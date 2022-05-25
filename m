@@ -2,45 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B09A35334FD
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 03:51:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E94BD533572
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 04:50:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243374AbiEYBvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 21:51:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57296 "EHLO
+        id S243669AbiEYCt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 22:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235156AbiEYBu5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 21:50:57 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB131AF39;
-        Tue, 24 May 2022 18:50:56 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L7DWm3NwJzgYJN;
-        Wed, 25 May 2022 09:49:24 +0800 (CST)
-Received: from container.huawei.com (10.175.104.82) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 25 May 2022 09:50:54 +0800
-From:   Wang Yufen <wangyufen@huawei.com>
-To:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-Subject: [PATCH net-next v2] ipv6: Fix signed integer overflow in __ip6_append_data
-Date:   Wed, 25 May 2022 10:08:27 +0800
-Message-ID: <20220525020827.1571021-1-wangyufen@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S234123AbiEYCt5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 22:49:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21812703CF
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 19:49:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653446995;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ElTuX9jWxfL0CUwfGnyHCc3cXorhj0tUDVKXC9Pq5yE=;
+        b=SCsFvErvjB569gHhEv8qQXK/cvYp4munxTKrceCZ4ZonnBY+omeKA1L2/IcbPlL0EodUAc
+        H0FZf9Amkatu87aHrv8BlfZekH5SrTJSyeVQsfxd2AalOxnndN0IcpOFLNqja39HRkUMZS
+        /X03vhEpapmdK93QSD80fPkWw5KfQwc=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-479-Toi4OS8TPKGdHDmMzXgVng-1; Tue, 24 May 2022 22:49:53 -0400
+X-MC-Unique: Toi4OS8TPKGdHDmMzXgVng-1
+Received: by mail-lf1-f69.google.com with SMTP id u13-20020a05651206cd00b00477c7503103so8387528lff.15
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 19:49:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ElTuX9jWxfL0CUwfGnyHCc3cXorhj0tUDVKXC9Pq5yE=;
+        b=z27v/IePBLEnndifuFY4dasX95NLFIbzAjZFdBv2gwNJqwmCffgZ9lwT/ZeAI9jGK7
+         kLMDn7rqDBq7yrXvRCZCVNGEpqmg1RNMfRrim4cZ+x05TIrGnUmRk7X/JrtAkvQ55edT
+         ZdHB39JLKqPFR8/RRO9j+9EFVKJzgieTw4txfWU1Ku4bYVzm8wLq5DmkrWr1SoWSFPwS
+         5mV/SSHeyaGH0Xgq2QrZHAz55VtccM0L5FyQdxXCBJ+wvZPW05D0MR2DvBc7+RMBysKz
+         5UADjIYbFE6AuDj2Uh9dZpchtFjuWJE+vexIjKCfcI7G5nvwCBerZBAjgH9UP6DjnMyb
+         nb9A==
+X-Gm-Message-State: AOAM533XKPwrrfhNQkZE0WlWRtCtG6FEjN21uxGNx11Sne8nUBNzs10X
+        3tvzFQTMgZv5i+y8VH+ait8T0A9YX0ZqWa49Cx+WFgdemuDdWyrsryUJ5Cle4QgV34em3fjmp07
+        hjUXrTHDMEjV+xCqI+boct8svUczE6irZ
+X-Received: by 2002:a2e:81c1:0:b0:24b:f44:3970 with SMTP id s1-20020a2e81c1000000b0024b0f443970mr17702589ljg.97.1653446992149;
+        Tue, 24 May 2022 19:49:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwaAlxsbkHduKZFbcUP9Q8h4gtKP25cQ1tcIPf8o5riuG1dRzo29yaMgKzd1IjazP5PKoJ9oIdwVR4fFRKu26Q=
+X-Received: by 2002:a2e:81c1:0:b0:24b:f44:3970 with SMTP id
+ s1-20020a2e81c1000000b0024b0f443970mr17702581ljg.97.1653446991974; Tue, 24
+ May 2022 19:49:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <20220524170610.2255608-1-eperezma@redhat.com>
+In-Reply-To: <20220524170610.2255608-1-eperezma@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 25 May 2022 10:49:40 +0800
+Message-ID: <CACGkMEvHRL7a6njivA0+ae-+nXUB9Dng=oaQny0cHu-Ra+bcFg@mail.gmail.com>
+Subject: Re: [PATCH v2 0/4] Implement vdpasim stop operation
+To:     =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>, kvm <kvm@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Parav Pandit <parav@nvidia.com>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        Harpreet Singh Anand <hanand@xilinx.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>, tanuj.kamde@amd.com,
+        "Dawar, Gautam" <gautam.dawar@amd.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Dinan Gunawardena <dinang@xilinx.com>,
+        habetsm.xilinx@gmail.com, Eli Cohen <elic@nvidia.com>,
+        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
+        Laurent Vivier <lvivier@redhat.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Cindy Lu <lulu@redhat.com>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        ecree.xilinx@gmail.com, "Uminski, Piotr" <Piotr.Uminski@intel.com>,
+        Martin Porter <martinpo@xilinx.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Longpeng <longpeng2@huawei.com>,
+        Martin Petrus Hubertus Habets <martinh@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -48,135 +95,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Resurrect ubsan overflow checks and ubsan report this warning,
-fix it by change the variable [length] type to size_t.
+On Wed, May 25, 2022 at 1:06 AM Eugenio P=C3=A9rez <eperezma@redhat.com> wr=
+ote:
+>
+> Implement stop operation for vdpa_sim devices, so vhost-vdpa will offer
+> that backend feature and userspace can effectively stop the device.
+>
+> This is a must before get virtqueue indexes (base) for live migration,
+> since the device could modify them after userland gets them. There are
+> individual ways to perform that action for some devices
+> (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no
+> way to perform it for any vhost device (and, in particular, vhost-vdpa).
+>
+> After the return of ioctl with stop !=3D 0, the device MUST finish any
+> pending operations like in flight requests. It must also preserve all
+> the necessary state (the virtqueue vring base plus the possible device
+> specific states) that is required for restoring in the future. The
+> device must not change its configuration after that point.
 
-UBSAN: signed-integer-overflow in net/ipv6/ip6_output.c:1489:19
-2147479552 + 8567 cannot be represented in type 'int'
-CPU: 0 PID: 253 Comm: err Not tainted 5.16.0+ #1
-Hardware name: linux,dummy-virt (DT)
-Call trace:
-  dump_backtrace+0x214/0x230
-  show_stack+0x30/0x78
-  dump_stack_lvl+0xf8/0x118
-  dump_stack+0x18/0x30
-  ubsan_epilogue+0x18/0x60
-  handle_overflow+0xd0/0xf0
-  __ubsan_handle_add_overflow+0x34/0x44
-  __ip6_append_data.isra.48+0x1598/0x1688
-  ip6_append_data+0x128/0x260
-  udpv6_sendmsg+0x680/0xdd0
-  inet6_sendmsg+0x54/0x90
-  sock_sendmsg+0x70/0x88
-  ____sys_sendmsg+0xe8/0x368
-  ___sys_sendmsg+0x98/0xe0
-  __sys_sendmmsg+0xf4/0x3b8
-  __arm64_sys_sendmmsg+0x34/0x48
-  invoke_syscall+0x64/0x160
-  el0_svc_common.constprop.4+0x124/0x300
-  do_el0_svc+0x44/0xc8
-  el0_svc+0x3c/0x1e8
-  el0t_64_sync_handler+0x88/0xb0
-  el0t_64_sync+0x16c/0x170
+I'd suggest documenting this in the code maybe around ops->stop()?
 
-Changes since v1: 
--Change the variable [length] type to unsigned, as Eric Dumazet suggested.
-  
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
----
- include/net/ipv6.h    | 4 ++--
- net/ipv6/ip6_output.c | 8 ++++----
- net/ipv6/udp.c        | 2 +-
- net/l2tp/l2tp_ip6.c   | 2 +-
- 4 files changed, 8 insertions(+), 8 deletions(-)
+Thanks
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index 5b38bf1a586b..de9dcc5652c4 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -1063,7 +1063,7 @@ int ip6_find_1stfragopt(struct sk_buff *skb, u8 **nexthdr);
- int ip6_append_data(struct sock *sk,
- 		    int getfrag(void *from, char *to, int offset, int len,
- 				int odd, struct sk_buff *skb),
--		    void *from, int length, int transhdrlen,
-+		    void *from, size_t length, int transhdrlen,
- 		    struct ipcm6_cookie *ipc6, struct flowi6 *fl6,
- 		    struct rt6_info *rt, unsigned int flags);
- 
-@@ -1079,7 +1079,7 @@ struct sk_buff *__ip6_make_skb(struct sock *sk, struct sk_buff_head *queue,
- struct sk_buff *ip6_make_skb(struct sock *sk,
- 			     int getfrag(void *from, char *to, int offset,
- 					 int len, int odd, struct sk_buff *skb),
--			     void *from, int length, int transhdrlen,
-+			     void *from, size_t length, int transhdrlen,
- 			     struct ipcm6_cookie *ipc6,
- 			     struct rt6_info *rt, unsigned int flags,
- 			     struct inet_cork_full *cork);
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 4081b12a01ff..7d47ddd1e1f2 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1450,7 +1450,7 @@ static int __ip6_append_data(struct sock *sk,
- 			     struct page_frag *pfrag,
- 			     int getfrag(void *from, char *to, int offset,
- 					 int len, int odd, struct sk_buff *skb),
--			     void *from, int length, int transhdrlen,
-+			     void *from, size_t length, int transhdrlen,
- 			     unsigned int flags, struct ipcm6_cookie *ipc6)
- {
- 	struct sk_buff *skb, *skb_prev = NULL;
-@@ -1798,7 +1798,7 @@ static int __ip6_append_data(struct sock *sk,
- int ip6_append_data(struct sock *sk,
- 		    int getfrag(void *from, char *to, int offset, int len,
- 				int odd, struct sk_buff *skb),
--		    void *from, int length, int transhdrlen,
-+		    void *from, size_t length, int transhdrlen,
- 		    struct ipcm6_cookie *ipc6, struct flowi6 *fl6,
- 		    struct rt6_info *rt, unsigned int flags)
- {
-@@ -1995,13 +1995,13 @@ EXPORT_SYMBOL_GPL(ip6_flush_pending_frames);
- struct sk_buff *ip6_make_skb(struct sock *sk,
- 			     int getfrag(void *from, char *to, int offset,
- 					 int len, int odd, struct sk_buff *skb),
--			     void *from, int length, int transhdrlen,
-+			     void *from, size_t length, int transhdrlen,
- 			     struct ipcm6_cookie *ipc6, struct rt6_info *rt,
- 			     unsigned int flags, struct inet_cork_full *cork)
- {
- 	struct inet6_cork v6_cork;
- 	struct sk_buff_head queue;
--	int exthdrlen = (ipc6->opt ? ipc6->opt->opt_flen : 0);
-+	size_t exthdrlen = (ipc6->opt ? ipc6->opt->opt_flen : 0);
- 	int err;
- 
- 	if (flags & MSG_PROBE) {
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 55afd7f39c04..91704bbc7715 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -1308,7 +1308,7 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	struct ipcm6_cookie ipc6;
- 	int addr_len = msg->msg_namelen;
- 	bool connected = false;
--	int ulen = len;
-+	size_t ulen = len;
- 	int corkreq = READ_ONCE(up->corkflag) || msg->msg_flags&MSG_MORE;
- 	int err;
- 	int is_udplite = IS_UDPLITE(sk);
-diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
-index c6ff8bf9b55f..5981d6e25776 100644
---- a/net/l2tp/l2tp_ip6.c
-+++ b/net/l2tp/l2tp_ip6.c
-@@ -504,7 +504,7 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	struct ipcm6_cookie ipc6;
- 	int addr_len = msg->msg_namelen;
- 	int transhdrlen = 4; /* zero session-id */
--	int ulen = len + transhdrlen;
-+	size_t ulen = len + transhdrlen;
- 	int err;
- 
- 	/* Rough check on arithmetic overflow,
--- 
-2.25.1
+>
+> After the return of ioctl with stop =3D=3D 0, the device can continue
+> processing buffers as long as typical conditions are met (vq is enabled,
+> DRIVER_OK status bit is enabled, etc).
+>
+> In the future, we will provide features similar to VHOST_USER_GET_INFLIGH=
+T_FD
+> so the device can save pending operations.
+>
+> Comments are welcome.
+>
+> v2:
+> * Replace raw _F_STOP with BIT_ULL(_F_STOP).
+> * Fix obtaining of stop ioctl arg (it was not obtained but written).
+> * Add stop to vdpa_sim_blk.
+>
+> Eugenio P=C3=A9rez (4):
+>   vdpa: Add stop operation
+>   vhost-vdpa: introduce STOP backend feature bit
+>   vhost-vdpa: uAPI to stop the device
+>   vdpa_sim: Implement stop vdpa op
+>
+>  drivers/vdpa/vdpa_sim/vdpa_sim.c     | 21 +++++++++++++++++
+>  drivers/vdpa/vdpa_sim/vdpa_sim.h     |  1 +
+>  drivers/vdpa/vdpa_sim/vdpa_sim_blk.c |  3 +++
+>  drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  3 +++
+>  drivers/vhost/vdpa.c                 | 34 +++++++++++++++++++++++++++-
+>  include/linux/vdpa.h                 |  6 +++++
+>  include/uapi/linux/vhost.h           |  3 +++
+>  include/uapi/linux/vhost_types.h     |  2 ++
+>  8 files changed, 72 insertions(+), 1 deletion(-)
+>
+> --
+> 2.27.0
+>
+>
 
