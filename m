@@ -2,183 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50B1B533A36
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 11:46:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC0F0533A86
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 12:18:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241887AbiEYJpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 05:45:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58654 "EHLO
+        id S242024AbiEYKS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 06:18:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242293AbiEYJpO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 05:45:14 -0400
-Received: from fx305.security-mail.net (smtpout30.security-mail.net [85.31.212.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A77DD91550
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 02:45:02 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by fx305.security-mail.net (Postfix) with ESMTP id B0C1230FF9C
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 11:45:00 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kalrayinc.com;
-        s=sec-sig-email; t=1653471900;
-        bh=D7OnqBeaCunQCMTpdOSdgREG5DFUSHXyAGxAzYeQA54=;
-        h=Date:From:To:Cc:In-Reply-To:References:Subject;
-        b=PjoM409/rrepxd8lzh9LD+PY4ybC+kcEsM6i+j7Tfk0G2gEfej3k+IoxI81OyNJB/
-         PK7pcdNPiiImYjLzt8t2ksxTiKB+2RqgeKsSzrd14i0qUPcQu2PZIXEKDmw6/n5OUO
-         KGq4lm/3WXfq3pKf7E2JoT1Z0NoRU2cAK1A+2QrM=
-Received: from fx305 (localhost [127.0.0.1]) by fx305.security-mail.net
- (Postfix) with ESMTP id CE3DD30FF5D; Wed, 25 May 2022 11:44:58 +0200 (CEST)
-Received: from zimbra2.kalray.eu (unknown [217.181.231.53]) by
- fx305.security-mail.net (Postfix) with ESMTPS id 0E85E30FF23; Wed, 25 May
- 2022 11:44:58 +0200 (CEST)
-Received: from zimbra2.kalray.eu (localhost [127.0.0.1]) by
- zimbra2.kalray.eu (Postfix) with ESMTPS id DDE6D27E04AF; Wed, 25 May 2022
- 11:44:57 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1]) by zimbra2.kalray.eu
- (Postfix) with ESMTP id C34F027E04B4; Wed, 25 May 2022 11:44:57 +0200 (CEST)
-Received: from zimbra2.kalray.eu ([127.0.0.1]) by localhost
- (zimbra2.kalray.eu [127.0.0.1]) (amavisd-new, port 10026) with ESMTP id
- Rf1L1t4ji49j; Wed, 25 May 2022 11:44:57 +0200 (CEST)
-Received: from zimbra2.kalray.eu (localhost [127.0.0.1]) by
- zimbra2.kalray.eu (Postfix) with ESMTP id A6C5427E04AF; Wed, 25 May 2022
- 11:44:57 +0200 (CEST)
-X-Virus-Scanned: E-securemail, by Secumail
-Secumail-id: <15834.628dfa9a.b47c.0>
-DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu C34F027E04B4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kalrayinc.com;
- s=4F334102-7B72-11EB-A74E-42D0B9747555; t=1653471897;
- bh=RyhDwXzgrMAOQGgbbs+MJeBkkXISmkrQqT6bvK26j3s=;
- h=Date:From:To:Message-ID:MIME-Version;
- b=NXBv1m8aeljYXei0aBAnUdouunhTPpUfgS+zMEtejwA38JqvFJJQOQkn8OWTUm9OD
- howjoLOCv88orMlYLcQKsSckjogTSvz7rnsURu/IkP/IlZCj3c83hwdtlcJ7qjXtuP
- JYhVVYJITdUwxeZrLPSQ1m3MUSCMT4VeE0J4JYLWkW/XCoK/FQWaHrSrgSixscGf7g
- mEKY1dGydBAuWetU3parRNEdUqL95OY/OTuHnqhRuh0a5bWm3735/698gP7OPlkzPL
- Q2iwwYx2/GZMYY/SpvSCLdHZn0G1K6gW/5ZPuKYT1lZSSFZwsMdi8c9g5ZsVh7Wz54
- csGYSTDGu2J0Q==
-Date:   Wed, 25 May 2022 11:44:57 +0200 (CEST)
-From:   Vincent Ray <vray@kalrayinc.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     linyunsheng <linyunsheng@huawei.com>, davem <davem@davemloft.net>,
-        =?utf-8?b?5pa55Zu954Ks?= <guoju.fgj@alibaba-inc.com>,
-        kuba <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Samuel Jones <sjones@kalrayinc.com>,
-        vladimir oltean <vladimir.oltean@nxp.com>,
-        Guoju Fang <gjfang@linux.alibaba.com>,
-        Remy Gauguey <rgauguey@kalrayinc.com>, will <will@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Message-ID: <1140270297.15304639.1653471897630.JavaMail.zimbra@kalray.eu>
-In-Reply-To: <317a3e67-0956-e9c2-0406-9349844ca612@gmail.com>
-References: <1359936158.10849094.1649854873275.JavaMail.zimbra@kalray.eu>
- <2b827f3b-a9db-e1a7-0dc9-65446e07bc63@linux.alibaba.com>
- <1684598287.15044793.1653314052575.JavaMail.zimbra@kalray.eu>
- <d374b806-1816-574e-ba8b-a750a848a6b3@huawei.com>
- <1758521608.15136543.1653380033771.JavaMail.zimbra@kalray.eu>
- <1675198168.15239468.1653411635290.JavaMail.zimbra@kalray.eu>
- <317a3e67-0956-e9c2-0406-9349844ca612@gmail.com>
-Subject: Re: packet stuck in qdisc : patch proposal
+        with ESMTP id S236640AbiEYKS4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 06:18:56 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D7E97288
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 03:18:53 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id z15so5616981wrg.11
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 03:18:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=IKO1wQPqNeafXW7ePx/p6H6D1wFfnLpkgbfwaCOWD9o=;
+        b=CWTtkvYFGef5ey+p035Mn9qClBe5IM61n2d51HyOo6ItqkiavbGG73JXbcGaExiw9d
+         wg00mxcAerlPgWUpzrJ8w6fSjW5TntE/H91PCb0KJYsCdbsqhG0HHYHt/TcVL2g0w/Ot
+         8nHb+85XPzoFVRbf6s2E5ctugD4BfMmxQVRESSUjYMiYDY/bubJsIu4u80siyLDjTWK7
+         4OD/HyNkz1YL4xJBkatPj577T+sZwbDw+4yMFfuIjDdoCJFGA2lsiOjm2TkIgWZHwn+I
+         7ldZ4aH+oyR7xWefpMIn+gtNyZDyj3AkIES6acDXz1k4cAxWd0aCtMJYx0SfvYWgZ9nN
+         J77w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IKO1wQPqNeafXW7ePx/p6H6D1wFfnLpkgbfwaCOWD9o=;
+        b=Y/Gn8ydC4meRJke5ppfN8YDDncCoIc7CcNMG2btL7SqkKYrDYpDtPqVmxbFuB3BrNz
+         dNDTszMi3ji0dIMwNDHSvBZ/QYSzFdQlc0yIjQWMg+9XiIKUGbAolDH0LoHchMNNPeZn
+         8xihQX8qEnnPecSQorXzZ8Ex+D1stPlHSbjbDVPxMPx9VMoGLb5Qw+VpZyYZSIKu93Zz
+         GYOdLxr/RIrrW5q3OMDVYDN+G66jHc1oJKqwvyhmT8gYTrd4xZ8sCkNWy0aB0sqhzFjt
+         U5gdzwDs7pC1xIYu3qqCTiRLhvQiQVri3zc/nYz5cMCDb0KGQqJONRAyWc2QpEo4ilx8
+         J8gw==
+X-Gm-Message-State: AOAM533NG1fq5OKzVuQcuV2sBF17K27x8bQeurG8PSuxHqj8/zP3apjT
+        sGggSnigT51Dv5JztHGmqPN6CA==
+X-Google-Smtp-Source: ABdhPJxgtLZHCd6/bHzg9r3GWuTdZpprQ2vQ2cJsbS0c885HtYWHWfg4GYMB8tQn4zKYJcJdaeJoiA==
+X-Received: by 2002:adf:fc01:0:b0:20c:ff9a:2c53 with SMTP id i1-20020adffc01000000b0020cff9a2c53mr26042048wrr.142.1653473931814;
+        Wed, 25 May 2022 03:18:51 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id p3-20020a1c7403000000b0039744664af7sm1749957wmc.1.2022.05.25.03.18.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 25 May 2022 03:18:51 -0700 (PDT)
+Message-ID: <4bf1c80d-0f18-f444-3005-59a45797bcfd@blackwall.org>
+Date:   Wed, 25 May 2022 13:18:49 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [192.168.40.202]
-X-Mailer: Zimbra 9.0.0_GA_4126 (ZimbraWebClient - FF100
- (Linux)/9.0.0_GA_4126)
-Thread-Topic: packet stuck in qdisc : patch proposal
-Thread-Index: FV/7/iaaKOuW1iLl/hf49KySDvwv6w==
-X-ALTERMIMEV2_out: done
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
+ locked port feature
+Content-Language: en-US
+To:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
+ <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
+ <01e6e35c-f5c9-9776-1263-058f84014ed9@blackwall.org>
+ <86zgj6oqa9.fsf@gmail.com>
+ <b78fb006-04c4-5a25-7ba5-94428cc9591a@blackwall.org>
+ <86fskyggdo.fsf@gmail.com>
+ <040a1551-2a9f-18d0-9987-f196bb429c1b@blackwall.org>
+ <86v8tu7za3.fsf@gmail.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <86v8tu7za3.fsf@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ On May 24, 2022, at 10:17 PM, Eric Dumazet eric.dumazet@gmail.com wrote:
-
-> On 5/24/22 10:00, Vincent Ray wrote:
->> All,
+On 25/05/2022 12:11, Hans Schultz wrote:
+> On ons, maj 25, 2022 at 11:38, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+>> On 25/05/2022 11:34, Hans Schultz wrote:
+>>> On ons, maj 25, 2022 at 11:06, Nikolay Aleksandrov <razor@blackwall.org> wrote:
+>>>> On 24/05/2022 19:21, Hans Schultz wrote:
+>>>>>>
+>>>>>> Hi Hans,
+>>>>>> So this approach has a fundamental problem, f->dst is changed without any synchronization
+>>>>>> you cannot rely on it and thus you cannot account for these entries properly. We must be very
+>>>>>> careful if we try to add any new synchronization not to affect performance as well.
+>>>>>> More below...
+>>>>>>
+>>>>>>> @@ -319,6 +326,9 @@ static void fdb_delete(struct net_bridge *br, struct net_bridge_fdb_entry *f,
+>>>>>>>  	if (test_bit(BR_FDB_STATIC, &f->flags))
+>>>>>>>  		fdb_del_hw_addr(br, f->key.addr.addr);
+>>>>>>>  
+>>>>>>> +	if (test_bit(BR_FDB_ENTRY_LOCKED, &f->flags) && !test_bit(BR_FDB_OFFLOADED, &f->flags))
+>>>>>>> +		atomic_dec(&f->dst->locked_entry_cnt);
+>>>>>>
+>>>>>> Sorry but you cannot do this for multiple reasons:
+>>>>>>  - f->dst can be NULL
+>>>>>>  - f->dst changes without any synchronization
+>>>>>>  - there is no synchronization between fdb's flags and its ->dst
+>>>>>>
+>>>>>> Cheers,
+>>>>>>  Nik
+>>>>>
+>>>>> Hi Nik,
+>>>>>
+>>>>> if a port is decoupled from the bridge, the locked entries would of
+>>>>> course be invalid, so maybe if adding and removing a port is accounted
+>>>>> for wrt locked entries and the count of locked entries, would that not
+>>>>> work?
+>>>>>
+>>>>> Best,
+>>>>> Hans
+>>>>
+>>>> Hi Hans,
+>>>> Unfortunately you need the correct amount of locked entries per-port if you want
+>>>> to limit their number per-port, instead of globally. So you need a
+>>>> consistent
+>>>
+>>> Hi Nik,
+>>> the used dst is a port structure, so it is per-port and not globally.
+>>>
+>>> Best,
+>>> Hans
+>>>
 >>
->> I confirm Eric's patch works well too, and it's better and clearer than mine.
->> So I think we should go for it, and the one from Guoju in addition.
+>> Yeah, I know. :) That's why I wrote it, if the limit is not a feature requirement I'd suggest
+>> dropping it altogether, it can be enforced externally (e.g. from user-space) if needed.
 >>
->> @Eric : I see you are one of the networking maintainers, so I have a few
->> questions for you :
+>> By the way just fyi net-next is closed right now due to merge window. And one more
+>> thing please include a short log of changes between versions when you send a new one.
+>> I had to go look for v2 to find out what changed.
 >>
->> a) are you going to take care of these patches directly yourself, or is there
->> something Guoju or I should do to promote them ?
 > 
-> I think this is totally fine you take ownership of the patch, please
-> send a formal V2.
-> 
-> Please double check what patchwork had to say about your V1 :
-> 
-> 
-> https://patchwork.kernel.org/project/netdevbpf/patch/1684598287.15044793.1653314052575.JavaMail.zimbra@kalray.eu/
-> 
-> 
-> And make sure to address the relevant points
-
-OK I will.
-If you agree, I will take your version of the fix (test_and_set_bit()), keeping the commit message
-similar to my original one.
-
-What about Guoju's patch ? 
-(adding a smp_mb() between the spin_unlock() and test_bit() in qdisc_run_end()). 
-I think it is also necessary though potentially less critical.
-Do we embed it in the same patch ? or patch series ?
-
-@Guoju : have you submitted it for integration ?
-
-
-> The most important one is the lack of 'Signed-off-by:' tag, of course.
-> 
-> 
->> b) Can we expect to see them land in the mainline soon ?
-> 
-> If your v2 submission is correct, it can be merged this week ;)
-> 
-> 
->>
->> c) Will they be backported to previous versions of the kernel ? Which ones ?
-> 
-> You simply can include a proper Fixes: tag, so that stable teams can
-> backport
-> 
-> the patch to all affected kernel versions.
+> Okay, I will drop the limit in the bridge module, which is an easy thing
+> to do. :) (It is mostly there to ensure against DOS attacks if someone
+> bombards a locked port with random mac addresses.)
+> I have a similar limitation in the driver, which should then probably be
+> dropped too?
 > 
 
-Here things get a little complicated in my head ;-)
-As explained, I think this mechanism has been bugged, in a way or an other, for some time, perhaps since the introduction
-of lockless qdiscs (4.16) or somewhere between 4.16 and 5.14.
-It's hard to tell at a glance since the code looks quite different back then.
-Because of these changes, a unique patch will also only apply up to a certain point in the past.
+That is up to you/driver, I'd try looking for similar problems in other switch drivers
+and check how those were handled. There are people in the CC above that can
+directly answer that. :)
 
-However, I think the bug became really critical only with the introduction of "true bypass" behavior 
-in lockless qdiscs by YunSheng in 5.14, though there may be scenarios where it is a big deal 
-even in no-bypass mode.
+> The mayor difference between v2 and v3 is in the mv88e6xxx driver, where
+> I now keep an inventory of locked ATU entries and remove them based on a
+> timer (mv88e6xxx_switchcore.c).
+> 
 
-=> I suggest we only tag it for backward fix up to the 5.14, where it should apply smoothly,
- and we live with the bug for versions before that.
-This would mean that 5.15 LT can be patched but no earlier LT
- 
-What do you think ?
+ack
 
-BTW : forgive my ignorance, but are there any kind of "Errata Sheet" or similar for known bugs that 
-won't be fixed in a given kernel ?
+> I guess the mentioned log should be in the cover letter part?
+> 
+
+Yep, usually a short mention of what changed to make it easier for reviewers.
+Some people also add the patch-specific changes to each patch under the ---
+so they're not included in the log, but I'm fine either way as long as I don't
+have to go digging up the old versions.
 
 > 
-> 
->>
->> Thanks a lot, best,
-> 
-> Thanks a lot for working on this long standing issue.
-> 
-> 
-> 
-> 
-> To declare a filtering error, please use the following link :
-> https://www.security-mail.net/reporter.php?mid=7009.628d3d4c.37c04.0&r=vray%40kalrayinc.com&s=eric.dumazet%40gmail.com&o=Re%3A+packet+stuck+in+qdisc+%3A+patch+proposal&verdict=C&c=0ca08e7b7e420d1ab014cda67db48db71df41f5f
-
-
-
+>>>> fdb view with all its attributes when changing its dst in this case, which would
+>>>> require new locking because you have multiple dependent struct fields and it will
+>>>> kill roaming/learning scalability. I don't think this use case is worth the complexity it
+>>>> will bring, so I'd suggest an alternative - you can monitor the number of locked entries
+>>>> per-port from a user-space agent and disable port learning or some similar solution that
+>>>> doesn't require any complex kernel changes. Is the limit a requirement to add the feature?
+>>>>
+>>>> I have an idea how to do it and to minimize the performance hit if it really is needed
+>>>> but it'll add a lot of complexity which I'd like to avoid if possible.
+>>>>
+>>>> Cheers,
+>>>>  Nik
 
