@@ -2,71 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F8E5533AD6
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 12:46:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87A0E533B1E
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 12:59:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242403AbiEYKqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 06:46:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53332 "EHLO
+        id S236105AbiEYK7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 06:59:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242520AbiEYKq1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 06:46:27 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57BFFD1
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 03:46:08 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id i1so18222314plg.7
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 03:46:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=nfd8GuZibV93hv9RFZEH/5/7YZjQFYEI7fvZmGryy4s=;
-        b=TfAvOXi/gD7eAIll7QchzF7Eta8mzPE79DQuQGqufw9MAXxEiSBkUhihxhjy4hVKku
-         Ww6UrrdG8O2dEu71e4mxTyAq68P3xddG05R270g4Jq+MiOX6Ty6F43Xii72x4LZkgUS4
-         QfN498OGx3DN3QY0WPRX0i9eYTrnyKFkAVBVo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=nfd8GuZibV93hv9RFZEH/5/7YZjQFYEI7fvZmGryy4s=;
-        b=Q4dT3dlXMn6sDpgi6X+fD2ZGXPzg+B8VgpB6YikepPve2rYjOgHx78ZtezXewyMzny
-         KigfQoIXnB4gsvJfJ1Q76y5LqH3wlezNajv9t5oAZJHUswmmN79gwX0rf9SsC20rm5xz
-         5JSQBEp1CFWfgmBFh8kFfQdntQ0dPAgGUtCiR+VKZRhj7oqB065Q8ono8iet/MCtfjz7
-         77kx8v+P7EuGus0EcKzBV8quqTbbJEsDYszfpG5mk1Td81QPtKcALceTQajr5bQZHyhg
-         j9b3XvrXkF0bdpzqwGY5/Mw7Jfc82oJHDI0Eh/F+KfBxmN4MSyJe0ld21cAGgT9erbX5
-         EbHA==
-X-Gm-Message-State: AOAM532wMuOhMtKWsxjCOm5RiluB9RHGOgrpe7susceQpGr1H9jS1LxJ
-        cO0gSw1gz93wWmDauhrbs0RqOtwnB5BtWA==
-X-Google-Smtp-Source: ABdhPJx+kR3HjBYxdXGooCC+ftVmy/otgl5MmgHXHeoEREOhHWmbCkk17kKT61UumNXFsaWtKwwJGw==
-X-Received: by 2002:a17:90b:4f81:b0:1e0:7643:36ae with SMTP id qe1-20020a17090b4f8100b001e0764336aemr8297282pjb.124.1653475568108;
-        Wed, 25 May 2022 03:46:08 -0700 (PDT)
-Received: from localhost (174.71.80.34.bc.googleusercontent.com. [34.80.71.174])
-        by smtp.gmail.com with UTF8SMTPSA id a21-20020a637055000000b003c14af505fesm8151397pgn.22.2022.05.25.03.46.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 May 2022 03:46:07 -0700 (PDT)
-From:   Joseph Hwang <josephsih@chromium.org>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com, pali@kernel.org
-Cc:     josephsih@google.com, chromeos-bluetooth-upstreaming@chromium.org,
-        Joseph Hwang <josephsih@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v5 5/5] Bluetooth: let HCI_QUALITY_REPORT persist over adapter power cycle
-Date:   Wed, 25 May 2022 18:45:45 +0800
-Message-Id: <20220525104545.2314653-3-josephsih@chromium.org>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
-In-Reply-To: <20220525104545.2314653-1-josephsih@chromium.org>
-References: <20220525104545.2314653-1-josephsih@chromium.org>
+        with ESMTP id S233957AbiEYK7p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 06:59:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 752A960BAF
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 03:59:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653476383;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=oQoa0hxtp2aLppBonjbRDOp8064Y/JajbFbLccXWRXs=;
+        b=ULqPEtjKjR9kOpbiu3Uor3WiS76in3E5/uM7e2zJNWDmZCpUG0JO+3WDFibqz6vzQQcAyE
+        IJk3KMW74ATv6TAlAE60MSqZUoMunxWtlzetrOYhtfCSpeA8q9hE/id4k9tvgMGjZMZP6S
+        QJ699cbM03GPXR2ua0vxgALo014baK8=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-39-Wbiuid1DNn2z-eOkMf5Tzg-1; Wed, 25 May 2022 06:59:42 -0400
+X-MC-Unique: Wbiuid1DNn2z-eOkMf5Tzg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D96EF1C0CE63;
+        Wed, 25 May 2022 10:59:40 +0000 (UTC)
+Received: from eperezma.remote.csb (unknown [10.39.192.180])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 05E591730C;
+        Wed, 25 May 2022 10:59:31 +0000 (UTC)
+From:   =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Jason Wang <jasowang@redhat.com>
+Cc:     Zhu Lingshan <lingshan.zhu@intel.com>, martinh@xilinx.com,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        ecree.xilinx@gmail.com, Eli Cohen <elic@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>, dinang@xilinx.com,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Xie Yongji <xieyongji@bytedance.com>, gautam.dawar@amd.com,
+        lulu@redhat.com, martinpo@xilinx.com, pabloc@xilinx.com,
+        Longpeng <longpeng2@huawei.com>, Piotr.Uminski@intel.com,
+        tanuj.kamde@amd.com, Si-Wei Liu <si-wei.liu@oracle.com>,
+        habetsm.xilinx@gmail.com, lvivier@redhat.com,
+        Zhang Min <zhang.min9@zte.com.cn>, hanand@xilinx.com
+Subject: [PATCH v3 0/4] Implement vdpasim stop operation
+Date:   Wed, 25 May 2022 12:59:18 +0200
+Message-Id: <20220525105922.2413991-1-eperezma@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,104 +71,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The quality report specifications, including AOSP Bluetooth Quality
-Report and Intel Telemetry Event, do not define what happen when
-the adapter is turned off and then on. To be consistent among
-different specifications and vendors, the quality report feature is
-turned off when the adapter is powered off and is turned on when
-the adapter is powered on if the feature has been on before power
-cycle.
-
-Signed-off-by: Joseph Hwang <josephsih@chromium.org>
-Reviewed-by: Archie Pusaka <apusaka@chromium.org>
----
-
-Changes in v5:
-- This is a new patch in this series changes version.
-
- include/net/bluetooth/hci_core.h |  1 -
- net/bluetooth/hci_sync.c         | 35 +++++++++++++++++++++++++++++++-
- 2 files changed, 34 insertions(+), 2 deletions(-)
-
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 9e48d606591e..5788350efa68 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -807,7 +807,6 @@ extern struct mutex hci_cb_list_lock;
- 		hci_dev_clear_flag(hdev, HCI_LE_ADV);		\
- 		hci_dev_clear_flag(hdev, HCI_LL_RPA_RESOLUTION);\
- 		hci_dev_clear_flag(hdev, HCI_PERIODIC_INQ);	\
--		hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);	\
- 	} while (0)
- 
- #define hci_dev_le_state_simultaneous(hdev) \
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index a6ada9dcede5..12a18d046bb6 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -3849,6 +3849,31 @@ static const struct {
- 			 "advertised, but not supported.")
- };
- 
-+static void suspend_resume_quality_report(struct hci_dev *hdev, bool enable)
-+{
-+	int err;
-+
-+	/* Suspend and resume quality report only when the feature has
-+	 * already been enabled. The HCI_QUALITY_REPORT flag, as an indicator
-+	 * whether to re-enable the feature after resume, is not changed by
-+	 * suspend/resume.
-+	 */
-+	if (!hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
-+		return;
-+
-+	if (hdev->set_quality_report)
-+		err = hdev->set_quality_report(hdev, enable);
-+	else
-+		err = aosp_set_quality_report(hdev, enable);
-+
-+	if (err)
-+		bt_dev_err(hdev, "%s quality report error %d",
-+			   enable ? "resume" : "suspend", err);
-+	else
-+		bt_dev_info(hdev, "%s quality report",
-+			    enable ? "resume" : "suspend");
-+}
-+
- int hci_dev_open_sync(struct hci_dev *hdev)
- {
- 	int ret = 0;
-@@ -4013,6 +4038,7 @@ int hci_dev_open_sync(struct hci_dev *hdev)
- 	if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
- 		msft_do_open(hdev);
- 		aosp_do_open(hdev);
-+		suspend_resume_quality_report(hdev, true);
- 	}
- 
- 	clear_bit(HCI_INIT, &hdev->flags);
-@@ -4095,6 +4121,14 @@ int hci_dev_close_sync(struct hci_dev *hdev)
- 
- 	hci_request_cancel_all(hdev);
- 
-+	/* Disable quality report and close aosp before shutdown()
-+	 * is called. Otherwise, some chips may panic.
-+	 */
-+	if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
-+		suspend_resume_quality_report(hdev, false);
-+		aosp_do_close(hdev);
-+	}
-+
- 	if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
- 	    !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
- 	    test_bit(HCI_UP, &hdev->flags)) {
-@@ -4158,7 +4192,6 @@ int hci_dev_close_sync(struct hci_dev *hdev)
- 	hci_sock_dev_event(hdev, HCI_DEV_DOWN);
- 
- 	if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
--		aosp_do_close(hdev);
- 		msft_do_close(hdev);
- 	}
- 
--- 
-2.36.1.124.g0e6072fb45-goog
+Implement stop operation for vdpa_sim devices, so vhost-vdpa will offer=0D
+that backend feature and userspace can effectively stop the device.=0D
+=0D
+This is a must before get virtqueue indexes (base) for live migration,=0D
+since the device could modify them after userland gets them. There are=0D
+individual ways to perform that action for some devices=0D
+(VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no=0D
+way to perform it for any vhost device (and, in particular, vhost-vdpa).=0D
+=0D
+After the return of ioctl with stop !=3D 0, the device MUST finish any=0D
+pending operations like in flight requests. It must also preserve all=0D
+the necessary state (the virtqueue vring base plus the possible device=0D
+specific states) that is required for restoring in the future. The=0D
+device must not change its configuration after that point.=0D
+=0D
+After the return of ioctl with stop =3D=3D 0, the device can continue=0D
+processing buffers as long as typical conditions are met (vq is enabled,=0D
+DRIVER_OK status bit is enabled, etc).=0D
+=0D
+In the future, we will provide features similar to VHOST_USER_GET_INFLIGHT_=
+FD=0D
+so the device can save pending operations.=0D
+=0D
+Comments are welcome.=0D
+=0D
+v3:=0D
+* s/VHOST_STOP/VHOST_VDPA_STOP/=0D
+* Add documentation and requirements of the ioctl above its definition.=0D
+=0D
+v2:=0D
+* Replace raw _F_STOP with BIT_ULL(_F_STOP).=0D
+* Fix obtaining of stop ioctl arg (it was not obtained but written).=0D
+* Add stop to vdpa_sim_blk.=0D
+=0D
+Eugenio P=C3=A9rez (4):=0D
+  vdpa: Add stop operation=0D
+  vhost-vdpa: introduce STOP backend feature bit=0D
+  vhost-vdpa: uAPI to stop the device=0D
+  vdpa_sim: Implement stop vdpa op=0D
+=0D
+ drivers/vdpa/vdpa_sim/vdpa_sim.c     | 21 +++++++++++++++++=0D
+ drivers/vdpa/vdpa_sim/vdpa_sim.h     |  1 +=0D
+ drivers/vdpa/vdpa_sim/vdpa_sim_blk.c |  3 +++=0D
+ drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  3 +++=0D
+ drivers/vhost/vdpa.c                 | 34 +++++++++++++++++++++++++++-=0D
+ include/linux/vdpa.h                 |  6 +++++=0D
+ include/uapi/linux/vhost.h           | 14 ++++++++++++=0D
+ include/uapi/linux/vhost_types.h     |  2 ++=0D
+ 8 files changed, 83 insertions(+), 1 deletion(-)=0D
+=0D
+-- =0D
+2.27.0=0D
+=0D
 
