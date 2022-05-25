@@ -2,682 +2,441 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C55825345B9
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 23:26:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 424255345DB
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 23:36:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244594AbiEYV0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 17:26:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39502 "EHLO
+        id S239825AbiEYVg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 17:36:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238229AbiEYV0A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 17:26:00 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3351BE00E
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 14:25:57 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id 4-20020a251004000000b0064df0151b18so19470980ybq.21
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 14:25:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=f0cykqcVpQZ6/A132ZoRpqFr5lqp7HWj//bcumODcAA=;
-        b=iGqAv8XDfEiJH5PVi3LYY77Hvfucv41GIdzFt5rr6lnadjXGUIwWQENzBRDBMWGcJH
-         4NB94FmPUPF9/Os/BPvN7idW+8sbmxEXF5tBmkkbo+hQjo9jfZOZhRa2fK0mPDmMIwjY
-         5D4CMYGRh+QIfRL5uu1SQEDKGVaASYDUVHlY7bsiv2SIeh2P75Pyvekkjv434SHJFFBi
-         IPhcE5NxtXZ/wvr8SAUWNWbYwJcEi8fIBuWOAjhrLUJWJYYbKSQV4CLZmmeUNUyZ8FWd
-         QNX9mvYVrSswGsDOyrod7/Gb80GN1sVigvSD5f4uGPcOvAgwEYO8s2mL90vJAh/8fMCo
-         A7eA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=f0cykqcVpQZ6/A132ZoRpqFr5lqp7HWj//bcumODcAA=;
-        b=eKoqK925GUmljag1GLa0LukmYFEiYlKm8j4F6F0IAp/YHa48h4uqIQjBJNVrzczweX
-         Sopu9nBrTWKXDDt5fsNtiUc+CYf68WWR42ceh6JER+ganJ9oDntFuL+kczhPs0g75LWb
-         3eDt2r9QAiTUkBN+xYDKFDEivk8j1CBv2hFX8aOdp0YoWctTEwyiRXn/12HZQW3QaN/w
-         1m1xUbXS9ofZhh4DH2k/fu8hoXcQlZAafywJGtjDuu3Qp6YxTBNQNGP2+P3YW0eJj3Eq
-         LDmmUK2oqg+h8aFeUig/P7jTKwDzDbbL5t5irYMa02aH2qaYyGPYxIORdY1vQejHczFV
-         MOmg==
-X-Gm-Message-State: AOAM530ij3dL8pevvECJgBJnBM3cU+hok/c+97TXgUZAlIId3Xkc4fXT
-        T7+ywi6XaiqwYtUAxn0dgYVC9L0=
-X-Google-Smtp-Source: ABdhPJx6aqbwM2r0UPiwxJi4fEa7m2vN3Wy2TtubFOY9OLk/y2sy+6f2HLEjk4ZU1K2hOu/Mom3q1dc=
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:201:5ad2:d36b:186c:728f])
- (user=sdf job=sendgmr) by 2002:a81:16d1:0:b0:301:b558:77af with SMTP id
- 200-20020a8116d1000000b00301b55877afmr973775yww.431.1653513956405; Wed, 25
- May 2022 14:25:56 -0700 (PDT)
-Date:   Wed, 25 May 2022 14:25:54 -0700
-In-Reply-To: <20220525203935.xkjeb7qkfltjsfqc@kafai-mbp>
-Message-Id: <Yo6e4sNHnnazM+Cx@google.com>
-Mime-Version: 1.0
-References: <20220518225531.558008-6-sdf@google.com> <20220524034857.jwbjciq3rfb3l5kx@kafai-mbp>
- <CAKH8qBuCZVNPZaCRWrTiv7deDCyOkofT_ypvAiuE=OMz=TUuJw@mail.gmail.com>
- <20220524175035.i2ltl7gcrp2sng5r@kafai-mbp> <CAEf4BzYEXKQ-J8EQtTiYci1wdrRG7SPpuGhejJFY0cc5QQovEQ@mail.gmail.com>
- <CAKH8qBuRvnVoY-KEa6ofTjc2Jh2HUZYb1U2USSxgT=ozk0_JUA@mail.gmail.com>
- <CAEf4BzYdH9aayLvKAVTAeQ2XSLZPDX9N+fbP+yZnagcKd7ytNA@mail.gmail.com>
- <CAKH8qBvQHFcSQQiig6YGRdnjTHnu0T7-q-mPNjRb_nbY49N-Xw@mail.gmail.com>
- <CAKH8qBsjUgzEFQEzN9dwD4EQdJyno4TW2vDDp-cSejs1gFS4Ww@mail.gmail.com> <20220525203935.xkjeb7qkfltjsfqc@kafai-mbp>
-Subject: Re: [PATCH bpf-next v7 05/11] bpf: implement BPF_PROG_QUERY for BPF_LSM_CGROUP
-From:   sdf@google.com
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S231226AbiEYVgZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 17:36:25 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679B815FC0;
+        Wed, 25 May 2022 14:36:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653514583; x=1685050583;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=p2xIr7qIJQysFb3ESgxRnboAHXPwDgkY8y4Y8EPMgTo=;
+  b=TIIYovGOjtUYEOw9NfLThc3il7tl+21cwYt5BIe4O7YKbFjBOXZdzfPy
+   UQvT1moL6sREKi7lcRzV1QiLni9R4RlGilriyuUDfdSL8qoG5oiF28pCJ
+   vCgR8ZvI59UM0dBNcpV4+7qNGZEcx//dY9vmSDO+EqcsMPTEDrCoVzW+s
+   KfbjiBe6Y5Z6wYjy86JKAC50d48iQkdumalO4l6BCwOgvjP8NH6g/F9Hn
+   pCMj+Cx7WROznI349+TVZgfzpt4QlBbdtFoM//ZNrJ5gmm/icAJKllw1z
+   zrDnGIEdPd4GXujPwBamDnkbTbUe80jXoOz7A95vfDd0M0f3dhVFGbS+A
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="273942785"
+X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
+   d="scan'208";a="273942785"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 14:36:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
+   d="scan'208";a="717928351"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 25 May 2022 14:36:17 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ntyfw-0003KS-WB;
+        Wed, 25 May 2022 21:36:17 +0000
+Date:   Thu, 26 May 2022 05:35:20 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-riscv@lists.infradead.org,
+        linux-rdma@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-parport@lists.infradead.org, linux-omap@vger.kernel.org,
+        linux-mm@kvack.org, linux-fbdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, bpf@vger.kernel.org,
+        amd-gfx@lists.freedesktop.org, alsa-devel@alsa-project.org,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: [linux-next:master] BUILD REGRESSION
+ 8cb8311e95e3bb58bd84d6350365f14a718faa6d
+Message-ID: <628ea118.wJYf60YnZco0hs9o%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/25, Martin KaFai Lau wrote:
-> On Wed, May 25, 2022 at 10:02:07AM -0700, Stanislav Fomichev wrote:
-> > On Wed, May 25, 2022 at 9:01 AM Stanislav Fomichev <sdf@google.com>  
-> wrote:
-> > >
-> > > On Tue, May 24, 2022 at 9:39 PM Andrii Nakryiko
-> > > <andrii.nakryiko@gmail.com> wrote:
-> > > >
-> > > > On Tue, May 24, 2022 at 9:03 PM Stanislav Fomichev <sdf@google.com>  
-> wrote:
-> > > > >
-> > > > > On Tue, May 24, 2022 at 4:45 PM Andrii Nakryiko
-> > > > > <andrii.nakryiko@gmail.com> wrote:
-> > > > > >
-> > > > > > On Tue, May 24, 2022 at 10:50 AM Martin KaFai Lau  
-> <kafai@fb.com> wrote:
-> > > > > > >
-> > > > > > > On Tue, May 24, 2022 at 08:55:04AM -0700, Stanislav Fomichev  
-> wrote:
-> > > > > > > > On Mon, May 23, 2022 at 8:49 PM Martin KaFai Lau  
-> <kafai@fb.com> wrote:
-> > > > > > > > >
-> > > > > > > > > On Wed, May 18, 2022 at 03:55:25PM -0700, Stanislav  
-> Fomichev wrote:
-> > > > > > > > > > We have two options:
-> > > > > > > > > > 1. Treat all BPF_LSM_CGROUP the same, regardless of  
-> attach_btf_id
-> > > > > > > > > > 2. Treat BPF_LSM_CGROUP+attach_btf_id as a separate  
-> hook point
-> > > > > > > > > >
-> > > > > > > > > > I was doing (2) in the original patch, but switching to  
-> (1) here:
-> > > > > > > > > >
-> > > > > > > > > > * bpf_prog_query returns all attached BPF_LSM_CGROUP  
-> programs
-> > > > > > > > > > regardless of attach_btf_id
-> > > > > > > > > > * attach_btf_id is exported via bpf_prog_info
-> > > > > > > > > >
-> > > > > > > > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > > > > > > > > ---
-> > > > > > > > > >  include/uapi/linux/bpf.h |   5 ++
-> > > > > > > > > >  kernel/bpf/cgroup.c      | 103  
-> +++++++++++++++++++++++++++------------
-> > > > > > > > > >  kernel/bpf/syscall.c     |   4 +-
-> > > > > > > > > >  3 files changed, 81 insertions(+), 31 deletions(-)
-> > > > > > > > > >
-> > > > > > > > > > diff --git a/include/uapi/linux/bpf.h  
-> b/include/uapi/linux/bpf.h
-> > > > > > > > > > index b9d2d6de63a7..432fc5f49567 100644
-> > > > > > > > > > --- a/include/uapi/linux/bpf.h
-> > > > > > > > > > +++ b/include/uapi/linux/bpf.h
-> > > > > > > > > > @@ -1432,6 +1432,7 @@ union bpf_attr {
-> > > > > > > > > >               __u32           attach_flags;
-> > > > > > > > > >               __aligned_u64   prog_ids;
-> > > > > > > > > >               __u32           prog_cnt;
-> > > > > > > > > > +             __aligned_u64   prog_attach_flags; /*  
-> output: per-program attach_flags */
-> > > > > > > > > >       } query;
-> > > > > > > > > >
-> > > > > > > > > >       struct { /* anonymous struct used by  
-> BPF_RAW_TRACEPOINT_OPEN command */
-> > > > > > > > > > @@ -5911,6 +5912,10 @@ struct bpf_prog_info {
-> > > > > > > > > >       __u64 run_cnt;
-> > > > > > > > > >       __u64 recursion_misses;
-> > > > > > > > > >       __u32 verified_insns;
-> > > > > > > > > > +     /* BTF ID of the function to attach to within BTF  
-> object identified
-> > > > > > > > > > +      * by btf_id.
-> > > > > > > > > > +      */
-> > > > > > > > > > +     __u32 attach_btf_func_id;
-> > > > > > > > > >  } __attribute__((aligned(8)));
-> > > > > > > > > >
-> > > > > > > > > >  struct bpf_map_info {
-> > > > > > > > > > diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> > > > > > > > > > index a959cdd22870..08a1015ee09e 100644
-> > > > > > > > > > --- a/kernel/bpf/cgroup.c
-> > > > > > > > > > +++ b/kernel/bpf/cgroup.c
-> > > > > > > > > > @@ -1074,6 +1074,7 @@ static int  
-> cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
-> > > > > > > > > >  static int __cgroup_bpf_query(struct cgroup *cgrp,  
-> const union bpf_attr *attr,
-> > > > > > > > > >                             union bpf_attr __user  
-> *uattr)
-> > > > > > > > > >  {
-> > > > > > > > > > +     __u32 __user *prog_attach_flags =  
-> u64_to_user_ptr(attr->query.prog_attach_flags);
-> > > > > > > > > >       __u32 __user *prog_ids =  
-> u64_to_user_ptr(attr->query.prog_ids);
-> > > > > > > > > >       enum bpf_attach_type type =  
-> attr->query.attach_type;
-> > > > > > > > > >       enum cgroup_bpf_attach_type atype;
-> > > > > > > > > > @@ -1081,50 +1082,92 @@ static int  
-> __cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
-> > > > > > > > > >       struct hlist_head *progs;
-> > > > > > > > > >       struct bpf_prog *prog;
-> > > > > > > > > >       int cnt, ret = 0, i;
-> > > > > > > > > > +     int total_cnt = 0;
-> > > > > > > > > >       u32 flags;
-> > > > > > > > > >
-> > > > > > > > > > -     atype = to_cgroup_bpf_attach_type(type);
-> > > > > > > > > > -     if (atype < 0)
-> > > > > > > > > > -             return -EINVAL;
-> > > > > > > > > > +     enum cgroup_bpf_attach_type from_atype, to_atype;
-> > > > > > > > > >
-> > > > > > > > > > -     progs = &cgrp->bpf.progs[atype];
-> > > > > > > > > > -     flags = cgrp->bpf.flags[atype];
-> > > > > > > > > > +     if (type == BPF_LSM_CGROUP) {
-> > > > > > > > > > +             from_atype = CGROUP_LSM_START;
-> > > > > > > > > > +             to_atype = CGROUP_LSM_END;
-> > > > > > > > > > +     } else {
-> > > > > > > > > > +             from_atype =  
-> to_cgroup_bpf_attach_type(type);
-> > > > > > > > > > +             if (from_atype < 0)
-> > > > > > > > > > +                     return -EINVAL;
-> > > > > > > > > > +             to_atype = from_atype;
-> > > > > > > > > > +     }
-> > > > > > > > > >
-> > > > > > > > > > -     effective =  
-> rcu_dereference_protected(cgrp->bpf.effective[atype],
-> > > > > > > > > > -                                            
-> lockdep_is_held(&cgroup_mutex));
-> > > > > > > > > > +     for (atype = from_atype; atype <= to_atype;  
-> atype++) {
-> > > > > > > > > > +             progs = &cgrp->bpf.progs[atype];
-> > > > > > > > > > +             flags = cgrp->bpf.flags[atype];
-> > > > > > > > > >
-> > > > > > > > > > -     if (attr->query.query_flags &  
-> BPF_F_QUERY_EFFECTIVE)
-> > > > > > > > > > -             cnt = bpf_prog_array_length(effective);
-> > > > > > > > > > -     else
-> > > > > > > > > > -             cnt = prog_list_length(progs);
-> > > > > > > > > > +             effective =  
-> rcu_dereference_protected(cgrp->bpf.effective[atype],
-> > > > > > > > > > +                                                    
-> lockdep_is_held(&cgroup_mutex));
-> > > > > > > > > >
-> > > > > > > > > > -     if (copy_to_user(&uattr->query.attach_flags,  
-> &flags, sizeof(flags)))
-> > > > > > > > > > -             return -EFAULT;
-> > > > > > > > > > -     if (copy_to_user(&uattr->query.prog_cnt, &cnt,  
-> sizeof(cnt)))
-> > > > > > > > > > +             if (attr->query.query_flags &  
-> BPF_F_QUERY_EFFECTIVE)
-> > > > > > > > > > +                     total_cnt +=  
-> bpf_prog_array_length(effective);
-> > > > > > > > > > +             else
-> > > > > > > > > > +                     total_cnt +=  
-> prog_list_length(progs);
-> > > > > > > > > > +     }
-> > > > > > > > > > +
-> > > > > > > > > > +     if (type != BPF_LSM_CGROUP)
-> > > > > > > > > > +             if  
-> (copy_to_user(&uattr->query.attach_flags, &flags, sizeof(flags)))
-> > > > > > > > > > +                     return -EFAULT;
-> > > > > > > > > > +     if (copy_to_user(&uattr->query.prog_cnt,  
-> &total_cnt, sizeof(total_cnt)))
-> > > > > > > > > >               return -EFAULT;
-> > > > > > > > > > -     if (attr->query.prog_cnt == 0 || !prog_ids | 
-> | !cnt)
-> > > > > > > > > > +     if (attr->query.prog_cnt == 0 || !prog_ids | 
-> | !total_cnt)
-> > > > > > > > > >               /* return early if user requested only  
-> program count + flags */
-> > > > > > > > > >               return 0;
-> > > > > > > > > > -     if (attr->query.prog_cnt < cnt) {
-> > > > > > > > > > -             cnt = attr->query.prog_cnt;
-> > > > > > > > > > +
-> > > > > > > > > > +     if (attr->query.prog_cnt < total_cnt) {
-> > > > > > > > > > +             total_cnt = attr->query.prog_cnt;
-> > > > > > > > > >               ret = -ENOSPC;
-> > > > > > > > > >       }
-> > > > > > > > > >
-> > > > > > > > > > -     if (attr->query.query_flags &  
-> BPF_F_QUERY_EFFECTIVE) {
-> > > > > > > > > > -             return  
-> bpf_prog_array_copy_to_user(effective, prog_ids, cnt);
-> > > > > > > > > > -     } else {
-> > > > > > > > > > -             struct bpf_prog_list *pl;
-> > > > > > > > > > -             u32 id;
-> > > > > > > > > > +     for (atype = from_atype; atype <= to_atype;  
-> atype++) {
-> > > > > > > > > > +             if (total_cnt <= 0)
-> > > > > > > > > > +                     break;
-> > > > > > > > > >
-> > > > > > > > > > -             i = 0;
-> > > > > > > > > > -             hlist_for_each_entry(pl, progs, node) {
-> > > > > > > > > > -                     prog = prog_list_prog(pl);
-> > > > > > > > > > -                     id = prog->aux->id;
-> > > > > > > > > > -                     if (copy_to_user(prog_ids + i,  
-> &id, sizeof(id)))
-> > > > > > > > > > -                             return -EFAULT;
-> > > > > > > > > > -                     if (++i == cnt)
-> > > > > > > > > > -                             break;
-> > > > > > > > > > +             progs = &cgrp->bpf.progs[atype];
-> > > > > > > > > > +             flags = cgrp->bpf.flags[atype];
-> > > > > > > > > > +
-> > > > > > > > > > +             effective =  
-> rcu_dereference_protected(cgrp->bpf.effective[atype],
-> > > > > > > > > > +                                                    
-> lockdep_is_held(&cgroup_mutex));
-> > > > > > > > > > +
-> > > > > > > > > > +             if (attr->query.query_flags &  
-> BPF_F_QUERY_EFFECTIVE)
-> > > > > > > > > > +                     cnt =  
-> bpf_prog_array_length(effective);
-> > > > > > > > > > +             else
-> > > > > > > > > > +                     cnt = prog_list_length(progs);
-> > > > > > > > > > +
-> > > > > > > > > > +             if (cnt >= total_cnt)
-> > > > > > > > > > +                     cnt = total_cnt;
-> > > > > > > > > > +
-> > > > > > > > > > +             if (attr->query.query_flags &  
-> BPF_F_QUERY_EFFECTIVE) {
-> > > > > > > > > > +                     ret =  
-> bpf_prog_array_copy_to_user(effective, prog_ids, cnt);
-> > > > > > > > > > +             } else {
-> > > > > > > > > > +                     struct bpf_prog_list *pl;
-> > > > > > > > > > +                     u32 id;
-> > > > > > > > > > +
-> > > > > > > > > > +                     i = 0;
-> > > > > > > > > > +                     hlist_for_each_entry(pl, progs,  
-> node) {
-> > > > > > > > > > +                             prog = prog_list_prog(pl);
-> > > > > > > > > > +                             id = prog->aux->id;
-> > > > > > > > > > +                             if (copy_to_user(prog_ids  
-> + i, &id, sizeof(id)))
-> > > > > > > > > > +                                     return -EFAULT;
-> > > > > > > > > > +                             if (++i == cnt)
-> > > > > > > > > > +                                     break;
-> > > > > > > > > > +                     }
-> > > > > > > > > >               }
-> > > > > > > > > > +
-> > > > > > > > > > +             if (prog_attach_flags)
-> > > > > > > > > > +                     for (i = 0; i < cnt; i++)
-> > > > > > > > > > +                             if  
-> (copy_to_user(prog_attach_flags + i, &flags, sizeof(flags)))
-> > > > > > > > > > +                                     return -EFAULT;
-> > > > > > > > > > +
-> > > > > > > > > > +             prog_ids += cnt;
-> > > > > > > > > > +             total_cnt -= cnt;
-> > > > > > > > > > +             if (prog_attach_flags)
-> > > > > > > > > > +                     prog_attach_flags += cnt;
-> > > > > > > > > >       }
-> > > > > > > > > >       return ret;
-> > > > > > > > > >  }
-> > > > > > > > > > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> > > > > > > > > > index 5ed2093e51cc..4137583c04a2 100644
-> > > > > > > > > > --- a/kernel/bpf/syscall.c
-> > > > > > > > > > +++ b/kernel/bpf/syscall.c
-> > > > > > > > > > @@ -3520,7 +3520,7 @@ static int bpf_prog_detach(const  
-> union bpf_attr *attr)
-> > > > > > > > > >       }
-> > > > > > > > > >  }
-> > > > > > > > > >
-> > > > > > > > > > -#define BPF_PROG_QUERY_LAST_FIELD query.prog_cnt
-> > > > > > > > > > +#define BPF_PROG_QUERY_LAST_FIELD  
-> query.prog_attach_flags
-> > > > > > > > > >
-> > > > > > > > > >  static int bpf_prog_query(const union bpf_attr *attr,
-> > > > > > > > > >                         union bpf_attr __user *uattr)
-> > > > > > > > > > @@ -3556,6 +3556,7 @@ static int bpf_prog_query(const  
-> union bpf_attr *attr,
-> > > > > > > > > >       case BPF_CGROUP_SYSCTL:
-> > > > > > > > > >       case BPF_CGROUP_GETSOCKOPT:
-> > > > > > > > > >       case BPF_CGROUP_SETSOCKOPT:
-> > > > > > > > > > +     case BPF_LSM_CGROUP:
-> > > > > > > > > >               return cgroup_bpf_prog_query(attr, uattr);
-> > > > > > > > > >       case BPF_LIRC_MODE2:
-> > > > > > > > > >               return lirc_prog_query(attr, uattr);
-> > > > > > > > > > @@ -4066,6 +4067,7 @@ static int  
-> bpf_prog_get_info_by_fd(struct file *file,
-> > > > > > > > > >
-> > > > > > > > > >       if (prog->aux->btf)
-> > > > > > > > > >               info.btf_id = btf_obj_id(prog->aux->btf);
-> > > > > > > > > > +     info.attach_btf_func_id =  
-> prog->aux->attach_btf_id;
-> > > > > > > > > Note that exposing prog->aux->attach_btf_id only may not  
-> be enough
-> > > > > > > > > unless it can assume info.attach_btf_id is always  
-> referring to btf_vmlinux
-> > > > > > > > > for all bpf prog types.
-> > > > > > > >
-> > > > > > > > We also export btf_id two lines above, right? Btw, I left a  
-> comment in
-> > > > > > > > the bpftool about those btf_ids, I'm not sure how resolve  
-> them and
-> > > > > > > > always assume vmlinux for now.
-> > > > > > > yeah, that btf_id above is the cgroup-lsm prog's btf_id which  
-> has its
-> > > > > > > func info, line info...etc.   It is not the one the  
-> attach_btf_id correspond
-> > > > > > > to.  attach_btf_id refers to either aux->attach_btf or  
-> aux->dst_prog's btf (or
-> > > > > > > target btf id here).
-> > > > > > >
-> > > > > > > It needs a consensus on where this attach_btf_id, target btf  
-> id, and
-> > > > > > > prog_attach_flags should be.  If I read the patch 7 thread  
-> correctly,
-> > > > > > > I think Andrii is suggesting to expose them to userspace  
-> through link, so
-> > > > > > > potentially putting them in bpf_link_info.  The  
-> bpf_prog_query will
-> > > > > > > output a list of link ids.  The same probably applies to
-> > > > > >
-> > > > > > Yep and I think it makes sense because link is representing one
-> > > > > > specific attachment (and I presume flags can be stored inside  
-> the link
-> > > > > > itself as well, right?).
-> > > > > >
-> > > > > > But if legacy non-link BPF_PROG_ATTACH is supported then using
-> > > > > > bpf_link_info won't cover legacy prog-only attachments.
-> > > > >
-> > > > > I don't have any attachment to the legacy apis, I'm supporting  
-> them
-> > > > > only because it takes two lines of code; we can go link-only if  
-> there
-> > > > > is an agreement that it's inherently better.
-> > > > >
-> > > > > How about I keep sys_bpf(BPF_PROG_QUERY) as is and I do a loop in  
-> the
-> > > > > userspace (for BPF_LSM_CGROUP only) over all links
-> > > > > (BPF_LINK_GET_NEXT_ID) and will find the the ones with matching  
-> prog
-> > > > > ids (BPF_LINK_GET_FD_BY_ID+BPF_OBJ_GET_INFO_BY_FD)?
-> > > > >
-> > > > > That way we keep new fields in bpf_link_info, but we don't have to
-> > > > > extend sys_bpf(BPF_PROG_QUERY) because there doesn't seem to be a  
-> good
-> > > > > way to do it. Exporting links via new link_fds would mean we'd  
-> have to
-> > > > > support BPF_F_QUERY_EFFECTIVE, but getting an effective array of  
-> links
-> > > > > seems to be messy. If, in the future, we figure out a better way  
-> to
-> I don't see a clean way to get effective array from one individual
-> link[_info] through link iteration.  effective array is the progs that
-> will be run at a cgroup and in such order.  The prog running at a
-> cgroup doesn't necessarily linked to that cgroup.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+branch HEAD: 8cb8311e95e3bb58bd84d6350365f14a718faa6d  Add linux-next specific files for 20220525
 
-Yeah, that's the problem with exposing links via prog_info; getting an
-effective list is painful.
+Error/Warning reports:
 
-> If staying with BPF_PROG_QUERY+BPF_F_QUERY_EFFECTIVE to get effective  
-> array
-> and if it is decided the addition should be done in bpf_link_info,
-> then a list of link ids needs to be output instead of the current list of
-> prog ids.  The old attach type will still have to stay with the list of
-> prog ids though :/
+https://lore.kernel.org/linux-mm/202204291924.vTGZmerI-lkp@intel.com
+https://lore.kernel.org/linux-mm/202205031017.4TwMan3l-lkp@intel.com
+https://lore.kernel.org/linux-mm/202205041248.WgCwPcEV-lkp@intel.com
+https://lore.kernel.org/linux-mm/202205150051.3RzuooAG-lkp@intel.com
+https://lore.kernel.org/linux-mm/202205150117.sd6HzBVm-lkp@intel.com
+https://lore.kernel.org/lkml/202205100617.5UUm3Uet-lkp@intel.com
+https://lore.kernel.org/llvm/202205251645.gusu3spL-lkp@intel.com
 
-> It will be sad not to be able to get effective only for BPF_LSM_CGROUP.
-> I found it more useful to show what will be run at a cgroup and in such
-> order instead of what is linked to a cgroup.
+Error/Warning: (recently discovered and may have been fixed)
 
-See my hacky proof-of-concept below (on top of this series).
+drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:1364:5: warning: no previous prototype for 'amdgpu_discovery_get_mall_info' [-Wmissing-prototypes]
+drivers/gpu/drm/amd/amdgpu/soc21.c:171:6: warning: no previous prototype for 'soc21_grbm_select' [-Wmissing-prototypes]
+drivers/gpu/drm/solomon/ssd130x-spi.c:154:35: warning: 'ssd130x_spi_table' defined but not used [-Wunused-const-variable=]
+drivers/net/wireless/intel/iwlwifi/pcie/trans.c:1093:9: warning: 'CAUSE' macro redefined [-Wmacro-redefined]
+drivers/video/fbdev/omap/hwa742.c:492:5: warning: no previous prototype for 'hwa742_update_window_async' [-Wmissing-prototypes]
+fs/buffer.c:2254:5: warning: stack frame size (2144) exceeds limit (1024) in 'block_read_full_folio' [-Wframe-larger-than]
+fs/ntfs/aops.c:378:12: warning: stack frame size (2216) exceeds limit (1024) in 'ntfs_read_folio' [-Wframe-larger-than]
 
-I think if we keep prog_info as is (don't export anything new, don't
-export the list of links), iterating through all links on the host should  
-work,
-right? We get prog_ids list (effective or not, doesn't matter), then we
-go through all the links and find the ones with with the same
-prog_id (we can ignore cgroup, it shouldn't matter). Then we can export
-attach_type/attach_btf_id/etc. If it happens to be slow in the future,
-we can improve with some tbd interface to get the list of links for cgroup
-(and then we'd have to care about effective list).
+Unverified Error/Warning (likely false positive, please contact us if interested):
 
-But the problem with going link-only is that I'd have to teach bpftool
-to use links for BPF_LSM_CGROUP and it brings a bunch of problems:
-* I'd have to pin those links somewhere to make them stick around
-* Those pin paths essentially become an API now because "detach" now
-   depends on them?
-* (right now it automatically works with the legacy apis without any  
-changes)
+.__mulsi3.o.cmd: No such file or directory
+Makefile:686: arch/h8300/Makefile: No such file or directory
+Makefile:765: arch/h8300/Makefile: No such file or directory
+arch/Kconfig:10: can't open file "arch/h8300/Kconfig"
+arch/riscv/purgatory/kexec-purgatory.c:1860:9: sparse: sparse: trying to concatenate 29720-character string (8191 bytes max)
+drivers/gpu/drm/bridge/adv7511/adv7511.h:229:17: warning: 'ADV7511_REG_CEC_RX_FRAME_HDR' defined but not used [-Wunused-const-variable=]
+drivers/gpu/drm/bridge/adv7511/adv7511.h:235:17: warning: 'ADV7511_REG_CEC_RX_FRAME_LEN' defined but not used [-Wunused-const-variable=]
+drivers/infiniband/hw/hns/hns_roce_hw_v2.c:309:9: sparse: sparse: dubious: x & !y
+drivers/pinctrl/meson/pinctrl-meson8-pmx.c:60:25: warning: Value stored to 'func' during its initialization is never read [clang-analyzer-deadcode.DeadStores]
+drivers/staging/vt6655/card.c:758:16: sparse: sparse: cast to restricted __le64
+drivers/vhost/vdpa.c:595 vhost_vdpa_unlocked_ioctl() warn: maybe return -EFAULT instead of the bytes remaining?
+kernel/bpf/helpers.c:1468:29: sparse: sparse: symbol 'bpf_dynptr_from_mem_proto' was not declared. Should it be static?
+kernel/bpf/helpers.c:1490:29: sparse: sparse: symbol 'bpf_dynptr_from_mem_proto' was not declared. Should it be static?
+kernel/bpf/helpers.c:1516:29: sparse: sparse: symbol 'bpf_dynptr_read_proto' was not declared. Should it be static?
+kernel/bpf/helpers.c:1542:29: sparse: sparse: symbol 'bpf_dynptr_write_proto' was not declared. Should it be static?
+kernel/bpf/helpers.c:1569:29: sparse: sparse: symbol 'bpf_dynptr_data_proto' was not declared. Should it be static?
+make[1]: *** No rule to make target 'arch/h8300/Makefile'.
+mm/shmem.c:1948 shmem_getpage_gfp() warn: should '(((1) << 12) / 512) << folio_order(folio)' be a 64 bit type?
+sound/soc/intel/avs/ipc.c:87:5-24: atomic_dec_and_test variation before object free at line 88.
+{standard input}:3488: Error: unknown pseudo-op: `.l28'
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 269ad43b68c1..f34b64b9ba97 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -6049,6 +6049,9 @@ struct bpf_link_info {
-  		struct {
-  			__u64 cgroup_id;
-  			__u32 attach_type;
-+			__u32 attach_flags;
-+			__u32 attach_btf_id;
-+			__u32 attach_btf_obj_id;
-  		} cgroup;
-  		struct {
-  			__aligned_u64 target_name; /* in/out: target_name buffer ptr */
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index e05f7a11b45a..b5159e7f64f5 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -1211,6 +1211,20 @@ static int bpf_cgroup_link_fill_link_info(const  
-struct bpf_link *link,
+Error/Warning ids grouped by kconfigs:
 
-  	info->cgroup.cgroup_id = cg_id;
-  	info->cgroup.attach_type = cg_link->type;
-+
-+	info->cgroup.attach_btf_id = cg_link->link.prog->aux->attach_btf_id;
-+	if (cg_link->link.prog->aux->attach_btf)
-+		info->cgroup.attach_btf_obj_id =  
-btf_obj_id(cg_link->link.prog->aux->attach_btf);
-+
-+	if (cg_link->cgroup) {
-+		int atype;
-+
-+		mutex_lock(&cgroup_mutex);
-+		atype = bpf_cgroup_atype_find(cg_link->type,  
-cg_link->link.prog->aux->attach_btf_id);
-+		info->cgroup.attach_flags = cg_link->cgroup->bpf.flags[atype];
-+		mutex_unlock(&cgroup_mutex);
-+	}
-+
-  	return 0;
-  }
+gcc_recent_errors
+|-- alpha-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   `-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|-- alpha-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   |-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
+|   `-- drivers-staging-vt6655-card.c:sparse:sparse:cast-to-restricted-__le64
+|-- arc-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   |-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
+|   `-- drivers-staging-vt6655-card.c:sparse:sparse:cast-to-restricted-__le64
+|-- arm-allmodconfig
+|   |-- arch-arm-mach-omap2-dma.c:Unneeded-variable:errata-Return-on-line
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   |-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
+|   |-- drivers-staging-vt6655-card.c:sparse:sparse:cast-to-restricted-__le64
+|   |-- drivers-video-fbdev-omap-hwa742.c:warning:no-previous-prototype-for-hwa742_update_window_async
+|   `-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_from_mem_proto-was-not-declared.-Should-it-be-static
+|-- arm-allyesconfig
+|   |-- arch-arm-mach-omap2-dma.c:Unneeded-variable:errata-Return-on-line
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   |-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
+|   |-- drivers-staging-vt6655-card.c:sparse:sparse:cast-to-restricted-__le64
+|   |-- drivers-video-fbdev-omap-hwa742.c:warning:no-previous-prototype-for-hwa742_update_window_async
+|   `-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_from_mem_proto-was-not-declared.-Should-it-be-static
+|-- arm64-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   `-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|-- arm64-allyesconfig
+|   |-- arch-arm64-kernel-signal.c:sparse:sparse:dereference-of-noderef-expression
+|   |-- arch-arm64-kernel-signal.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-struct-user_ctxs-noderef-__user-user-got-struct-user_ctxs
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   |-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|   |-- drivers-infiniband-hw-hns-hns_roce_hw_v2.c:sparse:sparse:dubious:x-y
+|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
+|   |-- drivers-staging-vt6655-card.c:sparse:sparse:cast-to-restricted-__le64
+|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_from_mem_proto-was-not-declared.-Should-it-be-static
+|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_read_proto-was-not-declared.-Should-it-be-static
+|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_write_proto-was-not-declared.-Should-it-be-static
+|   `-- kernel-stackleak.c:sparse:sparse:symbol-stackleak_erase_off_task_stack-was-not-declared.-Should-it-be-static
+|-- csky-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   `-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|-- csky-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   `-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|-- csky-randconfig-s032-20220524
+|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_data_proto-was-not-declared.-Should-it-be-static
+|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_from_mem_proto-was-not-declared.-Should-it-be-static
+|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_read_proto-was-not-declared.-Should-it-be-static
+|   `-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_write_proto-was-not-declared.-Should-it-be-static
+|-- h8300-allmodconfig
+|   |-- Makefile:arch-h8300-Makefile:No-such-file-or-directory
+|   |-- arch-Kconfig:can-t-open-file-arch-h8300-Kconfig
+|   `-- make:No-rule-to-make-target-arch-h8300-Makefile-.
+|-- h8300-allyesconfig
+|   |-- Makefile:arch-h8300-Makefile:No-such-file-or-directory
+|   |-- arch-Kconfig:can-t-open-file-arch-h8300-Kconfig
+|   `-- make:No-rule-to-make-target-arch-h8300-Makefile-.
+|-- h8300-buildonly-randconfig-r004-20220524
+|   |-- Makefile:arch-h8300-Makefile:No-such-file-or-directory
+|   |-- arch-Kconfig:can-t-open-file-arch-h8300-Kconfig
+|   `-- make:No-rule-to-make-target-arch-h8300-Makefile-.
+|-- h8300-randconfig-r033-20220524
+|   |-- Makefile:arch-h8300-Makefile:No-such-file-or-directory
+|   |-- arch-Kconfig:can-t-open-file-arch-h8300-Kconfig
+|   `-- make:No-rule-to-make-target-arch-h8300-Makefile-.
+|-- i386-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   |-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|   |-- drivers-gpu-drm-bridge-adv7511-adv7511.h:warning:ADV7511_REG_CEC_RX_FRAME_HDR-defined-but-not-used
+|   |-- drivers-gpu-drm-bridge-adv7511-adv7511.h:warning:ADV7511_REG_CEC_RX_FRAME_LEN-defined-but-not-used
+|   `-- drivers-gpu-drm-solomon-ssd13-spi.c:warning:ssd13_spi_table-defined-but-not-used
+|-- i386-randconfig-a012
+|   |-- drivers-gpu-drm-bridge-adv7511-adv7511.h:warning:ADV7511_REG_CEC_RX_FRAME_HDR-defined-but-not-used
+|   `-- drivers-gpu-drm-bridge-adv7511-adv7511.h:warning:ADV7511_REG_CEC_RX_FRAME_LEN-defined-but-not-used
+|-- i386-randconfig-a014
+|   |-- drivers-gpu-drm-bridge-adv7511-adv7511.h:warning:ADV7511_REG_CEC_RX_FRAME_HDR-defined-but-not-used
+|   `-- drivers-gpu-drm-bridge-adv7511-adv7511.h:warning:ADV7511_REG_CEC_RX_FRAME_LEN-defined-but-not-used
+|-- i386-randconfig-m021
+|   `-- mm-shmem.c-shmem_getpage_gfp()-warn:should-((()-)-)-folio_order(folio)-be-a-bit-type
+|-- ia64-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   `-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|-- ia64-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   `-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|-- ia64-randconfig-r036-20220524
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   `-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|-- m68k-allyesconfig
+|   |-- drivers-block-paride-bpck.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-block-paride-comm.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-block-paride-dstr.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-block-paride-epat.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-block-paride-epia.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-block-paride-friq.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-block-paride-frpw.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-block-paride-kbic.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-block-paride-on26.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-block-paride-ppc6lnx.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-comedi-drivers-aio_aio12_8.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-comedi-drivers-das16m1.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-comedi-drivers-ni_at_ao.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-comedi-drivers-ni_daq_700.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-net-ethernet-apne.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-net-ethernet-xircom-xirc2ps_cs.c:sparse:sparse:cast-to-restricted-__le16
+|   |-- drivers-tty-ipwireless-hardware.c:sparse:sparse:incorrect-type-in-initializer-(different-base-types)-expected-restricted-__le16-usertype-raw_data-got-int
+|   `-- drivers-tty-ipwireless-hardware.c:sparse:sparse:incorrect-type-in-initializer-(different-base-types)-expected-unsigned-short-unused-usertype-__v-got-restricted-__le16-assigned-usertype-raw_data
+|-- microblaze-randconfig-m031-20220524
+|   `-- drivers-vhost-vdpa.c-vhost_vdpa_unlocked_ioctl()-warn:maybe-return-EFAULT-instead-of-the-bytes-remaining
+|-- mips-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   |-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
+|   `-- drivers-staging-vt6655-card.c:sparse:sparse:cast-to-restricted-__le64
+|-- mips-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   |-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
+|   |-- drivers-staging-vt6655-card.c:sparse:sparse:cast-to-restricted-__le64
+|   `-- sound-soc-intel-avs-ipc.c:atomic_dec_and_test-variation-before-object-free-at-line-.
+|-- openrisc-randconfig-s032-20220524
+|   `-- __mulsi3.o.cmd:No-such-file-or-directory
+|-- parisc-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   `-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|-- parisc-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   `-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|-- powerpc-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   |-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
+|   `-- drivers-staging-vt6655-card.c:sparse:sparse:cast-to-restricted-__le64
+|-- powerpc-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   |-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
+|   `-- drivers-staging-vt6655-card.c:sparse:sparse:cast-to-restricted-__le64
+|-- riscv-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   `-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|-- riscv-allyesconfig
+|   |-- arch-riscv-kernel-machine_kexec.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-got-void-noderef-__user-buf
+|   |-- arch-riscv-purgatory-kexec-purgatory.c:sparse:sparse:trying-to-concatenate-character-string-(-bytes-max)
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   |-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|   |-- drivers-infiniband-hw-hns-hns_roce_hw_v2.c:sparse:sparse:dubious:x-y
+|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
+|   |-- drivers-staging-vt6655-card.c:sparse:sparse:cast-to-restricted-__le64
+|   |-- kernel-fork.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-struct-atomic_t-usertype-lock-got-struct-atomic_t-noderef-__rcu
+|   `-- kernel-seccomp.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-struct-atomic_t-usertype-lock-got-struct-atomic_t-noderef-__rcu
+|-- riscv-randconfig-r042-20220524
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   `-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|-- s390-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   |-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|   |-- drivers-infiniband-hw-hns-hns_roce_hw_v2.c:sparse:sparse:dubious:x-y
+|   `-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
+|-- s390-randconfig-r014-20220524
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   `-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|-- sh-buildonly-randconfig-r003-20220524
+|   `-- standard-input:Error:unknown-pseudo-op:l28
+|-- sparc-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   |-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|   |-- drivers-infiniband-hw-hns-hns_roce_hw_v2.c:sparse:sparse:dubious:x-y
+|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
+|   |-- drivers-staging-vt6655-card.c:sparse:sparse:cast-to-restricted-__le64
+|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_from_mem_proto-was-not-declared.-Should-it-be-static
+|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_read_proto-was-not-declared.-Should-it-be-static
+|   `-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_write_proto-was-not-declared.-Should-it-be-static
+|-- sparc-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   |-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|   |-- drivers-infiniband-hw-hns-hns_roce_hw_v2.c:sparse:sparse:dubious:x-y
+|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
+|   |-- drivers-staging-vt6655-card.c:sparse:sparse:cast-to-restricted-__le64
+|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_from_mem_proto-was-not-declared.-Should-it-be-static
+|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_read_proto-was-not-declared.-Should-it-be-static
+|   `-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_write_proto-was-not-declared.-Should-it-be-static
+|-- x86_64-allyesconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   |-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+|   |-- drivers-gpu-drm-bridge-adv7511-adv7511.h:warning:ADV7511_REG_CEC_RX_FRAME_HDR-defined-but-not-used
+|   |-- drivers-gpu-drm-bridge-adv7511-adv7511.h:warning:ADV7511_REG_CEC_RX_FRAME_LEN-defined-but-not-used
+|   `-- drivers-gpu-drm-solomon-ssd13-spi.c:warning:ssd13_spi_table-defined-but-not-used
+|-- x86_64-randconfig-a011
+|   |-- drivers-gpu-drm-bridge-adv7511-adv7511.h:warning:ADV7511_REG_CEC_RX_FRAME_HDR-defined-but-not-used
+|   `-- drivers-gpu-drm-bridge-adv7511-adv7511.h:warning:ADV7511_REG_CEC_RX_FRAME_LEN-defined-but-not-used
+|-- xtensa-allmodconfig
+|   |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+|   `-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
+`-- xtensa-allyesconfig
+    |-- drivers-gpu-drm-amd-amdgpu-amdgpu_discovery.c:warning:no-previous-prototype-for-amdgpu_discovery_get_mall_info
+    `-- drivers-gpu-drm-amd-amdgpu-soc21.c:warning:no-previous-prototype-for-soc21_grbm_select
 
-diff --git a/tools/bpf/bpftool/cgroup.c b/tools/bpf/bpftool/cgroup.c
-index f40d4745711c..3cece48ebaa9 100644
---- a/tools/bpf/bpftool/cgroup.c
-+++ b/tools/bpf/bpftool/cgroup.c
-@@ -49,15 +49,34 @@ static enum bpf_attach_type parse_attach_type(const  
-char *str)
-  }
+clang_recent_errors
+|-- arm-randconfig-c002-20220524
+|   `-- drivers-pinctrl-meson-pinctrl-meson8-pmx.c:warning:Value-stored-to-func-during-its-initialization-is-never-read-clang-analyzer-deadcode.DeadStores
+|-- hexagon-randconfig-r011-20220524
+|   `-- fs-buffer.c:warning:stack-frame-size-()-exceeds-limit-()-in-block_read_full_folio
+|-- hexagon-randconfig-r035-20220524
+|   |-- fs-buffer.c:warning:stack-frame-size-()-exceeds-limit-()-in-block_read_full_folio
+|   `-- fs-ntfs-aops.c:warning:stack-frame-size-()-exceeds-limit-()-in-ntfs_read_folio
+`-- mips-randconfig-r022-20220524
+    `-- drivers-net-wireless-intel-iwlwifi-pcie-trans.c:warning:CAUSE-macro-redefined
 
-  static int show_bpf_prog(int id, enum bpf_attach_type attach_type,
--			 const char *attach_flags_str,
-+			 __u32 attach_flags,
-+			 __u32 attach_btf_id,
-+			 __u32 attach_btf_obj_id,
-  			 int level)
-  {
-  	char prog_name[MAX_PROG_FULL_NAME];
-  	const char *attach_btf_name = NULL;
-  	struct bpf_prog_info info = {};
-  	__u32 info_len = sizeof(info);
-+	const char *attach_flags_str;
-+	char buf[32];
-  	int prog_fd;
+elapsed time: 858m
 
-+	switch (attach_flags) {
-+	case BPF_F_ALLOW_MULTI:
-+		attach_flags_str = "multi";
-+		break;
-+	case BPF_F_ALLOW_OVERRIDE:
-+		attach_flags_str = "override";
-+		break;
-+	case 0:
-+		attach_flags_str = "";
-+		break;
-+	default:
-+		snprintf(buf, sizeof(buf), "unknown(%x)", attach_flags);
-+		attach_flags_str = buf;
-+	}
-+
-  	prog_fd = bpf_prog_get_fd_by_id(id);
-  	if (prog_fd < 0)
-  		return -1;
-@@ -68,13 +87,13 @@ static int show_bpf_prog(int id, enum bpf_attach_type  
-attach_type,
-  	}
+configs tested: 94
+configs skipped: 3
 
-  	if (btf_vmlinux &&
--	    info.attach_btf_id < btf__type_cnt(btf_vmlinux)) {
--		/* Note, we ignore info.btf_id for now. There
-+	    attach_btf_id < btf__type_cnt(btf_vmlinux)) {
-+		/* Note, we ignore attach_btf_obj_id for now. There
-  		 * is no good way to resolve btf_id to vmlinux
-  		 * or module btf.
-  		 */
-  		const struct btf_type *t = btf__type_by_id(btf_vmlinux,
--							   info.attach_btf_id);
-+							   attach_btf_id);
-  		attach_btf_name = btf__name_by_offset(btf_vmlinux,
-  						      t->name_off);
-  	}
-@@ -93,8 +112,8 @@ static int show_bpf_prog(int id, enum bpf_attach_type  
-attach_type,
-  		jsonw_string_field(json_wtr, "name", prog_name);
-  		if (attach_btf_name)
-  			jsonw_string_field(json_wtr, "attach_btf_name", attach_btf_name);
--		jsonw_uint_field(json_wtr, "btf_id", info.btf_id);
--		jsonw_uint_field(json_wtr, "attach_btf_id", info.attach_btf_id);
-+		jsonw_uint_field(json_wtr, "btf_id", attach_btf_obj_id);
-+		jsonw_uint_field(json_wtr, "attach_btf_id", attach_btf_id);
-  		jsonw_end_object(json_wtr);
-  	} else {
-  		printf("%s%-8u ", level ? "    " : "", info.id);
-@@ -105,8 +124,8 @@ static int show_bpf_prog(int id, enum bpf_attach_type  
-attach_type,
-  		printf(" %-15s %-15s", attach_flags_str, prog_name);
-  		if (attach_btf_name)
-  			printf(" %-15s", attach_btf_name);
--		else if (info.attach_btf_id)
--			printf(" btf_id=%d attach_btf_id=%d", info.btf_id, info.attach_btf_id);
-+		else if (attach_btf_id)
-+			printf(" btf_id=%d attach_btf_id=%d", attach_btf_obj_id, attach_btf_id);
-  		printf("\n");
-  	}
+gcc tested configs:
+arm                              allmodconfig
+arm                              allyesconfig
+arm64                            allyesconfig
+arm                                 defconfig
+arm64                               defconfig
+mips                             allyesconfig
+riscv                            allyesconfig
+um                           x86_64_defconfig
+riscv                            allmodconfig
+um                             i386_defconfig
+mips                             allmodconfig
+powerpc                          allmodconfig
+s390                             allmodconfig
+m68k                             allmodconfig
+powerpc                          allyesconfig
+s390                             allyesconfig
+m68k                             allyesconfig
+sparc                            allyesconfig
+parisc                           allyesconfig
+sh                               allmodconfig
+h8300                            allyesconfig
+arc                              allyesconfig
+alpha                            allyesconfig
+nios2                            allyesconfig
+m68k                            mac_defconfig
+arc                 nsimosci_hs_smp_defconfig
+sh                              ul2_defconfig
+mips                    maltaup_xpa_defconfig
+xtensa                          iss_defconfig
+ia64                                defconfig
+ia64                             allmodconfig
+ia64                             allyesconfig
+m68k                                defconfig
+nios2                               defconfig
+alpha                               defconfig
+csky                                defconfig
+xtensa                           allyesconfig
+arc                                 defconfig
+parisc                              defconfig
+parisc64                            defconfig
+s390                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+i386                                defconfig
+i386                             allyesconfig
+sparc                               defconfig
+powerpc                           allnoconfig
+i386                          randconfig-a001
+i386                          randconfig-a003
+i386                          randconfig-a005
+x86_64                        randconfig-a013
+x86_64                        randconfig-a011
+x86_64                        randconfig-a015
+i386                          randconfig-a014
+i386                          randconfig-a012
+riscv                randconfig-r042-20220524
+arc                  randconfig-r043-20220524
+s390                 randconfig-r044-20220524
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64                        randconfig-a006
+riscv                             allnoconfig
+riscv                    nommu_k210_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_virt_defconfig
+riscv                               defconfig
+x86_64                          rhel-8.3-func
+x86_64                    rhel-8.3-kselftests
+x86_64                         rhel-8.3-kunit
+x86_64                           rhel-8.3-syz
+x86_64                              defconfig
+x86_64                                  kexec
+x86_64                               rhel-8.3
+x86_64                           allyesconfig
 
-@@ -150,10 +169,10 @@ static int show_attached_bpf_progs(int cgroup_fd,  
-enum bpf_attach_type type,
-  				   int level)
-  {
-  	LIBBPF_OPTS(bpf_prog_query_opts, p);
--	const char *attach_flags_str;
-  	__u32 prog_ids[1024] = {0};
-  	__u32 attach_prog_flags[1024] = {0};
--	char buf[32];
-+	__u32 attach_btf_id[1024] = {0};
-+	__u32 attach_btf_obj_id[1024] = {0};
-  	__u32 iter;
-  	int ret;
+clang tested configs:
+mips                        bcm63xx_defconfig
+mips                       lemote2f_defconfig
+mips                         tb0287_defconfig
+arm                          ep93xx_defconfig
+arm                     am200epdkit_defconfig
+powerpc                     tqm5200_defconfig
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220524
+hexagon              randconfig-r041-20220524
+x86_64                        randconfig-a005
+x86_64                        randconfig-a001
+x86_64                        randconfig-a003
 
-@@ -168,29 +187,58 @@ static int show_attached_bpf_progs(int cgroup_fd,  
-enum bpf_attach_type type,
-  	if (p.prog_cnt == 0)
-  		return 0;
-
--	for (iter = 0; iter < p.prog_cnt; iter++) {
--		__u32 attach_flags;
-+	if (type == BPF_LSM_CGROUP) {
-+		/* Match prog_id to the link to find out link info. */
-+		struct bpf_link_info link_info;
-+		__u32 id = 0;
-+		__u32 link_len;
-+		int err;
-+		int fd;
-+
-+		while (1) {
-+			err = bpf_link_get_next_id(id, &id);
-+			if (err) {
-+				if (errno == ENOENT)
-+					break;
-+				continue;
-+			}
-
--		attach_flags = attach_prog_flags[iter] ?: p.attach_flags;
-+			fd = bpf_link_get_fd_by_id(id);
-+			if (fd < 0)
-+				continue;
-
--		switch (attach_flags) {
--		case BPF_F_ALLOW_MULTI:
--			attach_flags_str = "multi";
--			break;
--		case BPF_F_ALLOW_OVERRIDE:
--			attach_flags_str = "override";
--			break;
--		case 0:
--			attach_flags_str = "";
--			break;
--		default:
--			snprintf(buf, sizeof(buf), "unknown(%x)", attach_flags);
--			attach_flags_str = buf;
-+			link_len = sizeof(struct bpf_link_info);
-+			memset(&link_info, 0, link_len);
-+			err = bpf_obj_get_info_by_fd(fd, &link_info, &link_len);
-+			if (err) {
-+				close(fd);
-+				continue;
-+			}
-+
-+			if (link_info.type != BPF_LINK_TYPE_CGROUP) {
-+				close(fd);
-+				continue;
-+			}
-+
-+			for (iter = 0; iter < p.prog_cnt; iter++) {
-+				if (prog_ids[iter] != link_info.prog_id)
-+					continue;
-+
-+				fprintf(stderr, "\nprog_fd=%d btf_id=%d\n", link_info.prog_id,  
-link_info.cgroup.attach_btf_id);
-+
-+				attach_prog_flags[iter] = link_info.cgroup.attach_flags;
-+				attach_btf_id[iter] = link_info.cgroup.attach_btf_id;
-+				attach_btf_obj_id[iter] = link_info.cgroup.attach_btf_obj_id;
-+			}
-  		}
-+	}
-
-+	for (iter = 0; iter < p.prog_cnt; iter++)
-  		show_bpf_prog(prog_ids[iter], type,
--			      attach_flags_str, level);
--	}
-+			      attach_prog_flags[iter] ?: p.attach_flags,
-+			      attach_btf_id[iter],
-+			      attach_btf_obj_id[iter],
-+			      level);
-
-  	return 0;
-  }
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 269ad43b68c1..f34b64b9ba97 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -6049,6 +6049,9 @@ struct bpf_link_info {
-  		struct {
-  			__u64 cgroup_id;
-  			__u32 attach_type;
-+			__u32 attach_flags;
-+			__u32 attach_btf_id;
-+			__u32 attach_btf_obj_id;
-  		} cgroup;
-  		struct {
-  			__aligned_u64 target_name; /* in/out: target_name buffer ptr */
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
