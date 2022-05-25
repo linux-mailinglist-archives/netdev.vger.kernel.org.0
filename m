@@ -2,99 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E36395339A6
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 11:13:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83D105339AB
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 11:13:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231200AbiEYJN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 05:13:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58104 "EHLO
+        id S241102AbiEYJNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 05:13:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238463AbiEYJNK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 05:13:10 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5E18D68F
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 02:09:15 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id e4so23214689ljb.13
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 02:09:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=djGKhvUF8lAsiTuKU98fE1SgBbCGkJsAmy7BmMcoar8=;
-        b=oUhvHVwtjkX8aSGqHsZNBS8FC0AZjutoIsi8M/NjoiYYksR4ipdlYFw7lCpuYujOgk
-         F3tAK8uV/iuEXiUJbTfquiEm7fhq3T1/vZcLN0xok6wN+o1RZnpd8n57y/JKtSvpfzm5
-         DWE090RBaan2UJXiKwM9WXD7oexNx1NZBM92gAOJ3skC3L/DsBYsG+yBu1tQ9+lW2Awh
-         va2vDPSvi98nn4kOj71ke1tIcSCoPDeTuxdZGXIdadJnC3/5spZ6FHNTMOYmqzbOk8Mg
-         /zQIP9ZZN3XeObiSbOogYEgHA3/1NctBkFgRUMK4DaG2kBqUXh2bP9znstW7+wA8n92o
-         zteg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=djGKhvUF8lAsiTuKU98fE1SgBbCGkJsAmy7BmMcoar8=;
-        b=yiVuIYt9v0x+FzSwAkfJ2f1qXF45YsCUMRNliLuWUTjiO7Nf9xpM4iOg0GszWwvyDX
-         ZElaQzYH21MDm23OQFtl5KfjqyvUvcJxibSntWlOPBlnexoRqMT67EWN+mJsTmFfrAIn
-         NtQRRGvPjX1Si9ga8u5AtXH9DEOiRvJIrqOgl+YYViCsXkGoXZCrSKzZC/5V35E/Os+2
-         8QJswuKBSYon8DMTmEWrxlUfql7F7P0Q51nWdLnfKRQ45GvJesbOeDmDinWWxrw6ka1X
-         Ak0j21/vOURAT1AkJ19FIYSsih4rCjOETtuSl91I2x55BnG1wy73I3nxLCj8cTtoWbKc
-         sWKQ==
-X-Gm-Message-State: AOAM533gq3Bxzr36yMVbZIV+q8BhaWAdO4+OENl0XPMCg3L35tzHXs9O
-        2GiJFuBZgfegjkFRd1XOdgl3+aDP0v8zP6cxwYQ=
-X-Google-Smtp-Source: ABdhPJwJUoSeP+dNwviTlgTBwRz6jlptbxiA99jMLHEZJMEqCBuJcA9OeHuTzdLwC1FOsMFKR2iBUSdeo0CKdoPz4rw=
-X-Received: by 2002:a2e:a7c9:0:b0:253:e736:a767 with SMTP id
- x9-20020a2ea7c9000000b00253e736a767mr9961561ljp.218.1653469753929; Wed, 25
- May 2022 02:09:13 -0700 (PDT)
+        with ESMTP id S241336AbiEYJNU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 05:13:20 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5927B9E0;
+        Wed, 25 May 2022 02:11:04 -0700 (PDT)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24P92cDU010682;
+        Wed, 25 May 2022 09:10:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=KmDnEpmAKlwDvh66i6W0q85Z+HrzyMRUjYZXy8tL/5I=;
+ b=YWtTkV76EeaiL9yCfbjcNogPNOHAHoEP5xcbXwNN+z+akEOsIFI8M7C62KVgboE95KgR
+ 0Q8eJjdcbxD8ai3Dwj0sdWBIjMDspWXdvWloHYwq78QTKUHrKQ0OaXAyOYf8uU8uHyrR
+ Y3mpH45wskA409v83d8dt4/IKzo8QZqHZnvsV6QeRKSueNQTqenFKppRouKQBG0KzHas
+ rJflYv18Oi22UIny9xNVwxu/9tt1NDgEo4BgvwGU7iDE+pJLUnjK19HqIq1XhsVpbfxd
+ eGhJgFvrbk/tKr3eDXGyuCS+h4Mj5QaGtngAnkW1qLc8mU8GEN/90S2zpYSHt5HdrxcD fg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g9hfnr5sg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 25 May 2022 09:10:57 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24P96sUE028023;
+        Wed, 25 May 2022 09:10:57 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g9hfnr5rc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 25 May 2022 09:10:56 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24P97Lvx026762;
+        Wed, 25 May 2022 09:10:55 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma01fra.de.ibm.com with ESMTP id 3g93vc0wpd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 25 May 2022 09:10:55 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24P9AqFn20185344
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 25 May 2022 09:10:53 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DEBB05204F;
+        Wed, 25 May 2022 09:10:52 +0000 (GMT)
+Received: from [9.171.70.153] (unknown [9.171.70.153])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 6141B5204E;
+        Wed, 25 May 2022 09:10:52 +0000 (GMT)
+Message-ID: <29c0ef74-27d9-b8a4-623d-770b36e488b6@linux.ibm.com>
+Date:   Wed, 25 May 2022 11:10:52 +0200
 MIME-Version: 1.0
-Received: by 2002:aa6:cd8e:0:b0:1e5:6dcf:3c78 with HTTP; Wed, 25 May 2022
- 02:09:13 -0700 (PDT)
-Reply-To: ukofficeimf@gmail.com
-From:   IMF <gaevoleg82@gmail.com>
-Date:   Wed, 25 May 2022 09:09:13 +0000
-Message-ID: <CAOWpCPMx8q27z1S0o5sXeyiAT=3VyuJmrgqF=GwGDxRtjm7Ryg@mail.gmail.com>
-Subject: news
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.8 required=5.0 tests=BAYES_60,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:22f listed in]
-        [list.dnswl.org]
-        *  1.5 BAYES_60 BODY: Bayes spam probability is 60 to 80%
-        *      [score: 0.6233]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [gaevoleg82[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [gaevoleg82[at]gmail.com]
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.3 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH net] net/smc: set ini->smcrv2.ib_dev_v2 to NULL if SMC-Rv2
+ is unavailable
+Content-Language: en-US
+To:     liuyacan@corp.netease.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ubraun@linux.ibm.com
+References: <20220525085408.812273-1-liuyacan@corp.netease.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20220525085408.812273-1-liuyacan@corp.netease.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: taSopZVY4RJmXrxq4FQi_L_0SWf8o9zH
+X-Proofpoint-ORIG-GUID: rQiV8w1cm2U6SER2KgO_ADADsFTE5pc9
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-25_02,2022-05-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 bulkscore=0
+ impostorscore=0 phishscore=0 suspectscore=0 priorityscore=1501
+ lowpriorityscore=0 mlxscore=0 mlxlogscore=999 spamscore=0 adultscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2205250043
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Good Afternoon from UK,
-How are you? we guess you're well, Our office has sent you a message
-last week, did you read our notice? get back to us upon the receipt of
-this mail.
-Thank You,
-Mr. Hennager James Craig
-IMF Office London United Kingdom
+On 25/05/2022 10:54, liuyacan@corp.netease.com wrote:
+> From: liuyacan <liuyacan@corp.netease.com>
+> 
+> In the process of checking whether RDMAv2 is available, the current
+> implementation first sets ini->smcrv2.ib_dev_v2, and then allocates
+> smc buf desc and register rmb, but the latter may fail. In this case,
+> the pointer should be reset.
+> 
+> Fixes: e49300a6bf62 ("net/smc: add listen processing for SMC-Rv2")
+> Signed-off-by: liuyacan <liuyacan@corp.netease.com>
+> ---
+>  net/smc/af_smc.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+> index 45a24d242..540b32d86 100644
+> --- a/net/smc/af_smc.c
+> +++ b/net/smc/af_smc.c
+> @@ -2136,6 +2136,7 @@ static void smc_find_rdma_v2_device_serv(struct smc_sock *new_smc,
+>  
+>  not_found:
+>  	ini->smcr_version &= ~SMC_V2;
+> +	ini->smcrv2.ib_dev_v2 = NULL;
+>  	ini->check_smcrv2 = false;
+>  }
+>  
+
+Thank you!
+
+Reviewed-by: Karsten Graul <kgraul@linux.ibm.com>
