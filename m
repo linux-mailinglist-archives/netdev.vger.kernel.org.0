@@ -2,53 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30462533B89
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 13:15:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E4FE533B90
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 13:17:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242731AbiEYLPt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 07:15:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33966 "EHLO
+        id S243159AbiEYLQh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 07:16:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242942AbiEYLPi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 07:15:38 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF1294192;
-        Wed, 25 May 2022 04:15:33 -0700 (PDT)
+        with ESMTP id S243019AbiEYLQb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 07:16:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44987A0D04;
+        Wed, 25 May 2022 04:16:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0288FB81CA3;
-        Wed, 25 May 2022 11:15:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E18DC385B8;
-        Wed, 25 May 2022 11:15:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 790966149C;
+        Wed, 25 May 2022 11:16:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1EDCC385B8;
+        Wed, 25 May 2022 11:16:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653477330;
-        bh=MsdbkVlYtrgkT4W07at59fEGoLNJC4CRitFwyTCa1hI=;
+        s=k20201202; t=1653477367;
+        bh=zvHvvKhh15Y2BqWukRDNqFM8VSwimq+KIzL7XmZ+I+I=;
         h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=TfskDXstcbI3M0FA3iakW6qeBj5kPi8k0M7qG1bgJwNqUng53JPtiwwZsZUEpngxB
-         oDI/kPfGO01mDzCW7sB1g6tEuwU83ZZX2H7lGRaIw9bYIXoR06bIriKeWnHGRBGI36
-         zEa41fjh7rZs6gMvSx7+nM1sPMnhENCvRFcb/dGOwl1oHmTVtxCY4UZmuflsFDMDfc
-         uW0hA+8yZfmxwmrYmGBaEQtu4CYkeP10YNuCLbGzqjdExerbkGsvB43gnwdGpoPohI
-         vcFdWEEyep5tvUzReMHx7pHDur5DZrGflSJ25Rw2ZGLcw7InVlemJTAdGg62Qbcyn2
-         oZ3pfdKREgoSw==
+        b=awLyCuscCEosO88GzDNL/5EqsLe6Yejfb7d/ZZypbejB5j3JPDEJvi4ZvW/ZBPePx
+         eLJEizQo17DMkAuImvuGZPRkeeKVxg6Eibsu8bFBKgZyHmUms8LQinfh6Zez0/tI1H
+         NL4qPUxMtTX4/Azc6hdQqMzjhaeQWFm65gWkLl5/6EfgW3TDLJq3PT4FRs2CQhc4GQ
+         1o6bPcmXFbgJBxaRjFVdXe4J9R8F3zUIPhxUw0CEOqflsWpF90HuxxjOf1J4zZNxmF
+         gHRPA6Vwy9aQ+223HXtyYz6qN9p+n9y+XRosGNqZq9xSc1YpAzw6A429NXME+6L1Fq
+         l/+mbPh49pnwQ==
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 1845D3DED4A; Wed, 25 May 2022 13:15:28 +0200 (CEST)
+        id B41F23DED4C; Wed, 25 May 2022 13:16:05 +0200 (CEST)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org
-Cc:     weiyongjun1@huawei.com, shaozhengchao@huawei.com,
-        yuehaibing@huawei.com
-Subject: Re: [PATCH v3,bpf-next] samples/bpf: check detach prog exist or not
- in xdp_fwd
-In-Reply-To: <20220521043509.389007-1-shaozhengchao@huawei.com>
+To:     shaozhengchao <shaozhengchao@huawei.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>
+Cc:     "weiyongjun (A)" <weiyongjun1@huawei.com>,
+        yuehaibing <yuehaibing@huawei.com>
+Subject: Re: =?utf-8?B?562U5aSNOg==?= [PATCH v3,bpf-next] samples/bpf: check
+ detach prog exist or
+ not in xdp_fwd
+In-Reply-To: <eb8ee7fe2ffc477299eb2eceb622ca29@huawei.com>
 References: <20220521043509.389007-1-shaozhengchao@huawei.com>
+ <eb8ee7fe2ffc477299eb2eceb622ca29@huawei.com>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 25 May 2022 13:15:28 +0200
-Message-ID: <87o7zloobz.fsf@toke.dk>
+Date:   Wed, 25 May 2022 13:16:05 +0200
+Message-ID: <87leupooay.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -61,109 +72,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zhengchao Shao <shaozhengchao@huawei.com> writes:
+> Hi Toke,
+> Do you have any more feedback? Does it look better to you now?
 
-> Before detach the prog, we should check detach prog exist or not.
->
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> ---
->  samples/bpf/xdp_fwd_user.c | 59 ++++++++++++++++++++++++++++++++------
->  1 file changed, 50 insertions(+), 9 deletions(-)
->
-> diff --git a/samples/bpf/xdp_fwd_user.c b/samples/bpf/xdp_fwd_user.c
-> index 1828487bae9a..03a50f64e99a 100644
-> --- a/samples/bpf/xdp_fwd_user.c
-> +++ b/samples/bpf/xdp_fwd_user.c
-> @@ -47,17 +47,58 @@ static int do_attach(int idx, int prog_fd, int map_fd, const char *name)
->  	return err;
->  }
->  
-> -static int do_detach(int idx, const char *name)
-> +static int do_detach(int ifindex, const char *ifname, const char *app_name)
->  {
-> -	int err;
-> +	LIBBPF_OPTS(bpf_xdp_attach_opts, opts);
-> +	struct bpf_prog_info prog_info = {};
-> +	char prog_name[BPF_OBJ_NAME_LEN];
-> +	__u32 info_len, curr_prog_id;
-> +	int prog_fd;
-> +	int err = 1;
-> +
-> +	if (bpf_xdp_query_id(ifindex, xdp_flags, &curr_prog_id)) {
-> +		printf("ERROR: bpf_xdp_query_id failed (%s)\n",
-> +		       strerror(errno));
-> +		return err;
-> +	}
-> +
-> +	if (!curr_prog_id) {
-> +		printf("ERROR: flags(0x%x) xdp prog is not attached to %s\n",
-> +		       xdp_flags, ifname);
-> +		return err;
-> +	}
->  
-> -	err = bpf_xdp_detach(idx, xdp_flags, NULL);
-> -	if (err < 0)
-> -		printf("ERROR: failed to detach program from %s\n", name);
-> +	info_len = sizeof(prog_info);
-> +	prog_fd = bpf_prog_get_fd_by_id(curr_prog_id);
+Ah, sorry, missed your v3; replied now. Please make sure to add me
+directly to Cc on any follow-ups to make sure I don't miss them :)
 
-This fd is never closed again; you'll need to replace the 'return err'
-statement below with a 'goto err' and add a label at the end that closes
-the fd before returning - see comments below.
-
-> +	if (prog_fd < 0) {
-> +		printf("ERROR: bpf_prog_get_fd_by_id failed (%s)\n",
-> +		       strerror(errno));
-> +		return err;
-
-err is not actually set here; you could either 'return prog_fd' or
-'return -errno'.
-
-> +	}
-> +
-> +	err = bpf_obj_get_info_by_fd(prog_fd, &prog_info, &info_len);
-> +	if (err) {
-> +		printf("ERROR: bpf_obj_get_info_by_fd failed (%s)\n",
-> +		       strerror(errno));
-> +		return err;
-
-make this 'goto err'...
-> +	}
-> +	snprintf(prog_name, sizeof(prog_name), "%s_prog", app_name);
-> +	prog_name[BPF_OBJ_NAME_LEN - 1] = '\0';
-> +
-> +	if (strcmp(prog_info.name, prog_name)) {
-> +		printf("ERROR: %s isn't attached to %s\n", app_name, ifname);
-> +		err = 1;
-> +	} else {
-> +		opts.old_prog_fd = prog_fd;
-> +		err = bpf_xdp_detach(ifindex, xdp_flags, &opts);
-> +		if (err < 0)
-> +			printf("ERROR: failed to detach program from %s (%s)\n",
-> +			       ifname, strerror(errno));
-> +		/* TODO: Remember to cleanup map, when adding use of shared map
-> +		 *  bpf_map_delete_elem((map_fd, &idx);
-> +		 */
-> +	}
->  
-> -	/* TODO: Remember to cleanup map, when adding use of shared map
-> -	 *  bpf_map_delete_elem((map_fd, &idx);
-> -	 */
-...and add something like:
-
-err:
-        close(prog_fd);
->  	return err;
->  }
->  
-> @@ -169,7 +210,7 @@ int main(int argc, char **argv)
->  			return 1;
->  		}
->  		if (!attach) {
-> -			err = do_detach(idx, argv[i]);
-> +			err = do_detach(idx, argv[i], prog_name);
->  			if (err)
->  				ret = err;
->  		} else {
-> -- 
-> 2.17.1
+-Toke
