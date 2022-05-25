@@ -2,105 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C01F534547
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 22:48:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B158E53456D
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 22:58:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234321AbiEYUsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 16:48:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40892 "EHLO
+        id S238920AbiEYU6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 16:58:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240369AbiEYUs3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 16:48:29 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D27B41ED
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 13:48:22 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id v26so9979084ybd.2
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 13:48:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=+uyh4vUIYntN7Mid2B5fbgguOxBR2RiHnKBh7A4r37I=;
-        b=MIznAoP29XHGMZwK2XaORcuFYY4KHU3SiD37YZr3IksbwEszYFwRGI6NMOaIsgw3Rc
-         MNWUak9e2Pk5zm0JPp6szTBpWptBOFEsDKaXw1mzZOTFcRGcvyjOwqdtF8UB9EvyuuJZ
-         fMICjT1+KZ7bxeE9NTTU8LESXRGeqFThSri55TjzyU4r+qSYB8KRkbeHsWYNf08X2bEy
-         pryupL2ykuBV+sygnkk+fqajrVN1/45XJT6UIDBI/J4JIiO7GZW4kaISjbo9xtOnIbu3
-         /lAT2wlHOnLDqj2MsvwscUqPgxRkbuhwflLse0VSR01xDxZYapbGb527uMRlqnyfWWDn
-         3l8g==
+        with ESMTP id S230314AbiEYU6o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 16:58:44 -0400
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3FAEBA54B;
+        Wed, 25 May 2022 13:58:43 -0700 (PDT)
+Received: by mail-ot1-f52.google.com with SMTP id l10-20020a9d7a8a000000b0060b151de434so6756010otn.2;
+        Wed, 25 May 2022 13:58:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=+uyh4vUIYntN7Mid2B5fbgguOxBR2RiHnKBh7A4r37I=;
-        b=5wLlOEvoONa9r0CpAIJ0nq+/St1DMnCltTSdQf2orSZooBevRk8HfxAoUayd3Fl60N
-         JOzRwFqAKudcIegr8YtN7clYakE2UNq8esiPGK0aJvdglZ0nruz63lVvH1EwVrEXZd+K
-         J+Nan1/bAYVQ8mm7kqJnFeRwSsTIxztj6gPLpYLH+wDzjn2jjF4bXAHbTBsjmIoLvpOG
-         9TDIgMGr1dsxAokZ+HmMPyjZpbijMriWwEwsbiSUNyt4u8QuaZOJSp9lZGBFod1rm3IY
-         vsfmynv4BAUMls3+FPdyBF8VSf4Y4SwlDvXMZc0Yju8zw+fGa6yXtrez3POI7NVOEGo8
-         Nfug==
-X-Gm-Message-State: AOAM533dASV5v7iyBce3r2RiCSokeFLB40yxAK7D02A85QSx6RbmLf/k
-        Da5Bg9BPmhLVUqJwfZ+4VujaGO4DhZWltsRPq4U=
-X-Google-Smtp-Source: ABdhPJygDnPWuNyLLxTk2B3Kv8LEKih1+m2wVtTUpsrNi1Bs8nM6GPylqvWzkD99kDlHZJJaie6GrPKCBIwCtXokpK8=
-X-Received: by 2002:a05:6902:1023:b0:64f:39e7:ef05 with SMTP id
- x3-20020a056902102300b0064f39e7ef05mr31533397ybt.126.1653511701867; Wed, 25
- May 2022 13:48:21 -0700 (PDT)
+        bh=+7R0jOM1X4u7urBmc2283Rmo7eHakiDoT/FWr1Vpcl8=;
+        b=IqIGYdzrWDahmOJXfR5Xv0qGOIIyY3y2iE1rpGzSPQueVxMDJC8N0iN4C1ODKw8PCJ
+         s2CimiEkiDWtjzeLLvJyt+8iSO+iRXdVAnd6phKoaSjNq677wyPd5EIRkSiS+BzPiJk0
+         UNBc7yQiVK9jdeuGzM2QkUHPkLPkDSNb41gj47Mvk03q+ZmAq3kJxUNHWPWzvPaseBab
+         CjCDk4wA6uqrGIWdgJro6+NF3oCAeejqVuG4d4Pxdyf0q8++QXe1MuXe1LGyF64KTOru
+         7y7gl5a0p2ErLJRvJ8bIQewGsrRgcrZJksZ+s5C+r4AJDPEbYBNapKfh/8dpZOfn/iv9
+         uS7w==
+X-Gm-Message-State: AOAM5330UT6iAHwwU6D004hOuyYd+v/prjgDNIZVbQnNPfB2zMCp8kDl
+        YO2F9iYGGU5icjvEXT8AXw==
+X-Google-Smtp-Source: ABdhPJz5l3JFyaeKrZTFkTzK+zkeMuXVUREn2S52CFfzx7dHLtxFxgDEfFTcUKndzWb2gdIez3qIeQ==
+X-Received: by 2002:a05:6830:310c:b0:606:66c8:53d4 with SMTP id b12-20020a056830310c00b0060666c853d4mr13372565ots.129.1653512323186;
+        Wed, 25 May 2022 13:58:43 -0700 (PDT)
+Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id t5-20020a056871054500b000e686d1386asm6398922oal.4.2022.05.25.13.58.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 13:58:42 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Marek Vasut <marex@denx.de>
+Cc:     Woojung Huh <Woojung.Huh@microchip.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: net/dsa: Add spi-peripheral-props.yaml references
+Date:   Wed, 25 May 2022 15:57:50 -0500
+Message-Id: <20220525205752.2484423-1-robh@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Received: by 2002:a05:7110:3682:b0:17b:2b7b:c035 with HTTP; Wed, 25 May 2022
- 13:48:21 -0700 (PDT)
-From:   Colina Fernando <colinafernando724@gmail.com>
-Date:   Wed, 25 May 2022 22:48:21 +0200
-Message-ID: <CAP7Hh1-EL6tqrQsO0De_QJ1avJao_roXNeVStyzCoPtO9q14fg@mail.gmail.com>
-Subject: Bitte kontaktaufnahme Erforderlich !!! Please Contact Required !!!
-To:     contact@firstdiamondbk.com
-Cc:     info@firstdiamondbk.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Guten Tag,
+SPI peripheral device bindings need to reference spi-peripheral-props.yaml
+in order to use various SPI controller specific properties. Otherwise,
+the unevaluatedProperties check will reject any controller specific
+properties.
 
-Ich habe mich nur gefragt, ob Sie meine vorherige E-Mail bekommen
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml | 1 +
+ Documentation/devicetree/bindings/net/dsa/realtek.yaml       | 1 +
+ 2 files changed, 2 insertions(+)
 
-haben ?
+diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+index 184152087b60..6bbd8145b6c1 100644
+--- a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+@@ -12,6 +12,7 @@ maintainers:
+ 
+ allOf:
+   - $ref: dsa.yaml#
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+ 
+ properties:
+   # See Documentation/devicetree/bindings/net/dsa/dsa.yaml for a list of additional
+diff --git a/Documentation/devicetree/bindings/net/dsa/realtek.yaml b/Documentation/devicetree/bindings/net/dsa/realtek.yaml
+index 99ee4b5b9346..4f99aff029dc 100644
+--- a/Documentation/devicetree/bindings/net/dsa/realtek.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/realtek.yaml
+@@ -108,6 +108,7 @@ if:
+     - reg
+ 
+ then:
++  $ref: /schemas/spi/spi-peripheral-props.yaml#
+   not:
+     required:
+       - mdc-gpios
+-- 
+2.34.1
 
-Ich habe versucht, Sie per E-Mail zu erreichen.
-
-Kommen Sie bitte schnell zu mir zur=C3=BCck, es ist sehr wichtig.
-
-Danke
-
-Fernando Colina
-
-colinafernando724@gmail.com
-
-
-
-
-----------------------------------
-
-
-
-
-Good Afternoon,
-
-I was just wondering if you got my Previous E-mail
-have ?
-
-I tried to reach you by E-mail.
-
-Please come back to me quickly, it is very Important.
-
-Thanks
-
-Fernando Colina
-
-colinafernando724@gmail.com
