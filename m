@@ -2,177 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E5E65336DA
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 08:44:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2CA6533744
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 09:20:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244200AbiEYGoI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 02:44:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59586 "EHLO
+        id S243506AbiEYHUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 03:20:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244186AbiEYGoH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 02:44:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A06565DA2D
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 23:44:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653461045;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=q0dTaNHuL4SUBlxpiPP30yUP0V2S131GhNnsHFSLPKs=;
-        b=CTr44IoGGXMZ2ibqlsIvlQJH+oW8HthHWkADWXizzX8aVXAZJhK8koFTn4jicbAxl3WLE4
-        Zj+iXolJnVkOEhzt2OsHSplnAV6/tTQlCCrRaYTf2qbLIkeKAu5QIbsZQdoNnvdziS0zX+
-        X/0C7QcaAowgj6/suzUdXXMT2sK9Imw=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-623-h_bOBfxROFuuo0PHbC1rGg-1; Wed, 25 May 2022 02:44:04 -0400
-X-MC-Unique: h_bOBfxROFuuo0PHbC1rGg-1
-Received: by mail-qt1-f198.google.com with SMTP id c1-20020ac81101000000b002f9219952f0so9622555qtj.15
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 23:44:04 -0700 (PDT)
+        with ESMTP id S239469AbiEYHUJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 03:20:09 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CD2A113A;
+        Wed, 25 May 2022 00:20:07 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id h186so18214766pgc.3;
+        Wed, 25 May 2022 00:20:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=c3NN2a98vQ67oBdy58k4ALAhQdAN1uSvB09A0CcmiJY=;
+        b=mBcbVGb3wNLi5hNPLMu/XoOvLWcCk4sqM8U0MLyhriNhx+FA5oKEsABeEVw2hPkIYw
+         1QRrqx3sFIFYWGINrNZ57Q+nJZmjAeBdpHgORWba7mJC9Npa/QaDdaXZwmM+d0kpHPjk
+         CtnhC6WvPlztLh8INB9OjcEea7gcwRTetIwZXh01miBnvzHwCOe2vLHBfui86TktvHpK
+         wQ9iRZMTflwV251+iVAoyqFaFR0aH2SyuQHH0SgaA009BrDs6Dz43wf9jdsZ52U9z1Xo
+         1jPLIjYxbgCUyIn5eY0Hy75XUoG5UN7X50u2TAJDNagp9vUylM6ddP65pmyQuV2Vj0m8
+         LZng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=q0dTaNHuL4SUBlxpiPP30yUP0V2S131GhNnsHFSLPKs=;
-        b=rziX72GxsxvGlQEzrtJhUxxy9CP8f+MZ3II5ivSywFfUEJo4zCclX73Bhvlmj/flX5
-         xJK2DLST8ZszKtpOPprXfGJPs9A0cvhwrQ5tZKTo4EwXYVEcdtPksit0e9I8AHcdG+63
-         GJ8cNm/rKib0yuN5oSaX/obewwI5XECYMwLaEOiNlfb5x1c+/zFouieYCbcn/hgCe0hW
-         s9oWkrJfNl0yalWiirZwtp+tykolgNRG1ernkRK6VaznGYKCBer1yyNLZGfYfLkHRYLy
-         EWhrTJ2atZDCqrXaeqXtQ8d/7AlUNvWas/3iPmnV5siLks4K8emHbgL3abTKP3his0Dk
-         En9Q==
-X-Gm-Message-State: AOAM530273Yapd2L6uvW87u8RFpoqo2bKYQKbXBzT64Jx4Ps0DFA17hN
-        5IxWSdJVHfdDImwXGnyHf/z2Wg/g0a+OU59jNDHnMyhNGSIWEZo2BPJUned6rcCetgSFdqZImTP
-        lF1gqfzJlcqhVhZoZGE1p5uIgV7ZLxIWn
-X-Received: by 2002:a05:620a:40c4:b0:6a2:e166:c7e3 with SMTP id g4-20020a05620a40c400b006a2e166c7e3mr20156514qko.486.1653461043998;
-        Tue, 24 May 2022 23:44:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxzBnli9BMJnOwkhuFIoRR7C+Xyp7bTitLcsl+I7WPStVvlJFXCRpVWtTCUfc3ivMsRtC2VLRXsg8ONEOvPReo=
-X-Received: by 2002:a05:620a:40c4:b0:6a2:e166:c7e3 with SMTP id
- g4-20020a05620a40c400b006a2e166c7e3mr20156497qko.486.1653461043733; Tue, 24
- May 2022 23:44:03 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=c3NN2a98vQ67oBdy58k4ALAhQdAN1uSvB09A0CcmiJY=;
+        b=ThNntfvJZbClD/pY9bqbOPn2KOxOS7b9CTylGtK7X3Bm7IzL/8iO2jgXNn6cgKWEX4
+         tnBPCJa+i6l868dLjFV6dNZ3wdrlB1IQygqX0wuHZUpZ+3yiLxrXGUv4zlD/WgLBQgYj
+         FPG6kBJwwL+3nLjh/clYqjhDe+QUMiif0/33B1gbLkoFC+HpyAvEplMqdd00AH0tDUdZ
+         TaTXCG9neT+SoTqBfVfbd94v1Io3s5KtnEzRCMDDF9EE/AEGBQv+m3RTHrGxyD5AXqjK
+         50B29xl0JnMz9+8DCWqVbONQqkgY6yuSx07g06s6UgoPF5DZ3o9Sa7tbPNo+l9E9p8cG
+         av7Q==
+X-Gm-Message-State: AOAM533eWcqvbureeO+M5wL+YH7t1zl60uCWew6Ls8xeNJ0zKUZJjiqJ
+        Tm3+y36lIpF5biZ/ifWTDcU=
+X-Google-Smtp-Source: ABdhPJy4SzjDG9HgY2opuZXTbupL+Jja3hb5i7r++rjCcqLLwoKwoafmNx3vWrkya6xc0kk2NjTxDQ==
+X-Received: by 2002:a05:6a00:114e:b0:4c8:55f7:faad with SMTP id b14-20020a056a00114e00b004c855f7faadmr32105069pfm.86.1653463207201;
+        Wed, 25 May 2022 00:20:07 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id x15-20020a170902a38f00b00162496617b9sm2657121pla.286.2022.05.25.00.20.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 00:20:06 -0700 (PDT)
+Date:   Wed, 25 May 2022 15:20:01 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Yun Lu <luyun_611@163.com>
+Cc:     willemb@google.com, davem@davemloft.net, edumazet@google.com,
+        willemdebruijn.kernel@gmail.com, liuyun01@kylinos.cn,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v2] selftests/net: enable lo.accept_local in psock_snd
+ test
+Message-ID: <Yo3YoZWRkygFyqUc@Laptop-X1>
+References: <20220525031819.866684-1-luyun_611@163.com>
 MIME-Version: 1.0
-References: <20220524170610.2255608-1-eperezma@redhat.com> <20220524170610.2255608-4-eperezma@redhat.com>
- <CACGkMEsZSTgsgYkg5HhpJ62pKFTr6mtiNwYJa8E+r4RMTRuU8A@mail.gmail.com>
-In-Reply-To: <CACGkMEsZSTgsgYkg5HhpJ62pKFTr6mtiNwYJa8E+r4RMTRuU8A@mail.gmail.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Wed, 25 May 2022 08:43:27 +0200
-Message-ID: <CAJaqyWdxjmDVX4DQOdW90mkW_-MbP7AtK+Q_KdrsU0=nRdtGXQ@mail.gmail.com>
-Subject: Re: [PATCH v2 3/4] vhost-vdpa: uAPI to stop the device
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm <kvm@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Parav Pandit <parav@nvidia.com>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>, tanuj.kamde@amd.com,
-        "Dawar, Gautam" <gautam.dawar@amd.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        habetsm.xilinx@gmail.com, Eli Cohen <elic@nvidia.com>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        Laurent Vivier <lvivier@redhat.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Cindy Lu <lulu@redhat.com>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        ecree.xilinx@gmail.com, "Uminski, Piotr" <Piotr.Uminski@intel.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Longpeng <longpeng2@huawei.com>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220525031819.866684-1-luyun_611@163.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 25, 2022 at 4:51 AM Jason Wang <jasowang@redhat.com> wrote:
->
-> On Wed, May 25, 2022 at 1:06 AM Eugenio P=C3=A9rez <eperezma@redhat.com> =
-wrote:
-> >
-> > The ioctl adds support for stop the device from userspace.
-> >
-> > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > ---
-> >  drivers/vhost/vdpa.c       | 18 ++++++++++++++++++
-> >  include/uapi/linux/vhost.h |  3 +++
-> >  2 files changed, 21 insertions(+)
-> >
-> > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> > index 32713db5831d..a5d33bad92f9 100644
-> > --- a/drivers/vhost/vdpa.c
-> > +++ b/drivers/vhost/vdpa.c
-> > @@ -478,6 +478,21 @@ static long vhost_vdpa_get_vqs_count(struct vhost_=
-vdpa *v, u32 __user *argp)
-> >         return 0;
-> >  }
-> >
-> > +static long vhost_vdpa_stop(struct vhost_vdpa *v, u32 __user *argp)
-> > +{
-> > +       struct vdpa_device *vdpa =3D v->vdpa;
-> > +       const struct vdpa_config_ops *ops =3D vdpa->config;
-> > +       int stop;
-> > +
-> > +       if (!ops->stop)
-> > +               return -EOPNOTSUPP;
-> > +
-> > +       if (copy_from_user(&stop, argp, sizeof(stop)))
-> > +               return -EFAULT;
-> > +
-> > +       return ops->stop(vdpa, stop);
-> > +}
-> > +
-> >  static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int =
-cmd,
-> >                                    void __user *argp)
-> >  {
-> > @@ -650,6 +665,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *=
-filep,
-> >         case VHOST_VDPA_GET_VQS_COUNT:
-> >                 r =3D vhost_vdpa_get_vqs_count(v, argp);
-> >                 break;
-> > +       case VHOST_STOP:
-> > +               r =3D vhost_vdpa_stop(v, argp);
-> > +               break;
-> >         default:
-> >                 r =3D vhost_dev_ioctl(&v->vdev, cmd, argp);
-> >                 if (r =3D=3D -ENOIOCTLCMD)
-> > diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
-> > index cab645d4a645..e7526968ab0c 100644
-> > --- a/include/uapi/linux/vhost.h
-> > +++ b/include/uapi/linux/vhost.h
-> > @@ -171,4 +171,7 @@
-> >  #define VHOST_VDPA_SET_GROUP_ASID      _IOW(VHOST_VIRTIO, 0x7C, \
-> >                                              struct vhost_vring_state)
-> >
-> > +/* Stop or resume a device so it does not process virtqueue requests a=
-nymore */
-> > +#define VHOST_STOP                     _IOW(VHOST_VIRTIO, 0x7D, int)
-> > +
->
-> Unless we know it's a vhost general uAPI, let's use VHOST_VDPA_STOP here.
->
+On Wed, May 25, 2022 at 11:18:19AM +0800, Yun Lu wrote:
+> From: luyun <luyun@kylinos.cn>
+> 
+> The psock_snd test sends and recieves packets over loopback, and
+> the test results depend on parameter settings:
+> Set rp_filter=0,
+> or set rp_filter=1 and accept_local=1
+> so that the test will pass. Otherwise, this test will fail with
+> Resource temporarily unavailable:
+> sudo ./psock_snd.sh
+> dgram
+> tx: 128
+> rx: 142
+> ./psock_snd: recv: Resource temporarily unavailable
+> 
+> For most distro kernel releases(like Ubuntu or Centos), the parameter
+> rp_filter is enabled by default, so it's necessary to enable the
+> parameter lo.accept_local in psock_snd test. And this test runs
+> inside a netns, changing a sysctl is fine.
+> 
+> v2: add detailed description.
+> 
+> Suggested-by: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+> Signed-off-by: luyun <luyun@kylinos.cn>
+> Reviewed-by: Jackie Liu <liuyun01@kylinos.cn>
+> ---
+>  tools/testing/selftests/net/psock_snd.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/net/psock_snd.c b/tools/testing/selftests/net/psock_snd.c
+> index 7d15e10a9fb6..edf1e6f80d41 100644
+> --- a/tools/testing/selftests/net/psock_snd.c
+> +++ b/tools/testing/selftests/net/psock_snd.c
+> @@ -389,6 +389,8 @@ int main(int argc, char **argv)
+>  		error(1, errno, "ip link set mtu");
+>  	if (system("ip addr add dev lo 172.17.0.1/24"))
+>  		error(1, errno, "ip addr add");
+> +	if (system("sysctl -w net.ipv4.conf.lo.accept_local=1"))
+> +		error(1, errno, "sysctl lo.accept_local");
+>  
+>  	run_test();
+>  
+> -- 
+> 2.25.1
 
-Ok I'll rename.
+Great, this also fixed my problem. Please feel free to add my
 
-Thanks!
-
-> Thanks
->
-> >  #endif
-> > --
-> > 2.27.0
-> >
->
-
+Tested-by: Hangbin Liu <liuhangbin@gmail.com>
