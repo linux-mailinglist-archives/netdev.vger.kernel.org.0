@@ -2,105 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A65AF5337DD
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 09:57:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 431E85337F9
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 10:07:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233588AbiEYH5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 03:57:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38144 "EHLO
+        id S234380AbiEYIG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 04:06:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233794AbiEYH5i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 03:57:38 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F287CDC4
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 00:57:37 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id y24so4220524wmq.5
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 00:57:36 -0700 (PDT)
+        with ESMTP id S235607AbiEYIGy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 04:06:54 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7AD814AC
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 01:06:48 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id x12so4705447wrg.2
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 01:06:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7/n2rpbeqJlIklC2fIxXMA/rV6mHKXGQbAPiEq5BLsM=;
-        b=mlQa19aK81m43lYo0SMSdV1JuMB3iAcGjS0kCYSlwY4Owl10NE/fMJcXACc/rOrt38
-         CswENuk2mEk4I+53JvksmltRMaPncPj0spLwH62zJatFkIPtEHoLLH8pX1WaYBpVNiAY
-         EIYuMUPv5YMmuRFp550wpzzXx1jr8CcPaBPhdyFxvq/qYxhTyW1hXuW6zEwcvDSMWOUu
-         T2LXFnFzHFSzUDR4ILkT7vlD6xbBKdeXJMDS8tUIvDVGEIW+Yzrh6p8RdIdtsLCuedP4
-         soaO8Z6Z1lAgZeD0adQQpgEVDzs94XQld2Oj2Sx0txyIC/b/Ew5LhCsnPBQlysD+8nvw
-         wucw==
+        bh=cVq7pwXv2//Gfr1cHlRRSEheHaq4li61MQakSnDYkHk=;
+        b=NSbOEN1kEirXXcI0n+Rf9Sy90jmua25IOlwq3lBlny6ebWLJYupmHvohFiRfMPOYyq
+         4F5ikMXUckwPZMYV4cy1mkymCR7C/+/APrT91TE45m53C/G8or+AB0C7YnLnAmuFqZxj
+         a/5bJX+7SKQT+s4uAyqsGz5KEfN+/60UTN5yTFZEQNyAHD1BVJT73zQdK0VlccjJONE9
+         6R2aYtGZx2oDjYvCVCmv2sLZ5HSRUx3w3LKH4wb4s0fzsiBa9yitlqNtoveAi/tXQGzZ
+         HxQ1a1kqvyEtO1SgEEEkCr31sl8DHd8EzzaECAtIi2qlVGJgviVNf+Z4TdWIH4CvIbxt
+         nT8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=7/n2rpbeqJlIklC2fIxXMA/rV6mHKXGQbAPiEq5BLsM=;
-        b=uddXLusD6nyPT2nV9z5EnCo5XpFZXNRS+1AY6eCintVvtt9rKc3lSG5Im9Rlf448GX
-         hHf+2wsdc6ClqkxPsXQrLwDncak4JxPhohk3jAGQaXHhvO6/dEYIIchgeeMN0KtnqQoM
-         FEGBLImHSaFFTk6mTj72Rl+/ea0pZSlyyFSQHxcKKrumzGaAbpTb3qT7TtdQ0kQbA7Y4
-         b3o3Xix8F9B+l6YXyYNxPzd+s3oWZ8ByM0J24CxM+Fq9NeSOtaZmEdMnz5y/db3ZnK+x
-         qi/kvOhbnbjbwO8FetpFvS0EZGdn1FiSq33r5JWtJeqhELFEdrIzuE62LNAcKe+9GEDo
-         iTFA==
-X-Gm-Message-State: AOAM531FlyFR5IRe8ZgPxfDGdRISeOEtsSuSjBpcfhl5NhKSI0Cxl4et
-        wC/qRaFfQ9b7DxACqEHvfYQg+g==
-X-Google-Smtp-Source: ABdhPJwU3tiCSWEc5k6/hdVsuGs3QgovfC4cfBeEzTT2vPIRaFjiEuTCQ1BJa9/qqQpUuRwQG1bHvQ==
-X-Received: by 2002:a7b:c5cd:0:b0:38c:8b1b:d220 with SMTP id n13-20020a7bc5cd000000b0038c8b1bd220mr6862787wmk.118.1653465455410;
-        Wed, 25 May 2022 00:57:35 -0700 (PDT)
+        bh=cVq7pwXv2//Gfr1cHlRRSEheHaq4li61MQakSnDYkHk=;
+        b=uALPvO7Q74PfLRbNBzJabhicxicLlQp/9feeTdyyHqKwL8mIehgLyS6/nRQULPKmN8
+         S+hlkwOsMWZa8XE58sVz+9rhR5T6aaz3iVd3RWh5QgXOdS5QBfrpBRjn1suqP7ZaS2iT
+         gC6RTgKPisms1TMKVxwYt3p/bEBNGnK5sLV3B2FSjZkwG+NHbYAbqj5PotFrH/v3+AG7
+         eahD70bqfLrVe6jw6O2bdrqxN4ltwBmzwORmomjAjcmuawrmGzpfh2QvbhRvjvDPafWy
+         v6Yil8Y19capKsUIXQ9sm6VyTuFRRzYb2A9BkMxMccypPC34yPy8w3V1pVnIIiNwR+V0
+         tnlg==
+X-Gm-Message-State: AOAM532XZWOreayE3AHUiv5FPjSejU47NnyI3EJ4iEh8sCZHLXt4j4Ek
+        HFXGU2j5mh+AOci74SQCYpcLjA==
+X-Google-Smtp-Source: ABdhPJxxUHRzsWG9Ga2j1bOgOyilkp0ZbdgwfH/TcJtO2mh86zxzRwq60XFA/9neVmDozoa29iR3JA==
+X-Received: by 2002:adf:d1a8:0:b0:20f:f808:2ac8 with SMTP id w8-20020adfd1a8000000b0020ff8082ac8mr4694627wrc.495.1653466007320;
+        Wed, 25 May 2022 01:06:47 -0700 (PDT)
 Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id j11-20020a5d564b000000b0020e68dd2598sm1307846wrw.97.2022.05.25.00.57.34
+        by smtp.gmail.com with ESMTPSA id x8-20020a7bc208000000b0039765a7add4sm1038032wmi.29.2022.05.25.01.06.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 May 2022 00:57:34 -0700 (PDT)
-Message-ID: <979fb547-41d8-e346-74f1-ba723b932e7a@blackwall.org>
-Date:   Wed, 25 May 2022 10:57:33 +0300
+        Wed, 25 May 2022 01:06:46 -0700 (PDT)
+Message-ID: <b78fb006-04c4-5a25-7ba5-94428cc9591a@blackwall.org>
+Date:   Wed, 25 May 2022 11:06:44 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.7.0
-Subject: Re: [PATCH net] net, neigh: Set lower cap for neigh_managed_work
- rearming
+Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
+ locked port feature
 Content-Language: en-US
-To:     Daniel Borkmann <daniel@iogearbox.net>, kuba@kernel.org
-Cc:     wangyuweihx@gmail.com, pabeni@redhat.com, netdev@vger.kernel.org
-References: <3b8c5aa906c52c3a8c995d1b2e8ccf650ea7c716.1653432794.git.daniel@iogearbox.net>
+To:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
+ <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
+ <01e6e35c-f5c9-9776-1263-058f84014ed9@blackwall.org>
+ <86zgj6oqa9.fsf@gmail.com>
 From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <3b8c5aa906c52c3a8c995d1b2e8ccf650ea7c716.1653432794.git.daniel@iogearbox.net>
+In-Reply-To: <86zgj6oqa9.fsf@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/05/2022 01:56, Daniel Borkmann wrote:
-> Yuwei reported that plain reuse of DELAY_PROBE_TIME to rearm work queue
-> in neigh_managed_work is problematic if user explicitly configures the
-> DELAY_PROBE_TIME to 0 for a neighbor table. Such misconfig can then hog
-> CPU to 100% processing the system work queue. Instead, set lower interval
-> bound to HZ which is totally sufficient. Yuwei is additionally looking
-> into making the interval separately configurable from DELAY_PROBE_TIME.
+On 24/05/2022 19:21, Hans Schultz wrote:
+>>
+>> Hi Hans,
+>> So this approach has a fundamental problem, f->dst is changed without any synchronization
+>> you cannot rely on it and thus you cannot account for these entries properly. We must be very
+>> careful if we try to add any new synchronization not to affect performance as well.
+>> More below...
+>>
+>>> @@ -319,6 +326,9 @@ static void fdb_delete(struct net_bridge *br, struct net_bridge_fdb_entry *f,
+>>>  	if (test_bit(BR_FDB_STATIC, &f->flags))
+>>>  		fdb_del_hw_addr(br, f->key.addr.addr);
+>>>  
+>>> +	if (test_bit(BR_FDB_ENTRY_LOCKED, &f->flags) && !test_bit(BR_FDB_OFFLOADED, &f->flags))
+>>> +		atomic_dec(&f->dst->locked_entry_cnt);
+>>
+>> Sorry but you cannot do this for multiple reasons:
+>>  - f->dst can be NULL
+>>  - f->dst changes without any synchronization
+>>  - there is no synchronization between fdb's flags and its ->dst
+>>
+>> Cheers,
+>>  Nik
 > 
-> Reported-by: Yuwei Wang <wangyuweihx@gmail.com>
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Nikolay Aleksandrov <razor@blackwall.org>
-> Link: https://lore.kernel.org/netdev/797c3c53-ce1b-9f60-e253-cda615788f4a@iogearbox.net
-> ---
->  net/core/neighbour.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Hi Nik,
 > 
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index f64ebd050f6..fd69133dc7c 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -1579,7 +1579,7 @@ static void neigh_managed_work(struct work_struct *work)
->  	list_for_each_entry(neigh, &tbl->managed_list, managed_list)
->  		neigh_event_send_probe(neigh, NULL, false);
->  	queue_delayed_work(system_power_efficient_wq, &tbl->managed_work,
-> -			   NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME));
-> +			   max(NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME), HZ));
->  	write_unlock_bh(&tbl->lock);
->  }
->  
+> if a port is decoupled from the bridge, the locked entries would of
+> course be invalid, so maybe if adding and removing a port is accounted
+> for wrt locked entries and the count of locked entries, would that not
+> work?
+> 
+> Best,
+> Hans
 
-Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
+Hi Hans,
+Unfortunately you need the correct amount of locked entries per-port if you want
+to limit their number per-port, instead of globally. So you need a consistent
+fdb view with all its attributes when changing its dst in this case, which would
+require new locking because you have multiple dependent struct fields and it will
+kill roaming/learning scalability. I don't think this use case is worth the complexity it
+will bring, so I'd suggest an alternative - you can monitor the number of locked entries
+per-port from a user-space agent and disable port learning or some similar solution that
+doesn't require any complex kernel changes. Is the limit a requirement to add the feature?
+
+I have an idea how to do it and to minimize the performance hit if it really is needed
+but it'll add a lot of complexity which I'd like to avoid if possible.
+
+Cheers,
+ Nik
 
