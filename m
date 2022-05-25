@@ -1,45 +1,63 @@
 Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from out1.vger.email (unknown [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6594E533D0D
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 14:56:53 +0200 (CEST)
+Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
+	by mail.lfdr.de (Postfix) with ESMTP id 37BE0533DD4
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 15:23:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237230AbiEYM4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 08:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39722 "EHLO
+        id S244496AbiEYNWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 09:22:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229831AbiEYM43 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 08:56:29 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A835A5F40
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 05:56:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=PUw5uYRAN+UvcaLVGTxSk2VbbG4NH3OKJYNSQ+c1Z5E=; b=LQWS6ZQq4S4M0elU43DWG09afU
-        vMJ46/qyeaxGepdI4ZkTHr5SevkrBhT1uDr/GhkdY74+ajPtpl8d5yS96QjIy2aZ2SaZWyip/YI9L
-        4AU7YGEfazw7xlIeg9gcaLAiffRLjAe5xCXXHdoMht32xbitB6sDLNa1EDCAdKvsQ+AM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ntqYl-004EdX-IS; Wed, 25 May 2022 14:56:19 +0200
-Date:   Wed, 25 May 2022 14:56:19 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jiawen Wu <jiawenwu@trustnetic.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net: txgbe: Add build support for txgbe
-Message-ID: <Yo4ncweml1gRDlhC@lunn.ch>
-References: <20220517092109.8161-1-jiawenwu@trustnetic.com>
- <YoRkONdJlIU0ymd6@lunn.ch>
- <01d001d86fe7$a4f4ba20$eede2e60$@trustnetic.com>
+        with ESMTP id S233416AbiEYNWZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 09:22:25 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6591E2FFE9
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 06:21:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653484918; x=1685020918;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=pPJHbvH/CiYdJQCat3sp9UlNnA6L3VzD2OqSB/bcNxw=;
+  b=KeUOyyKJEHbiG+f3pFZKB9ZwrM8ffZTHF1nbbeJt+TKc3l/DhFfajJHN
+   f2wXFc3wIQK6yytei7hG5StLhELxnv9kQUl+lo+dHVdNhrPLqv9jvxafu
+   Qo/ERtX8sE58raQ6oD4SfQWGyiSxUxCavh/6znd6lAnQcrHfuIkR80tlo
+   e10nM3r3YpKYJE48imPAJV3BjLGS+NcSfetm4jaJ/Vc7wnInSJRSceEY2
+   SD6/tg9tw3Z2ZegBAw70zQRezBT+aBVQsOfjg8kqWZAgQ9F/j9ddwZpHH
+   9iUt5knqSOzn051so2hItWRW3k2oM3Y+lVTxKpf7PWK2bHtn44cptQcO/
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="261422510"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="261422510"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 06:21:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="609121468"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 25 May 2022 06:21:55 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ntqxW-00032c-L6;
+        Wed, 25 May 2022 13:21:54 +0000
+Date:   Wed, 25 May 2022 21:21:00 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tobias Klauser <tklauser@distanz.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        Akhmat Karakotov <hmukos@yandex-team.ru>
+Subject: Re: [PATCH] socket: Use __u8 instead of u8 in uapi socket.h
+Message-ID: <202205252127.cfqhpFVS-lkp@intel.com>
+References: <20220525085126.29977-1-tklauser@distanz.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <01d001d86fe7$a4f4ba20$eede2e60$@trustnetic.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+In-Reply-To: <20220525085126.29977-1-tklauser@distanz.ch>
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -47,74 +65,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > +	/* setup the private structure */
-> > > +	err = txgbe_sw_init(adapter);
-> > > +	if (err)
-> > > +		goto err_sw_init;
-> > > +
-> > > +	if (pci_using_dac)
-> > > +		netdev->features |= NETIF_F_HIGHDMA;
-> > 
-> > There should probably be a return 0; here, so the probe is successful.
-> Without
-> > that, you cannot test the remove function.
-> > 
-> 
-> I find that when I execute 'rmmod txgbe', it causes a segmentation fault
-> which prints 'iounmap: bad address'.
-> But when I try to do 'iounmap' before 'return 0' in the probe function,
-> there is no error.
-> Could you please tell me the reason for this?
+Hi Tobias,
 
-I'm assuming it is this code which is doing the print:
+I love your patch! Perhaps something to improve:
 
-https://elixir.bootlin.com/linux/v5.18/source/arch/x86/mm/ioremap.c#L469
+[auto build test WARNING on net-next/master]
+[also build test WARNING on net/master horms-ipvs/master linus/master v5.18 next-20220525]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Which suggests the area you are trying to unmap is not actually
-mapped.
+url:    https://github.com/intel-lab-lkp/linux/commits/Tobias-Klauser/socket-Use-__u8-instead-of-u8-in-uapi-socket-h/20220525-170053
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 57d7becda9c9e612e6b00676f2eecfac3e719e88
+config: x86_64-randconfig-a015 (https://download.01.org/0day-ci/archive/20220525/202205252127.cfqhpFVS-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/283fe3009b96069f17a813f86db8b48d12b5014e
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Tobias-Klauser/socket-Use-__u8-instead-of-u8-in-uapi-socket-h/20220525-170053
+        git checkout 283fe3009b96069f17a813f86db8b48d12b5014e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-Your code is a bit confusing:
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-in probe you have:
+All warnings (new ones prefixed by >>):
 
-+	hw->hw_addr = ioremap(pci_resource_start(pdev, 0),
-+			      pci_resource_len(pdev, 0));
+>> usr/include/linux/socket.h:34: found __[us]{8,16,32,64} type without #include <linux/types.h>
 
-and remove:
-
-+	iounmap(adapter->io_addr);
-
-There is an assignment adapter->io_addr = hw->hw_addr; but this is
-enough suggestion your structure of adapter and hw is not correct.
-
-What i also notice is that release would normally things in the
-opposite order to probe. That is not the case for your code.
-
-> > > +static bool txgbe_check_cfg_remove(struct txgbe_hw *hw, struct
-> > > +pci_dev *pdev) {
-> > > +	u16 value;
-> > > +
-> > > +	pci_read_config_word(pdev, PCI_VENDOR_ID, &value);
-> > > +	if (value == TXGBE_FAILED_READ_CFG_WORD) {
-> > > +		txgbe_remove_adapter(hw);
-> > > +		return true;
-> > > +	}
-> > > +	return false;
-> > 
-> > This needs a comment to explain what is happening here, because it is not
-> > clear to me.
-> > 
-> 
-> It means some kind of problem occur on PCI.
-
-Which does not explain what this function is doing.
-
-It seems like you have two cases to cover:
-
-A PCI problem during probe. This is probably the more likely case. You
-just fail the probe.
-
-A PCI problem during run time. What sort of recovery are you going to
-do? Just print a warning and keep going, hope for the best? 
-
-    Andrew
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
