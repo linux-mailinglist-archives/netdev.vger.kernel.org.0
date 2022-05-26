@@ -2,79 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3979534AEC
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 09:42:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E66B2534AF2
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 09:43:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346530AbiEZHkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 03:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46268 "EHLO
+        id S1346468AbiEZHnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 03:43:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346478AbiEZHkX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 03:40:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7AE259CF6A
-        for <netdev@vger.kernel.org>; Thu, 26 May 2022 00:40:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653550821;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=h87lEcHWW9NSvSXQ8moSWArV+B37Hn/AuWysA9c+PK0=;
-        b=ZE9Fy1qIu25acxEtmsGRjq/0vtPQo91AEEjbO8H+rqSw+nA9u2cMg7eRkulGZycc3GBtQm
-        doCagEtzi0v4o1stU1MbznRauKQZbMtkdzQymMbhew29C2N5BxhNgcJ1I6OmXcbQ5j1HbP
-        vGBdxfd6xkBZflSELGbm8PTy+eWro/I=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-594-Che3X3FsMIK8Gwgcq5-kAw-1; Thu, 26 May 2022 03:40:20 -0400
-X-MC-Unique: Che3X3FsMIK8Gwgcq5-kAw-1
-Received: by mail-qk1-f199.google.com with SMTP id x9-20020a05620a14a900b006a32ca95a72so749485qkj.22
-        for <netdev@vger.kernel.org>; Thu, 26 May 2022 00:40:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=h87lEcHWW9NSvSXQ8moSWArV+B37Hn/AuWysA9c+PK0=;
-        b=OncqT4Oh2XXip+1AvkfsBydFFacmPNOBDOBBpbKnzkdNh/lGKAUZn8pZFWvACIxkS+
-         n6kkovKVO777LkbOKfwIWMawY61xn3+m0S1mlGwZRxuG+kcnpewStGdIFLj5xyyYVCKZ
-         IB0Mkk1+7J5LIGB/rgr+XSecolOveV8TTR+5t7ZY4N2iV5Cti/uoOMaFrM9vpWSOQ2lo
-         ueiSO7Vxsxfp81nhTh3StTo6/zERdx8PxuKBgtei3BfQ7oEM/vOZP0Z8zP3100wpsChT
-         veypbWa5dqPsINwFvJfSHRnUym+a4ZNGSHx7hMpnMpb4fPnh2Ubwmstsuw3bwcKtqo0u
-         ZOiQ==
-X-Gm-Message-State: AOAM532Udp1g0Z34GKMtEW8Go9V+UlMrnutD++JcTQwVDnllmDgGhSZQ
-        1tyuS8FeUi+PkYTN1QYo+6WMLFxAnZQPOZT2/FdrgK3La8HMwNQM3WkYpKMTdPYuAR9/Xvuza+l
-        JSZ/2xwx+Nu9mXX4H
-X-Received: by 2002:a05:620a:1662:b0:6a3:5692:636 with SMTP id d2-20020a05620a166200b006a356920636mr18117749qko.311.1653550819603;
-        Thu, 26 May 2022 00:40:19 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyGZmitJKJqP0PNn4UMzLOXwHO4RgNOhYxUL06AUoEgZozxAhU6wiPgJMr6U+VIT3QBvaxigA==
-X-Received: by 2002:a05:620a:1662:b0:6a3:5692:636 with SMTP id d2-20020a05620a166200b006a356920636mr18117739qko.311.1653550819282;
-        Thu, 26 May 2022 00:40:19 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
-        by smtp.gmail.com with ESMTPSA id k202-20020a37a1d3000000b0069fc13ce1d5sm830924qke.6.2022.05.26.00.40.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 00:40:18 -0700 (PDT)
-Message-ID: <5497d8af4630264418ad91513e7eafeb016e6971.camel@redhat.com>
-Subject: Re: [PATCH] ipv6/addrconf: fix timing bug in tempaddr regen
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Sam Edwards <cfsworks@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>
-Date:   Thu, 26 May 2022 09:40:14 +0200
-In-Reply-To: <CAH5Ym4gm49mkMUKzyPqKT8vt3M67NZB-zoep3bu+VB3FbuVzCQ@mail.gmail.com>
-References: <20220523202543.9019-1-CFSworks@gmail.com>
-         <76f1d70068523c173670819fc9a688a1368bfa12.camel@redhat.com>
-         <CAH5Ym4gm49mkMUKzyPqKT8vt3M67NZB-zoep3bu+VB3FbuVzCQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S245089AbiEZHns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 03:43:48 -0400
+Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6081CA3098
+        for <netdev@vger.kernel.org>; Thu, 26 May 2022 00:43:46 -0700 (PDT)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed30:6498:8099:cb9:b18e])
+        by michel.telenet-ops.be with bizsmtp
+        id bKjX2700H0qhjiN06KjXSy; Thu, 26 May 2022 09:43:43 +0200
+Received: from geert (helo=localhost)
+        by ramsan.of.borg with local-esmtp (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nu89a-001en6-FJ; Thu, 26 May 2022 09:43:30 +0200
+Date:   Thu, 26 May 2022 09:43:30 +0200 (CEST)
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+X-X-Sender: geert@ramsan.of.borg
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>
+cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        corbet@lwn.net, tsbogend@alpha.franken.de, mpe@ellerman.id.au,
+        paulus@samba.org, sburla@marvell.com, vburru@marvell.com,
+        aayarekar@marvell.com, arnd@arndb.de, zhangyue1@kylinos.cn,
+        linux-doc@vger.kernel.org, linux-mips@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org
+Subject: Re: [PATCH net-next] eth: de4x5: remove support for Generic DECchip
+ & DIGITAL EtherWORKS PCI/EISA
+In-Reply-To: <f84c4cb17eebe385fe22c3fc4563645742269d46.camel@kernel.crashing.org>
+Message-ID: <alpine.DEB.2.22.394.2205260933520.394690@ramsan.of.borg>
+References: <20220519031345.2134401-1-kuba@kernel.org> <f84c4cb17eebe385fe22c3fc4563645742269d46.camel@kernel.crashing.org>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,46 +49,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-05-25 at 14:07 -0600, Sam Edwards wrote:
-> Bah, I've had to resend this since it went out as HTML yesterday.
-> Sorry about the double mailing everyone!
-> 
-> On Tue, May 24, 2022 at 3:24 AM Paolo Abeni <pabeni@redhat.com> wrote:
-> > I looks like with this change the tmp addresses will never hit the
-> > DEPRECATED branch ?!?
-> 
-> The DEPRECATED branch becomes reachable again once this line is hit:
-> ifp->regen_count++;
-> ...because it causes this condition in the elseif to evaluate false:
-> !ifp->regen_count
+ 	Hi Ben,
 
-That condition looks problematic:
+On Sat, 21 May 2022, Benjamin Herrenschmidt wrote:
+> On Wed, 2022-05-18 at 20:13 -0700, Jakub Kicinski wrote:
+>> Looks like almost all changes to this driver had been tree-wide
+>> refactoring since git era begun. There is one commit from Al
+>> 15 years ago which could potentially be fixing a real bug.
+>>
+>> The driver is using virt_to_bus() and is a real magnet for pointless
+>> cleanups. It seems unlikely to have real users. Let's try to shed
+>> this maintenance burden.
+>>
+>> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+>
+> Removing this driver will kill support for some rather old PowerMac
+> models (some PowerBooks I think, paulus would know). No objection on my
+> part, though. I doubt people still use these things with new kernels
+> but ... who knows ? :-)
 
+Aren't these PCI, and thus working fine with the PCI-only DE2104X
+(dc2104x) or TULIP (dc2114x) drivers?
 
-	unsigned long regen_advance = ifp->idev->cnf.regen_max_retry *
-                                        ifp->idev->cnf.dad_transmits *
-                                        max(NEIGH_VAR(ifp->idev->nd_parms, RETRANS_TIME), HZ/100) / HZ;
+IIRC, I've initially used the de4x5 driver on Alpha (UDB/Multia) or PPC
+(CHRP), but switched to the TULIP driver later (that was before the
+dc2104x/dc2114x driver split, hence a loooong time ago).
 
-	if (age >= ifp->prefered_lft - regen_advance) {
+Gr{oetje,eeting}s,
 
-'age', 'ifp->prefered_lft' and 'regen_advance' are unsigned, and it
-looks like 'regen_advance' is not constrained to be less then 'ifp-
->prefered_lft'. If that happens the condition will (allways) evaluate
-to false, there will be no temporary address regenaration,
-'regen_count' will be untouched and the temporary address will never
-expire...
+ 						Geert
 
-... unless I missed something relevant, which is totally possible ;)
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Otherwise I think we need to explicitly handle the 'regen_advance >
-ifp->prefered_lft' condition possibly with something alike:
-
-	unsigned long regen_advance = ifp->idev->cnf.regen_max_retry * //...
-	
-	regen_adavance = min(regen_advance, ifp->prefered_lft);
-	if (age >= ifp->prefered_lft - regen_advance) { //...
-
-Thanks,
-
-Paolo
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+ 							    -- Linus Torvalds
