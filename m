@@ -2,87 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC99534864
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 03:53:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E3E4534898
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 04:07:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343720AbiEZBxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 21:53:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36436 "EHLO
+        id S1344428AbiEZCHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 22:07:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235094AbiEZBxv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 21:53:51 -0400
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA9EA76E9;
-        Wed, 25 May 2022 18:53:50 -0700 (PDT)
-Received: by mail-ot1-f53.google.com with SMTP id g13-20020a9d6b0d000000b0060b13026e0dso139225otp.8;
-        Wed, 25 May 2022 18:53:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=m55NAQ/+DalgNWR3OXGbO7JhI+ga4RyvXmQjO8mq5mQ=;
-        b=rYL3y8yJdI9B6tpDipfQG8JtKDQDKmei/ngo2XHFXevlrqi64uSi6p4MVTmzV25kB4
-         370bkidqoAk+aM2Oj8p03+830TJNGWANQ1akF56ozlspNScemdlvO2s7pv5SV0kEevbj
-         uXBzmRhKwD60dL+XPwKwOdUAR+rpT/+J+s5EWn57nbvu8S1z3QCtgQtHdpa4WD44/oOz
-         Jm/bPpnxJI2BiZXuBnNRl5841vcvWKh0Yolo/EbGS7geSPEpLj/+lI57CMBfg1wUm7ge
-         Am9rX976PYnft4C7gSEpJyK4SOH//Ehifr4hBsDUt8YrHB52OtkNq2iRD7VmECVuRXP9
-         2x0w==
-X-Gm-Message-State: AOAM53077bXn4pyEWeZeutwSVBYvQ1HrgHLoFGNUlioBuGw8F1gfAcof
-        3SfYHoAANyNzclWMWmFrCw==
-X-Google-Smtp-Source: ABdhPJxUECrPKk1zVsVzwxw4o4izk5MQHkys50u0beDZYTdqa/G5za3LI8m4qnzvCPli/b7OAfXPcw==
-X-Received: by 2002:a9d:5506:0:b0:60b:1f4c:85b5 with SMTP id l6-20020a9d5506000000b0060b1f4c85b5mr5483048oth.174.1653530029455;
-        Wed, 25 May 2022 18:53:49 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id f18-20020a9d7b52000000b0060603221262sm117879oto.50.2022.05.25.18.53.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 18:53:48 -0700 (PDT)
-Received: (nullmailer pid 2890783 invoked by uid 1000);
-        Thu, 26 May 2022 01:53:47 -0000
-Date:   Wed, 25 May 2022 20:53:47 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Josua Mayer <josua@solid-run.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] dt-bindings: net: adin: Fix adi,phy-output-clock
- description syntax
-Message-ID: <20220526015347.GA2890726-robh@kernel.org>
-References: <6fcef2665a6cd86a021509a84c5956ec2efd93ed.1653401420.git.geert+renesas@glider.be>
+        with ESMTP id S232001AbiEZCHi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 22:07:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A017FD05;
+        Wed, 25 May 2022 19:07:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37395B81EC8;
+        Thu, 26 May 2022 02:07:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A98BCC385B8;
+        Thu, 26 May 2022 02:07:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653530855;
+        bh=VdNXFge3R6+PIbAtpUi/5xR8rIBIMY61yBeKFaaaSKw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cQmQCt6S9XdBnxaw3pDXAqZ2BFdk76fv4hAVYSZDCou76a/QIy/BFG77JMa7ECMAE
+         ZeEKiaXmhLC3C4WTGg4K+YveQ/VrD0xwZo0Wtj8ZtB9X9QOaoo02r2C+JQ6nW2RGx6
+         XsMJ8rtOYSxyu8UkCKswS1llmnVj+xtiUfcgCPIT67O8s06PBIvcWvip07kFi/buv+
+         u1eNsReJzgNirqkqvpWjZoRoktESJOrzplQBS+qaOiqn5qSVNnA0jGMXFKIJt+P5o4
+         9USmMys2yNvwGNPIlkXjVtk//Sw9H9YfVxdnIsg8ex/e7/vFcUSJBK96G8U4ciHuoG
+         flhRDAS7yynbQ==
+Date:   Wed, 25 May 2022 19:07:33 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     johannes.berg@intel.com, gregory.greenman@intel.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] iwlwifi: pcie: Rename the CAUSE() macro
+Message-ID: <20220525190733.37b08dc8@kernel.org>
+In-Reply-To: <20220526004434.1160267-1-festevam@gmail.com>
+References: <20220526004434.1160267-1-festevam@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6fcef2665a6cd86a021509a84c5956ec2efd93ed.1653401420.git.geert+renesas@glider.be>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 24 May 2022 16:11:53 +0200, Geert Uytterhoeven wrote:
-> "make dt_binding_check":
+On Wed, 25 May 2022 21:44:34 -0300 Fabio Estevam wrote:
+> arch/mips/include/uapi/asm/ptrace.h already defines CAUSE, which
+> causes a name clash:
 > 
->     Documentation/devicetree/bindings/net/adi,adin.yaml:40:77: [error] syntax error: mapping values are not allowed here (syntax)
+> drivers/net/wireless/intel/iwlwifi/pcie/trans.c:1093: warning: "CAUSE" redefined
 > 
-> The first line of the description ends with a colon, hence the block
-> needs to be marked with a "|".
-> 
-> Fixes: 1f77204e11f8b9e5 ("dt-bindings: net: adin: document phy clock output properties")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  Documentation/devicetree/bindings/net/adi,adin.yaml | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
+> Fix the problem by renaming it to IWLWIFI_CAUSE().
 
-Acked-by: Rob Herring <robh@kernel.org>
+https://lore.kernel.org/all/20220523220300.682be2029361.I283200b18da589a975a284073dca8ed001ee107a@changeid/
