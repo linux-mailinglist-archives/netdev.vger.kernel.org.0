@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3EE2535591
+	by mail.lfdr.de (Postfix) with ESMTP id 78017535590
 	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 23:36:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349146AbiEZVf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 17:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53584 "EHLO
+        id S232241AbiEZVgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 17:36:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239426AbiEZVfz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 17:35:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D31E64C8;
-        Thu, 26 May 2022 14:35:53 -0700 (PDT)
+        with ESMTP id S1349139AbiEZVf6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 17:35:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 828A9E2770;
+        Thu, 26 May 2022 14:35:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C8FCFB82208;
-        Thu, 26 May 2022 21:35:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6FF2C34116;
-        Thu, 26 May 2022 21:35:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F070561B9F;
+        Thu, 26 May 2022 21:35:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9393C34113;
+        Thu, 26 May 2022 21:35:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653600950;
-        bh=mqF8jilsCws+g9Zxa8PAKLUjKcoZ29u8HpwxolUv1LM=;
+        s=k20201202; t=1653600954;
+        bh=48We6qG1H0Lampl10l/ZCWya5IW2jF018MmP42l9VbE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xk5p1Rx4Ia8G6b+1VoVvU88Q4hlFaq4LKttOOwhvfD15q1MsCYkwPcMcz+D/lOSqa
-         QzGOShG5QaKCMYXu5bYsIRITQACgGpukxdQ3AqEyy/MtOP6isC76vxqIRudc6MAfEl
-         kYi63413IL4yxjPbA7h3aZUpmtJSdoTwp1dcNSCxJVbUZa6XyqYmddCTROuoBTOThx
-         GYekzTP3AZVuZmsJWrHYzaoAUyKpiLrH22nuTmY3SJdFG0afbCwFyxgzzXWacvYBlA
-         EWGEv4gt+G0R541U7/keKeY/ZLxTSGl5iAEkD/C61HoRXaUz6YWo700OE7PsULSJaq
-         rvBAOh9D8gxtw==
+        b=B6VkfIhgODdm0i5Wn1amHTxV8ZtA67Jz7EU82dbifZaw2wA4Q/r8kqd25w8AJotPc
+         OkTnc2JUNOr8xFPap3ovwyKiklCzjuLwgxivgqmugvjj2ewhftAFEBCLfqpWAnNdlk
+         mTyFlCy65B0TCqDGU607FS2xfdpQ6nyosj7fAp114JgD1nbZ/9mfJBQuNUVIQ4S9We
+         Z2eZ3JxOodgprlwsSeYVW3FpPkHp23+teYOpmJRjrDWWlCoT2tcBdfeVthhBgnJklG
+         Rhs0qHVYLH6+FvMDoCps+jMwbbyuSnFRvG6aoyS3jJMXSA2HQ8auxBYDqjWdKu4vP5
+         oiSvZ0Ld2mEMg==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
@@ -39,9 +39,9 @@ Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         fw@strlen.de, netfilter-devel@vger.kernel.org,
         lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
         memxor@gmail.com, yhs@fb.com
-Subject: [PATCH v4 bpf-next 06/14] bpf: Whitelist some fields in nf_conn for BPF_WRITE
-Date:   Thu, 26 May 2022 23:34:54 +0200
-Message-Id: <2954ab26de09afeecf3a56ba93624f9629072102.1653600578.git.lorenzo@kernel.org>
+Subject: [PATCH v4 bpf-next 07/14] bpf: Define acquire-release pairs for kfuncs
+Date:   Thu, 26 May 2022 23:34:55 +0200
+Message-Id: <0d951f5f56365c4f8a7b2ed8951d997b7bc696ef.1653600578.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <cover.1653600577.git.lorenzo@kernel.org>
 References: <cover.1653600577.git.lorenzo@kernel.org>
@@ -59,272 +59,305 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
-Since we want to allow user to set some fields in nf_conn after it is
-allocated but before it is inserted, we can permit BPF_WRITE for normal
-nf_conn, and then mark return value as read only on insert, preventing
-further BPF_WRITE. This way, nf_conn can be written to using normal
-BPF instructions after allocation, but not after insertion.
+Introduce support for specifying pairings of acquire release kfuncs, so
+that when there are multiple candidates that may produce the same type
+of referenced PTR_TO_BTF_ID, it is clear which ones are allowed and
+which ones are not. This is an additional check performed after the
+typical type checks kfuncs are subjected to.
 
-Note that we special nf_conn a bit here, inside the btf_struct_access
-callback for XDP and TC programs. Since this is the only struct for
-these programs requiring such adjustments, making this mechanism
-more generic has been left as an exercise for a future patch adding
-custom callbacks for more structs.
+This is needed because we want to prevent bpf_ct_release for pointer
+obtained from bpf_xdp_ct_alloc, and only allow it to be passed to
+insert kfunc. Since bpf_ct_release takes const parameter, it can
+take rdonly and non-rdonly PTR_TO_BTF_ID. To avoid this confusion
+in case of multiple candidate release kfuncs, we can define a strict
+pairing between acquire and release kfuncs that will be checked and
+enforced only if defined. The only condition is that an acquire kfunc
+either has no mappings, or defines all possible mappings.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- include/linux/bpf.h                      | 12 ++---
- include/linux/filter.h                   |  3 ++
- include/net/netfilter/nf_conntrack_bpf.h |  5 +++
- kernel/bpf/verifier.c                    |  6 ++-
- net/core/filter.c                        | 28 ++++++++++++
- net/netfilter/nf_conntrack_bpf.c         | 56 +++++++++++++++++++++++-
- net/netfilter/nf_conntrack_core.c        |  2 +
- 7 files changed, 105 insertions(+), 7 deletions(-)
+ include/linux/bpf_verifier.h     |  1 +
+ include/linux/btf.h              | 11 ++++
+ kernel/bpf/btf.c                 | 99 +++++++++++++++++++++++++++++++-
+ kernel/bpf/verifier.c            | 17 +++++-
+ net/netfilter/nf_conntrack_bpf.c | 31 ++++++----
+ 5 files changed, 147 insertions(+), 12 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 49e3e7f4b0f9..bc5d8d0e63d1 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -640,6 +640,12 @@ struct bpf_prog_ops {
- 			union bpf_attr __user *uattr);
+diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+index e8439f6cbe57..fb87f9cfa41a 100644
+--- a/include/linux/bpf_verifier.h
++++ b/include/linux/bpf_verifier.h
+@@ -68,6 +68,7 @@ struct bpf_reg_state {
+ 		struct {
+ 			struct btf *btf;
+ 			u32 btf_id;
++			u32 acq_kfunc_btf_id;
+ 		};
+ 
+ 		u32 mem_size; /* for PTR_TO_MEM | PTR_TO_MEM_OR_NULL */
+diff --git a/include/linux/btf.h b/include/linux/btf.h
+index f8dc5f810b40..30977d7332c6 100644
+--- a/include/linux/btf.h
++++ b/include/linux/btf.h
+@@ -40,6 +40,8 @@ struct btf_kfunc_id_set {
+ 		};
+ 		struct btf_id_set *sets[BTF_KFUNC_TYPE_MAX];
+ 	};
++	u32 *acq_rel_pairs;
++	u32 acq_rel_pairs_cnt;
  };
  
-+typedef int (*btf_struct_access_t)(struct bpf_verifier_log *log,
-+				   const struct btf *btf,
-+				   const struct btf_type *t, int off, int size,
-+				   enum bpf_access_type atype, u32 *next_btf_id,
-+				   enum bpf_type_flag *flag);
-+
- struct bpf_verifier_ops {
- 	/* return eBPF function prototype for verification */
- 	const struct bpf_func_proto *
-@@ -660,11 +666,7 @@ struct bpf_verifier_ops {
- 				  const struct bpf_insn *src,
- 				  struct bpf_insn *dst,
- 				  struct bpf_prog *prog, u32 *target_size);
--	int (*btf_struct_access)(struct bpf_verifier_log *log,
--				 const struct btf *btf,
--				 const struct btf_type *t, int off, int size,
--				 enum bpf_access_type atype,
--				 u32 *next_btf_id, enum bpf_type_flag *flag);
-+	btf_struct_access_t btf_struct_access;
- };
- 
- struct bpf_prog_offload_ops {
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index ed0c0ff42ad5..95cbf9b28927 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -1389,6 +1389,9 @@ struct bpf_sk_lookup_kern {
- 
- extern struct static_key_false bpf_sk_lookup_enabled;
- 
-+extern btf_struct_access_t nf_conn_btf_struct_access;
-+extern struct mutex nf_conn_btf_struct_access_mtx;
-+
- /* Runners for BPF_SK_LOOKUP programs to invoke on socket lookup.
-  *
-  * Allowed return values for a BPF SK_LOOKUP program are SK_PASS and
-diff --git a/include/net/netfilter/nf_conntrack_bpf.h b/include/net/netfilter/nf_conntrack_bpf.h
-index a473b56842c5..15c027549250 100644
---- a/include/net/netfilter/nf_conntrack_bpf.h
-+++ b/include/net/netfilter/nf_conntrack_bpf.h
-@@ -10,6 +10,7 @@
-     (IS_MODULE(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))
- 
- extern int register_nf_conntrack_bpf(void);
-+extern void unregister_nf_conntrack_bpf(void);
- 
- #else
- 
-@@ -18,6 +19,10 @@ static inline int register_nf_conntrack_bpf(void)
- 	return 0;
+ struct btf_id_dtor_kfunc {
+@@ -382,6 +384,9 @@ struct btf *bpf_prog_get_target_btf(const struct bpf_prog *prog);
+ bool btf_kfunc_id_set_contains(const struct btf *btf,
+ 			       enum bpf_prog_type prog_type,
+ 			       enum btf_kfunc_type type, u32 kfunc_btf_id);
++int btf_kfunc_match_acq_rel_pair(const struct btf *btf,
++				 enum bpf_prog_type prog_type,
++				 u32 acq_kfunc_btf_id, u32 rel_kfunc_btf_id);
+ int register_btf_kfunc_id_set(enum bpf_prog_type prog_type,
+ 			      const struct btf_kfunc_id_set *s);
+ s32 btf_find_dtor_kfunc(struct btf *btf, u32 btf_id);
+@@ -405,6 +410,12 @@ static inline bool btf_kfunc_id_set_contains(const struct btf *btf,
+ {
+ 	return false;
  }
- 
-+static inline void unregister_nf_conntrack_bpf(void)
++static inline int btf_kfunc_match_acq_rel_pair(const struct btf *btf,
++					       enum bpf_prog_type prog_type,
++					       u32 acq_kfunc_btf_id, u32 rel_kfunc_btf_id)
 +{
++	return 0;
 +}
-+
- #endif
+ static inline int register_btf_kfunc_id_set(enum bpf_prog_type prog_type,
+ 					    const struct btf_kfunc_id_set *s)
+ {
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 9b9fbb43c417..456ba6120aa8 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -214,6 +214,7 @@ enum {
  
- #endif /* _NF_CONNTRACK_BPF_H */
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 9b8962e6bc14..8cc754d83521 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -13342,6 +13342,7 @@ static int convert_ctx_accesses(struct bpf_verifier_env *env)
+ struct btf_kfunc_set_tab {
+ 	struct btf_id_set *sets[BTF_KFUNC_HOOK_MAX][BTF_KFUNC_TYPE_MAX];
++	struct btf_id_set *acq_rel_pairs[BTF_KFUNC_HOOK_MAX];
+ };
  
- 	for (i = 0; i < insn_cnt; i++, insn++) {
- 		bpf_convert_ctx_access_t convert_ctx_access;
-+		enum bpf_prog_type prog_type;
- 		bool ctx_access;
+ struct btf_id_dtor_kfunc_tab {
+@@ -1595,6 +1596,7 @@ static void btf_free_kfunc_set_tab(struct btf *btf)
+ 	for (hook = 0; hook < ARRAY_SIZE(tab->sets); hook++) {
+ 		for (type = 0; type < ARRAY_SIZE(tab->sets[0]); type++)
+ 			kfree(tab->sets[hook][type]);
++		kfree(tab->acq_rel_pairs[hook]);
+ 	}
+ free_tab:
+ 	kfree(tab);
+@@ -6226,7 +6228,7 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
  
- 		if (insn->code == (BPF_LDX | BPF_MEM | BPF_B) ||
-@@ -13385,6 +13386,7 @@ static int convert_ctx_accesses(struct bpf_verifier_env *env)
- 		if (!ctx_access)
- 			continue;
- 
-+		prog_type = resolve_prog_type(env->prog);
- 		switch ((int)env->insn_aux_data[i + delta].ptr_type) {
- 		case PTR_TO_CTX:
- 			if (!ops->convert_ctx_access)
-@@ -13409,7 +13411,9 @@ static int convert_ctx_accesses(struct bpf_verifier_env *env)
- 				insn->code = BPF_LDX | BPF_PROBE_MEM |
- 					BPF_SIZE((insn)->code);
- 				env->prog->aux->num_exentries++;
--			} else if (resolve_prog_type(env->prog) != BPF_PROG_TYPE_STRUCT_OPS) {
-+			} else if (prog_type != BPF_PROG_TYPE_STRUCT_OPS &&
-+				   prog_type != BPF_PROG_TYPE_XDP &&
-+				   prog_type != BPF_PROG_TYPE_SCHED_CLS) {
- 				verbose(env, "Writes through BTF pointers are not allowed\n");
- 				return -EINVAL;
- 			}
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 5af58eb48587..bacc39eb9526 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -10453,6 +10453,32 @@ static u32 sk_msg_convert_ctx_access(enum bpf_access_type type,
- 	return insn - insn_buf;
+ 			if (base_type(reg->type) == PTR_TO_BTF_ID) {
+ 				if ((reg->type & MEM_RDONLY) && !is_ref_t_const) {
+-					bpf_log(log, "cannot pass read only pointer to arg#%d", i);
++					bpf_log(log, "cannot pass read only pointer to arg#%d\n", i);
+ 					return -EINVAL;
+ 				}
+ 				reg_btf = reg->btf;
+@@ -7119,6 +7121,55 @@ static int btf_populate_kfunc_set(struct btf *btf, enum btf_kfunc_hook hook,
+ 	return ret;
  }
  
-+btf_struct_access_t nf_conn_btf_struct_access;
-+/* Protects nf_conn_btf_struct_access */
-+DEFINE_MUTEX(nf_conn_btf_struct_access_mtx);
-+
-+static int xdp_tc_btf_struct_access(struct bpf_verifier_log *log,
-+				    const struct btf *btf,
-+				    const struct btf_type *t, int off, int size,
-+				    enum bpf_access_type atype,
-+				    u32 *next_btf_id, enum bpf_type_flag *flag)
++static int btf_populate_kfunc_acq_rel_pairs(struct btf *btf, enum btf_kfunc_hook hook,
++					    const struct btf_kfunc_id_set *kset)
 +{
++	struct btf_kfunc_set_tab *tab;
++	struct btf_id_set *pairs;
++	u32 cnt;
 +	int ret;
 +
-+	if (atype == BPF_READ || !READ_ONCE(nf_conn_btf_struct_access))
++	if (hook >= BTF_KFUNC_HOOK_MAX || (kset->acq_rel_pairs_cnt & 1)) {
++		ret = -EINVAL;
 +		goto end;
-+	mutex_lock(&nf_conn_btf_struct_access_mtx);
-+	if (!nf_conn_btf_struct_access)
-+		goto end_unlock;
-+	ret = nf_conn_btf_struct_access(log, btf, t, off, size, atype, next_btf_id, flag);
-+	mutex_unlock(&nf_conn_btf_struct_access_mtx);
-+	return ret;
-+end_unlock:
-+	mutex_unlock(&nf_conn_btf_struct_access_mtx);
++	}
++
++	tab = btf->kfunc_set_tab;
++	pairs = tab->acq_rel_pairs[hook];
++	/* Only one call allowed for modules */
++	if (WARN_ON_ONCE(pairs && btf_is_module(btf))) {
++		ret = -EINVAL;
++		goto end;
++	}
++
++	cnt = pairs ? pairs->cnt : 0;
++	if (cnt > U32_MAX - kset->acq_rel_pairs_cnt) {
++		ret = -EOVERFLOW;
++		goto end;
++	}
++
++	pairs = krealloc(tab->acq_rel_pairs[hook],
++			 offsetof(struct btf_id_set, ids[cnt + kset->acq_rel_pairs_cnt]),
++			 GFP_KERNEL | __GFP_NOWARN);
++	if (!pairs) {
++		ret = -ENOMEM;
++		goto end;
++	}
++
++	if (!tab->acq_rel_pairs[hook])
++		pairs->cnt = 0;
++	tab->acq_rel_pairs[hook] = pairs;
++
++	memcpy(pairs->ids + pairs->cnt, kset->acq_rel_pairs,
++	       kset->acq_rel_pairs_cnt * sizeof(pairs->ids[0]));
++	pairs->cnt += kset->acq_rel_pairs_cnt;
++
++	return 0;
 +end:
-+	return btf_struct_access(log, btf, t, off, size, atype, next_btf_id, flag);
++	btf_free_kfunc_set_tab(btf);
++	return ret;
 +}
 +
- const struct bpf_verifier_ops sk_filter_verifier_ops = {
- 	.get_func_proto		= sk_filter_func_proto,
- 	.is_valid_access	= sk_filter_is_valid_access,
-@@ -10470,6 +10496,7 @@ const struct bpf_verifier_ops tc_cls_act_verifier_ops = {
- 	.convert_ctx_access	= tc_cls_act_convert_ctx_access,
- 	.gen_prologue		= tc_cls_act_prologue,
- 	.gen_ld_abs		= bpf_gen_ld_abs,
-+	.btf_struct_access	= xdp_tc_btf_struct_access,
- };
+ static bool __btf_kfunc_id_set_contains(const struct btf *btf,
+ 					enum btf_kfunc_hook hook,
+ 					enum btf_kfunc_type type,
+@@ -7171,6 +7222,51 @@ bool btf_kfunc_id_set_contains(const struct btf *btf,
+ 	return __btf_kfunc_id_set_contains(btf, hook, type, kfunc_btf_id);
+ }
  
- const struct bpf_prog_ops tc_cls_act_prog_ops = {
-@@ -10481,6 +10508,7 @@ const struct bpf_verifier_ops xdp_verifier_ops = {
- 	.is_valid_access	= xdp_is_valid_access,
- 	.convert_ctx_access	= xdp_convert_ctx_access,
- 	.gen_prologue		= bpf_noop_prologue,
-+	.btf_struct_access	= xdp_tc_btf_struct_access,
- };
- 
- const struct bpf_prog_ops xdp_prog_ops = {
-diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
-index 195ec68d309d..fbf58eb74c79 100644
---- a/net/netfilter/nf_conntrack_bpf.c
-+++ b/net/netfilter/nf_conntrack_bpf.c
-@@ -9,7 +9,9 @@
- #include <linux/bpf.h>
- #include <linux/btf.h>
- #include <linux/types.h>
-+#include <linux/filter.h>
- #include <linux/btf_ids.h>
-+#include <linux/bpf_verifier.h>
- #include <linux/net_namespace.h>
- #include <net/netfilter/nf_conntrack.h>
- #include <net/netfilter/nf_conntrack_bpf.h>
-@@ -257,10 +259,62 @@ static const struct btf_kfunc_id_set nf_conntrack_tc_kfunc_set = {
- 	.ret_null_set = &nf_ct_ret_null_kfunc_ids,
- };
- 
-+BTF_ID_LIST_SINGLE(nf_conn_btf_id, struct, nf_conn)
-+
-+static int nf_conn_bpf_btf_struct_access(struct bpf_verifier_log *log,
-+					 const struct btf *btf,
-+					 const struct btf_type *t, int off,
-+					 int size, enum bpf_access_type atype,
-+					 u32 *next_btf_id,
-+					 enum bpf_type_flag *flag)
++/* If no mapping exists, just rely on argument matching. Otherwise even if one
++ * mapping exists for acq_kfunc_btf_id, we fail on not finding a matching pair.
++ * Hence, an acquire kfunc either has 0 mappings, or N mappings. In case of 0
++ * mappings, only rely on the result of argument matches. In case of N mappings,
++ * always check for a mapping between the acquire and release function, and fail
++ * on not finding a match.
++ */
++int btf_kfunc_match_acq_rel_pair(const struct btf *btf,
++				 enum bpf_prog_type prog_type,
++				 u32 acq_kfunc_btf_id, u32 rel_kfunc_btf_id)
 +{
-+	const struct btf_type *nf_conn_t;
-+	size_t end;
++	struct btf_kfunc_set_tab *tab = btf->kfunc_set_tab;
++	enum btf_kfunc_hook hook;
++	struct btf_id_set *pairs;
++	bool was_seen = false;
++	u32 i;
 +
-+	WARN_ON_ONCE(atype != BPF_WRITE);
-+
-+	nf_conn_t = btf_type_by_id(btf, nf_conn_btf_id[0]);
-+	if (!nf_conn_t || nf_conn_t != t) {
-+		bpf_log(log, "only read is supported");
-+		return -EACCES;
++	if (!acq_kfunc_btf_id)
++		return 0;
++	hook = bpf_prog_type_to_kfunc_hook(prog_type);
++	if (hook >= BTF_KFUNC_HOOK_MAX)
++		return -EINVAL;
++	if (WARN_ON_ONCE(!tab))
++		return -EFAULT;
++	pairs = tab->acq_rel_pairs[hook];
++	if (!pairs)
++		return 0;
++	for (i = 0; i < pairs->cnt; i += 2) {
++		if (pairs->ids[i] == acq_kfunc_btf_id) {
++			was_seen = true;
++			if (pairs->ids[i + 1] == rel_kfunc_btf_id)
++				return 0;
++		}
 +	}
-+
-+	switch (off) {
-+	case offsetof(struct nf_conn, status):
-+		end = offsetofend(struct nf_conn, status);
-+		break;
-+	default:
-+		bpf_log(log, "no write support to nf_conn at off %d\n", off);
-+		return -EACCES;
-+	}
-+
-+	if (off + size > end) {
-+		bpf_log(log,
-+			"write access at off %d with size %d beyond the member of nf_conn ended at %zu\n",
-+			off, size, end);
-+		return -EACCES;
-+	}
-+
-+	return NOT_INIT;
-+}
-+
- int register_nf_conntrack_bpf(void)
- {
- 	int ret;
- 
- 	ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_XDP, &nf_conntrack_xdp_kfunc_set);
--	return ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS, &nf_conntrack_tc_kfunc_set);
-+	ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS, &nf_conntrack_tc_kfunc_set);
-+	if (ret < 0)
-+		return ret;
-+	mutex_lock(&nf_conn_btf_struct_access_mtx);
-+	nf_conn_btf_struct_access = nf_conn_bpf_btf_struct_access;
-+	mutex_unlock(&nf_conn_btf_struct_access_mtx);
++	/* There are some mappings for this acq_kfunc_btf_id, but none that
++	 * matched this pair.
++	 */
++	if (was_seen)
++		return -ENOENT;
++	/* There are no mappings for this acq_kfunc_btf_id, just rely on
++	 * argument matching.
++	 */
 +	return 0;
 +}
 +
-+void unregister_nf_conntrack_bpf(void)
-+{
-+	mutex_lock(&nf_conn_btf_struct_access_mtx);
-+	nf_conn_btf_struct_access = NULL;
-+	mutex_unlock(&nf_conn_btf_struct_access_mtx);
- }
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 082a2fd8d85b..91f890972f9e 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -2497,6 +2497,8 @@ void nf_conntrack_cleanup_start(void)
+ /* This function must be invoked only from initcalls/module init functions */
+ int register_btf_kfunc_id_set(enum bpf_prog_type prog_type,
+ 			      const struct btf_kfunc_id_set *kset)
+@@ -7196,6 +7292,7 @@ int register_btf_kfunc_id_set(enum bpf_prog_type prog_type,
  
- void nf_conntrack_cleanup_end(void)
- {
-+	unregister_nf_conntrack_bpf();
+ 	hook = bpf_prog_type_to_kfunc_hook(prog_type);
+ 	ret = btf_populate_kfunc_set(btf, hook, kset);
++	ret = ret ?: btf_populate_kfunc_acq_rel_pairs(btf, hook, kset);
+ 	btf_put(btf);
+ 	return ret;
+ }
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 8cc754d83521..cd8bf00a657f 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -7532,7 +7532,21 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+ 	 * PTR_TO_BTF_ID back from btf_check_kfunc_arg_match, do the release now
+ 	 */
+ 	if (err) {
+-		err = release_reference(env, regs[err].ref_obj_id);
++		int regno = err;
 +
- 	RCU_INIT_POINTER(nf_ct_hook, NULL);
- 	cancel_delayed_work_sync(&conntrack_gc_work.dwork);
- 	kvfree(nf_conntrack_hash);
++		if (regs[regno].acq_kfunc_btf_id && desc_btf != regs[regno].btf) {
++			verbose(env, "verifier internal error: acquire and release kfunc BTF must match");
++			return -EFAULT;
++		}
++		err = btf_kfunc_match_acq_rel_pair(desc_btf, resolve_prog_type(env->prog),
++						   regs[regno].acq_kfunc_btf_id, func_id);
++		if (err) {
++			if (err == -ENOENT)
++				verbose(env, "kfunc %s#%d not permitted to release reference\n",
++					func_name, func_id);
++			return err;
++		}
++		err = release_reference(env, regs[regno].ref_obj_id);
+ 		if (err) {
+ 			verbose(env, "kfunc %s#%d reference has not been acquired before\n",
+ 				func_name, func_id);
+@@ -7592,6 +7606,7 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+ 				return id;
+ 			regs[BPF_REG_0].id = id;
+ 			regs[BPF_REG_0].ref_obj_id = id;
++			regs[BPF_REG_0].acq_kfunc_btf_id = func_id;
+ 		}
+ 	} /* else { add_kfunc_call() ensures it is btf_type_is_void(t) } */
+ 
+diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
+index fbf58eb74c79..5169405dd9d1 100644
+--- a/net/netfilter/nf_conntrack_bpf.c
++++ b/net/netfilter/nf_conntrack_bpf.c
+@@ -243,20 +243,31 @@ BTF_SET_END(nf_ct_release_kfunc_ids)
+ /* Both sets are identical */
+ #define nf_ct_ret_null_kfunc_ids nf_ct_acquire_kfunc_ids
+ 
++BTF_ID_LIST(nf_ct_acq_rel_pairs)
++BTF_ID(func, bpf_xdp_ct_lookup)
++BTF_ID(func, bpf_ct_release)
++
++BTF_ID(func, bpf_skb_ct_lookup)
++BTF_ID(func, bpf_ct_release)
++
+ static const struct btf_kfunc_id_set nf_conntrack_xdp_kfunc_set = {
+-	.owner        = THIS_MODULE,
+-	.check_set    = &nf_ct_xdp_check_kfunc_ids,
+-	.acquire_set  = &nf_ct_acquire_kfunc_ids,
+-	.release_set  = &nf_ct_release_kfunc_ids,
+-	.ret_null_set = &nf_ct_ret_null_kfunc_ids,
++	.owner             = THIS_MODULE,
++	.check_set         = &nf_ct_xdp_check_kfunc_ids,
++	.acquire_set       = &nf_ct_acquire_kfunc_ids,
++	.release_set       = &nf_ct_release_kfunc_ids,
++	.ret_null_set      = &nf_ct_ret_null_kfunc_ids,
++	.acq_rel_pairs     = nf_ct_acq_rel_pairs,
++	.acq_rel_pairs_cnt = 10,
+ };
+ 
+ static const struct btf_kfunc_id_set nf_conntrack_tc_kfunc_set = {
+-	.owner        = THIS_MODULE,
+-	.check_set    = &nf_ct_tc_check_kfunc_ids,
+-	.acquire_set  = &nf_ct_acquire_kfunc_ids,
+-	.release_set  = &nf_ct_release_kfunc_ids,
+-	.ret_null_set = &nf_ct_ret_null_kfunc_ids,
++	.owner             = THIS_MODULE,
++	.check_set         = &nf_ct_tc_check_kfunc_ids,
++	.acquire_set       = &nf_ct_acquire_kfunc_ids,
++	.release_set       = &nf_ct_release_kfunc_ids,
++	.ret_null_set      = &nf_ct_ret_null_kfunc_ids,
++	.acq_rel_pairs     = nf_ct_acq_rel_pairs,
++	.acq_rel_pairs_cnt = 10,
+ };
+ 
+ BTF_ID_LIST_SINGLE(nf_conn_btf_id, struct, nf_conn)
 -- 
 2.35.3
 
