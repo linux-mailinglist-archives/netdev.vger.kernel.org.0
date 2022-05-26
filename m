@@ -2,294 +2,376 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B217534D5B
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 12:34:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBEFA534D5C
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 12:35:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346630AbiEZKet (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 06:34:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53958 "EHLO
+        id S1346966AbiEZKfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 06:35:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241953AbiEZKer (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 06:34:47 -0400
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA6CCC16C
-        for <netdev@vger.kernel.org>; Thu, 26 May 2022 03:34:46 -0700 (PDT)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220526103442euoutp010a3336131b0683ba2087587c48fe969e~yoTnJ_qSq3174331743euoutp01I
-        for <netdev@vger.kernel.org>; Thu, 26 May 2022 10:34:42 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220526103442euoutp010a3336131b0683ba2087587c48fe969e~yoTnJ_qSq3174331743euoutp01I
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1653561282;
-        bh=oOj0KQk1xU/k17SS2yM6mKwI+S1ERvO9x6+c0kti3UI=;
-        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-        b=G/AyPSRGev/fG2gkBPykEV9Tyso2qqZCVPJ7ZgWzBDeiGUcGKXSnAJsmL/mtDE5OT
-         ZZsssWMXVxVpxG9mSfP8Z/jqe0NtjS43HMYQUwkWd7Ljw4/XlsmDyzwkp7UIENjOFn
-         dU1OnWOeu2casiUMXKgjMNj3jsd5o5cHNiDba7Nw=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20220526103442eucas1p1392a6aa42b3924a2a66843784f3c3274~yoTmq92fX2658826588eucas1p1J;
-        Thu, 26 May 2022 10:34:42 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id 28.A0.09887.2C75F826; Thu, 26
-        May 2022 11:34:42 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220526103441eucas1p14f347b72295c50297061706cac9d54b9~yoTl_do-X0512705127eucas1p1a;
-        Thu, 26 May 2022 10:34:41 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220526103441eusmtrp141c0c30578b34d66bb9922e7dfe6b578~yoTl9cy5d1620816208eusmtrp1L;
-        Thu, 26 May 2022 10:34:41 +0000 (GMT)
-X-AuditID: cbfec7f4-45bff7000000269f-f0-628f57c22dff
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 11.6E.09404.1C75F826; Thu, 26
-        May 2022 11:34:41 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220526103440eusmtip198df46b735ffbadad23d4dd5fd5b1c66~yoTk3KvK30401304013eusmtip1F;
-        Thu, 26 May 2022 10:34:40 +0000 (GMT)
-Message-ID: <8d26c979-62ba-3263-2a13-3e872c535707@samsung.com>
-Date:   Thu, 26 May 2022 12:34:40 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
-        Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: [PATCH net] net: phy: Don't trigger state machine while in
- suspend
-Content-Language: en-US
-To:     Lukas Wunner <lukas@wunner.de>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230203AbiEZKfL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 06:35:11 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DAC864AE0B;
+        Thu, 26 May 2022 03:35:09 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7E9501684;
+        Thu, 26 May 2022 03:35:09 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.2.68])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3527B3F70D;
+        Thu, 26 May 2022 03:35:01 -0700 (PDT)
+Date:   Thu, 26 May 2022 11:34:56 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Xu Kuohai <xukuohai@huawei.com>
+Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        hpa@zytor.com, Shuah Khan <shuah@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Ferry Toth <fntoth@gmail.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-samsung-soc@vger.kernel.org
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <688f559346ea747d3b47a4d16ef8277e093f9ebe.1653556322.git.lukas@wunner.de>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0xbVRzHd+693D6ykkuBcQKExZqxzShsPpKzYVDMxJtlZrgsWyRELXDH
-        YIWS3pWhJoZ0A+EKDNiw2PAoMl51vDqejUxWsURrViqy0a74ADoYghXoYDicWu6m/Pf5/c73
-        e36/78kR4lIdGSpMzzrLqLLkChkpJnot67bnzCcvJu+7USpA1QUOAbJNmnF01+EkUbXtAoHc
-        likBelD7NYlsWg2OPvdU+SGbrVOARntL/dDMF00YqrJdx5C5chCgYa+BQHOzYegXO0cgi34H
-        4qZbSaTPdxNo1boA0PnleQw9LLeTr+6gx27Zcbp/8gqgu1sdGD2gmxTQfyy9Q+uNatpddklA
-        Gw1FJD3s+BXQA/0rGO160Ahoz/Vxknb8Po/Tf58fI+iO7nGCXjFGJEgTxS+nMor0HEYVHfue
-        +PSXbV4yeyE6t8e0AfLAtUgOiISQehE2D/bgHBALpVQLgCUeA8EXXgDLZi3Ap5JSKwDeqXjp
-        iaPINCvgRc0AOuvbSb5YAnC13IJxQCiUULFwuCHDZyCoXbBz4D7mYwkVAL/9bIbwcTCVDOt6
-        8/18HEi9BWsaajcZp0Kgc6YO890ZRF3B4EVuHPgKnGoh4JhRv6kiqf2QW+RIH4uoE7BmrULA
-        u3fCvsXqzUCQqhfD1ct2nN/7ECxZbwE8B8L5kW4Bz+HQeqmY8G0NKSX8q+oFvp0Lb/129bE1
-        Brpu/kn6JDi1F3aYovl2HHRMVOC80x9OLAbwG/jDil7t47YEFhZIeXUk1I20/zfzxugPeBmQ
-        6ba8im5Let2WLLr/5+oBYQAhjJrNTGPY57OYc1GsPJNVZ6VFpSgzjeDf72t9NOLtB83zS1Fm
-        gAmBGUAhLguSjLpLkqWSVPn7HzAq5bsqtYJhzSBMSMhCJCnpnXIplSY/y5xhmGxG9eQUE4pC
-        87BGDVlfPmSYDCemni1Otte9Vl1emBgTe3Th55VA9dGcvIxRZ9rlOGkB8dGFgPXi9AG59JTB
-        xSkb2wun4hVPdyVkN7wRvPemf/zQwzrRyOqPXYpU4Orb3n48MubRkbaeyuWQe9/sTImwdrVq
-        az/ZN37HLQqTc+FJmrui198Mu509rdlzWP5dR9O1/KimT50fa9tC5yLqo7dzrGat6CfvsC73
-        w42knIP3KNOJ26XTG7Kr6o6EpOUJz/d+2w6FBrL3h2xtu1TWrqmJweaDNSy+rEx8+9hX4qAD
-        C+LD2leO716rCF6Pq8T7BjPOnZrbE29W53kOnDlpCi4BT7lU3dvQEQ3EZQR7Wr7/GVzFyv8B
-        U+MB2S0EAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA01SfUwbZRzOe3e9azcbzwLjDRohjS6OxevHoHtB7BgxcozInDEu2ZTZbhdg
-        Ky32Y9mIf+DYdKuCfDgGTVfqWowUCNgVBsSR2JUqw1jqUrRIDTo6WN2GsE2ZLiClMeG/J/k9
-        X/nl4eOiXl4av0Jr5PRalUZMbiLGV76NvPjN/k/V0pXpJGT9MEyhQMSLo1vhKRJZA6cJFPX/
-        TqFl2zUSBS6cwtGlhVYeCgT6KDQxUM9Ds11fYKg1MIIh7/mrAPkeuAg0P/c0mgmaCeS3b0Hm
-        m50ksp+JEuiv8TsA1S7FMPRvY5DM38LemAzi7GDECVhPZxhjhywRiv1zsZS1u01stKGZYt2u
-        cyTrC/8G2KHB+xg7vdwB2IWREMmG78VwdrX2BsH2ekIEe9/97OuiA0yeXmcychnlOoPxZfFB
-        GZIzshzEyLNyGNmOne/kyrPFEmXeEU5TcZzTS5TvMuVf9zwgq+5ITvQPPwY14PJWMxDwIZ0F
-        zw3PUWawiS+iOwBsvRYkEodn4FhLDS+Bk+DjSTOZIC0A6HCH1hR8vpBWQp/jaJxD0M/DvqGH
-        WBwL6afgWNvsuk8KrYa2q10gjpPoffCiw7buidOpcGq2fZ2fTDsx6OzJj/vjdDcB+85fJxJh
-        nQB+9sFtKs4iaRk03423EPAF9Fvw4t9NVMJJAc39ZpDA6fDKXSveAESWDUUsGwItGySWDRI7
-        IFwgmTMZKssqDXLGoKo0mLRlzGFdpRusLWfA/8gzCDpji4wXYHzgBZCPi5OFE9E6tUh4RHWy
-        mtPrDulNGs7gBdlr32jE01IO69ampzUekimk2bIsRY40O0exQ5wqLKo6qxLRZSojd4zjqjj9
-        /zqML0irwRS9Htf8dR/mouTKyE2LZQDrqOg25u0ZByU/tvjekNIvjc3t9bV9359rXzzZ/UJG
-        MblruiLGKzCmNf+QgjmerF94pXh/aEYwzHz5q0KtTPpDXV1TsnLrq7OuYz7J3PTMgfckjqkT
-        z5VuHw/qzjTVCydNeMYnU5aPYyOouc4yubr7UUFhbbv/zX9Gi63aoqXv/K++5lRe8Oz5WdY+
-        XzD69ufbDxYWHrVHid3M3verj6dWt8maNPs++il6b3Mg1zbYCksat6rrnOkTS/7Qldu7rKfL
-        dmoMRHqRrbgrc1TqzzwFnhggt1nzNut7KHPe5UvRXzIfTiz7V0u7Gvqi21rye8WEoVwly8T1
-        BtV/RJ1m6sIDAAA=
-X-CMS-MailID: 20220526103441eucas1p14f347b72295c50297061706cac9d54b9
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20220526092819eucas1p2f05c11c571f47b0330e42d00b5d32b50
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220526092819eucas1p2f05c11c571f47b0330e42d00b5d32b50
-References: <CGME20220526092819eucas1p2f05c11c571f47b0330e42d00b5d32b50@eucas1p2.samsung.com>
-        <688f559346ea747d3b47a4d16ef8277e093f9ebe.1653556322.git.lukas@wunner.de>
-X-Spam-Status: No, score=-9.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Delyan Kratunov <delyank@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Subject: Re: [PATCH bpf-next v5 4/6] bpf, arm64: Impelment
+ bpf_arch_text_poke() for arm64
+Message-ID: <Yo9X0EKU03QbFZk+@FVFF77S0Q05N>
+References: <20220518131638.3401509-1-xukuohai@huawei.com>
+ <20220518131638.3401509-5-xukuohai@huawei.com>
+ <Yo441FR4mXpa2yNx@FVFF77S0Q05N>
+ <b99896a2-8d9e-d224-d5ba-24b917cdab5a@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b99896a2-8d9e-d224-d5ba-24b917cdab5a@huawei.com>
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Lukas,
+On Thu, May 26, 2022 at 05:45:30PM +0800, Xu Kuohai wrote:
+> On 5/25/2022 10:10 PM, Mark Rutland wrote:
+> > On Wed, May 18, 2022 at 09:16:36AM -0400, Xu Kuohai wrote:
+> >> Impelment bpf_arch_text_poke() for arm64, so bpf trampoline code can use
+> >> it to replace nop with jump, or replace jump with nop.
+> >>
+> >> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+> >> Acked-by: Song Liu <songliubraving@fb.com>
+> >> Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+> >> ---
+> >>  arch/arm64/net/bpf_jit.h      |   1 +
+> >>  arch/arm64/net/bpf_jit_comp.c | 107 +++++++++++++++++++++++++++++++---
+> >>  2 files changed, 99 insertions(+), 9 deletions(-)
+> >>
+> >> diff --git a/arch/arm64/net/bpf_jit.h b/arch/arm64/net/bpf_jit.h
+> >> index 194c95ccc1cf..1c4b0075a3e2 100644
+> >> --- a/arch/arm64/net/bpf_jit.h
+> >> +++ b/arch/arm64/net/bpf_jit.h
+> >> @@ -270,6 +270,7 @@
+> >>  #define A64_BTI_C  A64_HINT(AARCH64_INSN_HINT_BTIC)
+> >>  #define A64_BTI_J  A64_HINT(AARCH64_INSN_HINT_BTIJ)
+> >>  #define A64_BTI_JC A64_HINT(AARCH64_INSN_HINT_BTIJC)
+> >> +#define A64_NOP    A64_HINT(AARCH64_INSN_HINT_NOP)
+> >>  
+> >>  /* DMB */
+> >>  #define A64_DMB_ISH aarch64_insn_gen_dmb(AARCH64_INSN_MB_ISH)
+> >> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+> >> index 8ab4035dea27..5ce6ed5f42a1 100644
+> >> --- a/arch/arm64/net/bpf_jit_comp.c
+> >> +++ b/arch/arm64/net/bpf_jit_comp.c
+> >> @@ -9,6 +9,7 @@
+> >>  
+> >>  #include <linux/bitfield.h>
+> >>  #include <linux/bpf.h>
+> >> +#include <linux/memory.h>
+> >>  #include <linux/filter.h>
+> >>  #include <linux/printk.h>
+> >>  #include <linux/slab.h>
+> >> @@ -18,6 +19,7 @@
+> >>  #include <asm/cacheflush.h>
+> >>  #include <asm/debug-monitors.h>
+> >>  #include <asm/insn.h>
+> >> +#include <asm/patching.h>
+> >>  #include <asm/set_memory.h>
+> >>  
+> >>  #include "bpf_jit.h"
+> >> @@ -235,13 +237,13 @@ static bool is_lsi_offset(int offset, int scale)
+> >>  	return true;
+> >>  }
+> >>  
+> >> +#define BTI_INSNS (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL) ? 1 : 0)
+> >> +#define PAC_INSNS (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL) ? 1 : 0)
+> >> +
+> >>  /* Tail call offset to jump into */
+> >> -#if IS_ENABLED(CONFIG_ARM64_BTI_KERNEL) || \
+> >> -	IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL)
+> >> -#define PROLOGUE_OFFSET 9
+> >> -#else
+> >> -#define PROLOGUE_OFFSET 8
+> >> -#endif
+> >> +#define PROLOGUE_OFFSET	(BTI_INSNS + 2 + PAC_INSNS + 8)
+> >> +/* Offset of nop instruction in bpf prog entry to be poked */
+> >> +#define POKE_OFFSET	(BTI_INSNS + 1)
+> >>  
+> >>  static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+> >>  {
+> >> @@ -279,12 +281,15 @@ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+> >>  	 *
+> >>  	 */
+> >>  
+> >> +	if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
+> >> +		emit(A64_BTI_C, ctx);
+> >> +
+> >> +	emit(A64_MOV(1, A64_R(9), A64_LR), ctx);
+> >> +	emit(A64_NOP, ctx);
+> > 
+> > I take it the idea is to make this the same as the regular ftrace patch-site
+> > sequence, so that this can call the same trampoline(s) ?
+> > 
+> 
+> Yes, we can attach a bpf trampoline to bpf prog.
 
-On 26.05.2022 11:28, Lukas Wunner wrote:
-> Upon system sleep, mdio_bus_phy_suspend() stops the phy_state_machine(),
-> but subsequent interrupts may retrigger it:
->
-> They may have been left enabled to facilitate wakeup and are not
-> quiesced until the ->suspend_noirq() phase.  Unwanted interrupts may
-> hence occur between mdio_bus_phy_suspend() and dpm_suspend_noirq(),
-> as well as between dpm_resume_noirq() and mdio_bus_phy_resume().
->
-> Amend phy_interrupt() to avoid triggering the state machine if the PHY
-> is suspended.  Signal wakeup instead if the attached net_device or its
-> parent has been configured as a wakeup source.  (Those conditions are
-> identical to mdio_bus_phy_may_suspend().)  Postpone handling of the
-> interrupt until the PHY has resumed.
->
-> Before stopping the phy_state_machine() in mdio_bus_phy_suspend(),
-> wait for a concurrent phy_interrupt() to run to completion.  That is
-> necessary because phy_interrupt() may have checked the PHY's suspend
-> status before the system sleep transition commenced and it may thus
-> retrigger the state machine after it was stopped.
->
-> Likewise, after re-enabling interrupt handling in mdio_bus_phy_resume(),
-> wait for a concurrent phy_interrupt() to complete to ensure that
-> interrupts which it postponed are properly rerun.
->
-> Fixes: 1ce8b37241ed ("usbnet: smsc95xx: Forward PHY interrupts to PHY driver to avoid polling")
+Just to check, is the BPF trampoline *only* attached to BPF programs, or could
+that be attached to a regular ftrace patch-site?
 
-I'm not sure if this is a right commit here. It revealed the issue, but 
-it is not directly related to the net/phy code.
+I has assumed that the point of adding direct calls support was so that this
+could be called from regular ftrace patch sites, but your replies below on how
+the trampoline is protected imply that's not the case.
 
-> Link: https://lore.kernel.org/netdev/a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com/
-> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Signed-off-by: Lukas Wunner <lukas@wunner.de>
+> > If so, we need some commentary to that effect, and we need some comments in the
+> > ftrace code explaining that this needs to be kept in-sync.
+> > 
+> 
+> This is patched by bpf_arch_text_poke(), not ftrace.
 
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+I understood that, but if the idea is that the instruction sequence must match,
+then we need to make that clear. Otherwise changes to one side may break the
+other unexpectedly.
 
-> ---
->   drivers/net/phy/phy.c        | 23 +++++++++++++++++++++++
->   drivers/net/phy/phy_device.c | 23 +++++++++++++++++++++++
->   include/linux/phy.h          |  6 ++++++
->   3 files changed, 52 insertions(+)
->
-> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-> index ef62f357b76d..8d3ee3a6495b 100644
-> --- a/drivers/net/phy/phy.c
-> +++ b/drivers/net/phy/phy.c
-> @@ -31,6 +31,7 @@
->   #include <linux/io.h>
->   #include <linux/uaccess.h>
->   #include <linux/atomic.h>
-> +#include <linux/suspend.h>
->   #include <net/netlink.h>
->   #include <net/genetlink.h>
->   #include <net/sock.h>
-> @@ -976,6 +977,28 @@ static irqreturn_t phy_interrupt(int irq, void *phy_dat)
->   	struct phy_driver *drv = phydev->drv;
->   	irqreturn_t ret;
->   
-> +	/* Wakeup interrupts may occur during a system sleep transition.
-> +	 * Postpone handling until the PHY has resumed.
-> +	 */
-> +	if (IS_ENABLED(CONFIG_PM_SLEEP) && phydev->irq_suspended) {
-> +		struct net_device *netdev = phydev->attached_dev;
-> +
-> +		if (netdev) {
-> +			struct device *parent = netdev->dev.parent;
-> +
-> +			if (netdev->wol_enabled)
-> +				pm_system_wakeup();
-> +			else if (device_may_wakeup(&netdev->dev))
-> +				pm_wakeup_dev_event(&netdev->dev, 0, true);
-> +			else if (parent && device_may_wakeup(parent))
-> +				pm_wakeup_dev_event(parent, 0, true);
-> +		}
-> +
-> +		phydev->irq_rerun = 1;
-> +		disable_irq_nosync(irq);
-> +		return IRQ_HANDLED;
-> +	}
-> +
->   	mutex_lock(&phydev->lock);
->   	ret = drv->handle_interrupt(phydev);
->   	mutex_unlock(&phydev->lock);
-> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> index 431a8719c635..46acddd865a7 100644
-> --- a/drivers/net/phy/phy_device.c
-> +++ b/drivers/net/phy/phy_device.c
-> @@ -278,6 +278,15 @@ static __maybe_unused int mdio_bus_phy_suspend(struct device *dev)
->   	if (phydev->mac_managed_pm)
->   		return 0;
->   
-> +	/* Wakeup interrupts may occur during the system sleep transition when
-> +	 * the PHY is inaccessible. Set flag to postpone handling until the PHY
-> +	 * has resumed. Wait for concurrent interrupt handler to complete.
-> +	 */
-> +	if (phy_interrupt_is_valid(phydev)) {
-> +		phydev->irq_suspended = 1;
-> +		synchronize_irq(phydev->irq);
-> +	}
-> +
->   	/* We must stop the state machine manually, otherwise it stops out of
->   	 * control, possibly with the phydev->lock held. Upon resume, netdev
->   	 * may call phy routines that try to grab the same lock, and that may
-> @@ -315,6 +324,20 @@ static __maybe_unused int mdio_bus_phy_resume(struct device *dev)
->   	if (ret < 0)
->   		return ret;
->   no_resume:
-> +	if (phy_interrupt_is_valid(phydev)) {
-> +		phydev->irq_suspended = 0;
-> +		synchronize_irq(phydev->irq);
-> +
-> +		/* Rerun interrupts which were postponed by phy_interrupt()
-> +		 * because they occurred during the system sleep transition.
-> +		 */
-> +		if (phydev->irq_rerun) {
-> +			phydev->irq_rerun = 0;
-> +			enable_irq(phydev->irq);
-> +			irq_wake_thread(phydev->irq, phydev);
-> +		}
-> +	}
-> +
->   	if (phydev->attached_dev && phydev->adjust_link)
->   		phy_start_machine(phydev);
->   
-> diff --git a/include/linux/phy.h b/include/linux/phy.h
-> index 508f1149665b..b09f7d36cff2 100644
-> --- a/include/linux/phy.h
-> +++ b/include/linux/phy.h
-> @@ -572,6 +572,10 @@ struct macsec_ops;
->    * @mdix_ctrl: User setting of crossover
->    * @pma_extable: Cached value of PMA/PMD Extended Abilities Register
->    * @interrupts: Flag interrupts have been enabled
-> + * @irq_suspended: Flag indicating PHY is suspended and therefore interrupt
-> + *                 handling shall be postponed until PHY has resumed
-> + * @irq_rerun: Flag indicating interrupts occurred while PHY was suspended,
-> + *             requiring a rerun of the interrupt handler after resume
->    * @interface: enum phy_interface_t value
->    * @skb: Netlink message for cable diagnostics
->    * @nest: Netlink nest used for cable diagnostics
-> @@ -626,6 +630,8 @@ struct phy_device {
->   
->   	/* Interrupts are enabled */
->   	unsigned interrupts:1;
-> +	unsigned irq_suspended:1;
-> +	unsigned irq_rerun:1;
->   
->   	enum phy_state state;
->   
+> >> +
+> >>  	/* Sign lr */
+> >>  	if (IS_ENABLED(CONFIG_ARM64_PTR_AUTH_KERNEL))
+> >>  		emit(A64_PACIASP, ctx);
+> >> -	/* BTI landing pad */
+> >> -	else if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
+> >> -		emit(A64_BTI_C, ctx);
+> >>  
+> >>  	/* Save FP and LR registers to stay align with ARM64 AAPCS */
+> >>  	emit(A64_PUSH(A64_FP, A64_LR, A64_SP), ctx);
+> >> @@ -1529,3 +1534,87 @@ void bpf_jit_free_exec(void *addr)
+> >>  {
+> >>  	return vfree(addr);
+> >>  }
+> >> +
+> >> +static int gen_branch_or_nop(enum aarch64_insn_branch_type type, void *ip,
+> >> +			     void *addr, u32 *insn)
+> >> +{
+> >> +	if (!addr)
+> >> +		*insn = aarch64_insn_gen_nop();
+> >> +	else
+> >> +		*insn = aarch64_insn_gen_branch_imm((unsigned long)ip,
+> >> +						    (unsigned long)addr,
+> >> +						    type);
+> >> +
+> >> +	return *insn != AARCH64_BREAK_FAULT ? 0 : -EFAULT;
+> >> +}
+> >> +
+> >> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
+> >> +		       void *old_addr, void *new_addr)
+> >> +{
+> >> +	int ret;
+> >> +	u32 old_insn;
+> >> +	u32 new_insn;
+> >> +	u32 replaced;
+> >> +	unsigned long offset = ~0UL;
+> >> +	enum aarch64_insn_branch_type branch_type;
+> >> +	char namebuf[KSYM_NAME_LEN];
+> >> +
+> >> +	if (!__bpf_address_lookup((unsigned long)ip, NULL, &offset, namebuf))
+> >> +		/* Only poking bpf text is supported. Since kernel function
+> >> +		 * entry is set up by ftrace, we reply on ftrace to poke kernel
+> >> +		 * functions.
+> >> +		 */
+> >> +		return -EINVAL;
+> >> +
+> >> +	/* bpf entry */
+> >> +	if (offset == 0UL)
+> >> +		/* skip to the nop instruction in bpf prog entry:
+> >> +		 * bti c	// if BTI enabled
+> >> +		 * mov x9, x30
+> >> +		 * nop
+> >> +		 */
+> >> +		ip = ip + POKE_OFFSET * AARCH64_INSN_SIZE;
+> > 
+> > When is offset non-zero? is this ever called to patch other instructions, and
+> > could this ever be used to try to patch the BTI specifically?
+> 
+> bpf_arch_text_poke() is also called to patch other instructions, for
+> example, bpf_tramp_image_put() calls this to skip calling fexit bpf progs:
+> 
+> int err = bpf_arch_text_poke(im->ip_after_call, BPF_MOD_JUMP,
+>                              NULL, im->ip_epilogue);
+> 
+> 
+> Before this is called, a bpf trampoline looks like:
+> 
+> 	[...]
+> ip_after_call:
+> 	nop // to be patched
+> 	bl <fexit prog>
+> ip_epilogue:
+> 	bti j
+> 	[...]
+> 
+> After:
+> 	[...]
+> ip_after_call:
+> 	b <ip_epilogue> // patched
+> 	bl <fexit prog>
+> ip_epilogue:
+> 	bti j
+> 	[...]
+> 
+> 
+> > I strongly suspect we need a higher-level API to say "poke the patchable
+> > callsite in the prologue", rather than assuming that offset 0 always means
+> > that, or it'll be *very* easy for this to go wrong.
+> 
+> Ah, bpf_arch_text_poke() only patches bpf progs, and the patch-site in
+> bpf prog prologue is constructed for bpf_arch_text_poke(), so we always
+> know the patch-site offset. There's no compiler generated instruction
+> here, so it seems to be not a problem.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+I understand all of that. My point is that if anyone ever wants to use
+bpf_arch_text_poke() to poke the *actual* first instruction, this will go
+wrong.
 
+I see that x86 does the same thing to skip ENDBR, so if this is just a fragile
+API, and people are expected to not do that, then fine. It's just confusing.
+
+> >> +
+> >> +	if (poke_type == BPF_MOD_CALL)
+> >> +		branch_type = AARCH64_INSN_BRANCH_LINK;
+> >> +	else
+> >> +		branch_type = AARCH64_INSN_BRANCH_NOLINK;
+> > 
+> > When is poke_type *not* BPF_MOD_CALL?>
+> 
+> The bpf_tramp_image_put() example above uses BPF_MOD_JUMP.
+> 
+> > I assume that means BPF also uses this for non-ftrace reasons?
+> >
+> 
+> This function is NOT used for ftrace patch-site. It's only used to patch
+> bpf image.
+
+I understand that this isn't ftrace; I meant for the patch site we introduced
+in the BPF program that is compatible with the patch-site sequence that ftrace
+uses.
+
+> >> +	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
+> >> +		return -EFAULT;
+> >> +
+> >> +	if (gen_branch_or_nop(branch_type, ip, new_addr, &new_insn) < 0)
+> >> +		return -EFAULT;
+> >> +
+> >> +	mutex_lock(&text_mutex);
+> >> +	if (aarch64_insn_read(ip, &replaced)) {
+> >> +		ret = -EFAULT;
+> >> +		goto out;
+> >> +	}
+> >> +
+> >> +	if (replaced != old_insn) {
+> >> +		ret = -EFAULT;
+> >> +		goto out;
+> >> +	}
+> >> +
+> >> +	/* We call aarch64_insn_patch_text_nosync() to replace instruction
+> >> +	 * atomically, so no other CPUs will fetch a half-new and half-old
+> >> +	 * instruction. But there is chance that another CPU fetches the old
+> >> +	 * instruction after bpf_arch_text_poke() finishes, that is, different
+> >> +	 * CPUs may execute different versions of instructions at the same
+> >> +	 * time before the icache is synchronized by hardware.
+> >> +	 *
+> >> +	 * 1. when a new trampoline is attached, it is not an issue for
+> >> +	 *    different CPUs to jump to different trampolines temporarily.
+> >> +	 *
+> >> +	 * 2. when an old trampoline is freed, we should wait for all other
+> >> +	 *    CPUs to exit the trampoline and make sure the trampoline is no
+> >> +	 *    longer reachable, since bpf_tramp_image_put() function already
+> >> +	 *    uses percpu_ref and rcu task to do the sync, no need to call the
+> >> +	 *    sync interface here.
+> >> +	 */
+> > 
+> > How is RCU used for that? It's not clear to me how that works for PREEMPT_RCU
+> > (which is the usual configuration for arm64), since we can easily be in a
+> > preemptible context, outside of an RCU read side critical section, yet call
+> > into a trampoline.
+> > 
+> > I know that for livepatching we need to use stacktracing to ensure we've
+> > finished using code we'd like to free, and I can't immediately see how you can
+> > avoid that here. I'm suspicious that there's still a race where threads can
+> > enter the trampoline and it can be subsequently freed.
+> > 
+> > For ftrace today we get away with entering the existing trampolines when not
+> > intended because those are statically allocated, and the race is caught when
+> > acquiring the ops inside the ftrace core code. This case is different because
+> > the CPU can fetch the instruction and execute that at any time, without any RCU
+> > involvement.
+> > 
+> > Can you give more details on how the scheme described above works? How
+> > *exactly*` do you ensure that threads which have entered the trampoline (and
+> > may have been immediately preempted by an interrupt) have returned? Which RCU
+> > mechanism are you using?
+> > 
+> > If you can point me at where this is implemented I'm happy to take a look.
+> >
+> IIUC, task rcu's critical section ends at a voluntary context switch,
+> since no volutary context switch occurs in a progoluge, when a task
+> rcu's critical section ends, we can ensure no one is running in the
+> prologue [1].
+> 
+> For bpf trampoline, the scenario is similar, except that it may sleep,
+> so a reference count is increased when entering the trampoline and
+> decreased when exiting the trampoline, so we can wait for the reference
+> count to become zero to make sure there is no one in the sleepable
+> region [2].
+> 
+> [1] https://lore.kernel.org/all/20140804192017.GA18337@linux.vnet.ibm.com/
+> [2]
+> https://lore.kernel.org/bpf/20210316210007.38949-1-alexei.starovoitov@gmail.com/
+
+Ok. Am I correct in understanding that this means the BPF trampoline is only
+ever attached to BPF programs and those programs handle this around calling the
+BPF trampoline?
+
+Thanks,
+Mark.
