@@ -2,109 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 338FF534DA4
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 13:00:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0D47534DA9
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 13:01:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234350AbiEZK67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 06:58:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32904 "EHLO
+        id S242723AbiEZLBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 07:01:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231377AbiEZK65 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 06:58:57 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F088CEB87;
-        Thu, 26 May 2022 03:58:53 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24Q99OE6022048;
-        Thu, 26 May 2022 03:57:23 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=date : from : to :
- cc : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pfpt0220; bh=ivqjH5toYJSfs0wcoHW14DPOTzybjgWJFjAhcoJ5Ot8=;
- b=WWXJORHL3UuzuxMgiyL/psVfQBsXxqEPvg+WhY5d+xONwMi83X+0Fj3LzaZOxnw9w/Ro
- D9XGCQ3B23TM4BEBLXTGmBXN6AoGAwplmFGg5VL3c/X8kU9w5PovnpkaeCLxBTVStprJ
- 2uHa8vm9UVgTY2OKjzoJDzRGDSNTltLBLjBcm/4EnFMrjK+shkQNp9jq10bBH+WiegAq
- EVdVWECzfAdRHSoUPHFhXVhBRXYG2mpvu87X7kCKYY7gNekpx9uQMi2Om+oUBLyA0DIm
- 6iPuPsAQWT7a4BB7cHYPznpOKGukMIInn3K8p+ydUz2x01/28Zvc8wuyqpE2pnLR4UMI rw== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3g93ty8cpx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 26 May 2022 03:57:23 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 26 May
- 2022 03:57:21 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 26 May 2022 03:57:20 -0700
-Received: from Dell2s-9 (unknown [10.110.150.250])
-        by maili.marvell.com (Postfix) with ESMTP id DFCD03F70A8;
-        Thu, 26 May 2022 03:57:20 -0700 (PDT)
-Date:   Thu, 26 May 2022 03:57:20 -0700
-From:   Piyush Malgujar <pmalgujar@marvell.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Chandrakala Chavva" <cchavva@marvell.com>,
-        Damian Eppel <deppel@marvell.com>,
-        "Heiner Kallweit" <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S231377AbiEZLBN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 07:01:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7B31D0F3;
+        Thu, 26 May 2022 04:01:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4821EB81F14;
+        Thu, 26 May 2022 11:01:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCE33C385A9;
+        Thu, 26 May 2022 11:01:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653562868;
+        bh=hfcaxSjEVLVQ76sX/0B4km9ev5zJp72a68slPepbwZs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=J9dNX/CYol3rStXoipC4u3m65JQ/CVaYQLLeFR/i3em/BmWPkr6liFYFLsTB73x+2
+         AsmUaVFFeVz7ZNFGd1fXszmwZSbIzc9eBnFF5fLvfmUuJZGybocBoY+BaFL9uPpQAe
+         ns25g2mHLQUqOlfyBZdCH7cHrwSN6s7nq7bUYiY00XpfTe5OmO3XJtHs0cFXqp6uPc
+         r5iTZmfH515no5UYjI8tMSqvh8GPqn+Rffu8JwrjYtZvB+6eEbR+gl+TST/LgjdAyD
+         /zyoM4tNT5p1h5DYZB/tt2QE43L7JUZZaXXKLXVcdTWOoaCcC4TE7SKVHlz5xygH6h
+         fQZ4MpxI6Bd4w==
+Date:   Thu, 26 May 2022 13:01:02 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>
-Subject: Re: [PATCH] Marvell MDIO clock related changes.
-Message-ID: <20220526105720.GA4922@Dell2s-9>
-References: <CH0PR18MB4193CF9786F80101D08A2431A3FC9@CH0PR18MB4193.namprd18.prod.outlook.com>
- <Ymv1NU6hvCpAo5+F@lunn.ch>
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: mv88e6xxx: Fix refcount leak in
+ mv88e6xxx_mdios_register
+Message-ID: <20220526130102.6c532648@dellmb>
+In-Reply-To: <20220526083748.39816-1-linmq006@gmail.com>
+References: <20220526083748.39816-1-linmq006@gmail.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Ymv1NU6hvCpAo5+F@lunn.ch>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-GUID: Xjsy_p5LYX-EpN9TEKAnqE8DuqKqtMlY
-X-Proofpoint-ORIG-GUID: Xjsy_p5LYX-EpN9TEKAnqE8DuqKqtMlY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-26_03,2022-05-25_02,2022-02-23_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Apr 29, 2022 at 04:24:53PM +0200, Andrew Lunn wrote:
-> > > > 2) Marvell MDIO clock frequency attribute change:
-> > > > This MDIO change provides an option for user to have the bus speed set
-> > > > to their needs which is otherwise set to default(3.125 MHz).
-> > > 
-> > > Please read 802.3 Clause 22. The default should be 2.5MHz.
-> > > 
-> > 
-> > These changes are only specific to Marvell Octeon family.
+On Thu, 26 May 2022 12:37:48 +0400
+Miaoqian Lin <linmq006@gmail.com> wrote:
+
+> of_get_child_by_name() returns a node pointer with refcount
+> incremented, we should use of_node_put() on it when done.
+> This function missing of_node_put() in an error path.
+> Add missing of_node_put() to avoid refcount leak.
 > 
-> Are you saying the Marvell Octeon family decide to ignore 802.3?  Have
-> you tested every possible PHY that could be connected to this MDIO bus
-> and they all work for 3.125MHz, even though 802.3 says they only need
-> to support up to 2.5Mhz?
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> ---
+>  drivers/net/dsa/mv88e6xxx/chip.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
->      Andrew
+> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+> index 5d2c57a7c708..0726df6aeb1f 100644
+> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> @@ -3960,8 +3960,10 @@ static int mv88e6xxx_mdios_register(struct mv88e6xxx_chip *chip,
+>  	 */
+>  	child = of_get_child_by_name(np, "mdio");
+>  	err = mv88e6xxx_mdio_register(chip, child, false);
+> -	if (err)
+> +	if (err) {
+> +		of_node_put(child);
+>  		return err;
+> +	}
+>  
+>  	/* Walk the device tree, and see if there are any other nodes
+>  	 * which say they are compatible with the external mdio
 
-Hi Andrew,
-
-Yes, but as for Marvell Octeon family it defaults to 3.125 MHz and this
-driver is already existing in the kernel.
-This patch is not changing that, only adding support to configure
-clock-freq from DTS.
-Also, following PHYs have been verified with it:
-PHY_MARVELL_88E1548,
-PHY_MARVELL_5123,
-PHY_MARVELL_5113,
-PHY_MARVELL_6141,
-PHY_MARVELL_88E1514,
-PHY_MARVELL_3310,
-PHY_VITESSE_8574
-
-Thanks,
-Piyush
+Fix needs Fixes tag so that it can be backported. Please add correct
+Fixes tag.
