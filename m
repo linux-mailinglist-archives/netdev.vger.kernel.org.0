@@ -2,68 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 371C4534BD7
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 10:38:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7C09534BE2
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 10:45:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237224AbiEZIiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 04:38:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47620 "EHLO
+        id S1346708AbiEZIpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 04:45:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233597AbiEZIiA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 04:38:00 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A72C8D697;
-        Thu, 26 May 2022 01:37:59 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso1196756pjg.0;
-        Thu, 26 May 2022 01:37:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xf0m+cxj00ml2J9yglsVjh3XZlLBOWXtU5mmNEGwQ3U=;
-        b=i642uYY+wNCW0IASrgCRqqUrpcyvz5d7Y5qfZhMhirG9Tm3cfZwhsci4yxhdFfngQS
-         iiLYP2kYMX2o8DP7FpRPczN05j8zdJOm6GzMxIRc++95E4XlXesmhSLzVE45TbbXvRtO
-         2IA3/6rGlxgRyhXT2zHzL073VKF2HjW5jrH8MCB/IfSaNRTHB8ZrWS7/xyhwEzW4cZ5q
-         qhCDS4D+LmZfEruPup0LJjJ1ijKFKsxsCE0dd0zTHO5q9etGVnslIQHQap4RdKqJbwhE
-         pbi8NMbo3e4Q22lYdpf1ytGoC23bbj8zimwxRuVIT3cCSptA1tEQRnm4cwqzh6uB6cxz
-         WzAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xf0m+cxj00ml2J9yglsVjh3XZlLBOWXtU5mmNEGwQ3U=;
-        b=Cv9xWbAY60BNqCiGF+VyJf/Gerr+yRHpPhLVpEZmHua4ubmUjA5myFtjKdA1iAnXiW
-         IzOuMPhus89IKCqyC05xjDCdrhuAm6jom8PHi1P9imQ8Gse41JFzF9L56wPj1/5it3AC
-         P/o3mz06W8MMQ/51ClfQF7Omza64Yp6kfye4lTCm7bW9AZPWD8WqLz2RBnvLDMfK7W45
-         47/AJUf1bllvFpCloZh68PNYuPVIePny0vSrBVGONLLIToI7stjEDMLA6T8aCmeMbTgO
-         hnsX0fgA3JB6sms3DUPVApIPyXTc6KVx1JIWVJLCj2lx7YWet5d6GCgcVMlYdG3rgqr3
-         grzA==
-X-Gm-Message-State: AOAM531xUFtdBHb2G8WiXcxnpc/5T+iR48eoeUTgLw4gOlZ5KdJZApuu
-        0Ft2ZejcK/4P2b+qplJQjxw=
-X-Google-Smtp-Source: ABdhPJyomcwLo5TPDTRup87oeopH9IDzFzWCv42VuwnRK/LOPPEHKHcBE48P9ZU4tHOxHqOHHKMwJw==
-X-Received: by 2002:a17:90a:31cf:b0:1c9:f9b8:68c7 with SMTP id j15-20020a17090a31cf00b001c9f9b868c7mr1510376pjf.34.1653554278500;
-        Thu, 26 May 2022 01:37:58 -0700 (PDT)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id k71-20020a63844a000000b003db7de758besm964332pgd.5.2022.05.26.01.37.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 01:37:58 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] net: dsa: mv88e6xxx: Fix refcount leak in mv88e6xxx_mdios_register
-Date:   Thu, 26 May 2022 12:37:48 +0400
-Message-Id: <20220526083748.39816-1-linmq006@gmail.com>
+        with ESMTP id S230215AbiEZIpl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 04:45:41 -0400
+X-Greylist: delayed 18895 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 26 May 2022 01:45:39 PDT
+Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 344BBEF;
+        Thu, 26 May 2022 01:45:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=0ZyEQ
+        /bJBhAiNQ0J1gBwUOgg0ihgin014Qd7tlwiVpk=; b=gyOXPhj89b6wvRWdVQKfp
+        CeGzUBl8mcBbFNdt+92cAHvlrxGd+G0HKhJXpatY6bOHbb9JCygbwIVK4PW22F4S
+        KH/g5nqL4nf9voz2Idyr5gqsxLEkLo2ma5jZGPwKd9apP+bq5iRcY8vftRgMDqsD
+        HBXWB+qBeh2eSpy8fJwL8c=
+Received: from localhost.localdomain (unknown [123.112.69.106])
+        by smtp1 (Coremail) with SMTP id GdxpCgC3t7_dPY9inGY1EQ--.48759S4;
+        Thu, 26 May 2022 16:44:28 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     saeedm@nvidia.com, leon@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        parav@nvidia.com, vuhuong@nvidia.com, shayd@nvidia.com
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH] net/mlx5: Fix memory leak in mlx5_sf_dev_add()
+Date:   Thu, 26 May 2022 16:44:11 +0800
+Message-Id: <20220526084411.480472-1-niejianglei2021@163.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GdxpCgC3t7_dPY9inGY1EQ--.48759S4
+X-Coremail-Antispam: 1Uf129KBjvJXoWruFyDKw43Zry5tF1ftFy8uFg_yoW8JF1kpF
+        47Wa45Wryxuw4jga1UZrWfXFn8GanrKayv9rWxZ34fCr9avayUAr98tryYkw13CrWUXFy7
+        tFnruw1DZFn8Jw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRID7fUUUUU=
+X-Originating-IP: [123.112.69.106]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiPgwNjFxBsV-PzwAAsA
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
         FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
@@ -74,32 +54,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when done.
-This function missing of_node_put() in an error path.
-Add missing of_node_put() to avoid refcount leak.
+The variable id is allocated by mlx5_adev_idx_alloc(). When some error
+happens, the id should be freed by mlx5_adev_idx_free().But when
+auxiliary_device_add() and xa_insert() fail, the id is not freed,which
+will lead to a potential memory leak.
 
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+We can fix it by calling mlx5_sf_dev_add() when auxiliary_device_add()
+and xa_insert() fail.
+
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 5d2c57a7c708..0726df6aeb1f 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3960,8 +3960,10 @@ static int mv88e6xxx_mdios_register(struct mv88e6xxx_chip *chip,
- 	 */
- 	child = of_get_child_by_name(np, "mdio");
- 	err = mv88e6xxx_mdio_register(chip, child, false);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
+index 7da012ff0d41..9f222061a1c0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
+@@ -125,13 +125,16 @@ static void mlx5_sf_dev_add(struct mlx5_core_dev *dev, u16 sf_index, u16 fn_id,
+ 
+ 	err = auxiliary_device_add(&sf_dev->adev);
+ 	if (err) {
++		mlx5_adev_idx_free(id);
+ 		put_device(&sf_dev->adev.dev);
+ 		goto add_err;
+ 	}
+ 
+ 	err = xa_insert(&table->devices, sf_index, sf_dev, GFP_KERNEL);
 -	if (err)
 +	if (err) {
-+		of_node_put(child);
- 		return err;
++		mlx5_adev_idx_free(id);
+ 		goto xa_err;
 +	}
+ 	return;
  
- 	/* Walk the device tree, and see if there are any other nodes
- 	 * which say they are compatible with the external mdio
+ xa_err:
 -- 
 2.25.1
 
