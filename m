@@ -2,145 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D87953482F
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 03:31:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D547853484A
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 03:42:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234375AbiEZBbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 21:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53432 "EHLO
+        id S1345814AbiEZBmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 21:42:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245169AbiEZBao (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 21:30:44 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B19F8A76F4;
-        Wed, 25 May 2022 18:30:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653528627; x=1685064627;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=UaSIPRzQt8djgwCCogviIlJQSqF/rXfZ66henu/ROoY=;
-  b=dTTyDv38O0Oyxwm3H23qgOh7Mmxfcd44npw5Wx54abP0fUA+37piwUgg
-   6JWCiQP+WEoj2CizKCuEvp43H+w9/w3GpxKxY+UkN+/AQW/7LZO7caUR5
-   iOHQtmjYbBAEl/97S2snN+Qf2ewgYe5Y4IDHYrAbvPc7k7VZQYKzUERAe
-   1gkC6pRgmK+uStAU/UgymoeJft26/oVsh3hztSPRCYyTQuUophT8cIQin
-   n8Fm6kRwR7BVO1mnTvWmNCCoqyvqeuX8wsdSuRdES6nq2X2tupDw8tlmY
-   3oslxqf/AgchmI5P1T9gGld+gFDGcWnT48S2z/RL66YDk6TPwHE+osllK
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="273713962"
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="273713962"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 18:30:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="718002411"
-Received: from p12hl01tmin.png.intel.com ([10.158.65.216])
-  by fmsmga001.fm.intel.com with ESMTP; 25 May 2022 18:30:23 -0700
-From:   Tan Tee Min <tee.min.tan@linux.intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S1345828AbiEZBmD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 21:42:03 -0400
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33406A7E13;
+        Wed, 25 May 2022 18:41:59 -0700 (PDT)
+Received: by mail-oi1-f171.google.com with SMTP id i66so603326oia.11;
+        Wed, 25 May 2022 18:41:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d+Z9RgiK3EIxVlZZsUbr4/gk0SD8+6Vq2nxSeiDB3Go=;
+        b=lonZS1Pi4KRL8RzO1Z0tiH9qUojyzK/dL5wtw2dI+r1w4Cx/N8mctkpbzYaOD/H6bA
+         wyesyM50Wr738vR+XsMWpb1aoUZ4/V70zOGaCu9YEZocTLH81SOtGINPoTvSS7AOQ48N
+         O0RifAjoxpfpc4KdxSKHs8JlMsMifdoAlh2RP7E419G0enlnvkVQXj7Xp+cEH/n1VDPK
+         AGBa8u4L7fpkr/J8UfGmSEt3cpbELl9SEMWVk7CafzrCW8uocoebncLqrYVMDg8CUldz
+         ioWctwm5+bZhSii5cwwsCWywVmbrptd/zlzjuAi4yiT+fnjwr302z1pVSH1JjC+E1164
+         dvwg==
+X-Gm-Message-State: AOAM53023vTsYNe3gU1hOC+YV5VHFPEaq1qEVqgpcdI7b5CY0KdSQMia
+        e2Vr4agbz1RZdzii4mqSyw==
+X-Google-Smtp-Source: ABdhPJxuUpgwjNNVehgCikH94aM0C278Tato0V32TMxGzCsr8Y3hkxPGQkpU0UbT585q/wH8Oxdo3Q==
+X-Received: by 2002:a05:6808:210a:b0:326:77be:466f with SMTP id r10-20020a056808210a00b0032677be466fmr5336oiw.184.1653529318875;
+        Wed, 25 May 2022 18:41:58 -0700 (PDT)
+Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id pi12-20020a0568704c8c00b000e9b8376a7bsm162542oab.23.2022.05.25.18.41.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 18:41:58 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Voon Wei Feng <weifeng.voon@intel.com>,
-        Sit Michael Wei Hong <michael.wei.hong.sit@intel.com>,
-        Ling Pei Lee <pei.lee.ling@intel.com>,
-        Looi Hong Aun <hong.aun.looi@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>
-Subject: [PATCH net-next 1/1] net: phy: dp83867: retrigger SGMII AN when link change
-Date:   Thu, 26 May 2022 09:37:14 +0800
-Message-Id: <20220526013714.4119839-1-tee.min.tan@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Biao Huang <biao.huang@mediatek.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH] dt-bindings: net: Fix unevaluatedProperties warnings in examples
+Date:   Wed, 25 May 2022 20:41:48 -0500
+Message-Id: <20220526014149.2872762-1-robh@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a limitation in TI DP83867 PHY device where SGMII AN is only
-triggered once after the device is booted up. Even after the PHY TPI is
-down and up again, SGMII AN is not triggered and hence no new in-band
-message from PHY to MAC side SGMII.
+The 'unevaluatedProperties' schema checks is not fully working and doesn't
+catch some cases where there's a $ref to another schema. A fix is pending,
+but results in new warnings in examples. Fix the warnings by removing
+spurious properties or adding missing properties to the schema.
 
-This could cause an issue during power up, when PHY is up prior to MAC.
-At this condition, once MAC side SGMII is up, MAC side SGMII wouldn`t
-receive new in-band message from TI PHY with correct link status, speed
-and duplex info.
-
-As suggested by TI, implemented a SW solution here to retrigger SGMII
-Auto-Neg whenever there is a link change.
-
-Signed-off-by: Sit, Michael Wei Hong <michael.wei.hong.sit@intel.com>
-Reviewed-by: Voon Weifeng <weifeng.voon@intel.com>
-Signed-off-by: Tan Tee Min <tee.min.tan@linux.intel.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- drivers/net/phy/dp83867.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ Documentation/devicetree/bindings/net/cdns,macb.yaml           | 1 -
+ Documentation/devicetree/bindings/net/mediatek,net.yaml        | 3 +++
+ Documentation/devicetree/bindings/net/mediatek-dwmac.yaml      | 3 +++
+ .../devicetree/bindings/net/wireless/mediatek,mt76.yaml        | 2 +-
+ 4 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 8561f2d4443b..13dafe7a29bd 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -137,6 +137,7 @@
- #define DP83867_DOWNSHIFT_2_COUNT	2
- #define DP83867_DOWNSHIFT_4_COUNT	4
- #define DP83867_DOWNSHIFT_8_COUNT	8
-+#define DP83867_SGMII_AUTONEG_EN	BIT(7)
+diff --git a/Documentation/devicetree/bindings/net/cdns,macb.yaml b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+index 337cec4d85ca..86fc31c2d91b 100644
+--- a/Documentation/devicetree/bindings/net/cdns,macb.yaml
++++ b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+@@ -191,7 +191,6 @@ examples:
+                     clock-names = "pclk", "hclk", "tx_clk", "rx_clk", "tsu_clk";
+                     #address-cells = <1>;
+                     #size-cells = <0>;
+-                    #stream-id-cells = <1>;
+                     iommus = <&smmu 0x875>;
+                     power-domains = <&zynqmp_firmware PD_ETH_1>;
+                     resets = <&zynqmp_reset ZYNQMP_RESET_GEM1>;
+diff --git a/Documentation/devicetree/bindings/net/mediatek,net.yaml b/Documentation/devicetree/bindings/net/mediatek,net.yaml
+index 699164dd1295..f5564ecddb62 100644
+--- a/Documentation/devicetree/bindings/net/mediatek,net.yaml
++++ b/Documentation/devicetree/bindings/net/mediatek,net.yaml
+@@ -27,6 +27,9 @@ properties:
+   reg:
+     maxItems: 1
  
- /* CFG3 bits */
- #define DP83867_CFG3_INT_OE			BIT(7)
-@@ -855,6 +856,32 @@ static int dp83867_phy_reset(struct phy_device *phydev)
- 			 DP83867_PHYCR_FORCE_LINK_GOOD, 0);
- }
++  clocks: true
++  clock-names: true
++
+   interrupts:
+     minItems: 3
+     maxItems: 4
+diff --git a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+index 901944683322..61b2fb9e141b 100644
+--- a/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
++++ b/Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
+@@ -58,6 +58,9 @@ properties:
+       - const: rmii_internal
+       - const: mac_cg
  
-+static void dp83867_link_change_notify(struct phy_device *phydev)
-+{
-+	/* There is a limitation in DP83867 PHY device where SGMII AN is
-+	 * only triggered once after the device is booted up. Even after the
-+	 * PHY TPI is down and up again, SGMII AN is not triggered and
-+	 * hence no new in-band message from PHY to MAC side SGMII.
-+	 * This could cause an issue during power up, when PHY is up prior
-+	 * to MAC. At this condition, once MAC side SGMII is up, MAC side
-+	 * SGMII wouldn`t receive new in-band message from TI PHY with
-+	 * correct link status, speed and duplex info.
-+	 * Thus, implemented a SW solution here to retrigger SGMII Auto-Neg
-+	 * whenever there is a link change.
-+	 */
-+	if (phydev->interface == PHY_INTERFACE_MODE_SGMII) {
-+		int val = 0;
++  power-domains:
++    maxItems: 1
 +
-+		val = phy_clear_bits(phydev, DP83867_CFG2,
-+				     DP83867_SGMII_AUTONEG_EN);
-+		if (val < 0)
-+			return;
-+
-+		phy_set_bits(phydev, DP83867_CFG2,
-+			     DP83867_SGMII_AUTONEG_EN);
-+	}
-+}
-+
- static struct phy_driver dp83867_driver[] = {
- 	{
- 		.phy_id		= DP83867_PHY_ID,
-@@ -879,6 +906,8 @@ static struct phy_driver dp83867_driver[] = {
+   mediatek,pericfg:
+     $ref: /schemas/types.yaml#/definitions/phandle
+     description:
+diff --git a/Documentation/devicetree/bindings/net/wireless/mediatek,mt76.yaml b/Documentation/devicetree/bindings/net/wireless/mediatek,mt76.yaml
+index 249967d8d750..5a12dc32288a 100644
+--- a/Documentation/devicetree/bindings/net/wireless/mediatek,mt76.yaml
++++ b/Documentation/devicetree/bindings/net/wireless/mediatek,mt76.yaml
+@@ -51,7 +51,7 @@ properties:
+     description:
+       Specify the consys reset for mt7986.
  
- 		.suspend	= genphy_suspend,
- 		.resume		= genphy_resume,
-+
-+		.link_change_notify = dp83867_link_change_notify,
- 	},
- };
- module_phy_driver(dp83867_driver);
+-  reset-name:
++  reset-names:
+     const: consys
+ 
+   mediatek,infracfg:
 -- 
-2.25.1
+2.34.1
 
