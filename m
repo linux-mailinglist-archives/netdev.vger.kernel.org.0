@@ -2,64 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA80A5355CE
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 23:46:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E71AE5355D0
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 23:46:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244735AbiEZVqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 17:46:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60112 "EHLO
+        id S1346690AbiEZVq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 17:46:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230141AbiEZVqQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 17:46:16 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 479D51F8;
-        Thu, 26 May 2022 14:46:14 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1nuLIs-0008H6-Ef; Thu, 26 May 2022 23:45:58 +0200
-Date:   Thu, 26 May 2022 23:45:58 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        pablo@netfilter.org, fw@strlen.de, netfilter-devel@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
-        memxor@gmail.com, yhs@fb.com
-Subject: Re: [PATCH v4 bpf-next 06/14] bpf: Whitelist some fields in nf_conn
- for BPF_WRITE
-Message-ID: <20220526214558.GA31193@breakpoint.cc>
-References: <cover.1653600577.git.lorenzo@kernel.org>
- <2954ab26de09afeecf3a56ba93624f9629072102.1653600578.git.lorenzo@kernel.org>
+        with ESMTP id S1345621AbiEZVq2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 17:46:28 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FE35FFD;
+        Thu, 26 May 2022 14:46:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=sfRMVadM5DFvb9UkztUPJSueAUQ271E9by4MUwweJIo=; b=grlE4T31u4JkQQZ4JcZrTN7AfI
+        X7vawcJ+xqbIzLvHhQ6G/2VB+nkK1jfwl8c/PGI4ZCIdAD6ZsvbTXkxDsd15G6ys1NuFn7nfMQeVS
+        wKlxNnjNrodkPlzw4l3wiRj51HHnEcu2nrxasnjZLiLAdJdNvM35TJYAOPeoYfijWxuQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nuLJD-004ORC-W8; Thu, 26 May 2022 23:46:19 +0200
+Date:   Thu, 26 May 2022 23:46:19 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Piyush Malgujar <pmalgujar@marvell.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Chandrakala Chavva <cchavva@marvell.com>,
+        Damian Eppel <deppel@marvell.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH] Marvell MDIO clock related changes.
+Message-ID: <Yo/1K5KYivuJM6CA@lunn.ch>
+References: <CH0PR18MB4193CF9786F80101D08A2431A3FC9@CH0PR18MB4193.namprd18.prod.outlook.com>
+ <Ymv1NU6hvCpAo5+F@lunn.ch>
+ <20220526105720.GA4922@Dell2s-9>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2954ab26de09afeecf3a56ba93624f9629072102.1653600578.git.lorenzo@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220526105720.GA4922@Dell2s-9>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-> From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+On Thu, May 26, 2022 at 03:57:20AM -0700, Piyush Malgujar wrote:
+> On Fri, Apr 29, 2022 at 04:24:53PM +0200, Andrew Lunn wrote:
+> > > > > 2) Marvell MDIO clock frequency attribute change:
+> > > > > This MDIO change provides an option for user to have the bus speed set
+> > > > > to their needs which is otherwise set to default(3.125 MHz).
+> > > > 
+> > > > Please read 802.3 Clause 22. The default should be 2.5MHz.
+> > > > 
+> > > 
+> > > These changes are only specific to Marvell Octeon family.
+> > 
+> > Are you saying the Marvell Octeon family decide to ignore 802.3?  Have
+> > you tested every possible PHY that could be connected to this MDIO bus
+> > and they all work for 3.125MHz, even though 802.3 says they only need
+> > to support up to 2.5Mhz?
+> > 
+> >      Andrew
 > 
-> Since we want to allow user to set some fields in nf_conn after it is
-> allocated but before it is inserted, we can permit BPF_WRITE for normal
-> nf_conn, and then mark return value as read only on insert, preventing
-> further BPF_WRITE. This way, nf_conn can be written to using normal
-> BPF instructions after allocation, but not after insertion.
+> Hi Andrew,
 > 
-> Note that we special nf_conn a bit here, inside the btf_struct_access
-> callback for XDP and TC programs. Since this is the only struct for
-> these programs requiring such adjustments, making this mechanism
-> more generic has been left as an exercise for a future patch adding
-> custom callbacks for more structs.
+> Yes, but as for Marvell Octeon family it defaults to 3.125 MHz and this
+> driver is already existing in the kernel.
+> This patch is not changing that, only adding support to configure
+> clock-freq from DTS.
+> Also, following PHYs have been verified with it:
+> PHY_MARVELL_88E1548,
+> PHY_MARVELL_5123,
+> PHY_MARVELL_5113,
+> PHY_MARVELL_6141,
+> PHY_MARVELL_88E1514,
+> PHY_MARVELL_3310,
+> PHY_VITESSE_8574
 
-Are you sure this is safe?
-As far as I can see this allows nf_conn->status = ~0ul.
-I'm fairly sure this isn't a good idea, see nf_ct_delete() for example.
+So if you want to ignore 802.3, please make it very clear in the DT
+binding that the default is 3.125MHz, not 2.5Mhz which the standard
+requires.
+
+As you say, 3.125Mhz will work for some PHYs. And it will fail for
+other PHYs.
+
+	Andrew
+
