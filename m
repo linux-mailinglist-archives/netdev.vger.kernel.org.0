@@ -2,63 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A46F534DF2
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 13:21:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CA86534DFB
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 13:22:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242759AbiEZLVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 07:21:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46446 "EHLO
+        id S241851AbiEZLWF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 07:22:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236723AbiEZLVr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 07:21:47 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D42D74
-        for <netdev@vger.kernel.org>; Thu, 26 May 2022 04:21:45 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id u12-20020a17090a1d4c00b001df78c7c209so4164926pju.1
-        for <netdev@vger.kernel.org>; Thu, 26 May 2022 04:21:45 -0700 (PDT)
+        with ESMTP id S1347044AbiEZLVx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 07:21:53 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6840BE08
+        for <netdev@vger.kernel.org>; Thu, 26 May 2022 04:21:50 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so1474562pjq.2
+        for <netdev@vger.kernel.org>; Thu, 26 May 2022 04:21:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2iK0JmSQYTB7W/NddouTDmgmSdRkfZFIZ90UVQfjdRo=;
-        b=WgHNCvPUwm6A5Bpdync/k62mv4R2FuM2AVS3mf1foVPgeo5O1GL6Bnnn+fpHzPysiw
-         MH5A9YPPnv7CRFnOb2UEAahdhf7xNUejM+t/NhW47jz83y0AM3gSrN7k9IuGMZnkhvsU
-         ExZRnDghSqDcjchcObjeuPGweoBRQXKXFTHzg=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8AKWROhkthGjkc4Ud5HnzQlOL7LDaXlOkoq/4/BpIVA=;
+        b=KX20t1Pbqnm8ZGH/G31lN5Nt4rVaQHLCwQJ235qU9UdXISqM1hVi04/H0b5mWVN+Ai
+         PJb1ZBEAFrGFNWN4CSZXxTxxJ6Pw20PZyoKSjQ79qgvKyZuStZEiymRaaDVTQmJHNdyW
+         lwykEUvgZ85XaCwRDc9cVquil38Ble2xPPlmo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2iK0JmSQYTB7W/NddouTDmgmSdRkfZFIZ90UVQfjdRo=;
-        b=dQdy0RvXTJ8dsXxNRMHa0TlJt2VyV2FBieIU6q73hM81WZaNmYLYECggjDOpAhf91L
-         2/WeRKUKQIC2WWbtWztAWM5j+kP+2aGJ6u2ahp1W9zL+iGEkoNbC9mP1B43WOQyBJfOp
-         DR4LGIb6SH08xgAy2pHYElKm+/rHwhBm+a9FFPJ4glHtcp8SGheshU+kj0GSmIV1K77j
-         xwo3h35bDwFCoWK0j/8sZaKahqtuEQqI+3rOSQsUtxIa9z0tNUKomTgSSiMUb1N04wi3
-         2F8LEkCnyXu+3N5mYrhoJ41ik4mrw15Go/x1SjiBJOG0ZPMe3Y1V5VsG/qulvAXStx1n
-         4urw==
-X-Gm-Message-State: AOAM530e0uK17mXX4e89iA36/0KGMDiHRDuNwO5P2/19/nfA6br1mhcG
-        qjaz10qPYRctsAovB71kUwvq3w==
-X-Google-Smtp-Source: ABdhPJz0joFdyuqT2P3YS2oo8Vyn34AHb81YGCz6tLkSAdfACCIxBNJeHTIiA9QXZXIPI+Fh3o2ULA==
-X-Received: by 2002:a17:902:b692:b0:14c:935b:2b03 with SMTP id c18-20020a170902b69200b0014c935b2b03mr37389995pls.81.1653564105228;
-        Thu, 26 May 2022 04:21:45 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8AKWROhkthGjkc4Ud5HnzQlOL7LDaXlOkoq/4/BpIVA=;
+        b=dqVnTS/9sNWQPWREAHL9Iwjjbaa0ZHoe77hCgyLhkxyP5ZuwlzyEUm1uSk3/sdfetj
+         OcWz0ZaAc086UW+RoGPCIVJTp49nliVGNz5ddeGmUUpv0KDfSudK2fsuFnZpF51HZul1
+         TPTQkV5SywmavkLu2KhChJTJAswvVfCnafSEwm5+C9TcL6E47AUxibcjFT/FBZGwPcy3
+         PF2Il9b8W9cQ8CuWvhN3T2YaIXIT7MFvHfUfLLpg4WsOsFjb6iPcLa77sf5/bgLCKYQX
+         DI5tVisoJ1ruOQAEjflJ3s6t/ZaDX97hIc24lL/GwGIkZbMkaaPiuo/J7WiudIXi07Ue
+         bgUQ==
+X-Gm-Message-State: AOAM53300rtBpS/t7qaPD4UttoJTich+nMpJZosuLUtdTP823bSilq0O
+        5EUY26JQ5voPZFZ1VmN90zgyjw==
+X-Google-Smtp-Source: ABdhPJyOOotK0MNlEveIfjwf0W892BfUsrzbELogFM+NJHVwULKnSjdDfWrGrOiDFQQCpwpP+TR0rQ==
+X-Received: by 2002:a17:90b:3c50:b0:1df:7b1f:8b79 with SMTP id pm16-20020a17090b3c5000b001df7b1f8b79mr2134510pjb.71.1653564109743;
+        Thu, 26 May 2022 04:21:49 -0700 (PDT)
 Received: from localhost (174.71.80.34.bc.googleusercontent.com. [34.80.71.174])
-        by smtp.gmail.com with UTF8SMTPSA id w23-20020aa78597000000b0050dc7628150sm1217985pfn.42.2022.05.26.04.21.42
+        by smtp.gmail.com with UTF8SMTPSA id j4-20020a62b604000000b0050dc76281f8sm1184466pff.210.2022.05.26.04.21.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 May 2022 04:21:44 -0700 (PDT)
+        Thu, 26 May 2022 04:21:49 -0700 (PDT)
 From:   Joseph Hwang <josephsih@chromium.org>
 To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
         luiz.dentz@gmail.com, pali@kernel.org
 Cc:     chromeos-bluetooth-upstreaming@chromium.org, josephsih@google.com,
         Joseph Hwang <josephsih@chromium.org>,
+        kernel test robot <lkp@intel.com>,
+        Archie Pusaka <apusaka@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH v6 1/5] Bluetooth: mgmt: add MGMT_OP_SET_QUALITY_REPORT for quality report
-Date:   Thu, 26 May 2022 19:21:30 +0800
-Message-Id: <20220526112135.2486883-1-josephsih@chromium.org>
+Subject: [PATCH v6 2/5] Bluetooth: aosp: surface AOSP quality report through mgmt
+Date:   Thu, 26 May 2022 19:21:31 +0800
+Message-Id: <20220526192047.v6.2.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
 X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
+In-Reply-To: <20220526112135.2486883-1-josephsih@chromium.org>
+References: <20220526112135.2486883-1-josephsih@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -71,294 +75,408 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a new set_quality_report mgmt handler to set
-the quality report feature. The feature is removed from the
-experimental features at the same time.
+When receiving a HCI vendor event, the kernel checks if it is an
+AOSP bluetooth quality report. If yes, the event is sent to bluez
+user space through the mgmt socket.
+
+Reported-by: kernel test robot <lkp@intel.com>
 
 Signed-off-by: Joseph Hwang <josephsih@chromium.org>
+Reviewed-by: Archie Pusaka <apusaka@chromium.org>
 ---
 
 Changes in v6:
-- No update in this patch. The patch 2/5 is updated to fix
-  a sparse check warning.
+- Fixed a sparse check warning about using static for evt_prefixes.
 
 Changes in v5:
-- This patch becomes the first patch.
-- Remove useless hdev check in get_supported_settings().
-- An additional patch will make quality report survive power off/on
-  cycles.
-
-Changes in v4:
-- return current settings for set_quality_report.
+- Define "struct ext_vendor_prefix" to replace "struct vendor_prefix"
+  so that extended vendor prefix = prefix + 1-octet subcode
+- Define aosp_ext_prefix to provide AOSP extended prefix which is
+  returned by aosp_get_ext_prefix().
+- Redefine struct ext_vendor_event_prefix such that
+  . it uses get_ext_vendor_prefix to get prefix and subcodes where
+    the prefix and the prefix length may be variable and are not
+    unknown until run time;
+  . it uses vendor_func to handle a vendor event
+  This table handles vendor events in a generic way.
+- Rewrite hci_vendor_evt() so that it compares both vendor prefix
+  and subcode to match a vendor event.
+- Define set_ext_prefix() to create MSFT extended vendor prefix
+  which is returned by msft_get_ext_prefix().
+- Do not EXPORT_SYMBOL(mgmt_quality_report).
+- Keep msft_get_ext_prefix in msft instead of hci_dev since it is
+  not used by any drivers.
 
 Changes in v3:
-- This is a new patch to enable the quality report feature.
-  The reading and setting of the quality report feature are
-  removed from the experimental features.
+- Rebase to resolve the code conflict.
+- Move aosp_quality_report_evt() from hci_event.c to aosp.c.
+- A new patch (3/3) is added to enable the quality report feature.
 
- include/net/bluetooth/mgmt.h |   7 ++
- net/bluetooth/mgmt.c         | 167 +++++++++++++++--------------------
- 2 files changed, 80 insertions(+), 94 deletions(-)
+Changes in v2:
+- Scrap the two structures defined in aosp.c and use constants for
+  size check.
+- Do a basic size check about the quality report event. Do not pull
+  data from the event in which the kernel has no interest.
+- Define vendor event prefixes with which vendor events of distinct
+  vendor specifications can be clearly differentiated.
+- Use mgmt helpers to add the header and data to a mgmt skb.
 
+ include/net/bluetooth/hci_core.h | 12 +++++++
+ include/net/bluetooth/mgmt.h     |  7 +++++
+ net/bluetooth/aosp.c             | 50 +++++++++++++++++++++++++++++
+ net/bluetooth/aosp.h             | 18 +++++++++++
+ net/bluetooth/hci_event.c        | 54 +++++++++++++++++++++++++++++++-
+ net/bluetooth/mgmt.c             | 19 +++++++++++
+ net/bluetooth/msft.c             | 28 ++++++++++++++++-
+ net/bluetooth/msft.h             | 12 +++++--
+ 8 files changed, 195 insertions(+), 5 deletions(-)
+
+diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+index 64d3a63759a8..f89738c6b973 100644
+--- a/include/net/bluetooth/hci_core.h
++++ b/include/net/bluetooth/hci_core.h
+@@ -328,6 +328,13 @@ struct amp_assoc {
+ 
+ #define HCI_MAX_PAGES	3
+ 
++struct ext_vendor_prefix {
++	__u8 *prefix;
++	__u8 prefix_len;
++	__u8 *subcodes;
++	__u8 subcodes_len;
++};
++
+ struct hci_dev {
+ 	struct list_head list;
+ 	struct mutex	lock;
+@@ -1876,6 +1883,8 @@ int mgmt_add_adv_patterns_monitor_complete(struct hci_dev *hdev, u8 status);
+ int mgmt_remove_adv_monitor_complete(struct hci_dev *hdev, u8 status);
+ void mgmt_adv_monitor_device_lost(struct hci_dev *hdev, u16 handle,
+ 				  bdaddr_t *bdaddr, u8 addr_type);
++int mgmt_quality_report(struct hci_dev *hdev, void *data, u32 data_len,
++			u8 quality_spec);
+ 
+ u8 hci_le_conn_update(struct hci_conn *conn, u16 min, u16 max, u16 latency,
+ 		      u16 to_multiplier);
+@@ -1894,4 +1903,7 @@ void hci_copy_identity_address(struct hci_dev *hdev, bdaddr_t *bdaddr,
+ 
+ #define TRANSPORT_TYPE_MAX	0x04
+ 
++#define QUALITY_SPEC_AOSP_BQR		0x0
++#define QUALITY_SPEC_INTEL_TELEMETRY	0x1
++
+ #endif /* __HCI_CORE_H */
 diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-index 7c1ad0f6fcec..c1c2fd72d9e3 100644
+index c1c2fd72d9e3..6ccd0067c295 100644
 --- a/include/net/bluetooth/mgmt.h
 +++ b/include/net/bluetooth/mgmt.h
-@@ -109,6 +109,7 @@ struct mgmt_rp_read_index_list {
- #define MGMT_SETTING_STATIC_ADDRESS	0x00008000
- #define MGMT_SETTING_PHY_CONFIGURATION	0x00010000
- #define MGMT_SETTING_WIDEBAND_SPEECH	0x00020000
-+#define MGMT_SETTING_QUALITY_REPORT	0x00040000
- 
- #define MGMT_OP_READ_INFO		0x0004
- #define MGMT_READ_INFO_SIZE		0
-@@ -838,6 +839,12 @@ struct mgmt_cp_add_adv_patterns_monitor_rssi {
+@@ -1127,3 +1127,10 @@ struct mgmt_ev_adv_monitor_device_lost {
+ 	__le16 monitor_handle;
+ 	struct mgmt_addr_info addr;
  } __packed;
- #define MGMT_ADD_ADV_PATTERNS_MONITOR_RSSI_SIZE	8
- 
-+#define MGMT_OP_SET_QUALITY_REPORT		0x0057
-+struct mgmt_cp_set_quality_report {
-+	__u8	action;
++
++#define MGMT_EV_QUALITY_REPORT			0x0031
++struct mgmt_ev_quality_report {
++	__u8	quality_spec;
++	__u32	data_len;
++	__u8	data[];
 +} __packed;
-+#define MGMT_SET_QUALITY_REPORT_SIZE		1
+diff --git a/net/bluetooth/aosp.c b/net/bluetooth/aosp.c
+index 432ae3aac9e3..94faa15b1ea0 100644
+--- a/net/bluetooth/aosp.c
++++ b/net/bluetooth/aosp.c
+@@ -199,3 +199,53 @@ int aosp_set_quality_report(struct hci_dev *hdev, bool enable)
+ 	else
+ 		return disable_quality_report(hdev);
+ }
 +
- #define MGMT_EV_CMD_COMPLETE		0x0001
- struct mgmt_ev_cmd_complete {
- 	__le16	opcode;
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index d2d390534e54..1ad84f34097f 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -857,6 +857,9 @@ static u32 get_supported_settings(struct hci_dev *hdev)
- 
- 	settings |= MGMT_SETTING_PHY_CONFIGURATION;
- 
-+	if (aosp_has_quality_report(hdev) || hdev->set_quality_report)
-+		settings |= MGMT_SETTING_QUALITY_REPORT;
++/* The following LEN = 1-byte Sub-event code + 48-byte Sub-event Parameters */
++#define BLUETOOTH_QUALITY_REPORT_LEN 49
 +
- 	return settings;
- }
- 
-@@ -928,6 +931,9 @@ static u32 get_current_settings(struct hci_dev *hdev)
- 	if (hci_dev_test_flag(hdev, HCI_WIDEBAND_SPEECH_ENABLED))
- 		settings |= MGMT_SETTING_WIDEBAND_SPEECH;
- 
-+	if (hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
-+		settings |= MGMT_SETTING_QUALITY_REPORT;
-+
- 	return settings;
- }
- 
-@@ -3901,12 +3907,6 @@ static const u8 debug_uuid[16] = {
- };
- #endif
- 
--/* 330859bc-7506-492d-9370-9a6f0614037f */
--static const u8 quality_report_uuid[16] = {
--	0x7f, 0x03, 0x14, 0x06, 0x6f, 0x9a, 0x70, 0x93,
--	0x2d, 0x49, 0x06, 0x75, 0xbc, 0x59, 0x08, 0x33,
--};
--
- /* a6695ace-ee7f-4fb9-881a-5fac66c629af */
- static const u8 offload_codecs_uuid[16] = {
- 	0xaf, 0x29, 0xc6, 0x66, 0xac, 0x5f, 0x1a, 0x88,
-@@ -3928,7 +3928,7 @@ static const u8 rpa_resolution_uuid[16] = {
- static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
- 				  void *data, u16 data_len)
- {
--	char buf[102];   /* Enough space for 5 features: 2 + 20 * 5 */
-+	char buf[82];   /* Enough space for 4 features: 2 + 20 * 4 */
- 	struct mgmt_rp_read_exp_features_info *rp = (void *)buf;
- 	u16 idx = 0;
- 	u32 flags;
-@@ -3969,18 +3969,6 @@ static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
- 		idx++;
- 	}
- 
--	if (hdev && (aosp_has_quality_report(hdev) ||
--		     hdev->set_quality_report)) {
--		if (hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
--			flags = BIT(0);
--		else
--			flags = 0;
--
--		memcpy(rp->features[idx].uuid, quality_report_uuid, 16);
--		rp->features[idx].flags = cpu_to_le32(flags);
--		idx++;
--	}
--
- 	if (hdev && hdev->get_data_path_id) {
- 		if (hci_dev_test_flag(hdev, HCI_OFFLOAD_CODECS_ENABLED))
- 			flags = BIT(0);
-@@ -4193,80 +4181,6 @@ static int set_rpa_resolution_func(struct sock *sk, struct hci_dev *hdev,
- 	return err;
- }
- 
--static int set_quality_report_func(struct sock *sk, struct hci_dev *hdev,
--				   struct mgmt_cp_set_exp_feature *cp,
--				   u16 data_len)
--{
--	struct mgmt_rp_set_exp_feature rp;
--	bool val, changed;
--	int err;
--
--	/* Command requires to use a valid controller index */
--	if (!hdev)
--		return mgmt_cmd_status(sk, MGMT_INDEX_NONE,
--				       MGMT_OP_SET_EXP_FEATURE,
--				       MGMT_STATUS_INVALID_INDEX);
--
--	/* Parameters are limited to a single octet */
--	if (data_len != MGMT_SET_EXP_FEATURE_SIZE + 1)
--		return mgmt_cmd_status(sk, hdev->id,
--				       MGMT_OP_SET_EXP_FEATURE,
--				       MGMT_STATUS_INVALID_PARAMS);
--
--	/* Only boolean on/off is supported */
--	if (cp->param[0] != 0x00 && cp->param[0] != 0x01)
--		return mgmt_cmd_status(sk, hdev->id,
--				       MGMT_OP_SET_EXP_FEATURE,
--				       MGMT_STATUS_INVALID_PARAMS);
--
--	hci_req_sync_lock(hdev);
--
--	val = !!cp->param[0];
--	changed = (val != hci_dev_test_flag(hdev, HCI_QUALITY_REPORT));
--
--	if (!aosp_has_quality_report(hdev) && !hdev->set_quality_report) {
--		err = mgmt_cmd_status(sk, hdev->id,
--				      MGMT_OP_SET_EXP_FEATURE,
--				      MGMT_STATUS_NOT_SUPPORTED);
--		goto unlock_quality_report;
--	}
--
--	if (changed) {
--		if (hdev->set_quality_report)
--			err = hdev->set_quality_report(hdev, val);
--		else
--			err = aosp_set_quality_report(hdev, val);
--
--		if (err) {
--			err = mgmt_cmd_status(sk, hdev->id,
--					      MGMT_OP_SET_EXP_FEATURE,
--					      MGMT_STATUS_FAILED);
--			goto unlock_quality_report;
--		}
--
--		if (val)
--			hci_dev_set_flag(hdev, HCI_QUALITY_REPORT);
--		else
--			hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);
--	}
--
--	bt_dev_dbg(hdev, "quality report enable %d changed %d", val, changed);
--
--	memcpy(rp.uuid, quality_report_uuid, 16);
--	rp.flags = cpu_to_le32(val ? BIT(0) : 0);
--	hci_sock_set_flag(sk, HCI_MGMT_EXP_FEATURE_EVENTS);
--
--	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_EXP_FEATURE, 0,
--				&rp, sizeof(rp));
--
--	if (changed)
--		exp_feature_changed(hdev, quality_report_uuid, val, sk);
--
--unlock_quality_report:
--	hci_req_sync_unlock(hdev);
--	return err;
--}
--
- static int set_offload_codec_func(struct sock *sk, struct hci_dev *hdev,
- 				  struct mgmt_cp_set_exp_feature *cp,
- 				  u16 data_len)
-@@ -4393,7 +4307,6 @@ static const struct mgmt_exp_feature {
- 	EXP_FEAT(debug_uuid, set_debug_func),
- #endif
- 	EXP_FEAT(rpa_resolution_uuid, set_rpa_resolution_func),
--	EXP_FEAT(quality_report_uuid, set_quality_report_func),
- 	EXP_FEAT(offload_codecs_uuid, set_offload_codec_func),
- 	EXP_FEAT(le_simultaneous_roles_uuid, set_le_simultaneous_roles_func),
- 
-@@ -8664,6 +8577,71 @@ static int get_adv_size_info(struct sock *sk, struct hci_dev *hdev,
- 				 MGMT_STATUS_SUCCESS, &rp, sizeof(rp));
- }
- 
-+static int set_quality_report(struct sock *sk, struct hci_dev *hdev,
-+			      void *data, u16 data_len)
++bool aosp_check_quality_report_len(struct sk_buff *skb)
 +{
-+	struct mgmt_cp_set_quality_report *cp = data;
-+	bool enable, changed;
-+	int err;
-+
-+	/* Command requires to use a valid controller index */
-+	if (!hdev)
-+		return mgmt_cmd_status(sk, MGMT_INDEX_NONE,
-+				       MGMT_OP_SET_QUALITY_REPORT,
-+				       MGMT_STATUS_INVALID_INDEX);
-+
-+	/* Only 0 (off) and 1 (on) is supported */
-+	if (cp->action != 0x00 && cp->action != 0x01)
-+		return mgmt_cmd_status(sk, hdev->id,
-+				       MGMT_OP_SET_QUALITY_REPORT,
-+				       MGMT_STATUS_INVALID_PARAMS);
-+
-+	hci_req_sync_lock(hdev);
-+
-+	enable = !!cp->action;
-+	changed = (enable != hci_dev_test_flag(hdev, HCI_QUALITY_REPORT));
-+
-+	if (!aosp_has_quality_report(hdev) && !hdev->set_quality_report) {
-+		err = mgmt_cmd_status(sk, hdev->id,
-+				      MGMT_OP_SET_QUALITY_REPORT,
-+				      MGMT_STATUS_NOT_SUPPORTED);
-+		goto unlock_quality_report;
++	/* skb->len is allowed to be larger than BLUETOOTH_QUALITY_REPORT_LEN
++	 * to accommodate an additional Vendor Specific Parameter (vsp) field.
++	 */
++	if (skb->len < BLUETOOTH_QUALITY_REPORT_LEN) {
++		BT_ERR("AOSP evt data len %d too short (%u expected)",
++		       skb->len, BLUETOOTH_QUALITY_REPORT_LEN);
++		return false;
 +	}
 +
-+	if (changed) {
-+		if (hdev->set_quality_report)
-+			err = hdev->set_quality_report(hdev, enable);
-+		else
-+			err = aosp_set_quality_report(hdev, enable);
-+
-+		if (err) {
-+			err = mgmt_cmd_status(sk, hdev->id,
-+					      MGMT_OP_SET_QUALITY_REPORT,
-+					      MGMT_STATUS_FAILED);
-+			goto unlock_quality_report;
-+		}
-+
-+		if (enable)
-+			hci_dev_set_flag(hdev, HCI_QUALITY_REPORT);
-+		else
-+			hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);
-+	}
-+
-+	bt_dev_dbg(hdev, "quality report enable %d changed %d",
-+		   enable, changed);
-+
-+	err = send_settings_rsp(sk, MGMT_OP_SET_QUALITY_REPORT, hdev);
-+	if (err < 0)
-+		goto unlock_quality_report;
-+
-+	if (changed)
-+		err = new_settings(hdev, sk);
-+
-+unlock_quality_report:
-+	hci_req_sync_unlock(hdev);
-+	return err;
++	return true;
 +}
 +
- static const struct hci_mgmt_handler mgmt_handlers[] = {
- 	{ NULL }, /* 0x0000 (no command) */
- 	{ read_version,            MGMT_READ_VERSION_SIZE,
-@@ -8790,6 +8768,7 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
- 	{ add_adv_patterns_monitor_rssi,
- 				   MGMT_ADD_ADV_PATTERNS_MONITOR_RSSI_SIZE,
- 						HCI_MGMT_VAR_LEN },
-+	{ set_quality_report,      MGMT_SET_QUALITY_REPORT_SIZE },
++/* AOSP HCI Requirements use 0x54 and up as sub-event codes without
++ * actually defining a vendor prefix. Refer to
++ * https://source.android.com/devices/bluetooth/hci_requirements
++ * Hence, the other vendor event prefixes should not use the same
++ * space to avoid collision.
++ * Since the AOSP does not define a prefix, its prefix is NULL
++ * and prefix_len is 0.
++ * While there are a number of subcodes in AOSP, only interested in
++ * Bluetooth Quality Report (0x58) for now.
++ */
++#define AOSP_EV_QUALITY_REPORT		0x58
++
++static unsigned char AOSP_SUBCODES[] = { AOSP_EV_QUALITY_REPORT };
++
++static struct ext_vendor_prefix aosp_ext_prefix = {
++	.prefix		= NULL,
++	.prefix_len	= 0,
++	.subcodes	= AOSP_SUBCODES,
++	.subcodes_len	= sizeof(AOSP_SUBCODES),
++};
++
++struct ext_vendor_prefix *aosp_get_ext_prefix(struct hci_dev *hdev)
++{
++	return &aosp_ext_prefix;
++}
++
++void aosp_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
++{
++	if (aosp_has_quality_report(hdev) && aosp_check_quality_report_len(skb))
++		mgmt_quality_report(hdev, skb->data, skb->len,
++				    QUALITY_SPEC_AOSP_BQR);
++}
+diff --git a/net/bluetooth/aosp.h b/net/bluetooth/aosp.h
+index 2fd8886d51b2..8208e01fffed 100644
+--- a/net/bluetooth/aosp.h
++++ b/net/bluetooth/aosp.h
+@@ -10,6 +10,9 @@ void aosp_do_close(struct hci_dev *hdev);
+ 
+ bool aosp_has_quality_report(struct hci_dev *hdev);
+ int aosp_set_quality_report(struct hci_dev *hdev, bool enable);
++bool aosp_check_quality_report_len(struct sk_buff *skb);
++struct ext_vendor_prefix *aosp_get_ext_prefix(struct hci_dev *hdev);
++void aosp_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb);
+ 
+ #else
+ 
+@@ -26,4 +29,19 @@ static inline int aosp_set_quality_report(struct hci_dev *hdev, bool enable)
+ 	return -EOPNOTSUPP;
+ }
+ 
++static inline bool aosp_check_quality_report_len(struct sk_buff *skb)
++{
++	return false;
++}
++
++static inline struct ext_vendor_prefix *
++aosp_get_ext_prefix(struct hci_dev *hdev)
++{
++	return NULL;
++}
++
++static inline void aosp_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
++{
++}
++
+ #endif
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 0270e597c285..8398971eddf4 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -37,6 +37,7 @@
+ #include "smp.h"
+ #include "msft.h"
+ #include "eir.h"
++#include "aosp.h"
+ 
+ #define ZERO_KEY "\x00\x00\x00\x00\x00\x00\x00\x00" \
+ 		 "\x00\x00\x00\x00\x00\x00\x00\x00"
+@@ -4259,6 +4260,57 @@ static void hci_num_comp_blocks_evt(struct hci_dev *hdev, void *data,
+ 	queue_work(hdev->workqueue, &hdev->tx_work);
+ }
+ 
++/* Every distinct vendor specification must have a well-defined vendor
++ * event prefix to determine if a vendor event meets the specification.
++ * Some vendor prefixes are fixed values while some other vendor prefixes
++ * are only available at run time.
++ */
++static struct ext_vendor_event_prefix {
++	/* Some vendor prefixes are variable length. For convenience,
++	 * the prefix in struct ext_vendor_prefix is in little endian.
++	 */
++	struct ext_vendor_prefix *
++		(*get_ext_vendor_prefix)(struct hci_dev *hdev);
++	void (*vendor_func)(struct hci_dev *hdev, struct sk_buff *skb);
++} evt_prefixes[] = {
++	{ aosp_get_ext_prefix, aosp_vendor_evt },
++	{ msft_get_ext_prefix, msft_vendor_evt },
++
++	/* end with a null entry */
++	{},
++};
++
++static void hci_vendor_evt(struct hci_dev *hdev, void *data,
++			   struct sk_buff *skb)
++{
++	int i, j;
++	struct ext_vendor_prefix *vnd;
++	__u8 subcode;
++
++	for (i = 0; evt_prefixes[i].get_ext_vendor_prefix; i++) {
++		vnd = evt_prefixes[i].get_ext_vendor_prefix(hdev);
++		if (!vnd)
++			continue;
++
++		/* Compare the raw prefix data in little endian directly. */
++		if (memcmp(vnd->prefix, skb->data, vnd->prefix_len))
++			continue;
++
++		/* Make sure that there are more data after prefix. */
++		if (skb->len <= vnd->prefix_len)
++			continue;
++
++		/* The subcode is the single octet following the prefix. */
++		subcode = skb->data[vnd->prefix_len];
++		for (j = 0; j < vnd->subcodes_len; j++) {
++			if (vnd->subcodes[j] == subcode) {
++				evt_prefixes[i].vendor_func(hdev, skb);
++				break;
++			}
++		}
++	}
++}
++
+ static void hci_mode_change_evt(struct hci_dev *hdev, void *data,
+ 				struct sk_buff *skb)
+ {
+@@ -6879,7 +6931,7 @@ static const struct hci_ev {
+ 	HCI_EV(HCI_EV_NUM_COMP_BLOCKS, hci_num_comp_blocks_evt,
+ 	       sizeof(struct hci_ev_num_comp_blocks)),
+ 	/* [0xff = HCI_EV_VENDOR] */
+-	HCI_EV_VL(HCI_EV_VENDOR, msft_vendor_evt, 0, HCI_MAX_EVENT_SIZE),
++	HCI_EV_VL(HCI_EV_VENDOR, hci_vendor_evt, 0, HCI_MAX_EVENT_SIZE),
  };
  
- void mgmt_index_added(struct hci_dev *hdev)
+ static void hci_event_func(struct hci_dev *hdev, u8 event, struct sk_buff *skb,
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 1ad84f34097f..9d3666bdd07c 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -4332,6 +4332,25 @@ static int set_exp_feature(struct sock *sk, struct hci_dev *hdev,
+ 			       MGMT_STATUS_NOT_SUPPORTED);
+ }
+ 
++int mgmt_quality_report(struct hci_dev *hdev, void *data, u32 data_len,
++			u8 quality_spec)
++{
++	struct mgmt_ev_quality_report *ev;
++	struct sk_buff *skb;
++
++	skb = mgmt_alloc_skb(hdev, MGMT_EV_QUALITY_REPORT,
++			     sizeof(*ev) + data_len);
++	if (!skb)
++		return -ENOMEM;
++
++	ev = skb_put(skb, sizeof(*ev));
++	ev->quality_spec = quality_spec;
++	ev->data_len = data_len;
++	skb_put_data(skb, data, data_len);
++
++	return mgmt_event_skb(skb, NULL);
++}
++
+ static int get_device_flags(struct sock *sk, struct hci_dev *hdev, void *data,
+ 			    u16 data_len)
+ {
+diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
+index f43994523b1f..c003e94faccd 100644
+--- a/net/bluetooth/msft.c
++++ b/net/bluetooth/msft.c
+@@ -116,6 +116,20 @@ bool msft_monitor_supported(struct hci_dev *hdev)
+ 	return !!(msft_get_features(hdev) & MSFT_FEATURE_MASK_LE_ADV_MONITOR);
+ }
+ 
++/* Add the MSFT vendor event subcodes into MSFT_SUBCODES which
++ * msft_vendor_evt() is interested in handling.
++ */
++static unsigned char MSFT_SUBCODES[] = { MSFT_EV_LE_MONITOR_DEVICE };
++static struct ext_vendor_prefix msft_ext_prefix = { 0 };
++
++static void set_ext_prefix(struct msft_data *msft)
++{
++	msft_ext_prefix.prefix = msft->evt_prefix;
++	msft_ext_prefix.prefix_len = msft->evt_prefix_len;
++	msft_ext_prefix.subcodes = MSFT_SUBCODES;
++	msft_ext_prefix.subcodes_len = sizeof(MSFT_SUBCODES);
++}
++
+ static bool read_supported_features(struct hci_dev *hdev,
+ 				    struct msft_data *msft)
+ {
+@@ -156,6 +170,8 @@ static bool read_supported_features(struct hci_dev *hdev,
+ 	if (msft->features & MSFT_FEATURE_MASK_CURVE_VALIDITY)
+ 		hdev->msft_curve_validity = true;
+ 
++	set_ext_prefix(msft);
++
+ 	kfree_skb(skb);
+ 	return true;
+ 
+@@ -742,7 +758,17 @@ static void msft_monitor_device_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 				 handle_data->mgmt_handle);
+ }
+ 
+-void msft_vendor_evt(struct hci_dev *hdev, void *data, struct sk_buff *skb)
++struct ext_vendor_prefix *msft_get_ext_prefix(struct hci_dev *hdev)
++{
++	struct msft_data *msft = hdev->msft_data;
++
++	if (!msft)
++		return NULL;
++
++	return &msft_ext_prefix;
++}
++
++void msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ {
+ 	struct msft_data *msft = hdev->msft_data;
+ 	u8 *evt_prefix;
+diff --git a/net/bluetooth/msft.h b/net/bluetooth/msft.h
+index afcaf7d3b1cb..1515ae06c628 100644
+--- a/net/bluetooth/msft.h
++++ b/net/bluetooth/msft.h
+@@ -17,7 +17,7 @@ void msft_register(struct hci_dev *hdev);
+ void msft_unregister(struct hci_dev *hdev);
+ void msft_do_open(struct hci_dev *hdev);
+ void msft_do_close(struct hci_dev *hdev);
+-void msft_vendor_evt(struct hci_dev *hdev, void *data, struct sk_buff *skb);
++void msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb);
+ __u64 msft_get_features(struct hci_dev *hdev);
+ int msft_add_monitor_pattern(struct hci_dev *hdev, struct adv_monitor *monitor);
+ int msft_remove_monitor(struct hci_dev *hdev, struct adv_monitor *monitor,
+@@ -27,6 +27,7 @@ int msft_set_filter_enable(struct hci_dev *hdev, bool enable);
+ int msft_suspend_sync(struct hci_dev *hdev);
+ int msft_resume_sync(struct hci_dev *hdev);
+ bool msft_curve_validity(struct hci_dev *hdev);
++struct ext_vendor_prefix *msft_get_ext_prefix(struct hci_dev *hdev);
+ 
+ #else
+ 
+@@ -39,8 +40,7 @@ static inline void msft_register(struct hci_dev *hdev) {}
+ static inline void msft_unregister(struct hci_dev *hdev) {}
+ static inline void msft_do_open(struct hci_dev *hdev) {}
+ static inline void msft_do_close(struct hci_dev *hdev) {}
+-static inline void msft_vendor_evt(struct hci_dev *hdev, void *data,
+-				   struct sk_buff *skb) {}
++static inline void msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb) {}
+ static inline __u64 msft_get_features(struct hci_dev *hdev) { return 0; }
+ static inline int msft_add_monitor_pattern(struct hci_dev *hdev,
+ 					   struct adv_monitor *monitor)
+@@ -77,4 +77,10 @@ static inline bool msft_curve_validity(struct hci_dev *hdev)
+ 	return false;
+ }
+ 
++static inline struct ext_vendor_prefix *
++msft_get_ext_prefix(struct hci_dev *hdev)
++{
++	return NULL;
++}
++
+ #endif
 -- 
 2.36.1.124.g0e6072fb45-goog
 
