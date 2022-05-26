@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EBFC535157
+	by mail.lfdr.de (Postfix) with ESMTP id 6A75B535159
 	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 17:23:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344038AbiEZPXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 11:23:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35056 "EHLO
+        id S1347909AbiEZPXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 11:23:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229993AbiEZPXW (ORCPT
+        with ESMTP id S1345092AbiEZPXW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 11:23:22 -0400
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C3DCC0394
-        for <netdev@vger.kernel.org>; Thu, 26 May 2022 08:23:21 -0700 (PDT)
-Received: by mail-io1-xd33.google.com with SMTP id i74so1886319ioa.4
-        for <netdev@vger.kernel.org>; Thu, 26 May 2022 08:23:20 -0700 (PDT)
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11260B82C0
+        for <netdev@vger.kernel.org>; Thu, 26 May 2022 08:23:22 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id y12so1871020ior.7
+        for <netdev@vger.kernel.org>; Thu, 26 May 2022 08:23:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=3FuYWZH+FiljKJENkWoPtISQbamYnIl3gQFtl722jiA=;
-        b=JCJ0wcVFz30z7mdJYRQ1SjWB5/cxg52tEnaNUcX7dIplxUVCw74CoRRZS/xOVFVUM7
-         s/pzcO+MNm62J5nT943NsEYQvJ2z0BFhGyoa2dY7cHIRIQBh9R7iQEDQ5imoZ6BoWAOn
-         4dKll3g71P1z/ZtXyzCupQsqBu0IVVoTpUcHnjwl0SRFloc+vFfi6Q1GQxK83xLHe8Oa
-         4eQCfBWb6k5lhYRT5CJ6jB8kRlwa0gRRzHyEOd6rxQkqwERcfaiGesZm9OBFBmtT3g4G
-         z9kSZydtVvp0j7tHFaXPU+w5tR9xTiZxL15tp0/tfHC9D0TK2JG+5f6h9QbNvaTRu6in
-         lFRA==
+        bh=wgV5WDhxmD0Dnlf3qJjYbgrRUn1OQnaRM9u6zB4EPj0=;
+        b=IToBwRVLrMfLDIr+YkgYZKo8kZX1EPcQ3otjSZJwsbE2mnnYVVMzCor7Z2y3464Ndv
+         uZMezsTJE2h3v16QLMKPwdYP1RuyNXo92U8i0fVWOevhQqqqnjBIwQSDSSYmqabH2vYW
+         LLqxri3IE5rLz6/x0vLp/+ymd4p3tpoAIOUIk0ihH0ZiTVNdL2dAfoF7H2EuciTVWZNA
+         uwHcGax+n8ofHSnCuYoc4n1M40JC+FMpSbMLzvD5fP7YRX85UtUCT4S0pWL0ZkMZ3Sa3
+         g0C7uEfYPQ/i+vKS3hDZknB4x0EJD/FYdUQZ1uZ8fAcpza125jtsnaYtIFmJxGUgRxVr
+         b1wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=3FuYWZH+FiljKJENkWoPtISQbamYnIl3gQFtl722jiA=;
-        b=EUAlpTuG0/ibhi9Afk2HBJMjTn6fx1+KZ78Lz1l/AxRSravzwig1pa9k7gXIr981x/
-         OVkYS3Te5duRuaEE29XR55ltk2nzMpoqN2MxurYZ+c3uhNkRQzep0bB1btsqWzfTBrwI
-         aQsv6mX9sMbPjgs2bVDaQZ4oyfW0H0qexx8caEdjdJkV7LiytvLGrXMDNtk/1qL6chb1
-         lzi6gG1iArsOYLa+1CicvXyuaKutODa/e0gf2aXWmM5lSxZ3VP+g1/lULeSxL43EqLRy
-         F/UkBImzQwxQx/C6tfdNr1Dq64P9f4i+0lpoproGU01r8KqpKKlRu5b26TAt8gnVk0L8
-         t7Uw==
-X-Gm-Message-State: AOAM531YWTEi4NiMWDkpIkDYECTPDiw3A/NqMAC/F4wKmJfw7yIdknxA
-        CYiVqnR+14L//TqyKRgp0BXJjw==
-X-Google-Smtp-Source: ABdhPJwSwMkwczWccgfG9TdcgTrjzDEinEWUUPdmZXWDZhhvWQEAQXqnS055C5SratTS0Ib/K6kDSw==
-X-Received: by 2002:a05:6638:3490:b0:32e:ec1f:b923 with SMTP id t16-20020a056638349000b0032eec1fb923mr6394074jal.20.1653578600375;
-        Thu, 26 May 2022 08:23:20 -0700 (PDT)
+        bh=wgV5WDhxmD0Dnlf3qJjYbgrRUn1OQnaRM9u6zB4EPj0=;
+        b=1707uTpGhOPYv/OitcAemA6chBFxhPWzwLelZgGpg+zCrUuEe0Fog1zNZy01x+um9J
+         2ujrf7wK0Nl/E8WlkbUWKitenMYu8qlrN3BbhkXcAzLdGJT5woiWKPGzWXP7rtsQiG8p
+         k0sRsg6B+v3QnYAsfQV8p3DGJts3kZsbAtnNl8mjShppji+23M7y4Zu8pSbYOfuriEPO
+         nXnC48VNR8lTlOkogU98gj4aYg5VW1YPumYisDc1ndcOZ9ygP9IAFfIyaMEpVii8wxPI
+         yhVsRa7joPe/4yTOoxmm3LRXKqZ0EQiQK+GRUMRaRfyg+h7Gymj1gU4keVvrKMahIFCf
+         5AZg==
+X-Gm-Message-State: AOAM531EPczWFXqFDGr0AXWhhpnRZlp2VM5Muus1zqUMDx1rjunhbyS7
+        v5EBAHHdaV4XoVVfq42Wwq4dmw==
+X-Google-Smtp-Source: ABdhPJyv86Q+rlXw0biKIV5ICAXAC45XHggZ5ExI5BZTBsIyQSf3VwVvO7o6NzYN3ZcueM3S2dDB/w==
+X-Received: by 2002:a5d:9448:0:b0:657:24e0:c0b2 with SMTP id x8-20020a5d9448000000b0065724e0c0b2mr16683401ior.167.1653578601430;
+        Thu, 26 May 2022 08:23:21 -0700 (PDT)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id b59-20020a0295c1000000b0032b3a78176fsm466847jai.51.2022.05.26.08.23.19
+        by smtp.gmail.com with ESMTPSA id b59-20020a0295c1000000b0032b3a78176fsm466847jai.51.2022.05.26.08.23.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 08:23:20 -0700 (PDT)
+        Thu, 26 May 2022 08:23:21 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -55,9 +55,9 @@ Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
         quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
         elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v2 1/2] net: ipa: fix page free in ipa_endpoint_trans_release()
-Date:   Thu, 26 May 2022 10:23:13 -0500
-Message-Id: <20220526152314.1405629-2-elder@linaro.org>
+Subject: [PATCH net v2 2/2] net: ipa: fix page free in ipa_endpoint_replenish_one()
+Date:   Thu, 26 May 2022 10:23:14 -0500
+Message-Id: <20220526152314.1405629-3-elder@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220526152314.1405629-1-elder@linaro.org>
 References: <20220526152314.1405629-1-elder@linaro.org>
@@ -65,7 +65,7 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,39 +73,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the (possibly compound) page used for receive buffers are
+Currently the (possibly compound) pages used for receive buffers are
 freed using __free_pages().  But according to this comment above the
 definition of that function, that's wrong:
-    If you want to use the page's reference count to decide when
-    to free the allocation, you should allocate a compound page,
-    and use put_page() instead of __free_pages().
+    If you want to use the page's reference count to decide
+    when to free the allocation, you should allocate a compound
+    page, and use put_page() instead of __free_pages().
 
-Convert the call to __free_pages() in ipa_endpoint_trans_release()
+Convert the call to __free_pages() in ipa_endpoint_replenish_one()
 to use put_page() instead.
 
-Fixes: ed23f02680caa ("net: ipa: define per-endpoint receive buffer size")
+Fixes: 6a606b90153b8 ("net: ipa: allocate transaction in replenish loop")
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_endpoint.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/net/ipa/ipa_endpoint.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 385aa63ab4bbc..e92aa9447f6e7 100644
+index e92aa9447f6e7..d3b3255ac3d12 100644
 --- a/drivers/net/ipa/ipa_endpoint.c
 +++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1418,11 +1418,8 @@ void ipa_endpoint_trans_release(struct ipa_endpoint *endpoint,
- 	} else {
- 		struct page *page = trans->data;
+@@ -1095,7 +1095,7 @@ static int ipa_endpoint_replenish_one(struct ipa_endpoint *endpoint,
  
--		if (page) {
--			u32 buffer_size = endpoint->config.rx.buffer_size;
--
--			__free_pages(page, get_order(buffer_size));
--		}
-+		if (page)
-+			put_page(page);
- 	}
- }
+ 	ret = gsi_trans_page_add(trans, page, len, offset);
+ 	if (ret)
+-		__free_pages(page, get_order(buffer_size));
++		put_page(page);
+ 	else
+ 		trans->data = page;	/* transaction owns page now */
  
 -- 
 2.32.0
