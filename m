@@ -2,91 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AEEB35347F7
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 03:17:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A53F2534808
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 03:23:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345568AbiEZBRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 21:17:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54468 "EHLO
+        id S241392AbiEZBXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 21:23:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344426AbiEZBQ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 21:16:57 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4177B4FC5F;
-        Wed, 25 May 2022 18:16:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=qYg8IKyL/r8f2Vg1ESuYjuOnE5g2jafpU06hhSyNUpw=; b=FU/B4l/86GX2mfAVzdnOZlet7o
-        4YIMhkZpbCoSmgTvSZ+0srZ6BwOG40pWCCMj19qhaZ7LyhuSaw2+YdDV5a6+88avQFq2cWdQHfPWr
-        byuXc0vT/MGU7fDuPvzVefIP3U6jrYIpaAmCNdJioEzp88SsKae4gtRxxjsbwJwKjR30fWyrk6jS+
-        6N+w+qBIVJaEKMA2SIN/QJXQZdAFNIwoALKz9JWYzo9WKGMkqQ+rWdT359dIGkZ8Sy1ZcS2tNgQxZ
-        uFqnsZqHJyvAVlUVWnv0GfWFHqg8A7Yfpa485ULCi1tDMGcQd2T2bgnhjP4//0FFa8Q9P8q43x6cS
-        bXqNJBtA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nu278-000pxs-VA; Thu, 26 May 2022 01:16:35 +0000
-Date:   Thu, 26 May 2022 02:16:34 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Jessica Clarke <jrtc27@jrtc27.com>,
-        kernel test robot <lkp@intel.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-riscv@lists.infradead.org,
-        linux-rdma@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-parport@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-mm@kvack.org, linux-fbdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, bpf@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org, alsa-devel@alsa-project.org
-Subject: Re: [linux-next:master] BUILD REGRESSION
- 8cb8311e95e3bb58bd84d6350365f14a718faa6d
-Message-ID: <Yo7U8kglHlcvQ0Ri@casper.infradead.org>
-References: <628ea118.wJYf60YnZco0hs9o%lkp@intel.com>
- <20220525145056.953631743a4c494aabf000dc@linux-foundation.org>
- <F0E25DFF-8256-48FF-8B88-C0E3730A3E5E@jrtc27.com>
- <20220525152006.e87d3fa50aca58fdc1b43b6a@linux-foundation.org>
+        with ESMTP id S229688AbiEZBXE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 21:23:04 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5D76EC4F;
+        Wed, 25 May 2022 18:23:03 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id h186so134810pgc.3;
+        Wed, 25 May 2022 18:23:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0nqWB/LSEwThisZLz/wW12YmDGCojhBcUDE6LDvsPV0=;
+        b=ThWslwVu5+xITBYy/y8OV9wmC80QfQLOPsP221cWT9FtRu11K+uu5ur4UCa6BSs37c
+         gjW4chHRLzLmEoOgPnM7YRFM3upFuJ7bOpXUQGrzJthaTPlYSk9YxCUz6sQ0KT2/vbRN
+         6xB+2TH+7fqVtDQXrhgFgmKp+3jaTSWJ984J60cuzPl6MPsYpbGsn2wB6JbgGIiA9jN+
+         0CiIZv5m2X7qFNzAw0D2kI2krSHwqarAOY21kq7s214vTOW5RWIzc+TxVskjXED/cMTv
+         /91609019Ln4SoO2hMoJKtforPWi1s+aMl/pDU+EDyZmmRJuMdp5ilqKwZFW3uvdfHyK
+         TQWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0nqWB/LSEwThisZLz/wW12YmDGCojhBcUDE6LDvsPV0=;
+        b=KVv4rD3Yt06MvPhGXK9ERWdYtaqAesMtMHRIKJXSd5l6mHibK91hgQHKAP5sPrOGMr
+         kLxDuY3RfFr8g9UUKkziQwrqm/UNQSILRcc1t4XSFltU2bhYDCjlerp94r6eddZ820iZ
+         34AgYVqAJh1cT58Km3ZM8bQ+ZEmUkLGikNcpbiFsIMTgPMNr2/4zIKswVos01h6lDSPb
+         YP1wGy2UyIfBxHcG4YCk9ZKCpNohrAJdE9s8fpCx5l9Zmhs9tBEYVbNnhstup/bONARW
+         ws8vsULQsNm6woh9cVgBgS7+fonsNW8zZP5fP6XjxYdgnecANrP+0re099j7dVKXUh8i
+         f3Ww==
+X-Gm-Message-State: AOAM533rcyGCT7srlyjm9YlxtwwhaSxNVPuaGgucnf0QmhV4risNv0WK
+        R4aPtJHk1o5w9iJ8vACLDm0=
+X-Google-Smtp-Source: ABdhPJwqevSetUTrgBGV0OADIxks6YW6FZUIO9P2LGG3VCfy3/qJHDrjU0rOXV9e8n2rgmzRL8McRw==
+X-Received: by 2002:a63:6cc7:0:b0:3f6:ba59:1bcc with SMTP id h190-20020a636cc7000000b003f6ba591bccmr25222379pgc.188.1653528182711;
+        Wed, 25 May 2022 18:23:02 -0700 (PDT)
+Received: from localhost ([2405:6580:97e0:3100:ae94:2ee7:59a:4846])
+        by smtp.gmail.com with ESMTPSA id e9-20020a170902ef4900b0015e8d4eb1c1sm66497plx.11.2022.05.25.18.23.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 18:23:01 -0700 (PDT)
+Date:   Thu, 26 May 2022 10:22:59 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCH bpf-next v8 09/10] selftests/bpf: Extend kfunc selftests
+Message-ID: <Yo7Wc2xGyuq/1tq1@d3>
+References: <20220114163953.1455836-1-memxor@gmail.com>
+ <20220114163953.1455836-10-memxor@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220525152006.e87d3fa50aca58fdc1b43b6a@linux-foundation.org>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20220114163953.1455836-10-memxor@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 25, 2022 at 03:20:06PM -0700, Andrew Morton wrote:
-> On Wed, 25 May 2022 23:07:35 +0100 Jessica Clarke <jrtc27@jrtc27.com> wrote:
+On 2022-01-14 22:09 +0530, Kumar Kartikeya Dwivedi wrote:
+> Use the prog_test kfuncs to test the referenced PTR_TO_BTF_ID kfunc
+> support, and PTR_TO_CTX, PTR_TO_MEM argument passing support. Also
+> testing the various failure cases for invalid kfunc prototypes.
 > 
-> > This is i386, so an unsigned long is 32-bit, but i_blocks is a blkcnt_t
-> > i.e. a u64, which makes the shift without a cast of the LHS fishy.
+> Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> ---
+>  net/bpf/test_run.c                            | 129 +++++++++++++++++-
+>  .../selftests/bpf/prog_tests/kfunc_call.c     |   6 +
+>  .../selftests/bpf/progs/kfunc_call_test.c     |  52 ++++++-
+>  tools/testing/selftests/bpf/verifier/calls.c  |  75 ++++++++++
+>  4 files changed, 258 insertions(+), 4 deletions(-)
 > 
-> Ah, of course, thanks.  I remember 32 bits ;)
-> 
-> --- a/mm/shmem.c~mm-shmemc-suppress-shift-warning
-> +++ a/mm/shmem.c
-> @@ -1945,7 +1945,7 @@ alloc_nohuge:
->  
->  	spin_lock_irq(&info->lock);
->  	info->alloced += folio_nr_pages(folio);
-> -	inode->i_blocks += BLOCKS_PER_PAGE << folio_order(folio);
-> +	inode->i_blocks += (blkcnt_t)BLOCKS_PER_PAGE << folio_order(folio);
 
-Bizarre this started showing up now.  The recent patch was:
+It looks like this patch broke building the bpf tests:
 
--       info->alloced += compound_nr(page);
--       inode->i_blocks += BLOCKS_PER_PAGE << compound_order(page);
-+       info->alloced += folio_nr_pages(folio);
-+       inode->i_blocks += BLOCKS_PER_PAGE << folio_order(folio);
+tools/testing/selftests/bpf$ make
+  CLNG-BPF [test_maps] kfunc_call_test.o
+progs/kfunc_call_test.c:13:46: error: declaration of 'struct prog_test_pass1' will not be visible outside of this function [-Werror,-Wvisibility]
+extern void bpf_kfunc_call_test_pass1(struct prog_test_pass1 *p) __ksym;
+                                             ^
 
-so it could tell that compound_order() was small, but folio_order()
-might be large?
+The only definition of struct prog_test_pass1 that I see is in
+net/bpf/test_run.c. How is this supposed to work?
 
-Silencing the warning is a good thing, but folio_order() can (at the
-moment) be at most 9 on i386, so it isn't actually going to be
-larger than 4096.
+
+commit 87091063df5d ("selftests/bpf: Add test for unstable CT lookup
+API") from the same series added a similar problem in
+progs/test_bpf_nf.c:
+
+progs/test_bpf_nf.c:31:21: error: variable has incomplete type 'struct bpf_ct_opts'
+        struct bpf_ct_opts opts_def = { .l4proto = IPPROTO_TCP, .netns_id = -1 };
+                           ^
