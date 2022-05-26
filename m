@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA5535355AF
+	by mail.lfdr.de (Postfix) with ESMTP id 4CC205355AD
 	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 23:37:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349173AbiEZVgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 17:36:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54220 "EHLO
+        id S1349229AbiEZVgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 17:36:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243125AbiEZVgW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 17:36:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56126E7334;
-        Thu, 26 May 2022 14:36:20 -0700 (PDT)
+        with ESMTP id S1349212AbiEZVgY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 17:36:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC35366AF8;
+        Thu, 26 May 2022 14:36:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DED38B82219;
-        Thu, 26 May 2022 21:36:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25138C36AE5;
-        Thu, 26 May 2022 21:36:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 282FB61B9C;
+        Thu, 26 May 2022 21:36:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 073BBC385B8;
+        Thu, 26 May 2022 21:36:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653600977;
-        bh=lGWKZyEAcHG/rHFsEc19gERB0bPYlJN8ZkjFWS2dFSE=;
+        s=k20201202; t=1653600981;
+        bh=RHe/zgcc/AG0MxbXX/Obu5hneNnlfD3DUodX3MgDfH0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MOGtWO5AwgO+tzpK4cMGLdCJqhqPr+6PQIKtansl5j5IxSwbSyU2MCjXzSWncGgEa
-         c0aotAg0Mk0z8GY1UTHySWqwXW3riJfQuhr3BvHvHMpXWsvh44rGQ3JLExFJpXtC+b
-         puyPEYoP6OReTGhS8O9SRfQdQwQ6DoIOsUfX8LBC+MZ1FQx7DkyFAmQLxAi1r1zt2s
-         TC/ANDj5g3oRrnKA5naxZ3Fg4T4F276Wc19qK8yvq58AgZhDpEhZUpwXIwZotQkVgf
-         gC6YvbCFHdPca8GD5gQM7GnyHTsdxeVZdiJVstfO5UAUlpjukVZrTGoD6TwUg/wgL2
-         6DN33UcUY6wOg==
+        b=HFALLCzyM8AwrhKW5LTkKMWGZ9I7DGValV3faSC4mqpUcaZytEGT4tVD7uJmiC5SJ
+         6/7GOyYftJBR+4GPzT0vhCCZjc8SWt8X+uLpv6eHrrNZXK1ok7NsM3V1nwT+EwCoHG
+         b4127jNH+u40PfWQ9htun31f+Gle/joc0OrW3V1GGCH56u3zg0i4GwPv53NBQe4z/w
+         zBv9efGbYINdYrRA2Ll3tXdwt6CYExrxzO++/XwPN1kFf+3bOor9ZNZ37poufC4LGz
+         lpyZywCMM3LZV6vrT9PRHLcpt6qiAW01nfC2uYC3M5jJIMi9mACyA1Yx6qxtzuUMai
+         3ZzeXIpnfnGtw==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
@@ -39,9 +39,9 @@ Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         fw@strlen.de, netfilter-devel@vger.kernel.org,
         lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
         memxor@gmail.com, yhs@fb.com
-Subject: [PATCH v4 bpf-next 13/14] selftests/bpf: add selftest for bpf_xdp_ct_add and bpf_ct_refresh_timeout kfunc
-Date:   Thu, 26 May 2022 23:35:01 +0200
-Message-Id: <777f1aec6aef006604edf945cb898a0ca636fb9d.1653600578.git.lorenzo@kernel.org>
+Subject: [PATCH v4 bpf-next 14/14] selftests/bpf: Add negative tests for bpf_nf
+Date:   Thu, 26 May 2022 23:35:02 +0200
+Message-Id: <87f1b4523264afab3ad3ea56a2be7000d37cfeea.1653600578.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <cover.1653600577.git.lorenzo@kernel.org>
 References: <cover.1653600577.git.lorenzo@kernel.org>
@@ -57,72 +57,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce selftests for the following kfunc helpers:
-- bpf_xdp_ct_alloc
-- bpf_skb_ct_alloc
-- bpf_ct_insert_entry
-- bpf_ct_refresh_timeout
+From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
+Test cases we care about and ensure improper usage is caught and
+rejected by verifier. This also ends up exercising acquire release
+pair logic and MEM_RDONLY's effect on a PTR_TO_BTF_ID which usually
+permits BPF_WRITE.
+
+Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- .../testing/selftests/bpf/prog_tests/bpf_nf.c |  6 ++
- .../testing/selftests/bpf/progs/test_bpf_nf.c | 87 +++++++++++++++----
- 2 files changed, 76 insertions(+), 17 deletions(-)
+ .../testing/selftests/bpf/prog_tests/bpf_nf.c | 52 ++++++++++++-
+ .../selftests/bpf/progs/test_bpf_nf_fail.c    | 73 +++++++++++++++++++
+ 2 files changed, 124 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_bpf_nf_fail.c
 
 diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
-index dd30b1e3a67c..b909928427f3 100644
+index b909928427f3..d7294c6451d0 100644
 --- a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
 +++ b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
-@@ -39,6 +39,12 @@ void test_bpf_nf_ct(int mode)
- 	ASSERT_EQ(skel->bss->test_enonet_netns_id, -ENONET, "Test ENONET for bad but valid netns_id");
- 	ASSERT_EQ(skel->bss->test_enoent_lookup, -ENOENT, "Test ENOENT for failed lookup");
- 	ASSERT_EQ(skel->bss->test_eafnosupport, -EAFNOSUPPORT, "Test EAFNOSUPPORT for invalid len__tuple");
-+	ASSERT_EQ(skel->data->test_alloc_entry, 0, "Test for alloc new entry");
-+	ASSERT_EQ(skel->data->test_insert_entry, 0, "Test for insert new entry");
-+	ASSERT_EQ(skel->data->test_succ_lookup, 0, "Test for successful lookup");
-+	/* allow some tolerance for test_delta_timeout value to avoid races. */
-+	ASSERT_GT(skel->bss->test_delta_timeout, 9, "Test for min ct timeout update");
-+	ASSERT_LE(skel->bss->test_delta_timeout, 10, "Test for max ct timeout update");
- end:
+@@ -2,13 +2,25 @@
+ #include <test_progs.h>
+ #include <network_helpers.h>
+ #include "test_bpf_nf.skel.h"
++#include "test_bpf_nf_fail.skel.h"
++
++static char log_buf[1024 * 1024];
++
++struct {
++	const char *prog_name;
++	const char *err_msg;
++} test_bpf_nf_fail_tests[] = {
++	{ "alloc_release", "not permitted to release reference" },
++	{ "write_after_insert", "pointer points to const object, only read is supported" },
++	{ "lookup_insert", "cannot pass read only pointer to arg#0" },
++};
+ 
+ enum {
+ 	TEST_XDP,
+ 	TEST_TC_BPF,
+ };
+ 
+-void test_bpf_nf_ct(int mode)
++static void test_bpf_nf_ct(int mode)
+ {
+ 	struct test_bpf_nf *skel;
+ 	int prog_fd, err;
+@@ -49,10 +61,48 @@ void test_bpf_nf_ct(int mode)
  	test_bpf_nf__destroy(skel);
  }
-diff --git a/tools/testing/selftests/bpf/progs/test_bpf_nf.c b/tools/testing/selftests/bpf/progs/test_bpf_nf.c
-index f00a9731930e..1e39f62f7bc8 100644
---- a/tools/testing/selftests/bpf/progs/test_bpf_nf.c
-+++ b/tools/testing/selftests/bpf/progs/test_bpf_nf.c
-@@ -8,6 +8,8 @@
- #define EINVAL 22
- #define ENOENT 2
  
-+extern unsigned long CONFIG_HZ __kconfig;
++static void test_bpf_nf_ct_fail(const char *prog_name, const char *err_msg)
++{
++	LIBBPF_OPTS(bpf_object_open_opts, opts, .kernel_log_buf = log_buf,
++						.kernel_log_size = sizeof(log_buf),
++						.kernel_log_level = 1);
++	struct test_bpf_nf_fail *skel;
++	struct bpf_program *prog;
++	int ret;
 +
- int test_einval_bpf_tuple = 0;
- int test_einval_reserved = 0;
- int test_einval_netns_id = 0;
-@@ -16,6 +18,10 @@ int test_eproto_l4proto = 0;
- int test_enonet_netns_id = 0;
- int test_enoent_lookup = 0;
- int test_eafnosupport = 0;
-+int test_alloc_entry = -EINVAL;
-+int test_insert_entry = -EAFNOSUPPORT;
-+int test_succ_lookup = -ENOENT;
-+u32 test_delta_timeout = 0;
- 
- struct nf_conn;
- 
-@@ -26,31 +32,42 @@ struct bpf_ct_opts___local {
- 	u8 reserved[3];
- } __attribute__((preserve_access_index));
- 
--struct nf_conn *bpf_xdp_ct_lookup(struct xdp_md *, struct bpf_sock_tuple *, u32,
--				  struct bpf_ct_opts___local *, u32) __ksym;
--struct nf_conn *bpf_skb_ct_lookup(struct __sk_buff *, struct bpf_sock_tuple *, u32,
--				  struct bpf_ct_opts___local *, u32) __ksym;
--void bpf_ct_release(struct nf_conn *) __ksym;
-+struct nf_conn *bpf_xdp_ct_alloc(struct xdp_md *, struct bpf_sock_tuple *, u32,
-+				 struct bpf_ct_opts___local *, u32) __ksym;
-+const struct nf_conn *bpf_xdp_ct_lookup(struct xdp_md *, struct bpf_sock_tuple *, u32,
-+					struct bpf_ct_opts___local *, u32) __ksym;
++	skel = test_bpf_nf_fail__open_opts(&opts);
++	if (!ASSERT_OK_PTR(skel, "test_bpf_nf_fail__open"))
++		return;
++
++	prog = bpf_object__find_program_by_name(skel->obj, prog_name);
++	if (!ASSERT_OK_PTR(prog, "bpf_object__find_program_by_name"))
++		goto end;
++
++	bpf_program__set_autoload(prog, true);
++
++	ret = test_bpf_nf_fail__load(skel);
++	if (!ASSERT_ERR(ret, "test_bpf_nf_fail__load must fail"))
++		goto end;
++
++	if (!ASSERT_OK_PTR(strstr(log_buf, err_msg), "expected error message")) {
++		fprintf(stderr, "Expected: %s\n", err_msg);
++		fprintf(stderr, "Verifier: %s\n", log_buf);
++	}
++
++end:
++	test_bpf_nf_fail__destroy(skel);
++}
++
+ void test_bpf_nf(void)
+ {
++	int i;
+ 	if (test__start_subtest("xdp-ct"))
+ 		test_bpf_nf_ct(TEST_XDP);
+ 	if (test__start_subtest("tc-bpf-ct"))
+ 		test_bpf_nf_ct(TEST_TC_BPF);
++	for (i = 0; i < ARRAY_SIZE(test_bpf_nf_fail_tests); i++) {
++		if (test__start_subtest(test_bpf_nf_fail_tests[i].prog_name))
++			test_bpf_nf_ct_fail(test_bpf_nf_fail_tests[i].prog_name,
++					    test_bpf_nf_fail_tests[i].err_msg);
++	}
+ }
+diff --git a/tools/testing/selftests/bpf/progs/test_bpf_nf_fail.c b/tools/testing/selftests/bpf/progs/test_bpf_nf_fail.c
+new file mode 100644
+index 000000000000..2484f7baef90
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_bpf_nf_fail.c
+@@ -0,0 +1,73 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <vmlinux.h>
++#include <bpf/bpf_tracing.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_core_read.h>
++
++struct nf_conn;
++
++struct nf_conn___local {;
++	unsigned long status;
++} __attribute__((preserve_access_index));
++
++struct bpf_ct_opts___local {
++	s32 netns_id;
++	s32 error;
++	u8 l4proto;
++	u8 reserved[3];
++} __attribute__((preserve_access_index));
++
 +struct nf_conn *bpf_skb_ct_alloc(struct __sk_buff *, struct bpf_sock_tuple *, u32,
 +				 struct bpf_ct_opts___local *, u32) __ksym;
 +const struct nf_conn *bpf_skb_ct_lookup(struct __sk_buff *, struct bpf_sock_tuple *, u32,
@@ -130,142 +184,53 @@ index f00a9731930e..1e39f62f7bc8 100644
 +const struct nf_conn *
 +bpf_ct_insert_entry(struct nf_conn *, struct bpf_ct_opts___local *, u32) __ksym;
 +void bpf_ct_release(const struct nf_conn *) __ksym;
-+void bpf_ct_refresh_timeout(const struct nf_conn *, u32) __ksym;
- 
- static __always_inline void
--nf_ct_test(struct nf_conn *(*func)(void *, struct bpf_sock_tuple *, u32,
--				   struct bpf_ct_opts___local *, u32),
-+nf_ct_test(struct nf_conn *(*lookup_fn)(void *, struct bpf_sock_tuple *, u32,
-+					struct bpf_ct_opts___local *, u32),
-+	   struct nf_conn *(*alloc_fn)(void *, struct bpf_sock_tuple *, u32,
-+				       struct bpf_ct_opts___local *, u32),
- 	   void *ctx)
- {
- 	struct bpf_ct_opts___local opts_def = { .l4proto = IPPROTO_TCP, .netns_id = -1 };
- 	struct bpf_sock_tuple bpf_tuple;
- 	struct nf_conn *ct;
-+	int err;
- 
- 	__builtin_memset(&bpf_tuple, 0, sizeof(bpf_tuple.ipv4));
- 
--	ct = func(ctx, NULL, 0, &opts_def, sizeof(opts_def));
-+	ct = lookup_fn(ctx, NULL, 0, &opts_def, sizeof(opts_def));
- 	if (ct)
- 		bpf_ct_release(ct);
- 	else
- 		test_einval_bpf_tuple = opts_def.error;
- 
- 	opts_def.reserved[0] = 1;
--	ct = func(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def, sizeof(opts_def));
-+	ct = lookup_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
-+		       sizeof(opts_def));
- 	opts_def.reserved[0] = 0;
- 	opts_def.l4proto = IPPROTO_TCP;
- 	if (ct)
-@@ -59,21 +76,24 @@ nf_ct_test(struct nf_conn *(*func)(void *, struct bpf_sock_tuple *, u32,
- 		test_einval_reserved = opts_def.error;
- 
- 	opts_def.netns_id = -2;
--	ct = func(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def, sizeof(opts_def));
-+	ct = lookup_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
-+		       sizeof(opts_def));
- 	opts_def.netns_id = -1;
- 	if (ct)
- 		bpf_ct_release(ct);
- 	else
- 		test_einval_netns_id = opts_def.error;
- 
--	ct = func(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def, sizeof(opts_def) - 1);
-+	ct = lookup_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
-+		       sizeof(opts_def) - 1);
- 	if (ct)
- 		bpf_ct_release(ct);
- 	else
- 		test_einval_len_opts = opts_def.error;
- 
- 	opts_def.l4proto = IPPROTO_ICMP;
--	ct = func(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def, sizeof(opts_def));
-+	ct = lookup_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
-+		       sizeof(opts_def));
- 	opts_def.l4proto = IPPROTO_TCP;
- 	if (ct)
- 		bpf_ct_release(ct);
-@@ -81,37 +101,70 @@ nf_ct_test(struct nf_conn *(*func)(void *, struct bpf_sock_tuple *, u32,
- 		test_eproto_l4proto = opts_def.error;
- 
- 	opts_def.netns_id = 0xf00f;
--	ct = func(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def, sizeof(opts_def));
-+	ct = lookup_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
-+		       sizeof(opts_def));
- 	opts_def.netns_id = -1;
- 	if (ct)
- 		bpf_ct_release(ct);
- 	else
- 		test_enonet_netns_id = opts_def.error;
- 
--	ct = func(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def, sizeof(opts_def));
-+	ct = lookup_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
-+		       sizeof(opts_def));
- 	if (ct)
- 		bpf_ct_release(ct);
- 	else
- 		test_enoent_lookup = opts_def.error;
- 
--	ct = func(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4) - 1, &opts_def, sizeof(opts_def));
-+	ct = lookup_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4) - 1, &opts_def,
-+		       sizeof(opts_def));
- 	if (ct)
- 		bpf_ct_release(ct);
- 	else
- 		test_eafnosupport = opts_def.error;
 +
-+	bpf_tuple.ipv4.saddr = bpf_get_prandom_u32(); /* src IP */
-+	bpf_tuple.ipv4.daddr = bpf_get_prandom_u32(); /* dst IP */
-+	bpf_tuple.ipv4.sport = bpf_get_prandom_u32(); /* src port */
-+	bpf_tuple.ipv4.dport = bpf_get_prandom_u32(); /* dst port */
++SEC("?tc")
++int alloc_release(struct __sk_buff *ctx)
++{
++	struct bpf_ct_opts___local opts = {};
++	struct bpf_sock_tuple tup = {};
++	struct nf_conn *ct;
 +
-+	ct = alloc_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
-+		      sizeof(opts_def));
-+	if (ct) {
-+		const struct nf_conn *ct_ins;
++	ct = bpf_skb_ct_alloc(ctx, &tup, sizeof(tup.ipv4), &opts, sizeof(opts));
++	if (!ct)
++		return 0;
++	bpf_ct_release(ct);
++	return 0;
++}
 +
-+		ct_ins = bpf_ct_insert_entry(ct, &opts_def, sizeof(opts_def));
-+		if (ct_ins) {
-+			struct nf_conn *ct_lk;
++SEC("?tc")
++int write_after_insert(struct __sk_buff *ctx)
++{
++	struct bpf_ct_opts___local opts = {};
++	struct bpf_sock_tuple tup = {};
++	struct nf_conn___local *ct;
 +
-+			ct_lk = lookup_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4),
-+					  &opts_def, sizeof(opts_def));
-+			if (ct_lk) {
-+				/* update ct entry timeout */
-+				bpf_ct_refresh_timeout(ct_lk, 10000);
-+				test_delta_timeout = ct_lk->timeout - bpf_jiffies64();
-+				test_delta_timeout /= CONFIG_HZ;
-+				bpf_ct_release(ct_lk);
-+				test_succ_lookup = 0;
-+			}
-+			bpf_ct_release(ct_ins);
-+			test_insert_entry = 0;
-+		}
-+		test_alloc_entry = 0;
-+	}
- }
- 
- SEC("xdp")
- int nf_xdp_ct_test(struct xdp_md *ctx)
- {
--	nf_ct_test((void *)bpf_xdp_ct_lookup, ctx);
-+	nf_ct_test((void *)bpf_xdp_ct_lookup, (void *)bpf_xdp_ct_alloc, ctx);
- 	return 0;
- }
- 
- SEC("tc")
- int nf_skb_ct_test(struct __sk_buff *ctx)
- {
--	nf_ct_test((void *)bpf_skb_ct_lookup, ctx);
-+	nf_ct_test((void *)bpf_skb_ct_lookup, (void *)bpf_skb_ct_alloc, ctx);
- 	return 0;
- }
- 
++	ct = (void *)bpf_skb_ct_alloc(ctx, &tup, sizeof(tup.ipv4), &opts, sizeof(opts));
++	if (!ct)
++		return 0;
++	ct = (void *)bpf_ct_insert_entry((void *)ct, &opts, sizeof(opts));
++	if (!ct)
++		return 0;
++	ct->status = 0;
++	return 0;
++}
++
++SEC("?tc")
++int lookup_insert(struct __sk_buff *ctx)
++{
++	struct bpf_ct_opts___local opts = {};
++	struct bpf_sock_tuple tup = {};
++	struct nf_conn *ct;
++
++	ct = (void *)bpf_skb_ct_lookup(ctx, &tup, sizeof(tup.ipv4), &opts, sizeof(opts));
++	if (!ct)
++		return 0;
++	bpf_ct_insert_entry(ct, &opts, sizeof(opts));
++	return 0;
++}
++
++char _license[] SEC("license") = "GPL";
 -- 
 2.35.3
 
