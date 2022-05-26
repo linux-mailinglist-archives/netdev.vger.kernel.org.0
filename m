@@ -2,158 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9B33534C40
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 11:07:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C1C3534C7D
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 11:28:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345957AbiEZJHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 05:07:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48570 "EHLO
+        id S237594AbiEZJ2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 05:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239192AbiEZJHW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 05:07:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A203AEE1D
-        for <netdev@vger.kernel.org>; Thu, 26 May 2022 02:07:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653556039;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KrhZj/f2a1K5xyngYjaDLFoTBYuesG1Fa4WdS5JUxdc=;
-        b=PqsbdUzHwK3A5hrBfI2O18NMQn7wLtI8TQIn5oZRsAPlgAuhtlki1fOcWkE6dU22yzKPCO
-        D70sUJQpUbXQryivYe9qz6OFubPiffizY1KT2OWb59e0ZjVp5FLkqiNyI5+qBoQzHAamOn
-        oHStQfoK7Ok3q9CIsqS0u4QK9CPUejs=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-623-6UbcWFsdPCme4TLX18OlkQ-1; Thu, 26 May 2022 05:07:18 -0400
-X-MC-Unique: 6UbcWFsdPCme4TLX18OlkQ-1
-Received: by mail-wm1-f72.google.com with SMTP id o2-20020a05600c510200b0039747b0216fso2731108wms.0
-        for <netdev@vger.kernel.org>; Thu, 26 May 2022 02:07:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=KrhZj/f2a1K5xyngYjaDLFoTBYuesG1Fa4WdS5JUxdc=;
-        b=GkmDD8l8aspOj2ScgbzvyxiS3z+iZsyrkJadsA92CNzBI6JzAu9aczEYqo5gPh1cPh
-         W0WHiItjSp4TloAMxm/mIi53kNa7J/Lw1NLkLQlUrq/TyGT6+rQbCMC3XZ6JWO5UAPws
-         09R8qW4YCMWR6Wa0aIkdd6Fys3y54dUK7x+6w/6ksYpOO5OcJ5+XmQiViaZlKwZYLTLZ
-         X4zhH6KoMgV7K0Mf6Qmydfyo7ksyrGHBfp2UJkuZ7dpzGWpaQqKAelfrC22sJTKO6RR6
-         eiFxGUsPAGZqXuNRgqjivoG6cwa0GBvNgoWT5IQzm3YWh8hVT0qqk2DrQt8ZAZuG8ej6
-         0VqQ==
-X-Gm-Message-State: AOAM530SjWEVJuuGft1M9DJ1+X7hhnziFwIquyP3ijHqMqX9RLudXM+Z
-        +zMlFn6riq1GUbj+/1H9kg3gJddSISSdTuXb/RCnY1jUliXHY/5BkPZNe9Ox76AgmcmTGTe1Ulx
-        loHsBmzaDxDdJ8mqy
-X-Received: by 2002:a05:600c:3d0d:b0:397:460d:3360 with SMTP id bh13-20020a05600c3d0d00b00397460d3360mr1385908wmb.54.1653556037232;
-        Thu, 26 May 2022 02:07:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzsQMSJXaL5D4KLoVhLNCOsXSL5t/a06VfP1CmmgXg13RDPmXb5nBs/26we+aadnB6KRWEdCQ==
-X-Received: by 2002:a05:600c:3d0d:b0:397:460d:3360 with SMTP id bh13-20020a05600c3d0d00b00397460d3360mr1385860wmb.54.1653556036941;
-        Thu, 26 May 2022 02:07:16 -0700 (PDT)
-Received: from sgarzare-redhat (host-87-12-25-16.business.telecomitalia.it. [87.12.25.16])
-        by smtp.gmail.com with ESMTPSA id p36-20020a05600c1da400b003974027722csm1247492wms.47.2022.05.26.02.07.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 02:07:16 -0700 (PDT)
-Date:   Thu, 26 May 2022 11:07:06 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Eugenio Perez Martin <eperezma@redhat.com>
-Cc:     "Dawar, Gautam" <gautam.dawar@amd.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        Jason Wang <jasowang@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        "martinh@xilinx.com" <martinh@xilinx.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        "dinang@xilinx.com" <dinang@xilinx.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        "martinpo@xilinx.com" <martinpo@xilinx.com>,
-        "pabloc@xilinx.com" <pabloc@xilinx.com>,
-        Longpeng <longpeng2@huawei.com>,
-        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
-        "lvivier@redhat.com" <lvivier@redhat.com>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        "hanand@xilinx.com" <hanand@xilinx.com>
-Subject: Re: [PATCH v3 2/4] vhost-vdpa: introduce STOP backend feature bit
-Message-ID: <20220526090706.maf645wayelb7mcp@sgarzare-redhat>
-References: <20220525105922.2413991-1-eperezma@redhat.com>
- <20220525105922.2413991-3-eperezma@redhat.com>
- <BL1PR12MB582520CC9CE024149141327499D69@BL1PR12MB5825.namprd12.prod.outlook.com>
- <CAJaqyWc9_ErCg4whLKrjNyP5z2DZno-LJm7PN=-9uk7PUT4fJw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJaqyWc9_ErCg4whLKrjNyP5z2DZno-LJm7PN=-9uk7PUT4fJw@mail.gmail.com>
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S230081AbiEZJ2O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 05:28:14 -0400
+Received: from mailout1.hostsharing.net (mailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5fcc:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7125C644
+        for <netdev@vger.kernel.org>; Thu, 26 May 2022 02:28:11 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by mailout1.hostsharing.net (Postfix) with ESMTPS id C7222103A8FDE;
+        Thu, 26 May 2022 11:28:09 +0200 (CEST)
+Received: from localhost (unknown [89.246.108.87])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by h08.hostsharing.net (Postfix) with ESMTPSA id 9EAD560D2D3A;
+        Thu, 26 May 2022 11:28:09 +0200 (CEST)
+X-Mailbox-Line: From 688f559346ea747d3b47a4d16ef8277e093f9ebe Mon Sep 17 00:00:00 2001
+Message-Id: <688f559346ea747d3b47a4d16ef8277e093f9ebe.1653556322.git.lukas@wunner.de>
+From:   Lukas Wunner <lukas@wunner.de>
+Date:   Thu, 26 May 2022 11:28:08 +0200
+Subject: [PATCH net] net: phy: Don't trigger state machine while in suspend
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     netdev@vger.kernel.org,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Ferry Toth <fntoth@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-samsung-soc@vger.kernel.org
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 26, 2022 at 10:57:03AM +0200, Eugenio Perez Martin wrote:
->On Wed, May 25, 2022 at 1:23 PM Dawar, Gautam <gautam.dawar@amd.com> wrote:
->>
->> [AMD Official Use Only - General]
->>
->> -----Original Message-----
->> From: Eugenio Pérez <eperezma@redhat.com>
->> Sent: Wednesday, May 25, 2022 4:29 PM
->> To: Michael S. Tsirkin <mst@redhat.com>; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; kvm@vger.kernel.org; virtualization@lists.linux-foundation.org; Jason Wang <jasowang@redhat.com>
->> Cc: Zhu Lingshan <lingshan.zhu@intel.com>; martinh@xilinx.com; Stefano Garzarella <sgarzare@redhat.com>; ecree.xilinx@gmail.com; Eli Cohen <elic@nvidia.com>; Dan Carpenter <dan.carpenter@oracle.com>; Parav Pandit <parav@nvidia.com>; Wu Zongyong <wuzongyong@linux.alibaba.com>; dinang@xilinx.com; Christophe JAILLET <christophe.jaillet@wanadoo.fr>; Xie Yongji <xieyongji@bytedance.com>; Dawar, Gautam <gautam.dawar@amd.com>; lulu@redhat.com; martinpo@xilinx.com; pabloc@xilinx.com; Longpeng <longpeng2@huawei.com>; Piotr.Uminski@intel.com; Kamde, Tanuj <tanuj.kamde@amd.com>; Si-Wei Liu <si-wei.liu@oracle.com>; habetsm.xilinx@gmail.com; lvivier@redhat.com; Zhang Min <zhang.min9@zte.com.cn>; hanand@xilinx.com
->> Subject: [PATCH v3 2/4] vhost-vdpa: introduce STOP backend feature bit
->>
->> [CAUTION: External Email]
->>
->> Userland knows if it can stop the device or not by checking this feature bit.
->>
->> It's only offered if the vdpa driver backend implements the stop() operation callback, and try to set it if the backend does not offer that callback is an error.
->>
->> Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
->> ---
->>  drivers/vhost/vdpa.c             | 16 +++++++++++++++-
->>  include/uapi/linux/vhost_types.h |  2 ++
->>  2 files changed, 17 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c index 1f1d1c425573..32713db5831d 100644
->> --- a/drivers/vhost/vdpa.c
->> +++ b/drivers/vhost/vdpa.c
->> @@ -347,6 +347,14 @@ static long vhost_vdpa_set_config(struct vhost_vdpa *v,
->>         return 0;
->>  }
->>
->> +static bool vhost_vdpa_can_stop(const struct vhost_vdpa *v) {
->> +       struct vdpa_device *vdpa = v->vdpa;
->> +       const struct vdpa_config_ops *ops = vdpa->config;
->> +
->> +       return ops->stop;
->> [GD>>] Would it be better to explicitly return a bool to match the return type?
->
->I'm not sure about the kernel code style regarding that casting. Maybe
->it's better to return !!ops->stop here. The macros likely and unlikely
->do that.
+Upon system sleep, mdio_bus_phy_suspend() stops the phy_state_machine(),
+but subsequent interrupts may retrigger it:
 
-IIUC `ops->stop` is a function pointer, so what about
+They may have been left enabled to facilitate wakeup and are not
+quiesced until the ->suspend_noirq() phase.  Unwanted interrupts may
+hence occur between mdio_bus_phy_suspend() and dpm_suspend_noirq(),
+as well as between dpm_resume_noirq() and mdio_bus_phy_resume().
 
-     return ops->stop != NULL;
+Amend phy_interrupt() to avoid triggering the state machine if the PHY
+is suspended.  Signal wakeup instead if the attached net_device or its
+parent has been configured as a wakeup source.  (Those conditions are
+identical to mdio_bus_phy_may_suspend().)  Postpone handling of the
+interrupt until the PHY has resumed.
 
-Thanks,
-Stefano
+Before stopping the phy_state_machine() in mdio_bus_phy_suspend(),
+wait for a concurrent phy_interrupt() to run to completion.  That is
+necessary because phy_interrupt() may have checked the PHY's suspend
+status before the system sleep transition commenced and it may thus
+retrigger the state machine after it was stopped.
+
+Likewise, after re-enabling interrupt handling in mdio_bus_phy_resume(),
+wait for a concurrent phy_interrupt() to complete to ensure that
+interrupts which it postponed are properly rerun.
+
+Fixes: 1ce8b37241ed ("usbnet: smsc95xx: Forward PHY interrupts to PHY driver to avoid polling")
+Link: https://lore.kernel.org/netdev/a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com/
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+---
+ drivers/net/phy/phy.c        | 23 +++++++++++++++++++++++
+ drivers/net/phy/phy_device.c | 23 +++++++++++++++++++++++
+ include/linux/phy.h          |  6 ++++++
+ 3 files changed, 52 insertions(+)
+
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index ef62f357b76d..8d3ee3a6495b 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -31,6 +31,7 @@
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
+ #include <linux/atomic.h>
++#include <linux/suspend.h>
+ #include <net/netlink.h>
+ #include <net/genetlink.h>
+ #include <net/sock.h>
+@@ -976,6 +977,28 @@ static irqreturn_t phy_interrupt(int irq, void *phy_dat)
+ 	struct phy_driver *drv = phydev->drv;
+ 	irqreturn_t ret;
+ 
++	/* Wakeup interrupts may occur during a system sleep transition.
++	 * Postpone handling until the PHY has resumed.
++	 */
++	if (IS_ENABLED(CONFIG_PM_SLEEP) && phydev->irq_suspended) {
++		struct net_device *netdev = phydev->attached_dev;
++
++		if (netdev) {
++			struct device *parent = netdev->dev.parent;
++
++			if (netdev->wol_enabled)
++				pm_system_wakeup();
++			else if (device_may_wakeup(&netdev->dev))
++				pm_wakeup_dev_event(&netdev->dev, 0, true);
++			else if (parent && device_may_wakeup(parent))
++				pm_wakeup_dev_event(parent, 0, true);
++		}
++
++		phydev->irq_rerun = 1;
++		disable_irq_nosync(irq);
++		return IRQ_HANDLED;
++	}
++
+ 	mutex_lock(&phydev->lock);
+ 	ret = drv->handle_interrupt(phydev);
+ 	mutex_unlock(&phydev->lock);
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 431a8719c635..46acddd865a7 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -278,6 +278,15 @@ static __maybe_unused int mdio_bus_phy_suspend(struct device *dev)
+ 	if (phydev->mac_managed_pm)
+ 		return 0;
+ 
++	/* Wakeup interrupts may occur during the system sleep transition when
++	 * the PHY is inaccessible. Set flag to postpone handling until the PHY
++	 * has resumed. Wait for concurrent interrupt handler to complete.
++	 */
++	if (phy_interrupt_is_valid(phydev)) {
++		phydev->irq_suspended = 1;
++		synchronize_irq(phydev->irq);
++	}
++
+ 	/* We must stop the state machine manually, otherwise it stops out of
+ 	 * control, possibly with the phydev->lock held. Upon resume, netdev
+ 	 * may call phy routines that try to grab the same lock, and that may
+@@ -315,6 +324,20 @@ static __maybe_unused int mdio_bus_phy_resume(struct device *dev)
+ 	if (ret < 0)
+ 		return ret;
+ no_resume:
++	if (phy_interrupt_is_valid(phydev)) {
++		phydev->irq_suspended = 0;
++		synchronize_irq(phydev->irq);
++
++		/* Rerun interrupts which were postponed by phy_interrupt()
++		 * because they occurred during the system sleep transition.
++		 */
++		if (phydev->irq_rerun) {
++			phydev->irq_rerun = 0;
++			enable_irq(phydev->irq);
++			irq_wake_thread(phydev->irq, phydev);
++		}
++	}
++
+ 	if (phydev->attached_dev && phydev->adjust_link)
+ 		phy_start_machine(phydev);
+ 
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 508f1149665b..b09f7d36cff2 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -572,6 +572,10 @@ struct macsec_ops;
+  * @mdix_ctrl: User setting of crossover
+  * @pma_extable: Cached value of PMA/PMD Extended Abilities Register
+  * @interrupts: Flag interrupts have been enabled
++ * @irq_suspended: Flag indicating PHY is suspended and therefore interrupt
++ *                 handling shall be postponed until PHY has resumed
++ * @irq_rerun: Flag indicating interrupts occurred while PHY was suspended,
++ *             requiring a rerun of the interrupt handler after resume
+  * @interface: enum phy_interface_t value
+  * @skb: Netlink message for cable diagnostics
+  * @nest: Netlink nest used for cable diagnostics
+@@ -626,6 +630,8 @@ struct phy_device {
+ 
+ 	/* Interrupts are enabled */
+ 	unsigned interrupts:1;
++	unsigned irq_suspended:1;
++	unsigned irq_rerun:1;
+ 
+ 	enum phy_state state;
+ 
+-- 
+2.35.2
 
