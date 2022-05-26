@@ -2,149 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBC4D535104
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 16:49:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 748EE535109
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 16:52:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347755AbiEZOtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 10:49:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48558 "EHLO
+        id S1347720AbiEZOwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 10:52:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243362AbiEZOtk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 10:49:40 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E3812AE4;
-        Thu, 26 May 2022 07:49:36 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id f9so3561275ejc.0;
-        Thu, 26 May 2022 07:49:36 -0700 (PDT)
+        with ESMTP id S1347844AbiEZOwW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 10:52:22 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A81272736;
+        Thu, 26 May 2022 07:52:19 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id cv10so1950478pjb.4;
+        Thu, 26 May 2022 07:52:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zls+MzWfNPZtlXrrhoUFcg/vRk2lvR8P63hFWQr6QVQ=;
-        b=VN7XyPmcnf+r0c9uFfso0TaP5OfKEcmXy7GyTZfhd0/K/m4YGQQybFCZdWUeQuvrmK
-         z7AiaUvxEbiCvOqLvf42ZUorbp0AbsWGuQcl8vJK6ZE2t5O166B0PyKU/3ACPrVGlD7Y
-         3Q+WhPMC6zgre4S6rMKdeW6MTClNoFRUjXXhjtp4OWsQpkgs/VLdcfHmy0PdMO/dWxHf
-         oFP6gSNbVSOwXuC45vmwcaBhcB6BhQnbkMh64RtCuUxeDTAUdqkEYoz/hcSs2U1Xojaa
-         skwAJRhwpfDt6xDbPdA/FjKWGcbRaHQZlZDq0i38toEqVu3xlQlT++pUYOwiJfd+iKcc
-         bFdg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Chwf7y1RtksUbq1MRPEZtP7ng/hgzSfVOfHBHdn9xZo=;
+        b=L4tFN4lVB/mgJJ4IeFPlN7YEU6qsVmDtRbR1EuSZJYwMQ+Jk/7iWqp35wKDTraSsil
+         OXbUWPtHxKgGyZtH9k+7ZViFv/TKqx6HlHQASxHiHbYChunP/JY+fmowHfWoRegpmTMf
+         +/mVaCiioxfvHbWlu6Udc8KnPg3RlsU9Jx7BJO8oYgOZ0Pbvb+vKfdoQjTOrM8uMorqo
+         msix4UXAqc3U0B2YnxpUVN/TNy/4irtmLPb1/63xBeNQBQFpBxugF1ue0FCG3xxv8jkD
+         06pXyv3R/hzpzl1H0k0JOEKq2ciR1A9bZ2be9h+tiKXEwHC5FnSGPbDobZLYCJpaceJM
+         4V7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zls+MzWfNPZtlXrrhoUFcg/vRk2lvR8P63hFWQr6QVQ=;
-        b=VrGqqjRnVoIdylojwLpfhDFjuo6jngA9vAUctQHSZ7WuEOlxF4SC9p/fIwWdxnIaiw
-         /4zrSXRksvjPYziek6hTe+ycODX1L2wtC/VtTNNjBAnLNRTrPWD67YW/cA5WmTDfTDTL
-         rxt6UISruFoF2jM27NoS228dIX+hPDmk5mP+1LxNEPhyBT6KKcLad/BHNaQH9PTt/ea1
-         Rgd/QXFx/QdbIidEGuCq2AKQ/bvl8TUTy2oXGYixZ4HP3EhJN9TZsuvdlYU2ijwdvrcy
-         hOb4wSbF4WqET22j+pupNZ42W9Ui5UMEg4DKU5+lk5Ryz/vaIpxzJGFcJXfWQT6+HFCw
-         UCmQ==
-X-Gm-Message-State: AOAM532OFxTWdFIJngwlrgLzdhoynO/27fo9e6TZ3t7/SnxANm3m0dOh
-        8xg9wjZjAblQImLAjIV/fTYgSjpMlKwcgI7z
-X-Google-Smtp-Source: ABdhPJyD9f+4ZFEI6jZ541jsLof3Q2dlfauTm/zR+AYc1PlDValxLFKK422K5ikxEdwl32XWGT36Ng==
-X-Received: by 2002:a17:907:da3:b0:6fe:f08b:776 with SMTP id go35-20020a1709070da300b006fef08b0776mr17607635ejc.558.1653576575332;
-        Thu, 26 May 2022 07:49:35 -0700 (PDT)
-Received: from krava (net-93-65-242-160.cust.vodafonedsl.it. [93.65.242.160])
-        by smtp.gmail.com with ESMTPSA id b23-20020a1709065e5700b006fe9ba21333sm567992eju.113.2022.05.26.07.49.34
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Chwf7y1RtksUbq1MRPEZtP7ng/hgzSfVOfHBHdn9xZo=;
+        b=NSWw5LR5fIInkTl8ZkVqXxI+6Id3RHI8x3mbSYLoeK15kGCUtDSQvaJAbeioE3ZAie
+         JB/kNyBLkOIx9Umi8sv3aZK9QmkDOoAK8CPQTy4WOMQ0ufYW7zDPqBdBBmQxu3O1Q6/f
+         WuC2BegQTljDHBQ//0srlUQLokffwY/t75xQEvg8csZvbFczad9pZ6aKdHVSCocp6bsv
+         TrmQPFuAdnKX23Y6f/d06u4GUixZPiG0TmwRYnbQ4koLHfrF5Y4qVHRReuPuaePC4ho3
+         41HNNwpstgZZT1qX1SsKKzZG2tofy3aS8viM66hToMN511B1H+Sp4ZGdEyWyh2ug1QqI
+         5fmQ==
+X-Gm-Message-State: AOAM532s1aNnS30ocjZX+yFrsZA92IhUkPI37EQa8pKMPLjZ2TgcvETu
+        3CLmIUXXkGyabpjT1wlhWAQ=
+X-Google-Smtp-Source: ABdhPJyQyLvEus3Wy488EJJsivQvh95OSL+k8gz6NEghH+RZoxufUt0R/0ihabXhF5bq7rfw7zFOLg==
+X-Received: by 2002:a17:902:ba97:b0:161:524d:5adb with SMTP id k23-20020a170902ba9700b00161524d5adbmr37819511pls.126.1653576738922;
+        Thu, 26 May 2022 07:52:18 -0700 (PDT)
+Received: from localhost.localdomain ([202.120.234.246])
+        by smtp.googlemail.com with ESMTPSA id n1-20020a17090aab8100b001e0d197898dsm1964168pjq.3.2022.05.26.07.52.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 07:49:34 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Thu, 26 May 2022 16:49:26 +0200
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, "Paul E. McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH] rethook: Reject getting a rethook if RCU is not watching
-Message-ID: <Yo+TWcfpyHy55Il5@krava>
-References: <165189881197.175864.14757002789194211860.stgit@devnote2>
- <20220524192301.0c2ab08a@gandalf.local.home>
- <20220526232530.cb7d0aed0c60625ef093a735@kernel.org>
+        Thu, 26 May 2022 07:52:18 -0700 (PDT)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH v3] net: dsa: mv88e6xxx: Fix refcount leak in mv88e6xxx_mdios_register
+Date:   Thu, 26 May 2022 18:52:08 +0400
+Message-Id: <20220526145208.25673-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220526232530.cb7d0aed0c60625ef093a735@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 26, 2022 at 11:25:30PM +0900, Masami Hiramatsu wrote:
-> On Tue, 24 May 2022 19:23:01 -0400
-> Steven Rostedt <rostedt@goodmis.org> wrote:
-> 
-> > On Sat,  7 May 2022 13:46:52 +0900
-> > Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> > 
-> > Is this expected to go through the BPF tree?
-> > 
-> 
-> Yes, since rethook (fprobe) is currently used only from eBPF.
-> Jiri, can you check this is good for your test case?
+of_get_child_by_name() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when done.
 
-sure I'll test it.. can't see the original email,
-perhaps I wasn't cc-ed.. but I'll find it
+mv88e6xxx_mdio_register() pass the device node to of_mdiobus_register().
+We don't need the device node after it.
 
-is this also related to tracing 'idle' functions,
-as discussed in here?
-  https://lore.kernel.org/bpf/20220515203653.4039075-1-jolsa@kernel.org/
+Add missing of_node_put() to avoid refcount leak.
 
-because that's the one I can reproduce.. but I can
-certainly try that with your change as well
+Fixes: a3c53be55c95 ("net: dsa: mv88e6xxx: Support multiple MDIO busses")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+changes in v2:
+- Add fixes tag.
+changes in v3:
+- Move of_node_put() statement to cover normal path.
+- Update commit message.
 
-jirka
+I do cross-check to determine we should release the node after
+of_mdiobus_register(), refer to functions like lan78xx_mdio_init(),
+ave_init() and ag71xx_mdio_probe().
 
-> 
-> Thank you,
-> 
-> 
-> > -- Steve
-> > 
-> > 
-> > > Since the rethook_recycle() will involve the call_rcu() for reclaiming
-> > > the rethook_instance, the rethook must be set up at the RCU available
-> > > context (non idle). This rethook_recycle() in the rethook trampoline
-> > > handler is inevitable, thus the RCU available check must be done before
-> > > setting the rethook trampoline.
-> > > 
-> > > This adds a rcu_is_watching() check in the rethook_try_get() so that
-> > > it will return NULL if it is called when !rcu_is_watching().
-> > > 
-> > > Fixes: 54ecbe6f1ed5 ("rethook: Add a generic return hook")
-> > > Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-> > > ---
-> > >  kernel/trace/rethook.c |    9 +++++++++
-> > >  1 file changed, 9 insertions(+)
-> > > 
-> > > diff --git a/kernel/trace/rethook.c b/kernel/trace/rethook.c
-> > > index b56833700d23..c69d82273ce7 100644
-> > > --- a/kernel/trace/rethook.c
-> > > +++ b/kernel/trace/rethook.c
-> > > @@ -154,6 +154,15 @@ struct rethook_node *rethook_try_get(struct rethook *rh)
-> > >  	if (unlikely(!handler))
-> > >  		return NULL;
-> > >  
-> > > +	/*
-> > > +	 * This expects the caller will set up a rethook on a function entry.
-> > > +	 * When the function returns, the rethook will eventually be reclaimed
-> > > +	 * or released in the rethook_recycle() with call_rcu().
-> > > +	 * This means the caller must be run in the RCU-availabe context.
-> > > +	 */
-> > > +	if (unlikely(!rcu_is_watching()))
-> > > +		return NULL;
-> > > +
-> > >  	fn = freelist_try_get(&rh->pool);
-> > >  	if (!fn)
-> > >  		return NULL;
-> > 
-> 
-> 
-> -- 
-> Masami Hiramatsu (Google) <mhiramat@kernel.org>
+v1 link: https://lore.kernel.org/r/20220526083748.39816-1-linmq006@gmail.com/
+v2 link: https://lore.kernel.org/all/20220526112415.13835-1-linmq006@gmail.com/
+---
+ drivers/net/dsa/mv88e6xxx/chip.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 5d2c57a7c708..0b49d243e00b 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3960,6 +3960,7 @@ static int mv88e6xxx_mdios_register(struct mv88e6xxx_chip *chip,
+ 	 */
+ 	child = of_get_child_by_name(np, "mdio");
+ 	err = mv88e6xxx_mdio_register(chip, child, false);
++	of_node_put(child);
+ 	if (err)
+ 		return err;
+ 
+-- 
+2.25.1
+
