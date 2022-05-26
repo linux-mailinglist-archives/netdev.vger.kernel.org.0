@@ -2,114 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6519A534E09
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 13:26:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC828534E90
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 13:48:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347147AbiEZLYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 07:24:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55458 "EHLO
+        id S1343943AbiEZLrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 07:47:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347146AbiEZLYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 07:24:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9C8495484
-        for <netdev@vger.kernel.org>; Thu, 26 May 2022 04:24:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653564276;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rHAlnYokbPDm5sHzersK7AiNCY1b15v1iGws20Njocw=;
-        b=aVDAczMq9nRxOLYbwWDuqmBJIhqvC17XLoLFl1CkE3VEE3BJ+xxYYh6N41BkkwAUaJT+O5
-        ur2j0bsELLMONzNNoVW8fpr3WKOEroC7aywhjT/SZIRieJ79i+45soj29BOW3i4FJZlOLv
-        3TaNxFZODJP+3YUKr/jwGkuspAGVaug=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-167-EyoYv9nLOUao7GNxRWcFMg-1; Thu, 26 May 2022 07:24:35 -0400
-X-MC-Unique: EyoYv9nLOUao7GNxRWcFMg-1
-Received: by mail-wr1-f71.google.com with SMTP id c11-20020adffb4b000000b0020ff998391dso220351wrs.8
-        for <netdev@vger.kernel.org>; Thu, 26 May 2022 04:24:35 -0700 (PDT)
+        with ESMTP id S1347335AbiEZLri (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 07:47:38 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64196E15F7
+        for <netdev@vger.kernel.org>; Thu, 26 May 2022 04:45:53 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id q15so1468265edb.11
+        for <netdev@vger.kernel.org>; Thu, 26 May 2022 04:45:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vfOErO6fy5eTpl/9iS2Cw+n8TwvhSHjdW06lieV7SLY=;
+        b=2IogySvh3904IgW4sh9keQoRrbHzUSW8lIMvNWmnC+KcY/q/Hx6PARA4A/kCVAmNOL
+         ohV57Si3W4lnVH1cNkNYU0JUIRBt7GEuhgyuHD3NpyAY+24EU4TZrhV/N+NUcUKllnCk
+         X1SfXyOI0xFdf/nv0Sp2Wrc2W6t+28oX2ULQEJJdB0sCePBtu3optM9v0kAjFBoAMxs7
+         7Jga3vfPhn9wAoaOa2BInMIY2gZ7bgjXO9BxSYwKoR6DMpiegZ1c0AZR5/nVrKK2k0KY
+         kduFcJaV4pT8eOonXk9BTSRyOZwaBH8O1wn76AWBE2sLpibMmcL6twWGM3AjOC27cqhE
+         e91A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=rHAlnYokbPDm5sHzersK7AiNCY1b15v1iGws20Njocw=;
-        b=GZMgKZxILhrlVU9YOsYMXxKkFDde43mnNKlNVguOlRJr3oHC57DlgjXOGAjOG2pauO
-         Fga19TG2INVIHaq3NtUy30VaPVHv3YxhFaQ9g6OMuyTIYv18rTSFGuIl4MLZZPP5cs9u
-         ienOaHKm2X7QbouEP0cYV3nmIWKtDxFUzBZokaxDX0+inX3FjxGlFmMKBVf3jkVbbDEv
-         fysgEwmfUOOm0WIExMT1gd42YS+sC9AAkBvJd43W6Vx/xc0nddlwvWSSrbkMYoCdMvbK
-         W9XUEIqv6qI3iWHUFIHEdt+DbwUqcnO8Iao13b3RkWnYGpt7cp2fsg5ozhmbMpgnmdaB
-         qQbA==
-X-Gm-Message-State: AOAM530X0h9nDymeGq87f/QUjpgwy2OaNzYl5ASQ+0DffmgTW/AjyhM8
-        F/jcOpA0uFixzduRhVCSerUyOBSQk2H1b8mQSfj+0q165wEcuWVMcvlWO4eO9pC9i6XTDO138da
-        w40TJptwJ52hKlUO7
-X-Received: by 2002:adf:d1c6:0:b0:20f:c7dc:8466 with SMTP id b6-20020adfd1c6000000b0020fc7dc8466mr20941651wrd.43.1653564274204;
-        Thu, 26 May 2022 04:24:34 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzVhEt94v61sw8ti8f9sTXCoLOXwnzyGUf1wdEfVwHoxd1ZJYbH2PGE0KfqATe1+yEk07VXVQ==
-X-Received: by 2002:adf:d1c6:0:b0:20f:c7dc:8466 with SMTP id b6-20020adfd1c6000000b0020fc7dc8466mr20941635wrd.43.1653564274009;
-        Thu, 26 May 2022 04:24:34 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
-        by smtp.gmail.com with ESMTPSA id z24-20020a7bc7d8000000b003974ba5cacdsm1570171wmk.35.2022.05.26.04.24.33
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vfOErO6fy5eTpl/9iS2Cw+n8TwvhSHjdW06lieV7SLY=;
+        b=AHAnRuGuWEI4vr1zJ5ii7OPCu/NQGtzUIiO1qT6ztoT11sCa5CG2+fLPmnPe8bvw0U
+         uB6bNAQoxszuR1sypuHJi6IdpdWl0u89tFejPRIRADj9WndxljTd2+R6eeRlGbRDnAF4
+         KQLsgVCXcZlM2lxyGt7A/HChsd1QD1e4N/ToeZjM+DVnkxxiu3apaWDTx6wT97lE/v/a
+         lb34PRMpLBtqqo7cfkSGlDj5SqMiXrIsqkLpJCnK9v4B7K13gWR101Zhv1uLn2c31AsY
+         G6Fj7Js3OueSqA8icSLvVl9ERJV4+KtiAqDV7NxvLJBuAuefTh25Bs8sLsMC+3iNlSQ3
+         +Rfg==
+X-Gm-Message-State: AOAM533PkzWhOsbEilWeDb3+Hv+TtOjQmUU+ZEQordPyoMgSFtXPnCjf
+        ZiH/UrBQwLM6MjKbm6S9Mo/WH46YIXwxUI3Tr0Q=
+X-Google-Smtp-Source: ABdhPJzuYDQc6TahHsPw9MD4zjkrxxQy4KEpb/rzsYRTgHJNHkk7vYMylwFBp2DK71r91vkBeACl8g==
+X-Received: by 2002:a05:6402:3289:b0:42b:4d05:ac85 with SMTP id f9-20020a056402328900b0042b4d05ac85mr25239699eda.106.1653565551711;
+        Thu, 26 May 2022 04:45:51 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id mu31-20020a1709068a9f00b006feb875503fsm449076ejc.78.2022.05.26.04.45.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 04:24:33 -0700 (PDT)
-Message-ID: <081b216e6496e8cc2284df191dcc2d8b604d04f7.camel@redhat.com>
-Subject: Re: [PATCH] Bluetooth: hci_conn: fix potential double free in
- le_scan_cleanup()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Jianglei Nie <niejianglei2021@163.com>, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 26 May 2022 13:24:32 +0200
-In-Reply-To: <20220526094918.482971-1-niejianglei2021@163.com>
-References: <20220526094918.482971-1-niejianglei2021@163.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Thu, 26 May 2022 04:45:51 -0700 (PDT)
+Date:   Thu, 26 May 2022 13:45:49 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
+        andrew@lunn.ch, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
+ and info
+Message-ID: <Yo9obX5Cppn8GFC4@nanopsycho>
+References: <20220429153845.5d833979@kernel.org>
+ <YmzW12YL15hAFZRV@nanopsycho>
+ <20220502073933.5699595c@kernel.org>
+ <YotW74GJWt0glDnE@nanopsycho>
+ <20220523105640.36d1e4b3@kernel.org>
+ <Yox/TkxkTUtd0RMM@nanopsycho>
+ <YozsUWj8TQPi7OkM@nanopsycho>
+ <20220524110057.38f3ca0d@kernel.org>
+ <Yo3KvfgTVTFM/JHL@nanopsycho>
+ <20220525085054.70f297ac@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220525085054.70f297ac@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-05-26 at 17:49 +0800, Jianglei Nie wrote:
-> When "c == conn" is true, hci_conn_cleanup() is called. The
-> hci_conn_cleanup() calls hci_dev_put() and hci_conn_put() in
-> its function implementation. hci_dev_put() and hci_conn_put()
-> will free the relevant resource if the reference count reaches
-> zero, which may lead to a double free when hci_dev_put() and
-> hci_conn_put() are called again.
-> 
-> We should add a return to this function after hci_conn_cleanup()
-> is called.
-> 
-> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-> ---
->  net/bluetooth/hci_conn.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-> index fe803bee419a..7b3e91eb9fa3 100644
-> --- a/net/bluetooth/hci_conn.c
-> +++ b/net/bluetooth/hci_conn.c
-> @@ -166,6 +166,7 @@ static void le_scan_cleanup(struct work_struct *work)
->  	if (c == conn) {
->  		hci_connect_le_scan_cleanup(conn);
->  		hci_conn_cleanup(conn);
-> +		return;
+Wed, May 25, 2022 at 05:50:54PM CEST, kuba@kernel.org wrote:
+>On Wed, 25 May 2022 08:20:45 +0200 Jiri Pirko wrote:
+>> >We talked about this earlier in the thread, I think. If you need both
+>> >info and flash per LC just make them a separate devlink instance and
+>> >let them have all the objects they need. Then just put the instance
+>> >name under lc info.  
+>> 
+>> I don't follow :/ What do you mean be "separate devlink instance" here?
+>> Could you draw me an example?
+>
+>Separate instance:
+>
+>	for (i = 0; i < sw->num_lcs; i++) {
+>		devlink_register(&sw->lc_dl[i]);
+>		devlink_line_card_link(&sw->lc[i], &sw->lc_dl[i]);
+>	}
+>
+>then report that under the linecard
+>
+>	nla_nest_start(msg, DEVLINK_SUBORDINATE_INSTANCE);
+>	devlink_nl_put_handle(msg, lc->devlink);
+>	nla_nest_end(msg...)
+>
+>then user can update the linecard like any devlink instance, switch,
+>NIC etc. It's better code reuse and I don't see any downside, TBH.
 
-This looks not correct. At very least you should release the
-hci_dev_lock.
-
-Cheers,
-
-Paolo
-
+Okay, I was thinking about this a litle bit more, and I would like to
+explore extending the components path. Exposing the components in
+"devlink dev info" and then using them in "devlink dev flash". LC could
+be just one of multiple potential users of components. Will send RFC
+soon.
