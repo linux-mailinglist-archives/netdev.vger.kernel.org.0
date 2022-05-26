@@ -2,76 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6506534BAB
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 10:24:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 327DE534BD0
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 10:32:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344364AbiEZIWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 04:22:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35726 "EHLO
+        id S1346703AbiEZIcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 04:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237936AbiEZIWe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 04:22:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D5AB1ADAB
-        for <netdev@vger.kernel.org>; Thu, 26 May 2022 01:22:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653553352;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=b+5UPzucSEh/21RXIqYpPNxN/JQMCW1p/LRCquflxKQ=;
-        b=SZIdvg9UbXMke+Tt3tJp8n9/KIzU2wr5G4inbTYQqdh1fe5ruxcF5ihADwAOrzW3XpjmJG
-        +kV1uL4osRloOd6HEsoX4tJH+cUVy0uofw5LvqXbN2CUxMlB497IgOvQc+9a805T5030UK
-        Vnbbn+hOc3VQwaDLBY/gbcMC08AfBlk=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-628-TFGlaP99PpaWwkUhRWPJIQ-1; Thu, 26 May 2022 04:22:30 -0400
-X-MC-Unique: TFGlaP99PpaWwkUhRWPJIQ-1
-Received: by mail-qt1-f199.google.com with SMTP id w21-20020a05622a135500b002f3b801f51eso950237qtk.23
-        for <netdev@vger.kernel.org>; Thu, 26 May 2022 01:22:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=b+5UPzucSEh/21RXIqYpPNxN/JQMCW1p/LRCquflxKQ=;
-        b=3SqolI4YvoEVYIK6SnGyVq0rhgtupVphzxEr6p/nzU11DOn+/FvgpcWMLg7zgMd/WP
-         lFU0y6Ucty/P/kpHdRQUWfsrZHbltRHMgzL6TalDyJ/CoWfzphwwBKns7TzXDmTbIrsI
-         VgjnQEs6sSxS+QujmzJBQt+JIAsaV3LuBvMK+GybCiebBj2NcM9sdYHYZA/qLeFvDB8e
-         leVXsnM4VQ/2BwLGBYUAy2CI7NeJ1GNrV2F0slXBJhmjLwM867upZxEd62WSZi6ay4dZ
-         IOloS8LvfPfxH7j4JlINJwc+r2xC9nWR7+RjR2YfM0udw2+R4WUDukiKZMOsEXU544Jc
-         xSeA==
-X-Gm-Message-State: AOAM533cEE1Xh6N2RjZpJ+IRSvLSPz7jgep7MyW5OprzD9aTRxo7G2Mg
-        o64U3iqU/zetMs69xPm6cEvFp8cXf/7QvohhF+J89NU1UWdbt330vbrPxZpH7ktj31X1Y1l4v9H
-        J6prmPW2wA0qRP+fR
-X-Received: by 2002:ac8:7c56:0:b0:2fb:8075:4755 with SMTP id o22-20020ac87c56000000b002fb80754755mr4274502qtv.403.1653553350124;
-        Thu, 26 May 2022 01:22:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJy9jSmBONOb3KHjKM+0LnLvaHsPE2gME7E6aCg23ihbyWwIWtR6dIaQyTcI5r0cln3CZr27qw==
-X-Received: by 2002:ac8:7c56:0:b0:2fb:8075:4755 with SMTP id o22-20020ac87c56000000b002fb80754755mr4274492qtv.403.1653553349882;
-        Thu, 26 May 2022 01:22:29 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
-        by smtp.gmail.com with ESMTPSA id 195-20020a370acc000000b006a33f89bb00sm829991qkk.81.2022.05.26.01.22.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 01:22:29 -0700 (PDT)
-Message-ID: <184f66e5839a765571547f490988f25c5290856b.camel@redhat.com>
-Subject: Re: [PATCH] net: ipv4: Avoid bounds check warning
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Genjian Zhang <zhanggenjian123@gmail.com>, edumazet@google.com,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        huhai@kylinos.cn
-Date:   Thu, 26 May 2022 10:22:25 +0200
-In-Reply-To: <20220524072326.3484768-1-zhanggenjian@kylinos.cn>
-References: <20220524072326.3484768-1-zhanggenjian@kylinos.cn>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S233597AbiEZIcq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 04:32:46 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03C6E40A01;
+        Thu, 26 May 2022 01:32:44 -0700 (PDT)
+Received: from mail-yw1-f177.google.com ([209.85.128.177]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MREqy-1oF67j0SBw-00N8ei; Thu, 26 May 2022 10:32:43 +0200
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-2ff7b90e635so7972107b3.5;
+        Thu, 26 May 2022 01:32:42 -0700 (PDT)
+X-Gm-Message-State: AOAM532n56ZQxMFT91DplnjI4UlxvMLpwX5cJfGthcRkihp19TE1VFPf
+        WKymCUc/IyL8ZzF7Enfld3wx3kxFrVpsTOcxFJ4=
+X-Google-Smtp-Source: ABdhPJzd1Td84PUKl1aMompoBi/CI7Ij8UKcDh3J33F17cieCWlpkBhuvBB90C07npKSjm4gZ1dqj3OUo1L9/csGNzA=
+X-Received: by 2002:a81:488c:0:b0:302:549f:ffbc with SMTP id
+ v134-20020a81488c000000b00302549fffbcmr1085051ywa.495.1653553961173; Thu, 26
+ May 2022 01:32:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+References: <628ea118.wJYf60YnZco0hs9o%lkp@intel.com>
+In-Reply-To: <628ea118.wJYf60YnZco0hs9o%lkp@intel.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 26 May 2022 10:32:24 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a10aGYNr=nKZVzv+1n_DRibSCCkoCLuTDtmhZskBMWfyw@mail.gmail.com>
+Message-ID: <CAK8P3a10aGYNr=nKZVzv+1n_DRibSCCkoCLuTDtmhZskBMWfyw@mail.gmail.com>
+Subject: Re: [linux-next:master] BUILD REGRESSION 8cb8311e95e3bb58bd84d6350365f14a718faa6d
+To:     kernel test robot <lkp@intel.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        "open list:DRM DRIVER FOR QEMU'S CIRRUS DEVICE" 
+        <virtualization@lists.linux-foundation.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux-staging@lists.linux.dev,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-parport@lists.infradead.org,
+        linux-omap <linux-omap@vger.kernel.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        kvm list <kvm@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        bpf <bpf@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Linux Memory Management List <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:PCHqQe4zueVMpS9NgDF2gz9QeCCu3e6TGmy70qhxHLlI0l3tOil
+ 3TFtRnaqRaEZG2VsxMRL/BwWZliZgBFMDmDiMT3VIGVV7w/27RA/2CRb4zSjCOlvy6iPqM+
+ Ix8rIUqF6hC1so72stcjY0PS4GOuwl3eoiB7/wGEVVCCs6sLXUBtn7f33ehfn9C/4yk3dDp
+ HkxtbWvMftl4TNJsT/kdw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:78dHAjsp8rs=:pc1R8fxbsnLyXZ+tRpGQOD
+ uxA9TCI9qUoqcJMUd1AmSehehlkwp4lmW53FlY5vykKfLVp3l4Cy3SqmMT6B6mya5q5MRwxkf
+ m7QZ+C8X14ZCcB5IxiTYJW206aHfgsPNJomi4dTa4Q0GBDu0G1YyyS+b444yzR6Ql+isnCXDE
+ BaopH42n0dgogTvazQMff/ftjtr/9zyvzRmrYLJS4uFRWmD165Bs3C5cNRf1hJrB5k8ZzHeQy
+ K1yMzV8yWnyEKKBtXjoiRqV8bMO7cAnNdGPS5fCO4ftcfO/cecWVCpVWndcEZ9x1nDJg1D8VE
+ cvUIno1cSk0UgIfu2/5XqxpHIcXhPaLTHN/EmRDKT0KHfgLefREyf60nrRRa9uIuoGEMseFnY
+ w7VUgrNB6qMgTvY207Bconmza5huJdYU/eYpERC/rZ5T0FCF5lwvGeIPKZ7ksIlc6ODVPg/ai
+ tN+s/QUqu/oGnRgUX5rqVmFSDRC4Qymxdb5j7XnNsHNyvFnh3L8M/pVipBzZMit++nOOSwv8L
+ lzke+HIGWue2uxhnXmS1o6EKaqH0QnE2h1YczeWOyQqNnaULvHKS9aTWf7jqBdaFw/sR9KtKO
+ E5J/7/HBe64/yJ5lPlU61ObcoAwrtcuuQi3yvImA0w2+y5fJFLOqtRZmuu4Xx1oYJpap7uEYb
+ fOwJXnqP6OLmpV1sQY574fdWBoCBdpIgasOipuT/zal3XqVMNt43wm8BNL4z+dJelXQ5B0e+6
+ E9Ue+mya/1nF3I7PDdxpguLJHREPOu0X43OCAmh3V6MvGos2qozLOWy3Ak1zG17pRyum8eEOn
+ G7OvNUUsj+nY1bIOD5ZJ0jYMjwxjBNBNkH6VJ8PZsuf1SZThl1aBB5NgcoDPH4OaSWZq215Ek
+ FyaWh6mDmdGTBCUZfibUJlxkVMnc/NhNVZHsTg5L8=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,43 +80,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-05-24 at 15:23 +0800, Genjian Zhang wrote:
-> From: huhai <huhai@kylinos.cn>
-> 
-> Fix the following build warning when CONFIG_IPV6 is not set:
-> 
-> In function ‘fortify_memcpy_chk’,
->     inlined from ‘tcp_md5_do_add’ at net/ipv4/tcp_ipv4.c:1211:2:
-> ./include/linux/fortify-string.h:328:4: error: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Werror=attribute-warning]
->   328 |    __write_overflow_field(p_size_field, size);
->       |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> Signed-off-by: huhai <huhai@kylinos.cn>
-> ---
->  net/ipv4/tcp_ipv4.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> index 457f5b5d5d4a..ed03b8c48443 100644
-> --- a/net/ipv4/tcp_ipv4.c
-> +++ b/net/ipv4/tcp_ipv4.c
-> @@ -1207,9 +1207,14 @@ int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
->  	key->prefixlen = prefixlen;
->  	key->l3index = l3index;
->  	key->flags = flags;
-> +#if IS_ENABLED(CONFIG_IPV6)
->  	memcpy(&key->addr, addr,
->  	       (family == AF_INET6) ? sizeof(struct in6_addr) :
->  				      sizeof(struct in_addr));
+On Wed, May 25, 2022 at 11:35 PM kernel test robot <lkp@intel.com> wrote:
+> .__mulsi3.o.cmd: No such file or directory
+> Makefile:686: arch/h8300/Makefile: No such file or directory
+> Makefile:765: arch/h8300/Makefile: No such file or directory
+> arch/Kconfig:10: can't open file "arch/h8300/Kconfig"
 
-I'm wondering if you could avoid the extra compiler conditional with
-something alike:
+Please stop building h8300  after the asm-generic tree is merged, the
+architecture is getting removed.
 
- 	memcpy(&key->addr, addr,
-  	       (IS_ENABLED(CONFIG_IPV6) && family == AF_INET6) ? sizeof(struct in6_addr) :
-								 sizeof(struct in_addr));
-
-Thanks!
-
-Paolo
-
+        Arnd
