@@ -2,91 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC569534975
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 05:47:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BD7F534A03
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 06:48:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244076AbiEZDrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 23:47:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53722 "EHLO
+        id S241287AbiEZEr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 00:47:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233544AbiEZDr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 23:47:29 -0400
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25AC6257;
-        Wed, 25 May 2022 20:47:26 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VEQTeja_1653536838;
-Received: from 30.225.28.183(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VEQTeja_1653536838)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 26 May 2022 11:47:24 +0800
-Message-ID: <8a518b27-3048-cb0b-d2e3-a68d0ef05171@linux.alibaba.com>
-Date:   Thu, 26 May 2022 11:47:18 +0800
+        with ESMTP id S232322AbiEZEr5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 00:47:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42FF7562F4
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 21:47:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2D17B81F15
+        for <netdev@vger.kernel.org>; Thu, 26 May 2022 04:47:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7417C385B8;
+        Thu, 26 May 2022 04:47:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653540470;
+        bh=dQcN+06ByEQot47T79tud8US6s7E+AuXEPMx73aXhoU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hBqp/riCB6B/CEZlCTNyO8EdviREfriUZUECTgM/jEWq6mUpnxNERs0sE22YLazod
+         uXqxRJNCd8nVnkhZYhBcBfwDsXRpue9/shVY4TKmb2W+fZm+XECxS1XE6qYxO2TfaE
+         E6nNlt5w0JxJfvh8ZGiRtF6vlLBCDdCxLc3gzibS9/HXcPmNIb6wpqrSvM5bvAueDu
+         g2BvCuXlLEuXkOON70A+nucEwgctn1n/3H7ZngLk8FB+ifa7d5n3lLMVx2GKmcWhpq
+         GldcNyC4YblXOvs5UYwckzJuDurTN7SHpcrbvwaELWNNR7xUts3Tk8jOueiVTXeG0S
+         BTsuKbnW2JNEg==
+Date:   Wed, 25 May 2022 21:47:48 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net 0/3] amt: fix several bugs
+Message-ID: <20220525214748.35fd8cf6@kernel.org>
+In-Reply-To: <20220523161708.29518-1-ap420073@gmail.com>
+References: <20220523161708.29518-1-ap420073@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.1
-Subject: Re: [RFC net-next] net/smc:introduce 1RTT to SMC
-To:     Alexandra Winter <wintera@linux.ibm.com>,
-        Tony Lu <tonylu@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-References: <1653375127-130233-1-git-send-email-alibuda@linux.alibaba.com>
- <YoyOGlG2kVe4VA4m@TonyMac-Alibaba>
- <64439f1c-9817-befd-c11b-fa64d22620a9@linux.ibm.com>
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-In-Reply-To: <64439f1c-9817-befd-c11b-fa64d22620a9@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-10.0 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-在 2022/5/25 下午9:42, Alexandra Winter 写道:
-
-> Thank you D. Wythe for your proposals, the prototype and measurements.
-> They sound quite promising to us.
->  > We need to carefully evaluate them and make sure everything is compatible
-> with the existing implementations of SMC-D and SMC-R v1 and v2. In the
-> typical s390 environment ROCE LAG is propably not good enough, as the card
-> is still a single point of failure. So your ideas need to be compatible
-> with link redundancy. We also need to consider that the extension of the
-> protocol does not block other desirable extensions.
+On Mon, 23 May 2022 16:17:05 +0000 Taehee Yoo wrote:
+> This patchset fixes several bugs in amt module
 > 
-> Your prototype is very helpful for the understanding. Before submitting any
-> code patches to net-next, we should agree on the details of the protocol
-> extension. Maybe you could formulate your proposal in plain text, so we can
-> discuss it here?
-
-I am very pleased to hear that your team have interest in this 
-proposals, and thanks a lot for your advise. We really appreciate your 
-point of view about compatibility, In fact, we are working on some 
-written drafts which compatibility is quite a important part, and will 
-be shared here soon.
-
+> First patch fixes typo.
 > 
-> We also need to inform you that several public holidays are upcoming in the
-> next weeks and several of our team will be out for summer vacation, so please
-> allow for longer response times.
-
-Thanks for your informing, that's totaly okay to us. May your holidays 
-be full of warmth and cheer.
-
-
-> Kind regards
-> Alexandra Winter
+> Second patch fixes wrong return value of amt_update_handler().
+> A relay finds a tunnel if it receives an update message from the gateway.
+> If it can't find a tunnel, amt_update_handler() should return an error,
+> not success. But it always returns success.
 > 
+> Third patch fixes a possible memory leak in amt_rcv().
+> A skb would not be freed if an amt interface doesn't have a socket.
 
-
-D. Wyther
-Thanks.
-
-
-
-
+Please double check you're not missing pskb_may_pull() calls.
+E.g. in amt_update_handler()? There's more.
