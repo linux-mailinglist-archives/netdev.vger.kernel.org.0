@@ -2,206 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E3B8534CF8
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 12:06:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A29A0534D10
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 12:12:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346940AbiEZKGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 06:06:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38212 "EHLO
+        id S239614AbiEZKMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 06:12:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346945AbiEZKGX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 06:06:23 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CEE1960C4;
-        Thu, 26 May 2022 03:06:22 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 707FE1474;
-        Thu, 26 May 2022 03:06:22 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.2.68])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A4AC73F70D;
-        Thu, 26 May 2022 03:06:13 -0700 (PDT)
-Date:   Thu, 26 May 2022 11:06:09 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Xu Kuohai <xukuohai@huawei.com>
-Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        hpa@zytor.com, Shuah Khan <shuah@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Delyan Kratunov <delyank@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        cj.chengjian@huawei.com, huawei.libin@huawei.com,
-        xiexiuqi@huawei.com, liwei391@huawei.com
-Subject: Re: [PATCH bpf-next v5 1/6] arm64: ftrace: Add ftrace direct call
- support
-Message-ID: <Yo9REdx3nsgbZunE@FVFF77S0Q05N>
-References: <Yo4xb2w+FHhUtJNw@FVFF77S0Q05N>
- <0f8fe661-c450-ccd8-761f-dbfff449c533@huawei.com>
+        with ESMTP id S1346966AbiEZKMh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 06:12:37 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71DE62644;
+        Thu, 26 May 2022 03:12:36 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso1370987pjg.0;
+        Thu, 26 May 2022 03:12:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xAQlpNbU2NjknCJlnhi8QNZU6DsJe41C4/l5GK8TjmM=;
+        b=CImTY0YiCYdF0KMjX3hj3mJjtQP8gGtFHiiZ6UzWlmmICN0rw1yEe7ox1Bvx8q9+QJ
+         57lacZqqNXbKLBcPwmjtv2c+TxoHE5coqpXH+k2SimNgnam3qZX9lb9Vzm2yaC2u092B
+         BuZPoPs2y9WL8nA+jq7ZQJm8to/2ZOlGZwCEASjTjbWXzJu4O9xzs8xrbKc4n50vRcEg
+         eKz9135zSAVI/kbXS91beHuiri+IlAfO0yioIzOWTfB26PCGYqrAJTd8BoBL+p4BsyA4
+         D/THK2M5VdyyLzVx43m7Y9QZwmdGKJO8q2yoXVPk3Ch8Tc1j+N+qXUjeDanWUOkvwIW+
+         FTyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xAQlpNbU2NjknCJlnhi8QNZU6DsJe41C4/l5GK8TjmM=;
+        b=UiAn+aU7dz/NtJ6HKE9TQid+7xJ6N26CJr64YYLEmkzA5mSSUBLOJq5AVPxpn5epOL
+         4hkqmh63RQQ79nP56YsGtYNongOTUou+cnAz6X3UZrTovTQbNoRmMigxFSHgCKEpCe/s
+         YlW5T0MvXBImnU7qg0chfN+I6dtAJ0+PNuXJ7ZfVkhXTXm9MDOpPnqM6xnSC0FPLPCxA
+         /LzgNoAfNDgxtq3w3TF1lPm0LE4wMOa6LMF6ZZTlFYPQ+5/vMJoSrpcFQj8C84+Cmt0Y
+         yqze8IecSmvAsce1EUWUg3PDDTdY3MhYiTGsdi9uogXWFcvKZcn00bnAjMdBtoVk9ztw
+         DrwA==
+X-Gm-Message-State: AOAM533xgudKzuab01pAaAD8ZTZ0LkNvAv6SUMN8POQt0gEp26NgTdmn
+        YFlUQH6X2WimpKSXj8DBefM=
+X-Google-Smtp-Source: ABdhPJyljOBjwFuJo3P/fN9WLD7ZVEn5FDVre+7cTcjsDbNwirZRbjg88K8KpeR/+attvz8aKKfuIg==
+X-Received: by 2002:a17:90a:d3d4:b0:1e0:a6a7:6ef with SMTP id d20-20020a17090ad3d400b001e0a6a706efmr1822421pjw.17.1653559955995;
+        Thu, 26 May 2022 03:12:35 -0700 (PDT)
+Received: from localhost.localdomain ([150.107.0.8])
+        by smtp.gmail.com with ESMTPSA id j2-20020aa79282000000b005187f4ebd12sm1055018pfa.123.2022.05.26.03.12.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 03:12:35 -0700 (PDT)
+From:   zhanggenjian <zhanggenjian123@gmail.com>
+X-Google-Original-From: zhanggenjian <zhanggenjian@kylinos.cn>
+To:     pabeni@redhat.com, edumazet@google.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        huhai@kylinos.cn, zhanggenjian123@gmail.com
+Subject: [PATCH v2] net: ipv4: Avoid bounds check warning
+Date:   Thu, 26 May 2022 18:12:13 +0800
+Message-Id: <20220526101213.2392980-1-zhanggenjian@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0f8fe661-c450-ccd8-761f-dbfff449c533@huawei.com>
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 26, 2022 at 05:45:03PM +0800, Xu Kuohai wrote:
-> On 5/25/2022 9:38 PM, Mark Rutland wrote:
-> > On Wed, May 18, 2022 at 09:16:33AM -0400, Xu Kuohai wrote:
-> >> Add ftrace direct support for arm64.
-> >>
-> >> 1. When there is custom trampoline only, replace the fentry nop to a
-> >>    jump instruction that jumps directly to the custom trampoline.
-> >>
-> >> 2. When ftrace trampoline and custom trampoline coexist, jump from
-> >>    fentry to ftrace trampoline first, then jump to custom trampoline
-> >>    when ftrace trampoline exits. The current unused register
-> >>    pt_regs->orig_x0 is used as an intermediary for jumping from ftrace
-> >>    trampoline to custom trampoline.
-> > 
-> > For those of us not all that familiar with BPF, can you explain *why* you want
-> > this? The above explains what the patch implements, but not why that's useful.
-> > 
-> > e.g. is this just to avoid the overhead of the ops list processing in the
-> > regular ftrace code, or is the custom trampoline there to allow you to do
-> > something special?
-> 
-> IIUC, ftrace direct call was designed to *remove* the unnecessary
-> overhead of saving regs completely [1][2].
+From: huhai <huhai@kylinos.cn>
 
-Ok. My plan is to get rid of most of the register saving generally, so I think
-that aspect can be solved without direct calls.
+Fix the following build warning when CONFIG_IPV6 is not set:
 
-> [1]
-> https://lore.kernel.org/all/20191022175052.frjzlnjjfwwfov64@ast-mbp.dhcp.thefacebook.com/
-> [2] https://lore.kernel.org/all/20191108212834.594904349@goodmis.org/
-> 
-> This patch itself is just a variant of [3].
-> 
-> [3] https://lore.kernel.org/all/20191108213450.891579507@goodmis.org/
-> 
-> > 
-> > There is another patch series on the list from some of your colleagues which
-> > uses dynamic trampolines to try to avoid that ops list overhead, and it's not
-> > clear to me whether these are trying to solve the largely same problem or
-> > something different. That other thread is at:
-> > 
-> >   https://lore.kernel.org/linux-arm-kernel/20220316100132.244849-1-bobo.shaobowang@huawei.com/
-> > 
-> > ... and I've added the relevant parties to CC here, since there doesn't seem to
-> > be any overlap in the CC lists of the two threads.
-> 
-> We're not working to solve the same problem. The trampoline introduced
-> in this series helps us to monitor kernel function or another bpf prog
-> with bpf, and also helps us to use bpf prog like a normal kernel
-> function pointer.
+In function ‘fortify_memcpy_chk’,
+    inlined from ‘tcp_md5_do_add’ at net/ipv4/tcp_ipv4.c:1210:2:
+./include/linux/fortify-string.h:328:4: error: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Werror=attribute-warning]
+  328 |    __write_overflow_field(p_size_field, size);
+      |    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Ok, but why is it necessary to have a special trampoline?
+Suggested-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: huhai <huhai@kylinos.cn>
+---
+ net/ipv4/tcp_ipv4.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Is that *just* to avoid overhead, or do you need to do something special that
-the regular trampoline won't do?
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 457f5b5d5d4a..46ae9d535086 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1208,8 +1208,8 @@ int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
+ 	key->l3index = l3index;
+ 	key->flags = flags;
+ 	memcpy(&key->addr, addr,
+-	       (family == AF_INET6) ? sizeof(struct in6_addr) :
+-				      sizeof(struct in_addr));
++	       (IS_ENABLED(CONFIG_IPV6) && family == AF_INET6) ? sizeof(struct in6_addr) :
++								 sizeof(struct in_addr));
+ 	hlist_add_head_rcu(&key->node, &md5sig->head);
+ 	return 0;
+ }
+-- 
+2.27.0
 
-> > 
-> > In that other thread I've suggested a general approach we could follow at:
-> >   
-> >   https://lore.kernel.org/linux-arm-kernel/YmGF%2FOpIhAF8YeVq@lakrids/
-> >
-> 
-> Is it possible for a kernel function to take a long jump to common
-> trampoline when we get a huge kernel image?
-
-It is possible, but only where the kernel Image itself is massive and the .text
-section exceeeds 128MiB, at which point other things break anyway. Practically
-speaking, this doesn't happen for production kernels, or reasonable test
-kernels.
-
-I've been meaning to add some logic to detect this at boot time and idsable
-ftrace (or at build time), since live patching would also be broken in that
-case.
-
-> > As noted in that thread, I have a few concerns which equally apply here:
-> > 
-> > * Due to the limited range of BL instructions, it's not always possible to
-> >   patch an ftrace call-site to branch to an arbitrary trampoline. The way this
-> >   works for ftrace today relies upon knowingthe set of trampolines at
-> >   compile-time, and allocating module PLTs for those, and that approach cannot
-> >   work reliably for dynanically allocated trampolines.
-> 
-> Currently patch 5 returns -ENOTSUPP when long jump is detected, so no
-> bpf trampoline is constructed for out of range patch-site:
-> 
-> if (is_long_jump(orig_call, image))
-> 	return -ENOTSUPP;
-
-Sure, my point is that in practice that means that (from the user's PoV) this
-may randomly fail to work, and I'd like something that we can ensure works
-consistently.
-
-> >   I'd strongly prefer to avoid custom tramplines unless they're strictly
-> >   necessary for functional reasons, so that we can have this work reliably and
-> >   consistently.
-> 
-> bpf trampoline is needed by bpf itself, not to replace ftrace trampolines.
-
-As above, can you please let me know *why* specifically it is needed? Why can't
-we invoke the BPF code through the usual ops mechanism?
-
-Is that to avoid overhead, or are there other functional reasons you need a
-special trampoline?
-
-> >> * If this is mostly about avoiding the ops list processing overhead, I
-> beleive
-> >   we can implement some custom ops support more generally in ftrace which would
-> >   still use a common trampoline but could directly call into those custom ops.
-> >   I would strongly prefer this over custom trampolines.
-> > 
-> > * I'm looking to minimize the set of regs ftrace saves, and never save a full
-> >   pt_regs, since today we (incompletely) fill that with bogus values and cannot
-> >   acquire some state reliably (e.g. PSTATE). I'd like to avoid usage of pt_regs
-> >   unless necessary, and I don't want to add additional reliance upon that
-> >   structure.
-> 
-> Even if such a common trampoline is used, bpf trampoline is still
-> necessary since we need to construct custom instructions to implement
-> bpf functions, for example, to implement kernel function pointer with a
-> bpf prog.
-
-Sorry, but I'm struggling to understand this. What specifically do you need to
-do that means this can't use the same calling convention as the regular ops
-function pointers?
-
-Thanks,
-Mark.
