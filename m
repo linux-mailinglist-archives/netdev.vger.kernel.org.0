@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CE86534CC1
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 11:50:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72259534CE9
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 12:03:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238744AbiEZJuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 05:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56656 "EHLO
+        id S1345017AbiEZKDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 06:03:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231214AbiEZJuO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 05:50:14 -0400
+        with ESMTP id S229593AbiEZKDL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 06:03:11 -0400
 Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D0846558B;
-        Thu, 26 May 2022 02:50:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5587BAF337;
+        Thu, 26 May 2022 03:03:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Di6y9
-        LmpgXQ4/BEcC3oV3UoBlBH0yPqVOabL8M117+A=; b=EZPjLzAPCOi4AlHgX6qbU
-        SjQHFuz4h3Y+YZC9aoQz8DWoxh7+OlCSC6l5VK3QLNpphNjFaLFud+l3qCp/vU2z
-        XLJRHx4xpuecJEv3OTAU3NsSzWVZdLOJXWmeOYk0qSR23pqQr6lDAf9T6HAyYadE
-        Vi0nRvSmQ8Db9OFEV+etis=
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=SIdeg
+        1ju9DDQN5SyCoUMa81G3s2La6ZRZRDFK36w+Gs=; b=IT45QKTSbSotUcsxZObUz
+        X/x0mnRaCmfMUDbvpTmu30DDcXk+RYMzFjgtF4l8haYS0UnziqbLhXroCc6DIIAG
+        BcooIfejMSHpSQ2E6pdNkjqKvJcZg7PehLp5WqqZBSX1/hgHSZKGolkFQ0wPuV8R
+        ukHMk7ZJ+pr7Is3O3/cr10=
 Received: from localhost.localdomain (unknown [123.112.69.106])
-        by smtp3 (Coremail) with SMTP id G9xpCgDXpnghTY9iJIzYEg--.5546S4;
-        Thu, 26 May 2022 17:49:43 +0800 (CST)
+        by smtp3 (Coremail) with SMTP id G9xpCgAXuJk2UI9iK0jaEg--.27316S4;
+        Thu, 26 May 2022 18:02:43 +0800 (CST)
 From:   Jianglei Nie <niejianglei2021@163.com>
-To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH] Bluetooth: hci_conn: fix potential double free in le_scan_cleanup()
-Date:   Thu, 26 May 2022 17:49:18 +0800
-Message-Id: <20220526094918.482971-1-niejianglei2021@163.com>
+Subject: [PATCH] ath11k: mhi: fix potential memory leak in ath11k_mhi_register()
+Date:   Thu, 26 May 2022 18:02:27 +0800
+Message-Id: <20220526100227.483609-1-niejianglei2021@163.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: G9xpCgDXpnghTY9iJIzYEg--.5546S4
-X-Coremail-Antispam: 1Uf129KBjvdXoWruFWfZFy8tw48AF48AryftFb_yoWfKrcEv3
-        sa9F4S9w4DZ395CanIya15A3y8Jwn3ZFykJa12qry5K3s0vFnrGr4xXr1kKryUWw4UZr1f
-        Crs8Gr1kZw17tjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xREsqXtUUUUU==
+X-CM-TRANSID: G9xpCgAXuJk2UI9iK0jaEg--.27316S4
+X-Coremail-Antispam: 1Uf129KBjvdXoW7Wr48KryDZrWkKrW8uw1rZwb_yoWkZrg_CF
+        ZYgF17ZrW2kw1rJrWjkr4UZFyS9ay7X3Z5Wa10qFyxJa95Z3yDuryDZFy5JasrKr4jvr13
+        CrnrAFyjy3sI9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xREF4i5UUUUU==
 X-Originating-IP: [123.112.69.106]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbi6xcNjFXl1rDewQAAs0
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiPhcNjFxBsWDfhwABs9
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
         FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
@@ -53,33 +52,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When "c == conn" is true, hci_conn_cleanup() is called. The
-hci_conn_cleanup() calls hci_dev_put() and hci_conn_put() in
-its function implementation. hci_dev_put() and hci_conn_put()
-will free the relevant resource if the reference count reaches
-zero, which may lead to a double free when hci_dev_put() and
-hci_conn_put() are called again.
+mhi_alloc_controller() allocates a memory space for mhi_ctrl. When some
+errors occur, mhi_ctrl should be freed by mhi_free_controller(). But
+when ath11k_mhi_read_addr_from_dt() fails, the function returns without
+calling mhi_free_controller(), which will lead to a memory leak.
 
-We should add a return to this function after hci_conn_cleanup()
-is called.
+We can fix it by calling mhi_free_controller() when
+ath11k_mhi_read_addr_from_dt() fails.
 
 Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
 ---
- net/bluetooth/hci_conn.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/ath/ath11k/mhi.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index fe803bee419a..7b3e91eb9fa3 100644
---- a/net/bluetooth/hci_conn.c
-+++ b/net/bluetooth/hci_conn.c
-@@ -166,6 +166,7 @@ static void le_scan_cleanup(struct work_struct *work)
- 	if (c == conn) {
- 		hci_connect_le_scan_cleanup(conn);
- 		hci_conn_cleanup(conn);
-+		return;
- 	}
+diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
+index fc3524e83e52..3318c7c2b32b 100644
+--- a/drivers/net/wireless/ath/ath11k/mhi.c
++++ b/drivers/net/wireless/ath/ath11k/mhi.c
+@@ -376,8 +376,10 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
  
- 	hci_dev_unlock(hdev);
+ 	if (test_bit(ATH11K_FLAG_FIXED_MEM_RGN, &ab->dev_flags)) {
+ 		ret = ath11k_mhi_read_addr_from_dt(mhi_ctrl);
+-		if (ret < 0)
++		if (ret < 0) {
++			mhi_free_controller(mhi_ctrl);
+ 			return ret;
++		}
+ 	} else {
+ 		mhi_ctrl->iova_start = 0;
+ 		mhi_ctrl->iova_stop = 0xFFFFFFFF;
 -- 
 2.25.1
 
