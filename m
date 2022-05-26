@@ -2,103 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BDD45353EA
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 21:29:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BD08535445
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 22:12:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347805AbiEZT27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 15:28:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44104 "EHLO
+        id S1348905AbiEZUMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 16:12:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242670AbiEZT24 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 15:28:56 -0400
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F69F4DF52;
-        Thu, 26 May 2022 12:28:55 -0700 (PDT)
-Received: by mail-qt1-f174.google.com with SMTP id w17so2680433qtk.13;
-        Thu, 26 May 2022 12:28:55 -0700 (PDT)
+        with ESMTP id S1348874AbiEZUMI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 16:12:08 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA9EC5DB9;
+        Thu, 26 May 2022 13:12:07 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id w2-20020a17090ac98200b001e0519fe5a8so2574231pjt.4;
+        Thu, 26 May 2022 13:12:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ym1mSZ1N+gDIg7RPoqcZ6DASQgrFGhS7kPRYey05Jig=;
+        b=U1xGut8jUgrl5aH8rrFlvVXLlKZ7koIFTkdaMNaSFb8co+fPLt4WOdT87pgdLm6qh/
+         T5NtkOndjxddPXrFuQIIF0BxTtiH2PPpuJU4fsZpIT/NmHbDkvkP04pJxo3w8ZXXearK
+         kMXiE6Hh5pvG5yBWpANTZX3wgyqrKqbM8ya8yowLKKrQOEz0A3Hd4+1yEqTStNr0ieYv
+         7/baUY8jkz09C99Gw4+4utqAiIqoDRP8JanN0EoMKt1diGcDbyXxcTDIvTv9ws+1qJ31
+         UQUqHbQNlGGzEId1tuQe/ERjK/CIo/eHN5u9tNsEezabBNv7BphITj4I/SyMZRUEcxlX
+         /T7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ABNBkho3HuokJ1OxV81tEGMepDWeKd0C7azPUMmvl4s=;
-        b=R1uR3BjuA1203FWh5X053ulrzj0MDRVnmpAbLve3D8UcBX0KWXA9frJf34OB6TZjEl
-         /Mwg87/LD/IXaRJ4LZwLT31sxJ318ahjtKFf3VA9diuJSwUk4HmttWFVJ9732NOPA7og
-         rLH/azkkbVCY2PDfU5PpYkgvDdsxm42tUGOE/3zK8T5SIYZhJ7Cg7bz30zSOBLuz4Y3e
-         GtJ1K1WAWycNQ8u1nJ4s4vyv5eZd8VDkhUlYevsHTpqq/OdwGqn0gujIHxC2BVIJmjv2
-         P0nIRZ+X70eByJ6KTxbjiQJr/sQx7cfr3PQYz/ZcYhAuWPxk7/nktyaL1tHAQq/LqNbR
-         tuRA==
-X-Gm-Message-State: AOAM533+F84Yybj7bs85uuCe7U7NKHWV10GbxAnYgSTI2cltmN8Ewd4T
-        GoZVzF35JkUArlxfTqrEDeM=
-X-Google-Smtp-Source: ABdhPJwZuGHr5yFZm4ksvR46I9zWL120ve44b2CID8M+OkKAYk6B54B2Fm2v9qAIuQanEJ2q1P1AyQ==
-X-Received: by 2002:ac8:59d3:0:b0:2f3:d7ee:2b54 with SMTP id f19-20020ac859d3000000b002f3d7ee2b54mr30726125qtf.290.1653593334366;
-        Thu, 26 May 2022 12:28:54 -0700 (PDT)
-Received: from dev0025.ash9.facebook.com (fwdproxy-ash-006.fbsv.net. [2a03:2880:20ff:6::face:b00c])
-        by smtp.gmail.com with ESMTPSA id b13-20020a05620a0ccd00b006a36b7e55b3sm1587812qkj.4.2022.05.26.12.28.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 May 2022 12:28:53 -0700 (PDT)
-Date:   Thu, 26 May 2022 12:28:51 -0700
-From:   David Vernet <void@manifault.com>
-To:     Song Liu <song@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kernel-team@fb.com,
-        Mykola Lysenko <mykolal@fb.com>
-Subject: Re: [PATCH bpf] selftests/bpf: fix stacktrace_build_id with missing
- kprobe/urandom_read
-Message-ID: <20220526192851.mu65slufe5rzdxir@dev0025.ash9.facebook.com>
-References: <20220526191608.2364049-1-song@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ym1mSZ1N+gDIg7RPoqcZ6DASQgrFGhS7kPRYey05Jig=;
+        b=twQJiG/y+MXWHGFtdSibf+/NSl3Eml3r+NyyvuL6OHZvVXz8YU7lq/v2QLdDf1ZQhe
+         KhSA6Q27sXBWYBbUHBt8m9xHqmPuEIPFqyVpbXZXLslMz8ujzmUAkZ050DH8XOXSlCx0
+         7+Xey39LanoU0z829boeS73yWe81STAFwZU0RpKZuM/nBFpFmQrng0XTRZ2YzFfMZck5
+         qTiTKBYTYghn2MzFb0NtK7abrWjMjhdO2SEC22jchENEh7ul+N2daHJyGK7aFVP7Flj+
+         i5fK0438pLDDTdSx4DlHog+fkNNAchTb2z83/tZV+LQv6QUb5Ty2y0GsZ5COWcp0668G
+         pG1A==
+X-Gm-Message-State: AOAM5328KOA0AblWsCLd6hLX9O1bAyGtZifFJiBNOfhOiTQsP5PeOZ9r
+        vu2cfmwLagKCzw66b+3ENDC01hHK7kUOBHi1wFWCpup8
+X-Google-Smtp-Source: ABdhPJxBECFKdSI1IJ8bWSn4XNDvgl0Y71qedIzUHn9db1kEWuBdaTXj/Sa82JHFeVa7k0aeyBGlKXFKI5ofxC7eGCg=
+X-Received: by 2002:a17:902:d5c1:b0:162:64e:8c21 with SMTP id
+ g1-20020a170902d5c100b00162064e8c21mr27987572plh.34.1653595927124; Thu, 26
+ May 2022 13:12:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220526191608.2364049-1-song@kernel.org>
-User-Agent: NeoMutt/20211029
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+References: <20220526094918.482971-1-niejianglei2021@163.com> <081b216e6496e8cc2284df191dcc2d8b604d04f7.camel@redhat.com>
+In-Reply-To: <081b216e6496e8cc2284df191dcc2d8b604d04f7.camel@redhat.com>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Thu, 26 May 2022 13:11:56 -0700
+Message-ID: <CABBYNZJ+E6KMyqODib_nhGJuZzWssSrswKR9MoqPrM7tuEpDcg@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: hci_conn: fix potential double free in le_scan_cleanup()
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Jianglei Nie <niejianglei2021@163.com>, marcel@holtmann.org,
+        johan.hedberg@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 26, 2022 at 12:16:08PM -0700, Song Liu wrote:
-> Kernel function urandom_read is replaced with urandom_read_iter.
-> Therefore, kprobe on urandom_read is not working any more:
-> 
-> [root@eth50-1 bpf]# ./test_progs -n 161
-> test_stacktrace_build_id:PASS:skel_open_and_load 0 nsec
-> libbpf: kprobe perf_event_open() failed: No such file or directory
-> libbpf: prog 'oncpu': failed to create kprobe 'urandom_read+0x0' \
->         perf event: No such file or directory
-> libbpf: prog 'oncpu': failed to auto-attach: -2
-> test_stacktrace_build_id:FAIL:attach_tp err -2
-> 161     stacktrace_build_id:FAIL
-> 
-> Fix this by replacing urandom_read with urandom_read_iter in the test.
-> 
-> Fixes: 1b388e7765f2 ("random: convert to using fops->read_iter()")
-> Reported-by: Mykola Lysenko <mykolal@fb.com>
-> Signed-off-by: Song Liu <song@kernel.org>
-> ---
->  tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c b/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c
-> index 6c62bfb8bb6f..0c4426592a26 100644
-> --- a/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c
-> +++ b/tools/testing/selftests/bpf/progs/test_stacktrace_build_id.c
-> @@ -39,7 +39,7 @@ struct {
->  	__type(value, stack_trace_t);
->  } stack_amap SEC(".maps");
->  
-> -SEC("kprobe/urandom_read")
-> +SEC("kprobe/urandom_read_iter")
->  int oncpu(struct pt_regs *args)
->  {
->  	__u32 max_len = sizeof(struct bpf_stack_build_id)
-> -- 
-> 2.30.2
-> 
+Hi,
 
-Acked-by: David Vernet <void@manifault.com>
+On Thu, May 26, 2022 at 4:24 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Thu, 2022-05-26 at 17:49 +0800, Jianglei Nie wrote:
+> > When "c == conn" is true, hci_conn_cleanup() is called. The
+> > hci_conn_cleanup() calls hci_dev_put() and hci_conn_put() in
+> > its function implementation. hci_dev_put() and hci_conn_put()
+> > will free the relevant resource if the reference count reaches
+> > zero, which may lead to a double free when hci_dev_put() and
+> > hci_conn_put() are called again.
+> >
+> > We should add a return to this function after hci_conn_cleanup()
+> > is called.
+> >
+> > Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+> > ---
+> >  net/bluetooth/hci_conn.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
+> > index fe803bee419a..7b3e91eb9fa3 100644
+> > --- a/net/bluetooth/hci_conn.c
+> > +++ b/net/bluetooth/hci_conn.c
+> > @@ -166,6 +166,7 @@ static void le_scan_cleanup(struct work_struct *work)
+> >       if (c == conn) {
+> >               hci_connect_le_scan_cleanup(conn);
+> >               hci_conn_cleanup(conn);
+> > +             return;
+>
+> This looks not correct. At very least you should release the
+> hci_dev_lock.
+
+Yep, it should probably use break instead of return.
+
+> Cheers,
+>
+> Paolo
+>
+
+
+-- 
+Luiz Augusto von Dentz
