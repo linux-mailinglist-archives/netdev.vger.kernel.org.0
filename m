@@ -2,291 +2,273 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C647534C25
-	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 11:01:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF5B5534C4B
+	for <lists+netdev@lfdr.de>; Thu, 26 May 2022 11:09:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346190AbiEZJBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 05:01:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33270 "EHLO
+        id S1346826AbiEZJI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 05:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345132AbiEZJBN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 05:01:13 -0400
-Received: from de-smtp-delivery-102.mimecast.com (de-smtp-delivery-102.mimecast.com [194.104.111.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59AAFD87
-        for <netdev@vger.kernel.org>; Thu, 26 May 2022 02:01:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
-        t=1653555669;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WfmgWYmROWun/bdUJVEavyz/U7GYo/KA9VVj0w/KH0w=;
-        b=FtWYEwdxBXlaxkScikoX9RfYqocQ5WtAadC+XsKwTbuASRsY3TiY75+Zxh2x+7MuGD/pkR
-        2Pk5efAEYcJLxuzPfH5p72j7UH0T42Si+Yj7Ny8qSBkyQxuXlkj8RnPLOPleai/X9+XSMY
-        FxlDae0y8JCVlkmBzmhg+yUqGdgTqi8=
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com
- (mail-db3eur04lp2054.outbound.protection.outlook.com [104.47.12.54]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-30-6ilVzBiWMOCjk4RarezeXA-1; Thu, 26 May 2022 11:01:05 +0200
-X-MC-Unique: 6ilVzBiWMOCjk4RarezeXA-1
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=idRlkO/+w2xtGG/8+jelwxRfBtIe1og8+ILjZD9t5XDUsjOggIKuszt0a54UqqeLv0jnS3qfIJlmGNXrBg31+Q5pfj+T2aM13NDj+QnrChqFYHgZPn/BruBgDbsneaD0p5wDHAjPPSgCCtAicQY7SQrjSVKxOA4seHhMBX7OVVnz/iDpKzaPK/YXI75HARFzOXr8gRk5nvpBS03wyBAMa50WZQTCWPo91pFWxvtcFFv+IBa7ZFlAodF1jk4Bn7N98Kd9uEFTk14vItaVGGmLLtp9cDZiEZKkbE3c5eyWYptUgul8RJy8oE1I2Id2cOlqt/Pb4iV/eWltuJnwe8cAkQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WfmgWYmROWun/bdUJVEavyz/U7GYo/KA9VVj0w/KH0w=;
- b=lRi2fczdpQMZqVwJ52Ha0PlIRjcnuCqzS9Y2zrwk6UmgnyYDhh+KpXNCHL71Aa/QFRxtHMfI9H4MvpWQ8tGS2FihzxO8YRhwmkLbC/GsBFq00xc/a6w6kGw5SGSImJEEq83OrxBPs/rCK0/u+qkDpnfoxeir8p0ShMcrpZ9rTtmDtWrQehUScRnxjeh3OYBpPpw2/LZVCwhu85pxAwMfwd1lwAo3npSWsfWvJpeZQuXS48At514BrbOHzHe2fp+xLRRI8opq2hlldoMeHdLl4lf0zaz01xpQwHJJ2QpjUqSuPYBga4EswqK7leXM3m//lUyGZvP2jAl7QQ4Q54YWhw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from DB9PR04MB8107.eurprd04.prod.outlook.com (2603:10a6:10:243::20)
- by AM6PR04MB5639.eurprd04.prod.outlook.com (2603:10a6:20b:ad::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.23; Thu, 26 May
- 2022 09:01:02 +0000
-Received: from DB9PR04MB8107.eurprd04.prod.outlook.com
- ([fe80::40a2:1b77:8319:a7fa]) by DB9PR04MB8107.eurprd04.prod.outlook.com
- ([fe80::40a2:1b77:8319:a7fa%6]) with mapi id 15.20.5293.013; Thu, 26 May 2022
- 09:01:02 +0000
-Date:   Thu, 26 May 2022 16:59:45 +0800
-From:   Shung-Hsi Yu <shung-hsi.yu@suse.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Subject: Re: [PATCH bpf-next 2/4] bpf: verifier: explain opcode check in
- check_ld_imm()
-Message-ID: <Yo9BgYBum3jU4N4s@syu-laptop>
-References: <20220520113728.12708-1-shung-hsi.yu@suse.com>
- <20220520113728.12708-3-shung-hsi.yu@suse.com>
- <f9511485-cda4-4e5e-fe1f-60ffe57e27d1@fb.com>
- <0cf50c32-ab67-ef23-7b84-ef1d4e007c33@fb.com>
- <YoyEbYGIoiULPQEk@syu-laptop>
- <CAADnVQ+gJ8ksqGRgYn0kbfTBm2BsvZyc-hRAMbAWhj05LdW6Lw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAADnVQ+gJ8ksqGRgYn0kbfTBm2BsvZyc-hRAMbAWhj05LdW6Lw@mail.gmail.com>
-X-ClientProxiedBy: AS8PR05CA0009.eurprd05.prod.outlook.com
- (2603:10a6:20b:311::14) To DB9PR04MB8107.eurprd04.prod.outlook.com
- (2603:10a6:10:243::20)
+        with ESMTP id S1346823AbiEZJI4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 05:08:56 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55EBD1FCC0;
+        Thu, 26 May 2022 02:08:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653556135; x=1685092135;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BbgZo0fAvzwrr8/AxG79gLLntIyYXKjXVTnVr9TmLbk=;
+  b=SVgZeJbXKOBo9mrpxgOMMYUr8dmEe/CAmRHumIk54DTikZcKKGFhuOfF
+   lanoOGZQ2ayux9AcnfflaGZwN4gHCcTebsPyG+6Yd056IUh1pBKWQ19PM
+   NJaH8VGasGpppcUw82GPySPIBIZmFl+voqji8930s3aeNJMvxzU9HpWCv
+   hIZtu5pedx2dLQOc4Vh6RJXvNNft8qpt1lvUrI7ndhweF3Qn8XtgxHFbq
+   47Hf+8Nxg125Jcecm0y+fqIXNzsCPFvfug6+nCQKSVNAnJYNpQPYxkFRW
+   UikBpGA0LlpL5zll7P4n3o4ygyfIxodIXYgVbSz0TQXq2C2741jhFrEJx
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="299428592"
+X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
+   d="scan'208";a="299428592"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 02:08:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
+   d="scan'208";a="718170597"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 26 May 2022 02:08:52 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nu9UB-0003jg-Gz;
+        Thu, 26 May 2022 09:08:51 +0000
+Date:   Thu, 26 May 2022 17:02:43 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jianglei Nie <niejianglei2021@163.com>, pizza@shaftnet.org,
+        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: Re: [PATCH] cw1200: Fix memory leak in cw1200_set_key()
+Message-ID: <202205261656.CWDWN8nG-lkp@intel.com>
+References: <20220526033003.473943-1-niejianglei2021@163.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8da69b1f-8eee-4fda-bae4-08da3ef64236
-X-MS-TrafficTypeDiagnostic: AM6PR04MB5639:EE_
-X-Microsoft-Antispam-PRVS: <AM6PR04MB5639D9B002A68F6BB8C19736BFD99@AM6PR04MB5639.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ydl2uozAt5zqh45J+p6Xl0LWC2PO6jK7sNq/wXBOfNI2ahvzkfL7/+0uf3HBWIAvIgIemHnErperpG477pqYxo5NX76kUWU9DMRrUEn/r1InblknVs4ioKXdfOOpKUo0wwYznj3BePWbfFvbII83eBGu++u2mf/AU2z1AayuDonhGehie/tKKVZW0AfxmNAitSZcp3sOMVCPEWw1rC9UV7woHI09waicrbna56L4KesIWgAaNhsTTIWRcIS76OzHn4SOqWrYrHqJezddZfG2Uw7gfrFEzGO3BJHzLUAQM1FOBy0/RaRakFLUr7YKOtl90+OCkOEs1HAgeRUo0Zx87mQ2yAJ4ZTouJOw5yk/5GpjE3fZp7Qzq1hkiqLuUTw/MS1sx3lY67s7vQOOda+fr4v/vAtQkhuxEtDLUAqRlmGpci3bWhZ8/uM69tsvgOtM7HmguLZN5GvZvyUn0LNNiqZoUhw8/6LrnVExyYErbqwxYSt/ZJROhc9bY73OrzKL3eWdthHpTLuVH9iMXsW5KOjiiK5mVGB4pIhxgF+QJ4NhHajTngPWW2wFnioNwmUwwLxCDn5crg0XB19wnMfqdkaswnTLR/FU8yVpvJwkPbvJRampDnRIonpHVey06WL01hzz9Unkbz7x+ya9aUpGSBA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8107.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(66556008)(508600001)(6916009)(38100700002)(54906003)(66476007)(186003)(7416002)(5660300002)(6506007)(6486002)(53546011)(86362001)(9686003)(6512007)(26005)(33716001)(8936002)(6666004)(2906002)(8676002)(316002)(66946007)(83380400001)(4326008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UjZ6WktRWXRwcytubnhUQXhveHNKK0NTRkJjR3BtTWc1SFdnWG5MUEJLbGpa?=
- =?utf-8?B?Ylg1bGxEL1BOUkVNaFpzbUNMdmR4YTh5Q25zZUM3Qy82MXZ1Nksxb0hpVzFF?=
- =?utf-8?B?Q2padENSYzgvc0RqejJxQm51dlVTQ1lUM0pFbHROYVJEZkpobnUzT2pTb3Vu?=
- =?utf-8?B?VFc0T3gwQzkwWG5VWkdBWE9tWkhNUzJ5bjdreVZrQ2x4RlEwUGxqUFpvcm9E?=
- =?utf-8?B?MDRqQ1QyV2pVcjliQUNXMFNMSWFUUkxpemJHdHpuN0dCa3lpNkVyVS8wQ1Ji?=
- =?utf-8?B?ZUpzZmFzYUpNa0VLdUZsZlhMem9XMGN0TEN1R2xwMmcwRmtqKy94aEFSTnJN?=
- =?utf-8?B?bkVUQXdJaC83czlpSzZrZ1pkQnJvS21FYVhucG9yekIrWmVtMm1JTkZQaUNM?=
- =?utf-8?B?MkpRV0pwYmpoZExLVmxjRG5aZGJPUmZIUHE3QWR5Q3FlZ2Rna2ROTytDRitI?=
- =?utf-8?B?QlV6a2NHaVZmT2t5SG5mY0RqVVh1VVZHaExETnVkR0JjLzNNNkhmYmpuZ3Z6?=
- =?utf-8?B?OHZVYWlOQmg3ZzZ3OHowZUhuMkJOSXV5R09Ic0hNUHVXZXppRVhCUkltQkRC?=
- =?utf-8?B?RjBWZmROdndzaE1naHkxVHJnRDNDcXg0czZlMGhQeTRlbUNjYVBPR1dML1Uv?=
- =?utf-8?B?S29OQnA2cTJpTFhxcVZVNUFUcmg2VFhOQlF4YzMxTnV6Rm5YQTc5Uk10Q2s4?=
- =?utf-8?B?TCt6LzByNjZpUTE0Zk8vRHJhUEh6OHc4cGNraUdzb0ZGd3BoV3lJbldLdkhU?=
- =?utf-8?B?SFBweHBUNGlhaFlZZDlXb3lGS3RQMXNJNFN2NWRVSHZMYkk0cXV4bXJkT01a?=
- =?utf-8?B?Q05FMFBkU1VnQ1lHbFJiUGx2TldENCtHU1p5cTNvZTQyV3J2VW9CU1BIeUJy?=
- =?utf-8?B?ZkJJckIxK0xOMjdjdTg3U3o0TXFPQjRaRjIrMFpuVGJZcndsb1Yvd3dvNkNp?=
- =?utf-8?B?cEZ4eUc4by82N1ZjY1RBR1YvL1ZBWjgvdnBqa1BGWlpoZUNZVzloR0VKT1dI?=
- =?utf-8?B?bExHZlZwQlJOUkJNS3JBV1ZrcjBhM3dUS3Z5T0t3ajl6T3FvcTd6QklOV2px?=
- =?utf-8?B?YVhQeWs5WDZRWmZHMGZ1WWRYMGpydVNTN0VwT0NENzArcmFuOUhqbGs1RHpo?=
- =?utf-8?B?QXY3VTdXQ0NHZGplUDdPaFFiRGprQjljbzlueWo0bk05dERENzFrcTR0a0ov?=
- =?utf-8?B?V0dZZnhNMXBvSlJBQndqa3FGYkdyb05HL3dkQUd0SFBBelZyY29WZFN2RURs?=
- =?utf-8?B?OXBMcEp2MWRkMTh1NmlXdGM0SjV0MnBRTzNOSTlXWjJvakRteVZvMnU5Q056?=
- =?utf-8?B?dXNkZjVSeDcxN2QxQ3RTTExzMURDRkRaeXViZlVhV1hLN2VZR1NRanlqRmdk?=
- =?utf-8?B?TFZha1d4VDZNNDducytMeERwTW9yRzd2RnU2WmJDZ1dDUStZNmdQYnZudUV2?=
- =?utf-8?B?YWNUUlJZNXB5eVMxdnFxNmxTcHI1bnUxa3ZqUmlmY3UwcFlneDV0NUhmKzhE?=
- =?utf-8?B?YmRVL0pGR3ZDVnFCb241bG44UDBLanNIQ2V2TEZudHVmZFNHQU1vYVo3MmUz?=
- =?utf-8?B?WHNqOWJLYTNCWDgrVUxCWXphRHROWGlnWFErcWQ4WWI0NlV6ZnRMUVhnWWdi?=
- =?utf-8?B?T2Z1dTJtOXFLQ2hiVGxSclJQbzFKZ1VXTGlLdUZ1VlRPTzd4Sm05TTk2K2Vp?=
- =?utf-8?B?T1JhSXZ3TEs4SHZ3K1lZenRaMy81cVlMQVFOb2E1cUxyNkhlSTBaMitqWjM3?=
- =?utf-8?B?QWt3SGJxdUxvOFpwQTlYOXFid2h0dDN1cmFNbVN5NXlkWGpsOE13Si9xSHJi?=
- =?utf-8?B?K0JiZlVnVjlacjFjTS9CVUVTWkFJMDJqVHA3UjcrSUU4NUNiUW5XaTlxbmFM?=
- =?utf-8?B?anhSeFdrZXBUbHp2ZVdsc21NQW1DeEk0N0ZpWk45Y0p6cjlXRjFLalhUa1BY?=
- =?utf-8?B?U2diVlNmaVd6Yy9OcU9SMjFHMGwrS21lRmF5NU5IMTJDOWQrZWFFd2QzejZt?=
- =?utf-8?B?QmkxVEgrREJhcU5sS1RxZ1ZVL014ZXkyQm9QZ2RSaFBCMG5UalV1a0F6RlVX?=
- =?utf-8?B?N2RlUmhvTWd4Y0RyaitpMVN0ekpodEVpZHdKOWVneW1PNzhBWkpxN0I2Q1N6?=
- =?utf-8?B?RENib1J3aGpnWU5XRG9aT1pYMjZXSkFoaEJOMWhnQTZVaGR3THFUM2hUNm1J?=
- =?utf-8?B?cmQ4KzViWFVHUXF3TitxV3Z1R0l3UmNYekE2dmdXbjdsazJTYlVOK3R0RGJj?=
- =?utf-8?B?U2U4dHpOMHcveVZUMnJzMEcrektSKzFoM01wdlM4Q21MNDUrNjF4OUdqckRU?=
- =?utf-8?B?WTZRK1loQUpuSDExUnFlSFhRcXVUeEdScmI3YmYxanhwY2JWNWxEUT09?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8da69b1f-8eee-4fda-bae4-08da3ef64236
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8107.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2022 09:01:02.5886
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: w2h5Vf5x0wj55t7z39HZFvEOenRzGmZHxvcjGZORZKJfSkEuWWaMBYSxGSS1n+8iaCV1tIIC4fi/bXzx3qlGyw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5639
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220526033003.473943-1-niejianglei2021@163.com>
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 24, 2022 at 08:12:24AM -0700, Alexei Starovoitov wrote:
-> On Tue, May 24, 2022 at 12:11 AM Shung-Hsi Yu <shung-hsi.yu@suse.com> wrote:
-> > On Fri, May 20, 2022 at 05:25:36PM -0700, Yonghong Song wrote:
-> > > On 5/20/22 4:50 PM, Yonghong Song wrote:
-> > > > On 5/20/22 4:37 AM, Shung-Hsi Yu wrote:
-> > > > > The BPF_SIZE check in the beginning of check_ld_imm() actually guard
-> > > > > against program with JMP instructions that goes to the second
-> > > > > instruction of BPF_LD_IMM64, but may be easily dismissed as an simple
-> > > > > opcode check that's duplicating the effort of bpf_opcode_in_insntable().
-> > > > >
-> > > > > Add comment to better reflect the importance of the check.
-> > > > >
-> > > > > Signed-off-by: Shung-Hsi Yu <shung-hsi.yu@suse.com>
-> > > > > ---
-> > > > >   kernel/bpf/verifier.c | 4 ++++
-> > > > >   1 file changed, 4 insertions(+)
-> > > > >
-> > > > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > > > > index 79a2695ee2e2..133929751f80 100644
-> > > > > --- a/kernel/bpf/verifier.c
-> > > > > +++ b/kernel/bpf/verifier.c
-> > > > > @@ -9921,6 +9921,10 @@ static int check_ld_imm(struct
-> > > > > bpf_verifier_env *env, struct bpf_insn *insn)
-> > > > >       struct bpf_map *map;
-> > > > >       int err;
-> > > > > +    /* checks that this is not the second part of BPF_LD_IMM64, which is
-> > > > > +     * skipped over during opcode check, but a JMP with invalid
-> > > > > offset may
-> > > > > +     * cause check_ld_imm() to be called upon it.
-> > > > > +     */
-> > > >
-> > > > The check_ld_imm() call context is:
-> > > >
-> > > >                  } else if (class == BPF_LD) {
-> > > >                          u8 mode = BPF_MODE(insn->code);
-> > > >
-> > > >                          if (mode == BPF_ABS || mode == BPF_IND) {
-> > > >                                  err = check_ld_abs(env, insn);
-> > > >                                  if (err)
-> > > >                                          return err;
-> > > >
-> > > >                          } else if (mode == BPF_IMM) {
-> > > >                                  err = check_ld_imm(env, insn);
-> > > >                                  if (err)
-> > > >                                          return err;
-> > > >
-> > > >                                  env->insn_idx++;
-> > > >                                  sanitize_mark_insn_seen(env);
-> > > >                          } else {
-> > > >                                  verbose(env, "invalid BPF_LD mode\n");
-> > > >                                  return -EINVAL;
-> > > >                          }
-> > > >                  }
-> > > >
-> > > > which is a normal checking of LD_imm64 insn.
-> > > >
-> > > > I think the to-be-added comment is incorrect and unnecessary.
-> > >
-> > > Okay, double check again and now I understand what happens
-> > > when hitting the second insn of ldimm64 with a branch target.
-> > > Here we have BPF_LD = 0 and BPF_IMM = 0, so for a branch
-> > > target to the 2nd part of ldimm64, it will come to
-> > > check_ld_imm() and have error "invalid BPF_LD_IMM insn"
-> >
-> > Yes, the 2nd instruction uses the reserved opcode 0, which could be
-> > interpreted as BPF_LD | BPF_W | BPF_IMM.
-> >
-> > > So check_ld_imm() is to check whether the insn is a
-> > > *legal* insn for the first part of ldimm64.
-> > >
-> > > So the comment may be rewritten as below.
-> > >
-> > > This is to verify whether an insn is a BPF_LD_IMM64
-> > > or not. But since BPF_LD = 0 and BPF_IMM = 0, if the branch
-> > > target comes to the second part of BPF_LD_IMM64,
-> > > the control may come here as well.
-> > >
-> > > > >       if (BPF_SIZE(insn->code) != BPF_DW) {
-> > > > >           verbose(env, "invalid BPF_LD_IMM insn\n");
-> > > > >           return -EINVAL;
-> >
-> > After giving it a bit more though, maybe it'd be clearer if we simply detect
-> > such case in the JMP branch of do_check().
-> >
-> > Something like this instead. Though I haven't tested yet, and it still check
-> > the jump destination even it's a dead branch.
-> >
-> > ---
-> >  kernel/bpf/verifier.c | 19 +++++++++++++++++++
-> >  1 file changed, 19 insertions(+)
-> >
-> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > index aedac2ac02b9..59228806884e 100644
-> > --- a/kernel/bpf/verifier.c
-> > +++ b/kernel/bpf/verifier.c
-> > @@ -12191,6 +12191,25 @@ static int do_check(struct bpf_verifier_env *env)
-> >                         u8 opcode = BPF_OP(insn->code);
-> >
-> >                         env->jmps_processed++;
-> > +
-> > +                       /* check jump offset */
-> > +                       if (opcode != BPF_CALL && opcode != BPF_EXIT) {
-> > +                               u32 dst_insn_idx = env->insn_idx + insn->off + 1;
-> > +                               struct bpf_insn *dst_insn = &insns[dst_insn_idx];
-> > +
-> > +                               if (dst_insn_idx > insn_cnt) {
-> > +                                       verbose(env, "invalid JMP idx %d off %d beyond end of program insn_cnt %d\n", env->insn_idx, insn->off, insn_cnt);
-> > +                                       return -EFAULT;
-> > +                               }
-> > +                               if (!bpf_opcode_in_insntable(dst_insn->code)) {
-> > +                                       /* Should we simply tell the user that it's a
-> > +                                        * jump to the 2nd LD_IMM64 instruction
-> > +                                        * here? */
-> > +                                       verbose(env, "idx %d JMP to idx %d with unknown opcode %02x\n", env->insn_idx, dst_insn_idx, insn->code);
-> > +                                       return -EINVAL;
-> > +                               }
-> > +                       }
-> > +
-> 
-> This makes the code worse.
+Hi Jianglei,
 
-Could you elaborate a bit more on the reason? I'd like to try avoid
-submitting patch like this in the future.
+Thank you for the patch! Yet something to improve:
 
-In hindsight I'd guess it's because it adds more branching into do_check()
-and more lines of code, making it harder to understand, but at the same time
-the added checks is mostly repeating existing
+[auto build test ERROR on wireless-next/main]
+[also build test ERROR on wireless/main v5.18 next-20220526]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
- 1. insn_cnt check in the beginning of do_check() loop
- 2. BPF_SIZE check in check_ld_imm()
+url:    https://github.com/intel-lab-lkp/linux/commits/Jianglei-Nie/cw1200-Fix-memory-leak-in-cw1200_set_key/20220526-114747
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git main
+config: x86_64-randconfig-a003 (https://download.01.org/0day-ci/archive/20220526/202205261656.CWDWN8nG-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 3d546191ad9d7d2ad2c7928204b9de51deafa675)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/1e40283730dea11a1556d589925313cdca295484
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jianglei-Nie/cw1200-Fix-memory-leak-in-cw1200_set_key/20220526-114747
+        git checkout 1e40283730dea11a1556d589925313cdca295484
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/wireless/st/cw1200/
 
-While it has the benefit of adding more specific error message, such error
-message is too specific to be useful in general, thus does not outweigh the
-cost of added complexity?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> There is no need for these patches.
+All errors (new ones prefixed by >>):
 
-Just to be clear, "these" refers to the added checks do_check()
-<Yoxjvvm9poTC3Atv@syu-laptop> only, or does it also includes the to-be-added
-comment inside check_ld_imm() of patch 2?
+>> drivers/net/wireless/st/cw1200/sta.c:826:26: error: use of undeclared identifier 'idx'
+                           cw1200_free_key(priv, idx);
+                                                 ^
+   1 error generated.
 
+
+vim +/idx +826 drivers/net/wireless/st/cw1200/sta.c
+
+   679	
+   680	int cw1200_set_key(struct ieee80211_hw *dev, enum set_key_cmd cmd,
+   681			   struct ieee80211_vif *vif, struct ieee80211_sta *sta,
+   682			   struct ieee80211_key_conf *key)
+   683	{
+   684		int ret = -EOPNOTSUPP;
+   685		struct cw1200_common *priv = dev->priv;
+   686		struct ieee80211_key_seq seq;
+   687	
+   688		mutex_lock(&priv->conf_mutex);
+   689	
+   690		if (cmd == SET_KEY) {
+   691			u8 *peer_addr = NULL;
+   692			int pairwise = (key->flags & IEEE80211_KEY_FLAG_PAIRWISE) ?
+   693				1 : 0;
+   694			int idx = cw1200_alloc_key(priv);
+   695			struct wsm_add_key *wsm_key = &priv->keys[idx];
+   696	
+   697			if (idx < 0) {
+   698				ret = -EINVAL;
+   699				goto finally;
+   700			}
+   701	
+   702			if (sta)
+   703				peer_addr = sta->addr;
+   704	
+   705			key->flags |= IEEE80211_KEY_FLAG_PUT_IV_SPACE |
+   706				      IEEE80211_KEY_FLAG_RESERVE_TAILROOM;
+   707	
+   708			switch (key->cipher) {
+   709			case WLAN_CIPHER_SUITE_WEP40:
+   710			case WLAN_CIPHER_SUITE_WEP104:
+   711				if (key->keylen > 16) {
+   712					cw1200_free_key(priv, idx);
+   713					ret = -EINVAL;
+   714					goto finally;
+   715				}
+   716	
+   717				if (pairwise) {
+   718					wsm_key->type = WSM_KEY_TYPE_WEP_PAIRWISE;
+   719					memcpy(wsm_key->wep_pairwise.peer,
+   720					       peer_addr, ETH_ALEN);
+   721					memcpy(wsm_key->wep_pairwise.keydata,
+   722					       &key->key[0], key->keylen);
+   723					wsm_key->wep_pairwise.keylen = key->keylen;
+   724				} else {
+   725					wsm_key->type = WSM_KEY_TYPE_WEP_DEFAULT;
+   726					memcpy(wsm_key->wep_group.keydata,
+   727					       &key->key[0], key->keylen);
+   728					wsm_key->wep_group.keylen = key->keylen;
+   729					wsm_key->wep_group.keyid = key->keyidx;
+   730				}
+   731				break;
+   732			case WLAN_CIPHER_SUITE_TKIP:
+   733				ieee80211_get_key_rx_seq(key, 0, &seq);
+   734				if (pairwise) {
+   735					wsm_key->type = WSM_KEY_TYPE_TKIP_PAIRWISE;
+   736					memcpy(wsm_key->tkip_pairwise.peer,
+   737					       peer_addr, ETH_ALEN);
+   738					memcpy(wsm_key->tkip_pairwise.keydata,
+   739					       &key->key[0], 16);
+   740					memcpy(wsm_key->tkip_pairwise.tx_mic_key,
+   741					       &key->key[16], 8);
+   742					memcpy(wsm_key->tkip_pairwise.rx_mic_key,
+   743					       &key->key[24], 8);
+   744				} else {
+   745					size_t mic_offset =
+   746						(priv->mode == NL80211_IFTYPE_AP) ?
+   747						16 : 24;
+   748					wsm_key->type = WSM_KEY_TYPE_TKIP_GROUP;
+   749					memcpy(wsm_key->tkip_group.keydata,
+   750					       &key->key[0], 16);
+   751					memcpy(wsm_key->tkip_group.rx_mic_key,
+   752					       &key->key[mic_offset], 8);
+   753	
+   754					wsm_key->tkip_group.rx_seqnum[0] = seq.tkip.iv16 & 0xff;
+   755					wsm_key->tkip_group.rx_seqnum[1] = (seq.tkip.iv16 >> 8) & 0xff;
+   756					wsm_key->tkip_group.rx_seqnum[2] = seq.tkip.iv32 & 0xff;
+   757					wsm_key->tkip_group.rx_seqnum[3] = (seq.tkip.iv32 >> 8) & 0xff;
+   758					wsm_key->tkip_group.rx_seqnum[4] = (seq.tkip.iv32 >> 16) & 0xff;
+   759					wsm_key->tkip_group.rx_seqnum[5] = (seq.tkip.iv32 >> 24) & 0xff;
+   760					wsm_key->tkip_group.rx_seqnum[6] = 0;
+   761					wsm_key->tkip_group.rx_seqnum[7] = 0;
+   762	
+   763					wsm_key->tkip_group.keyid = key->keyidx;
+   764				}
+   765				break;
+   766			case WLAN_CIPHER_SUITE_CCMP:
+   767				ieee80211_get_key_rx_seq(key, 0, &seq);
+   768				if (pairwise) {
+   769					wsm_key->type = WSM_KEY_TYPE_AES_PAIRWISE;
+   770					memcpy(wsm_key->aes_pairwise.peer,
+   771					       peer_addr, ETH_ALEN);
+   772					memcpy(wsm_key->aes_pairwise.keydata,
+   773					       &key->key[0], 16);
+   774				} else {
+   775					wsm_key->type = WSM_KEY_TYPE_AES_GROUP;
+   776					memcpy(wsm_key->aes_group.keydata,
+   777					       &key->key[0], 16);
+   778	
+   779					wsm_key->aes_group.rx_seqnum[0] = seq.ccmp.pn[5];
+   780					wsm_key->aes_group.rx_seqnum[1] = seq.ccmp.pn[4];
+   781					wsm_key->aes_group.rx_seqnum[2] = seq.ccmp.pn[3];
+   782					wsm_key->aes_group.rx_seqnum[3] = seq.ccmp.pn[2];
+   783					wsm_key->aes_group.rx_seqnum[4] = seq.ccmp.pn[1];
+   784					wsm_key->aes_group.rx_seqnum[5] = seq.ccmp.pn[0];
+   785					wsm_key->aes_group.rx_seqnum[6] = 0;
+   786					wsm_key->aes_group.rx_seqnum[7] = 0;
+   787					wsm_key->aes_group.keyid = key->keyidx;
+   788				}
+   789				break;
+   790			case WLAN_CIPHER_SUITE_SMS4:
+   791				if (pairwise) {
+   792					wsm_key->type = WSM_KEY_TYPE_WAPI_PAIRWISE;
+   793					memcpy(wsm_key->wapi_pairwise.peer,
+   794					       peer_addr, ETH_ALEN);
+   795					memcpy(wsm_key->wapi_pairwise.keydata,
+   796					       &key->key[0], 16);
+   797					memcpy(wsm_key->wapi_pairwise.mic_key,
+   798					       &key->key[16], 16);
+   799					wsm_key->wapi_pairwise.keyid = key->keyidx;
+   800				} else {
+   801					wsm_key->type = WSM_KEY_TYPE_WAPI_GROUP;
+   802					memcpy(wsm_key->wapi_group.keydata,
+   803					       &key->key[0],  16);
+   804					memcpy(wsm_key->wapi_group.mic_key,
+   805					       &key->key[16], 16);
+   806					wsm_key->wapi_group.keyid = key->keyidx;
+   807				}
+   808				break;
+   809			default:
+   810				pr_warn("Unhandled key type %d\n", key->cipher);
+   811				cw1200_free_key(priv, idx);
+   812				ret = -EOPNOTSUPP;
+   813				goto finally;
+   814			}
+   815			ret = wsm_add_key(priv, wsm_key);
+   816			if (!ret)
+   817				key->hw_key_idx = idx;
+   818			else
+   819				cw1200_free_key(priv, idx);
+   820		} else if (cmd == DISABLE_KEY) {
+   821			struct wsm_remove_key wsm_key = {
+   822				.index = key->hw_key_idx,
+   823			};
+   824	
+   825			if (wsm_key.index > WSM_KEY_MAX_INDEX) {
+ > 826				cw1200_free_key(priv, idx);
+   827				ret = -EINVAL;
+   828				goto finally;
+   829			}
+   830	
+   831			cw1200_free_key(priv, wsm_key.index);
+   832			ret = wsm_remove_key(priv, &wsm_key);
+   833		} else {
+   834			pr_warn("Unhandled key command %d\n", cmd);
+   835		}
+   836	
+   837	finally:
+   838		mutex_unlock(&priv->conf_mutex);
+   839		return ret;
+   840	}
+   841	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
