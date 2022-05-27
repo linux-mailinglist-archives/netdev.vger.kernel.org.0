@@ -2,102 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C439E535E58
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 12:32:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9E68535EB7
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 12:56:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245317AbiE0Kcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 06:32:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34296 "EHLO
+        id S1350683AbiE0K4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 06:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237134AbiE0Kc0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 06:32:26 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D062A1059FF
-        for <netdev@vger.kernel.org>; Fri, 27 May 2022 03:32:21 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id z186so2926431ybz.3
-        for <netdev@vger.kernel.org>; Fri, 27 May 2022 03:32:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=gMRL2ChFV1c1fJH6+lzMvi+AnpLvf8Jv1voAqTadcaU=;
-        b=HCBTEMsB47s25vRhGTGCwdBYlzlH7poF8SpUHY7eL2f8EUxhufzvn5Z7C80h/gulXZ
-         0hnGmm7dg/oYEwGItvBxYeqUt9RmnEp+r2Hq/Vn/+klI+S5MbfpdDZpNuTq1cDq3oMc+
-         5oaYbEGmGvsMGSCK5rOHK9ukoLvE45xxQfk8WSlexlF0LrGxKeZqHCcEu+qPnku+xz/7
-         i0PL2ZhP7wGm0e2Q7PaD/I6fLaYog1n2wgb5Cb6c7x+Gmxbs7hgYJ7NBPVLpmtFykLA8
-         qLxvKdn9i6XVpNgAm7Aa4/i7KBfc0/cao23m4nQ+gva7q8mOF/bT2l+SCYznelEKXHL6
-         b4RQ==
+        with ESMTP id S1350013AbiE0Kz6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 06:55:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1B084EC3F8
+        for <netdev@vger.kernel.org>; Fri, 27 May 2022 03:55:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653648956;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gGQcppmnDaS/J3TRXiziyA5gL0rtQs0/Sd1uzUmYxEU=;
+        b=TX/g3FXr8yz7Z4SKaqizhItgcvzPTwiWs0UnO8RLql2ZHXLrE2lKFmltLJ5ce6ogyCaDhz
+        ouvtKFLXGk4YeaN6GwgYLwfU/yQCE1a5tCf2rYiwgU5NI2oGD3uAQplMj+KX0jiUH9ITDp
+        5O/lrqM8QeB445XnLCX8/8ysK6lxKYQ=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-486-CPCr_JXJN1ygdHd8BQk42A-1; Fri, 27 May 2022 06:55:55 -0400
+X-MC-Unique: CPCr_JXJN1ygdHd8BQk42A-1
+Received: by mail-ed1-f69.google.com with SMTP id m9-20020a50ef09000000b0042bd6839fd5so2841964eds.6
+        for <netdev@vger.kernel.org>; Fri, 27 May 2022 03:55:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=gMRL2ChFV1c1fJH6+lzMvi+AnpLvf8Jv1voAqTadcaU=;
-        b=ihBX9MzmsCFb5AOal4KytiZFJtH0yur2D0bDoJTM6F5TTwG5mvMmSYy/rfyVX8l8BN
-         9E6tqxFTrpwtcChj12awqqK35vR0ZUcB02bV90FoG5aglODZCJY+tUd3H+HTtmtOnOZd
-         n3Fx9K6WnlVRUJFD3H6VR3xhhc9sRTILRwz0y1D8gUO0AkZLX+cgN/MriZSGe4AVLHUk
-         Vkjg3UpvZqgIiK+XF0xKgipWjaw4U3dRniYPOLEhNjXmxhGqjfa3Vyj6Wdgw5jDQDYQ0
-         PYiSMA1xOGVptSe46Xn5QVhS9v91F7daTTtD733QVLPDGZkjYVDdgatvjeDWgTYjZtJl
-         w4SQ==
-X-Gm-Message-State: AOAM532+IGeDwpeRDxLUetlov5ipDTjHbJwyctti+NW32NSsn6FK/G6K
-        KIIo2LP97lMcuO5G0Kk9jCh/Evd0PfcJej0nb24=
-X-Google-Smtp-Source: ABdhPJzAnbI1qOnSk0otK/jHfjRV38/X2vG9Eadji2mUEuurzdv/92ZxxaSSFreupSJR0sd+v4sAcUcEI9sMViDGiJo=
-X-Received: by 2002:a25:e7d0:0:b0:655:22c0:ea08 with SMTP id
- e199-20020a25e7d0000000b0065522c0ea08mr14311281ybh.374.1653647540697; Fri, 27
- May 2022 03:32:20 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=gGQcppmnDaS/J3TRXiziyA5gL0rtQs0/Sd1uzUmYxEU=;
+        b=Vg7n2I+m6M+vBpNijSA+sm/ZOoBQ+mq26xv0HLKNZKd9/MttOIjghxySCJmSxpoMBc
+         6JMO5ozhTEc1HSSsU/esxiYP3YGXaUoz45Z/7tDLRei21Jo0QA3++kuHT26McJmwuK3S
+         jWo81wf1fefberysBg8493jHMDOx9CiswHWOmWAeqjJASpz1Y9zl/NlbGyTexrVgpENP
+         kXA1lsDg9fBnYmoIQnI+vCSr2TLniI8LNfDsDQBOEBAOpSBeHTvFVB33GiNPm8XbBwzy
+         ACHD5y9ycTnRE8bw/a8xoRfMSSVFfNtlzhkihf4pLd4MDcHcEhU9Q6OK5NdmUzof1DUh
+         0AQw==
+X-Gm-Message-State: AOAM533edW9SA7i+MLkmnE68CtyPGvD5Ljy/vc5agUVLQXNHqqUt5eVR
+        rQpTbb7MLM06U8bb5q2g/pxDQP9pUBUldsNEl1aHGG8vqem1DTCcPRR6emSuojhheiiRiX4b7k9
+        tavRJjtmvA+VRlg8Y
+X-Received: by 2002:a17:907:8a03:b0:6fe:c10d:4bf8 with SMTP id sc3-20020a1709078a0300b006fec10d4bf8mr27371028ejc.308.1653648953918;
+        Fri, 27 May 2022 03:55:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzyjSEByHUT1dN2e6dwR/wwQsgGO85W9JgRso9Wz+PFfyejclX0Yhn5dm9pxNJ4ZMKkOZKFiA==
+X-Received: by 2002:a17:907:8a03:b0:6fe:c10d:4bf8 with SMTP id sc3-20020a1709078a0300b006fec10d4bf8mr27371006ejc.308.1653648953659;
+        Fri, 27 May 2022 03:55:53 -0700 (PDT)
+Received: from redhat.com ([2.55.130.213])
+        by smtp.gmail.com with ESMTPSA id fm6-20020a1709072ac600b006fec98edf3asm1318544ejc.166.2022.05.27.03.55.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 May 2022 03:55:53 -0700 (PDT)
+Date:   Fri, 27 May 2022 06:55:44 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "martinh@xilinx.com" <martinh@xilinx.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "martinpo@xilinx.com" <martinpo@xilinx.com>,
+        "lvivier@redhat.com" <lvivier@redhat.com>,
+        "pabloc@xilinx.com" <pabloc@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "dinang@xilinx.com" <dinang@xilinx.com>,
+        Longpeng <longpeng2@huawei.com>
+Subject: Re: [PATCH v4 0/4] Implement vdpasim stop operation
+Message-ID: <20220527065442-mutt-send-email-mst@kernel.org>
+References: <20220526124338.36247-1-eperezma@redhat.com>
+ <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Received: by 2002:a05:6902:114d:0:0:0:0 with HTTP; Fri, 27 May 2022 03:32:20
- -0700 (PDT)
-Reply-To: donaldcurtis3000@gmail.com
-From:   Donald Curtis <91474711amele@gmail.com>
-Date:   Fri, 27 May 2022 11:32:20 +0100
-Message-ID: <CAC=gNW1kALOxoCMdGSFSPm-RHhHN4277TRbKjYuspzE+yt=Rhw@mail.gmail.com>
-Subject: Donald
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=5.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        FREEMAIL_REPLYTO_END_DIGIT,FROM_STARTS_WITH_NUMS,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
-X-Spam-Report: *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5009]
-        *  0.7 FROM_STARTS_WITH_NUMS From: starts with several numbers
-        * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:b35 listed in]
-        [list.dnswl.org]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [91474711amele[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [donaldcurtis3000[at]gmail.com]
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.3 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-I called to know if you received my previous email, reply to me asap.
-Donald
+On Thu, May 26, 2022 at 12:54:32PM +0000, Parav Pandit wrote:
+> 
+> 
+> > From: Eugenio Pérez <eperezma@redhat.com>
+> > Sent: Thursday, May 26, 2022 8:44 AM
+> 
+> > Implement stop operation for vdpa_sim devices, so vhost-vdpa will offer
+> > 
+> > that backend feature and userspace can effectively stop the device.
+> > 
+> > 
+> > 
+> > This is a must before get virtqueue indexes (base) for live migration,
+> > 
+> > since the device could modify them after userland gets them. There are
+> > 
+> > individual ways to perform that action for some devices
+> > 
+> > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there
+> > was no
+> > 
+> > way to perform it for any vhost device (and, in particular, vhost-vdpa).
+> > 
+> > 
+> > 
+> > After the return of ioctl with stop != 0, the device MUST finish any
+> > 
+> > pending operations like in flight requests. It must also preserve all
+> > 
+> > the necessary state (the virtqueue vring base plus the possible device
+> > 
+> > specific states) that is required for restoring in the future. The
+> > 
+> > device must not change its configuration after that point.
+> > 
+> > 
+> > 
+> > After the return of ioctl with stop == 0, the device can continue
+> > 
+> > processing buffers as long as typical conditions are met (vq is enabled,
+> > 
+> > DRIVER_OK status bit is enabled, etc).
+> 
+> Just to be clear, we are adding vdpa level new ioctl() that doesn’t map to any mechanism in the virtio spec.
+> 
+> Why can't we use this ioctl() to indicate driver to start/stop the device instead of driving it through the driver_ok?
+> This is in the context of other discussion we had in the LM series.
 
-Hallo,
-Ich habe angerufen, um zu wissen, ob Sie meine vorherige E-Mail
-erhalten haben. Antworten Sie mir so schnell wie m=C3=B6glich.
-Donald
+If there's something in the spec that does this then let's use that.
+Unfortunately the LM series seems to be stuck on moving
+bits around with the admin virtqueue ...
+
+-- 
+MST
+
