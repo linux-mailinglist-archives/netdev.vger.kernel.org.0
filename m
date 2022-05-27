@@ -2,59 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B0F2C535ABC
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 09:55:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ECB5535ABF
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 09:56:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348043AbiE0Hz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 03:55:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46682 "EHLO
+        id S1348155AbiE0H4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 03:56:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347762AbiE0HzX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 03:55:23 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDBA3FC4D5
-        for <netdev@vger.kernel.org>; Fri, 27 May 2022 00:55:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653638122; x=1685174122;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6BP8alYMTBAjhSCGeih2Vc7RPzbBW1ws24N0kOFDGgc=;
-  b=asdKP1VUzDRqGBtadHqm4sNXsyeBWDp+RZQctEzhZO+oEpIP7zTV3RR5
-   vQVLOvWsK64lxQtgRpZ1WxZTkbw8FmkBtH3Enni4/jDZo3w+6dYb//pbT
-   uwfTRkQf7zO/mi4j5RR4mEChGkqrcudInucUywtpPsg44JR0zcxLcZb95
-   O8XFb8ENRIghje1SCxAb5AUvwlSCKuPKWtbhYmQow/uRxWSqY2rdI7tqe
-   iBQgsXhnXotps5WUdi0G3m89GW55AC6wDLbhdektN/bJG9zhgpHwxd39q
-   RQQFl3zzesFfwcgV3SrFz+dOVW9sDfkpazlMQPq7Ms4ad1ekgPCkjpC5O
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="274514276"
-X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="274514276"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 00:55:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="527915256"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 27 May 2022 00:55:20 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nuUoZ-0004XS-Tc;
-        Fri, 27 May 2022 07:55:19 +0000
-Date:   Fri, 27 May 2022 15:54:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiawen Wu <jiawenwu@trustnetic.com>, netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Jiawen Wu <jiawenwu@trustnetic.com>
-Subject: Re: [PATCH net-next v3] net: txgbe: Add build support for txgbe
-Message-ID: <202205271506.b3ILwQFq-lkp@intel.com>
-References: <20220527063157.486686-1-jiawenwu@trustnetic.com>
+        with ESMTP id S1347762AbiE0H4E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 03:56:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20FD8FC4E9
+        for <netdev@vger.kernel.org>; Fri, 27 May 2022 00:56:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653638161;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CA+R9olX9BNKnTqlZ0IZTGggNbz8tWHe/TMK4H707bg=;
+        b=GEbm+M0Uh8bOTcLwyH9jFYqBm2qu9VC9q9xp7OTAA/6bhIXcDpMTHbhAE5NYXy7BcR0P9a
+        m+VIwTq1PkZPE+mQWn2n6mXWpZGDQRBcsGo39drsHP0V6alxadw4Jv+I0QKzkQQ3JqKPK6
+        ljFxC118vMhWEiQ+9K6fTfxOpY3VFGI=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-53-NNczawJ1Nh6UxRSgXUClzw-1; Fri, 27 May 2022 03:56:00 -0400
+X-MC-Unique: NNczawJ1Nh6UxRSgXUClzw-1
+Received: by mail-qv1-f69.google.com with SMTP id kc27-20020a056214411b00b0046243e2136bso2880271qvb.10
+        for <netdev@vger.kernel.org>; Fri, 27 May 2022 00:56:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=CA+R9olX9BNKnTqlZ0IZTGggNbz8tWHe/TMK4H707bg=;
+        b=TzT8U2zNF1ES2yXs4W2IvwcSzMpiS3bj2aEYJBgn5gac3iMSbOkT4ErjrrTseKYVlt
+         n/LDUYlh8AdIeOVHUhxpK9ADsAocjM+9liDKXRVO6k2D5RWchliOaeFjfeqEPiH/bNhz
+         2AT5Yq95YCM9Fl96KBBuLf+Os1Qb+EmMQJXJQda82lYw87xLAWQISnfLpj2v+jYgJCvi
+         7VDkfRSEZGNo0LNQWzLZate1cqD8hPwZG+RCmlfyeLPXlDMCbawngH3JIcl+LXksbPDy
+         1EoCxFV6ERofahnoW3/DDCO+FdA6JxNSFu6kz7gOCUZdxdhpAsTg77XFfCPmIQjB0shf
+         X3dA==
+X-Gm-Message-State: AOAM533MOa2eXuOmM7VT7GJa7TnH8t1o2qcoDPlwHB/WQ2hoQW8EmWzG
+        LRtJJBQhKFf6s6GJfC3RYFmenEO/Z7zeJOdEx+irBtCtIVZ+uiHNA+WO5jVhl3+mJPYjlVhlOtv
+        VwapHPq7UM70Ud8y2lb0IbK6w0a+JkgHB
+X-Received: by 2002:a05:6214:400e:b0:462:5d6:5f47 with SMTP id kd14-20020a056214400e00b0046205d65f47mr31100665qvb.70.1653638160356;
+        Fri, 27 May 2022 00:56:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJylroTpRZpeeO0qtJQiqEAiLIxT6iU6LRe7ndfiDx59PJHC+Rmgm12rix1MW2ISsQFjDw6wHv3KBekDpydjKiM=
+X-Received: by 2002:a05:6214:400e:b0:462:5d6:5f47 with SMTP id
+ kd14-20020a056214400e00b0046205d65f47mr31100652qvb.70.1653638160151; Fri, 27
+ May 2022 00:56:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220527063157.486686-1-jiawenwu@trustnetic.com>
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <20220526124338.36247-1-eperezma@redhat.com> <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEu1YenjBHAssP=FvKX6WxDQ5Aa50r-BsnkfR4zqNTk6hg@mail.gmail.com>
+In-Reply-To: <CACGkMEu1YenjBHAssP=FvKX6WxDQ5Aa50r-BsnkfR4zqNTk6hg@mail.gmail.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Fri, 27 May 2022 09:55:24 +0200
+Message-ID: <CAJaqyWfzoORc7V=xqdyLsdRPRYGNJBvWaPcZDhOb1vJWhbixoA@mail.gmail.com>
+Subject: Re: [PATCH v4 0/4] Implement vdpasim stop operation
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "martinh@xilinx.com" <martinh@xilinx.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "martinpo@xilinx.com" <martinpo@xilinx.com>,
+        "lvivier@redhat.com" <lvivier@redhat.com>,
+        "pabloc@xilinx.com" <pabloc@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "dinang@xilinx.com" <dinang@xilinx.com>,
+        Longpeng <longpeng2@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,146 +101,96 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jiawen,
+On Fri, May 27, 2022 at 4:26 AM Jason Wang <jasowang@redhat.com> wrote:
+>
+> On Thu, May 26, 2022 at 8:54 PM Parav Pandit <parav@nvidia.com> wrote:
+> >
+> >
+> >
+> > > From: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> > > Sent: Thursday, May 26, 2022 8:44 AM
+> >
+> > > Implement stop operation for vdpa_sim devices, so vhost-vdpa will off=
+er
+> > >
+> > > that backend feature and userspace can effectively stop the device.
+> > >
+> > >
+> > >
+> > > This is a must before get virtqueue indexes (base) for live migration=
+,
+> > >
+> > > since the device could modify them after userland gets them. There ar=
+e
+> > >
+> > > individual ways to perform that action for some devices
+> > >
+> > > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there
+> > > was no
+> > >
+> > > way to perform it for any vhost device (and, in particular, vhost-vdp=
+a).
+> > >
+> > >
+> > >
+> > > After the return of ioctl with stop !=3D 0, the device MUST finish an=
+y
+> > >
+> > > pending operations like in flight requests. It must also preserve all
+> > >
+> > > the necessary state (the virtqueue vring base plus the possible devic=
+e
+> > >
+> > > specific states) that is required for restoring in the future. The
+> > >
+> > > device must not change its configuration after that point.
+> > >
+> > >
+> > >
+> > > After the return of ioctl with stop =3D=3D 0, the device can continue
+> > >
+> > > processing buffers as long as typical conditions are met (vq is enabl=
+ed,
+> > >
+> > > DRIVER_OK status bit is enabled, etc).
+> >
+> > Just to be clear, we are adding vdpa level new ioctl() that doesn=E2=80=
+=99t map to any mechanism in the virtio spec.
+>
+> We try to provide forward compatibility to VIRTIO_CONFIG_S_STOP. That
+> means it is expected to implement at least a subset of
+> VIRTIO_CONFIG_S_STOP.
+>
 
-I love your patch! Perhaps something to improve:
+Appending a link to the proposal, just for reference [1].
 
-[auto build test WARNING on net-next/master]
+> >
+> > Why can't we use this ioctl() to indicate driver to start/stop the devi=
+ce instead of driving it through the driver_ok?
+>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jiawen-Wu/net-txgbe-Add-build-support-for-txgbe/20220527-143401
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 7e062cda7d90543ac8c7700fc7c5527d0c0f22ad
-config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220527/202205271506.b3ILwQFq-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/b2d691a438052d44a1ec82c4b9e23ecf5514a579
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jiawen-Wu/net-txgbe-Add-build-support-for-txgbe/20220527-143401
-        git checkout b2d691a438052d44a1ec82c4b9e23ecf5514a579
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/net/ethernet/wangxun/txgbe/
+Parav, I'm not sure I follow you here.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+By the proposal, the resume of the device is (From qemu POV):
+1. To configure all data vqs and cvq (addr, num, ...)
+2. To enable only CVQ, not data vqs
+3. To send DRIVER_OK
+4. Wait for all buffers of CVQ to be used
+5. To enable all others data vqs (individual ioctl at the moment)
 
-All warnings (new ones prefixed by >>):
+Where can we fit the resume (as "stop(false)") here? If the device is
+stopped (as if we send stop(true) before DRIVER_OK), we don't read CVQ
+first. If we send it right after (or instead) DRIVER_OK, data buffers
+can reach data vqs before configuring RSS.
 
-   drivers/net/ethernet/wangxun/txgbe/txgbe_main.c: In function 'txgbe_probe':
->> drivers/net/ethernet/wangxun/txgbe/txgbe_main.c:93:26: warning: variable 'hw' set but not used [-Wunused-but-set-variable]
-      93 |         struct txgbe_hw *hw = NULL;
-         |                          ^~
+> So the idea is to add capability that does not exist in the spec. Then
+> came the stop/resume which can't be done via DRIVER_OK. I think we
+> should only allow the stop/resume to succeed after DRIVER_OK is set.
+>
+> > This is in the context of other discussion we had in the LM series.
+>
+> Do you see any issue that blocks the live migration?
+>
+> Thanks
+>
 
-
-vim +/hw +93 drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-
-    77	
-    78	/**
-    79	 * txgbe_probe - Device Initialization Routine
-    80	 * @pdev: PCI device information struct
-    81	 * @ent: entry in txgbe_pci_tbl
-    82	 *
-    83	 * Returns 0 on success, negative on failure
-    84	 *
-    85	 * txgbe_probe initializes an adapter identified by a pci_dev structure.
-    86	 * The OS initialization, configuring of the adapter private structure,
-    87	 * and a hardware reset occur.
-    88	 **/
-    89	static int txgbe_probe(struct pci_dev *pdev,
-    90			       const struct pci_device_id __always_unused *ent)
-    91	{
-    92		struct txgbe_adapter *adapter = NULL;
-  > 93		struct txgbe_hw *hw = NULL;
-    94		struct net_device *netdev;
-    95		int err, pci_using_dac;
-    96	
-    97		err = pci_enable_device_mem(pdev);
-    98		if (err)
-    99			return err;
-   100	
-   101		if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(64)) &&
-   102		    !dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64))) {
-   103			pci_using_dac = 1;
-   104		} else {
-   105			err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
-   106			if (err) {
-   107				err = dma_set_coherent_mask(&pdev->dev,
-   108							    DMA_BIT_MASK(32));
-   109				if (err) {
-   110					dev_err(&pdev->dev,
-   111						"No usable DMA configuration, aborting\n");
-   112					goto err_dma;
-   113				}
-   114			}
-   115			pci_using_dac = 0;
-   116		}
-   117	
-   118		err = pci_request_selected_regions(pdev,
-   119						   pci_select_bars(pdev, IORESOURCE_MEM),
-   120						   txgbe_driver_name);
-   121		if (err) {
-   122			dev_err(&pdev->dev,
-   123				"pci_request_selected_regions failed 0x%x\n", err);
-   124			goto err_pci_reg;
-   125		}
-   126	
-   127		pci_enable_pcie_error_reporting(pdev);
-   128		pci_set_master(pdev);
-   129		/* errata 16 */
-   130		pcie_capability_clear_and_set_word(pdev, PCI_EXP_DEVCTL,
-   131						   PCI_EXP_DEVCTL_READRQ,
-   132						   0x1000);
-   133	
-   134		netdev = devm_alloc_etherdev_mqs(&pdev->dev,
-   135						 sizeof(struct txgbe_adapter),
-   136						 TXGBE_MAX_TX_QUEUES,
-   137						 TXGBE_MAX_RX_QUEUES);
-   138		if (!netdev) {
-   139			err = -ENOMEM;
-   140			goto err_alloc_etherdev;
-   141		}
-   142	
-   143		SET_NETDEV_DEV(netdev, &pdev->dev);
-   144	
-   145		adapter = netdev_priv(netdev);
-   146		adapter->netdev = netdev;
-   147		adapter->pdev = pdev;
-   148		hw = &adapter->hw;
-   149	
-   150		adapter->io_addr = devm_ioremap(&pdev->dev,
-   151						pci_resource_start(pdev, 0),
-   152						pci_resource_len(pdev, 0));
-   153		if (!adapter->io_addr) {
-   154			err = -EIO;
-   155			goto err_ioremap;
-   156		}
-   157	
-   158		/* setup the private structure */
-   159		err = txgbe_sw_init(adapter);
-   160		if (err)
-   161			goto err_sw_init;
-   162	
-   163		if (pci_using_dac)
-   164			netdev->features |= NETIF_F_HIGHDMA;
-   165	
-   166		pci_set_drvdata(pdev, adapter);
-   167	
-   168		return 0;
-   169	
-   170	err_sw_init:
-   171		devm_iounmap(&pdev->dev, adapter->io_addr);
-   172	err_ioremap:
-   173	err_alloc_etherdev:
-   174		pci_release_selected_regions(pdev,
-   175					     pci_select_bars(pdev, IORESOURCE_MEM));
-   176	err_pci_reg:
-   177	err_dma:
-   178		pci_disable_device(pdev);
-   179		return err;
-   180	}
-   181	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
