@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A2FA7535894
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 06:48:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8CBE535896
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 06:49:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242398AbiE0Esg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 00:48:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43392 "EHLO
+        id S242413AbiE0Esi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 00:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237156AbiE0Esf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 00:48:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C977E41322;
-        Thu, 26 May 2022 21:48:34 -0700 (PDT)
+        with ESMTP id S242397AbiE0Esg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 00:48:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613EF47ACD
+        for <netdev@vger.kernel.org>; Thu, 26 May 2022 21:48:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 582CE60BD4;
-        Fri, 27 May 2022 04:48:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8E4AAC385A9;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A32F60BD6
+        for <netdev@vger.kernel.org>; Fri, 27 May 2022 04:48:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A285BC34118;
         Fri, 27 May 2022 04:48:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1653626913;
-        bh=OHORZuBkhGyIjfAgvAx1fjS7Wl/qrazwATxQRTfrV1w=;
+        bh=3hufhEU2WULw7u2UPm2WGlS6SM+3pDpsPeruJ+eNSrg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=jfycG77haFoYN5yoSVAqqBHrmhEp2ZJ+3esfJ+n5IwVbwFHaV7CkRlfdN2y9O+2Oc
-         4SgoCA4qHNutVXfQWHb8SjPciy8ntAG3F8DoBqAJR0TtJCUksSJvzshhmLz2o0JqOG
-         2nU0kJyv3fuB2KS9WHVM1S6UbhCKupgLIEEm3arbgcl+UquNycxgm2KgeDRh+YZ4ni
-         fUKc56UYwY1SHYv6rEJA6QRAXc9/Z9hocDEHmHgRlUaioaTmHUrJOR/oY487TrgXyF
-         4H94PugM/UTRdnKvyJO2vPRldqxaIeqtSCZMazPJ2sRl7FAhi7eqxv/czbQCTEeUPV
-         UPyDOj8lnzpDw==
+        b=bpe1Q5a5+pIMNvMRUIUiSnqRg09845HoOc/Pi3s//oIvjszDltuRrkGZh+iYH66Cd
+         U3hC/ltqs8OLy+tRft7eItSj8gSuKtPrn/2Cl6rwb8Vpzf6SdcSBu3karc9g5daZwt
+         3LPUK4zwtF315Swp311Jgj8+FI2yHnAh9OCvTL0NKGa6knQWh78JGhTth4C/9+6F1/
+         iN0dnYi5Dk55hMUXzndV6tPOJm29fj+qthXG++3sFLCoJmLhi7+bpm8F6HfSioL59t
+         DJTO/Ae6uGMiV1lZ1vk1WpYdaMRombMV7jw7ckHOyPL4QW579a7M9tR72tYBbpwiwK
+         Yl0FZFs58+PzA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 712CAF03944;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 83E63EAC081;
         Fri, 27 May 2022 04:48:33 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/2] netfilter: nf_tables: disallow non-stateful
- expression in sets earlier
+Subject: Re: [PATCH v3 net] net: sched: fixed barrier to prevent skbuff sticking
+ in qdisc backlog
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165362691345.5864.18094210067248775753.git-patchwork-notify@kernel.org>
+Message-Id: <165362691353.5864.10388871011458588553.git-patchwork-notify@kernel.org>
 Date:   Fri, 27 May 2022 04:48:33 +0000
-References: <20220526205411.315136-2-pablo@netfilter.org>
-In-Reply-To: <20220526205411.315136-2-pablo@netfilter.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org, pabeni@redhat.com
+References: <20220526001746.2437669-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220526001746.2437669-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, edumazet@google.com, vray@kalrayinc.com
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,25 +59,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to bpf/bpf.git (master)
-by Pablo Neira Ayuso <pablo@netfilter.org>:
+This patch was applied to bpf/bpf.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu, 26 May 2022 22:54:10 +0200 you wrote:
-> Since 3e135cd499bf ("netfilter: nft_dynset: dynamic stateful expression
-> instantiation"), it is possible to attach stateful expressions to set
-> elements.
+On Wed, 25 May 2022 17:17:46 -0700 you wrote:
+> From: Vincent Ray <vray@kalrayinc.com>
 > 
-> cd5125d8f518 ("netfilter: nf_tables: split set destruction in deactivate
-> and destroy phase") introduces conditional destruction on the object to
-> accomodate transaction semantics.
+> In qdisc_run_begin(), smp_mb__before_atomic() used before test_bit()
+> does not provide any ordering guarantee as test_bit() is not an atomic
+> operation. This, added to the fact that the spin_trylock() call at
+> the beginning of qdisc_run_begin() does not guarantee acquire
+> semantics if it does not grab the lock, makes it possible for the
+> following statement :
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,1/2] netfilter: nf_tables: disallow non-stateful expression in sets earlier
-    https://git.kernel.org/bpf/bpf/c/520778042ccc
-  - [net,2/2] netfilter: nft_limit: Clone packet limits' cost value
-    https://git.kernel.org/bpf/bpf/c/558254b0b602
+  - [v3,net] net: sched: fixed barrier to prevent skbuff sticking in qdisc backlog
+    https://git.kernel.org/bpf/bpf/c/a54ce3703613
 
 You are awesome, thank you!
 -- 
