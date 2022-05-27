@@ -2,120 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C85F535B1F
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 10:08:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E0BF535B2F
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 10:12:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345554AbiE0IGJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 04:06:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56968 "EHLO
+        id S1348724AbiE0IMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 04:12:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349489AbiE0IFw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 04:05:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6107D104CA7
-        for <netdev@vger.kernel.org>; Fri, 27 May 2022 01:05:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653638747;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zUMz42NQDPklQDFZddLSQgxBUSTJ3Oh6Dc/96phD/yY=;
-        b=Ckl8WhTgXwFVScbI8iLeL47NQaovLXZNMSB/TI5RJAJ4DNRbpsxfe4JhPGbOSByBHVywbw
-        NjZ0v2hyOZJ8aU7+UfX4TSH7SkLOEJZlYMKYcqD6scssFvblRnYKmr7jqdjXROzrkBbWZd
-        J8gWZq/VKyHtAYYsbqDNuRS/GYfeWu8=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-605-zrTI3FHwMp6siMGtH6USlA-1; Fri, 27 May 2022 04:05:45 -0400
-X-MC-Unique: zrTI3FHwMp6siMGtH6USlA-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 500583C0ED58;
-        Fri, 27 May 2022 08:05:45 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.39.192.122])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 32627401E23;
-        Fri, 27 May 2022 08:05:43 +0000 (UTC)
-From:   =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
-To:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, cmclachlan@solarflare.com, brouer@redhat.com,
-        netdev@vger.kernel.org,
-        =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>,
-        Tianhao Zhao <tizhao@redhat.com>
-Subject: [PATCH net v2 2/2] sfc: fix wrong tx channel offset with efx_separate_tx_channels
-Date:   Fri, 27 May 2022 10:05:29 +0200
-Message-Id: <20220527080529.24225-3-ihuguet@redhat.com>
-In-Reply-To: <20220527080529.24225-1-ihuguet@redhat.com>
-References: <20220527080529.24225-1-ihuguet@redhat.com>
+        with ESMTP id S229513AbiE0IMA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 04:12:00 -0400
+Received: from einhorn-mail-out.in-berlin.de (einhorn.in-berlin.de [192.109.42.8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EE32FD37A
+        for <netdev@vger.kernel.org>; Fri, 27 May 2022 01:11:59 -0700 (PDT)
+X-Envelope-From: thomas@x-berg.in-berlin.de
+Received: from x-berg.in-berlin.de (x-change.in-berlin.de [217.197.86.40])
+        by einhorn.in-berlin.de  with ESMTPS id 24R8BXrA2041257
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 27 May 2022 10:11:34 +0200
+Received: from thomas by x-berg.in-berlin.de with local (Exim 4.94.2)
+        (envelope-from <thomas@x-berg.in-berlin.de>)
+        id 1nuV4H-0002o2-H9; Fri, 27 May 2022 10:11:33 +0200
+Date:   Fri, 27 May 2022 10:11:33 +0200
+From:   Thomas Osterried <thomas@osterried.de>
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     netdev@vger.kernel.org, jreuter@yaina.de, ralf@linux-mips.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-kernel@vger.kernel.org,
+        linux-hams@vger.kernel.org, thomas@osterried.de
+Subject: Re: [PATCH net] ax25: Fix ax25 session cleanup problem in
+ ax25_release
+Message-ID: <YpCHtRoxEXU7UAji@x-berg.in-berlin.de>
+References: <20220525112850.102363-1-duoming@zju.edu.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220525112850.102363-1-duoming@zju.edu.cn>
+Sender: Thomas Osterried <thomas@x-berg.in-berlin.de>
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tx_channel_offset is calculated in efx_allocate_msix_channels, but it is
-also calculated again in efx_set_channels because it was originally done
-there, and when efx_allocate_msix_channels was introduced it was
-forgotten to be removed from efx_set_channels.
 
-Moreover, the old calculation is wrong when using
-efx_separate_tx_channels because now we can have XDP channels after the
-TX channels, so n_channels - n_tx_channels doesn't point to the first TX
-channel.
+I Tested several cases: this patch works as expected.
 
-Remove the old calculation from efx_set_channels, and add the
-initialization of this variable if MSI or legacy interrupts are used,
-next to the initialization of the rest of the related variables, where
-it was missing.
+Anyone else testet it?
 
-Fixes: 3990a8fffbda ("sfc: allocate channels for XDP tx queues")
-Reported-by: Tianhao Zhao <tizhao@redhat.com>
-Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
----
- drivers/net/ethernet/sfc/efx_channels.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+vy 73,
+	- Thomas  dl9sau
 
-diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
-index 40df910aa140..b9cf873e1e42 100644
---- a/drivers/net/ethernet/sfc/efx_channels.c
-+++ b/drivers/net/ethernet/sfc/efx_channels.c
-@@ -324,6 +324,7 @@ int efx_probe_interrupts(struct efx_nic *efx)
- 		efx->n_channels = 1;
- 		efx->n_rx_channels = 1;
- 		efx->n_tx_channels = 1;
-+		efx->tx_channel_offset = 0;
- 		efx->n_xdp_channels = 0;
- 		efx->xdp_channel_offset = efx->n_channels;
- 		rc = pci_enable_msi(efx->pci_dev);
-@@ -344,6 +345,7 @@ int efx_probe_interrupts(struct efx_nic *efx)
- 		efx->n_channels = 1 + (efx_separate_tx_channels ? 1 : 0);
- 		efx->n_rx_channels = 1;
- 		efx->n_tx_channels = 1;
-+		efx->tx_channel_offset = 1;
- 		efx->n_xdp_channels = 0;
- 		efx->xdp_channel_offset = efx->n_channels;
- 		efx->legacy_irq = efx->pci_dev->irq;
-@@ -979,10 +981,6 @@ int efx_set_channels(struct efx_nic *efx)
- 	struct efx_channel *channel;
- 	int rc;
- 
--	efx->tx_channel_offset =
--		efx_separate_tx_channels ?
--		efx->n_channels - efx->n_tx_channels : 0;
--
- 	if (efx->xdp_tx_queue_count) {
- 		EFX_WARN_ON_PARANOID(efx->xdp_tx_queues);
- 
--- 
-2.34.1
 
+On Wed, May 25, 2022 at 07:28:50PM +0800, Duoming Zhou wrote:
+> The timers of ax25 are used for correct session cleanup.
+> If we use ax25_release() to close ax25 sessions and
+> ax25_dev is not null, the del_timer_sync() functions in
+> ax25_release() will execute. As a result, the sessions
+> could not be cleaned up correctly, because the timers
+> have stopped.
+> 
+> This patch adds a device_up flag in ax25_dev in order to
+> judge whether the device is up. If there are sessions to
+> be cleaned up, the del_timer_sync() in ax25_release() will
+> not execute. As a result the sessions could be cleaned up
+> correctly.
+> 
+> Fixes: 82e31755e55f ("ax25: Fix UAF bugs in ax25 timers")
+> Reported-by: Thomas Osterried <thomas@osterried.de>
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> ---
+>  include/net/ax25.h  |  1 +
+>  net/ax25/af_ax25.c  | 13 ++++++++-----
+>  net/ax25/ax25_dev.c |  1 +
+>  3 files changed, 10 insertions(+), 5 deletions(-)
+> 
+> diff --git a/include/net/ax25.h b/include/net/ax25.h
+> index 0f9790c455b..a427a05672e 100644
+> --- a/include/net/ax25.h
+> +++ b/include/net/ax25.h
+> @@ -228,6 +228,7 @@ typedef struct ax25_dev {
+>  	ax25_dama_info		dama;
+>  #endif
+>  	refcount_t		refcount;
+> +	bool device_up;
+>  } ax25_dev;
+>  
+>  typedef struct ax25_cb {
+> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+> index 363d47f9453..47ce6b630cc 100644
+> --- a/net/ax25/af_ax25.c
+> +++ b/net/ax25/af_ax25.c
+> @@ -81,6 +81,7 @@ static void ax25_kill_by_device(struct net_device *dev)
+>  
+>  	if ((ax25_dev = ax25_dev_ax25dev(dev)) == NULL)
+>  		return;
+> +	ax25_dev->device_up = false;
+>  
+>  	spin_lock_bh(&ax25_list_lock);
+>  again:
+> @@ -1053,11 +1054,13 @@ static int ax25_release(struct socket *sock)
+>  		ax25_destroy_socket(ax25);
+>  	}
+>  	if (ax25_dev) {
+> -		del_timer_sync(&ax25->timer);
+> -		del_timer_sync(&ax25->t1timer);
+> -		del_timer_sync(&ax25->t2timer);
+> -		del_timer_sync(&ax25->t3timer);
+> -		del_timer_sync(&ax25->idletimer);
+> +		if (!ax25_dev->device_up) {
+> +			del_timer_sync(&ax25->timer);
+> +			del_timer_sync(&ax25->t1timer);
+> +			del_timer_sync(&ax25->t2timer);
+> +			del_timer_sync(&ax25->t3timer);
+> +			del_timer_sync(&ax25->idletimer);
+> +		}
+>  		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
+>  		ax25_dev_put(ax25_dev);
+>  	}
+> diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
+> index d2a244e1c26..5451be15e07 100644
+> --- a/net/ax25/ax25_dev.c
+> +++ b/net/ax25/ax25_dev.c
+> @@ -62,6 +62,7 @@ void ax25_dev_device_up(struct net_device *dev)
+>  	ax25_dev->dev     = dev;
+>  	dev_hold_track(dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
+>  	ax25_dev->forward = NULL;
+> +	ax25_dev->device_up = true;
+>  
+>  	ax25_dev->values[AX25_VALUES_IPDEFMODE] = AX25_DEF_IPDEFMODE;
+>  	ax25_dev->values[AX25_VALUES_AXDEFMODE] = AX25_DEF_AXDEFMODE;
+> -- 
+> 2.17.1
+> 
