@@ -2,187 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73FC5535D9F
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 11:50:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA07A535DB9
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 11:58:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350694AbiE0Juy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 05:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41208 "EHLO
+        id S1350733AbiE0J6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 05:58:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350685AbiE0Jux (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 05:50:53 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70074.outbound.protection.outlook.com [40.107.7.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B81106556;
-        Fri, 27 May 2022 02:50:50 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e+09WAVApdVwz+3RqaQtVp+wRZpikcRTrszhBhQ+LnRGdrbwKStlsUieDzVhnTprHdXE+WG803geU8Gb74/KRpZfgyFM2yoV/MMnRmg3cL/npoSE/rsvZlfoTy5P1fllvuRuz9ifni0v7zW3C0T9AqrcnwUswG5ODnj0hPZA7+Pw6lJoCABFW2xdxFl0Z0q4g9a6+SKX8IQwEwAAh//wG2tZyZVwaAZsPfLx+FYu1YzlWEUV1Nfnn4x1aDdbRUXRvwywRk8g94lIlrEsEisIjb6DbTVG5W9XpynN7n4o/hFRl6tCubic02T4EoaHdqBkRJyuTyZ9p6VdpPpP6Sy8fg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gOphPAZCwWiXSq5cKMPdC9JSXvlavE2E/EDwI7P0rBk=;
- b=BGP11ADA+q7/kahMmI97CwYmzz4nkUadK0bhRPebVpoxWFCpUHeV7HsEPkBcVWg4etdrELpCncVIPq4haqt7TmbmXAy1zTvhMxQTbWNTbFr5/2STF2/0O+NNT99qfWg5eXHCh4rQ+7SnL2jmnuiSwUPVa6qLFTSvmK5XCqpAknJlgbXl3ugDS/QkwX5zwWQhxOLdod54/Eg2K20PicoqXnhAXtYswJOeK6wy/ccr/gn/CMXC6T0LTALcNdjhQK1VHdFeY/2Hkc19iOBTyFlFHUvCF52fqHNjaD+6ifR9oIesw7pXLY2X3OSxN/Njp9RSWzxV2e7SXiBhTQCj3w2wDA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gOphPAZCwWiXSq5cKMPdC9JSXvlavE2E/EDwI7P0rBk=;
- b=H7Se7HxM69NG+JxQmsA+CTtayNldoLDnlNQDu2Ev8XTeamjloOnEiiuVM3e1PJ2e3b4lhq4jNfwu0rqMSIZAgl+xh24feEr7zs3ZiYrJby31AQQ/JU3n5X0kIydwAEmJhKWbMs7PTKKpwM8XOTH01iztRvPs8c/AEhRt/YD85TI=
-Received: from VI1PR04MB5005.eurprd04.prod.outlook.com (2603:10a6:803:57::30)
- by DB6PR0401MB2677.eurprd04.prod.outlook.com (2603:10a6:4:38::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.15; Fri, 27 May
- 2022 09:50:47 +0000
-Received: from VI1PR04MB5005.eurprd04.prod.outlook.com
- ([fe80::b116:46f0:f42b:cf19]) by VI1PR04MB5005.eurprd04.prod.outlook.com
- ([fe80::b116:46f0:f42b:cf19%3]) with mapi id 15.20.5293.013; Fri, 27 May 2022
- 09:50:47 +0000
-From:   Viorel Suman <viorel.suman@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "Viorel Suman (OSS)" <viorel.suman@oss.nxp.com>,
+        with ESMTP id S1350728AbiE0J6n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 05:58:43 -0400
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C854339D;
+        Fri, 27 May 2022 02:58:38 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 6FA8E5C015C;
+        Fri, 27 May 2022 05:58:35 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Fri, 27 May 2022 05:58:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1653645515; x=1653731915; bh=EiD5ylETSiKx2sZ0AEuhqhGtVCfZ
+        ZuZgoLENo4nmHjI=; b=nl1wqhKerxlTczMdRkjvSnPtwogU5s5fEPawnMJK9jUi
+        +U9sQE+Xa1qD8B/YVmkLs+aD7AXrZF5/TcXXNqDyFR29gcywdBl6ohsY5JzqUoK4
+        QjJ+Kr7VGpMSB0rSdfvt/gGkgIvHXdPIwpgtJEKihENGGJ9hHO0AcZMYWK0xF2zm
+        +4UF50xRCHd0pMAppOt+J0yqGgj9uLz3FNZ02YlwodsgSlSILClZDP3Q19fBCZW0
+        5jWVH2/Xffs9D0+eMxydw3bJPskA6uDhP82oHM/FBeEnpb9+TLlJRU7wy6tsluic
+        JPgN/u76HcWDZe7U+kxV+HPMfhAUJE8fuvPN7EYU3g==
+X-ME-Sender: <xms:yqCQYi5uVAePkXoWspOvnHh8L_xPLalSW9G1n64DafXVXC6yXvqMug>
+    <xme:yqCQYr5ZTriITbWl1N-V4q5-33eXA3IbLWwpv7d1riob3tw0iqqX0lEqkJ_mufXTg
+    rQs7CVUzS_D2-M>
+X-ME-Received: <xmr:yqCQYhdChVRfZ3YHejad2KTBTfieOxfIkk5VrPNZ-GfoQWOpgJPofCBnAyXTnM8ORIF5-2G1ZF-jpScoCn3_Vd6RoNTqVQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrjeelgddvudcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeejgeeg
+    hfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
+    hoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:yqCQYvI5NdpEHQGa421oczRfs8oDG5kKWtCpLVA0NKpvWt-F5koyzw>
+    <xmx:yqCQYmLcFD69B14v_s2Vn0FHsm1uIGUmjjTs4MWgDq1kc67F6vIjpw>
+    <xmx:yqCQYgx-INT9hl_02YCP-cqFsfFY6MxkrIRA6wp2aNkIcFQNwZufvA>
+    <xmx:y6CQYndoTV0A5gjPE9GQ_bQeERG3Or7GULDrCHVpljyeLiItw_ia0Q>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 27 May 2022 05:58:34 -0400 (EDT)
+Date:   Fri, 27 May 2022 12:58:30 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Hans Schultz <schultz.hans@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Luo Jie <luoj@codeaurora.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH] net: phy: at803x: disable WOL at probe
-Thread-Topic: [PATCH] net: phy: at803x: disable WOL at probe
-Thread-Index: AQHYcCNkafabLQYWvUiOZDbREa7myq0yHGYAgABhzAA=
-Date:   Fri, 27 May 2022 09:50:47 +0000
-Message-ID: <20220527094939.qgtl3s7frlgx3yvf@localhost.localdomain>
-References: <20220525103657.22384-1-viorel.suman@oss.nxp.com>
- <20220526210044.638128f6@kernel.org>
-In-Reply-To: <20220526210044.638128f6@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9c46db1e-522e-4842-ae6e-08da3fc65fef
-x-ms-traffictypediagnostic: DB6PR0401MB2677:EE_
-x-microsoft-antispam-prvs: <DB6PR0401MB2677EC303ED9ABBDDE76073192D89@DB6PR0401MB2677.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 47uAsBJXeJuGHHTsgx6Vu7gA0k548/5CJ5+5r5arXW56D/UPfc8a+FpdG59WiBC5pzfeHBT0zkKXmmDxlcj1cvpk139SqRLZFbEXQBKL6bBuqBu+HxxfJl2jZ9ES2FPlulrKXBhn9BbX6QcXIPdjOUu4U1IY+laCrrTsitShpPvy2osi3YzIN8UCzyLRbBeeSSaAxT8YKl1tqamJqWfRK+WFTCQJ0Znqpj2xiJpZ6Mi9df3YWlZUKGz6IlM0nJ1Z9bVTvyCk3hTQqR4v9sOAtnbic+TtIfovC2+l++mBpqk4zRskIwiP+iZ0qqef+RYUuReqCwwJB1++S8qnnvrllkbMhNnqKamnTTqrnjtNWNRSD6zPFN43uUQZnadSRoKOF9v1sXHv7E1E0ZxaWQuLStDmi7Mo3vfd0viKPAky2GRctuCFFDzQW27fHi5yNzCTxUHgFA2ldvll1gvFo2Cg1ICkL0rFhbigZHCTkmr3Fhg5lsCrRpirpNy54URbZ69i4Si9jsnpCRTR2B5eKTQDfywsbzB+FhKpL+HLZ3FTdMvCfI47WJwUqOsxP7pe0SkT1Dp0dZCn1gLeqXUav+B/jepvxgYb4GmQb+2yVe1R1hJoTMpJpr8r+gcgXCWhTExWDolOUWVmOsm99wNLgnb0QE0GWcnARn+bqlzeZdhHj475NxEryQcOzN2NWyh37+RFvAUJm+hgpKyhvdIDhrrRVQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5005.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(71200400001)(38100700002)(8676002)(66446008)(76116006)(66556008)(66946007)(64756008)(66476007)(91956017)(4326008)(508600001)(44832011)(2906002)(7416002)(53546011)(6486002)(6506007)(8936002)(122000001)(186003)(1076003)(26005)(9686003)(6512007)(316002)(86362001)(38070700005)(54906003)(6916009);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?whypKfI+UEIQ3ICO6LiG5ic3sX8m7CyKlZWiQQ5OstnfN7bYiT6jFvzVbVLG?=
- =?us-ascii?Q?3jNnT1ho9rf/QHMRhG9+2zQ8MYtQW/u00CkmoG0rOoT/NJk0Jy3jfDtAvgSo?=
- =?us-ascii?Q?KyW8TgbiyWR8pwcnEQI9CJDaymWezeZFGTwTq7AlkauQufsZwSyz26OqpLgH?=
- =?us-ascii?Q?oHLF0oeDCoYDvhlS/yifEyGTPrZxHKMZvY6r2VUwyAtH3Uqw6+EMWS/iiuK9?=
- =?us-ascii?Q?3i22jwobzGwqOuRIkVqt0kAKYr0l/KIxbEb5GM8jh/NzuQYrrq/YwFu5Bueg?=
- =?us-ascii?Q?zFWr5YpgvPOqvIZ9l5DxbcVJTGb5SZBn1GleHZH0jKExD2Au4EcpsqofmFP8?=
- =?us-ascii?Q?z+Txzhow/4acFHfFbooGnthx6JMQAYT7svDv688q/AQ/0li/5pDFvWsSQtuf?=
- =?us-ascii?Q?1xi0dhGrqy6RSDZAzTCNMlSxaJHmUJGSXFsWSArx4ieoF0bTCD+j7cai0hJn?=
- =?us-ascii?Q?+1U8wc2gQCN/lhxdE0SgGM7MfDTwY5rOIRJukp/XOhocJC9cmB7cjgDUhogS?=
- =?us-ascii?Q?ucRTKM3rM1CuEIM7SE7tM/i4Z4UaE8CHRrKTYaagrNQFM6hjeoJz24yUHK/q?=
- =?us-ascii?Q?roCfOqpiXpMh5t5P6fUwvMbGNktQq6ZB2gemA22R45V+SAf0dsEftW0sSICn?=
- =?us-ascii?Q?lM5qMFPnNTiTrtr4xgIkgVdD4IXjJd3wDcf0wPaNYjhzSx+2XsV+xHDGtq/Z?=
- =?us-ascii?Q?2bsioHjsWRXWA7dPYXRgQkygdImw/8UfIZ9HWKzd9VQB1HjlhO1h2jRVdcNZ?=
- =?us-ascii?Q?3WA4PRk7Ma1dxA3q8IyERe/FAbFweoxwuKm5aNJP9Hkrh0aoFdENT8MglSqo?=
- =?us-ascii?Q?mAM8CgKYXIY7qtA+xkXDSQeHnLFTLgkingw+ATVwMKNKmYJ5cMf8lOzBSE4U?=
- =?us-ascii?Q?NJV6qAsGaFXZad0LR79NIPmf17f0uM4Lv9oA2P0/NV9ObBmjsKxf4Lt71CFE?=
- =?us-ascii?Q?HazN9YEKTBbpc17Qa9zu+RIwQoFYtUVq3TwWW+pWE+LAL2dL6gQfNdN8DSpb?=
- =?us-ascii?Q?ewqP46lwp7FEu2FlxsQnP9lCc5WivTKgDQVaKoRP5uSeD5c97FPveedZBwyW?=
- =?us-ascii?Q?6iMY6ksWaHJpD9jqFOKxhZCR0yM1GucjepUC5cdqNI6sZk0+o+BSuIPYDLb7?=
- =?us-ascii?Q?NB2H55cKgLMUYlb66m86XYFeGOdPYTAT4UyBQJeJewYAeWtS/Nk1B1Y1ItlO?=
- =?us-ascii?Q?KvfwI1MJzn/E4W7ZEkYWMXYg8jj9HXji3EFnYecvRIFVvSvbv02OnkSWkNtr?=
- =?us-ascii?Q?gEe5uebUSki/N5yYEXyNSyzwwDyxSiPL7W+DON2EOCLPf0RioNbb97yVZK+H?=
- =?us-ascii?Q?u+u+107VGiWMUUt8FJGZcxfg9X4JrpE4H1iMzl6LVOuMgS3iVVjElFKbA1wM?=
- =?us-ascii?Q?8otCt7kdrYkOA3G5nuKzCFLClGXNQmTwz/xVVbHPaiMVyrz5d26NnT6XDJ3+?=
- =?us-ascii?Q?MQwgoeDnb4UzPb9k/HXUB7rwfwUqRcrwci0sABGuM1FFbBGcc6XRdqdSvort?=
- =?us-ascii?Q?8dmoO0UUNRkgcuwTmdrWxLPOtAC9JsczNa42UqpahvopBbnwMmHCDnyAwNwy?=
- =?us-ascii?Q?BIGTnwPUaBEJjDgLVjAYwh8qBlyg248zXkXIRnwwxO+xynb0CR+neGUtwY3q?=
- =?us-ascii?Q?WzgnwDYgXJ23CPIRR6kJ0zsQ5QEhFtryJ3mK6kVXrhhcoh3UgiAj6RWyEBvj?=
- =?us-ascii?Q?n20wphxsr0XhYI9ZH6eotds94DLU5s0JhOVWNqBNxPRvvcYzAF+JTTIGQB1g?=
- =?us-ascii?Q?MVbvftu7FvwT7t7lxx9bU/f72V9vX+4=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <448B1B9533984D4D87C12BF5055224D9@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
+ locked port feature
+Message-ID: <YpCgxtJf9Qe7fTFd@shredder>
+References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
+ <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
+ <Yo+LAj1vnjq0p36q@shredder>
+ <86sfov2w8k.fsf@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5005.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c46db1e-522e-4842-ae6e-08da3fc65fef
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2022 09:50:47.1495
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NFuesg9ZZ4PENHJdAPlpqfTBuLRW8FhkXYbhrj6Yf5l9ctcAtTV5BXDE/V079a2ItjLZuALw/f+2BlayN/VRlw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2677
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <86sfov2w8k.fsf@gmail.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22-05-26 21:00:44, Jakub Kicinski wrote:
-> On Wed, 25 May 2022 13:36:57 +0300 Viorel Suman (OSS) wrote:
-> > diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-> > index 73926006d319..6277d1b1d814 100644
-> > --- a/drivers/net/phy/at803x.c
-> > +++ b/drivers/net/phy/at803x.c
-> > @@ -443,10 +443,10 @@ static int at803x_set_wol(struct phy_device *phyd=
-ev,
-> >  		AT803X_LOC_MAC_ADDR_0_15_OFFSET,
-> >  	};
-> > =20
-> > -	if (!ndev)
-> > -		return -ENODEV;
-> > -
-> >  	if (wol->wolopts & WAKE_MAGIC) {
-> > +		if (!ndev)
-> > +			return -ENODEV;
->=20
-> Please move the ndev variable into the scope.
-> It'll make it clear that it can't be used elsewhere
-> in this function.
+On Fri, May 27, 2022 at 10:52:27AM +0200, Hans Schultz wrote:
+> On tor, maj 26, 2022 at 17:13, Ido Schimmel <idosch@idosch.org> wrote:
+> > On Tue, May 24, 2022 at 05:21:41PM +0200, Hans Schultz wrote:
+> >> Add an intermediate state for clients behind a locked port to allow for
+> >> possible opening of the port for said clients. This feature corresponds
+> >> to the Mac-Auth and MAC Authentication Bypass (MAB) named features. The
+> >> latter defined by Cisco.
+> >> Locked FDB entries will be limited in number, so as to prevent DOS
+> >> attacks by spamming the port with random entries. The limit will be
+> >> a per port limit as it is a port based feature and that the port flushes
+> >> all FDB entries on link down.
+> >
+> > Why locked FDB entries need a special treatment compared to regular
+> > entries? A port that has learning enabled can be spammed with random
+> > source MACs just as well.
+> >
+> > The authorization daemon that is monitoring FDB notifications can have a
+> > policy to shut down a port if the rate / number of locked entries is
+> > above a given threshold.
+> >
+> > I don't think this kind of policy belongs in the kernel. If it resides
+> > in user space, then the threshold can be adjusted. Currently it's hard
+> > coded to 64 and I don't see how user space can change or monitor it.
+> 
+> In the Mac-Auth/MAB context, the locked port feature is really a form of
+> CPU based learning, and on mv88e6xxx switchcores, this is facilitated by
+> violation interrupts. Based on miss violation interrupts, the locked
+> entries are then added to a list with a timer to remove the entries
+> according to the bridge timeout.
+> As this is very CPU intensive compared to normal operation, the
+> assessment is that all this will jam up most devices if bombarded with
+> random entries at link speed, and my estimate is that any userspace 
+> daemon that listens to the ensuing fdb events will never get a chance
+> to stop this flood and eventually the device will lock down/reset. To
+> prevent this, the limit is introduced.
+> 
+> Ideally this limit could be adjustable from userspace, but in real
+> use-cases a cap like 64 should be more than enough, as that corresponds
+> to 64 possible devices behind a port that cannot authenticate by other
+> means (printers etc.) than having their mac addresses white-listed.
+> 
+> The software bridge behavior was then just set to correspond to the
+> offloaded behavior, but after correspondence with Nik, the software
+> bridge locked entries limit will be removed.
 
-Thank you for review, done in v2.
+As far as the bridge is concerned, locked entries are not really
+different from regular learned entries in terms of processing and since
+we don't have limits for regular entries I don't think we should have
+limits for locked entries.
 
->=20
-> >  		mac =3D (const u8 *) ndev->dev_addr;
-> > =20
-> >  		if (!is_valid_ether_addr(mac))
-> > @@ -857,6 +857,9 @@ static int at803x_probe(struct phy_device *phydev)
-> >  	if (phydev->drv->phy_id =3D=3D ATH8031_PHY_ID) {
-> >  		int ccr =3D phy_read(phydev, AT803X_REG_CHIP_CONFIG);
-> >  		int mode_cfg;
-> > +		struct ethtool_wolinfo wol =3D {
-> > +			.wolopts =3D 0,
-> > +		};
-> > =20
-> >  		if (ccr < 0)
-> >  			goto err;
-> > @@ -872,6 +875,13 @@ static int at803x_probe(struct phy_device *phydev)
-> >  			priv->is_fiber =3D true;
-> >  			break;
-> >  		}
-> > +
-> > +		/* Disable WOL by default */
-> > +		ret =3D at803x_set_wol(phydev, &wol);
-> > +		if (ret < 0) {
-> > +			phydev_err(phydev, "failed to disable WOL on probe: %d\n", ret);
-> > +			return ret;
->=20
-> Don't you need to goto err; here?
+I do understand the problem you have in mv88e6xxx and I think it would
+be wise to hard code a reasonable limit there. It can be adjusted over
+time based on feedback and possibly exposed to user space.
 
-Missed err section indeed, thanks. Fixed in v2.
-
->=20
-> > +		}
-> >  	}
-> > =20
-> >  	return 0;=
+Just to give you another data point about how this works in other
+devices, I can say that at least in Spectrum this works a bit
+differently. Packets that ingress via a locked port and incur an FDB
+miss are trapped to the CPU where they should be injected into the Rx
+path so that the bridge will create the 'locked' FDB entry and notify it
+to user space. The packets are obviously rated limited as the CPU cannot
+handle billions of packets per second, unlike the ASIC. The limit is not
+per bridge port (or even per bridge), but instead global to the entire
+device.
