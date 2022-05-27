@@ -2,152 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA07A535DB9
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 11:58:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F067535DC7
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 12:04:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350733AbiE0J6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 05:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36194 "EHLO
+        id S1350760AbiE0KEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 06:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350728AbiE0J6n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 05:58:43 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C854339D;
-        Fri, 27 May 2022 02:58:38 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 6FA8E5C015C;
-        Fri, 27 May 2022 05:58:35 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Fri, 27 May 2022 05:58:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1653645515; x=1653731915; bh=EiD5ylETSiKx2sZ0AEuhqhGtVCfZ
-        ZuZgoLENo4nmHjI=; b=nl1wqhKerxlTczMdRkjvSnPtwogU5s5fEPawnMJK9jUi
-        +U9sQE+Xa1qD8B/YVmkLs+aD7AXrZF5/TcXXNqDyFR29gcywdBl6ohsY5JzqUoK4
-        QjJ+Kr7VGpMSB0rSdfvt/gGkgIvHXdPIwpgtJEKihENGGJ9hHO0AcZMYWK0xF2zm
-        +4UF50xRCHd0pMAppOt+J0yqGgj9uLz3FNZ02YlwodsgSlSILClZDP3Q19fBCZW0
-        5jWVH2/Xffs9D0+eMxydw3bJPskA6uDhP82oHM/FBeEnpb9+TLlJRU7wy6tsluic
-        JPgN/u76HcWDZe7U+kxV+HPMfhAUJE8fuvPN7EYU3g==
-X-ME-Sender: <xms:yqCQYi5uVAePkXoWspOvnHh8L_xPLalSW9G1n64DafXVXC6yXvqMug>
-    <xme:yqCQYr5ZTriITbWl1N-V4q5-33eXA3IbLWwpv7d1riob3tw0iqqX0lEqkJ_mufXTg
-    rQs7CVUzS_D2-M>
-X-ME-Received: <xmr:yqCQYhdChVRfZ3YHejad2KTBTfieOxfIkk5VrPNZ-GfoQWOpgJPofCBnAyXTnM8ORIF5-2G1ZF-jpScoCn3_Vd6RoNTqVQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrjeelgddvudcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedvudefveekheeugeeftddvveefgfduieefudeifefgleekheegleegjeejgeeg
-    hfenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiug
-    hoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:yqCQYvI5NdpEHQGa421oczRfs8oDG5kKWtCpLVA0NKpvWt-F5koyzw>
-    <xmx:yqCQYmLcFD69B14v_s2Vn0FHsm1uIGUmjjTs4MWgDq1kc67F6vIjpw>
-    <xmx:yqCQYgx-INT9hl_02YCP-cqFsfFY6MxkrIRA6wp2aNkIcFQNwZufvA>
-    <xmx:y6CQYndoTV0A5gjPE9GQ_bQeERG3Or7GULDrCHVpljyeLiItw_ia0Q>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 27 May 2022 05:58:34 -0400 (EDT)
-Date:   Fri, 27 May 2022 12:58:30 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
+        with ESMTP id S238247AbiE0KEV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 06:04:21 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16CAA106A56;
+        Fri, 27 May 2022 03:04:20 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id ck4so7698182ejb.8;
+        Fri, 27 May 2022 03:04:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xRSTmBtHtIY4PjpL0e2GqDS2gPDdmkS49tDAKosAVXU=;
+        b=n4MLJQoBakTDPpzTh3wUO7Vs2fY2Dz89UBIBNMvNQMK9sBc9U6Mm2OZxtlwRXPx9td
+         NGoCzSyGD7PKMWcjclDaCAI+OKcKDzKlFpSzVPMnq55OSw+eeo+Vpmcezc4al282Oo91
+         agoFbeU+aOUxrLi8tUlpmvJX3HhE6wno8m1aC09jOgcmYIUKi2RX/nJMG26YN5hFEfY2
+         XgQlDRvvBzrzdr75uF1foXhVt3/hGHzghgPOzfjGbg438sb/JQbgmJRmnucLtSFT9kLB
+         AMM2vWmcNjkCUxfzsUCOjRzH7Di2oskSlMGgas3zFeAfTOIXQCcQja7rK0MD2+ekUsIu
+         Kv4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=xRSTmBtHtIY4PjpL0e2GqDS2gPDdmkS49tDAKosAVXU=;
+        b=QN43s0c6DPz9WMRDHOl4xO2LPVaHg73py3CYE9+PD4mbZa80A7THFPJ1cCn8Q0kZY2
+         7fiF7bbVzIVKG6ZLiWC0MJciBsm3eelbMZmeAnBzYRtu/DrhJIM3ERnwPYrimA5Xrg79
+         UJ5gEFX2CIGbp3FwzHsx+RmGw86gIes7UvIEhhs3tn8IOPGjj6weyY9XDihKG9cmYpte
+         cdnOPMAPpr9qQcFuweC+WbPU5yAnYPcTmrkP72KXcPewY8KPLudwNyyT+l1e9cLhJW7e
+         bGz2EAY60gHBvEMjNecTKAqywJguWOiGt/ura266H+AkPQDJnbnTCRmCQulnYRAw3NRF
+         heyQ==
+X-Gm-Message-State: AOAM533G2ONVP4GErCBBQIASMOp4kU+j+waW5qsXIIaetqTW0pmWQ25T
+        ATEI80wfnxiSwiOPExfsseA=
+X-Google-Smtp-Source: ABdhPJw7kA2HNU05BoAPuckfDoIpMbjctRC4Y91Ac+KMDOqTR4tMKAXEDeMLnq8bts7rF3ooofhPoA==
+X-Received: by 2002:a17:906:7d83:b0:6ce:fee:9256 with SMTP id v3-20020a1709067d8300b006ce0fee9256mr38322696ejo.647.1653645858511;
+        Fri, 27 May 2022 03:04:18 -0700 (PDT)
+Received: from gmail.com (563BA16F.dsl.pool.telekom.hu. [86.59.161.111])
+        by smtp.gmail.com with ESMTPSA id w7-20020a170906130700b006f3ef214dfesm1296659ejb.100.2022.05.27.03.04.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 May 2022 03:04:17 -0700 (PDT)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+Date:   Fri, 27 May 2022 12:04:14 +0200
+From:   Ingo Molnar <mingo@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
- locked port feature
-Message-ID: <YpCgxtJf9Qe7fTFd@shredder>
-References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
- <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
- <Yo+LAj1vnjq0p36q@shredder>
- <86sfov2w8k.fsf@gmail.com>
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org
+Subject: Re: [PATCH v2] ftrace: Add FTRACE_MCOUNT_MAX_OFFSET to avoid adding
+ weak function
+Message-ID: <YpCiHlBjj99hALbV@gmail.com>
+References: <20220525180553.419eac77@gandalf.local.home>
+ <Yo7q6dwphFexGuRA@gmail.com>
+ <20220526091106.1eb2287a@gandalf.local.home>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <86sfov2w8k.fsf@gmail.com>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220526091106.1eb2287a@gandalf.local.home>
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 27, 2022 at 10:52:27AM +0200, Hans Schultz wrote:
-> On tor, maj 26, 2022 at 17:13, Ido Schimmel <idosch@idosch.org> wrote:
-> > On Tue, May 24, 2022 at 05:21:41PM +0200, Hans Schultz wrote:
-> >> Add an intermediate state for clients behind a locked port to allow for
-> >> possible opening of the port for said clients. This feature corresponds
-> >> to the Mac-Auth and MAC Authentication Bypass (MAB) named features. The
-> >> latter defined by Cisco.
-> >> Locked FDB entries will be limited in number, so as to prevent DOS
-> >> attacks by spamming the port with random entries. The limit will be
-> >> a per port limit as it is a port based feature and that the port flushes
-> >> all FDB entries on link down.
-> >
-> > Why locked FDB entries need a special treatment compared to regular
-> > entries? A port that has learning enabled can be spammed with random
-> > source MACs just as well.
-> >
-> > The authorization daemon that is monitoring FDB notifications can have a
-> > policy to shut down a port if the rate / number of locked entries is
-> > above a given threshold.
-> >
-> > I don't think this kind of policy belongs in the kernel. If it resides
-> > in user space, then the threshold can be adjusted. Currently it's hard
-> > coded to 64 and I don't see how user space can change or monitor it.
-> 
-> In the Mac-Auth/MAB context, the locked port feature is really a form of
-> CPU based learning, and on mv88e6xxx switchcores, this is facilitated by
-> violation interrupts. Based on miss violation interrupts, the locked
-> entries are then added to a list with a timer to remove the entries
-> according to the bridge timeout.
-> As this is very CPU intensive compared to normal operation, the
-> assessment is that all this will jam up most devices if bombarded with
-> random entries at link speed, and my estimate is that any userspace 
-> daemon that listens to the ensuing fdb events will never get a chance
-> to stop this flood and eventually the device will lock down/reset. To
-> prevent this, the limit is introduced.
-> 
-> Ideally this limit could be adjustable from userspace, but in real
-> use-cases a cap like 64 should be more than enough, as that corresponds
-> to 64 possible devices behind a port that cannot authenticate by other
-> means (printers etc.) than having their mac addresses white-listed.
-> 
-> The software bridge behavior was then just set to correspond to the
-> offloaded behavior, but after correspondence with Nik, the software
-> bridge locked entries limit will be removed.
 
-As far as the bridge is concerned, locked entries are not really
-different from regular learned entries in terms of processing and since
-we don't have limits for regular entries I don't think we should have
-limits for locked entries.
+* Steven Rostedt <rostedt@goodmis.org> wrote:
 
-I do understand the problem you have in mv88e6xxx and I think it would
-be wise to hard code a reasonable limit there. It can be adjusted over
-time based on feedback and possibly exposed to user space.
+> On Thu, 26 May 2022 04:50:17 +0200
+> Ingo Molnar <mingo@kernel.org> wrote:
+> 
+> 
+> > > The real fix would be to fix kallsyms to not show address of weak
+> > > functions as the function before it. But that would require adding code in
+> > > the build to add function size to kallsyms so that it can know when the
+> > > function ends instead of just using the start of the next known symbol.  
+> > 
+> > Yeah, so I actually have a (prototype...) objtool based kallsyms 
+> > implementation in the (way too large) fast-headers tree that is both faster 
+> > & allows such details in principle:
+> 
+> Nice.
+> 
+> Will this work for other architectures too?
 
-Just to give you another data point about how this works in other
-devices, I can say that at least in Spectrum this works a bit
-differently. Packets that ingress via a locked port and incur an FDB
-miss are trapped to the CPU where they should be injected into the Rx
-path so that the bridge will create the 'locked' FDB entry and notify it
-to user space. The packets are obviously rated limited as the CPU cannot
-handle billions of packets per second, unlike the ASIC. The limit is not
-per bridge port (or even per bridge), but instead global to the entire
-device.
+For those which implement objtool, it certainly should: as we parse through 
+each object file during the build, generating kallsyms data structures is 
+relatively straightforward.
+
+Objtool availability is a big gating condition though. :-/
+
+[ ... and still Acked-by on -v4 too. ]
+
+Thanks,
+
+	Ingo
