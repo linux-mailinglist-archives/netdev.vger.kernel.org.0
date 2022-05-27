@@ -2,94 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F321535A79
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 09:33:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34A57535A87
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 09:36:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237373AbiE0Hci (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 03:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46604 "EHLO
+        id S1347746AbiE0Hf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 03:35:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230271AbiE0Hch (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 03:32:37 -0400
-Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F37BED73E
-        for <netdev@vger.kernel.org>; Fri, 27 May 2022 00:32:34 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.191.102])
-        by smtp.orange.fr with ESMTPA
-        id uUSUn7gyWN260uUSUnhRNX; Fri, 27 May 2022 09:32:32 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Fri, 27 May 2022 09:32:32 +0200
-X-ME-IP: 90.11.191.102
-Message-ID: <a3e0df04-fb94-ef38-c2dc-1c41e6c721d9@wanadoo.fr>
-Date:   Fri, 27 May 2022 09:32:30 +0200
+        with ESMTP id S1347845AbiE0Hfw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 03:35:52 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56624FC4F1;
+        Fri, 27 May 2022 00:35:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653636941; x=1685172941;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6v2EmsRePZ1dhjddWsHy3e8Q/iX3QjOW2uXTXpcHfg8=;
+  b=FD/lMGRwfyf/qpa3U4vF95/npq4FFug47A1ps1Q+cOZZPOUgLO9uvJQj
+   wFeR4E2hUOZGMWU6vk7uoVl7Em0Ow6Ndw1t69qPLSp3+DJ9zKDEfkpHc9
+   CTodbnx3nbSnR+3MzNt/BOsxenJcNPqK3OCQQqs1Epq9epzCsB1D1wjbp
+   LxMZlYsSWKxEP+dtcDe0oNWOGlPWxRBjXnBc442BC9qhi2YU+IqzE1244
+   YICNramoMUb4OuJUz6hhI5Lz1Y0dG2GHHMW9pu3qPC4Thzk+RaFP85kTe
+   m83tyt6QJfAiS8YstpcmmK1mZT9wFQBjwZBDvgnTrQpIgJaljcXPsy/2O
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="335059202"
+X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
+   d="scan'208";a="335059202"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 00:35:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
+   d="scan'208";a="550032971"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 27 May 2022 00:35:19 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nuUVC-0004WV-Gl;
+        Fri, 27 May 2022 07:35:18 +0000
+Date:   Fri, 27 May 2022 15:34:33 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, pablo@netfilter.org,
+        fw@strlen.de, netfilter-devel@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
+        memxor@gmail.com, yhs@fb.com
+Subject: Re: [PATCH v4 bpf-next 06/14] bpf: Whitelist some fields in nf_conn
+ for BPF_WRITE
+Message-ID: <202205271522.W0HxUVz1-lkp@intel.com>
+References: <2954ab26de09afeecf3a56ba93624f9629072102.1653600578.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] mac80211: Directly use ida_alloc()/free()
-Content-Language: en-AU
-To:     liuke94@huawei.com
-References: <20220527074132.2474867-1-liuke94@huawei.com>
-Cc:     davem@davemloft.net, edumazet@google.com,
-        johannes@sipsolutions.net, kuba@kernel.org, kvalo@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220527074132.2474867-1-liuke94@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2954ab26de09afeecf3a56ba93624f9629072102.1653600578.git.lorenzo@kernel.org>
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Lorenzo,
 
-Le 27/05/2022 à 09:41, keliu a écrit :
-> Use ida_alloc()/ida_free() instead of deprecated
-> ida_simple_get()/ida_simple_remove() .
-> 
-> Signed-off-by: keliu <liuke94-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> ---
->   drivers/net/wireless/mac80211_hwsim.c | 6 +++---
->   1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-> index e9ec63e0e395..6ad884d9e9a4 100644
-> --- a/drivers/net/wireless/mac80211_hwsim.c
-> +++ b/drivers/net/wireless/mac80211_hwsim.c
-> @@ -290,8 +290,8 @@ static inline int hwsim_net_set_netgroup(struct net *net)
->   {
->   	struct hwsim_net *hwsim_net = net_generic(net, hwsim_net_id);
->   
-> -	hwsim_net->netgroup = ida_simple_get(&hwsim_netgroup_ida,
-> -					     0, 0, GFP_KERNEL);
-> +	hwsim_net->netgroup = ida_alloc(&hwsim_netgroup_ida,
-> +					     GFP_KERNEL);
-Nitpick: GFP_KERNEL should be on the same line if there is enough space 
-or aligned with &hwsim_netgroup_ida
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on bpf-next/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Lorenzo-Bianconi/net-netfilter-add-kfunc-helper-to-update-ct-timeout/20220527-053913
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220527/202205271522.W0HxUVz1-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 134d7f9a4b97e9035150d970bd9e376043c4577e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/c346565af9b023d9231ca8fca2e1b8c66a782f84
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Lorenzo-Bianconi/net-netfilter-add-kfunc-helper-to-update-ct-timeout/20220527-053913
+        git checkout c346565af9b023d9231ca8fca2e1b8c66a782f84
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash net/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> net/core/filter.c:10479:9: error: call to undeclared function 'btf_struct_access'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           return btf_struct_access(log, btf, t, off, size, atype, next_btf_id, flag);
+                  ^
+   1 error generated.
 
 
-Out of curiosity, how do you generate these patches?
-(coccinelle should be the perfect tool for it, but I thought it would 
-already deal with alignment)
+vim +/btf_struct_access +10479 net/core/filter.c
 
-CJ
+ 10459	
+ 10460	static int xdp_tc_btf_struct_access(struct bpf_verifier_log *log,
+ 10461					    const struct btf *btf,
+ 10462					    const struct btf_type *t, int off, int size,
+ 10463					    enum bpf_access_type atype,
+ 10464					    u32 *next_btf_id, enum bpf_type_flag *flag)
+ 10465	{
+ 10466		int ret;
+ 10467	
+ 10468		if (atype == BPF_READ || !READ_ONCE(nf_conn_btf_struct_access))
+ 10469			goto end;
+ 10470		mutex_lock(&nf_conn_btf_struct_access_mtx);
+ 10471		if (!nf_conn_btf_struct_access)
+ 10472			goto end_unlock;
+ 10473		ret = nf_conn_btf_struct_access(log, btf, t, off, size, atype, next_btf_id, flag);
+ 10474		mutex_unlock(&nf_conn_btf_struct_access_mtx);
+ 10475		return ret;
+ 10476	end_unlock:
+ 10477		mutex_unlock(&nf_conn_btf_struct_access_mtx);
+ 10478	end:
+ 10479		return btf_struct_access(log, btf, t, off, size, atype, next_btf_id, flag);
+ 10480	}
+ 10481	
 
->   	return hwsim_net->netgroup >= 0 ? 0 : -ENOMEM;
->   }
->   
-> @@ -4733,7 +4733,7 @@ static void __net_exit hwsim_exit_net(struct net *net)
->   					 NULL);
->   	}
->   
-> -	ida_simple_remove(&hwsim_netgroup_ida, hwsim_net_get_netgroup(net));
-> +	ida_free(&hwsim_netgroup_ida, hwsim_net_get_netgroup(net));
->   }
->   
->   static struct pernet_operations hwsim_net_ops = {
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
