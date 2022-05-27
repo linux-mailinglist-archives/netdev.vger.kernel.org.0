@@ -2,130 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D82D35356D7
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 01:58:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DEEB5356FB
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 02:13:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244664AbiEZX6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 19:58:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53198 "EHLO
+        id S235844AbiE0ANT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 20:13:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241821AbiEZX5R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 19:57:17 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89252EBE88;
-        Thu, 26 May 2022 16:56:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653609361; x=1685145361;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IJGf5RepmEDrnwHRwu4dMdbVrN0wb3olBg9WO6yrmPs=;
-  b=FZ8FLh8lEmDv89DPI+BITUJhno1Fm35u2MEBinJTbXr6ofE8TtfaYljb
-   TChcafjad6+HUjOern/g7IMT3EVFhsfr6M6XE+a9T1UPSIUYGCgxON3C7
-   k6ke/jaWZPOk4fECwPq+jfA4hfs3c/xNEzN7iwbJtQMN+Jrsm9C9QhiEq
-   DEbtkdKZGdBDF8QHcnPj+CG2V8kSE1p9di5aOeQuCxuVNnWLWyObyCUQx
-   YKn+RK1ZM5vQy1tYUzgFX3JD/Ki6HXksXDg13L1kL8Z8VN1Uz0UcaOSz3
-   VdpJnehbkJfYZUjQwFCEtDJ6T5bxJJRyAzv/cx7Sizs8vj0EojBv+9pgP
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="273141771"
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="273141771"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 16:56:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,252,1647327600"; 
-   d="scan'208";a="603453275"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 26 May 2022 16:55:56 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nuNKd-0004Fs-G4;
-        Thu, 26 May 2022 23:55:55 +0000
-Date:   Fri, 27 May 2022 07:55:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        pablo@netfilter.org, fw@strlen.de, netfilter-devel@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
-        memxor@gmail.com, yhs@fb.com
-Subject: Re: [PATCH v4 bpf-next 06/14] bpf: Whitelist some fields in nf_conn
- for BPF_WRITE
-Message-ID: <202205270749.blol7EcF-lkp@intel.com>
-References: <2954ab26de09afeecf3a56ba93624f9629072102.1653600578.git.lorenzo@kernel.org>
+        with ESMTP id S230461AbiE0ANS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 20:13:18 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 268552AC5B
+        for <netdev@vger.kernel.org>; Thu, 26 May 2022 17:13:17 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id y189so2993950pfy.10
+        for <netdev@vger.kernel.org>; Thu, 26 May 2022 17:13:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=p9iTWLyJ025WM0SvqQwn+Xw6+/Qe+I4QkaVruL1mYtQ=;
+        b=faecmEBzfgXLuBMBS8lzCrpKuO3wlZiSbclqP8jEqaFc2TGHzVEb/nKY1X8OgEdXd0
+         GJiI0krThFksIkk0Ffba724p6Tbx3UDM9c5mJOGvWkotLCqmh7I+M6YN1+IOPtzpDMQz
+         w36jUJEx5UXevkBpZEd/HV8En7ypjl+UxauU4DQFvRjRxgOdC7ylYdnY/lsp3FyqNPwP
+         zxpqwmXZGmxoFMhSsnr8YimcXsMdeuy9eo0gkpx0d/n8X4NufJR2DvWiuCbbY7jyE4y+
+         SEU5oms0q0Njkm5qvjgnPBTqbUsQaj0UO8UdWRCLOvDWUKrhCZxKQEDuIbciNQu/YuZI
+         wRKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=p9iTWLyJ025WM0SvqQwn+Xw6+/Qe+I4QkaVruL1mYtQ=;
+        b=3TGESLAXuOfpB5u/7KpkOOPLhlwmDghCZudXSb6cXHas4EFVrrsgkwnPiUeN2YQ8XE
+         THREMkgXNDj6kzKUMoiQOS8byDmiiUrRMcTAYDcJQJcbVZNuJ2oS36g2kL5QEfU+O33u
+         0n2YXtodPJmajIYpm3703CebJobyFV6zhzaHpiNVfhFNCA1sBiLqaRaPYtoNvYZQVlP9
+         Qjf/DMLgoo+ANCK9aLnoAFsSsj0a6RI4QMvMqT0eUkdtYDkmVe7UlcR/FjFjZs58GjBy
+         k9jnqNmebbOSleS5aF9bHvkLIokQ6fLGnbNy/Kk6UpCIDWglFF//NDmSTSJcBClvvA6D
+         D54Q==
+X-Gm-Message-State: AOAM530mcIj9TYS3tnVi3Nz0Z0caOtaq/9sr7cZ/Zd+rKr2+DR7E0K+o
+        rwf6+d/PY6vjKLFPxfhyIEK98pkHyn/vgA==
+X-Google-Smtp-Source: ABdhPJzQgD6wXKqAZTy0sHjjNU0b45Omky1LbH2YE52j7LE2z3jMuFUe7IytZAkGHS6dS8Tbnm/yGw==
+X-Received: by 2002:a05:6a00:cc:b0:518:1348:8dc2 with SMTP id e12-20020a056a0000cc00b0051813488dc2mr41752681pfj.52.1653610396657;
+        Thu, 26 May 2022 17:13:16 -0700 (PDT)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id e13-20020a170902ef4d00b0016184e7b013sm2162327plx.36.2022.05.26.17.13.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 May 2022 17:13:16 -0700 (PDT)
+Date:   Thu, 26 May 2022 17:13:13 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     <netdev@vger.kernel.org>, David Ahern <dsahern@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH iproute2-next 09/10] ipstats: Expose bond stats in
+ ipstats
+Message-ID: <20220526171313.592cbdb1@hermes.local>
+In-Reply-To: <5c0de4f4844bd23a3c7035826ec93d6bf71ae666.1652104101.git.petrm@nvidia.com>
+References: <cover.1652104101.git.petrm@nvidia.com>
+        <5c0de4f4844bd23a3c7035826ec93d6bf71ae666.1652104101.git.petrm@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2954ab26de09afeecf3a56ba93624f9629072102.1653600578.git.lorenzo@kernel.org>
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Lorenzo,
+On Mon, 9 May 2022 16:00:02 +0200
+Petr Machata <petrm@nvidia.com> wrote:
 
-Thank you for the patch! Yet something to improve:
+> Describe xstats and xstats_slave subgroups for bond netdevices.
+> 
+> For example:
+> 
+>  # ip stats show dev swp1 group xstats_slave subgroup bond
+>  56: swp1: group xstats_slave subgroup bond suite 802.3ad
+>                      LACPDU Rx 0
+>                      LACPDU Tx 0
+>                      LACPDU Unknown type Rx 0
+>                      LACPDU Illegal Rx 0
+>                      Marker Rx 0
+>                      Marker Tx 0
+>                      Marker response Rx 0
+>                      Marker response Tx 0
+>                      Marker unknown type Rx 0
+> 
+>  # ip -j stats show dev swp1 group xstats_slave subgroup bond | jq
+>  [
+>    {
+>      "ifindex": 56,
+>      "ifname": "swp1",
+>      "group": "xstats_slave",
+>      "subgroup": "bond",
+>      "suite": "802.3ad",
+>      "802.3ad": {
+>        "lacpdu_rx": 0,
+>        "lacpdu_tx": 0,
+>        "lacpdu_unknown_rx": 0,
+>        "lacpdu_illegal_rx": 0,
+>        "marker_rx": 0,
+>        "marker_tx": 0,
+>        "marker_response_rx": 0,
+>        "marker_response_tx": 0,
+>        "marker_unknown_rx": 0
+>      }
+>    }
+>  ]
+> 
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
+> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  ip/ip_common.h   |  3 +++
+>  ip/iplink_bond.c | 55 ++++++++++++++++++++++++++++++++++++++++++++++--
+>  ip/ipstats.c     |  2 ++
+>  3 files changed, 58 insertions(+), 2 deletions(-)
 
-[auto build test ERROR on bpf-next/master]
+This change won't build if clang is used to build iproute2.
+It has valid warning:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Lorenzo-Bianconi/net-netfilter-add-kfunc-helper-to-update-ct-timeout/20220527-053913
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220527/202205270749.blol7EcF-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/c346565af9b023d9231ca8fca2e1b8c66a782f84
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Lorenzo-Bianconi/net-netfilter-add-kfunc-helper-to-update-ct-timeout/20220527-053913
-        git checkout c346565af9b023d9231ca8fca2e1b8c66a782f84
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
+    CC       iplink_bond.o
+iplink_bond.c:935:10: error: initializer element is not a compile-time constant
+        .desc = ipstats_stat_desc_bond_tmpl_lacp,
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+iplink_bond.c:957:10: error: initializer element is not a compile-time constant
+        .desc = ipstats_stat_desc_bond_tmpl_lacp,
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2 errors generated.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   net/core/filter.c: In function 'xdp_tc_btf_struct_access':
->> net/core/filter.c:10479:16: error: implicit declaration of function 'btf_struct_access'; did you mean 'xdp_tc_btf_struct_access'? [-Werror=implicit-function-declaration]
-   10479 |         return btf_struct_access(log, btf, t, off, size, atype, next_btf_id, flag);
-         |                ^~~~~~~~~~~~~~~~~
-         |                xdp_tc_btf_struct_access
-   cc1: some warnings being treated as errors
-
-
-vim +10479 net/core/filter.c
-
- 10459	
- 10460	static int xdp_tc_btf_struct_access(struct bpf_verifier_log *log,
- 10461					    const struct btf *btf,
- 10462					    const struct btf_type *t, int off, int size,
- 10463					    enum bpf_access_type atype,
- 10464					    u32 *next_btf_id, enum bpf_type_flag *flag)
- 10465	{
- 10466		int ret;
- 10467	
- 10468		if (atype == BPF_READ || !READ_ONCE(nf_conn_btf_struct_access))
- 10469			goto end;
- 10470		mutex_lock(&nf_conn_btf_struct_access_mtx);
- 10471		if (!nf_conn_btf_struct_access)
- 10472			goto end_unlock;
- 10473		ret = nf_conn_btf_struct_access(log, btf, t, off, size, atype, next_btf_id, flag);
- 10474		mutex_unlock(&nf_conn_btf_struct_access_mtx);
- 10475		return ret;
- 10476	end_unlock:
- 10477		mutex_unlock(&nf_conn_btf_struct_access_mtx);
- 10478	end:
- 10479		return btf_struct_access(log, btf, t, off, size, atype, next_btf_id, flag);
- 10480	}
- 10481	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Since desc is a structure, you can't just assign an existing data structure
+to the new initializer.  It needs to be a pointer or macro.
