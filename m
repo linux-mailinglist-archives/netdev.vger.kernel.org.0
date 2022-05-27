@@ -2,215 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1E4C535D39
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 11:22:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B118535D3A
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 11:22:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350564AbiE0JLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 05:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58724 "EHLO
+        id S237761AbiE0JMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 05:12:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344759AbiE0JLD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 05:11:03 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17CB31312B1;
-        Fri, 27 May 2022 02:07:58 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id i23so4291928ljb.4;
-        Fri, 27 May 2022 02:07:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=QhJy8vAsWRk7rBxT10iDy/5PmoVr3qcRU2Dxdwypg2w=;
-        b=BFYKpQ+8HJ031Pci0GGoXTHAK52LstG0U+QTzwaDWYuNKuqt6XQOmyKDhqE4LpIweq
-         ddrtnQYze5cmPDF816qSS+xaUlDY24jUhRklTLRJHNb2kludEKx1hdd5wHhWDvb08gKa
-         LevUQgwVi8mn9T5XFFOnNVtGY5dWJcNmqREqpjXCUPLR2x7Th55wEZ7xPmUQy6fu7u+S
-         Z9eoeDMEgDTOLUUV3N+I0yEY9OH9OxbB4lxErfv89muikeeaq6/+/ETll0ovphhOM4S1
-         p1BK0EiffcXwJjrp0h/wVqqXZkykAy0GzEo9y6Ws9EoOijhpHwJauuKDRNeNQL0lCu1j
-         qYhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=QhJy8vAsWRk7rBxT10iDy/5PmoVr3qcRU2Dxdwypg2w=;
-        b=Yui6kY0lFPyE6eakMJplHu7mCsciVgebp0xKXqzF1WOcVLYjNFts6/qMgrjoboInee
-         zCCh1qJ/Q/YeFQ/SGF71S4Obn0QFIAUq4W42Z7IJ00PC9vV96/tcycFOzRcIKtsfzeCy
-         +qDt5mSsEMkRlO/yB3vKR7e52BmSMJ9xPcYYfuajEU2e33nKCitiFNxkir5aq6HEBQgN
-         AN6ZJ6Iy18gycIi1l5QCXDtTCUnrNYyGQT2E0M0q2JEyODdjZR7L9iVddN0cEENVKFQf
-         RQ/02c2Ifl+OJ3JZgr431sdkxH8nywo6f8D4d9eGvtUc3uSK+NnS6uq7VMdYk4vjm18U
-         c/VQ==
-X-Gm-Message-State: AOAM532t43qXpmYb1NzB20iQarDeCqzC1TQXXN8HYqy92PfqO+87oKPC
-        HRJHRzOQYtWzm07fZQ1D9XoSgnOjCwmwYA==
-X-Google-Smtp-Source: ABdhPJz3dOSfuDx2uiYcak6q55G0/yRusHjmQ01zeaTTpiKKJVdkc3yPqv08H48DT8wHs1EdQCIjOg==
-X-Received: by 2002:a05:651c:160b:b0:255:3884:7940 with SMTP id f11-20020a05651c160b00b0025538847940mr1469961ljq.379.1653642473217;
-        Fri, 27 May 2022 02:07:53 -0700 (PDT)
-Received: from wse-c0127 (2-104-116-184-cable.dk.customer.tdc.net. [2.104.116.184])
-        by smtp.gmail.com with ESMTPSA id b9-20020a056512070900b0047862287498sm783205lfs.208.2022.05.27.02.07.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 May 2022 02:07:52 -0700 (PDT)
-From:   Hans Schultz <schultz.hans@gmail.com>
-X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
-To:     Ido Schimmel <idosch@idosch.org>,
-        Hans Schultz <schultz.hans@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH V3 net-next 4/4] selftests: forwarding: add test of
- MAC-Auth Bypass to locked port tests
-In-Reply-To: <Yo+OYN/rjdB7wfQu@shredder>
-References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
- <20220524152144.40527-5-schultz.hans+netdev@gmail.com>
- <Yo+OYN/rjdB7wfQu@shredder>
-Date:   Fri, 27 May 2022 11:07:50 +0200
-Message-ID: <86pmjz2vix.fsf@gmail.com>
+        with ESMTP id S1350579AbiE0JLy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 05:11:54 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4246113C36F
+        for <netdev@vger.kernel.org>; Fri, 27 May 2022 02:08:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653642505; x=1685178505;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=C9nAhmJGVLFRsDfrnddwjcwKvsG0JoJ14Hik8F6vvqw=;
+  b=XbfaeHIszMutKueYzK34NdzFbhWZ3jnxMr0RnTLVB6/ke8j6iZm00p/0
+   xgv3+SnM1HSQD6SUTDFAyJkNAyIS1hJwCZPb8bJvfVT0PQ+tz28y4Pch0
+   M8r+2po0M0hHrcV39DPG2RWQRpabAye2jFdkII9JVh4Cg84cTZO3V1C8k
+   H0RFRO2PNFtRPGkgupWRHl1q1w4HFpLthDIHOT86F2Gmq7IV32grwO37o
+   eVkxLTMNNf1TaieNj58dDFEmgxRWshmPPFnChplsJnwkw9w0QAD2xC88Z
+   9Cd4EX+Nh+7nX1azg9I3/tONK0paAdhog2cwJ58/FYx0mZ9aLZ0SBFdjs
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="273240601"
+X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
+   d="scan'208";a="273240601"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 02:08:24 -0700
+X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
+   d="scan'208";a="603770259"
+Received: from zhoufuro-mobl.ccr.corp.intel.com (HELO [10.255.30.80]) ([10.255.30.80])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 02:08:21 -0700
+Message-ID: <e6cb8b03-4d3d-b64b-0aca-642fe53ecb90@linux.intel.com>
+Date:   Fri, 27 May 2022 17:08:18 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH net-next v5 09/11] igc: Add support for Frame Preemption
+ verification
+Content-Language: en-US
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, vladimir.oltean@nxp.com, po.liu@nxp.com,
+        boon.leong.ong@intel.com, intel-wired-lan@lists.osuosl.org
+References: <20220520011538.1098888-1-vinicius.gomes@intel.com>
+ <20220520011538.1098888-10-vinicius.gomes@intel.com>
+From:   Zhou Furong <furong.zhou@linux.intel.com>
+In-Reply-To: <20220520011538.1098888-10-vinicius.gomes@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On tor, maj 26, 2022 at 17:27, Ido Schimmel <idosch@idosch.org> wrote:
-> On Tue, May 24, 2022 at 05:21:44PM +0200, Hans Schultz wrote:
->> Verify that the MAC-Auth mechanism works by adding a FDB entry with the
->> locked flag set. denying access until the FDB entry is replaced with a
->> FDB entry without the locked flag set.
->> 
->> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
->> ---
->>  .../net/forwarding/bridge_locked_port.sh      | 42 ++++++++++++++++---
->>  1 file changed, 36 insertions(+), 6 deletions(-)
->> 
->> diff --git a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
->> index 5b02b6b60ce7..50b9048d044a 100755
->> --- a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
->> +++ b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
->> @@ -1,7 +1,7 @@
->>  #!/bin/bash
->>  # SPDX-License-Identifier: GPL-2.0
->>  
->> -ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan"
->> +ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan locked_port_mab"
->>  NUM_NETIFS=4
->>  CHECK_TC="no"
->>  source lib.sh
->> @@ -94,13 +94,13 @@ locked_port_ipv4()
->>  	ping_do $h1 192.0.2.2
->>  	check_fail $? "Ping worked after locking port, but before adding FDB entry"
->>  
->> -	bridge fdb add `mac_get $h1` dev $swp1 master static
->> +	bridge fdb replace `mac_get $h1` dev $swp1 master static
->>  
->>  	ping_do $h1 192.0.2.2
->>  	check_err $? "Ping did not work after locking port and adding FDB entry"
->>  
->>  	bridge link set dev $swp1 locked off
->> -	bridge fdb del `mac_get $h1` dev $swp1 master static
->> +	bridge fdb del `mac_get $h1` dev $swp1 master
->>  
->>  	ping_do $h1 192.0.2.2
->>  	check_err $? "Ping did not work after unlocking port and removing FDB entry."
->> @@ -124,13 +124,13 @@ locked_port_vlan()
->>  	ping_do $h1.100 198.51.100.2
->>  	check_fail $? "Ping through vlan worked after locking port, but before adding FDB entry"
->>  
->> -	bridge fdb add `mac_get $h1` dev $swp1 vlan 100 master static
->> +	bridge fdb replace `mac_get $h1` dev $swp1 master static
->>  
->>  	ping_do $h1.100 198.51.100.2
->>  	check_err $? "Ping through vlan did not work after locking port and adding FDB entry"
->>  
->>  	bridge link set dev $swp1 locked off
->> -	bridge fdb del `mac_get $h1` dev $swp1 vlan 100 master static
->> +	bridge fdb del `mac_get $h1` dev $swp1 vlan 100 master
->>  
->>  	ping_do $h1.100 198.51.100.2
->>  	check_err $? "Ping through vlan did not work after unlocking port and removing FDB entry"
->> @@ -153,7 +153,8 @@ locked_port_ipv6()
->>  	ping6_do $h1 2001:db8:1::2
->>  	check_fail $? "Ping6 worked after locking port, but before adding FDB entry"
->>  
->> -	bridge fdb add `mac_get $h1` dev $swp1 master static
->> +	bridge fdb replace `mac_get $h1` dev $swp1 master static
->> +
->>  	ping6_do $h1 2001:db8:1::2
->>  	check_err $? "Ping6 did not work after locking port and adding FDB entry"
->>  
->> @@ -166,6 +167,35 @@ locked_port_ipv6()
->>  	log_test "Locked port ipv6"
->>  }
->
-> Why did you change s/add/replace/? Also, from the subject and commit
-> message I understand the patch is about adding a new test, not changing
-> existing ones.
->
+> +
+> +	struct delayed_work fp_verification_work;
+> +	unsigned long fp_start;
+> +	bool fp_received_smd_v;
+> +	bool fp_received_smd_r;
+> +	unsigned int fp_verify_cnt;
+> +	enum frame_preemption_state fp_tx_state;
+> +	bool fp_disable_verify;
 
-Sorry, I might have lost a bit track of the kernel selftests, as for
-internal reasons there has been a pause in the work. I will remove the
-changes to the previous tests, and I hope it will be fine.
+struct size would be smaller if add member to right place
 
->>  
->> +locked_port_mab()
->> +{
->> +	RET=0
->> +	check_locked_port_support || return 0
->> +
->> +	ping_do $h1 192.0.2.2
->> +	check_err $? "MAB: Ping did not work before locking port"
->> +
->> +	bridge link set dev $swp1 locked on
->> +	bridge link set dev $swp1 learning on
->> +
->> +	bridge fdb del `mac_get $h1` dev $swp1 master
->
-> Why the delete is needed? Aren't you getting errors on trying to delete
-> a non-existing entry? In previous test cases learning is disabled and it
-> seems the FDB entry is cleaned up.
->
 
-I guess you are right.
+> +	if (!netif_running(adapter->netdev))
+> +		return -ENOTCONN;
+> +
+> +	/* FIXME: rename this function to something less specific, as
+> +	 * it can be used outside XDP.
+> +	 */
+> +	ring = igc_xdp_get_tx_ring(adapter, cpu);
+> +	nq = txring_txq(ring);
+> +
+> +	skb = alloc_skb(IGC_FP_SMD_FRAME_SIZE, GFP_KERNEL);
+> +	if (!skb)
+> +		return -ENOMEM;
+> +
+if there is chance of NOMEM, move this before
+ring = igc_xdp_get_tx_ring(adapter, cpu);
 
->> +
->> +	ping_do $h1 192.0.2.2
->> +	check_fail $? "MAB: Ping worked on locked port without FDB entry"
->> +
->> +	bridge fdb show | grep `mac_get $h1` | grep -q "locked"
->> +	check_err $? "MAB: No locked fdb entry after ping on locked port"
->> +
->> +	bridge fdb replace `mac_get $h1` dev $swp1 master static
->> +
->> +	ping_do $h1 192.0.2.2
->> +	check_err $? "MAB: Ping did not work with fdb entry without locked flag"
->> +
->> +	bridge fdb del `mac_get $h1` dev $swp1 master
->
-> bridge link set dev $swp1 learning off
->
 
-noted.
+> +static void igc_fp_verification_work(struct work_struct *work)
+> +{
+> +	struct delayed_work *dwork = to_delayed_work(work);
+> +	struct igc_adapter *adapter;
+> +	int err;
+> +
+> +	adapter = container_of(dwork, struct igc_adapter, fp_verification_work);
+> +
+please remove blank
 
->> +	bridge link set dev $swp1 locked off
->> +
->> +	log_test "Locked port MAB"
->> +}
->>  trap cleanup EXIT
->>  
->>  setup_prepare
->> -- 
->> 2.30.2
->> 
+> +	if (adapter->fp_disable_verify)
+> +		goto done;
+> +
+> +	switch (adapter->fp_tx_state) {
+> +	case FRAME_PREEMPTION_STATE_START:
+> +		adapter->fp_received_smd_r = false;
+> +		err = igc_xmit_smd_frame(adapter, IGC_SMD_TYPE_SMD_V);
+> +		if (err < 0)
+> +			netdev_err(adapter->netdev, "Error sending SMD-V frame\n");
+> +
+> +		adapter->fp_tx_state = FRAME_PREEMPTION_STATE_SENT;
+state is SENT when send error?
+
+> +		adapter->fp_start = jiffies;
+> +		schedule_delayed_work(&adapter->fp_verification_work, IGC_FP_TIMEOUT);
+> +		break;
+> +
+
+
+
+
+
+> +
+> +			if (adapter->fp_verify_cnt > IGC_MAX_VERIFY_CNT) {
+> +				adapter->fp_verify_cnt = 0;
+> +				adapter->fp_tx_state = FRAME_PREEMPTION_STATE_FAILED;
+> +				netdev_err(adapter->netdev,
+> +					   "Exceeded number of attempts for frame preemption verification\n");
+> +			} else {
+> +				adapter->fp_tx_state = FRAME_PREEMPTION_STATE_START;
+> +			}
+> +			schedule_delayed_work(&adapter->fp_verification_work, IGC_FP_TIMEOUT);
+> +		}
+> +
+> +		break;
+> +
+> +	case FRAME_PREEMPTION_STATE_FAILED:
+> +	case FRAME_PREEMPTION_STATE_DONE:
+miss default?
+
+> +		break;
+> +	}
+> +
