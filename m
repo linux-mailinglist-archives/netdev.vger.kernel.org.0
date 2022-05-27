@@ -2,89 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F137F536481
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 17:10:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 114A5536E20
+	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 21:06:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352654AbiE0PKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 11:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43072 "EHLO
+        id S229659AbiE1TGS convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 28 May 2022 15:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241203AbiE0PKP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 11:10:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4E4A41F9E;
-        Fri, 27 May 2022 08:10:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C114B8255C;
-        Fri, 27 May 2022 15:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0A8F3C34113;
-        Fri, 27 May 2022 15:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653664212;
-        bh=ovoahaMNfS6UEYpJPEXiV4cUjWIsZMQP/Yr3pKFPIIE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YGFZbVLVmOWGVlQF/KzJQXegksOK1TyK/20YBLM1PFXpH/e13w1qHVEUjaXRuQwWx
-         7HNhmXzA1puvZRH1s8G3EFAQwDpeBDquQtc5GmFp+IFkYLQwpCOrRfIs6PNx9QdGJo
-         JxHBgH2ZYbGUvlqmut910/6iCcbKVT7qMBYL/i+4P3W6XQB2e5zS1qeYBCInpJaZvH
-         RPY7CPLY2aLo8FTY0bY1TSgC1N79jQFrqZTNmb3L0aEgg3b3ERJTo0ZqlDI9ObnusD
-         G/DPyMWe5c4M0TsWnyV0XyDtSk85guuWJsKJqq7R0+Lq9K8cjgSrnVFzrgvBwgori/
-         +BCKEusyx/SNg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E057AF03947;
-        Fri, 27 May 2022 15:10:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229506AbiE1TGR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 15:06:17 -0400
+X-Greylist: delayed 44393 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 28 May 2022 12:06:13 PDT
+Received: from srv1.ensanne.nl (srv1.ensanne.nl [185.27.141.228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C53762232;
+        Sat, 28 May 2022 12:06:13 -0700 (PDT)
+Received: from [156.146.34.48] (helo=[192.168.4.104])
+        by srv1.ensanne.nl with esmtpa (Exim 4.94.2)
+        (envelope-from <ensanne@cybertrade.co.za>)
+        id 1nubiq-0003KI-DB; Fri, 27 May 2022 17:17:53 +0200
+Content-Type: text/plain; charset="iso-8859-1"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf] selftests/bpf: fix stacktrace_build_id with missing
- kprobe/urandom_read
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165366421191.28804.10243668813609197004.git-patchwork-notify@kernel.org>
-Date:   Fri, 27 May 2022 15:10:11 +0000
-References: <20220526191608.2364049-1-song@kernel.org>
-In-Reply-To: <20220526191608.2364049-1-song@kernel.org>
-To:     Song Liu <song@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kernel-team@fb.com,
-        mykolal@fb.com
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8BIT
+Content-Description: Mail message body
+Subject: Re: blessed deal.!nl
+To:     Recipients <ensanne@cybertrade.co.za>
+From:   "United States Marine Corps" <ensanne@cybertrade.co.za>
+Date:   Fri, 27 May 2022 18:17:22 +0300
+Reply-To: bbirenebh242@gmail.com
+Message-ID: <GENERATED-WASMISSING-1nubiq-0003KI-DB@srv1.ensanne.nl>
+X-ACL-Warn: Adding Message-ID header because it is missing!
+X-Authenticated-Id: info@ensanne.nl
+X-Spam-Status: Yes, score=7.4 required=5.0 tests=BAYES_50,
+        FREEMAIL_FORGED_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,NIXSPAM_IXHASH,
+        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5047]
+        *  1.3 RCVD_IN_VALIDITY_RPBL RBL: Relay in Validity RPBL,
+        *      https://senderscore.org/blocklistlookup/
+        *      [185.27.141.228 listed in bl.score.senderscore.com]
+        *  3.0 NIXSPAM_IXHASH http://www.nixspam.org/
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.0 SPF_NONE SPF: sender does not publish an SPF Record
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [bbirenebh242[at]gmail.com]
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  2.1 FREEMAIL_FORGED_REPLYTO Freemail in Reply-To, but not From
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hello!
 
-This patch was applied to bpf/bpf.git (master)
-by Alexei Starovoitov <ast@kernel.org>:
+Did you see my blessed deal message in your favor???
 
-On Thu, 26 May 2022 12:16:08 -0700 you wrote:
-> Kernel function urandom_read is replaced with urandom_read_iter.
-> Therefore, kprobe on urandom_read is not working any more:
-> 
-> [root@eth50-1 bpf]# ./test_progs -n 161
-> test_stacktrace_build_id:PASS:skel_open_and_load 0 nsec
-> libbpf: kprobe perf_event_open() failed: No such file or directory
-> libbpf: prog 'oncpu': failed to create kprobe 'urandom_read+0x0' \
->         perf event: No such file or directory
-> libbpf: prog 'oncpu': failed to auto-attach: -2
-> test_stacktrace_build_id:FAIL:attach_tp err -2
-> 161     stacktrace_build_id:FAIL
-> 
-> [...]
-
-Here is the summary with links:
-  - [bpf] selftests/bpf: fix stacktrace_build_id with missing kprobe/urandom_read
-    https://git.kernel.org/bpf/bpf/c/59ed76fe2f98
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Sgt Irene.
+United States Marine Corps (USMC)
