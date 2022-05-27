@@ -2,164 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6B92535743
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 03:16:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDDB7535767
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 03:50:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231886AbiE0BQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 21:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56982 "EHLO
+        id S233256AbiE0Bt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 21:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231819AbiE0BQQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 21:16:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9696F271;
-        Thu, 26 May 2022 18:16:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S233258AbiE0Btz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 21:49:55 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE22DE2758;
+        Thu, 26 May 2022 18:49:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653616194; x=1685152194;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kut1lyhhg+8YOva3L1ERzYHZ76rCQIBn6vcFl8mahxg=;
+  b=CMShrFktcY0NLyPNxmttBRR/xL8ehJK5Au/otaUsEhJt34VwXKUcY7XQ
+   QbjW1KTa2mfHxXx2Fj0OKjyQRQy99LK2y0HxOwrdNkuq5xi0f4OCOFbOr
+   +GLiTYL593qQCVl+8dLsMs0kcCGdJwF3gMkzxwGOETKNXBzSetLtuwKZD
+   kvkEjDLcpYnGVlBs9xNvv6s3TJlhi/voiiApKirWHm1al0FqXkOrrWjU6
+   xYjArUS7ittlou6gYWz3pbFPXHPNTJeenz9hC70qYbzygpUna/+EWmSQ6
+   2jX+XiFAurMfrEkyfS1LElxct8PsGNMbiCrwjxC+fi1MRD0lMDS5n6S0R
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="274451648"
+X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
+   d="scan'208";a="274451648"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2022 18:49:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
+   d="scan'208";a="631230192"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga008.fm.intel.com with ESMTP; 26 May 2022 18:49:53 -0700
+Received: from linux.intel.com (ssid-ilbpg3-teeminta.png.intel.com [10.88.227.74])
+        (using TLSv1.2 with cipher DHE-RSA-AES128-SHA (128/128 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2020761CB5;
-        Fri, 27 May 2022 01:16:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CDA9C34116;
-        Fri, 27 May 2022 01:16:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653614174;
-        bh=3OBYAY/ttRUgYAlC1eiThaGMaCz44RoEL561Vc+b8wM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WWLaLjekoR9RLT01/AGKfzkLzbX0ZqQnEgHD7m9xpIKFnE8QW1c/m2eJuLfs6m5qr
-         b/+AWQFoz82mq4om+LUaPNpMWgWJUBdwHpxciwJaefeKaFXRkfO/dF6A5YpvS42wU/
-         K3ZwnWjdTtjRHou0Ijo9WQwaHZqQUVzQOAYg9TbNQmswucS/p5kJr/6CbFcj/MRmk3
-         9+qq/PEzpecNvNPDjqfHyP2ZengmijD6HBePI9OG4ulEm+xajDDjPViEJXyNbj29X3
-         LQZ2D8XlZx3xACwR0VQlye7m9g1xdWD4+dooD44dbDHAy8dpyP+4VeudkhhnTlQ1cT
-         +AaYdckUbFcMg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 0FD7E4036D; Thu, 26 May 2022 22:16:11 -0300 (-03)
-Date:   Thu, 26 May 2022 22:16:11 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Ian Rogers <irogers@google.com>
-Subject: Re: [PATCHv2 0/3] perf tools: Fix prologue generation
-Message-ID: <YpAmW/BDq4346OaI@kernel.org>
-References: <20220510074659.2557731-1-jolsa@kernel.org>
+        by linux.intel.com (Postfix) with ESMTPS id 116F7580B54;
+        Thu, 26 May 2022 18:49:49 -0700 (PDT)
+Date:   Fri, 27 May 2022 09:47:09 +0800
+From:   Tan Tee Min <tee.min.tan@linux.intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Dan Murphy <dmurphy@ti.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
+        Sit Michael Wei Hong <michael.wei.hong.sit@intel.com>,
+        Ling Pei Lee <pei.lee.ling@intel.com>,
+        Looi Hong Aun <hong.aun.looi@intel.com>,
+        Wong Vee Khee <vee.khee.wong@intel.com>,
+        Tan Tee Min <tee.min.tan@intel.com>
+Subject: Re: [PATCH net-next v2 1/1] net: phy: dp83867: retrigger SGMII AN
+ when link change
+Message-ID: <20220527014709.GA26992@linux.intel.com>
+References: <20220526090347.128742-1-tee.min.tan@linux.intel.com>
+ <Yo9zTmMduwel8XeZ@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220510074659.2557731-1-jolsa@kernel.org>
-X-Url:  http://acmel.wordpress.com
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <Yo9zTmMduwel8XeZ@lunn.ch>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Tue, May 10, 2022 at 09:46:56AM +0200, Jiri Olsa escreveu:
-> hi,
-> sending change we discussed some time ago [1] to get rid of
-> some deprecated functions we use in perf prologue code.
+On Thu, May 26, 2022 at 02:32:14PM +0200, Andrew Lunn wrote:
+> On Thu, May 26, 2022 at 05:03:47PM +0800, Tan Tee Min wrote:
+> > This could cause an issue during power up, when PHY is up prior to MAC.
+> > At this condition, once MAC side SGMII is up, MAC side SGMII wouldn`t
+> > receive new in-band message from TI PHY with correct link status, speed
+> > and duplex info.
+> > 
+> > As suggested by TI, implemented a SW solution here to retrigger SGMII
+> > Auto-Neg whenever there is a link change.
 > 
-> Despite the gloomy discussion I think the final code does
-> not look that bad ;-)
+> Is there a bit in the PHY which reports host side link? There is no
+> point triggering an AN if there is already link.
 > 
-> This patchset removes following libbpf functions from perf:
->   bpf_program__set_prep
->   bpf_program__nth_fd
->   struct bpf_prog_prep_result
+>       Andrew
 
-So, the first patch is already in torvalds/master, I tried applying the
-other two patches to my local perf/core, that already is merged with
-torvalds/master and:
+Thanks for your comment.
 
-[root@quaco ~]# perf test 42
- 42: BPF filter                                                      :
- 42.1: Basic BPF filtering                                           : FAILED!
- 42.2: BPF pinning                                                   : FAILED!
- 42.3: BPF prologue generation                                       : FAILED!
-[root@quaco ~]#
+There is no register bit in TI PHY which reports the SGMII AN link status.
+But, there is a bit that only reports the SGMII AN completion status.
 
-I'll push my local perf/core to tmp.perf/core and continue tomorrow.
+In this case, the PHY side SGMII AN has been already completed prior to MAC is up.
+So, once MAC side SGMII is up, MAC side SGMII wouldn`t receive any new
+in-band message from TI PHY.
 
-Its failing around here:
+Thanks,
+Tee Min
 
-Open Debuginfo file: /root/.cache/debuginfod_client/e1c3de4b4c5db158f2098e80f2bf9140e8cfbdb6/debuginfo
-Try to find probe point from debuginfo.
-Matched function: do_epoll_wait [3806bb5]
-Probe point found: do_epoll_wait+0
-Found 1 probe_trace_events.
-Looking at the vmlinux_path (8 entries long)
-symsrc__init: build id mismatch for vmlinux.
-symsrc__init: cannot get elf header.
-Using /proc/kcore for kernel data
-Using /proc/kallsyms for symbols
-do_epoll_wait is out of .text, skip it.
-Post processing failed or all events are skipped. (1)
-Probe point 'do_epoll_wait' not found.
-bpf_probe: failed to convert perf probe events
-Failed to add events selected by BPF
-test child finished with -1
----- end ----
-BPF filter subtest 1: FAILED
-
-But:
-
-[root@quaco ~]# grep do_epoll_wait /proc/kallsyms
-ffffffff973c2a30 t do_epoll_wait
-[root@quaco ~]#
-
-- Arnaldo
- 
-> v2 changes:
->   - use fallback section prog handler, so we don't need to
->     use section prefix [Andrii]
->   - realloc prog->insns array in bpf_program__set_insns [Andrii]
->   - squash patch 1 from previous version with
->     bpf_program__set_insns change [Daniel]
->   - patch 3 already merged [Arnaldo]
->   - added more comments
-> 
->   meanwhile.. perf/core and bpf-next diverged, so:
->     - libbpf bpf_program__set_insns change is based on bpf-next/master
->     - perf changes do not apply on bpf-next/master so they are based on
->       perf/core ... however they can be merged only after we release
->       libbpf 0.8.0 with bpf_program__set_insns change, so we don't break
->       the dynamic linking
->       I'm sending perf changes now just for review, I'll resend them
->       once libbpf 0.8.0 is released
-> 
-> thanks,
-> jirka
-> 
-> 
-> [1] https://lore.kernel.org/bpf/CAEf4BzaiBO3_617kkXZdYJ8hS8YF--ZLgapNbgeeEJ-pY0H88g@mail.gmail.com/
-> ---
-> Jiri Olsa (1):
->       libbpf: Add bpf_program__set_insns function
-> 
->  tools/lib/bpf/libbpf.c   | 22 ++++++++++++++++++++++
->  tools/lib/bpf/libbpf.h   | 18 ++++++++++++++++++
->  tools/lib/bpf/libbpf.map |  1 +
->  3 files changed, 41 insertions(+)
-> 
-> Jiri Olsa (2):
->       perf tools: Register fallback libbpf section handler
->       perf tools: Rework prologue generation code
-> 
->  tools/perf/util/bpf-loader.c | 175 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------
->  1 file changed, 157 insertions(+), 18 deletions(-)
-
--- 
-
-- Arnaldo
