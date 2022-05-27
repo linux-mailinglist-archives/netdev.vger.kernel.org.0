@@ -2,148 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B118535D3A
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 11:22:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46E44535D2A
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 11:22:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237761AbiE0JMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 05:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58784 "EHLO
+        id S1349450AbiE0JMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 05:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350579AbiE0JLy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 05:11:54 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4246113C36F
-        for <netdev@vger.kernel.org>; Fri, 27 May 2022 02:08:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653642505; x=1685178505;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=C9nAhmJGVLFRsDfrnddwjcwKvsG0JoJ14Hik8F6vvqw=;
-  b=XbfaeHIszMutKueYzK34NdzFbhWZ3jnxMr0RnTLVB6/ke8j6iZm00p/0
-   xgv3+SnM1HSQD6SUTDFAyJkNAyIS1hJwCZPb8bJvfVT0PQ+tz28y4Pch0
-   M8r+2po0M0hHrcV39DPG2RWQRpabAye2jFdkII9JVh4Cg84cTZO3V1C8k
-   H0RFRO2PNFtRPGkgupWRHl1q1w4HFpLthDIHOT86F2Gmq7IV32grwO37o
-   eVkxLTMNNf1TaieNj58dDFEmgxRWshmPPFnChplsJnwkw9w0QAD2xC88Z
-   9Cd4EX+Nh+7nX1azg9I3/tONK0paAdhog2cwJ58/FYx0mZ9aLZ0SBFdjs
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="273240601"
-X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
-   d="scan'208";a="273240601"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 02:08:24 -0700
-X-IronPort-AV: E=Sophos;i="5.91,255,1647327600"; 
-   d="scan'208";a="603770259"
-Received: from zhoufuro-mobl.ccr.corp.intel.com (HELO [10.255.30.80]) ([10.255.30.80])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 02:08:21 -0700
-Message-ID: <e6cb8b03-4d3d-b64b-0aca-642fe53ecb90@linux.intel.com>
-Date:   Fri, 27 May 2022 17:08:18 +0800
+        with ESMTP id S237182AbiE0JMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 05:12:33 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47E569CFC
+        for <netdev@vger.kernel.org>; Fri, 27 May 2022 02:11:53 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=gjfang@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VEWf.f3_1653642706;
+Received: from i32f12254.sqa.eu95.tbsite.net(mailfrom:gjfang@linux.alibaba.com fp:SMTPD_---0VEWf.f3_1653642706)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 27 May 2022 17:11:50 +0800
+From:   Guoju Fang <gjfang@linux.alibaba.com>
+To:     gjfang@linux.alibaba.com
+Cc:     davem@davemloft.net, edumazet@google.com, eric.dumazet@gmail.com,
+        guoju.fgj@alibaba-inc.com, kuba@kernel.org, linyunsheng@huawei.com,
+        netdev@vger.kernel.org, pabeni@redhat.com, rgauguey@kalrayinc.com,
+        sjones@kalrayinc.com, vladimir.oltean@nxp.com, vray@kalrayinc.com,
+        will@kernel.org
+Subject: [PATCH v3 net] net: sched: add barrier to fix packet stuck problem for lockless qdisc
+Date:   Fri, 27 May 2022 17:11:43 +0800
+Message-Id: <20220527091143.120509-1-gjfang@linux.alibaba.com>
+X-Mailer: git-send-email 2.34.0
+In-Reply-To: <20220526070145.127019-1-gjfang@linux.alibaba.com>
+References: <20220526070145.127019-1-gjfang@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH net-next v5 09/11] igc: Add support for Frame Preemption
- verification
-Content-Language: en-US
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, vladimir.oltean@nxp.com, po.liu@nxp.com,
-        boon.leong.ong@intel.com, intel-wired-lan@lists.osuosl.org
-References: <20220520011538.1098888-1-vinicius.gomes@intel.com>
- <20220520011538.1098888-10-vinicius.gomes@intel.com>
-From:   Zhou Furong <furong.zhou@linux.intel.com>
-In-Reply-To: <20220520011538.1098888-10-vinicius.gomes@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +
-> +	struct delayed_work fp_verification_work;
-> +	unsigned long fp_start;
-> +	bool fp_received_smd_v;
-> +	bool fp_received_smd_r;
-> +	unsigned int fp_verify_cnt;
-> +	enum frame_preemption_state fp_tx_state;
-> +	bool fp_disable_verify;
+In qdisc_run_end(), the spin_unlock() only has store-release semantic,
+which guarantees all earlier memory access are visible before it. But
+the subsequent test_bit() may be reordered ahead of the spin_unlock(),
+and may cause a packet stuck problem.
 
-struct size would be smaller if add member to right place
+The concurrent operations can be described as below,
+         CPU 0                      |          CPU 1
+   qdisc_run_end()                  |     qdisc_run_begin()
+          .                         |           .
+ ----> /* may be reorderd here */   |           .
+|         .                         |           .
+|     spin_unlock()                 |         set_bit()
+|         .                         |         smp_mb__after_atomic()
+ ---- test_bit()                    |         spin_trylock()
+          .                         |          .
 
+Consider the following sequence of events:
+    CPU 0 reorder test_bit() ahead and see MISSED = 0
+    CPU 1 calls set_bit()
+    CPU 1 calls spin_trylock() and return fail
+    CPU 0 executes spin_unlock()
 
-> +	if (!netif_running(adapter->netdev))
-> +		return -ENOTCONN;
-> +
-> +	/* FIXME: rename this function to something less specific, as
-> +	 * it can be used outside XDP.
-> +	 */
-> +	ring = igc_xdp_get_tx_ring(adapter, cpu);
-> +	nq = txring_txq(ring);
-> +
-> +	skb = alloc_skb(IGC_FP_SMD_FRAME_SIZE, GFP_KERNEL);
-> +	if (!skb)
-> +		return -ENOMEM;
-> +
-if there is chance of NOMEM, move this before
-ring = igc_xdp_get_tx_ring(adapter, cpu);
+At the end of the sequence, CPU 0 calls spin_unlock() and does nothing
+because it see MISSED = 0. The skb on CPU 1 has beed enqueued but no one
+take it, until the next cpu pushing to the qdisc (if ever ...) will
+notice and dequeue it.
 
+So one explicit barrier is needed between spin_unlock() and test_bit()
+to ensure the correct order.
 
-> +static void igc_fp_verification_work(struct work_struct *work)
-> +{
-> +	struct delayed_work *dwork = to_delayed_work(work);
-> +	struct igc_adapter *adapter;
-> +	int err;
-> +
-> +	adapter = container_of(dwork, struct igc_adapter, fp_verification_work);
-> +
-please remove blank
+Fixes: 89837eb4b246 ("net: sched: add barrier to ensure correct ordering for lockless qdisc")
+Signed-off-by: Guoju Fang <gjfang@linux.alibaba.com>
+---
+V2 -> V3: Not split the Fixes tag across multiple lines
+V1 -> V2: Rewrite comments
+---
+ include/net/sch_generic.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-> +	if (adapter->fp_disable_verify)
-> +		goto done;
-> +
-> +	switch (adapter->fp_tx_state) {
-> +	case FRAME_PREEMPTION_STATE_START:
-> +		adapter->fp_received_smd_r = false;
-> +		err = igc_xmit_smd_frame(adapter, IGC_SMD_TYPE_SMD_V);
-> +		if (err < 0)
-> +			netdev_err(adapter->netdev, "Error sending SMD-V frame\n");
-> +
-> +		adapter->fp_tx_state = FRAME_PREEMPTION_STATE_SENT;
-state is SENT when send error?
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 9bab396c1f3b..8a8738642ca0 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -229,6 +229,9 @@ static inline void qdisc_run_end(struct Qdisc *qdisc)
+ 	if (qdisc->flags & TCQ_F_NOLOCK) {
+ 		spin_unlock(&qdisc->seqlock);
+ 
++		/* ensure ordering between spin_unlock() and test_bit() */
++		smp_mb();
++
+ 		if (unlikely(test_bit(__QDISC_STATE_MISSED,
+ 				      &qdisc->state)))
+ 			__netif_schedule(qdisc);
+-- 
+2.34.0
 
-> +		adapter->fp_start = jiffies;
-> +		schedule_delayed_work(&adapter->fp_verification_work, IGC_FP_TIMEOUT);
-> +		break;
-> +
-
-
-
-
-
-> +
-> +			if (adapter->fp_verify_cnt > IGC_MAX_VERIFY_CNT) {
-> +				adapter->fp_verify_cnt = 0;
-> +				adapter->fp_tx_state = FRAME_PREEMPTION_STATE_FAILED;
-> +				netdev_err(adapter->netdev,
-> +					   "Exceeded number of attempts for frame preemption verification\n");
-> +			} else {
-> +				adapter->fp_tx_state = FRAME_PREEMPTION_STATE_START;
-> +			}
-> +			schedule_delayed_work(&adapter->fp_verification_work, IGC_FP_TIMEOUT);
-> +		}
-> +
-> +		break;
-> +
-> +	case FRAME_PREEMPTION_STATE_FAILED:
-> +	case FRAME_PREEMPTION_STATE_DONE:
-miss default?
-
-> +		break;
-> +	}
-> +
