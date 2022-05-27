@@ -2,279 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6255F535713
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 02:31:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6B92535743
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 03:16:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231673AbiE0Aa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 20:30:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48144 "EHLO
+        id S231886AbiE0BQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 May 2022 21:16:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231130AbiE0Aa4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 20:30:56 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35BDD79823;
-        Thu, 26 May 2022 17:30:55 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-300beab2b76so31924667b3.13;
-        Thu, 26 May 2022 17:30:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=elAhUcObwS39lh683eW5heCcXmPEhxRMz3DBXgxXh2M=;
-        b=CBS7mjBjpPqYDkvZ0WwHMXyp+rrb87vDcuge2vvqwOUtirUtYAP2EdfR7XuC0joMTI
-         r2yAaCV8OAIOUCcZGT4QsaplueeCxBdrniz9LXBgDz+8Lyy6T/eMNKvhsEsRwahwzgez
-         LIssmvQdVrpQ2Cls1tnkK7Df9d1Y0nKTA9l9qxZBg7rZXb8YMqM9hrEEDN7sA/Iq9lr2
-         IvyFJQ+v6/35uscqaSJ/SyYAxFsCkkS26GyRbzNA6wU1s4ZD49uALpmSGL/dU6Lwe7Nk
-         W2WCKbK5NvgB3x1Dzd3bD9uE7HvFMp1T3jswbZz8NDvryOWefk3OK7zIF3bwCm4jBNhx
-         UEYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=elAhUcObwS39lh683eW5heCcXmPEhxRMz3DBXgxXh2M=;
-        b=0xr/anBohssf1sy4ICxO8iIUzCHLAi34DTGHejlv7bFs9Ec812KkslbR+5vYiki0SE
-         fg6nzO+3XhnFmNHNlfqmarNVQBr+j4qhbseXgdtZ+iB1SRptYBvdL3aP3jIOhE2WD+ow
-         a5ZafqRHmm3xXkE9BDfl5xsXUlNVlFSi/msz0xROgZVAtJLYqxupMT4EjC/jzQwGEJnn
-         R41Or+xPYOPmlCQUgs7n6FtYUcjLKCbgT4+w22wJoYSeMKDgMJNqyGOvoCUghPaocTXo
-         3z8/+TQW7Y9uXndCZh4sqCuYnELjoNr9EA+60ERHUzMf1zmeaePeqLY/StGxr6p3UijM
-         /2HQ==
-X-Gm-Message-State: AOAM532kDgIiXPOP9ZPukSd+29jcYHBs1UlDca8rRIB2xID+U2kK2edQ
-        ofIdOmyx8HyMVqxZxjTY/hbjio70gyVVZor/9q8=
-X-Google-Smtp-Source: ABdhPJwviyj3IkTwElbYE9H3XujG8OQkn3xbfyZh0KNIESdd+4iOJCPPlcBD5I90t2/KDB5Uen6ITGRWz1hvnDRHWtk=
-X-Received: by 2002:a81:5ad6:0:b0:300:3244:341 with SMTP id
- o205-20020a815ad6000000b0030032440341mr15471202ywb.191.1653611454269; Thu, 26
- May 2022 17:30:54 -0700 (PDT)
+        with ESMTP id S231819AbiE0BQQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 21:16:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9696F271;
+        Thu, 26 May 2022 18:16:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2020761CB5;
+        Fri, 27 May 2022 01:16:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CDA9C34116;
+        Fri, 27 May 2022 01:16:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653614174;
+        bh=3OBYAY/ttRUgYAlC1eiThaGMaCz44RoEL561Vc+b8wM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WWLaLjekoR9RLT01/AGKfzkLzbX0ZqQnEgHD7m9xpIKFnE8QW1c/m2eJuLfs6m5qr
+         b/+AWQFoz82mq4om+LUaPNpMWgWJUBdwHpxciwJaefeKaFXRkfO/dF6A5YpvS42wU/
+         K3ZwnWjdTtjRHou0Ijo9WQwaHZqQUVzQOAYg9TbNQmswucS/p5kJr/6CbFcj/MRmk3
+         9+qq/PEzpecNvNPDjqfHyP2ZengmijD6HBePI9OG4ulEm+xajDDjPViEJXyNbj29X3
+         LQZ2D8XlZx3xACwR0VQlye7m9g1xdWD4+dooD44dbDHAy8dpyP+4VeudkhhnTlQ1cT
+         +AaYdckUbFcMg==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 0FD7E4036D; Thu, 26 May 2022 22:16:11 -0300 (-03)
+Date:   Thu, 26 May 2022 22:16:11 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Ian Rogers <irogers@google.com>
+Subject: Re: [PATCHv2 0/3] perf tools: Fix prologue generation
+Message-ID: <YpAmW/BDq4346OaI@kernel.org>
+References: <20220510074659.2557731-1-jolsa@kernel.org>
 MIME-Version: 1.0
-References: <20220512135901.1377087-1-srinivas.neeli@xilinx.com>
- <CAMZ6Rq+z69CTY6Ec0n9d0-ri6pcyHtKH917M1eTD6hgkmyvGDQ@mail.gmail.com> <DM6PR02MB53868E201FAB1F01D01AAB25AFD99@DM6PR02MB5386.namprd02.prod.outlook.com>
-In-Reply-To: <DM6PR02MB53868E201FAB1F01D01AAB25AFD99@DM6PR02MB5386.namprd02.prod.outlook.com>
-From:   Vincent Mailhol <vincent.mailhol@gmail.com>
-Date:   Fri, 27 May 2022 09:30:41 +0900
-Message-ID: <CAMZ6RqLKQ-jmQfF7yq5dObpbzky6FcjEFw9acHmfLLhp2v4eXg@mail.gmail.com>
-Subject: Re: [PATCH] can: xilinx_can: Add Transmitter delay compensation (TDC)
- feature support
-To:     Srinivas Neeli <sneeli@xilinx.com>
-Cc:     "wg@grandegger.com" <wg@grandegger.com>,
-        "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Appana Durga Kedareswara Rao <appanad@xilinx.com>,
-        Srinivas Goud <sgoud@xilinx.com>,
-        Michal Simek <michals@xilinx.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        git <git@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220510074659.2557731-1-jolsa@kernel.org>
+X-Url:  http://acmel.wordpress.com
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri. 27 May 2022 at 00:51, Srinivas Neeli <sneeli@xilinx.com> wrote:
-> Hi Vincent,
->
-> > -----Original Message-----
-> > From: Vincent Mailhol <vincent.mailhol@gmail.com>
-> > Sent: Friday, May 13, 2022 6:54 AM
-> > To: Srinivas Neeli <sneeli@xilinx.com>
-> > Cc: wg@grandegger.com; mkl@pengutronix.de; davem@davemloft.net;
-> > edumazet@google.com; Appana Durga Kedareswara Rao
-> > <appanad@xilinx.com>; Srinivas Goud <sgoud@xilinx.com>; Michal Simek
-> > <michals@xilinx.com>; kuba@kernel.org; pabeni@redhat.com; linux-
-> > can@vger.kernel.org; netdev@vger.kernel.org; linux-arm-
-> > kernel@lists.infradead.org; linux-kernel@vger.kernel.org; git
-> > <git@xilinx.com>
-> > Subject: Re: [PATCH] can: xilinx_can: Add Transmitter delay compensation
-> > (TDC) feature support
-> >
-> > On Fri. 13 May 2022 at 07:30, Srinivas Neeli <srinivas.neeli@xilinx.com>
-> > wrote:
-> > > Added Transmitter delay compensation (TDC) feature support.
-> > > In the case of higher measured loop delay with higher baud rates,
-> > > observed bit stuff errors.
-> > > By enabling the TDC feature in a controller, will compensate for the
-> > > measure loop delay in the receive path.
-> > > TDC feature requires BRP values can be 1 or 2.
-> > > The current CAN framework does not limit the brp so while using TDC,
-> > > have to restrict BRP values.
-> > > Ex:
-> > > ip link set can0 type can tq 12 prop-seg 39 phase-seg1 20 phase-seg2
-> > > 20 sjw 20 dtq 12 dprop-seg 5 dphase-seg1 6 dphase-seg2 4 dsjw 4 fd on
-> > > loopback on tdco 12 tdc-mode auto
-> >
-> > Did you experience some cases in which you had BRP > 2 and saw
-> > transmission errors due to the absence of delay compensation? Could you
-> > show the calculated values?
-> > Usually, you start to observe but stuff error at high bitrates (e.g.
-> > ~5MBPS), and for such bitrates, time quanta has to be small which then
-> > results in a small BRP.
->
-> yes, we observed errors with higher baud rates(4 and 5 MBPS).
-> Observation:
-> BRPA 1Mbps Sampling 75%
-> BRPD 5MBPS Sampling 75%
-> On NXP PHY observed a delay of 160 ns. so observing the failure.
-> After enabling the TDC feature to work fine.
+Em Tue, May 10, 2022 at 09:46:56AM +0200, Jiri Olsa escreveu:
+> hi,
+> sending change we discussed some time ago [1] to get rid of
+> some deprecated functions we use in perf prologue code.
+> 
+> Despite the gloomy discussion I think the final code does
+> not look that bad ;-)
+> 
+> This patchset removes following libbpf functions from perf:
+>   bpf_program__set_prep
+>   bpf_program__nth_fd
+>   struct bpf_prog_prep_result
 
-Can you also share the results of:
+So, the first patch is already in torvalds/master, I tried applying the
+other two patches to my local perf/core, that already is merged with
+torvalds/master and:
 
-| ip --details link show can0
+[root@quaco ~]# perf test 42
+ 42: BPF filter                                                      :
+ 42.1: Basic BPF filtering                                           : FAILED!
+ 42.2: BPF pinning                                                   : FAILED!
+ 42.3: BPF prologue generation                                       : FAILED!
+[root@quaco ~]#
 
-for both the automatic calculation by the CAN framework and for your
-hand calculated values?
+I'll push my local perf/core to tmp.perf/core and continue tomorrow.
 
+Its failing around here:
 
-Thank you!
+Open Debuginfo file: /root/.cache/debuginfod_client/e1c3de4b4c5db158f2098e80f2bf9140e8cfbdb6/debuginfo
+Try to find probe point from debuginfo.
+Matched function: do_epoll_wait [3806bb5]
+Probe point found: do_epoll_wait+0
+Found 1 probe_trace_events.
+Looking at the vmlinux_path (8 entries long)
+symsrc__init: build id mismatch for vmlinux.
+symsrc__init: cannot get elf header.
+Using /proc/kcore for kernel data
+Using /proc/kallsyms for symbols
+do_epoll_wait is out of .text, skip it.
+Post processing failed or all events are skipped. (1)
+Probe point 'do_epoll_wait' not found.
+bpf_probe: failed to convert perf probe events
+Failed to add events selected by BPF
+test child finished with -1
+---- end ----
+BPF filter subtest 1: FAILED
 
-> > > Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
-> > > ---
-> > >  drivers/net/can/xilinx_can.c | 30 +++++++++++++++++++++++++-----
-> > >  1 file changed, 25 insertions(+), 5 deletions(-)
-> > >
-> > > diff --git a/drivers/net/can/xilinx_can.c
-> > > b/drivers/net/can/xilinx_can.c index e2b15d29d15e..7af518fbed02 100644
-> > > --- a/drivers/net/can/xilinx_can.c
-> > > +++ b/drivers/net/can/xilinx_can.c
-> > > @@ -1,7 +1,7 @@
-> > >  // SPDX-License-Identifier: GPL-2.0-or-later
-> > >  /* Xilinx CAN device driver
-> > >   *
-> > > - * Copyright (C) 2012 - 2014 Xilinx, Inc.
-> > > + * Copyright (C) 2012 - 2022 Xilinx, Inc.
-> > >   * Copyright (C) 2009 PetaLogix. All rights reserved.
-> > >   * Copyright (C) 2017 - 2018 Sandvik Mining and Construction Oy
-> > >   *
-> > > @@ -133,6 +133,8 @@ enum xcan_reg {
-> > >  #define XCAN_DLCR_BRS_MASK             0x04000000 /* BRS Mask in DLC */
-> > >
-> > >  /* CAN register bit shift - XCAN_<REG>_<BIT>_SHIFT */
-> > > +#define XCAN_BRPR_TDCO_SHIFT_CANFD     8  /* Transmitter Delay
-> > Compensation Offset */
-> >
-> > Having CANFD in the name is redundant (TDC implies CANFD).
-> > #define XCAN_BRPR_TDCO_SHIFT 8
-> update in V2.
->
-> >
-> > > +#define XCAN_BRPR_TDCE_SHIFT_CANFD     16 /* Transmitter Delay
-> > Compensation (TDC) Enable */
-> >
-> > Why not:
-> > #define XCAN_BRPR_TDC_ENABLE BIT(16)
-> update in V2.
->
-> >
-> > >  #define XCAN_BTR_SJW_SHIFT             7  /* Synchronous jump width */
-> > >  #define XCAN_BTR_TS2_SHIFT             4  /* Time segment 2 */
-> > >  #define XCAN_BTR_SJW_SHIFT_CANFD       16 /* Synchronous jump width
-> > */
-> > > @@ -259,7 +261,7 @@ static const struct can_bittiming_const
-> > xcan_bittiming_const_canfd2 = {
-> > >         .tseg2_min = 1,
-> > >         .tseg2_max = 128,
-> > >         .sjw_max = 128,
-> > > -       .brp_min = 2,
-> > > +       .brp_min = 1,
-> >
-> > Was there any reason to have brp_min = 2 in the first place?
-> > I think this change  should be a different patch. If the brp_min = 2 is just a
-> > typo, you might also want to backport it to stable branches.
->
-> On early silicon engineering samples we observed bit shrinking issue when we use brp =1 , hence we updated brp_min =2.
-> As in production silicon this issue is fixed we are planning to revert the patch.
+But:
 
-Great!
+[root@quaco ~]# grep do_epoll_wait /proc/kallsyms
+ffffffff973c2a30 t do_epoll_wait
+[root@quaco ~]#
 
-> > >         .brp_max = 256,
-> > >         .brp_inc = 1,
-> > >  };
-> > > @@ -272,11 +274,21 @@ static struct can_bittiming_const
-> > xcan_data_bittiming_const_canfd2 = {
-> > >         .tseg2_min = 1,
-> > >         .tseg2_max = 16,
-> > >         .sjw_max = 16,
-> > > -       .brp_min = 2,
-> > > +       .brp_min = 1,
-> > >         .brp_max = 256,
-> > >         .brp_inc = 1,
-> > >  };
-> > >
-> > > +/* Transmission Delay Compensation constants for CANFD2.0 and Versal
-> > > +*/ static const struct can_tdc_const xcan_tdc_const = {
-> > > +       .tdcv_min = 0,
-> > > +       .tdcv_max = 0, /* Manual mode not supported. */
-> >
-> > Right, had a look at the datasheet and xilinx indeed does not support setting
-> > TDCV.
-> > However, xilinx still has a TDCV register to report the measured transmission
-> > delay.
-> >
-> > Socket CAN's TDC framework provides can_priv::do_get_auto_tdcv() to
-> > report the measured value through the netlink interface:
-> > https://elixir.bootlin.com/linux/v5.17/source/include/linux/can/dev.h#L87
-> >
-> > Can you implement this call back function?
-> Will implement in V2.
->
-> >
-> > > +       .tdco_min = 0,
-> > > +       .tdco_max = 64,
-> > > +       .tdcf_min = 0, /* Filter window not supported */
-> > > +       .tdcf_max = 0,
-> > > +};
-> > > +
-> > >  /**
-> > >   * xcan_write_reg_le - Write a value to the device register little endian
-> > >   * @priv:      Driver private data structure
-> > > @@ -425,6 +437,11 @@ static int xcan_set_bittiming(struct net_device
-> > *ndev)
-> > >             priv->devtype.cantype == XAXI_CANFD_2_0) {
-> > >                 /* Setting Baud Rate prescalar value in F_BRPR Register */
-> > >                 btr0 = dbt->brp - 1;
-> > > +               if (can_tdc_is_enabled(&priv->can)) {
-> > > +                       btr0 = btr0 |
-> > > +                       (priv->can.tdc.tdco) << XCAN_BRPR_TDCO_SHIFT_CANFD |
-> > > +                       1 << XCAN_BRPR_TDCE_SHIFT_CANFD;
-> >
-> > I don't think the parenthesis around (priv->can.tdc.tdco) are needed.
-> Yes, will update.
-> >
-> >                        btr0 = btr0 |
-> >                        priv->can.tdc.tdco << XCAN_BRPR_TDCO_SHIFT |
-> >                       XCAN_BRPR_TDC_ENABLE
-> >
-> > (c.f. above for macro names)
-> >
-> > > +               }
-> > >
-> > >                 /* Setting Time Segment 1 in BTR Register */
-> > >                 btr1 = dbt->prop_seg + dbt->phase_seg1 - 1; @@
-> > > -1747,13 +1764,16 @@ static int xcan_probe(struct platform_device *pdev)
-> > >                 priv->can.data_bittiming_const =
-> > >                         &xcan_data_bittiming_const_canfd;
-> > >
-> > > -       if (devtype->cantype == XAXI_CANFD_2_0)
-> > > +       if (devtype->cantype == XAXI_CANFD_2_0) {
-> > >                 priv->can.data_bittiming_const =
-> > >                         &xcan_data_bittiming_const_canfd2;
-> > > +               priv->can.tdc_const = &xcan_tdc_const;
-> > > +       }
-> > >
-> > >         if (devtype->cantype == XAXI_CANFD ||
-> > >             devtype->cantype == XAXI_CANFD_2_0)
-> > > -               priv->can.ctrlmode_supported |= CAN_CTRLMODE_FD;
-> > > +               priv->can.ctrlmode_supported |= CAN_CTRLMODE_FD |
-> > > +                                               CAN_CTRLMODE_TDC_AUTO;
-> > >
-> > >         priv->reg_base = addr;
-> > >         priv->tx_max = tx_max;
+- Arnaldo
+ 
+> v2 changes:
+>   - use fallback section prog handler, so we don't need to
+>     use section prefix [Andrii]
+>   - realloc prog->insns array in bpf_program__set_insns [Andrii]
+>   - squash patch 1 from previous version with
+>     bpf_program__set_insns change [Daniel]
+>   - patch 3 already merged [Arnaldo]
+>   - added more comments
+> 
+>   meanwhile.. perf/core and bpf-next diverged, so:
+>     - libbpf bpf_program__set_insns change is based on bpf-next/master
+>     - perf changes do not apply on bpf-next/master so they are based on
+>       perf/core ... however they can be merged only after we release
+>       libbpf 0.8.0 with bpf_program__set_insns change, so we don't break
+>       the dynamic linking
+>       I'm sending perf changes now just for review, I'll resend them
+>       once libbpf 0.8.0 is released
+> 
+> thanks,
+> jirka
+> 
+> 
+> [1] https://lore.kernel.org/bpf/CAEf4BzaiBO3_617kkXZdYJ8hS8YF--ZLgapNbgeeEJ-pY0H88g@mail.gmail.com/
+> ---
+> Jiri Olsa (1):
+>       libbpf: Add bpf_program__set_insns function
+> 
+>  tools/lib/bpf/libbpf.c   | 22 ++++++++++++++++++++++
+>  tools/lib/bpf/libbpf.h   | 18 ++++++++++++++++++
+>  tools/lib/bpf/libbpf.map |  1 +
+>  3 files changed, 41 insertions(+)
+> 
+> Jiri Olsa (2):
+>       perf tools: Register fallback libbpf section handler
+>       perf tools: Rework prologue generation code
+> 
+>  tools/perf/util/bpf-loader.c | 175 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------
+>  1 file changed, 157 insertions(+), 18 deletions(-)
+
+-- 
+
+- Arnaldo
