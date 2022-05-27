@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE6C75359CE
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 09:07:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A191B5359D0
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 09:07:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345058AbiE0HFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 03:05:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42496 "EHLO
+        id S1344955AbiE0HGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 03:06:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344926AbiE0HFp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 03:05:45 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36925E278E;
-        Fri, 27 May 2022 00:05:40 -0700 (PDT)
+        with ESMTP id S1344997AbiE0HGB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 03:06:01 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C17ED8FC;
+        Fri, 27 May 2022 00:05:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1653635140; x=1685171140;
+  t=1653635159; x=1685171159;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=2+QyWHgpSaoljkbhS4MTjXOzmzlkFw8dFsY984H5Rqw=;
-  b=ks3h1TDNFcEI2XMnwQFsolJMUok+4TVtgvQVpm57P7ouzTDDjGzANz9z
-   5C06UnzKJvebdagOgIqpA8XXVU4ACi8GF3O8leBkvY2pxm+heThoiNq3d
-   W/Pvwppc+AfxWjXK7TZuunqP+MOgEeaI/OIVhNhNpltubDxpH3yVzD7hq
-   pRg2Sbro2AVRzr2eN9Yi9K9wLB/UVFC86Viz3z5sMR4g859T56UrOthTe
-   JjHTXq29Agkhb4bxcIkee0fqTJtYkrHZA+bH/XORVBudtkjLVXlrtGu9E
-   7jtLtDyX82XE6hTN50hiVZpNMR+96JwXEwS547S6ICmBfapfHKJO+fYc0
-   g==;
+  bh=4SWaC9gWE/iDiogcXxavwBo/qrYz9X2kmDYIdlo+yvk=;
+  b=fJmDmhhYerGG/BJpKmfFDSNR7P6kFJLQw7ql/iRqQdPikd9a8WfhK7Pz
+   jaHTWVdzlLbJfSO4+fCL0O5k/75Yuvg2bwb8Ph9yynta7vLbOhQAv2ivO
+   SjbiT8Xksm7adHMPDqsoUYFAC7H0pE9c7GoeDA5/0TvQTg0LG8+K30Zc+
+   NVYOpT1un/VUFwdIK7nwko11RaJ5Q2RmeuwNCNgGMlobqLeLtzg+ln4Em
+   wHqc3cV8oBz+VcYRwz1UWhjzrxN/QMc5GeyBLss3+TNcp9Lec6o3aMYEL
+   mt8vJ6O5CuLYFb2LwlCiwidaSK+oJkGyz3ouISt077gIb19tpxOJDtdhi
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="165953404"
+   d="scan'208";a="157812967"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 May 2022 00:05:39 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 May 2022 00:05:57 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 27 May 2022 00:05:39 -0700
+ 15.1.2375.17; Fri, 27 May 2022 00:05:55 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 27 May 2022 00:05:34 -0700
+ 15.1.2375.17 via Frontend Transport; Fri, 27 May 2022 00:05:51 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Woojung Huh <woojung.huh@microchip.com>,
@@ -50,9 +50,9 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         "Russell King" <linux@armlinux.org.uk>
-Subject: [RFC Patch net-next 01/17] net: dsa: microchip: ksz9477: cleanup the ksz9477_switch_detect
-Date:   Fri, 27 May 2022 12:33:42 +0530
-Message-ID: <20220527070358.25490-2-arun.ramadoss@microchip.com>
+Subject: [RFC Patch net-next 02/17] net: dsa: microchip: move switch chip_id detection to ksz_common
+Date:   Fri, 27 May 2022 12:33:43 +0530
+Message-ID: <20220527070358.25490-3-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220527070358.25490-1-arun.ramadoss@microchip.com>
 References: <20220527070358.25490-1-arun.ramadoss@microchip.com>
@@ -69,100 +69,330 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ksz9477_switch_detect performs the detecting the chip id from the
-location 0x00 and also check gigabit compatibility check & number of
-ports based on the register global_options0. To prepare the common ksz
-switch detect function, routine other than chip id read is moved to
-ksz9477_switch_init.
+KSZ87xx and KSZ88xx have chip_id representation at reg location 0. And
+KSZ9477 compatible switch and LAN937x switch have same chip_id detection
+at location 0x01 and 0x02. To have the common switch detect
+functionality for ksz switches, ksz_switch_detect function is
+introduced.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/ksz9477.c | 48 +++++++++++++----------------
- 1 file changed, 22 insertions(+), 26 deletions(-)
+ drivers/net/dsa/microchip/ksz8795.c     | 46 ---------------
+ drivers/net/dsa/microchip/ksz8795_reg.h | 13 -----
+ drivers/net/dsa/microchip/ksz9477.c     | 21 -------
+ drivers/net/dsa/microchip/ksz9477_reg.h |  1 -
+ drivers/net/dsa/microchip/ksz_common.c  | 78 +++++++++++++++++++++++--
+ drivers/net/dsa/microchip/ksz_common.h  | 19 +++++-
+ 6 files changed, 92 insertions(+), 86 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index ab40b700cf1a..7afc06681c02 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1362,12 +1362,30 @@ static u32 ksz9477_get_port_addr(int port, int offset)
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index 12a599d5e61a..927db57d02db 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -1424,51 +1424,6 @@ static u32 ksz8_get_port_addr(int port, int offset)
+ 	return PORT_CTRL_ADDR(port, offset);
+ }
  
- static int ksz9477_switch_detect(struct ksz_device *dev)
- {
--	u8 data8;
--	u8 id_hi;
--	u8 id_lo;
- 	u32 id32;
- 	int ret;
- 
-+	/* read chip id */
-+	ret = ksz_read32(dev, REG_CHIP_ID0__1, &id32);
-+	if (ret)
-+		return ret;
-+
-+	dev_dbg(dev->dev, "Switch detect: ID=%08x\n", id32);
-+
-+	dev->chip_id = id32 & 0x00FFFF00;
-+
-+	return 0;
-+}
-+
-+static int ksz9477_switch_init(struct ksz_device *dev)
-+{
-+	u8 data8;
-+	int ret;
-+
-+	dev->ds->ops = &ksz9477_switch_ops;
-+
-+	dev->port_mask = (1 << dev->info->port_cnt) - 1;
-+
- 	/* turn off SPI DO Edge select */
- 	ret = ksz_read8(dev, REG_SW_GLOBAL_SERIAL_CTRL_0, &data8);
- 	if (ret)
-@@ -1378,10 +1396,6 @@ static int ksz9477_switch_detect(struct ksz_device *dev)
- 	if (ret)
- 		return ret;
- 
+-static int ksz8_switch_detect(struct ksz_device *dev)
+-{
+-	u8 id1, id2;
+-	u16 id16;
+-	int ret;
+-
 -	/* read chip id */
--	ret = ksz_read32(dev, REG_CHIP_ID0__1, &id32);
+-	ret = ksz_read16(dev, REG_CHIP_ID0, &id16);
 -	if (ret)
 -		return ret;
- 	ret = ksz_read8(dev, REG_GLOBAL_OPTIONS, &data8);
- 	if (ret)
- 		return ret;
-@@ -1392,10 +1406,7 @@ static int ksz9477_switch_detect(struct ksz_device *dev)
- 	/* Default capability is gigabit capable. */
- 	dev->features = GBIT_SUPPORT;
- 
--	dev_dbg(dev->dev, "Switch detect: ID=%08x%02x\n", id32, data8);
--	id_hi = (u8)(id32 >> 16);
--	id_lo = (u8)(id32 >> 8);
--	if ((id_lo & 0xf) == 3) {
-+	if (dev->chip_id == KSZ9893_CHIP_ID) {
- 		/* Chip is from KSZ9893 design. */
- 		dev_info(dev->dev, "Found KSZ9893\n");
- 		dev->features |= IS_9893;
-@@ -1413,21 +1424,6 @@ static int ksz9477_switch_detect(struct ksz_device *dev)
- 		if (!(data8 & SW_GIGABIT_ABLE))
- 			dev->features &= ~GBIT_SUPPORT;
- 	}
 -
--	/* Change chip id to known ones so it can be matched against them. */
--	id32 = (id_hi << 16) | (id_lo << 8);
+-	id1 = id16 >> 8;
+-	id2 = id16 & SW_CHIP_ID_M;
 -
--	dev->chip_id = id32;
+-	switch (id1) {
+-	case KSZ87_FAMILY_ID:
+-		if ((id2 != CHIP_ID_94 && id2 != CHIP_ID_95))
+-			return -ENODEV;
+-
+-		if (id2 == CHIP_ID_95) {
+-			u8 val;
+-
+-			id2 = 0x95;
+-			ksz_read8(dev, REG_PORT_STATUS_0, &val);
+-			if (val & PORT_FIBER_MODE)
+-				id2 = 0x65;
+-		} else if (id2 == CHIP_ID_94) {
+-			id2 = 0x94;
+-		}
+-		break;
+-	case KSZ88_FAMILY_ID:
+-		if (id2 != CHIP_ID_63)
+-			return -ENODEV;
+-		break;
+-	default:
+-		dev_err(dev->dev, "invalid family id: %d\n", id1);
+-		return -ENODEV;
+-	}
+-	id16 &= ~0xff;
+-	id16 |= id2;
+-	dev->chip_id = id16;
 -
 -	return 0;
 -}
 -
--static int ksz9477_switch_init(struct ksz_device *dev)
--{
--	dev->ds->ops = &ksz9477_switch_ops;
+ static int ksz8_switch_init(struct ksz_device *dev)
+ {
+ 	struct ksz8 *ksz8 = dev->priv;
+@@ -1522,7 +1477,6 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
+ 	.freeze_mib = ksz8_freeze_mib,
+ 	.port_init_cnt = ksz8_port_init_cnt,
+ 	.shutdown = ksz8_reset_switch,
+-	.detect = ksz8_switch_detect,
+ 	.init = ksz8_switch_init,
+ 	.exit = ksz8_switch_exit,
+ };
+diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
+index 4109433b6b6c..50cdc2a09f5a 100644
+--- a/drivers/net/dsa/microchip/ksz8795_reg.h
++++ b/drivers/net/dsa/microchip/ksz8795_reg.h
+@@ -14,23 +14,10 @@
+ #define KS_PRIO_M			0x3
+ #define KS_PRIO_S			2
+ 
+-#define REG_CHIP_ID0			0x00
 -
--	dev->port_mask = (1 << dev->info->port_cnt) - 1;
+-#define KSZ87_FAMILY_ID			0x87
+-#define KSZ88_FAMILY_ID			0x88
 -
- 	return 0;
+-#define REG_CHIP_ID1			0x01
+-
+-#define SW_CHIP_ID_M			0xF0
+-#define SW_CHIP_ID_S			4
+ #define SW_REVISION_M			0x0E
+ #define SW_REVISION_S			1
+ #define SW_START			0x01
+ 
+-#define CHIP_ID_94			0x60
+-#define CHIP_ID_95			0x90
+-#define CHIP_ID_63			0x30
+-
+ #define KSZ8863_REG_SW_RESET		0x43
+ 
+ #define KSZ8863_GLOBAL_SOFTWARE_RESET	BIT(4)
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 7afc06681c02..7d3c8f6908b6 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -1360,23 +1360,6 @@ static u32 ksz9477_get_port_addr(int port, int offset)
+ 	return PORT_CTRL_ADDR(port, offset);
  }
  
+-static int ksz9477_switch_detect(struct ksz_device *dev)
+-{
+-	u32 id32;
+-	int ret;
+-
+-	/* read chip id */
+-	ret = ksz_read32(dev, REG_CHIP_ID0__1, &id32);
+-	if (ret)
+-		return ret;
+-
+-	dev_dbg(dev->dev, "Switch detect: ID=%08x\n", id32);
+-
+-	dev->chip_id = id32 & 0x00FFFF00;
+-
+-	return 0;
+-}
+-
+ static int ksz9477_switch_init(struct ksz_device *dev)
+ {
+ 	u8 data8;
+@@ -1407,8 +1390,6 @@ static int ksz9477_switch_init(struct ksz_device *dev)
+ 	dev->features = GBIT_SUPPORT;
+ 
+ 	if (dev->chip_id == KSZ9893_CHIP_ID) {
+-		/* Chip is from KSZ9893 design. */
+-		dev_info(dev->dev, "Found KSZ9893\n");
+ 		dev->features |= IS_9893;
+ 
+ 		/* Chip does not support gigabit. */
+@@ -1416,7 +1397,6 @@ static int ksz9477_switch_init(struct ksz_device *dev)
+ 			dev->features &= ~GBIT_SUPPORT;
+ 		dev->phy_port_cnt = 2;
+ 	} else {
+-		dev_info(dev->dev, "Found KSZ9477 or compatible\n");
+ 		/* Chip uses new XMII register definitions. */
+ 		dev->features |= NEW_XMII;
+ 
+@@ -1443,7 +1423,6 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
+ 	.freeze_mib = ksz9477_freeze_mib,
+ 	.port_init_cnt = ksz9477_port_init_cnt,
+ 	.shutdown = ksz9477_reset_switch,
+-	.detect = ksz9477_switch_detect,
+ 	.init = ksz9477_switch_init,
+ 	.exit = ksz9477_switch_exit,
+ };
+diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
+index 7a2c8d4767af..077e35ab11b5 100644
+--- a/drivers/net/dsa/microchip/ksz9477_reg.h
++++ b/drivers/net/dsa/microchip/ksz9477_reg.h
+@@ -25,7 +25,6 @@
+ 
+ #define REG_CHIP_ID2__1			0x0002
+ 
+-#define CHIP_ID_63			0x63
+ #define CHIP_ID_66			0x66
+ #define CHIP_ID_67			0x67
+ #define CHIP_ID_77			0x77
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 9ca8c8d7740f..9057cdb5971c 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -930,6 +930,72 @@ void ksz_port_stp_state_set(struct dsa_switch *ds, int port,
+ }
+ EXPORT_SYMBOL_GPL(ksz_port_stp_state_set);
+ 
++static int ksz_switch_detect(struct ksz_device *dev)
++{
++	u8 id1, id2;
++	u16 id16;
++	u32 id32;
++	int ret;
++
++	/* read chip id */
++	ret = ksz_read16(dev, REG_CHIP_ID0, &id16);
++	if (ret)
++		return ret;
++
++	id1 = FIELD_GET(SW_FAMILY_ID_M, id16);
++	id2 = FIELD_GET(SW_CHIP_ID_M, id16);
++
++	switch (id1) {
++	case KSZ87_FAMILY_ID:
++		if (id2 == CHIP_ID_95) {
++			u8 val;
++
++			dev->chip_id = KSZ8795_CHIP_ID;
++
++			ksz_read8(dev, KSZ8_PORT_STATUS_0, &val);
++			if (val & KSZ8_PORT_FIBER_MODE)
++				dev->chip_id = KSZ8765_CHIP_ID;
++		} else if (id2 == CHIP_ID_94) {
++			dev->chip_id = KSZ8794_CHIP_ID;
++		} else {
++			return -ENODEV;
++		}
++		break;
++	case KSZ88_FAMILY_ID:
++		if (id2 == CHIP_ID_63)
++			dev->chip_id = KSZ8830_CHIP_ID;
++		else
++			return -ENODEV;
++		break;
++	default:
++		ret = ksz_read32(dev, REG_CHIP_ID0, &id32);
++		if (ret)
++			return ret;
++
++		dev->chip_rev = FIELD_GET(SW_REV_ID_M, id32);
++		id32 &= ~0xFF;
++
++		switch (id32) {
++		case KSZ9477_CHIP_ID:
++		case KSZ9897_CHIP_ID:
++		case KSZ9893_CHIP_ID:
++		case KSZ9567_CHIP_ID:
++		case LAN9370_CHIP_ID:
++		case LAN9371_CHIP_ID:
++		case LAN9372_CHIP_ID:
++		case LAN9373_CHIP_ID:
++		case LAN9374_CHIP_ID:
++			dev->chip_id = id32;
++			break;
++		default:
++			dev_err(dev->dev,
++				"unsupported switch detected %x)\n", id32);
++			return -ENODEV;
++		}
++	}
++	return 0;
++}
++
+ struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
+ {
+ 	struct dsa_switch *ds;
+@@ -986,10 +1052,9 @@ int ksz_switch_register(struct ksz_device *dev,
+ 	mutex_init(&dev->alu_mutex);
+ 	mutex_init(&dev->vlan_mutex);
+ 
+-	dev->dev_ops = ops;
+-
+-	if (dev->dev_ops->detect(dev))
+-		return -EINVAL;
++	ret = ksz_switch_detect(dev);
++	if (ret)
++		return ret;
+ 
+ 	info = ksz_lookup_info(dev->chip_id);
+ 	if (!info)
+@@ -998,10 +1063,15 @@ int ksz_switch_register(struct ksz_device *dev,
+ 	/* Update the compatible info with the probed one */
+ 	dev->info = info;
+ 
++	dev_info(dev->dev, "found switch: %s, rev %i\n",
++		 dev->info->dev_name, dev->chip_rev);
++
+ 	ret = ksz_check_device_id(dev);
+ 	if (ret)
+ 		return ret;
+ 
++	dev->dev_ops = ops;
++
+ 	ret = dev->dev_ops->init(dev);
+ 	if (ret)
+ 		return ret;
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 8500eaedad67..d16c095cdefb 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -90,6 +90,7 @@ struct ksz_device {
+ 
+ 	/* chip specific data */
+ 	u32 chip_id;
++	u8 chip_rev;
+ 	int cpu_port;			/* port connected to CPU */
+ 	int phy_port_cnt;
+ 	phy_interface_t compat_interface;
+@@ -182,7 +183,6 @@ struct ksz_dev_ops {
+ 	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
+ 	void (*port_init_cnt)(struct ksz_device *dev, int port);
+ 	int (*shutdown)(struct ksz_device *dev);
+-	int (*detect)(struct ksz_device *dev);
+ 	int (*init)(struct ksz_device *dev);
+ 	void (*exit)(struct ksz_device *dev);
+ };
+@@ -353,6 +353,23 @@ static inline void ksz_regmap_unlock(void *__mtx)
+ #define PORT_RX_ENABLE			BIT(1)
+ #define PORT_LEARN_DISABLE		BIT(0)
+ 
++/* Switch ID Defines */
++#define REG_CHIP_ID0			0x00
++
++#define SW_FAMILY_ID_M			GENMASK(15, 8)
++#define KSZ87_FAMILY_ID			0x87
++#define KSZ88_FAMILY_ID			0x88
++
++#define KSZ8_PORT_STATUS_0		0x08
++#define KSZ8_PORT_FIBER_MODE		BIT(7)
++
++#define SW_CHIP_ID_M			GENMASK(7, 4)
++#define CHIP_ID_94			0x6
++#define CHIP_ID_95			0x9
++#define CHIP_ID_63			0x3
++
++#define SW_REV_ID_M			GENMASK(7, 4)
++
+ /* Regmap tables generation */
+ #define KSZ_SPI_OP_RD		3
+ #define KSZ_SPI_OP_WR		2
 -- 
 2.36.1
 
