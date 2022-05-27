@@ -2,48 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29B8353581E
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 05:50:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15E5C535829
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 06:01:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239339AbiE0Dtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 May 2022 23:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40126 "EHLO
+        id S239781AbiE0EAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 00:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229768AbiE0Dto (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 May 2022 23:49:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BF93B0D11;
-        Thu, 26 May 2022 20:49:44 -0700 (PDT)
+        with ESMTP id S229696AbiE0EAu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 00:00:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F72E27A8;
+        Thu, 26 May 2022 21:00:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C05B61D76;
-        Fri, 27 May 2022 03:49:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D748C385A9;
-        Fri, 27 May 2022 03:49:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9AF88B82281;
+        Fri, 27 May 2022 04:00:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9A33C385A9;
+        Fri, 27 May 2022 04:00:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653623382;
-        bh=D3GZP6fleTWhoFCBrTzOU6j74QipwUFxxLvVwr0pU/0=;
+        s=k20201202; t=1653624046;
+        bh=AIn4JDCvAfCC2uEkwjg1qq8LYA0cehvmuztjXF/NZcg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tJYPOCiwACHoA6gz2mr86oT4blc545XfmkckujqLvZZxC77zEMLzeH3PWJhMyd0aH
-         El1JGn7e16gh2ymjCcTCfLVRHobvGN6C3/Kb5K3JoZ9QUVNkmJWX7R0TySjsLu8p6S
-         tstrp0aLNOHigSU7TeBgKbGkPvQlxxsJqENYcGJBs8psmhkNOJq8d1OZdnQzFq8Lio
-         nJqc1TC2G+/H5QWMJWSG4q79d6a4Q/W4893B/TIl8AiJkmEoDwV1mPYIzzPpjZrhzH
-         AzO0wzzbUGGz34KkoYbQi1AlT6bDEHeCVA3wqixuy7cuN3LdhvMHUyFlBUgOLic5EZ
-         svVn5zKj6cIrw==
-Date:   Thu, 26 May 2022 20:49:41 -0700
+        b=aRsOSLBvnd62P0sGwVb67mpQvRy4aPsy1ClDRfM2GmGBhWWxCfVeafDNxmpiTs0WM
+         kUyVfzVnLYg+nAcs3fq+jsNRAfx+toFcYiz7qCVhD5B1gLWAYDxFQH1J8Jx9hMGN0A
+         UZISU+Ybd60FbtMKglpZ8+wdzDwIpHSk+4gO8DAysauLnnD0KF/xlVOYmE5rAoJ8aA
+         vFc4jSMkDkaqwsJQqMptP/AW2tMU8S6C5gIQrShcgFsL6lLHVsDYmohpKBfa3MRYIx
+         xpbZV4nKpSjO+m3vqkpTLelcgmDS1hZelYMjZqFoG4kugeSv2+Z73ZfnUELw9HMkro
+         abTGLhuKi6Itg==
+Date:   Thu, 26 May 2022 21:00:44 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Thomas Osterried <thomas@osterried.de>
-Cc:     Lu Wei <luwei32@huawei.com>, jreuter@yaina.de, ralf@linux-mips.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] ax25: merge repeat codes in
- ax25_dev_device_down()
-Message-ID: <20220526204941.0a56bf5d@kernel.org>
-In-Reply-To: <YoQj7eND7/2KSBFs@x-berg.in-berlin.de>
-References: <20220516062804.254742-1-luwei32@huawei.com>
-        <YoQj7eND7/2KSBFs@x-berg.in-berlin.de>
+To:     "Viorel Suman (OSS)" <viorel.suman@oss.nxp.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Luo Jie <luoj@codeaurora.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com, Viorel Suman <viorel.suman@nxp.com>
+Subject: Re: [PATCH] net: phy: at803x: disable WOL at probe
+Message-ID: <20220526210044.638128f6@kernel.org>
+In-Reply-To: <20220525103657.22384-1-viorel.suman@oss.nxp.com>
+References: <20220525103657.22384-1-viorel.suman@oss.nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,17 +59,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 May 2022 00:38:37 +0200 Thomas Osterried wrote:
-> 1. We need time for questions and discussions
-> 
-> In the past, we had several problems with patches that went upstream which
-> obviously not have been tested.
-> We have several requests by our community at linux-hams, that we need
-> to have a chance to read a patch proposal, and have time to test it,
-> before things become worse.
+On Wed, 25 May 2022 13:36:57 +0300 Viorel Suman (OSS) wrote:
+> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+> index 73926006d319..6277d1b1d814 100644
+> --- a/drivers/net/phy/at803x.c
+> +++ b/drivers/net/phy/at803x.c
+> @@ -443,10 +443,10 @@ static int at803x_set_wol(struct phy_device *phydev,
+>  		AT803X_LOC_MAC_ADDR_0_15_OFFSET,
+>  	};
+>  
+> -	if (!ndev)
+> -		return -ENODEV;
+> -
+>  	if (wol->wolopts & WAKE_MAGIC) {
+> +		if (!ndev)
+> +			return -ENODEV;
 
-Any input on:
+Please move the ndev variable into the scope.
+It'll make it clear that it can't be used elsewhere
+in this function.
 
-https://patchwork.kernel.org/project/netdevbpf/patch/20220525112850.102363-1-duoming@zju.edu.cn/
+>  		mac = (const u8 *) ndev->dev_addr;
+>  
+>  		if (!is_valid_ether_addr(mac))
+> @@ -857,6 +857,9 @@ static int at803x_probe(struct phy_device *phydev)
+>  	if (phydev->drv->phy_id == ATH8031_PHY_ID) {
+>  		int ccr = phy_read(phydev, AT803X_REG_CHIP_CONFIG);
+>  		int mode_cfg;
+> +		struct ethtool_wolinfo wol = {
+> +			.wolopts = 0,
+> +		};
+>  
+>  		if (ccr < 0)
+>  			goto err;
+> @@ -872,6 +875,13 @@ static int at803x_probe(struct phy_device *phydev)
+>  			priv->is_fiber = true;
+>  			break;
+>  		}
+> +
+> +		/* Disable WOL by default */
+> +		ret = at803x_set_wol(phydev, &wol);
+> +		if (ret < 0) {
+> +			phydev_err(phydev, "failed to disable WOL on probe: %d\n", ret);
+> +			return ret;
 
-?
+Don't you need to goto err; here?
+
+> +		}
+>  	}
+>  
+>  	return 0;
