@@ -2,65 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34A57535A87
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 09:36:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2BDB535A85
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 09:35:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347746AbiE0Hf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 03:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52752 "EHLO
+        id S243444AbiE0HfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 03:35:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347845AbiE0Hfw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 03:35:52 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56624FC4F1;
-        Fri, 27 May 2022 00:35:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653636941; x=1685172941;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6v2EmsRePZ1dhjddWsHy3e8Q/iX3QjOW2uXTXpcHfg8=;
-  b=FD/lMGRwfyf/qpa3U4vF95/npq4FFug47A1ps1Q+cOZZPOUgLO9uvJQj
-   wFeR4E2hUOZGMWU6vk7uoVl7Em0Ow6Ndw1t69qPLSp3+DJ9zKDEfkpHc9
-   CTodbnx3nbSnR+3MzNt/BOsxenJcNPqK3OCQQqs1Epq9epzCsB1D1wjbp
-   LxMZlYsSWKxEP+dtcDe0oNWOGlPWxRBjXnBc442BC9qhi2YU+IqzE1244
-   YICNramoMUb4OuJUz6hhI5Lz1Y0dG2GHHMW9pu3qPC4Thzk+RaFP85kTe
-   m83tyt6QJfAiS8YstpcmmK1mZT9wFQBjwZBDvgnTrQpIgJaljcXPsy/2O
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10359"; a="335059202"
-X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="335059202"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2022 00:35:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,254,1647327600"; 
-   d="scan'208";a="550032971"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 27 May 2022 00:35:19 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nuUVC-0004WV-Gl;
-        Fri, 27 May 2022 07:35:18 +0000
-Date:   Fri, 27 May 2022 15:34:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com, pabeni@redhat.com, pablo@netfilter.org,
-        fw@strlen.de, netfilter-devel@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
-        memxor@gmail.com, yhs@fb.com
-Subject: Re: [PATCH v4 bpf-next 06/14] bpf: Whitelist some fields in nf_conn
- for BPF_WRITE
-Message-ID: <202205271522.W0HxUVz1-lkp@intel.com>
-References: <2954ab26de09afeecf3a56ba93624f9629072102.1653600578.git.lorenzo@kernel.org>
+        with ESMTP id S241354AbiE0HfP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 03:35:15 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38928F749E
+        for <netdev@vger.kernel.org>; Fri, 27 May 2022 00:35:14 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id z11so3876112pjc.3
+        for <netdev@vger.kernel.org>; Fri, 27 May 2022 00:35:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Gb3zDFV9H+CHGG21xlS3jy0JJ5srdRQ7fNU8vIFlsFk=;
+        b=IyLxRp1mE9Et2lxydx1HPhnWe6DCL7WQy7D5A4YpMUnrflrb5Hiq2ncgVKQXaeUG0P
+         OvI2Jh0vueBWfpXSdRpYFTufDrmHUwIn+L0htDonTuGb+6wTiDbWSP1QEM/0vSZhg//L
+         e/fesYXFPVmRUZcAwt6RYGO/iMF1BYVNS47r131t8pJofG0lvbO2fDqABq5hFYO3g7ku
+         OThkgLBzZzr6BjYTYAokDR5eMHWU9tYlolgm+UhX0JuSeEcZwQNIeaUxiYXNS1QzSFdM
+         7HMNCnDf4AJQl+lmc6Ig6aZpdecCj5f2K5C6NjpgLwzQTRCNzophenbmQn/JlyRb2mHZ
+         nwyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Gb3zDFV9H+CHGG21xlS3jy0JJ5srdRQ7fNU8vIFlsFk=;
+        b=Obffk2fKMwNRS/YiO2KDIEvRVCxL7bvo7mdj3UZEk/Iqb8gI2+PlywxSSFFmqjPI/p
+         GdT4/f+zPYoPhFFqhfuTkTG+F7UEnFyMdyJD9PLd+3T7bWj14uSkKQAnOG9GR4iwewtD
+         YOrNm9z/EmRGBeMe8R93kbHARfQHcQhZYm0KhSXRKy5y0AUtbGb/kMxvgnJJKlLlnqj4
+         zdzmvibGBNUh2vLAGMNXNG4K3ZfNDVx2xDw0VmHaA7THR8ng/o6qNbrFGeaRdE24RCVg
+         XFHRjRNiFgVHR1EzA3pTgwQEomr6De1exfYHA0a9hJxfLYsKMU+k3o7IRD0PNrlTFl8S
+         xz0Q==
+X-Gm-Message-State: AOAM533J/ErRgNFx1GPfKG7nWMd9nCGQoftAvxKDZWEFFGQ5BXPwBEeR
+        MCGExgFyIjX9DIBmB7H4SThH7VMxypGTrQe1uNqBzg==
+X-Google-Smtp-Source: ABdhPJw62TEM52pirxa8VD09mT1OBlEzVQWoJlfF2xpk/wGrpzAjxoAYWL4kPHvBmJ5aNWUYCtrIJHogrA12d6+IRHo=
+X-Received: by 2002:a17:902:ee52:b0:161:96bc:da8f with SMTP id
+ 18-20020a170902ee5200b0016196bcda8fmr41431829plo.25.1653636913616; Fri, 27
+ May 2022 00:35:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2954ab26de09afeecf3a56ba93624f9629072102.1653600578.git.lorenzo@kernel.org>
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+References: <20220413143434.527-1-aajith@arista.com> <350f6a02-2975-ac1b-1c9d-ab738722a9fe@kernel.org>
+ <CAOvjArTAce_68CkoUff_=Hi+mr731dsWcQdEbaev4xaMDFZNug@mail.gmail.com> <5f189615-8701-e2ca-d9a6-d6037f8799aa@kernel.org>
+In-Reply-To: <5f189615-8701-e2ca-d9a6-d6037f8799aa@kernel.org>
+From:   Arun Ajith S <aajith@arista.com>
+Date:   Fri, 27 May 2022 13:05:01 +0530
+Message-ID: <CAOvjArT+0Os_LBcAoZ778OYXZCw3N6WhbPG8ANnNGV=Ms-QStQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v3] net/ipv6: Introduce accept_unsolicited_na
+ knob to implement router-side changes for RFC9131
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
+        corbet@lwn.net, prestwoj@gmail.com, gilligan@arista.com,
+        noureddine@arista.com, gk@arista.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -69,64 +70,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Lorenzo,
+On Sat, May 21, 2022 at 7:30 AM David Ahern <dsahern@kernel.org> wrote:
+>
+> On 5/20/22 1:19 AM, Arun Ajith S wrote:
+> > On Thu, Apr 14, 2022 at 3:37 AM David Ahern <dsahern@kernel.org> wrote:
+> >>
+> >> On 4/13/22 8:34 AM, Arun Ajith S wrote:
+> >>> diff --git a/tools/testing/selftests/net/ndisc_unsolicited_na_test.py b/tools/testing/selftests/net/ndisc_unsolicited_na_test.py
+> >>> new file mode 100755
+> >>> index 000000000000..f508657ee126
+> >>> --- /dev/null
+> >>> +++ b/tools/testing/selftests/net/ndisc_unsolicited_na_test.py
+> >>> @@ -0,0 +1,255 @@
+> >>> +#!/bin/bash
+> >>
+> >> that file name suffix should be .sh since it is a bash script; not .py
+> >>
+> >> other than that looks good to me.
+> >>
+> >> Reviewed-by: David Ahern <dsahern@kernel.org>
+> >
+> > Hi David,
+> >
+> > It has been pointed out to me that I might have read RFC9131 in a
+> > narrower sense than what was intended.
+> > The behavior of adding a new entry in the neighbour cache on receiving
+> > a NA if none exists presently
+> > shouldn't be limited to unsolicited NAs like in my original patch,
+> > rather it should extend to all NAs.
+> >
+> > I am quoting from the RFC below
+> >
+> >    |  When a valid Neighbor Advertisement is received (either solicited
+> >    |  or unsolicited), the Neighbor Cache is searched for the target's
+> >    |  entry.  If no entry exists:
+> >    |
+> >    |  *  Hosts SHOULD silently discard the advertisement.  There is no
+> >    |     need to create an entry if none exists, since the recipient has
+> >    |     apparently not initiated any communication with the target.
+> >    |
+> >    |  *  Routers SHOULD create a new entry for the target address with
+> >    |     the link-layer address set to the Target Link-Layer Address
+> >    |     Option (if supplied).  The entry's reachability state MUST be
+> >    |     set to STALE.  If the received Neighbor Advertisement does not
+> >    |     contain the Target Link-Layer Address Option, the advertisement
+> >    |     SHOULD be silently discarded.
+> >
+> > I want to fix this, but this would mean the sysctl name
+> > accept_unsolicited_na is no longer appropriate
+> > I see that the net-next window for 5.19 is still open and changing the
+> > sysctl name
+> > wouldn't mean changing an existing interface.
+> > I was thinking of renaming the sysctl to accept_untracked_na to
+> > highlight that we are accepting NAs even if there is
+> > no corresponding entry tracked in the neighbor cache.
+> >
+> > Also, there's an error in my comment, where I say "pass up the stack"
+> > as we don't pass NAs up the stack.
+> > The comment can be updated as:
+> >         /* RFC 9131 updates original Neighbour Discovery RFC 4861.
+> >          * NAs with Target LL Address option without a corresponding
+> >          * entry in the neighbour cache can now create a STALE neighbour
+> >          * cache entry on routers.
+> >          *
+> >          *   entry accept  fwding  solicited        behaviour
+> >          * ------- ------  ------  ---------    ----------------------
+> >          * present      X       X         0     Set state to STALE
+> >          * present      X       X         1     Set state to REACHABLE
+> >          *  absent      0       X         X     Do nothing
+> >          *  absent      1       0         X     Do nothing
+> >          *  absent      1       1         X     Add a new STALE entry
+> >          */
+> >
+> > In summary
+> > 1. accept=0 keeps original(5.18) behavior for all cases.
+> > 2. accept=1 changes original behavior for entry=asbent, fwding=1 case
+> > provided the NA had specified target link-layer address.
+> >
+> > Please let me know what you think.
+> >
+>
+> Changes can be made until it is in a released kernel to users. This
+> feature has many weeks before it hits that level.
 
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on bpf-next/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Lorenzo-Bianconi/net-netfilter-add-kfunc-helper-to-update-ct-timeout/20220527-053913
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220527/202205271522.W0HxUVz1-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 134d7f9a4b97e9035150d970bd9e376043c4577e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/c346565af9b023d9231ca8fca2e1b8c66a782f84
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Lorenzo-Bianconi/net-netfilter-add-kfunc-helper-to-update-ct-timeout/20220527-053913
-        git checkout c346565af9b023d9231ca8fca2e1b8c66a782f84
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash net/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> net/core/filter.c:10479:9: error: call to undeclared function 'btf_struct_access'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           return btf_struct_access(log, btf, t, off, size, atype, next_btf_id, flag);
-                  ^
-   1 error generated.
-
-
-vim +/btf_struct_access +10479 net/core/filter.c
-
- 10459	
- 10460	static int xdp_tc_btf_struct_access(struct bpf_verifier_log *log,
- 10461					    const struct btf *btf,
- 10462					    const struct btf_type *t, int off, int size,
- 10463					    enum bpf_access_type atype,
- 10464					    u32 *next_btf_id, enum bpf_type_flag *flag)
- 10465	{
- 10466		int ret;
- 10467	
- 10468		if (atype == BPF_READ || !READ_ONCE(nf_conn_btf_struct_access))
- 10469			goto end;
- 10470		mutex_lock(&nf_conn_btf_struct_access_mtx);
- 10471		if (!nf_conn_btf_struct_access)
- 10472			goto end_unlock;
- 10473		ret = nf_conn_btf_struct_access(log, btf, t, off, size, atype, next_btf_id, flag);
- 10474		mutex_unlock(&nf_conn_btf_struct_access_mtx);
- 10475		return ret;
- 10476	end_unlock:
- 10477		mutex_unlock(&nf_conn_btf_struct_access_mtx);
- 10478	end:
- 10479		return btf_struct_access(log, btf, t, off, size, atype, next_btf_id, flag);
- 10480	}
- 10481	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks, I have made the proposed changes here:
+https://patchwork.kernel.org/project/netdevbpf/patch/20220527073111.14336-1-aajith@arista.com/
