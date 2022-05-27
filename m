@@ -2,87 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E29D3535D3F
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 11:22:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF15B535D1E
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 11:22:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350017AbiE0JUh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 05:20:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
+        id S1349348AbiE0JVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 05:21:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241442AbiE0JUb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 05:20:31 -0400
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C93297A83D;
-        Fri, 27 May 2022 02:20:30 -0700 (PDT)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        pabeni@redhat.com
-Subject: [PATCH net 4/4] netfilter: nf_tables: set element extended ACK reporting support
-Date:   Fri, 27 May 2022 11:20:23 +0200
-Message-Id: <20220527092023.327441-5-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220527092023.327441-1-pablo@netfilter.org>
-References: <20220527092023.327441-1-pablo@netfilter.org>
+        with ESMTP id S231964AbiE0JVH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 05:21:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECF236AA6B;
+        Fri, 27 May 2022 02:21:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A8F55B823D0;
+        Fri, 27 May 2022 09:21:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E4F2C385A9;
+        Fri, 27 May 2022 09:20:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653643262;
+        bh=ez+vHDC1JZcB/q4Ew/Nyp1xMVHDbgDrO5Einjt3rI1Y=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=Fp0qRcCM5reRtgw54xqvPVkW6BPvu4O4gz4OU03NnufzAV4is8i2DjZoOq1zQb8c2
+         UjvtzMWfTZC8s2apsETWVIzqv60bTNo3unCIl+va6LKfel6wdoK0jx2cNL6O3iwWJv
+         n3pwSTz7j5c40e52EJizBgJoxqwF//PPnf4CsBYbn00yREr6BRobJQZAMAsFI808RS
+         Mp42fs4uyS5Zp3R4sXMzZFgXAxpWSam3vEuKwagyq2yYpzF7MhZLOZjIELWLiVEuHj
+         gnt5g/ARK2DT3sp/hzSbxY/I/BOOZ2rfhGVrITvAdA0VoQ3aFzNMsstZOqvkjLOCcf
+         PoCZ35692YRRA==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, torvalds@linux-foundation.org
+Subject: Re: mainline build failure due to c1918196427b ("iwlwifi: pcie: simplify MSI-X cause mapping")
+References: <YpCWIlVFd7JDPfT+@debian>
+Date:   Fri, 27 May 2022 12:20:55 +0300
+In-Reply-To: <YpCWIlVFd7JDPfT+@debian> (Sudip Mukherjee's message of "Fri, 27
+        May 2022 10:13:06 +0100")
+Message-ID: <875ylrqqko.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Report the element that causes problems via netlink extended ACK for set
-element commands.
+Sudip Mukherjee <sudipm.mukherjee@gmail.com> writes:
 
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nf_tables_api.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+> The latest mainline kernel branch fails to build for mips allmodconfig
+> with the error:
+>
+> drivers/net/wireless/intel/iwlwifi/pcie/trans.c:1093: error: "CAUSE" redefined [-Werror]
+>  1093 | #define CAUSE(reg, mask)                                                \
+>       | 
+> In file included from ./arch/mips/include/asm/ptrace.h:19,
+>                  from ./include/linux/sched/signal.h:14,
+>                  from ./include/linux/rcuwait.h:6,
+>                  from ./include/linux/percpu-rwsem.h:7,
+>                  from ./include/linux/fs.h:33,
+>                  from ./arch/mips/include/asm/elf.h:12,
+>                  from ./include/linux/elf.h:6,
+>                  from ./include/linux/module.h:19,
+>                  from ./include/linux/device/driver.h:21,
+>                  from ./include/linux/device.h:32,
+>                  from ./include/linux/pci.h:37,
+>                  from drivers/net/wireless/intel/iwlwifi/pcie/trans.c:7:
+> ./arch/mips/include/uapi/asm/ptrace.h:18: note: this is the location of the previous definition
+>    18 | #define CAUSE           65
+>
+> git bisect pointed to c1918196427b ("iwlwifi: pcie: simplify MSI-X cause mapping")
+>
+> And, reverting it on top of mainline branch has fixed the build failure.
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index f296dfe86b62..f4f1d0a2da43 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5348,8 +5348,10 @@ static int nf_tables_getsetelem(struct sk_buff *skb,
- 
- 	nla_for_each_nested(attr, nla[NFTA_SET_ELEM_LIST_ELEMENTS], rem) {
- 		err = nft_get_set_elem(&ctx, set, attr);
--		if (err < 0)
-+		if (err < 0) {
-+			NL_SET_BAD_ATTR(extack, attr);
- 			break;
-+		}
- 	}
- 
- 	return err;
-@@ -6126,8 +6128,10 @@ static int nf_tables_newsetelem(struct sk_buff *skb,
- 
- 	nla_for_each_nested(attr, nla[NFTA_SET_ELEM_LIST_ELEMENTS], rem) {
- 		err = nft_add_set_elem(&ctx, set, attr, info->nlh->nlmsg_flags);
--		if (err < 0)
-+		if (err < 0) {
-+			NL_SET_BAD_ATTR(extack, attr);
- 			return err;
-+		}
- 	}
- 
- 	if (nft_net->validate_state == NFT_VALIDATE_DO)
-@@ -6397,8 +6401,10 @@ static int nf_tables_delsetelem(struct sk_buff *skb,
- 
- 	nla_for_each_nested(attr, nla[NFTA_SET_ELEM_LIST_ELEMENTS], rem) {
- 		err = nft_del_setelem(&ctx, set, attr);
--		if (err < 0)
-+		if (err < 0) {
-+			NL_SET_BAD_ATTR(extack, attr);
- 			break;
-+		}
- 	}
- 	return err;
- }
+We have a fix:
+
+iwlwifi: pcie: rename CAUSE macro
+
+https://patchwork.kernel.org/project/linux-wireless/patch/20220523220300.682be2029361.I283200b18da589a975a284073dca8ed001ee107a@changeid/
+
+It's marked as accepted but I don't know where it's applied to, Gregory?
+This is failing the build, should Linus apply the fix directly to his
+tree?
+
 -- 
-2.30.2
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
