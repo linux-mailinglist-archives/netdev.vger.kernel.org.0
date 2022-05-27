@@ -2,128 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F3D05362A7
-	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 14:38:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33DF25362C3
+	for <lists+netdev@lfdr.de>; Fri, 27 May 2022 14:41:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348488AbiE0MiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 08:38:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54164 "EHLO
+        id S1352308AbiE0MlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 08:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244530AbiE0MiD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 08:38:03 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5D3F1A8E21;
-        Fri, 27 May 2022 05:20:59 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id s14so3995785plk.8;
-        Fri, 27 May 2022 05:20:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:reply-to:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=iJRtC6FZ8/ulUwIgZS39WaHh+o9Ilrp1wW7JFepItc0=;
-        b=qSLrw/xH/l+UVkirRAZz/8FZ0ZZjL5uSuxHX7LIvFmTyb2UbiCPcMLJ7FPei3UtAUG
-         /ngnpOH2XTctk2kEZnq1GlxnsaUo07pYEaINTbsCgqrOHFJQt24gZQ+ILHVpJtEzyjME
-         4UrYxkBjVTiElekXp+gzuW+XAGU6/RtkFdOXe+8dCI4p/cXb8vCquU8DfILasd9urWSo
-         KHl1WoMhA+RFZrgD0SzbVWJBhfTAXtdoOWgI9FuBo/sPpuLmHrpwM/ULSW9MXKoel/hj
-         SOkK23tv+gEHbYe80ZKZG6/zw7Y4B7GfXZTNIaeke82Up93gcA/IDSi6cSpXHo/eaf+S
-         8+fw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:reply-to
-         :subject:content-language:to:cc:references:from:organization
-         :in-reply-to:content-transfer-encoding;
-        bh=iJRtC6FZ8/ulUwIgZS39WaHh+o9Ilrp1wW7JFepItc0=;
-        b=IadmFGgIBN5MiOuyC90KPCx7/qMyYhSEPcE7+u2jVfyPyYS3b32xJ/DtgLYnpqyBhL
-         YOJwsGcQ+bi/pT3hptDW7HCRdS52SeM1J0OKI4NCDz7JZhfrCXauGqmE0c7Qy3ksG3g5
-         GcdGTfPUq4gsfxpVpDo+9tMyZVzvZ6bH6EhZgplvV/B/mH1l+Cg1Q5pGA+ClevVacl4b
-         r1Ap/vD7Csw9kKsst8U40kOlYOZb59ciTEQr+ra5KeR6o7z1CQvPhBrCChKwQE51FvvW
-         fHeKk3tj+vI/+rqzKs68c4fE0w/zSO3+SlYJanBCYbmXgRNcgE316MUpfqJutsVvNmlJ
-         rruA==
-X-Gm-Message-State: AOAM532neNjBGPbbwBT1Tn4oVcnf/E6ynMWF14+VNqBovPIrVPA1xMJA
-        5rFc8Jz7F82eoREgWNfbnpU=
-X-Google-Smtp-Source: ABdhPJyhM4+yaDnivdy5jmDUaKkUnBpSnlKSW9KCRZAyRvH55Ju8bIw6KCyC4TQtzI1iKBxbIA25WA==
-X-Received: by 2002:a17:903:2305:b0:163:64c7:f9ff with SMTP id d5-20020a170903230500b0016364c7f9ffmr11636415plh.46.1653654059447;
-        Fri, 27 May 2022 05:20:59 -0700 (PDT)
-Received: from ?IPV6:2404:f801:0:5:8000::597? ([2404:f801:9000:18:efec::597])
-        by smtp.gmail.com with ESMTPSA id c11-20020a170902d48b00b0015ea8b4b8f3sm3463974plg.263.2022.05.27.05.20.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 May 2022 05:20:58 -0700 (PDT)
-Message-ID: <56243d2b-d7f6-9e45-d5fd-3af7767d52e3@gmail.com>
-Date:   Fri, 27 May 2022 20:20:50 +0800
+        with ESMTP id S1353162AbiE0MkO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 08:40:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B950B1C920;
+        Fri, 27 May 2022 05:30:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 728C7B823D0;
+        Fri, 27 May 2022 12:30:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 903ADC385A9;
+        Fri, 27 May 2022 12:30:45 +0000 (UTC)
+Date:   Fri, 27 May 2022 08:30:43 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org
+Subject: Re: [PATCH v4] ftrace: Add FTRACE_MCOUNT_MAX_OFFSET to avoid adding
+ weak function
+Message-ID: <20220527083043.022e8e36@gandalf.local.home>
+In-Reply-To: <20220526141912.794c2786@gandalf.local.home>
+References: <20220526141912.794c2786@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Reply-To: tiala@microsoft.com
-Subject: Re: [RFC PATCH V3 2/2] net: netvsc: Allocate per-device swiotlb
- bounce buffer for netvsc
-Content-Language: en-US
-To:     Dexuan Cui <decui@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-Cc:     Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        vkuznets <vkuznets@redhat.com>,
-        "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
-        "hch@lst.de" <hch@lst.de>,
-        "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
-        "andi.kleen@intel.com" <andi.kleen@intel.com>,
-        "kirill.shutemov" <kirill.shutemov@intel.com>
-References: <20220526120113.971512-1-ltykernel@gmail.com>
- <20220526120113.971512-3-ltykernel@gmail.com>
- <BYAPR21MB12706372826A3ABAEF42E716BFD99@BYAPR21MB1270.namprd21.prod.outlook.com>
-From:   Tianyu Lan <ltykernel@gmail.com>
-Organization: Microsft
-In-Reply-To: <BYAPR21MB12706372826A3ABAEF42E716BFD99@BYAPR21MB1270.namprd21.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 26 May 2022 14:19:12 -0400
+Steven Rostedt <rostedt@goodmis.org> (by way of Steven Rostedt
+<rostedt@goodmis.org>) wrote:
+
+> +++ b/kernel/trace/ftrace.c
+> @@ -3654,6 +3654,31 @@ static void add_trampoline_func(struct seq_file *m, struct ftrace_ops *ops,
+>  		seq_printf(m, " ->%pS", ptr);
+>  }
+>  
+> +#ifdef FTRACE_MCOUNT_MAX_OFFSET
+> +static int print_rec(struct seq_file *m, unsigned long ip)
+> +{
+> +	unsigned long offset;
+> +	char str[KSYM_SYMBOL_LEN];
+> +	char *modname;
+> +	const char *ret;
+> +
+> +	ret = kallsyms_lookup(ip, NULL, &offset, &modname, str);
+> +	if (!ret || offset > FTRACE_MCOUNT_MAX_OFFSET)
+> +		return -1;
+
+Unfortunately, I can't just skip printing these functions. The reason is
+because it breaks trace-cmd (libtracefs specifically). As trace-cmd can
+filter with full regular expressions (regex(3)), and does so by searching
+the available_filter_functions. It collects an index of functions to
+enabled, then passes that into set_ftrace_filter.
+
+As a speed up, set_ftrace_filter allows you to pass an index, defined by the
+line in available_filter_functions, into it that uses array indexing into
+the ftrace table to enable/disable functions for tracing. By skipping
+entries, it breaks the indexing, because the index is a 1 to 1 paring of
+the lines of available_filter_functions.
+
+To solve this, instead of printing nothing, I have this:
+
+	ret = kallsyms_lookup(ip, NULL, &offset, &modname, str);
+	/* Weak functions can cause invalid addresses */
+	if (!ret || offset > FTRACE_MCOUNT_MAX_OFFSET) {
+		snprintf(str, KSYM_SYMBOL_LEN, "%s_%ld",
+			 FTRACE_INVALID_FUNCTION, offset);
+	}
+
+Where:
+
+#define FTRACE_INVALID_FUNCTION		"__ftrace_invalid_address__"
+
+When doing this, the available_filter_functions file has 546 invalid
+entries. 14 of which are for the kvm module. Probably to deal with the
+differences between Intel and AMD.
+
+When a function is read as invalid, the rec->flags get set as DISABLED,
+which will keep it from being enabled in the future.
+
+Of course, one can just enter in numbers without reading any of the files,
+and that will allow them to be set. It won't do anything bad, it would just
+act like it does today.
+
+Does anyone have any issues with this approach (with
+__ftrace_invalid_address__%d inserted into available_filter_functions)?
 
 
-On 5/27/2022 2:43 AM, Dexuan Cui wrote:
->> From: Tianyu Lan <ltykernel@gmail.com>
->> Sent: Thursday, May 26, 2022 5:01 AM
->> ...
->> @@ -119,6 +124,10 @@ static void netvsc_subchan_work(struct work_struct
->> *w)
->>   			nvdev->max_chn = 1;
->>   			nvdev->num_chn = 1;
->>   		}
->> +
->> +		/* Allocate boucne buffer.*/
->> +		swiotlb_device_allocate(&hdev->device, nvdev->num_chn,
->> +				10 * IO_TLB_BLOCK_UNIT);
->>   	}
-> 
-> Looks like swiotlb_device_allocate() is not called if the netvsc device
-> has only 1 primary channel and no sub-schannel, e.g. in the case of
-> single-vCPU VM?
+-- Steve
 
-When there is only sinlge，there seems not to be much performance
-penalty. But you are right, we should keep the same behavior when single 
-CPU and multi CPU. Will update in the next version.
 
-Thanks.
-
+> +
+> +	seq_puts(m, str);
+> +	if (modname)
+> +		seq_printf(m, " [%s]", modname);
+> +	return 0;
+> +}
+> +#else
+> +static int print_rec(struct seq_file *m, unsigned long ip)
+> +{
+> +	seq_printf(m, "%ps", (void *)ip);
+> +	return 0;
+> +}
+> +#endif
+> +
