@@ -2,153 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EDA8536C57
-	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 12:40:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0AF5536C97
+	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 13:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233996AbiE1Kkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 May 2022 06:40:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54848 "EHLO
+        id S234888AbiE1LkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 May 2022 07:40:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233070AbiE1Kkq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 06:40:46 -0400
-Received: from zg8tmja5ljk3lje4ms43mwaa.icoremail.net (zg8tmja5ljk3lje4ms43mwaa.icoremail.net [209.97.181.73])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 6B74A1D6;
-        Sat, 28 May 2022 03:40:42 -0700 (PDT)
-Received: by ajax-webmail-mail-app3 (Coremail) ; Sat, 28 May 2022 18:40:20
- +0800 (GMT+08:00)
-X-Originating-IP: [106.117.80.109]
-Date:   Sat, 28 May 2022 18:40:20 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     linux-hams@vger.kernel.org
-Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        thomas@osterried.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] ax25: Fix ax25 session cleanup problem in
- ax25_release
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20220527151822.23217-1-duoming@zju.edu.cn>
-References: <20220527151822.23217-1-duoming@zju.edu.cn>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S234741AbiE1LkO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 07:40:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15318167DD;
+        Sat, 28 May 2022 04:40:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC5A7B80EAE;
+        Sat, 28 May 2022 11:40:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 68A31C34118;
+        Sat, 28 May 2022 11:40:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653738011;
+        bh=ZHpRnFQkeQtmCAXLllnoeiBMgN6AR5loMUWSyWMqj38=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=tHv4xzJIVLE7nNzO8MQ4KGbhH82tAQSNStVEI4ylZaL0oP9YoGTqZAz6VvqImcHpg
+         lusq22zRSMJ0Uha/huKJPtrh+cZR6tDWc+yRnOSZlmcmLOgOmBoqHCut0lBiKUJAoQ
+         UDfblPV9QptlLSDsKJzxyopjgbDHhvIMAOSIVmKR0hH+7yhpyPRccwUz17Qaqr6ZMA
+         QBwNRKdHt39j469HA2IIDmnkAm9ksLBZ6lZ8HjR2LChznS7x4aqrzS9XdoVDjmr+HX
+         McxoonhcxUB+gDbEisyZbxlxzQnQeSvVysWx9Bw7QX40gGYSJRRlqf9ApmJBuG7lXT
+         eakuXHko9XsHg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 515ACF03942;
+        Sat, 28 May 2022 11:40:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Message-ID: <52f70cc1.3a10e.1810a40afe0.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cC_KCgDni7gU_JFiHx4ZAQ--.25273W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgwEAVZdtZ7orAABsu
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net/smc: fixes for converting from "struct
+ smc_cdc_tx_pend **" to "struct smc_wr_tx_pend_priv *"
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165373801132.32245.12112811414781251794.git-patchwork-notify@kernel.org>
+Date:   Sat, 28 May 2022 11:40:11 +0000
+References: <20220528065457.93676-1-guangguan.wang@linux.alibaba.com>
+In-Reply-To: <20220528065457.93676-1-guangguan.wang@linux.alibaba.com>
+To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpPbiBGcmksIDI3IE1heSAyMDIyIDIzOjE4OjMyICswODAwIER1b21pbmcgd3JvdGU6
-Cgo+IFRoZSB0aW1lcnMgb2YgYXgyNSBhcmUgdXNlZCBmb3IgY29ycmVjdCBzZXNzaW9uIGNsZWFu
-dXAuCj4gSWYgd2UgdXNlIGF4MjVfcmVsZWFzZSgpIHRvIGNsb3NlIGF4MjUgc2Vzc2lvbnMgYW5k
-Cj4gYXgyNV9kZXYgaXMgbm90IG51bGwsIHRoZSBkZWxfdGltZXJfc3luYygpIGZ1bmN0aW9ucyBp
-bgo+IGF4MjVfcmVsZWFzZSgpIHdpbGwgZXhlY3V0ZS4gQXMgYSByZXN1bHQsIHRoZSBzZXNzaW9u
-cwo+IGNvdWxkIG5vdCBiZSBjbGVhbmVkIHVwIGNvcnJlY3RseSwgYmVjYXVzZSB0aGUgdGltZXJz
-Cj4gaGF2ZSBzdG9wcGVkLgo+IAo+IFRoaXMgcGF0Y2ggYWRkcyBhIGRldmljZV91cCBmbGFnIGlu
-IGF4MjVfZGV2IGluIG9yZGVyIHRvCj4ganVkZ2Ugd2hldGhlciB0aGUgZGV2aWNlIGlzIHVwLiBJ
-ZiB0aGVyZSBhcmUgc2Vzc2lvbnMgdG8KPiBiZSBjbGVhbmVkIHVwLCB0aGUgZGVsX3RpbWVyX3N5
-bmMoKSBpbiBheDI1X3JlbGVhc2UoKSB3aWxsCj4gbm90IGV4ZWN1dGUuIFdoYXQncyBtb3JlLCB3
-ZSBhZGQgYXgyNV9jYl9kZWwoKSBpbgo+IGF4MjVfa2lsbF9ieV9kZXZpY2UoKSwgYmVjYXVzZSB0
-aGUgdGltZXJzIGhhdmUgYmVlbiBzdG9wcGVkCj4gYW5kIHRoZXJlIGFyZSBubyBmdW5jdGlvbnMg
-dGhhdCBjb3VsZCBkZWxldGUgYXgyNV9jYiBpZiB3ZQo+IGRvIG5vdCBjYWxsIGF4MjVfcmVsZWFz
-ZSgpLgo+IAo+IEZpeGVzOiA4MmUzMTc1NWU1NWYgKCJheDI1OiBGaXggVUFGIGJ1Z3MgaW4gYXgy
-NSB0aW1lcnMiKQo+IFJlcG9ydGVkLWFuZC10ZXN0ZWQtYnk6IFRob21hcyBPc3RlcnJpZWQgPHRo
-b21hc0Bvc3RlcnJpZWQuZGU+Cj4gU2lnbmVkLW9mZi1ieTogRHVvbWluZyBaaG91IDxkdW9taW5n
-QHpqdS5lZHUuY24+Cj4gLS0tCj4gQ2hhbmdlcyBpbiB2MjoKPiAgIC0gQWRkIGF4MjVfY2JfZGVs
-KCkgaW4gYXgyNV9raWxsX2J5X2RldmljZSgpLgo+IAo+ICBpbmNsdWRlL25ldC9heDI1LmggIHwg
-IDEgKwo+ICBuZXQvYXgyNS9hZl9heDI1LmMgIHwgMTUgKysrKysrKysrKy0tLS0tCj4gIG5ldC9h
-eDI1L2F4MjVfZGV2LmMgfCAgMSArCj4gIDMgZmlsZXMgY2hhbmdlZCwgMTIgaW5zZXJ0aW9ucygr
-KSwgNSBkZWxldGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9uZXQvYXgyNS5oIGIv
-aW5jbHVkZS9uZXQvYXgyNS5oCj4gaW5kZXggMGY5NzkwYzQ1NWIuLmE0MjdhMDU2NzJlIDEwMDY0
-NAo+IC0tLSBhL2luY2x1ZGUvbmV0L2F4MjUuaAo+ICsrKyBiL2luY2x1ZGUvbmV0L2F4MjUuaAo+
-IEBAIC0yMjgsNiArMjI4LDcgQEAgdHlwZWRlZiBzdHJ1Y3QgYXgyNV9kZXYgewo+ICAJYXgyNV9k
-YW1hX2luZm8JCWRhbWE7Cj4gICNlbmRpZgo+ICAJcmVmY291bnRfdAkJcmVmY291bnQ7Cj4gKwli
-b29sIGRldmljZV91cDsKPiAgfSBheDI1X2RldjsKPiAgCj4gIHR5cGVkZWYgc3RydWN0IGF4MjVf
-Y2Igewo+IGRpZmYgLS1naXQgYS9uZXQvYXgyNS9hZl9heDI1LmMgYi9uZXQvYXgyNS9hZl9heDI1
-LmMKPiBpbmRleCAzNjNkNDdmOTQ1My4uOTJjYmIwOGE2YzUgMTAwNjQ0Cj4gLS0tIGEvbmV0L2F4
-MjUvYWZfYXgyNS5jCj4gKysrIGIvbmV0L2F4MjUvYWZfYXgyNS5jCj4gQEAgLTgxLDYgKzgxLDcg
-QEAgc3RhdGljIHZvaWQgYXgyNV9raWxsX2J5X2RldmljZShzdHJ1Y3QgbmV0X2RldmljZSAqZGV2
-KQo+ICAKPiAgCWlmICgoYXgyNV9kZXYgPSBheDI1X2Rldl9heDI1ZGV2KGRldikpID09IE5VTEwp
-Cj4gIAkJcmV0dXJuOwo+ICsJYXgyNV9kZXYtPmRldmljZV91cCA9IGZhbHNlOwo+ICAKPiAgCXNw
-aW5fbG9ja19iaCgmYXgyNV9saXN0X2xvY2spOwo+ICBhZ2FpbjoKPiBAQCAtOTEsNiArOTIsNyBA
-QCBzdGF0aWMgdm9pZCBheDI1X2tpbGxfYnlfZGV2aWNlKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYp
-Cj4gIAkJCQlzcGluX3VubG9ja19iaCgmYXgyNV9saXN0X2xvY2spOwo+ICAJCQkJYXgyNV9kaXNj
-b25uZWN0KHMsIEVORVRVTlJFQUNIKTsKPiAgCQkJCXMtPmF4MjVfZGV2ID0gTlVMTDsKPiArCQkJ
-CWF4MjVfY2JfZGVsKHMpOwo+ICAJCQkJc3Bpbl9sb2NrX2JoKCZheDI1X2xpc3RfbG9jayk7Cj4g
-IAkJCQlnb3RvIGFnYWluOwo+ICAJCQl9Cj4gQEAgLTEwNCw2ICsxMDYsNyBAQCBzdGF0aWMgdm9p
-ZCBheDI1X2tpbGxfYnlfZGV2aWNlKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpCj4gIAkJCQlheDI1
-X2Rldl9wdXQoYXgyNV9kZXYpOwo+ICAJCQl9Cj4gIAkJCXJlbGVhc2Vfc29jayhzayk7Cj4gKwkJ
-CWF4MjVfY2JfZGVsKHMpOwo+ICAJCQlzcGluX2xvY2tfYmgoJmF4MjVfbGlzdF9sb2NrKTsKPiAg
-CQkJc29ja19wdXQoc2spOwo+ICAJCQkvKiBUaGUgZW50cnkgY291bGQgaGF2ZSBiZWVuIGRlbGV0
-ZWQgZnJvbSB0aGUKClRoZXJlIGlzIGEgInJlZmNvdW50X3Q6IHVuZGVyZmxvdyIgcHJvYmxlbSwg
-dGhlIGNhbGwgdHJhY2UgaXMgc2hvd24gYmVsb3c6CgpyZWZjb3VudF90OiB1bmRlcmZsb3c7IHVz
-ZS1hZnRlci1mcmVlLgpXQVJOSU5HOiBDUFU6IDEgUElEOiAxNTk5NyBhdCBsaWIvcmVmY291bnQu
-YzoyOCByZWZjb3VudF93YXJuX3NhdHVyYXRlKzB4YzUvMHgxMTAKUklQOiAwMDEwOnJlZmNvdW50
-X3dhcm5fc2F0dXJhdGUrMHhjNS8weDExMApDb2RlOiAxYiBlMCBkNiAwMiAwMSBlOCA0NiA4MiAx
-ZCAwMSAwZiAwYiBlYiA5OSA4MCAzZCAwOCBlMCBkNiAwMiAwMCA3NSA5MCA0OCBjNyBjNyA4MCA4
-NwpSU1A6IDAwMTg6ZmZmZjg4ODAwYWIzN2RiMCBFRkxBR1M6IDAwMDAwMjg2ClJBWDogMDAwMDAw
-MDAwMDAwMDAwMCBSQlg6IDAwMDAwMDAwMDAwMDAwMDMgUkNYOiAwMDAwMDAwMDAwMDAwMDAwClJE
-WDogMDAwMDAwMDAwMDAwMDAwMSBSU0k6IDAwMDAwMDAwMDAwMDAwMDggUkRJOiBmZmZmZWQxMDAx
-NTY2ZmE4ClJCUDogZmZmZjg4ODAwYTNiYjQxMCBSMDg6IGZmZmZmZmZmODEwZmZlMmYgUjA5OiBm
-ZmZmODg4MDBhYjM3YTM3ClIxMDogZmZmZmVkMTAwMTU2NmY0NiBSMTE6IDAwMDAwMDAwMDAwMDAw
-MDEgUjEyOiBmZmZmODg4MDA4OTYwMDAwClIxMzogZmZmZjg4ODAwOTUzZjJjMCBSMTQ6IGZmZmY4
-ODgwMDY1MDAwMTggUjE1OiBmZmZmODg4MDA4OTYwMDgwCkZTOiAgMDAwMDdmNDY5ODFmMzcwMCgw
-MDAwKSBHUzpmZmZmODg4MDZjNjAwMDAwKDAwMDApIGtubEdTOjAwMDAwMDAwMDAwMDAwMDAKQ1M6
-ICAwMDEwIERTOiAwMDAwIEVTOiAwMDAwIENSMDogMDAwMDAwMDA4MDA1MDAzMwpDUjI6IDAwMDAw
-MDAwMDA0MjI3MGEgQ1IzOiAwMDAwMDAwMDA5YjY0MDAwIENSNDogMDAwMDAwMDAwMDAwMDZlMApD
-YWxsIFRyYWNlOgo8VEFTSz4KX19za19kZXN0cnVjdCsweDJjLzB4MzUwCmF4MjVfcmVsZWFzZSsw
-eDM0ZS8weDRhMApfX3NvY2tfcmVsZWFzZSsweDZkLzB4MTIwCnNvY2tfY2xvc2UrMHhmLzB4MjAK
-X19mcHV0KzB4MTBlLzB4NDEwCnRhc2tfd29ya19ydW4rMHg4Ni8weGMwCmV4aXRfdG9fdXNlcl9t
-b2RlX3ByZXBhcmUrMHgxOTQvMHgxYTAKc3lzY2FsbF9leGl0X3RvX3VzZXJfbW9kZSsweDE5LzB4
-NTAKZG9fc3lzY2FsbF82NCsweDQ4LzB4OTAKZW50cnlfU1lTQ0FMTF82NF9hZnRlcl9od2ZyYW1l
-KzB4NDQvMHhhZQoKVGhlIHJhY2UgY29uZGl0aW9uIGlzIHNob3duIGJlbG93OgoKICAgICAgKFRo
-cmVhZCAxKSAgICAgICAgICAgICAgICAgICAgfCAgICAgIChUaHJlYWQgMikKYXgyNV9jcmVhdGUo
-KSAgICAgICAgICAgICAgICAgICAgICAgfAogIHJlZmNvdW50X3NldCgmYXgyNS0+cmVmY291bnQs
-IDEpICB8CmF4MjVfYmluZCgpICAgICAgICAgICAgICAgICAgICAgICAgIHwKICBheDI1X2NiX2Fk
-ZCgpICAgICAgICAgICAgICAgICAgICAgfAogICAgYXgyNV9jYl9ob2xkKGF4MjUpIC8vcmVmY250
-ID0gMiB8CmF4MjVfa2lsbF9ieV9kZXZpY2UoKSAgICAgICAgICAgICAgIHwgYXgyNV9yZWxlYXNl
-KCkKICAuLi4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgIC4uLgogIHJlbGVhc2Vf
-c29jaygpOyAgICAgICAgICAgICAgICAgICB8ICAgICAKICAvLyBubyBsb2NrcyBwcm90ZWN0IGF4
-MjVfY2JfZGVsICAgfCAgIGxvY2tfc29jaygpICAKICBheDI1X2NiX2RlbCgpICAgICAgICAgICAg
-ICAgICAgICAgfCAgIGF4MjVfZGVzdHJveV9zb2NrZXQoKQogICAgaWYgKCFobGlzdF91bmhhc2hl
-ZCguLikpICAgICAgICB8ICAgYXgyNV9jYl9kZWwoKQogICAgICAuLi4gICAgICAgICAgICAgICAg
-ICAgICAgICAgICB8ICAgIGlmICghaGxpc3RfdW5oYXNoZWQoLi4pKQogICAgICBobGlzdF9kZWxf
-aW5pdCgpICAgICAgICAgICAgICB8ICAgICAgCiAgICAgIGF4MjVfY2JfcHV0KGF4MjUpIC8vcmVm
-Y250ID0gMXwgICAgICAuLi4KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAg
-ICAgIGF4MjVfY2JfcHV0KGF4MjUpIC8vcmVmY250ID0gMAogICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICB8ICAgICAgLi4uCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIHwgICBzb2NrX3B1dChzaykgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IHwgICAgIHNrX2ZyZWUoKQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAg
-ICAgIHNrX2Rlc3RydWN0KCkKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAg
-ICAgICAgIF9fc2tfZGVzdHJ1Y3QoKQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICB8ICAgICAgICAgICBheDI1X2ZyZWVfc29jaygpCiAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgIHwgICAgICAgICAgICAgYXgyNV9jYl9wdXQoYXgyNSkgLy8gcmVmY291bnRfdDog
-dW5kZXJmbG93IQoKTW92aW5nIGF4MjVfY2JfZGVsKCkgaW50byBsb2NrX3NvY2soKSBjYW4gc29s
-dmUgdGhpcyBwcm9ibGVtLCAKYmVjYXVzZSB0aGVyZSBpcyBhIGNoZWNrIGluIGF4MjVfY2JfZGVs
-KCkuIElmIHdlIGRlbGV0ZSBheDI1IG5vZGUKaW4gaGxpc3QsIHRoZSBjaGVjayB3aWxsIG5vdCBi
-ZSBzYXRpc2ZpZWQuCgppZiAoIWhsaXN0X3VuaGFzaGVkKCZheDI1LT5heDI1X25vZGUpKSB7IC8v
-Y2hlY2sKICAgIHNwaW5fbG9ja19iaCgmYXgyNV9saXN0X2xvY2spOwogICAgaGxpc3RfZGVsX2lu
-aXQoJmF4MjUtPmF4MjVfbm9kZSk7ICAvL2RlbGV0ZSBheDI1IG5vZGUKICAgIHNwaW5fdW5sb2Nr
-X2JoKCZheDI1X2xpc3RfbG9jayk7CiAgICBheDI1X2NiX3B1dChheDI1KTsKfQoKTXkgc3VjY2Vz
-c2Z1bCB0ZXN0IHdhcyB0aGlzOgoKQEAgLTEwMyw2ICsxMDUsNyBAQCBzdGF0aWMgdm9pZCBheDI1
-X2tpbGxfYnlfZGV2aWNlKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpCiAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgZGV2X3B1dF90cmFjayhheDI1X2Rldi0+ZGV2LCAmYXgyNV9kZXYtPmRl
-dl90cmFja2VyKTsKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBheDI1X2Rldl9wdXQo
-YXgyNV9kZXYpOwogICAgICAgICAgICAgICAgICAgICAgICB9CisgICAgICAgICAgICAgICAgICAg
-ICAgIGF4MjVfY2JfZGVsKHMpOwogICAgICAgICAgICAgICAgICAgICAgICByZWxlYXNlX3NvY2so
-c2spOwogICAgICAgICAgICAgICAgICAgICAgICBzcGluX2xvY2tfYmgoJmF4MjVfbGlzdF9sb2Nr
-KTsKICAgICAgICAgICAgICAgICAgICAgICAgc29ja19wdXQoc2spOwoKQmVzdCByZWdhcmRzLApE
-dW9taW5nIFpob3UK
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Sat, 28 May 2022 14:54:57 +0800 you wrote:
+> "struct smc_cdc_tx_pend **" can not directly convert
+> to "struct smc_wr_tx_pend_priv *".
+> 
+> Fixes: 2bced6aefa3d ("net/smc: put slot when connection is killed")
+> Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+> ---
+>  net/smc/smc_cdc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Here is the summary with links:
+  - [net] net/smc: fixes for converting from "struct smc_cdc_tx_pend **" to "struct smc_wr_tx_pend_priv *"
+    https://git.kernel.org/netdev/net/c/e225c9a5a74b
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
