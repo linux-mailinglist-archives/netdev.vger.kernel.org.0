@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AACD536998
-	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 03:08:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E643B53699D
+	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 03:14:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355333AbiE1BIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 21:08:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49736 "EHLO
+        id S1355337AbiE1BOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 21:14:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231280AbiE1BIy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 21:08:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99540ED79F;
-        Fri, 27 May 2022 18:08:53 -0700 (PDT)
+        with ESMTP id S231186AbiE1BOa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 21:14:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42577122B69;
+        Fri, 27 May 2022 18:14:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F54FB82658;
-        Sat, 28 May 2022 01:08:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26968C34113;
-        Sat, 28 May 2022 01:08:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B938F61B6B;
+        Sat, 28 May 2022 01:14:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 419CBC385A9;
+        Sat, 28 May 2022 01:14:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653700131;
-        bh=BHdO//WFdywzaAtxnWELfFNsd3t16H2AK+RSIjth62Y=;
+        s=k20201202; t=1653700468;
+        bh=rTYJv8jXTriCoHR9T+nXzqG+J0Zbs8O4Ly3nJx6dWcs=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=N3A+ayqXSJHBK0dACaRK4ZQqVBALscjvXc3z6cXfLcf0PBn+Y7+u6g4xSSxT1EWJC
-         53lA6Ztd62uJ958r9EOLk/8farpnXsiUTKW7zt5a9d46vTD5OqcpfzkOMNKhUU+HuU
-         AvuyeoXVaY+cQzhkeCSPfgpQZup9jc7wc44jfWYqCl3xlqUL01zfYvyu1+asF7P/h+
-         O2toKSTUCAGv6oByLuR6Q9cEufrTNqY0UFyQVEb2Ae7+Lu5WMDwHP1REq065fT/Q4f
-         5yP8OgVPSDIaEy9RVCyvb+Q4UhYkcc8bmP1vHk5BLJAqV5mfbq3PNJZnLV8eBOcoWz
-         9PzhVKo+v3ASA==
-Date:   Fri, 27 May 2022 18:08:48 -0700
+        b=o5414BETX5KriRkmLAeW11oLaGwOkGcFraMiGwOq8sAHmE3F273UeDmaZqAzKn4Kd
+         kPhjAbnq8XiJ7bvEVpcN9cBzPMHRq3ncHtFwkRCzKgvmbGTPH2/qt9AGqYnCu3m9ag
+         AaD1Lk041XfEBUY04X0USPDqPkb4Sj2F5+h1t5t6sWn28J4ORMQpa16dBW2Ov9rQLW
+         VffIKZgwUWFMNRLi6atvctitPBtsyk2nResrVi/NXm2nAORNtNlFA2UA+oL9q0Kr9U
+         syIYRP7uY8jkfnBoIzkkLHWpH8OqxQhiW+w0QdYohcckEHF9QIfc6yQur9m9Dz8QuB
+         wngxRqgwHI+lg==
+Date:   Fri, 27 May 2022 18:14:26 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     menglong8.dong@gmail.com
 Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
@@ -42,12 +42,12 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
         imagedong@tencent.com, dsahern@kernel.org, talalahmad@google.com,
         keescook@chromium.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH net-next 1/3] net: skb: move enum skb_drop_reason to
- standalone header file
-Message-ID: <20220527180848.25f9e199@kernel.org>
-In-Reply-To: <20220527071522.116422-2-imagedong@tencent.com>
+Subject: Re: [PATCH net-next 2/3] net: skb: use auto-generation to convert
+ skb drop reason to string
+Message-ID: <20220527181426.126367e5@kernel.org>
+In-Reply-To: <20220527071522.116422-3-imagedong@tencent.com>
 References: <20220527071522.116422-1-imagedong@tencent.com>
-        <20220527071522.116422-2-imagedong@tencent.com>
+        <20220527071522.116422-3-imagedong@tencent.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -61,7 +61,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 May 2022 15:15:20 +0800 menglong8.dong@gmail.com wrote:
-> +++ b/include/linux/dropreason.h
+On Fri, 27 May 2022 15:15:21 +0800 menglong8.dong@gmail.com wrote:
+> +clean-files := dropreason_str.h
+> +
+> +quiet_cmd_dropreason_str = GEN     $@
+> +cmd_dropreason_str = echo '\n\#define __DEFINE_SKB_DROP_REASON(FN) \' > $@;\
 
-include/net is probably a better location for it
+echo -n
+
+> +	sed -e '/enum skb_drop_reason {/,/}/!d' $< | \
+> +	awk -F ',' '/SKB_DROP_REASON_/{printf "	FN(%s) \\\n", substr($$1, 18)}' >> $@;\
+> +	echo '' >> $@
+
+Trying to figure out when we're in the enum could be more robust
+in case more stuff gets added to the header:
+
+ | awk -F ',' '/^enum skb_drop/ { dr=1; } 
+               /\}\;/           { dr=0; } 
+               /^\tSKB_DROP/    { if (dr) {print $1;}}'
+
+> +$(obj)/dropreason_str.h: $(srctree)/include/linux/dropreason.h
+> +	$(call cmd,dropreason_str)
+> +
+> +$(obj)/skbuff.o: $(obj)/dropreason_str.h
+
+Since we just generate the array directly now should we generate
+a source file with it directly instead of generating a header with 
+the huge define?
