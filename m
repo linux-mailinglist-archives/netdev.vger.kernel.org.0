@@ -2,96 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F24CB536DE8
-	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 19:17:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28273536E26
+	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 21:11:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238851AbiE1RRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 May 2022 13:17:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47632 "EHLO
+        id S229639AbiE1TLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 May 2022 15:11:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238857AbiE1RRP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 13:17:15 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430B6BF59
-        for <netdev@vger.kernel.org>; Sat, 28 May 2022 10:17:14 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id i187so12758052ybg.6
-        for <netdev@vger.kernel.org>; Sat, 28 May 2022 10:17:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=pSKuz9BJS/Qwel4yBJUKsJP++c1z8gtIosTtEbMtN5I=;
-        b=Evcz97LOKzHfSgT/AL/l+ZvMvf33Mnf2JcLi4+SabJA4RVfVM4/A46bF7LrAex2ihQ
-         DAlRR8/zXtJTnIoEfh6f7bdC2JRR+yXK1eOVqaphmBhPg+nXO/886U3X5GDEMu2yZzTG
-         2QbvLBgO/2ZnaMZ64zlK5XOVIIl1SuH3E1vYjFzTh4ifT/z4GjIOkdCqWZaLHfZRu/L9
-         XInGcHNGmawHrNpuj/q0VbBJWcYR7YDA070uYdD/UQCxkpMMrEj2bhBVT3vnoFUN6ubb
-         FY2vKq+UskzZ+khk4B7ynDvYv4mv8uOY5VIkwWrNQ13Yu6d+0uCVvcPG55NygjZC9ZzA
-         KzyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=pSKuz9BJS/Qwel4yBJUKsJP++c1z8gtIosTtEbMtN5I=;
-        b=jVA6tELTdvrbP2EMd52iqr7CsLAnWczzhkk3BplLFPhpdYWimnE3mzEbZNHL2rXz5q
-         ipuBrxjsTbcbtF/ivwK4cxtAY9Ai1SkTQkFYiW6HiL+MOSkKNZ4TydcLaZKoQ7ndfcii
-         WYOZl0oKI0550SJEKhgqYVkm4l2zg8UIsz49Qxt9OcehunsIkUad0+S0JMPGmTmBrK84
-         bCZ5rouYYON2FjgDXQft3QOsFpmdrsdaIbYbem13LU5FMwr00ESWyNtdenCqXdZclgRv
-         hty8aSEF9HS6pBo8QZVR8xacZY/vv+Zig8jOgWVagmvIfixLWc3VZ6uSEAR/Nncoz7f8
-         kamg==
-X-Gm-Message-State: AOAM531scbEU9st5aSsY+sVcuxUq580G9qK741LBZsHFdoCz7gq64FLJ
-        dXhZlpZ6xlT2GSXr3ZqXVVlBy/Oq/poG4QQJdaI=
-X-Google-Smtp-Source: ABdhPJxPsnNngIXYUzCPybntA0BZ3Hio+So97vpfEl2GjbHePX/ZnvzzyR/z5l50rmRV1R4F3fvnNoPkkQhCO5/mYL4=
-X-Received: by 2002:a25:168b:0:b0:64a:54ba:e88e with SMTP id
- 133-20020a25168b000000b0064a54bae88emr42052597ybw.17.1653758233195; Sat, 28
- May 2022 10:17:13 -0700 (PDT)
+        with ESMTP id S229561AbiE1TLQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 15:11:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6830E6D86A
+        for <netdev@vger.kernel.org>; Sat, 28 May 2022 12:11:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A72BB80885
+        for <netdev@vger.kernel.org>; Sat, 28 May 2022 19:02:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85525C34100;
+        Sat, 28 May 2022 19:02:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653764574;
+        bh=PENZKiL8VO6QpRh6gvJR4EMjrhAlK6L5DxB8rj5OXQw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=e+eOvN2oF6uZ/PtGrQj/3ql0qGNApEyXcaWl5hhUsKpM7xkUupvwwnl8hzwSN7oep
+         AtxyMR046KoyKy2mm19mk+7MkilD/1Z3mDXGroXm5LeCFsUhtBorV4A3kDeEuCuTAy
+         W7POTrkdFoW5xELzACRS6NEKUUzSyyXy2Sm+6wCc3fS1dMfDrISXiaPsJK3kYhuGTA
+         FtwCvISrphnhT1yEJjcP7aKzUuMlOsXfgOj28s/USvU0bLh49JoXJv5xRq2ECEhZiw
+         XHgfAUJ5acG2I4Rc3SIz9o9HJk59WVxbHjpoy/Zczk/pCRrYydN9l2ABZ3VMnRrgIQ
+         FYIvpMOALXBWA==
+Date:   Sat, 28 May 2022 12:02:53 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
+        andrew@lunn.ch, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
+ and info
+Message-ID: <20220528120253.5200f80f@kernel.org>
+In-Reply-To: <YpHmrdCmiRagdxvt@nanopsycho>
+References: <20220523105640.36d1e4b3@kernel.org>
+        <Yox/TkxkTUtd0RMM@nanopsycho>
+        <YozsUWj8TQPi7OkM@nanopsycho>
+        <20220524110057.38f3ca0d@kernel.org>
+        <Yo3KvfgTVTFM/JHL@nanopsycho>
+        <20220525085054.70f297ac@kernel.org>
+        <Yo9obX5Cppn8GFC4@nanopsycho>
+        <20220526103539.60dcb7f0@kernel.org>
+        <YpB9cwqcSAMslKLu@nanopsycho>
+        <20220527171038.52363749@kernel.org>
+        <YpHmrdCmiRagdxvt@nanopsycho>
 MIME-Version: 1.0
-Received: by 2002:a05:7108:768b:0:0:0:0 with HTTP; Sat, 28 May 2022 10:17:12
- -0700 (PDT)
-Reply-To: davidnelson7702626@gmail.com
-From:   Viviane Amouzou <vivianeamouzou5@gmail.com>
-Date:   Sat, 28 May 2022 18:17:12 +0100
-Message-ID: <CAHpnGrhK7NLqZF9qc8c4tF7S0W5tp9A3wdfsMR8bpNThgpvN4w@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.4 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5055]
-        * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:b2a listed in]
-        [list.dnswl.org]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [vivianeamouzou5[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [vivianeamouzou5[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [davidnelson7702626[at]gmail.com]
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.3 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello friend, I want to send money to you to enable me invest in your
-country get back to me if you are interested.
+On Sat, 28 May 2022 11:09:01 +0200 Jiri Pirko wrote:
+> Sat, May 28, 2022 at 02:10:38AM CEST, kuba@kernel.org wrote:
+> >
+> >Is the "lc1" free-form or generated by the core based on subobjects?
+> >Is it carried as a string or object type + id?  
+> 
+> It could be both:
+> 1) for line cards I plan to have a helper to have this generated by core
+> 2) for other FW objects, it is up to the driver.
+
+Did you mean "either" or "both"?
+
+> >I guess my suggestion of a CLI mockup has proven its weakness :)  
+> 
+> I'm not sure I understand what you mean by this sentence. Could you
+> please be more blunt? You know, my english is not so good to understand
+> some hidden meanings :)
+
+The question of what kind of attribute "lc1" is carried in would had
+been answered in posting of a code, while CLI mockup doesn't provide
+such detail.
+
+> >
+> >I sort of assumed that the DEVLINK_ATTR_INFO_VERSION_NAME is the
+> >component, the docs also use the word "component" for it.   
+> 
+> Okay, that I didn't see.
+> 
+> >
+> >For the nfp for instance we had "fw.app" for the datapath microcode and
+> >"fw.mgmt" for the control processor. These are separate partitions on
+> >the flash. I don't think we ever implemented writing them separately
+> >but it's certainly was our internal plan at some point.  
+> 
+> Okay, so what you say it, we already have components in "devlink dev
+> info". Like you pointed out as an example:
+>   fw.app
+>   fw.mgmt
+> so the flash comment would be:
+>   devlink dev flash pci/0000:01:00.0 component fw.app file foo.bin
+>   devlink dev flash pci/0000:01:00.0 component fw.mgmt file bar.bin
+> ?
+
+Correct.
+
+> If yes, what should be the default in case component is not defined? Do
+> we need to expose it in "devlink dev info"? How?
+
+Not defined as in someone tries to flash component X but there is no
+version for X in info?
+
+> So to extend this existing facility with my line card example, we would
+> have:
+> 
+> $ devlink dev info
+> pci/0000:01:00.0:
+>    driver mlxsw_spectrum2
+>    versions:
+>        fixed:
+>          hw.revision A0
+>          fw.psid MT_0000000199
+> 	 lc1.hw.revision 0
+> 	 lc1.fw.psid MT_0000000111
+> 	 lc2.hw.revision 0
+> 	 lc2.fw.psid MT_0000000111
+>        running:
+>          fw.version 29.2010.2302
+>          fw 29.2010.2302
+> 	 lc1.fw 19.2010.1310
+> 	 lc1.ini.version 4
+> 	 lc2.fw 19.2010.1310
+> 	 lc2.ini.version 4
+> 
+> And then:
+> devlink dev flash pci/0000:01:00.0 component lc1.fw file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
+> 
+> Does this sound correct?
+
+I think I suggested something like that in the past, but back then 
+I was assuming that lc FW would come from the same large FW bundle
+file as the control plan FW, and we would not have to use the component.
+
+Let's step back and look from the automation perspective again.
+Assuming we don't want to hardcode matching "lc$i" there how can 
+a generic FW update service scan the dev info and decide on what
+dev flash command to fire off?
+
+> Also, to avoid free-form, I can imagine to have per-linecard info_get() op
+> which would be called for each line card from devlink_nl_info_fill() and
+> prefix the "lcX" automatically without driver being involved.
+> 
+> Sounds good?
+
+Hm. That's moving the matryoshka-ing of the objects from the uAPI level
+to the internals. 
+
+If we don't do the string prefix but instead pass the subobject info to
+the user space as an attribute per version we can at least avoid
+per-subobject commands (DEVLINK_CMD_LINECARD_INFO_GET). Much closer to
+how health reporters are implemented than how params are done, so I
+think it is a good direction.
+
+We still need to iron out how the automation can go over the main FW
+and sub-objects in a generic way.
+
+I still think full devlink sub-instance is better because we will end
+up needing params or health. Fake devices can be made with auxbus or
+otherwise. But if you really don't want sub-instances we can explore 
+the above.
