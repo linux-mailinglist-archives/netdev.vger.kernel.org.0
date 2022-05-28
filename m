@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F457536AB4
-	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 06:27:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 950CC536AB9
+	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 06:32:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345546AbiE1E1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 May 2022 00:27:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37866 "EHLO
+        id S1355638AbiE1Ecm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 May 2022 00:32:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349774AbiE1E1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 00:27:05 -0400
+        with ESMTP id S238534AbiE1Ecl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 00:32:41 -0400
 Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CA05BE7B;
-        Fri, 27 May 2022 21:26:55 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id jx22so11876239ejb.12;
-        Fri, 27 May 2022 21:26:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCBB05D5D9;
+        Fri, 27 May 2022 21:32:38 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id jx22so11888512ejb.12;
+        Fri, 27 May 2022 21:32:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=AH8OnCXRC51Mg4MBO4ivuHAwds1YuEo+ZbFbIglk25k=;
-        b=c0VKYFgSHpb0/8AKdLqgatVQSCC+/mDi9S4RMNPyPuqG7IF0j0cFnom/jsmvY2lpWg
-         T2DucG2NXVXOD2Klh8NHl7onmOERFTK3TtK9sL5Us+4Ug54ojF1gyhh130c6DHjstucT
-         NLUT3P8zzdXMrVTg07MSxJGQ5Z0SNtwk+R7RJUDdhM9iaR27ySkGT54Q7Bw6lwEMr9me
-         SoWUnGE7hA0LTMx8owdpPAO7r/5hUbGOqb9qo7D4enZezrKO97kuWutagxdlyr7bHVC6
-         jcbwE6d4ffpAoa3BA03Ld5Wvii1ver+hDfGhxZhwyT/xmDg019/TGHWP/NoaFbSmj3Ln
-         +oiw==
+        bh=K5qfxYBTG9WQi+JmHupiyYmCa2ZO/Sp/SWpnNg7xgFg=;
+        b=TBfD3xnunIhS2XmLVzvPpgX+ylxEweyl7z8zgWPrkVF69pvMB9/eSJkDKqh9BBnMzn
+         DxSMSIRlyEWfQSqJzYGJ+4PidF+PFfVRs8PjCetH+KFQqKIyUcN5VFJb32LfUrkNCGjt
+         xAsLSE9W9Tnk9GSNwYn7AB6HDTklA/laxHZG7OV57SvVFBc642y7Tjda9BeAJGcC1Jyo
+         kf3KFdT+zdMIwYNqkHoWBeZceiKPnzLzL1NMeTtBnZwUceGN1ASq5M/qGK2z185prIM8
+         3rh2/x93gFKQkLBtLApJxFr1zFw7T9MBL1U0coABCiBThTzzEPsCNQpCnS0yQGwtF3IY
+         s4sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=AH8OnCXRC51Mg4MBO4ivuHAwds1YuEo+ZbFbIglk25k=;
-        b=Coe1xVj7wTZEYC2WfMTuRFyj4MAdmwyrbLjn8gkzPVOytdWUDKn8y28+Rn0eGWnwrX
-         y4dZBrGhMJmMCPnlpLCvF/Bd9tN+3/Ycgqq8YWCoUCetoJk27Y1be09uUGR+mYCJsO1O
-         dfcayziVqmMK+QcBCsKwe7mUWZ6+HDuAojlGFZbE2oh/SJtR4GzznRg2sMI+8DOCh8PG
-         UT3V8rfIvgClXjNJ4Ln7XcYyPdmOB8+/ILXCb18F06Lnj8qlE/nafAezpzQp1fXV7Q9i
-         mrkpTpX/IpyX3uutRLNZUJV+fOK6BQypSS2lDVgkdm/4atMK0KnuD4Cmhj+/iITQS9L3
-         3zBA==
-X-Gm-Message-State: AOAM531mdDdnMcI2Bg3jrx9Fo02QbLNBOksBW/tuFOZQ6fDHqmovHzS9
-        KcbNZyotvVTkd4tcGR1Di07f0AQOv2sb3SmUL0Y=
-X-Google-Smtp-Source: ABdhPJx+Bye2Fi8Q2Yp/a2pdYrI2N1T2SeWCiZr66i3gzr7t/ESq3IlDhQNK/eh3WnVIs1U2wmBM8BN1dVFByGtHOk0=
-X-Received: by 2002:a17:907:3f17:b0:6fe:bc5d:8d8e with SMTP id
- hq23-20020a1709073f1700b006febc5d8d8emr30880227ejc.439.1653712014572; Fri, 27
- May 2022 21:26:54 -0700 (PDT)
+        bh=K5qfxYBTG9WQi+JmHupiyYmCa2ZO/Sp/SWpnNg7xgFg=;
+        b=C18noDWvi+Arjy31dhLAyFVSi4KHLumUSRU1XRAI5bRKy7yTZeJ6kPpBb5TDsQlsuo
+         NKWaUoq4c6NNMUMoT6lEhjjtamQZAN6iDpjSvd3sXk8zxU6EWkFZo8uNYQR/niZNNsrN
+         jPtIPIaqnNOzf5ArkLm8KviWLVFtTC/65Y3xg5ZJDI4l2pfRONPOinDmTSpHQPYa37Zy
+         2KIqzXeILogshPO2HHXMOufs08D2LWHuTcexzeiuE9Ag7HvRFajdOVPbXucQbS0xNwTM
+         XA2o0yEAG+R14zbODLQTUWSLyHAXeUq52pUwEQVy4eG0p+YDpnlEe53aoWymzRqV8R/x
+         y5Hw==
+X-Gm-Message-State: AOAM533FM13ZCyyUrtPppZc/ESZA6ZEsYk4igIguuTx9qO3PcUGHRA6N
+        6JizEe8zh7qzGUOvksAHCdRRTyqT4rQAW0fFfmQ=
+X-Google-Smtp-Source: ABdhPJyc+e4+b4oc4I1w5A7pZswiReAC3+xRq+obk6xVXM2JA2WQpdxl/8he3EORjKO/k1h9+ZcgJqtGvdCaSxf51ek=
+X-Received: by 2002:a17:906:6a07:b0:6fe:ec47:b64d with SMTP id
+ qw7-20020a1709066a0700b006feec47b64dmr23985856ejc.765.1653712357408; Fri, 27
+ May 2022 21:32:37 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220527071522.116422-1-imagedong@tencent.com>
- <20220527071522.116422-3-imagedong@tencent.com> <20220527181426.126367e5@kernel.org>
-In-Reply-To: <20220527181426.126367e5@kernel.org>
+ <20220527071522.116422-4-imagedong@tencent.com> <20220527181915.6e776577@kernel.org>
+In-Reply-To: <20220527181915.6e776577@kernel.org>
 From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Sat, 28 May 2022 12:26:43 +0800
-Message-ID: <CADxym3YJKOmxmZPvqAJGS_WHUv5i+Cb0MSwu583wK+G6BO0MOw@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/3] net: skb: use auto-generation to convert skb
- drop reason to string
+Date:   Sat, 28 May 2022 12:32:26 +0800
+Message-ID: <CADxym3ZM=eW3hNLsUuCYDfZe2F+=c_Q69YxVi9VQ_65GY2DbAQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/3] net: dropreason: reformat the comment fo skb
+ drop reasons
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     Steven Rostedt <rostedt@goodmis.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -83,38 +83,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 28, 2022 at 9:14 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On Sat, May 28, 2022 at 9:19 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Fri, 27 May 2022 15:15:21 +0800 menglong8.dong@gmail.com wrote:
-> > +clean-files := dropreason_str.h
-> > +
-> > +quiet_cmd_dropreason_str = GEN     $@
-> > +cmd_dropreason_str = echo '\n\#define __DEFINE_SKB_DROP_REASON(FN) \' > $@;\
+> On Fri, 27 May 2022 15:15:22 +0800 menglong8.dong@gmail.com wrote:
+> > From: Menglong Dong <imagedong@tencent.com>
+> >
+> > To make the code clear, reformat the comment in dropreason.h to k-doc
+> > style.
+> >
+> > Now, the comment can pass the check of kernel-doc without warnning:
+> >
+> > $ ./scripts/kernel-doc -v -none include/linux/dropreason.h
+> > include/linux/dropreason.h:7: info: Scanning doc for enum skb_drop_reason
+> >
+> > Signed-off-by: Menglong Dong <imagedong@tencent.com>
 >
-> echo -n
+> I feel bad for suggesting this after you reformatted all the values
+> but could we use inline notation here? With a huge enum like this
+> there's a lot of scrolling between documentation and the value.
 >
-> > +     sed -e '/enum skb_drop_reason {/,/}/!d' $< | \
-> > +     awk -F ',' '/SKB_DROP_REASON_/{printf " FN(%s) \\\n", substr($$1, 18)}' >> $@;\
-> > +     echo '' >> $@
->
-> Trying to figure out when we're in the enum could be more robust
-> in case more stuff gets added to the header:
->
->  | awk -F ',' '/^enum skb_drop/ { dr=1; }
->                /\}\;/           { dr=0; }
->                /^\tSKB_DROP/    { if (dr) {print $1;}}'
->
-> > +$(obj)/dropreason_str.h: $(srctree)/include/linux/dropreason.h
-> > +     $(call cmd,dropreason_str)
-> > +
-> > +$(obj)/skbuff.o: $(obj)/dropreason_str.h
->
-> Since we just generate the array directly now should we generate
-> a source file with it directly instead of generating a header with
-> the huge define?
+> /**
+>  * enum skb_drop_reason - the reasons of skb drops
+>  *
+>  * The reason of skb drop, which is used in kfree_skb_reason().
+>  * en...maybe they should be splited by group?
+>  */
+>  enum skb_drop_reason {
+>         /**
+>          * @SKB_NOT_DROPPED_YET: skb is not dropped yet (used for no-drop case)
+>          */
+>         SKB_NOT_DROPPED_YET = 0,
+>         /** @SKB_DROP_REASON_NOT_SPECIFIED: drop reason is not specified */
+>         SKB_DROP_REASON_NOT_SPECIFIED,
+>         /** @SKB_DROP_REASON_NO_SOCKET: socket not found */
+>         SKB_DROP_REASON_NO_SOCKET,
+> ...
 
-This seems to be a good idea, which is able to decouple the
-definition of the array with skbuff.c. I'll try this.
+The inline comment is an option, which I thought of. But I found it
+makes the code a little not tidy. Of course, inline comments are
+easier to read. Anyway, I'll have a try and make them inline.
 
 Thanks!
 Menglong Dong
