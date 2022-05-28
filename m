@@ -2,105 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 136BA536CDE
-	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 14:26:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E61F2536CE5
+	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 14:33:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355656AbiE1M0k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 May 2022 08:26:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37974 "EHLO
+        id S235067AbiE1MdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 May 2022 08:33:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348350AbiE1M0i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 08:26:38 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF5D96156
-        for <netdev@vger.kernel.org>; Sat, 28 May 2022 05:26:35 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id s20so7376664ljd.10
-        for <netdev@vger.kernel.org>; Sat, 28 May 2022 05:26:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=G9Q6psb88NqsE/S/Fz8mCADYqgWwagXV/KHNWgqOKj4=;
-        b=RxALeLjf7aIJ3FT6Qmtsh/x4UoCU7HeGSBGSMxjOrOskhnJSs/Q86FqQyESpM+ctaF
-         L1UhhTYiGmB0kY/Nzyd4AobytscQEi/v2pISGjQmL56LZ77TkA2AGgOzd4lARMhBZJ+j
-         CqesulRoL4UVNCk60Sag7DHeNZsinoOAKh2QfZ+yEBRHps6MfXx2InJ3qNmflbBIt8gY
-         /zNtDiN4zldWzxB13USMQSr7dR8ydyzhc7Va7CT4mbXqDkozOjlI9jIcAaztEaYp7XX5
-         yH7b8YRLTkva2/vd8OlxTpOI3rL07HsP7AFiKqbFHOmDmbfjShoweo4HnxYl1+6a4HR+
-         /Wsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=G9Q6psb88NqsE/S/Fz8mCADYqgWwagXV/KHNWgqOKj4=;
-        b=3Kmk8SEqJ8Vj5KqcIIdYediuLfcf7HXhD6GmEe0GudKh9FBUAhbCWcXcDSljxDFoS8
-         5Ko0zUcXHa/EEic2EvRWjBEHECaICPRcin7sxC2wn7gT5lWHB1uFswwgZq0Xp2yV95N0
-         ovYGYNHBxwq+7VzBPTnYQkeBnIXkFetKMh4tIw2BcjLq9GFCC1IEXkJpaKKA4x200c7f
-         e+T+4R1v0DggHPqCrZuL+lbPq3Ila779xVwtnUAZhCnihcSvmNeUWiNzrC1cLs4vaRKp
-         kH7DQVUkir3Fal0qU6ULO5j7BYYoF+FOAjErS0VviRHqmKTwh67Y1p88tl+ATzEOshyT
-         RPbA==
-X-Gm-Message-State: AOAM531G0+xvBrTR2lh+XlZvRpnNXnm7Qe6jTQ25aqFT6Up/X2Swd0D7
-        llMIjQOF+wsEtOVhDvbwRP34Uu4LBLq8tKZGF+Y=
-X-Google-Smtp-Source: ABdhPJwPDX4x3jMX/Rt8/h1JS4QPzLcFtUCzpuB5FVnhn7aFq406VNc7J8ggfeJgMgQNAOmGoZFEkL/RszSY4f5I+M4=
-X-Received: by 2002:a2e:a364:0:b0:255:458c:797d with SMTP id
- i4-20020a2ea364000000b00255458c797dmr2006110ljn.529.1653740794065; Sat, 28
- May 2022 05:26:34 -0700 (PDT)
+        with ESMTP id S1355881AbiE1MdL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 08:33:11 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062B920BEC
+        for <netdev@vger.kernel.org>; Sat, 28 May 2022 05:33:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653741190; x=1685277190;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=uOo7myYBx/RcpwJItduBuV2bS3g6vCg6XkOlXq7505k=;
+  b=mogTCqLOfIiVM/5hIKCchx8ykAGtTzCQ/ZjnGhHO7ssj0QWlrtcI/gJE
+   BmKpwoPc4sKpw/BCDRPBS9Q29FZveeWohBUBoQ2N6UzFDduSruBvZs/C5
+   4NeGs13m0+8dmTihHH0AiyuRjrGhpmDXNqQJjIeN9072EowURlGR8ekCd
+   waL1hDMWEnMYUArUqTiCkwahqfRPkJBnYEDkrYtOH56ymGr0CK2OU1db6
+   re0OQ3nBrZjO/aE8BFitU7FeYP4ozzPRYxPj0bY2O37d6jhCDCYvy58N5
+   oR1HKRpCzoBhh1l7vQCayJPYZ4m9Z6RVgyrOYVVWnv+XBwn76GBMeqb9X
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10360"; a="335321207"
+X-IronPort-AV: E=Sophos;i="5.91,258,1647327600"; 
+   d="scan'208";a="335321207"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2022 05:33:10 -0700
+X-IronPort-AV: E=Sophos;i="5.91,258,1647327600"; 
+   d="scan'208";a="604391824"
+Received: from unknown (HELO jiaqingz-server.sh.intel.com) ([10.239.48.171])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 May 2022 05:33:08 -0700
+From:   Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+To:     netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org
+Cc:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+Subject: [PATCH 0/3] Fix "VLAN filer" typos
+Date:   Sat, 28 May 2022 20:31:20 +0800
+Message-Id: <20220528123123.1851519-1-jiaqing.zhao@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Received: by 2002:a05:6520:4ed:b0:1b9:ca22:a6c4 with HTTP; Sat, 28 May 2022
- 05:26:33 -0700 (PDT)
-Reply-To: jameskibesa@gmail.com
-From:   James Kibesa <lambertjeffery86@gmail.com>
-Date:   Sat, 28 May 2022 05:26:33 -0700
-Message-ID: <CANiUo+9fhrP+jmC+-QiR6sRyDS_xyJHtb+WG-RYOcGMJ9SgyqQ@mail.gmail.com>
-Subject: GPE COVID-19 relieve funds.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:22a listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [lambertjeffery86[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [lambertjeffery86[at]gmail.com]
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.3 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+My misspelled search keywords gave some results, guess we need to fix
+them.
+
+Jiaqing Zhao (3):
+  e1000: Fix typos in comments
+  ixgb: Fix typos in comments
+  ixgbe: Fix typos in comments
+
+ drivers/net/ethernet/intel/e1000/e1000_hw.c     | 4 ++--
+ drivers/net/ethernet/intel/ixgb/ixgb_hw.c       | 4 ++--
+ drivers/net/ethernet/intel/ixgbe/ixgbe_82598.c  | 2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_common.c | 2 +-
+ 4 files changed, 6 insertions(+), 6 deletions(-)
+
 -- 
-Hello,
+2.34.1
 
-You have been approved to received GPE COVID-19 relief funds. Reply to
-this email (jameskibesa@gmail.com) for claim procedure.
-
-James Kibesa
-
-
-Chief Financial Officer
-
-Global Partnership Pandemic Relief Consortium
-
-www.globalpartnership.org.pl
