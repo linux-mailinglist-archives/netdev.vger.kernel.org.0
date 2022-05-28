@@ -2,37 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52FA5536939
-	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 01:50:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F3F153694D
+	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 02:10:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355192AbiE0Xur (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 19:50:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34006 "EHLO
+        id S1351215AbiE1AKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 20:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232365AbiE0Xuq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 19:50:46 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB45140DD;
-        Fri, 27 May 2022 16:50:45 -0700 (PDT)
-Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nujj8-000F2R-F0; Sat, 28 May 2022 01:50:42 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2022-05-28
-Date:   Sat, 28 May 2022 01:50:42 +0200
-Message-Id: <20220527235042.8526-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        with ESMTP id S229628AbiE1AKn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 20:10:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE662AE1B
+        for <netdev@vger.kernel.org>; Fri, 27 May 2022 17:10:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70EDAB82655
+        for <netdev@vger.kernel.org>; Sat, 28 May 2022 00:10:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F234C385A9;
+        Sat, 28 May 2022 00:10:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653696640;
+        bh=deeVstLirzwzuUFVT4d8hFJpWp1D4Uv59omXQS1HX2U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OXjsg0eEE/QuD1GY66o/y7Z5tJRay7FvLyf1BQz2BayGY9tyrwdFVH84ejVCVOnGi
+         ftgGZWsRgtQreThBtz4VPF6E+tj4w0ONPOS2yqHYcpiOfZRxcnl/3eQcbizxb7Hg6o
+         i+xZkX0ZzVtKXzRUbdFHkDagE33fa/PIY6y05U0C8lFiAfHiIT8fD5ybaVhR2DaBi/
+         sKuyQS7SOtuwGSCI+RrFcsMeakdb05kjFPCUZm7KGmhHBEccmlww3TSBUJf8gYZrXk
+         b53RcogfhmZ35eSLhpGofre/sAGvezSC5dZXzjtPS3e/P6igpu0A1SVm3nLhL5JYzw
+         /XSfBaFibd3hw==
+Date:   Fri, 27 May 2022 17:10:38 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
+        andrew@lunn.ch, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
+ and info
+Message-ID: <20220527171038.52363749@kernel.org>
+In-Reply-To: <YpB9cwqcSAMslKLu@nanopsycho>
+References: <20220502073933.5699595c@kernel.org>
+        <YotW74GJWt0glDnE@nanopsycho>
+        <20220523105640.36d1e4b3@kernel.org>
+        <Yox/TkxkTUtd0RMM@nanopsycho>
+        <YozsUWj8TQPi7OkM@nanopsycho>
+        <20220524110057.38f3ca0d@kernel.org>
+        <Yo3KvfgTVTFM/JHL@nanopsycho>
+        <20220525085054.70f297ac@kernel.org>
+        <Yo9obX5Cppn8GFC4@nanopsycho>
+        <20220526103539.60dcb7f0@kernel.org>
+        <YpB9cwqcSAMslKLu@nanopsycho>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26554/Fri May 27 10:04:35 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -41,52 +66,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub, hi Paolo, hi Eric,
+On Fri, 27 May 2022 09:27:47 +0200 Jiri Pirko wrote:
+> Okay. So the output of devlink dev info would be extended by
+> "components" nest. This nest would carry array of components which
+> contain versions. The name of the component is openin each array member
+> nest:
+> 
+> $ devlink dev info
+> pci/0000:01:00.0:
+>   driver mlxsw_spectrum2
+>   versions:
+>       fixed:
+>         hw.revision A0
+>         fw.psid MT_0000000199
+>       running:
+>         fw.version 29.2010.2302
+>         fw 29.2010.2302
+>   components:
+>     lc1:
 
-The following pull-request contains BPF updates for your *net* tree.
+Is the "lc1" free-form or generated by the core based on subobjects?
+Is it carried as a string or object type + id?
 
-We've added 2 non-merge commits during the last 1 day(s) which contain
-a total of 2 files changed, 6 insertions(+), 10 deletions(-).
+I guess my suggestion of a CLI mockup has proven its weakness :)
 
-The main changes are:
+>       versions:
+>         fixed:
+>           hw.revision 0
+>           fw.psid MT_0000000111
+>         running:
+>           fw 19.2010.1310
+>           ini.version 4
+>     lc2:
+>       versions:
+>         fixed:
+>           hw.revision 0
+>           fw.psid MT_0000000111
+>         running:
+>           fw 19.2010.1310
+>           ini.version 4
+>     someothercomponentname:
+>       versions:
+>         running:
+> 	   fw: 888
+> 
+> Now on top of exsisting "devlink dev flash" cmd without component, user
+> may specify the component name from the array above:
+> 
+> $ devlink dev flash pci/0000:01:00.0 component lc1 file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
+> 
+> $ devlink dev flash pci/0000:01:00.0 component someothercomponentname file foo.bin
+> 
+> Note this is generic vehicle, line cards would benefit but it is usable
+> for multiple ASIC FW partitions for example.
+> 
+> Note that on "devlink dev flash" there is no change. This is implemented
+> currently. Only "devlink dev info" is extended to show the component
+> list.
 
-1) Fix ldx_probe_mem instruction in interpreter by properly zero-extending
-   the bpf_probe_read_kernel() read content, from Menglong Dong.
+I sort of assumed that the DEVLINK_ATTR_INFO_VERSION_NAME is the
+component, the docs also use the word "component" for it. 
 
-2) Fix stacktrace_build_id BPF selftest given urandom_read has been renamed
-   into urandom_read_iter in random driver, from Song Liu.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-David Vernet, Hao Peng, Jiang Biao, Mykola Lysenko
-
-----------------------------------------------------------------
-
-The following changes since commit 2c262b21de6dc93ac4d8c7a4cea0da4226b451fb:
-
-  net: usb: qmi_wwan: add Telit 0x1250 composition (2022-05-27 12:12:40 +0100)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to caff1fa4118cec4dfd4336521ebd22a6408a1e3e:
-
-  bpf: Fix probe read error in ___bpf_prog_run() (2022-05-28 01:09:18 +0200)
-
-----------------------------------------------------------------
-Menglong Dong (1):
-      bpf: Fix probe read error in ___bpf_prog_run()
-
-Song Liu (1):
-      selftests/bpf: fix stacktrace_build_id with missing kprobe/urandom_read
-
- kernel/bpf/core.c                                          | 14 +++++---------
- .../testing/selftests/bpf/progs/test_stacktrace_build_id.c |  2 +-
- 2 files changed, 6 insertions(+), 10 deletions(-)
+For the nfp for instance we had "fw.app" for the datapath microcode and
+"fw.mgmt" for the control processor. These are separate partitions on
+the flash. I don't think we ever implemented writing them separately
+but it's certainly was our internal plan at some point.
