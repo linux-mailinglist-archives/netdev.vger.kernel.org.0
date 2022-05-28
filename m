@@ -2,60 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28273536E26
-	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 21:11:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54C35536E47
+	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 22:00:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbiE1TLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 May 2022 15:11:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35578 "EHLO
+        id S229565AbiE1T5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 May 2022 15:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiE1TLQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 15:11:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6830E6D86A
-        for <netdev@vger.kernel.org>; Sat, 28 May 2022 12:11:08 -0700 (PDT)
+        with ESMTP id S229556AbiE1T53 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 15:57:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7254474B;
+        Sat, 28 May 2022 12:53:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A72BB80885
-        for <netdev@vger.kernel.org>; Sat, 28 May 2022 19:02:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85525C34100;
-        Sat, 28 May 2022 19:02:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3495660C84;
+        Sat, 28 May 2022 19:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8CD4EC34117;
+        Sat, 28 May 2022 19:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653764574;
-        bh=PENZKiL8VO6QpRh6gvJR4EMjrhAlK6L5DxB8rj5OXQw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=e+eOvN2oF6uZ/PtGrQj/3ql0qGNApEyXcaWl5hhUsKpM7xkUupvwwnl8hzwSN7oep
-         AtxyMR046KoyKy2mm19mk+7MkilD/1Z3mDXGroXm5LeCFsUhtBorV4A3kDeEuCuTAy
-         W7POTrkdFoW5xELzACRS6NEKUUzSyyXy2Sm+6wCc3fS1dMfDrISXiaPsJK3kYhuGTA
-         FtwCvISrphnhT1yEJjcP7aKzUuMlOsXfgOj28s/USvU0bLh49JoXJv5xRq2ECEhZiw
-         XHgfAUJ5acG2I4Rc3SIz9o9HJk59WVxbHjpoy/Zczk/pCRrYydN9l2ABZ3VMnRrgIQ
-         FYIvpMOALXBWA==
-Date:   Sat, 28 May 2022 12:02:53 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
-        andrew@lunn.ch, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
- and info
-Message-ID: <20220528120253.5200f80f@kernel.org>
-In-Reply-To: <YpHmrdCmiRagdxvt@nanopsycho>
-References: <20220523105640.36d1e4b3@kernel.org>
-        <Yox/TkxkTUtd0RMM@nanopsycho>
-        <YozsUWj8TQPi7OkM@nanopsycho>
-        <20220524110057.38f3ca0d@kernel.org>
-        <Yo3KvfgTVTFM/JHL@nanopsycho>
-        <20220525085054.70f297ac@kernel.org>
-        <Yo9obX5Cppn8GFC4@nanopsycho>
-        <20220526103539.60dcb7f0@kernel.org>
-        <YpB9cwqcSAMslKLu@nanopsycho>
-        <20220527171038.52363749@kernel.org>
-        <YpHmrdCmiRagdxvt@nanopsycho>
+        s=k20201202; t=1653766211;
+        bh=LE5Pmj9FFmU1ckt7mZgAQoT947XRJVaEXYAznCha/NQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=uzafZ4lhX1hDFn0JtQMswHl+cX/lxJlJzABcR23Qil2E26AZS7avImz8NsB02feu/
+         uz6aTpig9NpCThihMUtrVPGlSfXCFcGOw0SBQGTrblfeqJnTTUxY9Iqn1HSIMK4a27
+         fFC2enrm1NTCXyCs1N5ClaN2T1IFwzsgGns8kAb0iYJsSt1kN5Kg0O7ZojvwEhRI4h
+         9NcmN0Oyh7ISvUZK4Pw6nUJVfk28yexA1rQPeNF2JFi8WmwHrbEAEETYf/I7E+uU3o
+         pG/nuNs5NM4/URJYsomKOnEuqDpwJ7G/rUOLfJxjb5TkD20DrbKk196BcNQAPSZiB2
+         f6dRou4Ym/Dyw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 717FDF03944;
+        Sat, 28 May 2022 19:30:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: enetc: Use pci_release_region() to release some
+ resources
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165376621146.15448.670456967245992093.git-patchwork-notify@kernel.org>
+Date:   Sat, 28 May 2022 19:30:11 +0000
+References: <b0dcb6124717d13900e48b2f1fa697b922f672b2.1653643529.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <b0dcb6124717d13900e48b2f1fa697b922f672b2.1653643529.git.christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     claudiu.manoil@nxp.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, andrew@lunn.ch,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -66,112 +59,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 28 May 2022 11:09:01 +0200 Jiri Pirko wrote:
-> Sat, May 28, 2022 at 02:10:38AM CEST, kuba@kernel.org wrote:
-> >
-> >Is the "lc1" free-form or generated by the core based on subobjects?
-> >Is it carried as a string or object type + id?  
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Fri, 27 May 2022 11:25:47 +0200 you wrote:
+> Some resources are allocated using pci_request_region().
+> It is more straightforward to release them with pci_release_region().
 > 
-> It could be both:
-> 1) for line cards I plan to have a helper to have this generated by core
-> 2) for other FW objects, it is up to the driver.
-
-Did you mean "either" or "both"?
-
-> >I guess my suggestion of a CLI mockup has proven its weakness :)  
+> Fixes: 231ece36f50d ("enetc: Add mdio bus driver for the PCIe MDIO endpoint")
 > 
-> I'm not sure I understand what you mean by this sentence. Could you
-> please be more blunt? You know, my english is not so good to understand
-> some hidden meanings :)
-
-The question of what kind of attribute "lc1" is carried in would had
-been answered in posting of a code, while CLI mockup doesn't provide
-such detail.
-
-> >
-> >I sort of assumed that the DEVLINK_ATTR_INFO_VERSION_NAME is the
-> >component, the docs also use the word "component" for it.   
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 > 
-> Okay, that I didn't see.
-> 
-> >
-> >For the nfp for instance we had "fw.app" for the datapath microcode and
-> >"fw.mgmt" for the control processor. These are separate partitions on
-> >the flash. I don't think we ever implemented writing them separately
-> >but it's certainly was our internal plan at some point.  
-> 
-> Okay, so what you say it, we already have components in "devlink dev
-> info". Like you pointed out as an example:
->   fw.app
->   fw.mgmt
-> so the flash comment would be:
->   devlink dev flash pci/0000:01:00.0 component fw.app file foo.bin
->   devlink dev flash pci/0000:01:00.0 component fw.mgmt file bar.bin
-> ?
+> [...]
 
-Correct.
+Here is the summary with links:
+  - net: enetc: Use pci_release_region() to release some resources
+    https://git.kernel.org/netdev/net/c/18eeb4dea65c
 
-> If yes, what should be the default in case component is not defined? Do
-> we need to expose it in "devlink dev info"? How?
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Not defined as in someone tries to flash component X but there is no
-version for X in info?
 
-> So to extend this existing facility with my line card example, we would
-> have:
-> 
-> $ devlink dev info
-> pci/0000:01:00.0:
->    driver mlxsw_spectrum2
->    versions:
->        fixed:
->          hw.revision A0
->          fw.psid MT_0000000199
-> 	 lc1.hw.revision 0
-> 	 lc1.fw.psid MT_0000000111
-> 	 lc2.hw.revision 0
-> 	 lc2.fw.psid MT_0000000111
->        running:
->          fw.version 29.2010.2302
->          fw 29.2010.2302
-> 	 lc1.fw 19.2010.1310
-> 	 lc1.ini.version 4
-> 	 lc2.fw 19.2010.1310
-> 	 lc2.ini.version 4
-> 
-> And then:
-> devlink dev flash pci/0000:01:00.0 component lc1.fw file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
-> 
-> Does this sound correct?
-
-I think I suggested something like that in the past, but back then 
-I was assuming that lc FW would come from the same large FW bundle
-file as the control plan FW, and we would not have to use the component.
-
-Let's step back and look from the automation perspective again.
-Assuming we don't want to hardcode matching "lc$i" there how can 
-a generic FW update service scan the dev info and decide on what
-dev flash command to fire off?
-
-> Also, to avoid free-form, I can imagine to have per-linecard info_get() op
-> which would be called for each line card from devlink_nl_info_fill() and
-> prefix the "lcX" automatically without driver being involved.
-> 
-> Sounds good?
-
-Hm. That's moving the matryoshka-ing of the objects from the uAPI level
-to the internals. 
-
-If we don't do the string prefix but instead pass the subobject info to
-the user space as an attribute per version we can at least avoid
-per-subobject commands (DEVLINK_CMD_LINECARD_INFO_GET). Much closer to
-how health reporters are implemented than how params are done, so I
-think it is a good direction.
-
-We still need to iron out how the automation can go over the main FW
-and sub-objects in a generic way.
-
-I still think full devlink sub-instance is better because we will end
-up needing params or health. Fake devices can be made with auxbus or
-otherwise. But if you really don't want sub-instances we can explore 
-the above.
