@@ -2,57 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F3F153694D
-	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 02:10:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E54D453695F
+	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 02:24:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351215AbiE1AKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 20:10:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54296 "EHLO
+        id S1355251AbiE1AYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 20:24:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbiE1AKn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 20:10:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE662AE1B
-        for <netdev@vger.kernel.org>; Fri, 27 May 2022 17:10:42 -0700 (PDT)
+        with ESMTP id S245666AbiE1AYc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 20:24:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E821A12816C;
+        Fri, 27 May 2022 17:24:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70EDAB82655
-        for <netdev@vger.kernel.org>; Sat, 28 May 2022 00:10:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F234C385A9;
-        Sat, 28 May 2022 00:10:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 837D561B10;
+        Sat, 28 May 2022 00:24:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7100BC385A9;
+        Sat, 28 May 2022 00:24:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653696640;
-        bh=deeVstLirzwzuUFVT4d8hFJpWp1D4Uv59omXQS1HX2U=;
+        s=k20201202; t=1653697470;
+        bh=qIeo6JA4DyQSPaWCe6rVK+y6LvJBmRfB69g0OJlcccQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OXjsg0eEE/QuD1GY66o/y7Z5tJRay7FvLyf1BQz2BayGY9tyrwdFVH84ejVCVOnGi
-         ftgGZWsRgtQreThBtz4VPF6E+tj4w0ONPOS2yqHYcpiOfZRxcnl/3eQcbizxb7Hg6o
-         i+xZkX0ZzVtKXzRUbdFHkDagE33fa/PIY6y05U0C8lFiAfHiIT8fD5ybaVhR2DaBi/
-         sKuyQS7SOtuwGSCI+RrFcsMeakdb05kjFPCUZm7KGmhHBEccmlww3TSBUJf8gYZrXk
-         b53RcogfhmZ35eSLhpGofre/sAGvezSC5dZXzjtPS3e/P6igpu0A1SVm3nLhL5JYzw
-         /XSfBaFibd3hw==
-Date:   Fri, 27 May 2022 17:10:38 -0700
+        b=CgNMxMfx7+wKROjD/tbPomCNoavKeo+cNapEs/zriCIX0Veinl3wj89kEd/SNdfih
+         SKF9BoBugxnhbD3cudZgm/w4NZ77YffZJJKatGYDkMINzIo1rz6nPAY1KfTtxjvI9a
+         SYeSS7KJcy14oAJgwV5Su+i44tQ892k9pDTmAKUgyLUSLv8NpPM3rmxiH7hpsfDx3z
+         GI10eWJl/a3Y5fKkhP/F9PieaTPE8cXKDPlMDWbA+c4Hek20s4+p60/u1hWSEk90P2
+         sIPuq43d8x9FMZwsFXuHoBzXB7yfVyDk/2IOWK7crM2Em5/2z+UvKBVWiAPLaVuP7s
+         Tckgo3bTbS/TA==
+Date:   Fri, 27 May 2022 17:24:29 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
-        andrew@lunn.ch, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
- and info
-Message-ID: <20220527171038.52363749@kernel.org>
-In-Reply-To: <YpB9cwqcSAMslKLu@nanopsycho>
-References: <20220502073933.5699595c@kernel.org>
-        <YotW74GJWt0glDnE@nanopsycho>
-        <20220523105640.36d1e4b3@kernel.org>
-        <Yox/TkxkTUtd0RMM@nanopsycho>
-        <YozsUWj8TQPi7OkM@nanopsycho>
-        <20220524110057.38f3ca0d@kernel.org>
-        <Yo3KvfgTVTFM/JHL@nanopsycho>
-        <20220525085054.70f297ac@kernel.org>
-        <Yo9obX5Cppn8GFC4@nanopsycho>
-        <20220526103539.60dcb7f0@kernel.org>
-        <YpB9cwqcSAMslKLu@nanopsycho>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Kalle Valo <kvalo@kernel.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, torvalds@linux-foundation.org
+Subject: Re: mainline build failure due to c1918196427b ("iwlwifi: pcie:
+ simplify MSI-X cause mapping")
+Message-ID: <20220527172429.6cd3110e@kernel.org>
+In-Reply-To: <604ee91b52c79c575bb0ac0849f504be354bf404.camel@sipsolutions.net>
+References: <YpCWIlVFd7JDPfT+@debian>
+        <875ylrqqko.fsf@kernel.org>
+        <604ee91b52c79c575bb0ac0849f504be354bf404.camel@sipsolutions.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -66,68 +62,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 May 2022 09:27:47 +0200 Jiri Pirko wrote:
-> Okay. So the output of devlink dev info would be extended by
-> "components" nest. This nest would carry array of components which
-> contain versions. The name of the component is openin each array member
-> nest:
+On Fri, 27 May 2022 11:23:10 +0200 Johannes Berg wrote:
+> On Fri, 2022-05-27 at 12:20 +0300, Kalle Valo wrote:
+> > 
+> > iwlwifi: pcie: rename CAUSE macro
+> > 
+> > https://patchwork.kernel.org/project/linux-wireless/patch/20220523220300.682be2029361.I283200b18da589a975a284073dca8ed001ee107a@changeid/
+> > 
+> > It's marked as accepted but I don't know where it's applied to, Gregory?  
 > 
-> $ devlink dev info
-> pci/0000:01:00.0:
->   driver mlxsw_spectrum2
->   versions:
->       fixed:
->         hw.revision A0
->         fw.psid MT_0000000199
->       running:
->         fw.version 29.2010.2302
->         fw 29.2010.2302
->   components:
->     lc1:
+> Gregory picked it up to our internal tree.
+> 
+> > This is failing the build, should Linus apply the fix directly to his
+> > tree?  
+> 
+> I had previous asked Jakub if he wanted to do that, but he didn't (yet).
+> I don't know what's the best course of action right now...
+> 
+> No objections to it taking any kind of fast path though :)
 
-Is the "lc1" free-form or generated by the core based on subobjects?
-Is it carried as a string or object type + id?
+IIRC this is a warning and it's on MIPS only [1], so if it can make its
+way to your Wed PR and I'll send it to Linus on Thu - that should be
+good enough (I think).
 
-I guess my suggestion of a CLI mockup has proven its weakness :)
-
->       versions:
->         fixed:
->           hw.revision 0
->           fw.psid MT_0000000111
->         running:
->           fw 19.2010.1310
->           ini.version 4
->     lc2:
->       versions:
->         fixed:
->           hw.revision 0
->           fw.psid MT_0000000111
->         running:
->           fw 19.2010.1310
->           ini.version 4
->     someothercomponentname:
->       versions:
->         running:
-> 	   fw: 888
-> 
-> Now on top of exsisting "devlink dev flash" cmd without component, user
-> may specify the component name from the array above:
-> 
-> $ devlink dev flash pci/0000:01:00.0 component lc1 file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
-> 
-> $ devlink dev flash pci/0000:01:00.0 component someothercomponentname file foo.bin
-> 
-> Note this is generic vehicle, line cards would benefit but it is usable
-> for multiple ASIC FW partitions for example.
-> 
-> Note that on "devlink dev flash" there is no change. This is implemented
-> currently. Only "devlink dev info" is extended to show the component
-> list.
-
-I sort of assumed that the DEVLINK_ATTR_INFO_VERSION_NAME is the
-component, the docs also use the word "component" for it. 
-
-For the nfp for instance we had "fw.app" for the datapath microcode and
-"fw.mgmt" for the control processor. These are separate partitions on
-the flash. I don't think we ever implemented writing them separately
-but it's certainly was our internal plan at some point.
+[1] https://lore.kernel.org/all/20220523125906.20d60f1d@kernel.org/
