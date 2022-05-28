@@ -2,421 +2,331 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E8A7536D72
-	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 17:14:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F4C3536D8F
+	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 17:43:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237225AbiE1POO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 May 2022 11:14:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34926 "EHLO
+        id S237856AbiE1Pm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 May 2022 11:42:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237153AbiE1POO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 11:14:14 -0400
-Received: from smtp.smtpout.orange.fr (smtp05.smtpout.orange.fr [80.12.242.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09CEA15A3D
-        for <netdev@vger.kernel.org>; Sat, 28 May 2022 08:14:11 -0700 (PDT)
-Received: from pop-os.home ([90.11.191.102])
-        by smtp.orange.fr with ESMTPA
-        id uy8mnuDxQ6rrEuy8mnJluk; Sat, 28 May 2022 17:14:10 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sat, 28 May 2022 17:14:10 +0200
-X-ME-IP: 90.11.191.102
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     tglx@linutronix.de,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        Felipe Balbi <felipe.balbi@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH] USB: Follow-up to SPDX GPL-2.0+ identifiers addition - remove now useless comments
-Date:   Sat, 28 May 2022 17:13:56 +0200
-Message-Id: <5c6c58772ada0fd95434c669b79428bd610c0084.1653750820.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S237805AbiE1Pm5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 11:42:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12188183A3;
+        Sat, 28 May 2022 08:42:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 252BCB800C1;
+        Sat, 28 May 2022 15:42:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2784C34100;
+        Sat, 28 May 2022 15:42:49 +0000 (UTC)
+Date:   Sat, 28 May 2022 11:42:48 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org
+Subject: [PATCH v7] ftrace: Add FTRACE_MCOUNT_MAX_OFFSET to avoid adding
+ weak function
+Message-ID: <20220528114248.31cf36d4@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All these files have been updated in the commit given in the Fixes: tag
-below.
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-When the SPDX-License-Identifier: has been added, the corresponding text at
-the beginning of the files has not been deleted.
-All these texts are about GPL-2.0+, with different variation in the
-wording.
+If an unused weak function was traced, it's call to fentry will still
+exist, which gets added into the __mcount_loc table. Ftrace will use
+kallsyms to retrieve the name for each location in __mcount_loc to display
+it in the available_filter_functions and used to enable functions via the
+name matching in set_ftrace_filter/notrace. Enabling these functions do
+nothing but enable an unused call to ftrace_caller. If a traced weak
+function is overridden, the symbol of the function would be used for it,
+which will either created duplicate names, or if the previous function was
+not traced, it would be incorrectly be listed in available_filter_functions
+as a function that can be traced.
 
-Remove these now useless lines to save some LoC.
+This became an issue with BPF[1] as there are tooling that enables the
+direct callers via ftrace but then checks to see if the functions were
+actually enabled. The case of one function that was marked notrace, but
+was followed by an unused weak function that was traced. The unused
+function's call to fentry was added to the __mcount_loc section, and
+kallsyms retrieved the untraced function's symbol as the weak function was
+overridden. Since the untraced function would not get traced, the BPF
+check would detect this and fail.
 
-Fixes: 5fd54ace4721 ("USB: add SPDX identifiers to all remaining files in drivers/usb/")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+The real fix would be to fix kallsyms to not show addresses of weak
+functions as the function before it. But that would require adding code in
+the build to add function size to kallsyms so that it can know when the
+function ends instead of just using the start of the next known symbol.
+
+In the mean time, this is a work around. Add a FTRACE_MCOUNT_MAX_OFFSET
+macro that if defined, ftrace will ignore any function that has its call
+to fentry/mcount that has an offset from the symbol that is greater than
+FTRACE_MCOUNT_MAX_OFFSET.
+
+If CONFIG_HAVE_FENTRY is defined for x86, define FTRACE_MCOUNT_MAX_OFFSET
+to zero (unless IBT is enabled), which will have ftrace ignore all locations
+that are not at the start of the function (or one after the ENDBR
+instruction).
+
+A worker thread is added at boot up to scan all the ftrace record entries,
+and will mark any that fail the FTRACE_MCOUNT_MAX_OFFSET test as disabled.
+They will still appear in the available_filter_functions file as:
+
+  __ftrace_invalid_address___<invalid-offset>
+
+(showing the offset that caused it to be invalid).
+
+This is required for tools that use libtracefs (like trace-cmd does) that
+scan the available_filter_functions and enable set_ftrace_filter and
+set_ftrace_notrace using indexes of the function listed in the file (this
+is a speedup, as enabling thousands of files via names is an O(n^2)
+operation and can take minutes to complete, where the indexing takes less
+than a second).
+
+The invalid functions cannot be removed from available_filter_functions as
+the names there correspond to the ftrace records in the array that manages
+them (and the indexing depends on this).
+
+[1] https://lore.kernel.org/all/20220412094923.0abe90955e5db486b7bca279@kernel.org/
+
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- include/linux/usb/c67x00.h        | 15 ---------------
- include/linux/usb/composite.h     | 14 --------------
- include/linux/usb/ehci_def.h      | 14 --------------
- include/linux/usb/ehci_pdriver.h  | 14 --------------
- include/linux/usb/g_hid.h         | 14 --------------
- include/linux/usb/hcd.h           | 14 --------------
- include/linux/usb/musb-ux500.h    | 10 ----------
- include/linux/usb/net2280.h       | 14 --------------
- include/linux/usb/ohci_pdriver.h  | 14 --------------
- include/linux/usb/otg-fsm.h       | 17 ++---------------
- include/linux/usb/phy_companion.h | 10 ----------
- include/linux/usb/rndis_host.h    | 14 --------------
- include/linux/usb/usb338x.h       | 11 -----------
- include/linux/usb/usbnet.h        | 14 --------------
- 14 files changed, 2 insertions(+), 187 deletions(-)
+Changes since v6: https://lore.kernel.org/all/20220527234003.2719e6c6@gandalf.local.home/
+ - Clear all flags set in the weak record for modules other than 
+   the DISABLED flag. Also, move the check before doing the reference
+   counting.
 
-diff --git a/include/linux/usb/c67x00.h b/include/linux/usb/c67x00.h
-index 2fc39e3b7281..45e0757e58f3 100644
---- a/include/linux/usb/c67x00.h
-+++ b/include/linux/usb/c67x00.h
-@@ -3,21 +3,6 @@
-  * usb_c67x00.h: platform definitions for the Cypress C67X00 USB chip
-  *
-  * Copyright (C) 2006-2008 Barco N.V.
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, write to the Free Software
-- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-- * MA  02110-1301  USA.
-  */
+ arch/x86/include/asm/ftrace.h |   7 ++
+ kernel/trace/ftrace.c         | 141 +++++++++++++++++++++++++++++++++-
+ 2 files changed, 146 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/ftrace.h b/arch/x86/include/asm/ftrace.h
+index 024d9797646e..b5ef474be858 100644
+--- a/arch/x86/include/asm/ftrace.h
++++ b/arch/x86/include/asm/ftrace.h
+@@ -9,6 +9,13 @@
+ # define MCOUNT_ADDR		((unsigned long)(__fentry__))
+ #define MCOUNT_INSN_SIZE	5 /* sizeof mcount call */
  
- #ifndef _LINUX_USB_C67X00_H
-diff --git a/include/linux/usb/composite.h b/include/linux/usb/composite.h
-index 9d2762279286..43ac3fa760db 100644
---- a/include/linux/usb/composite.h
-+++ b/include/linux/usb/composite.h
-@@ -3,20 +3,6 @@
-  * composite.h -- framework for usb gadgets which are composite devices
-  *
-  * Copyright (C) 2006-2008 David Brownell
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, write to the Free Software
-- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-  */
++/* Ignore unused weak functions which will have non zero offsets */
++#ifdef CONFIG_HAVE_FENTRY
++# include <asm/ibt.h>
++/* Add offset for endbr64 if IBT enabled */
++# define FTRACE_MCOUNT_MAX_OFFSET	ENDBR_INSN_SIZE
++#endif
++
+ #ifdef CONFIG_DYNAMIC_FTRACE
+ #define ARCH_SUPPORTS_FTRACE_OPS 1
+ #endif
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index d653ef4febc5..c5088c76a108 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -45,6 +45,8 @@
+ #include "trace_output.h"
+ #include "trace_stat.h"
  
- #ifndef	__LINUX_USB_COMPOSITE_H
-diff --git a/include/linux/usb/ehci_def.h b/include/linux/usb/ehci_def.h
-index c892c5bc6638..fbabadd3b372 100644
---- a/include/linux/usb/ehci_def.h
-+++ b/include/linux/usb/ehci_def.h
-@@ -1,20 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+
- /*
-  * Copyright (c) 2001-2002 by David Brownell
-- *
-- * This program is free software; you can redistribute it and/or modify it
-- * under the terms of the GNU General Public License as published by the
-- * Free Software Foundation; either version 2 of the License, or (at your
-- * option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful, but
-- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-- * for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, write to the Free Software Foundation,
-- * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-  */
++#define FTRACE_INVALID_FUNCTION		"__ftrace_invalid_address__"
++
+ #define FTRACE_WARN_ON(cond)			\
+ 	({					\
+ 		int ___r = cond;		\
+@@ -3654,6 +3656,105 @@ static void add_trampoline_func(struct seq_file *m, struct ftrace_ops *ops,
+ 		seq_printf(m, " ->%pS", ptr);
+ }
  
- #ifndef __LINUX_USB_EHCI_DEF_H
-diff --git a/include/linux/usb/ehci_pdriver.h b/include/linux/usb/ehci_pdriver.h
-index 89fc901e778f..0f1b166f5aa0 100644
---- a/include/linux/usb/ehci_pdriver.h
-+++ b/include/linux/usb/ehci_pdriver.h
-@@ -1,20 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+
- /*
-  * Copyright (C) 2012 Hauke Mehrtens <hauke@hauke-m.de>
-- *
-- * This program is free software; you can redistribute it and/or modify it
-- * under the terms of the GNU General Public License as published by the
-- * Free Software Foundation; either version 2 of the License, or (at your
-- * option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful, but
-- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-- * for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, write to the Free Software Foundation,
-- * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-  */
- 
- #ifndef __USB_CORE_EHCI_PDRIVER_H
-diff --git a/include/linux/usb/g_hid.h b/include/linux/usb/g_hid.h
-index 7581e488c237..d56bfedeb079 100644
---- a/include/linux/usb/g_hid.h
-+++ b/include/linux/usb/g_hid.h
-@@ -3,20 +3,6 @@
-  * g_hid.h -- Header file for USB HID gadget driver
-  *
-  * Copyright (C) 2010 Fabien Chouteau <fabien.chouteau@barco.com>
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, write to the Free Software
-- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-  */
- 
- #ifndef __LINUX_USB_G_HID_H
-diff --git a/include/linux/usb/hcd.h b/include/linux/usb/hcd.h
-index 2c1fc9212cf2..37ccb31b1d40 100644
---- a/include/linux/usb/hcd.h
-+++ b/include/linux/usb/hcd.h
-@@ -1,20 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+
- /*
-  * Copyright (c) 2001-2002 by David Brownell
-- *
-- * This program is free software; you can redistribute it and/or modify it
-- * under the terms of the GNU General Public License as published by the
-- * Free Software Foundation; either version 2 of the License, or (at your
-- * option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful, but
-- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-- * for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, write to the Free Software Foundation,
-- * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-  */
- 
- #ifndef __USB_CORE_HCD_H
-diff --git a/include/linux/usb/musb-ux500.h b/include/linux/usb/musb-ux500.h
-index c4b7ad9850ca..d60dcfc56b5a 100644
---- a/include/linux/usb/musb-ux500.h
-+++ b/include/linux/usb/musb-ux500.h
-@@ -1,16 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+
- /*
-  * Copyright (C) 2013 ST-Ericsson AB
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-  */
- 
- #ifndef __MUSB_UX500_H__
-diff --git a/include/linux/usb/net2280.h b/include/linux/usb/net2280.h
-index 08b85caecfaf..f29fe6a1f415 100644
---- a/include/linux/usb/net2280.h
-+++ b/include/linux/usb/net2280.h
-@@ -5,20 +5,6 @@
-  *
-  * Copyright (C) 2002 NetChip Technology, Inc. (http://www.netchip.com)
-  * Copyright (C) 2003 David Brownell
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, write to the Free Software
-- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-  */
- 
- #ifndef __LINUX_USB_NET2280_H
-diff --git a/include/linux/usb/ohci_pdriver.h b/include/linux/usb/ohci_pdriver.h
-index 7eb16cf587ee..2447c78b1766 100644
---- a/include/linux/usb/ohci_pdriver.h
-+++ b/include/linux/usb/ohci_pdriver.h
-@@ -1,20 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+
- /*
-  * Copyright (C) 2012 Hauke Mehrtens <hauke@hauke-m.de>
-- *
-- * This program is free software; you can redistribute it and/or modify it
-- * under the terms of the GNU General Public License as published by the
-- * Free Software Foundation; either version 2 of the License, or (at your
-- * option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful, but
-- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-- * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
-- * for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, write to the Free Software Foundation,
-- * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-  */
- 
- #ifndef __USB_CORE_OHCI_PDRIVER_H
-diff --git a/include/linux/usb/otg-fsm.h b/include/linux/usb/otg-fsm.h
-index 784659d4dc99..6135d076c53d 100644
---- a/include/linux/usb/otg-fsm.h
-+++ b/include/linux/usb/otg-fsm.h
-@@ -1,19 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+
--/* Copyright (C) 2007,2008 Freescale Semiconductor, Inc.
-- *
-- * This program is free software; you can redistribute  it and/or modify it
-- * under  the terms of  the GNU General  Public License as published by the
-- * Free Software Foundation;  either version 2 of the  License, or (at your
-- * option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful, but
-- * WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-- * General Public License for more details.
-- *
-- * You should have received a copy of the  GNU General Public License along
-- * with this program; if not, write  to the Free Software Foundation, Inc.,
-- * 675 Mass Ave, Cambridge, MA 02139, USA.
++#ifdef FTRACE_MCOUNT_MAX_OFFSET
 +/*
-+ * Copyright (C) 2007,2008 Freescale Semiconductor, Inc.
-  */
++ * Weak functions can still have an mcount/fentry that is saved in
++ * the __mcount_loc section. These can be detected by having a
++ * symbol offset of greater than FTRACE_MCOUNT_MAX_OFFSET, as the
++ * symbol found by kallsyms is not the function that the mcount/fentry
++ * is part of. The offset is much greater in these cases.
++ *
++ * Test the record to make sure that the ip points to a valid kallsyms
++ * and if not, mark it disabled.
++ */
++static int test_for_valid_rec(struct dyn_ftrace *rec)
++{
++	char str[KSYM_SYMBOL_LEN];
++	unsigned long offset;
++	const char *ret;
++
++	ret = kallsyms_lookup(rec->ip, NULL, &offset, NULL, str);
++
++	/* Weak functions can cause invalid addresses */
++	if (!ret || offset > FTRACE_MCOUNT_MAX_OFFSET) {
++		rec->flags |= FTRACE_FL_DISABLED;
++		return 0;
++	}
++	return 1;
++}
++
++static struct workqueue_struct *ftrace_check_wq __initdata;
++static struct work_struct ftrace_check_work __initdata;
++
++/*
++ * Scan all the mcount/fentry entries to make sure they are valid.
++ */
++static __init void ftrace_check_work_func(struct work_struct *work)
++{
++	struct ftrace_page *pg;
++	struct dyn_ftrace *rec;
++
++	mutex_lock(&ftrace_lock);
++	do_for_each_ftrace_rec(pg, rec) {
++		test_for_valid_rec(rec);
++	} while_for_each_ftrace_rec();
++	mutex_unlock(&ftrace_lock);
++}
++
++static int __init ftrace_check_for_weak_functions(void)
++{
++	INIT_WORK(&ftrace_check_work, ftrace_check_work_func);
++
++	ftrace_check_wq = alloc_workqueue("ftrace_check_wq", WQ_UNBOUND, 0);
++
++	queue_work(ftrace_check_wq, &ftrace_check_work);
++	return 0;
++}
++
++static int __init ftrace_check_sync(void)
++{
++	/* Make sure the ftrace_check updates are finished */
++	if (ftrace_check_wq)
++		destroy_workqueue(ftrace_check_wq);
++	return 0;
++}
++
++late_initcall_sync(ftrace_check_sync);
++subsys_initcall(ftrace_check_for_weak_functions);
++
++static int print_rec(struct seq_file *m, unsigned long ip)
++{
++	unsigned long offset;
++	char str[KSYM_SYMBOL_LEN];
++	char *modname;
++	const char *ret;
++
++	ret = kallsyms_lookup(ip, NULL, &offset, &modname, str);
++	/* Weak functions can cause invalid addresses */
++	if (!ret || offset > FTRACE_MCOUNT_MAX_OFFSET) {
++		snprintf(str, KSYM_SYMBOL_LEN, "%s_%ld",
++			 FTRACE_INVALID_FUNCTION, offset);
++		ret = NULL;
++	}
++
++	seq_puts(m, str);
++	if (modname)
++		seq_printf(m, " [%s]", modname);
++	return ret == NULL ? -1 : 0;
++}
++#else
++static inline int test_for_valid_rec(struct dyn_ftrace *rec)
++{
++	return 1;
++}
++
++static inline int print_rec(struct seq_file *m, unsigned long ip)
++{
++	seq_printf(m, "%ps", (void *)ip);
++	return 0;
++}
++#endif
++
+ static int t_show(struct seq_file *m, void *v)
+ {
+ 	struct ftrace_iterator *iter = m->private;
+@@ -3678,7 +3779,13 @@ static int t_show(struct seq_file *m, void *v)
+ 	if (!rec)
+ 		return 0;
  
- #ifndef __LINUX_USB_OTG_FSM_H
-diff --git a/include/linux/usb/phy_companion.h b/include/linux/usb/phy_companion.h
-index 263196f05015..862aaeca2319 100644
---- a/include/linux/usb/phy_companion.h
-+++ b/include/linux/usb/phy_companion.h
-@@ -3,18 +3,8 @@
-  * phy-companion.h -- phy companion to indicate the comparator part of PHY
-  *
-  * Copyright (C) 2012 Texas Instruments Incorporated - https://www.ti.com
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-  *
-  * Author: Kishon Vijay Abraham I <kishon@ti.com>
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-  */
+-	seq_printf(m, "%ps", (void *)rec->ip);
++	if (print_rec(m, rec->ip)) {
++		/* This should only happen when a rec is disabled */
++		WARN_ON_ONCE(!(rec->flags & FTRACE_FL_DISABLED));
++		seq_putc(m, '\n');
++		return 0;
++	}
++
+ 	if (iter->flags & FTRACE_ITER_ENABLED) {
+ 		struct ftrace_ops *ops;
  
- #ifndef __DRIVERS_PHY_COMPANION_H
-diff --git a/include/linux/usb/rndis_host.h b/include/linux/usb/rndis_host.h
-index cc42db51bbba..489cfb1d00f6 100644
---- a/include/linux/usb/rndis_host.h
-+++ b/include/linux/usb/rndis_host.h
-@@ -2,20 +2,6 @@
- /*
-  * Host Side support for RNDIS Networking Links
-  * Copyright (C) 2005 by David Brownell
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, write to the Free Software
-- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-  */
+@@ -3996,6 +4103,24 @@ add_rec_by_index(struct ftrace_hash *hash, struct ftrace_glob *func_g,
+ 	return 0;
+ }
  
- #ifndef	__LINUX_USB_RNDIS_HOST_H
-diff --git a/include/linux/usb/usb338x.h b/include/linux/usb/usb338x.h
-index 20020c1336d5..70a7e3cdb3c9 100644
---- a/include/linux/usb/usb338x.h
-+++ b/include/linux/usb/usb338x.h
-@@ -6,17 +6,6 @@
-  * Copyright (C) 2002 NetChip Technology, Inc. (http://www.netchip.com)
-  * Copyright (C) 2003 David Brownell
-  * Copyright (C) 2014 Ricardo Ribalda - Qtechnology/AS
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-  */
++#ifdef FTRACE_MCOUNT_MAX_OFFSET
++static int lookup_ip(unsigned long ip, char **modname, char *str)
++{
++	unsigned long offset;
++
++	kallsyms_lookup(ip, NULL, &offset, modname, str);
++	if (offset > FTRACE_MCOUNT_MAX_OFFSET)
++		return -1;
++	return 0;
++}
++#else
++static int lookup_ip(unsigned long ip, char **modname, char *str)
++{
++	kallsyms_lookup(ip, NULL, NULL, modname, str);
++	return 0;
++}
++#endif
++
+ static int
+ ftrace_match_record(struct dyn_ftrace *rec, struct ftrace_glob *func_g,
+ 		struct ftrace_glob *mod_g, int exclude_mod)
+@@ -4003,7 +4128,12 @@ ftrace_match_record(struct dyn_ftrace *rec, struct ftrace_glob *func_g,
+ 	char str[KSYM_SYMBOL_LEN];
+ 	char *modname;
  
- #ifndef __LINUX_USB_USB338X_H
-diff --git a/include/linux/usb/usbnet.h b/include/linux/usb/usbnet.h
-index 1b4d72d5e891..4f5608cbd9ab 100644
---- a/include/linux/usb/usbnet.h
-+++ b/include/linux/usb/usbnet.h
-@@ -4,20 +4,6 @@
-  *
-  * Copyright (C) 2000-2005 by David Brownell <dbrownell@users.sourceforge.net>
-  * Copyright (C) 2003-2005 David Hollis <dhollis@davehollis.com>
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, write to the Free Software
-- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-  */
+-	kallsyms_lookup(rec->ip, NULL, NULL, &modname, str);
++	if (lookup_ip(rec->ip, &modname, str)) {
++		/* This should only happen when a rec is disabled */
++		WARN_ON_ONCE(system_state == SYSTEM_RUNNING &&
++			     !(rec->flags & FTRACE_FL_DISABLED));
++		return 0;
++	}
  
- #ifndef	__LINUX_USB_USBNET_H
+ 	if (mod_g) {
+ 		int mod_matches = (modname) ? ftrace_match(modname, mod_g) : 0;
+@@ -6819,6 +6949,13 @@ void ftrace_module_enable(struct module *mod)
+ 		    !within_module_init(rec->ip, mod))
+ 			break;
+ 
++		/* Weak functions should still be ignored */
++		if (!test_for_valid_rec(rec)) {
++			/* Clear all other flags. Should not be enabled anyway */
++			rec->flags = FTRACE_FL_DISABLED;
++			continue;
++		}
++
+ 		cnt = 0;
+ 
+ 		/*
 -- 
-2.34.1
+2.35.1
 
