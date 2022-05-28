@@ -2,47 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47F16536AC1
-	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 06:34:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77F50536AE9
+	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 07:28:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239596AbiE1EdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 May 2022 00:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54128 "EHLO
+        id S1354614AbiE1F2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 May 2022 01:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238534AbiE1EdP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 00:33:15 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF14E5D5FE;
-        Fri, 27 May 2022 21:33:13 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L981F0KGDzDqSf;
-        Sat, 28 May 2022 12:33:05 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 28 May 2022 12:33:11 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 28 May 2022 12:33:11 +0800
-From:   Ke Liu <liuke94@huawei.com>
-To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Ke Liu <liuke94@huawei.com>
-Subject: [PATCH] net: phy: Directly use ida_alloc()/free()
-Date:   Sat, 28 May 2022 04:54:37 +0000
-Message-ID: <20220528045437.102232-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230054AbiE1F2O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 01:28:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715003AA40;
+        Fri, 27 May 2022 22:28:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EA82B826A7;
+        Sat, 28 May 2022 05:28:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CACA2C34100;
+        Sat, 28 May 2022 05:28:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653715690;
+        bh=kJC1YQ2Fcox47AmJFx59AV8GPwK/+Co3XeZND2MgUD0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oM1KOh7BNwvd6HG5WKH+wymWh6ECTXj4VNm9a6SUjwm2YZMtHbeVeDHlRgoZSe8h4
+         /estUBk3ZmMQ+f3Ov+XkqDawufdhLe0OxGQlXST9ODwU3Kft4hQA8IG98fxitRqDEu
+         ZTKixQk6UHsdNJejB55KuHZGKLifTGih7VI4MFivxgtGqtddESUVd3+zjHEa3H7eKj
+         R6ekxailC76nHO3KkTca6YjHdLXnXMfakXTYGViRx8AxaNzU8HEpxNBn8QD9DGnkIU
+         6sGi5AJoCaWqB3bW5RjBwLTDhnv9KnASn3bPowQ1w//9WxDOcBM4XAi3tea36GCdhc
+         3zhi92cZkOXAA==
+Date:   Fri, 27 May 2022 22:28:09 -0700
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Eric Dumazet <edumazet@google.com>, linux-rdma@vger.kernel.org,
+        Maor Gottlieb <maorg@nvidia.com>,
+        Mark Bloch <markb@nvidia.com>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH net] net/mlx5: Don't use already freed action pointer
+Message-ID: <20220528052809.raf6bjndaxs2fvxk@sx1>
+References: <7fe70bbb120422cc71e6b018531954d58ea2e61e.1653397057.git.leonro@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <7fe70bbb120422cc71e6b018531954d58ea2e61e.1653397057.git.leonro@nvidia.com>
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -51,43 +60,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove().
+On 24 May 15:59, Leon Romanovsky wrote:
+>From: Leon Romanovsky <leonro@nvidia.com>
+>
+>The call to mlx5dr_action_destroy() releases "action" memory. That
+>pointer is set to miss_action later and generates the following smatch
+>error:
+>
+> drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c:53 set_miss_action()
+> warn: 'action' was already freed.
+>
+>Make sure that the pointer is always valid by setting NULL after destroy.
+>
+>Fixes: 6a48faeeca10 ("net/mlx5: Add direct rule fs_cmd implementation")
+>Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+>Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-Signed-off-by: Ke Liu <liuke94@huawei.com>
----
- drivers/net/phy/fixed_phy.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Applied to net-mlx5. I am still working on other critical fixes in my
+net queue, will submit all at once next week so we can make it to rc1.
 
-diff --git a/drivers/net/phy/fixed_phy.c b/drivers/net/phy/fixed_phy.c
-index c65fb5f5d2dc..03abe6233bbb 100644
---- a/drivers/net/phy/fixed_phy.c
-+++ b/drivers/net/phy/fixed_phy.c
-@@ -180,7 +180,7 @@ static void fixed_phy_del(int phy_addr)
- 			if (fp->link_gpiod)
- 				gpiod_put(fp->link_gpiod);
- 			kfree(fp);
--			ida_simple_remove(&phy_fixed_ida, phy_addr);
-+			ida_free(&phy_fixed_ida, phy_addr);
- 			return;
- 		}
- 	}
-@@ -244,13 +244,13 @@ static struct phy_device *__fixed_phy_register(unsigned int irq,
- 	}
- 
- 	/* Get the next available PHY address, up to PHY_MAX_ADDR */
--	phy_addr = ida_simple_get(&phy_fixed_ida, 0, PHY_MAX_ADDR, GFP_KERNEL);
-+	phy_addr = ida_alloc_max(&phy_fixed_ida, PHY_MAX_ADDR - 1, GFP_KERNEL);
- 	if (phy_addr < 0)
- 		return ERR_PTR(phy_addr);
- 
- 	ret = fixed_phy_add_gpiod(irq, phy_addr, status, gpiod);
- 	if (ret < 0) {
--		ida_simple_remove(&phy_fixed_ida, phy_addr);
-+		ida_free(&phy_fixed_ida, phy_addr);
- 		return ERR_PTR(ret);
- 	}
- 
--- 
-2.25.1
+Thanks,
+Saeed
+
 
