@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E54D453695F
-	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 02:24:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F35EC53696E
+	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 02:39:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355251AbiE1AYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 20:24:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37406 "EHLO
+        id S1355269AbiE1AjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 20:39:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245666AbiE1AYc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 20:24:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E821A12816C;
-        Fri, 27 May 2022 17:24:31 -0700 (PDT)
+        with ESMTP id S229854AbiE1AjV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 20:39:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E69B496B3;
+        Fri, 27 May 2022 17:39:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 837D561B10;
-        Sat, 28 May 2022 00:24:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7100BC385A9;
-        Sat, 28 May 2022 00:24:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61691B825E7;
+        Sat, 28 May 2022 00:39:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90C1DC385A9;
+        Sat, 28 May 2022 00:39:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653697470;
-        bh=qIeo6JA4DyQSPaWCe6rVK+y6LvJBmRfB69g0OJlcccQ=;
+        s=k20201202; t=1653698357;
+        bh=8kvWjLS5nLEsyvb9/kvzb99/2a/PJ7zI0saL5NfzYUI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CgNMxMfx7+wKROjD/tbPomCNoavKeo+cNapEs/zriCIX0Veinl3wj89kEd/SNdfih
-         SKF9BoBugxnhbD3cudZgm/w4NZ77YffZJJKatGYDkMINzIo1rz6nPAY1KfTtxjvI9a
-         SYeSS7KJcy14oAJgwV5Su+i44tQ892k9pDTmAKUgyLUSLv8NpPM3rmxiH7hpsfDx3z
-         GI10eWJl/a3Y5fKkhP/F9PieaTPE8cXKDPlMDWbA+c4Hek20s4+p60/u1hWSEk90P2
-         sIPuq43d8x9FMZwsFXuHoBzXB7yfVyDk/2IOWK7crM2Em5/2z+UvKBVWiAPLaVuP7s
-         Tckgo3bTbS/TA==
-Date:   Fri, 27 May 2022 17:24:29 -0700
+        b=WniJ/Q+vFJF5P62ha9Slb96mIhdog9bpxFNAYC9bSxM88NO8iwfxzkhtYJjEjtLuf
+         kd5RrcwThGqW+WoM6lJNyySRexA08gRtmHT/arQddz/af/OLaOZDuBFoZiHlXzLUYU
+         ohi4KL2Ftq76m1G6yDFMf/6Rh1ckoCro3LiBFGS35OnOiw+7/AL0KZBJlMNj/GxDL2
+         imuw2HXKuDj9MldfaqntYEa7xNxqhLvYJyYcZ9PMtNwOee5sBZhst4XwT78p0Y0Cvn
+         RB55Io5w6INiT6ASWC5VmrazKgESFYqaQV+8Jni20c51j+0JboP1Itwr3JFENmZh1e
+         mGmL0Ov4UNHBQ==
+Date:   Fri, 27 May 2022 17:39:15 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Kalle Valo <kvalo@kernel.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+To:     Shijith Thotton <sthotton@marvell.com>
+Cc:     Arnaud Ebalard <arno@natisbad.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        <linux-crypto@vger.kernel.org>, <jerinj@marvell.com>,
+        <sgoutham@marvell.com>, Linu Cherian <lcherian@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, torvalds@linux-foundation.org
-Subject: Re: mainline build failure due to c1918196427b ("iwlwifi: pcie:
- simplify MSI-X cause mapping")
-Message-ID: <20220527172429.6cd3110e@kernel.org>
-In-Reply-To: <604ee91b52c79c575bb0ac0849f504be354bf404.camel@sipsolutions.net>
-References: <YpCWIlVFd7JDPfT+@debian>
-        <875ylrqqko.fsf@kernel.org>
-        <604ee91b52c79c575bb0ac0849f504be354bf404.camel@sipsolutions.net>
+        "open list:MARVELL OCTEONTX2 RVU ADMIN FUNCTION DRIVER" 
+        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] octeontx2-af: fix operand size in bitwise operation
+Message-ID: <20220527173915.1c30cdb7@kernel.org>
+In-Reply-To: <6baefc0e5cddb99df98b6a96a15fbd0328b12bda.1653637964.git.sthotton@marvell.com>
+References: <6baefc0e5cddb99df98b6a96a15fbd0328b12bda.1653637964.git.sthotton@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,27 +63,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 May 2022 11:23:10 +0200 Johannes Berg wrote:
-> On Fri, 2022-05-27 at 12:20 +0300, Kalle Valo wrote:
-> > 
-> > iwlwifi: pcie: rename CAUSE macro
-> > 
-> > https://patchwork.kernel.org/project/linux-wireless/patch/20220523220300.682be2029361.I283200b18da589a975a284073dca8ed001ee107a@changeid/
-> > 
-> > It's marked as accepted but I don't know where it's applied to, Gregory?  
+On Fri, 27 May 2022 13:29:28 +0530 Shijith Thotton wrote:
+> Made size of operands same in bitwise operations.
 > 
-> Gregory picked it up to our internal tree.
+> The patch fixes the klocwork issue, operands in a bitwise operation
+> have different size at line 375 and 483.
 > 
-> > This is failing the build, should Linus apply the fix directly to his
-> > tree?  
-> 
-> I had previous asked Jakub if he wanted to do that, but he didn't (yet).
-> I don't know what's the best course of action right now...
-> 
-> No objections to it taking any kind of fast path though :)
+> Signed-off-by: Shijith Thotton <sthotton@marvell.com>
 
-IIRC this is a warning and it's on MIPS only [1], so if it can make its
-way to your Wed PR and I'll send it to Linus on Thu - that should be
-good enough (I think).
+# Form letter - net-next is closed
 
-[1] https://lore.kernel.org/all/20220523125906.20d60f1d@kernel.org/
+We have already sent the networking pull request for 5.19
+and therefore net-next is closed for new drivers, features,
+code refactoring and optimizations. We are currently accepting
+bug fixes only.
+
+Please repost when net-next reopens after 5.19-rc1 is cut.
+
+RFC patches sent for review only are obviously welcome at any time.
