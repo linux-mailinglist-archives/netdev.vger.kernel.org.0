@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FFA0536D4B
-	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 16:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AABB536D51
+	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 16:40:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236555AbiE1OaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 May 2022 10:30:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46312 "EHLO
+        id S235737AbiE1OkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 May 2022 10:40:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234642AbiE1OaN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 10:30:13 -0400
+        with ESMTP id S231317AbiE1OkN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 May 2022 10:40:13 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2A0118E09
-        for <netdev@vger.kernel.org>; Sat, 28 May 2022 07:30:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA5B417E08
+        for <netdev@vger.kernel.org>; Sat, 28 May 2022 07:40:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37B5160E77
-        for <netdev@vger.kernel.org>; Sat, 28 May 2022 14:30:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7CFBFC34117;
-        Sat, 28 May 2022 14:30:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 426E460DED
+        for <netdev@vger.kernel.org>; Sat, 28 May 2022 14:40:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 95587C34117;
+        Sat, 28 May 2022 14:40:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653748211;
-        bh=0n3pzcCq0bSELDO2vctcbS2m6S4r78iPdsJWJhIRR7g=;
+        s=k20201202; t=1653748811;
+        bh=lKDy/nYpMOe2CHpo5ZQ22UHPCpZVR3wt+SUQNAogoP0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dFkxc5ENq1/6P1TG1TAIShDn8sB6TyQjwa8832B+YVjZ3YC76KQqzcFPdOqnTLqXP
-         JR/GMEN7X8olhcLFqli0eV6+eyPOxSI9KfnJ2ETyriwWfiAAB6udN/NH4VIaRCM1Wo
-         u4U1FW1cIkR55sx/8IeWOvmlLw87cJfb6mpWe5nwRj4JipSiV9Xt1ao5mCnDF3A//t
-         XJV5kQCurcZLVhNYqPKM4zYXa6VdjYDab7sTW+OimPhEHSj698YfxrbeoIOai24cFk
-         HBJh+BxjRx0v99l5P07qL8jIFqpEfniQjNgNfRYwbQsoexP1zjJG1Z9MkoVMmKMa4/
-         HmdwKTepp1sjw==
+        b=gdTKzJt0lnW5i2GJ91I1+H67LsvJrwu52eaH6QJePlrhbiy+uJXSdkPrXjvq3akyO
+         wXYGzZkIarR0dmop31hngF4T8e8eBTnsHqbV9ZVj1C8vCaZHNWhmOfCLVWmbGYjeoh
+         IvtZJllnGqWWnUcZiVrT611DstODrEmihwxXEjVBbXUix24/YJIIP/W53ZthpmI4I2
+         BQDT0Qv31GKKSVvVajysEfyu4obAjz8V2gFkTVkXja1JF3ewHdKXNSuAKnZxPZ8wp6
+         X6GiazeVR9XAfFf4ei+hknGSx5vRjv4V6Ci+5P/wtIcYzSBI/nUGpMamIMR0gSz7u+
+         XneF4LrRZsllw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 64514F03942;
-        Sat, 28 May 2022 14:30:11 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7ACE7F0394B;
+        Sat, 28 May 2022 14:40:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] nfp: only report pause frame configuration for physical
- device
+Subject: Re: [PATCH net] bonding: NS target should accept link local address
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165374821140.9964.13031827104109225961.git-patchwork-notify@kernel.org>
-Date:   Sat, 28 May 2022 14:30:11 +0000
-References: <20220527182424.621275-1-simon.horman@corigine.com>
-In-Reply-To: <20220527182424.621275-1-simon.horman@corigine.com>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, yu.xiao@corigine.com
+Message-Id: <165374881149.13902.3468751378080291217.git-patchwork-notify@kernel.org>
+Date:   Sat, 28 May 2022 14:40:11 +0000
+References: <20220527064439.1837544-1-liuhangbin@gmail.com>
+In-Reply-To: <20220527064439.1837544-1-liuhangbin@gmail.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, j.vosburgh@gmail.com, vfalico@gmail.com,
+        andy@greyhouse.net, davem@davemloft.net, kuba@kernel.org,
+        jtoppins@redhat.com, eric.dumazet@gmail.com, pabeni@redhat.com,
+        liali@redhat.com
 X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,21 +63,20 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 27 May 2022 20:24:24 +0200 you wrote:
-> From: Yu Xiao <yu.xiao@corigine.com>
+On Fri, 27 May 2022 14:44:39 +0800 you wrote:
+> When setting bond NS target, we use bond_is_ip6_target_ok() to check
+> if the address valid. The link local address was wrongly rejected in
+> bond_changelink(), as most time the user just set the ARP/NS target to
+> gateway, while the IPv6 gateway is always a link local address when user
+> set up interface via SLAAC.
 > 
-> Only report pause frame configuration for physical device. Logical
-> port of both PCI PF and PCI VF do not support it.
-> 
-> Fixes: 9fdc5d85a8fe ("nfp: update ethtool reporting of pauseframe control")
-> Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
-> Signed-off-by: Simon Horman <simon.horman@corigine.com>
+> So remove the link local addr check when setting bond NS target.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] nfp: only report pause frame configuration for physical device
-    https://git.kernel.org/netdev/net/c/0649e4d63420
+  - [net] bonding: NS target should accept link local address
+    https://git.kernel.org/netdev/net/c/5e1eeef69c0f
 
 You are awesome, thank you!
 -- 
