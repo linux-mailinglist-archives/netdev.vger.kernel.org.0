@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A2585369B4
-	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 03:30:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A8385369D7
+	for <lists+netdev@lfdr.de>; Sat, 28 May 2022 03:39:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355497AbiE1Bai (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 May 2022 21:30:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60110 "EHLO
+        id S233407AbiE1Bhi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 May 2022 21:37:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355540AbiE1BaQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 21:30:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5CC2132773;
-        Fri, 27 May 2022 18:30:15 -0700 (PDT)
+        with ESMTP id S231660AbiE1Bhe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 May 2022 21:37:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EDF1271BA;
+        Fri, 27 May 2022 18:37:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F588B8266D;
-        Sat, 28 May 2022 01:30:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F3FCAC34114;
-        Sat, 28 May 2022 01:30:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C94A61BE9;
+        Sat, 28 May 2022 01:37:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CC11C385A9;
+        Sat, 28 May 2022 01:37:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653701413;
-        bh=i41YhGqBq9eNSRQxAZMF0GrW8MDdl0IZqfBg+V0ebuQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YVa5GRAnlAVbKMVhYp0nxxdEROvqIAq9gtl/4/f8aXeCJmmRIlVQj0Oug2zKIatgy
-         4azN/h0Js+lkKu6kkXoM6wpIxIrZ9/K9wvjckRlBPXu8LuBPFV3CgT3Jm0TRZyjMc9
-         T4frUIL3bN8Ayw/mkOgLONvlp59dkX2MZKd60s/zR3+CmvVAkyAquwnBpk4Zs07paF
-         pAmFjbbK2mfvkjZP33Lzl0jjzllaMo2aSZWjqTde+QLnd0GJif3BeBkz6MCsZnxDVH
-         NsiyZnQy6xopc5ODzeuyDpgy/mwr2Kg4lzHjakOKgl5s6qoQdDP4Qwy9NjIasmrQEg
-         cuTkvcKm4swKQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D4F96EAC081;
-        Sat, 28 May 2022 01:30:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1653701852;
+        bh=0A4GDS0/xoWk9h+94rvB7hZvdBuYFPiKZbBmCrPpur4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EgVunYxNG9zVa6HGSDa9fnF7jafFHulZ1dvn3cVJHIaOzxJZAlr72t4YipRYRBoVX
+         3zucd9EkoB0vfJUyz4E6nrjEEnhXB0/qD2JE7l3hd6btX0Dbg2LsacvBGDKqK5c/9P
+         e30Sl8s0yZJobB6wmWfJ8eL9l54f7tHvWLMCs3Mwp4xNINwE+4PPuBiVviGbP6Qitg
+         eAUlIkZnSezAFJfBSLyQMHCV4SkXP5KmpcQff7ji57oihyLxhzeM3foi+jdeMUdyAo
+         yMEKMHcPlSQrhKbPfoSqEF1xOgzyk3glcygsdfNVnyvKVKRQ6ppjXqHhbBktfRq9eD
+         prh4uw7JjieGQ==
+Date:   Fri, 27 May 2022 18:37:30 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Era Mayflower <mayflowerera@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] net: macsec: Retrieve MACSec-XPN attributes before
+ offloading
+Message-ID: <20220527183730.144bb400@kernel.org>
+In-Reply-To: <AM9PR08MB67886ABF9BF353568A56B29BDBD99@AM9PR08MB6788.eurprd08.prod.outlook.com>
+References: <AM9PR08MB67886ABF9BF353568A56B29BDBD99@AM9PR08MB6788.eurprd08.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net] dt-bindings: net: Update ADIN PHY maintainers
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165370141286.14527.15855968807352373650.git-patchwork-notify@kernel.org>
-Date:   Sat, 28 May 2022 01:30:12 +0000
-References: <20220526141318.77146-1-alexandru.tachici@analog.com>
-In-Reply-To: <20220526141318.77146-1-alexandru.tachici@analog.com>
-To:     Alexandru Tachici <alexandru.tachici@analog.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org,
-        devicetree@vger.kernel.org, edumazet@google.com,
-        geert+renesas@glider.be, geert@linux-m68k.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-kernel@vger.kernel.org,
-        michael.hennerich@analog.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,28 +58,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 26 May 2022 17:13:18 +0300 you wrote:
-> From: Alexandru Tachici <alexandru.tachici@analog.com>
+On Thu, 26 May 2022 12:28:00 +0000 Carlos Fernandez wrote:
+> From: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+> To: "David S. Miller" <davem@davemloft.net>, Eric Dumazet  <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni  <pabeni@redhat.com>, Era Mayflower <mayflowerera@gmail.com>,  "netdev@vger.kernel.org" <netdev@vger.kernel.org>,  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+> CC: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+> Subject: [PATCH net] net: macsec: Retrieve MACSec-XPN attributes before  offloading
+> Date: Thu, 26 May 2022 12:28:00 +0000
 > 
-> Update the dt-bindings maintainers section.
+> From 149a8fbcf7a410ed6be0e660d5b83eb9f17decc6 Mon Sep 17 00:00:00 2001
+> From: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+> Date: Tue, 24 May 2022 12:29:52 +0200
+> Subject: [PATCH net] net: macsec: Retrieve MACSec-XPN attributes before
+>  offloading
 > 
-> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
-> ---
->  Documentation/devicetree/bindings/net/adi,adin.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> When MACsec offloading is used with XPN, before mdo_add_rxsa
+> and mdo_add_txsa functions are called, the key salt is not
+> copied to the macsec context struct. Offloaded phys will need
+> this data when performing offloading.
 
-Here is the summary with links:
-  - [net] dt-bindings: net: Update ADIN PHY maintainers
-    https://git.kernel.org/netdev/net/c/4dc160a52da1
+Now git can't detect the patch at all:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+$ git pw series apply 645266
+Patch is empty.
+When you have resolved this problem, run "git am --continue".
+If you prefer to skip this patch, run "git am --skip" instead.
+To restore the original branch and stop patching, run "git am --abort".
 
-
+:(
