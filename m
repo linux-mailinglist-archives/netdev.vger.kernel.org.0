@@ -2,170 +2,374 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4563B5370DC
-	for <lists+netdev@lfdr.de>; Sun, 29 May 2022 13:51:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C28A537156
+	for <lists+netdev@lfdr.de>; Sun, 29 May 2022 16:25:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230113AbiE2Lu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 May 2022 07:50:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44860 "EHLO
+        id S230413AbiE2OZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 May 2022 10:25:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229732AbiE2Lu5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 May 2022 07:50:57 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2082.outbound.protection.outlook.com [40.107.94.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D3F4A909
-        for <netdev@vger.kernel.org>; Sun, 29 May 2022 04:50:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GQxh+nwPMMutzJEazZAl0a8QVKe7CW5xk6370e02B/ahn8L+kbICbj9J2GqZ3jcPAr+GwQrSuYaSG2KxEWF9Yo+Ny9obFnksKIR1gi31H3i8dFckUEHW9KVUqdIwz9o+8agQbKF6hurmL4zAogNd1j9EgMaD18M/Zi+TOj0KQRI/hnOnDcZ/znbXZVY9oCtiDTL1LPm2os07I6epoUZW/qbNIaOOIoOInpApXGJ1wGszMkSnA1TmtMXsTB1uR0yOrBx58IG3ihQApa4ITKpFWd46Cn+uz/3ueKZhxaUHon0+oFaMf6DDQ3j3gCh5+tSk8mSIab5ntz8hTXWnkW0zlA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NKRG3f39MbqLWhKFhEL1C9edf7wh7ypvREs95IFZMfk=;
- b=nS4b8hkEo+HkV4ZMEpplwBIBDihpJu3QCDn+IAZQROYKJqz9Pu6m7ig8KRlWvRIqDUL75zM+Bxq3eNGe3+EBfOY8SElgmYh4eAJ2iVXTEV/v/gINDeXVeiQDLfICZ66pUWkmjFVNb+D6eXZH/VWMvQ0UGwo1aKFUUVeocs2viVs1pbH/sBPPdHAw5TBkrJK7/9R1h1JPBXEjR5NIHyaiOXdyFAcmy5+qDluNtChtVjaUGoie9zDuBXRVrSIFeF0gf7eXPkj2VhvxwxHen6TOAm8f5EX9VT0R3fWcuFSUmDmx0kAZR2eSfqIaBsGeM/UOtmD+Mh4UDGTY3qv4xjPHqQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NKRG3f39MbqLWhKFhEL1C9edf7wh7ypvREs95IFZMfk=;
- b=tgoBHORpT4eYHBQBJe2Po42laih8mnrulazq5R/wEFkw7AAvRz9lwEzCipi8a37CRykTW+PGq0GBS0fCGX+NWXXfb5N9cO62Vmioql5WswjdU1DvLEeXhQsWocGZVYILg48mpPCxxmvKBNJeNiTddOiey/FHQuFyXclA6uPBBDGF1tEg0foLgznMGm3MjAwYBWD+ubFpjQUR7BQ9RShEiKAmMcjcrvonE99AREhniTV2zxO8LSC1YaBC1bAJDFc03wdkKdoRGftOmI8oL92a+Bc0fW2RgjoM8ZBIJaCcSCqOVjtlIsJrkQyINrfXF1mPiPwj9r9CZL2QkQH98KYOyA==
-Received: from BN0PR02CA0056.namprd02.prod.outlook.com (2603:10b6:408:e5::31)
- by BN7PR12MB2836.namprd12.prod.outlook.com (2603:10b6:408:32::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Sun, 29 May
- 2022 11:50:54 +0000
-Received: from BN8NAM11FT023.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:e5:cafe::6d) by BN0PR02CA0056.outlook.office365.com
- (2603:10b6:408:e5::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13 via Frontend
- Transport; Sun, 29 May 2022 11:50:54 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.235) by
- BN8NAM11FT023.mail.protection.outlook.com (10.13.177.103) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5293.13 via Frontend Transport; Sun, 29 May 2022 11:50:53 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Sun, 29 May 2022 11:50:53 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Sun, 29 May 2022 04:50:51 -0700
-Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Sun, 29 May 2022 04:50:49 -0700
-From:   Tariq Toukan <tariqt@nvidia.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>
-CC:     <netdev@vger.kernel.org>, Aya Levin <ayal@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [PATCH net V2] net: ping6: Fix ping -6 with interface name
-Date:   Sun, 29 May 2022 14:50:33 +0300
-Message-ID: <20220529115033.13454-1-tariqt@nvidia.com>
-X-Mailer: git-send-email 2.21.0
+        with ESMTP id S230408AbiE2OZd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 May 2022 10:25:33 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF7955E151;
+        Sun, 29 May 2022 07:25:31 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id p13so3738942ybm.1;
+        Sun, 29 May 2022 07:25:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+0zPRYJnufvVPkTixT+aSSdJu8NMBjIecozVwXO0Nko=;
+        b=LqdjDaXotHC/DSVIXU8KG9WyTe3pAhOq0KOMWQ1stlTUK2qbRsT6lbKLNKLFgksH5T
+         sfmSavGPerQYxhzJETb/O9SerasmLDNr5OekWLv3iHR9ZAJDdIcjSy22+5gawPV4dolD
+         kxFBR/8dJ87BkHPcsGkDvQCHy3qeon2Az640yUvS5oj081UliQpd+vDBYvp8Q7l6diDH
+         0zdl/J+PfNeHc1zuu1bA9gyAGWu0lNllRowBWzK9ys9w4vyhaWHiYkkbPAn7+nPvBSZP
+         irOZBTYIX1jaktNgcNuoAGdZAFziRSIg0fvE1E9ZQ43ylFKicLpwys8+PzRVFLNXcbRV
+         w/WQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+0zPRYJnufvVPkTixT+aSSdJu8NMBjIecozVwXO0Nko=;
+        b=DWl1toFPNAmiTM+2frl+/rGe19J02J34WuBRUPcmpatlwxuSZMIjJPpI+nxApQPfJS
+         3cqw/aaXk8jrGGFDc4T0FemQ6Xm8keL0lBSI85sKxy91FTu/yiUIbzjdFIDv6xtmtl9q
+         il+pZ6QICOHAaHvac5bFlizRJgpgHfjL6Obo1HVLuKocAwHhFLB1lOVgeIP0xEBdDvWq
+         fnLt1yLAJBbN2dAXll3t0KvPZV6snOpQHA3qndcil+k9zMep6+DiVC2ZRbWXfBVvzSi8
+         OuhzdiBxxlfixA1kh30ubYXIBHEKiRANPpZVKn1YFEnWbsN2RCgaHyefH7C3spnJyg7E
+         +fSQ==
+X-Gm-Message-State: AOAM5339WkMRGgY5Le14mdYHp2mUIVQXinpc7qkiK9ienWviY0rT0Rkp
+        y2jzIxaE+12GPDDYa/pgHBSE5Wbv6vWiSHimXWcakDoacZd0Pg==
+X-Google-Smtp-Source: ABdhPJwtNSjqYTLL1SW8UvN5n72R4plMC2o/nSbnPtkZ2xGV4T5mxk3wZ9RBBltR4yaQKbgIyL2o7sqHgaBLCOh9XbM=
+X-Received: by 2002:a5b:1d0:0:b0:65c:ce2b:594f with SMTP id
+ f16-20020a5b01d0000000b0065cce2b594fmr1574128ybp.500.1653834331020; Sun, 29
+ May 2022 07:25:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b1f7744c-3d9f-45f4-edc2-08da41697c72
-X-MS-TrafficTypeDiagnostic: BN7PR12MB2836:EE_
-X-Microsoft-Antispam-PRVS: <BN7PR12MB2836A2E857400728FA5F28C0A3DA9@BN7PR12MB2836.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WDi9Hyu6d8NH0+8yzQAzojtU4HZ3Zg1mMKL5JI8wIoufUzLi+EUEnPUhSP0lPMTQfix4+0oTG4gR0e121efz12vDA3BV8ymEQFA24q5hL7sDucFkMAEZekmIXq7vvdYrcO8otlafUiFHh81nwxBWK0gMnVZ4NgMR0Ls7lBmG2r2HIiC521dyV8Cd/yI8chkDbx0WnuKPLXULvO4O3ghspCnCP+oskh1BISgGV0AGl/cJgu3P+3kGlZtgIrlrXti+wF16BNjXvT5hkg1M5tcl5qp70lkShzgeLEDlpdncKxpFCjCsJ6K75FTGP/WS+ky66h346z7RCR/VoT54fiVkYF4iUX9SeT9uHHzwgzBdisgeRMqoW6smnGHUjQeSuKOYqYpR6PbJa9DKlGJcs3pqDHqGi+LwsFFu6qfBLVlYQZvkhhGjmNRJZqeXhavKwQXM5hVdpmrCePjm9UxmHZcN4tijaAm0CfY55JzjKpRLvCanleaJAZjKryjoj4rfUGud+ozf5Mt/yeueoFG4oNqfgYxqQl4h9+DA2wqlU9Fk7cwKjhM1n1Vtf8IThibuoA2ehaXQoK81j7fW3a/MMtz682MIoRl4IFh8UjKEnwLYrLM7AZGq5v8kIwCeAXUx2BCtTFDd6qwyfX9nuJxXohYnHs0qOwj6bIn9OW2VgDoFw5NfNf4hvC5PZogcnCvCe7WqPda8eoEYhYLj/bbRaHuB0Q==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(2616005)(5660300002)(82310400005)(8936002)(86362001)(107886003)(1076003)(508600001)(40460700003)(83380400001)(8676002)(4326008)(336012)(186003)(426003)(7696005)(36756003)(70586007)(70206006)(2906002)(6666004)(47076005)(81166007)(356005)(54906003)(316002)(26005)(36860700001)(110136005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2022 11:50:53.9437
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b1f7744c-3d9f-45f4-edc2-08da41697c72
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT023.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2836
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220512135901.1377087-1-srinivas.neeli@xilinx.com>
+ <CAMZ6Rq+z69CTY6Ec0n9d0-ri6pcyHtKH917M1eTD6hgkmyvGDQ@mail.gmail.com>
+ <DM6PR02MB53868E201FAB1F01D01AAB25AFD99@DM6PR02MB5386.namprd02.prod.outlook.com>
+ <CAMZ6RqLKQ-jmQfF7yq5dObpbzky6FcjEFw9acHmfLLhp2v4eXg@mail.gmail.com> <DM6PR02MB5386DCD8D96FEC639D967A42AFDB9@DM6PR02MB5386.namprd02.prod.outlook.com>
+In-Reply-To: <DM6PR02MB5386DCD8D96FEC639D967A42AFDB9@DM6PR02MB5386.namprd02.prod.outlook.com>
+From:   Vincent Mailhol <vincent.mailhol@gmail.com>
+Date:   Sun, 29 May 2022 23:25:19 +0900
+Message-ID: <CAMZ6RqJ2JHJYRu-pSpbpV6SOBqs5w7RNt5R3xeuRyD++NiNWPw@mail.gmail.com>
+Subject: Re: [PATCH] can: xilinx_can: Add Transmitter delay compensation (TDC)
+ feature support
+To:     Srinivas Neeli <sneeli@xilinx.com>
+Cc:     "wg@grandegger.com" <wg@grandegger.com>,
+        "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Appana Durga Kedareswara Rao <appanad@xilinx.com>,
+        Srinivas Goud <sgoud@xilinx.com>,
+        Michal Simek <michals@xilinx.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        git <git@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aya Levin <ayal@nvidia.com>
+On Sat. 28 May 2022 at 09:46, Srinivas Neeli <sneeli@xilinx.com> wrote:
+> Hi Vincent,
+>
+> > -----Original Message-----
+> > From: Vincent Mailhol <vincent.mailhol@gmail.com>
+> > Sent: Friday, May 27, 2022 6:01 AM
+> > To: Srinivas Neeli <sneeli@xilinx.com>
+> > Cc: wg@grandegger.com; mkl@pengutronix.de; davem@davemloft.net;
+> > edumazet@google.com; Appana Durga Kedareswara Rao
+> > <appanad@xilinx.com>; Srinivas Goud <sgoud@xilinx.com>; Michal Simek
+> > <michals@xilinx.com>; kuba@kernel.org; pabeni@redhat.com; linux-
+> > can@vger.kernel.org; netdev@vger.kernel.org; linux-arm-
+> > kernel@lists.infradead.org; linux-kernel@vger.kernel.org; git
+> > <git@xilinx.com>
+> > Subject: Re: [PATCH] can: xilinx_can: Add Transmitter delay compensation
+> > (TDC) feature support
+> >
+> > On Fri. 27 May 2022 at 00:51, Srinivas Neeli <sneeli@xilinx.com> wrote:
+> > > Hi Vincent,
+> > >
+> > > > -----Original Message-----
+> > > > From: Vincent Mailhol <vincent.mailhol@gmail.com>
+> > > > Sent: Friday, May 13, 2022 6:54 AM
+> > > > To: Srinivas Neeli <sneeli@xilinx.com>
+> > > > Cc: wg@grandegger.com; mkl@pengutronix.de; davem@davemloft.net;
+> > > > edumazet@google.com; Appana Durga Kedareswara Rao
+> > > > <appanad@xilinx.com>; Srinivas Goud <sgoud@xilinx.com>; Michal
+> > Simek
+> > > > <michals@xilinx.com>; kuba@kernel.org; pabeni@redhat.com; linux-
+> > > > can@vger.kernel.org; netdev@vger.kernel.org; linux-arm-
+> > > > kernel@lists.infradead.org; linux-kernel@vger.kernel.org; git
+> > > > <git@xilinx.com>
+> > > > Subject: Re: [PATCH] can: xilinx_can: Add Transmitter delay
+> > > > compensation
+> > > > (TDC) feature support
+> > > >
+> > > > On Fri. 13 May 2022 at 07:30, Srinivas Neeli
+> > > > <srinivas.neeli@xilinx.com>
+> > > > wrote:
+> > > > > Added Transmitter delay compensation (TDC) feature support.
+> > > > > In the case of higher measured loop delay with higher baud rates,
+> > > > > observed bit stuff errors.
+> > > > > By enabling the TDC feature in a controller, will compensate for
+> > > > > the measure loop delay in the receive path.
+> > > > > TDC feature requires BRP values can be 1 or 2.
+> > > > > The current CAN framework does not limit the brp so while using
+> > > > > TDC, have to restrict BRP values.
+> > > > > Ex:
+> > > > > ip link set can0 type can tq 12 prop-seg 39 phase-seg1 20
+> > > > > phase-seg2
+> > > > > 20 sjw 20 dtq 12 dprop-seg 5 dphase-seg1 6 dphase-seg2 4 dsjw 4 fd
+> > > > > on loopback on tdco 12 tdc-mode auto
+> > > >
+> > > > Did you experience some cases in which you had BRP > 2 and saw
+> > > > transmission errors due to the absence of delay compensation? Could
+> > > > you show the calculated values?
+> > > > Usually, you start to observe but stuff error at high bitrates (e.g.
+> > > > ~5MBPS), and for such bitrates, time quanta has to be small which
+> > > > then results in a small BRP.
+> > >
+> > > yes, we observed errors with higher baud rates(4 and 5 MBPS).
+> > > Observation:
+> > > BRPA 1Mbps Sampling 75%
+> > > BRPD 5MBPS Sampling 75%
+> > > On NXP PHY observed a delay of 160 ns. so observing the failure.
+> > > After enabling the TDC feature to work fine.
+> >
+> > Can you also share the results of:
+> >
+> > | ip --details link show can0
+> >
+> > for both the automatic calculation by the CAN framework and for your hand
+> > calculated values?
+>
+> ip --details link show can6
+> root@xilinx-vck190-2021_1:~# ip --details link show can6
+> 9: can6: <NOARP,UP,LOWER_UP,ECHO> mtu 72 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000
+>     link/can  promiscuity 0 minmtu 0 maxmtu 0
+>     can <FD> state ERROR-ACTIVE (berr-counter tx 0 rx 0) restart-ms 0
+>           bitrate 999999 sample-point 0.750
+>           tq 250 prop-seg 1 phase-seg1 1 phase-seg2 1 sjw 1
+>           xilinx_can: tseg1 1..256 tseg2 1..128 sjw 1..128 brp 2..256 brp-inc 1
+>           dbitrate 4999999 dsample-point 0.750
+>           dtq 50 dprop-seg 1 dphase-seg1 1 dphase-seg2 1 dsjw 1
+>           xilinx_can: dtseg1 1..32 dtseg2 1..16 dsjw 1..16 dbrp 2..256 dbrp-inc 1
+>           clock 79999999 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
+> root@xilinx-vck190-2021_1:~#
 
-When passing interface parameter to ping -6:
-$ ping -6 ::11:141:84:9 -I eth2
-Results in:
-PING ::11:141:84:10(::11:141:84:10) from ::11:141:84:9 eth2: 56 data bytes
-ping: sendmsg: Invalid argument
-ping: sendmsg: Invalid argument
+So the CAN framework calculated a DBRP of 4.
 
-Initialize the fl6's outgoing interface (OIF) before triggering
-ip6_datagram_send_ctl. Don't wipe fl6 after ip6_datagram_send_ctl() as
-changes in fl6 that may happen in the function are overwritten explicitly.
-Update comment accordingly.
+Did you apply this patch from Marc?
 
-Fixes: 13651224c00b ("net: ping6: support setting basic SOL_IPV6 options via cmsg")
-Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
----
- net/ipv6/ping.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=85d4eb2a3dfe939dda5304d61e406cb8e0852d60
 
-V2:
-Per David Ahern's comment, moved memset before if (msg->msg_controllen),
-and updated the code comment accordingly.
+It is supposed to solve those "too high BRP" issues.
 
-diff --git a/net/ipv6/ping.c b/net/ipv6/ping.c
-index ff033d16549e..2a5f3337d488 100644
---- a/net/ipv6/ping.c
-+++ b/net/ipv6/ping.c
-@@ -101,24 +101,25 @@ static int ping_v6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	ipc6.sockc.tsflags = sk->sk_tsflags;
- 	ipc6.sockc.mark = sk->sk_mark;
- 
-+	memset(&fl6, 0, sizeof(fl6));
-+
- 	if (msg->msg_controllen) {
- 		struct ipv6_txoptions opt = {};
- 
- 		opt.tot_len = sizeof(opt);
- 		ipc6.opt = &opt;
-+		fl6.flowi6_oif = oif;
- 
- 		err = ip6_datagram_send_ctl(sock_net(sk), sk, msg, &fl6, &ipc6);
- 		if (err < 0)
- 			return err;
- 
- 		/* Changes to txoptions and flow info are not implemented, yet.
--		 * Drop the options, fl6 is wiped below.
-+		 * Drop the options.
- 		 */
- 		ipc6.opt = NULL;
- 	}
- 
--	memset(&fl6, 0, sizeof(fl6));
--
- 	fl6.flowi6_proto = IPPROTO_ICMPV6;
- 	fl6.saddr = np->saddr;
- 	fl6.daddr = *daddr;
--- 
-2.21.0
+> Hand calculated values:
+> ip link set can0 type can tq 12 prop-seg 39 phase-seg1 20 phase-seg2 20 sjw 20 dtq 12 dprop-seg 5 dphase-seg1 6 dphase-seg2 4 dsjw 4 fd on
 
+With tq = 12 you are off by 4%, right?
+I get:
+
+dbrp = dtq * clock / 1000000000
+     = 12 * 80000000 / 1000000000
+     = 0.96
+
+instead of brp = 1.
+
+Wouldn't dtq = 25 and dbrp = 2 be the best here?
+
+> Observations:
+> ---------------
+> Board VCK190 +NXP phy.
+> Observed TDCV value generated by IP is 9clock cycles(112ns)[Choosing Falling edge of bit].
+> But Bit starts on rx line after 160 ns observed with scope.
+>
+> Exp1:
+> BRPA 1Mbps Sampling 75%
+> BRPD 5MBPS Sampling 75%
+>
+> Without TDC feature:
+> Bit length 200ns, Sampling point 75% means 150ns.
+> IP tries to sample at 150ns , but Bit starting at 160ns,so observed failure.
+>
+> With TDC feature:
+> Bit length 200ns, Sampling point 75%, TDCO =12clock cycles(150ns).
+> Ip tries after 112+150 = 262ns,able to sample the bit.
+
+That seems correct.
+My worries is why the framework calculates a DBRP of 4. Please check
+that Mark's patch was correctly applied. If not, try it and,
+hopefully, this will fix your issue and you will not have to enter
+manually calculated parameters again.
+
+> Thank you!
+> >
+> >
+> > Thank you!
+> >
+> > > > > Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+> > > > > ---
+> > > > >  drivers/net/can/xilinx_can.c | 30 +++++++++++++++++++++++++-----
+> > > > >  1 file changed, 25 insertions(+), 5 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/net/can/xilinx_can.c
+> > > > > b/drivers/net/can/xilinx_can.c index e2b15d29d15e..7af518fbed02
+> > > > > 100644
+> > > > > --- a/drivers/net/can/xilinx_can.c
+> > > > > +++ b/drivers/net/can/xilinx_can.c
+> > > > > @@ -1,7 +1,7 @@
+> > > > >  // SPDX-License-Identifier: GPL-2.0-or-later
+> > > > >  /* Xilinx CAN device driver
+> > > > >   *
+> > > > > - * Copyright (C) 2012 - 2014 Xilinx, Inc.
+> > > > > + * Copyright (C) 2012 - 2022 Xilinx, Inc.
+> > > > >   * Copyright (C) 2009 PetaLogix. All rights reserved.
+> > > > >   * Copyright (C) 2017 - 2018 Sandvik Mining and Construction Oy
+> > > > >   *
+> > > > > @@ -133,6 +133,8 @@ enum xcan_reg {
+> > > > >  #define XCAN_DLCR_BRS_MASK             0x04000000 /* BRS Mask in DLC
+> > */
+> > > > >
+> > > > >  /* CAN register bit shift - XCAN_<REG>_<BIT>_SHIFT */
+> > > > > +#define XCAN_BRPR_TDCO_SHIFT_CANFD     8  /* Transmitter Delay
+> > > > Compensation Offset */
+> > > >
+> > > > Having CANFD in the name is redundant (TDC implies CANFD).
+> > > > #define XCAN_BRPR_TDCO_SHIFT 8
+> > > update in V2.
+> > >
+> > > >
+> > > > > +#define XCAN_BRPR_TDCE_SHIFT_CANFD     16 /* Transmitter Delay
+> > > > Compensation (TDC) Enable */
+> > > >
+> > > > Why not:
+> > > > #define XCAN_BRPR_TDC_ENABLE BIT(16)
+> > > update in V2.
+> > >
+> > > >
+> > > > >  #define XCAN_BTR_SJW_SHIFT             7  /* Synchronous jump width */
+> > > > >  #define XCAN_BTR_TS2_SHIFT             4  /* Time segment 2 */
+> > > > >  #define XCAN_BTR_SJW_SHIFT_CANFD       16 /* Synchronous jump
+> > width
+> > > > */
+> > > > > @@ -259,7 +261,7 @@ static const struct can_bittiming_const
+> > > > xcan_bittiming_const_canfd2 = {
+> > > > >         .tseg2_min = 1,
+> > > > >         .tseg2_max = 128,
+> > > > >         .sjw_max = 128,
+> > > > > -       .brp_min = 2,
+> > > > > +       .brp_min = 1,
+> > > >
+> > > > Was there any reason to have brp_min = 2 in the first place?
+> > > > I think this change  should be a different patch. If the brp_min = 2
+> > > > is just a typo, you might also want to backport it to stable branches.
+> > >
+> > > On early silicon engineering samples we observed bit shrinking issue when
+> > we use brp =1 , hence we updated brp_min =2.
+> > > As in production silicon this issue is fixed we are planning to revert the
+> > patch.
+> >
+> > Great!
+> >
+> > > > >         .brp_max = 256,
+> > > > >         .brp_inc = 1,
+> > > > >  };
+> > > > > @@ -272,11 +274,21 @@ static struct can_bittiming_const
+> > > > xcan_data_bittiming_const_canfd2 = {
+> > > > >         .tseg2_min = 1,
+> > > > >         .tseg2_max = 16,
+> > > > >         .sjw_max = 16,
+> > > > > -       .brp_min = 2,
+> > > > > +       .brp_min = 1,
+> > > > >         .brp_max = 256,
+> > > > >         .brp_inc = 1,
+> > > > >  };
+> > > > >
+> > > > > +/* Transmission Delay Compensation constants for CANFD2.0 and
+> > > > > +Versal */ static const struct can_tdc_const xcan_tdc_const = {
+> > > > > +       .tdcv_min = 0,
+> > > > > +       .tdcv_max = 0, /* Manual mode not supported. */
+> > > >
+> > > > Right, had a look at the datasheet and xilinx indeed does not
+> > > > support setting TDCV.
+> > > > However, xilinx still has a TDCV register to report the measured
+> > > > transmission delay.
+> > > >
+> > > > Socket CAN's TDC framework provides can_priv::do_get_auto_tdcv() to
+> > > > report the measured value through the netlink interface:
+> > > > https://elixir.bootlin.com/linux/v5.17/source/include/linux/can/dev.
+> > > > h#L87
+> > > >
+> > > > Can you implement this call back function?
+> > > Will implement in V2.
+> > >
+> > > >
+> > > > > +       .tdco_min = 0,
+> > > > > +       .tdco_max = 64,
+> > > > > +       .tdcf_min = 0, /* Filter window not supported */
+> > > > > +       .tdcf_max = 0,
+> > > > > +};
+> > > > > +
+> > > > >  /**
+> > > > >   * xcan_write_reg_le - Write a value to the device register little endian
+> > > > >   * @priv:      Driver private data structure
+> > > > > @@ -425,6 +437,11 @@ static int xcan_set_bittiming(struct
+> > > > > net_device
+> > > > *ndev)
+> > > > >             priv->devtype.cantype == XAXI_CANFD_2_0) {
+> > > > >                 /* Setting Baud Rate prescalar value in F_BRPR Register */
+> > > > >                 btr0 = dbt->brp - 1;
+> > > > > +               if (can_tdc_is_enabled(&priv->can)) {
+> > > > > +                       btr0 = btr0 |
+> > > > > +                       (priv->can.tdc.tdco) << XCAN_BRPR_TDCO_SHIFT_CANFD
+> > |
+> > > > > +                       1 << XCAN_BRPR_TDCE_SHIFT_CANFD;
+> > > >
+> > > > I don't think the parenthesis around (priv->can.tdc.tdco) are needed.
+> > > Yes, will update.
+> > > >
+> > > >                        btr0 = btr0 |
+> > > >                        priv->can.tdc.tdco << XCAN_BRPR_TDCO_SHIFT |
+> > > >                       XCAN_BRPR_TDC_ENABLE
+> > > >
+> > > > (c.f. above for macro names)
+> > > >
+> > > > > +               }
+> > > > >
+> > > > >                 /* Setting Time Segment 1 in BTR Register */
+> > > > >                 btr1 = dbt->prop_seg + dbt->phase_seg1 - 1; @@
+> > > > > -1747,13 +1764,16 @@ static int xcan_probe(struct platform_device
+> > *pdev)
+> > > > >                 priv->can.data_bittiming_const =
+> > > > >                         &xcan_data_bittiming_const_canfd;
+> > > > >
+> > > > > -       if (devtype->cantype == XAXI_CANFD_2_0)
+> > > > > +       if (devtype->cantype == XAXI_CANFD_2_0) {
+> > > > >                 priv->can.data_bittiming_const =
+> > > > >                         &xcan_data_bittiming_const_canfd2;
+> > > > > +               priv->can.tdc_const = &xcan_tdc_const;
+> > > > > +       }
+> > > > >
+> > > > >         if (devtype->cantype == XAXI_CANFD ||
+> > > > >             devtype->cantype == XAXI_CANFD_2_0)
+> > > > > -               priv->can.ctrlmode_supported |= CAN_CTRLMODE_FD;
+> > > > > +               priv->can.ctrlmode_supported |= CAN_CTRLMODE_FD |
+> > > > > +
+> > > > > + CAN_CTRLMODE_TDC_AUTO;
+> > > > >
+> > > > >         priv->reg_base = addr;
+> > > > >         priv->tx_max = tx_max;
