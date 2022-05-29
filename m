@@ -2,133 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2965453702E
-	for <lists+netdev@lfdr.de>; Sun, 29 May 2022 09:32:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1CF153706D
+	for <lists+netdev@lfdr.de>; Sun, 29 May 2022 11:23:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229661AbiE2HcT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 29 May 2022 03:32:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60204 "EHLO
+        id S229796AbiE2JXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 May 2022 05:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiE2HcR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 May 2022 03:32:17 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E156C0EB
-        for <netdev@vger.kernel.org>; Sun, 29 May 2022 00:32:14 -0700 (PDT)
-Received: (Authenticated sender: pbl@bestov.io)
-        by mail.gandi.net (Postfix) with ESMTPSA id 28B2E240004;
-        Sun, 29 May 2022 07:32:11 +0000 (UTC)
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 29 May 2022 09:32:08 +0200
-Message-Id: <CKC2JT09MKR2.32I3TC5GHHJC9@enhorning>
-From:   "Riccardo Paolo Bestetti" <pbl@bestov.io>
-To:     =?utf-8?q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Cc:     "David Ahern" <dsahern@kernel.org>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Lorenzo Colitti" <lorenzo@google.com>,
-        "Linux NetDev" <netdev@vger.kernel.org>
-Subject: Re: REGRESSION?? ping ipv4 sockets and binding to 255.255.255.255
- without IP_TRANSPARENT
-X-Mailer: aerc 0.9.0
-References: <CANP3RGdkAcDyAZoT1h8Gtuu0saq+eOrrTiWbxnOs+5zn+cpyKg@mail.gmail.com> <CKBUCV5XNA5W.1WFEM5DTPSCHV@enhorning> <CANP3RGcBjYL0hpd-J_GvXCJsbOg3ztS5yhXr4S8M5G5_F1ZwLQ@mail.gmail.com>
-In-Reply-To: <CANP3RGcBjYL0hpd-J_GvXCJsbOg3ztS5yhXr4S8M5G5_F1ZwLQ@mail.gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229630AbiE2JXH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 May 2022 05:23:07 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0C345AD3
+        for <netdev@vger.kernel.org>; Sun, 29 May 2022 02:23:04 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id h62-20020a1c2141000000b0039aa4d054e2so780832wmh.1
+        for <netdev@vger.kernel.org>; Sun, 29 May 2022 02:23:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wzRHahTsR3NXAxK74mSupx4n85A6raQepNtaS2DAyAY=;
+        b=sU2Ytl/nQDHscdUUhDqH8B3vdRDnnHmADxjODRH1NoeIymhKuWqugZcxnhvyvc8lJ3
+         O/o0jIGzAup/29H/Z5Iqiansqzpie7qOPQtjSV/KKInRtVbC2PFL5E1VB6F4D3NXvOQg
+         LJUvE/lCRpy7t+zEk4SxpFatFh1QqGE/jHe4+Pl+nI6pKF+A+lk3bI2mAPzqvh/MvwxZ
+         zQG7kUc4wE0umFQOwM0BZGy/q4SEZqmHc8kY2DHakcfinCtcjiUw8ZjvGqw9bbu0YzqE
+         cIcVkhhCxsvG/xs112DD2ltF/eFgRyysykeO7Wq4z24vC+tVnNKeXHA7YpYJYKPYTGif
+         Bkng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wzRHahTsR3NXAxK74mSupx4n85A6raQepNtaS2DAyAY=;
+        b=4BRy2iyWa6kkw3WhjJedQHiBLGuZDhD4ETKLcf9Zpwe6qD76BYEGfnONA0yRQMzZu6
+         2F3qeUc4PF5lWmnxl13z8CKCS170uauMHmDrDmc6RkGHXS5Hgvmpu2jffSeVHpeKyfUM
+         /6UpCadzXQR6c9mtLclvS4gYrVl0QgAswycncm0A7VlqcqineYwcb3b/stMmyNW4KoTO
+         spq8fK4soboX/gn5iaq+aIYR3nZriPQ3Q0Ul3x+30EfLNlMFutp2jqahzwbloH8YL2vB
+         WQlag5LXhiYLe3Md2HHeRvnhTt9qW5M7tXAaizyJ6rYP1Fisr3t1nUxUlBqbqt/ESIwa
+         i8RQ==
+X-Gm-Message-State: AOAM530CLnH94g3L2K/qpJ4CMtaz/6RXPpVYFlJGSdWEWtswB/aLg/Cw
+        JkoZLaoDj3PIUpbI9EfKSOOXeg==
+X-Google-Smtp-Source: ABdhPJwjODe/9KCy8U23/24oZTu/I9MAdyOZcEi433vyRSZ7bebD/ocV02fSsHXk4FhVwxz2obk9AA==
+X-Received: by 2002:a1c:4e19:0:b0:397:7b13:1bc7 with SMTP id g25-20020a1c4e19000000b003977b131bc7mr14134516wmh.114.1653816183225;
+        Sun, 29 May 2022 02:23:03 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id l2-20020a05600c4f0200b003942a244f33sm7750475wmq.12.2022.05.29.02.23.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 29 May 2022 02:23:02 -0700 (PDT)
+Date:   Sun, 29 May 2022 11:23:01 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
+        andrew@lunn.ch, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
+ and info
+Message-ID: <YpM7dWye/i15DBHF@nanopsycho>
+References: <YozsUWj8TQPi7OkM@nanopsycho>
+ <20220524110057.38f3ca0d@kernel.org>
+ <Yo3KvfgTVTFM/JHL@nanopsycho>
+ <20220525085054.70f297ac@kernel.org>
+ <Yo9obX5Cppn8GFC4@nanopsycho>
+ <20220526103539.60dcb7f0@kernel.org>
+ <YpB9cwqcSAMslKLu@nanopsycho>
+ <20220527171038.52363749@kernel.org>
+ <YpHmrdCmiRagdxvt@nanopsycho>
+ <20220528120253.5200f80f@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220528120253.5200f80f@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun May 29, 2022 at 8:14 AM CEST, Maciej Żenczykowski wrote:
-> On Sat, May 28, 2022 at 6:07 PM Riccardo Paolo Bestetti <pbl@bestov.io> wrote:
-> > I confirm that, indeed, it was unintended.
+Sat, May 28, 2022 at 09:02:53PM CEST, kuba@kernel.org wrote:
+>On Sat, 28 May 2022 11:09:01 +0200 Jiri Pirko wrote:
+>> Sat, May 28, 2022 at 02:10:38AM CEST, kuba@kernel.org wrote:
+>> >
+>> >Is the "lc1" free-form or generated by the core based on subobjects?
+>> >Is it carried as a string or object type + id?  
+>> 
+>> It could be both:
+>> 1) for line cards I plan to have a helper to have this generated by core
+>> 2) for other FW objects, it is up to the driver.
 >
-> Good to hear this.
->
-> > Nothing about the behaviour of broadcast and multicast bind addresses is
-> > mentioned in the commit message or linked Mac OS X documentation
-> > (although it would be interesting to test how Mac OS X behaves - anyone
-> > with a Mac around here that can do that?)
->
-> I think sending with ping multicast/broadcast source is unlikely to get replies
-> due to valid worries that it is an attempt at a multiplication DoS attack.
-> (send one unicast packet to target, get target to reply with broadcast 'storm')
+>Did you mean "either" or "both"?
 
-I agree. I find it likely that other implementation also would disallow
-to bind on such addresses. I'll see if I can find out more this week.
+Both.
+
 
 >
-> > I agree, it doesn't make sense to be able to do that. That's probably
-> > why the check was done that way in the first place. I think the previous
-> > behaviour should be restored. Not by reverting (part of) the patch,
-> > because honestly the original code sucked, but by rewriting it properly.
+>> >I guess my suggestion of a CLI mockup has proven its weakness :)  
+>> 
+>> I'm not sure I understand what you mean by this sentence. Could you
+>> please be more blunt? You know, my english is not so good to understand
+>> some hidden meanings :)
 >
-> I'm failing to see a way to write it in a more obvious way...
+>The question of what kind of attribute "lc1" is carried in would had
+>been answered in posting of a code, while CLI mockup doesn't provide
+>such detail.
 >
-> ipv4_is_zeroaddr() should probably be tree-wide renamed to ipv4_addr_any()
-> to match ipv6_addr_any() which now saves the same purpose.
-> [since it's just a check for 0.0.0.0/32 now after Dave Taht's commit]
+>> >
+>> >I sort of assumed that the DEVLINK_ATTR_INFO_VERSION_NAME is the
+>> >component, the docs also use the word "component" for it.   
+>> 
+>> Okay, that I didn't see.
+>> 
+>> >
+>> >For the nfp for instance we had "fw.app" for the datapath microcode and
+>> >"fw.mgmt" for the control processor. These are separate partitions on
+>> >the flash. I don't think we ever implemented writing them separately
+>> >but it's certainly was our internal plan at some point.  
+>> 
+>> Okay, so what you say it, we already have components in "devlink dev
+>> info". Like you pointed out as an example:
+>>   fw.app
+>>   fw.mgmt
+>> so the flash comment would be:
+>>   devlink dev flash pci/0000:01:00.0 component fw.app file foo.bin
+>>   devlink dev flash pci/0000:01:00.0 component fw.mgmt file bar.bin
+>> ?
 >
-> Then the following:
+>Correct.
 >
-> if (ipv4_is_zeronet(addr) || ipv4_is_lbcast(addr))
-> return RTN_BROADCAST;
+>> If yes, what should be the default in case component is not defined? Do
+>> we need to expose it in "devlink dev info"? How?
 >
-> is more immediately weird.
+>Not defined as in someone tries to flash component X but there is no
+>version for X in info?
 >
-> Why do we classify INADDR_ANY as broadcast?
+>> So to extend this existing facility with my line card example, we would
+>> have:
+>> 
+>> $ devlink dev info
+>> pci/0000:01:00.0:
+>>    driver mlxsw_spectrum2
+>>    versions:
+>>        fixed:
+>>          hw.revision A0
+>>          fw.psid MT_0000000199
+>> 	 lc1.hw.revision 0
+>> 	 lc1.fw.psid MT_0000000111
+>> 	 lc2.hw.revision 0
+>> 	 lc2.fw.psid MT_0000000111
+>>        running:
+>>          fw.version 29.2010.2302
+>>          fw 29.2010.2302
+>> 	 lc1.fw 19.2010.1310
+>> 	 lc1.ini.version 4
+>> 	 lc2.fw 19.2010.1310
+>> 	 lc2.ini.version 4
+>> 
+>> And then:
+>> devlink dev flash pci/0000:01:00.0 component lc1.fw file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
+>> 
+>> Does this sound correct?
+>
+>I think I suggested something like that in the past, but back then 
 
-That's what I was also wondering. But inet_addr_type() is not only
-referenced 8 times inside the kernel, but also exported. So ultimately
-the reason for returning RTN_BROADCAST is irrelevant as it's here to
-stay. That's probably why the original code was "correcting" its
-semantics on the fly by explicitly checking for 0.0.0.0 and remarketing
-it as RTN_LOCAL.
+Yes, you did.
 
-As for ipv4_is_zeronet() vs ipv4_addr_any(), I do agree ipv4_addr_any()
-is more consistent with other stuff and a better name by itself.
 
-> It should either be classified as a new RTN_ADDR_ANY or as RTN_LOCAL,
-> with the understanding that in practice 0.0.0.0/32 just means "don't care
-> assign something for me".
+>I was assuming that lc FW would come from the same large FW bundle
+>file as the control plan FW, and we would not have to use the component.
+>
+>Let's step back and look from the automation perspective again.
+>Assuming we don't want to hardcode matching "lc$i" there how can 
+>a generic FW update service scan the dev info and decide on what
+>dev flash command to fire off?
 
-Again, inet_addr_type() is exported...
+Hardcode matching lc$i? I don't follow. It is a part of the
+version/component name.
+So if devlink dev info outputs:
+lc2.fw 19.2010.1310
+then you use for devlink dev flash:
+devlink dev flash pci/0000:01:00.0 component lc2.fw file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
+Same name, same string.
+
+What am I missing?
+
+
 
 >
-> I guess one could do:
+>> Also, to avoid free-form, I can imagine to have per-linecard info_get() op
+>> which would be called for each line card from devlink_nl_info_fill() and
+>> prefix the "lcX" automatically without driver being involved.
+>> 
+>> Sounds good?
 >
->  if (!ipv4_addr_any() && (!inet_can_nonlocal_bind(net, isk) &&
->                     chk_addr_ret != RTN_LOCAL) ||
->                    chk_addr_ret == RTN_MULTICAST
->                    chk_addr_ret == RTN_BROADCAST))
->                         return -EADDRNOTAVAIL;
+>Hm. That's moving the matryoshka-ing of the objects from the uAPI level
+>to the internals. 
 >
-> But that's not really any more meaningfully readable than the old code.
+>If we don't do the string prefix but instead pass the subobject info to
+>the user space as an attribute per version we can at least avoid
+>per-subobject commands (DEVLINK_CMD_LINECARD_INFO_GET). Much closer to
+>how health reporters are implemented than how params are done, so I
+>think it is a good direction.
 
-I think this is already significantly better than checking for 0.0.0.0
-separately and changing chk_addr_ret depending on that. I also feel that
-a comment, in this case, might go a long way. And all the
-nonlocal-is-allowed-or-address-is-local logic could go in one line.
-Maybe along the lines of:
+Sorry, I'm a bit lost. Could you please provide some example about how
+you envision it? For me it is a guessing game :/
+My guess is you would like to add to the version nest where
+DEVLINK_ATTR_INFO_VERSION_NAME resides for example
+DEVLINK_ATTR_LINECARD_INDEX?
 
-/* never accept multicast and broadcast addresses */
-if (!ipv4_addr_any() &&
-    (chk_addr_ret != RTN_LOCAL && !inet_can_nonlocal_bind(...)) ||
-    chk_addr_ret == RTN_MULTICAST || chk_addr_ret == RTN_BROADCAST))
-                         return -EADDRNOTAVAIL;
+Correct?
 
-This, to me, is loads more readable than the pre-5.17 code.
-
-Riccardo P. Bestetti
 
 >
-> > And more importantly I think that test cases for that should be added in
-> > the kernel (this has been in two released minor versions before even
-> > being caught...)
-> >
-> > I should be able to roll up a patch inside a few days, if this sounds
-> > like a good approach to everyone.
+>We still need to iron out how the automation can go over the main FW
+>and sub-objects in a generic way.
+>
+>I still think full devlink sub-instance is better because we will end
+>up needing params or health. Fake devices can be made with auxbus or
+>otherwise. But if you really don't want sub-instances we can explore 
+>the above.
+
+I really don't.
 
