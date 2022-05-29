@@ -2,75 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1CF153706D
-	for <lists+netdev@lfdr.de>; Sun, 29 May 2022 11:23:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FD5B53706E
+	for <lists+netdev@lfdr.de>; Sun, 29 May 2022 11:25:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbiE2JXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 May 2022 05:23:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
+        id S229726AbiE2JZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 May 2022 05:25:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229630AbiE2JXH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 May 2022 05:23:07 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0C345AD3
-        for <netdev@vger.kernel.org>; Sun, 29 May 2022 02:23:04 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id h62-20020a1c2141000000b0039aa4d054e2so780832wmh.1
-        for <netdev@vger.kernel.org>; Sun, 29 May 2022 02:23:04 -0700 (PDT)
+        with ESMTP id S229630AbiE2JZA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 May 2022 05:25:00 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651F345ADC
+        for <netdev@vger.kernel.org>; Sun, 29 May 2022 02:24:58 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id p5-20020a1c2905000000b003970dd5404dso4956766wmp.0
+        for <netdev@vger.kernel.org>; Sun, 29 May 2022 02:24:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=wzRHahTsR3NXAxK74mSupx4n85A6raQepNtaS2DAyAY=;
-        b=sU2Ytl/nQDHscdUUhDqH8B3vdRDnnHmADxjODRH1NoeIymhKuWqugZcxnhvyvc8lJ3
-         O/o0jIGzAup/29H/Z5Iqiansqzpie7qOPQtjSV/KKInRtVbC2PFL5E1VB6F4D3NXvOQg
-         LJUvE/lCRpy7t+zEk4SxpFatFh1QqGE/jHe4+Pl+nI6pKF+A+lk3bI2mAPzqvh/MvwxZ
-         zQG7kUc4wE0umFQOwM0BZGy/q4SEZqmHc8kY2DHakcfinCtcjiUw8ZjvGqw9bbu0YzqE
-         cIcVkhhCxsvG/xs112DD2ltF/eFgRyysykeO7Wq4z24vC+tVnNKeXHA7YpYJYKPYTGif
-         Bkng==
+        bh=K+ZvBpEHdePLqM1fgQoN1xdPWy8TNt24dkxWtnLqU00=;
+        b=b+Q4DHsznIqGnW16F/P9khDR7ULS5iXgCk4dzODEd61SeHJBDR9oatCkrCJ5rGwkLu
+         2hKl+N9wjqYnd1eU/HuPMe3B3XDginoLgNIbUAutuWUFDR2Byt6Q+svINRtnIBleNg8k
+         k9buLA0KtNnvD9nshGCdAO1j01pmg8LCjEpBCWt/vvI4bXBt5xmCsEalQKX0P+VghgxD
+         P6/6+aAJGdiajXWmqRlw4udROzG33uVFQE2SebJ3Tyr1PDA6fNqJdi8C+Eep4o51qrgS
+         0W1t/cm9kWdHFn8Pokakto1Y5gEIzqZJeZeqlYruJcBY06XuGm58n8h1GBscziiUReGo
+         eThw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=wzRHahTsR3NXAxK74mSupx4n85A6raQepNtaS2DAyAY=;
-        b=4BRy2iyWa6kkw3WhjJedQHiBLGuZDhD4ETKLcf9Zpwe6qD76BYEGfnONA0yRQMzZu6
-         2F3qeUc4PF5lWmnxl13z8CKCS170uauMHmDrDmc6RkGHXS5Hgvmpu2jffSeVHpeKyfUM
-         /6UpCadzXQR6c9mtLclvS4gYrVl0QgAswycncm0A7VlqcqineYwcb3b/stMmyNW4KoTO
-         spq8fK4soboX/gn5iaq+aIYR3nZriPQ3Q0Ul3x+30EfLNlMFutp2jqahzwbloH8YL2vB
-         WQlag5LXhiYLe3Md2HHeRvnhTt9qW5M7tXAaizyJ6rYP1Fisr3t1nUxUlBqbqt/ESIwa
-         i8RQ==
-X-Gm-Message-State: AOAM530CLnH94g3L2K/qpJ4CMtaz/6RXPpVYFlJGSdWEWtswB/aLg/Cw
-        JkoZLaoDj3PIUpbI9EfKSOOXeg==
-X-Google-Smtp-Source: ABdhPJwjODe/9KCy8U23/24oZTu/I9MAdyOZcEi433vyRSZ7bebD/ocV02fSsHXk4FhVwxz2obk9AA==
-X-Received: by 2002:a1c:4e19:0:b0:397:7b13:1bc7 with SMTP id g25-20020a1c4e19000000b003977b131bc7mr14134516wmh.114.1653816183225;
-        Sun, 29 May 2022 02:23:03 -0700 (PDT)
+        bh=K+ZvBpEHdePLqM1fgQoN1xdPWy8TNt24dkxWtnLqU00=;
+        b=gYiFE3PkiRBMd3mbkwEx4Pu6AICZ+S8tDahQmRz+zOsWzkLbHdcH9J083kSAjYTDo7
+         5F+mYl1HppjvOBI3HPV5WDxZ2kwtpHJrTRDKlH372ZYxpFijGXZgjuKRm5ljAVJ0AxtI
+         P4fEJDTYryGtkbO0CyaN8oodbhWYIuSIsSx3QvFYr9fGuaCabO0hFnt1J9Qhh0K3O7kU
+         V+ryYOfRWjJ96MTL7HwJWjX9zK1ayduQtUUOzkP3/q8Vc5utxVnWzpxngsezQM95vuf4
+         efU5CY9k+pnSgmQCben6+RGebOiU9X2bfO2BOSKVsufKR+r730JL9zZgEjnO0tr7CMKo
+         XLgA==
+X-Gm-Message-State: AOAM531ohnIoPEvPKegfeOEcKlrl5qxJvWjUq2ui5s8cJKhl07ry78vm
+        3MrZNCdQT/HJI3JYNs7rRbg++A==
+X-Google-Smtp-Source: ABdhPJzhpzVyWcRrcOrl5PqSXrPfrF7kvm0It4Yv1VyMDWelgGAEboUsLDidJ0teeVbXyif4ITGsTQ==
+X-Received: by 2002:a7b:ca59:0:b0:397:8c63:4bd2 with SMTP id m25-20020a7bca59000000b003978c634bd2mr9791979wml.76.1653816296879;
+        Sun, 29 May 2022 02:24:56 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id l2-20020a05600c4f0200b003942a244f33sm7750475wmq.12.2022.05.29.02.23.01
+        by smtp.gmail.com with ESMTPSA id c14-20020a7bc84e000000b0039771fbffcasm6900283wml.21.2022.05.29.02.24.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 May 2022 02:23:02 -0700 (PDT)
-Date:   Sun, 29 May 2022 11:23:01 +0200
+        Sun, 29 May 2022 02:24:56 -0700 (PDT)
+Date:   Sun, 29 May 2022 11:24:55 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
-        andrew@lunn.ch, mlxsw@nvidia.com
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@idosch.org>,
+        Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, pabeni@redhat.com, jiri@nvidia.com,
+        petrm@nvidia.com, andrew@lunn.ch, mlxsw@nvidia.com
 Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
  and info
-Message-ID: <YpM7dWye/i15DBHF@nanopsycho>
-References: <YozsUWj8TQPi7OkM@nanopsycho>
- <20220524110057.38f3ca0d@kernel.org>
- <Yo3KvfgTVTFM/JHL@nanopsycho>
- <20220525085054.70f297ac@kernel.org>
- <Yo9obX5Cppn8GFC4@nanopsycho>
- <20220526103539.60dcb7f0@kernel.org>
- <YpB9cwqcSAMslKLu@nanopsycho>
- <20220527171038.52363749@kernel.org>
- <YpHmrdCmiRagdxvt@nanopsycho>
- <20220528120253.5200f80f@kernel.org>
+Message-ID: <YpM75y3rf4nUhYsy@nanopsycho>
+References: <20220429114535.64794e94@kernel.org>
+ <Ymw8jBoK3Vx8A/uq@nanopsycho>
+ <20220429153845.5d833979@kernel.org>
+ <YmzW12YL15hAFZRV@nanopsycho>
+ <20220502073933.5699595c@kernel.org>
+ <YotW74GJWt0glDnE@nanopsycho>
+ <20220523105640.36d1e4b3@kernel.org>
+ <Yox/TkxkTUtd0RMM@nanopsycho>
+ <YozsUWj8TQPi7OkM@nanopsycho>
+ <2d7c3432-591f-54e7-d62c-abc93663b149@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220528120253.5200f80f@kernel.org>
+In-Reply-To: <2d7c3432-591f-54e7-d62c-abc93663b149@gmail.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -80,147 +80,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sat, May 28, 2022 at 09:02:53PM CEST, kuba@kernel.org wrote:
->On Sat, 28 May 2022 11:09:01 +0200 Jiri Pirko wrote:
->> Sat, May 28, 2022 at 02:10:38AM CEST, kuba@kernel.org wrote:
->> >
->> >Is the "lc1" free-form or generated by the core based on subobjects?
->> >Is it carried as a string or object type + id?  
+Sat, May 28, 2022 at 05:58:56PM CEST, dsahern@gmail.com wrote:
+>On 5/24/22 8:31 AM, Jiri Pirko wrote:
 >> 
->> It could be both:
->> 1) for line cards I plan to have a helper to have this generated by core
->> 2) for other FW objects, it is up to the driver.
->
->Did you mean "either" or "both"?
-
-Both.
-
-
->
->> >I guess my suggestion of a CLI mockup has proven its weakness :)  
->> 
->> I'm not sure I understand what you mean by this sentence. Could you
->> please be more blunt? You know, my english is not so good to understand
->> some hidden meanings :)
->
->The question of what kind of attribute "lc1" is carried in would had
->been answered in posting of a code, while CLI mockup doesn't provide
->such detail.
->
->> >
->> >I sort of assumed that the DEVLINK_ATTR_INFO_VERSION_NAME is the
->> >component, the docs also use the word "component" for it.   
->> 
->> Okay, that I didn't see.
->> 
->> >
->> >For the nfp for instance we had "fw.app" for the datapath microcode and
->> >"fw.mgmt" for the control processor. These are separate partitions on
->> >the flash. I don't think we ever implemented writing them separately
->> >but it's certainly was our internal plan at some point.  
->> 
->> Okay, so what you say it, we already have components in "devlink dev
->> info". Like you pointed out as an example:
->>   fw.app
->>   fw.mgmt
->> so the flash comment would be:
->>   devlink dev flash pci/0000:01:00.0 component fw.app file foo.bin
->>   devlink dev flash pci/0000:01:00.0 component fw.mgmt file bar.bin
->> ?
->
->Correct.
->
->> If yes, what should be the default in case component is not defined? Do
->> we need to expose it in "devlink dev info"? How?
->
->Not defined as in someone tries to flash component X but there is no
->version for X in info?
->
->> So to extend this existing facility with my line card example, we would
->> have:
->> 
->> $ devlink dev info
+>> $ devlink lc info pci/0000:01:00.0 lc 8
 >> pci/0000:01:00.0:
->>    driver mlxsw_spectrum2
->>    versions:
->>        fixed:
->>          hw.revision A0
->>          fw.psid MT_0000000199
->> 	 lc1.hw.revision 0
->> 	 lc1.fw.psid MT_0000000111
->> 	 lc2.hw.revision 0
->> 	 lc2.fw.psid MT_0000000111
->>        running:
->>          fw.version 29.2010.2302
->>          fw 29.2010.2302
->> 	 lc1.fw 19.2010.1310
->> 	 lc1.ini.version 4
->> 	 lc2.fw 19.2010.1310
->> 	 lc2.ini.version 4
+>
+>...
+>
 >> 
->> And then:
->> devlink dev flash pci/0000:01:00.0 component lc1.fw file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
->> 
->> Does this sound correct?
+>> $ devlink lc flash pci/0000:01:00.0 lc 8 file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
 >
->I think I suggested something like that in the past, but back then 
-
-Yes, you did.
-
-
->I was assuming that lc FW would come from the same large FW bundle
->file as the control plan FW, and we would not have to use the component.
 >
->Let's step back and look from the automation perspective again.
->Assuming we don't want to hardcode matching "lc$i" there how can 
->a generic FW update service scan the dev info and decide on what
->dev flash command to fire off?
+>A lot of your proposed syntax for devlink commands has 'lc' twice. If
+>'lc' is the subcommand, then you are managing a linecard making 'lc'
+>before the '8' redundant. How about 'slot 8' or something along those lines?
 
-Hardcode matching lc$i? I don't follow. It is a part of the
-version/component name.
-So if devlink dev info outputs:
-lc2.fw 19.2010.1310
-then you use for devlink dev flash:
-devlink dev flash pci/0000:01:00.0 component lc2.fw file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
-Same name, same string.
+Well, there is 1:1 match between cmd line options and output, as always.
 
-What am I missing?
-
-
-
->
->> Also, to avoid free-form, I can imagine to have per-linecard info_get() op
->> which would be called for each line card from devlink_nl_info_fill() and
->> prefix the "lcX" automatically without driver being involved.
->> 
->> Sounds good?
->
->Hm. That's moving the matryoshka-ing of the objects from the uAPI level
->to the internals. 
->
->If we don't do the string prefix but instead pass the subobject info to
->the user space as an attribute per version we can at least avoid
->per-subobject commands (DEVLINK_CMD_LINECARD_INFO_GET). Much closer to
->how health reporters are implemented than how params are done, so I
->think it is a good direction.
-
-Sorry, I'm a bit lost. Could you please provide some example about how
-you envision it? For me it is a guessing game :/
-My guess is you would like to add to the version nest where
-DEVLINK_ATTR_INFO_VERSION_NAME resides for example
-DEVLINK_ATTR_LINECARD_INDEX?
-
-Correct?
-
-
->
->We still need to iron out how the automation can go over the main FW
->and sub-objects in a generic way.
->
->I still think full devlink sub-instance is better because we will end
->up needing params or health. Fake devices can be made with auxbus or
->otherwise. But if you really don't want sub-instances we can explore 
->the above.
-
-I really don't.
+Object name is one thing, the option name is different. It is quite
+common to name them both the same. I'm not sure I understand why it
+would be an issue.
 
