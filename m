@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 265055371A5
-	for <lists+netdev@lfdr.de>; Sun, 29 May 2022 17:39:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C63DD537199
+	for <lists+netdev@lfdr.de>; Sun, 29 May 2022 17:39:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231251AbiE2Pj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 May 2022 11:39:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35434 "EHLO
+        id S231217AbiE2PjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 May 2022 11:39:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231206AbiE2PjS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 May 2022 11:39:18 -0400
+        with ESMTP id S231196AbiE2PjO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 May 2022 11:39:14 -0400
 Received: from sender2-op-o12.zoho.com.cn (sender2-op-o12.zoho.com.cn [163.53.93.243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E43C62CFF;
-        Sun, 29 May 2022 08:39:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1653838743;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358DC62CF2;
+        Sun, 29 May 2022 08:39:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1653838744;
         s=zohomail; d=mykernel.net; i=cgxu519@mykernel.net;
         h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-        bh=X/Nq01tIJiL66k1gHdv7dx/ePbQHb3DUAurLiy4DtgY=;
-        b=Fxu+1huBl4/KM9ltkTR62MbYdabZL04hTFCByM3kfUr9KQF+biVFQn04SW5kP1Q1
-        d5FpcnH+HjpXz3YGGZs8hNGV7vmMhcINJN8I3dyyTu3u5GPC3BA13oZEbKWyod0tHYM
-        x4zAoZp93gXnnqBdI3yIffL8VH3rnYxVVye1HRYM=
+        bh=xGbv7HlqU9NUiVmKFFfWHWJ7GjiXkmgNU5UawXCQxn8=;
+        b=CEiWwOtlT6bd2aVw4bG73jCv97mRPVBdqfemmSl/LrQoOQJuysu1DOyLp9C6hlcb
+        l2D8QE9ga+kYz/ATTtLgF0EOURGdgn332FlVJoPf6/C9LyQkbp8oe5lGo+4xeIauouw
+        7C7pRqm4BnKd9PBU8/vgPBg4yEo7o44a99YUBhJg=
 Received: from localhost.localdomain (81.71.33.115 [81.71.33.115]) by mx.zoho.com.cn
-        with SMTPS id 1653838741319791.7650617890589; Sun, 29 May 2022 23:39:01 +0800 (CST)
+        with SMTPS id 1653838743051746.6363796456236; Sun, 29 May 2022 23:39:03 +0800 (CST)
 From:   Chengguang Xu <cgxu519@mykernel.net>
 To:     netdev@vger.kernel.org, linux-staging@lists.linux.dev,
         linux-scsi@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
         linux-media@vger.kernel.org
 Cc:     Chengguang Xu <cgxu519@mykernel.net>
-Message-ID: <20220529153456.4183738-6-cgxu519@mykernel.net>
-Subject: [PATCH 5/6] scsi: pmcraid: fix missing resource cleanup in error case
-Date:   Sun, 29 May 2022 23:34:55 +0800
+Message-ID: <20220529153456.4183738-7-cgxu519@mykernel.net>
+Subject: [PATCH 6/6] media: platform: fix missing/incorrect resource cleanup in error case
+Date:   Sun, 29 May 2022 23:34:56 +0800
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220529153456.4183738-1-cgxu519@mykernel.net>
 References: <20220529153456.4183738-1-cgxu519@mykernel.net>
@@ -48,28 +48,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix missing resource cleanup(when '(--i) =3D=3D 0') for error case in
-pmcraid_register_interrupt_handler().
+In error case of s5p_mfc_power_on() we should call
+clk_disable_unprepare() for the
+clocks(from pm->clocks[0] to pm->clocks[i-1]).
 
 Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
 ---
- drivers/scsi/pmcraid.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/platform/samsung/s5p-mfc/s5p_mfc_pm.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/pmcraid.c b/drivers/scsi/pmcraid.c
-index 3d5cd337a2a6..0007a8a993a1 100644
---- a/drivers/scsi/pmcraid.c
-+++ b/drivers/scsi/pmcraid.c
-@@ -4031,7 +4031,7 @@ pmcraid_register_interrupt_handler(struct pmcraid_ins=
-tance *pinstance)
- =09return 0;
+diff --git a/drivers/media/platform/samsung/s5p-mfc/s5p_mfc_pm.c b/drivers/=
+media/platform/samsung/s5p-mfc/s5p_mfc_pm.c
+index 72a901e99450..187849841a28 100644
+--- a/drivers/media/platform/samsung/s5p-mfc/s5p_mfc_pm.c
++++ b/drivers/media/platform/samsung/s5p-mfc/s5p_mfc_pm.c
+@@ -88,7 +88,6 @@ int s5p_mfc_power_on(void)
+ =09=09if (ret < 0) {
+ =09=09=09mfc_err("clock prepare failed for clock: %s\n",
+ =09=09=09=09pm->clk_names[i]);
+-=09=09=09i++;
+ =09=09=09goto err;
+ =09=09}
+ =09}
+@@ -98,7 +97,7 @@ int s5p_mfc_power_on(void)
 =20
- out_unwind:
+ =09return 0;
+ err:
 -=09while (--i > 0)
 +=09while (--i >=3D 0)
- =09=09free_irq(pci_irq_vector(pdev, i), &pinstance->hrrq_vector[i]);
- =09pci_free_irq_vectors(pdev);
- =09return rc;
+ =09=09clk_disable_unprepare(pm->clocks[i]);
+ =09pm_runtime_put(pm->device);
+ =09return ret;
 --=20
 2.27.0
 
