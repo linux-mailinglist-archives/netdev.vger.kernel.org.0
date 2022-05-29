@@ -2,75 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF1035370AC
-	for <lists+netdev@lfdr.de>; Sun, 29 May 2022 13:10:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49B065370BC
+	for <lists+netdev@lfdr.de>; Sun, 29 May 2022 13:20:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229958AbiE2LKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 May 2022 07:10:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34644 "EHLO
+        id S230060AbiE2LUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 May 2022 07:20:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229943AbiE2LK1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 May 2022 07:10:27 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 142E37A467
-        for <netdev@vger.kernel.org>; Sun, 29 May 2022 04:10:27 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id y13so16138214eje.2
-        for <netdev@vger.kernel.org>; Sun, 29 May 2022 04:10:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=bs5DBrDYP0sNBpBiG9sxUl5vLBFzr14O34yIMD/h0nA=;
-        b=qaOhJnDyEs6kctcS3mIPnzusmrpIIwicdocaEDl31DjnAwK97kNHZNUzdvP1LUYR3e
-         NBkwEO4oM9OJypv+WKnT2k3VxCRzjHhCU4D6iERnxvX4ziadVonmv1NTYGXbVk6gRvCX
-         pzepUVp/dyKcAR/9dEZeqJRb8VQLXZtJ2z4D5dWzCBq0Xgl/sP6gLteEBKMN0qa/veT2
-         aFoc3OPkSXiEZUP/pWO+YvzZef7NNh8GagxM53ils7KTOm5i6XrGcGV4+OwlJ0AJ/6n3
-         GIuF4NLiPLv9qD1O2HdzgtQjai/tfpVg17iq8FA4TbtV20webywr+GDLRfD4BdLfNXgN
-         y83g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bs5DBrDYP0sNBpBiG9sxUl5vLBFzr14O34yIMD/h0nA=;
-        b=mvYgO62gGp53TiBD1wb/zjy9+TOf6bIbUbGfhnIImopCXVXHn6m35c5eTEcpVYF4Fr
-         VvOy7Y4WvfwdMzd4egptU6LfZDDaZXtYW+VDjAahqoRkLetnvAUPrCFqyqlTccLodEym
-         ybG6JeGV07cjse0+Dqm3hMMZTTS1b3HMx7/dbCM1p9XeTbevzl9/9Y7+8e00MIqeTWMT
-         bfRSorB9WA3zYn5ElZ+AApQHE0StR2vh6AybPIleNBKGMLFO/fqwK+UjjP2rauzLrAZ/
-         A/9EVfhgiGNIDH0AkYIc0aC51QOJA5hxbIY9ZnQ0cbRGYhQTgeECggBBVRcZEy6ktWzu
-         Yd8Q==
-X-Gm-Message-State: AOAM531Ua3/xIyIsrfTgjPkD0YnxAji0bBaanM/t+7mpynZzJW9lZFl1
-        KE51KPhRajWf2G1sDRDOhoiR5w==
-X-Google-Smtp-Source: ABdhPJx+u4MF8iq6avvPhns6VVqIcAsvksAUbgN+Qkn99OG8kj9/FnVxPTJNPlV7SjkKxfcImdWG5Q==
-X-Received: by 2002:a17:907:9626:b0:6fe:bae9:70bc with SMTP id gb38-20020a170907962600b006febae970bcmr35066248ejc.150.1653822625432;
-        Sun, 29 May 2022 04:10:25 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id d3-20020a1709063ec300b006fee2bdf6c6sm3073996ejj.169.2022.05.29.04.10.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 May 2022 04:10:24 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 2/2] ARM: dts: aspeed: yosemitev2: use proper "mellanox" DT vendor prefix
-Date:   Sun, 29 May 2022 13:10:17 +0200
-Message-Id: <20220529111017.181766-2-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220529111017.181766-1-krzysztof.kozlowski@linaro.org>
-References: <20220529111017.181766-1-krzysztof.kozlowski@linaro.org>
+        with ESMTP id S230039AbiE2LUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 May 2022 07:20:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A8EF99695
+        for <netdev@vger.kernel.org>; Sun, 29 May 2022 04:20:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 860DD60EEE
+        for <netdev@vger.kernel.org>; Sun, 29 May 2022 11:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D9E06C3411A;
+        Sun, 29 May 2022 11:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653823212;
+        bh=dvfIC9OnbvCjhgERbPtgWo7DB7RKnM5DGn+EM8N6MKE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=OqSuMhaiMPGCz0r5C1HkofbaRqbEwxlZp/dX5bp3C4LPAQ+K4Y2aDGVpktSE54Vzu
+         WPmsc882W5U26VSUlxPW/gseHRxfzRIiN/A/ETaCW0a/9ApM2zBF9Lbms9seKQkPmH
+         sIJThOmM4gljkXlb3nkqlLck8rrS0QYu4Mi+OITCNFCSoRV/rsoy4Ff+cziN6mfzvD
+         JrFWUJGTndDtq0YtHFyDtc8Y33ZwLz2jwVLmJrMv0wW80/uClPQK7DsJAbzfunisjJ
+         GX8cvmcmMsRP1JNyYvGmGLKjsPd0OuSdLDtKbYTf8gwW+KmWHP5kuwBoaIXKJ3L+d9
+         YpbohUtcDrT6Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B9175F03942;
+        Sun, 29 May 2022 11:20:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Subject: Re: [PATCH net v2 0/2] sfc: fix some efx_separate_tx_channels errors
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165382321275.13055.6073002084792987579.git-patchwork-notify@kernel.org>
+Date:   Sun, 29 May 2022 11:20:12 +0000
+References: <20220527080529.24225-1-ihuguet@redhat.com>
+In-Reply-To: <20220527080529.24225-1-ihuguet@redhat.com>
+To:     =?utf-8?b?w43DsWlnbyBIdWd1ZXQgPGlodWd1ZXRAcmVkaGF0LmNvbT4=?=@ci.codeaurora.org
+Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, cmclachlan@solarflare.com, brouer@redhat.com,
+        netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -79,33 +58,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"mlx" Devicetree vendor prefix is not documented and instead "mellanox"
-should be used:
+Hello:
 
-  aspeed-bmc-facebook-yosemitev2.dtb: ethernet@1e660000: 'mlx,multi-host' does not match any of the regexes
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+On Fri, 27 May 2022 10:05:27 +0200 you wrote:
+> Trying to load sfc driver with modparam efx_separate_tx_channels=1
+> resulted in errors during initialization and not being able to use the
+> NIC. This patches fix a few bugs and make it work again.
+> 
+> v2:
+> * added Martin's patch instead of a previous mine. Mine one solved some
+> of the initialization errors, but Martin's solves them also in all
+> possible cases.
+> * removed whitespaces cleanup, as requested by Jakub
+> 
+> [...]
 
----
+Here is the summary with links:
+  - [net,v2,1/2] sfc: fix considering that all channels have TX queues
+    https://git.kernel.org/netdev/net/c/2e102b53f8a7
+  - [net,v2,2/2] sfc: fix wrong tx channel offset with efx_separate_tx_channels
+    https://git.kernel.org/netdev/net/c/c308dfd1b43e
 
-The change depends on net/ncsi change.
----
- arch/arm/boot/dts/aspeed-bmc-facebook-yosemitev2.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-yosemitev2.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-yosemitev2.dts
-index 8864e9c312a8..26217bc652e7 100644
---- a/arch/arm/boot/dts/aspeed-bmc-facebook-yosemitev2.dts
-+++ b/arch/arm/boot/dts/aspeed-bmc-facebook-yosemitev2.dts
-@@ -95,7 +95,7 @@ &mac0 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_rmii1_default>;
- 	use-ncsi;
--	mlx,multi-host;
-+	mellanox,multi-host;
- };
- 
- &adc {
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
