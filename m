@@ -2,70 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B64A3537248
-	for <lists+netdev@lfdr.de>; Sun, 29 May 2022 21:04:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BA795372F3
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 01:30:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231734AbiE2TEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 May 2022 15:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38190 "EHLO
+        id S231667AbiE2Xai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 May 2022 19:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230368AbiE2TEC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 May 2022 15:04:02 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46C0257B02
-        for <netdev@vger.kernel.org>; Sun, 29 May 2022 12:04:01 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id c5-20020a1c3505000000b0038e37907b5bso7330507wma.0
-        for <netdev@vger.kernel.org>; Sun, 29 May 2022 12:04:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MtzNwdll4LTazb3SnDmOfdBWik1I1Q3tYPCC6MNC+oU=;
-        b=Db9IdsVz4okVy/S44zxw3DOHLc6tberVKjnPVcR8LIaTHhBJ9kG87hx06QXf3NGil+
-         0UVgxCAlf2Ex6VL6uI8y8UyHbVVRBVZ4/NQiZgwzlX9/lFNPL+tkAWfXoSNqLgOnyGNU
-         DsoRqvGoj3kUqkY6rDexOmTpCJGM1ewGACFXQ+jfYk8RIqEK0+LWfY59qNM4W4ygaAVe
-         vMDW8Re6FVMDhtI9VY97uOD4Etml70cm8B5JNeZG/EdIYsUKNmQ3M6thi4bue3bAXyIX
-         U0AGTO2yfN8Lzmo96DRaH2IGdpcxyMY9eq5oQY+m1K0Ehl5/K2H3HHsoRaS5Y1C+XsLi
-         hc5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MtzNwdll4LTazb3SnDmOfdBWik1I1Q3tYPCC6MNC+oU=;
-        b=7v3uxCh5H8qNHP3ov1XHirRYNH0PC7zFAWlyjypTKpefenSxljvanbqUSaQ8UuLYU/
-         6gJc6oCX+GmxXqvPqTtFWW2J1/tOniRHkwwJvRneaIGMq9bbNL3hoT5Juyix95HmEbw4
-         wTDYe13iT3nKjVZvL2PHHhmkXNUYe51aFJnz06/oDvtlitjbfNY1x/arx+FNTyEXbolJ
-         +ajEJ8cZFRoxhmSl9MYKO7yUYAqNLkAguIFhl0xjpM9H8j6V9/qadsmjes+rl3owkQiT
-         2QpqpjiUWkOR2v+xJFWNz1AZvjQqNSGt5lRudIcU+yM2lecu1r4SdIHYv0BSIa1O8ZHu
-         CUBQ==
-X-Gm-Message-State: AOAM5318nc23pEbA/0BmFd9vUWQADPd3DvGP8p8U+CMMFXsHcAHoaHWF
-        TB8zw13jNg4aZYYNrVMm1VfYtA==
-X-Google-Smtp-Source: ABdhPJxx0AIi2dkIWVCXl7rwvfW5NdZbl6YNOoydU2sAUy31f4xaRC6B/EepgHM7fQOYwYnG14sz3g==
-X-Received: by 2002:a05:600c:3c8f:b0:39b:808c:b5cb with SMTP id bg15-20020a05600c3c8f00b0039b808cb5cbmr3597003wmb.11.1653851039490;
-        Sun, 29 May 2022 12:03:59 -0700 (PDT)
-Received: from 6wind.com ([2a01:e0a:5ac:6460:c065:401d:87eb:9b25])
-        by smtp.gmail.com with ESMTPSA id m5-20020a5d64a5000000b0020c5253d8casm7937420wrp.22.2022.05.29.12.03.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 May 2022 12:03:58 -0700 (PDT)
-Date:   Sun, 29 May 2022 21:03:57 +0200
-From:   Olivier Matz <olivier.matz@6wind.com>
-To:     Piotr Skajewski <piotrx.skajewski@intel.com>
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        davem@davemloft.net, pabeni@redhat.com, pmenzel@molgen.mpg.de,
-        stable@vger.kernel.org, nicolas.dichtel@6wind.com,
-        alexandr.lobakin@intel.com, maciej.fijalkowski@intel.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com
-Subject: Re: [Intel-wired-lan] [PATCH net v2 0/2] ixgbe: fix promiscuous mode
- on VF
-Message-ID: <YpPDnXRlxC5doIAJ@platinum>
-References: <20220406095252.22338-1-olivier.matz@6wind.com>
- <20220526141015.43057-1-piotrx.skajewski@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220526141015.43057-1-piotrx.skajewski@intel.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        with ESMTP id S230417AbiE2Xad (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 May 2022 19:30:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F20186F1;
+        Sun, 29 May 2022 16:30:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 557B460F60;
+        Sun, 29 May 2022 23:30:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 844B5C385B8;
+        Sun, 29 May 2022 23:30:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1653867030;
+        bh=GpzTPsNqRojtOnbCgreA4wsBMUClKlvqnaoCqS7Q2yQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KQN+Ec1m1OMjJ+UgZwlfD9T6ILbxe9+b+NogjSKzaZo1W1GjKoD9jeHRuicyTluyc
+         Y46PdY9URSoFNW57j4/XKpmaiBgrj1ciQxaSkul9U9dTYTKiq1R56QatdIs0SAEJHx
+         OOvlfw0dtnht5dc3r6aVTVDcQB2SvqPjf1wmm0BM=
+Date:   Sun, 29 May 2022 16:30:29 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Chen Lin <chen45464546@163.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Alexander Duyck <alexander.h.duyck@linux.intel.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] mm: page_frag: Warn_on when frag_alloc size is bigger
+ than PAGE_SIZE
+Message-Id: <20220529163029.12425c1e5286d7c7e3fe3708@linux-foundation.org>
+In-Reply-To: <1653752373-3172-1-git-send-email-chen45464546@163.com>
+References: <1653752373-3172-1-git-send-email-chen45464546@163.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-9.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -74,49 +53,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Piotr,
+On Sat, 28 May 2022 23:39:33 +0800 Chen Lin <chen45464546@163.com> wrote:
 
-On Thu, May 26, 2022 at 04:10:15PM +0200, Piotr Skajewski wrote:
-> > On Mon, Apr 25, 2022 at 01:51:53PM +0200, Olivier Matz wrote:
-> > > Hi,
-> > > 
-> > > On Wed, Apr 06, 2022 at 11:52:50AM +0200, Olivier Matz wrote:
-> > > > These 2 patches fix issues related to the promiscuous mode on VF.
-> > > > 
-> > > > Comments are welcome,
-> > > > Olivier
-> > > > 
-> > > > Cc: stable@vger.kernel.org
-> > > > Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-> > > > 
-> > > > Changes since v1:
-> > > > - resend with CC intel-wired-lan
-> > > > - remove CC Hiroshi Shimamoto (address does not exist anymore)
-> > > > 
-> > > > Olivier Matz (2):
-> > > >   ixgbe: fix bcast packets Rx on VF after promisc removal
-> > > >   ixgbe: fix unexpected VLAN Rx in promisc mode on VF
-> > > > 
-> > > >  drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c | 8 ++++----
-> > > >  1 file changed, 4 insertions(+), 4 deletions(-)
-> > > 
-> > > Any feedback about this patchset?
-> > > Comments are welcome.
-> >
-> > I didn't get feedback for this patchset until now. Am I doing things
-> > correctly? Am I targeting the appropriate mailing lists and people?
-> >
-> > Please let me know if I missed something.
+> netdev_alloc_frag->page_frag_alloc may cause memory corruption in 
+> the following process:
 > 
-> Hi Olivier,
+> 1. A netdev_alloc_frag function call need alloc 200 Bytes to build a skb.
 > 
-> Sorry for the late reply,
-> We had to analyze it internally and it took us some time.
-> After reviewing, we decided that the proposed patches could be accepted.
+> 2. Insufficient memory to alloc PAGE_FRAG_CACHE_MAX_ORDER(32K) in 
+> __page_frag_cache_refill to fill frag cache, then one page(eg:4K) 
+> is allocated, now current frag cache is 4K, alloc is success, 
+> nc->pagecnt_bias--.
 > 
-> ACK for series.
+> 3. Then this 200 bytes skb in step 1 is freed, page->_refcount--.
+> 
+> 4. Another netdev_alloc_frag function call need alloc 5k, page->_refcount 
+> is equal to nc->pagecnt_bias, reset page count bias and offset to 
+> start of new frag. page_frag_alloc will return the 4K memory for a 
+> 5K memory request.
+> 
+> 5. The caller write on the extra 1k memory which is not actual allocated 
+> will cause memory corruption.
+> 
+> page_frag_alloc is for fragmented allocation. We should warn the caller 
+> to avoid memory corruption.
+> 
 
-No problem for the delay.
-Thank you!
+Let's cc Alexander and the networking developers.
 
-Olivier
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -5574,6 +5574,11 @@ void *page_frag_alloc_align(struct page_frag_cache *nc,
+>  	struct page *page;
+>  	int offset;
+>  
+> +	/* frag_alloc is not suitable for memory alloc which fragsz
+> +	 * is bigger than PAGE_SIZE, use kmalloc or alloc_pages instead.
+> +	 */
+> +	WARN_ON(fragsz > PAGE_SIZE);
+> +
+>  	if (unlikely(!nc->va)) {
+>  refill:
+>  		page = __page_frag_cache_refill(nc, gfp_mask);
+
+Odd.  All this does is generate a warning.  If the kernel is corrupting
+memory, that's a bug which needs fixing?
+
