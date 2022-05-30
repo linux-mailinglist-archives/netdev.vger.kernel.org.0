@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 517665381AC
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:32:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43BAD538190
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:32:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240970AbiE3OUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:20:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51736 "EHLO
+        id S240793AbiE3OUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:20:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240927AbiE3OQh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:16:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0541078A8;
-        Mon, 30 May 2022 06:44:21 -0700 (PDT)
+        with ESMTP id S241002AbiE3OQw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:16:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055E610EA75;
+        Mon, 30 May 2022 06:44:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7605860F14;
-        Mon, 30 May 2022 13:43:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC410C385B8;
-        Mon, 30 May 2022 13:43:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BEBDFB80DC0;
+        Mon, 30 May 2022 13:43:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 154A0C3411C;
+        Mon, 30 May 2022 13:43:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918218;
-        bh=VH0lnEDL+ySeSCJhfAcOBhCdDPlruk92FAA23rKWlWs=;
+        s=k20201202; t=1653918229;
+        bh=s4KO1UgUY/B996K+l2DBDtuWNiu3YWMyS23OqCyZMqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CAb6vuUrDP0fIZFfyGLVbiiSuzp0xWf0OM5D/ymRB78s01GvYaX6lMJvPyYZ7zi8I
-         7O4VehmMoba5XGLKn3one14XHduHT9LqQmN4z3JM1r6ZC3XtKIpWC3/hVy1xubXAO/
-         S0MsgQpxZjVfOJt/i/zDMvEWlzEJM713fdn3axXSubApx+7hoj4mKn0t8ueG0O5eTC
-         jsXHqc5WWqvNcSWqyOCUgEi+eSBJBklzNF2F8t74vJ9hyU48d5o5tFvMY1wns1cUx6
-         gztLnE46t0Hqfz1q8pQlP5+9/o1v+dBUWw+Frf6rSK/HD3uEF67qbv8wsnh5sAZTNi
-         Y9S1ZkmdTf9kA==
+        b=nVLPPuHC6by1sqKeeCu0gVAt1mE5a4ARlGbBTONt6V7u0hCqlD325Ef+/S5/wCohc
+         wCuGeNS8wQls20Nrd9mRj7EUzyn5j5srkKSqLgpShdz6pGyA6td285aonXSIJFET1h
+         eFKJXyFCYlgYCg3ESq0U3bXC/9GWTYO2PuCo1Ns6iOy/M/WFL6JZ4RBrNOSEj82ERc
+         e5NBEPs7oU4CtdRmfduCeGlG/tckLNVzE9szy6TETP9YWBU3jJXxnZb/OrKiTxHeMa
+         jOOfzAnAuuckJ1CokShmjTm6hKeamCA35U8KmZdDXzmmO/mJLyGLOd+EeQXT8PoNGU
+         yrW1TR74rBptw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alex Elder <elder@linaro.org>,
+Cc:     David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, elder@kernel.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 099/109] net: ipa: ignore endianness if there is no header
-Date:   Mon, 30 May 2022 09:38:15 -0400
-Message-Id: <20220530133825.1933431-99-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 103/109] rxrpc: Return an error to sendmsg if call failed
+Date:   Mon, 30 May 2022 09:38:19 -0400
+Message-Id: <20220530133825.1933431-103-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -58,81 +59,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 332ef7c814bdd60f08d0d9013d0e1104798b2d23 ]
+[ Upstream commit 4ba68c5192554876bd8c3afd904e3064d2915341 ]
 
-If we program an RX endpoint to have no header (header length is 0),
-header-related endpoint configuration values are meaningless and are
-ignored.
+If at the end of rxrpc sendmsg() or rxrpc_kernel_send_data() the call that
+was being given data was aborted remotely or otherwise failed, return an
+error rather than returning the amount of data buffered for transmission.
 
-The only case we support that defines a header is QMAP endpoints.
-In ipa_endpoint_init_hdr_ext() we set the endianness mask value
-unconditionally, but it should not be done if there is no header
-(meaning it is not configured for QMAP).
+The call (presumably) did not complete, so there's not much point
+continuing with it.  AF_RXRPC considers it "complete" and so will be
+unwilling to do anything else with it - and won't send a notification for
+it, deeming the return from sendmsg sufficient.
 
-Set the endianness conditionally, and rearrange the logic in that
-function slightly to avoid testing the qmap flag twice.
+Not returning an error causes afs to incorrectly handle a StoreData
+operation that gets interrupted by a change of address due to NAT
+reconfiguration.
 
-Delete an incorrect comment in ipa_endpoint_init_aggr().
+This doesn't normally affect most operations since their request parameters
+tend to fit into a single UDP packet and afs_make_call() returns before the
+server responds; StoreData is different as it involves transmission of a
+lot of data.
 
-Signed-off-by: Alex Elder <elder@linaro.org>
+This can be triggered on a client by doing something like:
+
+	dd if=/dev/zero of=/afs/example.com/foo bs=1M count=512
+
+at one prompt, and then changing the network address at another prompt,
+e.g.:
+
+	ifconfig enp6s0 inet 192.168.6.2 && route add 192.168.6.1 dev enp6s0
+
+Tracing packets on an Auristor fileserver looks something like:
+
+192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
+192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
+192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+<ARP exchange for 192.168.6.2>
+192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
+192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
+192.168.6.1 -> 192.168.6.2  RX 107 ACK Exceeds Window  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 29321  Call: 4  Source Port: 7000  Destination Port: 7001
+
+The Auristor fileserver logs code -453 (RXGEN_SS_UNMARSHAL), but the abort
+code received by kafs is -5 (RX_PROTOCOL_ERROR) as the rx layer sees the
+condition and generates an abort first and the unmarshal error is a
+consequence of that at the application layer.
+
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004810.html # v1
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ipa/ipa_endpoint.c | 32 +++++++++++++++++---------------
- 1 file changed, 17 insertions(+), 15 deletions(-)
+ net/rxrpc/sendmsg.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 87e42db1b61e..8e31c2ba5057 100644
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -570,19 +570,23 @@ static void ipa_endpoint_init_hdr_ext(struct ipa_endpoint *endpoint)
- 	struct ipa *ipa = endpoint->ipa;
- 	u32 val = 0;
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index af8ad6c30b9f..1d38e279e2ef 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -444,6 +444,12 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
  
--	val |= HDR_ENDIANNESS_FMASK;		/* big endian */
--
--	/* A QMAP header contains a 6 bit pad field at offset 0.  The RMNet
--	 * driver assumes this field is meaningful in packets it receives,
--	 * and assumes the header's payload length includes that padding.
--	 * The RMNet driver does *not* pad packets it sends, however, so
--	 * the pad field (although 0) should be ignored.
--	 */
--	if (endpoint->data->qmap && !endpoint->toward_ipa) {
--		val |= HDR_TOTAL_LEN_OR_PAD_VALID_FMASK;
--		/* HDR_TOTAL_LEN_OR_PAD is 0 (pad, not total_len) */
--		val |= HDR_PAYLOAD_LEN_INC_PADDING_FMASK;
--		/* HDR_TOTAL_LEN_OR_PAD_OFFSET is 0 */
-+	if (endpoint->data->qmap) {
-+		/* We have a header, so we must specify its endianness */
-+		val |= HDR_ENDIANNESS_FMASK;	/* big endian */
-+
-+		/* A QMAP header contains a 6 bit pad field at offset 0.
-+		 * The RMNet driver assumes this field is meaningful in
-+		 * packets it receives, and assumes the header's payload
-+		 * length includes that padding.  The RMNet driver does
-+		 * *not* pad packets it sends, however, so the pad field
-+		 * (although 0) should be ignored.
-+		 */
-+		if (!endpoint->toward_ipa) {
-+			val |= HDR_TOTAL_LEN_OR_PAD_VALID_FMASK;
-+			/* HDR_TOTAL_LEN_OR_PAD is 0 (pad, not total_len) */
-+			val |= HDR_PAYLOAD_LEN_INC_PADDING_FMASK;
-+			/* HDR_TOTAL_LEN_OR_PAD_OFFSET is 0 */
-+		}
- 	}
- 
- 	/* HDR_PAYLOAD_LEN_INC_PADDING is 0 */
-@@ -738,8 +742,6 @@ static void ipa_endpoint_init_aggr(struct ipa_endpoint *endpoint)
- 
- 			close_eof = endpoint->data->rx.aggr_close_eof;
- 			val |= aggr_sw_eof_active_encoded(version, close_eof);
--
--			/* AGGR_HARD_BYTE_LIMIT_ENABLE is 0 */
- 		} else {
- 			val |= u32_encode_bits(IPA_ENABLE_DEAGGR,
- 					       AGGR_EN_FMASK);
+ success:
+ 	ret = copied;
++	if (READ_ONCE(call->state) == RXRPC_CALL_COMPLETE) {
++		read_lock_bh(&call->state_lock);
++		if (call->error < 0)
++			ret = call->error;
++		read_unlock_bh(&call->state_lock);
++	}
+ out:
+ 	call->tx_pending = skb;
+ 	_leave(" = %d", ret);
 -- 
 2.35.1
 
