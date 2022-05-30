@@ -2,50 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58A3D53819E
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:32:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 185CC5382E8
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:38:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240842AbiE3OUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:20:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40114 "EHLO
+        id S237700AbiE3O3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:29:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241154AbiE3ORR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:17:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC97C9AE5C;
-        Mon, 30 May 2022 06:44:42 -0700 (PDT)
+        with ESMTP id S241201AbiE3ORV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:17:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FF77118014;
+        Mon, 30 May 2022 06:44:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77F9960F93;
-        Mon, 30 May 2022 13:44:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C23A4C3411F;
-        Mon, 30 May 2022 13:44:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C222B80DB8;
+        Mon, 30 May 2022 13:44:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7FEAC3411C;
+        Mon, 30 May 2022 13:44:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918279;
-        bh=0OlY5D9ye+XxIn+0T1FIRSEBJPKi2aO9hFT5ddJDyz8=;
+        s=k20201202; t=1653918291;
+        bh=6GPI7gYf07+zFN1Ol/tp6iH7PZSLrK3qLnRFMdReihY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d8Jd4Hj7/pI5KSBb13P8Dc7dU0Z+OidfdDwMNKXNyEiPSp8zrWqneXuGncq15GigV
-         BKfYiKftjulUrMMIwM5euAm6JiBonpqQz5wrviS9ztAMs7VZ0Bhjq9LGK0flP//jjR
-         vRtvZ/7a75Rrb3njIRQVzVdvnRw/GOKqNsXQ9DNge2gK2NdwSHlt1wOdMqef/wv0Il
-         /WTovaRg39xR0Cs+1iMOsZbA/mQG9fv/BZRJxN06jnyvTP1+58JnJbWY3klEeLl6/p
-         Hi2VpmzMrd7VNPtG6XCTl+jG2z/qEXBhKHKg3So2npkXlglJijEsWFat3yrSLbxD4C
-         DZ/fYNfySmA1g==
+        b=N6OrMFIYb6mRkiU6uhxkACdJ8bWfDrylL0UtX5OFtrcMXMm8F4ZnVX8vwNKyHiFpc
+         k2y8czltPfRVCfpWLI1BGvVjfqeM9ziu6tyGxhFhqOod5seie/r6fR3rBIRGCE1/Xk
+         bcCMwwY/9fz0hT9I5k37N0z+dw0vrhZO4a4deP1vZh3Hr8rwrylRcXQAeSZUB/Hxdl
+         H7PeRx/9SxHbi3eEtzVE1n6vaTnd1ES+mP2J9VHMM7UVLImaDDvOst0PsonhyEtL0Y
+         WgsxSkCxf5ZMmnUVrHrwRvQM5vV/StGAbVcvulJQOjia5PgjfEnz+Yx0P5HJNwZHLE
+         wHxTKJLIDhfWA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Haowen Bai <baihaowen@meizu.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+Cc:     =?UTF-8?q?Thibaut=20VAR=C3=88NE?= <hacks+kernel@slashdirt.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 15/76] sfc: ef10: Fix assigning negative value to unsigned variable
-Date:   Mon, 30 May 2022 09:43:05 -0400
-Message-Id: <20220530134406.1934928-15-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 20/76] ath9k: fix QCA9561 PA bias level
+Date:   Mon, 30 May 2022 09:43:10 -0400
+Message-Id: <20220530134406.1934928-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
 References: <20220530134406.1934928-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -59,36 +62,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Haowen Bai <baihaowen@meizu.com>
+From: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
 
-[ Upstream commit b8ff3395fbdf3b79a99d0ef410fc34c51044121e ]
+[ Upstream commit e999a5da28a0e0f7de242d841ef7d5e48f4646ae ]
 
-fix warning reported by smatch:
-251 drivers/net/ethernet/sfc/ef10.c:2259 efx_ef10_tx_tso_desc()
-warn: assigning (-208) to unsigned variable 'ip_tot_len'
+This patch fixes an invalid TX PA DC bias level on QCA9561, which
+results in a very low output power and very low throughput as devices
+are further away from the AP (compared to other 2.4GHz APs).
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Acked-by: Edward Cree <ecree.xilinx@gmail.com>
-Link: https://lore.kernel.org/r/1649640757-30041-1-git-send-email-baihaowen@meizu.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This patch was suggested by Felix Fietkau, who noted[1]:
+"The value written to that register is wrong, because while the mask
+definition AR_CH0_TOP2_XPABIASLVL uses a different value for 9561, the
+shift definition AR_CH0_TOP2_XPABIASLVL_S is hardcoded to 12, which is
+wrong for 9561."
+
+In real life testing, without this patch the 2.4GHz throughput on
+Yuncore XD3200 is around 10Mbps sitting next to the AP, and closer to
+practical maximum with the patch applied.
+
+[1] https://lore.kernel.org/all/91c58969-c60e-2f41-00ac-737786d435ae@nbd.name
+
+Signed-off-by: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
+Acked-by: Felix Fietkau <nbd@nbd.name>
+Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220417145145.1847-1-hacks+kernel@slashdirt.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/ef10.c | 2 +-
+ drivers/net/wireless/ath/ath9k/ar9003_phy.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index 6f950979d25e..fa1a872c4bc8 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -2240,7 +2240,7 @@ int efx_ef10_tx_tso_desc(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
- 	 * guaranteed to satisfy the second as we only attempt TSO if
- 	 * inner_network_header <= 208.
- 	 */
--	ip_tot_len = -EFX_TSO2_MAX_HDRLEN;
-+	ip_tot_len = 0x10000 - EFX_TSO2_MAX_HDRLEN;
- 	EFX_WARN_ON_ONCE_PARANOID(mss + EFX_TSO2_MAX_HDRLEN +
- 				  (tcp->doff << 2u) > ip_tot_len);
+diff --git a/drivers/net/wireless/ath/ath9k/ar9003_phy.h b/drivers/net/wireless/ath/ath9k/ar9003_phy.h
+index a171dbb29fbb..ad949eb02f3d 100644
+--- a/drivers/net/wireless/ath/ath9k/ar9003_phy.h
++++ b/drivers/net/wireless/ath/ath9k/ar9003_phy.h
+@@ -720,7 +720,7 @@
+ #define AR_CH0_TOP2		(AR_SREV_9300(ah) ? 0x1628c : \
+ 					(AR_SREV_9462(ah) ? 0x16290 : 0x16284))
+ #define AR_CH0_TOP2_XPABIASLVL		(AR_SREV_9561(ah) ? 0x1e00 : 0xf000)
+-#define AR_CH0_TOP2_XPABIASLVL_S	12
++#define AR_CH0_TOP2_XPABIASLVL_S	(AR_SREV_9561(ah) ? 9 : 12)
  
+ #define AR_CH0_XTAL		(AR_SREV_9300(ah) ? 0x16294 : \
+ 				 ((AR_SREV_9462(ah) || AR_SREV_9565(ah)) ? 0x16298 : \
 -- 
 2.35.1
 
