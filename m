@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADB2F537EE5
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:14:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BDE5537F6A
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:20:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238765AbiE3Nxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 09:53:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55034 "EHLO
+        id S238847AbiE3Nxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 09:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238424AbiE3NwT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:52:19 -0400
+        with ESMTP id S238665AbiE3NxM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:53:12 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A56512772;
-        Mon, 30 May 2022 06:37:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C07D28A063;
+        Mon, 30 May 2022 06:37:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4D11B80AE8;
-        Mon, 30 May 2022 13:37:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5649FC3411A;
-        Mon, 30 May 2022 13:37:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2521BB80D84;
+        Mon, 30 May 2022 13:37:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97809C3411C;
+        Mon, 30 May 2022 13:37:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917840;
-        bh=OgUDXA45bwkJ5vJysgvw42AgkjEwX/rQiiRRrhcxWUo=;
+        s=k20201202; t=1653917848;
+        bh=q4P0TgG5luIpHJz6sITHcKcCqK92PH1Nr8Ym2LquE5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TdRT7ZkwY4RaVxLhkDy1VH33PFQjdGSp1wANjSvPHwfmz1OImS6KBoug3UFHRnlnq
-         F3IwEknTt6vaJ/b0LormgOEKOyvpRxEImyKIwyqmn5TuArm+93wKTqrCemABQO5Od2
-         detGoNgSDRmfDb/dY9pDL+Kv9JsjpQNkve0vJd7fQSJbdPGSV7R/cnYbfrOiP0AhWl
-         nZRUOOiFf0pYF+/eaaSrxeq75Esb2h0sb/uILYuFE3bHl+ixyjL9qc/YSF/YYjR228
-         ET2ZiuiFr7LxZ2h8qFjZqeImaUgfz4eJgeV8bKKQXdbSgAneozvai6rayVsdrCDDot
-         iEDU+HQIYOrNg==
+        b=eRHvNohK5o/9i6WEWDApz7pdd8OXDreAPbtyqXrjQBi3AUMlcCkiXZ010ins09rOC
+         BmlMep37EOcvoogJd5E/HOHkYjmY9Tje0LQG1RDDfOePLcD3g3DDH4761b0Zo+5+Wr
+         FH9ArgvKctQakiKHaQaoh1gfkem1ilb916jGVqlXDJFnBNODVG81/0Uw7XF+GuscYf
+         qURmdDKZe8rq1LHCC5DAYG6YApRujHDtq/QF96axnXi9/lR7MILsl95CntwNAEvm0F
+         O/6T1xvXmNbcSS3UFXVM6kryDlhyFCfurD6kGjKKJBillMTWPIRzndZSx2PtUb00sf
+         8jpDdByTm9oZA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fabio Estevam <festevam@denx.de>, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 112/135] net: phy: micrel: Allow probing without .driver_data
-Date:   Mon, 30 May 2022 09:31:10 -0400
-Message-Id: <20220530133133.1931716-112-sashal@kernel.org>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>, Kalle Valo <kvalo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 115/135] rtw89: cfo: check mac_id to avoid out-of-bounds
+Date:   Mon, 30 May 2022 09:31:13 -0400
+Message-Id: <20220530133133.1931716-115-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -58,70 +57,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+From: Ping-Ke Shih <pkshih@realtek.com>
 
-[ Upstream commit f2ef6f7539c68c6bd6c32323d8845ee102b7c450 ]
+[ Upstream commit 97df85871a5b187609d30fca6d85b912d9e02f29 ]
 
-Currently, if the .probe element is present in the phy_driver structure
-and the .driver_data is not, a NULL pointer dereference happens.
+Somehow, hardware reports incorrect mac_id and pollute memory. Check index
+before we access the array.
 
-Allow passing .probe without .driver_data by inserting NULL checks
-for priv->type.
+  UBSAN: array-index-out-of-bounds in rtw89/phy.c:2517:23
+  index 188 is out of range for type 's32 [64]'
+  CPU: 1 PID: 51550 Comm: irq/35-rtw89_pc Tainted: G           OE
+  Call Trace:
+   <IRQ>
+   show_stack+0x52/0x58
+   dump_stack_lvl+0x4c/0x63
+   dump_stack+0x10/0x12
+   ubsan_epilogue+0x9/0x45
+   __ubsan_handle_out_of_bounds.cold+0x44/0x49
+   ? __alloc_skb+0x92/0x1d0
+   rtw89_phy_cfo_parse+0x44/0x7f [rtw89_core]
+   rtw89_core_rx+0x261/0x871 [rtw89_core]
+   ? __alloc_skb+0xee/0x1d0
+   rtw89_pci_napi_poll+0x3fa/0x4ea [rtw89_pci]
+   __napi_poll+0x33/0x1a0
+   net_rx_action+0x126/0x260
+   ? __queue_work+0x217/0x4c0
+   __do_softirq+0xd9/0x315
+   ? disable_irq_nosync+0x10/0x10
+   do_softirq.part.0+0x6d/0x90
+   </IRQ>
+   <TASK>
+   __local_bh_enable_ip+0x62/0x70
+   rtw89_pci_interrupt_threadfn+0x182/0x1a6 [rtw89_pci]
+   irq_thread_fn+0x28/0x60
+   irq_thread+0xc8/0x190
+   ? irq_thread_fn+0x60/0x60
+   kthread+0x16b/0x190
+   ? irq_thread_check_affinity+0xe0/0xe0
+   ? set_kthread_struct+0x50/0x50
+   ret_from_fork+0x22/0x30
+   </TASK>
 
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220513114613.762810-1-festevam@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220516005215.5878-4-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/micrel.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/net/wireless/realtek/rtw89/phy.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index cfb5378bbb39..f20d8c3e91bf 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -348,7 +348,7 @@ static int kszphy_config_reset(struct phy_device *phydev)
- 		}
- 	}
+diff --git a/drivers/net/wireless/realtek/rtw89/phy.c b/drivers/net/wireless/realtek/rtw89/phy.c
+index 147009888de0..777ad4e8f45f 100644
+--- a/drivers/net/wireless/realtek/rtw89/phy.c
++++ b/drivers/net/wireless/realtek/rtw89/phy.c
+@@ -1872,6 +1872,11 @@ void rtw89_phy_cfo_parse(struct rtw89_dev *rtwdev, s16 cfo_val,
+ 	struct rtw89_cfo_tracking_info *cfo = &rtwdev->cfo_tracking;
+ 	u8 macid = phy_ppdu->mac_id;
  
--	if (priv->led_mode >= 0)
-+	if (priv->type && priv->led_mode >= 0)
- 		kszphy_setup_led(phydev, priv->type->led_mode_reg, priv->led_mode);
- 
- 	return 0;
-@@ -364,10 +364,10 @@ static int kszphy_config_init(struct phy_device *phydev)
- 
- 	type = priv->type;
- 
--	if (type->has_broadcast_disable)
-+	if (type && type->has_broadcast_disable)
- 		kszphy_broadcast_disable(phydev);
- 
--	if (type->has_nand_tree_disable)
-+	if (type && type->has_nand_tree_disable)
- 		kszphy_nand_tree_disable(phydev);
- 
- 	return kszphy_config_reset(phydev);
-@@ -1365,7 +1365,7 @@ static int kszphy_probe(struct phy_device *phydev)
- 
- 	priv->type = type;
- 
--	if (type->led_mode_reg) {
-+	if (type && type->led_mode_reg) {
- 		ret = of_property_read_u32(np, "micrel,led-mode",
- 				&priv->led_mode);
- 		if (ret)
-@@ -1386,7 +1386,8 @@ static int kszphy_probe(struct phy_device *phydev)
- 		unsigned long rate = clk_get_rate(clk);
- 		bool rmii_ref_clk_sel_25_mhz;
- 
--		priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
-+		if (type)
-+			priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
- 		rmii_ref_clk_sel_25_mhz = of_property_read_bool(np,
- 				"micrel,rmii-reference-clock-select-25-mhz");
- 
++	if (macid >= CFO_TRACK_MAX_USER) {
++		rtw89_warn(rtwdev, "mac_id %d is out of range\n", macid);
++		return;
++	}
++
+ 	cfo->cfo_tail[macid] += cfo_val;
+ 	cfo->cfo_cnt[macid]++;
+ 	cfo->packet_count++;
 -- 
 2.35.1
 
