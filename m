@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0A065380A4
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:24:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADB2F537EE5
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:14:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237587AbiE3NxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 09:53:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34778 "EHLO
+        id S238765AbiE3Nxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 09:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239340AbiE3Nv2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:51:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F6B21E09;
-        Mon, 30 May 2022 06:36:37 -0700 (PDT)
+        with ESMTP id S238424AbiE3NwT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:52:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A56512772;
+        Mon, 30 May 2022 06:37:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12F8060F81;
-        Mon, 30 May 2022 13:36:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6A53C385B8;
-        Mon, 30 May 2022 13:36:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4D11B80AE8;
+        Mon, 30 May 2022 13:37:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5649FC3411A;
+        Mon, 30 May 2022 13:37:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917796;
-        bh=rQOzDbigvvxG6jMxeqztHkPaTTETYnr8ntAiHYX1pbw=;
+        s=k20201202; t=1653917840;
+        bh=OgUDXA45bwkJ5vJysgvw42AgkjEwX/rQiiRRrhcxWUo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oHD4hLwmAjRJv6R3nbyVU3Mk36b2fnDGot90q6y34Vei9hQQ8o3PqDbp9d+YyF0oo
-         nDxIbuMmSimVCbUkE21UCSImgOK0vpfaUmRXbOV74/3TEZomHPgNUjtposQdn0aYgC
-         brHAA00y6MQ6O4uklY9mi7axVn5RT47P2xLRbPE1KD8Xr75r2rgzeTicsZiPuOTTeD
-         QjJ6E3Gahw9XYfavFSrAaXbgLQf/qltxNbpqNOKT+Lm814bjKVRLeXgyoxo/agICiG
-         1trLM+h488MKHacuUdCyoyA+hmXpPcf5jx+Qq26fDz6Yym+IWrVXTMnbgVaFn9cq7E
-         PcRq9vyb0nf3g==
+        b=TdRT7ZkwY4RaVxLhkDy1VH33PFQjdGSp1wANjSvPHwfmz1OImS6KBoug3UFHRnlnq
+         F3IwEknTt6vaJ/b0LormgOEKOyvpRxEImyKIwyqmn5TuArm+93wKTqrCemABQO5Od2
+         detGoNgSDRmfDb/dY9pDL+Kv9JsjpQNkve0vJd7fQSJbdPGSV7R/cnYbfrOiP0AhWl
+         nZRUOOiFf0pYF+/eaaSrxeq75Esb2h0sb/uILYuFE3bHl+ixyjL9qc/YSF/YYjR228
+         ET2ZiuiFr7LxZ2h8qFjZqeImaUgfz4eJgeV8bKKQXdbSgAneozvai6rayVsdrCDDot
+         iEDU+HQIYOrNg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 100/135] Bluetooth: HCI: Add HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN quirk
-Date:   Mon, 30 May 2022 09:30:58 -0400
-Message-Id: <20220530133133.1931716-100-sashal@kernel.org>
+Cc:     Fabio Estevam <festevam@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 112/135] net: phy: micrel: Allow probing without .driver_data
+Date:   Mon, 30 May 2022 09:31:10 -0400
+Message-Id: <20220530133133.1931716-112-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -59,91 +58,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Fabio Estevam <festevam@denx.de>
 
-[ Upstream commit 05abad857277dda198063017b00ba5b9fed2c0cb ]
+[ Upstream commit f2ef6f7539c68c6bd6c32323d8845ee102b7c450 ]
 
-This adds HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN quirk which can be
-used to mark HCI_Enhanced_Setup_Synchronous_Connection as broken even
-if its support command bit are set since some controller report it as
-supported but the command don't work properly with some configurations
-(e.g. BT_VOICE_TRANSPARENT/mSBC).
+Currently, if the .probe element is present in the phy_driver structure
+and the .driver_data is not, a NULL pointer dereference happens.
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Allow passing .probe without .driver_data by inserting NULL checks
+for priv->type.
+
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220513114613.762810-1-festevam@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/bluetooth/hci.h      | 9 +++++++++
- include/net/bluetooth/hci_core.h | 8 ++++++--
- net/bluetooth/hci_conn.c         | 2 +-
- net/bluetooth/sco.c              | 2 +-
- 4 files changed, 17 insertions(+), 4 deletions(-)
+ drivers/net/phy/micrel.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index 69ef31cea582..62a9bb022aed 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -265,6 +265,15 @@ enum {
- 	 * runtime suspend, because event filtering takes place there.
- 	 */
- 	HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL,
-+
-+	/*
-+	 * When this quirk is set, disables the use of
-+	 * HCI_OP_ENHANCED_SETUP_SYNC_CONN command to setup SCO connections.
-+	 *
-+	 * This quirk can be set before hci_register_dev is called or
-+	 * during the hdev->setup vendor callback.
-+	 */
-+	HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN,
- };
- 
- /* HCI device flags */
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 131514913430..49a88b2f4678 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -1483,8 +1483,12 @@ void hci_conn_del_sysfs(struct hci_conn *conn);
- #define privacy_mode_capable(dev) (use_ll_privacy(dev) && \
- 				   (hdev->commands[39] & 0x04))
- 
--/* Use enhanced synchronous connection if command is supported */
--#define enhanced_sco_capable(dev) ((dev)->commands[29] & 0x08)
-+/* Use enhanced synchronous connection if command is supported and its quirk
-+ * has not been set.
-+ */
-+#define enhanced_sync_conn_capable(dev) \
-+	(((dev)->commands[29] & 0x08) && \
-+	 !test_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &(dev)->quirks))
- 
- /* Use ext scanning if set ext scan param and ext scan enable is supported */
- #define use_ext_scan(dev) (((dev)->commands[37] & 0x20) && \
-diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index 84312c836549..cd51bf2a709b 100644
---- a/net/bluetooth/hci_conn.c
-+++ b/net/bluetooth/hci_conn.c
-@@ -481,7 +481,7 @@ static bool hci_setup_sync_conn(struct hci_conn *conn, __u16 handle)
- 
- bool hci_setup_sync(struct hci_conn *conn, __u16 handle)
- {
--	if (enhanced_sco_capable(conn->hdev))
-+	if (enhanced_sync_conn_capable(conn->hdev))
- 		return hci_enhanced_setup_sync_conn(conn, handle);
- 
- 	return hci_setup_sync_conn(conn, handle);
-diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
-index 8eabf41b2993..2a58c7d88433 100644
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -885,7 +885,7 @@ static int sco_sock_setsockopt(struct socket *sock, int level, int optname,
- 			err = -EBADFD;
- 			break;
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index cfb5378bbb39..f20d8c3e91bf 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -348,7 +348,7 @@ static int kszphy_config_reset(struct phy_device *phydev)
  		}
--		if (enhanced_sco_capable(hdev) &&
-+		if (enhanced_sync_conn_capable(hdev) &&
- 		    voice.setting == BT_VOICE_TRANSPARENT)
- 			sco_pi(sk)->codec.id = BT_CODEC_TRANSPARENT;
- 		hci_dev_put(hdev);
+ 	}
+ 
+-	if (priv->led_mode >= 0)
++	if (priv->type && priv->led_mode >= 0)
+ 		kszphy_setup_led(phydev, priv->type->led_mode_reg, priv->led_mode);
+ 
+ 	return 0;
+@@ -364,10 +364,10 @@ static int kszphy_config_init(struct phy_device *phydev)
+ 
+ 	type = priv->type;
+ 
+-	if (type->has_broadcast_disable)
++	if (type && type->has_broadcast_disable)
+ 		kszphy_broadcast_disable(phydev);
+ 
+-	if (type->has_nand_tree_disable)
++	if (type && type->has_nand_tree_disable)
+ 		kszphy_nand_tree_disable(phydev);
+ 
+ 	return kszphy_config_reset(phydev);
+@@ -1365,7 +1365,7 @@ static int kszphy_probe(struct phy_device *phydev)
+ 
+ 	priv->type = type;
+ 
+-	if (type->led_mode_reg) {
++	if (type && type->led_mode_reg) {
+ 		ret = of_property_read_u32(np, "micrel,led-mode",
+ 				&priv->led_mode);
+ 		if (ret)
+@@ -1386,7 +1386,8 @@ static int kszphy_probe(struct phy_device *phydev)
+ 		unsigned long rate = clk_get_rate(clk);
+ 		bool rmii_ref_clk_sel_25_mhz;
+ 
+-		priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
++		if (type)
++			priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
+ 		rmii_ref_clk_sel_25_mhz = of_property_read_bool(np,
+ 				"micrel,rmii-reference-clock-select-25-mhz");
+ 
 -- 
 2.35.1
 
