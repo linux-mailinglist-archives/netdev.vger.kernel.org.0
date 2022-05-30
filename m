@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CB53537950
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:45:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 137D1537952
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:45:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235326AbiE3Kp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 06:45:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
+        id S235382AbiE3Kpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 06:45:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235529AbiE3KpK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 06:45:10 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B522F7CB5F;
-        Mon, 30 May 2022 03:44:49 -0700 (PDT)
+        with ESMTP id S235553AbiE3KpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 06:45:13 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70017CDD9;
+        Mon, 30 May 2022 03:44:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1653907489; x=1685443489;
+  t=1653907501; x=1685443501;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=2Otoz5YtUY5UHAOLNEZxCRuGxLKPnn/UlxdImZmJO1I=;
-  b=XPDf/ci9TxW16DAF0iQ1VR029DKRoxw9N3beVl07QZZiuDu1GmeqLpxl
-   b8rBBoyknQBQFd52fTNUZ+TphFUPC7j8LU+dlSCmLQqdxRBGGBpkGTT5c
-   6uEjasDOGx4NrUQ+ELSppmDXLY5Z4nf3ZqtEB0tXp51D4kvnVFCIbybU8
-   jDJRonWP3TlqdrRMu/qPppBdCIVwLaUwIxw1cAgD6aRhdvniIkZTYuxvA
-   SXB33e3LxRYMFHk6TV+tgUX+nsIDvL/bjFy78JckEBY/+5nH+FK1Fmh/4
-   nyUT/xBZbQZUnMB9f6y8aUJWmc9unP49cvRlooXt/1CVdvusnI80XfCf9
+  bh=yD+UidQ4JHeg1ql64Js19oGacUngysc4A0+nvKOShHo=;
+  b=TitAMymqVjm+YU+/ZJikIEo1xjJMLvgW1sSvT5MhC+VkgNAjVY2dCWKC
+   FpMjgL8h4Z9u696f5UkDV3DHRjhYyOBEbbiYb76ceTq0IEypLwP4z0kXg
+   XOXJP5Chv0gF41hw0YUcShvUWchAKmH6l7QpgmaLFz/90syz9VK+BTzBi
+   yJqU3XkiL5F+/VUMUHFPJklWLUTDyyCR4Rh6Nfti/MUdvCcBjZ5hGgOEE
+   fQtfnlw0OzIW3iWwI798m36t13sdYe/qMVhWKmnHXJJ0/jTwR6FyNKtmk
+   dbjREGSE19T3KlwZSEv0yd7L+zqsHcp8lag8koFwAmXpwNECUkZuSA2uR
    A==;
 X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
-   d="scan'208";a="161124788"
+   d="scan'208";a="165913274"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 May 2022 03:44:48 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 May 2022 03:45:00 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 30 May 2022 03:44:48 -0700
+ 15.1.2375.17; Mon, 30 May 2022 03:44:58 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 30 May 2022 03:44:44 -0700
+ 15.1.2375.17 via Frontend Transport; Mon, 30 May 2022 03:44:53 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Woojung Huh <woojung.huh@microchip.com>,
@@ -50,9 +50,9 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         "Russell King" <linux@armlinux.org.uk>
-Subject: [RFC Patch net-next v2 13/15] net: dsa: microchip: common menuconfig for ksz series switch
-Date:   Mon, 30 May 2022 16:12:55 +0530
-Message-ID: <20220530104257.21485-14-arun.ramadoss@microchip.com>
+Subject: [RFC Patch net-next v2 14/15] net: dsa: microchip: move ksz_dev_ops to ksz_common.c
+Date:   Mon, 30 May 2022 16:12:56 +0530
+Message-ID: <20220530104257.21485-15-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220530104257.21485-1-arun.ramadoss@microchip.com>
 References: <20220530104257.21485-1-arun.ramadoss@microchip.com>
@@ -69,124 +69,1052 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch replaces the two different menuconfig for ksz9477 and ksz8795
-to single ksz_common. so that it can be extended for the other switch
-like lan937x. And removes the export_symbols for the extern functions in
-the ksz_common.h.
+This patch move the ksz_dev_ops from individual files to ksz_common.c.
+And the dev_ops is assigned to ksz_device based on the switch detect.
+This reduces the redundant function and allows to reuse the
+functionality for LAN937x which has similar register set.
+And deletes the ksz8_switch_register and ksz9477_switch_register since
+both are calling the ksz_switch_register function. Instead the
+ksz_switch_register is called from the probe function.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/Kconfig      | 28 +++++++++-----------------
- drivers/net/dsa/microchip/Makefile     |  7 ++++---
- drivers/net/dsa/microchip/ksz_common.c |  3 ---
- 3 files changed, 13 insertions(+), 25 deletions(-)
+ drivers/net/dsa/microchip/ksz8.h        |  46 ++++++++
+ drivers/net/dsa/microchip/ksz8795.c     | 123 ++++++++--------------
+ drivers/net/dsa/microchip/ksz8795_spi.c |   2 +-
+ drivers/net/dsa/microchip/ksz8863_smi.c |   2 +-
+ drivers/net/dsa/microchip/ksz9477.c     | 133 ++++++++----------------
+ drivers/net/dsa/microchip/ksz9477.h     |  58 +++++++++++
+ drivers/net/dsa/microchip/ksz9477_i2c.c |   2 +-
+ drivers/net/dsa/microchip/ksz9477_spi.c |   2 +-
+ drivers/net/dsa/microchip/ksz_common.c  |  78 +++++++++++++-
+ drivers/net/dsa/microchip/ksz_common.h  |   7 +-
+ 10 files changed, 271 insertions(+), 182 deletions(-)
+ create mode 100644 drivers/net/dsa/microchip/ksz9477.h
 
-diff --git a/drivers/net/dsa/microchip/Kconfig b/drivers/net/dsa/microchip/Kconfig
-index c9e2a8989556..d21ff069e5aa 100644
---- a/drivers/net/dsa/microchip/Kconfig
-+++ b/drivers/net/dsa/microchip/Kconfig
-@@ -1,39 +1,29 @@
- # SPDX-License-Identifier: GPL-2.0-only
--config NET_DSA_MICROCHIP_KSZ_COMMON
--	select NET_DSA_TAG_KSZ
--	tristate
--
--menuconfig NET_DSA_MICROCHIP_KSZ9477
--	tristate "Microchip KSZ9477 series switch support"
-+menuconfig NET_DSA_MICROCHIP_KSZ_COMMON
-+	tristate "Microchip KSZ8795/KSZ9477 series switch support"
- 	depends on NET_DSA
--	select NET_DSA_MICROCHIP_KSZ_COMMON
-+	select NET_DSA_TAG_KSZ
- 	help
--	  This driver adds support for Microchip KSZ9477 switch chips.
-+	  This driver adds support for Microchip KSZ9477 series switch and
-+	  KSZ8795/KSZ88x3 switch chips.
+diff --git a/drivers/net/dsa/microchip/ksz8.h b/drivers/net/dsa/microchip/ksz8.h
+index 03da369675c6..90d5c7ea7850 100644
+--- a/drivers/net/dsa/microchip/ksz8.h
++++ b/drivers/net/dsa/microchip/ksz8.h
+@@ -8,6 +8,8 @@
+ #ifndef __KSZ8XXX_H
+ #define __KSZ8XXX_H
+ #include <linux/kernel.h>
++#include <net/dsa.h>
++#include "ksz_common.h"
  
- config NET_DSA_MICROCHIP_KSZ9477_I2C
- 	tristate "KSZ9477 series I2C connected switch driver"
--	depends on NET_DSA_MICROCHIP_KSZ9477 && I2C
-+	depends on NET_DSA_MICROCHIP_KSZ_COMMON && I2C
- 	select REGMAP_I2C
- 	help
- 	  Select to enable support for registering switches configured through I2C.
+ enum ksz_regs {
+ 	REG_IND_CTRL_0,
+@@ -67,4 +69,48 @@ struct ksz8 {
+ 	void *priv;
+ };
  
- config NET_DSA_MICROCHIP_KSZ9477_SPI
- 	tristate "KSZ9477 series SPI connected switch driver"
--	depends on NET_DSA_MICROCHIP_KSZ9477 && SPI
-+	depends on NET_DSA_MICROCHIP_KSZ_COMMON && SPI
- 	select REGMAP_SPI
- 	help
- 	  Select to enable support for registering switches configured through SPI.
- 
--menuconfig NET_DSA_MICROCHIP_KSZ8795
--	tristate "Microchip KSZ8795 series switch support"
--	depends on NET_DSA
--	select NET_DSA_MICROCHIP_KSZ_COMMON
--	help
--	  This driver adds support for Microchip KSZ8795/KSZ88X3 switch chips.
--
- config NET_DSA_MICROCHIP_KSZ8795_SPI
- 	tristate "KSZ8795 series SPI connected switch driver"
--	depends on NET_DSA_MICROCHIP_KSZ8795 && SPI
-+	depends on NET_DSA_MICROCHIP_KSZ_COMMON && SPI
- 	select REGMAP_SPI
- 	help
- 	  This driver accesses KSZ8795 chip through SPI.
-@@ -43,7 +33,7 @@ config NET_DSA_MICROCHIP_KSZ8795_SPI
- 
- config NET_DSA_MICROCHIP_KSZ8863_SMI
- 	tristate "KSZ series SMI connected switch driver"
--	depends on NET_DSA_MICROCHIP_KSZ8795
-+	depends on NET_DSA_MICROCHIP_KSZ_COMMON
- 	select MDIO_BITBANG
- 	help
- 	  Select to enable support for registering switches configured through
-diff --git a/drivers/net/dsa/microchip/Makefile b/drivers/net/dsa/microchip/Makefile
-index 2a03b21a3386..4cf4755e6426 100644
---- a/drivers/net/dsa/microchip/Makefile
-+++ b/drivers/net/dsa/microchip/Makefile
-@@ -1,8 +1,9 @@
- # SPDX-License-Identifier: GPL-2.0-only
--obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ_COMMON)	+= ksz_common.o
--obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477)		+= ksz9477.o
-+obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ_COMMON)	+= ksz_switch.o
-+ksz_switch-objs := ksz_common.o
-+ksz_switch-objs += ksz9477.o
-+ksz_switch-objs += ksz8795.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477_I2C)	+= ksz9477_i2c.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477_SPI)	+= ksz9477_spi.o
--obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8795)		+= ksz8795.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8795_SPI)	+= ksz8795_spi.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8863_SMI)	+= ksz8863_smi.o
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index f40d64858d35..8f852649c217 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -503,7 +503,6 @@ void ksz_r_mib_stats64(struct ksz_device *dev, int port)
- 
- 	spin_unlock(&mib->stats64_lock);
++int ksz8_setup(struct dsa_switch *ds);
++u32 ksz8_get_port_addr(int port, int offset);
++void ksz8_cfg_port_member(struct ksz_device *dev, int port, u8 member);
++void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port);
++void ksz8_port_setup(struct ksz_device *dev, int port, bool cpu_port);
++void ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val);
++void ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val);
++int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
++			 u8 *fid, u8 *src_port, u8 *timestamp, u16 *entries);
++int ksz8_r_sta_mac_table(struct ksz_device *dev, u16 addr,
++			 struct alu_struct *alu);
++void ksz8_w_sta_mac_table(struct ksz_device *dev, u16 addr,
++			  struct alu_struct *alu);
++void ksz8_r_mib_cnt(struct ksz_device *dev, int port, u16 addr, u64 *cnt);
++void ksz8_r_mib_pkt(struct ksz_device *dev, int port, u16 addr,
++		    u64 *dropped, u64 *cnt);
++void ksz8_freeze_mib(struct ksz_device *dev, int port, bool freeze);
++void ksz8_port_init_cnt(struct ksz_device *dev, int port);
++int ksz8_fdb_dump(struct ksz_device *dev, int port,
++		  dsa_fdb_dump_cb_t *cb, void *data);
++int ksz8_mdb_add(struct ksz_device *dev, int port,
++		 const struct switchdev_obj_port_mdb *mdb, struct dsa_db db);
++int ksz8_mdb_del(struct ksz_device *dev, int port,
++		 const struct switchdev_obj_port_mdb *mdb, struct dsa_db db);
++int ksz8_port_vlan_filtering(struct ksz_device *dev, int port, bool flag,
++			     struct netlink_ext_ack *extack);
++int ksz8_port_vlan_add(struct ksz_device *dev, int port,
++		       const struct switchdev_obj_port_vlan *vlan,
++		       struct netlink_ext_ack *extack);
++int ksz8_port_vlan_del(struct ksz_device *dev, int port,
++		       const struct switchdev_obj_port_vlan *vlan);
++int ksz8_port_mirror_add(struct ksz_device *dev, int port,
++			 struct dsa_mall_mirror_tc_entry *mirror,
++			 bool ingress, struct netlink_ext_ack *extack);
++void ksz8_port_mirror_del(struct ksz_device *dev, int port,
++			  struct dsa_mall_mirror_tc_entry *mirror);
++int ksz8_get_stp_reg(void);
++void ksz8_get_caps(struct ksz_device *dev, int port,
++		   struct phylink_config *config);
++int ksz8_reset_switch(struct ksz_device *dev);
++int ksz8_switch_detect(struct ksz_device *dev);
++int ksz8_switch_init(struct ksz_device *dev);
++void ksz8_switch_exit(struct ksz_device *dev);
++
+ #endif
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index ff4b33a3b1b4..3c9d32caa9ad 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -162,7 +162,7 @@ static int ksz8_ind_write8(struct ksz_device *dev, u8 table, u16 addr, u8 data)
+ 	return ret;
  }
--EXPORT_SYMBOL_GPL(ksz_r_mib_stats64);
  
- static void ksz_get_stats64(struct dsa_switch *ds, int port,
- 			    struct rtnl_link_stats64 *s)
-@@ -674,7 +673,6 @@ void ksz_init_mib_timer(struct ksz_device *dev)
- 		memset(mib->counters, 0, dev->info->mib_cnt * sizeof(u64));
+-static int ksz8_reset_switch(struct ksz_device *dev)
++int ksz8_reset_switch(struct ksz_device *dev)
+ {
+ 	if (ksz_is_ksz88x3(dev)) {
+ 		/* reset switch */
+@@ -213,7 +213,7 @@ static void ksz8795_set_prio_queue(struct ksz_device *dev, int port, int queue)
+ 			true);
+ }
+ 
+-static void ksz8_r_mib_cnt(struct ksz_device *dev, int port, u16 addr, u64 *cnt)
++void ksz8_r_mib_cnt(struct ksz_device *dev, int port, u16 addr, u64 *cnt)
+ {
+ 	struct ksz8 *ksz8 = dev->priv;
+ 	const u32 *masks;
+@@ -334,8 +334,8 @@ static void ksz8863_r_mib_pkt(struct ksz_device *dev, int port, u16 addr,
  	}
  }
--EXPORT_SYMBOL_GPL(ksz_init_mib_timer);
  
- static int ksz_phy_read16(struct dsa_switch *ds, int addr, int reg)
+-static void ksz8_r_mib_pkt(struct ksz_device *dev, int port, u16 addr,
+-			   u64 *dropped, u64 *cnt)
++void ksz8_r_mib_pkt(struct ksz_device *dev, int port, u16 addr,
++		    u64 *dropped, u64 *cnt)
  {
-@@ -901,7 +899,6 @@ void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
- 
- 	ksz_update_port_member(dev, port);
+ 	if (ksz_is_ksz88x3(dev))
+ 		ksz8863_r_mib_pkt(dev, port, addr, dropped, cnt);
+@@ -343,7 +343,7 @@ static void ksz8_r_mib_pkt(struct ksz_device *dev, int port, u16 addr,
+ 		ksz8795_r_mib_pkt(dev, port, addr, dropped, cnt);
  }
--EXPORT_SYMBOL_GPL(ksz_port_stp_state_set);
  
- static enum dsa_tag_protocol ksz_get_tag_protocol(struct dsa_switch *ds,
- 						  int port,
+-static void ksz8_freeze_mib(struct ksz_device *dev, int port, bool freeze)
++void ksz8_freeze_mib(struct ksz_device *dev, int port, bool freeze)
+ {
+ 	if (ksz_is_ksz88x3(dev))
+ 		return;
+@@ -358,7 +358,7 @@ static void ksz8_freeze_mib(struct ksz_device *dev, int port, bool freeze)
+ 		ksz_cfg(dev, REG_SW_CTRL_6, BIT(port), false);
+ }
+ 
+-static void ksz8_port_init_cnt(struct ksz_device *dev, int port)
++void ksz8_port_init_cnt(struct ksz_device *dev, int port)
+ {
+ 	struct ksz_port_mib *mib = &dev->ports[port].mib;
+ 	u64 *dropped;
+@@ -447,9 +447,8 @@ static int ksz8_valid_dyn_entry(struct ksz_device *dev, u8 *data)
+ 	return 0;
+ }
+ 
+-static int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr,
+-				u8 *mac_addr, u8 *fid, u8 *src_port,
+-				u8 *timestamp, u16 *entries)
++int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr, u8 *mac_addr,
++			 u8 *fid, u8 *src_port, u8 *timestamp, u16 *entries)
+ {
+ 	struct ksz8 *ksz8 = dev->priv;
+ 	u32 data_hi, data_lo;
+@@ -512,8 +511,8 @@ static int ksz8_r_dyn_mac_table(struct ksz_device *dev, u16 addr,
+ 	return rc;
+ }
+ 
+-static int ksz8_r_sta_mac_table(struct ksz_device *dev, u16 addr,
+-				struct alu_struct *alu)
++int ksz8_r_sta_mac_table(struct ksz_device *dev, u16 addr,
++			 struct alu_struct *alu)
+ {
+ 	struct ksz8 *ksz8 = dev->priv;
+ 	u32 data_hi, data_lo;
+@@ -551,8 +550,8 @@ static int ksz8_r_sta_mac_table(struct ksz_device *dev, u16 addr,
+ 	return -ENXIO;
+ }
+ 
+-static void ksz8_w_sta_mac_table(struct ksz_device *dev, u16 addr,
+-				 struct alu_struct *alu)
++void ksz8_w_sta_mac_table(struct ksz_device *dev, u16 addr,
++			  struct alu_struct *alu)
+ {
+ 	struct ksz8 *ksz8 = dev->priv;
+ 	u32 data_hi, data_lo;
+@@ -663,7 +662,7 @@ static void ksz8_w_vlan_table(struct ksz_device *dev, u16 vid, u16 vlan)
+ 	ksz8_w_table(dev, TABLE_VLAN, addr, buf);
+ }
+ 
+-static void ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
++void ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
+ {
+ 	struct ksz8 *ksz8 = dev->priv;
+ 	u8 restart, speed, ctrl, link;
+@@ -786,7 +785,7 @@ static void ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
+ 		*val = data;
+ }
+ 
+-static void ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
++void ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
+ {
+ 	struct ksz8 *ksz8 = dev->priv;
+ 	u8 restart, speed, ctrl, data;
+@@ -898,7 +897,7 @@ static void ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
+ 	}
+ }
+ 
+-static void ksz8_cfg_port_member(struct ksz_device *dev, int port, u8 member)
++void ksz8_cfg_port_member(struct ksz_device *dev, int port, u8 member)
+ {
+ 	u8 data;
+ 
+@@ -908,12 +907,12 @@ static void ksz8_cfg_port_member(struct ksz_device *dev, int port, u8 member)
+ 	ksz_pwrite8(dev, port, P_MIRROR_CTRL, data);
+ }
+ 
+-static int ksz8_get_stp_reg(void)
++int ksz8_get_stp_reg(void)
+ {
+ 	return P_STP_CTRL;
+ }
+ 
+-static void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
++void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
+ {
+ 	u8 learn[DSA_MAX_PORTS];
+ 	int first, index, cnt;
+@@ -946,8 +945,8 @@ static void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
+ 	}
+ }
+ 
+-static int ksz8_fdb_dump(struct ksz_device *dev, int port,
+-			 dsa_fdb_dump_cb_t *cb, void *data)
++int ksz8_fdb_dump(struct ksz_device *dev, int port,
++		  dsa_fdb_dump_cb_t *cb, void *data)
+ {
+ 	int ret = 0;
+ 	u16 i = 0;
+@@ -975,9 +974,8 @@ static int ksz8_fdb_dump(struct ksz_device *dev, int port,
+ 	return ret;
+ }
+ 
+-static int ksz8_mdb_add(struct ksz_device *dev, int port,
+-			const struct switchdev_obj_port_mdb *mdb,
+-			struct dsa_db db)
++int ksz8_mdb_add(struct ksz_device *dev, int port,
++		 const struct switchdev_obj_port_mdb *mdb, struct dsa_db db)
+ {
+ 	struct alu_struct alu;
+ 	int index;
+@@ -1019,9 +1017,8 @@ static int ksz8_mdb_add(struct ksz_device *dev, int port,
+ 	return 0;
+ }
+ 
+-static int ksz8_mdb_del(struct ksz_device *dev, int port,
+-			const struct switchdev_obj_port_mdb *mdb,
+-			struct dsa_db db)
++int ksz8_mdb_del(struct ksz_device *dev, int port,
++		 const struct switchdev_obj_port_mdb *mdb, struct dsa_db db)
+ {
+ 	struct alu_struct alu;
+ 	int index;
+@@ -1049,8 +1046,8 @@ static int ksz8_mdb_del(struct ksz_device *dev, int port,
+ 	return 0;
+ }
+ 
+-static int ksz8_port_vlan_filtering(struct ksz_device *dev, int port, bool flag,
+-				    struct netlink_ext_ack *extack)
++int ksz8_port_vlan_filtering(struct ksz_device *dev, int port, bool flag,
++			     struct netlink_ext_ack *extack)
+ {
+ 	if (ksz_is_ksz88x3(dev))
+ 		return -ENOTSUPP;
+@@ -1076,9 +1073,9 @@ static void ksz8_port_enable_pvid(struct ksz_device *dev, int port, bool state)
+ 	}
+ }
+ 
+-static int ksz8_port_vlan_add(struct ksz_device *dev, int port,
+-			      const struct switchdev_obj_port_vlan *vlan,
+-			      struct netlink_ext_ack *extack)
++int ksz8_port_vlan_add(struct ksz_device *dev, int port,
++		       const struct switchdev_obj_port_vlan *vlan,
++		       struct netlink_ext_ack *extack)
+ {
+ 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+ 	struct ksz_port *p = &dev->ports[port];
+@@ -1148,8 +1145,8 @@ static int ksz8_port_vlan_add(struct ksz_device *dev, int port,
+ 	return 0;
+ }
+ 
+-static int ksz8_port_vlan_del(struct ksz_device *dev, int port,
+-			      const struct switchdev_obj_port_vlan *vlan)
++int ksz8_port_vlan_del(struct ksz_device *dev, int port,
++		       const struct switchdev_obj_port_vlan *vlan)
+ {
+ 	u16 data, pvid;
+ 	u8 fid, member, valid;
+@@ -1180,9 +1177,9 @@ static int ksz8_port_vlan_del(struct ksz_device *dev, int port,
+ 	return 0;
+ }
+ 
+-static int ksz8_port_mirror_add(struct ksz_device *dev, int port,
+-				struct dsa_mall_mirror_tc_entry *mirror,
+-				bool ingress, struct netlink_ext_ack *extack)
++int ksz8_port_mirror_add(struct ksz_device *dev, int port,
++			 struct dsa_mall_mirror_tc_entry *mirror,
++			 bool ingress, struct netlink_ext_ack *extack)
+ {
+ 	if (ingress) {
+ 		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX, true);
+@@ -1202,8 +1199,8 @@ static int ksz8_port_mirror_add(struct ksz_device *dev, int port,
+ 	return 0;
+ }
+ 
+-static void ksz8_port_mirror_del(struct ksz_device *dev, int port,
+-				 struct dsa_mall_mirror_tc_entry *mirror)
++void ksz8_port_mirror_del(struct ksz_device *dev, int port,
++			  struct dsa_mall_mirror_tc_entry *mirror)
+ {
+ 	u8 data;
+ 
+@@ -1270,7 +1267,7 @@ static void ksz8795_cpu_interface_select(struct ksz_device *dev, int port)
+ 	p->phydev.duplex = 1;
+ }
+ 
+-static void ksz8_port_setup(struct ksz_device *dev, int port, bool cpu_port)
++void ksz8_port_setup(struct ksz_device *dev, int port, bool cpu_port)
+ {
+ 	struct dsa_switch *ds = dev->ds;
+ 	struct ksz8 *ksz8 = dev->priv;
+@@ -1374,7 +1371,7 @@ static int ksz8_handle_global_errata(struct dsa_switch *ds)
+ 	return ret;
+ }
+ 
+-static int ksz8_setup(struct dsa_switch *ds)
++int ksz8_setup(struct dsa_switch *ds)
+ {
+ 	struct ksz_device *dev = ds->priv;
+ 	struct alu_struct alu;
+@@ -1444,8 +1441,8 @@ static int ksz8_setup(struct dsa_switch *ds)
+ 	return ksz8_handle_global_errata(ds);
+ }
+ 
+-static void ksz8_get_caps(struct ksz_device *dev, int port,
+-			  struct phylink_config *config)
++void ksz8_get_caps(struct ksz_device *dev, int port,
++		   struct phylink_config *config)
+ {
+ 	config->mac_capabilities = MAC_10 | MAC_100;
+ 
+@@ -1462,12 +1459,12 @@ static void ksz8_get_caps(struct ksz_device *dev, int port,
+ 		config->mac_capabilities |= MAC_ASYM_PAUSE;
+ }
+ 
+-static u32 ksz8_get_port_addr(int port, int offset)
++u32 ksz8_get_port_addr(int port, int offset)
+ {
+ 	return PORT_CTRL_ADDR(port, offset);
+ }
+ 
+-static int ksz8_switch_init(struct ksz_device *dev)
++int ksz8_switch_init(struct ksz_device *dev)
+ {
+ 	struct ksz8 *ksz8 = dev->priv;
+ 
+@@ -1498,47 +1495,11 @@ static int ksz8_switch_init(struct ksz_device *dev)
+ 	return 0;
+ }
+ 
+-static void ksz8_switch_exit(struct ksz_device *dev)
++void ksz8_switch_exit(struct ksz_device *dev)
+ {
+ 	ksz8_reset_switch(dev);
+ }
+ 
+-static const struct ksz_dev_ops ksz8_dev_ops = {
+-	.setup = ksz8_setup,
+-	.get_port_addr = ksz8_get_port_addr,
+-	.cfg_port_member = ksz8_cfg_port_member,
+-	.flush_dyn_mac_table = ksz8_flush_dyn_mac_table,
+-	.port_setup = ksz8_port_setup,
+-	.r_phy = ksz8_r_phy,
+-	.w_phy = ksz8_w_phy,
+-	.r_dyn_mac_table = ksz8_r_dyn_mac_table,
+-	.r_sta_mac_table = ksz8_r_sta_mac_table,
+-	.w_sta_mac_table = ksz8_w_sta_mac_table,
+-	.r_mib_cnt = ksz8_r_mib_cnt,
+-	.r_mib_pkt = ksz8_r_mib_pkt,
+-	.freeze_mib = ksz8_freeze_mib,
+-	.port_init_cnt = ksz8_port_init_cnt,
+-	.fdb_dump = ksz8_fdb_dump,
+-	.mdb_add = ksz8_mdb_add,
+-	.mdb_del = ksz8_mdb_del,
+-	.vlan_filtering = ksz8_port_vlan_filtering,
+-	.vlan_add = ksz8_port_vlan_add,
+-	.vlan_del = ksz8_port_vlan_del,
+-	.mirror_add = ksz8_port_mirror_add,
+-	.mirror_del = ksz8_port_mirror_del,
+-	.get_stp_reg = ksz8_get_stp_reg,
+-	.get_caps = ksz8_get_caps,
+-	.shutdown = ksz8_reset_switch,
+-	.init = ksz8_switch_init,
+-	.exit = ksz8_switch_exit,
+-};
+-
+-int ksz8_switch_register(struct ksz_device *dev)
+-{
+-	return ksz_switch_register(dev, &ksz8_dev_ops);
+-}
+-EXPORT_SYMBOL(ksz8_switch_register);
+-
+ MODULE_AUTHOR("Tristram Ha <Tristram.Ha@microchip.com>");
+ MODULE_DESCRIPTION("Microchip KSZ8795 Series Switch DSA Driver");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/net/dsa/microchip/ksz8795_spi.c b/drivers/net/dsa/microchip/ksz8795_spi.c
+index 961a74c359a8..3a816661989c 100644
+--- a/drivers/net/dsa/microchip/ksz8795_spi.c
++++ b/drivers/net/dsa/microchip/ksz8795_spi.c
+@@ -82,7 +82,7 @@ static int ksz8795_spi_probe(struct spi_device *spi)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = ksz8_switch_register(dev);
++	ret = ksz_switch_register(dev);
+ 
+ 	/* Main DSA driver may not be started yet. */
+ 	if (ret)
+diff --git a/drivers/net/dsa/microchip/ksz8863_smi.c b/drivers/net/dsa/microchip/ksz8863_smi.c
+index b6f99e641dca..d71df05b8b7b 100644
+--- a/drivers/net/dsa/microchip/ksz8863_smi.c
++++ b/drivers/net/dsa/microchip/ksz8863_smi.c
+@@ -174,7 +174,7 @@ static int ksz8863_smi_probe(struct mdio_device *mdiodev)
+ 	if (mdiodev->dev.platform_data)
+ 		dev->pdata = mdiodev->dev.platform_data;
+ 
+-	ret = ksz8_switch_register(dev);
++	ret = ksz_switch_register(dev);
+ 
+ 	/* Main DSA driver may not be started yet. */
+ 	if (ret)
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index c87ce0e2afd8..430dcbf48a46 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -17,6 +17,7 @@
+ 
+ #include "ksz9477_reg.h"
+ #include "ksz_common.h"
++#include "ksz9477.h"
+ 
+ /* Used with variable features to indicate capabilities. */
+ #define GBIT_SUPPORT			BIT(0)
+@@ -47,7 +48,7 @@ static void ksz9477_port_cfg32(struct ksz_device *dev, int port, int offset,
+ 			   bits, set ? bits : 0);
+ }
+ 
+-static int ksz9477_change_mtu(struct ksz_device *dev, int port, int mtu)
++int ksz9477_change_mtu(struct ksz_device *dev, int port, int mtu)
+ {
+ 	u16 frame_size, max_frame = 0;
+ 	int i;
+@@ -64,7 +65,7 @@ static int ksz9477_change_mtu(struct ksz_device *dev, int port, int mtu)
+ 				  REG_SW_MTU_MASK, max_frame);
+ }
+ 
+-static int ksz9477_max_mtu(struct ksz_device *dev, int port)
++int ksz9477_max_mtu(struct ksz_device *dev, int port)
+ {
+ 	return KSZ9477_MAX_FRAME_SIZE - VLAN_ETH_HLEN - ETH_FCS_LEN;
+ }
+@@ -174,7 +175,7 @@ static int ksz9477_wait_alu_sta_ready(struct ksz_device *dev)
+ 					10, 1000);
+ }
+ 
+-static int ksz9477_reset_switch(struct ksz_device *dev)
++int ksz9477_reset_switch(struct ksz_device *dev)
+ {
+ 	u8 data8;
+ 	u32 data32;
+@@ -213,8 +214,7 @@ static int ksz9477_reset_switch(struct ksz_device *dev)
+ 	return 0;
+ }
+ 
+-static void ksz9477_r_mib_cnt(struct ksz_device *dev, int port, u16 addr,
+-			      u64 *cnt)
++void ksz9477_r_mib_cnt(struct ksz_device *dev, int port, u16 addr, u64 *cnt)
+ {
+ 	struct ksz_port *p = &dev->ports[port];
+ 	unsigned int val;
+@@ -241,14 +241,14 @@ static void ksz9477_r_mib_cnt(struct ksz_device *dev, int port, u16 addr,
+ 	*cnt += data;
+ }
+ 
+-static void ksz9477_r_mib_pkt(struct ksz_device *dev, int port, u16 addr,
+-			      u64 *dropped, u64 *cnt)
++void ksz9477_r_mib_pkt(struct ksz_device *dev, int port, u16 addr,
++		       u64 *dropped, u64 *cnt)
+ {
+ 	addr = dev->info->mib_names[addr].index;
+ 	ksz9477_r_mib_cnt(dev, port, addr, cnt);
+ }
+ 
+-static void ksz9477_freeze_mib(struct ksz_device *dev, int port, bool freeze)
++void ksz9477_freeze_mib(struct ksz_device *dev, int port, bool freeze)
+ {
+ 	u32 val = freeze ? MIB_COUNTER_FLUSH_FREEZE : 0;
+ 	struct ksz_port *p = &dev->ports[port];
+@@ -262,7 +262,7 @@ static void ksz9477_freeze_mib(struct ksz_device *dev, int port, bool freeze)
+ 	mutex_unlock(&p->mib.cnt_mutex);
+ }
+ 
+-static void ksz9477_port_init_cnt(struct ksz_device *dev, int port)
++void ksz9477_port_init_cnt(struct ksz_device *dev, int port)
+ {
+ 	struct ksz_port_mib *mib = &dev->ports[port].mib;
+ 
+@@ -275,7 +275,7 @@ static void ksz9477_port_init_cnt(struct ksz_device *dev, int port)
+ 	mutex_unlock(&mib->cnt_mutex);
+ }
+ 
+-static void ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
++void ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
+ {
+ 	u16 val = 0xffff;
+ 
+@@ -324,7 +324,7 @@ static void ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
+ 	*data = val;
+ }
+ 
+-static void ksz9477_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val)
++void ksz9477_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val)
+ {
+ 	/* No real PHY after this. */
+ 	if (addr >= dev->phy_port_cnt)
+@@ -337,18 +337,17 @@ static void ksz9477_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val)
+ 	ksz_pwrite16(dev, addr, 0x100 + (reg << 1), val);
+ }
+ 
+-static void ksz9477_cfg_port_member(struct ksz_device *dev, int port,
+-				    u8 member)
++void ksz9477_cfg_port_member(struct ksz_device *dev, int port, u8 member)
+ {
+ 	ksz_pwrite32(dev, port, REG_PORT_VLAN_MEMBERSHIP__4, member);
+ }
+ 
+-static int ksz9477_get_stp_reg(void)
++int ksz9477_get_stp_reg(void)
+ {
+ 	return P_STP_CTRL;
+ }
+ 
+-static void ksz9477_flush_dyn_mac_table(struct ksz_device *dev, int port)
++void ksz9477_flush_dyn_mac_table(struct ksz_device *dev, int port)
+ {
+ 	u8 data;
+ 
+@@ -370,9 +369,8 @@ static void ksz9477_flush_dyn_mac_table(struct ksz_device *dev, int port)
+ 	}
+ }
+ 
+-static int ksz9477_port_vlan_filtering(struct ksz_device *dev, int port,
+-				       bool flag,
+-				       struct netlink_ext_ack *extack)
++int ksz9477_port_vlan_filtering(struct ksz_device *dev, int port,
++				bool flag, struct netlink_ext_ack *extack)
+ {
+ 	if (flag) {
+ 		ksz_port_cfg(dev, port, REG_PORT_LUE_CTRL,
+@@ -387,9 +385,9 @@ static int ksz9477_port_vlan_filtering(struct ksz_device *dev, int port,
+ 	return 0;
+ }
+ 
+-static int ksz9477_port_vlan_add(struct ksz_device *dev, int port,
+-				 const struct switchdev_obj_port_vlan *vlan,
+-				 struct netlink_ext_ack *extack)
++int ksz9477_port_vlan_add(struct ksz_device *dev, int port,
++			  const struct switchdev_obj_port_vlan *vlan,
++			  struct netlink_ext_ack *extack)
+ {
+ 	u32 vlan_table[3];
+ 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+@@ -423,8 +421,8 @@ static int ksz9477_port_vlan_add(struct ksz_device *dev, int port,
+ 	return 0;
+ }
+ 
+-static int ksz9477_port_vlan_del(struct ksz_device *dev, int port,
+-				 const struct switchdev_obj_port_vlan *vlan)
++int ksz9477_port_vlan_del(struct ksz_device *dev, int port,
++			  const struct switchdev_obj_port_vlan *vlan)
+ {
+ 	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+ 	u32 vlan_table[3];
+@@ -456,9 +454,8 @@ static int ksz9477_port_vlan_del(struct ksz_device *dev, int port,
+ 	return 0;
+ }
+ 
+-static int ksz9477_fdb_add(struct ksz_device *dev, int port,
+-			   const unsigned char *addr, u16 vid,
+-			   struct dsa_db db)
++int ksz9477_fdb_add(struct ksz_device *dev, int port,
++		    const unsigned char *addr, u16 vid, struct dsa_db db)
+ {
+ 	u32 alu_table[4];
+ 	u32 data;
+@@ -513,9 +510,8 @@ static int ksz9477_fdb_add(struct ksz_device *dev, int port,
+ 	return ret;
+ }
+ 
+-static int ksz9477_fdb_del(struct ksz_device *dev, int port,
+-			   const unsigned char *addr, u16 vid,
+-			   struct dsa_db db)
++int ksz9477_fdb_del(struct ksz_device *dev, int port,
++		    const unsigned char *addr, u16 vid, struct dsa_db db)
+ {
+ 	u32 alu_table[4];
+ 	u32 data;
+@@ -603,8 +599,8 @@ static void ksz9477_convert_alu(struct alu_struct *alu, u32 *alu_table)
+ 	alu->mac[5] = alu_table[3] & 0xFF;
+ }
+ 
+-static int ksz9477_fdb_dump(struct ksz_device *dev, int port,
+-			    dsa_fdb_dump_cb_t *cb, void *data)
++int ksz9477_fdb_dump(struct ksz_device *dev, int port,
++		     dsa_fdb_dump_cb_t *cb, void *data)
+ {
+ 	int ret = 0;
+ 	u32 ksz_data;
+@@ -654,9 +650,8 @@ static int ksz9477_fdb_dump(struct ksz_device *dev, int port,
+ 	return ret;
+ }
+ 
+-static int ksz9477_mdb_add(struct ksz_device *dev, int port,
+-			   const struct switchdev_obj_port_mdb *mdb,
+-			   struct dsa_db db)
++int ksz9477_mdb_add(struct ksz_device *dev, int port,
++		    const struct switchdev_obj_port_mdb *mdb, struct dsa_db db)
+ {
+ 	u32 static_table[4];
+ 	u32 data;
+@@ -729,9 +724,8 @@ static int ksz9477_mdb_add(struct ksz_device *dev, int port,
+ 	return err;
+ }
+ 
+-static int ksz9477_mdb_del(struct ksz_device *dev, int port,
+-			   const struct switchdev_obj_port_mdb *mdb,
+-			   struct dsa_db db)
++int ksz9477_mdb_del(struct ksz_device *dev, int port,
++		    const struct switchdev_obj_port_mdb *mdb, struct dsa_db db)
+ {
+ 	u32 static_table[4];
+ 	u32 data;
+@@ -804,9 +798,9 @@ static int ksz9477_mdb_del(struct ksz_device *dev, int port,
+ 	return ret;
+ }
+ 
+-static int ksz9477_port_mirror_add(struct ksz_device *dev, int port,
+-				   struct dsa_mall_mirror_tc_entry *mirror,
+-				   bool ingress, struct netlink_ext_ack *extack)
++int ksz9477_port_mirror_add(struct ksz_device *dev, int port,
++			    struct dsa_mall_mirror_tc_entry *mirror,
++			    bool ingress, struct netlink_ext_ack *extack)
+ {
+ 	u8 data;
+ 	int p;
+@@ -843,8 +837,8 @@ static int ksz9477_port_mirror_add(struct ksz_device *dev, int port,
+ 	return 0;
+ }
+ 
+-static void ksz9477_port_mirror_del(struct ksz_device *dev, int port,
+-				    struct dsa_mall_mirror_tc_entry *mirror)
++void ksz9477_port_mirror_del(struct ksz_device *dev, int port,
++			     struct dsa_mall_mirror_tc_entry *mirror)
+ {
+ 	bool in_use = false;
+ 	u8 data;
+@@ -1067,14 +1061,14 @@ static void ksz9477_phy_errata_setup(struct ksz_device *dev, int port)
+ 	ksz9477_port_mmd_write(dev, port, 0x1c, 0x20, 0xeeee);
+ }
+ 
+-static void ksz9477_get_caps(struct ksz_device *dev, int port,
+-			     struct phylink_config *config)
++void ksz9477_get_caps(struct ksz_device *dev, int port,
++		      struct phylink_config *config)
+ {
+ 	config->mac_capabilities = MAC_10 | MAC_100 | MAC_1000FD |
+ 				   MAC_ASYM_PAUSE | MAC_SYM_PAUSE;
+ }
+ 
+-static void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
++void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
+ {
+ 	struct ksz_port *p = &dev->ports[port];
+ 	struct dsa_switch *ds = dev->ds;
+@@ -1241,7 +1235,7 @@ static void ksz9477_config_cpu_port(struct dsa_switch *ds)
+ 	}
+ }
+ 
+-static int ksz9477_setup(struct dsa_switch *ds)
++int ksz9477_setup(struct dsa_switch *ds)
+ {
+ 	struct ksz_device *dev = ds->priv;
+ 	int ret = 0;
+@@ -1293,12 +1287,12 @@ static int ksz9477_setup(struct dsa_switch *ds)
+ 	return 0;
+ }
+ 
+-static u32 ksz9477_get_port_addr(int port, int offset)
++u32 ksz9477_get_port_addr(int port, int offset)
+ {
+ 	return PORT_CTRL_ADDR(port, offset);
+ }
+ 
+-static int ksz9477_switch_init(struct ksz_device *dev)
++int ksz9477_switch_init(struct ksz_device *dev)
+ {
+ 	u8 data8;
+ 	int ret;
+@@ -1344,12 +1338,12 @@ static int ksz9477_switch_init(struct ksz_device *dev)
+ 	return 0;
+ }
+ 
+-static void ksz9477_switch_exit(struct ksz_device *dev)
++void ksz9477_switch_exit(struct ksz_device *dev)
+ {
+ 	ksz9477_reset_switch(dev);
+ }
+ 
+-static int ksz9477_dsa_init(struct ksz_device *dev)
++int ksz9477_dsa_init(struct ksz_device *dev)
+ {
+ 	struct phy_device *phydev;
+ 	int i;
+@@ -1373,45 +1367,6 @@ static int ksz9477_dsa_init(struct ksz_device *dev)
+ 	return 0;
+ }
+ 
+-static const struct ksz_dev_ops ksz9477_dev_ops = {
+-	.setup = ksz9477_setup,
+-	.get_port_addr = ksz9477_get_port_addr,
+-	.cfg_port_member = ksz9477_cfg_port_member,
+-	.flush_dyn_mac_table = ksz9477_flush_dyn_mac_table,
+-	.port_setup = ksz9477_port_setup,
+-	.r_phy = ksz9477_r_phy,
+-	.w_phy = ksz9477_w_phy,
+-	.r_mib_cnt = ksz9477_r_mib_cnt,
+-	.r_mib_pkt = ksz9477_r_mib_pkt,
+-	.r_mib_stat64 = ksz_r_mib_stats64,
+-	.freeze_mib = ksz9477_freeze_mib,
+-	.port_init_cnt = ksz9477_port_init_cnt,
+-	.vlan_filtering = ksz9477_port_vlan_filtering,
+-	.vlan_add = ksz9477_port_vlan_add,
+-	.vlan_del = ksz9477_port_vlan_del,
+-	.mirror_add = ksz9477_port_mirror_add,
+-	.mirror_del = ksz9477_port_mirror_del,
+-	.get_stp_reg = ksz9477_get_stp_reg,
+-	.get_caps = ksz9477_get_caps,
+-	.fdb_dump = ksz9477_fdb_dump,
+-	.fdb_add = ksz9477_fdb_add,
+-	.fdb_del = ksz9477_fdb_del,
+-	.mdb_add = ksz9477_mdb_add,
+-	.mdb_del = ksz9477_mdb_del,
+-	.change_mtu = ksz9477_change_mtu,
+-	.max_mtu = ksz9477_max_mtu,
+-	.shutdown = ksz9477_reset_switch,
+-	.dsa_init = ksz9477_dsa_init,
+-	.init = ksz9477_switch_init,
+-	.exit = ksz9477_switch_exit,
+-};
+-
+-int ksz9477_switch_register(struct ksz_device *dev)
+-{
+-	return ksz_switch_register(dev, &ksz9477_dev_ops);
+-}
+-EXPORT_SYMBOL(ksz9477_switch_register);
+-
+ MODULE_AUTHOR("Woojung Huh <Woojung.Huh@microchip.com>");
+ MODULE_DESCRIPTION("Microchip KSZ9477 Series Switch DSA Driver");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/net/dsa/microchip/ksz9477.h b/drivers/net/dsa/microchip/ksz9477.h
+new file mode 100644
+index 000000000000..feb5464e8c2b
+--- /dev/null
++++ b/drivers/net/dsa/microchip/ksz9477.h
+@@ -0,0 +1,58 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Microchip KSZ9477 series Header file
++ *
++ * Copyright (C) 2017-2022 Microchip Technology Inc.
++ */
++
++#ifndef __KSZ9477_H
++#define __KSZ9477_H
++
++#include <net/dsa.h>
++#include "ksz_common.h"
++
++int ksz9477_setup(struct dsa_switch *ds);
++u32 ksz9477_get_port_addr(int port, int offset);
++void ksz9477_cfg_port_member(struct ksz_device *dev, int port, u8 member);
++void ksz9477_flush_dyn_mac_table(struct ksz_device *dev, int port);
++void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port);
++void ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data);
++void ksz9477_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val);
++void ksz9477_r_mib_cnt(struct ksz_device *dev, int port, u16 addr, u64 *cnt);
++void ksz9477_r_mib_pkt(struct ksz_device *dev, int port, u16 addr,
++		       u64 *dropped, u64 *cnt);
++void ksz9477_freeze_mib(struct ksz_device *dev, int port, bool freeze);
++void ksz9477_port_init_cnt(struct ksz_device *dev, int port);
++int ksz9477_port_vlan_filtering(struct ksz_device *dev, int port,
++				bool flag, struct netlink_ext_ack *extack);
++int ksz9477_port_vlan_add(struct ksz_device *dev, int port,
++			  const struct switchdev_obj_port_vlan *vlan,
++			  struct netlink_ext_ack *extack);
++int ksz9477_port_vlan_del(struct ksz_device *dev, int port,
++			  const struct switchdev_obj_port_vlan *vlan);
++int ksz9477_port_mirror_add(struct ksz_device *dev, int port,
++			    struct dsa_mall_mirror_tc_entry *mirror,
++			    bool ingress, struct netlink_ext_ack *extack);
++void ksz9477_port_mirror_del(struct ksz_device *dev, int port,
++			     struct dsa_mall_mirror_tc_entry *mirror);
++int ksz9477_get_stp_reg(void);
++void ksz9477_get_caps(struct ksz_device *dev, int port,
++		      struct phylink_config *config);
++int ksz9477_fdb_dump(struct ksz_device *dev, int port,
++		     dsa_fdb_dump_cb_t *cb, void *data);
++int ksz9477_fdb_add(struct ksz_device *dev, int port,
++		    const unsigned char *addr, u16 vid, struct dsa_db db);
++int ksz9477_fdb_del(struct ksz_device *dev, int port,
++		    const unsigned char *addr, u16 vid, struct dsa_db db);
++int ksz9477_mdb_add(struct ksz_device *dev, int port,
++		    const struct switchdev_obj_port_mdb *mdb, struct dsa_db db);
++int ksz9477_mdb_del(struct ksz_device *dev, int port,
++		    const struct switchdev_obj_port_mdb *mdb, struct dsa_db db);
++int ksz9477_change_mtu(struct ksz_device *dev, int port, int mtu);
++int ksz9477_max_mtu(struct ksz_device *dev, int port);
++int ksz9477_reset_switch(struct ksz_device *dev);
++int ksz9477_dsa_init(struct ksz_device *dev);
++int ksz9477_switch_init(struct ksz_device *dev);
++void ksz9477_switch_exit(struct ksz_device *dev);
++
++#endif
+diff --git a/drivers/net/dsa/microchip/ksz9477_i2c.c b/drivers/net/dsa/microchip/ksz9477_i2c.c
+index faa3163c86b0..984fe5df1643 100644
+--- a/drivers/net/dsa/microchip/ksz9477_i2c.c
++++ b/drivers/net/dsa/microchip/ksz9477_i2c.c
+@@ -41,7 +41,7 @@ static int ksz9477_i2c_probe(struct i2c_client *i2c,
+ 	if (i2c->dev.platform_data)
+ 		dev->pdata = i2c->dev.platform_data;
+ 
+-	ret = ksz9477_switch_register(dev);
++	ret = ksz_switch_register(dev);
+ 
+ 	/* Main DSA driver may not be started yet. */
+ 	if (ret)
+diff --git a/drivers/net/dsa/microchip/ksz9477_spi.c b/drivers/net/dsa/microchip/ksz9477_spi.c
+index 1bc8b0cbe458..2ee0601bc014 100644
+--- a/drivers/net/dsa/microchip/ksz9477_spi.c
++++ b/drivers/net/dsa/microchip/ksz9477_spi.c
+@@ -54,7 +54,7 @@ static int ksz9477_spi_probe(struct spi_device *spi)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = ksz9477_switch_register(dev);
++	ret = ksz_switch_register(dev);
+ 
+ 	/* Main DSA driver may not be started yet. */
+ 	if (ret)
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 8f852649c217..44d62ceff427 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -21,6 +21,8 @@
+ #include <net/switchdev.h>
+ 
+ #include "ksz_common.h"
++#include "ksz8.h"
++#include "ksz9477.h"
+ 
+ #define MIB_COUNTER_NUM 0x20
+ 
+@@ -139,6 +141,69 @@ static const struct ksz_mib_names ksz9477_mib_names[] = {
+ 	{ 0x83, "tx_discards" },
+ };
+ 
++static const struct ksz_dev_ops ksz8_dev_ops = {
++	.setup = ksz8_setup,
++	.get_port_addr = ksz8_get_port_addr,
++	.cfg_port_member = ksz8_cfg_port_member,
++	.flush_dyn_mac_table = ksz8_flush_dyn_mac_table,
++	.port_setup = ksz8_port_setup,
++	.r_phy = ksz8_r_phy,
++	.w_phy = ksz8_w_phy,
++	.r_dyn_mac_table = ksz8_r_dyn_mac_table,
++	.r_sta_mac_table = ksz8_r_sta_mac_table,
++	.w_sta_mac_table = ksz8_w_sta_mac_table,
++	.r_mib_cnt = ksz8_r_mib_cnt,
++	.r_mib_pkt = ksz8_r_mib_pkt,
++	.freeze_mib = ksz8_freeze_mib,
++	.port_init_cnt = ksz8_port_init_cnt,
++	.fdb_dump = ksz8_fdb_dump,
++	.mdb_add = ksz8_mdb_add,
++	.mdb_del = ksz8_mdb_del,
++	.vlan_filtering = ksz8_port_vlan_filtering,
++	.vlan_add = ksz8_port_vlan_add,
++	.vlan_del = ksz8_port_vlan_del,
++	.mirror_add = ksz8_port_mirror_add,
++	.mirror_del = ksz8_port_mirror_del,
++	.get_stp_reg = ksz8_get_stp_reg,
++	.get_caps = ksz8_get_caps,
++	.shutdown = ksz8_reset_switch,
++	.init = ksz8_switch_init,
++	.exit = ksz8_switch_exit,
++};
++
++static const struct ksz_dev_ops ksz9477_dev_ops = {
++	.setup = ksz9477_setup,
++	.get_port_addr = ksz9477_get_port_addr,
++	.cfg_port_member = ksz9477_cfg_port_member,
++	.flush_dyn_mac_table = ksz9477_flush_dyn_mac_table,
++	.port_setup = ksz9477_port_setup,
++	.r_phy = ksz9477_r_phy,
++	.w_phy = ksz9477_w_phy,
++	.r_mib_cnt = ksz9477_r_mib_cnt,
++	.r_mib_pkt = ksz9477_r_mib_pkt,
++	.r_mib_stat64 = ksz_r_mib_stats64,
++	.freeze_mib = ksz9477_freeze_mib,
++	.port_init_cnt = ksz9477_port_init_cnt,
++	.vlan_filtering = ksz9477_port_vlan_filtering,
++	.vlan_add = ksz9477_port_vlan_add,
++	.vlan_del = ksz9477_port_vlan_del,
++	.mirror_add = ksz9477_port_mirror_add,
++	.mirror_del = ksz9477_port_mirror_del,
++	.get_stp_reg = ksz9477_get_stp_reg,
++	.get_caps = ksz9477_get_caps,
++	.fdb_dump = ksz9477_fdb_dump,
++	.fdb_add = ksz9477_fdb_add,
++	.fdb_del = ksz9477_fdb_del,
++	.mdb_add = ksz9477_mdb_add,
++	.mdb_del = ksz9477_mdb_del,
++	.change_mtu = ksz9477_change_mtu,
++	.max_mtu = ksz9477_max_mtu,
++	.shutdown = ksz9477_reset_switch,
++	.dsa_init = ksz9477_dsa_init,
++	.init = ksz9477_switch_init,
++	.exit = ksz9477_switch_exit,
++};
++
+ const struct ksz_chip_data ksz_switch_chips[] = {
+ 	[KSZ8795] = {
+ 		.chip_id = KSZ8795_CHIP_ID,
+@@ -148,6 +213,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ 		.num_statics = 8,
+ 		.cpu_ports = 0x10,	/* can be configured as cpu port */
+ 		.port_cnt = 5,		/* total cpu and user ports */
++		.ops = &ksz8_dev_ops,
+ 		.ksz87xx_eee_link_erratum = true,
+ 		.mib_names = ksz9477_mib_names,
+ 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
+@@ -180,6 +246,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ 		.num_statics = 8,
+ 		.cpu_ports = 0x10,	/* can be configured as cpu port */
+ 		.port_cnt = 5,		/* total cpu and user ports */
++		.ops = &ksz8_dev_ops,
+ 		.ksz87xx_eee_link_erratum = true,
+ 		.mib_names = ksz9477_mib_names,
+ 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
+@@ -198,6 +265,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ 		.num_statics = 8,
+ 		.cpu_ports = 0x10,	/* can be configured as cpu port */
+ 		.port_cnt = 5,		/* total cpu and user ports */
++		.ops = &ksz8_dev_ops,
+ 		.ksz87xx_eee_link_erratum = true,
+ 		.mib_names = ksz9477_mib_names,
+ 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
+@@ -216,6 +284,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ 		.num_statics = 8,
+ 		.cpu_ports = 0x4,	/* can be configured as cpu port */
+ 		.port_cnt = 3,
++		.ops = &ksz8_dev_ops,
+ 		.mib_names = ksz88xx_mib_names,
+ 		.mib_cnt = ARRAY_SIZE(ksz88xx_mib_names),
+ 		.reg_mib_cnt = MIB_COUNTER_NUM,
+@@ -232,6 +301,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ 		.num_statics = 16,
+ 		.cpu_ports = 0x7F,	/* can be configured as cpu port */
+ 		.port_cnt = 7,		/* total physical port count */
++		.ops = &ksz9477_dev_ops,
+ 		.phy_errata_9477 = true,
+ 		.mib_names = ksz9477_mib_names,
+ 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
+@@ -254,6 +324,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ 		.num_statics = 16,
+ 		.cpu_ports = 0x7F,	/* can be configured as cpu port */
+ 		.port_cnt = 7,		/* total physical port count */
++		.ops = &ksz9477_dev_ops,
+ 		.phy_errata_9477 = true,
+ 		.mib_names = ksz9477_mib_names,
+ 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
+@@ -276,6 +347,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ 		.num_statics = 16,
+ 		.cpu_ports = 0x07,	/* can be configured as cpu port */
+ 		.port_cnt = 3,		/* total port count */
++		.ops = &ksz9477_dev_ops,
+ 		.mib_names = ksz9477_mib_names,
+ 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
+ 		.reg_mib_cnt = MIB_COUNTER_NUM,
+@@ -293,6 +365,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ 		.num_statics = 16,
+ 		.cpu_ports = 0x7F,	/* can be configured as cpu port */
+ 		.port_cnt = 7,		/* total physical port count */
++		.ops = &ksz9477_dev_ops,
+ 		.phy_errata_9477 = true,
+ 		.mib_names = ksz9477_mib_names,
+ 		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
+@@ -1130,8 +1203,7 @@ struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
+ }
+ EXPORT_SYMBOL(ksz_switch_alloc);
+ 
+-int ksz_switch_register(struct ksz_device *dev,
+-			const struct ksz_dev_ops *ops)
++int ksz_switch_register(struct ksz_device *dev)
+ {
+ 	const struct ksz_chip_data *info;
+ 	struct device_node *port, *ports;
+@@ -1178,7 +1250,7 @@ int ksz_switch_register(struct ksz_device *dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	dev->dev_ops = ops;
++	dev->dev_ops = dev->info->ops;
+ 
+ 	ret = dev->dev_ops->init(dev);
+ 	if (ret)
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 23962f47df46..dbd194e4039a 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -41,6 +41,7 @@ struct ksz_chip_data {
+ 	int num_statics;
+ 	int cpu_ports;
+ 	int port_cnt;
++	const struct ksz_dev_ops *ops;
+ 	bool phy_errata_9477;
+ 	bool ksz87xx_eee_link_erratum;
+ 	const struct ksz_mib_names *mib_names;
+@@ -219,13 +220,9 @@ struct ksz_dev_ops {
+ };
+ 
+ struct ksz_device *ksz_switch_alloc(struct device *base, void *priv);
+-int ksz_switch_register(struct ksz_device *dev,
+-			const struct ksz_dev_ops *ops);
++int ksz_switch_register(struct ksz_device *dev);
+ void ksz_switch_remove(struct ksz_device *dev);
+ 
+-int ksz8_switch_register(struct ksz_device *dev);
+-int ksz9477_switch_register(struct ksz_device *dev);
+-
+ void ksz_init_mib_timer(struct ksz_device *dev);
+ void ksz_r_mib_stats64(struct ksz_device *dev, int port);
+ void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
 -- 
 2.36.1
 
