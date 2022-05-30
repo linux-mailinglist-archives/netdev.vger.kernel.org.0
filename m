@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9349053786D
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:06:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 205285377E0
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:05:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234510AbiE3I6f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 04:58:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52964 "EHLO
+        id S234519AbiE3I6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 04:58:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234068AbiE3I6e (ORCPT
+        with ESMTP id S234476AbiE3I6e (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 04:58:34 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63ACC762AA;
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B9E7220E;
         Mon, 30 May 2022 01:58:33 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LBTpQ1zKHzDqZ2;
-        Mon, 30 May 2022 16:58:22 +0800 (CST)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LBTl26c7JzQkPB;
+        Mon, 30 May 2022 16:55:26 +0800 (CST)
 Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2375.24; Mon, 30 May 2022 16:58:31 +0800
 Received: from k04.huawei.com (10.67.174.115) by
@@ -41,10 +41,12 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Palmer Dabbelt <palmer@dabbelt.com>,
         Albert Ou <aou@eecs.berkeley.edu>,
         Pu Lehui <pulehui@huawei.com>
-Subject: [PATCH bpf-next v3 0/6] Support riscv jit to provide
-Date:   Mon, 30 May 2022 17:28:09 +0800
-Message-ID: <20220530092815.1112406-1-pulehui@huawei.com>
+Subject: [PATCH bpf-next v3 1/6] bpf: Unify data extension operation of jited_ksyms and jited_linfo
+Date:   Mon, 30 May 2022 17:28:10 +0800
+Message-ID: <20220530092815.1112406-2-pulehui@huawei.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220530092815.1112406-1-pulehui@huawei.com>
+References: <20220530092815.1112406-1-pulehui@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -61,42 +63,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-patch 1 fix an issue that could not print bpf line info due
-to data inconsistency in 32-bit environment.
+We found that 32-bit environment can not print bpf line info due
+to data inconsistency between jited_ksyms[0] and jited_linfo[0].
 
-patch 2 add support for riscv jit to provide bpf_line_info.
-"test_progs -a btf" and "test_bpf.ko" all test pass, as well
-as "test_verifier" and "test_progs" with no new failure ceses.
+For example:
+jited_kyms[0] = 0xb800067c, jited_linfo[0] = 0xffffffffb800067c
 
-patch 3-6 make some trival cleanup.
+We know that both of them store bpf func address, but due to the
+different data extension operations when extended to u64, they may
+not be the same. We need to unify the data extension operations of
+them.
 
-v3:
-- split kernel changes, libbpf changes, and selftests/bpf changes
-into separate patches. (Andrii)
-- shorten the name of jited_linfo_addr to avoid line break. (John)
-- rename prologue_offset to body_len to make it more sense. (Luke)
+Signed-off-by: Pu Lehui <pulehui@huawei.com>
+---
+ kernel/bpf/syscall.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-v2: https://lore.kernel.org/bpf/20220429014240.3434866-1-pulehui@huawei.com
-- Remove some trivial code
-
-v1: https://lore.kernel.org/bpf/20220426140924.3308472-1-pulehui@huawei.com
-
-Pu Lehui (6):
-  bpf: Unify data extension operation of jited_ksyms and jited_linfo
-  riscv, bpf: Support riscv jit to provide bpf_line_info
-  bpf: Correct the comment about insn_to_jit_off
-  libbpf: Unify memory address casting operation style
-  selftests/bpf: Unify memory address casting operation style
-  selftests/bpf: Remove the casting about jited_ksyms and jited_linfo
-
- arch/riscv/net/bpf_jit.h                     |  1 +
- arch/riscv/net/bpf_jit_core.c                |  8 +++++++-
- kernel/bpf/core.c                            |  2 +-
- kernel/bpf/syscall.c                         |  5 +++--
- tools/lib/bpf/bpf_prog_linfo.c               |  9 +++++----
- tools/testing/selftests/bpf/prog_tests/btf.c | 18 +++++++++---------
- 6 files changed, 26 insertions(+), 17 deletions(-)
-
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index e0aead17dff4..2929a4aab82c 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -4095,14 +4095,15 @@ static int bpf_prog_get_info_by_fd(struct file *file,
+ 		info.nr_jited_line_info = 0;
+ 	if (info.nr_jited_line_info && ulen) {
+ 		if (bpf_dump_raw_ok(file->f_cred)) {
++			unsigned long ladd;
+ 			__u64 __user *user_linfo;
+ 			u32 i;
+ 
+ 			user_linfo = u64_to_user_ptr(info.jited_line_info);
+ 			ulen = min_t(u32, info.nr_jited_line_info, ulen);
+ 			for (i = 0; i < ulen; i++) {
+-				if (put_user((__u64)(long)prog->aux->jited_linfo[i],
+-					     &user_linfo[i]))
++				ladd = (unsigned long)prog->aux->jited_linfo[i];
++				if (put_user((__u64)ladd, &user_linfo[i]))
+ 					return -EFAULT;
+ 			}
+ 		} else {
 -- 
 2.25.1
 
