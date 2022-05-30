@@ -2,115 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B4F05376B4
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 10:50:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA4E5537720
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 10:51:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231640AbiE3It0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 04:49:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36218 "EHLO
+        id S234136AbiE3Iug (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 04:50:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234126AbiE3ItR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 04:49:17 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2124.outbound.protection.outlook.com [40.107.93.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5628172216
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 01:49:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SZinSrbsBMM7gBMgCL5/d6bGjef4Qi8RFwpi1OVlGoq+V+yTR9+U/PdOxHgPG3j4rY64BPIJMmL/vW1IsN7RNqKr0V1TXbPFI9bQyBQ1KY8+95en8I7EfeKSFxGC61stAX7xGDb2b6uINE2ZfzhZMZf9raam5/l81w3m8TZzRd5iptAn+PqxQl8CrdbFaYa718Mpf6pjZ532GuohyvYq92aobY0uzRIopmIBi8v4qYedwdgx4gaMHwYLxLBJxbbfur7f2+S4iLoxmiH+C0XzzPI8zxt50BCvOmtl0W3TSjJ3mspv7rciRo7VGu4DNJ1asm5ZeeyMDdbY5qKLTXjC8Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SA4igGewvUtbRZCpczATOOZQyiN1EcaRzhPWS4YwTCI=;
- b=GU6a6bGdWvCvrZB9TCaLZI4njd+UYXExhKqftp5WNGTAcdZiUa8VYDZJaCkSyBnlvdjLODBCOsrjg21ZDIV2C0eSsFfurklqZhiNJmCcXt0WMgwF/18wddqyzDAfzahPo4bt0MTTbomhly3ubpDYkbUk1y2pXGrHuL3rFwyjHTozkdhxr5n7H0oeEkotiZUz/d2NBPDIWBChpvIbpv/lGcXdt4HJm+dcWfygOgQ7GsMfiI9r6YYcHd5oznDcHXNOpTMTH/D1CrA1FvW5JnTH9fFkrN1di0JnEKmO92KtVjswF13BmYg6dQXDs5BPzhzp3/unhfVX+i6wiee0uo0nLw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SA4igGewvUtbRZCpczATOOZQyiN1EcaRzhPWS4YwTCI=;
- b=IMYgy8Kc8BlbuOES22LJteCkF1ROCVb+Bpg0P2PQMizW0eEOXsYqwJzz19oYZUZqqIojdbojJeqU5KRPKVIR0+ODc54A7qszIwhwhhifCz1asRKC8bFTGmQb+PD1tVpQ+U46UOeSi5vckuMG7iTRRMp88dwQXGo3my8rBIaNe+g=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by CY4PR1301MB1976.namprd13.prod.outlook.com (2603:10b6:910:45::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.11; Mon, 30 May
- 2022 08:49:14 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::b18b:5e90:6805:a8fa]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::b18b:5e90:6805:a8fa%7]) with mapi id 15.20.5314.011; Mon, 30 May 2022
- 08:49:13 +0000
-From:   Simon Horman <simon.horman@corigine.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Yu Xiao <yu.xiao@corigine.com>,
-        Yinjun Zhang <yinjun.zhang@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net] nfp: correct the output of `ethtool --show-fec <intf>`
-Date:   Mon, 30 May 2022 10:48:42 +0200
-Message-Id: <20220530084842.21258-1-simon.horman@corigine.com>
-X-Mailer: git-send-email 2.30.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: LO2P123CA0062.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:1::26) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        with ESMTP id S234011AbiE3Iud (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 04:50:33 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE6C372213;
+        Mon, 30 May 2022 01:50:29 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 5B55A6001A;
+        Mon, 30 May 2022 08:50:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1653900627;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=41JmnR4yDUs/1vUJDSdqgS0vvUbw7Yjk8fxwRTB7rG4=;
+        b=HnEwVp5v3IipP0jAd0bV5SqHNlg9qS9UIgVjWtzAhcAEk3gyYKPWlqHuofLdNtreOXLX9E
+        Drd6B95ESQaTAwTd32w8Lpfu93azR60gKBk/fzG79I5/ASpSwpqDFWMb2vdU0YBn5vd432
+        PqhkbRQmkNooXQq+iRV++ac7UX3ub2xhGbAzMr1+aGAOWqVHACRJ4erNJIJKOrytgUbdli
+        CYPcseMEDPMvGzNhfGD5erDnuTcAnqpNHte6z0Ln8iYh1Kl2K/BDJys7KKAitU9KqoIys7
+        LWTCvuxpKe2bImhlsFIrT8JW7a108FPPBOhYvfbe9YAe1KEZ662P6Kq5/4EwvA==
+From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>
+Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?q?Miqu=C3=A8l=20Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v6 00/16] add support for Renesas RZ/N1 ethernet subsystem devices
+Date:   Mon, 30 May 2022 10:49:01 +0200
+Message-Id: <20220530084917.91130-1-clement.leger@bootlin.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 324d0948-eedc-40af-e8cc-08da42194575
-X-MS-TrafficTypeDiagnostic: CY4PR1301MB1976:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR1301MB197691DAA55867454BB36B23E8DD9@CY4PR1301MB1976.namprd13.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FdPRv0XyrLL0A6Uzc1lmma/QI2x1k1T3mSflxwGOk0b8AFjZHtgNVmpPT9N8FlRsMyT224HD3FYJEw1MIdsLobMaEaGZvuP/Mz8Aj3sfkkeuj9U0UEfdvxkaA/866EHLudkHMpKOMLtx5qEoUs9XyH4rAHB574JYS9YypubpPqK1fr9gn1KzVIJH2CPFO8MnDzDqoz7FqJAjHSe/ELQ7M9I/wISxv6JwM/D948YWyeVgWZgahIAuOFK7RMzsCOw3W7S5JQekfX7cBhxYtAB0oM33sZDil4zhpHtuabJfS2U9Lm4yQ9b0ct2kFWLSd3T8oHaAq+rXZg486FVYotSAO/rHC9sDB4Iu05jL6RWJ3tkBexAO89oTQt3NefHGTk4VS93RIH789N+yyuFZNJmgTStKXr7OzHkiu/0kzHwFfxbMsqtrtSpjRlFMricIxbtAeMjd9BjOY75/Hm/gTgTO8dsQjt1QrdH9nRC/YDH5dVsN9EYN1NeTRZxRGECLbFXpozh5++o6SZxO3Ci78Cgki35JCWJIcVk1LQwPUtXB4MSq5nbepNZThAIEXmEyPZwrD/DgzQyY9wwALDRzse1/YB5g0lNvJaG3PXg1oCvMsP3i9kjdRprrlnLRVyUWzkH0adEl7Kr82pc8Ru3+Xx9jZuzjgGjeLaeBXCrHGCYLKqUyMGUhOyGRYqdSuNnhj8Q3ErcNkpOhq1OUU1+kWWp3VVfHTEgZbyJT4gUOknnYMGu/vgMg0ORpC1Shkpf/WLT161YLuHKzRLmV9ogjKwi0Iw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(346002)(376002)(366004)(136003)(396003)(39830400003)(316002)(186003)(52116002)(86362001)(38350700002)(6666004)(2906002)(110136005)(1076003)(107886003)(6486002)(54906003)(26005)(6512007)(8676002)(508600001)(6506007)(83380400001)(5660300002)(44832011)(36756003)(4326008)(66946007)(8936002)(41300700001)(2616005)(38100700002)(66556008)(66476007)(81973001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3OeTL3/H+n+Pf8RMHTf2rL1wkzBuXhGFuPZEjnbDbEiVZLtETZacVa/0T7QO?=
- =?us-ascii?Q?bq77zMVncY8RJBqEkbR+FAimNDZlG9yPclOHTfJlOeeCpR+lGZ1YzrHc+KxJ?=
- =?us-ascii?Q?Oq9aFSv+hVA0qv7l+s0fiZbWWBSkrjGtixvnaYb0b7PiEhr7XwnMwyJVBVFC?=
- =?us-ascii?Q?8qHBe1jbnLfugXDJJWxQ7ab63V1OVP6dq7AEgUBdRsSrWSXjyl8CYbzmc3ui?=
- =?us-ascii?Q?Af/k8gnbYcrT7qPFs+Uotm/r3ug/wQsVHpcS70zFlcpyaWZ6zLXXA5LBYOZ6?=
- =?us-ascii?Q?oI8jQZz52UyYN3jPETWWipWYz+coaddz5sY6K8uZDhzGFDCTsVOXfggu9xd6?=
- =?us-ascii?Q?sy3b/iJOdEbOo3vcEbyEMgYNZkQNU5QcwN6Se97tRPJew3zcTx7t7cfzyhtz?=
- =?us-ascii?Q?JNEWUiH2cbqofFAuz2ID7VzrW8MbbUquCEoeRCFL7lGWbYsOU8GyyCEXs3Zi?=
- =?us-ascii?Q?f1Cy9z7J78IgWWARRDFjS6baCb64Mm9jD+c5C230basGudJPNsteLWD1B1Iv?=
- =?us-ascii?Q?0O4ovKEDc1zS6lx6klmTNUpfkp5dH6qVXXyI67UtWlHaTkJLcc3wZ7ngyNpR?=
- =?us-ascii?Q?ukqprcCYKKWtJySlBVWHBrTQ820UC81nmlDnDorVaSTg4/Z9bJLfW6AmrHFP?=
- =?us-ascii?Q?sQsqJ6fVXa356nxldfBFT/YSNikiKAAR3pTn1qKMdYuSVxzwQGhewM1ao9YV?=
- =?us-ascii?Q?wxmqsgGot9AXpCb7DTf7aeT4V6B2sSbh+1Cha9dJ5lu34xmc7dqUAQi5AcNr?=
- =?us-ascii?Q?TAGCkeMuJQGz800Ttqczeft2iynMWOkaBKSJ0udZUAezO41u5n+5x4ItlzEx?=
- =?us-ascii?Q?H644e5TZevBHMDBZxzoQZopVZ2+z+lfO8Pn5WLUQ6CWN1Sh4PP/DgbPkScFz?=
- =?us-ascii?Q?8m4wC7Ac9zeojIrwWZMWqzC+NT8zUO12fAMnLmMGtPtLIQ/162r9sEp3wzA+?=
- =?us-ascii?Q?OqHIHmdm9CSFMiDrkVgoDpB8AZj7rjdpGLIpSslKwrkB7jqZxbEVeJWq1eNE?=
- =?us-ascii?Q?qCe3U+1l8rBh9EUpI1oa/JN0WBZk1Cag8SUylLW4IaYeUwY2P4e20pmdEaZh?=
- =?us-ascii?Q?0sf1t6vUBlGSFlbJ1MQRtGXT1VZ367dY7zrLQwmoY3/YZqVcF6BP2teCEb6C?=
- =?us-ascii?Q?XwAhvWlPY9OoKEdJBid0f1dHgj1lcXOPOwPPGQqt3EFoWzFgnClMkkEiKAPx?=
- =?us-ascii?Q?4sQUyEXrWuJQAPOHJnNrarIYsbWJR+cON5PYmOa7Y4XIKgXOV2KPi7JJTwyl?=
- =?us-ascii?Q?noq8PkmbOmu25Q+xfyDoAJ5qhuQzvp8YLrXHKI47vRZQg5aGuDIOpViYg3KP?=
- =?us-ascii?Q?Lv/bm1cbQyrEDsoBZ1wmwCHjSYq5YorepMWkilrKxs7VFNN7D+6K59S3ctfk?=
- =?us-ascii?Q?HoHPgj1g3GQaFKydRgOiOPcPY4wkpw4RBbK7I8xKSoE5jLjjQMVh1dwSaU70?=
- =?us-ascii?Q?7MpGkAskhWWq2akkRwrI911s6K3JMcCUjVOQbjVnl2TGKmRyy3ZG28Sx+itA?=
- =?us-ascii?Q?nJRNi28mkLwoN3ZiWK+QfQV8DFrYaeJ7osKJmTp5af8MV7Vc+7JmhbdlqU1W?=
- =?us-ascii?Q?g6XbmfWdBOS77KFGG3H/8Ss5WiAt/iGEa5IiCJvrxruQL4tBJ4oKkc2be9Df?=
- =?us-ascii?Q?nkIi6oje0eRJ9vVIL35hTKmx7FsO5KSl32n6HFLC/e9/Fkp5d8kLOcA6L2DM?=
- =?us-ascii?Q?ujWddmJtp/2JqRyTATcHYPOr26JRPHnHHwMV10HulFIpbwSqo6ZX5xJ3n53I?=
- =?us-ascii?Q?N68r7dT9v3XGDHdJtz5BCESL0WSDUBU=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 324d0948-eedc-40af-e8cc-08da42194575
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2022 08:49:13.6285
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GGv8PHXZQaftq2d6kyBBuGrIVg9HNkkqzmmSrFqz2jVjdo9iRs1KnL5lAP/IRMLMTG8uGmklLHCOwVXdpTgomEHQtnC3qi6AjryM4i6gnIQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1301MB1976
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -118,90 +71,178 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yu Xiao <yu.xiao@corigine.com>
+The Renesas RZ/N1 SoCs features an ethernet subsystem which contains
+(most notably) a switch, two GMACs, and a MII converter [1]. This
+series adds support for the switch and the MII converter.
 
-The output  of `Configured FEC encodings` should display user
-configured/requested value, rather than the NIC supported modes
-list.
+The MII converter present on this SoC has been represented as a PCS
+which sit between the MACs and the PHY. This PCS driver is probed from
+the device-tree since it requires to be configured. Indeed the MII
+converter also contains the registers that are handling the muxing of
+ports (Switch, MAC, HSR, RTOS, etc) internally to the SoC.
 
-Before this patch, the output is:
- # ethtool --show-fec <intf>
- FEC parameters for <intf>:
- Configured FEC encodings: Auto Off RS BaseR
- Active FEC encoding: None
+The switch driver is based on DSA and exposes 4 ports + 1 CPU
+management port. It include basic bridging support as well as FDB and
+statistics support.
 
-With this patch, the corrected output is:
- # ethtool --show-fec <intf>
- FEC parameters for <intf>:
- Configured FEC encodings: Auto
- Active FEC encoding: None
+This series needs commits 14f11da778ff6421 ("soc: renesas: rzn1: Select
+PM and PM_GENERIC_DOMAINS configs") and ed66b37f916ee23b ("ARM: dts:
+r9a06g032: Add missing '#power-domain-cells'") which are available on
+the renesas-devel tree in order to enable generic power domain on
+RZ/N1.
 
-Fixes: 0d0870938337 ("nfp: implement ethtool FEC mode settings")
-Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
-Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
-Signed-off-by: Louis Peens <louis.peens@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
----
- drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c | 4 +++-
- drivers/net/ethernet/netronome/nfp/nfp_port.c        | 1 +
- drivers/net/ethernet/netronome/nfp/nfp_port.h        | 2 ++
- 3 files changed, 6 insertions(+), 1 deletion(-)
+Link: [1] https://www.renesas.com/us/en/document/mah/rzn1d-group-rzn1s-group-rzn1l-group-users-manual-r-engine-and-ethernet-peripherals
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-index df0afd271a21..115acd4b963b 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
-@@ -842,8 +842,8 @@ nfp_port_get_fecparam(struct net_device *netdev,
- 	if (!nfp_eth_can_support_fec(eth_port))
- 		return 0;
- 
--	param->fec = nfp_port_fec_nsp_to_ethtool(eth_port->fec_modes_supported);
- 	param->active_fec = nfp_port_fec_nsp_to_ethtool(eth_port->fec);
-+	param->fec = port->fec_configured;
- 
- 	return 0;
- }
-@@ -873,6 +873,8 @@ nfp_port_set_fecparam(struct net_device *netdev,
- 		/* Only refresh if we did something */
- 		nfp_net_refresh_port_table(port);
- 
-+	port->fec_configured = param->fec;
-+
- 	return err < 0 ? err : 0;
- }
- 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_port.c b/drivers/net/ethernet/netronome/nfp/nfp_port.c
-index 4f2308570dcf..73f7bc8add7f 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_port.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_port.c
-@@ -189,6 +189,7 @@ int nfp_port_init_phy_port(struct nfp_pf *pf, struct nfp_app *app,
- 
- 	port->eth_port = &pf->eth_tbl->ports[id];
- 	port->eth_id = pf->eth_tbl->ports[id].index;
-+	port->fec_configured = ETHTOOL_FEC_NONE;
- 	if (pf->mac_stats_mem)
- 		port->eth_stats =
- 			pf->mac_stats_mem + port->eth_id * NFP_MAC_STATS_SIZE;
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_port.h b/drivers/net/ethernet/netronome/nfp/nfp_port.h
-index d1ebe6c72f7f..fc2dfd2d01be 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_port.h
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_port.h
-@@ -50,6 +50,7 @@ enum nfp_port_flags {
-  * @eth_id:	for %NFP_PORT_PHYS_PORT port ID in NFP enumeration scheme
-  * @eth_forced:	for %NFP_PORT_PHYS_PORT port is forced UP or DOWN, don't change
-  * @eth_port:	for %NFP_PORT_PHYS_PORT translated ETH Table port entry
-+ * @fec_configured:	for %NFP_PORT_PHYS_PORT configured FEC encodings
-  * @eth_stats:	for %NFP_PORT_PHYS_PORT MAC stats if available
-  * @pf_id:	for %NFP_PORT_PF_PORT, %NFP_PORT_VF_PORT ID of the PCI PF (0-3)
-  * @vf_id:	for %NFP_PORT_VF_PORT ID of the PCI VF within @pf_id
-@@ -75,6 +76,7 @@ struct nfp_port {
- 			unsigned int eth_id;
- 			bool eth_forced;
- 			struct nfp_eth_table_port *eth_port;
-+			u32 fec_configured;
- 			u8 __iomem *eth_stats;
- 		};
- 		/* NFP_PORT_PF_PORT, NFP_PORT_VF_PORT */
+-----
+Changes in V6:
+- Commits:
+  - Add commit which enable ethernet switch on RZ/N1D-DB board
+  - Add commit which adds "renesas,rzn1-gmac" compatible t
+    "snps,dwmac" bindings
+  - Fix mutex change being done in FDB feature commit
+  - Add commit which  adds"power-domains" to "snps,dwmac" bindings
+- Bindings and DT
+  - Add clock-names to MII converter and make it required
+  - Added Reviewed-by Geert on MII converter binding
+  - Added "power-domains" to switch bindings and to switch description
+  - Use new compatible "renesas,rzn1-gmac" for GMAC2
+  - Describe all switch ports in ethernet switch node
+  - Add phy-mode = "internal" to cpu port
+- PCS:
+  - use phy_interface_mode_is_rgmii() instead of open coded check
+  - Add device_link_add() call in miic_create()
+- Switch:
+  - Fix missing of_node_put(port) in case of loop break.
+  - Fix comment alignment for statistics defines
+  - Move lk_lock mutex locking outside of the fdb_dump loop
+
+Changes in V5:
+- MAINTAINERS:
+  - Add Florian Fainelli Reviewed-by
+- Switch:
+  - Switch Lookup table lock to a mutex instead of a spinlock
+  - Only handle "ethernet-ports" property for switch ports
+  - Handle RGMII_ID/RXID/TXID
+  - Add check for pdata to be non null in remove
+  - Add missing of_node_put() for mdio and ports
+  - Applied Florian Fainelli patch which makes stats description
+    shorter
+  - Add Kconfig dependency on ARCH_RZN1 to avoid Kconfig "unmet direct
+    dependency"
+- PCS:
+  - Handle RGMII_ID/RXID/TXID
+  - Use value instead of BIT() for speed/mode
+- Tag driver:
+  - Add Florian Fainelli Reviewed-by
+
+Changes in V4:
+- Add ETH_P_DSA_A5PSW in uapi/linux/if_ether.h
+- PCS:
+  - Use devm_pm_runtime_enable() instead of pm_runtime_enable()
+- Switch:
+  - Return -EOPNOTSUPP and set extack when multiple bridges are created
+  - Remove error messages in fdb_del if entry does not exists
+  - Add compatibility with "ethernet-ports" device-tree property
+- Tag driver:
+  - Use ETH_ZLEN as padding len
+
+Changes in V3:
+- PCS:
+  - Fixed reverse christmas tree declaration
+  - Remove spurious pr_err
+  - Use pm_runtime functions
+- Tag driver:
+  - Remove packed attribute from the tag struct
+- Switch:
+  - Fix missing spin_unlock in fdb_dump in case of error
+  - Add static qualifier to dsa_switch_ops
+  - Add missing documentation for hclk and clk members of struct a5psw
+  - Changed types of fdb_entry to u16 to discard GCC note on char
+    packed bitfields and add reserved field
+- Added Reviewed-by tag from Florian Fainelli
+
+Changes in V2:
+- PCS:
+  - Fix Reverse Christmas tree declaration
+  - Removed stray newline
+  - Add PCS remove function and disable clocks in them
+  - Fix miic_validate function to return correct values
+  - Split PCS CONV_MODE definition
+  - Reordered phylink_pcs_ops in definition order
+  - Remove interface setting in miic_link_up
+  - Remove useless checks for invalid interface/speed and error prints
+  - Replace phylink_pcs_to_miic_port macro by a static function
+  - Add comment in miic_probe about platform_set_drvdata
+- Bindings:
+ - Fix wrong path for mdio.yaml $ref
+ - Fix yamllint errors
+- Tag driver:
+  - Squashed commit that added tag value with tag driver
+  - Add BUILD_BUG_ON for tag size
+  - Split control_data2 in 2 16bits values
+- Switch:
+  - Use .phylink_get_caps instead of .phylink_validate and fill
+    supported_interface correctly
+  - Use fixed size (ETH_GSTRING_LEN) string for stats and use memcpy
+  - Remove stats access locking since RTNL lock is used in upper layers
+  - Check for non C45 addresses in mdio_read/write and return
+    -EOPNOTSUPP
+  - Add get_eth_mac_stats, get_eth_mac_ctrl_stat, get_rmon_stats
+  - Fix a few indentation problems
+  - Remove reset callback from MDIO bus operation
+  - Add phy/mac/rmon stats
+- Add get_rmon_stat to dsa_ops
+
+Clément Léger (16):
+  net: dsa: allow port_bridge_join() to override extack message
+  net: dsa: add support for ethtool get_rmon_stats()
+  net: dsa: add Renesas RZ/N1 switch tag driver
+  dt-bindings: net: pcs: add bindings for Renesas RZ/N1 MII converter
+  net: pcs: add Renesas MII converter driver
+  dt-bindings: net: dsa: add bindings for Renesas RZ/N1 Advanced 5 port
+    switch
+  net: dsa: rzn1-a5psw: add Renesas RZ/N1 advanced 5 port switch driver
+  net: dsa: rzn1-a5psw: add statistics support
+  net: dsa: rzn1-a5psw: add FDB support
+  dt-bindings: net: snps,dwmac: add "power-domains" property
+  dt-bindings: net: snps,dwmac: add "renesas,rzn1" compatible
+  ARM: dts: r9a06g032: describe MII converter
+  ARM: dts: r9a06g032: describe GMAC2
+  ARM: dts: r9a06g032: describe switch
+  ARM: dts: r9a06g032-rzn1d400-db: add switch description
+  MAINTAINERS: add Renesas RZ/N1 switch related driver entry
+
+ .../bindings/net/dsa/renesas,rzn1-a5psw.yaml  |  134 +++
+ .../bindings/net/pcs/renesas,rzn1-miic.yaml   |  171 +++
+ .../devicetree/bindings/net/snps,dwmac.yaml   |    5 +
+ MAINTAINERS                                   |   11 +
+ arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts   |  117 ++
+ arch/arm/boot/dts/r9a06g032.dtsi              |  108 ++
+ drivers/net/dsa/Kconfig                       |    9 +
+ drivers/net/dsa/Makefile                      |    1 +
+ drivers/net/dsa/rzn1_a5psw.c                  | 1062 +++++++++++++++++
+ drivers/net/dsa/rzn1_a5psw.h                  |  259 ++++
+ drivers/net/pcs/Kconfig                       |    8 +
+ drivers/net/pcs/Makefile                      |    1 +
+ drivers/net/pcs/pcs-rzn1-miic.c               |  519 ++++++++
+ include/dt-bindings/net/pcs-rzn1-miic.h       |   33 +
+ include/linux/pcs-rzn1-miic.h                 |   18 +
+ include/net/dsa.h                             |    5 +
+ include/uapi/linux/if_ether.h                 |    1 +
+ net/dsa/Kconfig                               |    7 +
+ net/dsa/Makefile                              |    1 +
+ net/dsa/slave.c                               |   18 +-
+ net/dsa/tag_rzn1_a5psw.c                      |  113 ++
+ 21 files changed, 2599 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
+ create mode 100644 Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
+ create mode 100644 drivers/net/dsa/rzn1_a5psw.c
+ create mode 100644 drivers/net/dsa/rzn1_a5psw.h
+ create mode 100644 drivers/net/pcs/pcs-rzn1-miic.c
+ create mode 100644 include/dt-bindings/net/pcs-rzn1-miic.h
+ create mode 100644 include/linux/pcs-rzn1-miic.h
+ create mode 100644 net/dsa/tag_rzn1_a5psw.c
+
 -- 
-2.30.2
+2.36.0
 
