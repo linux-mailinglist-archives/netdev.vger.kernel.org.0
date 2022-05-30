@@ -2,44 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C24D5537BD7
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:28:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 136D0537B98
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:27:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236849AbiE3NZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 09:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57716 "EHLO
+        id S236752AbiE3N0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 09:26:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236757AbiE3NZe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:25:34 -0400
+        with ESMTP id S236691AbiE3NZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:25:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBDA384A23;
-        Mon, 30 May 2022 06:25:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F64982157;
+        Mon, 30 May 2022 06:25:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6589B80D89;
-        Mon, 30 May 2022 13:25:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 923FCC385B8;
-        Mon, 30 May 2022 13:25:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79EA9B80D84;
+        Mon, 30 May 2022 13:25:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09FDAC341C0;
+        Mon, 30 May 2022 13:25:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917113;
-        bh=1Nut9CRMqLigdsqkyxIk7KKSPWoZoP6lmxG2cVbPM1g=;
+        s=k20201202; t=1653917115;
+        bh=C9X33pXWCcfrKODJ1R5etG2iGEZfHfyCD+gmXXOfpYc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g2v1SeVN8R8UfgljPcqOpIBMblL1E3LV6PqfltTe0fjLQ38woNjZ4UVJF5jRqZVxt
-         pw76dXRafRDYn1d9MPWCmMRXe4XTj19JHt3KWpBFGgY+DJfUPcEWU6tK+/Zs6ESRf7
-         jUWowRpktGQTDvlNLxJnyQTAjkY8ogBIV2F0AuMrXJqdSbcg/rIzI7X2dS/VJ62W+F
-         U25U3gIEiMM83BqLuuRm1mDBw8BqyvwkHpAMGD06TaBYVGIhk+pT9QYXOCCzQbziNF
-         nEVSiOi5JcKaCBvbeYsLmO3JY2CvR2ZichGZeLPmwhPExUUry1cNYgXtOjEIq1OdT6
-         /DdxYc2eg5P9Q==
+        b=bu4rxuFX1nR7SOveLWHZO3OyzxMqTgmyJMidCIuZQpgik96MTdMjDaPpUxOr3wowr
+         u91TIXoF/cdcdb2UMBgdpE5eMazTyBzwVFXiFzqMH575SaOtr2KksPPKPO3d1IAD7t
+         i83ebJD/r1Zfe87Z94X0MyhSZAFnPDO1t8EXUYhvmLWrhKAbRP+cbudv/SEM9bQiLE
+         FaodA0wzi6z7Z6eSZsjZShrQ9pTAOKHW+T/7PNESUydb+febfRzli3w0WQNvm81Vce
+         M5j8EmpzTKSNOIieKIYh5v0wDQybchzHXRLkbWX9/FBb8wbWyMTywl1BhNnGQjkNT3
+         dWbk5kWMNLlIw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Runqing Yang <rainkin1993@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 020/159] libbpf: Fix a bug with checking bpf_probe_read_kernel() support in old kernels
-Date:   Mon, 30 May 2022 09:22:05 -0400
-Message-Id: <20220530132425.1929512-20-sashal@kernel.org>
+Cc:     Peter Seiderer <ps.report@gmx.net>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 021/159] mac80211: minstrel_ht: fix where rate stats are stored (fixes debugfs output)
+Date:   Mon, 30 May 2022 09:22:06 -0400
+Message-Id: <20220530132425.1929512-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -57,74 +59,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Runqing Yang <rainkin1993@gmail.com>
+From: Peter Seiderer <ps.report@gmx.net>
 
-[ Upstream commit d252a4a499a07bec21c65873f605c3a1ef52ffed ]
+[ Upstream commit 5c6dd7bd569b54c0d2904125d7366aa93f077f67 ]
 
-Background:
-Libbpf automatically replaces calls to BPF bpf_probe_read_{kernel,user}
-[_str]() helpers with bpf_probe_read[_str](), if libbpf detects that
-kernel doesn't support new APIs. Specifically, libbpf invokes the
-probe_kern_probe_read_kernel function to load a small eBPF program into
-the kernel in which bpf_probe_read_kernel API is invoked and lets the
-kernel checks whether the new API is valid. If the loading fails, libbpf
-considers the new API invalid and replaces it with the old API.
+Using an ath9k card the debugfs output of minstrel_ht looks like the following
+(note the zero values for the first four rates sum-of success/attempts):
 
-static int probe_kern_probe_read_kernel(void)
-{
-	struct bpf_insn insns[] = {
-		BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),	/* r1 = r10 (fp) */
-		BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),	/* r1 += -8 */
-		BPF_MOV64_IMM(BPF_REG_2, 8),		/* r2 = 8 */
-		BPF_MOV64_IMM(BPF_REG_3, 0),		/* r3 = 0 */
-		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_probe_read_kernel),
-		BPF_EXIT_INSN(),
-	};
-	int fd, insn_cnt = ARRAY_SIZE(insns);
+             best    ____________rate__________    ____statistics___    _____last____    ______sum-of________
+mode guard #  rate   [name   idx airtime  max_tp]  [avg(tp) avg(prob)]  [retry|suc|att]  [#success | #attempts]
+OFDM       1    DP     6.0M  272    1640     5.2       3.1      53.8       3     0 0             0   0
+OFDM       1   C       9.0M  273    1104     7.7       4.6      53.8       4     0 0             0   0
+OFDM       1  B       12.0M  274     836    10.0       6.0      53.8       4     0 0             0   0
+OFDM       1 A    S   18.0M  275     568    14.3       8.5      53.8       5     0 0             0   0
+OFDM       1      S   24.0M  276     436    18.1       0.0       0.0       5     0 1            80   1778
+OFDM       1          36.0M  277     300    24.9       0.0       0.0       0     0 1             0   107
+OFDM       1      S   48.0M  278     236    30.4       0.0       0.0       0     0 0             0   75
+OFDM       1          54.0M  279     212    33.0       0.0       0.0       0     0 0             0   72
 
-	fd = bpf_prog_load(BPF_PROG_TYPE_KPROBE, NULL,
-                           "GPL", insns, insn_cnt, NULL);
-	return probe_fd(fd);
-}
+Total packet count::    ideal 16582      lookaround 885
+Average # of aggregated frames per A-MPDU: 1.0
 
-Bug:
-On older kernel versions [0], the kernel checks whether the version
-number provided in the bpf syscall, matches the LINUX_VERSION_CODE.
-If not matched, the bpf syscall fails. eBPF However, the
-probe_kern_probe_read_kernel code does not set the kernel version
-number provided to the bpf syscall, which causes the loading process
-alwasys fails for old versions. It means that libbpf will replace the
-new API with the old one even the kernel supports the new one.
+Debugging showed that the rate statistics for the first four rates where
+stored in the MINSTREL_CCK_GROUP instead of the MINSTREL_OFDM_GROUP because
+in minstrel_ht_get_stats() the supported check was not honoured as done in
+various other places, e.g net/mac80211/rc80211_minstrel_ht_debugfs.c:
 
-Solution:
-After a discussion in [1], the solution is using BPF_PROG_TYPE_TRACEPOINT
-program type instead of BPF_PROG_TYPE_KPROBE because kernel does not
-enfoce version check for tracepoint programs. I test the patch in old
-kernels (4.18 and 4.19) and it works well.
+ 74                 if (!(mi->supported[i] & BIT(j)))
+ 75                         continue;
 
-  [0] https://elixir.bootlin.com/linux/v4.19/source/kernel/bpf/syscall.c#L1360
-  [1] Closes: https://github.com/libbpf/libbpf/issues/473
+With the patch applied the output looks good:
 
-Signed-off-by: Runqing Yang <rainkin1993@gmail.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20220409144928.27499-1-rainkin1993@gmail.com
+              best    ____________rate__________    ____statistics___    _____last____    ______sum-of________
+mode guard #  rate   [name   idx airtime  max_tp]  [avg(tp) avg(prob)]  [retry|suc|att]  [#success | #attempts]
+OFDM       1    D      6.0M  272    1640     5.2       5.2     100.0       3     0 0             1   1
+OFDM       1   C       9.0M  273    1104     7.7       7.7     100.0       4     0 0            38   38
+OFDM       1  B       12.0M  274     836    10.0       9.9      89.5       4     2 2           372   395
+OFDM       1 A   P    18.0M  275     568    14.3      14.3      97.2       5    52 53         6956   7181
+OFDM       1      S   24.0M  276     436    18.1       0.0       0.0       0     0 1             6   163
+OFDM       1          36.0M  277     300    24.9       0.0       0.0       0     0 1             0   35
+OFDM       1      S   48.0M  278     236    30.4       0.0       0.0       0     0 0             0   38
+OFDM       1      S   54.0M  279     212    33.0       0.0       0.0       0     0 0             0   38
+
+Total packet count::    ideal 7097      lookaround 287
+Average # of aggregated frames per A-MPDU: 1.0
+
+Signed-off-by: Peter Seiderer <ps.report@gmx.net>
+Link: https://lore.kernel.org/r/20220404165414.1036-1-ps.report@gmx.net
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/mac80211/rc80211_minstrel_ht.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 809fe209cdcc..dabf9a1451c3 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -4587,7 +4587,7 @@ static int probe_kern_probe_read_kernel(void)
- 	};
- 	int fd, insn_cnt = ARRAY_SIZE(insns);
+diff --git a/net/mac80211/rc80211_minstrel_ht.c b/net/mac80211/rc80211_minstrel_ht.c
+index 9c6ace858107..5a6bf46a4248 100644
+--- a/net/mac80211/rc80211_minstrel_ht.c
++++ b/net/mac80211/rc80211_minstrel_ht.c
+@@ -362,6 +362,9 @@ minstrel_ht_get_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi,
  
--	fd = bpf_prog_load(BPF_PROG_TYPE_KPROBE, NULL, "GPL", insns, insn_cnt, NULL);
-+	fd = bpf_prog_load(BPF_PROG_TYPE_TRACEPOINT, NULL, "GPL", insns, insn_cnt, NULL);
- 	return probe_fd(fd);
- }
+ 	group = MINSTREL_CCK_GROUP;
+ 	for (idx = 0; idx < ARRAY_SIZE(mp->cck_rates); idx++) {
++		if (!(mi->supported[group] & BIT(idx)))
++			continue;
++
+ 		if (rate->idx != mp->cck_rates[idx])
+ 			continue;
  
 -- 
 2.35.1
