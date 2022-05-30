@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 928E253810F
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:28:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C3145380AE
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:24:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238093AbiE3N73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 09:59:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34826 "EHLO
+        id S236290AbiE3ODe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:03:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236819AbiE3N5q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:57:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF16A8B088;
-        Mon, 30 May 2022 06:38:51 -0700 (PDT)
+        with ESMTP id S237027AbiE3N6e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:58:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46449859C;
+        Mon, 30 May 2022 06:39:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AE7260F3B;
-        Mon, 30 May 2022 13:38:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 714DFC385B8;
-        Mon, 30 May 2022 13:38:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9CE6CB80D84;
+        Mon, 30 May 2022 13:39:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07A64C3411F;
+        Mon, 30 May 2022 13:39:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917930;
-        bh=LPSSCwqGaNrNkqp/n9QTqw04SGRP8OwOqgtrF6QVz+k=;
+        s=k20201202; t=1653917943;
+        bh=zrO+I81q/bOufw7+PNCwLxw9CKtniX3Y5piTVB+tuCs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cNlwpIR9bJPpoizcltsWki95qBzjkp2WixAzpcDOvX3SrWovSrGPJI5JQ02vTw3Gy
-         H6aeap0tGCZjDhRTEkAqJ85KhOY9B2o6PVN3+TFdgQydG2EbAQcIyS+UKwYGsmAs6J
-         +y2q1FbmA3S7xRoCdbbLUyjnOaaW2rQCypAl7FzK59tiejIdfsoWRSiEIS+utR5CaX
-         UYRs1Hlc/YB8/dHNCmqKd71EfxeiVRPkB0JoZgT4ppxigxDfwonJgUlGiw3dLNKTBW
-         7PAP+Z6EEpKNm6T6wl0TrpWuMFCz1LRBabjP64zeIG4jaN+nICdATMS3WEeKi7lETI
-         n8ISdy1aPU3sQ==
+        b=seMngUoqP8lR846SVw8IUd8tFFpZ5Er0UFIOTOFPWd2yuovlfAYJmLiyBN/b46mnn
+         ij9pk9WVun6GRZ5DW787fbL4ygkwMb7BbZKwy1ltZyVxlh1WRfT1NSjPIknOAeSzgm
+         v1q2SYgi42LnHEw4BGuSq182LbS9Bt9uBwR1vDEwsL7NMjZJNLcWgZBpiIi4ZOO4Vl
+         4aR4n0+ksCEJBpJLSe6vOl+nlHI1Gc2UHYD50jjFuAKXZ/RhVCT0/I2YdGsMZJlHTC
+         W+cMVCcrWzQmQv8tlHswdPwmOTNaqkRfJ/x47bxOQ5UiPTo3ADY2QHmE5KbfZFsgh/
+         jwp75pNPHzuuw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Niels Dossche <dossche.niels@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+Cc:     Peter Seiderer <ps.report@gmx.net>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 010/109] ipv6: fix locking issues with loops over idev->addr_list
-Date:   Mon, 30 May 2022 09:36:46 -0400
-Message-Id: <20220530133825.1933431-10-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 014/109] mac80211: minstrel_ht: fix where rate stats are stored (fixes debugfs output)
+Date:   Mon, 30 May 2022 09:36:50 -0400
+Message-Id: <20220530133825.1933431-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -59,147 +59,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Peter Seiderer <ps.report@gmx.net>
 
-[ Upstream commit 51454ea42c1ab4e0c2828bb0d4d53957976980de ]
+[ Upstream commit 5c6dd7bd569b54c0d2904125d7366aa93f077f67 ]
 
-idev->addr_list needs to be protected by idev->lock. However, it is not
-always possible to do so while iterating and performing actions on
-inet6_ifaddr instances. For example, multiple functions (like
-addrconf_{join,leave}_anycast) eventually call down to other functions
-that acquire the idev->lock. The current code temporarily unlocked the
-idev->lock during the loops, which can cause race conditions. Moving the
-locks up is also not an appropriate solution as the ordering of lock
-acquisition will be inconsistent with for example mc_lock.
+Using an ath9k card the debugfs output of minstrel_ht looks like the following
+(note the zero values for the first four rates sum-of success/attempts):
 
-This solution adds an additional field to inet6_ifaddr that is used
-to temporarily add the instances to a temporary list while holding
-idev->lock. The temporary list can then be traversed without holding
-idev->lock. This change was done in two places. In addrconf_ifdown, the
-list_for_each_entry_safe variant of the list loop is also no longer
-necessary as there is no deletion within that specific loop.
+             best    ____________rate__________    ____statistics___    _____last____    ______sum-of________
+mode guard #  rate   [name   idx airtime  max_tp]  [avg(tp) avg(prob)]  [retry|suc|att]  [#success | #attempts]
+OFDM       1    DP     6.0M  272    1640     5.2       3.1      53.8       3     0 0             0   0
+OFDM       1   C       9.0M  273    1104     7.7       4.6      53.8       4     0 0             0   0
+OFDM       1  B       12.0M  274     836    10.0       6.0      53.8       4     0 0             0   0
+OFDM       1 A    S   18.0M  275     568    14.3       8.5      53.8       5     0 0             0   0
+OFDM       1      S   24.0M  276     436    18.1       0.0       0.0       5     0 1            80   1778
+OFDM       1          36.0M  277     300    24.9       0.0       0.0       0     0 1             0   107
+OFDM       1      S   48.0M  278     236    30.4       0.0       0.0       0     0 0             0   75
+OFDM       1          54.0M  279     212    33.0       0.0       0.0       0     0 0             0   72
 
-Suggested-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Link: https://lore.kernel.org/r/20220403231523.45843-1-dossche.niels@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Total packet count::    ideal 16582      lookaround 885
+Average # of aggregated frames per A-MPDU: 1.0
+
+Debugging showed that the rate statistics for the first four rates where
+stored in the MINSTREL_CCK_GROUP instead of the MINSTREL_OFDM_GROUP because
+in minstrel_ht_get_stats() the supported check was not honoured as done in
+various other places, e.g net/mac80211/rc80211_minstrel_ht_debugfs.c:
+
+ 74                 if (!(mi->supported[i] & BIT(j)))
+ 75                         continue;
+
+With the patch applied the output looks good:
+
+              best    ____________rate__________    ____statistics___    _____last____    ______sum-of________
+mode guard #  rate   [name   idx airtime  max_tp]  [avg(tp) avg(prob)]  [retry|suc|att]  [#success | #attempts]
+OFDM       1    D      6.0M  272    1640     5.2       5.2     100.0       3     0 0             1   1
+OFDM       1   C       9.0M  273    1104     7.7       7.7     100.0       4     0 0            38   38
+OFDM       1  B       12.0M  274     836    10.0       9.9      89.5       4     2 2           372   395
+OFDM       1 A   P    18.0M  275     568    14.3      14.3      97.2       5    52 53         6956   7181
+OFDM       1      S   24.0M  276     436    18.1       0.0       0.0       0     0 1             6   163
+OFDM       1          36.0M  277     300    24.9       0.0       0.0       0     0 1             0   35
+OFDM       1      S   48.0M  278     236    30.4       0.0       0.0       0     0 0             0   38
+OFDM       1      S   54.0M  279     212    33.0       0.0       0.0       0     0 0             0   38
+
+Total packet count::    ideal 7097      lookaround 287
+Average # of aggregated frames per A-MPDU: 1.0
+
+Signed-off-by: Peter Seiderer <ps.report@gmx.net>
+Link: https://lore.kernel.org/r/20220404165414.1036-1-ps.report@gmx.net
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/if_inet6.h |  8 ++++++++
- net/ipv6/addrconf.c    | 30 ++++++++++++++++++++++++------
- 2 files changed, 32 insertions(+), 6 deletions(-)
+ net/mac80211/rc80211_minstrel_ht.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
-index 653e7d0f65cb..8ec0878a90a7 100644
---- a/include/net/if_inet6.h
-+++ b/include/net/if_inet6.h
-@@ -64,6 +64,14 @@ struct inet6_ifaddr {
+diff --git a/net/mac80211/rc80211_minstrel_ht.c b/net/mac80211/rc80211_minstrel_ht.c
+index 72b44d4c42d0..90238170dec3 100644
+--- a/net/mac80211/rc80211_minstrel_ht.c
++++ b/net/mac80211/rc80211_minstrel_ht.c
+@@ -364,6 +364,9 @@ minstrel_ht_get_stats(struct minstrel_priv *mp, struct minstrel_ht_sta *mi,
  
- 	struct hlist_node	addr_lst;
- 	struct list_head	if_list;
-+	/*
-+	 * Used to safely traverse idev->addr_list in process context
-+	 * if the idev->lock needed to protect idev->addr_list cannot be held.
-+	 * In that case, add the items to this list temporarily and iterate
-+	 * without holding idev->lock.
-+	 * See addrconf_ifdown and dev_forward_change.
-+	 */
-+	struct list_head	if_list_aux;
- 
- 	struct list_head	tmp_list;
- 	struct inet6_ifaddr	*ifpub;
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 3a8838b79bb6..1ba5ff21412c 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -798,6 +798,7 @@ static void dev_forward_change(struct inet6_dev *idev)
- {
- 	struct net_device *dev;
- 	struct inet6_ifaddr *ifa;
-+	LIST_HEAD(tmp_addr_list);
- 
- 	if (!idev)
- 		return;
-@@ -816,14 +817,24 @@ static void dev_forward_change(struct inet6_dev *idev)
- 		}
- 	}
- 
-+	read_lock_bh(&idev->lock);
- 	list_for_each_entry(ifa, &idev->addr_list, if_list) {
- 		if (ifa->flags&IFA_F_TENTATIVE)
+ 	group = MINSTREL_CCK_GROUP;
+ 	for (idx = 0; idx < ARRAY_SIZE(mp->cck_rates); idx++) {
++		if (!(mi->supported[group] & BIT(idx)))
++			continue;
++
+ 		if (rate->idx != mp->cck_rates[idx])
  			continue;
-+		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
-+	}
-+	read_unlock_bh(&idev->lock);
-+
-+	while (!list_empty(&tmp_addr_list)) {
-+		ifa = list_first_entry(&tmp_addr_list,
-+				       struct inet6_ifaddr, if_list_aux);
-+		list_del(&ifa->if_list_aux);
- 		if (idev->cnf.forwarding)
- 			addrconf_join_anycast(ifa);
- 		else
- 			addrconf_leave_anycast(ifa);
- 	}
-+
- 	inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
- 				     NETCONFA_FORWARDING,
- 				     dev->ifindex, &idev->cnf);
-@@ -3728,7 +3739,8 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
- 	unsigned long event = unregister ? NETDEV_UNREGISTER : NETDEV_DOWN;
- 	struct net *net = dev_net(dev);
- 	struct inet6_dev *idev;
--	struct inet6_ifaddr *ifa, *tmp;
-+	struct inet6_ifaddr *ifa;
-+	LIST_HEAD(tmp_addr_list);
- 	bool keep_addr = false;
- 	bool was_ready;
- 	int state, i;
-@@ -3820,16 +3832,23 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
- 		write_lock_bh(&idev->lock);
- 	}
  
--	list_for_each_entry_safe(ifa, tmp, &idev->addr_list, if_list) {
-+	list_for_each_entry(ifa, &idev->addr_list, if_list)
-+		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
-+	write_unlock_bh(&idev->lock);
-+
-+	while (!list_empty(&tmp_addr_list)) {
- 		struct fib6_info *rt = NULL;
- 		bool keep;
- 
-+		ifa = list_first_entry(&tmp_addr_list,
-+				       struct inet6_ifaddr, if_list_aux);
-+		list_del(&ifa->if_list_aux);
-+
- 		addrconf_del_dad_work(ifa);
- 
- 		keep = keep_addr && (ifa->flags & IFA_F_PERMANENT) &&
- 			!addr_is_local(&ifa->addr);
- 
--		write_unlock_bh(&idev->lock);
- 		spin_lock_bh(&ifa->lock);
- 
- 		if (keep) {
-@@ -3860,15 +3879,14 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
- 			addrconf_leave_solict(ifa->idev, &ifa->addr);
- 		}
- 
--		write_lock_bh(&idev->lock);
- 		if (!keep) {
-+			write_lock_bh(&idev->lock);
- 			list_del_rcu(&ifa->if_list);
-+			write_unlock_bh(&idev->lock);
- 			in6_ifa_put(ifa);
- 		}
- 	}
- 
--	write_unlock_bh(&idev->lock);
--
- 	/* Step 5: Discard anycast and multicast list */
- 	if (unregister) {
- 		ipv6_ac_destroy_dev(idev);
 -- 
 2.35.1
 
