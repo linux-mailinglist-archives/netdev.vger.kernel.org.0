@@ -2,100 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22F9653866B
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 18:55:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F652538692
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 19:07:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242038AbiE3Qz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 12:55:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42424 "EHLO
+        id S235511AbiE3RHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 13:07:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236669AbiE3Qz0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 12:55:26 -0400
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F9A3A776C;
-        Mon, 30 May 2022 09:55:25 -0700 (PDT)
-Date:   Mon, 30 May 2022 18:55:20 +0200
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        Jo-Philipp Wich <jo@mein.io>
-Subject: Re: [RFC] netfilter: nf_tables: ignore errors on flowtable device hw
- offload setup
-Message-ID: <YpT27/1oJgURRCYw@salvia>
-References: <20220510202739.67068-1-nbd@nbd.name>
- <Yn4NnwAkoVryQtCK@salvia>
- <b1fd2a80-f629-48a3-7466-0e04f2c531df@nbd.name>
- <Yn4TmdzQPUQ4TRUr@salvia>
- <88da25b7-0cd0-49df-c09e-8271618ba50f@nbd.name>
- <YoGhjjhsE1PcVeFC@salvia>
- <1c368b57-be21-5c37-ef38-e23fe344b70a@nbd.name>
- <YodIN0jLtAcHUq40@salvia>
- <ede77f8a-73d3-b507-5a7d-e8e3004e930d@nbd.name>
- <YogMj4PC/+DXYjQX@salvia>
+        with ESMTP id S229836AbiE3RHt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 13:07:49 -0400
+Received: from smtp7.emailarray.com (smtp7.emailarray.com [65.39.216.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73CAA52E77
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 10:07:47 -0700 (PDT)
+Received: (qmail 29942 invoked by uid 89); 30 May 2022 17:07:46 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNw==) (POLARISLOCAL)  
+  by smtp7.emailarray.com with SMTP; 30 May 2022 17:07:46 -0000
+Date:   Mon, 30 May 2022 10:07:44 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux@armlinux.org.uk,
+        bcm-kernel-feedback-list@broadcom.com, kernel-team@fb.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Subject: Re: [PATCH net-next v5 2/2] net: phy: broadcom: Add PTP support for
+ some Broadcom PHYs.
+Message-ID: <20220530170744.zs6urci5lcytl2j4@bsd-mbp.dhcp.thefacebook.com>
+References: <20220518223935.2312426-1-jonathan.lemon@gmail.com>
+ <20220518223935.2312426-3-jonathan.lemon@gmail.com>
+ <20220529003447.GA32026@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YogMj4PC/+DXYjQX@salvia>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20220529003447.GA32026@hoboy.vegasvil.org>
+X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,
+        SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 20, 2022 at 11:48:01PM +0200, Pablo Neira Ayuso wrote:
-> On Fri, May 20, 2022 at 08:07:44PM +0200, Felix Fietkau wrote:
-> > 
-> > On 20.05.22 09:50, Pablo Neira Ayuso wrote:
-> > > I'm sssuming we relax the requirement as I proposed, ie. allow for not
-> > > allow devices to support for hardware offload, but at least one.
-> > > 
-> > > Then, it should be possible to extend the netlink interface to promote
-> > > a flowtable to support hardware offload, e.g.
-> > > 
-> > >   add flowtable inet x y { hook ingress devices = { eth0, eth1 } priority 0; flags offload; }
-> > > 
-> > > For an existing flowtable, that will add eth0 and eth1, and it will
-> > > request to turn hardware offload.
-> > > 
-> > > This is not supported, these bits are missing in the netlink interface.
-> > > 
-> > > > I still think the best course of action is to silently accept the offload
-> > > > flag even if none of the devices support hw offload.
-> > > 
-> > > Silent means user is asking for something that is actually not
-> > > supported, there will be no effective way from the control plane to
-> > > check if what they request is actually being applied.
-> > > 
-> > > I'd propose two changes:
-> > > 
-> > > - relax the existing requirement, so if one device support hw offload,
-> > >    then accept the configuration.
-> > > 
-> > > - allow to update a flowtable to on/off hardware offload from netlink
-> > >    interface without needing to reload your whole ruleset.
-> >
-> > I still don't see the value in forcing user space to do the
-> > failure-and-retry dance if none of the devices support hw offload.
-> > If this is about notifying user space about the hw offload status, I think
-> > it's much better to simply accept such configurations as-is and extend the
-> > netlink api to report which of the member devices hw offload was actually
-> > enabled for.
-> > This would be much more valuable to users that actually care about the hw
-> > offload status than knowing if one of the devices in the list has hw offload
-> > support, and it would simplify the code as well, for kernel and user space
-> > alike.
+On Sat, May 28, 2022 at 05:34:47PM -0700, Richard Cochran wrote:
+> On Wed, May 18, 2022 at 03:39:35PM -0700, Jonathan Lemon wrote:
 > 
-> I would suggest to extend the API to expose if the device actually
-> support for the flowtable hardware offload, then after the listing,
-> the user knows if the feature is available, so they can turn it on.
+> > +static int bcm_ptp_adjtime_locked(struct bcm_ptp_private *priv,
+> > +				  s64 delta_ns)
+> > +{
+> > +	struct timespec64 ts;
+> > +	int err;
+> > +
+> > +	err = bcm_ptp_gettime_locked(priv, &ts, NULL);
+> > +	if (!err) {
+> > +		set_normalized_timespec64(&ts, ts.tv_sec,
+> > +					  ts.tv_nsec + delta_ns);
+> 
+> This also takes a LONG time when delta is large...
 
-Thinking it well, something in between your proposal and mine.
+Didn't we just go through this?  What constitutes a "large" offset here?
+The current version seems acceptable to me:
 
-Allow to set on 'offload', then the kernel will disable this flag if
-no devices support for hardware offload. The update path would also
-need to allow for this new behaviour.
+root@rpi:~/src/rpi # time phc_ctl /dev/ptp0 -- adj 86400
+phc_ctl[766492.486]: adjusted clock by 86400.000000 seconds
 
-The user can check via 'nft list ruleset' if the flag is on / off.
+real    0m0.009s
+user    0m0.002s
+sys 0m0.007s
+
+root@rpi:~/src/rpi # time phc_ctl /dev/ptp0 -- adj -86400
+phc_ctl[766494.647]: adjusted clock by -86400.000000 seconds
+
+real    0m0.009s
+user    0m0.009s
+sys 0m0.000s
+
+-- 
+Jonathan
