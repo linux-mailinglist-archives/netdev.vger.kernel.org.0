@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 825ED5380F5
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:28:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D21D538133
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:28:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239476AbiE3OJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56004 "EHLO
+        id S239629AbiE3OO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:14:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239832AbiE3OI3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:08:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1B779827;
-        Mon, 30 May 2022 06:42:26 -0700 (PDT)
+        with ESMTP id S240581AbiE3OMX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:12:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B88C9E52A5;
+        Mon, 30 May 2022 06:43:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 576D760FCC;
-        Mon, 30 May 2022 13:42:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22962C3411E;
-        Mon, 30 May 2022 13:42:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C6E9B80D83;
+        Mon, 30 May 2022 13:42:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22821C3411E;
+        Mon, 30 May 2022 13:42:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918141;
-        bh=z0nAyk/VU0ksVU4YbjsvPBgUNPDMbbrVaHL11Of9pZI=;
+        s=k20201202; t=1653918162;
+        bh=x4B8zV580+azv9vAE3GUqPaunN3G/DT9gCW5iU7BFrQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tcXUM9Mt00yqROSr4JfU7kluOvUjdAknUI2SlVrSKG3DEbo6oBNNqurQYE5X8MSXg
-         gQxUx9jP8QhM43z1uz6cfOQUhN/KzDzt2k3rnsvsWuaG0uwYPvfkg2K6TUqVIbXifo
-         VQznQaLbo3RLRYCQ3ghfP4w/UMwAIwKW34fsTyCvrsCXmvKUroeEVQurnNnl5TJkVq
-         FvbomnConRUsXi3coHcXUWikpQT3QHLQz8rgwxwq0DjfiKdxJQrAsbxV7DalEo/8j1
-         IXEb44q5+DLBbcuGv2kUX6ryAald9QmtkF+pTpBG+/kRUvl/ESW7pNbmDi62BAtXu8
-         cOjDI3Q0pzQuA==
+        b=oM4olH1TiNqqzik2850SNFLatZbXcFlqLgbnCsxmwmLvC5zTezvC4hQH870yyGi+7
+         FFNifitfw78O0YZk4CnrWF4cwleRmDH9MT/yfy+bveoGDxz8VYsrnb90HODVAeyVig
+         4wMpr6iGobcHARW3lhYG03s1AeotWEgjYieRdNFpPzsNn1uZVOkupQE8baW0NgO4SI
+         m7BZaNUo29QnuPeV+uHbVmDkJ33XWNfiLkGZy0SXbJPLe9YhyL4vULxSvlxghk8BQx
+         SXpFVKvObAqUy0o7fLP224RgIKhrDjPgL7OIHLy7bEEPOwXN5w9a9rzlhTsfS4vtey
+         AZB6a29WRNb1A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>,
-        =?UTF-8?q?Thibaut=20VAR=C3=88NE?= <hacks+kernel@slashdirt.org>,
-        Sasha Levin <sashal@kernel.org>, lorenzo@kernel.org,
-        ryder.lee@mediatek.com, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        matthias.bgg@gmail.com, Bo.Jiao@mediatek.com,
-        sujuan.chen@mediatek.com, shayne.chen@mediatek.com,
-        greearb@candelatech.com, sean.wang@mediatek.com,
-        deren.wu@mediatek.com, xing.song@mediatek.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 075/109] mt76: fix encap offload ethernet type check
-Date:   Mon, 30 May 2022 09:37:51 -0400
-Message-Id: <20220530133825.1933431-75-sashal@kernel.org>
+Cc:     Lukas Wunner <lukas@wunner.de>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Ferry Toth <fntoth@gmail.com>,
+        Oliver Neukum <oneukum@suse.com>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, steve.glendinning@shawell.net,
+        UNGLinuxDriver@microchip.com, linux@rempel-privat.de,
+        colin.king@intel.com, paskripkin@gmail.com,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 082/109] usbnet: Run unregister_netdev() before unbind() again
+Date:   Mon, 30 May 2022 09:37:58 -0400
+Message-Id: <20220530133825.1933431-82-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -66,67 +65,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit bc98e7fdd80d215b4b55eea001023231eb8ce12e ]
+[ Upstream commit d1408f6b4dd78fb1b9e26bcf64477984e5f85409 ]
 
-The driver needs to check if the format is 802.2 vs 802.3 in order to set
-a tx descriptor flag. skb->protocol can't be used, since it may not be properly
-initialized for packets coming in from a packet socket.
-Fix misdetection by checking the ethertype from the skb data instead
+Commit 2c9d6c2b871d ("usbnet: run unbind() before unregister_netdev()")
+sought to fix a use-after-free on disconnect of USB Ethernet adapters.
 
-Reported-by: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+It turns out that a different fix is necessary to address the issue:
+https://lore.kernel.org/netdev/18b3541e5372bc9b9fc733d422f4e698c089077c.1650177997.git.lukas@wunner.de/
+
+So the commit was not necessary.
+
+The commit made binding and unbinding of USB Ethernet asymmetrical:
+Before, usbnet_probe() first invoked the ->bind() callback and then
+register_netdev().  usbnet_disconnect() mirrored that by first invoking
+unregister_netdev() and then ->unbind().
+
+Since the commit, the order in usbnet_disconnect() is reversed and no
+longer mirrors usbnet_probe().
+
+One consequence is that a PHY disconnected (and stopped) in ->unbind()
+is afterwards stopped once more by unregister_netdev() as it closes the
+netdev before unregistering.  That necessitates a contortion in ->stop()
+because the PHY may only be stopped if it hasn't already been
+disconnected.
+
+Reverting the commit allows making the call to phy_stop() unconditional
+in ->stop().
+
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
+Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Acked-by: Oliver Neukum <oneukum@suse.com>
+Cc: Martyn Welch <martyn.welch@collabora.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 4 +++-
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 4 +++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/usb/asix_devices.c | 6 +-----
+ drivers/net/usb/smsc95xx.c     | 3 +--
+ drivers/net/usb/usbnet.c       | 6 +++---
+ 3 files changed, 5 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-index 7691292526e0..a8a0e6af51f8 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-@@ -799,6 +799,7 @@ mt7915_mac_write_txwi_8023(struct mt7915_dev *dev, __le32 *txwi,
- 
- 	u8 tid = skb->priority & IEEE80211_QOS_CTL_TID_MASK;
- 	u8 fc_type, fc_stype;
-+	u16 ethertype;
- 	bool wmm = false;
- 	u32 val;
- 
-@@ -812,7 +813,8 @@ mt7915_mac_write_txwi_8023(struct mt7915_dev *dev, __le32 *txwi,
- 	val = FIELD_PREP(MT_TXD1_HDR_FORMAT, MT_HDR_FORMAT_802_3) |
- 	      FIELD_PREP(MT_TXD1_TID, tid);
- 
--	if (be16_to_cpu(skb->protocol) >= ETH_P_802_3_MIN)
-+	ethertype = get_unaligned_be16(&skb->data[12]);
-+	if (ethertype >= ETH_P_802_3_MIN)
- 		val |= MT_TXD1_ETH_802_3;
- 
- 	txwi[1] |= cpu_to_le32(val);
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-index 5024ddf07cbc..bef8d4a76ed9 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-@@ -681,6 +681,7 @@ mt7921_mac_write_txwi_8023(struct mt7921_dev *dev, __le32 *txwi,
+diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
+index bd8f8619ad6f..396505396a2e 100644
+--- a/drivers/net/usb/asix_devices.c
++++ b/drivers/net/usb/asix_devices.c
+@@ -799,11 +799,7 @@ static int ax88772_stop(struct usbnet *dev)
  {
- 	u8 tid = skb->priority & IEEE80211_QOS_CTL_TID_MASK;
- 	u8 fc_type, fc_stype;
-+	u16 ethertype;
- 	bool wmm = false;
- 	u32 val;
+ 	struct asix_common_private *priv = dev->driver_priv;
  
-@@ -694,7 +695,8 @@ mt7921_mac_write_txwi_8023(struct mt7921_dev *dev, __le32 *txwi,
- 	val = FIELD_PREP(MT_TXD1_HDR_FORMAT, MT_HDR_FORMAT_802_3) |
- 	      FIELD_PREP(MT_TXD1_TID, tid);
+-	/* On unplugged USB, we will get MDIO communication errors and the
+-	 * PHY will be set in to PHY_HALTED state.
+-	 */
+-	if (priv->phydev->state != PHY_HALTED)
+-		phy_stop(priv->phydev);
++	phy_stop(priv->phydev);
  
--	if (be16_to_cpu(skb->protocol) >= ETH_P_802_3_MIN)
-+	ethertype = get_unaligned_be16(&skb->data[12]);
-+	if (ethertype >= ETH_P_802_3_MIN)
- 		val |= MT_TXD1_ETH_802_3;
+ 	return 0;
+ }
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index eb0d325e92b7..4e39e4345084 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -1217,8 +1217,7 @@ static int smsc95xx_start_phy(struct usbnet *dev)
  
- 	txwi[1] |= cpu_to_le32(val);
+ static int smsc95xx_stop(struct usbnet *dev)
+ {
+-	if (dev->net->phydev)
+-		phy_stop(dev->net->phydev);
++	phy_stop(dev->net->phydev);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index a33d7fb82a00..af2bbaff2478 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -1614,9 +1614,6 @@ void usbnet_disconnect (struct usb_interface *intf)
+ 		   xdev->bus->bus_name, xdev->devpath,
+ 		   dev->driver_info->description);
+ 
+-	if (dev->driver_info->unbind)
+-		dev->driver_info->unbind(dev, intf);
+-
+ 	net = dev->net;
+ 	unregister_netdev (net);
+ 
+@@ -1624,6 +1621,9 @@ void usbnet_disconnect (struct usb_interface *intf)
+ 
+ 	usb_scuttle_anchored_urbs(&dev->deferred);
+ 
++	if (dev->driver_info->unbind)
++		dev->driver_info->unbind(dev, intf);
++
+ 	usb_kill_urb(dev->interrupt);
+ 	usb_free_urb(dev->interrupt);
+ 	kfree(dev->padding_pkt);
 -- 
 2.35.1
 
