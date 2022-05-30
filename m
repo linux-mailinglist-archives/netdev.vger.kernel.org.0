@@ -2,169 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD1BF5376FA
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 10:51:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B4F05376B4
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 10:50:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234067AbiE3Ip7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 04:45:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58234 "EHLO
+        id S231640AbiE3It0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 04:49:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233523AbiE3Ip4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 04:45:56 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4D052B3A;
-        Mon, 30 May 2022 01:45:55 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LBTR21D2wz685ZP;
-        Mon, 30 May 2022 16:41:34 +0800 (CST)
-Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 30 May 2022 10:45:53 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kpsingh@kernel.org>
-CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH 2/2] selftests/bpf: Add test for retrying access to map with read-only perm
-Date:   Mon, 30 May 2022 10:45:14 +0200
-Message-ID: <20220530084514.10170-3-roberto.sassu@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220530084514.10170-1-roberto.sassu@huawei.com>
-References: <20220530084514.10170-1-roberto.sassu@huawei.com>
+        with ESMTP id S234126AbiE3ItR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 04:49:17 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2124.outbound.protection.outlook.com [40.107.93.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5628172216
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 01:49:16 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SZinSrbsBMM7gBMgCL5/d6bGjef4Qi8RFwpi1OVlGoq+V+yTR9+U/PdOxHgPG3j4rY64BPIJMmL/vW1IsN7RNqKr0V1TXbPFI9bQyBQ1KY8+95en8I7EfeKSFxGC61stAX7xGDb2b6uINE2ZfzhZMZf9raam5/l81w3m8TZzRd5iptAn+PqxQl8CrdbFaYa718Mpf6pjZ532GuohyvYq92aobY0uzRIopmIBi8v4qYedwdgx4gaMHwYLxLBJxbbfur7f2+S4iLoxmiH+C0XzzPI8zxt50BCvOmtl0W3TSjJ3mspv7rciRo7VGu4DNJ1asm5ZeeyMDdbY5qKLTXjC8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SA4igGewvUtbRZCpczATOOZQyiN1EcaRzhPWS4YwTCI=;
+ b=GU6a6bGdWvCvrZB9TCaLZI4njd+UYXExhKqftp5WNGTAcdZiUa8VYDZJaCkSyBnlvdjLODBCOsrjg21ZDIV2C0eSsFfurklqZhiNJmCcXt0WMgwF/18wddqyzDAfzahPo4bt0MTTbomhly3ubpDYkbUk1y2pXGrHuL3rFwyjHTozkdhxr5n7H0oeEkotiZUz/d2NBPDIWBChpvIbpv/lGcXdt4HJm+dcWfygOgQ7GsMfiI9r6YYcHd5oznDcHXNOpTMTH/D1CrA1FvW5JnTH9fFkrN1di0JnEKmO92KtVjswF13BmYg6dQXDs5BPzhzp3/unhfVX+i6wiee0uo0nLw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SA4igGewvUtbRZCpczATOOZQyiN1EcaRzhPWS4YwTCI=;
+ b=IMYgy8Kc8BlbuOES22LJteCkF1ROCVb+Bpg0P2PQMizW0eEOXsYqwJzz19oYZUZqqIojdbojJeqU5KRPKVIR0+ODc54A7qszIwhwhhifCz1asRKC8bFTGmQb+PD1tVpQ+U46UOeSi5vckuMG7iTRRMp88dwQXGo3my8rBIaNe+g=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by CY4PR1301MB1976.namprd13.prod.outlook.com (2603:10b6:910:45::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.11; Mon, 30 May
+ 2022 08:49:14 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::b18b:5e90:6805:a8fa]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::b18b:5e90:6805:a8fa%7]) with mapi id 15.20.5314.011; Mon, 30 May 2022
+ 08:49:13 +0000
+From:   Simon Horman <simon.horman@corigine.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Yu Xiao <yu.xiao@corigine.com>,
+        Yinjun Zhang <yinjun.zhang@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        Simon Horman <simon.horman@corigine.com>
+Subject: [PATCH net] nfp: correct the output of `ethtool --show-fec <intf>`
+Date:   Mon, 30 May 2022 10:48:42 +0200
+Message-Id: <20220530084842.21258-1-simon.horman@corigine.com>
+X-Mailer: git-send-email 2.30.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: LO2P123CA0062.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:1::26) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.204.63.22]
-X-ClientProxiedBy: lhreml753-chm.china.huawei.com (10.201.108.203) To
- fraeml714-chm.china.huawei.com (10.206.15.33)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 324d0948-eedc-40af-e8cc-08da42194575
+X-MS-TrafficTypeDiagnostic: CY4PR1301MB1976:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR1301MB197691DAA55867454BB36B23E8DD9@CY4PR1301MB1976.namprd13.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FdPRv0XyrLL0A6Uzc1lmma/QI2x1k1T3mSflxwGOk0b8AFjZHtgNVmpPT9N8FlRsMyT224HD3FYJEw1MIdsLobMaEaGZvuP/Mz8Aj3sfkkeuj9U0UEfdvxkaA/866EHLudkHMpKOMLtx5qEoUs9XyH4rAHB574JYS9YypubpPqK1fr9gn1KzVIJH2CPFO8MnDzDqoz7FqJAjHSe/ELQ7M9I/wISxv6JwM/D948YWyeVgWZgahIAuOFK7RMzsCOw3W7S5JQekfX7cBhxYtAB0oM33sZDil4zhpHtuabJfS2U9Lm4yQ9b0ct2kFWLSd3T8oHaAq+rXZg486FVYotSAO/rHC9sDB4Iu05jL6RWJ3tkBexAO89oTQt3NefHGTk4VS93RIH789N+yyuFZNJmgTStKXr7OzHkiu/0kzHwFfxbMsqtrtSpjRlFMricIxbtAeMjd9BjOY75/Hm/gTgTO8dsQjt1QrdH9nRC/YDH5dVsN9EYN1NeTRZxRGECLbFXpozh5++o6SZxO3Ci78Cgki35JCWJIcVk1LQwPUtXB4MSq5nbepNZThAIEXmEyPZwrD/DgzQyY9wwALDRzse1/YB5g0lNvJaG3PXg1oCvMsP3i9kjdRprrlnLRVyUWzkH0adEl7Kr82pc8Ru3+Xx9jZuzjgGjeLaeBXCrHGCYLKqUyMGUhOyGRYqdSuNnhj8Q3ErcNkpOhq1OUU1+kWWp3VVfHTEgZbyJT4gUOknnYMGu/vgMg0ORpC1Shkpf/WLT161YLuHKzRLmV9ogjKwi0Iw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(346002)(376002)(366004)(136003)(396003)(39830400003)(316002)(186003)(52116002)(86362001)(38350700002)(6666004)(2906002)(110136005)(1076003)(107886003)(6486002)(54906003)(26005)(6512007)(8676002)(508600001)(6506007)(83380400001)(5660300002)(44832011)(36756003)(4326008)(66946007)(8936002)(41300700001)(2616005)(38100700002)(66556008)(66476007)(81973001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3OeTL3/H+n+Pf8RMHTf2rL1wkzBuXhGFuPZEjnbDbEiVZLtETZacVa/0T7QO?=
+ =?us-ascii?Q?bq77zMVncY8RJBqEkbR+FAimNDZlG9yPclOHTfJlOeeCpR+lGZ1YzrHc+KxJ?=
+ =?us-ascii?Q?Oq9aFSv+hVA0qv7l+s0fiZbWWBSkrjGtixvnaYb0b7PiEhr7XwnMwyJVBVFC?=
+ =?us-ascii?Q?8qHBe1jbnLfugXDJJWxQ7ab63V1OVP6dq7AEgUBdRsSrWSXjyl8CYbzmc3ui?=
+ =?us-ascii?Q?Af/k8gnbYcrT7qPFs+Uotm/r3ug/wQsVHpcS70zFlcpyaWZ6zLXXA5LBYOZ6?=
+ =?us-ascii?Q?oI8jQZz52UyYN3jPETWWipWYz+coaddz5sY6K8uZDhzGFDCTsVOXfggu9xd6?=
+ =?us-ascii?Q?sy3b/iJOdEbOo3vcEbyEMgYNZkQNU5QcwN6Se97tRPJew3zcTx7t7cfzyhtz?=
+ =?us-ascii?Q?JNEWUiH2cbqofFAuz2ID7VzrW8MbbUquCEoeRCFL7lGWbYsOU8GyyCEXs3Zi?=
+ =?us-ascii?Q?f1Cy9z7J78IgWWARRDFjS6baCb64Mm9jD+c5C230basGudJPNsteLWD1B1Iv?=
+ =?us-ascii?Q?0O4ovKEDc1zS6lx6klmTNUpfkp5dH6qVXXyI67UtWlHaTkJLcc3wZ7ngyNpR?=
+ =?us-ascii?Q?ukqprcCYKKWtJySlBVWHBrTQ820UC81nmlDnDorVaSTg4/Z9bJLfW6AmrHFP?=
+ =?us-ascii?Q?sQsqJ6fVXa356nxldfBFT/YSNikiKAAR3pTn1qKMdYuSVxzwQGhewM1ao9YV?=
+ =?us-ascii?Q?wxmqsgGot9AXpCb7DTf7aeT4V6B2sSbh+1Cha9dJ5lu34xmc7dqUAQi5AcNr?=
+ =?us-ascii?Q?TAGCkeMuJQGz800Ttqczeft2iynMWOkaBKSJ0udZUAezO41u5n+5x4ItlzEx?=
+ =?us-ascii?Q?H644e5TZevBHMDBZxzoQZopVZ2+z+lfO8Pn5WLUQ6CWN1Sh4PP/DgbPkScFz?=
+ =?us-ascii?Q?8m4wC7Ac9zeojIrwWZMWqzC+NT8zUO12fAMnLmMGtPtLIQ/162r9sEp3wzA+?=
+ =?us-ascii?Q?OqHIHmdm9CSFMiDrkVgoDpB8AZj7rjdpGLIpSslKwrkB7jqZxbEVeJWq1eNE?=
+ =?us-ascii?Q?qCe3U+1l8rBh9EUpI1oa/JN0WBZk1Cag8SUylLW4IaYeUwY2P4e20pmdEaZh?=
+ =?us-ascii?Q?0sf1t6vUBlGSFlbJ1MQRtGXT1VZ367dY7zrLQwmoY3/YZqVcF6BP2teCEb6C?=
+ =?us-ascii?Q?XwAhvWlPY9OoKEdJBid0f1dHgj1lcXOPOwPPGQqt3EFoWzFgnClMkkEiKAPx?=
+ =?us-ascii?Q?4sQUyEXrWuJQAPOHJnNrarIYsbWJR+cON5PYmOa7Y4XIKgXOV2KPi7JJTwyl?=
+ =?us-ascii?Q?noq8PkmbOmu25Q+xfyDoAJ5qhuQzvp8YLrXHKI47vRZQg5aGuDIOpViYg3KP?=
+ =?us-ascii?Q?Lv/bm1cbQyrEDsoBZ1wmwCHjSYq5YorepMWkilrKxs7VFNN7D+6K59S3ctfk?=
+ =?us-ascii?Q?HoHPgj1g3GQaFKydRgOiOPcPY4wkpw4RBbK7I8xKSoE5jLjjQMVh1dwSaU70?=
+ =?us-ascii?Q?7MpGkAskhWWq2akkRwrI911s6K3JMcCUjVOQbjVnl2TGKmRyy3ZG28Sx+itA?=
+ =?us-ascii?Q?nJRNi28mkLwoN3ZiWK+QfQV8DFrYaeJ7osKJmTp5af8MV7Vc+7JmhbdlqU1W?=
+ =?us-ascii?Q?g6XbmfWdBOS77KFGG3H/8Ss5WiAt/iGEa5IiCJvrxruQL4tBJ4oKkc2be9Df?=
+ =?us-ascii?Q?nkIi6oje0eRJ9vVIL35hTKmx7FsO5KSl32n6HFLC/e9/Fkp5d8kLOcA6L2DM?=
+ =?us-ascii?Q?ujWddmJtp/2JqRyTATcHYPOr26JRPHnHHwMV10HulFIpbwSqo6ZX5xJ3n53I?=
+ =?us-ascii?Q?N68r7dT9v3XGDHdJtz5BCESL0WSDUBU=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 324d0948-eedc-40af-e8cc-08da42194575
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2022 08:49:13.6285
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GGv8PHXZQaftq2d6kyBBuGrIVg9HNkkqzmmSrFqz2jVjdo9iRs1KnL5lAP/IRMLMTG8uGmklLHCOwVXdpTgomEHQtnC3qi6AjryM4i6gnIQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1301MB1976
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a test to check the ability of bpf_map_get_fd_by_id() to get a map file
-descriptor if write permission is denied.
+From: Yu Xiao <yu.xiao@corigine.com>
 
-Also ensure that a map update operation fails with the obtained read-only
-file descriptor.
+The output  of `Configured FEC encodings` should display user
+configured/requested value, rather than the NIC supported modes
+list.
 
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+Before this patch, the output is:
+ # ethtool --show-fec <intf>
+ FEC parameters for <intf>:
+ Configured FEC encodings: Auto Off RS BaseR
+ Active FEC encoding: None
+
+With this patch, the corrected output is:
+ # ethtool --show-fec <intf>
+ FEC parameters for <intf>:
+ Configured FEC encodings: Auto
+ Active FEC encoding: None
+
+Fixes: 0d0870938337 ("nfp: implement ethtool FEC mode settings")
+Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
+Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
+Signed-off-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- .../bpf/prog_tests/test_map_retry_access.c    | 54 +++++++++++++++++++
- .../selftests/bpf/progs/map_retry_access.c    | 36 +++++++++++++
- 2 files changed, 90 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/test_map_retry_access.c
- create mode 100644 tools/testing/selftests/bpf/progs/map_retry_access.c
+ drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c | 4 +++-
+ drivers/net/ethernet/netronome/nfp/nfp_port.c        | 1 +
+ drivers/net/ethernet/netronome/nfp/nfp_port.h        | 2 ++
+ 3 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/test_map_retry_access.c b/tools/testing/selftests/bpf/prog_tests/test_map_retry_access.c
-new file mode 100644
-index 000000000000..beffb2026dcd
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/test_map_retry_access.c
-@@ -0,0 +1,54 @@
-+// SPDX-License-Identifier: GPL-2.0
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
+index df0afd271a21..115acd4b963b 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_ethtool.c
+@@ -842,8 +842,8 @@ nfp_port_get_fecparam(struct net_device *netdev,
+ 	if (!nfp_eth_can_support_fec(eth_port))
+ 		return 0;
+ 
+-	param->fec = nfp_port_fec_nsp_to_ethtool(eth_port->fec_modes_supported);
+ 	param->active_fec = nfp_port_fec_nsp_to_ethtool(eth_port->fec);
++	param->fec = port->fec_configured;
+ 
+ 	return 0;
+ }
+@@ -873,6 +873,8 @@ nfp_port_set_fecparam(struct net_device *netdev,
+ 		/* Only refresh if we did something */
+ 		nfp_net_refresh_port_table(port);
+ 
++	port->fec_configured = param->fec;
 +
-+/*
-+ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-+ *
-+ * Author: Roberto Sassu <roberto.sassu@huawei.com>
-+ */
-+
-+#include <test_progs.h>
-+
-+#include "map_retry_access.skel.h"
-+
-+void test_test_map_retry_access(void)
-+{
-+	struct map_retry_access *skel;
-+	struct bpf_map_info info;
-+	struct bpf_map *map;
-+	__u32 len = sizeof(info);
-+	int ret, zero = 0, fd, duration = 0;
-+
-+	skel = map_retry_access__open_and_load();
-+	if (CHECK(!skel, "skel", "open_and_load failed\n"))
-+		goto close_prog;
-+
-+	ret = map_retry_access__attach(skel);
-+	if (CHECK(ret < 0, "skel", "attach failed\n"))
-+		goto close_prog;
-+
-+	map = bpf_object__find_map_by_name(skel->obj, "data_input");
-+	if (CHECK(!map, "bpf_object__find_map_by_name", "not found\n"))
-+		goto close_prog;
-+
-+	ret = bpf_obj_get_info_by_fd(bpf_map__fd(map), &info, &len);
-+	if (CHECK(ret < 0, "bpf_obj_get_info_by_fd", "error: %d\n", ret))
-+		goto close_prog;
-+
-+	fd = bpf_map_get_fd_by_id(info.id);
-+	if (CHECK(fd < 0, "bpf_map_get_fd_by_id", "error: %d\n", fd))
-+		goto close_prog;
-+
-+	ret = bpf_map_update_elem(fd, &zero, &len, BPF_ANY);
-+
-+	close(fd);
-+
-+	if (CHECK(!ret, "bpf_map_update_elem",
-+		  "should fail (read-only permission)\n"))
-+		goto close_prog;
-+
-+	ret = bpf_map_update_elem(bpf_map__fd(map), &zero, &len, BPF_ANY);
-+
-+	CHECK(ret < 0, "bpf_map_update_elem", "error: %d\n", ret);
-+close_prog:
-+	map_retry_access__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/map_retry_access.c b/tools/testing/selftests/bpf/progs/map_retry_access.c
-new file mode 100644
-index 000000000000..1ed7b137a286
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/map_retry_access.c
-@@ -0,0 +1,36 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+/*
-+ * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
-+ *
-+ * Author: Roberto Sassu <roberto.sassu@huawei.com>
-+ */
-+
-+#include "vmlinux.h"
-+#include <errno.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+/* From include/linux/mm.h. */
-+#define FMODE_WRITE	0x2
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 1);
-+	__type(key, __u32);
-+	__type(value, __u32);
-+} data_input SEC(".maps");
-+
-+char _license[] SEC("license") = "GPL";
-+
-+SEC("lsm/bpf_map")
-+int BPF_PROG(bpf_map_retry_access, struct bpf_map *map, fmode_t fmode)
-+{
-+	if (map != (struct bpf_map *)&data_input)
-+		return 0;
-+
-+	if (fmode & FMODE_WRITE)
-+		return -EACCES;
-+
-+	return 0;
-+}
+ 	return err < 0 ? err : 0;
+ }
+ 
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_port.c b/drivers/net/ethernet/netronome/nfp/nfp_port.c
+index 4f2308570dcf..73f7bc8add7f 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_port.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_port.c
+@@ -189,6 +189,7 @@ int nfp_port_init_phy_port(struct nfp_pf *pf, struct nfp_app *app,
+ 
+ 	port->eth_port = &pf->eth_tbl->ports[id];
+ 	port->eth_id = pf->eth_tbl->ports[id].index;
++	port->fec_configured = ETHTOOL_FEC_NONE;
+ 	if (pf->mac_stats_mem)
+ 		port->eth_stats =
+ 			pf->mac_stats_mem + port->eth_id * NFP_MAC_STATS_SIZE;
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_port.h b/drivers/net/ethernet/netronome/nfp/nfp_port.h
+index d1ebe6c72f7f..fc2dfd2d01be 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_port.h
++++ b/drivers/net/ethernet/netronome/nfp/nfp_port.h
+@@ -50,6 +50,7 @@ enum nfp_port_flags {
+  * @eth_id:	for %NFP_PORT_PHYS_PORT port ID in NFP enumeration scheme
+  * @eth_forced:	for %NFP_PORT_PHYS_PORT port is forced UP or DOWN, don't change
+  * @eth_port:	for %NFP_PORT_PHYS_PORT translated ETH Table port entry
++ * @fec_configured:	for %NFP_PORT_PHYS_PORT configured FEC encodings
+  * @eth_stats:	for %NFP_PORT_PHYS_PORT MAC stats if available
+  * @pf_id:	for %NFP_PORT_PF_PORT, %NFP_PORT_VF_PORT ID of the PCI PF (0-3)
+  * @vf_id:	for %NFP_PORT_VF_PORT ID of the PCI VF within @pf_id
+@@ -75,6 +76,7 @@ struct nfp_port {
+ 			unsigned int eth_id;
+ 			bool eth_forced;
+ 			struct nfp_eth_table_port *eth_port;
++			u32 fec_configured;
+ 			u8 __iomem *eth_stats;
+ 		};
+ 		/* NFP_PORT_PF_PORT, NFP_PORT_VF_PORT */
 -- 
-2.25.1
+2.30.2
 
