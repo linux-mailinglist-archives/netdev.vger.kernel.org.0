@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B87C538052
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:23:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EAC4537F87
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:20:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239877AbiE3OKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:10:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56110 "EHLO
+        id S239782AbiE3OKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:10:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239172AbiE3OFY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:05:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77AC7CEBA8;
-        Mon, 30 May 2022 06:41:28 -0700 (PDT)
+        with ESMTP id S240077AbiE3OG2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:06:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7AF35AAF;
+        Mon, 30 May 2022 06:41:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BEE3460F9B;
-        Mon, 30 May 2022 13:41:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB6DCC341C4;
-        Mon, 30 May 2022 13:41:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF9BEB80D86;
+        Mon, 30 May 2022 13:41:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40590C3411C;
+        Mon, 30 May 2022 13:41:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918087;
-        bh=6PJF83MYmr1iD+sEdmRIMreTQhVP/kon/lfjZYqbT1c=;
+        s=k20201202; t=1653918110;
+        bh=ENYoUzxPB664IG1sN5huDvIcLEy/V+cCgsIQBznRbKg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=icb/ZZ0DkwNaDItV6NotVU2rOSxnRLm3iyklYDFV2ktbh8gK759W/ThOoicdYteTP
-         iptq9zjkZzTpIu/EQ1OeREdS7flJvO84hj+tzqT4li9kTwiXp2Jt92RYIuXpgXFTGj
-         pQ3krN3n7IIN2WHG1nPG1/6OfWlATjrcdkvw1yCW2nkd3f4mzIZzfwBjFvRoiwK2OY
-         Y/3VWIPiALpAKBIHRlNWSWm9eY9A+JsQL3VuRqnLlkaTgKowz0LZbwnJ+uws1OJwMC
-         2WMv/O4Iw8IRN3kxs1mj147tnVmvI738+aIaia9pr3Epwh1VfRGxvc5K/bK7WB7Gwe
-         hQU6hN7FWG1FQ==
+        b=MOOUJnKoHXi1OODJji/4uozjCxJlDNPnvUqUvahcy13bJ2LFFEZerLGsLKhWpBXF6
+         nXe6YatXAfJniVqkzS8q4DP4lcx2Nfs6+iT3mBbXL43gukVWtZOFgseAAGGvMK1QrQ
+         HvyCJaLHX1MM/GhhN12VF/8+2MF7OCLTf2JCt92eCxKAGHBdZJ9mHJcJe9CNPRgSOw
+         bEGlBp5GZAQJUL//WQZq1dNZeEIAeycbdZGe9iH1Rg8pccRExyT58rH0uGequ2pyiO
+         t74eTKaRu456FRvVwDhpjh98SEX/o9Iyf8CUW0sp/ssbPkiNkZzPOmcaz64HVMaqPA
+         1BYNH7hMM7Vvw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Petr Machata <petrm@nvidia.com>,
-        Maksym Yaremchuk <maksymy@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
+Cc:     Eric Dumazet <edumazet@google.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 056/109] mlxsw: Treat LLDP packets as control
-Date:   Mon, 30 May 2022 09:37:32 -0400
-Message-Id: <20220530133825.1933431-56-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        pabeni@redhat.com, bigeasy@linutronix.de, imagedong@tencent.com,
+        petrm@nvidia.com, memxor@gmail.com, arnd@arndb.de,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 064/109] net: remove two BUG() from skb_checksum_help()
+Date:   Mon, 30 May 2022 09:37:40 -0400
+Message-Id: <20220530133825.1933431-64-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -59,57 +59,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 0106668cd2f91bf913fb78972840dedfba80a3c3 ]
+[ Upstream commit d7ea0d9df2a6265b2b180d17ebc64b38105968fc ]
 
-When trapping packets for on-CPU processing, Spectrum machines
-differentiate between control and non-control traps. Traffic trapped
-through non-control traps is treated as data and kept in shared buffer in
-pools 0-4. Traffic trapped through control traps is kept in the dedicated
-control buffer 9. The advantage of marking traps as control is that
-pressure in the data plane does not prevent the control traffic to be
-processed.
+I have a syzbot report that managed to get a crash in skb_checksum_help()
 
-When the LLDP trap was introduced, it was marked as a control trap. But
-then in commit aed4b5721143 ("mlxsw: spectrum: PTP: Hook into packet
-receive path"), PTP traps were introduced. Because Ethernet-encapsulated
-PTP packets look to the Spectrum-1 ASIC as LLDP traffic and are trapped
-under the LLDP trap, this trap was reconfigured as non-control, in sync
-with the PTP traps.
+If syzbot can trigger these BUG(), it makes sense to replace
+them with more friendly WARN_ON_ONCE() since skb_checksum_help()
+can instead return an error code.
 
-There is however no requirement that PTP traffic be handled as data.
-Besides, the usual encapsulation for PTP traffic is UDP, not bare Ethernet,
-and that is in deployments that even need PTP, which is far less common
-than LLDP. This is reflected by the default policer, which was not bumped
-up to the 19Kpps / 24Kpps that is the expected load of a PTP-enabled
-Spectrum-1 switch.
+Note that syzbot will still crash there, until real bug is fixed.
 
-Marking of LLDP trap as non-control was therefore probably misguided. In
-this patch, change it back to control.
-
-Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/dev.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 26d01adbedad..ce6f6590a777 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -864,7 +864,7 @@ static const struct mlxsw_sp_trap_item mlxsw_sp_trap_items_arr[] = {
- 		.trap = MLXSW_SP_TRAP_CONTROL(LLDP, LLDP, TRAP),
- 		.listeners_arr = {
- 			MLXSW_RXL(mlxsw_sp_rx_ptp_listener, LLDP, TRAP_TO_CPU,
--				  false, SP_LLDP, DISCARD),
-+				  true, SP_LLDP, DISCARD),
- 		},
- 	},
- 	{
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 5907212c00f3..b9731b267d07 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3233,11 +3233,15 @@ int skb_checksum_help(struct sk_buff *skb)
+ 	}
+ 
+ 	offset = skb_checksum_start_offset(skb);
+-	BUG_ON(offset >= skb_headlen(skb));
++	ret = -EINVAL;
++	if (WARN_ON_ONCE(offset >= skb_headlen(skb)))
++		goto out;
++
+ 	csum = skb_checksum(skb, offset, skb->len - offset, 0);
+ 
+ 	offset += skb->csum_offset;
+-	BUG_ON(offset + sizeof(__sum16) > skb_headlen(skb));
++	if (WARN_ON_ONCE(offset + sizeof(__sum16) > skb_headlen(skb)))
++		goto out;
+ 
+ 	ret = skb_ensure_writable(skb, offset + sizeof(__sum16));
+ 	if (ret)
 -- 
 2.35.1
 
