@@ -2,46 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3D78537D9D
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:42:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 490B8537D01
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:41:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237528AbiE3Ngt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 09:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44676 "EHLO
+        id S237404AbiE3Ngo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 09:36:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237390AbiE3NeS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:34:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6FDB82146;
-        Mon, 30 May 2022 06:28:07 -0700 (PDT)
+        with ESMTP id S237643AbiE3Nfe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:35:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6E4D939C6;
+        Mon, 30 May 2022 06:28:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F04660EC3;
-        Mon, 30 May 2022 13:28:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 846E7C385B8;
-        Mon, 30 May 2022 13:27:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BD4E60DD5;
+        Mon, 30 May 2022 13:28:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E97AC385B8;
+        Mon, 30 May 2022 13:28:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917279;
-        bh=6Hz5HqIYdJLRIZwRktEAYB4iRCBgmhBAZDeEbAndy0g=;
+        s=k20201202; t=1653917291;
+        bh=bGfe+XYml5vTZnnP/P6GhNopkUPsUwTEgTIBai+RAio=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iQbtpKiBC0hR4G1GN614qAKZs6USCuT5zpYAoYucXXBsu7oANELy5G8CA1Z3xahql
-         hLupJ0hg+L0USwDnaKeT+QDIbAx2U0OB5DWmUjumaojcCsyIVmKT5DGWh5vnXaFV4J
-         JDdc+llnDdf1nDBsZu17Of4+wDf9Srk0JCW1O41eSZurReS8NcA9VzZk7CRHUn6Pls
-         qbwxTm5aWELxHqgA/q2sx5S3lQTOXis9yA7m7O9rTFsAHhA+nxDCugNLMAgOymef9s
-         fOfXyz1QYekS4PpIEP/dE+c13GHyj3uWadi8ROOXl+/0cry/od+yP15jGzkOvvdKRr
-         yy+UenBNEeLpw==
+        b=VeW2XIppxFWqvhI265VRppxPHoea/Yd1hrC3gVGOYzKD1/EWLy1mAuBb9S3uCrQeg
+         0HlR12427XBnpmO9iWDgXRtrS/+BZMJuR3+qZFQ16L667fYOsDO3KudrMRX9pold1Z
+         ws2BIZyX+LLsy1hxoUzHpWGP6/LY4tJeRw13L+mQaAXkGDzyAtcjDyBxZaibekx6jO
+         82fDHEChbLpNrkED/Ow8DJAug4Jw6SFewlrHbH0CM7prpSkQ2ELlSISRtdEmiJL5ov
+         at67ulgUMBrfTxehNQxdnPSnF8euZYsze+PO6TmX0dAmUoCDb/6kvXRkEw+Ca++8uX
+         hQql+SIKNUP8Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Petr Machata <petrm@nvidia.com>,
-        Maksym Yaremchuk <maksymy@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 081/159] mlxsw: Treat LLDP packets as control
-Date:   Mon, 30 May 2022 09:23:06 -0400
-Message-Id: <20220530132425.1929512-81-sashal@kernel.org>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>, jesse.brandeburg@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 085/159] ice: always check VF VSI pointer values
+Date:   Mon, 30 May 2022 09:23:10 -0400
+Message-Id: <20220530132425.1929512-85-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -59,57 +61,287 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Jacob Keller <jacob.e.keller@intel.com>
 
-[ Upstream commit 0106668cd2f91bf913fb78972840dedfba80a3c3 ]
+[ Upstream commit baeb705fd6a7245cc1fa69ed991a9cffdf44a174 ]
 
-When trapping packets for on-CPU processing, Spectrum machines
-differentiate between control and non-control traps. Traffic trapped
-through non-control traps is treated as data and kept in shared buffer in
-pools 0-4. Traffic trapped through control traps is kept in the dedicated
-control buffer 9. The advantage of marking traps as control is that
-pressure in the data plane does not prevent the control traffic to be
-processed.
+The ice_get_vf_vsi function can return NULL in some cases, such as if
+handling messages during a reset where the VSI is being removed and
+recreated.
 
-When the LLDP trap was introduced, it was marked as a control trap. But
-then in commit aed4b5721143 ("mlxsw: spectrum: PTP: Hook into packet
-receive path"), PTP traps were introduced. Because Ethernet-encapsulated
-PTP packets look to the Spectrum-1 ASIC as LLDP traffic and are trapped
-under the LLDP trap, this trap was reconfigured as non-control, in sync
-with the PTP traps.
+Several places throughout the driver do not bother to check whether this
+VSI pointer is valid. Static analysis tools maybe report issues because
+they detect paths where a potentially NULL pointer could be dereferenced.
 
-There is however no requirement that PTP traffic be handled as data.
-Besides, the usual encapsulation for PTP traffic is UDP, not bare Ethernet,
-and that is in deployments that even need PTP, which is far less common
-than LLDP. This is reflected by the default policer, which was not bumped
-up to the 19Kpps / 24Kpps that is the expected load of a PTP-enabled
-Spectrum-1 switch.
+Fix this by checking the return value of ice_get_vf_vsi everywhere.
 
-Marking of LLDP trap as non-control was therefore probably misguided. In
-this patch, change it back to control.
-
-Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_devlink.c  |  5 ++-
+ drivers/net/ethernet/intel/ice/ice_repr.c     |  7 +++-
+ drivers/net/ethernet/intel/ice/ice_sriov.c    | 32 +++++++++++++++++--
+ drivers/net/ethernet/intel/ice/ice_vf_lib.c   | 28 +++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_virtchnl.c |  5 +++
+ .../ethernet/intel/ice/ice_virtchnl_fdir.c    |  7 +++-
+ 6 files changed, 77 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 47b061b99160..ed4d0d3448f3 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -864,7 +864,7 @@ static const struct mlxsw_sp_trap_item mlxsw_sp_trap_items_arr[] = {
- 		.trap = MLXSW_SP_TRAP_CONTROL(LLDP, LLDP, TRAP),
- 		.listeners_arr = {
- 			MLXSW_RXL(mlxsw_sp_rx_ptp_listener, LLDP, TRAP_TO_CPU,
--				  false, SP_LLDP, DISCARD),
-+				  true, SP_LLDP, DISCARD),
- 		},
- 	},
- 	{
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
+index a230edb38466..4a9de59121d8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devlink.c
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
+@@ -753,9 +753,12 @@ int ice_devlink_create_vf_port(struct ice_vf *vf)
+ 
+ 	pf = vf->pf;
+ 	dev = ice_pf_to_dev(pf);
+-	vsi = ice_get_vf_vsi(vf);
+ 	devlink_port = &vf->devlink_port;
+ 
++	vsi = ice_get_vf_vsi(vf);
++	if (!vsi)
++		return -EINVAL;
++
+ 	attrs.flavour = DEVLINK_PORT_FLAVOUR_PCI_VF;
+ 	attrs.pci_vf.pf = pf->hw.bus.func;
+ 	attrs.pci_vf.vf = vf->vf_id;
+diff --git a/drivers/net/ethernet/intel/ice/ice_repr.c b/drivers/net/ethernet/intel/ice/ice_repr.c
+index 848f2adea563..a91b81c3088b 100644
+--- a/drivers/net/ethernet/intel/ice/ice_repr.c
++++ b/drivers/net/ethernet/intel/ice/ice_repr.c
+@@ -293,8 +293,13 @@ static int ice_repr_add(struct ice_vf *vf)
+ 	struct ice_q_vector *q_vector;
+ 	struct ice_netdev_priv *np;
+ 	struct ice_repr *repr;
++	struct ice_vsi *vsi;
+ 	int err;
+ 
++	vsi = ice_get_vf_vsi(vf);
++	if (!vsi)
++		return -EINVAL;
++
+ 	repr = kzalloc(sizeof(*repr), GFP_KERNEL);
+ 	if (!repr)
+ 		return -ENOMEM;
+@@ -313,7 +318,7 @@ static int ice_repr_add(struct ice_vf *vf)
+ 		goto err_alloc;
+ 	}
+ 
+-	repr->src_vsi = ice_get_vf_vsi(vf);
++	repr->src_vsi = vsi;
+ 	repr->vf = vf;
+ 	vf->repr = repr;
+ 	np = netdev_priv(repr->netdev);
+diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
+index 0c438219f7a3..bb1721f1321d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sriov.c
++++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
+@@ -46,7 +46,12 @@ static void ice_free_vf_entries(struct ice_pf *pf)
+  */
+ static void ice_vf_vsi_release(struct ice_vf *vf)
+ {
+-	ice_vsi_release(ice_get_vf_vsi(vf));
++	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
++
++	if (WARN_ON(!vsi))
++		return;
++
++	ice_vsi_release(vsi);
+ 	ice_vf_invalidate_vsi(vf);
+ }
+ 
+@@ -104,6 +109,8 @@ static void ice_dis_vf_mappings(struct ice_vf *vf)
+ 
+ 	hw = &pf->hw;
+ 	vsi = ice_get_vf_vsi(vf);
++	if (WARN_ON(!vsi))
++		return;
+ 
+ 	dev = ice_pf_to_dev(pf);
+ 	wr32(hw, VPINT_ALLOC(vf->vf_id), 0);
+@@ -341,6 +348,9 @@ static void ice_ena_vf_q_mappings(struct ice_vf *vf, u16 max_txq, u16 max_rxq)
+ 	struct ice_hw *hw = &vf->pf->hw;
+ 	u32 reg;
+ 
++	if (WARN_ON(!vsi))
++		return;
++
+ 	/* set regardless of mapping mode */
+ 	wr32(hw, VPLAN_TXQ_MAPENA(vf->vf_id), VPLAN_TXQ_MAPENA_TX_ENA_M);
+ 
+@@ -386,6 +396,9 @@ static void ice_ena_vf_mappings(struct ice_vf *vf)
+ {
+ 	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
+ 
++	if (WARN_ON(!vsi))
++		return;
++
+ 	ice_ena_vf_msix_mappings(vf);
+ 	ice_ena_vf_q_mappings(vf, vsi->alloc_txq, vsi->alloc_rxq);
+ }
+@@ -1128,6 +1141,8 @@ static struct ice_vf *ice_get_vf_from_pfq(struct ice_pf *pf, u16 pfq)
+ 		u16 rxq_idx;
+ 
+ 		vsi = ice_get_vf_vsi(vf);
++		if (!vsi)
++			continue;
+ 
+ 		ice_for_each_rxq(vsi, rxq_idx)
+ 			if (vsi->rxq_map[rxq_idx] == pfq) {
+@@ -1521,8 +1536,15 @@ static int ice_calc_all_vfs_min_tx_rate(struct ice_pf *pf)
+ static bool
+ ice_min_tx_rate_oversubscribed(struct ice_vf *vf, int min_tx_rate)
+ {
+-	int link_speed_mbps = ice_get_link_speed_mbps(ice_get_vf_vsi(vf));
+-	int all_vfs_min_tx_rate = ice_calc_all_vfs_min_tx_rate(vf->pf);
++	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
++	int all_vfs_min_tx_rate;
++	int link_speed_mbps;
++
++	if (WARN_ON(!vsi))
++		return false;
++
++	link_speed_mbps = ice_get_link_speed_mbps(vsi);
++	all_vfs_min_tx_rate = ice_calc_all_vfs_min_tx_rate(vf->pf);
+ 
+ 	/* this VF's previous rate is being overwritten */
+ 	all_vfs_min_tx_rate -= vf->min_tx_rate;
+@@ -1566,6 +1588,10 @@ ice_set_vf_bw(struct net_device *netdev, int vf_id, int min_tx_rate,
+ 		goto out_put_vf;
+ 
+ 	vsi = ice_get_vf_vsi(vf);
++	if (!vsi) {
++		ret = -EINVAL;
++		goto out_put_vf;
++	}
+ 
+ 	/* when max_tx_rate is zero that means no max Tx rate limiting, so only
+ 	 * check if max_tx_rate is non-zero
+diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+index 6578059d9479..aefd66a4db80 100644
+--- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
+@@ -220,8 +220,10 @@ static void ice_vf_clear_counters(struct ice_vf *vf)
+ {
+ 	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
+ 
++	if (vsi)
++		vsi->num_vlan = 0;
++
+ 	vf->num_mac = 0;
+-	vsi->num_vlan = 0;
+ 	memset(&vf->mdd_tx_events, 0, sizeof(vf->mdd_tx_events));
+ 	memset(&vf->mdd_rx_events, 0, sizeof(vf->mdd_rx_events));
+ }
+@@ -251,6 +253,9 @@ static int ice_vf_rebuild_vsi(struct ice_vf *vf)
+ 	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
+ 	struct ice_pf *pf = vf->pf;
+ 
++	if (WARN_ON(!vsi))
++		return -EINVAL;
++
+ 	if (ice_vsi_rebuild(vsi, true)) {
+ 		dev_err(ice_pf_to_dev(pf), "failed to rebuild VF %d VSI\n",
+ 			vf->vf_id);
+@@ -514,6 +519,10 @@ int ice_reset_vf(struct ice_vf *vf, u32 flags)
+ 	ice_trigger_vf_reset(vf, flags & ICE_VF_RESET_VFLR, false);
+ 
+ 	vsi = ice_get_vf_vsi(vf);
++	if (WARN_ON(!vsi)) {
++		err = -EIO;
++		goto out_unlock;
++	}
+ 
+ 	ice_dis_vf_qs(vf);
+ 
+@@ -572,6 +581,11 @@ int ice_reset_vf(struct ice_vf *vf, u32 flags)
+ 
+ 	vf->vf_ops->post_vsi_rebuild(vf);
+ 	vsi = ice_get_vf_vsi(vf);
++	if (WARN_ON(!vsi)) {
++		err = -EINVAL;
++		goto out_unlock;
++	}
++
+ 	ice_eswitch_update_repr(vsi);
+ 	ice_eswitch_replay_vf_mac_rule(vf);
+ 
+@@ -610,6 +624,9 @@ void ice_dis_vf_qs(struct ice_vf *vf)
+ {
+ 	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
+ 
++	if (WARN_ON(!vsi))
++		return;
++
+ 	ice_vsi_stop_lan_tx_rings(vsi, ICE_NO_RESET, vf->vf_id);
+ 	ice_vsi_stop_all_rx_rings(vsi);
+ 	ice_set_vf_state_qs_dis(vf);
+@@ -790,6 +807,9 @@ static int ice_vf_rebuild_host_mac_cfg(struct ice_vf *vf)
+ 	u8 broadcast[ETH_ALEN];
+ 	int status;
+ 
++	if (WARN_ON(!vsi))
++		return -EINVAL;
++
+ 	if (ice_is_eswitch_mode_switchdev(vf->pf))
+ 		return 0;
+ 
+@@ -875,6 +895,9 @@ static int ice_vf_rebuild_host_tx_rate_cfg(struct ice_vf *vf)
+ 	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
+ 	int err;
+ 
++	if (WARN_ON(!vsi))
++		return -EINVAL;
++
+ 	if (vf->min_tx_rate) {
+ 		err = ice_set_min_bw_limit(vsi, (u64)vf->min_tx_rate * 1000);
+ 		if (err) {
+@@ -938,6 +961,9 @@ void ice_vf_rebuild_host_cfg(struct ice_vf *vf)
+ 	struct device *dev = ice_pf_to_dev(vf->pf);
+ 	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
+ 
++	if (WARN_ON(!vsi))
++		return;
++
+ 	ice_vf_set_host_trust_cfg(vf);
+ 
+ 	if (ice_vf_rebuild_host_mac_cfg(vf))
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
+index 2889e050a4c9..5405a0e752cf 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
+@@ -2392,6 +2392,11 @@ static int ice_vc_ena_vlan_stripping(struct ice_vf *vf)
+ 	}
+ 
+ 	vsi = ice_get_vf_vsi(vf);
++	if (!vsi) {
++		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
++		goto error_param;
++	}
++
+ 	if (vsi->inner_vlan_ops.ena_stripping(vsi, ETH_P_8021Q))
+ 		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+index 8e38ee2faf58..b74ccbd1591a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+@@ -1344,7 +1344,12 @@ static void ice_vf_fdir_dump_info(struct ice_vf *vf)
+ 	pf = vf->pf;
+ 	hw = &pf->hw;
+ 	dev = ice_pf_to_dev(pf);
+-	vf_vsi = pf->vsi[vf->lan_vsi_idx];
++	vf_vsi = ice_get_vf_vsi(vf);
++	if (!vf_vsi) {
++		dev_dbg(dev, "VF %d: invalid VSI pointer\n", vf->vf_id);
++		return;
++	}
++
+ 	vsi_num = ice_get_hw_vsi_num(hw, vf_vsi->idx);
+ 
+ 	fd_size = rd32(hw, VSIQF_FD_SIZE(vsi_num));
 -- 
 2.35.1
 
