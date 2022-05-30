@@ -2,91 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A46F05375C3
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 09:47:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92E1153763A
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 10:13:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233862AbiE3HrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 03:47:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56870 "EHLO
+        id S232416AbiE3IHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 04:07:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232565AbiE3HrV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 03:47:21 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99B681A823
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 00:47:19 -0700 (PDT)
-Received: from [192.168.0.4] (ip5f5aeb6c.dynamic.kabel-deutschland.de [95.90.235.108])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 1423861EA1923;
-        Mon, 30 May 2022 09:47:18 +0200 (CEST)
-Message-ID: <ade6c030-b1c5-e359-7321-fa21310a10f3@molgen.mpg.de>
-Date:   Mon, 30 May 2022 09:47:17 +0200
+        with ESMTP id S230147AbiE3IHG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 04:07:06 -0400
+Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B1613FBC2;
+        Mon, 30 May 2022 01:07:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Tj+2x
+        aAcY6dalUpOJzC6dld8hSXl1LyIhtvLrJnzwZg=; b=G2nvkRL8UJQWrrTBpV3WZ
+        5YFO1arfhl1hIgRxGmzdR1lx5RDQUfUGDMEf4dKLIuCs/e2zVNU9yt4Zo1DC5NC8
+        kaZFOUHIEWfvn+ctFmTsdztfZM7YvbvauTEks6ER/dkBuNVm2Ot6rB4b5iNWSOrv
+        z5xEGHBmplGj7cUBFLr9a4=
+Received: from localhost.localdomain (unknown [123.112.69.106])
+        by smtp2 (Coremail) with SMTP id GtxpCgBXFQj0epRilgL9FQ--.40673S4;
+        Mon, 30 May 2022 16:06:33 +0800 (CST)
+From:   Jianglei Nie <niejianglei2021@163.com>
+To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     ath11k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jianglei Nie <niejianglei2021@163.com>
+Subject: [PATCH v2] ath11k: mhi: fix potential memory leak in ath11k_mhi_register()
+Date:   Mon, 30 May 2022 16:06:10 +0800
+Message-Id: <20220530080610.143925-1-niejianglei2021@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v3 3/3] igb_main: Assign random MAC address instead of
- fail in case of invalid one
-Content-Language: en-US
-To:     Lixue Liang <lianglixuehao@126.com>
-Cc:     anthony.l.nguyen@intel.com, intel-wired-lan@lists.osuosl.org,
-        jesse.brandeburg@intel.com, kuba@kernel.org,
-        lianglixue@greatwall.com.cn, netdev@vger.kernel.org
-References: <d50b23b1-38b5-2522-cbf4-c360c0ed05cd@molgen.mpg.de>
- <20220530031941.44006-1-lianglixuehao@126.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20220530031941.44006-1-lianglixuehao@126.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-CM-TRANSID: GtxpCgBXFQj0epRilgL9FQ--.40673S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7CF1Dtw1fGF4UZryxuFy8Xwb_yoW8KrW5pF
+        4fWw47AFyrAF4fWFWrtF1kJFy3Wa93Ar1DK39rG34rCrnavF90q345JFyrXFyakw4xGFyU
+        ZF4Ut3W3Gas8AF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pibo7AUUUUU=
+X-Originating-IP: [123.112.69.106]
+X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiFQkRjF5mK76qWwAAsd
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Lixue,
+mhi_alloc_controller() allocates a memory space for mhi_ctrl. When some
+errors occur, mhi_ctrl should be freed by mhi_free_controller() and set
+ab_pci->mhi_ctrl = NULL because ab_pci->mhi_ctrl has a dangling pointer
+to the freed memory. But when ath11k_mhi_read_addr_from_dt() fails, the
+function returns without calling mhi_free_controller(), which will lead
+to a memory leak.
 
-Am 30.05.22 um 05:19 schrieb Lixue Liang:
-> From: Lixue Liang <lianglixue@greatwall.com.cn>
-> 
-> In some cases, when the user uses igb_set_eeprom to modify the MAC
-> address to be invalid, the igb driver will fail to load. If there is no
-> network card device, the user must modify it to a valid MAC address by
-> other means.
-> 
-> Since the MAC address can be modified, then add a random valid MAC address
-> to replace the invalid MAC address in the driver can be workable, it can
-> continue to finish the loading, and output the relevant log reminder.
-> 
-> Signed-off-by: Lixue Liang <lianglixue@greatwall.com.cn>
-> ---
->   drivers/net/ethernet/intel/igb/igb_main.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index 746233befade..40f43534a3af 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -3362,7 +3362,7 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->   		eth_hw_addr_random(netdev);
->   		ether_addr_copy(hw->mac.addr, netdev->dev_addr);
->   		dev_err(&pdev->dev,
-> -			"Invalid MAC Address, already assigned random MAC Address\n");
-> +			"Invalid MAC address, already assigned random MAC address\n");
->   	}
->   
->   	igb_set_default_mac_filter(adapter);
+We can fix it by calling mhi_free_controller() when
+ath11k_mhi_read_addr_from_dt() fails and set ab_pci->mhi_ctrl = NULL in
+all of the places where we call mhi_free_controller().
 
-The diff does not do what is described in the commit message. I also 
-just noticed, that it was spelled “MAC Address” before, so it would be 
-fine for me if you send in this commit separately (but with the correct 
-commit message).
+Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+---
+ drivers/net/wireless/ath/ath11k/mhi.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
+index fc3524e83e52..fc1bbf91c58e 100644
+--- a/drivers/net/wireless/ath/ath11k/mhi.c
++++ b/drivers/net/wireless/ath/ath11k/mhi.c
+@@ -367,8 +367,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
+ 	ret = ath11k_mhi_get_msi(ab_pci);
+ 	if (ret) {
+ 		ath11k_err(ab, "failed to get msi for mhi\n");
+-		mhi_free_controller(mhi_ctrl);
+-		return ret;
++		goto free_controller;
+ 	}
+ 
+ 	if (!test_bit(ATH11K_PCI_FLAG_MULTI_MSI_VECTORS, &ab_pci->flags))
+@@ -377,7 +376,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
+ 	if (test_bit(ATH11K_FLAG_FIXED_MEM_RGN, &ab->dev_flags)) {
+ 		ret = ath11k_mhi_read_addr_from_dt(mhi_ctrl);
+ 		if (ret < 0)
+-			return ret;
++			goto free_controller;
+ 	} else {
+ 		mhi_ctrl->iova_start = 0;
+ 		mhi_ctrl->iova_stop = 0xFFFFFFFF;
+@@ -405,18 +404,22 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
+ 	default:
+ 		ath11k_err(ab, "failed assign mhi_config for unknown hw rev %d\n",
+ 			   ab->hw_rev);
+-		mhi_free_controller(mhi_ctrl);
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto free_controller;
+ 	}
+ 
+ 	ret = mhi_register_controller(mhi_ctrl, ath11k_mhi_config);
+ 	if (ret) {
+ 		ath11k_err(ab, "failed to register to mhi bus, err = %d\n", ret);
+-		mhi_free_controller(mhi_ctrl);
+-		return ret;
++		goto free_controller;
+ 	}
+ 
+ 	return 0;
++
++free_controller:
++	mhi_free_controller(mhi_ctrl);
++	ab_pci->mhi_ctrl = NULL;
++	return ret;
+ }
+ 
+ void ath11k_mhi_unregister(struct ath11k_pci *ab_pci)
+-- 
+2.25.1
 
-Kind regards,
-
-Paul
