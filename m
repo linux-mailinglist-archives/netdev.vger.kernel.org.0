@@ -2,46 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6D22537BB1
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:28:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C24D5537BD7
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:28:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236681AbiE3NZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 09:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57982 "EHLO
+        id S236849AbiE3NZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 09:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236673AbiE3NZF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:25:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA37782149;
-        Mon, 30 May 2022 06:25:03 -0700 (PDT)
+        with ESMTP id S236757AbiE3NZe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:25:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBDA384A23;
+        Mon, 30 May 2022 06:25:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 335EE60EA5;
-        Mon, 30 May 2022 13:25:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E53AC36AEA;
-        Mon, 30 May 2022 13:25:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6589B80D89;
+        Mon, 30 May 2022 13:25:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 923FCC385B8;
+        Mon, 30 May 2022 13:25:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917102;
-        bh=xCNAFf0u7cNDjeIALTJWkSUBwi3rQPoajxPJWvRR0CU=;
+        s=k20201202; t=1653917113;
+        bh=1Nut9CRMqLigdsqkyxIk7KKSPWoZoP6lmxG2cVbPM1g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WYnLLWSP9BiXf5YcJ7BrzDtCcR/FdLnv+C7nWOcdwVMYYGVmCi0qo0fZprxMU/EU7
-         g/JDZ56/i3ESKU3/2lHU7mmku4QBPavc0C+ElBtZE56KbrxnO2C7modY27nCO8U+Cc
-         3f0eaJ+pUvVegcX2I2X5EsB3unlt4oGbu7yTKzoQEhxmcXxK70I3o1vD41lJEuWPDR
-         3aXaG62TfHM9LnGTIabiTn8fs7LFZL6YkMfflDQuAyjs2qin6DX9ZCF4LeDI0XzX6r
-         5q7G2EYbyjWmc698ueVfxfmwzKilMusvBkqMAS7l4ZGWmynlONAo+4TGbeZExFnINQ
-         lFIal9xGI1oJg==
+        b=g2v1SeVN8R8UfgljPcqOpIBMblL1E3LV6PqfltTe0fjLQ38woNjZ4UVJF5jRqZVxt
+         pw76dXRafRDYn1d9MPWCmMRXe4XTj19JHt3KWpBFGgY+DJfUPcEWU6tK+/Zs6ESRf7
+         jUWowRpktGQTDvlNLxJnyQTAjkY8ogBIV2F0AuMrXJqdSbcg/rIzI7X2dS/VJ62W+F
+         U25U3gIEiMM83BqLuuRm1mDBw8BqyvwkHpAMGD06TaBYVGIhk+pT9QYXOCCzQbziNF
+         nEVSiOi5JcKaCBvbeYsLmO3JY2CvR2ZichGZeLPmwhPExUUry1cNYgXtOjEIq1OdT6
+         /DdxYc2eg5P9Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Niels Dossche <dossche.niels@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 016/159] ipv6: fix locking issues with loops over idev->addr_list
-Date:   Mon, 30 May 2022 09:22:01 -0400
-Message-Id: <20220530132425.1929512-16-sashal@kernel.org>
+Cc:     Runqing Yang <rainkin1993@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 020/159] libbpf: Fix a bug with checking bpf_probe_read_kernel() support in old kernels
+Date:   Mon, 30 May 2022 09:22:05 -0400
+Message-Id: <20220530132425.1929512-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -59,147 +57,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Runqing Yang <rainkin1993@gmail.com>
 
-[ Upstream commit 51454ea42c1ab4e0c2828bb0d4d53957976980de ]
+[ Upstream commit d252a4a499a07bec21c65873f605c3a1ef52ffed ]
 
-idev->addr_list needs to be protected by idev->lock. However, it is not
-always possible to do so while iterating and performing actions on
-inet6_ifaddr instances. For example, multiple functions (like
-addrconf_{join,leave}_anycast) eventually call down to other functions
-that acquire the idev->lock. The current code temporarily unlocked the
-idev->lock during the loops, which can cause race conditions. Moving the
-locks up is also not an appropriate solution as the ordering of lock
-acquisition will be inconsistent with for example mc_lock.
+Background:
+Libbpf automatically replaces calls to BPF bpf_probe_read_{kernel,user}
+[_str]() helpers with bpf_probe_read[_str](), if libbpf detects that
+kernel doesn't support new APIs. Specifically, libbpf invokes the
+probe_kern_probe_read_kernel function to load a small eBPF program into
+the kernel in which bpf_probe_read_kernel API is invoked and lets the
+kernel checks whether the new API is valid. If the loading fails, libbpf
+considers the new API invalid and replaces it with the old API.
 
-This solution adds an additional field to inet6_ifaddr that is used
-to temporarily add the instances to a temporary list while holding
-idev->lock. The temporary list can then be traversed without holding
-idev->lock. This change was done in two places. In addrconf_ifdown, the
-list_for_each_entry_safe variant of the list loop is also no longer
-necessary as there is no deletion within that specific loop.
+static int probe_kern_probe_read_kernel(void)
+{
+	struct bpf_insn insns[] = {
+		BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),	/* r1 = r10 (fp) */
+		BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),	/* r1 += -8 */
+		BPF_MOV64_IMM(BPF_REG_2, 8),		/* r2 = 8 */
+		BPF_MOV64_IMM(BPF_REG_3, 0),		/* r3 = 0 */
+		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_probe_read_kernel),
+		BPF_EXIT_INSN(),
+	};
+	int fd, insn_cnt = ARRAY_SIZE(insns);
 
-Suggested-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Link: https://lore.kernel.org/r/20220403231523.45843-1-dossche.niels@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+	fd = bpf_prog_load(BPF_PROG_TYPE_KPROBE, NULL,
+                           "GPL", insns, insn_cnt, NULL);
+	return probe_fd(fd);
+}
+
+Bug:
+On older kernel versions [0], the kernel checks whether the version
+number provided in the bpf syscall, matches the LINUX_VERSION_CODE.
+If not matched, the bpf syscall fails. eBPF However, the
+probe_kern_probe_read_kernel code does not set the kernel version
+number provided to the bpf syscall, which causes the loading process
+alwasys fails for old versions. It means that libbpf will replace the
+new API with the old one even the kernel supports the new one.
+
+Solution:
+After a discussion in [1], the solution is using BPF_PROG_TYPE_TRACEPOINT
+program type instead of BPF_PROG_TYPE_KPROBE because kernel does not
+enfoce version check for tracepoint programs. I test the patch in old
+kernels (4.18 and 4.19) and it works well.
+
+  [0] https://elixir.bootlin.com/linux/v4.19/source/kernel/bpf/syscall.c#L1360
+  [1] Closes: https://github.com/libbpf/libbpf/issues/473
+
+Signed-off-by: Runqing Yang <rainkin1993@gmail.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220409144928.27499-1-rainkin1993@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/if_inet6.h |  8 ++++++++
- net/ipv6/addrconf.c    | 30 ++++++++++++++++++++++++------
- 2 files changed, 32 insertions(+), 6 deletions(-)
+ tools/lib/bpf/libbpf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/if_inet6.h b/include/net/if_inet6.h
-index 4cfdef6ca4f6..c8490729b4ae 100644
---- a/include/net/if_inet6.h
-+++ b/include/net/if_inet6.h
-@@ -64,6 +64,14 @@ struct inet6_ifaddr {
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 809fe209cdcc..dabf9a1451c3 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -4587,7 +4587,7 @@ static int probe_kern_probe_read_kernel(void)
+ 	};
+ 	int fd, insn_cnt = ARRAY_SIZE(insns);
  
- 	struct hlist_node	addr_lst;
- 	struct list_head	if_list;
-+	/*
-+	 * Used to safely traverse idev->addr_list in process context
-+	 * if the idev->lock needed to protect idev->addr_list cannot be held.
-+	 * In that case, add the items to this list temporarily and iterate
-+	 * without holding idev->lock.
-+	 * See addrconf_ifdown and dev_forward_change.
-+	 */
-+	struct list_head	if_list_aux;
+-	fd = bpf_prog_load(BPF_PROG_TYPE_KPROBE, NULL, "GPL", insns, insn_cnt, NULL);
++	fd = bpf_prog_load(BPF_PROG_TYPE_TRACEPOINT, NULL, "GPL", insns, insn_cnt, NULL);
+ 	return probe_fd(fd);
+ }
  
- 	struct list_head	tmp_list;
- 	struct inet6_ifaddr	*ifpub;
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index b22504176588..1afc4c024981 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -797,6 +797,7 @@ static void dev_forward_change(struct inet6_dev *idev)
- {
- 	struct net_device *dev;
- 	struct inet6_ifaddr *ifa;
-+	LIST_HEAD(tmp_addr_list);
- 
- 	if (!idev)
- 		return;
-@@ -815,14 +816,24 @@ static void dev_forward_change(struct inet6_dev *idev)
- 		}
- 	}
- 
-+	read_lock_bh(&idev->lock);
- 	list_for_each_entry(ifa, &idev->addr_list, if_list) {
- 		if (ifa->flags&IFA_F_TENTATIVE)
- 			continue;
-+		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
-+	}
-+	read_unlock_bh(&idev->lock);
-+
-+	while (!list_empty(&tmp_addr_list)) {
-+		ifa = list_first_entry(&tmp_addr_list,
-+				       struct inet6_ifaddr, if_list_aux);
-+		list_del(&ifa->if_list_aux);
- 		if (idev->cnf.forwarding)
- 			addrconf_join_anycast(ifa);
- 		else
- 			addrconf_leave_anycast(ifa);
- 	}
-+
- 	inet6_netconf_notify_devconf(dev_net(dev), RTM_NEWNETCONF,
- 				     NETCONFA_FORWARDING,
- 				     dev->ifindex, &idev->cnf);
-@@ -3728,7 +3739,8 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
- 	unsigned long event = unregister ? NETDEV_UNREGISTER : NETDEV_DOWN;
- 	struct net *net = dev_net(dev);
- 	struct inet6_dev *idev;
--	struct inet6_ifaddr *ifa, *tmp;
-+	struct inet6_ifaddr *ifa;
-+	LIST_HEAD(tmp_addr_list);
- 	bool keep_addr = false;
- 	bool was_ready;
- 	int state, i;
-@@ -3820,16 +3832,23 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
- 		write_lock_bh(&idev->lock);
- 	}
- 
--	list_for_each_entry_safe(ifa, tmp, &idev->addr_list, if_list) {
-+	list_for_each_entry(ifa, &idev->addr_list, if_list)
-+		list_add_tail(&ifa->if_list_aux, &tmp_addr_list);
-+	write_unlock_bh(&idev->lock);
-+
-+	while (!list_empty(&tmp_addr_list)) {
- 		struct fib6_info *rt = NULL;
- 		bool keep;
- 
-+		ifa = list_first_entry(&tmp_addr_list,
-+				       struct inet6_ifaddr, if_list_aux);
-+		list_del(&ifa->if_list_aux);
-+
- 		addrconf_del_dad_work(ifa);
- 
- 		keep = keep_addr && (ifa->flags & IFA_F_PERMANENT) &&
- 			!addr_is_local(&ifa->addr);
- 
--		write_unlock_bh(&idev->lock);
- 		spin_lock_bh(&ifa->lock);
- 
- 		if (keep) {
-@@ -3860,15 +3879,14 @@ static int addrconf_ifdown(struct net_device *dev, bool unregister)
- 			addrconf_leave_solict(ifa->idev, &ifa->addr);
- 		}
- 
--		write_lock_bh(&idev->lock);
- 		if (!keep) {
-+			write_lock_bh(&idev->lock);
- 			list_del_rcu(&ifa->if_list);
-+			write_unlock_bh(&idev->lock);
- 			in6_ifa_put(ifa);
- 		}
- 	}
- 
--	write_unlock_bh(&idev->lock);
--
- 	/* Step 5: Discard anycast and multicast list */
- 	if (unregister) {
- 		ipv6_ac_destroy_dev(idev);
 -- 
 2.35.1
 
