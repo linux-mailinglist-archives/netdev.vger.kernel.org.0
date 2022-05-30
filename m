@@ -2,108 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C89E5388D5
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 00:18:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B84E538910
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 01:04:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240109AbiE3WSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 18:18:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56206 "EHLO
+        id S242821AbiE3XEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 19:04:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232789AbiE3WSu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 18:18:50 -0400
-Received: from smtp8.emailarray.com (smtp8.emailarray.com [65.39.216.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A5F873795
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 15:18:49 -0700 (PDT)
-Received: (qmail 86987 invoked by uid 89); 30 May 2022 22:18:46 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNw==) (POLARISLOCAL)  
-  by smtp8.emailarray.com with SMTP; 30 May 2022 22:18:46 -0000
-Date:   Mon, 30 May 2022 15:18:45 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, bcm-kernel-feedback-list@broadcom.com,
-        kernel-team@fb.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, richardcochran@gmail.com
+        with ESMTP id S242741AbiE3XEo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 19:04:44 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6581553A6E
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 16:04:43 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id 129so6940363pgc.2
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 16:04:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Wvsx9QOw3yKY3DiRpplNW+C33EXyoaZ7VSxWs8/Uvyk=;
+        b=TklPa8OkLrZVPTjtJUc3CF3PwrSBCZoa3Pk2AgZiDu7qGmRTZZeCH9riyvhku4/B/d
+         6T+dCWLbDDUUqr19ZjaoZCU/NXFyuxVrpsHwMvte8+MnIlB0qNv7sqhBHJLyj+c73FEt
+         qwZlmD0IBKNJws+Qep9dkx57Pjwox42IldMBtv51FC4lZRWFJ6Bh+l/ABpA11mhomi6L
+         Jl+vO54A0VAO20mtOO+sxvGPbKCn1ZWfVJnKvswG8xTfS5VC2hhNTDSyjdhTtF0qEopE
+         2WA1Hw4NCTRhDhr6B/gqj+AfDLzvb8OuvnBFOovcprw//jbqvARnwfMFXH69VyoXUBJx
+         K/lA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Wvsx9QOw3yKY3DiRpplNW+C33EXyoaZ7VSxWs8/Uvyk=;
+        b=Qhbt/I57rCzrZA3d0MJBZ4tDIn3mZF28LjUrMW2UI4unqQ/nXpJ914gmmQydI99rme
+         MGBvlFy0Rk3g1IVjD5X9eAtxbIp02qp1xGBLZMGrJqEjb76YKzRNnLZLUBLurgSPH+s7
+         BP9tBn49RC0GX0X2wJwlU7upALBo+MVYmErbx06/W572n+i819TPBRW+fDmjvstyZCvy
+         OOVJq36B8525HROV1Il4MILUXQQ4UPq8bgLcv1Xmea+xcIVJIFl/5783L8qc2qylt5Uz
+         kfgtbcn1/D0p9AH61lQo+dbujAXM5HM+3vEb3O4EKwLf7zs522IE0oToIz6ZsUIRiVPc
+         rWEA==
+X-Gm-Message-State: AOAM533142+h0PA9WJKVMq07VO3CXph9lo/0WZeTmb5gpNxrBB7uIyQS
+        +7ulrL2wIgR7yjd8iSMOs3k=
+X-Google-Smtp-Source: ABdhPJyirqQ/Dhafaj8hSDoggSfKjcfkMqg7Ir+dk/Y1f+sVG7CXJ0k+6AjAZLDiOGGlF5pz0+38fg==
+X-Received: by 2002:a63:a06:0:b0:3c2:3345:bf99 with SMTP id 6-20020a630a06000000b003c23345bf99mr50311969pgk.477.1653951882899;
+        Mon, 30 May 2022 16:04:42 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id q6-20020a170902f78600b001635c9e7f77sm9740181pln.57.2022.05.30.16.04.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 16:04:42 -0700 (PDT)
+Date:   Mon, 30 May 2022 16:04:39 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux@armlinux.org.uk,
+        bcm-kernel-feedback-list@broadcom.com, kernel-team@fb.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
 Subject: Re: [PATCH net-next v5 2/2] net: phy: broadcom: Add PTP support for
  some Broadcom PHYs.
-Message-ID: <20220530221845.r4pf7pyu2pabzqi5@bsd-mbp.dhcp.thefacebook.com>
+Message-ID: <20220530230439.GA22405@hoboy.vegasvil.org>
 References: <20220518223935.2312426-1-jonathan.lemon@gmail.com>
  <20220518223935.2312426-3-jonathan.lemon@gmail.com>
- <f5963ddb-01bb-6935-ecdd-0f9e7c0afda0@gmail.com>
- <20220521020456.fkgx7s5ymtxd5y2q@bsd-mbp.local>
- <dd55b6ce-204e-557b-ef70-1c91f80e5f8d@gmail.com>
+ <20220529003447.GA32026@hoboy.vegasvil.org>
+ <20220530170744.zs6urci5lcytl2j4@bsd-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <dd55b6ce-204e-557b-ef70-1c91f80e5f8d@gmail.com>
-X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,
-        SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=no
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220530170744.zs6urci5lcytl2j4@bsd-mbp.dhcp.thefacebook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 22, 2022 at 07:49:20PM -0700, Florian Fainelli wrote:
-> 
-> 
-> On 5/20/2022 7:04 PM, Jonathan Lemon wrote:
-> > On Fri, May 20, 2022 at 10:24:25AM -0700, Florian Fainelli wrote:
-> > > 
-> > > 
-> > > On 5/18/2022 3:39 PM, Jonathan Lemon wrote:
-> > > > This adds PTP support for BCM54210E Broadcom PHYs, in particular,
-> > > > the BCM54213PE, as used in the Rasperry PI CM4.  It has only been
-> > > > tested on that hardware.
-> > > > 
-> > > > Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> > > > ---
-> > > [snip]
-> > > 
-> > > Looks good to me, just one question below:
-> > > 
-> > > > +static void bcm_ptp_init(struct bcm_ptp_private *priv)
-> > > > +{
-> > > > +	priv->nse_ctrl = NSE_GMODE_EN;
-> > > > +
-> > > > +	mutex_init(&priv->mutex);
-> > > > +	skb_queue_head_init(&priv->tx_queue);
-> > > > +
-> > > > +	priv->mii_ts.rxtstamp = bcm_ptp_rxtstamp;
-> > > > +	priv->mii_ts.txtstamp = bcm_ptp_txtstamp;
-> > > > +	priv->mii_ts.hwtstamp = bcm_ptp_hwtstamp;
-> > > > +	priv->mii_ts.ts_info = bcm_ptp_ts_info;
-> > > > +
-> > > > +	priv->phydev->mii_ts = &priv->mii_ts;
-> > > > +
-> > > > +	INIT_DELAYED_WORK(&priv->out_work, bcm_ptp_fsync_work);
-> > > 
-> > > Do we need to make sure that we cancel the workqueue in an bcm_ptp_exit()
-> > > function?
-> > > 
-> > > I would imagine that the Ethernet MAC attached to that PHY device having
-> > > stopped its receiver and transmitter should ensure no more packets coming in
-> > > or out, however since this is a delayed/asynchronous work, do not we need to
-> > > protect against use after free?
+On Mon, May 30, 2022 at 10:07:44AM -0700, Jonathan Lemon wrote:
+> On Sat, May 28, 2022 at 05:34:47PM -0700, Richard Cochran wrote:
+> > On Wed, May 18, 2022 at 03:39:35PM -0700, Jonathan Lemon wrote:
 > > 
-> > The workqueue is just mamually creatimg a 1PPS pulse on the SYNC_OUT
-> > pin, no packet activity.  Arguably, the .suspend hook could stop all work,
-> > but that seems out of scope here? (and this phy does not suspend/resume)
+> > > +static int bcm_ptp_adjtime_locked(struct bcm_ptp_private *priv,
+> > > +				  s64 delta_ns)
+> > > +{
+> > > +	struct timespec64 ts;
+> > > +	int err;
+> > > +
+> > > +	err = bcm_ptp_gettime_locked(priv, &ts, NULL);
+> > > +	if (!err) {
+> > > +		set_normalized_timespec64(&ts, ts.tv_sec,
+> > > +					  ts.tv_nsec + delta_ns);
+> > 
+> > This also takes a LONG time when delta is large...
 > 
-> The BCM54210E entry does have a suspend/resume entry so it seems to me that
-> we do need to cancel the workqueue as the PHY library will not do that on
-> our behalf. What I imagine could happen is that this workqueue generates
-> spurious MDIO accesses *after* both the PHY and the bus have been suspended
-> (and their driver's clock possibly gated already).
+> Didn't we just go through this?  What constitutes a "large" offset here?
+> The current version seems acceptable to me:
 
-Yes, you're right.  I was looking at the rpi-5.15.y tree, which doesn't
-have these hooks yet.  I'll add a call to stop the workqueue.
+When the PHY boots, it starts from time zero.
 
-Actually, in the next series, I'll break out the extts/perout into
-separate patch.
+Then as a client it needs to adjust to today, something like:
 
-Thanks for pointing this out!
--- 
-Jonathan
+1653951762.413809006 or Mon May 30 16:02:42 2022
+
+(that means adding 1,653,951,762,413,809,006 nanoseconds)
+
+Try that and see how long it takes to apply the adjustment.
+
+Thanks,
+Richard
