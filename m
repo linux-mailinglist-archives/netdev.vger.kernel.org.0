@@ -2,91 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7278537928
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:37:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29D4953793D
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:43:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234352AbiE3Khm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 06:37:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50130 "EHLO
+        id S234835AbiE3KnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 06:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiE3Khk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 06:37:40 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36583101DB;
-        Mon, 30 May 2022 03:37:38 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 81D19205D2;
-        Mon, 30 May 2022 12:37:35 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id yqTvz7IRuTuA; Mon, 30 May 2022 12:37:35 +0200 (CEST)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 0DBF82057A;
-        Mon, 30 May 2022 12:37:35 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id 083F180004A;
-        Mon, 30 May 2022 12:37:35 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+        with ESMTP id S232909AbiE3KnX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 06:43:23 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26637092E;
+        Mon, 30 May 2022 03:43:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1653907399; x=1685443399;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=YrCrnhgDpbAXZ+YGdyDdS831L42HGMFSh6WqeHNqCo8=;
+  b=DCuh0WKGm4pnXiSGXaxjL5IzDpY4OQ1Q95+7MWOJ9u4ZTK5HkeXgIU4U
+   EY6OsxKfh1dTuDs4KAqHrat7eQrgUkka14NE4W029XVP1vnlzkpAYQKsJ
+   pBtGoDNKp/1Yt0UJWdZGfyMhv8NxT1spiYhQGuyvMW2g2gr7lM01Av6va
+   QHuNaprDRJMaJn40CTVOqmsTbOrkAyEgCOL6EzYYSuHcjXxYPDz7feEQb
+   5JE6G6XeQZ1/zuHZfq65kzSA9RnD6RQ95ifP2tg55D6DZi2KI0CtZ5hcw
+   ry2djibeZ+pXy+glEjanxjdGVnblnKe8ZjvUxvyYdVqfm00qTkTr6G+KR
+   w==;
+X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
+   d="scan'208";a="97812686"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 May 2022 03:43:18 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 30 May 2022 12:37:34 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 30 May
- 2022 12:37:34 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 373283182D2D; Mon, 30 May 2022 12:37:34 +0200 (CEST)
-Date:   Mon, 30 May 2022 12:37:34 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Hangyu Hua <hbh25y@gmail.com>
-CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] xfrm: xfrm_input: fix a possible memory leak in
- xfrm_input()
-Message-ID: <20220530103734.GD2517843@gauss3.secunet.de>
-References: <20220530102046.41249-1-hbh25y@gmail.com>
+ 15.1.2375.17; Mon, 30 May 2022 03:43:18 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 30 May 2022 03:43:13 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Woojung Huh <woojung.huh@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Russell King" <linux@armlinux.org.uk>
+Subject: [RFC Patch net-next v2 00/15] net: dsa: microchip: common spi probe for the ksz series switches
+Date:   Mon, 30 May 2022 16:12:42 +0530
+Message-ID: <20220530104257.21485-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220530102046.41249-1-hbh25y@gmail.com>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 30, 2022 at 06:20:46PM +0800, Hangyu Hua wrote:
-> xfrm_input needs to handle skb internally. But skb is not freed When
-> xo->flags & XFRM_GRO == 0 and decaps == 0.
-> 
-> Fixes: 7785bba299a8 ("esp: Add a software GRO codepath")
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-> ---
->  net/xfrm/xfrm_input.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-> index 144238a50f3d..6f9576352f30 100644
-> --- a/net/xfrm/xfrm_input.c
-> +++ b/net/xfrm/xfrm_input.c
-> @@ -742,7 +742,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
->  			gro_cells_receive(&gro_cells, skb);
->  			return err;
->  		}
-> -
-> +		kfree_skb(skb);
->  		return err;
->  	}
+This patch series aims to refactor the ksz_switch_register routine to have the
+common flow for the ksz series switch. At present ksz8795.c & ksz9477.c have
+its own dsa_switch_ops and switch detect functionality.
+In ksz_switch_register, ksz_dev_ops is assigned based on the function parameter
+passed by the individual ksz8/ksz9477 switch register function. And then switch
+detect is performed based on the ksz_dev_ops.detect hook.  This patch modifies
+the ksz_switch_register such a way that switch detect is performed first, based
+on the chip ksz_dev_ops is assigned to ksz_device structure. It ensures the
+common flow for the existing as well as LAN937x switches.
+It also replaces the individual dsa_switch_ops structure to common
+dsa_switch_ops in the ksz_common.  Based on the ksz_dev_ops hook pointer,
+particular functionality for the switches may or may not executed.
+Finally replaces the two spi probes such as ksz8795_spi.c and ksz9477_spi.c to
+common ksz_spi.c. These switches have different regmap config and it is
+differentited using the of_device_id data.
 
-Did you test this? The function behind the 'afinfo->the transport_finish()'
-pointer handles this skb and frees it in that case.
+Changes in RFC v2
+- Fixed the compilation issue.
+- Reduced the patch set to 15.
+
+Arun Ramadoss (15):
+  net: dsa: microchip: ksz9477: cleanup the ksz9477_switch_detect
+  net: dsa: microchip: move switch chip_id detection to ksz_common
+  net: dsa: microchip: move tag_protocol & phy read/write to ksz_common
+  net: dsa: microchip: move vlan functionality to ksz_common
+  net: dsa: microchip: move the port mirror to ksz_common
+  net: dsa: microchip: get P_STP_CTRL in ksz_port_stp_state by
+    ksz_dev_ops
+  net: dsa: microchip: update the ksz_phylink_get_caps
+  net: dsa: microchip: update the ksz_port_mdb_add/del
+  net: dsa: microchip: update fdb add/del/dump in ksz_common
+  net: dsa: microchip: move the setup, get_phy_flags & mtu to ksz_common
+  net: dsa: microchip: common dsa_switch_ops for ksz switches
+  net: dsa: microchip: ksz9477: separate phylink mode from switch
+    register
+  net: dsa: microchip: common menuconfig for ksz series switch
+  net: dsa: microchip: move ksz_dev_ops to ksz_common.c
+  net: dsa: microchip: common ksz_spi_probe for ksz switches
+
+ drivers/net/dsa/microchip/Kconfig             |  42 +-
+ drivers/net/dsa/microchip/Makefile            |  10 +-
+ drivers/net/dsa/microchip/ksz8.h              |  46 ++
+ drivers/net/dsa/microchip/ksz8795.c           | 309 +++++------
+ drivers/net/dsa/microchip/ksz8795_reg.h       |  13 -
+ drivers/net/dsa/microchip/ksz8863_smi.c       |   2 +-
+ drivers/net/dsa/microchip/ksz9477.c           | 225 ++------
+ drivers/net/dsa/microchip/ksz9477.h           |  58 ++
+ drivers/net/dsa/microchip/ksz9477_i2c.c       |   2 +-
+ drivers/net/dsa/microchip/ksz9477_reg.h       |   1 -
+ drivers/net/dsa/microchip/ksz9477_spi.c       | 150 -----
+ drivers/net/dsa/microchip/ksz_common.c        | 521 +++++++++++++-----
+ drivers/net/dsa/microchip/ksz_common.h        |  91 +--
+ .../microchip/{ksz8795_spi.c => ksz_spi.c}    |  85 ++-
+ 14 files changed, 821 insertions(+), 734 deletions(-)
+ create mode 100644 drivers/net/dsa/microchip/ksz9477.h
+ delete mode 100644 drivers/net/dsa/microchip/ksz9477_spi.c
+ rename drivers/net/dsa/microchip/{ksz8795_spi.c => ksz_spi.c} (61%)
+
+-- 
+2.36.1
+
