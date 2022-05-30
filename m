@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1C275381CE
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:33:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1242E538146
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:29:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240620AbiE3OT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:19:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40158 "EHLO
+        id S239714AbiE3OTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:19:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241390AbiE3ORd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:17:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593A58FFAE;
-        Mon, 30 May 2022 06:46:06 -0700 (PDT)
+        with ESMTP id S241407AbiE3ORe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:17:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6A59C2D9;
+        Mon, 30 May 2022 06:46:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B3C5B80D89;
-        Mon, 30 May 2022 13:46:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82C0CC3411A;
-        Mon, 30 May 2022 13:46:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BF4DF60F38;
+        Mon, 30 May 2022 13:46:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16972C385B8;
+        Mon, 30 May 2022 13:46:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918363;
-        bh=YjcHEhCxy8AQgAgWf5d6Py/JLOr5IKgh0bz0IGQIrzc=;
+        s=k20201202; t=1653918385;
+        bh=GcjfrhzQCxc1EVuTfPY07sfSOpXv/e8b2AKb9LNl33w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bF4YDI83Mi95WcUNiuxvx8CpC4lkVaQm28dwC2KGozZ9BHnir5Joz/DGNIIjCeaKt
-         aSxFN2+r0SyI3nzGd+XQLVgDTNptEPOrCqoomQEBKoH2X4w8QzgVXq4VWtHMrj2G2r
-         +KGfFmByibTxeL/M/L4LVEfgKFE8lg2R+FUCJQWLAIPlV6M+JGLltvlO0sYPTlYpLl
-         JyeXf2lns/ySps2PWg3ZQSVd+UO3fZ/KUXmaeo/FGUs9EHgUFamvAUWv2lmINqswzd
-         cXRJzFvcTLP+HzGI5knkpuAu4Lzj/qhWkzMMVlByE6BOxcOwSnOHu/RKZTtPm8usgr
-         TmjT2o/fSZPag==
+        b=jqT94D2Jzbjaw18MWI83JBVVTFsPfU/U5b8hRPggtzO0aijlp05AjF75eW4sZ9q3N
+         HppnoG6oeOimw0xIU7gt2DdhVLoS/U05Il4RV2F+rUDuy+IR52qj7rvpCDPn2OTspE
+         MnTtmwYHPjiSIbjH/jFEKU3qq1LSkhdwrMxnGzE058Isme9+TydAS65RqceyjS/dVa
+         ZvswFQjOn01g4GYafvWljaqouZj4hdDWMLxVD37c1cdCfILJO1atHPFL/0GQ0cjj5s
+         rDtuUTNApiJlRWLIVtqSzl+7vWski01po+tqEwVfpUSiK3MDk2bawQGimmbJfAvcSE
+         wYXL4It9BNDpg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzkaller <syzkaller@googlegroups.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        pkshih@realtek.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+Cc:     Fabio Estevam <festevam@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 54/76] rtlwifi: Use pr_warn instead of WARN_ONCE
-Date:   Mon, 30 May 2022 09:43:44 -0400
-Message-Id: <20220530134406.1934928-54-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 63/76] net: phy: micrel: Allow probing without .driver_data
+Date:   Mon, 30 May 2022 09:43:53 -0400
+Message-Id: <20220530134406.1934928-63-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
 References: <20220530134406.1934928-1-sashal@kernel.org>
@@ -59,37 +58,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Fabio Estevam <festevam@denx.de>
 
-[ Upstream commit ad732da434a2936128769216eddaece3b1af4588 ]
+[ Upstream commit f2ef6f7539c68c6bd6c32323d8845ee102b7c450 ]
 
-This memory allocation failure can be triggered by fault injection or
-high pressure testing, resulting a WARN.
+Currently, if the .probe element is present in the phy_driver structure
+and the .driver_data is not, a NULL pointer dereference happens.
 
-Fix this by replacing WARN with pr_warn.
+Allow passing .probe without .driver_data by inserting NULL checks
+for priv->type.
 
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220511014453.1621366-1-dzm91@hust.edu.cn
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220513114613.762810-1-festevam@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtlwifi/usb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/phy/micrel.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
-index 06e073defad6..c6e4fda7e431 100644
---- a/drivers/net/wireless/realtek/rtlwifi/usb.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
-@@ -1015,7 +1015,7 @@ int rtl_usb_probe(struct usb_interface *intf,
- 	hw = ieee80211_alloc_hw(sizeof(struct rtl_priv) +
- 				sizeof(struct rtl_usb_priv), &rtl_ops);
- 	if (!hw) {
--		WARN_ONCE(true, "rtl_usb: ieee80211 alloc failed\n");
-+		pr_warn("rtl_usb: ieee80211 alloc failed\n");
- 		return -ENOMEM;
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index 92e94ac94a34..bbbe198f83e8 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -283,7 +283,7 @@ static int kszphy_config_reset(struct phy_device *phydev)
+ 		}
  	}
- 	rtlpriv = hw->priv;
+ 
+-	if (priv->led_mode >= 0)
++	if (priv->type && priv->led_mode >= 0)
+ 		kszphy_setup_led(phydev, priv->type->led_mode_reg, priv->led_mode);
+ 
+ 	return 0;
+@@ -299,10 +299,10 @@ static int kszphy_config_init(struct phy_device *phydev)
+ 
+ 	type = priv->type;
+ 
+-	if (type->has_broadcast_disable)
++	if (type && type->has_broadcast_disable)
+ 		kszphy_broadcast_disable(phydev);
+ 
+-	if (type->has_nand_tree_disable)
++	if (type && type->has_nand_tree_disable)
+ 		kszphy_nand_tree_disable(phydev);
+ 
+ 	return kszphy_config_reset(phydev);
+@@ -1112,7 +1112,7 @@ static int kszphy_probe(struct phy_device *phydev)
+ 
+ 	priv->type = type;
+ 
+-	if (type->led_mode_reg) {
++	if (type && type->led_mode_reg) {
+ 		ret = of_property_read_u32(np, "micrel,led-mode",
+ 				&priv->led_mode);
+ 		if (ret)
+@@ -1133,7 +1133,8 @@ static int kszphy_probe(struct phy_device *phydev)
+ 		unsigned long rate = clk_get_rate(clk);
+ 		bool rmii_ref_clk_sel_25_mhz;
+ 
+-		priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
++		if (type)
++			priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
+ 		rmii_ref_clk_sel_25_mhz = of_property_read_bool(np,
+ 				"micrel,rmii-reference-clock-select-25-mhz");
+ 
 -- 
 2.35.1
 
