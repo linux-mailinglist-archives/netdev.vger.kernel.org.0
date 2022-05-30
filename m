@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BED3A537852
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:06:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FB425377ED
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:05:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234702AbiE3JNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 05:13:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36268 "EHLO
+        id S234706AbiE3JON (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 05:14:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234695AbiE3JNy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 05:13:54 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D0778EFF
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 02:13:53 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id q18so9785514pln.12
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 02:13:53 -0700 (PDT)
+        with ESMTP id S234722AbiE3JOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 05:14:04 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AF77A478
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 02:14:00 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id bo5so10084173pfb.4
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 02:14:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JNP+R0ohcLUjNtDJRZoqQVoepX4pDHJ5Tzsqw/Ip/us=;
-        b=1zsRDNM7+bOnSAXrGT8GTnB+LPiaiWeULGvPDxnh8ygbaIBhoXtWi5qIMtlR+0jVC3
-         mCvGt4XP1HvP05Ke+93gP1wyUTIWPC8TqTkPUCoiPi8wDLv8QUjVuAY9G0wfAwfbjglm
-         NoKvGVb3RhJ+KbFn1b/3H6xRut1xSH5jjCVxn04Hu4IuhaomW+hHiu/5rI8BZ8F3q5pX
-         eBlK0Kq1pBmWUk7cwGnPfxh4Z4PAB1MyZytQjrashWTXpKvEnWe8/jjjhSVvNtkcdGZ2
-         VnvSXj+wY3xyfzW3dI1WBCB648rq6dK65QaH+KQdProsmF9O+QYp5Geg7zOqauaANpg9
-         6iUA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=/aO+jf2mfum2lozA0/bk+POhUodk65js+sUsVeQ8jAE=;
+        b=LerkZnf5CPpcI69vtjO3F6lQ4rhXQ+cOQmDDyWyj2YYT806h3QAsMTVXZ5jUDA4sEs
+         PaZ5oasFyx3OENvqoKZEyFzBI2xSzsreqBICLaHaube0AQ00n7StTn1hiSm5vuJStgAM
+         sFC3meol5yFCSuW8wbvJMvKdcuWgTzDH18g6OXN0bO8e3AjY0hpxAj5l2NlNeZRKgGFT
+         zrd+ZPUagBdzqto2bspQKnISbjkTsciJxhbdPn2UPqPdgQSqEi1vKYoboJrs7sm949nY
+         obUwt+/Dx9Yj6zTyZNbySi3c7+qryxLK3vMY/HJb6VuEmbCEMeMh20YgqM3T69cb1ADc
+         Mtpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JNP+R0ohcLUjNtDJRZoqQVoepX4pDHJ5Tzsqw/Ip/us=;
-        b=VLdhhiUCmr7AFADqmAfGfMLk7qDoot6wl2lF6KGtNhW4b2Tr3awTHKA+Mg69VBS2qq
-         Xt0Kaw+CM+u7csQ09+F7FY/CRvWliKIHYhCJjfjL9QODzM/LpQr4r6oPyzsBVcY3QBwa
-         Dlqg4Sj0lC99jG04g2zQgc74fRqNRC7EH1VosJnCOvzQ6gx2rV2G4AZojTDnaUoBdyLD
-         eXVw96q+86nL5Jvyc0uaVLSmgX61l5hM7xyjmPCfRbILrcc3wEjTE/HJfuyyVDSdtAUc
-         O+dtYsRqu+AYpIeaOarzmYaUZW6yUI01Z/zMjqS0zbIYwEUFUtRZPKIR8sMRkps3/oYT
-         fyig==
-X-Gm-Message-State: AOAM530WcX8yoFEB+++Lp2QKqlKeyizufTUbTwx0LLnJizlR2Py15cVC
-        lg5Gg6z+fGxVL9kfwSnkFvKO7Q==
-X-Google-Smtp-Source: ABdhPJy6/T1nAe2l6F6QTn/YqY4r78bM0hS6jGpWftKdzqrtiEzTF325nNWOg/9YtvKgUD7qLfn7Yw==
-X-Received: by 2002:a17:903:22cc:b0:162:4d8b:e2eb with SMTP id y12-20020a17090322cc00b001624d8be2ebmr29890361plg.22.1653902032530;
-        Mon, 30 May 2022 02:13:52 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=/aO+jf2mfum2lozA0/bk+POhUodk65js+sUsVeQ8jAE=;
+        b=2mj+TWRNX7QBO41yu7uK2QjevAGiqSeHAsF15Eral1HTP2MKgr+yQMS90RfnAF6zJf
+         N4eBri4KsuLRoMmHz6UB4xFgT2yLBPPd5pp8c2gThgGDMotl5oFpt9nyNciE/RDvcygM
+         9g4rR4JKGbkiOge0HJcuv9PTvKOqhWzz0u8Tk7ZRBinmf9sEnOBvL0PbK0F/p/MuUiBS
+         QebPzh0HTZBnBQisiP/2lmSpXc2Ks/4agsl3xOwCLJnRqvbr38WPCvf8UsFYKdEq163H
+         LnVOlqz3hxXztRgTbmZ1MKT0dkD7M/quUpZkl6PMGlR1UUZEwVW6MBL8HGyHXZA4hs+3
+         YbSA==
+X-Gm-Message-State: AOAM532XBpFa3H2qmNkZxGHB6s1dALR5Ce1PkWDTjU+bSUJxCt5HxuAH
+        viNgEv6V2N2qAWFDF7gm8cGZi8ScVrAVeBcl
+X-Google-Smtp-Source: ABdhPJyDwEZ/st38zGBwvrBthGjm2ezoOPEupdzo52oUsJnsJQ8bGkTrwFDGrWJxt5nucW0E2pakXA==
+X-Received: by 2002:a63:9044:0:b0:3fa:27bf:448c with SMTP id a65-20020a639044000000b003fa27bf448cmr34298392pge.131.1653902039733;
+        Mon, 30 May 2022 02:13:59 -0700 (PDT)
 Received: from C02F52LSML85.bytedance.net ([139.177.225.225])
-        by smtp.gmail.com with ESMTPSA id p2-20020a170902ebc200b0015e8d4eb20dsm8640644plg.87.2022.05.30.02.13.45
+        by smtp.gmail.com with ESMTPSA id p2-20020a170902ebc200b0015e8d4eb20dsm8640644plg.87.2022.05.30.02.13.53
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 30 May 2022 02:13:52 -0700 (PDT)
+        Mon, 30 May 2022 02:13:59 -0700 (PDT)
 From:   Feng zhou <zhoufeng.zf@bytedance.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
@@ -56,10 +56,12 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         songmuchun@bytedance.com, wangdongdong.6@bytedance.com,
         cong.wang@bytedance.com, zhouchengming@bytedance.com,
         zhoufeng.zf@bytedance.com
-Subject: [PATCH v3 0/2] Optimize performance of update hash-map when free is zero
-Date:   Mon, 30 May 2022 17:13:38 +0800
-Message-Id: <20220530091340.53443-1-zhoufeng.zf@bytedance.com>
+Subject: [PATCH v3 1/2] bpf: avoid grabbing spin_locks of all cpus when no free elems
+Date:   Mon, 30 May 2022 17:13:39 +0800
+Message-Id: <20220530091340.53443-2-zhoufeng.zf@bytedance.com>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+In-Reply-To: <20220530091340.53443-1-zhoufeng.zf@bytedance.com>
+References: <20220530091340.53443-1-zhoufeng.zf@bytedance.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -74,45 +76,262 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Feng Zhou <zhoufeng.zf@bytedance.com>
 
-We encountered bad case on big system with 96 CPUs that
-alloc_htab_elem() would last for 1ms. The reason is that after the
-prealloc hashtab has no free elems, when trying to update, it will still
-grab spin_locks of all cpus. If there are multiple update users, the
-competition is very serious.
+This patch add is_empty in pcpu_freelist_head to check freelist
+having free or not. If having, grab spin_lock, or check next cpu's
+freelist.
 
-0001: Add is_empty to check whether the free list is empty or not before taking
-the lock.
-0002: Add benchmark to reproduce this worst case.
+Before patch: hash_map performance
+./map_perf_test 1
+0:hash_map_perf pre-alloc 975345 events per sec
+4:hash_map_perf pre-alloc 855367 events per sec
+12:hash_map_perf pre-alloc 860862 events per sec
+8:hash_map_perf pre-alloc 849561 events per sec
+3:hash_map_perf pre-alloc 849074 events per sec
+6:hash_map_perf pre-alloc 847120 events per sec
+10:hash_map_perf pre-alloc 845047 events per sec
+5:hash_map_perf pre-alloc 841266 events per sec
+14:hash_map_perf pre-alloc 849740 events per sec
+2:hash_map_perf pre-alloc 839598 events per sec
+9:hash_map_perf pre-alloc 838695 events per sec
+11:hash_map_perf pre-alloc 845390 events per sec
+7:hash_map_perf pre-alloc 834865 events per sec
+13:hash_map_perf pre-alloc 842619 events per sec
+1:hash_map_perf pre-alloc 804231 events per sec
+15:hash_map_perf pre-alloc 795314 events per sec
 
-Changelog:
-v2->v3: Addressed comments from Alexei Starovoitov, Andrii Nakryiko.
-- Adjust the way the benchmark is tested.
-- Adjust the code format.
-some details in here:
-https://lore.kernel.org/all/20220524075306.32306-1-zhoufeng.zf@bytedance.com/T/
+hash_map the worst: no free
+./map_perf_test 2048
+6:worse hash_map_perf pre-alloc 28628 events per sec
+5:worse hash_map_perf pre-alloc 28553 events per sec
+11:worse hash_map_perf pre-alloc 28543 events per sec
+3:worse hash_map_perf pre-alloc 28444 events per sec
+1:worse hash_map_perf pre-alloc 28418 events per sec
+7:worse hash_map_perf pre-alloc 28427 events per sec
+13:worse hash_map_perf pre-alloc 28330 events per sec
+14:worse hash_map_perf pre-alloc 28263 events per sec
+9:worse hash_map_perf pre-alloc 28211 events per sec
+15:worse hash_map_perf pre-alloc 28193 events per sec
+12:worse hash_map_perf pre-alloc 28190 events per sec
+10:worse hash_map_perf pre-alloc 28129 events per sec
+8:worse hash_map_perf pre-alloc 28116 events per sec
+4:worse hash_map_perf pre-alloc 27906 events per sec
+2:worse hash_map_perf pre-alloc 27801 events per sec
+0:worse hash_map_perf pre-alloc 27416 events per sec
+3:worse hash_map_perf pre-alloc 28188 events per sec
 
-v1->v2: Addressed comments from Alexei Starovoitov.
-- add a benchmark to reproduce the issue.
-- Adjust the code format that avoid adding indent.
-some details in here:
-https://lore.kernel.org/all/877ac441-045b-1844-6938-fcaee5eee7f2@bytedance.com/T/
+ftrace trace
 
-Feng Zhou (2):
-  bpf: avoid grabbing spin_locks of all cpus when no free elems
-  selftest/bpf/benchs: Add bpf_map benchmark
+0)               |  htab_map_update_elem() {
+0)   0.198 us    |    migrate_disable();
+0)               |    _raw_spin_lock_irqsave() {
+0)   0.157 us    |      preempt_count_add();
+0)   0.538 us    |    }
+0)   0.260 us    |    lookup_elem_raw();
+0)               |    alloc_htab_elem() {
+0)               |      __pcpu_freelist_pop() {
+0)               |        _raw_spin_lock() {
+0)   0.152 us    |          preempt_count_add();
+0)   0.352 us    |          native_queued_spin_lock_slowpath();
+0)   1.065 us    |        }
+		 |	  ...
+0)               |        _raw_spin_unlock() {
+0)   0.254 us    |          preempt_count_sub();
+0)   0.555 us    |        }
+0) + 25.188 us   |      }
+0) + 25.486 us   |    }
+0)               |    _raw_spin_unlock_irqrestore() {
+0)   0.155 us    |      preempt_count_sub();
+0)   0.454 us    |    }
+0)   0.148 us    |    migrate_enable();
+0) + 28.439 us   |  }
 
- kernel/bpf/percpu_freelist.c                  | 28 +++++-
- kernel/bpf/percpu_freelist.h                  |  1 +
- tools/testing/selftests/bpf/Makefile          |  4 +-
- tools/testing/selftests/bpf/bench.c           |  2 +
- .../benchs/bench_bpf_hashmap_full_update.c    | 96 +++++++++++++++++++
- .../run_bench_bpf_hashmap_full_update.sh      | 11 +++
- .../bpf/progs/bpf_hashmap_full_update_bench.c | 40 ++++++++
- 7 files changed, 178 insertions(+), 4 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/benchs/bench_bpf_hashmap_full_update.c
- create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_bpf_hashmap_full_update.sh
- create mode 100644 tools/testing/selftests/bpf/progs/bpf_hashmap_full_update_bench.c
+The test machine is 16C, trying to get spin_lock 17 times, in addition
+to 16c, there is an extralist.
 
+after patch: hash_map performance
+./map_perf_test 1
+0:hash_map_perf pre-alloc 969348 events per sec
+10:hash_map_perf pre-alloc 906526 events per sec
+11:hash_map_perf pre-alloc 904557 events per sec
+9:hash_map_perf pre-alloc 902384 events per sec
+15:hash_map_perf pre-alloc 912287 events per sec
+14:hash_map_perf pre-alloc 905689 events per sec
+12:hash_map_perf pre-alloc 903680 events per sec
+13:hash_map_perf pre-alloc 902631 events per sec
+8:hash_map_perf pre-alloc 875369 events per sec
+4:hash_map_perf pre-alloc 862808 events per sec
+1:hash_map_perf pre-alloc 857218 events per sec
+2:hash_map_perf pre-alloc 852875 events per sec
+5:hash_map_perf pre-alloc 846497 events per sec
+6:hash_map_perf pre-alloc 828467 events per sec
+3:hash_map_perf pre-alloc 812542 events per sec
+7:hash_map_perf pre-alloc 805336 events per sec
+
+hash_map worst: no free
+./map_perf_test 2048
+7:worse hash_map_perf pre-alloc 391104 events per sec
+4:worse hash_map_perf pre-alloc 388073 events per sec
+5:worse hash_map_perf pre-alloc 387038 events per sec
+1:worse hash_map_perf pre-alloc 386546 events per sec
+0:worse hash_map_perf pre-alloc 384590 events per sec
+11:worse hash_map_perf pre-alloc 379378 events per sec
+10:worse hash_map_perf pre-alloc 375480 events per sec
+12:worse hash_map_perf pre-alloc 372394 events per sec
+6:worse hash_map_perf pre-alloc 367692 events per sec
+3:worse hash_map_perf pre-alloc 363970 events per sec
+9:worse hash_map_perf pre-alloc 364008 events per sec
+8:worse hash_map_perf pre-alloc 363759 events per sec
+2:worse hash_map_perf pre-alloc 360743 events per sec
+14:worse hash_map_perf pre-alloc 361195 events per sec
+13:worse hash_map_perf pre-alloc 360276 events per sec
+15:worse hash_map_perf pre-alloc 360057 events per sec
+0:worse hash_map_perf pre-alloc 378177 events per sec
+
+ftrace trace
+0)               |  htab_map_update_elem() {
+0)   0.317 us    |    migrate_disable();
+0)               |    _raw_spin_lock_irqsave() {
+0)   0.260 us    |      preempt_count_add();
+0)   1.803 us    |    }
+0)   0.276 us    |    lookup_elem_raw();
+0)               |    alloc_htab_elem() {
+0)   0.586 us    |      __pcpu_freelist_pop();
+0)   0.945 us    |    }
+0)               |    _raw_spin_unlock_irqrestore() {
+0)   0.160 us    |      preempt_count_sub();
+0)   0.972 us    |    }
+0)   0.657 us    |    migrate_enable();
+0)   8.669 us    |  }
+
+It can be seen that after adding this patch, the map performance is
+almost not degraded, and when free=0, first check is_empty instead of
+directly acquiring spin_lock.
+
+As for why to add is_empty instead of directly judging head->first, my
+understanding is this, head->first is frequently modified during updating
+map, which will lead to invalid other cpus's cache, and is_empty is after
+freelist having no free elems will be changed, the performance will be better.
+
+Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+---
+ kernel/bpf/percpu_freelist.c | 28 +++++++++++++++++++++++++---
+ kernel/bpf/percpu_freelist.h |  1 +
+ 2 files changed, 26 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/bpf/percpu_freelist.c b/kernel/bpf/percpu_freelist.c
+index 3d897de89061..f83eb63720d4 100644
+--- a/kernel/bpf/percpu_freelist.c
++++ b/kernel/bpf/percpu_freelist.c
+@@ -16,9 +16,11 @@ int pcpu_freelist_init(struct pcpu_freelist *s)
+ 
+ 		raw_spin_lock_init(&head->lock);
+ 		head->first = NULL;
++		head->is_empty = true;
+ 	}
+ 	raw_spin_lock_init(&s->extralist.lock);
+ 	s->extralist.first = NULL;
++	s->extralist.is_empty = true;
+ 	return 0;
+ }
+ 
+@@ -32,6 +34,8 @@ static inline void pcpu_freelist_push_node(struct pcpu_freelist_head *head,
+ {
+ 	node->next = head->first;
+ 	head->first = node;
++	if (head->is_empty)
++		head->is_empty = false;
+ }
+ 
+ static inline void ___pcpu_freelist_push(struct pcpu_freelist_head *head,
+@@ -130,14 +134,19 @@ static struct pcpu_freelist_node *___pcpu_freelist_pop(struct pcpu_freelist *s)
+ 	orig_cpu = cpu = raw_smp_processor_id();
+ 	while (1) {
+ 		head = per_cpu_ptr(s->freelist, cpu);
++		if (head->is_empty)
++			goto next_cpu;
+ 		raw_spin_lock(&head->lock);
+ 		node = head->first;
+ 		if (node) {
+ 			head->first = node->next;
++			if (!head->first)
++				head->is_empty = true;
+ 			raw_spin_unlock(&head->lock);
+ 			return node;
+ 		}
+ 		raw_spin_unlock(&head->lock);
++next_cpu:
+ 		cpu = cpumask_next(cpu, cpu_possible_mask);
+ 		if (cpu >= nr_cpu_ids)
+ 			cpu = 0;
+@@ -146,10 +155,15 @@ static struct pcpu_freelist_node *___pcpu_freelist_pop(struct pcpu_freelist *s)
+ 	}
+ 
+ 	/* per cpu lists are all empty, try extralist */
++	if (s->extralist.is_empty)
++		return NULL;
+ 	raw_spin_lock(&s->extralist.lock);
+ 	node = s->extralist.first;
+-	if (node)
++	if (node) {
+ 		s->extralist.first = node->next;
++		if (!s->extralist.first)
++			s->extralist.is_empty = true;
++	}
+ 	raw_spin_unlock(&s->extralist.lock);
+ 	return node;
+ }
+@@ -164,15 +178,20 @@ ___pcpu_freelist_pop_nmi(struct pcpu_freelist *s)
+ 	orig_cpu = cpu = raw_smp_processor_id();
+ 	while (1) {
+ 		head = per_cpu_ptr(s->freelist, cpu);
++		if (head->is_empty)
++			goto next_cpu;
+ 		if (raw_spin_trylock(&head->lock)) {
+ 			node = head->first;
+ 			if (node) {
+ 				head->first = node->next;
++				if (!head->first)
++					head->is_empty = true;
+ 				raw_spin_unlock(&head->lock);
+ 				return node;
+ 			}
+ 			raw_spin_unlock(&head->lock);
+ 		}
++next_cpu:
+ 		cpu = cpumask_next(cpu, cpu_possible_mask);
+ 		if (cpu >= nr_cpu_ids)
+ 			cpu = 0;
+@@ -181,11 +200,14 @@ ___pcpu_freelist_pop_nmi(struct pcpu_freelist *s)
+ 	}
+ 
+ 	/* cannot pop from per cpu lists, try extralist */
+-	if (!raw_spin_trylock(&s->extralist.lock))
++	if (s->extralist.is_empty || !raw_spin_trylock(&s->extralist.lock))
+ 		return NULL;
+ 	node = s->extralist.first;
+-	if (node)
++	if (node) {
+ 		s->extralist.first = node->next;
++		if (!s->extralist.first)
++			s->extralist.is_empty = true;
++	}
+ 	raw_spin_unlock(&s->extralist.lock);
+ 	return node;
+ }
+diff --git a/kernel/bpf/percpu_freelist.h b/kernel/bpf/percpu_freelist.h
+index 3c76553cfe57..9e4545631ed5 100644
+--- a/kernel/bpf/percpu_freelist.h
++++ b/kernel/bpf/percpu_freelist.h
+@@ -9,6 +9,7 @@
+ struct pcpu_freelist_head {
+ 	struct pcpu_freelist_node *first;
+ 	raw_spinlock_t lock;
++	bool is_empty;
+ };
+ 
+ struct pcpu_freelist {
 -- 
 2.20.1
 
