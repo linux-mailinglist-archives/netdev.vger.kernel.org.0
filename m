@@ -2,52 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 419AE53888E
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 23:20:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6891753889C
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 23:37:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240246AbiE3VUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 17:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36362 "EHLO
+        id S238694AbiE3VhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 17:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232574AbiE3VUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 17:20:19 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2D244EA30;
-        Mon, 30 May 2022 14:20:18 -0700 (PDT)
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nvmo7-000EnB-SM; Mon, 30 May 2022 23:20:11 +0200
-Received: from [85.1.206.226] (helo=linux-2.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nvmo7-000Sj7-Dh; Mon, 30 May 2022 23:20:11 +0200
-Subject: Re: [PATCH v3 1/2] bpf: avoid grabbing spin_locks of all cpus when no
- free elems
-To:     Feng zhou <zhoufeng.zf@bytedance.com>, ast@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
-        songmuchun@bytedance.com, wangdongdong.6@bytedance.com,
-        cong.wang@bytedance.com, zhouchengming@bytedance.com
-References: <20220530091340.53443-1-zhoufeng.zf@bytedance.com>
- <20220530091340.53443-2-zhoufeng.zf@bytedance.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <3cd2bc87-d766-0466-7079-eaff14fbe422@iogearbox.net>
-Date:   Mon, 30 May 2022 23:20:10 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S234936AbiE3VhU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 17:37:20 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D396EC79
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 14:37:18 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id c2so11244272plh.2
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 14:37:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oToy6kmJnhx8mRreN/ZinyzzZwnGFWlfUKlgbjPTM4I=;
+        b=cRgqZqcj1DZC7cIqldAWxyrSJA8Yc2CTf5PIM5xAVpNdeHMIRaqUhkLaJU5GWeWcy7
+         8429ByuhPB1KbdbM7tEdd8RywnxOXyOlTrEK0kvNSiexzRlc+8hwLJqtSYWjA6jlrTQR
+         paHcc7wREL3pA6mfMIwCVl29Eyoom2aCX2bA7xlmdt91U/nvdp1gW0WSHjx3QeskvG70
+         npqUOkSMJg+pIoq5cIQy9N5Cq8GmWojnhGSDvj1qc/PHzVL2oavej6odkwDfzIH0FI1N
+         zFVTPgHNaEed3uP5WYtEA/ZebkJ9uuEevmAB+td/hQzNTcy9xaREn68DaqQopRdSTFQw
+         /rig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oToy6kmJnhx8mRreN/ZinyzzZwnGFWlfUKlgbjPTM4I=;
+        b=UzGUkQdkvLd0BD9BZDfSbNulJlAr5HMhFKK/scN9g1Zcrz7JeCevfRObymTCGC00SS
+         nD6BPkA1wh9wK2a7f0ml3eYTVt1r5KO5BEifFCWtZ0AMfT/fdsc4yZk51qK7JBOQ0IUI
+         aTIXHLkkwalSfhT/dd/vWJ/QgttMb9B0J+X0YRYaECHm8Vtng4c/35GN/w3P80cX1Rmt
+         YtMLvbTZyOQEtabrsw76Nb5GqJfBjDH65+Cjr4cNdkFsPqobzhjCILzFW9ry/BIGWJBU
+         jXv3jIn9AmwHtD1fjIA4jMNYQttClVTh3tEXUSqTZJQ/8tdVBWiFSwj5ZH1lzrjSlMRD
+         0+Ow==
+X-Gm-Message-State: AOAM53208d7X1mWWs8BQ9S56zunpcgE1PoyDfMmdaHXEYpvXN1pYqnOR
+        Cs5FAPVaM9vtY8bvjgworzg=
+X-Google-Smtp-Source: ABdhPJx/riDqDg9/Uk9ViZtx6Y3C/Vqy2YDGaWLGwXaspqVwzabkcI+1LC0khrAcjzqtUfa3Nx5t7A==
+X-Received: by 2002:a17:903:240a:b0:14e:dad4:5ce4 with SMTP id e10-20020a170903240a00b0014edad45ce4mr59747559plo.125.1653946637477;
+        Mon, 30 May 2022 14:37:17 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:bfb5:416f:fa7c:79c9])
+        by smtp.gmail.com with ESMTPSA id z7-20020a170903018700b0016188a4005asm9718211plg.122.2022.05.30.14.37.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 14:37:16 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Laurent Fasnacht <laurent.fasnacht@proton.ch>
+Subject: [PATCH net] tcp: tcp_rtx_synack() can be called from process context
+Date:   Mon, 30 May 2022 14:37:13 -0700
+Message-Id: <20220530213713.601888-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 MIME-Version: 1.0
-In-Reply-To: <20220530091340.53443-2-zhoufeng.zf@bytedance.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26557/Mon May 30 10:05:44 2022)
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -56,188 +73,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/30/22 11:13 AM, Feng zhou wrote:
-> From: Feng Zhou <zhoufeng.zf@bytedance.com>
-> 
-> This patch add is_empty in pcpu_freelist_head to check freelist
-> having free or not. If having, grab spin_lock, or check next cpu's
-> freelist.
-> 
-> Before patch: hash_map performance
-> ./map_perf_test 1
-> 0:hash_map_perf pre-alloc 975345 events per sec
-> 4:hash_map_perf pre-alloc 855367 events per sec
-> 12:hash_map_perf pre-alloc 860862 events per sec
-> 8:hash_map_perf pre-alloc 849561 events per sec
-> 3:hash_map_perf pre-alloc 849074 events per sec
-> 6:hash_map_perf pre-alloc 847120 events per sec
-> 10:hash_map_perf pre-alloc 845047 events per sec
-> 5:hash_map_perf pre-alloc 841266 events per sec
-> 14:hash_map_perf pre-alloc 849740 events per sec
-> 2:hash_map_perf pre-alloc 839598 events per sec
-> 9:hash_map_perf pre-alloc 838695 events per sec
-> 11:hash_map_perf pre-alloc 845390 events per sec
-> 7:hash_map_perf pre-alloc 834865 events per sec
-> 13:hash_map_perf pre-alloc 842619 events per sec
-> 1:hash_map_perf pre-alloc 804231 events per sec
-> 15:hash_map_perf pre-alloc 795314 events per sec
-> 
-> hash_map the worst: no free
-> ./map_perf_test 2048
-> 6:worse hash_map_perf pre-alloc 28628 events per sec
-> 5:worse hash_map_perf pre-alloc 28553 events per sec
-> 11:worse hash_map_perf pre-alloc 28543 events per sec
-> 3:worse hash_map_perf pre-alloc 28444 events per sec
-> 1:worse hash_map_perf pre-alloc 28418 events per sec
-> 7:worse hash_map_perf pre-alloc 28427 events per sec
-> 13:worse hash_map_perf pre-alloc 28330 events per sec
-> 14:worse hash_map_perf pre-alloc 28263 events per sec
-> 9:worse hash_map_perf pre-alloc 28211 events per sec
-> 15:worse hash_map_perf pre-alloc 28193 events per sec
-> 12:worse hash_map_perf pre-alloc 28190 events per sec
-> 10:worse hash_map_perf pre-alloc 28129 events per sec
-> 8:worse hash_map_perf pre-alloc 28116 events per sec
-> 4:worse hash_map_perf pre-alloc 27906 events per sec
-> 2:worse hash_map_perf pre-alloc 27801 events per sec
-> 0:worse hash_map_perf pre-alloc 27416 events per sec
-> 3:worse hash_map_perf pre-alloc 28188 events per sec
-> 
-> ftrace trace
-> 
-> 0)               |  htab_map_update_elem() {
-> 0)   0.198 us    |    migrate_disable();
-> 0)               |    _raw_spin_lock_irqsave() {
-> 0)   0.157 us    |      preempt_count_add();
-> 0)   0.538 us    |    }
-> 0)   0.260 us    |    lookup_elem_raw();
-> 0)               |    alloc_htab_elem() {
-> 0)               |      __pcpu_freelist_pop() {
-> 0)               |        _raw_spin_lock() {
-> 0)   0.152 us    |          preempt_count_add();
-> 0)   0.352 us    |          native_queued_spin_lock_slowpath();
-> 0)   1.065 us    |        }
-> 		 |	  ...
-> 0)               |        _raw_spin_unlock() {
-> 0)   0.254 us    |          preempt_count_sub();
-> 0)   0.555 us    |        }
-> 0) + 25.188 us   |      }
-> 0) + 25.486 us   |    }
-> 0)               |    _raw_spin_unlock_irqrestore() {
-> 0)   0.155 us    |      preempt_count_sub();
-> 0)   0.454 us    |    }
-> 0)   0.148 us    |    migrate_enable();
-> 0) + 28.439 us   |  }
-> 
-> The test machine is 16C, trying to get spin_lock 17 times, in addition
-> to 16c, there is an extralist.
-> 
-> after patch: hash_map performance
-> ./map_perf_test 1
-> 0:hash_map_perf pre-alloc 969348 events per sec
-> 10:hash_map_perf pre-alloc 906526 events per sec
-> 11:hash_map_perf pre-alloc 904557 events per sec
-> 9:hash_map_perf pre-alloc 902384 events per sec
-> 15:hash_map_perf pre-alloc 912287 events per sec
-> 14:hash_map_perf pre-alloc 905689 events per sec
-> 12:hash_map_perf pre-alloc 903680 events per sec
-> 13:hash_map_perf pre-alloc 902631 events per sec
-> 8:hash_map_perf pre-alloc 875369 events per sec
-> 4:hash_map_perf pre-alloc 862808 events per sec
-> 1:hash_map_perf pre-alloc 857218 events per sec
-> 2:hash_map_perf pre-alloc 852875 events per sec
-> 5:hash_map_perf pre-alloc 846497 events per sec
-> 6:hash_map_perf pre-alloc 828467 events per sec
-> 3:hash_map_perf pre-alloc 812542 events per sec
-> 7:hash_map_perf pre-alloc 805336 events per sec
-> 
-> hash_map worst: no free
-> ./map_perf_test 2048
-> 7:worse hash_map_perf pre-alloc 391104 events per sec
-> 4:worse hash_map_perf pre-alloc 388073 events per sec
-> 5:worse hash_map_perf pre-alloc 387038 events per sec
-> 1:worse hash_map_perf pre-alloc 386546 events per sec
-> 0:worse hash_map_perf pre-alloc 384590 events per sec
-> 11:worse hash_map_perf pre-alloc 379378 events per sec
-> 10:worse hash_map_perf pre-alloc 375480 events per sec
-> 12:worse hash_map_perf pre-alloc 372394 events per sec
-> 6:worse hash_map_perf pre-alloc 367692 events per sec
-> 3:worse hash_map_perf pre-alloc 363970 events per sec
-> 9:worse hash_map_perf pre-alloc 364008 events per sec
-> 8:worse hash_map_perf pre-alloc 363759 events per sec
-> 2:worse hash_map_perf pre-alloc 360743 events per sec
-> 14:worse hash_map_perf pre-alloc 361195 events per sec
-> 13:worse hash_map_perf pre-alloc 360276 events per sec
-> 15:worse hash_map_perf pre-alloc 360057 events per sec
-> 0:worse hash_map_perf pre-alloc 378177 events per sec
-> 
-> ftrace trace
-> 0)               |  htab_map_update_elem() {
-> 0)   0.317 us    |    migrate_disable();
-> 0)               |    _raw_spin_lock_irqsave() {
-> 0)   0.260 us    |      preempt_count_add();
-> 0)   1.803 us    |    }
-> 0)   0.276 us    |    lookup_elem_raw();
-> 0)               |    alloc_htab_elem() {
-> 0)   0.586 us    |      __pcpu_freelist_pop();
-> 0)   0.945 us    |    }
-> 0)               |    _raw_spin_unlock_irqrestore() {
-> 0)   0.160 us    |      preempt_count_sub();
-> 0)   0.972 us    |    }
-> 0)   0.657 us    |    migrate_enable();
-> 0)   8.669 us    |  }
-> 
-> It can be seen that after adding this patch, the map performance is
-> almost not degraded, and when free=0, first check is_empty instead of
-> directly acquiring spin_lock.
-> 
-> As for why to add is_empty instead of directly judging head->first, my
-> understanding is this, head->first is frequently modified during updating
-> map, which will lead to invalid other cpus's cache, and is_empty is after
-> freelist having no free elems will be changed, the performance will be better.
-> 
-> Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
-> ---
->   kernel/bpf/percpu_freelist.c | 28 +++++++++++++++++++++++++---
->   kernel/bpf/percpu_freelist.h |  1 +
->   2 files changed, 26 insertions(+), 3 deletions(-)
-[...]
->   	/* per cpu lists are all empty, try extralist */
-> +	if (s->extralist.is_empty)
-> +		return NULL;
->   	raw_spin_lock(&s->extralist.lock);
->   	node = s->extralist.first;
-> -	if (node)
-> +	if (node) {
->   		s->extralist.first = node->next;
-> +		if (!s->extralist.first)
-> +			s->extralist.is_empty = true;
-> +	}
->   	raw_spin_unlock(&s->extralist.lock);
->   	return node;
->   }
-> @@ -164,15 +178,20 @@ ___pcpu_freelist_pop_nmi(struct pcpu_freelist *s)
->   	orig_cpu = cpu = raw_smp_processor_id();
->   	while (1) {
->   		head = per_cpu_ptr(s->freelist, cpu);
-> +		if (head->is_empty)
+From: Eric Dumazet <edumazet@google.com>
 
-This should use READ_ONCE/WRITE_ONCE pair for head->is_empty.
+Laurent reported the enclosed report [1]
 
-> +			goto next_cpu;
->   		if (raw_spin_trylock(&head->lock)) {
->   			node = head->first;
->   			if (node) {
->   				head->first = node->next;
-> +				if (!head->first)
-> +					head->is_empty = true;
->   				raw_spin_unlock(&head->lock);
->   				return node;
->   			}
->   			raw_spin_unlock(&head->lock);
->   		}
-> +next_cpu:
->   		cpu = cpumask_next(cpu, cpu_possible_mask);
->   		if (cpu >= nr_cpu_ids)
->   			cpu = 0;
+This bug triggers with following coditions:
+
+0) Kernel built with CONFIG_DEBUG_PREEMPT=y
+
+1) A new passive FastOpen TCP socket is created.
+   This FO socket waits for an ACK coming from client to be a complete
+   ESTABLISHED one.
+2) A socket operation on this socket goes through lock_sock()
+   release_sock() dance.
+3) While the socket is owned by the user in step 2),
+   a retransmit of the SYN is received and stored in socket backlog.
+4) At release_sock() time, the socket backlog is processed while
+   in process context.
+5) A SYNACK packet is cooked in response of the SYN retransmit.
+6) -> tcp_rtx_synack() is called in process context.
+
+Before blamed commit, tcp_rtx_synack() was always called from BH handler,
+from a timer handler.
+
+Fix this by using TCP_INC_STATS() & NET_INC_STATS()
+which do not assume caller is in non preemptible context.
+
+[1]
+BUG: using __this_cpu_add() in preemptible [00000000] code: epollpep/2180
+caller is tcp_rtx_synack.part.0+0x36/0xc0
+CPU: 10 PID: 2180 Comm: epollpep Tainted: G           OE     5.16.0-0.bpo.4-amd64 #1  Debian 5.16.12-1~bpo11+1
+Hardware name: Supermicro SYS-5039MC-H8TRF/X11SCD-F, BIOS 1.7 11/23/2021
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x48/0x5e
+ check_preemption_disabled+0xde/0xe0
+ tcp_rtx_synack.part.0+0x36/0xc0
+ tcp_rtx_synack+0x8d/0xa0
+ ? kmem_cache_alloc+0x2e0/0x3e0
+ ? apparmor_file_alloc_security+0x3b/0x1f0
+ inet_rtx_syn_ack+0x16/0x30
+ tcp_check_req+0x367/0x610
+ tcp_rcv_state_process+0x91/0xf60
+ ? get_nohz_timer_target+0x18/0x1a0
+ ? lock_timer_base+0x61/0x80
+ ? preempt_count_add+0x68/0xa0
+ tcp_v4_do_rcv+0xbd/0x270
+ __release_sock+0x6d/0xb0
+ release_sock+0x2b/0x90
+ sock_setsockopt+0x138/0x1140
+ ? __sys_getsockname+0x7e/0xc0
+ ? aa_sk_perm+0x3e/0x1a0
+ __sys_setsockopt+0x198/0x1e0
+ __x64_sys_setsockopt+0x21/0x30
+ do_syscall_64+0x38/0xc0
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: 168a8f58059a ("tcp: TCP Fast Open Server - main code path")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Laurent Fasnacht <laurent.fasnacht@proton.ch>
+---
+ net/ipv4/tcp_output.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index b4b2284ed4a2c9e2569bd945e3b4e023c5502f25..1c054431e358328fe3849f5a45aaa88308a1e1c8 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -4115,8 +4115,8 @@ int tcp_rtx_synack(const struct sock *sk, struct request_sock *req)
+ 	res = af_ops->send_synack(sk, NULL, &fl, req, NULL, TCP_SYNACK_NORMAL,
+ 				  NULL);
+ 	if (!res) {
+-		__TCP_INC_STATS(sock_net(sk), TCP_MIB_RETRANSSEGS);
+-		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNRETRANS);
++		TCP_INC_STATS(sock_net(sk), TCP_MIB_RETRANSSEGS);
++		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPSYNRETRANS);
+ 		if (unlikely(tcp_passive_fastopen(sk)))
+ 			tcp_sk(sk)->total_retrans++;
+ 		trace_tcp_retransmit_synack(sk, req);
+-- 
+2.36.1.255.ge46751e96f-goog
+
