@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1971537FC1
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:21:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65D58538111
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:28:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234949AbiE3N5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 09:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44386 "EHLO
+        id S236657AbiE3N5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 09:57:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239244AbiE3N4J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:56:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF581954BE;
-        Mon, 30 May 2022 06:38:18 -0700 (PDT)
+        with ESMTP id S239428AbiE3N4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:56:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17BB495DC4;
+        Mon, 30 May 2022 06:38:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7138BB80D84;
-        Mon, 30 May 2022 13:38:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ECC1C3411A;
-        Mon, 30 May 2022 13:38:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9712460F7B;
+        Mon, 30 May 2022 13:38:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3739DC385B8;
+        Mon, 30 May 2022 13:38:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917896;
-        bh=sm8MbBlNG5K6X9hLCmzFjLBYl5czMKscsEUm5HoPOMk=;
+        s=k20201202; t=1653917902;
+        bh=cYbqQ0dMuwCZflYozzYeRbTkmB9Hzvvc14PryXL08Gw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iegigauerrH4Nsqv9CwW1gI1rY2ABaj8Ke2+BY1y96b5xt0JqCOLQSeIj4zXxS3Nx
-         G2GAueQQ5Ytj/ey99CFqbRoIvcQvkDClGn0sKe2D7y1FW0ueUpagyB+uzKq2wQorEC
-         bag0u6b3fCB5EkhsnYLRyjZW10LyAjfBGbKLzB+ZI7W54SzU2TB5o9sj/gc3Ngijj5
-         6OczrtPfrB1PMql4tuU/AtiVsWBPpNFQuWRgkiV1PEFQu3XmR8pPwWrnVVwNFwPR+s
-         bz8+S0HBC4t/2GhMA/PdkUm1nmKwOZf9C3XIiS4l6+gxRDqKeRLjljPbnVe+N5lbWe
-         yKALT03mhXhVg==
+        b=GUHhJ6KAF70VyGGHb4xkxBm/kIufPH+BnaT57GbFGMMJ7GN9wI7UJQ4jAmS36eSlT
+         7Hrp8faOumS4WVHEQXIKobm7KRXVKZ0IO50FDMRrrVO3X6ecEg0T3I5b/xuUpOrMVp
+         nxp6WYb5/JIfJlLcCnsOZtIH9+GG4zhx/W2LBPFgrn1YG196bx/uxiwAs97UffUeRg
+         kZGWPi5gJULZKcJjA9yWu/WWBnRr/LDBHa8KxWy0iLHZgZ4AK8tcp54pugJM5s8yjZ
+         uNGqeaVwjr4hImZAInFU78EhBmF2TL46T+vZ3bTFYwtYLYYnJt6bG3LTpWzMYcNyDV
+         A9j/LUo0oj+/w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 132/135] eth: tg3: silence the GCC 12 array-bounds warning
-Date:   Mon, 30 May 2022 09:31:30 -0400
-Message-Id: <20220530133133.1931716-132-sashal@kernel.org>
+Cc:     Yonghong Song <yhs@fb.com>, Mykola Lysenko <mykolal@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, sunyucong@gmail.com,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, llvm@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.17 134/135] selftests/bpf: fix btf_dump/btf_dump due to recent clang change
+Date:   Mon, 30 May 2022 09:31:32 -0400
+Message-Id: <20220530133133.1931716-134-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -58,42 +60,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Yonghong Song <yhs@fb.com>
 
-[ Upstream commit 9dec850fd7c210a04b4707df8e6c95bfafdd6a4b ]
+[ Upstream commit 4050764cbaa25760aab40857f723393c07898474 ]
 
-GCC 12 currently generates a rather inconsistent warning:
+Latest llvm-project upstream had a change of behavior
+related to qualifiers on function return type ([1]).
+This caused selftests btf_dump/btf_dump failure.
+The following example shows what changed.
 
-drivers/net/ethernet/broadcom/tg3.c:17795:51: warning: array subscript 5 is above array bounds of ‘struct tg3_napi[5]’ [-Warray-bounds]
-17795 |                 struct tg3_napi *tnapi = &tp->napi[i];
-      |                                           ~~~~~~~~^~~
+  $ cat t.c
+  typedef const char * const (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
+  struct t {
+    int a;
+    fn_ptr_arr2_t l;
+  };
+  int foo(struct t *arg) {
+    return arg->a;
+  }
 
-i is guaranteed < tp->irq_max which in turn is either 1 or 5.
-There are more loops like this one in the driver, but strangely
-GCC 12 dislikes only this single one.
+Compiled with latest upstream llvm15,
+  $ clang -O2 -g -target bpf -S -emit-llvm t.c
+The related generated debuginfo IR looks like:
+  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
+  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !32)
+  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
+  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
+  !20 = !DISubroutineType(types: !21)
+  !21 = !{!22, null}
+  !22 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !23, size: 64)
+  !23 = !DISubroutineType(types: !24)
+  !24 = !{!25, !28}
+  !25 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !26, size: 64)
+  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
+  !27 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+You can see two intermediate const qualifier to pointer are dropped in debuginfo IR.
 
-Silence this silliness for now.
+With llvm14, we have following debuginfo IR:
+  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
+  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !34)
+  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
+  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
+  !20 = !DISubroutineType(types: !21)
+  !21 = !{!22, null}
+  !22 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !23)
+  !23 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !24, size: 64)
+  !24 = !DISubroutineType(types: !25)
+  !25 = !{!26, !30}
+  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
+  !27 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !28, size: 64)
+  !28 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !29)
+  !29 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
+All const qualifiers are preserved.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+To adapt the selftest to both old and new llvm, this patch removed
+the intermediate const qualifier in const-to-ptr types, to make the
+test succeed again.
+
+  [1] https://reviews.llvm.org/D125919
+
+Reported-by: Mykola Lysenko <mykolal@fb.com>
+Signed-off-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/r/20220523152044.3905809-1-yhs@fb.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/Makefile | 5 +++++
- 1 file changed, 5 insertions(+)
+ tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/Makefile b/drivers/net/ethernet/broadcom/Makefile
-index 0ddfb5b5d53c..2e6c5f258a1f 100644
---- a/drivers/net/ethernet/broadcom/Makefile
-+++ b/drivers/net/ethernet/broadcom/Makefile
-@@ -17,3 +17,8 @@ obj-$(CONFIG_BGMAC_BCMA) += bgmac-bcma.o bgmac-bcma-mdio.o
- obj-$(CONFIG_BGMAC_PLATFORM) += bgmac-platform.o
- obj-$(CONFIG_SYSTEMPORT) += bcmsysport.o
- obj-$(CONFIG_BNXT) += bnxt/
-+
-+# FIXME: temporarily silence -Warray-bounds on non W=1+ builds
-+ifndef KBUILD_EXTRA_WARN
-+CFLAGS_tg3.o += -Wno-array-bounds
-+endif
+diff --git a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
+index 1c7105fcae3c..4ee4748133fe 100644
+--- a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
++++ b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
+@@ -94,7 +94,7 @@ typedef void (* (*signal_t)(int, void (*)(int)))(int);
+ 
+ typedef char * (*fn_ptr_arr1_t[10])(int **);
+ 
+-typedef char * (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
++typedef char * (* (* const fn_ptr_arr2_t[5])())(char * (*)(int));
+ 
+ struct struct_w_typedefs {
+ 	int_t a;
 -- 
 2.35.1
 
