@@ -2,46 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9160537D32
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:42:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10B41537D25
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:42:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237133AbiE3NeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 09:34:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47316 "EHLO
+        id S237402AbiE3Ned (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 09:34:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237120AbiE3Nct (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:32:49 -0400
+        with ESMTP id S237188AbiE3NdA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:33:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F12CB90CF7;
-        Mon, 30 May 2022 06:27:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C869155D;
+        Mon, 30 May 2022 06:27:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A1C460EA5;
-        Mon, 30 May 2022 13:27:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22CC1C385B8;
-        Mon, 30 May 2022 13:27:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5B2960DD4;
+        Mon, 30 May 2022 13:27:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3C58C3411F;
+        Mon, 30 May 2022 13:27:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917271;
-        bh=wWAvOVOPQT5CaVYQmJhM10amzags21436o88ZdkxGgQ=;
+        s=k20201202; t=1653917273;
+        bh=KIXhqxSYoKrP4kKBC0eYCNhdJSzSYEi5MBaoOve82dc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o9vzbTubFOaJbePyhWmgFa7AgEcS0CHMOK+G8x2J3gQOQFv0qcNhY3bVXLRfU56vL
-         uu3alEPQy8qEMjNp042rEMOeZuJJY5iLlk0olWHM0NUpteJ/sBdR5wNBXITVb41xHX
-         oc79V29m6IvZumRh4a3zriSzI9Q/hiwnPHjWDs6WpYNYkwELwtt8BaXHzedwsKWx+m
-         1mxI143Tl7+5qL19xVzxeOEz13g5YklyTurN3HiOJXQ1YGrOr1iTwDiXoJ/UUERAM6
-         MsApaBL5SZnadbFkH+XW7nM6JEgZHLMzukBmO6/CTxmlaWh/SeaBAOZG6lUX1daK9u
-         FYOjsWaHcSS9w==
+        b=Lu9zQ1cErMXXhQSXGvlEFyb+HENqITeeo+9M/cOxbvAegGTTMquh4OI5bEWGmX03x
+         41kvakt0o7t6oIFaJ7UxctpehUcRrLYJIQWZN297TRNMvzj2+125ZXJbBMSu1prf6r
+         zRQt+SZO+5vlAjm6tkqYaTvTH28bFU64xG+bUIhA+N68wKsgyS8rSZOhujGRC5eKk7
+         z4zN+8pT9h3S/CLgVXqsp1w3rJbD+/kQhlpA9Gc2zq3YUq+xk1nXaSFDU4wJWfTa2y
+         G/zmrMsj4dewb35Y7IP5x+EWdU4p9ooeMff6C893qIAWaHBT1FguVqqdp9ykbRYLrK
+         c+IoimIEwuf7Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ziyang Xuan <william.xuanziyang@huawei.com>,
+Cc:     Mark Bloch <mbloch@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        ozsh@nvidia.com, paulb@nvidia.com, roid@nvidia.com,
         netdev@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 076/159] net/mlx5: use kvfree() for kvzalloc() in mlx5_ct_fs_smfs_matcher_create
-Date:   Mon, 30 May 2022 09:23:01 -0400
-Message-Id: <20220530132425.1929512-76-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.18 077/159] net/mlx5: fs, delete the FTE when there are no rules attached to it
+Date:   Mon, 30 May 2022 09:23:02 -0400
+Message-Id: <20220530132425.1929512-77-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -59,35 +58,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ziyang Xuan <william.xuanziyang@huawei.com>
+From: Mark Bloch <mbloch@nvidia.com>
 
-[ Upstream commit c389362096be8ee69ec3a163a0699a31e84b8451 ]
+[ Upstream commit 7b0c6338597613f465d131bd939a51844a00455a ]
 
-The memory of spec is allocated with kvzalloc(), the corresponding
-release function should not be kfree(), use kvfree() instead.
+When an FTE has no children is means all the rules where removed
+and the FTE can be deleted regardless of the dests_size value.
+While dests_size should be 0 when there are no children
+be extra careful not to leak memory or get firmware syndrome
+if the proper bookkeeping of dests_size wasn't done.
 
-Generated by: scripts/coccinelle/api/kfree_mismatch.cocci
-
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+Signed-off-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/tc/ct_fs_smfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/ct_fs_smfs.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/ct_fs_smfs.c
-index bec9ed0103a9..2b80fe73549d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/ct_fs_smfs.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/ct_fs_smfs.c
-@@ -101,7 +101,7 @@ mlx5_ct_fs_smfs_matcher_create(struct mlx5_ct_fs *fs, struct mlx5dr_table *tbl,
- 	spec->match_criteria_enable = MLX5_MATCH_MISC_PARAMETERS_2 | MLX5_MATCH_OUTER_HEADERS;
- 
- 	dr_matcher = mlx5_smfs_matcher_create(tbl, priority, spec);
--	kfree(spec);
-+	kvfree(spec);
- 	if (!dr_matcher)
- 		return ERR_PTR(-EINVAL);
- 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+index 3ad67e6b5586..89ba72e8d109 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -2071,16 +2071,16 @@ void mlx5_del_flow_rules(struct mlx5_flow_handle *handle)
+ 	down_write_ref_node(&fte->node, false);
+ 	for (i = handle->num_rules - 1; i >= 0; i--)
+ 		tree_remove_node(&handle->rule[i]->node, true);
+-	if (fte->dests_size) {
+-		if (fte->modify_mask)
+-			modify_fte(fte);
+-		up_write_ref_node(&fte->node, false);
+-	} else if (list_empty(&fte->node.children)) {
++	if (list_empty(&fte->node.children)) {
+ 		del_hw_fte(&fte->node);
+ 		/* Avoid double call to del_hw_fte */
+ 		fte->node.del_hw_func = NULL;
+ 		up_write_ref_node(&fte->node, false);
+ 		tree_put_node(&fte->node, false);
++	} else if (fte->dests_size) {
++		if (fte->modify_mask)
++			modify_fte(fte);
++		up_write_ref_node(&fte->node, false);
+ 	} else {
+ 		up_write_ref_node(&fte->node, false);
+ 	}
 -- 
 2.35.1
 
