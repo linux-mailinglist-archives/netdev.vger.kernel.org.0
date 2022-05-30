@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 490B8537D01
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:41:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8C94537D24
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:42:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237404AbiE3Ngo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 09:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56382 "EHLO
+        id S237732AbiE3Nhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 09:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237643AbiE3Nfe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:35:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6E4D939C6;
-        Mon, 30 May 2022 06:28:41 -0700 (PDT)
+        with ESMTP id S237554AbiE3Nf2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:35:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38334939A3;
+        Mon, 30 May 2022 06:28:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BD4E60DD5;
-        Mon, 30 May 2022 13:28:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E97AC385B8;
-        Mon, 30 May 2022 13:28:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6D7460DD4;
+        Mon, 30 May 2022 13:28:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC635C385B8;
+        Mon, 30 May 2022 13:28:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917291;
-        bh=bGfe+XYml5vTZnnP/P6GhNopkUPsUwTEgTIBai+RAio=;
+        s=k20201202; t=1653917308;
+        bh=HQF46pET341uvIM6dclJ+MRdmoa7RzWaMYRR/mwcVOs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VeW2XIppxFWqvhI265VRppxPHoea/Yd1hrC3gVGOYzKD1/EWLy1mAuBb9S3uCrQeg
-         0HlR12427XBnpmO9iWDgXRtrS/+BZMJuR3+qZFQ16L667fYOsDO3KudrMRX9pold1Z
-         ws2BIZyX+LLsy1hxoUzHpWGP6/LY4tJeRw13L+mQaAXkGDzyAtcjDyBxZaibekx6jO
-         82fDHEChbLpNrkED/Ow8DJAug4Jw6SFewlrHbH0CM7prpSkQ2ELlSISRtdEmiJL5ov
-         at67ulgUMBrfTxehNQxdnPSnF8euZYsze+PO6TmX0dAmUoCDb/6kvXRkEw+Ca++8uX
-         hQql+SIKNUP8Q==
+        b=IqxGvW94lUrmk6erj8b1q6sR1tTKbhMxJitgLvVPUfkfiQg2dS2vwVsJEGtQCXmwQ
+         1C8txWGl1Ff9T+fFyqK9EW6BPCcGCNN0/0YQO2AYxC/R8sJAWIHO243m+O0xtFnmA8
+         xGM41Nk716ythmzVsMM7AzufIMSVrAPoU6B0JkXeBzpCjTeh8icwj0t9SGq0iTjWBL
+         xXNRVSA5xgl2vJAF4k/h6SJKM++xCGR/gUj6ghJbAcx1atpRm4uFZbtX4xBOFHnSeE
+         IMIgoZGwR+wl3Gn4mVZ4kcfV7KqmY2evr3lKMmORTUz87cN+IJ8R3ug5/nhc+W1Ffc
+         SnSWB1ifT68GA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>, jesse.brandeburg@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 085/159] ice: always check VF VSI pointer values
-Date:   Mon, 30 May 2022 09:23:10 -0400
-Message-Id: <20220530132425.1929512-85-sashal@kernel.org>
+Cc:     Gavin Li <gavinl@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        amirtz@nvidia.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 090/159] net/mlx5: Increase FW pre-init timeout for health recovery
+Date:   Mon, 30 May 2022 09:23:15 -0400
+Message-Id: <20220530132425.1929512-90-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -61,287 +60,196 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+From: Gavin Li <gavinl@nvidia.com>
 
-[ Upstream commit baeb705fd6a7245cc1fa69ed991a9cffdf44a174 ]
+[ Upstream commit 37ca95e62ee23fa6d2c2c64e3dc40b4a0c0146dc ]
 
-The ice_get_vf_vsi function can return NULL in some cases, such as if
-handling messages during a reset where the VSI is being removed and
-recreated.
+Currently, health recovery will reload driver to recover it from fatal
+errors. During the driver's load process, it would wait for FW to set the
+pre-init bit for up to 120 seconds, beyond this threshold it would abort
+the load process. In some cases, such as a FW upgrade on the DPU, this
+timeout period is insufficient, and the user has no way to recover the
+host device.
 
-Several places throughout the driver do not bother to check whether this
-VSI pointer is valid. Static analysis tools maybe report issues because
-they detect paths where a potentially NULL pointer could be dereferenced.
+To solve this issue, introduce a new FW pre-init timeout for health
+recovery, which is set to 2 hours.
 
-Fix this by checking the return value of ice_get_vf_vsi everywhere.
+The timeout for devlink reload and probe will use the original one because
+they are user triggered flows, and therefore should not have a
+significantly long timeout, during which the user command would hang.
 
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Gavin Li <gavinl@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Shay Drory <shayd@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_devlink.c  |  5 ++-
- drivers/net/ethernet/intel/ice/ice_repr.c     |  7 +++-
- drivers/net/ethernet/intel/ice/ice_sriov.c    | 32 +++++++++++++++++--
- drivers/net/ethernet/intel/ice/ice_vf_lib.c   | 28 +++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_virtchnl.c |  5 +++
- .../ethernet/intel/ice/ice_virtchnl_fdir.c    |  7 +++-
- 6 files changed, 77 insertions(+), 7 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |  4 ++--
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    |  2 +-
+ .../ethernet/mellanox/mlx5/core/lib/tout.c    |  1 +
+ .../ethernet/mellanox/mlx5/core/lib/tout.h    |  1 +
+ .../net/ethernet/mellanox/mlx5/core/main.c    | 23 +++++++++++--------
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  2 +-
+ 6 files changed, 20 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index a230edb38466..4a9de59121d8 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -753,9 +753,12 @@ int ice_devlink_create_vf_port(struct ice_vf *vf)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+index 057dde6f4417..9401127fb0ec 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -178,13 +178,13 @@ static int mlx5_devlink_reload_up(struct devlink *devlink, enum devlink_reload_a
+ 	*actions_performed = BIT(action);
+ 	switch (action) {
+ 	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
+-		return mlx5_load_one(dev);
++		return mlx5_load_one(dev, false);
+ 	case DEVLINK_RELOAD_ACTION_FW_ACTIVATE:
+ 		if (limit == DEVLINK_RELOAD_LIMIT_NO_RESET)
+ 			break;
+ 		/* On fw_activate action, also driver is reloaded and reinit performed */
+ 		*actions_performed |= BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT);
+-		return mlx5_load_one(dev);
++		return mlx5_load_one(dev, false);
+ 	default:
+ 		/* Unsupported action should not get to this function */
+ 		WARN_ON(1);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+index 81eb67fb95b0..052af4901c0b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+@@ -149,7 +149,7 @@ static void mlx5_fw_reset_complete_reload(struct mlx5_core_dev *dev)
+ 	if (test_bit(MLX5_FW_RESET_FLAGS_PENDING_COMP, &fw_reset->reset_flags)) {
+ 		complete(&fw_reset->done);
+ 	} else {
+-		mlx5_load_one(dev);
++		mlx5_load_one(dev, false);
+ 		devlink_remote_reload_actions_performed(priv_to_devlink(dev), 0,
+ 							BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
+ 							BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE));
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
+index c1df0d3595d8..d758848d34d0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
+@@ -10,6 +10,7 @@ struct mlx5_timeouts {
  
- 	pf = vf->pf;
- 	dev = ice_pf_to_dev(pf);
--	vsi = ice_get_vf_vsi(vf);
- 	devlink_port = &vf->devlink_port;
+ static const u32 tout_def_sw_val[MAX_TIMEOUT_TYPES] = {
+ 	[MLX5_TO_FW_PRE_INIT_TIMEOUT_MS] = 120000,
++	[MLX5_TO_FW_PRE_INIT_ON_RECOVERY_TIMEOUT_MS] = 7200000,
+ 	[MLX5_TO_FW_PRE_INIT_WARN_MESSAGE_INTERVAL_MS] = 20000,
+ 	[MLX5_TO_FW_PRE_INIT_WAIT_MS] = 2,
+ 	[MLX5_TO_FW_INIT_MS] = 2000,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
+index 1c42ead782fa..257c03eeab36 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
+@@ -7,6 +7,7 @@
+ enum mlx5_timeouts_types {
+ 	/* pre init timeouts (not read from FW) */
+ 	MLX5_TO_FW_PRE_INIT_TIMEOUT_MS,
++	MLX5_TO_FW_PRE_INIT_ON_RECOVERY_TIMEOUT_MS,
+ 	MLX5_TO_FW_PRE_INIT_WARN_MESSAGE_INTERVAL_MS,
+ 	MLX5_TO_FW_PRE_INIT_WAIT_MS,
  
-+	vsi = ice_get_vf_vsi(vf);
-+	if (!vsi)
-+		return -EINVAL;
-+
- 	attrs.flavour = DEVLINK_PORT_FLAVOUR_PCI_VF;
- 	attrs.pci_vf.pf = pf->hw.bus.func;
- 	attrs.pci_vf.vf = vf->vf_id;
-diff --git a/drivers/net/ethernet/intel/ice/ice_repr.c b/drivers/net/ethernet/intel/ice/ice_repr.c
-index 848f2adea563..a91b81c3088b 100644
---- a/drivers/net/ethernet/intel/ice/ice_repr.c
-+++ b/drivers/net/ethernet/intel/ice/ice_repr.c
-@@ -293,8 +293,13 @@ static int ice_repr_add(struct ice_vf *vf)
- 	struct ice_q_vector *q_vector;
- 	struct ice_netdev_priv *np;
- 	struct ice_repr *repr;
-+	struct ice_vsi *vsi;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index ef196cb764e2..8b5263699994 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1014,7 +1014,7 @@ static void mlx5_cleanup_once(struct mlx5_core_dev *dev)
+ 	mlx5_devcom_unregister_device(dev->priv.devcom);
+ }
+ 
+-static int mlx5_function_setup(struct mlx5_core_dev *dev, bool boot)
++static int mlx5_function_setup(struct mlx5_core_dev *dev, u64 timeout)
+ {
  	int err;
  
-+	vsi = ice_get_vf_vsi(vf);
-+	if (!vsi)
-+		return -EINVAL;
-+
- 	repr = kzalloc(sizeof(*repr), GFP_KERNEL);
- 	if (!repr)
- 		return -ENOMEM;
-@@ -313,7 +318,7 @@ static int ice_repr_add(struct ice_vf *vf)
- 		goto err_alloc;
+@@ -1029,11 +1029,11 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, bool boot)
+ 
+ 	/* wait for firmware to accept initialization segments configurations
+ 	 */
+-	err = wait_fw_init(dev, mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT),
++	err = wait_fw_init(dev, timeout,
+ 			   mlx5_tout_ms(dev, FW_PRE_INIT_WARN_MESSAGE_INTERVAL));
+ 	if (err) {
+ 		mlx5_core_err(dev, "Firmware over %llu MS in pre-initializing state, aborting\n",
+-			      mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT));
++			      timeout);
+ 		return err;
  	}
  
--	repr->src_vsi = ice_get_vf_vsi(vf);
-+	repr->src_vsi = vsi;
- 	repr->vf = vf;
- 	vf->repr = repr;
- 	np = netdev_priv(repr->netdev);
-diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
-index 0c438219f7a3..bb1721f1321d 100644
---- a/drivers/net/ethernet/intel/ice/ice_sriov.c
-+++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
-@@ -46,7 +46,12 @@ static void ice_free_vf_entries(struct ice_pf *pf)
-  */
- static void ice_vf_vsi_release(struct ice_vf *vf)
- {
--	ice_vsi_release(ice_get_vf_vsi(vf));
-+	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
-+
-+	if (WARN_ON(!vsi))
-+		return;
-+
-+	ice_vsi_release(vsi);
- 	ice_vf_invalidate_vsi(vf);
+@@ -1296,7 +1296,7 @@ int mlx5_init_one(struct mlx5_core_dev *dev)
+ 	mutex_lock(&dev->intf_state_mutex);
+ 	dev->state = MLX5_DEVICE_STATE_UP;
+ 
+-	err = mlx5_function_setup(dev, true);
++	err = mlx5_function_setup(dev, mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT));
+ 	if (err)
+ 		goto err_function;
+ 
+@@ -1360,9 +1360,10 @@ void mlx5_uninit_one(struct mlx5_core_dev *dev)
+ 	mutex_unlock(&dev->intf_state_mutex);
  }
  
-@@ -104,6 +109,8 @@ static void ice_dis_vf_mappings(struct ice_vf *vf)
- 
- 	hw = &pf->hw;
- 	vsi = ice_get_vf_vsi(vf);
-+	if (WARN_ON(!vsi))
-+		return;
- 
- 	dev = ice_pf_to_dev(pf);
- 	wr32(hw, VPINT_ALLOC(vf->vf_id), 0);
-@@ -341,6 +348,9 @@ static void ice_ena_vf_q_mappings(struct ice_vf *vf, u16 max_txq, u16 max_rxq)
- 	struct ice_hw *hw = &vf->pf->hw;
- 	u32 reg;
- 
-+	if (WARN_ON(!vsi))
-+		return;
-+
- 	/* set regardless of mapping mode */
- 	wr32(hw, VPLAN_TXQ_MAPENA(vf->vf_id), VPLAN_TXQ_MAPENA_TX_ENA_M);
- 
-@@ -386,6 +396,9 @@ static void ice_ena_vf_mappings(struct ice_vf *vf)
+-int mlx5_load_one(struct mlx5_core_dev *dev)
++int mlx5_load_one(struct mlx5_core_dev *dev, bool recovery)
  {
- 	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
+ 	int err = 0;
++	u64 timeout;
  
-+	if (WARN_ON(!vsi))
-+		return;
-+
- 	ice_ena_vf_msix_mappings(vf);
- 	ice_ena_vf_q_mappings(vf, vsi->alloc_txq, vsi->alloc_rxq);
+ 	mutex_lock(&dev->intf_state_mutex);
+ 	if (test_bit(MLX5_INTERFACE_STATE_UP, &dev->intf_state)) {
+@@ -1372,7 +1373,11 @@ int mlx5_load_one(struct mlx5_core_dev *dev)
+ 	/* remove any previous indication of internal error */
+ 	dev->state = MLX5_DEVICE_STATE_UP;
+ 
+-	err = mlx5_function_setup(dev, false);
++	if (recovery)
++		timeout = mlx5_tout_ms(dev, FW_PRE_INIT_ON_RECOVERY_TIMEOUT);
++	else
++		timeout = mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT);
++	err = mlx5_function_setup(dev, timeout);
+ 	if (err)
+ 		goto err_function;
+ 
+@@ -1746,7 +1751,7 @@ static void mlx5_pci_resume(struct pci_dev *pdev)
+ 
+ 	mlx5_pci_trace(dev, "Enter, loading driver..\n");
+ 
+-	err = mlx5_load_one(dev);
++	err = mlx5_load_one(dev, false);
+ 
+ 	mlx5_pci_trace(dev, "Done, err = %d, device %s\n", err,
+ 		       !err ? "recovered" : "Failed");
+@@ -1833,7 +1838,7 @@ static int mlx5_resume(struct pci_dev *pdev)
+ {
+ 	struct mlx5_core_dev *dev = pci_get_drvdata(pdev);
+ 
+-	return mlx5_load_one(dev);
++	return mlx5_load_one(dev, false);
  }
-@@ -1128,6 +1141,8 @@ static struct ice_vf *ice_get_vf_from_pfq(struct ice_pf *pf, u16 pfq)
- 		u16 rxq_idx;
  
- 		vsi = ice_get_vf_vsi(vf);
-+		if (!vsi)
-+			continue;
- 
- 		ice_for_each_rxq(vsi, rxq_idx)
- 			if (vsi->rxq_map[rxq_idx] == pfq) {
-@@ -1521,8 +1536,15 @@ static int ice_calc_all_vfs_min_tx_rate(struct ice_pf *pf)
- static bool
- ice_min_tx_rate_oversubscribed(struct ice_vf *vf, int min_tx_rate)
- {
--	int link_speed_mbps = ice_get_link_speed_mbps(ice_get_vf_vsi(vf));
--	int all_vfs_min_tx_rate = ice_calc_all_vfs_min_tx_rate(vf->pf);
-+	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
-+	int all_vfs_min_tx_rate;
-+	int link_speed_mbps;
-+
-+	if (WARN_ON(!vsi))
-+		return false;
-+
-+	link_speed_mbps = ice_get_link_speed_mbps(vsi);
-+	all_vfs_min_tx_rate = ice_calc_all_vfs_min_tx_rate(vf->pf);
- 
- 	/* this VF's previous rate is being overwritten */
- 	all_vfs_min_tx_rate -= vf->min_tx_rate;
-@@ -1566,6 +1588,10 @@ ice_set_vf_bw(struct net_device *netdev, int vf_id, int min_tx_rate,
- 		goto out_put_vf;
- 
- 	vsi = ice_get_vf_vsi(vf);
-+	if (!vsi) {
-+		ret = -EINVAL;
-+		goto out_put_vf;
-+	}
- 
- 	/* when max_tx_rate is zero that means no max Tx rate limiting, so only
- 	 * check if max_tx_rate is non-zero
-diff --git a/drivers/net/ethernet/intel/ice/ice_vf_lib.c b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-index 6578059d9479..aefd66a4db80 100644
---- a/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_vf_lib.c
-@@ -220,8 +220,10 @@ static void ice_vf_clear_counters(struct ice_vf *vf)
- {
- 	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
- 
-+	if (vsi)
-+		vsi->num_vlan = 0;
-+
- 	vf->num_mac = 0;
--	vsi->num_vlan = 0;
- 	memset(&vf->mdd_tx_events, 0, sizeof(vf->mdd_tx_events));
- 	memset(&vf->mdd_rx_events, 0, sizeof(vf->mdd_rx_events));
- }
-@@ -251,6 +253,9 @@ static int ice_vf_rebuild_vsi(struct ice_vf *vf)
- 	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
- 	struct ice_pf *pf = vf->pf;
- 
-+	if (WARN_ON(!vsi))
-+		return -EINVAL;
-+
- 	if (ice_vsi_rebuild(vsi, true)) {
- 		dev_err(ice_pf_to_dev(pf), "failed to rebuild VF %d VSI\n",
- 			vf->vf_id);
-@@ -514,6 +519,10 @@ int ice_reset_vf(struct ice_vf *vf, u32 flags)
- 	ice_trigger_vf_reset(vf, flags & ICE_VF_RESET_VFLR, false);
- 
- 	vsi = ice_get_vf_vsi(vf);
-+	if (WARN_ON(!vsi)) {
-+		err = -EIO;
-+		goto out_unlock;
-+	}
- 
- 	ice_dis_vf_qs(vf);
- 
-@@ -572,6 +581,11 @@ int ice_reset_vf(struct ice_vf *vf, u32 flags)
- 
- 	vf->vf_ops->post_vsi_rebuild(vf);
- 	vsi = ice_get_vf_vsi(vf);
-+	if (WARN_ON(!vsi)) {
-+		err = -EINVAL;
-+		goto out_unlock;
-+	}
-+
- 	ice_eswitch_update_repr(vsi);
- 	ice_eswitch_replay_vf_mac_rule(vf);
- 
-@@ -610,6 +624,9 @@ void ice_dis_vf_qs(struct ice_vf *vf)
- {
- 	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
- 
-+	if (WARN_ON(!vsi))
-+		return;
-+
- 	ice_vsi_stop_lan_tx_rings(vsi, ICE_NO_RESET, vf->vf_id);
- 	ice_vsi_stop_all_rx_rings(vsi);
- 	ice_set_vf_state_qs_dis(vf);
-@@ -790,6 +807,9 @@ static int ice_vf_rebuild_host_mac_cfg(struct ice_vf *vf)
- 	u8 broadcast[ETH_ALEN];
- 	int status;
- 
-+	if (WARN_ON(!vsi))
-+		return -EINVAL;
-+
- 	if (ice_is_eswitch_mode_switchdev(vf->pf))
- 		return 0;
- 
-@@ -875,6 +895,9 @@ static int ice_vf_rebuild_host_tx_rate_cfg(struct ice_vf *vf)
- 	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
- 	int err;
- 
-+	if (WARN_ON(!vsi))
-+		return -EINVAL;
-+
- 	if (vf->min_tx_rate) {
- 		err = ice_set_min_bw_limit(vsi, (u64)vf->min_tx_rate * 1000);
- 		if (err) {
-@@ -938,6 +961,9 @@ void ice_vf_rebuild_host_cfg(struct ice_vf *vf)
- 	struct device *dev = ice_pf_to_dev(vf->pf);
- 	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
- 
-+	if (WARN_ON(!vsi))
-+		return;
-+
- 	ice_vf_set_host_trust_cfg(vf);
- 
- 	if (ice_vf_rebuild_host_mac_cfg(vf))
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl.c b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-index 2889e050a4c9..5405a0e752cf 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl.c
-@@ -2392,6 +2392,11 @@ static int ice_vc_ena_vlan_stripping(struct ice_vf *vf)
+ static const struct pci_device_id mlx5_core_pci_table[] = {
+@@ -1878,7 +1883,7 @@ int mlx5_recover_device(struct mlx5_core_dev *dev)
+ 			return -EIO;
  	}
  
- 	vsi = ice_get_vf_vsi(vf);
-+	if (!vsi) {
-+		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
-+		goto error_param;
-+	}
-+
- 	if (vsi->inner_vlan_ops.ena_stripping(vsi, ETH_P_8021Q))
- 		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
+-	return mlx5_load_one(dev);
++	return mlx5_load_one(dev, true);
+ }
  
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
-index 8e38ee2faf58..b74ccbd1591a 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
-@@ -1344,7 +1344,12 @@ static void ice_vf_fdir_dump_info(struct ice_vf *vf)
- 	pf = vf->pf;
- 	hw = &pf->hw;
- 	dev = ice_pf_to_dev(pf);
--	vf_vsi = pf->vsi[vf->lan_vsi_idx];
-+	vf_vsi = ice_get_vf_vsi(vf);
-+	if (!vf_vsi) {
-+		dev_dbg(dev, "VF %d: invalid VSI pointer\n", vf->vf_id);
-+		return;
-+	}
-+
- 	vsi_num = ice_get_hw_vsi_num(hw, vf_vsi->idx);
+ static struct pci_driver mlx5_core_driver = {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+index a9b2d6ead542..9026be1d6223 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+@@ -290,7 +290,7 @@ void mlx5_mdev_uninit(struct mlx5_core_dev *dev);
+ int mlx5_init_one(struct mlx5_core_dev *dev);
+ void mlx5_uninit_one(struct mlx5_core_dev *dev);
+ void mlx5_unload_one(struct mlx5_core_dev *dev);
+-int mlx5_load_one(struct mlx5_core_dev *dev);
++int mlx5_load_one(struct mlx5_core_dev *dev, bool recovery);
  
- 	fd_size = rd32(hw, VSIQF_FD_SIZE(vsi_num));
+ int mlx5_vport_get_other_func_cap(struct mlx5_core_dev *dev, u16 function_id, void *out);
+ 
 -- 
 2.35.1
 
