@@ -2,94 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D732537908
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:29:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C1B65378EF
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:29:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235031AbiE3KHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 06:07:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59806 "EHLO
+        id S234200AbiE3KId (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 06:08:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiE3KHg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 06:07:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFFC77A47D;
-        Mon, 30 May 2022 03:07:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51AD761007;
-        Mon, 30 May 2022 10:07:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D55AC34119;
-        Mon, 30 May 2022 10:07:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653905254;
-        bh=PM3fGM/2KDpEdmCfS2EzZkHoMTRHurmfq1JVpIRhyl4=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=gcjaWJIxyQ0Shw9VjDMl2x+xgL93iVYQcPMyIqC21JOU6t0UohtXEWj7emx0TXM7F
-         +cWJEoWHccJnCBXunuxdB5Brk/m01ESTi9PUPY5vTUz4pPfN0wqgEtsHNm/OP1ZCmX
-         DizS8MIt7SYgp2uv97xnyfBnHlo6jpKp2YbfPiCMecazgBo5WTgbWFICDidPkqmdod
-         7LA9T0O/HexhctDYfAOPq0XEAx4TufOpMrjCkKJ4QngJR3RpiQA205AW/sapDfN51J
-         P7HnYjdPTkFaoDctgl+FY2wrZZEE54svv2UGBMBriA+eITw5o9MRh2huk/DYW2He1q
-         jBXlnPPfcIVgA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     linux-wireless@vger.kernel.org, Neo Jou <neojou@gmail.com>,
-        Hans Ulli Kroll <linux@ulli-kroll.de>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: [PATCH 00/10] RTW88: Add support for USB variants
-References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
-        <87fskrv0cm.fsf@kernel.org> <20220530095232.GI1615@pengutronix.de>
-Date:   Mon, 30 May 2022 13:07:25 +0300
-In-Reply-To: <20220530095232.GI1615@pengutronix.de> (Sascha Hauer's message of
-        "Mon, 30 May 2022 11:52:32 +0200")
-Message-ID: <87a6azpc4i.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S232002AbiE3KIa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 06:08:30 -0400
+Received: from mail-4323.proton.ch (mail-4323.proton.ch [185.70.43.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA5F7A80B
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 03:08:29 -0700 (PDT)
+Date:   Mon, 30 May 2022 10:08:24 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.ch;
+        s=protonmail2; t=1653905306; x=1654164506;
+        bh=GH/to77fqKdxrJgyMcrSrCi+sI0uVLKarG9jq+i7Zag=;
+        h=Date:To:From:Reply-To:Subject:Message-ID:Feedback-ID:From:To:Cc:
+         Date:Subject:Reply-To:Feedback-ID:Message-ID;
+        b=YSoeaP2wvDnOUT5N7fCjuj/IEy4bMuNtxFQWxJNhe41VU8TSFIaok1shjjAGt+Ayi
+         CfoPs84em0HeTZF91jkpBv9pnmWx+RUb+qLwlQDPwPRm0dq7mFo7Yp961s/VgmnY3q
+         cY5vyujPKHxquRTf4iJit/GY5kn1gOyBcjBwayNCxcTNAzKcNCW1r/1yJ86QM6Q4Tm
+         JGZpcN91+FXdMmCVmkRyFJC3EsOJYEZukfWH3/ZoXS6FA0AtMYHjMej7vDuip3m/bd
+         Dc+CiW6h9yPSkNYlvC9FKSE9lzIjpKlz/eZcYmZuUDiKcklQ7dPWg0dMYiwuHFr0i5
+         pJTei4KgrtfHw==
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Laurent Fasnacht <laurent.fasnacht@proton.ch>
+Reply-To: Laurent Fasnacht <laurent.fasnacht@proton.ch>
+Subject: Bug in tcp_rtx_synack?
+Message-ID: <99ZT3wzzJiMfHBn9Ul-NdFqpZAo3QoZbOGfgFx-X60_EOIzwtUNC6991CzKn0CSNukTVz1ib9TrLSgTlhePSDVK70nTaQlx5oTxXHYbsSyg=@proton.ch>
+Feedback-ID: 37000963:user:proton
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sascha Hauer <s.hauer@pengutronix.de> writes:
+Hello,
 
-> On Mon, May 30, 2022 at 12:25:13PM +0300, Kalle Valo wrote:
->> Sascha Hauer <s.hauer@pengutronix.de> writes:
->> 
->> > Another problem to address is that the driver uses
->> > ieee80211_iterate_stations_atomic() and
->> > ieee80211_iterate_active_interfaces_atomic() and does register accesses
->> > in the iterator. This doesn't work with USB, so iteration is done in two
->> > steps now: The ieee80211_iterate_*_atomic() functions are only used to
->> > collect the stations/interfaces on a list which is then iterated over
->> > non-atomically in the second step. The implementation for this is
->> > basically the one suggested by Ping-Ke here:
->> >
->> > https://lore.kernel.org/lkml/423f474e15c948eda4db5bc9a50fd391@realtek.com/
->> 
->> Isn't this racy? What guarantees that vifs are not deleted after
->> ieee80211_iterate_active_interfaces_atomic() call?
->
-> The driver mutex &rtwdev->mutex is acquired during the whole
-> collection/iteration process. For deleting an interface
-> ieee80211_ops::remove_interface would have to be called, right?
-> That would acquire &rtwdev->mutex as well, so I think this should be
-> safe.
+I'm having the following bug on a 5.16 kernel, it happens periodically (a f=
+ew times per day, on every of our production server that has this kernel). =
+I'm unable to reproduce on machines with lower load and I also know for sur=
+e that it doesn't happen on the 5.10 kernel.
 
-Can you add a comment to the code explaining this? And
-lockdep_assert_held() is a good way to guarantee that the mutex is
-really held.
+I wonder if it's related to trace_tcp_retransmit_synack?
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+I'm happy to help, let me know.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Cheers,
+Laurent
+
+---
+
+(gdb) l *(tcp_rtx_synack+0x8d)
+0xffffffff817ee76d is in tcp_rtx_synack (arch/x86/include/asm/preempt.h:95)=
+.
+90       * a decrement which hits zero means we have no preempt_count and s=
+hould
+91       * reschedule.
+92       */
+93      static __always_inline bool __preempt_count_dec_and_test(void)
+94      {
+95              return GEN_UNARY_RMWcc("decl", __preempt_count, e, __percpu=
+_arg([var]));
+96      }
+97
+98      /*
+99       * Returns true when we need to resched and can (barring IRQ state)=
+.
+(gdb) l *(tcp_rtx_synack+0x8d-4)
+0xffffffff817ee769 is in tcp_rtx_synack (include/trace/events/tcp.h:190).
+185             TP_PROTO(struct sock *sk),
+186
+187             TP_ARGS(sk)
+188     );
+189
+190     TRACE_EVENT(tcp_retransmit_synack,
+191
+192             TP_PROTO(const struct sock *sk, const struct request_sock *=
+req),
+193
+194             TP_ARGS(sk, req),
+
+--
+
+BUG: using __this_cpu_add() in preemptible [00000000] code: epollpep/2180
+caller is tcp_rtx_synack.part.0+0x36/0xc0
+CPU: 10 PID: 2180 Comm: epollpep Tainted: G           OE     5.16.0-0.bpo.4=
+-amd64 #1  Debian 5.16.12-1~bpo11+1
+Hardware name: Supermicro SYS-5039MC-H8TRF/X11SCD-F, BIOS 1.7 11/23/2021
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x48/0x5e
+ check_preemption_disabled+0xde/0xe0
+ tcp_rtx_synack.part.0+0x36/0xc0
+ tcp_rtx_synack+0x8d/0xa0
+ ? kmem_cache_alloc+0x2e0/0x3e0
+ ? apparmor_file_alloc_security+0x3b/0x1f0
+ inet_rtx_syn_ack+0x16/0x30
+ tcp_check_req+0x367/0x610
+ tcp_rcv_state_process+0x91/0xf60
+ ? get_nohz_timer_target+0x18/0x1a0
+ ? lock_timer_base+0x61/0x80
+ ? preempt_count_add+0x68/0xa0
+ tcp_v4_do_rcv+0xbd/0x270
+ __release_sock+0x6d/0xb0
+ release_sock+0x2b/0x90
+ sock_setsockopt+0x138/0x1140
+ ? __sys_getsockname+0x7e/0xc0
+ ? aa_sk_perm+0x3e/0x1a0
+ __sys_setsockopt+0x198/0x1e0
+ __x64_sys_setsockopt+0x21/0x30
+ do_syscall_64+0x38/0xc0
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fefe7d4441a
+Code: ff ff ff c3 0f 1f 40 00 48 8b 15 71 ea 0b 00 f7 d8 64 89 02 48 c7 c0 =
+ff ff ff ff eb b7 0f 1f 00 49 89 ca b8 36 00 00 00 0f 05 <48> 3d 01 f0 ff f=
+f 73 01 c3 48 8b 0d 46 ea 0b 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffca1cd0ab8 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
+RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 00007fefe7d4441a
+RDX: 0000000000000009 RSI: 0000000000000001 RDI: 00000000000006f3
+RBP: 00007ffca1cd1410 R08: 0000000000000004 R09: 0000560e9f8a55ec
+R10: 00007ffca1cd10f0 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffca1cd1190 R14: 00007ffca1cd1198 R15: 00007ffca1cd23f0
+ </TASK>
+
