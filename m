@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0FE05382E7
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:38:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F8E45382D7
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:38:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239890AbiE3O2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:28:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49894 "EHLO
+        id S239267AbiE3O2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:28:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237928AbiE3OXa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:23:30 -0400
+        with ESMTP id S240302AbiE3OZM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:25:12 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5F3B12B00D;
-        Mon, 30 May 2022 06:50:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332E4A88AA;
+        Mon, 30 May 2022 06:50:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34D3360FD4;
-        Mon, 30 May 2022 13:50:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74B74C3411F;
-        Mon, 30 May 2022 13:50:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3155E60FDC;
+        Mon, 30 May 2022 13:50:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 761D1C3411C;
+        Mon, 30 May 2022 13:50:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918642;
-        bh=7NQUcC/FlqpwOfcBIb3NaowHI4IDjxIyTjXjX85mQTw=;
+        s=k20201202; t=1653918652;
+        bh=btq8rGeFsERr+agkyBJfvYQq6qyKxnfz/CGUWhG9Irs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QPXcNm27ef1ghlpzWdo1ULGg/cqPpFNWOAq37awD+f83XlKfqfLXXB9atmixphxnY
-         gDDCAHGYVxBFItYgmxSrn/EgiwT39ovBAsi3+8gJE8bmgs7/R6dyE3ztVihEoHEOk7
-         D1tadU80P+9U946s42F42bu/IAqjjVOTHeo7cOYqA6i3aeOR3bulJ3e2/kwrUhjcKB
-         ADVYnegYXX18GaYZLBcNOL5DdqjNqIFwmueF/xvSRzG0i3a32AFrxrTpMNlQyom9ca
-         oEkiQJI5w4TStcsghJ/T5Q3/sVV6+3K9nV6WvwqlaYAw/h4CvXmTXe0z0pOYTc8FbS
-         ES7oznQLC1dVQ==
+        b=h5ztGshOZ7zHYhAg7mdNGbFvn3hktYOXMAamSYagYhVzgD9tBK07c6WMj+o62lH/z
+         9G3f8SXvEF4FG0UpgNzorarvWq5gJQoL899fRRDRdS9/nNuP9V+Y7KpSdzVHnuTj4S
+         LUO6lK812UsjQeSrHwgI8T8gd07r2vUI9NV4OAi7JfWYtLkKbNpMZEtal49Y6gWQJm
+         zE3ziqWOSMPa6O77LGeb3M1iJwN4zv+mLiwvgl4Q6IA1xZk6+XFpE8qnOKcA7NeO8S
+         GEuu4vd7GogRuX2/dtx+s6Fwd5qqXQjm2GvbKFtc+qLIVzEOTHcGBhipY12JZbhT4Z
+         WRFNjfpoypryQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fabio Estevam <festevam@denx.de>, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 33/38] net: phy: micrel: Allow probing without .driver_data
-Date:   Mon, 30 May 2022 09:49:19 -0400
-Message-Id: <20220530134924.1936816-33-sashal@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 37/38] rxrpc: Return an error to sendmsg if call failed
+Date:   Mon, 30 May 2022 09:49:23 -0400
+Message-Id: <20220530134924.1936816-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
 References: <20220530134924.1936816-1-sashal@kernel.org>
@@ -58,70 +59,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit f2ef6f7539c68c6bd6c32323d8845ee102b7c450 ]
+[ Upstream commit 4ba68c5192554876bd8c3afd904e3064d2915341 ]
 
-Currently, if the .probe element is present in the phy_driver structure
-and the .driver_data is not, a NULL pointer dereference happens.
+If at the end of rxrpc sendmsg() or rxrpc_kernel_send_data() the call that
+was being given data was aborted remotely or otherwise failed, return an
+error rather than returning the amount of data buffered for transmission.
 
-Allow passing .probe without .driver_data by inserting NULL checks
-for priv->type.
+The call (presumably) did not complete, so there's not much point
+continuing with it.  AF_RXRPC considers it "complete" and so will be
+unwilling to do anything else with it - and won't send a notification for
+it, deeming the return from sendmsg sufficient.
 
-Signed-off-by: Fabio Estevam <festevam@denx.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220513114613.762810-1-festevam@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Not returning an error causes afs to incorrectly handle a StoreData
+operation that gets interrupted by a change of address due to NAT
+reconfiguration.
+
+This doesn't normally affect most operations since their request parameters
+tend to fit into a single UDP packet and afs_make_call() returns before the
+server responds; StoreData is different as it involves transmission of a
+lot of data.
+
+This can be triggered on a client by doing something like:
+
+	dd if=/dev/zero of=/afs/example.com/foo bs=1M count=512
+
+at one prompt, and then changing the network address at another prompt,
+e.g.:
+
+	ifconfig enp6s0 inet 192.168.6.2 && route add 192.168.6.1 dev enp6s0
+
+Tracing packets on an Auristor fileserver looks something like:
+
+192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
+192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
+192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+<ARP exchange for 192.168.6.2>
+192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
+192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
+192.168.6.1 -> 192.168.6.2  RX 107 ACK Exceeds Window  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 29321  Call: 4  Source Port: 7000  Destination Port: 7001
+
+The Auristor fileserver logs code -453 (RXGEN_SS_UNMARSHAL), but the abort
+code received by kafs is -5 (RX_PROTOCOL_ERROR) as the rx layer sees the
+condition and generates an abort first and the unmarshal error is a
+consequence of that at the application layer.
+
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004810.html # v1
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/micrel.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ net/rxrpc/sendmsg.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 013590330059..1d00a563892a 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -285,7 +285,7 @@ static int kszphy_config_reset(struct phy_device *phydev)
- 		}
- 	}
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index edd76c41765f..0220a2935002 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -440,6 +440,12 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
  
--	if (priv->led_mode >= 0)
-+	if (priv->type && priv->led_mode >= 0)
- 		kszphy_setup_led(phydev, priv->type->led_mode_reg, priv->led_mode);
- 
- 	return 0;
-@@ -301,10 +301,10 @@ static int kszphy_config_init(struct phy_device *phydev)
- 
- 	type = priv->type;
- 
--	if (type->has_broadcast_disable)
-+	if (type && type->has_broadcast_disable)
- 		kszphy_broadcast_disable(phydev);
- 
--	if (type->has_nand_tree_disable)
-+	if (type && type->has_nand_tree_disable)
- 		kszphy_nand_tree_disable(phydev);
- 
- 	return kszphy_config_reset(phydev);
-@@ -775,7 +775,7 @@ static int kszphy_probe(struct phy_device *phydev)
- 
- 	priv->type = type;
- 
--	if (type->led_mode_reg) {
-+	if (type && type->led_mode_reg) {
- 		ret = of_property_read_u32(np, "micrel,led-mode",
- 				&priv->led_mode);
- 		if (ret)
-@@ -796,7 +796,8 @@ static int kszphy_probe(struct phy_device *phydev)
- 		unsigned long rate = clk_get_rate(clk);
- 		bool rmii_ref_clk_sel_25_mhz;
- 
--		priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
-+		if (type)
-+			priv->rmii_ref_clk_sel = type->has_rmii_ref_clk_sel;
- 		rmii_ref_clk_sel_25_mhz = of_property_read_bool(np,
- 				"micrel,rmii-reference-clock-select-25-mhz");
- 
+ success:
+ 	ret = copied;
++	if (READ_ONCE(call->state) == RXRPC_CALL_COMPLETE) {
++		read_lock_bh(&call->state_lock);
++		if (call->error < 0)
++			ret = call->error;
++		read_unlock_bh(&call->state_lock);
++	}
+ out:
+ 	call->tx_pending = skb;
+ 	_leave(" = %d", ret);
 -- 
 2.35.1
 
