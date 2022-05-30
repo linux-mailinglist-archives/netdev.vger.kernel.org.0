@@ -2,178 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48DFA5373BD
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 05:39:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA6B9537428
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 06:51:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232367AbiE3Djk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 May 2022 23:39:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52126 "EHLO
+        id S232447AbiE3EvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 00:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232158AbiE3Dji (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 May 2022 23:39:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 955E9719EE
-        for <netdev@vger.kernel.org>; Sun, 29 May 2022 20:39:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653881975;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FdZG8wd/mfaE1rIlJ69hB8EXyZHW/gHoxx+VKCUjuys=;
-        b=Jjzoh9QA1gH+XboJr1s4bzFEH97iKQlySG9L4fbxysEXFsWvuKWNHVA3q6gq6ILvJCCTFn
-        057HsOalJYU/yMzWuW/bKzhU/qSXB+saHfdubzo/PK/h3vb3oIA2DtAoW2GkY+/PRixWcC
-        ic2ne+7dSF5bCYCtYD0o2+f1+1XfAi4=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-533-ZceCUXLFOA-j6_kMUmcwug-1; Sun, 29 May 2022 23:39:34 -0400
-X-MC-Unique: ZceCUXLFOA-j6_kMUmcwug-1
-Received: by mail-lf1-f69.google.com with SMTP id g11-20020a05651222cb00b0047872568226so4658000lfu.3
-        for <netdev@vger.kernel.org>; Sun, 29 May 2022 20:39:34 -0700 (PDT)
+        with ESMTP id S230147AbiE3EvW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 00:51:22 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F69B70927;
+        Sun, 29 May 2022 21:51:21 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id s24so5656304wrb.10;
+        Sun, 29 May 2022 21:51:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=LELXwtIIYJe0NF4K6OawoTsFSY6J+FVjbPvU3ikss6s=;
+        b=KRC5F4j041Kk3SA3GmG7xlhhwYLCjfRxlQde+xEyn10pTqxTs4zg5NEYCGpCTLKjaQ
+         VwbGZ4HdcH7ntSS8Wj1wAoZUeugoNg8tABp03jedsE0Arbs95+M24rfoUzgZ8NvcqMbb
+         MbUcveKEdIDaVyy/XlY9Ei0GUwqkTzDwuoSwJ7Y7hO2yPzYu7RynUzzKsbEvUmW1XFTI
+         pu2WZgb/GKJUoLWFRBP5OqhfvW62qwFKlJj7ytWsfALiRI+53qTt7XlD2+rD8/cnJqWx
+         /uo4LqP/AqyE03Lfa0PDgDw4/NkZNR3j3CuxWRFN6lsx3bgzLpxOlcF+zmyxTTP3KmU3
+         QcXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=FdZG8wd/mfaE1rIlJ69hB8EXyZHW/gHoxx+VKCUjuys=;
-        b=6qi/41HWKjEYrZId6ihtCg4dHZVyiPBt91Eew0y5C4hHMs+Uz9kaSOHaib7ONWfaeH
-         IEvWtlBLjtxakXrSTyNliOjdreb9cbrd4RBcnF+vumlgQPDHyz13/z7D7JmucrXbMdfx
-         k40HCauzP5T7L2oXrmcyYBOQvlayiSNB3UB4AhkWRdMAlAbckL7PPkUj0U79sEDshY2A
-         fVy8mFGqCtapSf0TkEnpTkJ8pEVr+Kf+3XPBPyj9L779uyZOF4vMHpeSiCFD1PUL1Bxi
-         Sgjq7Yq9r+XHRdaIf2JAXIRHfDSHTNRZQUDUTSCd3aABXyia30df6eppifoT4KT+jIiW
-         hk4g==
-X-Gm-Message-State: AOAM531AeNCO5tfF6Hl0TqaQSpUWBrRE+dkVHokTjgiyaeIG8W4iy1do
-        umsRJ48Knbs2KQuGZEMCHAR0r8PofxK52tXNiXO7FFBGR+7SvaYQxzfrsgpWmY8rNOGw/J0Is+P
-        In324xnQrdRYVQzSOH+A5imIGRg3T7M64
-X-Received: by 2002:a2e:bd85:0:b0:250:9bf2:8e27 with SMTP id o5-20020a2ebd85000000b002509bf28e27mr31984324ljq.177.1653881972993;
-        Sun, 29 May 2022 20:39:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwJ+6zqmnNnl7EEnXkdvxuYG8LYk8erHBazoZjoQnAG/qmTMJwUD0nMIgF2AK7TVkQU1NACb7Vt0qIrH9A2MBc=
-X-Received: by 2002:a2e:bd85:0:b0:250:9bf2:8e27 with SMTP id
- o5-20020a2ebd85000000b002509bf28e27mr31984290ljq.177.1653881972697; Sun, 29
- May 2022 20:39:32 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=LELXwtIIYJe0NF4K6OawoTsFSY6J+FVjbPvU3ikss6s=;
+        b=pfwfJ1uQeghrZ3E0Z8p3UCaTxpQ9cbuw0xiDVKEr4ul9r5u2ln7KBA2gE9LOyx9TQB
+         f7nm0coQNoa4mReycTNbmArAw1gBOKh59SecOF5TM3F18NVJAGfNmNJZaif0bFEnWvUp
+         Gsf1t8wyirzxXIp0uelhKGakf4Cg1/ZtUk5/+kbOssvqAzN6MDfKbOCw+8Fm2mDZMpnm
+         epsCJqLIdqMEUAuF+oT3j/6AwxQfT735na2aKF7IVk/zOjbJy3EQdJ3wvByrcmgeIIZo
+         mhsEFez+pRkGNXEu6jxkJ37ZUnZ6gIejTv8Sf0F8nXdEa/yPH0HNICGDBV1+kySz5Dj6
+         OzCg==
+X-Gm-Message-State: AOAM533g2vLthpJTfLa9hbhrDY/GlXZ4TTystKjxeT1/wTepQc/m/4MI
+        NClzt2UeyeZmTWkjEbNIRYs=
+X-Google-Smtp-Source: ABdhPJzj/tnDr26ClZFxa3yjdjaUe1R7YLdcAYEMa/2HHDD9FQr5zW6KCuCqvWXKlbBurv+oKKHssA==
+X-Received: by 2002:a05:6000:1549:b0:20f:c4c7:a697 with SMTP id 9-20020a056000154900b0020fc4c7a697mr36185138wry.716.1653886279691;
+        Sun, 29 May 2022 21:51:19 -0700 (PDT)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id k1-20020adfe8c1000000b0021031c894d3sm2300562wrn.94.2022.05.29.21.51.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 29 May 2022 21:51:19 -0700 (PDT)
+Date:   Mon, 30 May 2022 06:51:14 +0200
+From:   Corentin Labbe <clabbe.montjoie@gmail.com>
+To:     patchwork-bot+netdevbpf@kernel.org
+Cc:     None <conleylee@foxmail.com>, davem@davemloft.net, kuba@kernel.org,
+        mripard@kernel.org, wens@csie.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6] sun4i-emac.c: add dma support
+Message-ID: <YpRNQlPHiuNoLu3J@Red>
+References: <tencent_DE05ADA53D5B084D4605BE6CB11E49EF7408@qq.com>
+ <164082961168.30206.13406661054070190413.git-patchwork-notify@kernel.org>
 MIME-Version: 1.0
-References: <20220526124338.36247-1-eperezma@redhat.com> <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220527065442-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220527065442-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Mon, 30 May 2022 11:39:21 +0800
-Message-ID: <CACGkMEubfv_OJOsJ_ROgei41Qx4mPO0Xz8rMVnO8aPFiEqr8rA@mail.gmail.com>
-Subject: Re: [PATCH v4 0/4] Implement vdpasim stop operation
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Parav Pandit <parav@nvidia.com>,
-        =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "martinh@xilinx.com" <martinh@xilinx.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "martinpo@xilinx.com" <martinpo@xilinx.com>,
-        "lvivier@redhat.com" <lvivier@redhat.com>,
-        "pabloc@xilinx.com" <pabloc@xilinx.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
-        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
-        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "dinang@xilinx.com" <dinang@xilinx.com>,
-        Longpeng <longpeng2@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <164082961168.30206.13406661054070190413.git-patchwork-notify@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 27, 2022 at 6:56 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Thu, May 26, 2022 at 12:54:32PM +0000, Parav Pandit wrote:
-> >
-> >
-> > > From: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > > Sent: Thursday, May 26, 2022 8:44 AM
-> >
-> > > Implement stop operation for vdpa_sim devices, so vhost-vdpa will off=
-er
-> > >
-> > > that backend feature and userspace can effectively stop the device.
-> > >
-> > >
-> > >
-> > > This is a must before get virtqueue indexes (base) for live migration=
-,
-> > >
-> > > since the device could modify them after userland gets them. There ar=
-e
-> > >
-> > > individual ways to perform that action for some devices
-> > >
-> > > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there
-> > > was no
-> > >
-> > > way to perform it for any vhost device (and, in particular, vhost-vdp=
-a).
-> > >
-> > >
-> > >
-> > > After the return of ioctl with stop !=3D 0, the device MUST finish an=
-y
-> > >
-> > > pending operations like in flight requests. It must also preserve all
-> > >
-> > > the necessary state (the virtqueue vring base plus the possible devic=
-e
-> > >
-> > > specific states) that is required for restoring in the future. The
-> > >
-> > > device must not change its configuration after that point.
-> > >
-> > >
-> > >
-> > > After the return of ioctl with stop =3D=3D 0, the device can continue
-> > >
-> > > processing buffers as long as typical conditions are met (vq is enabl=
-ed,
-> > >
-> > > DRIVER_OK status bit is enabled, etc).
-> >
-> > Just to be clear, we are adding vdpa level new ioctl() that doesn=E2=80=
-=99t map to any mechanism in the virtio spec.
-> >
-> > Why can't we use this ioctl() to indicate driver to start/stop the devi=
-ce instead of driving it through the driver_ok?
-> > This is in the context of other discussion we had in the LM series.
->
-> If there's something in the spec that does this then let's use that.
+Le Thu, Dec 30, 2021 at 02:00:11AM +0000, patchwork-bot+netdevbpf@kernel.org a écrit :
+> Hello:
+> 
+> This patch was applied to netdev/net-next.git (master)
+> by Jakub Kicinski <kuba@kernel.org>:
+> 
+> On Wed, 29 Dec 2021 09:43:51 +0800 you wrote:
+> > From: Conley Lee <conleylee@foxmail.com>
+> > 
+> > Thanks for your review. Here is the new version for this patch.
+> > 
+> > This patch adds support for the emac rx dma present on sun4i. The emac
+> > is able to move packets from rx fifo to RAM by using dma.
+> > 
+> > [...]
+> 
+> Here is the summary with links:
+>   - [v6] sun4i-emac.c: add dma support
+>     https://git.kernel.org/netdev/net-next/c/47869e82c8b8
+> 
+> You are awesome, thank you!
+> -- 
+> Deet-doot-dot, I am a bot.
+> https://korg.docs.kernel.org/patchwork/pwbot.html
+> 
 
-Actually, we try to propose a independent feature here:
+Hello
 
-https://lists.oasis-open.org/archives/virtio-dev/202111/msg00020.html
+Any news on patch which enable sun4i-emac DMA in DT ?
 
-Does it make sense to you?
-
-Thanks
-
-> Unfortunately the LM series seems to be stuck on moving
-> bits around with the admin virtqueue ...
->
-> --
-> MST
->
-
+Regards
