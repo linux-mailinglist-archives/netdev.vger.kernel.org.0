@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FF91538349
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:39:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8FB2538385
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:40:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241246AbiE3OcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:32:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42892 "EHLO
+        id S239923AbiE3Odf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:33:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242602AbiE3ObV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:31:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A1881997;
-        Mon, 30 May 2022 06:53:12 -0700 (PDT)
+        with ESMTP id S239947AbiE3Ob5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:31:57 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 756441312B0;
+        Mon, 30 May 2022 06:53:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74F80B80DE5;
-        Mon, 30 May 2022 13:52:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF4CEC36AE3;
-        Mon, 30 May 2022 13:52:49 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EFBCBCE1024;
+        Mon, 30 May 2022 13:53:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38F4CC341C0;
+        Mon, 30 May 2022 13:53:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918771;
-        bh=xFZ/qA6yDXkSrcTFBTSW99brMlcXXlUY75Bdj3PbFFI=;
+        s=k20201202; t=1653918791;
+        bh=08EMK0gOc1s8fDqsa5otPCkfPEWHoIcvRbnM1fHm79s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZDVGgHdv51TR/F2n6byZD8U4Glz/SnMFzUW05i8eHBv8OMLAX9D5nsmRRdWj4dck+
-         YgUACvIcsCcVj79vH0A+38AsrC2Jd1ddo/b+z6TVHGzRUDqi52rwNoDRbl/Lu8/jQd
-         2UcDVM1CDq+Uw46ZFSUF3ufBZTZpr+dUjsieI05Cbzc9GyXukGnxvFMQnZkSc3/ye0
-         N67WIjeNwHWsMk26oeuZj2HOr7TOA23cnmDY2WZ9XTOTydomVfR2niiBSfAlNQIHBa
-         X9YzsvuMFwMWJaF1IucXqtC6+MBbwsJ926fuNV9aKImHxnVShntSArxukKNt+eGkC0
-         mbsCJMtq1VfQg==
+        b=mChWiFyIToYMWLiu3y0fe3iJF0W77ynG2SaTwXNwm15wWcBzKR4ZISQoFHrsKpLzu
+         WOr17+ZV/3PH0tZl3Ugn2niw/ndi8JltwN7gWEtDGa67P+cssRAPszDMf5BlFuL+C9
+         gvZlN7tOG2/C0r9vQtJlqEVzkdH4acKACgqQD6cpfPuNpcuEGySa4RM3aROyERvmk9
+         JvJ4JrEankxw7xfoZvSVx27j6vCTU9j7B9x/ljAeFVz/H3FVxmoTwEBigm3Fqf5162
+         b63a1NfSZAQqR0jlEoC8e7TKk7nnF/B7Ekywky9RIjFipInudkWAVu/Dqroa0yeojR
+         zRpHEm7w6q7pg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
+Cc:     David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        pabeni@redhat.com, bigeasy@linutronix.de, imagedong@tencent.com,
-        petrm@nvidia.com, memxor@gmail.com, arnd@arndb.de,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 15/24] net: remove two BUG() from skb_checksum_help()
-Date:   Mon, 30 May 2022 09:52:02 -0400
-Message-Id: <20220530135211.1937674-15-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 23/24] rxrpc: Return an error to sendmsg if call failed
+Date:   Mon, 30 May 2022 09:52:10 -0400
+Message-Id: <20220530135211.1937674-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530135211.1937674-1-sashal@kernel.org>
 References: <20220530135211.1937674-1-sashal@kernel.org>
@@ -59,47 +59,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit d7ea0d9df2a6265b2b180d17ebc64b38105968fc ]
+[ Upstream commit 4ba68c5192554876bd8c3afd904e3064d2915341 ]
 
-I have a syzbot report that managed to get a crash in skb_checksum_help()
+If at the end of rxrpc sendmsg() or rxrpc_kernel_send_data() the call that
+was being given data was aborted remotely or otherwise failed, return an
+error rather than returning the amount of data buffered for transmission.
 
-If syzbot can trigger these BUG(), it makes sense to replace
-them with more friendly WARN_ON_ONCE() since skb_checksum_help()
-can instead return an error code.
+The call (presumably) did not complete, so there's not much point
+continuing with it.  AF_RXRPC considers it "complete" and so will be
+unwilling to do anything else with it - and won't send a notification for
+it, deeming the return from sendmsg sufficient.
 
-Note that syzbot will still crash there, until real bug is fixed.
+Not returning an error causes afs to incorrectly handle a StoreData
+operation that gets interrupted by a change of address due to NAT
+reconfiguration.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+This doesn't normally affect most operations since their request parameters
+tend to fit into a single UDP packet and afs_make_call() returns before the
+server responds; StoreData is different as it involves transmission of a
+lot of data.
+
+This can be triggered on a client by doing something like:
+
+	dd if=/dev/zero of=/afs/example.com/foo bs=1M count=512
+
+at one prompt, and then changing the network address at another prompt,
+e.g.:
+
+	ifconfig enp6s0 inet 192.168.6.2 && route add 192.168.6.1 dev enp6s0
+
+Tracing packets on an Auristor fileserver looks something like:
+
+192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
+192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
+192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+<ARP exchange for 192.168.6.2>
+192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
+192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
+192.168.6.1 -> 192.168.6.2  RX 107 ACK Exceeds Window  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
+192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 29321  Call: 4  Source Port: 7000  Destination Port: 7001
+
+The Auristor fileserver logs code -453 (RXGEN_SS_UNMARSHAL), but the abort
+code received by kafs is -5 (RX_PROTOCOL_ERROR) as the rx layer sees the
+condition and generates an abort first and the unmarshal error is a
+consequence of that at the application layer.
+
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004810.html # v1
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/dev.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ net/rxrpc/sendmsg.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 47468fc5d0c9..d725ca4d4455 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -2518,11 +2518,15 @@ int skb_checksum_help(struct sk_buff *skb)
- 	}
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index 2ec1c29eeba4..b8e87804296c 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -336,6 +336,12 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
  
- 	offset = skb_checksum_start_offset(skb);
--	BUG_ON(offset >= skb_headlen(skb));
-+	ret = -EINVAL;
-+	if (WARN_ON_ONCE(offset >= skb_headlen(skb)))
-+		goto out;
-+
- 	csum = skb_checksum(skb, offset, skb->len - offset, 0);
- 
- 	offset += skb->csum_offset;
--	BUG_ON(offset + sizeof(__sum16) > skb_headlen(skb));
-+	if (WARN_ON_ONCE(offset + sizeof(__sum16) > skb_headlen(skb)))
-+		goto out;
- 
- 	if (skb_cloned(skb) &&
- 	    !skb_clone_writable(skb, offset + sizeof(__sum16))) {
+ success:
+ 	ret = copied;
++	if (READ_ONCE(call->state) == RXRPC_CALL_COMPLETE) {
++		read_lock_bh(&call->state_lock);
++		if (call->error < 0)
++			ret = call->error;
++		read_unlock_bh(&call->state_lock);
++	}
+ out:
+ 	call->tx_pending = skb;
+ 	_leave(" = %d", ret);
 -- 
 2.35.1
 
