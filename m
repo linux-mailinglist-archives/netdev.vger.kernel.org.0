@@ -2,120 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 043AF5373AA
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 05:03:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0D9F5373AE
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 05:16:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232319AbiE3DDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 May 2022 23:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52894 "EHLO
+        id S232340AbiE3DQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 May 2022 23:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231174AbiE3DDb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 May 2022 23:03:31 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4A413F19
-        for <netdev@vger.kernel.org>; Sun, 29 May 2022 20:03:30 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id d22so9142904plr.9
-        for <netdev@vger.kernel.org>; Sun, 29 May 2022 20:03:30 -0700 (PDT)
+        with ESMTP id S230190AbiE3DQY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 May 2022 23:16:24 -0400
+Received: from corp-front10-corp.i.nease.net (corp-front11-corp.i.nease.net [42.186.62.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC34A4BB88;
+        Sun, 29 May 2022 20:16:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EI7EkXqC6fGu4H8lCPr8feXsIbQYVB1oLlQyi3lQ5rc=;
-        b=IQ7mAumRfUIpvMCAKTUqJhdUOrLO/eoUpOQnCav6lPhrt6fwnSIeHbyXm5qLOrqWEM
-         9RwAO59kI7T9/dCCIaRaVgceJ33Xk5HS0xD3OuNIqSnYBaxE0dcvntizmEsIQnH3hg8P
-         v8mbEra1kEoR4EawX3uncaUjZUaQ/26uD/6My7oplOL6GaKjA1gxR5V6pMzemcoYDAH+
-         Evplb9iM9NEUhCBJQ54o5DwsSCRFcwHjJMZPWnGKXWU6wFdaW0sLuz0OHYrdqxTcln5/
-         gXOkplMhNCTx5B2SqWWI8n3QFlpYZUyGhBOhi6tLvF05B59/PUttGiVxkCmwGyyIC1XH
-         eEJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EI7EkXqC6fGu4H8lCPr8feXsIbQYVB1oLlQyi3lQ5rc=;
-        b=H2Ir1X42Oe90t5+5GtJJLI5pCH2cd7MoSSCMV6O2JczFWbhKVUbeKsVbfQDEj6NLPs
-         +yd0gTdNIg8+GhRZtwOoOi2OZJkPa1fA+O0y3ThDx3c/Mja8yej987JhA+39tb260wkg
-         dsRf4ZoDw7ctG9e7NSZpY7cJcy7Sp1m+t0zM75LO2pTdWvjQSeDdgwSsmNIiCa+B6Xh1
-         SJ5LfLfKL2F7+kMS3OFTogOEw6rXjEhmdELmVRfbwcVCA1avo5yc05AmyC3JkBhhiUf+
-         vXnRGMvU5CqevtF5rVCLXz/W+Nw63xBlS4kiYE75XNtxY6Ly0kbg8/xyTapy4aQ/8lnJ
-         FZKA==
-X-Gm-Message-State: AOAM531n69+l0r3Upiy5dvTF9Ky2W4Ns+hEMTU+wV9qnA5hsOUfdoyQ2
-        LXSvpoE/AhgvvINsxZmtFos6fabHH9AFXA==
-X-Google-Smtp-Source: ABdhPJxFVlxgfbGEDP92fV+/3DVxWVSfJh2rW3InbI5z9b+MJ6t99v694BkiENCIfJ2UnX12XfsLUw==
-X-Received: by 2002:a17:90a:930b:b0:1bf:ac1f:6585 with SMTP id p11-20020a17090a930b00b001bfac1f6585mr20741335pjo.88.1653879810056;
-        Sun, 29 May 2022 20:03:30 -0700 (PDT)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id f194-20020a6238cb000000b005180c127200sm7542533pfa.24.2022.05.29.20.03.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 May 2022 20:03:29 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>, Li Liang <liali@redhat.com>
-Subject: [PATCHv2 net] bonding: show NS IPv6 targets in proc master info
-Date:   Mon, 30 May 2022 11:03:19 +0800
-Message-Id: <20220530030319.16696-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        d=corp.netease.com; s=s210401; h=Received:From:To:Cc:Subject:
+        Date:Message-Id:MIME-Version:Content-Transfer-Encoding; bh=3ZtQG
+        plpK1TUOtshd/f0IPODZV9We7sq8TM2GN3EieU=; b=A7OuLVkRtBPo/LvMY8qLh
+        zvlX3RenAztIQ2UlyMYSk/Ar/zUuLXhYSLBqghk33CuxKLx7zmKvVajeXDoukc1m
+        17p7/0pXooZqLLrGJNCocxuu4/aQl+lidQstnAjmmIPlnrYhShnMvFG1tAHQCQN6
+        tBQhAU8gVxaqsEJLXT2th0=
+Received: from pubt1-k8s74.yq.163.org (unknown [115.238.122.38])
+        by corp-front11-corp.i.nease.net (Coremail) with SMTP id aYG_CgA3UmT0NpRiZmklAA--.15991S2;
+        Mon, 30 May 2022 11:16:04 +0800 (HKT)
+From:   liuyacan@corp.netease.com
+To:     kgraul@linux.ibm.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ubraun@linux.ibm.com,
+        tonylu@linux.alibaba.com
+Subject: SMC-R problem under multithread
+Date:   Mon, 30 May 2022 11:16:04 +0800
+Message-Id: <20220530031604.144875-1-liuyacan@corp.netease.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-CM-TRANSID: aYG_CgA3UmT0NpRiZmklAA--.15991S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7JrWfXFWxXw1rKF4xKw1xKrg_yoWkCrb_WF
+        4kGF1UA3y3JrWIgw4Ivr10yrZaqay5Cwn8Z34kKr10k3ykXwnxCFZ5X393Xa1kGF4Fkrn0
+        gwn0vrZrtw1a9jkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbJkYjxAI6xCIbckI1I0E57IF64kEYxAxM7k0a2IF6w4xM7kC6x80
+        4xWl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14
+        AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv2
+        0xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26rxl6s0DM28EF7xvwVC2z2
+        80aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2kK67ZEXf0FJ3sC
+        6x9vy-n0Xa0_Xr1Utr1kJwI_Jr4le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqjxCE34x0Y4
+        8IcwAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2
+        jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACI402YV
+        CY1x02628vn2kIc2xKxwAKzVCY07xG64k0F24l7I0Y64k_MxkI7II2jI8vz4vEwIxGrwCF
+        04k20xvY0x0EwIxGrwCF72vEw2IIxxk0rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwCFI7vE0w
+        C20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAF
+        wI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjx
+        v20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2
+        jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0x
+        ZFpf9x07jD_-PUUUUU=
+X-CM-SenderInfo: 5olx5txfdqquhrush05hwht23hof0z/1tbiBQATCVt763voNAAPs8
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When adding bond new parameter ns_targets. I forgot to print this
-in bond master proc info. After updating, the bond master info will looks
-like:
+Hi experts,
 
-ARP IP target/s (n.n.n.n form): 192.168.1.254
-NS IPv6 target/s (XX::XX form): 2022::1, 2022::2
+  I recently used memcached to test the performance of SMC-R relative to TCP, but the results 
+  are confusing me. When using multithread on the server side, the performance of SMC-R is not as good as TCP.
+    
+  Specifically, I tested 4 scenarios with server thread: 1\2\4\8. The client uses 8threads fixedly. 
+  
+  server: (smc_run) memcached -t 1 -m 16384 -p [SERVER-PORT] -U 0 -F -c 10240 -o modern
+  client: (smc-run) memtier_benchmark -s [SERVER-IP] -p [SERVER-PORT] -P memcache_text --random-data --data-size=100 --data-size-pattern=S --key-minimum=30 --key-maximum=100  -n 5000000 -t 8
+  
+  The result is as follows:
+  
+  SMC-R:
+  
+  server-thread    ops/sec  client-cpu server-cpu
+      1             242k        220%         97%
+      2             362k        241%        128%
+      4             378k        242%        160%
+      8             395k        242%        210%
+      
+  TCP:
+  server-thread    ops/sec  client-cpu server-cpu
+      1             185k       224%         100%
+      2             435k       479%         200%
+      4             780k       731%         400%
+      8             938k       800%         659%                   
+   
+  It can be seen that as the number of threads increases, the performance increase of SMC-R is much slower than that of TCP.
 
-Fixes: 4e24be018eb9 ("bonding: add new parameter ns_targets")
-Reported-by: Li Liang <liali@redhat.com>
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
-v2: add CONFIG_IPV6 gating
----
- drivers/net/bonding/bond_procfs.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+  Am I doing something wrong? Or is it only when CPU resources are tight that SMC-R has a significant advantage ?  
+  
+  Any suggestions are welcome.
 
-diff --git a/drivers/net/bonding/bond_procfs.c b/drivers/net/bonding/bond_procfs.c
-index cfe37be42be4..43be458422b3 100644
---- a/drivers/net/bonding/bond_procfs.c
-+++ b/drivers/net/bonding/bond_procfs.c
-@@ -129,6 +129,21 @@ static void bond_info_show_master(struct seq_file *seq)
- 			printed = 1;
- 		}
- 		seq_printf(seq, "\n");
-+
-+#if IS_ENABLED(CONFIG_IPV6)
-+		printed = 0;
-+		seq_printf(seq, "NS IPv6 target/s (xx::xx form):");
-+
-+		for (i = 0; (i < BOND_MAX_NS_TARGETS); i++) {
-+			if (ipv6_addr_any(&bond->params.ns_targets[i]))
-+				break;
-+			if (printed)
-+				seq_printf(seq, ",");
-+			seq_printf(seq, " %pI6c", &bond->params.ns_targets[i]);
-+			printed = 1;
-+		}
-+		seq_printf(seq, "\n");
-+#endif
- 	}
- 
- 	if (BOND_MODE(bond) == BOND_MODE_8023AD) {
--- 
-2.35.1
+
+Thanks & Regards,
+Yacan.
 
