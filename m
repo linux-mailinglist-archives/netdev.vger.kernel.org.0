@@ -2,164 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 931685376C6
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 10:50:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D90F25376AC
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 10:50:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233679AbiE3IWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 04:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39180 "EHLO
+        id S233799AbiE3IYS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 04:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233812AbiE3IVt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 04:21:49 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A122C264E;
-        Mon, 30 May 2022 01:21:37 -0700 (PDT)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24U7tgiJ032624;
-        Mon, 30 May 2022 08:20:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=8W/Qr7GW+a5noC4Ymc+o5KHLvWFwOSj/ipiDYV1VxbQ=;
- b=RwBo4mv5bkT/jBO11H1WjHUFKof/vzWlPXV1IKaDAooKJipCO7oVvlqAiuT1jdEcP+Z+
- Aa4OtCkzYxUO8R/QKtodj7GTrQygqgKWleejSrC3AkInU5wTq+b6723QoiIe9HNBABQl
- OUop+E7y67++78LBXzlyu4n4Qyu1qo71KPZ+PMGNo0PN+ZLE/DbzkxXiBUwUKY67YM+E
- /yYPqGCjBeN1fSFTXW2rJJWf3EXSksRFwjbaa2sZHfAvNR7Ip+xfK7/L+MjM26yAP4sX
- uS+Ulxa0a5ZYwlDsrjgW0C1mmFaF+T1C4kHbwkcy+NbWG/80JBmJ8kTbp30Pjl+UQIon 7A== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gbcahjd26-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 30 May 2022 08:20:57 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 24U8BMKB011450;
-        Mon, 30 May 2022 08:20:55 GMT
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2101.outbound.protection.outlook.com [104.47.70.101])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gc8jvysmu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 30 May 2022 08:20:55 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ahq19epU6OmrPSMXqyTKI26gWsp6q5daGQfI4qLqZWafF59XeCVELLAEKtE8zD+k7GlSrQwWEgWd2hnwHfugFkyaz3SMVNuE9ofaoPdof4e/EC/3C/uCFkeOacgaj8IWw/30Fu+FkprQsj0YujyED074dggHd0YQVhkrx4o+Io/9KPxp3OBUfszgYOoKR0gDAdsvaOchT2xecnfFTx9hdtZECeXz9FFIJ8DLq71QSUeepWYmoKmVJFO9MAgFkQrgdJv9ujGdZp/pCu7OSbdkXBWmKY8eqmpYYl31Dky8nPmYM1bQyY/AN1rnpZDDmNbkDkHvpkqPHrZdBI04UxYeDA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8W/Qr7GW+a5noC4Ymc+o5KHLvWFwOSj/ipiDYV1VxbQ=;
- b=EDVCJF17YGDBcSVLkt91TSQrOjzMmWHtpn7zsAa5jL7iUVWJL4GF/tI6wRXbTRlY7YGd+71Cx4d0yVnPh155wK3sGcjy6OtQonGbAwyqsTfc69r1QuilyPCt6VbddaVPY4KnDPVEstF8F4OAveMt4dVbWN2YVM0dyxWMnhNQfnW+MhXJyFrSIUlA6dY7PHmJ8/bmR4zJaLyd7mFTUXcqwoF47YfkM8/EzkcL92/9nzrnsRi+sxeNdtAgjhLN3RDtyxNBNBhyrfo7heOsV+DjQJ/2uCvNcSuUHobdzZXnCFBkxUKitWIH8iIOOanJwxsPxhZJP2gttoJt7H8mIEc+bg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8W/Qr7GW+a5noC4Ymc+o5KHLvWFwOSj/ipiDYV1VxbQ=;
- b=sAKXPZ8gb0n7Ym2OVkEkZEO93iX+IZvCLZ1ix9qVTFQ7QpPRWgnOFAAENWKIzn4RIPhzc1ZCIparSqxHjOYPEgev1ciitMIuuBfs1c6IfEetXs23gkNBsZeya6X/IGu7qlewcPLgWQhyh2WnOpONk9TblG0apUO8ICMucta2qIY=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CO1PR10MB4404.namprd10.prod.outlook.com
- (2603:10b6:303:90::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Mon, 30 May
- 2022 08:20:53 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::86f:81ba:9951:5a7e]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::86f:81ba:9951:5a7e%2]) with mapi id 15.20.5293.019; Mon, 30 May 2022
- 08:20:53 +0000
-Date:   Mon, 30 May 2022 11:20:34 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Chengguang Xu <cgxu519@mykernel.net>
-Cc:     netdev@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-scsi@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        linux-media@vger.kernel.org
-Subject: Re: [PATCH 0/6] fix a common error of while loop condition in error
- path
-Message-ID: <20220530082034.GN2146@kadam>
-References: <20220529153456.4183738-1-cgxu519@mykernel.net>
+        with ESMTP id S229503AbiE3IYR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 04:24:17 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E0374DDD;
+        Mon, 30 May 2022 01:24:14 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R701e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VEkVDRR_1653899050;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VEkVDRR_1653899050)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 30 May 2022 16:24:11 +0800
+Date:   Mon, 30 May 2022 16:24:10 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     liuyacan@corp.netease.com
+Cc:     davem@davemloft.net, edumazet@google.com, kgraul@linux.ibm.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, ubraun@linux.ibm.com
+Subject: Re: SMC-R problem under multithread
+Message-ID: <YpR/Kjx4L6WoMb26@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <YpRRuxCs+G6Fp4kT@TonyMac-Alibaba>
+ <20220530064049.1014294-1-liuyacan@corp.netease.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220529153456.4183738-1-cgxu519@mykernel.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNAP275CA0010.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4c::15)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: be4967f9-59bd-48f9-e1c8-08da42155056
-X-MS-TrafficTypeDiagnostic: CO1PR10MB4404:EE_
-X-Microsoft-Antispam-PRVS: <CO1PR10MB4404B2C276DB6CF65084F8CD8EDD9@CO1PR10MB4404.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UVkcQLK5Z0qUg2W9QghhczkPkwcH9T0ZvHwupks5+Gg7aRb9vSCecDpnxprUrGa+xoL2PuXJGKNMAAWVs/j+8qtziyotx5Mnj/Y5bfYdfsRJ4zYnxqZM6hY4cWjziWSzRiTReecfQfSkfSvzjp4yfflVJrQelZ5yausWqhAbaDxqOpkf7AI7uYnG2qNdENvPkSweFausdyJMw/xuaxjhHnAJ6Bb4QQhgTZ45xSEN0Cpc9ecEjUSQDmq3sH3RG/TTBWHtn4Cq/UzQSPw7E2HA40Y6KPah7BB5XaUXmF40MYFsbpLntrBqlKjW0aWyt6p/89eTE27bmOQD8awfLN0eqJ4rqS72sIlGBvAuudd7aF2f1MeAWHL6wE66/b6uAEbzZzq907RNcIwlsDr3cUjJEH8pqZC8w09RrsDxkIP91Y67H3kwgBvPWHCQBrJbcwrMJ8NJjWfo4s9HdXrvfntSgNuM98pVkdtSw+r7v2wbA6XH2oco2UZvmFFhd42TzOU7oTzazKE4LHQHCARI1KK0uyAwYHdNXiCGMua4hrtOTR+DrxJscNh1gbpvYZT/irZS8696aAzgnN4PlG2IBlqFTc4znVK2k8iBY4i8zWIR+1TmDOjeYZ8fTEg/tL5hFF9Zyk22jFh5pkwUyVKpTrLCW2FivNARyJAmK2BFmjagapkeslIN4Ce1tRULr0UsO3HP+Ev2QM+K0blSGqwoYkaArQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(6506007)(2906002)(86362001)(186003)(1076003)(26005)(4744005)(38350700002)(5660300002)(38100700002)(316002)(33656002)(44832011)(6512007)(8936002)(4326008)(8676002)(33716001)(66476007)(66556008)(508600001)(66946007)(6666004)(6486002)(6916009)(52116002)(9686003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?W0DneNdmu1ae6Vo+eh2nYbGh5qZLGrMsRpkxod2fulVvoKF3CwIzvY3sNRr2?=
- =?us-ascii?Q?jlNDKjsmlcMSsxJG1mfi7qZUO3PxAOiP5DPwy3jyQ4EuZKoWFES/a8djPZLE?=
- =?us-ascii?Q?EzWI+oKyodyQZgLOYxhRblbLl1sj267siBzkuZYvyW3YV1wDGEIio3RNEGL5?=
- =?us-ascii?Q?lP29sjhytyPBjb4SSsqis8VPR+04dnxxknFstq39lWI2Y5Ctr29gWAgm37Sg?=
- =?us-ascii?Q?ghDo43FteT/ATA1rZ8UC2ph4/b+DOf2hZ9lM6dcktth28rW8FvI6XQ85emSL?=
- =?us-ascii?Q?Mdth1Q01qKSTkHzkjHVogaFbapW85ahWPRQisTM0IkjUhFR7l4DUksaQZckg?=
- =?us-ascii?Q?m8UZvv0NztztTxXsubf2CGASPQtKFY+rYkhmpp3QJv2VLUY8RjPhwyJGFLQD?=
- =?us-ascii?Q?QEh2XfgV2hbdQvelp5hiqTu2mKrtqxZFc0o8j6lZDph7yMqQm/dFwSXUE2ID?=
- =?us-ascii?Q?6d04pCm1l+/jzMBAPYq9vUYwb/kHO5/OI606r06bClxTxmqT5DGZKQPxzZmK?=
- =?us-ascii?Q?VfcvJpTh5Mdvx6nKmUJMcAshr3zMlTysGYYy/rXt+iHMEwg9Ky81Q5ZiCq0W?=
- =?us-ascii?Q?Y7vXkqPK1VdaxNWy3qWfTeFBZ9Bk60y3yVjvWP0caIoekdTFjH+kAj5BDXyL?=
- =?us-ascii?Q?NN+cBehYR/bQ3xDPqIeT3b+UsYv7JicDOdzyOJeyYZAcCbwxSt4CcrVr4CrL?=
- =?us-ascii?Q?uYag5fcqMU54yAiZpU97aWHy4zjVUdpOSlGErvmPgiX+BYSjyE3gj0QlhA/o?=
- =?us-ascii?Q?UNBiXFNPSVgAnAe7Hllt3Pbz62j8WaW8aze7CBrYUE00/Hl6jjXcKxVZoZOf?=
- =?us-ascii?Q?ptHOgvlYYXtcYeKFfhJM57JYN/7YaXLORmxjUXKq/vMUDSt51X+DOvrtNYox?=
- =?us-ascii?Q?/4GRPEeI0cTzKTHB0k/CUnMXV9RTbAwpq1pySvCAe+MqykLtbcYgv/rKBh9Q?=
- =?us-ascii?Q?JpAZWjDqwboRn8dvePZ8SoyXVLaQCtGp4r0a8HK4Rgt7ICGbPQKMqJlM2LfK?=
- =?us-ascii?Q?kEF+hzy5t94Kbwv2bHXzYCOiSDMVnDvys0DC4hGl8thkMYyoUoxVExHq6o37?=
- =?us-ascii?Q?y80qWke+61aERKZuZLvZoPVSMoB3NOkJ5ETMiuLTay7CwcNUqr4JuwPViXG9?=
- =?us-ascii?Q?999svY0HRQ/BSrzFMB/ht11pLhMBpRrmDAYceaXZUZ+jCtyC1bHVIGie/yiY?=
- =?us-ascii?Q?HM63rxYufjICo9DEQ2DPZW8c5dkyN9usD1dGRih4ttqlF2JB2m21kJUMBPWQ?=
- =?us-ascii?Q?Q/zD2FypXA0WPCx14Wk9/j2w9tCdHxNLOg9PlruJb6bM/XDF8ZRNTwsvTRQ1?=
- =?us-ascii?Q?fmNof4fZ3OJlVnWUrUnFXqxAdCln0EPMToQFJsdpze2zhJHTHdTSyYrllXqu?=
- =?us-ascii?Q?HUSn35xPVc0D1r+snXjlYdWZk/nST8czstD6yaP0M3Kw2pJgmgm0FW0bcJgw?=
- =?us-ascii?Q?Dy6ERrqr9s2XGbgzwo5CmW05ueEHcipTiiKN7rSd5ZT1CIsGth3CFOnlcTDX?=
- =?us-ascii?Q?VE52CF4IEa3rdYAM5LhE6BrDU4YNc22sJQN4yWrGdbtI2/VKtMR997qseBPk?=
- =?us-ascii?Q?+X08IHK40yw0IrtnLA8xC5QQbRoRQs1t3dcRchpqNVu6LjZ/sQs/NyI8HNO/?=
- =?us-ascii?Q?MfIHwD2zSdPt2IL1FyvBaE9y0+PWg9tlnvMHPG/9hiEPU9H19YvdOAJjy+CP?=
- =?us-ascii?Q?XllP8hHoE7cWIdn4V22vXyDmYn1+Qpvt6E9z3m43NyVpKPqPuwARi1MjpcH5?=
- =?us-ascii?Q?k4wzOYK0ciQuUlfxS6qlKeojuNUfSSo=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: be4967f9-59bd-48f9-e1c8-08da42155056
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 May 2022 08:20:53.7838
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nZe/IiG0f1I2UhhfQ0dKiwx1OuXLRE0oEmKm3yHHIgzCD+zWONFYQeo4Z8geE726a2sP//LE292D22li4Gv2rRwZI6OeAdZA9bpYZxIPsKw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4404
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.486,18.0.874
- definitions=2022-05-30_02:2022-05-27,2022-05-30 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=939 mlxscore=0
- suspectscore=0 spamscore=0 phishscore=0 malwarescore=0 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2204290000 definitions=main-2205300043
-X-Proofpoint-ORIG-GUID: vvcZqiDtZAHMnPQOVgOu699pf8QYdcJC
-X-Proofpoint-GUID: vvcZqiDtZAHMnPQOVgOu699pf8QYdcJC
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220530064049.1014294-1-liuyacan@corp.netease.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 29, 2022 at 11:34:50PM +0800, Chengguang Xu wrote:
-> There is a common error of while loop condition which misses
-> the case '(--i) == 0' in error path. This patch series just
-> tries to fix it in several driver's code.
+On Mon, May 30, 2022 at 02:40:49PM +0800, liuyacan@corp.netease.com wrote:
+> > Hi experts,
+> > 
+> > I recently used memcached to test the performance of SMC-R relative to TCP, but the results 
+> > are confusing me. When using multithread on the server side, the performance of SMC-R is not as good as TCP.
+> > 
+> > Specifically, I tested 4 scenarios with server thread: 1\2\4\8. The client uses 8threads fixedly. 
+> > 
+> > server: (smc_run) memcached -t 1 -m 16384 -p [SERVER-PORT] -U 0 -F -c 10240 -o modern
+> > client: (smc-run) memtier_benchmark -s [SERVER-IP] -p [SERVER-PORT] -P memcache_text --random-data --data-size=100 --data-size-pattern=S --key-minimum=30 --key-maximum=100  -n 5000000 -t 8
+> > 
+> > The result is as follows:
+> > 
+> > SMC-R:
+> > 
+> > server-thread    ops/sec  client-cpu server-cpu
+> > 1             242k        220%         97%
+> > 2             362k        241%        128%
+> > 4             378k        242%        160%
+> > 8             395k        242%        210%
+> > 
+> > TCP:
+> > server-thread    ops/sec  client-cpu server-cpu
+> > 1             185k       224%         100%
+> > 2             435k       479%         200%
+> > 4             780k       731%         400%
+> > 8             938k       800%         659%                   
+> > 
+> > It can be seen that as the number of threads increases, the performance increase of SMC-R is much slower than that of TCP.
+> > 
+> > Am I doing something wrong? Or is it only when CPU resources are tight that SMC-R has a significant advantage ?  
+> > 
+> > Any suggestions are welcome.
 > 
-> Note: I'm not specialist of specific drivers so just compile tested
-> for the fixes.
+> Hi, Tony.
+> 
+> Inline.
+>  
+> > Hi Yacan,
+> > 
+> > This result matches some of our scenarios to some extent. Let's talk
+> > about this result first.
+> > 
+> > Based on your benchmark, the biggest factor affecting performance seems
+> > that the CPU resource is limited. As the number of threads increased,
+> > neither CPU usage nor performance metrics improved, and CPU is limited
+> > to about 200-250%. To make it clear, could you please give out more
+> > metrics about per-CPU (usr / sys / hi / si) and memcached process usage.
+> 
+> Now, I use taskset to limit memcached to use cpu21~cpu28. The result is as follows:
+> 
+> TCP    1 thread 
+> %Cpu21 :  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu22 :  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu23 :  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu24 :  0.0 us,  0.0 sy,  0.0 ni, 99.7 id,  0.0 wa,  0.0 hi,  0.3 si,  0.0 st
+> %Cpu25 : 14.3 us, 76.3 sy,  0.0 ni,  0.0 id,  0.0 wa,  0.0 hi,  9.3 si,  0.0 st
+> %Cpu26 :  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu27 :  1.0 us,  0.0 sy,  0.0 ni, 98.0 id,  0.0 wa,  0.0 hi,  1.0 si,  0.0 st
+> %Cpu28 :  0.0 us,  0.0 sy,  0.0 ni, 99.7 id,  0.0 wa,  0.0 hi,  0.3 si,  0.0 st
+>   
+> SMC-R  1 thread
+> %Cpu21 :  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu22 :  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu23 :  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu24 :  0.0 us,  2.8 sy,  0.0 ni, 17.2 id,  0.0 wa,  0.0 hi, 79.9 si,  0.0 st
+> %Cpu25 : 18.9 us, 74.2 sy,  0.0 ni,  7.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu26 :  2.9 us,  0.3 sy,  0.0 ni, 96.7 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu27 :  0.3 us,  0.0 sy,  0.0 ni, 99.7 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu28 :  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> 
+> TCP    2 thread
+> %Cpu21 : 12.0 us, 81.7 sy,  0.0 ni,  6.3 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu22 : 11.0 us, 80.0 sy,  0.0 ni,  9.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu23 :  3.0 us, 12.6 sy,  0.0 ni, 84.4 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu24 :  0.0 us,  0.0 sy,  0.0 ni, 98.3 id,  0.0 wa,  0.0 hi,  1.7 si,  0.0 st
+> %Cpu25 :  0.0 us,  0.0 sy,  0.0 ni, 96.5 id,  0.0 wa,  0.0 hi,  3.5 si,  0.0 st
+> %Cpu26 :  0.0 us,  0.3 sy,  0.0 ni, 98.0 id,  0.0 wa,  0.0 hi,  1.7 si,  0.0 st
+> %Cpu27 :  0.0 us,  0.0 sy,  0.0 ni, 98.3 id,  0.0 wa,  0.0 hi,  1.7 si,  0.0 st
+> %Cpu28 :  2.0 us,  0.3 sy,  0.0 ni, 93.0 id,  0.0 wa,  0.0 hi,  4.7 si,  0.0 st
+>   
+> SMC-R  2 thread
+> %Cpu21 :  4.3 us, 18.1 sy,  0.0 ni, 77.6 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu22 :  2.7 us, 20.6 sy,  0.0 ni, 76.7 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu23 :  4.7 us, 28.7 sy,  0.0 ni, 66.6 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu24 :  0.7 us,  2.3 sy,  0.0 ni, 17.3 id,  0.0 wa,  0.0 hi, 79.7 si,  0.0 st
+> %Cpu25 :  7.7 us, 23.6 sy,  0.0 ni, 68.7 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu26 :  3.7 us,  8.8 sy,  0.0 ni, 87.5 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu27 :  0.0 us,  0.7 sy,  0.0 ni, 99.3 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu28 :  1.3 us,  8.6 sy,  0.0 ni, 90.1 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> 
+> TCP    4  thread
+> %Cpu21 : 10.0 us, 55.3 sy,  0.0 ni, 34.7 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu22 :  8.7 us, 50.5 sy,  0.0 ni, 40.8 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu23 : 11.7 us, 63.7 sy,  0.0 ni, 24.7 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu24 :  3.1 us, 13.9 sy,  0.0 ni, 75.6 id,  0.0 wa,  0.0 hi,  7.5 si,  0.0 st
+> %Cpu25 :  9.3 us, 30.9 sy,  0.0 ni, 49.8 id,  0.0 wa,  0.0 hi, 10.0 si,  0.0 st
+> %Cpu26 :  8.5 us, 28.3 sy,  0.0 ni, 56.3 id,  0.0 wa,  0.0 hi,  6.8 si,  0.0 st
+> %Cpu27 :  4.3 us, 21.4 sy,  0.0 ni, 64.9 id,  0.0 wa,  0.0 hi,  9.4 si,  0.0 st
+> %Cpu28 : 12.4 us, 48.3 sy,  0.0 ni, 30.5 id,  0.0 wa,  0.0 hi,  8.7 si,  0.0 st
+> 
+> SMC-R  4  thread
+> %Cpu21 :  6.1 us, 21.4 sy,  0.0 ni, 72.5 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu22 :  5.9 us, 21.8 sy,  0.0 ni, 72.3 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu23 :  6.5 us, 28.1 sy,  0.0 ni, 65.4 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu24 :  4.1 us,  9.3 sy,  0.0 ni,  5.5 id,  0.0 wa,  0.0 hi, 81.0 si,  0.0 st
+> %Cpu25 :  3.7 us,  8.4 sy,  0.0 ni, 87.9 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu26 :  3.3 us, 10.9 sy,  0.0 ni, 85.8 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu27 :  4.7 us, 11.3 sy,  0.0 ni, 84.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu28 :  1.0 us,  4.3 sy,  0.0 ni, 94.6 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> 
+> TCP    8  thread
+> %Cpu21 : 14.7 us, 63.2 sy,  0.0 ni, 22.1 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu22 : 14.6 us, 61.1 sy,  0.0 ni, 24.3 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu23 : 12.9 us, 66.9 sy,  0.0 ni, 20.2 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu24 : 15.4 us, 52.1 sy,  0.0 ni, 20.3 id,  0.0 wa,  0.0 hi, 12.2 si,  0.0 st
+> %Cpu25 : 11.2 us, 52.7 sy,  0.0 ni, 19.7 id,  0.0 wa,  0.0 hi, 16.3 si,  0.0 st
+> %Cpu26 : 14.3 us, 54.3 sy,  0.0 ni, 20.8 id,  0.0 wa,  0.0 hi, 10.6 si,  0.0 st
+> %Cpu27 : 12.1 us, 52.8 sy,  0.0 ni, 21.4 id,  0.0 wa,  0.0 hi, 13.8 si,  0.0 st
+> %Cpu28 : 14.7 us, 49.1 sy,  0.0 ni, 21.2 id,  0.0 wa,  0.0 hi, 15.0 si,  0.0 st
+> 
+> SMC-R  8  thread 
+> %Cpu21 :  6.3 us, 20.4 sy,  0.0 ni, 73.3 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu22 :  8.3 us, 18.3 sy,  0.0 ni, 73.4 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu23 :  5.1 us, 23.3 sy,  0.0 ni, 71.6 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu24 :  1.3 us,  3.4 sy,  0.0 ni,  1.0 id,  0.0 wa,  0.0 hi, 94.3 si,  0.0 st
+> %Cpu25 :  6.3 us, 15.6 sy,  0.0 ni, 78.1 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu26 :  6.5 us, 12.7 sy,  0.0 ni, 80.8 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu27 :  7.4 us, 13.5 sy,  0.0 ni, 79.1 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> %Cpu28 :  5.8 us, 13.3 sy,  0.0 ni, 80.9 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+> 
+> 
+> It looks like SMC-R only uses one core to do softirq work, I presume this is the rx/tx tasklet, right?
 
-These are all correct.  Thank you.
+Yep, it only used one CQ (one CPU core) to handle data (tasklet), which
+is solved in [1].
+ 
+> > Secondly, it seems that there is lots of connections in this test.
+> > If it takes too much time to establish a connection, or the number of
+> > final connections does not reach the specified value, the result will be
+> > greatly affected. Could you please give out more details about the
+> > connections numbers during benchmark?
+> 
+> In our environment, client always use 50*8=400 connections.
 
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+400 connections is not too much. We found some regressions when the
+number of connections reaches the scale of thousands.
 
-regards,
-dan carpenter
+> 
+> > We have noticed SMC has some limitations in multiple threads and many
+> > connections. This benchmark happens to be basically in line with this
+> > scenario. In general, there are some aspects in brief:
+> > 1. control path (connection setup and dismiss) is not as fast as TCP;
+> > 2. data path (lock contention, CQ spreading, etc.) needs further improvement;
+> 
+> SMC-R control path setup time slower than TCP is reasonable and tolerable.
 
+Connection setup is the one of hardest part to solve. If this is okay, I
+think SMC should suitable for your scenario.
 
+> 
+> > About CPU limitation, SMC use one CQ and one core to handle data
+> > transmission, which cannot spread workload over multiple cores. There is
+> > is an early temporary solution [1], which also need to improve (new CQ
+> > API, WR refactor). With this early solution, it shows several times the
+> > performance improvement.
+> > 
+> > About the improvement of connection setup, you can see [2] for more
+> > details, which is still a proposal now, and we are working on it now.
+> > This show considerable performance boost.
+> > 
+> > [1] https://lore.kernel.org/all/20220126130140.66316-1-tonylu@linux.alibaba.com/
+> > [2] https://lore.kernel.org/all/1653375127-130233-1-git-send-email-alibuda@linux.alibaba.com/
+> > 
+> > Thanks,
+> > Tony LU
+> > 
+> 
+> We just noticed the CQ per device as well. Actually we tried creating more CQs, multiple rx tasklets, 
+> but nothing seems to work. Maybe we got it wrong somewhere...Now We plan to try [1] first.
+
+The key point of this patch [1] is to spread CQ vector to different
+cores. It can solve single core issue of tasklet (si high in some CPU
+core).
+
+Looking forward for your feedback, thanks.
+ 
+> Thank you very much for your reply!
+> 
+> [1] https://lore.kernel.org/all/20220126130140.66316-1-tonylu@linux.alibaba.com/
+> 
+> Regards,
+> Yacan
+> 
+> 
+
+[1] https://lore.kernel.org/all/20220126130140.66316-1-tonylu@linux.alibaba.com/
+
+Cheers,
+Tony Lu
