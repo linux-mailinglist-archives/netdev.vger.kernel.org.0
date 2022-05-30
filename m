@@ -2,91 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76C095374F3
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 09:23:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F40FC5374C0
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 09:23:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232663AbiE3G2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 02:28:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37476 "EHLO
+        id S231144AbiE3G0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 02:26:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232388AbiE3G2Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 02:28:24 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C027B25EAF;
-        Sun, 29 May 2022 23:28:18 -0700 (PDT)
-X-UUID: beb414e58d2c4899bcc7c4da52594413-20220530
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:a195ec36-b888-41bb-b4a1-9208f132fbd3,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:105
-X-CID-INFO: VERSION:1.1.5,REQID:a195ec36-b888-41bb-b4a1-9208f132fbd3,OB:0,LOB:
-        0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:105
-X-CID-META: VersionHash:2a19b09,CLOUDID:f2cff847-4fb1-496b-8f1d-39e733fed1ea,C
-        OID:4c6178cddb7c,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:0,BEC:nil
-X-UUID: beb414e58d2c4899bcc7c4da52594413-20220530
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <lina.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1226521694; Mon, 30 May 2022 14:28:10 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Mon, 30 May 2022 14:28:09 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Mon, 30 May 2022 14:28:08 +0800
-From:   Lina Wang <lina.wang@mediatek.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S232643AbiE3G0u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 02:26:50 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3E7DEC7
+        for <netdev@vger.kernel.org>; Sun, 29 May 2022 23:26:48 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id c2so9478589plh.2
+        for <netdev@vger.kernel.org>; Sun, 29 May 2022 23:26:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AEx6g4K/BNKtt4o5jHp5iqq3vHgFmnZ7V8rePWQ8U9k=;
+        b=pqObJXTlBeKXzlD4umt0P3x4WFPiWbf1veP/C9rNc/3zreULsTYmJSHx2FtJW1VFH4
+         Qw176djgR+nvpeIRQO0mJgOfOsvYl4McQ6HqoXQX1oRbgZwZCc2Ezg4dw57ooHZUGzjb
+         Mk6xL2cB0mZiAYBdCYu0NU2n1hFz6vqkZcCXp25u/z0uay20kNSyE+8Xj75cTxIiceTV
+         fCsmTpmrxt6qycBShD59cJg0LpNdErYxw08z2XoWR//RROGnOn60KXLy3LY410T7j7yQ
+         Y+AhJ3/b2WoaAwSuXLXSzqHU3ckxbcvvhxCIjSmUi/+74hg0df0ZBlPWyva0nXb4HQsb
+         3s/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AEx6g4K/BNKtt4o5jHp5iqq3vHgFmnZ7V8rePWQ8U9k=;
+        b=FXHZWWxoksYVvWMRjcPNnsTIsDE8oPPtHjgt8t3XSCiTR0zTgaYjhOs8ExpTutJLw9
+         oB4CHHECmwIbIo+EzhkuZn7S9rWNwEnhDyeUCTIotu6nBieqrNaB3VyThunO6pSR92Ki
+         dYx7vwFuqyzFVvWaIJ6sXabkSKFGZN1ai6hlf8UyhCPs/2wcmhRzmEvxNmyNFGDJRiRM
+         518mJxIxRW/q6PKRhGZ/FYwQscaZ/C+tU7Rju8P2/D8MsszosTgCcKs5Q/bBZm80BHTo
+         tOjiGBZIn1y4LhykDImDwRsDFCcMYs5lPNjuKJsPKIf31Ma2hgxECzHNsNSpOG/4RxS4
+         G/JA==
+X-Gm-Message-State: AOAM533McIAN1+bUDCrQReTXAHtwfT66Jo1wPjCVKOSt18H9eS6ibyDS
+        gpgTBoxus8UJsGc5BPkLTlWP9VDgwSt5wg==
+X-Google-Smtp-Source: ABdhPJwe5Yv73KiXfB80GwcWkDalutB0nF8ysFWXScrugy9vh2x31DRhoEnoZUUkxqQBefDUywAdWQ==
+X-Received: by 2002:a17:903:240c:b0:153:c8df:7207 with SMTP id e12-20020a170903240c00b00153c8df7207mr54446546plo.44.1653892007894;
+        Sun, 29 May 2022 23:26:47 -0700 (PDT)
+Received: from Laptop-X1.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id j4-20020a62b604000000b0050dc76281f8sm7888748pff.210.2022.05.29.23.26.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 29 May 2022 23:26:47 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "Maciej enczykowski" <maze@google.com>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <lkp@intel.com>,
-        <rong.a.chen@intel.com>, kernel test robot <oliver.sang@intel.com>,
-        Lina Wang <lina.wang@mediatek.com>
-Subject: [PATCH] selftests net: fix bpf build error
-Date:   Mon, 30 May 2022 14:21:26 +0800
-Message-ID: <20220530062126.27808-1-lina.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>, Li Liang <liali@redhat.com>
+Subject: [PATCHv3 net] bonding: show NS IPv6 targets in proc master info
+Date:   Mon, 30 May 2022 14:26:39 +0800
+Message-Id: <20220530062639.37179-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
-        SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR,UNPARSEABLE_RELAY
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf_helpers.h has been moved to tools/lib/bpf since 5.10, so add more
-incliding path.
+When adding bond new parameter ns_targets. I forgot to print this
+in bond master proc info. After updating, the bond master info will look
+like:
 
-Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Signed-off-by: Lina Wang <lina.wang@mediatek.com>
+ARP IP target/s (n.n.n.n form): 192.168.1.254
+NS IPv6 target/s (XX::XX form): 2022::1, 2022::2
+
+Fixes: 4e24be018eb9 ("bonding: add new parameter ns_targets")
+Reported-by: Li Liang <liali@redhat.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- tools/testing/selftests/net/bpf/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+v3: fix description typo as Jon pointed.
+v2: add CONFIG_IPV6 gating
+---
+ drivers/net/bonding/bond_procfs.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/tools/testing/selftests/net/bpf/Makefile b/tools/testing/selftests/net/bpf/Makefile
-index f91bf14bbee7..070251986dbe 100644
---- a/tools/testing/selftests/net/bpf/Makefile
-+++ b/tools/testing/selftests/net/bpf/Makefile
-@@ -2,6 +2,7 @@
+diff --git a/drivers/net/bonding/bond_procfs.c b/drivers/net/bonding/bond_procfs.c
+index cfe37be42be4..43be458422b3 100644
+--- a/drivers/net/bonding/bond_procfs.c
++++ b/drivers/net/bonding/bond_procfs.c
+@@ -129,6 +129,21 @@ static void bond_info_show_master(struct seq_file *seq)
+ 			printed = 1;
+ 		}
+ 		seq_printf(seq, "\n");
++
++#if IS_ENABLED(CONFIG_IPV6)
++		printed = 0;
++		seq_printf(seq, "NS IPv6 target/s (xx::xx form):");
++
++		for (i = 0; (i < BOND_MAX_NS_TARGETS); i++) {
++			if (ipv6_addr_any(&bond->params.ns_targets[i]))
++				break;
++			if (printed)
++				seq_printf(seq, ",");
++			seq_printf(seq, " %pI6c", &bond->params.ns_targets[i]);
++			printed = 1;
++		}
++		seq_printf(seq, "\n");
++#endif
+ 	}
  
- CLANG ?= clang
- CCINCLUDE += -I../../bpf
-+CCINCLUDE += -I../../../../lib
- CCINCLUDE += -I../../../../../usr/include/
- 
- TEST_CUSTOM_PROGS = $(OUTPUT)/bpf/nat6to4.o
+ 	if (BOND_MODE(bond) == BOND_MODE_8023AD) {
 -- 
-2.18.0
+2.35.1
 
