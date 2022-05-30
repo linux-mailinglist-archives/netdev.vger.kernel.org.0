@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CDA253801B
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:22:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE15D5380DC
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:28:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236972AbiE3Nw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 09:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33020 "EHLO
+        id S238606AbiE3Nwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 09:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238508AbiE3NuR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:50:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C2DAB0F3;
-        Mon, 30 May 2022 06:34:55 -0700 (PDT)
+        with ESMTP id S239152AbiE3NvH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:51:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38241915B3;
+        Mon, 30 May 2022 06:35:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7632C60F2A;
-        Mon, 30 May 2022 13:34:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B4B1C3411E;
-        Mon, 30 May 2022 13:34:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1222360F49;
+        Mon, 30 May 2022 13:35:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D291DC385B8;
+        Mon, 30 May 2022 13:35:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917694;
-        bh=6Hz5HqIYdJLRIZwRktEAYB4iRCBgmhBAZDeEbAndy0g=;
+        s=k20201202; t=1653917724;
+        bh=KVltontKE0lt0QW9bDngZHFXADK5DEfFhlfr0x7maPU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eWYwVozCqwP4cMii/2Q+UTYPfLHrHEsgy8WwWDVYfER703fombQjkNj1aQoXPFv2Q
-         MCJMqnAD8ROU48tXse4VijYniiy2Ii5BIbVP0i7aMEGnifalgBA6C2EG/FXuVJWRqg
-         /ky/m1rPCmgf7TSGpzqg//Zq7onAnNHYgnRAwKzDhU6Vt4SPlFJ7UDgZaPOxiEe6LJ
-         boqg2syyOfM1btC1I0aVj6CLVxBfQ/0T5qgU8CFzwN/jiF52YBM4y06Ouz/DVhREmw
-         Z81oImUta9BZzMMyCdyhh5f8cE7pzrlsrirp9EHzpA61gSAI3mhqbunMf5hOZsKXQl
-         KeP9bnqc65Cpg==
+        b=Un7+KSjInc4vyuZn7bYA7z2VQDKmOLPXaW97iRA64vsbnNkUJ0E6QhtyU6rbrLgcI
+         Fz3zoANBC9QDZ9Nokp12ZX4hUWBFP8UcNBjWuy7AngAhhO88RH9evpGoI79c5UcnRL
+         UNDVQ+xixVrpSRO3JZDEFJ/9qIhlary7Kv10iqF2tQvb1A57gQkVIV4XDa7hpRPq3M
+         aClVmwNf6KGraxVrndktRoiCA0sHNIKQoRjWKlbTgxFQqOO2okiCG2EgbATQWuIrRW
+         vAD5CjkjgRj1T7FuosmTytjk1rEPNhTPGEle7W1HkCqBwMH3eAmQk2PXlg+EaKNBeM
+         LIWjxB0JUjYgg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Petr Machata <petrm@nvidia.com>,
-        Maksym Yaremchuk <maksymy@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 067/135] mlxsw: Treat LLDP packets as control
-Date:   Mon, 30 May 2022 09:30:25 -0400
-Message-Id: <20220530133133.1931716-67-sashal@kernel.org>
+Cc:     Gavin Li <gavinl@nvidia.com>, Moshe Shemesh <moshe@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        amirtz@nvidia.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 075/135] net/mlx5: Increase FW pre-init timeout for health recovery
+Date:   Mon, 30 May 2022 09:30:33 -0400
+Message-Id: <20220530133133.1931716-75-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -59,57 +60,196 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+From: Gavin Li <gavinl@nvidia.com>
 
-[ Upstream commit 0106668cd2f91bf913fb78972840dedfba80a3c3 ]
+[ Upstream commit 37ca95e62ee23fa6d2c2c64e3dc40b4a0c0146dc ]
 
-When trapping packets for on-CPU processing, Spectrum machines
-differentiate between control and non-control traps. Traffic trapped
-through non-control traps is treated as data and kept in shared buffer in
-pools 0-4. Traffic trapped through control traps is kept in the dedicated
-control buffer 9. The advantage of marking traps as control is that
-pressure in the data plane does not prevent the control traffic to be
-processed.
+Currently, health recovery will reload driver to recover it from fatal
+errors. During the driver's load process, it would wait for FW to set the
+pre-init bit for up to 120 seconds, beyond this threshold it would abort
+the load process. In some cases, such as a FW upgrade on the DPU, this
+timeout period is insufficient, and the user has no way to recover the
+host device.
 
-When the LLDP trap was introduced, it was marked as a control trap. But
-then in commit aed4b5721143 ("mlxsw: spectrum: PTP: Hook into packet
-receive path"), PTP traps were introduced. Because Ethernet-encapsulated
-PTP packets look to the Spectrum-1 ASIC as LLDP traffic and are trapped
-under the LLDP trap, this trap was reconfigured as non-control, in sync
-with the PTP traps.
+To solve this issue, introduce a new FW pre-init timeout for health
+recovery, which is set to 2 hours.
 
-There is however no requirement that PTP traffic be handled as data.
-Besides, the usual encapsulation for PTP traffic is UDP, not bare Ethernet,
-and that is in deployments that even need PTP, which is far less common
-than LLDP. This is reflected by the default policer, which was not bumped
-up to the 19Kpps / 24Kpps that is the expected load of a PTP-enabled
-Spectrum-1 switch.
+The timeout for devlink reload and probe will use the original one because
+they are user triggered flows, and therefore should not have a
+significantly long timeout, during which the user command would hang.
 
-Marking of LLDP trap as non-control was therefore probably misguided. In
-this patch, change it back to control.
-
-Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Gavin Li <gavinl@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Shay Drory <shayd@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |  4 ++--
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    |  2 +-
+ .../ethernet/mellanox/mlx5/core/lib/tout.c    |  1 +
+ .../ethernet/mellanox/mlx5/core/lib/tout.h    |  1 +
+ .../net/ethernet/mellanox/mlx5/core/main.c    | 23 +++++++++++--------
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  2 +-
+ 6 files changed, 20 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 47b061b99160..ed4d0d3448f3 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -864,7 +864,7 @@ static const struct mlxsw_sp_trap_item mlxsw_sp_trap_items_arr[] = {
- 		.trap = MLXSW_SP_TRAP_CONTROL(LLDP, LLDP, TRAP),
- 		.listeners_arr = {
- 			MLXSW_RXL(mlxsw_sp_rx_ptp_listener, LLDP, TRAP_TO_CPU,
--				  false, SP_LLDP, DISCARD),
-+				  true, SP_LLDP, DISCARD),
- 		},
- 	},
- 	{
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+index d1093bb2d436..5e432e4fc381 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -182,13 +182,13 @@ static int mlx5_devlink_reload_up(struct devlink *devlink, enum devlink_reload_a
+ 	*actions_performed = BIT(action);
+ 	switch (action) {
+ 	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
+-		return mlx5_load_one(dev);
++		return mlx5_load_one(dev, false);
+ 	case DEVLINK_RELOAD_ACTION_FW_ACTIVATE:
+ 		if (limit == DEVLINK_RELOAD_LIMIT_NO_RESET)
+ 			break;
+ 		/* On fw_activate action, also driver is reloaded and reinit performed */
+ 		*actions_performed |= BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT);
+-		return mlx5_load_one(dev);
++		return mlx5_load_one(dev, false);
+ 	default:
+ 		/* Unsupported action should not get to this function */
+ 		WARN_ON(1);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+index 1c771287bee5..d5f540132a0e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+@@ -106,7 +106,7 @@ static void mlx5_fw_reset_complete_reload(struct mlx5_core_dev *dev)
+ 	if (test_bit(MLX5_FW_RESET_FLAGS_PENDING_COMP, &fw_reset->reset_flags)) {
+ 		complete(&fw_reset->done);
+ 	} else {
+-		mlx5_load_one(dev);
++		mlx5_load_one(dev, false);
+ 		devlink_remote_reload_actions_performed(priv_to_devlink(dev), 0,
+ 							BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
+ 							BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE));
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
+index c1df0d3595d8..d758848d34d0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c
+@@ -10,6 +10,7 @@ struct mlx5_timeouts {
+ 
+ static const u32 tout_def_sw_val[MAX_TIMEOUT_TYPES] = {
+ 	[MLX5_TO_FW_PRE_INIT_TIMEOUT_MS] = 120000,
++	[MLX5_TO_FW_PRE_INIT_ON_RECOVERY_TIMEOUT_MS] = 7200000,
+ 	[MLX5_TO_FW_PRE_INIT_WARN_MESSAGE_INTERVAL_MS] = 20000,
+ 	[MLX5_TO_FW_PRE_INIT_WAIT_MS] = 2,
+ 	[MLX5_TO_FW_INIT_MS] = 2000,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
+index 1c42ead782fa..257c03eeab36 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h
+@@ -7,6 +7,7 @@
+ enum mlx5_timeouts_types {
+ 	/* pre init timeouts (not read from FW) */
+ 	MLX5_TO_FW_PRE_INIT_TIMEOUT_MS,
++	MLX5_TO_FW_PRE_INIT_ON_RECOVERY_TIMEOUT_MS,
+ 	MLX5_TO_FW_PRE_INIT_WARN_MESSAGE_INTERVAL_MS,
+ 	MLX5_TO_FW_PRE_INIT_WAIT_MS,
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 4e49dca94bc3..56a8079dc16a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1015,7 +1015,7 @@ static void mlx5_cleanup_once(struct mlx5_core_dev *dev)
+ 	mlx5_devcom_unregister_device(dev->priv.devcom);
+ }
+ 
+-static int mlx5_function_setup(struct mlx5_core_dev *dev, bool boot)
++static int mlx5_function_setup(struct mlx5_core_dev *dev, u64 timeout)
+ {
+ 	int err;
+ 
+@@ -1030,11 +1030,11 @@ static int mlx5_function_setup(struct mlx5_core_dev *dev, bool boot)
+ 
+ 	/* wait for firmware to accept initialization segments configurations
+ 	 */
+-	err = wait_fw_init(dev, mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT),
++	err = wait_fw_init(dev, timeout,
+ 			   mlx5_tout_ms(dev, FW_PRE_INIT_WARN_MESSAGE_INTERVAL));
+ 	if (err) {
+ 		mlx5_core_err(dev, "Firmware over %llu MS in pre-initializing state, aborting\n",
+-			      mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT));
++			      timeout);
+ 		return err;
+ 	}
+ 
+@@ -1297,7 +1297,7 @@ int mlx5_init_one(struct mlx5_core_dev *dev)
+ 	mutex_lock(&dev->intf_state_mutex);
+ 	dev->state = MLX5_DEVICE_STATE_UP;
+ 
+-	err = mlx5_function_setup(dev, true);
++	err = mlx5_function_setup(dev, mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT));
+ 	if (err)
+ 		goto err_function;
+ 
+@@ -1361,9 +1361,10 @@ void mlx5_uninit_one(struct mlx5_core_dev *dev)
+ 	mutex_unlock(&dev->intf_state_mutex);
+ }
+ 
+-int mlx5_load_one(struct mlx5_core_dev *dev)
++int mlx5_load_one(struct mlx5_core_dev *dev, bool recovery)
+ {
+ 	int err = 0;
++	u64 timeout;
+ 
+ 	mutex_lock(&dev->intf_state_mutex);
+ 	if (test_bit(MLX5_INTERFACE_STATE_UP, &dev->intf_state)) {
+@@ -1373,7 +1374,11 @@ int mlx5_load_one(struct mlx5_core_dev *dev)
+ 	/* remove any previous indication of internal error */
+ 	dev->state = MLX5_DEVICE_STATE_UP;
+ 
+-	err = mlx5_function_setup(dev, false);
++	if (recovery)
++		timeout = mlx5_tout_ms(dev, FW_PRE_INIT_ON_RECOVERY_TIMEOUT);
++	else
++		timeout = mlx5_tout_ms(dev, FW_PRE_INIT_TIMEOUT);
++	err = mlx5_function_setup(dev, timeout);
+ 	if (err)
+ 		goto err_function;
+ 
+@@ -1746,7 +1751,7 @@ static void mlx5_pci_resume(struct pci_dev *pdev)
+ 
+ 	mlx5_pci_trace(dev, "Enter, loading driver..\n");
+ 
+-	err = mlx5_load_one(dev);
++	err = mlx5_load_one(dev, false);
+ 
+ 	mlx5_pci_trace(dev, "Done, err = %d, device %s\n", err,
+ 		       !err ? "recovered" : "Failed");
+@@ -1833,7 +1838,7 @@ static int mlx5_resume(struct pci_dev *pdev)
+ {
+ 	struct mlx5_core_dev *dev = pci_get_drvdata(pdev);
+ 
+-	return mlx5_load_one(dev);
++	return mlx5_load_one(dev, false);
+ }
+ 
+ static const struct pci_device_id mlx5_core_pci_table[] = {
+@@ -1878,7 +1883,7 @@ int mlx5_recover_device(struct mlx5_core_dev *dev)
+ 			return -EIO;
+ 	}
+ 
+-	return mlx5_load_one(dev);
++	return mlx5_load_one(dev, true);
+ }
+ 
+ static struct pci_driver mlx5_core_driver = {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+index 6f8baa0f2a73..2d2150fc7a0f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
+@@ -290,7 +290,7 @@ void mlx5_mdev_uninit(struct mlx5_core_dev *dev);
+ int mlx5_init_one(struct mlx5_core_dev *dev);
+ void mlx5_uninit_one(struct mlx5_core_dev *dev);
+ void mlx5_unload_one(struct mlx5_core_dev *dev);
+-int mlx5_load_one(struct mlx5_core_dev *dev);
++int mlx5_load_one(struct mlx5_core_dev *dev, bool recovery);
+ 
+ int mlx5_vport_get_other_func_cap(struct mlx5_core_dev *dev, u16 function_id, void *out);
+ 
 -- 
 2.35.1
 
