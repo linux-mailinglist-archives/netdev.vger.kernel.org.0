@@ -2,55 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 372AA53783E
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:06:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 143ED537869
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:06:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234953AbiE3Jwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 05:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42000 "EHLO
+        id S234982AbiE3JzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 05:55:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233008AbiE3Jwq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 05:52:46 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0C710FE5
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 02:52:45 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1nvc4g-0008P8-Vu; Mon, 30 May 2022 11:52:34 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1nvc4e-0007Yd-Tf; Mon, 30 May 2022 11:52:32 +0200
-Date:   Mon, 30 May 2022 11:52:32 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, Neo Jou <neojou@gmail.com>,
-        Hans Ulli Kroll <linux@ulli-kroll.de>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: [PATCH 00/10] RTW88: Add support for USB variants
-Message-ID: <20220530095232.GI1615@pengutronix.de>
-References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
- <87fskrv0cm.fsf@kernel.org>
+        with ESMTP id S235019AbiE3JzL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 05:55:11 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813AC4C7A2;
+        Mon, 30 May 2022 02:55:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653904510; x=1685440510;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=2+hk4ostrY+MgPjlK3LLl5aBonfXPFHwp7H2wGkBm0A=;
+  b=l2WflFQLF2yT+A3ZswKmNutlIVWnZhi2sEpaVzFBgVyXDo3+XenWIerB
+   rTQR8vXy+/PbZaotYbDl9xtNG3UnZd/+QPruXQStiSEnvTaYXet8GHArs
+   QZO0qPn5HYRTSnX39HfvYlszt7MfPyFM63Wxur7iInHfbi9tbF+Ed3b+y
+   /J7Ifg52diiw4OpS9D1P7tokENsrr5wrdyoeQ4pIorAJod4/G22BIYZLm
+   eBj+/mYklUcEB8qOkidQIXl0ccJz9vCj6QHCjrPDGtWZDUzR+CMOHgUZt
+   P5x6S4sp4sbG/wPoiKXsDUdzITCikkxS/y/CX5h92M2Wi+NU2JXh39pkj
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10362"; a="272527404"
+X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
+   d="scan'208";a="272527404"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 02:55:10 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
+   d="scan'208";a="666452045"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by FMSMGA003.fm.intel.com with ESMTP; 30 May 2022 02:55:07 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 24U9t6o1022718;
+        Mon, 30 May 2022 10:55:06 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mark Bloch <mbloch@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net/mlx5: fix invalid structure access
+Date:   Mon, 30 May 2022 11:53:53 +0200
+Message-Id: <20220530095353.1237458-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220527222905.chagmk4wfresegfg@sx1>
+References: <20220527110132.102192-1-alexandr.lobakin@intel.com> <20220527222905.chagmk4wfresegfg@sx1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87fskrv0cm.fsf@kernel.org>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain; charset="us-ascii"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,33 +69,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 30, 2022 at 12:25:13PM +0300, Kalle Valo wrote:
-> Sascha Hauer <s.hauer@pengutronix.de> writes:
+From: Saeed Mahameed <saeed@kernel.org>
+Date: Fri, 27 May 2022 15:29:05 -0700
+
+> On 27 May 13:01, Alexander Lobakin wrote:
+> >After pulling latest bpf-next, I started catching the following:
+
+[...]
+
+> We have a similar patch that is being reviewed internally.
+> I don't like comparing strings to match devices. Also this could cause mlx5
+> unwanted aux devices to be matched, e.g mlx5e, mlx5_ib, mlx5v, etc .., since
+> they all share the same prefix ? yes, no ? 
 > 
-> > Another problem to address is that the driver uses
-> > ieee80211_iterate_stations_atomic() and
-> > ieee80211_iterate_active_interfaces_atomic() and does register accesses
-> > in the iterator. This doesn't work with USB, so iteration is done in two
-> > steps now: The ieee80211_iterate_*_atomic() functions are only used to
-> > collect the stations/interfaces on a list which is then iterated over
-> > non-atomically in the second step. The implementation for this is
-> > basically the one suggested by Ping-Ke here:
-> >
-> > https://lore.kernel.org/lkml/423f474e15c948eda4db5bc9a50fd391@realtek.com/
+> We also have another patch/approach that is comparing drivers:
 > 
-> Isn't this racy? What guarantees that vifs are not deleted after
-> ieee80211_iterate_active_interfaces_atomic() call?
+> 	if (dev->driver != curr->device->driver)
+> 		return NULL;
+> 
+> But also this is under discussion.
 
-The driver mutex &rtwdev->mutex is acquired during the whole
-collection/iteration process. For deleting an interface
-ieee80211_ops::remove_interface would have to be called, right?
-That would acquire &rtwdev->mutex as well, so I think this should be
-safe.
+Ok, I spotted that implementation in your repo at korg, hope it will
+hit mainline trees soon.
 
-Sascha
+> 
+> I think the whole design of this function is wrong, it's being used to match
+> devices of type mlx5_core_dev which are pci devices, but it is using aux class
+> to lookup! It works since we always have some aux devices hanging on top of
+> mlx5_core pci devs and since all of them share the same wrapper structure
+> "mlx5_adev" we find the corresponding mdev "mlx5_core_dev" sort of correctly.
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+[...]
+
+> >-- 
+> >2.36.1
+
+Thanks,
+Al
