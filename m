@@ -2,49 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6BBD537D0B
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:41:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46EC9537CF7
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:41:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237674AbiE3Nia (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 09:38:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56416 "EHLO
+        id S237541AbiE3NiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 09:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237640AbiE3Ng7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:36:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F3384A32;
-        Mon, 30 May 2022 06:30:59 -0700 (PDT)
+        with ESMTP id S237609AbiE3NhK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:37:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E03B85EEA;
+        Mon, 30 May 2022 06:31:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C4C5B80D89;
-        Mon, 30 May 2022 13:30:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB78BC3411E;
-        Mon, 30 May 2022 13:30:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F8E860F14;
+        Mon, 30 May 2022 13:31:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66EC6C341C5;
+        Mon, 30 May 2022 13:30:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917456;
-        bh=8gQNAltN6BIULDhgTdmaQHw+k3XtzpJbkUP7TqeHUWw=;
+        s=k20201202; t=1653917459;
+        bh=jfjiiczskkWIPFRnJUOUCmc+nJhtQvnuC1XUvP8+RYg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o6qTWDP7FT2in5SFuI7wMukx6I6DKCc2pzE3zrhf44Um2NR0N60+2qYI+hsz23U33
-         NZr+RDSqaiNPGTTnV47WEssxwPXGiX0Ac3YHd8E7sknr75iebeI5DwUW0oEN9sib3s
-         6rE8SOraXBOTdQrPkqVdr42vanN2y6xQU0I1P0KT+P1tmbqTPEMJe1QEDlES+qfWgq
-         xylJddpdxsK3BU7/mJOSs+N6mGpxEE531489NtA1ko3NXt/gnhpm3Zl/V+ZVifRjeZ
-         CVqbf3mjtpqwfgaA4+AprDmSoKfQDxg9upbcWazVv3Cf7wQmrPNoKVMofK3CuUBIwH
-         xvRf6IbJplndw==
+        b=uE0SBNbqUuOz4iH1mj1vF+l2H3W88LxaU7oUmt1sAgZLw1HGXZhw3km/6JYoKW4Zg
+         zkrZILcnrkD68ZTIbcR4h3BZSx7FFlth4LaWBXLIRSpx3vbyexm/k0LoQfkg5cyr7Z
+         8hYTz4011i26H1x9QK9FyhI6hwTIxLBUxR0+0InpmT4AwkVd5ha8KBqmB58bgDUvFI
+         ToFxQ/IQ73uq2U7oytltwaSuOGVXUEAgtMokKiCmPMbsLeHwbtlgl3BK3E9TSDaBRr
+         GVsgfb9AU8FDhKmPksZCFulg0Xzm/fln93LF625H1KnK2FATr8X9aa09vZXZT6NDXl
+         YysMAQQyz0fnA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        kernel test robot <lkp@intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ndesaulniers@google.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.18 144/159] can: mcp251xfd: silence clang's -Wunaligned-access warning
-Date:   Mon, 30 May 2022 09:24:09 -0400
-Message-Id: <20220530132425.1929512-144-sashal@kernel.org>
+Cc:     Alex Elder <elder@linaro.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, elder@kernel.org,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 146/159] net: ipa: ignore endianness if there is no header
+Date:   Mon, 30 May 2022 09:24:11 -0400
+Message-Id: <20220530132425.1929512-146-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -62,62 +58,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Alex Elder <elder@linaro.org>
 
-[ Upstream commit 1a6dd9996699889313327be03981716a8337656b ]
+[ Upstream commit 332ef7c814bdd60f08d0d9013d0e1104798b2d23 ]
 
-clang emits a -Wunaligned-access warning on union
-mcp251xfd_tx_ojb_load_buf.
+If we program an RX endpoint to have no header (header length is 0),
+header-related endpoint configuration values are meaningless and are
+ignored.
 
-The reason is that field hw_tx_obj (not declared as packed) is being
-packed right after a 16 bits field inside a packed struct:
+The only case we support that defines a header is QMAP endpoints.
+In ipa_endpoint_init_hdr_ext() we set the endianness mask value
+unconditionally, but it should not be done if there is no header
+(meaning it is not configured for QMAP).
 
-| union mcp251xfd_tx_obj_load_buf {
-| 	struct __packed {
-| 		struct mcp251xfd_buf_cmd cmd;
-| 		  /* ^ 16 bits fields */
-| 		struct mcp251xfd_hw_tx_obj_raw hw_tx_obj;
-| 		  /* ^ not declared as packed */
-| 	} nocrc;
-| 	struct __packed {
-| 		struct mcp251xfd_buf_cmd_crc cmd;
-| 		struct mcp251xfd_hw_tx_obj_raw hw_tx_obj;
-| 		__be16 crc;
-| 	} crc;
-| } ____cacheline_aligned;
+Set the endianness conditionally, and rearrange the logic in that
+function slightly to avoid testing the qmap flag twice.
 
-Starting from LLVM 14, having an unpacked struct nested in a packed
-struct triggers a warning. c.f. [1].
+Delete an incorrect comment in ipa_endpoint_init_aggr().
 
-This is a false positive because the field is always being accessed
-with the relevant put_unaligned_*() function. Adding __packed to the
-structure declaration silences the warning.
-
-[1] https://github.com/llvm/llvm-project/issues/55520
-
-Link: https://lore.kernel.org/all/20220518114357.55452-1-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Reported-by: kernel test robot <lkp@intel.com>
-Tested-by: Nathan Chancellor <nathan@kernel.org> # build
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/spi/mcp251xfd/mcp251xfd.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ipa/ipa_endpoint.c | 32 +++++++++++++++++---------------
+ 1 file changed, 17 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd.h b/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
-index 9cb6b5ad8dda..60e56fa4601d 100644
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd.h
-@@ -441,7 +441,7 @@ struct mcp251xfd_hw_tef_obj {
- /* The tx_obj_raw version is used in spi async, i.e. without
-  * regmap. We have to take care of endianness ourselves.
-  */
--struct mcp251xfd_hw_tx_obj_raw {
-+struct __packed mcp251xfd_hw_tx_obj_raw {
- 	__le32 id;
- 	__le32 flags;
- 	u8 data[sizeof_field(struct canfd_frame, data)];
+diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+index cea7b2e2ce96..33be251c1e5c 100644
+--- a/drivers/net/ipa/ipa_endpoint.c
++++ b/drivers/net/ipa/ipa_endpoint.c
+@@ -586,19 +586,23 @@ static void ipa_endpoint_init_hdr_ext(struct ipa_endpoint *endpoint)
+ 	struct ipa *ipa = endpoint->ipa;
+ 	u32 val = 0;
+ 
+-	val |= HDR_ENDIANNESS_FMASK;		/* big endian */
+-
+-	/* A QMAP header contains a 6 bit pad field at offset 0.  The RMNet
+-	 * driver assumes this field is meaningful in packets it receives,
+-	 * and assumes the header's payload length includes that padding.
+-	 * The RMNet driver does *not* pad packets it sends, however, so
+-	 * the pad field (although 0) should be ignored.
+-	 */
+-	if (endpoint->data->qmap && !endpoint->toward_ipa) {
+-		val |= HDR_TOTAL_LEN_OR_PAD_VALID_FMASK;
+-		/* HDR_TOTAL_LEN_OR_PAD is 0 (pad, not total_len) */
+-		val |= HDR_PAYLOAD_LEN_INC_PADDING_FMASK;
+-		/* HDR_TOTAL_LEN_OR_PAD_OFFSET is 0 */
++	if (endpoint->data->qmap) {
++		/* We have a header, so we must specify its endianness */
++		val |= HDR_ENDIANNESS_FMASK;	/* big endian */
++
++		/* A QMAP header contains a 6 bit pad field at offset 0.
++		 * The RMNet driver assumes this field is meaningful in
++		 * packets it receives, and assumes the header's payload
++		 * length includes that padding.  The RMNet driver does
++		 * *not* pad packets it sends, however, so the pad field
++		 * (although 0) should be ignored.
++		 */
++		if (!endpoint->toward_ipa) {
++			val |= HDR_TOTAL_LEN_OR_PAD_VALID_FMASK;
++			/* HDR_TOTAL_LEN_OR_PAD is 0 (pad, not total_len) */
++			val |= HDR_PAYLOAD_LEN_INC_PADDING_FMASK;
++			/* HDR_TOTAL_LEN_OR_PAD_OFFSET is 0 */
++		}
+ 	}
+ 
+ 	/* HDR_PAYLOAD_LEN_INC_PADDING is 0 */
+@@ -756,8 +760,6 @@ static void ipa_endpoint_init_aggr(struct ipa_endpoint *endpoint)
+ 
+ 			close_eof = rx_data->aggr_close_eof;
+ 			val |= aggr_sw_eof_active_encoded(version, close_eof);
+-
+-			/* AGGR_HARD_BYTE_LIMIT_ENABLE is 0 */
+ 		} else {
+ 			val |= u32_encode_bits(IPA_ENABLE_DEAGGR,
+ 					       AGGR_EN_FMASK);
 -- 
 2.35.1
 
