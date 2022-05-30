@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7C1D537E83
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:13:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D804537F3B
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:19:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238035AbiE3Nr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 09:47:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
+        id S237656AbiE3Nrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 09:47:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238273AbiE3NpP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:45:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60EED9CC9A;
-        Mon, 30 May 2022 06:32:38 -0700 (PDT)
+        with ESMTP id S238320AbiE3NpQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:45:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9B28FD46;
+        Mon, 30 May 2022 06:32:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C81B60F3E;
-        Mon, 30 May 2022 13:32:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D3A4C36AE5;
-        Mon, 30 May 2022 13:32:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6003260F6B;
+        Mon, 30 May 2022 13:32:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BE2BC3411A;
+        Mon, 30 May 2022 13:32:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917556;
-        bh=ejuhZEKzsLw6h/Md1QV3clFX/3mpYTU9ecrvIYpDi1U=;
+        s=k20201202; t=1653917561;
+        bh=I+5VL4h4/uUKIFvLHkwrzyV1ZwSfo2lBjc7LZAxD4nk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q8Xa/IKz+vW+S/3NAb3lwYlF7DxZuDNsS/59zsXdj6COaDK3luJ1H+Giy7F+/Dj65
-         +H7LigjV9hjxMtTO1mTdLYwYHh+jDqjK3fAoxj4Ty7+3amWdLn70yqzBce0yarpgqP
-         VBMqUEzDbY6p5M1OqiNwhO56D34/LCRdXEAKouwkKqGFUUQFM+25KcMEcImt8+Ft/d
-         ZcU1EQuZ3EdKyI0kVNKfmIxYBAC7samJ+LnMD16xVB4ifhYO6PmO7SYxV/3msR3Re4
-         RKEGxt0Vr3J6ZU1PxajfLSlRsovNtzPByWwpwudw//ZvspTfe1Rw5qvLdf+qMKEQh/
-         2Dauwgx9+BJpg==
+        b=apwZy7wbVNmh2G3J4nlPDdRAROlgMriMnFA6nMJukGUAxRnbIYpGRk0DA4VySEXEY
+         OeJ/ZWIGO4lFCkbRDpCI1Y4NBiGnvGABhUsD9d73V/dBYnDX6PO0IOUS4Uv2qOLS4N
+         OLoiC679hZNUSzHCuQUKn1ptCpqqLJA2AFH1tP3c0Hn6+lqXSQs8N5WhE5mjGqPrC+
+         IWofDyUZu37mNAOMwvonHBom9zeVSJpFoglV1WlST0wWr5SHzZ0yDOO6FDoP47vGtX
+         eIszlgQsRUTIlUeNUqN13YRGWC5h3a+ai+7GVoMYB09EcHDv3gjIaCJhu7T6cedqLd
+         Eej3qQBSeSymA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Haowen Bai <baihaowen@meizu.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, habetsm.xilinx@gmail.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+Cc:     Po-Hao Huang <phhuang@realtek.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        tony0620emma@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 023/135] sfc: ef10: Fix assigning negative value to unsigned variable
-Date:   Mon, 30 May 2022 09:29:41 -0400
-Message-Id: <20220530133133.1931716-23-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 025/135] rtw88: fix incorrect frequency reported
+Date:   Mon, 30 May 2022 09:29:43 -0400
+Message-Id: <20220530133133.1931716-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133133.1931716-1-sashal@kernel.org>
 References: <20220530133133.1931716-1-sashal@kernel.org>
@@ -59,36 +59,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Haowen Bai <baihaowen@meizu.com>
+From: Po-Hao Huang <phhuang@realtek.com>
 
-[ Upstream commit b8ff3395fbdf3b79a99d0ef410fc34c51044121e ]
+[ Upstream commit 6723c0cde84fde582a261c186ce84100dcfa0019 ]
 
-fix warning reported by smatch:
-251 drivers/net/ethernet/sfc/ef10.c:2259 efx_ef10_tx_tso_desc()
-warn: assigning (-208) to unsigned variable 'ip_tot_len'
+We should only fill in frequency reported by firmware during scan.
+Add this so frames won't be dropped by mac80211 due to frequency
+mismatch.
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
-Acked-by: Edward Cree <ecree.xilinx@gmail.com>
-Link: https://lore.kernel.org/r/1649640757-30041-1-git-send-email-baihaowen@meizu.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220407095858.46807-3-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/sfc/ef10.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/realtek/rtw88/rx.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index 1ab725d554a5..e50dea0e3859 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -2256,7 +2256,7 @@ int efx_ef10_tx_tso_desc(struct efx_tx_queue *tx_queue, struct sk_buff *skb,
- 	 * guaranteed to satisfy the second as we only attempt TSO if
- 	 * inner_network_header <= 208.
- 	 */
--	ip_tot_len = -EFX_TSO2_MAX_HDRLEN;
-+	ip_tot_len = 0x10000 - EFX_TSO2_MAX_HDRLEN;
- 	EFX_WARN_ON_ONCE_PARANOID(mss + EFX_TSO2_MAX_HDRLEN +
- 				  (tcp->doff << 2u) > ip_tot_len);
- 
+diff --git a/drivers/net/wireless/realtek/rtw88/rx.c b/drivers/net/wireless/realtek/rtw88/rx.c
+index d2d607e22198..84aedabdf285 100644
+--- a/drivers/net/wireless/realtek/rtw88/rx.c
++++ b/drivers/net/wireless/realtek/rtw88/rx.c
+@@ -158,7 +158,8 @@ void rtw_rx_fill_rx_status(struct rtw_dev *rtwdev,
+ 	memset(rx_status, 0, sizeof(*rx_status));
+ 	rx_status->freq = hw->conf.chandef.chan->center_freq;
+ 	rx_status->band = hw->conf.chandef.chan->band;
+-	if (rtw_fw_feature_check(&rtwdev->fw, FW_FEATURE_SCAN_OFFLOAD))
++	if (rtw_fw_feature_check(&rtwdev->fw, FW_FEATURE_SCAN_OFFLOAD) &&
++	    test_bit(RTW_FLAG_SCANNING, rtwdev->flags))
+ 		rtw_set_rx_freq_by_pktstat(pkt_stat, rx_status);
+ 	if (pkt_stat->crc_err)
+ 		rx_status->flag |= RX_FLAG_FAILED_FCS_CRC;
 -- 
 2.35.1
 
