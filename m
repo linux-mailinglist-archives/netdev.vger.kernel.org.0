@@ -2,48 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41603537F95
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:20:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E97FC538166
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:29:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239733AbiE3OKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:10:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53898 "EHLO
+        id S240358AbiE3OTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238667AbiE3OEp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:04:45 -0400
-Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 79082994E0;
-        Mon, 30 May 2022 06:40:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=pAaMY+j2sYlcGXBo+T
-        l/106hE5vn1j7rLU/jBsZmyb0=; b=jTMZTqW7LoEoQlhvQyd+EhF8McmtnCP7w9
-        FEBRaWpGwgkM/mraPsZgTw/48dhPhu80hZv+J36QnN3SOKZR//uIuM70Z4O5ag0y
-        kHH5Oy3Jm+oFFCucyh6kjT/WyJ5wNV1hXPSTMxVxrDWtQuH0JxKyC+0PXc2y2ak2
-        0ZcYMAm+4=
-Received: from localhost.localdomain (unknown [171.221.150.250])
-        by smtp8 (Coremail) with SMTP id DMCowADXdaYMyZRiQha+FA--.22801S2;
-        Mon, 30 May 2022 21:39:32 +0800 (CST)
-From:   Chen Lin <chen45464546@163.com>
-To:     akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        alexander.h.duyck@linux.intel.com, netdev@vger.kernel.org,
-        Chen Lin <chen45464546@163.com>
-Subject: [PATCH v2] mm: page_frag: Warn_on when frag_alloc size is bigger than PAGE_SIZE
-Date:   Mon, 30 May 2022 21:39:02 +0800
-Message-Id: <1653917942-5982-1-git-send-email-chen45464546@163.com>
-X-Mailer: git-send-email 1.7.9.5
-In-Reply-To: <20220529163029.12425c1e5286d7c7e3fe3708@linux-foundation.org>
-References: <20220529163029.12425c1e5286d7c7e3fe3708@linux-foundation.org>
-X-CM-TRANSID: DMCowADXdaYMyZRiQha+FA--.22801S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7tr17tw1fGFWkur17WF4rXwb_yoW8KrW7pF
-        W7Cr15ZFs0qwnxCw4kAw4vyr45A398WFWUKrWFv34Y9w13Gr109w1DKr4jvFyrAr10kFW7
-        tF4Yyr13C3WjvaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pE66wsUUUUU=
-X-Originating-IP: [171.221.150.250]
-X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/xtbCqRsRnl0DfvPs0gAAsQ
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        with ESMTP id S241079AbiE3ORM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:17:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91478110470;
+        Mon, 30 May 2022 06:44:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69167B80DC4;
+        Mon, 30 May 2022 13:44:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AE19C385B8;
+        Mon, 30 May 2022 13:44:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653918254;
+        bh=EI6kyMEv2r+oMfMB12oZQKomnwfH3xTNuKb7+f/Swr4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AeutlHaByfHlZEzwH5aurbO+18DCiz5avlVv568IS/fu1T06ZhwPd19HM8AZDTD71
+         We29Kitj6z+J9r3NImbQsSUT+80aoaBIQBPCcdQMcPS8TdWxCxYx8iYZoF0WOl4a2s
+         LFzJMSwNX9N1b6o+ndTIeuEYuaoQ09H5fo9Izv3IcysLvyVhtcTKbxzQDOFycAYpnZ
+         trj8yIYoZnfvWWHVV4t0V6K7PtKiUTaJ0KU62cOykC9vHkWyVotcJ8IdNaIzyeiwWV
+         iPmzSkn9uk/dl2w87ml1yTsd4sxQyeGzn5UHqZxa8rleg3iwel5AiY15oGYbUDbpvT
+         49PIysjHI9W2Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Nikolay Borisov <nborisov@suse.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 03/76] selftests/bpf: Fix vfs_link kprobe definition
+Date:   Mon, 30 May 2022 09:42:53 -0400
+Message-Id: <20220530134406.1934928-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
+References: <20220530134406.1934928-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -52,67 +59,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-netdev_alloc_frag->page_frag_alloc may cause memory corruption in 
-the following process:
+From: Nikolay Borisov <nborisov@suse.com>
 
-1. A netdev_alloc_frag function call need alloc 200 Bytes to build a skb.
+[ Upstream commit e299bcd4d16ff86f46c48df1062c8aae0eca1ed8 ]
 
-2. Insufficient memory to alloc PAGE_FRAG_CACHE_MAX_ORDER(32K) in 
-__page_frag_cache_refill to fill frag cache, then one page(eg:4K) 
-is allocated, now current frag cache is 4K, alloc is success, 
-nc->pagecnt_bias--.
+Since commit 6521f8917082 ("namei: prepare for idmapped mounts")
+vfs_link's prototype was changed, the kprobe definition in
+profiler selftest in turn wasn't updated. The result is that all
+argument after the first are now stored in different registers. This
+means that self-test has been broken ever since. Fix it by updating the
+kprobe definition accordingly.
 
-3. Then this 200 bytes skb in step 1 is freed, page->_refcount--.
-
-4. Another netdev_alloc_frag function call need alloc 5k, page->_refcount 
-is equal to nc->pagecnt_bias, reset page count bias and offset to 
-start of new frag. page_frag_alloc will return the 4K memory for a 
-5K memory request.
-
-5. The caller write on the extra 1k memory which is not actual allocated 
-will cause memory corruption.
-
-page_frag_alloc is for fragmented allocation. We should warn the caller 
-to avoid memory corruption.
-
-When fragsz is larger than one page, we report the failure and return.
-I don't think it is a good idea to make efforts to support the
-allocation of more than one page in this function because the total
-frag cache size(PAGE_FRAG_CACHE_MAX_SIZE 32768) is relatively small.
-When the request is larger than one page, the caller should switch to
-use other kernel interfaces, such as kmalloc and alloc_Pages.
-
-This bug is mainly caused by the reuse of the previously allocated
-frag cache memory by the following LARGER allocations. This bug existed
-before page_frag_alloc was ported from __netdev_alloc_frag in 
-net/core/skbuff.c, so most Linux versions have this problem.
-
-Signed-off-by: Chen Lin <chen45464546@163.com>
+Signed-off-by: Nikolay Borisov <nborisov@suse.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20220331140949.1410056-1-nborisov@suse.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/page_alloc.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ tools/testing/selftests/bpf/progs/profiler.inc.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index e008a3d..1e9e2c4 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -5574,6 +5574,16 @@ void *page_frag_alloc_align(struct page_frag_cache *nc,
- 	struct page *page;
- 	int offset;
+diff --git a/tools/testing/selftests/bpf/progs/profiler.inc.h b/tools/testing/selftests/bpf/progs/profiler.inc.h
+index 4896fdf816f7..92331053dba3 100644
+--- a/tools/testing/selftests/bpf/progs/profiler.inc.h
++++ b/tools/testing/selftests/bpf/progs/profiler.inc.h
+@@ -826,8 +826,9 @@ int kprobe_ret__do_filp_open(struct pt_regs* ctx)
  
-+	/* frag_alloc is not suitable for memory alloc which fragsz
-+	 * is bigger than PAGE_SIZE, use kmalloc or alloc_pages instead.
-+	 */
-+	if (unlikely(fragsz > PAGE_SIZE)) {
-+		WARN(1, "alloc fragsz(%d) > PAGE_SIZE(%ld) not supported,
-+			alloc fail\n", fragsz, PAGE_SIZE);
-+
-+		return NULL;
-+	}
-+
- 	if (unlikely(!nc->va)) {
- refill:
- 		page = __page_frag_cache_refill(nc, gfp_mask);
+ SEC("kprobe/vfs_link")
+ int BPF_KPROBE(kprobe__vfs_link,
+-	       struct dentry* old_dentry, struct inode* dir,
+-	       struct dentry* new_dentry, struct inode** delegated_inode)
++	       struct dentry* old_dentry, struct user_namespace *mnt_userns,
++	       struct inode* dir, struct dentry* new_dentry,
++	       struct inode** delegated_inode)
+ {
+ 	struct bpf_func_stats_ctx stats_ctx;
+ 	bpf_stats_enter(&stats_ctx, profiler_bpf_vfs_link);
 -- 
-1.7.9.5
+2.35.1
 
