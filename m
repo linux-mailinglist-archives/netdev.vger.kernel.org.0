@@ -2,340 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B83D5377F9
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:05:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DB105378BA
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:07:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234725AbiE3JOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 05:14:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37164 "EHLO
+        id S233852AbiE3J22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 05:28:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234739AbiE3JOJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 05:14:09 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F83B7A461
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 02:14:07 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id o6-20020a17090a0a0600b001e2c6566046so3877339pjo.0
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 02:14:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=B9vwKfbKHzDOEY1WrU024PdJUi8+ydTG61v0lkvD1q4=;
-        b=3CVTEMHe5u8PnWdpoi2iCxc8bv6kuPc09y9WU15ndr1za+Iad4T+G5PNWH4XwcwgCL
-         jPKFwE8NR+XU1GgadI/BDU/gR3Etnmw2QI90EQuuDOpRB/fDbkDCrMviKLer5CIy9gbQ
-         jM2ELm8cv1ez6RFoSL/PAavPJLzkbLXQJ8cJpEqo+e3LAbigfu9jRpz0Xht99lbNJRec
-         efhmI4TsgMfcHS4Ovs2PqpS9/t5FPelss9yvvepDUvQknOn5sHjYwb70xpcQZ3bXQJxl
-         m83HZPq/68T2+0MgULpHhse7Ob/SeUE83N36oBb2s2XMbRN/EGJ97iJyV+hL5qXMuC7e
-         lf5A==
+        with ESMTP id S232976AbiE3J20 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 05:28:26 -0400
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B435A483A0;
+        Mon, 30 May 2022 02:28:23 -0700 (PDT)
+Received: by mail-qt1-f179.google.com with SMTP id c8so328557qtj.1;
+        Mon, 30 May 2022 02:28:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=B9vwKfbKHzDOEY1WrU024PdJUi8+ydTG61v0lkvD1q4=;
-        b=rAz6XlZbuw4GKKsPWzm11qz1YvJ0d7FhlOrF+wsNeU+aQ2M6O3a0YK43vtlaQd8gRU
-         RBIDuu4lYqow01fdWkZRk5hKTlshpfUnNcF61S+LEj7B4PXnpd3wsrcS+qc4Av7Nj2vt
-         tddrbRqMUr6yIcGiImB+PymG24Un+WF7IIOw88F5UbwiwY5x02ej982gLSo/RaW8ap01
-         ebAWgy+LoBRnrynb2Fj1NqD8SoXPFf1fOAlX6LsB7/3ocyHh7erOMpw02Sf/DgM0fZss
-         44t2IcCAU6YTm8K7y8ULu9UXDCWJ6qgbYKVi40dIWxFuU7S6SJ5j6kkNCrgqs7vUhQOO
-         oIxw==
-X-Gm-Message-State: AOAM532L8aHOu/io+DSSLM+VWtOpbx+633BKZztB1POCEVmLIhnLdv5M
-        08DRakbMPF3ZJZT366vO2Kvs2Q==
-X-Google-Smtp-Source: ABdhPJxej8okzLLPhKbjWHGOYrjxyaHMYkzqfwAkHgSu+0zudUGwcu3bx61LnfVoShiJQHT1nGoemQ==
-X-Received: by 2002:a17:902:6b03:b0:161:51d6:61b with SMTP id o3-20020a1709026b0300b0016151d6061bmr31413370plk.23.1653902047063;
-        Mon, 30 May 2022 02:14:07 -0700 (PDT)
-Received: from C02F52LSML85.bytedance.net ([139.177.225.225])
-        by smtp.gmail.com with ESMTPSA id p2-20020a170902ebc200b0015e8d4eb20dsm8640644plg.87.2022.05.30.02.14.00
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 30 May 2022 02:14:06 -0700 (PDT)
-From:   Feng zhou <zhoufeng.zf@bytedance.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
-        songmuchun@bytedance.com, wangdongdong.6@bytedance.com,
-        cong.wang@bytedance.com, zhouchengming@bytedance.com,
-        zhoufeng.zf@bytedance.com
-Subject: [PATCH v3 2/2] selftest/bpf/benchs: Add bpf_map benchmark
-Date:   Mon, 30 May 2022 17:13:40 +0800
-Message-Id: <20220530091340.53443-3-zhoufeng.zf@bytedance.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20220530091340.53443-1-zhoufeng.zf@bytedance.com>
-References: <20220530091340.53443-1-zhoufeng.zf@bytedance.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sRRIuRryzgFI8ELIIPROeVlwSt2lbuDu8QoygFjo9dY=;
+        b=xhMCCryKaUgXAGzmfynEzov/h3DV+irDCkvwFk9FVpxAlBOi4uPlmyknBz8FLzpFYW
+         PH9mPInVoUC8ItuT80REI7tW+d6JBOxhKJG7mYavsIch3AnDk8/tRsUYeBZ7yiYNq6k5
+         P4rtoZM827yjMM+kx3ywjmxbcDrXgqFUgPmQzR+7rbAdFNFWUgcG1vjNXTlBxBmRri0B
+         FWKKHUlDZ+h1RSqLJYXjK0qzxIAAyLyCgLDYkI7nknaF1HNLDphlCfuOIjt5p7nrQyFo
+         fJL9jBKwWR/xmdkGtbwyLgiqrJvfDNum1iiFGO7B3XVnn7yRIQwSHpzskrkIo1+O6bx8
+         Fz6g==
+X-Gm-Message-State: AOAM531FC+aUCeLmfWAYJotLhhZco/K8UbFTDyAdYCa1kWz5MZwWdPh9
+        gga1ELEi7USEQrdo7MGvmJDhz0DysWbIKw==
+X-Google-Smtp-Source: ABdhPJx6LkWgelCyq4Tp9CBP0jVA4z6X2m6AeRjECc5lO8DzDztKPCLfny3veaAeZP8VfHM3QdPGKg==
+X-Received: by 2002:ac8:5cd3:0:b0:2ff:5954:9a91 with SMTP id s19-20020ac85cd3000000b002ff59549a91mr7848167qta.433.1653902902666;
+        Mon, 30 May 2022 02:28:22 -0700 (PDT)
+Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
+        by smtp.gmail.com with ESMTPSA id ca20-20020a05622a1f1400b002f3ef928fbbsm6955038qtb.72.2022.05.30.02.28.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 May 2022 02:28:22 -0700 (PDT)
+Received: by mail-yb1-f180.google.com with SMTP id l204so7377570ybf.10;
+        Mon, 30 May 2022 02:28:22 -0700 (PDT)
+X-Received: by 2002:a05:6902:389:b0:633:31c1:d0f7 with SMTP id
+ f9-20020a056902038900b0063331c1d0f7mr50896098ybs.543.1653902534054; Mon, 30
+ May 2022 02:22:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220526081550.1089805-1-saravanak@google.com> <20220526081550.1089805-3-saravanak@google.com>
+In-Reply-To: <20220526081550.1089805-3-saravanak@google.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 30 May 2022 11:22:03 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdV4Uzfg8aBY=tKnRcig=Npebd158J7UK3zg5_DtHwAR5w@mail.gmail.com>
+Message-ID: <CAMuHMdV4Uzfg8aBY=tKnRcig=Npebd158J7UK3zg5_DtHwAR5w@mail.gmail.com>
+Subject: Re: [RFC PATCH v1 2/9] pinctrl: devicetree: Delete usage of driver_deferred_probe_check_state()
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        John Stultz <jstultz@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Android Kernel Team <kernel-team@android.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Linux IOMMU <iommu@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Feng Zhou <zhoufeng.zf@bytedance.com>
+Hi Saravana,
 
-Add benchmark for hash_map to reproduce the worst case
-that non-stop update when map's free is zero.
+Thanks for your patch!
 
-before patch:
-Setting up benchmark 'bpf-hashmap-ful-update'...
-Benchmark 'bpf-hashmap-ful-update' started.
-1:hash_map_full_perf 107796 events per sec
-2:hash_map_full_perf 108072 events per sec
-3:hash_map_full_perf 112169 events per sec
-4:hash_map_full_perf 111423 events per sec
-5:hash_map_full_perf 110778 events per sec
-6:hash_map_full_perf 121336 events per sec
-7:hash_map_full_perf 98676 events per sec
-8:hash_map_full_perf 105860 events per sec
-9:hash_map_full_perf 109930 events per sec
-10:hash_map_full_perf 123434 events per sec
-11:hash_map_full_perf 125374 events per sec
-12:hash_map_full_perf 121979 events per sec
-13:hash_map_full_perf 123014 events per sec
-14:hash_map_full_perf 126219 events per sec
-15:hash_map_full_perf 104793 events per sec
+On Thu, May 26, 2022 at 10:16 AM Saravana Kannan <saravanak@google.com> wrote:
+> Now that fw_devlink=on by default and fw_devlink supports
+> "pinctrl-[0-8]" property, the execution will never get to the point
 
-after patch:
-Setting up benchmark 'bpf-hashmap-ful-update'...
-Benchmark 'bpf-hashmap-ful-update' started.
-0:hash_map_full_perf 1219230 events per sec
-1:hash_map_full_perf 1320256 events per sec
-2:hash_map_full_perf 1196550 events per sec
-3:hash_map_full_perf 1375684 events per sec
-4:hash_map_full_perf 1365551 events per sec
-5:hash_map_full_perf 1318432 events per sec
-6:hash_map_full_perf 1222007 events per sec
-7:hash_map_full_perf 1240786 events per sec
-8:hash_map_full_perf 1190005 events per sec
-9:hash_map_full_perf 1562336 events per sec
-10:hash_map_full_perf 1385241 events per sec
-11:hash_map_full_perf 1387909 events per sec
-12:hash_map_full_perf 1371877 events per sec
-13:hash_map_full_perf 1561836 events per sec
-14:hash_map_full_perf 1388895 events per sec
-15:hash_map_full_perf 1579054 events per sec
+0-9?
 
-Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
----
- tools/testing/selftests/bpf/Makefile          |  4 +-
- tools/testing/selftests/bpf/bench.c           |  2 +
- .../benchs/bench_bpf_hashmap_full_update.c    | 96 +++++++++++++++++++
- .../run_bench_bpf_hashmap_full_update.sh      | 11 +++
- .../bpf/progs/bpf_hashmap_full_update_bench.c | 40 ++++++++
- 5 files changed, 152 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/benchs/bench_bpf_hashmap_full_update.c
- create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_bpf_hashmap_full_update.sh
- create mode 100644 tools/testing/selftests/bpf/progs/bpf_hashmap_full_update_bench.c
+oh, it's really 0-8:
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 3820608faf57..b968649c7aa1 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -549,6 +549,7 @@ $(OUTPUT)/bench_ringbufs.o: $(OUTPUT)/ringbuf_bench.skel.h \
- $(OUTPUT)/bench_bloom_filter_map.o: $(OUTPUT)/bloom_filter_bench.skel.h
- $(OUTPUT)/bench_bpf_loop.o: $(OUTPUT)/bpf_loop_bench.skel.h
- $(OUTPUT)/bench_strncmp.o: $(OUTPUT)/strncmp_bench.skel.h
-+$(OUTPUT)/bench_bpf_hashmap_full_update.o: $(OUTPUT)/bpf_hashmap_full_update_bench.skel.h
- $(OUTPUT)/bench.o: bench.h testing_helpers.h $(BPFOBJ)
- $(OUTPUT)/bench: LDLIBS += -lm
- $(OUTPUT)/bench: $(OUTPUT)/bench.o \
-@@ -560,7 +561,8 @@ $(OUTPUT)/bench: $(OUTPUT)/bench.o \
- 		 $(OUTPUT)/bench_ringbufs.o \
- 		 $(OUTPUT)/bench_bloom_filter_map.o \
- 		 $(OUTPUT)/bench_bpf_loop.o \
--		 $(OUTPUT)/bench_strncmp.o
-+		 $(OUTPUT)/bench_strncmp.o \
-+		 $(OUTPUT)/bench_bpf_hashmap_full_update.o
- 	$(call msg,BINARY,,$@)
- 	$(Q)$(CC) $(CFLAGS) $(LDFLAGS) $(filter %.a %.o,$^) $(LDLIBS) -o $@
- 
-diff --git a/tools/testing/selftests/bpf/bench.c b/tools/testing/selftests/bpf/bench.c
-index f973320e6dbf..35de886d9a05 100644
---- a/tools/testing/selftests/bpf/bench.c
-+++ b/tools/testing/selftests/bpf/bench.c
-@@ -397,6 +397,7 @@ extern const struct bench bench_hashmap_with_bloom;
- extern const struct bench bench_bpf_loop;
- extern const struct bench bench_strncmp_no_helper;
- extern const struct bench bench_strncmp_helper;
-+extern const struct bench bench_bpf_hashmap_full_update;
- 
- static const struct bench *benchs[] = {
- 	&bench_count_global,
-@@ -431,6 +432,7 @@ static const struct bench *benchs[] = {
- 	&bench_bpf_loop,
- 	&bench_strncmp_no_helper,
- 	&bench_strncmp_helper,
-+	&bench_bpf_hashmap_full_update,
- };
- 
- static void setup_benchmark()
-diff --git a/tools/testing/selftests/bpf/benchs/bench_bpf_hashmap_full_update.c b/tools/testing/selftests/bpf/benchs/bench_bpf_hashmap_full_update.c
-new file mode 100644
-index 000000000000..cec51e0ff4b8
---- /dev/null
-+++ b/tools/testing/selftests/bpf/benchs/bench_bpf_hashmap_full_update.c
-@@ -0,0 +1,96 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2022 Bytedance */
-+
-+#include <argp.h>
-+#include "bench.h"
-+#include "bpf_hashmap_full_update_bench.skel.h"
-+#include "bpf_util.h"
-+
-+/* BPF triggering benchmarks */
-+static struct ctx {
-+	struct bpf_hashmap_full_update_bench *skel;
-+} ctx;
-+
-+#define MAX_LOOP_NUM 10000
-+
-+static void validate(void)
-+{
-+	if (env.consumer_cnt != 1) {
-+		fprintf(stderr, "benchmark doesn't support multi-consumer!\n");
-+		exit(1);
-+	}
-+}
-+
-+static void *producer(void *input)
-+{
-+	while (true) {
-+		/* trigger the bpf program */
-+		syscall(__NR_getpgid);
-+	}
-+
-+	return NULL;
-+}
-+
-+static void *consumer(void *input)
-+{
-+	return NULL;
-+}
-+
-+static void measure(struct bench_res *res)
-+{
-+}
-+
-+static void setup(void)
-+{
-+	struct bpf_link *link;
-+	int map_fd, i, max_entries;
-+
-+	setup_libbpf();
-+
-+	ctx.skel = bpf_hashmap_full_update_bench__open_and_load();
-+	if (!ctx.skel) {
-+		fprintf(stderr, "failed to open skeleton\n");
-+		exit(1);
-+	}
-+
-+	ctx.skel->bss->nr_loops = MAX_LOOP_NUM;
-+
-+	link = bpf_program__attach(ctx.skel->progs.benchmark);
-+	if (!link) {
-+		fprintf(stderr, "failed to attach program!\n");
-+		exit(1);
-+	}
-+
-+	/* fill hash_map */
-+	map_fd = bpf_map__fd(ctx.skel->maps.hash_map_bench);
-+	max_entries = bpf_map__max_entries(ctx.skel->maps.hash_map_bench);
-+	for (i = 0; i < max_entries; i++)
-+		bpf_map_update_elem(map_fd, &i, &i, BPF_ANY);
-+}
-+
-+void hashmap_report_final(struct bench_res res[], int res_cnt)
-+{
-+	unsigned int nr_cpus = bpf_num_possible_cpus();
-+	int i;
-+
-+	for (i = 0; i < nr_cpus; i++) {
-+		u64 time = ctx.skel->bss->percpu_time[i];
-+
-+		if (!time)
-+			continue;
-+
-+		printf("%d:hash_map_full_perf %lld events per sec\n",
-+		       i, ctx.skel->bss->nr_loops * 1000000000ll / time);
-+	}
-+}
-+
-+const struct bench bench_bpf_hashmap_full_update = {
-+	.name = "bpf-hashmap-ful-update",
-+	.validate = validate,
-+	.setup = setup,
-+	.producer_thread = producer,
-+	.consumer_thread = consumer,
-+	.measure = measure,
-+	.report_progress = NULL,
-+	.report_final = hashmap_report_final,
-+};
-diff --git a/tools/testing/selftests/bpf/benchs/run_bench_bpf_hashmap_full_update.sh b/tools/testing/selftests/bpf/benchs/run_bench_bpf_hashmap_full_update.sh
-new file mode 100755
-index 000000000000..1e2de838f9fa
---- /dev/null
-+++ b/tools/testing/selftests/bpf/benchs/run_bench_bpf_hashmap_full_update.sh
-@@ -0,0 +1,11 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+source ./benchs/run_common.sh
-+
-+set -eufo pipefail
-+
-+nr_threads=`expr $(cat /proc/cpuinfo | grep "processor"| wc -l) - 1`
-+summary=$($RUN_BENCH -p $nr_threads bpf-hashmap-ful-update)
-+printf "$summary"
-+printf "\n"
-diff --git a/tools/testing/selftests/bpf/progs/bpf_hashmap_full_update_bench.c b/tools/testing/selftests/bpf/progs/bpf_hashmap_full_update_bench.c
-new file mode 100644
-index 000000000000..aa93a03f961d
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/bpf_hashmap_full_update_bench.c
-@@ -0,0 +1,40 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2022 Bytedance */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include "bpf_misc.h"
-+
-+char _license[] SEC("license") = "GPL";
-+
-+#define MAX_ENTRIES 1000
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__type(key, u32);
-+	__type(value, u64);
-+	__uint(max_entries, MAX_ENTRIES);
-+} hash_map_bench SEC(".maps");
-+
-+u64 __attribute__((__aligned__(256))) percpu_time[256];
-+u64 nr_loops;
-+
-+static int loop_update_callback(__u32 index, u32 *key)
-+{
-+	u64 init_val = 1;
-+
-+	bpf_map_update_elem(&hash_map_bench, key, &init_val, BPF_ANY);
-+	return 0;
-+}
-+
-+SEC("fentry/" SYS_PREFIX "sys_getpgid")
-+int benchmark(void *ctx)
-+{
-+	u32 key = bpf_get_prandom_u32() % MAX_ENTRIES + MAX_ENTRIES;
-+	u32 cpu = bpf_get_smp_processor_id();
-+	u64 start_time = bpf_ktime_get_ns();
-+
-+	bpf_loop(nr_loops, loop_update_callback, &key, 0);
-+	percpu_time[cpu & 255] = bpf_ktime_get_ns() - start_time;
-+	return 0;
-+}
--- 
-2.20.1
+    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl0, "pinctrl-0", NULL)
+    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl1, "pinctrl-1", NULL)
+    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl2, "pinctrl-2", NULL)
+    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl3, "pinctrl-3", NULL)
+    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl4, "pinctrl-4", NULL)
+    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl5, "pinctrl-5", NULL)
+    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl6, "pinctrl-6", NULL)
+    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl7, "pinctrl-7", NULL)
+    drivers/of/property.c:DEFINE_SIMPLE_PROP(pinctrl8, "pinctrl-8", NULL)
 
+Looks fragile, especially since we now have:
+
+    arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi:
+pinctrl-9 = <&i2cmux_9>;
+    arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi: pinctrl-10
+= <&i2cmux_10>;
+    arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi: pinctrl-11
+= <&i2cmux_11>;
+    arch/arm64/boot/dts/microchip/sparx5_pcb134_board.dtsi: pinctrl-12
+= <&i2cmux_pins_i>;
+
+> where driver_deferred_probe_check_state() is called before the supplier
+> has probed successfully or before deferred probe timeout has expired.
+>
+> So, delete the call and replace it with -ENODEV.
+>
+> Signed-off-by: Saravana Kannan <saravanak@google.com>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
