@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59116537BCA
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:28:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 428C0537BD3
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:28:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236746AbiE3NZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 09:25:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57720 "EHLO
+        id S236724AbiE3NZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 09:25:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236655AbiE3NY5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:24:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409F38020A;
-        Mon, 30 May 2022 06:24:56 -0700 (PDT)
+        with ESMTP id S236619AbiE3NZC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:25:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86CB819BA;
+        Mon, 30 May 2022 06:25:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADC8660DD5;
-        Mon, 30 May 2022 13:24:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD8B5C385B8;
-        Mon, 30 May 2022 13:24:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85C13B80DA7;
+        Mon, 30 May 2022 13:25:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DC5DC385B8;
+        Mon, 30 May 2022 13:24:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917095;
-        bh=nQbb+Dvg94Bd3lpBOt9d1emxz4LV6Rz434ipGpczzEo=;
+        s=k20201202; t=1653917099;
+        bh=NCZ8ENLCATeP2GIJLaAP/xz+MzB5wHdRUTpcdOOL+I4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QPyb2rVw4zDPS3x3RnmdRciRF1bbmQUYysaVbzh2VbUfRZOZ/W2FTlIWhv9oeBXBe
-         zmVqZQEc6EXloTrSuZ4hMHEOubFntkgS0kjtG3AJGzuaXKPvxJsxJud4gG+7yxBWbV
-         1kFr+Bu6nnyjv+uJp949ux/0La6qpmVduTUWqN0/sRnkn1mG2DzVipnoRv/HHVbI2E
-         /bwej4U6eukDVWSoYtrlZ1ytO+VJOBzxR1ZTinAFOH21+r044rqXSLcXwMmAYZJfLM
-         FpDhxItsGnVIMTgFF6z0RIOj3fdUuN75NGGfnrHVZdkW4mVgG0jlY5B5o726Sw0q6w
-         SRY7Gzdvtv0GQ==
+        b=PDXGO+MzejJPGP3fKPQOWIMugax5rdz2yEh/Yf7lQPgY3p3EI4KZxkhZlHWYZqwRl
+         DuqY09nwT1wMgtgH8WWTp8KpM/09ne6ikZFeO72DiUccl0nBPIzZqZNsh4LO+Xnq1P
+         3SGYaLMBUe08dy+2FrXCI5f9gaihKDrAj/wfdE5Irz8GBx11jvZpRJCEkdjvDyjutF
+         8UEHwMYs/2jUd/Gdi0+K1AoC70SN0+GAVoGr+8ah9n9vfIkU5xJXP2/LQiraav/UZm
+         RiVwEUhDj7skBcFFT/NHVQPSXCFpIjO7pTNh0CRkZTts9vW14W+SXGAimdBmHlX3DL
+         YTV61ocaob0Jg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Haowen Bai <baihaowen@meizu.com>, Kalle Valo <kvalo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, Larry.Finger@lwfinger.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        thunder.leizhen@huawei.com, linux-wireless@vger.kernel.org,
         b43-dev@lists.infradead.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 013/159] b43legacy: Fix assigning negative value to unsigned variable
-Date:   Mon, 30 May 2022 09:21:58 -0400
-Message-Id: <20220530132425.1929512-13-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.18 014/159] b43: Fix assigning negative value to unsigned variable
+Date:   Mon, 30 May 2022 09:21:59 -0400
+Message-Id: <20220530132425.1929512-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -60,33 +60,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Haowen Bai <baihaowen@meizu.com>
 
-[ Upstream commit 3f6b867559b3d43a7ce1b4799b755e812fc0d503 ]
+[ Upstream commit 11800d893b38e0e12d636c170c1abc19c43c730c ]
 
 fix warning reported by smatch:
-drivers/net/wireless/broadcom/b43legacy/phy.c:1181 b43legacy_phy_lo_b_measure()
-warn: assigning (-772) to unsigned variable 'fval'
+drivers/net/wireless/broadcom/b43/phy_n.c:585 b43_nphy_adjust_lna_gain_table()
+warn: assigning (-2) to unsigned variable '*(lna_gain[0])'
 
 Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/1648203433-8736-1-git-send-email-baihaowen@meizu.com
+Link: https://lore.kernel.org/r/1648203315-28093-1-git-send-email-baihaowen@meizu.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/b43legacy/phy.c | 2 +-
+ drivers/net/wireless/broadcom/b43/phy_n.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/broadcom/b43legacy/phy.c b/drivers/net/wireless/broadcom/b43legacy/phy.c
-index 05404fbd1e70..c1395e622759 100644
---- a/drivers/net/wireless/broadcom/b43legacy/phy.c
-+++ b/drivers/net/wireless/broadcom/b43legacy/phy.c
-@@ -1123,7 +1123,7 @@ void b43legacy_phy_lo_b_measure(struct b43legacy_wldev *dev)
- 	struct b43legacy_phy *phy = &dev->phy;
- 	u16 regstack[12] = { 0 };
- 	u16 mls;
--	u16 fval;
-+	s16 fval;
- 	int i;
- 	int j;
+diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
+index cf3ccf4ddfe7..aa5c99465674 100644
+--- a/drivers/net/wireless/broadcom/b43/phy_n.c
++++ b/drivers/net/wireless/broadcom/b43/phy_n.c
+@@ -582,7 +582,7 @@ static void b43_nphy_adjust_lna_gain_table(struct b43_wldev *dev)
+ 	u16 data[4];
+ 	s16 gain[2];
+ 	u16 minmax[2];
+-	static const u16 lna_gain[4] = { -2, 10, 19, 25 };
++	static const s16 lna_gain[4] = { -2, 10, 19, 25 };
  
+ 	if (nphy->hang_avoid)
+ 		b43_nphy_stay_in_carrier_search(dev, 1);
 -- 
 2.35.1
 
