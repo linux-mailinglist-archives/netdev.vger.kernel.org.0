@@ -2,53 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8486C5381D8
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:33:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7F2F538296
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:35:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237454AbiE3OVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44868 "EHLO
+        id S239457AbiE3OYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:24:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239668AbiE3OSy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:18:54 -0400
+        with ESMTP id S237873AbiE3OWW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:22:22 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C8E122B7A;
-        Mon, 30 May 2022 06:49:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1AA128167;
+        Mon, 30 May 2022 06:50:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0B2261013;
-        Mon, 30 May 2022 13:49:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0B0AC3411F;
-        Mon, 30 May 2022 13:49:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5342660FE7;
+        Mon, 30 May 2022 13:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9262CC3411C;
+        Mon, 30 May 2022 13:50:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918595;
-        bh=6GPI7gYf07+zFN1Ol/tp6iH7PZSLrK3qLnRFMdReihY=;
+        s=k20201202; t=1653918615;
+        bh=Kosgc4gaOYUui21qx4+6ArSRjFgg1mna4ObNIRb1DBY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PEl7ajDelcP/heH6+IbIHd0nPhCCRsnGxvv4jkaQFTT9++nB5ALiQF8OuXrBERtup
-         8Ffn0CcZiD5neOwQ1eIiyDwZey3ORnMkADkV7OGFC8e0s3BVAbKsqfGhI7mazdbR2x
-         HELluNHZnspeWUo/FfGboPP5Sq/+EnRzWApvSdIcgIE6TV1Xea2kYXfuOqt8g/RnbG
-         kAydEBFQadtfGwz46POdtVl360EHwBZ37OIAoeApQ2Q1ILYZp2zkqXAb81GS1tW1IU
-         04i2yuB4uGzYWgiPVwH+uV3Rj5FyMz7uopMeJ+Yj4LDWpC0PazIQ0pm3rbexjJllmU
-         fC5M5lHJPDagQ==
+        b=EhgzREVyTiy6fUpB5BTz6kbZnG+UbDLu0VgZst29rnDKePlefyz1SeDeOeffRFx5l
+         CNvHeMB1/d9ogYrTf9NXyRo9Nwk7N44fAvVou1IC0Ixrv/xuxqVcpuFShuiicSN0ua
+         mUHVNTLvoC9MLWFA8qiCcQD7m7Fl89LBsXxOsEbVIddloCgyrCWeDIko1prReMt+zE
+         gduQiZh5w5twD8/Ahvy180lWOVdT/8Jo7kQQNyQ4XKXdjIoWlHvpPEhmo7T0gxDD6h
+         MztHMv9gXNjOOxHJM7yZdVOMHykgokug9EcfBv4Aeh8u+2oU8CLwsgznYepHq9fsgt
+         lmiHIeQSK33TA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Thibaut=20VAR=C3=88NE?= <hacks+kernel@slashdirt.org>,
-        Felix Fietkau <nbd@nbd.name>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 11/38] ath9k: fix QCA9561 PA bias level
-Date:   Mon, 30 May 2022 09:48:57 -0400
-Message-Id: <20220530134924.1936816-11-sashal@kernel.org>
+Cc:     jianghaoran <jianghaoran@kylinos.cn>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 20/38] ipv6: Don't send rs packets to the interface of ARPHRD_TUNNEL
+Date:   Mon, 30 May 2022 09:49:06 -0400
+Message-Id: <20220530134924.1936816-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134924.1936816-1-sashal@kernel.org>
 References: <20220530134924.1936816-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -62,49 +58,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
+From: jianghaoran <jianghaoran@kylinos.cn>
 
-[ Upstream commit e999a5da28a0e0f7de242d841ef7d5e48f4646ae ]
+[ Upstream commit b52e1cce31ca721e937d517411179f9196ee6135 ]
 
-This patch fixes an invalid TX PA DC bias level on QCA9561, which
-results in a very low output power and very low throughput as devices
-are further away from the AP (compared to other 2.4GHz APs).
+ARPHRD_TUNNEL interface can't process rs packets
+and will generate TX errors
 
-This patch was suggested by Felix Fietkau, who noted[1]:
-"The value written to that register is wrong, because while the mask
-definition AR_CH0_TOP2_XPABIASLVL uses a different value for 9561, the
-shift definition AR_CH0_TOP2_XPABIASLVL_S is hardcoded to 12, which is
-wrong for 9561."
+ex:
+ip tunnel add ethn mode ipip local 192.168.1.1 remote 192.168.1.2
+ifconfig ethn x.x.x.x
 
-In real life testing, without this patch the 2.4GHz throughput on
-Yuncore XD3200 is around 10Mbps sitting next to the AP, and closer to
-practical maximum with the patch applied.
+ethn: flags=209<UP,POINTOPOINT,RUNNING,NOARP>  mtu 1480
+	inet x.x.x.x  netmask 255.255.255.255  destination x.x.x.x
+	inet6 fe80::5efe:ac1e:3cdb  prefixlen 64  scopeid 0x20<link>
+	tunnel   txqueuelen 1000  (IPIP Tunnel)
+	RX packets 0  bytes 0 (0.0 B)
+	RX errors 0  dropped 0  overruns 0  frame 0
+	TX packets 0  bytes 0 (0.0 B)
+	TX errors 3  dropped 0 overruns 0  carrier 0  collisions 0
 
-[1] https://lore.kernel.org/all/91c58969-c60e-2f41-00ac-737786d435ae@nbd.name
-
-Signed-off-by: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
-Acked-by: Felix Fietkau <nbd@nbd.name>
-Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220417145145.1847-1-hacks+kernel@slashdirt.org
+Signed-off-by: jianghaoran <jianghaoran@kylinos.cn>
+Link: https://lore.kernel.org/r/20220429053802.246681-1-jianghaoran@kylinos.cn
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/ar9003_phy.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv6/addrconf.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/ar9003_phy.h b/drivers/net/wireless/ath/ath9k/ar9003_phy.h
-index a171dbb29fbb..ad949eb02f3d 100644
---- a/drivers/net/wireless/ath/ath9k/ar9003_phy.h
-+++ b/drivers/net/wireless/ath/ath9k/ar9003_phy.h
-@@ -720,7 +720,7 @@
- #define AR_CH0_TOP2		(AR_SREV_9300(ah) ? 0x1628c : \
- 					(AR_SREV_9462(ah) ? 0x16290 : 0x16284))
- #define AR_CH0_TOP2_XPABIASLVL		(AR_SREV_9561(ah) ? 0x1e00 : 0xf000)
--#define AR_CH0_TOP2_XPABIASLVL_S	12
-+#define AR_CH0_TOP2_XPABIASLVL_S	(AR_SREV_9561(ah) ? 9 : 12)
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index a8db1efccbf5..f261c6d7f1f2 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -4143,7 +4143,8 @@ static void addrconf_dad_completed(struct inet6_ifaddr *ifp, bool bump_id,
+ 	send_rs = send_mld &&
+ 		  ipv6_accept_ra(ifp->idev) &&
+ 		  ifp->idev->cnf.rtr_solicits != 0 &&
+-		  (dev->flags&IFF_LOOPBACK) == 0;
++		  (dev->flags & IFF_LOOPBACK) == 0 &&
++		  (dev->type != ARPHRD_TUNNEL);
+ 	read_unlock_bh(&ifp->idev->lock);
  
- #define AR_CH0_XTAL		(AR_SREV_9300(ah) ? 0x16294 : \
- 				 ((AR_SREV_9462(ah) || AR_SREV_9565(ah)) ? 0x16298 : \
+ 	/* While dad is in progress mld report's source address is in6_addrany.
 -- 
 2.35.1
 
