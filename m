@@ -2,134 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C228E53783A
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:06:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 372AA53783E
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:06:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234946AbiE3Jr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 05:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59150 "EHLO
+        id S234953AbiE3Jwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 05:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234922AbiE3JrZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 05:47:25 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A2EA19F;
-        Mon, 30 May 2022 02:47:20 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id wh22so19758116ejb.7;
-        Mon, 30 May 2022 02:47:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/k2m83LaODmcLsyS0dbBoJk+VKnEiUhqE8c6BRPwNpA=;
-        b=HEdtIu9h1Ee4llxxfLUHdT6WXTT7YVh7HuJ1UWwgpaAZEzYcK8Kt18Rc0y6hhxh/pk
-         gNEh0cjdDf/DymaC3VMDJfzt8hACMMSArRNFzvgV2rASP/QOIxu5SVhVDBmuBaF6jSqH
-         pE7Z+UNUl0L+YpcyxdWHlt+wnBHwJZV6FpL32JVe2MnfNBn8UF1zu7hi0PqUJB5JrUta
-         PzgzVuMmyO9cQBNDseiGyFnSevNpMoE0l5EdZjqKzsaGAyssfHObZ+KUH6ErxYptI92w
-         d+o7sRvi1EM4ocHQV9T1yTo01whLdcagvrS5NvenSKkHgxAUoXpqgSIjqaOGUKnRw74d
-         T+gA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/k2m83LaODmcLsyS0dbBoJk+VKnEiUhqE8c6BRPwNpA=;
-        b=XIrlJyRmWz55gyGgE2tHLcI3n1KCn3c0QQ4hM8elz+uMq7DZLj8SVGg7SjPePkUrNK
-         r4voehXaHfnMIi4k9R7MHYk8P6hUkma9KiUXJ2CcdAAIMfTUNkc4W7O8AjWXLqwiwADi
-         xClUWCGk7ai8jeyhGmxF3Q7/E4Tyci7rQsHXql1ewvXhvVXuAN7QyD72prej/TRDBgg7
-         AtZwYQbjBi1hPaMT0pvI7oAdvKk9816J90m/2lHgMYfTJ8R18XmS0vRCyOl8Wy8U9puT
-         +UAJ7H6lSqmJILbwPHC8aa3AIYmV5tFXro0meFeE7HIRE+dCdqDNtXMfZfUQQdMsDbM+
-         /gRg==
-X-Gm-Message-State: AOAM533BXqkPbcSKmfTVv+5p287lnPZ/DiMfDzh/8cUPXy0OIAmfmvjH
-        X9MFVBJqNPNeWV7/TCB5jR9fGi/HEkNLF8OpVj8=
-X-Google-Smtp-Source: ABdhPJz2Y4PPvobMreDaaaGYBcFdlzgaDp1D8UrIIx2/xRRkK7/L2BM9dOFFBRp5uNmzREpsNBcvOr4GVqLWfEZBHGw=
-X-Received: by 2002:a17:907:6e04:b0:6f4:d6f3:c72a with SMTP id
- sd4-20020a1709076e0400b006f4d6f3c72amr47585054ejc.636.1653904039317; Mon, 30
- May 2022 02:47:19 -0700 (PDT)
+        with ESMTP id S233008AbiE3Jwq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 05:52:46 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0C710FE5
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 02:52:45 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1nvc4g-0008P8-Vu; Mon, 30 May 2022 11:52:34 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1nvc4e-0007Yd-Tf; Mon, 30 May 2022 11:52:32 +0200
+Date:   Mon, 30 May 2022 11:52:32 +0200
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, Neo Jou <neojou@gmail.com>,
+        Hans Ulli Kroll <linux@ulli-kroll.de>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>
+Subject: Re: [PATCH 00/10] RTW88: Add support for USB variants
+Message-ID: <20220530095232.GI1615@pengutronix.de>
+References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
+ <87fskrv0cm.fsf@kernel.org>
 MIME-Version: 1.0
-References: <20220526081550.1089805-1-saravanak@google.com> <20220526081550.1089805-8-saravanak@google.com>
-In-Reply-To: <20220526081550.1089805-8-saravanak@google.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 30 May 2022 11:46:43 +0200
-Message-ID: <CAHp75VcJRfQO6oJpVUoGK4JQpr3Wbff9vgkm8+q8fn8cxohQug@mail.gmail.com>
-Subject: Re: [RFC PATCH v1 7/9] driver core: Add fw_devlink_unblock_may_probe()
- helper function
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, Len Brown <lenb@kernel.org>,
-        Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        John Stultz <jstultz@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Android Kernel Team <kernel-team@android.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87fskrv0cm.fsf@kernel.org>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 26, 2022 at 1:22 PM Saravana Kannan <saravanak@google.com> wrote:
->
-> This function can be used during the kernel boot sequence to forcefully
-> override fw_devlink=on and unblock the probing of all devices that have
-> a driver.
->
-> It's mainly meant to be called from late_initcall() or
-> late_initcall_sync() where a device needs to probe before the kernel can
-> mount rootfs.
+On Mon, May 30, 2022 at 12:25:13PM +0300, Kalle Valo wrote:
+> Sascha Hauer <s.hauer@pengutronix.de> writes:
+> 
+> > Another problem to address is that the driver uses
+> > ieee80211_iterate_stations_atomic() and
+> > ieee80211_iterate_active_interfaces_atomic() and does register accesses
+> > in the iterator. This doesn't work with USB, so iteration is done in two
+> > steps now: The ieee80211_iterate_*_atomic() functions are only used to
+> > collect the stations/interfaces on a list which is then iterated over
+> > non-atomically in the second step. The implementation for this is
+> > basically the one suggested by Ping-Ke here:
+> >
+> > https://lore.kernel.org/lkml/423f474e15c948eda4db5bc9a50fd391@realtek.com/
+> 
+> Isn't this racy? What guarantees that vifs are not deleted after
+> ieee80211_iterate_active_interfaces_atomic() call?
 
-...
+The driver mutex &rtwdev->mutex is acquired during the whole
+collection/iteration process. For deleting an interface
+ieee80211_ops::remove_interface would have to be called, right?
+That would acquire &rtwdev->mutex as well, so I think this should be
+safe.
 
-> diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
-> index 9a81c4410b9f..0770edda7068 100644
-> --- a/include/linux/fwnode.h
-> +++ b/include/linux/fwnode.h
-> @@ -13,6 +13,7 @@
->  #include <linux/list.h>
->  #include <linux/bits.h>
->  #include <linux/err.h>
-> +#include <linux/init.h>
->
->  struct fwnode_operations;
->  struct device;
-> @@ -199,5 +200,6 @@ extern bool fw_devlink_is_strict(void);
->  int fwnode_link_add(struct fwnode_handle *con, struct fwnode_handle *sup);
->  void fwnode_links_purge(struct fwnode_handle *fwnode);
->  void fw_devlink_purge_absent_suppliers(struct fwnode_handle *fwnode);
-> +void __init fw_devlink_unblock_may_probe(void);
-
-I don't think you need init.h and __init here. Important is that you
-have it in the C-file. Am I wrong?
+Sascha
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
