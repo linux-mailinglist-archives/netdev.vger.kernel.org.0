@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 839E453794D
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:45:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D59A853794F
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:45:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235386AbiE3Kox (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 06:44:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40712 "EHLO
+        id S234799AbiE3Kp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 06:45:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235417AbiE3KoY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 06:44:24 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B42E7CDC4;
-        Mon, 30 May 2022 03:44:02 -0700 (PDT)
+        with ESMTP id S235448AbiE3KoZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 06:44:25 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02BE97DE03;
+        Mon, 30 May 2022 03:44:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1653907444; x=1685443444;
+  t=1653907452; x=1685443452;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=AXEma/wXIo46/RpjwWuiE+84rIu0sswJH6jcqexjMHM=;
-  b=WjOGHjz5mNO4rECDO4NOjmAFZ4gytLavh8NEyO+bvvMF2jNp1rbMmwf7
-   3lUvep6lhv0LplrhRmUZl/xv1j0LFYtxFTPNjiEIHVF9vzs2cY9BdlLJs
-   d/ymThY4VgkkQlMUTa8rIeB1va68nkmGmVWLFC/LtTiWar+T+rzpuY83j
-   XxUBvuYCicgS7PK3n0vllVQNFYsH1yyuI2bwU61/QwBYhzVzPU9g6iqmn
-   rGNdMShp/kqA+EI3iTIiKHFVYaaj9vbvYJ1hep9yokf1wPrMs1cZeNqwG
-   WLfdQjqzhxejDX7d/2nfL11FzWYB4ty1iocJ7mWp6R7XRb9QDIugafJ+R
-   Q==;
+  bh=E5BLy6gRUx5QYynXA0m1su3odBaUXpMPYruvosrgoeU=;
+  b=2FQTRPt28pgcIjgt2/UENK8hnjHlGSAsuCiV8xAfHYIbUD0DyuYdD77+
+   Ko2AtXmu9SSu5kOC4tBtWWQD+FvVp8mSV0O/Gtwn3hdKS/zjp/WrEKvmC
+   B8DTQErWRlvokzH/e3dpL8zDaWn0IJhp7xBoCYLvT1jySKTSJHxqWmrbn
+   A/Z9iE9TsiBsk7NvUe6C2k7lX/vx0ntOUZu4HjDQjyC+erUTrWDheG2R6
+   w61aUdXzLJoMlPpUPSpz1KPF4c5vO5vyUTUE4SWjgOQNC9LnBgR+N0+P9
+   o2BaFlm6OrLhzXGagJUM+2nAYfVkz2YMh5BA7RlHNoIvb+OOPOLo1y/w6
+   A==;
 X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
-   d="scan'208";a="161124720"
+   d="scan'208";a="165913165"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 May 2022 03:44:01 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 May 2022 03:44:10 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 30 May 2022 03:44:01 -0700
+ 15.1.2375.17; Mon, 30 May 2022 03:44:08 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 30 May 2022 03:43:56 -0700
+ 15.1.2375.17 via Frontend Transport; Mon, 30 May 2022 03:44:03 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Woojung Huh <woojung.huh@microchip.com>,
@@ -50,9 +50,9 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         "Russell King" <linux@armlinux.org.uk>
-Subject: [RFC Patch net-next v2 06/15] net: dsa: microchip: get P_STP_CTRL in ksz_port_stp_state by ksz_dev_ops
-Date:   Mon, 30 May 2022 16:12:48 +0530
-Message-ID: <20220530104257.21485-7-arun.ramadoss@microchip.com>
+Subject: [RFC Patch net-next v2 07/15] net: dsa: microchip: update the ksz_phylink_get_caps
+Date:   Mon, 30 May 2022 16:12:49 +0530
+Message-ID: <20220530104257.21485-8-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220530104257.21485-1-arun.ramadoss@microchip.com>
 References: <20220530104257.21485-1-arun.ramadoss@microchip.com>
@@ -69,174 +69,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At present, P_STP_CTRL register value is passed as parameter to
-ksz_port_stp_state from the individual dsa_switch_ops hooks. This patch
-update the function to retrieve the register value through the
-ksz_dev_ops function pointer.
-And add the static to ksz_update_port_member since it is not called
-outside the ksz_common.
+This patch assigns the phylink_get_caps in ksz8795 and ksz9477 to
+ksz_phylink_get_caps. And update their mac_capabilities in the
+respective ksz_dev_ops.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/ksz8795.c    |  9 +++++----
- drivers/net/dsa/microchip/ksz9477.c    | 10 +++++-----
- drivers/net/dsa/microchip/ksz_common.c |  9 +++++----
- drivers/net/dsa/microchip/ksz_common.h |  5 ++---
- 4 files changed, 17 insertions(+), 16 deletions(-)
+ drivers/net/dsa/microchip/ksz8795.c    | 9 +++------
+ drivers/net/dsa/microchip/ksz9477.c    | 7 +++----
+ drivers/net/dsa/microchip/ksz_common.c | 3 +++
+ drivers/net/dsa/microchip/ksz_common.h | 2 ++
+ 4 files changed, 11 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 8657b520b336..e6982fa9d382 100644
+index e6982fa9d382..25763d89c67a 100644
 --- a/drivers/net/dsa/microchip/ksz8795.c
 +++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -920,9 +920,9 @@ static void ksz8_cfg_port_member(struct ksz_device *dev, int port, u8 member)
- 	ksz_pwrite8(dev, port, P_MIRROR_CTRL, data);
+@@ -1353,13 +1353,9 @@ static int ksz8_setup(struct dsa_switch *ds)
+ 	return ksz8_handle_global_errata(ds);
  }
  
--static void ksz8_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
-+static int ksz8_get_stp_reg(void)
+-static void ksz8_get_caps(struct dsa_switch *ds, int port,
++static void ksz8_get_caps(struct ksz_device *dev, int port,
+ 			  struct phylink_config *config)
  {
--	ksz_port_stp_state_set(ds, port, state, P_STP_CTRL);
-+	return P_STP_CTRL;
- }
+-	struct ksz_device *dev = ds->priv;
+-
+-	ksz_phylink_get_caps(ds, port, config);
+-
+ 	config->mac_capabilities = MAC_10 | MAC_100;
  
- static void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
-@@ -1240,7 +1240,7 @@ static void ksz8_config_cpu_port(struct dsa_switch *ds)
- 	for (i = 0; i < dev->phy_port_cnt; i++) {
- 		p = &dev->ports[i];
- 
--		ksz8_port_stp_state_set(ds, i, BR_STATE_DISABLED);
-+		ksz_port_stp_state_set(ds, i, BR_STATE_DISABLED);
- 
- 		/* Last port may be disabled. */
- 		if (i == dev->phy_port_cnt)
-@@ -1389,7 +1389,7 @@ static const struct dsa_switch_ops ksz8_switch_ops = {
- 	.get_sset_count		= ksz_sset_count,
- 	.port_bridge_join	= ksz_port_bridge_join,
- 	.port_bridge_leave	= ksz_port_bridge_leave,
--	.port_stp_state_set	= ksz8_port_stp_state_set,
-+	.port_stp_state_set	= ksz_port_stp_state_set,
- 	.port_fast_age		= ksz_port_fast_age,
- 	.port_vlan_filtering	= ksz_port_vlan_filtering,
- 	.port_vlan_add		= ksz_port_vlan_add,
-@@ -1463,6 +1463,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
- 	.vlan_del = ksz8_port_vlan_del,
+ 	/* Silicon Errata Sheet (DS80000830A):
+@@ -1381,7 +1377,7 @@ static const struct dsa_switch_ops ksz8_switch_ops = {
+ 	.setup			= ksz8_setup,
+ 	.phy_read		= ksz_phy_read16,
+ 	.phy_write		= ksz_phy_write16,
+-	.phylink_get_caps	= ksz8_get_caps,
++	.phylink_get_caps	= ksz_phylink_get_caps,
+ 	.phylink_mac_link_down	= ksz_mac_link_down,
+ 	.port_enable		= ksz_enable_port,
+ 	.get_strings		= ksz_get_strings,
+@@ -1464,6 +1460,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
  	.mirror_add = ksz8_port_mirror_add,
  	.mirror_del = ksz8_port_mirror_del,
-+	.get_stp_reg = ksz8_get_stp_reg,
+ 	.get_stp_reg = ksz8_get_stp_reg,
++	.get_caps = ksz8_get_caps,
  	.shutdown = ksz8_reset_switch,
  	.init = ksz8_switch_init,
  	.exit = ksz8_switch_exit,
 diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 6796c9d89ab9..f08694aba6bb 100644
+index f08694aba6bb..494f93e4c7f8 100644
 --- a/drivers/net/dsa/microchip/ksz9477.c
 +++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -344,10 +344,9 @@ static void ksz9477_cfg_port_member(struct ksz_device *dev, int port,
- 	ksz_pwrite32(dev, port, REG_PORT_VLAN_MEMBERSHIP__4, member);
+@@ -1073,11 +1073,9 @@ static void ksz9477_phy_errata_setup(struct ksz_device *dev, int port)
+ 	ksz9477_port_mmd_write(dev, port, 0x1c, 0x20, 0xeeee);
  }
  
--static void ksz9477_port_stp_state_set(struct dsa_switch *ds, int port,
--				       u8 state)
-+static int ksz9477_get_stp_reg(void)
+-static void ksz9477_get_caps(struct dsa_switch *ds, int port,
++static void ksz9477_get_caps(struct ksz_device *dev, int port,
+ 			     struct phylink_config *config)
  {
--	ksz_port_stp_state_set(ds, port, state, P_STP_CTRL);
-+	return P_STP_CTRL;
+-	ksz_phylink_get_caps(ds, port, config);
+-
+ 	config->mac_capabilities = MAC_10 | MAC_100 | MAC_1000FD |
+ 				   MAC_ASYM_PAUSE | MAC_SYM_PAUSE;
  }
- 
- static void ksz9477_flush_dyn_mac_table(struct ksz_device *dev, int port)
-@@ -1237,7 +1236,7 @@ static void ksz9477_config_cpu_port(struct dsa_switch *ds)
- 			continue;
- 		p = &dev->ports[i];
- 
--		ksz9477_port_stp_state_set(ds, i, BR_STATE_DISABLED);
-+		ksz_port_stp_state_set(ds, i, BR_STATE_DISABLED);
- 		p->on = 1;
- 		if (i < dev->phy_port_cnt)
- 			p->phy = 1;
-@@ -1315,7 +1314,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.get_sset_count		= ksz_sset_count,
- 	.port_bridge_join	= ksz_port_bridge_join,
- 	.port_bridge_leave	= ksz_port_bridge_leave,
--	.port_stp_state_set	= ksz9477_port_stp_state_set,
-+	.port_stp_state_set	= ksz_port_stp_state_set,
- 	.port_fast_age		= ksz_port_fast_age,
- 	.port_vlan_filtering	= ksz_port_vlan_filtering,
- 	.port_vlan_add		= ksz_port_vlan_add,
-@@ -1406,6 +1405,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.vlan_del = ksz9477_port_vlan_del,
+@@ -1307,7 +1305,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
+ 	.phy_read		= ksz_phy_read16,
+ 	.phy_write		= ksz_phy_write16,
+ 	.phylink_mac_link_down	= ksz_mac_link_down,
+-	.phylink_get_caps	= ksz9477_get_caps,
++	.phylink_get_caps	= ksz_phylink_get_caps,
+ 	.port_enable		= ksz_enable_port,
+ 	.get_strings		= ksz_get_strings,
+ 	.get_ethtool_stats	= ksz_get_ethtool_stats,
+@@ -1406,6 +1404,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
  	.mirror_add = ksz9477_port_mirror_add,
  	.mirror_del = ksz9477_port_mirror_del,
-+	.get_stp_reg = ksz9477_get_stp_reg,
+ 	.get_stp_reg = ksz9477_get_stp_reg,
++	.get_caps = ksz9477_get_caps,
  	.shutdown = ksz9477_reset_switch,
  	.init = ksz9477_switch_init,
  	.exit = ksz9477_switch_exit,
 diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 1ed4cc94795e..5cf183f753d9 100644
+index 5cf183f753d9..c1303a46a9b7 100644
 --- a/drivers/net/dsa/microchip/ksz_common.c
 +++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -532,7 +532,7 @@ void ksz_get_strings(struct dsa_switch *ds, int port,
- }
- EXPORT_SYMBOL_GPL(ksz_get_strings);
- 
--void ksz_update_port_member(struct ksz_device *dev, int port)
-+static void ksz_update_port_member(struct ksz_device *dev, int port)
- {
- 	struct ksz_port *p = &dev->ports[port];
- 	struct dsa_switch *ds = dev->ds;
-@@ -589,7 +589,6 @@ void ksz_update_port_member(struct ksz_device *dev, int port)
- 
- 	dev->dev_ops->cfg_port_member(dev, port, port_member | cpu_port);
- }
--EXPORT_SYMBOL_GPL(ksz_update_port_member);
- 
- static void port_r_cnt(struct ksz_device *dev, int port)
- {
-@@ -890,12 +889,14 @@ int ksz_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy)
- }
- EXPORT_SYMBOL_GPL(ksz_enable_port);
- 
--void ksz_port_stp_state_set(struct dsa_switch *ds, int port,
--			    u8 state, int reg)
-+void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state)
- {
- 	struct ksz_device *dev = ds->priv;
- 	struct ksz_port *p;
- 	u8 data;
-+	int reg;
+@@ -456,6 +456,9 @@ void ksz_phylink_get_caps(struct dsa_switch *ds, int port,
+ 	if (dev->info->internal_phy[port])
+ 		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
+ 			  config->supported_interfaces);
 +
-+	reg = dev->dev_ops->get_stp_reg();
++	if (dev->dev_ops->get_caps)
++		dev->dev_ops->get_caps(dev, port, config);
+ }
+ EXPORT_SYMBOL_GPL(ksz_phylink_get_caps);
  
- 	ksz_pread8(dev, port, reg, &data);
- 	data &= ~(PORT_TX_ENABLE | PORT_RX_ENABLE | PORT_LEARN_DISABLE);
 diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 01080ec22bf1..2727934b7171 100644
+index 2727934b7171..8124737a1170 100644
 --- a/drivers/net/dsa/microchip/ksz_common.h
 +++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -192,6 +192,7 @@ struct ksz_dev_ops {
- 			  bool ingress, struct netlink_ext_ack *extack);
+@@ -193,6 +193,8 @@ struct ksz_dev_ops {
  	void (*mirror_del)(struct ksz_device *dev, int port,
  			   struct dsa_mall_mirror_tc_entry *mirror);
-+	int (*get_stp_reg)(void);
+ 	int (*get_stp_reg)(void);
++	void (*get_caps)(struct ksz_device *dev, int port,
++			 struct phylink_config *config);
  	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
  	void (*port_init_cnt)(struct ksz_device *dev, int port);
  	int (*shutdown)(struct ksz_device *dev);
-@@ -207,7 +208,6 @@ void ksz_switch_remove(struct ksz_device *dev);
- int ksz8_switch_register(struct ksz_device *dev);
- int ksz9477_switch_register(struct ksz_device *dev);
- 
--void ksz_update_port_member(struct ksz_device *dev, int port);
- void ksz_init_mib_timer(struct ksz_device *dev);
- void ksz_r_mib_stats64(struct ksz_device *dev, int port);
- void ksz_get_stats64(struct dsa_switch *ds, int port,
-@@ -229,8 +229,7 @@ int ksz_port_bridge_join(struct dsa_switch *ds, int port,
- 			 struct netlink_ext_ack *extack);
- void ksz_port_bridge_leave(struct dsa_switch *ds, int port,
- 			   struct dsa_bridge bridge);
--void ksz_port_stp_state_set(struct dsa_switch *ds, int port,
--			    u8 state, int reg);
-+void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
- void ksz_port_fast_age(struct dsa_switch *ds, int port);
- int ksz_port_fdb_dump(struct dsa_switch *ds, int port, dsa_fdb_dump_cb_t *cb,
- 		      void *data);
 -- 
 2.36.1
 
