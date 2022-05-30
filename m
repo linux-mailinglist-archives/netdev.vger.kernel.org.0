@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14F20537F4C
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:19:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D7FA53802B
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:22:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236196AbiE3OJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:09:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55984 "EHLO
+        id S235423AbiE3OJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:09:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239106AbiE3OFW (ORCPT
+        with ESMTP id S239107AbiE3OFW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:05:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F2838CB2D;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB88899685;
         Mon, 30 May 2022 06:41:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 021A8B80B3A;
-        Mon, 30 May 2022 13:41:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79BA1C3411A;
-        Mon, 30 May 2022 13:41:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 532BE60F1F;
+        Mon, 30 May 2022 13:41:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A3FAC3411C;
+        Mon, 30 May 2022 13:41:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918079;
-        bh=mY7KrG6r191VUiGCfk7TkE+/2zhyGYPgoN5cuvSvJXs=;
+        s=k20201202; t=1653918081;
+        bh=zqKkk3ngvML06SimDRXhnKVNzO0XNOGW/eElEV6oaXU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h1OD9mLETKA7mutV38HB339MtxQBjLywoU4ltQYsCpRHxL/tS5Elf1MhMInpjPE1R
-         Vv5vDU9h4PpDmY8pUfHwjJX3MYTBOtEuiboVSFUrW8H82HJE0x6Z/t4agfAp95IW8q
-         m3Pqi14dNc1TptEEE8Lym+k9v9n1BFd2Qt/U18vls0laueA1U1zdngJ5amPVNGuXqk
-         OWmW3icUCR87MWf4uUE7NlLy9cGowLe59LV1GY6RkkpreHUQWokNGYxhEtngJBfH7N
-         AtYp4/sDeOdiylRpD5ftprgzK4u7NS+jVKF2aqsPe7/pHhPa5/7e6Y4i0r6hGNJVAW
-         otbWQ1xTcCVbQ==
+        b=C3Y1N90ozFgdJEmkIQUooQmQjSHydD948ptI0UXjzOkvsIw/Smiuuodx4dpP2sZes
+         JSsMbkhUqXi5+txwblmvLFcs4eD2YR5Vy1xasHqszzoIOFcvz7gwCUGR3dw5o5FUcb
+         6cZ7IzLj3SDEAGGPOwJyE3n3gjmflEiKpCFqVXI6b51++pvaMIRYgCPeEboVcCJth2
+         JxCMHY4iQfmSSEZ9VNKEeRv7bw7v4FTNeavjQ1ZMlqmwj93uEQAQ/bj5EyVYcgCYSD
+         IAbpL0todhTU15kgDrU1jf9EDBzKOo5uoyRZmJ8cKgyj/+1C078CLYHK1t4dgVvmYK
+         IQQsGvGyEkJ4A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     jianghaoran <jianghaoran@kylinos.cn>,
-        Jakub Kicinski <kuba@kernel.org>,
+Cc:     Mark Bloch <mbloch@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 052/109] ipv6: Don't send rs packets to the interface of ARPHRD_TUNNEL
-Date:   Mon, 30 May 2022 09:37:28 -0400
-Message-Id: <20220530133825.1933431-52-sashal@kernel.org>
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 053/109] net/mlx5: fs, delete the FTE when there are no rules attached to it
+Date:   Mon, 30 May 2022 09:37:29 -0400
+Message-Id: <20220530133825.1933431-53-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
@@ -58,48 +58,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: jianghaoran <jianghaoran@kylinos.cn>
+From: Mark Bloch <mbloch@nvidia.com>
 
-[ Upstream commit b52e1cce31ca721e937d517411179f9196ee6135 ]
+[ Upstream commit 7b0c6338597613f465d131bd939a51844a00455a ]
 
-ARPHRD_TUNNEL interface can't process rs packets
-and will generate TX errors
+When an FTE has no children is means all the rules where removed
+and the FTE can be deleted regardless of the dests_size value.
+While dests_size should be 0 when there are no children
+be extra careful not to leak memory or get firmware syndrome
+if the proper bookkeeping of dests_size wasn't done.
 
-ex:
-ip tunnel add ethn mode ipip local 192.168.1.1 remote 192.168.1.2
-ifconfig ethn x.x.x.x
-
-ethn: flags=209<UP,POINTOPOINT,RUNNING,NOARP>  mtu 1480
-	inet x.x.x.x  netmask 255.255.255.255  destination x.x.x.x
-	inet6 fe80::5efe:ac1e:3cdb  prefixlen 64  scopeid 0x20<link>
-	tunnel   txqueuelen 1000  (IPIP Tunnel)
-	RX packets 0  bytes 0 (0.0 B)
-	RX errors 0  dropped 0  overruns 0  frame 0
-	TX packets 0  bytes 0 (0.0 B)
-	TX errors 3  dropped 0 overruns 0  carrier 0  collisions 0
-
-Signed-off-by: jianghaoran <jianghaoran@kylinos.cn>
-Link: https://lore.kernel.org/r/20220429053802.246681-1-jianghaoran@kylinos.cn
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/addrconf.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 1ba5ff21412c..07b868c002a3 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -4219,7 +4219,8 @@ static void addrconf_dad_completed(struct inet6_ifaddr *ifp, bool bump_id,
- 	send_rs = send_mld &&
- 		  ipv6_accept_ra(ifp->idev) &&
- 		  ifp->idev->cnf.rtr_solicits != 0 &&
--		  (dev->flags&IFF_LOOPBACK) == 0;
-+		  (dev->flags & IFF_LOOPBACK) == 0 &&
-+		  (dev->type != ARPHRD_TUNNEL);
- 	read_unlock_bh(&ifp->idev->lock);
- 
- 	/* While dad is in progress mld report's source address is in6_addrany.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+index 00834c914dc6..a197dd7ca73b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -2031,16 +2031,16 @@ void mlx5_del_flow_rules(struct mlx5_flow_handle *handle)
+ 	down_write_ref_node(&fte->node, false);
+ 	for (i = handle->num_rules - 1; i >= 0; i--)
+ 		tree_remove_node(&handle->rule[i]->node, true);
+-	if (fte->dests_size) {
+-		if (fte->modify_mask)
+-			modify_fte(fte);
+-		up_write_ref_node(&fte->node, false);
+-	} else if (list_empty(&fte->node.children)) {
++	if (list_empty(&fte->node.children)) {
+ 		del_hw_fte(&fte->node);
+ 		/* Avoid double call to del_hw_fte */
+ 		fte->node.del_hw_func = NULL;
+ 		up_write_ref_node(&fte->node, false);
+ 		tree_put_node(&fte->node, false);
++	} else if (fte->dests_size) {
++		if (fte->modify_mask)
++			modify_fte(fte);
++		up_write_ref_node(&fte->node, false);
+ 	} else {
+ 		up_write_ref_node(&fte->node, false);
+ 	}
 -- 
 2.35.1
 
