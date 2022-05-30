@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 205285377E0
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:05:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05B925378CA
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:07:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234519AbiE3I6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 04:58:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52966 "EHLO
+        id S234536AbiE3I6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 04:58:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234476AbiE3I6e (ORCPT
+        with ESMTP id S229822AbiE3I6e (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 04:58:34 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B9E7220E;
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E45762B0;
         Mon, 30 May 2022 01:58:33 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LBTl26c7JzQkPB;
-        Mon, 30 May 2022 16:55:26 +0800 (CST)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LBTpQ5jKTzDqZF;
+        Mon, 30 May 2022 16:58:22 +0800 (CST)
 Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2375.24; Mon, 30 May 2022 16:58:31 +0800
 Received: from k04.huawei.com (10.67.174.115) by
@@ -41,9 +41,9 @@ CC:     Alexei Starovoitov <ast@kernel.org>,
         Palmer Dabbelt <palmer@dabbelt.com>,
         Albert Ou <aou@eecs.berkeley.edu>,
         Pu Lehui <pulehui@huawei.com>
-Subject: [PATCH bpf-next v3 1/6] bpf: Unify data extension operation of jited_ksyms and jited_linfo
-Date:   Mon, 30 May 2022 17:28:10 +0800
-Message-ID: <20220530092815.1112406-2-pulehui@huawei.com>
+Subject: [PATCH bpf-next v3 2/6] riscv, bpf: Support riscv jit to provide bpf_line_info
+Date:   Mon, 30 May 2022 17:28:11 +0800
+Message-ID: <20220530092815.1112406-3-pulehui@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220530092815.1112406-1-pulehui@huawei.com>
 References: <20220530092815.1112406-1-pulehui@huawei.com>
@@ -63,44 +63,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We found that 32-bit environment can not print bpf line info due
-to data inconsistency between jited_ksyms[0] and jited_linfo[0].
-
-For example:
-jited_kyms[0] = 0xb800067c, jited_linfo[0] = 0xffffffffb800067c
-
-We know that both of them store bpf func address, but due to the
-different data extension operations when extended to u64, they may
-not be the same. We need to unify the data extension operations of
-them.
+Add support for riscv jit to provide bpf_line_info. We need to
+consider the prologue offset in ctx->offset, but unlike x86 and
+arm64, ctx->offset of riscv does not provide an extra slot for
+the prologue, so here we just calculate the len of prologue and
+add it to ctx->offset at the end. Both RV64 and RV32 have been
+tested.
 
 Signed-off-by: Pu Lehui <pulehui@huawei.com>
 ---
- kernel/bpf/syscall.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/riscv/net/bpf_jit.h      | 1 +
+ arch/riscv/net/bpf_jit_core.c | 8 +++++++-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index e0aead17dff4..2929a4aab82c 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -4095,14 +4095,15 @@ static int bpf_prog_get_info_by_fd(struct file *file,
- 		info.nr_jited_line_info = 0;
- 	if (info.nr_jited_line_info && ulen) {
- 		if (bpf_dump_raw_ok(file->f_cred)) {
-+			unsigned long ladd;
- 			__u64 __user *user_linfo;
- 			u32 i;
+diff --git a/arch/riscv/net/bpf_jit.h b/arch/riscv/net/bpf_jit.h
+index 2a3715bf29fe..d926e0f7ef57 100644
+--- a/arch/riscv/net/bpf_jit.h
++++ b/arch/riscv/net/bpf_jit.h
+@@ -69,6 +69,7 @@ struct rv_jit_context {
+ 	struct bpf_prog *prog;
+ 	u16 *insns;		/* RV insns */
+ 	int ninsns;
++	int body_len;
+ 	int epilogue_offset;
+ 	int *offset;		/* BPF to RV */
+ 	int nexentries;
+diff --git a/arch/riscv/net/bpf_jit_core.c b/arch/riscv/net/bpf_jit_core.c
+index be743d700aa7..737baf8715da 100644
+--- a/arch/riscv/net/bpf_jit_core.c
++++ b/arch/riscv/net/bpf_jit_core.c
+@@ -44,7 +44,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 	unsigned int prog_size = 0, extable_size = 0;
+ 	bool tmp_blinded = false, extra_pass = false;
+ 	struct bpf_prog *tmp, *orig_prog = prog;
+-	int pass = 0, prev_ninsns = 0, i;
++	int pass = 0, prev_ninsns = 0, prologue_len, i;
+ 	struct rv_jit_data *jit_data;
+ 	struct rv_jit_context *ctx;
  
- 			user_linfo = u64_to_user_ptr(info.jited_line_info);
- 			ulen = min_t(u32, info.nr_jited_line_info, ulen);
- 			for (i = 0; i < ulen; i++) {
--				if (put_user((__u64)(long)prog->aux->jited_linfo[i],
--					     &user_linfo[i]))
-+				ladd = (unsigned long)prog->aux->jited_linfo[i];
-+				if (put_user((__u64)ladd, &user_linfo[i]))
- 					return -EFAULT;
- 			}
- 		} else {
+@@ -95,6 +95,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 			prog = orig_prog;
+ 			goto out_offset;
+ 		}
++		ctx->body_len = ctx->ninsns;
+ 		bpf_jit_build_prologue(ctx);
+ 		ctx->epilogue_offset = ctx->ninsns;
+ 		bpf_jit_build_epilogue(ctx);
+@@ -161,6 +162,11 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 
+ 	if (!prog->is_func || extra_pass) {
+ 		bpf_jit_binary_lock_ro(jit_data->header);
++		prologue_len = ctx->epilogue_offset - ctx->body_len;
++		for (i = 0; i < prog->len; i++)
++			ctx->offset[i] = ninsns_rvoff(prologue_len +
++						      ctx->offset[i]);
++		bpf_prog_fill_jited_linfo(prog, ctx->offset);
+ out_offset:
+ 		kfree(ctx->offset);
+ 		kfree(jit_data);
 -- 
 2.25.1
 
