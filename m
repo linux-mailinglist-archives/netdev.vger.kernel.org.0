@@ -2,50 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A34D053803A
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:22:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D4ED53805D
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:23:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235816AbiE3ODc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51390 "EHLO
+        id S239518AbiE3OJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:09:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239600AbiE3OBn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:01:43 -0400
+        with ESMTP id S236885AbiE3OD4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:03:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 773AFC5D98;
-        Mon, 30 May 2022 06:39:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5274598590;
+        Mon, 30 May 2022 06:40:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8042B80DB3;
-        Mon, 30 May 2022 13:39:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25965C3411C;
-        Mon, 30 May 2022 13:39:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11711B80DA9;
+        Mon, 30 May 2022 13:40:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F35EC3411E;
+        Mon, 30 May 2022 13:40:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917969;
-        bh=6SQtvCCi7KG7ZERvGOkFPImwwLGdIpID+YyAH/hlYBs=;
+        s=k20201202; t=1653918011;
+        bh=6GPI7gYf07+zFN1Ol/tp6iH7PZSLrK3qLnRFMdReihY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jovwoMEhgiIXWiziuiuZ5jP4+cD1GidA1Z+zgq/LmEF1AqyIhx9pYVC8wBfkSGhHF
-         vjIVsKO3irX4IWm9pUCP3BPIuAbj3ZBb0fKoI2WbRgXl/FTnnUFGHk6aOaUms805ti
-         YLaryWDwxrzsVhy7DAC75G2v8Hd7LoK666tRVslOpakusjZTvuXtkU6m2k6MUkPcVq
-         QmNLeBp4YUdR4SwkDslvXM36/350VkLcnLNo2Ze9paqOXwC7eRflRnjhpBdeRHXSCK
-         VKegZaLbUgAM9O87qpwDEwLM1cZ3fUlQnloMGuc3gBb2NbP2CnkkJGs8x8p/QjlSV5
-         YmKJdTb7/0tGg==
+        b=LitFFkhZCO3wVKbDNdI7dk9on9mC5zFp+9ge9WcfS1s61G1qGx0ZJmZaDYVo1WVpZ
+         caytGENi0T2hehBuQtQmWXOELFL7aLV+jlN8wSK/G6AXvf39N9QuuVGthBi5e5HrNS
+         yizMre+2z+ljIDb35OZiCHQK3fYUyEvZKXWoKa8fd/Q2oHwUaRTe4q5RVj1+D6CA2U
+         58+jMXkaHG+PNFPCC2gSMhU6tOav6TNN8xbTPMk6UItKVHY3gY1WiFg5zVWWNkFMH0
+         yXBZZVWn1hbsJgfftq38b5zHE11AyrsatRO1YOBuISSJJ8ua6Cip/D8WwfJlX5hNdl
+         X5id3rfpkP4sA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Po-Hao Huang <phhuang@realtek.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        tony0620emma@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+Cc:     =?UTF-8?q?Thibaut=20VAR=C3=88NE?= <hacks+kernel@slashdirt.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 021/109] rtw88: 8821c: fix debugfs rssi value
-Date:   Mon, 30 May 2022 09:36:57 -0400
-Message-Id: <20220530133825.1933431-21-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 031/109] ath9k: fix QCA9561 PA bias level
+Date:   Mon, 30 May 2022 09:37:07 -0400
+Message-Id: <20220530133825.1933431-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
 References: <20220530133825.1933431-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -59,58 +62,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Po-Hao Huang <phhuang@realtek.com>
+From: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
 
-[ Upstream commit ece31c93d4d68f7eb8eea4431b052aacdb678de2 ]
+[ Upstream commit e999a5da28a0e0f7de242d841ef7d5e48f4646ae ]
 
-RSSI value per frame is reported to mac80211 but not maintained in
-our own statistics, add it back to help us debug.
+This patch fixes an invalid TX PA DC bias level on QCA9561, which
+results in a very low output power and very low throughput as devices
+are further away from the AP (compared to other 2.4GHz APs).
 
-Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220407095858.46807-7-pkshih@realtek.com
+This patch was suggested by Felix Fietkau, who noted[1]:
+"The value written to that register is wrong, because while the mask
+definition AR_CH0_TOP2_XPABIASLVL uses a different value for 9561, the
+shift definition AR_CH0_TOP2_XPABIASLVL_S is hardcoded to 12, which is
+wrong for 9561."
+
+In real life testing, without this patch the 2.4GHz throughput on
+Yuncore XD3200 is around 10Mbps sitting next to the AP, and closer to
+practical maximum with the patch applied.
+
+[1] https://lore.kernel.org/all/91c58969-c60e-2f41-00ac-737786d435ae@nbd.name
+
+Signed-off-by: Thibaut VARÈNE <hacks+kernel@slashdirt.org>
+Acked-by: Felix Fietkau <nbd@nbd.name>
+Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20220417145145.1847-1-hacks+kernel@slashdirt.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw88/rtw8821c.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/wireless/ath/ath9k/ar9003_phy.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.c b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-index 785b8181513f..f405f42d1c1b 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.c
-@@ -506,6 +506,7 @@ static s8 get_cck_rx_pwr(struct rtw_dev *rtwdev, u8 lna_idx, u8 vga_idx)
- static void query_phy_status_page0(struct rtw_dev *rtwdev, u8 *phy_status,
- 				   struct rtw_rx_pkt_stat *pkt_stat)
- {
-+	struct rtw_dm_info *dm_info = &rtwdev->dm_info;
- 	s8 rx_power;
- 	u8 lna_idx = 0;
- 	u8 vga_idx = 0;
-@@ -517,6 +518,7 @@ static void query_phy_status_page0(struct rtw_dev *rtwdev, u8 *phy_status,
+diff --git a/drivers/net/wireless/ath/ath9k/ar9003_phy.h b/drivers/net/wireless/ath/ath9k/ar9003_phy.h
+index a171dbb29fbb..ad949eb02f3d 100644
+--- a/drivers/net/wireless/ath/ath9k/ar9003_phy.h
++++ b/drivers/net/wireless/ath/ath9k/ar9003_phy.h
+@@ -720,7 +720,7 @@
+ #define AR_CH0_TOP2		(AR_SREV_9300(ah) ? 0x1628c : \
+ 					(AR_SREV_9462(ah) ? 0x16290 : 0x16284))
+ #define AR_CH0_TOP2_XPABIASLVL		(AR_SREV_9561(ah) ? 0x1e00 : 0xf000)
+-#define AR_CH0_TOP2_XPABIASLVL_S	12
++#define AR_CH0_TOP2_XPABIASLVL_S	(AR_SREV_9561(ah) ? 9 : 12)
  
- 	pkt_stat->rx_power[RF_PATH_A] = rx_power;
- 	pkt_stat->rssi = rtw_phy_rf_power_2_rssi(pkt_stat->rx_power, 1);
-+	dm_info->rssi[RF_PATH_A] = pkt_stat->rssi;
- 	pkt_stat->bw = RTW_CHANNEL_WIDTH_20;
- 	pkt_stat->signal_power = rx_power;
- }
-@@ -524,6 +526,7 @@ static void query_phy_status_page0(struct rtw_dev *rtwdev, u8 *phy_status,
- static void query_phy_status_page1(struct rtw_dev *rtwdev, u8 *phy_status,
- 				   struct rtw_rx_pkt_stat *pkt_stat)
- {
-+	struct rtw_dm_info *dm_info = &rtwdev->dm_info;
- 	u8 rxsc, bw;
- 	s8 min_rx_power = -120;
- 
-@@ -543,6 +546,7 @@ static void query_phy_status_page1(struct rtw_dev *rtwdev, u8 *phy_status,
- 
- 	pkt_stat->rx_power[RF_PATH_A] = GET_PHY_STAT_P1_PWDB_A(phy_status) - 110;
- 	pkt_stat->rssi = rtw_phy_rf_power_2_rssi(pkt_stat->rx_power, 1);
-+	dm_info->rssi[RF_PATH_A] = pkt_stat->rssi;
- 	pkt_stat->bw = bw;
- 	pkt_stat->signal_power = max(pkt_stat->rx_power[RF_PATH_A],
- 				     min_rx_power);
+ #define AR_CH0_XTAL		(AR_SREV_9300(ah) ? 0x16294 : \
+ 				 ((AR_SREV_9462(ah) || AR_SREV_9565(ah)) ? 0x16298 : \
 -- 
 2.35.1
 
