@@ -2,286 +2,354 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72D95537550
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 09:24:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA3675374A4
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 09:23:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233349AbiE3HOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 03:14:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39846 "EHLO
+        id S233422AbiE3HRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 03:17:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233332AbiE3HOb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 03:14:31 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5311286D0
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 00:14:29 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id h9-20020a056e021d8900b002d39d3d2367so3020382ila.3
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 00:14:29 -0700 (PDT)
+        with ESMTP id S233406AbiE3HRP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 03:17:15 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39BEB7034E
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 00:17:13 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id h1so356449plf.11
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 00:17:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6SyAFe8yiRS+xJf7v92sSCs8jgpttKvVsYzEwlwQFS4=;
+        b=ZOeRe7U0XN51BGptO4ulac6NQI0nCMB9cTNM1vtwVSsEuo+Y57HJ/rVD289kTpOuNA
+         BqgcfBDZ6o+pHimdt0qhyNgUMPKNtGaJ4DIIVLMPWjBQk4H+qMmshEjyRqTIWPlntKk9
+         GUpuvW++NU3UYHPd2RcmrAHdIMTiwCGxM/wmpU6/fC//bJt80kCyfSh0p+NPsxNGzAYQ
+         iwWRKdj5cuyVsncgOsZpANMHNeqFdOHigS/lALVQ1LrxcNRJgm1eZBrj2VO/qQBUrtgX
+         ok85n1NSwUYI5ten6ARtJGpj4NiQZtY0YAk4bOv4ffCsfa5Fa1ffSzRIUq9kYmAY5vy6
+         Odmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=vu9s7JaJsIRlCSKC6DiPcrE594Tl3l5z2UrTEmKmA5Y=;
-        b=1Yok5Bork93pj4TOMI9N1YyJ5B7hJ+d7V+NPmyoSW/vC0APuytxzFFR45talhJKsIZ
-         9DiN/aN6V1ZrvqnSdPc21v6ISuNEmQ9WtTwhfh/zp+h6g4LnKseefM1H/+FPBy/TNerc
-         /nFxDikS2t/CG5JE+GmMizEVhg71Vt9P76blXGXyNaW3L9bn5DER+X2khSxR8ILG9kBu
-         EuDkXrKzzl6MJEgfFpi+A8M/kBLmkIxt5NNAzpQykIQnPe6GqKdiPqfyYtdqdlYWgs+H
-         yx5AfeBhCBJRpcRkuvY4gHc0MaGAK2Kn2xGGsQXb95P7PxsYGMaMfFSQEyE0IV70QtCJ
-         TwMw==
-X-Gm-Message-State: AOAM530yo/RBnD7pZgUybaFCDrwZgGZwV16wBHrsjgPBq0OVsmvpAbWH
-        oZPX2tpffRMbEk1K3tO2InKrMNgcl1kDq3rPqBii4s99OEqu
-X-Google-Smtp-Source: ABdhPJxQCBFuhI7Pe/Im2MLer+CVUcR3cJ+LPRPcdSPvI6fGtLCtO1AG/+ApaLPtxvXrKrM8AXzVCMT6j9/aXLxuKhovhcDSRmaI
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6SyAFe8yiRS+xJf7v92sSCs8jgpttKvVsYzEwlwQFS4=;
+        b=1T4RzSFvzTt4Odh2X0ayjdpPTiLoK7zI4C0Eutly7YWF1IpAf9jJShWVKh0E95N0nt
+         M7EM0joeFaVxmkrXVLKiPSvaJ9+lWFsSE7snpSdc6XlOUcnqN6F4fKW9Eohr8yP6NFBO
+         QMqo+J//+dyDW9jkghkFfO+VbGRCC9XovJL5/JZcRit/YvSzfh7FYaGbjuw8GxzYF2jd
+         d5butBluaTPVsuhlTaa7IhGmoTZ/YLokGaiwE1+yL0qhTOSQItFeTg7ttCm7iSTXc2wG
+         kQEFvtKZBQKWjiMqQuR72sL3w9u6y1kK3ftRgtwquMLZE+OyLLtvfIiE1PmqAH6BnGMO
+         hHhg==
+X-Gm-Message-State: AOAM530SfJXV5buBJHu2SqVdLVNIsFhTiHdtRHVo4PSrnDjTks9qbZ41
+        4/TyS7157uQQInlLNa5Er68leH+wlUPbgh56
+X-Google-Smtp-Source: ABdhPJy5m/fEfM/HgnPEeOcyxwTjHUpQZCqLSOeoiRXgi/yKZgASya8AZr9lUSqPGzHVqkTH6fSOjg==
+X-Received: by 2002:a17:90a:690f:b0:1df:336d:5533 with SMTP id r15-20020a17090a690f00b001df336d5533mr21802608pjj.222.1653895032082;
+        Mon, 30 May 2022 00:17:12 -0700 (PDT)
+Received: from localhost.localdomain ([49.37.162.84])
+        by smtp.gmail.com with ESMTPSA id a1-20020a170902900100b0015e9d4a5d27sm8355503plp.23.2022.05.30.00.17.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 00:17:10 -0700 (PDT)
+From:   Arun Ajith S <aajith@arista.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        dsahern@kernel.org, bagasdotme@gmail.com, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org, pabeni@redhat.com, prestwoj@gmail.com,
+        corbet@lwn.net, justin.iurman@uliege.be, edumazet@google.com,
+        shuah@kernel.org, aajith@arista.com, gilligan@arista.com,
+        noureddine@arista.com, gk@arista.com
+Subject: [PATCH net v2] net/ipv6: Expand and rename accept_unsolicited_na to accept_untracked_na
+Date:   Mon, 30 May 2022 07:17:00 +0000
+Message-Id: <20220530071700.12237-1-aajith@arista.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:4985:b0:32e:ddf4:e1ed with SMTP id
- cv5-20020a056638498500b0032eddf4e1edmr16496667jab.284.1653894869077; Mon, 30
- May 2022 00:14:29 -0700 (PDT)
-Date:   Mon, 30 May 2022 00:14:29 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002ad5ee05e03568f4@google.com>
-Subject: [syzbot] INFO: task can't die in vlan_ioctl_handler
-From:   syzbot <syzbot+6db61674290152a463a0@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, keescook@chromium.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        william.xuanziyang@huawei.com, zhudi21@huawei.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_DIGITS,
-        FROM_LOCAL_HEX,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+RFC 9131 changes default behaviour of handling RX of NA messages when the
+corresponding entry is absent in the neighbour cache. The current
+implementation is limited to accept just unsolicited NAs. However, the
+RFC is more generic where it also accepts solicited NAs. Both types
+should result in adding a STALE entry for this case.
 
-syzbot found the following issue on:
+Expand accept_untracked_na behaviour to also accept solicited NAs to
+be compliant with the RFC and rename the sysctl knob to
+accept_untracked_na.
 
-HEAD commit:    f81e94e91878 Add linux-next specific files for 20211125
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=12fd3609b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=be9183de0824e4d7
-dashboard link: https://syzkaller.appspot.com/bug?extid=6db61674290152a463a0
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+6db61674290152a463a0@syzkaller.appspotmail.com
-
-INFO: task syz-executor.1:28061 can't die for more than 143 seconds.
-task:syz-executor.1  state:D stack:27480 pid:28061 ppid: 26621 flags:0x00000004
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:4983 [inline]
- __schedule+0xab2/0x4d90 kernel/sched/core.c:6293
- schedule+0xd2/0x260 kernel/sched/core.c:6366
- schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6425
- __mutex_lock_common kernel/locking/mutex.c:680 [inline]
- __mutex_lock+0xa32/0x12f0 kernel/locking/mutex.c:740
- vlan_ioctl_handler+0xb7/0xec0 net/8021q/vlan.c:557
- sock_ioctl+0x1d8/0x640 net/socket.c:1199
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:874 [inline]
- __se_sys_ioctl fs/ioctl.c:860 [inline]
- __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f6130d89ae9
-RSP: 002b:00007f612e2ff188 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f6130e9cf60 RCX: 00007f6130d89ae9
-RDX: 0000000020000000 RSI: 0000000000008982 RDI: 0000000000000005
-RBP: 00007f6130de3f6d R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fff3c576def R14: 00007f612e2ff300 R15: 0000000000022000
- </TASK>
-INFO: task syz-executor.1:28061 blocked for more than 143 seconds.
-      Not tainted 5.16.0-rc2-next-20211125-syzkaller #0
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:syz-executor.1  state:D stack:27480 pid:28061 ppid: 26621 flags:0x00000004
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:4983 [inline]
- __schedule+0xab2/0x4d90 kernel/sched/core.c:6293
- schedule+0xd2/0x260 kernel/sched/core.c:6366
- schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6425
- __mutex_lock_common kernel/locking/mutex.c:680 [inline]
- __mutex_lock+0xa32/0x12f0 kernel/locking/mutex.c:740
- vlan_ioctl_handler+0xb7/0xec0 net/8021q/vlan.c:557
- sock_ioctl+0x1d8/0x640 net/socket.c:1199
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:874 [inline]
- __se_sys_ioctl fs/ioctl.c:860 [inline]
- __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f6130d89ae9
-RSP: 002b:00007f612e2ff188 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f6130e9cf60 RCX: 00007f6130d89ae9
-RDX: 0000000020000000 RSI: 0000000000008982 RDI: 0000000000000005
-RBP: 00007f6130de3f6d R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007fff3c576def R14: 00007f612e2ff300 R15: 0000000000022000
- </TASK>
-
-Showing all locks held in the system:
-1 lock held by khungtaskd/27:
- #0: ffffffff8bb83220 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6458
-3 locks held by kworker/1:3/2985:
- #0: ffff88814a039d38 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff88814a039d38 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff88814a039d38 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
- #0: ffff88814a039d38 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:635 [inline]
- #0: ffff88814a039d38 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:662 [inline]
- #0: ffff88814a039d38 ((wq_completion)ipv6_addrconf){+.+.}-{0:0}, at: process_one_work+0x896/0x1690 kernel/workqueue.c:2270
- #1: ffffc90001acfdb0 ((addr_chk_work).work){+.+.}-{0:0}, at: process_one_work+0x8ca/0x1690 kernel/workqueue.c:2274
- #2: ffffffff8d30cce8 (rtnl_mutex){+.+.}-{3:3}, at: addrconf_verify_work+0xa/0x20 net/ipv6/addrconf.c:4595
-1 lock held by in:imklog/6221:
- #0: ffff88807e445270 (&f->f_pos_lock){+.+.}-{3:3}, at: __fdget_pos+0xe9/0x100 fs/file.c:990
-2 locks held by agetty/6296:
- #0: ffff888023ca4098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x22/0x80 drivers/tty/tty_ldisc.c:252
- #1: ffffc9000274c2e8 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0xcf0/0x1230 drivers/tty/n_tty.c:2113
-2 locks held by agetty/6327:
- #0: ffff88807b627098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x22/0x80 drivers/tty/tty_ldisc.c:252
- #1: ffffc90001f682e8 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0xcf0/0x1230 drivers/tty/n_tty.c:2113
-3 locks held by kworker/1:2/1415:
- #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
- #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:635 [inline]
- #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:662 [inline]
- #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x896/0x1690 kernel/workqueue.c:2270
- #1: ffffc9000b15fdb0 (deferred_process_work){+.+.}-{0:0}, at: process_one_work+0x8ca/0x1690 kernel/workqueue.c:2274
- #2: ffffffff8d30cce8 (rtnl_mutex){+.+.}-{3:3}, at: switchdev_deferred_process_work+0xa/0x20 net/switchdev/switchdev.c:74
-5 locks held by kworker/u4:1/22852:
- #0: ffff8880119f3138 ((wq_completion)netns){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff8880119f3138 ((wq_completion)netns){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff8880119f3138 ((wq_completion)netns){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
- #0: ffff8880119f3138 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:635 [inline]
- #0: ffff8880119f3138 ((wq_completion)netns){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:662 [inline]
- #0: ffff8880119f3138 ((wq_completion)netns){+.+.}-{0:0}, at: process_one_work+0x896/0x1690 kernel/workqueue.c:2270
- #1: ffffc9000e7f7db0 (net_cleanup_work){+.+.}-{0:0}, at: process_one_work+0x8ca/0x1690 kernel/workqueue.c:2274
- #2: ffffffff8d2f8850 (pernet_ops_rwsem){++++}-{3:3}, at: cleanup_net+0x9b/0xb00 net/core/net_namespace.c:555
- #3: ffffffff8d30cce8 (rtnl_mutex){+.+.}-{3:3}, at: rtnl_lock_unregistering net/core/dev.c:10879 [inline]
- #3: ffffffff8d30cce8 (rtnl_mutex){+.+.}-{3:3}, at: default_device_exit_batch+0xe8/0x3c0 net/core/dev.c:10917
- #4: ffffffff8bb8cb30 (rcu_state.barrier_mutex){+.+.}-{3:3}, at: rcu_barrier+0x44/0x440 kernel/rcu/tree.c:4026
-3 locks held by kworker/1:4/23005:
- #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
- #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:635 [inline]
- #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:662 [inline]
- #0: ffff888010c64d38 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x896/0x1690 kernel/workqueue.c:2270
- #1: ffffc9000ecf7db0 ((linkwatch_work).work){+.+.}-{0:0}, at: process_one_work+0x8ca/0x1690 kernel/workqueue.c:2274
- #2: ffffffff8d30cce8 (rtnl_mutex){+.+.}-{3:3}, at: linkwatch_event+0xb/0x60 net/core/link_watch.c:251
-1 lock held by syz-executor.1/27113:
- #0: ffffffff8d30cce8 (rtnl_mutex){+.+.}-{3:3}, at: tun_detach drivers/net/tun.c:684 [inline]
- #0: ffffffff8d30cce8 (rtnl_mutex){+.+.}-{3:3}, at: tun_chr_close+0x3a/0x180 drivers/net/tun.c:3402
-2 locks held by syz-executor.1/28061:
- #0: ffffffff8d2e9a28 (vlan_ioctl_mutex){+.+.}-{3:3}, at: sock_ioctl+0x1bf/0x640 net/socket.c:1197
- #1: ffffffff8d30cce8 (rtnl_mutex){+.+.}-{3:3}, at: vlan_ioctl_handler+0xb7/0xec0 net/8021q/vlan.c:557
-3 locks held by kworker/1:5/28145:
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1198 [inline]
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:635 [inline]
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:662 [inline]
- #0: ffff888010c65d38 ((wq_completion)events_power_efficient){+.+.}-{0:0}, at: process_one_work+0x896/0x1690 kernel/workqueue.c:2270
- #1: ffffc9000b83fdb0 ((reg_check_chans).work){+.+.}-{0:0}, at: process_one_work+0x8ca/0x1690 kernel/workqueue.c:2274
- #2: ffffffff8d30cce8 (rtnl_mutex){+.+.}-{3:3}, at: reg_check_chans_work+0x83/0xe10 net/wireless/reg.c:2423
-
-=============================================
-
-NMI backtrace for cpu 0
-CPU: 0 PID: 27 Comm: khungtaskd Not tainted 5.16.0-rc2-next-20211125-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- nmi_cpu_backtrace.cold+0x47/0x144 lib/nmi_backtrace.c:111
- nmi_trigger_cpumask_backtrace+0x1b3/0x230 lib/nmi_backtrace.c:62
- trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
- check_hung_uninterruptible_tasks kernel/hung_task.c:256 [inline]
- watchdog+0xcb7/0xed0 kernel/hung_task.c:413
- kthread+0x405/0x4f0 kernel/kthread.c:345
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-Sending NMI from CPU 0 to CPUs 1:
-NMI backtrace for cpu 1
-CPU: 1 PID: 6221 Comm: in:imklog Not tainted 5.16.0-rc2-next-20211125-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:mark_usage kernel/locking/lockdep.c:4485 [inline]
-RIP: 0010:__lock_acquire+0x77a/0x54a0 kernel/locking/lockdep.c:4981
-Code: 00 00 44 8b 54 24 08 45 85 d2 0f 84 37 01 00 00 49 8d 7c 24 21 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 0f b6 04 02 <48> 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 19 39 00 00 49 8d 6c 24
-RSP: 0018:ffffc9000b59f770 EFLAGS: 00000806
-RAX: 0000000000000000 RBX: 0000000000000552 RCX: ffffffff815c786d
-RDX: 1ffff1100eecf156 RSI: 0000000000000008 RDI: ffff888077678ab1
-RBP: 0000000000000003 R08: 0000000000000000 R09: ffffffff8ff819ef
-R10: 0000000000000001 R11: 0000000000000000 R12: ffff888077678a90
-R13: ffff888077678000 R14: ffff888077678a68 R15: dffffc0000000000
-FS:  00007fb231d4f700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f93356ac000 CR3: 0000000070edc000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- lock_acquire kernel/locking/lockdep.c:5637 [inline]
- lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5602
- __mutex_lock_common kernel/locking/mutex.c:607 [inline]
- __mutex_lock+0x12f/0x12f0 kernel/locking/mutex.c:740
- syslog_print+0x39a/0x580 kernel/printk/printk.c:1557
- do_syslog.part.0+0x202/0x640 kernel/printk/printk.c:1658
- do_syslog+0x49/0x60 kernel/printk/printk.c:1643
- kmsg_read+0x90/0xb0 fs/proc/kmsg.c:40
- pde_read fs/proc/inode.c:311 [inline]
- proc_reg_read+0x119/0x300 fs/proc/inode.c:321
- vfs_read+0x1b5/0x600 fs/read_write.c:479
- ksys_read+0x12d/0x250 fs/read_write.c:619
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7fb23439222d
-Code: c1 20 00 00 75 10 b8 00 00 00 00 0f 05 48 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 4e fc ff ff 48 89 04 24 b8 00 00 00 00 0f 05 <48> 8b 3c 24 48 89 c2 e8 97 fc ff ff 48 89 d0 48 83 c4 08 48 3d 01
-RSP: 002b:00007fb231d2e580 EFLAGS: 00000293 ORIG_RAX: 0000000000000000
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fb23439222d
-RDX: 0000000000001fa0 RSI: 00007fb231d2eda0 RDI: 0000000000000004
-RBP: 000055ab9ea8d9d0 R08: 0000000000000000 R09: 0000000000000000
-R10: 2ce33e6c02ce33e7 R11: 0000000000000293 R12: 00007fb231d2eda0
-R13: 0000000000001fa0 R14: 0000000000001f9f R15: 00007fb231d2ee1e
- </TASK>
-----------------
-Code disassembly (best guess):
-   0:	00 00                	add    %al,(%rax)
-   2:	44 8b 54 24 08       	mov    0x8(%rsp),%r10d
-   7:	45 85 d2             	test   %r10d,%r10d
-   a:	0f 84 37 01 00 00    	je     0x147
-  10:	49 8d 7c 24 21       	lea    0x21(%r12),%rdi
-  15:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  1c:	fc ff df
-  1f:	48 89 fa             	mov    %rdi,%rdx
-  22:	48 c1 ea 03          	shr    $0x3,%rdx
-  26:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax
-* 2a:	48 89 fa             	mov    %rdi,%rdx <-- trapping instruction
-  2d:	83 e2 07             	and    $0x7,%edx
-  30:	38 d0                	cmp    %dl,%al
-  32:	7f 08                	jg     0x3c
-  34:	84 c0                	test   %al,%al
-  36:	0f 85 19 39 00 00    	jne    0x3955
-  3c:	49                   	rex.WB
-  3d:	8d                   	.byte 0x8d
-  3e:	6c                   	insb   (%dx),%es:(%rdi)
-  3f:	24                   	.byte 0x24
-
-
+Fixes: f9a2fb73318e ("net/ipv6: Introduce accept_unsolicited_na knob to implement router-side changes for RFC9131")
+Signed-off-by: Arun Ajith S <aajith@arista.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+This change updates the accept_unsolicited_na feature that merged to net-next
+for v5.19 to be better compliant with the RFC. It also involves renaming the sysctl
+knob to accept_untracked_na before shipping in a release.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Note that the behaviour table has been modifed in the code comments,
+but dropped from the Documentation. This is because the table 
+documents behaviour that is not unique to the knob, and it is more
+relevant to understanding the code. The documentation has been updated
+to be unambiguous even without the table.
+
+v2:
+  1. Changed commit message and subject as suggested.
+  2. Added Fixes tag.
+  3. Used en-uk spellings consistently.
+  4. Added a couple of missing comments.
+  5. Refactored patch to be smaller by avoiding early return.
+  6. Made the documentation more clearer.
+
+ Documentation/networking/ip-sysctl.rst        | 23 ++++-------
+ include/linux/ipv6.h                          |  2 +-
+ include/uapi/linux/ipv6.h                     |  2 +-
+ net/ipv6/addrconf.c                           |  6 +--
+ net/ipv6/ndisc.c                              | 41 +++++++++++--------
+ .../net/ndisc_unsolicited_na_test.sh          | 23 +++++------
+ 6 files changed, 49 insertions(+), 48 deletions(-)
+
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index b882d4238581..04216564a03c 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -2474,21 +2474,16 @@ drop_unsolicited_na - BOOLEAN
+ 
+ 	By default this is turned off.
+ 
+-accept_unsolicited_na - BOOLEAN
+-	Add a new neighbour cache entry in STALE state for routers on receiving an
+-	unsolicited neighbour advertisement with target link-layer address option
+-	specified. This is as per router-side behavior documented in RFC9131.
+-	This has lower precedence than drop_unsolicited_na.
++accept_untracked_na - BOOLEAN
++	Add a new neighbour cache entry in STALE state for routers on receiving a
++	neighbour advertisement (either solicited or unsolicited) with target
++	link-layer address option specified if no neighbour entry is already
++	present for the advertised IPv6 address. Without this knob, NAs received
++	for untracked addresses (absent in neighbour cache) are silently ignored.
++
++	This is as per router-side behaviour documented in RFC9131.
+ 
+-	 ====   ======  ======  ==============================================
+-	 drop   accept  fwding                   behaviour
+-	 ----   ------  ------  ----------------------------------------------
+-	    1        X       X  Drop NA packet and don't pass up the stack
+-	    0        0       X  Pass NA packet up the stack, don't update NC
+-	    0        1       0  Pass NA packet up the stack, don't update NC
+-	    0        1       1  Pass NA packet up the stack, and add a STALE
+-	                        NC entry
+-	 ====   ======  ======  ==============================================
++	This has lower precedence than drop_unsolicited_na.
+ 
+ 	This will optimize the return path for the initial off-link communication
+ 	that is initiated by a directly connected host, by ensuring that
+diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+index 38c8203d52cb..37dfdcfcdd54 100644
+--- a/include/linux/ipv6.h
++++ b/include/linux/ipv6.h
+@@ -61,7 +61,7 @@ struct ipv6_devconf {
+ 	__s32		suppress_frag_ndisc;
+ 	__s32		accept_ra_mtu;
+ 	__s32		drop_unsolicited_na;
+-	__s32		accept_unsolicited_na;
++	__s32		accept_untracked_na;
+ 	struct ipv6_stable_secret {
+ 		bool initialized;
+ 		struct in6_addr secret;
+diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
+index 549ddeaf788b..03cdbe798fe3 100644
+--- a/include/uapi/linux/ipv6.h
++++ b/include/uapi/linux/ipv6.h
+@@ -194,7 +194,7 @@ enum {
+ 	DEVCONF_IOAM6_ID,
+ 	DEVCONF_IOAM6_ID_WIDE,
+ 	DEVCONF_NDISC_EVICT_NOCARRIER,
+-	DEVCONF_ACCEPT_UNSOLICITED_NA,
++	DEVCONF_ACCEPT_UNTRACKED_NA,
+ 	DEVCONF_MAX
+ };
+ 
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index ca0aa744593e..1b1932502e9e 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -5586,7 +5586,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
+ 	array[DEVCONF_IOAM6_ID] = cnf->ioam6_id;
+ 	array[DEVCONF_IOAM6_ID_WIDE] = cnf->ioam6_id_wide;
+ 	array[DEVCONF_NDISC_EVICT_NOCARRIER] = cnf->ndisc_evict_nocarrier;
+-	array[DEVCONF_ACCEPT_UNSOLICITED_NA] = cnf->accept_unsolicited_na;
++	array[DEVCONF_ACCEPT_UNTRACKED_NA] = cnf->accept_untracked_na;
+ }
+ 
+ static inline size_t inet6_ifla6_size(void)
+@@ -7038,8 +7038,8 @@ static const struct ctl_table addrconf_sysctl[] = {
+ 		.extra2		= (void *)SYSCTL_ONE,
+ 	},
+ 	{
+-		.procname	= "accept_unsolicited_na",
+-		.data		= &ipv6_devconf.accept_unsolicited_na,
++		.procname	= "accept_untracked_na",
++		.data		= &ipv6_devconf.accept_untracked_na,
+ 		.maxlen		= sizeof(int),
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec_minmax,
+diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
+index 254addad0dd3..ed0bbe87e345 100644
+--- a/net/ipv6/ndisc.c
++++ b/net/ipv6/ndisc.c
+@@ -979,7 +979,6 @@ static void ndisc_recv_na(struct sk_buff *skb)
+ 	struct inet6_dev *idev = __in6_dev_get(dev);
+ 	struct inet6_ifaddr *ifp;
+ 	struct neighbour *neigh;
+-	bool create_neigh;
+ 
+ 	if (skb->len < sizeof(struct nd_msg)) {
+ 		ND_PRINTK(2, warn, "NA: packet too short\n");
+@@ -1000,7 +999,7 @@ static void ndisc_recv_na(struct sk_buff *skb)
+ 	/* For some 802.11 wireless deployments (and possibly other networks),
+ 	 * there will be a NA proxy and unsolicitd packets are attacks
+ 	 * and thus should not be accepted.
+-	 * drop_unsolicited_na takes precedence over accept_unsolicited_na
++	 * drop_unsolicited_na takes precedence over accept_untracked_na
+ 	 */
+ 	if (!msg->icmph.icmp6_solicited && idev &&
+ 	    idev->cnf.drop_unsolicited_na)
+@@ -1041,25 +1040,33 @@ static void ndisc_recv_na(struct sk_buff *skb)
+ 		in6_ifa_put(ifp);
+ 		return;
+ 	}
++
++	neigh = neigh_lookup(&nd_tbl, &msg->target, dev);
++
+ 	/* RFC 9131 updates original Neighbour Discovery RFC 4861.
+-	 * An unsolicited NA can now create a neighbour cache entry
+-	 * on routers if it has Target LL Address option.
++	 * NAs with Target LL Address option without a corresponding
++	 * entry in the neighbour cache can now create a STALE neighbour
++	 * cache entry on routers.
++	 *
++	 *   entry accept  fwding  solicited        behaviour
++	 * ------- ------  ------  ---------    ----------------------
++	 * present      X       X         0     Set state to STALE
++	 * present      X       X         1     Set state to REACHABLE
++	 *  absent      0       X         X     Do nothing
++	 *  absent      1       0         X     Do nothing
++	 *  absent      1       1         X     Add a new STALE entry
+ 	 *
+-	 * drop   accept  fwding                   behaviour
+-	 * ----   ------  ------  ----------------------------------------------
+-	 *    1        X       X  Drop NA packet and don't pass up the stack
+-	 *    0        0       X  Pass NA packet up the stack, don't update NC
+-	 *    0        1       0  Pass NA packet up the stack, don't update NC
+-	 *    0        1       1  Pass NA packet up the stack, and add a STALE
+-	 *                          NC entry
+ 	 * Note that we don't do a (daddr == all-routers-mcast) check.
+ 	 */
+-	create_neigh = !msg->icmph.icmp6_solicited && lladdr &&
+-		       idev && idev->cnf.forwarding &&
+-		       idev->cnf.accept_unsolicited_na;
+-	neigh = __neigh_lookup(&nd_tbl, &msg->target, dev, create_neigh);
++	new_state = msg->icmph.icmp6_solicited ? NUD_REACHABLE : NUD_STALE;
++	if (!neigh && lladdr &&
++	    idev && idev->cnf.forwarding &&
++	    idev->cnf.accept_untracked_na) {
++		neigh = neigh_create(&nd_tbl, &msg->target, dev);
++		new_state = NUD_STALE;
++	}
+ 
+-	if (neigh) {
++	if (neigh && !IS_ERR(neigh)) {
+ 		u8 old_flags = neigh->flags;
+ 		struct net *net = dev_net(dev);
+ 
+@@ -1079,7 +1086,7 @@ static void ndisc_recv_na(struct sk_buff *skb)
+ 		}
+ 
+ 		ndisc_update(dev, neigh, lladdr,
+-			     msg->icmph.icmp6_solicited ? NUD_REACHABLE : NUD_STALE,
++			     new_state,
+ 			     NEIGH_UPDATE_F_WEAK_OVERRIDE|
+ 			     (msg->icmph.icmp6_override ? NEIGH_UPDATE_F_OVERRIDE : 0)|
+ 			     NEIGH_UPDATE_F_OVERRIDE_ISROUTER|
+diff --git a/tools/testing/selftests/net/ndisc_unsolicited_na_test.sh b/tools/testing/selftests/net/ndisc_unsolicited_na_test.sh
+index f508657ee126..86e621b7b9c7 100755
+--- a/tools/testing/selftests/net/ndisc_unsolicited_na_test.sh
++++ b/tools/testing/selftests/net/ndisc_unsolicited_na_test.sh
+@@ -1,15 +1,14 @@
+ #!/bin/bash
+ # SPDX-License-Identifier: GPL-2.0
+ 
+-# This test is for the accept_unsolicited_na feature to
++# This test is for the accept_untracked_na feature to
+ # enable RFC9131 behaviour. The following is the test-matrix.
+ # drop   accept  fwding                   behaviour
+ # ----   ------  ------  ----------------------------------------------
+-#    1        X       X  Drop NA packet and don't pass up the stack
+-#    0        0       X  Pass NA packet up the stack, don't update NC
+-#    0        1       0  Pass NA packet up the stack, don't update NC
+-#    0        1       1  Pass NA packet up the stack, and add a STALE
+-#                           NC entry
++#    1        X       X  Don't update NC
++#    0        0       X  Don't update NC
++#    0        1       0  Don't update NC
++#    0        1       1  Add a STALE NC entry
+ 
+ ret=0
+ # Kselftest framework requirement - SKIP code is 4.
+@@ -72,7 +71,7 @@ setup()
+ 	set -e
+ 
+ 	local drop_unsolicited_na=$1
+-	local accept_unsolicited_na=$2
++	local accept_untracked_na=$2
+ 	local forwarding=$3
+ 
+ 	# Setup two namespaces and a veth tunnel across them.
+@@ -93,7 +92,7 @@ setup()
+ 	${IP_ROUTER_EXEC} sysctl -qw \
+                 ${ROUTER_CONF}.drop_unsolicited_na=${drop_unsolicited_na}
+ 	${IP_ROUTER_EXEC} sysctl -qw \
+-                ${ROUTER_CONF}.accept_unsolicited_na=${accept_unsolicited_na}
++                ${ROUTER_CONF}.accept_untracked_na=${accept_untracked_na}
+ 	${IP_ROUTER_EXEC} sysctl -qw ${ROUTER_CONF}.disable_ipv6=0
+ 	${IP_ROUTER} addr add ${ROUTER_ADDR_WITH_MASK} dev ${ROUTER_INTF}
+ 
+@@ -144,13 +143,13 @@ link_up() {
+ 
+ verify_ndisc() {
+ 	local drop_unsolicited_na=$1
+-	local accept_unsolicited_na=$2
++	local accept_untracked_na=$2
+ 	local forwarding=$3
+ 
+ 	neigh_show_output=$(${IP_ROUTER} neigh show \
+                 to ${HOST_ADDR} dev ${ROUTER_INTF} nud stale)
+ 	if [ ${drop_unsolicited_na} -eq 0 ] && \
+-			[ ${accept_unsolicited_na} -eq 1 ] && \
++			[ ${accept_untracked_na} -eq 1 ] && \
+ 			[ ${forwarding} -eq 1 ]; then
+ 		# Neighbour entry expected to be present for 011 case
+ 		[[ ${neigh_show_output} ]]
+@@ -179,14 +178,14 @@ test_unsolicited_na_combination() {
+ 	test_unsolicited_na_common $1 $2 $3
+ 	test_msg=("test_unsolicited_na: "
+ 		"drop_unsolicited_na=$1 "
+-		"accept_unsolicited_na=$2 "
++		"accept_untracked_na=$2 "
+ 		"forwarding=$3")
+ 	log_test $? 0 "${test_msg[*]}"
+ 	cleanup
+ }
+ 
+ test_unsolicited_na_combinations() {
+-	# Args: drop_unsolicited_na accept_unsolicited_na forwarding
++	# Args: drop_unsolicited_na accept_untracked_na forwarding
+ 
+ 	# Expect entry
+ 	test_unsolicited_na_combination 0 1 1
+-- 
+2.27.0
+
