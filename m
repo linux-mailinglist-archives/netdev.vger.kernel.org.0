@@ -2,159 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 323E25387B4
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 21:21:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C60A5387BB
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 21:28:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232331AbiE3TVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 15:21:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40202 "EHLO
+        id S238114AbiE3T1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 15:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230525AbiE3TVd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 15:21:33 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2364690CF2
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 12:21:31 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id er5so14739634edb.12
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 12:21:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=FDK0AWhHQV6WbeVI5zbrjO/3+9xCZ4WyC/jUsElElmw=;
-        b=Bu5fq6iHFT4qX6Mrdm0y7A9KhzPwjW2WHuLi2WnkT1G6+KyJCSEYzAx63iE422dVEM
-         GCmTvja3Iwb1/GfrK2kXBgHHE6+t2wcWNuh5ERJv0FDLIbJxftfUVXnf8tIwNdQFy3xg
-         GDOMnc8oLeJQjosf/z/yRtZlY25ZJ6yyJX+0Tyv56kwtVpHZ3/yMXEdBsjrFd/E4rfkm
-         5aQvIHY5p2hKekfyMcKV4PrbdhXLYm9X0uG6Ly+2Il6ILFbvvUkuYDmETRS/r35XuPwU
-         IfYEg0sBh7UkJ6nhn9+yPn8ITntMbj7rYAY6OlJd33G0s627HdTYUXtdmhlOzZdyQxUv
-         JLnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=FDK0AWhHQV6WbeVI5zbrjO/3+9xCZ4WyC/jUsElElmw=;
-        b=KgDHNFgkWOHiBJykkWfDrolj9T/0sCAIbJAOm0fDjNoybQvnjL2lxMljIUqsrvkt1R
-         aVIx2Qj35Pgps3KyiL6AzcpVj5zibjWA0/FDL4nd5TuEy6bg0jJDdyH+4vIjq2N1osyL
-         az4V7NEhkzIZd++Rw48T2IpovBV9MQpt53bIsj5AoJtMgzXs9umUIotb9z/ncSMfdVuw
-         9MH4K/Tf+mBKknC06Ll/HwPa2HsvzP21WjR+0HVx7zrGDrggoygQpD55wedT1xgI1Mpm
-         L0Q0QbCj497c/lQIACU2bDmXac2E2lXmuKSxD4yJ1HH8YhYibD55UtGcvW2iXPr1WfUV
-         b6Mg==
-X-Gm-Message-State: AOAM53249b0qhsLayPiwKDCgHxM8LSnNUwdiOmqtZGFLm/8puqqzUNat
-        2yxJWkWpjgyl1BUfa9Mfva4=
-X-Google-Smtp-Source: ABdhPJxS0D8SL+3VDSilg8MqSN8Wy/adAoXu+cylixSGmYuC2AynJZ4E9ewVn4CopIt755gH6dUPPA==
-X-Received: by 2002:a05:6402:5298:b0:42a:cb63:5d10 with SMTP id en24-20020a056402529800b0042acb635d10mr60869706edb.415.1653938489467;
-        Mon, 30 May 2022 12:21:29 -0700 (PDT)
-Received: from ?IPV6:2a01:c23:b80f:c600:9d2f:ea32:d27c:872e? (dynamic-2a01-0c23-b80f-c600-9d2f-ea32-d27c-872e.c23.pool.telefonica.de. [2a01:c23:b80f:c600:9d2f:ea32:d27c:872e])
-        by smtp.googlemail.com with ESMTPSA id s24-20020a508d18000000b0042dd60352d1sm1511949eds.35.2022.05.30.12.21.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 May 2022 12:21:29 -0700 (PDT)
-Message-ID: <81e63fc9-ac8c-cb35-4572-c808ddab997d@gmail.com>
-Date:   Mon, 30 May 2022 21:21:21 +0200
+        with ESMTP id S236624AbiE3T1K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 15:27:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D83381A0;
+        Mon, 30 May 2022 12:27:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5033CB80EEF;
+        Mon, 30 May 2022 19:27:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B014AC385B8;
+        Mon, 30 May 2022 19:27:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653938827;
+        bh=VqyJ6noyoqh1S7m6hSDlQTa4dwHKLepTFOb1kWS4Bn0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SZmYTXA0cg2agATwf3lreIr597+4bg+ZiO5067DPzcrZywy523jz23y0QFzvogU4F
+         3b81ndHyZkvqHSLhDOT1qIBJrOSC/spWz55EJ3l/Vx5nJBOZlwja63GvtZGisWz0Wi
+         GxMU5o+oRmO29kg9Vuz87bHNYi6w88n0JilKw4iEpKRpWkhP6od9MVHFIMcypzY/VM
+         JkhsNNE8xd/8wDKcute9JPRXPxCo7nq78n9ap9+sbWkw/9DbnfbN1JJjlJlgR+9xCW
+         TS5YJDszNKCkLugEief/EG4kTFhQsQUMUkjOucvYmQVuXixDfdL/jrpvhIF/YwqaoN
+         uVAXh6zQktVQw==
+Date:   Mon, 30 May 2022 12:27:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Chen Lin <chen45464546@163.com>
+Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2] mm: page_frag: Warn_on when frag_alloc size is
+ bigger than PAGE_SIZE
+Message-ID: <20220530122705.4e74bc1e@kernel.org>
+In-Reply-To: <1653917942-5982-1-git-send-email-chen45464546@163.com>
+References: <20220529163029.12425c1e5286d7c7e3fe3708@linux-foundation.org>
+        <1653917942-5982-1-git-send-email-chen45464546@163.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Content-Language: en-US
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        nic_swsd@realtek.com
-References: <5a04080f-a2eb-6597-091e-6b31c4df1661@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: r8169: Ethernet speed regressions with RTL8168gu in ThinkPad E480
-In-Reply-To: <5a04080f-a2eb-6597-091e-6b31c4df1661@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.05.2022 16:10, Rafał Miłecki wrote:
-> I've ThinkPad E480 with i3-8130U CPU and 10ec:8168 detected as:
-> [    8.458515] r8169 0000:03:00.0 eth0: RTL8168gu/8111gu, 8c:16:45:5d:f2:c2, XID 509, IRQ 136
-> [    8.458521] r8169 0000:03:00.0 eth0: jumbo features [frames: 9194 bytes, tx checksumming: ko]
-> [   12.272352] Generic FE-GE Realtek PHY r8169-0-300:00: attached PHY driver (mii_bus:phy_addr=r8169-0-300:00, irq=MAC)
+On Mon, 30 May 2022 21:39:02 +0800 Chen Lin wrote:
+> netdev_alloc_frag->page_frag_alloc may cause memory corruption in 
+> the following process:
 > 
-> It's connected to WAN port of BCM4708 based home router running OpenWrt
-> with kernel 5.4.113. I run "iperf -s" on this E480 for network testing.
+> 1. A netdev_alloc_frag function call need alloc 200 Bytes to build a skb.
 > 
-> ***************
+> 2. Insufficient memory to alloc PAGE_FRAG_CACHE_MAX_ORDER(32K) in 
+> __page_frag_cache_refill to fill frag cache, then one page(eg:4K) 
+> is allocated, now current frag cache is 4K, alloc is success, 
+> nc->pagecnt_bias--.
 > 
-> After upgrading kernel from 4.12 to 5.18 I noticed Ethernet speed
-> regression. I bisected it down to two commits:
+> 3. Then this 200 bytes skb in step 1 is freed, page->_refcount--.
 > 
+> 4. Another netdev_alloc_frag function call need alloc 5k, page->_refcount 
+> is equal to nc->pagecnt_bias, reset page count bias and offset to 
+> start of new frag. page_frag_alloc will return the 4K memory for a 
+> 5K memory request.
 > 
-> commit 6b839b6cf9eada30b086effb51e5d6076bafc761
-> Author: Heiner Kallweit <hkallweit1@gmail.com>
-> Date:   Thu Oct 18 19:56:01 2018 +0200
+> 5. The caller write on the extra 1k memory which is not actual allocated 
+> will cause memory corruption.
 > 
->     r8169: fix NAPI handling under high load
+> page_frag_alloc is for fragmented allocation. We should warn the caller 
+> to avoid memory corruption.
 > 
-> (introduced in 4.19 and dropped speed by 20 Mb/s = 5%)
+> When fragsz is larger than one page, we report the failure and return.
+> I don't think it is a good idea to make efforts to support the
+> allocation of more than one page in this function because the total
+> frag cache size(PAGE_FRAG_CACHE_MAX_SIZE 32768) is relatively small.
+> When the request is larger than one page, the caller should switch to
+> use other kernel interfaces, such as kmalloc and alloc_Pages.
 > 
+> This bug is mainly caused by the reuse of the previously allocated
+> frag cache memory by the following LARGER allocations. This bug existed
+> before page_frag_alloc was ported from __netdev_alloc_frag in 
+> net/core/skbuff.c, so most Linux versions have this problem.
 > 
-> commit 288ac524cf70a8e7ed851a61ed2a9744039dae8d
-> Author: Heiner Kallweit <hkallweit1@gmail.com>
-> Date:   Sat Mar 30 17:13:24 2019 +0100
+> Signed-off-by: Chen Lin <chen45464546@163.com>
+> ---
+>  mm/page_alloc.c |   10 ++++++++++
+>  1 file changed, 10 insertions(+)
 > 
->     r8169: disable default rx interrupt coalescing on RTL8168
-> 
-> (introduced in 5.1 and dropped speed by 60 Mb/s = 15%)
-> 
-> ***************
-> 
-> Is that possible to fix / rework r8169 to provide original higher
-> Ethernet speed out of the box?
-> 
-With RTL8168g and RTL8168h I get >900Mbps in both directions.
-Both referenced changes are needed. What you could try:
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index e008a3d..1e9e2c4 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -5574,6 +5574,16 @@ void *page_frag_alloc_align(struct page_frag_cache *nc,
+>  	struct page *page;
+>  	int offset;
+>  
+> +	/* frag_alloc is not suitable for memory alloc which fragsz
+> +	 * is bigger than PAGE_SIZE, use kmalloc or alloc_pages instead.
+> +	 */
+> +	if (unlikely(fragsz > PAGE_SIZE)) {
+> +		WARN(1, "alloc fragsz(%d) > PAGE_SIZE(%ld) not supported,
+> +			alloc fail\n", fragsz, PAGE_SIZE);
+> +
+> +		return NULL;
+> +	}
+> +
+>  	if (unlikely(!nc->va)) {
+>  refill:
+>  		page = __page_frag_cache_refill(nc, gfp_mask);
 
-Enable TSO:
-ethtool -K eth0 sg on tso on
+Let's see what Alex says (fixing his email now). It seems a little too
+drastic to me. I'd go with something like:
 
-As replacement for hw irq coalescing:
-echo 20000 > /sys/class/net/eth0/gro_flush_timeout
-echo 1 > /sys/class/net/eth0/napi_defer_hard_irqs
-
-Or use ethtool to (re-)enable hw irq coalescing.
-
-> Honestly I'd expect this i3-8130U to handle 1 Gb/s traffic or more and
-> my guess is that the real bottleneck is my home router here (slow
-> BCM4708 SoC CPU). Still it seems like r8169 can be a bottleneck on top
-> of bottleneck.
-> 
-> ***************
-> 
-> v5.18
-> 334 Mbits/sec
-> 
-> v5.10
-> 336 Mbits/sec
-> 
-> v5.1 + git revert 288ac524cf70a8e7ed851a61ed2a9744039dae8d
-> 397 Mbits/sec (back to medium speed)
-> 
-> v5.1
-> 335 Mbits/sec (-60 Mb/s)
-> 
-> v5.0
-> 395 Mbits/sec
-> 
-> ***************
-> 
-> v4.19 + git revert 6b839b6cf9eada30b086effb51e5d6076bafc761
-> 414 Mbits/sec (back to high speed)
-> 
-> v4.19
-> 395 Mbits/sec (-20 Mb/s)
-> 
-> v4.18
-> 415 Mbits/sec
-> 
-> v4.12
-> 415 Mbits/sec
-
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index e008a3df0485..360a545ee5e8 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5537,6 +5537,7 @@ EXPORT_SYMBOL(free_pages);
+  * sk_buff->head, or to be used in the "frags" portion of skb_shared_info.
+  */
+ static struct page *__page_frag_cache_refill(struct page_frag_cache *nc,
++					     unsigned int fragsz,
+ 					     gfp_t gfp_mask)
+ {
+ 	struct page *page = NULL;
+@@ -5549,7 +5550,7 @@ static struct page *__page_frag_cache_refill(struct page_frag_cache *nc,
+ 				PAGE_FRAG_CACHE_MAX_ORDER);
+ 	nc->size = page ? PAGE_FRAG_CACHE_MAX_SIZE : PAGE_SIZE;
+ #endif
+-	if (unlikely(!page))
++	if (unlikely(!page && fragsz <= PAGE_SIZE))
+ 		page = alloc_pages_node(NUMA_NO_NODE, gfp, 0);
+ 
+ 	nc->va = page ? page_address(page) : NULL;
+@@ -5576,7 +5577,7 @@ void *page_frag_alloc_align(struct page_frag_cache *nc,
+ 
+ 	if (unlikely(!nc->va)) {
+ refill:
+-		page = __page_frag_cache_refill(nc, gfp_mask);
++		page = __page_frag_cache_refill(nc, fragsz, gfp_mask);
+ 		if (!page)
+ 			return NULL;
+ 
