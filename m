@@ -2,49 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA75E538343
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:39:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 423F053835B
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:39:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240649AbiE3OcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50304 "EHLO
+        id S241255AbiE3Ocz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:32:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241543AbiE3Oa2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:30:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617785D19F;
-        Mon, 30 May 2022 06:52:14 -0700 (PDT)
+        with ESMTP id S241720AbiE3Oah (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:30:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17CD9DF0E;
+        Mon, 30 May 2022 06:52:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D321B80DC0;
-        Mon, 30 May 2022 13:52:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A280C385B8;
-        Mon, 30 May 2022 13:52:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EEE88B80DE6;
+        Mon, 30 May 2022 13:52:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 153FCC3411E;
+        Mon, 30 May 2022 13:52:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918731;
-        bh=t7o3dVSPbYAXzDXsGXvIxTwGgdjNZH7ytre5uqNhv44=;
+        s=k20201202; t=1653918736;
+        bh=4Hn55xUawJ3YgwZBIXWCSFOmXckO9al6Xx/5hM6LUCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hOFLE1aRVXHJsjGta1pNWf4m1HaPG1lhQlQ5LJauAhI2hyl788cET5TZP6Yn+3h48
-         4OKIRYdQD2z6rDEJ6WZygEbozdfNtQ0p/vG04nHvyXXxUo8sBEdMz/K6ls+c2p41/P
-         ITV6Vihm2XXoK0fs8oEsCvW9JipmOHMuNag9zeFeIW8RHtfyAms8Gx+szWoRCNahzi
-         UelFVxuYmATPEfEQZfjoNots7DCXJuNQxo9jBnzEu7fZMdpckGU6WI0KRlpXRn5+oN
-         mkYuYe/6J8NTI8m2QSG/Z45G6pa/6zzJTY4HCpOfqBi7Z45052HQ8eNWZCOiTOZy7q
-         ClZ+PgeIBgyCQ==
+        b=rdypaQfyUEKdkNdpH83JxMAS1NBSs+4gwfxdJ/0XZ3xh5dSQDq+kqS0o/WXTOxqm7
+         j4yobCyMtGTeqNgaSaFL/lQq0bkNY1Nj+9ZC4hicSG25H6LK1an1eQyMNdZlW0rwtg
+         nEPTw1lZCUurshBFS+kG8y83MFxuwePjfgncUBNI8pphQnzJm+pSRQuiHHOyJziK2+
+         rpr3QWZS2mIss4jzDXwYbYikdy7b6U6vXARA3zQhQ5O0E2yiRdZCyUaYP2Y8Na5e3K
+         b2Jiwj4v3dU1vLK3AI1h6tAPc4u7DAYXwO6dXQGNf0UOlcQVVaQeM4mQq5qpgzlYjY
+         HYFHywvcEw2eA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 29/29] eth: tg3: silence the GCC 12 array-bounds warning
-Date:   Mon, 30 May 2022 09:50:56 -0400
-Message-Id: <20220530135057.1937286-29-sashal@kernel.org>
+Cc:     Niels Dossche <dossche.niels@gmail.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        amitkarwar@gmail.com, ganapathi017@gmail.com,
+        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 02/24] mwifiex: add mutex lock for call in mwifiex_dfs_chan_sw_work_queue
+Date:   Mon, 30 May 2022 09:51:49 -0400
+Message-Id: <20220530135211.1937674-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530135057.1937286-1-sashal@kernel.org>
-References: <20220530135057.1937286-1-sashal@kernel.org>
+In-Reply-To: <20220530135211.1937674-1-sashal@kernel.org>
+References: <20220530135211.1937674-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -58,42 +61,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 9dec850fd7c210a04b4707df8e6c95bfafdd6a4b ]
+[ Upstream commit 3e12968f6d12a34b540c39cbd696a760cc4616f0 ]
 
-GCC 12 currently generates a rather inconsistent warning:
+cfg80211_ch_switch_notify uses ASSERT_WDEV_LOCK to assert that
+net_device->ieee80211_ptr->mtx (which is the same as priv->wdev.mtx)
+is held during the function's execution.
+mwifiex_dfs_chan_sw_work_queue is one of its callers, which does not
+hold that lock, therefore violating the assertion.
+Add a lock around the call.
 
-drivers/net/ethernet/broadcom/tg3.c:17795:51: warning: array subscript 5 is above array bounds of ‘struct tg3_napi[5]’ [-Warray-bounds]
-17795 |                 struct tg3_napi *tnapi = &tp->napi[i];
-      |                                           ~~~~~~~~^~~
+Disclaimer:
+I am currently working on a static analyser to detect missing locks.
+This was a reported case. I manually verified the report by looking
+at the code, so that I do not send wrong information or patches.
+After concluding that this seems to be a true positive, I created
+this patch.
+However, as I do not in fact have this particular hardware,
+I was unable to test it.
 
-i is guaranteed < tp->irq_max which in turn is either 1 or 5.
-There are more loops like this one in the driver, but strangely
-GCC 12 dislikes only this single one.
-
-Silence this silliness for now.
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220321225515.32113-1-dossche.niels@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/Makefile | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wireless/marvell/mwifiex/11h.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/Makefile b/drivers/net/ethernet/broadcom/Makefile
-index 7046ad6d3d0e..ac50da49ca77 100644
---- a/drivers/net/ethernet/broadcom/Makefile
-+++ b/drivers/net/ethernet/broadcom/Makefile
-@@ -16,3 +16,8 @@ obj-$(CONFIG_BGMAC_BCMA) += bgmac-bcma.o bgmac-bcma-mdio.o
- obj-$(CONFIG_BGMAC_PLATFORM) += bgmac-platform.o
- obj-$(CONFIG_SYSTEMPORT) += bcmsysport.o
- obj-$(CONFIG_BNXT) += bnxt/
-+
-+# FIXME: temporarily silence -Warray-bounds on non W=1+ builds
-+ifndef KBUILD_EXTRA_WARN
-+CFLAGS_tg3.o += -Wno-array-bounds
-+endif
+diff --git a/drivers/net/wireless/marvell/mwifiex/11h.c b/drivers/net/wireless/marvell/mwifiex/11h.c
+index 43dccd5b0291..3024a83c0f33 100644
+--- a/drivers/net/wireless/marvell/mwifiex/11h.c
++++ b/drivers/net/wireless/marvell/mwifiex/11h.c
+@@ -308,5 +308,7 @@ void mwifiex_dfs_chan_sw_work_queue(struct work_struct *work)
+ 
+ 	mwifiex_dbg(priv->adapter, MSG,
+ 		    "indicating channel switch completion to kernel\n");
++	mutex_lock(&priv->wdev.mtx);
+ 	cfg80211_ch_switch_notify(priv->netdev, &priv->dfs_chandef);
++	mutex_unlock(&priv->wdev.mtx);
+ }
 -- 
 2.35.1
 
