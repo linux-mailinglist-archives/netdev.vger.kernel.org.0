@@ -2,58 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 441F5537557
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 09:24:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22D555374E5
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 09:23:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233086AbiE3HDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 03:03:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53684 "EHLO
+        id S233321AbiE3HOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 03:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231735AbiE3HDD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 03:03:03 -0400
+        with ESMTP id S232048AbiE3HO3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 03:14:29 -0400
 Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38116F4AC
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 00:03:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1BF286D0
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 00:14:27 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id DD7EB20504;
-        Mon, 30 May 2022 09:02:57 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id 17D6C205CD;
+        Mon, 30 May 2022 09:14:26 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 6_XB_gEnEI_D; Mon, 30 May 2022 09:02:57 +0200 (CEST)
+        with ESMTP id cJVKQSj2jZds; Mon, 30 May 2022 09:14:25 +0200 (CEST)
 Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 279CF201AA;
-        Mon, 30 May 2022 09:02:57 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 3DD502052E;
+        Mon, 30 May 2022 09:14:25 +0200 (CEST)
 Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id 2299B80004A;
-        Mon, 30 May 2022 09:02:57 +0200 (CEST)
+        by mailout2.secunet.com (Postfix) with ESMTP id 388FF80004A;
+        Mon, 30 May 2022 09:14:25 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 30 May 2022 09:02:57 +0200
+ 15.1.2375.24; Mon, 30 May 2022 09:14:25 +0200
 Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 30 May
- 2022 09:02:56 +0200
+ 2022 09:14:24 +0200
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 2EE793182D2D; Mon, 30 May 2022 09:02:56 +0200 (CEST)
-Date:   Mon, 30 May 2022 09:02:56 +0200
+        id 9039E3182D2D; Mon, 30 May 2022 09:14:24 +0200 (CEST)
+Date:   Mon, 30 May 2022 09:14:24 +0200
 From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>
-CC:     Linux NetDev <netdev@vger.kernel.org>,
-        Benedict Wong <benedictwong@google.com>,
-        Yan Yan <evitayan@google.com>
-Subject: Re: 5.18 breaks Android net test PFKEY AddSA test case
-Message-ID: <20220530070256.GA2517843@gauss3.secunet.de>
-References: <CANP3RGcW6DWei2bXrAQn8B4Uf0ggx_MgEfVyX_D7AaYZcYOchQ@mail.gmail.com>
+To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
+CC:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        "Lorenzo Colitti" <lorenzo@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Lina Wang <lina.wang@mediatek.com>
+Subject: Re: [PATCH] xfrm: do not set IPv4 DF flag when encapsulating IPv6
+ frames <= 1280 bytes.
+Message-ID: <20220530071424.GB2517843@gauss3.secunet.de>
+References: <20220518210548.2296546-1-zenczykowski@gmail.com>
+ <20220526065115.GA680067@gauss3.secunet.de>
+ <CANP3RGdt2aOOK80PLcB-Q2ecz-sjyWuN+Wc8h0Kuo7RdUNGSTA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CANP3RGcW6DWei2bXrAQn8B4Uf0ggx_MgEfVyX_D7AaYZcYOchQ@mail.gmail.com>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+In-Reply-To: <CANP3RGdt2aOOK80PLcB-Q2ecz-sjyWuN+Wc8h0Kuo7RdUNGSTA@mail.gmail.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
  mbx-essen-01.secunet.de (10.53.40.197)
 X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -65,46 +69,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 28, 2022 at 01:54:25AM -0700, Maciej Żenczykowski wrote:
-> I've not gotten to the bottom of the root cause, since I'm hoping
-> someone will know off the top of their head,
-> why this might now be broken...
+On Sat, May 28, 2022 at 02:25:59AM -0700, Maciej Żenczykowski wrote:
+> On Wed, May 25, 2022 at 11:51 PM Steffen Klassert
+> <steffen.klassert@secunet.com> wrote:
+> >
+> > On Wed, May 18, 2022 at 02:05:48PM -0700, Maciej Żenczykowski wrote:
+> > > From: Maciej Żenczykowski <maze@google.com>
+> > >
+> > > One may want to have DF set on large packets to support discovering
+> > > path mtu and limiting the size of generated packets (hence not
+> > > setting the XFRM_STATE_NOPMTUDISC tunnel flag), while still
+> > > supporting networks that are incapable of carrying even minimal
+> > > sized IPv6 frames (post encapsulation).
+> > >
+> > > Having IPv4 Don't Frag bit set on encapsulated IPv6 frames that
+> > > are not larger than the minimum IPv6 mtu of 1280 isn't useful,
+> > > because the resulting ICMP Fragmentation Required error isn't
+> > > actionable (even assuming you receive it) because IPv6 will not
+> > > drop it's path mtu below 1280 anyway.  While the IPv4 stack
+> > > could prefrag the packets post encap, this requires the ICMP
+> > > error to be successfully delivered and causes a loss of the
+> > > original IPv6 frame (thus requiring a retransmit and latency
+> > > hit).  Luckily with IPv4 if we simply don't set the DF flag,
+> > > we'll just make further fragmenting the packets some other
+> > > router's problems.
+> > >
+> > > We'll still learn the correct IPv4 path mtu through encapsulation
+> > > of larger IPv6 frames.
+> > >
+> > > I'm still not convinced this patch is entirely sufficient to make
+> > > everything happy... but I don't see how it could possibly
+> > > make things worse.
+> > >
+> > > See also recent:
+> > >   4ff2980b6bd2 'xfrm: fix tunnel model fragmentation behavior'
+> > > and friends
+> > >
+> > > Bug: 203183943
+> > > Cc: Lorenzo Colitti <lorenzo@google.com>
+> > > Cc: Eric Dumazet <edumazet@google.com>
+> > > Cc: Lina Wang <lina.wang@mediatek.com>
+> > > Cc: Steffen Klassert <steffen.klassert@secunet.com>
+> > > Signed-off-by: Maciej Zenczykowski <maze@google.com>
+> >
+> > Applied, thanks a lot!
 > 
-> ##### ./pf_key_test.py (13/25)
+> Thanks.
 > 
-> E
-> ======================================================================
-> ERROR: testAddDelSa (__main__.PfKeyTest)
-> ----------------------------------------------------------------------
-> Traceback (most recent call last):
->   File "./pf_key_test.py", line 42, in testAddDelSa
->     pf_key.SADB_X_AALG_SHA2_256HMAC, ENCRYPTION_KEY)
->   File "/aosp-tests/net/test/pf_key.py", line 254, in AddSa
->     self.SendAndRecv(msg, self.PackPfKeyExtensions(extlist))
->   File "/aosp-tests/net/test/pf_key.py", line 218, in SendAndRecv
->     return self.Recv()
->   File "/aosp-tests/net/test/pf_key.py", line 208, in Recv
->     raise OSError(msg.errno, os.strerror(msg.errno))
-> OSError: [Errno 3] No such process
-> 
-> The failure is at
->   https://cs.android.com/android/platform/superproject/+/master:kernel/tests/net/test/pf_key_test.py;l=42
-> ie.
-> 
-> ENCRYPTION_KEY =
-> ("308146eb3bd84b044573d60f5a5fd15957c7d4fe567a2120f35bae0f9869ec22".decode("hex"))
-> 
-> src4 = csocket.Sockaddr(("192.0.2.1", 0))
-> dst4 = csocket.Sockaddr(("192.0.2.2", 1))
-> self.pf_key.AddSa(src4, dst4, 0xdeadbeef, pf_key.SADB_TYPE_ESP,
-> pf_key.IPSEC_MODE_TRANSPORT, 54321,
-> pf_key.SADB_X_EALG_AESCBC, ENCRYPTION_KEY,
-> pf_key.SADB_X_AALG_SHA2_256HMAC, ENCRYPTION_KEY)
+> Is this published somewhere, since I'd lack to backport it to Android
+> Common Kernel 5.10+, but can't find a sha1 (yet?)
 
-I guess that is because of
+Actually I applied it, but forgot to push it out.
+It is now in the ipsec tree:
 
-commit 4dc2a5a8f6754492180741facf2a8787f2c415d7
-net: af_key: add check for pfkey_broadcast in function pfkey_process
-
-This is already reverted in the ipsec tree and will go upstream
-this week.
+git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec.git
