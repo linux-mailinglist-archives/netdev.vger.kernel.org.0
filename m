@@ -2,139 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43BAD538190
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:32:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 599B5537EBF
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:14:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240793AbiE3OUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33932 "EHLO
+        id S231428AbiE3N5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 09:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241002AbiE3OQw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:16:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055E610EA75;
-        Mon, 30 May 2022 06:44:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BEBDFB80DC0;
-        Mon, 30 May 2022 13:43:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 154A0C3411C;
-        Mon, 30 May 2022 13:43:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918229;
-        bh=s4KO1UgUY/B996K+l2DBDtuWNiu3YWMyS23OqCyZMqk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nVLPPuHC6by1sqKeeCu0gVAt1mE5a4ARlGbBTONt6V7u0hCqlD325Ef+/S5/wCohc
-         wCuGeNS8wQls20Nrd9mRj7EUzyn5j5srkKSqLgpShdz6pGyA6td285aonXSIJFET1h
-         eFKJXyFCYlgYCg3ESq0U3bXC/9GWTYO2PuCo1Ns6iOy/M/WFL6JZ4RBrNOSEj82ERc
-         e5NBEPs7oU4CtdRmfduCeGlG/tckLNVzE9szy6TETP9YWBU3jJXxnZb/OrKiTxHeMa
-         jOOfzAnAuuckJ1CokShmjTm6hKeamCA35U8KmZdDXzmmO/mJLyGLOd+EeQXT8PoNGU
-         yrW1TR74rBptw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 103/109] rxrpc: Return an error to sendmsg if call failed
-Date:   Mon, 30 May 2022 09:38:19 -0400
-Message-Id: <20220530133825.1933431-103-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530133825.1933431-1-sashal@kernel.org>
-References: <20220530133825.1933431-1-sashal@kernel.org>
+        with ESMTP id S239424AbiE3N4h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:56:37 -0400
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C44E295A0E;
+        Mon, 30 May 2022 06:38:23 -0700 (PDT)
+Received: by mail-wm1-f43.google.com with SMTP id 129-20020a1c0287000000b003974edd7c56so5032821wmc.2;
+        Mon, 30 May 2022 06:38:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KsAtagss1zN3OoHQ7StI415A2RqFxEh/FfqiDwV3lwg=;
+        b=7lyU2De1X9ZXN/Hr9PSFbeqMSGGk5VUpXoWpUWNqicJOhkowYwVTgrFCAH69cxDxze
+         X6Y+0xysgCcAF5PSY72jLW0SVLYtcK9vJExKiyU04x3hciYgUX8y5SWAvqAHG43g3g8L
+         EeCsQ4N5qM0XDiG9C8y89pyoiuZ4EXx9rNac8wR5VB15Z2Ur6y1G50hIAWzcmHgOe+eH
+         X8uiwOdyelie4EmmKRYtuTJGmUEVtea+8/4dT8bhP3mxP9bhuhv+JlHYqz4AmT9ndlXe
+         +HY08mhXjnpRdKcKmjg/i2Gmw2OD14fn5VFallHzNFM1PNsrVOExcCxFdOPbKpIGSeOx
+         Pc9A==
+X-Gm-Message-State: AOAM530ftFmF2fgyGTR83L0/XkdCwFVmo6pxXxqWcivdRUeXKJ/vlHqR
+        dVKk33ahROERZeGppNGMOMOmR/XNUiQ=
+X-Google-Smtp-Source: ABdhPJyLAdckxSBuBL1xhlfS9GVoNCXS4Kx15kZbX2/pn3pGdm0f8N7kwpIgiWG6jbtRdSs4v7MPfw==
+X-Received: by 2002:a7b:c1d8:0:b0:397:337a:b593 with SMTP id a24-20020a7bc1d8000000b00397337ab593mr18979837wmj.96.1653917902170;
+        Mon, 30 May 2022 06:38:22 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id u2-20020adfdb82000000b002102e6b757csm5331680wri.90.2022.05.30.06.38.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 06:38:21 -0700 (PDT)
+Date:   Mon, 30 May 2022 13:38:20 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Juergen Gross <jgross@suse.com>
+Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jan Beulich <jbeulich@suse.com>
+Subject: Re: [PATCH] xen/netback: fix incorrect usage of
+ RING_HAS_UNCONSUMED_REQUESTS()
+Message-ID: <20220530133820.5mbjaavusxdhv25c@liuwe-devbox-debian-v2>
+References: <20220530113459.20124-1-jgross@suse.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220530113459.20124-1-jgross@suse.com>
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+On Mon, May 30, 2022 at 01:34:59PM +0200, Juergen Gross wrote:
+> Commit 6fac592cca60 ("xen: update ring.h") missed to fix one use case
+> of RING_HAS_UNCONSUMED_REQUESTS().
+> 
+> Reported-by: Jan Beulich <jbeulich@suse.com>
+> Fixes: 6fac592cca60 ("xen: update ring.h")
+> Signed-off-by: Juergen Gross <jgross@suse.com>
 
-[ Upstream commit 4ba68c5192554876bd8c3afd904e3064d2915341 ]
-
-If at the end of rxrpc sendmsg() or rxrpc_kernel_send_data() the call that
-was being given data was aborted remotely or otherwise failed, return an
-error rather than returning the amount of data buffered for transmission.
-
-The call (presumably) did not complete, so there's not much point
-continuing with it.  AF_RXRPC considers it "complete" and so will be
-unwilling to do anything else with it - and won't send a notification for
-it, deeming the return from sendmsg sufficient.
-
-Not returning an error causes afs to incorrectly handle a StoreData
-operation that gets interrupted by a change of address due to NAT
-reconfiguration.
-
-This doesn't normally affect most operations since their request parameters
-tend to fit into a single UDP packet and afs_make_call() returns before the
-server responds; StoreData is different as it involves transmission of a
-lot of data.
-
-This can be triggered on a client by doing something like:
-
-	dd if=/dev/zero of=/afs/example.com/foo bs=1M count=512
-
-at one prompt, and then changing the network address at another prompt,
-e.g.:
-
-	ifconfig enp6s0 inet 192.168.6.2 && route add 192.168.6.1 dev enp6s0
-
-Tracing packets on an Auristor fileserver looks something like:
-
-192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
-192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
-192.168.6.3 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(64538) (64538)
-192.168.6.1 -> 192.168.6.3  RX 107 ACK Idle  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
-<ARP exchange for 192.168.6.2>
-192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
-192.168.6.2 -> 192.168.6.1  AFS (RX) 1482 FS Request: Unknown(0) (0)
-192.168.6.1 -> 192.168.6.2  RX 107 ACK Exceeds Window  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
-192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 0  Call: 4  Source Port: 7000  Destination Port: 7001
-192.168.6.1 -> 192.168.6.2  RX 74 ABORT  Seq: 29321  Call: 4  Source Port: 7000  Destination Port: 7001
-
-The Auristor fileserver logs code -453 (RXGEN_SS_UNMARSHAL), but the abort
-code received by kafs is -5 (RX_PROTOCOL_ERROR) as the rx layer sees the
-condition and generates an abort first and the unmarshal error is a
-consequence of that at the application layer.
-
-Reported-by: Marc Dionne <marc.dionne@auristor.com>
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: linux-afs@lists.infradead.org
-Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004810.html # v1
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/rxrpc/sendmsg.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
-index af8ad6c30b9f..1d38e279e2ef 100644
---- a/net/rxrpc/sendmsg.c
-+++ b/net/rxrpc/sendmsg.c
-@@ -444,6 +444,12 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
- 
- success:
- 	ret = copied;
-+	if (READ_ONCE(call->state) == RXRPC_CALL_COMPLETE) {
-+		read_lock_bh(&call->state_lock);
-+		if (call->error < 0)
-+			ret = call->error;
-+		read_unlock_bh(&call->state_lock);
-+	}
- out:
- 	call->tx_pending = skb;
- 	_leave(" = %d", ret);
--- 
-2.35.1
-
+Acked-by: Wei Liu <wei.liu@kernel.org>
