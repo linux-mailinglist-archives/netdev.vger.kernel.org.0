@@ -2,456 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83D04537953
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:45:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DFE1537984
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 12:59:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235367AbiE3Kpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 06:45:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40646 "EHLO
+        id S235574AbiE3K7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 06:59:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235560AbiE3KpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 06:45:13 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC997CB28;
-        Mon, 30 May 2022 03:45:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1653907506; x=1685443506;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=oSaXWSwiwW3AyXGv4J1904kAivyPS9dvImVl4oEtyzg=;
-  b=bcoa+wR46/pSt7HH09StznHs2fQTVI1B8/XgWw0CECsb5lPXuSzDWTjB
-   vNPWLuDBLPuHcGJh7CuCA8OF1xBgbfwU5Tb+PV7OMuj8eOyHns9t8HN9P
-   Cnkh3fdc1DPSnwiwxngoZKhm/G/pcQ5O2OGVs2ZqtYm8GdHFnVJDbagku
-   noIjpx1khrKFlUmb5RKvcXhMLIE5rgpUmiirvE9qcUJJoWKYgpsDyq9aR
-   FblEQ1fQRne5GUYkdSuCJqtDp19n5xwzbl7yAlgK6jR5tP3Xvn2oRNi6J
-   5E85+dNxOa69Yr/ZWcCbGRyqbfrN7DHY1sTVoS4RADkzrxfGX2EZIKydv
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.91,262,1647327600"; 
-   d="scan'208";a="161124812"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 May 2022 03:45:05 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 30 May 2022 03:45:05 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 30 May 2022 03:45:00 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King" <linux@armlinux.org.uk>
-Subject: [RFC Patch net-next v2 15/15] net: dsa: microchip: common ksz_spi_probe for ksz switches
-Date:   Mon, 30 May 2022 16:12:57 +0530
-Message-ID: <20220530104257.21485-16-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220530104257.21485-1-arun.ramadoss@microchip.com>
-References: <20220530104257.21485-1-arun.ramadoss@microchip.com>
+        with ESMTP id S234860AbiE3K7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 06:59:04 -0400
+Received: from m15112.mail.126.com (m15112.mail.126.com [220.181.15.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B67445640F
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 03:59:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=sF0xs
+        3i6VUMYYdYuJHXE3WrD0C3bHhq1LujyIez1SnQ=; b=o3nenJJYUueaOa2P1ka6s
+        0Cf0V9t0+ojUwe8ybpFNGeMvtzZtVdKkVro4Zzxx1zQVhKRZzmg0CaqUglDRe9S+
+        5y55tZ5r7SvhNW/wgFwwYylkahrJX0QGKVQsrr4JHmCjCpkLDJEvPXDglw4IMY+E
+        0uOJfwG6vWIG83qwCOrR+k=
+Received: from localhost.localdomain (unknown [223.104.68.80])
+        by smtp2 (Coremail) with SMTP id DMmowAB3fwNbo5RiPi31CA--.52866S2;
+        Mon, 30 May 2022 18:58:37 +0800 (CST)
+From:   Lixue Liang <lianglixuehao@126.com>
+To:     pmenzel@molgen.mpg.de
+Cc:     anthony.l.nguyen@intel.com, intel-wired-lan@lists.osuosl.org,
+        jesse.brandeburg@intel.com, kuba@kernel.org,
+        lianglixue@greatwall.com.cn, netdev@vger.kernel.org
+Subject: [PATCH v3] igb_main: Assign random MAC address instead of fail in case of invalid one
+Date:   Mon, 30 May 2022 10:58:34 +0000
+Message-Id: <20220530105834.97175-1-lianglixuehao@126.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <d50b23b1-38b5-2522-cbf4-c360c0ed05cd@molgen.mpg.de>
+References: <d50b23b1-38b5-2522-cbf4-c360c0ed05cd@molgen.mpg.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-CM-TRANSID: DMmowAB3fwNbo5RiPi31CA--.52866S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7uFW3Ww4xGFW3KrWrAFyxZrb_yoW8Xr13pa
+        n5Xa4Igr1kXr4jq3ykJa18Za4Ykayjq345CrZxA3WF9Fn0vrWDAr4Ut347tryrGrZ5uFsx
+        tr47Za1kuan8AaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07URwZxUUUUU=
+X-Originating-IP: [223.104.68.80]
+X-CM-SenderInfo: xold0w5ol03vxkdrqiyswou0bp/xtbBGg4RFl-HZLYkDgAAsz
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As of now, there are two spi probes, one ksz8795_spi.c and other
-ksz9477_spi.c. This patch combines two files into single ksz_spi.c. The
-difference between the two are regmap config and struct ksz8. The regmap
-config is assigned based on the platform data. And struct ksz8 is left
-untouched, as it is used only ksz8795.c. It can be used for all
-other switches also in future.
+From: Lixue Liang <lianglixue@greatwall.com.cn>
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+In some cases, when the user uses igb_set_eeprom to modify the MAC
+address to be invalid, the igb driver will fail to load. If there is no
+network card device, the user must modify it to a valid MAC address by
+other means.
+
+Since the MAC address can be modified, then add a random valid MAC address
+to replace the invalid MAC address in the driver can be workable, it can
+continue to finish the loading, and output the relevant log reminder.
+
+Signed-off-by: Lixue Liang <lianglixue@greatwall.com.cn>
 ---
- drivers/net/dsa/microchip/Kconfig             |  16 +-
- drivers/net/dsa/microchip/Makefile            |   3 +-
- drivers/net/dsa/microchip/ksz9477_spi.c       | 150 ------------------
- .../microchip/{ksz8795_spi.c => ksz_spi.c}    |  83 +++++++---
- 4 files changed, 69 insertions(+), 183 deletions(-)
- delete mode 100644 drivers/net/dsa/microchip/ksz9477_spi.c
- rename drivers/net/dsa/microchip/{ksz8795_spi.c => ksz_spi.c} (61%)
+ drivers/net/ethernet/intel/igb/igb_main.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/Kconfig b/drivers/net/dsa/microchip/Kconfig
-index d21ff069e5aa..2edb88080790 100644
---- a/drivers/net/dsa/microchip/Kconfig
-+++ b/drivers/net/dsa/microchip/Kconfig
-@@ -8,29 +8,19 @@ menuconfig NET_DSA_MICROCHIP_KSZ_COMMON
- 	  KSZ8795/KSZ88x3 switch chips.
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 34b33b21e0dc..40f43534a3af 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -3359,9 +3359,10 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	eth_hw_addr_set(netdev, hw->mac.addr);
  
- config NET_DSA_MICROCHIP_KSZ9477_I2C
--	tristate "KSZ9477 series I2C connected switch driver"
-+	tristate "KSZ series I2C connected switch driver"
- 	depends on NET_DSA_MICROCHIP_KSZ_COMMON && I2C
- 	select REGMAP_I2C
- 	help
- 	  Select to enable support for registering switches configured through I2C.
+ 	if (!is_valid_ether_addr(netdev->dev_addr)) {
+-		dev_err(&pdev->dev, "Invalid MAC Address\n");
+-		err = -EIO;
+-		goto err_eeprom;
++		eth_hw_addr_random(netdev);
++		ether_addr_copy(hw->mac.addr, netdev->dev_addr);
++		dev_err(&pdev->dev,
++			"Invalid MAC address, already assigned random MAC address\n");
+ 	}
  
--config NET_DSA_MICROCHIP_KSZ9477_SPI
--	tristate "KSZ9477 series SPI connected switch driver"
-+config NET_DSA_MICROCHIP_KSZ_SPI
-+	tristate "KSZ series SPI connected switch driver"
- 	depends on NET_DSA_MICROCHIP_KSZ_COMMON && SPI
- 	select REGMAP_SPI
- 	help
- 	  Select to enable support for registering switches configured through SPI.
- 
--config NET_DSA_MICROCHIP_KSZ8795_SPI
--	tristate "KSZ8795 series SPI connected switch driver"
--	depends on NET_DSA_MICROCHIP_KSZ_COMMON && SPI
--	select REGMAP_SPI
--	help
--	  This driver accesses KSZ8795 chip through SPI.
--
--	  It is required to use the KSZ8795 switch driver as the only access
--	  is through SPI.
--
- config NET_DSA_MICROCHIP_KSZ8863_SMI
- 	tristate "KSZ series SMI connected switch driver"
- 	depends on NET_DSA_MICROCHIP_KSZ_COMMON
-diff --git a/drivers/net/dsa/microchip/Makefile b/drivers/net/dsa/microchip/Makefile
-index 4cf4755e6426..b2ba7c1bcb93 100644
---- a/drivers/net/dsa/microchip/Makefile
-+++ b/drivers/net/dsa/microchip/Makefile
-@@ -4,6 +4,5 @@ ksz_switch-objs := ksz_common.o
- ksz_switch-objs += ksz9477.o
- ksz_switch-objs += ksz8795.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477_I2C)	+= ksz9477_i2c.o
--obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477_SPI)	+= ksz9477_spi.o
--obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8795_SPI)	+= ksz8795_spi.o
-+obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ_SPI)		+= ksz_spi.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8863_SMI)	+= ksz8863_smi.o
-diff --git a/drivers/net/dsa/microchip/ksz9477_spi.c b/drivers/net/dsa/microchip/ksz9477_spi.c
-deleted file mode 100644
-index 2ee0601bc014..000000000000
---- a/drivers/net/dsa/microchip/ksz9477_spi.c
-+++ /dev/null
-@@ -1,150 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/*
-- * Microchip KSZ9477 series register access through SPI
-- *
-- * Copyright (C) 2017-2019 Microchip Technology Inc.
-- */
--
--#include <asm/unaligned.h>
--
--#include <linux/delay.h>
--#include <linux/kernel.h>
--#include <linux/module.h>
--#include <linux/regmap.h>
--#include <linux/spi/spi.h>
--
--#include "ksz_common.h"
--
--#define SPI_ADDR_SHIFT			24
--#define SPI_ADDR_ALIGN			3
--#define SPI_TURNAROUND_SHIFT		5
--
--KSZ_REGMAP_TABLE(ksz9477, 32, SPI_ADDR_SHIFT,
--		 SPI_TURNAROUND_SHIFT, SPI_ADDR_ALIGN);
--
--static int ksz9477_spi_probe(struct spi_device *spi)
--{
--	struct regmap_config rc;
--	struct ksz_device *dev;
--	int i, ret;
--
--	dev = ksz_switch_alloc(&spi->dev, spi);
--	if (!dev)
--		return -ENOMEM;
--
--	for (i = 0; i < ARRAY_SIZE(ksz9477_regmap_config); i++) {
--		rc = ksz9477_regmap_config[i];
--		rc.lock_arg = &dev->regmap_mutex;
--		dev->regmap[i] = devm_regmap_init_spi(spi, &rc);
--		if (IS_ERR(dev->regmap[i])) {
--			ret = PTR_ERR(dev->regmap[i]);
--			dev_err(&spi->dev,
--				"Failed to initialize regmap%i: %d\n",
--				ksz9477_regmap_config[i].val_bits, ret);
--			return ret;
--		}
--	}
--
--	if (spi->dev.platform_data)
--		dev->pdata = spi->dev.platform_data;
--
--	/* setup spi */
--	spi->mode = SPI_MODE_3;
--	ret = spi_setup(spi);
--	if (ret)
--		return ret;
--
--	ret = ksz_switch_register(dev);
--
--	/* Main DSA driver may not be started yet. */
--	if (ret)
--		return ret;
--
--	spi_set_drvdata(spi, dev);
--
--	return 0;
--}
--
--static void ksz9477_spi_remove(struct spi_device *spi)
--{
--	struct ksz_device *dev = spi_get_drvdata(spi);
--
--	if (dev)
--		ksz_switch_remove(dev);
--
--	spi_set_drvdata(spi, NULL);
--}
--
--static void ksz9477_spi_shutdown(struct spi_device *spi)
--{
--	struct ksz_device *dev = spi_get_drvdata(spi);
--
--	if (dev)
--		dsa_switch_shutdown(dev->ds);
--
--	spi_set_drvdata(spi, NULL);
--}
--
--static const struct of_device_id ksz9477_dt_ids[] = {
--	{
--		.compatible = "microchip,ksz9477",
--		.data = &ksz_switch_chips[KSZ9477]
--	},
--	{
--		.compatible = "microchip,ksz9897",
--		.data = &ksz_switch_chips[KSZ9897]
--	},
--	{
--		.compatible = "microchip,ksz9893",
--		.data = &ksz_switch_chips[KSZ9893]
--	},
--	{
--		.compatible = "microchip,ksz9563",
--		.data = &ksz_switch_chips[KSZ9893]
--	},
--	{
--		.compatible = "microchip,ksz8563",
--		.data = &ksz_switch_chips[KSZ9893]
--	},
--	{
--		.compatible = "microchip,ksz9567",
--		.data = &ksz_switch_chips[KSZ9567]
--	},
--	{},
--};
--MODULE_DEVICE_TABLE(of, ksz9477_dt_ids);
--
--static const struct spi_device_id ksz9477_spi_ids[] = {
--	{ "ksz9477" },
--	{ "ksz9897" },
--	{ "ksz9893" },
--	{ "ksz9563" },
--	{ "ksz8563" },
--	{ "ksz9567" },
--	{ },
--};
--MODULE_DEVICE_TABLE(spi, ksz9477_spi_ids);
--
--static struct spi_driver ksz9477_spi_driver = {
--	.driver = {
--		.name	= "ksz9477-switch",
--		.owner	= THIS_MODULE,
--		.of_match_table = of_match_ptr(ksz9477_dt_ids),
--	},
--	.id_table = ksz9477_spi_ids,
--	.probe	= ksz9477_spi_probe,
--	.remove	= ksz9477_spi_remove,
--	.shutdown = ksz9477_spi_shutdown,
--};
--
--module_spi_driver(ksz9477_spi_driver);
--
--MODULE_ALIAS("spi:ksz9477");
--MODULE_ALIAS("spi:ksz9897");
--MODULE_ALIAS("spi:ksz9893");
--MODULE_ALIAS("spi:ksz9563");
--MODULE_ALIAS("spi:ksz8563");
--MODULE_ALIAS("spi:ksz9567");
--MODULE_AUTHOR("Woojung Huh <Woojung.Huh@microchip.com>");
--MODULE_DESCRIPTION("Microchip KSZ9477 Series Switch SPI access Driver");
--MODULE_LICENSE("GPL");
-diff --git a/drivers/net/dsa/microchip/ksz8795_spi.c b/drivers/net/dsa/microchip/ksz_spi.c
-similarity index 61%
-rename from drivers/net/dsa/microchip/ksz8795_spi.c
-rename to drivers/net/dsa/microchip/ksz_spi.c
-index 3a816661989c..baec2fbf9537 100644
---- a/drivers/net/dsa/microchip/ksz8795_spi.c
-+++ b/drivers/net/dsa/microchip/ksz_spi.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- /*
-- * Microchip KSZ8795 series register access through SPI
-+ * Microchip ksz series register access through SPI
-  *
-  * Copyright (C) 2017 Microchip Technology Inc.
-  *	Tristram Ha <Tristram.Ha@microchip.com>
-@@ -25,13 +25,20 @@
- #define KSZ8863_SPI_ADDR_ALIGN			8
- #define KSZ8863_SPI_TURNAROUND_SHIFT		0
- 
-+#define KSZ9477_SPI_ADDR_SHIFT			24
-+#define KSZ9477_SPI_ADDR_ALIGN			3
-+#define KSZ9477_SPI_TURNAROUND_SHIFT		5
-+
- KSZ_REGMAP_TABLE(ksz8795, 16, KSZ8795_SPI_ADDR_SHIFT,
- 		 KSZ8795_SPI_TURNAROUND_SHIFT, KSZ8795_SPI_ADDR_ALIGN);
- 
- KSZ_REGMAP_TABLE(ksz8863, 16, KSZ8863_SPI_ADDR_SHIFT,
- 		 KSZ8863_SPI_TURNAROUND_SHIFT, KSZ8863_SPI_ADDR_ALIGN);
- 
--static int ksz8795_spi_probe(struct spi_device *spi)
-+KSZ_REGMAP_TABLE(ksz9477, 32, KSZ9477_SPI_ADDR_SHIFT,
-+		 KSZ9477_SPI_TURNAROUND_SHIFT, KSZ9477_SPI_ADDR_ALIGN);
-+
-+static int ksz_spi_probe(struct spi_device *spi)
- {
- 	const struct regmap_config *regmap_config;
- 	const struct ksz_chip_data *chip;
-@@ -57,8 +64,12 @@ static int ksz8795_spi_probe(struct spi_device *spi)
- 
- 	if (chip->chip_id == KSZ8830_CHIP_ID)
- 		regmap_config = ksz8863_regmap_config;
--	else
-+	else if (chip->chip_id == KSZ8795_CHIP_ID ||
-+		 chip->chip_id == KSZ8794_CHIP_ID ||
-+		 chip->chip_id == KSZ8765_CHIP_ID)
- 		regmap_config = ksz8795_regmap_config;
-+	else
-+		regmap_config = ksz9477_regmap_config;
- 
- 	for (i = 0; i < ARRAY_SIZE(ksz8795_regmap_config); i++) {
- 		rc = regmap_config[i];
-@@ -93,7 +104,7 @@ static int ksz8795_spi_probe(struct spi_device *spi)
- 	return 0;
- }
- 
--static void ksz8795_spi_remove(struct spi_device *spi)
-+static void ksz_spi_remove(struct spi_device *spi)
- {
- 	struct ksz_device *dev = spi_get_drvdata(spi);
- 
-@@ -103,7 +114,7 @@ static void ksz8795_spi_remove(struct spi_device *spi)
- 	spi_set_drvdata(spi, NULL);
- }
- 
--static void ksz8795_spi_shutdown(struct spi_device *spi)
-+static void ksz_spi_shutdown(struct spi_device *spi)
- {
- 	struct ksz_device *dev = spi_get_drvdata(spi);
- 
-@@ -118,7 +129,7 @@ static void ksz8795_spi_shutdown(struct spi_device *spi)
- 	spi_set_drvdata(spi, NULL);
- }
- 
--static const struct of_device_id ksz8795_dt_ids[] = {
-+static const struct of_device_id ksz_dt_ids[] = {
- 	{
- 		.compatible = "microchip,ksz8765",
- 		.data = &ksz_switch_chips[KSZ8765]
-@@ -139,34 +150,70 @@ static const struct of_device_id ksz8795_dt_ids[] = {
- 		.compatible = "microchip,ksz8873",
- 		.data = &ksz_switch_chips[KSZ8830]
- 	},
-+	{
-+		.compatible = "microchip,ksz9477",
-+		.data = &ksz_switch_chips[KSZ9477]
-+	},
-+	{
-+		.compatible = "microchip,ksz9897",
-+		.data = &ksz_switch_chips[KSZ9897]
-+	},
-+	{
-+		.compatible = "microchip,ksz9893",
-+		.data = &ksz_switch_chips[KSZ9893]
-+	},
-+	{
-+		.compatible = "microchip,ksz9563",
-+		.data = &ksz_switch_chips[KSZ9893]
-+	},
-+	{
-+		.compatible = "microchip,ksz8563",
-+		.data = &ksz_switch_chips[KSZ9893]
-+	},
-+	{
-+		.compatible = "microchip,ksz9567",
-+		.data = &ksz_switch_chips[KSZ9567]
-+	},
- 	{},
- };
--MODULE_DEVICE_TABLE(of, ksz8795_dt_ids);
-+MODULE_DEVICE_TABLE(of, ksz_dt_ids);
- 
--static const struct spi_device_id ksz8795_spi_ids[] = {
-+static const struct spi_device_id ksz_spi_ids[] = {
- 	{ "ksz8765" },
- 	{ "ksz8794" },
- 	{ "ksz8795" },
- 	{ "ksz8863" },
- 	{ "ksz8873" },
-+	{ "ksz9477" },
-+	{ "ksz9897" },
-+	{ "ksz9893" },
-+	{ "ksz9563" },
-+	{ "ksz8563" },
-+	{ "ksz9567" },
- 	{ },
- };
--MODULE_DEVICE_TABLE(spi, ksz8795_spi_ids);
-+MODULE_DEVICE_TABLE(spi, ksz_spi_ids);
- 
--static struct spi_driver ksz8795_spi_driver = {
-+static struct spi_driver ksz_spi_driver = {
- 	.driver = {
--		.name	= "ksz8795-switch",
-+		.name	= "ksz-switch",
- 		.owner	= THIS_MODULE,
--		.of_match_table = of_match_ptr(ksz8795_dt_ids),
-+		.of_match_table = of_match_ptr(ksz_dt_ids),
- 	},
--	.id_table = ksz8795_spi_ids,
--	.probe	= ksz8795_spi_probe,
--	.remove	= ksz8795_spi_remove,
--	.shutdown = ksz8795_spi_shutdown,
-+	.id_table = ksz_spi_ids,
-+	.probe	= ksz_spi_probe,
-+	.remove	= ksz_spi_remove,
-+	.shutdown = ksz_spi_shutdown,
- };
- 
--module_spi_driver(ksz8795_spi_driver);
-+module_spi_driver(ksz_spi_driver);
- 
-+MODULE_ALIAS("spi:ksz9477");
-+MODULE_ALIAS("spi:ksz9897");
-+MODULE_ALIAS("spi:ksz9893");
-+MODULE_ALIAS("spi:ksz9563");
-+MODULE_ALIAS("spi:ksz8563");
-+MODULE_ALIAS("spi:ksz9567");
- MODULE_AUTHOR("Tristram Ha <Tristram.Ha@microchip.com>");
--MODULE_DESCRIPTION("Microchip KSZ8795 Series Switch SPI Driver");
-+MODULE_DESCRIPTION("Microchip ksz Series Switch SPI Driver");
- MODULE_LICENSE("GPL");
+ 	igb_set_default_mac_filter(adapter);
 -- 
-2.36.1
+2.27.0
 
