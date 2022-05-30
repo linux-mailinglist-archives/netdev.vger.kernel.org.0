@@ -2,51 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1AB7538504
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 17:36:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2ADE538536
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 17:47:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240856AbiE3Pf6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 11:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42232 "EHLO
+        id S242722AbiE3PrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 11:47:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242709AbiE3PfW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 11:35:22 -0400
-Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 90983996B7;
-        Mon, 30 May 2022 07:41:40 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [106.117.80.109])
-        by mail-app2 (Coremail) with SMTP id by_KCgDHeAh415Rir1sMAQ--.3918S2;
-        Mon, 30 May 2022 22:41:08 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-hams@vger.kernel.org
-Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas@osterried.de, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH v4] ax25: Fix ax25 session cleanup problems
-Date:   Mon, 30 May 2022 22:40:56 +0800
-Message-Id: <20220530144056.100002-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: by_KCgDHeAh415Rir1sMAQ--.3918S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxtF45ZFWxZry7XFWfXry7KFg_yoWxGw47pF
-        W7Ka1fJrZrXr4rCw4rWFWkWF18uw4qq3yUGr1UuFnakw13G3s8JF1ktFWjqFW3GFWfJF1D
-        Z34UWan8Ar4kuFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
-        Y2ka0xkIwI1lc2xSY4AK67AK6ry5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
-        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
-        b7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
-        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAI
-        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
-        nxnUUI43ZEXa7VUbkR65UUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAg4GAVZdtZ9W2gAIsu
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        with ESMTP id S242157AbiE3PrI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 11:47:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF6C7222A04
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 08:00:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BB9660FE4
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 15:00:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A412C3411C;
+        Mon, 30 May 2022 15:00:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653922806;
+        bh=GpyK8/Yfu8X4M5tnR6vG0wJ9aTdcB+4+BwiogudKXbU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=K0eam4/L3UiqfDx4ZaZPRhC0CXQitGxjy0pxK+UgrRcq6xPa+X4JFBoN6J8wpEqgI
+         kr1STHg8rVjzRp3KfMRH6NeUjM7cWZZLaWGhbPPdMiHOrarGhNu98qcmcVfOrGsd4I
+         f/Jwf4Kv9KrCPuIBhmTB9pgz6yeYZ1w/uwG8Jhq9PARVbQXQR959DwGuEF8quDMaAY
+         z7jUlq3ger85lGQYWCd5wyTLL2KdTswPdTEgbTnp+eQQaNWgBqwg0s5ziLcwSHnKPS
+         5El72S2VH1M+H97ObDALF+788uJK1vErDLEiD0/ZxpuY+c8k0YRmQm9AoQ3xvjhov2
+         Utfwkg8puPUZg==
+Message-ID: <779a783e-41ec-d0b0-d6a1-0c5668d0c844@kernel.org>
+Date:   Mon, 30 May 2022 09:00:05 -0600
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: [PATCH net V2] net: ping6: Fix ping -6 with interface name
+Content-Language: en-US
+To:     Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+References: <20220529115033.13454-1-tariqt@nvidia.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220529115033.13454-1-tariqt@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,179 +60,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are session cleanup problems in ax25_release() and
-ax25_disconnect(). If we setup a session and then disconnect,
-the disconnected session is still in "LISTENING" state that
-is shown below.
+On 5/29/22 5:50 AM, Tariq Toukan wrote:
+> From: Aya Levin <ayal@nvidia.com>
+> 
+> When passing interface parameter to ping -6:
+> $ ping -6 ::11:141:84:9 -I eth2
+> Results in:
+> PING ::11:141:84:10(::11:141:84:10) from ::11:141:84:9 eth2: 56 data bytes
+> ping: sendmsg: Invalid argument
+> ping: sendmsg: Invalid argument
+> 
+> Initialize the fl6's outgoing interface (OIF) before triggering
+> ip6_datagram_send_ctl. Don't wipe fl6 after ip6_datagram_send_ctl() as
+> changes in fl6 that may happen in the function are overwritten explicitly.
+> Update comment accordingly.
+> 
+> Fixes: 13651224c00b ("net: ping6: support setting basic SOL_IPV6 options via cmsg")
+> Signed-off-by: Aya Levin <ayal@nvidia.com>
+> Reviewed-by: Gal Pressman <gal@nvidia.com>
+> Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
+> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+> ---
+>  net/ipv6/ping.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> V2:
+> Per David Ahern's comment, moved memset before if (msg->msg_controllen),
+> and updated the code comment accordingly.
+> 
+> diff --git a/net/ipv6/ping.c b/net/ipv6/ping.c
+> index ff033d16549e..2a5f3337d488 100644
+> --- a/net/ipv6/ping.c
+> +++ b/net/ipv6/ping.c
+> @@ -101,24 +101,25 @@ static int ping_v6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+>  	ipc6.sockc.tsflags = sk->sk_tsflags;
+>  	ipc6.sockc.mark = sk->sk_mark;
+>  
+> +	memset(&fl6, 0, sizeof(fl6));
+> +
+>  	if (msg->msg_controllen) {
+>  		struct ipv6_txoptions opt = {};
+>  
+>  		opt.tot_len = sizeof(opt);
+>  		ipc6.opt = &opt;
+> +		fl6.flowi6_oif = oif;
 
-Active AX.25 sockets
-Dest       Source     Device  State        Vr/Vs    Send-Q  Recv-Q
-DL9SAU-4   DL9SAU-3   ???     LISTENING    000/000  0       0
-DL9SAU-3   DL9SAU-4   ???     LISTENING    000/000  0       0
+This should be moved up to after the memset since it is currently done
+after "fl6.daddr = *daddr;" below (remove that one). That's how it is
+done in rawv6_sendmsg and udpv6_sendmsg.
 
-The first reason is caused by del_timer_sync() in ax25_release().
-The timers of ax25 are used for correct session cleanup. If we use
-ax25_release() to close ax25 sessions and ax25_dev is not null,
-the del_timer_sync() functions in ax25_release() will execute.
-As a result, the sessions could not be cleaned up correctly,
-because the timers have stopped.
 
-In order to solve this problem, this patch adds a device_up flag
-in ax25_dev in order to judge whether the device is up. If there
-are sessions to be cleaned up, the del_timer_sync() in
-ax25_release() will not execute. What's more, we add ax25_cb_del()
-in ax25_kill_by_device(), because the timers have been stopped
-and there are no functions that could delete ax25_cb if we do not
-call ax25_release(). Finally, we reorder the position of
-ax25_list_lock in ax25_cb_del() in order to synchronize among
-different functions that call ax25_cb_del().
 
-The second reason is caused by improper check in ax25_disconnect().
-The incoming ax25 sessions which ax25->sk is null will close
-heartbeat timer, because the check "if(!ax25->sk || ..)" is
-satisfied. As a result, the session could not be cleaned up properly.
-
-In order to solve this problem, this patch changes "||" to "&&"
-in ax25_disconnect().
-
-What`s more, the ax25_disconnect() may be called twice, which is
-not necessary. For example, ax25_kill_by_device() calls
-ax25_disconnect() and sets ax25->state to AX25_STATE_0, but
-ax25_release() calls ax25_disconnect() again.
-
-In order to solve this problem, this patch add a check in
-ax25_release(). If the flag of ax25->sk equals to SOCK_DEAD,
-the ax25_disconnect() in ax25_release() should not be executed.
-
-Fixes: 82e31755e55f ("ax25: Fix UAF bugs in ax25 timers")
-Fixes: 8a367e74c012 ("ax25: Fix segfault after sock connection timeout")
-Reported-and-tested-by: Thomas Osterried <thomas@osterried.de>
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
-Changes in v4:
-  - Fix session cleanup problem in ax25_disconnect().
-  - Fix ax25_disconnect() may be called twice problem.
-
- include/net/ax25.h   |  1 +
- net/ax25/af_ax25.c   | 27 +++++++++++++++++----------
- net/ax25/ax25_dev.c  |  1 +
- net/ax25/ax25_subr.c |  2 +-
- 4 files changed, 20 insertions(+), 11 deletions(-)
-
-diff --git a/include/net/ax25.h b/include/net/ax25.h
-index 0f9790c455b..a427a05672e 100644
---- a/include/net/ax25.h
-+++ b/include/net/ax25.h
-@@ -228,6 +228,7 @@ typedef struct ax25_dev {
- 	ax25_dama_info		dama;
- #endif
- 	refcount_t		refcount;
-+	bool device_up;
- } ax25_dev;
- 
- typedef struct ax25_cb {
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 363d47f9453..289f355e185 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -62,12 +62,12 @@ static void ax25_free_sock(struct sock *sk)
-  */
- static void ax25_cb_del(ax25_cb *ax25)
- {
-+	spin_lock_bh(&ax25_list_lock);
- 	if (!hlist_unhashed(&ax25->ax25_node)) {
--		spin_lock_bh(&ax25_list_lock);
- 		hlist_del_init(&ax25->ax25_node);
--		spin_unlock_bh(&ax25_list_lock);
- 		ax25_cb_put(ax25);
- 	}
-+	spin_unlock_bh(&ax25_list_lock);
- }
- 
- /*
-@@ -81,6 +81,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- 
- 	if ((ax25_dev = ax25_dev_ax25dev(dev)) == NULL)
- 		return;
-+	ax25_dev->device_up = false;
- 
- 	spin_lock_bh(&ax25_list_lock);
- again:
-@@ -91,6 +92,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- 				spin_unlock_bh(&ax25_list_lock);
- 				ax25_disconnect(s, ENETUNREACH);
- 				s->ax25_dev = NULL;
-+				ax25_cb_del(s);
- 				spin_lock_bh(&ax25_list_lock);
- 				goto again;
- 			}
-@@ -103,6 +105,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- 				dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
- 				ax25_dev_put(ax25_dev);
- 			}
-+			ax25_cb_del(s);
- 			release_sock(sk);
- 			spin_lock_bh(&ax25_list_lock);
- 			sock_put(sk);
-@@ -995,9 +998,11 @@ static int ax25_release(struct socket *sock)
- 	if (sk->sk_type == SOCK_SEQPACKET) {
- 		switch (ax25->state) {
- 		case AX25_STATE_0:
--			release_sock(sk);
--			ax25_disconnect(ax25, 0);
--			lock_sock(sk);
-+			if (!sock_flag(ax25->sk, SOCK_DEAD)) {
-+				release_sock(sk);
-+				ax25_disconnect(ax25, 0);
-+				lock_sock(sk);
-+			}
- 			ax25_destroy_socket(ax25);
- 			break;
- 
-@@ -1053,11 +1058,13 @@ static int ax25_release(struct socket *sock)
- 		ax25_destroy_socket(ax25);
- 	}
- 	if (ax25_dev) {
--		del_timer_sync(&ax25->timer);
--		del_timer_sync(&ax25->t1timer);
--		del_timer_sync(&ax25->t2timer);
--		del_timer_sync(&ax25->t3timer);
--		del_timer_sync(&ax25->idletimer);
-+		if (!ax25_dev->device_up) {
-+			del_timer_sync(&ax25->timer);
-+			del_timer_sync(&ax25->t1timer);
-+			del_timer_sync(&ax25->t2timer);
-+			del_timer_sync(&ax25->t3timer);
-+			del_timer_sync(&ax25->idletimer);
-+		}
- 		dev_put_track(ax25_dev->dev, &ax25_dev->dev_tracker);
- 		ax25_dev_put(ax25_dev);
- 	}
-diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
-index d2a244e1c26..5451be15e07 100644
---- a/net/ax25/ax25_dev.c
-+++ b/net/ax25/ax25_dev.c
-@@ -62,6 +62,7 @@ void ax25_dev_device_up(struct net_device *dev)
- 	ax25_dev->dev     = dev;
- 	dev_hold_track(dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
- 	ax25_dev->forward = NULL;
-+	ax25_dev->device_up = true;
- 
- 	ax25_dev->values[AX25_VALUES_IPDEFMODE] = AX25_DEF_IPDEFMODE;
- 	ax25_dev->values[AX25_VALUES_AXDEFMODE] = AX25_DEF_AXDEFMODE;
-diff --git a/net/ax25/ax25_subr.c b/net/ax25/ax25_subr.c
-index 3a476e4f6cd..227c2b09c52 100644
---- a/net/ax25/ax25_subr.c
-+++ b/net/ax25/ax25_subr.c
-@@ -268,7 +268,7 @@ void ax25_disconnect(ax25_cb *ax25, int reason)
- 		del_timer_sync(&ax25->t3timer);
- 		del_timer_sync(&ax25->idletimer);
- 	} else {
--		if (!ax25->sk || !sock_flag(ax25->sk, SOCK_DESTROY))
-+		if (!ax25->sk && !sock_flag(ax25->sk, SOCK_DESTROY))
- 			ax25_stop_heartbeat(ax25);
- 		ax25_stop_t1timer(ax25);
- 		ax25_stop_t2timer(ax25);
--- 
-2.17.1
+>  
+>  		err = ip6_datagram_send_ctl(sock_net(sk), sk, msg, &fl6, &ipc6);
+>  		if (err < 0)
+>  			return err;
+>  
+>  		/* Changes to txoptions and flow info are not implemented, yet.
+> -		 * Drop the options, fl6 is wiped below.
+> +		 * Drop the options.
+>  		 */
+>  		ipc6.opt = NULL;
+>  	}
+>  
+> -	memset(&fl6, 0, sizeof(fl6));
+> -
+>  	fl6.flowi6_proto = IPPROTO_ICMPV6;
+>  	fl6.saddr = np->saddr;
+>  	fl6.daddr = *daddr;
 
