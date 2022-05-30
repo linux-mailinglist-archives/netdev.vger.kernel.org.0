@@ -2,55 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31B8A5383A5
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:40:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49FC4538414
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 17:14:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242810AbiE3Ohz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51740 "EHLO
+        id S240340AbiE3OrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:47:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242771AbiE3Obi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:31:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9E8131F27;
-        Mon, 30 May 2022 06:53:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5748B6102C;
-        Mon, 30 May 2022 13:53:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC737C385B8;
-        Mon, 30 May 2022 13:53:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918794;
-        bh=nenEibBJQkf8B+U53841xOeYfUma/aYeU1WO7LivkSI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jxGBEE296v4VVyNLLPcr4MiotoS4X4i9oQnMIuDvs/zpL8WreOQZGqapXovmbVkrr
-         rhRL7va1NUpAxWnj5YbLeftppS8BWuolD8Duk6chojVckfJMmJcUlnso0kLVvKTTGm
-         wzUUSdrldRwv4+46xeUPNOtWt3o5aG7g7Vkx6nWGiumyNtur24suBnoMlX8c1JYXj8
-         +5Fijch7CGcYD1iIueOhj/qQFUYI63WR2uFkhoDtwo3RBT7QbqjKOPKpjpTSxoxsMy
-         FmWcznR5mbFg9Kg2Hpw8wnpCW7E7/0W6rAq7mKJg/UomQa8THyhBaPcSs00LfkOje2
-         e3eTJvMbmNunw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 24/24] eth: tg3: silence the GCC 12 array-bounds warning
-Date:   Mon, 30 May 2022 09:52:11 -0400
-Message-Id: <20220530135211.1937674-24-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530135211.1937674-1-sashal@kernel.org>
-References: <20220530135211.1937674-1-sashal@kernel.org>
+        with ESMTP id S241316AbiE3OnL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:43:11 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE4A941BA
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 06:55:30 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1nvfrO-0007UU-PV; Mon, 30 May 2022 15:55:07 +0200
+Received: from [2a0a:edc0:0:1101:1d::28] (helo=dude02.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <sha@pengutronix.de>)
+        id 1nvfrO-005SmD-GU; Mon, 30 May 2022 15:55:05 +0200
+Received: from sha by dude02.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <sha@pengutronix.de>)
+        id 1nvfrL-004dIL-E2; Mon, 30 May 2022 15:55:03 +0200
+From:   Sascha Hauer <s.hauer@pengutronix.de>
+To:     linux-wireless@vger.kernel.org
+Cc:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Subject: [PATCH v2 00/10] RTW88: Add support for USB variants
+Date:   Mon, 30 May 2022 15:54:47 +0200
+Message-Id: <20220530135457.1104091-1-s.hauer@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,42 +55,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+This is the second round of patches for RTW88 USB support. I hopefully
+addressed all comments to v1.
 
-[ Upstream commit 9dec850fd7c210a04b4707df8e6c95bfafdd6a4b ]
+Overall changes since v1:
+- Dropped rtl8723du chipset support (reported to be not working)
+- make mostly checkpatch clean
 
-GCC 12 currently generates a rather inconsistent warning:
+see changelog in the patches for patch specific changes
 
-drivers/net/ethernet/broadcom/tg3.c:17795:51: warning: array subscript 5 is above array bounds of ‘struct tg3_napi[5]’ [-Warray-bounds]
-17795 |                 struct tg3_napi *tnapi = &tp->napi[i];
-      |                                           ~~~~~~~~^~~
+Sascha
 
-i is guaranteed < tp->irq_max which in turn is either 1 or 5.
-There are more loops like this one in the driver, but strangely
-GCC 12 dislikes only this single one.
+Sascha Hauer (10):
+  rtw88: Call rtw_fw_beacon_filter_config() with rtwdev->mutex held
+  rtw88: Drop rf_lock
+  rtw88: Drop h2c.lock
+  rtw88: Drop coex mutex
+  rtw88: iterate over vif/sta list non-atomically
+  rtw88: Add common USB chip support
+  rtw88: Add rtw8821cu chipset support
+  rtw88: Add rtw8822bu chipset support
+  rtw88: Add rtw8822cu chipset support
+  rtw88: disable powersave modes for USB devices
 
-Silence this silliness for now.
+ drivers/net/wireless/realtek/rtw88/Kconfig    |   36 +
+ drivers/net/wireless/realtek/rtw88/Makefile   |   11 +
+ drivers/net/wireless/realtek/rtw88/coex.c     |    3 +-
+ drivers/net/wireless/realtek/rtw88/debug.c    |   15 +
+ drivers/net/wireless/realtek/rtw88/fw.c       |   13 +-
+ drivers/net/wireless/realtek/rtw88/hci.h      |    9 +-
+ drivers/net/wireless/realtek/rtw88/mac.c      |    3 +
+ drivers/net/wireless/realtek/rtw88/mac80211.c |    5 +-
+ drivers/net/wireless/realtek/rtw88/main.c     |    8 +-
+ drivers/net/wireless/realtek/rtw88/main.h     |   11 +-
+ drivers/net/wireless/realtek/rtw88/phy.c      |    6 +-
+ drivers/net/wireless/realtek/rtw88/ps.c       |    2 +-
+ drivers/net/wireless/realtek/rtw88/reg.h      |    1 +
+ drivers/net/wireless/realtek/rtw88/rtw8821c.c |   23 +
+ drivers/net/wireless/realtek/rtw88/rtw8821c.h |   21 +
+ .../net/wireless/realtek/rtw88/rtw8821cu.c    |   50 +
+ .../net/wireless/realtek/rtw88/rtw8821cu.h    |   10 +
+ drivers/net/wireless/realtek/rtw88/rtw8822b.c |   19 +
+ .../net/wireless/realtek/rtw88/rtw8822bu.c    |   90 ++
+ .../net/wireless/realtek/rtw88/rtw8822bu.h    |   10 +
+ drivers/net/wireless/realtek/rtw88/rtw8822c.c |   24 +
+ .../net/wireless/realtek/rtw88/rtw8822cu.c    |   44 +
+ .../net/wireless/realtek/rtw88/rtw8822cu.h    |   10 +
+ drivers/net/wireless/realtek/rtw88/tx.h       |   31 +
+ drivers/net/wireless/realtek/rtw88/usb.c      | 1037 +++++++++++++++++
+ drivers/net/wireless/realtek/rtw88/usb.h      |  114 ++
+ drivers/net/wireless/realtek/rtw88/util.c     |  103 ++
+ drivers/net/wireless/realtek/rtw88/util.h     |   12 +-
+ 28 files changed, 1684 insertions(+), 37 deletions(-)
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8821cu.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8821cu.h
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822bu.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822bu.h
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822cu.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822cu.h
+ create mode 100644 drivers/net/wireless/realtek/rtw88/usb.c
+ create mode 100644 drivers/net/wireless/realtek/rtw88/usb.h
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/broadcom/Makefile | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/net/ethernet/broadcom/Makefile b/drivers/net/ethernet/broadcom/Makefile
-index 79f2372c66ec..4211c6cd6b35 100644
---- a/drivers/net/ethernet/broadcom/Makefile
-+++ b/drivers/net/ethernet/broadcom/Makefile
-@@ -15,3 +15,8 @@ obj-$(CONFIG_BGMAC_BCMA) += bgmac-bcma.o bgmac-bcma-mdio.o
- obj-$(CONFIG_BGMAC_PLATFORM) += bgmac-platform.o
- obj-$(CONFIG_SYSTEMPORT) += bcmsysport.o
- obj-$(CONFIG_BNXT) += bnxt/
-+
-+# FIXME: temporarily silence -Warray-bounds on non W=1+ builds
-+ifndef KBUILD_EXTRA_WARN
-+CFLAGS_tg3.o += -Wno-array-bounds
-+endif
 -- 
-2.35.1
+2.30.2
 
