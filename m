@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C3DA53814D
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:29:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC37B538194
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:32:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239986AbiE3OTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40314 "EHLO
+        id S240800AbiE3OUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241425AbiE3ORf (ORCPT
+        with ESMTP id S241434AbiE3ORf (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:17:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8332F4C7BD;
-        Mon, 30 May 2022 06:46:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD09A50008;
+        Mon, 30 May 2022 06:47:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2037960FD4;
-        Mon, 30 May 2022 13:46:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0595C385B8;
-        Mon, 30 May 2022 13:46:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 68E9360EC3;
+        Mon, 30 May 2022 13:47:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17995C3411C;
+        Mon, 30 May 2022 13:47:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918418;
-        bh=jEQDOTSyoEKOF9759rFdyj0iuN0nKojdVw6RmdvTscU=;
+        s=k20201202; t=1653918426;
+        bh=+hGjQKfDNGnTsMzTo9PMesAjDFTq1kh+tT1+3aPgf3c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=COdYbR0gveEUh5THUGeGIQg3YuaHn9oyhHsWdwe9229Sxt6wDC500v2vhrHl+zEQk
-         oFefQoW7TUZ1et9osLt73sS2rHVhqQhFI2PLjwwU72miDxcmL8y12PKLXcDrP2fri4
-         oSs1ZnadjmV05x/aMbS1YBjI0AJJ4t9CB1FDdfiszdztHZH+waGuZP3wBkcGX28pO6
-         2MACve8FQVIvLiy8sk/4BKVmLG/fYKqOM9O8Q5rr28d0ni9PCGVU3V4zFO3q6qDP0R
-         MoaO3lhP4BfdfhjCdjY9Lwhl1JAcxh+7e3Bo9gs7cySS/ULmxeCd0uGBVL+GofEpeb
-         CMs6fW/Stafyg==
+        b=axk87PkP5bGhgRXvraDgQAwwAECGpBA+iEb4P1RU8yQ9G/BJCGR+5rl1a7ZKYQ61w
+         Ha4vj/PKnTkuaddyC/UwLpBeuDj7uJPLrApxdsOpdMG28nMLCdLdl/xiUsUMm06A+v
+         xrjrmCcvC7uq046m0mrbPCPl6n/FFhuzwS05x0fRrakrTLWIOqXwaHJq4sxIGCBsP4
+         zgkTYf/tbyPx9s3c+IrS3iLzuoiVuU1OtjGLvV8S6/sMXif1OaTG3SXkfaIKFCMIoR
+         /u/3m9idbTr+H2evF5eNa49xeLvpeRe01Py+xMKrI5b7i68CmrE66bgJLYWz/1CQKo
+         Mi23Eimt4K3UQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yonghong Song <yhs@fb.com>, Mykola Lysenko <mykolal@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, nathan@kernel.org,
-        ndesaulniers@google.com, sunyucong@gmail.com,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.10 75/76] selftests/bpf: fix btf_dump/btf_dump due to recent clang change
-Date:   Mon, 30 May 2022 09:44:05 -0400
-Message-Id: <20220530134406.1934928-75-sashal@kernel.org>
+Cc:     Niels Dossche <dossche.niels@gmail.com>,
+        Brian Norris <briannorris@chromium.org>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        amitkarwar@gmail.com, ganapathi017@gmail.com,
+        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 02/55] mwifiex: add mutex lock for call in mwifiex_dfs_chan_sw_work_queue
+Date:   Mon, 30 May 2022 09:46:08 -0400
+Message-Id: <20220530134701.1935933-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220530134406.1934928-1-sashal@kernel.org>
-References: <20220530134406.1934928-1-sashal@kernel.org>
+In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
+References: <20220530134701.1935933-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -60,87 +61,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yonghong Song <yhs@fb.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 4050764cbaa25760aab40857f723393c07898474 ]
+[ Upstream commit 3e12968f6d12a34b540c39cbd696a760cc4616f0 ]
 
-Latest llvm-project upstream had a change of behavior
-related to qualifiers on function return type ([1]).
-This caused selftests btf_dump/btf_dump failure.
-The following example shows what changed.
+cfg80211_ch_switch_notify uses ASSERT_WDEV_LOCK to assert that
+net_device->ieee80211_ptr->mtx (which is the same as priv->wdev.mtx)
+is held during the function's execution.
+mwifiex_dfs_chan_sw_work_queue is one of its callers, which does not
+hold that lock, therefore violating the assertion.
+Add a lock around the call.
 
-  $ cat t.c
-  typedef const char * const (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
-  struct t {
-    int a;
-    fn_ptr_arr2_t l;
-  };
-  int foo(struct t *arg) {
-    return arg->a;
-  }
+Disclaimer:
+I am currently working on a static analyser to detect missing locks.
+This was a reported case. I manually verified the report by looking
+at the code, so that I do not send wrong information or patches.
+After concluding that this seems to be a true positive, I created
+this patch.
+However, as I do not in fact have this particular hardware,
+I was unable to test it.
 
-Compiled with latest upstream llvm15,
-  $ clang -O2 -g -target bpf -S -emit-llvm t.c
-The related generated debuginfo IR looks like:
-  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
-  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !32)
-  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
-  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
-  !20 = !DISubroutineType(types: !21)
-  !21 = !{!22, null}
-  !22 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !23, size: 64)
-  !23 = !DISubroutineType(types: !24)
-  !24 = !{!25, !28}
-  !25 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !26, size: 64)
-  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
-  !27 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
-You can see two intermediate const qualifier to pointer are dropped in debuginfo IR.
-
-With llvm14, we have following debuginfo IR:
-  !16 = !DIDerivedType(tag: DW_TAG_typedef, name: "fn_ptr_arr2_t", file: !1, line: 1, baseType: !17)
-  !17 = !DICompositeType(tag: DW_TAG_array_type, baseType: !18, size: 320, elements: !34)
-  !18 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !19)
-  !19 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !20, size: 64)
-  !20 = !DISubroutineType(types: !21)
-  !21 = !{!22, null}
-  !22 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !23)
-  !23 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !24, size: 64)
-  !24 = !DISubroutineType(types: !25)
-  !25 = !{!26, !30}
-  !26 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !27)
-  !27 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !28, size: 64)
-  !28 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !29)
-  !29 = !DIBasicType(name: "char", size: 8, encoding: DW_ATE_signed_char)
-All const qualifiers are preserved.
-
-To adapt the selftest to both old and new llvm, this patch removed
-the intermediate const qualifier in const-to-ptr types, to make the
-test succeed again.
-
-  [1] https://reviews.llvm.org/D125919
-
-Reported-by: Mykola Lysenko <mykolal@fb.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/r/20220523152044.3905809-1-yhs@fb.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220321225515.32113-1-dossche.niels@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/marvell/mwifiex/11h.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-index 31975c96e2c9..fe43556e1a61 100644
---- a/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-+++ b/tools/testing/selftests/bpf/progs/btf_dump_test_case_syntax.c
-@@ -94,7 +94,7 @@ typedef void (* (*signal_t)(int, void (*)(int)))(int);
+diff --git a/drivers/net/wireless/marvell/mwifiex/11h.c b/drivers/net/wireless/marvell/mwifiex/11h.c
+index 238accfe4f41..c4176e357b22 100644
+--- a/drivers/net/wireless/marvell/mwifiex/11h.c
++++ b/drivers/net/wireless/marvell/mwifiex/11h.c
+@@ -303,5 +303,7 @@ void mwifiex_dfs_chan_sw_work_queue(struct work_struct *work)
  
- typedef char * (*fn_ptr_arr1_t[10])(int **);
- 
--typedef char * (* const (* const fn_ptr_arr2_t[5])())(char * (*)(int));
-+typedef char * (* (* const fn_ptr_arr2_t[5])())(char * (*)(int));
- 
- struct struct_w_typedefs {
- 	int_t a;
+ 	mwifiex_dbg(priv->adapter, MSG,
+ 		    "indicating channel switch completion to kernel\n");
++	mutex_lock(&priv->wdev.mtx);
+ 	cfg80211_ch_switch_notify(priv->netdev, &priv->dfs_chandef);
++	mutex_unlock(&priv->wdev.mtx);
+ }
 -- 
 2.35.1
 
