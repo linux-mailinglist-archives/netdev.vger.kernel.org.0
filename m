@@ -2,48 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8DC7537C1B
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:32:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C4F9537C78
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:33:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237136AbiE3Nbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 09:31:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59342 "EHLO
+        id S237289AbiE3Ncq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 09:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237435AbiE3Na2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:30:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C64B8D686;
-        Mon, 30 May 2022 06:27:23 -0700 (PDT)
+        with ESMTP id S237093AbiE3Nbc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:31:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 109CB8E1B0;
+        Mon, 30 May 2022 06:27:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2E72B80D89;
-        Mon, 30 May 2022 13:27:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ABE5C3411F;
-        Mon, 30 May 2022 13:27:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D3C260EE0;
+        Mon, 30 May 2022 13:27:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 499C2C36AE9;
+        Mon, 30 May 2022 13:27:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917240;
-        bh=0SOjUx1vP3pC5to7NMBxAemGEoK1IKRZDN4I6BH/TuI=;
+        s=k20201202; t=1653917260;
+        bh=MQrjqXErBDcH5v3vhgMjiO1PsCtlzbFiX1PZbys4/vo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r5llVgSf2B0XJJOjzcSt/Sub17ERn65EWdXZY1hhbZsy2Ceeh66LzVHqICsxiMlXT
-         6Utvs4BIMCf2s9/YRPpGU0eNMeR2MSTXXpJKivL1Ui2c7z+pbdrmpXeGodkMbpjoKd
-         QEK8hYYKkpSusW4WgxaBzuazlLUM9tfXY2ryKE/KpkLn80+8NIi09S/7punnb1+4r7
-         Hq7rQfSAqJYQD59CuAX/ACtdoxoM81QNNVUzNG0jfzdZ26RygU3e72eOyRP4US3ST2
-         RKnXiiyxaAc8H1KWw7esVP81G8mE0avQXU51/efcVSHx9r4anC3hKlFkOgFUpqXTGF
-         pWlb6s408R4Xw==
+        b=pY6i3qKzFO7g45zu2rWn1VBukt6piBW6Rr5tOhyZZWde4B7hUlPwo0OLlTo2D5x+P
+         zcqcDaGkhp9ndA1u8Aiuhz2P5IXgyqLks8cR3WCBTetgBBv8m5yBZvZ+2bUWtEIpY/
+         4vYFd4EF1/NO68WaPDZsZaZZ1iLqSDwa3u05yTOfNRVd5Vl/+WAQqiswjlYgTF+86R
+         bWvZRvdxcS9r5BFyLTNnqZ7+R2CQdw6kGiWuYdNZQMZhDpstH/mGCPkoFU7E5T5tSf
+         o0u5kwA7PsqsjSN/8+UnNRPfcdf5gBbxq5OiElV5QaZktYJd2BW6FnEAOdzsj1eJqc
+         2EaSpNAdYKz2A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Abhishek Kumar <kuabhs@chromium.org>,
-        Wen Gong <quic_wgong@quicinc.com>,
-        Brian Norris <briannorris@chromium.org>,
+Cc:     Wen Gong <quic_wgong@quicinc.com>,
         Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ath10k@lists.infradead.org,
+        pabeni@redhat.com, ath11k@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 068/159] ath10k: skip ath10k_halt during suspend for driver state RESTARTING
-Date:   Mon, 30 May 2022 09:22:53 -0400
-Message-Id: <20220530132425.1929512-68-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.18 073/159] ath11k: fix warning of not found station for bssid in message
+Date:   Mon, 30 May 2022 09:22:58 -0400
+Message-Id: <20220530132425.1929512-73-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -61,112 +59,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Abhishek Kumar <kuabhs@chromium.org>
+From: Wen Gong <quic_wgong@quicinc.com>
 
-[ Upstream commit b72a4aff947ba807177bdabb43debaf2c66bee05 ]
+[ Upstream commit 7330e1ec9748948177830c6e1a13379835d577f9 ]
 
-Double free crash is observed when FW recovery(caused by wmi
-timeout/crash) is followed by immediate suspend event. The FW recovery
-is triggered by ath10k_core_restart() which calls driver clean up via
-ath10k_halt(). When the suspend event occurs between the FW recovery,
-the restart worker thread is put into frozen state until suspend completes.
-The suspend event triggers ath10k_stop() which again triggers ath10k_halt()
-The double invocation of ath10k_halt() causes ath10k_htt_rx_free() to be
-called twice(Note: ath10k_htt_rx_alloc was not called by restart worker
-thread because of its frozen state), causing the crash.
+When test connect/disconnect to an AP frequently with WCN6855, sometimes
+it show below log.
 
-To fix this, during the suspend flow, skip call to ath10k_halt() in
-ath10k_stop() when the current driver state is ATH10K_STATE_RESTARTING.
-Also, for driver state ATH10K_STATE_RESTARTING, call
-ath10k_wait_for_suspend() in ath10k_stop(). This is because call to
-ath10k_wait_for_suspend() is skipped later in
-[ath10k_halt() > ath10k_core_stop()] for the driver state
-ATH10K_STATE_RESTARTING.
+[  277.040121] wls1: deauthenticating from 8c:21:0a:b3:5a:64 by local choice (Reason: 3=DEAUTH_LEAVING)
+[  277.050906] ath11k_pci 0000:05:00.0: wmi stats vdev id 0 mac 00:03:7f:29:61:11
+[  277.050944] ath11k_pci 0000:05:00.0: wmi stats bssid 8c:21:0a:b3:5a:64 vif         pK-error
+[  277.050954] ath11k_pci 0000:05:00.0: not found station for bssid 8c:21:0a:b3:5a:64
+[  277.050961] ath11k_pci 0000:05:00.0: failed to parse rssi chain -71
+[  277.050967] ath11k_pci 0000:05:00.0: failed to pull fw stats: -71
+[  277.050976] ath11k_pci 0000:05:00.0: wmi stats vdev id 0 mac 00:03:7f:29:61:11
+[  277.050983] ath11k_pci 0000:05:00.0: wmi stats bssid 8c:21:0a:b3:5a:64 vif         pK-error
+[  277.050989] ath11k_pci 0000:05:00.0: not found station for bssid 8c:21:0a:b3:5a:64
+[  277.050995] ath11k_pci 0000:05:00.0: failed to parse rssi chain -71
+[  277.051000] ath11k_pci 0000:05:00.0: failed to pull fw stats: -71
+[  278.064050] ath11k_pci 0000:05:00.0: failed to request fw stats: -110
 
-The frozen restart worker thread will be cancelled during resume when the
-device comes out of suspend.
+Reason is:
+When running disconnect operation, sta_info removed from local->sta_hash
+by __sta_info_destroy_part1() from __sta_info_flush(), after this,
+ieee80211_find_sta_by_ifaddr() which called by
+ath11k_wmi_tlv_fw_stats_data_parse() and ath11k_wmi_tlv_rssi_chain_parse()
+cannot find this station, then failed log printed.
 
-Below is the crash stack for reference:
+steps are like this:
+1. when disconnect from AP, __sta_info_destroy() called __sta_info_destroy_part1()
+and __sta_info_destroy_part2().
 
-[  428.469167] ------------[ cut here ]------------
-[  428.469180] kernel BUG at mm/slub.c:4150!
-[  428.469193] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
-[  428.469219] Workqueue: events_unbound async_run_entry_fn
-[  428.469230] RIP: 0010:kfree+0x319/0x31b
-[  428.469241] RSP: 0018:ffffa1fac015fc30 EFLAGS: 00010246
-[  428.469247] RAX: ffffedb10419d108 RBX: ffff8c05262b0000
-[  428.469252] RDX: ffff8c04a8c07000 RSI: 0000000000000000
-[  428.469256] RBP: ffffa1fac015fc78 R08: 0000000000000000
-[  428.469276] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  428.469285] Call Trace:
-[  428.469295]  ? dma_free_attrs+0x5f/0x7d
-[  428.469320]  ath10k_core_stop+0x5b/0x6f
-[  428.469336]  ath10k_halt+0x126/0x177
-[  428.469352]  ath10k_stop+0x41/0x7e
-[  428.469387]  drv_stop+0x88/0x10e
-[  428.469410]  __ieee80211_suspend+0x297/0x411
-[  428.469441]  rdev_suspend+0x6e/0xd0
-[  428.469462]  wiphy_suspend+0xb1/0x105
-[  428.469483]  ? name_show+0x2d/0x2d
-[  428.469490]  dpm_run_callback+0x8c/0x126
-[  428.469511]  ? name_show+0x2d/0x2d
-[  428.469517]  __device_suspend+0x2e7/0x41b
-[  428.469523]  async_suspend+0x1f/0x93
-[  428.469529]  async_run_entry_fn+0x3d/0xd1
-[  428.469535]  process_one_work+0x1b1/0x329
-[  428.469541]  worker_thread+0x213/0x372
-[  428.469547]  kthread+0x150/0x15f
-[  428.469552]  ? pr_cont_work+0x58/0x58
-[  428.469558]  ? kthread_blkcg+0x31/0x31
+2. in __sta_info_destroy_part1(),  it has "sta_info_hash_del(local, sta)"
+and "list_del_rcu(&sta->list)", it will remove the ieee80211_sta from the
+list of ieee80211_hw.
 
-Tested-on: QCA6174 hw3.2 PCI WLAN.RM.4.4.1-00288-QCARMSWPZ-1
-Co-developed-by: Wen Gong <quic_wgong@quicinc.com>
+3. in __sta_info_destroy_part2(), it called drv_sta_state()->ath11k_mac_op_sta_state(),
+then peer->sta is clear at this moment.
+
+4. in __sta_info_destroy_part2(), it then called sta_set_sinfo()->drv_sta_statistics()
+->ath11k_mac_op_sta_statistics(), then WMI_REQUEST_STATS_CMDID sent to firmware.
+
+5. WMI_UPDATE_STATS_EVENTID reported from firmware, at this moment, the
+ieee80211_sta can not be found again because it has remove from list in
+step2 and also peer->sta is clear in step3.
+
+6. in __sta_info_destroy_part2(), it then called cleanup_single_sta()->
+sta_info_free()->kfree(sta), at this moment, the ieee80211_sta is freed
+in memory, then the failed log will not happen because function
+ath11k_mac_op_sta_state() will not be called.
+
+Actually this print log is not a real error, it is only to skip parse the
+info, so change to skip print by default debug setting.
+
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-03125-QCAHSPSWPL_V1_V2_SILICONZ_LITE-3
+
 Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
-Reviewed-by: Brian Norris <briannorris@chromium.org>
 Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220426221859.v2.1.I650b809482e1af8d0156ed88b5dc2677a0711d46@changeid
+Link: https://lore.kernel.org/r/20220428022426.2927-1-quic_wgong@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/mac.c | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath11k/wmi.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index b11aaee8b8c0..a11b31191d5a 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -5339,13 +5339,29 @@ static int ath10k_start(struct ieee80211_hw *hw)
- static void ath10k_stop(struct ieee80211_hw *hw)
- {
- 	struct ath10k *ar = hw->priv;
-+	u32 opt;
- 
- 	ath10k_drain_tx(ar);
- 
- 	mutex_lock(&ar->conf_mutex);
- 	if (ar->state != ATH10K_STATE_OFF) {
--		if (!ar->hw_rfkill_on)
--			ath10k_halt(ar);
-+		if (!ar->hw_rfkill_on) {
-+			/* If the current driver state is RESTARTING but not yet
-+			 * fully RESTARTED because of incoming suspend event,
-+			 * then ath10k_halt() is already called via
-+			 * ath10k_core_restart() and should not be called here.
-+			 */
-+			if (ar->state != ATH10K_STATE_RESTARTING) {
-+				ath10k_halt(ar);
-+			} else {
-+				/* Suspending here, because when in RESTARTING
-+				 * state, ath10k_core_stop() skips
-+				 * ath10k_wait_for_suspend().
-+				 */
-+				opt = WMI_PDEV_SUSPEND_AND_DISABLE_INTR;
-+				ath10k_wait_for_suspend(ar, opt);
-+			}
-+		}
- 		ar->state = ATH10K_STATE_OFF;
+diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
+index 2751fe8814df..0900f75eef20 100644
+--- a/drivers/net/wireless/ath/ath11k/wmi.c
++++ b/drivers/net/wireless/ath/ath11k/wmi.c
+@@ -5789,9 +5789,9 @@ static int ath11k_wmi_tlv_rssi_chain_parse(struct ath11k_base *ab,
+ 					   arvif->bssid,
+ 					   NULL);
+ 	if (!sta) {
+-		ath11k_warn(ab, "not found station for bssid %pM\n",
+-			    arvif->bssid);
+-		ret = -EPROTO;
++		ath11k_dbg(ab, ATH11K_DBG_WMI,
++			   "not found station of bssid %pM for rssi chain\n",
++			   arvif->bssid);
+ 		goto exit;
  	}
- 	mutex_unlock(&ar->conf_mutex);
+ 
+@@ -5889,8 +5889,9 @@ static int ath11k_wmi_tlv_fw_stats_data_parse(struct ath11k_base *ab,
+ 					   "wmi stats vdev id %d snr %d\n",
+ 					   src->vdev_id, src->beacon_snr);
+ 			} else {
+-				ath11k_warn(ab, "not found station for bssid %pM\n",
+-					    arvif->bssid);
++				ath11k_dbg(ab, ATH11K_DBG_WMI,
++					   "not found station of bssid %pM for vdev stat\n",
++					   arvif->bssid);
+ 			}
+ 		}
+ 
 -- 
 2.35.1
 
