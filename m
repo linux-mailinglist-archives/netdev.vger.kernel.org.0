@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E934538184
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:31:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21C135381AA
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 16:32:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240704AbiE3OUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 10:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40188 "EHLO
+        id S240909AbiE3OUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 10:20:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241920AbiE3OSL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:18:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D449CCBB;
-        Mon, 30 May 2022 06:48:33 -0700 (PDT)
+        with ESMTP id S241984AbiE3OSQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 10:18:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 219029CF6B;
+        Mon, 30 May 2022 06:48:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4852861024;
-        Mon, 30 May 2022 13:48:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54AB6C36AEA;
-        Mon, 30 May 2022 13:48:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5220FB80DA7;
+        Mon, 30 May 2022 13:48:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC3BBC36AE3;
+        Mon, 30 May 2022 13:48:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653918496;
-        bh=Gr+Vw9+XXHKPKIAm54nUK/J4qufutb1HXkatbHy3PKE=;
+        s=k20201202; t=1653918500;
+        bh=+/FYCLGsRVRHNZXvwv77uB0pWt/M78vjProgDG0PYuM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y7tOju2OJq2c5lCWGO+m1B0YN/S6gujOxlAUrKualLw3FDGPTL7OeYa5gIbzLv0W1
-         aHh44d4pUTRcQvpzKjrQYVOzilUI5fbu74z5YjmYXex57g5CICVhpbyL/QBdzygabg
-         8ULcpknW64QCyul7tpIeHrL8vzJ7ndroemqNRr6eBSGmdWF9vE4dGJ26gxsV39RwKz
-         T8Uqpkvb2wpJdF7uR+DzEx6/TuNw1XIUrIYwvujGVIv3YFGYx/r91fzjbbUQW+4OcR
-         JzbxskWyM66Kpb/L4pnLi2C9IcQBkUBqgkLleNuJYuuHZR0tA1NFE5ocvfQgZwEuxh
-         duAeVuCBsU5ag==
+        b=vQWzh9wwM3Guse3V1zszKi3ZShmsYzIKKuDTv7NvsRayXuZiwHe4X5rGOx5RV+RGo
+         N3Hc73IyCVSYne5hpdFuFPvpFP7Y+Ss1UdIl5Hd6uvzhlX/7Z/ECrTf8ho/yTJw8SJ
+         DIhbRcIzb8leBW0ciQvTQm12b8qetrtjPtfdO6CjE4lZ62zG5ZuUtM5gQ7lruO+d6Z
+         yMtWv2pMz2Kkh+JxofuSK1D9QVbnlys25mzIdkyVaBRHXKd5Bym+DEmKKcdyVSguOe
+         gCNU/SB18zAvagMk47qs6G7Ivo4LFUql7l5fTqvwBvy8a/t0P8w2gwjf+33XBMEm7q
+         JVYepH2OHPDSw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Bloch <mbloch@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 28/55] net/mlx5: fs, delete the FTE when there are no rules attached to it
-Date:   Mon, 30 May 2022 09:46:34 -0400
-Message-Id: <20220530134701.1935933-28-sashal@kernel.org>
+Cc:     Petr Machata <petrm@nvidia.com>,
+        Maksym Yaremchuk <maksymy@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 30/55] mlxsw: spectrum_dcb: Do not warn about priority changes
+Date:   Mon, 30 May 2022 09:46:36 -0400
+Message-Id: <20220530134701.1935933-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530134701.1935933-1-sashal@kernel.org>
 References: <20220530134701.1935933-1-sashal@kernel.org>
@@ -58,50 +59,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mark Bloch <mbloch@nvidia.com>
+From: Petr Machata <petrm@nvidia.com>
 
-[ Upstream commit 7b0c6338597613f465d131bd939a51844a00455a ]
+[ Upstream commit b6b584562cbe7dc357083459d6dd5b171e12cadb ]
 
-When an FTE has no children is means all the rules where removed
-and the FTE can be deleted regardless of the dests_size value.
-While dests_size should be 0 when there are no children
-be extra careful not to leak memory or get firmware syndrome
-if the proper bookkeeping of dests_size wasn't done.
+The idea behind the warnings is that the user would get warned in case when
+more than one priority is configured for a given DSCP value on a netdevice.
 
-Signed-off-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+The warning is currently wrong, because dcb_ieee_getapp_mask() returns
+the first matching entry, not all of them, and the warning will then claim
+that some priority is "current", when in fact it is not.
+
+But more importantly, the warning is misleading in general. Consider the
+following commands:
+
+ # dcb app flush dev swp19 dscp-prio
+ # dcb app add dev swp19 dscp-prio 24:3
+ # dcb app replace dev swp19 dscp-prio 24:2
+
+The last command will issue the following warning:
+
+ mlxsw_spectrum3 0000:07:00.0 swp19: Ignoring new priority 2 for DSCP 24 in favor of current value of 3
+
+The reason is that the "replace" command works by first adding the new
+value, and then removing all old values. This is the only way to make the
+replacement without causing the traffic to be prioritized to whatever the
+chip defaults to. The warning is issued in response to adding the new
+priority, and then no warning is shown when the old priority is removed.
+The upshot is that the canonical way to change traffic prioritization
+always produces a warning about ignoring the new priority, but what gets
+configured is in fact what the user intended.
+
+An option to just emit warning every time that the prioritization changes
+just to make it clear that it happened is obviously unsatisfactory.
+
+Therefore, in this patch, remove the warnings.
+
+Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c | 13 -------------
+ 1 file changed, 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index 5baf2c666d29..8c8b68e7abb4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -1937,16 +1937,16 @@ void mlx5_del_flow_rules(struct mlx5_flow_handle *handle)
- 	down_write_ref_node(&fte->node, false);
- 	for (i = handle->num_rules - 1; i >= 0; i--)
- 		tree_remove_node(&handle->rule[i]->node, true);
--	if (fte->dests_size) {
--		if (fte->modify_mask)
--			modify_fte(fte);
--		up_write_ref_node(&fte->node, false);
--	} else if (list_empty(&fte->node.children)) {
-+	if (list_empty(&fte->node.children)) {
- 		del_hw_fte(&fte->node);
- 		/* Avoid double call to del_hw_fte */
- 		fte->node.del_hw_func = NULL;
- 		up_write_ref_node(&fte->node, false);
- 		tree_put_node(&fte->node, false);
-+	} else if (fte->dests_size) {
-+		if (fte->modify_mask)
-+			modify_fte(fte);
-+		up_write_ref_node(&fte->node, false);
- 	} else {
- 		up_write_ref_node(&fte->node, false);
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
+index 21296fa7f7fb..bf51ed94952c 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_dcb.c
+@@ -227,8 +227,6 @@ static int mlxsw_sp_dcbnl_ieee_setets(struct net_device *dev,
+ static int mlxsw_sp_dcbnl_app_validate(struct net_device *dev,
+ 				       struct dcb_app *app)
+ {
+-	int prio;
+-
+ 	if (app->priority >= IEEE_8021QAZ_MAX_TCS) {
+ 		netdev_err(dev, "APP entry with priority value %u is invalid\n",
+ 			   app->priority);
+@@ -242,17 +240,6 @@ static int mlxsw_sp_dcbnl_app_validate(struct net_device *dev,
+ 				   app->protocol);
+ 			return -EINVAL;
+ 		}
+-
+-		/* Warn about any DSCP APP entries with the same PID. */
+-		prio = fls(dcb_ieee_getapp_mask(dev, app));
+-		if (prio--) {
+-			if (prio < app->priority)
+-				netdev_warn(dev, "Choosing priority %d for DSCP %d in favor of previously-active value of %d\n",
+-					    app->priority, app->protocol, prio);
+-			else if (prio > app->priority)
+-				netdev_warn(dev, "Ignoring new priority %d for DSCP %d in favor of current value of %d\n",
+-					    app->priority, app->protocol, prio);
+-		}
+ 		break;
+ 
+ 	case IEEE_8021QAZ_APP_SEL_ETHERTYPE:
 -- 
 2.35.1
 
