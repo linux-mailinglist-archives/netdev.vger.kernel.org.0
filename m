@@ -2,52 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B030537D2F
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:42:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92A1B537CCF
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 15:41:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237694AbiE3NhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 09:37:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56420 "EHLO
+        id S237574AbiE3NhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 09:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238182AbiE3NgK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:36:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E64986CF;
-        Mon, 30 May 2022 06:29:54 -0700 (PDT)
+        with ESMTP id S238205AbiE3NgL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 09:36:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34846986E3;
+        Mon, 30 May 2022 06:29:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E26FDB80D89;
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC92FB80B3A;
+        Mon, 30 May 2022 13:29:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F784C3411E;
         Mon, 30 May 2022 13:29:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BA96C3411C;
-        Mon, 30 May 2022 13:29:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653917391;
-        bh=67f36S+4rjT+JdsrzBc14AqQKTdEkAdczFOtEskmpRI=;
+        s=k20201202; t=1653917393;
+        bh=uBf4ntkHBfzEN3956XOhHHxqoIIf5aiUP6GYJPkD3to=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f4TkQrnqFbA414/oVIi7K9Wxu9EcpZ8cm2kNnEIb7oPzCwLvZ6WJ6SGG20oATPmNe
-         KSJcq3ZbstAsoF+6Ku/AEAVFlCjcyOQi2gsv0qP7nSVjpq+uuxImSFnFdddUs72YsE
-         AhvQBY8VOvjfpeZTFBVbyR6jc3DJ8y/3ZaIX2DyH7rUcbjXOR3kLiXcT8TvhwNbNqg
-         uevFeBX2vw8c00+NZC8Yw3WmJjPZbWlfXGL8bL9Wzl1I6251TA/pFf60YMnyQ7p6Gx
-         3c1Ndvh2WkOTwirrfGzi2yweKebWFkE/dVcgY2hWEpOkhXKjYfrZsP9FmgHUwpQDdq
-         jJOIIsjF4Q4EA==
+        b=K7PddymlSaPApJdx+LnoTmw264e8dbXftO7ORmtAvQzel+KCL5mSj1+aMHBqkOQ+A
+         jTmXKILctlKfGeoxfE0gX0QwN5sokUQ/x9ewBurPVmGrCXlex3V5GGHyJhCryVcxyM
+         FAwlIiBeqtUOF5xW7Jl/HJG/xoVvvSRSkOk7ALNmCOeM+bXlUH6+/aRTSIxas2KYVx
+         0SA+asUr17yojjhq+6MQq38oP8uslZzcaPJcpTxtJCHrP3okenhpQkGC/DgKnszZ3N
+         sgCRR43Qiy2/ArjraUfqfg46ns2siP18cxiodsCjA8CgiVLVNXaw6bKWekCxGTCalC
+         u1lxfkkG8LSqg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Ferry Toth <fntoth@gmail.com>,
-        Oliver Neukum <oneukum@suse.com>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, steve.glendinning@shawell.net,
-        UNGLinuxDriver@microchip.com, linux@rempel-privat.de,
-        colin.king@intel.com, paskripkin@gmail.com,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 118/159] usbnet: Run unregister_netdev() before unbind() again
-Date:   Mon, 30 May 2022 09:23:43 -0400
-Message-Id: <20220530132425.1929512-118-sashal@kernel.org>
+Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 119/159] Bluetooth: HCI: Add HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN quirk
+Date:   Mon, 30 May 2022 09:23:44 -0400
+Message-Id: <20220530132425.1929512-119-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220530132425.1929512-1-sashal@kernel.org>
 References: <20220530132425.1929512-1-sashal@kernel.org>
@@ -65,104 +59,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit d1408f6b4dd78fb1b9e26bcf64477984e5f85409 ]
+[ Upstream commit 05abad857277dda198063017b00ba5b9fed2c0cb ]
 
-Commit 2c9d6c2b871d ("usbnet: run unbind() before unregister_netdev()")
-sought to fix a use-after-free on disconnect of USB Ethernet adapters.
+This adds HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN quirk which can be
+used to mark HCI_Enhanced_Setup_Synchronous_Connection as broken even
+if its support command bit are set since some controller report it as
+supported but the command don't work properly with some configurations
+(e.g. BT_VOICE_TRANSPARENT/mSBC).
 
-It turns out that a different fix is necessary to address the issue:
-https://lore.kernel.org/netdev/18b3541e5372bc9b9fc733d422f4e698c089077c.1650177997.git.lukas@wunner.de/
-
-So the commit was not necessary.
-
-The commit made binding and unbinding of USB Ethernet asymmetrical:
-Before, usbnet_probe() first invoked the ->bind() callback and then
-register_netdev().  usbnet_disconnect() mirrored that by first invoking
-unregister_netdev() and then ->unbind().
-
-Since the commit, the order in usbnet_disconnect() is reversed and no
-longer mirrors usbnet_probe().
-
-One consequence is that a PHY disconnected (and stopped) in ->unbind()
-is afterwards stopped once more by unregister_netdev() as it closes the
-netdev before unregistering.  That necessitates a contortion in ->stop()
-because the PHY may only be stopped if it hasn't already been
-disconnected.
-
-Reverting the commit allows making the call to phy_stop() unconditional
-in ->stop().
-
-Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
-Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Acked-by: Oliver Neukum <oneukum@suse.com>
-Cc: Martyn Welch <martyn.welch@collabora.com>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/asix_devices.c | 6 +-----
- drivers/net/usb/smsc95xx.c     | 3 +--
- drivers/net/usb/usbnet.c       | 6 +++---
- 3 files changed, 5 insertions(+), 10 deletions(-)
+ include/net/bluetooth/hci.h      | 9 +++++++++
+ include/net/bluetooth/hci_core.h | 8 ++++++--
+ net/bluetooth/hci_conn.c         | 2 +-
+ net/bluetooth/sco.c              | 2 +-
+ 4 files changed, 17 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
-index 38e47a93fb83..5b5eb630c4b7 100644
---- a/drivers/net/usb/asix_devices.c
-+++ b/drivers/net/usb/asix_devices.c
-@@ -795,11 +795,7 @@ static int ax88772_stop(struct usbnet *dev)
- {
- 	struct asix_common_private *priv = dev->driver_priv;
- 
--	/* On unplugged USB, we will get MDIO communication errors and the
--	 * PHY will be set in to PHY_HALTED state.
--	 */
--	if (priv->phydev->state != PHY_HALTED)
--		phy_stop(priv->phydev);
-+	phy_stop(priv->phydev);
- 
- 	return 0;
- }
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index 4ef61f6b85df..edf0492ad489 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -1243,8 +1243,7 @@ static int smsc95xx_start_phy(struct usbnet *dev)
- 
- static int smsc95xx_stop(struct usbnet *dev)
- {
--	if (dev->net->phydev)
--		phy_stop(dev->net->phydev);
-+	phy_stop(dev->net->phydev);
- 
- 	return 0;
- }
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index 9a6450f796dc..36b24ec11650 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -1616,9 +1616,6 @@ void usbnet_disconnect (struct usb_interface *intf)
- 		   xdev->bus->bus_name, xdev->devpath,
- 		   dev->driver_info->description);
- 
--	if (dev->driver_info->unbind)
--		dev->driver_info->unbind(dev, intf);
--
- 	net = dev->net;
- 	unregister_netdev (net);
- 
-@@ -1626,6 +1623,9 @@ void usbnet_disconnect (struct usb_interface *intf)
- 
- 	usb_scuttle_anchored_urbs(&dev->deferred);
- 
-+	if (dev->driver_info->unbind)
-+		dev->driver_info->unbind(dev, intf);
+diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+index 69ef31cea582..62a9bb022aed 100644
+--- a/include/net/bluetooth/hci.h
++++ b/include/net/bluetooth/hci.h
+@@ -265,6 +265,15 @@ enum {
+ 	 * runtime suspend, because event filtering takes place there.
+ 	 */
+ 	HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL,
 +
- 	usb_kill_urb(dev->interrupt);
- 	usb_free_urb(dev->interrupt);
- 	kfree(dev->padding_pkt);
++	/*
++	 * When this quirk is set, disables the use of
++	 * HCI_OP_ENHANCED_SETUP_SYNC_CONN command to setup SCO connections.
++	 *
++	 * This quirk can be set before hci_register_dev is called or
++	 * during the hdev->setup vendor callback.
++	 */
++	HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN,
+ };
+ 
+ /* HCI device flags */
+diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+index 62d7b81b1cb7..5a52a2018b56 100644
+--- a/include/net/bluetooth/hci_core.h
++++ b/include/net/bluetooth/hci_core.h
+@@ -1495,8 +1495,12 @@ void hci_conn_del_sysfs(struct hci_conn *conn);
+ #define privacy_mode_capable(dev) (use_ll_privacy(dev) && \
+ 				   (hdev->commands[39] & 0x04))
+ 
+-/* Use enhanced synchronous connection if command is supported */
+-#define enhanced_sco_capable(dev) ((dev)->commands[29] & 0x08)
++/* Use enhanced synchronous connection if command is supported and its quirk
++ * has not been set.
++ */
++#define enhanced_sync_conn_capable(dev) \
++	(((dev)->commands[29] & 0x08) && \
++	 !test_bit(HCI_QUIRK_BROKEN_ENHANCED_SETUP_SYNC_CONN, &(dev)->quirks))
+ 
+ /* Use ext scanning if set ext scan param and ext scan enable is supported */
+ #define use_ext_scan(dev) (((dev)->commands[37] & 0x20) && \
+diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
+index fe803bee419a..882a7df13005 100644
+--- a/net/bluetooth/hci_conn.c
++++ b/net/bluetooth/hci_conn.c
+@@ -481,7 +481,7 @@ static bool hci_setup_sync_conn(struct hci_conn *conn, __u16 handle)
+ 
+ bool hci_setup_sync(struct hci_conn *conn, __u16 handle)
+ {
+-	if (enhanced_sco_capable(conn->hdev))
++	if (enhanced_sync_conn_capable(conn->hdev))
+ 		return hci_enhanced_setup_sync_conn(conn, handle);
+ 
+ 	return hci_setup_sync_conn(conn, handle);
+diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+index 8eabf41b2993..2a58c7d88433 100644
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -885,7 +885,7 @@ static int sco_sock_setsockopt(struct socket *sock, int level, int optname,
+ 			err = -EBADFD;
+ 			break;
+ 		}
+-		if (enhanced_sco_capable(hdev) &&
++		if (enhanced_sync_conn_capable(hdev) &&
+ 		    voice.setting == BT_VOICE_TRANSPARENT)
+ 			sco_pi(sk)->codec.id = BT_CODEC_TRANSPARENT;
+ 		hci_dev_put(hdev);
 -- 
 2.35.1
 
