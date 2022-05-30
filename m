@@ -2,122 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DA8C538791
-	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 20:52:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 452EB538795
+	for <lists+netdev@lfdr.de>; Mon, 30 May 2022 20:55:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238788AbiE3Swm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 14:52:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53732 "EHLO
+        id S238918AbiE3Sze (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 14:55:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233150AbiE3Swl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 14:52:41 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80C3F4F9C9;
-        Mon, 30 May 2022 11:52:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=3P4KzYhF63sLYOXorznhG4XjYdR4PWa+3SOrHzFYIB8=; b=nG4vAIg8xMFt5rvGJKlgQScY1Z
-        OKXPTPUOOf+TicqcGuXwXL5CKEixaiZdduQL7FFyxyaK75Ou/K91KQb1v+Vftm7rwaMH3d6pQveun
-        0X7dJao66dw60pchJClaygaC5mc7J8sIhQHyvY0yuQubdpjgUQYSQFqpMHTnhmHmPmyI=;
-Received: from [217.114.218.22] (helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1nvkVI-0001hK-Vw; Mon, 30 May 2022 20:52:37 +0200
-Message-ID: <40ce1ec0-0527-7659-2da0-a9d643580f9e@nbd.name>
-Date:   Mon, 30 May 2022 20:52:36 +0200
+        with ESMTP id S243100AbiE3SzS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 14:55:18 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED9D4F9FD;
+        Mon, 30 May 2022 11:55:16 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id e25so5182088wra.11;
+        Mon, 30 May 2022 11:55:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Sjq+zhjt3oCdhRwlc6XHlvBFai3CbF2klJFSbntyk2Q=;
+        b=WHV5Zhuoyb9Bcn7c6kyXJ12eTWIWcl5yQzbJVizjDEYh3hNyUIMD7ZsUusanfVifAw
+         GkQngBgaV1SBlq18DyGsvYINh+hb9o8no3RCWnYEX7jaFpQWeK9Vix8rirOsZXnXsq89
+         X68gciCor65mJEZ4zUC/hni51CxeJ0CPk10fA3Xh0o0UbMYtIcTY8i7IBxX2CXXs36LH
+         tJoBZCw7xalbTfYuEs7dOpGLURPdwT3JSmsXbnz0VG8KC4eBTaXp3+8kz4nmiumCjArP
+         nYqZzDYCFe3nh9ECiOMMefv5sY6Q76flRaRuv7CwHy0Y4+0arOQD41qorUgACg6dsm5l
+         bZQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Sjq+zhjt3oCdhRwlc6XHlvBFai3CbF2klJFSbntyk2Q=;
+        b=RbW1EabzfWJ3L31PO+kwoeiqfQrxnl7nMc80XpVDyvu1trrUU2d3OSJatY/JmasoLA
+         A3x6QdwhGIGDpFeRwt9zod3I9GuuCmG1icxfVuaQV+1BISXDke11aqFzpoyiVUT9j7XU
+         I5woKMITeu9q2aNmAOtyC6dohZDRgQdHbgFo8otmotWQMVynSMVNT5ez8o1QJa+iUmkC
+         zaC3aokwItUxdGz9H9mCsRMsRRTB+TL3CjipUtqRuerUDHhrISgDJdOE+r40Jew2ke/x
+         VXUkqGzFzCjdTabMjGnfooeFEg94/rvg1hcErWpLTXxNFdZ8RWrjgqLG3qpkLOk5DsIm
+         sbNA==
+X-Gm-Message-State: AOAM533TKWwHkkSBIILlhrrW8aIAY0R2tOtAkRklf9sdYhNo8lTAdk1Z
+        jYr39yKqXiVlngkdpsEsYgM=
+X-Google-Smtp-Source: ABdhPJxfvmZOPCqBf8PcUvO3+JEJvHPcWNIXf08IbPhQaa9PBU+9Vxygwrc/dLXfR1bv1BJJVTWtiw==
+X-Received: by 2002:a5d:6d84:0:b0:20e:7376:e13b with SMTP id l4-20020a5d6d84000000b0020e7376e13bmr45805753wrs.32.1653936915505;
+        Mon, 30 May 2022 11:55:15 -0700 (PDT)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id u2-20020adfdb82000000b002102e6b757csm6032139wri.90.2022.05.30.11.55.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 May 2022 11:55:15 -0700 (PDT)
+Date:   Mon, 30 May 2022 20:55:13 +0200
+From:   Corentin Labbe <clabbe.montjoie@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     None <conleylee@foxmail.com>, davem@davemloft.net,
+        mripard@kernel.org, wens@csie.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6] sun4i-emac.c: add dma support
+Message-ID: <YpUTETTNhRwooOMA@Red>
+References: <tencent_DE05ADA53D5B084D4605BE6CB11E49EF7408@qq.com>
+ <164082961168.30206.13406661054070190413.git-patchwork-notify@kernel.org>
+ <YpRNQlPHiuNoLu3J@Red>
+ <20220530114819.551f3d2f@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: [RFC] netfilter: nf_tables: ignore errors on flowtable device hw
- offload setup
-Content-Language: en-US
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        Jo-Philipp Wich <jo@mein.io>
-References: <20220510202739.67068-1-nbd@nbd.name> <Yn4NnwAkoVryQtCK@salvia>
- <b1fd2a80-f629-48a3-7466-0e04f2c531df@nbd.name> <Yn4TmdzQPUQ4TRUr@salvia>
- <88da25b7-0cd0-49df-c09e-8271618ba50f@nbd.name> <YoGhjjhsE1PcVeFC@salvia>
- <1c368b57-be21-5c37-ef38-e23fe344b70a@nbd.name> <YodIN0jLtAcHUq40@salvia>
- <ede77f8a-73d3-b507-5a7d-e8e3004e930d@nbd.name> <YogMj4PC/+DXYjQX@salvia>
- <YpT27/1oJgURRCYw@salvia>
-From:   Felix Fietkau <nbd@nbd.name>
-In-Reply-To: <YpT27/1oJgURRCYw@salvia>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220530114819.551f3d2f@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 30.05.22 18:55, Pablo Neira Ayuso wrote:
-> On Fri, May 20, 2022 at 11:48:01PM +0200, Pablo Neira Ayuso wrote:
->> On Fri, May 20, 2022 at 08:07:44PM +0200, Felix Fietkau wrote:
->> > 
->> > On 20.05.22 09:50, Pablo Neira Ayuso wrote:
->> > > I'm sssuming we relax the requirement as I proposed, ie. allow for not
->> > > allow devices to support for hardware offload, but at least one.
->> > > 
->> > > Then, it should be possible to extend the netlink interface to promote
->> > > a flowtable to support hardware offload, e.g.
->> > > 
->> > >   add flowtable inet x y { hook ingress devices = { eth0, eth1 } priority 0; flags offload; }
->> > > 
->> > > For an existing flowtable, that will add eth0 and eth1, and it will
->> > > request to turn hardware offload.
->> > > 
->> > > This is not supported, these bits are missing in the netlink interface.
->> > > 
->> > > > I still think the best course of action is to silently accept the offload
->> > > > flag even if none of the devices support hw offload.
->> > > 
->> > > Silent means user is asking for something that is actually not
->> > > supported, there will be no effective way from the control plane to
->> > > check if what they request is actually being applied.
->> > > 
->> > > I'd propose two changes:
->> > > 
->> > > - relax the existing requirement, so if one device support hw offload,
->> > >    then accept the configuration.
->> > > 
->> > > - allow to update a flowtable to on/off hardware offload from netlink
->> > >    interface without needing to reload your whole ruleset.
->> >
->> > I still don't see the value in forcing user space to do the
->> > failure-and-retry dance if none of the devices support hw offload.
->> > If this is about notifying user space about the hw offload status, I think
->> > it's much better to simply accept such configurations as-is and extend the
->> > netlink api to report which of the member devices hw offload was actually
->> > enabled for.
->> > This would be much more valuable to users that actually care about the hw
->> > offload status than knowing if one of the devices in the list has hw offload
->> > support, and it would simplify the code as well, for kernel and user space
->> > alike.
->> 
->> I would suggest to extend the API to expose if the device actually
->> support for the flowtable hardware offload, then after the listing,
->> the user knows if the feature is available, so they can turn it on.
+Le Mon, May 30, 2022 at 11:48:19AM -0700, Jakub Kicinski a écrit :
+> On Mon, 30 May 2022 06:51:14 +0200 Corentin Labbe wrote:
+> > Any news on patch which enable sun4i-emac DMA in DT ?
 > 
-> Thinking it well, something in between your proposal and mine.
-> 
-> Allow to set on 'offload', then the kernel will disable this flag if
-> no devices support for hardware offload. The update path would also
-> need to allow for this new behaviour.
-> 
-> The user can check via 'nft list ruleset' if the flag is on / off.
+> Who are you directing this question to and where's that patch posted?
 
-I think that's reasonable. Let's implement it this way for now.
+I am sorry, I fail to set the right "to:"
+My question was for Conley Lee.
 
-Thanks,
+This serie was applied but the DT part was never posted.
+So sun4i-emac can handle DMA but is not enabled at all.
 
-- Felix
+The DT patch is easy, so without answer, I will send it.
+
+Regards
