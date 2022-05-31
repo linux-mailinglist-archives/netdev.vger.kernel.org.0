@@ -2,101 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B158953932F
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 16:32:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F821539335
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 16:36:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345053AbiEaOcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 10:32:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39976 "EHLO
+        id S1345270AbiEaOgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 10:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244389AbiEaOcA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 10:32:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D230132EF4
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 07:31:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DACE2B81199
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 14:31:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01407C385A9;
-        Tue, 31 May 2022 14:31:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654007515;
-        bh=/mocd5XcGuqflFwsD790qH6He3e3717biPtFsUgkwzU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=opJ2XsOyuU/KmivF/r7l66Eqqm2rn40k7zPxhScxZFsTVxXPDi+0p6AbtpSE0qaWw
-         TqKM2QnbyhlDITA0vRdFd3/7MHzsc1nbpVJdR9CoKNTzhqrticc2Vvb+CBoW6qGCXL
-         BUqhUbzgFT4mZk0xdBM4ASqFiQNNMB2R4HFN2W5Aqsodudnl+TQs187gh1hRH9sFoi
-         mJdTcdG4yXf8mFCTn+BU2ZC9AEEQVb95twvdx/W09mvDiVcCmfNXbDj8PJWoN2qEPT
-         lzFbNlr9TpetRc0VlidcBvshW4+r75bTc3BFv5p5owkedL3Sx5oXobNqcS1ZW3zqZ9
-         f63uShoJ8Ghhg==
-Message-ID: <461d1b36-70d3-31fb-6e03-edad2d39b04c@kernel.org>
-Date:   Tue, 31 May 2022 08:31:53 -0600
+        with ESMTP id S240546AbiEaOgr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 10:36:47 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A24CC2613
+        for <netdev@vger.kernel.org>; Tue, 31 May 2022 07:36:44 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id s188so17669277oie.4
+        for <netdev@vger.kernel.org>; Tue, 31 May 2022 07:36:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=1Br/N6WhyVMlujnGsxiPG2oa5QW+rtf7KlXAbdHBbwA=;
+        b=P2nRh0pgB8JklGzPmXdJusJqD/mKkVdOZQyh7bUo82BI7aD+KII10M85Omue8eyJc2
+         0L0EyvFyKND+iVfpF61jBVwse396m4m3THBP01M/3h9NFz1t+TG3AUQE2eql7aRe8R44
+         KlTf8+aaf2X9hkh+HXsAaguW/k00bKgRybLUcsaI8JDQYO6YAe6tHPADmi3F1OLvsJDv
+         EUcXNIYFfGzsJXunnB1tNuZdjT0uC7aqWlXkvlOf4jtJMNSqQaNf9yO7InuOShK71Z4s
+         cQg3Sby+vDcnqhMPw+wvQIeN+IBpmIVBxWnrn07VD/NN5vKaQIqfmpKHGDyghd3D0lYB
+         18WA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=1Br/N6WhyVMlujnGsxiPG2oa5QW+rtf7KlXAbdHBbwA=;
+        b=ug9a6szXKUBzOxtBcpgEmEZytD49kW3/T2TlshzWEUrJpcnN5KY40F6WJugQre7A1C
+         R5hZNen3IxE97YPPrT+lcwaEv8kSPpSzeGyR65hLE1bGTS9t3oBsx9rTasvi41TQJ/27
+         pVNUJ7rwyBqgctq2q3unO3ncgCh5+XnJDjlYRdEPh14wq0s84xP1Tb0YsiWQ1Xgrb8Hi
+         uTW+SLUQ8ePVbqAHsM0q7mEoOzd3lNi4z0p6vppJG3nKEgPxtfcDApt5Znf6q9kNsgV4
+         79vVV4AcJuJfNo24g6U834oInSDyA2LspLGrKeUf1JjK79d0/8AJiZ5ErWZxs2bIaHOm
+         wapg==
+X-Gm-Message-State: AOAM533iVDHq4VGC7IAzJpPqG8oQYFlALgDETnFO421DVx2BFK2MMID4
+        DjDpvxSiBGOA0CC6FwqeCOqzp5AefrEVNsRh3PQ=
+X-Google-Smtp-Source: ABdhPJxmQIUGccTUjZTCEkuENB5q9+Ipkikzb/XieoYE+6Q2XQBTGRayFi8C17Rr3jDoaDfYNSfqv3xTXNRHrt54JQo=
+X-Received: by 2002:aca:61c1:0:b0:2ec:d091:ff53 with SMTP id
+ v184-20020aca61c1000000b002ecd091ff53mr12464308oib.235.1654007804015; Tue, 31
+ May 2022 07:36:44 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: [PATCH net V3] net: ping6: Fix ping -6 with interface name
-Content-Language: en-US
-To:     Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Paolo Abeni <pabeni@redhat.com>, Aya Levin <ayal@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-References: <20220531084544.15126-1-tariqt@nvidia.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220531084544.15126-1-tariqt@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-10.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:6358:105:b0:a3:40cd:8525 with HTTP; Tue, 31 May 2022
+ 07:36:43 -0700 (PDT)
+Reply-To: mrsbillchantallawrence58@gmail.com
+From:   chantal <msrjutconpolamcompola888@gmail.com>
+Date:   Tue, 31 May 2022 07:36:43 -0700
+Message-ID: <CABt-Z7GTSxFpY12xFmYgOT1--TYxkzKdTMjRVw-gRaZ8+AJ9ZA@mail.gmail.com>
+Subject: dear frinds incase my connession is not good
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=7.6 required=5.0 tests=BAYES_60,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        LOTS_OF_MONEY,MONEY_FREEMAIL_REPTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM,UNDISC_MONEY autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:231 listed in]
+        [list.dnswl.org]
+        *  1.5 BAYES_60 BODY: Bayes spam probability is 60 to 80%
+        *      [score: 0.7979]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [msrjutconpolamcompola888[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [mrsbillchantallawrence58[at]gmail.com]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [msrjutconpolamcompola888[at]gmail.com]
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  2.7 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  2.0 MONEY_FREEMAIL_REPTO Lots of money from someone using free
+        *      email?
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+        *  0.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/31/22 2:45 AM, Tariq Toukan wrote:
-> From: Aya Levin <ayal@nvidia.com>
-> 
-> When passing interface parameter to ping -6:
-> $ ping -6 ::11:141:84:9 -I eth2
-> Results in:
-> PING ::11:141:84:10(::11:141:84:10) from ::11:141:84:9 eth2: 56 data bytes
-> ping: sendmsg: Invalid argument
-> ping: sendmsg: Invalid argument
-> 
-> Initialize the fl6's outgoing interface (OIF) before triggering
-> ip6_datagram_send_ctl. Don't wipe fl6 after ip6_datagram_send_ctl() as
-> changes in fl6 that may happen in the function are overwritten explicitly.
-> Update comment accordingly.
-> 
-> Fixes: 13651224c00b ("net: ping6: support setting basic SOL_IPV6 options via cmsg")
-> Signed-off-by: Aya Levin <ayal@nvidia.com>
-> Reviewed-by: Gal Pressman <gal@nvidia.com>
-> Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
-> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-> ---
->  net/ipv6/ping.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> V3:
-> Per David Ahern's comment, moved fl6.flowi6_oif init to the
-> shared flow right after the memset.
-> 
-> V2:
-> Per David Ahern's comment, moved memset before if (msg->msg_controllen),
-> and updated the code comment accordingly.
-> 
+hello....
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+You have been compensated with the sum of 5.5 million dollars in this
+united nation the payment will be issue into atm visa card and send to
+you from the santander bank we need your address and your  Whatsapp
+this my email.ID (  mrsbillchantallawrence58@gmail.com)  contact  me
 
-The patch set with the Fixes tag added selftests using cmsg_sender.c.
-You can extend it to support IPV6_PKTINFO and submit a selftest for this
-case to -next when it opens.
+Thanks my
+
+mrs chantal
