@@ -2,97 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1023F538D9F
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 11:23:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2A03538DAA
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 11:25:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245135AbiEaJX2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 05:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38366 "EHLO
+        id S245174AbiEaJY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 05:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245131AbiEaJX1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 05:23:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 16BE585ECC
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 02:23:27 -0700 (PDT)
+        with ESMTP id S245168AbiEaJYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 05:24:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 38EF584A36
+        for <netdev@vger.kernel.org>; Tue, 31 May 2022 02:24:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653989006;
+        s=mimecast20190719; t=1653989092;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=R1t1NBmkNMBO5DYdEINGWFlHVzMhXZpx3lk8YtT0vEg=;
-        b=W6wc+5ouBAahyhZbpUPawAdMewMw2yGzFt6g41+AbVnREWipdHvpP7tGGLzDbhAxjXd4cU
-        /wanc2jL5QP0MdOwgnUyM/78HjtcUWNlcvpKjqd61o2+iZ3vjoy7C4eJLFfua9nbne4/zA
-        YQ4AasMqpHBVEBDnXb4MvgBh18vf4Xg=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=6P95NKv5J75UDyhLz30/tdSQWDhNkRy2BgkpUcXftuM=;
+        b=I7pv1iS93IqAmNahtebLr2nQ+r94EMaXz3n2tCDqL8gzwZLPbhPma/G7lJmag6fbQNGTFE
+        3Ek8iiBVrG0VpGzzNzQwS/MDNd9Kl3t/u7sx9aGAjreYD9Sk8UOxu2vSDoVkmI4H7mXKe9
+        QvPjiolGraj5ZTsjnJfdEPPydVbowy8=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-378-6U0tVZW4PciEOrwUVL-MMQ-1; Tue, 31 May 2022 05:23:24 -0400
-X-MC-Unique: 6U0tVZW4PciEOrwUVL-MMQ-1
-Received: by mail-wm1-f70.google.com with SMTP id o2-20020a05600c510200b0039747b0216fso1154594wms.0
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 02:23:24 -0700 (PDT)
+ us-mta-553-siiFdxDTPruV7N8sv8odVA-1; Tue, 31 May 2022 05:24:51 -0400
+X-MC-Unique: siiFdxDTPruV7N8sv8odVA-1
+Received: by mail-qk1-f199.google.com with SMTP id g14-20020ae9e10e000000b006a394d35dbfso10123745qkm.5
+        for <netdev@vger.kernel.org>; Tue, 31 May 2022 02:24:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=R1t1NBmkNMBO5DYdEINGWFlHVzMhXZpx3lk8YtT0vEg=;
-        b=qR5jS1dJYD9raDwHznCRoxPg1CZSW2PqnZSbEms9yz0s5+jKxQwL7PkHbahtzHsYgz
-         sV/Khuy6Oy7orHNzGMQAo5tZ25kmFA577kZtxXgpfStwBQJC3a1Mhbm2mdwHnR/DOAnt
-         DrYQRoZvA/gtA8L1Ov44pnnY7OuwNHcBJleFLGz2eItLZw2EIFRBk9Cw75QMCKwbOkU1
-         pGIMwCJqc6u/zTfw4FoHZICCNZX2spx1KL7q/HMWyJfvM/uEs25IKY7ociY/80pcvJeA
-         U2SnNkt2ufbfvw7CcmHomOXBy4d2ifXvXB7+HLQcWRIPLY1IC0jQGMJWBw35RXFSrDcE
-         RpoQ==
-X-Gm-Message-State: AOAM532RFdZxm0SXCSn58t75FDhp2fVO5A0bzNIWNBfpJ2WHzjSrurop
-        Sk4Wy/GUr7Ntp7A9iBqG+Msyf8fCzWBe8RAg9j4KNuNtExGpLS/t0ibVKRRgOthSKsUvGkpbbeA
-        MFmtq1BKC9ypPtkq/
-X-Received: by 2002:adf:fb0d:0:b0:20d:97e:17ce with SMTP id c13-20020adffb0d000000b0020d097e17cemr50794559wrr.585.1653989003673;
-        Tue, 31 May 2022 02:23:23 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxzXciEmGxzFbd78RU5NlgInASiXlfG+r9fWr3h5yZzU+8WJoDJl/m3AngyKgTZnA+DlsQGmQ==
-X-Received: by 2002:adf:fb0d:0:b0:20d:97e:17ce with SMTP id c13-20020adffb0d000000b0020d097e17cemr50794524wrr.585.1653989003358;
-        Tue, 31 May 2022 02:23:23 -0700 (PDT)
-Received: from redhat.com ([2.52.157.68])
-        by smtp.gmail.com with ESMTPSA id k66-20020a1ca145000000b0039c15861001sm1605939wme.21.2022.05.31.02.23.16
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=6P95NKv5J75UDyhLz30/tdSQWDhNkRy2BgkpUcXftuM=;
+        b=IFd70mkpLbYb7c2ouwJjI33oC7JrR4ZFKFS8xVLtRpUyidDU96wUZMuLPUJ/WY6rAW
+         5BkxZaT4LsxZe7C8jsUNeuHnpMlLnmyYWjSIfhQzBuKKkHw3vWkjxQdNy5MZW1snTX22
+         mJQgSvkDOowys824qhBL3+ZkVeHT0Eo/VQ6Nic5tw+8+N04BjSA+/5OY8Dr+FQhghAc8
+         qujXijISkg1yw7PMoXb+DQ4mIBQV5ZWwNBmZ66dsVyZC5LA4JHsaBad4R4LagGR92w+0
+         vOWml/16xzLEdAkfHQvop3641Tj7iIDc5MTkXyZJ2akT+iIlwlAzeA2QULEPC32bsy2x
+         fptg==
+X-Gm-Message-State: AOAM533GUp2asutxqvoXPKuuW8iPQSwDYHSuwVcO+pHOSkUoVNHCc5rs
+        SDWvsh0LeDkhwuZ4CEso4NsbmH8yEEuGRHd1qTR9d9BXI+CB1DdIgCA0zFOyNsq8ierqAndCcGA
+        XqFN2tBAolaaNLEcl
+X-Received: by 2002:a37:61c6:0:b0:6a3:6deb:51b0 with SMTP id v189-20020a3761c6000000b006a36deb51b0mr32088495qkb.256.1653989090223;
+        Tue, 31 May 2022 02:24:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzDQ3saUc3j3r8qbgKiZMd7azlywBiVjq2NMHzzdJ39YCZw5YMHkctRIdGFUBaIffISu+uNeg==
+X-Received: by 2002:a37:61c6:0:b0:6a3:6deb:51b0 with SMTP id v189-20020a3761c6000000b006a36deb51b0mr32088481qkb.256.1653989089953;
+        Tue, 31 May 2022 02:24:49 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
+        by smtp.gmail.com with ESMTPSA id bz11-20020a05622a1e8b00b002f940c06d93sm144028qtb.16.2022.05.31.02.24.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 02:23:22 -0700 (PDT)
-Date:   Tue, 31 May 2022 05:23:14 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Eugenio Perez Martin <eperezma@redhat.com>
-Cc:     kvm list <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Laurent Vivier <lvivier@redhat.com>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        Parav Pandit <parav@nvidia.com>, Eli Cohen <elic@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Cindy Lu <lulu@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>, ecree.xilinx@gmail.com,
-        "Dawar, Gautam" <gautam.dawar@amd.com>, habetsm.xilinx@gmail.com,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        Longpeng <longpeng2@huawei.com>
-Subject: Re: [PATCH v4 0/4] Implement vdpasim stop operation
-Message-ID: <20220531052240-mutt-send-email-mst@kernel.org>
-References: <20220526124338.36247-1-eperezma@redhat.com>
- <20220531014108-mutt-send-email-mst@kernel.org>
- <CAJaqyWfRSD6xiS8DROkPvjJ4Y4dotOPWqUzaQeM3X=q_XgABdw@mail.gmail.com>
+        Tue, 31 May 2022 02:24:49 -0700 (PDT)
+Message-ID: <7e77647a5c3c538ae6beb668083e1b6090dccb62.camel@redhat.com>
+Subject: Re: [PATCH v2] socket: Use __u8 instead of u8 in uapi socket.h
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     David Laight <David.Laight@ACULAB.COM>,
+        'Tobias Klauser' <tklauser@distanz.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Akhmat Karakotov <hmukos@yandex-team.ru>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Date:   Tue, 31 May 2022 11:24:46 +0200
+In-Reply-To: <2d48c65078ff424398588237e5fe1279@AcuMS.aculab.com>
+References: <20220525085126.29977-1-tklauser@distanz.ch>
+         <20220530081450.16591-1-tklauser@distanz.ch>
+         <2d48c65078ff424398588237e5fe1279@AcuMS.aculab.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJaqyWfRSD6xiS8DROkPvjJ4Y4dotOPWqUzaQeM3X=q_XgABdw@mail.gmail.com>
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -103,86 +82,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 31, 2022 at 09:13:38AM +0200, Eugenio Perez Martin wrote:
-> On Tue, May 31, 2022 at 7:42 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Thu, May 26, 2022 at 02:43:34PM +0200, Eugenio Pérez wrote:
-> > > Implement stop operation for vdpa_sim devices, so vhost-vdpa will offer
-> > > that backend feature and userspace can effectively stop the device.
-> > >
-> > > This is a must before get virtqueue indexes (base) for live migration,
-> > > since the device could modify them after userland gets them. There are
-> > > individual ways to perform that action for some devices
-> > > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no
-> > > way to perform it for any vhost device (and, in particular, vhost-vdpa).
-> > >
-> > > After the return of ioctl with stop != 0, the device MUST finish any
-> > > pending operations like in flight requests. It must also preserve all
-> > > the necessary state (the virtqueue vring base plus the possible device
-> > > specific states) that is required for restoring in the future. The
-> > > device must not change its configuration after that point.
-> > >
-> > > After the return of ioctl with stop == 0, the device can continue
-> > > processing buffers as long as typical conditions are met (vq is enabled,
-> > > DRIVER_OK status bit is enabled, etc).
-> > >
-> > > In the future, we will provide features similar to VHOST_USER_GET_INFLIGHT_FD
-> > > so the device can save pending operations.
-> > >
-> > > Comments are welcome.
-> >
-> >
-> > So given this is just for simulator and affects UAPI I think it's fine
-> > to make it wait for the next merge window, until there's a consensus.
-> > Right?
-> >
+On Mon, 2022-05-30 at 08:20 +0000, David Laight wrote:
+> From: Tobias Klauser
+> > Sent: 30 May 2022 09:15
+> > 
+> > Use the uapi variant of the u8 type.
+> > 
+> > Fixes: 26859240e4ee ("txhash: Add socket option to control TX hash rethink behavior")
+> > Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+> > ---
+> > v2: add missing <linux/types.h> include as reported by kernel test robot
+> > 
+> >  include/uapi/linux/socket.h | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/include/uapi/linux/socket.h b/include/uapi/linux/socket.h
+> > index 51d6bb2f6765..62a32040ad4f 100644
+> > --- a/include/uapi/linux/socket.h
+> > +++ b/include/uapi/linux/socket.h
+> > @@ -2,6 +2,8 @@
+> >  #ifndef _UAPI_LINUX_SOCKET_H
+> >  #define _UAPI_LINUX_SOCKET_H
+> > 
+> > +#include <linux/types.h>
+> > +
+> >  /*
+> >   * Desired design of maximum size and alignment (see RFC2553)
+> >   */
+> > @@ -31,7 +33,7 @@ struct __kernel_sockaddr_storage {
+> > 
+> >  #define SOCK_BUF_LOCK_MASK (SOCK_SNDBUF_LOCK | SOCK_RCVBUF_LOCK)
+> > 
+> > -#define SOCK_TXREHASH_DEFAULT	((u8)-1)
+> > +#define SOCK_TXREHASH_DEFAULT	((__u8)-1)
 > 
-> While the change is only implemented in the simulator at this moment,
-> it's just the very last missing piece in the kernel to implement
-> complete live migration for net devices with cvq :). All vendor
-> drivers can implement this call with current code, just a little bit
-> of plumbing is needed. And it was accepted in previous meetings.
-> 
-> If it proves it works for every configuration (nested, etc), the
-> implementation can forward the call to the admin vq for example. At
-> the moment, it follows the proposed stop status bit sematic to stop
-> the device, which POC has been tested in these circumstances.
-> 
-> Thanks!
+> I can't help feeling that 255u (or 0xffu) would be a better
+> way to describe that value.
 
-Oh absolutely, but I am guessing this plumbing won't
-be ready for this merge window.
+Even plain '255' would do. Additionally, any of the above will avoid
+the additional header dependency.
 
-> > > v4:
-> > > * Replace VHOST_STOP to VHOST_VDPA_STOP in vhost ioctl switch case too.
-> > >
-> > > v3:
-> > > * s/VHOST_STOP/VHOST_VDPA_STOP/
-> > > * Add documentation and requirements of the ioctl above its definition.
-> > >
-> > > v2:
-> > > * Replace raw _F_STOP with BIT_ULL(_F_STOP).
-> > > * Fix obtaining of stop ioctl arg (it was not obtained but written).
-> > > * Add stop to vdpa_sim_blk.
-> > >
-> > > Eugenio Pérez (4):
-> > >   vdpa: Add stop operation
-> > >   vhost-vdpa: introduce STOP backend feature bit
-> > >   vhost-vdpa: uAPI to stop the device
-> > >   vdpa_sim: Implement stop vdpa op
-> > >
-> > >  drivers/vdpa/vdpa_sim/vdpa_sim.c     | 21 +++++++++++++++++
-> > >  drivers/vdpa/vdpa_sim/vdpa_sim.h     |  1 +
-> > >  drivers/vdpa/vdpa_sim/vdpa_sim_blk.c |  3 +++
-> > >  drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  3 +++
-> > >  drivers/vhost/vdpa.c                 | 34 +++++++++++++++++++++++++++-
-> > >  include/linux/vdpa.h                 |  6 +++++
-> > >  include/uapi/linux/vhost.h           | 14 ++++++++++++
-> > >  include/uapi/linux/vhost_types.h     |  2 ++
-> > >  8 files changed, 83 insertions(+), 1 deletion(-)
-> > >
-> > > --
-> > > 2.31.1
-> > >
-> >
+Thanks,
+
+Paolo
 
