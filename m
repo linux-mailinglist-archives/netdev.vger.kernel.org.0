@@ -2,55 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B970F539849
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 22:55:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74A74539858
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 22:56:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347782AbiEaUzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 16:55:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
+        id S1347662AbiEaU4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 16:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344076AbiEaUzS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 16:55:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F1749CF71
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 13:55:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41E4EB816C5
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 20:55:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E415BC3411E;
-        Tue, 31 May 2022 20:55:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654030510;
-        bh=erDxHPUna1RJgRiVlJXVPWys+11srRfuFK/gWtgqaQI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oAJ68lYcC5HNI9AdpFlXXzW4jhmf1lR911y4LiDFJgJLfLjAWkyaopiVIXGsz7m5c
-         HPT/YNm7ODd3usAxT4z7u/zXFOAwfYF8GGc7bdddVkjO3rxdSVJAzRGSl7SwOsmk4s
-         hr3X0JP/YcGjNf262ecadMXu2ZefHM6zuO+2yGBcHwd2yhfzuHfv7PfldJC6Zt9WCi
-         RLzNMGGjMgtKoFRsr8vyUit4fnlD7J41Q6BrZ3Up/ny++7hhTcexiy/VvmjEdehXlP
-         YQHxBz1kXLd/zbnywGZcl8RxJQToo+vSw8lrC0pFpWzCgqCS839axdjmeHthpDJHYh
-         ksI+Z5XvuxvKQ==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Maher Sanalla <msanalla@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Mark Bloch <mbloch@nvidia.com>
-Subject: [net 7/7] net/mlx5: Fix mlx5_get_next_dev() peer device matching
-Date:   Tue, 31 May 2022 13:54:47 -0700
-Message-Id: <20220531205447.99236-8-saeed@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220531205447.99236-1-saeed@kernel.org>
-References: <20220531205447.99236-1-saeed@kernel.org>
+        with ESMTP id S243326AbiEaU4b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 16:56:31 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2279CF75;
+        Tue, 31 May 2022 13:56:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654030588; x=1685566588;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=KmOBMBNjMDvpHex0XEgSTh2uGSxfl8GV13MikE3newM=;
+  b=MHoDQ0HOQskKGu5ovr5S7czoNjWNvtm/RRusmxN9w6vAVxpErzBn0qgk
+   NgaMYgh8eGYd3d9yY70NrMFDBeG0wF1KvB63Y68hXLb6BarAQ0af4sLBM
+   wcCfN6SRUvyAQadMp6WoC5RDDUhshJwNVKbYUzR6vVijOQ8UnhUptHV3X
+   fIYDPTZAfjRmgnTgXyN6LKpAIEvVstVkGYAk35YiXIaDpeZ4Vd9NCltHY
+   nZ3Ei71nS4b7Ya7iXaE+mCkIn8733KJ5G0v18LUwtkpa0Dl2YJdzXBg27
+   a/4Z/U6O6CsBQQzamdISCaLnr+T8oeI+uvhlsGWoPIoeECnNXAjJHabOW
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="274185873"
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="274185873"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 13:56:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="706748538"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 31 May 2022 13:56:26 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nw8uf-00034W-Ih;
+        Tue, 31 May 2022 20:56:25 +0000
+Date:   Wed, 1 Jun 2022 04:55:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Bo Liu <liubo03@inspur.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [mst-vhost:vhost 62/65] drivers/virtio/virtio_ring.c:1783:9: error:
+ use of undeclared identifier 'vq'
+Message-ID: <202206010444.EGBXgPMJ-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,117 +62,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git vhost
+head:   5e83df49b4993a11b01399f6ce402f775940f965
+commit: a50f09346a341984d34ff41f03dbd14dea6f20fe [62/65] virtio_ring: remove unused variable in virtqueue_add()
+config: mips-randconfig-c004-20220531 (https://download.01.org/0day-ci/archive/20220601/202206010444.EGBXgPMJ-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c825abd6b0198fb088d9752f556a70705bc99dfd)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mipsel-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git/commit/?id=a50f09346a341984d34ff41f03dbd14dea6f20fe
+        git remote add mst-vhost https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git
+        git fetch --no-tags mst-vhost vhost
+        git checkout a50f09346a341984d34ff41f03dbd14dea6f20fe
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/virtio/
 
-In some use-cases, mlx5 instances will need to search for their peer
-device (the other port on the same HCA). For that, mlx5 device matching
-mechanism relied on auxiliary_find_device() to search, and used a bad matching
-callback function.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-This approach has two issues:
+All errors (new ones prefixed by >>):
 
-1) next_phys_dev() the matching function, assumed all devices are
-   of the type mlx5_adev (mlx5 auxiliary device) which is wrong and
-   could lead to crashes, this worked for a while, since only lately
-   other drivers started registering auxiliary devices.
+>> drivers/virtio/virtio_ring.c:1783:9: error: use of undeclared identifier 'vq'
+           return vq->packed_ring ? virtqueue_add_packed(_vq, sgs, total_sg,
+                  ^
+   1 error generated.
 
-2) using the auxiliary class bus (auxiliary_find_device) to search for
-   mlx5_core_dev devices, who are actually PCIe device instances, is wrong.
-   This works since mlx5_core always has at least one mlx5_adev instance
-   hanging around in the aux bus.
 
-As suggested by others we can fix 1. by comparing device names prefixes
-if they have the string "mlx5_core" in them, which is not a best practice !
-but even with that fixed, still 2. needs fixing, we are trying to
-match pcie device peers so we should look in the right bus (pci bus),
-hence this fix.
+vim +/vq +1783 drivers/virtio/virtio_ring.c
 
-The fix:
-1) search the pci bus for mlx5 peer devices, instead of the aux bus
-2) to validated devices are the same type "mlx5_core_dev" compare if
-   they have the same driver, which is bulletproof.
+1ce9e6055fa0a9 Tiwei Bie 2018-11-21  1768  
+1ce9e6055fa0a9 Tiwei Bie 2018-11-21  1769  
+e6f633e5beab65 Tiwei Bie 2018-11-21  1770  /*
+e6f633e5beab65 Tiwei Bie 2018-11-21  1771   * Generic functions and exported symbols.
+e6f633e5beab65 Tiwei Bie 2018-11-21  1772   */
+e6f633e5beab65 Tiwei Bie 2018-11-21  1773  
+e6f633e5beab65 Tiwei Bie 2018-11-21  1774  static inline int virtqueue_add(struct virtqueue *_vq,
+e6f633e5beab65 Tiwei Bie 2018-11-21  1775  				struct scatterlist *sgs[],
+e6f633e5beab65 Tiwei Bie 2018-11-21  1776  				unsigned int total_sg,
+e6f633e5beab65 Tiwei Bie 2018-11-21  1777  				unsigned int out_sgs,
+e6f633e5beab65 Tiwei Bie 2018-11-21  1778  				unsigned int in_sgs,
+e6f633e5beab65 Tiwei Bie 2018-11-21  1779  				void *data,
+e6f633e5beab65 Tiwei Bie 2018-11-21  1780  				void *ctx,
+e6f633e5beab65 Tiwei Bie 2018-11-21  1781  				gfp_t gfp)
+e6f633e5beab65 Tiwei Bie 2018-11-21  1782  {
+1ce9e6055fa0a9 Tiwei Bie 2018-11-21 @1783  	return vq->packed_ring ? virtqueue_add_packed(_vq, sgs, total_sg,
+1ce9e6055fa0a9 Tiwei Bie 2018-11-21  1784  					out_sgs, in_sgs, data, ctx, gfp) :
+1ce9e6055fa0a9 Tiwei Bie 2018-11-21  1785  				 virtqueue_add_split(_vq, sgs, total_sg,
+e6f633e5beab65 Tiwei Bie 2018-11-21  1786  					out_sgs, in_sgs, data, ctx, gfp);
+e6f633e5beab65 Tiwei Bie 2018-11-21  1787  }
+e6f633e5beab65 Tiwei Bie 2018-11-21  1788  
 
-   This wouldn't have worked with the aux bus since the various mlx5 aux
-   device types don't share the same driver, even if they share the same device
-   wrapper struct (mlx5_adev) "which helped to find the parent device"
+:::::: The code at line 1783 was first introduced by commit
+:::::: 1ce9e6055fa0a9043405c5604cf19169ec5379ff virtio_ring: introduce packed ring support
 
-Fixes: a925b5e309c9 ("net/mlx5: Register mlx5 devices to auxiliary virtual bus")
-Reported-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Reported-by: Maher Sanalla <msanalla@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Maher Sanalla <msanalla@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/dev.c | 34 +++++++++++++------
- 1 file changed, 23 insertions(+), 11 deletions(-)
+:::::: TO: Tiwei Bie <tiwei.bie@intel.com>
+:::::: CC: David S. Miller <davem@davemloft.net>
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-index 11f7c03ae81b..0eb9d74547f8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-@@ -571,18 +571,32 @@ static int _next_phys_dev(struct mlx5_core_dev *mdev,
- 	return 1;
- }
- 
-+static void *pci_get_other_drvdata(struct device *this, struct device *other)
-+{
-+	if (this->driver != other->driver)
-+		return NULL;
-+
-+	return pci_get_drvdata(to_pci_dev(other));
-+}
-+
- static int next_phys_dev(struct device *dev, const void *data)
- {
--	struct mlx5_adev *madev = container_of(dev, struct mlx5_adev, adev.dev);
--	struct mlx5_core_dev *mdev = madev->mdev;
-+	struct mlx5_core_dev *mdev, *this = (struct mlx5_core_dev *)data;
-+
-+	mdev = pci_get_other_drvdata(this->device, dev);
-+	if (!mdev)
-+		return 0;
- 
- 	return _next_phys_dev(mdev, data);
- }
- 
- static int next_phys_dev_lag(struct device *dev, const void *data)
- {
--	struct mlx5_adev *madev = container_of(dev, struct mlx5_adev, adev.dev);
--	struct mlx5_core_dev *mdev = madev->mdev;
-+	struct mlx5_core_dev *mdev, *this = (struct mlx5_core_dev *)data;
-+
-+	mdev = pci_get_other_drvdata(this->device, dev);
-+	if (!mdev)
-+		return 0;
- 
- 	if (!MLX5_CAP_GEN(mdev, vport_group_manager) ||
- 	    !MLX5_CAP_GEN(mdev, lag_master) ||
-@@ -596,19 +610,17 @@ static int next_phys_dev_lag(struct device *dev, const void *data)
- static struct mlx5_core_dev *mlx5_get_next_dev(struct mlx5_core_dev *dev,
- 					       int (*match)(struct device *dev, const void *data))
- {
--	struct auxiliary_device *adev;
--	struct mlx5_adev *madev;
-+	struct device *next;
- 
- 	if (!mlx5_core_is_pf(dev))
- 		return NULL;
- 
--	adev = auxiliary_find_device(NULL, dev, match);
--	if (!adev)
-+	next = bus_find_device(&pci_bus_type, NULL, dev, match);
-+	if (!next)
- 		return NULL;
- 
--	madev = container_of(adev, struct mlx5_adev, adev);
--	put_device(&adev->dev);
--	return madev->mdev;
-+	put_device(next);
-+	return pci_get_drvdata(to_pci_dev(next));
- }
- 
- /* Must be called with intf_mutex held */
 -- 
-2.36.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
