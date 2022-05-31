@@ -2,75 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD4965389D7
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 04:12:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9D4B5389D9
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 04:13:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243493AbiEaCLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 22:11:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57588 "EHLO
+        id S243514AbiEaCMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 22:12:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237934AbiEaCLU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 22:11:20 -0400
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FFDC87A3E
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 19:11:20 -0700 (PDT)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-f2cd424b9cso16507279fac.7
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 19:11:20 -0700 (PDT)
+        with ESMTP id S237934AbiEaCMN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 22:12:13 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174626D1B7;
+        Mon, 30 May 2022 19:12:10 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id n10so12393516pjh.5;
+        Mon, 30 May 2022 19:12:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Jb1gRyg2fSm+hzMK9OEVu7nzK2DB+ZXXpFJAvzboyx4=;
-        b=je8oY2ZPgLVBHGvPMQtJ65LFLKrsZPL9ut3q7F4FWHK9kDzVeX5hep/UovM7AjdgIh
-         +or+2r0vhCFsqcA0ERtJtnhSJbuZzofbuunnXfgZJx1/T0TdUw4tEUrdTM6pYJyS22md
-         O8SZl8tX+B3KqjIdF0gH/Tv5SsZ32eTel/dvo+2vXsP+GHnqKxg9NukANCA5CNTvxN8V
-         Cnb1IcijEWfb+jDTpi9oGSZl5B8PQQLgJzyKeTemPL8tYP9kXVit9uTFIhOxd42t9wz3
-         U/dHL0Z96w9JoplMkMqnU7kjlDCjukkz5/ieo1bmz0ZW+1eeOxbHJ65Ksw2ps2ha1DzG
-         0+GA==
+        bh=Y9NpA244q+Ie2cq2saBG14XgicSc5nrLNVGgmrMt+GA=;
+        b=f1FcxdztfrWaE6q/q8Ufqq6gaV+5X0i4mDaOYkz0dj+Xy2ace4+KYKZdum2KcpjSSw
+         RWhR2xv5megWa63y3JZCyUsZiWnI8/whQLZa5syOATHWZ979yziCp698s7APaqgDnlB7
+         +oFxJwcC2Q6wOfMt4h0Wj2UOR8v9Wycc3mxs24+a114TuwOMcGAnxGJq9Tt1wUqOr+qD
+         SwPqti2glx2QV0ZtKslccmqgosqkkMkHVVI9lXYPKpnD9w1D1+PakmyOfmsRzPdbssK8
+         N8kYVtf64TnnkUAPN09zv1fqLXlHQoAUm3zRyqcEEf2NYYiUSPYmCuzr+OBoDCwONpc4
+         9v5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Jb1gRyg2fSm+hzMK9OEVu7nzK2DB+ZXXpFJAvzboyx4=;
-        b=Ix3C9F09WNdrm1qZOA3aAicmljgreWTUarTpmlJD8OyVMJlPdDkCCzAQIdEvxFNu9z
-         YuEkmilFYQRfyJga3F03Z8lWTqNGXVRbhe1tHzqoyRmwqgJ33CPuQLL6XYLLN7uyuvXa
-         SCtZ8QThVZWr189pus6Mh+2UCUCg2NZyxHCwB/BmtNAZhQMuNj4v6g4P46jqaw1ToTSh
-         DEIAa6pmLzDuLBD/Aozp9TvF2pazyLlGEaIMOEmR35iss3wJI5imyA45R+8TJ5V25z/E
-         g2yHvh/YbH9kVv6xTYnAandi0czMt+Sz108wljEgsPqYDW/X5VYxt7w4qQ0iPUsDr+4Z
-         s1Tw==
-X-Gm-Message-State: AOAM532xqafyhcQPAbLVKa6MZTpAnmasgtnRduCzPsWsi3K8mT65vQmn
-        5NORTN0O5foA3YFtHdrWQVI=
-X-Google-Smtp-Source: ABdhPJy2BZHu/vLIOkYQ0inNLrGVavI7BcprUr0snzksZA7ytW9pstlReJsX13ips22IrTO+zBjAVg==
-X-Received: by 2002:a05:6870:41ca:b0:e9:c84:987a with SMTP id z10-20020a05687041ca00b000e90c84987amr11408927oac.149.1653963079573;
-        Mon, 30 May 2022 19:11:19 -0700 (PDT)
-Received: from [172.16.0.2] ([104.28.192.252])
-        by smtp.googlemail.com with ESMTPSA id pk10-20020a0568704c0a00b000e686d1387asm4558269oab.20.2022.05.30.19.11.18
+        bh=Y9NpA244q+Ie2cq2saBG14XgicSc5nrLNVGgmrMt+GA=;
+        b=vSqGu5YVvhSaEJqBmvG2qcWZ43c1FMuziPKQ6wSocf9c4QOEHJPynBQUvr93xKjWVY
+         /bpAoRFtjP8Z0q8myuIHZlsYabwAWTfRiVkykWiepoFU1RESEOsAzzYK5zzTdAi5JzuT
+         ZEGuGEa510aJmJWMgdgpGbZrOOCac9n2VlQb9pL/3zKdUa3j5D6Sf1XCXJuli4NnHGzc
+         WS8e60ndAXOb56qcIgScIzW4AV7HZ8l8BGuIbmuiyJMHceonEkrmzooM4qrdfEAlf+og
+         ZtTO1M3ugSjZxsPUssd8r4rB28R7J9ra55GbyMT4x6J5dYaiq70nCOYX/u0yUzZ/Ujhy
+         NB9w==
+X-Gm-Message-State: AOAM532+GcroJM0DaXNzEroHJrGAujGeAym/pWWrStxKjIGSeRbDoSqS
+        +t3cL2FDyaZfBXA+9d+8+F4=
+X-Google-Smtp-Source: ABdhPJwLOWEWOmn2m2tJxf+EfxNAA0hyWWh/wOr+aHWR+zFkdT0Gi6tmevwnlE4P2e89lpnD73Hxxw==
+X-Received: by 2002:a17:902:9b84:b0:161:db34:61ef with SMTP id y4-20020a1709029b8400b00161db3461efmr57642504plp.138.1653963129471;
+        Mon, 30 May 2022 19:12:09 -0700 (PDT)
+Received: from [192.168.50.247] ([103.84.139.165])
+        by smtp.gmail.com with ESMTPSA id y11-20020a62b50b000000b0051849315ecdsm9237110pfe.48.2022.05.30.19.12.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 May 2022 19:11:18 -0700 (PDT)
-Message-ID: <5c740b60-78eb-d0df-369c-d8411e24a054@gmail.com>
-Date:   Mon, 30 May 2022 20:11:16 -0600
+        Mon, 30 May 2022 19:12:09 -0700 (PDT)
+Message-ID: <17ce0028-cbf2-20cd-c9ae-16b37ed61924@gmail.com>
+Date:   Tue, 31 May 2022 10:12:05 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
- and info
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] xfrm: xfrm_input: fix a possible memory leak in
+ xfrm_input()
 Content-Language: en-US
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@idosch.org>,
-        Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, pabeni@redhat.com, jiri@nvidia.com,
-        petrm@nvidia.com, andrew@lunn.ch, mlxsw@nvidia.com
-References: <20220429114535.64794e94@kernel.org> <Ymw8jBoK3Vx8A/uq@nanopsycho>
- <20220429153845.5d833979@kernel.org> <YmzW12YL15hAFZRV@nanopsycho>
- <20220502073933.5699595c@kernel.org> <YotW74GJWt0glDnE@nanopsycho>
- <20220523105640.36d1e4b3@kernel.org> <Yox/TkxkTUtd0RMM@nanopsycho>
- <YozsUWj8TQPi7OkM@nanopsycho>
- <2d7c3432-591f-54e7-d62c-abc93663b149@gmail.com>
- <YpM75y3rf4nUhYsy@nanopsycho>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <YpM75y3rf4nUhYsy@nanopsycho>
-Content-Type: text/plain; charset=UTF-8
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220530102046.41249-1-hbh25y@gmail.com>
+ <20220530103734.GD2517843@gauss3.secunet.de>
+From:   Hangyu Hua <hbh25y@gmail.com>
+In-Reply-To: <20220530103734.GD2517843@gauss3.secunet.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
@@ -82,29 +76,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/29/22 3:24 AM, Jiri Pirko wrote:
-> Sat, May 28, 2022 at 05:58:56PM CEST, dsahern@gmail.com wrote:
->> On 5/24/22 8:31 AM, Jiri Pirko wrote:
->>>
->>> $ devlink lc info pci/0000:01:00.0 lc 8
->>> pci/0000:01:00.0:
+On 2022/5/30 18:37, Steffen Klassert wrote:
+> On Mon, May 30, 2022 at 06:20:46PM +0800, Hangyu Hua wrote:
+>> xfrm_input needs to handle skb internally. But skb is not freed When
+>> xo->flags & XFRM_GRO == 0 and decaps == 0.
 >>
->> ...
+>> Fixes: 7785bba299a8 ("esp: Add a software GRO codepath")
+>> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+>> ---
+>>   net/xfrm/xfrm_input.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
 >>
->>>
->>> $ devlink lc flash pci/0000:01:00.0 lc 8 file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
->>
->>
->> A lot of your proposed syntax for devlink commands has 'lc' twice. If
->> 'lc' is the subcommand, then you are managing a linecard making 'lc'
->> before the '8' redundant. How about 'slot 8' or something along those lines?
+>> diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+>> index 144238a50f3d..6f9576352f30 100644
+>> --- a/net/xfrm/xfrm_input.c
+>> +++ b/net/xfrm/xfrm_input.c
+>> @@ -742,7 +742,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+>>   			gro_cells_receive(&gro_cells, skb);
+>>   			return err;
+>>   		}
+>> -
+>> +		kfree_skb(skb);
+>>   		return err;
+>>   	}
 > 
-> Well, there is 1:1 match between cmd line options and output, as always.
-> 
-> Object name is one thing, the option name is different. It is quite
-> common to name them both the same. I'm not sure I understand why it
-> would be an issue.
-> 
+> Did you test this? The function behind the 'afinfo->the transport_finish()'
+> pointer handles this skb and frees it in that case.
 
-example? To me it says something is off in your model when you want to
-use the same keyword twice in a command line.
+int xfrm4_transport_finish(struct sk_buff *skb, int async)
+{
+	struct xfrm_offload *xo = xfrm_offload(skb);
+	struct iphdr *iph = ip_hdr(skb);
+
+	iph->protocol = XFRM_MODE_SKB_CB(skb)->protocol;
+
+#ifndef CONFIG_NETFILTER
+	if (!async)
+		return -iph->protocol;		<--- [1]
+#endif
+...
+	NF_HOOK(NFPROTO_IPV4, NF_INET_PRE_ROUTING,
+		dev_net(skb->dev), NULL, skb, skb->dev, NULL,
+		xfrm4_rcv_encap_finish);	<--- [2]
+	return 0;
+}
+
+int xfrm6_transport_finish(struct sk_buff *skb, int async)
+{
+	struct xfrm_offload *xo = xfrm_offload(skb);
+	int nhlen = skb->data - skb_network_header(skb);
+
+	skb_network_header(skb)[IP6CB(skb)->nhoff] =
+		XFRM_MODE_SKB_CB(skb)->protocol;
+
+#ifndef CONFIG_NETFILTER
+	if (!async)
+		return 1;			<--- [3]
+#endif
+...
+	NF_HOOK(NFPROTO_IPV6, NF_INET_PRE_ROUTING,
+		dev_net(skb->dev), NULL, skb, skb->dev, NULL,
+		xfrm6_transport_finish2);
+	return 0;				<--- [4]
+}
+
+If transport_finish() return in [1] or [3], there will be a memory leak. 
+If it return return in [2] and [4], there will not be a memory leak. It 
+look like my patch is incorrect.
+
+How do you think i modify the patch as follows?
+
+    			gro_cells_receive(&gro_cells, skb);
+    			return err;
+    		}
+  -
+  +		if (err != 0)
+  +			kfree_skb(skb);
+    		return err;
+    	}
+
+
+
