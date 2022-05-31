@@ -2,118 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD8CD53900B
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 13:48:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05679539010
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 13:50:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343946AbiEaLst (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 07:48:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56736 "EHLO
+        id S236240AbiEaLus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 07:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242016AbiEaLss (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 07:48:48 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6998A980A7
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 04:48:47 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id f21so26007555ejh.11
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 04:48:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7bhfywGiVfr9SKmJyu/pt4AMdz2eCKoqLhGa9Sh6I0M=;
-        b=gSo7aWDWhBewdtRYI6AhSZGPymEo/Hi7nqlGWSdSvP2WjCmWEIQ3dxM8zVn7wsiwBJ
-         f+utlV9IOq45T06qm0yXgSdPV6+0jHV7GxpoedmB2ryz5kWVoatw9I1bcvyhKFBLbA6N
-         Me7wv18JM2w/Dk7Q7sGIv4N9/DlnraPh0z4RFgtr9vdWsP/KlHpCQTaPyRtOdlPJJiHb
-         w+trMybFM2hrW6X5QUXniCFfJ8rld+V4gwBX7f/TGdkfXKvGnFSuvBAjV3qp4q5qeHYJ
-         4gNDfkijE5fRVqIKGGbrCICCmFtsrY537+Ra28E5TbZeITlrWordgRlbyIGzk6K3KP6q
-         MSCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7bhfywGiVfr9SKmJyu/pt4AMdz2eCKoqLhGa9Sh6I0M=;
-        b=qtIaimGkrrLif7MLCNLjNEFpZgEAtOOm75EJc/aS0l82B1eRjF4+RiqTDJx/mDaJyc
-         BocR8N9opWFz7ahl3/Avm4tKLxmsu2k9eurpkyAEj85WbqEWTeZ2GtDpdSLYUsy8P8xL
-         1JtG9xNdMKCi7mwNK1X0SNqpocVQkiAIFf4bkMLET3eyhn57kS0dEO91wlGeylL8SidN
-         poZ7n4LIFwsg5X28VHrKo7Azv6/PJfDCwIqQDuI3eSOgtlmdM1HcMRdXL29TCrKJIMTb
-         VR+CkosxKqKUAv19lNRC1XnAjqpw3defTemGm4tR7OIateHAAwIC7Ge3FbKxUqYGlWW2
-         am5Q==
-X-Gm-Message-State: AOAM5301AAX/F9XI0dyoPLKo/K0Hf/s7Cs2QBh50v47gBnE1bAI/RsIt
-        hg6KrzOy8WfeZfy/s5zW2dTLEg==
-X-Google-Smtp-Source: ABdhPJwcNLd9LnCiYZOXV8MwmtT3ra4raRUTYvS0GEN/xsJdOBcdPNqdR+hvE0rsqf7imJzUMUb6HQ==
-X-Received: by 2002:a17:907:2d06:b0:6fe:af0f:2fab with SMTP id gs6-20020a1709072d0600b006feaf0f2fabmr45791538ejc.324.1653997725953;
-        Tue, 31 May 2022 04:48:45 -0700 (PDT)
-Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id e6-20020a170906844600b006fee13caaeasm4878148ejy.190.2022.05.31.04.48.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 May 2022 04:48:45 -0700 (PDT)
-Message-ID: <a47f5d18-9ecc-a679-b407-799e4a15c6cf@linaro.org>
-Date:   Tue, 31 May 2022 13:48:44 +0200
+        with ESMTP id S230080AbiEaLuq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 07:50:46 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16359809E;
+        Tue, 31 May 2022 04:50:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=EaX3DGUPmHHCP5bGL2k/AhkjGQklNLSjDKLEp7C+0Go=; b=anR5n6PAL/h5Aqw7nUNlUXMZ24
+        SejeHE5cl1VljKLimUmyGRznnSgZZ8D0hU3397nRGumAc4jWiziLvrS8W4wJcIWP510glOYTqlBuO
+        As5QW8KPgoti56A7eZ5g5ki+Elg2HuQUeq+cV5GViFbEBCnNpwC6CNTiIwU+nBsjtWGUqgE37BY+5
+        7r+L0vZwrlD2PQsaaYirCaZ+LHG1E2A4ZWWQer10P/58q9OMlYSCWDoenEpcyGLlcY64T5Uip10Zg
+        DyD0636qWCYbQWJUlXMrBLRYK9tGzCxN2bWoITzCTKZFq1VynB5EXGpelOMtIhBUo5MlBrGUjPLIf
+        lmeGADeg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60900)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nw0OQ-0004te-MQ; Tue, 31 May 2022 12:50:34 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nw0OM-0002Ma-Pg; Tue, 31 May 2022 12:50:30 +0100
+Date:   Tue, 31 May 2022 12:50:30 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Siddharth Vadapalli <s-vadapalli@ti.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vladimir.oltean@nxp.com,
+        grygorii.strashko@ti.com, vigneshr@ti.com, nsekhar@ti.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kishon@ti.com
+Subject: Re: [PATCH 2/3] net: ethernet: ti: am65-cpsw: Add support for QSGMII
+ mode
+Message-ID: <YpYBBp8Io116bBwM@shell.armlinux.org.uk>
+References: <20220531113058.23708-1-s-vadapalli@ti.com>
+ <20220531113058.23708-3-s-vadapalli@ti.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 1/2] dt-bindings: net: Add ICSSG Ethernet Driver
- bindings
-Content-Language: en-US
-To:     Puranjay Mohan <p-mohan@ti.com>, linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com,
-        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, nm@ti.com, ssantosh@kernel.org,
-        s-anna@ti.com, linux-arm-kernel@lists.infradead.org,
-        rogerq@kernel.org, grygorii.strashko@ti.com, vigneshr@ti.com,
-        kishon@ti.com, robh+dt@kernel.org, afd@ti.com, andrew@lunn.ch
-References: <20220531095108.21757-1-p-mohan@ti.com>
- <20220531095108.21757-2-p-mohan@ti.com>
- <4ccba38a-ccde-83cd-195b-77db7a64477c@linaro.org>
- <faff79c9-7e1e-a69b-f314-6c00dedf1722@ti.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <faff79c9-7e1e-a69b-f314-6c00dedf1722@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220531113058.23708-3-s-vadapalli@ti.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/05/2022 13:27, Puranjay Mohan wrote:
->>> +examples:
->>> +  - |
->>> +
->>> +    /* Example k3-am654 base board SR2.0, dual-emac */
->>> +    pruss2_eth: pruss2_eth {
->>> +            compatible = "ti,am654-icssg-prueth";
->>
->> Again missed Rob's comment.
-> 
-> One of Rob's comment was to make the indentation as 4 which I have done.
+On Tue, May 31, 2022 at 05:00:57PM +0530, Siddharth Vadapalli wrote:
+>  static void am65_cpsw_nuss_mac_config(struct phylink_config *config, unsigned int mode,
+>  				      const struct phylink_link_state *state)
+>  {
+> -	/* Currently not used */
+> +	struct am65_cpsw_slave_data *slave = container_of(config, struct am65_cpsw_slave_data,
+> +							  phylink_config);
+> +	struct am65_cpsw_port *port = container_of(slave, struct am65_cpsw_port, slave);
+> +
+> +	if (state->interface == PHY_INTERFACE_MODE_QSGMII)
+> +		writel(AM65_CPSW_SGMII_CONTROL_MR_AN_ENABLE,
+> +		       port->sgmii_base + AM65_CPSW_SGMII_CONTROL_REG);
 
-I clearly do not see indentation of 4, but there is 8 instead.
+What about writing this register when the interface mode isn't QSGMII?
 
-Let's count:
-+    pruss2_eth: pruss2_eth {
-+            compatible = "ti,am654-icssg-prueth";
-     12345678^
-
-It's 8...
-
-> 
-> The second comment was about 'ti,prus'.
-> 
-> So, ti,prus , firmware-name, and ti,pruss-gp-mux-sel are a part of
-> remoteproc/ti,pru-consumer.yaml which I have included with
-> 
-> allOf:
->   - $ref: /schemas/remoteproc/ti,pru-consumer.yaml#
-> 
-> So, I thought it is not required to add them again.
-> 
-> I will add it in next version, if that is how it should be done.
-I was referring to the indentation.
-
-Krzysztof
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
