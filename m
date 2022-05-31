@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFB1353933E
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 16:42:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA490539341
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 16:44:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344041AbiEaOmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 10:42:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39960 "EHLO
+        id S244388AbiEaOoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 10:44:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236138AbiEaOmm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 10:42:42 -0400
-Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E2A683AA4F;
-        Tue, 31 May 2022 07:42:30 -0700 (PDT)
+        with ESMTP id S236138AbiEaOoL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 10:44:11 -0400
+Received: from m12-11.163.com (m12-11.163.com [220.181.12.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31FD68E1B3;
+        Tue, 31 May 2022 07:44:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=aHImv8CecLYVsqxKLx
-        3rBrqZ/D2QPjA2ce0QtxRVS6U=; b=EIltXozl2No9vHKMLM/uX+FcLKlsvVmznW
-        RpEoePT6laOVkJojJXlZqLXi3QS2HswLuHavgogewG6axocynVEjZNMBdXAPyGxg
-        UKBG4NYGScz5X0X48vmWxZzztj3oAacQ/JwFUqvZF+3XEshfF+HP3Sp0Vbswv9zD
-        mR7j5nNK8=
+        s=s110527; h=From:Subject:Date:Message-Id; bh=iuuhYKTTPiOzGziHSP
+        rXCTcTDHlPtwy5gFXzjZU5qSA=; b=GUNYURUsZZ0yE8K1wk1KTamdGwDV0JGpYD
+        KxAAJz5Dq5xtwbUOCNY0qSPu/kFVUgMsAC/ms06Mz2u6e+/hp8Wt6MQVrfDSvFLe
+        dIP5Y7x+pG2sjgJIGkJd2aUovlsjzNv30gL9MietYXeMFKwk0+vQIyBu4IN2bBbP
+        lbnmCXMI0=
 Received: from localhost.localdomain (unknown [171.221.150.250])
-        by smtp8 (Coremail) with SMTP id DMCowAAnhxMcKZZiLhmEFQ--.38243S2;
-        Tue, 31 May 2022 22:41:38 +0800 (CST)
+        by smtp7 (Coremail) with SMTP id C8CowAC32aCRKZZiz_PwFQ--.58649S2;
+        Tue, 31 May 2022 22:43:35 +0800 (CST)
 From:   Chen Lin <chen45464546@163.com>
-To:     kuba@kernel.org
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, alexander.duyck@gmail.com,
-        netdev@vger.kernel.org, Chen Lin <chen45464546@163.com>
-Subject: Re:Re: [PATCH v2] mm: page_frag: Warn_on when frag_alloc size is bigger than PAGE_SIZE
-Date:   Tue, 31 May 2022 22:41:12 +0800
-Message-Id: <1654008072-3136-1-git-send-email-chen45464546@163.com>
+To:     akpm@linux-foundation.org
+Cc:     kuba@kernel.org, linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        alexander.duyck@gmail.com, netdev@vger.kernel.org,
+        Chen Lin <chen45464546@163.com>
+Subject: [PATCH v3] mm: page_frag: Warn_on when frag_alloc size is bigger than PAGE_SIZE
+Date:   Tue, 31 May 2022 22:43:08 +0800
+Message-Id: <1654008188-3183-1-git-send-email-chen45464546@163.com>
 X-Mailer: git-send-email 1.7.9.5
-In-Reply-To: <20220530122918.549ef054@kernel.org>
-References: <20220530122918.549ef054@kernel.org>
-X-CM-TRANSID: DMCowAAnhxMcKZZiLhmEFQ--.38243S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7KF18AF1xGF43Gr1kKw45KFg_yoW8Ww15pr
-        WUCFy5ZF45X3Z8CrW8Jrs8Aa4Fy3s3JFWUJayfJas8Zw13JrW0gw1DtrnIvryIkwn2kayI
-        vr4jgr45Ca1Yq37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pRt5rOUUUUU=
+In-Reply-To: <20220530130705.29c5fa4a5225265d3736bfa4@linux-foundation.org>
+References: <20220530130705.29c5fa4a5225265d3736bfa4@linux-foundation.org>
+X-CM-TRANSID: C8CowAC32aCRKZZiz_PwFQ--.58649S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7tr17tw1fGFWkur17WF4rXwb_yoW8Kry8pF
+        W7Cr15ZFs0qwnFkw4kJw4vyr45A398WFWUKrWFv3s09w13Gr1093s8KrWjvFyrAr10kFy7
+        tF4Yyw13ua1jvaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pMBTnXUUUUU=
 X-Originating-IP: [171.221.150.250]
-X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/1tbiGgISnlaEB7ovCgAAse
+X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/xtbBzhcSnmI0UtCdCQAAsV
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
         FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
@@ -52,44 +52,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At 2022-05-31 02:29:18, "Jakub Kicinski" <kuba@kernel.org> wrote:
->On Mon, 30 May 2022 12:27:05 -0700 Jakub Kicinski wrote:
->> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
->> index e008a3df0485..360a545ee5e8 100644
->> --- a/mm/page_alloc.c
->> +++ b/mm/page_alloc.c
->> @@ -5537,6 +5537,7 @@ EXPORT_SYMBOL(free_pages);
->>   * sk_buff->head, or to be used in the "frags" portion of skb_shared_info.
->>   */
->>  static struct page *__page_frag_cache_refill(struct page_frag_cache *nc,
->> +					     unsigned int fragsz,
->>  					     gfp_t gfp_mask)
->>  {
->>  	struct page *page = NULL;
->> @@ -5549,7 +5550,7 @@ static struct page *__page_frag_cache_refill(struct page_frag_cache *nc,
->>  				PAGE_FRAG_CACHE_MAX_ORDER);
->>  	nc->size = page ? PAGE_FRAG_CACHE_MAX_SIZE : PAGE_SIZE;
->>  #endif
->> -	if (unlikely(!page))
->> +	if (unlikely(!page && fragsz <= PAGE_SIZE))
->>  		page = alloc_pages_node(NUMA_NO_NODE, gfp, 0);
->>  
->>  	nc->va = page ? page_address(page) : NULL;
->> @@ -5576,7 +5577,7 @@ void *page_frag_alloc_align(struct page_frag_cache *nc,
->>  
->>  	if (unlikely(!nc->va)) {
->>  refill:
->> -		page = __page_frag_cache_refill(nc, gfp_mask);
->> +		page = __page_frag_cache_refill(nc, fragsz, gfp_mask);
->>  		if (!page)
->>  			return NULL;
->
->Oh, well, the reuse also needs an update. We can slap a similar
->condition next to the pfmemalloc check.
+netdev_alloc_frag->page_frag_alloc may cause memory corruption in 
+the following process:
 
-The sample code above cannot completely solve the current problem.
-For example, when fragsz is greater than PAGE_FRAG_CACHE_MAX_SIZE(32768),
-__page_frag_cache_refill will return a memory of only 32768 bytes, so 
-should we continue to expand the PAGE_FRAG_CACHE_MAX_SIZE? Maybe more 
-work needs to be done
+1. A netdev_alloc_frag function call need alloc 200 Bytes to build a skb.
+
+2. Insufficient memory to alloc PAGE_FRAG_CACHE_MAX_ORDER(32K) in 
+__page_frag_cache_refill to fill frag cache, then one page(eg:4K) 
+is allocated, now current frag cache is 4K, alloc is success, 
+nc->pagecnt_bias--.
+
+3. Then this 200 bytes skb in step 1 is freed, page->_refcount--.
+
+4. Another netdev_alloc_frag function call need alloc 5k, page->_refcount 
+is equal to nc->pagecnt_bias, reset page count bias and offset to 
+start of new frag. page_frag_alloc will return the 4K memory for a 
+5K memory request.
+
+5. The caller write on the extra 1k memory which is not actual allocated 
+will cause memory corruption.
+
+page_frag_alloc is for fragmented allocation. We should warn the caller 
+to avoid memory corruption.
+
+When fragsz is larger than one page, we report the failure and return.
+I don't think it is a good idea to make efforts to support the
+allocation of more than one page in this function because the total
+frag cache size(PAGE_FRAG_CACHE_MAX_SIZE 32768) is relatively small.
+When the request is larger than one page, the caller should switch to
+use other kernel interfaces, such as kmalloc and alloc_Pages.
+
+This bug is mainly caused by the reuse of the previously allocated
+frag cache memory by the following LARGER allocations. This bug existed
+before page_frag_alloc was ported from __netdev_alloc_frag in 
+net/core/skbuff.c, so most Linux versions have this problem.
+
+Signed-off-by: Chen Lin <chen45464546@163.com>
+---
+ mm/page_alloc.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index e008a3d..ffc42b5 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5574,6 +5574,15 @@ void *page_frag_alloc_align(struct page_frag_cache *nc,
+ 	struct page *page;
+ 	int offset;
+ 
++	/*
++	 * frag_alloc is not suitable for memory alloc which fragsz
++	 * is bigger than PAGE_SIZE, use kmalloc or alloc_pages instead.
++	 */
++	if (WARN_ONCE(fragz > PAGE_SIZE,
++		      "alloc fragsz(%d) > PAGE_SIZE(%ld) not supported, alloc fail\n",
++		      fragsz, PAGE_SIZE))
++		return NULL;
++
+ 	if (unlikely(!nc->va)) {
+ refill:
+ 		page = __page_frag_cache_refill(nc, gfp_mask);
+-- 
+1.7.9.5
 
