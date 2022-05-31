@@ -2,66 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CCB953997B
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 00:27:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 259F9539980
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 00:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348403AbiEaW1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 18:27:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55510 "EHLO
+        id S1348420AbiEaWaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 18:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233920AbiEaW1W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 18:27:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00CD34ECDB;
-        Tue, 31 May 2022 15:27:21 -0700 (PDT)
+        with ESMTP id S1348419AbiEaWaO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 18:30:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D80C9E9DD;
+        Tue, 31 May 2022 15:30:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7B37B81717;
-        Tue, 31 May 2022 22:27:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78C4BC385A9;
-        Tue, 31 May 2022 22:27:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0C2A61454;
+        Tue, 31 May 2022 22:30:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3DDA5C3411D;
+        Tue, 31 May 2022 22:30:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654036039;
-        bh=OunOxBC+k7o9OrvxxcKFBRB8QFvQhoJy4jFX3affSqc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=KfXNuKCCAZ4LjF9dMrnVueTKKeDR5zhqyFenJukPO33jgv1Z8XOrSPG2W6JUIIGrV
-         ph5eV8gNlul/v48sKRAeXNYmHumGfCQp/EOJVdzeCmHIqocAKWGzNs1NYIR4dF76Y1
-         tmVaWOYhc6bkmrATFNinJLA9SwmZc2pFSaP0YZda+b/38rNiw1EYHaFWtcPF8Nmy6D
-         3IQJ4g1FaJbH3hVNdQpCX0uOqsDzZt8/tEHfYbuJ+ayR1zd1nBXm4mKbY5khBMtRWh
-         qdD8Aorv3LfPB83OvRII9UREKv5UlxCeUBkqC+mKU36XU/lmsM3YSzTufvU372QeY5
-         Dn6emA1k8DgJw==
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-30c1b401711so196167b3.2;
-        Tue, 31 May 2022 15:27:19 -0700 (PDT)
-X-Gm-Message-State: AOAM530WYGRaCZkhb9iOvvxA26nr8f+5EVLBj2Wc+kScMAorifCfOj+w
-        pvnSK2g0WUygHnL4uLMcg5rxJWSyZ5UtJABjucI=
-X-Google-Smtp-Source: ABdhPJwPoH/v/n7U+49ZTqMuPuNF+FEX/vs3krbLN/3x2j+pXOLLkMzSaI1GKHunHaVHcD+/r/cny2JIyqSq2oNgRWU=
-X-Received: by 2002:a81:4e48:0:b0:30c:6c6a:616d with SMTP id
- c69-20020a814e48000000b0030c6c6a616dmr11828673ywb.447.1654036038539; Tue, 31
- May 2022 15:27:18 -0700 (PDT)
+        s=k20201202; t=1654036213;
+        bh=9CKFF1v1EuML4c9sbd8g8eEThV0z6jr7sag1RJZVsVQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=O0TdG8p6Muv4GNkaiYcpNUOQjXdI7Ys2BaegeqJ9TjURLkmmcdmwP9wSfTGfC4wtp
+         6LQ+l1QQTTkNVV7vICicf2rOq8c3qqon7I0Fd6wrGS2n0hsR+oejLA8sQKHAAEpEYn
+         yVylGcTPCimH2OmOxXJzrNvUeSLj/0sVwbS+EehioQkCiDZyCwZr/W5sy2uHExu0uG
+         JIAT8n7/IB90s46KbDiySe7oRf7De0r99bB/lIQOaM9sYqpi1YG3E52tGxOPTTfNOZ
+         z/9JWa4jbUI763n5NpkUZxrEsjOFMnvYEtArXshkQ3Q0Ou2UD9TtTUuZ8y7ZMIqaIG
+         r1hoGvP4fwImA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1ED99F0394D;
+        Tue, 31 May 2022 22:30:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220530062126.27808-1-lina.wang@mediatek.com>
-In-Reply-To: <20220530062126.27808-1-lina.wang@mediatek.com>
-From:   Song Liu <song@kernel.org>
-Date:   Tue, 31 May 2022 15:27:07 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW57zs54sT9N-2mvUAA6HUQ6TOzh+zM0kN0vHzH+AszD5g@mail.gmail.com>
-Message-ID: <CAPhsuW57zs54sT9N-2mvUAA6HUQ6TOzh+zM0kN0vHzH+AszD5g@mail.gmail.com>
-Subject: Re: [PATCH] selftests net: fix bpf build error
-To:     Lina Wang <lina.wang@mediatek.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Maciej enczykowski <maze@google.com>,
-        Networking <netdev@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        kbuild test robot <lkp@intel.com>, rong.a.chen@intel.com,
-        kernel test robot <oliver.sang@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf] bpf: arm64: clear prog->jited_len along prog->jited
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165403621312.30952.5989556122316481247.git-patchwork-notify@kernel.org>
+Date:   Tue, 31 May 2022 22:30:13 +0000
+References: <20220531215113.1100754-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220531215113.1100754-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        zlim.lnx@gmail.com, davem@davemloft.net, netdev@vger.kernel.org,
+        edumazet@google.com, bpf@vger.kernel.org,
+        syzkaller@googlegroups.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -72,36 +58,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 29, 2022 at 11:28 PM Lina Wang <lina.wang@mediatek.com> wrote:
->
-> bpf_helpers.h has been moved to tools/lib/bpf since 5.10, so add more
-> incliding path.
-nit:  including
+Hello:
 
->
-> Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Signed-off-by: Lina Wang <lina.wang@mediatek.com>
+This patch was applied to bpf/bpf.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-Acked-by: Song Liu <songliubraving@fb.com>
+On Tue, 31 May 2022 14:51:13 -0700 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> syzbot reported an illegal copy_to_user() attempt
+> from bpf_prog_get_info_by_fd() [1]
+> 
+> There was no repro yet on this bug, but I think
+> that commit 0aef499f3172 ("mm/usercopy: Detect vmalloc overruns")
+> is exposing a prior bug in bpf arm64.
+> 
+> [...]
+
+Here is the summary with links:
+  - [bpf] bpf: arm64: clear prog->jited_len along prog->jited
+    https://git.kernel.org/bpf/bpf/c/e0491b11c131
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-> ---
->  tools/testing/selftests/net/bpf/Makefile | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/tools/testing/selftests/net/bpf/Makefile b/tools/testing/selftests/net/bpf/Makefile
-> index f91bf14bbee7..070251986dbe 100644
-> --- a/tools/testing/selftests/net/bpf/Makefile
-> +++ b/tools/testing/selftests/net/bpf/Makefile
-> @@ -2,6 +2,7 @@
->
->  CLANG ?= clang
->  CCINCLUDE += -I../../bpf
-> +CCINCLUDE += -I../../../../lib
->  CCINCLUDE += -I../../../../../usr/include/
->
->  TEST_CUSTOM_PROGS = $(OUTPUT)/bpf/nat6to4.o
-> --
-> 2.18.0
->
