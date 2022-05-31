@@ -2,73 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 987F35396A5
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 21:00:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33A615396BF
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 21:09:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236089AbiEaS7r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 14:59:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59100 "EHLO
+        id S1344175AbiEaTJP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 15:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347210AbiEaS7m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 14:59:42 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FEA398089
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 11:59:41 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id u12-20020a17090a1d4c00b001df78c7c209so3749398pju.1
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 11:59:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cNiGCPoi6p1OejqRoSXTe2BoMHzWdsim8KjMuMoTcjQ=;
-        b=EavEoA2pkqMMLG8GUY4cXqgCClF1i+mDuRrHH/zvGcwnEGLHsabsSJdH86XwqFVQtl
-         HR0ak9hK8xityx1lT49hYw0sIa+/zU+gi5BQeNgGJunhOMNBTiwucUM/Ay1hYVY1dr8p
-         l0knbIapWyr8lvfEx5BgqRwIuG8XTIl+yHSAs94HRaWYus/s9iKFDSNJmR7OWAEbrt+V
-         moVA4SnrD7gnnuocqar2B6zRcWkGH/Nn+b1zAxyZ8SduOOla1vokcbftFBl2xIK2KQEc
-         AGWHjwRAsUZQ2R67RHQKWac2FDxgkRNh7VczvlM6tlaiQ33mikyq1lQ35En0Cm4YHqXd
-         1pPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cNiGCPoi6p1OejqRoSXTe2BoMHzWdsim8KjMuMoTcjQ=;
-        b=GxN9eSEb7Z5TAg/uSMIaJcAdpVp+hUhn7U6bBVcs+xcJ5L3poX5eoTa2a268/+u3hh
-         q/7H2plgc1CuNSwaSWt8npCIeoVDJ6kqtcWxLF07tZRDjoP9Qm06uVNZLp7Hls7bXdOa
-         G50V9b73RAtsAfjpKLlHcmvvpQi6QgXHObz8dV06p5HfiI/YxuDc89sFRHJT0bRxv/5Q
-         pWqrN4JdKDYzf2eeMr4dRDtb1m3IWAXjl2JClUnOmyVLbBb/ns54OHgvgLsc8rJdUdNu
-         kuRtE1Gv+2MndmYQ9tyRI50CPjEIZ+RaR2Z7d9kjd1PHOsCI4JV0HbPJer0MyVLKJ0q4
-         BDJg==
-X-Gm-Message-State: AOAM5313nCfsZOTDoMhPDfGNnBdqWFETyvsJBlEIyPRx05CnP5D+FNBP
-        mooGwXrhaIf3T4F2pkBDsLc=
-X-Google-Smtp-Source: ABdhPJzKJjNFlEgXlVCNbqo+Y3LI8SW5W66RsZ70ii8zBnHKWFTFl7woQhqrVGK6aTMgnv3H0TWknA==
-X-Received: by 2002:a17:902:e945:b0:15f:22cd:c6cc with SMTP id b5-20020a170902e94500b0015f22cdc6ccmr63580999pll.162.1654023580823;
-        Tue, 31 May 2022 11:59:40 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:74f8:d874:7d9d:dabb])
-        by smtp.gmail.com with ESMTPSA id y30-20020a056a001c9e00b0050dc762814dsm10941628pfw.39.2022.05.31.11.59.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 11:59:40 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>
-Subject: [PATCH net 2/2] net/af_packet: make sure to pull mac header
-Date:   Tue, 31 May 2022 11:59:33 -0700
-Message-Id: <20220531185933.1086667-3-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-In-Reply-To: <20220531185933.1086667-1-eric.dumazet@gmail.com>
-References: <20220531185933.1086667-1-eric.dumazet@gmail.com>
+        with ESMTP id S231464AbiEaTJN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 15:09:13 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2086.outbound.protection.outlook.com [40.107.20.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B10198590;
+        Tue, 31 May 2022 12:09:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TGjtu5E7ro7qVqPp6cfJdHn38GnSHHXKgQYmmjt1ytIj9FmaXENdZVkEG6IH10mr0YmeX7C/V9yjFUmjX6v+z+jVuBV8py6klsEA/wr99GMNDRl0JGDFFeE9SHB2HKlORTtj7m+EOPk/NnMAn3tphFEpezfj9KJ6kA1M1om1eT1C1Sc4EepOG8n+gf6zvQWVkr8kpOvvBt3mu9K26Qbdeo8aHF1HgJRfnBr/rDMfT97UuPCyOQHu7rAumIsf/X78Y7GivON3Nt/SLQY6BAh146NZom5/aPVRls/S6nUke8yyFT3CBjh469SMymZmozpUhewpWZSlrVbH2FZjWp9tsQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6TiWCS/bJw86FgFuRTTxOULzSnPblXjqjjaS3DaLxI0=;
+ b=Mz6Q08r+M4tesi18dpqhWlKiilmvIiFvGW862vgCH89kIt4ZUP9aQwdZrj1DRVC8QSV2D8S28QIQ2QJrbjOcvOEbraG4ikJQr8pShIAuoeNRW4b2vHIxQzNNxZrilpW/NXKX60E47rkZbTXi1zqKN6NQkjI3gWSUqWCNHMA+v5kvgRj1ZyolSUj+iwmUn8vRqk3lHtqifyk/Dw4DrYkTulgv0OaSf6FhcyXLmM+apFOVy7COe+FyCEmXlMHQuLoOXK6iVyXFggqHrDyElZklbmAkBR6sT7l1255Sz3s9M/IIJU+u0oVXIHwTaiIUPSny28MR+HrIGvprLub488nkSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6TiWCS/bJw86FgFuRTTxOULzSnPblXjqjjaS3DaLxI0=;
+ b=AMwBwHwtb5iNiRyyRvK0/ad7WZzrwfjO2iEIuUD2Bid9Ht1wgilY4nj+DMXFz9Ve25wiVGyN+bz+Vof9mznKL3yeNhzq27Ji7QJmqGXC1fB5lrNOTyymvU9dQtZ8uRnJgBiD4cAd4Qwt34WYaHxl1CXA6Rp2jCT6xmwz03iWfOn7OXcclqsBeFPKT/MV1IbKwrEKKe7Zx436y+J1tqaImsk2S8a0xvCIhLGxnwU9nkicTQQIWzKe1n7A2uzr5gJcOqO0Il05PH/em01RPVuy06Iyj+fEYK1weKHgAu26wEjwGV7zF8bysvJ31UCirgfA67hAbMjuEWIeZNhogPPToA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
+ by AM6PR03MB3973.eurprd03.prod.outlook.com (2603:10a6:20b:25::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.19; Tue, 31 May
+ 2022 19:09:09 +0000
+Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::c84e:a022:78f4:a3cf]) by DB7PR03MB4972.eurprd03.prod.outlook.com
+ ([fe80::c84e:a022:78f4:a3cf%6]) with mapi id 15.20.5293.019; Tue, 31 May 2022
+ 19:09:08 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+Subject: net: fman: IRQ races
+To:     Madalin Bucur <madalin.bucur@nxp.com>,
+        netdev <netdev@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Florinel Iordache <florinel.iordache@nxp.com>
+Message-ID: <c6c6f425-d12b-3a16-2573-4c70b9c48b7e@seco.com>
+Date:   Tue, 31 May 2022 15:09:02 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL1PR13CA0108.namprd13.prod.outlook.com
+ (2603:10b6:208:2b9::23) To DB7PR03MB4972.eurprd03.prod.outlook.com
+ (2603:10a6:10:7d::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 40372178-de31-48fa-bff0-08da43390a0a
+X-MS-TrafficTypeDiagnostic: AM6PR03MB3973:EE_
+X-Microsoft-Antispam-PRVS: <AM6PR03MB3973AC6FF747D3AE5693906D96DC9@AM6PR03MB3973.eurprd03.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0jGy5nUResodcUi74gIJWsibEI0FhVRrDS9G81ttzzghLHQl6i8vPF7rGJNL3Nr1KUE1UZbjJI5/cic9RCpFyHEgeyVB0vkqDCsGmjghdMK3pxUek0yDFxHZQejgtlnoQ4GjisZVOqBTm0+I8FfVDKym8g9cBFIx/bKezOGaIGacN9T2/tA/hKII2X9LsXzWQH9faNtANM0mEGwuvH++oZmXySZaclis1+LOGwajye9aaG8bKQulA/bHDM8+qpeuA++8+ukbGf19RMv2aE85lGK3GxDSwUz52WfFxlqi83iAfYbY2ie+0ficVr96V/YPn+5pguSdw9LdScwgzgrWPgQekMWCuG86GjD/NRmDI2m88zW6h7dxzhTVlOUHPP+sw+/72jkZsxOkj/becGoRLZ3AdZ/cDzxwD6WK0WKqmll+/oG4iYABUscyqbPN+WyWZggefHMQTaHRpegnScyxlcQa1veeYmHrLXf2dsRETITRBI3FSDrca4QgtZWSdLW4n85z7pq52iegE6PaeB9FnQ7OGRPk+km5hRO1Ktb9oGBXYjEe7RFs9ChpzcToLUGeJ4kvcTOS92PSjOEjJbA6hJUbZN8YVI+iE0qK+3VmFmInz1Qmz9QTszbR4sCPmyibDCs0sqJBKafUoken2/UlpTPdwxNZITtYiV6ce/nN8Lfr8/YH9Ffm6haSdOCCBkuHZ5C7ha7AwO7WW80yjpua6DOO3fbTzlwO7QgKkDOQjQ44YXOPTNYW4jOWsziZ2f0E4uO9mPL5hW55/uQW+0836A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(44832011)(8676002)(4326008)(66946007)(6506007)(6512007)(38100700002)(38350700002)(2616005)(31686004)(66476007)(66556008)(26005)(2906002)(36756003)(508600001)(8936002)(54906003)(110136005)(6486002)(31696002)(5660300002)(6666004)(86362001)(186003)(83380400001)(316002)(52116002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SWRvMDVVSEtuV2ZpZEllZ24zSGY0ZTA4NEtyaFV5TmJ6c2FyRXJsTmxxWGJR?=
+ =?utf-8?B?TmFVZXZINUdQMkpDVWVpZ3luZ2VHaWdxa2xmdWRrSmFxVyt3Nmx5L213aVlu?=
+ =?utf-8?B?RytLUGl4Q3c2eUZaTTZ1ekFZNDlPbnJIbTEwL2Jpa3ZlM0RZYUlwdktaR2Mx?=
+ =?utf-8?B?ckhvVEJaQkhtT243bUtCUVRSWCtwSDR2VVlFaitNSmFxTGlhalZiWTY1VlZU?=
+ =?utf-8?B?MCtPN1ZhL2F2TlU5MTc0Z2NBNm1LaUhaNEJNV0tPMGo5NWlXdVhqeFlhMGZP?=
+ =?utf-8?B?R0xRNnI1cGZ1ZkR5eVozYTB4WW93QTFGV0doNDlkQXBIcE1pQUxaZnZuMGMv?=
+ =?utf-8?B?eVE2N2dHWDVWcE9WdjNoUnVSVDhRc0tHTzRKWGNLcHBsODJXRWpLVVRSOS9K?=
+ =?utf-8?B?NlZjSnA2MUZmRzJoci9NbVRVVXJoVjdacnQzaUxPRC9jb0VrdW1uTFRwb3k5?=
+ =?utf-8?B?eElLZnRwTi95U0xjNlVPWVhZd2lsRlB6ckpmQlNpd2Q3Z2RNV1pYRU52cTZ3?=
+ =?utf-8?B?cThra3NzdWNUWXJJN2RwMHJjZ2ljT0U3eTRUWGhsbkJNK25CYnRyeTRTeFZo?=
+ =?utf-8?B?L2pZVnFEcFlSYTh5STlMYlRaYWtSSHB3R21mTkdud3RlRWE5eVA3c3NjNVU1?=
+ =?utf-8?B?V1RvRGo2dFN2NldJYVRHZzNYWWczMzFBTHBtWERzL0ZjbmgvTHI0YkIwaHF6?=
+ =?utf-8?B?a0xKeDhxVTJ2YlljTEUvV0szTFFJVC82VnBBc1dKU2ZoN0gwMW1OWkRnM0J4?=
+ =?utf-8?B?d0xKQkZ4R3lKT2JYUFFLZnVra3AwVUg5OU4yNTBkWHU1eTdraEhrNHcvTWRr?=
+ =?utf-8?B?WDhLa1A5SzQveWV3SDlrWFl4MWxCcjhBMGJ5TUc5emhhMnJaaFBtcjRRYWZ5?=
+ =?utf-8?B?ZXZKS1JoWDZWNWlXYkdsVk5mTkwxU2lWWXRnOUhReG55VzRRSlBaTUF2UXFW?=
+ =?utf-8?B?NFlCb3BzeGtRKytQS0tDbUVaMzFTVmdqUlhGRlY1TnovbFVycG1PUDVjMEo1?=
+ =?utf-8?B?b0RlNmtNVmcrMlg5bVdxa2l4a25vUGxLcWlsSERnR1R5RHVuemZJRGplaW90?=
+ =?utf-8?B?OVRHbkxFeFluc0drdmVxN0lJbWhQbmd3d0t1TjJZRVFuV3Blb0JySWdIcXo4?=
+ =?utf-8?B?L05MNVc5MHE3cTFrN1FZNE5iTENWZ0lRdkZzd2lIbG5pN2k4V2FibzdwUjJJ?=
+ =?utf-8?B?TlVySlhlZXVKY253VjZGWDFkam9SeExubVhGZ0RuajhMbmxhNVJuSjBDd1h0?=
+ =?utf-8?B?TTJkSG1aOUtJTkg0aElKYjZpVFF5VVVrNmUzWjRUcnBldCtjRDA3WXVyVXNQ?=
+ =?utf-8?B?Rm95cW1TU3NwQURHRE5HbFViVDZHZHhRWVF4Yk1NZE91eFp1Z3ByUm9rdWV4?=
+ =?utf-8?B?SWkwcVRuOEZ4a05rTlFqV1l2WDBGZ2xaQXVhTUhSa2l1ZkpGTXR1NzNuQnFN?=
+ =?utf-8?B?bWZUZzBJaUFaRERTR21CaHF3YlNDWVdLNnZuUEhSTFFQcXNiZkZVQkRNbkM1?=
+ =?utf-8?B?bG5laC9DWGxBR1AzYUE4cEVBeU5KVjJSa3ZQWDJVM1cweW9QaTBZT2dFZUVW?=
+ =?utf-8?B?ZTI1cFFBQVJ1bEFXLzg3eElzMnN6UTZKR1pNYkd0YitpRW5lQ1V3bFVzR0p4?=
+ =?utf-8?B?TVdjQUZ2QUV4T0ZTMGtEUE9mdndLMTgwMDBxcTRRbEtrQnBWT010UWl6cVpv?=
+ =?utf-8?B?TWd2V0cxWU05QjgrMHlQbkdua0ZPdjhROEtqM3pZTGppcVRtV2dxVXAwRmR4?=
+ =?utf-8?B?eHpoSG1YQmNmVzRGUHRRdmplWVNDUTQ1WXhselpIY05LZG5neWltK3ErTVhF?=
+ =?utf-8?B?UUF4NW5WN2M2SzJNYXJrR2J1aEZ2bHAwMGFxMUhWK2JwK25jcEtSUlZmcWx6?=
+ =?utf-8?B?VHZoK2tUQUFqSEZnM1A4d25jcmtpbHFHeThPa3d4dkErSytWbkoyRXNza3hM?=
+ =?utf-8?B?eFV5YUZIdzVqMnlQT0g1clNVL21iZlp5TUZGcE9tVjZxY3JXazNGTnYwZFJk?=
+ =?utf-8?B?ZHpmUkRrUnF2NkQ4ZVZXYnlPQjFsQXh5TXIrMHR6OFZrTGN1aDRXN0dQT2Zz?=
+ =?utf-8?B?YnRPYWVmTVNoc1RZcnNyWnp0d2hUQXlYMllkSHljK3RiWUU5eUxrRHhtS2tF?=
+ =?utf-8?B?dmMzZUQ3QUs5dkZWdTI3L1puSFFJbWxWSzVTVHBlRy9PR0pya1ZkY2UzR0Fy?=
+ =?utf-8?B?Ry9OTzR3MmFNYXYzSHV2enBoTXF5eFR4MzMvNDZETHp0MlR4eUxDaXhDM2ly?=
+ =?utf-8?B?NmpUaklUNktkZy93a0o0MCsybGRGcmNITWhGamlSa1hHcE9kejZDYUZpTzNj?=
+ =?utf-8?B?Z1ZGOERNVmJUZFZwMWdDbndLUVFGcTJ6ZXlTVHRPSllhUnozWjFmM0ExSUxR?=
+ =?utf-8?Q?CAfMg50Cdkyf90WM=3D?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 40372178-de31-48fa-bff0-08da43390a0a
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2022 19:09:08.9207
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: X9ZQV4MRpJE1T1SgnxFq1YTTMXVAMKhFCLkdxVnsprtWwm44J+oYLGECSSgXnQOxWrZW9Pj37weo3Kes1+WkzA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR03MB3973
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,93 +127,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Hi all,
 
-GSO assumes skb->head contains link layer headers.
+I'm doing some refactoring of the dpaa/fman drivers, and I'm a bit
+confused by the way IRQs are handled. To contrast, in GAM/MACB, one of
+the first things IRQ handler does is grab a spinlock guarding register
+access. This lets it do read/modify/writes all it wants. However, I
+don't see anything like that in the FMan code. I'd like to use two
+examples to illustrate.
 
-tun device in some case can provide base 14 bytes,
-regardless of VLAN being used or not.
+First, consider call_mac_isr. It will race with both fman_register_intr:
 
-After blamed commit, we can end up setting a network
-header offset of 18+, we better pull the missing
-bytes to avoid a posible crash in GSO.
+CPU0 (call_mac_isr)		CPU1 (fman_register_intr)
+				isr_cb = foo
+isr_cb(src_handle)
+				src_handle = bar
 
-syzbot report was:
-kernel BUG at include/linux/skbuff.h:2699!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 3601 Comm: syz-executor210 Not tainted 5.18.0-syzkaller-11338-g2c5ca23f7414 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__skb_pull include/linux/skbuff.h:2699 [inline]
-RIP: 0010:skb_mac_gso_segment+0x48f/0x530 net/core/gro.c:136
-Code: 00 48 c7 c7 00 96 d4 8a c6 05 cb d3 45 06 01 e8 26 bb d0 01 e9 2f fd ff ff 49 c7 c4 ea ff ff ff e9 f1 fe ff ff e8 91 84 19 fa <0f> 0b 48 89 df e8 97 44 66 fa e9 7f fd ff ff e8 ad 44 66 fa e9 48
-RSP: 0018:ffffc90002e2f4b8 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000000012 RCX: 0000000000000000
-RDX: ffff88805bb58000 RSI: ffffffff8760ed0f RDI: 0000000000000004
-RBP: 0000000000005dbc R08: 0000000000000004 R09: 0000000000000fe0
-R10: 0000000000000fe4 R11: 0000000000000000 R12: 0000000000000fe0
-R13: ffff88807194d780 R14: 1ffff920005c5e9b R15: 0000000000000012
-FS:  000055555730f300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000200015c0 CR3: 0000000071ff8000 CR4: 0000000000350ee0
-Call Trace:
- <TASK>
- __skb_gso_segment+0x327/0x6e0 net/core/dev.c:3411
- skb_gso_segment include/linux/netdevice.h:4749 [inline]
- validate_xmit_skb+0x6bc/0xf10 net/core/dev.c:3669
- validate_xmit_skb_list+0xbc/0x120 net/core/dev.c:3719
- sch_direct_xmit+0x3d1/0xbe0 net/sched/sch_generic.c:327
- __dev_xmit_skb net/core/dev.c:3815 [inline]
- __dev_queue_xmit+0x14a1/0x3a00 net/core/dev.c:4219
- packet_snd net/packet/af_packet.c:3071 [inline]
- packet_sendmsg+0x21cb/0x5550 net/packet/af_packet.c:3102
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:734
- ____sys_sendmsg+0x6eb/0x810 net/socket.c:2492
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2546
- __sys_sendmsg net/socket.c:2575 [inline]
- __do_sys_sendmsg net/socket.c:2584 [inline]
- __se_sys_sendmsg net/socket.c:2582 [inline]
- __x64_sys_sendmsg+0x132/0x220 net/socket.c:2582
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7f4b95da06c9
-Code: 28 c3 e8 4a 15 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffd7defc4c8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007ffd7defc4f0 RCX: 00007f4b95da06c9
-RDX: 0000000000000000 RSI: 0000000020000140 RDI: 0000000000000003
-RBP: 0000000000000003 R08: bb1414ac00000050 R09: bb1414ac00000050
-R10: 0000000000000004 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffd7defc4e0 R14: 00007ffd7defc4d8 R15: 00007ffd7defc4d4
- </TASK>
+and with fman_unregister_intr
 
-Fixes: dfed913e8b55 ("net/af_packet: add VLAN support for AF_PACKET SOCK_RAW GSO")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: Hangbin Liu <liuhangbin@gmail.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Cc: Michael S. Tsirkin <mst@redhat.com>
----
- net/packet/af_packet.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+CPU0 (call_mac_isr)		CPU1 (fman_unregister_intr)
+if (isr_cb)
+				isr_cb = NULL
+				src_handle = NULL
+isr_cb(src_handle)
 
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 677f9cfa9660816a160a11bfa4c291431412005f..ca6e92a229239f9093900bf9249396cf0d410104 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -1935,8 +1935,10 @@ static void packet_parse_headers(struct sk_buff *skb, struct socket *sock)
- 	/* Move network header to the right position for VLAN tagged packets */
- 	if (likely(skb->dev->type == ARPHRD_ETHER) &&
- 	    eth_type_vlan(skb->protocol) &&
--	    __vlan_get_protocol(skb, skb->protocol, &depth) != 0)
--		skb_set_network_header(skb, depth);
-+	    __vlan_get_protocol(skb, skb->protocol, &depth) != 0) {
-+		if (pskb_may_pull(skb, depth))
-+			skb_set_network_header(skb, depth);
-+	}
- 
- 	skb_probe_transport_header(skb);
- }
--- 
-2.36.1.255.ge46751e96f-goog
+This is probably not too critical (since hopefully there are no
+interrupts before/after the handler is registered), but it certainly
+looks very strange.
 
+Second, consider dtsec_isr. It will race with (for example) dtsec_set_allmulti:
+
+CPU0 (dtsec_isr)		CPU1 (dtsec_set_allmulti)
+<XFUNEN interrupt>
+ioread32be(rctrl)		ioread32be(rctrl)
+				iowrite32be(rctrl | MPROM)
+iowrite32be(rctrl | GRS)
+
+and suddenly the MPROM write is dropped. (Actually, the whole
+FM_TX_LOCKUP_ERRATA_DTSEC6 errata code seems funky, since after calling
+fman_reset_mac it seems like everything would need to be reinitialized).
+
+So what's going on here? Is there actually no locking, or am I missing
+something?
+
+--Sean
