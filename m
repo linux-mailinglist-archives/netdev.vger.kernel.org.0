@@ -2,49 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA490539341
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 16:44:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1680F53937B
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 17:01:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244388AbiEaOoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 10:44:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47770 "EHLO
+        id S1345428AbiEaPBH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 11:01:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236138AbiEaOoL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 10:44:11 -0400
-Received: from m12-11.163.com (m12-11.163.com [220.181.12.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31FD68E1B3;
-        Tue, 31 May 2022 07:44:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=iuuhYKTTPiOzGziHSP
-        rXCTcTDHlPtwy5gFXzjZU5qSA=; b=GUNYURUsZZ0yE8K1wk1KTamdGwDV0JGpYD
-        KxAAJz5Dq5xtwbUOCNY0qSPu/kFVUgMsAC/ms06Mz2u6e+/hp8Wt6MQVrfDSvFLe
-        dIP5Y7x+pG2sjgJIGkJd2aUovlsjzNv30gL9MietYXeMFKwk0+vQIyBu4IN2bBbP
-        lbnmCXMI0=
-Received: from localhost.localdomain (unknown [171.221.150.250])
-        by smtp7 (Coremail) with SMTP id C8CowAC32aCRKZZiz_PwFQ--.58649S2;
-        Tue, 31 May 2022 22:43:35 +0800 (CST)
-From:   Chen Lin <chen45464546@163.com>
-To:     akpm@linux-foundation.org
-Cc:     kuba@kernel.org, linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        alexander.duyck@gmail.com, netdev@vger.kernel.org,
-        Chen Lin <chen45464546@163.com>
-Subject: [PATCH v3] mm: page_frag: Warn_on when frag_alloc size is bigger than PAGE_SIZE
-Date:   Tue, 31 May 2022 22:43:08 +0800
-Message-Id: <1654008188-3183-1-git-send-email-chen45464546@163.com>
-X-Mailer: git-send-email 1.7.9.5
-In-Reply-To: <20220530130705.29c5fa4a5225265d3736bfa4@linux-foundation.org>
-References: <20220530130705.29c5fa4a5225265d3736bfa4@linux-foundation.org>
-X-CM-TRANSID: C8CowAC32aCRKZZiz_PwFQ--.58649S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7tr17tw1fGFWkur17WF4rXwb_yoW8Kry8pF
-        W7Cr15ZFs0qwnFkw4kJw4vyr45A398WFWUKrWFv3s09w13Gr1093s8KrWjvFyrAr10kFy7
-        tF4Yyw13ua1jvaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pMBTnXUUUUU=
-X-Originating-IP: [171.221.150.250]
-X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/xtbBzhcSnmI0UtCdCQAAsV
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        with ESMTP id S1345415AbiEaPBF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 11:01:05 -0400
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 013355BD38;
+        Tue, 31 May 2022 08:01:02 -0700 (PDT)
+Received: by mail-oi1-f179.google.com with SMTP id k187so13570195oif.1;
+        Tue, 31 May 2022 08:01:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xut3EUzOWaallyGiLaq5YwI8FEiuwGHhPLk1PFTsGCw=;
+        b=s/KqAg5WRr5rOrf9t46WxfeSjnsMPX3bOEKKlkk5GUqKWBVFfVzzMjLd0QPkCqS74y
+         EvbhsMVht3LZ4wSU+TnwEkiliWCRGmhFxlU7uPo9/NKnuEF0cLbXJb4DS9LwF7XtzNQL
+         sSq+slbxxKwQidboEQfE2FixtzMRA8rwEk34teV286l2wOGv7smsEMRK1FhLn+ul3WqI
+         03WJcsyRckpOUn3a7WUNB3YQ6CW/AuMKpkhV3lDfpvVJ5dyRMWHheCBlgnBRECZbuv7G
+         qkUu6hteG+gbZCO8Tm9vy0Es3vyaJ29UKs11vAn8PER6CoDlV6NzyEFg6nZtsNuEirDR
+         zLEg==
+X-Gm-Message-State: AOAM5316/wA9FCQXL4Jql9LPNWsOhilOtm/O7sNySNhjEHmiRiPRjcx6
+        s5SuT1fVxun9iExLKLF4EQ==
+X-Google-Smtp-Source: ABdhPJwSjgbLtDvlMIgEbd/14EO8tIgNGbqSDQWqqsx3KFH9ampHeHe4nDRvpCz7PczMPaXOpvITjQ==
+X-Received: by 2002:a05:6808:ecc:b0:2fa:7d95:8dec with SMTP id q12-20020a0568080ecc00b002fa7d958decmr12183479oiv.34.1654009262254;
+        Tue, 31 May 2022 08:01:02 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r7-20020a544887000000b00325cda1ff99sm5754199oic.24.2022.05.31.08.01.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 08:01:01 -0700 (PDT)
+Received: (nullmailer pid 1755878 invoked by uid 1000);
+        Tue, 31 May 2022 15:01:01 -0000
+Date:   Tue, 31 May 2022 10:01:01 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Marek Vasut <marex@denx.de>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: net/dsa: Add spi-peripheral-props.yaml
+ references
+Message-ID: <20220531150101.GA1742958-robh@kernel.org>
+References: <20220525205752.2484423-1-robh@kernel.org>
+ <20220526003216.7jxopjckccugh3ft@skbuf>
+ <20220526220450.GB315754-robh@kernel.org>
+ <20220526231859.qstxkxqdetiawozv@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220526231859.qstxkxqdetiawozv@skbuf>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,66 +76,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-netdev_alloc_frag->page_frag_alloc may cause memory corruption in 
-the following process:
+On Fri, May 27, 2022 at 02:18:59AM +0300, Vladimir Oltean wrote:
+> On Thu, May 26, 2022 at 05:04:50PM -0500, Rob Herring wrote:
+> > On Thu, May 26, 2022 at 03:32:16AM +0300, Vladimir Oltean wrote:
+> > > Also needed by nxp,sja1105.yaml and the following from brcm,b53.yaml:
+> > > 	brcm,bcm5325
+> > > 	brcm,bcm5365
+> > > 	brcm,bcm5395
+> > > 	brcm,bcm5397
+> > > 	brcm,bcm5398
+> > > 	brcm,bcm53115
+> > > 	brcm,bcm53125
+> > > 	brcm,bcm53128
+> > 
+> > Okay. Looks like you missed bcm5389?
+> 
+> I went to the end of drivers/net/dsa/b53/b53_spi.c and copied the
+> compatible strings. "brcm,bcm5389" is marked in b53_mdio.c, so I would
+> guess not.
 
-1. A netdev_alloc_frag function call need alloc 200 Bytes to build a skb.
+The datasheet I found says it is SPI interface, but I guess someone that 
+cares about this h/w can sort that out if needed.
 
-2. Insufficient memory to alloc PAGE_FRAG_CACHE_MAX_ORDER(32K) in 
-__page_frag_cache_refill to fill frag cache, then one page(eg:4K) 
-is allocated, now current frag cache is 4K, alloc is success, 
-nc->pagecnt_bias--.
-
-3. Then this 200 bytes skb in step 1 is freed, page->_refcount--.
-
-4. Another netdev_alloc_frag function call need alloc 5k, page->_refcount 
-is equal to nc->pagecnt_bias, reset page count bias and offset to 
-start of new frag. page_frag_alloc will return the 4K memory for a 
-5K memory request.
-
-5. The caller write on the extra 1k memory which is not actual allocated 
-will cause memory corruption.
-
-page_frag_alloc is for fragmented allocation. We should warn the caller 
-to avoid memory corruption.
-
-When fragsz is larger than one page, we report the failure and return.
-I don't think it is a good idea to make efforts to support the
-allocation of more than one page in this function because the total
-frag cache size(PAGE_FRAG_CACHE_MAX_SIZE 32768) is relatively small.
-When the request is larger than one page, the caller should switch to
-use other kernel interfaces, such as kmalloc and alloc_Pages.
-
-This bug is mainly caused by the reuse of the previously allocated
-frag cache memory by the following LARGER allocations. This bug existed
-before page_frag_alloc was ported from __netdev_alloc_frag in 
-net/core/skbuff.c, so most Linux versions have this problem.
-
-Signed-off-by: Chen Lin <chen45464546@163.com>
----
- mm/page_alloc.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index e008a3d..ffc42b5 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -5574,6 +5574,15 @@ void *page_frag_alloc_align(struct page_frag_cache *nc,
- 	struct page *page;
- 	int offset;
- 
-+	/*
-+	 * frag_alloc is not suitable for memory alloc which fragsz
-+	 * is bigger than PAGE_SIZE, use kmalloc or alloc_pages instead.
-+	 */
-+	if (WARN_ONCE(fragz > PAGE_SIZE,
-+		      "alloc fragsz(%d) > PAGE_SIZE(%ld) not supported, alloc fail\n",
-+		      fragsz, PAGE_SIZE))
-+		return NULL;
-+
- 	if (unlikely(!nc->va)) {
- refill:
- 		page = __page_frag_cache_refill(nc, gfp_mask);
--- 
-1.7.9.5
+Rob
 
