@@ -2,253 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0CE4538E78
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 12:08:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD07A538E81
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 12:10:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236230AbiEaKIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 06:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40570 "EHLO
+        id S245402AbiEaKJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 06:09:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232305AbiEaKIm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 06:08:42 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB06A762B8
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 03:08:40 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id gh17so25619649ejc.6
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 03:08:40 -0700 (PDT)
+        with ESMTP id S245400AbiEaKJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 06:09:50 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E68996AD;
+        Tue, 31 May 2022 03:09:48 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id k16so13642271wrg.7;
+        Tue, 31 May 2022 03:09:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0xEDKtRJ1gFx9yMLHsbYq7kEF2/saJCmbQuGtwp5BAo=;
-        b=FJlTsAsgLQm8T7cg7ztoR+hVidoRf0V5AWOmRsLnTi0T7R1GvuT2r/FFDmqkIl53A6
-         DbHgnZvG+DyTKUwG/vdUmgZmVNF+w7UeZKwmdDVjGozRWvHTYOIaY1SWDxFECXfVzcy0
-         LAg5f9EqBC3WEIjvhOnIkvR7P+OsgIhI/OiivIkJBdzRo9jS9E+2yx+Sm8NDltnFTUwA
-         IYLDY1JDsLGwfIc2HtBk3jWG83NDp0Ea+TiENVqdmzdP+uv3rQqxCeGPQQRIR8kZ+lhz
-         EsPkUVZzzGoPnArdmSNQGceUzqD1QuOmhiLIlqBDnkgIxv0uDEGSG52wLOF3N4QCWRdj
-         7/7A==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PSCX4PHCAROocqljRy3ZnI/Dr3u/fImtm88PpfecH+0=;
+        b=hgL7i4XhVKnDz+kV6ZUE7M1I5YWxgyeFW2IZF2mSrdg4RvA1wzUpEjpZp0UL8CTzy4
+         +6zDKiJjI/xbhMEf/hdKbj+GEz7nQr3s94DqNwb4DnmCKFcUxk0OeQ9vQCKA6ez2anWb
+         QbVooWUWhpKl2Yn7AHI9HP6ngfob1aHHe5a9xbOSfuj2OmrK4N9X477rxL8O9b1OsD+g
+         PtUvha7RK1clPNKDMorU2IBsVZJQsvxfkCMkcfShi9SxTLwHDC7bnNoB0Lxi8+/+AkuR
+         HCru7e1wLgDwrbmJYV3oA2c3aN4+ehq1Vicg0eUYQqvQ1+C0RNIh4ob3SZt4spKW/PxT
+         i8Ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=0xEDKtRJ1gFx9yMLHsbYq7kEF2/saJCmbQuGtwp5BAo=;
-        b=ULDiVYtERsgDDIZ0RmsatWBbhB89MemUZE+BTHynu4K6hZeL12D+ch7I4XqxvLz6su
-         SZ2pSzJUl2lqI6dENSFCg6SgVXGo+R5NHNdQB/iHZx8T+pWq6YnAxF5txEGyq+mj0cdx
-         kTmXpOthYRz77jaTNsyQmBYw9jrSu/PkWAV34de/lWyT4QxqSlzZ6EplxVhLBg+KQMk7
-         oDc4hb64kq+rbE21ol8KX+dINixHoBeIm1gHwsgMN9rOqPr8O/7kXKhc6x6KGCa8Nzn0
-         S/QQYJn1xoMH6XoyKCNpFUK4XNySIRhwmHGlr9cTU40muu1RY1h6ocNjD7RFG+I/R1Gt
-         LdRA==
-X-Gm-Message-State: AOAM530x/sBpNsM/aGQsJO+Jc5J1lz1LyHPhTUQV3h2Cd9ofjXoDl7ZG
-        jelIUrXsFWMuhLOFopkrhj9W3Q==
-X-Google-Smtp-Source: ABdhPJxvLTVkRm6gy9yj0yU6UO395ZmuZmGbmyxXWGwAn4IUJBt1uCvPDQ8Lpwmm1nn62gUGkldWYA==
-X-Received: by 2002:a17:906:5d0d:b0:6fe:b420:5eab with SMTP id g13-20020a1709065d0d00b006feb4205eabmr45855204ejt.23.1653991719238;
-        Tue, 31 May 2022 03:08:39 -0700 (PDT)
-Received: from [192.168.0.179] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id i16-20020a1709063c5000b006fed85c1a72sm4802036ejg.223.2022.05.31.03.08.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 May 2022 03:08:38 -0700 (PDT)
-Message-ID: <4ccba38a-ccde-83cd-195b-77db7a64477c@linaro.org>
-Date:   Tue, 31 May 2022 12:08:37 +0200
+        bh=PSCX4PHCAROocqljRy3ZnI/Dr3u/fImtm88PpfecH+0=;
+        b=LZzoGtgAci/jXSpdWjGrhinc4o/sUt+cQXdag+rSLtNDMYiAuc2iQnHFJI3WEKRxO4
+         strcHSNd5+7myhZzJVg4ho7XCEWjaYMCJf7xf39NGtk4bmqn5gUlHKbpHZUEE5ezSHWg
+         3xfMb5qkAxQpAwTUOBmYZgTmv711zX+gY+xymVRKt0S4h9EBv89K/ELBKKLbCLnTmQfN
+         McXVr1ws15hSW/3g8XerGVj4KiV6aLl9rK5itdCOar+yu2ciEEMYKs1uFV7zS23123nt
+         0uovx2uwZVYCgbtf7XPP3Wso36jpM/s9/a3bT77ySqCqeC0PArWRelHEe1kbVBW25Nis
+         CChg==
+X-Gm-Message-State: AOAM533QdCfhHe4mtuCJTLst/RNiWMUnotfZgJN2Drrgn0POF/k7iglI
+        tWCtES4wkLVfvEf3afp6y4M=
+X-Google-Smtp-Source: ABdhPJzEABsFC0dAQtKAZa34WuskN0k+eNzR8nofFV3y4fHwJcykXVBdRQaxtQGc/Y72uF6IkW2opA==
+X-Received: by 2002:a05:6000:1542:b0:20f:f809:cf89 with SMTP id 2-20020a056000154200b0020ff809cf89mr27658582wry.361.1653991786933;
+        Tue, 31 May 2022 03:09:46 -0700 (PDT)
+Received: from baligh-ThinkCentre-M720q.iliad.local (freebox.vlq16.iliad.fr. [213.36.7.13])
+        by smtp.googlemail.com with ESMTPSA id n6-20020a05600c4f8600b0039b006bd6d9sm1975543wmq.6.2022.05.31.03.09.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 03:09:46 -0700 (PDT)
+From:   Baligh Gasmi <gasmibal@gmail.com>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Baligh Gasmi <gasmibal@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org (open list:MAC80211),
+        netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RFC PATCH v3 1/1] mac80211: use AQL airtime for expected throughput.
+Date:   Tue, 31 May 2022 12:09:22 +0200
+Message-Id: <20220531100922.491344-1-gasmibal@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 1/2] dt-bindings: net: Add ICSSG Ethernet Driver
- bindings
-Content-Language: en-US
-To:     Puranjay Mohan <p-mohan@ti.com>, linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com,
-        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, nm@ti.com, ssantosh@kernel.org,
-        s-anna@ti.com, linux-arm-kernel@lists.infradead.org,
-        rogerq@kernel.org, grygorii.strashko@ti.com, vigneshr@ti.com,
-        kishon@ti.com, robh+dt@kernel.org, afd@ti.com, andrew@lunn.ch
-References: <20220531095108.21757-1-p-mohan@ti.com>
- <20220531095108.21757-2-p-mohan@ti.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220531095108.21757-2-p-mohan@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/05/2022 11:51, Puranjay Mohan wrote:
-> Add a YAML binding document for the ICSSG Programmable real time unit
-> based Ethernet driver. This driver uses the PRU and PRUSS consumer APIs
-> to interface the PRUs and load/run the firmware for supporting ethernet
-> functionality.
-> 
-> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
-> ---
-> v1: https://lore.kernel.org/all/20220506052433.28087-2-p-mohan@ti.com/ 
-> v1 -> v2:
-> * Addressed Rob's Comments
+Since the integration of AQL, packet TX airtime estimation is
+calculated and counted to be used for the dequeue limit.
 
-Nope, they were not addressed.
+Use this estimated airtime to compute expected throughput for
+each station.
 
-> * It includes indentation, formatting, and other minor changes.
-> ---
->  .../bindings/net/ti,icssg-prueth.yaml         | 181 ++++++++++++++++++
->  1 file changed, 181 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml b/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
-> new file mode 100644
-> index 000000000000..40af968e9178
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
-> @@ -0,0 +1,181 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/ti,icssg-prueth.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: |+
+It will be a generic mac80211 implementation. If the driver has
+get_expected_throughput implementation, it will be used instead.
 
-Missed Rob's comment.
+Useful for L2 routing protocols, like B.A.T.M.A.N.
 
-> +  Texas Instruments ICSSG PRUSS Ethernet
-> +
-> +maintainers:
-> +  - Puranjay Mohan <p-mohan@ti.com>
-> +
-> +description:
-> +  Ethernet based on the Programmable Real-Time
-> +  Unit and Industrial Communication Subsystem.
-> +
-> +allOf:
-> +  - $ref: /schemas/remoteproc/ti,pru-consumer.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - ti,am654-icssg-prueth  # for AM65x SoC family
-> +
-> +  pinctrl-0:
-> +    maxItems: 1
-> +
-> +  pinctrl-names:
-> +    items:
-> +      - const: default
+Signed-off-by: Baligh Gasmi <gasmibal@gmail.com>
+---
+ net/mac80211/driver-ops.h |  2 ++
+ net/mac80211/sta_info.c   | 39 +++++++++++++++++++++++++++++++++++++++
+ net/mac80211/sta_info.h   | 11 +++++++++++
+ net/mac80211/status.c     |  2 ++
+ net/mac80211/tx.c         |  8 +++++++-
+ 5 files changed, 61 insertions(+), 1 deletion(-)
 
-You do not need these usually, they are coming from schema.
+diff --git a/net/mac80211/driver-ops.h b/net/mac80211/driver-ops.h
+index 4e2fc1a08681..fa9952154795 100644
+--- a/net/mac80211/driver-ops.h
++++ b/net/mac80211/driver-ops.h
+@@ -1142,6 +1142,8 @@ static inline u32 drv_get_expected_throughput(struct ieee80211_local *local,
+ 	trace_drv_get_expected_throughput(&sta->sta);
+ 	if (local->ops->get_expected_throughput && sta->uploaded)
+ 		ret = local->ops->get_expected_throughput(&local->hw, &sta->sta);
++	else
++		ret = ewma_avg_est_tp_read(&sta->deflink.status_stats.avg_est_tp);
+ 	trace_drv_return_u32(local, ret);
+ 
+ 	return ret;
+diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
+index e04a0905e941..201aab465234 100644
+--- a/net/mac80211/sta_info.c
++++ b/net/mac80211/sta_info.c
+@@ -1993,6 +1993,45 @@ void ieee80211_sta_update_pending_airtime(struct ieee80211_local *local,
+ 			       tx_pending, 0);
+ }
+ 
++void ieee80211_sta_update_tp(struct ieee80211_local *local,
++			     struct sta_info *sta,
++			     struct sk_buff *skb,
++			     u16 tx_time_est,
++			     bool ack, int retry)
++{
++	unsigned long diff;
++	struct rate_control_ref *ref = NULL;
++
++	if (!skb || !sta || !tx_time_est)
++		return;
++
++	if (test_sta_flag(sta, WLAN_STA_RATE_CONTROL))
++		ref = sta->rate_ctrl;
++
++	if (ref && ref->ops->get_expected_throughput)
++		return;
++
++	if (local->ops->get_expected_throughput)
++		return;
++
++	tx_time_est += ack ? 4 : 0;
++	tx_time_est += retry ? retry * 2 : 2;
++
++	sta->deflink.tx_stats.tp_tx_size += (skb->len * 8) * 1000;
++	sta->deflink.tx_stats.tp_tx_time_est += tx_time_est;
++
++	diff = jiffies - sta->deflink.status_stats.last_tp_update;
++	if (diff > HZ / 10) {
++		ewma_avg_est_tp_add(&sta->deflink.status_stats.avg_est_tp,
++				    sta->deflink.tx_stats.tp_tx_size /
++				    sta->deflink.tx_stats.tp_tx_time_est);
++
++		sta->deflink.tx_stats.tp_tx_size = 0;
++		sta->deflink.tx_stats.tp_tx_time_est = 0;
++		sta->deflink.status_stats.last_tp_update = jiffies;
++	}
++}
++
+ int sta_info_move_state(struct sta_info *sta,
+ 			enum ieee80211_sta_state new_state)
+ {
+diff --git a/net/mac80211/sta_info.h b/net/mac80211/sta_info.h
+index 35c390bedfba..4200856fefcd 100644
+--- a/net/mac80211/sta_info.h
++++ b/net/mac80211/sta_info.h
+@@ -123,6 +123,7 @@ enum ieee80211_sta_info_flags {
+ #define HT_AGG_STATE_STOP_CB		7
+ #define HT_AGG_STATE_SENT_ADDBA		8
+ 
++DECLARE_EWMA(avg_est_tp, 8, 16)
+ DECLARE_EWMA(avg_signal, 10, 8)
+ enum ieee80211_agg_stop_reason {
+ 	AGG_STOP_DECLINED,
+@@ -157,6 +158,12 @@ void ieee80211_register_airtime(struct ieee80211_txq *txq,
+ 
+ struct sta_info;
+ 
++void ieee80211_sta_update_tp(struct ieee80211_local *local,
++			     struct sta_info *sta,
++			     struct sk_buff *skb,
++			     u16 tx_time_est,
++			     bool ack, int retry);
++
+ /**
+  * struct tid_ampdu_tx - TID aggregation information (Tx).
+  *
+@@ -549,6 +556,8 @@ struct link_sta_info {
+ 		s8 last_ack_signal;
+ 		bool ack_signal_filled;
+ 		struct ewma_avg_signal avg_ack_signal;
++		struct ewma_avg_est_tp avg_est_tp;
++		unsigned long last_tp_update;
+ 	} status_stats;
+ 
+ 	/* Updated from TX path only, no locking requirements */
+@@ -558,6 +567,8 @@ struct link_sta_info {
+ 		struct ieee80211_tx_rate last_rate;
+ 		struct rate_info last_rate_info;
+ 		u64 msdu[IEEE80211_NUM_TIDS + 1];
++		u64 tp_tx_size;
++		u64 tp_tx_time_est;
+ 	} tx_stats;
+ 
+ 	enum ieee80211_sta_rx_bandwidth cur_max_bandwidth;
+diff --git a/net/mac80211/status.c b/net/mac80211/status.c
+index e69272139437..1fb93abc1709 100644
+--- a/net/mac80211/status.c
++++ b/net/mac80211/status.c
+@@ -1152,6 +1152,8 @@ void ieee80211_tx_status_ext(struct ieee80211_hw *hw,
+ 	ack_signal_valid =
+ 		!!(info->status.flags & IEEE80211_TX_STATUS_ACK_SIGNAL_VALID);
+ 
++	ieee80211_sta_update_tp(local, sta, skb, tx_time_est, acked, retry_count);
++
+ 	if (pubsta) {
+ 		struct ieee80211_sub_if_data *sdata = sta->sdata;
+ 
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index 0e4efc08c762..e58d89c108a4 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -3632,6 +3632,7 @@ struct sk_buff *ieee80211_tx_dequeue(struct ieee80211_hw *hw,
+ 	struct ieee80211_tx_data tx;
+ 	ieee80211_tx_result r;
+ 	struct ieee80211_vif *vif = txq->vif;
++	struct rate_control_ref *ref = NULL;
+ 
+ 	WARN_ON_ONCE(softirq_count() == 0);
+ 
+@@ -3790,8 +3791,13 @@ struct sk_buff *ieee80211_tx_dequeue(struct ieee80211_hw *hw,
+ encap_out:
+ 	IEEE80211_SKB_CB(skb)->control.vif = vif;
+ 
++	if (tx.sta && test_sta_flag(tx.sta, WLAN_STA_RATE_CONTROL))
++		ref = tx.sta->deflink.rate_ctrl;
++
+ 	if (vif &&
+-	    wiphy_ext_feature_isset(local->hw.wiphy, NL80211_EXT_FEATURE_AQL)) {
++	    ((!local->ops->get_expected_throughput &&
++	     (!ref || !ref->ops->get_expected_throughput)) ||
++	    wiphy_ext_feature_isset(local->hw.wiphy, NL80211_EXT_FEATURE_AQL))) {
+ 		bool ampdu = txq->ac != IEEE80211_AC_VO;
+ 		u32 airtime;
+ 
+-- 
+2.36.1
 
-> +
-> +  sram:
-> +    description:
-> +      phandle to MSMC SRAM node
-> +
-> +  dmas:
-> +    maxItems: 10
-> +    description:
-> +      list of phandles and specifiers to UDMA.
-
-Please follow Rob's comment - drop description.
-
-> +
-> +  dma-names:
-> +    items:
-> +      - const: tx0-0
-> +      - const: tx0-1
-> +      - const: tx0-2
-> +      - const: tx0-3
-> +      - const: tx1-0
-> +      - const: tx1-1
-> +      - const: tx1-2
-> +      - const: tx1-3
-> +      - const: rx0
-> +      - const: rx1
-> +
-> +  ethernet-ports:
-> +    type: object
-> +    properties:
-> +      '#address-cells':
-> +        const: 1
-> +      '#size-cells':
-> +        const: 0
-> +
-> +    patternProperties:
-> +      ^port@[0-1]$:
-
-How did you implement Rob's comments here?
-
-> +        type: object
-> +        description: ICSSG PRUETH external ports
-> +
-> +        $ref: ethernet-controller.yaml#
-> +
-> +        unevaluatedProperties: false
-> +        additionalProperties: true
-
-No one proposed to add additionalProperties:true... Does it even work?
-
-> +        properties:
-> +          reg:
-> +            items:
-> +              - enum: [0, 1]
-> +            description: ICSSG PRUETH port number
-> +
-> +          ti,syscon-rgmii-delay:
-> +            $ref: /schemas/types.yaml#/definitions/phandle-array
-> +            description:
-> +              phandle to system controller node and register offset
-> +              to ICSSG control register for RGMII transmit delay
-> +
-> +        required:
-> +          - reg
-> +
-> +  ti,mii-g-rt:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description: |
-> +      phandle to MII_G_RT module's syscon regmap.
-> +
-> +  ti,mii-rt:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description: |
-> +      phandle to MII_RT module's syscon regmap
-> +
-> +  interrupts:
-> +    minItems: 2
-> +    maxItems: 2
-> +    description: |
-> +      Interrupt specifiers to TX timestamp IRQ.
-> +
-> +  interrupt-names:
-> +    items:
-> +      - const: tx_ts0
-> +      - const: tx_ts1
-> +
-> +required:
-> +  - compatible
-> +  - sram
-> +  - ti,mii-g-rt
-> +  - dmas
-> +  - dma-names
-> +  - ethernet-ports
-> +  - interrupts
-> +  - interrupt-names
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +
-> +    /* Example k3-am654 base board SR2.0, dual-emac */
-> +    pruss2_eth: pruss2_eth {
-> +            compatible = "ti,am654-icssg-prueth";
-
-Again missed Rob's comment.
-
-Really, you ignored four of his comments. Please respect reviewers time
-but not forcing them to repeat same review comments.
-
-Best regards,
-Krzysztof
