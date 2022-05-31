@@ -2,117 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8E17538FE7
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 13:32:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFFF7538FEA
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 13:33:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343884AbiEaLcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 07:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36852 "EHLO
+        id S1343783AbiEaLdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 07:33:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343868AbiEaLcJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 07:32:09 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD7928707;
-        Tue, 31 May 2022 04:32:03 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 24VBVpOH009605;
-        Tue, 31 May 2022 06:31:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1653996711;
-        bh=Y49SYg7Hevgb4Z0CMHnMyG+cdHgITguxNOIA8hoK/n0=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=DaR685p6dyAxlqHTO3Tg+B50dJY9OvN27BhFZ892l6T/A/6ssABEF7y8/GRmGymgM
-         rQu4rGYUSuQKm7vOGzfgKHMWTBUGn4ZHmLXplQ3MBvKJcVGt3hGb7x1W4n7lbQU3YM
-         /MaW0C5f4MgYMQvyVc0LcAS4LEPI7NwjGOOR8ZYI=
-Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 24VBVpAV086902
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 31 May 2022 06:31:51 -0500
-Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 31
- May 2022 06:31:51 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Tue, 31 May 2022 06:31:51 -0500
-Received: from ula0492258.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 24VBV92r064165;
-        Tue, 31 May 2022 06:31:46 -0500
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <linux@armlinux.org.uk>,
-        <vladimir.oltean@nxp.com>, <grygorii.strashko@ti.com>,
-        <vigneshr@ti.com>, <nsekhar@ti.com>
-CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <kishon@ti.com>,
-        Siddharth Vadapalli <s-vadapalli@ti.com>
-Subject: [PATCH 3/3] net: ethernet: ti: am65-cpsw: Move phy_set_mode_ext() to correct location
-Date:   Tue, 31 May 2022 17:00:58 +0530
-Message-ID: <20220531113058.23708-4-s-vadapalli@ti.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220531113058.23708-1-s-vadapalli@ti.com>
-References: <20220531113058.23708-1-s-vadapalli@ti.com>
+        with ESMTP id S232076AbiEaLdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 07:33:50 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099D324F03;
+        Tue, 31 May 2022 04:33:49 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id b5so12566518plx.10;
+        Tue, 31 May 2022 04:33:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ig4+wp1fU7yx4LD+qy8MKiDUweklCo6s3UZGAjYIIS8=;
+        b=RWzKcNEkS3clgbIP82SZJEJdnbGJhs0sn9XFVF6BbZQvEIk4hTdEiiiYg7/JTSR1E7
+         5o5CHwZTvI0iE1LP/i4ghUpIPz2iKcY8XHhGhG9AQx2nDW2Nju8R39c1zxaiajS/1pef
+         04g6lZRHJMNSHqMuV5k/hUbHuB1FMci/qu3z3xDczQ0RpuVAMcD8kX88V3HwMbTsa7vg
+         9u/FPJlW/MpkZCaVTEWh53Ml5+KkoDCLuoi5EERonshpaAC9yLlPZlhhoTYT3QnpTuJt
+         VohT7BmVuRP/7iaZySYs1wsYRUefmGMbhKrYtJ5giFGWVBDA8B2DIq8HKbi5aXDnJLms
+         HCsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ig4+wp1fU7yx4LD+qy8MKiDUweklCo6s3UZGAjYIIS8=;
+        b=S11IRYrW6oh2k2w6jc+BtR8iyA3NiWwWAK4qNb0xIi/qzzLn4kAptojlYV6dOhaNi0
+         lR2EMeIBUwUFr0L7ubeh+xreD214uyIX+hjSEPcUNv6mfO4UV3Cd8ofbkUKxQLPrc+BD
+         89lD1vFAJJSoENI6+I1gDW9y6xA0DPmkSu+VF0Q9xf+7xE28BpMvDpgbc8PhzQMmQRXp
+         W4tVivWtu+HgvKFfUe8GVgSPmTG6iKQOTGuLeTrJRMetqln23qZ6bvIjNXkihXkAYmxF
+         OJUyJD43YFBo9jttUy9xiv6DBh3ejKNFn/7Fl6QBPmCOvVhJcrI3Qf3yvrhQvZk1D5Z1
+         qTMg==
+X-Gm-Message-State: AOAM531qcPgDdrhLy+3rD+HU6W8dDaO1VwWZP1IpxWmakP8Eaz7qq381
+        7DMi473lNwbv7Wr3xDO+ckN3Ix2bVgY=
+X-Google-Smtp-Source: ABdhPJwWFRTavQ4dRo5PjvXLGKZNWFYG0YlKr7SDOWhTaEbiUeczjYya5hL7yfVPX68IneiXgMj0lA==
+X-Received: by 2002:a17:90b:380f:b0:1e3:3de5:d60e with SMTP id mq15-20020a17090b380f00b001e33de5d60emr2734565pjb.211.1653996828544;
+        Tue, 31 May 2022 04:33:48 -0700 (PDT)
+Received: from localhost.localdomain ([103.84.139.165])
+        by smtp.gmail.com with ESMTPSA id b11-20020aa7810b000000b0050dc762814bsm10531759pfi.37.2022.05.31.04.33.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 04:33:48 -0700 (PDT)
+From:   Hangyu Hua <hbh25y@gmail.com>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, timo.teras@iki.fi
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Hangyu Hua <hbh25y@gmail.com>
+Subject: [PATCH] xfrm: xfrm_policy: fix a possible double xfrm_pols_put() in xfrm_bundle_lookup()
+Date:   Tue, 31 May 2022 19:33:36 +0800
+Message-Id: <20220531113336.31993-1-hbh25y@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In TI's J7200 SoC CPSW5G ports, each of the 4 ports can be configured
-as a QSGMII main or QSGMII-SUB port. This configuration is performed
-by phy-gmii-sel driver on invoking the phy_set_mode_ext() function.
+xfrm_policy_lookup() will call xfrm_pol_hold_rcu() to get a refcount of
+pols[0]. This refcount can be dropped in xfrm_expand_policies() when
+xfrm_expand_policies() return error. pols[0]'s refcount is balanced in
+here. But xfrm_bundle_lookup() will also call xfrm_pols_put() with
+num_pols == 1 to drop this refcount when xfrm_expand_policies() return
+error.
 
-It is necessary for the QSGMII main port to be configured before any of
-the QSGMII-SUB interfaces are brought up. Currently, the QSGMII-SUB
-interfaces come up before the QSGMII main port is configured.
+Fix this by setting num_pols = 0 in xfrm_expand_policies()'s error path.
 
-Fix this by moving the call to phy_set_mode_ext() from
-am65_cpsw_nuss_ndo_slave_open() to am65_cpsw_nuss_init_slave_ports(),
-thereby ensuring that the QSGMII main port is configured before any of
-the QSGMII-SUB ports are brought up.
-
-Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+Fixes: 80c802f3073e ("xfrm: cache bundles instead of policies for outgoing flows")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
 ---
- drivers/net/ethernet/ti/am65-cpsw-nuss.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ net/xfrm/xfrm_policy.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-index 462f63313fb3..c5ee636c4208 100644
---- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-+++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
-@@ -593,11 +593,6 @@ static int am65_cpsw_nuss_ndo_slave_open(struct net_device *ndev)
- 	/* mac_sl should be configured via phy-link interface */
- 	am65_cpsw_sl_ctl_reset(port);
- 
--	ret = phy_set_mode_ext(port->slave.ifphy, PHY_MODE_ETHERNET,
--			       port->slave.phy_if);
--	if (ret)
--		goto error_cleanup;
--
- 	ret = phylink_of_phy_connect(port->slave.phylink, port->slave.phy_node, 0);
- 	if (ret)
- 		goto error_cleanup;
-@@ -1895,6 +1890,10 @@ static int am65_cpsw_nuss_init_slave_ports(struct am65_cpsw_common *common)
- 			goto of_node_put;
- 		}
- 
-+		ret = phy_set_mode_ext(port->slave.ifphy, PHY_MODE_ETHERNET, port->slave.phy_if);
-+		if (ret)
-+			goto of_node_put;
-+
- 		ret = of_get_mac_address(port_np, port->slave.mac_addr);
- 		if (ret) {
- 			am65_cpsw_am654_get_efuse_macid(port_np,
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index f1876ea61fdc..a511875ef523 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -2694,6 +2694,7 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
+ 		if (pols[1]) {
+ 			if (IS_ERR(pols[1])) {
+ 				xfrm_pols_put(pols, *num_pols);
++				*num_pols = 0;
+ 				return PTR_ERR(pols[1]);
+ 			}
+ 			(*num_pols)++;
 -- 
-2.36.1
+2.25.1
 
