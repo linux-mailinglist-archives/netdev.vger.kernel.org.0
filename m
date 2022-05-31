@@ -2,53 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A15095393B5
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 17:14:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65AB45393D3
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 17:20:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345542AbiEaPOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 11:14:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
+        id S1345608AbiEaPUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 11:20:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237336AbiEaPOR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 11:14:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9B125F0;
-        Tue, 31 May 2022 08:14:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 112FDB8119C;
-        Tue, 31 May 2022 15:14:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E149C385A9;
-        Tue, 31 May 2022 15:14:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654010053;
-        bh=gDp6UNdQ0PKd5CJVOD3E4KkUjLefxtxl9Ek4Nl2FAww=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mXlSXKTpzFFbquqZzqwvtnvCZhcVvGXl02PY5LezepuGRt4lhTakVtteFtu/fd9Uq
-         tZFcfHkNDgyAnRcl5DFxYGxLIM7H1LBOFKqLq9P7sm98S4N+5UnWlFfdQxiZxz7Ucd
-         UJ+lOZhhh026r3qFAob+L+00lWT0uBs5gzXahsvg3pGIz0MFSQEcoYgbK8z9fzHlV0
-         inW42vMBYRZHhhKKqQ2j6Crh4ojGJo+BaSTHH26CkDTVfZv9GDSypjBwJhSqkY8mZj
-         5zTz40yuIzjyPwtFikCybZmKtk4bs9TcD/XjmEQOIUbmcBBVzZYCNE801MhFRULDX0
-         JeF0EOrwiek6g==
-Date:   Tue, 31 May 2022 08:14:12 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Chen Lin <chen45464546@163.com>
-Cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, alexander.duyck@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2] mm: page_frag: Warn_on when frag_alloc size is
- bigger than PAGE_SIZE
-Message-ID: <20220531081412.22db88cc@kernel.org>
-In-Reply-To: <1654008072-3136-1-git-send-email-chen45464546@163.com>
-References: <20220530122918.549ef054@kernel.org>
-        <1654008072-3136-1-git-send-email-chen45464546@163.com>
+        with ESMTP id S237532AbiEaPUb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 11:20:31 -0400
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEF5B633AE;
+        Tue, 31 May 2022 08:20:30 -0700 (PDT)
+Received: by mail-oi1-f170.google.com with SMTP id k11so4244742oia.12;
+        Tue, 31 May 2022 08:20:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5T9PqeW++1xR8KKb+9Iejw7mcxEUijjXojRIr46Glmk=;
+        b=fSj9MiGFVu/I11xxqO9+Jy+11hkELC+K7pW925nSsxDrjAa4brjDS/TKYwDlpZkv/I
+         +2+LtU4zREFKnWBzInsdw5dciR8/CCpBQftiSy5qpDtxLJXyyTcMDBvX8uOPEuDagvaG
+         n2KzM19l21s/WBOlh2jVrN1ItCO1JE5XI9dMh8bBfIPa+5iWMzxGA9OZr1FInEqi50Sy
+         FkcKLTvwK9kdt3C1SPh9B7Dg3j3zRGHPzDTjqkAeZg47PJirOGzYowmryymCHEGhpHBS
+         SYQ9td83unP5iiKKhhxCFdyYWKuauzkuDMCrX1oEAK862MAMdxQb2ClAk+CoPYV96sAK
+         xVkg==
+X-Gm-Message-State: AOAM532AyLpr8jNtV/xCLgUu5GqSsd5k+YvgRSkoKBHGGTcIBK7G9fUz
+        ePZOOriDLiD4PtxF/ikAlw==
+X-Google-Smtp-Source: ABdhPJxjR2JRyWzVqnm7ztIPcE+YpVknf54yXEDm7ZWqZcTjkkBQ/BU8e6ghx/26uMLfuoLOoS41AA==
+X-Received: by 2002:aca:61c1:0:b0:2ec:d091:ff53 with SMTP id v184-20020aca61c1000000b002ecd091ff53mr12581172oib.235.1654010430172;
+        Tue, 31 May 2022 08:20:30 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r19-20020a056820039300b00333220959b9sm6169928ooj.1.2022.05.31.08.20.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 08:20:29 -0700 (PDT)
+Received: (nullmailer pid 1785018 invoked by uid 1000);
+        Tue, 31 May 2022 15:20:28 -0000
+Date:   Tue, 31 May 2022 10:20:28 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Biao Huang <biao.huang@mediatek.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] dt-bindings: net: Fix unevaluatedProperties warnings in
+ examples
+Message-ID: <20220531152028.GF1742958-robh@kernel.org>
+References: <20220526014149.2872762-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220526014149.2872762-1-robh@kernel.org>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,16 +78,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 31 May 2022 22:41:12 +0800 Chen Lin wrote:
-> At 2022-05-31 02:29:18, "Jakub Kicinski" <kuba@kernel.org> wrote:
-> >Oh, well, the reuse also needs an update. We can slap a similar
-> >condition next to the pfmemalloc check.  
+On Wed, May 25, 2022 at 08:41:48PM -0500, Rob Herring wrote:
+> The 'unevaluatedProperties' schema checks is not fully working and doesn't
+> catch some cases where there's a $ref to another schema. A fix is pending,
+> but results in new warnings in examples. Fix the warnings by removing
+> spurious properties or adding missing properties to the schema.
 > 
-> The sample code above cannot completely solve the current problem.
-> For example, when fragsz is greater than PAGE_FRAG_CACHE_MAX_SIZE(32768),
-> __page_frag_cache_refill will return a memory of only 32768 bytes, so 
-> should we continue to expand the PAGE_FRAG_CACHE_MAX_SIZE? Maybe more 
-> work needs to be done
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/net/cdns,macb.yaml           | 1 -
+>  Documentation/devicetree/bindings/net/mediatek,net.yaml        | 3 +++
+>  Documentation/devicetree/bindings/net/mediatek-dwmac.yaml      | 3 +++
+>  .../devicetree/bindings/net/wireless/mediatek,mt76.yaml        | 2 +-
+>  4 files changed, 7 insertions(+), 2 deletions(-)
 
-Right, but I can think of two drivers off the top of my head which will
-allocate <=32k frags but none which will allocate more.
+Applied, thanks.
