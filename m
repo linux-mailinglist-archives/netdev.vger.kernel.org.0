@@ -2,110 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B84E538910
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 01:04:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EED37538963
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 03:01:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242821AbiE3XEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 19:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37776 "EHLO
+        id S242534AbiEaBBH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 21:01:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242741AbiE3XEo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 19:04:44 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6581553A6E
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 16:04:43 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id 129so6940363pgc.2
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 16:04:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Wvsx9QOw3yKY3DiRpplNW+C33EXyoaZ7VSxWs8/Uvyk=;
-        b=TklPa8OkLrZVPTjtJUc3CF3PwrSBCZoa3Pk2AgZiDu7qGmRTZZeCH9riyvhku4/B/d
-         6T+dCWLbDDUUqr19ZjaoZCU/NXFyuxVrpsHwMvte8+MnIlB0qNv7sqhBHJLyj+c73FEt
-         qwZlmD0IBKNJws+Qep9dkx57Pjwox42IldMBtv51FC4lZRWFJ6Bh+l/ABpA11mhomi6L
-         Jl+vO54A0VAO20mtOO+sxvGPbKCn1ZWfVJnKvswG8xTfS5VC2hhNTDSyjdhTtF0qEopE
-         2WA1Hw4NCTRhDhr6B/gqj+AfDLzvb8OuvnBFOovcprw//jbqvARnwfMFXH69VyoXUBJx
-         K/lA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Wvsx9QOw3yKY3DiRpplNW+C33EXyoaZ7VSxWs8/Uvyk=;
-        b=Qhbt/I57rCzrZA3d0MJBZ4tDIn3mZF28LjUrMW2UI4unqQ/nXpJ914gmmQydI99rme
-         MGBvlFy0Rk3g1IVjD5X9eAtxbIp02qp1xGBLZMGrJqEjb76YKzRNnLZLUBLurgSPH+s7
-         BP9tBn49RC0GX0X2wJwlU7upALBo+MVYmErbx06/W572n+i819TPBRW+fDmjvstyZCvy
-         OOVJq36B8525HROV1Il4MILUXQQ4UPq8bgLcv1Xmea+xcIVJIFl/5783L8qc2qylt5Uz
-         kfgtbcn1/D0p9AH61lQo+dbujAXM5HM+3vEb3O4EKwLf7zs522IE0oToIz6ZsUIRiVPc
-         rWEA==
-X-Gm-Message-State: AOAM533142+h0PA9WJKVMq07VO3CXph9lo/0WZeTmb5gpNxrBB7uIyQS
-        +7ulrL2wIgR7yjd8iSMOs3k=
-X-Google-Smtp-Source: ABdhPJyirqQ/Dhafaj8hSDoggSfKjcfkMqg7Ir+dk/Y1f+sVG7CXJ0k+6AjAZLDiOGGlF5pz0+38fg==
-X-Received: by 2002:a63:a06:0:b0:3c2:3345:bf99 with SMTP id 6-20020a630a06000000b003c23345bf99mr50311969pgk.477.1653951882899;
-        Mon, 30 May 2022 16:04:42 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id q6-20020a170902f78600b001635c9e7f77sm9740181pln.57.2022.05.30.16.04.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 May 2022 16:04:42 -0700 (PDT)
-Date:   Mon, 30 May 2022 16:04:39 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk,
-        bcm-kernel-feedback-list@broadcom.com, kernel-team@fb.com,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Subject: Re: [PATCH net-next v5 2/2] net: phy: broadcom: Add PTP support for
- some Broadcom PHYs.
-Message-ID: <20220530230439.GA22405@hoboy.vegasvil.org>
-References: <20220518223935.2312426-1-jonathan.lemon@gmail.com>
- <20220518223935.2312426-3-jonathan.lemon@gmail.com>
- <20220529003447.GA32026@hoboy.vegasvil.org>
- <20220530170744.zs6urci5lcytl2j4@bsd-mbp.dhcp.thefacebook.com>
+        with ESMTP id S238350AbiEaBBG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 21:01:06 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F7A70924;
+        Mon, 30 May 2022 18:01:03 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 24V10OybC030273, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 24V10OybC030273
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 31 May 2022 09:00:24 +0800
+Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Tue, 31 May 2022 09:00:24 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Tue, 31 May 2022 09:00:23 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
+ RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
+ 15.01.2308.021; Tue, 31 May 2022 09:00:23 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "neojou@gmail.com" <neojou@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "linux@ulli-kroll.de" <linux@ulli-kroll.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 07/10] rtw88: Add rtw8821cu chipset support
+Thread-Topic: [PATCH v2 07/10] rtw88: Add rtw8821cu chipset support
+Thread-Index: AQHYdDPNfhsNNxWggUmawvqBEIgmQa03pQ4A
+Date:   Tue, 31 May 2022 01:00:23 +0000
+Message-ID: <0db09b608192b1d8d93b3034962bd322041aaeef.camel@realtek.com>
+References: <20220530135457.1104091-1-s.hauer@pengutronix.de>
+         <20220530135457.1104091-8-s.hauer@pengutronix.de>
+In-Reply-To: <20220530135457.1104091-8-s.hauer@pengutronix.de>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.1-2 
+x-originating-ip: [172.16.20.31]
+x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzUvMzAg5LiL5Y2IIDEwOjE3OjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <6EB704338A3C4F40B3376E6FDB65B00F@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220530170744.zs6urci5lcytl2j4@bsd-mbp.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 30, 2022 at 10:07:44AM -0700, Jonathan Lemon wrote:
-> On Sat, May 28, 2022 at 05:34:47PM -0700, Richard Cochran wrote:
-> > On Wed, May 18, 2022 at 03:39:35PM -0700, Jonathan Lemon wrote:
-> > 
-> > > +static int bcm_ptp_adjtime_locked(struct bcm_ptp_private *priv,
-> > > +				  s64 delta_ns)
-> > > +{
-> > > +	struct timespec64 ts;
-> > > +	int err;
-> > > +
-> > > +	err = bcm_ptp_gettime_locked(priv, &ts, NULL);
-> > > +	if (!err) {
-> > > +		set_normalized_timespec64(&ts, ts.tv_sec,
-> > > +					  ts.tv_nsec + delta_ns);
-> > 
-> > This also takes a LONG time when delta is large...
-> 
-> Didn't we just go through this?  What constitutes a "large" offset here?
-> The current version seems acceptable to me:
-
-When the PHY boots, it starts from time zero.
-
-Then as a client it needs to adjust to today, something like:
-
-1653951762.413809006 or Mon May 30 16:02:42 2022
-
-(that means adding 1,653,951,762,413,809,006 nanoseconds)
-
-Try that and see how long it takes to apply the adjustment.
-
-Thanks,
-Richard
+T24gTW9uLCAyMDIyLTA1LTMwIGF0IDE1OjU0ICswMjAwLCBTYXNjaGEgSGF1ZXIgd3JvdGU6DQo+
+IEFkZCBzdXBwb3J0IGZvciB0aGUgcnR3ODgyMWN1IGNoaXBzZXQgYmFzZWQgb24NCj4gaHR0cHM6
+Ly9naXRodWIuY29tL3VsbGkta3JvbGwvcnR3ODgtdXNiLmdpdA0KPiANCj4gU2lnbmVkLW9mZi1i
+eTogU2FzY2hhIEhhdWVyIDxzLmhhdWVyQHBlbmd1dHJvbml4LmRlPg0KPiANCg0KWy4uLl0NCg0K
+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIx
+Y3UuaA0KPiBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMWN1LmgN
+Cj4gbmV3IGZpbGUgbW9kZSAxMDA2NDQNCj4gaW5kZXggMDAwMDAwMDAwMDAwMC4uYzg5Njc5MjI0
+MDAxMQ0KPiAtLS0gL2Rldi9udWxsDQo+ICsrKyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0
+ZWsvcnR3ODgvcnR3ODgyMWN1LmgNCj4gQEAgLTAsMCArMSwxMCBAQA0KPiArLyogU1BEWC1MaWNl
+bnNlLUlkZW50aWZpZXI6IEdQTC0yLjAgT1IgQlNELTMtQ2xhdXNlICovDQo+ICsvKiBDb3B5cmln
+aHQoYykgMjAxOC0yMDE5ICBSZWFsdGVrIENvcnBvcmF0aW9uDQo+ICsgKi8NCj4gKw0KPiArI2lm
+bmRlZiBfX1JUV184ODIxQ1VfSF8NCj4gKyNkZWZpbmUgX19SVFdfODgyMUNVX0hfDQo+ICsNCj4g
+K2V4dGVybiBzdHJ1Y3QgcnR3X2NoaXBfaW5mbyBydHc4ODIxY19od19zcGVjOw0KDQpUaGlzIGV4
+dGVybiBoYXMgbW92ZWQgdG8gcnR3ODgyMWMuaCBbMV0sIHNvIHdlIGRvbid0IG5lZWQgcnR3ODgy
+MWN1LmguDQpBcyB3ZWxsIGFzIDg4MjJidS5oIGFuZCA4ODIyY3UuaC4NCg0KDQpbMV0gDQpodHRw
+czovL2xvcmUua2VybmVsLm9yZy9saW51eC13aXJlbGVzcy8yMDIyMDUyNDE1MzYyMS4xOTAyNy0y
+LUxhcnJ5LkZpbmdlckBsd2Zpbmdlci5uZXQvVC8jbTJlZGNjMzQ3ZGFhMDhkMTMzMDcxZWViMzQz
+NzcwMTEwMDA1NGFmN2YNCg0KLS0NClBpbmctS2UNCg0KDQo=
