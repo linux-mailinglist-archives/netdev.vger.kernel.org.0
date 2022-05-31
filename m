@@ -2,123 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13190538D77
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 11:08:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1AA2538D95
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 11:20:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243414AbiEaJIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 05:08:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48632 "EHLO
+        id S240074AbiEaJU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 05:20:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234760AbiEaJIC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 05:08:02 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA88954FBE
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 02:07:59 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id c15-20020a9d684f000000b0060b097c71ecso9154133oto.10
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 02:07:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RWsthZPxNDA39U3KIC6LMsBvLuzLbrfSrlsINFHYDcI=;
-        b=GIYO75yR6RxABAavORON5hxUzN4kdiuq7iHSEQU+CYmSKkkfZ8vjYY7xX1gDRJoG5K
-         WA75V3DNHdz/zDQXyHEiAH5srFHNeIsH2HYfdJMpQ9w1XsbSWECD8ZOulAam5RJpg6fY
-         NhnvWk26PwIEleos7OZzKK8rR2pvXqVteUll6hvklGGoXj/S6IspbIDwpd+Ift+Vybjb
-         wEeXzYj5OjZ94nZYdMK7gyTFAIti2MtbG/oejv+cr+8XhQ/mazoM4Ro7zRM68pWVz+zM
-         YKZuF6uX6UrEUrH0DkPcfa89zq0xmnpzrmr6a9G0wxvHQdCMY77aNgspIxpSuNWyDxRN
-         sSTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RWsthZPxNDA39U3KIC6LMsBvLuzLbrfSrlsINFHYDcI=;
-        b=ITrTkxiDAgN0EGAeNf07x8AE+UXUXzUjY4U/9rX/bfMBQNmpkYV3jKbQaQKSnbIRUT
-         zF7FN/BigCba19n+rmQudjtMu0RXmyG8dqSt4aLh4rqF9aGCizCbtL6rLrEwPm+uWpXD
-         iB8GthUZ/oepAn3wU+gRJ1tkV7VFmCpjfeV6ZadVVjYPlw7x5rfY0zaYR1Gxcv7wPLAR
-         OG1d517SVZX47OArlnLgV+CMHEaZQ7xA7IuXSWR68iDwsQjJVcUivaqxDl4zVld/WJHM
-         Q8ZeidpQe5raSD/nMB5y2pj7Q+tvK2BFIIzJFDOXNm39MaUaZqTCfpn0+KM1czvaJNTY
-         rSuA==
-X-Gm-Message-State: AOAM530CBuq/0A2i2lkYFBgzOn55R9iLB/ug69j9KkD8UgitOgguA2n5
-        SwaCGcUf3rcF+y4Bp0q3NKAb+YCO0BMVQJmfFl2tpQ==
-X-Google-Smtp-Source: ABdhPJxVvTrJGlPKkgE3ckW+2BAEYRKazdCH8wFipcEpTVtbBTK4iTzPHd32UxIZGi3IQCROhrDqUirCGPDwLhTbJs0=
-X-Received: by 2002:a9d:6f1a:0:b0:60b:20fd:ca75 with SMTP id
- n26-20020a9d6f1a000000b0060b20fdca75mr13961134otq.126.1653988078875; Tue, 31
- May 2022 02:07:58 -0700 (PDT)
+        with ESMTP id S245141AbiEaJUR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 05:20:17 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2FC462A12
+        for <netdev@vger.kernel.org>; Tue, 31 May 2022 02:20:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5351BCE1300
+        for <netdev@vger.kernel.org>; Tue, 31 May 2022 09:20:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8A7A5C34119;
+        Tue, 31 May 2022 09:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653988812;
+        bh=j+0A8U+99IRQDrJJhpHVse+Mcy2wHa+hRkOS7SWaf74=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=anR6lXiXBcKnLnCqb0nNgtWrgjxnPVwfu7aBKR5Jl6EzvQ1gh/2NVs8bJZMt6Bp2A
+         sc6eARdG09JkBOkgSCxApqHvf955gAgv2LhzyKu+Ndc1KCTQX1anMiOims5svIpO+f
+         IQQFgnWYzoKFMDPfhIw4uV2tNBb3sVkT1VJETpm1TQoNaU3g1Y5j5w2kfkUR5UlQHi
+         m1eBVFLT+ymNVESEdvDim157H+kSFcLQMHyVLfIUjT45lL20fxTWm6ClCZjszRivoH
+         bv0r/wYzsDhwjCOKrofdqnrYpQZ5k1NgaYozQN1WQp8GnsyzH1uzgDmeeA+LYLi4iV
+         SIKW6e+nPH5Xg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 691EBF0394E;
+        Tue, 31 May 2022 09:20:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220517094532.2729049-1-poprdi@google.com>
-In-Reply-To: <20220517094532.2729049-1-poprdi@google.com>
-From:   =?UTF-8?Q?Tam=C3=A1s_Koczka?= <poprdi@google.com>
-Date:   Tue, 31 May 2022 11:07:47 +0200
-Message-ID: <CAPUC6bKo6EdacUVAWaJp+_Z_sEztnv96Li6zLpm-UR=2rZth-w@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: Collect kcov coverage from hci_rx_work
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Andy Nguyen <theflow@google.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Aleksandr Nogikh <nogikh@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCHv3 net] bonding: show NS IPv6 targets in proc master info
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165398881242.16269.6286099453685787139.git-patchwork-notify@kernel.org>
+Date:   Tue, 31 May 2022 09:20:12 +0000
+References: <20220530062639.37179-1-liuhangbin@gmail.com>
+In-Reply-To: <20220530062639.37179-1-liuhangbin@gmail.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, j.vosburgh@gmail.com, vfalico@gmail.com,
+        andy@greyhouse.net, davem@davemloft.net, kuba@kernel.org,
+        jtoppins@redhat.com, eric.dumazet@gmail.com, pabeni@redhat.com,
+        liali@redhat.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Everyone,
+Hello:
 
-Thank you for reviewing the patch - I hope everything is going well.
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Please feel free to ask me if you need any more information regarding it!
+On Mon, 30 May 2022 14:26:39 +0800 you wrote:
+> When adding bond new parameter ns_targets. I forgot to print this
+> in bond master proc info. After updating, the bond master info will look
+> like:
+> 
+> ARP IP target/s (n.n.n.n form): 192.168.1.254
+> NS IPv6 target/s (XX::XX form): 2022::1, 2022::2
+> 
+> [...]
 
-Thank you,
-Tamas
+Here is the summary with links:
+  - [PATCHv3,net] bonding: show NS IPv6 targets in proc master info
+    https://git.kernel.org/netdev/net/c/4a1f14df55d1
 
-On Tue, May 17, 2022 at 11:45 AM Tamas Koczka <poprdi@google.com> wrote:
->
-> Annotate hci_rx_work() with kcov_remote_start() and kcov_remote_stop()
-> calls, so remote KCOV coverage is collected while processing the rx_q
-> queue which is the main incoming Bluetooth packet queue.
->
-> Coverage is associated with the thread which created the packet skb.
->
-> Signed-off-by: Tamas Koczka <poprdi@google.com>
-> ---
->  net/bluetooth/hci_core.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->
-> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> index 45c2dd2e1590..703722031b8d 100644
-> --- a/net/bluetooth/hci_core.c
-> +++ b/net/bluetooth/hci_core.c
-> @@ -29,6 +29,7 @@
->  #include <linux/rfkill.h>
->  #include <linux/debugfs.h>
->  #include <linux/crypto.h>
-> +#include <linux/kcov.h>
->  #include <linux/property.h>
->  #include <linux/suspend.h>
->  #include <linux/wait.h>
-> @@ -3780,7 +3781,9 @@ static void hci_rx_work(struct work_struct *work)
->
->         BT_DBG("%s", hdev->name);
->
-> -       while ((skb = skb_dequeue(&hdev->rx_q))) {
-> +       for (; (skb = skb_dequeue(&hdev->rx_q)); kcov_remote_stop()) {
-> +               kcov_remote_start_common(skb_get_kcov_handle(skb));
-> +
->                 /* Send copy to monitor */
->                 hci_send_to_monitor(hdev, skb);
->
-> --
-> 2.36.0.550.gb090851708-goog
->
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
