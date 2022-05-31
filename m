@@ -2,167 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC004538BD7
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 09:11:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C23A4538BDC
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 09:14:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244440AbiEaHLc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 03:11:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46318 "EHLO
+        id S244455AbiEaHOV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 03:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236425AbiEaHLb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 03:11:31 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBE487A0A
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 00:11:30 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id rq11so24794274ejc.4
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 00:11:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=wAoGiMky5RXQtM4Hp7qwPxCAMIEA2ov16kHxdtH7ZAs=;
-        b=RK46LnUKAPDMpJS4rDmLgEzdmc8kZNvu/JxPYoWYoznIJzG9mKIr11b+q8kS7nTMp2
-         ORnY1uf/ZXim8ve/7d9VUnsdgFSth97Q5d9z83cW7KrxQS9+6IDg6mbOdfnhW8tE8XUZ
-         seF0jUHGufIeH385gUO08jwtgIZaPG1R4Tu5te1odw3rIufj1t8zLg9TUBho+8rHnznd
-         CWBYY0c3JsI7Za+etaqmWg7uCK+66ZaKSKuYbBnlmcf71Khtb2ISjf/9sOlEOqyh4+UH
-         kUSEtsQMpslRn3yqLyqZz3ZRrDDvYCtVEoQuxQuMRS3FRqLV9i0/bMhg+GTf5RwXge6a
-         U2jw==
+        with ESMTP id S244449AbiEaHOT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 03:14:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE73290CEE
+        for <netdev@vger.kernel.org>; Tue, 31 May 2022 00:14:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653981256;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=33Q+kZ3exxiCIGxTXejuFhcm2TRKe5xhqodtK0AziM4=;
+        b=YKKTSQ7cEgGv2W3/Q1Z9iMOLhEVgcpbkHoxV0J0O9IzLIXxn2wZc+4j5yOmr7WITR+C2uU
+        4wtpuoC+1x4mPm7/hmeQjekdvXycPgAYm2LF/q5f7JDvJI64Iifrk417ipdzEMug38izwN
+        zARMQVgkHAI2IQjIzXI1LhISbpBpC1M=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-612-itCSv0wrNNKUfPXasgKZRg-1; Tue, 31 May 2022 03:14:15 -0400
+X-MC-Unique: itCSv0wrNNKUfPXasgKZRg-1
+Received: by mail-qk1-f197.google.com with SMTP id p13-20020a05620a132d00b006a362041049so9994505qkj.0
+        for <netdev@vger.kernel.org>; Tue, 31 May 2022 00:14:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=wAoGiMky5RXQtM4Hp7qwPxCAMIEA2ov16kHxdtH7ZAs=;
-        b=o0TquQNZmFlWLq6LhD80O9NSg4KDaqDrNtA8THrbrBxc0n7T49bz6DcNlt2C1/gN5N
-         Ag4Vq/rIYKstVXHVa0JFMZTdLU1BuxWuhvAdzQmtqY0hL5WdYFkoi9TR1uodAkE1PJAD
-         KVFtb8wLVYNqCUlzxvSdpVanmV98JzG+JQOPJfz8sBmfY0iOoKAER04bGj5SwiZ1FjTj
-         WWSzMkXmh0kGxkjR3g0QMjni1xdnkp4ETfa61UJL5py5y3OMsSpiJsqKze+W7IAPYKPF
-         o50OGwELSTV9bYu1HcROE6qQUMnbX6V77zszvf+p/mxIvp5r3f6U9XoX+8A6GtxbBOui
-         jO5g==
-X-Gm-Message-State: AOAM530Su4xkF6G1iqHA645jQJJl8TidYG/6314qJZnDpFxNhqfnnhXs
-        DDzphU3KkurhH6KMsiKGe+9Lkg==
-X-Google-Smtp-Source: ABdhPJy45ghXvW7AM/xvCmypSvYohuA7LNPqw0oUZ6vj1Yt8vst0pmK/Df0rU1hhxWgfilyzUkMR4g==
-X-Received: by 2002:a17:906:3b8d:b0:6fe:94ac:2a78 with SMTP id u13-20020a1709063b8d00b006fe94ac2a78mr53309453ejf.547.1653981089028;
-        Tue, 31 May 2022 00:11:29 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id j24-20020a170906255800b006fee2570067sm4561142ejb.23.2022.05.31.00.11.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 00:11:28 -0700 (PDT)
-Date:   Tue, 31 May 2022 09:11:27 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
-        andrew@lunn.ch, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
- and info
-Message-ID: <YpW/n3Nh8fIYOEe+@nanopsycho>
-References: <Yo3KvfgTVTFM/JHL@nanopsycho>
- <20220525085054.70f297ac@kernel.org>
- <Yo9obX5Cppn8GFC4@nanopsycho>
- <20220526103539.60dcb7f0@kernel.org>
- <YpB9cwqcSAMslKLu@nanopsycho>
- <20220527171038.52363749@kernel.org>
- <YpHmrdCmiRagdxvt@nanopsycho>
- <20220528120253.5200f80f@kernel.org>
- <YpM7dWye/i15DBHF@nanopsycho>
- <20220530125408.3a9cb8ed@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=33Q+kZ3exxiCIGxTXejuFhcm2TRKe5xhqodtK0AziM4=;
+        b=Hdem/BNftvYAVRRNRIrtY3uRfMRZsLP5SrD47VFYEYOjIJuoi00hikCKM1bOOvzSp2
+         o4lYoUQ0mhIr4eZ8EJAoMk8zpV4Zc2vUB0Ux/wa75IK34+saovwmotcyJw5MpWD7OyzM
+         3tDwhK7m3OmBS1PwfDaeyN66sBv9reE4sPY96N7ga8qztrcltsHDlXhpQ43qYiT8Fl3o
+         cQjjbzk7NESHtMie2Wwe/n5V/GlJr1jigsUt2cne9fhUkjSauI81ouW8bd+c40zO8v+D
+         geHNvA4jvLVIZiY8dlijqor8cu08t/DKkKRcs/G2JCMukUwKM4K+mUc9xa3WkwfpAm1R
+         R8Og==
+X-Gm-Message-State: AOAM531XTkjLT81DS2TNFveV935EWg6qCyORcuOkhofRTiXZeDsU+dl5
+        mRU+lREf8BBLIISfHlRj5jwI/ilauK3s+o4xiM4G0vRToVnGL6DLHqJZVimtQTNYuqKODfOzDMZ
+        9llLRKBidiLGZwKyRLVOCBePLH1KMqec6
+X-Received: by 2002:ac8:5ad0:0:b0:2f3:e37a:e768 with SMTP id d16-20020ac85ad0000000b002f3e37ae768mr45957239qtd.592.1653981254774;
+        Tue, 31 May 2022 00:14:14 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxfsK62AT66aNNUrpiRT8Q1h/z0vwoFAfZ6ojK+Cso5QwGPLczuZn5KrJtMDcQKDAqYGqbzNtxijjj7ElUmbMA=
+X-Received: by 2002:ac8:5ad0:0:b0:2f3:e37a:e768 with SMTP id
+ d16-20020ac85ad0000000b002f3e37ae768mr45957224qtd.592.1653981254525; Tue, 31
+ May 2022 00:14:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220530125408.3a9cb8ed@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220526124338.36247-1-eperezma@redhat.com> <20220531014108-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220531014108-mutt-send-email-mst@kernel.org>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Tue, 31 May 2022 09:13:38 +0200
+Message-ID: <CAJaqyWfRSD6xiS8DROkPvjJ4Y4dotOPWqUzaQeM3X=q_XgABdw@mail.gmail.com>
+Subject: Re: [PATCH v4 0/4] Implement vdpasim stop operation
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     kvm list <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Martin Porter <martinpo@xilinx.com>,
+        Laurent Vivier <lvivier@redhat.com>,
+        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
+        Parav Pandit <parav@nvidia.com>, Eli Cohen <elic@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        Cindy Lu <lulu@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>, ecree.xilinx@gmail.com,
+        "Dawar, Gautam" <gautam.dawar@amd.com>, habetsm.xilinx@gmail.com,
+        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
+        Harpreet Singh Anand <hanand@xilinx.com>,
+        Dinan Gunawardena <dinang@xilinx.com>,
+        Longpeng <longpeng2@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, May 30, 2022 at 09:54:08PM CEST, kuba@kernel.org wrote:
->On Sun, 29 May 2022 11:23:01 +0200 Jiri Pirko wrote:
->> >Let's step back and look from the automation perspective again.
->> >Assuming we don't want to hardcode matching "lc$i" there how can 
->> >a generic FW update service scan the dev info and decide on what
->> >dev flash command to fire off?  
->> 
->> Hardcode matching lc$i? I don't follow. It is a part of the
->> version/component name.
->> So if devlink dev info outputs:
->> lc2.fw 19.2010.1310
->> then you use for devlink dev flash:
->> devlink dev flash pci/0000:01:00.0 component lc2.fw file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
->> Same name, same string.
->> 
->> What am I missing?
+On Tue, May 31, 2022 at 7:42 AM Michael S. Tsirkin <mst@redhat.com> wrote:
 >
->Nevermind, I think we can iterate over all the groupings.
->Since I hope you agreed that component has an established
-
-Yeah, component=version. I will send a RFC soon that tights it together.
-
->meaning can we use group instead?
-
-Group of what? Could you provide me example what you mean?
-
-
+> On Thu, May 26, 2022 at 02:43:34PM +0200, Eugenio P=C3=A9rez wrote:
+> > Implement stop operation for vdpa_sim devices, so vhost-vdpa will offer
+> > that backend feature and userspace can effectively stop the device.
+> >
+> > This is a must before get virtqueue indexes (base) for live migration,
+> > since the device could modify them after userland gets them. There are
+> > individual ways to perform that action for some devices
+> > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no
+> > way to perform it for any vhost device (and, in particular, vhost-vdpa)=
+.
+> >
+> > After the return of ioctl with stop !=3D 0, the device MUST finish any
+> > pending operations like in flight requests. It must also preserve all
+> > the necessary state (the virtqueue vring base plus the possible device
+> > specific states) that is required for restoring in the future. The
+> > device must not change its configuration after that point.
+> >
+> > After the return of ioctl with stop =3D=3D 0, the device can continue
+> > processing buffers as long as typical conditions are met (vq is enabled=
+,
+> > DRIVER_OK status bit is enabled, etc).
+> >
+> > In the future, we will provide features similar to VHOST_USER_GET_INFLI=
+GHT_FD
+> > so the device can save pending operations.
+> >
+> > Comments are welcome.
 >
->> >> Also, to avoid free-form, I can imagine to have per-linecard info_get() op
->> >> which would be called for each line card from devlink_nl_info_fill() and
->> >> prefix the "lcX" automatically without driver being involved.
->> >> 
->> >> Sounds good?  
->> >
->> >Hm. That's moving the matryoshka-ing of the objects from the uAPI level
->> >to the internals. 
->> >
->> >If we don't do the string prefix but instead pass the subobject info to
->> >the user space as an attribute per version we can at least avoid
->> >per-subobject commands (DEVLINK_CMD_LINECARD_INFO_GET). Much closer to
->> >how health reporters are implemented than how params are done, so I
->> >think it is a good direction.  
->> 
->> Sorry, I'm a bit lost. Could you please provide some example about how
->> you envision it? For me it is a guessing game :/
->> My guess is you would like to add to the version nest where
->> DEVLINK_ATTR_INFO_VERSION_NAME resides for example
->> DEVLINK_ATTR_LINECARD_INDEX?
->> 
->> Correct?
 >
->Yup.
+> So given this is just for simulator and affects UAPI I think it's fine
+> to make it wait for the next merge window, until there's a consensus.
+> Right?
+>
 
-Hmm, in that case, I'm not sure how to do this. As cmd options and       
-outputs should match, we would have:                                     
-                                                                         
-devlink dev info                                                         
-lc2.fw 19.2010.1310                                                      
-                                                                         
-here lc2 and fw are concatenated from DEVLINK_ATTR_LINECARD_INDEX and DEVLINK_ATTR_INFO_VERSION_NAME
-                                                                         
-Now on devlink dev flash side, when I pass "component lc2.fw", how could 
-the "devlink dev flash" know to divide it to DEVLINK_ATTR_LINECARD_INDEX 
-and FLASH_COMPONENT? Should I parse the cmd line option and figure the
-"lcX." prefix into an attribute?
-                                                                         
-Or, we would have to have something like:                                    
-devlink dev flash pci/0000:01:00.0 lc 2 component fw file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
-                                                                         
-But to be consistent with the output, we would have to change "devlink   
-dev info" to something like:                                             
-pci/0000:01:00.0:                                                        
-  versions:                                                              
-      running:                                                           
-        fw 1.2.3                                                         
-        fw.mgmt 10.20.30                                                 
-        lc 2 fw 19.2010.1310                                             
-                                                                         
-But that would break the existing JSON output, because "running" is an array:
-                "running": {                                             
-                    "fw": "1.2.3",                                       
-                    "fw.mgmt": "10.20.30"                                
-                },                                                       
+While the change is only implemented in the simulator at this moment,
+it's just the very last missing piece in the kernel to implement
+complete live migration for net devices with cvq :). All vendor
+drivers can implement this call with current code, just a little bit
+of plumbing is needed. And it was accepted in previous meetings.
 
-So probably better to stick to "lcx.y" notation in both devlink dev info
-and flash and split/squash to attributes internally. What do you think?
+If it proves it works for every configuration (nested, etc), the
+implementation can forward the call to the admin vq for example. At
+the moment, it follows the proposed stop status bit sematic to stop
+the device, which POC has been tested in these circumstances.
+
+Thanks!
+
+> > v4:
+> > * Replace VHOST_STOP to VHOST_VDPA_STOP in vhost ioctl switch case too.
+> >
+> > v3:
+> > * s/VHOST_STOP/VHOST_VDPA_STOP/
+> > * Add documentation and requirements of the ioctl above its definition.
+> >
+> > v2:
+> > * Replace raw _F_STOP with BIT_ULL(_F_STOP).
+> > * Fix obtaining of stop ioctl arg (it was not obtained but written).
+> > * Add stop to vdpa_sim_blk.
+> >
+> > Eugenio P=C3=A9rez (4):
+> >   vdpa: Add stop operation
+> >   vhost-vdpa: introduce STOP backend feature bit
+> >   vhost-vdpa: uAPI to stop the device
+> >   vdpa_sim: Implement stop vdpa op
+> >
+> >  drivers/vdpa/vdpa_sim/vdpa_sim.c     | 21 +++++++++++++++++
+> >  drivers/vdpa/vdpa_sim/vdpa_sim.h     |  1 +
+> >  drivers/vdpa/vdpa_sim/vdpa_sim_blk.c |  3 +++
+> >  drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  3 +++
+> >  drivers/vhost/vdpa.c                 | 34 +++++++++++++++++++++++++++-
+> >  include/linux/vdpa.h                 |  6 +++++
+> >  include/uapi/linux/vhost.h           | 14 ++++++++++++
+> >  include/uapi/linux/vhost_types.h     |  2 ++
+> >  8 files changed, 83 insertions(+), 1 deletion(-)
+> >
+> > --
+> > 2.31.1
+> >
+>
+
