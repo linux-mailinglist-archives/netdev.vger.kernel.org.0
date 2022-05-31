@@ -2,54 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 827E7539181
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 15:11:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 083325391B9
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 15:21:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344589AbiEaNLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 09:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34712 "EHLO
+        id S1344698AbiEaNVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 09:21:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344587AbiEaNLo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 09:11:44 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79AA0CC0;
-        Tue, 31 May 2022 06:11:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=4ua9nPt2PukSR9gYpe/o1H008WDaOZXfT2gVd5Mb3XI=; b=TpklImPqrcJUJNVWAXID4BD4M/
-        Bb4KxbZW6ta5g27nNp0hodORImPxOm/myB6VilyUGpRTW4Gkr+0SwcaaQm1Zf5w9IVudq2TMg6qan
-        +AN6AHvEcyByBSibzp+5g1iLbu+iQKM7YtSffWb/yRrbTZ8+hQkZM7CuzlUg78ntGIvNkUSg64FNL
-        JKv9loboyiERmAX4lfygofzokYJxTSXbULIZhtXaj7N7B7oAA/piU85ID9KrQ5WfJF80zVQtx9LJ5
-        zZRs5pJv+lmKbdXJN+YKzjmSBO5oZjc+Bf+WMKo7fCOTku0kDUIKRDdHOdwRaF+OJof64E3tp5fBs
-        AePfsbsQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nw1en-003SGS-A3; Tue, 31 May 2022 13:11:34 +0000
-Message-ID: <529649b4-a597-9304-0df6-1b1e577df38c@infradead.org>
-Date:   Tue, 31 May 2022 06:11:24 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 2/2] net: ti: icssg-prueth: Add ICSSG ethernet driver
-Content-Language: en-US
-To:     Puranjay Mohan <p-mohan@ti.com>, linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com,
-        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, nm@ti.com, ssantosh@kernel.org,
-        s-anna@ti.com, linux-arm-kernel@lists.infradead.org,
-        rogerq@kernel.org, grygorii.strashko@ti.com, vigneshr@ti.com,
-        kishon@ti.com, robh+dt@kernel.org, afd@ti.com, andrew@lunn.ch
-References: <20220531095108.21757-1-p-mohan@ti.com>
- <20220531095108.21757-3-p-mohan@ti.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220531095108.21757-3-p-mohan@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        with ESMTP id S1344700AbiEaNV3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 09:21:29 -0400
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F7D4972A6;
+        Tue, 31 May 2022 06:21:28 -0700 (PDT)
+Received: by mail-oi1-f176.google.com with SMTP id m82so3421973oif.13;
+        Tue, 31 May 2022 06:21:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=e5hEwdVyk0aAkl6eSBNPLNwTk/gtSZtsZFRN5GRZ6bA=;
+        b=SLJnrAdPTX9gBHgCOIQUIvxYlWeUh/43uZIeHIbWXD6AgkZXfTsmVFN5/J1axleTgi
+         W0Cv4Udy3xf4gfrDaQJ2zz6HRNdIo4oe8Has8kF5a35m8cB6mvSeB6hLgb2wmGZ5fQ/h
+         MzL/WuStPns1a0DTMplSgAUK579dZESxCV+EFxyvFJ7Kco3zKrg3YmnHqJRJMUB2QrO7
+         1zYv9b9aqzsRFxxH06dMe8IDa/Z+qpPoVXzaBmIGqdUSVMwm86Cc0lArGHpgWeDfU6Ix
+         MUSRE+Vou+C6XSt13kYA72n4pHOWi49g/UKizwP2QyPexXgNkdJxd6X4vNc7m5Zhv1G+
+         g9Sw==
+X-Gm-Message-State: AOAM532+2SN84i6RIgO+cR5M+6d+3gCJf6AiuBP6cV46rMtmUPWGfRgB
+        xYlYGi0twYXqHrcOlpyJyQ==
+X-Google-Smtp-Source: ABdhPJwc9hEHIr4dNicEv2trxpFWfW7N9CStjs9nOb2xy+SSJhjlsZ6CBFELIq7Zjs0oQODGv2QlAg==
+X-Received: by 2002:a05:6808:f8c:b0:32a:e67f:d20e with SMTP id o12-20020a0568080f8c00b0032ae67fd20emr11509012oiw.88.1654003287818;
+        Tue, 31 May 2022 06:21:27 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id s31-20020a056830439f00b0060613c844adsm6307651otv.10.2022.05.31.06.21.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 06:21:27 -0700 (PDT)
+Received: (nullmailer pid 1610161 invoked by uid 1000);
+        Tue, 31 May 2022 13:21:25 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Puranjay Mohan <p-mohan@ti.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        robh+dt@kernel.org, edumazet@google.com, vigneshr@ti.com,
+        kishon@ti.com, afd@ti.com, davem@davemloft.net,
+        ssantosh@kernel.org, andrew@lunn.ch,
+        krzysztof.kozlowski+dt@linaro.org, grygorii.strashko@ti.com,
+        devicetree@vger.kernel.org, s-anna@ti.com, nm@ti.com,
+        rogerq@kernel.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20220531095108.21757-2-p-mohan@ti.com>
+References: <20220531095108.21757-1-p-mohan@ti.com> <20220531095108.21757-2-p-mohan@ti.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: net: Add ICSSG Ethernet Driver bindings
+Date:   Tue, 31 May 2022 08:21:25 -0500
+Message-Id: <1654003285.283793.1610159.nullmailer@robh.at.kernel.org>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,36 +63,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi--
+On Tue, 31 May 2022 15:21:07 +0530, Puranjay Mohan wrote:
+> Add a YAML binding document for the ICSSG Programmable real time unit
+> based Ethernet driver. This driver uses the PRU and PRUSS consumer APIs
+> to interface the PRUs and load/run the firmware for supporting ethernet
+> functionality.
+> 
+> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+> ---
+> v1: https://lore.kernel.org/all/20220506052433.28087-2-p-mohan@ti.com/
+> v1 -> v2:
+> * Addressed Rob's Comments
+> * It includes indentation, formatting, and other minor changes.
+> ---
+>  .../bindings/net/ti,icssg-prueth.yaml         | 181 ++++++++++++++++++
+>  1 file changed, 181 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+> 
 
-On 5/31/22 02:51, Puranjay Mohan wrote:
-> diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
-> index fb30bc5d56cb..500d0591ad2a 100644
-> --- a/drivers/net/ethernet/ti/Kconfig
-> +++ b/drivers/net/ethernet/ti/Kconfig
-> @@ -182,4 +182,19 @@ config CPMAC
->  	help
->  	  TI AR7 CPMAC Ethernet support
->  
-> +config TI_ICSSG_PRUETH
-> +	tristate "TI Gigabit PRU Ethernet driver"
-> +	select PHYLIB
-> +
-> +	depends on PRU_REMOTEPROC
-> +	depends on ARCH_K3 && OF && TI_K3_UDMA_GLUE_LAYER
-> +	help
-> +	  Support dual Gigabit Ethernet ports over the ICSSG PRU Subsystem
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-	End the sentence above with a period ('.').
+yamllint warnings/errors:
 
-> +	  This subsystem is available starting with the AM65 platform.
-> +
-> +	  This driver requires firmware binaries which will run on the PRUs
-> +	  to support the ethernet operation. Currently, it supports Ethernet
+dtschema/dtc warnings/errors:
+./Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/remoteproc/ti,pru-consumer.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,icssg-prueth.example.dtb: pruss2_eth: False schema does not allow {'compatible': ['ti,am654-icssg-prueth'], 'pinctrl-names': ['default'], 'pinctrl-0': [[4294967295]], 'sram': [[4294967295]], 'ti,prus': [[4294967295, 4294967295, 4294967295, 4294967295, 4294967295, 4294967295]], 'firmware-name': ['ti-pruss/am65x-pru0-prueth-fw.elf', 'ti-pruss/am65x-rtu0-prueth-fw.elf', 'ti-pruss/am65x-txpru0-prueth-fw.elf', 'ti-pruss/am65x-pru1-prueth-fw.elf', 'ti-pruss/am65x-rtu1-prueth-fw.elf', 'ti-pruss/am65x-txpru1-prueth-fw.elf'], 'ti,pruss-gp-mux-sel': [[2, 2, 2, 2, 2, 2]], 'ti,mii-g-rt': [[4294967295]], 'dmas': [[4294967295, 49920], [4294967295, 49921], [4294967295, 49922], [4294967295, 49923], [4294967295, 49924], [4294967295, 49925], [4294967295, 49926], [4294967295, 49927], [4294967295, 17152], [4294967295, 17153]], 'dma-names': ['tx0-0', 'tx0-1', 'tx0-2', 'tx0-3', 'tx1-0', 'tx1-1', 'tx1-2', 'tx1-3', 'rx0', 'rx1'], 'i
+ nterrupts': [[24, 0, 2], [25, 1, 3]], 'interrupt-names': ['tx_ts0', 'tx_ts1'], 'ethernet-ports': {'#address-cells': [[1]], '#size-cells': [[0]], 'port@0': {'reg': [[0]], 'phy-handle': [[4294967295]], 'phy-mode': ['rgmii-rxid'], 'interrupts-extended': [[4294967295, 24]], 'ti,syscon-rgmii-delay': [[4294967295, 16672]], 'local-mac-address': [[0, 0, 0, 0, 0, 0]]}, 'port@1': {'reg': [[1]], 'phy-handle': [[4294967295]], 'phy-mode': ['rgmii-rxid'], 'interrupts-extended': [[4294967295, 25]], 'ti,syscon-rgmii-delay': [[4294967295, 16676]], 'local-mac-address': [[0, 0, 0, 0, 0, 0]]}}, '$nodename': ['pruss2_eth']}
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,icssg-prueth.example.dtb: pruss2_eth: Unevaluated properties are not allowed ('firmware-name', 'ti,prus', 'ti,pruss-gp-mux-sel' were unexpected)
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
 
-	Be consistent:   ethernet                       or          Ethernet
+doc reference errors (make refcheckdocs):
 
-> +	  with 1G and 100M link speed.
+See https://patchwork.ozlabs.org/patch/
 
--- 
-~Randy
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
