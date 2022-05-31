@@ -2,53 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF6B538B2A
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 08:04:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EFB8538B67
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 08:28:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243907AbiEaGEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 02:04:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33024 "EHLO
+        id S243547AbiEaG2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 02:28:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238360AbiEaGEd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 02:04:33 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6215A915BE;
-        Mon, 30 May 2022 23:04:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=3CbF3u5gxI6nZsA0r6n4BrV1CPCofWtVl71+qUSAels=; b=qpAnrVzAgPZagunlQwv8l4h7wd
-        2C5im6O+hHfn/TgEOmHVVP9OcuvueyToIsWpd+12VpgdJH7Ycz0Qj8Twm9iHtQQFpTqoOOkpEbSCd
-        109aMzYNZRTbe/3bQZDNfEi3rRF2SqtSNWdQxdRLrWzWkG/Xq+uSqCvXSkHeAw9o3eBC3xpfIRnuc
-        kiVcpoj82nAbXJHmAA07y7uVK1wJIhfh3SlH7DVXBlXT6fiAt1VBJJdyVQkZzXZtsYN5Wt/yucptF
-        7ojaVgA3ql83Ey/tgbq2EI23KHcQ16zScKSzB+WWs8O8bmEX4/zFef4JzuOcAWhjkX4wqFwxvFu+L
-        GqJQ81lA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nvuzY-009UJb-7m; Tue, 31 May 2022 06:04:32 +0000
-Date:   Mon, 30 May 2022 23:04:32 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Joe Damato <jdamato@fastly.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, x86@kernel.org
-Subject: Re: [RFC,net-next,x86 0/6] Nontemporal copies in unix socket write
- path
-Message-ID: <YpWv8JACaqd5JuHN@infradead.org>
-References: <1652241268-46732-1-git-send-email-jdamato@fastly.com>
+        with ESMTP id S232025AbiEaG2D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 02:28:03 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF15D3FDBF;
+        Mon, 30 May 2022 23:28:01 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LC2Lm3XT0zBrnj;
+        Tue, 31 May 2022 14:24:48 +0800 (CST)
+Received: from [10.174.179.200] (10.174.179.200) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 31 May 2022 14:27:53 +0800
+Subject: Re: [PATCH net] macsec: fix UAF bug for real_dev
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <ap420073@gmail.com>
+References: <20220528093659.3186312-1-william.xuanziyang@huawei.com>
+ <20220530212338.7a7d4145@kernel.org>
+From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
+Message-ID: <71f44378-3961-b751-1ae9-f9c4bc4b061a@huawei.com>
+Date:   Tue, 31 May 2022 14:27:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1652241268-46732-1-git-send-email-jdamato@fastly.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220530212338.7a7d4145@kernel.org>
+Content-Type: text/plain; charset="gbk"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.200]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From the iov_iter point of view:  please follow the way how the inatomic
-nocache helpers are implemented instead of adding costly funtion
-pointers.
+> On Sat, 28 May 2022 17:36:59 +0800 Ziyang Xuan wrote:
+>> --- a/drivers/net/macsec.c
+>> +++ b/drivers/net/macsec.c
+>> @@ -107,6 +107,7 @@ struct pcpu_secy_stats {
+>>  struct macsec_dev {
+>>  	struct macsec_secy secy;
+>>  	struct net_device *real_dev;
+>> +	netdevice_tracker dev_tracker;
+> 
+> You need to add kdoc for @dev_tracker.
+
+Yes, it's right. I will give v2 later.
+
+Thank you!
+> .
+> 
