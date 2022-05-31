@@ -2,272 +2,536 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B20C538A31
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 05:24:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A89FB538A29
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 05:18:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243627AbiEaDYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 May 2022 23:24:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53972 "EHLO
+        id S239358AbiEaDSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 May 2022 23:18:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231163AbiEaDYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 23:24:40 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47DC91585
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 20:24:38 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id u12-20020a17090a1d4c00b001df78c7c209so1172641pju.1
-        for <netdev@vger.kernel.org>; Mon, 30 May 2022 20:24:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=QLemg35dtO0TggrOtHsmX2G8r9FZ0B/KT3RLAejsh4U=;
-        b=rC54PeeMuU8j1dq+b34pSGbGrDtfYR37oseYqNxdFvlQSERPokecvYHWf8gIyG/zms
-         26C6vVO6Lo8uYlfas7oTx3YECIhiuOI0ycylVWHwCJHJh9YbC7naOatjDp4H2C0dQc6/
-         5msyN/q0LSM5BUlAUXdkylWWzWcMySYE5p/KNjDoS/yqYuHBMJ6nJ8D0we5fGlGakM8/
-         Pl9ak5WZuD4rcyVmhrQYtWDeWyrMljDocktriE4F8kuu7itM1x9eQ07FYbW+AmU4QC6R
-         gzxV5VGFhSA11k3VH9Mq89S/28tZhKbBxXsgtgOptDsHsJnssWeiTGDJTPuyy6xY9235
-         AIJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=QLemg35dtO0TggrOtHsmX2G8r9FZ0B/KT3RLAejsh4U=;
-        b=aLssI2goKrFhMu3tMDJQOClOH/xQmnj5jsY6C/13W4u5XbUFtsv9snnTJIcGv9cKKy
-         iqmI81i3gFwPhcLhhkHGfFIWk79k63KTu71CLb2I0qTvMxdLUy3w6bJlS3AvuK82GX4g
-         6mKqac1mxahECCx3KXq4YmLqTp/yMXNLhB6azcsUrzGDuPG8txwdUtW+ZBmVOhTrgdNv
-         wvl1DdU7k8Qui3uXIAUYq4/JO279FIyK0AuG+NQuYA5Kazbs8IZqRC24IPTpQ5nwZpzt
-         9TmZhf/j+oIxk1cO3YOKZNBzJGoggkZiLkVlk0+hi4nHb3cErgkNSqCbCjyxWV1fzY10
-         QXUw==
-X-Gm-Message-State: AOAM533a5m55p0dbCTxtNRkeZRn5NqwbualwWWABCrLemlBx0LIMiejd
-        hhCDaFYU8r5wbri7o+IXHFMzsg==
-X-Google-Smtp-Source: ABdhPJyVXeL/+sKZJvszTSuatiJtXzvb33Ze9d4ceYMbJ7rWDV4jLin5P6/QcPPZPdrhwG127DAP0A==
-X-Received: by 2002:a17:902:e552:b0:163:6a5e:4e0d with SMTP id n18-20020a170902e55200b001636a5e4e0dmr27124956plf.66.1653967478391;
-        Mon, 30 May 2022 20:24:38 -0700 (PDT)
-Received: from [10.71.57.194] ([139.177.225.225])
-        by smtp.gmail.com with ESMTPSA id z3-20020a17090a8b8300b001e2afd35791sm476368pjn.18.2022.05.30.20.24.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 May 2022 20:24:38 -0700 (PDT)
-Message-ID: <1302ea6d-3b25-bcc9-e988-9f538231e088@bytedance.com>
-Date:   Tue, 31 May 2022 11:24:30 +0800
+        with ESMTP id S231163AbiEaDS3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 May 2022 23:18:29 -0400
+Received: from smtpproxy21.qq.com (smtpbg701.qq.com [203.205.195.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 271E65C358
+        for <netdev@vger.kernel.org>; Mon, 30 May 2022 20:18:25 -0700 (PDT)
+X-QQ-mid: bizesmtp67t1653967089tj039kls
+Received: from wxdbg.localdomain.com ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 31 May 2022 11:17:55 +0800 (CST)
+X-QQ-SSF: 01400000002000F0P000B00A0000000
+X-QQ-FEAT: mRMOzK475hm8dycjZGin/5Lg+RLE0EoIs9i/5b9Dzag1ey0sPU8qv/7Zqmd+c
+        /xV8R6hNigaLvVwCPgGW0c+sQaOMGfQPzceRhITA/1+DJ6h0wJysxSNgplFlYC+8k/NWbzB
+        mrfGycOtxSo84LFDd+we3biCkFnf/qeVJyrEuzKRAXc/u+u7mfYNTtM538/cpgn6PlKd3ee
+        9mSBf70PiwgQjaYV8K9XyjXPcLIguCbCE/y+PaQJ1vec+YHtDM9kL8rmW0eHXbtp7prWkLQ
+        56DWTGquA+88fl0sE+8UfJe8C4L4vVoFRRi7p2ml4fcBHaEx/YNM4LQMwUtDpOIYa4FQUbw
+        KIN4BHbRsjOpwSqeSrXb7YWpLooSA==
+X-QQ-GoodBg: 2
+From:   Jiawen Wu <jiawenwu@trustnetic.com>
+To:     netdev@vger.kernel.org
+Cc:     Jiawen Wu <jiawenwu@trustnetic.com>
+Subject: [PATCH net-next v4] net: txgbe: Add build support for txgbe
+Date:   Tue, 31 May 2022 11:26:40 +0800
+Message-Id: <20220531032640.27678-1-jiawenwu@trustnetic.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: Re: [PATCH v3 1/2] bpf: avoid grabbing spin_locks of all cpus
- when no free elems
-To:     Daniel Borkmann <daniel@iogearbox.net>, ast@kernel.org,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
-        songmuchun@bytedance.com, wangdongdong.6@bytedance.com,
-        cong.wang@bytedance.com, zhouchengming@bytedance.com
-References: <20220530091340.53443-1-zhoufeng.zf@bytedance.com>
- <20220530091340.53443-2-zhoufeng.zf@bytedance.com>
- <3cd2bc87-d766-0466-7079-eaff14fbe422@iogearbox.net>
-From:   Feng Zhou <zhoufeng.zf@bytedance.com>
-In-Reply-To: <3cd2bc87-d766-0466-7079-eaff14fbe422@iogearbox.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:trustnetic.com:qybgforeign:qybgforeign4
+X-QQ-Bgrelay: 1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-在 2022/5/31 上午5:20, Daniel Borkmann 写道:
-> On 5/30/22 11:13 AM, Feng zhou wrote:
->> From: Feng Zhou <zhoufeng.zf@bytedance.com>
->>
->> This patch add is_empty in pcpu_freelist_head to check freelist
->> having free or not. If having, grab spin_lock, or check next cpu's
->> freelist.
->>
->> Before patch: hash_map performance
->> ./map_perf_test 1
->> 0:hash_map_perf pre-alloc 975345 events per sec
->> 4:hash_map_perf pre-alloc 855367 events per sec
->> 12:hash_map_perf pre-alloc 860862 events per sec
->> 8:hash_map_perf pre-alloc 849561 events per sec
->> 3:hash_map_perf pre-alloc 849074 events per sec
->> 6:hash_map_perf pre-alloc 847120 events per sec
->> 10:hash_map_perf pre-alloc 845047 events per sec
->> 5:hash_map_perf pre-alloc 841266 events per sec
->> 14:hash_map_perf pre-alloc 849740 events per sec
->> 2:hash_map_perf pre-alloc 839598 events per sec
->> 9:hash_map_perf pre-alloc 838695 events per sec
->> 11:hash_map_perf pre-alloc 845390 events per sec
->> 7:hash_map_perf pre-alloc 834865 events per sec
->> 13:hash_map_perf pre-alloc 842619 events per sec
->> 1:hash_map_perf pre-alloc 804231 events per sec
->> 15:hash_map_perf pre-alloc 795314 events per sec
->>
->> hash_map the worst: no free
->> ./map_perf_test 2048
->> 6:worse hash_map_perf pre-alloc 28628 events per sec
->> 5:worse hash_map_perf pre-alloc 28553 events per sec
->> 11:worse hash_map_perf pre-alloc 28543 events per sec
->> 3:worse hash_map_perf pre-alloc 28444 events per sec
->> 1:worse hash_map_perf pre-alloc 28418 events per sec
->> 7:worse hash_map_perf pre-alloc 28427 events per sec
->> 13:worse hash_map_perf pre-alloc 28330 events per sec
->> 14:worse hash_map_perf pre-alloc 28263 events per sec
->> 9:worse hash_map_perf pre-alloc 28211 events per sec
->> 15:worse hash_map_perf pre-alloc 28193 events per sec
->> 12:worse hash_map_perf pre-alloc 28190 events per sec
->> 10:worse hash_map_perf pre-alloc 28129 events per sec
->> 8:worse hash_map_perf pre-alloc 28116 events per sec
->> 4:worse hash_map_perf pre-alloc 27906 events per sec
->> 2:worse hash_map_perf pre-alloc 27801 events per sec
->> 0:worse hash_map_perf pre-alloc 27416 events per sec
->> 3:worse hash_map_perf pre-alloc 28188 events per sec
->>
->> ftrace trace
->>
->> 0)               |  htab_map_update_elem() {
->> 0)   0.198 us    |    migrate_disable();
->> 0)               |    _raw_spin_lock_irqsave() {
->> 0)   0.157 us    |      preempt_count_add();
->> 0)   0.538 us    |    }
->> 0)   0.260 us    |    lookup_elem_raw();
->> 0)               |    alloc_htab_elem() {
->> 0)               |      __pcpu_freelist_pop() {
->> 0)               |        _raw_spin_lock() {
->> 0)   0.152 us    |          preempt_count_add();
->> 0)   0.352 us    |          native_queued_spin_lock_slowpath();
->> 0)   1.065 us    |        }
->>          |      ...
->> 0)               |        _raw_spin_unlock() {
->> 0)   0.254 us    |          preempt_count_sub();
->> 0)   0.555 us    |        }
->> 0) + 25.188 us   |      }
->> 0) + 25.486 us   |    }
->> 0)               |    _raw_spin_unlock_irqrestore() {
->> 0)   0.155 us    |      preempt_count_sub();
->> 0)   0.454 us    |    }
->> 0)   0.148 us    |    migrate_enable();
->> 0) + 28.439 us   |  }
->>
->> The test machine is 16C, trying to get spin_lock 17 times, in addition
->> to 16c, there is an extralist.
->>
->> after patch: hash_map performance
->> ./map_perf_test 1
->> 0:hash_map_perf pre-alloc 969348 events per sec
->> 10:hash_map_perf pre-alloc 906526 events per sec
->> 11:hash_map_perf pre-alloc 904557 events per sec
->> 9:hash_map_perf pre-alloc 902384 events per sec
->> 15:hash_map_perf pre-alloc 912287 events per sec
->> 14:hash_map_perf pre-alloc 905689 events per sec
->> 12:hash_map_perf pre-alloc 903680 events per sec
->> 13:hash_map_perf pre-alloc 902631 events per sec
->> 8:hash_map_perf pre-alloc 875369 events per sec
->> 4:hash_map_perf pre-alloc 862808 events per sec
->> 1:hash_map_perf pre-alloc 857218 events per sec
->> 2:hash_map_perf pre-alloc 852875 events per sec
->> 5:hash_map_perf pre-alloc 846497 events per sec
->> 6:hash_map_perf pre-alloc 828467 events per sec
->> 3:hash_map_perf pre-alloc 812542 events per sec
->> 7:hash_map_perf pre-alloc 805336 events per sec
->>
->> hash_map worst: no free
->> ./map_perf_test 2048
->> 7:worse hash_map_perf pre-alloc 391104 events per sec
->> 4:worse hash_map_perf pre-alloc 388073 events per sec
->> 5:worse hash_map_perf pre-alloc 387038 events per sec
->> 1:worse hash_map_perf pre-alloc 386546 events per sec
->> 0:worse hash_map_perf pre-alloc 384590 events per sec
->> 11:worse hash_map_perf pre-alloc 379378 events per sec
->> 10:worse hash_map_perf pre-alloc 375480 events per sec
->> 12:worse hash_map_perf pre-alloc 372394 events per sec
->> 6:worse hash_map_perf pre-alloc 367692 events per sec
->> 3:worse hash_map_perf pre-alloc 363970 events per sec
->> 9:worse hash_map_perf pre-alloc 364008 events per sec
->> 8:worse hash_map_perf pre-alloc 363759 events per sec
->> 2:worse hash_map_perf pre-alloc 360743 events per sec
->> 14:worse hash_map_perf pre-alloc 361195 events per sec
->> 13:worse hash_map_perf pre-alloc 360276 events per sec
->> 15:worse hash_map_perf pre-alloc 360057 events per sec
->> 0:worse hash_map_perf pre-alloc 378177 events per sec
->>
->> ftrace trace
->> 0)               |  htab_map_update_elem() {
->> 0)   0.317 us    |    migrate_disable();
->> 0)               |    _raw_spin_lock_irqsave() {
->> 0)   0.260 us    |      preempt_count_add();
->> 0)   1.803 us    |    }
->> 0)   0.276 us    |    lookup_elem_raw();
->> 0)               |    alloc_htab_elem() {
->> 0)   0.586 us    |      __pcpu_freelist_pop();
->> 0)   0.945 us    |    }
->> 0)               |    _raw_spin_unlock_irqrestore() {
->> 0)   0.160 us    |      preempt_count_sub();
->> 0)   0.972 us    |    }
->> 0)   0.657 us    |    migrate_enable();
->> 0)   8.669 us    |  }
->>
->> It can be seen that after adding this patch, the map performance is
->> almost not degraded, and when free=0, first check is_empty instead of
->> directly acquiring spin_lock.
->>
->> As for why to add is_empty instead of directly judging head->first, my
->> understanding is this, head->first is frequently modified during 
->> updating
->> map, which will lead to invalid other cpus's cache, and is_empty is 
->> after
->> freelist having no free elems will be changed, the performance will 
->> be better.
->>
->> Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
->> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
->> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
->> ---
->>   kernel/bpf/percpu_freelist.c | 28 +++++++++++++++++++++++++---
->>   kernel/bpf/percpu_freelist.h |  1 +
->>   2 files changed, 26 insertions(+), 3 deletions(-)
-> [...]
->>       /* per cpu lists are all empty, try extralist */
->> +    if (s->extralist.is_empty)
->> +        return NULL;
->>       raw_spin_lock(&s->extralist.lock);
->>       node = s->extralist.first;
->> -    if (node)
->> +    if (node) {
->>           s->extralist.first = node->next;
->> +        if (!s->extralist.first)
->> +            s->extralist.is_empty = true;
->> +    }
->>       raw_spin_unlock(&s->extralist.lock);
->>       return node;
->>   }
->> @@ -164,15 +178,20 @@ ___pcpu_freelist_pop_nmi(struct pcpu_freelist *s)
->>       orig_cpu = cpu = raw_smp_processor_id();
->>       while (1) {
->>           head = per_cpu_ptr(s->freelist, cpu);
->> +        if (head->is_empty)
->
-> This should use READ_ONCE/WRITE_ONCE pair for head->is_empty.
+Add doc build infrastructure for txgbe driver.
+Initialize PCI memory space for WangXun 10 Gigabit Ethernet devices.
 
-Yes, will do. Thanks.
+Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
+---
+ .../device_drivers/ethernet/index.rst         |   1 +
+ .../device_drivers/ethernet/wangxun/txgbe.rst |  20 ++
+ MAINTAINERS                                   |   7 +
+ drivers/net/ethernet/Kconfig                  |   1 +
+ drivers/net/ethernet/Makefile                 |   1 +
+ drivers/net/ethernet/wangxun/Kconfig          |  32 ++++
+ drivers/net/ethernet/wangxun/Makefile         |   6 +
+ drivers/net/ethernet/wangxun/txgbe/Makefile   |   9 +
+ drivers/net/ethernet/wangxun/txgbe/txgbe.h    |  24 +++
+ .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 178 ++++++++++++++++++
+ .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  57 ++++++
+ drivers/pci/quirks.c                          |  15 ++
+ include/linux/pci_ids.h                       |   2 +
+ 13 files changed, 353 insertions(+)
+ create mode 100644 Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
+ create mode 100644 drivers/net/ethernet/wangxun/Kconfig
+ create mode 100644 drivers/net/ethernet/wangxun/Makefile
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/Makefile
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe.h
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+ create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
 
->
->> +            goto next_cpu;
->>           if (raw_spin_trylock(&head->lock)) {
->>               node = head->first;
->>               if (node) {
->>                   head->first = node->next;
->> +                if (!head->first)
->> +                    head->is_empty = true;
->>                   raw_spin_unlock(&head->lock);
->>                   return node;
->>               }
->>               raw_spin_unlock(&head->lock);
->>           }
->> +next_cpu:
->>           cpu = cpumask_next(cpu, cpu_possible_mask);
->>           if (cpu >= nr_cpu_ids)
->>               cpu = 0;
+diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/Documentation/networking/device_drivers/ethernet/index.rst
+index 6b5dc203da2b..4766ac9d260e 100644
+--- a/Documentation/networking/device_drivers/ethernet/index.rst
++++ b/Documentation/networking/device_drivers/ethernet/index.rst
+@@ -52,6 +52,7 @@ Contents:
+    ti/am65_nuss_cpsw_switchdev
+    ti/tlan
+    toshiba/spider_net
++   wangxun/txgbe
+ 
+ .. only::  subproject and html
+ 
+diff --git a/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst b/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
+new file mode 100644
+index 000000000000..eaa87dbe8848
+--- /dev/null
++++ b/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
+@@ -0,0 +1,20 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++================================================================
++Linux Base Driver for WangXun(R) 10 Gigabit PCI Express Adapters
++================================================================
++
++WangXun 10 Gigabit Linux driver.
++Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd.
++
++
++Contents
++========
++
++- Support
++
++
++Support
++=======
++If you got any problem, contact Wangxun support team via support@trustnetic.com
++and Cc: netdev.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f468864fd268..a18a7ea9e671 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -21208,6 +21208,13 @@ L:	linux-input@vger.kernel.org
+ S:	Maintained
+ F:	drivers/input/tablet/wacom_serial4.c
+ 
++WANGXUN ETHERNET DRIVER
++M:	Jiawen Wu <jiawenwu@trustnetic.com>
++L:	netdev@vger.kernel.org
++S:	Maintained
++F:	Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
++F:	drivers/net/ethernet/wangxun/
++
+ WATCHDOG DEVICE DRIVERS
+ M:	Wim Van Sebroeck <wim@linux-watchdog.org>
+ M:	Guenter Roeck <linux@roeck-us.net>
+diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
+index 827993022386..e505cb1c171b 100644
+--- a/drivers/net/ethernet/Kconfig
++++ b/drivers/net/ethernet/Kconfig
+@@ -84,6 +84,7 @@ source "drivers/net/ethernet/huawei/Kconfig"
+ source "drivers/net/ethernet/i825xx/Kconfig"
+ source "drivers/net/ethernet/ibm/Kconfig"
+ source "drivers/net/ethernet/intel/Kconfig"
++source "drivers/net/ethernet/wangxun/Kconfig"
+ source "drivers/net/ethernet/xscale/Kconfig"
+ 
+ config JME
+diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
+index 8ef43e0c33c0..82db3b15e421 100644
+--- a/drivers/net/ethernet/Makefile
++++ b/drivers/net/ethernet/Makefile
+@@ -96,6 +96,7 @@ obj-$(CONFIG_NET_VENDOR_TOSHIBA) += toshiba/
+ obj-$(CONFIG_NET_VENDOR_TUNDRA) += tundra/
+ obj-$(CONFIG_NET_VENDOR_VERTEXCOM) += vertexcom/
+ obj-$(CONFIG_NET_VENDOR_VIA) += via/
++obj-$(CONFIG_NET_VENDOR_WANGXUN) += wangxun/
+ obj-$(CONFIG_NET_VENDOR_WIZNET) += wiznet/
+ obj-$(CONFIG_NET_VENDOR_XILINX) += xilinx/
+ obj-$(CONFIG_NET_VENDOR_XIRCOM) += xircom/
+diff --git a/drivers/net/ethernet/wangxun/Kconfig b/drivers/net/ethernet/wangxun/Kconfig
+new file mode 100644
+index 000000000000..baa1f0a5cc37
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/Kconfig
+@@ -0,0 +1,32 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Wangxun network device configuration
++#
++
++config NET_VENDOR_WANGXUN
++	bool "Wangxun devices"
++	default y
++	help
++	  If you have a network (Ethernet) card belonging to this class, say Y.
++
++	  Note that the answer to this question doesn't directly affect the
++	  kernel: saying N will just cause the configurator to skip all
++	  the questions about Intel cards. If you say Y, you will be asked for
++	  your specific card in the following questions.
++
++if NET_VENDOR_WANGXUN
++
++config TXGBE
++	tristate "Wangxun(R) 10GbE PCI Express adapters support"
++	depends on PCI
++	help
++	  This driver supports Wangxun(R) 10GbE PCI Express family of
++	  adapters.
++
++	  More specific information on configuring the driver is in
++	  <file:Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst>.
++
++	  To compile this driver as a module, choose M here. The module
++	  will be called txgbe.
++
++endif # NET_VENDOR_WANGXUN
+diff --git a/drivers/net/ethernet/wangxun/Makefile b/drivers/net/ethernet/wangxun/Makefile
+new file mode 100644
+index 000000000000..c34db1bead25
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/Makefile
+@@ -0,0 +1,6 @@
++# SPDX-License-Identifier: GPL-2.0
++#
++# Makefile for the Wangxun network device drivers.
++#
++
++obj-$(CONFIG_TXGBE) += txgbe/
+diff --git a/drivers/net/ethernet/wangxun/txgbe/Makefile b/drivers/net/ethernet/wangxun/txgbe/Makefile
+new file mode 100644
+index 000000000000..431303ca75b4
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/txgbe/Makefile
+@@ -0,0 +1,9 @@
++# SPDX-License-Identifier: GPL-2.0
++# Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd.
++#
++# Makefile for the Wangxun(R) 10GbE PCI Express ethernet driver
++#
++
++obj-$(CONFIG_TXGBE) += txgbe.o
++
++txgbe-objs := txgbe_main.o
+diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe.h b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
+new file mode 100644
+index 000000000000..4e2c637f7c73
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
+@@ -0,0 +1,24 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
++
++#ifndef _TXGBE_H_
++#define _TXGBE_H_
++
++#include "txgbe_type.h"
++
++#define TXGBE_MAX_FDIR_INDICES          63
++
++#define TXGBE_MAX_RX_QUEUES   (TXGBE_MAX_FDIR_INDICES + 1)
++#define TXGBE_MAX_TX_QUEUES   (TXGBE_MAX_FDIR_INDICES + 1)
++
++/* board specific private data structure */
++struct txgbe_adapter {
++	u8 __iomem *io_addr;    /* Mainly for iounmap use */
++	/* OS defined structs */
++	struct net_device *netdev;
++	struct pci_dev *pdev;
++};
++
++#define TXGBE_NAME "txgbe"
++
++#endif /* _TXGBE_H_ */
+diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+new file mode 100644
+index 000000000000..f465ea5ba09c
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+@@ -0,0 +1,178 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
++
++#include <linux/types.h>
++#include <linux/module.h>
++#include <linux/pci.h>
++#include <linux/netdevice.h>
++#include <linux/string.h>
++#include <linux/aer.h>
++#include <linux/etherdevice.h>
++
++#include "txgbe.h"
++
++char txgbe_driver_name[32] = TXGBE_NAME;
++
++/* txgbe_pci_tbl - PCI Device ID Table
++ *
++ * Wildcard entries (PCI_ANY_ID) should come last
++ * Last entry must be all 0s
++ *
++ * { Vendor ID, Device ID, SubVendor ID, SubDevice ID,
++ *   Class, Class Mask, private data (not used) }
++ */
++static const struct pci_device_id txgbe_pci_tbl[] = {
++	{ PCI_VDEVICE(WANGXUN, TXGBE_DEV_ID_SP1000), 0},
++	{ PCI_VDEVICE(WANGXUN, TXGBE_DEV_ID_WX1820), 0},
++	/* required last entry */
++	{ .device = 0 }
++};
++
++#define DEFAULT_DEBUG_LEVEL_SHIFT 3
++
++static void txgbe_dev_shutdown(struct pci_dev *pdev, bool *enable_wake)
++{
++	struct txgbe_adapter *adapter = pci_get_drvdata(pdev);
++	struct net_device *netdev = adapter->netdev;
++
++	netif_device_detach(netdev);
++
++	pci_disable_device(pdev);
++}
++
++static void txgbe_shutdown(struct pci_dev *pdev)
++{
++	bool wake;
++
++	txgbe_dev_shutdown(pdev, &wake);
++
++	if (system_state == SYSTEM_POWER_OFF) {
++		pci_wake_from_d3(pdev, wake);
++		pci_set_power_state(pdev, PCI_D3hot);
++	}
++}
++
++/**
++ * txgbe_probe - Device Initialization Routine
++ * @pdev: PCI device information struct
++ * @ent: entry in txgbe_pci_tbl
++ *
++ * Returns 0 on success, negative on failure
++ *
++ * txgbe_probe initializes an adapter identified by a pci_dev structure.
++ * The OS initialization, configuring of the adapter private structure,
++ * and a hardware reset occur.
++ **/
++static int txgbe_probe(struct pci_dev *pdev,
++		       const struct pci_device_id __always_unused *ent)
++{
++	struct txgbe_adapter *adapter = NULL;
++	struct net_device *netdev;
++	int err, pci_using_dac;
++
++	err = pci_enable_device_mem(pdev);
++	if (err)
++		return err;
++
++	if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(64)) &&
++	    !dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64))) {
++		pci_using_dac = 1;
++	} else {
++		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
++		if (err) {
++			err = dma_set_coherent_mask(&pdev->dev,
++						    DMA_BIT_MASK(32));
++			if (err) {
++				dev_err(&pdev->dev,
++					"No usable DMA configuration, aborting\n");
++				goto err_dma;
++			}
++		}
++		pci_using_dac = 0;
++	}
++
++	err = pci_request_selected_regions(pdev,
++					   pci_select_bars(pdev, IORESOURCE_MEM),
++					   txgbe_driver_name);
++	if (err) {
++		dev_err(&pdev->dev,
++			"pci_request_selected_regions failed 0x%x\n", err);
++		goto err_pci_reg;
++	}
++
++	pci_enable_pcie_error_reporting(pdev);
++	pci_set_master(pdev);
++
++	netdev = devm_alloc_etherdev_mqs(&pdev->dev,
++					 sizeof(struct txgbe_adapter),
++					 TXGBE_MAX_TX_QUEUES,
++					 TXGBE_MAX_RX_QUEUES);
++	if (!netdev) {
++		err = -ENOMEM;
++		goto err_alloc_etherdev;
++	}
++
++	SET_NETDEV_DEV(netdev, &pdev->dev);
++
++	adapter = netdev_priv(netdev);
++	adapter->netdev = netdev;
++	adapter->pdev = pdev;
++
++	adapter->io_addr = devm_ioremap(&pdev->dev,
++					pci_resource_start(pdev, 0),
++					pci_resource_len(pdev, 0));
++	if (!adapter->io_addr) {
++		err = -EIO;
++		goto err_ioremap;
++	}
++
++	if (pci_using_dac)
++		netdev->features |= NETIF_F_HIGHDMA;
++
++	pci_set_drvdata(pdev, adapter);
++
++	return 0;
++
++err_ioremap:
++err_alloc_etherdev:
++	pci_release_selected_regions(pdev,
++				     pci_select_bars(pdev, IORESOURCE_MEM));
++err_pci_reg:
++err_dma:
++	pci_disable_device(pdev);
++	return err;
++}
++
++/**
++ * txgbe_remove - Device Removal Routine
++ * @pdev: PCI device information struct
++ *
++ * txgbe_remove is called by the PCI subsystem to alert the driver
++ * that it should release a PCI device.  The could be caused by a
++ * Hot-Plug event, or because the driver is going to be removed from
++ * memory.
++ **/
++static void txgbe_remove(struct pci_dev *pdev)
++{
++	pci_release_selected_regions(pdev,
++				     pci_select_bars(pdev, IORESOURCE_MEM));
++
++	pci_disable_pcie_error_reporting(pdev);
++
++	pci_disable_device(pdev);
++}
++
++static struct pci_driver txgbe_driver = {
++	.name     = txgbe_driver_name,
++	.id_table = txgbe_pci_tbl,
++	.probe    = txgbe_probe,
++	.remove   = txgbe_remove,
++	.shutdown = txgbe_shutdown,
++};
++
++module_pci_driver(txgbe_driver);
++
++MODULE_DEVICE_TABLE(pci, txgbe_pci_tbl);
++MODULE_AUTHOR("Beijing WangXun Technology Co., Ltd, <software@trustnetic.com>");
++MODULE_DESCRIPTION("WangXun(R) 10 Gigabit PCI Express Network Driver");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
+new file mode 100644
+index 000000000000..b2e329f50bae
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
+@@ -0,0 +1,57 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
++
++#ifndef _TXGBE_TYPE_H_
++#define _TXGBE_TYPE_H_
++
++#include <linux/types.h>
++#include <linux/netdevice.h>
++
++/************ txgbe_register.h ************/
++/* Vendor ID */
++#ifndef PCI_VENDOR_ID_WANGXUN
++#define PCI_VENDOR_ID_WANGXUN                   0x8088
++#endif
++
++/* Device IDs */
++#define TXGBE_DEV_ID_SP1000                     0x1001
++#define TXGBE_DEV_ID_WX1820                     0x2001
++
++/* Subsystem IDs */
++/* SFP */
++#define TXGBE_ID_SP1000_SFP                     0x0000
++#define TXGBE_ID_WX1820_SFP                     0x2000
++#define TXGBE_ID_SFP                            0x00
++
++/* copper */
++#define TXGBE_ID_SP1000_XAUI                    0x1010
++#define TXGBE_ID_WX1820_XAUI                    0x2010
++#define TXGBE_ID_XAUI                           0x10
++#define TXGBE_ID_SP1000_SGMII                   0x1020
++#define TXGBE_ID_WX1820_SGMII                   0x2020
++#define TXGBE_ID_SGMII                          0x20
++/* backplane */
++#define TXGBE_ID_SP1000_KR_KX_KX4               0x1030
++#define TXGBE_ID_WX1820_KR_KX_KX4               0x2030
++#define TXGBE_ID_KR_KX_KX4                      0x30
++/* MAC Interface */
++#define TXGBE_ID_SP1000_MAC_XAUI                0x1040
++#define TXGBE_ID_WX1820_MAC_XAUI                0x2040
++#define TXGBE_ID_MAC_XAUI                       0x40
++#define TXGBE_ID_SP1000_MAC_SGMII               0x1060
++#define TXGBE_ID_WX1820_MAC_SGMII               0x2060
++#define TXGBE_ID_MAC_SGMII                      0x60
++
++#define TXGBE_NCSI_SUP                          0x8000
++#define TXGBE_NCSI_MASK                         0x8000
++#define TXGBE_WOL_SUP                           0x4000
++#define TXGBE_WOL_MASK                          0x4000
++#define TXGBE_DEV_MASK                          0xf0
++
++/* Combined interface*/
++#define TXGBE_ID_SFI_XAUI			0x50
++
++/* Revision ID */
++#define TXGBE_SP_MPW  1
++
++#endif /* _TXGBE_TYPE_H_ */
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index da829274fc66..bed2054959cc 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -5895,3 +5895,17 @@ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, 0x1533, rom_bar_overlap_defect);
+ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, 0x1536, rom_bar_overlap_defect);
+ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, 0x1537, rom_bar_overlap_defect);
+ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, 0x1538, rom_bar_overlap_defect);
++
++static void quirk_wangxun_set_read_req_size(struct pci_dev *pdev)
++{
++	u16 ctl;
++
++	pcie_capability_read_word(pdev, PCI_EXP_DEVCTL, &ctl);
++
++	if (((ctl & PCI_EXP_DEVCTL_READRQ) != PCI_EXP_DEVCTL_READRQ_128B) &&
++	    ((ctl & PCI_EXP_DEVCTL_READRQ) != PCI_EXP_DEVCTL_READRQ_256B))
++		pcie_capability_clear_and_set_word(pdev, PCI_EXP_DEVCTL,
++						   PCI_EXP_DEVCTL_READRQ,
++						   PCI_EXP_DEVCTL_READRQ_256B);
++}
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_WANGXUN, PCI_ANY_ID,
++			 quirk_wangxun_set_read_req_size);
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index 0178823ce8c2..c86f61480c7e 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -3105,4 +3105,6 @@
+ 
+ #define PCI_VENDOR_ID_NCUBE		0x10ff
+ 
++#define PCI_VENDOR_ID_WANGXUN           0x8088
++
+ #endif /* _LINUX_PCI_IDS_H */
+-- 
+2.27.0
+
 
 
