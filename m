@@ -2,125 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74A74539858
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 22:56:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE3BB53986E
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 23:10:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347662AbiEaU4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 16:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53868 "EHLO
+        id S1347877AbiEaVKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 17:10:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243326AbiEaU4b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 16:56:31 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2279CF75;
-        Tue, 31 May 2022 13:56:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654030588; x=1685566588;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=KmOBMBNjMDvpHex0XEgSTh2uGSxfl8GV13MikE3newM=;
-  b=MHoDQ0HOQskKGu5ovr5S7czoNjWNvtm/RRusmxN9w6vAVxpErzBn0qgk
-   NgaMYgh8eGYd3d9yY70NrMFDBeG0wF1KvB63Y68hXLb6BarAQ0af4sLBM
-   wcCfN6SRUvyAQadMp6WoC5RDDUhshJwNVKbYUzR6vVijOQ8UnhUptHV3X
-   fIYDPTZAfjRmgnTgXyN6LKpAIEvVstVkGYAk35YiXIaDpeZ4Vd9NCltHY
-   nZ3Ei71nS4b7Ya7iXaE+mCkIn8733KJ5G0v18LUwtkpa0Dl2YJdzXBg27
-   a/4Z/U6O6CsBQQzamdISCaLnr+T8oeI+uvhlsGWoPIoeECnNXAjJHabOW
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="274185873"
-X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="274185873"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 13:56:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="706748538"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 31 May 2022 13:56:26 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nw8uf-00034W-Ih;
-        Tue, 31 May 2022 20:56:25 +0000
-Date:   Wed, 1 Jun 2022 04:55:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Bo Liu <liubo03@inspur.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [mst-vhost:vhost 62/65] drivers/virtio/virtio_ring.c:1783:9: error:
- use of undeclared identifier 'vq'
-Message-ID: <202206010444.EGBXgPMJ-lkp@intel.com>
+        with ESMTP id S235409AbiEaVKl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 17:10:41 -0400
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F610D10C;
+        Tue, 31 May 2022 14:10:40 -0700 (PDT)
+Received: by mail-ot1-f48.google.com with SMTP id r3-20020a9d5cc3000000b0060ae1789875so10390819oti.13;
+        Tue, 31 May 2022 14:10:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jzW1JdSSaJMwGg3qesFwvu8mpZHhPD4+MXniK61Rt3c=;
+        b=E1MoRHMgdIaBH/BWBDdqy7BTwcIWpSvjOR6D3V4i2aaj2aI8Q0wRoleHA+YLl3oDtB
+         V7hW4/YJ/0G2Cn29SBLs3ggMFDvf7E0Qq9Z/i7EJbnNG3ZVJAWFEStEJ8nmxKpTeleG6
+         0YTJSBOBd74iSPm6brgpTIi8xcdU3kEpZRLniogcLE3tUmKPS5GpmB2de0OYOPerj34b
+         UrdUyNPtyNEUeaYs9oh+DPUSkUG7hMKRb3r2EZ9P2tKwAhWL8/tgH293amq84ku4mmYF
+         q4cHhKOZ5nhQmB+ZsKGHx4YoA9vnQikGEZyEQxIUZ3RbuP0jfQe8CIWmm/XUmwF0xv2C
+         tG2w==
+X-Gm-Message-State: AOAM53338ZlIiRnx4MDZs6NeAxHrWByV4P5ovP+1averNMtVKSrFcFhV
+        2TETj0VWW5uYWPc1xKTfPw==
+X-Google-Smtp-Source: ABdhPJxNbIKdjEPRgo4JQ5V9dqSJhYalfYXMYMRH+TkW2RI3oPMZ9jeXHWstJRfOkTdb8QXyB0wqew==
+X-Received: by 2002:a05:6830:2705:b0:606:c10:e4b5 with SMTP id j5-20020a056830270500b006060c10e4b5mr23985649otu.74.1654031439450;
+        Tue, 31 May 2022 14:10:39 -0700 (PDT)
+Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id l13-20020a9d550d000000b0060adbf4f89dsm6550556oth.77.2022.05.31.14.10.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 14:10:38 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Marek Vasut <marex@denx.de>
+Cc:     Woojung Huh <Woojung.Huh@microchip.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] dt-bindings: net/dsa: Add spi-peripheral-props.yaml references
+Date:   Tue, 31 May 2022 16:10:14 -0500
+Message-Id: <20220531211018.2287964-1-robh@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git vhost
-head:   5e83df49b4993a11b01399f6ce402f775940f965
-commit: a50f09346a341984d34ff41f03dbd14dea6f20fe [62/65] virtio_ring: remove unused variable in virtqueue_add()
-config: mips-randconfig-c004-20220531 (https://download.01.org/0day-ci/archive/20220601/202206010444.EGBXgPMJ-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c825abd6b0198fb088d9752f556a70705bc99dfd)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mipsel-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git/commit/?id=a50f09346a341984d34ff41f03dbd14dea6f20fe
-        git remote add mst-vhost https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git
-        git fetch --no-tags mst-vhost vhost
-        git checkout a50f09346a341984d34ff41f03dbd14dea6f20fe
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/virtio/
+SPI peripheral device bindings need to reference spi-peripheral-props.yaml
+in order to use various SPI controller specific properties. Otherwise,
+the unevaluatedProperties check will reject any controller specific
+properties.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+v2:
+ - Also add references in nxp,sja1105.yaml and brcm,b53.yaml as
+   pointed out by Vladimir Oltean
+---
+ .../devicetree/bindings/net/dsa/brcm,b53.yaml | 112 ++++++++++--------
+ .../bindings/net/dsa/microchip,ksz.yaml       |   1 +
+ .../bindings/net/dsa/nxp,sja1105.yaml         |   1 +
+ .../devicetree/bindings/net/dsa/realtek.yaml  |   1 +
+ 4 files changed, 68 insertions(+), 47 deletions(-)
 
-All errors (new ones prefixed by >>):
-
->> drivers/virtio/virtio_ring.c:1783:9: error: use of undeclared identifier 'vq'
-           return vq->packed_ring ? virtqueue_add_packed(_vq, sgs, total_sg,
-                  ^
-   1 error generated.
-
-
-vim +/vq +1783 drivers/virtio/virtio_ring.c
-
-1ce9e6055fa0a9 Tiwei Bie 2018-11-21  1768  
-1ce9e6055fa0a9 Tiwei Bie 2018-11-21  1769  
-e6f633e5beab65 Tiwei Bie 2018-11-21  1770  /*
-e6f633e5beab65 Tiwei Bie 2018-11-21  1771   * Generic functions and exported symbols.
-e6f633e5beab65 Tiwei Bie 2018-11-21  1772   */
-e6f633e5beab65 Tiwei Bie 2018-11-21  1773  
-e6f633e5beab65 Tiwei Bie 2018-11-21  1774  static inline int virtqueue_add(struct virtqueue *_vq,
-e6f633e5beab65 Tiwei Bie 2018-11-21  1775  				struct scatterlist *sgs[],
-e6f633e5beab65 Tiwei Bie 2018-11-21  1776  				unsigned int total_sg,
-e6f633e5beab65 Tiwei Bie 2018-11-21  1777  				unsigned int out_sgs,
-e6f633e5beab65 Tiwei Bie 2018-11-21  1778  				unsigned int in_sgs,
-e6f633e5beab65 Tiwei Bie 2018-11-21  1779  				void *data,
-e6f633e5beab65 Tiwei Bie 2018-11-21  1780  				void *ctx,
-e6f633e5beab65 Tiwei Bie 2018-11-21  1781  				gfp_t gfp)
-e6f633e5beab65 Tiwei Bie 2018-11-21  1782  {
-1ce9e6055fa0a9 Tiwei Bie 2018-11-21 @1783  	return vq->packed_ring ? virtqueue_add_packed(_vq, sgs, total_sg,
-1ce9e6055fa0a9 Tiwei Bie 2018-11-21  1784  					out_sgs, in_sgs, data, ctx, gfp) :
-1ce9e6055fa0a9 Tiwei Bie 2018-11-21  1785  				 virtqueue_add_split(_vq, sgs, total_sg,
-e6f633e5beab65 Tiwei Bie 2018-11-21  1786  					out_sgs, in_sgs, data, ctx, gfp);
-e6f633e5beab65 Tiwei Bie 2018-11-21  1787  }
-e6f633e5beab65 Tiwei Bie 2018-11-21  1788  
-
-:::::: The code at line 1783 was first introduced by commit
-:::::: 1ce9e6055fa0a9043405c5604cf19169ec5379ff virtio_ring: introduce packed ring support
-
-:::::: TO: Tiwei Bie <tiwei.bie@intel.com>
-:::::: CC: David S. Miller <davem@davemloft.net>
-
+diff --git a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
+index c3c938893ad9..09814288c685 100644
+--- a/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/brcm,b53.yaml
+@@ -68,53 +68,71 @@ required:
+   - compatible
+   - reg
+ 
+-# BCM585xx/586xx/88312 SoCs
+-if:
+-  properties:
+-    compatible:
+-      contains:
+-        enum:
+-          - brcm,bcm58522-srab
+-          - brcm,bcm58523-srab
+-          - brcm,bcm58525-srab
+-          - brcm,bcm58622-srab
+-          - brcm,bcm58623-srab
+-          - brcm,bcm58625-srab
+-          - brcm,bcm88312-srab
+-then:
+-  properties:
+-    reg:
+-      minItems: 3
+-      maxItems: 3
+-    reg-names:
+-      items:
+-        - const: srab
+-        - const: mux_config
+-        - const: sgmii_config
+-    interrupts:
+-      minItems: 13
+-      maxItems: 13
+-    interrupt-names:
+-      items:
+-        - const: link_state_p0
+-        - const: link_state_p1
+-        - const: link_state_p2
+-        - const: link_state_p3
+-        - const: link_state_p4
+-        - const: link_state_p5
+-        - const: link_state_p7
+-        - const: link_state_p8
+-        - const: phy
+-        - const: ts
+-        - const: imp_sleep_timer_p5
+-        - const: imp_sleep_timer_p7
+-        - const: imp_sleep_timer_p8
+-  required:
+-    - interrupts
+-else:
+-  properties:
+-    reg:
+-      maxItems: 1
++allOf:
++  - $ref: dsa.yaml#
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - brcm,bcm5325
++              - brcm,bcm53115
++              - brcm,bcm53125
++              - brcm,bcm53128
++              - brcm,bcm5365
++              - brcm,bcm5395
++              - brcm,bcm5397
++              - brcm,bcm5398
++    then:
++      $ref: /schemas/spi/spi-peripheral-props.yaml
++
++    # BCM585xx/586xx/88312 SoCs
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - brcm,bcm58522-srab
++              - brcm,bcm58523-srab
++              - brcm,bcm58525-srab
++              - brcm,bcm58622-srab
++              - brcm,bcm58623-srab
++              - brcm,bcm58625-srab
++              - brcm,bcm88312-srab
++    then:
++      properties:
++        reg:
++          minItems: 3
++          maxItems: 3
++        reg-names:
++          items:
++            - const: srab
++            - const: mux_config
++            - const: sgmii_config
++        interrupts:
++          minItems: 13
++          maxItems: 13
++        interrupt-names:
++          items:
++            - const: link_state_p0
++            - const: link_state_p1
++            - const: link_state_p2
++            - const: link_state_p3
++            - const: link_state_p4
++            - const: link_state_p5
++            - const: link_state_p7
++            - const: link_state_p8
++            - const: phy
++            - const: ts
++            - const: imp_sleep_timer_p5
++            - const: imp_sleep_timer_p7
++            - const: imp_sleep_timer_p8
++      required:
++        - interrupts
++    else:
++      properties:
++        reg:
++          maxItems: 1
+ 
+ unevaluatedProperties: false
+ 
+diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+index 184152087b60..6bbd8145b6c1 100644
+--- a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+@@ -12,6 +12,7 @@ maintainers:
+ 
+ allOf:
+   - $ref: dsa.yaml#
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+ 
+ properties:
+   # See Documentation/devicetree/bindings/net/dsa/dsa.yaml for a list of additional
+diff --git a/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml b/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
+index 1ea0bd490473..1e26d876d146 100644
+--- a/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/nxp,sja1105.yaml
+@@ -14,6 +14,7 @@ description:
+ 
+ allOf:
+   - $ref: "dsa.yaml#"
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+ 
+ maintainers:
+   - Vladimir Oltean <vladimir.oltean@nxp.com>
+diff --git a/Documentation/devicetree/bindings/net/dsa/realtek.yaml b/Documentation/devicetree/bindings/net/dsa/realtek.yaml
+index 99ee4b5b9346..4f99aff029dc 100644
+--- a/Documentation/devicetree/bindings/net/dsa/realtek.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/realtek.yaml
+@@ -108,6 +108,7 @@ if:
+     - reg
+ 
+ then:
++  $ref: /schemas/spi/spi-peripheral-props.yaml#
+   not:
+     required:
+       - mdc-gpios
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
