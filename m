@@ -2,90 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E64053901E
-	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 13:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2636F539031
+	for <lists+netdev@lfdr.de>; Tue, 31 May 2022 14:00:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343985AbiEaLz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 07:55:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41886 "EHLO
+        id S1344043AbiEaMAT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 08:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242862AbiEaLz1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 07:55:27 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F30B3A1A4;
-        Tue, 31 May 2022 04:55:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=kUMBZgY8iX2iMdYNu+l03Qq//chFmyXyGt0+8brQTSk=; b=YNH32eHxS/BtFCzN1yaCjACuh0
-        uddqn/a6Y22J0eGRE4v6jngNh+Q+KTupeG11aTjhkcCNjB51jVLnqntXy7qbZSjLio1B1hKgHfTMY
-        L9WIBD2zhCIb+2Z2aIiLcJJrVvcULHstOdaqGOWpLLP0UWeP0BlaZBd3UGkYUAByQ+HQskb0WNTJO
-        gfSg8ExNfv9zDGoFrRIiZR8y272r9qt4dUeo2AQV9nA8618XDtEFrxlGJ4f0yUJFSumUncpEOAxET
-        CQl9OBSC9Rg71jq+QKhcuIoy/5FAeD8+U0qXjUCBBK+htLofqzlXpjGohv6om2+Xz2CMNSW6J2OPs
-        rvK5XLOw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60902)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nw0T1-0004uB-Ks; Tue, 31 May 2022 12:55:19 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nw0T0-0002Mh-RY; Tue, 31 May 2022 12:55:18 +0100
-Date:   Tue, 31 May 2022 12:55:18 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, vladimir.oltean@nxp.com,
-        grygorii.strashko@ti.com, vigneshr@ti.com, nsekhar@ti.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kishon@ti.com
-Subject: Re: [PATCH 3/3] net: ethernet: ti: am65-cpsw: Move
- phy_set_mode_ext() to correct location
-Message-ID: <YpYCJv2SIExL+VHs@shell.armlinux.org.uk>
-References: <20220531113058.23708-1-s-vadapalli@ti.com>
- <20220531113058.23708-4-s-vadapalli@ti.com>
+        with ESMTP id S1343980AbiEaMAL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 08:00:11 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D9F4B876;
+        Tue, 31 May 2022 05:00:10 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 24VBxvmB051554;
+        Tue, 31 May 2022 06:59:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1653998397;
+        bh=NCF8qzJXZvRI2xr8UI7DFywm74Lxqfy9OUTIpn0OUjM=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=IeW/gJ/cW2iicX2vwufN757RUnpatOCqMfqdZ58Fq/aJ6SV2wxTomRe4AKDsaUANV
+         kCrq58L4vM4EEe4mHBO/A0x3+HaQbJsKb5x5e3vX1VPE5rGdOjxF09sdz8xEH0/mu4
+         PnZEuKtEjALRGWjEdRToGt+Jsr6Nc6WDnIvnvqZU=
+Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 24VBxvQw030965
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 31 May 2022 06:59:57 -0500
+Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Tue, 31
+ May 2022 06:59:56 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Tue, 31 May 2022 06:59:56 -0500
+Received: from [172.24.220.119] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 24VBxnGq089567;
+        Tue, 31 May 2022 06:59:50 -0500
+Message-ID: <c13f79c9-ffca-d81d-8904-95c424dd19bc@ti.com>
+Date:   Tue, 31 May 2022 17:29:48 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220531113058.23708-4-s-vadapalli@ti.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: net: Add ICSSG Ethernet Driver
+ bindings
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>,
+        <krzysztof.kozlowski+dt@linaro.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <nm@ti.com>, <ssantosh@kernel.org>,
+        <s-anna@ti.com>, <linux-arm-kernel@lists.infradead.org>,
+        <rogerq@kernel.org>, <grygorii.strashko@ti.com>, <vigneshr@ti.com>,
+        <kishon@ti.com>, <robh+dt@kernel.org>, <afd@ti.com>,
+        <andrew@lunn.ch>
+References: <20220531095108.21757-1-p-mohan@ti.com>
+ <20220531095108.21757-2-p-mohan@ti.com>
+ <4ccba38a-ccde-83cd-195b-77db7a64477c@linaro.org>
+ <faff79c9-7e1e-a69b-f314-6c00dedf1722@ti.com>
+ <a47f5d18-9ecc-a679-b407-799e4a15c6cf@linaro.org>
+From:   Puranjay Mohan <p-mohan@ti.com>
+In-Reply-To: <a47f5d18-9ecc-a679-b407-799e4a15c6cf@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 31, 2022 at 05:00:58PM +0530, Siddharth Vadapalli wrote:
-> In TI's J7200 SoC CPSW5G ports, each of the 4 ports can be configured
-> as a QSGMII main or QSGMII-SUB port. This configuration is performed
-> by phy-gmii-sel driver on invoking the phy_set_mode_ext() function.
+Hi Krzysztof,
+
+On 31/05/22 17:18, Krzysztof Kozlowski wrote:
+> On 31/05/2022 13:27, Puranjay Mohan wrote:
+>>>> +examples:
+>>>> +  - |
+>>>> +
+>>>> +    /* Example k3-am654 base board SR2.0, dual-emac */
+>>>> +    pruss2_eth: pruss2_eth {
+>>>> +            compatible = "ti,am654-icssg-prueth";
+>>>
+>>> Again missed Rob's comment.
+>>
+>> One of Rob's comment was to make the indentation as 4 which I have done.
 > 
-> It is necessary for the QSGMII main port to be configured before any of
-> the QSGMII-SUB interfaces are brought up. Currently, the QSGMII-SUB
-> interfaces come up before the QSGMII main port is configured.
+> I clearly do not see indentation of 4, but there is 8 instead.
+
+I changed the indentation at the wrong place.
+
 > 
-> Fix this by moving the call to phy_set_mode_ext() from
-> am65_cpsw_nuss_ndo_slave_open() to am65_cpsw_nuss_init_slave_ports(),
-> thereby ensuring that the QSGMII main port is configured before any of
-> the QSGMII-SUB ports are brought up.
+> Let's count:
+> +    pruss2_eth: pruss2_eth {
+^ here, it was 8 in v1 so, I changed it to 4
 
-This sounds like "if we're configured via port->slave.phy_if to be in
-QSGMII mode, then the serdes PHY needs to be configured before any of
-the QSGMII ports are used". Doesn't that mean that if
-port->slave.phy_if is QSGMII, then the port _only_ supports QSGMII
-mode, and conversely, the port doesn't support QSGMII unless firmware
-said it could be.
+> +            compatible = "ti,am654-icssg-prueth";
+>      12345678^
+> 
 
-So, doesn't that mean am65_cpsw_nuss_init_port_ndev() should indicate
-only QSGMII, or only the RGMII modes, but never both together?
+Compatible is the child of pruss2_eth, so, It should have 4+4 = 8?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> It's 8...
+> 
+>>
+>> The second comment was about 'ti,prus'.
+>>
+>> So, ti,prus , firmware-name, and ti,pruss-gp-mux-sel are a part of
+>> remoteproc/ti,pru-consumer.yaml which I have included with
+>>
+>> allOf:
+>>   - $ref: /schemas/remoteproc/ti,pru-consumer.yaml#
+>>
+>> So, I thought it is not required to add them again.
+>>
+>> I will add it in next version, if that is how it should be done.
+> I was referring to the indentation.
+> 
+> Krzysztof
+
+Thanks,
+Puranjay
