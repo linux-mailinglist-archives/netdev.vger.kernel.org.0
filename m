@@ -2,101 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BE23539E34
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 09:28:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70F01539E43
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 09:35:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344886AbiFAH2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 03:28:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49406 "EHLO
+        id S1350334AbiFAHfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 03:35:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350208AbiFAH1y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 03:27:54 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9B66AA53
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 00:27:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654068473; x=1685604473;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=oFs32X8Vuja4n3nkXynoprNM6aMb+/r9XGr2wHeiI8E=;
-  b=BXNQ0lhbvq6OM5ppT0QyMkEuNJ7kT58+brucVvaJ6UAO8/MgeoRaeE+f
-   tRBSfMAeTR8aeQx9Ha5oHHyTA6rp2KZhUAnLsrdoEEYyzKmHm8Bzz9HCF
-   TdO8ahBLb4rKOHZXZ3xeaZiwz77W36W+xvBEqExUZG3fzMGUvu9HoRNJH
-   dRXRhh0mvhaYNZtKoMKmi877+JoRmgK5inVLDX0KQqotBp1j19p8yD2jp
-   b2EgbWkN4WW+9LXAT4mhwQp/7AEmB8Er6vco2TMjNFeeIu+R9U6vZJ5UM
-   Kw8xtayvK2VE/F8tsS0i9nHTJqmATtHiwRVMw7U1Zi59aS6oRNLwluY/X
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="274303930"
-X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="274303930"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 00:27:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
-   d="scan'208";a="720664025"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 01 Jun 2022 00:27:50 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nwIlh-0003h8-Ix;
-        Wed, 01 Jun 2022 07:27:49 +0000
-Date:   Wed, 1 Jun 2022 15:27:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     kbuild-all@lists.01.org, netdev <netdev@vger.kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net 1/2] net: add debug info to __skb_pull()
-Message-ID: <202206011509.Rpp82wrl-lkp@intel.com>
-References: <20220531185933.1086667-2-eric.dumazet@gmail.com>
+        with ESMTP id S1346357AbiFAHfJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 03:35:09 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E77719C3
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 00:35:06 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id er5so941089edb.12
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 00:35:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Ty7O53YsyHmR9XZszWr9+5E8bvXaLHnarWtMUeJeGqc=;
+        b=rYtC/I+ubkn3cmGIImzDMseieo6R8RMcmEbAThYUh3803iCF9K5IWjOfoPqDhzQkay
+         gKQsiVtOo4Z/4LdD80RK3FssztDS0ZT4v/UTUCoUYh+CNRm6P5RVyzqfV/vErmG5WLvv
+         DugOP2eTrid/Re/hvMHCcnlNGZQ5R7/VH39YjFvXvlEOjpK5vhsunw+GUaJJ7Iz9mLXr
+         CLchRFGLFxLKROdWquDd+mMWmXMZRmPtSzLyBFeyp1qH4gsQAmniK86Vujug0mh8YJct
+         VPHCM/E964yvMzZ5+Qop8TlHLf9Fg63NUp4+mFV/j6qrap9q9SdRU8CIsT1zNkf4rs4b
+         N6GA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ty7O53YsyHmR9XZszWr9+5E8bvXaLHnarWtMUeJeGqc=;
+        b=J41s8kgqHuRdYreapwD2eB04m4S/pTUDsUaBPk2UmSVX5T/RGuIQrYmolkqMhTvMVe
+         YCBzD/aNgiU2DKsKyCRBE6K8nXe8cQvr2I5+6AcSkXky7Dk6JfeMk1M6BtK9MSnlwthK
+         l+x2XpcxcG/Ts7agwIYUi9h41YA0qwnrR4D09li4pQRZNwPw4wSnL5VpVJ7l5CWhizlE
+         WxoIgJL3qxXBxGjagEFYNhRRsgggJPTwhmnqL2SLn9logz5H1NJIq5Iyteob5oLKGjNO
+         iKZcTcFc4qTfop+3Ap/wLYSE/75AdzLnzagojVd9Q/1g5aJLmCnNSlGGIRa/tKPXKB2B
+         n+GQ==
+X-Gm-Message-State: AOAM5318mXZsqt94LUegsHzK716PAdxCHr6r/+s90nE1bWGOpIDcE5q2
+        iyWdoDNqJsV8JPGICNsh6vOuBQ==
+X-Google-Smtp-Source: ABdhPJwrEmbNmN0ee1MmU4NlHOwR8A2rutesA+61kpP9KBLtfODbFGCcQ2WmGWtHjSajvMoC+/sJeQ==
+X-Received: by 2002:a50:a691:0:b0:42d:c66d:e7db with SMTP id e17-20020a50a691000000b0042dc66de7dbmr19694887edc.258.1654068905621;
+        Wed, 01 Jun 2022 00:35:05 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id w7-20020a056402070700b0042aa153e73esm517549edx.12.2022.06.01.00.35.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 00:35:04 -0700 (PDT)
+Date:   Wed, 1 Jun 2022 09:35:04 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
+        andrew@lunn.ch, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
+ and info
+Message-ID: <YpcWqL5By3hU+AVP@nanopsycho>
+References: <YpHmrdCmiRagdxvt@nanopsycho>
+ <20220528120253.5200f80f@kernel.org>
+ <YpM7dWye/i15DBHF@nanopsycho>
+ <20220530125408.3a9cb8ed@kernel.org>
+ <YpW/n3Nh8fIYOEe+@nanopsycho>
+ <20220531080555.29b6ec6b@kernel.org>
+ <YpY5iKHR073DNF7D@nanopsycho>
+ <20220531090852.2b10c344@kernel.org>
+ <YpZt0mRaeZqrp4gU@nanopsycho>
+ <20220531154159.5dbf9d37@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220531185933.1086667-2-eric.dumazet@gmail.com>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220531154159.5dbf9d37@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+Wed, Jun 01, 2022 at 12:41:59AM CEST, kuba@kernel.org wrote:
+>On Tue, 31 May 2022 21:34:42 +0200 Jiri Pirko wrote:
+>> And again, for the record, I strongly believe that a separate dl
+>> instance for this does not make any sense at all :/ I wonder why you
+>> still think it does.
+>
+>For purely software reuse reasons. I think the line cards will require
+>a lot of the same attributes as the full devlink instance, so making
+>them a subobject which can have all the same attributes is poor SW arch.
 
-I love your patch! Yet something to improve:
+Sure, I understand the motivation.
 
-[auto build test ERROR on net/master]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Eric-Dumazet/net-af_packet-be-careful-when-expanding-mac-header-size/20220601-030146
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 09e545f7381459c015b6fa0cd0ac6f010ef8cc25
-config: arc-randconfig-r021-20220531 (https://download.01.org/0day-ci/archive/20220601/202206011509.Rpp82wrl-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/a907c048e7699133feedaa06948c15c719a59f94
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Eric-Dumazet/net-af_packet-be-careful-when-expanding-mac-header-size/20220601-030146
-        git checkout a907c048e7699133feedaa06948c15c719a59f94
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+>Think about it from OOP perspective, you'd definitely factor all that
+>stuff out to an abstract class. We can't do that in netlink but whatever
+>just make it a full dl instance and describe the link between the two.
+>
+>Most NIC vendors (everyone excluding Netronome?) decided that devlink
+>instance is equivalent to a bus device which IIUC it was not supposed
+>to be. It was supposed to be the whole ASIC. If we're okay to stretch
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+I agree, that is incorrect. That is why I was thinking about sort of
+"alias" to make it right (2 PF devlink instances would be one connected
+by alias). Not implemented yet though :/
 
-All errors (new ones prefixed by >>):
 
-   arc-elf-ld: kernel/bpf/cgroup.o: in function `__skb_pull':
-   include/linux/skbuff.h:2703: undefined reference to `skb_dump'
->> arc-elf-ld: include/linux/skbuff.h:2703: undefined reference to `skb_dump'
+>the definition of a dl instance to be "any independently controllable
+>unit of HW" for NICs then IDK why we can't make a line card a dl
+>instance.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Well, it is not independently controllable. Well, truth is, that in our
+current implementation, there is one independent "configuration", and
+that is flash burn of the gearbox. It is done using a "tunnelling"
+register which encapsulates register communication what is done during
+flash burning.
+
+
+>
+>Are you afraid of hiding dependencies?
+
+Not really, I'm just not sure I see it is worth the excercise.
+
+In czech, we have this saying: "kanon na vrabce". I think that the
+following picture is better than any translation :)
+https://i.iinfo.cz/images/72/shutterstock-com-kanon-delo-ptak-vrabec-strilet-1.jpg
+
+Will think about it some more.
