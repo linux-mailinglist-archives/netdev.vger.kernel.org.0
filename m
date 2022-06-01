@@ -2,43 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05B54539E24
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 09:24:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BE23539E34
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 09:28:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343589AbiFAHYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 03:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44676 "EHLO
+        id S1344886AbiFAH2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 03:28:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236045AbiFAHYo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 03:24:44 -0400
-Received: from mail.meizu.com (edge05.meizu.com [157.122.146.251])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 882EF4EA3A;
-        Wed,  1 Jun 2022 00:24:41 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail12.meizu.com
- (172.16.1.108) with Microsoft SMTP Server (TLS) id 14.3.487.0; Wed, 1 Jun
- 2022 15:24:41 +0800
-Received: from meizu.meizu.com (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Wed, 1 Jun
- 2022 15:24:38 +0800
-From:   Haowen Bai <baihaowen@meizu.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S1350208AbiFAH1y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 03:27:54 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9B66AA53
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 00:27:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654068473; x=1685604473;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=oFs32X8Vuja4n3nkXynoprNM6aMb+/r9XGr2wHeiI8E=;
+  b=BXNQ0lhbvq6OM5ppT0QyMkEuNJ7kT58+brucVvaJ6UAO8/MgeoRaeE+f
+   tRBSfMAeTR8aeQx9Ha5oHHyTA6rp2KZhUAnLsrdoEEYyzKmHm8Bzz9HCF
+   TdO8ahBLb4rKOHZXZ3xeaZiwz77W36W+xvBEqExUZG3fzMGUvu9HoRNJH
+   dRXRhh0mvhaYNZtKoMKmi877+JoRmgK5inVLDX0KQqotBp1j19p8yD2jp
+   b2EgbWkN4WW+9LXAT4mhwQp/7AEmB8Er6vco2TMjNFeeIu+R9U6vZJ5UM
+   Kw8xtayvK2VE/F8tsS0i9nHTJqmATtHiwRVMw7U1Zi59aS6oRNLwluY/X
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="274303930"
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="274303930"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 00:27:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="720664025"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 01 Jun 2022 00:27:50 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nwIlh-0003h8-Ix;
+        Wed, 01 Jun 2022 07:27:49 +0000
+Date:   Wed, 1 Jun 2022 15:27:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-CC:     Haowen Bai <baihaowen@meizu.com>, <netdev@vger.kernel.org>,
-        <linux-parisc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] net: tulip: de4x5: remove unused variable
-Date:   Wed, 1 Jun 2022 15:24:36 +0800
-Message-ID: <1654068277-6691-1-git-send-email-baihaowen@meizu.com>
-X-Mailer: git-send-email 2.7.4
+Cc:     kbuild-all@lists.01.org, netdev <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net 1/2] net: add debug info to __skb_pull()
+Message-ID: <202206011509.Rpp82wrl-lkp@intel.com>
+References: <20220531185933.1086667-2-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,KHOP_HELO_FCRDNS,
-        SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220531185933.1086667-2-eric.dumazet@gmail.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -46,29 +67,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The variable imr is initialized but never used otherwise.
+Hi Eric,
 
-Signed-off-by: Haowen Bai <baihaowen@meizu.com>
----
- drivers/net/ethernet/dec/tulip/de4x5.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+I love your patch! Yet something to improve:
 
-diff --git a/drivers/net/ethernet/dec/tulip/de4x5.c b/drivers/net/ethernet/dec/tulip/de4x5.c
-index 71730ef4cd57..40a54827d599 100644
---- a/drivers/net/ethernet/dec/tulip/de4x5.c
-+++ b/drivers/net/ethernet/dec/tulip/de4x5.c
-@@ -3817,10 +3817,9 @@ de4x5_setup_intr(struct net_device *dev)
- {
-     struct de4x5_private *lp = netdev_priv(dev);
-     u_long iobase = dev->base_addr;
--    s32 imr, sts;
-+    s32 sts;
- 
-     if (inl(DE4X5_OMR) & OMR_SR) {   /* Only unmask if TX/RX is enabled */
--	imr = 0;
- 	UNMASK_IRQs;
- 	sts = inl(DE4X5_STS);        /* Reset any pending (stale) interrupts */
- 	outl(sts, DE4X5_STS);
+[auto build test ERROR on net/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Eric-Dumazet/net-af_packet-be-careful-when-expanding-mac-header-size/20220601-030146
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 09e545f7381459c015b6fa0cd0ac6f010ef8cc25
+config: arc-randconfig-r021-20220531 (https://download.01.org/0day-ci/archive/20220601/202206011509.Rpp82wrl-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/a907c048e7699133feedaa06948c15c719a59f94
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Eric-Dumazet/net-af_packet-be-careful-when-expanding-mac-header-size/20220601-030146
+        git checkout a907c048e7699133feedaa06948c15c719a59f94
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   arc-elf-ld: kernel/bpf/cgroup.o: in function `__skb_pull':
+   include/linux/skbuff.h:2703: undefined reference to `skb_dump'
+>> arc-elf-ld: include/linux/skbuff.h:2703: undefined reference to `skb_dump'
+
 -- 
-2.7.4
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
