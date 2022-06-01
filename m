@@ -2,81 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF05F53A16F
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 11:59:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDE7053A17C
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 12:00:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351516AbiFAJ6c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 05:58:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36632 "EHLO
+        id S1351562AbiFAKAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 06:00:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351560AbiFAJ62 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 05:58:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D6BF164BEA
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 02:58:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654077498;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=82uW6EP3zc+L57WVwLvvIjr2wDUWz17pBSLf4qWZW8w=;
-        b=D/cDL6lXb6JNNNUH47J0mhwOQlpo02nG0snSaVkvH7kK3AXwOz8DOvB6/rmM4YyeF885pH
-        Mps22KSi3iNn2Bqkx12T7dedVGEnGZ74ZtxOhDkxLEy4QvjyF1LpDSm5CfTatvNKSVUWXu
-        ztleqpTJPWab5D4t2elRIMTNVa2NHjk=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-433-yv_g-Wi8ODmMwygPAWaZ3Q-1; Wed, 01 Jun 2022 05:58:17 -0400
-X-MC-Unique: yv_g-Wi8ODmMwygPAWaZ3Q-1
-Received: by mail-qt1-f198.google.com with SMTP id v1-20020a05622a014100b002f93e6b1e8cso902919qtw.9
-        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 02:58:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=82uW6EP3zc+L57WVwLvvIjr2wDUWz17pBSLf4qWZW8w=;
-        b=MZ57JWHakwlE0fLu3G5loGgYlDLE/7+hbB8wPt5gGJCEpDLlOCqDNgjfuWWY8Cz446
-         ECYZ3rqoxaBrsNnpydA51CiGb2ITGwElkvqRLUR5V0a73khV5SrZh5+5xCxgTx2eWfeJ
-         JwNmIFZNNwmI5DlQDiA255dx+5Q03+C81GDdu0ezMfg33iTavE6HLzPwCyi1ChCuNlpm
-         8znmlbBd8IaCl8VofoTy1ut7eS7LpZ4bxlMaZstn2bLVsAj7kXHEuFk2EnxfWn0foJEL
-         dpLLleocGgmvL/e67QWoWtK2wQp0TlZTFTWxh6wjEOgbrczcwP7t157PjNFztAyj29Wu
-         rBRw==
-X-Gm-Message-State: AOAM530TPzyk23F6hwknoc41X26AqOOIx7MCgxfa/RpOWB2q0G5jQG7P
-        CniXsGMoqB+009zLLcRBg2au5V2mqCWdhHHj7eLbcJJYiAnYAEPHXXcm+DxeCb5Z2kYtLpO1jbt
-        0JStDEkxBpiGFkR/B
-X-Received: by 2002:ac8:5a07:0:b0:2f9:3f44:cbf2 with SMTP id n7-20020ac85a07000000b002f93f44cbf2mr35438351qta.374.1654077496977;
-        Wed, 01 Jun 2022 02:58:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzUM/uH1EMfzyt/oe9dsKBoDbn6qxA8RvrUjHsiO/kb+dC9J0+cArxgPflsfnYB9Tt0pc3J3A==
-X-Received: by 2002:ac8:5a07:0:b0:2f9:3f44:cbf2 with SMTP id n7-20020ac85a07000000b002f93f44cbf2mr35438335qta.374.1654077496724;
-        Wed, 01 Jun 2022 02:58:16 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
-        by smtp.gmail.com with ESMTPSA id z24-20020ac84558000000b002f918680d80sm837267qtn.78.2022.06.01.02.58.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 02:58:16 -0700 (PDT)
-Message-ID: <5e8ccf5fb949fb8bef822f379f7a410ccd6b6f41.camel@redhat.com>
-Subject: Re: [PATCH net-next v1 1/2] net: Update bhash2 when socket's rcv
- saddr changes
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        Joanne Koong <joannelkoong@gmail.com>
-Cc:     netdev@vger.kernel.org, kafai@fb.com, kuba@kernel.org,
-        davem@davemloft.net, richard_siegfried@systemli.org,
-        dsahern@kernel.org, yoshfuji@linux-ipv6.org, kuniyu@amazon.co.jp,
-        dccp@vger.kernel.org, testing@vger.kernel.org,
-        syzbot+015d756bbd1f8b5c8f09@syzkaller.appspotmail.com
-Date:   Wed, 01 Jun 2022 11:58:12 +0200
-In-Reply-To: <CANn89i+pg8guF+XeOngSMa4vUD81g=u-pCBpi0Yp2WB9PQZvdg@mail.gmail.com>
-References: <20220524230400.1509219-1-joannelkoong@gmail.com>
-         <20220524230400.1509219-2-joannelkoong@gmail.com>
-         <CANn89i+pg8guF+XeOngSMa4vUD81g=u-pCBpi0Yp2WB9PQZvdg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S1351664AbiFAKAR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 06:00:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D21633BF;
+        Wed,  1 Jun 2022 03:00:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E522FB81879;
+        Wed,  1 Jun 2022 10:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 88FB5C3411D;
+        Wed,  1 Jun 2022 10:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654077613;
+        bh=SUNGJJJsc37BnKZCLFH/YDYDT5gfEd5kdxzwC12leT4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Te/VTC/JCD/soRG1TYrWBQyOGZ6KdMN7BILWsbMhGBArNMuBvGuZkEv9JpVEyr5Xa
+         M1gG6k2/I4YuSQB6LLh3qx6S3xnVL9D/yHQDu03d2Rr85MHhT985o4zMij/GxAMtEr
+         BkXSJcPizmpY33l6nQwmEddmBJ8C36bLW6ZfCoOUaxiczYNfU+x6B62qNtzNlVCzGV
+         748QAlaHYDcgg528sOWwYBCTQI7kaX25u9yswslQ/LVprBnbGp+jq8vVtMyAMCuBCb
+         4bquPX6dHl42DRVfS+hX+IUtmfJJO3ZYZM4oeU1+yUVA4teajslFS57YubR/voMuqC
+         CdK3YjYAtBRgA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 70E8BF0394E;
+        Wed,  1 Jun 2022 10:00:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] octeontx2-af: fix error code in is_valid_offset()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165407761345.1365.5840991906743453184.git-patchwork-notify@kernel.org>
+Date:   Wed, 01 Jun 2022 10:00:13 +0000
+References: <YpXDrTPb8qV01JSP@kili>
+In-Reply-To: <YpXDrTPb8qV01JSP@kili>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     sgoutham@marvell.com, lcherian@marvell.com, gakula@marvell.com,
+        jerinj@marvell.com, hkelam@marvell.com, sbhatta@marvell.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, schalla@marvell.com, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,43 +59,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hello:
 
-On Tue, 2022-05-31 at 15:04 -0700, Eric Dumazet wrote:
-> On Tue, May 24, 2022 at 4:20 PM Joanne Koong <joannelkoong@gmail.com> wrote:
-> > 
-> > Commit d5a42de8bdbe ("net: Add a second bind table hashed by port and
-> > address") added a second bind table, bhash2, that hashes by a socket's port
-> > and rcv address.
-> > 
-> > However, there are two cases where the socket's rcv saddr can change
-> > after it has been binded:
-> > 
-> > 1) The case where there is a bind() call on "::" (IPADDR_ANY) and then
-> > a connect() call. The kernel will assign the socket an address when it
-> > handles the connect()
-> > 
-> > 2) In inet_sk_reselect_saddr(), which is called when rerouting fails
-> > when rebuilding the sk header (invoked by inet_sk_rebuild_header)
-> > 
-> > In these two cases, we need to update the bhash2 table by removing the
-> > entry for the old address, and adding a new entry reflecting the updated
-> > address.
-> > 
-> > Reported-by: syzbot+015d756bbd1f8b5c8f09@syzkaller.appspotmail.com
-> > Fixes: d5a42de8bdbe ("net: Add a second bind table hashed by port and address")
-> > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
-> > ---
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
+
+On Tue, 31 May 2022 10:28:45 +0300 you wrote:
+> The is_valid_offset() function returns success/true if the call to
+> validate_and_get_cpt_blkaddr() fails.
 > 
-> Reviewed-by: Eric Dumazet <edumzet@google.com>
-> 
-Apparently this patch (and 2/2) did not reach the ML nor patchwork (let
-alone my inbox ;). I've no idea on the root cause, sorry.
+> Fixes: ecad2ce8c48f ("octeontx2-af: cn10k: Add mailbox to configure reassembly timeout")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+>  drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-@Joanne: could you please re-post the series? (you can retain Eric's
-review tag)
+Here is the summary with links:
+  - [net] octeontx2-af: fix error code in is_valid_offset()
+    https://git.kernel.org/netdev/net/c/f3d671c71109
 
-Thanks!
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Paolo
 
