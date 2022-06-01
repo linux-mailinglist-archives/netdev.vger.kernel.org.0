@@ -2,132 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DC47539F9B
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 10:37:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F9C5539F7A
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 10:29:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350823AbiFAIhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 04:37:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60490 "EHLO
+        id S1350750AbiFAI3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 04:29:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245286AbiFAIhL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 04:37:11 -0400
-X-Greylist: delayed 513 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 01 Jun 2022 01:37:07 PDT
-Received: from smtp-8faf.mail.infomaniak.ch (smtp-8faf.mail.infomaniak.ch [83.166.143.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B6F1EC70
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 01:37:06 -0700 (PDT)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LCj3106knzMprL9;
-        Wed,  1 Jun 2022 10:28:29 +0200 (CEST)
-Received: from [10.0.0.141] (unknown [31.10.206.125])
-        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4LCj300xmMzlhs7p;
-        Wed,  1 Jun 2022 10:28:27 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=pschenker.ch;
-        s=20220412; t=1654072108;
-        bh=Mxe97A1GNK58/rOoNSBOXmeHmHULjXJ31P/mKWrLzv4=;
-        h=Subject:From:Reply-To:To:Cc:Date:In-Reply-To:References:From;
-        b=I+VDQNdDVJO53tsfUev2HYDDi2xbfy+3H92LPzqKmqJBf57b1oH/UVgYjGKgs4Pdb
-         wU0PTT2ybRQi5XSUqyvtb5AsTfFbuzSk7vdgjuDSSpSB2YqoIfjAWzqEYcQ/xBhJEP
-         ChW2tB1NS/RJdQL+nA3t7oXYxTR0ukB7FXRaO9c8=
-Message-ID: <e93aef5c9f8a97efe23cfb5892f78f919ce328e7.camel@pschenker.ch>
-Subject: Re: [PATCH] Revert "mt76: mt7921: enable aspm by default"
-From:   Philippe Schenker <dev@pschenker.ch>
-Reply-To: dev@pschenker.ch
-To:     Deren Wu <deren.wu@mediatek.com>, Kalle Valo <kvalo@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
-        linux@leemhuis.info, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        YN Chen <YN.Chen@mediatek.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
-Date:   Wed, 01 Jun 2022 10:28:27 +0200
-In-Reply-To: <668f1310cc78b17c24ce7be10f5f907d5578e280.camel@mediatek.com>
-References: <20220412090415.17541-1-dev@pschenker.ch>
-         <87y20aod5d.fsf@kernel.org>
-         <668f1310cc78b17c24ce7be10f5f907d5578e280.camel@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 
+        with ESMTP id S1349252AbiFAI3T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 04:29:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25824B861;
+        Wed,  1 Jun 2022 01:29:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 513D3B81854;
+        Wed,  1 Jun 2022 08:29:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8AB1C385A5;
+        Wed,  1 Jun 2022 08:29:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654072155;
+        bh=1iXjC+c5NDksDK4JWBcsRyUMhftWpjNZ5o01WmkxYAc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HAildSU/sq7Bgxx0sWq8pyb5IW7hO4kp1mXK9VDpSGGieB/7DZd6I8AvLt0YkEDB5
+         +9cFXyLVug9Vm/WIEm8VnZNUT1z4Cq5kg6vxviY5FCRX+zYt+qLBnUkiDVvOmLyK5S
+         Vg07weRxFj18FDJWZQi0lB1p2bS1+QR/pMOUgNmyRTu+bsRv+D/tdfQN1BzCCN+cV2
+         efEexTSPtk+K5OXjyDx9LUL8ZJ2inc1V9RNShdvvit0zVWv85IWkYtNwak3eDwNJsp
+         Te868s6mOvSqgnV87dZx3TlrTHQeRWEjOuELjgaBo7/vwhXdgF+CD8Y975G7UB7sz/
+         TDqCVKcQG9zjg==
+Date:   Wed, 1 Jun 2022 11:29:10 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Kent Overstreet <kent.overstreet@gmail.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Andrew Lunn <andrew@lunn.ch>, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+        netdev@vger.kernel.org, mcgrof@kernel.org, tytso@mit.edu,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+Subject: Re: RFC: Ioctl v2
+Message-ID: <YpcjVs/41EzAtr9k@unreal>
+References: <20220520161652.rmhqlvwvfrvskg4w@moria.home.lan>
+ <Yof6hsC1hLiYITdh@lunn.ch>
+ <20220521164546.h7huckdwvguvmmyy@moria.home.lan>
+ <20220521124559.69414fec@hermes.local>
+ <20220525170233.2yxb5pm75dehrjuj@moria.home.lan>
 MIME-Version: 1.0
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220525170233.2yxb5pm75dehrjuj@moria.home.lan>
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-04-12 at 19:06 +0800, Deren Wu wrote:
-> On Tue, 2022-04-12 at 12:37 +0300, Kalle Valo wrote:
-> > Philippe Schenker <dev@pschenker.ch> writes:
-> >=20
-> > > This reverts commit bf3747ae2e25dda6a9e6c464a717c66118c588c8.
-> > >=20
-> > > This commit introduces a regression on some systems where the
-> > > kernel is
-> > > crashing in different locations after a reboot was issued.
-> > >=20
-> > > This issue was bisected on a Thinkpad P14s Gen2 (AMD) with latest
-> > > firmware.
-> > >=20
-> > > Link:=20
-> > > https://urldefense.com/v3/__https://lore.kernel.org/linux-wireless/50=
-77a953487275837e81bdf1808ded00b9676f9f.camel@pschenker.ch/__;!!CTRNKA9wMg0A=
-Rbw!09tjyaQlMci3fVI3yiNiDJKUW_qwNA_CbVhoAraeIX96B99Q14J4iDycWA9cq36Y$
-> > > =C2=A0
-> > > Signed-off-by: Philippe Schenker <dev@pschenker.ch>
-> >=20
-> > Can I take this to wireless tree? Felix, ack?
-> >=20
-> > I'll also add:
-> >=20
-> > Fixes: bf3747ae2e25 ("mt76: mt7921: enable aspm by default")
-> >=20
->=20
-> Hi Kalle,
->=20
-> We have a patch for a similar problem. Can you wait for the
-> verification by Philippe?
-> Commit 602cc0c9618a81 ("mt76: mt7921e: fix possible probe failure
-> after
-> reboot")
-> Link:=20
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit=
-/drivers/net/wireless/mediatek/mt76?id=3D602cc0c9618a819ab00ea3c9400742a0ca=
-318380
->=20
-> I can reproduce the problem in my v5.16-rc5 desktop. And the issue can
-> be fixed when the patch applied.
->=20
->=20
-> Hi Philippe,
->=20
-> Can you please help to check the patch in your platform?
+On Wed, May 25, 2022 at 01:02:33PM -0400, Kent Overstreet wrote:
+> On Sat, May 21, 2022 at 12:45:59PM -0700, Stephen Hemminger wrote:
+> > On Sat, 21 May 2022 12:45:46 -0400
+> > Kent Overstreet <kent.overstreet@gmail.com> wrote:
+> > 
+> > > On Fri, May 20, 2022 at 10:31:02PM +0200, Andrew Lunn wrote:
+> > > > > I want to circulate this and get some comments and feedback, and if
+> > > > > no one raises any serious objections - I'd love to get collaborators
+> > > > > to work on this with me. Flame away!  
+> > > > 
+> > > > Hi Kent
+> > > > 
+> > > > I doubt you will get much interest from netdev. netdev already
+> > > > considers ioctl as legacy, and mostly uses netlink and a message
+> > > > passing structure, which is easy to extend in a backwards compatible
+> > > > manor.  
+> > > 
+> > > The more I look at netlink the more I wonder what on earth it's targeted at or
+> > > was trying to solve. It must exist for a reason, but I've written a few ioctls
+> > > myself and I can't fathom a situation where I'd actually want any of the stuff
+> > > netlink provides.
+> > 
+> > Netlink was built for networking operations, you want to set something like a route with a large
+> > number of varying parameters in one transaction. And you don't want to have to invent
+> > a new system call every time a new option is added.
+> > 
+> > Also, you want to monitor changes and see these events for a userspace control
+> > application such as a routing daemon.
+> 
+> That makes sense - perhaps the new mount API could've been done as a netlink
+> interface :)
+> 
+> But perhaps it makes sense to have both - netlink for the big complicated
+> stateful operations, ioctl v2 for the simpler ones. I haven't looked at netlink
+> usage at all, but most of the filesystem ioctls I've looked at fall into the the
+> simple bucket, for me.
 
-Hi Kalle and Deren,
+In RDMA, we solved this thing (standard entry points, multiple
+parameters and vendor specific data) by combining netlink and ioctls.
 
-I just noticed on my system and mainline v5.18 reboots do now work
-however Bluetooth is no longer accessible after a reboot.
+The entry point is done with ioctls (mainly performance reason, but not
+only) while data is passed in netlink attributes style.
 
-Reverting commit bf3747ae2e25dda6a9e6c464a717c66118c588c8 on top of
-v5.18 solves this problem for me.
+ib_uverbs_ioctl:
+https://elixir.bootlin.com/linux/v5.18/source/drivers/infiniband/core/uverbs_ioctl.c#L605
 
-@Deren are you aware of this bug?
-@Kalle Is there a bugtracker somewhere I can submit this?
+Latest example of newly added global to whole stack command:
+RDMA/uverbs: Add uverbs command for dma-buf based MR registration
+https://lore.kernel.org/linux-rdma/1608067636-98073-4-git-send-email-jianxin.xiong@intel.com/
 
-Thanks,
-Philippe
-
->=20
->=20
-> Regards,
-> Deren
->=20
-
+Thanks
