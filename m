@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE7B7539DD3
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 09:07:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5101539DC4
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 09:07:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350139AbiFAHHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 03:07:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36766 "EHLO
+        id S1350150AbiFAHHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 03:07:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350111AbiFAHHj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 03:07:39 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F15B8CB3F
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 00:07:29 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id s66-20020a252c45000000b0065ca728881bso709607ybs.14
-        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 00:07:29 -0700 (PDT)
+        with ESMTP id S1348130AbiFAHHl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 03:07:41 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E9A8FFBB
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 00:07:32 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id ob5-20020a17090b390500b001e2f03294a7so3151654pjb.8
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 00:07:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=eS/2TM+GfDlfIh94cuHfgXIohxcqeVLl/51vayxOGcM=;
-        b=nEbS5SUQKPV2uEuRcyqOCeYxkIcVm6QtbRuafH1IWgffM/UiSk4n7jieCoUxjX9Oaq
-         WdF2MZAjtTV+A+oRtPcrP2vyYILJP7A+Sg3USDA4WMYh1mFqe4FUjmEsa0guT0E1V4tj
-         CRvpIOw9ggRCgKvj+BCr2MskAML9dPYYf+XO0/d9/Xj9Uc/+LTk7YMR8wiug+nW8uluL
-         vowkrv4PAa7gy873wiXvd7t6in/QuT1Qpd5KLLyCXllUZoQDqvWM1KUKzksMRYWJwumF
-         +1QzKxLzBi0hg9GJrGLwC8SMCfssBQpKzUmvRevuplmTStk4Ali/UF0v2Vw1hH1Gn3Yl
-         JBDw==
+        bh=OkJpVuwUYhbhpu72ndfOfRLuS01Uvu7J1G58GhOqBxA=;
+        b=kaB7C37gink8Qqvn0pctcjGVSWc9j4P8uk4v0K5AISpFKd+hvgB21RJZ41FYYZ2nfP
+         UmDUvnh6V+KzZKv5WfvINI9HLMdh7n8ba4XuzBpJy5rHK6bp1b1kDpTMg0ATRjp6Lwj2
+         oUK95Il9GYfC6gvX6T78R/PvRyeHepeWwdbNNm5Sr2T0TFGbeSJTp2JBkr1gp4mduXVA
+         lkarklZizZ86HZBwymU9R99XtDoe9UgMCyo+4bRGBaY/9hFYylTp4hF/BbGcx22jCbiY
+         nO8hfl2g+kKIMmRXfosATkgzY9XsxdnlNlEw7i2848Bd9uWVHMGW1ZotBwpbu0+owPb3
+         dOgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=eS/2TM+GfDlfIh94cuHfgXIohxcqeVLl/51vayxOGcM=;
-        b=XqyTfPlIcohu1WF2qo9/alYwFkb11FLiUnoYh3bFCb3y19U6g3rT1YjQSvSbFZax6k
-         2KGck0oslhvSpQkRzm9dYpQTn0nkjH+i7wfZWQ5O3CUENo0ae1Yt1HMw9YstMLffL+nY
-         Bb/AyfmP/MDiXJ8viKirNq7jYck3hVHnLsTkfSpS3R1extj8MmcQCT46Atb1JHUDYAqE
-         59UsEnNaut4h+EYh+tagbX0xVYFWBKb8Pe0wSu+gqqv8nNpBMS29XgpTN8bC0hsFp9KN
-         byYW/JxaMMHIkfULfpsJa+gH/iOHHYviXY/9Fht+bLxqsgl6ae27HbbNDZiYq6in04iu
-         k8PQ==
-X-Gm-Message-State: AOAM533KLIscZrx1pL2qRYQvncd1mfZKm/8mkJ8G4+975rkXecPkJygy
-        5IrJS4qSR3e0Mw1oDhFK9bvqkWPCCTxEe7E=
-X-Google-Smtp-Source: ABdhPJwtAnnXhJAd8leQI7IsJQYpPEGmerba49yF9GJ2QPuTWzcc40IB9+ccBefvJrVmInskP9rGOF8g1cQWJjY=
+        bh=OkJpVuwUYhbhpu72ndfOfRLuS01Uvu7J1G58GhOqBxA=;
+        b=bziIbobEbRJAY8/a/lqSNRyYwCDS7mtQO/pdoHeDUpesk86ydMs6ZtJTU0YTJwLKh2
+         ot8BPdUAk0ex2hvzJG3xd1E/7Ud1RPH0J8+IVV8jVuE8+fW265dyg8+pGhQbvYVZ5UC8
+         OAHf0TWvONBAk58+nmnFW2ycss0dwnXrr4MrddW8ka3csPhtgDl+nuZ3yb272+Ocx4js
+         7QL8KpTa639DKu0SieVouNzAcBpIWH7uNI01IGvO12xQPUyKVSOpVsNih8KXh85Z1cQV
+         6vYBOxhUnKIXWW9mcXILH/KskVcJ2Yj0GCCNy8rexIeJuoppnWPrsJ/i6AT3umWDUMSb
+         3nyQ==
+X-Gm-Message-State: AOAM532OSiIbKEaJmMPivuV0FdH/OoZhGdiuWRYSDngkvHpaUEngO6xN
+        tBMVSTlZ5V5LFQXFPorrcQt4NikajmkfKow=
+X-Google-Smtp-Source: ABdhPJztwlN85cyj2vBepMijcpN5dd/hOJ41SzfRJZ6qCQvnaOveLbdas5N5VokZNsF3pp0hEJdTKPs546XcksM=
 X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:f3aa:cafe:c20a:e136])
- (user=saravanak job=sendgmr) by 2002:a81:ac67:0:b0:30c:4692:77fd with SMTP id
- z39-20020a81ac67000000b0030c469277fdmr16106442ywj.180.1654067249191; Wed, 01
- Jun 2022 00:07:29 -0700 (PDT)
-Date:   Wed,  1 Jun 2022 00:07:02 -0700
+ (user=saravanak job=sendgmr) by 2002:a17:90b:3c4e:b0:1e3:36c8:8496 with SMTP
+ id pm14-20020a17090b3c4e00b001e336c88496mr7944623pjb.82.1654067252323; Wed,
+ 01 Jun 2022 00:07:32 -0700 (PDT)
+Date:   Wed,  1 Jun 2022 00:07:03 -0700
 In-Reply-To: <20220601070707.3946847-1-saravanak@google.com>
-Message-Id: <20220601070707.3946847-7-saravanak@google.com>
+Message-Id: <20220601070707.3946847-8-saravanak@google.com>
 Mime-Version: 1.0
 References: <20220601070707.3946847-1-saravanak@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2 6/9] Revert "driver core: Set default deferred_probe_timeout
- back to 0."
+Subject: [PATCH v2 7/9] driver core: Set fw_devlink.strict=1 by default
 From:   Saravana Kannan <saravanak@google.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
@@ -78,39 +77,36 @@ Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 11f7e7ef553b6b93ac1aa74a3c2011b9cc8aeb61.
-
-Let's take another shot at getting deferred_probe_timeout=10 to work.
+Now that deferred_probe_timeout is non-zero by default, fw_devlink will
+never permanently block the probing of devices. It'll try its best to
+probe the devices in the right order and then finally let devices probe
+even if their suppliers don't have any drivers.
 
 Signed-off-by: Saravana Kannan <saravanak@google.com>
 ---
- drivers/base/dd.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/base/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-index 4a55fbb7e0da..335e71d3a618 100644
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -256,7 +256,12 @@ static int deferred_devs_show(struct seq_file *s, void *data)
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index 61fdfe99b348..977b379a495b 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -1613,7 +1613,7 @@ static int __init fw_devlink_setup(char *arg)
  }
- DEFINE_SHOW_ATTRIBUTE(deferred_devs);
+ early_param("fw_devlink", fw_devlink_setup);
  
-+#ifdef CONFIG_MODULES
-+int driver_deferred_probe_timeout = 10;
-+#else
- int driver_deferred_probe_timeout;
-+#endif
-+
- EXPORT_SYMBOL_GPL(driver_deferred_probe_timeout);
- 
- static int __init deferred_probe_timeout_setup(char *str)
+-static bool fw_devlink_strict;
++static bool fw_devlink_strict = true;
+ static int __init fw_devlink_strict_setup(char *arg)
+ {
+ 	return strtobool(arg, &fw_devlink_strict);
 -- 
 2.36.1.255.ge46751e96f-goog
 
