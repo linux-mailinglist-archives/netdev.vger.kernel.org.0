@@ -2,64 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C380653A92E
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 16:29:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C69153A950
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 16:39:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355014AbiFAO2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 10:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51708 "EHLO
+        id S1354849AbiFAOjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 10:39:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354990AbiFAO1l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 10:27:41 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0CF4263F
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 07:22:34 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id z13so2154991ljn.11
-        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 07:22:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vsEqLx3OgDPWs4ZLZiTy/4sPplZIdTXobmR6Gec9Res=;
-        b=h94CdPcu+dARHjr4EssZ6BTEc/vGQO45X4Nuoq/mitPHx9QZKuiWPUxcRIR5NaOI4D
-         RN2tYmO+UX9I/BumRzmgOijyHBO+qvwQzKoIIjWVTdkluzwZOUB4gFYwPFaNLkdYRI+Z
-         JYSzmr88Kar6PBUw858oPrsyazEgLfqQuqVRY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vsEqLx3OgDPWs4ZLZiTy/4sPplZIdTXobmR6Gec9Res=;
-        b=b/qwfN5fsilfgEJPqo4/HLpy7P5JQ3b1Wiczye1LF2EXiX/n08bpNsQlG2+93Gfuh8
-         V/770PoVaS2rt6mb944WhjTStydoKC2faIQ/acdX1nqHD78fG5HM51a0YWwhDVVkrn/J
-         2mtV9uD0aXEmhczm0XD1Wq0u0XQMVd0axOjjFlGWD5+hyvTIYrFjN8q8gGsy04O0KZVy
-         IC9lShNUvQxfuAiwPDTHbi56/sIptFq2BSzMbZyq/TYHjAJqBA5qE9xEoC+cwjjUMJL8
-         zjCkBpqJZpNjyAcR+RCuYDGonp/2cKjtAtQ1yEd3vriAddoC5harwlTtg/Oa7dg3IDNN
-         +Kjg==
-X-Gm-Message-State: AOAM531sz5xMjOQ88NuC8mIN0WWUrM9/Qgoj3VzX5dPyTPY+lZkBC+ow
-        UW29F8HgfTu0CaheIJnKnP9iMQ==
-X-Google-Smtp-Source: ABdhPJxMAt1NLVYOUw6pB3tro1F7SV4gxh6HLOIWuCWEzEcs7MAgK5A7qupPnnzpzHH5YenUpHzBUA==
-X-Received: by 2002:a2e:88da:0:b0:255:51e2:32a6 with SMTP id a26-20020a2e88da000000b0025551e232a6mr7549883ljk.49.1654093352819;
-        Wed, 01 Jun 2022 07:22:32 -0700 (PDT)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id f14-20020a05651232ce00b0047255d2118csm388255lfg.187.2022.06.01.07.22.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 07:22:32 -0700 (PDT)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+        with ESMTP id S229602AbiFAOjP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 10:39:15 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B1F31233;
+        Wed,  1 Jun 2022 07:39:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654094354; x=1685630354;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kgeZ5dHKGAmvtm2SI9klD7xeCUa8LmfIDO8LskDbpCY=;
+  b=MyuPw3nzSlQyeCaTmkm7Ejw6KJHsH675eqa5SmbWap7jFNJ/xMaYJDqT
+   LcG5mXaQwjwZTpl3btRS16ja0lzt3brAE2pkcGnCa+H5YaGJJsZg/uYMt
+   rifWWALy9MFPYaDKDwg+sMrx3kDu/iAgkTZRjfYKxXnLMZSfsq+AjgvS8
+   5QStByOq5thYnnAcjfm3VW0QqCWk/vK0fu/G5YuaEfqeAtAt+dbpE8kvc
+   tM9DeShSxR+0pB/CGmcQEmEO4SxdmohNxwGq+hVZG16A1fMerHoxsDnRQ
+   14cM7nsGN0lOtB8N4oL+XWK7KClFKQBPmTEwpEa7gprXfSfu1CnNDZBTN
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="338656201"
+X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
+   d="scan'208";a="338656201"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 07:39:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,268,1647327600"; 
+   d="scan'208";a="581611535"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 01 Jun 2022 07:39:10 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nwPV2-00044e-Nc;
+        Wed, 01 Jun 2022 14:39:04 +0000
+Date:   Wed, 1 Jun 2022 22:38:35 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Haowen Bai <baihaowen@meizu.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH] net: stmmac: use dev_err_probe() for reporting mdio bus registration failure
-Date:   Wed,  1 Jun 2022 16:22:26 +0200
-Message-Id: <20220601142226.1123110-1-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.31.1
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        netdev@vger.kernel.org, Haowen Bai <baihaowen@meizu.com>,
+        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: tulip: de4x5: remove unused variable
+Message-ID: <202206012206.rmnA2Zg6-lkp@intel.com>
+References: <1654068277-6691-1-git-send-email-baihaowen@meizu.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1654068277-6691-1-git-send-email-baihaowen@meizu.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,51 +68,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I have a board where these two lines are always printed during boot:
+Hi Haowen,
 
-   imx-dwmac 30bf0000.ethernet: Cannot register the MDIO bus
-   imx-dwmac 30bf0000.ethernet: stmmac_dvr_probe: MDIO bus (id: 1) registration failed
+Thank you for the patch! Yet something to improve:
 
-It's perfectly fine, and the device is succesfully (and silently, as far
-as the console goes) probed later.
+[auto build test ERROR on horms-ipvs/master]
+[also build test ERROR on v5.18]
+[cannot apply to net-next/master net/master linus/master next-20220601]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Use dev_err_probe() instead, which will demote these messages to debug
-level (thus removing the alarming messages from the console) when the
-error is -EPROBE_DEFER, and also has the advantage of including the
-error code if/when it happens to be something other than -EPROBE_DEFER.
+url:    https://github.com/intel-lab-lkp/linux/commits/Haowen-Bai/net-tulip-de4x5-remove-unused-variable/20220601-152922
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/horms/ipvs.git master
+config: i386-randconfig-a004 (https://download.01.org/0day-ci/archive/20220601/202206012206.rmnA2Zg6-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c825abd6b0198fb088d9752f556a70705bc99dfd)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/98c118e28527e7ff29469521c68414943a7cfc3a
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Haowen-Bai/net-tulip-de4x5-remove-unused-variable/20220601-152922
+        git checkout 98c118e28527e7ff29469521c68414943a7cfc3a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
- drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 3b81d4e9dc83..8a739746c951 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7129,7 +7129,7 @@ int stmmac_dvr_probe(struct device *device,
- 		/* MDIO bus Registration */
- 		ret = stmmac_mdio_register(ndev);
- 		if (ret < 0) {
--			dev_err(priv->device,
-+			dev_err_probe(priv->device, ret,
- 				"%s: MDIO bus (id: %d) registration failed",
- 				__func__, priv->plat->bus_id);
- 			goto error_mdio_register;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-index 9bc625fccca0..03d3d1f7aa4b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -482,7 +482,7 @@ int stmmac_mdio_register(struct net_device *ndev)
- 
- 	err = of_mdiobus_register(new_bus, mdio_node);
- 	if (err != 0) {
--		dev_err(dev, "Cannot register the MDIO bus\n");
-+		dev_err_probe(dev, err, "Cannot register the MDIO bus\n");
- 		goto bus_register_fail;
- 	}
- 
+All errors (new ones prefixed by >>):
+
+>> drivers/net/ethernet/dec/tulip/de4x5.c:3823:2: error: use of undeclared identifier 'imr'
+           UNMASK_IRQs;
+           ^
+   drivers/net/ethernet/dec/tulip/de4x5.c:694:5: note: expanded from macro 'UNMASK_IRQs'
+       imr |= lp->irq_mask;\
+       ^
+>> drivers/net/ethernet/dec/tulip/de4x5.c:3823:2: error: use of undeclared identifier 'imr'
+   drivers/net/ethernet/dec/tulip/de4x5.c:695:10: note: expanded from macro 'UNMASK_IRQs'
+       outl(imr, DE4X5_IMR);               /* Unmask the IRQs */\
+            ^
+   drivers/net/ethernet/dec/tulip/de4x5.c:3826:2: error: use of undeclared identifier 'imr'
+           ENABLE_IRQs;
+           ^
+   drivers/net/ethernet/dec/tulip/de4x5.c:683:5: note: expanded from macro 'ENABLE_IRQs'
+       imr |= lp->irq_en;\
+       ^
+   drivers/net/ethernet/dec/tulip/de4x5.c:3826:2: error: use of undeclared identifier 'imr'
+   drivers/net/ethernet/dec/tulip/de4x5.c:684:10: note: expanded from macro 'ENABLE_IRQs'
+       outl(imr, DE4X5_IMR);               /* Enable the IRQs */\
+            ^
+   4 errors generated.
+
+
+vim +/imr +3823 drivers/net/ethernet/dec/tulip/de4x5.c
+
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3814  
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3815  static void
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3816  de4x5_setup_intr(struct net_device *dev)
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3817  {
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3818      struct de4x5_private *lp = netdev_priv(dev);
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3819      u_long iobase = dev->base_addr;
+98c118e28527e7 drivers/net/ethernet/dec/tulip/de4x5.c Haowen Bai     2022-06-01  3820      s32 sts;
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3821  
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3822      if (inl(DE4X5_OMR) & OMR_SR) {   /* Only unmask if TX/RX is enabled */
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16 @3823  	UNMASK_IRQs;
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3824  	sts = inl(DE4X5_STS);        /* Reset any pending (stale) interrupts */
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3825  	outl(sts, DE4X5_STS);
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3826  	ENABLE_IRQs;
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3827      }
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3828  }
+^1da177e4c3f41 drivers/net/tulip/de4x5.c              Linus Torvalds 2005-04-16  3829  
+
 -- 
-2.31.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
