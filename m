@@ -2,40 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DDD053B0A8
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 02:34:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C103E53AFA0
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 00:51:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232633AbiFAXqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 19:46:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46536 "EHLO
+        id S232248AbiFAWXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 18:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232625AbiFAXqD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 19:46:03 -0400
+        with ESMTP id S232229AbiFAWXh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 18:23:37 -0400
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D743526C;
-        Wed,  1 Jun 2022 16:45:56 -0700 (PDT)
-X-UUID: d56c0ad4ca4d417bbaa2d4d01dd99fb1-20220602
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E2FFC9;
+        Wed,  1 Jun 2022 15:23:31 -0700 (PDT)
+X-UUID: 3adf2b09e9054a8ebf80d0196da9e7aa-20220602
 X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:5ec6251a-a20b-46e3-b4d5-c55df9cc1787,OB:0,LO
-        B:10,IP:0,URL:25,TC:0,Content:3,EDM:0,RT:0,SF:54,FILE:0,RULE:Release_Ham,A
+X-CID-O-INFO: VERSION:1.1.5,REQID:f7e979cc-3c39-4192-b114-63159e78c769,OB:10,L
+        OB:0,IP:0,URL:25,TC:0,Content:3,EDM:0,RT:0,SF:54,FILE:0,RULE:Release_Ham,A
         CTION:release,TS:82
-X-CID-INFO: VERSION:1.1.5,REQID:5ec6251a-a20b-46e3-b4d5-c55df9cc1787,OB:0,LOB:
-        10,IP:0,URL:25,TC:0,Content:3,EDM:0,RT:0,SF:54,FILE:0,RULE:Spam_GS981B3D,A
+X-CID-INFO: VERSION:1.1.5,REQID:f7e979cc-3c39-4192-b114-63159e78c769,OB:10,LOB
+        :0,IP:0,URL:25,TC:0,Content:3,EDM:0,RT:0,SF:54,FILE:0,RULE:Spam_GS981B3D,A
         CTION:quarantine,TS:82
-X-CID-META: VersionHash:2a19b09,CLOUDID:bca1820d-3a0d-4bbe-9d72-0e5d26d57423,C
-        OID:c0bd4adc9736,Recheck:0,SF:28|16|19|48,TC:nil,Content:3,EDM:-3,IP:nil,U
+X-CID-META: VersionHash:2a19b09,CLOUDID:ad70f514-b515-4766-a72d-4514488fe823,C
+        OID:519d15beb0b2,Recheck:0,SF:28|16|19|48,TC:nil,Content:3,EDM:-3,IP:nil,U
         RL:1,File:nil,QS:0,BEC:nil
-X-UUID: d56c0ad4ca4d417bbaa2d4d01dd99fb1-20220602
+X-UUID: 3adf2b09e9054a8ebf80d0196da9e7aa-20220602
 Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
         (envelope-from <sean.wang@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 576863483; Thu, 02 Jun 2022 07:45:53 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with ShadowRedundancy id 15.2.792.3;
- Wed, 1 Jun 2022 23:44:56 +0000
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+        with ESMTP id 290362415; Thu, 02 Jun 2022 06:23:25 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
  Thu, 2 Jun 2022 06:23:23 +0800
 Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
@@ -61,8 +58,8 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-MTK:  N
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR,UNPARSEABLE_RELAY
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR,UNPARSEABLE_RELAY autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
