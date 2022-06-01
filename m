@@ -2,498 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14FA0539D81
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 08:54:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E44E7539D7A
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 08:54:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349978AbiFAGys (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 02:54:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60394 "EHLO
+        id S1349923AbiFAGx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 02:53:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349975AbiFAGyq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 02:54:46 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6213E5D66C;
-        Tue, 31 May 2022 23:54:42 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id v11-20020a17090a4ecb00b001e2c5b837ccso5259708pjl.3;
-        Tue, 31 May 2022 23:54:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Z4OJ0pE1ZscIcGimIlffkTYSoRis6GicivmNje5iT6g=;
-        b=T2FtS+6N8jEMfQntYbHEAom5rNU5FkTIyqEq3piiaryAC0PQ1yykOuwqEMuvxrYvIH
-         1LugM0uyAgoKDnHmg4zzPYe8ksCzZyB/rGi0QSzp0jjAhOKBAW13j4kyO//ZnctR3m0W
-         /gKFyMSQ4mXsnWaxjCBm+Zcb9o5GEirEY8C5HDZJWHZ69jUxbGwmuwVcrH7UiIOg/AMj
-         pNuiF2nHuk7XN1aBltwEmAY5hXBrg24cjRBvehbaWqEIX79bz+vCPwunBWCxL+nTysdu
-         Uo0PZBX1ujYULq7fvgZ40lZwTSR0IyioOFlYRRc4vw5QGUiOOlb3vK6CX+HYw+7kjg1/
-         V/sw==
+        with ESMTP id S1349215AbiFAGx6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 02:53:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E75F488AF
+        for <netdev@vger.kernel.org>; Tue, 31 May 2022 23:53:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654066436;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MWmZwzFVpRksBO4BOLojz9NUjcykvBgvkXhMFxoUwY0=;
+        b=SUvqI2yud/hJezmgwK7tLL5n1BprhNBblapWRuco7yEV1EOZHnJXQq4jVGoyHL0D3Nv++D
+        DZ+9lJ2/vRzG/Ysdket+MWYcgCFXSkofMxHofgDZLUsDeB+67e9bpZ7C/B62KpmsTKGPJs
+        kaQrhiGKNJJoZOYpAgmRJTe1y1bxRWE=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-80-d3i9non4Npe3qnjCRaoAVg-1; Wed, 01 Jun 2022 02:53:55 -0400
+X-MC-Unique: d3i9non4Npe3qnjCRaoAVg-1
+Received: by mail-qk1-f197.google.com with SMTP id i2-20020a05620a144200b006a3a8651de1so666993qkl.14
+        for <netdev@vger.kernel.org>; Tue, 31 May 2022 23:53:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Z4OJ0pE1ZscIcGimIlffkTYSoRis6GicivmNje5iT6g=;
-        b=I+hDjw0nCfsCZPm9fM8En+ib562dC9LPKLUR5P+ag04wxkaxobL3Ys2VqdOGIoQ+0m
-         V5ySJeegxtnDgVKfVYw2XcJPzonL3UlXGlTIphsZcP7+Qj8HzgQFxJF6+N/BUaQ6bQSg
-         rySxibwbGtx1lxzYTOi7eVL1tJchgGqOJqu1jziqTyKh5xSqHePsDhASJDv1hmN1Plpc
-         kEXyGfEOuqhMVHN11lxM82IzRq1p3iFurfcVA1/cwQvkSSPdRC6qRuf9bd7GKTgJaE5i
-         JijKig1h521AjcXqzrnkE4iQ8r+DltOn+oDxQDb21AiycJJKzF1iD4yM2PIabBv7a41k
-         byTw==
-X-Gm-Message-State: AOAM530+o2vzByKz9v+5EMDzjLNrujE4iEi40L0Xli6MUkw5EPt/Cm62
-        NU6InHUDuA26iNp/8Dw19/A=
-X-Google-Smtp-Source: ABdhPJynOAguMhRXg9ptovAoKZviLK+QJRcjiGt2xDgO8K0NhQCRG9PlqoWDLb1Ke+AwMw3ujyEjUA==
-X-Received: by 2002:a17:902:b418:b0:166:3165:eaff with SMTP id x24-20020a170902b41800b001663165eaffmr61777plr.96.1654066481887;
-        Tue, 31 May 2022 23:54:41 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.27])
-        by smtp.gmail.com with ESMTPSA id b11-20020a170902d50b00b0015e8d4eb276sm671460plg.192.2022.05.31.23.54.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 23:54:41 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     kuba@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, nhorman@tuxdriver.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        imagedong@tencent.com, dsahern@kernel.org, talalahmad@google.com,
-        keescook@chromium.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH net-next v3 3/3] net: dropreason: reformat the comment fo skb drop reasons
-Date:   Wed,  1 Jun 2022 14:52:38 +0800
-Message-Id: <20220601065238.1357624-4-imagedong@tencent.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220601065238.1357624-1-imagedong@tencent.com>
-References: <20220601065238.1357624-1-imagedong@tencent.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=MWmZwzFVpRksBO4BOLojz9NUjcykvBgvkXhMFxoUwY0=;
+        b=iluoFGHOa2spl/FNF0IxhkCjpdPrLfS7zCp8PDW9TPNewqkpz7ebsyNRgmO3YLZFHh
+         ST1WlZhaVs5LJoFOwPzhrMqivhMxlVsghX+YJUdhB51ifUdg5OoGqJFicckrm/Lk0wIR
+         b9+4LvusQTSvdXlw0h3t/57RMbqUpwOmDRhldzRp+2hqDVlz4SmDLprdYfwAykwxkQAz
+         xFP2Nd1vv09/cKRcF+4tuMa5XPW/pXgHLm2CvQz7HSeBdCDUreWfXr90outw0XoYRXVN
+         8bWuQ74X42exZc15tp4k8T5uYWFogbmq08eHYCQfbKi4zWgk+OGtwdXB/HRwvX1DTi6G
+         S6tA==
+X-Gm-Message-State: AOAM530pgx2tgOmha3PbX/EcH+0EQqoxinZewEBhpR2pj1KzHceB4ghG
+        lMl+XL4FI8hIwvzkKd2Zwt9k2ozZvnHuTT3vTlrRcsrmcrPS+ZzlO16XfnX59VMUVlIfvR/rJgO
+        cga1fYno6d8ETXGTXACGluhRtOhFXTIR8
+X-Received: by 2002:ac8:5ad0:0:b0:2f3:e37a:e768 with SMTP id d16-20020ac85ad0000000b002f3e37ae768mr50097546qtd.592.1654066435024;
+        Tue, 31 May 2022 23:53:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwfPCaM1Mb2ZZ2MmLFAvNODRxUeZ4/DdHaMTc0SpE9AKwfijcq0lYwmMmaTnm8BsgB2V8pYGab8IEx/HQXQOwg=
+X-Received: by 2002:ac8:5ad0:0:b0:2f3:e37a:e768 with SMTP id
+ d16-20020ac85ad0000000b002f3e37ae768mr50097535qtd.592.1654066434799; Tue, 31
+ May 2022 23:53:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UPPERCASE_50_75 autolearn=no autolearn_force=no version=3.4.6
+References: <20220526124338.36247-1-eperezma@redhat.com> <20220526124338.36247-2-eperezma@redhat.com>
+ <DM8PR12MB5400573627EEB71D774892C4ABDF9@DM8PR12MB5400.namprd12.prod.outlook.com>
+In-Reply-To: <DM8PR12MB5400573627EEB71D774892C4ABDF9@DM8PR12MB5400.namprd12.prod.outlook.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Wed, 1 Jun 2022 08:53:18 +0200
+Message-ID: <CAJaqyWfHLtcFokus3PB1K+19gcD1yeazox426Ur0LoMqOPy7FQ@mail.gmail.com>
+Subject: Re: [PATCH v4 1/4] vdpa: Add stop operation
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "martinh@xilinx.com" <martinh@xilinx.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "martinpo@xilinx.com" <martinpo@xilinx.com>,
+        "lvivier@redhat.com" <lvivier@redhat.com>,
+        "pabloc@xilinx.com" <pabloc@xilinx.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "dinang@xilinx.com" <dinang@xilinx.com>,
+        Longpeng <longpeng2@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+On Wed, Jun 1, 2022 at 7:35 AM Eli Cohen <elic@nvidia.com> wrote:
+>
+> > From: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> > Sent: Thursday, May 26, 2022 3:44 PM
+> > To: Michael S. Tsirkin <mst@redhat.com>; kvm@vger.kernel.org; virtualiz=
+ation@lists.linux-foundation.org; linux-kernel@vger.kernel.org;
+> > Jason Wang <jasowang@redhat.com>; netdev@vger.kernel.org
+> > Cc: martinh@xilinx.com; Stefano Garzarella <sgarzare@redhat.com>; marti=
+npo@xilinx.com; lvivier@redhat.com; pabloc@xilinx.com;
+> > Parav Pandit <parav@nvidia.com>; Eli Cohen <elic@nvidia.com>; Dan Carpe=
+nter <dan.carpenter@oracle.com>; Xie Yongji
+> > <xieyongji@bytedance.com>; Christophe JAILLET <christophe.jaillet@wanad=
+oo.fr>; Zhang Min <zhang.min9@zte.com.cn>; Wu Zongyong
+> > <wuzongyong@linux.alibaba.com>; lulu@redhat.com; Zhu Lingshan <lingshan=
+.zhu@intel.com>; Piotr.Uminski@intel.com; Si-Wei Liu <si-
+> > wei.liu@oracle.com>; ecree.xilinx@gmail.com; gautam.dawar@amd.com; habe=
+tsm.xilinx@gmail.com; tanuj.kamde@amd.com;
+> > hanand@xilinx.com; dinang@xilinx.com; Longpeng <longpeng2@huawei.com>
+> > Subject: [PATCH v4 1/4] vdpa: Add stop operation
+> >
+> > This operation is optional: It it's not implemented, backend feature bi=
+t
+> > will not be exposed.
+> >
+> > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> > ---
+> >  include/linux/vdpa.h | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> >
+> > diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+> > index 15af802d41c4..ddfebc4e1e01 100644
+> > --- a/include/linux/vdpa.h
+> > +++ b/include/linux/vdpa.h
+> > @@ -215,6 +215,11 @@ struct vdpa_map_file {
+> >   * @reset:                   Reset device
+> >   *                           @vdev: vdpa device
+> >   *                           Returns integer: success (0) or error (< =
+0)
+> > + * @stop:                    Stop or resume the device (optional, but =
+it must
+> > + *                           be implemented if require device stop)
+> > + *                           @vdev: vdpa device
+> > + *                           @stop: stop (true), not stop (false)
+> > + *                           Returns integer: success (0) or error (< =
+0)
+>
+> I assume after successful "stop" the device is guaranteed to stop process=
+ing descriptors and after resume it may process descriptors?
+> If that is so, I think it should be clear in the change log.
+>
 
-To make the code clear, reformat the comment in dropreason.h to k-doc
-style.
+Yes.
 
-Now, the comment can pass the check of kernel-doc without warnning:
+It's better described in the changelog of vdpa sim change, maybe it's
+better to move here.
 
-$ ./scripts/kernel-doc -v -none include/linux/dropreason.h
-include/linux/dropreason.h:7: info: Scanning doc for enum skb_drop_reason
+Thanks!
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
-v2:
-- make the comment inline (Jakub Kicinski)
----
- include/net/dropreason.h | 383 +++++++++++++++++++++++----------------
- 1 file changed, 227 insertions(+), 156 deletions(-)
-
-diff --git a/include/net/dropreason.h b/include/net/dropreason.h
-index 013ff0f2543e..0f329c62b5c5 100644
---- a/include/net/dropreason.h
-+++ b/include/net/dropreason.h
-@@ -3,168 +3,239 @@
- #ifndef _LINUX_DROPREASON_H
- #define _LINUX_DROPREASON_H
- 
--/* The reason of skb drop, which is used in kfree_skb_reason().
-- * en...maybe they should be splited by group?
-+/**
-+ * enum skb_drop_reason - the reasons of skb drops
-  *
-- * Each item here should also be in 'TRACE_SKB_DROP_REASON', which is
-- * used to translate the reason to string.
-+ * The reason of skb drop, which is used in kfree_skb_reason().
-+ * en...maybe they should be splited by group?
-  */
- enum skb_drop_reason {
-+	/**
-+	 * @SKB_NOT_DROPPED_YET: skb is not dropped yet (used for no-drop case)
-+	 */
- 	SKB_NOT_DROPPED_YET = 0,
--	SKB_DROP_REASON_NOT_SPECIFIED,	/* drop reason is not specified */
--	SKB_DROP_REASON_NO_SOCKET,	/* socket not found */
--	SKB_DROP_REASON_PKT_TOO_SMALL,	/* packet size is too small */
--	SKB_DROP_REASON_TCP_CSUM,	/* TCP checksum error */
--	SKB_DROP_REASON_SOCKET_FILTER,	/* dropped by socket filter */
--	SKB_DROP_REASON_UDP_CSUM,	/* UDP checksum error */
--	SKB_DROP_REASON_NETFILTER_DROP,	/* dropped by netfilter */
--	SKB_DROP_REASON_OTHERHOST,	/* packet don't belong to current
--					 * host (interface is in promisc
--					 * mode)
--					 */
--	SKB_DROP_REASON_IP_CSUM,	/* IP checksum error */
--	SKB_DROP_REASON_IP_INHDR,	/* there is something wrong with
--					 * IP header (see
--					 * IPSTATS_MIB_INHDRERRORS)
--					 */
--	SKB_DROP_REASON_IP_RPFILTER,	/* IP rpfilter validate failed.
--					 * see the document for rp_filter
--					 * in ip-sysctl.rst for more
--					 * information
--					 */
--	SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST, /* destination address of L2
--						  * is multicast, but L3 is
--						  * unicast.
--						  */
--	SKB_DROP_REASON_XFRM_POLICY,	/* xfrm policy check failed */
--	SKB_DROP_REASON_IP_NOPROTO,	/* no support for IP protocol */
--	SKB_DROP_REASON_SOCKET_RCVBUFF,	/* socket receive buff is full */
--	SKB_DROP_REASON_PROTO_MEM,	/* proto memory limition, such as
--					 * udp packet drop out of
--					 * udp_memory_allocated.
--					 */
--	SKB_DROP_REASON_TCP_MD5NOTFOUND,	/* no MD5 hash and one
--						 * expected, corresponding
--						 * to LINUX_MIB_TCPMD5NOTFOUND
--						 */
--	SKB_DROP_REASON_TCP_MD5UNEXPECTED,	/* MD5 hash and we're not
--						 * expecting one, corresponding
--						 * to LINUX_MIB_TCPMD5UNEXPECTED
--						 */
--	SKB_DROP_REASON_TCP_MD5FAILURE,	/* MD5 hash and its wrong,
--					 * corresponding to
--					 * LINUX_MIB_TCPMD5FAILURE
--					 */
--	SKB_DROP_REASON_SOCKET_BACKLOG,	/* failed to add skb to socket
--					 * backlog (see
--					 * LINUX_MIB_TCPBACKLOGDROP)
--					 */
--	SKB_DROP_REASON_TCP_FLAGS,	/* TCP flags invalid */
--	SKB_DROP_REASON_TCP_ZEROWINDOW,	/* TCP receive window size is zero,
--					 * see LINUX_MIB_TCPZEROWINDOWDROP
--					 */
--	SKB_DROP_REASON_TCP_OLD_DATA,	/* the TCP data reveived is already
--					 * received before (spurious retrans
--					 * may happened), see
--					 * LINUX_MIB_DELAYEDACKLOST
--					 */
--	SKB_DROP_REASON_TCP_OVERWINDOW,	/* the TCP data is out of window,
--					 * the seq of the first byte exceed
--					 * the right edges of receive
--					 * window
--					 */
--	SKB_DROP_REASON_TCP_OFOMERGE,	/* the data of skb is already in
--					 * the ofo queue, corresponding to
--					 * LINUX_MIB_TCPOFOMERGE
--					 */
--	SKB_DROP_REASON_TCP_RFC7323_PAWS, /* PAWS check, corresponding to
--					   * LINUX_MIB_PAWSESTABREJECTED
--					   */
--	SKB_DROP_REASON_TCP_INVALID_SEQUENCE, /* Not acceptable SEQ field */
--	SKB_DROP_REASON_TCP_RESET,	/* Invalid RST packet */
--	SKB_DROP_REASON_TCP_INVALID_SYN, /* Incoming packet has unexpected SYN flag */
--	SKB_DROP_REASON_TCP_CLOSE,	/* TCP socket in CLOSE state */
--	SKB_DROP_REASON_TCP_FASTOPEN,	/* dropped by FASTOPEN request socket */
--	SKB_DROP_REASON_TCP_OLD_ACK,	/* TCP ACK is old, but in window */
--	SKB_DROP_REASON_TCP_TOO_OLD_ACK, /* TCP ACK is too old */
--	SKB_DROP_REASON_TCP_ACK_UNSENT_DATA, /* TCP ACK for data we haven't sent yet */
--	SKB_DROP_REASON_TCP_OFO_QUEUE_PRUNE, /* pruned from TCP OFO queue */
--	SKB_DROP_REASON_TCP_OFO_DROP,	/* data already in receive queue */
--	SKB_DROP_REASON_IP_OUTNOROUTES,	/* route lookup failed */
--	SKB_DROP_REASON_BPF_CGROUP_EGRESS,	/* dropped by
--						 * BPF_PROG_TYPE_CGROUP_SKB
--						 * eBPF program
--						 */
--	SKB_DROP_REASON_IPV6DISABLED,	/* IPv6 is disabled on the device */
--	SKB_DROP_REASON_NEIGH_CREATEFAIL,	/* failed to create neigh
--						 * entry
--						 */
--	SKB_DROP_REASON_NEIGH_FAILED,	/* neigh entry in failed state */
--	SKB_DROP_REASON_NEIGH_QUEUEFULL,	/* arp_queue for neigh
--						 * entry is full
--						 */
--	SKB_DROP_REASON_NEIGH_DEAD,	/* neigh entry is dead */
--	SKB_DROP_REASON_TC_EGRESS,	/* dropped in TC egress HOOK */
--	SKB_DROP_REASON_QDISC_DROP,	/* dropped by qdisc when packet
--					 * outputting (failed to enqueue to
--					 * current qdisc)
--					 */
--	SKB_DROP_REASON_CPU_BACKLOG,	/* failed to enqueue the skb to
--					 * the per CPU backlog queue. This
--					 * can be caused by backlog queue
--					 * full (see netdev_max_backlog in
--					 * net.rst) or RPS flow limit
--					 */
--	SKB_DROP_REASON_XDP,		/* dropped by XDP in input path */
--	SKB_DROP_REASON_TC_INGRESS,	/* dropped in TC ingress HOOK */
--	SKB_DROP_REASON_UNHANDLED_PROTO,	/* protocol not implemented
--						 * or not supported
--						 */
--	SKB_DROP_REASON_SKB_CSUM,	/* sk_buff checksum computation
--					 * error
--					 */
--	SKB_DROP_REASON_SKB_GSO_SEG,	/* gso segmentation error */
--	SKB_DROP_REASON_SKB_UCOPY_FAULT,	/* failed to copy data from
--						 * user space, e.g., via
--						 * zerocopy_sg_from_iter()
--						 * or skb_orphan_frags_rx()
--						 */
--	SKB_DROP_REASON_DEV_HDR,	/* device driver specific
--					 * header/metadata is invalid
--					 */
--	/* the device is not ready to xmit/recv due to any of its data
--	 * structure that is not up/ready/initialized, e.g., the IFF_UP is
--	 * not set, or driver specific tun->tfiles[txq] is not initialized
-+	/** @SKB_DROP_REASON_NOT_SPECIFIED: drop reason is not specified */
-+	SKB_DROP_REASON_NOT_SPECIFIED,
-+	/** @SKB_DROP_REASON_NO_SOCKET: socket not found */
-+	SKB_DROP_REASON_NO_SOCKET,
-+	/** @SKB_DROP_REASON_PKT_TOO_SMALL: packet size is too small */
-+	SKB_DROP_REASON_PKT_TOO_SMALL,
-+	/** @SKB_DROP_REASON_TCP_CSUM: TCP checksum error */
-+	SKB_DROP_REASON_TCP_CSUM,
-+	/** @SKB_DROP_REASON_SOCKET_FILTER: dropped by socket filter */
-+	SKB_DROP_REASON_SOCKET_FILTER,
-+	/** @SKB_DROP_REASON_UDP_CSUM: UDP checksum error */
-+	SKB_DROP_REASON_UDP_CSUM,
-+	/** @SKB_DROP_REASON_NETFILTER_DROP: dropped by netfilter */
-+	SKB_DROP_REASON_NETFILTER_DROP,
-+	/**
-+	 * @SKB_DROP_REASON_OTHERHOST: packet don't belong to current host
-+	 * (interface is in promisc mode)
-+	 */
-+	SKB_DROP_REASON_OTHERHOST,
-+	/** @SKB_DROP_REASON_IP_CSUM: IP checksum error */
-+	SKB_DROP_REASON_IP_CSUM,
-+	/**
-+	 * @SKB_DROP_REASON_IP_INHDR: there is something wrong with IP header (see
-+	 * IPSTATS_MIB_INHDRERRORS)
-+	 */
-+	SKB_DROP_REASON_IP_INHDR,
-+	/**
-+	 * @SKB_DROP_REASON_IP_RPFILTER: IP rpfilter validate failed. see the
-+	 * document for rp_filter in ip-sysctl.rst for more information
-+	 */
-+	SKB_DROP_REASON_IP_RPFILTER,
-+	/**
-+	 * @SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST: destination address of L2 is
-+	 * multicast, but L3 is unicast.
-+	 */
-+	SKB_DROP_REASON_UNICAST_IN_L2_MULTICAST,
-+	/** @SKB_DROP_REASON_XFRM_POLICY: xfrm policy check failed */
-+	SKB_DROP_REASON_XFRM_POLICY,
-+	/** @SKB_DROP_REASON_IP_NOPROTO: no support for IP protocol */
-+	SKB_DROP_REASON_IP_NOPROTO,
-+	/** @SKB_DROP_REASON_SOCKET_RCVBUFF: socket receive buff is full */
-+	SKB_DROP_REASON_SOCKET_RCVBUFF,
-+	/**
-+	 * @SKB_DROP_REASON_PROTO_MEM: proto memory limition, such as udp packet
-+	 * drop out of udp_memory_allocated.
-+	 */
-+	SKB_DROP_REASON_PROTO_MEM,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_MD5NOTFOUND: no MD5 hash and one expected,
-+	 * corresponding to LINUX_MIB_TCPMD5NOTFOUND
-+	 */
-+	SKB_DROP_REASON_TCP_MD5NOTFOUND,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_MD5UNEXPECTED: MD5 hash and we're not expecting
-+	 * one, corresponding to LINUX_MIB_TCPMD5UNEXPECTED
-+	 */
-+	SKB_DROP_REASON_TCP_MD5UNEXPECTED,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_MD5FAILURE: MD5 hash and its wrong, corresponding
-+	 * to LINUX_MIB_TCPMD5FAILURE
-+	 */
-+	SKB_DROP_REASON_TCP_MD5FAILURE,
-+	/**
-+	 * @SKB_DROP_REASON_SOCKET_BACKLOG: failed to add skb to socket backlog (
-+	 * see LINUX_MIB_TCPBACKLOGDROP)
-+	 */
-+	SKB_DROP_REASON_SOCKET_BACKLOG,
-+	/** @SKB_DROP_REASON_TCP_FLAGS: TCP flags invalid */
-+	SKB_DROP_REASON_TCP_FLAGS,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_ZEROWINDOW: TCP receive window size is zero,
-+	 * see LINUX_MIB_TCPZEROWINDOWDROP
-+	 */
-+	SKB_DROP_REASON_TCP_ZEROWINDOW,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_OLD_DATA: the TCP data reveived is already
-+	 * received before (spurious retrans may happened), see
-+	 * LINUX_MIB_DELAYEDACKLOST
-+	 */
-+	SKB_DROP_REASON_TCP_OLD_DATA,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_OVERWINDOW: the TCP data is out of window,
-+	 * the seq of the first byte exceed the right edges of receive
-+	 * window
-+	 */
-+	SKB_DROP_REASON_TCP_OVERWINDOW,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_OFOMERGE: the data of skb is already in the ofo
-+	 * queue, corresponding to LINUX_MIB_TCPOFOMERGE
-+	 */
-+	SKB_DROP_REASON_TCP_OFOMERGE,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_RFC7323_PAWS: PAWS check, corresponding to
-+	 * LINUX_MIB_PAWSESTABREJECTED
-+	 */
-+	SKB_DROP_REASON_TCP_RFC7323_PAWS,
-+	/** @SKB_DROP_REASON_TCP_INVALID_SEQUENCE: Not acceptable SEQ field */
-+	SKB_DROP_REASON_TCP_INVALID_SEQUENCE,
-+	/** @SKB_DROP_REASON_TCP_RESET: Invalid RST packet */
-+	SKB_DROP_REASON_TCP_RESET,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_INVALID_SYN: Incoming packet has unexpected
-+	 * SYN flag
-+	 */
-+	SKB_DROP_REASON_TCP_INVALID_SYN,
-+	/** @SKB_DROP_REASON_TCP_CLOSE: TCP socket in CLOSE state */
-+	SKB_DROP_REASON_TCP_CLOSE,
-+	/** @SKB_DROP_REASON_TCP_FASTOPEN: dropped by FASTOPEN request socket */
-+	SKB_DROP_REASON_TCP_FASTOPEN,
-+	/** @SKB_DROP_REASON_TCP_OLD_ACK: TCP ACK is old, but in window */
-+	SKB_DROP_REASON_TCP_OLD_ACK,
-+	/** @SKB_DROP_REASON_TCP_TOO_OLD_ACK: TCP ACK is too old */
-+	SKB_DROP_REASON_TCP_TOO_OLD_ACK,
-+	/**
-+	 * @SKB_DROP_REASON_TCP_ACK_UNSENT_DATA: TCP ACK for data we haven't
-+	 * sent yet
-+	 */
-+	SKB_DROP_REASON_TCP_ACK_UNSENT_DATA,
-+	/** @SKB_DROP_REASON_TCP_OFO_QUEUE_PRUNE: pruned from TCP OFO queue */
-+	SKB_DROP_REASON_TCP_OFO_QUEUE_PRUNE,
-+	/** @SKB_DROP_REASON_TCP_OFO_DROP: data already in receive queue */
-+	SKB_DROP_REASON_TCP_OFO_DROP,
-+	/** @SKB_DROP_REASON_IP_OUTNOROUTES: route lookup failed */
-+	SKB_DROP_REASON_IP_OUTNOROUTES,
-+	/**
-+	 * @SKB_DROP_REASON_BPF_CGROUP_EGRESS: dropped by BPF_PROG_TYPE_CGROUP_SKB
-+	 * eBPF program
-+	 */
-+	SKB_DROP_REASON_BPF_CGROUP_EGRESS,
-+	/** @SKB_DROP_REASON_IPV6DISABLED: IPv6 is disabled on the device */
-+	SKB_DROP_REASON_IPV6DISABLED,
-+	/** @SKB_DROP_REASON_NEIGH_CREATEFAIL: failed to create neigh entry */
-+	SKB_DROP_REASON_NEIGH_CREATEFAIL,
-+	/** @SKB_DROP_REASON_NEIGH_FAILED: neigh entry in failed state */
-+	SKB_DROP_REASON_NEIGH_FAILED,
-+	/** @SKB_DROP_REASON_NEIGH_QUEUEFULL: arp_queue for neigh entry is full */
-+	SKB_DROP_REASON_NEIGH_QUEUEFULL,
-+	/** @SKB_DROP_REASON_NEIGH_DEAD: neigh entry is dead */
-+	SKB_DROP_REASON_NEIGH_DEAD,
-+	/** @SKB_DROP_REASON_TC_EGRESS: dropped in TC egress HOOK */
-+	SKB_DROP_REASON_TC_EGRESS,
-+	/**
-+	 * @SKB_DROP_REASON_QDISC_DROP: dropped by qdisc when packet outputting (
-+	 * failed to enqueue to current qdisc)
-+	 */
-+	SKB_DROP_REASON_QDISC_DROP,
-+	/**
-+	 * @SKB_DROP_REASON_CPU_BACKLOG: failed to enqueue the skb to the per CPU
-+	 * backlog queue. This can be caused by backlog queue full (see
-+	 * netdev_max_backlog in net.rst) or RPS flow limit
-+	 */
-+	SKB_DROP_REASON_CPU_BACKLOG,
-+	/** @SKB_DROP_REASON_XDP: dropped by XDP in input path */
-+	SKB_DROP_REASON_XDP,
-+	/** @SKB_DROP_REASON_TC_INGRESS: dropped in TC ingress HOOK */
-+	SKB_DROP_REASON_TC_INGRESS,
-+	/** @SKB_DROP_REASON_UNHANDLED_PROTO: protocol not implemented or not supported */
-+	SKB_DROP_REASON_UNHANDLED_PROTO,
-+	/** @SKB_DROP_REASON_SKB_CSUM: sk_buff checksum computation error */
-+	SKB_DROP_REASON_SKB_CSUM,
-+	/** @SKB_DROP_REASON_SKB_GSO_SEG: gso segmentation error */
-+	SKB_DROP_REASON_SKB_GSO_SEG,
-+	/**
-+	 * @SKB_DROP_REASON_SKB_UCOPY_FAULT: failed to copy data from user space,
-+	 * e.g., via zerocopy_sg_from_iter() or skb_orphan_frags_rx()
-+	 */
-+	SKB_DROP_REASON_SKB_UCOPY_FAULT,
-+	/** @SKB_DROP_REASON_DEV_HDR: device driver specific header/metadata is invalid */
-+	SKB_DROP_REASON_DEV_HDR,
-+	/**
-+	 * @SKB_DROP_REASON_DEV_READY: the device is not ready to xmit/recv due to
-+	 * any of its data structure that is not up/ready/initialized,
-+	 * e.g., the IFF_UP is not set, or driver specific tun->tfiles[txq]
-+	 * is not initialized
- 	 */
- 	SKB_DROP_REASON_DEV_READY,
--	SKB_DROP_REASON_FULL_RING,	/* ring buffer is full */
--	SKB_DROP_REASON_NOMEM,		/* error due to OOM */
--	SKB_DROP_REASON_HDR_TRUNC,      /* failed to trunc/extract the header
--					 * from networking data, e.g., failed
--					 * to pull the protocol header from
--					 * frags via pskb_may_pull()
--					 */
--	SKB_DROP_REASON_TAP_FILTER,     /* dropped by (ebpf) filter directly
--					 * attached to tun/tap, e.g., via
--					 * TUNSETFILTEREBPF
--					 */
--	SKB_DROP_REASON_TAP_TXFILTER,	/* dropped by tx filter implemented
--					 * at tun/tap, e.g., check_filter()
--					 */
--	SKB_DROP_REASON_ICMP_CSUM,	/* ICMP checksum error */
--	SKB_DROP_REASON_INVALID_PROTO,	/* the packet doesn't follow RFC
--					 * 2211, such as a broadcasts
--					 * ICMP_TIMESTAMP
--					 */
--	SKB_DROP_REASON_IP_INADDRERRORS,	/* host unreachable, corresponding
--						 * to IPSTATS_MIB_INADDRERRORS
--						 */
--	SKB_DROP_REASON_IP_INNOROUTES,	/* network unreachable, corresponding
--					 * to IPSTATS_MIB_INADDRERRORS
--					 */
--	SKB_DROP_REASON_PKT_TOO_BIG,	/* packet size is too big (maybe exceed
--					 * the MTU)
--					 */
-+	/** @SKB_DROP_REASON_FULL_RING: ring buffer is full */
-+	SKB_DROP_REASON_FULL_RING,
-+	/** @SKB_DROP_REASON_NOMEM: error due to OOM */
-+	SKB_DROP_REASON_NOMEM,
-+	/**
-+	 * @SKB_DROP_REASON_HDR_TRUNC: failed to trunc/extract the header from
-+	 * networking data, e.g., failed to pull the protocol header from
-+	 * frags via pskb_may_pull()
-+	 */
-+	SKB_DROP_REASON_HDR_TRUNC,
-+	/**
-+	 * @SKB_DROP_REASON_TAP_FILTER: dropped by (ebpf) filter directly attached
-+	 * to tun/tap, e.g., via TUNSETFILTEREBPF
-+	 */
-+	SKB_DROP_REASON_TAP_FILTER,
-+	/**
-+	 * @SKB_DROP_REASON_TAP_TXFILTER: dropped by tx filter implemented at
-+	 * tun/tap, e.g., check_filter()
-+	 */
-+	SKB_DROP_REASON_TAP_TXFILTER,
-+	/** @SKB_DROP_REASON_ICMP_CSUM: ICMP checksum error */
-+	SKB_DROP_REASON_ICMP_CSUM,
-+	/**
-+	 * @SKB_DROP_REASON_INVALID_PROTO: the packet doesn't follow RFC 2211,
-+	 * such as a broadcasts ICMP_TIMESTAMP
-+	 */
-+	SKB_DROP_REASON_INVALID_PROTO,
-+	/**
-+	 * @SKB_DROP_REASON_IP_INADDRERRORS: host unreachable, corresponding to
-+	 * IPSTATS_MIB_INADDRERRORS
-+	 */
-+	SKB_DROP_REASON_IP_INADDRERRORS,
-+	/**
-+	 * @SKB_DROP_REASON_IP_INNOROUTES: network unreachable, corresponding to
-+	 * IPSTATS_MIB_INADDRERRORS
-+	 */
-+	SKB_DROP_REASON_IP_INNOROUTES,
-+	/**
-+	 * @SKB_DROP_REASON_PKT_TOO_BIG: packet size is too big (maybe exceed the
-+	 * MTU)
-+	 */
-+	SKB_DROP_REASON_PKT_TOO_BIG,
-+	/**
-+	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
-+	 * used as a real 'reason'
-+	 */
- 	SKB_DROP_REASON_MAX,
- };
- 
--- 
-2.36.1
+> >   * @get_config_size:         Get the size of the configuration space i=
+ncludes
+> >   *                           fields that are conditional on feature bi=
+ts.
+> >   *                           @vdev: vdpa device
+> > @@ -316,6 +321,7 @@ struct vdpa_config_ops {
+> >       u8 (*get_status)(struct vdpa_device *vdev);
+> >       void (*set_status)(struct vdpa_device *vdev, u8 status);
+> >       int (*reset)(struct vdpa_device *vdev);
+> > +     int (*stop)(struct vdpa_device *vdev, bool stop);
+> >       size_t (*get_config_size)(struct vdpa_device *vdev);
+> >       void (*get_config)(struct vdpa_device *vdev, unsigned int offset,
+> >                          void *buf, unsigned int len);
+> > --
+> > 2.31.1
+>
 
