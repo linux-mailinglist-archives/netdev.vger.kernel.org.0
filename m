@@ -2,177 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E44E7539D7A
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 08:54:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5FE8539DE5
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 09:10:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349923AbiFAGx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 02:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59952 "EHLO
+        id S1346018AbiFAHI5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 03:08:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349215AbiFAGx6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 02:53:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E75F488AF
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 23:53:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654066436;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MWmZwzFVpRksBO4BOLojz9NUjcykvBgvkXhMFxoUwY0=;
-        b=SUvqI2yud/hJezmgwK7tLL5n1BprhNBblapWRuco7yEV1EOZHnJXQq4jVGoyHL0D3Nv++D
-        DZ+9lJ2/vRzG/Ysdket+MWYcgCFXSkofMxHofgDZLUsDeB+67e9bpZ7C/B62KpmsTKGPJs
-        kaQrhiGKNJJoZOYpAgmRJTe1y1bxRWE=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-80-d3i9non4Npe3qnjCRaoAVg-1; Wed, 01 Jun 2022 02:53:55 -0400
-X-MC-Unique: d3i9non4Npe3qnjCRaoAVg-1
-Received: by mail-qk1-f197.google.com with SMTP id i2-20020a05620a144200b006a3a8651de1so666993qkl.14
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 23:53:55 -0700 (PDT)
+        with ESMTP id S1344414AbiFAHHP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 03:07:15 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7CF2DF16
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 00:07:12 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id c11-20020a17090a4d0b00b001e4e081d525so689950pjg.7
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 00:07:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Mk17D+aOzb7UCdNS2oz9IAwDr5MmRg+quCipw6fx4RQ=;
+        b=hQa0JnnmV2cX05wxogayF7DAeIwm91UA5DD4Pd0261qK2nG5mlRfb8p0PwXRgLwmcG
+         6gimTBEfRJnzqCBPwGFDLXwY23Jge7qCK5EKBtDVk+4ZHueBZe2ScEh2abiJOXvqClXF
+         aItT2KKmdUihJqxg6KlMJQ+n9hDQfaXwUgpDUXId5vW641rUWKofWrnrujEe72Sytvnk
+         iXsC3g9D+PkO64XwFNhsJCy/xgMMwq44IzwR510vfqTBnn54+HA0yDiVcTK99umRrrcq
+         KawtwQ3E7vKCwmO2izMB9zQh9evWd8zx74HbqExwInwGL34iXnuFQ1QqmbkBW7qSDv5A
+         GPbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=MWmZwzFVpRksBO4BOLojz9NUjcykvBgvkXhMFxoUwY0=;
-        b=iluoFGHOa2spl/FNF0IxhkCjpdPrLfS7zCp8PDW9TPNewqkpz7ebsyNRgmO3YLZFHh
-         ST1WlZhaVs5LJoFOwPzhrMqivhMxlVsghX+YJUdhB51ifUdg5OoGqJFicckrm/Lk0wIR
-         b9+4LvusQTSvdXlw0h3t/57RMbqUpwOmDRhldzRp+2hqDVlz4SmDLprdYfwAykwxkQAz
-         xFP2Nd1vv09/cKRcF+4tuMa5XPW/pXgHLm2CvQz7HSeBdCDUreWfXr90outw0XoYRXVN
-         8bWuQ74X42exZc15tp4k8T5uYWFogbmq08eHYCQfbKi4zWgk+OGtwdXB/HRwvX1DTi6G
-         S6tA==
-X-Gm-Message-State: AOAM530pgx2tgOmha3PbX/EcH+0EQqoxinZewEBhpR2pj1KzHceB4ghG
-        lMl+XL4FI8hIwvzkKd2Zwt9k2ozZvnHuTT3vTlrRcsrmcrPS+ZzlO16XfnX59VMUVlIfvR/rJgO
-        cga1fYno6d8ETXGTXACGluhRtOhFXTIR8
-X-Received: by 2002:ac8:5ad0:0:b0:2f3:e37a:e768 with SMTP id d16-20020ac85ad0000000b002f3e37ae768mr50097546qtd.592.1654066435024;
-        Tue, 31 May 2022 23:53:55 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwfPCaM1Mb2ZZ2MmLFAvNODRxUeZ4/DdHaMTc0SpE9AKwfijcq0lYwmMmaTnm8BsgB2V8pYGab8IEx/HQXQOwg=
-X-Received: by 2002:ac8:5ad0:0:b0:2f3:e37a:e768 with SMTP id
- d16-20020ac85ad0000000b002f3e37ae768mr50097535qtd.592.1654066434799; Tue, 31
- May 2022 23:53:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220526124338.36247-1-eperezma@redhat.com> <20220526124338.36247-2-eperezma@redhat.com>
- <DM8PR12MB5400573627EEB71D774892C4ABDF9@DM8PR12MB5400.namprd12.prod.outlook.com>
-In-Reply-To: <DM8PR12MB5400573627EEB71D774892C4ABDF9@DM8PR12MB5400.namprd12.prod.outlook.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Wed, 1 Jun 2022 08:53:18 +0200
-Message-ID: <CAJaqyWfHLtcFokus3PB1K+19gcD1yeazox426Ur0LoMqOPy7FQ@mail.gmail.com>
-Subject: Re: [PATCH v4 1/4] vdpa: Add stop operation
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "martinh@xilinx.com" <martinh@xilinx.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "martinpo@xilinx.com" <martinpo@xilinx.com>,
-        "lvivier@redhat.com" <lvivier@redhat.com>,
-        "pabloc@xilinx.com" <pabloc@xilinx.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
-        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
-        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "dinang@xilinx.com" <dinang@xilinx.com>,
-        Longpeng <longpeng2@huawei.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Mk17D+aOzb7UCdNS2oz9IAwDr5MmRg+quCipw6fx4RQ=;
+        b=rR+gD6zOKYtQ4P7OLhShtx21EMVdimeDivaemcSR4rbM9bvj6BW9Bzsn9xEEI/pHoN
+         WNxnaz4o8hF9n/5FR5BTjtPl8jDK12H+nTfzFJrDX2CZQovZBDRVXBhlTkmuhAJJZWXo
+         86g7sFtKyo/Xr8Lwyo0oBHkFWMwkMLoEzPLOTTbb74sy1eAm0g4oZzd53I6KyrtBY7o1
+         sgL8okLEg3zywxv3xiOWF3/FJAVK+Z0jZXbUIz2j+L60Ab1CkNiWqH6NZLW0gG3hfG2v
+         inTpy5qgYVdV9LsYDLUOV5O7edk5b3yn3g7wWayVSJiZP4GJECNJV+c4JGkG71Xho3nh
+         v8NA==
+X-Gm-Message-State: AOAM533C1gHcD742dTSoYMSEi1brH/huK90BH+ldBgQq+W88c3V1nJWo
+        IPAOWroxJbCWIviPZ7nnc86jSEnte8rVt4E=
+X-Google-Smtp-Source: ABdhPJwo0w/Ul81l80Uz+X1lE0Knuok5VeKXEtMoQ0Yzewr/LH6PL8JE3PUvMoXQAWKjDKNKYDX9hXZkKLb6+II=
+X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:f3aa:cafe:c20a:e136])
+ (user=saravanak job=sendgmr) by 2002:a17:902:da8e:b0:164:537:d910 with SMTP
+ id j14-20020a170902da8e00b001640537d910mr7067516plx.75.1654067231712; Wed, 01
+ Jun 2022 00:07:11 -0700 (PDT)
+Date:   Wed,  1 Jun 2022 00:06:56 -0700
+Message-Id: <20220601070707.3946847-1-saravanak@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH v2 0/9] deferred_probe_timeout logic clean up
+From:   Saravana Kannan <saravanak@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+Cc:     Saravana Kannan <saravanak@google.com>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 1, 2022 at 7:35 AM Eli Cohen <elic@nvidia.com> wrote:
->
-> > From: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > Sent: Thursday, May 26, 2022 3:44 PM
-> > To: Michael S. Tsirkin <mst@redhat.com>; kvm@vger.kernel.org; virtualiz=
-ation@lists.linux-foundation.org; linux-kernel@vger.kernel.org;
-> > Jason Wang <jasowang@redhat.com>; netdev@vger.kernel.org
-> > Cc: martinh@xilinx.com; Stefano Garzarella <sgarzare@redhat.com>; marti=
-npo@xilinx.com; lvivier@redhat.com; pabloc@xilinx.com;
-> > Parav Pandit <parav@nvidia.com>; Eli Cohen <elic@nvidia.com>; Dan Carpe=
-nter <dan.carpenter@oracle.com>; Xie Yongji
-> > <xieyongji@bytedance.com>; Christophe JAILLET <christophe.jaillet@wanad=
-oo.fr>; Zhang Min <zhang.min9@zte.com.cn>; Wu Zongyong
-> > <wuzongyong@linux.alibaba.com>; lulu@redhat.com; Zhu Lingshan <lingshan=
-.zhu@intel.com>; Piotr.Uminski@intel.com; Si-Wei Liu <si-
-> > wei.liu@oracle.com>; ecree.xilinx@gmail.com; gautam.dawar@amd.com; habe=
-tsm.xilinx@gmail.com; tanuj.kamde@amd.com;
-> > hanand@xilinx.com; dinang@xilinx.com; Longpeng <longpeng2@huawei.com>
-> > Subject: [PATCH v4 1/4] vdpa: Add stop operation
-> >
-> > This operation is optional: It it's not implemented, backend feature bi=
-t
-> > will not be exposed.
-> >
-> > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > ---
-> >  include/linux/vdpa.h | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> >
-> > diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-> > index 15af802d41c4..ddfebc4e1e01 100644
-> > --- a/include/linux/vdpa.h
-> > +++ b/include/linux/vdpa.h
-> > @@ -215,6 +215,11 @@ struct vdpa_map_file {
-> >   * @reset:                   Reset device
-> >   *                           @vdev: vdpa device
-> >   *                           Returns integer: success (0) or error (< =
-0)
-> > + * @stop:                    Stop or resume the device (optional, but =
-it must
-> > + *                           be implemented if require device stop)
-> > + *                           @vdev: vdpa device
-> > + *                           @stop: stop (true), not stop (false)
-> > + *                           Returns integer: success (0) or error (< =
-0)
->
-> I assume after successful "stop" the device is guaranteed to stop process=
-ing descriptors and after resume it may process descriptors?
-> If that is so, I think it should be clear in the change log.
->
+This series is based on linux-next + these 2 small patches applies on top:
+https://lore.kernel.org/lkml/20220526034609.480766-1-saravanak@google.com/
 
-Yes.
+A lot of the deferred_probe_timeout logic is redundant with
+fw_devlink=on.  Also, enabling deferred_probe_timeout by default breaks
+a few cases.
 
-It's better described in the changelog of vdpa sim change, maybe it's
-better to move here.
+This series tries to delete the redundant logic, simplify the frameworks
+that use driver_deferred_probe_check_state(), enable
+deferred_probe_timeout=10 by default, and fixes the nfsroot failure
+case.
 
-Thanks!
+The overall idea of this series is to replace the global behavior of
+driver_deferred_probe_check_state() where all devices give up waiting on
+supplier at the same time with a more granular behavior:
 
-> >   * @get_config_size:         Get the size of the configuration space i=
-ncludes
-> >   *                           fields that are conditional on feature bi=
-ts.
-> >   *                           @vdev: vdpa device
-> > @@ -316,6 +321,7 @@ struct vdpa_config_ops {
-> >       u8 (*get_status)(struct vdpa_device *vdev);
-> >       void (*set_status)(struct vdpa_device *vdev, u8 status);
-> >       int (*reset)(struct vdpa_device *vdev);
-> > +     int (*stop)(struct vdpa_device *vdev, bool stop);
-> >       size_t (*get_config_size)(struct vdpa_device *vdev);
-> >       void (*get_config)(struct vdpa_device *vdev, unsigned int offset,
-> >                          void *buf, unsigned int len);
-> > --
-> > 2.31.1
->
+1. Devices with all their suppliers successfully probed by late_initcall
+   probe as usual and avoid unnecessary deferred probe attempts.
+
+2. At or after late_initcall, in cases where boot would break because of
+   fw_devlink=on being strict about the ordering, we
+
+   a. Temporarily relax the enforcement to probe any unprobed devices
+      that can probe successfully in the current state of the system.
+      For example, when we boot with a NFS rootfs and no network device
+      has probed.
+   b. Go back to enforcing the ordering for any devices that haven't
+      probed.
+
+3. After deferred probe timeout expires, we permanently give up waiting
+   on supplier devices without drivers. At this point, whatever devices
+   can probe without some of their optional suppliers end up probing.
+
+In the case where module support is disabled, it's fairly
+straightforward and all device probes are completed before the initcalls
+are done.
+
+Patches 1 to 3 are fairly straightforward and can probably be applied
+right away.
+
+Patches 4 to 6 are for fixing the NFS rootfs issue and setting the
+default deferred_probe_timeout back to 10 seconds when modules are
+enabled.
+
+Patches 7 to 9 are further clean up of the deferred_probe_timeout logic
+so that no framework has to know/care about deferred_probe_timeout.
+
+Yoshihiro/Geert,
+
+If you can test this patch series and confirm that the NFS root case
+works, I'd really appreciate that.
+
+Thanks,
+Saravana
+
+v1 -> v2:
+Rewrote the NFS rootfs fix to be a lot less destructive on the
+fw_devlink ordering for devices that don't end up probing during the
+"best effort" attempt at probing all devices needed for a network rootfs
+
+Saravana Kannan (9):
+  PM: domains: Delete usage of driver_deferred_probe_check_state()
+  pinctrl: devicetree: Delete usage of
+    driver_deferred_probe_check_state()
+  net: mdio: Delete usage of driver_deferred_probe_check_state()
+  driver core: Add wait_for_init_devices_probe helper function
+  net: ipconfig: Relax fw_devlink if we need to mount a network rootfs
+  Revert "driver core: Set default deferred_probe_timeout back to 0."
+  driver core: Set fw_devlink.strict=1 by default
+  iommu/of: Delete usage of driver_deferred_probe_check_state()
+  driver core: Delete driver_deferred_probe_check_state()
+
+ drivers/base/base.h            |   1 +
+ drivers/base/core.c            | 102 ++++++++++++++++++++++++++++++---
+ drivers/base/dd.c              |  54 ++++++-----------
+ drivers/base/power/domain.c    |   2 +-
+ drivers/iommu/of_iommu.c       |   2 +-
+ drivers/net/mdio/fwnode_mdio.c |   4 +-
+ drivers/pinctrl/devicetree.c   |   2 +-
+ include/linux/device/driver.h  |   2 +-
+ net/ipv4/ipconfig.c            |   6 ++
+ 9 files changed, 126 insertions(+), 49 deletions(-)
+
+-- 
+2.36.1.255.ge46751e96f-goog
 
