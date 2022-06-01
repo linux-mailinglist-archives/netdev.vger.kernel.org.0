@@ -2,183 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B1FD53AF96
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 00:51:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C83F53B097
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 02:34:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232418AbiFAWpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 18:45:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36448 "EHLO
+        id S232334AbiFAXBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 19:01:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232409AbiFAWpb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 18:45:31 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64554281860;
-        Wed,  1 Jun 2022 15:45:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654123530; x=1685659530;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=smkMhl7SsLCvV8F21B6h6yHB6om4C/Bmm9M+s7xMgFs=;
-  b=oC3R54YH7KpP6anGlcRpgoBObGC0UAHryK9cvqHrtBBg1Eq6VPQdWHUQ
-   Lo+az2D2znNGVdR54a+yrKQpJ0JjbVNlqqTH8lmfiLEMohAzGOyIzXrIa
-   K/27vk8uvFXRLkfqxaTfeVZ3BExw/oE+p2raA1oymfhdtnsFLE4/QHyeI
-   cuR7RUn1IuDREX5CXCc6RPra9TA3zT+fS3Y1jOLWyIpiR7Oco8nYP/BOL
-   Fk87tLBWnu8GatIjUDLGarL7l/wTLCNB48HRtjqHBNrHF62S7Lad4oKYh
-   /ZoczDsQ13x8OFCDCvee5we2LNkzKTy6+pVX5uz3xDDKNi+ONefq1EF+U
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="362129073"
-X-IronPort-AV: E=Sophos;i="5.91,269,1647327600"; 
-   d="scan'208";a="362129073"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 15:45:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,269,1647327600"; 
-   d="scan'208";a="581805052"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 01 Jun 2022 15:45:27 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nwX5j-0004UY-14;
-        Wed, 01 Jun 2022 22:45:27 +0000
-Date:   Thu, 2 Jun 2022 06:44:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Song Liu <song@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, jolsa@kernel.org, Song Liu <song@kernel.org>
-Subject: Re: [PATCH bpf-next 5/5] bpf: trampoline: support
- FTRACE_OPS_FL_SHARE_IPMODIFY
-Message-ID: <202206020622.HnFjEObo-lkp@intel.com>
-References: <20220601175749.3071572-6-song@kernel.org>
+        with ESMTP id S230455AbiFAXBK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 19:01:10 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8433EA99
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 16:01:09 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id s12so3092727plp.0
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 16:01:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TmJ151ApGOypiysE3OKyplOestV5NPN9d+wq4rRjspg=;
+        b=ajXYbaR/ER8Uorj3xPomSUszyTfeZW3X0dXX8QW9IYvxRUQwn2Q+Rl2TbhN1C4toHS
+         JURTEUB4jJQh6Q4iDDrHeWUgaI6Z5o53faQ3TUK45B4vPyjGSVnX+p9tYTeyhAXHECw2
+         Qc3f5gMWont5un3mj0XytJZ5P7zb35WmoQjK+Vw1felvEFCIpDt9CGfPtRFXvsxUnUrI
+         s4Nzjrnpb96FNGInbOosAL5aBSc+cYfs+z07csly9UZNS1FykyrgOyiSRFuE0PW20aPj
+         DbTLji1x+bJpqqCJ4p8YWUfIS32xT4UuZZTD8NeAME50rpx2CY4VRYT+oas9ULxb/UFT
+         t0WA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TmJ151ApGOypiysE3OKyplOestV5NPN9d+wq4rRjspg=;
+        b=NZIxLraENFt5l4Btlyec/68mfoHCKSLoRQf2sCpO8zJbwUILDTVPeO5ycHNyo+QSMc
+         FA5Mh2Co95/KGBqMYg8c1tMRqK6Y5R0l04vejQ6b6sxhUUEg1/lGKFzG7wPxY778Vu3Q
+         fAf1H1bcG6JEJOmk0cABAFno1eTX85LrpksD3gHEcljYyCemu6/o3bIyo4leBQrFMN37
+         jbhsTOGHmkM3wD6i5quq0xW2Vwkyx37ulktP/+fFsytWGqJS4aR19LdyZDT7ZyBt9hNK
+         FCmejmlbIsJ7Ysi9pBRgoeK8H4SH8lM6Wo4dL3KYUQmJsshFW8ODHigUJ/0mqAKj94Bz
+         SueA==
+X-Gm-Message-State: AOAM533Or3cAVWYWh8L/hWGhaFtsAk7v07xmSK4W7/lK5uXT6rQs0W5O
+        NabGp7cCJt6wTzR7pKcNHSLhlCcECezyqX/B
+X-Google-Smtp-Source: ABdhPJwgEPozukygOMWeI/2OK4DA9E1ATl1DZxRYfKMTao2Czrgx/1MfRQyadxavC549Nd4Tz7sC4A==
+X-Received: by 2002:a17:902:9b83:b0:164:59e:b189 with SMTP id y3-20020a1709029b8300b00164059eb189mr1649790plp.91.1654124469007;
+        Wed, 01 Jun 2022 16:01:09 -0700 (PDT)
+Received: from localhost ([2601:648:8700:396:fb27:2ab5:7245:4275])
+        by smtp.gmail.com with ESMTPSA id e14-20020a170902ed8e00b0015edfccfdb5sm2080974plj.50.2022.06.01.16.01.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 16:01:08 -0700 (PDT)
+Date:   Wed, 1 Jun 2022 16:01:07 -0700
+From:   Frederik Deweerdt <frederik.deweerdt@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH] [doc] msg_zerocopy.rst: clarify the TCP shutdown scenario
+Message-ID: <Ypfvs+VsNHWQKT6H@fractal.lan>
+References: <20220601024744.626323-1-frederik.deweerdt@gmail.com>
+ <CA+FuTSeCC=sKJhKEnavLA7qdwbGz=MC1wqFPoJQA04mZBqebow@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/mixed; boundary="B7JG9qKa0nZT1Wxe"
 Content-Disposition: inline
-In-Reply-To: <20220601175749.3071572-6-song@kernel.org>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <CA+FuTSeCC=sKJhKEnavLA7qdwbGz=MC1wqFPoJQA04mZBqebow@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Song,
 
-I love your patch! Perhaps something to improve:
+--B7JG9qKa0nZT1Wxe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-[auto build test WARNING on bpf-next/master]
+Hi Willem,
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Song-Liu/ftrace-host-klp-and-bpf-trampoline-together/20220602-020112
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20220602/202206020622.HnFjEObo-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c825abd6b0198fb088d9752f556a70705bc99dfd)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/7edcf1c49617641579f2bc36b86c7d59bea20aef
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Song-Liu/ftrace-host-klp-and-bpf-trampoline-together/20220602-020112
-        git checkout 7edcf1c49617641579f2bc36b86c7d59bea20aef
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/bpf/
+On Wed, Jun 01, 2022 at 09:24:32AM -0400, Willem de Bruijn wrote:
+> On Tue, May 31, 2022 at 10:48 PM Frederik Deweerdt
+> <frederik.deweerdt@gmail.com> wrote:
+> >
+> > Hi folks,
+> >
+> > Based on my understanding, retransmissions of zero copied buffers can
+> > happen after `close(2)`, the patch below amends the docs to suggest how
+> > notifications should be handled in that case.
+> 
+> Not just retransmissions. The first transmission similarly may be queued.
+> 
+> >
+[...]
+> > @@ -144,6 +144,10 @@ the socket. A socket that has an error queued would normally block
+> >  other operations until the error is read. Zerocopy notifications have
+> >  a zero error code, however, to not block send and recv calls.
+> >
+> > +For protocols like TCP, where retransmissions can occur after the
+> > +application is done with a given connection, applications should signal
+> > +the close to the peer via shutdown(2), and keep polling the error queue
+> > +until all transmissions have completed.
+> 
+> A socket must not be closed until all completion notifications have
+> been received.
+> 
+> Calling shutdown is an optional step. It may be sufficient to simply
+> delay close.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Thank you for the feedback, that helps!
 
-All warnings (new ones prefixed by >>):
+What do you think of the attached patch?
 
->> kernel/bpf/trampoline.c:30:66: warning: declaration of 'enum ftrace_ops_cmd' will not be visible outside of this function [-Wvisibility]
-   static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *op, enum ftrace_ops_cmd cmd);
-                                                                    ^
-   kernel/bpf/trampoline.c:92:21: error: invalid application of 'sizeof' to an incomplete type 'struct ftrace_ops'
-           tr->fops = kzalloc(sizeof(struct ftrace_ops), GFP_KERNEL);
-                              ^     ~~~~~~~~~~~~~~~~~~~
-   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
-   struct ftrace_ops;
-          ^
-   kernel/bpf/trampoline.c:100:10: error: incomplete definition of type 'struct ftrace_ops'
-           tr->fops->private = tr;
-           ~~~~~~~~^
-   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
-   struct ftrace_ops;
-          ^
-   kernel/bpf/trampoline.c:101:10: error: incomplete definition of type 'struct ftrace_ops'
-           tr->fops->ops_func = bpf_tramp_ftrace_ops_func;
-           ~~~~~~~~^
-   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
-   struct ftrace_ops;
-          ^
-   kernel/bpf/trampoline.c:397:11: error: incomplete definition of type 'struct ftrace_ops'
-                   tr->fops->flags |= FTRACE_OPS_FL_SHARE_IPMODIFY;
-                   ~~~~~~~~^
-   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
-   struct ftrace_ops;
-          ^
-   kernel/bpf/trampoline.c:397:22: error: use of undeclared identifier 'FTRACE_OPS_FL_SHARE_IPMODIFY'
-                   tr->fops->flags |= FTRACE_OPS_FL_SHARE_IPMODIFY;
-                                      ^
-   kernel/bpf/trampoline.c:415:11: error: incomplete definition of type 'struct ftrace_ops'
-                   tr->fops->func = NULL;
-                   ~~~~~~~~^
-   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
-   struct ftrace_ops;
-          ^
-   kernel/bpf/trampoline.c:416:11: error: incomplete definition of type 'struct ftrace_ops'
-                   tr->fops->trampoline = 0;
-                   ~~~~~~~~^
-   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
-   struct ftrace_ops;
-          ^
-   kernel/bpf/trampoline.c:431:67: warning: declaration of 'enum ftrace_ops_cmd' will not be visible outside of this function [-Wvisibility]
-   static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd cmd)
-                                                                     ^
-   kernel/bpf/trampoline.c:431:12: error: conflicting types for 'bpf_tramp_ftrace_ops_func'
-   static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd cmd)
-              ^
-   kernel/bpf/trampoline.c:30:12: note: previous declaration is here
-   static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *op, enum ftrace_ops_cmd cmd);
-              ^
-   kernel/bpf/trampoline.c:431:82: error: variable has incomplete type 'enum ftrace_ops_cmd'
-   static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd cmd)
-                                                                                    ^
-   kernel/bpf/trampoline.c:431:67: note: forward declaration of 'enum ftrace_ops_cmd'
-   static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd cmd)
-                                                                     ^
-   kernel/bpf/trampoline.c:433:33: error: incomplete definition of type 'struct ftrace_ops'
-           struct bpf_trampoline *tr = ops->private;
-                                       ~~~^
-   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
-   struct ftrace_ops;
-          ^
-   kernel/bpf/trampoline.c:448:7: error: use of undeclared identifier 'FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY'
-           case FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY:
-                ^
-   kernel/bpf/trampoline.c:452:7: error: use of undeclared identifier 'FTRACE_OPS_CMD_DISABLE_SHARE_IPMODIFY'
-           case FTRACE_OPS_CMD_DISABLE_SHARE_IPMODIFY:
-                ^
-   kernel/bpf/trampoline.c:454:11: error: incomplete definition of type 'struct ftrace_ops'
-                   tr->fops->flags &= ~FTRACE_OPS_FL_SHARE_IPMODIFY;
-                   ~~~~~~~~^
-   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
-   struct ftrace_ops;
-          ^
-   kernel/bpf/trampoline.c:454:23: error: use of undeclared identifier 'FTRACE_OPS_FL_SHARE_IPMODIFY'
-                   tr->fops->flags &= ~FTRACE_OPS_FL_SHARE_IPMODIFY;
-                                       ^
-   2 warnings and 14 errors generated.
+Frederik
 
+Signed-off-by: Frederik Deweerdt <frederik.deweerdt@gmail.com>
 
-vim +30 kernel/bpf/trampoline.c
+--B7JG9qKa0nZT1Wxe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline; filename=patch
 
-    29	
-  > 30	static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *op, enum ftrace_ops_cmd cmd);
-    31	
+commit 3218d973b68bc6d9f88d9e2374f3ada3df5ee7ff
+Author: Frederik Deweerdt <frederik.deweerdt@gmail.com>
+Date:   Tue May 31 18:23:54 2022 -0700
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+    [doc] msg_zerocopy.rst: clarify the TCP shutdown scenario
+    
+    Explicitly mention that applications shouldn't be calling `close(2)` on
+    a TCP socket without draining the error queue.
+
+diff --git a/Documentation/networking/msg_zerocopy.rst b/Documentation/networking/msg_zerocopy.rst
+index 15920db8d35d..9373631d0a82 100644
+--- a/Documentation/networking/msg_zerocopy.rst
++++ b/Documentation/networking/msg_zerocopy.rst
+@@ -144,6 +144,11 @@ the socket. A socket that has an error queued would normally block
+ other operations until the error is read. Zerocopy notifications have
+ a zero error code, however, to not block send and recv calls.
+ 
++For protocols like TCP, transmissions can occur after the application
++has called close(2). In cases where it's undesirable to delay calling
++close(2) until all notifications have been processed, the application
++can use shutdown(2), and keep polling the error queue until all
++transmissions have completed.
+ 
+ Notification Batching
+ ~~~~~~~~~~~~~~~~~~~~~
+
+--B7JG9qKa0nZT1Wxe--
