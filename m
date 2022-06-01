@@ -2,95 +2,793 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5571539B63
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 04:57:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E11FA539B60
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 04:57:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236148AbiFACqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 22:46:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52238 "EHLO
+        id S1349197AbiFACqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 22:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232241AbiFACqK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 22:46:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A83F35A5B2
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 19:46:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 42DC360EE7
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 02:46:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63D79C385A9;
-        Wed,  1 Jun 2022 02:46:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654051568;
-        bh=g2SNfgGfMdMKhYPLabKUvmye2yuPbn4g3VlhMuHDe3A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nzgOu0VLgbkWecqMl6iA8QbplMcIgwvtpNkraQ20SvBBawd6aJRTZq5/iYF9+5L6v
-         Qm4TgE7zcDLr2tMffYT+R7lRLoNa8JqJjFUO3zAmpu3P8x0sLqb5Disz3ikaVZxEWb
-         /Pgrcdzwrf5pEnrSemnO6sKKIqjMQNUgiMto8kGWKjhkDIYi2GfWKUCSk9iOWUWGGx
-         eykbtWj7nLXWB6TN1Z/oa6AAQ7YoPXImZ9Y4DlhUui0F/gReEA1i8WRJiQTCqVm0Gy
-         x0H1E5YEvOC5wIR3Ob02oJMt3uI/XLqY1l6PbN8IcQBsOsm8SSYVg6gAJYYOioDvk/
-         LwdNYoCEB454Q==
-Date:   Tue, 31 May 2022 19:46:07 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yinjun Zhang <yinjun.zhang@corigine.com>
-Cc:     Simon Horman <simon.horman@corigine.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, Yu Xiao <yu.xiao@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>
-Subject: Re: [PATCH net] nfp: correct the output of `ethtool --show-fec
- <intf>`
-Message-ID: <20220531194607.7520df10@kernel.org>
-In-Reply-To: <20220601014825.GA10961@nj-rack01-04.nji.corigine.com>
-References: <20220530084842.21258-1-simon.horman@corigine.com>
-        <20220530213232.332b5dff@kernel.org>
-        <20220601014825.GA10961@nj-rack01-04.nji.corigine.com>
+        with ESMTP id S1349194AbiFACqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 22:46:34 -0400
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 756096CAB0
+        for <netdev@vger.kernel.org>; Tue, 31 May 2022 19:46:30 -0700 (PDT)
+Received: by mail-yb1-xb34.google.com with SMTP id z186so637548ybz.3
+        for <netdev@vger.kernel.org>; Tue, 31 May 2022 19:46:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=R2Y1QAT8Sqbq5FI/J8koCYNpIPwnMhCmDfEwcgkidP4=;
+        b=FbvHzmn5Gk5n1c8Sh8fj9Z98MfojuH/e5ecN3zbKovKTET6HkLVQCNqaXuJ68GeU/E
+         xLsghQ0ShARs063xZQ6S8skIfH0NJCaMjvTfVNKOjrn/uBIDYvzRzCIrYjqK6EHYvHpC
+         r9Mob0nNwC0xTGIg1wTq2BDcoz7s8HoCSGiP8AMEbh0sXuljtqoYYk95jnSf06d3sZ0g
+         +IeCSbDfcPblMgml8zgwcKmy0WrbzLB9TdC1AwAkYD8f4Acq+cPpjQzq/dZr7OyBrAdt
+         lYEWsFPtwLzn7sPT/6FNOi6ixxBSxvwwB4RSXg3Kk72GJL0KkNRMFi3dxcece+20qNSb
+         kaUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=R2Y1QAT8Sqbq5FI/J8koCYNpIPwnMhCmDfEwcgkidP4=;
+        b=4j3oDqSs0RdslYtpXdCkWV3jeM2wGW8gm+TdbnFxlcxNDCJH0v2u0CSc9TqI3VXEfz
+         FT+qKOumX/fKhlstBPBr3BvQaZl6sh8K7zIj8R0KCcVO8uj0P/Wbuf+IeSm/fR0Kp68J
+         oXXfLUkL9BeA10GuRIH5Er01rOrP7Trui3GqBrdkmzQD6nF5lMGTvFnsYQI/pFg3sgAX
+         dVLiOFlKNIQRHNmzO4OcevdJkwU3OvbDWDIq4U5ef5R8jcPb2t8+o0gsWPXR4bzCHvGb
+         d87MYs0lZ1jGcCDxa4Q/2Kgfjgr9OkUknHSPOzNWFPNhvmQ95TO4cdnZrSCIzwHOywgs
+         g9/g==
+X-Gm-Message-State: AOAM533cqvhDtW730S80sLawzKwSEfWu619xE8YyXh5vvdPp+9Eiw9zo
+        emv4W0ezc4qeF36tbk3dh9pQB6DcUvH53hyp9Ig4+A==
+X-Google-Smtp-Source: ABdhPJzlwqg2IVNIbQQ89edhc+4aPCUbFIh7dm5UUZsAXS81iq+v/yYiGQ/AU0fBQ17hcKSk2W9FJKAEnIJW4FvNTbk=
+X-Received: by 2002:a25:b788:0:b0:64f:c825:8031 with SMTP id
+ n8-20020a25b788000000b0064fc8258031mr43688167ybh.483.1654051589202; Tue, 31
+ May 2022 19:46:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220526112135.2486883-1-josephsih@chromium.org>
+ <20220526192047.v6.2.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
+ <CABBYNZLXzc2QDJ-8_XaoOSL+CXnrfHi-t8DPRTjO+wJjmCbV-w@mail.gmail.com>
+ <CAHFy418Dfyio9ENfdJHfctWmHtmS7a2cOc2F2vyxi8pLESaQTw@mail.gmail.com>
+ <CABBYNZ+drWbXtyx9+eT7DCXjTmNNzeTYvUAsVf3MAvU2HhWK-g@mail.gmail.com> <CABBYNZ+x7K-XL2tzgQPw-v=RadhhadtADpzuMS=HpDeiBQVY0g@mail.gmail.com>
+In-Reply-To: <CABBYNZ+x7K-XL2tzgQPw-v=RadhhadtADpzuMS=HpDeiBQVY0g@mail.gmail.com>
+From:   Joseph Hwang <josephsih@google.com>
+Date:   Wed, 1 Jun 2022 10:46:18 +0800
+Message-ID: <CAHFy41-jMsG04cPjo-hmNM+in=vMGkb-cdmrgRrX_8HBDMBkHQ@mail.gmail.com>
+Subject: Re: [PATCH v6 2/5] Bluetooth: aosp: surface AOSP quality report
+ through mgmt
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        ChromeOS Bluetooth Upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        kernel test robot <lkp@intel.com>,
+        Archie Pusaka <apusaka@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 1 Jun 2022 09:48:25 +0800 Yinjun Zhang wrote:
-> On Mon, May 30, 2022 at 09:32:32PM -0700, Jakub Kicinski wrote:
-> > On Mon, 30 May 2022 10:48:42 +0200 Simon Horman wrote:  
-> > > The output  of `Configured FEC encodings` should display user
-> > > configured/requested value,  
-> > 
-> > That stands to reason, but when I checked what all drivers do 7 out 
-> > of 10 upstream drivers at the time used it to report supported modes.  
-> 
-> It seems you're right. I agree it's OK that nfp driver keep the same with
-> majority drivers' implementations.
+Hi Luiz:
 
-FWIW this is what I found in my notes:
+  Thank you for your comments. Please read my replies in the lines
+below. Thanks!
 
-get:
- s - supported
- c - configured
-set:
- 1 - single mode
- m - multiple modes
+On Wed, Jun 1, 2022 at 6:31 AM Luiz Augusto von Dentz
+<luiz.dentz@gmail.com> wrote:
+>
+> Hi Joseph,
+>
+> On Mon, May 30, 2022 at 2:00 PM Luiz Augusto von Dentz
+> <luiz.dentz@gmail.com> wrote:
+> >
+> > Hi Joseph,
+> >
+> > On Thu, May 26, 2022 at 9:37 PM Joseph Hwang <josephsih@google.com> wro=
+te:
+> > >
+> > > Hi Luiz:
+> > >
+> > > Thanks for your review! The get_ext_vendor_prefix() in the table
+> > > provides a *unique* extended vendor prefix ( =3D vendor prefix + 1-oc=
+tet
+> > > subcode) that can uniquely identify a vendor event. I am not aware of
+> > > any situation that might cause an event to be incorrectly matched wit=
+h
+> > > an extended vendor prefix. Maybe I am missing something?
+> > >
+> > > On the other hand, in your comment, to let a driver confirm whether i=
+t
+> > > is the vendor event structure it uses might be a bit risky. For
+> > > example, assume that we pass a vendor event to
+> > > msft.c:msft_vendor_evt() to determine whether it is a MSFT event. The
+> > > current implementation of msft_vendor_evt() is to call skb_pull_data(=
+)
+> > > to pull the event prefix for comparison with the dynamic MSFT event
+> > > prefix. No matter whether the event matches or not, the event skb has
+> > > been modified already and would cause bad behavior if we pass the
+> > > event skb to other vendor drivers/functions. How can we generally mak=
+e
+> > > sure that every such vendor drivers/functions are implemented in a
+> > > read-only way that does not modify the skb when comparing the prefix?
+> > > In this patch, we propose to use get_ext_vendor_prefix() which is
+> > > guaranteed not to modify the skb in any possible way.
+> > >
+> > > Please also note that the mechanism here also takes care of older
+> > > controllers that might not support some of the vendor specifications.
+> > > For example, if an older controller does not support the MSFT spec,
+> > > the msft_get_ext_prefix() would return NULL as its prefix. And hence =
+a
+> > > vendor event would not accidentally match the MSFT spec on the older
+> > > controller. Similarly, in the following patch =E2=80=9Cbtintel: setup
+> > > vendor_get_prefix and vendor_evt=E2=80=9D, on an older Intel controll=
+er that
+> > > does not support Intel telemetry events, the btintel driver would
+> > > *not* set up
+> > >
+> > >     hdev->vendor_get_ext_prefix =3D btintel_get_ext_prefix;
+> >
+> > I see, while this does indeed prevent events to be misinterpreted,
+> > this locks us on only supporting vendor commands which use vendor
+> > prefixes, but perhaps that is fine since I assume there is probably no
+> > better way to create vendor opcodes in the first place.
+> >
+> > > such that an event would not match as an Intel vendor event in any wa=
+y.
+> > >
+> > > Please let me know if I have any misunderstanding.
+> > >
+> > > Thanks and regards,
+> > > Joseph
+> > >
+> > >
+> > > On Fri, May 27, 2022 at 4:25 AM Luiz Augusto von Dentz
+> > > <luiz.dentz@gmail.com> wrote:
+> > > >
+> > > > Hi Joseph,
+> > > >
+> > > > On Thu, May 26, 2022 at 4:21 AM Joseph Hwang <josephsih@chromium.or=
+g> wrote:
+> > > > >
+> > > > > When receiving a HCI vendor event, the kernel checks if it is an
+> > > > > AOSP bluetooth quality report. If yes, the event is sent to bluez
+> > > > > user space through the mgmt socket.
+> > > > >
+> > > > > Reported-by: kernel test robot <lkp@intel.com>
+> > > > >
+> > > > > Signed-off-by: Joseph Hwang <josephsih@chromium.org>
+> > > > > Reviewed-by: Archie Pusaka <apusaka@chromium.org>
+> > > > > ---
+> > > > >
+> > > > > Changes in v6:
+> > > > > - Fixed a sparse check warning about using static for evt_prefixe=
+s.
+> > > > >
+> > > > > Changes in v5:
+> > > > > - Define "struct ext_vendor_prefix" to replace "struct vendor_pre=
+fix"
+> > > > >   so that extended vendor prefix =3D prefix + 1-octet subcode
+> > > > > - Define aosp_ext_prefix to provide AOSP extended prefix which is
+> > > > >   returned by aosp_get_ext_prefix().
+> > > > > - Redefine struct ext_vendor_event_prefix such that
+> > > > >   . it uses get_ext_vendor_prefix to get prefix and subcodes wher=
+e
+> > > > >     the prefix and the prefix length may be variable and are not
+> > > > >     unknown until run time;
+> > > > >   . it uses vendor_func to handle a vendor event
+> > > > >   This table handles vendor events in a generic way.
+> > > > > - Rewrite hci_vendor_evt() so that it compares both vendor prefix
+> > > > >   and subcode to match a vendor event.
+> > > > > - Define set_ext_prefix() to create MSFT extended vendor prefix
+> > > > >   which is returned by msft_get_ext_prefix().
+> > > > > - Do not EXPORT_SYMBOL(mgmt_quality_report).
+> > > > > - Keep msft_get_ext_prefix in msft instead of hci_dev since it is
+> > > > >   not used by any drivers.
+> > > > >
+> > > > > Changes in v3:
+> > > > > - Rebase to resolve the code conflict.
+> > > > > - Move aosp_quality_report_evt() from hci_event.c to aosp.c.
+> > > > > - A new patch (3/3) is added to enable the quality report feature=
+.
+> > > > >
+> > > > > Changes in v2:
+> > > > > - Scrap the two structures defined in aosp.c and use constants fo=
+r
+> > > > >   size check.
+> > > > > - Do a basic size check about the quality report event. Do not pu=
+ll
+> > > > >   data from the event in which the kernel has no interest.
+> > > > > - Define vendor event prefixes with which vendor events of distin=
+ct
+> > > > >   vendor specifications can be clearly differentiated.
+> > > > > - Use mgmt helpers to add the header and data to a mgmt skb.
+> > > > >
+> > > > >  include/net/bluetooth/hci_core.h | 12 +++++++
+> > > > >  include/net/bluetooth/mgmt.h     |  7 +++++
+> > > > >  net/bluetooth/aosp.c             | 50 ++++++++++++++++++++++++++=
++++
+> > > > >  net/bluetooth/aosp.h             | 18 +++++++++++
+> > > > >  net/bluetooth/hci_event.c        | 54 ++++++++++++++++++++++++++=
++++++-
+> > > > >  net/bluetooth/mgmt.c             | 19 +++++++++++
+> > > > >  net/bluetooth/msft.c             | 28 ++++++++++++++++-
+> > > > >  net/bluetooth/msft.h             | 12 +++++--
+> > > > >  8 files changed, 195 insertions(+), 5 deletions(-)
+> > > > >
+> > > > > diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluet=
+ooth/hci_core.h
+> > > > > index 64d3a63759a8..f89738c6b973 100644
+> > > > > --- a/include/net/bluetooth/hci_core.h
+> > > > > +++ b/include/net/bluetooth/hci_core.h
+> > > > > @@ -328,6 +328,13 @@ struct amp_assoc {
+> > > > >
+> > > > >  #define HCI_MAX_PAGES  3
+> > > > >
+> > > > > +struct ext_vendor_prefix {
+> > > > > +       __u8 *prefix;
+> > > > > +       __u8 prefix_len;
+> > > > > +       __u8 *subcodes;
+> > > > > +       __u8 subcodes_len;
+> > > > > +};
+> > > > > +
+> > > > >  struct hci_dev {
+> > > > >         struct list_head list;
+> > > > >         struct mutex    lock;
+> > > > > @@ -1876,6 +1883,8 @@ int mgmt_add_adv_patterns_monitor_complete(=
+struct hci_dev *hdev, u8 status);
+> > > > >  int mgmt_remove_adv_monitor_complete(struct hci_dev *hdev, u8 st=
+atus);
+> > > > >  void mgmt_adv_monitor_device_lost(struct hci_dev *hdev, u16 hand=
+le,
+> > > > >                                   bdaddr_t *bdaddr, u8 addr_type)=
+;
+> > > > > +int mgmt_quality_report(struct hci_dev *hdev, void *data, u32 da=
+ta_len,
+> > > > > +                       u8 quality_spec);
+> > > > >
+> > > > >  u8 hci_le_conn_update(struct hci_conn *conn, u16 min, u16 max, u=
+16 latency,
+> > > > >                       u16 to_multiplier);
+> > > > > @@ -1894,4 +1903,7 @@ void hci_copy_identity_address(struct hci_d=
+ev *hdev, bdaddr_t *bdaddr,
+> > > > >
+> > > > >  #define TRANSPORT_TYPE_MAX     0x04
+> > > > >
+> > > > > +#define QUALITY_SPEC_AOSP_BQR          0x0
+> > > > > +#define QUALITY_SPEC_INTEL_TELEMETRY   0x1
+> > > > > +
+> > > > >  #endif /* __HCI_CORE_H */
+> > > > > diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth=
+/mgmt.h
+> > > > > index c1c2fd72d9e3..6ccd0067c295 100644
+> > > > > --- a/include/net/bluetooth/mgmt.h
+> > > > > +++ b/include/net/bluetooth/mgmt.h
+> > > > > @@ -1127,3 +1127,10 @@ struct mgmt_ev_adv_monitor_device_lost {
+> > > > >         __le16 monitor_handle;
+> > > > >         struct mgmt_addr_info addr;
+> > > > >  } __packed;
+> > > > > +
+> > > > > +#define MGMT_EV_QUALITY_REPORT                 0x0031
+> > > > > +struct mgmt_ev_quality_report {
+> > > > > +       __u8    quality_spec;
+> > > > > +       __u32   data_len;
+> > > > > +       __u8    data[];
+> > > > > +} __packed;
+> > > > > diff --git a/net/bluetooth/aosp.c b/net/bluetooth/aosp.c
+> > > > > index 432ae3aac9e3..94faa15b1ea0 100644
+> > > > > --- a/net/bluetooth/aosp.c
+> > > > > +++ b/net/bluetooth/aosp.c
+> > > > > @@ -199,3 +199,53 @@ int aosp_set_quality_report(struct hci_dev *=
+hdev, bool enable)
+> > > > >         else
+> > > > >                 return disable_quality_report(hdev);
+> > > > >  }
+> > > > > +
+> > > > > +/* The following LEN =3D 1-byte Sub-event code + 48-byte Sub-eve=
+nt Parameters */
+> > > > > +#define BLUETOOTH_QUALITY_REPORT_LEN 49
+> > > > > +
+> > > > > +bool aosp_check_quality_report_len(struct sk_buff *skb)
+> > > > > +{
+> > > > > +       /* skb->len is allowed to be larger than BLUETOOTH_QUALIT=
+Y_REPORT_LEN
+> > > > > +        * to accommodate an additional Vendor Specific Parameter=
+ (vsp) field.
+> > > > > +        */
+> > > > > +       if (skb->len < BLUETOOTH_QUALITY_REPORT_LEN) {
+> > > > > +               BT_ERR("AOSP evt data len %d too short (%u expect=
+ed)",
+> > > > > +                      skb->len, BLUETOOTH_QUALITY_REPORT_LEN);
+> > > > > +               return false;
+> > > > > +       }
+> > > > > +
+> > > > > +       return true;
+> > > > > +}
+> > > > > +
+> > > > > +/* AOSP HCI Requirements use 0x54 and up as sub-event codes with=
+out
+> > > > > + * actually defining a vendor prefix. Refer to
+> > > > > + * https://source.android.com/devices/bluetooth/hci_requirements
+> > > > > + * Hence, the other vendor event prefixes should not use the sam=
+e
+> > > > > + * space to avoid collision.
+> > > > > + * Since the AOSP does not define a prefix, its prefix is NULL
+> > > > > + * and prefix_len is 0.
+> > > > > + * While there are a number of subcodes in AOSP, only interested=
+ in
+> > > > > + * Bluetooth Quality Report (0x58) for now.
+> > > > > + */
+> > > > > +#define AOSP_EV_QUALITY_REPORT         0x58
+> > > > > +
+> > > > > +static unsigned char AOSP_SUBCODES[] =3D { AOSP_EV_QUALITY_REPOR=
+T };
+> > > > > +
+> > > > > +static struct ext_vendor_prefix aosp_ext_prefix =3D {
+> > > > > +       .prefix         =3D NULL,
+> > > > > +       .prefix_len     =3D 0,
+> > > > > +       .subcodes       =3D AOSP_SUBCODES,
+> > > > > +       .subcodes_len   =3D sizeof(AOSP_SUBCODES),
+> > > > > +};
+> > > > > +
+> > > > > +struct ext_vendor_prefix *aosp_get_ext_prefix(struct hci_dev *hd=
+ev)
+> > > > > +{
+> > > > > +       return &aosp_ext_prefix;
+> > > > > +}
+> > > > > +
+> > > > > +void aosp_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
+> > > > > +{
+> > > > > +       if (aosp_has_quality_report(hdev) && aosp_check_quality_r=
+eport_len(skb))
+> > > > > +               mgmt_quality_report(hdev, skb->data, skb->len,
+> > > > > +                                   QUALITY_SPEC_AOSP_BQR);
+> > > > > +}
+> > > > > diff --git a/net/bluetooth/aosp.h b/net/bluetooth/aosp.h
+> > > > > index 2fd8886d51b2..8208e01fffed 100644
+> > > > > --- a/net/bluetooth/aosp.h
+> > > > > +++ b/net/bluetooth/aosp.h
+> > > > > @@ -10,6 +10,9 @@ void aosp_do_close(struct hci_dev *hdev);
+> > > > >
+> > > > >  bool aosp_has_quality_report(struct hci_dev *hdev);
+> > > > >  int aosp_set_quality_report(struct hci_dev *hdev, bool enable);
+> > > > > +bool aosp_check_quality_report_len(struct sk_buff *skb);
+> > > > > +struct ext_vendor_prefix *aosp_get_ext_prefix(struct hci_dev *hd=
+ev);
+> > > > > +void aosp_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb);
+> > > > >
+> > > > >  #else
+> > > > >
+> > > > > @@ -26,4 +29,19 @@ static inline int aosp_set_quality_report(stru=
+ct hci_dev *hdev, bool enable)
+> > > > >         return -EOPNOTSUPP;
+> > > > >  }
+> > > > >
+> > > > > +static inline bool aosp_check_quality_report_len(struct sk_buff =
+*skb)
+> > > > > +{
+> > > > > +       return false;
+> > > > > +}
+> > > > > +
+> > > > > +static inline struct ext_vendor_prefix *
+> > > > > +aosp_get_ext_prefix(struct hci_dev *hdev)
+> > > > > +{
+> > > > > +       return NULL;
+> > > > > +}
+> > > > > +
+> > > > > +static inline void aosp_vendor_evt(struct hci_dev *hdev, struct =
+sk_buff *skb)
+> > > > > +{
+> > > > > +}
+> > > > > +
+> > > > >  #endif
+> > > > > diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.=
+c
+> > > > > index 0270e597c285..8398971eddf4 100644
+> > > > > --- a/net/bluetooth/hci_event.c
+> > > > > +++ b/net/bluetooth/hci_event.c
+> > > > > @@ -37,6 +37,7 @@
+> > > > >  #include "smp.h"
+> > > > >  #include "msft.h"
+> > > > >  #include "eir.h"
+> > > > > +#include "aosp.h"
+> > > > >
+> > > > >  #define ZERO_KEY "\x00\x00\x00\x00\x00\x00\x00\x00" \
+> > > > >                  "\x00\x00\x00\x00\x00\x00\x00\x00"
+> > > > > @@ -4259,6 +4260,57 @@ static void hci_num_comp_blocks_evt(struct=
+ hci_dev *hdev, void *data,
+> > > > >         queue_work(hdev->workqueue, &hdev->tx_work);
+> > > > >  }
+> > > > >
+> > > > > +/* Every distinct vendor specification must have a well-defined =
+vendor
+> > > > > + * event prefix to determine if a vendor event meets the specifi=
+cation.
+> > > > > + * Some vendor prefixes are fixed values while some other vendor=
+ prefixes
+> > > > > + * are only available at run time.
+> > > > > + */
+> > > > > +static struct ext_vendor_event_prefix {
+> > > > > +       /* Some vendor prefixes are variable length. For convenie=
+nce,
+> > > > > +        * the prefix in struct ext_vendor_prefix is in little en=
+dian.
+> > > > > +        */
+> > > > > +       struct ext_vendor_prefix *
+> > > > > +               (*get_ext_vendor_prefix)(struct hci_dev *hdev);
+> > > > > +       void (*vendor_func)(struct hci_dev *hdev, struct sk_buff =
+*skb);
+> > > > > +} evt_prefixes[] =3D {
+> > > > > +       { aosp_get_ext_prefix, aosp_vendor_evt },
+> > > > > +       { msft_get_ext_prefix, msft_vendor_evt },
+> > > > > +
+> > > > > +       /* end with a null entry */
+> > > > > +       {},
+> > > > > +};
+> > > > > +
+> > > > > +static void hci_vendor_evt(struct hci_dev *hdev, void *data,
+> > > > > +                          struct sk_buff *skb)
+> > > > > +{
+> > > > > +       int i, j;
+> > > > > +       struct ext_vendor_prefix *vnd;
+> > > > > +       __u8 subcode;
+> > > > > +
+> > > > > +       for (i =3D 0; evt_prefixes[i].get_ext_vendor_prefix; i++)=
+ {
+> > > > > +               vnd =3D evt_prefixes[i].get_ext_vendor_prefix(hde=
+v);
+> > > > > +               if (!vnd)
+> > > > > +                       continue;
+>
+> We need to check like if (skb->len < vnd->prefix_len), btw are the
 
-      nfp | ionic | lio | cxgb4 | hns3 | i40e | ice | mlx5 | qede | sfc | bnxt
------------------------------------------------------------------------------
-get |  s  |   s   |  s  |   s   |  s   |  c?  |  s  |  c?  |  s   |  c? |
-set |  1  |   1   |  1  |   m   |  m   |  1   |  1  |  m?  |  m   |  m  |
+This condition has been checked below.
 
-I don't know how accurate that was, hard to tell those things 
-by looking only at the kernel driver.
+> prefixes supposed to be changed at runtime? If not probably a const
 
-> > At which point it may be better to change the text in ethtool user
-> > space that try to change the meaning of the field..  
-> 
-> To adapt to both implementations, "Supported/Configured FEC encodings"
-> would be a compromise I think.
+The answer: yes, the MSFT prefixes change at runtime. Hence, a const
+table would not work. Please refer to the Extended Vendor Prefix
+section in the shared doc
+(https://docs.google.com/document/d/1QAs_Z36O41OFoIoWx2DzWve4rS4xm6RC7TipI3=
+odPqY/edit?resourcekey=3D0-PQgtBiWGStMfnNzX6J4arg#heading=3Dh.4fmxxrhdjdi0)
+about what current vendor prefixes actually look like in various
+vendor specifications.
 
-Yup, it should help avoid bug reports. I don't have better ideas :(
+> table would work better. In fact I would suggest changing the
+> vendor_func to start parsing _after_ the prefix so you can use
+> skb_pull_data, or create a helper that does that conditionally e.g
+> skb_pull_data_cmp(skb, data, data_len).
+
+I do not understand the meaning clearly. Do you mean
+get_ext_vendor_prefix instead of vendor_func here? The
+get_ext_vendor_prefix does provide more data, which is the subode,
+_after_ the prefix for comparison. On the other hand, we do not
+concatenate the subcode with the prefix directly for the reason of
+flexibility to accommodate multiple subcodes in a vendor
+specification.
+
+>
+> > > > > +               /* Compare the raw prefix data in little endian d=
+irectly. */
+> > > > > +               if (memcmp(vnd->prefix, skb->data, vnd->prefix_le=
+n))
+> > > > > +                       continue;
+> > > > > +
+> > > > > +               /* Make sure that there are more data after prefi=
+x. */
+> > > > > +               if (skb->len <=3D vnd->prefix_len)
+> > > > > +                       continue;
+> > > > > +
+> > > > > +               /* The subcode is the single octet following the =
+prefix. */
+> > > > > +               subcode =3D skb->data[vnd->prefix_len];
+>
+> This part I don't really get, so the core is doing subcode matching,
+> what if the vendor decides that the subcode is part of the prefix?
+
+AFAIK, the vendor specs, including MSFT, AOSP, and Intel telemetry,
+define subcodes explicitly without mixing them with the prefixes.
+However, prefixes may not be defined as in the case of the AOSP spec.
+
+> Prefix matching is one thing but prefix + subcode is another pattern,
+> or is this to allow 0 prefix_len so it essentially becomes subcode
+
+Yes, it allows prefix_len to be 0. For example, the AOSP spec does not
+define a prefix, and hence its length is 0. Yes, it essentially
+becomes subcode matching in this case.
+
+> matching? Anyway I was thinking this could all be work out in a single
+> const table e.g:
+
+The const table may not be possible for one reason. It does not
+accommodate the MSFT dynamic prefixes that are only known at run time.
+
+In addition, the concept of using =E2=80=9Cu8 prefix[]; /* Prefix + subcode
+*/=E2=80=9D is less extensible. For example, MSFT vendor events define two
+subcodes, 0x01 and 0x02, so far. More subcodes are on the road. Using
+the concept that you proposed above, we would need two entries for the
+two subcodes in the table. More entries are needed soon as various
+specifications are planning more subcodes. I think it is a bit cleaner
+to dispatch the MSFT vendor events to the MSFT vendor function and let
+the vendor function to handle their subcodes inside their functions.
+It seems that the core table does not need to know the details about
+the internal things of the vendor specifications.
+
+>
+> #define data(args...) ((const unsigned char[]) { args })
+>
+> #define HCI_VENDOR_EVT(_func, _prefix_len, _prefix...)
+> { \
+>     .func =3D _func,
+>     .prefix_len =3D sizeof(data(_prefix)),
+>     .prefix =3D data(_prefix),
+> }
+>
+> const static struct hci_vendor_evt {
+>     (*func)...
+>     u16 prefix_len;
+>     u8 prefix[]; /* Prefix + subcode */
+> } =3D vendor_evt_table[] =3D {
+>     HCI_VENDOR_EVT(msft_monitor_device_evt, sizeof(msft_device_evt),
+> msft_prefix, MSFT_EV_LE_MONITOR_DEVICE),
+> };
+>
+> So it becomes pretty similar to the existing const tables we have in
+
+As explained above, MSFT prefixes should be queried at run time per
+the specification. Hence, the table would not be similar to the
+existing const tables.
+
+> hci_event.c with the only difference is that we use prefix matching
+> where the length is not constant among each element, the only drawback
+> that I can think of is that all vendor events will need to be added to
+> the table (msftp, aosp, etc.) but perhaps that makes it more visible
+
+The visibility does look to me as an advantage such that there is a
+single table describing what specs are being supported.
+
+> on exactly what events are supported instead of every subcode being
+> handled automatically which is not always the case, the table(s) would
+> sit in the driver code and would be registered to hdev all at once
+> instead of setting each prefix separately at runtime this all happens
+> at build time so the compiler can do its job while compiling it.
+
+As explained above, MSFT prefixes should be queried at run time per
+the specification. Hence, what you like to do cannot all happen at
+build time.
+
+One of my previous series-version uses a mixed table. For Intel and
+AOSP, their table entries are set statistically, while the MSFT table
+entry is queried at run time. The table looked a bit cluttered in that
+way though.
+
+>
+> > > > > +               for (j =3D 0; j < vnd->subcodes_len; j++) {
+> > > > > +                       if (vnd->subcodes[j] =3D=3D subcode) {
+> > > > > +                               evt_prefixes[i].vendor_func(hdev,=
+ skb);
+> > > > > +                               break;
+> > > > > +                       }
+> > > > > +               }
+> > > > > +       }
+> > > > > +}
+> > > >
+> > > > I recall saying that having such matching logic applied without the
+> > > > driver confirming that is the structure it using to be a bad idea
+> > > > since it could actually cause an event to misinterpret and cause ba=
+d
+> > > > behavior, instead we probably need a callback that gets populated b=
+y
+> > > > the driver e.g.(hdev->vendor_evt) then the driver can either popula=
+te
+> > > > with hci_vendor_evt if it does use prefixes or its own specialized
+> > > > function or NULL if it doesn't use vendor events, specially for old
+> > > > controllers Id leave it as NULL.
+> > > >
+> > > > >  static void hci_mode_change_evt(struct hci_dev *hdev, void *data=
+,
+> > > > >                                 struct sk_buff *skb)
+> > > > >  {
+> > > > > @@ -6879,7 +6931,7 @@ static const struct hci_ev {
+> > > > >         HCI_EV(HCI_EV_NUM_COMP_BLOCKS, hci_num_comp_blocks_evt,
+> > > > >                sizeof(struct hci_ev_num_comp_blocks)),
+> > > > >         /* [0xff =3D HCI_EV_VENDOR] */
+> > > > > -       HCI_EV_VL(HCI_EV_VENDOR, msft_vendor_evt, 0, HCI_MAX_EVEN=
+T_SIZE),
+> > > > > +       HCI_EV_VL(HCI_EV_VENDOR, hci_vendor_evt, 0, HCI_MAX_EVENT=
+_SIZE),
+> > > > >  };
+> > > > >
+> > > > >  static void hci_event_func(struct hci_dev *hdev, u8 event, struc=
+t sk_buff *skb,
+> > > > > diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+> > > > > index 1ad84f34097f..9d3666bdd07c 100644
+> > > > > --- a/net/bluetooth/mgmt.c
+> > > > > +++ b/net/bluetooth/mgmt.c
+> > > > > @@ -4332,6 +4332,25 @@ static int set_exp_feature(struct sock *sk=
+, struct hci_dev *hdev,
+> > > > >                                MGMT_STATUS_NOT_SUPPORTED);
+> > > > >  }
+> > > > >
+> > > > > +int mgmt_quality_report(struct hci_dev *hdev, void *data, u32 da=
+ta_len,
+> > > > > +                       u8 quality_spec)
+> > > > > +{
+> > > > > +       struct mgmt_ev_quality_report *ev;
+> > > > > +       struct sk_buff *skb;
+> > > > > +
+> > > > > +       skb =3D mgmt_alloc_skb(hdev, MGMT_EV_QUALITY_REPORT,
+> > > > > +                            sizeof(*ev) + data_len);
+> > > > > +       if (!skb)
+> > > > > +               return -ENOMEM;
+> > > > > +
+> > > > > +       ev =3D skb_put(skb, sizeof(*ev));
+> > > > > +       ev->quality_spec =3D quality_spec;
+> > > > > +       ev->data_len =3D data_len;
+> > > > > +       skb_put_data(skb, data, data_len);
+> > > > > +
+> > > > > +       return mgmt_event_skb(skb, NULL);
+> > > > > +}
+> > > > > +
+> > > > >  static int get_device_flags(struct sock *sk, struct hci_dev *hde=
+v, void *data,
+> > > > >                             u16 data_len)
+> > > > >  {
+> > > > > diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
+> > > > > index f43994523b1f..c003e94faccd 100644
+> > > > > --- a/net/bluetooth/msft.c
+> > > > > +++ b/net/bluetooth/msft.c
+> > > > > @@ -116,6 +116,20 @@ bool msft_monitor_supported(struct hci_dev *=
+hdev)
+> > > > >         return !!(msft_get_features(hdev) & MSFT_FEATURE_MASK_LE_=
+ADV_MONITOR);
+> > > > >  }
+> > > > >
+> > > > > +/* Add the MSFT vendor event subcodes into MSFT_SUBCODES which
+> > > > > + * msft_vendor_evt() is interested in handling.
+> > > > > + */
+> > > > > +static unsigned char MSFT_SUBCODES[] =3D { MSFT_EV_LE_MONITOR_DE=
+VICE };
+> > > > > +static struct ext_vendor_prefix msft_ext_prefix =3D { 0 };
+> > > > > +
+> > > > > +static void set_ext_prefix(struct msft_data *msft)
+> > > > > +{
+> > > > > +       msft_ext_prefix.prefix =3D msft->evt_prefix;
+> > > > > +       msft_ext_prefix.prefix_len =3D msft->evt_prefix_len;
+> > > > > +       msft_ext_prefix.subcodes =3D MSFT_SUBCODES;
+> > > > > +       msft_ext_prefix.subcodes_len =3D sizeof(MSFT_SUBCODES);
+> > > > > +}
+> > > > > +
+> > > > >  static bool read_supported_features(struct hci_dev *hdev,
+> > > > >                                     struct msft_data *msft)
+> > > > >  {
+> > > > > @@ -156,6 +170,8 @@ static bool read_supported_features(struct hc=
+i_dev *hdev,
+> > > > >         if (msft->features & MSFT_FEATURE_MASK_CURVE_VALIDITY)
+> > > > >                 hdev->msft_curve_validity =3D true;
+> > > > >
+> > > > > +       set_ext_prefix(msft);
+> > > > > +
+> > > > >         kfree_skb(skb);
+> > > > >         return true;
+> > > > >
+> > > > > @@ -742,7 +758,17 @@ static void msft_monitor_device_evt(struct h=
+ci_dev *hdev, struct sk_buff *skb)
+> > > > >                                  handle_data->mgmt_handle);
+> > > > >  }
+> > > > >
+> > > > > -void msft_vendor_evt(struct hci_dev *hdev, void *data, struct sk=
+_buff *skb)
+> > > > > +struct ext_vendor_prefix *msft_get_ext_prefix(struct hci_dev *hd=
+ev)
+> > > > > +{
+> > > > > +       struct msft_data *msft =3D hdev->msft_data;
+> > > > > +
+> > > > > +       if (!msft)
+> > > > > +               return NULL;
+> > > > > +
+> > > > > +       return &msft_ext_prefix;
+> > > > > +}
+> > > > > +
+> > > > > +void msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
+> > > > >  {
+> > > > >         struct msft_data *msft =3D hdev->msft_data;
+> > > > >         u8 *evt_prefix;
+> > > > > diff --git a/net/bluetooth/msft.h b/net/bluetooth/msft.h
+> > > > > index afcaf7d3b1cb..1515ae06c628 100644
+> > > > > --- a/net/bluetooth/msft.h
+> > > > > +++ b/net/bluetooth/msft.h
+> > > > > @@ -17,7 +17,7 @@ void msft_register(struct hci_dev *hdev);
+> > > > >  void msft_unregister(struct hci_dev *hdev);
+> > > > >  void msft_do_open(struct hci_dev *hdev);
+> > > > >  void msft_do_close(struct hci_dev *hdev);
+> > > > > -void msft_vendor_evt(struct hci_dev *hdev, void *data, struct sk=
+_buff *skb);
+> > > > > +void msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb);
+> > > > >  __u64 msft_get_features(struct hci_dev *hdev);
+> > > > >  int msft_add_monitor_pattern(struct hci_dev *hdev, struct adv_mo=
+nitor *monitor);
+> > > > >  int msft_remove_monitor(struct hci_dev *hdev, struct adv_monitor=
+ *monitor,
+> > > > > @@ -27,6 +27,7 @@ int msft_set_filter_enable(struct hci_dev *hdev=
+, bool enable);
+> > > > >  int msft_suspend_sync(struct hci_dev *hdev);
+> > > > >  int msft_resume_sync(struct hci_dev *hdev);
+> > > > >  bool msft_curve_validity(struct hci_dev *hdev);
+> > > > > +struct ext_vendor_prefix *msft_get_ext_prefix(struct hci_dev *hd=
+ev);
+> > > > >
+> > > > >  #else
+> > > > >
+> > > > > @@ -39,8 +40,7 @@ static inline void msft_register(struct hci_dev=
+ *hdev) {}
+> > > > >  static inline void msft_unregister(struct hci_dev *hdev) {}
+> > > > >  static inline void msft_do_open(struct hci_dev *hdev) {}
+> > > > >  static inline void msft_do_close(struct hci_dev *hdev) {}
+> > > > > -static inline void msft_vendor_evt(struct hci_dev *hdev, void *d=
+ata,
+> > > > > -                                  struct sk_buff *skb) {}
+> > > > > +static inline void msft_vendor_evt(struct hci_dev *hdev, struct =
+sk_buff *skb) {}
+> > > > >  static inline __u64 msft_get_features(struct hci_dev *hdev) { re=
+turn 0; }
+> > > > >  static inline int msft_add_monitor_pattern(struct hci_dev *hdev,
+> > > > >                                            struct adv_monitor *mo=
+nitor)
+> > > > > @@ -77,4 +77,10 @@ static inline bool msft_curve_validity(struct =
+hci_dev *hdev)
+> > > > >         return false;
+> > > > >  }
+> > > > >
+> > > > > +static inline struct ext_vendor_prefix *
+> > > > > +msft_get_ext_prefix(struct hci_dev *hdev)
+> > > > > +{
+> > > > > +       return NULL;
+> > > > > +}
+> > > > > +
+> > > > >  #endif
+> > > > > --
+> > > > > 2.36.1.124.g0e6072fb45-goog
+> > > > >
+> > > >
+> > > >
+> > > > --
+> > > > Luiz Augusto von Dentz
+> > >
+> > >
+> > >
+> > > --
+> > >
+> > > Joseph Shyh-In Hwang
+> > > Email: josephsih@google.com
+> >
+> >
+> >
+> > --
+> > Luiz Augusto von Dentz
+>
+>
+>
+> --
+> Luiz Augusto von Dentz
+
+
+
+--=20
+
+Joseph Shyh-In Hwang
+Email: josephsih@google.com
