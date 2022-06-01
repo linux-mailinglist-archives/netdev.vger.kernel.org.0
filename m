@@ -2,185 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09C88539FF4
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 10:58:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67830539FF2
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 10:58:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349865AbiFAI6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 04:58:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42038 "EHLO
+        id S1350986AbiFAI6k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 04:58:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345836AbiFAI6e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 04:58:34 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2086.outbound.protection.outlook.com [40.107.92.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD3E50044
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 01:58:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KMaTRph8Wc0Kj1PKQggS/gE1av0mbRi4AZ9Pf70TNi8EhLzETsMwivP1nr1ncqbp4fAGHmpDAbRDzRJDVKDFAj4ey6Dszxj3btuKL2EVn5QZ5maT6ulqrbSACzN+PotwiM9E2r8blHh3QwJaL01lJnkpFCS3ETs5xFrBy+Z7lx8K7XH80Mco3L3rhlQMeZ2lXUH2lWQfwrg5DYPc6BzGriItleNKJham/LjDntT3EOgaY/pEjNMr1IEpjhelBlhhwj2nVyWHff1cR+ISh8f+DCvrFZ4gCrmeKN59V/mRAbLIvZtxYN4EUV+Cs1dSUPqIMS54TAzg0eWseiJPrSxqNA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XkJY4X8Uxmxthmje4nFnDF0ZrBqCpDZ+2zAW6NzEQ4M=;
- b=SQYrZZ/3KEwIuiD7RL2UJ+LuT2UG9FSgElr3V8z+LwKWcPUJg+2OZt+YUHmS1ueOK4WXXLhbcgZprEUVLwaoDoy52e3AjdZWjevH+zxSvBP+dABqzad8Ku2xKwNdxeoQdyyOecIHbikAQDOdRV6uBhmZG4IXac8LlnHun+9TkXlVAhYyqF/D9bZ0LW586llvxlcKO393XNbid8DznjePCB3dUC4zMNAnEFrBBtbXLVTByd16P77nZ9W2vbfMfVZnUIDyDXj6L5hatgS8OO7oCWOHIhBi8ftrPNyJvukb4iX+tgAEETMT0WGylRS5qlhwXzjQ/b5ZkzQotVKvWD3LXQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XkJY4X8Uxmxthmje4nFnDF0ZrBqCpDZ+2zAW6NzEQ4M=;
- b=GT79c9sMrdMCh5nKUeQEAXUfs8mwzZo0PSWws3m8P9ZJfRLmQAz7ARZR6YdA5p5r19wgXq8kBeiidOjg5IWhD9RCo7j+opXnssMsSfoYpnxb4g5tuJU8g/JsDiGpD0minHucclbw2S4+ERtxqBYQagz9x1NPj6sYwF9iRSOLynZt0l0haYdaLYPYmdHPIRW90fWlVIVMdFYUWZR3G8WihM0ZTiAeCyu5qWHNwgkfr6iQbYEmkjzmzUPZh6Tz+fVPBCBYlRNAsXlTw5cBGToKmscApTWaOqRFlKc9Ku1bSldo01heLQXoQCPxEu8FvSjHMtEyRVsdNhdthtQJSWKRBA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM4PR12MB5150.namprd12.prod.outlook.com (2603:10b6:5:391::23)
- by BN7PR12MB2835.namprd12.prod.outlook.com (2603:10b6:408:30::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.15; Wed, 1 Jun
- 2022 08:58:32 +0000
-Received: from DM4PR12MB5150.namprd12.prod.outlook.com
- ([fe80::b133:1c18:871e:23eb]) by DM4PR12MB5150.namprd12.prod.outlook.com
- ([fe80::b133:1c18:871e:23eb%6]) with mapi id 15.20.5293.019; Wed, 1 Jun 2022
- 08:58:32 +0000
-Message-ID: <b050eb9a-b627-4efb-8095-d3be52ca3264@nvidia.com>
-Date:   Wed, 1 Jun 2022 11:58:22 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH iproute2-next] ss: Show zerocopy sendfile status of TLS
- sockets
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Boris Pismenny <borisp@nvidia.com>, netdev@vger.kernel.org
-References: <20220530141438.2245089-1-maximmi@nvidia.com>
- <20220530111745.7679b8c4@kernel.org> <20220531121829.01d02463@kernel.org>
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-In-Reply-To: <20220531121829.01d02463@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LNXP265CA0070.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:5d::34) To DM4PR12MB5150.namprd12.prod.outlook.com
- (2603:10b6:5:391::23)
+        with ESMTP id S1345836AbiFAI6h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 04:58:37 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE18350044;
+        Wed,  1 Jun 2022 01:58:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 40A07CE19D9;
+        Wed,  1 Jun 2022 08:58:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76A34C385B8;
+        Wed,  1 Jun 2022 08:58:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654073912;
+        bh=fycRZup+rRlDibIJXv+b3HmaX/NftZkSg+gXy5Njcqo=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=laVepRzYyH9QSsliuI01fpIxdBnoq4GRTpBkDWb+GHnPG0tBOjLV9AyqB9D+h4yV4
+         TPIkLvVZe4EBIdgshCqz0iqc/jH4PNKYahyQeUX5d+qxiRx0+CI25HWutXwoNNE8c3
+         NjEGpTyEuMRAFGNQ2O/YkVc1LSOlqeqNb2ZKnOAduLGWHMk4y8pLRefiCwj6K2i+NW
+         4Rnq6FdMXVyFiu0o3fN+a8kD6QBxODs4ggsFv6qyyr5LJhSzbKFP0aXJQwRc04HYHJ
+         SYdBYRQVehNUABAvGHAEjwPlogc7hDLkElYPaKRBTeHVzOZicj61LT1hyAS2B3sgBE
+         2PgUzp8xU9JAQ==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Philippe Schenker <dev@pschenker.ch>
+Cc:     Deren Wu <deren.wu@mediatek.com>, linux-wireless@vger.kernel.org,
+        Felix Fietkau <nbd@nbd.name>, linux@leemhuis.info,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        YN Chen <YN.Chen@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
+        regressions@lists.linux.dev
+Subject: Re: [PATCH] Revert "mt76: mt7921: enable aspm by default"
+References: <20220412090415.17541-1-dev@pschenker.ch>
+        <87y20aod5d.fsf@kernel.org>
+        <668f1310cc78b17c24ce7be10f5f907d5578e280.camel@mediatek.com>
+        <e93aef5c9f8a97efe23cfb5892f78f919ce328e7.camel@pschenker.ch>
+Date:   Wed, 01 Jun 2022 11:58:25 +0300
+In-Reply-To: <e93aef5c9f8a97efe23cfb5892f78f919ce328e7.camel@pschenker.ch>
+        (Philippe Schenker's message of "Wed, 01 Jun 2022 10:28:27 +0200")
+Message-ID: <87mtewoj4e.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 420c2a27-ddf8-45a1-0c93-08da43ace74e
-X-MS-TrafficTypeDiagnostic: BN7PR12MB2835:EE_
-X-Microsoft-Antispam-PRVS: <BN7PR12MB2835263CC2885C1B7686B0B8DCDF9@BN7PR12MB2835.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ltIMcUc2mlUffdS+0FfJFg4UkHVFkaAVbkMpD5qdkuQPQJQk2j9v6OzajrzbsCnYk22v65jNb6LfHnQsHSIvYvyEnJzehMOTKX+fpF8aPyTF0bRZCxuubIaqrJthSJaHnr8cH+VuwADHqkhiiyo3yg0vP0VKL/jsX4el4EeeUC24zPQJykZYyAdyRF06K4E44AmbCc+q+RWEKwk0430FXiluwdLmRH/RWgTYmL/wjq+ymfKBTz1yJyemapsLUBtLeHFstiM1/LoyV9NWZzDeWJuK120iimbm7Ccs7YJbW6//+eTdhxBYqfrxaYIBv5P3yQTuMvrzM8rHgu25xT2BSfasT7cGM73CPFTlmF52mqLJgGkJDaeU2g166rq7Z1yKEMYXTXuKi2IksICfWjdXisW7yOO2+2mYyCSwvy3y8gNAD8QXLl38i9nYWxUT14lHmpkVWz5ZpHW3sTMif8qLer6FKZoub70p3mXcMHVHzUN8QpNBEv/mJO5S/6LniA7BFpDDrLu6hOhbYdBUDok7Qm2tS5C+j7AvSNwa7d/uZDEDnLRb9yTxOyDw2tUNh98oDfpOSNQj3/W5zMaFZYwnUFv2nNB/kV71SgNVDVIE0Lv3jx1MLTrYapO9VJK03UF9GRUh/9+GqZcyClm2LO6f/Fbk0UZZ8wdvPJadHDCLYq+XlHqblb1ZAprAxJQNwNB01JqWK4LeYWUVZqkEWGHKACBruuVKlwxxFTzysNeNrJIgMQCBrPhkZjrjMBS0fGgC
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5150.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(6916009)(316002)(2906002)(5660300002)(31686004)(31696002)(83380400001)(54906003)(66556008)(66946007)(66476007)(8676002)(2616005)(38100700002)(8936002)(186003)(4326008)(508600001)(6666004)(36756003)(6486002)(6506007)(26005)(6512007)(53546011)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aTNLM2tsZ0haYmIrU1dnaVpwbGFXeU1kNzBmYkk0dlRZR1dmZW1YeUdVelYr?=
- =?utf-8?B?QWY3b2NMRno1Z2Z3MkdLWVhEQmxYMFQ3MWJGQ3NGdjVOVGtRVzdqVllMcVN1?=
- =?utf-8?B?NFpXaWJqc2F3b3p2VTluV01XbS9OeUYzeWY5T1cyMWZLanVTWWxoZXl1U1No?=
- =?utf-8?B?SzdBSllJV0JEajFRdzI5Z1FFL25JbStXQ0sxKy9ZOG0xUmh5R2QrYUwybFZp?=
- =?utf-8?B?L0dySUU1ZHU4ZWQ1M0tHUEZreXFFZXEyYTBOUU9SQVBkdWdRV3BxU1phSno0?=
- =?utf-8?B?eGVKMzlPTDFXblVTdnY5bFpNR0xxc1BoTGZYUWpzUWhEeWFJaW9tRUFsa3o5?=
- =?utf-8?B?UmJnVjVmTk9xVXVQeG1pa0xKMzUrODd5R1FSYjBxRDB0T1NKSFJIVVJOV3FY?=
- =?utf-8?B?Wm1yelpxKzJHbDBEQ3loVU1hNmszUFNCNFJYWDg5cEl3WUR1RzdqRE05Qmpr?=
- =?utf-8?B?YkJ2RGtwZ3hVYk5KcTZEQjQ3NnpEUmJBc3pLK05KaFVXczBhSUp3WXVnWk9J?=
- =?utf-8?B?dzlKWDJxdjIwQkRiVUtmclNsK2cwWVk0Z3RjK3drUVJzK2xWMUQ5MStqMGxI?=
- =?utf-8?B?MWJDcTFJUm9wNnFwcWh1T085MnhoTWFyZ3NGRjg1WFJINzlJVmZBUXg1dklU?=
- =?utf-8?B?M0VKMDhUL0VCOUpMSkR0Y1QrREV1Y1MvU2VPWUR1azB4bHhLN2VyTjhQT0JI?=
- =?utf-8?B?eVhwTzdGTGdPUHNDaEhPVTlib3kwNVlGOGtGU3crenE0RGJGV3h4VjNFRWd4?=
- =?utf-8?B?RFI4Q1Nadjd4QXBZUzNTUjloQTZGallzZzlMQkIyZno1RGVlK0pKclk2Q3FM?=
- =?utf-8?B?dWRqNW9JTDlTOHQ2ZmNYOHlLS2tQbWUvZnpyNW5BeWdsc3VLQVU4eHE3Qjds?=
- =?utf-8?B?TEg5T3JTTkFydXNiSFdBTGdRSkUwd0JzMWJYTXdmZTJQclBmb0tkR0xYcW5h?=
- =?utf-8?B?UGVDSTVCeGZGWlNGN3JBWmdDdVowUlN1TTNUb20weDlmOUc2eFo2TkZUcXJS?=
- =?utf-8?B?cFNPaCtWVUN0eko3dWtEQUNaOERiUUNIckptT09na1hDNXF6TkZZQzZTbG5M?=
- =?utf-8?B?TzFDNm9TbnBsVDFrMG8yUnZHNVdQNStmVXBOZVJjNzZTZzVub0oyR2lNbHhM?=
- =?utf-8?B?c0dJTDliVnJ3ZEhyam1ST1B3eExicWpBaDZDYkFmdzRLMXdRcUJsMExrcDRo?=
- =?utf-8?B?QnQxODNSUmdWSlFvQUl0akxzWWk4ZkxUUVBMcXcvNGdHaWRuV2RtQkROR3hp?=
- =?utf-8?B?eWpPdVRYTnZqbDJrUHZZZzU5Ni9GaVpJT0c4ZS83bGlSVEhwYU52UEMxekdr?=
- =?utf-8?B?YTl0ZWJibXpVK1haaE01aWJnaW9hTjBrN3orazZHQW9RTDFEZ200anlEZ2x1?=
- =?utf-8?B?MHhQQ0dGNjRYTEIzaklXb3ZqMWtKZnJRTmozSnlibXdXNWY2TUhxTitEV1pB?=
- =?utf-8?B?NXhXeTFXUGt1a2Q5ZlNmY1JmYTM2TjcrZ05iT3BjeVRvYURMRFVYcFZJL3BU?=
- =?utf-8?B?emtlbTRJbzNadkFPZGtKRWZuWE1nMFhRVGxSMlVzd0V2QzFzWk5VN3JLbnI4?=
- =?utf-8?B?cnE5NVBNbUhuUllzajBRVHdBUVB6Mm5hL21tcjVFV0pOR0xUSkVRQjlsNTlS?=
- =?utf-8?B?S0VLb0VXQVAvNFBraFQrV0QvNWpjZEIwYUZ5YS8wY0JlNDk3Z2x2ZFVZUE9P?=
- =?utf-8?B?MS9xV3JxcVFvQTRRMUI2Zk5idmtPYnBQeDVocnJDUXYvUTJpQTc3a3NjOGNt?=
- =?utf-8?B?cXVRa25VNXpkMXdUMVlXNGlOSS8vK0VlK014aTZQcnlaQVZLSDdmM2d3d3VI?=
- =?utf-8?B?eUhKdk9GMEVMVVpPQVZZUEVwY0ZwWnBqUlhyYmdkTVFhVDFSSU5KSmZKUjBZ?=
- =?utf-8?B?YzBnNnZKS0JKajh3QjY5d0dqK24xazFQMG1EaGtPMktudlFaeUVtVTJ0b005?=
- =?utf-8?B?elIvZENuZjc3MGRnRmxzTkdIK3VVb2V4aWQyT09nSDA4bDNTUWREOWlQYk5S?=
- =?utf-8?B?RVBKRGJTT0pSaURjbkFhSXlEdVU1aDdaOHdEVHV4WkMxb1J2MFB4K3c2L1oz?=
- =?utf-8?B?ZHBKekhtMVZrWi81Wnk3QUVaNUVJYWs5UGFMZVQ4YUdPeGtoZlFKZXlXMkRv?=
- =?utf-8?B?ZnhmWHNBRnJTWkRyT3l4Tndjc1VyR3BFblBhV3RLYlpmei9xWG1wZ1BoTlMx?=
- =?utf-8?B?MEg2RlZUSVV5d0Q5Y2ZOMXFBUkNVNzI0M2d5VGFLREYzZWRMVnYyRU90d0x3?=
- =?utf-8?B?dE5MOFBGNjNtUWZkb0RvSnozTytoeUNrcHVXamlKNU04VWE4NXRPa0dEeW9m?=
- =?utf-8?B?bU5yK3FDb2I2cFo2ZGN4TlNsZFRPV1BnNnUxRWIvMEpxR0hERUhmZz09?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 420c2a27-ddf8-45a1-0c93-08da43ace74e
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5150.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2022 08:58:32.3246
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: a8c48jgnrtccIGLVPnBKJjS2EQh7yDPKrmL1684WvCsY7jl2xVRWIJa/y+TAA/tmlLlwaVCoBW+wLiZr/njiBg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2835
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-05-31 22:18, Jakub Kicinski wrote:
-> On Mon, 30 May 2022 11:17:45 -0700 Jakub Kicinski wrote:
->> Also please send a patch to Documentation/, I forgot about that.
-> 
-> Actually let me take care of that on my own, I have some optimizations
-> to add, saves me a rebase ;)
-> 
-> Does this sound good?
-> 
-> 
-> Optional optimizations
-> ----------------------
-> 
-> There are certain condition-specific optimizations the TLS ULP can make,
-> if requested. Those optimizations are either not universally beneficial
-> or may impact correctness, hence they require an opt-in.
-> All options are set per-socket using setsockopt(), and their
-> state can be checked using getsockopt() and via socket diag (``ss``).
-> 
-> TLS_INFO_ZC_SENDFILE
-> ~~~~~~~~~~~~~~~~~~~~
-> 
-> For device offload only. Allow sendfile() data to be transmitted directly
-> to the NIC without making an in-kernel copy. This allows true zero-copy
-> behavior when device offload is enabled.
+Philippe Schenker <dev@pschenker.ch> writes:
 
-I suggest mentioning the purpose of this optimization: a huge 
-performance boost of up to 2.4 times compared to non-zerocopy device 
-offload. See the performance numbers from my commit message:
+> On Tue, 2022-04-12 at 19:06 +0800, Deren Wu wrote:
+>> On Tue, 2022-04-12 at 12:37 +0300, Kalle Valo wrote:
+>> > Philippe Schenker <dev@pschenker.ch> writes:
+>> >=20
+>> > > This reverts commit bf3747ae2e25dda6a9e6c464a717c66118c588c8.
+>> > >=20
+>> > > This commit introduces a regression on some systems where the
+>> > > kernel is
+>> > > crashing in different locations after a reboot was issued.
+>> > >=20
+>> > > This issue was bisected on a Thinkpad P14s Gen2 (AMD) with latest
+>> > > firmware.
+>> > >=20
+>> > > Link:=20
+>> > > https://urldefense.com/v3/__https://lore.kernel.org/linux-wireless/5=
+077a953487275837e81bdf1808ded00b9676f9f.camel@pschenker.ch/__;!!CTRNKA9wMg0=
+ARbw!09tjyaQlMci3fVI3yiNiDJKUW_qwNA_CbVhoAraeIX96B99Q14J4iDycWA9cq36Y$
+>> > > =C2=A0
+>> > > Signed-off-by: Philippe Schenker <dev@pschenker.ch>
+>> >=20
+>> > Can I take this to wireless tree? Felix, ack?
+>> >=20
+>> > I'll also add:
+>> >=20
+>> > Fixes: bf3747ae2e25 ("mt76: mt7921: enable aspm by default")
+>> >=20
+>>=20
+>> Hi Kalle,
+>>=20
+>> We have a patch for a similar problem. Can you wait for the
+>> verification by Philippe?
+>> Commit 602cc0c9618a81 ("mt76: mt7921e: fix possible probe failure
+>> after
+>> reboot")
+>> Link:=20
+>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commi=
+t/drivers/net/wireless/mediatek/mt76?id=3D602cc0c9618a819ab00ea3c9400742a0c=
+a318380
+>>=20
+>> I can reproduce the problem in my v5.16-rc5 desktop. And the issue can
+>> be fixed when the patch applied.
+>>=20
+>>=20
+>> Hi Philippe,
+>>=20
+>> Can you please help to check the patch in your platform?
+>
+> Hi Kalle and Deren,
+>
+> I just noticed on my system and mainline v5.18 reboots do now work
+> however Bluetooth is no longer accessible after a reboot.
+>
+> Reverting commit bf3747ae2e25dda6a9e6c464a717c66118c588c8 on top of
+> v5.18 solves this problem for me.
+>
+> @Deren are you aware of this bug?
+> @Kalle Is there a bugtracker somewhere I can submit this?
 
- > Performance numbers in a single-core test with 24 HTTPS streams on
- > nginx, under 100% CPU load:
- >
- > * non-zerocopy: 33.6 Gbit/s
- > * zerocopy: 79.92 Gbit/s
- >
- > CPU: Intel(R) Xeon(R) Platinum 8380 CPU @ 2.30GHz
+For regressions the best is to submit it to the regressions list, CCed
+it now.
 
-The rest of the text looks good to me and accurately describes the 
-limitations, intended use case and possible consequences. Thanks for 
-taking care of the documentation!
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-> The application must make sure that the data is not modified between being
-> submitted and transmission completing. In other words this is mostly
-> applicable if the data sent on a socket via sendfile() is read-only.
-> 
-> Modifying the data may result in different versions of the data being used
-> for the original TCP transmission and TCP retransmissions. To the receiver
-> this will look like TLS records had been tampered with and will result
-> in record authentication failures.
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
