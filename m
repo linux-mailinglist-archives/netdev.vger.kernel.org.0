@@ -2,75 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F38F9539D28
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 08:22:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33759539D2C
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 08:23:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349775AbiFAGV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 02:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47598 "EHLO
+        id S1349821AbiFAGXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 02:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349771AbiFAGV4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 02:21:56 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 900AB5C765;
-        Tue, 31 May 2022 23:21:55 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LCfCc0wJyzjXCk;
-        Wed,  1 Jun 2022 14:20:44 +0800 (CST)
-Received: from [10.174.177.215] (10.174.177.215) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 1 Jun 2022 14:21:53 +0800
-Subject: Re: [PATCH net-next v3] ipv6: Fix signed integer overflow in
- __ip6_append_data
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        <dsahern@kernel.org>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-References: <20220528022312.2827597-1-wangyufen@huawei.com>
- <20220531213500.521ef5cc@kernel.org>
-From:   wangyufen <wangyufen@huawei.com>
-Message-ID: <31f952a3-84e2-7512-e76f-b23b100c64b7@huawei.com>
-Date:   Wed, 1 Jun 2022 14:21:52 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        with ESMTP id S1349769AbiFAGXt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 02:23:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BAEB8674EE
+        for <netdev@vger.kernel.org>; Tue, 31 May 2022 23:23:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654064626;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ObvcbhHhMzX4KCwPSWO8iXUi+7J6vd2qbDKxEwk9xTg=;
+        b=MazYN3XfI2/hyGRd147tQef85xKBfkxF3oXJ/iS4EEL3g0gYz0vuFhkcflD1ide03mjdWx
+        aTjWoDRFr53B++h9QNl4E9KDs1F4iWKxanI2aL+aS0OB79zRRYsEKpbqaSI7xJMTew1Flv
+        rHlrkOCgu0FQ1znx6dlv6BNHgDKdUuQ=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-160-JYJTpWgPMoqF9xUhDSMy2A-1; Wed, 01 Jun 2022 02:23:46 -0400
+X-MC-Unique: JYJTpWgPMoqF9xUhDSMy2A-1
+Received: by mail-io1-f69.google.com with SMTP id 129-20020a6b0187000000b00660cf61c6e8so407154iob.4
+        for <netdev@vger.kernel.org>; Tue, 31 May 2022 23:23:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ObvcbhHhMzX4KCwPSWO8iXUi+7J6vd2qbDKxEwk9xTg=;
+        b=WD5TnWhBgKTr+Vps60dD8L7vWd2/hxDnsp8y29MaxNWTvk+2K2Itl/0Bu+2YXhJst/
+         pbDh2TmUgm5Zu0Inoe8trZ87RzSr+XefFV1OWSamWBatnPUCIYH4AU5kteXsD4A3uYxG
+         eYdLSq46uLivzAcmQduqrpGuW7aZCDBZyCRwftC7XckjRV4OnDTxMmbfyy0B6Oi+3QCI
+         sNpOnNK0H13qEHARRkGF2Gd8ecLG6BNZVwNsgNYGOhvOGHmCWyZ0N3we8p+8jhxV9IU5
+         mL/di/v8yyElezzGY5xX7hEz3YkcTt8R7m+p2qmtOVnqJ/scLq8VCEQkJ/Z39mXiBxA9
+         3s0Q==
+X-Gm-Message-State: AOAM531j3ghwEVvW2xLhRmjNjZWhcQk7yI/PkVCoFvSqkT+jRistJgvv
+        t0gHw2j0l858FJgL16Ov8cwnuqbz6ZEi1HbU4qOMo0lZ0gAhMCyNkzLnsTEH4iWarslw0ERhoRk
+        Ww1CO5mqbx8ztqXUuneuMImcu+JDe00dl
+X-Received: by 2002:a05:6638:204d:b0:32e:d894:2b07 with SMTP id t13-20020a056638204d00b0032ed8942b07mr23349604jaj.106.1654064625241;
+        Tue, 31 May 2022 23:23:45 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyvvvIUGiWpEPp18t4pNQ+yfM11uWYBFfXbqZ1lYd8MnTcI6wnkfQkmk+Dp/YLl2cvjBmzKGPnE9OA4bp7wVDw=
+X-Received: by 2002:a05:6638:204d:b0:32e:d894:2b07 with SMTP id
+ t13-20020a056638204d00b0032ed8942b07mr23349590jaj.106.1654064624903; Tue, 31
+ May 2022 23:23:44 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220531213500.521ef5cc@kernel.org>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.215]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220531134034.389792-1-ihuguet@redhat.com> <20220531083757.459b65dc@kernel.org>
+In-Reply-To: <20220531083757.459b65dc@kernel.org>
+From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date:   Wed, 1 Jun 2022 08:23:34 +0200
+Message-ID: <CACT4oufD4KtCLgP+vdOMFymrvi+1=ZoK_mbE7sgYmLb0L8CJ9A@mail.gmail.com>
+Subject: Re: [PATCH net 0/2] sfc/siena: fix some efx_separate_tx_channels errors
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, cmclachlan@solarflare.com,
+        Jesper Brouer <brouer@redhat.com>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, May 31, 2022 at 5:38 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Tue, 31 May 2022 15:40:32 +0200 =C3=8D=C3=B1igo Huguet wrote:
+> > Trying to load sfc driver with modparam efx_separate_tx_channels=3D1
+> > resulted in errors during initialization and not being able to use the
+> > NIC. This patches fix a few bugs and make it work again.
+> >
+> > This has been already done in sfc, do it also in sfc_siena.
+>
+> Does not apply.
+>
 
-ÔÚ 2022/6/1 12:35, Jakub Kicinski Ð´µÀ:
-> On Sat, 28 May 2022 10:23:12 +0800 Wang Yufen wrote:
->> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
->> index 55afd7f39c04..91704bbc7715 100644
->> --- a/net/ipv6/udp.c
->> +++ b/net/ipv6/udp.c
->> @@ -1308,7 +1308,7 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
->>   	struct ipcm6_cookie ipc6;
->>   	int addr_len = msg->msg_namelen;
->>   	bool connected = false;
->> -	int ulen = len;
->> +	size_t ulen = len;
->>   	int corkreq = READ_ONCE(up->corkflag) || msg->msg_flags&MSG_MORE;
->>   	int err;
->>   	int is_udplite = IS_UDPLITE(sk);
-> No need to change ulen neither, it will not overflow and will be
-> promoted to size_t when passed to ip6_append_data() / ip6_make_skb().
-> .
-OK, thanks.
+Sorry about that, I had only applied with patch, not with git, but it
+applies with fuzz 1, as I'm seeing now, so not 100% cleanly. I will
+send v2.
+
+--=20
+=C3=8D=C3=B1igo Huguet
+
