@@ -2,69 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04A8053AA8A
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 17:54:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E6C353AB62
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 18:56:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355907AbiFAPym (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 11:54:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34060 "EHLO
+        id S1353979AbiFAQzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 12:55:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355899AbiFAPyk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 11:54:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27ECB4EF57;
-        Wed,  1 Jun 2022 08:54:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AF166154D;
-        Wed,  1 Jun 2022 15:54:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 005F3C341C0;
-        Wed,  1 Jun 2022 15:54:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654098879;
-        bh=e6Mna80ZspxyJQOd2dpH7QWG2Ug46f911yLUGDUxQH8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=qYdX9qlassQM7uQXqDKZoHY7KTJKw4/j7zbd0Mhde2G2/ja+4TOlot9XhOJil0tAP
-         eUWqcNUFfMu5pwVN3mP+7r7MgnTATy33duaB3sNXt4yvfsYyB/x+BbpvlFA6zD3NwF
-         iSf8rOqtf3L01B6EyzEQ3726rXnpBPPCKTxawfWQpD6PEr7/4zt/DS/lkOoBu3o9za
-         Gqa5M5vOkZtuqamHNEasH2EtYeCsyJoIgPGi5CbKnGFUXA8EU6hzfW6SF/utaCmTGT
-         HZf5xG17afh6QsGAqHSw48ZhnF1eBe16CPgjnN6axsMANWzF0punFxi+bGGo8yR4ro
-         FBs3g5DPWQntQ==
-Received: by mail-yb1-f177.google.com with SMTP id i11so3647200ybq.9;
-        Wed, 01 Jun 2022 08:54:38 -0700 (PDT)
-X-Gm-Message-State: AOAM531S/hS3G/glsTbFnbFakCS19dJyDUC1Tpf3n3PB+/uFZGe48Ux7
-        /4iyVaPNYC8qWBMCPk4rYgaCeTh5DvUsHp3mYQ0=
-X-Google-Smtp-Source: ABdhPJxDULUZimykAAiyTJY1pmwtfTjTIeATsCu98SHFPpPlNMPxRzB8uBI2GLQQP9FV4OEh+S7pU42zj4IPRo35WtQ=
-X-Received: by 2002:a05:6902:114c:b0:641:87a7:da90 with SMTP id
- p12-20020a056902114c00b0064187a7da90mr388126ybu.561.1654098877958; Wed, 01
- Jun 2022 08:54:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220601084840.11024-1-lina.wang@mediatek.com>
-In-Reply-To: <20220601084840.11024-1-lina.wang@mediatek.com>
-From:   Song Liu <song@kernel.org>
-Date:   Wed, 1 Jun 2022 08:54:26 -0700
-X-Gmail-Original-Message-ID: <CAPhsuW7jxdpWSKm8+PAAJYBLRvg3bsE0w=TGXkPTy4VrYSGttA@mail.gmail.com>
-Message-ID: <CAPhsuW7jxdpWSKm8+PAAJYBLRvg3bsE0w=TGXkPTy4VrYSGttA@mail.gmail.com>
-Subject: Re: [PATCH v2] selftests net: fix bpf build error
-To:     Lina Wang <lina.wang@mediatek.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Maciej enczykowski <maze@google.com>,
-        Networking <netdev@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        kbuild test robot <lkp@intel.com>, rong.a.chen@intel.com,
-        kernel test robot <oliver.sang@intel.com>
+        with ESMTP id S1345508AbiFAQzt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 12:55:49 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EA969E9DF;
+        Wed,  1 Jun 2022 09:55:41 -0700 (PDT)
+X-UUID: 170dd9d948264c66b172e68656e21f4b-20220602
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:6fa3c549-2e88-441f-bdf7-7aeed1eadcdb,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:2a19b09,CLOUDID:82baf014-b515-4766-a72d-4514488fe823,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:0,BEC:nil
+X-UUID: 170dd9d948264c66b172e68656e21f4b-20220602
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <deren.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 713503531; Thu, 02 Jun 2022 00:55:39 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Thu, 2 Jun 2022 00:55:38 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Thu, 2 Jun 2022 00:55:38 +0800
+Message-ID: <da79fa2a94c435a308ea763efc557fc352d0245c.camel@mediatek.com>
+Subject: Re: [PATCH] Revert "mt76: mt7921: enable aspm by default"
+From:   Deren Wu <deren.wu@mediatek.com>
+To:     Kalle Valo <kvalo@kernel.org>, Philippe Schenker <dev@pschenker.ch>
+CC:     <linux-wireless@vger.kernel.org>, Felix Fietkau <nbd@nbd.name>,
+        <linux@leemhuis.info>, "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        "Sean Wang" <sean.wang@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        "YN Chen" <YN.Chen@mediatek.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <regressions@lists.linux.dev>
+Date:   Thu, 2 Jun 2022 00:55:38 +0800
+In-Reply-To: <87mtewoj4e.fsf@kernel.org>
+References: <20220412090415.17541-1-dev@pschenker.ch>
+         <87y20aod5d.fsf@kernel.org>
+         <668f1310cc78b17c24ce7be10f5f907d5578e280.camel@mediatek.com>
+         <e93aef5c9f8a97efe23cfb5892f78f919ce328e7.camel@pschenker.ch>
+         <87mtewoj4e.fsf@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR,UNPARSEABLE_RELAY autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,17 +73,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 1, 2022 at 1:55 AM Lina Wang <lina.wang@mediatek.com> wrote:
->
-> bpf_helpers.h has been moved to tools/lib/bpf since 5.10, so add more
-> including path.
->
-> Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Signed-off-by: Lina Wang <lina.wang@mediatek.com>
+On Wed, 2022-06-01 at 11:58 +0300, Kalle Valo wrote:
+> Philippe Schenker <dev@pschenker.ch> writes:
+> 
+> > On Tue, 2022-04-12 at 19:06 +0800, Deren Wu wrote:
+> > > On Tue, 2022-04-12 at 12:37 +0300, Kalle Valo wrote:
+> > > > Philippe Schenker <dev@pschenker.ch> writes:
+> > > > 
+> > > > > This reverts commit bf3747ae2e25dda6a9e6c464a717c66118c588c8.
+> > > > > 
+> > > > > This commit introduces a regression on some systems where the
+> > > > > kernel is
+> > > > > crashing in different locations after a reboot was issued.
+> > > > > 
+> > > > > This issue was bisected on a Thinkpad P14s Gen2 (AMD) with
+> > > > > latest
+> > > > > firmware.
+> > > > > 
+> > > > > Link: 
+> > > > > 
+https://urldefense.com/v3/__https://lore.kernel.org/linux-wireless/5077a953487275837e81bdf1808ded00b9676f9f.camel@pschenker.ch/__;!!CTRNKA9wMg0ARbw!09tjyaQlMci3fVI3yiNiDJKUW_qwNA_CbVhoAraeIX96B99Q14J4iDycWA9cq36Y$
+> > > > >  
+> > > > > Signed-off-by: Philippe Schenker <dev@pschenker.ch>
+> > > > 
+> > > > Can I take this to wireless tree? Felix, ack?
+> > > > 
+> > > > I'll also add:
+> > > > 
+> > > > Fixes: bf3747ae2e25 ("mt76: mt7921: enable aspm by default")
+> > > > 
+> > > 
+> > > Hi Kalle,
+> > > 
+> > > We have a patch for a similar problem. Can you wait for the
+> > > verification by Philippe?
+> > > Commit 602cc0c9618a81 ("mt76: mt7921e: fix possible probe failure
+> > > after
+> > > reboot")
+> > > Link: 
+> > > 
+https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/net/wireless/mediatek/mt76?id=602cc0c9618a819ab00ea3c9400742a0ca318380__;!!CTRNKA9wMg0ARbw!zCYyDcufJ-OLqQV6leCegA5SkNOOVjAIo-jzTHTk6HUWT9Gjt-bvSz8lr81Zv95u$
+> > >  
+> > > 
+> > > I can reproduce the problem in my v5.16-rc5 desktop. And the
+> > > issue can
+> > > be fixed when the patch applied.
+> > > 
+> > > 
+> > > Hi Philippe,
+> > > 
+> > > Can you please help to check the patch in your platform?
+> > 
+> > Hi Kalle and Deren,
+> > 
+> > I just noticed on my system and mainline v5.18 reboots do now work
+> > however Bluetooth is no longer accessible after a reboot.
+> > 
+> > Reverting commit bf3747ae2e25dda6a9e6c464a717c66118c588c8 on top of
+> > v5.18 solves this problem for me.
+> > 
+> > @Deren are you aware of this bug?
+> > @Kalle Is there a bugtracker somewhere I can submit this?
+> 
+> For regressions the best is to submit it to the regressions list,
+> CCed
+> it now.
+> 
+Hi Philippe,
 
-Acked-by: Song Liu <songliubraving@fb.com>
+Tried your test with v5.18.0 on my desktop and both wifi/bt are still
+avaible after reboot. The only problem is I need to insert btusb module
+by command "modprobe btusb" to make BT workable.
 
-PS: When sending v2, you can include Acked-by/Reviewed-by received for v1.
+I will check the issue on different platforms. If there are any
+finding, I will let you know.
 
-[...]
+Regards,
+Deren
+
