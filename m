@@ -2,302 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF9C153AC61
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 19:58:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16C2953AC73
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 20:08:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356563AbiFAR60 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 1 Jun 2022 13:58:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51980 "EHLO
+        id S1353638AbiFASIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 14:08:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356550AbiFAR6X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 13:58:23 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C5849BAE0
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 10:58:22 -0700 (PDT)
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 251E8H3M020065
-        for <netdev@vger.kernel.org>; Wed, 1 Jun 2022 10:58:21 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3ge9m2hps7-12
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 10:58:21 -0700
-Received: from twshared5413.23.frc3.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Wed, 1 Jun 2022 10:58:18 -0700
-Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
-        id E9AEB8603D06; Wed,  1 Jun 2022 10:58:14 -0700 (PDT)
-From:   Song Liu <song@kernel.org>
-To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kernel-team@fb.com>, <rostedt@goodmis.org>, <jolsa@kernel.org>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH bpf-next 5/5] bpf: trampoline: support FTRACE_OPS_FL_SHARE_IPMODIFY
-Date:   Wed, 1 Jun 2022 10:57:49 -0700
-Message-ID: <20220601175749.3071572-6-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220601175749.3071572-1-song@kernel.org>
-References: <20220601175749.3071572-1-song@kernel.org>
+        with ESMTP id S230345AbiFASIO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 14:08:14 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2080.outbound.protection.outlook.com [40.107.220.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5816A30F62;
+        Wed,  1 Jun 2022 11:08:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=L2j3OjIDo9/2zre+kF+sL3boHQtq1/uK3Xv9S55dFI48/vuUjMUCpxoAEVYD10kIzDJymM8JS1rUKI6tKOjtbGCdn9xopXpLcPOgiCX0s8d+OpyvRTZKb8ocah5AmQUFwS4LEG+XwBvQLSvIVTchufvsoTbAdHmtO0zJHp3xm3Dej2E3hGlx2qONxAntOw6+R7V1JPhD7ZXgtf6jWkXmrhmFtD2UIi4Kx4Q0HZD6kd08ueyoE+Az2CdqRLGqJZqB69Eto/L7naO267/Wua02jjhB7FrJDPTmbfbTm2gW608iIMuctbg021pvwl5PtDqJJgnwy3v2xmM37QMV7rzSsw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=U3dIOJiS3txfpERQozYCY+n6Fp8ihPEBKXPncoEHGxo=;
+ b=Pa45Qi4Gx3OzvhQ8yrCtQxplE/6uu/MAkf7sQD/1b21Sx5xOFe3VdllTqzFkRqwEHXw9FYyGBDT6naiNgrVnB6Aubm4P1t/RostNxDcvmZlbSSfLY09gJtHf4hI5yzfr3cEpQeKAnOSKjZbtK7WykEFbcPcqDqHrcaHoJ7xhzytvTw5mPFDMCOoCqRJ7RUbC+9tqvtIrvk3ESdPFUwZb0MrVz0hOG1xKMCarvBdPFcJgBAy6IwXtkwCNHIVBcgSQ6cEGE07ahsGkgGQ/o3En+2Ae8kUYrGJsPQXt+gnUQMTAHT8XaaB1lQ9EdyGoIeTKbY4EfKxPOiLyUOKP81BQgA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=U3dIOJiS3txfpERQozYCY+n6Fp8ihPEBKXPncoEHGxo=;
+ b=KbaynKn6fC6d7QwfcYmcYQ2pZRQJFsOUE4ooIYSBZ3tVV/Sd4KcgwLX9Ub0YS87CSZDdKXStGOtj0737gOCsAnsrWjjl8OiF1qTMI1NYv0eWO7psxgQOVVSN9uQlD6P/4oxmXqdR3KOYDEgO5qKOYiensCg2BpwjTpYViRFsADyGd0zZJ67veR4P3TW+FoYVCinrV2cymdxK68iwphEJytLlSGnZcANK1AGyAJqtEwxX3D5S02kteSSu8w/qtcCcBUMluKahL6zq8/9LOn7y4Pho0Wqdq5dI/W0Er3pgOXt2NUFgvRvZyBPJDWgPuPNum689K0FcV4X19+a1WFp0Eg==
+Received: from BN6PR17CA0054.namprd17.prod.outlook.com (2603:10b6:405:75::43)
+ by MN0PR12MB5713.namprd12.prod.outlook.com (2603:10b6:208:370::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.19; Wed, 1 Jun
+ 2022 18:08:11 +0000
+Received: from BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:405:75:cafe::8d) by BN6PR17CA0054.outlook.office365.com
+ (2603:10b6:405:75::43) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.19 via Frontend
+ Transport; Wed, 1 Jun 2022 18:08:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.238) by
+ BN8NAM11FT030.mail.protection.outlook.com (10.13.177.146) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5314.12 via Frontend Transport; Wed, 1 Jun 2022 18:08:11 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 1 Jun
+ 2022 18:08:10 +0000
+Received: from localhost (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 1 Jun 2022
+ 11:08:09 -0700
+Date:   Wed, 1 Jun 2022 21:08:06 +0300
+From:   Leon Romanovsky <leonro@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>, <netdev@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Saeed Mahameed" <saeedm@nvidia.com>
+Subject: Re: [PATCH] MAINTAINERS: adjust MELLANOX ETHERNET INNOVA DRIVERS to
+ TLS support removal
+Message-ID: <YperBiCh1rkKDmSR@unreal>
+References: <20220601045738.19608-1-lukas.bulwahn@gmail.com>
+ <Ypc85O47YoNzUTr5@unreal>
+ <20220601103032.28d14fc4@kicinski-fedora-PC1C0HJN>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: O-wLwrgBcpJ0xmcjWEmouQUJruSN3YHo
-X-Proofpoint-ORIG-GUID: O-wLwrgBcpJ0xmcjWEmouQUJruSN3YHo
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-01_06,2022-06-01_01,2022-02-23_01
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220601103032.28d14fc4@kicinski-fedora-PC1C0HJN>
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 719790aa-e83d-445f-feb3-08da43f9b09b
+X-MS-TrafficTypeDiagnostic: MN0PR12MB5713:EE_
+X-Microsoft-Antispam-PRVS: <MN0PR12MB5713944BD39F17027EF21CE7BDDF9@MN0PR12MB5713.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: eM0SfkLkpaTQJnQC+7IXEQqWilhV+uL2PSAO6x8nmJltl1fWVqC1Ap6cuLg7kegsNXyO1Nt066aeB3axS5TIuPv2X0Bq8p8ewO3chGKK7x1LMz7GkSbPpDTwWAcBBLXBAXtcB0h+TbEWItUb3J9ZCBiS5Rlkv4rlfCKlcdMi7CdYhmCPXv7Ih56McCBBYSdXco4nxEcRIMRkvPV8vIM4hA1cPxD/DtKndKdvkVF1SIfC+5wybIlpdXsK3bumUl8Hot3KjQH33frc74EmDA5v8QJllNQWeskNpw3Us9dHuH47onNpVrdnJfMAJ36oYv3PIS7fqpzFWYyfEXqTs0Piqml+a4L1i+Wb/yeWA8PKSbP+3Tf1VitWSlhjhAgGKkB5UW3hnFVdmduw6GIfogUO1UPQUDYJIvGOXHM/aFU3zzI3eP1cAM+2nQH6tFP9NTycts7Twoajh7j26B+D08A1Bi8atjxhiJMlXZcx+We98SnSvfNcMPwvGNeWVcnzswyu8MdJu9i6cBJLsYDVBY4BfzaIXNZ5CfkDL3I6hLfYD6guyEKbmcI6SarI62awPy4CbU0Wqq+WvPBJtdg1hlyRtHhpbG3K0vFdh3hgmjrjAk3OreY6qjt3mP7ucuCMuyjUzcWWj0F/l2TjrSqZPWy8AVR/Zn8uSxhXbvw3Zm4i9JKqGTkjX6qkCJzOHtU8ulhUwWeEZ+O3ZtFpvM4WWyrbR0Nrciu+N8RYd/8SVAZ/Grng27h+SIE/vIk0SUsZsoTLt1UkDwbUJHOrNv9fqlWaG9xS9lmEMNXepicsBbyIebM=
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(7916004)(40470700004)(46966006)(36840700001)(54906003)(33716001)(316002)(2906002)(81166007)(9686003)(26005)(6916009)(356005)(47076005)(336012)(83380400001)(426003)(4326008)(16526019)(70206006)(5660300002)(70586007)(82310400005)(86362001)(8936002)(8676002)(40460700003)(508600001)(966005)(36860700001)(107886003)(186003)(6666004)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2022 18:08:11.3402
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 719790aa-e83d-445f-feb3-08da43f9b09b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5713
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This allows bpf trampoline to trace kernel functions with live patch.
-Also, move bpf trampoline to *_ftrace_direct_multi APIs, which allows
-setting different flags of ftrace_ops.
+On Wed, Jun 01, 2022 at 10:30:39AM -0700, Jakub Kicinski wrote:
+> On Wed, 1 Jun 2022 13:18:12 +0300 Leon Romanovsky wrote:
+> > On Wed, Jun 01, 2022 at 06:57:38AM +0200, Lukas Bulwahn wrote:
+> > > Commit 40379a0084c2 ("net/mlx5_fpga: Drop INNOVA TLS support") removes all
+> > > files in the directory drivers/net/ethernet/mellanox/mlx5/core/accel/, but
+> > > misses to adjust its reference in MAINTAINERS.
+> > > 
+> > > Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
+> > > broken reference.
+> > > 
+> > > Remove the file entry to the removed directory in MELLANOX ETHERNET INNOVA
+> > > DRIVERS.
+> > > 
+> > > Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+> > > ---
+> > > Leon, please pick this minor non-urgent clean-up patch on top of the commit
+> > > above.  
+> > 
+> > Thanks, we will submit it once net-next will be open.
+> 
+> It should go via net FWIW.
 
-Signed-off-by: Song Liu <song@kernel.org>
----
- include/linux/bpf.h     |   3 ++
- kernel/bpf/trampoline.c | 100 +++++++++++++++++++++++++++++++++++-----
- 2 files changed, 91 insertions(+), 12 deletions(-)
+I'm slightly confused here.
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index a6e06f384e81..20a8ed600ca6 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -44,6 +44,7 @@ struct kobject;
- struct mem_cgroup;
- struct module;
- struct bpf_func_state;
-+struct ftrace_ops;
- 
- extern struct idr btf_idr;
- extern spinlock_t btf_idr_lock;
-@@ -816,6 +817,7 @@ struct bpf_tramp_image {
- struct bpf_trampoline {
- 	/* hlist for trampoline_table */
- 	struct hlist_node hlist;
-+	struct ftrace_ops *fops;
- 	/* serializes access to fields of this trampoline */
- 	struct mutex mutex;
- 	refcount_t refcnt;
-@@ -838,6 +840,7 @@ struct bpf_trampoline {
- 	struct bpf_tramp_image *cur_image;
- 	u64 selector;
- 	struct module *mod;
-+	bool indirect_call;
- };
- 
- struct bpf_attach_target_info {
-diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-index 93c7675f0c9e..33d70d6ed165 100644
---- a/kernel/bpf/trampoline.c
-+++ b/kernel/bpf/trampoline.c
-@@ -27,6 +27,8 @@ static struct hlist_head trampoline_table[TRAMPOLINE_TABLE_SIZE];
- /* serializes access to trampoline_table */
- static DEFINE_MUTEX(trampoline_mutex);
- 
-+static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *op, enum ftrace_ops_cmd cmd);
-+
- bool bpf_prog_has_trampoline(const struct bpf_prog *prog)
- {
- 	enum bpf_attach_type eatype = prog->expected_attach_type;
-@@ -87,8 +89,16 @@ static struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
- 	tr = kzalloc(sizeof(*tr), GFP_KERNEL);
- 	if (!tr)
- 		goto out;
-+	tr->fops = kzalloc(sizeof(struct ftrace_ops), GFP_KERNEL);
-+	if (!tr->fops) {
-+		kfree(tr);
-+		tr = NULL;
-+		goto out;
-+	}
- 
- 	tr->key = key;
-+	tr->fops->private = tr;
-+	tr->fops->ops_func = bpf_tramp_ftrace_ops_func;
- 	INIT_HLIST_NODE(&tr->hlist);
- 	hlist_add_head(&tr->hlist, head);
- 	refcount_set(&tr->refcnt, 1);
-@@ -126,7 +136,7 @@ static int unregister_fentry(struct bpf_trampoline *tr, void *old_addr)
- 	int ret;
- 
- 	if (tr->func.ftrace_managed)
--		ret = unregister_ftrace_direct((long)ip, (long)old_addr);
-+		ret = unregister_ftrace_direct_multi(tr->fops, (long)old_addr);
- 	else
- 		ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, old_addr, NULL);
- 
-@@ -135,15 +145,20 @@ static int unregister_fentry(struct bpf_trampoline *tr, void *old_addr)
- 	return ret;
- }
- 
--static int modify_fentry(struct bpf_trampoline *tr, void *old_addr, void *new_addr)
-+static int modify_fentry(struct bpf_trampoline *tr, void *old_addr, void *new_addr,
-+			 bool lock_direct_mutex)
- {
- 	void *ip = tr->func.addr;
- 	int ret;
- 
--	if (tr->func.ftrace_managed)
--		ret = modify_ftrace_direct((long)ip, (long)old_addr, (long)new_addr);
--	else
-+	if (tr->func.ftrace_managed) {
-+		if (lock_direct_mutex)
-+			ret = modify_ftrace_direct_multi(tr->fops, (long)new_addr);
-+		else
-+			ret = modify_ftrace_direct_multi_nolock(tr->fops, (long)new_addr);
-+	} else {
- 		ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, old_addr, new_addr);
-+	}
- 	return ret;
- }
- 
-@@ -161,10 +176,15 @@ static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
- 	if (bpf_trampoline_module_get(tr))
- 		return -ENOENT;
- 
--	if (tr->func.ftrace_managed)
--		ret = register_ftrace_direct((long)ip, (long)new_addr);
--	else
-+	if (tr->func.ftrace_managed) {
-+		ftrace_set_filter_ip(tr->fops, (unsigned long)ip, 0, 0);
-+		ret = register_ftrace_direct_multi(tr->fops, (long)new_addr);
-+		if (ret)
-+			ftrace_set_filter_ip(tr->fops, (unsigned long)ip, 1, 0);
-+
-+	} else {
- 		ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, NULL, new_addr);
-+	}
- 
- 	if (ret)
- 		bpf_trampoline_module_put(tr);
-@@ -330,7 +350,7 @@ static struct bpf_tramp_image *bpf_tramp_image_alloc(u64 key, u32 idx)
- 	return ERR_PTR(err);
- }
- 
--static int bpf_trampoline_update(struct bpf_trampoline *tr)
-+static int bpf_trampoline_update(struct bpf_trampoline *tr, bool lock_direct_mutex)
- {
- 	struct bpf_tramp_image *im;
- 	struct bpf_tramp_links *tlinks;
-@@ -363,20 +383,40 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
- 	if (ip_arg)
- 		flags |= BPF_TRAMP_F_IP_ARG;
- 
-+again:
-+	if (tr->indirect_call)
-+		flags |= BPF_TRAMP_F_ORIG_STACK;
-+
- 	err = arch_prepare_bpf_trampoline(im, im->image, im->image + PAGE_SIZE,
- 					  &tr->func.model, flags, tlinks,
- 					  tr->func.addr);
- 	if (err < 0)
- 		goto out;
- 
-+	if (tr->indirect_call)
-+		tr->fops->flags |= FTRACE_OPS_FL_SHARE_IPMODIFY;
-+
- 	WARN_ON(tr->cur_image && tr->selector == 0);
- 	WARN_ON(!tr->cur_image && tr->selector);
- 	if (tr->cur_image)
- 		/* progs already running at this address */
--		err = modify_fentry(tr, tr->cur_image->image, im->image);
-+		err = modify_fentry(tr, tr->cur_image->image, im->image, lock_direct_mutex);
- 	else
- 		/* first time registering */
- 		err = register_fentry(tr, im->image);
-+
-+	if (err == -EAGAIN) {
-+		if (WARN_ON_ONCE(tr->indirect_call))
-+			goto out;
-+		/* should only retry on the first register */
-+		if (WARN_ON_ONCE(tr->cur_image))
-+			goto out;
-+		tr->indirect_call = true;
-+		tr->fops->func = NULL;
-+		tr->fops->trampoline = 0;
-+		goto again;
-+	}
-+
- 	if (err)
- 		goto out;
- 	if (tr->cur_image)
-@@ -388,6 +428,41 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr)
- 	return err;
- }
- 
-+static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd cmd)
-+{
-+	struct bpf_trampoline *tr = ops->private;
-+	int ret;
-+
-+	/*
-+	 * The normal locking order is
-+	 *    tr->mutex => direct_mutex (ftrace.c) => ftrace_lock (ftrace.c)
-+	 *
-+	 * This is called from prepare_direct_functions_for_ipmodify, with
-+	 * direct_mutex locked. Use mutex_trylock() to avoid dead lock.
-+	 * Also, bpf_trampoline_update here should not lock direct_mutex.
-+	 */
-+	if (!mutex_trylock(&tr->mutex))
-+		return -EAGAIN;
-+
-+	switch (cmd) {
-+	case FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY:
-+		tr->indirect_call = true;
-+		ret = bpf_trampoline_update(tr, false /* lock_direct_mutex */);
-+		break;
-+	case FTRACE_OPS_CMD_DISABLE_SHARE_IPMODIFY:
-+		tr->indirect_call = false;
-+		tr->fops->flags &= ~FTRACE_OPS_FL_SHARE_IPMODIFY;
-+		ret = bpf_trampoline_update(tr, false /* lock_direct_mutex */);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	};
-+	mutex_unlock(&tr->mutex);
-+	return ret;
-+}
-+
-+
- static enum bpf_tramp_prog_type bpf_attach_type_to_tramp(struct bpf_prog *prog)
- {
- 	switch (prog->expected_attach_type) {
-@@ -460,7 +535,7 @@ int bpf_trampoline_link_prog(struct bpf_tramp_link *link, struct bpf_trampoline
- 
- 	hlist_add_head(&link->tramp_hlist, &tr->progs_hlist[kind]);
- 	tr->progs_cnt[kind]++;
--	err = bpf_trampoline_update(tr);
-+	err = bpf_trampoline_update(tr, true /* lock_direct_mutex */);
- 	if (err) {
- 		hlist_del_init(&link->tramp_hlist);
- 		tr->progs_cnt[kind]--;
-@@ -487,7 +562,7 @@ int bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_trampolin
- 	}
- 	hlist_del_init(&link->tramp_hlist);
- 	tr->progs_cnt[kind]--;
--	err = bpf_trampoline_update(tr);
-+	err = bpf_trampoline_update(tr, true /* lock_direct_mutex */);
- out:
- 	mutex_unlock(&tr->mutex);
- 	return err;
-@@ -535,6 +610,7 @@ void bpf_trampoline_put(struct bpf_trampoline *tr)
- 	 * multiple rcu callbacks.
- 	 */
- 	hlist_del(&tr->hlist);
-+	kfree(tr->fops);
- 	kfree(tr);
- out:
- 	mutex_unlock(&trampoline_mutex);
--- 
-2.30.2
+According to net policy, the patches that goes there should have Fixes
+line, but Fixes lines are added for bugs [1].
 
+This forgotten line in MAINTAINERS doesn't cause to any harm to
+users/developers.
+
+So when should I put Fixes line in netdev?
+
+[1] https://lore.kernel.org/netdev/20211208070842.0ace6747@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
+
+Thanks
