@@ -2,45 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE5E9539F85
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 10:30:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63ACB539FE6
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 10:55:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350785AbiFAIak (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 04:30:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50194 "EHLO
+        id S1350943AbiFAIzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 04:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350773AbiFAIah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 04:30:37 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E77A4BFE9;
-        Wed,  1 Jun 2022 01:30:35 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LCj432ZBXzjXDv;
-        Wed,  1 Jun 2022 16:29:23 +0800 (CST)
-Received: from container.huawei.com (10.175.104.82) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 1 Jun 2022 16:30:32 +0800
-From:   Wang Yufen <wangyufen@huawei.com>
-To:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <andrii@kernel.org>, <kafai@fb.com>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <john.fastabend@gmail.com>, <kpsingh@kernel.org>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-Subject: [PATCH net-next v4] ipv6: Fix signed integer overflow in __ip6_append_data
-Date:   Wed, 1 Jun 2022 16:48:03 +0800
-Message-ID: <20220601084803.1833344-1-wangyufen@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S240907AbiFAIzm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 04:55:42 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854363EB83;
+        Wed,  1 Jun 2022 01:55:34 -0700 (PDT)
+X-UUID: 3f01de6d2d9d4dcdab48dd6d9a90e923-20220601
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.5,REQID:07a5508c-f0d0-4141-97ae-30c7e52dea0e,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:53,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:58
+X-CID-INFO: VERSION:1.1.5,REQID:07a5508c-f0d0-4141-97ae-30c7e52dea0e,OB:0,LOB:
+        0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:53,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:58
+X-CID-META: VersionHash:2a19b09,CLOUDID:c2408914-f88c-475e-badf-d9ee54230b8f,C
+        OID:5e25530cba60,Recheck:0,SF:28|100|17|19|48|101,TC:nil,Content:0,EDM:-3,
+        IP:nil,URL:1,File:nil,QS:0,BEC:nil
+X-UUID: 3f01de6d2d9d4dcdab48dd6d9a90e923-20220601
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <lina.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 652858334; Wed, 01 Jun 2022 16:55:28 +0800
+Received: from mtkmbs07n1.mediatek.inc (172.21.101.16) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 1 Jun 2022 16:55:26 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 1 Jun 2022 16:55:26 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Wed, 1 Jun 2022 16:55:25 +0800
+From:   Lina Wang <lina.wang@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Maciej enczykowski <maze@google.com>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <lkp@intel.com>,
+        <rong.a.chen@intel.com>, kernel test robot <oliver.sang@intel.com>,
+        Lina Wang <lina.wang@mediatek.com>
+Subject: [PATCH v2] selftests net: fix bpf build error
+Date:   Wed, 1 Jun 2022 16:48:40 +0800
+Message-ID: <20220601084840.11024-1-lina.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR,UNPARSEABLE_RELAY autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -48,105 +68,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Resurrect ubsan overflow checks and ubsan report this warning,
-fix it by change the variable [length] type to size_t.
+bpf_helpers.h has been moved to tools/lib/bpf since 5.10, so add more
+including path.
 
-UBSAN: signed-integer-overflow in net/ipv6/ip6_output.c:1489:19
-2147479552 + 8567 cannot be represented in type 'int'
-CPU: 0 PID: 253 Comm: err Not tainted 5.16.0+ #1
-Hardware name: linux,dummy-virt (DT)
-Call trace:
-  dump_backtrace+0x214/0x230
-  show_stack+0x30/0x78
-  dump_stack_lvl+0xf8/0x118
-  dump_stack+0x18/0x30
-  ubsan_epilogue+0x18/0x60
-  handle_overflow+0xd0/0xf0
-  __ubsan_handle_add_overflow+0x34/0x44
-  __ip6_append_data.isra.48+0x1598/0x1688
-  ip6_append_data+0x128/0x260
-  udpv6_sendmsg+0x680/0xdd0
-  inet6_sendmsg+0x54/0x90
-  sock_sendmsg+0x70/0x88
-  ____sys_sendmsg+0xe8/0x368
-  ___sys_sendmsg+0x98/0xe0
-  __sys_sendmmsg+0xf4/0x3b8
-  __arm64_sys_sendmmsg+0x34/0x48
-  invoke_syscall+0x64/0x160
-  el0_svc_common.constprop.4+0x124/0x300
-  do_el0_svc+0x44/0xc8
-  el0_svc+0x3c/0x1e8
-  el0t_64_sync_handler+0x88/0xb0
-  el0t_64_sync+0x16c/0x170
-
-Changes since v1:
--Change the variable [length] type to unsigned, as Eric Dumazet suggested.
-Changes since v2:
--Don't change exthdrlen type in ip6_make_skb, as Paolo Abeni suggested.
-Changes since v3:
--Don't change ulen type in udpv6_sendmsg and l2tp_ip6_sendmsg, as
-Jakub Kicinski suggested.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
+Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Lina Wang <lina.wang@mediatek.com>
 ---
- include/net/ipv6.h    | 4 ++--
- net/ipv6/ip6_output.c | 6 +++---
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ tools/testing/selftests/net/bpf/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index 5b38bf1a586b..de9dcc5652c4 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -1063,7 +1063,7 @@ int ip6_find_1stfragopt(struct sk_buff *skb, u8 **nexthdr);
- int ip6_append_data(struct sock *sk,
- 		    int getfrag(void *from, char *to, int offset, int len,
- 				int odd, struct sk_buff *skb),
--		    void *from, int length, int transhdrlen,
-+		    void *from, size_t length, int transhdrlen,
- 		    struct ipcm6_cookie *ipc6, struct flowi6 *fl6,
- 		    struct rt6_info *rt, unsigned int flags);
+diff --git a/tools/testing/selftests/net/bpf/Makefile b/tools/testing/selftests/net/bpf/Makefile
+index f91bf14bbee7..070251986dbe 100644
+--- a/tools/testing/selftests/net/bpf/Makefile
++++ b/tools/testing/selftests/net/bpf/Makefile
+@@ -2,6 +2,7 @@
  
-@@ -1079,7 +1079,7 @@ struct sk_buff *__ip6_make_skb(struct sock *sk, struct sk_buff_head *queue,
- struct sk_buff *ip6_make_skb(struct sock *sk,
- 			     int getfrag(void *from, char *to, int offset,
- 					 int len, int odd, struct sk_buff *skb),
--			     void *from, int length, int transhdrlen,
-+			     void *from, size_t length, int transhdrlen,
- 			     struct ipcm6_cookie *ipc6,
- 			     struct rt6_info *rt, unsigned int flags,
- 			     struct inet_cork_full *cork);
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 4081b12a01ff..77e3f5970ce4 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1450,7 +1450,7 @@ static int __ip6_append_data(struct sock *sk,
- 			     struct page_frag *pfrag,
- 			     int getfrag(void *from, char *to, int offset,
- 					 int len, int odd, struct sk_buff *skb),
--			     void *from, int length, int transhdrlen,
-+			     void *from, size_t length, int transhdrlen,
- 			     unsigned int flags, struct ipcm6_cookie *ipc6)
- {
- 	struct sk_buff *skb, *skb_prev = NULL;
-@@ -1798,7 +1798,7 @@ static int __ip6_append_data(struct sock *sk,
- int ip6_append_data(struct sock *sk,
- 		    int getfrag(void *from, char *to, int offset, int len,
- 				int odd, struct sk_buff *skb),
--		    void *from, int length, int transhdrlen,
-+		    void *from, size_t length, int transhdrlen,
- 		    struct ipcm6_cookie *ipc6, struct flowi6 *fl6,
- 		    struct rt6_info *rt, unsigned int flags)
- {
-@@ -1995,7 +1995,7 @@ EXPORT_SYMBOL_GPL(ip6_flush_pending_frames);
- struct sk_buff *ip6_make_skb(struct sock *sk,
- 			     int getfrag(void *from, char *to, int offset,
- 					 int len, int odd, struct sk_buff *skb),
--			     void *from, int length, int transhdrlen,
-+			     void *from, size_t length, int transhdrlen,
- 			     struct ipcm6_cookie *ipc6, struct rt6_info *rt,
- 			     unsigned int flags, struct inet_cork_full *cork)
- {
+ CLANG ?= clang
+ CCINCLUDE += -I../../bpf
++CCINCLUDE += -I../../../../lib
+ CCINCLUDE += -I../../../../../usr/include/
+ 
+ TEST_CUSTOM_PROGS = $(OUTPUT)/bpf/nat6to4.o
 -- 
-2.25.1
+2.18.0
 
