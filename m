@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 155A253AED9
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 00:49:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3420E53AF2F
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 00:50:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230523AbiFAVBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 17:01:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56054 "EHLO
+        id S230504AbiFAVA7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 17:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231474AbiFAVAv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 17:00:51 -0400
-Received: from mail-io1-xd4a.google.com (mail-io1-xd4a.google.com [IPv6:2607:f8b0:4864:20::d4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F2A1E735F
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 14:00:50 -0700 (PDT)
-Received: by mail-io1-xd4a.google.com with SMTP id t1-20020a056602140100b0065393cc1dc3so1591165iov.5
-        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 14:00:50 -0700 (PDT)
+        with ESMTP id S231205AbiFAVAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 17:00:04 -0400
+Received: from mail-oi1-x24a.google.com (mail-oi1-x24a.google.com [IPv6:2607:f8b0:4864:20::24a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF2621C3BC
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 14:00:02 -0700 (PDT)
+Received: by mail-oi1-x24a.google.com with SMTP id s7-20020aca4507000000b0032c20f7f5baso1534830oia.19
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 14:00:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=Z3XrmrzG1E7CQDQjbRLcTKucAXZgRFFOnuK9Lavovb8=;
-        b=fvBwum9p0arUYomlScnWBNVHt3UxgVkXaL71BzZltne3RU86IkVsVcLl0Gd8j7O0ol
-         SWb/Kn0IHafLup50hZkQfw6PjrMeVvYd/PN1OYjDwcb4dgjiaPMxMe18JP67fDCIbEKE
-         VqYG2MeOBE15M5PgGPkLYKH15Mny/SAzetOXWlmkEjEaivmldWT8KygiP6BQMdA1v9Wo
-         KWh+lO8WkCXW210gN+4PTjmuuS/+TN44MxzqCCNi2JE+HNUw0iqW2MjBDnyVuStAt/c5
-         4Y+upMptOgkmdYMffa2eSQxPL/xmS+7DUp8CAaFI+byom2XXNJP0vPIu9up2E+/gKsW9
-         Tqiw==
+        bh=RXKl9EM4qib7IbD/zrHgEWRk4S4fWpIVCE5G5HO5GOU=;
+        b=mhB+WeznATLkYl2LbdHUewk/1U/ZysZB6fqyK0rpfIPuuTMnLJ6gcRHvOtbTdoIK/4
+         zPhvMiQupAFL76HJ24aCCy7sHZ3kuJgqrBDZc5/tzhoVZkUH/No8JNGMGGoK4npwTjgM
+         K0kPbj0WqH9Dp0DnSU25vA7SQTT+V+QYT8jmXp3HNONWN6dvAVarHrAJXiV/FkF/3dON
+         MGar8Xpij604YOHwpJ4Jtj0WUT8Fypkt2DsBm+c2NeajIWM1Y1Sd75r4mb3u42Hi18QU
+         55o0EyOX61cj53DRHpFFwHGTp/uRPP1Ox0gufo1vBt+WmbwgxuPTo+bJH7MY81LethMX
+         Zfrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=Z3XrmrzG1E7CQDQjbRLcTKucAXZgRFFOnuK9Lavovb8=;
-        b=mWrzGxp7DR6CL9VAlzljVDRkvEvw0tfg4kQPDaFmyANBtbEu6OVWWO8zhAYw/HQ1L1
-         Ceqgk6yOk0CVlD+2JHBQ5UAanlmVQM7wwxR1i04klKLKJqTj4H9El5mn1M0uHKQVBpIB
-         HRq9fzsKinDHfRWscVNp96OAeFckK1840A/eJ2ZS0pTu1FP+4nTH+hOy5en9gJAimkb2
-         CJ4zU87Wi/s259iKK/wikHW9wbgbUmDX/iIXZA/2q9m+VXKWGc9C2QPNCkIelWfUqhCS
-         OTO/S6e1NucrI7rj807F+hfIlOjjMUSO4ivUmmdmxBFOIoVF84d+lkY408u7mH01v0z9
-         DHyQ==
-X-Gm-Message-State: AOAM532JN99vIA2Lr9V4ehJ+fwlgyQXLA6/zRftu3vEoVKa+SeqPw+1E
-        FDY+cShNqciy49FGf8v823MeIywO2kwftJc3zZdWW3sB7CPwaWUJNQLHWN7VUboy03lpHWGHvZR
-        gDKDei0pn2dcOF6jBSV0Tfyvi8r9BQxhG7LhzJNstnN13HO9dUhH14g==
-X-Google-Smtp-Source: ABdhPJzpcccWKy/kWMc0Rr6d+Xasm+0rNCdub25bODIfr5daASxYMyMKpczpA58a6i2pPdSQB8oaJN0=
+        bh=RXKl9EM4qib7IbD/zrHgEWRk4S4fWpIVCE5G5HO5GOU=;
+        b=f8DYe0Ev+X7aKCZxBixdwzE5Cvf06jv+CeQNIAU1PeoZsW/0YFk/QFouTFKslL/8MU
+         nBRgBvD2L+R8MZ2mcUxb7IzLzPLOcPY8luGE8+R2uUbg7xO3o3IYZk2jox4skjjGvoKI
+         mapKSrTElKouxPII1etI6AUYuUlRqwKI/DyBgfzn5EI3nDjcGGpftg9xu7XxCKQSurFP
+         w/pMVDfY+dh7VDPuU4ccNgrNkWvKT25acpbU1mZIGVa5yqa33r6KoTM/nSlBAdRC1kB/
+         lR5kVQ4u1PRA11QwBvNfHM9WYuEAtUhSgpT1J/LxFginGkM0FxSj1Qgh4IQNuSricgWb
+         u96Q==
+X-Gm-Message-State: AOAM531F1XD/o4eJbJyPalP/132QAyP1GD40qSBx0E9wwZXkaXRTncod
+        QgRKRnlBGpTQuPr78DAQpn6WOYPLd/rumS1SXLIkFVEOIbgMSjOe9PKhIjO7kEjFPYUq447DASE
+        q10vcB0XwP/D2L8fdwDCv4J6T+K46x7iSGqYwODX/Zi9+lwa8ct2GhA==
+X-Google-Smtp-Source: ABdhPJzojwUo6eFF1QyJpEP+hioorPSnRmbi6POqS3MVEZ1iJmso/k6SCYPa7RGCfqF1MUZvMm3oBVY=
 X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a65:6a47:0:b0:3f5:d7a8:44ee with SMTP id
- o7-20020a656a47000000b003f5d7a844eemr732103pgu.330.1654110146989; Wed, 01 Jun
- 2022 12:02:26 -0700 (PDT)
-Date:   Wed,  1 Jun 2022 12:02:11 -0700
+ (user=sdf job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
+ t9-20020a17090a024900b001e0a8a33c6cmr3309pje.0.1654110148549; Wed, 01 Jun
+ 2022 12:02:28 -0700 (PDT)
+Date:   Wed,  1 Jun 2022 12:02:12 -0700
 In-Reply-To: <20220601190218.2494963-1-sdf@google.com>
-Message-Id: <20220601190218.2494963-5-sdf@google.com>
+Message-Id: <20220601190218.2494963-6-sdf@google.com>
 Mime-Version: 1.0
 References: <20220601190218.2494963-1-sdf@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH bpf-next v8 04/11] bpf: minimize number of allocated lsm slots
- per program
+Subject: [PATCH bpf-next v8 05/11] bpf: implement BPF_PROG_QUERY for BPF_LSM_CGROUP
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
@@ -69,209 +68,210 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Previous patch adds 1:1 mapping between all 211 LSM hooks
-and bpf_cgroup program array. Instead of reserving a slot per
-possible hook, reserve 10 slots per cgroup for lsm programs.
-Those slots are dynamically allocated on demand and reclaimed.
+We have two options:
+1. Treat all BPF_LSM_CGROUP the same, regardless of attach_btf_id
+2. Treat BPF_LSM_CGROUP+attach_btf_id as a separate hook point
 
-struct cgroup_bpf {
-	struct bpf_prog_array *    effective[33];        /*     0   264 */
-	/* --- cacheline 4 boundary (256 bytes) was 8 bytes ago --- */
-	struct hlist_head          progs[33];            /*   264   264 */
-	/* --- cacheline 8 boundary (512 bytes) was 16 bytes ago --- */
-	u8                         flags[33];            /*   528    33 */
+I was doing (2) in the original patch, but switching to (1) here:
 
-	/* XXX 7 bytes hole, try to pack */
-
-	struct list_head           storages;             /*   568    16 */
-	/* --- cacheline 9 boundary (576 bytes) was 8 bytes ago --- */
-	struct bpf_prog_array *    inactive;             /*   584     8 */
-	struct percpu_ref          refcnt;               /*   592    16 */
-	struct work_struct         release_work;         /*   608    72 */
-
-	/* size: 680, cachelines: 11, members: 7 */
-	/* sum members: 673, holes: 1, sum holes: 7 */
-	/* last cacheline: 40 bytes */
-};
-
-Move 'ifdef CONFIG_CGROUP_BPF' to expose CGROUP_BPF_ATTACH_TYPE_INVALID
-to non-cgroup (core) parts.
+* bpf_prog_query returns all attached BPF_LSM_CGROUP programs
+regardless of attach_btf_id
+* attach_btf_id is exported via bpf_prog_info
 
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- include/linux/bpf-cgroup-defs.h |  3 ++-
- include/linux/bpf.h             |  2 ++
- include/linux/bpf_lsm.h         |  6 -----
- kernel/bpf/bpf_lsm.c            |  5 ----
- kernel/bpf/cgroup.c             | 45 ++++++++++++++++++++++++++++++++-
- kernel/bpf/core.c               |  7 +++++
- 6 files changed, 55 insertions(+), 13 deletions(-)
+ include/uapi/linux/bpf.h |   3 ++
+ kernel/bpf/cgroup.c      | 103 +++++++++++++++++++++++++++------------
+ kernel/bpf/syscall.c     |   6 ++-
+ 3 files changed, 81 insertions(+), 31 deletions(-)
 
-diff --git a/include/linux/bpf-cgroup-defs.h b/include/linux/bpf-cgroup-defs.h
-index b99f8c3e37ea..7b121bd780eb 100644
---- a/include/linux/bpf-cgroup-defs.h
-+++ b/include/linux/bpf-cgroup-defs.h
-@@ -11,7 +11,8 @@
- struct bpf_prog_array;
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index fa64b0b612fd..4271ef3c2afb 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -1432,6 +1432,7 @@ union bpf_attr {
+ 		__u32		attach_flags;
+ 		__aligned_u64	prog_ids;
+ 		__u32		prog_cnt;
++		__aligned_u64	prog_attach_flags; /* output: per-program attach_flags */
+ 	} query;
  
- #ifdef CONFIG_BPF_LSM
--#define CGROUP_LSM_NUM 211 /* will be addressed in the next patch */
-+/* Maximum number of concurrently attachable per-cgroup LSM hooks. */
-+#define CGROUP_LSM_NUM 10
- #else
- #define CGROUP_LSM_NUM 0
- #endif
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 210c4203db78..1a547fd6443c 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -2446,4 +2446,6 @@ void bpf_dynptr_init(struct bpf_dynptr_kern *ptr, void *data,
- void bpf_dynptr_set_null(struct bpf_dynptr_kern *ptr);
- int bpf_dynptr_check_size(u32 size);
+ 	struct { /* anonymous struct used by BPF_RAW_TRACEPOINT_OPEN command */
+@@ -5996,6 +5997,8 @@ struct bpf_prog_info {
+ 	__u64 run_cnt;
+ 	__u64 recursion_misses;
+ 	__u32 verified_insns;
++	__u32 attach_btf_obj_id;
++	__u32 attach_btf_id;
+ } __attribute__((aligned(8)));
  
-+void bpf_cgroup_atype_free(int cgroup_atype);
-+
- #endif /* _LINUX_BPF_H */
-diff --git a/include/linux/bpf_lsm.h b/include/linux/bpf_lsm.h
-index 61787a5f6af9..4bcf76a9bb06 100644
---- a/include/linux/bpf_lsm.h
-+++ b/include/linux/bpf_lsm.h
-@@ -42,7 +42,6 @@ extern const struct bpf_func_proto bpf_inode_storage_get_proto;
- extern const struct bpf_func_proto bpf_inode_storage_delete_proto;
- void bpf_inode_storage_free(struct inode *inode);
- 
--int bpf_lsm_hook_idx(u32 btf_id);
- void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog, bpf_func_t *bpf_func);
- 
- #else /* !CONFIG_BPF_LSM */
-@@ -73,11 +72,6 @@ static inline void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
- {
- }
- 
--static inline int bpf_lsm_hook_idx(u32 btf_id)
--{
--	return -EINVAL;
--}
--
- #endif /* CONFIG_BPF_LSM */
- 
- #endif /* _LINUX_BPF_LSM_H */
-diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
-index 0f72020bfdcf..83aa431dd52e 100644
---- a/kernel/bpf/bpf_lsm.c
-+++ b/kernel/bpf/bpf_lsm.c
-@@ -69,11 +69,6 @@ void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
- 		*bpf_func = __cgroup_bpf_run_lsm_current;
- }
- 
--int bpf_lsm_hook_idx(u32 btf_id)
--{
--	return btf_id_set_index(&bpf_lsm_hooks, btf_id);
--}
--
- int bpf_lsm_verify_prog(struct bpf_verifier_log *vlog,
- 			const struct bpf_prog *prog)
- {
+ struct bpf_map_info {
 diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index 66b644a76a69..a27a6a7bd852 100644
+index a27a6a7bd852..cb3338ef01e0 100644
 --- a/kernel/bpf/cgroup.c
 +++ b/kernel/bpf/cgroup.c
-@@ -129,12 +129,46 @@ unsigned int __cgroup_bpf_run_lsm_current(const void *ctx,
- }
- 
- #ifdef CONFIG_BPF_LSM
-+u32 cgroup_lsm_atype_btf_id[CGROUP_LSM_NUM];
-+
- static enum cgroup_bpf_attach_type
- bpf_cgroup_atype_find(enum bpf_attach_type attach_type, u32 attach_btf_id)
+@@ -1035,6 +1035,7 @@ static int cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+ static int __cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
+ 			      union bpf_attr __user *uattr)
  {
-+	int i;
-+
-+	lockdep_assert_held(&cgroup_mutex);
-+
- 	if (attach_type != BPF_LSM_CGROUP)
- 		return to_cgroup_bpf_attach_type(attach_type);
--	return CGROUP_LSM_START + bpf_lsm_hook_idx(attach_btf_id);
-+
-+	for (i = 0; i < ARRAY_SIZE(cgroup_lsm_atype_btf_id); i++)
-+		if (cgroup_lsm_atype_btf_id[i] == attach_btf_id)
-+			return CGROUP_LSM_START + i;
-+
-+	for (i = 0; i < ARRAY_SIZE(cgroup_lsm_atype_btf_id); i++)
-+		if (cgroup_lsm_atype_btf_id[i] == 0)
-+			return CGROUP_LSM_START + i;
-+
-+	return -E2BIG;
-+
-+}
-+
-+static void bpf_cgroup_atype_alloc(u32 attach_btf_id, int cgroup_atype)
-+{
-+	int i = cgroup_atype - CGROUP_LSM_START;
-+
-+	lockdep_assert_held(&cgroup_mutex);
-+
-+	cgroup_lsm_atype_btf_id[i] = attach_btf_id;
-+}
-+
-+void bpf_cgroup_atype_free(int cgroup_atype)
-+{
-+	int i = cgroup_atype - CGROUP_LSM_START;
-+
-+	mutex_lock(&cgroup_mutex);
-+	cgroup_lsm_atype_btf_id[i] = 0;
-+	mutex_unlock(&cgroup_mutex);
- }
- #else
- static enum cgroup_bpf_attach_type
-@@ -144,6 +178,14 @@ bpf_cgroup_atype_find(enum bpf_attach_type attach_type, u32 attach_btf_id)
- 		return to_cgroup_bpf_attach_type(attach_type);
- 	return -EOPNOTSUPP;
- }
-+
-+static void bpf_cgroup_atype_alloc(u32 attach_btf_id, int cgroup_atype)
-+{
-+}
-+
-+void bpf_cgroup_atype_free(int cgroup_atype)
-+{
-+}
- #endif /* CONFIG_BPF_LSM */
++	__u32 __user *prog_attach_flags = u64_to_user_ptr(attr->query.prog_attach_flags);
+ 	__u32 __user *prog_ids = u64_to_user_ptr(attr->query.prog_ids);
+ 	enum bpf_attach_type type = attr->query.attach_type;
+ 	enum cgroup_bpf_attach_type atype;
+@@ -1042,50 +1043,92 @@ static int __cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
+ 	struct hlist_head *progs;
+ 	struct bpf_prog *prog;
+ 	int cnt, ret = 0, i;
++	int total_cnt = 0;
+ 	u32 flags;
  
- void cgroup_bpf_offline(struct cgroup *cgrp)
-@@ -659,6 +701,7 @@ static int __cgroup_bpf_attach(struct cgroup *cgrp,
- 		err = bpf_trampoline_link_cgroup_shim(new_prog, &tgt_info, atype);
- 		if (err)
- 			goto cleanup;
-+		bpf_cgroup_atype_alloc(new_prog->aux->attach_btf_id, atype);
+-	atype = to_cgroup_bpf_attach_type(type);
+-	if (atype < 0)
+-		return -EINVAL;
++	enum cgroup_bpf_attach_type from_atype, to_atype;
+ 
+-	progs = &cgrp->bpf.progs[atype];
+-	flags = cgrp->bpf.flags[atype];
++	if (type == BPF_LSM_CGROUP) {
++		from_atype = CGROUP_LSM_START;
++		to_atype = CGROUP_LSM_END;
++	} else {
++		from_atype = to_cgroup_bpf_attach_type(type);
++		if (from_atype < 0)
++			return -EINVAL;
++		to_atype = from_atype;
++	}
+ 
+-	effective = rcu_dereference_protected(cgrp->bpf.effective[atype],
+-					      lockdep_is_held(&cgroup_mutex));
++	for (atype = from_atype; atype <= to_atype; atype++) {
++		progs = &cgrp->bpf.progs[atype];
++		flags = cgrp->bpf.flags[atype];
+ 
+-	if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE)
+-		cnt = bpf_prog_array_length(effective);
+-	else
+-		cnt = prog_list_length(progs);
++		effective = rcu_dereference_protected(cgrp->bpf.effective[atype],
++						      lockdep_is_held(&cgroup_mutex));
+ 
+-	if (copy_to_user(&uattr->query.attach_flags, &flags, sizeof(flags)))
+-		return -EFAULT;
+-	if (copy_to_user(&uattr->query.prog_cnt, &cnt, sizeof(cnt)))
++		if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE)
++			total_cnt += bpf_prog_array_length(effective);
++		else
++			total_cnt += prog_list_length(progs);
++	}
++
++	if (type != BPF_LSM_CGROUP)
++		if (copy_to_user(&uattr->query.attach_flags, &flags, sizeof(flags)))
++			return -EFAULT;
++	if (copy_to_user(&uattr->query.prog_cnt, &total_cnt, sizeof(total_cnt)))
+ 		return -EFAULT;
+-	if (attr->query.prog_cnt == 0 || !prog_ids || !cnt)
++	if (attr->query.prog_cnt == 0 || !prog_ids || !total_cnt)
+ 		/* return early if user requested only program count + flags */
+ 		return 0;
+-	if (attr->query.prog_cnt < cnt) {
+-		cnt = attr->query.prog_cnt;
++
++	if (attr->query.prog_cnt < total_cnt) {
++		total_cnt = attr->query.prog_cnt;
+ 		ret = -ENOSPC;
  	}
  
- 	err = update_effective_progs(cgrp, atype);
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 091ee210842f..224bb4d4fe4e 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -107,6 +107,9 @@ struct bpf_prog *bpf_prog_alloc_no_stats(unsigned int size, gfp_t gfp_extra_flag
- 	fp->aux->prog = fp;
- 	fp->jit_requested = ebpf_jit_enabled();
- 	fp->blinding_requested = bpf_jit_blinding_enabled(fp);
-+#ifdef CONFIG_BPF_LSM
-+	aux->cgroup_atype = CGROUP_BPF_ATTACH_TYPE_INVALID;
-+#endif
+-	if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE) {
+-		return bpf_prog_array_copy_to_user(effective, prog_ids, cnt);
+-	} else {
+-		struct bpf_prog_list *pl;
+-		u32 id;
++	for (atype = from_atype; atype <= to_atype; atype++) {
++		if (total_cnt <= 0)
++			break;
  
- 	INIT_LIST_HEAD_RCU(&fp->aux->ksym.lnode);
- 	mutex_init(&fp->aux->used_maps_mutex);
-@@ -2558,6 +2561,10 @@ static void bpf_prog_free_deferred(struct work_struct *work)
- 	aux = container_of(work, struct bpf_prog_aux, work);
- #ifdef CONFIG_BPF_SYSCALL
- 	bpf_free_kfunc_btf_tab(aux->kfunc_btf_tab);
-+#endif
-+#ifdef CONFIG_BPF_LSM
-+	if (aux->cgroup_atype != CGROUP_BPF_ATTACH_TYPE_INVALID)
-+		bpf_cgroup_atype_free(aux->cgroup_atype);
- #endif
- 	bpf_free_used_maps(aux);
- 	bpf_free_used_btfs(aux);
+-		i = 0;
+-		hlist_for_each_entry(pl, progs, node) {
+-			prog = prog_list_prog(pl);
+-			id = prog->aux->id;
+-			if (copy_to_user(prog_ids + i, &id, sizeof(id)))
+-				return -EFAULT;
+-			if (++i == cnt)
+-				break;
++		progs = &cgrp->bpf.progs[atype];
++		flags = cgrp->bpf.flags[atype];
++
++		effective = rcu_dereference_protected(cgrp->bpf.effective[atype],
++						      lockdep_is_held(&cgroup_mutex));
++
++		if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE)
++			cnt = bpf_prog_array_length(effective);
++		else
++			cnt = prog_list_length(progs);
++
++		if (cnt >= total_cnt)
++			cnt = total_cnt;
++
++		if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE) {
++			ret = bpf_prog_array_copy_to_user(effective, prog_ids, cnt);
++		} else {
++			struct bpf_prog_list *pl;
++			u32 id;
++
++			i = 0;
++			hlist_for_each_entry(pl, progs, node) {
++				prog = prog_list_prog(pl);
++				id = prog->aux->id;
++				if (copy_to_user(prog_ids + i, &id, sizeof(id)))
++					return -EFAULT;
++				if (++i == cnt)
++					break;
++			}
+ 		}
++
++		if (prog_attach_flags)
++			for (i = 0; i < cnt; i++)
++				if (copy_to_user(prog_attach_flags + i, &flags, sizeof(flags)))
++					return -EFAULT;
++
++		prog_ids += cnt;
++		total_cnt -= cnt;
++		if (prog_attach_flags)
++			prog_attach_flags += cnt;
+ 	}
+ 	return ret;
+ }
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index a237be4f8bb3..27492d44133f 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -3520,7 +3520,7 @@ static int bpf_prog_detach(const union bpf_attr *attr)
+ 	}
+ }
+ 
+-#define BPF_PROG_QUERY_LAST_FIELD query.prog_cnt
++#define BPF_PROG_QUERY_LAST_FIELD query.prog_attach_flags
+ 
+ static int bpf_prog_query(const union bpf_attr *attr,
+ 			  union bpf_attr __user *uattr)
+@@ -3556,6 +3556,7 @@ static int bpf_prog_query(const union bpf_attr *attr,
+ 	case BPF_CGROUP_SYSCTL:
+ 	case BPF_CGROUP_GETSOCKOPT:
+ 	case BPF_CGROUP_SETSOCKOPT:
++	case BPF_LSM_CGROUP:
+ 		return cgroup_bpf_prog_query(attr, uattr);
+ 	case BPF_LIRC_MODE2:
+ 		return lirc_prog_query(attr, uattr);
+@@ -4066,6 +4067,9 @@ static int bpf_prog_get_info_by_fd(struct file *file,
+ 
+ 	if (prog->aux->btf)
+ 		info.btf_id = btf_obj_id(prog->aux->btf);
++	info.attach_btf_id = prog->aux->attach_btf_id;
++	if (prog->aux->attach_btf)
++		info.attach_btf_obj_id = btf_obj_id(prog->aux->attach_btf);
+ 
+ 	ulen = info.nr_func_info;
+ 	info.nr_func_info = prog->aux->func_info_cnt;
 -- 
 2.36.1.255.ge46751e96f-goog
 
