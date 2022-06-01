@@ -2,90 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 77DB4539C41
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 06:27:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2193539BF5
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 06:13:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344376AbiFAEWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 00:22:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38206 "EHLO
+        id S231659AbiFAEKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 00:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239067AbiFAEWM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 00:22:12 -0400
-X-Greylist: delayed 916 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 31 May 2022 21:22:10 PDT
-Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 84CB556C3D;
-        Tue, 31 May 2022 21:22:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=NQtIH
-        J06HoYqg4AlgS70TpzgL+X5qu9PjqBNRbTGWww=; b=MXWCIKMhGzqfZQ8Su4hJu
-        rEnVWc6Z+bVxH/fjXKNl84AEUstOc5En4zjaVjXSucmncX9vIg4y3Dmb5nAO7O50
-        qmlehQrC/ArMFL3M3T+SgHzR7plgMV2YEjQf1hsGeSDQMWCPlBfCr8+NvcOU1Iz6
-        B4Y3MxdgfJMk8txOmQLucg=
-Received: from localhost.localdomain (unknown [112.97.51.18])
-        by smtp2 (Coremail) with SMTP id GtxpCgCn4d6P5ZZipNqMFw--.1225S2;
-        Wed, 01 Jun 2022 12:05:37 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     bjorn@mork.no, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] net: usb: qmi_wwan: Add support for Cinterion MV31 with new baseline
-Date:   Wed,  1 Jun 2022 12:05:31 +0800
-Message-Id: <20220601040531.6016-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229447AbiFAEKT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 00:10:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EDF771DA1;
+        Tue, 31 May 2022 21:10:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1683B817DF;
+        Wed,  1 Jun 2022 04:10:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 50AE3C3411A;
+        Wed,  1 Jun 2022 04:10:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654056613;
+        bh=cudR3AmrMMpq0flpl7nw1YP9b0I8Sex8DswpaTr3OGg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=opZ9V0C15lOrasyD/L8mV7AENsxDUBzTFHusOxs7Al8B7ddElu3YJHqmfPeVQNosr
+         PkPb1Ixwtkx5ubqvHPEPB38MXzQogyhUoJmPAhm/TOUTZM+nrV5MKfHFjg94wHaWd8
+         ujGkC34gfu7ku9bM1bOm1iN/pQW040NL1c3WoC68ALL0KA08CW7IlkU7MslSz44yF6
+         CY0V8RrGRh0MVv12yw32GvTDUXGSXqUA9dcZbdhHoBMb27Wann7TApdiJs6Ts0gtKV
+         s+3ZNLmztCQkOnFy28vXvalV1NCtRkAbVmV8G6PhuMsb499uN5LnCS/LaO3OEin7Iv
+         2sBq9VgRG4gDA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 34407F0394D;
+        Wed,  1 Jun 2022 04:10:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GtxpCgCn4d6P5ZZipNqMFw--.1225S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Ww15CrWDKF1rCr4xKFyDJrb_yoW8Cr1rp3
-        yqkryayF1UX3Wjva4DAF1S9rZYv3ZxW3sF9a47Aws7WFW0yrn2grW8tFyxZ3Z29r4fKa1j
-        vF4qg34xJ3s5GrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0z_g4hxUUUUU=
-X-Originating-IP: [112.97.51.18]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBAxkTZGB0KyYyIgAAsk
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net 1/5] netfilter: nf_tables: sanitize
+ nft_set_desc_concat_parse()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165405661321.30810.1706401303605363331.git-patchwork-notify@kernel.org>
+Date:   Wed, 01 Jun 2022 04:10:13 +0000
+References: <20220531215839.84765-2-pablo@netfilter.org>
+In-Reply-To: <20220531215839.84765-2-pablo@netfilter.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding support for Cinterion device MV31 with Qualcomm
-new baseline. Use different PIDs to separate it from
-previous base line products.
-All interfaces settings keep same as previous.
+Hello:
 
-T:  Bus=03 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  7 Spd=480 MxCh= 0
-D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=1e2d ProdID=00b9 Rev=04.14
-S:  Manufacturer=Cinterion
-S:  Product=Cinterion PID 0x00B9 USB Mobile Broadband
-S:  SerialNumber=90418e79
-C:  #Ifs= 4 Cfg#= 1 Atr=a0 MxPwr=500mA
-I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=50 Driver=qmi_wwan
-I:  If#=0x1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=40 Driver=option
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=60 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
+This series was applied to netdev/net.git (master)
+by Pablo Neira Ayuso <pablo@netfilter.org>:
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
- drivers/net/usb/qmi_wwan.c | 1 +
- 1 file changed, 1 insertion(+)
+On Tue, 31 May 2022 23:58:35 +0200 you wrote:
+> Add several sanity checks for nft_set_desc_concat_parse():
+> 
+> - validate desc->field_count not larger than desc->field_len array.
+> - field length cannot be larger than desc->field_len (ie. U8_MAX)
+> - total length of the concatenation cannot be larger than register array.
+> 
+> Joint work with Florian Westphal.
+> 
+> [...]
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index a659d6fb0b12..571a399c195d 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1389,6 +1389,7 @@ static const struct usb_device_id products[] = {
- 	{QMI_FIXED_INTF(0x1e2d, 0x0083, 4)},	/* Cinterion PHxx,PXxx (1 RmNet + USB Audio)*/
- 	{QMI_QUIRK_SET_DTR(0x1e2d, 0x00b0, 4)},	/* Cinterion CLS8 */
- 	{QMI_FIXED_INTF(0x1e2d, 0x00b7, 0)},	/* Cinterion MV31 RmNet */
-+	{QMI_FIXED_INTF(0x1e2d, 0x00b9, 0)},	/* Cinterion MV31 RmNet based on new baseline */
- 	{QMI_FIXED_INTF(0x413c, 0x81a2, 8)},	/* Dell Wireless 5806 Gobi(TM) 4G LTE Mobile Broadband Card */
- 	{QMI_FIXED_INTF(0x413c, 0x81a3, 8)},	/* Dell Wireless 5570 HSPA+ (42Mbps) Mobile Broadband Card */
- 	{QMI_FIXED_INTF(0x413c, 0x81a4, 8)},	/* Dell Wireless 5570e HSPA+ (42Mbps) Mobile Broadband Card */
+Here is the summary with links:
+  - [net,1/5] netfilter: nf_tables: sanitize nft_set_desc_concat_parse()
+    https://git.kernel.org/netdev/net/c/fecf31ee395b
+  - [net,2/5] netfilter: nf_tables: hold mutex on netns pre_exit path
+    https://git.kernel.org/netdev/net/c/3923b1e44066
+  - [net,3/5] netfilter: nf_tables: double hook unregistration in netns path
+    https://git.kernel.org/netdev/net/c/f9a43007d3f7
+  - [net,4/5] netfilter: flowtable: fix missing FLOWI_FLAG_ANYSRC flag
+    https://git.kernel.org/netdev/net/c/f1896d45fee9
+  - [net,5/5] netfilter: flowtable: fix nft_flow_route source address for nat case
+    https://git.kernel.org/netdev/net/c/97629b237a8c
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
