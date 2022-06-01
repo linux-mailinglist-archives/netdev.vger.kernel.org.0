@@ -2,132 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F55953A2B0
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 12:35:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79FD553A33B
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 12:49:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352093AbiFAKex (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 06:34:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57642 "EHLO
+        id S1352342AbiFAKtO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 06:49:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352091AbiFAKer (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 06:34:47 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A6A7C167
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 03:34:45 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 2DBDE205F0;
-        Wed,  1 Jun 2022 12:34:44 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id K0R4YWTxypnt; Wed,  1 Jun 2022 12:34:42 +0200 (CEST)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id B38A120184;
-        Wed,  1 Jun 2022 12:34:42 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id AE9B980004A;
-        Wed,  1 Jun 2022 12:34:42 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 1 Jun 2022 12:34:42 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 1 Jun
- 2022 12:34:42 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 131C83182E45; Wed,  1 Jun 2022 12:34:42 +0200 (CEST)
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH 2/2] xfrm: do not set IPv4 DF flag when encapsulating IPv6 frames <= 1280 bytes.
-Date:   Wed, 1 Jun 2022 12:33:49 +0200
-Message-ID: <20220601103349.2297361-3-steffen.klassert@secunet.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220601103349.2297361-1-steffen.klassert@secunet.com>
-References: <20220601103349.2297361-1-steffen.klassert@secunet.com>
+        with ESMTP id S1352325AbiFAKtI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 06:49:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BF524E0E3
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 03:49:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654080545;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=T5n9A4eLifr47qhHLRf9Kq7hYcEBfD03DgfdoZ0OcNA=;
+        b=Uk1uvFgUXEo7skN5DF4HSeE4BQl9i3HmwsuRPo0FBTd8uH236zDXBSAA0C3JwMqLi9Ti5d
+        3wL5XqhxO+jyEmbiYw0oZHox7OOEsEadhYucimV9lNum3W0UUjwtVG2c10ETkHlGh/K0vu
+        1ubdZx0bRI2n4M6aNCgDvtQNet5flhs=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-300-G_DyauNGO2ujKMUZlimW6g-1; Wed, 01 Jun 2022 06:49:04 -0400
+X-MC-Unique: G_DyauNGO2ujKMUZlimW6g-1
+Received: by mail-qv1-f72.google.com with SMTP id kj4-20020a056214528400b0044399a9bb4cso1059746qvb.15
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 03:49:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=T5n9A4eLifr47qhHLRf9Kq7hYcEBfD03DgfdoZ0OcNA=;
+        b=YpdVm7BOOeAwGALKiuSAAJbK1n5KTKMA6B6dnP17uGUtI/aEP7wTFwh45coImk3uk6
+         xJlZhFz7ckPW8tOGUxynnEnI4AdTSlTxsYJocqvDzN9/qNFxhfLVqluH0A9Q+WCbdkDA
+         7mW7ARVVTg3hR6xe+ltuqVJdikHVbvBHSqToKkjxlruqnIJAWrnAl1qviQBnxEem3DWu
+         6WlSw6PcmL2/6j6dfBMcOWAVY8ozE3/rk5IeB3+eowzlIrCdKwRlFExgkoYAkvzq9xci
+         t66ZGIPPvLUcu+MilaipiN24Gr2jQfQALv1vYygj3t9Nn9wvXho7xr0jeV7BzqkDUbJ6
+         yd8w==
+X-Gm-Message-State: AOAM531JUj+OCOAx/ocSGuAKRHVKCzW+4PmtkzKfwtAJ6AWnK2Z3r6kt
+        pPSQi+sy+HaOh6DJ7M5VMxqLtocB2ZSUTQ3x5Ubfr43ADyIK36mBdCrAvR8bn04V+MBYH3ojwpd
+        aPJ/tsbJsAvcCozaZRiFO2ov+U6zxwJYx
+X-Received: by 2002:a0c:fe48:0:b0:462:6a02:a17d with SMTP id u8-20020a0cfe48000000b004626a02a17dmr27671545qvs.108.1654080544241;
+        Wed, 01 Jun 2022 03:49:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJydnMnL2CGtfHvsmGsOMtRegKBWrDanbK1aFihPp/xsHxn9Wq3Oqc+JoLCDAIVDJM7yrsBugSDtOndvdK+IpM0=
+X-Received: by 2002:a0c:fe48:0:b0:462:6a02:a17d with SMTP id
+ u8-20020a0cfe48000000b004626a02a17dmr27671514qvs.108.1654080544026; Wed, 01
+ Jun 2022 03:49:04 -0700 (PDT)
 MIME-Version: 1.0
+References: <20220526124338.36247-1-eperezma@redhat.com> <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEu1YenjBHAssP=FvKX6WxDQ5Aa50r-BsnkfR4zqNTk6hg@mail.gmail.com>
+ <CAJaqyWfzoORc7V=xqdyLsdRPRYGNJBvWaPcZDhOb1vJWhbixoA@mail.gmail.com> <PH0PR12MB54813940FE5AC483C4676F24DCDC9@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB54813940FE5AC483C4676F24DCDC9@PH0PR12MB5481.namprd12.prod.outlook.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Wed, 1 Jun 2022 12:48:27 +0200
+Message-ID: <CAJaqyWejR8M1sgNtJmWbDGKp2rMZO2rHZP_syqqJxVMiHfXLUQ@mail.gmail.com>
+Subject: Re: [PATCH v4 0/4] Implement vdpasim stop operation
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "martinh@xilinx.com" <martinh@xilinx.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "martinpo@xilinx.com" <martinpo@xilinx.com>,
+        "lvivier@redhat.com" <lvivier@redhat.com>,
+        "pabloc@xilinx.com" <pabloc@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "dinang@xilinx.com" <dinang@xilinx.com>,
+        Longpeng <longpeng2@huawei.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+On Tue, May 31, 2022 at 10:26 PM Parav Pandit <parav@nvidia.com> wrote:
+>
+>
+>
+> > From: Eugenio Perez Martin <eperezma@redhat.com>
+> > Sent: Friday, May 27, 2022 3:55 AM
+> >
+> > On Fri, May 27, 2022 at 4:26 AM Jason Wang <jasowang@redhat.com> wrote:
+> > >
+> > > On Thu, May 26, 2022 at 8:54 PM Parav Pandit <parav@nvidia.com> wrote=
+:
+> > > >
+> > > >
+> > > >
+> > > > > From: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> > > > > Sent: Thursday, May 26, 2022 8:44 AM
+> > > >
+> > > > > Implement stop operation for vdpa_sim devices, so vhost-vdpa will
+> > > > > offer
+> > > > >
+> > > > > that backend feature and userspace can effectively stop the devic=
+e.
+> > > > >
+> > > > >
+> > > > >
+> > > > > This is a must before get virtqueue indexes (base) for live
+> > > > > migration,
+> > > > >
+> > > > > since the device could modify them after userland gets them. Ther=
+e
+> > > > > are
+> > > > >
+> > > > > individual ways to perform that action for some devices
+> > > > >
+> > > > > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but
+> > there
+> > > > > was no
+> > > > >
+> > > > > way to perform it for any vhost device (and, in particular, vhost=
+-vdpa).
+> > > > >
+> > > > >
+> > > > >
+> > > > > After the return of ioctl with stop !=3D 0, the device MUST finis=
+h
+> > > > > any
+> > > > >
+> > > > > pending operations like in flight requests. It must also preserve
+> > > > > all
+> > > > >
+> > > > > the necessary state (the virtqueue vring base plus the possible
+> > > > > device
+> > > > >
+> > > > > specific states) that is required for restoring in the future. Th=
+e
+> > > > >
+> > > > > device must not change its configuration after that point.
+> > > > >
+> > > > >
+> > > > >
+> > > > > After the return of ioctl with stop =3D=3D 0, the device can cont=
+inue
+> > > > >
+> > > > > processing buffers as long as typical conditions are met (vq is
+> > > > > enabled,
+> > > > >
+> > > > > DRIVER_OK status bit is enabled, etc).
+> > > >
+> > > > Just to be clear, we are adding vdpa level new ioctl() that doesn=
+=E2=80=99t map to
+> > any mechanism in the virtio spec.
+> > >
+> > > We try to provide forward compatibility to VIRTIO_CONFIG_S_STOP. That
+> > > means it is expected to implement at least a subset of
+> > > VIRTIO_CONFIG_S_STOP.
+> > >
+> >
+> > Appending a link to the proposal, just for reference [1].
+> >
+> > > >
+> > > > Why can't we use this ioctl() to indicate driver to start/stop the =
+device
+> > instead of driving it through the driver_ok?
+> > >
+> >
+> > Parav, I'm not sure I follow you here.
+> >
+> > By the proposal, the resume of the device is (From qemu POV):
+> > 1. To configure all data vqs and cvq (addr, num, ...) 2. To enable only=
+ CVQ, not
+> > data vqs 3. To send DRIVER_OK 4. Wait for all buffers of CVQ to be used=
+ 5. To
+> > enable all others data vqs (individual ioctl at the moment)
+> >
+> > Where can we fit the resume (as "stop(false)") here? If the device is s=
+topped
+> > (as if we send stop(true) before DRIVER_OK), we don't read CVQ first. I=
+f we
+> > send it right after (or instead) DRIVER_OK, data buffers can reach data=
+ vqs
+> > before configuring RSS.
+> >
+> It doesn=E2=80=99t make sense with currently proposed way of using cvq to=
+ replay the config.
 
-One may want to have DF set on large packets to support discovering
-path mtu and limiting the size of generated packets (hence not
-setting the XFRM_STATE_NOPMTUDISC tunnel flag), while still
-supporting networks that are incapable of carrying even minimal
-sized IPv6 frames (post encapsulation).
+The stop/resume part is not intended to restore the config through the
+CVQ. The stop call is issued to be able to retrieve the vq status
+(base, in vhost terminology). The symmetric operation (resume) was
+added on demand, it was never intended to be part neither of the
+config restore or the virtqueue state restore workflow.
 
-Having IPv4 Don't Frag bit set on encapsulated IPv6 frames that
-are not larger than the minimum IPv6 mtu of 1280 isn't useful,
-because the resulting ICMP Fragmentation Required error isn't
-actionable (even assuming you receive it) because IPv6 will not
-drop it's path mtu below 1280 anyway.  While the IPv4 stack
-could prefrag the packets post encap, this requires the ICMP
-error to be successfully delivered and causes a loss of the
-original IPv6 frame (thus requiring a retransmit and latency
-hit).  Luckily with IPv4 if we simply don't set the DF flag,
-we'll just make further fragmenting the packets some other
-router's problems.
+The configuration restore workflow was modelled after the device
+initialization, so each part needed to add the less things the better,
+and only qemu needed to be changed. From the device POV, there is no
+need to learn new tricks for this. The support of .set_vq_ready and
+.get_vq_ready is already in the kernel in every vdpa backend driver.
 
-We'll still learn the correct IPv4 path mtu through encapsulation
-of larger IPv6 frames.
+> Need to continue with currently proposed temporary method that subsequent=
+ly to be replaced with optimized flow as we discussed.
 
-I'm still not convinced this patch is entirely sufficient to make
-everything happy... but I don't see how it could possibly
-make things worse.
+Back then, it was noted by you that enabling each data vq individually
+after DRIVER_OK is slow on mlx5 devices. The solution was to batch
+these enable calls accounting in the kernel, achieving no growth in
+the vdpa uAPI layer. The proposed solution did not involve the resume
+operation.
 
-See also recent:
-  4ff2980b6bd2 'xfrm: fix tunnel model fragmentation behavior'
-and friends
+After that, you proposed in this thread "Why can't we use this ioctl()
+to indicate driver to start/stop the device instead of driving it
+through the driver_ok?". As I understand, that is a mistake, since it
+requires the device, the vdpa layer, etc... to learn new tricks. It
+requires qemu to duplicate the initialization layer (it's now common
+for start and restore config). But I might have not seen the whole
+picture, missing advantages of using the resume call for this
+workflow. Can you describe the workflow you have in mind? How does
+that new workflow affect this proposal?
 
-Cc: Lorenzo Colitti <lorenzo@google.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Lina Wang <lina.wang@mediatek.com>
-Cc: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Maciej Zenczykowski <maze@google.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
----
- net/xfrm/xfrm_output.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I'm ok to change the proposal as long as we find we obtain a net gain.
 
-diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index d4935b3b9983..555ab35cd119 100644
---- a/net/xfrm/xfrm_output.c
-+++ b/net/xfrm/xfrm_output.c
-@@ -273,6 +273,7 @@ static int xfrm4_beet_encap_add(struct xfrm_state *x, struct sk_buff *skb)
-  */
- static int xfrm4_tunnel_encap_add(struct xfrm_state *x, struct sk_buff *skb)
- {
-+	bool small_ipv6 = (skb->protocol == htons(ETH_P_IPV6)) && (skb->len <= IPV6_MIN_MTU);
- 	struct dst_entry *dst = skb_dst(skb);
- 	struct iphdr *top_iph;
- 	int flags;
-@@ -303,7 +304,7 @@ static int xfrm4_tunnel_encap_add(struct xfrm_state *x, struct sk_buff *skb)
- 	if (flags & XFRM_STATE_NOECN)
- 		IP_ECN_clear(top_iph);
- 
--	top_iph->frag_off = (flags & XFRM_STATE_NOPMTUDISC) ?
-+	top_iph->frag_off = (flags & XFRM_STATE_NOPMTUDISC) || small_ipv6 ?
- 		0 : (XFRM_MODE_SKB_CB(skb)->frag_off & htons(IP_DF));
- 
- 	top_iph->ttl = ip4_dst_hoplimit(xfrm_dst_child(dst));
--- 
-2.25.1
+Thanks!
 
