@@ -2,47 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B983A539BCC
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 05:51:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BDCA539BD4
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 05:55:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238931AbiFADuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 23:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45518 "EHLO
+        id S1349517AbiFADyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 23:54:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233702AbiFADuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 23:50:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F6D5FD6
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 20:50:15 -0700 (PDT)
+        with ESMTP id S232740AbiFADym (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 23:54:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017935A090;
+        Tue, 31 May 2022 20:54:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B40E2B81768
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 03:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31D2DC385B8;
-        Wed,  1 Jun 2022 03:50:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 257B560C2D;
+        Wed,  1 Jun 2022 03:54:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA75EC385B8;
+        Wed,  1 Jun 2022 03:54:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654055412;
-        bh=hFM7UfiSrad7nKJ6d6CNHGBDDgXT7uxEepqTa0NzhjQ=;
+        s=k20201202; t=1654055680;
+        bh=Hw0JjLLLLJmJEqRrg3SXTwBDAG1cIOlJGpAbCO5/avU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oqI5aiEOCUUsMdXAw2RNvp5W8zInl/zm/EXyAT2F9k/iRUtkdg5RUgtei6Dsa2p4W
-         fPD/Fvha4DUhYlZa2YvhVHKafTS+QuHihG01SE3NTPZrnCofXTxA8HHtVLGbF9cbgq
-         TJm7CNTKMU328N9z3uVlruK0THoMyC3KryZnadbrCci6LYea8AEwrMpcK+dviQIv7n
-         W8OS3PCDADHriyDJYkZo4moHDBdZS/1xNgJC5oB6XOHs6TpuXV7gcBnJBTQIMkeIzb
-         docp6KJT//LhjNk+TnlUhDE+zDgosOJ9QASY7dz2GsEpHg5VDn1u7MSLNLx/9QWw4m
-         34Nfhb/Ye4eMA==
-Date:   Tue, 31 May 2022 20:50:11 -0700
+        b=MKJ/UpypicQmV5Js/2EpsXg5icbiSKbIoajJ0yHax556P6pZObm2oxOjZsDCB65H+
+         Vu5wwM1jvXHHdwu/oomCCLR77M8bIfsIh8vx6Y76SC5dpgmM1BGm9AoR4CQnaFBTUJ
+         HpYebHTPPqiXPF6nfDnbdIIQBLjLDQVo678D6CvGZPvu13hWMzn+5lbH0JHk4ECjuF
+         x/+FknlbIGb5mjbC0plI7txLX8jgR4SIOO6StpQagBQSRiQsPwwSaU3u54B2CRUIHm
+         DEdwGeEUErA7PyNTtfRWU84LUEvyqRbGxA0GUAz7mgKp4esS2xX4YwbIZXJeQTBdhc
+         +0MMsfvSkygbg==
+Date:   Tue, 31 May 2022 20:54:38 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Tham, Mun Yew" <mun.yew.tham@intel.com>
-Cc:     Joyce Ooi <joyce.ooi@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
+To:     Piyush Malgujar <pmalgujar@marvell.com>
+Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <devicetree@vger.kernel.org>,
+        <cchavva@marvell.com>, <deppel@marvell.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: eth: altera: set rx and tx ring size before
- init_dma call
-Message-ID: <20220531205011.4e17bc11@kernel.org>
-In-Reply-To: <20220531025117.13822-1-mun.yew.tham@intel.com>
-References: <20220531025117.13822-1-mun.yew.tham@intel.com>
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH v2 0/3] net: mdio: mdio-thunder: MDIO clock related
+ changes for Marvell Octeon Family.
+Message-ID: <20220531205438.4fe7e074@kernel.org>
+In-Reply-To: <20220530125329.30717-1-pmalgujar@marvell.com>
+References: <20220530125329.30717-1-pmalgujar@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,15 +61,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 31 May 2022 10:51:17 +0800 Tham, Mun Yew wrote:
-> It is more appropriate to set the rx and tx ring size before calling
-> the init function for the dma.
+On Mon, 30 May 2022 05:53:25 -0700 Piyush Malgujar wrote:
+> This patch series mdio changes are pertaining to Marvell Octeon family.
+> 
+> 1) clock gating:
+> 	The purpose of this change is to apply clock gating for MDIO clock
+> 	when there is no transaction happening. This will stop the MDC
+> 	clock toggling in idle scenario.
+> 
+> 2) Marvell MDIO clock frequency attribute change:
+> 	This MDIO change provides an option for user to have the bus speed
+> 	set to their needs. The clock-freq for Marvell Octeon defaults to
+> 	3.125 MHz and not 2.5 MHz as standard. In case someone needs to use
+> 	this attribute, they have to add an extra attribute
+> 	"clock-frequency" in the mdio entry in their DTS and this driver
+> 	will do the rest.
+>         The changes are made in a way that the clock will set to the
+> 	nearest possible value based on the clock calculation and required
+> 	frequency from DTS.
+>         
+> These changes has been verified internally with Marvell Octeon series.
 
-Improve the commit message please, this tells us nothing.
-It's hardly a well know software design best practice to set some
-random thing before calling another random thing.
-AFAICT neither dma implementation upstream cares about
-priv->[tr]x_ring_size, do they?
-
-If you're doing this to prepare for adding another DMA engine,
-please post this patch together with the support being added.
+Thanks for the patches, this does not sound like a fix tho and we're in
+the middle of a merge window, so please repost on/after Monday.
