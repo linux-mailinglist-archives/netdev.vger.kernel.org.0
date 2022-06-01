@@ -2,700 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E74D539AB5
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 03:20:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3635F539AF0
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 03:48:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348968AbiFABUh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 May 2022 21:20:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41588 "EHLO
+        id S1349028AbiFABsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 May 2022 21:48:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348962AbiFABUf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 21:20:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E51F95A3A
-        for <netdev@vger.kernel.org>; Tue, 31 May 2022 18:20:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654046432;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=qAzOFD7ObxR7RBhrEOE65Iye7i1jdPXqMYZvPrmJxC8=;
-        b=WVtgajrKs69Xi2M3KwS3knzzPqKXAlmaXIXsmxcYZmn4y3hSeWdkcCQTwhCDCGeMI6J+X1
-        IROGBJaKFqVbJ4/U9SbGYFrQT8ZQ2J0bdbCrVEf+b6G6lA0oclOLr8DL7k7h6z3RqUFFhl
-        srsI9c468bBB37SKKdRcywsAPHM2bag=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-195-1Yq-QPCgO4WwfOJdBWCj-g-1; Tue, 31 May 2022 21:20:28 -0400
-X-MC-Unique: 1Yq-QPCgO4WwfOJdBWCj-g-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 32E6829AB40F;
-        Wed,  1 Jun 2022 01:20:28 +0000 (UTC)
-Received: from server.redhat.com (ovpn-13-32.pek2.redhat.com [10.72.13.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id DF327492C3B;
-        Wed,  1 Jun 2022 01:20:23 +0000 (UTC)
-From:   Cindy Lu <lulu@redhat.com>
-To:     lulu@redhat.com, mst@redhat.com, jasowang@redhat.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v2] vdpa: Do not count the pages that were already pinned in the vhost-vDPA
-Date:   Wed,  1 Jun 2022 09:20:19 +0800
-Message-Id: <20220601012019.1102186-1-lulu@redhat.com>
+        with ESMTP id S231584AbiFABsf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 May 2022 21:48:35 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2138.outbound.protection.outlook.com [40.107.237.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496C1DF8D
+        for <netdev@vger.kernel.org>; Tue, 31 May 2022 18:48:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YrHc5BZ6lk93ra8ItH+EFBPkmqdM4fTLWWSBIDrCeThpOREW9txZAS97xDzt/yVFunvsNB09ncf0ZznNRvbB5YR1M6yQD+QBelFUDF2bXOLwqWgHkwpahyTUASpA2b+vnz5A3I0Cnx5FHRz2itOCwO4J/4cRBEalpetFrBnMIpGGxVx6CpOrmR1+8yHPG2F6Y1Lkbxucy5BloTLEWM7Y+158k1EpTyriSAbhC482Ngg13h/+TriU+lFWCNxTFdJRt9/RhGSl9MoJAIUQiAEv5aYNfro8N66I6gaY5VQfaxKk2JMhNPbnuUmATmwl2zz7iEc068lOtaxkn9gxIRhrQw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yW59vAM+5FhnE3gazuwfajauig5yg3mqfzXk5OinGYU=;
+ b=XaEIOpslUm5xK3ZG8Ab7nivqE8e8KpKp1Wc5dAjNhwXR/icBDIvcBoajzROB5JFOTdipelJrpAFuRB7AAueN4VJn738oeYeQTRnRW0PRqjqjPciOvZ97krTut3ixNmjBUq0GNRueU1zZEx1fRZ8ofAXyYVvTTp73cG2YlLJ/yois5Lkn/K/JC2M/ah2+I0Xd3hcC/fSansQKyuHt/RsQtYL6zLVFMpjRLF7WYTNftLceWxSSkv/X0ASnSBjLv7fvScn2Wmnrwd/SaT80AGsLNFIeFOcyxJLRNhWABe66eiWR3Fq764mIGdOpXecV0jG7jEbPGbpVg+iGO3aPs7qFEQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yW59vAM+5FhnE3gazuwfajauig5yg3mqfzXk5OinGYU=;
+ b=juf0Ywc2dPKj1JsPK9rkZpmdaFkXP8xEptWm6PjdnjMDrpEKewGoSg83zV2xjs13TpduaetTAtxCH6l76WoxkQQw1QZ7kF68JGdeANUfMGwteAPDwg27w5+9TLSv6pUQ+FFJABgyjWEnUi2Purb9OBlnPYhWV7V8Dt1t7i5jbRc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from DM6PR13MB3705.namprd13.prod.outlook.com (2603:10b6:5:24c::16)
+ by SJ0PR13MB5335.namprd13.prod.outlook.com (2603:10b6:a03:3d6::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.9; Wed, 1 Jun
+ 2022 01:48:32 +0000
+Received: from DM6PR13MB3705.namprd13.prod.outlook.com
+ ([fe80::51ba:4bbc:6170:1405]) by DM6PR13MB3705.namprd13.prod.outlook.com
+ ([fe80::51ba:4bbc:6170:1405%5]) with mapi id 15.20.5314.012; Wed, 1 Jun 2022
+ 01:48:32 +0000
+Date:   Wed, 1 Jun 2022 09:48:25 +0800
+From:   Yinjun Zhang <yinjun.zhang@corigine.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Simon Horman <simon.horman@corigine.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        oss-drivers@corigine.com, Yu Xiao <yu.xiao@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>
+Subject: Re: [PATCH net] nfp: correct the output of `ethtool --show-fec
+ <intf>`
+Message-ID: <20220601014825.GA10961@nj-rack01-04.nji.corigine.com>
+References: <20220530084842.21258-1-simon.horman@corigine.com>
+ <20220530213232.332b5dff@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220530213232.332b5dff@kernel.org>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-ClientProxiedBy: HK0PR01CA0050.apcprd01.prod.exchangelabs.com
+ (2603:1096:203:a6::14) To DM6PR13MB3705.namprd13.prod.outlook.com
+ (2603:10b6:5:24c::16)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b1db7586-936d-49b4-747f-08da4370d51a
+X-MS-TrafficTypeDiagnostic: SJ0PR13MB5335:EE_
+X-Microsoft-Antispam-PRVS: <SJ0PR13MB53351C00AFE01A8A5C9E096DFCDF9@SJ0PR13MB5335.namprd13.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Ic9prighf0skttzDJrDABlZbQ96uNGiksd2IqgkHMrEIFUD24tCoeguNf8r4gKSzNWDshiUlRv/dOnqIN9KUgjbPXHhyGg7jnYDScRhZJ1mNKvtikhNM7rf3ESfjNX+u2VnyuzgXgpoH8SHNkD1UfTlRDILwVfYokWqwuWCUdIXBDygzY8e+vlxN74gVz3dBsxqO5RLKIwunrDf3k9GAJEkzauO7NKx7eIiXK6ffKJUcfBbdjw364JKIW7JEvsbIUTlq7D6Yvm3aRD/tjLN+ySnVGz5BTqlzP7mwsWxxghovFj/HBXY9EICWyUdzfenYj7OKfwLAWFBbLSfa9AmyVImzyf+2EUJQZeRO7aQ4KVbk+bypgZAOi+xP2ELsOnGkiuvbDzB3q0qJLYpdgmxByEzNFApVjb1+Pm1OXM/pUYufjibpf4uCezt5qoN2bBPQ1/d362kjrlapSMpPzKT7vFXLLb2ZO82NQi89MiGcp1ZEoZea6UrHblY5ZErOh8uSrBxKtFLPp+JUtDiAeMlXVOsfByhSN6kTH+INLl1B8wVMga/1Etv9LOPmlBBKt2y28s0pRgVnfm6k9njDDLNdM2KPL+IPnellXvly87GI3SFjOcFf7wjsdwgLzz2jMHlltmLUtTx/nxM+6leP4K/kgTDsDzASqhpGhGq6srsC5UzkXLFrSYclFzM5aBFEF1APnfV6KJ1WCIy03uvUTw5MAeLgW/ONOWnGZelmg6js5fo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR13MB3705.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(136003)(396003)(346002)(39830400003)(366004)(376002)(54906003)(6916009)(316002)(33656002)(4326008)(6506007)(41300700001)(8676002)(186003)(38350700002)(38100700002)(66476007)(66946007)(26005)(6486002)(2906002)(66556008)(6512007)(83380400001)(6666004)(107886003)(5660300002)(8936002)(508600001)(1076003)(52116002)(86362001)(44832011)(81973001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LPrL8EzvMLXQ5RtNPx38YJDVY1RDvLM53rB9o4wq1riiklWTTjkhK8rJrtmQ?=
+ =?us-ascii?Q?Jw0caK/sfcxqGnbxFE+m/HClGwapKoxoMYnCfI382yxa+5JKMvRXWWxWx2KP?=
+ =?us-ascii?Q?D/R86/3BQtyBzohZXCfqZlLE9aNL1iBdqQdgTIzpydvi9FFjWDpMT7DnkdcZ?=
+ =?us-ascii?Q?hFxWjdahtXlhvSL4iwlNwfWwLV2MOHHNaT3+bCClt57tY8iMvEIudl0uxSvm?=
+ =?us-ascii?Q?haGuB2WHjA0MfFi5ZY2+r1VLKfQImjnYRGPEVJmqEOBK2PFXmEG30VIYzPnZ?=
+ =?us-ascii?Q?e550jXGjSw9HG3dxqOsnv5SOFResMq3Ug2c6+h/gUO4uzpT9IFBvgfbwMm8a?=
+ =?us-ascii?Q?5lInG9e5jWda1gtOZ+Wx/garapHLOXsATM+QDQIICR4TaDhOsqXSEzRTCnS2?=
+ =?us-ascii?Q?yUEe3wfj2ws/7uT50XINd9rYeXPOQBQkYAQSywFVJQ3lc0a84S1vRHv4RYVd?=
+ =?us-ascii?Q?GUNZ40KbtJXZmdph8TaMbIE3x9sNkqH8nTA1KqtQdTeZl3djyvRqNqBccj+l?=
+ =?us-ascii?Q?BXXEhQsGeSnT61z+tGZQ2bjr/hp2vOeB4q4/+b9H7S0sqL1r3IzHk5LjfJSy?=
+ =?us-ascii?Q?zp/k8J+E9ZPVs1no+R9uR8Zp36krY7SwTfWBE913GvMe4pIFumnY5fI4fJgq?=
+ =?us-ascii?Q?P7QXiskzs5yAv3UCnu5qgFK5Ah+zS4SlUXSAjX+H5BIQPuN5qzaKW/p8Wqi6?=
+ =?us-ascii?Q?Ww0ObdBauPq2ZL7n/6H9rZUG2n007uSH0ICumFrneGipGh1aTua7Kyr7ZUbV?=
+ =?us-ascii?Q?Kkw7tNNi4DorjCbdWWhdN64QIxFrdvVs3MjwMun+X4kqOVIBGwFvCBH1mSBy?=
+ =?us-ascii?Q?r2wPljX7HDb30pqSfnWng3XrUC0Y1lSYJnTXuILjFOehUKa71dWOa4D9/ryr?=
+ =?us-ascii?Q?9qSzH79pzFqaolhO/lm3Umm/vYKwHBfXhN+o4nLxwz32T990fmZlBVwM9QcA?=
+ =?us-ascii?Q?E64prwRHlru0tk/BpdmeprjLBdLk860UdeqhCOfF+bDLER3f3xI183IMnzIT?=
+ =?us-ascii?Q?3ejUoTZLuO60P3VvZohFucOtg+6y1feu8O0q1P4anSJPeKwl4kStnTUF4Pyy?=
+ =?us-ascii?Q?oU7yRxC++mp2a+4kbRJDhYq6WEzrIdpXZKgGXgO+WGxwnoeeQzGMAEowLzzl?=
+ =?us-ascii?Q?N9gNVXKZ7/Q3Cf7aFCOp3CjF/O7PymUUwV8ANLHkP1kAZFFo4PIvWzrNMEoB?=
+ =?us-ascii?Q?x1n54SMYgUSfVCs1PTsegxQzcobP3gmuwsdN9ndk6nym4JMgBVRKojP//8rx?=
+ =?us-ascii?Q?4d81pc6kCjgerXF/r4/tW+U05xQ9rgUvghhzXUHvuWjjsYT39CwNMgqlonvc?=
+ =?us-ascii?Q?7Iw9GKicr68PSqRUwOnHtW5nAEH8g0UrXAwQT8/V0QLu4b/AQ1/Wdpn8r9rA?=
+ =?us-ascii?Q?l0RoEaBM8aelYxKONQ8ztNh/0io5VHxkh5W+I1c4juRksGj37vQzRqka29XP?=
+ =?us-ascii?Q?6sUF7fXdyvM5YisACM24bA6GPq0M9DQDV2mcetHbxysqIZ86RqavdkiKGuLT?=
+ =?us-ascii?Q?IJ9MoDstiIzPMrEVP+a55E4ALvxx6p/Xrl1XsYDY1ddf+8P2hzTBLoKZ9HSj?=
+ =?us-ascii?Q?B0ubX98Kp9qxhOvOU3CGE04xWjDyMO4dzXiVvhIxWsvZIaLNDMVmayaTMATP?=
+ =?us-ascii?Q?REp9lLrDBb38KhjKdPhi9yzRyHoeF1jdItbFhWLv7UU4EM0sgBvTdec9rKtm?=
+ =?us-ascii?Q?k1YX7MR58jHNDXMHhhT1JJpxf87tJ1wm2CwfNTGieg1ot82Qwk3VAuXqIqMp?=
+ =?us-ascii?Q?ZuaERznxWO8otESHKYozxNY43eSBtgg=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b1db7586-936d-49b4-747f-08da4370d51a
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR13MB3705.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2022 01:48:31.8431
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wvuBCKiVCDLKhO3Iz0G7HOh3/KdV+pdRh8mFrk5xrAtjMuzcORkNYplMCvuY4VaBWDjSF/oCGljPVM3plUU5qDNlTpXOZcRUBoeEnaeA9Tg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR13MB5335
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We count pinned_vm as follow in vhost-vDPA
+On Mon, May 30, 2022 at 09:32:32PM -0700, Jakub Kicinski wrote:
+> On Mon, 30 May 2022 10:48:42 +0200 Simon Horman wrote:
+> > The output  of `Configured FEC encodings` should display user
+> > configured/requested value,
+> 
+> That stands to reason, but when I checked what all drivers do 7 out 
+> of 10 upstream drivers at the time used it to report supported modes.
 
-lock_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
-if (npages + atomic64_read(&dev->mm->pinned_vm) > lock_limit) {
-         ret = -ENOMEM;
-         goto unlock;
-}
-This means if we have two vDPA devices for the same VM the pages would be counted twice
-So we add a tree to save the page that counted and we will not count it
-again.
-Signed-off-by: Cindy Lu <lulu@redhat.com>
----
- drivers/vhost/vdpa.c  | 542 +++++++++++++++++++++++++++++++++++++++++-
- drivers/vhost/vhost.h |   1 +
- 2 files changed, 539 insertions(+), 4 deletions(-)
+It seems you're right. I agree it's OK that nfp driver keep the same with
+majority drivers' implementations.
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index 05f5fd2af58f..1b0da0735efd 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -24,6 +24,10 @@
- #include <linux/vhost.h>
- 
- #include "vhost.h"
-+#include <linux/rbtree.h>
-+#include <linux/interval_tree.h>
-+#include <linux/interval_tree_generic.h>
-+#include <linux/hashtable.h>
- 
- enum {
- 	VHOST_VDPA_BACKEND_FEATURES =
-@@ -506,12 +510,478 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
- 	return r;
- }
- 
-+struct vdpa_tree_node {
-+	struct interval_tree_node tree_node;
-+	int ref;
-+};
-+struct vdpa_link_node {
-+	struct vdpa_tree_node *vdpa_node;
-+	struct vdpa_link_node *next;
-+	u64 node_start;
-+	u64 node_last;
-+};
-+
-+int vhost_vdpa_add_range_ctx(struct rb_root_cached *root, u64 start, u64 last,
-+			     int ref)
-+{
-+	struct interval_tree_node *new_node;
-+	struct vdpa_tree_node *vdpa_node;
-+
-+	if (last < start)
-+		return -EFAULT;
-+
-+	/* If the range being mapped is [0, ULONG_MAX], split it into two entries
-+	 * otherwise its size would overflow u64.
-+	 */
-+	if (start == 0 && last == ULONG_MAX) {
-+		u64 mid = last / 2;
-+
-+		vhost_vdpa_add_range_ctx(root, start, mid, ref);
-+		start = mid + 1;
-+	}
-+	vdpa_node = kmalloc(sizeof(struct vdpa_tree_node), GFP_ATOMIC);
-+
-+	new_node = &vdpa_node->tree_node;
-+	if (!new_node)
-+		return -ENOMEM;
-+
-+	new_node->start = start;
-+	new_node->last = last;
-+	vdpa_node->ref = ref;
-+
-+	interval_tree_insert(new_node, root);
-+
-+	return 0;
-+}
-+
-+u64 vhost_vdpa_range_ref_add(struct rb_root_cached *root,
-+			     struct vdpa_link_node *link_head, int node_number,
-+			     u64 start, u64 last)
-+{
-+	int i = 0;
-+	u64 size = 0;
-+	int new_ref;
-+	u64 node_start;
-+	u64 node_last;
-+	u64 range_start;
-+	u64 range_last;
-+	int range_size;
-+	struct vdpa_link_node *link_node;
-+	struct vdpa_tree_node *vdpa_node = NULL;
-+	struct interval_tree_node *node = NULL;
-+
-+	if (node_number == 0) {
-+		vhost_vdpa_add_range_ctx(root, start, last, 1);
-+
-+		size = last - start + 1;
-+		return size;
-+	}
-+
-+	link_node = link_head;
-+	range_start = start;
-+	range_last = last;
-+	range_size = range_start - range_last;
-+	for (i = 0; i < node_number; i++) {
-+		vdpa_node = link_node->vdpa_node;
-+		link_node = link_node->next;
-+		node = &vdpa_node->tree_node;
-+		new_ref = vdpa_node->ref;
-+		node_start = node->start;
-+		node_last = node->last;
-+
-+		if (range_start == node_start) {
-+			if (node_last < range_last) {
-+				/* range_start= node->start--- node->last--range_last*/
-+				vhost_vdpa_add_range_ctx(root, node_start,
-+							 node_last,
-+							 new_ref + 1);
-+				/*count the next range */
-+			} else if (node_last > range_last) {
-+				/* range_start= node->start	---  last --  node->last*/
-+				vhost_vdpa_add_range_ctx(root, node_start,
-+							 range_last,
-+							 new_ref + 1);
-+				vhost_vdpa_add_range_ctx(root, range_last + 1,
-+							 node_last, new_ref);
-+			} else {
-+				vhost_vdpa_add_range_ctx(root, node_start,
-+							 node_last,
-+							 new_ref + 1);
-+			}
-+		} else if (node_start < range_start) {
-+			if (range_last < node_last) {
-+				/* node->start---  start--- last--- node->last*/
-+				/* should the end rang*/
-+
-+				vhost_vdpa_add_range_ctx(root, node_start,
-+							 range_start - 1,
-+							 new_ref);
-+				vhost_vdpa_add_range_ctx(root, range_start,
-+							 range_last,
-+							 new_ref + 1);
-+				vhost_vdpa_add_range_ctx(root, range_last + 1,
-+							 node_last, new_ref);
-+
-+			} else if (range_last > node_last) {
-+				/* node->start---  start--- node->last-- last*/
-+
-+				vhost_vdpa_add_range_ctx(root, node_start,
-+							 range_start - 1,
-+							 new_ref);
-+				vhost_vdpa_add_range_ctx(root, range_start,
-+							 node_last,
-+							 new_ref + 1);
-+			} else {
-+				/* node->start---  start--- node->last= last*/
-+				vhost_vdpa_add_range_ctx(root, node_start,
-+							 range_start - 1,
-+							 new_ref);
-+				vhost_vdpa_add_range_ctx(root, range_start,
-+							 node_last,
-+							 new_ref + 1);
-+				/* should the end rang*/
-+			}
-+		} else {
-+			if (node_last < range_last) {
-+				/* range_start --- node->start --- node->last ----last  */
-+
-+				vhost_vdpa_add_range_ctx(root, range_start,
-+							 node_start - 1, 1);
-+				vhost_vdpa_add_range_ctx(root, node_start,
-+							 node_last,
-+							 new_ref + 1);
-+				size += ((node_start - 1) - range_start) + 1;
-+			} else if (node_last > range_last) {
-+				/* range_start--- node->start	---  last --  node->last	*/
-+				vhost_vdpa_add_range_ctx(root, range_start,
-+							 node_start - 1, 1);
-+				vhost_vdpa_add_range_ctx(root, node_start,
-+							 range_last,
-+							 new_ref + 1);
-+				vhost_vdpa_add_range_ctx(root, range_last + 1,
-+							 node_last, new_ref);
-+				size += ((node_start - 1) - range_start) + 1;
-+
-+				/* should the end rang*/
-+			} else {
-+				/* range_start--- node->start	---  last =  node->last	*/
-+				vhost_vdpa_add_range_ctx(root, range_start,
-+							 node_start - 1, 1);
-+				vhost_vdpa_add_range_ctx(root, node_start,
-+							 node_last,
-+							 new_ref + 1);
-+				size += ((node_start - 1) - range_start) + 1;
-+
-+				/* should the end rang*/
-+			}
-+		}
-+		/* work in next node*/
-+		range_start = node_last + 1;
-+		if (range_start > range_last)
-+			break;
-+	}
-+
-+	range_size = range_last - range_start;
-+
-+	/* last round and still some range*/
-+
-+	if ((range_size >= 0) && (range_start >= node_last) &&
-+	    (node_number == i + 1)) {
-+		vhost_vdpa_add_range_ctx(root, range_start, range_last, 1);
-+		size = size + (range_last - range_start) + 1;
-+	} else if ((range_size == -1) && (node_number == i + 1)) {
-+		return size;
-+	} else {
-+		printk(KERN_WARNING,
-+		       "%s %d FAIL start %lld last %lld node->start %lld  node->last %lld i  %d",
-+		       __func__, __LINE__, range_start, range_last, node_start,
-+		       node_last, i);
-+	}
-+
-+	return size;
-+}
-+
-+u64 vhost_vdpa_range_ref_del(struct rb_root_cached *root,
-+			     struct vdpa_link_node *link_head, int node_number,
-+			     u64 start, u64 last)
-+{
-+	int i = 0;
-+	u64 size = 0;
-+	int new_ref;
-+	u64 node_start;
-+	u64 node_last;
-+	u64 range_start;
-+	u64 range_last;
-+	int range_size;
-+	struct vdpa_link_node *link_node;
-+	struct vdpa_tree_node *vdpa_node = NULL;
-+	struct interval_tree_node *node = NULL;
-+
-+	if (node_number == 0)
-+		return 0;
-+
-+	link_node = link_head;
-+	range_start = start;
-+	range_last = last;
-+
-+	for (i = 0; i < node_number; i++) {
-+		vdpa_node = link_node->vdpa_node;
-+		link_node = link_node->next;
-+		node = &vdpa_node->tree_node;
-+		new_ref = vdpa_node->ref;
-+		node_start = node->start;
-+		node_last = node->last;
-+
-+		if (range_start == node_start) {
-+			if (node_last < range_last) {
-+				/* range_start =node->start --- node->last ----last*/
-+				if (new_ref > 1) {
-+					vhost_vdpa_add_range_ctx(root,
-+								 node_start,
-+								 node_last,
-+								 new_ref - 1);
-+					/*count the next range */
-+				} else {
-+					/* if the ref =0, do not need add it back, count size*/
-+					size += (node_last - node_start) + 1;
-+				}
-+
-+			} else if (node_last > range_last) {
-+				/* range_start= node->start	---  last --  node->last*/
-+
-+				if (new_ref > 1) {
-+					vhost_vdpa_add_range_ctx(root,
-+								 node_start,
-+								 range_last,
-+								 new_ref - 1);
-+				} else {
-+					size += (range_last - node_start) + 1;
-+				}
-+				vhost_vdpa_add_range_ctx(root, range_last + 1,
-+							 node_last, new_ref);
-+			} else {
-+				/* range_start= node->start	---  last = node->last*/
-+
-+				if (new_ref > 1) {
-+					vhost_vdpa_add_range_ctx(root,
-+								 node_start,
-+								 range_last,
-+								 new_ref - 1);
-+				} else {
-+					size += (range_last - node_start) + 1;
-+				}
-+				/* should be the end */
-+			}
-+		} else if (node_start < range_start) {
-+			if (range_last < node_last) {
-+				/* node->start---  start--- last--- node->last*/
-+				/* should the end rang*/
-+				vhost_vdpa_add_range_ctx(root, node_start,
-+							 range_start - 1,
-+							 new_ref);
-+				if (new_ref > 1) {
-+					vhost_vdpa_add_range_ctx(root,
-+								 range_start,
-+								 range_last,
-+								 new_ref - 1);
-+				} else {
-+					size += (range_last - range_start) + 1;
-+				}
-+				vhost_vdpa_add_range_ctx(root, range_last + 1,
-+							 node_last, new_ref);
-+
-+			} else if (range_last > node_last) {
-+				/* node->start---  start--- node->last--- last*/
-+
-+				vhost_vdpa_add_range_ctx(root, node_start,
-+							 range_start - 1,
-+							 new_ref);
-+				if (new_ref > 1) {
-+					vhost_vdpa_add_range_ctx(root,
-+								 range_start,
-+								 node_last,
-+								 new_ref - 1);
-+				} else {
-+					size += (node_last - range_start) + 1;
-+				}
-+			} else {
-+				/* node->start---  start--- node->last= last*/
-+				vhost_vdpa_add_range_ctx(root, node_start,
-+							 range_start - 1,
-+							 new_ref);
-+				if (new_ref > 1) {
-+					vhost_vdpa_add_range_ctx(root,
-+								 range_start,
-+								 range_last,
-+								 new_ref - 1);
-+				} else {
-+					size += (range_last - range_start) + 1;
-+				}
-+				/* should be the end */
-+			}
-+		} else {
-+			/* some range not in the node, error*/
-+			printk(KERN_WARNING,
-+			       "%s %d FAIL  start %lld last %lld node->start %lld  node->last %lld new_ref %d",
-+			       __func__, __LINE__, range_start, range_last,
-+			       node_start, node_last, new_ref);
-+		}
-+
-+		range_start = node_last + 1;
-+		if (range_start > range_last)
-+			break;
-+	}
-+
-+	range_size = range_last - range_start;
-+
-+	/* last round and still some range*/
-+
-+	if ((range_size > 0) && (node_number == i + 1)) {
-+		printk(KERN_WARNING,
-+		       "%s %d FAIL start %lld last %lld node->start %lld  node->last %lld range_size  %d",
-+		       __func__, __LINE__, range_start, range_last, node_start,
-+		       node_last, range_size);
-+	}
-+	return size;
-+}
-+
-+struct vdpa_link_node *vhost_vdpa_merge_list(struct vdpa_link_node *list1,
-+					     struct vdpa_link_node *list2)
-+{
-+	struct vdpa_link_node dummy_head;
-+	struct vdpa_link_node *ptr = &dummy_head;
-+
-+	while (list1 && list2) {
-+		if (list1->node_start < list2->node_start) {
-+			ptr->next = list1;
-+			list1 = list1->next;
-+		} else {
-+			ptr->next = list2;
-+			list2 = list2->next;
-+		}
-+		ptr = ptr->next;
-+	}
-+	if (list1)
-+		ptr->next = list1;
-+	else
-+		ptr->next = list2;
-+
-+	return dummy_head.next;
-+}
-+
-+struct vdpa_link_node *vhost_vdpa_get_mid(struct vdpa_link_node *head)
-+{
-+	struct vdpa_link_node *mid_prev = NULL;
-+	struct vdpa_link_node *mid;
-+
-+	while (head && head->next) {
-+		mid_prev = (mid_prev == NULL) ? head : mid_prev->next;
-+		head = head->next->next;
-+	}
-+	mid = mid_prev->next;
-+	mid_prev->next = NULL;
-+	return mid;
-+}
-+struct vdpa_link_node *vhost_vdpa_sort_list(struct vdpa_link_node *head)
-+{
-+	struct vdpa_link_node *mid;
-+	struct vdpa_link_node *left;
-+	struct vdpa_link_node *right;
-+
-+	if (!head || !head->next)
-+		return head;
-+
-+	mid = vhost_vdpa_get_mid(head);
-+	left = vhost_vdpa_sort_list(head);
-+	right = vhost_vdpa_sort_list(mid);
-+	return vhost_vdpa_merge_list(left, right);
-+}
-+
-+u64 vhost_vdpa_range_ops(struct rb_root_cached *root, u64 start, u64 last,
-+			 bool ops)
-+{
-+	struct interval_tree_node *node = NULL;
-+	struct vdpa_tree_node *vdpa_node;
-+	int node_number = 0;
-+	int i = 0;
-+	u64 size = 0;
-+	struct vdpa_link_node dummy_head = { 0 };
-+	struct vdpa_link_node *link_node;
-+	struct vdpa_link_node *link_head_tmp;
-+	struct vdpa_link_node *pre_link_node;
-+
-+	pre_link_node = &dummy_head;
-+	/*search the rang overlaped, and del from the tree*/
-+	for (node = interval_tree_iter_first(root, start, last); node;
-+	     node = interval_tree_iter_next(node, start, last)) {
-+		link_node = kmalloc(sizeof(struct vdpa_link_node), GFP_ATOMIC);
-+		if (link_node == NULL) {
-+			goto out;
-+		}
-+		vdpa_node =
-+			container_of(node, struct vdpa_tree_node, tree_node);
-+		link_node->vdpa_node = vdpa_node;
-+		link_node->node_start = node->start;
-+		link_node->node_last = node->last;
-+
-+		pre_link_node->next = link_node;
-+		pre_link_node = link_node;
-+		pre_link_node->next = NULL;
-+
-+		node_number++;
-+
-+		interval_tree_remove(node, root);
-+	}
-+	/* sorting the node */
-+	link_head_tmp = vhost_vdpa_sort_list(dummy_head.next);
-+
-+	/* these link node are have overlap with range, check the ref and add back to the tree*/
-+	if (ops == true) {
-+		size = vhost_vdpa_range_ref_add(root, link_head_tmp,
-+						node_number, start, last);
-+	} else {
-+		size = vhost_vdpa_range_ref_del(root, link_head_tmp,
-+						node_number, start, last);
-+	}
-+out:
-+	pre_link_node = link_head_tmp;
-+
-+	for (i = 0; i < node_number; i++) {
-+		vdpa_node = pre_link_node->vdpa_node;
-+		link_node = pre_link_node->next;
-+		kfree(vdpa_node);
-+		kfree(pre_link_node);
-+		pre_link_node = link_node;
-+	}
-+	return size;
-+}
-+u64 vhost_vdpa_search_range_add(struct rb_root_cached *root, u64 start,
-+				u64 last)
-+{
-+	u64 size;
-+
-+	size = vhost_vdpa_range_ops(root, start, last, true);
-+
-+	return size;
-+}
-+
-+u64 vhost_vdpa_search_range_del(struct rb_root_cached *root, u64 start,
-+				u64 last)
-+{
-+	u64 size;
-+
-+	size = vhost_vdpa_range_ops(root, start, last, false);
-+
-+	return size;
-+}
-+
- static void vhost_vdpa_pa_unmap(struct vhost_vdpa *v, u64 start, u64 last)
- {
- 	struct vhost_dev *dev = &v->vdev;
- 	struct vhost_iotlb *iotlb = dev->iotlb;
- 	struct vhost_iotlb_map *map;
- 	struct page *page;
-+	u64 size;
- 	unsigned long pfn, pinned;
- 
- 	while ((map = vhost_iotlb_itree_first(iotlb, start, last)) != NULL) {
-@@ -523,7 +993,11 @@ static void vhost_vdpa_pa_unmap(struct vhost_vdpa *v, u64 start, u64 last)
- 				set_page_dirty_lock(page);
- 			unpin_user_page(page);
- 		}
--		atomic64_sub(PFN_DOWN(map->size), &dev->mm->pinned_vm);
-+
-+		size = vhost_vdpa_search_range_del(dev->vdpa_mem_tree,
-+						   map->start,
-+						   map->start + map->size - 1);
-+		atomic64_sub(PFN_DOWN(size), &dev->mm->pinned_vm);
- 		vhost_iotlb_map_free(iotlb, map);
- 	}
- }
-@@ -591,6 +1065,7 @@ static int vhost_vdpa_map(struct vhost_vdpa *v, u64 iova,
- 	struct vdpa_device *vdpa = v->vdpa;
- 	const struct vdpa_config_ops *ops = vdpa->config;
- 	int r = 0;
-+	u64 size_count;
- 
- 	r = vhost_iotlb_add_range_ctx(dev->iotlb, iova, iova + size - 1,
- 				      pa, perm, opaque);
-@@ -610,9 +1085,11 @@ static int vhost_vdpa_map(struct vhost_vdpa *v, u64 iova,
- 		vhost_iotlb_del_range(dev->iotlb, iova, iova + size - 1);
- 		return r;
- 	}
--
--	if (!vdpa->use_va)
--		atomic64_add(PFN_DOWN(size), &dev->mm->pinned_vm);
-+	if (!vdpa->use_va) {
-+		size_count = vhost_vdpa_search_range_add(dev->vdpa_mem_tree,
-+							 iova, iova + size - 1);
-+		atomic64_add(PFN_DOWN(size_count), &dev->mm->pinned_vm);
-+	}
- 
- 	return 0;
- }
-@@ -946,6 +1423,58 @@ static void vhost_vdpa_set_iova_range(struct vhost_vdpa *v)
- 	}
- }
- 
-+struct root_for_vdpa_node {
-+	struct hlist_node hlist;
-+	struct rb_root_cached vdpa_mem_tree;
-+	pid_t pid_using;
-+};
-+static DECLARE_HASHTABLE(root_for_vdpa_node_list, 8);
-+int status_for_vdpa_tree = 0;
-+
-+struct root_for_vdpa_node *vhost_vdpa_get_mem_tree(struct task_struct *task)
-+{
-+	struct root_for_vdpa_node *root_get_tmp = NULL;
-+	pid_t pid_using = task_pid_nr(task);
-+
-+	/* No hased table, init one */
-+	if (status_for_vdpa_tree == 0) {
-+		hash_init(root_for_vdpa_node_list);
-+		status_for_vdpa_tree = 1;
-+	}
-+
-+	hash_for_each_possible (root_for_vdpa_node_list, root_get_tmp, hlist,
-+				pid_using) {
-+		if (root_get_tmp->pid_using == pid_using)
-+			return root_get_tmp;
-+	}
-+
-+	root_get_tmp = kmalloc(sizeof(*root_get_tmp), GFP_KERNEL);
-+	root_get_tmp->pid_using = pid_using;
-+
-+	root_get_tmp->vdpa_mem_tree = RB_ROOT_CACHED;
-+
-+	hash_add(root_for_vdpa_node_list, &root_get_tmp->hlist,
-+		 root_get_tmp->pid_using);
-+
-+	return root_get_tmp;
-+}
-+
-+void vhost_vdpa_relase_mem_tree(struct task_struct *task)
-+{
-+	struct root_for_vdpa_node *root_get_tmp = NULL;
-+	pid_t pid_using = task_pid_nr(task);
-+
-+	/* No hased table, init one */
-+	hash_for_each_possible (root_for_vdpa_node_list, root_get_tmp, hlist,
-+				pid_using) {
-+		if (root_get_tmp->pid_using == pid_using)
-+			kfree(root_get_tmp);
-+		return;
-+	}
-+
-+	return;
-+}
-+
- static int vhost_vdpa_open(struct inode *inode, struct file *filep)
- {
- 	struct vhost_vdpa *v;
-@@ -991,10 +1520,13 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
- 	vhost_vdpa_set_iova_range(v);
- 
- 	filep->private_data = v;
-+	struct root_for_vdpa_node *tmp = vhost_vdpa_get_mem_tree(current);
-+	dev->vdpa_mem_tree = &tmp->vdpa_mem_tree;
- 
- 	return 0;
- 
- err_init_iotlb:
-+	vhost_vdpa_relase_mem_tree(current);
- 	vhost_dev_cleanup(&v->vdev);
- 	kfree(vqs);
- err:
-@@ -1016,6 +1548,8 @@ static int vhost_vdpa_release(struct inode *inode, struct file *filep)
- 	struct vhost_dev *d = &v->vdev;
- 
- 	mutex_lock(&d->mutex);
-+	vhost_vdpa_relase_mem_tree(current);
-+
- 	filep->private_data = NULL;
- 	vhost_vdpa_clean_irq(v);
- 	vhost_vdpa_reset(v);
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index 638bb640d6b4..d1c662eb4f26 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -161,6 +161,7 @@ struct vhost_dev {
- 	int byte_weight;
- 	u64 kcov_handle;
- 	bool use_worker;
-+	struct rb_root_cached *vdpa_mem_tree;
- 	int (*msg_handler)(struct vhost_dev *dev,
- 			   struct vhost_iotlb_msg *msg);
- };
--- 
-2.34.3
+> At which point it may be better to change the text in ethtool user
+> space that try to change the meaning of the field..
 
+To adapt to both implementations, "Supported/Configured FEC encodings"
+would be a compromise I think.
+
+> 
+> > rather than the NIC supported modes list.
+> > 
+> > Before this patch, the output is:
+> >  # ethtool --show-fec <intf>
+> >  FEC parameters for <intf>:
+> >  Configured FEC encodings: Auto Off RS BaseR
+> >  Active FEC encoding: None
+> > 
+> > With this patch, the corrected output is:
+> >  # ethtool --show-fec <intf>
+> >  FEC parameters for <intf>:
+> >  Configured FEC encodings: Auto
+> >  Active FEC encoding: None
+> 
