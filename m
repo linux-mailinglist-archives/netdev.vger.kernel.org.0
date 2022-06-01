@@ -2,58 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59B5053AD23
+	by mail.lfdr.de (Postfix) with ESMTP id A5BCE53AD24
 	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 21:07:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229758AbiFATGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 15:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
+        id S229809AbiFATGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 15:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiFATGj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 15:06:39 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DB01C0C86
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 12:06:36 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id m11-20020a25710b000000b0065d4a4abca1so2162533ybc.18
-        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 12:06:36 -0700 (PDT)
+        with ESMTP id S229491AbiFATGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 15:06:51 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BD11181C
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 12:06:48 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id z12-20020a170903018c00b001651395dcb8so1496896plg.12
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 12:06:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=uLhEAF6ELM6OcR0UTHc6s4fCUiCOGO02IN2U67aZoh4=;
-        b=Fwl4joEJQzmwoYj3HlsKYdl1hXxIYFc5D6x4vyQKCB0qiIe0S4misb63UMAR0AYmxI
-         12MBp2yZQ2ZXLHH+TxIQYGh3X3Qb+aJJD6NBTLCHqYeArk4CqWcDJ8+E8AaR8wkI9Iwe
-         ANz6nB40LOl3dySTnLPPU/5SfFv6cg58NCJwCgFiCB+COCo18osVgfpt03M/0G1RW0D5
-         sKvkI56HxajxE5eU6DCkrwFcbl+cqWVn36jGtG9d1cr1HfS19U3tsfnxSwGgVn5Xi4Tw
-         LFL1wBiG2HkTytJNEhWZFBiUpSAikUiqWV6V3/DXd5XvMS/Fv88mZCIebQZm4xlJ0n2q
-         OHkQ==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=FFB2suG8cFo0y0QCZ+gGk4yWBmnHr1ArG9MtWFGk+Jk=;
+        b=fCiMYQmCZazeJfbkHT8SEt8S0Vkv1a6q7U7Q3yYSj2uXlN9zs7cKorjEQ2YrW19PY7
+         E/OJzXoa7wWm+Kb1w4pvv4T5jZ+bNFPW09107/xISMTX3SfBMn4HLjn2XqaeVGaEGuob
+         tnyGYpqnt2aUQsIJTPsH/SLx4J6rPARSs0YTIUmIwAI6JmUbnYqTpsj1IMij8djqQo9/
+         nOjocgae/+XL0oWDYcXcJ56PWzBSQUx6ibtPWpd/neoNWNkMF3Q21az3P5ad3vr3PTQ4
+         gf6mml1CmAfcdWvnzq/NmcO+hk+5Ot0M09J2KvjHzVY7VBGgP9toCnT06J/YpCj7PtbD
+         uiZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=uLhEAF6ELM6OcR0UTHc6s4fCUiCOGO02IN2U67aZoh4=;
-        b=CgxT3VZL/QKIFAe+3n4/KM+zEmz/f8JbapmvexfHGdsdFXIVMrJ7drjJeKfsAK5UHH
-         /KsrAh4E8K+fhcDY3Senvlt8FEdGwypso3au5ZnqMrSHFE5bQDzNJ5i8/Mhq85rJ8dST
-         UzJgBbJOdmiRfy422ql8FfAWZiMsCVPHFm3goYNpnmfsV+Bzebm+GS5fBxxOtPGmRPLC
-         /w8I8zC/xyqetWLh5qqHjEIeQ1tG1WfSwgf7uJyoxvkIPNN22ye6TADo8KCar6iXG9UE
-         Vvv5+GzUMFBfWe5VeAJi4klGleH/RWeoflWEd1P59zWCcDiNR0axDmGA5mFVMl40DPUp
-         MVYQ==
-X-Gm-Message-State: AOAM5315t+MD+p0t7GGUm1/sf7mfZ5Gjy3Dqkg+s55a4M8179iv4Gm/l
-        +Jn+2/yphEIqnMP11e+RaqFpAQpKszbnjDeePR9GHev2wVnkhXKn2g8OLStRMNfNB5Yi4+9qWV5
-        y8iAuLyTwpQyguINs/4/LnxR/oPbJti0Z87xMAxFCkXHrsYXH4cnHHg==
-X-Google-Smtp-Source: ABdhPJxQYxaZskSSXuvhK0PDgYyyfr2SGwTr4nIHdJmQ34vAIcgYF7xLFVjs3uAtuVuOLhLn0Sveb3k=
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=FFB2suG8cFo0y0QCZ+gGk4yWBmnHr1ArG9MtWFGk+Jk=;
+        b=zDp7GS0t+41lf9Accl9+f4fM6/iQxGzuzD4sMTwbSsLbYYegcZDEjsE3LV1r3hKZyA
+         vw8jJAHEB9Tw0WQ3fS8cHUlSOUP548PC2wEMAoIg7vBrn58aRPcKFsxW3jWYZX9kVXUd
+         u84YM602QvItoLUAJBGQOEfMV93fLitoDKzUpdklvOTMrVlrDGEKTNmzFYgdZcoAqfoQ
+         yGD1kTyu691cOrS+9Otopey40XXetPWzlN32nQwntJuyvxQQsGlSs7UUQr555pIYq/bg
+         ft9AyKPMfsLB6URYxJf4mljn7P5lGAeUgFMvn95lEqExdB18LmhFNvh0ZOi0LSaAT8iO
+         7aOQ==
+X-Gm-Message-State: AOAM532cmSbjHKAs+tdBUV5Tqy8MMRqB/QCL1scXDsC5iG0wXCbblE03
+        yXDd9Jrg2KyHLZtFAGBOtkjcbJoG6CmjomGd57eSUhr6N75LAZFZ7hlBRpnD6nkGYhulC1hS1Ee
+        hQTN9zM4SVZ/ks4IeoaNd414WUwwKdwPSkY5gYe1TWiQsaxFIfr7YcQ==
+X-Google-Smtp-Source: ABdhPJwpmUY21UlX/04WqtyIF73T+IOPYUKLIosAu7laWb5Uowi2fdPqMtdJMiRXSAQTq6l7wjKwdZo=
 X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a81:a507:0:b0:300:5bfe:e682 with SMTP id
- u7-20020a81a507000000b003005bfee682mr1069826ywg.337.1654110140371; Wed, 01
- Jun 2022 12:02:20 -0700 (PDT)
-Date:   Wed,  1 Jun 2022 12:02:07 -0700
-Message-Id: <20220601190218.2494963-1-sdf@google.com>
+ (user=sdf job=sendgmr) by 2002:a05:6a00:14d4:b0:518:b918:fae4 with SMTP id
+ w20-20020a056a0014d400b00518b918fae4mr45446381pfu.55.1654110141845; Wed, 01
+ Jun 2022 12:02:21 -0700 (PDT)
+Date:   Wed,  1 Jun 2022 12:02:08 -0700
+In-Reply-To: <20220601190218.2494963-1-sdf@google.com>
+Message-Id: <20220601190218.2494963-2-sdf@google.com>
 Mime-Version: 1.0
+References: <20220601190218.2494963-1-sdf@google.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH bpf-next v8 00/11] bpf: cgroup_sock lsm flavor
+Subject: [PATCH bpf-next v8 01/11] bpf: add bpf_func_t and trampoline helpers
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        Stanislav Fomichev <sdf@google.com>, kafai@fb.com,
-        kpsingh@kernel.org, jakub@cloudflare.com
+        Stanislav Fomichev <sdf@google.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -65,148 +68,181 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series implements new lsm flavor for attaching per-cgroup programs to
-existing lsm hooks. The cgroup is taken out of 'current', unless
-the first argument of the hook is 'struct socket'. In this case,
-the cgroup association is taken out of socket. The attachment
-looks like a regular per-cgroup attachment: we add new BPF_LSM_CGROUP
-attach type which, together with attach_btf_id, signals per-cgroup lsm.
-Behind the scenes, we allocate trampoline shim program and
-attach to lsm. This program looks up cgroup from current/socket
-and runs cgroup's effective prog array. The rest of the per-cgroup BPF
-stays the same: hierarchy, local storage, retval conventions
-(return 1 == success).
+I'll be adding lsm cgroup specific helpers that grab
+trampoline mutex.
 
-Current limitations:
-* haven't considered sleepable bpf; can be extended later on
-* not sure the verifier does the right thing with null checks;
-  see latest selftest for details
-* total of 10 (global) per-cgroup LSM attach points
+No functional changes.
 
-Cc: ast@kernel.org
-Cc: daniel@iogearbox.net
-Cc: kafai@fb.com
-Cc: kpsingh@kernel.org
-Cc: jakub@cloudflare.com
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ include/linux/bpf.h     | 11 ++++---
+ kernel/bpf/trampoline.c | 63 +++++++++++++++++++++--------------------
+ 2 files changed, 38 insertions(+), 36 deletions(-)
 
-v8:
-- CI: fix compile issue
-- CI: fix broken bpf_cookie
-- Yonghong: remove __bpf_trampoline_unlink_prog comment
-- Yonghong: move cgroup_atype around to fill the gap
-- Yonghong: make bpf_lsm_find_cgroup_shim void
-- Yonghong: rename regs to args
-- Yonghong: remove if(current) check
-- Martin: move refcnt into bpf_link
-- Martin: move shim management to bpf_link ops
-- Martin: use cgroup_atype for shim only
-- Martin: go back to arrays for managing cgroup_atype(s)
-- Martin: export bpf_obj_id(aux->attach_btf)
-- Andrii: reorder SEC_DEF("lsm_cgroup+")
-- Andrii: OPTS_SET instead of OPTS_HAS
-- Andrii: rename attach_btf_func_id
-- Andrii: move into 1.0 map
-
-v7:
-- there were a lot of comments last time, hope I didn't forget anything,
-  some of the bigger ones:
-  - Martin: use/extend BTF_SOCK_TYPE_SOCKET
-  - Martin: expose bpf_set_retval
-  - Martin: reject 'return 0' at the verifier for 'void' hooks
-  - Martin: prog_query returns all BPF_LSM_CGROUP, prog_info
-    returns attach_btf_func_id
-  - Andrii: split libbpf changes
-  - Andrii: add field access test to test_progs, not test_verifier (still
-    using asm though)
-- things that I haven't addressed, stating them here explicitly, let
-  me know if some of these are still problematic:
-  1. Andrii: exposing only link-based api: seems like the changes
-     to support non-link-based ones are minimal, couple of lines,
-     so seems like it worth having it?
-  2. Alexei: applying cgroup_atype for all cgroup hooks, not only
-     cgroup lsm: looks a bit harder to apply everywhere that I
-     originally thought; with lsm cgroup, we have a shim_prog pointer where
-     we store cgroup_atype; for non-lsm programs, we don't have a
-     trace program where to store it, so we still need some kind
-     of global table to map from "static" hook to "dynamic" slot.
-     So I'm dropping this "can be easily extended" clause from the
-     description for now. I have converted this whole machinery
-     to an RCU-managed list to remove synchronize_rcu().
-- also note that I had to introduce new bpf_shim_tramp_link and
-  moved refcnt there; we need something to manage new bpf_tramp_link
-
-v6:
-- remove active count & stats for shim program (Martin KaFai Lau)
-- remove NULL/error check for btf_vmlinux (Martin)
-- don't check cgroup_atype in bpf_cgroup_lsm_shim_release (Martin)
-- use old_prog (instead of passed one) in __cgroup_bpf_detach (Martin)
-- make sure attach_btf_id is the same in __cgroup_bpf_replace (Martin)
-- enable cgroup local storage and test it (Martin)
-- properly implement prog query and add bpftool & tests (Martin)
-- prohibit non-shared cgroup storage mode for BPF_LSM_CGROUP (Martin)
-
-v5:
-- __cgroup_bpf_run_lsm_socket remove NULL sock/sk checks (Martin KaFai Lau)
-- __cgroup_bpf_run_lsm_{socket,current} s/prog/shim_prog/ (Martin)
-- make sure bpf_lsm_find_cgroup_shim works for hooks without args (Martin)
-- __cgroup_bpf_attach make sure attach_btf_id is the same when replacing (Martin)
-- call bpf_cgroup_lsm_shim_release only for LSM_CGROUP (Martin)
-- drop BPF_LSM_CGROUP from bpf_attach_type_to_tramp (Martin)
-- drop jited check from cgroup_shim_find (Martin)
-- new patch to convert cgroup_bpf to hlist_node (Jakub Sitnicki)
-- new shim flavor for 'struct sock' + list of exceptions (Martin)
-
-v4:
-- fix build when jit is on but syscall is off
-
-v3:
-- add BPF_LSM_CGROUP to bpftool
-- use simple int instead of refcnt_t (to avoid use-after-free
-  false positive)
-
-v2:
-- addressed build bot failures
-
-Stanislav Fomichev (11):
-  bpf: add bpf_func_t and trampoline helpers
-  bpf: convert cgroup_bpf.progs to hlist
-  bpf: per-cgroup lsm flavor
-  bpf: minimize number of allocated lsm slots per program
-  bpf: implement BPF_PROG_QUERY for BPF_LSM_CGROUP
-  bpf: allow writing to a subset of sock fields from lsm progtype
-  libbpf: add lsm_cgoup_sock type
-  libbpf: implement bpf_prog_query_opts
-  bpftool: implement cgroup tree for BPF_LSM_CGROUP
-  selftests/bpf: lsm_cgroup functional test
-  selftests/bpf: verify lsm_cgroup struct sock access
-
- arch/x86/net/bpf_jit_comp.c                   |  24 +-
- include/linux/bpf-cgroup-defs.h               |  13 +-
- include/linux/bpf-cgroup.h                    |   9 +-
- include/linux/bpf.h                           |  39 +-
- include/linux/bpf_lsm.h                       |   7 +
- include/linux/btf_ids.h                       |   3 +-
- include/uapi/linux/bpf.h                      |   4 +
- kernel/bpf/bpf_lsm.c                          | 101 +++++
- kernel/bpf/btf.c                              |  11 +
- kernel/bpf/cgroup.c                           | 370 ++++++++++++++----
- kernel/bpf/core.c                             |   9 +
- kernel/bpf/syscall.c                          |  16 +-
- kernel/bpf/trampoline.c                       | 251 ++++++++++--
- kernel/bpf/verifier.c                         |  35 +-
- tools/bpf/bpftool/cgroup.c                    |  79 ++--
- tools/include/linux/btf_ids.h                 |   4 +-
- tools/include/uapi/linux/bpf.h                |   4 +
- tools/lib/bpf/bpf.c                           |  40 +-
- tools/lib/bpf/bpf.h                           |  15 +
- tools/lib/bpf/libbpf.c                        |   3 +
- tools/lib/bpf/libbpf.map                      |   2 +-
- .../selftests/bpf/prog_tests/lsm_cgroup.c     | 346 ++++++++++++++++
- .../testing/selftests/bpf/progs/lsm_cgroup.c  | 160 ++++++++
- 23 files changed, 1394 insertions(+), 151 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/lsm_cgroup.c
- create mode 100644 tools/testing/selftests/bpf/progs/lsm_cgroup.c
-
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 8e6092d0ea95..b0af68b6297b 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -53,6 +53,8 @@ typedef u64 (*bpf_callback_t)(u64, u64, u64, u64, u64);
+ typedef int (*bpf_iter_init_seq_priv_t)(void *private_data,
+ 					struct bpf_iter_aux_info *aux);
+ typedef void (*bpf_iter_fini_seq_priv_t)(void *private_data);
++typedef unsigned int (*bpf_func_t)(const void *,
++				   const struct bpf_insn *);
+ struct bpf_iter_seq_info {
+ 	const struct seq_operations *seq_ops;
+ 	bpf_iter_init_seq_priv_t init_seq_private;
+@@ -863,8 +865,7 @@ struct bpf_dispatcher {
+ static __always_inline __nocfi unsigned int bpf_dispatcher_nop_func(
+ 	const void *ctx,
+ 	const struct bpf_insn *insnsi,
+-	unsigned int (*bpf_func)(const void *,
+-				 const struct bpf_insn *))
++	bpf_func_t bpf_func)
+ {
+ 	return bpf_func(ctx, insnsi);
+ }
+@@ -893,8 +894,7 @@ int arch_prepare_bpf_dispatcher(void *image, s64 *funcs, int num_funcs);
+ 	noinline __nocfi unsigned int bpf_dispatcher_##name##_func(	\
+ 		const void *ctx,					\
+ 		const struct bpf_insn *insnsi,				\
+-		unsigned int (*bpf_func)(const void *,			\
+-					 const struct bpf_insn *))	\
++		bpf_func_t bpf_func)					\
+ 	{								\
+ 		return bpf_func(ctx, insnsi);				\
+ 	}								\
+@@ -905,8 +905,7 @@ int arch_prepare_bpf_dispatcher(void *image, s64 *funcs, int num_funcs);
+ 	unsigned int bpf_dispatcher_##name##_func(			\
+ 		const void *ctx,					\
+ 		const struct bpf_insn *insnsi,				\
+-		unsigned int (*bpf_func)(const void *,			\
+-					 const struct bpf_insn *));	\
++		bpf_func_t bpf_func);					\
+ 	extern struct bpf_dispatcher bpf_dispatcher_##name;
+ #define BPF_DISPATCHER_FUNC(name) bpf_dispatcher_##name##_func
+ #define BPF_DISPATCHER_PTR(name) (&bpf_dispatcher_##name)
+diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+index 93c7675f0c9e..5466e15be61f 100644
+--- a/kernel/bpf/trampoline.c
++++ b/kernel/bpf/trampoline.c
+@@ -410,7 +410,7 @@ static enum bpf_tramp_prog_type bpf_attach_type_to_tramp(struct bpf_prog *prog)
+ 	}
+ }
+ 
+-int bpf_trampoline_link_prog(struct bpf_tramp_link *link, struct bpf_trampoline *tr)
++static int __bpf_trampoline_link_prog(struct bpf_tramp_link *link, struct bpf_trampoline *tr)
+ {
+ 	enum bpf_tramp_prog_type kind;
+ 	struct bpf_tramp_link *link_exiting;
+@@ -418,44 +418,33 @@ int bpf_trampoline_link_prog(struct bpf_tramp_link *link, struct bpf_trampoline
+ 	int cnt = 0, i;
+ 
+ 	kind = bpf_attach_type_to_tramp(link->link.prog);
+-	mutex_lock(&tr->mutex);
+-	if (tr->extension_prog) {
++	if (tr->extension_prog)
+ 		/* cannot attach fentry/fexit if extension prog is attached.
+ 		 * cannot overwrite extension prog either.
+ 		 */
+-		err = -EBUSY;
+-		goto out;
+-	}
++		return -EBUSY;
+ 
+ 	for (i = 0; i < BPF_TRAMP_MAX; i++)
+ 		cnt += tr->progs_cnt[i];
+ 
+ 	if (kind == BPF_TRAMP_REPLACE) {
+ 		/* Cannot attach extension if fentry/fexit are in use. */
+-		if (cnt) {
+-			err = -EBUSY;
+-			goto out;
+-		}
++		if (cnt)
++			return -EBUSY;
+ 		tr->extension_prog = link->link.prog;
+-		err = bpf_arch_text_poke(tr->func.addr, BPF_MOD_JUMP, NULL,
+-					 link->link.prog->bpf_func);
+-		goto out;
+-	}
+-	if (cnt >= BPF_MAX_TRAMP_LINKS) {
+-		err = -E2BIG;
+-		goto out;
++		return bpf_arch_text_poke(tr->func.addr, BPF_MOD_JUMP, NULL,
++					  link->link.prog->bpf_func);
+ 	}
+-	if (!hlist_unhashed(&link->tramp_hlist)) {
++	if (cnt >= BPF_MAX_TRAMP_LINKS)
++		return -E2BIG;
++	if (!hlist_unhashed(&link->tramp_hlist))
+ 		/* prog already linked */
+-		err = -EBUSY;
+-		goto out;
+-	}
++		return -EBUSY;
+ 	hlist_for_each_entry(link_exiting, &tr->progs_hlist[kind], tramp_hlist) {
+ 		if (link_exiting->link.prog != link->link.prog)
+ 			continue;
+ 		/* prog already linked */
+-		err = -EBUSY;
+-		goto out;
++		return -EBUSY;
+ 	}
+ 
+ 	hlist_add_head(&link->tramp_hlist, &tr->progs_hlist[kind]);
+@@ -465,30 +454,44 @@ int bpf_trampoline_link_prog(struct bpf_tramp_link *link, struct bpf_trampoline
+ 		hlist_del_init(&link->tramp_hlist);
+ 		tr->progs_cnt[kind]--;
+ 	}
+-out:
++	return err;
++}
++
++int bpf_trampoline_link_prog(struct bpf_tramp_link *link, struct bpf_trampoline *tr)
++{
++	int err;
++
++	mutex_lock(&tr->mutex);
++	err = __bpf_trampoline_link_prog(link, tr);
+ 	mutex_unlock(&tr->mutex);
+ 	return err;
+ }
+ 
+-/* bpf_trampoline_unlink_prog() should never fail. */
+-int bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_trampoline *tr)
++static int __bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_trampoline *tr)
+ {
+ 	enum bpf_tramp_prog_type kind;
+ 	int err;
+ 
+ 	kind = bpf_attach_type_to_tramp(link->link.prog);
+-	mutex_lock(&tr->mutex);
+ 	if (kind == BPF_TRAMP_REPLACE) {
+ 		WARN_ON_ONCE(!tr->extension_prog);
+ 		err = bpf_arch_text_poke(tr->func.addr, BPF_MOD_JUMP,
+ 					 tr->extension_prog->bpf_func, NULL);
+ 		tr->extension_prog = NULL;
+-		goto out;
++		return err;
+ 	}
+ 	hlist_del_init(&link->tramp_hlist);
+ 	tr->progs_cnt[kind]--;
+-	err = bpf_trampoline_update(tr);
+-out:
++	return bpf_trampoline_update(tr);
++}
++
++/* bpf_trampoline_unlink_prog() should never fail. */
++int bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_trampoline *tr)
++{
++	int err;
++
++	mutex_lock(&tr->mutex);
++	err = __bpf_trampoline_unlink_prog(link, tr);
+ 	mutex_unlock(&tr->mutex);
+ 	return err;
+ }
 -- 
 2.36.1.255.ge46751e96f-goog
 
