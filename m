@@ -2,75 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8C4953AC81
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 20:11:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1FEA53ACD2
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 20:31:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354377AbiFASL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 14:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
+        id S232880AbiFASbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 14:31:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230345AbiFASL0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 14:11:26 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58816A076;
-        Wed,  1 Jun 2022 11:11:24 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id rq11so5416355ejc.4;
-        Wed, 01 Jun 2022 11:11:24 -0700 (PDT)
+        with ESMTP id S229871AbiFASbV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 14:31:21 -0400
+Received: from mail-vs1-xe29.google.com (mail-vs1-xe29.google.com [IPv6:2607:f8b0:4864:20::e29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA90ABF48;
+        Wed,  1 Jun 2022 11:31:20 -0700 (PDT)
+Received: by mail-vs1-xe29.google.com with SMTP id q14so2477598vsr.12;
+        Wed, 01 Jun 2022 11:31:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=vD3acUwrnvCDNzsw6CVDjDJdTYe7I/67xtDcmDRh9WM=;
-        b=iAwFOoctnI2pHGQt2d7qlsaLocofuzUJ2It0EaiuRyr2OSU7Oap9cvKDCxz1+lpZ4G
-         cajNdAdrsL5uyCiy4yg5u++fz7B/Q8RAYzw69GintttzI7v7YhOsCx/l4ii3SnVLSNj7
-         dx8e1UCFXgNTCD0MIOlTvgG/mG+6HCR6M98DysnfXqCnGnvTXVldMuAW8GbV/ZkCpxep
-         eTMkMKN5sbgRdBJY6utl3aRLRQXCsL9e76v9YUsqUzWx4vJXT9JkbDyQv1kOEVRqojFl
-         L/RKRaOvRhcEu/6+uKKEAXpWjZY+kSCYzymyfz8L9XIFjGZz/ulDS7X9jP2K1XO/QRh1
-         IQbw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OFvsxENADR9nRogVtYrcodU+LeiBGyV+qepeUinzWDE=;
+        b=ettnCSZocYZcqVQEfvzuV4fO1803FG4NM6Bee7y+Bbnmke0Wu3wgZ4XWrAEdC7X3RT
+         OyufiwExdccONw4dLvpl85DRE4PjSW2Qgo4C8joXXNc0CbpJvxoi82WgtxcksUmaYGQ3
+         HJyrGzbdGqSiyOcwSc9TLgQlwbM5GBsbcBPI6GNEo4lo8OWfPTmyRqAmLZ9J43mh5nI3
+         dSopi+vcjJTptzGcOLRa2d0UjAc7GtwnyyaXeROuGAJYTI9g247ivLjwLdToylCQ7ca8
+         +VhpEbHvEBPYpMtZuQiNCbFSj83+swOspl5IttoC4TNChU7TCYdWJDCo00HYCQfMHKnq
+         sUwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=vD3acUwrnvCDNzsw6CVDjDJdTYe7I/67xtDcmDRh9WM=;
-        b=wdBwwqlI7NYMU8+A+erRHrSbGhAxRKBhXP2d2JoyRc4KWqUOwGjF5Erq3u/ymDkS35
-         XMc+W9ThRM1GZDo/pM6Ej9U01dFsYW/f5dvUD06FJJUPLSuyPYzY+hk+jERqhGdopk4v
-         F3If0NA2mT13OkoLV/lHHbd2V61Yv10/Ug4l9XzcwimFfXODvy8ahRL2Hh8uy2zvWqd1
-         +CdEa6vFhoRSgQJJ52E8qKyz9E0TdmaBUhnLq22i9dWw2/WAruhhqrtZm9xF8ofM7Yzz
-         xlwYcLb6btfye8dx8ilWEJTeokofn8IegKW2Xnwd6M4bQ8K4suo1P2+XTvvGKzKDBh1p
-         N8LA==
-X-Gm-Message-State: AOAM531432Qsloe51w9O4i/0+jN/J64mC7SWDdlwxJe2TedY7J5uyHac
-        cxgFyHxSBPjnukaEnivx040=
-X-Google-Smtp-Source: ABdhPJxJPetCioCFfRp6wOhkl6YLSYLtQ7EzBUCTON3lZZC63W+7hHEcENgLz+SFwYCD4t6XWZNB6A==
-X-Received: by 2002:a17:907:7f94:b0:708:272:6a99 with SMTP id qk20-20020a1709077f9400b0070802726a99mr672594ejc.537.1654107083476;
-        Wed, 01 Jun 2022 11:11:23 -0700 (PDT)
-Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id d22-20020a50fb16000000b0042617ba6389sm1310058edq.19.2022.06.01.11.11.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 11:11:22 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Wed, 1 Jun 2022 20:11:21 +0200
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Ian Rogers <irogers@google.com>
-Subject: Re: [PATCHv2 0/3] perf tools: Fix prologue generation
-Message-ID: <YperyVk8bTVT+s2U@krava>
-References: <20220510074659.2557731-1-jolsa@kernel.org>
- <YpAmW/BDq4346OaI@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OFvsxENADR9nRogVtYrcodU+LeiBGyV+qepeUinzWDE=;
+        b=C69QEeHr2IMfNTHXtFTvxNG63HbjT9ePcqQClbfjycy7WhNpVgL0Sja+5Ij5WMRBC8
+         ARowBD4CKKjpoYb7gzRszuqRXevwlb7T1sI3oLYIYrfGPD0ctQ3I6KDCDCrBSWapFfno
+         GtzOQoMME5rN45chqIKktWanRtnorBUCDTpg4L0ff2dRJBUg8Ba3TaF917C0YsfCXmwl
+         hBi5R+5daW4+Dmx0L/pnx0Hgp5eadbTB9uZkOM+nHdzahdM4F7JzrhHSrxswR9P8L9Cx
+         HL8AleaM7swtSpd6UKHX+9Wibgur3NVzJTb7HPkULbke/L/p3AvrMYHbDOWAS51r/56x
+         PKZw==
+X-Gm-Message-State: AOAM532iQMrFt2AeAagWN0/iBLWXRl3ZoPmpOHXn6sbZtupr/GBVjfi5
+        kZ85ORr6EDCJF/aBJ/WrYPUNupMNC7uc+lQssv4=
+X-Google-Smtp-Source: ABdhPJx7fajL9rrU15sgVUAJsUHAOYFnWmV6W7+XgivDuS1jOdRXBC7zKlb0bYCdyrceDxrUcGtHL9k12EtoQHZa8Iw=
+X-Received: by 2002:a05:6102:3f4b:b0:337:c02d:f5d7 with SMTP id
+ l11-20020a0561023f4b00b00337c02df5d7mr697471vsv.50.1654108279594; Wed, 01 Jun
+ 2022 11:31:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YpAmW/BDq4346OaI@kernel.org>
+References: <20220524230400.1509219-1-joannelkoong@gmail.com>
+ <20220524230400.1509219-2-joannelkoong@gmail.com> <CANn89i+pg8guF+XeOngSMa4vUD81g=u-pCBpi0Yp2WB9PQZvdg@mail.gmail.com>
+ <5e8ccf5fb949fb8bef822f379f7a410ccd6b6f41.camel@redhat.com>
+In-Reply-To: <5e8ccf5fb949fb8bef822f379f7a410ccd6b6f41.camel@redhat.com>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Wed, 1 Jun 2022 11:31:08 -0700
+Message-ID: <CAJnrk1bkLFwAmmQviJeeHKSHygUqG8LH81RYnx6+mJOLZF8tjw@mail.gmail.com>
+Subject: Re: [PATCH net-next v1 1/2] net: Update bhash2 when socket's rcv
+ saddr changes
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        netdev <netdev@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        richard_siegfried@systemli.org, dsahern@kernel.org,
+        yoshfuji@linux-ipv6.org, kuniyu@amazon.co.jp, dccp@vger.kernel.org,
+        testing@vger.kernel.org,
+        syzbot <syzbot+015d756bbd1f8b5c8f09@syzkaller.appspotmail.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -81,46 +74,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 26, 2022 at 10:16:11PM -0300, Arnaldo Carvalho de Melo wrote:
-> Em Tue, May 10, 2022 at 09:46:56AM +0200, Jiri Olsa escreveu:
-> > hi,
-> > sending change we discussed some time ago [1] to get rid of
-> > some deprecated functions we use in perf prologue code.
-> > 
-> > Despite the gloomy discussion I think the final code does
-> > not look that bad ;-)
-> > 
-> > This patchset removes following libbpf functions from perf:
-> >   bpf_program__set_prep
-> >   bpf_program__nth_fd
-> >   struct bpf_prog_prep_result
-> 
-> So, the first patch is already in torvalds/master, I tried applying the
-> other two patches to my local perf/core, that already is merged with
-> torvalds/master and:
-> 
-> [root@quaco ~]# perf test 42
->  42: BPF filter                                                      :
->  42.1: Basic BPF filtering                                           : FAILED!
->  42.2: BPF pinning                                                   : FAILED!
->  42.3: BPF prologue generation                                       : FAILED!
-> [root@quaco ~]#
-> 
-> I'll push my local perf/core to tmp.perf/core and continue tomorrow.
+On Wed, Jun 1, 2022 at 2:58 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> Hello,
+>
+> On Tue, 2022-05-31 at 15:04 -0700, Eric Dumazet wrote:
+> > On Tue, May 24, 2022 at 4:20 PM Joanne Koong <joannelkoong@gmail.com> wrote:
+> > >
+> > > Commit d5a42de8bdbe ("net: Add a second bind table hashed by port and
+> > > address") added a second bind table, bhash2, that hashes by a socket's port
+> > > and rcv address.
+> > >
+> > > However, there are two cases where the socket's rcv saddr can change
+> > > after it has been binded:
+> > >
+> > > 1) The case where there is a bind() call on "::" (IPADDR_ANY) and then
+> > > a connect() call. The kernel will assign the socket an address when it
+> > > handles the connect()
+> > >
+> > > 2) In inet_sk_reselect_saddr(), which is called when rerouting fails
+> > > when rebuilding the sk header (invoked by inet_sk_rebuild_header)
+> > >
+> > > In these two cases, we need to update the bhash2 table by removing the
+> > > entry for the old address, and adding a new entry reflecting the updated
+> > > address.
+> > >
+> > > Reported-by: syzbot+015d756bbd1f8b5c8f09@syzkaller.appspotmail.com
+> > > Fixes: d5a42de8bdbe ("net: Add a second bind table hashed by port and address")
+> > > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
+> > > ---
+> >
+> > Reviewed-by: Eric Dumazet <edumzet@google.com>
+> >
+> Apparently this patch (and 2/2) did not reach the ML nor patchwork (let
+> alone my inbox ;). I've no idea on the root cause, sorry.
+>
+> @Joanne: could you please re-post the series? (you can retain Eric's
+> review tag)
+>
+For some reason, my patches recently haven't been getting through to
+the netdev mailing list but they've been going through ok to the bpf
+one; John, Jakub, and I are looking into it and doing some
+investigations :)
 
-hi,
-I just rebased my changes on top of your perf/core and it seems to work:
+I will resend this series again.
 
-	[root@krava perf]# ./perf test bpf
-	 40: LLVM search and compile                                         :
-	 40.1: Basic BPF llvm compile                                        : Ok
-	 40.3: Compile source for BPF prologue generation                    : Ok
-	 40.4: Compile source for BPF relocation                             : Ok
-	 42: BPF filter                                                      :
-	 42.1: Basic BPF filtering                                           : Ok
-	 42.2: BPF pinning                                                   : Ok
-	 42.3: BPF prologue generation                                       : Ok
-
-is it still a problem?
-
-jirka
+Thanks for taking a look at this patchset, Eric and Paolo.
+> Thanks!
+>
+> Paolo
+>
