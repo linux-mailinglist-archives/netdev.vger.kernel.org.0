@@ -2,155 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C971553A575
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 14:48:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0B6A53A593
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 14:59:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352700AbiFAMsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 08:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
+        id S1353077AbiFAM7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 08:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238006AbiFAMso (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 08:48:44 -0400
-X-Greylist: delayed 936 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 01 Jun 2022 05:48:41 PDT
-Received: from m1322.mail.163.com (m1322.mail.163.com [220.181.13.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E84C1145A;
-        Wed,  1 Jun 2022 05:48:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=NFBlK
-        pRDQs1uQ60u0KwM3jZAk4g2SpACH5FI7TLBoX0=; b=Y60/vm9hOGmDOw3gFFTyW
-        xkvGhGDCieHMsy2MY9yFPc+PGBU27jRCea5hbIlPTqM/Ft1Q5B5lNDTI1WgQlclz
-        Hj5TAkkk+MEZuOA1BF+pOiHs0H3gjreTSXWHMjclPmm06BGXcjr6xMM9yUEG2yoO
-        +AgDTPIYubFScaVNDoE+cQ=
-Received: from chen45464546$163.com ( [171.221.150.250] ) by
- ajax-webmail-wmsvr22 (Coremail) ; Wed, 1 Jun 2022 20:32:48 +0800 (CST)
-X-Originating-IP: [171.221.150.250]
-Date:   Wed, 1 Jun 2022 20:32:48 +0800 (CST)
-From:   =?GBK?B?097K9w==?= <chen45464546@163.com>
-To:     "Alexander Duyck" <alexander.duyck@gmail.com>
-Cc:     "Jakub Kicinski" <kuba@kernel.org>,
-        "Andrew Morton" <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re:Re: [PATCH v2] mm: page_frag: Warn_on when frag_alloc size is
- bigger than PAGE_SIZE
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 163com
-In-Reply-To: <CAKgT0UfQsbAzsJ1e__irHY2xBRevpB9m=FBYDis3C1fMua+Zag@mail.gmail.com>
-References: <20220531081412.22db88cc@kernel.org>
- <1654011382-2453-1-git-send-email-chen45464546@163.com>
- <20220531084704.480133fa@kernel.org>
- <CAKgT0UfQsbAzsJ1e__irHY2xBRevpB9m=FBYDis3C1fMua+Zag@mail.gmail.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        with ESMTP id S232460AbiFAM7f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 08:59:35 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73ECF11162;
+        Wed,  1 Jun 2022 05:59:34 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 251C1ME9017371;
+        Wed, 1 Jun 2022 12:59:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=66cj72qWa420n6emi4QsTozK10KFr6QW/aMACc/IsC4=;
+ b=k0PE2oVRwYewMMl4r6pCh7MAesrPiH9lRca2UeyBjzgp5ci7Wa3uqkAPiEDQXEvBgvEu
+ 4yfWXnlY5ta0DPt2Wjr/YSTr5jCnwz9i+a0o3rDtggOTHZ54DeXQusWcf61tDQcfgwYB
+ 7N9HZBXN4/zjRCNqaeeC0VDGOn23xlfVohO+WB+EJWLOJzK4/gnYrbarR/SB3ph0f9IW
+ 42b5y9me3cTlW1YqdXkT5ypuEXOKRKmQVfZ4CspHa6MB7oFfy+rBZJMntNEnGVNDDkOE
+ dp2XhMxAbarrVPNtU1rAfIgXhakNHJ6Xvc51keCJVXXHXfE+fy3U/khAWilQRa/2bvjF lg== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3ge5aevc8x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 01 Jun 2022 12:59:18 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 251CoiPA021220;
+        Wed, 1 Jun 2022 12:59:18 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma02dal.us.ibm.com with ESMTP id 3gd1ad0au9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 01 Jun 2022 12:59:18 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 251CxHO67013306
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 1 Jun 2022 12:59:17 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4BCE1124058;
+        Wed,  1 Jun 2022 12:59:17 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B12AD124053;
+        Wed,  1 Jun 2022 12:59:16 +0000 (GMT)
+Received: from [9.211.56.150] (unknown [9.211.56.150])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed,  1 Jun 2022 12:59:16 +0000 (GMT)
+Message-ID: <d4ee8702-46c7-2419-40f7-b8d9709741df@linux.vnet.ibm.com>
+Date:   Wed, 1 Jun 2022 07:59:16 -0500
 MIME-Version: 1.0
-Message-ID: <3498989.c69f.1811f41186e.Coremail.chen45464546@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: FsGowAD3tDpwXJdiGSsdAA--.33056W
-X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/xtbBdhUTnmDknYJ7SQABsG
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 3/6] scsi: ipr: fix missing/incorrect resource cleanup in
+ error case
+Content-Language: en-US
+To:     Chengguang Xu <cgxu519@mykernel.net>, netdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-scsi@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-media@vger.kernel.org
+References: <20220529153456.4183738-1-cgxu519@mykernel.net>
+ <20220529153456.4183738-4-cgxu519@mykernel.net>
+From:   Brian King <brking@linux.vnet.ibm.com>
+In-Reply-To: <20220529153456.4183738-4-cgxu519@mykernel.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 2erhlMD9EfkOHm_SO_Xt_703KUfPLYW3
+X-Proofpoint-ORIG-GUID: 2erhlMD9EfkOHm_SO_Xt_703KUfPLYW3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-01_03,2022-06-01_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1011
+ malwarescore=0 lowpriorityscore=0 bulkscore=0 spamscore=0 phishscore=0
+ adultscore=0 impostorscore=0 priorityscore=1501 mlxlogscore=944
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206010057
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-QXQgMjAyMi0wNi0wMSAwMToyODo1OSwgIkFsZXhhbmRlciBEdXljayIgPGFsZXhhbmRlci5kdXlj
-a0BnbWFpbC5jb20+IHdyb3RlOgo+T24gVHVlLCBNYXkgMzEsIDIwMjIgYXQgODo0NyBBTSBKYWt1
-YiBLaWNpbnNraSA8a3ViYUBrZXJuZWwub3JnPiB3cm90ZToKPj4KPj4gT24gVHVlLCAzMSBNYXkg
-MjAyMiAyMzozNjoyMiArMDgwMCBDaGVuIExpbiB3cm90ZToKPj4gPiBBdCAyMDIyLTA1LTMxIDIy
-OjE0OjEyLCAiSmFrdWIgS2ljaW5za2kiIDxrdWJhQGtlcm5lbC5vcmc+IHdyb3RlOgo+PiA+ID5P
-biBUdWUsIDMxIE1heSAyMDIyIDIyOjQxOjEyICswODAwIENoZW4gTGluIHdyb3RlOgo+PiA+ID4+
-IFRoZSBzYW1wbGUgY29kZSBhYm92ZSBjYW5ub3QgY29tcGxldGVseSBzb2x2ZSB0aGUgY3VycmVu
-dCBwcm9ibGVtLgo+PiA+ID4+IEZvciBleGFtcGxlLCB3aGVuIGZyYWdzeiBpcyBncmVhdGVyIHRo
-YW4gUEFHRV9GUkFHX0NBQ0hFX01BWF9TSVpFKDMyNzY4KSwKPj4gPiA+PiBfX3BhZ2VfZnJhZ19j
-YWNoZV9yZWZpbGwgd2lsbCByZXR1cm4gYSBtZW1vcnkgb2Ygb25seSAzMjc2OCBieXRlcywgc28K
-Pj4gPiA+PiBzaG91bGQgd2UgY29udGludWUgdG8gZXhwYW5kIHRoZSBQQUdFX0ZSQUdfQ0FDSEVf
-TUFYX1NJWkU/IE1heWJlIG1vcmUKPj4gPiA+PiB3b3JrIG5lZWRzIHRvIGJlIGRvbmUKPj4gPiA+
-Cj4+ID4gPlJpZ2h0LCBidXQgSSBjYW4gdGhpbmsgb2YgdHdvIGRyaXZlcnMgb2ZmIHRoZSB0b3Ag
-b2YgbXkgaGVhZCB3aGljaCB3aWxsCj4+ID4gPmFsbG9jYXRlIDw9MzJrIGZyYWdzIGJ1dCBub25l
-IHdoaWNoIHdpbGwgYWxsb2NhdGUgbW9yZS4KPj4gPgo+PiA+IEluIGZhY3QsIGl0IGlzIHJhcmUg
-dG8gYXBwbHkgZm9yIG1vcmUgdGhhbiBvbmUgcGFnZSwgc28gaXMgaXQgbmVjZXNzYXJ5IHRvCj4+
-ID4gY2hhbmdlIGl0IHRvIHN1cHBvcnQ/Cj4+Cj4+IEkgZG9uJ3QgcmVhbGx5IGNhcmUgaWYgaXQn
-cyBzdXBwb3J0ZWQgVEJILCBidXQgSSBkaXNsaWtlIGFkZGluZwo+PiBhIGJyYW5jaCB0byB0aGUg
-ZmFzdCBwYXRoIGp1c3QgdG8gY2F0Y2ggb25lIG9yIHR3byBlc290ZXJpYyBiYWQKPj4gY2FsbGVy
-cy4KPj4KPj4gTWF5YmUgeW91IGNhbiB3cmFwIHRoZSBjaGVjayB3aXRoIHNvbWUgZGVidWcgQ09O
-RklHXyBzbyBpdCB3b24ndAo+PiBydW4gb24gcHJvZHVjdGlvbiBidWlsZHM/Cj4KPkFsc28gdGhl
-IGV4YW1wbGUgdXNlZCBoZXJlIHRvIGRlZmluZSB3aGF0IGlzIHRyaWdnZXJpbmcgdGhlIGJlaGF2
-aW9yCj5pcyBzZXJpb3VzbHkgZmxhd2VkLiBUaGUgY29kZSBpdHNlbGYgaXMgbWVhbnQgdG8gYWxs
-b3cgZm9yIG9yZGVyMCBwYWdlCj5yZXVzZSwgYW5kIHRoZSAzMksgcGFnZSB3YXMganVzdCBhbiBv
-cHRpbWl6YXRpb24uIFNvIHRoZSBhc3N1bXB0aW9uCj50aGF0IHlvdSBjb3VsZCByZXF1ZXN0IG1v
-cmUgdGhhbiA0ayBpcyBhIGJhZCBhc3N1bXB0aW9uIGluIHRoZSBkcml2ZXIKPnRoYXQgaXMgbWFr
-aW5nIHRoaXMgY2FsbC4KPgo+U28gSSBhbSBpbiBhZ3JlZW1lbnQgd2l0aCBLdWJhLiBXZSBzaG91
-bGRuJ3QgYmUgbmVlZGluZyB0byBhZGQgY29kZSBpbgo+dGhlIGZhc3QgcGF0aCB0byB0ZWxsIHVz
-ZXJzIG5vdCB0byBzaG9vdCB0aGVtc2VsdmVzIGluIHRoZSBmb290Lgo+Cj5XZSBhbHJlYWR5IGhh
-dmUgY29kZSBpbiBwbGFjZSBpbiBfX25ldGRldl9hbGxvY19za2IgdGhhdCBpcyBjYWxsaW5nCj50
-aGUgc2xhYiBhbGxvY2F0b3IgaWYgImxlbiA+IFNLQl9XSVRIX09WRVJIRUFEKFBBR0VfU0laRSki
-LiBXZSBjb3VsZAo+cHJvYmFibHkganVzdCBhZGQgYSBERUJVRyB3cmFwcGVkIEJVR19PTiB0byBj
-YXB0dXJlIHRob3NlIGNhc2VzIHdoZXJlCj5hIGRyaXZlciBpcyBtYWtpbmcgdGhhdCBtaXN0YWtl
-IHdpdGggX19uZXRkZXZfYWxsb2NfZnJhZ19hbGlnbi4KClRoYW5rcyBmb3IgdGhlIGNsZWFyIGV4
-cGxhbmF0aW9uLiAKVGhlIHJlYWxpdHkgaXMgdGhhdCBpdCBpcyBub3QgZWFzeSB0byBjYXB0dXJl
-IHRoZSBkcml2ZXJzIHRoYXQgbWFrZSBzdWNoIG1pc3Rha2UuCkJlY2F1c2UgbWVtb3J5IGNvcnJ1
-cHRpb24gdXN1YWxseSBsZWFkcyB0byBlcnJvcnMgb24gb3RoZXIgdW5yZWxhdGVkIG1vZHVsZXMu
-IApOb3QgbG9uZyBhZ28sIHdlIGhhdmUgc3BlbnQgYSBsb3Qgb2YgdGltZSBhbmQgZWZmb3J0IHRv
-IGxvY2F0ZSBhIGlzc3VlIHRoYXQgCm9jY2FzaW9uYWxseSBvY2N1cnMgaW4gZGlmZmVyZW50IGtl
-cm5lbCBtb2R1bGVzLCBhbmQgZmluYWxseSBmaW5kIHRoZSByb290IGNhdXNlIGlzCnRoZSBpbXBy
-b3BlciB1c2Ugb2YgdGhpcyBuZXRkZXZfYWxsb2NfZnJhZyBpbnRlcmZhY2UgaW4gRFBBQSBuZXQg
-ZHJpdmVyIGZyb20gTlhQLiAKSXQncyBhIG1pc2VyYWJsZSBwcm9jZXNzLgoKSSBhbHNvIGZvdW5k
-IHRoYXQgc29tZSBuZXQgZHJpdmVycyBpbiB0aGUgbGF0ZXN0IExpbnV4IHZlcnNpb24gaGF2ZSB0
-aGlzIGlzc3VlLgpMaWtlOgoxLiBuZXRkZXZfYWxsb2NfZnJhZyAibGVuIiBtYXkgbGFyZ2VyIHRo
-YW4gUEFHRV9TSVpFCiNlbGlmIChQQUdFX1NJWkUgPj0gRTEwMDBfUlhCVUZGRVJfNDA5NikKICAg
-ICAgICAgICAgICAgIGFkYXB0ZXItPnJ4X2J1ZmZlcl9sZW4gPSBQQUdFX1NJWkU7CiNlbmRpZgoK
-c3RhdGljIHVuc2lnbmVkIGludCBlMTAwMF9mcmFnX2xlbihjb25zdCBzdHJ1Y3QgZTEwMDBfYWRh
-cHRlciAqYSkKewogICAgICAgIHJldHVybiBTS0JfREFUQV9BTElHTihhLT5yeF9idWZmZXJfbGVu
-ICsgRTEwMDBfSEVBRFJPT00pICsKICAgICAgICAgICAgICAgIFNLQl9EQVRBX0FMSUdOKHNpemVv
-ZihzdHJ1Y3Qgc2tiX3NoYXJlZF9pbmZvKSk7Cn0KCnN0YXRpYyB2b2lkICplMTAwMF9hbGxvY19m
-cmFnKGNvbnN0IHN0cnVjdCBlMTAwMF9hZGFwdGVyICphKQp7CiAgICAgICAgdW5zaWduZWQgaW50
-IGxlbiA9IGUxMDAwX2ZyYWdfbGVuKGEpOwogICAgICAgIHU4ICpkYXRhID0gbmV0ZGV2X2FsbG9j
-X2ZyYWcobGVuKTsKfQoiLi9kcml2ZXJzL25ldC9ldGhlcm5ldC9pbnRlbC9lMTAwMC9lMTAwMF9t
-YWluLmMiIDUzMTYgIC0tMzglLS0gCgoyLiBuZXRkZXZfYWxsb2NfZnJhZyAicmluZy0+ZnJhZ19z
-aXplIiBtYXkgbGFyZ2VyIHRoYW4gKDQwOTYgKiAzKQoKI2RlZmluZSBNVEtfTUFYX0xST19SWF9M
-RU5HVEggICAgICAgICAgICg0MDk2ICogMykKICAgICAgICBpZiAocnhfZmxhZyA9PSBNVEtfUlhf
-RkxBR1NfSFdMUk8pIHsKICAgICAgICAgICAgICAgIHJ4X2RhdGFfbGVuID0gTVRLX01BWF9MUk9f
-UlhfTEVOR1RIOwogICAgICAgICAgICAgICAgcnhfZG1hX3NpemUgPSBNVEtfSFdfTFJPX0RNQV9T
-SVpFOwogICAgICAgIH0gZWxzZSB7CiAgICAgICAgICAgICAgICByeF9kYXRhX2xlbiA9IEVUSF9E
-QVRBX0xFTjsKICAgICAgICAgICAgICAgIHJ4X2RtYV9zaXplID0gTVRLX0RNQV9TSVpFOwogICAg
-ICAgIH0KCiAgICAgICAgcmluZy0+ZnJhZ19zaXplID0gbXRrX21heF9mcmFnX3NpemUocnhfZGF0
-YV9sZW4pOwogICAgICAgIAogICAgICAgIGZvciAoaSA9IDA7IGkgPCByeF9kbWFfc2l6ZTsgaSsr
-KSB7CiAgICAgICAgICAgICAgICByaW5nLT5kYXRhW2ldID0gbmV0ZGV2X2FsbG9jX2ZyYWcocmlu
-Zy0+ZnJhZ19zaXplKTsKICAgICAgICAgICAgICAgIGlmICghcmluZy0+ZGF0YVtpXSkKICAgICAg
-ICAgICAgICAgICAgICAgICAgcmV0dXJuIC1FTk9NRU07CiAgICAgICAgfQoiZHJpdmVycy9uZXQv
-ZXRoZXJuZXQvbWVkaWF0ZWsvbXRrX2V0aF9zb2MuYyIgMzM0NCAgLS01MCUtLSAKCkkgd2lsbCB0
-cnkgdG8gZml4IHRoZXNlIGRyaXZlcnMgbGF0ZXIuCgpFdmVuIGV4cGVyaWVuY2VkIGRyaXZlciBl
-bmdpbmVlcnMgbWF5IHVzZSB0aGlzIG5ldGRldl9hbGxvY19mcmFnIAppbnRlcmZhY2UgaW5jb3Jy
-ZWN0bHkuIApTbyBJIHRob3VnaHQgaXQgaXMgYmVzdCB0byBwcm92aWRlIHNvbWUgcHJvbXB0IGlu
-Zm9ybWF0aW9uIG9mIHVzYWdlIAplcnJvciBpbnNpZGUgdGhlIG5ldGRldl9hbGxvY19mcmFnLCBv
-ciBpdCdzIE9LIHRvIHJlcG9ydCBzdWNoIG1pc3Rha2UgCmR1cmluZyBzeXN0ZW0gcnVubmluZyB3
-aGljaCBtYXkgY2F1c2VkIGJ5IGZyYWdzeiB2YXJpZXMoZXhjZWVkZWQgcGFnZSBzaXplKS4KCk5v
-dywgYXMgeW91IGFuZCBLdWJhIG1lbnRpb25lZCBlYXJsaWVyLCAiZG8gbm90IGFkZCBjb2RlIGlu
-IGZhc3QgcGF0aCIuCgpDYW4gd2UganVzdCBhZGQgY29kZSB0byB0aGUgcmVsYXRpdmVseSBzbG93
-IHBhdGggdG8gY2FwdHVyZSB0aGUgbWlzdGFrZQpiZWZvcmUgaXQgbGVhZCB0byBtZW1vcnkgY29y
-cnVwdGlvbj8gCkxpa2U6CmRpZmYgLS1naXQgYS9tbS9wYWdlX2FsbG9jLmMgYi9tbS9wYWdlX2Fs
-bG9jLmMKaW5kZXggZTZmMjExZC4uYWM2MGE5NyAxMDA2NDQKLS0tIGEvbW0vcGFnZV9hbGxvYy5j
-CisrKyBiL21tL3BhZ2VfYWxsb2MuYwpAQCAtNTU4MCw2ICs1NTgwLDcgQEAgdm9pZCAqcGFnZV9m
-cmFnX2FsbG9jX2FsaWduKHN0cnVjdCBwYWdlX2ZyYWdfY2FjaGUgKm5jLAogICAgICAgICAgICAg
-ICAgLyogcmVzZXQgcGFnZSBjb3VudCBiaWFzIGFuZCBvZmZzZXQgdG8gc3RhcnQgb2YgbmV3IGZy
-YWcgKi8KICAgICAgICAgICAgICAgIG5jLT5wYWdlY250X2JpYXMgPSBQQUdFX0ZSQUdfQ0FDSEVf
-TUFYX1NJWkUgKyAxOwogICAgICAgICAgICAgICAgb2Zmc2V0ID0gc2l6ZSAtIGZyYWdzejsKKyAg
-ICAgICAgICAgICAgIEJVR19PTihvZmZzZXQgPCAwKTsKICAgICAgICB9CgogICAgICAgIG5jLT5w
-YWdlY250X2JpYXMtLTsKCgpBZGRpdGlvbmFsLCB3ZSBtYXkgbW9kaWZ5IGRvY3VtZW50IHRvIGNs
-ZWFybHkgaW5kaWNhdGUgdGhlIGxpbWl0cyBvZiB0aGUgCmlucHV0IHBhcmFtZXRlciBmcmFnc3ou
-Ckxpa2U6CmRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL3ZtL3BhZ2VfZnJhZ3MucnN0IGIvRG9j
-dW1lbnRhdGlvbi92bS9wYWdlX2ZyYWdzLnJzdAppbmRleCA3ZDZmOTM4Li42MWIyODA1IDEwMDY0
-NAotLS0gYS9Eb2N1bWVudGF0aW9uL3ZtL3BhZ2VfZnJhZ3MucnN0CisrKyBiL0RvY3VtZW50YXRp
-b24vdm0vcGFnZV9mcmFncy5yc3QKQEAgLTQsNyArNCw3IEBACiBQYWdlIGZyYWdtZW50cwogPT09
-PT09PT09PT09PT0KCi1BIHBhZ2UgZnJhZ21lbnQgaXMgYW4gYXJiaXRyYXJ5LWxlbmd0aCBhcmJp
-dHJhcnktb2Zmc2V0IGFyZWEgb2YgbWVtb3J5CitBIHBhZ2UgZnJhZ21lbnQgaXMgYW4gYXJiaXRy
-YXJ5LWxlbmd0aChtdXN0IDw9IFBBR0VfU0laRSkgYXJiaXRyYXJ5LW9mZnNldCBhcmVhIG9mIG1l
-bW9yeQogd2hpY2ggcmVzaWRlcyB3aXRoaW4gYSAwIG9yIGhpZ2hlciBvcmRlciBjb21wb3VuZCBw
-YWdlLiAKClRoYW5rcwo=
+Acked-by: Brian King <brking@linux.vnet.ibm.com>
+
+
+-- 
+Brian King
+Power Linux I/O
+IBM Linux Technology Center
+
