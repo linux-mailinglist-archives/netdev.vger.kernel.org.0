@@ -2,86 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7315F53A5D1
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 15:20:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1980E53A5E8
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 15:25:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346949AbiFANUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 09:20:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40810 "EHLO
+        id S1348774AbiFANZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 09:25:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349877AbiFANUO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 09:20:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1AAA427D5;
-        Wed,  1 Jun 2022 06:20:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FCCC61597;
-        Wed,  1 Jun 2022 13:20:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8FAFDC3411D;
-        Wed,  1 Jun 2022 13:20:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654089612;
-        bh=xFLEubiyifM6V8QcdqT81e+dQpNxVYM6vnU7/+58nZ8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=h9CCbuCM737rNDvyFsbiqlMxGnYWwVs4dJzE1GNE1JpOQEfCddYPCZJN4Ium74SKT
-         QebeE5yrGqlIQcSXHwwuyGmjhktw1FNLvxJC7dka6E08HM/CP+q65Zl8oPglplo79V
-         TYbqHli6XjvClR6UYBqKLRdFuJx0gfZKg/Tx+Dvbr1eyvywnE6y0hfmVsDen1nxfTt
-         4DXoFxb3Po5C61Zl8faDL6fOOS8U6As7q83FTVdkiyxQfMGTD/u5iEQWWl1Aco+tVv
-         Vntq/Zv1iZN867rl2Vzj4cENPWwzecyCm0nqdB1PdVHK3bXraKG2BWSbCMgIcVH5kP
-         nZfGsobO/SYQA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 70D07F03944;
-        Wed,  1 Jun 2022 13:20:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S236812AbiFANZM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 09:25:12 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE2A4FC5A
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 06:25:10 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id x65so1274207qke.2
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 06:25:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=K9Nc1Tu0/8ihCdAEMWgjDcSe3eiR1jGVE5lLxirGSF4=;
+        b=OvJ+65Ln6clO1r0Wm9+1tnB8CfOMlWBLWn8Gt3f4oECyp+mG4cwm82xbK9bgrDkndb
+         CzdIinyOkk72UD4y5w5eBLVQv9ncjxTe3wCvJgG3K2q+VEW5feX33f2XFtzWfDetKARv
+         abAi7gQh0yprF/VT6mcX+ec/ecRVBZmxN2CPfxIs5rXKf0p2vr/rtDGUH7trK2D+jgAy
+         i/4rScmxfUiBewySeZMz75sAIi1W8g/7G3kq6/nNcCiW2lsBCWxVyn5cs1sOzMOmHr12
+         xIqHenHEHQVWnXfoqDYRjzGk8kvSFGEqKkeOMWvazYoM7vFYu1nnZKhGHh2jSDdrwPtp
+         +mug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=K9Nc1Tu0/8ihCdAEMWgjDcSe3eiR1jGVE5lLxirGSF4=;
+        b=S2SSBEeL+lMQZQwWOKSr3c+89EFeBd+majxizt/dxDSp1VeYU1GaxozMzFC8oFXLe2
+         AyngIkR122+EvBxrx6sOT6cNT7vdgmwlchKJutAHhiPRhcN+fIHcoiimiKk1GWTcZLqd
+         RhubyO7QhtK6JuafK2vy9AwH6uyrMEbeyOR/6Ch59CJKCa1IExr71oftWqZ8vZVaiRpW
+         BiNw6krGvyv1m/H1gVUsO0A65wtEdRhjpXUxbmgfJaJlWRgvt6yXsF7WPvvCcXBnUjDn
+         xMTUrIBD8V1IVDZ9oh0pn8klXZGv+WtJoOBPH9KDMzp6gVBa4KiKVTSmP4vfHivS8jCq
+         eiIA==
+X-Gm-Message-State: AOAM530JE3uw8oLNYmxpm1RlwIXNZ9Osw0HNANj4HO6kj3vi1t4Cpo4S
+        fVgPrW3duddRkzzTJW2xJP8ETLaDth0=
+X-Google-Smtp-Source: ABdhPJxwa/d72qaubuZYJJXEFX6+U1DnBKDVg9+MuVxoW0dyc6usU8kzIotNVowmiha3oOEIBzFaqA==
+X-Received: by 2002:a05:620a:89b:b0:6a3:62b8:83c4 with SMTP id b27-20020a05620a089b00b006a362b883c4mr38171908qka.676.1654089909515;
+        Wed, 01 Jun 2022 06:25:09 -0700 (PDT)
+Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
+        by smtp.gmail.com with ESMTPSA id k4-20020a05620a138400b006a650276ecesm1231402qki.14.2022.06.01.06.25.08
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 06:25:09 -0700 (PDT)
+Received: by mail-yb1-f181.google.com with SMTP id g4so2854008ybf.12
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 06:25:08 -0700 (PDT)
+X-Received: by 2002:a05:6902:138b:b0:64f:cb1c:9eac with SMTP id
+ x11-20020a056902138b00b0064fcb1c9eacmr48228399ybu.457.1654089908549; Wed, 01
+ Jun 2022 06:25:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net/sched: act_api: fix error code in
- tcf_ct_flow_table_fill_tuple_ipv6()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165408961245.18360.13013856288748164007.git-patchwork-notify@kernel.org>
-Date:   Wed, 01 Jun 2022 13:20:12 +0000
-References: <YpYFnbDxFl6tQ3Bn@kili>
-In-Reply-To: <YpYFnbDxFl6tQ3Bn@kili>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     jhs@mojatatu.com, toshiaki.makita1@gmail.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        paulb@nvidia.com, pablo@netfilter.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220601024744.626323-1-frederik.deweerdt@gmail.com>
+In-Reply-To: <20220601024744.626323-1-frederik.deweerdt@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 1 Jun 2022 09:24:32 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSeCC=sKJhKEnavLA7qdwbGz=MC1wqFPoJQA04mZBqebow@mail.gmail.com>
+Message-ID: <CA+FuTSeCC=sKJhKEnavLA7qdwbGz=MC1wqFPoJQA04mZBqebow@mail.gmail.com>
+Subject: Re: [PATCH] [doc] msg_zerocopy.rst: clarify the TCP shutdown scenario
+To:     Frederik Deweerdt <frederik.deweerdt@gmail.com>
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, May 31, 2022 at 10:48 PM Frederik Deweerdt
+<frederik.deweerdt@gmail.com> wrote:
+>
+> Hi folks,
+>
+> Based on my understanding, retransmissions of zero copied buffers can
+> happen after `close(2)`, the patch below amends the docs to suggest how
+> notifications should be handled in that case.
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+Not just retransmissions. The first transmission similarly may be queued.
 
-On Tue, 31 May 2022 15:10:05 +0300 you wrote:
-> The tcf_ct_flow_table_fill_tuple_ipv6() function is supposed to return
-> false on failure.  It should not return negatives because that means
-> succes/true.
-> 
-> Fixes: fcb6aa86532c ("act_ct: Support GRE offload")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> 
-> [...]
+>
+> Explicitly mention that applications shouldn't be calling `close(2)` on
+> a TCP socket without draining the error queue.
+> ---
+>  Documentation/networking/msg_zerocopy.rst | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/Documentation/networking/msg_zerocopy.rst b/Documentation/networking/msg_zerocopy.rst
+> index 15920db8d35d..cb44fc1f3e3e 100644
+> --- a/Documentation/networking/msg_zerocopy.rst
+> +++ b/Documentation/networking/msg_zerocopy.rst
+> @@ -144,6 +144,10 @@ the socket. A socket that has an error queued would normally block
+>  other operations until the error is read. Zerocopy notifications have
+>  a zero error code, however, to not block send and recv calls.
+>
+> +For protocols like TCP, where retransmissions can occur after the
+> +application is done with a given connection, applications should signal
+> +the close to the peer via shutdown(2), and keep polling the error queue
+> +until all transmissions have completed.
 
-Here is the summary with links:
-  - [net] net/sched: act_api: fix error code in tcf_ct_flow_table_fill_tuple_ipv6()
-    https://git.kernel.org/netdev/net/c/86360030cc51
+A socket must not be closed until all completion notifications have
+been received.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Calling shutdown is an optional step. It may be sufficient to simply
+delay close.
