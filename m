@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C103E53AFA0
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 00:51:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B1FD53AF96
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 00:51:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232248AbiFAWXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 18:23:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49278 "EHLO
+        id S232418AbiFAWpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 18:45:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232229AbiFAWXh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 18:23:37 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06E2FFC9;
-        Wed,  1 Jun 2022 15:23:31 -0700 (PDT)
-X-UUID: 3adf2b09e9054a8ebf80d0196da9e7aa-20220602
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:f7e979cc-3c39-4192-b114-63159e78c769,OB:10,L
-        OB:0,IP:0,URL:25,TC:0,Content:3,EDM:0,RT:0,SF:54,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:82
-X-CID-INFO: VERSION:1.1.5,REQID:f7e979cc-3c39-4192-b114-63159e78c769,OB:10,LOB
-        :0,IP:0,URL:25,TC:0,Content:3,EDM:0,RT:0,SF:54,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:82
-X-CID-META: VersionHash:2a19b09,CLOUDID:ad70f514-b515-4766-a72d-4514488fe823,C
-        OID:519d15beb0b2,Recheck:0,SF:28|16|19|48,TC:nil,Content:3,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:0,BEC:nil
-X-UUID: 3adf2b09e9054a8ebf80d0196da9e7aa-20220602
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <sean.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 290362415; Thu, 02 Jun 2022 06:23:25 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 2 Jun 2022 06:23:23 +0800
-Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 2 Jun 2022 06:23:23 +0800
-From:   <sean.wang@mediatek.com>
-To:     <dev@pschenker.ch>
-CC:     <deren.wu@mediatek.com>, <kvalo@kernel.org>,
-        <linux-wireless@vger.kernel.org>, <nbd@nbd.name>,
-        <linux@leemhuis.info>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <lorenzo.bianconi83@gmail.com>, <matthias.bgg@gmail.com>,
-        <pabeni@redhat.com>, <ryder.lee@mediatek.com>,
-        <sean.wang@mediatek.com>, <shayne.chen@mediatek.com>,
-        <yn.chen@mediatek.com>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH] Revert "mt76: mt7921: enable aspm by default"
-Date:   Thu, 2 Jun 2022 06:23:23 +0800
-Message-ID: <1654122203-26090-1-git-send-email-sean.wang@mediatek.com>
-X-Mailer: git-send-email 1.7.9.5
-In-Reply-To: <e93aef5c9f8a97efe23cfb5892f78f919ce328e7.camel@pschenker.ch--annotate>
-References: <e93aef5c9f8a97efe23cfb5892f78f919ce328e7.camel@pschenker.ch--annotate>
+        with ESMTP id S232409AbiFAWpb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 18:45:31 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64554281860;
+        Wed,  1 Jun 2022 15:45:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654123530; x=1685659530;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=smkMhl7SsLCvV8F21B6h6yHB6om4C/Bmm9M+s7xMgFs=;
+  b=oC3R54YH7KpP6anGlcRpgoBObGC0UAHryK9cvqHrtBBg1Eq6VPQdWHUQ
+   Lo+az2D2znNGVdR54a+yrKQpJ0JjbVNlqqTH8lmfiLEMohAzGOyIzXrIa
+   K/27vk8uvFXRLkfqxaTfeVZ3BExw/oE+p2raA1oymfhdtnsFLE4/QHyeI
+   cuR7RUn1IuDREX5CXCc6RPra9TA3zT+fS3Y1jOLWyIpiR7Oco8nYP/BOL
+   Fk87tLBWnu8GatIjUDLGarL7l/wTLCNB48HRtjqHBNrHF62S7Lad4oKYh
+   /ZoczDsQ13x8OFCDCvee5we2LNkzKTy6+pVX5uz3xDDKNi+ONefq1EF+U
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="362129073"
+X-IronPort-AV: E=Sophos;i="5.91,269,1647327600"; 
+   d="scan'208";a="362129073"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 15:45:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,269,1647327600"; 
+   d="scan'208";a="581805052"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 01 Jun 2022 15:45:27 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nwX5j-0004UY-14;
+        Wed, 01 Jun 2022 22:45:27 +0000
+Date:   Thu, 2 Jun 2022 06:44:41 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Song Liu <song@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kernel-team@fb.com,
+        rostedt@goodmis.org, jolsa@kernel.org, Song Liu <song@kernel.org>
+Subject: Re: [PATCH bpf-next 5/5] bpf: trampoline: support
+ FTRACE_OPS_FL_SHARE_IPMODIFY
+Message-ID: <202206020622.HnFjEObo-lkp@intel.com>
+References: <20220601175749.3071572-6-song@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR,UNPARSEABLE_RELAY autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220601175749.3071572-6-song@kernel.org>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,88 +66,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+Hi Song,
 
->On Tue, 2022-04-12 at 19:06 +0800, Deren Wu wrote:
->> On Tue, 2022-04-12 at 12:37 +0300, Kalle Valo wrote:
->> > Philippe Schenker <dev@pschenker.ch> writes:
->> >
->> > > This reverts commit bf3747ae2e25dda6a9e6c464a717c66118c588c8.
->> > >
->> > > This commit introduces a regression on some systems where the
->> > > kernel is crashing in different locations after a reboot was
->> > > issued.
->> > >
->> > > This issue was bisected on a Thinkpad P14s Gen2 (AMD) with latest
->> > > firmware.
->> > >
->> > > Link:
->> > > https://urldefense.com/v3/__https://lore.kernel.org/linux-wireless
->> > > /5077a953487275837e81bdf1808ded00b9676f9f.camel@pschenker.ch/__;!!
->> > > CTRNKA9wMg0ARbw!09tjyaQlMci3fVI3yiNiDJKUW_qwNA_CbVhoAraeIX96B99Q14
->> > > J4iDycWA9cq36Y$
->> > >
->> > > Signed-off-by: Philippe Schenker <dev@pschenker.ch>
->> >
->> > Can I take this to wireless tree? Felix, ack?
->> >
->> > I'll also add:
->> >
->> > Fixes: bf3747ae2e25 ("mt76: mt7921: enable aspm by default")
->> >
->>
->> Hi Kalle,
->>
->> We have a patch for a similar problem. Can you wait for the
->> verification by Philippe?
->> Commit 602cc0c9618a81 ("mt76: mt7921e: fix possible probe failure
->> after
->> reboot")
->> Link:
->> https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kerne
->> l/git/torvalds/linux.git/commit/drivers/net/wireless/mediatek/mt76?id=
->> 602cc0c9618a819ab00ea3c9400742a0ca318380__;!!CTRNKA9wMg0ARbw!3N9I3iKwS
->> 3XCNAb4LuhbFqt_el1yiOaJzSdUjaJsTaxRCHiWhXnEgbk3bOqYTy6T$
->>
->> I can reproduce the problem in my v5.16-rc5 desktop. And the issue can
->> be fixed when the patch applied.
->>
->>
->> Hi Philippe,
->>
->> Can you please help to check the patch in your platform?
->
->Hi Kalle and Deren,
->
->I just noticed on my system and mainline v5.18 reboots do now work however Bluetooth is no longer accessible after a reboot.
->
->Reverting commit bf3747ae2e25dda6a9e6c464a717c66118c588c8 on top of
->v5.18 solves this problem for me.
->
->@Deren are you aware of this bug?
->@Kalle Is there a bugtracker somewhere I can submit this?
+I love your patch! Perhaps something to improve:
 
-Hi Philippe,
+[auto build test WARNING on bpf-next/master]
 
-Could you try the latest firmware to see if it can help with the issue you reported here ?
+url:    https://github.com/intel-lab-lkp/linux/commits/Song-Liu/ftrace-host-klp-and-bpf-trampoline-together/20220602-020112
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20220602/202206020622.HnFjEObo-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c825abd6b0198fb088d9752f556a70705bc99dfd)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/7edcf1c49617641579f2bc36b86c7d59bea20aef
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Song-Liu/ftrace-host-klp-and-bpf-trampoline-together/20220602-020112
+        git checkout 7edcf1c49617641579f2bc36b86c7d59bea20aef
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/bpf/
 
-Please check out https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/mediatek
-and replace the following three files in /lib/firmware/mediatek on your target and reboot
-1) BT_RAM_CODE_MT7961_1_2_hdr.bin
-2) WIFI_MT7961_patch_mcu_1_2_hdr.bin
-3) WIFI_RAM_CODE_MT7961_1.bin
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-	Sean
+All warnings (new ones prefixed by >>):
 
->
->Thanks,
->Philippe
->
->>
->>
->> Regards,
->> Deren
->>
->
->
->
+>> kernel/bpf/trampoline.c:30:66: warning: declaration of 'enum ftrace_ops_cmd' will not be visible outside of this function [-Wvisibility]
+   static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *op, enum ftrace_ops_cmd cmd);
+                                                                    ^
+   kernel/bpf/trampoline.c:92:21: error: invalid application of 'sizeof' to an incomplete type 'struct ftrace_ops'
+           tr->fops = kzalloc(sizeof(struct ftrace_ops), GFP_KERNEL);
+                              ^     ~~~~~~~~~~~~~~~~~~~
+   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
+   struct ftrace_ops;
+          ^
+   kernel/bpf/trampoline.c:100:10: error: incomplete definition of type 'struct ftrace_ops'
+           tr->fops->private = tr;
+           ~~~~~~~~^
+   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
+   struct ftrace_ops;
+          ^
+   kernel/bpf/trampoline.c:101:10: error: incomplete definition of type 'struct ftrace_ops'
+           tr->fops->ops_func = bpf_tramp_ftrace_ops_func;
+           ~~~~~~~~^
+   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
+   struct ftrace_ops;
+          ^
+   kernel/bpf/trampoline.c:397:11: error: incomplete definition of type 'struct ftrace_ops'
+                   tr->fops->flags |= FTRACE_OPS_FL_SHARE_IPMODIFY;
+                   ~~~~~~~~^
+   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
+   struct ftrace_ops;
+          ^
+   kernel/bpf/trampoline.c:397:22: error: use of undeclared identifier 'FTRACE_OPS_FL_SHARE_IPMODIFY'
+                   tr->fops->flags |= FTRACE_OPS_FL_SHARE_IPMODIFY;
+                                      ^
+   kernel/bpf/trampoline.c:415:11: error: incomplete definition of type 'struct ftrace_ops'
+                   tr->fops->func = NULL;
+                   ~~~~~~~~^
+   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
+   struct ftrace_ops;
+          ^
+   kernel/bpf/trampoline.c:416:11: error: incomplete definition of type 'struct ftrace_ops'
+                   tr->fops->trampoline = 0;
+                   ~~~~~~~~^
+   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
+   struct ftrace_ops;
+          ^
+   kernel/bpf/trampoline.c:431:67: warning: declaration of 'enum ftrace_ops_cmd' will not be visible outside of this function [-Wvisibility]
+   static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd cmd)
+                                                                     ^
+   kernel/bpf/trampoline.c:431:12: error: conflicting types for 'bpf_tramp_ftrace_ops_func'
+   static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd cmd)
+              ^
+   kernel/bpf/trampoline.c:30:12: note: previous declaration is here
+   static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *op, enum ftrace_ops_cmd cmd);
+              ^
+   kernel/bpf/trampoline.c:431:82: error: variable has incomplete type 'enum ftrace_ops_cmd'
+   static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd cmd)
+                                                                                    ^
+   kernel/bpf/trampoline.c:431:67: note: forward declaration of 'enum ftrace_ops_cmd'
+   static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd cmd)
+                                                                     ^
+   kernel/bpf/trampoline.c:433:33: error: incomplete definition of type 'struct ftrace_ops'
+           struct bpf_trampoline *tr = ops->private;
+                                       ~~~^
+   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
+   struct ftrace_ops;
+          ^
+   kernel/bpf/trampoline.c:448:7: error: use of undeclared identifier 'FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY'
+           case FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY:
+                ^
+   kernel/bpf/trampoline.c:452:7: error: use of undeclared identifier 'FTRACE_OPS_CMD_DISABLE_SHARE_IPMODIFY'
+           case FTRACE_OPS_CMD_DISABLE_SHARE_IPMODIFY:
+                ^
+   kernel/bpf/trampoline.c:454:11: error: incomplete definition of type 'struct ftrace_ops'
+                   tr->fops->flags &= ~FTRACE_OPS_FL_SHARE_IPMODIFY;
+                   ~~~~~~~~^
+   include/linux/bpf.h:47:8: note: forward declaration of 'struct ftrace_ops'
+   struct ftrace_ops;
+          ^
+   kernel/bpf/trampoline.c:454:23: error: use of undeclared identifier 'FTRACE_OPS_FL_SHARE_IPMODIFY'
+                   tr->fops->flags &= ~FTRACE_OPS_FL_SHARE_IPMODIFY;
+                                       ^
+   2 warnings and 14 errors generated.
+
+
+vim +30 kernel/bpf/trampoline.c
+
+    29	
+  > 30	static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *op, enum ftrace_ops_cmd cmd);
+    31	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
