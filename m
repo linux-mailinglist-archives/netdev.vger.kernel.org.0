@@ -2,143 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 16C2953AC73
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 20:08:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D547053AC7B
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 20:10:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353638AbiFASIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 14:08:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35014 "EHLO
+        id S1354371AbiFASJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 14:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230345AbiFASIO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 14:08:14 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2080.outbound.protection.outlook.com [40.107.220.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5816A30F62;
-        Wed,  1 Jun 2022 11:08:13 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L2j3OjIDo9/2zre+kF+sL3boHQtq1/uK3Xv9S55dFI48/vuUjMUCpxoAEVYD10kIzDJymM8JS1rUKI6tKOjtbGCdn9xopXpLcPOgiCX0s8d+OpyvRTZKb8ocah5AmQUFwS4LEG+XwBvQLSvIVTchufvsoTbAdHmtO0zJHp3xm3Dej2E3hGlx2qONxAntOw6+R7V1JPhD7ZXgtf6jWkXmrhmFtD2UIi4Kx4Q0HZD6kd08ueyoE+Az2CdqRLGqJZqB69Eto/L7naO267/Wua02jjhB7FrJDPTmbfbTm2gW608iIMuctbg021pvwl5PtDqJJgnwy3v2xmM37QMV7rzSsw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=U3dIOJiS3txfpERQozYCY+n6Fp8ihPEBKXPncoEHGxo=;
- b=Pa45Qi4Gx3OzvhQ8yrCtQxplE/6uu/MAkf7sQD/1b21Sx5xOFe3VdllTqzFkRqwEHXw9FYyGBDT6naiNgrVnB6Aubm4P1t/RostNxDcvmZlbSSfLY09gJtHf4hI5yzfr3cEpQeKAnOSKjZbtK7WykEFbcPcqDqHrcaHoJ7xhzytvTw5mPFDMCOoCqRJ7RUbC+9tqvtIrvk3ESdPFUwZb0MrVz0hOG1xKMCarvBdPFcJgBAy6IwXtkwCNHIVBcgSQ6cEGE07ahsGkgGQ/o3En+2Ae8kUYrGJsPQXt+gnUQMTAHT8XaaB1lQ9EdyGoIeTKbY4EfKxPOiLyUOKP81BQgA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U3dIOJiS3txfpERQozYCY+n6Fp8ihPEBKXPncoEHGxo=;
- b=KbaynKn6fC6d7QwfcYmcYQ2pZRQJFsOUE4ooIYSBZ3tVV/Sd4KcgwLX9Ub0YS87CSZDdKXStGOtj0737gOCsAnsrWjjl8OiF1qTMI1NYv0eWO7psxgQOVVSN9uQlD6P/4oxmXqdR3KOYDEgO5qKOYiensCg2BpwjTpYViRFsADyGd0zZJ67veR4P3TW+FoYVCinrV2cymdxK68iwphEJytLlSGnZcANK1AGyAJqtEwxX3D5S02kteSSu8w/qtcCcBUMluKahL6zq8/9LOn7y4Pho0Wqdq5dI/W0Er3pgOXt2NUFgvRvZyBPJDWgPuPNum689K0FcV4X19+a1WFp0Eg==
-Received: from BN6PR17CA0054.namprd17.prod.outlook.com (2603:10b6:405:75::43)
- by MN0PR12MB5713.namprd12.prod.outlook.com (2603:10b6:208:370::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.19; Wed, 1 Jun
- 2022 18:08:11 +0000
-Received: from BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
- (2603:10b6:405:75:cafe::8d) by BN6PR17CA0054.outlook.office365.com
- (2603:10b6:405:75::43) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.19 via Frontend
- Transport; Wed, 1 Jun 2022 18:08:11 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.238) by
- BN8NAM11FT030.mail.protection.outlook.com (10.13.177.146) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5314.12 via Frontend Transport; Wed, 1 Jun 2022 18:08:11 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 1 Jun
- 2022 18:08:10 +0000
-Received: from localhost (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 1 Jun 2022
- 11:08:09 -0700
-Date:   Wed, 1 Jun 2022 21:08:06 +0300
-From:   Leon Romanovsky <leonro@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>, <netdev@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Saeed Mahameed" <saeedm@nvidia.com>
-Subject: Re: [PATCH] MAINTAINERS: adjust MELLANOX ETHERNET INNOVA DRIVERS to
- TLS support removal
-Message-ID: <YperBiCh1rkKDmSR@unreal>
-References: <20220601045738.19608-1-lukas.bulwahn@gmail.com>
- <Ypc85O47YoNzUTr5@unreal>
- <20220601103032.28d14fc4@kicinski-fedora-PC1C0HJN>
+        with ESMTP id S230345AbiFASJp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 14:09:45 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6EB46A076;
+        Wed,  1 Jun 2022 11:09:44 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id h19so3324534edj.0;
+        Wed, 01 Jun 2022 11:09:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qJkyUXY8x9EIR3mTw1Vm7BUt+f3Dj3q32F+KNT2VkuQ=;
+        b=QCUtR3vQbTjYmM7uZ5JIWeJAg0M1EQvQkVQJoxYD6iWWtsycG6w+QCruDWZ7v1viRR
+         tZld0a3KhdyH5dHGZA6u0/RlAwhoLWTuv5IT9LuhU+VRILElDGP+lQFDcEt709EQZ9Cq
+         CPkWv4e3PDr0A/60PYROzhp97gy7oZPzjgG4O16rtPl1nBAY6Y8hgcIi5io7m7hEoecB
+         DrGIoEDw+H9+9ctzIBno+LK8ehjw5ddN6Xv7noN3Jwjh4pYF0lzc8O/twmmdwsEnDP0D
+         39pjSs2Ntu+IPV4lE+nMG/V39KOrYHf2eQFdI3QVExwOdhgEpOTUlpi24EedmcP/ItAZ
+         t/KA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qJkyUXY8x9EIR3mTw1Vm7BUt+f3Dj3q32F+KNT2VkuQ=;
+        b=cGzG+H+cWb1hyAVRw7vuHvsJXwgGeKt5P77ctALcqAPIj6YXDHotW5TEVE50bPcX1p
+         M1iFYzVB4rj3tdYtqndZZ67K6SkrNnG/RmbV56Ul7yjLGbUz3vQseAXqnXwkaIgnoCEB
+         zY/rF9qwK9tLQh4m6J9OcNjeYdyDaLqoT4S0d67q7TOWoTXTz1Mcd7WfunJdAzLiyKho
+         Afyg91LJwjXPE8rPQZE1w8sLdgM0ScV6z9YlW4xoRq9pI6Wn7pMUjw9JZPIbaUZPLe/B
+         IFTNBZfU7f8bIewP8JazW9t3unzy/1nlS1ALX6T/nnra/qYa7Npxf90ooJgwJt9mxbvH
+         vcfA==
+X-Gm-Message-State: AOAM533n7EEeZW7XliMimlsCu4/W6L5P0LRdaSaubM5Uxba3vqHUrakK
+        KzBXP4QoFDFoW3RL4BlNq3I=
+X-Google-Smtp-Source: ABdhPJyZJd4aR0TcVeVo+RIf7YtPAvMsp+WjGLp9Hy1FQXnNDG2u5Y9OBxmSMesWWJKcj2KaekeoxQ==
+X-Received: by 2002:a05:6402:2999:b0:428:bb4d:6cea with SMTP id eq25-20020a056402299900b00428bb4d6ceamr1054625edb.29.1654106983174;
+        Wed, 01 Jun 2022 11:09:43 -0700 (PDT)
+Received: from krava ([193.85.244.190])
+        by smtp.gmail.com with ESMTPSA id g8-20020a056402114800b0042dd109b212sm1327662edw.3.2022.06.01.11.09.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 11:09:42 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Wed, 1 Jun 2022 20:09:40 +0200
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <olsajiri@gmail.com>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Ian Rogers <irogers@google.com>
+Subject: Re: [PATCHv2 0/3] perf tools: Fix prologue generation
+Message-ID: <YperTPAIgqdPs01R@krava>
+References: <Ynv+7iaaAbyM38B6@kernel.org>
+ <CAEf4BzaQsF31f3WuU32wDCzo6bw7eY8E9zF6Lo218jfw-VQmcA@mail.gmail.com>
+ <YoTAhC+6j4JshqN8@krava>
+ <YoYj6cb0aPNN/olH@krava>
+ <CAEf4Bzaa60kZJbWT0xAqcDMyXBzbg98ShuizJAv7x+8_3X0ZBg@mail.gmail.com>
+ <Yokk5XRxBd72fqoW@kernel.org>
+ <Yos8hq3NmBwemoJw@krava>
+ <CAEf4BzYRJj8sXjYs2ioz6Qq7L2UshZDi4Kt0XLsLtwQSGCpAzg@mail.gmail.com>
+ <YoyXRij2LaxxTicC@krava>
+ <CAEf4Bzbxo7_dbBzjeBu8FeB6MFBpgqn1Cwq_om-mGuz-gJH6CA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220601103032.28d14fc4@kicinski-fedora-PC1C0HJN>
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 719790aa-e83d-445f-feb3-08da43f9b09b
-X-MS-TrafficTypeDiagnostic: MN0PR12MB5713:EE_
-X-Microsoft-Antispam-PRVS: <MN0PR12MB5713944BD39F17027EF21CE7BDDF9@MN0PR12MB5713.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eM0SfkLkpaTQJnQC+7IXEQqWilhV+uL2PSAO6x8nmJltl1fWVqC1Ap6cuLg7kegsNXyO1Nt066aeB3axS5TIuPv2X0Bq8p8ewO3chGKK7x1LMz7GkSbPpDTwWAcBBLXBAXtcB0h+TbEWItUb3J9ZCBiS5Rlkv4rlfCKlcdMi7CdYhmCPXv7Ih56McCBBYSdXco4nxEcRIMRkvPV8vIM4hA1cPxD/DtKndKdvkVF1SIfC+5wybIlpdXsK3bumUl8Hot3KjQH33frc74EmDA5v8QJllNQWeskNpw3Us9dHuH47onNpVrdnJfMAJ36oYv3PIS7fqpzFWYyfEXqTs0Piqml+a4L1i+Wb/yeWA8PKSbP+3Tf1VitWSlhjhAgGKkB5UW3hnFVdmduw6GIfogUO1UPQUDYJIvGOXHM/aFU3zzI3eP1cAM+2nQH6tFP9NTycts7Twoajh7j26B+D08A1Bi8atjxhiJMlXZcx+We98SnSvfNcMPwvGNeWVcnzswyu8MdJu9i6cBJLsYDVBY4BfzaIXNZ5CfkDL3I6hLfYD6guyEKbmcI6SarI62awPy4CbU0Wqq+WvPBJtdg1hlyRtHhpbG3K0vFdh3hgmjrjAk3OreY6qjt3mP7ucuCMuyjUzcWWj0F/l2TjrSqZPWy8AVR/Zn8uSxhXbvw3Zm4i9JKqGTkjX6qkCJzOHtU8ulhUwWeEZ+O3ZtFpvM4WWyrbR0Nrciu+N8RYd/8SVAZ/Grng27h+SIE/vIk0SUsZsoTLt1UkDwbUJHOrNv9fqlWaG9xS9lmEMNXepicsBbyIebM=
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(7916004)(40470700004)(46966006)(36840700001)(54906003)(33716001)(316002)(2906002)(81166007)(9686003)(26005)(6916009)(356005)(47076005)(336012)(83380400001)(426003)(4326008)(16526019)(70206006)(5660300002)(70586007)(82310400005)(86362001)(8936002)(8676002)(40460700003)(508600001)(966005)(36860700001)(107886003)(186003)(6666004)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2022 18:08:11.3402
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 719790aa-e83d-445f-feb3-08da43f9b09b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5713
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <CAEf4Bzbxo7_dbBzjeBu8FeB6MFBpgqn1Cwq_om-mGuz-gJH6CA@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 10:30:39AM -0700, Jakub Kicinski wrote:
-> On Wed, 1 Jun 2022 13:18:12 +0300 Leon Romanovsky wrote:
-> > On Wed, Jun 01, 2022 at 06:57:38AM +0200, Lukas Bulwahn wrote:
-> > > Commit 40379a0084c2 ("net/mlx5_fpga: Drop INNOVA TLS support") removes all
-> > > files in the directory drivers/net/ethernet/mellanox/mlx5/core/accel/, but
-> > > misses to adjust its reference in MAINTAINERS.
-> > > 
-> > > Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-> > > broken reference.
-> > > 
-> > > Remove the file entry to the removed directory in MELLANOX ETHERNET INNOVA
-> > > DRIVERS.
-> > > 
-> > > Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> > > ---
-> > > Leon, please pick this minor non-urgent clean-up patch on top of the commit
-> > > above.  
-> > 
-> > Thanks, we will submit it once net-next will be open.
+On Wed, Jun 01, 2022 at 10:39:08AM -0700, Andrii Nakryiko wrote:
+> On Tue, May 24, 2022 at 1:28 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+> >
+> > On Mon, May 23, 2022 at 03:43:10PM -0700, Andrii Nakryiko wrote:
+> > > On Mon, May 23, 2022 at 12:49 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+> > > >
+> > > > On Sat, May 21, 2022 at 02:44:05PM -0300, Arnaldo Carvalho de Melo wrote:
+> > > > > Em Fri, May 20, 2022 at 02:46:49PM -0700, Andrii Nakryiko escreveu:
+> > > > > > On Thu, May 19, 2022 at 4:03 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+> > > > > > > On Wed, May 18, 2022 at 11:46:44AM +0200, Jiri Olsa wrote:
+> > > > > > > > On Tue, May 17, 2022 at 03:02:53PM -0700, Andrii Nakryiko wrote:
+> > > > > > > > > Jiri, libbpf v0.8 is out, can you please re-send your perf patches?
+> > > > >
+> > > > > > > > yep, just made new fedora package.. will resend the perf changes soon
+> > > > >
+> > > > > > > fedora package is on the way, but I'll need perf/core to merge
+> > > > > > > the bpf_program__set_insns change.. Arnaldo, any idea when this
+> > > > > > > could happen?
+> > > > >
+> > > > > > Can we land these patches through bpf-next to avoid such complicated
+> > > > > > cross-tree dependencies? As I started removing libbpf APIs I also
+> > > > > > noticed that perf is still using few other deprecated APIs:
+> > > > > >   - bpf_map__next;
+> > > > > >   - bpf_program__next;
+> > > > > >   - bpf_load_program;
+> > > > > >   - btf__get_from_id;
+> > > >
+> > > > these were added just to bypass the time window when they were not
+> > > > available in the package, so can be removed now (in the patch below)
+> > > >
+> > > > >
+> > > > > > It's trivial to fix up, but doing it across few trees will delay
+> > > > > > libbpf work as well.
+> > > > >
+> > > > > > So let's land this through bpf-next, if Arnaldo doesn't mind?
+> > > > >
+> > > > > Yeah, that should be ok, the only consideration is that I'm submitting
+> > > > > this today to Linus:
+> > > > >
+> > > > > https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/commit/?h=tmp.perf/urgent&id=0ae065a5d265bc5ada13e350015458e0c5e5c351
+> > > > >
+> > > > > To address this:
+> > > > >
+> > > > > https://lore.kernel.org/linux-perf-users/f0add43b-3de5-20c5-22c4-70aff4af959f@scylladb.com/
+> > > >
+> > > > ok, we can do that via bpf-next, but of course there's a problem ;-)
+> > > >
+> > > > perf/core already has dependency commit [1]
+> > > >
+> > > > so either we wait for perf/core and bpf-next/master to sync or:
+> > > >
+> > > >   - perf/core reverts [1] and
+> > > >   - bpf-next/master takes [1] and the rest
+> > > >
+> > > > I have the changes ready if you guys are ok with that
+> > >
+> > > So, if I understand correctly, with merge window open bpf-next/master
+> > > will get code from perf/core soon when we merge tip back in. So we can
+> > > wait for that to happen and not revert anything.
+> > >
+> > > So please add the below patch to your series and resend once tip is
+> > > merged into bpf-next? Thanks!
+> >
+> > ok
 > 
-> It should go via net FWIW.
+> Hm.. Ok, so I don't see your patches in tip yet. I see them in
+> perf/core only. Which means things won't happen naturally soon. How
+> should we proceed? I'm sitting on a pile of patches removing a lot of
+> code from libbpf and I'd rather get it out soon, but I can't because
+> of them breaking perf in bpf-next without Jiri's changes.
 
-I'm slightly confused here.
+sorry it's merged in linus master, Arnaldo no longer goes through tip tree
 
-According to net policy, the patches that goes there should have Fixes
-line, but Fixes lines are added for bugs [1].
+> 
+> Arnaldo, what's your suggestion? Can we land remaining Jiri's patches
+> into perf/core and then you can create a tag for us to merge into
+> bpf-next, so that we avoid any conflicts later? Would that work? I
+> think we did something like that with other trees (e.g., RCU), when we
+> had dependencies like this before.
 
-This forgotten line in MAINTAINERS doesn't cause to any harm to
-users/developers.
+either way is fine for me.. I just rebased those changes on top of perf/core
 
-So when should I put Fixes line in netdev?
-
-[1] https://lore.kernel.org/netdev/20211208070842.0ace6747@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
-
-Thanks
+jirka
