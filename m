@@ -2,122 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F204B53A26E
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 12:18:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9036A53A271
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 12:18:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351692AbiFAKSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 06:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38554 "EHLO
+        id S244114AbiFAKSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 06:18:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346695AbiFAKSV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 06:18:21 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2061.outbound.protection.outlook.com [40.107.100.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2210959BA5;
-        Wed,  1 Jun 2022 03:18:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MmN3zL1U+ZpRgVIa/N5AzBkP+RzLw3hUXPIZwI4CUC0D98WUY4fXiQR4bTDUzZzu8bAHIxqvBp0864C8oOVJbl727D+sjw0sdbvIXIPiLplLxKa2b5eKsf3wm3waoCJ1PtR3nUQDhRVKCrR/5/MPvYXsXim59qo9RC9DAdw3JEwZP+kzpeYj0yJe3Kp+dQNMra4r1RhYIAbHxQ066ql83iFHDEZ63PVR4gXe2k8b+lY8tzzD5iF0R/YUeSiZ8Xqyt/Dtsp/UsWa+8Q7lUHF1YYikODMQKSJlFwv+4OYiQO/98egGuXrgR7xJQImLE0Mp0S8CWiqhxKapTeNS3uzkaw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tmkkZTyAuh1M3kDRGnEk0u21tnNnP34n8cS+xB6CTXU=;
- b=ixJgeIcOTVP6yjjOBaBhpEV6j9XuolPYvhiaK57Z+2yaikGZfxB14j2q5ZUKpDq/NEQ7HZIsXyjUV6RMy73yqTdlOrHHlCFHBO7Ag/5IUg4KS9OMEnzchDODDtkt+WIq9PlxjWuE0FKUXpO4EjmHOc33RyumM7Gp1JkPnSKfKvGeKVTIO/Hg4BOiKzl3DZdCpqkUkb8xaej6qUC8vvoJ50lUE1WcHkme2EZaj7di2gy5mu7q/wFTCdscb+WbBADUPL44+p57JhhLNUkhjfaPJUC4im8K2BUAxDyYGkvvmi6ZyZQeMITM6xEp5A7Vhb2WcEV4rosZvu4fUWWJ0f3/qw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tmkkZTyAuh1M3kDRGnEk0u21tnNnP34n8cS+xB6CTXU=;
- b=aDKCgH3ffC9st6sY7MEvdVOZTRwxzzgzbpmp3tLps/FiPdnozkolrA6trqwC2Uhh5xB8ewuYNKKHU8LWHrRKl3+4E+SeMqWWJ/BE+x3sPJL6geuQGwK0keK1L9pPgWDKeZaH+13i1nzgThV1TOFKG79tG3Mmw6URWYNHIcDoZK6WtiHWqvX3M8tNPBJnbwK+WsoDriraGo2+A7zk3qDPt9tm1hdbgFfDk4ZeF7ibWeOZBviswT63+vfGjwD75x16NpsVsDqehzo+CvzQuXNBD43ewfTGXATmI1HrptuGxl8vyLkDiFWI2kYzP+Dq+ZdZz6qYuN2bGxrHMkrmLynCrQ==
-Received: from BN9PR03CA0923.namprd03.prod.outlook.com (2603:10b6:408:107::28)
- by SA0PR12MB4416.namprd12.prod.outlook.com (2603:10b6:806:99::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12; Wed, 1 Jun
- 2022 10:18:18 +0000
-Received: from BN8NAM11FT056.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:107:cafe::52) by BN9PR03CA0923.outlook.office365.com
- (2603:10b6:408:107::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13 via Frontend
- Transport; Wed, 1 Jun 2022 10:18:17 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.235) by
- BN8NAM11FT056.mail.protection.outlook.com (10.13.177.26) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5314.12 via Frontend Transport; Wed, 1 Jun 2022 10:18:17 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 1 Jun
- 2022 10:18:16 +0000
-Received: from localhost (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 1 Jun 2022
- 03:18:15 -0700
+        with ESMTP id S231261AbiFAKSS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 06:18:18 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7619552E42
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 03:18:16 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id k19so1653559wrd.8
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 03:18:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=IwWvhtTjYr+ClHbli2v9zYHeb4MlsNpBTNH8t1R848I=;
+        b=GtPU/uwQD9b57QEgTl6NokCQd9GvrTQt1sIs8TPk5MeYHbuGQ/1idQzmZ2Yb7IVzLp
+         bHF+TLzP44u05K82Wu9Po8riWCIBCjjunOt3hpYjYzdVfzkGASl2MrodRu6cpuCxnQhK
+         2odSI3SDSStjxCaGMJF/PkLzEXiK1RRIi532veIgDmJjZVaHSzHcIFEj8Z7fgpmCupmp
+         Gp1oxdrvHKCEhfqPguNSn7PwejuntjG6G+vW9TjhRUZfNIzISmeqHwLev0vIBzPLoL9P
+         KsmvTtmoE+03QPRFY187ghGlBvV1XJWhfR/l9sl9SKyE48vWi71v461GoUKVwOD2vmF6
+         l+UA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IwWvhtTjYr+ClHbli2v9zYHeb4MlsNpBTNH8t1R848I=;
+        b=F8/AXwuJbyzyEHa7HZCDoKNt9ee1AVTmuMz0rVwowbqntnsM7ImfJ9AOI7q3694zpo
+         CDld8UKGUlo6MzCcPrjHXjXA8je46rciqt5e7NGUPpZ4OKYx3GXZ2dVa4psrfcCvXeWz
+         FFz9KbmJDmOUSRvGgDh/GafbBlalKz1Metst44bc7B3BbZy/zBMM22afbWUBWM30pP8R
+         4qihXlllxhGD1Bd7Bx01Wt8QjebDAoR2bsdKnJCRNtRFoDXUt8rZlnsHmnXN9qrSt25b
+         7UIfkUViK2UzcQHRqbGjfbm/F/n0FSv9cA3dzkbUs4kiWjVikvM4yVBrR6VQjubsATOz
+         xQSQ==
+X-Gm-Message-State: AOAM530dlIVZG5m6doNg5xOXghlXSS87UiJwPIY0ebRPrEfvD7Aa8pAl
+        rjFevorZANDEKa+6Uq1k4TGXelFsyuheey6H
+X-Google-Smtp-Source: ABdhPJwBa+M9aeZv9/Ogg5QJHUpAxgn7hncZ4hePZxAKj5Jc0ssXUSPMGxEAGta4j/iaCiDubg2y+Q==
+X-Received: by 2002:a5d:5888:0:b0:20c:d66e:a637 with SMTP id n8-20020a5d5888000000b0020cd66ea637mr54478888wrf.215.1654078694923;
+        Wed, 01 Jun 2022 03:18:14 -0700 (PDT)
+Received: from [192.168.15.233] (bzq-82-81-222-124.cablep.bezeqint.net. [82.81.222.124])
+        by smtp.gmail.com with ESMTPSA id y6-20020adfee06000000b0021004d7d75asm1223974wrn.84.2022.06.01.03.18.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 03:18:14 -0700 (PDT)
+Message-ID: <7c70ab93-6d35-52f5-ab11-e3b4ecd622f2@solid-run.com>
 Date:   Wed, 1 Jun 2022 13:18:12 +0300
-From:   Leon Romanovsky <leonro@nvidia.com>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-CC:     Boris Pismenny <borisp@nvidia.com>, <netdev@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Saeed Mahameed" <saeedm@nvidia.com>
-Subject: Re: [PATCH] MAINTAINERS: adjust MELLANOX ETHERNET INNOVA DRIVERS to
- TLS support removal
-Message-ID: <Ypc85O47YoNzUTr5@unreal>
-References: <20220601045738.19608-1-lukas.bulwahn@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220601045738.19608-1-lukas.bulwahn@gmail.com>
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c639241c-4234-4f50-f699-08da43b80bba
-X-MS-TrafficTypeDiagnostic: SA0PR12MB4416:EE_
-X-Microsoft-Antispam-PRVS: <SA0PR12MB44166CCDB5F7C54058117740BDDF9@SA0PR12MB4416.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5fcGmKSuS4wOuF6wbAqrlcNo+752AioYEXUb2bxwSYW+bKTEDakbfcwdB0ZZa7tukjVyTc0aeUNZJmualYXC4m0NAteBa1ZjWb3kupZBdaaikT9/Pb5wmJbK5mQp3OgFVpnWANXlmXELWZrx9g9VOAF63nLHXQO2DLYNOApgb3139K1mtr5H8UKHuD21hb2NFzyC7BoMaF8lDbrbshbS62pmfrHhEaaHr6vmiT+Eak61jnmIVoIWBfZtZgTEyIMwRr/W/zLNnreFSv1OP/AoX/O68C5YtEMyt4/72MFeleJPwr+4XjWAKrTJRL2H8fnxe5E6/GOpmviMR5MECc0HaTbvLHLTCrBjTjJAFXK55iCqOuTi3jUQNrpm/4KpoqEsdzAH4ozEt3O9MFvfhoLrTqg42ySdjcEvY/zFdOs0bZQMNX2MzINP8qrfYbO+mSJnwVdU2pzOTgUMNBrSFG1VzgSGJeBM9XLrS00twcwl4VHyPQULC8HxlP20hXu/e6cKpiaGAkIcd8Sb4PLdN8VCUvo0G2B/RMbWFHJh2NeNCnIHEA9n2QHxiXn64YqngnRakauTBRqQ7dQMZZ/JrFQ8VxzQPY+tv7scAbwUNEqJVMoJRWgdIqfil6Igp0eWh3ns444uDRv3di3mE/kWwgXXW2yfiygDBlVuM6dFpmT5mOYsOI41HFVwCfKiMuTd9KwTKoT7kCDmumvrabVVmr7BOw==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(7916004)(4636009)(40470700004)(46966006)(36840700001)(83380400001)(8936002)(33716001)(86362001)(36860700001)(82310400005)(81166007)(508600001)(9686003)(4326008)(26005)(70586007)(8676002)(70206006)(40460700003)(356005)(47076005)(54906003)(6666004)(336012)(6916009)(426003)(2906002)(4744005)(5660300002)(107886003)(16526019)(186003)(316002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2022 10:18:17.4473
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c639241c-4234-4f50-f699-08da43b80bba
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT056.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4416
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH RFC] net: sfp: support assigning status LEDs to SFP
+ connectors
+Content-Language: en-US
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>, rafal@milecki.pl
+References: <20220509122938.14651-1-josua@solid-run.com>
+ <Ynk5UPWkuoXeqfJj@shell.armlinux.org.uk>
+ <bc461bd4-e123-212d-42a5-2da2efb7235a@solid-run.com>
+ <20220511132221.pkvi3g7agjm2xuph@skbuf>
+ <Ynu8ixB5cm3zy6Yx@shell.armlinux.org.uk>
+From:   Josua Mayer <josua@solid-run.com>
+In-Reply-To: <Ynu8ixB5cm3zy6Yx@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 06:57:38AM +0200, Lukas Bulwahn wrote:
-> Commit 40379a0084c2 ("net/mlx5_fpga: Drop INNOVA TLS support") removes all
-> files in the directory drivers/net/ethernet/mellanox/mlx5/core/accel/, but
-> misses to adjust its reference in MAINTAINERS.
-> 
-> Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-> broken reference.
-> 
-> Remove the file entry to the removed directory in MELLANOX ETHERNET INNOVA
-> DRIVERS.
-> 
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> ---
-> Leon, please pick this minor non-urgent clean-up patch on top of the commit
-> above.
+Hi Russell,
 
-Thanks, we will submit it once net-next will be open.
+Thank you for the examples below!
+Stable names do help in some cases, but not in all.
+
+I did some testing the other day with renaming network interfaces 
+through the ip command:
+ip link set dev eth8 down
+ip link set dev eth12 down
+ip link set eth12 name eth20
+ip link set eth8 name eth12
+ip link set eth20 name eth8
+ip link set eth8 up
+ip link set dev eth12 up
+
+Swapping interface names like this seems a perfectly legal thing for 
+userspace to do. I personally would in such case expect the previous LED 
+assignment to move along with the name change, however this does not happen.
+Instead after the interface rename, the LEDs are effectively swapped.
+
+Further the netdev trigger implementation seems incorrect when you add 
+network namespaces.
+Two namespaces can each contain a device named eth0, but the netdev 
+trigger does not look at the namespace id when matching events to 
+triggers, just the name.
+
+Is it intended for userspace to track interface renames and reassign LEDs?
+Or should the trigger driver watch for name changes and adapt accordingly?
+
+Finally I also noticed that the netdev trigger by default does not 
+propagate any information to the LED.
+All properties - link, rx, tx are 0.
+Attempts at setting this by default through udev were widely unsuccessful:
+E.g. before setting the trigger property to netdev, the device_name or 
+link properties do not exist.
+Therefore a rule that sets trigger and link and device at the same time 
+does not function:
+SUBSYSTEM=="leds", ACTION=="add|change", 
+ENV{OF_FULLNAME}=="/leds/led_c1_at", ATTR{trigger}="netdev", 
+ATTR{link}="1", ATTR{device_name}="eth0"
+
+It appears necessary to use 2 rules, one that selects netdev, another 
+one that chooses what property to show, e.g. link;
+and finally some rule that tracks the netdev name and updates 
+device_name property accordingly.
+All while watching out for infinite loops because the property changes 
+appear to trigger more change events, and e.g. setting trigger to netdev 
+again causes another change event and resets the properties ...
+
+I get the impression that this is very complex and might be described 
+much better in device-tree, at least when a vendor makes explicit 
+decisions to the purpose of each led.
+
+Thee has been a recent patchset floating this list by Rafał Miłecki,
+which I very much liked:
+[PATCH RESEND PoC] leds: trigger: netdev: support DT "trigger-sources" 
+property
+
+It does allow declaring the relation from dpmac to led in dts as I would 
+have expected.
+
+In addition I believe there should be a way in dts to also set a default 
+for what information to show, e.g.
+default-function = "link";
+
+And finally dynamic tracking of the interface name.
+
+I would be willing to work on the last two ideas, if this is an 
+acceptable approach.
+
+Am 11.05.22 um 16:39 schrieb Russell King (Oracle):
+> On Wed, May 11, 2022 at 01:22:22PM +0000, Ioana Ciornei wrote:
+>> On Tue, May 10, 2022 at 12:44:41PM +0300, Josua Mayer wrote:
+>>
+>>> One issue is that the interfaces don't have stable names. It purely depends
+>>> on probe order,
+>>> which is controlled by sending commands to the networking coprocessor.
+>>>
+>>> We actually get asked this question sometimes how to have stable device
+>>> names, and so far the answer has been systemd services with explicit sleep
+>>> to force the order.
+>>> But this is a different topic.
+>>>
+>>
+>> Stable names can be achieved using some udev rules based on the OF node.
+>> For example, I am using the following rules on a Clearfog CX LX2:
+>>
+>> [root@clearfog-cx-lx2 ~] # cat /etc/udev/rules.d/70-persistent-net.rules
+>> SUBSYSTEM=="net", ACTION=="add", DRIVERS=="fsl_dpaa2_eth", ENV{OF_FULLNAME}=="/soc/fsl-mc@80c000000/dpmacs/ethernet@7", NAME="eth7"
+>> SUBSYSTEM=="net", ACTION=="add", DRIVERS=="fsl_dpaa2_eth", ENV{OF_FULLNAME}=="/soc/fsl-mc@80c000000/dpmacs/ethernet@8", NAME="eth8"
+>> SUBSYSTEM=="net", ACTION=="add", DRIVERS=="fsl_dpaa2_eth", ENV{OF_FULLNAME}=="/soc/fsl-mc@80c000000/dpmacs/ethernet@9", NAME="eth9"
+>> SUBSYSTEM=="net", ACTION=="add", DRIVERS=="fsl_dpaa2_eth", ENV{OF_FULLNAME}=="/soc/fsl-mc@80c000000/dpmacs/ethernet@a", NAME="eth10"
+>> SUBSYSTEM=="net", ACTION=="add", DRIVERS=="fsl_dpaa2_eth", ENV{OF_FULLNAME}=="/soc/fsl-mc@80c000000/dpmacs/ethernet@11", NAME="eth17"
+Yes this seems to work okay.
+I feel that it is wrong for userspace to recognize particular dts nodes, 
+but it *does* work.
+
+> 
+> Or by using systemd - for example, on the Armada 38x Clearfog platform,
+> I use:
+> 
+> /etc/systemd/network/01-ded.link:
+> [Match]
+> Path=platform-f1070000.ethernet
+> [Link]
+> MACAddressPolicy=none
+> Name=eno0
+> 
+> /etc/systemd/network/02-sw.link:
+> [Match]
+> Path=platform-f1030000.ethernet
+> [Link]
+> MACAddressPolicy=none
+> Name=eno1
+> 
+> /etc/systemd/network/03-sfp.link:
+> [Match]
+> Path=platform-f1034000.ethernet
+> [Link]
+> MACAddressPolicy=none
+> Name=eno2
+> 
+
+sincerely
+Josua Mayer
