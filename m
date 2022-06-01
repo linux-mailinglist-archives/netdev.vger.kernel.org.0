@@ -2,48 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E30653A991
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 17:06:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A79F53A9B4
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 17:12:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347454AbiFAPGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 11:06:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50866 "EHLO
+        id S1354398AbiFAPMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 11:12:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353471AbiFAPGD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 11:06:03 -0400
-Received: from m15114.mail.126.com (m15114.mail.126.com [220.181.15.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 891CD5DE58
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 08:06:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=HWtXy
-        zpTYQi99vLNSN4B9mSWTWB3vA617XDlC71beEg=; b=REGwHbh2ta/WGQSkYIACC
-        gSL3byjExvI15fyOzkdsCZNZ7qpTvwJZp8NZt741HlPEN2W+k5rnqHtZYEL4/FgV
-        2z/Y8Z/BWyHpjnMoLoYsRMlsjuGnM4+kaJTt1Kq0iVi06L/WAkhUUTeBhtn9XXHW
-        maDm0qIxrOMnI4Y/w76VfA=
-Received: from localhost.localdomain (unknown [223.104.68.68])
-        by smtp7 (Coremail) with SMTP id DsmowAC3mKT9f5dis3x_CQ--.20151S2;
-        Wed, 01 Jun 2022 23:04:30 +0800 (CST)
-From:   Lixue Liang <lianglixuehao@126.com>
-To:     pmenzel@molgen.mpg.de
-Cc:     anthony.l.nguyen@intel.com, intel-wired-lan@lists.osuosl.org,
-        jesse.brandeburg@intel.com, kuba@kernel.org,
-        lianglixue@greatwall.com.cn, netdev@vger.kernel.org
-Subject: [PATCH v4] igb: Assign random MAC address instead of fail in case of invalid one
-Date:   Wed,  1 Jun 2022 15:04:28 +0000
-Message-Id: <20220601150428.33945-1-lianglixuehao@126.com>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsmowAC3mKT9f5dis3x_CQ--.20151S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7uFW3Ww4xGFW3KrWrAFyxZrb_yoW8Zw1Upa
-        yrJa42grWkJr4jqw4kX3WxZas0kan0q345C39Iyw1F93Z0grWDArWrtry7tryrKrZ5Ca13
-        Zr17Za1Dua1DAFDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jU0edUUUUU=
-X-Originating-IP: [223.104.68.68]
-X-CM-SenderInfo: xold0w5ol03vxkdrqiyswou0bp/xtbBGggTFl-HZMgquAAAsx
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        with ESMTP id S1353967AbiFAPMh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 11:12:37 -0400
+Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F47488A2
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 08:12:36 -0700 (PDT)
+Received: by mail-qk1-x749.google.com with SMTP id g3-20020a05620a108300b006a329bc4da3so1520365qkk.3
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 08:12:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=kgeENkTKQF5CH/ji/s7eILYDZxj2xanbyJLZhsasnkA=;
+        b=FJxMPGLt2Bpvw2/0+tJdREvb+DvBVoSgL11uuMKQGGTKHhbzS1I+Kb5IoBEB8FEwZl
+         5PL30L7Ye9wlkvHJ1x3wx36AWb/z3moL84nUSqZlHzJrad66C9/VQ9u7QQzKEvTSXlW7
+         rvy4jBfDlCdSiT+XDVTD+i2XLVhe3o0D/1rXCHKitF61d49rYkx8M4L4h2HqRjpXDL3m
+         uY3Cm8nhLzAqLc+TY/4QGvQR9at5NiE8yWTOylrD8Iz9Y/wIZrRIccGo4Da7Y1jFL1N9
+         JODWH9iZODIrQCpWLK80EzwKYOygFwR434EKMuiqMbBMbutxv5twhC1Q2gU+37CZx135
+         StQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=kgeENkTKQF5CH/ji/s7eILYDZxj2xanbyJLZhsasnkA=;
+        b=t8ep1GdyjlOCFMIT/Kdbh0n3w+FA30GvZZT/xTN/xFNs6DlfsydtbNYi6VbhWtszax
+         QL9uDWg+fR/64wfrqjo18wN6v1Vc7BOF87mpDjb9Zf8t4+auwdwyWZsPQ56X4BAangeE
+         dcexBdWjGvE4txzBqz5lpb+ZzdqFRQR3NWGZQ5tgbnEMpqfO8ph3NqkulGB8G9bMJwWz
+         aHoWuQp0gxdUmbj2yX77UcDv7o/bdcj+XmyqARE8/gBMzpmFs45COz4De7VTMgkCSzAP
+         4kmzoZo5AdFnAvnA6YmGpiqOoniW8Azc5xtjkOH1a7k0oTsXLK1eBVpH76LBQcF9N/tD
+         AMUA==
+X-Gm-Message-State: AOAM533poBlyZw41CaAZFGIgi6+9eZ8CHbSNdGypDdbpiU2dTE6MUmNW
+        HX9w8iI5TQUUvAV3dQQFzeRP0aNSOvFh5dXwVVM=
+X-Google-Smtp-Source: ABdhPJzoNig3fFGatBX6poNGyFUAGYYb28s9k+CvU/LWYXulZuecUpb6DYnP8BHOpM1XCl11+luMa+37t/YNT9crnFU=
+X-Received: from alainmic.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:2890])
+ (user=alainmichaud job=sendgmr) by 2002:ad4:5b8e:0:b0:464:50c4:c568 with SMTP
+ id 14-20020ad45b8e000000b0046450c4c568mr13309768qvp.115.1654096355448; Wed,
+ 01 Jun 2022 08:12:35 -0700 (PDT)
+Date:   Wed,  1 Jun 2022 15:11:27 +0000
+Message-Id: <20220601151115.1.Ia503b15be0f366563b4e7c9f93cbec5e756bb0ae@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH] Bluetooth: clear the temporary linkkey in hci_conn_cleanup
+From:   Alain Michaud <alainmichaud@google.com>
+To:     linux-bluetooth@vger.kernel.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        Alain Michaud <alainm@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,59 +71,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lixue Liang <lianglixue@greatwall.com.cn>
+From: Alain Michaud <alainm@chromium.org>
 
-In some cases, when the user uses igb_set_eeprom to modify the MAC
-address to be invalid, the igb driver will fail to load. If there is no
-network card device, the user must modify it to a valid MAC address by
-other means.
+If a hardware error occurs and the connections are flushed without a
+disconnection_complete event being signaled, the temporary linkkeys are
+not flushed.
 
-Since the MAC address can be modified, then add a random valid MAC address
-to replace the invalid MAC address in the driver can be workable, it can
-continue to finish the loading, and output the relevant log reminder.
+This change ensures that any outstanding flushable linkkeys are flushed
+when the connection are flushed from the hash table.
 
-Signed-off-by: Lixue Liang <lianglixue@greatwall.com.cn>
+Signed-off-by: Alain Michaud <alainm@chromium.org>
+
 ---
-Changelog:
-* v4:
-  - Change the igb_mian in the title to igb
-  - Fix dev_err message: replace "already assigned random MAC address" 
-    with "Invalid MAC address. Assigned random MAC address" 
-  Suggested-by Tony <anthony.l.nguyen@intel.com>
 
-* v3:
-  - Add space after comma in commit message 
-  - Correct spelling of MAC address
-  Suggested-by Paul <pmenzel@molgen.mpg.de>
+ net/bluetooth/hci_conn.c  | 3 +++
+ net/bluetooth/hci_event.c | 4 +++-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-* v2:
-  - Change memcpy to ether_addr_copy
-  - Change dev_info to dev_err
-  - Fix the description of the commit message
-  - Change eth_random_addr to eth_hw_addr_random
-  Reported-by: kernel test robot <lkp@intel.com>
-
- drivers/net/ethernet/intel/igb/igb_main.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 34b33b21e0dc..5e3b162e50ac 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -3359,9 +3359,10 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	eth_hw_addr_set(netdev, hw->mac.addr);
+diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
+index 352d7d612128..85dc1af90fcb 100644
+--- a/net/bluetooth/hci_conn.c
++++ b/net/bluetooth/hci_conn.c
+@@ -118,6 +118,9 @@ static void hci_conn_cleanup(struct hci_conn *conn)
+ 	if (test_bit(HCI_CONN_PARAM_REMOVAL_PEND, &conn->flags))
+ 		hci_conn_params_del(conn->hdev, &conn->dst, conn->dst_type);
  
- 	if (!is_valid_ether_addr(netdev->dev_addr)) {
--		dev_err(&pdev->dev, "Invalid MAC Address\n");
--		err = -EIO;
--		goto err_eeprom;
-+		eth_hw_addr_random(netdev);
-+		ether_addr_copy(hw->mac.addr, netdev->dev_addr);
-+		dev_err(&pdev->dev,
-+			"Invalid MAC address. Assigned random MAC address\n");
++	if (test_bit(HCI_CONN_FLUSH_KEY, &conn->flags))
++		hci_remove_link_key(hdev, &conn->dst);
++
+ 	hci_chan_list_flush(conn);
+ 
+ 	hci_conn_hash_del(hdev, conn);
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 6b83f9b0082c..09f4ff71e747 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -3372,8 +3372,10 @@ static void hci_disconn_complete_evt(struct hci_dev *hdev, void *data,
+ 				reason, mgmt_connected);
+ 
+ 	if (conn->type == ACL_LINK) {
+-		if (test_bit(HCI_CONN_FLUSH_KEY, &conn->flags))
++		if (test_bit(HCI_CONN_FLUSH_KEY, &conn->flags)) {
+ 			hci_remove_link_key(hdev, &conn->dst);
++			clear_bit(HCI_CONN_FLUSH_KEY, &conn->flags);
++		}
+ 
+ 		hci_req_update_scan(hdev);
  	}
- 
- 	igb_set_default_mac_filter(adapter);
 -- 
-2.27.0
+2.36.1.255.ge46751e96f-goog
 
