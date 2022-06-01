@@ -2,152 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E6C353AB62
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 18:56:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED3E853ABD6
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 19:26:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353979AbiFAQzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 12:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51356 "EHLO
+        id S1355803AbiFAR0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 13:26:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345508AbiFAQzt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 12:55:49 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EA969E9DF;
-        Wed,  1 Jun 2022 09:55:41 -0700 (PDT)
-X-UUID: 170dd9d948264c66b172e68656e21f4b-20220602
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:6fa3c549-2e88-441f-bdf7-7aeed1eadcdb,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:2a19b09,CLOUDID:82baf014-b515-4766-a72d-4514488fe823,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:0,BEC:nil
-X-UUID: 170dd9d948264c66b172e68656e21f4b-20220602
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <deren.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 713503531; Thu, 02 Jun 2022 00:55:39 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Thu, 2 Jun 2022 00:55:38 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Thu, 2 Jun 2022 00:55:38 +0800
-Message-ID: <da79fa2a94c435a308ea763efc557fc352d0245c.camel@mediatek.com>
-Subject: Re: [PATCH] Revert "mt76: mt7921: enable aspm by default"
-From:   Deren Wu <deren.wu@mediatek.com>
-To:     Kalle Valo <kvalo@kernel.org>, Philippe Schenker <dev@pschenker.ch>
-CC:     <linux-wireless@vger.kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        <linux@leemhuis.info>, "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        "Sean Wang" <sean.wang@mediatek.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        "YN Chen" <YN.Chen@mediatek.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <regressions@lists.linux.dev>
-Date:   Thu, 2 Jun 2022 00:55:38 +0800
-In-Reply-To: <87mtewoj4e.fsf@kernel.org>
-References: <20220412090415.17541-1-dev@pschenker.ch>
-         <87y20aod5d.fsf@kernel.org>
-         <668f1310cc78b17c24ce7be10f5f907d5578e280.camel@mediatek.com>
-         <e93aef5c9f8a97efe23cfb5892f78f919ce328e7.camel@pschenker.ch>
-         <87mtewoj4e.fsf@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        with ESMTP id S1345750AbiFAR0U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 13:26:20 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2D73EBA4
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 10:26:19 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2f83983782fso26328657b3.6
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 10:26:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wdMD0knNqN9sqWmnxjKW1L2wG54cbNO+R3QNEYwN0t4=;
+        b=CTxsReE9WzfHzH1TmYW4L33X1alptKwJSgcU1Um/lTWg9N0lE4QJWmbwAZi/RqzLCN
+         PFrkIehiemOJax0EKJOUz1fvIYaeTvsPBFrJhzlRXTXYzKQrkehTJ3O1OGaSkzB+NLap
+         QO7nRV0FaRODvvHSq4zPw7LoUXJmQP7KHou2rvH/NmaGpaP7IOT+DU8aaJ2t78nsWf/k
+         kfG32mndXUDCSpdQAxSVKVVNrWJB7zYKsyj+Gy3WwdhmvtKcolqTix9LYSr93w4sXKuk
+         8vhEVPDqjHUEXLVYU4CUoNBfqExWrWrRGiIhCF3vjJN6Tu9EwhnVRvy/v8bzYmqIMcQl
+         BaEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wdMD0knNqN9sqWmnxjKW1L2wG54cbNO+R3QNEYwN0t4=;
+        b=3l/nDgmD2ci8BfrPqY6tKX5TWdlaH/eVANAcpDpzR1lMK3s5KOXfvWksf69oVO0kfQ
+         CFRcp5fVr/4CcUfry45JfSScnW4nMWtx0tdq00ALrKVGnaqjR2jZ9Wjrmr/s1DY1GY0y
+         b9bkYWtU+TZDohi5nvOicYl2CpVyJZAwqhoKh+wf4yy0DZz6D6r+5+itfizlcbDS8GDW
+         c2SQawwFH1yFbn3PviirnTvby6tihqLVFeASrv37U4iZzpAvM7IiEtQt41gKqMulscod
+         MttBPbIC1n7Gk8zShJ6vgH7DqZ+XKvoZQoh1d3vvWEF/NajaJ6HGnZLRbUJhhXQIOJPG
+         FpTg==
+X-Gm-Message-State: AOAM531sfBzITclCLvIgHl5uErqTrWLNt9/jZpD6z8owR70lr+4NRF1x
+        wZ4ceFsVYwRaE7KwNDBMlyQeEAkGee7RmcnMJmPGLg==
+X-Google-Smtp-Source: ABdhPJxxCEBy4meH7Kx2Tf8V2ItTb8rgnpgruejTcC3pEJF8dC7me884W7RolUaNAPVkXzkLJTNFKRmUoXOo8GS+oeI=
+X-Received: by 2002:a81:4909:0:b0:30c:34d5:9f2c with SMTP id
+ w9-20020a814909000000b0030c34d59f2cmr542095ywa.489.1654104378223; Wed, 01 Jun
+ 2022 10:26:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR,UNPARSEABLE_RELAY autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220531185933.1086667-2-eric.dumazet@gmail.com> <202206011509.Rpp82wrl-lkp@intel.com>
+In-Reply-To: <202206011509.Rpp82wrl-lkp@intel.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 1 Jun 2022 10:26:07 -0700
+Message-ID: <CANn89i+dz7NiTOJP4uyq2qCsj-_E=qbXBBKZ819pgMzd6TbMBA@mail.gmail.com>
+Subject: Re: [PATCH net 1/2] net: add debug info to __skb_pull()
+To:     kernel test robot <lkp@intel.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kbuild-all@lists.01.org,
+        netdev <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-06-01 at 11:58 +0300, Kalle Valo wrote:
-> Philippe Schenker <dev@pschenker.ch> writes:
-> 
-> > On Tue, 2022-04-12 at 19:06 +0800, Deren Wu wrote:
-> > > On Tue, 2022-04-12 at 12:37 +0300, Kalle Valo wrote:
-> > > > Philippe Schenker <dev@pschenker.ch> writes:
-> > > > 
-> > > > > This reverts commit bf3747ae2e25dda6a9e6c464a717c66118c588c8.
-> > > > > 
-> > > > > This commit introduces a regression on some systems where the
-> > > > > kernel is
-> > > > > crashing in different locations after a reboot was issued.
-> > > > > 
-> > > > > This issue was bisected on a Thinkpad P14s Gen2 (AMD) with
-> > > > > latest
-> > > > > firmware.
-> > > > > 
-> > > > > Link: 
-> > > > > 
-https://urldefense.com/v3/__https://lore.kernel.org/linux-wireless/5077a953487275837e81bdf1808ded00b9676f9f.camel@pschenker.ch/__;!!CTRNKA9wMg0ARbw!09tjyaQlMci3fVI3yiNiDJKUW_qwNA_CbVhoAraeIX96B99Q14J4iDycWA9cq36Y$
-> > > > >  
-> > > > > Signed-off-by: Philippe Schenker <dev@pschenker.ch>
-> > > > 
-> > > > Can I take this to wireless tree? Felix, ack?
-> > > > 
-> > > > I'll also add:
-> > > > 
-> > > > Fixes: bf3747ae2e25 ("mt76: mt7921: enable aspm by default")
-> > > > 
-> > > 
-> > > Hi Kalle,
-> > > 
-> > > We have a patch for a similar problem. Can you wait for the
-> > > verification by Philippe?
-> > > Commit 602cc0c9618a81 ("mt76: mt7921e: fix possible probe failure
-> > > after
-> > > reboot")
-> > > Link: 
-> > > 
-https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/net/wireless/mediatek/mt76?id=602cc0c9618a819ab00ea3c9400742a0ca318380__;!!CTRNKA9wMg0ARbw!zCYyDcufJ-OLqQV6leCegA5SkNOOVjAIo-jzTHTk6HUWT9Gjt-bvSz8lr81Zv95u$
-> > >  
-> > > 
-> > > I can reproduce the problem in my v5.16-rc5 desktop. And the
-> > > issue can
-> > > be fixed when the patch applied.
-> > > 
-> > > 
-> > > Hi Philippe,
-> > > 
-> > > Can you please help to check the patch in your platform?
-> > 
-> > Hi Kalle and Deren,
-> > 
-> > I just noticed on my system and mainline v5.18 reboots do now work
-> > however Bluetooth is no longer accessible after a reboot.
-> > 
-> > Reverting commit bf3747ae2e25dda6a9e6c464a717c66118c588c8 on top of
-> > v5.18 solves this problem for me.
-> > 
-> > @Deren are you aware of this bug?
-> > @Kalle Is there a bugtracker somewhere I can submit this?
-> 
-> For regressions the best is to submit it to the regressions list,
-> CCed
-> it now.
-> 
-Hi Philippe,
+On Wed, Jun 1, 2022 at 12:28 AM kernel test robot <lkp@intel.com> wrote:
+>
+> Hi Eric,
+>
+> I love your patch! Yet something to improve:
+>
+> [auto build test ERROR on net/master]
+>
+> url:    https://github.com/intel-lab-lkp/linux/commits/Eric-Dumazet/net-af_packet-be-careful-when-expanding-mac-header-size/20220601-030146
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 09e545f7381459c015b6fa0cd0ac6f010ef8cc25
+> config: arc-randconfig-r021-20220531 (https://download.01.org/0day-ci/archive/20220601/202206011509.Rpp82wrl-lkp@intel.com/config)
+> compiler: arc-elf-gcc (GCC) 11.3.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/intel-lab-lkp/linux/commit/a907c048e7699133feedaa06948c15c719a59f94
+>         git remote add linux-review https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review Eric-Dumazet/net-af_packet-be-careful-when-expanding-mac-header-size/20220601-030146
+>         git checkout a907c048e7699133feedaa06948c15c719a59f94
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+>
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+>    arc-elf-ld: kernel/bpf/cgroup.o: in function `__skb_pull':
+>    include/linux/skbuff.h:2703: undefined reference to `skb_dump'
+> >> arc-elf-ld: include/linux/skbuff.h:2703: undefined reference to `skb_dump'
+>
 
-Tried your test with v5.18.0 on my desktop and both wifi/bt are still
-avaible after reboot. The only problem is I need to insert btusb module
-by command "modprobe btusb" to make BT workable.
 
-I will check the issue on different platforms. If there are any
-finding, I will let you know.
+So... CONFIG_NET=n  and yet __cgroup_bpf_run_filter_skb() is using skbs ?
 
-Regards,
-Deren
+Not sure if this makes any sense.
 
+
+
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://01.org/lkp
