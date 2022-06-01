@@ -2,181 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96E7B53ADC5
-	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 22:49:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59B5053AD23
+	for <lists+netdev@lfdr.de>; Wed,  1 Jun 2022 21:07:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229676AbiFAUmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 16:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39152 "EHLO
+        id S229758AbiFATGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 15:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229570AbiFAUmi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 16:42:38 -0400
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2064.outbound.protection.outlook.com [40.107.101.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3230C1D5AA0;
-        Wed,  1 Jun 2022 13:23:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gKOJoPC5XHOME4J8+S+w8DzoDchE8ZCsM4U50xd7JFYlgLpp2H2/YjHoNNY4vxK9/crvgtZ0gsZX5594GXCLqJ/M8V80PFBH5JV1rp/inLVGTJvTQe5a2D9CrnNJJAomZ1hsyl6WENPv5p1T+F9pG/uQjJtj9YXkcxWTXMT4c1sic+kD0Ii6Q0ee79MVzsP0qrUsrXe1GgkbK8yFKHZIoIPZCAPUmMmAHj++9cpapoHkitk9panPbghUi2jtMwY5gXPzG+qoDMoGd0hVWV5EL0HnzyvfGp0M8s+x6KyzvYeKoIGKCwofsxNzAAQFiOkl9NTM3Mg4oCcd7sRLeStuoQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Hn60ivQJmJV+bG6M13r5JDBfKGyc96V3puCHuVeolJw=;
- b=nuRgLLW8Te6G+Ve202W3CFvTQFcqLuOwegj99I4nBJ/KNtxVI1RmOONib1lI15nmKDQ4CfAhDvAPasjKSIQEnPjschICyYH2oZV/6Rf20ti5LP1Zih9FzKadKVAfJ6Y9bOLJpo4LxyQQjyvsH9JuAfDxkHff2B2upZr06Xk/XJ4Ac5I+2bd7pS0oZrT/GAISPbFUHs4QJzMK+3xsDJyFdq8IhmVta50ygIG+lgSTEKtsomSE92DjYUwPGIpw4vUrFrS9uECbbxAe4Ua3EnBpayZJnLe7POo5RYRXEI5G0IVJ0rC8c5bjO3VRudsEBAxPoUExoJzoMXL/GFqGWSiBdg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Hn60ivQJmJV+bG6M13r5JDBfKGyc96V3puCHuVeolJw=;
- b=oD1Fxv94RMEAeBcImSlGOcmmZgRlqKd8sKJpoTQowxX0wn/GG+cYqhTzNwALTowFaS08eKLPgC1kdYYGjsyqgHZaU5fTd1yCPFc4nJ6sWZuCXYDVdQOYuUb6QE6njHhXe/NSPdq/413bp7bOPsQObnwwtpz05x2Fmr5NTgDyBJz65TGkQIqlWyuLk21771YOOd0O3dQAutEC5q+fnX+bqOghhs4a2bZQE56bGPzecoviT3y1AOLARxgmfRhv7DPgitkykqcwZ7HK1aM7lAT2ojhDiO35NCUknVlnqYzOHnqabkRxBTrkciWgGRxqdjcUv5qrMH/GBHkgHaakIxmw3w==
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
- by BL1PR12MB5320.namprd12.prod.outlook.com (2603:10b6:208:314::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12; Wed, 1 Jun
- 2022 18:58:50 +0000
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::489d:7d33:3194:b854]) by PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::489d:7d33:3194:b854%3]) with mapi id 15.20.5314.013; Wed, 1 Jun 2022
- 18:58:50 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     Jason Wang <jasowang@redhat.com>
-CC:     "Michael S. Tsirkin" <mst@redhat.com>,
-        =?utf-8?B?RXVnZW5pbyBQw6lyZXo=?= <eperezma@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "martinh@xilinx.com" <martinh@xilinx.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "martinpo@xilinx.com" <martinpo@xilinx.com>,
-        "lvivier@redhat.com" <lvivier@redhat.com>,
-        "pabloc@xilinx.com" <pabloc@xilinx.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        "lulu@redhat.com" <lulu@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
-        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
-        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
-        "hanand@xilinx.com" <hanand@xilinx.com>,
-        "dinang@xilinx.com" <dinang@xilinx.com>,
-        Longpeng <longpeng2@huawei.com>
-Subject: RE: [PATCH v4 0/4] Implement vdpasim stop operation
-Thread-Topic: [PATCH v4 0/4] Implement vdpasim stop operation
-Thread-Index: AQHYcP5BrBz66eonZEeOxjwIzt98aa0xHKkwgAFx+gCABD0SgIACqRJggABroACAAQ+R4A==
-Date:   Wed, 1 Jun 2022 18:58:50 +0000
-Message-ID: <PH0PR12MB5481CAA3F57892FF7F05B004DCDF9@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20220526124338.36247-1-eperezma@redhat.com>
- <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
- <20220527065442-mutt-send-email-mst@kernel.org>
- <CACGkMEubfv_OJOsJ_ROgei41Qx4mPO0Xz8rMVnO8aPFiEqr8rA@mail.gmail.com>
- <PH0PR12MB5481695930E7548BAAF1B0D9DCDC9@PH0PR12MB5481.namprd12.prod.outlook.com>
- <CACGkMEsSKF_MyLgFdzVROptS3PCcp1y865znLWgnzq9L7CpFVQ@mail.gmail.com>
-In-Reply-To: <CACGkMEsSKF_MyLgFdzVROptS3PCcp1y865znLWgnzq9L7CpFVQ@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b4a25959-63de-4510-5b56-08da4400c3d8
-x-ms-traffictypediagnostic: BL1PR12MB5320:EE_
-x-microsoft-antispam-prvs: <BL1PR12MB5320CBC9DCF23529BAC7464DDCDF9@BL1PR12MB5320.namprd12.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dCn49QPxbJdYjTfpHLo7/hc4GbiHsZlpD2bHK21G2nh352KrTUKnlLqq6P6aEXoG/3hrT5+GYSUcurFmFvjNHEFZSD11qlPRfwi1J2FjNWcE0ZYN94hCu+sLpFx3BFMFrb52DOu1cLsXSS/UW8LgzxsIijPCjbTAGUlwEXInnf54TUWJtkI8YnftCPxv+P0ObkgcBIXzqZIdIXiIJHmUp9+oHWfHzRBMN2eEV75DorSDQD7hGFwkDTWdOoFk5ITzdp6Hmx+GHkEbZdBEfju66Mq8W2cXJnsS1VDg/wilPrZQFHjrxVMciR3hdJnfSz3BhloC7UbaD84T1ho1Ls3B3f2RBu/NXnlBu3X6hvcZwTxmG7rg7hTyhmSI31vpsKLTzqQHxukym8N2lzG5tzw30sc47H7fz+r8lZWZkJaEqY6pDYtD5N7ltQIdyW7G6sajGRul1QEuzdXVLBEbiBuhL0UlCpSLgZtyQ/iI1g1GFB1PnZiXWPxe4i8Ki8G9E+mOcg6Qq3Wl1Ob4SuMcfY114cCr38E4s1QpZnAKw52LMZBSmg30kKhn58LqioMXVYMlyFNC2rBg0SeHwIMeU4nxECvY76anNePXLu2m7xAZH2fCzjQli+8lf9fo3paQKmJ6B+jhZJy0gzhVQBycJvfjV1NQeVX454HqCjRjBV0UosHv4AEu/3pltnZDN4CGJhSmpakxigEFs3NWWeJUdjbwRYufdxyJpocnWoRSwJdWvcvqPnWxibMkcJnIrMqKNRxU+YEEiJt4pIvoVrKhEODoR6N0KkJ1hpsoNe57jKIsrxs=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(7696005)(86362001)(6506007)(38070700005)(52536014)(2906002)(54906003)(316002)(8676002)(4326008)(38100700002)(66556008)(66476007)(76116006)(66446008)(6916009)(66946007)(64756008)(7416002)(55016003)(71200400001)(4744005)(186003)(83380400001)(9686003)(966005)(122000001)(5660300002)(508600001)(33656002)(8936002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 2
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?WmFPYWpDeU9ERkk0ZlBFTjRsMnJGVG0vNTI0MWNaMnNCWkVHOHpSWUkyWWJz?=
- =?utf-8?B?ek5QM2hBRW8rOXN1QlhSY0FpOG1RS3Z2ZWtGVkFZbENhYnNvMDBqZmNJTnkr?=
- =?utf-8?B?VmdnV0o3K2UrNEdjYWdHZDJEVGpiY1VocEFnYWZON1pLaGYzM3pzYm1HTDJn?=
- =?utf-8?B?S0NNa3lnVWE5ellHNWNZSFo4VDhrSVZKK3FJN0FlbG1xaTNWZHpXbDRQR0dB?=
- =?utf-8?B?a3hOM1hYaUNuZUJ6Y0trN2NRclRnUGQzbDc5azhReDA0ckhHMVErNithU3Ra?=
- =?utf-8?B?VGFpblJFYXhYK2pLNkE2VTh3cTFGbGxqSE10ekpxOFJXM3ZycXVsS1BUR1N6?=
- =?utf-8?B?dWZCWGZrbi9neTRYcEtTUEMxRUtxQlZOaFc4Vlpaa0RQdkZ6Z0QzOERNOVpk?=
- =?utf-8?B?bDJuL2M1Vk9sY0J2K2JTUWFtL3NQcHkzR2kzaVpRUXNxcnA1ZEVEUDY2YzRw?=
- =?utf-8?B?cGFHa1ZIVEFncENnMElNY25YTFhnSkp6SXNxQ2Q1UVRiUVN5UXJEZmlra09l?=
- =?utf-8?B?S3RtVlYzRkJ3MlpPQURlRHpmQWtGYzBKaWhNSjdwSTdINFFDRW1Eb002UlVt?=
- =?utf-8?B?ZEZ0SUdJVHhaYTJsM3lWcG9RYXJEcVN1cjE2ajl6OGhKRmhlVmxlNUptM0Vr?=
- =?utf-8?B?U3k5L1RHcXlKeDArVWhFQ2lrQUNsZjFKZDcxTXpmaHhPenpYOTV0MWlqdXRD?=
- =?utf-8?B?ZzBReXBCSThDNU5Zc1ZFV3V2NlltRE1nVDZKMnZGT0JoUjVEcVhHeHE4SUJt?=
- =?utf-8?B?dFg2ZEh3VE5VZ3AxbEhYelorTURzeTBrbDVXMnY5Z0lQK3gvaUt5N2RHaS9H?=
- =?utf-8?B?aVNMcXk0WGhhWUpUQmNGeEhFTzEvL3UxRVRVOEU4T1JURzh2Z05EWHlselFZ?=
- =?utf-8?B?Q0VrZGVpNnYyaXMvODZEU2JrYjFDU2wxR0tabXFiV2xnMzlsNG5nWmtCYlZw?=
- =?utf-8?B?dUtDajNLZEtEbU9UYXRCRzkySmxWRHJHL3p5ZkU5T2ZnczZ1V2ZhWFRrUHNY?=
- =?utf-8?B?MzJSaTB2S0UzN0pBekJOeDBRRVhLa2NsVmpZQjNmSTQvbVNlUDNvMGFOdVdY?=
- =?utf-8?B?aUdLRTlFeTZ1K0EvaGN6dk1wNFY4Qk9CTmNEZnJxc1RiTE9uYVdGUmYyN0k5?=
- =?utf-8?B?UFUzRTFia2xHcDkvT3MxNEdyMnBZcjlXSnBBV1pDU2x5YnlHWFNQelVPV2FB?=
- =?utf-8?B?bkR2OWF1bGVPSys2RkNPb21rQndKbGR1T1IxK1JtT1VvSE5ZQUFmV0JGbHZt?=
- =?utf-8?B?bFJKZm1LV1hFalBHTStyV2dISDU5bm02R2VRc3dkRXh2M0NiU0NaeEJYVG1W?=
- =?utf-8?B?cC9Mb1lCY2xmZU1rR0tYNzBIS2NiZDc2ZmNSY3FqanhuaDZKdUc0OW1uemx3?=
- =?utf-8?B?T0QvNWpZdXZsQjlTWWxTUGhPdkpPNFhUK2ZwM3BIOS9hWXE0b2ovQVZkY0Ji?=
- =?utf-8?B?RUl5cXNacElNdnR4ME1VNnMremZmaEhLR0ZqemdHTHRFcWJGY3FvdDlpR2VU?=
- =?utf-8?B?YWYwV1RURGNOMGJqRXZoY3drRnpDeVRYVVh3WHhlaGRsc0lTb0FPQVg5VjQ4?=
- =?utf-8?B?RmxPK2t5V3lLd0ROZU1ldmxJVWRRU080TXMxUVJsM1NCVzlrVmgrajdwWlRK?=
- =?utf-8?B?MnlKdjdFeUNRdnA5d3ZkNlJTU3hma0w1Q2hOL1NyV1hGYVZxdzN0c2xZM1pr?=
- =?utf-8?B?OEk0VWhWS1p2UEM5T0x0NFRxV2lLdVJmS01OS3RSVkJ2ZmpwUmw5dXFwSC9H?=
- =?utf-8?B?ZGlsanJLK1BMdHdPUEMxTnl2SjFrN1BNMElGK0ZsME5XSWEwcm9hRXpTcC9y?=
- =?utf-8?B?TW9TMTVUejRVeFp5UjBHYUN5UTZXWFllSDVKYTRDeEhrWHRxSWhTdWh1c0Fp?=
- =?utf-8?B?ck1TbXpGMG9BRXBiWXV5RTJweXR2eDFoNHlVbFBYTWZrdlhyQnIyeVU1dkMz?=
- =?utf-8?B?Qks1aVlFbjVQUGRtTnQ3SlZaWXRIR0YzL0d1UWsrUlp3ZnpBYTh2bDVWaCtD?=
- =?utf-8?B?UDY1ZzF1TlRlekVWRXhOUjVrdlJkTFdHZGJ5NW9PTFZCUVE0bVlyNVZaNmdC?=
- =?utf-8?B?VW8rL1NBRUJYOWNlbTg2b281cWlOMHRSK3pvclNlWERRcHQyYVE0eVNsUWFL?=
- =?utf-8?B?bXVaMnp3ay9XMUVtMzlNOFlNUmo2K0JvQm1jYnJCUC91cWlFaVNLTE9BdXBj?=
- =?utf-8?B?WnNZRTVFMko4N0M4bDNOQUl5K3V1VXVkT3pSVU5qMlUxM3Z6US9mcjNvbVZu?=
- =?utf-8?B?a2c1SnQwZ1Baa0MzU2U0M0h5SXhsN0VpZEVTZzM0UFFrdU5Tcks5aWhXNEFm?=
- =?utf-8?B?L0lMbFkwVUFmUlExRVNUNmQ1RDFiNEkzellMV2lxZy9wQmFGT1hvM0c3ZkJo?=
- =?utf-8?Q?tVxN/wPsS1gaBv+MKGvT99QIt9C99mWFJ3wWSyLITVZYM?=
-x-ms-exchange-antispam-messagedata-1: kLLLBaaw3QEQ1g==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b4a25959-63de-4510-5b56-08da4400c3d8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Jun 2022 18:58:50.2146
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: DMYXAQdqACFd3kqWqB0gg32nP960djVcPVEf12O6ZC9YdPk0vIZYRQDYpXV4rv8g+ERBwWqm2+o4FLFo09K+Bw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5320
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S229491AbiFATGj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 15:06:39 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DB01C0C86
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 12:06:36 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id m11-20020a25710b000000b0065d4a4abca1so2162533ybc.18
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 12:06:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=uLhEAF6ELM6OcR0UTHc6s4fCUiCOGO02IN2U67aZoh4=;
+        b=Fwl4joEJQzmwoYj3HlsKYdl1hXxIYFc5D6x4vyQKCB0qiIe0S4misb63UMAR0AYmxI
+         12MBp2yZQ2ZXLHH+TxIQYGh3X3Qb+aJJD6NBTLCHqYeArk4CqWcDJ8+E8AaR8wkI9Iwe
+         ANz6nB40LOl3dySTnLPPU/5SfFv6cg58NCJwCgFiCB+COCo18osVgfpt03M/0G1RW0D5
+         sKvkI56HxajxE5eU6DCkrwFcbl+cqWVn36jGtG9d1cr1HfS19U3tsfnxSwGgVn5Xi4Tw
+         LFL1wBiG2HkTytJNEhWZFBiUpSAikUiqWV6V3/DXd5XvMS/Fv88mZCIebQZm4xlJ0n2q
+         OHkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=uLhEAF6ELM6OcR0UTHc6s4fCUiCOGO02IN2U67aZoh4=;
+        b=CgxT3VZL/QKIFAe+3n4/KM+zEmz/f8JbapmvexfHGdsdFXIVMrJ7drjJeKfsAK5UHH
+         /KsrAh4E8K+fhcDY3Senvlt8FEdGwypso3au5ZnqMrSHFE5bQDzNJ5i8/Mhq85rJ8dST
+         UzJgBbJOdmiRfy422ql8FfAWZiMsCVPHFm3goYNpnmfsV+Bzebm+GS5fBxxOtPGmRPLC
+         /w8I8zC/xyqetWLh5qqHjEIeQ1tG1WfSwgf7uJyoxvkIPNN22ye6TADo8KCar6iXG9UE
+         Vvv5+GzUMFBfWe5VeAJi4klGleH/RWeoflWEd1P59zWCcDiNR0axDmGA5mFVMl40DPUp
+         MVYQ==
+X-Gm-Message-State: AOAM5315t+MD+p0t7GGUm1/sf7mfZ5Gjy3Dqkg+s55a4M8179iv4Gm/l
+        +Jn+2/yphEIqnMP11e+RaqFpAQpKszbnjDeePR9GHev2wVnkhXKn2g8OLStRMNfNB5Yi4+9qWV5
+        y8iAuLyTwpQyguINs/4/LnxR/oPbJti0Z87xMAxFCkXHrsYXH4cnHHg==
+X-Google-Smtp-Source: ABdhPJxQYxaZskSSXuvhK0PDgYyyfr2SGwTr4nIHdJmQ34vAIcgYF7xLFVjs3uAtuVuOLhLn0Sveb3k=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a81:a507:0:b0:300:5bfe:e682 with SMTP id
+ u7-20020a81a507000000b003005bfee682mr1069826ywg.337.1654110140371; Wed, 01
+ Jun 2022 12:02:20 -0700 (PDT)
+Date:   Wed,  1 Jun 2022 12:02:07 -0700
+Message-Id: <20220601190218.2494963-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH bpf-next v8 00/11] bpf: cgroup_sock lsm flavor
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        Stanislav Fomichev <sdf@google.com>, kafai@fb.com,
+        kpsingh@kernel.org, jakub@cloudflare.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IEZyb206IEphc29uIFdhbmcgPGphc293YW5nQHJlZGhhdC5jb20+DQo+IFNlbnQ6IFR1ZXNk
-YXksIE1heSAzMSwgMjAyMiAxMDo0MiBQTQ0KPiANCj4gV2VsbCwgdGhlIGFiaWxpdHkgdG8gcXVl
-cnkgdGhlIHZpcnRxdWV1ZSBzdGF0ZSB3YXMgcHJvcG9zZWQgYXMgYW5vdGhlcg0KPiBmZWF0dXJl
-IChFdWdlbmlvLCBwbGVhc2UgY29ycmVjdCBtZSkuIFRoaXMgc2hvdWxkIGJlIHN1ZmZpY2llbnQg
-Zm9yIG1ha2luZw0KPiB2aXJ0aW8tbmV0IHRvIGJlIGxpdmUgbWlncmF0ZWQuDQo+IA0KVGhlIGRl
-dmljZSBpcyBzdG9wcGVkLCBpdCB3b24ndCBhbnN3ZXIgdG8gdGhpcyBzcGVjaWFsIHZxIGNvbmZp
-ZyBkb25lIGhlcmUuDQpQcm9ncmFtbWluZyBhbGwgb2YgdGhlc2UgdXNpbmcgY2ZnIHJlZ2lzdGVy
-cyBkb2Vzbid0IHNjYWxlIGZvciBvbi1jaGlwIG1lbW9yeSBhbmQgZm9yIHRoZSBzcGVlZC4NCg0K
-TmV4dCB3b3VsZCBiZSB0byBwcm9ncmFtIGh1bmRyZWRzIG9mIHN0YXRpc3RpY3Mgb2YgdGhlIDY0
-IFZRcyB0aHJvdWdoIGdpYW50IFBDSSBjb25maWcgc3BhY2UgcmVnaXN0ZXIgaW4gc29tZSBidXN5
-IHBvbGxpbmcgc2NoZW1lLg0KDQpJIGNhbiBjbGVhcmx5IHNlZSBob3cgYWxsIHRoZXNlIGFyZSBp
-bmVmZmljaWVudCBmb3IgZmFzdGVyIExNLg0KV2UgbmVlZCBhbiBlZmZpY2llbnQgQVEgdG8gcHJv
-Y2VlZCB3aXRoIGF0IG1pbmltdW0uDQoNCj4gaHR0cHM6Ly9saXN0cy5vYXNpcy1vcGVuLm9yZy9h
-cmNoaXZlcy92aXJ0aW8tY29tbWVudC8yMDIxMDMvbXNnMDAwMDguaHRtbA0KPiANCj4gPiBPbmNl
-IHRoZSBkZXZpY2UgaXMgc3RvcHBlZCwgaXRzIHN0YXRlIGNhbm5vdCBiZSBxdWVyaWVkIGZ1cnRo
-ZXIgYXMgZGV2aWNlDQo+IHdvbid0IHJlc3BvbmQuDQo+ID4gSXQgaGFzIGxpbWl0ZWQgdXNlIGNh
-c2UuDQo+ID4gV2hhdCB3ZSBuZWVkIGlzIHRvIHN0b3Agbm9uIGFkbWluIHF1ZXVlIHJlbGF0ZWQg
-cG9ydGlvbiBvZiB0aGUgZGV2aWNlLg0K
+This series implements new lsm flavor for attaching per-cgroup programs to
+existing lsm hooks. The cgroup is taken out of 'current', unless
+the first argument of the hook is 'struct socket'. In this case,
+the cgroup association is taken out of socket. The attachment
+looks like a regular per-cgroup attachment: we add new BPF_LSM_CGROUP
+attach type which, together with attach_btf_id, signals per-cgroup lsm.
+Behind the scenes, we allocate trampoline shim program and
+attach to lsm. This program looks up cgroup from current/socket
+and runs cgroup's effective prog array. The rest of the per-cgroup BPF
+stays the same: hierarchy, local storage, retval conventions
+(return 1 == success).
+
+Current limitations:
+* haven't considered sleepable bpf; can be extended later on
+* not sure the verifier does the right thing with null checks;
+  see latest selftest for details
+* total of 10 (global) per-cgroup LSM attach points
+
+Cc: ast@kernel.org
+Cc: daniel@iogearbox.net
+Cc: kafai@fb.com
+Cc: kpsingh@kernel.org
+Cc: jakub@cloudflare.com
+
+v8:
+- CI: fix compile issue
+- CI: fix broken bpf_cookie
+- Yonghong: remove __bpf_trampoline_unlink_prog comment
+- Yonghong: move cgroup_atype around to fill the gap
+- Yonghong: make bpf_lsm_find_cgroup_shim void
+- Yonghong: rename regs to args
+- Yonghong: remove if(current) check
+- Martin: move refcnt into bpf_link
+- Martin: move shim management to bpf_link ops
+- Martin: use cgroup_atype for shim only
+- Martin: go back to arrays for managing cgroup_atype(s)
+- Martin: export bpf_obj_id(aux->attach_btf)
+- Andrii: reorder SEC_DEF("lsm_cgroup+")
+- Andrii: OPTS_SET instead of OPTS_HAS
+- Andrii: rename attach_btf_func_id
+- Andrii: move into 1.0 map
+
+v7:
+- there were a lot of comments last time, hope I didn't forget anything,
+  some of the bigger ones:
+  - Martin: use/extend BTF_SOCK_TYPE_SOCKET
+  - Martin: expose bpf_set_retval
+  - Martin: reject 'return 0' at the verifier for 'void' hooks
+  - Martin: prog_query returns all BPF_LSM_CGROUP, prog_info
+    returns attach_btf_func_id
+  - Andrii: split libbpf changes
+  - Andrii: add field access test to test_progs, not test_verifier (still
+    using asm though)
+- things that I haven't addressed, stating them here explicitly, let
+  me know if some of these are still problematic:
+  1. Andrii: exposing only link-based api: seems like the changes
+     to support non-link-based ones are minimal, couple of lines,
+     so seems like it worth having it?
+  2. Alexei: applying cgroup_atype for all cgroup hooks, not only
+     cgroup lsm: looks a bit harder to apply everywhere that I
+     originally thought; with lsm cgroup, we have a shim_prog pointer where
+     we store cgroup_atype; for non-lsm programs, we don't have a
+     trace program where to store it, so we still need some kind
+     of global table to map from "static" hook to "dynamic" slot.
+     So I'm dropping this "can be easily extended" clause from the
+     description for now. I have converted this whole machinery
+     to an RCU-managed list to remove synchronize_rcu().
+- also note that I had to introduce new bpf_shim_tramp_link and
+  moved refcnt there; we need something to manage new bpf_tramp_link
+
+v6:
+- remove active count & stats for shim program (Martin KaFai Lau)
+- remove NULL/error check for btf_vmlinux (Martin)
+- don't check cgroup_atype in bpf_cgroup_lsm_shim_release (Martin)
+- use old_prog (instead of passed one) in __cgroup_bpf_detach (Martin)
+- make sure attach_btf_id is the same in __cgroup_bpf_replace (Martin)
+- enable cgroup local storage and test it (Martin)
+- properly implement prog query and add bpftool & tests (Martin)
+- prohibit non-shared cgroup storage mode for BPF_LSM_CGROUP (Martin)
+
+v5:
+- __cgroup_bpf_run_lsm_socket remove NULL sock/sk checks (Martin KaFai Lau)
+- __cgroup_bpf_run_lsm_{socket,current} s/prog/shim_prog/ (Martin)
+- make sure bpf_lsm_find_cgroup_shim works for hooks without args (Martin)
+- __cgroup_bpf_attach make sure attach_btf_id is the same when replacing (Martin)
+- call bpf_cgroup_lsm_shim_release only for LSM_CGROUP (Martin)
+- drop BPF_LSM_CGROUP from bpf_attach_type_to_tramp (Martin)
+- drop jited check from cgroup_shim_find (Martin)
+- new patch to convert cgroup_bpf to hlist_node (Jakub Sitnicki)
+- new shim flavor for 'struct sock' + list of exceptions (Martin)
+
+v4:
+- fix build when jit is on but syscall is off
+
+v3:
+- add BPF_LSM_CGROUP to bpftool
+- use simple int instead of refcnt_t (to avoid use-after-free
+  false positive)
+
+v2:
+- addressed build bot failures
+
+Stanislav Fomichev (11):
+  bpf: add bpf_func_t and trampoline helpers
+  bpf: convert cgroup_bpf.progs to hlist
+  bpf: per-cgroup lsm flavor
+  bpf: minimize number of allocated lsm slots per program
+  bpf: implement BPF_PROG_QUERY for BPF_LSM_CGROUP
+  bpf: allow writing to a subset of sock fields from lsm progtype
+  libbpf: add lsm_cgoup_sock type
+  libbpf: implement bpf_prog_query_opts
+  bpftool: implement cgroup tree for BPF_LSM_CGROUP
+  selftests/bpf: lsm_cgroup functional test
+  selftests/bpf: verify lsm_cgroup struct sock access
+
+ arch/x86/net/bpf_jit_comp.c                   |  24 +-
+ include/linux/bpf-cgroup-defs.h               |  13 +-
+ include/linux/bpf-cgroup.h                    |   9 +-
+ include/linux/bpf.h                           |  39 +-
+ include/linux/bpf_lsm.h                       |   7 +
+ include/linux/btf_ids.h                       |   3 +-
+ include/uapi/linux/bpf.h                      |   4 +
+ kernel/bpf/bpf_lsm.c                          | 101 +++++
+ kernel/bpf/btf.c                              |  11 +
+ kernel/bpf/cgroup.c                           | 370 ++++++++++++++----
+ kernel/bpf/core.c                             |   9 +
+ kernel/bpf/syscall.c                          |  16 +-
+ kernel/bpf/trampoline.c                       | 251 ++++++++++--
+ kernel/bpf/verifier.c                         |  35 +-
+ tools/bpf/bpftool/cgroup.c                    |  79 ++--
+ tools/include/linux/btf_ids.h                 |   4 +-
+ tools/include/uapi/linux/bpf.h                |   4 +
+ tools/lib/bpf/bpf.c                           |  40 +-
+ tools/lib/bpf/bpf.h                           |  15 +
+ tools/lib/bpf/libbpf.c                        |   3 +
+ tools/lib/bpf/libbpf.map                      |   2 +-
+ .../selftests/bpf/prog_tests/lsm_cgroup.c     | 346 ++++++++++++++++
+ .../testing/selftests/bpf/progs/lsm_cgroup.c  | 160 ++++++++
+ 23 files changed, 1394 insertions(+), 151 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/lsm_cgroup.c
+ create mode 100644 tools/testing/selftests/bpf/progs/lsm_cgroup.c
+
+-- 
+2.36.1.255.ge46751e96f-goog
+
