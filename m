@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C318253B21C
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 05:42:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9021F53B227
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 05:42:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233587AbiFBD2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 23:28:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55430 "EHLO
+        id S233599AbiFBD3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 23:29:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233573AbiFBD17 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 23:27:59 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183CE5DBCD
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 20:27:58 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id 3-20020a17090a174300b001e426a02ac5so4984461pjm.2
-        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 20:27:58 -0700 (PDT)
+        with ESMTP id S233578AbiFBD3X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 23:29:23 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C6E267CE4
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 20:29:17 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id y196so3646416pfb.6
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 20:29:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:to:cc:references
          :from:in-reply-to:content-transfer-encoding;
-        bh=sZ8GzRUQBIRnVHILPlLfnQyD91gR78EWniMrsU1AmRw=;
-        b=nHuGvwI9o58j8lsqts87M+3kByKxsrc6rcVXPBo7v2yqnvCQuP72TbGLvtDo8h2mFj
-         8Xnpn2KWkwl1P+DnsYYpQTXW5BVC3B519Qv82bF5qq0UAX2M/jULgWfJbRC5MuMfMndm
-         cOND4RdcH1iH4+nwv5uyffzq51YTrhYJmoffPJYJF07Sq9zts008GlGbpDVWuMv1eEZ7
-         wzuTBOfdo6T3yf4aOYR3Ux6hh7ntQKdi7w+mZbiHD2I885cviqJsPzeP/vO8A7JvXoPt
-         hs19TKJ7omx4l47CplvvvddULcSUuUq4ZyUWL5ZNBjTRG92UMMPx+RC97qZ4Pne1KtDP
-         mIVQ==
+        bh=d7/X5D/XlWDgxC+lr9ny4gEaWSqGcdWBVlXv9V2nJSc=;
+        b=4zgwd/soJ4OlZOpXRWMVKCorWv2P8U3su0NGdknMw1o/lf/a30yo2AcvaHVixK4JcF
+         HEf5qgd8iNm+Iu7TGuu2W1/UAlo7NIcftpk4VWQyeAjUF4m3RkS1x0+QylTvUiPn+dut
+         0gAvKdf3riJQgRXO4pz/G7rmweSBnWdvYJmsAYhq+wR364cs2wiiVzu7zzRMQYV3G109
+         HHJiCxvOCctMT0SRMlJaiGxpSd4U8IgIT8sP9fNkHkuXAPdeo3jrj/I2q0IP+EjNieEG
+         b22fM9Zpj5PBalBM5lVDOBwBkL7xz4P42CIx8Q1qgw1Xd2Kker2XfNkgN2SGUIn+IV3W
+         30rw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=sZ8GzRUQBIRnVHILPlLfnQyD91gR78EWniMrsU1AmRw=;
-        b=APIwMnK3T0RCPfeMB6w17IPlV+zDfnJWg0/amTCQKpAs3uF9L8aXgKtoQ9hi6fgQ14
-         n9W1/6SUtJmZR7lFTnsov+MnNqSnQrPmZAj3lKlI2RE/BxtTnpTgkEUhZ96lIBWkebZe
-         r6inPhUxP6o3rtwYSpVygV5nTFVi3f5DkMeFzlR9DuO58kPNwPfXqRLkhmmeLCWUNhmU
-         ABbdfBN1U2ipiKNAFVkWkpHt5EUVPCkyT6bBP2MYXflZTTEpSm1R9QF9IAErmNU4qZFO
-         66IhaEGJW/LG93u95TwkBO37J6RWw+PlRf1Ss7SrT+8oH3qG/ivMmHUiVSrJAnsWqfTH
-         89hg==
-X-Gm-Message-State: AOAM532JvZLyKqZgJ2U4NknOpP4EF3psEbeUIYJ1bqMJwUIasrqbyvqi
-        IQ1vXKQ6jaXcpkr5huGgWF2UNQ==
-X-Google-Smtp-Source: ABdhPJzbui9XgIru9OSL8mR+ctNjeib5PVobaIezJORsGKxZXTGoi8iyoBq7eJRaZvW/YntSXpqDVA==
-X-Received: by 2002:a17:902:a605:b0:163:8e47:8929 with SMTP id u5-20020a170902a60500b001638e478929mr2701820plq.69.1654140477634;
-        Wed, 01 Jun 2022 20:27:57 -0700 (PDT)
+        bh=d7/X5D/XlWDgxC+lr9ny4gEaWSqGcdWBVlXv9V2nJSc=;
+        b=JioG7KsIccof20ZDp1aoZtc8xk73pSXf9Md/pSK4caMFBgLb7L8d8qdZ4Ut3G2hl27
+         uCWarnmgrbcTBw7VjqlzLvCITFMWtaJJ+IUNb3S6NVnzd4BycUcvc5udArlq+BpKFeaf
+         e/dyu3EPYZQBCivXNqFJhnVkS/tS/kYUMmREEI4BQ53gK9xOeTOp84mUn2ktUnvYuGQf
+         4E6lukc+bpCwqt4F+6l+OCvOliQ+inHErUUSMmI5tH5UXd8EzwfZ2iOaC8EXslRt/wuW
+         xOE68jj7pJLVi1G8GTbOMxBLaG3HnQ2cmjXUA+yZZxU+pSVwIUhubKTH3mp3azVM3ECY
+         rFeg==
+X-Gm-Message-State: AOAM5326WfDr8iVskcyOl1zlq2UJAjOXlKlz0ueFDgwGHWli4eEc91k7
+        5hOLORdBnVwu6DyvmD1MmfOFIA==
+X-Google-Smtp-Source: ABdhPJz5XXjx1kduDqvTabORmcqulZrn95ibw4rCM4QDXk4FGV+QJnfefUP2GHpZKCvFFGv71aOTSQ==
+X-Received: by 2002:a05:6a00:889:b0:510:91e6:6463 with SMTP id q9-20020a056a00088900b0051091e66463mr2840480pfj.58.1654140556716;
+        Wed, 01 Jun 2022 20:29:16 -0700 (PDT)
 Received: from [10.71.57.194] ([139.177.225.241])
-        by smtp.gmail.com with ESMTPSA id p2-20020a170902c70200b001617541c94fsm2269689plp.60.2022.06.01.20.27.51
+        by smtp.gmail.com with ESMTPSA id v4-20020a1709028d8400b00163cdf1a200sm2239756plo.38.2022.06.01.20.29.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 01 Jun 2022 20:27:57 -0700 (PDT)
-Message-ID: <6aedba89-51f4-c889-d3cc-5f513defb920@bytedance.com>
-Date:   Thu, 2 Jun 2022 11:27:49 +0800
+        Wed, 01 Jun 2022 20:29:16 -0700 (PDT)
+Message-ID: <6181d77a-66ed-76ff-35a4-b24134bc67fb@bytedance.com>
+Date:   Thu, 2 Jun 2022 11:29:09 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: Re: [PATCH v4 1/2] bpf: avoid grabbing spin_locks of all cpus
- when no free elems
+Subject: Re: Re: Re: [PATCH v4 2/2] selftest/bpf/benchs: Add bpf_map benchmark
 To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -70,12 +69,12 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Cong Wang <cong.wang@bytedance.com>,
         Chengming Zhou <zhouchengming@bytedance.com>
 References: <20220601084149.13097-1-zhoufeng.zf@bytedance.com>
- <20220601084149.13097-2-zhoufeng.zf@bytedance.com>
- <CAADnVQJcbDXtQsYNn=j0NzKx3SFSPE1YTwbmtkxkpzmFt-zh9Q@mail.gmail.com>
- <21ec90e3-2e89-09c1-fd22-de76e6794d68@bytedance.com>
- <CAADnVQKdU-3uBE9tKifChUunmr=c=32M4GwP8qG1-S=Atf7fvw@mail.gmail.com>
+ <20220601084149.13097-3-zhoufeng.zf@bytedance.com>
+ <CAADnVQ+qmvYK_Ttsjgo49Ga7paghicFg_O3=1sYZKbdps4877Q@mail.gmail.com>
+ <041465f0-0fd3-fd39-0dac-8093a1c98c00@bytedance.com>
+ <CAADnVQ+cCoH=DAoyLGtJ5HvdNVgFBgTW=wCHs1wvFQuwyhcWOw@mail.gmail.com>
 From:   Feng Zhou <zhoufeng.zf@bytedance.com>
-In-Reply-To: <CAADnVQKdU-3uBE9tKifChUunmr=c=32M4GwP8qG1-S=Atf7fvw@mail.gmail.com>
+In-Reply-To: <CAADnVQ+cCoH=DAoyLGtJ5HvdNVgFBgTW=wCHs1wvFQuwyhcWOw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -87,30 +86,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-在 2022/6/1 下午7:35, Alexei Starovoitov 写道:
-> On Wed, Jun 1, 2022 at 1:11 PM Feng Zhou <zhoufeng.zf@bytedance.com> wrote:
->> 在 2022/6/1 下午5:50, Alexei Starovoitov 写道:
+在 2022/6/1 下午7:37, Alexei Starovoitov 写道:
+> On Wed, Jun 1, 2022 at 1:17 PM Feng Zhou <zhoufeng.zf@bytedance.com> wrote:
+>> 在 2022/6/1 下午5:53, Alexei Starovoitov 写道:
 >>> On Wed, Jun 1, 2022 at 10:42 AM Feng zhou <zhoufeng.zf@bytedance.com> wrote:
->>>>    static inline void ___pcpu_freelist_push(struct pcpu_freelist_head *head,
->>>> @@ -130,14 +134,19 @@ static struct pcpu_freelist_node *___pcpu_freelist_pop(struct pcpu_freelist *s)
->>>>           orig_cpu = cpu = raw_smp_processor_id();
->>>>           while (1) {
->>>>                   head = per_cpu_ptr(s->freelist, cpu);
->>>> +               if (READ_ONCE(head->is_empty))
->>>> +                       goto next_cpu;
->>>>                   raw_spin_lock(&head->lock);
->>>>                   node = head->first;
->>>>                   if (node) {
->>> extra bool is unnecessary.
->>> just READ_ONCE(head->first)
->> As for why to add is_empty instead of directly judging head->first, my
->> understanding is this, head->first is frequently modified during updating
->> map, which will lead to invalid other cpus's cache, and is_empty is after
->> freelist having no free elems will be changed, the performance will be
->> better.
-> maybe. pls benchmark it.
-> imo wasting a bool for the corner case is not a good trade off.
+>>>> +struct {
+>>>> +       __uint(type, BPF_MAP_TYPE_HASH);
+>>>> +       __type(key, u32);
+>>>> +       __type(value, u64);
+>>>> +       __uint(max_entries, MAX_ENTRIES);
+>>>> +} hash_map_bench SEC(".maps");
+>>>> +
+>>>> +u64 __attribute__((__aligned__(256))) percpu_time[256];
+>>> aligned 256 ?
+>>> What is the point?
+>> I didn't think too much about it here, just referenced it from
+>> tools/testing/selftests/bpf/progs/bloom_filter_bench.c
+>>
+>>>> +u64 nr_loops;
+>>>> +
+>>>> +static int loop_update_callback(__u32 index, u32 *key)
+>>>> +{
+>>>> +       u64 init_val = 1;
+>>>> +
+>>>> +       bpf_map_update_elem(&hash_map_bench, key, &init_val, BPF_ANY);
+>>>> +       return 0;
+>>>> +}
+>>>> +
+>>>> +SEC("fentry/" SYS_PREFIX "sys_getpgid")
+>>>> +int benchmark(void *ctx)
+>>>> +{
+>>>> +       u32 key = bpf_get_prandom_u32() % MAX_ENTRIES + MAX_ENTRIES;
+>>> What is the point of random ?
+>>> just key = MAX_ENTRIES would be the same, no?
+>>> or key = -1 ?
+>> If all threads on different cpu trigger sys_getpgid and lookup the same
+>> key, it will cause
+>> "ret = htab_lock_bucket(htab, b, hash, &flags);"
+>> the lock competition here is fierce, and unnecessary overhead is
+>> introduced,
+>> and I don't want it to interfere with the test.
+> I see.
+> but using random leaves it to chance.
+> Use cpu+max_entries then?
 
-Yes, I will do and post the results as soon as possible, Thanks.
+Ok, will do. Thanks.
 
 
