@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFCEF53B115
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 03:23:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CD9D53B138
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 03:23:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233140AbiFBBVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 21:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38500 "EHLO
+        id S233139AbiFBBVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 21:21:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232994AbiFBBVS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 21:21:18 -0400
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215CD14086B;
-        Wed,  1 Jun 2022 18:21:18 -0700 (PDT)
-Received: by mail-qv1-xf2b.google.com with SMTP id q15so1869090qvy.8;
-        Wed, 01 Jun 2022 18:21:18 -0700 (PDT)
+        with ESMTP id S233129AbiFBBVU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 21:21:20 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE39140424;
+        Wed,  1 Jun 2022 18:21:19 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id cv1so2677321qvb.5;
+        Wed, 01 Jun 2022 18:21:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=2p5T12Sr5Y7Jc+Rm7GQI0KwEROHnmY0n8erF/Ry4hZE=;
-        b=WyEBAzBs29SBdtqWDjbHbR6YHiqKRaGHsWP9xmxyczibpFipVF6WkKH/216dNKTR5b
-         HiBod/PtHRxvXO/L+dy0m7a7s2kcecIU+KW6kYgHEFWpHmqEzTctwcBPVBmicfB2ekls
-         rUANfb0Ra7/D2R9ueolMPuePFInkbhmjgUgwdAj2NBZJMoNE+mWtIi0XL5mgkwdm/PJe
-         kdgGewP/wofqL5o25afHfWqzX3ygSeWoLkKjHarLiI872CWl18pk/kncAhwb3TDevDgP
-         OYbiRUnozaX9y3v/aCbpxaHKmLiqpikZchJmJDKVYOYXI0l00TtVFXRlQDcAgSvlICOv
-         bRpQ==
+        bh=/YIsaXDf0Vla/CpgZ3fY3VVxEFB+BQX409ICdnuhF6U=;
+        b=ZihXGbuxNpN6AzRAhkc0kafpiANTkruYdINgdmq/davY/ys00ajR6bejApb036Jvkv
+         xGhUaY7LKRYnZAtmucaHCYdATEjgx/ITfPDrDkf19+JHI+6JQ/kLucRgGL8gaKzNFxEr
+         2n0IaOJATOt8+OLnAQv1jpQGVGfBUBS3UuEn3Jo8FEVSUSw5gwGh7MYiPfnaiv7cqion
+         AZb6bNR5z3Q40jXULjq/pd+5jM06zEWZY6murrjb2LCWAvht+gfeEa9iAkbKl/BQMp+f
+         pE5r9SmxLn+3tKPM87f9cEgajCALh0+AEXG9aDom739az0e22Y67lYQIz1lKX7g1gZKt
+         rFiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=2p5T12Sr5Y7Jc+Rm7GQI0KwEROHnmY0n8erF/Ry4hZE=;
-        b=SiKyNY5F3ABXMXPi6eeOyVhBRwa374t8v7qVQgmmYgCF8kVxyoN46qG2RKwbPSoHfI
-         2zRtqm5Ck4FOYjxqHWpPYGo5U5NjAYeQbsL327NcrMzhnRP2kmgfbDUQohfX/nnXn0Kv
-         a0tf93Z5wLOBVhG7NNXMP5+fLybR7ehq61sJ6iVhsD9ms3i25d9Mi0vs74xnrjKsC5sm
-         HAng7DGFaHxDehW6+Sgj+N884XddV20hvqJFaQBLji14yYd54BI+dh8XAHbYBi2ks7YQ
-         diWuNK9jWT+QIU2ebqHwvH1/nNYMwnLpHu+fK4c8Ec7dlegDe+BAOf9oBJcx5kRbZtRm
-         Clcg==
-X-Gm-Message-State: AOAM532qKeqrr7Q4WPcrvcMItMhrLSQLiH2Us+/DvWDFlOBVbNRb6Um0
-        fMR54e0Xx9RDRQnl34O87c2MW3+3nAo=
-X-Google-Smtp-Source: ABdhPJx+zdY6Mw1V9xbiJamePo+weyauMMYmpi8hsd4+vwESGABYnE3xAywVX0HzJxBSKcoEDQXTjw==
-X-Received: by 2002:a05:6214:e47:b0:464:6235:ef0c with SMTP id o7-20020a0562140e4700b004646235ef0cmr8690277qvc.46.1654132877095;
-        Wed, 01 Jun 2022 18:21:17 -0700 (PDT)
+        bh=/YIsaXDf0Vla/CpgZ3fY3VVxEFB+BQX409ICdnuhF6U=;
+        b=sAaWt/35ePqx58tpxQJAVxijoDclbCgg9YWZElZ0LFybSEs6xJvGwC0gO46l24Tbdz
+         wWnJcI4JDFs9+1GIHceT9ysAwrv4Eg4QaF+03B7guBUseg/dDp0P/nG0egE+WNb5jPf1
+         YzkLgKBIsTOgSc0Q5LUzzoR1vgFDIA86z4deoHHQfBWKYjBBXHfsNpWHkBo+2iU0B8Iz
+         mMLAN4KDi03ujbqDDorDKiWiNZOx+dvnwFgK2nKUefBpM7sN3fQVxCCPDZS5xjBFRzBX
+         6tk4MrL9nZ8fveEIqi0abXW8GTNloCYblaCsDhVLuQ6tnev0AHsf1xftb7UIwloy5jy4
+         6Cow==
+X-Gm-Message-State: AOAM53123rzNZjJ0jE5TTrPLDEJpnj07+vO82AbYFgsMdrbpl3xxGffZ
+        X35MUQz4zTw7wAth3CKXc8DdPA7rURg=
+X-Google-Smtp-Source: ABdhPJxzuq16EgE98GmaGvX5cKqdqj7tIfPsgQISU8VJRgsM3qhGzAAINd8setCBDJtzw8mYTLxGbw==
+X-Received: by 2002:a05:6214:dc3:b0:464:5efe:3d63 with SMTP id 3-20020a0562140dc300b004645efe3d63mr9854639qvt.92.1654132878489;
+        Wed, 01 Jun 2022 18:21:18 -0700 (PDT)
 Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:a168:6dba:43b7:3240])
-        by smtp.gmail.com with ESMTPSA id x4-20020ac87304000000b002f39b99f670sm2077654qto.10.2022.06.01.18.21.15
+        by smtp.gmail.com with ESMTPSA id x4-20020ac87304000000b002f39b99f670sm2077654qto.10.2022.06.01.18.21.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 18:21:16 -0700 (PDT)
+        Wed, 01 Jun 2022 18:21:17 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Eric Dumazet <edumazet@google.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Jakub Sitnicki <jakub@cloudflare.com>
-Subject: [Patch bpf-next v3 3/4] skmsg: get rid of skb_clone()
-Date:   Wed,  1 Jun 2022 18:21:04 -0700
-Message-Id: <20220602012105.58853-4-xiyou.wangcong@gmail.com>
+Subject: [Patch bpf-next v3 4/4] skmsg: get rid of unncessary memset()
+Date:   Wed,  1 Jun 2022 18:21:05 -0700
+Message-Id: <20220602012105.58853-5-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220602012105.58853-1-xiyou.wangcong@gmail.com>
 References: <20220602012105.58853-1-xiyou.wangcong@gmail.com>
@@ -74,66 +73,75 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Cong Wang <cong.wang@bytedance.com>
 
-With ->read_skb() now we have an entire skb dequeued from
-receive queue, now we just need to grab an addtional refcnt
-before passing its ownership to recv actors.
+We always allocate skmsg with kzalloc(), so there is no need
+to call memset(0) on it, the only thing we need from
+sk_msg_init() is sg_init_marker(). So introduce a new helper
+which is just kzalloc()+sg_init_marker(), this saves an
+unncessary memset(0) for skmsg on fast path.
 
-And we should not touch them any more, particularly for
-skb->sk. Fortunately, skb->sk is already set for most of
-the protocols except UDP where skb->sk has been stolen,
-so we have to fix it up for UDP case.
-
-Cc: Eric Dumazet <edumazet@google.com>
 Cc: John Fastabend <john.fastabend@gmail.com>
 Cc: Daniel Borkmann <daniel@iogearbox.net>
 Cc: Jakub Sitnicki <jakub@cloudflare.com>
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- net/core/skmsg.c | 7 +------
- net/ipv4/udp.c   | 1 +
- 2 files changed, 2 insertions(+), 6 deletions(-)
+ net/core/skmsg.c | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
 
 diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index f7f63b7d990c..8b248d289c11 100644
+index 8b248d289c11..4b297d67edb7 100644
 --- a/net/core/skmsg.c
 +++ b/net/core/skmsg.c
-@@ -1167,10 +1167,7 @@ static int sk_psock_verdict_recv(struct sock *sk, struct sk_buff *skb)
- 	int ret = __SK_DROP;
- 	int len = skb->len;
+@@ -497,23 +497,27 @@ bool sk_msg_is_readable(struct sock *sk)
+ }
+ EXPORT_SYMBOL_GPL(sk_msg_is_readable);
  
--	/* clone here so sk_eat_skb() in tcp_read_sock does not drop our data */
--	skb = skb_clone(skb, GFP_ATOMIC);
--	if (!skb)
--		return 0;
-+	skb_get(skb);
+-static struct sk_msg *sk_psock_create_ingress_msg(struct sock *sk,
+-						  struct sk_buff *skb)
++static struct sk_msg *alloc_sk_msg(void)
+ {
+ 	struct sk_msg *msg;
  
- 	rcu_read_lock();
- 	psock = sk_psock(sk);
-@@ -1183,12 +1180,10 @@ static int sk_psock_verdict_recv(struct sock *sk, struct sk_buff *skb)
- 	if (!prog)
- 		prog = READ_ONCE(psock->progs.skb_verdict);
- 	if (likely(prog)) {
--		skb->sk = sk;
- 		skb_dst_drop(skb);
- 		skb_bpf_redirect_clear(skb);
- 		ret = bpf_prog_run_pin_on_cpu(prog, skb);
- 		ret = sk_psock_map_verd(ret, skb_bpf_redirect_fetch(skb));
--		skb->sk = NULL;
- 	}
- 	if (sk_psock_verdict_apply(psock, skb, ret) < 0)
- 		len = 0;
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 0a1e90b80e36..b09936ccf709 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1817,6 +1817,7 @@ int udp_read_skb(struct sock *sk, skb_read_actor_t recv_actor)
- 			continue;
- 		}
+-	if (atomic_read(&sk->sk_rmem_alloc) > sk->sk_rcvbuf)
++	msg = kzalloc(sizeof(*msg), __GFP_NOWARN | GFP_KERNEL);
++	if (unlikely(!msg))
+ 		return NULL;
++	sg_init_marker(msg->sg.data, NR_MSG_FRAG_IDS);
++	return msg;
++}
  
-+		WARN_ON(!skb_set_owner_sk_safe(skb, sk));
- 		used = recv_actor(sk, skb);
- 		if (used <= 0) {
- 			if (!copied)
+-	if (!sk_rmem_schedule(sk, skb, skb->truesize))
++static struct sk_msg *sk_psock_create_ingress_msg(struct sock *sk,
++						  struct sk_buff *skb)
++{
++	if (atomic_read(&sk->sk_rmem_alloc) > sk->sk_rcvbuf)
+ 		return NULL;
+ 
+-	msg = kzalloc(sizeof(*msg), __GFP_NOWARN | GFP_KERNEL);
+-	if (unlikely(!msg))
++	if (!sk_rmem_schedule(sk, skb, skb->truesize))
+ 		return NULL;
+ 
+-	sk_msg_init(msg);
+-	return msg;
++	return alloc_sk_msg();
+ }
+ 
+ static int sk_psock_skb_ingress_enqueue(struct sk_buff *skb,
+@@ -590,13 +594,12 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb,
+ static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb,
+ 				     u32 off, u32 len)
+ {
+-	struct sk_msg *msg = kzalloc(sizeof(*msg), __GFP_NOWARN | GFP_ATOMIC);
++	struct sk_msg *msg = alloc_sk_msg();
+ 	struct sock *sk = psock->sk;
+ 	int err;
+ 
+ 	if (unlikely(!msg))
+ 		return -EAGAIN;
+-	sk_msg_init(msg);
+ 	skb_set_owner_r(skb, sk);
+ 	err = sk_psock_skb_ingress_enqueue(skb, off, len, psock, sk, msg);
+ 	if (err < 0)
 -- 
 2.34.1
 
