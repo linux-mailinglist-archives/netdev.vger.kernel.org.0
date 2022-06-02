@@ -2,135 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 807E553B9A4
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 15:27:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1478953B9D1
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 15:35:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235295AbiFBN1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 09:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41882 "EHLO
+        id S235400AbiFBNfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 09:35:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231926AbiFBN1g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 09:27:36 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8142531523;
-        Thu,  2 Jun 2022 06:27:32 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id m32-20020a05600c3b2000b0039756bb41f2so2773389wms.3;
-        Thu, 02 Jun 2022 06:27:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l8W+7tcFTmWgcZkmqtvEAURZZKd0U2SDl09JGSg/xJY=;
-        b=EqF2c9DqGwXxEBxvnMScQ+ELXNccLj4Uv/g2mPawAj6APVYuwRlURI25YdBdFtNhb2
-         hm5s4r8nxVxYtjk7B4r8ZAQ4vzbuC2C1ydfNdoH5WwtOfWly2jlVVtP9j8BfvaCSs1zY
-         nqmTz20aaOy0p3CIvz4sk1WFXq5uP46hqsPKSW8g/jpwQ3zA1fVMgwKOmTVsQKYqRUoz
-         R6xSU+xTqa6fVeRBfNS8XUZ1bYaAXHpbc8DlW9jiaEO+GeOPURDfDYYBl0TOUayMWdkn
-         TdY+VKI1tfIWc9GfRq+WeG2qxLiGye2M4PXQ7ChXlB00w0wKbPA2c1U4iANB/s/HIAbj
-         C0+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=l8W+7tcFTmWgcZkmqtvEAURZZKd0U2SDl09JGSg/xJY=;
-        b=3hnnY4AokHVbK7B1CC9/gkqa0K+thzVErwJaxaQUVI2hSXk1DtoIRFajQ7x4Mc43P4
-         sfaGT94eM48H5/0sCe6oOXzEon/ScAR4mh6TkDG0wpOnC0fydCUsOuWsxZLaBBMNXmmM
-         HyAAjuEqeJThAAUtgdq6VECB/6DiLz9shftB8CP2OphbiIapdTWh3gzPqgaDmchmZcbd
-         nffC302Pb3csnnQgVTC0xUdHLwG2CU3qPagIG2k7LsODIookV3hFr5MuY98N34Qi8z27
-         qkAH0d9RvFyI8d2cIDtODM3GuEGXr677LHKWPxB0rffR6lfmU2+StrJrOVbrFbgSyWD+
-         eWyQ==
-X-Gm-Message-State: AOAM530rUVqJSHNaMYdePpvPtorPhRgdzXNjk3wjq0dP5xmsDha+8JXM
-        atJApjj5/0aB0oTpumeFn7RVaxcM/Dil5/fsgdQ=
-X-Google-Smtp-Source: ABdhPJwYupf43+H7wFwlwquLKLXu/Ei58WabOVVaZSXOqm1N2/bD1VaLi6h42LIL3W3Xt9RG1iGYtvyot1MCGIgpLGw=
-X-Received: by 2002:a05:600c:3d94:b0:39c:1c04:3191 with SMTP id
- bi20-20020a05600c3d9400b0039c1c043191mr3899511wmb.171.1654176450981; Thu, 02
- Jun 2022 06:27:30 -0700 (PDT)
-MIME-Version: 1.0
-References: <86sfov2w8k.fsf@gmail.com> <YpCgxtJf9Qe7fTFd@shredder>
- <86sfoqgi5e.fsf@gmail.com> <YpYk4EIeH6sdRl+1@shredder> <86y1yfzap3.fsf@gmail.com>
- <d88b6090-2ac8-0664-0e38-bb2860be7f6e@blackwall.org> <86sfonjroi.fsf@gmail.com>
- <3d93d46d-c484-da0a-c12c-80e83eba31c9@blackwall.org> <YpiTbOsh0HBMwiTE@shredder>
- <86mtevjmie.fsf@gmail.com> <YpiqlziXDCg/1FJH@shredder>
-In-Reply-To: <YpiqlziXDCg/1FJH@shredder>
-From:   Hans S <schultz.hans@gmail.com>
-Date:   Thu, 2 Jun 2022 15:27:19 +0200
-Message-ID: <CAKUejP5NiPYre8qAJKqJ0SOxQ_DtXHt6q6ze6gr=Xx6VGc8xsA@mail.gmail.com>
-Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
- locked port feature
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     Nikolay Aleksandrov <razor@blackwall.org>,
-        Ido Schimmel <idosch@idosch.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S235383AbiFBNfN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 09:35:13 -0400
+Received: from azure-sdnproxy-1.icoremail.net (azure-sdnproxy.icoremail.net [52.237.72.81])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 37DDD4C790;
+        Thu,  2 Jun 2022 06:35:11 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [106.117.80.109])
+        by mail-app3 (Coremail) with SMTP id cC_KCgCXn08uvJhiAyNhAQ--.19784S2;
+        Thu, 02 Jun 2022 21:33:45 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     amitkarwar@gmail.com, ganapathi017@gmail.com,
+        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
+        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        gregkh@linuxfoundation.org, johannes@sipsolutions.net,
+        rafael@kernel.org, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH v4 0/2] Remove extra param of dev_coredumpv and fix bugs
+Date:   Thu,  2 Jun 2022 21:33:32 +0800
+Message-Id: <cover.1654175941.git.duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgCXn08uvJhiAyNhAQ--.19784S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7ZFW8JFyDtw13CF1kuF1fXrb_yoW8XF1fpF
+        48Gas3ZryfKr4DCay8Ja1xCa45J3WfWF9F9rZ3Z34rW3WfAF1rJr1Y9FyFkrn0vFW8ta4Y
+        qF13tr13GF9agFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
+        Y2ka0xkIwI1lc2xSY4AK67AK6ry8MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
+        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
+        b7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
+        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAI
+        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
+        nxnUUI43ZEXa7VUjHGQDUUUUU==
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkJAVZdtaAX3gBis2
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yes, that sounds much like the case. So the replace of course just
-modifies the SW fdb entry, and then it just uses port_fdb_add() to
-replace HW entry I assume, which then in my case triggers
-SWITCHDEV_FDB_DEL_TO_BRIDGE as the locked entry is removed.
-So I should not send the SWITCHDEV_FDB_DEL_TO_BRIDGE message when
-removing the locked entry from port_fdb_add() function...
+The first patch removes the extra gfp_t param of dev_coredumpv.
+The second patch fix sleep in atomic context bugs of mwifiex
+caused by dev_coredumpv.
 
-(note: having problems with smtp.gmail.com...)
+Duoming Zhou (2):
+  devcoredump: remove the useless gfp_t parameter in dev_coredumpv
+  mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
 
+ drivers/base/devcoredump.c                             |  6 ++----
+ drivers/bluetooth/btmrvl_sdio.c                        |  2 +-
+ drivers/bluetooth/hci_qca.c                            |  2 +-
+ drivers/gpu/drm/etnaviv/etnaviv_dump.c                 |  2 +-
+ drivers/media/platform/qcom/venus/core.c               |  2 +-
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-dump.c         |  2 +-
+ drivers/net/wireless/ath/ath10k/coredump.c             |  2 +-
+ drivers/net/wireless/ath/wil6210/wil_crash_dump.c      |  2 +-
+ .../net/wireless/broadcom/brcm80211/brcmfmac/debug.c   |  2 +-
+ drivers/net/wireless/marvell/mwifiex/init.c            | 10 ++++++----
+ drivers/net/wireless/marvell/mwifiex/main.c            |  3 +--
+ drivers/net/wireless/marvell/mwifiex/main.h            |  2 +-
+ drivers/net/wireless/marvell/mwifiex/sta_event.c       |  6 +++---
+ drivers/net/wireless/mediatek/mt76/mt7615/mac.c        |  3 +--
+ drivers/net/wireless/mediatek/mt76/mt7921/mac.c        |  3 +--
+ drivers/net/wireless/realtek/rtw88/main.c              |  2 +-
+ drivers/net/wireless/realtek/rtw89/ser.c               |  2 +-
+ drivers/remoteproc/qcom_q6v5_mss.c                     |  2 +-
+ drivers/remoteproc/remoteproc_coredump.c               |  4 ++--
+ include/linux/devcoredump.h                            |  5 ++---
+ sound/soc/intel/catpt/dsp.c                            |  2 +-
+ 21 files changed, 31 insertions(+), 35 deletions(-)
 
-On Thu, Jun 2, 2022 at 2:18 PM Ido Schimmel <idosch@nvidia.com> wrote:
->
-> On Thu, Jun 02, 2022 at 02:08:41PM +0200, Hans Schultz wrote:
-> > >
-> > > I think Hans is testing with mv88e6xxx which dumps entries directly from
-> > > HW via ndo_fdb_dump(). See dsa_slave_port_fdb_do_dump() which sets
-> > > NTF_SELF.
-> > >
-> > > Hans, are you seeing the entry twice? Once with 'master' and once with
-> > > 'self'?
-> > >
-> >
-> > When replacing a locked entry it looks like this:
-> >
-> > # bridge fdb show dev eth6 | grep 4c
-> > 00:4c:4c:4c:4c:4c vlan 1 master br0 extern_learn offload locked
-> >
-> > # bridge fdb replace 00:4c:4c:4c:4c:4c dev eth6 vlan 1 master static ; bridge fdb show dev eth6 | grep 4c
-> > 00:4c:4c:4c:4c:4c vlan 1 self static
->
-> This output means that the FDB entry was deleted from the bridge driver
-> FDB.
->
-> >
-> > The problem is then that the function
-> > br_fdb_find_rcu(br,eth_hdr(skb)->h_source, vid);
-> > , where the h_source and vid is the entry above, does not find the entry.
-> > My hypothesis was then that this is because of the 'self' flag that I
-> > see.
->
-> br_fdb_find_rcu() does a lookup in the bridge driver FDB, but per the
-> output above, the entry isn't there for some reason. It's only in HW.
->
-> Can it be that you driver is deleting these entries from the bridge
-> driver FDB via SWITCHDEV_FDB_DEL_TO_BRIDGE for some reason?
->
-> >
-> > I am thinking that the function dsa_slave_port_fdb_do_dump() is only for
-> > debug, and thus does not really set any flags in the bridge modules FDB,
-> > but then I don't understand why the above find function does not find
-> > the entry?
+-- 
+2.17.1
+
