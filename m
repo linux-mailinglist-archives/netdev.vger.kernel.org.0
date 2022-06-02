@@ -2,98 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ED1E53B36D
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 08:23:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30B2853B379
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 08:23:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230496AbiFBGWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 02:22:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45064 "EHLO
+        id S230450AbiFBGWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 02:22:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230454AbiFBGWk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 02:22:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D718427CF7
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 23:22:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654150955;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dftoX5xxTZB/c8O5WA81vrlQezqU2CDPcAxmSZhNEc4=;
-        b=Hxp3PweVceqPY9q0omzQ4eKyLu/maXeie1mURY0XlG/gN9FWUHFdPVV/A6q/lZNwDvzWhQ
-        QpEGRV0FWauwoJCi/T0YG9VfQ/grfR0nwfZrN1yorRRFR3cAfRGW0FoAOThmhdIXVQXSMD
-        Yut10gLONjr3+n/DQjmEQPYkhrxQPBQ=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-34-MYWcukJ-OF6UpB-_ZsWe9A-1; Thu, 02 Jun 2022 02:22:32 -0400
-X-MC-Unique: MYWcukJ-OF6UpB-_ZsWe9A-1
-Received: by mail-qt1-f197.google.com with SMTP id s36-20020a05622a1aa400b00304b8f28352so2979302qtc.23
-        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 23:22:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=dftoX5xxTZB/c8O5WA81vrlQezqU2CDPcAxmSZhNEc4=;
-        b=DTvvsmlDNbyc9lGIiOw06gxhCuoa0DuBkok8cZknBgQin6iUjczOHRoc8wPNVBwzx6
-         aNHjM5bwxxWL/Vxg7lhg+y227JYH/SiAqf88o7u7432srwDaXVuSePb0vPAWS7IFUWpb
-         vE+F6jFADoGMT7UCpGQBwZShwQMNFaZUUarESSo/CyGh4dzXuGKADtHLDM03JwABw/C8
-         QGhLEhiYPVaMWjLnUzxTid2nO99CbToTBBlq4xOdqtuk1hefyTFKmLgGQlKhsNYubGLa
-         CkF+KR4m7lHVR1x7n/l9xpa9g97ofgTcpyLcwJNuthbSk9v+7bdJqrmXcAdu8lNXr2Bq
-         SHpA==
-X-Gm-Message-State: AOAM531ohEvHB8K9fhEwREYYeMElhTd34/SdZkYnWYGiHx4XsEMkJ8PG
-        itnorQFPUmtfpGsc6DV3oiLKulPMYPs/aiYd4HVrYXR5vhceuBSkjiTaptxGktah78R/GnBHFXs
-        zSPxJO37CjxtzkqcV7yY2ERXx27a1Qky/
-X-Received: by 2002:a0c:e702:0:b0:467:538e:ebba with SMTP id d2-20020a0ce702000000b00467538eebbamr2217017qvn.2.1654150951941;
-        Wed, 01 Jun 2022 23:22:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz0WJo9DePlOEq7IsA8BZdRFxkhg64PwaZaZWcafFZW35XH5PUzPmmmXhlP8oswWj9PLLjDa3nyytbYkOLb1wI=
-X-Received: by 2002:a0c:e702:0:b0:467:538e:ebba with SMTP id
- d2-20020a0ce702000000b00467538eebbamr2216984qvn.2.1654150951730; Wed, 01 Jun
- 2022 23:22:31 -0700 (PDT)
+        with ESMTP id S230222AbiFBGW2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 02:22:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1542871D
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 23:22:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0667261727
+        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 06:22:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBF69C385A5;
+        Thu,  2 Jun 2022 06:22:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654150946;
+        bh=j8BMyGAYE9Wja1pZ2m3I1XQIFMgm84RQJwGTfcAOoXI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MkH0PUlM1sqTRBjAyHXqYPIRU93Kd0MBHP+mMXQIH+n9O7+7hlIf3RxoiJr+5M/0V
+         QpM/yKAXda+LmuM6z26nX1GR4VjwEnTBBm7kGlvcktadGSEWkVLuLNO/NgAJ8UbwBd
+         Lv6cCsnl41LyXhpe5Br+LzFZYwajjofqDOAGpx7RKwBtTzOuepEOGkFDrnkK/IPRju
+         nV7EEKbk6m6puTKXvYKdQC7DhuFiRA10PeoOI+UH7PwnVDu86QlvhbczjCT+audGdX
+         ZFXET8rGPF9XGoiEKv+NacZbcDUlFehLEdk623UTV3gG41IECFSX6YZzHNSYWy4rZx
+         Gqx6s/B1aP5hg==
+Date:   Thu, 2 Jun 2022 09:22:22 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Hoang Le <hoang.h.le@dektech.com.au>
+Cc:     jmaloy@redhat.com, maloy@donjonn.com, ying.xue@windriver.com,
+        tung.q.nguyen@dektech.com.au, kuba@kernel.org,
+        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net,
+        syzbot+e820fdc8ce362f2dea51@syzkaller.appspotmail.com
+Subject: Re: [net v3] tipc: check attribute length for bearer name
+Message-ID: <YphXHswwVuINRsit@unreal>
+References: <20220602045757.3943-1-hoang.h.le@dektech.com.au>
 MIME-Version: 1.0
-References: <20220526124338.36247-1-eperezma@redhat.com> <20220526124338.36247-4-eperezma@redhat.com>
- <20220601070303-mutt-send-email-mst@kernel.org> <CAJaqyWcK7CwWLr5unxXr=FDbuufeA38X0eAboJy8yKLcsdiPow@mail.gmail.com>
- <PH0PR12MB54819A5DC204CED360C3BA86DCDF9@PH0PR12MB5481.namprd12.prod.outlook.com>
-In-Reply-To: <PH0PR12MB54819A5DC204CED360C3BA86DCDF9@PH0PR12MB5481.namprd12.prod.outlook.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Thu, 2 Jun 2022 08:21:55 +0200
-Message-ID: <CAJaqyWfJVDj+u0UVXGkJFriRJ5Lo5os6FWq02Q7av+NYG2JB9w@mail.gmail.com>
-Subject: Re: [PATCH v4 3/4] vhost-vdpa: uAPI to stop the device
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        kvm list <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Laurent Vivier <lvivier@redhat.com>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Cindy Lu <lulu@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
-        "Dawar, Gautam" <gautam.dawar@amd.com>,
-        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        Longpeng <longpeng2@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220602045757.3943-1-hoang.h.le@dektech.com.au>
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -101,176 +55,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 1, 2022 at 9:13 PM Parav Pandit <parav@nvidia.com> wrote:
->
->
->
-> > From: Eugenio Perez Martin <eperezma@redhat.com>
-> > Sent: Wednesday, June 1, 2022 7:15 AM
-> >
-> > On Wed, Jun 1, 2022 at 1:03 PM Michael S. Tsirkin <mst@redhat.com> wrot=
-e:
-> > >
-> > > On Thu, May 26, 2022 at 02:43:37PM +0200, Eugenio P=C3=A9rez wrote:
-> > > > The ioctl adds support for stop the device from userspace.
-> > > >
-> > > > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > > > ---
-> > > >  drivers/vhost/vdpa.c       | 18 ++++++++++++++++++
-> > > >  include/uapi/linux/vhost.h | 14 ++++++++++++++
-> > > >  2 files changed, 32 insertions(+)
-> > > >
-> > > > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c index
-> > > > 32713db5831d..d1d19555c4b7 100644
-> > > > --- a/drivers/vhost/vdpa.c
-> > > > +++ b/drivers/vhost/vdpa.c
-> > > > @@ -478,6 +478,21 @@ static long vhost_vdpa_get_vqs_count(struct
-> > vhost_vdpa *v, u32 __user *argp)
-> > > >       return 0;
-> > > >  }
-> > > >
-> > > > +static long vhost_vdpa_stop(struct vhost_vdpa *v, u32 __user *argp=
-)
-> > > > +{
-> > > > +     struct vdpa_device *vdpa =3D v->vdpa;
-> > > > +     const struct vdpa_config_ops *ops =3D vdpa->config;
-> > > > +     int stop;
-> > > > +
-> > > > +     if (!ops->stop)
-> > > > +             return -EOPNOTSUPP;
-> > > > +
-> > > > +     if (copy_from_user(&stop, argp, sizeof(stop)))
-> > > > +             return -EFAULT;
-> > > > +
-> > > > +     return ops->stop(vdpa, stop);
-> > > > +}
-> > > > +
-> > > >  static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned =
-int
-> > cmd,
-> > > >                                  void __user *argp)  { @@ -650,6
-> > > > +665,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
-> > > >       case VHOST_VDPA_GET_VQS_COUNT:
-> > > >               r =3D vhost_vdpa_get_vqs_count(v, argp);
-> > > >               break;
-> > > > +     case VHOST_VDPA_STOP:
-> > > > +             r =3D vhost_vdpa_stop(v, argp);
-> > > > +             break;
-> > > >       default:
-> > > >               r =3D vhost_dev_ioctl(&v->vdev, cmd, argp);
-> > > >               if (r =3D=3D -ENOIOCTLCMD) diff --git
-> > > > a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h index
-> > > > cab645d4a645..c7e47b29bf61 100644
-> > > > --- a/include/uapi/linux/vhost.h
-> > > > +++ b/include/uapi/linux/vhost.h
-> > > > @@ -171,4 +171,18 @@
-> > > >  #define VHOST_VDPA_SET_GROUP_ASID    _IOW(VHOST_VIRTIO, 0x7C,
-> > \
-> > > >                                            struct vhost_vring_state=
-)
-> > > >
-> > > > +/* Stop or resume a device so it does not process virtqueue
-> > > > +requests anymore
-> > > > + *
-> > > > + * After the return of ioctl with stop !=3D 0, the device must fin=
-ish
-> > > > +any
-> > > > + * pending operations like in flight requests. It must also
-> > > > +preserve all
-> > > > + * the necessary state (the virtqueue vring base plus the possible
-> > > > +device
-> > > > + * specific states) that is required for restoring in the future.
-> > > > +The
-> > > > + * device must not change its configuration after that point.
-> > > > + *
-> > > > + * After the return of ioctl with stop =3D=3D 0, the device can
-> > > > +continue
-> > > > + * processing buffers as long as typical conditions are met (vq is
-> > > > +enabled,
-> > > > + * DRIVER_OK status bit is enabled, etc).
-> > > > + */
-> > > > +#define VHOST_VDPA_STOP                      _IOW(VHOST_VIRTIO, 0x=
-7D, int)
-> > > > +
-> A better name is VHOST_VDPA_SET_STATE
-> State =3D stop/suspend
-> State =3D start/resume
->
-> Suspend/resume seems more logical, as opposed start/stop, because it more=
- clearly indicates that the resume (start) is from some programmed beginnin=
-g (and not first boot).
->
+On Thu, Jun 02, 2022 at 11:57:57AM +0700, Hoang Le wrote:
+> syzbot reported uninit-value:
+> =====================================================
+> BUG: KMSAN: uninit-value in string_nocheck lib/vsprintf.c:644 [inline]
+> BUG: KMSAN: uninit-value in string+0x4f9/0x6f0 lib/vsprintf.c:725
+>  string_nocheck lib/vsprintf.c:644 [inline]
+>  string+0x4f9/0x6f0 lib/vsprintf.c:725
+>  vsnprintf+0x2222/0x3650 lib/vsprintf.c:2806
+>  vprintk_store+0x537/0x2150 kernel/printk/printk.c:2158
+>  vprintk_emit+0x28b/0xab0 kernel/printk/printk.c:2256
+>  vprintk_default+0x86/0xa0 kernel/printk/printk.c:2283
+>  vprintk+0x15f/0x180 kernel/printk/printk_safe.c:50
+>  _printk+0x18d/0x1cf kernel/printk/printk.c:2293
+>  tipc_enable_bearer net/tipc/bearer.c:371 [inline]
+>  __tipc_nl_bearer_enable+0x2022/0x22a0 net/tipc/bearer.c:1033
+>  tipc_nl_bearer_enable+0x6c/0xb0 net/tipc/bearer.c:1042
+>  genl_family_rcv_msg_doit net/netlink/genetlink.c:731 [inline]
+> 
+> - Do sanity check the attribute length for TIPC_NLA_BEARER_NAME.
+> - Do not use 'illegal name' in printing message.
+> 
+> v3: add Fixes tag in commit message.
+> v2: remove unnecessary sanity check as Jakub's comment.
 
-It's fine to move to that nomenclature in my opinion.
+Same comment as for v2, please put changelog after --- trailer.
 
-> > > >  #endif
-> > >
-> > > I wonder how does this interact with the admin vq idea.
-> > > I.e. if we stop all VQs then apparently admin vq can't work either ..=
-.
-> > > Thoughts?
-> > >
-> >
-> > Copying here the answer to Parav, feel free to answer to any thread or
-> > highlight if I missed something :). Using the admin vq proposal termino=
-logy of
-> > "device group".
-> >
-> > --
-> > This would stop a device of a device
-> > group, but not the whole virtqueue group. If the admin VQ is offered by=
- the
-> > PF (since it's not exposed to the guest), it will continue accepting re=
-quests as
-> > normal. If it's exposed in the VF, I think the best bet is to shadow it=
-, since
-> > guest and host requests could conflict.
-> >
->
-> vhost-vdpa device is exposed for a VF through vp-vdpa driver to user land=
-.
-> Now vp-vdpa driver will have to choose between using config register vs u=
-sing AQ to suspend/resume the device.
->
+Thanks
 
-vp_vdpa cannot choose if the virtio device has an admin vq or any
-other feature, it just wraps the virtio device. If that virtio device
-does not expose AQ, vp_vdpa cannot expose it.
-
-> Why not always begin with more superior interface of AQ that address mult=
-iple of these needs for LM case?
->
-
-Because it doesn't address valid use cases like vp_vdpa with no AQ,
-devices that are not VF, or nested virtualization.
-
-VHOST_VDPA_STOP / VHOST_VDPA_SET_STATE does not replace AQ commands:
-It's just the way vhost-vdpa exposes that capability to qemu. vdpa
-backend is free to choose whatever methods it finds better to
-implement it.
-
-> For LM case, more you explore, we realize that either VF relying on PF's =
-AQ for query/config/setup/restore makes more sense or have its own dedicate=
-d AQ.
->
-
-This ioctl does not mandate that the device cannot implement it
-through AQ, or that the device has to be a VF.
-
-Thanks!
-
-> VM's suspend/resume operation can be handled through the shadow Q.
->
-> > Since this is offered through vdpa, the device backend driver can route=
- it to
-> > whatever method works better for the hardware. For example, to send an
-> > admin vq command to the PF. That's why it's important to keep the featu=
-re
-> > as self-contained and orthogonal to others as possible.
-> > --
-> >
-> > > > --
-> > > > 2.31.1
-> > >
->
-
+> 
+> Reported-by: syzbot+e820fdc8ce362f2dea51@syzkaller.appspotmail.com
+> Fixes: cb30a63384bc ("tipc: refactor function tipc_enable_bearer()")
+> Acked-by: Jon Maloy <jmaloy@redhat.com>
+> Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+> ---
+>  net/tipc/bearer.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+> index 6d39ca05f249..932c87b98eca 100644
+> --- a/net/tipc/bearer.c
+> +++ b/net/tipc/bearer.c
+> @@ -259,9 +259,8 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+>  	u32 i;
+>  
+>  	if (!bearer_name_validate(name, &b_names)) {
+> -		errstr = "illegal name";
+>  		NL_SET_ERR_MSG(extack, "Illegal name");
+> -		goto rejected;
+> +		return res;
+>  	}
+>  
+>  	if (prio > TIPC_MAX_LINK_PRI && prio != TIPC_MEDIA_LINK_PRI) {
+> -- 
+> 2.30.2
+> 
