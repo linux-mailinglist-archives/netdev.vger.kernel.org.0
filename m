@@ -2,193 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A21F53BEA6
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 21:22:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1292353BF22
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 21:52:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238463AbiFBTUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 15:20:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42948 "EHLO
+        id S236206AbiFBTus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 15:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238474AbiFBTUb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 15:20:31 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE12E03C;
-        Thu,  2 Jun 2022 12:20:29 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id i201so136759ioa.6;
-        Thu, 02 Jun 2022 12:20:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DhDehDv+zyKXYiYJM+Nr2lBfUGVAiGOwaQ4CdscP8uc=;
-        b=i6TBiLZqe1oL9IOPeyZnjGYZJr8DmUWKj0v+gQQ6DA09+Z4bdSxO5gnHvBvV4G/oKU
-         SP92cYH0eoFfKI/JN3rl6w/ZBC6pp1w+2CgYQD/inO+pMg1A758xwIfddTDNA4kTbuh8
-         ry2+IwjCHg1GHYog+/ik1YvxmDPyntKKBJAGnN1EkPMIlJaehh0QfPJX0B84+0NdmTzY
-         YfFkl9ShyqIWE6Uc/CfHtnXqsNLakhOkxAthrE8qg8T9A6iUDILjEI4NiqEAVkbXny6i
-         KMeAZ/n++zZgZy+iqIn6SeuKAwCk5P4+BXP0m6e3sXfjwUWMbjt+7xjAU1hEWIhEE3Uk
-         tPRg==
+        with ESMTP id S238981AbiFBTuS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 15:50:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B92BF220F3
+        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 12:49:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654199396;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KFAu8V+mmKk34LNH3ZRSMeAaGMAJlRV4pJIBIYKG/qo=;
+        b=GGiT8fRQFc5mbl8K4n0hO9a5VZXn8LGwhaO1EkS4fkn+ph9fijwP5977gtqeYJnrVKzI8W
+        3xuN9adrbyfb0g1y5NXVPTGpW+dtTgU/wp2AZ22+aSpwhQQAvNvEBmShVD2ob1AD/EFwmI
+        M0Q30Ud6OUhYwrtmELqLTUOnLMZtA34=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-620-A8zi4DC-MVKDdr0f41nVvA-1; Thu, 02 Jun 2022 15:49:55 -0400
+X-MC-Unique: A8zi4DC-MVKDdr0f41nVvA-1
+Received: by mail-wm1-f72.google.com with SMTP id o3-20020a05600c4fc300b003946a9764baso5630552wmq.1
+        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 12:49:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DhDehDv+zyKXYiYJM+Nr2lBfUGVAiGOwaQ4CdscP8uc=;
-        b=6M4SwfsoyIgc0rj0N9vR2D76M3JsDWB0MVewHZGjWSKJOU7dm7Y/mf67ZZzFd4/sqw
-         4/forC6WWNKezNQGzDqn51kiDK5wmbLiJDt5lIoSkM57D7p2tbx+Bzk5yayYzQrFtZG4
-         fAcCGb2YhdtkSrw13EB36Uxw4mloh77PQ/YXEfYyUd8N/dnvxCg9KY04Z6ZAXIWcOw68
-         QiY1vPjgnATSVWrFJR7mlDkB6kgoPLOWBcznYjfqzgSmoZ7KLnL7An5eIK3dBHdwJaW/
-         CPN1sKdHBBNdzmOHLm6tb+3wsMZrcg5MPwiWt7RNZuAvmnauUNun4QsTy5xstH431am4
-         +Lqg==
-X-Gm-Message-State: AOAM531oifDhfYdAxIQD+vijapCn43vSlEfNY9gb2C/gwX9x/sDH9uw8
-        9BgHfec5DfB68jLtvpy16chI9Ytb8V5jjIEz
-X-Google-Smtp-Source: ABdhPJxRhNoGFVFaxtC2dKLeNxK3hXDGM7nCKmJbcMVmpnweuzmYFrp+rEMsJHj2M60bFJsIxtjqDA==
-X-Received: by 2002:a02:90ce:0:b0:32e:e2ce:b17c with SMTP id c14-20020a0290ce000000b0032ee2ceb17cmr4037064jag.268.1654197628758;
-        Thu, 02 Jun 2022 12:20:28 -0700 (PDT)
-Received: from localhost.localdomain (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
-        by smtp.gmail.com with ESMTPSA id n18-20020a02a192000000b0032b3a7817dbsm1575609jah.159.2022.06.02.12.20.24
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 02 Jun 2022 12:20:28 -0700 (PDT)
-From:   Schspa Shi <schspa@gmail.com>
-To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Schspa Shi <schspa@gmail.com>,
-        syzbot+63bed493aebbf6872647@syzkaller.appspotmail.com
-Subject: [PATCH v2] Bluetooth: When HCI work queue is drained, only queue chained work
-Date:   Fri,  3 Jun 2022 03:19:49 +0800
-Message-Id: <20220602191949.31311-1-schspa@gmail.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KFAu8V+mmKk34LNH3ZRSMeAaGMAJlRV4pJIBIYKG/qo=;
+        b=3/NaaGZAbitH9KYnNO7sCt802oFr1+vA/Xblq/QnTWMsq+6QTBKIkDtqpmiyB5g/tx
+         koIpJt8tADUVVD+mpNWJmcHWx1VznkWisAlTs78QGpm04M+jzaQ3h3a9eZgX/3MI+YKc
+         NcSiMf05tmOXEaN9gxgCUf1rmxtblZsSuVBq/9p6b9X0faGAo3QT+cn9+vMSoCWJCmQs
+         Z/xEXwX4WVw17P8oWL3wtu2uhr4PNxsHzxvPgPjNf5kJM4p90no6aA24wG0fH1X+ZcK4
+         rJDrSf7wUL2Fg59Y6WMDLefRu6peYcxe5CHJhz8dA5oaB9CNMcx3HdmiIdgtN8yBIo7Y
+         ri7g==
+X-Gm-Message-State: AOAM531mEhGCvoyTKEVe9je2aEKjYwr4RFs0LtgbP6apUt0JNtrorHba
+        bU2MLEbyT+zOTHBqRFjMORq5xfJg8Zgm4qf3r5YUo0KU4SHv6GoAYCl0S3ClquRniCm5rjEsWg6
+        7iUSOdM/HMBBqU2rJ
+X-Received: by 2002:a5d:4c49:0:b0:210:353c:1c91 with SMTP id n9-20020a5d4c49000000b00210353c1c91mr5117018wrt.159.1654199394234;
+        Thu, 02 Jun 2022 12:49:54 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxDdV1Mn2ENQzCBfnn34X0NIwZPawsVz1nTT94jSHJMvq5I7DUFVC8BsTb4t8pWFh5ErMgvUA==
+X-Received: by 2002:a5d:4c49:0:b0:210:353c:1c91 with SMTP id n9-20020a5d4c49000000b00210353c1c91mr5117006wrt.159.1654199393949;
+        Thu, 02 Jun 2022 12:49:53 -0700 (PDT)
+Received: from redhat.com ([2.55.40.171])
+        by smtp.gmail.com with ESMTPSA id p33-20020a05600c1da100b003942a244ebesm6484974wms.3.2022.06.02.12.49.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 12:49:53 -0700 (PDT)
+Date:   Thu, 2 Jun 2022 15:49:49 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: Re: [PATCH v2 net 3/3] net/af_packet: make sure to pull mac header
+Message-ID: <20220602154941-mutt-send-email-mst@kernel.org>
+References: <20220602161859.2546399-1-eric.dumazet@gmail.com>
+ <20220602161859.2546399-4-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220602161859.2546399-4-eric.dumazet@gmail.com>
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The HCI command, event, and data packet processing workqueue is drained
-to avoid deadlock in commit
-76727c02c1e1 ("Bluetooth: Call drain_workqueue() before resetting state").
+On Thu, Jun 02, 2022 at 09:18:59AM -0700, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> GSO assumes skb->head contains link layer headers.
+> 
+> tun device in some case can provide base 14 bytes,
+> regardless of VLAN being used or not.
+> 
+> After blamed commit, we can end up setting a network
+> header offset of 18+, we better pull the missing
+> bytes to avoid a posible crash in GSO.
+> 
+> syzbot report was:
+> kernel BUG at include/linux/skbuff.h:2699!
+> invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+> CPU: 1 PID: 3601 Comm: syz-executor210 Not tainted 5.18.0-syzkaller-11338-g2c5ca23f7414 #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:__skb_pull include/linux/skbuff.h:2699 [inline]
+> RIP: 0010:skb_mac_gso_segment+0x48f/0x530 net/core/gro.c:136
+> Code: 00 48 c7 c7 00 96 d4 8a c6 05 cb d3 45 06 01 e8 26 bb d0 01 e9 2f fd ff ff 49 c7 c4 ea ff ff ff e9 f1 fe ff ff e8 91 84 19 fa <0f> 0b 48 89 df e8 97 44 66 fa e9 7f fd ff ff e8 ad 44 66 fa e9 48
+> RSP: 0018:ffffc90002e2f4b8 EFLAGS: 00010293
+> RAX: 0000000000000000 RBX: 0000000000000012 RCX: 0000000000000000
+> RDX: ffff88805bb58000 RSI: ffffffff8760ed0f RDI: 0000000000000004
+> RBP: 0000000000005dbc R08: 0000000000000004 R09: 0000000000000fe0
+> R10: 0000000000000fe4 R11: 0000000000000000 R12: 0000000000000fe0
+> R13: ffff88807194d780 R14: 1ffff920005c5e9b R15: 0000000000000012
+> FS:  000055555730f300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00000000200015c0 CR3: 0000000071ff8000 CR4: 0000000000350ee0
+> Call Trace:
+>  <TASK>
+>  __skb_gso_segment+0x327/0x6e0 net/core/dev.c:3411
+>  skb_gso_segment include/linux/netdevice.h:4749 [inline]
+>  validate_xmit_skb+0x6bc/0xf10 net/core/dev.c:3669
+>  validate_xmit_skb_list+0xbc/0x120 net/core/dev.c:3719
+>  sch_direct_xmit+0x3d1/0xbe0 net/sched/sch_generic.c:327
+>  __dev_xmit_skb net/core/dev.c:3815 [inline]
+>  __dev_queue_xmit+0x14a1/0x3a00 net/core/dev.c:4219
+>  packet_snd net/packet/af_packet.c:3071 [inline]
+>  packet_sendmsg+0x21cb/0x5550 net/packet/af_packet.c:3102
+>  sock_sendmsg_nosec net/socket.c:714 [inline]
+>  sock_sendmsg+0xcf/0x120 net/socket.c:734
+>  ____sys_sendmsg+0x6eb/0x810 net/socket.c:2492
+>  ___sys_sendmsg+0xf3/0x170 net/socket.c:2546
+>  __sys_sendmsg net/socket.c:2575 [inline]
+>  __do_sys_sendmsg net/socket.c:2584 [inline]
+>  __se_sys_sendmsg net/socket.c:2582 [inline]
+>  __x64_sys_sendmsg+0x132/0x220 net/socket.c:2582
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> RIP: 0033:0x7f4b95da06c9
+> Code: 28 c3 e8 4a 15 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007ffd7defc4c8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 00007ffd7defc4f0 RCX: 00007f4b95da06c9
+> RDX: 0000000000000000 RSI: 0000000020000140 RDI: 0000000000000003
+> RBP: 0000000000000003 R08: bb1414ac00000050 R09: bb1414ac00000050
+> R10: 0000000000000004 R11: 0000000000000246 R12: 0000000000000000
+> R13: 00007ffd7defc4e0 R14: 00007ffd7defc4d8 R15: 00007ffd7defc4d4
+>  </TASK>
+> 
+> Fixes: dfed913e8b55 ("net/af_packet: add VLAN support for AF_PACKET SOCK_RAW GSO")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Acked-by: Hangbin Liu <liuhangbin@gmail.com>
+> Acked-by: Willem de Bruijn <willemb@google.com>
+> Cc: Michael S. Tsirkin <mst@redhat.com>
 
-There is another delayed work, which will queue command to this drained
-workqueue. Which results in the following error report:
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-Bluetooth: hci2: command 0x040f tx timeout
-WARNING: CPU: 1 PID: 18374 at kernel/workqueue.c:1438 __queue_work+0xdad/0x1140
-Workqueue: events hci_cmd_timeout
-RIP: 0010:__queue_work+0xdad/0x1140
-RSP: 0000:ffffc90002cffc60 EFLAGS: 00010093
-RAX: 0000000000000000 RBX: ffff8880b9d3ec00 RCX: 0000000000000000
-RDX: ffff888024ba0000 RSI: ffffffff814e048d RDI: ffff8880b9d3ec08
-RBP: 0000000000000008 R08: 0000000000000000 R09: 00000000b9d39700
-R10: ffffffff814f73c6 R11: 0000000000000000 R12: ffff88807cce4c60
-R13: 0000000000000000 R14: ffff8880796d8800 R15: ffff8880796d8800
-FS:  0000000000000000(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000c0174b4000 CR3: 000000007cae9000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- ? queue_work_on+0xcb/0x110
- ? lockdep_hardirqs_off+0x90/0xd0
- queue_work_on+0xee/0x110
- process_one_work+0x996/0x1610
- ? pwq_dec_nr_in_flight+0x2a0/0x2a0
- ? rwlock_bug.part.0+0x90/0x90
- ? _raw_spin_lock_irq+0x41/0x50
- worker_thread+0x665/0x1080
- ? process_one_work+0x1610/0x1610
- kthread+0x2e9/0x3a0
- ? kthread_complete_and_exit+0x40/0x40
- ret_from_fork+0x1f/0x30
- </TASK>
-
-To fix this, we can add a new HCI_DRAIN_WQ flag, and don't queue the
-timeout workqueue while command workqueue is draining.
-
-Fixes: 76727c02c1e1 ("Bluetooth: Call drain_workqueue() before resetting state")
-Reported-by: syzbot+63bed493aebbf6872647@syzkaller.appspotmail.com
-Signed-off-by: Schspa Shi <schspa@gmail.com>
-
-Changelog:
-v1 -> v2:
-        - Move the workqueue drain flag to controller flags, and use hci_dev_*_flag.
-        - Add missing ncmd_timer cancel.
-        - Clear DRAIN_WORKQUEUE flag after device command flushed.
----
- include/net/bluetooth/hci.h |  1 +
- net/bluetooth/hci_core.c    | 10 +++++++++-
- net/bluetooth/hci_event.c   |  5 +++--
- 3 files changed, 13 insertions(+), 3 deletions(-)
-
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index fe7935be7dc4..4a45c48eb0d2 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -361,6 +361,7 @@ enum {
- 	HCI_QUALITY_REPORT,
- 	HCI_OFFLOAD_CODECS_ENABLED,
- 	HCI_LE_SIMULTANEOUS_ROLES,
-+	HCI_CMD_DRAIN_WORKQUEUE,
- 
- 	__HCI_NUM_FLAGS,
- };
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 5abb2ca5b129..e908fdc4625c 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -593,6 +593,11 @@ static int hci_dev_do_reset(struct hci_dev *hdev)
- 	skb_queue_purge(&hdev->rx_q);
- 	skb_queue_purge(&hdev->cmd_q);
- 
-+	/* Cancel these not cahined pending work */
-+	hci_dev_set_flag(hdev, HCI_CMD_DRAIN_WORKQUEUE);
-+	cancel_delayed_work(&hdev->cmd_timer);
-+	cancel_delayed_work(&hdev->ncmd_timer);
-+
- 	/* Avoid potential lockdep warnings from the *_flush() calls by
- 	 * ensuring the workqueue is empty up front.
- 	 */
-@@ -606,6 +611,8 @@ static int hci_dev_do_reset(struct hci_dev *hdev)
- 	if (hdev->flush)
- 		hdev->flush(hdev);
- 
-+	hci_dev_clear_flag(hdev, HCI_CMD_DRAIN_WORKQUEUE);
-+
- 	atomic_set(&hdev->cmd_cnt, 1);
- 	hdev->acl_cnt = 0; hdev->sco_cnt = 0; hdev->le_cnt = 0;
- 
-@@ -3861,7 +3868,8 @@ static void hci_cmd_work(struct work_struct *work)
- 			if (res < 0)
- 				__hci_cmd_sync_cancel(hdev, -res);
- 
--			if (test_bit(HCI_RESET, &hdev->flags))
-+			if (test_bit(HCI_RESET, &hdev->flags) ||
-+			    hci_dev_test_flag(hdev, HCI_CMD_DRAIN_WORKQUEUE))
- 				cancel_delayed_work(&hdev->cmd_timer);
- 			else
- 				schedule_delayed_work(&hdev->cmd_timer,
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index af17dfb20e01..7cb956d3abb2 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -3768,8 +3768,9 @@ static inline void handle_cmd_cnt_and_timer(struct hci_dev *hdev, u8 ncmd)
- 			cancel_delayed_work(&hdev->ncmd_timer);
- 			atomic_set(&hdev->cmd_cnt, 1);
- 		} else {
--			schedule_delayed_work(&hdev->ncmd_timer,
--					      HCI_NCMD_TIMEOUT);
-+			if (!hci_dev_test_flag(hdev, HCI_CMD_DRAIN_WORKQUEUE))
-+				schedule_delayed_work(&hdev->ncmd_timer,
-+						      HCI_NCMD_TIMEOUT);
- 		}
- 	}
- }
--- 
-2.24.3 (Apple Git-128)
+> ---
+>  net/packet/af_packet.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
+> index 677f9cfa9660816a160a11bfa4c291431412005f..ca6e92a229239f9093900bf9249396cf0d410104 100644
+> --- a/net/packet/af_packet.c
+> +++ b/net/packet/af_packet.c
+> @@ -1935,8 +1935,10 @@ static void packet_parse_headers(struct sk_buff *skb, struct socket *sock)
+>  	/* Move network header to the right position for VLAN tagged packets */
+>  	if (likely(skb->dev->type == ARPHRD_ETHER) &&
+>  	    eth_type_vlan(skb->protocol) &&
+> -	    __vlan_get_protocol(skb, skb->protocol, &depth) != 0)
+> -		skb_set_network_header(skb, depth);
+> +	    __vlan_get_protocol(skb, skb->protocol, &depth) != 0) {
+> +		if (pskb_may_pull(skb, depth))
+> +			skb_set_network_header(skb, depth);
+> +	}
+>  
+>  	skb_probe_transport_header(skb);
+>  }
+> -- 
+> 2.36.1.255.ge46751e96f-goog
 
