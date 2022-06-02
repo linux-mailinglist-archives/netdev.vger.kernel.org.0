@@ -2,95 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1D2253BB5A
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 17:08:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E710F53BB73
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 17:15:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236365AbiFBPIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 11:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56296 "EHLO
+        id S236423AbiFBPPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 11:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232427AbiFBPH6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 11:07:58 -0400
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905F569496;
-        Thu,  2 Jun 2022 08:07:57 -0700 (PDT)
-Received: by mail-oi1-f172.google.com with SMTP id r206so6852714oib.8;
-        Thu, 02 Jun 2022 08:07:57 -0700 (PDT)
+        with ESMTP id S233936AbiFBPPI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 11:15:08 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B191C2D60
+        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 08:15:07 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-30974094b5cso44635907b3.20
+        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 08:15:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=Wr2n5iI7XttDispKB41EO8G79l4qta1A1VBwdKgaGQg=;
+        b=K57/WdHT4u8VdENtYRT2HFl5kLPTLI0FcXt1D8IExcQ6jqRfEB78EOmbDeXhnMLAvx
+         ShM+ROjLF8dh1S+MActgGL3MfFOJKHMiqUACX0uAFFTahYnUUPNZH0ivKYqGh46n9Qvv
+         JIl1EH6b3KoMsm4FozPq3FZZ3qd1TbDzgBpA0TESnZwYKtoSt3FoG+zvJsUgDUuhG7Gq
+         eywRkDVmJ+53j+cYerjmufgUCW6r4D/HTR543Pqm51dozKw/gfhXZY9wwekLD183o7C+
+         cxKKbP3EbNMGPVgSw88747UrRcyWeVckl8bkm/yMVsPAzekVnAjDzx4gQqY95FW0GKVn
+         ZxKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=IeojhjDK1pB+KLRGjH83PQVoVBcwA3TY89wSB9R9mIM=;
-        b=ZlHreDlzNH7rrZGEICkTJvr+mbn0IqEyNcklDnF4glly2qFwUquiZVNkzN+TVsLxM4
-         2A9OLFV/iNEhsVqll9bePqJ89vodJZJmBq36xmzGB3BA+LrH1Rn8kj5X8VHa0YoYZKGS
-         MSu6X21ZT3uUTzBaMacWHo/RjAbTgOltKs8OVguAjLGxzltnL2kz8Ws7t9bgyrtsgT8y
-         JLpW9hjQ5eQRUJiO95zPcCN7paiJkjY9V+RNv/qT4gQX5MEpqdBOYB3zU7A+eHz3KubQ
-         536rL8o15LbQOVp6v1cFN5hI02WCMR8VGhK+Gte5hq6kAe8dBoEYWxbrH1Nwtb7gT98K
-         EJWQ==
-X-Gm-Message-State: AOAM530e33jJni8L/ZJF2DWZL21Bal9j3YYGClonsqi1M4PtftNodJ59
-        F9214pJLT/1pS6uughPW6g==
-X-Google-Smtp-Source: ABdhPJzlbe96ZgKJPKxe6kkBQL0Da/rm3HrAFZdrqRcPEVPDFd4PftNWU9ErtEa/+kVbBiUb+9xZdg==
-X-Received: by 2002:a05:6808:f11:b0:32b:d11c:9b9a with SMTP id m17-20020a0568080f1100b0032bd11c9b9amr16530279oiw.138.1654182476855;
-        Thu, 02 Jun 2022 08:07:56 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id m11-20020a4aedcb000000b00415a9971cfcsm2387584ooh.38.2022.06.02.08.07.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 08:07:56 -0700 (PDT)
-Received: (nullmailer pid 2328431 invoked by uid 1000);
-        Thu, 02 Jun 2022 15:07:55 -0000
-Date:   Thu, 2 Jun 2022 10:07:55 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Piyush Malgujar <pmalgujar@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
-        cchavva@marvell.com, deppel@marvell.com,
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=Wr2n5iI7XttDispKB41EO8G79l4qta1A1VBwdKgaGQg=;
+        b=08vIRAK1jkRyQh1v9X45RS7uuMTY88S3EEhhdE0MfBYcWkvYaVBUV5teBQQlISSPkx
+         UNiK0kYcVnTWP7aWvThlUnDqV+2ugyNXBPq/skaOwfTMBHvwmb7U09Wk1CdHlM5HNxAd
+         9p5AUDqAt1cMkd/aZ0Fv6hzMjPPyPpfSGIWseRk0G0JNij114AsVCBO4d8KFXXfCFK/s
+         J0Z6pLyec0++6sLKX2fcfKnyYwyxuFUpgvJkAZDGkO2dAE0THtY7EI8jbGcVnrvTUSJt
+         XAIdSraE1SPdafGlqyOHqosaHkVA0i3mtPWnSUndY/AwpBHVHQTHQbx/8B1IAkn0c94u
+         glKQ==
+X-Gm-Message-State: AOAM530U7uTWz0gAZ3Z6UaOPELbru9Z0RndsF951DFQpVAoStexi4KvC
+        Tz/sGb0dyq3li1bshAGrlCTnL64p7Bd7Ku4WKIQ=
+X-Google-Smtp-Source: ABdhPJwgzfjBkuwAIlhVJU3K64/lVauaaNGCor4kJpVmZz5B9OzfxnNDf589Fln0AbrJ3JiMHsVhssHw5pKQEGTTYVM=
+X-Received: from alainmic.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:2890])
+ (user=alainmichaud job=sendgmr) by 2002:a25:8046:0:b0:65b:9fd2:53b0 with SMTP
+ id a6-20020a258046000000b0065b9fd253b0mr5804468ybn.100.1654182907005; Thu, 02
+ Jun 2022 08:15:07 -0700 (PDT)
+Date:   Thu,  2 Jun 2022 15:15:03 +0000
+Message-Id: <20220602151456.v2.1.I9f2f4ef058af96a5ad610a90c6938ed17a7d103f@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+Subject: [PATCH v2] Bluetooth: clear the temporary linkkey in hci_conn_cleanup
+From:   Alain Michaud <alainmichaud@google.com>
+To:     linux-bluetooth@vger.kernel.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        Alain Michaud <alainm@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH v2 2/3] dt-bindings: net: cavium-mdio.txt: add
- clock-frequency attribute
-Message-ID: <20220602150755.GA2323599-robh@kernel.org>
-References: <20220530125329.30717-1-pmalgujar@marvell.com>
- <20220530125329.30717-3-pmalgujar@marvell.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220530125329.30717-3-pmalgujar@marvell.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 30, 2022 at 05:53:27AM -0700, Piyush Malgujar wrote:
-> Add support to configure MDIO clock frequency via DTS
-> 
-> Signed-off-by: Damian Eppel <deppel@marvell.com>
-> Signed-off-by: Piyush Malgujar <pmalgujar@marvell.com>
-> ---
->  Documentation/devicetree/bindings/net/cavium-mdio.txt | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/cavium-mdio.txt b/Documentation/devicetree/bindings/net/cavium-mdio.txt
-> index 020df08b8a30f4df80766bb90e100ae6210a777b..638c341966a80823b9eb2f33b947f38110907cc1 100644
-> --- a/Documentation/devicetree/bindings/net/cavium-mdio.txt
-> +++ b/Documentation/devicetree/bindings/net/cavium-mdio.txt
-> @@ -41,6 +41,9 @@ Properties:
->  
->  - reg: The PCI device and function numbers of the nexus device.
->  
-> +- clock-frequency: MDIO bus clock frequency in Hz. It defaults to 3.125 MHz and
-> +		   and not to standard 2.5 MHz for Marvell Octeon family.
+From: Alain Michaud <alainm@chromium.org>
 
-Already covered by mdio.yaml, so perhaps convert this to DT schema 
-format instead.
+If a hardware error occurs and the connections are flushed without a
+disconnection_complete event being signaled, the temporary linkkeys are
+not flushed.
 
-Rob
+This change ensures that any outstanding flushable linkkeys are flushed
+when the connection are flushed from the hash table.
+
+Signed-off-by: Alain Michaud <alainm@chromium.org>
+
+---
+
+Changes in v2:
+-Address Feedback from Luiz
+
+ net/bluetooth/hci_conn.c  | 3 +++
+ net/bluetooth/hci_event.c | 4 ++--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
+index 352d7d612128..5911ca0c5239 100644
+--- a/net/bluetooth/hci_conn.c
++++ b/net/bluetooth/hci_conn.c
+@@ -118,6 +118,9 @@ static void hci_conn_cleanup(struct hci_conn *conn)
+ 	if (test_bit(HCI_CONN_PARAM_REMOVAL_PEND, &conn->flags))
+ 		hci_conn_params_del(conn->hdev, &conn->dst, conn->dst_type);
+ 
++	if (test_and_clear_bit(HCI_CONN_FLUSH_KEY, &conn->flags))
++		hci_remove_link_key(hdev, &conn->dst);
++
+ 	hci_chan_list_flush(conn);
+ 
+ 	hci_conn_hash_del(hdev, conn);
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 6b83f9b0082c..b67fdd1ad8da 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -2729,7 +2729,7 @@ static void hci_cs_disconnect(struct hci_dev *hdev, u8 status)
+ 	mgmt_conn = test_and_clear_bit(HCI_CONN_MGMT_CONNECTED, &conn->flags);
+ 
+ 	if (conn->type == ACL_LINK) {
+-		if (test_bit(HCI_CONN_FLUSH_KEY, &conn->flags))
++		if (test_and_clear_bit(HCI_CONN_FLUSH_KEY, &conn->flags))
+ 			hci_remove_link_key(hdev, &conn->dst);
+ 	}
+ 
+@@ -3372,7 +3372,7 @@ static void hci_disconn_complete_evt(struct hci_dev *hdev, void *data,
+ 				reason, mgmt_connected);
+ 
+ 	if (conn->type == ACL_LINK) {
+-		if (test_bit(HCI_CONN_FLUSH_KEY, &conn->flags))
++		if (test_and_clear_bit(HCI_CONN_FLUSH_KEY, &conn->flags))
+ 			hci_remove_link_key(hdev, &conn->dst);
+ 
+ 		hci_req_update_scan(hdev);
+-- 
+2.36.1.255.ge46751e96f-goog
+
