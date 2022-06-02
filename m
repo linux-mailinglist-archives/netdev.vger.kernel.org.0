@@ -2,139 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBAF253B363
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 08:15:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 953E653B36A
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 08:19:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230430AbiFBGNj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 02:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39658 "EHLO
+        id S230106AbiFBGRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 02:17:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230106AbiFBGNh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 02:13:37 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2043.outbound.protection.outlook.com [40.107.243.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51FB22A1D6F;
-        Wed,  1 Jun 2022 23:13:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NJvR2jV/1a5l0buroogPzaT3xY+jU7eOwFUFuCqOsUVZAhzyHBBgLUvvU80BuzV2W8ffkJ9k+X72ParBFkLnHM7+UoGPqXbW8dEtq76+LR89DF91CtELKwW6u1xe+7gzXT6vX2EfYVry2t8glcyGS7d6akvc2LGSYKVr21phKk6n36LbDmtuPDUVPiE2UJgteaHiVfFaQPc2eN3YkVQJvmyLEne2ljoVeSMN8vR8hB7F1FsNy0+U6i1KdmTqgO2QrjQVMNvApvWivlDwPueBChVO53WOosPaSJXDuCH/bEGOsuh4wak/CBugQI+oW6PSN1IugEkWPv6ibhxaW+sihA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uC9VjVJeLskg+glQTHs1bLxDw4MSt6blFqZ55P2amt4=;
- b=SkxLBAvc7kI2kykUJJ4wIOBXr0vOoTt9zW0Nlphgu5ARwLJmYPCZM/6rNK7SQlFqxeghDcCb5zoomTnqIWud/LBDpEgJppCXPRX8xrOy00DUrmGlPQqumYLHKbgum4subsmUrEldVuezQSlgb5FBLyJkf3kK72bCG5sjoyOBrz9VscUp29ckPA1tU63hhJ4ZNw2UIm666EtMBhl/fYIytMcA5JeISgn8SeabRzxvi1pZdpeK5IUQRQ0gRGQTgyexmrIZ+dUTfFZVk3yIj43NG+WOYaeuobaywkkvbgN7cQLhsxFeC4XKMS5pSdgZmy+KFOLuvGPHrRMvF3ZCvEE0ZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uC9VjVJeLskg+glQTHs1bLxDw4MSt6blFqZ55P2amt4=;
- b=crf/j0HddS8nBAFC1+D5S2FS1HuoQ6yLSsNJRayOtRKpj3tPXGoMgnedsCksauHuI2HQyFFf3x+PkDm/y0ieEcvgDBSS76BqUZhN1kARYIzXEPoewgwXp9qDPrseAMITXw8VWH646C3llw/2qkeBCCt3k+eaxkX9h0pNHgOsZeRq1X4s3ZRabmHTtoYmot8ftXzbWWuGOXYte857r86CUMwP1jwVGnza4IQzriYVTGhRwMjURk5cMKrQlqfb81SCW5ADHN7iC83pwY6wWrWU1I9U5IFfNQpg+GilYwI6yzEnyfH0sKvcfwgrkadzh8jfmWSlYfkmInMpH5OaydxWbQ==
-Received: from MW4P223CA0012.NAMP223.PROD.OUTLOOK.COM (2603:10b6:303:80::17)
- by BN6PR12MB1778.namprd12.prod.outlook.com (2603:10b6:404:106::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.16; Thu, 2 Jun
- 2022 06:13:32 +0000
-Received: from CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:80:cafe::71) by MW4P223CA0012.outlook.office365.com
- (2603:10b6:303:80::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12 via Frontend
- Transport; Thu, 2 Jun 2022 06:13:32 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.235) by
- CO1NAM11FT041.mail.protection.outlook.com (10.13.174.217) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5314.12 via Frontend Transport; Thu, 2 Jun 2022 06:13:32 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 2 Jun
- 2022 06:13:31 +0000
-Received: from localhost (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 1 Jun 2022
- 23:13:30 -0700
-Date:   Thu, 2 Jun 2022 09:13:27 +0300
-From:   Leon Romanovsky <leonro@nvidia.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Boris Pismenny <borisp@nvidia.com>, <netdev@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Saeed Mahameed" <saeedm@nvidia.com>
-Subject: Re: [PATCH] MAINTAINERS: adjust MELLANOX ETHERNET INNOVA DRIVERS to
- TLS support removal
-Message-ID: <YphVB3EGzcLtZxvQ@unreal>
-References: <20220601045738.19608-1-lukas.bulwahn@gmail.com>
- <Ypc85O47YoNzUTr5@unreal>
- <20220601103032.28d14fc4@kicinski-fedora-PC1C0HJN>
- <YperBiCh1rkKDmSR@unreal>
- <20220601122618.78b93038@kernel.org>
+        with ESMTP id S229483AbiFBGRX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 02:17:23 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A912198;
+        Wed,  1 Jun 2022 23:17:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654150642; x=1685686642;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ooI4sWwbnlbAAJn+k1VaNoQTx4NFNgg+b47kaovZw28=;
+  b=keXhzColze0ab9W2f9vaZOYgwIqvspKimGRUxSeERQliq5jQ9mKYjG2k
+   pUA9hQwDfQo7CeGduRwm0hFrYMk09oDG8Y6c1WvfXXo7GV7W16ivH6ZGU
+   hWHbXWjXmNOES/Wm4YCNKRpBwY8Xg9n5l489GkIQojgulYjGpHOtOvGBg
+   52CwAEBdt3I5lYe3lAeIhtpV1CNbEQgTN8a7WQk+8JzPO4rL7HCsYEF2j
+   6UJu5xubOX0nCNLH+7RHGFAunzx50hzmhH/BYlJYNPmj6uBk5z1FUZ0E1
+   h9CLAqrNYFuiAAUM+9SRj6qXJbzECtwIJLBvm2xs7PxGv/PITnHkU2v+0
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="257906700"
+X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
+   d="scan'208";a="257906700"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 23:17:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
+   d="scan'208";a="563152976"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 01 Jun 2022 23:17:12 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nwe8u-0004mv-7k;
+        Thu, 02 Jun 2022 06:17:12 +0000
+Date:   Thu, 2 Jun 2022 14:16:54 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org,
+        Stanislav Fomichev <sdf@google.com>
+Subject: Re: [PATCH bpf-next v8 03/11] bpf: per-cgroup lsm flavor
+Message-ID: <202206021403.M9hFZdbY-lkp@intel.com>
+References: <20220601190218.2494963-4-sdf@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220601122618.78b93038@kernel.org>
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d105b601-0e97-4436-9a6d-08da445f04ec
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1778:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR12MB1778731AC1EE781073B5E1D7BDDE9@BN6PR12MB1778.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FsHockwrJTFFDsZirzpBqKjyJpSJbJ/2YrZQJxHyNCxLTFdqHLNMYsLQC4/c0Sl4SYLafJDtq2mEFccN5EPLBmEsxs0PjnXvVnb2Uty8CiSHBhzaw/bt312EeeZHqrJAL+sKm7KnUtYXUBjJoRJTU4xZ2DB/oIgZKGLQdO34gaDFhSdjsfyPG8a3DFpxCj9wKdpro5JaDyOrcvsyF47hRlij1IL/hi2HEY6/6iYDpYh1RIXRtFA4KT72SzRhcqZ4neCz87hDV7EetYlq0AkcR8HJFWFhJzWoRblGEcmPxb4qnd7r1H6IqG6dB47fBhDORqiNN/hBQx0+egc1tat1qyQ+GnIMpQeV3eoJ/hAaOTfdnta9fjOAccUzVkZKS04tfhvtChSgrGkEnSkzxCYxbaYEK5WOPadmExBYod/AOeMh6oXpzUxy9DxeZCiovoNsCvEmzxCCPU8LFj/MLuo2YqZXrQ+NH2pzdfZMDARWzrcQPpcMgUhSL8wxKKmesI86dBeLmGlouvu/xLOjQsXF35deGuXmhblYDu8dA6B7BIq+VeRU7hlU3o361rLX3MGa9v65q1l28G2kmyQ+SrUhZiqAh6dDLW7oCGCTPJsBg7G0PUPhzBIpW7ULtVhtmkYtsArgcotdXs55F+nBrljsIZApo6czWssd7KsX0Csv/jNc3HBSL61ItQhkqU19SjOtcgJ5yqLnx7/5JhXOr4m3d2CaH7fPG+6EnKx4lkk1SSUXO3PUxD/FwPNDlf54++NhWpaK4/OGEw5F0Y7Ik1UJuCZyCM+wcmx6sBppqXgZQzNLvmAZ7bKT+6VB4sXCxQFWTNBDLswjEV3M1PASNLIIKA==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(7916004)(4636009)(36840700001)(46966006)(40470700004)(186003)(70206006)(426003)(40460700003)(356005)(336012)(316002)(16526019)(2906002)(54906003)(86362001)(5660300002)(508600001)(6916009)(47076005)(8936002)(107886003)(966005)(6666004)(81166007)(83380400001)(82310400005)(33716001)(9686003)(26005)(8676002)(36860700001)(4326008)(70586007)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2022 06:13:32.0449
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d105b601-0e97-4436-9a6d-08da445f04ec
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1778
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <20220601190218.2494963-4-sdf@google.com>
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 12:26:18PM -0700, Jakub Kicinski wrote:
-> On Wed, 1 Jun 2022 21:08:06 +0300 Leon Romanovsky wrote:
-> > On Wed, Jun 01, 2022 at 10:30:39AM -0700, Jakub Kicinski wrote:
-> > > > Thanks, we will submit it once net-next will be open.  
-> > > 
-> > > It should go via net FWIW.  
-> > 
-> > I'm slightly confused here.
-> > 
-> > According to net policy, the patches that goes there should have Fixes
-> > line, but Fixes lines are added for bugs [1].
-> > 
-> > This forgotten line in MAINTAINERS doesn't cause to any harm to
-> > users/developers.
-> 
-> Fair, maybe I worded it too strongly. I should have said something like
-> "FWIW it's okay for MAINTAINERS updates to go via net".
-> 
-> Documentation/ patches and MAINTAINERS are special, they can go into
-> net without a Fixes tag so that changes to get_maintainer output and
-> https://www.kernel.org/doc/html/latest/ propagate quickly.
+Hi Stanislav,
 
-Awesome, thanks
+Thank you for the patch! Perhaps something to improve:
 
-> 
-> > So when should I put Fixes line in netdev?
-> > 
-> > [1] https://lore.kernel.org/netdev/20211208070842.0ace6747@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
-> 
+[auto build test WARNING on bpf-next/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Stanislav-Fomichev/bpf-cgroup_sock-lsm-flavor/20220602-050600
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: i386-randconfig-a004 (https://download.01.org/0day-ci/archive/20220602/202206021403.M9hFZdbY-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b364c76683f8ef241025a9556300778c07b590c2)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/584b25fdd30894c312d577f4b6b83f93d64e464b
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Stanislav-Fomichev/bpf-cgroup_sock-lsm-flavor/20220602-050600
+        git checkout 584b25fdd30894c312d577f4b6b83f93d64e464b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/bpf/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> kernel/bpf/cgroup.c:257:35: warning: overlapping comparisons always evaluate to false [-Wtautological-overlap-compare]
+                                   if (atype >= CGROUP_LSM_START && atype <= CGROUP_LSM_END)
+                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+   kernel/bpf/cgroup.c:252:35: warning: overlapping comparisons always evaluate to false [-Wtautological-overlap-compare]
+                                   if (atype >= CGROUP_LSM_START && atype <= CGROUP_LSM_END)
+                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+   2 warnings generated.
+
+
+vim +257 kernel/bpf/cgroup.c
+
+   226	
+   227	/**
+   228	 * cgroup_bpf_release() - put references of all bpf programs and
+   229	 *                        release all cgroup bpf data
+   230	 * @work: work structure embedded into the cgroup to modify
+   231	 */
+   232	static void cgroup_bpf_release(struct work_struct *work)
+   233	{
+   234		struct cgroup *p, *cgrp = container_of(work, struct cgroup,
+   235						       bpf.release_work);
+   236		struct bpf_prog_array *old_array;
+   237		struct list_head *storages = &cgrp->bpf.storages;
+   238		struct bpf_cgroup_storage *storage, *stmp;
+   239	
+   240		unsigned int atype;
+   241	
+   242		mutex_lock(&cgroup_mutex);
+   243	
+   244		for (atype = 0; atype < ARRAY_SIZE(cgrp->bpf.progs); atype++) {
+   245			struct hlist_head *progs = &cgrp->bpf.progs[atype];
+   246			struct bpf_prog_list *pl;
+   247			struct hlist_node *pltmp;
+   248	
+   249			hlist_for_each_entry_safe(pl, pltmp, progs, node) {
+   250				hlist_del(&pl->node);
+   251				if (pl->prog) {
+   252					if (atype >= CGROUP_LSM_START && atype <= CGROUP_LSM_END)
+   253						bpf_trampoline_unlink_cgroup_shim(pl->prog);
+   254					bpf_prog_put(pl->prog);
+   255				}
+   256				if (pl->link) {
+ > 257					if (atype >= CGROUP_LSM_START && atype <= CGROUP_LSM_END)
+   258						bpf_trampoline_unlink_cgroup_shim(pl->link->link.prog);
+   259					bpf_cgroup_link_auto_detach(pl->link);
+   260				}
+   261				kfree(pl);
+   262				static_branch_dec(&cgroup_bpf_enabled_key[atype]);
+   263			}
+   264			old_array = rcu_dereference_protected(
+   265					cgrp->bpf.effective[atype],
+   266					lockdep_is_held(&cgroup_mutex));
+   267			bpf_prog_array_free(old_array);
+   268		}
+   269	
+   270		list_for_each_entry_safe(storage, stmp, storages, list_cg) {
+   271			bpf_cgroup_storage_unlink(storage);
+   272			bpf_cgroup_storage_free(storage);
+   273		}
+   274	
+   275		mutex_unlock(&cgroup_mutex);
+   276	
+   277		for (p = cgroup_parent(cgrp); p; p = cgroup_parent(p))
+   278			cgroup_bpf_put(p);
+   279	
+   280		percpu_ref_exit(&cgrp->bpf.refcnt);
+   281		cgroup_put(cgrp);
+   282	}
+   283	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
