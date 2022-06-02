@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A1D853BA66
+	by mail.lfdr.de (Postfix) with ESMTP id 788AB53BA67
 	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 16:01:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235420AbiFBOBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 10:01:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43462 "EHLO
+        id S235675AbiFBOBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 10:01:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231543AbiFBOBY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 10:01:24 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2ACF29DC37
-        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 07:01:23 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id e66so4820878pgc.8
-        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 07:01:23 -0700 (PDT)
+        with ESMTP id S231543AbiFBOB2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 10:01:28 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F8C29FE6C
+        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 07:01:27 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id d129so4824974pgc.9
+        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 07:01:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=vp5waJ5s4F5VHc+rhaAMNO0Y7f4Er9EIwxw8IO5Dbok=;
-        b=gXknmAfjcjbF4ZJb9Z1RBDz0QXphgKP/hiOwuqtL/mRxzmyFezhIj2XptO3ihwNBC3
-         JY7mF9KRKZqCMVGHogpA/dBjDhg6fwYaXUXb5YxJMeDGdgAvbaAn7JGGRfg2dvC5GX+p
-         EQF6TEHz/X1G/pg0H9zua0C3wcSA8n9LSJRL/0rx7T4MrkTdA3bnYQZ25g1mswdrXOpK
-         fkWjN9bZJ0i/FSGhhHrUXX1SYU6KNocbOvpCfwgXa2zrapXAmXCGYiQv3PiRuANTIUxH
-         cLnKvau72v4qE3sye1tsCx4Yr3BRDRYmKWvPgVMcQ5mowcNpIjrQUxLNeWA5xFMBYtZl
-         UuoA==
+        bh=F52X7hEaD0sKd+J0O0835GFHljzQLnjTla5FR9Q8rYw=;
+        b=JvcMCcv6Y0L5Ud/GWvPHERnSbE6PBvM/6Qcg5Hum7HNFOQOMbMm0q4lVV4VEZG2hWM
+         iFWvPKfLGRUrlITqmY+Uys6dKqU1a/uqet3mERj8b4WaNpU2NI/hrbb7SVdE65HsEgRN
+         UMo0+SO6aJTXAGKbzJmF9K8AoK544eis5acst35PQBlg+Hll3fSyfaCZv0IH6/K3YjoX
+         K+4ip/Maw1Ne4lPLJCtVWOytgFaFoS96CWQqRgfie0pdU7j/wE6IroDUJYy2P0HaNciE
+         fEu7i+mAlVAWggqzm6Qt5l8978MIBQ/tzSUKfmlPdp2UWLEdNbVajqFOfHDBF433BzBw
+         j7aA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=vp5waJ5s4F5VHc+rhaAMNO0Y7f4Er9EIwxw8IO5Dbok=;
-        b=xKA7TReLk6TYr19M4SilwSwkY+XUVxfx2lxgRPfSmYdRL5uXxjIDBEuR2zaMQ0y9dO
-         z6UgVjN0nTdepqodiB0dqIAS8KagJNT/kHGu15MkQOw3Yct1mQjRpyssp0ybDmeGa2Yl
-         aULkgfWC/SWgkPkg4jdU49q+QN3BFoPdbL3z46qYYUH04NEK2MdLuc53PJIPyiHlEbzG
-         KFrr+7usGt6c2hBnCBeihUxO/MX/BOtVbbDWL1WQKMe0/Wdg11oko0tb+fimoxuHFEPx
-         BLQ4DPnrePPR6fOvgTIIZoSmb36d6swD0XJ2oPgHEZFVjosyNDL5EKOnqwN4+0qQSjcy
-         04wg==
-X-Gm-Message-State: AOAM5326jgZDhluC8TniVTddJGjKeFfIZBrtIBe6VW2Yw6oIO2fbqgJc
-        Wdf69XdRjTRKZtG2AbDq34c=
-X-Google-Smtp-Source: ABdhPJzTQu6n+cvsjbZYilpIJXjI1LvSIjB1PbkLiTk7O1pLgz3tSpE4cZLH6pzDgL9L5PV3qlJORA==
-X-Received: by 2002:a63:f113:0:b0:3fc:a9a6:91f with SMTP id f19-20020a63f113000000b003fca9a6091fmr4347744pgi.598.1654178483055;
-        Thu, 02 Jun 2022 07:01:23 -0700 (PDT)
+        bh=F52X7hEaD0sKd+J0O0835GFHljzQLnjTla5FR9Q8rYw=;
+        b=AC5s40OM0xXm/64vxF31OIr7ZXZKdxF5EjQaLWJ1c2hVOGf/NiaoNuD/c1KaqErmtm
+         TUUJtwkeCYExNzhO6htit0Nc+ieoTC9KOU0Cb21byRSvHnHNdgRt59FJd9VxgTD720+l
+         P8GKV0NEKirY//WPdNs9uor9mzjH3aiaK/8ecIE7kF56zvpbyvcXLAQZKYMdcCbeVxIr
+         FdCWhoM84hJz2DWyVVLgim+CHU5OE975Ddm6OEq7Ji3Jqq3Z7do0UixTnp3ND0H+u2YF
+         jrYCgtQr9wxwzci1TLGN4URNA0QcGEw8Wo9NyJ/zHmdyF6N+h2UK6PxaMrF5zq+oPsye
+         o56w==
+X-Gm-Message-State: AOAM533Z7fv3xZ2aVOgA00zLtU50tJYzZrz8yXtZ88Rh0/oKNq2GLd2E
+        wCgKDRvRhkB50xYfsbF5780=
+X-Google-Smtp-Source: ABdhPJw1828uS3misZLSnAFL33YzOgqjkiIlFRW93kjSbxhJmMPdq3WitMfiyP/TVIcbagCCbgO9zw==
+X-Received: by 2002:a63:f158:0:b0:3db:8563:e8f5 with SMTP id o24-20020a63f158000000b003db8563e8f5mr4497389pgk.191.1654178486878;
+        Thu, 02 Jun 2022 07:01:26 -0700 (PDT)
 Received: from localhost.localdomain ([182.213.254.91])
-        by smtp.gmail.com with ESMTPSA id k13-20020aa7998d000000b0050dc76281ecsm108463pfh.198.2022.06.02.07.01.20
+        by smtp.gmail.com with ESMTPSA id k13-20020aa7998d000000b0050dc76281ecsm108463pfh.198.2022.06.02.07.01.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 07:01:22 -0700 (PDT)
+        Thu, 02 Jun 2022 07:01:25 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com
-Subject: [PATCH net 1/3] amt: fix wrong usage of pskb_may_pull()
-Date:   Thu,  2 Jun 2022 14:01:06 +0000
-Message-Id: <20220602140108.18329-2-ap420073@gmail.com>
+Subject: [PATCH net 2/3] amt: fix possible null-ptr-deref in amt_rcv()
+Date:   Thu,  2 Jun 2022 14:01:07 +0000
+Message-Id: <20220602140108.18329-3-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220602140108.18329-1-ap420073@gmail.com>
 References: <20220602140108.18329-1-ap420073@gmail.com>
@@ -66,174 +66,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It adds missing pskb_may_pull() in amt_update_handler() and
-amt_multicast_data_handler().
-And it fixes wrong parameter of pskb_may_pull() in
-amt_advertisement_handler() and amt_membership_query_handler().
+When amt interface receives amt message, it tries to obtain amt private
+data from sock.
+If there is no amt private data, it frees an skb immediately.
+After kfree_skb(), it increases the rx_dropped stats.
+But in order to use rx_dropped, amt private data is needed.
+So, it makes amt_rcv() to do not increase rx_dropped stats when it can
+not obtain amt private data.
 
-Reported-by: Jakub Kicinski <kuba@kernel.org>
-Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Fixes: 1a1a0e80e005 ("amt: fix possible memory leak in amt_rcv()")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
- drivers/net/amt.c | 55 +++++++++++++++++++++++++++++++----------------
- 1 file changed, 37 insertions(+), 18 deletions(-)
+ drivers/net/amt.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index ebee5f07a208..900948e135ad 100644
+index 900948e135ad..ef483bf51033 100644
 --- a/drivers/net/amt.c
 +++ b/drivers/net/amt.c
-@@ -2220,8 +2220,7 @@ static bool amt_advertisement_handler(struct amt_dev *amt, struct sk_buff *skb)
- 	struct amt_header_advertisement *amta;
- 	int hdr_size;
+@@ -2698,7 +2698,8 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
+ 	amt = rcu_dereference_sk_user_data(sk);
+ 	if (!amt) {
+ 		err = true;
+-		goto drop;
++		kfree_skb(skb);
++		goto out;
+ 	}
  
--	hdr_size = sizeof(*amta) - sizeof(struct amt_header);
--
-+	hdr_size = sizeof(*amta) + sizeof(struct udphdr);
- 	if (!pskb_may_pull(skb, hdr_size))
- 		return true;
- 
-@@ -2251,19 +2250,27 @@ static bool amt_multicast_data_handler(struct amt_dev *amt, struct sk_buff *skb)
- 	struct ethhdr *eth;
- 	struct iphdr *iph;
- 
-+	hdr_size = sizeof(*amtmd) + sizeof(struct udphdr);
-+	if (!pskb_may_pull(skb, hdr_size))
-+		return true;
-+
- 	amtmd = (struct amt_header_mcast_data *)(udp_hdr(skb) + 1);
- 	if (amtmd->reserved || amtmd->version)
- 		return true;
- 
--	hdr_size = sizeof(*amtmd) + sizeof(struct udphdr);
- 	if (iptunnel_pull_header(skb, hdr_size, htons(ETH_P_IP), false))
- 		return true;
-+
- 	skb_reset_network_header(skb);
- 	skb_push(skb, sizeof(*eth));
- 	skb_reset_mac_header(skb);
- 	skb_pull(skb, sizeof(*eth));
- 	eth = eth_hdr(skb);
-+
-+	if (!pskb_may_pull(skb, sizeof(*iph)))
-+		return true;
- 	iph = ip_hdr(skb);
-+
- 	if (iph->version == 4) {
- 		if (!ipv4_is_multicast(iph->daddr))
- 			return true;
-@@ -2274,6 +2281,9 @@ static bool amt_multicast_data_handler(struct amt_dev *amt, struct sk_buff *skb)
- 	} else if (iph->version == 6) {
- 		struct ipv6hdr *ip6h;
- 
-+		if (!pskb_may_pull(skb, sizeof(*ip6h)))
-+			return true;
-+
- 		ip6h = ipv6_hdr(skb);
- 		if (!ipv6_addr_is_multicast(&ip6h->daddr))
- 			return true;
-@@ -2306,8 +2316,7 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
- 	struct iphdr *iph;
- 	int hdr_size, len;
- 
--	hdr_size = sizeof(*amtmq) - sizeof(struct amt_header);
--
-+	hdr_size = sizeof(*amtmq) + sizeof(struct udphdr);
- 	if (!pskb_may_pull(skb, hdr_size))
- 		return true;
- 
-@@ -2315,22 +2324,27 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
- 	if (amtmq->reserved || amtmq->version)
- 		return true;
- 
--	hdr_size = sizeof(*amtmq) + sizeof(struct udphdr) - sizeof(*eth);
-+	hdr_size -= sizeof(*eth);
- 	if (iptunnel_pull_header(skb, hdr_size, htons(ETH_P_TEB), false))
- 		return true;
-+
- 	oeth = eth_hdr(skb);
- 	skb_reset_mac_header(skb);
- 	skb_pull(skb, sizeof(*eth));
- 	skb_reset_network_header(skb);
- 	eth = eth_hdr(skb);
-+	if (!pskb_may_pull(skb, sizeof(*iph)))
-+		return true;
-+
- 	iph = ip_hdr(skb);
- 	if (iph->version == 4) {
--		if (!ipv4_is_multicast(iph->daddr))
--			return true;
- 		if (!pskb_may_pull(skb, sizeof(*iph) + AMT_IPHDR_OPTS +
- 				   sizeof(*ihv3)))
- 			return true;
- 
-+		if (!ipv4_is_multicast(iph->daddr))
-+			return true;
-+
- 		ihv3 = skb_pull(skb, sizeof(*iph) + AMT_IPHDR_OPTS);
- 		skb_reset_transport_header(skb);
- 		skb_push(skb, sizeof(*iph) + AMT_IPHDR_OPTS);
-@@ -2345,15 +2359,17 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
- 		ip_eth_mc_map(iph->daddr, eth->h_dest);
- #if IS_ENABLED(CONFIG_IPV6)
- 	} else if (iph->version == 6) {
--		struct ipv6hdr *ip6h = ipv6_hdr(skb);
- 		struct mld2_query *mld2q;
-+		struct ipv6hdr *ip6h;
- 
--		if (!ipv6_addr_is_multicast(&ip6h->daddr))
--			return true;
- 		if (!pskb_may_pull(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS +
- 				   sizeof(*mld2q)))
- 			return true;
- 
-+		ip6h = ipv6_hdr(skb);
-+		if (!ipv6_addr_is_multicast(&ip6h->daddr))
-+			return true;
-+
- 		mld2q = skb_pull(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS);
- 		skb_reset_transport_header(skb);
- 		skb_push(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS);
-@@ -2389,23 +2405,23 @@ static bool amt_update_handler(struct amt_dev *amt, struct sk_buff *skb)
- {
- 	struct amt_header_membership_update *amtmu;
- 	struct amt_tunnel_list *tunnel;
--	struct udphdr *udph;
- 	struct ethhdr *eth;
- 	struct iphdr *iph;
--	int len;
-+	int len, hdr_size;
- 
- 	iph = ip_hdr(skb);
--	udph = udp_hdr(skb);
- 
--	if (__iptunnel_pull_header(skb, sizeof(*udph), skb->protocol,
--				   false, false))
-+	hdr_size = sizeof(*amtmu) + sizeof(struct udphdr);
-+	if (!pskb_may_pull(skb, hdr_size))
- 		return true;
- 
--	amtmu = (struct amt_header_membership_update *)skb->data;
-+	amtmu = (struct amt_header_membership_update *)(udp_hdr(skb) + 1);
- 	if (amtmu->reserved || amtmu->version)
- 		return true;
- 
--	skb_pull(skb, sizeof(*amtmu));
-+	if (iptunnel_pull_header(skb, hdr_size, skb->protocol, false))
-+		return true;
-+
- 	skb_reset_network_header(skb);
- 
- 	list_for_each_entry_rcu(tunnel, &amt->tunnel_list, list) {
-@@ -2426,6 +2442,9 @@ static bool amt_update_handler(struct amt_dev *amt, struct sk_buff *skb)
- 	return true;
- 
- report:
-+	if (!pskb_may_pull(skb, sizeof(*iph)))
-+		return true;
-+
- 	iph = ip_hdr(skb);
- 	if (iph->version == 4) {
- 		if (ip_mc_check_igmp(skb)) {
+ 	skb->dev = amt->dev;
 -- 
 2.17.1
 
