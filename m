@@ -2,78 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1793E53BC3F
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 18:14:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73BA953BC50
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 18:19:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236880AbiFBQOK convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 2 Jun 2022 12:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34670 "EHLO
+        id S236662AbiFBQTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 12:19:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236699AbiFBQOJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 12:14:09 -0400
-Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D47A310D9;
-        Thu,  2 Jun 2022 09:14:08 -0700 (PDT)
-Received: from smtpclient.apple (p4ff9fc30.dip0.t-ipconnect.de [79.249.252.48])
-        by mail.holtmann.org (Postfix) with ESMTPSA id ADDF5CED1A;
-        Thu,  2 Jun 2022 18:14:07 +0200 (CEST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
-Subject: Re: [PATCH v2 2/3] Bluetooth: btrtl: add support for the RTL8723CS
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20220524212155.16944-3-bage@debian.org>
-Date:   Thu, 2 Jun 2022 18:14:07 +0200
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kubakici@wp.pl>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        Vasily Khoruzhick <anarsoul@gmail.com>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <E187ED85-92B9-418E-9026-1EEEB90A9602@holtmann.org>
-References: <20220524212155.16944-1-bage@debian.org>
- <20220524212155.16944-3-bage@debian.org>
-To:     Bastian Germann <bage@debian.org>
-X-Mailer: Apple Mail (2.3696.100.31)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S231533AbiFBQTE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 12:19:04 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 182AE66AE2
+        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 09:19:04 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id e66so5138151pgc.8
+        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 09:19:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WAUG6zcMKjrVcprQdaEgs0zUtw8MrPH76L3UJK0Do+8=;
+        b=LvRDQDm8m86SAxoNP/xujAN+knxDACGzMElxlN/f/xO7calPA71oS0hKngJ55rCXwR
+         wnZF8SuBpJ7t5td8Pig6S2Ky3KIdQZQy4MrjlFbxIsz/akXAbA6scCA5qQ4/dsoMY4XG
+         IBdqoSNZTp3peIctBKSYxN9iCWpZ5vkX8hP5d/onhOZJbhtgj2BEA/b+crEaCi3TzqPC
+         Bsf7ZOjHbrQ6AKdgRn0BT3uky1YIqgg53qgy9ENHzDD2TD71s583Wcjr2MFtA3ktFx9h
+         iPot0j+zB17/FMf7xgKMWTpYdP+mjDo51kTlPvFr5dpDFYYD2e9hJ/mkzd8Ma1ACR7Xf
+         FY+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WAUG6zcMKjrVcprQdaEgs0zUtw8MrPH76L3UJK0Do+8=;
+        b=wVvuelD2G8dbZWLHWGUzMolFWMzKZoiMbS7F5HgM2JCQmBWvWPeL9ZU5sQODcRgNtg
+         AdARw+l3lwrR/qZBk+rooJ+zA2jMMQeNbfuUdeTW5UF4WOei4cH5uLGR1ZfIfYGknZny
+         9PHMvtCp2GX9fsT1f7cBCdDy0bSA0fq88X2h7ULeAtPQnWsZQY6w1o169SU6s3BY5Ghq
+         8eYEIeNiHbWwP9YqvefnbUu5uhqnS1jUyCtaLXTWeffnRwdayb93lZ/u/z1WFLVIM3uS
+         yGCXzbE5+CDtQb0oGMMMDMCLFi7cYInBCUbWqpPn9rLtJmAEkrORkmhOdglLentEPr3Y
+         HcJA==
+X-Gm-Message-State: AOAM532mxNkkoRFJoNv6yeajN/Bfmu27DQDse3AwXYbISUwN6x8Gsx1i
+        Dpx59jKq+fYYVAeiB85j+Uo=
+X-Google-Smtp-Source: ABdhPJybPMvh+mkaRSbVicPoBLoLyo9grgLjXVP+r8yHt6GeYb0eTXKKvj562/KVxZe88iuBbWKsTA==
+X-Received: by 2002:a63:e017:0:b0:3f2:543b:8402 with SMTP id e23-20020a63e017000000b003f2543b8402mr4858876pgh.209.1654186743539;
+        Thu, 02 Jun 2022 09:19:03 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:1ff3:6bf6:224:48f2])
+        by smtp.gmail.com with ESMTPSA id u25-20020a62ed19000000b00518895f0dabsm3751072pfh.59.2022.06.02.09.19.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 09:19:02 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH v2 net 0/3] net: af_packet: be careful when expanding mac header size
+Date:   Thu,  2 Jun 2022 09:18:56 -0700
+Message-Id: <20220602161859.2546399-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bastien,
+From: Eric Dumazet <edumazet@google.com>
 
-> The Realtek RTL8723CS is SDIO WiFi chip. It also contains a Bluetooth
-> module which is connected via UART to the host.
-> 
-> It shares lmp subversion with 8703B, so Realtek's userspace
-> initialization tool (rtk_hciattach) differentiates varieties of RTL8723CS
-> (CG, VF, XX) with RTL8703B using vendor's command to read chip type.
-> 
-> Also this chip declares support for some features it doesn't support
-> so add a quirk to indicate that these features are broken.
-> 
-> Signed-off-by: Vasily Khoruzhick <anarsoul@gmail.com>
-> [move former btrtl_apply_quirks to btrtl_set_quirks]
-> [rebase on current tree]
+A recent regression in af_packet needed a preliminary debug patch,
+which will presumably be useful for next bugs hunting.
 
-I don’t know what these mean. Can you just remove them.
+The af_packet fix is to make sure MAC headers are contained in
+skb linear part, as GSO stack requests.
 
-> Signed-off-by: Bastian Germann <bage@debian.org>
-> ---
-> drivers/bluetooth/btrtl.c  | 120 +++++++++++++++++++++++++++++++++++--
-> drivers/bluetooth/btrtl.h  |   5 ++
-> drivers/bluetooth/hci_h5.c |   4 ++
-> 3 files changed, 125 insertions(+), 4 deletions(-)
+v2: CONFIG_DEBUG_NET depends on CONFIG_NET to avoid compile
+   errors found by kernel bots.
 
-Regards
+Eric Dumazet (3):
+  net: CONFIG_DEBUG_NET depends on CONFIG_NET
+  net: add debug info to __skb_pull()
+  net/af_packet: make sure to pull mac header
 
-Marcel
+ include/linux/skbuff.h | 9 ++++++++-
+ net/Kconfig.debug      | 2 +-
+ net/packet/af_packet.c | 6 ++++--
+ 3 files changed, 13 insertions(+), 4 deletions(-)
+
+-- 
+2.36.1.255.ge46751e96f-goog
 
