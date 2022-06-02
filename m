@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0689F53B133
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 03:23:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5424B53B114
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 03:23:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232866AbiFBAuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 20:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41552 "EHLO
+        id S232883AbiFBAxW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 20:53:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232856AbiFBAuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 20:50:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 801A1138903;
-        Wed,  1 Jun 2022 17:50:15 -0700 (PDT)
+        with ESMTP id S232856AbiFBAxV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 20:53:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE911175
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 17:53:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2689AB81D8F;
-        Thu,  2 Jun 2022 00:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A93F2C3411C;
-        Thu,  2 Jun 2022 00:50:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 39C42615AF
+        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 00:53:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 511D9C385B8;
+        Thu,  2 Jun 2022 00:53:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654131012;
-        bh=9vitLOVgalvdHnhyUe9CZ9AIdKgPfsn6rxv89R6q1mI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=OGxw5JwlYDQIM8wfG+RZUBOv90iWiW2zP2ObpjkLeBdOCpG4LGIngMdsIUPgbStDf
-         poO2NkUKkgg8x12InprBQ+JYPCwA7CT3hwHOpgyUx7dqpDENnpAJS0diN9XFNDEcxO
-         sC7YxqFfm4CQxNmhIQiEpB/8/MGoWn1K1CGCvfHb8cVXzduLMrab96874DFeQG+8n3
-         lXCKG6azobtWmqwMh24MSdXDM48jjOmVJB2CMmk1ZUSOsP6s1eMA4OPaj+S3KgAtc6
-         cDEPU8ZC9f1UKPiJUyOOMAuZENPzgcK6R+cqXE/mTq26Z769OTXpcfBC4UHJkrVbQ/
-         i05h7bn35nb9w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 86894EAC081;
-        Thu,  2 Jun 2022 00:50:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1654131199;
+        bh=P7KeeP0epy1eE8Z46PTCmAybrEemmjyM1IdYYDiq1LQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kCzA9gpTjXmEc+8zEYG3Ksl8KleEHTOGqoIkcDRYhI70tVJO1fEQQ0sdE0uYYYure
+         jztK9zBuTYP0+z2fvBYoT5c4AX0MfmqIl2aowEOzZKoQaYwjJiVYNxGbiIplVG+Afo
+         dXKgxHLvc5FFfsAs1GmFFNlsEuv1xB5zkILzdyBw0CJ6RbxMksSRbg5naSX7AZkdtF
+         Wh8nOO/VDm4qbLumSMBnZGGzhueHmUh0wG3EQ3PyJmNG2N5Dkxk6QfAgjlqwWSARaH
+         +qTe3sHX4jj+ALgUelx6mma/V742qicRXZM9zHBd9Jv/Si4HN7VGjE6zAiCpozditn
+         SbLXrS6nuCs2Q==
+Date:   Wed, 1 Jun 2022 17:53:18 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hoang Le <hoang.h.le@dektech.com.au>
+Cc:     jmaloy@redhat.com, maloy@donjonn.com, ying.xue@windriver.com,
+        tung.q.nguyen@dektech.com.au, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net,
+        syzbot+e820fdc8ce362f2dea51@syzkaller.appspotmail.com
+Subject: Re: [net] tipc: check attribute length for bearer name
+Message-ID: <20220601175318.1117f8dc@kernel.org>
+In-Reply-To: <20220601014853.4904-1-hoang.h.le@dektech.com.au>
+References: <20220601014853.4904-1-hoang.h.le@dektech.com.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: wireless-2022-06-01
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165413101254.24390.11206759473228548099.git-patchwork-notify@kernel.org>
-Date:   Thu, 02 Jun 2022 00:50:12 +0000
-References: <20220601110741.90B28C385A5@smtp.kernel.org>
-In-Reply-To: <20220601110741.90B28C385A5@smtp.kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -55,28 +55,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed,  1 Jun 2022 08:48:53 +0700 Hoang Le wrote:
+> diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
+> index 6d39ca05f249..0fd7554c7cde 100644
+> --- a/net/tipc/bearer.c
+> +++ b/net/tipc/bearer.c
+> @@ -258,10 +258,10 @@ static int tipc_enable_bearer(struct net *net, const char *name,
+>  	char *errstr = "";
+>  	u32 i;
+>  
+> -	if (!bearer_name_validate(name, &b_names)) {
+> -		errstr = "illegal name";
+> +	if (strlen(name) > TIPC_MAX_BEARER_NAME ||
+> +	    !bearer_name_validate(name, &b_names)) {
 
-This pull request was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+The strlen() check looks unnecessary, the first thing
+bearer_name_validate() does is:
 
-On Wed,  1 Jun 2022 11:07:41 +0000 (UTC) you wrote:
-> Hi,
-> 
-> here's a pull request to net tree, more info below. Please let me know if there
-> are any problems.
-> 
-> Kalle
-> 
-> [...]
+	/* copy bearer name & ensure length is OK */
+	if (strscpy(name_copy, name, TIPC_MAX_BEARER_NAME) < 0)
+		return 0;
 
-Here is the summary with links:
-  - pull-request: wireless-2022-06-01
-    https://git.kernel.org/netdev/net/c/38a4762e4ba6
+So it will handle non-terminated or over-sized names correctly already.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+>  		NL_SET_ERR_MSG(extack, "Illegal name");
+> -		goto rejected;
+> +		return res;
 
-
+Seems like we only need the change of goto to return for the fix.
