@@ -2,99 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C395053B461
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 09:35:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00B0653B469
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 09:36:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231775AbiFBHf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 03:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41986 "EHLO
+        id S231821AbiFBHgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 03:36:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbiFBHf2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 03:35:28 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4418B38DA1;
-        Thu,  2 Jun 2022 00:35:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654155327; x=1685691327;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=guW2S9dJLzjEzn/tbSdMDgpb8Z56ie57XqS2+J+2Pe0=;
-  b=Kfe75JAQUym80SFUmkfz10vlF2w8CPYNk2ZrmGEazHs4ys9Zz7K2dhii
-   4AL5Qh+UhvdUDi6J/UanqpJM5p8JDMteVqX7nQ1phnW0FHNWJawChMflK
-   eQCvhTdjZRGfoCpbO4BVaCf68SAFYgQOPCpEdygpYQ2WGTr3Ym4PEgWEn
-   22rFtaISo1+H1t8QQV9vGskNYLnZnVCFdGzT8Zv9mwHfzy67HDl5pPGr+
-   PMBw7z+X9B/p8XkTyq11Hz4H76gu0ivr0x23j7sHbFQbT5tVDvgsUKueS
-   wxDhuGoX90dwyrOwU2dPwU0EFZpr2ilNrB2poS4X/thGFsUBST6Xb3NXP
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="263495536"
-X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
-   d="scan'208";a="263495536"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2022 00:35:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
-   d="scan'208";a="606706523"
-Received: from mike-ilbpg1.png.intel.com ([10.88.227.76])
-  by orsmga008.jf.intel.com with ESMTP; 02 Jun 2022 00:35:21 -0700
-From:   Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>
-Subject: [net-next 1/1] stmmac: intel: Add RPL-P PCI ID
-Date:   Thu,  2 Jun 2022 15:35:07 +0800
-Message-Id: <20220602073507.3955721-1-michael.wei.hong.sit@intel.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231816AbiFBHgi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 03:36:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA44C39154
+        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 00:36:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654155396;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=l00IQqB81+H5bP30hrUtm+oNhTBjm7YmLlYdO4/7FSE=;
+        b=NZ7iN0uGh7/5pXUUVPOhWfznBD6f9V7ZullEQFitB/J4t/HDa0HmFabB12NiVgFWO081Yv
+        6XZgDBDJ196/XnUy9GLQ8OUjmb0SNJUcC6wzCFaueb6lR6fCP7rBRxYMC7/yubYnEDBl76
+        bCRLMvDnJAYhPMVnTGh1P1DYf+/eoio=
+Received: from mail-yw1-f198.google.com (mail-yw1-f198.google.com
+ [209.85.128.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-326-vye2gS12MFSB4Imcet0nVA-1; Thu, 02 Jun 2022 03:36:35 -0400
+X-MC-Unique: vye2gS12MFSB4Imcet0nVA-1
+Received: by mail-yw1-f198.google.com with SMTP id 00721157ae682-30c1d90587dso36045027b3.14
+        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 00:36:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l00IQqB81+H5bP30hrUtm+oNhTBjm7YmLlYdO4/7FSE=;
+        b=pzRX27ag6mZDVI+BxbW5mK5zCgU+it7N29yKweZcFFvwJfkzoBCyJ/NxWbI1arKSuy
+         0iDW+iHsp4GWLESC3FN4fVDYMsty+u93/+PJU5LOBW4CnkCHA+6TLPo38t+Si9zvJCTa
+         mOlgXp/XgtaQrrOxJq8CHOvEQEUlPcxpdVN6tpqS2c6KBuawb/GSku3GfpIpTtyLjkWC
+         JdRayPSUQpI0vzMTqINPx4l9Zm1bkSuajO67QmyJrmGvMTsf5r8fkqjz90BRkN3MzSlA
+         yc0/oUMGggjFWOaqn1tay/BJ7Dh+Uc91SfWOZ8fTZgbeRGExZ0L2o6ha9oZWUVen4heW
+         qECg==
+X-Gm-Message-State: AOAM532jwFIQi0d++OObQNPvTaFwro84JOsJY+PdncBkypy9yNaLBhI0
+        o2hZi8Uq7fv7L1zLCCyxrkSs9EiAxQPSbRIg2hHQISs7ZIMUQcGR4/AyTJ7+oSgjZfscqRDl5M1
+        TDMkA4nBS7niwPt0BGpFEb3p2djO/i6dA
+X-Received: by 2002:a25:bac7:0:b0:64c:b780:90d3 with SMTP id a7-20020a25bac7000000b0064cb78090d3mr3890104ybk.10.1654155394624;
+        Thu, 02 Jun 2022 00:36:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyLZvnLYAkQE0UJGJ91nxExuoLuGjC7sOLRQk6mmI/a6gfxOle0c8YveJkKocH1JNYmkjISxYhsm6RLPDM/jXM=
+X-Received: by 2002:a25:bac7:0:b0:64c:b780:90d3 with SMTP id
+ a7-20020a25bac7000000b0064cb78090d3mr3890093ybk.10.1654155394417; Thu, 02 Jun
+ 2022 00:36:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.0 required=5.0 tests=AC_FROM_MANY_DOTS,BAYES_00,
-        DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220602023845.2596397-1-lingshan.zhu@intel.com> <20220602023845.2596397-5-lingshan.zhu@intel.com>
+In-Reply-To: <20220602023845.2596397-5-lingshan.zhu@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Thu, 2 Jun 2022 15:36:23 +0800
+Message-ID: <CACGkMEtzHB9e9fgQ=t9vT1iz6A9t46hsEMmpHghQSTSfhr7kuw@mail.gmail.com>
+Subject: Re: [PATCH 4/6] vDPA: !FEATURES_OK should not block querying device
+ config space
+To:     Zhu Lingshan <lingshan.zhu@intel.com>
+Cc:     mst <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add PCI ID for Ethernet TSN Controller on RPL-P.
+On Thu, Jun 2, 2022 at 10:48 AM Zhu Lingshan <lingshan.zhu@intel.com> wrote:
+>
+> Users may want to query the config space of a vDPA device,
+> to choose a appropriate one for a certain guest. This means the
+> users need to read the config space before FEATURES_OK, and
+> the existence of config space contents does not depend on
+> FEATURES_OK.
 
-Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 2 ++
- 1 file changed, 2 insertions(+)
+Quotes from the spec:
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 0b0be0898ac5..f9f80933e0c9 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -1161,6 +1161,7 @@ static SIMPLE_DEV_PM_OPS(intel_eth_pm_ops, intel_eth_pci_suspend,
- #define PCI_DEVICE_ID_INTEL_ADLS_SGMII1G_0	0x7aac
- #define PCI_DEVICE_ID_INTEL_ADLS_SGMII1G_1	0x7aad
- #define PCI_DEVICE_ID_INTEL_ADLN_SGMII1G	0x54ac
-+#define PCI_DEVICE_ID_INTEL_RPLP_SGMII1G	0x51ac
- 
- static const struct pci_device_id intel_eth_pci_id_table[] = {
- 	{ PCI_DEVICE_DATA(INTEL, QUARK, &quark_info) },
-@@ -1179,6 +1180,7 @@ static const struct pci_device_id intel_eth_pci_id_table[] = {
- 	{ PCI_DEVICE_DATA(INTEL, ADLS_SGMII1G_0, &adls_sgmii1g_phy0_info) },
- 	{ PCI_DEVICE_DATA(INTEL, ADLS_SGMII1G_1, &adls_sgmii1g_phy1_info) },
- 	{ PCI_DEVICE_DATA(INTEL, ADLN_SGMII1G, &tgl_sgmii1g_phy0_info) },
-+	{ PCI_DEVICE_DATA(INTEL, RPLP_SGMII1G, &tgl_sgmii1g_phy0_info) },
- 	{}
- };
- MODULE_DEVICE_TABLE(pci, intel_eth_pci_id_table);
--- 
-2.25.1
+"The device MUST allow reading of any device-specific configuration
+field before FEATURES_OK is set by the driver. This includes fields
+which are conditional on feature bits, as long as those feature bits
+are offered by the device."
+
+>
+> This commit removes FEATURES_OK blocker in vdpa_dev_config_fill()
+> which calls vdpa_dev_net_config_fill() for virtio-net
+>
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> ---
+>  drivers/vdpa/vdpa.c | 8 --------
+>  1 file changed, 8 deletions(-)
+>
+> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+> index c820dd2b0307..030d96bdeed2 100644
+> --- a/drivers/vdpa/vdpa.c
+> +++ b/drivers/vdpa/vdpa.c
+> @@ -863,17 +863,9 @@ vdpa_dev_config_fill(struct vdpa_device *vdev, struct sk_buff *msg, u32 portid,
+>  {
+>         u32 device_id;
+>         void *hdr;
+> -       u8 status;
+>         int err;
+>
+>         mutex_lock(&vdev->cf_mutex);
+> -       status = vdev->config->get_status(vdev);
+> -       if (!(status & VIRTIO_CONFIG_S_FEATURES_OK)) {
+> -               NL_SET_ERR_MSG_MOD(extack, "Features negotiation not completed");
+> -               err = -EAGAIN;
+> -               goto out;
+> -       }
+
+So we had the following in vdpa_dev_net_config_fill():
+
+        features = vdev->config->get_driver_features(vdev);
+        if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features,
+                              VDPA_ATTR_PAD))
+                return -EMSGSIZE;
+
+It looks to me we need to switch to using get_device_features() instead.
+
+Thanks
+
+> -
+>         hdr = genlmsg_put(msg, portid, seq, &vdpa_nl_family, flags,
+>                           VDPA_CMD_DEV_CONFIG_GET);
+>         if (!hdr) {
+> --
+> 2.31.1
+>
 
