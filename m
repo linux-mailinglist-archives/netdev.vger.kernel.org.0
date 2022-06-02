@@ -2,51 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67A5653BDF6
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 20:22:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3552A53BDFA
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 20:22:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238082AbiFBSU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 14:20:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45188 "EHLO
+        id S236888AbiFBSU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 14:20:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237988AbiFBSUU (ORCPT
+        with ESMTP id S237991AbiFBSUU (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 14:20:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B160E5DBFD
-        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 11:20:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B171E5DD32;
+        Thu,  2 Jun 2022 11:20:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30FDF616BF
-        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 18:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 83477C3411C;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A1B1616F9;
+        Thu,  2 Jun 2022 18:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8E11DC34114;
         Thu,  2 Jun 2022 18:20:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1654194014;
-        bh=D5RIeejn4YgRvg67JIphd9lReWFGHhQQi4AeaaJqW90=;
+        bh=aKofY/xii58Ay5t+eF5YX3hdOSJaq5bVkJH0FJWL58I=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YePiWmudG7vABqqElSfJvqdbM3BVkTbMYihUZsWT8nqUk2f/4vMqndOnVs0p4+jM5
-         jr6ME5Nj8z71rZvOcP7rfzpMd14uIvFIzd+ugicyOg4DvzXWowNUBKjgtP4MU0eLZP
-         bI3TAHa8SL4RKkxnpo5Cjcd/b9V3f9WbAKDUc9qHSs/MEc9Fi5aXeVOYF/MIuEagTy
-         kUsZd2gn7XOn9SyXK/Xk1bY4Ya5JwmkmMYu6ox5RsjldGdeGyrfcpnTFhwbzrtjdU8
-         gop+kyx2ifmfQmEBtbap12t3uubeSpJHLnKpxqaWpQCGBZUsmDck9MVSrg6SLluflM
-         rZTrXr04LxzKw==
+        b=McC1kwoOT0LAQdbQKyEAsr3Ke8BjvnMABZ8Xjgo4oInbmx0HniAiD4t6/m2tMG4es
+         V/dilRUwGPXB2VL6hyim0nKfiKpkvmbq1EF8WumWDN6SOber7M9awdrb+4FP9YiWMO
+         6xbEFNRkqQSITEmJUbcQLaKlmVvE2fC3+djA3okXre5krYMc+bvrEzktXfDxw3t0fX
+         5aJtuy2YsP19+ARXPauDi9Iyu22tAlNlhQtxMTS3ZEVSOse8vXV9Bt3eAckwHQrGlw
+         +heeqB97twnrEmv7pxj/Y36K64wKm3tUMlirYYRFcCuCmP8N4X2aVxh7sUiZGU66cY
+         KrpC2YTrsS9Kw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 69331F03945;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 712DFF03953;
         Thu,  2 Jun 2022 18:20:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net 0/3] net: af_packet: be careful when expanding mac
- header size
+Subject: Re: [net-next 1/1] stmmac: intel: Add RPL-P PCI ID
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165419401442.24492.16341541730612381725.git-patchwork-notify@kernel.org>
+Message-Id: <165419401446.24492.827425543522994299.git-patchwork-notify@kernel.org>
 Date:   Thu, 02 Jun 2022 18:20:14 +0000
-References: <20220602161859.2546399-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220602161859.2546399-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, willemb@google.com, edumazet@google.com
+References: <20220602073507.3955721-1-michael.wei.hong.sit@intel.com>
+In-Reply-To: <20220602073507.3955721-1-michael.wei.hong.sit@intel.com>
+To:     Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, mcoquelin.stm32@gmail.com,
+        peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        edumazet@google.com, pabeni@redhat.com,
+        vee.khee.wong@linux.intel.com, weifeng.voon@intel.com,
+        tee.min.tan@intel.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,27 +64,20 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu,  2 Jun 2022 09:18:56 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Thu,  2 Jun 2022 15:35:07 +0800 you wrote:
+> Add PCI ID for Ethernet TSN Controller on RPL-P.
 > 
-> A recent regression in af_packet needed a preliminary debug patch,
-> which will presumably be useful for next bugs hunting.
-> 
-> The af_packet fix is to make sure MAC headers are contained in
-> skb linear part, as GSO stack requests.
-> 
-> [...]
+> Signed-off-by: Michael Sit Wei Hong <michael.wei.hong.sit@intel.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 2 ++
+>  1 file changed, 2 insertions(+)
 
 Here is the summary with links:
-  - [v2,net,1/3] net: CONFIG_DEBUG_NET depends on CONFIG_NET
-    https://git.kernel.org/netdev/net/c/eb0b39efb7d9
-  - [v2,net,2/3] net: add debug info to __skb_pull()
-    https://git.kernel.org/netdev/net/c/22296a5c0cd3
-  - [v2,net,3/3] net/af_packet: make sure to pull mac header
-    https://git.kernel.org/netdev/net/c/e9d3f80935b6
+  - [net-next,1/1] stmmac: intel: Add RPL-P PCI ID
+    https://git.kernel.org/netdev/net/c/83450bbafebd
 
 You are awesome, thank you!
 -- 
