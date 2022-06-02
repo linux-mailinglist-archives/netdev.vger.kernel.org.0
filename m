@@ -2,171 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A22653B319
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 07:38:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBAF253B363
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 08:15:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230112AbiFBFgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 01:36:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38248 "EHLO
+        id S230430AbiFBGNj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 02:13:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbiFBFgs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 01:36:48 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2111.outbound.protection.outlook.com [40.107.92.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E5F1D52
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 22:36:45 -0700 (PDT)
+        with ESMTP id S230106AbiFBGNh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 02:13:37 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2043.outbound.protection.outlook.com [40.107.243.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51FB22A1D6F;
+        Wed,  1 Jun 2022 23:13:34 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TwTuliza7iNiHmO9jasleHSzUa7GANip4FS/GyVqvaJLn3sCvMHU1PQmMQaFi9/NK+Ss99gTspjOFAuVPpO47I4KOGX9esMtkloMHiGgqysIsnr60Q62xaV/dulyjXCyPOW+6VTamO57aBHBwNAREqTkZYngXAvhXLgUPUEyYChWHpQtD9DOJA6eNB3AgDBSxHcJEArurlO9h0b/QsVz39UTEQa51apblCg7lakoCRVNwIPjkL/pkVB7nDSEeRjb7mxXuUSm4R0aPcSGgdm12evGHETaogwC/V4bMc0vqT+YR+QBd/AT/53LGKVn/efS6Fx29gj/EY3SzU5HpG+QlQ==
+ b=NJvR2jV/1a5l0buroogPzaT3xY+jU7eOwFUFuCqOsUVZAhzyHBBgLUvvU80BuzV2W8ffkJ9k+X72ParBFkLnHM7+UoGPqXbW8dEtq76+LR89DF91CtELKwW6u1xe+7gzXT6vX2EfYVry2t8glcyGS7d6akvc2LGSYKVr21phKk6n36LbDmtuPDUVPiE2UJgteaHiVfFaQPc2eN3YkVQJvmyLEne2ljoVeSMN8vR8hB7F1FsNy0+U6i1KdmTqgO2QrjQVMNvApvWivlDwPueBChVO53WOosPaSJXDuCH/bEGOsuh4wak/CBugQI+oW6PSN1IugEkWPv6ibhxaW+sihA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5cGmyHujEAkVe3dxXl+DoKdC/BVh88J25AvWZRvCeJw=;
- b=MwlxzmgmglAJ3+bUrMWZgBm4KHCeoFZ7xd26RuXT/GM+aeTORszxVLYp+hiz6pb/HjmyavnQjvhtDtLxIhmGjGivmb9WAMmcrsd8uazDEcqI/cJsTjXZox3CaMrpoO4pNS/EjmNWKrvsmGb6wl60vgfRIvKtrFJBHstWgqHrlrR7W6eIslEbtS9VkRmlRLtpWNhuZj5FGOiC1K8X9zeeHUP1uk2xSIpDz5yuACM5SLqSW/9YU454xSE9NBzlagUV8xdaid1pIx6QjVZGkugrap3+zLDpQIIBoGwDbVUtluv7H/wCwAD5nWPKyYdP9wQTIH3kl/9Y5TXuU9VcoWoLrA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ bh=uC9VjVJeLskg+glQTHs1bLxDw4MSt6blFqZ55P2amt4=;
+ b=SkxLBAvc7kI2kykUJJ4wIOBXr0vOoTt9zW0Nlphgu5ARwLJmYPCZM/6rNK7SQlFqxeghDcCb5zoomTnqIWud/LBDpEgJppCXPRX8xrOy00DUrmGlPQqumYLHKbgum4subsmUrEldVuezQSlgb5FBLyJkf3kK72bCG5sjoyOBrz9VscUp29ckPA1tU63hhJ4ZNw2UIm666EtMBhl/fYIytMcA5JeISgn8SeabRzxvi1pZdpeK5IUQRQ0gRGQTgyexmrIZ+dUTfFZVk3yIj43NG+WOYaeuobaywkkvbgN7cQLhsxFeC4XKMS5pSdgZmy+KFOLuvGPHrRMvF3ZCvEE0ZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5cGmyHujEAkVe3dxXl+DoKdC/BVh88J25AvWZRvCeJw=;
- b=bcWF+VNpDIwxXb0lOOZ54knaT+k2SdSl+DYV/G3DfJA35iM8ahFkGdD06by3wUXg9DMCBg59befVLsv7mYabkQ4tdWPCyS2SAdqPJG+Cx/mU+bzFp8VK0vwwamz0gajuepuvcaJ7AIoefrl1JtRuzX8n3r0yG0jh1iz4Q9Kttro=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM6PR13MB2987.namprd13.prod.outlook.com (2603:10b6:5:6::24) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5314.13; Thu, 2 Jun 2022 05:36:43 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::b18b:5e90:6805:a8fa]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::b18b:5e90:6805:a8fa%7]) with mapi id 15.20.5314.013; Thu, 2 Jun 2022
- 05:36:43 +0000
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Yu Xiao <yu.xiao@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH ethtool] ethtool: fec: Change the prompt string to adapt to current situations
-Date:   Thu,  2 Jun 2022 07:36:26 +0200
-Message-Id: <20220602053626.62512-1-simon.horman@corigine.com>
-X-Mailer: git-send-email 2.30.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0P190CA0015.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:208:190::25) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+ bh=uC9VjVJeLskg+glQTHs1bLxDw4MSt6blFqZ55P2amt4=;
+ b=crf/j0HddS8nBAFC1+D5S2FS1HuoQ6yLSsNJRayOtRKpj3tPXGoMgnedsCksauHuI2HQyFFf3x+PkDm/y0ieEcvgDBSS76BqUZhN1kARYIzXEPoewgwXp9qDPrseAMITXw8VWH646C3llw/2qkeBCCt3k+eaxkX9h0pNHgOsZeRq1X4s3ZRabmHTtoYmot8ftXzbWWuGOXYte857r86CUMwP1jwVGnza4IQzriYVTGhRwMjURk5cMKrQlqfb81SCW5ADHN7iC83pwY6wWrWU1I9U5IFfNQpg+GilYwI6yzEnyfH0sKvcfwgrkadzh8jfmWSlYfkmInMpH5OaydxWbQ==
+Received: from MW4P223CA0012.NAMP223.PROD.OUTLOOK.COM (2603:10b6:303:80::17)
+ by BN6PR12MB1778.namprd12.prod.outlook.com (2603:10b6:404:106::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.16; Thu, 2 Jun
+ 2022 06:13:32 +0000
+Received: from CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:80:cafe::71) by MW4P223CA0012.outlook.office365.com
+ (2603:10b6:303:80::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.12 via Frontend
+ Transport; Thu, 2 Jun 2022 06:13:32 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.235) by
+ CO1NAM11FT041.mail.protection.outlook.com (10.13.174.217) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5314.12 via Frontend Transport; Thu, 2 Jun 2022 06:13:32 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 2 Jun
+ 2022 06:13:31 +0000
+Received: from localhost (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 1 Jun 2022
+ 23:13:30 -0700
+Date:   Thu, 2 Jun 2022 09:13:27 +0300
+From:   Leon Romanovsky <leonro@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Boris Pismenny <borisp@nvidia.com>, <netdev@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Saeed Mahameed" <saeedm@nvidia.com>
+Subject: Re: [PATCH] MAINTAINERS: adjust MELLANOX ETHERNET INNOVA DRIVERS to
+ TLS support removal
+Message-ID: <YphVB3EGzcLtZxvQ@unreal>
+References: <20220601045738.19608-1-lukas.bulwahn@gmail.com>
+ <Ypc85O47YoNzUTr5@unreal>
+ <20220601103032.28d14fc4@kicinski-fedora-PC1C0HJN>
+ <YperBiCh1rkKDmSR@unreal>
+ <20220601122618.78b93038@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220601122618.78b93038@kernel.org>
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cdfa4ef7-5188-4e06-7e35-08da4459e002
-X-MS-TrafficTypeDiagnostic: DM6PR13MB2987:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR13MB298706F2A74D69F12F670CFEE8DE9@DM6PR13MB2987.namprd13.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: d105b601-0e97-4436-9a6d-08da445f04ec
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1778:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR12MB1778731AC1EE781073B5E1D7BDDE9@BN6PR12MB1778.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: K3XXu0uz+4CIKTZO8SUXDPS+hiS9Ja0Zwv+NE6n6lLObmkEJyrzmyn49eQ2j5KEvthQC7bQarJqg63Z3w20/V/hkQu5xx4xoXm67Y1qR9gWDfdsyIuGt2H7SGCoEQALqOjMd2yPvtHI6zayr/04ffQjfJp/fJl6LxS01ZzC+l5RQ3VjwQ5s73KZc6cXvlgf42vJySZF9HVHOYcTSsMdqJgJCWH6bgfxa6ff6SVYJpFIUQQ0mKPRk+K71BIFZ8t+vR1lEjcwtoAeWW+RAJCn6kc7A3t7Xijb9Z5mukx9o2njXoPXDznbJULGabKXet7YiDEwG21F11Kl+wAbq3JprePnA/D6mSoZkTyb0rut4QPzincLunbuVOBQSnFF53LDE6aXgGkPZVsD+SRtWTYcfq3Y0kXs+Z4VK1UsF95muogLFidqnADnsTvoifxyDFpgSd0silXT60h/NyROMkKM7G4zrW2wkN04qnzfXM/YzFj8PwFQzdhf8GTO3vjKT/VY5J8NnWqxDC+JF/95c8IXxNxyXebHl/xOy+QqUulApcm3Ss79X98Jl87Bx3cfIpFcOjLzEIquRqiw/GZwTqbynUUyphikzmFvo1LL7u2FebOFHHO8O7DuzoWZlC5isRRjYz2UgLmtDjMUV/e41aJYz+MO9Axi40wPJVNFsIVJwNpa8hUZtKtp9bPtEO31dtjXVNQN2sqjiBUUXHboU1gm7yFxxkqNjyykJLfwAlY2bUp3MBjsm2Vd0S48DbfMHqqC1x99ah7hOaOm7MpitUo5jtQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(376002)(366004)(346002)(396003)(39840400004)(136003)(38100700002)(186003)(6512007)(5660300002)(52116002)(8936002)(508600001)(2906002)(966005)(6486002)(44832011)(36756003)(6506007)(6666004)(54906003)(6916009)(83380400001)(4326008)(1076003)(316002)(41300700001)(66946007)(86362001)(2616005)(66556008)(66476007)(8676002)(107886003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Sz+DQzKiKzX4eL1A2YgsVxW7lGWmFX4j4ugrSBgCqdxj5D0KIZ4dsVQ3iTpb?=
- =?us-ascii?Q?m/D8n6MJ788jTEhkB4TwewElEfxxgsoE/zsGDmsF8s6PoPKCCwMHXrK7MPQl?=
- =?us-ascii?Q?qDUxx0pHvEYb++GFYkrRcjV7h3NrSCmZkXN8AS1enZKjTlEzdBwmktKEb0B1?=
- =?us-ascii?Q?RJ6HjQenB8N0P6Ewet0AXvm2pWUQypeL65IgQSGlKWyu8pKE/9i67AlMkF8F?=
- =?us-ascii?Q?f04cBftH7YT3S/8zRn19aDV/ZgdQJ3J6lFQCYQo+jGZRmWH8skXj0fq01kKl?=
- =?us-ascii?Q?VytuxMqXF+9TobOQyyuzRPXnUb2FcIi7P5+U+Xkp1gj1H5XvIh85jhLGKC0H?=
- =?us-ascii?Q?9IqavcPclVoPJtaZoCkCDwziSFiLwWNUEhDfwpkmgyEtzSRasmDztNHCAyRd?=
- =?us-ascii?Q?p+9XlcJf9GSi2ZRBJK+3as7BDL4G6qmSyqjRAvka6AdIP1jqFeWFYMQtErBR?=
- =?us-ascii?Q?rS/3oqLZrlcn/p0idR0UQclu/qpfjk2bcfDiXHbMw2wApedIRj93csM64R2F?=
- =?us-ascii?Q?xt7aFQy+sgyWbeiKEguQSHV4ETKcSXyo0j17fQCB6E8c+cnLf+r3Zf7RsnY5?=
- =?us-ascii?Q?ybUFoyi7UnFcN5X2LragcsJuWCiAeb4aETe6AZ3qtAftzF6ENDLqE59lwjLS?=
- =?us-ascii?Q?Nc4jVKNRj2WPCDB61QsU3+sr6o9YP9M9EE52XMsosBogwjxy7/v/wUqVRaGL?=
- =?us-ascii?Q?tQRnSRfZI4yBogntdWpkVDUf1F9VDSv24fkuLZy5IjCcu7bMZcpN+TfhiIrP?=
- =?us-ascii?Q?jZ79xw3uqXYFUXf0l3AYn/nXtQHCLKsTXLB04jqnzs2LlnB9qu5G0IsbBd+b?=
- =?us-ascii?Q?A5LWALaFtXP1HPLC97Igl3MP1nHn5JSG21k2cvt0rrSy5/rKn/sMKn0+h/sZ?=
- =?us-ascii?Q?Coho3kNKcyWDQz/8Z9ooZ0EZB2BtNe5nef1rdvMS7W/8ZUASxYdbqd5/oq9r?=
- =?us-ascii?Q?poOqBLhjfNMlCJcCqET3iP0LTRjfDY61x0RXdD5Qblz4cI+d9m3iXg5BlvJ4?=
- =?us-ascii?Q?8VKnpF27ylh2YzwOUz0xT99Xpmj5f2bn8uK1cclXzTou/OPDNnWjCdxg+MNj?=
- =?us-ascii?Q?Hm5Lewwe0Xlxd+R4zeG7EvmoIS2iH0WMRl2HTccBXrWl5owh2tR1C4Pa9xmt?=
- =?us-ascii?Q?8yKfj3jRhsPiyOWjaeIvPgQMFz+ltvJE4YP1e9mH4JnRKgLd6JddQR+zYnFc?=
- =?us-ascii?Q?zvdq9VDPiiWPiXAbgSvnDqD+bAouiFL2zLj2TlgPcppstxZ7Q95k/sqwIdvk?=
- =?us-ascii?Q?fwtvzXxsbleEbYT7E06Tne+H9qNdW0l26w53YaA3A86JFbcNQwpAufixzNb9?=
- =?us-ascii?Q?AB5hiyPlmyfSWuQEoW4CqoCP0vG+wtmRtwCYq/GIhGoEHpzdPs9Wde/U45VG?=
- =?us-ascii?Q?WIUoa6/0EenMCasWssBPcI4CHa+leCvgGnArujsbQP3zU+Zvh5Azk5+TC49P?=
- =?us-ascii?Q?oAlZsfodkM+NhPzFhsrG66VVbpNGwKIxUN2RBh1BpJauF3Ae8VkH7XaiIM/N?=
- =?us-ascii?Q?AgI1o7WNIOcQv33Q8A+QVHkpgGuFkU0jjHuCF+eNS8uADLpJ0t4wUsQDTshE?=
- =?us-ascii?Q?J7YEgd1W0SKqlrGxOlwaCzItmLcvxLdAokwKjb5PXw/T7zt7pJTgi0Nx0mmy?=
- =?us-ascii?Q?5ZAupK5dnqw09Aa9LffPJV+0Oo2nFIM6AfEurXqkFLDmFsOrsxIzfKlbxkb5?=
- =?us-ascii?Q?cKyeWaiqwIcKLGStiNTb5GJblzTqF1a6Mzw8F/rlyc3E6f6QqfOgico+BhhV?=
- =?us-ascii?Q?IyvZBeL0VlufWsNwUvz5qEXALC0Pcu4mXeqbPRfiu/dXsJRXRM4Lf+6VY94F?=
-X-MS-Exchange-AntiSpam-MessageData-1: 2Ss6lL/g2mtdYvMs/QMGJ8BdPckGvigybro=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cdfa4ef7-5188-4e06-7e35-08da4459e002
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2022 05:36:42.8946
+X-Microsoft-Antispam-Message-Info: FsHockwrJTFFDsZirzpBqKjyJpSJbJ/2YrZQJxHyNCxLTFdqHLNMYsLQC4/c0Sl4SYLafJDtq2mEFccN5EPLBmEsxs0PjnXvVnb2Uty8CiSHBhzaw/bt312EeeZHqrJAL+sKm7KnUtYXUBjJoRJTU4xZ2DB/oIgZKGLQdO34gaDFhSdjsfyPG8a3DFpxCj9wKdpro5JaDyOrcvsyF47hRlij1IL/hi2HEY6/6iYDpYh1RIXRtFA4KT72SzRhcqZ4neCz87hDV7EetYlq0AkcR8HJFWFhJzWoRblGEcmPxb4qnd7r1H6IqG6dB47fBhDORqiNN/hBQx0+egc1tat1qyQ+GnIMpQeV3eoJ/hAaOTfdnta9fjOAccUzVkZKS04tfhvtChSgrGkEnSkzxCYxbaYEK5WOPadmExBYod/AOeMh6oXpzUxy9DxeZCiovoNsCvEmzxCCPU8LFj/MLuo2YqZXrQ+NH2pzdfZMDARWzrcQPpcMgUhSL8wxKKmesI86dBeLmGlouvu/xLOjQsXF35deGuXmhblYDu8dA6B7BIq+VeRU7hlU3o361rLX3MGa9v65q1l28G2kmyQ+SrUhZiqAh6dDLW7oCGCTPJsBg7G0PUPhzBIpW7ULtVhtmkYtsArgcotdXs55F+nBrljsIZApo6czWssd7KsX0Csv/jNc3HBSL61ItQhkqU19SjOtcgJ5yqLnx7/5JhXOr4m3d2CaH7fPG+6EnKx4lkk1SSUXO3PUxD/FwPNDlf54++NhWpaK4/OGEw5F0Y7Ik1UJuCZyCM+wcmx6sBppqXgZQzNLvmAZ7bKT+6VB4sXCxQFWTNBDLswjEV3M1PASNLIIKA==
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(7916004)(4636009)(36840700001)(46966006)(40470700004)(186003)(70206006)(426003)(40460700003)(356005)(336012)(316002)(16526019)(2906002)(54906003)(86362001)(5660300002)(508600001)(6916009)(47076005)(8936002)(107886003)(966005)(6666004)(81166007)(83380400001)(82310400005)(33716001)(9686003)(26005)(8676002)(36860700001)(4326008)(70586007)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2022 06:13:32.0449
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: q7gECqH2m3MwfhxStnyNQiMUF1j8S8imTTtvxsNsyljrplDhnvn7gbXN9vvDcwXXghTWLZgeNIaWQamFhixhBEm85GpyfUai/qtCTKrZToY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB2987
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: d105b601-0e97-4436-9a6d-08da445f04ec
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT041.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1778
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yu Xiao <yu.xiao@corigine.com>
+On Wed, Jun 01, 2022 at 12:26:18PM -0700, Jakub Kicinski wrote:
+> On Wed, 1 Jun 2022 21:08:06 +0300 Leon Romanovsky wrote:
+> > On Wed, Jun 01, 2022 at 10:30:39AM -0700, Jakub Kicinski wrote:
+> > > > Thanks, we will submit it once net-next will be open.  
+> > > 
+> > > It should go via net FWIW.  
+> > 
+> > I'm slightly confused here.
+> > 
+> > According to net policy, the patches that goes there should have Fixes
+> > line, but Fixes lines are added for bugs [1].
+> > 
+> > This forgotten line in MAINTAINERS doesn't cause to any harm to
+> > users/developers.
+> 
+> Fair, maybe I worded it too strongly. I should have said something like
+> "FWIW it's okay for MAINTAINERS updates to go via net".
+> 
+> Documentation/ patches and MAINTAINERS are special, they can go into
+> net without a Fixes tag so that changes to get_maintainer output and
+> https://www.kernel.org/doc/html/latest/ propagate quickly.
 
-Majority upstream drivers uses `Configured FEC encodings` to report
-supported modes. At which point it is better to change the text in
-ethtool user space that changes the meaning of the field, which is
-better to suit for the current situations.
+Awesome, thanks
 
-So changing `Configured FEC encodings` to `Supported/Configured FEC
-encodings` to adapt to both implementations.
-
-Signed-off-by: Yu Xiao <yu.xiao@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
----
-
-This patch resulted from a discussion on netdev regarding
-updating the behaviour of the NFP driver. It was concluded in
-that thread that it would be better to update the ethtool documentation
-to reflect current implementations of the feature.
-
-Ref: [PATCH net] nfp: correct the output of `ethtool --show-fec <intf>`
-     https://lore.kernel.org/netdev/20220530084842.21258-1-simon.horman@corigine.com/
----
- ethtool.c     | 2 +-
- netlink/fec.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/ethtool.c b/ethtool.c
-index 277253090245..8654f70de03b 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -5567,7 +5567,7 @@ static int do_gfec(struct cmd_context *ctx)
- 	}
- 
- 	fprintf(stdout, "FEC parameters for %s:\n", ctx->devname);
--	fprintf(stdout, "Configured FEC encodings:");
-+	fprintf(stdout, "Supported/Configured FEC encodings:");
- 	dump_fec(feccmd.fec);
- 	fprintf(stdout, "\n");
- 
-diff --git a/netlink/fec.c b/netlink/fec.c
-index f2659199c157..1762ae349ca6 100644
---- a/netlink/fec.c
-+++ b/netlink/fec.c
-@@ -153,7 +153,7 @@ int fec_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- 	print_string(PRINT_ANY, "ifname", "FEC parameters for %s:\n",
- 		     nlctx->devname);
- 
--	open_json_array("config", "Configured FEC encodings:");
-+	open_json_array("support/config", "Supported/Configured FEC encodings:");
- 	fa = tb[ETHTOOL_A_FEC_AUTO] && mnl_attr_get_u8(tb[ETHTOOL_A_FEC_AUTO]);
- 	if (fa)
- 		print_string(PRINT_ANY, NULL, " %s", "Auto");
--- 
-2.30.2
-
+> 
+> > So when should I put Fixes line in netdev?
+> > 
+> > [1] https://lore.kernel.org/netdev/20211208070842.0ace6747@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
+> 
