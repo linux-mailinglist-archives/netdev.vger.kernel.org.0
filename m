@@ -2,166 +2,407 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00E5253B2D4
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 06:58:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2541E53B2FE
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 07:29:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229842AbiFBE6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 00:58:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34036 "EHLO
+        id S230044AbiFBF2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 01:28:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229539AbiFBE6T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 00:58:19 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2132.outbound.protection.outlook.com [40.107.21.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 196805BE49
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 21:58:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hoh/VaylkJsYWhTbWFepoB55g9+2Ohyyo5nUbaOS1pkVH3CBdRpQhOX9ias/T//rf/st+rI2uOta2nJqXB6P2ujnLyPuBWC1tR7Ec8UmphFQ0HkR+N+2yki4ELF2MaVc8+8oDSQIypLbwLf6tUjxa9ezkGtkXxPwtxgwTJjirVpXN0Kfh5ySv6hVHaMOgYDkpUygeVgdGTXnI5NYuAxeu6OBNueeTh7gQerQWYEhLmYpL8yq9p8WB5zKvk6y//BrY7MS5TUODXmyEUC/zQaaMe4OjO1DoXdgBrECi6J9WVhx7KneLj4Fe9baCzPvX8Ho7Vt7zF3I0O+W5qMnwDsgfw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fmej1GbGMURoy/JjCZLGNeoZpATdgjpPLkN112735g0=;
- b=eAfgwFP3ZBteLYtSWF9VrKsyodvs/tg/fj2bkSDtFxfSUfNgVI5bIXDDANmLL9HpOMMyzWF9kIUI0U5PsqiofaScOR+Y/RSmvIZUTxGpGvgCtWf0PXzyf8j04KShmTjmJeFJ26Oc3NaZfYaBnz7N39e074OSaoivTz6LG2CJMa745VwNgt43pV6pcpe91etVajrzK3cGZP9Wd+u0yAviAWWUc3MZICu2LbWUktvOyJC1yWzxovJ/GHNQ6Iyw5UQk69/YDh9ZiBkwoJWv4hfHCHwV+sOLDGb2DZA95wGWN94yXnBLGvUJl9a6wZv6kkNRN0ZEbfIrCFE8Z+ecIW7XMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fmej1GbGMURoy/JjCZLGNeoZpATdgjpPLkN112735g0=;
- b=toW6NS/Ve6sWZBwHLtAB+Ql6Rm8csyIPWsX+UYmddRDK1kA25cb8qBpuWtQj0dn7Ky0JFD9BMT6mhKoEeiptkH2pYr9WkEMJDqnRB0Q4FMK3fFqXI0HjhQLDt/SO5Mk9ql9FXzN8d3+7aM6G0KLdp6iaqooLaSQjx0yKdjutaGc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=dektech.com.au;
-Received: from DB9PR05MB7641.eurprd05.prod.outlook.com (2603:10a6:10:21f::6)
- by VI1PR05MB7039.eurprd05.prod.outlook.com (2603:10a6:800:186::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13; Thu, 2 Jun
- 2022 04:58:12 +0000
-Received: from DB9PR05MB7641.eurprd05.prod.outlook.com
- ([fe80::84e0:5f1b:9fe2:34f8]) by DB9PR05MB7641.eurprd05.prod.outlook.com
- ([fe80::84e0:5f1b:9fe2:34f8%2]) with mapi id 15.20.5314.013; Thu, 2 Jun 2022
- 04:58:12 +0000
-From:   Hoang Le <hoang.h.le@dektech.com.au>
-To:     jmaloy@redhat.com, maloy@donjonn.com, ying.xue@windriver.com,
-        tung.q.nguyen@dektech.com.au, kuba@kernel.org,
-        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net
-Cc:     syzbot+e820fdc8ce362f2dea51@syzkaller.appspotmail.com
-Subject: [net v3] tipc: check attribute length for bearer name
-Date:   Thu,  2 Jun 2022 11:57:57 +0700
-Message-Id: <20220602045757.3943-1-hoang.h.le@dektech.com.au>
-X-Mailer: git-send-email 2.30.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: HK2PR06CA0017.apcprd06.prod.outlook.com
- (2603:1096:202:2e::29) To DB9PR05MB7641.eurprd05.prod.outlook.com
- (2603:10a6:10:21f::6)
+        with ESMTP id S229647AbiFBF2Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 01:28:25 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70352A3B9F
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 22:28:20 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id c1-20020a928e01000000b002d1b20aa761so2671269ild.6
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 22:28:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=oBwwLmIWelfGfUj4Er9QHKF4pnoyhNYH+2/2k171TC4=;
+        b=ZLX+ci86+YmfgpJTowACaIE+Rd5LTPtFFqetVzLxmgxiv4s69fW3GYTyBH/ow9R/v2
+         3iC3e9B5OR2jAVxztHgWZwblVah7roLQ16eXLHACql0za7SnJk9GiQ76ft6i2a4gUmyq
+         hqEeOdKFW5l/g9hf1Ys9So7pxBY+LGT//dl6aF461UgEGnnYiIDGJkK5aGnljCLNvb4E
+         +zGUDMWedlgMO10qZWJMQfY9LfvL+vWddHnm/ByCajUY2nPtq3X/yso0isMMPAWbnUpH
+         Qo2GYO3+SlG93yZF0LYohbs0LzrPfMiiaOAeNRZplWAEcruSYl4P1fLhGrf1x8PlWP4W
+         QYow==
+X-Gm-Message-State: AOAM533w/kMJjqLbohIBtEsf0h85d912Twdf8Gdz2hzQ4641f+xMCGFu
+        ofwR2T2XzUfTMN/aymMEPSAlVx5M9+Ah/lK3bK5gwW/lQvj2
+X-Google-Smtp-Source: ABdhPJwbRf67+UyF9LzJGuP7RSzqkxCIsEFEV0tgbx5hKvN5+0eue/juVqy3l6Nnvgt+TVX16Pu/XRekpndUbnFGmOtTkyX0/9jN
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c5ac16d9-d083-48ab-72a5-08da44547e85
-X-MS-TrafficTypeDiagnostic: VI1PR05MB7039:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR05MB7039A657CAF403BA23BA6158F1DE9@VI1PR05MB7039.eurprd05.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BvDDmoqnhoU3v3CIvuGgwb2Eq54BlLr4MFhoblyG826qnKqGUCOIh41h/YdqGRwHbqZLjNzOnJ+bw7BXWjl+ZChkiO+y/rwkFg3PKJPJIAmUpvnOdfPqf+ceb8N963USEbSCL35WoLqUw2qFQQsNRdA+3JLwdNflLkEHN9r6vLW2M7zXhcgfazJtfRYSNZSXpJwm/wCGvgLkzw0oytGdSDEn3iwJGQ+pd/+jWB61Ur8K0bA/Ea86sRk1be3llU72YlI63uJRf1PXOCMv7fjd8qC1OQmjKgKc+Y7uFRI8wKB1QPJzlPlKY6yutBgo3+IDH89gZiQHQ+o4Y04Ujx0WHgMAd3c6fIntGdJMDUKZ/1bHHcRGcVSCkoLpuMQuqx0N/GEDjKQsrf8D8vhuhU1suSQkQ6VGM9Yrc/dBZ9MamDT20eOpj7HKCY6rgk3d2OOY/ZQt5KEIi+Af5Oqz88XgZmfRjng2v36f5XQubVm201Rm1Xmo2dvOCZ/7GDaFr5ccLUGH2Vz91Bfw6/VQThkcL+VSkUOYEghOlif3sjcm8c33zmx3Q4HgRuQq0rfKUja0sY7/XO0op28KhQIscaB3p79i1mCakOiC1aOe8F6YgYb7TBzxgr6Hd4GTW0XcJ0dZ9JvPct0xwZ5Q86ZUAYpbHJj9piKQqBBki7k8VeMuGpK9qbn59iG4N41pbdaIYiNf4Wq5OzWLgoBA7fZj6OyL8Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR05MB7641.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(396003)(346002)(376002)(39840400004)(366004)(136003)(41300700001)(1076003)(508600001)(86362001)(2616005)(316002)(186003)(66476007)(66556008)(66946007)(38100700002)(5660300002)(4326008)(83380400001)(8676002)(2906002)(8936002)(38350700002)(6666004)(6486002)(36756003)(26005)(6506007)(55236004)(6512007)(103116003)(52116002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RN11UWxfAcr30g2eRvcY4xfKbRzD1AR+jWerJMOHE6qr8zv9n0jRhnUawy4T?=
- =?us-ascii?Q?g6kfj1BfLd1gpJQG/xNg2cCZGA5wYsmHCPa186Zeb3uzJGJLTqQIs9+tfrm/?=
- =?us-ascii?Q?kOyqE6G/sFTioPnOzZuCFrthS36bIp1Gsniv6ksCoZWq1dkhoymoNb+RKJaS?=
- =?us-ascii?Q?Qkc2wQrAm39lu8WWKbpXfYl163Gsmg3IGXqG6Os/r/avFH8O0aOnZAaKRbLY?=
- =?us-ascii?Q?gW0PQKpTqwKVDXboTks9Aqozj6Nlm64FtV+uOkrNz05Ba8jU05nSpVr2cKih?=
- =?us-ascii?Q?a1Ljz2jtwJmjqv8cELeljqB3XBY20PLcqEq6P+ymP2UaC1MQ/69I0wIhbpwj?=
- =?us-ascii?Q?vzPs8xMJ57vU4v6wtBOPoVYyFsU+rBQ7/zWb00ccrG17TbL2xsZqI1+3gtkc?=
- =?us-ascii?Q?vYrN8eRUj6RKobK5R9rL9MohrExUq2VAt6AqKlu5o5xJqoQfTo13oaZj99kJ?=
- =?us-ascii?Q?w/xJ+DrTPkESf61dsuRTo29C+S/ajBi/AeeR7hJGYiB/NVlldcYV74kDcib0?=
- =?us-ascii?Q?VEWY756oP37M+4nvO/k2yoHUlcy+Ytv9QjPVQ1R2clbTpJFVJlhc0K5yzCJh?=
- =?us-ascii?Q?+fLiXXufCx9hCZwbnXVyyBrutIS1zIzAQEmtM5qmKv8WrxHQjqYJNzegXfK5?=
- =?us-ascii?Q?AKhZhUUWdp9zldaDXcu6x1uZaVGv07AHQS77L17tVJJS/0XIi5ZZqJYUnsPN?=
- =?us-ascii?Q?mFwc1xJpzebYAzIQ0/+FdG2cQis8VEtl7YQlzqXzi1TCd+ezOOMRq1OF3bWw?=
- =?us-ascii?Q?zLoAmZ669s0CqgmrAegR5M7pSLuUAv6KWSXbG/+FDnGW83M2vYOgcV1qrJZk?=
- =?us-ascii?Q?oEuVa49Q4ei4BJiU/bkymg339/qi9NYs3d+4CDi2yHo3xSPcwo1YdswsgNit?=
- =?us-ascii?Q?0fSJbhaB13+PEAtv+jR1auFToa/vE2d5e/NImlXjBINIEWnjMqYPwD5+Dl18?=
- =?us-ascii?Q?mZxxuyVfSB5F7rs4gN+yIABo8Q7Q9txQLnRMKd3Vt2XO6cO02p7Mj4nD9jBu?=
- =?us-ascii?Q?M5/N+7x0U40+jKev6sSNuNFlNzxZENWJzwm60uWFOLJECp4BiY0zOJvpeYGV?=
- =?us-ascii?Q?hbBA9WhAqgnBRW0+pePueQydSsm1geUaeA5RwrpGdEqxdXeODuF2NCjYU6OY?=
- =?us-ascii?Q?XOQgfVRaho/wGzg+wI1NJMNm3B482ZjP8E4qSNsnMA1XXVYee0lOnf73hD7c?=
- =?us-ascii?Q?g+55O3gqtJcCalReqd0Hg2bUGc0V7jKvUeVjuAJZOdWXlLWH4iWg4mBnlYcY?=
- =?us-ascii?Q?NoNjnAXO2DWXiwrAVwfPoTb6LF7avUnc20RB6orOX2xCPksmckGgjCv9YncD?=
- =?us-ascii?Q?msdRVwuZaoZjazaJthgvFWuQVFp2LewoR2Xbt3ngTP+FROJjCFb1ezIM0QdX?=
- =?us-ascii?Q?hIamg0orxgdbkYbhawH5xBMj7MiU1icHeJDm0hbxDjGY+iZpLYmAbYfN51Pn?=
- =?us-ascii?Q?9I7ARljbCX/CFNT96hQlTriTWZA/sLiEoQc/xRQwJb8ROIT9FPHbxXyUZlSM?=
- =?us-ascii?Q?Fp6oyLUyXhlK/wt0IMxvolkY0U3XXtYKrX6/r5+DbJqZiAB5mG/7Emjpdf6a?=
- =?us-ascii?Q?8xmcJUO//4FcAF6OQBGTGjQ/d21xbzRMgxC9MC3toS1kbEpcA0ndqp7jr8+m?=
- =?us-ascii?Q?7KOyjre1Wi0/Q6/Wg8/RTVxdIb5oDTaSAuJmiQk2FtHf3EYNjraufGZhKbh9?=
- =?us-ascii?Q?uGWf5dZwSpOPzhkw1g2Vfo1t5hQoQRz/CXmifskThJXUVypzrGTIqaAdT7HL?=
- =?us-ascii?Q?xUws2LPUggVmtZUaJekJq6zWIFU/uIE=3D?=
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-Network-Message-Id: c5ac16d9-d083-48ab-72a5-08da44547e85
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR05MB7641.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2022 04:58:12.0399
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4SVy+AhIdeWXqJei7UVPbf08SrnqRRewfRxvFjh/mWdoEX99S9Pk3Cb4INV34ouCQ5YEQdJUIS8o3S45ZUY4vsb/xenCpok/YbRmtq9V5dg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB7039
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a92:de4b:0:b0:2d2:18f1:be45 with SMTP id
+ e11-20020a92de4b000000b002d218f1be45mr2166512ilr.308.1654147700044; Wed, 01
+ Jun 2022 22:28:20 -0700 (PDT)
+Date:   Wed, 01 Jun 2022 22:28:20 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000113adf05e0704621@google.com>
+Subject: [syzbot] INFO: task hung in hci_power_on
+From:   syzbot <syzbot+8d7b9ced2a99394b0a50@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
+        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot reported uninit-value:
-=====================================================
-BUG: KMSAN: uninit-value in string_nocheck lib/vsprintf.c:644 [inline]
-BUG: KMSAN: uninit-value in string+0x4f9/0x6f0 lib/vsprintf.c:725
- string_nocheck lib/vsprintf.c:644 [inline]
- string+0x4f9/0x6f0 lib/vsprintf.c:725
- vsnprintf+0x2222/0x3650 lib/vsprintf.c:2806
- vprintk_store+0x537/0x2150 kernel/printk/printk.c:2158
- vprintk_emit+0x28b/0xab0 kernel/printk/printk.c:2256
- vprintk_default+0x86/0xa0 kernel/printk/printk.c:2283
- vprintk+0x15f/0x180 kernel/printk/printk_safe.c:50
- _printk+0x18d/0x1cf kernel/printk/printk.c:2293
- tipc_enable_bearer net/tipc/bearer.c:371 [inline]
- __tipc_nl_bearer_enable+0x2022/0x22a0 net/tipc/bearer.c:1033
- tipc_nl_bearer_enable+0x6c/0xb0 net/tipc/bearer.c:1042
- genl_family_rcv_msg_doit net/netlink/genetlink.c:731 [inline]
+Hello,
 
-- Do sanity check the attribute length for TIPC_NLA_BEARER_NAME.
-- Do not use 'illegal name' in printing message.
+syzbot found the following issue on:
 
-v3: add Fixes tag in commit message.
-v2: remove unnecessary sanity check as Jakub's comment.
+HEAD commit:    9d004b2f4fea Merge tag 'cxl-for-5.19' of git://git.kernel...
+git tree:       upstream
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=1644de7bf00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3c367f7c347f1679
+dashboard link: https://syzkaller.appspot.com/bug?extid=8d7b9ced2a99394b0a50
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=103f3755f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17f4cf3df00000
 
-Reported-by: syzbot+e820fdc8ce362f2dea51@syzkaller.appspotmail.com
-Fixes: cb30a63384bc ("tipc: refactor function tipc_enable_bearer()")
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8d7b9ced2a99394b0a50@syzkaller.appspotmail.com
+
+INFO: task kworker/u5:0:47 blocked for more than 143 seconds.
+      Not tainted 5.18.0-syzkaller-10643-g9d004b2f4fea #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:kworker/u5:0    state:D stack:26752 pid:   47 ppid:     2 flags:0x00004000
+Workqueue: hci2 hci_power_on
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5116 [inline]
+ __schedule+0x957/0xec0 kernel/sched/core.c:6431
+ schedule+0xeb/0x1b0 kernel/sched/core.c:6503
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6562
+ __mutex_lock_common+0xecf/0x26c0 kernel/locking/mutex.c:679
+ __mutex_lock kernel/locking/mutex.c:747 [inline]
+ mutex_lock_nested+0x17/0x20 kernel/locking/mutex.c:799
+ hci_dev_do_open net/bluetooth/hci_core.c:480 [inline]
+ hci_power_on+0x178/0x650 net/bluetooth/hci_core.c:963
+ process_one_work+0x81c/0xd10 kernel/workqueue.c:2289
+ worker_thread+0xb14/0x1330 kernel/workqueue.c:2436
+ kthread+0x266/0x300 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30
+ </TASK>
+INFO: task kworker/u5:8:3667 blocked for more than 143 seconds.
+      Not tainted 5.18.0-syzkaller-10643-g9d004b2f4fea #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:kworker/u5:8    state:D stack:26752 pid: 3667 ppid:     2 flags:0x00004000
+Workqueue: hci3 hci_power_on
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5116 [inline]
+ __schedule+0x957/0xec0 kernel/sched/core.c:6431
+ schedule+0xeb/0x1b0 kernel/sched/core.c:6503
+ schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6562
+ __mutex_lock_common+0xecf/0x26c0 kernel/locking/mutex.c:679
+ __mutex_lock kernel/locking/mutex.c:747 [inline]
+ mutex_lock_nested+0x17/0x20 kernel/locking/mutex.c:799
+ hci_dev_do_open net/bluetooth/hci_core.c:480 [inline]
+ hci_power_on+0x178/0x650 net/bluetooth/hci_core.c:963
+ process_one_work+0x81c/0xd10 kernel/workqueue.c:2289
+ worker_thread+0xb14/0x1330 kernel/workqueue.c:2436
+ kthread+0x266/0x300 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30
+ </TASK>
+INFO: task syz-executor174:3932 blocked for more than 143 seconds.
+      Not tainted 5.18.0-syzkaller-10643-g9d004b2f4fea #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz-executor174 state:D stack:26584 pid: 3932 ppid:  3611 flags:0x00004002
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5116 [inline]
+ __schedule+0x957/0xec0 kernel/sched/core.c:6431
+ schedule+0xeb/0x1b0 kernel/sched/core.c:6503
+ schedule_timeout+0xac/0x300 kernel/time/timer.c:1911
+ do_wait_for_common+0x3ea/0x560 kernel/sched/completion.c:85
+ __wait_for_common kernel/sched/completion.c:106 [inline]
+ wait_for_common kernel/sched/completion.c:117 [inline]
+ wait_for_completion+0x46/0x60 kernel/sched/completion.c:138
+ __flush_work kernel/workqueue.c:3075 [inline]
+ __cancel_work_timer+0x585/0x740 kernel/workqueue.c:3162
+ hci_dev_close_sync+0x31/0xcc0 net/bluetooth/hci_sync.c:4091
+ hci_dev_do_close net/bluetooth/hci_core.c:553 [inline]
+ hci_unregister_dev+0x1b1/0x460 net/bluetooth/hci_core.c:2685
+ hci_uart_tty_close+0x1a7/0x280 drivers/bluetooth/hci_ldisc.c:548
+ tty_ldisc_kill drivers/tty/tty_ldisc.c:608 [inline]
+ tty_ldisc_release+0x23c/0x510 drivers/tty/tty_ldisc.c:776
+ tty_release_struct+0x27/0xd0 drivers/tty/tty_io.c:1694
+ tty_release+0xc06/0xe60 drivers/tty/tty_io.c:1865
+ __fput+0x3b9/0x820 fs/file_table.c:317
+ task_work_run+0x146/0x1c0 kernel/task_work.c:177
+ exit_task_work include/linux/task_work.h:38 [inline]
+ do_exit+0x547/0x1ed0 kernel/exit.c:795
+ do_group_exit+0x23b/0x2f0 kernel/exit.c:925
+ __do_sys_exit_group kernel/exit.c:936 [inline]
+ __se_sys_exit_group kernel/exit.c:934 [inline]
+ __x64_sys_exit_group+0x3b/0x40 kernel/exit.c:934
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f934cf16ab9
+RSP: 002b:00007fff38b78f88 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 00007f934cf8a330 RCX: 00007f934cf16ab9
+RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 0000000000000001
+R10: 0000000000000001 R11: 0000000000000246 R12: 00007f934cf8a330
+R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
+ </TASK>
+INFO: task syz-executor174:4073 blocked for more than 144 seconds.
+      Not tainted 5.18.0-syzkaller-10643-g9d004b2f4fea #0
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:syz-executor174 state:D stack:26584 pid: 4073 ppid:  3615 flags:0x00004002
+Call Trace:
+ <TASK>
+ context_switch kernel/sched/core.c:5116 [inline]
+ __schedule+0x957/0xec0 kernel/sched/core.c:6431
+ schedule+0xeb/0x1b0 kernel/sched/core.c:6503
+ schedule_timeout+0xac/0x300 kernel/time/timer.c:1911
+ do_wait_for_common+0x3ea/0x560 kernel/sched/completion.c:85
+ __wait_for_common kernel/sched/completion.c:106 [inline]
+ wait_for_common kernel/sched/completion.c:117 [inline]
+ wait_for_completion+0x46/0x60 kernel/sched/completion.c:138
+ __flush_work kernel/workqueue.c:3075 [inline]
+ __cancel_work_timer+0x585/0x740 kernel/workqueue.c:3162
+ hci_dev_close_sync+0x31/0xcc0 net/bluetooth/hci_sync.c:4091
+ hci_dev_do_close net/bluetooth/hci_core.c:553 [inline]
+ hci_unregister_dev+0x1b1/0x460 net/bluetooth/hci_core.c:2685
+ hci_uart_tty_close+0x1a7/0x280 drivers/bluetooth/hci_ldisc.c:548
+ tty_ldisc_kill drivers/tty/tty_ldisc.c:608 [inline]
+ tty_ldisc_release+0x23c/0x510 drivers/tty/tty_ldisc.c:776
+ tty_release_struct+0x27/0xd0 drivers/tty/tty_io.c:1694
+ tty_release+0xc06/0xe60 drivers/tty/tty_io.c:1865
+ __fput+0x3b9/0x820 fs/file_table.c:317
+ task_work_run+0x146/0x1c0 kernel/task_work.c:177
+ exit_task_work include/linux/task_work.h:38 [inline]
+ do_exit+0x547/0x1ed0 kernel/exit.c:795
+ do_group_exit+0x23b/0x2f0 kernel/exit.c:925
+ __do_sys_exit_group kernel/exit.c:936 [inline]
+ __se_sys_exit_group kernel/exit.c:934 [inline]
+ __x64_sys_exit_group+0x3b/0x40 kernel/exit.c:934
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f934cf16ab9
+RSP: 002b:00007fff38b78f88 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 00007f934cf8a330 RCX: 00007f934cf16ab9
+RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000000
+RBP: 0000000000000000 R08: ffffffffffffffc0 R09: 0000000000000001
+R10: 0000000000000001 R11: 0000000000000246 R12: 00007f934cf8a330
+R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000001
+ </TASK>
+
+Showing all locks held in the system:
+1 lock held by khungtaskd/29:
+ #0: ffffffff8cb1ebe0 (rcu_read_lock){....}-{1:2}, at: rcu_lock_acquire+0x0/0x30
+3 locks held by kworker/u5:0/47:
+ #0: ffff88801fdcd938 ((wq_completion)hci2){+.+.}-{0:0}, at: process_one_work+0x796/0xd10 kernel/workqueue.c:2262
+ #1: ffffc90000b87d00 ((work_completion)(&hdev->power_on)){+.+.}-{0:0}, at: process_one_work+0x7d0/0xd10 kernel/workqueue.c:2264
+ #2: ffff88801d935048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_dev_do_open net/bluetooth/hci_core.c:480 [inline]
+ #2: ffff88801d935048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_power_on+0x178/0x650 net/bluetooth/hci_core.c:963
+2 locks held by getty/3280:
+ #0: ffff888025914098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x21/0x70 drivers/tty/tty_ldisc.c:244
+ #1: ffffc90002cd62e8 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0x6ad/0x1c90 drivers/tty/n_tty.c:2075
+3 locks held by kworker/u5:5/3630:
+ #0: ffff88801a8ed938 ((wq_completion)hci0){+.+.}-{0:0}, at: process_one_work+0x796/0xd10 kernel/workqueue.c:2262
+ #1: ffffc9000315fd00 ((work_completion)(&hdev->power_on)){+.+.}-{0:0}, at: process_one_work+0x7d0/0xd10 kernel/workqueue.c:2264
+ #2: ffff88801a7d1048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_dev_do_open net/bluetooth/hci_core.c:480 [inline]
+ #2: ffff88801a7d1048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_power_on+0x178/0x650 net/bluetooth/hci_core.c:963
+3 locks held by kworker/u5:6/3631:
+ #0: ffff8880772d6138 ((wq_completion)hci4){+.+.}-{0:0}, at: process_one_work+0x796/0xd10 kernel/workqueue.c:2262
+ #1: ffffc9000316fd00 ((work_completion)(&hdev->power_on)){+.+.}-{0:0}, at: process_one_work+0x7d0/0xd10 kernel/workqueue.c:2264
+ #2: ffff8880778cd048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_dev_do_open net/bluetooth/hci_core.c:480 [inline]
+ #2: ffff8880778cd048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_power_on+0x178/0x650 net/bluetooth/hci_core.c:963
+2 locks held by kworker/0:4/3634:
+ #0: ffff888011466538 ((wq_completion)rcu_gp){+.+.}-{0:0}, at: process_one_work+0x796/0xd10 kernel/workqueue.c:2262
+ #1: ffffc900031afd00 ((work_completion)(&rew->rew_work)){+.+.}-{0:0}, at: process_one_work+0x7d0/0xd10 kernel/workqueue.c:2264
+3 locks held by kworker/u5:7/3652:
+ #0: ffff88801b1bd938 ((wq_completion)hci5){+.+.}-{0:0}, at: process_one_work+0x796/0xd10 kernel/workqueue.c:2262
+ #1: ffffc900031efd00 ((work_completion)(&hdev->power_on)){+.+.}-{0:0}, at: process_one_work+0x7d0/0xd10 kernel/workqueue.c:2264
+ #2: ffff888075651048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_dev_do_open net/bluetooth/hci_core.c:480 [inline]
+ #2: ffff888075651048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_power_on+0x178/0x650 net/bluetooth/hci_core.c:963
+3 locks held by kworker/u5:8/3667:
+ #0: ffff88807b17b138 ((wq_completion)hci3){+.+.}-{0:0}, at: process_one_work+0x796/0xd10 kernel/workqueue.c:2262
+ #1: ffffc9000309fd00 ((work_completion)(&hdev->power_on)){+.+.}-{0:0}, at: process_one_work+0x7d0/0xd10 kernel/workqueue.c:2264
+ #2: ffff88807ae29048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_dev_do_open net/bluetooth/hci_core.c:480 [inline]
+ #2: ffff88807ae29048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_power_on+0x178/0x650 net/bluetooth/hci_core.c:963
+3 locks held by syz-executor174/3932:
+ #0: ffff88801ec0d098 (&tty->ldisc_sem){++++}-{0:0}, at: __tty_ldisc_lock drivers/tty/tty_ldisc.c:290 [inline]
+ #0: ffff88801ec0d098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_lock_pair_timeout drivers/tty/tty_ldisc.c:336 [inline]
+ #0: ffff88801ec0d098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_lock_pair drivers/tty/tty_ldisc.c:367 [inline]
+ #0: ffff88801ec0d098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_release+0x5b/0x510 drivers/tty/tty_ldisc.c:775
+ #1: ffff88801ec0e098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: __tty_ldisc_lock_nested drivers/tty/tty_ldisc.c:296 [inline]
+ #1: ffff88801ec0e098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_lock_pair_timeout drivers/tty/tty_ldisc.c:338 [inline]
+ #1: ffff88801ec0e098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_lock_pair drivers/tty/tty_ldisc.c:367 [inline]
+ #1: ffff88801ec0e098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_release+0x7f/0x510 drivers/tty/tty_ldisc.c:775
+ #2: ffff88801d935048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_dev_do_close net/bluetooth/hci_core.c:551 [inline]
+ #2: ffff88801d935048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_unregister_dev+0x1a9/0x460 net/bluetooth/hci_core.c:2685
+3 locks held by syz-executor174/4073:
+ #0: ffff888073846098 (&tty->ldisc_sem){++++}-{0:0}, at: __tty_ldisc_lock drivers/tty/tty_ldisc.c:290 [inline]
+ #0: ffff888073846098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_lock_pair_timeout drivers/tty/tty_ldisc.c:346 [inline]
+ #0: ffff888073846098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_lock_pair drivers/tty/tty_ldisc.c:367 [inline]
+ #0: ffff888073846098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_release+0xb3/0x510 drivers/tty/tty_ldisc.c:775
+ #1: ffff88807d590098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: __tty_ldisc_lock_nested drivers/tty/tty_ldisc.c:296 [inline]
+ #1: ffff88807d590098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_lock_pair_timeout drivers/tty/tty_ldisc.c:348 [inline]
+ #1: ffff88807d590098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_lock_pair drivers/tty/tty_ldisc.c:367 [inline]
+ #1: ffff88807d590098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_release+0xd7/0x510 drivers/tty/tty_ldisc.c:775
+ #2: ffff88807ae29048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_dev_do_close net/bluetooth/hci_core.c:551 [inline]
+ #2: ffff88807ae29048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_unregister_dev+0x1a9/0x460 net/bluetooth/hci_core.c:2685
+3 locks held by syz-executor174/4621:
+ #0: ffff888074f58098 (&tty->ldisc_sem){++++}-{0:0}, at: __tty_ldisc_lock drivers/tty/tty_ldisc.c:290 [inline]
+ #0: ffff888074f58098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_lock_pair_timeout drivers/tty/tty_ldisc.c:336 [inline]
+ #0: ffff888074f58098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_lock_pair drivers/tty/tty_ldisc.c:367 [inline]
+ #0: ffff888074f58098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_release+0x5b/0x510 drivers/tty/tty_ldisc.c:775
+ #1: ffff888074f5a098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: __tty_ldisc_lock_nested drivers/tty/tty_ldisc.c:296 [inline]
+ #1: ffff888074f5a098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_lock_pair_timeout drivers/tty/tty_ldisc.c:338 [inline]
+ #1: ffff888074f5a098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_lock_pair drivers/tty/tty_ldisc.c:367 [inline]
+ #1: ffff888074f5a098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_release+0x7f/0x510 drivers/tty/tty_ldisc.c:775
+ #2: ffff888075651048
+ (&hdev->req_lock){+.+.}-{3:3}, at: __debug_check_no_obj_freed lib/debugobjects.c:977 [inline]
+ (&hdev->req_lock){+.+.}-{3:3}, at: debug_check_no_obj_freed+0xc5/0x650 lib/debugobjects.c:1020
+3 locks held by syz-executor174/4623:
+ #0: ffff888021031098 (&tty->ldisc_sem){++++}-{0:0}, at: __tty_ldisc_lock drivers/tty/tty_ldisc.c:290 [inline]
+ #0: ffff888021031098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_lock_pair_timeout drivers/tty/tty_ldisc.c:346 [inline]
+ #0: ffff888021031098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_lock_pair drivers/tty/tty_ldisc.c:367 [inline]
+ #0: ffff888021031098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_release+0xb3/0x510 drivers/tty/tty_ldisc.c:775
+ #1: ffff888021034098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: __tty_ldisc_lock_nested drivers/tty/tty_ldisc.c:296 [inline]
+ #1: ffff888021034098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_lock_pair_timeout drivers/tty/tty_ldisc.c:348 [inline]
+ #1: ffff888021034098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_lock_pair drivers/tty/tty_ldisc.c:367 [inline]
+ #1: ffff888021034098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_release+0xd7/0x510 drivers/tty/tty_ldisc.c:775
+ #2: ffff88801a7d1048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_dev_do_close net/bluetooth/hci_core.c:551 [inline]
+ #2: ffff88801a7d1048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_unregister_dev+0x1a9/0x460 net/bluetooth/hci_core.c:2685
+3 locks held by syz-executor174/4624:
+ #0: ffff888074f59098 (&tty->ldisc_sem){++++}-{0:0}, at: __tty_ldisc_lock drivers/tty/tty_ldisc.c:290 [inline]
+ #0: ffff888074f59098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_lock_pair_timeout drivers/tty/tty_ldisc.c:346 [inline]
+ #0: ffff888074f59098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_lock_pair drivers/tty/tty_ldisc.c:367 [inline]
+ #0: ffff888074f59098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_release+0xb3/0x510 drivers/tty/tty_ldisc.c:775
+ #1: ffff888074f5b098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: __tty_ldisc_lock_nested drivers/tty/tty_ldisc.c:296 [inline]
+ #1: ffff888074f5b098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_lock_pair_timeout drivers/tty/tty_ldisc.c:348 [inline]
+ #1: ffff888074f5b098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_lock_pair drivers/tty/tty_ldisc.c:367 [inline]
+ #1: ffff888074f5b098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_release+0xd7/0x510 drivers/tty/tty_ldisc.c:775
+ #2: ffff8880778cd048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_dev_do_close net/bluetooth/hci_core.c:551 [inline]
+ #2: ffff8880778cd048 (&hdev->req_lock){+.+.}-{3:3}, at: hci_unregister_dev+0x1a9/0x460 net/bluetooth/hci_core.c:2685
+4 locks held by syz-executor174/4625:
+ #0: ffff8880166dc098 (&tty->ldisc_sem){++++}-{0:0}, at: __tty_ldisc_lock drivers/tty/tty_ldisc.c:290 [inline]
+ #0: ffff8880166dc098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_lock_pair_timeout drivers/tty/tty_ldisc.c:346 [inline]
+ #0: ffff8880166dc098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_lock_pair drivers/tty/tty_ldisc.c:367 [inline]
+ #0: ffff8880166dc098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_release+0xb3/0x510 drivers/tty/tty_ldisc.c:775
+ #1: ffff88801cfda098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: __tty_ldisc_lock_nested drivers/tty/tty_ldisc.c:296 [inline]
+ #1: ffff88801cfda098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_lock_pair_timeout drivers/tty/tty_ldisc.c:348 [inline]
+ #1: ffff88801cfda098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_lock_pair drivers/tty/tty_ldisc.c:367 [inline]
+ #1: ffff88801cfda098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_release+0xd7/0x510 drivers/tty/tty_ldisc.c:775
+ #2: ffff888023a8f990 (&hu->proto_lock){++++}-{0:0}, at: hci_uart_tty_close+0x123/0x280 drivers/bluetooth/hci_ldisc.c:539
+ #3: ffffffff8cb23ce0 (rcu_state.exp_mutex){+.+.}-{3:3}, at: exp_funnel_lock kernel/rcu/tree_exp.h:290 [inline]
+ #3: ffffffff8cb23ce0 (rcu_state.exp_mutex){+.+.}-{3:3}, at: synchronize_rcu_expedited+0x266/0x720 kernel/rcu/tree_exp.h:927
+3 locks held by syz-executor174/4626:
+ #0: ffff888074220098 (&tty->ldisc_sem){++++}-{0:0}, at: __tty_ldisc_lock drivers/tty/tty_ldisc.c:290 [inline]
+ #0: ffff888074220098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_lock_pair_timeout drivers/tty/tty_ldisc.c:346 [inline]
+ #0: ffff888074220098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_lock_pair drivers/tty/tty_ldisc.c:367 [inline]
+ #0: ffff888074220098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_release+0xb3/0x510 drivers/tty/tty_ldisc.c:775
+ #1: ffff888074224098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: __tty_ldisc_lock_nested drivers/tty/tty_ldisc.c:296 [inline]
+ #1: ffff888074224098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_lock_pair_timeout drivers/tty/tty_ldisc.c:348 [inline]
+ #1: ffff888074224098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_lock_pair drivers/tty/tty_ldisc.c:367 [inline]
+ #1: ffff888074224098 (&tty->ldisc_sem/1){+.+.}-{0:0}, at: tty_ldisc_release+0xd7/0x510 drivers/tty/tty_ldisc.c:775
+ #2: ffff88801f204d90 (&hu->proto_lock){++++}-{0:0}, at: hci_uart_tty_close+0x123/0x280 drivers/bluetooth/hci_ldisc.c:539
+
+=============================================
+
+NMI backtrace for cpu 0
+CPU: 0 PID: 29 Comm: khungtaskd Not tainted 5.18.0-syzkaller-10643-g9d004b2f4fea #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x1e3/0x2cb lib/dump_stack.c:106
+ nmi_cpu_backtrace+0x473/0x4a0 lib/nmi_backtrace.c:111
+ nmi_trigger_cpumask_backtrace+0x168/0x280 lib/nmi_backtrace.c:62
+ trigger_all_cpu_backtrace include/linux/nmi.h:146 [inline]
+ check_hung_uninterruptible_tasks kernel/hung_task.c:220 [inline]
+ watchdog+0xd18/0xd60 kernel/hung_task.c:378
+ kthread+0x266/0x300 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30
+ </TASK>
+Sending NMI from CPU 0 to CPUs 1:
+NMI backtrace for cpu 1
+CPU: 1 PID: 48 Comm: kworker/u4:2 Not tainted 5.18.0-syzkaller-10643-g9d004b2f4fea #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events_unbound toggle_allocation_gate
+RIP: 0010:get_current arch/x86/include/asm/current.h:15 [inline]
+RIP: 0010:__sanitizer_cov_trace_pc+0x4/0x60 kernel/kcov.c:199
+Code: 00 00 00 00 66 90 53 48 89 fb e8 17 00 00 00 48 8b 3d 18 f1 7b 0c 48 89 de 5b e9 47 ee 51 00 cc cc cc cc cc cc cc 48 8b 04 24 <65> 48 8b 0c 25 00 6f 02 00 65 8b 15 a4 fc 7a 7e f7 c2 00 01 ff 00
+RSP: 0018:ffffc90000b97658 EFLAGS: 00000093
+RAX: ffffffff813cd4d4 RBX: ffff8881c00fb000 RCX: 0000000000000000
+RDX: ffff8880171ad880 RSI: 000000000000002e RDI: 0000000000000040
+RBP: ffffc90000b97790 R08: ffffffff813cd4c5 R09: ffffed1027fc5085
+R10: ffffed1027fc5085 R11: 1ffff11027fc5084 R12: 0000000000000000
+R13: dffffc0000000000 R14: 00000001400fb000 R15: 000000000000002e
+FS:  0000000000000000(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f934cf8b1d0 CR3: 000000000c88e000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ phys_addr_valid arch/x86/mm/physaddr.h:7 [inline]
+ __phys_addr+0x94/0x160 arch/x86/mm/physaddr.c:28
+ build_cr3 arch/x86/mm/tlb.c:163 [inline]
+ load_new_mm_cr3 arch/x86/mm/tlb.c:283 [inline]
+ switch_mm_irqs_off+0x8f5/0x910 arch/x86/mm/tlb.c:628
+ use_temporary_mm arch/x86/kernel/alternative.c:962 [inline]
+ __text_poke+0x5c2/0x9d0 arch/x86/kernel/alternative.c:1073
+ text_poke arch/x86/kernel/alternative.c:1137 [inline]
+ text_poke_bp_batch+0x6bc/0x970 arch/x86/kernel/alternative.c:1483
+ text_poke_flush arch/x86/kernel/alternative.c:1589 [inline]
+ text_poke_finish+0x16/0x30 arch/x86/kernel/alternative.c:1596
+ arch_jump_label_transform_apply+0x13/0x20 arch/x86/kernel/jump_label.c:146
+ static_key_enable_cpuslocked+0x129/0x250 kernel/jump_label.c:177
+ static_key_enable+0x16/0x20 kernel/jump_label.c:190
+ toggle_allocation_gate+0xbf/0x470 mm/kfence/core.c:808
+ process_one_work+0x81c/0xd10 kernel/workqueue.c:2289
+ worker_thread+0xb14/0x1330 kernel/workqueue.c:2436
+ kthread+0x266/0x300 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30
+ </TASK>
+----------------
+Code disassembly (best guess):
+   0:	00 00                	add    %al,(%rax)
+   2:	00 00                	add    %al,(%rax)
+   4:	66 90                	xchg   %ax,%ax
+   6:	53                   	push   %rbx
+   7:	48 89 fb             	mov    %rdi,%rbx
+   a:	e8 17 00 00 00       	callq  0x26
+   f:	48 8b 3d 18 f1 7b 0c 	mov    0xc7bf118(%rip),%rdi        # 0xc7bf12e
+  16:	48 89 de             	mov    %rbx,%rsi
+  19:	5b                   	pop    %rbx
+  1a:	e9 47 ee 51 00       	jmpq   0x51ee66
+  1f:	cc                   	int3
+  20:	cc                   	int3
+  21:	cc                   	int3
+  22:	cc                   	int3
+  23:	cc                   	int3
+  24:	cc                   	int3
+  25:	cc                   	int3
+  26:	48 8b 04 24          	mov    (%rsp),%rax
+* 2a:	65 48 8b 0c 25 00 6f 	mov    %gs:0x26f00,%rcx <-- trapping instruction
+  31:	02 00
+  33:	65 8b 15 a4 fc 7a 7e 	mov    %gs:0x7e7afca4(%rip),%edx        # 0x7e7afcde
+  3a:	f7 c2 00 01 ff 00    	test   $0xff0100,%edx
+
+
 ---
- net/tipc/bearer.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
-index 6d39ca05f249..932c87b98eca 100644
---- a/net/tipc/bearer.c
-+++ b/net/tipc/bearer.c
-@@ -259,9 +259,8 @@ static int tipc_enable_bearer(struct net *net, const char *name,
- 	u32 i;
- 
- 	if (!bearer_name_validate(name, &b_names)) {
--		errstr = "illegal name";
- 		NL_SET_ERR_MSG(extack, "Illegal name");
--		goto rejected;
-+		return res;
- 	}
- 
- 	if (prio > TIPC_MAX_LINK_PRI && prio != TIPC_MEDIA_LINK_PRI) {
--- 
-2.30.2
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
