@@ -2,121 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DD1B53B4E0
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 10:21:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1670653B56E
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 10:52:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232072AbiFBITx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 04:19:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
+        id S232077AbiFBIwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 04:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbiFBITw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 04:19:52 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E6DC15;
-        Thu,  2 Jun 2022 01:19:51 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id g25so4436474ljm.2;
-        Thu, 02 Jun 2022 01:19:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wgIZR7dvI9d7yKsWI61xGA/OPJcvvRD4X0FBHSe3Sfk=;
-        b=Pg54oRUAqhJdc4T3bRYGpCzdjKqgEqDn2MLsyuNCWVEPwaewweQz4mmy5Qg9NhGEPe
-         SSJ2IJ8ZgzhsL8EegHcWGTuLM0jKcnY4WCne3PDWRmjiZ9TJ6oLpWL3P4JiG8UzbxgRm
-         kBylYcazGJeuVDIEojcf/na17ZGtmFyGxqOoaa3ZawreuAMkS/kTJeMi5qtWPaEeGPen
-         678L0uzIOVPJ8CFOOeJqr70oFzxq1k23mBCn8zL/VFtZOfsS0fJadqB4nESw4FPWuhp5
-         OzFBcZFItn+K7xcPMQzhm3qVjWlq0v5VJJ0eWAJJu5ZNbnftykcK0plzyTi/4FzZyHG5
-         kEww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wgIZR7dvI9d7yKsWI61xGA/OPJcvvRD4X0FBHSe3Sfk=;
-        b=QSftVSTZMn8zMTDhZTH33CdW+Fg5l3qrbfInPU26ugWCiQlCZW8NvwUwdb7LIm6rgD
-         YjX9QHiuxutAAEq2CXLLbPdqoEAvUlNmOArdniSU3h/a9IJqFXS/Qo9sOXMttXR+nHaO
-         eKUDzW9eHj6i4QPTcvtiNDPWyGQ5dEcQjMuf737idcDNuoKPyL6YFn0rXcAqiQAEcTOJ
-         inFd5FNM9TkzHY808QNQ7Ifz9j+DvO5FJrvMZ/1uxeOTlhQTHP6j1g/pvAvBlKoBo/B9
-         nR+5u35vUQfbJxKRSdxmkk7OckzmCg7N4vQrA0IZhvXsR+uc51G5QyR1DZO4O96v9guc
-         50Dg==
-X-Gm-Message-State: AOAM532UY30JT4zllFCCviCXRfT+Do9ZAxGgXIMQeRRbaMC/m/UHPd+y
-        bGFLi+HF7hCVupxrmsaq7ck=
-X-Google-Smtp-Source: ABdhPJwDGAb+Zq72WAJKKAG6b45ubLRipgsdl7M5Xhp3ys/FBwq/sVTMIncqljv7PvZaoIyeNrkq2g==
-X-Received: by 2002:a2e:bc13:0:b0:253:e72a:aa2f with SMTP id b19-20020a2ebc13000000b00253e72aaa2fmr32550928ljf.390.1654157989975;
-        Thu, 02 Jun 2022 01:19:49 -0700 (PDT)
-Received: from PC-752.milrem.lan (87-119-163-145.tll.elisa.ee. [87.119.163.145])
-        by smtp.gmail.com with ESMTPSA id y2-20020a056512044200b0047255d2117csm896132lfk.171.2022.06.02.01.19.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 01:19:49 -0700 (PDT)
-From:   =?UTF-8?q?Kaarel=20P=C3=A4rtel?= <kaarelp2rtel@gmail.com>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     =?UTF-8?q?Kaarel=20P=C3=A4rtel?= <kaarelp2rtel@gmail.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: add operstate for vcan and dummy
-Date:   Thu,  2 Jun 2022 11:19:29 +0300
-Message-Id: <20220602081929.21929-1-kaarelp2rtel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231966AbiFBIwN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 04:52:13 -0400
+X-Greylist: delayed 468 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 02 Jun 2022 01:52:08 PDT
+Received: from smtp-190e.mail.infomaniak.ch (smtp-190e.mail.infomaniak.ch [IPv6:2001:1600:4:17::190e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D1A9D4C5
+        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 01:52:08 -0700 (PDT)
+Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
+        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LDKLl046yzMprjq;
+        Thu,  2 Jun 2022 10:44:15 +0200 (CEST)
+Received: from [10.0.0.141] (unknown [31.10.206.125])
+        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4LDKLk1DMszlk1FD;
+        Thu,  2 Jun 2022 10:44:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=pschenker.ch;
+        s=20220412; t=1654159454;
+        bh=mV7mkCUjOl6hMSevGR59+xlFQCqBQ4WwdymyF0opzUY=;
+        h=Subject:From:Reply-To:To:Cc:Date:In-Reply-To:References:From;
+        b=TVJFhJK9EsLdiqX+KhfpvkfTgssVCX73VGWmPkbBNWLdNRINdU7AzH0KLslewDaPE
+         0/OcSegpEggQ+NuLItKAQexi9dmhEjTtYaqWsf2yWmCCCWHigsxq3jh0KmXREU+xJC
+         BCkuo08R2hje4EXErOkpDVna9rJTAIVc9SsHLJrw=
+Message-ID: <2c5a6bb34c67c9c15c393346e89bdb14ae6f3c44.camel@pschenker.ch>
+Subject: Re: [PATCH] Revert "mt76: mt7921: enable aspm by default"
+From:   Philippe Schenker <dev@pschenker.ch>
+Reply-To: dev@pschenker.ch
+To:     sean.wang@mediatek.com
+Cc:     deren.wu@mediatek.com, kvalo@kernel.org,
+        linux-wireless@vger.kernel.org, nbd@nbd.name, linux@leemhuis.info,
+        davem@davemloft.net, kuba@kernel.org, lorenzo.bianconi83@gmail.com,
+        matthias.bgg@gmail.com, pabeni@redhat.com, ryder.lee@mediatek.com,
+        shayne.chen@mediatek.com, yn.chen@mediatek.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org
+Date:   Thu, 02 Jun 2022 10:44:13 +0200
+In-Reply-To: <1654122203-26090-1-git-send-email-sean.wang@mediatek.com>
+References: <e93aef5c9f8a97efe23cfb5892f78f919ce328e7.camel@pschenker.ch--annotate>
+         <1654122203-26090-1-git-send-email-sean.wang@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The idea here is simple. The vcan and the dummy network devices
-currently do not set the operational state of the interface.
-The result is that the interface state will be UNKNOWN.
+On Thu, 2022-06-02 at 06:23 +0800, sean.wang@mediatek.com wrote:
+> From: Sean Wang <sean.wang@mediatek.com>
+>=20
+> > On Tue, 2022-04-12 at 19:06 +0800, Deren Wu wrote:
+> > > On Tue, 2022-04-12 at 12:37 +0300, Kalle Valo wrote:
+> > > > Philippe Schenker <dev@pschenker.ch> writes:
+> > > >=20
+> > > > > This reverts commit bf3747ae2e25dda6a9e6c464a717c66118c588c8.
+> > > > >=20
+> > > > > This commit introduces a regression on some systems where the
+> > > > > kernel is crashing in different locations after a reboot was
+> > > > > issued.
+> > > > >=20
+> > > > > This issue was bisected on a Thinkpad P14s Gen2 (AMD) with
+> > > > > latest
+> > > > > firmware.
+> > > > >=20
+> > > > > Link:
+> > > > > https://urldefense.com/v3/__https://lore.kernel.org/linux-wireles=
+s
+> > > > > /5077a953487275837e81bdf1808ded00b9676f9f.camel@pschenker.ch/_
+> > > > > _;!!
+> > > > > CTRNKA9wMg0ARbw!09tjyaQlMci3fVI3yiNiDJKUW_qwNA_CbVhoAraeIX96B9
+> > > > > 9Q14
+> > > > > J4iDycWA9cq36Y$
+> > > > >=20
+> > > > > Signed-off-by: Philippe Schenker <dev@pschenker.ch>
+> > > >=20
+> > > > Can I take this to wireless tree? Felix, ack?
+> > > >=20
+> > > > I'll also add:
+> > > >=20
+> > > > Fixes: bf3747ae2e25 ("mt76: mt7921: enable aspm by default")
+> > > >=20
+> > >=20
+> > > Hi Kalle,
+> > >=20
+> > > We have a patch for a similar problem. Can you wait for the
+> > > verification by Philippe?
+> > > Commit 602cc0c9618a81 ("mt76: mt7921e: fix possible probe failure
+> > > after
+> > > reboot")
+> > > Link:
+> > > https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kern=
+e
+> > > l/git/torvalds/linux.git/commit/drivers/net/wireless/mediatek/mt76
+> > > ?id=3D
+> > > 602cc0c9618a819ab00ea3c9400742a0ca318380__;!!CTRNKA9wMg0ARbw!3N9I3
+> > > iKwS
+> > > 3XCNAb4LuhbFqt_el1yiOaJzSdUjaJsTaxRCHiWhXnEgbk3bOqYTy6T$
+> > >=20
+> > > I can reproduce the problem in my v5.16-rc5 desktop. And the issue
+> > > can
+> > > be fixed when the patch applied.
+> > >=20
+> > >=20
+> > > Hi Philippe,
+> > >=20
+> > > Can you please help to check the patch in your platform?
+> >=20
+> > Hi Kalle and Deren,
+> >=20
+> > I just noticed on my system and mainline v5.18 reboots do now work
+> > however Bluetooth is no longer accessible after a reboot.
+> >=20
+> > Reverting commit bf3747ae2e25dda6a9e6c464a717c66118c588c8 on top of
+> > v5.18 solves this problem for me.
+> >=20
+> > @Deren are you aware of this bug?
+> > @Kalle Is there a bugtracker somewhere I can submit this?
+>=20
+> Hi Philippe,
+>=20
+> Could you try the latest firmware to see if it can help with the issue
+> you reported here ?
+>=20
+> Please check out
+> https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.g=
+it/tree/mediatek
+> and replace the following three files in /lib/firmware/mediatek on
+> your target and reboot
+> 1) BT_RAM_CODE_MT7961_1_2_hdr.bin
+> 2) WIFI_MT7961_patch_mcu_1_2_hdr.bin
+> 3) WIFI_RAM_CODE_MT7961_1.bin
+>=20
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0Sean
 
-The kernel considers the unknown state to be the same as up:
-https://elixir.bootlin.com/linux/latest/source/include/linux/netdevice.h#L4125
+Hi Sean,
 
-However for users this creates confusion:
-https://serverfault.com/questions/629676/dummy-network-interface-in-linux
+Thanks for your suggestion. I downloaded the firmwares from the link you
+indicated and downloaded the three firmwares from main branch. I checked
+and the sha256sums of the most recent firmwares match with the one
+installed by my distribution. So I already had latest versions on my
+tests.
 
-The change in this patch is very simple. When the interface is set up, the
-operational state is set to IF_OPER_UP.
+Philippe
 
-Signed-off-by: Kaarel Pärtel <kaarelp2rtel@gmail.com>
----
- drivers/net/can/vcan.c | 1 +
- drivers/net/dummy.c    | 1 +
- 2 files changed, 2 insertions(+)
-
-diff --git a/drivers/net/can/vcan.c b/drivers/net/can/vcan.c
-index a15619d883ec..79768f9d4294 100644
---- a/drivers/net/can/vcan.c
-+++ b/drivers/net/can/vcan.c
-@@ -162,6 +162,7 @@ static void vcan_setup(struct net_device *dev)
- 
- 	dev->netdev_ops		= &vcan_netdev_ops;
- 	dev->needs_free_netdev	= true;
-+	dev->operstate = IF_OPER_UP;
- }
- 
- static struct rtnl_link_ops vcan_link_ops __read_mostly = {
-diff --git a/drivers/net/dummy.c b/drivers/net/dummy.c
-index f82ad7419508..ab128f66de00 100644
---- a/drivers/net/dummy.c
-+++ b/drivers/net/dummy.c
-@@ -133,6 +133,7 @@ static void dummy_setup(struct net_device *dev)
- 
- 	dev->min_mtu = 0;
- 	dev->max_mtu = 0;
-+	dev->operstate = IF_OPER_UP;
- }
- 
- static int dummy_validate(struct nlattr *tb[], struct nlattr *data[],
--- 
-2.25.1
+>=20
+> >=20
+> > Thanks,
+> > Philippe
+> >=20
+> > >=20
+> > >=20
+> > > Regards,
+> > > Deren
+> > >=20
+> >=20
+> >=20
+> >=20
 
