@@ -2,86 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A309D53BABE
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 16:29:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95D9753BAE7
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 16:40:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235928AbiFBO3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 10:29:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35778 "EHLO
+        id S236083AbiFBOiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 10:38:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235859AbiFBO3U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 10:29:20 -0400
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21541EB41A;
-        Thu,  2 Jun 2022 07:29:18 -0700 (PDT)
-Received: by mail-ot1-f53.google.com with SMTP id w19-20020a9d6393000000b0060aeb359ca8so3519967otk.6;
-        Thu, 02 Jun 2022 07:29:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3LdxAC+hjoGbT8X2doYYpQEStBAtaF+fLV0X0u4yir4=;
-        b=KHDFjHHCpgdiUo9QqYaa0gIenz6tSgZ51roA5gizgVG8qKpQL0DkodlB8U6W5JBCVa
-         0MrKD4T4xxaW/7ZFvxk+5TuhUtIggR2cSDrtP0AA5VCUiz0xOdWRYWAxxU1UXnRYb/uC
-         3bbpHn6zHYcnZOzvZMLn4P82dQb1MXCotUh7yk4nbJriJky2O0VXAnya8MbyCod04+jh
-         mwFbXr+lkFDwW/C0uiwJUntzK5qewUEpHKiGQ0bN9jZ+qnH5X6eBpT3HPqp4bFRJrN7Z
-         GeKsW7yMSRxcL7qK1ut1NQ9NZSNR1LiO+b0zD4VbAUDZjOR5j+yKMWEQs578zCNk1OIu
-         oa2w==
-X-Gm-Message-State: AOAM531u1Wk385aFvjPa/pIAsa7t8LNEqCsZq+o4Rsp+R0X6FZv8HC+V
-        2NyfHphFx+ZANqaU8hNS3A==
-X-Google-Smtp-Source: ABdhPJxpzv7HpzITyd+wSw147FKRkc3JqW2DfLG9yre4EqpNix4xcaTZaxmSlhKlegS5iTyFsoVN3A==
-X-Received: by 2002:a05:6830:2b07:b0:60b:b38:fcc0 with SMTP id l7-20020a0568302b0700b0060b0b38fcc0mr2109243otv.353.1654180158189;
-        Thu, 02 Jun 2022 07:29:18 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id s42-20020a05683043aa00b0060613c844adsm2183325otv.10.2022.06.02.07.29.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 07:29:17 -0700 (PDT)
-Received: (nullmailer pid 2255406 invoked by uid 1000);
-        Thu, 02 Jun 2022 14:29:17 -0000
-Date:   Thu, 2 Jun 2022 09:29:17 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Palmer Dabbelt <palmer@rivosinc.com>
-Cc:     kuba@kernel.org, michael.hennerich@analog.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com,
-        krzysztof.kozlowski+dt@linaro.org, alexandru.ardelean@analog.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@rivosinc.com
-Subject: Re: [PATCH] dt-bindings: net: adin: Escape a trailing ":"
-Message-ID: <20220602142917.GA2254348-robh@kernel.org>
-References: <20220602012809.8384-1-palmer@rivosinc.com>
+        with ESMTP id S234251AbiFBOiN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 10:38:13 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E0513B8DC;
+        Thu,  2 Jun 2022 07:38:06 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LDT9w158vz67tVr;
+        Thu,  2 Jun 2022 22:37:08 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 2 Jun 2022 16:38:03 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kpsingh@kernel.org>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v2 0/9] bpf: Per-operation map permissions
+Date:   Thu, 2 Jun 2022 16:37:39 +0200
+Message-ID: <20220602143748.673971-1-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220602012809.8384-1-palmer@rivosinc.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 06:28:09PM -0700, Palmer Dabbelt wrote:
-> From: Palmer Dabbelt <palmer@rivosinc.com>
-> 
-> 1f77204e11f8 ("dt-bindings: net: adin: document phy clock output
-> properties") added a line with a ":" at the end, which is tripping up my
-> attempts to run the DT schema checks due to this being invalid YAML
-> syntax.  I get a schema check failure with the following error
-> 
->     ruamel.yaml.scanner.ScannerError: mapping values are not allowed in this context
-> 
-> This just escapes the line in question, so it can parse.
-> 
-> Fixes: 1f77204e11f8 ("dt-bindings: net: adin: document phy clock output properties")
-> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-> ---
->  Documentation/devicetree/bindings/net/adi,adin.yaml | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+With the bpf_map security hook, an eBPF program is able to restrict access
+to a map. For example, it might allow only read accesses and deny write
+accesses.
 
-Already have a fix queued in netdev.
+Unfortunately, permissions are not accurately specified by libbpf and
+bpftool. As a consequence, even if they are requested to perform a
+read-like operation, such as a map lookup, that operation fails even if the
+caller has the right to do so.
 
-Rob
+Even worse, the iteration over existing maps stops as soon as a
+write-protected one is encountered. Maps after the write-protected one are
+not accessible, even if the user has the right to perform operations on
+them.
+
+At low level, the problem is that open_flags and file_flags, respectively
+in the bpf_map_get_fd_by_id() and bpf_obj_get(), are set to zero. The
+kernel interprets this as a request to obtain a file descriptor with full
+permissions.
+
+For some operations, like show or dump, a read file descriptor is enough.
+Those operations could be still performed even in a write-protected map.
+
+Also for searching a map by name, which requires getting the map info, a
+read file descriptor is enough. If an operation requires more permissions,
+they could still be requested later, after the search.
+
+First, solve both problems by extending libbpf with two new functions,
+bpf_map_get_fd_by_id_flags() and bpf_obj_get_flags(), which unlike their
+counterparts bpf_map_get_fd_by_id() and bpf_obj_get(), have the additional
+parameter flags to specify the needed permissions for an operation.
+
+Then, propagate the flags in bpftool from the functions implementing the
+subcommands down to the functions calling bpf_map_get_fd_by_id() and
+bpf_obj_get(), and replace the latter functions with their new variant.
+Initially, set the flags to zero, so that the current behavior does not
+change.
+
+The only exception is for map search by name, where a read-only permission
+is requested, regardless of the operation, to get the map info. In this
+case, request a new file descriptor if a write-like operation needs to be
+performed after the search.
+
+Finally, identify other read-like operations in bpftool and for those
+replace the zero value for flags with BPF_F_RDONLY.
+
+The patch set is organized as follows.
+
+Patches 1-2 introduce the two new variants of bpf_map_get_fd_by_id() and
+bpf_obj_get() in libbpf, named respectively bpf_map_get_fd_by_id_flags()
+and bpf_obj_get_flags().
+
+Patches 3-7 propagate the flags in bpftool from the functions implementing
+the subcommands to the two new libbpf functions, and always set flags to
+BPF_F_RDONLY for the map search operation.
+
+Patch 8 adjusts permissions depending on the map operation performed.
+
+Patch 9 ensures that read-only accesses to a write-protected map succeed
+and write accesses still fail. Also ensure that map search is always
+successful even if there are write-protected maps.
+
+Changelog
+
+v1:
+  - Define per-operation permissions rather than retrying access with
+    read-only permission (suggested by Daniel)
+    https://lore.kernel.org/bpf/20220530084514.10170-1-roberto.sassu@huawei.com/
+
+Roberto Sassu (9):
+  libbpf: Introduce bpf_map_get_fd_by_id_flags()
+  libbpf: Introduce bpf_obj_get_flags()
+  bpftool: Add flags parameter to open_obj_pinned_any() and
+    open_obj_pinned()
+  bpftool: Add flags parameter to *_parse_fd() functions
+  bpftool: Add flags parameter to map_parse_fds()
+  bpftool: Add flags parameter to map_parse_fd_and_info()
+  bpftool: Add flags parameter in struct_ops functions
+  bpftool: Adjust map permissions
+  selftests/bpf: Add map access tests
+
+ tools/bpf/bpftool/btf.c                       |  11 +-
+ tools/bpf/bpftool/cgroup.c                    |   4 +-
+ tools/bpf/bpftool/common.c                    |  52 ++--
+ tools/bpf/bpftool/iter.c                      |   2 +-
+ tools/bpf/bpftool/link.c                      |   9 +-
+ tools/bpf/bpftool/main.h                      |  17 +-
+ tools/bpf/bpftool/map.c                       |  24 +-
+ tools/bpf/bpftool/map_perf_ring.c             |   3 +-
+ tools/bpf/bpftool/net.c                       |   2 +-
+ tools/bpf/bpftool/prog.c                      |  12 +-
+ tools/bpf/bpftool/struct_ops.c                |  39 ++-
+ tools/lib/bpf/bpf.c                           |  16 +-
+ tools/lib/bpf/bpf.h                           |   2 +
+ tools/lib/bpf/libbpf.map                      |   2 +
+ .../bpf/prog_tests/test_map_check_access.c    | 264 ++++++++++++++++++
+ .../selftests/bpf/progs/map_check_access.c    |  65 +++++
+ 16 files changed, 452 insertions(+), 72 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/test_map_check_access.c
+ create mode 100644 tools/testing/selftests/bpf/progs/map_check_access.c
+
+-- 
+2.25.1
+
