@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA5FD53B801
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 13:46:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22D0C53B814
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 13:49:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234332AbiFBLqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 07:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33392 "EHLO
+        id S234167AbiFBLq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 07:46:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234167AbiFBLql (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 07:46:41 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEEE82B07E0;
-        Thu,  2 Jun 2022 04:46:39 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 252BkKmm102230;
-        Thu, 2 Jun 2022 06:46:20 -0500
+        with ESMTP id S234349AbiFBLqz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 07:46:55 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A805F8D5;
+        Thu,  2 Jun 2022 04:46:53 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 252BkWTa051113;
+        Thu, 2 Jun 2022 06:46:32 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1654170380;
-        bh=ntPvbCmcohBfciLcjqfZzj02vyGWQbthMaYla29csnk=;
-        h=From:To:CC:Subject:Date;
-        b=i/ES2l7pW2NO9qomNBSkqIMube2yTKlruISkPnIVGhFNFCm84OkD7u8eH0nsA6KxK
-         5GUgH3BPbc6di07efPCrZQoEgV7lydNYVfs9NWGK1sXtyHDO4+C0mSis7cX6vSeFr0
-         Wf3JTozVH43d+sbnlSUFcLfCiA14QHVhDBMnYiE4=
-Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 252BkKpj068873
+        s=ti-com-17Q1; t=1654170392;
+        bh=f9GK7cbBgx2kpL53tzDgWg4De0q55g5xKDEsV4UsA9U=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=A7tbho1Qm1yqP0VVv9wpwh1+Y6PEYDih5Mhkyyp5CIfxRVScEK+VnyqOyOUVmuXZU
+         3+B6Dr5o6dcoG5AvYXAarZfIKB9Fs98VMcwJkfftSHtcP/DYLFTzownv1ZMpvISQah
+         kDyb8n4PBoDk5NV56h2R2GOt9LN0VxaoTRTjaZ9U=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 252BkWFh028334
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 2 Jun 2022 06:46:20 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+        Thu, 2 Jun 2022 06:46:32 -0500
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 2
- Jun 2022 06:46:20 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ Jun 2022 06:46:31 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 2 Jun 2022 06:46:20 -0500
+ Frontend Transport; Thu, 2 Jun 2022 06:46:31 -0500
 Received: from ula0492258.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 252BkDxf035959;
-        Thu, 2 Jun 2022 06:46:14 -0500
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 252BkDxg035959;
+        Thu, 2 Jun 2022 06:46:26 -0500
 From:   Siddharth Vadapalli <s-vadapalli@ti.com>
 To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <robh+dt@kernel.org>,
@@ -48,10 +48,12 @@ To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
 CC:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <kishon@ti.com>,
         Siddharth Vadapalli <s-vadapalli@ti.com>
-Subject: [PATCH v2 0/3] J7200: CPSW5G: Add support for QSGMII mode to am65-cpsw driver
-Date:   Thu, 2 Jun 2022 17:15:55 +0530
-Message-ID: <20220602114558.6204-1-s-vadapalli@ti.com>
+Subject: [PATCH v2 1/3] dt-bindings: net: ti: k3-am654-cpsw-nuss: Update bindings for J7200 CPSW5G
+Date:   Thu, 2 Jun 2022 17:15:56 +0530
+Message-ID: <20220602114558.6204-2-s-vadapalli@ti.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220602114558.6204-1-s-vadapalli@ti.com>
+References: <20220602114558.6204-1-s-vadapalli@ti.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -66,34 +68,177 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for QSGMII mode to am65-cpsw driver.
+Update bindings for TI K3 J7200 SoC which contains 5 ports (4 external
+ports) CPSW5G module and add compatible for it.
 
-Change log:
-v1 -> v2:
-1. Add new compatible for CPSW5G in ti,k3-am654-cpsw-nuss.yaml and extend
-   properties for new compatible.
-2. Add extra_modes member to struct am65_cpsw_pdata to be used for QSGMII
-   mode by new compatible.
-3. Add check for phylink supported modes to ensure that only one phy mode
-   is advertised as supported.
-4. Check if extra_modes supports QSGMII mode in am65_cpsw_nuss_mac_config()
-   for register write.
-5. Add check for assigning port->sgmii_base only when extra_modes is valid.
+Changes made:
+    - Add new compatible ti,j7200-cpswxg-nuss for CPSW5G.
+    - Extend pattern properties for new compatible.
+    - Change maximum number of CPSW ports to 4 for new compatible.
 
-v1: https://lore.kernel.org/r/20220531113058.23708-1-s-vadapalli@ti.com
-
-Siddharth Vadapalli (3):
-  dt-bindings: net: ti: k3-am654-cpsw-nuss: Update bindings for J7200
-    CPSW5G
-  net: ethernet: ti: am65-cpsw: Add support for J7200 CPSW5G
-  net: ethernet: ti: am65-cpsw: Move phy_set_mode_ext() to correct
-    location
-
+Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+---
  .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   | 140 ++++++++++++------
- drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  41 ++++-
- drivers/net/ethernet/ti/am65-cpsw-nuss.h      |   2 +
- 3 files changed, 134 insertions(+), 49 deletions(-)
+ 1 file changed, 98 insertions(+), 42 deletions(-)
 
+diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+index b8281d8be940..ec57bde7ac26 100644
+--- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
++++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+@@ -57,6 +57,7 @@ properties:
+       - ti,am654-cpsw-nuss
+       - ti,j721e-cpsw-nuss
+       - ti,am642-cpsw-nuss
++      - ti,j7200-cpswxg-nuss
+ 
+   reg:
+     maxItems: 1
+@@ -108,48 +109,103 @@ properties:
+         const: 1
+       '#size-cells':
+         const: 0
+-
+-    patternProperties:
+-      port@[1-2]:
+-        type: object
+-        description: CPSWxG NUSS external ports
+-
+-        $ref: ethernet-controller.yaml#
+-
+-        properties:
+-          reg:
+-            minimum: 1
+-            maximum: 2
+-            description: CPSW port number
+-
+-          phys:
+-            maxItems: 1
+-            description: phandle on phy-gmii-sel PHY
+-
+-          label:
+-            description: label associated with this port
+-
+-          ti,mac-only:
+-            $ref: /schemas/types.yaml#/definitions/flag
+-            description:
+-              Specifies the port works in mac-only mode.
+-
+-          ti,syscon-efuse:
+-            $ref: /schemas/types.yaml#/definitions/phandle-array
+-            items:
+-              - items:
+-                  - description: Phandle to the system control device node which
+-                      provides access to efuse
+-                  - description: offset to efuse registers???
+-            description:
+-              Phandle to the system control device node which provides access
+-              to efuse IO range with MAC addresses
+-
+-        required:
+-          - reg
+-          - phys
+-
+-    additionalProperties: false
++    allOf:
++      - if:
++          properties:
++            compatible:
++              contains:
++                enum:
++                  - ti,am654-cpsw-nuss
++                  - ti,j721e-cpsw-nuss
++                  - ti,am642-cpsw-nuss
++        then:
++          patternProperties:
++            port@[1-2]:
++              type: object
++              description: CPSWxG NUSS external ports
++
++              $ref: ethernet-controller.yaml#
++
++              properties:
++                reg:
++                  minimum: 1
++                  maximum: 2
++                  description: CPSW port number
++
++                phys:
++                  maxItems: 1
++                  description: phandle on phy-gmii-sel PHY
++
++                label:
++                  description: label associated with this port
++
++                ti,mac-only:
++                  $ref: /schemas/types.yaml#/definitions/flag
++                  description:
++                    Specifies the port works in mac-only mode.
++
++                ti,syscon-efuse:
++                  $ref: /schemas/types.yaml#/definitions/phandle-array
++                  items:
++                    - items:
++                        - description: Phandle to the system control device node which
++                            provides access to efuse
++                        - description: offset to efuse registers???
++                  description:
++                    Phandle to the system control device node which provides access
++                    to efuse IO range with MAC addresses
++
++              required:
++                - reg
++                - phys
++      - if:
++          properties:
++            compatible:
++              contains:
++                enum:
++                  - ti,j7200-cpswxg-nuss
++        then:
++          patternProperties:
++            port@[1-4]:
++              type: object
++              description: CPSWxG NUSS external ports
++
++              $ref: ethernet-controller.yaml#
++
++              properties:
++                reg:
++                  minimum: 1
++                  maximum: 4
++                  description: CPSW port number
++
++                phys:
++                  maxItems: 1
++                  description: phandle on phy-gmii-sel PHY
++
++                label:
++                  description: label associated with this port
++
++                ti,mac-only:
++                  $ref: /schemas/types.yaml#/definitions/flag
++                  description:
++                    Specifies the port works in mac-only mode.
++
++                ti,syscon-efuse:
++                  $ref: /schemas/types.yaml#/definitions/phandle-array
++                  items:
++                    - items:
++                        - description: Phandle to the system control device node which
++                            provides access to efuse
++                        - description: offset to efuse registers???
++                  description:
++                    Phandle to the system control device node which provides access
++                    to efuse IO range with MAC addresses
++
++              required:
++                - reg
++                - phys
++
++  additionalProperties: false
+ 
+ patternProperties:
+   "^mdio@[0-9a-f]+$":
 -- 
 2.36.1
 
