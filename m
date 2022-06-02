@@ -2,109 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EBF753BDCD
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 20:14:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67A5653BDF6
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 20:22:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237897AbiFBSOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 14:14:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
+        id S238082AbiFBSU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 14:20:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234302AbiFBSOG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 14:14:06 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDD92BE2
-        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 11:14:05 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id i1so5151397plg.7
-        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 11:14:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2hzKsxy3GSyzH3VoPq74Ra2M46bw5Ap28I/rHJv3+tc=;
-        b=rq2vHBiEC8VMhleqYRJItNirIKM61m3R7HxvIwMhcznlxp4rEHQLbZvFoIRBA+QhAN
-         H0xw5egFOCZE+Dj/U7jrX6ZCAiErSQ9XG8+OuIb714LahEBjSPGFU6QlBBOxLn7sKQ1c
-         d8N4FSsRwf7+Bah9rO0E5GgBJAY/gRFchcen13kA74EDDkHFXv+pXOn6W3LAT9rOJziR
-         +ZXdXVyLaMKYOwyJOdreyvSHckjLLSJaXYEvo511Dvew34ecpL+/cqclBF8f40xwqZtg
-         Y+0arLu4Fsx9+DmK4w/i3K7GSUI/GT9P5pi9LRAdGLpn+dROFGSHvmDvG2HBiZHLKV1z
-         eznA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2hzKsxy3GSyzH3VoPq74Ra2M46bw5Ap28I/rHJv3+tc=;
-        b=2EumhCWx7pPurLU8yoMSyUgw7kL6VQIZgNq1ShVRFi3lmgFXLCP/F9n2F6YyqEnmzF
-         lP262qoM36DUcigbZhjgtE/xx8gtcgzHtGgxdk3COziSTcw0S3iEdLUsHP2UemP4kFN5
-         KQJOTiUDEdlWodGgPEczK5mzmEnp/Zl9RWTYmNhoEKd7RPwX4XZ9xRwYwyjrIg46tmBv
-         luE+D1r/0omNws0u6gq3mWaFILsC7+w9VfIJH7UCo97Mmzcnu+g2PUdemRu2L5m5oiXs
-         DQgx9nzFpk2aTw3JNxg74sQ9coEWflkjeEPV3O1ClQBRoCMzZ9CDGEIbBEnRoE22/dqE
-         QRmA==
-X-Gm-Message-State: AOAM530EA7LTg9B+bPNdPPNtCpS8vAUqrRnoe/sEWF/Em+GLAAbU9PmA
-        KlPfB5D75WCD+bMa61rEN/P9Nw==
-X-Google-Smtp-Source: ABdhPJwxo235xizUNRexwPvS8t+xM23zzOIJMb4n64zyUc5d3kEkj6ZgoqLvyhOL613HmfHYlNNQ5Q==
-X-Received: by 2002:a17:903:240e:b0:158:eab9:2662 with SMTP id e14-20020a170903240e00b00158eab92662mr6067700plo.87.1654193645056;
-        Thu, 02 Jun 2022 11:14:05 -0700 (PDT)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id k7-20020aa79987000000b005104c6d7941sm3921224pfh.31.2022.06.02.11.14.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 11:14:04 -0700 (PDT)
-Date:   Thu, 2 Jun 2022 11:14:01 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Joakim Tjernlund <Joakim.Tjernlund@infinera.com>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net-sysfs: allow changing sysfs carrier when interface
- is down
-Message-ID: <20220602111401.31bcbe35@hermes.local>
-In-Reply-To: <20220602105215.12aff895@kernel.org>
-References: <20220602003523.19530-1-joakim.tjernlund@infinera.com>
-        <20220601180147.40a6e8ea@kernel.org>
-        <4b700cbc93bc087115c1e400449bdff48c37298d.camel@infinera.com>
-        <20220602085645.5ecff73f@hermes.local>
-        <b4b1b8519ef9bfef0d09aeea7ab8f89e531130c8.camel@infinera.com>
-        <20220602095756.764471e8@kernel.org>
-        <f22f16c43411aafc0aaddd208e688dec1616e6bb.camel@infinera.com>
-        <20220602105215.12aff895@kernel.org>
+        with ESMTP id S237988AbiFBSUU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 14:20:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B160E5DBFD
+        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 11:20:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30FDF616BF
+        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 18:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 83477C3411C;
+        Thu,  2 Jun 2022 18:20:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654194014;
+        bh=D5RIeejn4YgRvg67JIphd9lReWFGHhQQi4AeaaJqW90=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YePiWmudG7vABqqElSfJvqdbM3BVkTbMYihUZsWT8nqUk2f/4vMqndOnVs0p4+jM5
+         jr6ME5Nj8z71rZvOcP7rfzpMd14uIvFIzd+ugicyOg4DvzXWowNUBKjgtP4MU0eLZP
+         bI3TAHa8SL4RKkxnpo5Cjcd/b9V3f9WbAKDUc9qHSs/MEc9Fi5aXeVOYF/MIuEagTy
+         kUsZd2gn7XOn9SyXK/Xk1bY4Ya5JwmkmMYu6ox5RsjldGdeGyrfcpnTFhwbzrtjdU8
+         gop+kyx2ifmfQmEBtbap12t3uubeSpJHLnKpxqaWpQCGBZUsmDck9MVSrg6SLluflM
+         rZTrXr04LxzKw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 69331F03945;
+        Thu,  2 Jun 2022 18:20:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net 0/3] net: af_packet: be careful when expanding mac
+ header size
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165419401442.24492.16341541730612381725.git-patchwork-notify@kernel.org>
+Date:   Thu, 02 Jun 2022 18:20:14 +0000
+References: <20220602161859.2546399-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220602161859.2546399-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, willemb@google.com, edumazet@google.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2 Jun 2022 10:52:15 -0700
-Jakub Kicinski <kuba@kernel.org> wrote:
+Hello:
 
-> On Thu, 2 Jun 2022 17:15:13 +0000 Joakim Tjernlund wrote:
-> > > What is "our HW", what kernel driver does it use and why can't the
-> > > kernel driver take care of making sure the device is not accessed
-> > > when it'd crash the system?    
-> > 
-> > It is a custom asic with some homegrown controller. The full config path is too complex for kernel too
-> > know and depends on user input.  
-> 
-> We have a long standing tradition of not caring about user space
-> drivers in netdev land. I see no reason to merge this patch upstream.
-> 
-> > > > Maybe so but it seems to me that this limitation was put in place without much thought.    
-> > > 
-> > > Don't make unnecessary disparaging statements about someone else's work.
-> > > Whoever that person was.    
-> > 
-> > That was not meant the way you read it, sorry for being unclear.
-> > The commit from 2012 simply says:
-> > net: allow to change carrier via sysfs
-> >     
-> >     Make carrier writable  
-> 
-> Yeah, IIUC the interface was created for software devices.
+This series was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-If you want to discussion of original patch see:
-https://patchwork.ozlabs.org/project/netdev/patch/1314715608-978-2-git-send-email-jpirko@redhat.com/
+On Thu,  2 Jun 2022 09:18:56 -0700 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> A recent regression in af_packet needed a preliminary debug patch,
+> which will presumably be useful for next bugs hunting.
+> 
+> The af_packet fix is to make sure MAC headers are contained in
+> skb linear part, as GSO stack requests.
+> 
+> [...]
 
-PS: if you have lots of userspace handling, you should be using netlink not sysfs for management
+Here is the summary with links:
+  - [v2,net,1/3] net: CONFIG_DEBUG_NET depends on CONFIG_NET
+    https://git.kernel.org/netdev/net/c/eb0b39efb7d9
+  - [v2,net,2/3] net: add debug info to __skb_pull()
+    https://git.kernel.org/netdev/net/c/22296a5c0cd3
+  - [v2,net,3/3] net/af_packet: make sure to pull mac header
+    https://git.kernel.org/netdev/net/c/e9d3f80935b6
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
