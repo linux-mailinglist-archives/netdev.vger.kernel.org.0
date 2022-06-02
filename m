@@ -2,101 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 790CC53B224
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 05:42:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89D2053B221
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 05:42:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233552AbiFBDZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 23:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45370 "EHLO
+        id S233570AbiFBD0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 23:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233530AbiFBDZY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 23:25:24 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75AE927F5CE;
-        Wed,  1 Jun 2022 20:25:23 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id j7so3753253pjn.4;
-        Wed, 01 Jun 2022 20:25:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AFDK2qPVxqM8+WUlL7u1WOST3T5Ymo7VG05+dcoLhgI=;
-        b=mAwnLs1Gaw5S8IQ/QnRPqUFhT9elf7uCzSLvr49n5ykg9KzBWWMviGC8tP2PwK+07c
-         mtJ5p2iA1+URyrwS4RqkadmzwJW5tr77bDilQvWgG2bUA+idyw3ErX7mGWMSkdpO50e7
-         QTu5kTv14PNv0u0MeQ+dZrYL8JuPcEvHWZ9fHYqPe585Gc+jBoqiippscuopkcX3+atc
-         LZETOKjU4eKZQQPxRHsxkHl/VHWY3LSjwcJPsTv886fuaBDR6AiLq8xGi8kL8FM46ecE
-         K45ZBma8mu8TbLBc7ooXtfyIEoK/QorYaTp62+n6yG+WhmaMMWGIwnVLs+oOwcG5UICG
-         4N/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AFDK2qPVxqM8+WUlL7u1WOST3T5Ymo7VG05+dcoLhgI=;
-        b=UuNL4AmMvbV5JeBAOpiUbpF77Rou3tcPDE7voENy5YIQvvmB0TUD4xJ65NbDdEyyYl
-         kBJlZsBfr/r+RHe0Q39xPCOS0WlHrL50Zx069XLPwsgvUeiqfblgeSPJJ2WD3JMdKkPs
-         id/6ZOSCaHkwFnFsitya84vYyZbSh7sygzDydD3bWMJAvsYK2pgYyJroWwCnrefEnrvw
-         YWRIF73HkqdYQdOUP7q9vDYxHnvEGFGjRlESP0JuLJroqvtB6cYtfBuYNKMRYmpYgFW8
-         9MVAl/INNaCUa3pQ+xowMV1CFR3l0R9p+ko+dAIZfkWM1xa5R/vn6ofJQntDXCzHCA9P
-         c3jg==
-X-Gm-Message-State: AOAM532DQcICuoibsfnfrWTLEezC5DKPF+2e+vb4ZQZV8BVH+XUawHHN
-        meklsEovQFMc5JQEhZYkGUxrjC2cEXRICw==
-X-Google-Smtp-Source: ABdhPJz52twN/zD8CEgdGAN0wIH2Dp5PrfZ3jsI4fm+nCfmpGYnzQAmA5WcA39iOpQQvclRiGoC9OA==
-X-Received: by 2002:a17:90b:314b:b0:1e3:1033:f555 with SMTP id ip11-20020a17090b314b00b001e31033f555mr17899334pjb.245.1654140322762;
-        Wed, 01 Jun 2022 20:25:22 -0700 (PDT)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 84-20020a621857000000b0050dc7628158sm2200625pfy.50.2022.06.01.20.25.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 Jun 2022 20:25:22 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Mathieu Xhonneux <m.xhonneux@gmail.com>,
-        William Tu <u9012063@gmail.com>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH bpf-next] selftests/bpf: add drv mode testing for xdping
-Date:   Thu,  2 Jun 2022 11:25:07 +0800
-Message-Id: <20220602032507.464453-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S233530AbiFBD0X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 23:26:23 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692AF2A7A83;
+        Wed,  1 Jun 2022 20:26:21 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VF8hX7Z_1654140378;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VF8hX7Z_1654140378)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 02 Jun 2022 11:26:18 +0800
+Date:   Thu, 2 Jun 2022 11:26:18 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     Alexandra Winter <wintera@linux.ibm.com>
+Cc:     Tony Lu <tonylu@linux.alibaba.com>,
+        Karsten Graul <kgraul@linux.ibm.com>, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [RFC net-next] net/smc:introduce 1RTT to SMC
+Message-ID: <20220602032618.GA96227@e02h04389.eu6sqa>
+Reply-To: "D. Wythe" <alibuda@linux.alibaba.com>
+References: <1653375127-130233-1-git-send-email-alibuda@linux.alibaba.com>
+ <YoyOGlG2kVe4VA4m@TonyMac-Alibaba>
+ <64439f1c-9817-befd-c11b-fa64d22620a9@linux.ibm.com>
+ <7d57f299-115f-3d34-a45e-1c125a9a580a@linux.alibaba.com>
+ <YpcwaNLUtPyzPBgc@TonyMac-Alibaba>
+ <7fb28436-1fca-ba4c-7745-ca88d83c657b@linux.ibm.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=gb2312
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <7fb28436-1fca-ba4c-7745-ca88d83c657b@linux.ibm.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As subject, we only test SKB mode for xdping at present.
-Now add DRV mode for xdping.
+On Wed, Jun 01, 2022 at 01:35:52PM +0200, Alexandra Winter wrote:
+> 
+> 
+> On 01.06.22 11:24, Tony Lu wrote:
+> > On Wed, Jun 01, 2022 at 02:33:09PM +0800, D. Wythe wrote:
+> >>
+> >> ÔÚ 2022/5/25 ÏÂÎç9:42, Alexandra Winter Ð´µÀ:
+> >>
+> >>> We need to carefully evaluate them and make sure everything is compatible
+> >>> with the existing implementations of SMC-D and SMC-R v1 and v2. In the
+> >>> typical s390 environment ROCE LAG is propably not good enough, as the card
+> >>> is still a single point of failure. So your ideas need to be compatible
+> >>> with link redundancy. We also need to consider that the extension of the
+> >>> protocol does not block other desirable extensions.
+> >>>
+> >>> Your prototype is very helpful for the understanding. Before submitting any
+> >>> code patches to net-next, we should agree on the details of the protocol
+> >>> extension. Maybe you could formulate your proposal in plain text, so we can
+> >>> discuss it here?
+> >>>
+> >>> We also need to inform you that several public holidays are upcoming in the
+> >>> next weeks and several of our team will be out for summer vacation, so please
+> >>> allow for longer response times.
+> >>>
+> >>> Kind regards
+> >>> Alexandra Winter
+> >>>
+> >>
+> >> Hi alls,
+> >>
+> >> In order to achieve signle-link compatibility, we must
+> >> complete at least once negotiation. We wish to provide
+> >> higher scalability while meeting this feature. There are
+> >> few ways to reach this.
+> >>
+> >> 1. Use the available reserved bits. According to
+> >> the SMC v2 protocol, there are at least 28 reserved octets
+> >> in PROPOSAL MESSAGE and at least 10 reserved octets in
+> >> ACCEPT MESSAGE are available. We can define an area in which
+> >> as a feature area, works like bitmap. Considering the subsequent
+> >> scalability, we MAY use at least 2 reserved ctets, which can support
+> >> negotiation of at least 16 features.
+> >>
+> >> 2. Unify all the areas named extension in current
+> >> SMC v2 protocol spec without reinterpreting any existing field
+> >> and field offset changes, including 'PROPOSAL V1 IP Subnet Extension',
+> >> 'PROPOSAL V2 Extension', 'PROPOSAL SMC-DV2 EXTENSION' .etc. And provides
+> >> the ability to grow dynamically as needs expand. This scheme will use
+> >> at least 10 reserved octets in the PROPOSAL MESSAGE and at least 4 reserved
+> >> octets in ACCEPT MESSAGE and CONFIRM MESSAGE. Fortunately, we only need to
+> >> use reserved fields, and the current reserved fields are sufficient. And
+> >> then we can easily add a new extension named SIGNLE LINK. Limited by space,
+> >> the details will be elaborated after the scheme is finalized.
+> > 
+> > After reading this and latest version of protocol, I agree with that the
+> > idea to provide a more flexible extension facilities. And, it's a good
+> > chance for us to set here talking about the protocol extension.
+> > 
+> > There are some potential scenarios that need flexible extensions in my
+> > mind:
+> > - other protocols support, such as iWARP / IB or new version protocol,
+> > - dozens of feature flags in the future, like this proposal. With the
+> >   growth of new feature, it could overflow bitmap.
+> > 
+> > Actually, this extension facilities are very similar to TCP options.
+> > 
+> > So what about your opinions about the solution of this? If there are
+> > some existed approaches for the future extensions, maybe this can get
+> > involved in it. Or we can start a discuss about this as this mail
+> > mentioned.
+> > 
+> > Also, I am wondering if there is plan to update the RFC7609, add the
+> > latest v2 support?
+> > 
+> > Thanks,
+> > Tony Lu
+> 
+> We have asked the SMC protocol owners about their opinion about using the
+> reserved fields for new options in particular, and about where and how to
+> discuss this in general. (including where to document the versions).
+> Please allow some time for us to come back to you.
+> 
+> Kind regards
+> Alexandra
 
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- tools/testing/selftests/bpf/test_xdping.sh | 4 ++++
- 1 file changed, 4 insertions(+)
+Thank you for the information. Before we officially push the document update,
+if you had any suggestions for the two schemes we are mentioned above,
+or which one you prefer, please keep us informed.
 
-diff --git a/tools/testing/selftests/bpf/test_xdping.sh b/tools/testing/selftests/bpf/test_xdping.sh
-index c2f0ddb45531..c3d82e0a7378 100755
---- a/tools/testing/selftests/bpf/test_xdping.sh
-+++ b/tools/testing/selftests/bpf/test_xdping.sh
-@@ -95,5 +95,9 @@ for server_args in "" "-I veth0 -s -S" ; do
- 	test "$client_args" "$server_args"
- done
- 
-+# Test drv mode
-+test "-I veth1 -N" "-I veth0 -s -N"
-+test "-I veth1 -N -c 10" "-I veth0 -s -N"
-+
- echo "OK. All tests passed"
- exit 0
--- 
-2.35.1
+Best wishes.
+D. Wyther
 
