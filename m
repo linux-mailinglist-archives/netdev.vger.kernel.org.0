@@ -2,58 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68D0453B79F
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 13:10:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 160C253B7B3
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 13:21:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234050AbiFBLKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 07:10:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56762 "EHLO
+        id S234116AbiFBLVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 07:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234047AbiFBLKO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 07:10:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC0043B57C;
-        Thu,  2 Jun 2022 04:10:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35E9761640;
-        Thu,  2 Jun 2022 11:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7EC8BC34119;
-        Thu,  2 Jun 2022 11:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654168212;
-        bh=j06rqKLxCiZYtZpREEyAHdj4/fuHN/JgVF0s7TE/l6Y=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YI4/Ri7Ba7slwR1uW8/viRO3u1row1zIJphRUsZu3LsVs2op4ZPNlk07B4mgkyZV+
-         q5DkeqTKNwicZ+JkSHj7kqFSh+pqTnz9p0VO8P3anailRjVwx63HcWcsh8iPqIgXE/
-         4JT+2M7klhcHQn2QFNE9YDtwvZ2BEE2wfGfSzyP17rrt/rlt/qSGXcbwECu54+t4Fn
-         9wYva8BDgPlAy0YmeRYI5xqFz9CJSeArJqOXLXvYKKYRgOWdOa1c94ERcqRvzDeFVx
-         FZkEOovSOk0jXEd7ma0NjeMoPZkab/zDOnhYYHtnCYID5g1oS+Vl1PIHWKe93dr5Ad
-         oSa2u9N/DFY0A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 60E29F03950;
-        Thu,  2 Jun 2022 11:10:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232240AbiFBLVx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 07:21:53 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD5D20E500
+        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 04:21:50 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id f35so3117260qtb.11
+        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 04:21:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mtu.edu; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SLgonzI0VScBYhnwylVA+bbXs3ZiekQ33fitxBCDl5s=;
+        b=A2Fm1HpxkVGF2FTTsOA/UDzfbouzZBtTw3QG+6mkf7Zl/Ope/BGFtICnK0/bCfrPOy
+         DpLBSudOjwuTLh2P6KgCjU6rmb4wwXg52978wXTA/KUc5M0l5rc9TckUEYStrUIBNCDU
+         B2cQPQsc6WEgjUSKHa0RGCdmr7GmV0jgc8zLtSWA/4GTYCf0d17hIxF4RR+RIW3DH3ZL
+         Zbb3Sf1B+QUDKVP8bCF7oDwmLHvxk0tE7Vc8pAjf8ApZQmSPVUs1tl04NgJYGjxWk7kt
+         dO5oX/4IUMZLJOhnamJRorXeWm5rnwJeoi2Fect3lRCU8YxB1wJ1xZReQ+FaUqiv63FF
+         RyWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SLgonzI0VScBYhnwylVA+bbXs3ZiekQ33fitxBCDl5s=;
+        b=Hxd0Xgnwe9QU1nuXIPlPSx9CwURy1JSZ2Q6xPnESAPbwsWqYZaxcft88OaEHWXKhUk
+         xmDR2uo50HK9YIrS+RiHqbyCiTWKIpUCyahE2d4meC+I8k0vv+vJIie5Efv3nDLkq0H9
+         8Sz8RMN6/6iyalWpM0Psxf0B3xEs7EaWIHYx/nPjOO/ht8+nIW8bb8PnU379jr4GHc7d
+         EOu43IY/4+q2f1wbEHvWR03cFLYDtaCRhzfm999Q140hkBgKrdc4igYEP4CeS6zWyA1x
+         kmpibbAc0U81Q0ulf8BmFTjmydg7HPTtb5n5I43S62LMZa+I6HYWYegkfW61eTUhL/T7
+         qgKg==
+X-Gm-Message-State: AOAM533SL7rHO0CRkBh+94f1JdP1KRjgrXr7tlMaF0HFT0pW0sJYwtbQ
+        bhpWvik3oOFV02wL2CiRdkG3cQ==
+X-Google-Smtp-Source: ABdhPJyrem9Bifu0bCmyxJcYxnWHtctEbDvwq5+xOlPYk4ylOqsbqagwRWbAbZZ/Y1KeWFGXQvDjQQ==
+X-Received: by 2002:a05:622a:34e:b0:2f8:695b:ce78 with SMTP id r14-20020a05622a034e00b002f8695bce78mr3098231qtw.548.1654168909188;
+        Thu, 02 Jun 2022 04:21:49 -0700 (PDT)
+Received: from localhost.localdomain (z205.pasty.net. [71.13.100.205])
+        by smtp.gmail.com with ESMTPSA id e17-20020ac85991000000b002f9303ce545sm2986174qte.39.2022.06.02.04.21.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 04:21:48 -0700 (PDT)
+From:   Peter Lafreniere <pjlafren@mtu.edu>
+To:     linux-hams@vger.kernel.org
+Cc:     ralf@linux-mips.org, netdev@vger.kernel.org,
+        Peter Lafreniere <pjlafren@mtu.edu>
+Subject: [PATCH] ax25: use GFP_KERNEL over GFP_ATOMIC where possible
+Date:   Thu,  2 Jun 2022 07:21:38 -0400
+Message-Id: <20220602112138.8200-1-pjlafren@mtu.edu>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] ice: fix access-beyond-end in the switch code
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165416821239.26072.8874912583921079305.git-patchwork-notify@kernel.org>
-Date:   Thu, 02 Jun 2022 11:10:12 +0000
-References: <20220601105924.2841410-1-alexandr.lobakin@intel.com>
-In-Reply-To: <20220601105924.2841410-1-alexandr.lobakin@intel.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, jeffrey.t.kirsher@intel.com,
-        anirudh.venkataramanan@intel.com, bruce.w.allan@intel.com,
-        maciej.fijalkowski@intel.com, michal.swiatkowski@linux.intel.com,
-        wojciech.drewek@intel.com, marcin.szycik@linux.intel.com,
-        martyna.szapar-mudlaw@intel.com, netdev@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -62,34 +67,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+There are a few functions that can sleep that use GFP_ATOMIC.
+Here we change allocations to use the more reliable GFP_KERNEL
+flag.
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+ax25_dev_device_up() is only called during device setup, which is
+done in user context. In addition, ax25_dev_device_up()
+unconditionally calls ax25_register_dev_sysctl(), which already
+allocates with GFP_KERNEL.
 
-On Wed,  1 Jun 2022 12:59:24 +0200 you wrote:
-> Global `-Warray-bounds` enablement revealed some problems, one of
-> which is the way we define and use AQC rules messages.
-> In fact, they have a shared header, followed by the actual message,
-> which can be of one of several different formats. So it is
-> straightforward enough to define that header as a separate struct
-> and then embed it into message structures as needed, but currently
-> all the formats reside in one union coupled with the header. Then,
-> the code allocates only the memory needed for a particular message
-> format, leaving the union potentially incomplete.
-> There are no actual reads or writes beyond the end of an allocated
-> chunk, but at the same time, the whole implementation is fragile and
-> backed by an equilibrium rather than strong type and memory checks.
-> 
-> [...]
+ax25_rt_add() is a static function that is only called from
+ax25_rt_ioctl(), which must run in user context already due to
+copy_from_user() usage.
 
-Here is the summary with links:
-  - [net] ice: fix access-beyond-end in the switch code
-    https://git.kernel.org/netdev/net/c/6e1ff618737a
+Since it is allowed to sleep in both of these functions, here we
+change the functions to use GFP_KERNEL to reduce unnecessary
+out-of-memory errors.
 
-You are awesome, thank you!
+Signed-off-by: Peter Lafreniere <pjlafren@mtu.edu>
+---
+ net/ax25/ax25_dev.c   | 4 ++--
+ net/ax25/ax25_route.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
+index d2a244e1c260..b264904980a8 100644
+--- a/net/ax25/ax25_dev.c
++++ b/net/ax25/ax25_dev.c
+@@ -52,7 +52,7 @@ void ax25_dev_device_up(struct net_device *dev)
+ {
+ 	ax25_dev *ax25_dev;
+ 
+-	if ((ax25_dev = kzalloc(sizeof(*ax25_dev), GFP_ATOMIC)) == NULL) {
++	if ((ax25_dev = kzalloc(sizeof(*ax25_dev), GFP_KERNEL)) == NULL) {
+ 		printk(KERN_ERR "AX.25: ax25_dev_device_up - out of memory\n");
+ 		return;
+ 	}
+@@ -60,7 +60,7 @@ void ax25_dev_device_up(struct net_device *dev)
+ 	refcount_set(&ax25_dev->refcount, 1);
+ 	dev->ax25_ptr     = ax25_dev;
+ 	ax25_dev->dev     = dev;
+-	dev_hold_track(dev, &ax25_dev->dev_tracker, GFP_ATOMIC);
++	dev_hold_track(dev, &ax25_dev->dev_tracker, GFP_KERNEL);
+ 	ax25_dev->forward = NULL;
+ 
+ 	ax25_dev->values[AX25_VALUES_IPDEFMODE] = AX25_DEF_IPDEFMODE;
+diff --git a/net/ax25/ax25_route.c b/net/ax25/ax25_route.c
+index b7c4d656a94b..c77b848ccfc7 100644
+--- a/net/ax25/ax25_route.c
++++ b/net/ax25/ax25_route.c
+@@ -91,7 +91,7 @@ static int __must_check ax25_rt_add(struct ax25_routes_struct *route)
+ 			kfree(ax25_rt->digipeat);
+ 			ax25_rt->digipeat = NULL;
+ 			if (route->digi_count != 0) {
+-				if ((ax25_rt->digipeat = kmalloc(sizeof(ax25_digi), GFP_ATOMIC)) == NULL) {
++				if ((ax25_rt->digipeat = kmalloc(sizeof(ax25_digi), GFP_KERNEL)) == NULL) {
+ 					write_unlock_bh(&ax25_route_lock);
+ 					ax25_dev_put(ax25_dev);
+ 					return -ENOMEM;
+@@ -110,7 +110,7 @@ static int __must_check ax25_rt_add(struct ax25_routes_struct *route)
+ 		ax25_rt = ax25_rt->next;
+ 	}
+ 
+-	if ((ax25_rt = kmalloc(sizeof(ax25_route), GFP_ATOMIC)) == NULL) {
++	if ((ax25_rt = kmalloc(sizeof(ax25_route), GFP_KERNEL)) == NULL) {
+ 		write_unlock_bh(&ax25_route_lock);
+ 		ax25_dev_put(ax25_dev);
+ 		return -ENOMEM;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.36.1
 
