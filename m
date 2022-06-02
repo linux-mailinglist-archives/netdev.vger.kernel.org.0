@@ -2,203 +2,485 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1634B53BCBC
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 18:47:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25FFF53BCC6
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 18:48:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237234AbiFBQrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 12:47:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55744 "EHLO
+        id S237229AbiFBQrj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 2 Jun 2022 12:47:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237216AbiFBQrC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 12:47:02 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1DF6E013
-        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 09:46:58 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id x128-20020a628686000000b0051bbf64668cso1809890pfd.23
-        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 09:46:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=AjgkzHRF/kCv3qib+iv1yxeRLWexzkrlF44AYXOVusk=;
-        b=PxcI3fqzRJ7ZD3F6KPWNr09AVcJI3FmA018q2QE7ljYZ8ppYLmY6bTn+v/xRABQGzp
-         dgNKXCmEAexbMOwU1KkOvF6piTfhYEhVMTWQWsIpFpNFLMtc4mfllCSHGAJdQk5ygEx5
-         jh6JUAwHYFTllZ0dMB833W72tz5J+XqkfjrO0Gbifa2eEmfkKVS2tbjme7t9MRTQNgn8
-         wwxi2oZS6MefD6oVPHX3XuNP7fbSg2brEIq4LwVvhFIaCCk9V0MXWJdWhiOoh/IVJwGe
-         Y8EtxkroN3qmRx/2olrHz6SxgDavRLd5PKiV/Fqn1UWPpuqOwWhUdfqAZQwD9MVtS4Vi
-         nKcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=AjgkzHRF/kCv3qib+iv1yxeRLWexzkrlF44AYXOVusk=;
-        b=kHLFSl+GdR1c6pRLxMdJ/xAloB53dv9tVC6Ji5cm268Lo95rbdwuJqfaPqaquiHUzS
-         atJSP8slDVSUR1NBHtpVIMjJl8SJc/bt1T3mE0RdtqImz7A7acTMUPNLYYj+9cxNDrdw
-         N1Ho7l1FINJu9ixRHzvLy9SOaGXwxC0Vv11OeDDtw+MUf93krzHeG6LYIFOODESKPZZw
-         +Zt7YDwYaCK32uXLbr684MzHm7QnpQ342poRJP7cHzhIhegkOP5BAvkQd4MVa3Vp6uhO
-         yKOYJ6+0AXWG7YzeNV7SUpVDbnbw1i/QdczWfYt1Nf6LNSsAInEkCAoS4R3H9xPxR4lD
-         bpmw==
-X-Gm-Message-State: AOAM533pqRPRUez/RnDrAU1ZoV5OvqkFPOts/38bld8rbkZ/guQYsLtx
-        K9IXaOSin1btMSTSkfUVjAqS76j4Fnvwq5rgP1TtsA==
-X-Google-Smtp-Source: ABdhPJzMZ7vAEN4yoTtCnwEpdV5+bYJUnxSfJnm0kicvX9WAmIRgBOKPinDQ13Q7fSmw2ILb6suwvmfBYsxE/o9sPRV4kg==
-X-Received: from abps.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:9b4])
- (user=abhishekpandit job=sendgmr) by 2002:a63:5c52:0:b0:3fc:cf92:ff43 with
- SMTP id n18-20020a635c52000000b003fccf92ff43mr4911152pgm.249.1654188418220;
- Thu, 02 Jun 2022 09:46:58 -0700 (PDT)
-Date:   Thu,  2 Jun 2022 09:46:50 -0700
-In-Reply-To: <20220602094645.1.I7d191480c15b45a237b927e26aa26ba806409efb@changeid>
-Message-Id: <20220602094645.2.I8fe1bc0737dd40d4e3843ddd973fdd04ee006cfa@changeid>
-Mime-Version: 1.0
-References: <20220602094645.1.I7d191480c15b45a237b927e26aa26ba806409efb@changeid>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH 2/2] Bluetooth: Unregister suspend with userchannel
-From:   Abhishek Pandit-Subedi <abhishekpandit@google.com>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        luiz.dentz@gmail.com
-Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        with ESMTP id S236535AbiFBQrh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 12:47:37 -0400
+Received: from mail.holtmann.org (coyote.holtmann.net [212.227.132.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4A8FBE27;
+        Thu,  2 Jun 2022 09:47:35 -0700 (PDT)
+Received: from smtpclient.apple (p4ff9fc30.dip0.t-ipconnect.de [79.249.252.48])
+        by mail.holtmann.org (Postfix) with ESMTPSA id E456BCED1A;
+        Thu,  2 Jun 2022 18:47:33 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
+Subject: Re: [PATCH v6 2/5] Bluetooth: aosp: surface AOSP quality report
+ through mgmt
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20220526192047.v6.2.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
+Date:   Thu, 2 Jun 2022 18:47:33 +0200
+Cc:     BlueZ <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        pali@kernel.org, chromeos-bluetooth-upstreaming@chromium.org,
+        josephsih@google.com, kernel test robot <lkp@intel.com>,
+        Archie Pusaka <apusaka@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8BIT
+Message-Id: <DA61F27B-CB79-43A1-97DF-669DDFF31559@holtmann.org>
+References: <20220526112135.2486883-1-josephsih@chromium.org>
+ <20220526192047.v6.2.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
+To:     Joseph Hwang <josephsih@chromium.org>
+X-Mailer: Apple Mail (2.3696.100.31)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Hi Joseph,
 
-When HCI_USERCHANNEL is used, unregister the suspend notifier when
-binding and register when releasing. The userchannel socket should be
-left alone after open is completed.
+> When receiving a HCI vendor event, the kernel checks if it is an
+> AOSP bluetooth quality report. If yes, the event is sent to bluez
+> user space through the mgmt socket.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> Signed-off-by: Joseph Hwang <josephsih@chromium.org>
+> Reviewed-by: Archie Pusaka <apusaka@chromium.org>
+> ---
+> 
+> Changes in v6:
+> - Fixed a sparse check warning about using static for evt_prefixes.
+> 
+> Changes in v5:
+> - Define "struct ext_vendor_prefix" to replace "struct vendor_prefix"
+>  so that extended vendor prefix = prefix + 1-octet subcode
+> - Define aosp_ext_prefix to provide AOSP extended prefix which is
+>  returned by aosp_get_ext_prefix().
+> - Redefine struct ext_vendor_event_prefix such that
+>  . it uses get_ext_vendor_prefix to get prefix and subcodes where
+>    the prefix and the prefix length may be variable and are not
+>    unknown until run time;
+>  . it uses vendor_func to handle a vendor event
+>  This table handles vendor events in a generic way.
+> - Rewrite hci_vendor_evt() so that it compares both vendor prefix
+>  and subcode to match a vendor event.
+> - Define set_ext_prefix() to create MSFT extended vendor prefix
+>  which is returned by msft_get_ext_prefix().
+> - Do not EXPORT_SYMBOL(mgmt_quality_report).
+> - Keep msft_get_ext_prefix in msft instead of hci_dev since it is
+>  not used by any drivers.
+> 
+> Changes in v3:
+> - Rebase to resolve the code conflict.
+> - Move aosp_quality_report_evt() from hci_event.c to aosp.c.
+> - A new patch (3/3) is added to enable the quality report feature.
+> 
+> Changes in v2:
+> - Scrap the two structures defined in aosp.c and use constants for
+>  size check.
+> - Do a basic size check about the quality report event. Do not pull
+>  data from the event in which the kernel has no interest.
+> - Define vendor event prefixes with which vendor events of distinct
+>  vendor specifications can be clearly differentiated.
+> - Use mgmt helpers to add the header and data to a mgmt skb.
+> 
+> include/net/bluetooth/hci_core.h | 12 +++++++
+> include/net/bluetooth/mgmt.h     |  7 +++++
+> net/bluetooth/aosp.c             | 50 +++++++++++++++++++++++++++++
+> net/bluetooth/aosp.h             | 18 +++++++++++
+> net/bluetooth/hci_event.c        | 54 +++++++++++++++++++++++++++++++-
+> net/bluetooth/mgmt.c             | 19 +++++++++++
+> net/bluetooth/msft.c             | 28 ++++++++++++++++-
+> net/bluetooth/msft.h             | 12 +++++--
+> 8 files changed, 195 insertions(+), 5 deletions(-)
+> 
+> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+> index 64d3a63759a8..f89738c6b973 100644
+> --- a/include/net/bluetooth/hci_core.h
+> +++ b/include/net/bluetooth/hci_core.h
+> @@ -328,6 +328,13 @@ struct amp_assoc {
+> 
+> #define HCI_MAX_PAGES	3
+> 
+> +struct ext_vendor_prefix {
+> +	__u8 *prefix;
+> +	__u8 prefix_len;
+> +	__u8 *subcodes;
+> +	__u8 subcodes_len;
+> +};
+> +
+> struct hci_dev {
+> 	struct list_head list;
+> 	struct mutex	lock;
+> @@ -1876,6 +1883,8 @@ int mgmt_add_adv_patterns_monitor_complete(struct hci_dev *hdev, u8 status);
+> int mgmt_remove_adv_monitor_complete(struct hci_dev *hdev, u8 status);
+> void mgmt_adv_monitor_device_lost(struct hci_dev *hdev, u16 handle,
+> 				  bdaddr_t *bdaddr, u8 addr_type);
+> +int mgmt_quality_report(struct hci_dev *hdev, void *data, u32 data_len,
+> +			u8 quality_spec);
+> 
+> u8 hci_le_conn_update(struct hci_conn *conn, u16 min, u16 max, u16 latency,
+> 		      u16 to_multiplier);
+> @@ -1894,4 +1903,7 @@ void hci_copy_identity_address(struct hci_dev *hdev, bdaddr_t *bdaddr,
+> 
+> #define TRANSPORT_TYPE_MAX	0x04
+> 
+> +#define QUALITY_SPEC_AOSP_BQR		0x0
+> +#define QUALITY_SPEC_INTEL_TELEMETRY	0x1
+> +
+> #endif /* __HCI_CORE_H */
+> diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
+> index c1c2fd72d9e3..6ccd0067c295 100644
+> --- a/include/net/bluetooth/mgmt.h
+> +++ b/include/net/bluetooth/mgmt.h
+> @@ -1127,3 +1127,10 @@ struct mgmt_ev_adv_monitor_device_lost {
+> 	__le16 monitor_handle;
+> 	struct mgmt_addr_info addr;
+> } __packed;
+> +
+> +#define MGMT_EV_QUALITY_REPORT			0x0031
+> +struct mgmt_ev_quality_report {
+> +	__u8	quality_spec;
+> +	__u32	data_len;
+> +	__u8	data[];
+> +} __packed;
 
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
----
-Currently, the suspend notifier is harmless when used since no traffic
-is actually passed to controller with HCI_USERCHANNEL. When I suspend,
-all I see is the MGMT Controller Suspended and Controller Resumed
-events. However, for correctness, I've opted to unregister the suspend
-notifier entirely when using HCI_USERCHANNEL (similar to how the
-HCI_QUIRK_NO_SUSPEND_NOTIFIER works).
+I would really prefer you separate the addition of ext_prefix handling and the addition of the AOSP report and mgmt report event. It is currently a bit of a mix and match.
 
-The alternative to this approach would be to always keep the notifier
-registered and exit early in hci_suspend_notifier. Please let me know
-which you prefer.
+> diff --git a/net/bluetooth/aosp.c b/net/bluetooth/aosp.c
+> index 432ae3aac9e3..94faa15b1ea0 100644
+> --- a/net/bluetooth/aosp.c
+> +++ b/net/bluetooth/aosp.c
+> @@ -199,3 +199,53 @@ int aosp_set_quality_report(struct hci_dev *hdev, bool enable)
+> 	else
+> 		return disable_quality_report(hdev);
+> }
+> +
+> +/* The following LEN = 1-byte Sub-event code + 48-byte Sub-event Parameters */
+> +#define BLUETOOTH_QUALITY_REPORT_LEN 49
+> +
+> +bool aosp_check_quality_report_len(struct sk_buff *skb)
+> +{
+> +	/* skb->len is allowed to be larger than BLUETOOTH_QUALITY_REPORT_LEN
+> +	 * to accommodate an additional Vendor Specific Parameter (vsp) field.
+> +	 */
+> +	if (skb->len < BLUETOOTH_QUALITY_REPORT_LEN) {
+> +		BT_ERR("AOSP evt data len %d too short (%u expected)",
+> +		       skb->len, BLUETOOTH_QUALITY_REPORT_LEN);
+> +		return false;
+> +	}
+> +
+> +	return true;
+> +}
+> +
+> +/* AOSP HCI Requirements use 0x54 and up as sub-event codes without
+> + * actually defining a vendor prefix. Refer to
+> + * https://source.android.com/devices/bluetooth/hci_requirements
+> + * Hence, the other vendor event prefixes should not use the same
+> + * space to avoid collision.
+> + * Since the AOSP does not define a prefix, its prefix is NULL
+> + * and prefix_len is 0.
+> + * While there are a number of subcodes in AOSP, only interested in
+> + * Bluetooth Quality Report (0x58) for now.
+> + */
+> +#define AOSP_EV_QUALITY_REPORT		0x58
+> +
+> +static unsigned char AOSP_SUBCODES[] = { AOSP_EV_QUALITY_REPORT };
+> +
+> +static struct ext_vendor_prefix aosp_ext_prefix = {
+> +	.prefix		= NULL,
+> +	.prefix_len	= 0,
+> +	.subcodes	= AOSP_SUBCODES,
+> +	.subcodes_len	= sizeof(AOSP_SUBCODES),
+> +};
+> +
 
-Tested on ChromeOS kernel and compiled with allmodconfig on
-bluetooth-next.
+So I really like to have both as const. Any reason not to make array and struct const.
 
- include/net/bluetooth/hci_core.h |  2 ++
- net/bluetooth/hci_core.c         | 33 ++++++++++++++++++++++++--------
- net/bluetooth/hci_sock.c         |  3 +++
- 3 files changed, 30 insertions(+), 8 deletions(-)
+The all upper case AOSP_SUBCODES is weird to me, but we could let this slide since it is limited to these few lines.
 
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 5a52a2018b56..5b92a9abe141 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -1289,6 +1289,8 @@ void hci_free_dev(struct hci_dev *hdev);
- int hci_register_dev(struct hci_dev *hdev);
- void hci_unregister_dev(struct hci_dev *hdev);
- void hci_release_dev(struct hci_dev *hdev);
-+int hci_register_suspend_notifier(struct hci_dev *hdev);
-+int hci_unregister_suspend_notifier(struct hci_dev *hdev);
- int hci_suspend_dev(struct hci_dev *hdev);
- int hci_resume_dev(struct hci_dev *hdev);
- int hci_reset_dev(struct hci_dev *hdev);
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 5abb2ca5b129..ab647a63830d 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -2639,12 +2639,8 @@ int hci_register_dev(struct hci_dev *hdev)
- 	hci_sock_dev_event(hdev, HCI_DEV_REG);
- 	hci_dev_hold(hdev);
- 
--	if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks)) {
--		hdev->suspend_notifier.notifier_call = hci_suspend_notifier;
--		error = register_pm_notifier(&hdev->suspend_notifier);
--		if (error)
--			goto err_wqueue;
--	}
-+	if (hci_register_suspend_notifier(hdev))
-+		goto err_wqueue;
- 
- 	queue_work(hdev->req_workqueue, &hdev->power_on);
- 
-@@ -2677,8 +2673,7 @@ void hci_unregister_dev(struct hci_dev *hdev)
- 
- 	hci_cmd_sync_clear(hdev);
- 
--	if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks))
--		unregister_pm_notifier(&hdev->suspend_notifier);
-+	hci_unregister_suspend_notifier(hdev);
- 
- 	msft_unregister(hdev);
- 
-@@ -2742,6 +2737,28 @@ void hci_release_dev(struct hci_dev *hdev)
- }
- EXPORT_SYMBOL(hci_release_dev);
- 
-+int hci_register_suspend_notifier(struct hci_dev *hdev)
-+{
-+	int ret = 0;
-+
-+	if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks)) {
-+		hdev->suspend_notifier.notifier_call = hci_suspend_notifier;
-+		ret = register_pm_notifier(&hdev->suspend_notifier);
-+	}
-+
-+	return ret;
-+}
-+
-+int hci_unregister_suspend_notifier(struct hci_dev *hdev)
-+{
-+	int ret = 0;
-+
-+	if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks))
-+		ret = unregister_pm_notifier(&hdev->suspend_notifier);
-+
-+	return ret;
-+}
-+
- /* Suspend HCI device */
- int hci_suspend_dev(struct hci_dev *hdev)
- {
-diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
-index bd8358b44aa4..0d015d4a8e41 100644
---- a/net/bluetooth/hci_sock.c
-+++ b/net/bluetooth/hci_sock.c
-@@ -887,6 +887,7 @@ static int hci_sock_release(struct socket *sock)
- 			 */
- 			hci_dev_do_close(hdev);
- 			hci_dev_clear_flag(hdev, HCI_USER_CHANNEL);
-+			hci_register_suspend_notifier(hdev);
- 			mgmt_index_added(hdev);
- 		}
- 
-@@ -1215,6 +1216,7 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
- 		}
- 
- 		mgmt_index_removed(hdev);
-+		hci_unregister_suspend_notifier(hdev);
- 
- 		err = hci_dev_open(hdev->id);
- 		if (err) {
-@@ -1229,6 +1231,7 @@ static int hci_sock_bind(struct socket *sock, struct sockaddr *addr,
- 				err = 0;
- 			} else {
- 				hci_dev_clear_flag(hdev, HCI_USER_CHANNEL);
-+				hci_register_suspend_notifier(hdev);
- 				mgmt_index_added(hdev);
- 				hci_dev_put(hdev);
- 				goto done;
--- 
-2.36.1.255.ge46751e96f-goog
+> +struct ext_vendor_prefix *aosp_get_ext_prefix(struct hci_dev *hdev)
+> +{
+> +	return &aosp_ext_prefix;
+> +}
+> +
+> +void aosp_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
+> +{
+> +	if (aosp_has_quality_report(hdev) && aosp_check_quality_report_len(skb))
+> +		mgmt_quality_report(hdev, skb->data, skb->len,
+> +				    QUALITY_SPEC_AOSP_BQR);
+> +}
+> diff --git a/net/bluetooth/aosp.h b/net/bluetooth/aosp.h
+> index 2fd8886d51b2..8208e01fffed 100644
+> --- a/net/bluetooth/aosp.h
+> +++ b/net/bluetooth/aosp.h
+> @@ -10,6 +10,9 @@ void aosp_do_close(struct hci_dev *hdev);
+> 
+> bool aosp_has_quality_report(struct hci_dev *hdev);
+> int aosp_set_quality_report(struct hci_dev *hdev, bool enable);
+> +bool aosp_check_quality_report_len(struct sk_buff *skb);
+> +struct ext_vendor_prefix *aosp_get_ext_prefix(struct hci_dev *hdev);
+> +void aosp_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb);
+> 
+> #else
+> 
+> @@ -26,4 +29,19 @@ static inline int aosp_set_quality_report(struct hci_dev *hdev, bool enable)
+> 	return -EOPNOTSUPP;
+> }
+> 
+> +static inline bool aosp_check_quality_report_len(struct sk_buff *skb)
+> +{
+> +	return false;
+> +}
+> +
+> +static inline struct ext_vendor_prefix *
+> +aosp_get_ext_prefix(struct hci_dev *hdev)
+> +{
+> +	return NULL;
+> +}
+> +
+> +static inline void aosp_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
+> +{
+> +}
+> +
+> #endif
+> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+> index 0270e597c285..8398971eddf4 100644
+> --- a/net/bluetooth/hci_event.c
+> +++ b/net/bluetooth/hci_event.c
+> @@ -37,6 +37,7 @@
+> #include "smp.h"
+> #include "msft.h"
+> #include "eir.h"
+> +#include "aosp.h"
+> 
+> #define ZERO_KEY "\x00\x00\x00\x00\x00\x00\x00\x00" \
+> 		 "\x00\x00\x00\x00\x00\x00\x00\x00"
+> @@ -4259,6 +4260,57 @@ static void hci_num_comp_blocks_evt(struct hci_dev *hdev, void *data,
+> 	queue_work(hdev->workqueue, &hdev->tx_work);
+> }
+> 
+> +/* Every distinct vendor specification must have a well-defined vendor
+> + * event prefix to determine if a vendor event meets the specification.
+> + * Some vendor prefixes are fixed values while some other vendor prefixes
+> + * are only available at run time.
+> + */
+> +static struct ext_vendor_event_prefix {
+> +	/* Some vendor prefixes are variable length. For convenience,
+> +	 * the prefix in struct ext_vendor_prefix is in little endian.
+> +	 */
+> +	struct ext_vendor_prefix *
+> +		(*get_ext_vendor_prefix)(struct hci_dev *hdev);
+
+You can just shorten this to get and func here.
+
+> +	void (*vendor_func)(struct hci_dev *hdev, struct sk_buff *skb);
+> +} evt_prefixes[] = {
+> +	{ aosp_get_ext_prefix, aosp_vendor_evt },
+> +	{ msft_get_ext_prefix, msft_vendor_evt },
+> +
+> +	/* end with a null entry */
+> +	{},
+> +};
+> +
+
+Again here, why is this not const?
+
+> +static void hci_vendor_evt(struct hci_dev *hdev, void *data,
+> +			   struct sk_buff *skb)
+> +{
+> +	int i, j;
+> +	struct ext_vendor_prefix *vnd;
+> +	__u8 subcode;
+> +
+> +	for (i = 0; evt_prefixes[i].get_ext_vendor_prefix; i++) {
+> +		vnd = evt_prefixes[i].get_ext_vendor_prefix(hdev);
+> +		if (!vnd)
+> +			continue;
+> +
+> +		/* Compare the raw prefix data in little endian directly. */
+
+Little endian has nothing to do with this. You are comparing a byte-stream. That has no endianness.
+
+> +		if (memcmp(vnd->prefix, skb->data, vnd->prefix_len))
+> +			continue;
+> +
+> +		/* Make sure that there are more data after prefix. */
+> +		if (skb->len <= vnd->prefix_len)
+> +			continue;
+> +
+> +		/* The subcode is the single octet following the prefix. */
+> +		subcode = skb->data[vnd->prefix_len];
+> +		for (j = 0; j < vnd->subcodes_len; j++) {
+> +			if (vnd->subcodes[j] == subcode) {
+> +				evt_prefixes[i].vendor_func(hdev, skb);
+> +				break;
+> +			}
+> +		}
+> +	}
+> +}
+> +
+> static void hci_mode_change_evt(struct hci_dev *hdev, void *data,
+> 				struct sk_buff *skb)
+> {
+> @@ -6879,7 +6931,7 @@ static const struct hci_ev {
+> 	HCI_EV(HCI_EV_NUM_COMP_BLOCKS, hci_num_comp_blocks_evt,
+> 	       sizeof(struct hci_ev_num_comp_blocks)),
+> 	/* [0xff = HCI_EV_VENDOR] */
+> -	HCI_EV_VL(HCI_EV_VENDOR, msft_vendor_evt, 0, HCI_MAX_EVENT_SIZE),
+> +	HCI_EV_VL(HCI_EV_VENDOR, hci_vendor_evt, 0, HCI_MAX_EVENT_SIZE),
+> };
+> 
+> static void hci_event_func(struct hci_dev *hdev, u8 event, struct sk_buff *skb,
+> diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+> index 1ad84f34097f..9d3666bdd07c 100644
+> --- a/net/bluetooth/mgmt.c
+> +++ b/net/bluetooth/mgmt.c
+> @@ -4332,6 +4332,25 @@ static int set_exp_feature(struct sock *sk, struct hci_dev *hdev,
+> 			       MGMT_STATUS_NOT_SUPPORTED);
+> }
+> 
+> +int mgmt_quality_report(struct hci_dev *hdev, void *data, u32 data_len,
+> +			u8 quality_spec)
+> +{
+> +	struct mgmt_ev_quality_report *ev;
+> +	struct sk_buff *skb;
+> +
+> +	skb = mgmt_alloc_skb(hdev, MGMT_EV_QUALITY_REPORT,
+> +			     sizeof(*ev) + data_len);
+> +	if (!skb)
+> +		return -ENOMEM;
+> +
+> +	ev = skb_put(skb, sizeof(*ev));
+> +	ev->quality_spec = quality_spec;
+> +	ev->data_len = data_len;
+> +	skb_put_data(skb, data, data_len);
+> +
+> +	return mgmt_event_skb(skb, NULL);
+> +}
+> +
+> static int get_device_flags(struct sock *sk, struct hci_dev *hdev, void *data,
+> 			    u16 data_len)
+> {
+> diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
+> index f43994523b1f..c003e94faccd 100644
+> --- a/net/bluetooth/msft.c
+> +++ b/net/bluetooth/msft.c
+> @@ -116,6 +116,20 @@ bool msft_monitor_supported(struct hci_dev *hdev)
+> 	return !!(msft_get_features(hdev) & MSFT_FEATURE_MASK_LE_ADV_MONITOR);
+> }
+> 
+> +/* Add the MSFT vendor event subcodes into MSFT_SUBCODES which
+> + * msft_vendor_evt() is interested in handling.
+> + */
+> +static unsigned char MSFT_SUBCODES[] = { MSFT_EV_LE_MONITOR_DEVICE };
+> +static struct ext_vendor_prefix msft_ext_prefix = { 0 };
+> +
+> +static void set_ext_prefix(struct msft_data *msft)
+> +{
+> +	msft_ext_prefix.prefix = msft->evt_prefix;
+> +	msft_ext_prefix.prefix_len = msft->evt_prefix_len;
+> +	msft_ext_prefix.subcodes = MSFT_SUBCODES;
+> +	msft_ext_prefix.subcodes_len = sizeof(MSFT_SUBCODES);
+> +}
+> +
+> static bool read_supported_features(struct hci_dev *hdev,
+> 				    struct msft_data *msft)
+> {
+> @@ -156,6 +170,8 @@ static bool read_supported_features(struct hci_dev *hdev,
+> 	if (msft->features & MSFT_FEATURE_MASK_CURVE_VALIDITY)
+> 		hdev->msft_curve_validity = true;
+> 
+> +	set_ext_prefix(msft);
+> +
+
+This is broken!
+
+If you have one Intel controller and one Realtek controller in your system, you now created a big mess. You are overwriting msft_ext_prefix with each msft_do_open() now.
+
+For AOSP this works because it is the same struct no matter what the manufacturer is. For MSFT extensions it depends on the controller.
+
+> 	kfree_skb(skb);
+> 	return true;
+> 
+> @@ -742,7 +758,17 @@ static void msft_monitor_device_evt(struct hci_dev *hdev, struct sk_buff *skb)
+> 				 handle_data->mgmt_handle);
+> }
+> 
+> -void msft_vendor_evt(struct hci_dev *hdev, void *data, struct sk_buff *skb)
+> +struct ext_vendor_prefix *msft_get_ext_prefix(struct hci_dev *hdev)
+> +{
+> +	struct msft_data *msft = hdev->msft_data;
+> +
+> +	if (!msft)
+> +		return NULL;
+> +
+> +	return &msft_ext_prefix;
+> +}
+> +
+> +void msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
+> {
+> 	struct msft_data *msft = hdev->msft_data;
+> 	u8 *evt_prefix;
+> diff --git a/net/bluetooth/msft.h b/net/bluetooth/msft.h
+> index afcaf7d3b1cb..1515ae06c628 100644
+> --- a/net/bluetooth/msft.h
+> +++ b/net/bluetooth/msft.h
+> @@ -17,7 +17,7 @@ void msft_register(struct hci_dev *hdev);
+> void msft_unregister(struct hci_dev *hdev);
+> void msft_do_open(struct hci_dev *hdev);
+> void msft_do_close(struct hci_dev *hdev);
+> -void msft_vendor_evt(struct hci_dev *hdev, void *data, struct sk_buff *skb);
+> +void msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb);
+> __u64 msft_get_features(struct hci_dev *hdev);
+> int msft_add_monitor_pattern(struct hci_dev *hdev, struct adv_monitor *monitor);
+> int msft_remove_monitor(struct hci_dev *hdev, struct adv_monitor *monitor,
+> @@ -27,6 +27,7 @@ int msft_set_filter_enable(struct hci_dev *hdev, bool enable);
+> int msft_suspend_sync(struct hci_dev *hdev);
+> int msft_resume_sync(struct hci_dev *hdev);
+> bool msft_curve_validity(struct hci_dev *hdev);
+> +struct ext_vendor_prefix *msft_get_ext_prefix(struct hci_dev *hdev);
+> 
+> #else
+> 
+> @@ -39,8 +40,7 @@ static inline void msft_register(struct hci_dev *hdev) {}
+> static inline void msft_unregister(struct hci_dev *hdev) {}
+> static inline void msft_do_open(struct hci_dev *hdev) {}
+> static inline void msft_do_close(struct hci_dev *hdev) {}
+> -static inline void msft_vendor_evt(struct hci_dev *hdev, void *data,
+> -				   struct sk_buff *skb) {}
+> +static inline void msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb) {}
+> static inline __u64 msft_get_features(struct hci_dev *hdev) { return 0; }
+> static inline int msft_add_monitor_pattern(struct hci_dev *hdev,
+> 					   struct adv_monitor *monitor)
+> @@ -77,4 +77,10 @@ static inline bool msft_curve_validity(struct hci_dev *hdev)
+> 	return false;
+> }
+> 
+> +static inline struct ext_vendor_prefix *
+> +msft_get_ext_prefix(struct hci_dev *hdev)
+> +{
+> +	return NULL;
+> +}
+> +
+> #endif
+
+Regards
+
+Marcel
 
