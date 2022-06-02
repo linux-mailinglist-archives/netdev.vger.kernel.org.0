@@ -2,165 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 953E653B36A
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 08:19:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B575553B37E
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 08:23:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230106AbiFBGRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 02:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53062 "EHLO
+        id S230461AbiFBGUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 02:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbiFBGRX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 02:17:23 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A912198;
-        Wed,  1 Jun 2022 23:17:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654150642; x=1685686642;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ooI4sWwbnlbAAJn+k1VaNoQTx4NFNgg+b47kaovZw28=;
-  b=keXhzColze0ab9W2f9vaZOYgwIqvspKimGRUxSeERQliq5jQ9mKYjG2k
-   pUA9hQwDfQo7CeGduRwm0hFrYMk09oDG8Y6c1WvfXXo7GV7W16ivH6ZGU
-   hWHbXWjXmNOES/Wm4YCNKRpBwY8Xg9n5l489GkIQojgulYjGpHOtOvGBg
-   52CwAEBdt3I5lYe3lAeIhtpV1CNbEQgTN8a7WQk+8JzPO4rL7HCsYEF2j
-   6UJu5xubOX0nCNLH+7RHGFAunzx50hzmhH/BYlJYNPmj6uBk5z1FUZ0E1
-   h9CLAqrNYFuiAAUM+9SRj6qXJbzECtwIJLBvm2xs7PxGv/PITnHkU2v+0
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10365"; a="257906700"
-X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
-   d="scan'208";a="257906700"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jun 2022 23:17:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,270,1647327600"; 
-   d="scan'208";a="563152976"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 01 Jun 2022 23:17:12 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nwe8u-0004mv-7k;
-        Thu, 02 Jun 2022 06:17:12 +0000
-Date:   Thu, 2 Jun 2022 14:16:54 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org,
-        Stanislav Fomichev <sdf@google.com>
-Subject: Re: [PATCH bpf-next v8 03/11] bpf: per-cgroup lsm flavor
-Message-ID: <202206021403.M9hFZdbY-lkp@intel.com>
-References: <20220601190218.2494963-4-sdf@google.com>
+        with ESMTP id S230458AbiFBGUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 02:20:15 -0400
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F281406CC
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 23:20:14 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id c12so2998238qvr.3
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 23:20:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=o2gvj92MMCJDCXwiQ2IaKQl/GSOzCsdEUW5hfj1w4mY=;
+        b=jqjhIMcnN38xe8KD3rtttAeRrRw/1DaGRxpvX9yRMEkHyWsaAJqFmkK+/LK8VX4CJc
+         l4NShH9+PbKeD6tUZiOPoPtUM6ujoHC6mao60Fv7+qc3jBj9dY8jaQOEB5Qt28CfLdr9
+         n7HUpIRbTt0njGIIhEDtO+qIWeD/hPHt2Y9Yl+OqCHmyRaIOoN7VQMf0EPrcvs+8PjvA
+         q9ZbBtcN/F+bZClFDmJy/2k41Wmr+nqK+jIWC2B35E/5gfDvs7phd6xOc7KDmb9if4AQ
+         fYnLrzkHwKeffTIQyPZbfYS8JLtf3SRBgpIYKeQAmbb+nNfVGBUoRCdEHPVGulfKG2+A
+         q+Sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=o2gvj92MMCJDCXwiQ2IaKQl/GSOzCsdEUW5hfj1w4mY=;
+        b=uqk7+FReipD47hks6Sf172awWMASv5BKm7QjOOFhPrEUaPZKtxqBdDl0kjozX+4Xa7
+         K8yF8/8ojOq48MH+uvJcuPfLuwt8PDO8ZA5GlIQMrpfwPLXoLTV3LkbqqLU79CEnwTnq
+         Xa+KEeg9A7P7NU4pbWBSFUVFZCkNT5mNOezA/xjEZqbupMCibVxUa2JaPaekbE8shtKU
+         Y66D4l7kCRGh9ddq+gbDl29pf+QZr9qjX4t/L9o13gPJF3EJZCYR6r0trpD48ONhHrGV
+         3My/hDycpXONqFuSPvH8JHyqkssXev5K0bo7EPRNBXCmnkrpbe2boFLbFMEop+XeGg0e
+         7OTA==
+X-Gm-Message-State: AOAM533fIuR5vbf8bgQjYTDx4gxQ3SHt1LX8/FbS/dbrlRQOaUY4kdJ9
+        jHMQ2qN1RClkd6J6rwOpwyJzROFWAM4z88pNi/E=
+X-Google-Smtp-Source: ABdhPJy8qodqezYDDqTKWKOmPYGqCrBU/Iya0rKxrVY0ml2boMJnQ3hKBk6m9YMDYUmsfa2hp1sA7TJ1DRE+YrVBdnw=
+X-Received: by 2002:ad4:5d49:0:b0:461:f201:857a with SMTP id
+ jk9-20020ad45d49000000b00461f201857amr2327627qvb.36.1654150813336; Wed, 01
+ Jun 2022 23:20:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220601190218.2494963-4-sdf@google.com>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Sender: 1joypeters@gmail.com
+Received: by 2002:ac8:5f4d:0:0:0:0:0 with HTTP; Wed, 1 Jun 2022 23:20:12 -0700 (PDT)
+From:   Dina Mckenna <dinamckenna1894@gmail.com>
+Date:   Wed, 1 Jun 2022 18:20:12 -1200
+X-Google-Sender-Auth: _1PlTPfdB2Y1Qjh327hSdI9LCQQ
+Message-ID: <CA+F+MbZUb48fcr112cGyeObBDGXq4DW315xkuRVQmxN63z6PYw@mail.gmail.com>
+Subject: Please need your urgent assistance,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: Yes, score=6.5 required=5.0 tests=ADVANCE_FEE_5_NEW_MONEY,
+        BAYES_95,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        FREEMAIL_FROM,LOTS_OF_MONEY,MONEY_FRAUD_8,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_MONEY,URG_BIZ
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:f30 listed in]
+        [list.dnswl.org]
+        *  3.0 BAYES_95 BODY: Bayes spam probability is 95 to 99%
+        *      [score: 0.9734]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [1joypeters[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.6 URG_BIZ Contains urgent matter
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  0.0 MONEY_FRAUD_8 Lots of money and very many fraud phrases
+        *  3.0 ADVANCE_FEE_5_NEW_MONEY Advance Fee fraud and lots of money
+        *  0.1 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stanislav,
+Hello my dear,
 
-Thank you for the patch! Perhaps something to improve:
+ I sent this mail praying it will get to you in a good condition of
+health, since I myself are in a very critical health condition in
+which I sleep every night without knowing if I may be alive to see the
+next day. I bring peace and love to you. It is by the grace of God, I
+had no choice than to do what is lawful and right in the sight of God
+for eternal life and in the sight of man, for witness of God=E2=80=99s merc=
+y
+and glory upon my life. I am Mrs. Dina Howley Mckenna, a widow. I am
+suffering from a long time brain tumor, It has defiled all forms of
+medical treatment, and right now I have about a few months to leave,
+according to medical experts. The situation has gotten complicated
+recently with my inability to hear proper, am communicating with you
+with the help of the chief nurse herein the hospital, from all
+indication my conditions is really deteriorating and it is quite
+obvious that, according to my doctors they have advised me that I may
+not live too long, Because this illness has gotten to a very bad
+stage. I plead that you will not expose or betray this trust and
+confidence that I am about to repose on you for the mutual benefit of
+the orphans and the less privilege. I have some funds I inherited from
+my late husband, the sum of ($ 11,000,000.00, Eleven Million Dollars).
+Having known my condition, I decided to donate this fund to you
+believing that you will utilize it the way i am going to instruct
+herein. I need you to assist me and reclaim this money and use it for
+Charity works therein your country  for orphanages and gives justice
+and help to the poor, needy and widows says The Lord." Jeremiah
+22:15-16.=E2=80=9C and also build schools for less privilege that will be
+named after my late husband if possible and to promote the word of God
+and the effort that the house of God is maintained. I do not want a
+situation where this money will be used in an ungodly manner. That's
+why I'm taking this decision. I'm not afraid of death, so I know where
+I'm going. I accept this decision because I do not have any child who
+will inherit this money after I die.. Please I want your sincerely and
+urgent answer to know if you will be able to execute this project for
+the glory of God, and I will give you more information on how the fund
+will be transferred to your bank account. May the grace, peace, love
+and the truth in the Word of God be with you and all those that you
+love and care for.
 
-[auto build test WARNING on bpf-next/master]
+I'm waiting for your immediate reply.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Stanislav-Fomichev/bpf-cgroup_sock-lsm-flavor/20220602-050600
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: i386-randconfig-a004 (https://download.01.org/0day-ci/archive/20220602/202206021403.M9hFZdbY-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project b364c76683f8ef241025a9556300778c07b590c2)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/584b25fdd30894c312d577f4b6b83f93d64e464b
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Stanislav-Fomichev/bpf-cgroup_sock-lsm-flavor/20220602-050600
-        git checkout 584b25fdd30894c312d577f4b6b83f93d64e464b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/bpf/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> kernel/bpf/cgroup.c:257:35: warning: overlapping comparisons always evaluate to false [-Wtautological-overlap-compare]
-                                   if (atype >= CGROUP_LSM_START && atype <= CGROUP_LSM_END)
-                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/cgroup.c:252:35: warning: overlapping comparisons always evaluate to false [-Wtautological-overlap-compare]
-                                   if (atype >= CGROUP_LSM_START && atype <= CGROUP_LSM_END)
-                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
-   2 warnings generated.
-
-
-vim +257 kernel/bpf/cgroup.c
-
-   226	
-   227	/**
-   228	 * cgroup_bpf_release() - put references of all bpf programs and
-   229	 *                        release all cgroup bpf data
-   230	 * @work: work structure embedded into the cgroup to modify
-   231	 */
-   232	static void cgroup_bpf_release(struct work_struct *work)
-   233	{
-   234		struct cgroup *p, *cgrp = container_of(work, struct cgroup,
-   235						       bpf.release_work);
-   236		struct bpf_prog_array *old_array;
-   237		struct list_head *storages = &cgrp->bpf.storages;
-   238		struct bpf_cgroup_storage *storage, *stmp;
-   239	
-   240		unsigned int atype;
-   241	
-   242		mutex_lock(&cgroup_mutex);
-   243	
-   244		for (atype = 0; atype < ARRAY_SIZE(cgrp->bpf.progs); atype++) {
-   245			struct hlist_head *progs = &cgrp->bpf.progs[atype];
-   246			struct bpf_prog_list *pl;
-   247			struct hlist_node *pltmp;
-   248	
-   249			hlist_for_each_entry_safe(pl, pltmp, progs, node) {
-   250				hlist_del(&pl->node);
-   251				if (pl->prog) {
-   252					if (atype >= CGROUP_LSM_START && atype <= CGROUP_LSM_END)
-   253						bpf_trampoline_unlink_cgroup_shim(pl->prog);
-   254					bpf_prog_put(pl->prog);
-   255				}
-   256				if (pl->link) {
- > 257					if (atype >= CGROUP_LSM_START && atype <= CGROUP_LSM_END)
-   258						bpf_trampoline_unlink_cgroup_shim(pl->link->link.prog);
-   259					bpf_cgroup_link_auto_detach(pl->link);
-   260				}
-   261				kfree(pl);
-   262				static_branch_dec(&cgroup_bpf_enabled_key[atype]);
-   263			}
-   264			old_array = rcu_dereference_protected(
-   265					cgrp->bpf.effective[atype],
-   266					lockdep_is_held(&cgroup_mutex));
-   267			bpf_prog_array_free(old_array);
-   268		}
-   269	
-   270		list_for_each_entry_safe(storage, stmp, storages, list_cg) {
-   271			bpf_cgroup_storage_unlink(storage);
-   272			bpf_cgroup_storage_free(storage);
-   273		}
-   274	
-   275		mutex_unlock(&cgroup_mutex);
-   276	
-   277		for (p = cgroup_parent(cgrp); p; p = cgroup_parent(p))
-   278			cgroup_bpf_put(p);
-   279	
-   280		percpu_ref_exit(&cgrp->bpf.refcnt);
-   281		cgroup_put(cgrp);
-   282	}
-   283	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+May God Bless you,
+Mrs. Dina Howley Mckenna.
