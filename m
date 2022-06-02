@@ -2,153 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4125F53B618
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 11:33:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7083453B675
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 11:59:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233066AbiFBJdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 05:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37838 "EHLO
+        id S233269AbiFBJ7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 05:59:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232296AbiFBJdo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 05:33:44 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 985D4DFB5
-        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 02:33:38 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id v19so5501902edd.4
-        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 02:33:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=jLhgLLgTKtoWPjtFp8qSJCOCQYPPUCR4lznJBFvpJ40=;
-        b=U2/PO1uNjGw4COGMRK/7YnRCnLhzHnfNDU3fAZ5Gx+P/GW9LrdqG3I45ITG643pzdb
-         JG96C8RFIxHaJo6jdq6DH8J0mqrH0Bz1LFAyLJSsLa4UaZpclulO0L4GHi+89g9+1pnR
-         HDM6h3Y5186RpYH4+PvFGvDR2Ik+oyncwi5oGmQCSvo+gPTdzOt12QXk6cniH/TCtech
-         Vq3liKmSG0Xman0T2LN3WT0Wj/eUgaio4p3CEkzLOQrTkoGzCA/fMFr6AeOL1HJpIUZ2
-         C0wbKaR6CbkPBGYPA6Dz6XgoxKgg/nkvNXlWjX0lgXr+zdmUXLKioQVm/Tf/NW942v7j
-         a/3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=jLhgLLgTKtoWPjtFp8qSJCOCQYPPUCR4lznJBFvpJ40=;
-        b=0H6WSsj3QmGGvMherDiCLaAaeEgk9Jg710y5hbUkB3fUsaSShozjEcE20rKjali+sH
-         UCQzP60AlQtzorG8vw3p6FYFW+dgWH6EkYGcXonMUc8QKLuCOiVqSVIO3goPfoHjPUAu
-         q2g3QXgw1Ktpq4px5R2012JqZQUXjGRjhxANpX9vh+u8xixEbQil3YZjpeLbJvhbFM8V
-         Twbj2swMpI7BQfcg9TqoPc8Bs5mTHqBsdbRuo4SbWATrTM6aUBbxiH3IqIz1uq6QP63t
-         awMPq0nNc61x2zqVinDIIc54aGI2PdQhl7WU8pzBaBC0xF1KQcfMHsPey7nlLRa1rA7B
-         iYcA==
-X-Gm-Message-State: AOAM530WBk03023zeMGf60g/czH4h7Vjb2lnuzqwgPxFFlbJo0lTMGSc
-        qpJQAu2BL8Og/xyhA6js7GhRKQ==
-X-Google-Smtp-Source: ABdhPJywohivzrOJFdGS5Hg985CLuq974adXOQGB2Rff7HbgU7ROkd7WYTRbTxBJZQJ/cUCLzUml2w==
-X-Received: by 2002:aa7:c34d:0:b0:42d:ce57:5df2 with SMTP id j13-20020aa7c34d000000b0042dce575df2mr4213121edr.315.1654162416951;
-        Thu, 02 Jun 2022 02:33:36 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id lk24-20020a170906cb1800b006fa84a0af2asm1596415ejb.16.2022.06.02.02.33.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jun 2022 02:33:36 -0700 (PDT)
-Message-ID: <d88b6090-2ac8-0664-0e38-bb2860be7f6e@blackwall.org>
-Date:   Thu, 2 Jun 2022 12:33:34 +0300
+        with ESMTP id S233072AbiFBJ7r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 05:59:47 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9388FDF18;
+        Thu,  2 Jun 2022 02:59:45 -0700 (PDT)
+Received: from canpemm100010.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LDM0r3d5tzjXNk;
+        Thu,  2 Jun 2022 17:58:52 +0800 (CST)
+Received: from dggpeml500026.china.huawei.com (7.185.36.106) by
+ canpemm100010.china.huawei.com (7.192.104.38) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 2 Jun 2022 17:59:43 +0800
+Received: from dggpeml500026.china.huawei.com ([7.185.36.106]) by
+ dggpeml500026.china.huawei.com ([7.185.36.106]) with mapi id 15.01.2375.024;
+ Thu, 2 Jun 2022 17:59:43 +0800
+From:   shaozhengchao <shaozhengchao@huawei.com>
+To:     =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>
+CC:     "weiyongjun (A)" <weiyongjun1@huawei.com>,
+        yuehaibing <yuehaibing@huawei.com>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggdjUsYnBmLW5leHRdIHNhbXBsZXMvYnBmOiBjaGVj?=
+ =?utf-8?Q?k_detach_prog_exist_or_not_in_xdp=5Ffwd?=
+Thread-Topic: [PATCH v5,bpf-next] samples/bpf: check detach prog exist or not
+ in xdp_fwd
+Thread-Index: AQHYdh3mfF3YsnAkakOXItICkqOZQK07SqEAgACXBnA=
+Date:   Thu, 2 Jun 2022 09:59:43 +0000
+Message-ID: <f7e88b843e964632919c8efe16368786@huawei.com>
+References: <20220602011915.264431-1-shaozhengchao@huawei.com>
+ <87v8tjsavb.fsf@toke.dk>
+In-Reply-To: <87v8tjsavb.fsf@toke.dk>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.178.66]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
- locked port feature
-Content-Language: en-US
-To:     Hans Schultz <schultz.hans@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
- <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
- <Yo+LAj1vnjq0p36q@shredder> <86sfov2w8k.fsf@gmail.com>
- <YpCgxtJf9Qe7fTFd@shredder> <86sfoqgi5e.fsf@gmail.com>
- <YpYk4EIeH6sdRl+1@shredder> <86y1yfzap3.fsf@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <86y1yfzap3.fsf@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/06/2022 12:17, Hans Schultz wrote:
-> On tis, maj 31, 2022 at 17:23, Ido Schimmel <idosch@nvidia.com> wrote:
->> On Tue, May 31, 2022 at 11:34:21AM +0200, Hans Schultz wrote:
->>>> Just to give you another data point about how this works in other
->>>> devices, I can say that at least in Spectrum this works a bit
->>>> differently. Packets that ingress via a locked port and incur an FDB
->>>> miss are trapped to the CPU where they should be injected into the Rx
->>>> path so that the bridge will create the 'locked' FDB entry and notify it
->>>> to user space. The packets are obviously rated limited as the CPU cannot
->>>> handle billions of packets per second, unlike the ASIC. The limit is not
->>>> per bridge port (or even per bridge), but instead global to the entire
->>>> device.
->>>
->>> Btw, will the bridge not create a SWITCHDEV_FDB_ADD_TO_DEVICE event
->>> towards the switchcore in the scheme you mention and thus add an entry
->>> that opens up for the specified mac address?
->>
->> It will, but the driver needs to ignore FDB entries that are notified
->> with locked flag. I see that you extended 'struct
->> switchdev_notifier_fdb_info' with the locked flag, but it's not
->> initialized in br_switchdev_fdb_populate(). Can you add it in the next
->> version?
-> 
-> An issue with sending the flag to the driver is that port_fdb_add() is
-> suddenly getting more and more arguments and getting messy in my
-> opinion, but maybe that's just how it is...
-> 
-> Another issue is that
-> bridge fdb add MAC dev DEV master static
-> seems to add the entry with the SELF flag set, which I don't think is
-> what we would want it to do or?
-
-I don't see such thing (hacked iproute2 to print the flags before cmd):
-$ bridge fdb add 00:11:22:33:44:55 dev vnet110 master static
-flags 0x4
-
-0x4 = NTF_MASTER only
-
-> Also the replace command is not really supported properly as it is. I
-> have made a fix for that which looks something like this:
-> 
-> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-> index 6cbb27e3b976..f43aa204f375 100644
-> --- a/net/bridge/br_fdb.c
-> +++ b/net/bridge/br_fdb.c
-> @@ -917,6 +917,9 @@ static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
->                 if (flags & NLM_F_EXCL)
->                         return -EEXIST;
->  
-> +               if (flags & NLM_F_REPLACE)
-> +                       modified = true;
-> +
->                 if (READ_ONCE(fdb->dst) != source) {
->                         WRITE_ONCE(fdb->dst, source);
->                         modified = true;
-> 
-> The argument for always sending notifications to the driver in the case
-> of replace is that a replace command will refresh the entries timeout if
-> the entry is the same. Any thoughts on this?
-
-I don't think so. It always updates its "used" timer, not its "updated" timer which is the one
-for expire. A replace that doesn't actually change anything on the entry shouldn't generate
-a notification.
+DQoNCi0tLS0t6YKu5Lu25Y6f5Lu2LS0tLS0NCuWPkeS7tuS6ujogVG9rZSBIw7hpbGFuZC1Kw7hy
+Z2Vuc2VuIFttYWlsdG86dG9rZUBrZXJuZWwub3JnXSANCuWPkemAgeaXtumXtDogMjAyMuW5tDbm
+nIgy5pelIDE2OjU1DQrmlLbku7bkuro6IHNoYW96aGVuZ2NoYW8gPHNoYW96aGVuZ2NoYW9AaHVh
+d2VpLmNvbT47IGJwZkB2Z2VyLmtlcm5lbC5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxp
+bnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGFzdEBrZXJuZWwub3JnOyBkYW5pZWxAaW9nZWFy
+Ym94Lm5ldDsgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsga3ViYUBrZXJuZWwub3JnOyBoYXdrQGtlcm5l
+bC5vcmc7IGpvaG4uZmFzdGFiZW5kQGdtYWlsLmNvbTsgYW5kcmlpQGtlcm5lbC5vcmc7IGthZmFp
+QGZiLmNvbTsgc29uZ2xpdWJyYXZpbmdAZmIuY29tOyB5aHNAZmIuY29tOyBrcHNpbmdoQGtlcm5l
+bC5vcmcNCuaKhOmAgTogd2VpeW9uZ2p1biAoQSkgPHdlaXlvbmdqdW4xQGh1YXdlaS5jb20+OyBz
+aGFvemhlbmdjaGFvIDxzaGFvemhlbmdjaGFvQGh1YXdlaS5jb20+OyB5dWVoYWliaW5nIDx5dWVo
+YWliaW5nQGh1YXdlaS5jb20+DQrkuLvpopg6IFJlOiBbUEFUQ0ggdjUsYnBmLW5leHRdIHNhbXBs
+ZXMvYnBmOiBjaGVjayBkZXRhY2ggcHJvZyBleGlzdCBvciBub3QgaW4geGRwX2Z3ZA0KDQpaaGVu
+Z2NoYW8gU2hhbyA8c2hhb3poZW5nY2hhb0BodWF3ZWkuY29tPiB3cml0ZXM6DQoNCj4gQmVmb3Jl
+IGRldGFjaCB0aGUgcHJvZywgd2Ugc2hvdWxkIGNoZWNrIGRldGFjaCBwcm9nIGV4aXN0IG9yIG5v
+dC4NCj4NCj4gU2lnbmVkLW9mZi1ieTogWmhlbmdjaGFvIFNoYW8gPHNoYW96aGVuZ2NoYW9AaHVh
+d2VpLmNvbT4NCg0KWW91IG1pc3NlZCBvbmUgJ3JldHVybiBlcnJubycsIHNlZSBiZWxvdzoNCg0K
+PiAtLS0NCj4gIHNhbXBsZXMvYnBmL3hkcF9md2RfdXNlci5jIHwgNTUgDQo+ICsrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKy0tLS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgNDkgaW5zZXJ0
+aW9ucygrKSwgNiBkZWxldGlvbnMoLSkNCj4NCj4gZGlmZiAtLWdpdCBhL3NhbXBsZXMvYnBmL3hk
+cF9md2RfdXNlci5jIGIvc2FtcGxlcy9icGYveGRwX2Z3ZF91c2VyLmMgDQo+IGluZGV4IDE4Mjg0
+ODdiYWU5YS4uZDMyMWU2YWE5MzY0IDEwMDY0NA0KPiAtLS0gYS9zYW1wbGVzL2JwZi94ZHBfZndk
+X3VzZXIuYw0KPiArKysgYi9zYW1wbGVzL2JwZi94ZHBfZndkX3VzZXIuYw0KPiBAQCAtNDcsMTcg
+KzQ3LDYwIEBAIHN0YXRpYyBpbnQgZG9fYXR0YWNoKGludCBpZHgsIGludCBwcm9nX2ZkLCBpbnQg
+bWFwX2ZkLCBjb25zdCBjaGFyICpuYW1lKQ0KPiAgCXJldHVybiBlcnI7DQo+ICB9DQo+ICANCj4g
+LXN0YXRpYyBpbnQgZG9fZGV0YWNoKGludCBpZHgsIGNvbnN0IGNoYXIgKm5hbWUpDQo+ICtzdGF0
+aWMgaW50IGRvX2RldGFjaChpbnQgaWZpbmRleCwgY29uc3QgY2hhciAqaWZuYW1lLCBjb25zdCBj
+aGFyIA0KPiArKmFwcF9uYW1lKQ0KPiAgew0KPiAtCWludCBlcnI7DQo+ICsJTElCQlBGX09QVFMo
+YnBmX3hkcF9hdHRhY2hfb3B0cywgb3B0cyk7DQo+ICsJc3RydWN0IGJwZl9wcm9nX2luZm8gcHJv
+Z19pbmZvID0ge307DQo+ICsJY2hhciBwcm9nX25hbWVbQlBGX09CSl9OQU1FX0xFTl07DQo+ICsJ
+X191MzIgaW5mb19sZW4sIGN1cnJfcHJvZ19pZDsNCj4gKwlpbnQgcHJvZ19mZDsNCj4gKwlpbnQg
+ZXJyID0gMTsNCj4gKw0KPiArCWlmIChicGZfeGRwX3F1ZXJ5X2lkKGlmaW5kZXgsIHhkcF9mbGFn
+cywgJmN1cnJfcHJvZ19pZCkpIHsNCj4gKwkJcHJpbnRmKCJFUlJPUjogYnBmX3hkcF9xdWVyeV9p
+ZCBmYWlsZWQgKCVzKVxuIiwNCj4gKwkJICAgICAgIHN0cmVycm9yKGVycm5vKSk7DQo+ICsJCXJl
+dHVybiBlcnI7DQo+ICsJfQ0KPiAgDQo+IC0JZXJyID0gYnBmX3hkcF9kZXRhY2goaWR4LCB4ZHBf
+ZmxhZ3MsIE5VTEwpOw0KPiAtCWlmIChlcnIgPCAwKQ0KPiAtCQlwcmludGYoIkVSUk9SOiBmYWls
+ZWQgdG8gZGV0YWNoIHByb2dyYW0gZnJvbSAlc1xuIiwgbmFtZSk7DQo+ICsJaWYgKCFjdXJyX3By
+b2dfaWQpIHsNCj4gKwkJcHJpbnRmKCJFUlJPUjogZmxhZ3MoMHgleCkgeGRwIHByb2cgaXMgbm90
+IGF0dGFjaGVkIHRvICVzXG4iLA0KPiArCQkgICAgICAgeGRwX2ZsYWdzLCBpZm5hbWUpOw0KPiAr
+CQlyZXR1cm4gZXJyOw0KPiArCX0NCj4gIA0KPiArCWluZm9fbGVuID0gc2l6ZW9mKHByb2dfaW5m
+byk7DQo+ICsJcHJvZ19mZCA9IGJwZl9wcm9nX2dldF9mZF9ieV9pZChjdXJyX3Byb2dfaWQpOw0K
+PiArCWlmIChwcm9nX2ZkIDwgMCkgew0KPiArCQlwcmludGYoIkVSUk9SOiBicGZfcHJvZ19nZXRf
+ZmRfYnlfaWQgZmFpbGVkICglcylcbiIsDQo+ICsJCSAgICAgICBzdHJlcnJvcihlcnJubykpOw0K
+PiArCQlyZXR1cm4gZXJybm87DQoNClRoaXMgc2hvdWxkIGp1c3QgYmUgJyByZXR1cm4gcHJvZ19m
+ZCAnIHRvIHByb3BhZ2F0ZSB0aGUgZXJyb3IuLi4NCg0KLVRva2UNCg0KDQpIaSBUb2tlOg0KCVVz
+ZSAncmV0dXJuIHByb2dfZmQnIGluc3RlYWQgb2YgJ3JldHVybiBlcnJubycgZmlyc3QuIEFuZCBX
+aGljaCBwb3NpdGlvbiBtaXNzZWQgb25lICdyZXR1cm4gZXJybm8nPw0KDQotWmhlbmdjaGFvIFNo
+YW8NCg==
