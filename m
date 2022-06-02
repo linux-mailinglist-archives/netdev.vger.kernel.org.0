@@ -2,126 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F40553B494
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 09:49:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DD1B53B4E0
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 10:21:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231919AbiFBHt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 03:49:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37378 "EHLO
+        id S232072AbiFBITx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 04:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231519AbiFBHt1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 03:49:27 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80C9F20BB03
-        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 00:49:25 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id i10so6595299lfj.0
-        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 00:49:25 -0700 (PDT)
+        with ESMTP id S229846AbiFBITw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 04:19:52 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E6DC15;
+        Thu,  2 Jun 2022 01:19:51 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id g25so4436474ljm.2;
+        Thu, 02 Jun 2022 01:19:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=K13Ss91uwNp953S1Qn2a/l7SKkqhzBXyNe1HDSvV5fM=;
-        b=Yc5ldH5FA5hc0E+wFlHEiyL25VUeJfBDdSeE2esW+o4HCh9hmSwdz5uaPH5GbVe2bR
-         5RIxWXfWBbZB7dJkZK3Vkz+9qWrl9l2kZOZQpfj0bHUl9HjQCBIthCNLeFxs/RGCzJpA
-         xy6OI4LxCPuEWItM5/HTOrytYxP0k9B5S0iYY=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wgIZR7dvI9d7yKsWI61xGA/OPJcvvRD4X0FBHSe3Sfk=;
+        b=Pg54oRUAqhJdc4T3bRYGpCzdjKqgEqDn2MLsyuNCWVEPwaewweQz4mmy5Qg9NhGEPe
+         SSJ2IJ8ZgzhsL8EegHcWGTuLM0jKcnY4WCne3PDWRmjiZ9TJ6oLpWL3P4JiG8UzbxgRm
+         kBylYcazGJeuVDIEojcf/na17ZGtmFyGxqOoaa3ZawreuAMkS/kTJeMi5qtWPaEeGPen
+         678L0uzIOVPJ8CFOOeJqr70oFzxq1k23mBCn8zL/VFtZOfsS0fJadqB4nESw4FPWuhp5
+         OzFBcZFItn+K7xcPMQzhm3qVjWlq0v5VJJ0eWAJJu5ZNbnftykcK0plzyTi/4FzZyHG5
+         kEww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=K13Ss91uwNp953S1Qn2a/l7SKkqhzBXyNe1HDSvV5fM=;
-        b=wNAxJiFa5oqI1Qpzgrgn/6CvQpzwgOV3AEZKpRblhPWciZfuhypVRbzn+3papQX9tV
-         ti6b1q4cQQP6YPapQclrcHfBVcWNQ4TzDWoWL3poI2CLv4aes5fgCL34QG7oFHi2+hVx
-         qOl6PccGb7BzuYoq5e3drswGkiCd5P0odw2p9uIu+h32lTMWFgmFxNa0lHzwm2R73Atc
-         OZVieWRo2/KSgUZa8qxma+y+9FnT5ybE9kKGSz9c0LwXAA5mzp31NRM9xHPK2XBYWO+l
-         inedw5jS8fluSXW0zWlGnQy4BBSig2tXUaHDfWnfGTDnuG1SVCz1TuuK0uo5G+DpDRZk
-         y1gQ==
-X-Gm-Message-State: AOAM530pU9kZosQlHfaHIJZo04v6kIi5l91n0Tl50SG56ksXgyF5bHP8
-        IT0htBQz9nmgaNtG3T/9EnbWUw==
-X-Google-Smtp-Source: ABdhPJxkBlNJitxs05xkYj69VKHytIrfhfkMwd06bHf/13V/I9QQsXpeRKacHX4d2Uq4oak0J0Uvow==
-X-Received: by 2002:a05:6512:c1d:b0:478:f321:a57b with SMTP id z29-20020a0565120c1d00b00478f321a57bmr2584044lfu.125.1654156163819;
-        Thu, 02 Jun 2022 00:49:23 -0700 (PDT)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id m16-20020a056512115000b00478f2f2f044sm882946lfg.123.2022.06.02.00.49.22
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wgIZR7dvI9d7yKsWI61xGA/OPJcvvRD4X0FBHSe3Sfk=;
+        b=QSftVSTZMn8zMTDhZTH33CdW+Fg5l3qrbfInPU26ugWCiQlCZW8NvwUwdb7LIm6rgD
+         YjX9QHiuxutAAEq2CXLLbPdqoEAvUlNmOArdniSU3h/a9IJqFXS/Qo9sOXMttXR+nHaO
+         eKUDzW9eHj6i4QPTcvtiNDPWyGQ5dEcQjMuf737idcDNuoKPyL6YFn0rXcAqiQAEcTOJ
+         inFd5FNM9TkzHY808QNQ7Ifz9j+DvO5FJrvMZ/1uxeOTlhQTHP6j1g/pvAvBlKoBo/B9
+         nR+5u35vUQfbJxKRSdxmkk7OckzmCg7N4vQrA0IZhvXsR+uc51G5QyR1DZO4O96v9guc
+         50Dg==
+X-Gm-Message-State: AOAM532UY30JT4zllFCCviCXRfT+Do9ZAxGgXIMQeRRbaMC/m/UHPd+y
+        bGFLi+HF7hCVupxrmsaq7ck=
+X-Google-Smtp-Source: ABdhPJwDGAb+Zq72WAJKKAG6b45ubLRipgsdl7M5Xhp3ys/FBwq/sVTMIncqljv7PvZaoIyeNrkq2g==
+X-Received: by 2002:a2e:bc13:0:b0:253:e72a:aa2f with SMTP id b19-20020a2ebc13000000b00253e72aaa2fmr32550928ljf.390.1654157989975;
+        Thu, 02 Jun 2022 01:19:49 -0700 (PDT)
+Received: from PC-752.milrem.lan (87-119-163-145.tll.elisa.ee. [87.119.163.145])
+        by smtp.gmail.com with ESMTPSA id y2-20020a056512044200b0047255d2117csm896132lfk.171.2022.06.02.01.19.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 00:49:23 -0700 (PDT)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+        Thu, 02 Jun 2022 01:19:49 -0700 (PDT)
+From:   =?UTF-8?q?Kaarel=20P=C3=A4rtel?= <kaarelp2rtel@gmail.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH v2] net: stmmac: use dev_err_probe() for reporting mdio bus registration failure
-Date:   Thu,  2 Jun 2022 09:48:40 +0200
-Message-Id: <20220602074840.1143360-1-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220601142226.1123110-1-linux@rasmusvillemoes.dk>
-References: <20220601142226.1123110-1-linux@rasmusvillemoes.dk>
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     =?UTF-8?q?Kaarel=20P=C3=A4rtel?= <kaarelp2rtel@gmail.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: add operstate for vcan and dummy
+Date:   Thu,  2 Jun 2022 11:19:29 +0300
+Message-Id: <20220602081929.21929-1-kaarelp2rtel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I have a board where these two lines are always printed during boot:
+The idea here is simple. The vcan and the dummy network devices
+currently do not set the operational state of the interface.
+The result is that the interface state will be UNKNOWN.
 
-   imx-dwmac 30bf0000.ethernet: Cannot register the MDIO bus
-   imx-dwmac 30bf0000.ethernet: stmmac_dvr_probe: MDIO bus (id: 1) registration failed
+The kernel considers the unknown state to be the same as up:
+https://elixir.bootlin.com/linux/latest/source/include/linux/netdevice.h#L4125
 
-It's perfectly fine, and the device is successfully (and silently, as
-far as the console goes) probed later.
+However for users this creates confusion:
+https://serverfault.com/questions/629676/dummy-network-interface-in-linux
 
-Use dev_err_probe() instead, which will demote these messages to debug
-level (thus removing the alarming messages from the console) when the
-error is -EPROBE_DEFER, and also has the advantage of including the
-error code if/when it happens to be something other than -EPROBE_DEFER.
+The change in this patch is very simple. When the interface is set up, the
+operational state is set to IF_OPER_UP.
 
-While here, add the missing \n to one of the format strings.
-
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Signed-off-by: Kaarel Pärtel <kaarelp2rtel@gmail.com>
 ---
-v2: Reindent following lines, fix spello in commit message, also add \n.
+ drivers/net/can/vcan.c | 1 +
+ drivers/net/dummy.c    | 1 +
+ 2 files changed, 2 insertions(+)
 
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 6 +++---
- drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 2 +-
- 2 files changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 3b81d4e9dc83..d1a7cf4567bc 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7129,9 +7129,9 @@ int stmmac_dvr_probe(struct device *device,
- 		/* MDIO bus Registration */
- 		ret = stmmac_mdio_register(ndev);
- 		if (ret < 0) {
--			dev_err(priv->device,
--				"%s: MDIO bus (id: %d) registration failed",
--				__func__, priv->plat->bus_id);
-+			dev_err_probe(priv->device, ret,
-+				      "%s: MDIO bus (id: %d) registration failed\n",
-+				      __func__, priv->plat->bus_id);
- 			goto error_mdio_register;
- 		}
- 	}
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-index 9bc625fccca0..03d3d1f7aa4b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -482,7 +482,7 @@ int stmmac_mdio_register(struct net_device *ndev)
+diff --git a/drivers/net/can/vcan.c b/drivers/net/can/vcan.c
+index a15619d883ec..79768f9d4294 100644
+--- a/drivers/net/can/vcan.c
++++ b/drivers/net/can/vcan.c
+@@ -162,6 +162,7 @@ static void vcan_setup(struct net_device *dev)
  
- 	err = of_mdiobus_register(new_bus, mdio_node);
- 	if (err != 0) {
--		dev_err(dev, "Cannot register the MDIO bus\n");
-+		dev_err_probe(dev, err, "Cannot register the MDIO bus\n");
- 		goto bus_register_fail;
- 	}
+ 	dev->netdev_ops		= &vcan_netdev_ops;
+ 	dev->needs_free_netdev	= true;
++	dev->operstate = IF_OPER_UP;
+ }
  
+ static struct rtnl_link_ops vcan_link_ops __read_mostly = {
+diff --git a/drivers/net/dummy.c b/drivers/net/dummy.c
+index f82ad7419508..ab128f66de00 100644
+--- a/drivers/net/dummy.c
++++ b/drivers/net/dummy.c
+@@ -133,6 +133,7 @@ static void dummy_setup(struct net_device *dev)
+ 
+ 	dev->min_mtu = 0;
+ 	dev->max_mtu = 0;
++	dev->operstate = IF_OPER_UP;
+ }
+ 
+ static int dummy_validate(struct nlattr *tb[], struct nlattr *data[],
 -- 
-2.31.1
+2.25.1
 
