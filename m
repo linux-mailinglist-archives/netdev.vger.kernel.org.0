@@ -2,92 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC51653BA69
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 16:02:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A309D53BABE
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 16:29:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235524AbiFBOBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 10:01:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43580 "EHLO
+        id S235928AbiFBO3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 10:29:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235643AbiFBOBb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 10:01:31 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9FD229FE6C
-        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 07:01:30 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id q18so4574462pln.12
-        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 07:01:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=FtMPw/UI3OSdRNifjfzs2Ej9FUMxxMPJrrkz4FjDg00=;
-        b=avQM8YI86yCYQQdb2JYEaLMHRB6Yee1xmDZpBsEEOvWrAzMfzsVgZDu/roQq00GQ5E
-         w6Zdheiuzbv8Yw9wOgEVHIO3OJLTT7NAqqJU4+avULV7MTOteHmZh7AhqAFdGQ97Cimo
-         qBJ2kGS46HnxHoZkL+xyt/FjiTIWCBK05Fit6SNl2N45XrAvv4+1BzBea5M1B/NpMV8v
-         5YECURU47AgeIvAiDgjQEKFySPW7qdPGEPGYme0tMRgvu3O+f7Z6MfQ9hayp4nPrq5zS
-         eG9+SfiTzyP24BTf5JuhRU/MW1LDmYiTH2M0WEr0iTFL20eegsohxXh/zRIO6dyIOuen
-         lqVQ==
+        with ESMTP id S235859AbiFBO3U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 10:29:20 -0400
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21541EB41A;
+        Thu,  2 Jun 2022 07:29:18 -0700 (PDT)
+Received: by mail-ot1-f53.google.com with SMTP id w19-20020a9d6393000000b0060aeb359ca8so3519967otk.6;
+        Thu, 02 Jun 2022 07:29:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=FtMPw/UI3OSdRNifjfzs2Ej9FUMxxMPJrrkz4FjDg00=;
-        b=zn5eWyZQol5PlyWRpoho/7vPeWiRNgHf1q/cAr2KFoqzmLqXk4W/ip6ZP+ppeS9Lst
-         mKEv6L7v0VcsgHgSo5YNbDt7ap4+E1+0E1PVGEqA0V6PMSndN7zmSCSgDrwMlpczDlLl
-         E00hEDD6rkhUoHRwUMfWsueVGybq8QtwHYmtkYZPPbLpWEat180iQhG4z7LWAqwVxw+z
-         aNdsLHkZ4Wf1pNVZ+9AY61GttebtcbqpFj+vpzjEglEcvjo3E/XLRPXY/FGdpX0M52Me
-         y9Ln0kmxoYaxZPnICBQJwGHcADODxm+3ZtDRw0+IZkBH2EBsLLqYUuR5Ee+kAbWmsltV
-         wL2g==
-X-Gm-Message-State: AOAM532GjmsTEk7BR0GgLysMKSJmXGAgDBho1fizRxz5ZQvAkK7PYoPi
-        llQNYjCF7Q04kZKMm3LUSFI=
-X-Google-Smtp-Source: ABdhPJypkvTO2ezvUtNwkqf88CG99qxsOJ9oQz/4ub1cfOucig4z706nEf9/nmqsXDtqwIC/ePSq2A==
-X-Received: by 2002:a17:903:1d2:b0:165:fd6:6ab6 with SMTP id e18-20020a17090301d200b001650fd66ab6mr5073140plh.41.1654178490151;
-        Thu, 02 Jun 2022 07:01:30 -0700 (PDT)
-Received: from localhost.localdomain ([182.213.254.91])
-        by smtp.gmail.com with ESMTPSA id k13-20020aa7998d000000b0050dc76281ecsm108463pfh.198.2022.06.02.07.01.27
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3LdxAC+hjoGbT8X2doYYpQEStBAtaF+fLV0X0u4yir4=;
+        b=KHDFjHHCpgdiUo9QqYaa0gIenz6tSgZ51roA5gizgVG8qKpQL0DkodlB8U6W5JBCVa
+         0MrKD4T4xxaW/7ZFvxk+5TuhUtIggR2cSDrtP0AA5VCUiz0xOdWRYWAxxU1UXnRYb/uC
+         3bbpHn6zHYcnZOzvZMLn4P82dQb1MXCotUh7yk4nbJriJky2O0VXAnya8MbyCod04+jh
+         mwFbXr+lkFDwW/C0uiwJUntzK5qewUEpHKiGQ0bN9jZ+qnH5X6eBpT3HPqp4bFRJrN7Z
+         GeKsW7yMSRxcL7qK1ut1NQ9NZSNR1LiO+b0zD4VbAUDZjOR5j+yKMWEQs578zCNk1OIu
+         oa2w==
+X-Gm-Message-State: AOAM531u1Wk385aFvjPa/pIAsa7t8LNEqCsZq+o4Rsp+R0X6FZv8HC+V
+        2NyfHphFx+ZANqaU8hNS3A==
+X-Google-Smtp-Source: ABdhPJxpzv7HpzITyd+wSw147FKRkc3JqW2DfLG9yre4EqpNix4xcaTZaxmSlhKlegS5iTyFsoVN3A==
+X-Received: by 2002:a05:6830:2b07:b0:60b:b38:fcc0 with SMTP id l7-20020a0568302b0700b0060b0b38fcc0mr2109243otv.353.1654180158189;
+        Thu, 02 Jun 2022 07:29:18 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id s42-20020a05683043aa00b0060613c844adsm2183325otv.10.2022.06.02.07.29.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 07:01:29 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH net 3/3] amt: fix wrong type string definition
-Date:   Thu,  2 Jun 2022 14:01:08 +0000
-Message-Id: <20220602140108.18329-4-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220602140108.18329-1-ap420073@gmail.com>
-References: <20220602140108.18329-1-ap420073@gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        Thu, 02 Jun 2022 07:29:17 -0700 (PDT)
+Received: (nullmailer pid 2255406 invoked by uid 1000);
+        Thu, 02 Jun 2022 14:29:17 -0000
+Date:   Thu, 2 Jun 2022 09:29:17 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Palmer Dabbelt <palmer@rivosinc.com>
+Cc:     kuba@kernel.org, michael.hennerich@analog.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com,
+        krzysztof.kozlowski+dt@linaro.org, alexandru.ardelean@analog.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@rivosinc.com
+Subject: Re: [PATCH] dt-bindings: net: adin: Escape a trailing ":"
+Message-ID: <20220602142917.GA2254348-robh@kernel.org>
+References: <20220602012809.8384-1-palmer@rivosinc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220602012809.8384-1-palmer@rivosinc.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-amt message type definition starts from 1, not 0.
-But type_str[] starts from 0.
-So, it prints wrong type information.
+On Wed, Jun 01, 2022 at 06:28:09PM -0700, Palmer Dabbelt wrote:
+> From: Palmer Dabbelt <palmer@rivosinc.com>
+> 
+> 1f77204e11f8 ("dt-bindings: net: adin: document phy clock output
+> properties") added a line with a ":" at the end, which is tripping up my
+> attempts to run the DT schema checks due to this being invalid YAML
+> syntax.  I get a schema check failure with the following error
+> 
+>     ruamel.yaml.scanner.ScannerError: mapping values are not allowed in this context
+> 
+> This just escapes the line in question, so it can parse.
+> 
+> Fixes: 1f77204e11f8 ("dt-bindings: net: adin: document phy clock output properties")
+> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+> ---
+>  Documentation/devicetree/bindings/net/adi,adin.yaml | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
-Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
- drivers/net/amt.c | 1 +
- 1 file changed, 1 insertion(+)
+Already have a fix queued in netdev.
 
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index ef483bf51033..be2719a3ba70 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -51,6 +51,7 @@ static char *status_str[] = {
- };
- 
- static char *type_str[] = {
-+	"", /* Type 0 is not defined */
- 	"AMT_MSG_DISCOVERY",
- 	"AMT_MSG_ADVERTISEMENT",
- 	"AMT_MSG_REQUEST",
--- 
-2.17.1
-
+Rob
