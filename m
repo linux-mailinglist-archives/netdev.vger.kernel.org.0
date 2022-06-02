@@ -2,149 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C49B553B734
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 12:30:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DB8B53B76A
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 12:38:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233851AbiFBKaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 06:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
+        id S233955AbiFBKiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 06:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233906AbiFBKaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 06:30:11 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3AA2101F8
-        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 03:30:09 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id n10so9102151ejk.5
-        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 03:30:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=iabOKt8Lt4ClyBb4r4Q/KqHn7Cps1qrTWhdLROC0vws=;
-        b=VQCl9uRJ1U9yzv+giXqEkz6Z1yMCqEp3hD2gW4Jaw5s1Ewt13S9ZakS15xCYWgi3dv
-         xayD1UAWLjkxDApMnNgrFpkP1w09bQiGAG1jDOT96JEC8CsV4tlBXUJHtyiCTPMsiDZx
-         Ayt7KUdq8NRJLYDz2WlL2v8d2xGg5Kc1SDjshNLy/xPvE3M4zaxkKtVQdbvoCpaT8Fwp
-         zD8In4NBTo53lm8LB1BxmK9EXteWssgCifKEmDLsDDB4VC2y7OtAmcxx/TCoq8dQR+2r
-         9Ma6Txx/6cNyejFL24zKary5+Wajx7zFRWu44J5LchvKYmsCy0hhGgqcVVhxQ0Qdw/dh
-         EJxA==
+        with ESMTP id S233953AbiFBKiT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 06:38:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A0D272B1948
+        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 03:38:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654166297;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cEcO6QyHnPHYS4Vy+YLs+KWkeAz9zsW0LykwJtSxyKE=;
+        b=F/8WLkUaKtHZPQjxMe8S5VsESWppVY2mIHN4OmfSOC5jqik+/IEhtOJWDysu8KtPuHqvq6
+        yNnnRMvQcrZNsVMUaGfE6HyQ1/CrNQrByw992g0owU4W7umz3hRtMM7SmSQ5oKQKRkjUZE
+        rzZiOTAgnuEQZeCAJjCdnwd/HCPDryI=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-651-oS1JOS7LNSuXKN4ogKfmLA-1; Thu, 02 Jun 2022 06:38:17 -0400
+X-MC-Unique: oS1JOS7LNSuXKN4ogKfmLA-1
+Received: by mail-qt1-f197.google.com with SMTP id e13-20020a05622a110d00b00304b71fae86so3381327qty.5
+        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 03:38:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=iabOKt8Lt4ClyBb4r4Q/KqHn7Cps1qrTWhdLROC0vws=;
-        b=GJqm47xRxXSmb/2FvpvYabcL+LZ2YzSgeLGT/C6n84qqKZxUUNLxSZGFRB2viEgysT
-         02Tst+XdJV3XAcKBjyPOn7ykcb1Sx3Ezg0WGudq7rr1AsAK1Rj5IVt0vXfdyOF2aE0nJ
-         NtE37tcn0K/fUuCLMqlRmx4Ttrdjmm2EHd0xEjmpPTZbgTGSKhNuoZmFmIJDwC3xzNPA
-         pk15HatvnOGKveTlP4T8DQU0M+j6XH1080hUOcwMf5b9sSRCaC/7RguD1fbtG/F2DUQa
-         fi00eYMxiT8d0s0dFQHyFnexwtTyJqpMgq9757q2iLX09trArXeSroShNYyKJI+MGVHX
-         yJcw==
-X-Gm-Message-State: AOAM531/Qnc7BnmWaX0i83qbkbE3tgWz9zdNhC6M/5yemEEzxE8sUbvj
-        VtNVrf+o46JADu2/wnudw11RKKFoSwnYd2L43Pc=
-X-Google-Smtp-Source: ABdhPJy5pwOku+BM+CDHZx5dxzOvjqNeMSrLQbz9dkgce9cywc4H7D1hWfs/mduin6qoqUr7KiN1hQ==
-X-Received: by 2002:a17:907:3e07:b0:6fe:fdf9:2c2e with SMTP id hp7-20020a1709073e0700b006fefdf92c2emr3609612ejc.378.1654165808343;
-        Thu, 02 Jun 2022 03:30:08 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id oy9-20020a170907104900b006fe99b66198sm133279ejb.60.2022.06.02.03.30.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jun 2022 03:30:07 -0700 (PDT)
-Message-ID: <3d93d46d-c484-da0a-c12c-80e83eba31c9@blackwall.org>
-Date:   Thu, 2 Jun 2022 13:30:06 +0300
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=cEcO6QyHnPHYS4Vy+YLs+KWkeAz9zsW0LykwJtSxyKE=;
+        b=l5l1dPR9/yHVAQiPYl3LhusCUy5sfknYrG2U1bePjhPW35i4vOIAy045swsQMz9Zk1
+         q73NaM20va9YvwMQsU1J5TkpphGCidYyLPwg77z0S3kDyT/mkir+/hRU01qo+nD7bfyR
+         vlClc8i/gHhFy5dnMRx2QWIAMmhe3W/RsfVTFfFBx3h9H6JaS4O7km+oi1MPm0KYtlQ9
+         shiklVcSUlp8R1nq699SOVkLgLJbo6tiLVBfXeuGenQJOu2j0gbCSHBbbLUUvABrZr71
+         1I5OmWl0YcUpMi5RbT7v9bg/bqzuyA/u6vvP8m8MbLe0t1khORXgBnhjbb8pdhlhpVp8
+         JUbA==
+X-Gm-Message-State: AOAM533dN8IcZNfUPgYanFWtKncujL5RBuzGUS5zoTFTmG8lAGVRiY9I
+        XvRmcqBK1MeyrBpAFNCZSGVSMzPKTwKtBJeJnWnnE0Qq17UfPwH7hq5CFa8PbSWF1qQkUFkau2m
+        +g6qNzH7+pdt4GM4W
+X-Received: by 2002:a05:6214:4104:b0:42c:1db0:da28 with SMTP id kc4-20020a056214410400b0042c1db0da28mr58094685qvb.67.1654166295373;
+        Thu, 02 Jun 2022 03:38:15 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyKaok4uC0gNMvnkmHdYFlz5ez7IZbeoh5p82LSlatVHUnTtlooLcZ5k/Za57l19xqbgWEIFg==
+X-Received: by 2002:a05:6214:4104:b0:42c:1db0:da28 with SMTP id kc4-20020a056214410400b0042c1db0da28mr58094671qvb.67.1654166295138;
+        Thu, 02 Jun 2022 03:38:15 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
+        by smtp.gmail.com with ESMTPSA id p21-20020a05620a15f500b0069fc13ce23esm2747275qkm.111.2022.06.02.03.38.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 03:38:14 -0700 (PDT)
+Message-ID: <4c9e3cf5122f4c2f8a2473c493891362e0a13b4a.camel@redhat.com>
+Subject: Re: [PATCH net-next v4] ipv6: Fix signed integer overflow in
+ __ip6_append_data
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Wang Yufen <wangyufen@huawei.com>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
+        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Date:   Thu, 02 Jun 2022 12:38:10 +0200
+In-Reply-To: <20220601084803.1833344-1-wangyufen@huawei.com>
+References: <20220601084803.1833344-1-wangyufen@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
- locked port feature
-Content-Language: en-US
-To:     Hans Schultz <schultz.hans@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
- <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
- <Yo+LAj1vnjq0p36q@shredder> <86sfov2w8k.fsf@gmail.com>
- <YpCgxtJf9Qe7fTFd@shredder> <86sfoqgi5e.fsf@gmail.com>
- <YpYk4EIeH6sdRl+1@shredder> <86y1yfzap3.fsf@gmail.com>
- <d88b6090-2ac8-0664-0e38-bb2860be7f6e@blackwall.org>
- <86sfonjroi.fsf@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <86sfonjroi.fsf@gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/06/2022 13:17, Hans Schultz wrote:
-> On tor, jun 02, 2022 at 12:33, Nikolay Aleksandrov <razor@blackwall.org> wrote:
->> On 02/06/2022 12:17, Hans Schultz wrote:
->>> On tis, maj 31, 2022 at 17:23, Ido Schimmel <idosch@nvidia.com> wrote:
->>>> On Tue, May 31, 2022 at 11:34:21AM +0200, Hans Schultz wrote:
+On Wed, 2022-06-01 at 16:48 +0800, Wang Yufen wrote:
+> Resurrect ubsan overflow checks and ubsan report this warning,
+> fix it by change the variable [length] type to size_t.
 > 
->>> Another issue is that
->>> bridge fdb add MAC dev DEV master static
->>> seems to add the entry with the SELF flag set, which I don't think is
->>> what we would want it to do or?
->>
->> I don't see such thing (hacked iproute2 to print the flags before cmd):
->> $ bridge fdb add 00:11:22:33:44:55 dev vnet110 master static
->> flags 0x4
->>
->> 0x4 = NTF_MASTER only
->>
+> UBSAN: signed-integer-overflow in net/ipv6/ip6_output.c:1489:19
+> 2147479552 + 8567 cannot be represented in type 'int'
+> CPU: 0 PID: 253 Comm: err Not tainted 5.16.0+ #1
+> Hardware name: linux,dummy-virt (DT)
+> Call trace:
+>   dump_backtrace+0x214/0x230
+>   show_stack+0x30/0x78
+>   dump_stack_lvl+0xf8/0x118
+>   dump_stack+0x18/0x30
+>   ubsan_epilogue+0x18/0x60
+>   handle_overflow+0xd0/0xf0
+>   __ubsan_handle_add_overflow+0x34/0x44
+>   __ip6_append_data.isra.48+0x1598/0x1688
+>   ip6_append_data+0x128/0x260
+>   udpv6_sendmsg+0x680/0xdd0
+>   inet6_sendmsg+0x54/0x90
+>   sock_sendmsg+0x70/0x88
+>   ____sys_sendmsg+0xe8/0x368
+>   ___sys_sendmsg+0x98/0xe0
+>   __sys_sendmmsg+0xf4/0x3b8
+>   __arm64_sys_sendmmsg+0x34/0x48
+>   invoke_syscall+0x64/0x160
+>   el0_svc_common.constprop.4+0x124/0x300
+>   do_el0_svc+0x44/0xc8
+>   el0_svc+0x3c/0x1e8
+>   el0t_64_sync_handler+0x88/0xb0
+>   el0t_64_sync+0x16c/0x170
 > 
-> I also get 0x4 from iproute2, but I still get SELF entries when I look
-> with:
-> bridge fdb show dev DEV
-> 
+> Changes since v1:
+> -Change the variable [length] type to unsigned, as Eric Dumazet suggested.
+> Changes since v2:
+> -Don't change exthdrlen type in ip6_make_skb, as Paolo Abeni suggested.
+> Changes since v3:
+> -Don't change ulen type in udpv6_sendmsg and l2tp_ip6_sendmsg, as
+> Jakub Kicinski suggested.
 
-after the above add:
-$ bridge fdb show dev vnet110 | grep 00:11
-00:11:22:33:44:55 master virbr0 static
+I'm sorry for the multiple incremental feedback on this patch. It's
+somewhat tricky.
 
->>> Also the replace command is not really supported properly as it is. I
->>> have made a fix for that which looks something like this:
->>>
->>> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
->>> index 6cbb27e3b976..f43aa204f375 100644
->>> --- a/net/bridge/br_fdb.c
->>> +++ b/net/bridge/br_fdb.c
->>> @@ -917,6 +917,9 @@ static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
->>>                 if (flags & NLM_F_EXCL)
->>>                         return -EEXIST;
->>>  
->>> +               if (flags & NLM_F_REPLACE)
->>> +                       modified = true;
->>> +
->>>                 if (READ_ONCE(fdb->dst) != source) {
->>>                         WRITE_ONCE(fdb->dst, source);
->>>                         modified = true;
->>>
->>> The argument for always sending notifications to the driver in the case
->>> of replace is that a replace command will refresh the entries timeout if
->>> the entry is the same. Any thoughts on this?
->>
->> I don't think so. It always updates its "used" timer, not its "updated" timer which is the one
->> for expire. A replace that doesn't actually change anything on the entry shouldn't generate
->> a notification.
-> 
-> Okay, so then there is missing checks on flags as the issue arose from
-> replacing locked entries with dynamic entries. I will do another fix
-> based on flags as modified needs to be true for the driver to get notified.
+AFAICS Jakub mentioned only udpv6_sendmsg(). In l2tp_ip6_sendmsg() we
+can have an overflow:
+
+        int transhdrlen = 4; /* zero session-id */
+        int ulen = len + transhdrlen;
+
+when len >= INT_MAX - 4. That will be harmless, but I guess it could
+still trigger a noisy UBSAN splat. 
+
+Paolo
 
