@@ -2,67 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7083453B675
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 11:59:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97D6A53B678
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 12:00:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233269AbiFBJ7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 05:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56468 "EHLO
+        id S233328AbiFBKAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 06:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233072AbiFBJ7r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 05:59:47 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9388FDF18;
-        Thu,  2 Jun 2022 02:59:45 -0700 (PDT)
-Received: from canpemm100010.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LDM0r3d5tzjXNk;
-        Thu,  2 Jun 2022 17:58:52 +0800 (CST)
-Received: from dggpeml500026.china.huawei.com (7.185.36.106) by
- canpemm100010.china.huawei.com (7.192.104.38) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 2 Jun 2022 17:59:43 +0800
-Received: from dggpeml500026.china.huawei.com ([7.185.36.106]) by
- dggpeml500026.china.huawei.com ([7.185.36.106]) with mapi id 15.01.2375.024;
- Thu, 2 Jun 2022 17:59:43 +0800
-From:   shaozhengchao <shaozhengchao@huawei.com>
-To:     =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "hawk@kernel.org" <hawk@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>
-CC:     "weiyongjun (A)" <weiyongjun1@huawei.com>,
-        yuehaibing <yuehaibing@huawei.com>
-Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggdjUsYnBmLW5leHRdIHNhbXBsZXMvYnBmOiBjaGVj?=
- =?utf-8?Q?k_detach_prog_exist_or_not_in_xdp=5Ffwd?=
-Thread-Topic: [PATCH v5,bpf-next] samples/bpf: check detach prog exist or not
- in xdp_fwd
-Thread-Index: AQHYdh3mfF3YsnAkakOXItICkqOZQK07SqEAgACXBnA=
-Date:   Thu, 2 Jun 2022 09:59:43 +0000
-Message-ID: <f7e88b843e964632919c8efe16368786@huawei.com>
-References: <20220602011915.264431-1-shaozhengchao@huawei.com>
- <87v8tjsavb.fsf@toke.dk>
-In-Reply-To: <87v8tjsavb.fsf@toke.dk>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.178.66]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S233320AbiFBKAX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 06:00:23 -0400
+X-Greylist: delayed 91909 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 02 Jun 2022 03:00:21 PDT
+Received: from smtp-42ab.mail.infomaniak.ch (smtp-42ab.mail.infomaniak.ch [IPv6:2001:1600:3:17::42ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B49DE01B
+        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 03:00:20 -0700 (PDT)
+Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4LDM2S0hckzMqVZ1;
+        Thu,  2 Jun 2022 12:00:16 +0200 (CEST)
+Received: from [10.0.0.141] (unknown [31.10.206.125])
+        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4LDM2R1hVrzljk0H;
+        Thu,  2 Jun 2022 12:00:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=pschenker.ch;
+        s=20220412; t=1654164016;
+        bh=6clftNNkW5b/aLVfOs7w8oDA4IjZgT0jJnfYalkyXtc=;
+        h=Subject:From:Reply-To:To:Cc:Date:In-Reply-To:References:From;
+        b=MpfhxnUiBgc+nT3XyFNggIH4DEYXpuPFvnua6h7NJWilzYTT4MomXlytP5wDq6uDj
+         lP3sLe/hjP4cDifzRVZiBGxdxaZ7YA99O+wL3SUKgDsOPJqSKmqd1p6tvJs6nj47Az
+         BGEAbuMmyRoRhgzAiPemv/lhoB+iIXufekVl5a7M=
+Message-ID: <75b5f888b2e23f52aabce54ff38ddc70d1ad6a34.camel@pschenker.ch>
+Subject: Re: [PATCH] Revert "mt76: mt7921: enable aspm by default"
+From:   Philippe Schenker <dev@pschenker.ch>
+Reply-To: dev@pschenker.ch
+To:     Deren Wu <deren.wu@mediatek.com>, Kalle Valo <kvalo@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, Felix Fietkau <nbd@nbd.name>,
+        linux@leemhuis.info, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        YN Chen <YN.Chen@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, netdev@vger.kernel.org,
+        regressions@lists.linux.dev
+Date:   Thu, 02 Jun 2022 12:00:14 +0200
+In-Reply-To: <da79fa2a94c435a308ea763efc557fc352d0245c.camel@mediatek.com>
+References: <20220412090415.17541-1-dev@pschenker.ch>
+         <87y20aod5d.fsf@kernel.org>
+         <668f1310cc78b17c24ce7be10f5f907d5578e280.camel@mediatek.com>
+         <e93aef5c9f8a97efe23cfb5892f78f919ce328e7.camel@pschenker.ch>
+         <87mtewoj4e.fsf@kernel.org>
+         <da79fa2a94c435a308ea763efc557fc352d0245c.camel@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,50 +68,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCi0tLS0t6YKu5Lu25Y6f5Lu2LS0tLS0NCuWPkeS7tuS6ujogVG9rZSBIw7hpbGFuZC1Kw7hy
-Z2Vuc2VuIFttYWlsdG86dG9rZUBrZXJuZWwub3JnXSANCuWPkemAgeaXtumXtDogMjAyMuW5tDbm
-nIgy5pelIDE2OjU1DQrmlLbku7bkuro6IHNoYW96aGVuZ2NoYW8gPHNoYW96aGVuZ2NoYW9AaHVh
-d2VpLmNvbT47IGJwZkB2Z2VyLmtlcm5lbC5vcmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxp
-bnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGFzdEBrZXJuZWwub3JnOyBkYW5pZWxAaW9nZWFy
-Ym94Lm5ldDsgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsga3ViYUBrZXJuZWwub3JnOyBoYXdrQGtlcm5l
-bC5vcmc7IGpvaG4uZmFzdGFiZW5kQGdtYWlsLmNvbTsgYW5kcmlpQGtlcm5lbC5vcmc7IGthZmFp
-QGZiLmNvbTsgc29uZ2xpdWJyYXZpbmdAZmIuY29tOyB5aHNAZmIuY29tOyBrcHNpbmdoQGtlcm5l
-bC5vcmcNCuaKhOmAgTogd2VpeW9uZ2p1biAoQSkgPHdlaXlvbmdqdW4xQGh1YXdlaS5jb20+OyBz
-aGFvemhlbmdjaGFvIDxzaGFvemhlbmdjaGFvQGh1YXdlaS5jb20+OyB5dWVoYWliaW5nIDx5dWVo
-YWliaW5nQGh1YXdlaS5jb20+DQrkuLvpopg6IFJlOiBbUEFUQ0ggdjUsYnBmLW5leHRdIHNhbXBs
-ZXMvYnBmOiBjaGVjayBkZXRhY2ggcHJvZyBleGlzdCBvciBub3QgaW4geGRwX2Z3ZA0KDQpaaGVu
-Z2NoYW8gU2hhbyA8c2hhb3poZW5nY2hhb0BodWF3ZWkuY29tPiB3cml0ZXM6DQoNCj4gQmVmb3Jl
-IGRldGFjaCB0aGUgcHJvZywgd2Ugc2hvdWxkIGNoZWNrIGRldGFjaCBwcm9nIGV4aXN0IG9yIG5v
-dC4NCj4NCj4gU2lnbmVkLW9mZi1ieTogWmhlbmdjaGFvIFNoYW8gPHNoYW96aGVuZ2NoYW9AaHVh
-d2VpLmNvbT4NCg0KWW91IG1pc3NlZCBvbmUgJ3JldHVybiBlcnJubycsIHNlZSBiZWxvdzoNCg0K
-PiAtLS0NCj4gIHNhbXBsZXMvYnBmL3hkcF9md2RfdXNlci5jIHwgNTUgDQo+ICsrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKy0tLS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgNDkgaW5zZXJ0
-aW9ucygrKSwgNiBkZWxldGlvbnMoLSkNCj4NCj4gZGlmZiAtLWdpdCBhL3NhbXBsZXMvYnBmL3hk
-cF9md2RfdXNlci5jIGIvc2FtcGxlcy9icGYveGRwX2Z3ZF91c2VyLmMgDQo+IGluZGV4IDE4Mjg0
-ODdiYWU5YS4uZDMyMWU2YWE5MzY0IDEwMDY0NA0KPiAtLS0gYS9zYW1wbGVzL2JwZi94ZHBfZndk
-X3VzZXIuYw0KPiArKysgYi9zYW1wbGVzL2JwZi94ZHBfZndkX3VzZXIuYw0KPiBAQCAtNDcsMTcg
-KzQ3LDYwIEBAIHN0YXRpYyBpbnQgZG9fYXR0YWNoKGludCBpZHgsIGludCBwcm9nX2ZkLCBpbnQg
-bWFwX2ZkLCBjb25zdCBjaGFyICpuYW1lKQ0KPiAgCXJldHVybiBlcnI7DQo+ICB9DQo+ICANCj4g
-LXN0YXRpYyBpbnQgZG9fZGV0YWNoKGludCBpZHgsIGNvbnN0IGNoYXIgKm5hbWUpDQo+ICtzdGF0
-aWMgaW50IGRvX2RldGFjaChpbnQgaWZpbmRleCwgY29uc3QgY2hhciAqaWZuYW1lLCBjb25zdCBj
-aGFyIA0KPiArKmFwcF9uYW1lKQ0KPiAgew0KPiAtCWludCBlcnI7DQo+ICsJTElCQlBGX09QVFMo
-YnBmX3hkcF9hdHRhY2hfb3B0cywgb3B0cyk7DQo+ICsJc3RydWN0IGJwZl9wcm9nX2luZm8gcHJv
-Z19pbmZvID0ge307DQo+ICsJY2hhciBwcm9nX25hbWVbQlBGX09CSl9OQU1FX0xFTl07DQo+ICsJ
-X191MzIgaW5mb19sZW4sIGN1cnJfcHJvZ19pZDsNCj4gKwlpbnQgcHJvZ19mZDsNCj4gKwlpbnQg
-ZXJyID0gMTsNCj4gKw0KPiArCWlmIChicGZfeGRwX3F1ZXJ5X2lkKGlmaW5kZXgsIHhkcF9mbGFn
-cywgJmN1cnJfcHJvZ19pZCkpIHsNCj4gKwkJcHJpbnRmKCJFUlJPUjogYnBmX3hkcF9xdWVyeV9p
-ZCBmYWlsZWQgKCVzKVxuIiwNCj4gKwkJICAgICAgIHN0cmVycm9yKGVycm5vKSk7DQo+ICsJCXJl
-dHVybiBlcnI7DQo+ICsJfQ0KPiAgDQo+IC0JZXJyID0gYnBmX3hkcF9kZXRhY2goaWR4LCB4ZHBf
-ZmxhZ3MsIE5VTEwpOw0KPiAtCWlmIChlcnIgPCAwKQ0KPiAtCQlwcmludGYoIkVSUk9SOiBmYWls
-ZWQgdG8gZGV0YWNoIHByb2dyYW0gZnJvbSAlc1xuIiwgbmFtZSk7DQo+ICsJaWYgKCFjdXJyX3By
-b2dfaWQpIHsNCj4gKwkJcHJpbnRmKCJFUlJPUjogZmxhZ3MoMHgleCkgeGRwIHByb2cgaXMgbm90
-IGF0dGFjaGVkIHRvICVzXG4iLA0KPiArCQkgICAgICAgeGRwX2ZsYWdzLCBpZm5hbWUpOw0KPiAr
-CQlyZXR1cm4gZXJyOw0KPiArCX0NCj4gIA0KPiArCWluZm9fbGVuID0gc2l6ZW9mKHByb2dfaW5m
-byk7DQo+ICsJcHJvZ19mZCA9IGJwZl9wcm9nX2dldF9mZF9ieV9pZChjdXJyX3Byb2dfaWQpOw0K
-PiArCWlmIChwcm9nX2ZkIDwgMCkgew0KPiArCQlwcmludGYoIkVSUk9SOiBicGZfcHJvZ19nZXRf
-ZmRfYnlfaWQgZmFpbGVkICglcylcbiIsDQo+ICsJCSAgICAgICBzdHJlcnJvcihlcnJubykpOw0K
-PiArCQlyZXR1cm4gZXJybm87DQoNClRoaXMgc2hvdWxkIGp1c3QgYmUgJyByZXR1cm4gcHJvZ19m
-ZCAnIHRvIHByb3BhZ2F0ZSB0aGUgZXJyb3IuLi4NCg0KLVRva2UNCg0KDQpIaSBUb2tlOg0KCVVz
-ZSAncmV0dXJuIHByb2dfZmQnIGluc3RlYWQgb2YgJ3JldHVybiBlcnJubycgZmlyc3QuIEFuZCBX
-aGljaCBwb3NpdGlvbiBtaXNzZWQgb25lICdyZXR1cm4gZXJybm8nPw0KDQotWmhlbmdjaGFvIFNo
-YW8NCg==
+On Thu, 2022-06-02 at 00:55 +0800, Deren Wu wrote:
+> On Wed, 2022-06-01 at 11:58 +0300, Kalle Valo wrote:
+> > Philippe Schenker <dev@pschenker.ch> writes:
+> >=20
+> > > On Tue, 2022-04-12 at 19:06 +0800, Deren Wu wrote:
+> > > > On Tue, 2022-04-12 at 12:37 +0300, Kalle Valo wrote:
+> > > > > Philippe Schenker <dev@pschenker.ch> writes:
+> > > > >=20
+> > > > > > This reverts commit
+> > > > > > bf3747ae2e25dda6a9e6c464a717c66118c588c8.
+> > > > > >=20
+> > > > > > This commit introduces a regression on some systems where
+> > > > > > the
+> > > > > > kernel is
+> > > > > > crashing in different locations after a reboot was issued.
+> > > > > >=20
+> > > > > > This issue was bisected on a Thinkpad P14s Gen2 (AMD) with
+> > > > > > latest
+> > > > > > firmware.
+> > > > > >=20
+> > > > > > Link:=20
+> > > > > >=20
+> https://urldefense.com/v3/__https://lore.kernel.org/linux-wireless/5077a9=
+53487275837e81bdf1808ded00b9676f9f.camel@pschenker.ch/__;!!CTRNKA9wMg0ARbw!=
+09tjyaQlMci3fVI3yiNiDJKUW_qwNA_CbVhoAraeIX96B99Q14J4iDycWA9cq36Y$
+> > > > > > =C2=A0
+> > > > > > Signed-off-by: Philippe Schenker <dev@pschenker.ch>
+> > > > >=20
+> > > > > Can I take this to wireless tree? Felix, ack?
+> > > > >=20
+> > > > > I'll also add:
+> > > > >=20
+> > > > > Fixes: bf3747ae2e25 ("mt76: mt7921: enable aspm by default")
+> > > > >=20
+> > > >=20
+> > > > Hi Kalle,
+> > > >=20
+> > > > We have a patch for a similar problem. Can you wait for the
+> > > > verification by Philippe?
+> > > > Commit 602cc0c9618a81 ("mt76: mt7921e: fix possible probe
+> > > > failure
+> > > > after
+> > > > reboot")
+> > > > Link:=20
+> > > >=20
+> https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/g=
+it/torvalds/linux.git/commit/drivers/net/wireless/mediatek/mt76?id=3D602cc0=
+c9618a819ab00ea3c9400742a0ca318380__;!!CTRNKA9wMg0ARbw!zCYyDcufJ-OLqQV6leCe=
+gA5SkNOOVjAIo-jzTHTk6HUWT9Gjt-bvSz8lr81Zv95u$
+> > > > =C2=A0
+> > > >=20
+> > > > I can reproduce the problem in my v5.16-rc5 desktop. And the
+> > > > issue can
+> > > > be fixed when the patch applied.
+> > > >=20
+> > > >=20
+> > > > Hi Philippe,
+> > > >=20
+> > > > Can you please help to check the patch in your platform?
+> > >=20
+> > > Hi Kalle and Deren,
+> > >=20
+> > > I just noticed on my system and mainline v5.18 reboots do now work
+> > > however Bluetooth is no longer accessible after a reboot.
+> > >=20
+> > > Reverting commit bf3747ae2e25dda6a9e6c464a717c66118c588c8 on top
+> > > of
+> > > v5.18 solves this problem for me.
+> > >=20
+> > > @Deren are you aware of this bug?
+> > > @Kalle Is there a bugtracker somewhere I can submit this?
+> >=20
+> > For regressions the best is to submit it to the regressions list,
+> > CCed
+> > it now.
+> >=20
+> Hi Philippe,
+>=20
+> Tried your test with v5.18.0 on my desktop and both wifi/bt are still
+> avaible after reboot. The only problem is I need to insert btusb
+> module
+> by command "modprobe btusb" to make BT workable.
+>=20
+> I will check the issue on different platforms. If there are any
+> finding, I will let you know.
+
+Thanks for your tests, I did test again on my platform. This time with a
+hand-built v5.18 straight from torvalds/linux. And I can confirm my
+findings I even loaded btusb (removed and reloaded) nothing helped. I
+always get the message
+
+No default controller available
+
+In this case I guess it could be rather a BIOS issue. In this testing
+round also some USB ports did not work.
+
+If it helps any my system is a Lenovo P14s Gen2. I believe then the
+driver is good.
+
+Regards,
+Philippe
+
+>=20
+> Regards,
+> Deren
+>=20
+
