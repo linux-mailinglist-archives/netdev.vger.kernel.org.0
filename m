@@ -2,44 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B471753B13E
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 03:23:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CDE853B121
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 03:23:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232925AbiFBBBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 21:01:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33862 "EHLO
+        id S232762AbiFBBDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 21:03:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232915AbiFBBBw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 21:01:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F63AEB1;
-        Wed,  1 Jun 2022 18:01:50 -0700 (PDT)
+        with ESMTP id S232569AbiFBBDT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 21:03:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E26E525C1E2;
+        Wed,  1 Jun 2022 18:03:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCE4A615B6;
-        Thu,  2 Jun 2022 01:01:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03CE8C385A5;
-        Thu,  2 Jun 2022 01:01:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9ACC8B81D9C;
+        Thu,  2 Jun 2022 01:03:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01EEAC385B8;
+        Thu,  2 Jun 2022 01:03:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654131709;
-        bh=aC9ykK5hOX32xqGww6ZHmNtED1DXIZriCxTeqEarar4=;
+        s=k20201202; t=1654131796;
+        bh=wksuz7vaU/eT//E6IgpXwPJq8QtyuB6m7LjRu8m7SC4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qhkHOANd/4demtkSkrYacaFAmct1Faxrw1rc3/HSbUYfmbPYEcw2WAk4Bfj7UD44n
-         Y75jIBiyjd1oZveBG/zyMpBA29Ykz1Gp/+/FolcWFYfFKEnAaJlY+vRUM8Yto7NK3k
-         IFlIfelB+Kw/RG2FOw+VMG7uhXoxOFxobj7VsCyf/wNq3wtbffblY20nCK901QRdWB
-         U3Tc3a2rEtQ/L2abxcw3UhwQa3RnKyUAdxcKMgFlwD/CF7MNI++C0ipfRtiOe1L00t
-         qCzH2LQBeozcyetLatGMwrBY89VMJM46IPYUcCyvkIERH/+OJ+hoRIq1gyxWaaA/4p
-         dhrOfYRUEYtJA==
-Date:   Wed, 1 Jun 2022 18:01:47 -0700
+        b=qha8JLVY2iWPYuve2RGON4YDTNKfH+xK8C0vhdhsGZaiuONp0bzbvfBe5GCdbr96F
+         FGuk6sWryGYBGZf99Ktq+s6EtTg03fYEvi/u4jxdRf3VTPaCRmmYjmc1BsH8ZUqwyK
+         Ja45OsmwNnZBNd2JfqE6UXscH0TQMV86b4Q7yYSJAfcxx0bfZuQ+K6vgmaa6c48FCR
+         6X3LTLZUov3OoHFU+IVhOS23wHedUQvSLF0uRaj0CvzY0k4RgZ1yFGG7vryX0h2jtf
+         d3BoKuabKLe67ngushbsRUKP+bQ4p2i5lNabIcWWhkPL1rVKHa6wHKZRkalyh/wDRE
+         VX/sOmR+dtUhg==
+Date:   Wed, 1 Jun 2022 18:03:14 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Joakim Tjernlund <joakim.tjernlund@infinera.com>
-Cc:     <netdev@vger.kernel.org>, <stable@vger.kernel.org>
-Subject: Re: [PATCH] net-sysfs: allow changing sysfs carrier when interface
- is down
-Message-ID: <20220601180147.40a6e8ea@kernel.org>
-In-Reply-To: <20220602003523.19530-1-joakim.tjernlund@infinera.com>
-References: <20220602003523.19530-1-joakim.tjernlund@infinera.com>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] net: stmmac: use dev_err_probe() for reporting mdio bus
+ registration failure
+Message-ID: <20220601180314.02e4d84e@kernel.org>
+In-Reply-To: <20220601142226.1123110-1-linux@rasmusvillemoes.dk>
+References: <20220601142226.1123110-1-linux@rasmusvillemoes.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -53,26 +56,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2 Jun 2022 02:35:23 +0200 Joakim Tjernlund wrote:
-> UP/DOWN and carrier are async events and it makes sense one can
-> adjust carrier in sysfs before bringing the interface up.
+On Wed,  1 Jun 2022 16:22:26 +0200 Rasmus Villemoes wrote:
+>  		if (ret < 0) {
+> -			dev_err(priv->device,
+> +			dev_err_probe(priv->device, ret,
+>  				"%s: MDIO bus (id: %d) registration failed",
+>  				__func__, priv->plat->bus_id);
 
-Can you explain your use case?
+Please adjust the indent of the continuation lines.
 
-> Signed-off-by: Joakim Tjernlund <joakim.tjernlund@infinera.com>
-> Cc: stable@vger.kernel.org
-
-Seems a little too risky of a change to push into stable.
-
-> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-> index a4ae65263384..3418ef7ef2d8 100644
-> --- a/net/core/net-sysfs.c
-> +++ b/net/core/net-sysfs.c
-> @@ -167,8 +167,6 @@ static DEVICE_ATTR_RO(broadcast);
->  
->  static int change_carrier(struct net_device *dev, unsigned long new_carrier)
->  {
-> -	if (!netif_running(dev))
-> -		return -EINVAL;
->  	return dev_change_carrier(dev, (bool)new_carrier);
->  }
+And fix the spelling checkpatch also points out.
