@@ -2,67 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F023F53B9E6
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 15:36:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D724F53BA65
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 16:01:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235461AbiFBNgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 09:36:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53616 "EHLO
+        id S233408AbiFBOBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 10:01:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235449AbiFBNgk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 09:36:40 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82EDDA339A;
-        Thu,  2 Jun 2022 06:36:39 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id s12so4596449plp.0;
-        Thu, 02 Jun 2022 06:36:39 -0700 (PDT)
+        with ESMTP id S231543AbiFBOBV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 10:01:21 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7EE8271781
+        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 07:01:20 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id d22so4590400plr.9
+        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 07:01:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CYqtRMhf3hiwAxmny26ATlj89B2aT7j2j31cLRb7NFo=;
-        b=N/QkVfXfuzLFS7CtYfLP5H0xPJvDYgTqu6BaHVbKtDdNTxvzCIdAorS7Q+xvvp3fOy
-         CmYZWv1SrO6QwfOzSPUyFaZewIBY7SNNA6HVW7pofMVCQG01qzn20UcL8IL1DlTvxoF5
-         TC2S4oMuPJybzNOZP5Bvju3lyoTBd56QgAMhDT8QRzVznHce6L7bRGfnoW4VqNfIic22
-         KQ28Wc2oCpqQz9Fv8huAUar1SxmJ+HeWjyY5D3fTU1oQbkC8DXwWvC1SVA0xNB9BN7Sw
-         Gi23J276to19NJWnApIQlhxwP0kffnVUfFRgFXoOL4WpWQC8CGSsZunIhy7ilGn22EiN
-         qy/A==
+        h=from:to:cc:subject:date:message-id;
+        bh=NEkqd70uljO3jCHyeQu1WPotLMJG5tc7aZ7gxzL77Zo=;
+        b=aqo5BjeVUAthkQWwt226yrFr5M0LO0Tugr8/clCytCvF0JuayF2vpFQhTrKeiAeLKE
+         OztGCPPLw49jIO1EME02NLlzPRy31raFhQQhfM7nxr9Pidxe6HoTdwP/xN4TNsXEzL4Z
+         c5I1qastLK2GWaxDOh53gXosFx0s2upMROMnbaewdWeZshwM5YCM2MOaKUC/AuToU586
+         5rn5bP3Ikps8k4wJlagWdNuZI9r/XXYcnsu8rVwcrpd/rZlRFxGz1D1QunWo3KtcEueE
+         yVTnHnx3cuIM7HT1CAJfOAflgfV9eJObF+OMexfvmzf4UWM67Nll3Wen1sgfjQ+BWal7
+         c2jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CYqtRMhf3hiwAxmny26ATlj89B2aT7j2j31cLRb7NFo=;
-        b=a0Olyl82iPlXvQ/q6egYumwV0a3YoIFf+x2Okes1DSP8hCVXfnfnvDOucbHmsPro4i
-         8ZdeBHMrTh3TGOhPQIzu1kPTe2iAChOaNtm96QDEu0JmBitP3tTIH+17yPhLYBPsOT3/
-         aacKp+LzV1Z7Rgnl6gTOecBS1ettOBP1RvmPJ0QzLUrS9Dyie1gnZE5k7WZMG3Gl8A96
-         GLSg7HT3Ptcmx3eueQD+9ydMYve/KZMR53N50RmWoXG5leGOF+CIfLxRjJ+yWWhyQqPW
-         oJ8sQvVgFvPgQ95rXZsT3AG27BxxJTLIwJlIxvVn1sB/NxrWtvWuHAsmeVYa5wDHMofb
-         lQBg==
-X-Gm-Message-State: AOAM531WeI/oL/MJxKtcWrku8ceRup7KTE/v4BhONQs7odBWMaRw+S6i
-        kU3GY/IRg2SrHTun0BeBhjfYGI/WZHRSx457d/A=
-X-Google-Smtp-Source: ABdhPJwn+N4ftxqLaaFHmqmB5fFV7zWz2efb3dQmSH5zr9NZ+eYzHHyhJ1tHgcxVwJMf2GkjXdsAsw==
-X-Received: by 2002:a17:90a:8909:b0:1e0:bba8:32c3 with SMTP id u9-20020a17090a890900b001e0bba832c3mr40564809pjn.39.1654176999074;
-        Thu, 02 Jun 2022 06:36:39 -0700 (PDT)
-Received: from localhost.localdomain ([202.120.234.246])
-        by smtp.googlemail.com with ESMTPSA id d17-20020a63d651000000b003f24d67d226sm3263566pgj.92.2022.06.02.06.36.34
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=NEkqd70uljO3jCHyeQu1WPotLMJG5tc7aZ7gxzL77Zo=;
+        b=JZjdQLD4g2bpZDvmHfnzOmsxdatz440xDC/W5UwY407ZwyWv4LonDVqD5tbNVCVIMY
+         A76OTTUHpEeVxtw0kpbywxa+UfjFvjce3oDIKs8WXD7fqUWzrbEtFokBVq61u5leZnqm
+         qWi5F+5f+y0Z17J1TYHaewDOGNdB9XwROOGF1wT5+Qy71IoE4/fCVyfhPQJD9Y8oy3Ie
+         gF32joGMtVWCiFjjqNxo/2tD7atNmsweJlbWLJNeMxrriE/FIeRH2agnWjjIskjOht9C
+         JalIqv4R1Z/k1SGnP1OYlUUhHNuZNA9ejfzF/KHrb/e6W3/E8UXUcmuaNGQ74Fl6M82F
+         8JVw==
+X-Gm-Message-State: AOAM533gLhNR5WJjs856OY/QLpnDeX6XagdqE3QwpEjP8/ZFq04958nz
+        XzYl02+kOyvqH31UvVf2J/g=
+X-Google-Smtp-Source: ABdhPJyjdcp2LRaSN9XybL2FpvUnhNMy6Z/nQ+t0YrusCZQw96nAPi8LElBaqiVkO3PM8NMjRYgAIQ==
+X-Received: by 2002:a17:903:110e:b0:15e:f450:bee8 with SMTP id n14-20020a170903110e00b0015ef450bee8mr5014374plh.136.1654178479644;
+        Thu, 02 Jun 2022 07:01:19 -0700 (PDT)
+Received: from localhost.localdomain ([182.213.254.91])
+        by smtp.gmail.com with ESMTPSA id k13-20020aa7998d000000b0050dc76281ecsm108463pfh.198.2022.06.02.07.01.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 06:36:38 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] net: ethernet: bgmac: Fix refcount leak in bcma_mdio_mii_register
-Date:   Thu,  2 Jun 2022 17:36:29 +0400
-Message-Id: <20220602133629.35528-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 02 Jun 2022 07:01:18 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org
+Cc:     ap420073@gmail.com
+Subject: [PATCH net 0/3] amt: fix several bugs in amt_rcv()
+Date:   Thu,  2 Jun 2022 14:01:05 +0000
+Message-Id: <20220602140108.18329-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
         FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
@@ -73,29 +63,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-of_get_child_by_name() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+This series fixes bugs in amt_rcv().
 
-Fixes: format:55954f3bfdac ("net: ethernet: bgmac: move BCMA MDIO Phy
-code into a separate file")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c | 1 +
- 1 file changed, 1 insertion(+)
+First patch fixes pskb_may_pull() issue.
+Some functions missed to call pskb_may_pull() and uses wrong
+parameter of pskb_may_pull().
 
-diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c b/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
-index 086739e4f40a..9b83d5361699 100644
---- a/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
-+++ b/drivers/net/ethernet/broadcom/bgmac-bcma-mdio.c
-@@ -234,6 +234,7 @@ struct mii_bus *bcma_mdio_mii_register(struct bgmac *bgmac)
- 	np = of_get_child_by_name(core->dev.of_node, "mdio");
- 
- 	err = of_mdiobus_register(mii_bus, np);
-+	of_node_put(np);
- 	if (err) {
- 		dev_err(&core->dev, "Registration of mii bus failed\n");
- 		goto err_free_bus;
+Second patch fixes possible null-ptr-deref in amt_rcv().
+If there is no amt private data in sock, skb will be freed.
+And it increases stats.
+But in order to increase stats, amt private data is needed.
+So, uninitialised pointer will be used at that point.
+
+Third patch fixes wrong definition of type_str[] in amt.c
+
+Taehee Yoo (3):
+  amt: fix wrong usage of pskb_may_pull()
+  amt: fix possible null-ptr-deref in amt_rcv()
+  amt: fix wrong type string definition
+
+ drivers/net/amt.c | 59 ++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 40 insertions(+), 19 deletions(-)
+
 -- 
-2.25.1
+2.17.1
 
