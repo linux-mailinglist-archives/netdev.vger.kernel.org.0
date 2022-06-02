@@ -2,97 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67AAC53B11F
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 03:23:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9069F53B12F
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 03:23:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233034AbiFBBUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 21:20:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
+        id S233029AbiFBBVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 21:21:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232963AbiFBBUP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 21:20:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A059013C0BD
-        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 18:20:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B307615F3
-        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 01:20:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 823E5C34119;
-        Thu,  2 Jun 2022 01:20:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654132813;
-        bh=e2OcopGpqyp58cFs9F88X418a3OUeKjmt5PA/NdJijw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=C3fB6Fe26/5p3oul/5MRHJLWHgdDm3eS0ha1dh8Yfl4aT0hazH6sWCRXHl17b/hzV
-         otwxcgnENt7o39YaZ8dOvXWGri8lCT21CE1A1vxJdVRDSrTPj2qV1AYhuwD7sEP6+Y
-         4EiHfuTS24dTMXcYYICLEer0H//a+Ddjv+fYPldMQDk3wzgjVXy5cYrSH9ovwSmJFj
-         7jHLgkTam1qrzXtSxX6EOER4G8pqpAmWJVMyVz6XbYw5IRvGHNC4xSTlj+sMd4rs/9
-         JnC39KXxbKp4XtI5DwQp8bVwbD0V4BpGGOnPqmmAICxfMetDltPHPwwtt1P+gDBaKc
-         P0OCfbAMxObbw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 66F38F0394F;
-        Thu,  2 Jun 2022 01:20:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232994AbiFBBVO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 21:21:14 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7317FDFF4E;
+        Wed,  1 Jun 2022 18:21:13 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id 2so2522000qtw.0;
+        Wed, 01 Jun 2022 18:21:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i4/k1Y4z6iW3+036x59e6AS3ioClOeFXBzlJvKGBQ3c=;
+        b=jrdxIqCPMAS5AKPWNk3ElBCyxonj7tx2wMI0kqIaOnW6VkK5mHS+8Zzc586voz68z1
+         5MN5ExcQxJtGH9m1OQMKHXHDSA63RAeUGMYRzRfrb0U7+wZzyVwvXNLs2us9638C5nL5
+         4ZVpqYnzqRNill5xzL+XfZ3inBRKeePdTeqoNkAoDT358Y6h6IlWu40/PzA3ELWPuEP+
+         CaMswKMQ+laJh3aE/QyFZWx9/by/v669d33JhDSegHW35FrnsHkaLaUDd3vCDqhDb7TQ
+         6t1BUTzs+1p27dBjUShBmQtfQA2HIgiLyc8ed/A3rH7JxOuU74+XI9PEmzl6mAiOkhgU
+         yZiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i4/k1Y4z6iW3+036x59e6AS3ioClOeFXBzlJvKGBQ3c=;
+        b=Fgg4V3sfq30RUMM91RnRxu2UVwuEoBBdam+y5saCo423MmZtxRcMh+waZrrh4rNu5Z
+         /fIYzteeTWREpMe29zqZnam0C4AyarFcLq9NrHWlnWP3RM396kbHvqxmZUkvtwa8D5x+
+         hkvxpJmDGJb6E7Q08FkNOIv03g5WQV1T5BXwqkEbMM32KXNuIEJquKULSwBtz8KCRfYZ
+         MIjBCN08M3/R04Cxpll+fhkQRl9smJFd0dOwfZ52vUvnCNOejC4QtdWEOBh8ePHwkJbj
+         38mY93HWAmHlzhymiab6PoXGXctdyAmMEz09fCBbtqkHihh9b0eZ4TXz9rvBQES00aFQ
+         7JOw==
+X-Gm-Message-State: AOAM533vxCepxpZfXV7TlNC2JG5SektinR8drtpxKuFbYy6rC/0cW1Y8
+        rql5MbrCds/egYjP/6Ah5HN8m4+si2M=
+X-Google-Smtp-Source: ABdhPJyjncl9xSre/rCq9ixVwTU9kJ5mvulcYk8HMViPVD4aSsyydkJ4xtbkho7VIburuPpUOGi5DA==
+X-Received: by 2002:ac8:590a:0:b0:304:b5f4:941e with SMTP id 10-20020ac8590a000000b00304b5f4941emr2134024qty.46.1654132872409;
+        Wed, 01 Jun 2022 18:21:12 -0700 (PDT)
+Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:a168:6dba:43b7:3240])
+        by smtp.gmail.com with ESMTPSA id x4-20020ac87304000000b002f39b99f670sm2077654qto.10.2022.06.01.18.21.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Jun 2022 18:21:11 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
+Subject: [Patch bpf-next v3 0/4] sockmap: some performance optimizations
+Date:   Wed,  1 Jun 2022 18:21:01 -0700
+Message-Id: <20220602012105.58853-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net 1/7] net/mlx5: Don't use already freed action pointer
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165413281341.8511.9931929673309954074.git-patchwork-notify@kernel.org>
-Date:   Thu, 02 Jun 2022 01:20:13 +0000
-References: <20220531205447.99236-2-saeed@kernel.org>
-In-Reply-To: <20220531205447.99236-2-saeed@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, leonro@nvidia.com,
-        dan.carpenter@oracle.com, saeedm@nvidia.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+From: Cong Wang <cong.wang@bytedance.com>
 
-This series was applied to netdev/net.git (master)
-by Saeed Mahameed <saeedm@nvidia.com>:
+This patchset contains two optimizations for sockmap. The first one
+eliminates a skb_clone() and the second one eliminates a memset(). With 
+this patchset, the throughput of UDP transmission via sockmap gets
+improved by 61%.
 
-On Tue, 31 May 2022 13:54:41 -0700 you wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> The call to mlx5dr_action_destroy() releases "action" memory. That
-> pointer is set to miss_action later and generates the following smatch
-> error:
-> 
->  drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c:53 set_miss_action()
->  warn: 'action' was already freed.
-> 
-> [...]
+v3: avoid touching tcp_recv_skb()
 
-Here is the summary with links:
-  - [net,1/7] net/mlx5: Don't use already freed action pointer
-    https://git.kernel.org/netdev/net/c/80b2bd737d0e
-  - [net,2/7] net/mlx5e: TC NIC mode, fix tc chains miss table
-    https://git.kernel.org/netdev/net/c/66cb64e292d2
-  - [net,3/7] net/mlx5: CT: Fix header-rewrite re-use for tupels
-    https://git.kernel.org/netdev/net/c/1f2856cde64b
-  - [net,4/7] net/mlx5e: Disable softirq in mlx5e_activate_rq to avoid race condition
-    https://git.kernel.org/netdev/net/c/2e642afb61b2
-  - [net,5/7] net/mlx5: correct ECE offset in query qp output
-    https://git.kernel.org/netdev/net/c/3fc2a9e89b35
-  - [net,6/7] net/mlx5e: Update netdev features after changing XDP state
-    https://git.kernel.org/netdev/net/c/f6279f113ad5
-  - [net,7/7] net/mlx5: Fix mlx5_get_next_dev() peer device matching
-    https://git.kernel.org/netdev/net/c/1c5de097bea3
+v2: clean up coding style for tcp_read_skb()
+    get rid of some redundant variables
+    add a comment for ->read_skb()
 
-You are awesome, thank you!
+---
+
+Cong Wang (4):
+  tcp: introduce tcp_read_skb()
+  net: introduce a new proto_ops ->read_skb()
+  skmsg: get rid of skb_clone()
+  skmsg: get rid of unncessary memset()
+
+ include/linux/net.h |  4 ++++
+ include/net/tcp.h   |  1 +
+ include/net/udp.h   |  3 +--
+ net/core/skmsg.c    | 48 +++++++++++++++++----------------------------
+ net/ipv4/af_inet.c  |  3 ++-
+ net/ipv4/tcp.c      | 44 +++++++++++++++++++++++++++++++++++++++++
+ net/ipv4/udp.c      | 11 +++++------
+ net/ipv6/af_inet6.c |  3 ++-
+ net/unix/af_unix.c  | 23 +++++++++-------------
+ 9 files changed, 86 insertions(+), 54 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.34.1
 
