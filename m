@@ -2,143 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89D2053B221
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 05:42:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C318253B21C
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 05:42:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233570AbiFBD0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Jun 2022 23:26:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49796 "EHLO
+        id S233587AbiFBD2B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Jun 2022 23:28:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233530AbiFBD0X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 23:26:23 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692AF2A7A83;
-        Wed,  1 Jun 2022 20:26:21 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VF8hX7Z_1654140378;
-Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VF8hX7Z_1654140378)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 02 Jun 2022 11:26:18 +0800
-Date:   Thu, 2 Jun 2022 11:26:18 +0800
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-To:     Alexandra Winter <wintera@linux.ibm.com>
-Cc:     Tony Lu <tonylu@linux.alibaba.com>,
-        Karsten Graul <kgraul@linux.ibm.com>, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [RFC net-next] net/smc:introduce 1RTT to SMC
-Message-ID: <20220602032618.GA96227@e02h04389.eu6sqa>
-Reply-To: "D. Wythe" <alibuda@linux.alibaba.com>
-References: <1653375127-130233-1-git-send-email-alibuda@linux.alibaba.com>
- <YoyOGlG2kVe4VA4m@TonyMac-Alibaba>
- <64439f1c-9817-befd-c11b-fa64d22620a9@linux.ibm.com>
- <7d57f299-115f-3d34-a45e-1c125a9a580a@linux.alibaba.com>
- <YpcwaNLUtPyzPBgc@TonyMac-Alibaba>
- <7fb28436-1fca-ba4c-7745-ca88d83c657b@linux.ibm.com>
+        with ESMTP id S233573AbiFBD17 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Jun 2022 23:27:59 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183CE5DBCD
+        for <netdev@vger.kernel.org>; Wed,  1 Jun 2022 20:27:58 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id 3-20020a17090a174300b001e426a02ac5so4984461pjm.2
+        for <netdev@vger.kernel.org>; Wed, 01 Jun 2022 20:27:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=sZ8GzRUQBIRnVHILPlLfnQyD91gR78EWniMrsU1AmRw=;
+        b=nHuGvwI9o58j8lsqts87M+3kByKxsrc6rcVXPBo7v2yqnvCQuP72TbGLvtDo8h2mFj
+         8Xnpn2KWkwl1P+DnsYYpQTXW5BVC3B519Qv82bF5qq0UAX2M/jULgWfJbRC5MuMfMndm
+         cOND4RdcH1iH4+nwv5uyffzq51YTrhYJmoffPJYJF07Sq9zts008GlGbpDVWuMv1eEZ7
+         wzuTBOfdo6T3yf4aOYR3Ux6hh7ntQKdi7w+mZbiHD2I885cviqJsPzeP/vO8A7JvXoPt
+         hs19TKJ7omx4l47CplvvvddULcSUuUq4ZyUWL5ZNBjTRG92UMMPx+RC97qZ4Pne1KtDP
+         mIVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=sZ8GzRUQBIRnVHILPlLfnQyD91gR78EWniMrsU1AmRw=;
+        b=APIwMnK3T0RCPfeMB6w17IPlV+zDfnJWg0/amTCQKpAs3uF9L8aXgKtoQ9hi6fgQ14
+         n9W1/6SUtJmZR7lFTnsov+MnNqSnQrPmZAj3lKlI2RE/BxtTnpTgkEUhZ96lIBWkebZe
+         r6inPhUxP6o3rtwYSpVygV5nTFVi3f5DkMeFzlR9DuO58kPNwPfXqRLkhmmeLCWUNhmU
+         ABbdfBN1U2ipiKNAFVkWkpHt5EUVPCkyT6bBP2MYXflZTTEpSm1R9QF9IAErmNU4qZFO
+         66IhaEGJW/LG93u95TwkBO37J6RWw+PlRf1Ss7SrT+8oH3qG/ivMmHUiVSrJAnsWqfTH
+         89hg==
+X-Gm-Message-State: AOAM532JvZLyKqZgJ2U4NknOpP4EF3psEbeUIYJ1bqMJwUIasrqbyvqi
+        IQ1vXKQ6jaXcpkr5huGgWF2UNQ==
+X-Google-Smtp-Source: ABdhPJzbui9XgIru9OSL8mR+ctNjeib5PVobaIezJORsGKxZXTGoi8iyoBq7eJRaZvW/YntSXpqDVA==
+X-Received: by 2002:a17:902:a605:b0:163:8e47:8929 with SMTP id u5-20020a170902a60500b001638e478929mr2701820plq.69.1654140477634;
+        Wed, 01 Jun 2022 20:27:57 -0700 (PDT)
+Received: from [10.71.57.194] ([139.177.225.241])
+        by smtp.gmail.com with ESMTPSA id p2-20020a170902c70200b001617541c94fsm2269689plp.60.2022.06.01.20.27.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 01 Jun 2022 20:27:57 -0700 (PDT)
+Message-ID: <6aedba89-51f4-c889-d3cc-5f513defb920@bytedance.com>
+Date:   Thu, 2 Jun 2022 11:27:49 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=gb2312
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: Re: [PATCH v4 1/2] bpf: avoid grabbing spin_locks of all cpus
+ when no free elems
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Chengming Zhou <zhouchengming@bytedance.com>
+References: <20220601084149.13097-1-zhoufeng.zf@bytedance.com>
+ <20220601084149.13097-2-zhoufeng.zf@bytedance.com>
+ <CAADnVQJcbDXtQsYNn=j0NzKx3SFSPE1YTwbmtkxkpzmFt-zh9Q@mail.gmail.com>
+ <21ec90e3-2e89-09c1-fd22-de76e6794d68@bytedance.com>
+ <CAADnVQKdU-3uBE9tKifChUunmr=c=32M4GwP8qG1-S=Atf7fvw@mail.gmail.com>
+From:   Feng Zhou <zhoufeng.zf@bytedance.com>
+In-Reply-To: <CAADnVQKdU-3uBE9tKifChUunmr=c=32M4GwP8qG1-S=Atf7fvw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <7fb28436-1fca-ba4c-7745-ca88d83c657b@linux.ibm.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 01:35:52PM +0200, Alexandra Winter wrote:
-> 
-> 
-> On 01.06.22 11:24, Tony Lu wrote:
-> > On Wed, Jun 01, 2022 at 02:33:09PM +0800, D. Wythe wrote:
-> >>
-> >> ÔÚ 2022/5/25 ÏÂÎç9:42, Alexandra Winter Ð´µÀ:
-> >>
-> >>> We need to carefully evaluate them and make sure everything is compatible
-> >>> with the existing implementations of SMC-D and SMC-R v1 and v2. In the
-> >>> typical s390 environment ROCE LAG is propably not good enough, as the card
-> >>> is still a single point of failure. So your ideas need to be compatible
-> >>> with link redundancy. We also need to consider that the extension of the
-> >>> protocol does not block other desirable extensions.
-> >>>
-> >>> Your prototype is very helpful for the understanding. Before submitting any
-> >>> code patches to net-next, we should agree on the details of the protocol
-> >>> extension. Maybe you could formulate your proposal in plain text, so we can
-> >>> discuss it here?
-> >>>
-> >>> We also need to inform you that several public holidays are upcoming in the
-> >>> next weeks and several of our team will be out for summer vacation, so please
-> >>> allow for longer response times.
-> >>>
-> >>> Kind regards
-> >>> Alexandra Winter
-> >>>
-> >>
-> >> Hi alls,
-> >>
-> >> In order to achieve signle-link compatibility, we must
-> >> complete at least once negotiation. We wish to provide
-> >> higher scalability while meeting this feature. There are
-> >> few ways to reach this.
-> >>
-> >> 1. Use the available reserved bits. According to
-> >> the SMC v2 protocol, there are at least 28 reserved octets
-> >> in PROPOSAL MESSAGE and at least 10 reserved octets in
-> >> ACCEPT MESSAGE are available. We can define an area in which
-> >> as a feature area, works like bitmap. Considering the subsequent
-> >> scalability, we MAY use at least 2 reserved ctets, which can support
-> >> negotiation of at least 16 features.
-> >>
-> >> 2. Unify all the areas named extension in current
-> >> SMC v2 protocol spec without reinterpreting any existing field
-> >> and field offset changes, including 'PROPOSAL V1 IP Subnet Extension',
-> >> 'PROPOSAL V2 Extension', 'PROPOSAL SMC-DV2 EXTENSION' .etc. And provides
-> >> the ability to grow dynamically as needs expand. This scheme will use
-> >> at least 10 reserved octets in the PROPOSAL MESSAGE and at least 4 reserved
-> >> octets in ACCEPT MESSAGE and CONFIRM MESSAGE. Fortunately, we only need to
-> >> use reserved fields, and the current reserved fields are sufficient. And
-> >> then we can easily add a new extension named SIGNLE LINK. Limited by space,
-> >> the details will be elaborated after the scheme is finalized.
-> > 
-> > After reading this and latest version of protocol, I agree with that the
-> > idea to provide a more flexible extension facilities. And, it's a good
-> > chance for us to set here talking about the protocol extension.
-> > 
-> > There are some potential scenarios that need flexible extensions in my
-> > mind:
-> > - other protocols support, such as iWARP / IB or new version protocol,
-> > - dozens of feature flags in the future, like this proposal. With the
-> >   growth of new feature, it could overflow bitmap.
-> > 
-> > Actually, this extension facilities are very similar to TCP options.
-> > 
-> > So what about your opinions about the solution of this? If there are
-> > some existed approaches for the future extensions, maybe this can get
-> > involved in it. Or we can start a discuss about this as this mail
-> > mentioned.
-> > 
-> > Also, I am wondering if there is plan to update the RFC7609, add the
-> > latest v2 support?
-> > 
-> > Thanks,
-> > Tony Lu
-> 
-> We have asked the SMC protocol owners about their opinion about using the
-> reserved fields for new options in particular, and about where and how to
-> discuss this in general. (including where to document the versions).
-> Please allow some time for us to come back to you.
-> 
-> Kind regards
-> Alexandra
+åœ¨ 2022/6/1 ä¸‹åˆ7:35, Alexei Starovoitov å†™é“:
+> On Wed, Jun 1, 2022 at 1:11 PM Feng Zhou <zhoufeng.zf@bytedance.com> wrote:
+>> åœ¨ 2022/6/1 ä¸‹åˆ5:50, Alexei Starovoitov å†™é“:
+>>> On Wed, Jun 1, 2022 at 10:42 AM Feng zhou <zhoufeng.zf@bytedance.com> wrote:
+>>>>    static inline void ___pcpu_freelist_push(struct pcpu_freelist_head *head,
+>>>> @@ -130,14 +134,19 @@ static struct pcpu_freelist_node *___pcpu_freelist_pop(struct pcpu_freelist *s)
+>>>>           orig_cpu = cpu = raw_smp_processor_id();
+>>>>           while (1) {
+>>>>                   head = per_cpu_ptr(s->freelist, cpu);
+>>>> +               if (READ_ONCE(head->is_empty))
+>>>> +                       goto next_cpu;
+>>>>                   raw_spin_lock(&head->lock);
+>>>>                   node = head->first;
+>>>>                   if (node) {
+>>> extra bool is unnecessary.
+>>> just READ_ONCE(head->first)
+>> As for why to add is_empty instead of directly judging head->first, my
+>> understanding is this, head->first is frequently modified during updating
+>> map, which will lead to invalid other cpus's cache, and is_empty is after
+>> freelist having no free elems will be changed, the performance will be
+>> better.
+> maybe. pls benchmark it.
+> imo wasting a bool for the corner case is not a good trade off.
 
-Thank you for the information. Before we officially push the document update,
-if you had any suggestions for the two schemes we are mentioned above,
-or which one you prefer, please keep us informed.
+Yes, I will do and post the results as soon as possible, Thanks.
 
-Best wishes.
-D. Wyther
 
