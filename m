@@ -2,113 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D03753BB3F
-	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 16:54:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1D2253BB5A
+	for <lists+netdev@lfdr.de>; Thu,  2 Jun 2022 17:08:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235649AbiFBOyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 10:54:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60174 "EHLO
+        id S236365AbiFBPIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 11:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232395AbiFBOyp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 10:54:45 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E7C232A7E
-        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 07:54:44 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id u18so4737044plb.3
-        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 07:54:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=NCpzoj+0l36fkrjHX3S+lurr6Rzg3xie2enwLhIR/28=;
-        b=FNH5IUEeRWRZqzWkDAG4LSlg1cYlKBqbK3TZz7Bz00k/aXpnwFnACleEFtxpek4O9t
-         TVn6zQAEA06Twp7RmJiBcinYRx/lllg/KYM7hXmYNdbWY/NBJwQxTclEU+t68GrZPTKH
-         di75bd3dGRvE/HTrtqE2lmVFF9TjlISwAAmbPD1Ox1a23uAdtY2DZTJXRVPM69WxhjRI
-         u1Rr0j5G/AJUs+d/68IKJ454PzMxxDsIuHzsVRdFAaQmFidbIhHc3xJdM90ZEb+eIGyx
-         03QNvANmoPx1ZYdgeXwgx1Eg6uU6OnmwlDdBrLKhQXhdqhKSE4ej0O49yiSAkxDRTwwf
-         sJ9A==
+        with ESMTP id S232427AbiFBPH6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 11:07:58 -0400
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905F569496;
+        Thu,  2 Jun 2022 08:07:57 -0700 (PDT)
+Received: by mail-oi1-f172.google.com with SMTP id r206so6852714oib.8;
+        Thu, 02 Jun 2022 08:07:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=NCpzoj+0l36fkrjHX3S+lurr6Rzg3xie2enwLhIR/28=;
-        b=fTOpSFudzuEO5NHi4L5SE8WugJIojNONA4h0bKddjr0h8rJ6CPpDwgi+imBmb0zMzY
-         6rgtKczNPxD/l3nuRpX3OYfHXE9yWt+TXmB8Q6o1/ZFOHT3e9ThVrByCaJzPQLXHRzV4
-         5+Ln7sx5xuNEzEewA/8wz6HZigP3CCQ+QL9yVsaDFObjhbxUdgZZkv9gtw+SG5LwZ028
-         9xxzb860m79EeALjCMkkEZKx3SsJ3dp7Zk6t1LHgVOEX5jjgt1/MyHlu99kHMppfSu5I
-         zBjjuwH/At/iFR6n4XYe6z4JPbpEJ5VFpelJu/k5XPOZ7FSwbqORZ4fRFZxeO8/HN5hs
-         uf0g==
-X-Gm-Message-State: AOAM530u01YvW6Uv6MGbfzc4XD+h9t2mkM+ZsT/YhQQTmwPCWfpY9g7R
-        QOj6xqoCG9bILnINQhiXZ7RrFfNO+cc5cRYxhpg=
-X-Google-Smtp-Source: ABdhPJxYkUTW73htZ8Sc/sIxaDeo/2t6eUgEClTRRUcGrsWwno13Vp+kN1M8u9Nlr4XkC2FeXd6iOnAHPxazNJccz58=
-X-Received: by 2002:a17:90b:1c8e:b0:1bf:364c:dd7a with SMTP id
- oo14-20020a17090b1c8e00b001bf364cdd7amr5654100pjb.103.1654181684153; Thu, 02
- Jun 2022 07:54:44 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IeojhjDK1pB+KLRGjH83PQVoVBcwA3TY89wSB9R9mIM=;
+        b=ZlHreDlzNH7rrZGEICkTJvr+mbn0IqEyNcklDnF4glly2qFwUquiZVNkzN+TVsLxM4
+         2A9OLFV/iNEhsVqll9bePqJ89vodJZJmBq36xmzGB3BA+LrH1Rn8kj5X8VHa0YoYZKGS
+         MSu6X21ZT3uUTzBaMacWHo/RjAbTgOltKs8OVguAjLGxzltnL2kz8Ws7t9bgyrtsgT8y
+         JLpW9hjQ5eQRUJiO95zPcCN7paiJkjY9V+RNv/qT4gQX5MEpqdBOYB3zU7A+eHz3KubQ
+         536rL8o15LbQOVp6v1cFN5hI02WCMR8VGhK+Gte5hq6kAe8dBoEYWxbrH1Nwtb7gT98K
+         EJWQ==
+X-Gm-Message-State: AOAM530e33jJni8L/ZJF2DWZL21Bal9j3YYGClonsqi1M4PtftNodJ59
+        F9214pJLT/1pS6uughPW6g==
+X-Google-Smtp-Source: ABdhPJzlbe96ZgKJPKxe6kkBQL0Da/rm3HrAFZdrqRcPEVPDFd4PftNWU9ErtEa/+kVbBiUb+9xZdg==
+X-Received: by 2002:a05:6808:f11:b0:32b:d11c:9b9a with SMTP id m17-20020a0568080f1100b0032bd11c9b9amr16530279oiw.138.1654182476855;
+        Thu, 02 Jun 2022 08:07:56 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id m11-20020a4aedcb000000b00415a9971cfcsm2387584ooh.38.2022.06.02.08.07.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 08:07:56 -0700 (PDT)
+Received: (nullmailer pid 2328431 invoked by uid 1000);
+        Thu, 02 Jun 2022 15:07:55 -0000
+Date:   Thu, 2 Jun 2022 10:07:55 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Piyush Malgujar <pmalgujar@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        cchavva@marvell.com, deppel@marvell.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH v2 2/3] dt-bindings: net: cavium-mdio.txt: add
+ clock-frequency attribute
+Message-ID: <20220602150755.GA2323599-robh@kernel.org>
+References: <20220530125329.30717-1-pmalgujar@marvell.com>
+ <20220530125329.30717-3-pmalgujar@marvell.com>
 MIME-Version: 1.0
-Received: by 2002:a05:6a11:af16:0:0:0:0 with HTTP; Thu, 2 Jun 2022 07:54:41
- -0700 (PDT)
-Reply-To: alifseibou@gmail.com
-From:   MR MALICK <mrwilliamogbha1@gmail.com>
-Date:   Thu, 2 Jun 2022 07:54:42 -0700
-Message-ID: <CABGi1U9pU+ZX7exn2zJJUQUeX244DfLia-oL+2Uo4oJbgtJhiw@mail.gmail.com>
-Subject: =?UTF-8?Q?PREMIO_GANADOR_DE_LOTER=C3=8DA=2E?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=7.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,LOTS_OF_MONEY,MONEY_FREEMAIL_REPTO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,
-        T_HK_NAME_FM_MR_MRS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM,UNDISC_MONEY
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:62a listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5002]
-        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [mrwilliamogbha1[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [mrwilliamogbha1[at]gmail.com]
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  2.7 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-        *  2.0 MONEY_FREEMAIL_REPTO Lots of money from someone using free
-        *      email?
-        *  0.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: *******
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220530125329.30717-3-pmalgujar@marvell.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PREMIO GANADOR DE LOTER=C3=8DA.
+On Mon, May 30, 2022 at 05:53:27AM -0700, Piyush Malgujar wrote:
+> Add support to configure MDIO clock frequency via DTS
+> 
+> Signed-off-by: Damian Eppel <deppel@marvell.com>
+> Signed-off-by: Piyush Malgujar <pmalgujar@marvell.com>
+> ---
+>  Documentation/devicetree/bindings/net/cavium-mdio.txt | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/cavium-mdio.txt b/Documentation/devicetree/bindings/net/cavium-mdio.txt
+> index 020df08b8a30f4df80766bb90e100ae6210a777b..638c341966a80823b9eb2f33b947f38110907cc1 100644
+> --- a/Documentation/devicetree/bindings/net/cavium-mdio.txt
+> +++ b/Documentation/devicetree/bindings/net/cavium-mdio.txt
+> @@ -41,6 +41,9 @@ Properties:
+>  
+>  - reg: The PCI device and function numbers of the nexus device.
+>  
+> +- clock-frequency: MDIO bus clock frequency in Hz. It defaults to 3.125 MHz and
+> +		   and not to standard 2.5 MHz for Marvell Octeon family.
 
-Su correo electr=C3=B3nico gan=C3=B3 2.600.000 millones de d=C3=B3lares, co=
-mun=C3=ADquese
-con el abogado Marcel Cremer a trav=C3=A9s de su correo electr=C3=B3nico aq=
-u=C3=AD
-(edahgator@gmail.com) para reclamar su fondo ganador con sus datos de
-la siguiente manera. tu nombre completo, tu pa=C3=ADs. la direcci=C3=B3n de=
- su
-casa y su n=C3=BAmero de tel=C3=A9fono.
+Already covered by mdio.yaml, so perhaps convert this to DT schema 
+format instead.
 
-Saludos..
-Sr. Malick Samba
+Rob
