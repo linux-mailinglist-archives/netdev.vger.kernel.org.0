@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5ADF53C75A
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 11:21:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AB8353C75E
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 11:22:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242922AbiFCJVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 05:21:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58164 "EHLO
+        id S235054AbiFCJVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 05:21:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235054AbiFCJVW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 05:21:22 -0400
+        with ESMTP id S234965AbiFCJVe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 05:21:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5986339BB9;
-        Fri,  3 Jun 2022 02:21:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548DB39BBE;
+        Fri,  3 Jun 2022 02:21:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9B82B82291;
-        Fri,  3 Jun 2022 09:21:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97C46C385A9;
-        Fri,  3 Jun 2022 09:21:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1805FB82291;
+        Fri,  3 Jun 2022 09:21:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B05AC385A9;
+        Fri,  3 Jun 2022 09:21:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654248078;
-        bh=vtjXB9C9eo1qN3EtG3jApOdWt8v1yMTNZ9rOkpUkhvk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=peK7QiDOcEmbrLbYxFesqDYrbBLI4nZGAcSP4GhufEAU8pQwZcSVmX2cy6oN9mgFZ
-         lVtpxw1t8n9evyi4wKTtB97HUEdtRo9oCP/7ANLYYjCKrsvVyjICKGwGr3FniuY/Tp
-         gYk10njLEcyagE+Vde/6MehZCAVVdLxH/cf8CIoSpGKU0jJAzQz1dFAgOpHtRLuF4k
-         x8oALdj5WQzVSAJjiMgT9TNwVGjj3C9CxM0lcn3VMPeILmlKGH4pSG6vHlheVnHxef
-         k85PwCPPeFLNrSBpYTh0ImpJno1INwKbW+OvSAM8HNle4D22ZTrbRsvoJp9M0OBWy/
-         +cAwL59VHzgsA==
+        s=k20201202; t=1654248090;
+        bh=pnYGvBVe/Ughz9Z1CO7LvAmeznuNAGmRwoDwFt65xDc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pn8yLH2QlXzWyy5lX982zDhexNknE1+C+FcyuCWMnIlPMiyTrJH0b8TeZRRzjmmTm
+         uoq2I6k4Ib2ghbsAeyG+pnoRmiFh4cnANCPcTBjl+qvmkE6TAmKc6YMiBiCchCFOuM
+         3uWRdeLochMJdmkNGQq8mjgWtuEvkSPVuLNTA5XGL0msLwxulcwQXQuqnJ3craNaw0
+         rA317PCfPPseafvArNQccXFbPNehVaBkee6lGgz3Q2wzjvmcBodZDLtCaNn4qSH4v3
+         ySvd0fXKIQMtjkWF5yY2fJKGrRJpj+E1Ay1/2qNbtWImROfMHLgWsvUxrFPtHnyMRQ
+         FPgcYZwIQMMZg==
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -45,10 +45,12 @@ Cc:     linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Ian Rogers <irogers@google.com>
-Subject: [PATCHv3 bpf-next 0/3] perf tools: Fix prologue generation
-Date:   Fri,  3 Jun 2022 11:21:08 +0200
-Message-Id: <20220603092110.1294855-1-jolsa@kernel.org>
+Subject: [PATCHv3 bpf-next 1/2] perf tools: Register fallback libbpf section handler
+Date:   Fri,  3 Jun 2022 11:21:09 +0200
+Message-Id: <20220603092110.1294855-2-jolsa@kernel.org>
 X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220603092110.1294855-1-jolsa@kernel.org>
+References: <20220603092110.1294855-1-jolsa@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -61,51 +63,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hi,
-sending change we discussed some time ago [1] to get rid of
-some deprecated functions we use in perf prologue code.
+Perf is using section name to declare special kprobe arguments,
+which no longer works with current libbpf, that either requires
+certain form of the section name or allows to register custom
+handler.
 
-Despite the gloomy discussion I think the final code does
-not look that bad ;-)
+Adding perf support to register 'fallback' section handler to take
+care of perf kprobe programs. The fallback means that it handles
+any section definition besides the ones that libbpf handles.
 
-This patchset removes following libbpf functions from perf:
-  bpf_program__set_prep
-  bpf_program__nth_fd
-  struct bpf_prog_prep_result
+The handler serves two purposes:
+  - allows perf programs to have special arguments in section name
+  - allows perf to use pre-load callback where we can attach init
+    code (zeroing all argument registers) to each perf program
 
-v3 changes:
-  - removed R0/R1 zero init in libbpf_prog_prepare_load_fn,
-    because it's not needed [Andrii]
-  - rebased/post on top of bpf-next/master which now has
-    all the needed perf/core changes
+The second is essential part of new prologue generation code,
+that's coming in following patch.
 
-v2 changes:
-  - use fallback section prog handler, so we don't need to
-    use section prefix [Andrii]
-  - realloc prog->insns array in bpf_program__set_insns [Andrii]
-  - squash patch 1 from previous version with
-    bpf_program__set_insns change [Daniel]
-  - patch 3 already merged [Arnaldo]
-  - added more comments
-
-  meanwhile.. perf/core and bpf-next diverged, so:
-    - libbpf bpf_program__set_insns change is based on bpf-next/master
-    - perf changes do not apply on bpf-next/master so they are based on
-      perf/core ... however they can be merged only after we release
-      libbpf 0.8.0 with bpf_program__set_insns change, so we don't break
-      the dynamic linking
-      I'm sending perf changes now just for review, I'll resend them
-      once libbpf 0.8.0 is released
-
-thanks,
-jirka
-
-
-[1] https://lore.kernel.org/bpf/CAEf4BzaiBO3_617kkXZdYJ8hS8YF--ZLgapNbgeeEJ-pY0H88g@mail.gmail.com/
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
-Jiri Olsa (2):
-      perf tools: Register fallback libbpf section handler
-      perf tools: Rework prologue generation code
+ tools/perf/util/bpf-loader.c | 45 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
 
- tools/perf/util/bpf-loader.c | 173 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------
- 1 file changed, 155 insertions(+), 18 deletions(-)
+diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
+index f8ad581ea247..e7992a0eb477 100644
+--- a/tools/perf/util/bpf-loader.c
++++ b/tools/perf/util/bpf-loader.c
+@@ -86,6 +86,7 @@ bpf_perf_object__next(struct bpf_perf_object *prev)
+ 	     (perf_obj) = (tmp), (tmp) = bpf_perf_object__next(tmp))
+ 
+ static bool libbpf_initialized;
++static int libbpf_sec_handler;
+ 
+ static int bpf_perf_object__add(struct bpf_object *obj)
+ {
+@@ -99,12 +100,56 @@ static int bpf_perf_object__add(struct bpf_object *obj)
+ 	return perf_obj ? 0 : -ENOMEM;
+ }
+ 
++static struct bpf_insn prologue_init_insn[] = {
++	BPF_MOV64_IMM(BPF_REG_2, 0),
++	BPF_MOV64_IMM(BPF_REG_3, 0),
++	BPF_MOV64_IMM(BPF_REG_4, 0),
++	BPF_MOV64_IMM(BPF_REG_5, 0),
++};
++
++static int libbpf_prog_prepare_load_fn(struct bpf_program *prog,
++				       struct bpf_prog_load_opts *opts __maybe_unused,
++				       long cookie __maybe_unused)
++{
++	size_t init_size_cnt = ARRAY_SIZE(prologue_init_insn);
++	size_t orig_insn_cnt, insn_cnt, init_size, orig_size;
++	const struct bpf_insn *orig_insn;
++	struct bpf_insn *insn;
++
++	/* prepend initialization code to program instructions */
++	orig_insn = bpf_program__insns(prog);
++	orig_insn_cnt = bpf_program__insn_cnt(prog);
++	init_size = init_size_cnt * sizeof(*insn);
++	orig_size = orig_insn_cnt * sizeof(*insn);
++
++	insn_cnt = orig_insn_cnt + init_size_cnt;
++	insn = malloc(insn_cnt * sizeof(*insn));
++	if (!insn)
++		return -ENOMEM;
++
++	memcpy(insn, prologue_init_insn, init_size);
++	memcpy((char *) insn + init_size, orig_insn, orig_size);
++	bpf_program__set_insns(prog, insn, insn_cnt);
++	return 0;
++}
++
+ static int libbpf_init(void)
+ {
++	LIBBPF_OPTS(libbpf_prog_handler_opts, handler_opts,
++		.prog_prepare_load_fn = libbpf_prog_prepare_load_fn,
++	);
++
+ 	if (libbpf_initialized)
+ 		return 0;
+ 
+ 	libbpf_set_print(libbpf_perf_print);
++	libbpf_sec_handler = libbpf_register_prog_handler(NULL, BPF_PROG_TYPE_KPROBE,
++							  0, &handler_opts);
++	if (libbpf_sec_handler < 0) {
++		pr_debug("bpf: failed to register libbpf section handler: %d\n",
++			 libbpf_sec_handler);
++		return -BPF_LOADER_ERRNO__INTERNAL;
++	}
+ 	libbpf_initialized = true;
+ 	return 0;
+ }
+-- 
+2.35.3
+
