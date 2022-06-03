@@ -2,105 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 091B353CE08
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 19:25:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E917153CE15
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 19:30:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344451AbiFCRZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 13:25:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43728 "EHLO
+        id S1344483AbiFCRa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 13:30:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344444AbiFCRZa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 13:25:30 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96885527FE
-        for <netdev@vger.kernel.org>; Fri,  3 Jun 2022 10:25:28 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id i11so14862913ybq.9
-        for <netdev@vger.kernel.org>; Fri, 03 Jun 2022 10:25:28 -0700 (PDT)
+        with ESMTP id S241561AbiFCRa0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 13:30:26 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8163982D
+        for <netdev@vger.kernel.org>; Fri,  3 Jun 2022 10:30:22 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id i1so7283894plg.7
+        for <netdev@vger.kernel.org>; Fri, 03 Jun 2022 10:30:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9d7m1DB2JYorAFcfrJRCyYngv/Ipyhp23NdS37Fbtxg=;
-        b=URVQb1JkqaW1ZxUmYQ5sQlIodWx8/3heQ74G3ifWb6OpIziXlv8ER/kur16b8WoQp4
-         Lc75UyQ3wEz6iiXKQ8UhcNPavNi5XJQbcreWYMbvM5B1SvdDeRX2QhDybf7QiVx3ovoa
-         P9UtVL9f2yrR7ABjofsD/R/Wawv52H4VhdVBY2dYjjOPRr2oet+wr58sqTAgUHoYjoUb
-         QpvYsttsm2TqMFvOve3llhXgR+a3j2q2nJMOxhNJOScXi11csrk7F00sVwfpQAJ//JqB
-         un16nZdFbn+rv+2qfdYf+R1Xsx8fbDZo0yOXaVS9L05xFbaYKY8IaFxLUs5lR0uGl7zz
-         ZZhQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=meqM7jFCS4vUPCeo3whpvnKpoPst2WZR+IwjDPp1Il4=;
+        b=dFwM/g6NP3Z+x1YMX089n48qvZ9hYFZbs1QPrWpox5gyjt8vwZy8hmKARMlyjd8GIg
+         DWZu0VhsZZs6DjTtNLeFH4HRzyXYGm60hP8rHDmbIo5Qj8nTCsnuSX+Q7xdRAHGkhXIT
+         gt65l9DiUbCYg2ltwkBxdensnXOt9SgW0WGJ88lyvl0+m0Cns423KdM5UR/jl1Ev6xSB
+         q+YyAzkuRZWDOOOhtZb3jNeCNf26ijBCv3MQur2AFV8e76EHLI2EmOJaierNEVEjrEy4
+         Mk4MmAX23xqS+K7KAI8dmrn5X4aTgR2YNPLNFQaWfhl6pB10Yz+lSTIttZNrDZ4/JazJ
+         IOEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9d7m1DB2JYorAFcfrJRCyYngv/Ipyhp23NdS37Fbtxg=;
-        b=D9cpWrEeGBVZkSYXy85Vi498VixDapgK2+Zg4HzVn24YV2w03+D+wAHvL5tEwvrAKD
-         kxNzgHa3wFj4mElh3P6rzyevMJu1mSt1ZmykaVfte4CqU3gMQzAY92e3BZO5T7JbgafG
-         /M5JtREz3qEISL9iKMyOL0t+JkOQTzzgzw8sfCUC53iovExYNCh01n2aGQfM3OAE2RD/
-         Yh+9j//OtxO5e1P0b4ijsOyJ0SU3sE2lLbE7Q5UCHekGvJHBtV9OuiPPGCTv/4E3cxxE
-         KccnGRFUs57gE4Ntge2wtk7QLDscfeMfjFiWcQa2yTren++Zfw1v4vUO2neQM2BsbVHR
-         HRLw==
-X-Gm-Message-State: AOAM531kJEh/qTl5R3JrZnR0nzEusHkQBUQ/wOg9XtLMo/z9nk6Mirti
-        Aty1fZkS6GlHmm/2T1bJ+NB9Y86PNs6Pmf1VddU4Eg==
-X-Google-Smtp-Source: ABdhPJxf9t98itOGujrgic0ySJOm8xg1lh3ELD9RztTvYghZn9PWg0G/2n3G5/cLA3+ZqRARoLBWHk2qXYPDrLAVE04=
-X-Received: by 2002:a25:aa32:0:b0:65c:af6a:3502 with SMTP id
- s47-20020a25aa32000000b0065caf6a3502mr12290545ybi.598.1654277127473; Fri, 03
- Jun 2022 10:25:27 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=meqM7jFCS4vUPCeo3whpvnKpoPst2WZR+IwjDPp1Il4=;
+        b=rbsjxQ3W9ejUWPA7RTcOfoCjvofQvkMvA+mZKLcKo+pO+55BTNQZdWg3iKSQOOfPoW
+         YEsahKjzzHzA3JnCiqNHtWKAU/962jU+mBXeeAOHgmULgTr5EvDWJJ31ewMSxFnNic0U
+         hROk5lxtZIpAFPuOdHvZIyZhiSaeP/sICExR7NJjWjc3zy47SP0cjzD8URixZDDZwewx
+         +/sdGEL3pFZJk8tTb9n0SGIxP8KgRwX4pfRhQlQjP2bbcHZi8k7mXYfao4QD3piNxRZ5
+         ZGdzJKkUymuo7QF4GEPVZIrr28J30EWWIg3I0JroL5MAQ4sWzq3C5sPW/NLPwGj5kUIl
+         ocAg==
+X-Gm-Message-State: AOAM530XVkHJT5D/QjtdLexP6FMcuJrjYwX0Z1wh6gfaj7Z/USOsw3g1
+        W8WptR7SojZNJmz6hlw24pM=
+X-Google-Smtp-Source: ABdhPJwtkAx6na/Mn/BwIaqF0TJ1HX84m9Nw/F2G6ZL/93UAUJPc2u0yjrg2DZnksSRgd+UaPdDxtA==
+X-Received: by 2002:a17:902:ceca:b0:166:3418:5267 with SMTP id d10-20020a170902ceca00b0016634185267mr11123220plg.136.1654277422320;
+        Fri, 03 Jun 2022 10:30:22 -0700 (PDT)
+Received: from jeffreyji1.c.googlers.com.com (180.145.227.35.bc.googleusercontent.com. [35.227.145.180])
+        by smtp.gmail.com with ESMTPSA id ij1-20020a170902ab4100b00163efcd50bdsm5621706plb.94.2022.06.03.10.30.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jun 2022 10:30:21 -0700 (PDT)
+From:   Jeffrey Ji <jeffreyjilinux@gmail.com>
+To:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Brian Vazquez <brianvv@google.com>, netdev@vger.kernel.org,
+        edumazet@google.com, Jeffrey Ji <jeffreyji@google.com>
+Subject: [PATCH iproute2-next] show rx_otherehost_dropped stat in ip link show
+Date:   Fri,  3 Jun 2022 17:30:16 +0000
+Message-Id: <20220603173016.1383423-1-jeffreyjilinux@gmail.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 MIME-Version: 1.0
-References: <2997c5b0-3611-5e00-466c-b2966f09f067@nbd.name> <1654245968-8067-1-git-send-email-chen45464546@163.com>
-In-Reply-To: <1654245968-8067-1-git-send-email-chen45464546@163.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 3 Jun 2022 10:25:16 -0700
-Message-ID: <CANn89iKiyh36ULH4PCXF4c8sBdh9WLksMoMcmQwipZYWCzBkMA@mail.gmail.com>
-Subject: Re: [PATCH v2] net: ethernet: mtk_eth_soc: fix misuse of mem alloc
- interface netdev[napi]_alloc_frag
-To:     Chen Lin <chen45464546@163.com>
-Cc:     Felix Fietkau <nbd@nbd.name>, Jakub Kicinski <kuba@kernel.org>,
-        john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-mediatek@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 3, 2022 at 1:46 AM Chen Lin <chen45464546@163.com> wrote:
->
-> When rx_flag == MTK_RX_FLAGS_HWLRO,
-> rx_data_len = MTK_MAX_LRO_RX_LENGTH(4096 * 3) > PAGE_SIZE.
-> netdev_alloc_frag is for alloction of page fragment only.
-> Reference to other drivers and Documentation/vm/page_frags.rst
->
-> Branch to use alloc_pages when ring->frag_size > PAGE_SIZE.
->
-> Signed-off-by: Chen Lin <chen45464546@163.com>
+From: Jeffrey Ji <jeffreyji@google.com>
 
-...
+This stat was added in commit 794c24e9921f ("net-core:
+rx_otherhost_dropped to core_stats")
 
->                         goto release_desc;
-> @@ -1914,7 +1923,16 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
->                 return -ENOMEM;
->
->         for (i = 0; i < rx_dma_size; i++) {
-> -               ring->data[i] = netdev_alloc_frag(ring->frag_size);
+Tested: sent packet with wrong MAC address from 1
+network namespace to another, verified that counter showed "1" in
+`ip -s -s link sh` and `ip -s -s -j link sh`
 
-Note aside, calling netdev_alloc_frag() in a loop like that is adding
-GFP_ATOMIC pressure.
+Signed-off-by: Jeffrey Ji <jeffreyji@google.com>
+---
+ ip/ipaddress.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-mtk_rx_alloc() being in process context, using GFP_KERNEL allocations
-would be less aggressive and
-have more chances to succeed.
+diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+index 142731933ba3..544c7450b7bf 100644
+--- a/ip/ipaddress.c
++++ b/ip/ipaddress.c
+@@ -692,6 +692,7 @@ void print_stats64(FILE *fp, struct rtnl_link_stats64 *s,
+ 		strlen("heartbt"),
+ 		strlen("overrun"),
+ 		strlen("compressed"),
++		strlen("otherhost_dropped"),
+ 	};
+ 
+ 	if (is_json_context()) {
+@@ -730,6 +731,10 @@ void print_stats64(FILE *fp, struct rtnl_link_stats64 *s,
+ 			if (s->rx_nohandler)
+ 				print_u64(PRINT_JSON,
+ 					   "nohandler", NULL, s->rx_nohandler);
++			if (s->rx_otherhost_dropped)
++				print_u64(PRINT_JSON,
++					   "otherhost_dropped", NULL,
++					   s->rx_otherhost_dropped);
+ 		}
+ 		close_json_object();
+ 
+@@ -811,11 +816,14 @@ void print_stats64(FILE *fp, struct rtnl_link_stats64 *s,
+ 		/* RX error stats */
+ 		if (show_stats > 1) {
+ 			fprintf(fp, "%s", _SL_);
+-			fprintf(fp, "    RX errors:%*s %*s %*s %*s %*s %*s %*s%s",
++			fprintf(fp, "    RX errors:%*s %*s %*s %*s %*s %*s%*s%*s%s",
+ 				cols[0] - 10, "", cols[1], "length",
+ 				cols[2], "crc", cols[3], "frame",
+ 				cols[4], "fifo", cols[5], "overrun",
+-				cols[6], s->rx_nohandler ? "nohandler" : "",
++				s->rx_nohandler ? cols[6] + 1 : 0,
++				s->rx_nohandler ? " nohandler" : "",
++				s->rx_otherhost_dropped ? cols[7] + 1 : 0,
++				s->rx_otherhost_dropped ? " otherhost_dropped" : "",
+ 				_SL_);
+ 			fprintf(fp, "%*s", cols[0] + 5, "");
+ 			print_num(fp, cols[1], s->rx_length_errors);
+@@ -825,6 +833,9 @@ void print_stats64(FILE *fp, struct rtnl_link_stats64 *s,
+ 			print_num(fp, cols[5], s->rx_over_errors);
+ 			if (s->rx_nohandler)
+ 				print_num(fp, cols[6], s->rx_nohandler);
++			if (s->rx_otherhost_dropped)
++				print_num(fp, cols[7],
++				s->rx_otherhost_dropped);
+ 		}
+ 		fprintf(fp, "%s", _SL_);
+ 
+-- 
+2.36.1.255.ge46751e96f-goog
 
-We probably should offer a generic helper. This could be used from
-driver/net/tun.c and others.
