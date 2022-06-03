@@ -2,85 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F10EF53D3CE
-	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 01:15:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3CB753D3D3
+	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 01:20:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349617AbiFCXPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 19:15:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58046 "EHLO
+        id S245755AbiFCXUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 19:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349610AbiFCXPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 19:15:05 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A02B33883
-        for <netdev@vger.kernel.org>; Fri,  3 Jun 2022 16:15:03 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id w2so16266155ybi.7
-        for <netdev@vger.kernel.org>; Fri, 03 Jun 2022 16:15:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=V83cVOVWbfZOQsiOP6Rw6DiCk8oeXmGbfnal2vl7lbI=;
-        b=R/Ug6w6iwXnuTYOur6ggToT8cGH/aR8kC4da2RF87UTDSK18uY3G2hUaOgpo46qi6P
-         sH3/1vTzcc+V0StsoZ8o784gxkF90ZRSMQk7AaFImUiLnijorsCBpYexzUEr07uklhD/
-         O8Ioliovwssj89Q65+auD3Wm4xs4P+FMLx9dXblolyxVIqtWb+HO9uMHSBBFxYWUoUht
-         hzcJgxZI4zpc8Z++QlWg/9k2kz8+Q/mZg77//q6PkQBGrbDNbip6y36sGM5T47kVCuvB
-         k1bmh5G5qXzDBsKCllUH85XQSD1DR5KQgVqqtUqbfYK94sKAt0SrQvJ997H1yGqg/e0l
-         2PUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=V83cVOVWbfZOQsiOP6Rw6DiCk8oeXmGbfnal2vl7lbI=;
-        b=aKof1MqrW6ydORTAjs7aaSllr91K6hLKuGi4YJMeI548FBVr6qBGTyyHbuvOS7vymn
-         w+SUDfoO0lVff39vz1EfxtzKnaMD2IHVsq8UgH88Z7M6uJGX4lEEXf58qCmhyBn0C8af
-         nDUCM9YuQFyWG4lOn5aXhpHpDhjN3Tn1aZUjNhkVbjapYPCt4CMXDtXkEoESgq02hey0
-         AugxKkXIlqENcZ53vWWyxqR1yLmnb2tF6pT8LYH8LwSs9fB3LqUi9Wn88u7twREUAMES
-         v7ItRhixZsL1vdHIgl30Spts4GcCunOD1O/q4N+HgOzhTLoJ7214UUUjfCmvj2FPSRYB
-         Q/kg==
-X-Gm-Message-State: AOAM532HuEi+KQjqdg7qj31Jqo9Svdt3O7ceQZuqwNw8LaaFPCXzlQEA
-        vttiOK4DowVp202P7aaZN7LOuoySiILtM4Zj0PfqsGyhPXjiNgR9
-X-Google-Smtp-Source: ABdhPJya9KyFMLTzIg+TPURPxmZ2D0++lJnNXfY2GwA+bxZuqNS5DKePhgVHIH0jOMhYikrwmSiOAMw3WzbQmYW0cJM=
-X-Received: by 2002:a05:6902:1548:b0:65e:a5d6:186b with SMTP id
- r8-20020a056902154800b0065ea5d6186bmr13151458ybu.55.1654298102368; Fri, 03
- Jun 2022 16:15:02 -0700 (PDT)
+        with ESMTP id S236404AbiFCXUC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 19:20:02 -0400
+Received: from mail-4316.protonmail.ch (mail-4316.protonmail.ch [185.70.43.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92184D13A
+        for <netdev@vger.kernel.org>; Fri,  3 Jun 2022 16:20:00 -0700 (PDT)
+Date:   Fri, 03 Jun 2022 23:19:53 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+        s=protonmail3; t=1654298397; x=1654557597;
+        bh=YRxUSVZ+qoYXN7oduiTL6n6ULE7wKJlSgwj7h0HLgHM=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:Feedback-ID:From:To:
+         Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID;
+        b=o1s5FLQJV0PZnekxGDyYMCYtXLRlpONNj/ST25pY9hk45FRzzyQz3ZObMjAg+ESLs
+         jor4duyb28Ttyvrm+q7tAUfEAobKghC/1e2dzy8PbOA+oZysCh3Rm7t/x28QdJ3ggU
+         Qo3ked079mAMXat6ogdOcUsrD3jIUSPLwi1167WUZaWfYCIDGynrl9jErbu8mZzLqm
+         Ol/ikykY8phBcVdFxZBsBFEp2uJidFlIcbk3jCGQGFnmvY212mTPVq+wlVpT4Rb0cl
+         N5ZYB28pEaIc+bCoxbxgYb9lYCqibtugKmn5blR43aW1CiJeN97haDlKWCPl8mxeks
+         E3+XtmzRB3FCw==
+To:     netdev@vger.kernel.org
+From:   Jacques de Laval <jacques.delaval@protonmail.com>
+Cc:     Jacques de Laval <jacques.delaval@protonmail.com>
+Reply-To: Jacques de Laval <jacques.delaval@protonmail.com>
+Subject: [PATCH iproute2-next] lib/rt_names: Fix cache getting trashed on integer input to rtnl_*_a2n
+Message-ID: <20220603231933.127804-1-jacques.delaval@protonmail.com>
+Feedback-ID: 21766145:user:proton
 MIME-Version: 1.0
-References: <MWHPR2201MB10728AE0EB8C691B5CDA6D7DD0A19@MWHPR2201MB1072.namprd22.prod.outlook.com>
-In-Reply-To: <MWHPR2201MB10728AE0EB8C691B5CDA6D7DD0A19@MWHPR2201MB1072.namprd22.prod.outlook.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 3 Jun 2022 16:14:51 -0700
-Message-ID: <CANn89iJXcDL6mMEkQdp8=KxYE5iZwPbN+458M4NF4m=hA1XzUg@mail.gmail.com>
-Subject: Re: [BUG] Potential net namespace information leakage in /proc/net/sockstat
-To:     "Liu, Congyu" <liu3101@purdue.edu>
-Cc:     "ebiederm@xmission.com" <ebiederm@xmission.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 3, 2022 at 3:53 PM Liu, Congyu <liu3101@purdue.edu> wrote:
->
-> Hi,
->
-> In our test conducted on namespace, we found net information leakage in /=
-proc/net/sockstat. For instance, the TCP "alloc" field exposes a TCP socket=
- related counter that is shared across all net namespaces on the same host.=
- Is this an intentional design for specific purposes?
->
+The cache value 'res' should only be updated when the cache key 'cache'
+is updated. Otherwise the rtnl_*_a2n functions risk returning wrong
+values on subsequent calls.
 
-These counters are global to the host, not per netns.
-Note that /proc/slabinfo can somewhat 'reveal' similar information.
+Signed-off-by: Jacques de Laval <jacques.delaval@protonmail.com>
+---
+ lib/rt_names.c                         | 48 +++++++++++++-------------
+ testsuite/tests/ip/route/set_rtproto.t | 26 ++++++++++++++
+ 2 files changed, 50 insertions(+), 24 deletions(-)
+ create mode 100755 testsuite/tests/ip/route/set_rtproto.t
 
-I guess nobody cared enough yet.
+diff --git a/lib/rt_names.c b/lib/rt_names.c
+index b976471d..a67d8e89 100644
+--- a/lib/rt_names.c
++++ b/lib/rt_names.c
+@@ -202,7 +202,7 @@ int rtnl_rtprot_a2n(__u32 *id, const char *arg)
+ =09static char *cache;
+ =09static unsigned long res;
+ =09char *end;
+-=09int i;
++=09unsigned long i;
 
-Something more concerning is the fact that one netns can steal all
-tcp_mem memory.
+ =09if (cache && strcmp(cache, arg) =3D=3D 0) {
+ =09=09*id =3D res;
+@@ -222,10 +222,10 @@ int rtnl_rtprot_a2n(__u32 *id, const char *arg)
+ =09=09}
+ =09}
+
+-=09res =3D strtoul(arg, &end, 0);
+-=09if (!end || end =3D=3D arg || *end || res > 255)
++=09i =3D strtoul(arg, &end, 0);
++=09if (!end || end =3D=3D arg || *end || i > 255)
+ =09=09return -1;
+-=09*id =3D res;
++=09*id =3D i;
+ =09return 0;
+ }
+
+@@ -271,7 +271,7 @@ int rtnl_rtscope_a2n(__u32 *id, const char *arg)
+ =09static const char *cache;
+ =09static unsigned long res;
+ =09char *end;
+-=09int i;
++=09unsigned long i;
+
+ =09if (cache && strcmp(cache, arg) =3D=3D 0) {
+ =09=09*id =3D res;
+@@ -291,10 +291,10 @@ int rtnl_rtscope_a2n(__u32 *id, const char *arg)
+ =09=09}
+ =09}
+
+-=09res =3D strtoul(arg, &end, 0);
+-=09if (!end || end =3D=3D arg || *end || res > 255)
++=09i =3D strtoul(arg, &end, 0);
++=09if (!end || end =3D=3D arg || *end || i > 255)
+ =09=09return -1;
+-=09*id =3D res;
++=09*id =3D i;
+ =09return 0;
+ }
+
+@@ -334,7 +334,7 @@ int rtnl_rtrealm_a2n(__u32 *id, const char *arg)
+ =09static char *cache;
+ =09static unsigned long res;
+ =09char *end;
+-=09int i;
++=09unsigned long i;
+
+ =09if (cache && strcmp(cache, arg) =3D=3D 0) {
+ =09=09*id =3D res;
+@@ -354,10 +354,10 @@ int rtnl_rtrealm_a2n(__u32 *id, const char *arg)
+ =09=09}
+ =09}
+
+-=09res =3D strtoul(arg, &end, 0);
+-=09if (!end || end =3D=3D arg || *end || res > 255)
++=09i =3D strtoul(arg, &end, 0);
++=09if (!end || end =3D=3D arg || *end || i > 255)
+ =09=09return -1;
+-=09*id =3D res;
++=09*id =3D i;
+ =09return 0;
+ }
+
+@@ -511,7 +511,7 @@ int rtnl_dsfield_a2n(__u32 *id, const char *arg)
+ =09static char *cache;
+ =09static unsigned long res;
+ =09char *end;
+-=09int i;
++=09unsigned long i;
+
+ =09if (cache && strcmp(cache, arg) =3D=3D 0) {
+ =09=09*id =3D res;
+@@ -531,10 +531,10 @@ int rtnl_dsfield_a2n(__u32 *id, const char *arg)
+ =09=09}
+ =09}
+
+-=09res =3D strtoul(arg, &end, 16);
+-=09if (!end || end =3D=3D arg || *end || res > 255)
++=09i =3D strtoul(arg, &end, 16);
++=09if (!end || end =3D=3D arg || *end || i > 255)
+ =09=09return -1;
+-=09*id =3D res;
++=09*id =3D i;
+ =09return 0;
+ }
+
+@@ -668,7 +668,7 @@ int nl_proto_a2n(__u32 *id, const char *arg)
+ =09static char *cache;
+ =09static unsigned long res;
+ =09char *end;
+-=09int i;
++=09unsigned long i;
+
+ =09if (cache && strcmp(cache, arg) =3D=3D 0) {
+ =09=09*id =3D res;
+@@ -688,10 +688,10 @@ int nl_proto_a2n(__u32 *id, const char *arg)
+ =09=09}
+ =09}
+
+-=09res =3D strtoul(arg, &end, 0);
+-=09if (!end || end =3D=3D arg || *end || res > 255)
++=09i =3D strtoul(arg, &end, 0);
++=09if (!end || end =3D=3D arg || *end || i > 255)
+ =09=09return -1;
+-=09*id =3D res;
++=09*id =3D i;
+ =09return 0;
+ }
+
+@@ -760,7 +760,7 @@ int protodown_reason_a2n(__u32 *id, const char *arg)
+ =09static char *cache;
+ =09static unsigned long res;
+ =09char *end;
+-=09int i;
++=09unsigned long i;
+
+ =09if (cache && strcmp(cache, arg) =3D=3D 0) {
+ =09=09*id =3D res;
+@@ -780,9 +780,9 @@ int protodown_reason_a2n(__u32 *id, const char *arg)
+ =09=09}
+ =09}
+
+-=09res =3D strtoul(arg, &end, 0);
+-=09if (!end || end =3D=3D arg || *end || res >=3D PROTODOWN_REASON_NUM_BIT=
+S)
++=09i =3D strtoul(arg, &end, 0);
++=09if (!end || end =3D=3D arg || *end || i >=3D PROTODOWN_REASON_NUM_BITS)
+ =09=09return -1;
+-=09*id =3D res;
++=09*id =3D i;
+ =09return 0;
+ }
+diff --git a/testsuite/tests/ip/route/set_rtproto.t b/testsuite/tests/ip/ro=
+ute/set_rtproto.t
+new file mode 100755
+index 00000000..f6dfe053
+--- /dev/null
++++ b/testsuite/tests/ip/route/set_rtproto.t
+@@ -0,0 +1,26 @@
++#!/bin/sh
++
++. lib/generic.sh
++
++ts_log "[Testing setting protocol]"
++
++DEV=3Ddummy0
++
++ts_ip "$0" "Add new interface $DEV" link add $DEV type dummy
++ts_ip "$0" "Set $DEV into UP state" link set up dev $DEV
++
++cat <<EOF | ts_ip "$0" "Add routes with protocol set" -b -
++route add 10.10.0.0 proto ospf dev "$DEV"
++route add 10.20.0.0 proto 255 dev "$DEV"
++route add 10.30.0.0 proto ospf dev "$DEV"
++EOF
++
++ts_ip "$0" "Show proto ospf routes" route show proto ospf
++test_lines_count 2
++test_on "10.10.0.0 dev dummy0 scope link"
++test_on "10.30.0.0 dev dummy0 scope link"
++ts_ip "$0" "Show proto 255 routes" route show 10.20.0.0 proto 255
++test_lines_count 1
++test_on "10.20.0.0 dev dummy0 scope link"
++
++ts_ip "$0" "Del $DEV dummy interface"  link del dev "$DEV"
+--
+2.36.1
+
+
