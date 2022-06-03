@@ -2,74 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93C9853D23E
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 21:12:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92E5F53D243
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 21:12:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348872AbiFCTMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 15:12:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42392 "EHLO
+        id S1348869AbiFCTMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 15:12:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348866AbiFCTL7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 15:11:59 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8EEF286FC
-        for <netdev@vger.kernel.org>; Fri,  3 Jun 2022 12:11:55 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2ef5380669cso91646027b3.9
-        for <netdev@vger.kernel.org>; Fri, 03 Jun 2022 12:11:55 -0700 (PDT)
+        with ESMTP id S1348811AbiFCTMc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 15:12:32 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7F9439B82;
+        Fri,  3 Jun 2022 12:12:30 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id y29so9394220ljd.7;
+        Fri, 03 Jun 2022 12:12:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=5fDvBQ9pqnOyeFIGsW6/UXw+F1U5aWM1AabDKQN3DYA=;
-        b=sbHxZFWtLPJzqSmFanseJeEPL/ALu0sQSxEJQocSQIsAYQUBcFJXhscWQcNSmfW230
-         9rGYlKRGdc8+NCOtXd2QYQ2XQvkPWGrUdp03vXdekmYY9e2qdJp1uNuzLW9Jd7qinut+
-         Ucgv06zsk3X2VyQCWX4Jb6t/PfpbW+yc+9vdGhOzMheX7HMUapqW3A1s2XfR5HIv0Agq
-         elgZuBluPxPTAsSlHtoZErhKO59lkdTlBMQiKjoovrnNUk+VrG2hHbUT/6BCtCQF7T0s
-         l4pxZlAX/b52GuTokRfKfbVxdKCQqSp0ZEXlF2RRTj0w4dQuw3jptgt+I1RJdICqXtZI
-         HuAQ==
+        bh=s9H/2G67jjwwNRYeTE9y1UIake4ZPkc4A7dULW7T4YQ=;
+        b=KUmC6aDPHo7NEcOzM22l6XWST1a6GmF0lgIr4syhOJFztcCTOS4HWi8fFmavsI8oiw
+         x0AVco1dvYi0dHFkF97Gx6vdDFUVesOmkWluGriV2sIJTfYYsUinjdpPUEsfEu/q0ycJ
+         09B7m/o3Ve/ec5mb3YVLe7GId53U/eBRhSD2pmRvqYzC1fE9QS2zPZVTQB9s9Xe7uTht
+         X6Sb3/VxMGGjAHi1J1JlZoY0lC1WHH3wO8p0qjMVcHbKUCX92yiYSAX234MUgDPwgP6K
+         d8xJt3d2IPb4S4glMkLLLiPKiljF7+/3LKwm0bbuFUABxpSE3z3WlJgMXZi8eU42V5Cj
+         3WsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=5fDvBQ9pqnOyeFIGsW6/UXw+F1U5aWM1AabDKQN3DYA=;
-        b=SB7MKYhGOip2/ZJQUNZdUg+6V/MuXd+bkCH5bopir6BS1/EVBixccoOTcffISqFULM
-         VCacz1mH0kUdMKbAxbv1y/M2HcZmbEcbQa2Va33AS4BdSVdpx+C9e8nWS6W9llIonrNq
-         zuZLjq+0E5w1hTQV7vVQTTfZychflradtAGiTokElhGzKCncHwpDfguKRJv9I0X+eE+D
-         gizZLWV+b3pXRUBqkHF6upCGvGrAriD5LmqDi7jk5o+nL+lB0XK313jaZsA/ZqsyCHmS
-         N4ocmUqr2f59NUT7oW7vDvUT67G59etgO33oexyqAHy7/DQG1zSB4qZb/5Jrjg+HzhDx
-         6Edw==
-X-Gm-Message-State: AOAM530QBs9rkASG5OcRIqu79QmleqIkdl+L3z2vT1B0ZbXNruLuTS5t
-        KQKuVsYwYOHnSMwPaTw9AC8jmVT2KRmEjW9zBVcI+w==
-X-Google-Smtp-Source: ABdhPJy51STo1wv/NPeMQzs5HJJXun6eDnFOS3demyDMpHxmfb2j2pVRLASUIT3YfUHydKoFN9BCWC8eCqX08kRNFjI=
-X-Received: by 2002:a81:b401:0:b0:300:2e86:e7e5 with SMTP id
- h1-20020a81b401000000b003002e86e7e5mr12645707ywi.467.1654283514691; Fri, 03
- Jun 2022 12:11:54 -0700 (PDT)
+        bh=s9H/2G67jjwwNRYeTE9y1UIake4ZPkc4A7dULW7T4YQ=;
+        b=EN9eOkzBoZDfrzQuIpEGb1BK9i0DqZKEktrP9zCbpy3hBJ2Wi9M/TUuYJE7qx+H5u+
+         ECM4unjo0RsLDXBu71MNYFSZaifJIFr6vzO+RI4Mq3Ci+8hm99zwvDgWTe9PnKePr6b0
+         PVDAg8bKbXSrcHwQ1Au+8kcIyblVlTc+8TAkylXueJgfLNp0QO67WtnXa/ixKPkLmdvF
+         j/yqh3rCBGdqhaCqHld9+ovWTjkc1hE0Km14n7mMWa38Z0p6QBEHO23ZU5G0bjPCbweJ
+         CDP1onGhz5ZQHuqHu63kKFh7Cqg4nWTCA/ceAzi7fjtP92bB+u+IKM0S3RAALeQgOmum
+         u4bw==
+X-Gm-Message-State: AOAM531GLZsKhpUHI6Uc7xoiCYTR+SivjDi/8Sxj1Xxmy08Jxj7H0DMF
+        zvBQlc1y9dOOEy+JXqfoF1ZA9RjwGLzVaDhHZmI=
+X-Google-Smtp-Source: ABdhPJwGXQxFgTK2T/bv5P8x3Kz0T1dUVfNZfOmtvJ1Qw7A98pFPzvyoUQEECwQKpYhS6Sh3aCQ+W+zB/33Qx88s9oM=
+X-Received: by 2002:a2e:a7c5:0:b0:253:ee97:f9b7 with SMTP id
+ x5-20020a2ea7c5000000b00253ee97f9b7mr33481530ljp.472.1654283549239; Fri, 03
+ Jun 2022 12:12:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <2997c5b0-3611-5e00-466c-b2966f09f067@nbd.name>
- <1654245968-8067-1-git-send-email-chen45464546@163.com> <CANn89iKiyh36ULH4PCXF4c8sBdh9WLksMoMcmQwipZYWCzBkMA@mail.gmail.com>
- <20220603115956.6ad82a53@kernel.org>
-In-Reply-To: <20220603115956.6ad82a53@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 3 Jun 2022 12:11:43 -0700
-Message-ID: <CANn89i+dW+paaybeDkkC0XxYM+Mv_AOnbi6GSLtTgAv9L=TX7Q@mail.gmail.com>
-Subject: Re: [PATCH v2] net: ethernet: mtk_eth_soc: fix misuse of mem alloc
- interface netdev[napi]_alloc_frag
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Chen Lin <chen45464546@163.com>, Felix Fietkau <nbd@nbd.name>,
-        john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-mediatek@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>
+References: <20220527205611.655282-1-jolsa@kernel.org> <20220527205611.655282-3-jolsa@kernel.org>
+ <CAEf4BzbfbPA-U+GObZy2cEZOn9qAHqRmKtKq-rPOVM=_+DGVww@mail.gmail.com> <YpnfldPKcEqesioK@krava>
+In-Reply-To: <YpnfldPKcEqesioK@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 3 Jun 2022 12:12:17 -0700
+Message-ID: <CAEf4BzZury5Tnm1xmAadeOqNEtbTifNZ7065C4ax-GkXaz6dog@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/3] ftrace: Keep address offset in ftrace_lookup_symbols
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,58 +75,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 3, 2022 at 11:59 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On Fri, Jun 3, 2022 at 3:16 AM Jiri Olsa <olsajiri@gmail.com> wrote:
 >
-> On Fri, 3 Jun 2022 10:25:16 -0700 Eric Dumazet wrote:
-> > >                         goto release_desc;
-> > > @@ -1914,7 +1923,16 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
-> > >                 return -ENOMEM;
+> On Thu, Jun 02, 2022 at 03:52:03PM -0700, Andrii Nakryiko wrote:
+> > On Fri, May 27, 2022 at 1:56 PM Jiri Olsa <jolsa@kernel.org> wrote:
 > > >
-> > >         for (i = 0; i < rx_dma_size; i++) {
-> > > -               ring->data[i] = netdev_alloc_frag(ring->frag_size);
+> > > We want to store the resolved address on the same index as
+> > > the symbol string, because that's the user (bpf kprobe link)
+> > > code assumption.
+> > >
+> > > Also making sure we don't store duplicates that might be
+> > > present in kallsyms.
+> > >
+> > > Fixes: bed0d9a50dac ("ftrace: Add ftrace_lookup_symbols function")
+> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > ---
+> > >  kernel/trace/ftrace.c | 13 +++++++++++--
+> > >  1 file changed, 11 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+> > > index 674add0aafb3..00d0ba6397ed 100644
+> > > --- a/kernel/trace/ftrace.c
+> > > +++ b/kernel/trace/ftrace.c
+> > > @@ -7984,15 +7984,23 @@ static int kallsyms_callback(void *data, const char *name,
+> > >                              struct module *mod, unsigned long addr)
+> > >  {
+> > >         struct kallsyms_data *args = data;
+> > > +       const char **sym;
+> > > +       int idx;
+> > >
+> > > -       if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
+> > > +       sym = bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp);
+> > > +       if (!sym)
+> > > +               return 0;
+> > > +
+> > > +       idx = sym - args->syms;
+> > > +       if (args->addrs[idx])
 > >
-> > Note aside, calling netdev_alloc_frag() in a loop like that is adding
-> > GFP_ATOMIC pressure.
+> > if we have duplicated symbols we won't increment args->found here,
+> > right? So we won't stop early. But we also don't want to increment
+> > args->found here because we use it to check that we don't have
+> > duplicates (in addition to making sure we resolved all the unique
+> > symbols), right?
 > >
-> > mtk_rx_alloc() being in process context, using GFP_KERNEL allocations
-> > would be less aggressive and
-> > have more chances to succeed.
-> >
-> > We probably should offer a generic helper. This could be used from
-> > driver/net/tun.c and others.
+> > So I wonder if in this situation should we return some error code to
+> > signify that we encountered symbol duplicate?
 >
-> Do cases where netdev_alloc_frag() is not run from a process context
-> from to your mind? My feeling is that the prevailing pattern is what
-> this driver does, which is netdev_alloc_frag() at startup / open and
-> napi_alloc_frag() from the datapath. So maybe we can even spare the
-> detail in the API and have napi_alloc_frag() assume GFP_KERNEL by
-> default?
+> hum, this callback is called for each kallsyms symbol and there
+> are duplicates in /proc/kallsyms.. so even if we have just single
+> copy of such symbol in args->syms, bsearch will find this single
+> symbol for all the duplicates in /proc/kallsyms and we will endup
+> in here.. and it's still fine, we should continue
+>
 
-Yes, we only have to review callers and change the documentation and
-implementation.
+ah, ok, duplicate kallsyms entries, right, never mind then
 
-The confusion/overhead/generalization came with :
-
-commit 7ba7aeabbaba484347cc98fbe9045769ca0d118d
-Author: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Date:   Fri Jun 7 21:20:34 2019 +0200
-
-    net: Don't disable interrupts in napi_alloc_frag()
-
-    netdev_alloc_frag() can be used from any context and is used by NAPI
-    and non-NAPI drivers. Non-NAPI drivers use it in interrupt context
-    and NAPI drivers use it during initial allocation (->ndo_open() or
-    ->ndo_change_mtu()). Some NAPI drivers share the same function for the
-    initial allocation and the allocation in their NAPI callback.
-
-    The interrupts are disabled in order to ensure locked access from every
-    context to `netdev_alloc_cache'.
-
-    Let netdev_alloc_frag() check if interrupts are disabled. If they are,
-    use `netdev_alloc_cache' otherwise disable BH and invoke
-    __napi_alloc_frag() for the allocation. The IRQ check is cheaper
-    compared to disabling & enabling interrupts and memory allocation with
-    disabled interrupts does not work on -RT.
-
-    Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
+> jirka
+>
+> >
+> >
+> > >                 return 0;
+> > >
+> > >         addr = ftrace_location(addr);
+> > >         if (!addr)
+> > >                 return 0;
+> > >
+> > > -       args->addrs[args->found++] = addr;
+> > > +       args->addrs[idx] = addr;
+> > > +       args->found++;
+> > >         return args->found == args->cnt ? 1 : 0;
+> > >  }
+> > >
+> > > @@ -8017,6 +8025,7 @@ int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *a
+> > >         struct kallsyms_data args;
+> > >         int err;
+> > >
+> > > +       memset(addrs, 0x0, sizeof(*addrs) * cnt);
+> > >         args.addrs = addrs;
+> > >         args.syms = sorted_syms;
+> > >         args.cnt = cnt;
+> > > --
+> > > 2.35.3
+> > >
