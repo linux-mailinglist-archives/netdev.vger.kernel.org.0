@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E005653D33D
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 23:31:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7025753D346
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 23:35:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346482AbiFCVbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 17:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47126 "EHLO
+        id S231846AbiFCVfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 17:35:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232022AbiFCVa7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 17:30:59 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508EA38BE5;
-        Fri,  3 Jun 2022 14:30:58 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id l30so14527646lfj.3;
-        Fri, 03 Jun 2022 14:30:58 -0700 (PDT)
+        with ESMTP id S1349191AbiFCVfH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 17:35:07 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF7683DDD7;
+        Fri,  3 Jun 2022 14:35:05 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id q1so9730023ljb.5;
+        Fri, 03 Jun 2022 14:35:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=5/2T3P0ZiupSWsrUP0xa/9587MGNTDXqll1NTZ+aZdo=;
-        b=Lf+Kp8EJZJJIBxjmB7FVWwy/l0qRUVlcNFdcLxc92vGELD0XSoerbHE7PDXmeLOWL4
-         P/JEcGHKgstyqePRe/yEhBYBDqomW65uewyUDTnCz63S0+0pxziGGvvX0bXDpQVXS8ia
-         6DX2XLBP+IegZIJj3C0Z6nfyMjiRoDC5MA6X33sbTQt4ATtAIRE9jLL7xQmGiugE99lP
-         3VpZXYhFtlYU3dVNTuVbKQpYPGSFedF52GE0DXAxJdzC6qcmDC48YYucxdOi+kaiW/RG
-         ls80bfWAnnpQVkLiNGbjGu+7lK3QL98KVPp6hyYa+jsW35M2jzS46oVOOM6AzhAZ1qpt
-         lNtg==
+        bh=8v76F/y6/MbjqM3o59kqOrykFh+Wdeo7EKyCKM8FAro=;
+        b=G/IMUz4AXagHtKwKz/0cM5KncgmL00Lr/4+KexXnLrFlEmUQvzio1nNOvPjmVMOUtA
+         a+QyPPW1uTrQkmdUd9+WUC2RO8XpyaJNlDeUavAglnk2k94AGmLcJGl+2aWa/uaGMfK9
+         BWEm3sxG3DKGGSlwv3HXPeO64atHAJj98pkJyG0QutfACMKQ7xSNZY/UjInhccbivHfa
+         Kg2XeoIgsbPZOQh2JYb41YIWD53+zY3Az5qX5KpbhzcWV/MjnaI9Xgrh7ASaMa8Hmy3s
+         XXH4+41XppL71u0Sh0oyKJDp/vsFoCv/TpBesp3KPKvUlX1zlrR8GRHds/Ir9GpaF5YP
+         M9KA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=5/2T3P0ZiupSWsrUP0xa/9587MGNTDXqll1NTZ+aZdo=;
-        b=iCFFqGNzWJlO5XAra6kCWWnnhTAC+WLEiFHb5AtAQybhY5bqJad9duSMv1LVuUgj4o
-         rAxhYkjo4SHAUlgb1uS2kPUh5RnscuCUGX+czO79utIu+QLOeo/o6LYEh55g+zsGKiKG
-         EXD5GwfpkW6GHKLov0c0NuCUhEek2jhP9EEoSj/8V+O3hwv1dKN7VoRwldx/KLCzJxFE
-         WE87M1+caw0voeizGKsXiZBF3VqWkrjN+6KUz3/YD1WRMcaohJnr6b0oiqw8aAcjF+kk
-         iOfMCn8Y/QkmOYW/ohXkKunsZtnPMauWQqSDRzzg62KxwfojH+5RoBq5DwUdDgJXNTxZ
-         pGtQ==
-X-Gm-Message-State: AOAM533AKK/zq01bffKpFcciKYDIh3lWivdCKTRDg1c3qmYowLphy32A
-        gAcHhuoNDPcqstuqNpQTG2mcQwnoZHRpKOGkHXqS5n8Kzmw=
-X-Google-Smtp-Source: ABdhPJzZdJz/yoFUqVp9xzrNB8TMWtBZplBN1hFdIHTVRJzJOFdP/h+2jeRBBkb9PCJX1nkgCE1XbZaczOy058CKzvI=
-X-Received: by 2002:a05:6512:1398:b0:448:bda0:99f2 with SMTP id
- p24-20020a056512139800b00448bda099f2mr54765221lfa.681.1654291856678; Fri, 03
- Jun 2022 14:30:56 -0700 (PDT)
+        bh=8v76F/y6/MbjqM3o59kqOrykFh+Wdeo7EKyCKM8FAro=;
+        b=8FEcjyuLhZ/nC/3yKo1A/sZAbTvN3oWe/8vszcHCPPNZucSI7uP9+xgcgWS3Q886Fe
+         +O3pD5Fy+P6DlNpDl4SFpjt3eEWEOysmfY9k0J250+uO3PTFyU2QQ+1BhZnN9+VIfABw
+         9jP0vb7WNOGL+bgvND+RdqrldN4y8KECq7PPJ11UTQIuuXmm0NhfipM2j5zc0vcM5RF+
+         SIsUzi0SCJgZF0FeM0bYdX45Jn04l15uyey7ozpJub81WddobfpfcXtomJo/XfRqNlYn
+         qu/YWR3ykG/V7pblfCiHY6K0vibYVhHjvha8TwZD2vqehaHRGMj+HTljZ98/ZbqQ7jXA
+         40Ug==
+X-Gm-Message-State: AOAM532j2pIx2YMXz9hxmGZ6F7lRO/+x7RwHKjxwMqSUX6Xa7DEBp/Sg
+        Mw+pNkG94nuYT/5atAVHxpEEbqHhk4bQrG33L+0kr80H/Ec=
+X-Google-Smtp-Source: ABdhPJyUjHrmvehS2Lv5fKms+WVL07tJMSBLtK7DuhfMKXxdu7GqoyqbOyELcFuGAsFMDZFp7dS86KBXevDnDvT+RPw=
+X-Received: by 2002:a2e:9bc1:0:b0:253:e20a:7a79 with SMTP id
+ w1-20020a2e9bc1000000b00253e20a7a79mr38883935ljj.445.1654292104054; Fri, 03
+ Jun 2022 14:35:04 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220601190218.2494963-1-sdf@google.com> <20220601190218.2494963-8-sdf@google.com>
-In-Reply-To: <20220601190218.2494963-8-sdf@google.com>
+References: <20220601190218.2494963-1-sdf@google.com> <20220601190218.2494963-9-sdf@google.com>
+In-Reply-To: <20220601190218.2494963-9-sdf@google.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 3 Jun 2022 14:30:45 -0700
-Message-ID: <CAEf4BzZW_xFWVU0_VFsov+xo7i5i0SnC+_Ciy1vTHU97KT-+cQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v8 07/11] libbpf: add lsm_cgoup_sock type
+Date:   Fri, 3 Jun 2022 14:34:52 -0700
+Message-ID: <CAEf4BzYewhP+RbV9H1+8Htr73Y0fPNT4tN3E6v4-_GwEiJud-A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v8 08/11] libbpf: implement bpf_prog_query_opts
 To:     Stanislav Fomichev <sdf@google.com>
 Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -69,44 +69,126 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Jun 1, 2022 at 12:02 PM Stanislav Fomichev <sdf@google.com> wrote:
 >
-> lsm_cgroup/ is the prefix for BPF_LSM_CGROUP.
+> Implement bpf_prog_query_opts as a more expendable version of
+> bpf_prog_query. Expose new prog_attach_flags and attach_btf_func_id as
+> well:
+>
+> * prog_attach_flags is a per-program attach_type; relevant only for
+>   lsm cgroup program which might have different attach_flags
+>   per attach_btf_id
+> * attach_btf_func_id is a new field expose for prog_query which
+>   specifies real btf function id for lsm cgroup attachments
 >
 > Signed-off-by: Stanislav Fomichev <sdf@google.com>
 > ---
+>  tools/include/uapi/linux/bpf.h |  3 +++
+>  tools/lib/bpf/bpf.c            | 40 +++++++++++++++++++++++++++-------
+>  tools/lib/bpf/bpf.h            | 15 +++++++++++++
+>  tools/lib/bpf/libbpf.map       |  2 +-
+>  4 files changed, 51 insertions(+), 9 deletions(-)
+>
+
+Few consistency nits, but otherwise:
 
 Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
->  tools/lib/bpf/libbpf.c | 3 +++
->  1 file changed, 3 insertions(+)
+
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index fa64b0b612fd..4271ef3c2afb 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -1432,6 +1432,7 @@ union bpf_attr {
+>                 __u32           attach_flags;
+>                 __aligned_u64   prog_ids;
+>                 __u32           prog_cnt;
+> +               __aligned_u64   prog_attach_flags; /* output: per-program attach_flags */
+>         } query;
 >
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 5afe4cbd684f..a4209a1ad02f 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -107,6 +107,7 @@ static const char * const attach_type_name[] = {
->         [BPF_TRACE_FEXIT]               = "trace_fexit",
->         [BPF_MODIFY_RETURN]             = "modify_return",
->         [BPF_LSM_MAC]                   = "lsm_mac",
-> +       [BPF_LSM_CGROUP]                = "lsm_cgroup",
->         [BPF_SK_LOOKUP]                 = "sk_lookup",
->         [BPF_TRACE_ITER]                = "trace_iter",
->         [BPF_XDP_DEVMAP]                = "xdp_devmap",
-> @@ -9157,6 +9158,7 @@ static const struct bpf_sec_def section_defs[] = {
->         SEC_DEF("freplace+",            EXT, 0, SEC_ATTACH_BTF, attach_trace),
->         SEC_DEF("lsm+",                 LSM, BPF_LSM_MAC, SEC_ATTACH_BTF, attach_lsm),
->         SEC_DEF("lsm.s+",               LSM, BPF_LSM_MAC, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_lsm),
-> +       SEC_DEF("lsm_cgroup+",          LSM, BPF_LSM_CGROUP, SEC_ATTACH_BTF),
->         SEC_DEF("iter+",                TRACING, BPF_TRACE_ITER, SEC_ATTACH_BTF, attach_iter),
->         SEC_DEF("iter.s+",              TRACING, BPF_TRACE_ITER, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_iter),
->         SEC_DEF("syscall",              SYSCALL, 0, SEC_SLEEPABLE),
-> @@ -9610,6 +9612,7 @@ void btf_get_kernel_prefix_kind(enum bpf_attach_type attach_type,
->                 *kind = BTF_KIND_TYPEDEF;
->                 break;
->         case BPF_LSM_MAC:
-> +       case BPF_LSM_CGROUP:
->                 *prefix = BTF_LSM_PREFIX;
->                 *kind = BTF_KIND_FUNC;
->                 break;
-> --
-> 2.36.1.255.ge46751e96f-goog
+>         struct { /* anonymous struct used by BPF_RAW_TRACEPOINT_OPEN command */
+> @@ -5996,6 +5997,8 @@ struct bpf_prog_info {
+>         __u64 run_cnt;
+>         __u64 recursion_misses;
+>         __u32 verified_insns;
+> +       __u32 attach_btf_obj_id;
+> +       __u32 attach_btf_id;
+>  } __attribute__((aligned(8)));
 >
+>  struct bpf_map_info {
+> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+> index 240186aac8e6..c7af7db53725 100644
+> --- a/tools/lib/bpf/bpf.c
+> +++ b/tools/lib/bpf/bpf.c
+> @@ -888,28 +888,52 @@ int bpf_iter_create(int link_fd)
+>         return libbpf_err_errno(fd);
+>  }
+>
+> -int bpf_prog_query(int target_fd, enum bpf_attach_type type, __u32 query_flags,
+> -                  __u32 *attach_flags, __u32 *prog_ids, __u32 *prog_cnt)
+> +int bpf_prog_query_opts(int target_fd,
+> +                       enum bpf_attach_type type,
+> +                       struct bpf_prog_query_opts *opts)
+>  {
+>         union bpf_attr attr;
+>         int ret;
+>
+>         memset(&attr, 0, sizeof(attr));
+> +
+> +       if (!OPTS_VALID(opts, bpf_prog_query_opts))
+> +               return libbpf_err(-EINVAL);
+> +
+
+nit: check input args before you do work (memset), but it's very minor
+
+>         attr.query.target_fd    = target_fd;
+>         attr.query.attach_type  = type;
+> -       attr.query.query_flags  = query_flags;
+> -       attr.query.prog_cnt     = *prog_cnt;
+> -       attr.query.prog_ids     = ptr_to_u64(prog_ids);
+> +       attr.query.query_flags  = OPTS_GET(opts, query_flags, 0);
+> +       attr.query.prog_cnt     = OPTS_GET(opts, prog_cnt, 0);
+> +       attr.query.prog_ids     = ptr_to_u64(OPTS_GET(opts, prog_ids, NULL));
+> +       attr.query.prog_attach_flags = ptr_to_u64(OPTS_GET(opts, prog_attach_flags, NULL));
+>
+>         ret = sys_bpf(BPF_PROG_QUERY, &attr, sizeof(attr));
+>
+> -       if (attach_flags)
+> -               *attach_flags = attr.query.attach_flags;
+> -       *prog_cnt = attr.query.prog_cnt;
+> +       OPTS_SET(opts, attach_flags, attr.query.attach_flags);
+> +       OPTS_SET(opts, prog_cnt, attr.query.prog_cnt);
+>
+>         return libbpf_err_errno(ret);
+>  }
+>
+> +int bpf_prog_query(int target_fd, enum bpf_attach_type type, __u32 query_flags,
+> +                  __u32 *attach_flags, __u32 *prog_ids, __u32 *prog_cnt)
+> +{
+> +       LIBBPF_OPTS(bpf_prog_query_opts, p);
+
+nit: for consistency it would be good to call variable "opts" as we do
+pretty much everywhere else?
+
+> +       int ret;
+> +
+> +       p.query_flags = query_flags;
+> +       p.prog_ids = prog_ids;
+> +       p.prog_cnt = *prog_cnt;
+> +
+> +       ret = bpf_prog_query_opts(target_fd, type, &p);
+> +
+> +       if (attach_flags)
+> +               *attach_flags = p.attach_flags;
+> +       *prog_cnt = p.prog_cnt;
+> +
+> +       return ret;
+
+maybe use libbpf_err() here for consistency and just in case we add
+something that can clobber errno
+
+> +}
+> +
+>  int bpf_prog_test_run(int prog_fd, int repeat, void *data, __u32 size,
+>                       void *data_out, __u32 *size_out, __u32 *retval,
+>                       __u32 *duration)
+
+[...]
