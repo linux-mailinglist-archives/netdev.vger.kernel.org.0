@@ -2,90 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 357A453C3C1
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 06:31:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14B3553C3C6
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 06:32:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234266AbiFCEbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 00:31:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34538 "EHLO
+        id S237998AbiFCEbz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 00:31:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229540AbiFCEbM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 00:31:12 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A9836307;
-        Thu,  2 Jun 2022 21:31:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:
-        From:References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
-        :List-Post:List-Owner:List-Archive;
-        bh=EYuaU/n29S6mPWu7974aUOfQXdaYQnassV8I6gREXSk=; b=jFs5aKNPKQND+2mAmm11jMfMsE
-        oaCck4bKK7ocz1ORSzv1n7xnYz304ARX6tWej2j4cphCoj+oDzZUJoFx4zuXIP/ZsG3p3SVCE466n
-        k0ZK2P5lPgkE1SsT+MHdzYnXqDNq3gt9SpJYllbd8tngS03nKSE90ps+c5Ha/P3Mnvps=;
-Received: from p200300daa70ef200058bb5d56adcce0c.dip0.t-ipconnect.de ([2003:da:a70e:f200:58b:b5d5:6adc:ce0c] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1nwyxP-0004ok-B8; Fri, 03 Jun 2022 06:30:43 +0200
-Message-ID: <2997c5b0-3611-5e00-466c-b2966f09f067@nbd.name>
-Date:   Fri, 3 Jun 2022 06:30:42 +0200
+        with ESMTP id S229540AbiFCEby (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 00:31:54 -0400
+Received: from mail-vs1-xe62.google.com (mail-vs1-xe62.google.com [IPv6:2607:f8b0:4864:20::e62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92162117B
+        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 21:31:53 -0700 (PDT)
+Received: by mail-vs1-xe62.google.com with SMTP id 63so6338891vsx.5
+        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 21:31:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:dkim-signature:mime-version:references
+         :in-reply-to:from:date:message-id:subject:to:cc;
+        bh=TfOfY9nDE6EgdzK7eHo1wPWpr31B0AhtWoqNGscvDio=;
+        b=hPcJnMFtLK4O8Qe2A84mzf4m4mvhCYLJmkm8ynvsA926wOYWedaguwv/cL80xSC7VO
+         e0gilTU55NyCtw7dOAbV1WXIexLeufZ571cV+XuKVf4Iw5SbTKUxGmiTKOsEQKVbCrlB
+         mY2PWDmYYRBaQznBbdNPDP0nB16OUQd8f7eRqRJcxyltvyBFzyyhwFE9CPHPBTXlfo2E
+         6XFd53m66fLLcvY0WNlnfHN7IGp8GPCI/O0AYuJSmC0jLMxyay/lUCtZcu+b/6dIJama
+         8xRE6imZ1MCbY72dVowgADVocqNW3EofM+9/VO1kubrHOZS+mlvFayvUZzwkoEJGcSlh
+         F7AA==
+X-Gm-Message-State: AOAM5327OCIEYUgUCKQ7si9JPq7+brgsJlmlZEtwNzU1CfKy8T+pq5aX
+        OYga/qOHF0yi8LBR02Uwg2Pb73d3Abp4p9V3vUAv0rV/yEqChg==
+X-Google-Smtp-Source: ABdhPJwcQvbgfTFkGRjJydEpUibMYFE+NeIkgGn0w1/2j4jk6atAqQcNlOP3CX3U3SV0sJkcjdv+FAchDXCu
+X-Received: by 2002:a05:6102:a0c:b0:349:2d99:440f with SMTP id t12-20020a0561020a0c00b003492d99440fmr7593928vsa.22.1654230680776;
+        Thu, 02 Jun 2022 21:31:20 -0700 (PDT)
+Received: from netskope.com ([163.116.131.244])
+        by smtp-relay.gmail.com with ESMTPS id g22-20020ab00e16000000b00368ea885f44sm958423uak.16.2022.06.02.21.31.20
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jun 2022 21:31:20 -0700 (PDT)
+X-Relaying-Domain: riotgames.com
+Received: by mail-qv1-f69.google.com with SMTP id az18-20020ad45512000000b004645f3d2c36so4692724qvb.0
+        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 21:31:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=riotgames.com; s=riotgames;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TfOfY9nDE6EgdzK7eHo1wPWpr31B0AhtWoqNGscvDio=;
+        b=EB0xhxnrrBnHMP+Yw1n+L6/aBww/dvWK+IVeF09JEDipF5Hblr7ZZ3BsnJKTyT+ru6
+         lMbAs+t8Vw0xSjQDS8SvPfKDDZ2fXhgGGIEZQvhFveC26VsbjQ68eNbjAgPCO5AovCG8
+         mNwCZojcO25AASOYLNPvXo+S4c7KbmB7K9ies=
+X-Received: by 2002:a05:620a:4154:b0:6a5:7577:3e1b with SMTP id k20-20020a05620a415400b006a575773e1bmr5309324qko.694.1654230678934;
+        Thu, 02 Jun 2022 21:31:18 -0700 (PDT)
+X-Received: by 2002:a05:620a:4154:b0:6a5:7577:3e1b with SMTP id
+ k20-20020a05620a415400b006a575773e1bmr5309317qko.694.1654230678725; Thu, 02
+ Jun 2022 21:31:18 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.1
-Content-Language: en-US
-To:     Chen Lin <chen45464546@163.com>, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, matthias.bgg@gmail.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        alexander.duyck@gmail.com
-References: <1654229435-2934-1-git-send-email-chen45464546@163.com>
-From:   Felix Fietkau <nbd@nbd.name>
-Subject: Re: [PATCH] net: ethernet: mtk_eth_soc: fix misuse of mem alloc
- interface netdev_alloc_frag
-In-Reply-To: <1654229435-2934-1-git-send-email-chen45464546@163.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220603041701.2799595-1-irogers@google.com>
+In-Reply-To: <20220603041701.2799595-1-irogers@google.com>
+From:   Zvi Effron <zeffron@riotgames.com>
+Date:   Thu, 2 Jun 2022 21:31:07 -0700
+Message-ID: <CAC1LvL12oxCojWBxqCj=g+cC=UbAHoQ6kT4TQXSi1j78L5zn3g@mail.gmail.com>
+Subject: Re: [PATCH] libbpf: Fix is_pow_of_2
+To:     Ian Rogers <irogers@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yuze Chi <chiyuze@google.com>
+Content-Type: text/plain; charset="UTF-8"
+x-netskope-inspected: true
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03.06.22 06:10, Chen Lin wrote:
-> When rx_flag == MTK_RX_FLAGS_HWLRO,
-> rx_data_len = MTK_MAX_LRO_RX_LENGTH(4096 * 3) > PAGE_SIZE.
-> netdev_alloc_frag is for alloction of page fragment only.
-> Reference to other drivers and Documentation/vm/page_frags.rst
-> 
-> Branch to use kmalloc when rx_data_len > PAGE_SIZE.
-> 
-> Signed-off-by: Chen Lin <chen45464546@163.com>
+On Thu, Jun 2, 2022 at 9:17 PM Ian Rogers <irogers@google.com> wrote:
+>
+> From: Yuze Chi <chiyuze@google.com>
+>
+> There is a missing not. Consider a power of 2 number like 4096:
+>
+> x && (x & (x - 1))
+> 4096 && (4096 & (4096 - 1))
+> 4096 && (4096 & 4095)
+> 4096 && 0
+> 0
+>
+> with the not this is:
+> x && !(x & (x - 1))
+> 4096 && !(4096 & (4096 - 1))
+> 4096 && !(4096 & 4095)
+> 4096 && !0
+> 4096 && 1
+> 1
+>
+> Reported-by: Yuze Chi <chiyuze@google.com>
+> Signed-off-by: Yuze Chi <chiyuze@google.com>
+> Signed-off-by: Ian Rogers <irogers@google.com>
 > ---
->   drivers/net/ethernet/mediatek/mtk_eth_soc.c |    5 ++++-
->   1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> index b3b3c07..d0eebca 100644
-> --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-> @@ -1914,7 +1914,10 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
->   		return -ENOMEM;
->   
->   	for (i = 0; i < rx_dma_size; i++) {
-> -		ring->data[i] = netdev_alloc_frag(ring->frag_size);
-> +		if (ring->frag_size <= PAGE_SIZE)
-> +			ring->data[i] = netdev_alloc_frag(ring->frag_size);
-> +		else
-> +			ring->data[i] = kmalloc(ring->frag_size, GFP_KERNEL);
-I'm pretty sure you also need to update all the other places in the code 
-that currently assume that the buffer is allocated using the page frag 
-allocator.
+>  tools/lib/bpf/libbpf.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 3f4f18684bd3..fd0414ea00df 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -4956,7 +4956,7 @@ static void bpf_map__destroy(struct bpf_map *map);
+>
+>  static bool is_pow_of_2(size_t x)
+>  {
+> -       return x && (x & (x - 1));
+> +       return x && !(x & (x - 1));
 
-- Felix
+No idea if anyone cares about the consistency, but in linker.c (same directory)
+the same static function is defined using == 0 at the end instead of using the
+not operator.
+
+Aside from the consistency issue, personally I find the == 0 version a little
+bit easier to read and understand because it's a bit less dense (and a "!" next
+to a "(" is an easy character to overlook).
+
+>  }
+>
+>  static size_t adjust_ringbuf_sz(size_t sz)
+> --
+> 2.36.1.255.ge46751e96f-goog
+>
