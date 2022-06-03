@@ -2,219 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 880F953C3FE
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 07:12:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01CBE53C435
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 07:28:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240095AbiFCFLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 01:11:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53714 "EHLO
+        id S240512AbiFCF2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 01:28:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239964AbiFCFLO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 01:11:14 -0400
-X-Greylist: delayed 56223 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 02 Jun 2022 22:11:12 PDT
-Received: from zg8tmja5ljk3lje4ms43mwaa.icoremail.net (zg8tmja5ljk3lje4ms43mwaa.icoremail.net [209.97.181.73])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 5C540393C0;
-        Thu,  2 Jun 2022 22:11:12 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [106.117.80.109])
-        by mail-app4 (Coremail) with SMTP id cS_KCgCnieKRl5li3pgyAQ--.52150S4;
-        Fri, 03 Jun 2022 13:09:58 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     amitkarwar@gmail.com, ganapathi017@gmail.com,
-        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
-        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        johannes@sipsolutions.net, gregkh@linuxfoundation.org,
-        rafael@kernel.org, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH v5 2/2] mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
-Date:   Fri,  3 Jun 2022 13:09:35 +0800
-Message-Id: <54f886c2fce5948a8743b9de65d36ec3e8adfaf1.1654229964.git.duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1654229964.git.duoming@zju.edu.cn>
-References: <cover.1654229964.git.duoming@zju.edu.cn>
-In-Reply-To: <cover.1654229964.git.duoming@zju.edu.cn>
-References: <cover.1654229964.git.duoming@zju.edu.cn>
-X-CM-TRANSID: cS_KCgCnieKRl5li3pgyAQ--.52150S4
-X-Coremail-Antispam: 1UD129KBjvJXoW3Jw4UCryrJFy3JFyfCFyrCrg_yoWxAFyrpw
-        s8GF95Cr48Zr1qkr48JF4kXFy5K3W0ka42kr1kZw1xuF4fCryxXFWUKryIgFs8XFs2va4a
-        vr4kXrnaka4UtaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUPG14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
-        x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJw
-        A2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS
-        0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2
-        IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0
-        Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kIc2
-        xKxwCY02Avz4vE14v_GrWl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1l
-        x2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14
-        v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IY
-        x2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87
-        Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIF
-        yTuYvjfUYBMKDUUUU
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAggKAVZdtaBKlgAasZ
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S240486AbiFCF2i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 01:28:38 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4166D37ABC;
+        Thu,  2 Jun 2022 22:28:31 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id EBC195FD02;
+        Fri,  3 Jun 2022 08:28:27 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1654234108;
+        bh=oht4gbQPlTi/rOmdUgW/djRI05DtUhmK5LxNHxmuDtE=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=FHEO5fVTS8EeQDtc2JI1hq+5hQuJ9zzhB9lm5v3Dj+9CiM1lYVTEZ5EVR4OiaiDZ4
+         9V7cCKk3PCkYLvPKdBzIu7pM7mbHY5kQEKTgBlFjMNh+wi36wy4ryTjAZiuCIDUW+e
+         IRBkGxflvXzat9edeMpfetFnO0JXDwxsIlTNUkPRvVaOPFWjDtAmXABkrr+o3xpCYG
+         hrC1cl/MnPT376Fy96R58hK6ns8tYZK7z/pzgtofozmpST/+1rrhSV4P5aIURdz5tU
+         39gKoKlhKKKdARIOpZQXYPKNsTKUdH0gH9+SNuJZODANr6fXdPzRwbq3VU27rS2jFh
+         mThGkxPWJa5aw==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Fri,  3 Jun 2022 08:28:23 +0300 (MSK)
+From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        Krasnov Arseniy <oxffffaa@gmail.com>
+Subject: [RFC PATCH v2 0/8] virtio/vsock: experimental zerocopy receive
+Thread-Topic: [RFC PATCH v2 0/8] virtio/vsock: experimental zerocopy receive
+Thread-Index: AQHYdwquMlGCdyA1qUCtor+NkIn5wQ==
+Date:   Fri, 3 Jun 2022 05:27:56 +0000
+Message-ID: <e37fdf9b-be80-35e1-ae7b-c9dfeae3e3db@sberdevices.ru>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <56034BD2F7D286419339938E9C83A2EE@sberdevices.ru>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/06/03 01:19:00 #19656765
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are sleep in atomic context bugs when uploading device dump
-data in mwifiex. The root cause is that dev_coredumpv could not
-be used in atomic contexts, because it calls dev_set_name which
-include operations that may sleep. The call tree shows execution
-paths that could lead to bugs:
-
-   (Interrupt context)
-fw_dump_timer_fn
-  mwifiex_upload_device_dump
-    dev_coredumpv(..., GFP_KERNEL)
-      dev_coredumpm()
-        kzalloc(sizeof(*devcd), gfp); //may sleep
-        dev_set_name
-          kobject_set_name_vargs
-            kvasprintf_const(GFP_KERNEL, ...); //may sleep
-            kstrdup(s, GFP_KERNEL); //may sleep
-
-The corresponding fail log is shown below:
-
-[  135.275938] usb 1-1: == mwifiex dump information to /sys/class/devcoredump start
-[  135.281029] BUG: sleeping function called from invalid context at include/linux/sched/mm.h:265
-...
-[  135.293613] Call Trace:
-[  135.293613]  <IRQ>
-[  135.293613]  dump_stack_lvl+0x57/0x7d
-[  135.293613]  __might_resched.cold+0x138/0x173
-[  135.293613]  ? dev_coredumpm+0xca/0x2e0
-[  135.293613]  kmem_cache_alloc_trace+0x189/0x1f0
-[  135.293613]  ? devcd_match_failing+0x30/0x30
-[  135.293613]  dev_coredumpm+0xca/0x2e0
-[  135.293613]  ? devcd_freev+0x10/0x10
-[  135.293613]  dev_coredumpv+0x1c/0x20
-[  135.293613]  ? devcd_match_failing+0x30/0x30
-[  135.293613]  mwifiex_upload_device_dump+0x65/0xb0
-[  135.293613]  ? mwifiex_dnld_fw+0x1b0/0x1b0
-[  135.293613]  call_timer_fn+0x122/0x3d0
-[  135.293613]  ? msleep_interruptible+0xb0/0xb0
-[  135.293613]  ? lock_downgrade+0x3c0/0x3c0
-[  135.293613]  ? __next_timer_interrupt+0x13c/0x160
-[  135.293613]  ? lockdep_hardirqs_on_prepare+0xe/0x220
-[  135.293613]  ? mwifiex_dnld_fw+0x1b0/0x1b0
-[  135.293613]  __run_timers.part.0+0x3f8/0x540
-[  135.293613]  ? call_timer_fn+0x3d0/0x3d0
-[  135.293613]  ? arch_restore_msi_irqs+0x10/0x10
-[  135.293613]  ? lapic_next_event+0x31/0x40
-[  135.293613]  run_timer_softirq+0x4f/0xb0
-[  135.293613]  __do_softirq+0x1c2/0x651
-...
-[  135.293613] RIP: 0010:default_idle+0xb/0x10
-[  135.293613] RSP: 0018:ffff888006317e68 EFLAGS: 00000246
-[  135.293613] RAX: ffffffff82ad8d10 RBX: ffff888006301cc0 RCX: ffffffff82ac90e1
-[  135.293613] RDX: ffffed100d9ff1b4 RSI: ffffffff831ad140 RDI: ffffffff82ad8f20
-[  135.293613] RBP: 0000000000000003 R08: 0000000000000000 R09: ffff88806cff8d9b
-[  135.293613] R10: ffffed100d9ff1b3 R11: 0000000000000001 R12: ffffffff84593410
-[  135.293613] R13: 0000000000000000 R14: 0000000000000000 R15: 1ffff11000c62fd2
-...
-[  135.389205] usb 1-1: == mwifiex dump information to /sys/class/devcoredump end
-
-This patch uses delayed work to replace timer and moves the operations
-that may sleep into a delayed work in order to mitigate bugs, it was
-tested on Marvell 88W8801 chip whose port is usb and the firmware is
-usb8801_uapsta.bin. The following is the result after using delayed
-work to replace timer.
-
-[  134.936453] usb 1-1: == mwifiex dump information to /sys/class/devcoredump start
-[  135.043344] usb 1-1: == mwifiex dump information to /sys/class/devcoredump end
-
-As we can see, there is no bug now.
-
-Fixes: f5ecd02a8b20 ("mwifiex: device dump support for usb interface")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
-Changes in v5:
-  - Use delayed work to replace timer.
-
- drivers/net/wireless/marvell/mwifiex/init.c      | 10 ++++++----
- drivers/net/wireless/marvell/mwifiex/main.h      |  2 +-
- drivers/net/wireless/marvell/mwifiex/sta_event.c |  6 +++---
- 3 files changed, 10 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/wireless/marvell/mwifiex/init.c b/drivers/net/wireless/marvell/mwifiex/init.c
-index 88c72d1827a..3713f3e323f 100644
---- a/drivers/net/wireless/marvell/mwifiex/init.c
-+++ b/drivers/net/wireless/marvell/mwifiex/init.c
-@@ -63,9 +63,11 @@ static void wakeup_timer_fn(struct timer_list *t)
- 		adapter->if_ops.card_reset(adapter);
- }
- 
--static void fw_dump_timer_fn(struct timer_list *t)
-+static void fw_dump_work(struct work_struct *work)
- {
--	struct mwifiex_adapter *adapter = from_timer(adapter, t, devdump_timer);
-+	struct mwifiex_adapter *adapter = container_of(work,
-+					struct mwifiex_adapter,
-+					devdump_work.work);
- 
- 	mwifiex_upload_device_dump(adapter);
- }
-@@ -321,7 +323,7 @@ static void mwifiex_init_adapter(struct mwifiex_adapter *adapter)
- 	adapter->active_scan_triggered = false;
- 	timer_setup(&adapter->wakeup_timer, wakeup_timer_fn, 0);
- 	adapter->devdump_len = 0;
--	timer_setup(&adapter->devdump_timer, fw_dump_timer_fn, 0);
-+	INIT_DELAYED_WORK(&adapter->devdump_work, fw_dump_work);
- }
- 
- /*
-@@ -400,7 +402,7 @@ static void
- mwifiex_adapter_cleanup(struct mwifiex_adapter *adapter)
- {
- 	del_timer(&adapter->wakeup_timer);
--	del_timer_sync(&adapter->devdump_timer);
-+	cancel_delayed_work_sync(&adapter->devdump_work);
- 	mwifiex_cancel_all_pending_cmd(adapter);
- 	wake_up_interruptible(&adapter->cmd_wait_q.wait);
- 	wake_up_interruptible(&adapter->hs_activate_wait_q);
-diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
-index 332dd1c8db3..6530c6ee308 100644
---- a/drivers/net/wireless/marvell/mwifiex/main.h
-+++ b/drivers/net/wireless/marvell/mwifiex/main.h
-@@ -1055,7 +1055,7 @@ struct mwifiex_adapter {
- 	/* Device dump data/length */
- 	void *devdump_data;
- 	int devdump_len;
--	struct timer_list devdump_timer;
-+	struct delayed_work devdump_work;
- 
- 	bool ignore_btcoex_events;
- };
-diff --git a/drivers/net/wireless/marvell/mwifiex/sta_event.c b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-index 7d42c5d2dbf..4d93386494c 100644
---- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
-+++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-@@ -623,8 +623,8 @@ mwifiex_fw_dump_info_event(struct mwifiex_private *priv,
- 		 * transmission event get lost, in this cornel case,
- 		 * user would still get partial of the dump.
- 		 */
--		mod_timer(&adapter->devdump_timer,
--			  jiffies + msecs_to_jiffies(MWIFIEX_TIMER_10S));
-+		schedule_delayed_work(&adapter->devdump_work,
-+				      msecs_to_jiffies(MWIFIEX_TIMER_10S));
- 	}
- 
- 	/* Overflow check */
-@@ -643,7 +643,7 @@ mwifiex_fw_dump_info_event(struct mwifiex_private *priv,
- 	return;
- 
- upload_dump:
--	del_timer_sync(&adapter->devdump_timer);
-+	cancel_delayed_work_sync(&adapter->devdump_work);
- 	mwifiex_upload_device_dump(adapter);
- }
- 
--- 
-2.17.1
-
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgSU5UUk9EVUNUSU9ODQoNCglIZWxsbywgdGhp
+cyBpcyBleHBlcmltZW50YWwgaW1wbGVtZW50YXRpb24gb2YgdmlydGlvIHZzb2NrIHplcm9jb3B5
+DQpyZWNlaXZlLiBJdCB3YXMgaW5zcGlyZWQgYnkgVENQIHplcm9jb3B5IHJlY2VpdmUgYnkgRXJp
+YyBEdW1hemV0LiBUaGlzIEFQSSB1c2VzDQpzYW1lIGlkZWE6IGNhbGwgJ21tYXAoKScgb24gc29j
+a2V0J3MgZGVzY3JpcHRvciwgdGhlbiBldmVyeSAnZ2V0c29ja29wdCgpJyB3aWxsDQpmaWxsIHBy
+b3ZpZGVkIHZtYSBhcmVhIHdpdGggcGFnZXMgb2YgdmlydGlvIFJYIGJ1ZmZlcnMuIEFmdGVyIHJl
+Y2VpdmVkIGRhdGEgd2FzDQpwcm9jZXNzZWQgYnkgdXNlciwgcGFnZXMgbXVzdCBiZSBmcmVlZCBi
+eSAnbWFkdmlzZSgpJyAgY2FsbCB3aXRoIE1BRFZfRE9OVE5FRUQNCmZsYWcgc2V0KGlmIHVzZXIg
+d29uJ3QgY2FsbCAnbWFkdmlzZSgpJywgbmV4dCAnZ2V0c29ja29wdCgpJyB3aWxsIGZhaWwpLg0K
+DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBERVRBSUxTDQoNCglIZXJlIGlzIGhv
+dyBtYXBwaW5nIHdpdGggbWFwcGVkIHBhZ2VzIGxvb2tzIGV4YWN0bHk6IGZpcnN0IHBhZ2UgbWFw
+cGluZw0KY29udGFpbnMgYXJyYXkgb2YgdHJpbW1lZCB2aXJ0aW8gdnNvY2sgcGFja2V0IGhlYWRl
+cnMgKGluIGNvbnRhaW5zIG9ubHkgbGVuZ3RoDQpvZiBkYXRhIG9uIHRoZSBjb3JyZXNwb25kaW5n
+IHBhZ2UgYW5kICdmbGFncycgZmllbGQpOg0KDQoJc3RydWN0IHZpcnRpb192c29ja191c3JfaGRy
+IHsNCgkJdWludDMyX3QgbGVuZ3RoOw0KCQl1aW50MzJfdCBmbGFnczsNCgkJdWludDMyX3QgY29w
+eV9sZW47DQoJfTsNCg0KRmllbGQgICdsZW5ndGgnIGFsbG93cyB1c2VyIHRvIGtub3cgZXhhY3Qg
+c2l6ZSBvZiBwYXlsb2FkIHdpdGhpbiBlYWNoIHNlcXVlbmNlDQpvZiBwYWdlcyBhbmQgJ2ZsYWdz
+JyBhbGxvd3MgdXNlciB0byBoYW5kbGUgU09DS19TRVFQQUNLRVQgZmxhZ3Moc3VjaCBhcyBtZXNz
+YWdlDQpib3VuZHMgb3IgcmVjb3JkIGJvdW5kcykuIEZpZWxkICdjb3B5X2xlbicgaXMgZGVzY3Jp
+YmVkIGJlbG93IGluICd2MS0+djInIHBhcnQuDQpBbGwgb3RoZXIgcGFnZXMgYXJlIGRhdGEgcGFn
+ZXMgZnJvbSBSWCBxdWV1ZS4NCg0KICAgICAgICAgICAgIFBhZ2UgMCAgICAgIFBhZ2UgMSAgICAg
+IFBhZ2UgTg0KDQoJWyBoZHIxIC4uIGhkck4gXVsgZGF0YSBdIC4uIFsgZGF0YSBdDQogICAgICAg
+ICAgIHwgICAgICAgIHwgICAgICAgXiAgICAgICAgICAgXg0KICAgICAgICAgICB8ICAgICAgICB8
+ICAgICAgIHwgICAgICAgICAgIHwNCiAgICAgICAgICAgfCAgICAgICAgKi0tLS0tLS0tLS0tLS0t
+LS0tLS0qDQogICAgICAgICAgIHwgICAgICAgICAgICAgICAgfA0KICAgICAgICAgICB8ICAgICAg
+ICAgICAgICAgIHwNCiAgICAgICAgICAgKi0tLS0tLS0tLS0tLS0tLS0qDQoNCglPZiBjb3Vyc2Us
+IHNpbmdsZSBoZWFkZXIgY291bGQgcmVwcmVzZW50IGFycmF5IG9mIHBhZ2VzICh3aGVuIHBhY2tl
+dCdzDQpidWZmZXIgaXMgYmlnZ2VyIHRoYW4gb25lIHBhZ2UpLlNvIGhlcmUgaXMgZXhhbXBsZSBv
+ZiBkZXRhaWxlZCBtYXBwaW5nIGxheW91dA0KZm9yIHNvbWUgc2V0IG9mIHBhY2thZ2VzLiBMZXRz
+IGNvbnNpZGVyIHRoYXQgd2UgaGF2ZSB0aGUgZm9sbG93aW5nIHNlcXVlbmNlICBvZg0KcGFja2Fn
+ZXM6IDU2IGJ5dGVzLCA0MDk2IGJ5dGVzIGFuZCA4MjAwIGJ5dGVzLiBBbGwgcGFnZXM6IDAsMSwy
+LDMsNCBhbmQgNSB3aWxsDQpiZSBpbnNlcnRlZCB0byB1c2VyJ3Mgdm1hKHZtYSBpcyBsYXJnZSBl
+bm91Z2gpLg0KDQoJUGFnZSAwOiBbWyBoZHIwIF1bIGhkciAxIF1bIGhkciAyIF1bIGhkciAzIF0g
+Li4uIF0NCglQYWdlIDE6IFsgNTYgXQ0KCVBhZ2UgMjogWyA0MDk2IF0NCglQYWdlIDM6IFsgNDA5
+NiBdDQoJUGFnZSA0OiBbIDQwOTYgXQ0KCVBhZ2UgNTogWyA4IF0NCg0KCVBhZ2UgMCBjb250YWlu
+cyBvbmx5IGFycmF5IG9mIGhlYWRlcnM6DQoJJ2hkcjAnIGhhcyA1NiBpbiBsZW5ndGggZmllbGQu
+DQoJJ2hkcjEnIGhhcyA0MDk2IGluIGxlbmd0aCBmaWVsZC4NCgknaGRyMicgaGFzIDgyMDAgaW4g
+bGVuZ3RoIGZpZWxkLg0KCSdoZHIzJyBoYXMgMCBpbiBsZW5ndGggZmllbGQodGhpcyBpcyBlbmQg
+b2YgZGF0YSBtYXJrZXIpLg0KDQoJUGFnZSAxIGNvcnJlc3BvbmRzIHRvICdoZHIwJyBhbmQgaGFz
+IG9ubHkgNTYgYnl0ZXMgb2YgZGF0YS4NCglQYWdlIDIgY29ycmVzcG9uZHMgdG8gJ2hkcjEnIGFu
+ZCBmaWxsZWQgd2l0aCBkYXRhLg0KCVBhZ2UgMyBjb3JyZXNwb25kcyB0byAnaGRyMicgYW5kIGZp
+bGxlZCB3aXRoIGRhdGEuDQoJUGFnZSA0IGNvcnJlc3BvbmRzIHRvICdoZHIyJyBhbmQgZmlsbGVk
+IHdpdGggZGF0YS4NCglQYWdlIDUgY29ycmVzcG9uZHMgdG8gJ2hkcjInIGFuZCBoYXMgb25seSA4
+IGJ5dGVzIG9mIGRhdGEuDQoNCglUaGlzIHBhdGNoc2V0IGFsc28gY2hhbmdlcyBwYWNrZXRzIGFs
+bG9jYXRpb24gd2F5OiB0b2RheSBpbXBsZW1lbnRhdGlvbg0KdXNlcyBvbmx5ICdrbWFsbG9jKCkn
+IHRvIGNyZWF0ZSBkYXRhIGJ1ZmZlci4gUHJvYmxlbSBoYXBwZW5zIHdoZW4gd2UgdHJ5IHRvIG1h
+cA0Kc3VjaCBidWZmZXJzIHRvIHVzZXIncyB2bWEgLSBrZXJuZWwgZm9yYmlkcyB0byBtYXAgc2xh
+YiBwYWdlcyB0byB1c2VyJ3Mgdm1hKGFzDQpwYWdlcyBvZiAibm90IGxhcmdlIiAna21hbGxvYygp
+JyBhbGxvY2F0aW9ucyBhcmUgbWFya2VkIHdpdGggUGFnZVNsYWIgZmxhZyBhbmQNCiJub3QgbGFy
+Z2UiIGNvdWxkIGJlIGJpZ2dlciB0aGFuIG9uZSBwYWdlKS4gU28gdG8gYXZvaWQgdGhpcywgZGF0
+YSBidWZmZXJzIG5vdw0KYWxsb2NhdGVkIHVzaW5nICdhbGxvY19wYWdlcygpJyBjYWxsLg0KDQog
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFRFU1RTDQoNCglUaGlzIHBhdGNoc2V0
+IHVwZGF0ZXMgJ3Zzb2NrX3Rlc3QnIHV0aWxpdHk6IHR3byB0ZXN0cyBmb3IgbmV3IGZlYXR1cmUN
+CndlcmUgYWRkZWQuIEZpcnN0IHRlc3QgY292ZXJzIGludmFsaWQgY2FzZXMuIFNlY29uZCBjaGVj
+a3MgdmFsaWQgdHJhbnNtaXNzaW9uDQpjYXNlLg0KDQogICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIEJFTkNITUFSS0lORw0KDQoJRm9yIGJlbmNobWFrcmluZyBJJ3ZlIGFkZGVkIHNtYWxs
+IHV0aWxpdHkgJ3J4X3plcm9jb3B5Jy4gSXQgd29ya3MgaW4NCmNsaWVudC9zZXJ2ZXIgbW9kZS4g
+V2hlbiBjbGllbnQgY29ubmVjdHMgdG8gc2VydmVyLCBzZXJ2ZXIgc3RhcnRzIHNlbmRpbmcgZXhh
+Y3QNCmFtb3VudCBvZiBkYXRhIHRvIGNsaWVudChhbW91bnQgaXMgc2V0IGFzIGlucHV0IGFyZ3Vt
+ZW50KS5DbGllbnQgcmVhZHMgZGF0YSBhbmQNCndhaXRzIGZvciBuZXh0IHBvcnRpb24gb2YgaXQu
+IENsaWVudCB3b3JrcyBpbiB0d28gbW9kZXM6IGNvcHkgYW5kIHplcm8tY29weS4gSW4NCmNvcHkg
+bW9kZSBjbGllbnQgdXNlcyAncmVhZCgpJyBjYWxsIHdoaWxlIGluIHplcm9jb3B5IG1vZGUgc2Vx
+dWVuY2Ugb2YgJ21tYXAoKScNCi8nZ2V0c29ja29wdCgpJy8nbWFkdmlzZSgpJyBhcmUgdXNlZC4g
+U21hbGxlciBhbW91bnQgb2YgdGltZSBmb3IgdHJhbnNtaXNzaW9uIA0KaXMgYmV0dGVyLiBGb3Ig
+c2VydmVyLCB3ZSBjYW4gc2V0IHNpemUgb2YgdHggYnVmZmVyIGFuZCBmb3IgY2xpZW50IHdlIGNh
+biBzZXQNCnNpemUgb2YgcnggYnVmZmVyIG9yIHJ4IG1hcHBpbmcgc2l6ZShpbiB6ZXJvY29weSBt
+b2RlKS4gVXNhZ2Ugb2YgdGhpcyB1dGlsaXR5DQppcyBxdWlldCBzaW1wbGU6DQoNCkZvciBjbGll
+bnQgbW9kZToNCg0KLi9yeF96ZXJvY29weSAtLW1vZGUgY2xpZW50IFstLXplcm9jb3B5XSBbLS1y
+eF0NCg0KRm9yIHNlcnZlciBtb2RlOg0KDQouL3J4X3plcm9jb3B5IC0tbW9kZSBzZXJ2ZXIgWy0t
+bWJdIFstLXR4XQ0KDQpbLS1tYl0gc2V0cyBudW1iZXIgb2YgbWVnYWJ5dGVzIHRvIHRyYW5zZmVy
+Lg0KWy0tcnhdIHNldHMgc2l6ZSBvZiByZWNlaXZlIGJ1ZmZlci9tYXBwaW5nIGluIHBhZ2VzLg0K
+Wy0tdHhdIHNldHMgc2l6ZSBvZiB0cmFuc21pdCBidWZmZXIgaW4gcGFnZXMuDQoNCkkgY2hlY2tl
+ZCBmb3IgdHJhbnNtaXNzaW9uIG9mIDQwMDBtYiBvZiBkYXRhLiBIZXJlIGFyZSBzb21lIHJlc3Vs
+dHM6DQoNCiAgICAgICAgICAgICAgICAgICAgICAgICAgIHNpemUgb2YgcngvdHggYnVmZmVycyBp
+biBwYWdlcw0KICAgICAgICAgICAgICAgKi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLSoNCiAgICAgICAgICAgICAgIHwgICAgOCAgIHwgICAgMzIgICAg
+fCAgICA2NCAgIHwgICAyNTYgICAgfCAgIDUxMiAgICB8DQoqLS0tLS0tLS0tLS0tLS0qLS0tLS0t
+LS0qLS0tLS0tLS0tLSotLS0tLS0tLS0qLS0tLS0tLS0tLSotLS0tLS0tLS0tKg0KfCAgIHplcm9j
+b3B5ICAgfCAgIDI0ICAgfCAgIDEwLjYgICB8ICAxMi4yICAgfCAgIDIzLjYgICB8ICAgIDIxICAg
+IHwgc2VjcyB0bw0KKi0tLS0tLS0tLS0tLS0tKi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0gcHJvY2Vzcw0KfCBub24temVyb2NvcHkgfCAgIDEzICAg
+fCAgIDE2LjQgICB8ICAyNC43ICAgfCAgIDI3LjIgICB8ICAgMjMuOSAgIHwgNDAwMCBtYg0KKi0t
+LS0tLS0tLS0tLS0tKi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0NCg0KUmVzdWx0IGluIGZpcnN0IGNvbHVtbih3aGVyZSBub24temVyb2NvcHkgd29y
+a3MgYmV0dGVyIHRoYW4gemVyb2NvcHkpIGhhcHBlbnMNCmJlY2F1c2UgdGltZSwgc3BlbnQgaW4g
+J3JlYWQoKScgc3lzdGVtIGNhbGwgaXMgc21hbGxlciB0aGF0IHRpbWUgaW4gJ2dldHNvY2tvcHQn
+DQorICdtYWR2aXNlJy4gSSd2ZSBjaGVja2VkIHRoYXQuDQoNCkkgdGhpbmssIHRoYXQgcmVzdWx0
+cyBhcmUgbm90IHNvIGltcHJlc3NpdmUsIGJ1dCBhdCBsZWFzdCBpdCBpcyBub3Qgd29yc2UgdGhh
+bg0KY29weSBtb2RlIGFuZCB0aGVyZSBpcyBubyBuZWVkIHRvIGFsbG9jYXRlIG1lbW9yeSBmb3Ig
+cHJvY2Vzc2luZyBkYXRlLg0KDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBQUk9C
+TEVNUw0KDQoJVXBkYXRlZCBwYWNrZXQncyBhbGxvY2F0aW9uIGxvZ2ljIGNyZWF0ZXMgc29tZSBw
+cm9ibGVtOiB3aGVuIGhvc3QgZ2V0cw0KZGF0YSBmcm9tIGd1ZXN0KGluIHZob3N0LXZzb2NrKSwg
+aXQgYWxsb2NhdGVzIGF0IGxlYXN0IG9uZSBwYWdlIGZvciBlYWNoIHBhY2tldA0KKGV2ZW4gaWYg
+cGFja2V0IGhhcyAxIGJ5dGUgcGF5bG9hZCkuIEkgdGhpbmsgdGhpcyBjb3VsZCBiZSByZXNvbHZl
+ZCBpbiBzZXZlcmFsDQp3YXlzOg0KCTEpIE1ha2UgemVyb2NvcHkgcnggbW9kZSBkaXNhYmxlZCBi
+eSBkZWZhdWx0LCBzbyBpZiB1c2VyIGRpZG4ndCBlbmFibGUNCml0LCBjdXJyZW50ICdrbWFsbG9j
+KCknIHdheSB3aWxsIGJlIHVzZWQuIDw8PDw8PDwgKElNUExFTUVOVEVEIElOIFYyKQ0KCTIpIFVz
+ZSAna21hbGxvYygpJyBmb3IgInNtYWxsIiBwYWNrZXRzLCBlbHNlIGNhbGwgcGFnZSBhbGxvY2F0
+b3IuIEJ1dA0KaW4gdGhpcyBjYXNlLCB3ZSBoYXZlIG1peCBvZiBwYWNrZXRzLCBhbGxvY2F0ZWQg
+aW4gdHdvIGRpZmZlcmVudCB3YXlzIHRodXMNCmR1cmluZyB6ZXJvY29weWluZyB0byB1c2VyKGUu
+Zy4gbWFwcGluZyBwYWdlcyB0byB2bWEpLCBzdWNoIHNtYWxsIHBhY2tldHMgd2lsbA0KYmUgaGFu
+ZGxlZCBpbiBzb21lIHN0dXBpZCB3YXk6IHdlIG5lZWQgdG8gYWxsb2NhdGUgb25lIHBhZ2UgZm9y
+IHVzZXIsIGNvcHkgZGF0YQ0KdG8gaXQgYW5kIHRoZW4gaW5zZXJ0IHBhZ2UgdG8gdXNlcidzIHZt
+YS4NCg0KdjEgLT4gdjI6DQogMSkgWmVyb2NvcHkgcmVjZWl2ZSBtb2RlIGNvdWxkIGJlIGVuYWJs
+ZWQvZGlzYWJsZWQoZGlzYWJsZWQgYnkgZGVmYXVsdCkuIEkNCiAgICBkaWRuJ3QgdXNlIGdlbmVy
+aWMgU09fWkVST0NPUFkgZmxhZywgYmVjYXVzZSBpbiB2aXJ0aW8tdnNvY2sgY2FzZSB0aGlzDQog
+ICAgZmVhdHVyZSBkZXBlbmRzIG9uIHRyYW5zcG9ydCBzdXBwb3J0LiBJbnN0ZWFkIG9mIFNPX1pF
+Uk9DT1BZLCBBRl9WU09DSw0KICAgIGxheWVyIGZsYWcgd2FzIGFkZGVkOiBTT19WTV9TT0NLRVRT
+X1pFUk9DT1BZLCB3aGlsZSBwcmV2aW91cyBtZWFuaW5nIG9mDQogICAgU09fVk1fU09DS0VUU19a
+RVJPQ09QWShpbnNlcnQgcmVjZWl2ZSBidWZmZXJzIHRvIHVzZXIncyB2bSBhcmVhKSBub3cNCiAg
+ICByZW5hbWVkIHRvIFNPX1ZNX1NPQ0tFVFNfTUFQX1JYLg0KIDIpIFBhY2tldCBoZWFkZXIgd2hp
+Y2ggaXMgZXhwb3J0ZWQgdG8gdXNlciBub3cgZ2V0IG5ldyBmaWVsZDogJ2NvcHlfbGVuJy4NCiAg
+ICBUaGlzIGZpZWxkIGhhbmRsZXMgc3BlY2lhbCBjYXNlOiAgdXNlciByZWFkcyBkYXRhIGZyb20g
+c29ja2V0IGluIG5vbg0KICAgIHplcm9jb3B5IHdheSh3aXRoIGRpc2FibGVkIHplcm9jb3B5KSBh
+bmQgdGhlbiBlbmFibGVzIHplcm9jb3B5IGZlYXR1cmUuDQogICAgSW4gdGhpcyBjYXNlIHZob3N0
+IHBhcnQgd2lsbCBzd2l0Y2ggZGF0YSBidWZmZXIgYWxsb2NhdGlvbiBsb2dpYyBmcm9tDQogICAg
+J2ttYWxsb2MoKScgdG8gZGlyZWN0IGNhbGxzIGZvciBidWRkeSBhbGxvY2F0b3IuIEJ1dCwgdGhl
+cmUgY291bGQgYmUNCiAgICBzb21lIHBlbmRpbmcgJ2ttYWxsb2MoKScgYWxsb2NhdGVkIHBhY2tl
+dHMgaW4gc29ja2V0J3MgcnggbGlzdCwgYW5kIHRoZW4NCiAgICB1c2VyIHRyaWVzIHRvIHJlYWQg
+c3VjaCBwYWNrZXRzIGluIHplcm9jb3B5IHdheSwgZGVxdWV1ZSB3aWxsIGZhaWwsDQogICAgYmVj
+YXVzZSBTTEFCIHBhZ2VzIGNvdWxkIG5vdCBiZSBpbnNlcnRlZCB0byB1c2VyJ3Mgdm0gYXJlYS4g
+U28gd2hlbiBzdWNoDQogICAgcGFja2V0IGlzIGZvdW5kIGR1cmluZyB6ZXJvY29weSBkZXF1ZXVl
+LCBkZXF1ZXVlIGxvb3Agd2lsbCBicmVhayBhbmQNCiAgICAnY29weV9sZW4nIHdpbGwgc2hvdyBz
+aXplIG9mIHN1Y2ggImJhZCIgcGFja2V0LiBBZnRlciB1c2VyIGRldGVjdHMgdGhpcw0KICAgIGNh
+c2UsIGl0IG11c3QgdXNlICdyZWFkKCkvcmVjdigpJyBjYWxscyB0byBkZXF1ZXVlIHN1Y2ggcGFj
+a2V0Lg0KIDMpIEFsc28gbWF5IGJlIG1vdmUgdGhpcyBmZWF0dXJlcyB1bmRlciBjb25maWcgb3B0
+aW9uPw0KDQpBcnNlbml5IEtyYXNub3YoOCkNCiB2aXJ0aW8vdnNvY2s6IHJld29yayBwYWNrZXQg
+YWxsb2NhdGlvbiBsb2dpYw0KIHZob3N0L3Zzb2NrOiByZXdvcmsgcGFja2V0IGFsbG9jYXRpb24g
+bG9naWMNCiBhZl92c29jazogYWRkIHplcm9jb3B5IHJlY2VpdmUgbG9naWMNCiB2aXJ0aW8vdnNv
+Y2s6IGFkZCB0cmFuc3BvcnQgemVyb2NvcHkgY2FsbGJhY2sNCiB2aG9zdC92c29jazogZW5hYmxl
+IHplcm9jb3B5IGNhbGxiYWNrDQogdmlydGlvL3Zzb2NrOiBlbmFibGUgemVyb2NvcHkgY2FsbGJh
+Y2sNCiB0ZXN0L3Zzb2NrOiBhZGQgcmVjZWl2ZSB6ZXJvY29weSB0ZXN0cw0KIHRlc3QvdnNvY2s6
+IHZzb2NrIHJ4IHplcm9jb3B5IHV0aWxpdHkNCg0KIGRyaXZlcnMvdmhvc3QvdnNvY2suYyAgICAg
+ICAgICAgICAgICAgICB8IDEyMSArKysrKysrKystLQ0KIGluY2x1ZGUvbGludXgvdmlydGlvX3Zz
+b2NrLmggICAgICAgICAgICB8ICAgNSArDQogaW5jbHVkZS9uZXQvYWZfdnNvY2suaCAgICAgICAg
+ICAgICAgICAgIHwgICA3ICsNCiBpbmNsdWRlL3VhcGkvbGludXgvdmlydGlvX3Zzb2NrLmggICAg
+ICAgfCAgIDYgKw0KIGluY2x1ZGUvdWFwaS9saW51eC92bV9zb2NrZXRzLmggICAgICAgICB8ICAg
+MyArDQogbmV0L3Ztd192c29jay9hZl92c29jay5jICAgICAgICAgICAgICAgIHwgMTAwICsrKysr
+KysrKw0KIG5ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydC5jICAgICAgICB8ICA1MSArKysr
+LQ0KIG5ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYyB8IDIxMSArKysrKysr
+KysrKysrKysrKystDQogdG9vbHMvaW5jbHVkZS91YXBpL2xpbnV4L3ZpcnRpb192c29jay5oIHwg
+IDExICsNCiB0b29scy9pbmNsdWRlL3VhcGkvbGludXgvdm1fc29ja2V0cy5oICAgfCAgIDggKw0K
+IHRvb2xzL3Rlc3RpbmcvdnNvY2svTWFrZWZpbGUgICAgICAgICAgICB8ICAgMSArDQogdG9vbHMv
+dGVzdGluZy92c29jay9jb250cm9sLmMgICAgICAgICAgIHwgIDM0ICsrKw0KIHRvb2xzL3Rlc3Rp
+bmcvdnNvY2svY29udHJvbC5oICAgICAgICAgICB8ICAgMiArDQogdG9vbHMvdGVzdGluZy92c29j
+ay9yeF96ZXJvY29weS5jICAgICAgIHwgMzU2ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysr
+KysrDQogdG9vbHMvdGVzdGluZy92c29jay92c29ja190ZXN0LmMgICAgICAgIHwgMjk1ICsrKysr
+KysrKysrKysrKysrKysrKysrKysrDQogMTUgZmlsZXMgY2hhbmdlZCwgMTE5NiBpbnNlcnRpb25z
+KCspLCAxNSBkZWxldGlvbnMoLSkNCg0KLS0gDQoyLjI1LjENCg==
