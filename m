@@ -2,105 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E46F853CDEB
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 19:14:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 091B353CE08
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 19:25:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344309AbiFCRN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 13:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35750 "EHLO
+        id S1344451AbiFCRZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 13:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344297AbiFCRN6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 13:13:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 66F1635A97
-        for <netdev@vger.kernel.org>; Fri,  3 Jun 2022 10:13:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654276436;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qZiiAYxaxMVVhxFITrMzwfTeeESt5JIMhKGAkJ8Xd4w=;
-        b=M7P6DwZd3u8xjiHet1Z57pnlkK/v1yTZ0cPtmVcFbGb292rDGLpwQSkiEyoi3mXpixm8/z
-        vuDtzMqQWunsi4mi5TkjpigAtEZ0J2q/h1BxakRYcssC+UaQwFHbwNVeZxYFKMFCxSSAaO
-        DbpSa3x/rkHKLo8VKhr78GCB+z5VKjA=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-280-MqhGurQ4PRiAWQKcTMM7gw-1; Fri, 03 Jun 2022 13:13:54 -0400
-X-MC-Unique: MqhGurQ4PRiAWQKcTMM7gw-1
-Received: by mail-qk1-f199.google.com with SMTP id az40-20020a05620a172800b006a5faff65c8so6395284qkb.7
-        for <netdev@vger.kernel.org>; Fri, 03 Jun 2022 10:13:54 -0700 (PDT)
+        with ESMTP id S1344444AbiFCRZa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 13:25:30 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96885527FE
+        for <netdev@vger.kernel.org>; Fri,  3 Jun 2022 10:25:28 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id i11so14862913ybq.9
+        for <netdev@vger.kernel.org>; Fri, 03 Jun 2022 10:25:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9d7m1DB2JYorAFcfrJRCyYngv/Ipyhp23NdS37Fbtxg=;
+        b=URVQb1JkqaW1ZxUmYQ5sQlIodWx8/3heQ74G3ifWb6OpIziXlv8ER/kur16b8WoQp4
+         Lc75UyQ3wEz6iiXKQ8UhcNPavNi5XJQbcreWYMbvM5B1SvdDeRX2QhDybf7QiVx3ovoa
+         P9UtVL9f2yrR7ABjofsD/R/Wawv52H4VhdVBY2dYjjOPRr2oet+wr58sqTAgUHoYjoUb
+         QpvYsttsm2TqMFvOve3llhXgR+a3j2q2nJMOxhNJOScXi11csrk7F00sVwfpQAJ//JqB
+         un16nZdFbn+rv+2qfdYf+R1Xsx8fbDZo0yOXaVS9L05xFbaYKY8IaFxLUs5lR0uGl7zz
+         ZZhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=qZiiAYxaxMVVhxFITrMzwfTeeESt5JIMhKGAkJ8Xd4w=;
-        b=krSiv53X2oi7tDV9tqPu+Z8f6vfPuwS94AlqH2UTli7eUjwTQn7b3PZ+LxJJV61uXF
-         PUwJqZ/yidIlmw7CuINMn/u2qzBi5vKQ6H4J5cjw26ZK9uMKN+DC09c0ViMl6HdPAZYh
-         L7Hh54fmZ+saMi3g8wsRDJOSaWZ777A+BWqce4rIBsnHk8t+Celh4j6yFz/f7oFfxJw1
-         U+Dbu1U2R7FxEtL3+Kb1epdAaWBZs4W+LcxgFET0OCWnJ5CGEj/BkziTsNEkIaScoM9g
-         48KQggnis5r3MOR8d8V86Smw0ypCZ0KjYPR0noWP15fsKPMoFfbmQMn5paM9+4Av9wgN
-         acuQ==
-X-Gm-Message-State: AOAM532MDJvvZRhX9Mij8gniIUbQg9h7f4JCuf28A8knoI0BJdp+IPwY
-        mgFFigbw9SZoQinR7yl3fmDQa9/TWYMOkfdvGPfv3y8y+mCZrnNl2JLHbpOW91qfB4hyTAQjUqc
-        yPfBCR57HYNoF1b6M
-X-Received: by 2002:ad4:43e9:0:b0:462:6062:82ba with SMTP id f9-20020ad443e9000000b00462606282bamr41958235qvu.70.1654276433699;
-        Fri, 03 Jun 2022 10:13:53 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwwQG+tJHvXZScmjdVhwkEzp2abOgy7MnyCRyloUjacCm7hjuvm+xhwbSEMj9rhHw2p6suppA==
-X-Received: by 2002:ad4:43e9:0:b0:462:6062:82ba with SMTP id f9-20020ad443e9000000b00462606282bamr41958206qvu.70.1654276433378;
-        Fri, 03 Jun 2022 10:13:53 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
-        by smtp.gmail.com with ESMTPSA id s6-20020a05622a018600b002fcdfed2453sm5659974qtw.64.2022.06.03.10.13.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jun 2022 10:13:52 -0700 (PDT)
-Message-ID: <33ceb9b576c98cf0fae1d37a3a95f534975410a6.camel@redhat.com>
-Subject: Re: [PATCH v2] ipv6/addrconf: fix timing bug in tempaddr regen
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Sam Edwards <cfsworks@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>
-Date:   Fri, 03 Jun 2022 19:13:49 +0200
-In-Reply-To: <CAH5Ym4iS=d+dUAg+85wmRJv+jV=Cet=UtN1pNWejMV5fdPVprA@mail.gmail.com>
-References: <20220528004820.5916-1-CFSworks@gmail.com>
-         <c1c7a1207986d4ad9e80a301fe5e1415631949a9.camel@redhat.com>
-         <CAH5Ym4iS=d+dUAg+85wmRJv+jV=Cet=UtN1pNWejMV5fdPVprA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9d7m1DB2JYorAFcfrJRCyYngv/Ipyhp23NdS37Fbtxg=;
+        b=D9cpWrEeGBVZkSYXy85Vi498VixDapgK2+Zg4HzVn24YV2w03+D+wAHvL5tEwvrAKD
+         kxNzgHa3wFj4mElh3P6rzyevMJu1mSt1ZmykaVfte4CqU3gMQzAY92e3BZO5T7JbgafG
+         /M5JtREz3qEISL9iKMyOL0t+JkOQTzzgzw8sfCUC53iovExYNCh01n2aGQfM3OAE2RD/
+         Yh+9j//OtxO5e1P0b4ijsOyJ0SU3sE2lLbE7Q5UCHekGvJHBtV9OuiPPGCTv/4E3cxxE
+         KccnGRFUs57gE4Ntge2wtk7QLDscfeMfjFiWcQa2yTren++Zfw1v4vUO2neQM2BsbVHR
+         HRLw==
+X-Gm-Message-State: AOAM531kJEh/qTl5R3JrZnR0nzEusHkQBUQ/wOg9XtLMo/z9nk6Mirti
+        Aty1fZkS6GlHmm/2T1bJ+NB9Y86PNs6Pmf1VddU4Eg==
+X-Google-Smtp-Source: ABdhPJxf9t98itOGujrgic0ySJOm8xg1lh3ELD9RztTvYghZn9PWg0G/2n3G5/cLA3+ZqRARoLBWHk2qXYPDrLAVE04=
+X-Received: by 2002:a25:aa32:0:b0:65c:af6a:3502 with SMTP id
+ s47-20020a25aa32000000b0065caf6a3502mr12290545ybi.598.1654277127473; Fri, 03
+ Jun 2022 10:25:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <2997c5b0-3611-5e00-466c-b2966f09f067@nbd.name> <1654245968-8067-1-git-send-email-chen45464546@163.com>
+In-Reply-To: <1654245968-8067-1-git-send-email-chen45464546@163.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 3 Jun 2022 10:25:16 -0700
+Message-ID: <CANn89iKiyh36ULH4PCXF4c8sBdh9WLksMoMcmQwipZYWCzBkMA@mail.gmail.com>
+Subject: Re: [PATCH v2] net: ethernet: mtk_eth_soc: fix misuse of mem alloc
+ interface netdev[napi]_alloc_frag
+To:     Chen Lin <chen45464546@163.com>
+Cc:     Felix Fietkau <nbd@nbd.name>, Jakub Kicinski <kuba@kernel.org>,
+        john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-mediatek@lists.infradead.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-06-02 at 23:02 -0600, Sam Edwards wrote:
-> Since this is a periodic routine, it receives coverage as the system
-> runs normally. If we're concerned about protecting this change from
-> regressions and/or through the merge process, some kind of automated
-> test might be in order, but right now the way to test it is to leave
-> the system up, with tempaddrs enabled, on a IPv6 SLAAC network, for
-> several multiples of the temp_prefered_lft.
+On Fri, Jun 3, 2022 at 1:46 AM Chen Lin <chen45464546@163.com> wrote:
+>
+> When rx_flag == MTK_RX_FLAGS_HWLRO,
+> rx_data_len = MTK_MAX_LRO_RX_LENGTH(4096 * 3) > PAGE_SIZE.
+> netdev_alloc_frag is for alloction of page fragment only.
+> Reference to other drivers and Documentation/vm/page_frags.rst
+>
+> Branch to use alloc_pages when ring->frag_size > PAGE_SIZE.
+>
+> Signed-off-by: Chen Lin <chen45464546@163.com>
 
-It does not look easy, but you could use kunit to create e.g. a
-temporary address on the loopback device with the critical expiration
-time setting and check that it's deleted in due time - possibly after
-tuning the defaults to a reasonably short period.
+...
 
-The above will additionally open-up opportunities for more autoconf
-tests.
+>                         goto release_desc;
+> @@ -1914,7 +1923,16 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
+>                 return -ENOMEM;
+>
+>         for (i = 0; i < rx_dma_size; i++) {
+> -               ring->data[i] = netdev_alloc_frag(ring->frag_size);
 
-Up to your good will ;)
+Note aside, calling netdev_alloc_frag() in a loop like that is adding
+GFP_ATOMIC pressure.
 
-Thanks
+mtk_rx_alloc() being in process context, using GFP_KERNEL allocations
+would be less aggressive and
+have more chances to succeed.
 
-Paolo
-
+We probably should offer a generic helper. This could be used from
+driver/net/tun.c and others.
