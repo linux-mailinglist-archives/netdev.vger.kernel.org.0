@@ -2,63 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5436F53D311
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 23:03:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 445C853D316
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 23:05:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348102AbiFCVDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 17:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
+        id S1348264AbiFCVFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 17:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231657AbiFCVDU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 17:03:20 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BC051C938;
-        Fri,  3 Jun 2022 14:03:19 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id m25so6353852lji.11;
-        Fri, 03 Jun 2022 14:03:19 -0700 (PDT)
+        with ESMTP id S231235AbiFCVFY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 17:05:24 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A8F1D0EE;
+        Fri,  3 Jun 2022 14:05:22 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id l30so14446573lfj.3;
+        Fri, 03 Jun 2022 14:05:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=opFA97GGrUrFUT9SvfZGm6iux5I1umYstFz0GJmvO1s=;
-        b=jOMm80if0JHj8ErxTGfdh03GdgfvdFKd6Rm1alGSNt5XLLhAvf+YxjFXlBjrOPM+IH
-         Bqw7cj6W6JWPuTAHSqT8gS9wHeRaefNGImH/RqKb2oufhCm81PGpOqFMpqe2tNbHIm0J
-         7zlfwHc8fYGAs/0Ckmg+fGFHk05ZmM4j08cerriR96KFSyR04OgiYMva6Mp2mHLqLMfS
-         j//3vwk/QUFUaP7pn0C3CHL9FMbRoL8KozrVyh9d60Dj1+/BpipN+SD6BOoCXt85vwql
-         i+uKT08GonypnGrT7ceT0R5CYHMyfes2Oxln2HFd5Ag3DlumcUWfuaI4Jc1agK7EbgdW
-         4tSw==
+        bh=rdCC350CRfTnlMVl9hZPunLr7i2db8KX60dDtm/jhb4=;
+        b=dtlC/kgJuVZ3CpEdyshW/IR+2qIgLu09prKB5QevJec1hXcL9NpbvvzgNZ71mOaAiZ
+         PftpokKOYCrGeork8uYNkaZozFeRadECDkdIa16Jn4C/UQtALgI6m446ReodOYVPs+Kk
+         Kejoro6Tj3+9RBJ/zDzt6A1+Co7sMDJnAiH3pOJ5YsamY4dDsQYB5nte2cBU8u0S7/GB
+         u4AYa+ZGfS/5XzGXrNdKIn0k1wBWzELkZRwu2sJ+63YdiywR+SyoxwBfilufmJboPU+o
+         caid2AT5hUUlS8YLSUyMINY4lZO28FEotMfq4nVHXqBuFNUVmpLr3MWsHN55PMWHTMAV
+         /M7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=opFA97GGrUrFUT9SvfZGm6iux5I1umYstFz0GJmvO1s=;
-        b=3RR4+ud4uuGzRwN+mHl8tYSNDJwJQpQYNO+dqwJWZpj1rSx7e673LhNXx+hd0OxVcL
-         a5vSLsoOiPtz4G81iCRohwBU+mAUvLDSxMUW9+WFke7w7pfYHMfwft6CbQVQr64CVh4E
-         E3jQsVVHQj1j/KQeZZ26BiE03Jdd0Z4mxF7Z0hNm0no6rqA66yG54hcVWjZYMIvfgm6V
-         BpmzfM3YHIxtjoY6Gzpx9QPyhXOGtI1WywcHkyADLgAYtQ5vOFJO5R+hlC3PVdz9mK3u
-         nKtLwAJ9xQg1cVQsSKJeSkdObzIHgsbMk9YuSUnUpzOiwaIRdAchUEK3vH5vG5CiX26G
-         TRlw==
-X-Gm-Message-State: AOAM530Cp3qOfktnZs0QVgipBTseqvd6IInkwUhXbGKdzUvs9MxLaIIU
-        HNGTUdNHXnZOVlr/bycbcCJnbr1G95BvseVPG/A=
-X-Google-Smtp-Source: ABdhPJzmpEZzWq0TOpHSFyPqm8mLnO15YE4hqSuCFi23XZFXNjH9RoA689fYNyTFgdEhQVBfT9Zar6dctkoGXtjQjo8=
-X-Received: by 2002:a2e:1f12:0:b0:255:67ae:b655 with SMTP id
- f18-20020a2e1f12000000b0025567aeb655mr10080273ljf.303.1654290197923; Fri, 03
- Jun 2022 14:03:17 -0700 (PDT)
+        bh=rdCC350CRfTnlMVl9hZPunLr7i2db8KX60dDtm/jhb4=;
+        b=RfDLVmuozmgPtcBS05wywyXpL/qDYL5EJqGUX3HFQ/Y+k9sW9m2THQyrYIS7QspLe/
+         gmbJHQgbTpLtXaH8/458ZsTfXynWFe3IKHSQ3zgeaeIHdfMN2wd/TsxQaoTTPzPRq9p7
+         PkZjuVjW3OaYg31+7x+sNqPdaXbfkoWjWVpTMbgt9pRwrWeav6djonF9DEh7My4GXx4Y
+         8wKy07q1oNpEK/sqPz4+RlwxA/geV6e7UfnYKDZp4a2fmv426zXmp+nANPYRS0PdTwRy
+         c54DgeYjpvz151q3rISSBhhjqQR7Lj7aIf1PCGy9xWNCBR9itmqkameO3B6o9gHCUKoT
+         5ijw==
+X-Gm-Message-State: AOAM532QXQCakQ/sLN2urSOFmYTz6co0IGzgc0uwN3q9ejASQZwtnaJv
+        fHXY3IxD1NFJMWKkA3H9Iq0QOsGlaxhZ0fZx2Bs=
+X-Google-Smtp-Source: ABdhPJxQRsoWD2DZFdgj6bMc6YwCRCjL0tBk07f4Tytq4xquHn/ejDy48a4Wxbt7fLch3VWacC+ZwogYEJcokg0BPXo=
+X-Received: by 2002:a05:6512:2625:b0:478:5a51:7fe3 with SMTP id
+ bt37-20020a056512262500b004785a517fe3mr7697698lfb.158.1654290320714; Fri, 03
+ Jun 2022 14:05:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220530092815.1112406-1-pulehui@huawei.com> <20220530092815.1112406-5-pulehui@huawei.com>
- <a31efed5-a436-49c9-4126-902303df9766@iogearbox.net>
-In-Reply-To: <a31efed5-a436-49c9-4126-902303df9766@iogearbox.net>
+References: <20220530092815.1112406-1-pulehui@huawei.com> <20220530092815.1112406-7-pulehui@huawei.com>
+In-Reply-To: <20220530092815.1112406-7-pulehui@huawei.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 3 Jun 2022 14:03:06 -0700
-Message-ID: <CAEf4BzacrRNDDYFR_4GH40+wxff=hCiyxymig6N+NVrM537AAA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 4/6] libbpf: Unify memory address casting
- operation style
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Pu Lehui <pulehui@huawei.com>, bpf <bpf@vger.kernel.org>,
-        linux-riscv@lists.infradead.org,
+Date:   Fri, 3 Jun 2022 14:05:09 -0700
+Message-ID: <CAEf4Bza4RT=KFhr9ev29967dyT0eF_+6ZRqK35beUvnA_NbcqQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 6/6] selftests/bpf: Remove the casting about
+ jited_ksyms and jited_linfo
+To:     Pu Lehui <pulehui@huawei.com>
+Cc:     bpf <bpf@vger.kernel.org>, linux-riscv@lists.infradead.org,
         Networking <netdev@vger.kernel.org>,
         open list <linux-kernel@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
         Luke Nelson <luke.r.nels@gmail.com>,
@@ -80,39 +79,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 30, 2022 at 2:03 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Mon, May 30, 2022 at 1:58 AM Pu Lehui <pulehui@huawei.com> wrote:
 >
-> On 5/30/22 11:28 AM, Pu Lehui wrote:
-> > The members of bpf_prog_info, which are line_info, jited_line_info,
-> > jited_ksyms and jited_func_lens, store u64 address pointed to the
-> > corresponding memory regions. Memory addresses are conceptually
-> > unsigned, (unsigned long) casting makes more sense, so let's make
-> > a change for conceptual uniformity.
-> >
-> > Signed-off-by: Pu Lehui <pulehui@huawei.com>
-> > ---
-> >   tools/lib/bpf/bpf_prog_linfo.c | 9 +++++----
-> >   1 file changed, 5 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/bpf_prog_linfo.c b/tools/lib/bpf/bpf_prog_linfo.c
-> > index 5c503096ef43..7beb060d0671 100644
-> > --- a/tools/lib/bpf/bpf_prog_linfo.c
-> > +++ b/tools/lib/bpf/bpf_prog_linfo.c
-> > @@ -127,7 +127,8 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
-> >       prog_linfo->raw_linfo = malloc(data_sz);
-> >       if (!prog_linfo->raw_linfo)
-> >               goto err_free;
-> > -     memcpy(prog_linfo->raw_linfo, (void *)(long)info->line_info, data_sz);
-> > +     memcpy(prog_linfo->raw_linfo, (void *)(unsigned long)info->line_info,
-> > +            data_sz);
+> We have unified data extension operation of jited_ksyms and jited_linfo
+> into zero extension, so there's no need to cast u64 memory address to
+> long data type.
 >
-> Took in patch 1-3, lgtm, thanks! My question around the cleanups in patch 4-6 ...
-> there are various other such cases e.g. in libbpf, perhaps makes sense to clean all
-> of them up at once and not just the 4 locations in here.
+> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+> ---
+>  tools/testing/selftests/bpf/prog_tests/btf.c | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
+> index e6612f2bd0cf..65bdc4aa0a63 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/btf.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/btf.c
+> @@ -6599,8 +6599,8 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
+>         }
+>
+>         if (CHECK(jited_linfo[0] != jited_ksyms[0],
+> -                 "jited_linfo[0]:%lx != jited_ksyms[0]:%lx",
+> -                 (long)(jited_linfo[0]), (long)(jited_ksyms[0]))) {
+> +                 "jited_linfo[0]:%llx != jited_ksyms[0]:%llx",
+> +                 jited_linfo[0], jited_ksyms[0])) {
 
-if (void *)(long) pattern is wrong, then I guess the best replacement
-should be (void *)(uintptr_t) ?
+__u64 is not always printed with %lld, on some platforms it is
+actually %ld, so to avoid compiler warnings we just cast them to long
+long or unsigned long long (and then %lld or %llu is fine). So please
+update this part here and below.
 
+>                 err = -1;
+>                 goto done;
+>         }
+> @@ -6618,16 +6618,16 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
+>                 }
 >
-> Thanks,
-> Daniel
+>                 if (CHECK(jited_linfo[i] <= jited_linfo[i - 1],
+> -                         "jited_linfo[%u]:%lx <= jited_linfo[%u]:%lx",
+> -                         i, (long)jited_linfo[i],
+> -                         i - 1, (long)(jited_linfo[i - 1]))) {
+> +                         "jited_linfo[%u]:%llx <= jited_linfo[%u]:%llx",
+> +                         i, jited_linfo[i],
+> +                         i - 1, jited_linfo[i - 1])) {
+>                         err = -1;
+>                         goto done;
+>                 }
+>
+>                 if (CHECK(jited_linfo[i] - cur_func_ksyms > cur_func_len,
+> -                         "jited_linfo[%u]:%lx - %lx > %u",
+> -                         i, (long)jited_linfo[i], (long)cur_func_ksyms,
+> +                         "jited_linfo[%u]:%llx - %llx > %u",
+> +                         i, jited_linfo[i], cur_func_ksyms,
+>                           cur_func_len)) {
+>                         err = -1;
+>                         goto done;
+> --
+> 2.25.1
+>
