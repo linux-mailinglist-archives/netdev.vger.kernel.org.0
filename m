@@ -2,68 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D54D53D252
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 21:21:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 561C353D25B
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 21:28:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231744AbiFCTVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 15:21:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39304 "EHLO
+        id S1349252AbiFCT21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 15:28:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231741AbiFCTVe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 15:21:34 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79FCD48889;
-        Fri,  3 Jun 2022 12:21:32 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id h23so14091369lfe.4;
-        Fri, 03 Jun 2022 12:21:32 -0700 (PDT)
+        with ESMTP id S237562AbiFCT2Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 15:28:25 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEF7D2A71E;
+        Fri,  3 Jun 2022 12:28:24 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id a15so3064465wrh.2;
+        Fri, 03 Jun 2022 12:28:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vRu2HMj+s0FqdXBsHbhcGVbuFfWd/V443d4ot13YWmo=;
-        b=OKV7tTcP036iyUftGLcun4D6VX/mIbJnOq4KbylU0UckLQV0YRi7rT20aalYukRkbB
-         x5ztf/ipTvP7Aclc2Yk8Oug9b6uiclWXsTxwWWHTfF2hnQ5DUra8Tc71Eeyzq5PzP4+7
-         jT7neRneUab4RjY5G+Q3SqnJMP5Oviq/ixZWD/HsQ4lHEeQNTh+o6OYeCG3pWn6bYI78
-         gzVzLvFBc/npFvyaFYPysstw+gN7bPMN44vtBD2k/yDBlGEnK+ks4pINO1n38lqH7y4S
-         OAjofZF6yPpvsFVMvdXpEwIvywbS8KtA8lq4NKFoC6hFvdkfVdo2KfVFCDlyUIO9fRUu
-         ta6w==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4uPbkf5UwcTv67eMoEK+jU8Mqfc5cs35phf6Mu3osaU=;
+        b=bvRS7X5ZAUfrd3gsGqATChaxH2yV66tlhpE6HY65QIoEVuaoLZ/Ed6vmfKj5dVax7Y
+         KC7sF+Kes73MccmeOXAvLhCbXQVVvxlfO/eIxSsCYH9MJBlOADOHTrWJnw3pstfmmHJI
+         59URI4W5msImaCKEFm2/IciRNO0/Q4LwA0He8pX2eZyw2cQsFlWU0CqaYzHMCCp/g7zZ
+         jbhv2xQ2tRqfe9EvDbJFu9pmGpOtGMupcBW/JI1oidB+Eax7bEbLkEMJRzSulBT7sxV3
+         frpY3rc7gZJ/sKy9wqeuo1KX0E22d8S29LO9IDEAk7/IIx8l+PdK71TRB33IDERBIySw
+         bSBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vRu2HMj+s0FqdXBsHbhcGVbuFfWd/V443d4ot13YWmo=;
-        b=neMM2MWL/UcMb2R0HfJVjEoYHu2gfUdiZULgI49Pj5lJBh76t/VT7KC2YBWV642HTf
-         2QWTK7mnh3ChT2zsRvGkcRCY4B+UEgOzrBd0leFFZ50xKHDvA+hvugNBtz7qZE93ufqQ
-         ZS4Zoik2YbPF2V+jNPOKdAdTTRemZ1tpjMTDY0u/6lpwb/5YIINPDRo6hja16dc3zSpX
-         ElsQYDNZl6nZH/pBhF+0+s3nCd9E1GvuLdogAYpnHX2BfZjkkZ8a4AAYGCAsaFi3Vsb4
-         C2oeclbRXbAk8TEAldHdmHUjIfIG56oKne19Q4gzmvGKWRJUSAZj4OD/16kcm62DdMXr
-         oWXg==
-X-Gm-Message-State: AOAM532x1TNX7Hs2Mw+aM0J1lBYbNVTRyP9JVJK57/VZ9SRRTx+8YfSF
-        NqKhETjpttxe8iiqbWy2ZWnSXuKCYxC/PaJhtcM=
-X-Google-Smtp-Source: ABdhPJwMLUFTdm93iXq8E4Z/0ob4mwl9RuQRIleNT7awKXEEwPxrOOobu6es6AroM4YQ/4R62QnGVt+d9OBosxaSwdc=
-X-Received: by 2002:a05:6512:685:b0:479:176c:5a5e with SMTP id
- t5-20020a056512068500b00479176c5a5emr3578203lfe.408.1654284090835; Fri, 03
- Jun 2022 12:21:30 -0700 (PDT)
-MIME-Version: 1.0
-References: <165189881197.175864.14757002789194211860.stgit@devnote2>
- <20220524192301.0c2ab08a@gandalf.local.home> <20220526232530.cb7d0aed0c60625ef093a735@kernel.org>
- <Yo+TWcfpyHy55Il5@krava> <20220527011434.9e8c47d1b40f549baf2cf52a@kernel.org>
- <YpFMQOjvV/tgwsuK@krava> <20220528101928.5118395f2d97142f7625b761@kernel.org>
-In-Reply-To: <20220528101928.5118395f2d97142f7625b761@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 3 Jun 2022 12:21:19 -0700
-Message-ID: <CAEf4BzZdPc3HVUwtuyifaPwz_=9VtykafJsSsvDbYonLA=K=2Q@mail.gmail.com>
-Subject: Re: [PATCH] rethook: Reject getting a rethook if RCU is not watching
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Jiri Olsa <olsajiri@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4uPbkf5UwcTv67eMoEK+jU8Mqfc5cs35phf6Mu3osaU=;
+        b=dr1DQzChr8lxrvMjk1VzlWQXDv1xc/nuNIbDih6s0GM13hntzhsjbKb/oAjwF4aQaS
+         k5LzILNmR1DU2RBQ5j8CKdDJpTe88PwX2yRVBI9bRUFW//PEev6r+VF5XdG7OcREfcAX
+         y8lqkfXa0Z7B4y7fOlMDVeK8UyCOk+LFnJBdR2vV39bnDHi91cuvJM965YvmObLHTXY+
+         qPGtvUim8P/WsyEkflZ4cZD9/enN2MBGHZS+27aAV1+KMysc6QyEjC0kxFogTJeBcgBt
+         lgnxB1/nvtAF37xhfm/Xku9pcJXlwKYir03ovzcUWB+X3XaS0jR5wk+epH9rG5ShLm1g
+         OqUA==
+X-Gm-Message-State: AOAM532HtCRWQ4G14DzpGouUc2KMSkFP0ufhpw4aGrsnkrzd9XZDMlei
+        AIPytm65DuEbw9PdjPoDQs0=
+X-Google-Smtp-Source: ABdhPJwHFEDixDm7cpm7RPAbljg13vJ/exLx3Kh7goEgC/OPKYeE7bcC3AD0Omo6R6xVbeFOF8L03A==
+X-Received: by 2002:a5d:6445:0:b0:211:7eee:2f94 with SMTP id d5-20020a5d6445000000b002117eee2f94mr9447352wrw.631.1654284503374;
+        Fri, 03 Jun 2022 12:28:23 -0700 (PDT)
+Received: from krava ([83.240.62.162])
+        by smtp.gmail.com with ESMTPSA id h6-20020adfa4c6000000b0020fe61acd09sm8560295wrb.12.2022.06.03.12.28.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jun 2022 12:28:22 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Fri, 3 Jun 2022 21:28:20 +0200
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Ian Rogers <irogers@google.com>
+Subject: Re: [PATCHv3 bpf-next 2/2] perf tools: Rework prologue generation
+ code
+Message-ID: <Yppg1KCn4Mkw6T2K@krava>
+References: <20220603092110.1294855-1-jolsa@kernel.org>
+ <20220603092110.1294855-3-jolsa@kernel.org>
+ <CAEf4BzYB44Ht20mF2RtYezaJU_TfN+j8nvZNbd82uvN=TmCXAA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYB44Ht20mF2RtYezaJU_TfN+j8nvZNbd82uvN=TmCXAA@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -74,126 +85,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 27, 2022 at 6:19 PM Masami Hiramatsu <mhiramat@kernel.org> wrote:
->
-> On Sat, 28 May 2022 00:10:08 +0200
-> Jiri Olsa <olsajiri@gmail.com> wrote:
->
-> > On Fri, May 27, 2022 at 01:14:34AM +0900, Masami Hiramatsu wrote:
-> > > On Thu, 26 May 2022 16:49:26 +0200
-> > > Jiri Olsa <olsajiri@gmail.com> wrote:
-> > >
-> > > > On Thu, May 26, 2022 at 11:25:30PM +0900, Masami Hiramatsu wrote:
-> > > > > On Tue, 24 May 2022 19:23:01 -0400
-> > > > > Steven Rostedt <rostedt@goodmis.org> wrote:
-> > > > >
-> > > > > > On Sat,  7 May 2022 13:46:52 +0900
-> > > > > > Masami Hiramatsu <mhiramat@kernel.org> wrote:
-> > > > > >
-> > > > > > Is this expected to go through the BPF tree?
-> > > > > >
-> > > > >
-> > > > > Yes, since rethook (fprobe) is currently used only from eBPF.
-> > > > > Jiri, can you check this is good for your test case?
-> > > >
-> > > > sure I'll test it.. can't see the original email,
-> > > > perhaps I wasn't cc-ed.. but I'll find it
-> > >
-> > > Here it is. I Cc-ed your @kernel.org address.
-> > > https://lore.kernel.org/all/165189881197.175864.14757002789194211860.stgit@devnote2/T/#u
-> > >
-> > > >
-> > > > is this also related to tracing 'idle' functions,
-> > > > as discussed in here?
-> > > >   https://lore.kernel.org/bpf/20220515203653.4039075-1-jolsa@kernel.org/
-> > >
-> > > Ah, yes. So this may not happen with the above patch, but for the
-> > > hardening (ensuring it is always safe), I would like to add this.
-> > >
-> > > >
-> > > > because that's the one I can reproduce.. but I can
-> > > > certainly try that with your change as well
-> > >
-> > > Thank you!
+On Fri, Jun 03, 2022 at 11:46:52AM -0700, Andrii Nakryiko wrote:
+> On Fri, Jun 3, 2022 at 2:21 AM Jiri Olsa <jolsa@kernel.org> wrote:
 > >
-> > it did not help the idle warning as expected, but I did not
-> > see any problems running bpf tests on top of this
->
-> Oops, right. I forgot this is only for the rethook, not protect the
-> fprobe handlers, since fprobe code doesn't involve the RCU code (it
-> depends on ftrace's check). Sorry about that.
-> Hmm, I need to add a test code for this issue, but that could be
-> solved by your noninstr patch.
->
-
-
-Masami,
-
-It's not clear to me, do you intend to send a new revision with some
-more tests or this patch as is ready to go into bpf tree?
-
-
-> Thank you,
->
+> > Some functions we use for bpf prologue generation are going to be
+> > deprecated. This change reworks current code not to use them.
 > >
-> > jirka
+> > We need to replace following functions/struct:
+> >    bpf_program__set_prep
+> >    bpf_program__nth_fd
+> >    struct bpf_prog_prep_result
 > >
-> > >
-> > > >
-> > > > jirka
-> > > >
-> > > > >
-> > > > > Thank you,
-> > > > >
-> > > > >
-> > > > > > -- Steve
-> > > > > >
-> > > > > >
-> > > > > > > Since the rethook_recycle() will involve the call_rcu() for reclaiming
-> > > > > > > the rethook_instance, the rethook must be set up at the RCU available
-> > > > > > > context (non idle). This rethook_recycle() in the rethook trampoline
-> > > > > > > handler is inevitable, thus the RCU available check must be done before
-> > > > > > > setting the rethook trampoline.
-> > > > > > >
-> > > > > > > This adds a rcu_is_watching() check in the rethook_try_get() so that
-> > > > > > > it will return NULL if it is called when !rcu_is_watching().
-> > > > > > >
-> > > > > > > Fixes: 54ecbe6f1ed5 ("rethook: Add a generic return hook")
-> > > > > > > Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
-> > > > > > > ---
-> > > > > > >  kernel/trace/rethook.c |    9 +++++++++
-> > > > > > >  1 file changed, 9 insertions(+)
-> > > > > > >
-> > > > > > > diff --git a/kernel/trace/rethook.c b/kernel/trace/rethook.c
-> > > > > > > index b56833700d23..c69d82273ce7 100644
-> > > > > > > --- a/kernel/trace/rethook.c
-> > > > > > > +++ b/kernel/trace/rethook.c
-> > > > > > > @@ -154,6 +154,15 @@ struct rethook_node *rethook_try_get(struct rethook *rh)
-> > > > > > >     if (unlikely(!handler))
-> > > > > > >             return NULL;
-> > > > > > >
-> > > > > > > +   /*
-> > > > > > > +    * This expects the caller will set up a rethook on a function entry.
-> > > > > > > +    * When the function returns, the rethook will eventually be reclaimed
-> > > > > > > +    * or released in the rethook_recycle() with call_rcu().
-> > > > > > > +    * This means the caller must be run in the RCU-availabe context.
-> > > > > > > +    */
-> > > > > > > +   if (unlikely(!rcu_is_watching()))
-> > > > > > > +           return NULL;
-> > > > > > > +
-> > > > > > >     fn = freelist_try_get(&rh->pool);
-> > > > > > >     if (!fn)
-> > > > > > >             return NULL;
-> > > > > >
-> > > > >
-> > > > >
-> > > > > --
-> > > > > Masami Hiramatsu (Google) <mhiramat@kernel.org>
-> > >
-> > >
-> > > --
-> > > Masami Hiramatsu (Google) <mhiramat@kernel.org>
->
->
-> --
-> Masami Hiramatsu (Google) <mhiramat@kernel.org>
+> > Currently we use bpf_program__set_prep to hook perf callback before
+> > program is loaded and provide new instructions with the prologue.
+> >
+> > We replace this function/ality by taking instructions for specific
+> > program, attaching prologue to them and load such new ebpf programs
+> > with prologue using separate bpf_prog_load calls (outside libbpf
+> > load machinery).
+> >
+> > Before we can take and use program instructions, we need libbpf to
+> > actually load it. This way we get the final shape of its instructions
+> > with all relocations and verifier adjustments).
+> >
+> > There's one glitch though.. perf kprobe program already assumes
+> > generated prologue code with proper values in argument registers,
+> > so loading such program directly will fail in the verifier.
+> >
+> > That's where the fallback pre-load handler fits in and prepends
+> > the initialization code to the program. Once such program is loaded
+> > we take its instructions, cut off the initialization code and prepend
+> > the prologue.
+> >
+> > I know.. sorry ;-)
+> >
+> > Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  tools/perf/util/bpf-loader.c | 128 ++++++++++++++++++++++++++++++-----
+> >  1 file changed, 110 insertions(+), 18 deletions(-)
+> >
+> > diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
+> > index e7992a0eb477..2ce5f9684863 100644
+> > --- a/tools/perf/util/bpf-loader.c
+> > +++ b/tools/perf/util/bpf-loader.c
+> > @@ -9,6 +9,7 @@
+> >  #include <linux/bpf.h>
+> >  #include <bpf/libbpf.h>
+> >  #include <bpf/bpf.h>
+> > +#include <linux/filter.h>
+> >  #include <linux/err.h>
+> >  #include <linux/kernel.h>
+> >  #include <linux/string.h>
+> > @@ -49,6 +50,7 @@ struct bpf_prog_priv {
+> >         struct bpf_insn *insns_buf;
+> >         int nr_types;
+> >         int *type_mapping;
+> > +       int *proglogue_fds;
+> 
+> massively copy/pasted typo? prologue_fds?
+
+mama mia :)) time to have my eyes checked..  sry, I'll send new version
+
+jirka
+
+> 
+> Other than that looks good to me, but we'll need Arnaldo's ack before
+> merging into bpf-next.
+> 
+> >  };
+> >
+> >  struct bpf_perf_object {
+> > @@ -56,6 +58,11 @@ struct bpf_perf_object {
+> >         struct bpf_object *obj;
+> >  };
+> >
+> 
+> [...]
