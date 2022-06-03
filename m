@@ -2,190 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AA4F53C82D
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 12:12:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F20E453C879
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 12:17:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243383AbiFCKKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 06:10:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46868 "EHLO
+        id S243493AbiFCKRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 06:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243480AbiFCKKc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 06:10:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6CCD3B3C7
-        for <netdev@vger.kernel.org>; Fri,  3 Jun 2022 03:10:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654251020;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=u3+EP9PD/XGXq5/0hvrOKGwV2S5RKvIGOAb6+LG+/kc=;
-        b=Lno5InqW3+LApULwQZ4iG2/7SLvz2U6xfy9oe4UMIKPV4azfXaBU+D/4vVOsZjsYmEpu69
-        4n1Xy2Nvy00iYBWf9qGkZCMLVnKej/gXVrRaI08OwsfbxrLqdjbzQRfgczxfqi39qqdHFz
-        OaxuL1fBydql0KYnGXIrJUYxnC2tkG0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-352-5xAbDisiOb6gLvcBpaFx1A-1; Fri, 03 Jun 2022 06:10:15 -0400
-X-MC-Unique: 5xAbDisiOb6gLvcBpaFx1A-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AB74380A0B9;
-        Fri,  3 Jun 2022 10:10:14 +0000 (UTC)
-Received: from eperezma.remote.csb (unknown [10.40.192.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 97681403371;
-        Fri,  3 Jun 2022 10:10:09 +0000 (UTC)
-From:   =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
-To:     kvm@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Longpeng <longpeng2@huawei.com>,
-        Stefano Garzarella <sgarzare@redhat.com>, dinang@xilinx.com,
-        Piotr.Uminski@intel.com, martinpo@xilinx.com, tanuj.kamde@amd.com,
-        Parav Pandit <parav@nvidia.com>,
-        Zhang Min <zhang.min9@zte.com.cn>, habetsm.xilinx@gmail.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>, lulu@redhat.com,
-        hanand@xilinx.com, martinh@xilinx.com,
-        Si-Wei Liu <si-wei.liu@oracle.com>, gautam.dawar@amd.com,
-        Xie Yongji <xieyongji@bytedance.com>, ecree.xilinx@gmail.com,
-        pabloc@xilinx.com, lvivier@redhat.com, Eli Cohen <elic@nvidia.com>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH v5 4/4] vdpa_sim: Implement suspend vdpa op
-Date:   Fri,  3 Jun 2022 12:09:44 +0200
-Message-Id: <20220603100944.871727-5-eperezma@redhat.com>
-In-Reply-To: <20220603100944.871727-1-eperezma@redhat.com>
-References: <20220603100944.871727-1-eperezma@redhat.com>
+        with ESMTP id S242867AbiFCKRA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 06:17:00 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D110BC2E;
+        Fri,  3 Jun 2022 03:16:57 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id h5so9846701wrb.0;
+        Fri, 03 Jun 2022 03:16:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/77dZPgSUoE0SYO0JlE+nz8jz/dM6461hDUeKKkiK0s=;
+        b=kElUmYPu2WBSWkfGdPIbo+gojVPSl0jt0cDt9so0uWBN/m2z2RDc+zIbLHSzoHY7vY
+         +bO/wYZJ0Km6ODvQkY6tK1XDnQJidCmvMfaj41NWfNmTrhJ7oLCHZwocQPa2uY+CR4IA
+         5af46pQmv0JicSIvE6FHu6nQhhIgBGd4Gz/t5Xz591iWxGGgpvbyGIoqW9pNY8sux0yO
+         EYO3rZSjCvYcoDfH0BKK+b5Nea/g1kJq2SIzahPbFB9ZcMsKXbIisPG8yN76p6KpmbOE
+         tYeMf0p4bSB+3OqM6wyPJU+Zp8hA5Xa1LVK1dLTpHYD7T1gK4LMuie7DqX6NMCxom4SO
+         C7Fg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/77dZPgSUoE0SYO0JlE+nz8jz/dM6461hDUeKKkiK0s=;
+        b=I2Lotal3i+uQr6Y6D2LQnR5iKBbV2po5reLC7nZ7jief+0NaxNhV/bWM6lnW/npAhb
+         xDZCvRi4s7mC6qQmdDEgntCzBjZawxVYGTp1bT6CQZ3YkiShSFnjUJvsJznoC6ic6QHh
+         JsCUHUQ31CcSj3/gIizU7LAkM5RQEFrgtrqUxiQiNYCnv6gztsgZtRdf/8h7nyLDA2bN
+         sgbbrWl5lfunmMt42MndrflsdMuuXWSifIsoVu3V6aFreMRAe6p7MpP7AxKhpAJujYFi
+         SMqch8qiN9HvLX/1pW6bWys7v/bmEx5jUTJOMDJ7P0ucwWfHj7dnCjLwRw6VDiGhRq9y
+         XwPg==
+X-Gm-Message-State: AOAM5305FiJKO3KxD/llrBJ8TslnRX81X3qs3jGNfZBwP48r0N5lcaOp
+        lwQWZc6byjHovN9EEgbBBG4=
+X-Google-Smtp-Source: ABdhPJxFlN7EwKPN65Ha7ej7Ny5RlrEjR5WPck7DmZIeb7VnVC7DAw1c3pUZYfma4V/da4LcaMMyPQ==
+X-Received: by 2002:adf:f110:0:b0:210:78bd:7ea5 with SMTP id r16-20020adff110000000b0021078bd7ea5mr7258471wro.459.1654251416418;
+        Fri, 03 Jun 2022 03:16:56 -0700 (PDT)
+Received: from krava ([193.85.244.190])
+        by smtp.gmail.com with ESMTPSA id h4-20020adffd44000000b002102d4ed579sm6826665wrs.39.2022.06.03.03.16.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Jun 2022 03:16:55 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Fri, 3 Jun 2022 12:16:53 +0200
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH bpf-next 2/3] ftrace: Keep address offset in
+ ftrace_lookup_symbols
+Message-ID: <YpnfldPKcEqesioK@krava>
+References: <20220527205611.655282-1-jolsa@kernel.org>
+ <20220527205611.655282-3-jolsa@kernel.org>
+ <CAEf4BzbfbPA-U+GObZy2cEZOn9qAHqRmKtKq-rPOVM=_+DGVww@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzbfbPA-U+GObZy2cEZOn9qAHqRmKtKq-rPOVM=_+DGVww@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement suspend operation for vdpa_sim devices, so vhost-vdpa will
-offer that backend feature and userspace can effectively suspend the
-device.
+On Thu, Jun 02, 2022 at 03:52:03PM -0700, Andrii Nakryiko wrote:
+> On Fri, May 27, 2022 at 1:56 PM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > We want to store the resolved address on the same index as
+> > the symbol string, because that's the user (bpf kprobe link)
+> > code assumption.
+> >
+> > Also making sure we don't store duplicates that might be
+> > present in kallsyms.
+> >
+> > Fixes: bed0d9a50dac ("ftrace: Add ftrace_lookup_symbols function")
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >  kernel/trace/ftrace.c | 13 +++++++++++--
+> >  1 file changed, 11 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+> > index 674add0aafb3..00d0ba6397ed 100644
+> > --- a/kernel/trace/ftrace.c
+> > +++ b/kernel/trace/ftrace.c
+> > @@ -7984,15 +7984,23 @@ static int kallsyms_callback(void *data, const char *name,
+> >                              struct module *mod, unsigned long addr)
+> >  {
+> >         struct kallsyms_data *args = data;
+> > +       const char **sym;
+> > +       int idx;
+> >
+> > -       if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
+> > +       sym = bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp);
+> > +       if (!sym)
+> > +               return 0;
+> > +
+> > +       idx = sym - args->syms;
+> > +       if (args->addrs[idx])
+> 
+> if we have duplicated symbols we won't increment args->found here,
+> right? So we won't stop early. But we also don't want to increment
+> args->found here because we use it to check that we don't have
+> duplicates (in addition to making sure we resolved all the unique
+> symbols), right?
+> 
+> So I wonder if in this situation should we return some error code to
+> signify that we encountered symbol duplicate?
 
-This is a must before get virtqueue indexes (base) for live migration,
-since the device could modify them after userland gets them. There are
-individual ways to perform that action for some devices
-(VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no
-way to perform it for any vhost device (and, in particular, vhost-vdpa).
+hum, this callback is called for each kallsyms symbol and there
+are duplicates in /proc/kallsyms.. so even if we have just single
+copy of such symbol in args->syms, bsearch will find this single
+symbol for all the duplicates in /proc/kallsyms and we will endup
+in here.. and it's still fine, we should continue
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
----
- drivers/vdpa/vdpa_sim/vdpa_sim.c     | 21 +++++++++++++++++++++
- drivers/vdpa/vdpa_sim/vdpa_sim.h     |  1 +
- drivers/vdpa/vdpa_sim/vdpa_sim_blk.c |  3 +++
- drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  3 +++
- 4 files changed, 28 insertions(+)
+jirka
 
-diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-index 0f28658996472..01f9377830b3e 100644
---- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
-+++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-@@ -107,6 +107,7 @@ static void vdpasim_do_reset(struct vdpasim *vdpasim)
- 	for (i = 0; i < vdpasim->dev_attr.nas; i++)
- 		vhost_iotlb_reset(&vdpasim->iommu[i]);
- 
-+	vdpasim->running = true;
- 	spin_unlock(&vdpasim->iommu_lock);
- 
- 	vdpasim->features = 0;
-@@ -505,6 +506,24 @@ static int vdpasim_reset(struct vdpa_device *vdpa)
- 	return 0;
- }
- 
-+static int vdpasim_suspend(struct vdpa_device *vdpa, bool suspend)
-+{
-+	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
-+	int i;
-+
-+	spin_lock(&vdpasim->lock);
-+	vdpasim->running = !suspend;
-+	if (vdpasim->running) {
-+		/* Check for missed buffers */
-+		for (i = 0; i < vdpasim->dev_attr.nvqs; ++i)
-+			vdpasim_kick_vq(vdpa, i);
-+
-+	}
-+	spin_unlock(&vdpasim->lock);
-+
-+	return 0;
-+}
-+
- static size_t vdpasim_get_config_size(struct vdpa_device *vdpa)
- {
- 	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
-@@ -694,6 +713,7 @@ static const struct vdpa_config_ops vdpasim_config_ops = {
- 	.get_status             = vdpasim_get_status,
- 	.set_status             = vdpasim_set_status,
- 	.reset			= vdpasim_reset,
-+	.suspend		= vdpasim_suspend,
- 	.get_config_size        = vdpasim_get_config_size,
- 	.get_config             = vdpasim_get_config,
- 	.set_config             = vdpasim_set_config,
-@@ -726,6 +746,7 @@ static const struct vdpa_config_ops vdpasim_batch_config_ops = {
- 	.get_status             = vdpasim_get_status,
- 	.set_status             = vdpasim_set_status,
- 	.reset			= vdpasim_reset,
-+	.suspend		= vdpasim_suspend,
- 	.get_config_size        = vdpasim_get_config_size,
- 	.get_config             = vdpasim_get_config,
- 	.set_config             = vdpasim_set_config,
-diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.h b/drivers/vdpa/vdpa_sim/vdpa_sim.h
-index 622782e922391..061986f30911a 100644
---- a/drivers/vdpa/vdpa_sim/vdpa_sim.h
-+++ b/drivers/vdpa/vdpa_sim/vdpa_sim.h
-@@ -66,6 +66,7 @@ struct vdpasim {
- 	u32 generation;
- 	u64 features;
- 	u32 groups;
-+	bool running;
- 	/* spinlock to synchronize iommu table */
- 	spinlock_t iommu_lock;
- };
-diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-index 42d401d439117..bcdb1982c378e 100644
---- a/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-+++ b/drivers/vdpa/vdpa_sim/vdpa_sim_blk.c
-@@ -204,6 +204,9 @@ static void vdpasim_blk_work(struct work_struct *work)
- 	if (!(vdpasim->status & VIRTIO_CONFIG_S_DRIVER_OK))
- 		goto out;
- 
-+	if (!vdpasim->running)
-+		goto out;
-+
- 	for (i = 0; i < VDPASIM_BLK_VQ_NUM; i++) {
- 		struct vdpasim_virtqueue *vq = &vdpasim->vqs[i];
- 
-diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
-index 5125976a4df87..886449e885026 100644
---- a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
-+++ b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
-@@ -154,6 +154,9 @@ static void vdpasim_net_work(struct work_struct *work)
- 
- 	spin_lock(&vdpasim->lock);
- 
-+	if (!vdpasim->running)
-+		goto out;
-+
- 	if (!(vdpasim->status & VIRTIO_CONFIG_S_DRIVER_OK))
- 		goto out;
- 
--- 
-2.31.1
-
+> 
+> 
+> >                 return 0;
+> >
+> >         addr = ftrace_location(addr);
+> >         if (!addr)
+> >                 return 0;
+> >
+> > -       args->addrs[args->found++] = addr;
+> > +       args->addrs[idx] = addr;
+> > +       args->found++;
+> >         return args->found == args->cnt ? 1 : 0;
+> >  }
+> >
+> > @@ -8017,6 +8025,7 @@ int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *a
+> >         struct kallsyms_data args;
+> >         int err;
+> >
+> > +       memset(addrs, 0x0, sizeof(*addrs) * cnt);
+> >         args.addrs = addrs;
+> >         args.syms = sorted_syms;
+> >         args.cnt = cnt;
+> > --
+> > 2.35.3
+> >
