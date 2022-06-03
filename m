@@ -2,264 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF47453C3EA
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 07:02:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2739E53C403
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 07:12:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239407AbiFCFCr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 01:02:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36994 "EHLO
+        id S240018AbiFCFLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 01:11:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236793AbiFCFCq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 01:02:46 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D91E0E90
-        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 22:02:43 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-30c2f288f13so71477767b3.7
-        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 22:02:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=TXRGKDjuV3Bq9ZbA8Leir/RfHu2gALAHKQulLEnomsI=;
-        b=AY6SxYD/GJaxEBNjI5eveAfUfzOJdwNus4n71rq5wRm/WDpxW6IB9b4Z8B3mq/toJ4
-         zDYQ+3vMBo1KWzMekk8z1A7zet8bjk7udKZfQR7tj1pQtThQdyfuaz7p+HzzWiptxqh1
-         IC93JJOXfri274h2pzBkXM0k6f/64IePTIkf5F/gQ8k/CLUhkbxCBabl3tUFcoZgkOea
-         4S68PgaL0kyngFR4iAwD3nGjICdUjtoSt8a92Fp/gDEq9/6nncDZmPmTcLC8lwm+n/bh
-         tK2L3arsM8XIA3+GCI0xeHICfb3WUmWcrGfjeqM+D6hs2H+m89GxPdz6xPMph77UkVEK
-         BaYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=TXRGKDjuV3Bq9ZbA8Leir/RfHu2gALAHKQulLEnomsI=;
-        b=pb8qKqg3Tapf9P2wq5DpQ22SWGdiCRLe2w4W3gDXmsmAsR2e+9Q9y6EaZVSwoegSxS
-         b8Z9Q/9YTDyM4OzCamOpvatYnizG329dsJSLLK7oTpKBy9iP4d/n5wrvpqTPwnU+QZtH
-         4LgqQN6e2siKcJquiYP+nrL667pX8l6R3PyXlSEHAsCez5n+eX9bMgJOtvm/LI0PoPGZ
-         b8WyuNBeH+CU51Ju7QsziOKs5Ssmf2QnlakFWX+HVEAs2fxXtS6Evfsd4GVSIIzJ1p6w
-         PwJlSyyczz9CRaJdwT+9vlYcHWL/spljnEk675xdLwDNisjREvHD6m2sYgr9nC9jx+ks
-         8l9w==
-X-Gm-Message-State: AOAM530q0iNwGnVB52qINBsYwc65i8B0zhSK0AU5CbQSys6EYaHBJRT8
-        uy6piDhKJsQpDKRQEDR4ZOFAKJ9PCSPyex1UZAg=
-X-Google-Smtp-Source: ABdhPJxclF07TQNT5k3EUClkJUqIhaL9T2VHu2UbStFG5809gUfCZ6EP18v45pt+vYFH+EeuOJ6RVm74DJT9rUMGLjk=
-X-Received: by 2002:a81:1d16:0:b0:30c:ed7e:6cd6 with SMTP id
- d22-20020a811d16000000b0030ced7e6cd6mr9515653ywd.30.1654232563013; Thu, 02
- Jun 2022 22:02:43 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220528004820.5916-1-CFSworks@gmail.com> <c1c7a1207986d4ad9e80a301fe5e1415631949a9.camel@redhat.com>
-In-Reply-To: <c1c7a1207986d4ad9e80a301fe5e1415631949a9.camel@redhat.com>
-From:   Sam Edwards <cfsworks@gmail.com>
-Date:   Thu, 2 Jun 2022 23:02:31 -0600
-Message-ID: <CAH5Ym4iS=d+dUAg+85wmRJv+jV=Cet=UtN1pNWejMV5fdPVprA@mail.gmail.com>
-Subject: Re: [PATCH v2] ipv6/addrconf: fix timing bug in tempaddr regen
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S240012AbiFCFLN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 01:11:13 -0400
+Received: from azure-sdnproxy-3.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 784D5393C7;
+        Thu,  2 Jun 2022 22:11:08 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [106.117.80.109])
+        by mail-app4 (Coremail) with SMTP id cS_KCgCnieKRl5li3pgyAQ--.52150S2;
+        Fri, 03 Jun 2022 13:09:48 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     amitkarwar@gmail.com, ganapathi017@gmail.com,
+        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
+        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        johannes@sipsolutions.net, gregkh@linuxfoundation.org,
+        rafael@kernel.org, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH v5 0/2] Remove useless param of devcoredump functions and fix bugs
+Date:   Fri,  3 Jun 2022 13:09:33 +0800
+Message-Id: <cover.1654229964.git.duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cS_KCgCnieKRl5li3pgyAQ--.52150S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7ZFW8JFyDtw18XFyDJw1UZFb_yoW8Cry5pF
+        48Kas3ZrySkrs8uayxJF1xCas8J3WxWa47Kr9Fv3s5W3WfAF1rJr15uFyFkryqqFW8ta43
+        tF13Jr13GF9aqFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
+        Y2ka0xkIwI1lc2xSY4AK67AK6r4rMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
+        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
+        b7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
+        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAI
+        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
+        nxnUUI43ZEXa7VUbDDG5UUUUU==
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAggKAVZdtaBKlgAWsV
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The first patch removes the extra gfp_t param of dev_coredumpv()
+and dev_coredumpm().
 
-Since this is a periodic routine, it receives coverage as the system
-runs normally. If we're concerned about protecting this change from
-regressions and/or through the merge process, some kind of automated
-test might be in order, but right now the way to test it is to leave
-the system up, with tempaddrs enabled, on a IPv6 SLAAC network, for
-several multiples of the temp_prefered_lft. Though the way I see it,
-that suggests that a selftest to do just that may be inappropriate
-here: one of the rules for selftests is "Don=E2=80=99t take too long."
+The second patch fix sleep in atomic context bugs of mwifiex
+caused by dev_coredumpv().
 
-I can shorten that long line, though do note that my Signed-off-by tag
-is correct. That is the canonical capitalization of my email address!
-:)
+Duoming Zhou (2):
+  devcoredump: remove the useless gfp_t parameter in dev_coredumpv and
+    dev_coredumpm
+  mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
 
-Thanks and see you when net-next is open,
-Sam
+ drivers/base/devcoredump.c                       | 16 ++++++----------
+ drivers/bluetooth/btmrvl_sdio.c                  |  2 +-
+ drivers/bluetooth/hci_qca.c                      |  2 +-
+ drivers/gpu/drm/etnaviv/etnaviv_dump.c           |  2 +-
+ drivers/gpu/drm/msm/disp/msm_disp_snapshot.c     |  4 ++--
+ drivers/gpu/drm/msm/msm_gpu.c                    |  4 ++--
+ drivers/media/platform/qcom/venus/core.c         |  2 +-
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-dump.c   |  2 +-
+ drivers/net/wireless/ath/ath10k/coredump.c       |  2 +-
+ .../net/wireless/ath/wil6210/wil_crash_dump.c    |  2 +-
+ .../wireless/broadcom/brcm80211/brcmfmac/debug.c |  2 +-
+ drivers/net/wireless/intel/iwlwifi/fw/dbg.c      |  6 ++----
+ drivers/net/wireless/marvell/mwifiex/init.c      | 10 ++++++----
+ drivers/net/wireless/marvell/mwifiex/main.c      |  3 +--
+ drivers/net/wireless/marvell/mwifiex/main.h      |  2 +-
+ drivers/net/wireless/marvell/mwifiex/sta_event.c |  6 +++---
+ drivers/net/wireless/mediatek/mt76/mt7615/mac.c  |  3 +--
+ drivers/net/wireless/mediatek/mt76/mt7921/mac.c  |  3 +--
+ drivers/net/wireless/realtek/rtw88/main.c        |  2 +-
+ drivers/net/wireless/realtek/rtw89/ser.c         |  2 +-
+ drivers/remoteproc/qcom_q6v5_mss.c               |  2 +-
+ drivers/remoteproc/remoteproc_coredump.c         |  8 ++++----
+ include/drm/drm_print.h                          |  2 +-
+ include/linux/devcoredump.h                      | 13 ++++++-------
+ sound/soc/intel/avs/apl.c                        |  2 +-
+ sound/soc/intel/avs/skl.c                        |  2 +-
+ sound/soc/intel/catpt/dsp.c                      |  2 +-
+ 27 files changed, 50 insertions(+), 58 deletions(-)
 
-On Tue, May 31, 2022 at 1:50 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> Hello,
->
-> On Fri, 2022-05-27 at 18:48 -0600, Sam Edwards wrote:
-> > The addrconf_verify_rtnl() function uses a big if/elseif/elseif/... blo=
-ck
-> > to categorize each address by what type of attention it needs.  An
-> > about-to-expire (RFC 4941) temporary address is one such category, but =
-the
-> > previous elseif branch catches addresses that have already run out thei=
-r
-> > prefered_lft.  This means that if addrconf_verify_rtnl() fails to run i=
-n
-> > the necessary time window (i.e. REGEN_ADVANCE time units before the end=
- of
-> > the prefered_lft), the temporary address will never be regenerated, and=
- no
-> > temporary addresses will be available until each one's valid_lft runs o=
-ut
-> > and manage_tempaddrs() begins anew.
-> >
-> > Fix this by moving the entire temporary address regeneration case out o=
-f
-> > that block.  That block is supposed to implement the "destructive" part=
- of
-> > an address's lifecycle, and regenerating a fresh temporary address is n=
-ot,
-> > semantically speaking, actually tied to any particular lifecycle stage.
-> > The age test is also changed from `age >=3D prefered_lft - regen_advanc=
-e`
-> > to `age + regen_advance >=3D prefered_lft` instead, to ensure no underf=
-low
-> > occurs if the system administrator increases the regen_advance to a val=
-ue
-> > greater than the already-set prefered_lft.
-> >
-> > Note that this does not fix the problem of addrconf_verify_rtnl() somet=
-imes
-> > not running in time, resulting in the race condition described in RFC 4=
-941
-> > section 3.4 - it only ensures that the address is regenerated.  Fixing =
-THAT
-> > problem may require either using jiffies instead of seconds for all tim=
-e
-> > arithmetic here, or always rounding up when regen_advance is converted =
-to
-> > seconds.
-> >
-> > Signed-off-by: Sam Edwards <CFSworks@gmail.com>
-> > ---
-> >  net/ipv6/addrconf.c | 62 ++++++++++++++++++++++++---------------------
-> >  1 file changed, 33 insertions(+), 29 deletions(-)
-> >
-> > diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-> > index b22504176588..57aa46cb85b7 100644
-> > --- a/net/ipv6/addrconf.c
-> > +++ b/net/ipv6/addrconf.c
-> > @@ -4507,6 +4507,39 @@ static void addrconf_verify_rtnl(struct net *net=
-)
-> >                       /* We try to batch several events at once. */
-> >                       age =3D (now - ifp->tstamp + ADDRCONF_TIMER_FUZZ_=
-MINUS) / HZ;
-> >
-> > +                     if ((ifp->flags&IFA_F_TEMPORARY) &&
-> > +                         !(ifp->flags&IFA_F_TENTATIVE) &&
-> > +                         ifp->prefered_lft !=3D INFINITY_LIFE_TIME &&
-> > +                         !ifp->regen_count && ifp->ifpub) {
-> > +                             /* This is a non-regenerated temporary ad=
-dr. */
-> > +
-> > +                             unsigned long regen_advance =3D ifp->idev=
-->cnf.regen_max_retry *
-> > +                                     ifp->idev->cnf.dad_transmits *
-> > +                                     max(NEIGH_VAR(ifp->idev->nd_parms=
-, RETRANS_TIME), HZ/100) / HZ;
-> > +
-> > +                             if (age + regen_advance >=3D ifp->prefere=
-d_lft) {
-> > +                                     struct inet6_ifaddr *ifpub =3D if=
-p->ifpub;
-> > +                                     if (time_before(ifp->tstamp + ifp=
-->prefered_lft * HZ, next))
-> > +                                             next =3D ifp->tstamp + if=
-p->prefered_lft * HZ;
-> > +
-> > +                                     ifp->regen_count++;
-> > +                                     in6_ifa_hold(ifp);
-> > +                                     in6_ifa_hold(ifpub);
-> > +                                     spin_unlock(&ifp->lock);
-> > +
-> > +                                     spin_lock(&ifpub->lock);
-> > +                                     ifpub->regen_count =3D 0;
-> > +                                     spin_unlock(&ifpub->lock);
-> > +                                     rcu_read_unlock_bh();
-> > +                                     ipv6_create_tempaddr(ifpub, true)=
-;
-> > +                                     in6_ifa_put(ifpub);
-> > +                                     in6_ifa_put(ifp);
-> > +                                     rcu_read_lock_bh();
-> > +                                     goto restart;
-> > +                             } else if (time_before(ifp->tstamp + ifp-=
->prefered_lft * HZ - regen_advance * HZ, next))
-> > +                                     next =3D ifp->tstamp + ifp->prefe=
-red_lft * HZ - regen_advance * HZ;
-> > +                     }
-> > +
-> >                       if (ifp->valid_lft !=3D INFINITY_LIFE_TIME &&
-> >                           age >=3D ifp->valid_lft) {
-> >                               spin_unlock(&ifp->lock);
-> > @@ -4540,35 +4573,6 @@ static void addrconf_verify_rtnl(struct net *net=
-)
-> >                                       in6_ifa_put(ifp);
-> >                                       goto restart;
-> >                               }
-> > -                     } else if ((ifp->flags&IFA_F_TEMPORARY) &&
-> > -                                !(ifp->flags&IFA_F_TENTATIVE)) {
-> > -                             unsigned long regen_advance =3D ifp->idev=
-->cnf.regen_max_retry *
-> > -                                     ifp->idev->cnf.dad_transmits *
-> > -                                     max(NEIGH_VAR(ifp->idev->nd_parms=
-, RETRANS_TIME), HZ/100) / HZ;
-> > -
-> > -                             if (age >=3D ifp->prefered_lft - regen_ad=
-vance) {
-> > -                                     struct inet6_ifaddr *ifpub =3D if=
-p->ifpub;
-> > -                                     if (time_before(ifp->tstamp + ifp=
-->prefered_lft * HZ, next))
-> > -                                             next =3D ifp->tstamp + if=
-p->prefered_lft * HZ;
-> > -                                     if (!ifp->regen_count && ifpub) {
-> > -                                             ifp->regen_count++;
-> > -                                             in6_ifa_hold(ifp);
-> > -                                             in6_ifa_hold(ifpub);
-> > -                                             spin_unlock(&ifp->lock);
-> > -
-> > -                                             spin_lock(&ifpub->lock);
-> > -                                             ifpub->regen_count =3D 0;
-> > -                                             spin_unlock(&ifpub->lock)=
-;
-> > -                                             rcu_read_unlock_bh();
-> > -                                             ipv6_create_tempaddr(ifpu=
-b, true);
-> > -                                             in6_ifa_put(ifpub);
-> > -                                             in6_ifa_put(ifp);
-> > -                                             rcu_read_lock_bh();
-> > -                                             goto restart;
-> > -                                     }
-> > -                             } else if (time_before(ifp->tstamp + ifp-=
->prefered_lft * HZ - regen_advance * HZ, next))
-> > -                                     next =3D ifp->tstamp + ifp->prefe=
-red_lft * HZ - regen_advance * HZ;
-> > -                             spin_unlock(&ifp->lock);
-> >                       } else {
-> >                               /* ifp->prefered_lft <=3D ifp->valid_lft =
-*/
-> >                               if (time_before(ifp->tstamp + ifp->prefer=
-ed_lft * HZ, next))
->
-> The change looks correct to me, but it feels potentially
-> dangerous/impacting currently correct behaviours - especially
-> considering the lack of selftests for this code-path.
->
-> This looks like net-next material, and net-next is currently close. I
-> suggest to add a self-test verifying the tmp address regeneration and
-> expiration - I'm not sure how complext that will be, sorry - and re-
-> post when net-next re-opens.
-> While at that, please fix your SoB tag (there is a case mismatch with
-> the sender address) and it would be probably nice to shorten the line
-> exceeding the 100 chars limit.
->
-> Thanks,
->
-> Paolo
->
+-- 
+2.17.1
+
