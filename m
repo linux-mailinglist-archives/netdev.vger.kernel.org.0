@@ -2,160 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6539A53D1F0
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 20:56:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7122353D20E
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 21:02:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347749AbiFCS4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 14:56:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
+        id S1347897AbiFCTB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 15:01:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349624AbiFCSzH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 14:55:07 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAB95289AD
-        for <netdev@vger.kernel.org>; Fri,  3 Jun 2022 11:55:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654282505; x=1685818505;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=QbwnpqOGBbwoRZW5VI918Rr1F/exRgpMDmoqqCCs8Nk=;
-  b=JmEALNa4yKB9P5hjeFIWU2Cks/nYRsFfoqHIWv8Kg5SJRYgN3fBd5KHf
-   5rj7l/qUcUo3Z1ZWGlZ1Dp9fTB9/PPTKXxE1KHaJAaxDllPvisQej01CI
-   AsAQC10ufcrH4AfeI1CJ7tQDNieWDOOleffa+eKIUhsZCbleg3NUMT9A3
-   xmKCnXO7rGsXBYJk4y/A7Fi4solygeiKyBl+N3/SWFONDPWakUo2DcFCe
-   t9RCKUG4fuU0Iy2q8cyUD68GZfdPCSowg0hIoQ9YIkwJZ4MMkTvBcE1DR
-   gLGeXI7HlH/N6OE1X4mgOQBfpOop907SgWuwIeAI26yGd4sLehbNHqE99
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10367"; a="256186483"
-X-IronPort-AV: E=Sophos;i="5.91,275,1647327600"; 
-   d="scan'208";a="256186483"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 11:55:05 -0700
-X-IronPort-AV: E=Sophos;i="5.91,275,1647327600"; 
-   d="scan'208";a="646605643"
-Received: from nhaouati-mobl2.amr.corp.intel.com ([10.212.222.176])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 11:55:04 -0700
-Date:   Fri, 3 Jun 2022 11:54:58 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     Joanne Koong <joannelkoong@gmail.com>
-cc:     netdev@vger.kernel.org, edumazet@google.com, kafai@fb.com,
-        kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com
-Subject: Re: [PATCH net-next v2 0/2] Update bhash2 when socket's rcv saddr
- changes
-In-Reply-To: <20220602165101.3188482-1-joannelkoong@gmail.com>
-Message-ID: <4bae9df4-42c1-85c3-d350-119a151d29@linux.intel.com>
-References: <20220602165101.3188482-1-joannelkoong@gmail.com>
+        with ESMTP id S1348708AbiFCTAB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 15:00:01 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E2329833;
+        Fri,  3 Jun 2022 12:00:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6C987CE24B8;
+        Fri,  3 Jun 2022 18:59:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E77CCC385B8;
+        Fri,  3 Jun 2022 18:59:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654282797;
+        bh=wNoOUeH436EM5Q4+ipBC6tMdcUFPQYmnJuswlasQq7s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SoILe+FIL2S6KalxEeHmls5fUj88pDOTWr2GlXkpmPjl5+15cM4zJMc0RwCu3qH/3
+         QQIsotDeOWea8wAWWgNZGA2Vzz1rv8wKxyj8Bdude0azly82ePzu51lJpXZ85CTweI
+         5elR6Htm+9ahYC0czwCImx/nIgkILwiaxVRL1ZsjkUpbVFCexeLFzuZh0MQspNLkZU
+         lZqEetTJ1+ZuY7yIHo9e6rIAXwzXdJ9Fpo38wEB64ZorajI8T/uAg3brpJGvrtmK1S
+         9+R5sPRSMtfyS0q7/Bd4Qu8OuFPKFEVvuoLnNskg6SQZH0Mhg8PZhX9aGOINHxAEoV
+         iKbEjktYZcC/g==
+Date:   Fri, 3 Jun 2022 11:59:56 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Chen Lin <chen45464546@163.com>, Felix Fietkau <nbd@nbd.name>,
+        john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-mediatek@lists.infradead.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [PATCH v2] net: ethernet: mtk_eth_soc: fix misuse of mem alloc
+ interface netdev[napi]_alloc_frag
+Message-ID: <20220603115956.6ad82a53@kernel.org>
+In-Reply-To: <CANn89iKiyh36ULH4PCXF4c8sBdh9WLksMoMcmQwipZYWCzBkMA@mail.gmail.com>
+References: <2997c5b0-3611-5e00-466c-b2966f09f067@nbd.name>
+        <1654245968-8067-1-git-send-email-chen45464546@163.com>
+        <CANn89iKiyh36ULH4PCXF4c8sBdh9WLksMoMcmQwipZYWCzBkMA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=US-ASCII
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2 Jun 2022, Joanne Koong wrote:
+On Fri, 3 Jun 2022 10:25:16 -0700 Eric Dumazet wrote:
+> >                         goto release_desc;
+> > @@ -1914,7 +1923,16 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
+> >                 return -ENOMEM;
+> >
+> >         for (i = 0; i < rx_dma_size; i++) {
+> > -               ring->data[i] = netdev_alloc_frag(ring->frag_size);  
+> 
+> Note aside, calling netdev_alloc_frag() in a loop like that is adding
+> GFP_ATOMIC pressure.
+> 
+> mtk_rx_alloc() being in process context, using GFP_KERNEL allocations
+> would be less aggressive and
+> have more chances to succeed.
+> 
+> We probably should offer a generic helper. This could be used from
+> driver/net/tun.c and others.
 
-> As syzbot noted [1], there is an inconsistency in the bhash2 table in the
-> case where a socket's rcv saddr changes after it is binded. (For more
-> details, please see the commit message of the first patch)
->
-> This patchset fixes that and adds a test that triggers the case where the
-> sk's rcv saddr changes. The subsequent listen() call should succeed.
->
-> [1] https://lore.kernel.org/netdev/0000000000003f33bc05dfaf44fe@google.com/
->
-> --
-> v1 -> v2:
-> v1: https://lore.kernel.org/netdev/20220601201434.1710931-1-joannekoong@fb.com/
-> * Mark __inet_bhash2_update_saddr as static
->
-> Joanne Koong (2):
->  net: Update bhash2 when socket's rcv saddr changes
->  selftests/net: Add sk_bind_sendto_listen test
->
-
-Hi Joanne -
-
-I've been running my own syzkaller instance with v1 of this fix for a 
-couple of days. Before this patch, syzkaller would trigger the 
-inet_csk_get_port warning a couple of times per hour. After this patch it 
-took two days to show the warning:
-
-------------[ cut here ]------------
-
-WARNING: CPU: 0 PID: 9430 at net/ipv4/inet_connection_sock.c:525 
-inet_csk_get_port+0x938/0xe80 net/ipv4/inet_connection_sock.c:525
-Modules linked in:
-CPU: 0 PID: 9430 Comm: syz-executor.5 Not tainted 5.18.0-05016-g433fde5b4119 #3
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
-RIP: 0010:inet_csk_get_port+0x938/0xe80 net/ipv4/inet_connection_sock.c:525
-Code: ff 48 89 84 24 b0 00 00 00 48 85 c0 0f 84 6a 01 00 00 e8 2b 0f db fd 48 8b 6c 24 70 c6 04 24 01 e9 fb fb ff ff e8 18 0f db fd <0f> 0b e9 70 f9 ff ff e8 0c 0f db fd 0f 0b e9 28 f9 ff ff e8 00 0f
-RSP: 0018:ffffc90000b5fbc0 EFLAGS: 00010212
-RAX: 00000000000000e7 RBX: ffff88803c410040 RCX: ffffc9000e419000
-RDX: 0000000000040000 RSI: ffffffff836f47e8 RDI: ffff88803c4106e0
-RBP: ffff88810b773840 R08: 0000000000000001 R09: 0000000000000001
-R10: fffffbfff0f64303 R11: 0000000000000001 R12: 0000000000000000
-R13: ffff88810605e2f0 R14: ffffffff88606040 R15: 000000000000c1ff
-FS:  00007fada4d03640(0000) GS:ffff88811ac00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b32e24000 CR3: 00000001016de001 CR4: 0000000000770ef0
-PKRU: 55555554
-Call Trace:
-  <TASK>
-  inet_csk_listen_start+0x143/0x3d0 net/ipv4/inet_connection_sock.c:1178
-  inet_listen+0x22f/0x650 net/ipv4/af_inet.c:228
-  mptcp_listen+0x205/0x440 net/mptcp/protocol.c:3564
-  __sys_listen+0x189/0x260 net/socket.c:1810
-  __do_sys_listen net/socket.c:1819 [inline]
-  __se_sys_listen net/socket.c:1817 [inline]
-  __x64_sys_listen+0x54/0x80 net/socket.c:1817
-  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-  do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
-  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-RIP: 0033:0x7fada558f92d
-Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fada4d03028 EFLAGS: 00000246 ORIG_RAX: 0000000000000032
-RAX: ffffffffffffffda RBX: 00007fada56aff60 RCX: 00007fada558f92d
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000004
-RBP: 00007fada56000a0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 000000000000000b R14: 00007fada56aff60 R15: 00007fada4ce3000
-  </TASK>
-irq event stamp: 2078
-hardirqs last  enabled at (2092): [<ffffffff812f1be3>] __up_console_sem+0xb3/0xd0 kernel/printk/printk.c:291
-hardirqs last disabled at (2103): [<ffffffff812f1bc8>] __up_console_sem+0x98/0xd0 kernel/printk/printk.c:289
-softirqs last  enabled at (1498): [<ffffffff83807dd4>] lock_sock include/net/sock.h:1691 [inline]
-softirqs last  enabled at (1498): [<ffffffff83807dd4>] inet_listen+0x94/0x650 net/ipv4/af_inet.c:199
-softirqs last disabled at (1500): [<ffffffff836f425c>] spin_lock_bh include/linux/spinlock.h:354 [inline]
-softirqs last disabled at (1500): [<ffffffff836f425c>] inet_csk_get_port+0x3ac/0xe80 net/ipv4/inet_connection_sock.c:483
----[ end trace 0000000000000000 ]---
-
-
-In the full log file it does look like syskaller is doing something 
-strange since it's calling bind, connect, and listen on the same socket:
-
-r4 = socket$inet_mptcp(0x2, 0x1, 0x106)
-bind$inet(r4, &(0x7f0000000000)={0x2, 0x4e23, @empty}, 0x10)
-connect$inet(r4, &(0x7f0000000040)={0x2, 0x0, @local}, 0x10)
-listen(r4, 0x0)
-
-...but it is a fuzz tester after all.
-
-I've uploaded the full syzkaller logs to this GitHub issue:
-
-https://github.com/multipath-tcp/mptcp_net-next/issues/279
-
-
-Not sure yet if this is MPTCP-related. I don't think MPTCP 
-changes anything with the subflow TCP socket bind hashes.
-
-
---
-Mat Martineau
-Intel
-
+Do cases where netdev_alloc_frag() is not run from a process context
+from to your mind? My feeling is that the prevailing pattern is what
+this driver does, which is netdev_alloc_frag() at startup / open and
+napi_alloc_frag() from the datapath. So maybe we can even spare the
+detail in the API and have napi_alloc_frag() assume GFP_KERNEL by
+default?
