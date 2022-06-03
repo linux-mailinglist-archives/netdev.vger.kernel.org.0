@@ -2,44 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3DCB53C354
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 04:47:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CEC753C356
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 04:48:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233354AbiFCCrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 2 Jun 2022 22:47:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58434 "EHLO
+        id S238016AbiFCCsk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 2 Jun 2022 22:48:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230148AbiFCCro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 22:47:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E37117054;
-        Thu,  2 Jun 2022 19:47:43 -0700 (PDT)
+        with ESMTP id S230193AbiFCCsj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 2 Jun 2022 22:48:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1CF6338BA;
+        Thu,  2 Jun 2022 19:48:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A4B161653;
-        Fri,  3 Jun 2022 02:47:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F9FEC385A5;
-        Fri,  3 Jun 2022 02:47:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5995061618;
+        Fri,  3 Jun 2022 02:48:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44D68C385A5;
+        Fri,  3 Jun 2022 02:48:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654224462;
-        bh=QpU53RoJdAdCnP8jdYOtc2Hs4xhTtWtlmS+OW4nJ7R0=;
+        s=k20201202; t=1654224517;
+        bh=0yjv6yIGuuCsF28jC1oWN37CAZe1OojLqJTyuK1fAlM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=J1xZfil0Hbqojp2D/PUUnQCSTrqhMcJnUNscIDLPT5ctZn+JCQLaXonE7ZssC12cj
-         jWq5BiNys05aMpJKvhucLZiJjrj3IPwzZHF5G8rdby1mWQbHT0bqnbfAzD8yKcOTT7
-         3m1HXVnD9iovCMHzJPA7x1syBUAv/+MKWaFhgmff/CoUXhPdueVtrAjyi8hq+C/+do
-         xibiTPAlkY1RM17MkkS+r0hkSkxiYHEyl9TVQ1zxjpznT1sA6qPLAlYO9bS5yHVK5A
-         jRYNCeaxKsRZADWI2btMVsNKIYOFNWInSBWbXdQg4BSUgDI6i35jJ6VinhqIj05ssi
-         TwZRpgJ228QFQ==
-Date:   Thu, 2 Jun 2022 19:47:41 -0700
+        b=dqvjSemHn4B/SAqJrv5LWrVHNQlq67l+qJ7JhnO55wKhSUt63Z+sfm0lgHM6MBH6Z
+         Y5vxgRQCLYtQqTlfriFNhhQ4V0+jBttVFU5uRr8Y5tixohL+x0zjKafli4bXy1i4dY
+         18CRvghUAixrc946nIYCudw7fY7p/uo9YhfacZPwb86XRbaF6qv5R5gQbhVKSZOqhB
+         eJLUYX0O43Iic1S7w4EdYC0+JgSTWP221lvj5Sh3HPqxXh/MOFCR6vMXHqDYH0kTl8
+         NiurbE2z8sSp0zpqCr23lubzH6eDy6uxHkELJ8YXvPPiqiCkrtBZ4qZreCMmZ79xMT
+         D8mH/PO7L9hZQ==
+Date:   Thu, 2 Jun 2022 19:48:36 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Peter Lafreniere <pjlafren@mtu.edu>
-Cc:     linux-hams@vger.kernel.org, ralf@linux-mips.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] ax25: use GFP_KERNEL over GFP_ATOMIC where possible
-Message-ID: <20220602194741.6bba0611@kernel.org>
-In-Reply-To: <20220602112138.8200-1-pjlafren@mtu.edu>
-References: <20220602112138.8200-1-pjlafren@mtu.edu>
+To:     Siddharth Vadapalli <s-vadapalli@ti.com>
+Cc:     <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <linux@armlinux.org.uk>, <vladimir.oltean@nxp.com>,
+        <grygorii.strashko@ti.com>, <vigneshr@ti.com>, <nsekhar@ti.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kishon@ti.com>
+Subject: Re: [PATCH v2 0/3] J7200: CPSW5G: Add support for QSGMII mode to
+ am65-cpsw driver
+Message-ID: <20220602194836.37e41003@kernel.org>
+In-Reply-To: <20220602114558.6204-1-s-vadapalli@ti.com>
+References: <20220602114558.6204-1-s-vadapalli@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -53,26 +58,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  2 Jun 2022 07:21:38 -0400 Peter Lafreniere wrote:
-> There are a few functions that can sleep that use GFP_ATOMIC.
-> Here we change allocations to use the more reliable GFP_KERNEL
-> flag.
+On Thu, 2 Jun 2022 17:15:55 +0530 Siddharth Vadapalli wrote:
+> Add support for QSGMII mode to am65-cpsw driver.
 > 
-> ax25_dev_device_up() is only called during device setup, which is
-> done in user context. In addition, ax25_dev_device_up()
-> unconditionally calls ax25_register_dev_sysctl(), which already
-> allocates with GFP_KERNEL.
+> Change log:
+> v1 -> v2:
+> 1. Add new compatible for CPSW5G in ti,k3-am654-cpsw-nuss.yaml and extend
+>    properties for new compatible.
+> 2. Add extra_modes member to struct am65_cpsw_pdata to be used for QSGMII
+>    mode by new compatible.
+> 3. Add check for phylink supported modes to ensure that only one phy mode
+>    is advertised as supported.
+> 4. Check if extra_modes supports QSGMII mode in am65_cpsw_nuss_mac_config()
+>    for register write.
+> 5. Add check for assigning port->sgmii_base only when extra_modes is valid.
 > 
-> ax25_rt_add() is a static function that is only called from
-> ax25_rt_ioctl(), which must run in user context already due to
-> copy_from_user() usage.
-> 
-> Since it is allowed to sleep in both of these functions, here we
-> change the functions to use GFP_KERNEL to reduce unnecessary
-> out-of-memory errors.
-> 
-> Signed-off-by: Peter Lafreniere <pjlafren@mtu.edu>
+> v1: https://lore.kernel.org/r/20220531113058.23708-1-s-vadapalli@ti.com
 
-For merging into the Linux networking trees you'll have to repost next
-week, this seems like an optimization and we're currently in the merge
-window period where we only accept fixes.
+# Form letter - net-next is closed
+
+We have already sent the networking pull request for 5.19
+and therefore net-next is closed for new drivers, features,
+code refactoring and optimizations. We are currently accepting
+bug fixes only.
+
+Please repost when net-next reopens after 5.19-rc1 is cut.
+
+RFC patches sent for review only are obviously welcome at any time.
