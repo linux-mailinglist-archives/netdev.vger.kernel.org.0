@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F20E453C879
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 12:17:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69CC253C880
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 12:19:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243493AbiFCKRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 06:17:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32784 "EHLO
+        id S243575AbiFCKSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 06:18:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242867AbiFCKRA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 06:17:00 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D110BC2E;
-        Fri,  3 Jun 2022 03:16:57 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id h5so9846701wrb.0;
-        Fri, 03 Jun 2022 03:16:57 -0700 (PDT)
+        with ESMTP id S236237AbiFCKSn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 06:18:43 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0473B2AA;
+        Fri,  3 Jun 2022 03:18:42 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id n124-20020a1c2782000000b003972dfca96cso4083801wmn.4;
+        Fri, 03 Jun 2022 03:18:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:date:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=/77dZPgSUoE0SYO0JlE+nz8jz/dM6461hDUeKKkiK0s=;
-        b=kElUmYPu2WBSWkfGdPIbo+gojVPSl0jt0cDt9so0uWBN/m2z2RDc+zIbLHSzoHY7vY
-         +bO/wYZJ0Km6ODvQkY6tK1XDnQJidCmvMfaj41NWfNmTrhJ7oLCHZwocQPa2uY+CR4IA
-         5af46pQmv0JicSIvE6FHu6nQhhIgBGd4Gz/t5Xz591iWxGGgpvbyGIoqW9pNY8sux0yO
-         EYO3rZSjCvYcoDfH0BKK+b5Nea/g1kJq2SIzahPbFB9ZcMsKXbIisPG8yN76p6KpmbOE
-         tYeMf0p4bSB+3OqM6wyPJU+Zp8hA5Xa1LVK1dLTpHYD7T1gK4LMuie7DqX6NMCxom4SO
-         C7Fg==
+        bh=8mie30TBVJaN2bhO1dj0dafpM0jgLh+ZX1e7/mzDn4E=;
+        b=MZU049ypz3+Y3FBybZ5UDRAbsuOxjvKKagezlCSJ4WMyfrIEWmcSKNk6kPzEhicUT5
+         aV/ZaF3HsJvOa7qmadXcLfm2T/UDNmI7+0UP5c5bqqL6w1fjGtbln5WR75cjiNfsx+GK
+         5PLNnihNh6XeSaVm+kH9x/NDbq4oAQgUiyle+7g5EaHuVAbPwuC35e6a5G/CtrzJJB14
+         coFHaaj3sht3Q5qDSaHIF2s8+4JMYBP+tKZqVudkPlzuGvcm2iB4NfJGvQOzT3rnDqOv
+         Zxm+/JCIu9GUKUgevuxsyi6X/3LbiQfrvMDSaTx46VpRhUJi9tEl5KCIg3UGMNYlprvB
+         /MeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:date:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=/77dZPgSUoE0SYO0JlE+nz8jz/dM6461hDUeKKkiK0s=;
-        b=I2Lotal3i+uQr6Y6D2LQnR5iKBbV2po5reLC7nZ7jief+0NaxNhV/bWM6lnW/npAhb
-         xDZCvRi4s7mC6qQmdDEgntCzBjZawxVYGTp1bT6CQZ3YkiShSFnjUJvsJznoC6ic6QHh
-         JsCUHUQ31CcSj3/gIizU7LAkM5RQEFrgtrqUxiQiNYCnv6gztsgZtRdf/8h7nyLDA2bN
-         sgbbrWl5lfunmMt42MndrflsdMuuXWSifIsoVu3V6aFreMRAe6p7MpP7AxKhpAJujYFi
-         SMqch8qiN9HvLX/1pW6bWys7v/bmEx5jUTJOMDJ7P0ucwWfHj7dnCjLwRw6VDiGhRq9y
-         XwPg==
-X-Gm-Message-State: AOAM5305FiJKO3KxD/llrBJ8TslnRX81X3qs3jGNfZBwP48r0N5lcaOp
-        lwQWZc6byjHovN9EEgbBBG4=
-X-Google-Smtp-Source: ABdhPJxFlN7EwKPN65Ha7ej7Ny5RlrEjR5WPck7DmZIeb7VnVC7DAw1c3pUZYfma4V/da4LcaMMyPQ==
-X-Received: by 2002:adf:f110:0:b0:210:78bd:7ea5 with SMTP id r16-20020adff110000000b0021078bd7ea5mr7258471wro.459.1654251416418;
-        Fri, 03 Jun 2022 03:16:56 -0700 (PDT)
+        bh=8mie30TBVJaN2bhO1dj0dafpM0jgLh+ZX1e7/mzDn4E=;
+        b=MhSJ7n0t8lHND7lqH2jMAP6r+XCySdzkCCvaao8PoBi3ctqbSZOgjIIWiHLWVEkZdx
+         lUZ/ZJyXhwKXiBwWHgw3kZwHh2kirWUVgRj4L6lQrijMBTvucQD8nVA5dxhrNEYfXQs4
+         5ohsJW0IW81asMT/vLwGjrQKykcg+b4BV5vFEHyP3uq6ToHL/c8Y2n+to3Obc+qA2C9H
+         Zt3zV02A5UdIrcdNF+F93BLRsLGwBgJ73lGw3o8sybBM+vnROiBE+IShHiK2kHJvXphj
+         wWuNA22tY9roFwXb7EyClp4LY8FDWFba9C0uqTk1piQZ+2qNVQsEA45m4cjRtAa0z+So
+         SnoQ==
+X-Gm-Message-State: AOAM533FjuOR1JPZKL+fc5JBXxv0Oy8j1xr4Tt+wB/s1vkArjiPPW0Gt
+        mqFB754EdSQ0FTDbVK/FY2w=
+X-Google-Smtp-Source: ABdhPJzzdFa6iFPnJftJacrEqQ3/KLuCwOu2A/cGyImbXXDg3Tz+3Zggf18tOEpT+p3rShNWOuS9ew==
+X-Received: by 2002:a05:600c:502a:b0:397:44d1:d5b6 with SMTP id n42-20020a05600c502a00b0039744d1d5b6mr7943690wmr.57.1654251520952;
+        Fri, 03 Jun 2022 03:18:40 -0700 (PDT)
 Received: from krava ([193.85.244.190])
-        by smtp.gmail.com with ESMTPSA id h4-20020adffd44000000b002102d4ed579sm6826665wrs.39.2022.06.03.03.16.55
+        by smtp.gmail.com with ESMTPSA id h4-20020adffd44000000b002102d4ed579sm6830719wrs.39.2022.06.03.03.18.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jun 2022 03:16:55 -0700 (PDT)
+        Fri, 03 Jun 2022 03:18:40 -0700 (PDT)
 From:   Jiri Olsa <olsajiri@gmail.com>
 X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Fri, 3 Jun 2022 12:16:53 +0200
+Date:   Fri, 3 Jun 2022 12:18:38 +0200
 To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -62,16 +62,16 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         KP Singh <kpsingh@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Masami Hiramatsu <mhiramat@kernel.org>
-Subject: Re: [PATCH bpf-next 2/3] ftrace: Keep address offset in
- ftrace_lookup_symbols
-Message-ID: <YpnfldPKcEqesioK@krava>
+Subject: Re: [PATCH bpf-next 3/3] bpf: Force cookies array to follow symbols
+ sorting
+Message-ID: <Ypnf/pOC0zaFjF1s@krava>
 References: <20220527205611.655282-1-jolsa@kernel.org>
- <20220527205611.655282-3-jolsa@kernel.org>
- <CAEf4BzbfbPA-U+GObZy2cEZOn9qAHqRmKtKq-rPOVM=_+DGVww@mail.gmail.com>
+ <20220527205611.655282-4-jolsa@kernel.org>
+ <CAEf4BzbY19qe6Ftzev884R_xuS4H5OD_fRLOfeekbPWjd5jkiA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzbfbPA-U+GObZy2cEZOn9qAHqRmKtKq-rPOVM=_+DGVww@mail.gmail.com>
+In-Reply-To: <CAEf4BzbY19qe6Ftzev884R_xuS4H5OD_fRLOfeekbPWjd5jkiA@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -82,80 +82,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 02, 2022 at 03:52:03PM -0700, Andrii Nakryiko wrote:
-> On Fri, May 27, 2022 at 1:56 PM Jiri Olsa <jolsa@kernel.org> wrote:
+On Thu, Jun 02, 2022 at 04:01:07PM -0700, Andrii Nakryiko wrote:
+> On Fri, May 27, 2022 at 1:57 PM Jiri Olsa <jolsa@kernel.org> wrote:
 > >
-> > We want to store the resolved address on the same index as
-> > the symbol string, because that's the user (bpf kprobe link)
-> > code assumption.
+> > When user specifies symbols and cookies for kprobe_multi link
+> > interface it's very likely the cookies will be misplaced and
+> > returned to wrong functions (via get_attach_cookie helper).
 > >
-> > Also making sure we don't store duplicates that might be
-> > present in kallsyms.
+> > The reason is that to resolve the provided functions we sort
+> > them before passing them to ftrace_lookup_symbols, but we do
+> > not do the same sort on the cookie values.
 > >
-> > Fixes: bed0d9a50dac ("ftrace: Add ftrace_lookup_symbols function")
+> > Fixing this by using sort_r function with custom swap callback
+> > that swaps cookie values as well.
+> >
+> > Fixes: 0236fec57a15 ("bpf: Resolve symbols with ftrace_lookup_symbols for kprobe multi link")
 > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > > ---
-> >  kernel/trace/ftrace.c | 13 +++++++++++--
-> >  1 file changed, 11 insertions(+), 2 deletions(-)
+> >  kernel/trace/bpf_trace.c | 65 ++++++++++++++++++++++++++++++----------
+> >  1 file changed, 50 insertions(+), 15 deletions(-)
 > >
-> > diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-> > index 674add0aafb3..00d0ba6397ed 100644
-> > --- a/kernel/trace/ftrace.c
-> > +++ b/kernel/trace/ftrace.c
-> > @@ -7984,15 +7984,23 @@ static int kallsyms_callback(void *data, const char *name,
-> >                              struct module *mod, unsigned long addr)
-> >  {
-> >         struct kallsyms_data *args = data;
-> > +       const char **sym;
-> > +       int idx;
+> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > index 10b157a6d73e..e5c423b835ab 100644
+> > --- a/kernel/trace/bpf_trace.c
+> > +++ b/kernel/trace/bpf_trace.c
+> > @@ -2423,7 +2423,12 @@ kprobe_multi_link_handler(struct fprobe *fp, unsigned long entry_ip,
+> >         kprobe_multi_link_prog_run(link, entry_ip, regs);
+> >  }
 > >
-> > -       if (!bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp))
-> > +       sym = bsearch(&name, args->syms, args->cnt, sizeof(*args->syms), symbols_cmp);
-> > +       if (!sym)
-> > +               return 0;
+> > -static int symbols_cmp(const void *a, const void *b)
+> > +struct multi_symbols_sort {
+> > +       const char **funcs;
+> > +       u64 *cookies;
+> > +};
 > > +
-> > +       idx = sym - args->syms;
-> > +       if (args->addrs[idx])
+> > +static int symbols_cmp_r(const void *a, const void *b, const void *priv)
+> >  {
+> >         const char **str_a = (const char **) a;
+> >         const char **str_b = (const char **) b;
+> > @@ -2431,6 +2436,25 @@ static int symbols_cmp(const void *a, const void *b)
+> >         return strcmp(*str_a, *str_b);
+> >  }
+> >
+> > +static void symbols_swap_r(void *a, void *b, int size, const void *priv)
+> > +{
+> > +       const struct multi_symbols_sort *data = priv;
+> > +       const char **name_a = a, **name_b = b;
+> > +       u64 *cookie_a, *cookie_b;
+> > +
+> > +       cookie_a = data->cookies + (name_a - data->funcs);
+> > +       cookie_b = data->cookies + (name_b - data->funcs);
+> > +
+> > +       /* swap name_a/name_b and cookie_a/cookie_b values */
+> > +       swap(*name_a, *name_b);
+> > +       swap(*cookie_a, *cookie_b);
+> > +}
+> > +
+> > +static int symbols_cmp(const void *a, const void *b)
+> > +{
+> > +       return symbols_cmp_r(a, b, NULL);
+> > +}
+> > +
+> >  int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+> >  {
+> >         struct bpf_kprobe_multi_link *link = NULL;
+> > @@ -2468,6 +2492,19 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+> >         if (!addrs)
+> >                 return -ENOMEM;
+> >
+> > +       ucookies = u64_to_user_ptr(attr->link_create.kprobe_multi.cookies);
+> > +       if (ucookies) {
+> > +               cookies = kvmalloc(size, GFP_KERNEL);
+> > +               if (!cookies) {
+> > +                       err = -ENOMEM;
+> > +                       goto error;
+> > +               }
+> > +               if (copy_from_user(cookies, ucookies, size)) {
+> > +                       err = -EFAULT;
+> > +                       goto error;
+> > +               }
+> > +       }
+> > +
+> >         if (uaddrs) {
+> >                 if (copy_from_user(addrs, uaddrs, size)) {
+> >                         err = -EFAULT;
+> > @@ -2480,26 +2517,24 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+> >                 if (err)
+> >                         goto error;
+> >
+> > -               sort(us.syms, cnt, sizeof(*us.syms), symbols_cmp, NULL);
+> > +               if (cookies) {
+> > +                       struct multi_symbols_sort data = {
+> > +                               .cookies = cookies,
+> > +                               .funcs = us.syms,
+> > +                       };
+> > +
+> > +                       sort_r(us.syms, cnt, sizeof(*us.syms), symbols_cmp_r,
+> > +                              symbols_swap_r, &data);
+> > +               } else {
+> > +                       sort(us.syms, cnt, sizeof(*us.syms), symbols_cmp, NULL);
+> > +               }
 > 
-> if we have duplicated symbols we won't increment args->found here,
-> right? So we won't stop early. But we also don't want to increment
-> args->found here because we use it to check that we don't have
-> duplicates (in addition to making sure we resolved all the unique
-> symbols), right?
-> 
-> So I wonder if in this situation should we return some error code to
-> signify that we encountered symbol duplicate?
+> maybe just always do sort_r, swap callback can just check if cookie
+> array is NULL and if not, additionally swap cookies? why have all
+> these different callbacks and complicate the code unnecessarily?
 
-hum, this callback is called for each kallsyms symbol and there
-are duplicates in /proc/kallsyms.. so even if we have just single
-copy of such symbol in args->syms, bsearch will find this single
-symbol for all the duplicates in /proc/kallsyms and we will endup
-in here.. and it's still fine, we should continue
+right, good idea.. will change
 
+thanks,
 jirka
 
 > 
-> 
-> >                 return 0;
+> > +
+> >                 err = ftrace_lookup_symbols(us.syms, cnt, addrs);
+> >                 free_user_syms(&us);
+> >                 if (err)
+> >                         goto error;
+> >         }
 > >
-> >         addr = ftrace_location(addr);
-> >         if (!addr)
-> >                 return 0;
-> >
-> > -       args->addrs[args->found++] = addr;
-> > +       args->addrs[idx] = addr;
-> > +       args->found++;
-> >         return args->found == args->cnt ? 1 : 0;
-> >  }
-> >
-> > @@ -8017,6 +8025,7 @@ int ftrace_lookup_symbols(const char **sorted_syms, size_t cnt, unsigned long *a
-> >         struct kallsyms_data args;
-> >         int err;
-> >
-> > +       memset(addrs, 0x0, sizeof(*addrs) * cnt);
-> >         args.addrs = addrs;
-> >         args.syms = sorted_syms;
-> >         args.cnt = cnt;
+> > -       ucookies = u64_to_user_ptr(attr->link_create.kprobe_multi.cookies);
+> > -       if (ucookies) {
+> > -               cookies = kvmalloc(size, GFP_KERNEL);
+> > -               if (!cookies) {
+> > -                       err = -ENOMEM;
+> > -                       goto error;
+> > -               }
+> > -               if (copy_from_user(cookies, ucookies, size)) {
+> > -                       err = -EFAULT;
+> > -                       goto error;
+> > -               }
+> > -       }
+> > -
+> >         link = kzalloc(sizeof(*link), GFP_KERNEL);
+> >         if (!link) {
+> >                 err = -ENOMEM;
 > > --
 > > 2.35.3
 > >
