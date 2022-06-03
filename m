@@ -2,87 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A2A153D1D7
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 20:51:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6539A53D1F0
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 20:56:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349139AbiFCSu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 14:50:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53254 "EHLO
+        id S1347749AbiFCS4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 14:56:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349134AbiFCSuL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 14:50:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD09027FF0;
-        Fri,  3 Jun 2022 11:50:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CD7A619C2;
-        Fri,  3 Jun 2022 18:50:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 030BCC385B8;
-        Fri,  3 Jun 2022 18:50:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654282210;
-        bh=bOriYyJek/0gWTzeUpshNdx4hLR6hEcL+erxtFQ1q6Q=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Evqa9V+gShN4CKTki1Qc95yc8OQ6s9PLcauHwWuQWN/qHkuUNZ3Ib2o0b29gwpynZ
-         FRgXrSMXOhDap47vgkuQWBTzhhSlqdXRt/x0Mm2Q7px6ynj/GTJtEY2YI8lCMm0foC
-         tCzxlmZLw9mQEMDl6Ck+F4hfp9+VRvbgfh+AG/b1ERk5aKSf0lA34orC2kL0heSbP1
-         KSyyYSWbqd8GlD1k7CqRTvyLLEhZbKDqDUFqCXaJU3Zqven3aHo0fD3BqHSRRQ0IbI
-         Wvb9n5mPF5ea0BrsoYqVv8cJ4usD9SvY/gvd0zrWD7kgkOyV3Ja5WW7Y3ZE+OzLFsv
-         SHtKdUIA0I91g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E093BF03953;
-        Fri,  3 Jun 2022 18:50:09 +0000 (UTC)
-Subject: Re: [GIT PULL] vhost,virtio,vdpa: features, fixes, cleanups
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220602161124-mutt-send-email-mst@kernel.org>
-References: <20220602161124-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220602161124-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-X-PR-Tracked-Commit-Id: bd8bb9aed56b1814784a975e2dfea12a9adcee92
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 6e5f6a86915d65210e90acac0402e6f37e21fc7b
-Message-Id: <165428220991.10974.157104839485276628.pr-tracker-bot@kernel.org>
-Date:   Fri, 03 Jun 2022 18:50:09 +0000
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        arbn@yandex-team.com, arei.gonglei@huawei.com,
-        christophe.jaillet@wanadoo.fr, cohuck@redhat.com,
-        dan.carpenter@oracle.com, dinechin@redhat.com, elic@nvidia.com,
-        eperezma@redhat.com, gautam.dawar@xilinx.com, gdawar@xilinx.com,
-        helei.sig11@bytedance.com, jasowang@redhat.com,
-        lingshan.zhu@intel.com, linux-s390@vger.kernel.org,
-        liuke94@huawei.com, lkp@intel.com, lulu@redhat.com, maz@kernel.org,
-        michael.christie@oracle.com, mst@redhat.com, muriloo@linux.ibm.com,
-        oberpar@linux.ibm.com, pasic@linux.ibm.com, paulmck@kernel.org,
-        peterz@infradead.org, pizhenwei@bytedance.com, sgarzare@redhat.com,
-        solomonbstoner@protonmail.ch, stable@vger.kernel.org,
-        suwan.kim027@gmail.com, tglx@linutronix.de, vneethv@linux.ibm.com,
-        xianting.tian@linux.alibaba.com, zheyuma97@gmail.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S1349624AbiFCSzH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 14:55:07 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAB95289AD
+        for <netdev@vger.kernel.org>; Fri,  3 Jun 2022 11:55:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654282505; x=1685818505;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=QbwnpqOGBbwoRZW5VI918Rr1F/exRgpMDmoqqCCs8Nk=;
+  b=JmEALNa4yKB9P5hjeFIWU2Cks/nYRsFfoqHIWv8Kg5SJRYgN3fBd5KHf
+   5rj7l/qUcUo3Z1ZWGlZ1Dp9fTB9/PPTKXxE1KHaJAaxDllPvisQej01CI
+   AsAQC10ufcrH4AfeI1CJ7tQDNieWDOOleffa+eKIUhsZCbleg3NUMT9A3
+   xmKCnXO7rGsXBYJk4y/A7Fi4solygeiKyBl+N3/SWFONDPWakUo2DcFCe
+   t9RCKUG4fuU0Iy2q8cyUD68GZfdPCSowg0hIoQ9YIkwJZ4MMkTvBcE1DR
+   gLGeXI7HlH/N6OE1X4mgOQBfpOop907SgWuwIeAI26yGd4sLehbNHqE99
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10367"; a="256186483"
+X-IronPort-AV: E=Sophos;i="5.91,275,1647327600"; 
+   d="scan'208";a="256186483"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 11:55:05 -0700
+X-IronPort-AV: E=Sophos;i="5.91,275,1647327600"; 
+   d="scan'208";a="646605643"
+Received: from nhaouati-mobl2.amr.corp.intel.com ([10.212.222.176])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 11:55:04 -0700
+Date:   Fri, 3 Jun 2022 11:54:58 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Joanne Koong <joannelkoong@gmail.com>
+cc:     netdev@vger.kernel.org, edumazet@google.com, kafai@fb.com,
+        kuba@kernel.org, davem@davemloft.net, pabeni@redhat.com
+Subject: Re: [PATCH net-next v2 0/2] Update bhash2 when socket's rcv saddr
+ changes
+In-Reply-To: <20220602165101.3188482-1-joannelkoong@gmail.com>
+Message-ID: <4bae9df4-42c1-85c3-d350-119a151d29@linux.intel.com>
+References: <20220602165101.3188482-1-joannelkoong@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; format=flowed; charset=US-ASCII
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Thu, 2 Jun 2022 16:11:24 -0400:
+On Thu, 2 Jun 2022, Joanne Koong wrote:
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+> As syzbot noted [1], there is an inconsistency in the bhash2 table in the
+> case where a socket's rcv saddr changes after it is binded. (For more
+> details, please see the commit message of the first patch)
+>
+> This patchset fixes that and adds a test that triggers the case where the
+> sk's rcv saddr changes. The subsequent listen() call should succeed.
+>
+> [1] https://lore.kernel.org/netdev/0000000000003f33bc05dfaf44fe@google.com/
+>
+> --
+> v1 -> v2:
+> v1: https://lore.kernel.org/netdev/20220601201434.1710931-1-joannekoong@fb.com/
+> * Mark __inet_bhash2_update_saddr as static
+>
+> Joanne Koong (2):
+>  net: Update bhash2 when socket's rcv saddr changes
+>  selftests/net: Add sk_bind_sendto_listen test
+>
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/6e5f6a86915d65210e90acac0402e6f37e21fc7b
+Hi Joanne -
 
-Thank you!
+I've been running my own syzkaller instance with v1 of this fix for a 
+couple of days. Before this patch, syzkaller would trigger the 
+inet_csk_get_port warning a couple of times per hour. After this patch it 
+took two days to show the warning:
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+------------[ cut here ]------------
+
+WARNING: CPU: 0 PID: 9430 at net/ipv4/inet_connection_sock.c:525 
+inet_csk_get_port+0x938/0xe80 net/ipv4/inet_connection_sock.c:525
+Modules linked in:
+CPU: 0 PID: 9430 Comm: syz-executor.5 Not tainted 5.18.0-05016-g433fde5b4119 #3
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+RIP: 0010:inet_csk_get_port+0x938/0xe80 net/ipv4/inet_connection_sock.c:525
+Code: ff 48 89 84 24 b0 00 00 00 48 85 c0 0f 84 6a 01 00 00 e8 2b 0f db fd 48 8b 6c 24 70 c6 04 24 01 e9 fb fb ff ff e8 18 0f db fd <0f> 0b e9 70 f9 ff ff e8 0c 0f db fd 0f 0b e9 28 f9 ff ff e8 00 0f
+RSP: 0018:ffffc90000b5fbc0 EFLAGS: 00010212
+RAX: 00000000000000e7 RBX: ffff88803c410040 RCX: ffffc9000e419000
+RDX: 0000000000040000 RSI: ffffffff836f47e8 RDI: ffff88803c4106e0
+RBP: ffff88810b773840 R08: 0000000000000001 R09: 0000000000000001
+R10: fffffbfff0f64303 R11: 0000000000000001 R12: 0000000000000000
+R13: ffff88810605e2f0 R14: ffffffff88606040 R15: 000000000000c1ff
+FS:  00007fada4d03640(0000) GS:ffff88811ac00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000001b32e24000 CR3: 00000001016de001 CR4: 0000000000770ef0
+PKRU: 55555554
+Call Trace:
+  <TASK>
+  inet_csk_listen_start+0x143/0x3d0 net/ipv4/inet_connection_sock.c:1178
+  inet_listen+0x22f/0x650 net/ipv4/af_inet.c:228
+  mptcp_listen+0x205/0x440 net/mptcp/protocol.c:3564
+  __sys_listen+0x189/0x260 net/socket.c:1810
+  __do_sys_listen net/socket.c:1819 [inline]
+  __se_sys_listen net/socket.c:1817 [inline]
+  __x64_sys_listen+0x54/0x80 net/socket.c:1817
+  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+  do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
+  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7fada558f92d
+Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fada4d03028 EFLAGS: 00000246 ORIG_RAX: 0000000000000032
+RAX: ffffffffffffffda RBX: 00007fada56aff60 RCX: 00007fada558f92d
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000004
+RBP: 00007fada56000a0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 000000000000000b R14: 00007fada56aff60 R15: 00007fada4ce3000
+  </TASK>
+irq event stamp: 2078
+hardirqs last  enabled at (2092): [<ffffffff812f1be3>] __up_console_sem+0xb3/0xd0 kernel/printk/printk.c:291
+hardirqs last disabled at (2103): [<ffffffff812f1bc8>] __up_console_sem+0x98/0xd0 kernel/printk/printk.c:289
+softirqs last  enabled at (1498): [<ffffffff83807dd4>] lock_sock include/net/sock.h:1691 [inline]
+softirqs last  enabled at (1498): [<ffffffff83807dd4>] inet_listen+0x94/0x650 net/ipv4/af_inet.c:199
+softirqs last disabled at (1500): [<ffffffff836f425c>] spin_lock_bh include/linux/spinlock.h:354 [inline]
+softirqs last disabled at (1500): [<ffffffff836f425c>] inet_csk_get_port+0x3ac/0xe80 net/ipv4/inet_connection_sock.c:483
+---[ end trace 0000000000000000 ]---
+
+
+In the full log file it does look like syskaller is doing something 
+strange since it's calling bind, connect, and listen on the same socket:
+
+r4 = socket$inet_mptcp(0x2, 0x1, 0x106)
+bind$inet(r4, &(0x7f0000000000)={0x2, 0x4e23, @empty}, 0x10)
+connect$inet(r4, &(0x7f0000000040)={0x2, 0x0, @local}, 0x10)
+listen(r4, 0x0)
+
+...but it is a fuzz tester after all.
+
+I've uploaded the full syzkaller logs to this GitHub issue:
+
+https://github.com/multipath-tcp/mptcp_net-next/issues/279
+
+
+Not sure yet if this is MPTCP-related. I don't think MPTCP 
+changes anything with the subflow TCP socket bind hashes.
+
+
+--
+Mat Martineau
+Intel
+
