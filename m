@@ -2,111 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 300DD53C38A
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 06:17:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8070053C391
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 06:24:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233239AbiFCERK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 00:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32966 "EHLO
+        id S236457AbiFCEYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 00:24:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbiFCERI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 00:17:08 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F36332B27C
-        for <netdev@vger.kernel.org>; Thu,  2 Jun 2022 21:17:06 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-30c87716af6so58891157b3.22
-        for <netdev@vger.kernel.org>; Thu, 02 Jun 2022 21:17:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=1BsRtBAmOlVYU0X5fbG0S2pRq+lwbEah2uHUy+hlBpc=;
-        b=PNpb7lAUWhaEKQ51mR2StQfbPWqXTDAQ5v+xMQEdFL01N5gEzOXwaqQvi2ehoTMmhE
-         kKBj1ADbYt+999lWcGGZforge6SALcIw8PFsLHpeuL87d5uOzjkTNFi8Ur3I2WnsUapY
-         ljkNZgaOn/aTAJEEcsumb0w9NBSAo3Z/6Q6qW71mXNPxctk2qA4WIF1sousCLrUJxryt
-         GRbVolGOn3k2e2kl4JZVIgFSRE0X4eXfNHtyGR9l3RSn5gXcm0duhLsvUtAqkQVvnT9i
-         l/IHRRkUh6+N3x+CheeczYN93qdyIyrUVFcLM3ijn8SuVRcaMODvv2ivWhPkJaTDc1JE
-         OXYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=1BsRtBAmOlVYU0X5fbG0S2pRq+lwbEah2uHUy+hlBpc=;
-        b=tGF3WltszBzAYqciyiFv71uRYziAiW3oCDTJ6FMdLQGZSwYoZQUf5UnOaKW5zj65ss
-         mwy3dqqbFhfxwu5QbvKat3q7SHf62yT0HpBbtAlgv1zqKTuqmiRrI6/4sTmCgVH46Etl
-         qqpyvdQ6jiFpj/IzPMBySZyrN1gBD0i+o4zfI3MefUG+EmHApvuSNyq6dBQA3ONBTZiG
-         8rw5EaAiiZvPpyFs1TwiFnh/XHEHg5XvrgOc8piFHix1SVm/VONVuNbMVpeVpxxBrfEv
-         BhG+Vw2U5LbBnq1njo2TP426d27aCteV/hfJkP6/0q2V9FpY24w8fglEtnKDWTby8nZO
-         n+7w==
-X-Gm-Message-State: AOAM532zz3hbmzB0LvSihtSMFsJof2mkGbbMR2o0tKUXEkJzvhJ1NhjP
-        rauBvPaJ63KW/vdjs9Sv/6KLp+IOyRcD
-X-Google-Smtp-Source: ABdhPJyncQ59ohwrf8WGY/GsbBhrkQPGT4t6b3aYpN9jUOflHJ6PqJhebEFokesypUtUFM4/B6pu59vq1GHP
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:7125:61ca:dfbf:5f0b])
- (user=irogers job=sendgmr) by 2002:a25:1cc3:0:b0:660:1c62:1f3b with SMTP id
- c186-20020a251cc3000000b006601c621f3bmr8849106ybc.115.1654229826128; Thu, 02
- Jun 2022 21:17:06 -0700 (PDT)
-Date:   Thu,  2 Jun 2022 21:17:01 -0700
-Message-Id: <20220603041701.2799595-1-irogers@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH] libbpf: Fix is_pow_of_2
-From:   Ian Rogers <irogers@google.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Yuze Chi <chiyuze@google.com>, Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S235497AbiFCEYU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 00:24:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67AB435DCB;
+        Thu,  2 Jun 2022 21:24:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F156361687;
+        Fri,  3 Jun 2022 04:24:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C43D8C385A9;
+        Fri,  3 Jun 2022 04:24:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654230257;
+        bh=VcPv64F+arj4pM7sQW/MRMnr268G7RMioGuGKmtHk1w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HDBMkA0+jEtpi4t7vOKaGdzUkAsaY00BCPd5wU8y2xAN7CY0ONP/UwmBqk/AMmdgR
+         e/LoAEKtxBkQT4uawhQ/n/sSOnNkltOL+tpo2ADh9bJVIziT1sUkiLRo+/boOnIWXa
+         a+Hbb8MzmeNEy4DzOVgykKB6ecY1KvdFDD+AXpiQ08FVTbSVuGAdQDb9eoCDmfI2ES
+         dpCjtC3fLce7y2dz/X/gwjSWGhGTUmdrn0CjBVwsx4fnotxRIE8GDLV/tR/Fo1snSd
+         8Hq9ywuDwFzujTwvttyy8W8w4I6CubEqL/bsmMRwcEuNi8mhUM0qulhjIfN4tay8BR
+         0zp/prdI3fN7g==
+Date:   Thu, 2 Jun 2022 21:24:15 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Chen Lin <chen45464546@163.com>
+Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, matthias.bgg@gmail.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        alexander.duyck@gmail.com
+Subject: Re: [PATCH] net: ethernet: mtk_eth_soc: fix misuse of mem alloc
+ interface netdev_alloc_frag
+Message-ID: <20220602212415.71bc5133@kernel.org>
+In-Reply-To: <1654229435-2934-1-git-send-email-chen45464546@163.com>
+References: <1654229435-2934-1-git-send-email-chen45464546@163.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yuze Chi <chiyuze@google.com>
+On Fri,  3 Jun 2022 12:10:35 +0800 Chen Lin wrote:
+> -		ring->data[i] = netdev_alloc_frag(ring->frag_size);
+> +		if (ring->frag_size <= PAGE_SIZE)
+> +			ring->data[i] = netdev_alloc_frag(ring->frag_size);
+> +		else
+> +			ring->data[i] = kmalloc(ring->frag_size, GFP_KERNEL);
 
-There is a missing not. Consider a power of 2 number like 4096:
+Is it legal to allocate pages with kmalloc()? I mean they will end up
+getting freed by page_frag_free(), not kfree().
 
-x && (x & (x - 1))
-4096 && (4096 & (4096 - 1))
-4096 && (4096 & 4095)
-4096 && 0
-0
-
-with the not this is:
-x && !(x & (x - 1))
-4096 && !(4096 & (4096 - 1))
-4096 && !(4096 & 4095)
-4096 && !0
-4096 && 1
-1
-
-Reported-by: Yuze Chi <chiyuze@google.com>
-Signed-off-by: Yuze Chi <chiyuze@google.com>
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/lib/bpf/libbpf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 3f4f18684bd3..fd0414ea00df 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -4956,7 +4956,7 @@ static void bpf_map__destroy(struct bpf_map *map);
- 
- static bool is_pow_of_2(size_t x)
- {
--	return x && (x & (x - 1));
-+	return x && !(x & (x - 1));
- }
- 
- static size_t adjust_ringbuf_sz(size_t sz)
--- 
-2.36.1.255.ge46751e96f-goog
+Also there's more frag allocations here, search for napi_alloc_frag().
 
