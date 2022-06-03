@@ -2,108 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2865253D1A2
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 20:37:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8868D53D19F
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 20:36:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346856AbiFCSgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 14:36:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37960 "EHLO
+        id S1345331AbiFCSgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 14:36:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347499AbiFCSgS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 14:36:18 -0400
-Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FEC613CFE;
-        Fri,  3 Jun 2022 11:30:07 -0700 (PDT)
-Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-f3381207a5so11661837fac.4;
-        Fri, 03 Jun 2022 11:30:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=I7SGBEQXCUibuD73vM0CHY2eGNwkmF13THVdJfw1SR0=;
-        b=helJqc8zqX6zbSfEbH4SWyTFWVEJ3J1l8FPVvktuhm/I99DoqkP8JVroRDCQuuMxh6
-         o1BmZN49KOcGT+XlPCnRjyRN5YldPD7vlYqwxbLnWxgzqdYK8Pg+iL68NLMONqxn1A15
-         E7Z32QOhW2IYILlMzmNIdHOmzBG6sNMvwLRGAET8ClYQ83wQFMS0usAvz/Xdwv5u5YfG
-         Ehi0LkctJ6tyXIfLa+X6L5/5hP55z3nBbxANIf0ip0wnAIlAw+7yynRpQQK3BETm/XiA
-         h1c2Uq2cvMBuN/dWBRJwCxEiZLpdN2SlbzFbCkRMIpMBQWDxABkY4EwrCLNng2vFhIrA
-         P5Tg==
-X-Gm-Message-State: AOAM532OWXrCbIcctoZn41+A9tqDkxW0ehzVzmvvqo4jcIMuAdd/BCzb
-        cKphWP+jeNcCozCnpcgVAA==
-X-Google-Smtp-Source: ABdhPJzurdHrLRcPetBePDn+vKDT2DZNlz06HHGkbGle2OmyEXWhxj77Y4tWwxQDz7yoqzlBmWHgFg==
-X-Received: by 2002:a05:6870:311:b0:f2:d46a:b370 with SMTP id m17-20020a056870031100b000f2d46ab370mr24040400oaf.169.1654281006668;
-        Fri, 03 Jun 2022 11:30:06 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id m11-20020a9d644b000000b0060b350fd549sm3860552otl.65.2022.06.03.11.30.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jun 2022 11:30:06 -0700 (PDT)
-Received: (nullmailer pid 680143 invoked by uid 1000);
-        Fri, 03 Jun 2022 18:30:04 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Johan Jonker <jbx6244@gmail.com>
-Cc:     netdev@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-rockchip@lists.infradead.org, heiko@sntech.de,
-        edumazet@google.com, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, pabeni@redhat.com, kuba@kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org
-In-Reply-To: <20220603163539.537-1-jbx6244@gmail.com>
-References: <20220603163539.537-1-jbx6244@gmail.com>
-Subject: Re: [PATCH v2 1/3] dt-bindings: net: convert emac_rockchip.txt to YAML
-Date:   Fri, 03 Jun 2022 13:30:04 -0500
-Message-Id: <1654281004.034832.680142.nullmailer@robh.at.kernel.org>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S244688AbiFCSg2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 14:36:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F66313F30;
+        Fri,  3 Jun 2022 11:30:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B6A46193C;
+        Fri,  3 Jun 2022 18:30:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6EE13C3411E;
+        Fri,  3 Jun 2022 18:30:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654281013;
+        bh=2WWPirMtJEQad0WrllwBwe0e+esqegyEkmVUAEx8SkY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=FAQk13VM/spdQMtvQ9gh4NJDXLHc7R6+9QysSWxYJkIbDaNExQQXZqDIg9us9U8i0
+         ZELe06fy0pnftEmWhlVzbevdEj0JKHIDi51CguJPRAmbZ7M5jutp7pCngWKllD5hz9
+         1FCFwc7jRaBHae7n3XSRhZ82EO2kw4gUEVEDG7hGDoLiKRqYQZBBUE6HVv4H5wvseq
+         MiD+oEwkMfhcLktTvyfpKn9ZZ97xTNV9fZFMRv5+1a6jTv8F0qt5In6BikJIAa3uFE
+         yzrKP0Uac09DOWUPOG6nOZz02PfcZVYavrUo1fLK7GWWzWHmldIVuoeUNiqKQ6Qvm0
+         F7Mw94P5OBB+g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 53246F03953;
+        Fri,  3 Jun 2022 18:30:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] libbpf: Fix is_pow_of_2
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165428101333.23591.13242354654538988127.git-patchwork-notify@kernel.org>
+Date:   Fri, 03 Jun 2022 18:30:13 +0000
+References: <20220603055156.2830463-1-irogers@google.com>
+In-Reply-To: <20220603055156.2830463-1-irogers@google.com>
+To:     Ian Rogers <irogers@google.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, chiyuze@google.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 03 Jun 2022 18:35:37 +0200, Johan Jonker wrote:
-> Convert emac_rockchip.txt to YAML.
+Hello:
+
+This patch was applied to bpf/bpf-next.git (master)
+by Andrii Nakryiko <andrii@kernel.org>:
+
+On Thu,  2 Jun 2022 22:51:56 -0700 you wrote:
+> From: Yuze Chi <chiyuze@google.com>
 > 
-> Changes against original bindings:
->   Add mdio sub node.
->   Add extra clock for rk3036
+> Move the correct definition from linker.c into libbpf_internal.h.
 > 
-> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
-> ---
+> Reported-by: Yuze Chi <chiyuze@google.com>
+> Signed-off-by: Yuze Chi <chiyuze@google.com>
+> Signed-off-by: Ian Rogers <irogers@google.com>
 > 
-> Changed V2:
->   use phy
->   rename to rockchip,emac.yaml
->   add more requirements
-> ---
->  .../devicetree/bindings/net/emac_rockchip.txt |  52 --------
->  .../bindings/net/rockchip,emac.yaml           | 115 ++++++++++++++++++
->  2 files changed, 115 insertions(+), 52 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/net/emac_rockchip.txt
->  create mode 100644 Documentation/devicetree/bindings/net/rockchip,emac.yaml
-> 
+> [...]
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+Here is the summary with links:
+  - [v2] libbpf: Fix is_pow_of_2
+    https://git.kernel.org/bpf/bpf-next/c/f913ad6559e3
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Full log is available here: https://patchwork.ozlabs.org/patch/
-
-
-ethernet@10200000: compatible: ['rockchip,rk3036-emac', 'snps,arc-emac'] is too long
-	arch/arm/boot/dts/rk3036-evb.dtb
-	arch/arm/boot/dts/rk3036-kylin.dtb
-
-ethernet@10200000: 'mdio' is a required property
-	arch/arm/boot/dts/rk3036-evb.dtb
-	arch/arm/boot/dts/rk3036-kylin.dtb
-
-ethernet@10204000: 'mdio' is a required property
-	arch/arm/boot/dts/rk3066a-marsboard.dtb
-	arch/arm/boot/dts/rk3066a-rayeager.dtb
-	arch/arm/boot/dts/rk3188-radxarock.dtb
 
