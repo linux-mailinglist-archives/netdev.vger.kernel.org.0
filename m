@@ -2,72 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 445C853D316
-	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 23:05:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E005653D33D
+	for <lists+netdev@lfdr.de>; Fri,  3 Jun 2022 23:31:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348264AbiFCVFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 17:05:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
+        id S1346482AbiFCVbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 17:31:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231235AbiFCVFY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 17:05:24 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A8F1D0EE;
-        Fri,  3 Jun 2022 14:05:22 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id l30so14446573lfj.3;
-        Fri, 03 Jun 2022 14:05:22 -0700 (PDT)
+        with ESMTP id S232022AbiFCVa7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 17:30:59 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508EA38BE5;
+        Fri,  3 Jun 2022 14:30:58 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id l30so14527646lfj.3;
+        Fri, 03 Jun 2022 14:30:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=rdCC350CRfTnlMVl9hZPunLr7i2db8KX60dDtm/jhb4=;
-        b=dtlC/kgJuVZ3CpEdyshW/IR+2qIgLu09prKB5QevJec1hXcL9NpbvvzgNZ71mOaAiZ
-         PftpokKOYCrGeork8uYNkaZozFeRadECDkdIa16Jn4C/UQtALgI6m446ReodOYVPs+Kk
-         Kejoro6Tj3+9RBJ/zDzt6A1+Co7sMDJnAiH3pOJ5YsamY4dDsQYB5nte2cBU8u0S7/GB
-         u4AYa+ZGfS/5XzGXrNdKIn0k1wBWzELkZRwu2sJ+63YdiywR+SyoxwBfilufmJboPU+o
-         caid2AT5hUUlS8YLSUyMINY4lZO28FEotMfq4nVHXqBuFNUVmpLr3MWsHN55PMWHTMAV
-         /M7A==
+        bh=5/2T3P0ZiupSWsrUP0xa/9587MGNTDXqll1NTZ+aZdo=;
+        b=Lf+Kp8EJZJJIBxjmB7FVWwy/l0qRUVlcNFdcLxc92vGELD0XSoerbHE7PDXmeLOWL4
+         P/JEcGHKgstyqePRe/yEhBYBDqomW65uewyUDTnCz63S0+0pxziGGvvX0bXDpQVXS8ia
+         6DX2XLBP+IegZIJj3C0Z6nfyMjiRoDC5MA6X33sbTQt4ATtAIRE9jLL7xQmGiugE99lP
+         3VpZXYhFtlYU3dVNTuVbKQpYPGSFedF52GE0DXAxJdzC6qcmDC48YYucxdOi+kaiW/RG
+         ls80bfWAnnpQVkLiNGbjGu+7lK3QL98KVPp6hyYa+jsW35M2jzS46oVOOM6AzhAZ1qpt
+         lNtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=rdCC350CRfTnlMVl9hZPunLr7i2db8KX60dDtm/jhb4=;
-        b=RfDLVmuozmgPtcBS05wywyXpL/qDYL5EJqGUX3HFQ/Y+k9sW9m2THQyrYIS7QspLe/
-         gmbJHQgbTpLtXaH8/458ZsTfXynWFe3IKHSQ3zgeaeIHdfMN2wd/TsxQaoTTPzPRq9p7
-         PkZjuVjW3OaYg31+7x+sNqPdaXbfkoWjWVpTMbgt9pRwrWeav6djonF9DEh7My4GXx4Y
-         8wKy07q1oNpEK/sqPz4+RlwxA/geV6e7UfnYKDZp4a2fmv426zXmp+nANPYRS0PdTwRy
-         c54DgeYjpvz151q3rISSBhhjqQR7Lj7aIf1PCGy9xWNCBR9itmqkameO3B6o9gHCUKoT
-         5ijw==
-X-Gm-Message-State: AOAM532QXQCakQ/sLN2urSOFmYTz6co0IGzgc0uwN3q9ejASQZwtnaJv
-        fHXY3IxD1NFJMWKkA3H9Iq0QOsGlaxhZ0fZx2Bs=
-X-Google-Smtp-Source: ABdhPJxQRsoWD2DZFdgj6bMc6YwCRCjL0tBk07f4Tytq4xquHn/ejDy48a4Wxbt7fLch3VWacC+ZwogYEJcokg0BPXo=
-X-Received: by 2002:a05:6512:2625:b0:478:5a51:7fe3 with SMTP id
- bt37-20020a056512262500b004785a517fe3mr7697698lfb.158.1654290320714; Fri, 03
- Jun 2022 14:05:20 -0700 (PDT)
+        bh=5/2T3P0ZiupSWsrUP0xa/9587MGNTDXqll1NTZ+aZdo=;
+        b=iCFFqGNzWJlO5XAra6kCWWnnhTAC+WLEiFHb5AtAQybhY5bqJad9duSMv1LVuUgj4o
+         rAxhYkjo4SHAUlgb1uS2kPUh5RnscuCUGX+czO79utIu+QLOeo/o6LYEh55g+zsGKiKG
+         EXD5GwfpkW6GHKLov0c0NuCUhEek2jhP9EEoSj/8V+O3hwv1dKN7VoRwldx/KLCzJxFE
+         WE87M1+caw0voeizGKsXiZBF3VqWkrjN+6KUz3/YD1WRMcaohJnr6b0oiqw8aAcjF+kk
+         iOfMCn8Y/QkmOYW/ohXkKunsZtnPMauWQqSDRzzg62KxwfojH+5RoBq5DwUdDgJXNTxZ
+         pGtQ==
+X-Gm-Message-State: AOAM533AKK/zq01bffKpFcciKYDIh3lWivdCKTRDg1c3qmYowLphy32A
+        gAcHhuoNDPcqstuqNpQTG2mcQwnoZHRpKOGkHXqS5n8Kzmw=
+X-Google-Smtp-Source: ABdhPJzZdJz/yoFUqVp9xzrNB8TMWtBZplBN1hFdIHTVRJzJOFdP/h+2jeRBBkb9PCJX1nkgCE1XbZaczOy058CKzvI=
+X-Received: by 2002:a05:6512:1398:b0:448:bda0:99f2 with SMTP id
+ p24-20020a056512139800b00448bda099f2mr54765221lfa.681.1654291856678; Fri, 03
+ Jun 2022 14:30:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220530092815.1112406-1-pulehui@huawei.com> <20220530092815.1112406-7-pulehui@huawei.com>
-In-Reply-To: <20220530092815.1112406-7-pulehui@huawei.com>
+References: <20220601190218.2494963-1-sdf@google.com> <20220601190218.2494963-8-sdf@google.com>
+In-Reply-To: <20220601190218.2494963-8-sdf@google.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 3 Jun 2022 14:05:09 -0700
-Message-ID: <CAEf4Bza4RT=KFhr9ev29967dyT0eF_+6ZRqK35beUvnA_NbcqQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 6/6] selftests/bpf: Remove the casting about
- jited_ksyms and jited_linfo
-To:     Pu Lehui <pulehui@huawei.com>
-Cc:     bpf <bpf@vger.kernel.org>, linux-riscv@lists.infradead.org,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
+Date:   Fri, 3 Jun 2022 14:30:45 -0700
+Message-ID: <CAEf4BzZW_xFWVU0_VFsov+xo7i5i0SnC+_Ciy1vTHU97KT-+cQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v8 07/11] libbpf: add lsm_cgoup_sock type
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
+        Andrii Nakryiko <andrii@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -79,60 +67,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 30, 2022 at 1:58 AM Pu Lehui <pulehui@huawei.com> wrote:
+On Wed, Jun 1, 2022 at 12:02 PM Stanislav Fomichev <sdf@google.com> wrote:
 >
-> We have unified data extension operation of jited_ksyms and jited_linfo
-> into zero extension, so there's no need to cast u64 memory address to
-> long data type.
+> lsm_cgroup/ is the prefix for BPF_LSM_CGROUP.
 >
-> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
 > ---
->  tools/testing/selftests/bpf/prog_tests/btf.c | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
-> index e6612f2bd0cf..65bdc4aa0a63 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/btf.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/btf.c
-> @@ -6599,8 +6599,8 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
->         }
->
->         if (CHECK(jited_linfo[0] != jited_ksyms[0],
-> -                 "jited_linfo[0]:%lx != jited_ksyms[0]:%lx",
-> -                 (long)(jited_linfo[0]), (long)(jited_ksyms[0]))) {
-> +                 "jited_linfo[0]:%llx != jited_ksyms[0]:%llx",
-> +                 jited_linfo[0], jited_ksyms[0])) {
 
-__u64 is not always printed with %lld, on some platforms it is
-actually %ld, so to avoid compiler warnings we just cast them to long
-long or unsigned long long (and then %lld or %llu is fine). So please
-update this part here and below.
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
->                 err = -1;
->                 goto done;
->         }
-> @@ -6618,16 +6618,16 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
->                 }
+>  tools/lib/bpf/libbpf.c | 3 +++
+>  1 file changed, 3 insertions(+)
 >
->                 if (CHECK(jited_linfo[i] <= jited_linfo[i - 1],
-> -                         "jited_linfo[%u]:%lx <= jited_linfo[%u]:%lx",
-> -                         i, (long)jited_linfo[i],
-> -                         i - 1, (long)(jited_linfo[i - 1]))) {
-> +                         "jited_linfo[%u]:%llx <= jited_linfo[%u]:%llx",
-> +                         i, jited_linfo[i],
-> +                         i - 1, jited_linfo[i - 1])) {
->                         err = -1;
->                         goto done;
->                 }
->
->                 if (CHECK(jited_linfo[i] - cur_func_ksyms > cur_func_len,
-> -                         "jited_linfo[%u]:%lx - %lx > %u",
-> -                         i, (long)jited_linfo[i], (long)cur_func_ksyms,
-> +                         "jited_linfo[%u]:%llx - %llx > %u",
-> +                         i, jited_linfo[i], cur_func_ksyms,
->                           cur_func_len)) {
->                         err = -1;
->                         goto done;
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 5afe4cbd684f..a4209a1ad02f 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -107,6 +107,7 @@ static const char * const attach_type_name[] = {
+>         [BPF_TRACE_FEXIT]               = "trace_fexit",
+>         [BPF_MODIFY_RETURN]             = "modify_return",
+>         [BPF_LSM_MAC]                   = "lsm_mac",
+> +       [BPF_LSM_CGROUP]                = "lsm_cgroup",
+>         [BPF_SK_LOOKUP]                 = "sk_lookup",
+>         [BPF_TRACE_ITER]                = "trace_iter",
+>         [BPF_XDP_DEVMAP]                = "xdp_devmap",
+> @@ -9157,6 +9158,7 @@ static const struct bpf_sec_def section_defs[] = {
+>         SEC_DEF("freplace+",            EXT, 0, SEC_ATTACH_BTF, attach_trace),
+>         SEC_DEF("lsm+",                 LSM, BPF_LSM_MAC, SEC_ATTACH_BTF, attach_lsm),
+>         SEC_DEF("lsm.s+",               LSM, BPF_LSM_MAC, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_lsm),
+> +       SEC_DEF("lsm_cgroup+",          LSM, BPF_LSM_CGROUP, SEC_ATTACH_BTF),
+>         SEC_DEF("iter+",                TRACING, BPF_TRACE_ITER, SEC_ATTACH_BTF, attach_iter),
+>         SEC_DEF("iter.s+",              TRACING, BPF_TRACE_ITER, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_iter),
+>         SEC_DEF("syscall",              SYSCALL, 0, SEC_SLEEPABLE),
+> @@ -9610,6 +9612,7 @@ void btf_get_kernel_prefix_kind(enum bpf_attach_type attach_type,
+>                 *kind = BTF_KIND_TYPEDEF;
+>                 break;
+>         case BPF_LSM_MAC:
+> +       case BPF_LSM_CGROUP:
+>                 *prefix = BTF_LSM_PREFIX;
+>                 *kind = BTF_KIND_FUNC;
+>                 break;
 > --
-> 2.25.1
+> 2.36.1.255.ge46751e96f-goog
 >
