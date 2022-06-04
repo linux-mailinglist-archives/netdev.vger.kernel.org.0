@@ -2,201 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7101453D3F2
-	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 01:57:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 462C053D41C
+	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 02:39:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231902AbiFCXzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 19:55:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48022 "EHLO
+        id S1349811AbiFDAjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 20:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230239AbiFCXzT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 19:55:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BEB23981D
-        for <netdev@vger.kernel.org>; Fri,  3 Jun 2022 16:55:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EAC9FB82501
-        for <netdev@vger.kernel.org>; Fri,  3 Jun 2022 23:55:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34C3BC385A9;
-        Fri,  3 Jun 2022 23:55:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654300515;
-        bh=C9h3wZe8GpITvh5294wi+SCcHIg0kDLl+FaXF8m0qtY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=JCIlqFm19u+PrmodYJydRwnOkLxNr82B3gt0KKmxmJSJJcM+WZ/dhml+xZHZsRSlO
-         MvNKIWA6b+ko5HhXv3QmDvPxvyfhsMZbAZNwuQ5zGx79WE1iN/t3U8hXRMNddvrtpd
-         Z++dz8IKIxzDJbrQ0qb2qqCtaU0dF3VwVvY6YBI6d2nZRKy8oh+4wbR4CkegSOkv70
-         b+8SsNrLqfIUN1sxQLW7EcuFS4iiz455N2GfTl4TYGwXaceEWJNOA6cyy3UtoeIE55
-         /w4zYl9qqAKKCf0h+R14w8Y1hVqi8RClcaWrnhKiPY02kG93MFZvCoYfj8ECoQr9KU
-         eMv4SsSGfwAow==
-Date:   Fri, 3 Jun 2022 18:55:12 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Joao Pinto <Joao.Pinto@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Vaibhav Gupta <vaibhavgupta40@gmail.com>
-Subject: Re: [PATCH net] net: stmmac: Fix WoL for PCI-based setups
-Message-ID: <20220603235512.GA110908@bhelgaas>
+        with ESMTP id S231961AbiFDAjC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 20:39:02 -0400
+Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9586A26559
+        for <netdev@vger.kernel.org>; Fri,  3 Jun 2022 17:39:01 -0700 (PDT)
+Received: by mail-vs1-xe34.google.com with SMTP id r12so6130335vsg.8
+        for <netdev@vger.kernel.org>; Fri, 03 Jun 2022 17:39:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nQ12x7LYTirCKanAsGxhstl3+8Pc7DWx/YYw6rCUsvw=;
+        b=asoPVgxWz2KiFJn2uv7k5qvPzh4Cef3px6thi64JoY6bOhG3+3L+5mzNzFZH2REvGf
+         yLfsK7Yi1ngk9Cjq/i+frO9ltxOFj/5ujpzjeAjekgMfM0T0dDfjoOtALW/aYUUjP6TF
+         WAiJD4sjzPcjF7xdWxLs4I+KqWZUX5KJyYx6PZxYieGbrHfbZULC3P1c0cVOtg23ND6o
+         wezoj6V2HKMjVZFTNp6FUwhiKDQHWVUrvzGcuFr7tkF64+HEYF/eElBMU009PX+8uFxT
+         Tu8d/lpRK010kpP6GyUtpV+2XRLl/z1sdGcRdFMcDej9tf18UKRJzFELlEEZ+Lf8Rjc1
+         mnBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nQ12x7LYTirCKanAsGxhstl3+8Pc7DWx/YYw6rCUsvw=;
+        b=Yp+Y4H+QR//9eCR7NHACO01EhHew76Tnw5EEyftclPbptHkLf79dCYFS6lG6INNhYp
+         8uYzkzz9mmyhj3OzUMVv19xhp4vMBh4ApKTmC6DYMWtbpjlnsoEBQIQH18V4hy5CELCW
+         jvvvqgvgqG0mA9CGNGC/iHjsBk7ct4h0uRBk5AESjOU7xnmuRo6a7JwgnBNfmGwxB6TG
+         cSQM4mB3PoJPXnxr/PPQdWkB9cksWekbHYYaTtKIjzF64uLFlzqK1e2WByII+zjXMgo/
+         7MX0UlcfClUHxw7E6hnV/MIwuhV910TbEutI2WG6BNOphPu1ovqMtuPolyQQ//Z63dv4
+         XzFQ==
+X-Gm-Message-State: AOAM531d0SwZqNBMpMMNw0kI2bskzyoxMuE04FGW69bMickU87x7j7lv
+        2eg18e+KYVTVub8Df01fikYyR9w1mVWSeBl9D01LBGXf
+X-Google-Smtp-Source: ABdhPJysD4NCQ+HyNKLP6OuhkkRntpr5RcTl97d2V28YKiGtSvgcvVirWcvJBsJhObO2Wq0YW0uqrMXbBMvCHOdrXZ0=
+X-Received: by 2002:a67:d70e:0:b0:34b:8e32:404b with SMTP id
+ p14-20020a67d70e000000b0034b8e32404bmr4296166vsj.31.1654303140717; Fri, 03
+ Jun 2022 17:39:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2a47502239c0f5867d4dcebb2140849c40c5967f.1533046004.git.joabreu@synopsys.com>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220602165101.3188482-1-joannelkoong@gmail.com> <4bae9df4-42c1-85c3-d350-119a151d29@linux.intel.com>
+In-Reply-To: <4bae9df4-42c1-85c3-d350-119a151d29@linux.intel.com>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Fri, 3 Jun 2022 17:38:49 -0700
+Message-ID: <CAJnrk1buk-hK3nwyPz+o+wZLDdZTPpBSNniY3sJtgXZtJXOROQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 0/2] Update bhash2 when socket's rcv saddr changes
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[+cc Rafael, Vaibhav for wakeup usage questions]
+On Fri, Jun 3, 2022 at 11:55 AM Mat Martineau
+<mathew.j.martineau@linux.intel.com> wrote:
+>
+> On Thu, 2 Jun 2022, Joanne Koong wrote:
+>
+> > As syzbot noted [1], there is an inconsistency in the bhash2 table in the
+> > case where a socket's rcv saddr changes after it is binded. (For more
+> > details, please see the commit message of the first patch)
+> >
+> > This patchset fixes that and adds a test that triggers the case where the
+> > sk's rcv saddr changes. The subsequent listen() call should succeed.
+> >
+> > [1] https://lore.kernel.org/netdev/0000000000003f33bc05dfaf44fe@google.com/
+> >
+> > --
+> > v1 -> v2:
+> > v1: https://lore.kernel.org/netdev/20220601201434.1710931-1-joannekoong@fb.com/
+> > * Mark __inet_bhash2_update_saddr as static
+> >
+> > Joanne Koong (2):
+> >  net: Update bhash2 when socket's rcv saddr changes
+> >  selftests/net: Add sk_bind_sendto_listen test
+> >
+>
+> Hi Joanne -
+>
+> I've been running my own syzkaller instance with v1 of this fix for a
+> couple of days. Before this patch, syzkaller would trigger the
+> inet_csk_get_port warning a couple of times per hour. After this patch it
+> took two days to show the warning:
+>
+> ------------[ cut here ]------------
+>
+> WARNING: CPU: 0 PID: 9430 at net/ipv4/inet_connection_sock.c:525
+> inet_csk_get_port+0x938/0xe80 net/ipv4/inet_connection_sock.c:525
+> Modules linked in:
+> CPU: 0 PID: 9430 Comm: syz-executor.5 Not tainted 5.18.0-05016-g433fde5b4119 #3
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+> RIP: 0010:inet_csk_get_port+0x938/0xe80 net/ipv4/inet_connection_sock.c:525
+> Code: ff 48 89 84 24 b0 00 00 00 48 85 c0 0f 84 6a 01 00 00 e8 2b 0f db fd 48 8b 6c 24 70 c6 04 24 01 e9 fb fb ff ff e8 18 0f db fd <0f> 0b e9 70 f9 ff ff e8 0c 0f db fd 0f 0b e9 28 f9 ff ff e8 00 0f
+> RSP: 0018:ffffc90000b5fbc0 EFLAGS: 00010212
+> RAX: 00000000000000e7 RBX: ffff88803c410040 RCX: ffffc9000e419000
+> RDX: 0000000000040000 RSI: ffffffff836f47e8 RDI: ffff88803c4106e0
+> RBP: ffff88810b773840 R08: 0000000000000001 R09: 0000000000000001
+> R10: fffffbfff0f64303 R11: 0000000000000001 R12: 0000000000000000
+> R13: ffff88810605e2f0 R14: ffffffff88606040 R15: 000000000000c1ff
+> FS:  00007fada4d03640(0000) GS:ffff88811ac00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000001b32e24000 CR3: 00000001016de001 CR4: 0000000000770ef0
+> PKRU: 55555554
+> Call Trace:
+>   <TASK>
+>   inet_csk_listen_start+0x143/0x3d0 net/ipv4/inet_connection_sock.c:1178
+>   inet_listen+0x22f/0x650 net/ipv4/af_inet.c:228
+>   mptcp_listen+0x205/0x440 net/mptcp/protocol.c:3564
+>   __sys_listen+0x189/0x260 net/socket.c:1810
+>   __do_sys_listen net/socket.c:1819 [inline]
+>   __se_sys_listen net/socket.c:1817 [inline]
+>   __x64_sys_listen+0x54/0x80 net/socket.c:1817
+>   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>   do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
+>   entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> RIP: 0033:0x7fada558f92d
+> Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007fada4d03028 EFLAGS: 00000246 ORIG_RAX: 0000000000000032
+> RAX: ffffffffffffffda RBX: 00007fada56aff60 RCX: 00007fada558f92d
+> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000004
+> RBP: 00007fada56000a0 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+> R13: 000000000000000b R14: 00007fada56aff60 R15: 00007fada4ce3000
+>   </TASK>
+> irq event stamp: 2078
+> hardirqs last  enabled at (2092): [<ffffffff812f1be3>] __up_console_sem+0xb3/0xd0 kernel/printk/printk.c:291
+> hardirqs last disabled at (2103): [<ffffffff812f1bc8>] __up_console_sem+0x98/0xd0 kernel/printk/printk.c:289
+> softirqs last  enabled at (1498): [<ffffffff83807dd4>] lock_sock include/net/sock.h:1691 [inline]
+> softirqs last  enabled at (1498): [<ffffffff83807dd4>] inet_listen+0x94/0x650 net/ipv4/af_inet.c:199
+> softirqs last disabled at (1500): [<ffffffff836f425c>] spin_lock_bh include/linux/spinlock.h:354 [inline]
+> softirqs last disabled at (1500): [<ffffffff836f425c>] inet_csk_get_port+0x3ac/0xe80 net/ipv4/inet_connection_sock.c:483
+> ---[ end trace 0000000000000000 ]---
+>
+>
+> In the full log file it does look like syskaller is doing something
+> strange since it's calling bind, connect, and listen on the same socket:
+>
+> r4 = socket$inet_mptcp(0x2, 0x1, 0x106)
+> bind$inet(r4, &(0x7f0000000000)={0x2, 0x4e23, @empty}, 0x10)
+> connect$inet(r4, &(0x7f0000000040)={0x2, 0x0, @local}, 0x10)
+> listen(r4, 0x0)
+>
+> ...but it is a fuzz tester after all.
+>
+> I've uploaded the full syzkaller logs to this GitHub issue:
+>
+> https://github.com/multipath-tcp/mptcp_net-next/issues/279
+>
+>
+> Not sure yet if this is MPTCP-related. I don't think MPTCP
+> changes anything with the subflow TCP socket bind hashes.
+>
+Hi Mat,
 
-On Tue, Jul 31, 2018 at 03:08:20PM +0100, Jose Abreu wrote:
-> WoL won't work in PCI-based setups because we are not saving the PCI EP
-> state before entering suspend state and not allowing D3 wake.
-> 
-> Fix this by using a wrapper around stmmac_{suspend/resume} which
-> correctly sets the PCI EP state.
-> 
-> Signed-off-by: Jose Abreu <joabreu@synopsys.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Joao Pinto <jpinto@synopsys.com>
-> Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-> Cc: Alexandre Torgue <alexandre.torgue@st.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 40 ++++++++++++++++++++++--
->  1 file changed, 38 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-> index 8d375e51a526..6a393b16a1fc 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-> @@ -257,7 +257,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
->  		return -ENOMEM;
->  
->  	/* Enable pci device */
-> -	ret = pcim_enable_device(pdev);
-> +	ret = pci_enable_device(pdev);
->  	if (ret) {
->  		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n",
->  			__func__);
-> @@ -300,9 +300,45 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
->  static void stmmac_pci_remove(struct pci_dev *pdev)
->  {
->  	stmmac_dvr_remove(&pdev->dev);
-> +	pci_disable_device(pdev);
->  }
->  
-> -static SIMPLE_DEV_PM_OPS(stmmac_pm_ops, stmmac_suspend, stmmac_resume);
-> +static int stmmac_pci_suspend(struct device *dev)
-> +{
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +	int ret;
-> +
-> +	ret = stmmac_suspend(dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = pci_save_state(pdev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	pci_disable_device(pdev);
-> +	pci_wake_from_d3(pdev, true);
-
-I have a question about this.  This driver uses generic power
-management (thank you for that!), and in that case the PCI core should
-take care of all these PCI details for you, e.g.,
-
-  suspend_devices_and_enter
-    dpm_suspend_start(PMSG_SUSPEND)
-      pci_pm_suspend                       # PCI bus .suspend() method
-        stmmac_suspend                     # driver->pm->suspend
-          netif_device_detach              <-- device-specific
-          ...                              <-- device-specific
-    suspend_enter
-      dpm_suspend_noirq(PMSG_SUSPEND)
-        pci_pm_suspend_noirq               # PCI bus .suspend_noirq() method
-          pci_save_state                   <-- generic PCI
-          pci_prepare_to_sleep             <-- generic PCI
-            pci_enable_wake(true)
-            pci_set_power_state
-    ...
-    dpm_resume_end(PMSG_RESUME)
-      pci_pm_resume                        # PCI bus .resume() method
-        pci_restore_standard_config
-          pci_set_power_state(PCI_D0)      <-- generic PCI
-          pci_restore_state                <-- generic PCI
-        pci_pm_default_resume
-          pci_enable_wake(false)
-        stmmac_resume                      # driver->pm->resume
-          ...                              <-- device-specific
-          netif_device_attach              <-- device-specific
-
-So why did WoL not work before this patch?  IIUC there are two
-important pieces to the generic wakeup framework:
-
-  device_set_wakeup_capable(true):  device physically CAN signal wakeup
-  device_set_wakeup_enable(true):   device is ALLOWED to signal wakeup
-
-The PCI core calls device_set_wakeup_capable(true) in pci_pm_init() if
-the device advertises support for PME, so that part was probably fine.
-
-But I don't think WoL would *work* unless somebody called
-device_set_wakeup_enable(true), which the PCI core doesn't do.
-stmmac_set_wol() does, but I think that's only exercised by ethtool.
-
-There are several drivers, e.g., e1000, igb, ixgbe, that call
-device_set_wakeup_enable() from their .probe() methods, and I suspect
-that if you did the same, you wouldn't need this patch.
-
-I'm not 100% sure that's the right approach though because of these
-notes from devices.rst, which seem a little bit contradictory:
-
-  These fields are initialized by bus or device driver code using
-  device_set_wakeup_capable() and device_set_wakeup_enable(), defined
-  in include/linux/pm_wakeup.h. [1]
-  ...
-  Device drivers, however, are not expected to call
-  device_set_wakeup_enable() directly in any case. [2]
-
-If drivers aren't expected to call device_set_wakeup_enable(), I guess
-WoL would never be enabled except by user-space doing something?  If
-that's the intent, why do all these drivers enable wakeup themselves?
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/driver-api/pm/devices.rst?id=v5.18#n141
-[2] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/driver-api/pm/devices.rst?id=v5.18#n181
-
-> +	return 0;
-> +}
-> +
-> +static int stmmac_pci_resume(struct device *dev)
-> +{
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +	int ret;
-> +
-> +	pci_restore_state(pdev);
-> +	pci_set_power_state(pdev, PCI_D0);
-> +
-> +	ret = pci_enable_device(pdev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	pci_set_master(pdev);
-> +
-> +	return stmmac_resume(dev);
-> +}
-> +
-> +static SIMPLE_DEV_PM_OPS(stmmac_pm_ops, stmmac_pci_suspend, stmmac_pci_resume);
->  
->  /* synthetic ID, no official vendor */
->  #define PCI_VENDOR_ID_STMMAC 0x700
-> -- 
-> 2.7.4
+Thanks for bringing this up and for uploading the logs. I will look into this.
+>
+> --
+> Mat Martineau
+> Intel
+>
