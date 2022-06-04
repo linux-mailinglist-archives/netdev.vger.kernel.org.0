@@ -2,84 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD71853D6EF
-	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 15:07:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B291453D70C
+	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 15:46:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236292AbiFDNHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jun 2022 09:07:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47052 "EHLO
+        id S236403AbiFDNq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jun 2022 09:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236189AbiFDNHW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 09:07:22 -0400
-Received: from mail-oa1-x43.google.com (mail-oa1-x43.google.com [IPv6:2001:4860:4864:20::43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D7922513
-        for <netdev@vger.kernel.org>; Sat,  4 Jun 2022 06:07:20 -0700 (PDT)
-Received: by mail-oa1-x43.google.com with SMTP id 586e51a60fabf-e656032735so13933583fac.0
-        for <netdev@vger.kernel.org>; Sat, 04 Jun 2022 06:07:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=XXEhaw3EyxGH5Hb/RtU9Bqf726dwWbeMmBNixXdVBho=;
-        b=YdJZXgHJ/I8hXG0ekFy7RZTPgSnurEQ+JBj3OlEknwK3IPrbMfOv9xF6IwY0dZchQ3
-         ozjpz2yAsuLZA1sa/EKqO1Pe92RCZq4QL9pGjYjU1YgDftj4Ktl7M17pm/EVz5nWxC/f
-         0TNoADnsN3Ntn/XEhjBiNWOUAFgccHr8KOsNi6BubALk5KFuDi8XBRTOg+dGuJhrZJLn
-         CuU2e2d/WJRiKwFZaOoqwTC3Y56IZznDSEWmerQVbs6siCTFLQd6WtPPdEtg5dqaFzRP
-         mN6EdlNFKlBhQjoGODMJoUHYNH+BEi8fJ5L+PjAnk4yiA7wgZ5OnCJDOYqHXXEpVsa97
-         NxFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=XXEhaw3EyxGH5Hb/RtU9Bqf726dwWbeMmBNixXdVBho=;
-        b=y708R/A6UlOwwJ8gR2iTCZp8FQ/Va+gGO3JAaXc/+LKz+BGAtzTcb3SnKQgugGGPJY
-         HvJnhYRMICIZSHqxMFkQFQGrTu3ikMPA3VipKSbQ7XwUju1LenBicbwURV7QeZ4ox01O
-         ObJQb4fgJLU/VnRE9UxUqeaDiQIyZQNT1MryBpWxv/eLxW9TpegkWL0xclh822lk3wzO
-         WidNC7szSwurmqif5f610asW1t1/vMgIjuf7+mxiUi8eIwzGVs3fIJfbTyMdDT7JLuZN
-         DP3Wum4QRP2RilUDS1rfkUux9ieCSuBxbaT8zYGv3nt0BerjsjGNhf0ZBbfc+GVuKKPE
-         7q1A==
-X-Gm-Message-State: AOAM53008bGMYuaowrKMzpAibXyb1R1szo9TKsv4PKtZD6RCg2N9Zy9l
-        wQ7D2A8KvT50DZSVteBKZjZb9FgXzUEYRpgVUDg=
-X-Google-Smtp-Source: ABdhPJzfhEU24yqqtfLVVAX5G6kqQdY6jloYffDGXzPZeH87AtJpWn//ve+/ShIFv/HX+AauefON+f3EI5cUYjyGfk0=
-X-Received: by 2002:a05:6870:c348:b0:ed:f231:2b41 with SMTP id
- e8-20020a056870c34800b000edf2312b41mr25784453oak.23.1654348039822; Sat, 04
- Jun 2022 06:07:19 -0700 (PDT)
+        with ESMTP id S230425AbiFDNqY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 09:46:24 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64E402BB23
+        for <netdev@vger.kernel.org>; Sat,  4 Jun 2022 06:46:23 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nxU6c-00055f-B1; Sat, 04 Jun 2022 15:46:18 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 96BE98C377;
+        Sat,  4 Jun 2022 13:46:16 +0000 (UTC)
+Date:   Sat, 4 Jun 2022 15:46:15 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Max Staudt <max@enpas.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v4 2/7] can: Kconfig: turn menu "CAN Device Drivers" into
+ a menuconfig using CAN_DEV
+Message-ID: <20220604134615.l7qtyam6kmqboujo@pengutronix.de>
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220603102848.17907-1-mailhol.vincent@wanadoo.fr>
+ <20220603102848.17907-3-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Sender: hamp56690@gmail.com
-Received: by 2002:ac9:7fd2:0:0:0:0:0 with HTTP; Sat, 4 Jun 2022 06:07:19 -0700 (PDT)
-From:   Pavillion Tchi <pavilliontch27@gmail.com>
-Date:   Sat, 4 Jun 2022 13:07:19 +0000
-X-Google-Sender-Auth: 4k7otY6yv2gZkxy-Z391gcQ25Ng
-Message-ID: <CAGPqaA5zkXz_6cretVpjAdi-mbsrQgpdK65g5cXQwnHTURASmw@mail.gmail.com>
-Subject: =?UTF-8?B?2YXZitix2KfYqw==?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="pvkdbv5sicbki4qw"
+Content-Disposition: inline
+In-Reply-To: <20220603102848.17907-3-mailhol.vincent@wanadoo.fr>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-LS0gDQrZitmI2YUg2KzZhdmK2YTYjA0K2YTZgtivINmD2KrYqNiqINmE2YMg2YXZhiDZgtio2YQg
-2YjZhNmD2YbZgyDZhNmFINiq2LHYryDYudmE2Ykg2KjYsdmK2K/ZiiDYp9mE2KXZhNmD2KrYsdmI
-2YbZii4NCtmD2YrZgSDYrdin2YTZgyDZiNi52KfYptmE2KrZgyDYp9mE2YrZiNmF2J8g2KLZhdmE
-INij2YbZgyDYrNmK2K8hINmF2Lkg2K7Yp9mE2LUg2KfZhNiq2YLYr9mK2LEg2Iwg2KPZhtinINin
-2YTZhdit2KfZhdmKDQrYqNin2YHZitmE2YrZiNmGINiq2LTZiiDYjCDYo9ix2LPZhNiqINmE2YMg
-2K7Yt9in2KjZi9inINin2YTYtNmH2LEg2KfZhNmF2KfYttmKINiMINmE2YPZhtmDINmE2YUg2KrY
-sdivINi52YTZiiDYjCDZiNmE2K/Zig0K2YXYudmE2YjZhdin2Kog2YXZh9mF2Kkg2K3ZiNmEINmF
-2YrYsdin2KvZgyDYp9mE2LDZiiDYqtio2YTYuiDZgtmK2YXYqtmHIDUuNSDZhdmE2YrZiNmGINiv
-2YjZhNin2LEuINin2KjZhiDYudmF2YoNCtin2YTZhdiq2YjZgdmJINmF2YYg2KjZhNiv2YMuINij
-2LfZhNioINmF2YjYp9mB2YLYqtmDINi52YTZiSDYqtmC2K/ZitmF2YMg2KjYtdmB2KrZgyDYo9mC
-2LHYqCDYo9mC2LHYqNin2KbZgyDZhNi32YTYqCDZh9iw2KcNCtin2YTYtdmG2K/ZiNmCINiMINit
-2YrYqyDZg9mE2YHZhtmKINin2YTYqNmG2YMg2KjYqtmC2K/ZitmFINij2YLYsdioINin2YTYo9mC
-2KfYsdioINmE2YfZhSDZhNiq2YXZg9mK2YbZh9mFINmF2YYg2KjYr9ihDQrYp9mE2KXYrNix2KfY
-odin2Kog2KfZhNmC2KfZhtmI2YbZitipINmE2KrYrdmI2YrZhCDZh9iw2Kcg2KfZhNi12YbYr9mI
-2YIg2KXZhNmJINit2LPYp9io2YMg2KfZhNmF2LXYsdmB2YouIC4NCg0K2LPZitmD2YjZhiDZhdmI
-2LbYuSDYqtmC2K/ZitixINin2LPYqtis2KfYqNiq2YMg2KfZhNiz2LHZiti52Kkg2YTZhdiy2YrY
-ryDZhdmGINin2YTYqtmB2KfYtdmK2YQuDQrYqNil2K7ZhNin2LXYjA0K2KzZhtin2K0g2KrYtNmK
-DQo=
+
+--pvkdbv5sicbki4qw
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+My previous mail on this was wrong (as you noticed).... so here's the
+corrected one (hopefully).
+
+On 03.06.2022 19:28:43, Vincent Mailhol wrote:
+> diff --git a/drivers/net/can/dev/Makefile b/drivers/net/can/dev/Makefile
+> index 5b4c813c6222..919f87e36eed 100644
+> --- a/drivers/net/can/dev/Makefile
+> +++ b/drivers/net/can/dev/Makefile
+> @@ -1,9 +1,11 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> =20
+> -obj-$(CONFIG_CAN_NETLINK) +=3D can-dev.o
+> -can-dev-y                    +=3D bittiming.o
+> -can-dev-y                    +=3D dev.o
+> -can-dev-y                    +=3D length.o
+> -can-dev-y                    +=3D netlink.o
+> -can-dev-y                    +=3D rx-offload.o
+> -can-dev-y                       +=3D skb.o
+> +obj-$(CONFIG_CAN_DEV) +=3D can-dev.o
+> +
+> +can-dev-$(CONFIG_CAN_DEV) +=3D skb.o
+           ^^^^^^^^^^^^^^^^
+
+As "skb.o" is always part of "can-dev.o" (if build at all), you can use
+"can-dev-y" here.
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--pvkdbv5sicbki4qw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKbYiQACgkQrX5LkNig
+012l2gf/YsNjl48yYp2YEyLJmGsd69HaA37eYqom1L74OW9JPO9Gx2alg4uULFXL
+Y2pcFSHVqKAWefFuIh5MeE3b5+ARJkwEdqggBPSy1Z88LqW+zNp/oA7gIIHtgjGC
+AzyEEj8FyHFFAk2lqzGgMenGYxzVxFyba6NtXGWzc/aTT7ltWwFUaKPOSBkInvmf
+Y0hAQmOggGxuMKES7H+JBXTYCoewgn2dOkazxBn/8Xllg4porzsCGCBOTijEbYr0
+/YHerEoOBecHcf5SsoG1QmLdfBEI7VpqjicPQ1arODIR84j+GvfFym+7TjjtJJfy
+ji0E0hivJG2/HzmzsjKrXKZAQDekrw==
+=iouw
+-----END PGP SIGNATURE-----
+
+--pvkdbv5sicbki4qw--
