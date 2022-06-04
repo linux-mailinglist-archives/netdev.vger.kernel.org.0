@@ -2,92 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D65B653D7C5
-	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 18:32:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8246453D7F5
+	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 18:56:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238211AbiFDQca (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jun 2022 12:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49060 "EHLO
+        id S238912AbiFDQzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jun 2022 12:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231208AbiFDQc3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 12:32:29 -0400
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937D22CCAB;
-        Sat,  4 Jun 2022 09:32:27 -0700 (PDT)
-Received: by mail-yb1-f171.google.com with SMTP id w2so18731814ybi.7;
-        Sat, 04 Jun 2022 09:32:27 -0700 (PDT)
+        with ESMTP id S231436AbiFDQzP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 12:55:15 -0400
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94084193FC
+        for <netdev@vger.kernel.org>; Sat,  4 Jun 2022 09:55:14 -0700 (PDT)
+Received: by mail-ot1-x330.google.com with SMTP id e11-20020a9d6e0b000000b0060afcbafa80so7689697otr.3
+        for <netdev@vger.kernel.org>; Sat, 04 Jun 2022 09:55:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ZumGXwmkKCZw7zAdFkot1A/Xnxwq0a7hOWfoxoDKoQ8=;
+        b=QQs2MgcRI6yP5EnNAHZzZ9lmKYEXyravNG82OpADwUeN49SRjTsJD7jkysatQWJRTC
+         j2ZakeqAzvQ+HR4NXCAw3EqRLoDOIhxK7HyNuCaSLNLF3kO+rzn1pI7u+KpdVH79oIKj
+         jOgJ4rmoqGpMrV2rhfP04uoYiwQxvsXTHlM6vc9XRmjd55ebEf/hdZy3/EawKuFoaCDN
+         9nlXIuGQ1q7n3Rw459DMYT4FMK273EPHZ1LQvWwhxNm4ehdYaq2FkQ2i7dgVRqojqqIK
+         hSKnoTHn6bzQK3CJ+vrA9eJUwUlnj97GD5Btf+e1vLb4XJO728B3zwN65Gaf611Q7tfe
+         hCiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u1iTXsUBZY4rOPgodw6cyeMHMVRQnYdLbaVth9Uz2Lo=;
-        b=iOj1PnYlQN2hXYJfmyGMmKvMG8fR82WSZe3IY5ezDeASW4nc5L1hGJNR19RJbD5Xzz
-         qaPDJM707ytD5jLJJT+jK5Ivst9ZRkaX0KRu9u9Q3y7OOGy0AjW30QGUm2xGiRq00vFB
-         5EKVuk7lL8DhEzDD/nkzu6isUi2CYmNKH43IEek78SFEMmgs/4VLhaeY/MUPD2G/cH8U
-         Q2zCFXhShteTroyxgaEvqoRaDmVlqRQvKzWXeAbRiOhnnsOz13bDOs5gilJMMtd+gouq
-         /e7r7ei0DPzZSh5sJ6gUUIkqZkOXdCR8fcYzZjLZ4soYHVuw+duk2eXY2z7irDeyrZPR
-         B1EA==
-X-Gm-Message-State: AOAM533gdlE6XFlHsbx0T/xVG8BsnEiF/kEhRQqFyegHOaPLAEAbbvCA
-        fqxFcny6BuXrK7K4ns+0T2+cytewLVyEhTOtrFI=
-X-Google-Smtp-Source: ABdhPJyNmKTDde0VcHd04GhxlN3kUsWv1n9QPvSxGy7iPiUvCW0/iO6JQhDFpJIAy7Cx7lfgbJ7xwo/EYrHv+XaBmIw=
-X-Received: by 2002:a25:ad58:0:b0:65c:e3e5:e813 with SMTP id
- l24-20020a25ad58000000b0065ce3e5e813mr16127790ybe.151.1654360346868; Sat, 04
- Jun 2022 09:32:26 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZumGXwmkKCZw7zAdFkot1A/Xnxwq0a7hOWfoxoDKoQ8=;
+        b=HSRNS1uM01CJpzwT3SL7SBwbtWA/nm5Hgl4J72w3aO+M+YKnKyvC1biG0s/ij0JqwQ
+         RKWnlS1PkwtLtgYt/g56RnmguL+Un/MrM6kpj3rcpM7eInpte4E50vq0dbizXt2KeGTW
+         enrN6nxcy23c6YSYPYM/L92Q19Adz9Qq2h8Mx10OcGYBePgjT/D3mVJh2lB5XUuwBWyI
+         vaLAscVEUgMrD07M41wVstnvG7l5Lf9QXqEXu1bCb9zwmrEl8mGzE1wyLaz6pD1I8zVp
+         QN26EryqHBgT1rCAzYCYuWiFpYnyA6FxWyaUuk8uvpnD1fGTtbFbH+0aE+0iCpuUej0Z
+         2A4w==
+X-Gm-Message-State: AOAM532MZ1V9uSJqqqnen9hggdIEtcSMacHDxpCu18GtiJ+0q3b3L02q
+        EmDNAoDeZx+rXPJWVXcMSW4=
+X-Google-Smtp-Source: ABdhPJw41iuEgVIWDqlfOwlAoi7teuzZjmtkpVfHRHE3ovkWmjzuF1Wsv/8jdEimiyc67CtfMqHK8w==
+X-Received: by 2002:a9d:76d0:0:b0:60b:53e5:6640 with SMTP id p16-20020a9d76d0000000b0060b53e56640mr6570158otl.241.1654361713977;
+        Sat, 04 Jun 2022 09:55:13 -0700 (PDT)
+Received: from [172.16.0.2] ([8.48.134.34])
+        by smtp.googlemail.com with ESMTPSA id k84-20020aca3d57000000b0032e2599df3dsm5165944oia.10.2022.06.04.09.55.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 04 Jun 2022 09:55:13 -0700 (PDT)
+Message-ID: <d33dbbe6-57b0-85a1-83f8-435dd0a7c8c9@gmail.com>
+Date:   Sat, 4 Jun 2022 10:55:12 -0600
 MIME-Version: 1.0
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220603102848.17907-1-mailhol.vincent@wanadoo.fr> <20220604114603.hi4klmu2hwrvf75x@pengutronix.de>
- <CAMZ6RqJpJCAudv89YqFFQH80ei7WiAshyk1RtbEv=aXSyxo3hQ@mail.gmail.com>
- <20220604135541.2ki2eskyc7gsmrlu@pengutronix.de> <CAMZ6RqJ7qvXyxNVUK-=oJnK_oq7N94WABOb3pqeYf9Fw3G6J9A@mail.gmail.com>
- <20220604151859.hyywffrni4vo6gdl@pengutronix.de>
-In-Reply-To: <20220604151859.hyywffrni4vo6gdl@pengutronix.de>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Sun, 5 Jun 2022 01:32:15 +0900
-Message-ID: <CAMZ6RqK45r-cqXvorUzRV-LA_C+mk6hNSA1b+0kLs7C-oTcDCA@mail.gmail.com>
-Subject: Re: [PATCH v4 0/7] can: refactoring of can-dev module and of Kbuild
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Max Staudt <max@enpas.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: [RFC] Backporting "add second dif to raw, inet{6,}, udp,
+ multicast sockets" to LTS 4.9
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Petr Vorel <pvorel@suse.cz>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+References: <YppqNtTmqjeR5cZV@pevik> <YpsvAludRUxuK22U@kroah.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <YpsvAludRUxuK22U@kroah.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun. 5 juin 2022 at 00:18, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> On 04.06.2022 23:59:48, Vincent MAILHOL wrote:
-> > > > Fine, but I need a bit of guidance here. To provide a tag, I need to
-> > > > have my own git repository hosted online, right?
-> > >
-> > > That is one option.
-> >
-> > This suggests that there are other options? What would be those other
-> > options?
->
-> 2. git.kernel.org (most preferred)
-> 3. github.com (have to ask Davem/Jakub)
->
-> > > > Is GitHub OK or should I create one on https://git.kernel.org/?
-> > >
-> > > Some maintainers don't like github, let's wait what Davem and Jakub say.
-> > > I think for git.kernel.org you need a GPG key with signatures of 3 users
-> > > of git.kernel.org.
-> >
-> > Personally, I would also prefer getting my own git.kernel.org account.
->
-> See https://korg.docs.kernel.org/accounts.html
+On 6/4/22 4:08 AM, Greg Kroah-Hartman wrote:
+> On Fri, Jun 03, 2022 at 10:08:22PM +0200, Petr Vorel wrote:
+>> Hi all,
+>>
+>> David (both), would it be possible to backport your commits from merge
+>> 9bcb5a572fd6 ("Merge branch 'net-l3mdev-Support-for-sockets-bound-to-enslaved-device'")
+>> from v4.14-rc1 to LTS 4.9?
+>>
+>> These commits added second dif to raw, inet{6,}, udp, multicast sockets.
+>> The change is not a fix but a feature - significant change, therefore I
+>> understand if you're aginast backporting it.
+>>
+>> My motivation is to get backported to LTS 4.9 these fixes from v5.17 (which
+>> has been backported to all newer stable/LTS trees):
+>> 2afc3b5a31f9 ("ping: fix the sk_bound_dev_if match in ping_lookup")
+>> 35a79e64de29 ("ping: fix the dif and sdif check in ping_lookup")
+>> cd33bdcbead8 ("ping: remove pr_err from ping_lookup")
+>>
+>> which fix small issue with IPv6 in ICMP datagram socket ("ping" socket).
+>>
+>> These 3 commits depend on 9bcb5a572fd6, particularly on:
+>> 3fa6f616a7a4d ("net: ipv4: add second dif to inet socket lookups")
+>> 4297a0ef08572 ("net: ipv6: add second dif to inet6 socket lookups")
+> 
+> Can't the fixes be backported without the larger api changes needed?
+> 
+> If not, how many commits are you trying to backport here?  And there's
+> no need for David to do this work if you need/want these fixes merged.
+> 
 
-Thanks for the link. I will have a look at it tomorrow (or the day
-after tomorrow in the worst case).
-
-Meanwhile, I will send the v5 which should address all your comments.
-
-
-Yours sincerely,
-Vincent Mailhol
+I think you will find it is a non-trivial amount of work to backport the
+listed patches and their dependencies to 4.9. That said, the test cases
+exist in selftests to give someone confidence that it works properly
+(you will have to remove tests that are not relevant for the
+capabilities in 4.9).
