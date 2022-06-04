@@ -2,49 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 243DB53D65C
-	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 12:08:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 458A753D681
+	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 13:22:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232888AbiFDKIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jun 2022 06:08:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58288 "EHLO
+        id S235210AbiFDLWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jun 2022 07:22:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230482AbiFDKIJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 06:08:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0125717A9A
-        for <netdev@vger.kernel.org>; Sat,  4 Jun 2022 03:08:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB661B8013C
-        for <netdev@vger.kernel.org>; Sat,  4 Jun 2022 10:08:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2EE0C385B8;
-        Sat,  4 Jun 2022 10:08:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654337285;
-        bh=rzvemic7CHLLrkHDuGNJ3L+9QlCtl0fr4DZR83NbFz4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WhlWXZ4VN28zZIpmpBQdx90nWUvaYPYPZN/pDcjgjqPESoN73Kup28+Uk3aO0Atb/
-         I/nXUDo6krip1WvKTNEapEVeUw8AmYh9hcaQPmfq+41LXquPFUcz1j2X4Jyv/LBpHu
-         imBEORvzpIgMWi5YKE4wMKZi3I+CBOdxs3nkfzGI=
-Date:   Sat, 4 Jun 2022 12:08:02 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Petr Vorel <pvorel@suse.cz>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: Re: [RFC] Backporting "add second dif to raw, inet{6,}, udp,
- multicast sockets" to LTS 4.9
-Message-ID: <YpsvAludRUxuK22U@kroah.com>
-References: <YppqNtTmqjeR5cZV@pevik>
+        with ESMTP id S235197AbiFDLWj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 07:22:39 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05797248E5
+        for <netdev@vger.kernel.org>; Sat,  4 Jun 2022 04:22:37 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nxRrS-0000ia-PZ; Sat, 04 Jun 2022 13:22:30 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id A90578C2DA;
+        Sat,  4 Jun 2022 11:22:28 +0000 (UTC)
+Date:   Sat, 4 Jun 2022 13:22:27 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Max Staudt <max@enpas.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v4 4/7] can: Kconfig: add CONFIG_CAN_RX_OFFLOAD
+Message-ID: <20220604112227.nlyxulkxelgofruz@pengutronix.de>
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220603102848.17907-1-mailhol.vincent@wanadoo.fr>
+ <20220603102848.17907-5-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="pvg7tyzpzddgwkey"
 Content-Disposition: inline
-In-Reply-To: <YppqNtTmqjeR5cZV@pevik>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <20220603102848.17907-5-mailhol.vincent@wanadoo.fr>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,34 +56,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 10:08:22PM +0200, Petr Vorel wrote:
-> Hi all,
-> 
-> David (both), would it be possible to backport your commits from merge
-> 9bcb5a572fd6 ("Merge branch 'net-l3mdev-Support-for-sockets-bound-to-enslaved-device'")
-> from v4.14-rc1 to LTS 4.9?
-> 
-> These commits added second dif to raw, inet{6,}, udp, multicast sockets.
-> The change is not a fix but a feature - significant change, therefore I
-> understand if you're aginast backporting it.
-> 
-> My motivation is to get backported to LTS 4.9 these fixes from v5.17 (which
-> has been backported to all newer stable/LTS trees):
-> 2afc3b5a31f9 ("ping: fix the sk_bound_dev_if match in ping_lookup")
-> 35a79e64de29 ("ping: fix the dif and sdif check in ping_lookup")
-> cd33bdcbead8 ("ping: remove pr_err from ping_lookup")
-> 
-> which fix small issue with IPv6 in ICMP datagram socket ("ping" socket).
-> 
-> These 3 commits depend on 9bcb5a572fd6, particularly on:
-> 3fa6f616a7a4d ("net: ipv4: add second dif to inet socket lookups")
-> 4297a0ef08572 ("net: ipv6: add second dif to inet6 socket lookups")
 
-Can't the fixes be backported without the larger api changes needed?
+--pvg7tyzpzddgwkey
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-If not, how many commits are you trying to backport here?  And there's
-no need for David to do this work if you need/want these fixes merged.
+On 03.06.2022 19:28:45, Vincent Mailhol wrote:
+> Only a few drivers rely on the CAN rx offload framework (as of the
+> writing of this patch, only three: flexcan, ti_hecc and
+> mcp251xfd). Give the option to the user to deselect this features
+> during compilation.
+>=20
+> The drivers relying on CAN rx offload are in different sub
+> folders. All of these drivers get tagged with "select CAN_RX_OFFLOAD"
+> so that the option is automatically enabled whenever one of those
+> driver is chosen.
+>=20
+> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> ---
+>  drivers/net/can/Kconfig               | 16 ++++++++++++++++
+>  drivers/net/can/dev/Makefile          |  2 ++
+>  drivers/net/can/spi/mcp251xfd/Kconfig |  1 +
+>  3 files changed, 19 insertions(+)
+>=20
+> diff --git a/drivers/net/can/Kconfig b/drivers/net/can/Kconfig
+> index 8f3b97aea638..1f1d81da1c8c 100644
+> --- a/drivers/net/can/Kconfig
+> +++ b/drivers/net/can/Kconfig
+> @@ -102,6 +102,20 @@ config CAN_CALC_BITTIMING
+> =20
+>  	  If unsure, say Y.
+> =20
+> +config CAN_RX_OFFLOAD
+> +	bool "CAN RX offload"
+> +	default y
+> +	help
+> +	  Framework to offload the controller's RX FIFO during one
+> +	  interrupt. The CAN frames of the FIFO are read and put into a skb
+> +	  queue during that interrupt and transmitted afterwards in a NAPI
+> +	  context.
+> +
+> +	  The additional features selected by this option will be added to the
+> +	  can-dev module.
+> +
+> +	  If unsure, say Y.
+> +
+>  config CAN_AT91
+>  	tristate "Atmel AT91 onchip CAN controller"
+>  	depends on (ARCH_AT91 || COMPILE_TEST) && HAS_IOMEM
+> @@ -113,6 +127,7 @@ config CAN_FLEXCAN
+>  	tristate "Support for Freescale FLEXCAN based chips"
+>  	depends on OF || COLDFIRE || COMPILE_TEST
+>  	depends on HAS_IOMEM
+> +	select CAN_RX_OFFLOAD
+>  	help
+>  	  Say Y here if you want to support for Freescale FlexCAN.
+> =20
+> @@ -162,6 +177,7 @@ config CAN_SUN4I
+>  config CAN_TI_HECC
+>  	depends on ARM
+>  	tristate "TI High End CAN Controller"
+> +	select CAN_RX_OFFLOAD
+>  	help
+>  	  Driver for TI HECC (High End CAN Controller) module found on many
+>  	  TI devices. The device specifications are available from www.ti.com
+> diff --git a/drivers/net/can/dev/Makefile b/drivers/net/can/dev/Makefile
+> index b8a55b1d90cd..5081d8a3be57 100644
+> --- a/drivers/net/can/dev/Makefile
+> +++ b/drivers/net/can/dev/Makefile
+> @@ -11,3 +11,5 @@ can-dev-$(CONFIG_CAN_NETLINK) +=3D netlink.o
+>  can-dev-$(CONFIG_CAN_NETLINK) +=3D rx-offload.o
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-thanks,
+Do you want to remove this?
 
-greg k-h
+> =20
+>  can-dev-$(CONFIG_CAN_CALC_BITTIMING) +=3D calc_bittiming.o
+> +
+> +can-dev-$(CONFIG_CAN_RX_OFFLOAD) +=3D rx-offload.o
+> diff --git a/drivers/net/can/spi/mcp251xfd/Kconfig b/drivers/net/can/spi/=
+mcp251xfd/Kconfig
+> index dd0fc0a54be1..877e4356010d 100644
+> --- a/drivers/net/can/spi/mcp251xfd/Kconfig
+> +++ b/drivers/net/can/spi/mcp251xfd/Kconfig
+> @@ -2,6 +2,7 @@
+> =20
+>  config CAN_MCP251XFD
+>  	tristate "Microchip MCP251xFD SPI CAN controllers"
+> +	select CAN_RX_OFFLOAD
+>  	select REGMAP
+>  	select WANT_DEV_COREDUMP
+>  	help
+
+I remember I've given you a list of drivers needing RX offload, I
+probably missed the m_can driver. Feel free to squash this patch:
+
+--- a/drivers/net/can/dev/Makefile
++++ b/drivers/net/can/dev/Makefile
+@@ -8,7 +8,6 @@ can-dev-$(CONFIG_CAN_NETLINK) +=3D bittiming.o
+ can-dev-$(CONFIG_CAN_NETLINK) +=3D dev.o
+ can-dev-$(CONFIG_CAN_NETLINK) +=3D length.o
+ can-dev-$(CONFIG_CAN_NETLINK) +=3D netlink.o
+-can-dev-$(CONFIG_CAN_NETLINK) +=3D rx-offload.o
+=20
+ can-dev-$(CONFIG_CAN_CALC_BITTIMING) +=3D calc_bittiming.o
+=20
+diff --git a/drivers/net/can/m_can/Kconfig b/drivers/net/can/m_can/Kconfig
+index 45ad1b3f0cd0..fc2afab36279 100644
+--- a/drivers/net/can/m_can/Kconfig
++++ b/drivers/net/can/m_can/Kconfig
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ menuconfig CAN_M_CAN
+        tristate "Bosch M_CAN support"
++       select CAN_RX_OFFLOAD
+        help
+          Say Y here if you want support for Bosch M_CAN controller framewo=
+rk.
+          This is common support for devices that embed the Bosch M_CAN IP.
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--pvg7tyzpzddgwkey
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKbQHEACgkQrX5LkNig
+012c2gf8C/gNJNvEuZbs7n7LevMALo31wcnilUdo6W7cXTyfc0/pOg+WACXex3at
+y+CDvjWkkMGbNL1sHsKdOrXN9iFY97yCvlFCNBuiHXkmsz9RXDY+G+d/FRuZ2ZUA
+gpM2u6S6Z0PjGt78k/hVqoiAgCX/HqTbqCN9A9/kn+vrIh8KDps26Bl+U8Q4FeXH
+OfRMPGgCtAJZo/9o1Lt502XuYcVXytdI1uFvhfXvH1BCFAVR+eUY0lXDrjULfw96
+0Kxj2M+PUveANkVw0WaZa+xSbi4vbfd21bxbvvfZk13cyX9WeuVAMUf9XmeCMqMA
+VR47UVj1A+pGip+ZZO/6eQ0CxrkqIQ==
+=en9U
+-----END PGP SIGNATURE-----
+
+--pvg7tyzpzddgwkey--
