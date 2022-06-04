@@ -2,88 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E62753D6A0
-	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 13:52:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CA6B53D6A3
+	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 14:03:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235873AbiFDLwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jun 2022 07:52:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39038 "EHLO
+        id S240230AbiFDMBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jun 2022 08:01:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232620AbiFDLwJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 07:52:09 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 498F460F1
-        for <netdev@vger.kernel.org>; Sat,  4 Jun 2022 04:52:06 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nxSJz-0003Bz-Mw; Sat, 04 Jun 2022 13:51:59 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 250798C303;
-        Sat,  4 Jun 2022 11:51:58 +0000 (UTC)
-Date:   Sat, 4 Jun 2022 13:51:57 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-Subject: PR with merges
-Message-ID: <20220604115157.3xaiey6hud4fdqln@pengutronix.de>
+        with ESMTP id S231638AbiFDMBD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 08:01:03 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C490954027
+        for <netdev@vger.kernel.org>; Sat,  4 Jun 2022 05:00:59 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id r8so10507923ljp.1
+        for <netdev@vger.kernel.org>; Sat, 04 Jun 2022 05:00:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=MeNHKCbc/XVwe161xH1MhP1HhpnsPYGeIRS9Pmc8tLI=;
+        b=KG/g3yjGCxVvh0FnNjY8twtNquxzdkz4HP7WuT79MDpIqv/YfGFwO1jMo1urgk9D02
+         Be+o9+9K5SyrL9Yv2z3icuRGNdIlW4hnwbOt7gIvOgGoPTuGPdhoMd4OWUmQfg0plaAu
+         ZdAOX/YL2OfnSB45RemrpJCF8Xke3fyett367QHNQA5rCfOElUc+n1bCxoMthACAXHU3
+         X1RT/7pexOR3w4D2W8EfnnswN0E/SsZuG/La/Q/LCwQCcWXvWLS71YXTIno/Slyke0qg
+         F20JLnkoxwm2bcR7aHP1y47QyTYRpVj2kutAkh0lMF69N3JstXG3i1fr2/gMFIaM8KFV
+         nesA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=MeNHKCbc/XVwe161xH1MhP1HhpnsPYGeIRS9Pmc8tLI=;
+        b=B9/459qdrpZCCT7PEeg699nRDAC0ys2U+DoxfHsp/dk4mdjfZsg/dB4Ny1M6Sm/OP3
+         6JsexvLkUfvHhKr1gZ5rMk/FOPyX1Q/SMMDz95bTrNCqrDhBppkfnIE67GECX6m3bc0a
+         F09TDVPwVKVXFT/wkSVlATuD237/aRUwvYgKfS5wpOUTxZT35p/HmgAYugLYjBs2dw3X
+         DcAX7neu5/VlIRnN2ON+Hs1n0VtktpxZTZyrHloaWh5tVUEyLXvKW64FlQTwG04aEV42
+         zGYOKPRZsfXgNVJHY990+Cze59y8daO1uyQPxpz7PHEHLJStakARghIH/xuOGP7Y6MWf
+         ykgA==
+X-Gm-Message-State: AOAM533w4z92yuVry5i1x1T8aWEib9gCkaJ6qw/KSnicwC9cnnmMCiQV
+        /xDVvFw0fbavJcoCMoYWCzHYAQvzcddwzRQzLX8=
+X-Google-Smtp-Source: ABdhPJyhxxREd0IR0P8/lWvSJb0PibRsPjwHEg2vcFUgF8TwX1DsPMsfNBDhYKWvQlCRH52eg/X9qXLnGgEQuUBV3Sg=
+X-Received: by 2002:a2e:9048:0:b0:255:758b:449b with SMTP id
+ n8-20020a2e9048000000b00255758b449bmr6828816ljg.123.1654344057866; Sat, 04
+ Jun 2022 05:00:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="jffqydbxlew2anmo"
-Content-Disposition: inline
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Received: by 2002:ac2:4e0e:0:0:0:0:0 with HTTP; Sat, 4 Jun 2022 05:00:57 -0700 (PDT)
+Reply-To: danielsmithinvestment01@hotmail.com
+From:   Daniel Smith <aw3483888@gmail.com>
+Date:   Sat, 4 Jun 2022 05:00:57 -0700
+Message-ID: <CADekC5MD+KQy95s_bweEUdL4i-XkCMJzSGZ3bAHArbxTUZT7cw@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---jffqydbxlew2anmo
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hello David, hello Jakub,
-
-I was wondering if you take pull requests from me (for net-next) which
-are not a linear patch series but contain merges? A merge would add a
-single feature and is based on net-next.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---jffqydbxlew2anmo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKbR1oACgkQrX5LkNig
-010Dzgf9G8OHbZoNGSpPqGwxmK8uZUx9h4G5fp9GXS5zireRkc3r0dnvck1pGeSY
-QNCFuUBAZmUDisBZnI7ZQ5DGffZEKFj/QuwK3GVKW8bwrmKR4Yb2p26VNjFxlyG+
-x8kjBS5fSylaA3fiFIKCTy9ECfsYYeJ6jsjtxdhxMjM3tl0JHQRVJ8vdGWdxU4AR
-hEZkUZiHv1Mm5GYJM3BVHViUZNTqbJng8QWAWKyutgQjHGf5UWDwNOyIB9+VSXuC
-oQJBGSew4uoV4/TZHlMnEwXGMlt4x6nTE88WtSnO9PqdU3TLVJA+XtIskkLMY53c
-JUM+D3VW+YNm+cqWed2oYccG1ZMqKQ==
-=va3z
------END PGP SIGNATURE-----
-
---jffqydbxlew2anmo--
+-- 
+Apply for a loan.
