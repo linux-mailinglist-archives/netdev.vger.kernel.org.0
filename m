@@ -2,238 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9630B53D6EB
-	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 15:05:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD71853D6EF
+	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 15:07:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236224AbiFDNFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jun 2022 09:05:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44728 "EHLO
+        id S236292AbiFDNHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jun 2022 09:07:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236189AbiFDNFW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 09:05:22 -0400
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A6C517D0;
-        Sat,  4 Jun 2022 06:05:21 -0700 (PDT)
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-30fa61b1a83so100470347b3.0;
-        Sat, 04 Jun 2022 06:05:21 -0700 (PDT)
+        with ESMTP id S236189AbiFDNHW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 09:07:22 -0400
+Received: from mail-oa1-x43.google.com (mail-oa1-x43.google.com [IPv6:2001:4860:4864:20::43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D7922513
+        for <netdev@vger.kernel.org>; Sat,  4 Jun 2022 06:07:20 -0700 (PDT)
+Received: by mail-oa1-x43.google.com with SMTP id 586e51a60fabf-e656032735so13933583fac.0
+        for <netdev@vger.kernel.org>; Sat, 04 Jun 2022 06:07:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=XXEhaw3EyxGH5Hb/RtU9Bqf726dwWbeMmBNixXdVBho=;
+        b=YdJZXgHJ/I8hXG0ekFy7RZTPgSnurEQ+JBj3OlEknwK3IPrbMfOv9xF6IwY0dZchQ3
+         ozjpz2yAsuLZA1sa/EKqO1Pe92RCZq4QL9pGjYjU1YgDftj4Ktl7M17pm/EVz5nWxC/f
+         0TNoADnsN3Ntn/XEhjBiNWOUAFgccHr8KOsNi6BubALk5KFuDi8XBRTOg+dGuJhrZJLn
+         CuU2e2d/WJRiKwFZaOoqwTC3Y56IZznDSEWmerQVbs6siCTFLQd6WtPPdEtg5dqaFzRP
+         mN6EdlNFKlBhQjoGODMJoUHYNH+BEi8fJ5L+PjAnk4yiA7wgZ5OnCJDOYqHXXEpVsa97
+         NxFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+bJg133VzTr840Ej01ygsEXox3ooYZgtindEMoofCgA=;
-        b=z4ER0C3ra/pWRhGze37mX5PHeW3morCjwfNNLEhHQ5OzhM1a3DeNOZ2ytb33hbkppN
-         F/dCkCK7CIf/Z7Tup5D2ARmdqngJfHVM2EWLotvT8P+JsvMEdwXuHU//+7oOxHXl0fcU
-         jL71BupOjr3jQ+6cLmFT+YoPsLQhe748d+pxM7zBXaK8TJaEHwItwV/EGSRALjuiE7JU
-         bGA34xg2T5iOwZx3YBAQn+8HL9WuQcgt4pUPk9ER/Lrjb4X+Z//Q63v9rJ/0dHp1HJQG
-         9S1lg/wAjNWHRrN2gmVcZ1f0Am4KBviDiwJJRsj4HsKuhHUET7Qbg3hN1PZNSFy7V4kW
-         EPnQ==
-X-Gm-Message-State: AOAM53084wRbV+x5u8lctPjpJyL92IeooqZRN2JLRem7ZzxkOKnTqyyj
-        WeRX3Q+iB5zYGmhRFq/jzncLiDhkxBGXBaZwRaU6TO6LcfO4Wg==
-X-Google-Smtp-Source: ABdhPJwYIjs+Me6pyYvlBoSJq2e/R0RU2S21TDiiX+WJ4LL3xGMFd39j6X/j499UDcl6oQoqG9eTqVLyCR+fW94WpHw=
-X-Received: by 2002:a81:2dc5:0:b0:2f5:c6c8:9ee5 with SMTP id
- t188-20020a812dc5000000b002f5c6c89ee5mr16469638ywt.518.1654347920570; Sat, 04
- Jun 2022 06:05:20 -0700 (PDT)
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=XXEhaw3EyxGH5Hb/RtU9Bqf726dwWbeMmBNixXdVBho=;
+        b=y708R/A6UlOwwJ8gR2iTCZp8FQ/Va+gGO3JAaXc/+LKz+BGAtzTcb3SnKQgugGGPJY
+         HvJnhYRMICIZSHqxMFkQFQGrTu3ikMPA3VipKSbQ7XwUju1LenBicbwURV7QeZ4ox01O
+         ObJQb4fgJLU/VnRE9UxUqeaDiQIyZQNT1MryBpWxv/eLxW9TpegkWL0xclh822lk3wzO
+         WidNC7szSwurmqif5f610asW1t1/vMgIjuf7+mxiUi8eIwzGVs3fIJfbTyMdDT7JLuZN
+         DP3Wum4QRP2RilUDS1rfkUux9ieCSuBxbaT8zYGv3nt0BerjsjGNhf0ZBbfc+GVuKKPE
+         7q1A==
+X-Gm-Message-State: AOAM53008bGMYuaowrKMzpAibXyb1R1szo9TKsv4PKtZD6RCg2N9Zy9l
+        wQ7D2A8KvT50DZSVteBKZjZb9FgXzUEYRpgVUDg=
+X-Google-Smtp-Source: ABdhPJzfhEU24yqqtfLVVAX5G6kqQdY6jloYffDGXzPZeH87AtJpWn//ve+/ShIFv/HX+AauefON+f3EI5cUYjyGfk0=
+X-Received: by 2002:a05:6870:c348:b0:ed:f231:2b41 with SMTP id
+ e8-20020a056870c34800b000edf2312b41mr25784453oak.23.1654348039822; Sat, 04
+ Jun 2022 06:07:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220603102848.17907-1-mailhol.vincent@wanadoo.fr> <20220604114603.hi4klmu2hwrvf75x@pengutronix.de>
-In-Reply-To: <20220604114603.hi4klmu2hwrvf75x@pengutronix.de>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Sat, 4 Jun 2022 22:05:09 +0900
-Message-ID: <CAMZ6RqJpJCAudv89YqFFQH80ei7WiAshyk1RtbEv=aXSyxo3hQ@mail.gmail.com>
-Subject: Re: [PATCH v4 0/7] can: refactoring of can-dev module and of Kbuild
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Max Staudt <max@enpas.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        netdev@vger.kernel.org
+Sender: hamp56690@gmail.com
+Received: by 2002:ac9:7fd2:0:0:0:0:0 with HTTP; Sat, 4 Jun 2022 06:07:19 -0700 (PDT)
+From:   Pavillion Tchi <pavilliontch27@gmail.com>
+Date:   Sat, 4 Jun 2022 13:07:19 +0000
+X-Google-Sender-Auth: 4k7otY6yv2gZkxy-Z391gcQ25Ng
+Message-ID: <CAGPqaA5zkXz_6cretVpjAdi-mbsrQgpdK65g5cXQwnHTURASmw@mail.gmail.com>
+Subject: =?UTF-8?B?2YXZitix2KfYqw==?=
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat. 4 juin 2022 at 20:46, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> Hello Vincent,
->
-> wow! This is a great series which addresses a lot of long outstanding
-> issues. Great work!
-
-Thanks.
-
-> As this cover letter brings so much additional information I'll ask
-> Jakub and David if they take pull request from me, which itself have
-> merges. This cover letter would be part of my merge. If I get the OK,
-> can you provide this series as a tag (ideally GPG signed) that I can
-> pull?
-
-Fine, but I need a bit of guidance here. To provide a tag, I need to
-have my own git repository hosted online, right? Is GitHub OK or
-should I create one on https://git.kernel.org/?
-
-> regards,
-> Marc
->
-> On 03.06.2022 19:28:41, Vincent Mailhol wrote:
-> > Aside of calc_bittiming.o which can be configured with
-> > CAN_CALC_BITTIMING, all objects from drivers/net/can/dev/ get linked
-> > unconditionally to can-dev.o even if not needed by the user.
-> >
-> > This series first goal it to split the can-dev modules so that the
-> > user can decide which features get built in during
-> > compilation. Additionally, the CAN Device Drivers menu is moved from
-> > the "Networking support" category to the "Device Drivers" category
-> > (where all drivers are supposed to be).
-> >
-> > Below diagrams illustrate the changes made.
-> > The arrow symbol "x --> y" denotes that "y depends on x".
-> >
-> > * menu before this series *
-> >
-> > CAN bus subsystem support
-> >   symbol: CONFIG_CAN
-> >   |
-> >   +-> CAN Device Drivers
-> >       (no symbol)
-> >       |
-> >       +-> software/virtual CAN device drivers
-> >       |   (at time of writing: slcan, vcan, vxcan)
-> >       |
-> >       +-> Platform CAN drivers with Netlink support
-> >           symbol: CONFIG_CAN_DEV
-> >         |
-> >           +-> CAN bit-timing calculation  (optional for hardware drivers)
-> >           |   symbol: CONFIG_CAN_BITTIMING
-> >         |
-> >         +-> All other CAN devices
-> >
-> > * menu after this series *
-> >
-> > Network device support
-> >   symbol: CONFIG_NETDEVICES
-> >   |
-> >   +-> CAN Device Drivers
-> >       symbol: CONFIG_CAN_DEV
-> >       |
-> >       +-> software/virtual CAN device drivers
-> >       |   (at time of writing: slcan, vcan, vxcan)
-> >       |
-> >       +-> CAN device drivers with Netlink support
-> >           symbol: CONFIG_CAN_NETLINK (matches previous CONFIG_CAN_DEV)
-> >           |
-> >           +-> CAN bit-timing calculation (optional for all drivers)
-> >           |   symbol: CONFIG_CAN_BITTIMING
-> >         |
-> >         +-> All other CAN devices not relying on RX offload
-> >           |
-> >           +-> CAN rx offload
-> >               symbol: CONFIG_CAN_RX_OFFLOAD
-> >               |
-> >               +-> CAN devices relying on rx offload
-> >                   (at time of writing: flexcan, ti_hecc and mcp251xfd)
-> >
-> > Patches 1 to 5 of this series do above modification.
-> >
-> > The last two patches add a check toward CAN_CTRLMODE_LISTENONLY in
-> > can_dropped_invalid_skb() to discard tx skb (such skb can potentially
-> > reach the driver if injected via the packet socket). In more details,
-> > patch 6 moves can_dropped_invalid_skb() from skb.h to skb.o and patch
-> > 7 is the actual change.
-> >
-> > Those last two patches are actually connected to the first five ones:
-> > because slcan and v(x)can requires can_dropped_invalid_skb(), it was
-> > necessary to add those three devices to the scope of can-dev before
-> > moving the function to skb.o.
-> >
-> >
-> > ** N.B. **
-> >
-> > This design results from the lengthy discussion in [1].
-> >
-> > I did one change from Oliver's suggestions in [2]. The initial idea
-> > was that the first two config symbols should be respectively
-> > CAN_DEV_SW and CAN_DEV instead of CAN_DEV and CAN_NETLINK as proposed
-> > in this series.
-> >
-> >   * First symbol is changed from CAN_DEV_SW to CAN_DEV. The rationale
-> >     is that it is this entry that will trigger the build of can-dev.o
-> >     and it makes more sense for me to name the symbol share the same
-> >     name as the module. Furthermore, this allows to create a menuentry
-> >     with an explicit name that will cover both the virtual and
-> >     physical devices (naming the menuentry "CAN Device Software" would
-> >     be inconsistent with the fact that physical devices would also be
-> >     present in a sub menu). And not using menuentry complexifies the
-> >     menu.
-> >
-> >   * Second symbol is renamed from CAN_DEV to CAN_NETLINK because
-> >     CAN_DEV is now taken by the previous menuconfig and netlink is the
-> >     predominant feature added at this level. I am opened to other
-> >     naming suggestion (CAN_DEV_NETLINK, CAN_DEV_HW...?).
-> >
-> > [1] https://lore.kernel.org/linux-can/20220514141650.1109542-1-mailhol.vincent@wanadoo.fr/
-> > [2] https://lore.kernel.org/linux-can/22590a57-c7c6-39c6-06d5-11c6e4e1534b@hartkopp.net/
-> >
-> >
-> > ** Changelog **
-> >
-> > v3 -> v4:
-> >
-> >   * Five additional patches added to split can-dev module and refactor
-> >     Kbuild. c.f. below (lengthy) thread:
-> >     https://lore.kernel.org/linux-can/20220514141650.1109542-1-mailhol.vincent@wanadoo.fr/
-> >
-> >
-> > v2 -> v3:
-> >
-> >   * Apply can_dropped_invalid_skb() to slcan.
-> >
-> >   * Make vcan, vxcan and slcan dependent of CONFIG_CAN_DEV by
-> >     modifying Kbuild.
-> >
-> >   * fix small typos.
-> >
-> > v1 -> v2:
-> >
-> >   * move can_dropped_invalid_skb() to skb.c instead of dev.h
-> >
-> >   * also move can_skb_headroom_valid() to skb.c
-> >
-> > Vincent Mailhol (7):
-> >   can: Kbuild: rename config symbol CAN_DEV into CAN_NETLINK
-> >   can: Kconfig: turn menu "CAN Device Drivers" into a menuconfig using
-> >     CAN_DEV
-> >   can: bittiming: move bittiming calculation functions to
-> >     calc_bittiming.c
-> >   can: Kconfig: add CONFIG_CAN_RX_OFFLOAD
-> >   net: Kconfig: move the CAN device menu to the "Device Drivers" section
-> >   can: skb: move can_dropped_invalid_skb() and can_skb_headroom_valid()
-> >     to skb.c
-> >   can: skb: drop tx skb if in listen only mode
-> >
-> >  drivers/net/Kconfig                   |   2 +
-> >  drivers/net/can/Kconfig               |  66 +++++++--
-> >  drivers/net/can/dev/Makefile          |  20 ++-
-> >  drivers/net/can/dev/bittiming.c       | 197 -------------------------
-> >  drivers/net/can/dev/calc_bittiming.c  | 202 ++++++++++++++++++++++++++
-> >  drivers/net/can/dev/dev.c             |   9 +-
-> >  drivers/net/can/dev/skb.c             |  72 +++++++++
-> >  drivers/net/can/spi/mcp251xfd/Kconfig |   1 +
-> >  include/linux/can/skb.h               |  59 +-------
-> >  net/can/Kconfig                       |   5 +-
-> >  10 files changed, 351 insertions(+), 282 deletions(-)
-> >  create mode 100644 drivers/net/can/dev/calc_bittiming.c
-> >
-> > --
-> > 2.35.1
-> >
-> >
->
-> --
-> Pengutronix e.K.                 | Marc Kleine-Budde           |
-> Embedded Linux                   | https://www.pengutronix.de  |
-> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+LS0gDQrZitmI2YUg2KzZhdmK2YTYjA0K2YTZgtivINmD2KrYqNiqINmE2YMg2YXZhiDZgtio2YQg
+2YjZhNmD2YbZgyDZhNmFINiq2LHYryDYudmE2Ykg2KjYsdmK2K/ZiiDYp9mE2KXZhNmD2KrYsdmI
+2YbZii4NCtmD2YrZgSDYrdin2YTZgyDZiNi52KfYptmE2KrZgyDYp9mE2YrZiNmF2J8g2KLZhdmE
+INij2YbZgyDYrNmK2K8hINmF2Lkg2K7Yp9mE2LUg2KfZhNiq2YLYr9mK2LEg2Iwg2KPZhtinINin
+2YTZhdit2KfZhdmKDQrYqNin2YHZitmE2YrZiNmGINiq2LTZiiDYjCDYo9ix2LPZhNiqINmE2YMg
+2K7Yt9in2KjZi9inINin2YTYtNmH2LEg2KfZhNmF2KfYttmKINiMINmE2YPZhtmDINmE2YUg2KrY
+sdivINi52YTZiiDYjCDZiNmE2K/Zig0K2YXYudmE2YjZhdin2Kog2YXZh9mF2Kkg2K3ZiNmEINmF
+2YrYsdin2KvZgyDYp9mE2LDZiiDYqtio2YTYuiDZgtmK2YXYqtmHIDUuNSDZhdmE2YrZiNmGINiv
+2YjZhNin2LEuINin2KjZhiDYudmF2YoNCtin2YTZhdiq2YjZgdmJINmF2YYg2KjZhNiv2YMuINij
+2LfZhNioINmF2YjYp9mB2YLYqtmDINi52YTZiSDYqtmC2K/ZitmF2YMg2KjYtdmB2KrZgyDYo9mC
+2LHYqCDYo9mC2LHYqNin2KbZgyDZhNi32YTYqCDZh9iw2KcNCtin2YTYtdmG2K/ZiNmCINiMINit
+2YrYqyDZg9mE2YHZhtmKINin2YTYqNmG2YMg2KjYqtmC2K/ZitmFINij2YLYsdioINin2YTYo9mC
+2KfYsdioINmE2YfZhSDZhNiq2YXZg9mK2YbZh9mFINmF2YYg2KjYr9ihDQrYp9mE2KXYrNix2KfY
+odin2Kog2KfZhNmC2KfZhtmI2YbZitipINmE2KrYrdmI2YrZhCDZh9iw2Kcg2KfZhNi12YbYr9mI
+2YIg2KXZhNmJINit2LPYp9io2YMg2KfZhNmF2LXYsdmB2YouIC4NCg0K2LPZitmD2YjZhiDZhdmI
+2LbYuSDYqtmC2K/ZitixINin2LPYqtis2KfYqNiq2YMg2KfZhNiz2LHZiti52Kkg2YTZhdiy2YrY
+ryDZhdmGINin2YTYqtmB2KfYtdmK2YQuDQrYqNil2K7ZhNin2LXYjA0K2KzZhtin2K0g2KrYtNmK
+DQo=
