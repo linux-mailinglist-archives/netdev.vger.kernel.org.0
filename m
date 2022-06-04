@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3733653D7C8
-	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 18:33:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48CA453D7D0
+	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 18:33:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238477AbiFDQcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jun 2022 12:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50254 "EHLO
+        id S238513AbiFDQdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jun 2022 12:33:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238405AbiFDQcp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 12:32:45 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D4B3139B;
-        Sat,  4 Jun 2022 09:32:38 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id s68so9552215pgs.10;
-        Sat, 04 Jun 2022 09:32:38 -0700 (PDT)
+        with ESMTP id S238570AbiFDQcz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 12:32:55 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C2B92FFF2;
+        Sat,  4 Jun 2022 09:32:48 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id mh16-20020a17090b4ad000b001e8313301f1so2897139pjb.1;
+        Sat, 04 Jun 2022 09:32:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=yv2ujViesI7iZ5pUTL94PJt7L5AXnXGvqy5kLDepAhw=;
-        b=DlOrMAq7XD/EhvDNhXAcHh5V2sni08bl8fcW4SAE2IGmP8NdeL+BNVajWFRvVdoM5V
-         TyL+VAln/7Bbz7libhOycyeYG/E4O1SMskUDoyqymkvTBIF/22TziQ8Ws/h7YyIwca1m
-         bPxBo4UD22bZWqxGqBZwzU2oHXq094RIJLZPC/INsFDslPo1Yrx5wZWaixz5uV885wLG
-         IdLHbFgfDAxSnYb6dXnh0/HKWLWNa9xxV4ue7jTQe3PSLmuvEy1txBNGfubKnBdz2UU+
-         g2Xx1P6XvbX2sCs3dqG31SWZ8/Ubua2ueurm+nqfoyelG6v0T8omIkFMwouDjP8ntGtM
-         clPQ==
+        bh=X6sw+uVo9+V5bniSOny1T/rm2LBgg1eN3C+QvtIkJCI=;
+        b=pCedfDlKf1TwEIVc3/6he061wl56HHi+OmWM2WNz9H2jmeqQ4RRs5457Wl48jj17lJ
+         cM7GmD+gCxAgxfuG9h1ThWxo9afBA8sPk81ihywPPW55pWyjWQU+CgQVVW6YKzg3ipQq
+         TxfSACf7iNMdCb1I7diY3PCyLHA+JWAO28g+UuFw5Y1CgfnQs+F5+JEBgikoC8klDmN+
+         hPGio9XegwCf9gEcoQBtl5cwuUyayywwl7MAMpH7WfPev6VDYRzMyAM2xfkhyoTzw3Nf
+         zgx74oTWQ3xnMlM8XtesALaugzc53psr68yGXYePguWYVwjmnbP9AALRE0rqzFLDcz0j
+         WxlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=yv2ujViesI7iZ5pUTL94PJt7L5AXnXGvqy5kLDepAhw=;
-        b=X6knmEy6Xe0XaooDYna/OWZf7yoV53u4zHMh2rrmyRd5++3I0a927DluoFysNUNdd2
-         CV41Q97bdnSiit16O/naIwNY2TVZImiwennDZ6hzENWhHmel7Zopw5XI643t7ZBM0fUu
-         MhwonFpMXY2pbTlkPq4JLx9UAp4WiUYEMOsuL+kegJlRpKyKerXte6TPZtRtAeFkiX8b
-         98rlAjLW+znLowjEwC23ABcatceEZDYvce7QJRUT/uIdh/L3DR7GlwbijGOZFxOAFF4P
-         01a2LbkZev7bwDqesDxk2GqUxZL/Ye/qAakAMiml3PiWh6qcO9np6PX2WYCnK1ID/LET
-         xdnQ==
-X-Gm-Message-State: AOAM530RtSnDSzlW9DUD6ixTr1RsK5mWpTwB3OZFGhl9g8AHCVLZO7Vy
-        tWd+nLEagXPBetLDFOWQL+g=
-X-Google-Smtp-Source: ABdhPJyNx5wd46hRkR2iTZulLhxQ5+rqd9Vpot0QHhcmBmedXrNFBpkdeCweL3CnZ6/X4VDZXUSjGQ==
-X-Received: by 2002:a63:88c6:0:b0:3fc:aa43:7e3b with SMTP id l189-20020a6388c6000000b003fcaa437e3bmr13291760pgd.567.1654360358384;
-        Sat, 04 Jun 2022 09:32:38 -0700 (PDT)
+        bh=X6sw+uVo9+V5bniSOny1T/rm2LBgg1eN3C+QvtIkJCI=;
+        b=6d9OArv1rUG5yw+NQzESKCqsigpe6Qn3mDs2D3R7NbyW6G4t+lFg8pspPtoWbJOTJq
+         hBCWjW7xLa298r1sxQrF4KFtX7xNB/AKRJzR/hTrkLL7XJ+cDrYS2Qh0n13j673KGrn6
+         sRrwyeiap7wB9vFkfCHuyDr4T25MRWuB6eJcv9cH5R0zsTSY93rDQK+AmNWObcYqPEHi
+         Zm7MuV8AG0wF4VJvxzXM8Ut5e0pDhKn4/kK+cVt/1/qbSKhq2R7NNKmydquYXsU2LeiX
+         OZzEDT/MUTQmMuqM1ddBLLz9BAXcj0DaRD2iH1K3TQLWMLwJnrXoM8oW8BffLFgZ2nfS
+         pBUw==
+X-Gm-Message-State: AOAM530nPZmu5xHADzhz2VQP7zfF7/xuPKVeuzZrVTsM6TkgAOyfEd6E
+        I0phN8TMUAGaz9sVdJ2AEK0=
+X-Google-Smtp-Source: ABdhPJzQfq3Jo0uAk2PkXh++t24LeHjEvobPMe+bdSWNKsCFZEa5orTZFmRA9AvZ0ZHOgPGerphrpQ==
+X-Received: by 2002:a17:902:ef43:b0:156:9c5d:b0fe with SMTP id e3-20020a170902ef4300b001569c5db0femr15394402plx.158.1654360366999;
+        Sat, 04 Jun 2022 09:32:46 -0700 (PDT)
 Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id t8-20020a17090a3b4800b001e34b5ed5a7sm8424874pjf.35.2022.06.04.09.32.36
+        by smtp.gmail.com with ESMTPSA id t8-20020a17090a3b4800b001e34b5ed5a7sm8424874pjf.35.2022.06.04.09.32.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jun 2022 09:32:38 -0700 (PDT)
+        Sat, 04 Jun 2022 09:32:46 -0700 (PDT)
 Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>
@@ -55,9 +55,9 @@ Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
         Oliver Hartkopp <socketcan@hartkopp.net>,
         netdev@vger.kernel.org,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v5 2/7] can: Kconfig: turn menu "CAN Device Drivers" into a menuconfig using CAN_DEV
-Date:   Sun,  5 Jun 2022 01:29:55 +0900
-Message-Id: <20220604163000.211077-3-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v5 3/7] can: bittiming: move bittiming calculation functions to calc_bittiming.c
+Date:   Sun,  5 Jun 2022 01:29:56 +0900
+Message-Id: <20220604163000.211077-4-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
 References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
@@ -75,163 +75,471 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the next patches, the software/virtual drivers (slcan, v(x)can)
-will depend on drivers/net/can/dev/skb.o.
+The canonical way to select or deselect an object during compilation
+is to use this pattern in the relevant Makefile:
 
-This patch changes the scope of the can-dev module to include the
-above mentioned drivers.
+bar-$(CONFIG_FOO) := foo.o
 
-To do so, we reuse the menu "CAN Device Drivers" and turn it into a
-configmenu using the config symbol CAN_DEV (which we released in
-previous patch). Also, add a description to this new CAN_DEV
-menuconfig.
+bittiming.c instead uses some #ifdef CONFIG_CAN_CALC_BITTIMG.
 
-The symbol CAN_DEV now only triggers the build of skb.o. For this
-reasons, all the macros from linux/module.h are deported from
-drivers/net/can/dev/dev.c to drivers/net/can/dev/skb.c.
+Create a new file named calc_bittiming.c with all the functions which
+are conditionally compiled with CONFIG_CAN_CALC_BITTIMG and modify the
+Makefile according to above pattern.
 
-Finally, drivers/net/can/dev/Makefile is adjusted accordingly.
-
-Suggested-by: Oliver Hartkopp <socketcan@hartkopp.net>
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
- drivers/net/can/Kconfig      | 29 ++++++++++++++++++++++++++---
- drivers/net/can/dev/Makefile | 16 +++++++++-------
- drivers/net/can/dev/dev.c    |  9 +--------
- drivers/net/can/dev/skb.c    |  7 +++++++
- 4 files changed, 43 insertions(+), 18 deletions(-)
+ drivers/net/can/Kconfig              |   4 +
+ drivers/net/can/dev/Makefile         |   1 +
+ drivers/net/can/dev/bittiming.c      | 197 --------------------------
+ drivers/net/can/dev/calc_bittiming.c | 202 +++++++++++++++++++++++++++
+ 4 files changed, 207 insertions(+), 197 deletions(-)
+ create mode 100644 drivers/net/can/dev/calc_bittiming.c
 
 diff --git a/drivers/net/can/Kconfig b/drivers/net/can/Kconfig
-index 99f189ad35ad..3c692af16676 100644
+index 3c692af16676..87470feae6b1 100644
 --- a/drivers/net/can/Kconfig
 +++ b/drivers/net/can/Kconfig
-@@ -1,5 +1,25 @@
- # SPDX-License-Identifier: GPL-2.0-only
--menu "CAN Device Drivers"
+@@ -96,6 +96,10 @@ config CAN_CALC_BITTIMING
+ 	  source clock frequencies. Disabling saves some space, but then the
+ 	  bit-timing parameters must be specified directly using the Netlink
+ 	  arguments "tq", "prop_seg", "phase_seg1", "phase_seg2" and "sjw".
 +
-+menuconfig CAN_DEV
-+	tristate "CAN Device Drivers"
-+	default y
-+	help
-+	  Controller Area Network (CAN) is serial communications protocol up to
-+	  1Mbit/s for its original release (now known as Classical CAN) and up
-+	  to 8Mbit/s for the more recent CAN with Flexible Data-Rate
-+	  (CAN-FD). The CAN bus was originally mainly for automotive, but is now
-+	  widely used in marine (NMEA2000), industrial, and medical
-+	  applications. More information on the CAN network protocol family
-+	  PF_CAN is contained in <Documentation/networking/can.rst>.
-+
-+	  This section contains all the CAN(-FD) device drivers including the
-+	  virtual ones. If you own such devices or plan to use the virtual CAN
-+	  interfaces to develop applications, say Y here.
-+
-+	  To compile as a module, choose M here: the module will be called
-+	  can-dev.
-+
-+if CAN_DEV
- 
- config CAN_VCAN
- 	tristate "Virtual Local CAN Interface (vcan)"
-@@ -49,7 +69,7 @@ config CAN_SLCAN
- 	  also be built as a module. If so, the module will be called slcan.
- 
- config CAN_NETLINK
--	tristate "CAN device drivers with Netlink support"
-+	bool "CAN device drivers with Netlink support"
- 	default y
- 	help
- 	  Enables the common framework for CAN device drivers. This is the
-@@ -57,6 +77,9 @@ config CAN_NETLINK
- 	  as bittiming validation, support of CAN error states, device restart
- 	  and others.
- 
 +	  The additional features selected by this option will be added to the
 +	  can-dev module.
 +
- 	  This is required by all platform and hardware CAN drivers. If you
- 	  plan to use such devices or if unsure, say Y.
+ 	  If unsure, say Y.
  
-@@ -178,4 +201,4 @@ config CAN_DEBUG_DEVICES
- 	  a problem with CAN support and want to see more of what is going
- 	  on.
- 
--endmenu
-+endif #CAN_DEV
+ config CAN_AT91
 diff --git a/drivers/net/can/dev/Makefile b/drivers/net/can/dev/Makefile
-index 5b4c813c6222..1baaf7020f7c 100644
+index 1baaf7020f7c..791e6b297ea3 100644
 --- a/drivers/net/can/dev/Makefile
 +++ b/drivers/net/can/dev/Makefile
-@@ -1,9 +1,11 @@
- # SPDX-License-Identifier: GPL-2.0
+@@ -4,6 +4,7 @@ obj-$(CONFIG_CAN_DEV) += can-dev.o
  
--obj-$(CONFIG_CAN_NETLINK) += can-dev.o
--can-dev-y			+= bittiming.o
--can-dev-y			+= dev.o
--can-dev-y			+= length.o
--can-dev-y			+= netlink.o
--can-dev-y			+= rx-offload.o
--can-dev-y                       += skb.o
-+obj-$(CONFIG_CAN_DEV) += can-dev.o
-+
-+can-dev-y += skb.o
-+
-+can-dev-$(CONFIG_CAN_NETLINK) += bittiming.o
-+can-dev-$(CONFIG_CAN_NETLINK) += dev.o
-+can-dev-$(CONFIG_CAN_NETLINK) += length.o
-+can-dev-$(CONFIG_CAN_NETLINK) += netlink.o
-+can-dev-$(CONFIG_CAN_NETLINK) += rx-offload.o
-diff --git a/drivers/net/can/dev/dev.c b/drivers/net/can/dev/dev.c
-index 96c9d9db00cf..523eaacfe29e 100644
---- a/drivers/net/can/dev/dev.c
-+++ b/drivers/net/can/dev/dev.c
-@@ -4,7 +4,6 @@
+ can-dev-y += skb.o
+ 
++can-dev-$(CONFIG_CAN_CALC_BITTIMING) += calc_bittiming.o
+ can-dev-$(CONFIG_CAN_NETLINK) += bittiming.o
+ can-dev-$(CONFIG_CAN_NETLINK) += dev.o
+ can-dev-$(CONFIG_CAN_NETLINK) += length.o
+diff --git a/drivers/net/can/dev/bittiming.c b/drivers/net/can/dev/bittiming.c
+index c1e76f0a5064..7ae80763c960 100644
+--- a/drivers/net/can/dev/bittiming.c
++++ b/drivers/net/can/dev/bittiming.c
+@@ -4,205 +4,8 @@
   * Copyright (C) 2008-2009 Wolfgang Grandegger <wg@grandegger.com>
   */
  
--#include <linux/module.h>
- #include <linux/kernel.h>
- #include <linux/slab.h>
- #include <linux/netdevice.h>
-@@ -17,12 +16,6 @@
- #include <linux/gpio/consumer.h>
- #include <linux/of.h>
- 
--#define MOD_DESC "CAN device driver interface"
--
--MODULE_DESCRIPTION(MOD_DESC);
--MODULE_LICENSE("GPL v2");
--MODULE_AUTHOR("Wolfgang Grandegger <wg@grandegger.com>");
--
- static void can_update_state_error_stats(struct net_device *dev,
- 					 enum can_state new_state)
- {
-@@ -513,7 +506,7 @@ static __init int can_dev_init(void)
- 
- 	err = can_netlink_register();
- 	if (!err)
--		pr_info(MOD_DESC "\n");
-+		pr_info("CAN device driver interface\n");
- 
- 	return err;
- }
-diff --git a/drivers/net/can/dev/skb.c b/drivers/net/can/dev/skb.c
-index 61660248c69e..a4208f125b76 100644
---- a/drivers/net/can/dev/skb.c
-+++ b/drivers/net/can/dev/skb.c
-@@ -5,6 +5,13 @@
-  */
- 
+-#include <linux/units.h>
  #include <linux/can/dev.h>
-+#include <linux/module.h>
-+
-+#define MOD_DESC "CAN device driver interface"
-+
-+MODULE_DESCRIPTION(MOD_DESC);
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("Wolfgang Grandegger <wg@grandegger.com>");
  
- /* Local echo of CAN messages
-  *
+-#ifdef CONFIG_CAN_CALC_BITTIMING
+-#define CAN_CALC_MAX_ERROR 50 /* in one-tenth of a percent */
+-
+-/* Bit-timing calculation derived from:
+- *
+- * Code based on LinCAN sources and H8S2638 project
+- * Copyright 2004-2006 Pavel Pisa - DCE FELK CVUT cz
+- * Copyright 2005      Stanislav Marek
+- * email: pisa@cmp.felk.cvut.cz
+- *
+- * Calculates proper bit-timing parameters for a specified bit-rate
+- * and sample-point, which can then be used to set the bit-timing
+- * registers of the CAN controller. You can find more information
+- * in the header file linux/can/netlink.h.
+- */
+-static int
+-can_update_sample_point(const struct can_bittiming_const *btc,
+-			const unsigned int sample_point_nominal, const unsigned int tseg,
+-			unsigned int *tseg1_ptr, unsigned int *tseg2_ptr,
+-			unsigned int *sample_point_error_ptr)
+-{
+-	unsigned int sample_point_error, best_sample_point_error = UINT_MAX;
+-	unsigned int sample_point, best_sample_point = 0;
+-	unsigned int tseg1, tseg2;
+-	int i;
+-
+-	for (i = 0; i <= 1; i++) {
+-		tseg2 = tseg + CAN_SYNC_SEG -
+-			(sample_point_nominal * (tseg + CAN_SYNC_SEG)) /
+-			1000 - i;
+-		tseg2 = clamp(tseg2, btc->tseg2_min, btc->tseg2_max);
+-		tseg1 = tseg - tseg2;
+-		if (tseg1 > btc->tseg1_max) {
+-			tseg1 = btc->tseg1_max;
+-			tseg2 = tseg - tseg1;
+-		}
+-
+-		sample_point = 1000 * (tseg + CAN_SYNC_SEG - tseg2) /
+-			(tseg + CAN_SYNC_SEG);
+-		sample_point_error = abs(sample_point_nominal - sample_point);
+-
+-		if (sample_point <= sample_point_nominal &&
+-		    sample_point_error < best_sample_point_error) {
+-			best_sample_point = sample_point;
+-			best_sample_point_error = sample_point_error;
+-			*tseg1_ptr = tseg1;
+-			*tseg2_ptr = tseg2;
+-		}
+-	}
+-
+-	if (sample_point_error_ptr)
+-		*sample_point_error_ptr = best_sample_point_error;
+-
+-	return best_sample_point;
+-}
+-
+-int can_calc_bittiming(const struct net_device *dev, struct can_bittiming *bt,
+-		       const struct can_bittiming_const *btc)
+-{
+-	struct can_priv *priv = netdev_priv(dev);
+-	unsigned int bitrate;			/* current bitrate */
+-	unsigned int bitrate_error;		/* difference between current and nominal value */
+-	unsigned int best_bitrate_error = UINT_MAX;
+-	unsigned int sample_point_error;	/* difference between current and nominal value */
+-	unsigned int best_sample_point_error = UINT_MAX;
+-	unsigned int sample_point_nominal;	/* nominal sample point */
+-	unsigned int best_tseg = 0;		/* current best value for tseg */
+-	unsigned int best_brp = 0;		/* current best value for brp */
+-	unsigned int brp, tsegall, tseg, tseg1 = 0, tseg2 = 0;
+-	u64 v64;
+-
+-	/* Use CiA recommended sample points */
+-	if (bt->sample_point) {
+-		sample_point_nominal = bt->sample_point;
+-	} else {
+-		if (bt->bitrate > 800 * KILO /* BPS */)
+-			sample_point_nominal = 750;
+-		else if (bt->bitrate > 500 * KILO /* BPS */)
+-			sample_point_nominal = 800;
+-		else
+-			sample_point_nominal = 875;
+-	}
+-
+-	/* tseg even = round down, odd = round up */
+-	for (tseg = (btc->tseg1_max + btc->tseg2_max) * 2 + 1;
+-	     tseg >= (btc->tseg1_min + btc->tseg2_min) * 2; tseg--) {
+-		tsegall = CAN_SYNC_SEG + tseg / 2;
+-
+-		/* Compute all possible tseg choices (tseg=tseg1+tseg2) */
+-		brp = priv->clock.freq / (tsegall * bt->bitrate) + tseg % 2;
+-
+-		/* choose brp step which is possible in system */
+-		brp = (brp / btc->brp_inc) * btc->brp_inc;
+-		if (brp < btc->brp_min || brp > btc->brp_max)
+-			continue;
+-
+-		bitrate = priv->clock.freq / (brp * tsegall);
+-		bitrate_error = abs(bt->bitrate - bitrate);
+-
+-		/* tseg brp biterror */
+-		if (bitrate_error > best_bitrate_error)
+-			continue;
+-
+-		/* reset sample point error if we have a better bitrate */
+-		if (bitrate_error < best_bitrate_error)
+-			best_sample_point_error = UINT_MAX;
+-
+-		can_update_sample_point(btc, sample_point_nominal, tseg / 2,
+-					&tseg1, &tseg2, &sample_point_error);
+-		if (sample_point_error >= best_sample_point_error)
+-			continue;
+-
+-		best_sample_point_error = sample_point_error;
+-		best_bitrate_error = bitrate_error;
+-		best_tseg = tseg / 2;
+-		best_brp = brp;
+-
+-		if (bitrate_error == 0 && sample_point_error == 0)
+-			break;
+-	}
+-
+-	if (best_bitrate_error) {
+-		/* Error in one-tenth of a percent */
+-		v64 = (u64)best_bitrate_error * 1000;
+-		do_div(v64, bt->bitrate);
+-		bitrate_error = (u32)v64;
+-		if (bitrate_error > CAN_CALC_MAX_ERROR) {
+-			netdev_err(dev,
+-				   "bitrate error %d.%d%% too high\n",
+-				   bitrate_error / 10, bitrate_error % 10);
+-			return -EDOM;
+-		}
+-		netdev_warn(dev, "bitrate error %d.%d%%\n",
+-			    bitrate_error / 10, bitrate_error % 10);
+-	}
+-
+-	/* real sample point */
+-	bt->sample_point = can_update_sample_point(btc, sample_point_nominal,
+-						   best_tseg, &tseg1, &tseg2,
+-						   NULL);
+-
+-	v64 = (u64)best_brp * 1000 * 1000 * 1000;
+-	do_div(v64, priv->clock.freq);
+-	bt->tq = (u32)v64;
+-	bt->prop_seg = tseg1 / 2;
+-	bt->phase_seg1 = tseg1 - bt->prop_seg;
+-	bt->phase_seg2 = tseg2;
+-
+-	/* check for sjw user settings */
+-	if (!bt->sjw || !btc->sjw_max) {
+-		bt->sjw = 1;
+-	} else {
+-		/* bt->sjw is at least 1 -> sanitize upper bound to sjw_max */
+-		if (bt->sjw > btc->sjw_max)
+-			bt->sjw = btc->sjw_max;
+-		/* bt->sjw must not be higher than tseg2 */
+-		if (tseg2 < bt->sjw)
+-			bt->sjw = tseg2;
+-	}
+-
+-	bt->brp = best_brp;
+-
+-	/* real bitrate */
+-	bt->bitrate = priv->clock.freq /
+-		(bt->brp * (CAN_SYNC_SEG + tseg1 + tseg2));
+-
+-	return 0;
+-}
+-
+-void can_calc_tdco(struct can_tdc *tdc, const struct can_tdc_const *tdc_const,
+-		   const struct can_bittiming *dbt,
+-		   u32 *ctrlmode, u32 ctrlmode_supported)
+-
+-{
+-	if (!tdc_const || !(ctrlmode_supported & CAN_CTRLMODE_TDC_AUTO))
+-		return;
+-
+-	*ctrlmode &= ~CAN_CTRLMODE_TDC_MASK;
+-
+-	/* As specified in ISO 11898-1 section 11.3.3 "Transmitter
+-	 * delay compensation" (TDC) is only applicable if data BRP is
+-	 * one or two.
+-	 */
+-	if (dbt->brp == 1 || dbt->brp == 2) {
+-		/* Sample point in clock periods */
+-		u32 sample_point_in_tc = (CAN_SYNC_SEG + dbt->prop_seg +
+-					  dbt->phase_seg1) * dbt->brp;
+-
+-		if (sample_point_in_tc < tdc_const->tdco_min)
+-			return;
+-		tdc->tdco = min(sample_point_in_tc, tdc_const->tdco_max);
+-		*ctrlmode |= CAN_CTRLMODE_TDC_AUTO;
+-	}
+-}
+-#endif /* CONFIG_CAN_CALC_BITTIMING */
+-
+ /* Checks the validity of the specified bit-timing parameters prop_seg,
+  * phase_seg1, phase_seg2 and sjw and tries to determine the bitrate
+  * prescaler value brp. You can find more information in the header
+diff --git a/drivers/net/can/dev/calc_bittiming.c b/drivers/net/can/dev/calc_bittiming.c
+new file mode 100644
+index 000000000000..d3caa040614d
+--- /dev/null
++++ b/drivers/net/can/dev/calc_bittiming.c
+@@ -0,0 +1,202 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (C) 2005 Marc Kleine-Budde, Pengutronix
++ * Copyright (C) 2006 Andrey Volkov, Varma Electronics
++ * Copyright (C) 2008-2009 Wolfgang Grandegger <wg@grandegger.com>
++ */
++
++#include <linux/units.h>
++#include <linux/can/dev.h>
++
++#define CAN_CALC_MAX_ERROR 50 /* in one-tenth of a percent */
++
++/* Bit-timing calculation derived from:
++ *
++ * Code based on LinCAN sources and H8S2638 project
++ * Copyright 2004-2006 Pavel Pisa - DCE FELK CVUT cz
++ * Copyright 2005      Stanislav Marek
++ * email: pisa@cmp.felk.cvut.cz
++ *
++ * Calculates proper bit-timing parameters for a specified bit-rate
++ * and sample-point, which can then be used to set the bit-timing
++ * registers of the CAN controller. You can find more information
++ * in the header file linux/can/netlink.h.
++ */
++static int
++can_update_sample_point(const struct can_bittiming_const *btc,
++			const unsigned int sample_point_nominal, const unsigned int tseg,
++			unsigned int *tseg1_ptr, unsigned int *tseg2_ptr,
++			unsigned int *sample_point_error_ptr)
++{
++	unsigned int sample_point_error, best_sample_point_error = UINT_MAX;
++	unsigned int sample_point, best_sample_point = 0;
++	unsigned int tseg1, tseg2;
++	int i;
++
++	for (i = 0; i <= 1; i++) {
++		tseg2 = tseg + CAN_SYNC_SEG -
++			(sample_point_nominal * (tseg + CAN_SYNC_SEG)) /
++			1000 - i;
++		tseg2 = clamp(tseg2, btc->tseg2_min, btc->tseg2_max);
++		tseg1 = tseg - tseg2;
++		if (tseg1 > btc->tseg1_max) {
++			tseg1 = btc->tseg1_max;
++			tseg2 = tseg - tseg1;
++		}
++
++		sample_point = 1000 * (tseg + CAN_SYNC_SEG - tseg2) /
++			(tseg + CAN_SYNC_SEG);
++		sample_point_error = abs(sample_point_nominal - sample_point);
++
++		if (sample_point <= sample_point_nominal &&
++		    sample_point_error < best_sample_point_error) {
++			best_sample_point = sample_point;
++			best_sample_point_error = sample_point_error;
++			*tseg1_ptr = tseg1;
++			*tseg2_ptr = tseg2;
++		}
++	}
++
++	if (sample_point_error_ptr)
++		*sample_point_error_ptr = best_sample_point_error;
++
++	return best_sample_point;
++}
++
++int can_calc_bittiming(const struct net_device *dev, struct can_bittiming *bt,
++		       const struct can_bittiming_const *btc)
++{
++	struct can_priv *priv = netdev_priv(dev);
++	unsigned int bitrate;			/* current bitrate */
++	unsigned int bitrate_error;		/* difference between current and nominal value */
++	unsigned int best_bitrate_error = UINT_MAX;
++	unsigned int sample_point_error;	/* difference between current and nominal value */
++	unsigned int best_sample_point_error = UINT_MAX;
++	unsigned int sample_point_nominal;	/* nominal sample point */
++	unsigned int best_tseg = 0;		/* current best value for tseg */
++	unsigned int best_brp = 0;		/* current best value for brp */
++	unsigned int brp, tsegall, tseg, tseg1 = 0, tseg2 = 0;
++	u64 v64;
++
++	/* Use CiA recommended sample points */
++	if (bt->sample_point) {
++		sample_point_nominal = bt->sample_point;
++	} else {
++		if (bt->bitrate > 800 * KILO /* BPS */)
++			sample_point_nominal = 750;
++		else if (bt->bitrate > 500 * KILO /* BPS */)
++			sample_point_nominal = 800;
++		else
++			sample_point_nominal = 875;
++	}
++
++	/* tseg even = round down, odd = round up */
++	for (tseg = (btc->tseg1_max + btc->tseg2_max) * 2 + 1;
++	     tseg >= (btc->tseg1_min + btc->tseg2_min) * 2; tseg--) {
++		tsegall = CAN_SYNC_SEG + tseg / 2;
++
++		/* Compute all possible tseg choices (tseg=tseg1+tseg2) */
++		brp = priv->clock.freq / (tsegall * bt->bitrate) + tseg % 2;
++
++		/* choose brp step which is possible in system */
++		brp = (brp / btc->brp_inc) * btc->brp_inc;
++		if (brp < btc->brp_min || brp > btc->brp_max)
++			continue;
++
++		bitrate = priv->clock.freq / (brp * tsegall);
++		bitrate_error = abs(bt->bitrate - bitrate);
++
++		/* tseg brp biterror */
++		if (bitrate_error > best_bitrate_error)
++			continue;
++
++		/* reset sample point error if we have a better bitrate */
++		if (bitrate_error < best_bitrate_error)
++			best_sample_point_error = UINT_MAX;
++
++		can_update_sample_point(btc, sample_point_nominal, tseg / 2,
++					&tseg1, &tseg2, &sample_point_error);
++		if (sample_point_error >= best_sample_point_error)
++			continue;
++
++		best_sample_point_error = sample_point_error;
++		best_bitrate_error = bitrate_error;
++		best_tseg = tseg / 2;
++		best_brp = brp;
++
++		if (bitrate_error == 0 && sample_point_error == 0)
++			break;
++	}
++
++	if (best_bitrate_error) {
++		/* Error in one-tenth of a percent */
++		v64 = (u64)best_bitrate_error * 1000;
++		do_div(v64, bt->bitrate);
++		bitrate_error = (u32)v64;
++		if (bitrate_error > CAN_CALC_MAX_ERROR) {
++			netdev_err(dev,
++				   "bitrate error %d.%d%% too high\n",
++				   bitrate_error / 10, bitrate_error % 10);
++			return -EDOM;
++		}
++		netdev_warn(dev, "bitrate error %d.%d%%\n",
++			    bitrate_error / 10, bitrate_error % 10);
++	}
++
++	/* real sample point */
++	bt->sample_point = can_update_sample_point(btc, sample_point_nominal,
++						   best_tseg, &tseg1, &tseg2,
++						   NULL);
++
++	v64 = (u64)best_brp * 1000 * 1000 * 1000;
++	do_div(v64, priv->clock.freq);
++	bt->tq = (u32)v64;
++	bt->prop_seg = tseg1 / 2;
++	bt->phase_seg1 = tseg1 - bt->prop_seg;
++	bt->phase_seg2 = tseg2;
++
++	/* check for sjw user settings */
++	if (!bt->sjw || !btc->sjw_max) {
++		bt->sjw = 1;
++	} else {
++		/* bt->sjw is at least 1 -> sanitize upper bound to sjw_max */
++		if (bt->sjw > btc->sjw_max)
++			bt->sjw = btc->sjw_max;
++		/* bt->sjw must not be higher than tseg2 */
++		if (tseg2 < bt->sjw)
++			bt->sjw = tseg2;
++	}
++
++	bt->brp = best_brp;
++
++	/* real bitrate */
++	bt->bitrate = priv->clock.freq /
++		(bt->brp * (CAN_SYNC_SEG + tseg1 + tseg2));
++
++	return 0;
++}
++
++void can_calc_tdco(struct can_tdc *tdc, const struct can_tdc_const *tdc_const,
++		   const struct can_bittiming *dbt,
++		   u32 *ctrlmode, u32 ctrlmode_supported)
++
++{
++	if (!tdc_const || !(ctrlmode_supported & CAN_CTRLMODE_TDC_AUTO))
++		return;
++
++	*ctrlmode &= ~CAN_CTRLMODE_TDC_MASK;
++
++	/* As specified in ISO 11898-1 section 11.3.3 "Transmitter
++	 * delay compensation" (TDC) is only applicable if data BRP is
++	 * one or two.
++	 */
++	if (dbt->brp == 1 || dbt->brp == 2) {
++		/* Sample point in clock periods */
++		u32 sample_point_in_tc = (CAN_SYNC_SEG + dbt->prop_seg +
++					  dbt->phase_seg1) * dbt->brp;
++
++		if (sample_point_in_tc < tdc_const->tdco_min)
++			return;
++		tdc->tdco = min(sample_point_in_tc, tdc_const->tdco_max);
++		*ctrlmode |= CAN_CTRLMODE_TDC_AUTO;
++	}
++}
 -- 
 2.35.1
 
