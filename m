@@ -2,177 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 462C053D41C
-	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 02:39:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E3B853D433
+	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 03:02:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349811AbiFDAjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 3 Jun 2022 20:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49666 "EHLO
+        id S1349866AbiFDBCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 3 Jun 2022 21:02:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231961AbiFDAjC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 20:39:02 -0400
-Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9586A26559
-        for <netdev@vger.kernel.org>; Fri,  3 Jun 2022 17:39:01 -0700 (PDT)
-Received: by mail-vs1-xe34.google.com with SMTP id r12so6130335vsg.8
-        for <netdev@vger.kernel.org>; Fri, 03 Jun 2022 17:39:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nQ12x7LYTirCKanAsGxhstl3+8Pc7DWx/YYw6rCUsvw=;
-        b=asoPVgxWz2KiFJn2uv7k5qvPzh4Cef3px6thi64JoY6bOhG3+3L+5mzNzFZH2REvGf
-         yLfsK7Yi1ngk9Cjq/i+frO9ltxOFj/5ujpzjeAjekgMfM0T0dDfjoOtALW/aYUUjP6TF
-         WAiJD4sjzPcjF7xdWxLs4I+KqWZUX5KJyYx6PZxYieGbrHfbZULC3P1c0cVOtg23ND6o
-         wezoj6V2HKMjVZFTNp6FUwhiKDQHWVUrvzGcuFr7tkF64+HEYF/eElBMU009PX+8uFxT
-         Tu8d/lpRK010kpP6GyUtpV+2XRLl/z1sdGcRdFMcDej9tf18UKRJzFELlEEZ+Lf8Rjc1
-         mnBQ==
+        with ESMTP id S232018AbiFDBCY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 3 Jun 2022 21:02:24 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A12396B3
+        for <netdev@vger.kernel.org>; Fri,  3 Jun 2022 18:02:22 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id r9-20020a92cd89000000b002d16798b3cfso7308473ilb.22
+        for <netdev@vger.kernel.org>; Fri, 03 Jun 2022 18:02:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nQ12x7LYTirCKanAsGxhstl3+8Pc7DWx/YYw6rCUsvw=;
-        b=Yp+Y4H+QR//9eCR7NHACO01EhHew76Tnw5EEyftclPbptHkLf79dCYFS6lG6INNhYp
-         8uYzkzz9mmyhj3OzUMVv19xhp4vMBh4ApKTmC6DYMWtbpjlnsoEBQIQH18V4hy5CELCW
-         jvvvqgvgqG0mA9CGNGC/iHjsBk7ct4h0uRBk5AESjOU7xnmuRo6a7JwgnBNfmGwxB6TG
-         cSQM4mB3PoJPXnxr/PPQdWkB9cksWekbHYYaTtKIjzF64uLFlzqK1e2WByII+zjXMgo/
-         7MX0UlcfClUHxw7E6hnV/MIwuhV910TbEutI2WG6BNOphPu1ovqMtuPolyQQ//Z63dv4
-         XzFQ==
-X-Gm-Message-State: AOAM531d0SwZqNBMpMMNw0kI2bskzyoxMuE04FGW69bMickU87x7j7lv
-        2eg18e+KYVTVub8Df01fikYyR9w1mVWSeBl9D01LBGXf
-X-Google-Smtp-Source: ABdhPJysD4NCQ+HyNKLP6OuhkkRntpr5RcTl97d2V28YKiGtSvgcvVirWcvJBsJhObO2Wq0YW0uqrMXbBMvCHOdrXZ0=
-X-Received: by 2002:a67:d70e:0:b0:34b:8e32:404b with SMTP id
- p14-20020a67d70e000000b0034b8e32404bmr4296166vsj.31.1654303140717; Fri, 03
- Jun 2022 17:39:00 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=a+3cX63j0HBxXf0a3L3zpLBULDl2FODnZzb1/pTxks0=;
+        b=GEFI0euJTAugjNn8u7q4KNgbwaMaQkuBal2hjHFOPPZSdpS4sJV/5bYOQBJNnxA5CB
+         fRIvUdS8+5RHfYQFxtJg07A+gV/RWHSwMjDCDppLIAB9365v9TampSI32NW3/sdcF602
+         xUHq3zRPX00XmuBbwZNuAxNRuGFCuorElU4Ep01OOLj3oWyG2ORkusg9wNlJuLqkKJzx
+         Qcfi78DqZCUsKeaeaznlyIydE25vRk6i3t24Jg25fP3IaqHfkIq3L86Fp40uz2+5IwcL
+         tSJeVqoD+9Fa9lOfSvHa8nmEOgwDzbGu6rwqQ1gL1tijKBVNGlerFwAAwTN7OErMYX3Z
+         8DEw==
+X-Gm-Message-State: AOAM533IXMxcLmt6aC0gsq9SUNeGIytozTp1NC0dAzBpJv56ic1uXkXB
+        2D3KmqjPu6yq8E5wNwbe1aYIH/wB7VteoGrVvBNAVD1hHb4L
+X-Google-Smtp-Source: ABdhPJwiDZ5m2kBfl7tNv3jbfR1q82b6i15VD7p6BurmnmTaDg4W4iwGe9cNfOy66GUpVbRjXFu9HIC9+Sb688Us1P29KXFmBov9
 MIME-Version: 1.0
-References: <20220602165101.3188482-1-joannelkoong@gmail.com> <4bae9df4-42c1-85c3-d350-119a151d29@linux.intel.com>
-In-Reply-To: <4bae9df4-42c1-85c3-d350-119a151d29@linux.intel.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Fri, 3 Jun 2022 17:38:49 -0700
-Message-ID: <CAJnrk1buk-hK3nwyPz+o+wZLDdZTPpBSNniY3sJtgXZtJXOROQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 0/2] Update bhash2 when socket's rcv saddr changes
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>
+X-Received: by 2002:a05:6e02:154a:b0:2d1:d151:3c26 with SMTP id
+ j10-20020a056e02154a00b002d1d1513c26mr7030398ilu.24.1654304542187; Fri, 03
+ Jun 2022 18:02:22 -0700 (PDT)
+Date:   Fri, 03 Jun 2022 18:02:22 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000009667e705e094ca3c@google.com>
+Subject: [syzbot] kernel BUG in __skb_gso_segment
+From:   syzbot <syzbot+7160965e6a93d826048a@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, liuhangbin@gmail.com,
+        lixiaoyan@google.com, mst@redhat.com, netdev@vger.kernel.org,
+        pabeni@redhat.com, steffen.klassert@secunet.com,
+        syzkaller-bugs@googlegroups.com, willemb@google.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 3, 2022 at 11:55 AM Mat Martineau
-<mathew.j.martineau@linux.intel.com> wrote:
->
-> On Thu, 2 Jun 2022, Joanne Koong wrote:
->
-> > As syzbot noted [1], there is an inconsistency in the bhash2 table in the
-> > case where a socket's rcv saddr changes after it is binded. (For more
-> > details, please see the commit message of the first patch)
-> >
-> > This patchset fixes that and adds a test that triggers the case where the
-> > sk's rcv saddr changes. The subsequent listen() call should succeed.
-> >
-> > [1] https://lore.kernel.org/netdev/0000000000003f33bc05dfaf44fe@google.com/
-> >
-> > --
-> > v1 -> v2:
-> > v1: https://lore.kernel.org/netdev/20220601201434.1710931-1-joannekoong@fb.com/
-> > * Mark __inet_bhash2_update_saddr as static
-> >
-> > Joanne Koong (2):
-> >  net: Update bhash2 when socket's rcv saddr changes
-> >  selftests/net: Add sk_bind_sendto_listen test
-> >
->
-> Hi Joanne -
->
-> I've been running my own syzkaller instance with v1 of this fix for a
-> couple of days. Before this patch, syzkaller would trigger the
-> inet_csk_get_port warning a couple of times per hour. After this patch it
-> took two days to show the warning:
->
-> ------------[ cut here ]------------
->
-> WARNING: CPU: 0 PID: 9430 at net/ipv4/inet_connection_sock.c:525
-> inet_csk_get_port+0x938/0xe80 net/ipv4/inet_connection_sock.c:525
-> Modules linked in:
-> CPU: 0 PID: 9430 Comm: syz-executor.5 Not tainted 5.18.0-05016-g433fde5b4119 #3
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
-> RIP: 0010:inet_csk_get_port+0x938/0xe80 net/ipv4/inet_connection_sock.c:525
-> Code: ff 48 89 84 24 b0 00 00 00 48 85 c0 0f 84 6a 01 00 00 e8 2b 0f db fd 48 8b 6c 24 70 c6 04 24 01 e9 fb fb ff ff e8 18 0f db fd <0f> 0b e9 70 f9 ff ff e8 0c 0f db fd 0f 0b e9 28 f9 ff ff e8 00 0f
-> RSP: 0018:ffffc90000b5fbc0 EFLAGS: 00010212
-> RAX: 00000000000000e7 RBX: ffff88803c410040 RCX: ffffc9000e419000
-> RDX: 0000000000040000 RSI: ffffffff836f47e8 RDI: ffff88803c4106e0
-> RBP: ffff88810b773840 R08: 0000000000000001 R09: 0000000000000001
-> R10: fffffbfff0f64303 R11: 0000000000000001 R12: 0000000000000000
-> R13: ffff88810605e2f0 R14: ffffffff88606040 R15: 000000000000c1ff
-> FS:  00007fada4d03640(0000) GS:ffff88811ac00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000001b32e24000 CR3: 00000001016de001 CR4: 0000000000770ef0
-> PKRU: 55555554
-> Call Trace:
->   <TASK>
->   inet_csk_listen_start+0x143/0x3d0 net/ipv4/inet_connection_sock.c:1178
->   inet_listen+0x22f/0x650 net/ipv4/af_inet.c:228
->   mptcp_listen+0x205/0x440 net/mptcp/protocol.c:3564
->   __sys_listen+0x189/0x260 net/socket.c:1810
->   __do_sys_listen net/socket.c:1819 [inline]
->   __se_sys_listen net/socket.c:1817 [inline]
->   __x64_sys_listen+0x54/0x80 net/socket.c:1817
->   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->   do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
->   entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> RIP: 0033:0x7fada558f92d
-> Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007fada4d03028 EFLAGS: 00000246 ORIG_RAX: 0000000000000032
-> RAX: ffffffffffffffda RBX: 00007fada56aff60 RCX: 00007fada558f92d
-> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000004
-> RBP: 00007fada56000a0 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-> R13: 000000000000000b R14: 00007fada56aff60 R15: 00007fada4ce3000
->   </TASK>
-> irq event stamp: 2078
-> hardirqs last  enabled at (2092): [<ffffffff812f1be3>] __up_console_sem+0xb3/0xd0 kernel/printk/printk.c:291
-> hardirqs last disabled at (2103): [<ffffffff812f1bc8>] __up_console_sem+0x98/0xd0 kernel/printk/printk.c:289
-> softirqs last  enabled at (1498): [<ffffffff83807dd4>] lock_sock include/net/sock.h:1691 [inline]
-> softirqs last  enabled at (1498): [<ffffffff83807dd4>] inet_listen+0x94/0x650 net/ipv4/af_inet.c:199
-> softirqs last disabled at (1500): [<ffffffff836f425c>] spin_lock_bh include/linux/spinlock.h:354 [inline]
-> softirqs last disabled at (1500): [<ffffffff836f425c>] inet_csk_get_port+0x3ac/0xe80 net/ipv4/inet_connection_sock.c:483
-> ---[ end trace 0000000000000000 ]---
->
->
-> In the full log file it does look like syskaller is doing something
-> strange since it's calling bind, connect, and listen on the same socket:
->
-> r4 = socket$inet_mptcp(0x2, 0x1, 0x106)
-> bind$inet(r4, &(0x7f0000000000)={0x2, 0x4e23, @empty}, 0x10)
-> connect$inet(r4, &(0x7f0000000040)={0x2, 0x0, @local}, 0x10)
-> listen(r4, 0x0)
->
-> ...but it is a fuzz tester after all.
->
-> I've uploaded the full syzkaller logs to this GitHub issue:
->
-> https://github.com/multipath-tcp/mptcp_net-next/issues/279
->
->
-> Not sure yet if this is MPTCP-related. I don't think MPTCP
-> changes anything with the subflow TCP socket bind hashes.
->
-Hi Mat,
+Hello,
 
-Thanks for bringing this up and for uploading the logs. I will look into this.
->
-> --
-> Mat Martineau
-> Intel
->
+syzbot found the following issue on:
+
+HEAD commit:    2c5ca23f7414 Merge tag 'ovl-update-5.19' of git://git.kern..
+git tree:       upstream
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=11330935f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9b19cdd2d45cc221
+dashboard link: https://syzkaller.appspot.com/bug?extid=7160965e6a93d826048a
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1724add5f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1324cbf9f00000
+
+The issue was bisected to:
+
+commit dfed913e8b55a0c2c4906f1242fd38fd9a116e49
+Author: Hangbin Liu <liuhangbin@gmail.com>
+Date:   Mon Apr 25 01:45:02 2022 +0000
+
+    net/af_packet: add VLAN support for AF_PACKET SOCK_RAW GSO
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=169079bdf00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=159079bdf00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=119079bdf00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+7160965e6a93d826048a@syzkaller.appspotmail.com
+Fixes: dfed913e8b55 ("net/af_packet: add VLAN support for AF_PACKET SOCK_RAW GSO")
+
+------------[ cut here ]------------
+kernel BUG at include/linux/skbuff.h:2699!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 3601 Comm: syz-executor210 Not tainted 5.18.0-syzkaller-11338-g2c5ca23f7414 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:__skb_pull include/linux/skbuff.h:2699 [inline]
+RIP: 0010:skb_mac_gso_segment+0x48f/0x530 net/core/gro.c:136
+Code: 00 48 c7 c7 00 96 d4 8a c6 05 cb d3 45 06 01 e8 26 bb d0 01 e9 2f fd ff ff 49 c7 c4 ea ff ff ff e9 f1 fe ff ff e8 91 84 19 fa <0f> 0b 48 89 df e8 97 44 66 fa e9 7f fd ff ff e8 ad 44 66 fa e9 48
+RSP: 0018:ffffc90002e2f4b8 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 0000000000000012 RCX: 0000000000000000
+RDX: ffff88805bb58000 RSI: ffffffff8760ed0f RDI: 0000000000000004
+RBP: 0000000000005dbc R08: 0000000000000004 R09: 0000000000000fe0
+R10: 0000000000000fe4 R11: 0000000000000000 R12: 0000000000000fe0
+R13: ffff88807194d780 R14: 1ffff920005c5e9b R15: 0000000000000012
+FS:  000055555730f300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000200015c0 CR3: 0000000071ff8000 CR4: 0000000000350ee0
+Call Trace:
+ <TASK>
+ __skb_gso_segment+0x327/0x6e0 net/core/dev.c:3411
+ skb_gso_segment include/linux/netdevice.h:4749 [inline]
+ validate_xmit_skb+0x6bc/0xf10 net/core/dev.c:3669
+ validate_xmit_skb_list+0xbc/0x120 net/core/dev.c:3719
+ sch_direct_xmit+0x3d1/0xbe0 net/sched/sch_generic.c:327
+ __dev_xmit_skb net/core/dev.c:3815 [inline]
+ __dev_queue_xmit+0x14a1/0x3a00 net/core/dev.c:4219
+ packet_snd net/packet/af_packet.c:3071 [inline]
+ packet_sendmsg+0x21cb/0x5550 net/packet/af_packet.c:3102
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:734
+ ____sys_sendmsg+0x6eb/0x810 net/socket.c:2492
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2546
+ __sys_sendmsg net/socket.c:2575 [inline]
+ __do_sys_sendmsg net/socket.c:2584 [inline]
+ __se_sys_sendmsg net/socket.c:2582 [inline]
+ __x64_sys_sendmsg+0x132/0x220 net/socket.c:2582
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f4b95da06c9
+Code: 28 c3 e8 4a 15 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffd7defc4c8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007ffd7defc4f0 RCX: 00007f4b95da06c9
+RDX: 0000000000000000 RSI: 0000000020000140 RDI: 0000000000000003
+RBP: 0000000000000003 R08: bb1414ac00000050 R09: bb1414ac00000050
+R10: 0000000000000004 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffd7defc4e0 R14: 00007ffd7defc4d8 R15: 00007ffd7defc4d4
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:__skb_pull include/linux/skbuff.h:2699 [inline]
+RIP: 0010:skb_mac_gso_segment+0x48f/0x530 net/core/gro.c:136
+Code: 00 48 c7 c7 00 96 d4 8a c6 05 cb d3 45 06 01 e8 26 bb d0 01 e9 2f fd ff ff 49 c7 c4 ea ff ff ff e9 f1 fe ff ff e8 91 84 19 fa <0f> 0b 48 89 df e8 97 44 66 fa e9 7f fd ff ff e8 ad 44 66 fa e9 48
+RSP: 0018:ffffc90002e2f4b8 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 0000000000000012 RCX: 0000000000000000
+RDX: ffff88805bb58000 RSI: ffffffff8760ed0f RDI: 0000000000000004
+RBP: 0000000000005dbc R08: 0000000000000004 R09: 0000000000000fe0
+R10: 0000000000000fe4 R11: 0000000000000000 R12: 0000000000000fe0
+R13: ffff88807194d780 R14: 1ffff920005c5e9b R15: 0000000000000012
+FS:  000055555730f300(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000200015c0 CR3: 0000000071ff8000 CR4: 0000000000350ee0
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
