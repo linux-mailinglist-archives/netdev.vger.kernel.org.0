@@ -2,115 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 125A553D63E
-	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 11:27:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7310253D642
+	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 11:32:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233873AbiFDJ0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jun 2022 05:26:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36712 "EHLO
+        id S234015AbiFDJcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jun 2022 05:32:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230351AbiFDJ0v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 05:26:51 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CFACB
-        for <netdev@vger.kernel.org>; Sat,  4 Jun 2022 02:26:50 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id v11-20020a17090a4ecb00b001e2c5b837ccso13875033pjl.3
-        for <netdev@vger.kernel.org>; Sat, 04 Jun 2022 02:26:50 -0700 (PDT)
+        with ESMTP id S230351AbiFDJca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 05:32:30 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1886C26124;
+        Sat,  4 Jun 2022 02:32:29 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id q21so20131063ejm.1;
+        Sat, 04 Jun 2022 02:32:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=fyO9OaANfvBBrKAbHvEP8A5701DEFNGjeZ7FhKJ0lcA=;
-        b=Dt6/9lhl3NnXAs9oFD9PFfcqxOY5xcpq0mBVZkh0lQfKMikT/HoflX30wCjDsca7R2
-         9zUqCknn0AWKmJ15Hp/IBj0PmqLetGC+HAL30hcMIZyWhLcYtZRpujT1ybXIB5TuZTqG
-         g3YDdFjsqsebfzJF+4dapRrcHFBHPm+VHgwz5qoTybkmlNn7KyfYoMqmLFyFXGX7+6EH
-         /9LT2JDXnluj9C5mEpEaUibhyO4Kj5KYeGVcU34pvyimt8oEaV4gDKRESAbob46sK82/
-         oPcneyVnJnla72gCygHYVJOQeuX668RH2klgr03eIXTbkgpz2OoSFD/Rj69R9skyQpvS
-         seeg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kEnlhjDu0FbGaaiDuZ0pof8c2vlmdAC3/VHnhWFqmg4=;
+        b=PnimOz8UTsnQrP+tEBJhi00bkQm619fcXVGRSpNRTJK4BE0FZCxeOMZ4tv3bK3fTQe
+         2VBpDrqigAmGMAgDTdPCoyUvjLVSBMLn3lNa52v+PG8+ODbpszGfmBc98L7MaP/Y2SCq
+         N5jAsIquHzKMtbi+8tjg1RkholuN6cahghqBcdKW4Vo8NUP1zO8nLOXiwKF6q0FuiE55
+         +KH9++ROi2nHfYjxrAR12tn52UFbbiXLiJCt2qJB4zlQL+2qJuTKc4JJvatCF/kLIPYd
+         +vF6sn8DssyO8XjdU19Y7jBHzks4YzZzauxaAd/udeWawZphiIZ9C4I+RPasgyVuyWAd
+         pguA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=fyO9OaANfvBBrKAbHvEP8A5701DEFNGjeZ7FhKJ0lcA=;
-        b=IQzjw2uXN9ABlBoQQhwAxTVf6dCJEGOnqhgmkAof6hm7wgpYJWz1zbp55wlSQmiwqb
-         OiTl5zuR6oc/pWBmgqnN68xBtndEXADBdQ6PIjwTAxDBYw8+sfV5tH/gWdO7BN5hGmAY
-         xt+/LKTpHD1coGrJsOKgLxOeNhOkwmH6DCckkxDfktaKYJq+pyDlmZ72tlUeg6VZpqiZ
-         Yrkc8PrV/0PkqNgKpvT46k4T1X17ozCpE5NISIO8X4DahRDswQJkl1iOpYJJyK8dYTWg
-         dnN0qgFrLpNS+uXFZmCT/JPK7yaS6smUTnVCX4KUTr/HoVZyjnfb86VyhLqKiTtxG6y/
-         5KDw==
-X-Gm-Message-State: AOAM530VPuIHeIRM/SiMSzEFRxIPd9IMAeRbadjm6bNPu3hr5pkIfhx4
-        qexuWaHItEBxuAgJNIFPNIqcvLdTM4KYV9mOnRM=
-X-Google-Smtp-Source: ABdhPJzXhY2sspnZ+dgQe0DEGQmExkvbwVGM7H2imjmAaCNjHtYE05atlzi03R9twPB1ioo8mv/NDAgvs7gA4BoVgoY=
-X-Received: by 2002:a17:902:bf04:b0:149:c5a5:5323 with SMTP id
- bi4-20020a170902bf0400b00149c5a55323mr14034748plb.97.1654334809884; Sat, 04
- Jun 2022 02:26:49 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kEnlhjDu0FbGaaiDuZ0pof8c2vlmdAC3/VHnhWFqmg4=;
+        b=SDCJG++6NlxUWbCBqMvQhp5toJGDxG0BLAEF00nFnoLUKxhMkFe19S2WwIsuey1uUk
+         iWwczzPlQ8bBOjt69cAbvicl/HjDRfGE6XI208HvmQkj4MeRnKzTfF1wS3j3+UBwiLTN
+         Mkb/Ja2v1nf5POi06E4RC7HQsSUR6t09hpqr4A3SDWqbdN5xyDuGvHBlLh14LXYACvcq
+         wcguKkPmdZXi1qQng+pgqrhJbEms5SiqzlXxh46lEK8ZJLUpVXOij7+TKJ+/SXPZM0NE
+         Liqi3sDs0KugViTxxp0CkEz+ECAf0Sm4+deF+0QQUMn2lqs6vVL75aEYQau0CE4oAuTK
+         H7Tw==
+X-Gm-Message-State: AOAM531xPd/fsXfqpVu8DaAZdSOU+6cS3iy2I6yO4tHkMCrOFMQ4Trwy
+        VH0sqSqFoG+PlTtqgTYTZDS7zdpUHy2DTmfVOLw=
+X-Google-Smtp-Source: ABdhPJzPjZrJ4eJvtFdkY3qOCuyVx7FzZONcP1b+1P5BVkPY2ID46v7ARm3OX9d9GsOfOQFTiXP0iWZFxzGOBMajY6E=
+X-Received: by 2002:a17:907:72c1:b0:6ff:c5f:6b7d with SMTP id
+ du1-20020a17090772c100b006ff0c5f6b7dmr12395793ejc.676.1654335147423; Sat, 04
+ Jun 2022 02:32:27 -0700 (PDT)
 MIME-Version: 1.0
-Sender: jonahfirst45@gmail.com
-Received: by 2002:ac4:8486:0:b0:4d6:fb53:83df with HTTP; Sat, 4 Jun 2022
- 02:26:49 -0700 (PDT)
-From:   Jackie Grayson <jackiegrayson08@gmail.com>
-Date:   Fri, 3 Jun 2022 21:26:49 -1200
-X-Google-Sender-Auth: 5EXZWQWkZTvMsy8Hc6fuKRUSobQ
-Message-ID: <CADG_itPa7nFcG12n4X+2r0oZs77WHpEmpS+Be1RTpAbcrqHE4g@mail.gmail.com>
-Subject: Hello
-To:     undisclosed-recipients:;
+References: <20220525132115.896698-1-roberto.sassu@huawei.com>
+ <20220525132115.896698-2-roberto.sassu@huawei.com> <CACYkzJ7L-fE740t91amu4uiDA5dnDMU1D+c0vhb-sFHyQK08kA@mail.gmail.com>
+ <89db5543066f4dccbfebd78ed3c025e7@huawei.com> <CACYkzJ4uD_k6sDktVaxkE_1QtSphZm+Rhjk4wrMm71LcmWRJ0w@mail.gmail.com>
+ <cfaafb3af5be40ec80f14e134a5702cf@huawei.com>
+In-Reply-To: <cfaafb3af5be40ec80f14e134a5702cf@huawei.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 4 Jun 2022 11:32:15 +0200
+Message-ID: <CAADnVQ+QL+rewHZ-Q=0W9o7VXKPvwHm=rmdGFKTqQBUxZhsnuQ@mail.gmail.com>
+Subject: Re: [PATCH 1/3] bpf: Add BPF_F_VERIFY_ELEM to require signature
+ verification on map values
+To:     Roberto Sassu <roberto.sassu@huawei.com>
+Cc:     KP Singh <kpsingh@kernel.org>, "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=3.8 required=5.0 tests=ADVANCE_FEE_5_NEW_MONEY,
-        BAYES_50,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,LOTS_OF_MONEY,MONEY_FRAUD_8,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_MONEY autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ***
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello my dear,
+On Fri, Jun 3, 2022 at 5:44 PM Roberto Sassu <roberto.sassu@huawei.com> wrote:
+> >
+> > Your bpf_map_verify_value_sig hard codes the type of signature
+> > (bpf_map_verify_value_sig as verify_pkcs7_signature)
+> > its implementation. This is not extensible.
+>
+> It is hardcoded now, but it wouldn't if there are more verification
+> functions. For example, if 'id_type' of module_signature is set
+> to PKEY_ID_PGP, bpf_map_verify_value_sig() would call
+> verify_pgp_signature() (assuming that support for PGP keys and
+> signatures is added to the kernel).
 
-  I sent this mail praying it will get to you in a good condition of
-health, since I myself are in a very critical health condition in
-which I sleep every night without knowing if I may be alive to see the
-next day. I bring peace and love to you. It is by the grace of God, I
-had no choice than to do what is lawful and right in the sight of God
-for eternal life and in the sight of man, for witness of God=E2=80=99s merc=
-y
-and glory upon my life,I am Mrs,Grayson Jackie,a widow,I am suffering
-from a long time brain tumor, It has defiled all forms of medical
-treatment, and right now I have about a few months to leave, according
-to medical experts.
-
-   The situation has gotten complicated recently with my inability to
-hear proper, am communicating with you with the help of the chief
-nurse herein the hospital, from all indication my conditions is really
-deteriorating and it is quite obvious that, according to my doctors
-they have advised me that I may not live too long, Because this
-illness has gotten to a very bad stage. I plead that you will not
-expose or betray this trust and confidence that I am about to repose
-on you for the mutual benefit of the orphans and the less privilege. I
-have some funds I inherited from my late husband, the sum of
-($11,500,000.00 Dollars).Having known my condition, I decided to
-donate this fund to you believing that you will utilize it the way i
-am going to instruct herein.
-
-   I need you to assist me and reclaim this money and use it for
-Charity works, for orphanages and gives justice and help to the poor,
-needy and widows says The Lord." Jeremiah 22:15-16.=E2=80=9C and also build
-schools for less privilege that will be named after my late husband if
-possible and to promote the word of God and the effort that the house
-of God is maintained. I do not want a situation where this money will
-be used in an ungodly manner. That's why I'm taking this decision. I'm
-not afraid of death, so I know where I'm going. I accept this decision
-because I do not have any child who will inherit this money after I
-die. Please I want your sincerely and urgent answer to know if you
-will be able to execute this project for the glory of God, and I will
-give you more information on how the fund will be transferred to your
-bank account. May the grace, peace, love and the truth in the Word of
-God be with you and all those that you love and care for.
-I'm waiting for your immediate reply,
-Best Regards.
-Mrs,Grayson Jackie,
-Writting From the hospital,
-May God Bless you,
+I agree with KP. All hard coded things are hurting extensibility.
+we just need a helper that calls verify_pkcs7_signature
+where prog will specify len, keyring, etc.
