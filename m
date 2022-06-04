@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3961F53D7D3
-	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 18:33:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E25C553D7D2
+	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 18:33:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238600AbiFDQdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jun 2022 12:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51488 "EHLO
+        id S239017AbiFDQd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jun 2022 12:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238446AbiFDQc4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 12:32:56 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79EE737AAB;
-        Sat,  4 Jun 2022 09:32:50 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id q12-20020a17090a304c00b001e2d4fb0eb4so14407933pjl.4;
-        Sat, 04 Jun 2022 09:32:50 -0700 (PDT)
+        with ESMTP id S238681AbiFDQdI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 12:33:08 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4893A39694;
+        Sat,  4 Jun 2022 09:32:55 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id w21so9484215pfc.0;
+        Sat, 04 Jun 2022 09:32:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ixvx9ZCs0ZusH96SsbzvyM52UNoz2acA96dUGJ3sGy4=;
-        b=TVTiRNsIgUJ4yU28ozvG3CFARR5WifYH6ixolq/Lfw7oWBhf87759ldLEPDAGIOXq7
-         H/VaIiZJyum1Abe3bqcZNRy6gLXAG0TxOS3SVp8qNGfKxEK0QAE0gofQ8AeMXHxGX6+1
-         xDGSbqmDHqWUkd787ctWBDArCSpU56Dl9I5OjUMwAKRclMTRI63USuYA1jlFHgb9dKxr
-         Tf/c7HJpPdJl1O10hP///ekYV/jlM8lLkeuUAC40zVTd9gjxuWgjH2Vc+tCvCJL2dB9h
-         UPsyyd9cF/bljxlhfQecvDahLNHICgJ4tsc2aXIgRUMB/AhXQa4domif/cYiZBu4XlQD
-         g5xw==
+        bh=agCu5duaP2yRZbB8x8TElHRh/rx3kgk6Ng8uUqbAkb0=;
+        b=blhMq/g6bIz0SW4AGzZN+kavtWYqy1zINCdLwEHLRFIGrkaeQXpoi8qzkkoGO7YRvA
+         dty8YCz2Ttnlxu4AiDXKzoO4JLs9IqGijSZkSSi47doPgKBn9PkVMonf1qJqLQmkXGwt
+         ge/VWBJ9u8rcOZ6GShfQwFeKffS1SolhbqDO/l2+Sn9DXYLH6R+2JNsRnmslZc89EWkl
+         f0MUOAAiTF6sw/7g67uMdVgv4d6Q6++92DU3LqRilRutrwuVL89zQhT9AiEe2s/erVZt
+         8PjVbP95AUx1BMLfJOlZU6qj63XQJOQA4orNRfQFkhgOh/l24cuvho7WSgZpHiL5ggBE
+         Gn1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=ixvx9ZCs0ZusH96SsbzvyM52UNoz2acA96dUGJ3sGy4=;
-        b=KjYV1XIJFapfRj3Wdeh4obCoWypWjcpx490Z3nrcNfZjRtjCIwn+0guGK1sW/mhVLw
-         xhiSx0/YBrURRg3VtMPhLc4LDJYcrl463v4UZIotMN4eCqT2OdLBklK5/C7msJWLB1pj
-         NDWaWgLzBOpVR+/9Kle+v6ospQil2LnHjh32t1ew1+uH70Adnfi8v1E4n3po/LQB96c7
-         R51aC0VvzUFbHt849kigCpnVft5RPDa4TtSRScCYjOLBtcX3dvRn8Z/gjxJnY3OZ9/wj
-         oR5ss22ir4kO3fYJTcO54y1oP3PmOWcBfX+BxRhZARKVuNK/VpyA9J/AxhZcu8g0ezFu
-         T4vw==
-X-Gm-Message-State: AOAM530Q0lyo2jyz3rwnyR4TZA7b86+3+pYFSd9l62Jiiq6sOvN9Z6QB
-        6mNFKBQ2PSX72pTGbPGC9TY=
-X-Google-Smtp-Source: ABdhPJxhb8MGVtj3pEcfJ55o9ojo/zwQbjnthgudxvCcmUyaugQyCcQkqbnFtnudpx4M9W6RNDR/LQ==
-X-Received: by 2002:a17:902:c945:b0:163:c3c3:aff8 with SMTP id i5-20020a170902c94500b00163c3c3aff8mr15594129pla.56.1654360369949;
-        Sat, 04 Jun 2022 09:32:49 -0700 (PDT)
+        bh=agCu5duaP2yRZbB8x8TElHRh/rx3kgk6Ng8uUqbAkb0=;
+        b=64ZDY9SSE5sGD4asheRBjs87L8Swp276fxFejOpVafNQNOLxeqHjAIIjoEwPsLtDLe
+         34gXe/e2CxImSaQzChEOTsXDeRMVXCxtGDzLSMfgYEes9tp8MHSiAfNFJDajwBgqwG0m
+         qSqmIWjoJ16g0qYN/GS5pF3dgqEid62m13djrGzt4b7HCpEbjylNFvO71EYXnFYnNLXI
+         RmushnF9ZSFDyObmFJ5izmTAVZ49IwrjTAi8ahXX1AwmI6Nz10fx01tZw1cnTq7GlwYZ
+         17jQGOH+Ermi+icdYH5bLXiH9cQFSZlgdfbe7cWpnIjQnDdqFWlMfGRGdA3MLBZgiRmt
+         x8Sg==
+X-Gm-Message-State: AOAM530eRfFewJ+ttaTaMBsbpTFvs0uoGpvzm5EN0GxSGa2MINnjPWQ2
+        UQPQfrdO+nFneVgXMmE+kWQ=
+X-Google-Smtp-Source: ABdhPJz3E287L4EMAW/1XV7S3KBFudykJkNlQhVU+E+Z/iO4uQw46tfFFonxP36HU96LEVy5+v2tqw==
+X-Received: by 2002:a63:90c9:0:b0:3fc:f0c9:d0f with SMTP id a192-20020a6390c9000000b003fcf0c90d0fmr10780089pge.608.1654360374573;
+        Sat, 04 Jun 2022 09:32:54 -0700 (PDT)
 Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id t8-20020a17090a3b4800b001e34b5ed5a7sm8424874pjf.35.2022.06.04.09.32.48
+        by smtp.gmail.com with ESMTPSA id t8-20020a17090a3b4800b001e34b5ed5a7sm8424874pjf.35.2022.06.04.09.32.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jun 2022 09:32:49 -0700 (PDT)
+        Sat, 04 Jun 2022 09:32:54 -0700 (PDT)
 Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>
@@ -55,9 +55,9 @@ Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
         Oliver Hartkopp <socketcan@hartkopp.net>,
         netdev@vger.kernel.org,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v5 4/7] can: Kconfig: add CONFIG_CAN_RX_OFFLOAD
-Date:   Sun,  5 Jun 2022 01:29:57 +0900
-Message-Id: <20220604163000.211077-5-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v5 5/7] net: Kconfig: move the CAN device menu to the "Device Drivers" section
+Date:   Sun,  5 Jun 2022 01:29:58 +0900
+Message-Id: <20220604163000.211077-6-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
 References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
@@ -75,99 +75,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Only a few drivers rely on the CAN rx offload framework (as of the
-writing of this patch, only four: flexcan, m_can, mcp251xfd and
-ti_hecc). Give the option to the user to deselect this features during
-compilation.
+The devices are meant to be under the "Device Drivers" category of the
+menuconfig. The CAN subsystem is currently one of the rare exception
+with all of its devices under the "Networking support" category.
 
-The drivers relying on CAN rx offload are in different sub
-folders. All of these drivers get tagged with "select CAN_RX_OFFLOAD"
-so that the option is automatically enabled whenever one of those
-driver is chosen.
+The CAN_DEV menuentry gets moved to fix this discrepancy. The CAN menu
+is added just before MCTP in order to be consistent with the current
+order under the "Networking support" menu.
+
+A dependency on CAN is added to CAN_DEV so that the CAN devices only
+show up if the CAN subsystem is enabled.
 
 Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 ---
- drivers/net/can/Kconfig               | 16 ++++++++++++++++
- drivers/net/can/dev/Makefile          |  2 +-
- drivers/net/can/m_can/Kconfig         |  1 +
- drivers/net/can/spi/mcp251xfd/Kconfig |  1 +
- 4 files changed, 19 insertions(+), 1 deletion(-)
+ drivers/net/Kconfig     | 2 ++
+ drivers/net/can/Kconfig | 1 +
+ net/can/Kconfig         | 5 ++---
+ 3 files changed, 5 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index b2a4f998c180..5de243899de8 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -499,6 +499,8 @@ config NET_SB1000
+ 
+ source "drivers/net/phy/Kconfig"
+ 
++source "drivers/net/can/Kconfig"
++
+ source "drivers/net/mctp/Kconfig"
+ 
+ source "drivers/net/mdio/Kconfig"
 diff --git a/drivers/net/can/Kconfig b/drivers/net/can/Kconfig
-index 87470feae6b1..91e4af727d1f 100644
+index 91e4af727d1f..17656beb6bda 100644
 --- a/drivers/net/can/Kconfig
 +++ b/drivers/net/can/Kconfig
-@@ -102,6 +102,20 @@ config CAN_CALC_BITTIMING
- 
- 	  If unsure, say Y.
- 
-+config CAN_RX_OFFLOAD
-+	bool "CAN RX offload"
-+	default y
-+	help
-+	  Framework to offload the controller's RX FIFO during one
-+	  interrupt. The CAN frames of the FIFO are read and put into a skb
-+	  queue during that interrupt and transmitted afterwards in a NAPI
-+	  context.
-+
-+	  The additional features selected by this option will be added to the
-+	  can-dev module.
-+
-+	  If unsure, say Y.
-+
- config CAN_AT91
- 	tristate "Atmel AT91 onchip CAN controller"
- 	depends on (ARCH_AT91 || COMPILE_TEST) && HAS_IOMEM
-@@ -113,6 +127,7 @@ config CAN_FLEXCAN
- 	tristate "Support for Freescale FLEXCAN based chips"
- 	depends on OF || COLDFIRE || COMPILE_TEST
- 	depends on HAS_IOMEM
-+	select CAN_RX_OFFLOAD
+@@ -3,6 +3,7 @@
+ menuconfig CAN_DEV
+ 	tristate "CAN Device Drivers"
+ 	default y
++	depends on CAN
  	help
- 	  Say Y here if you want to support for Freescale FlexCAN.
+ 	  Controller Area Network (CAN) is serial communications protocol up to
+ 	  1Mbit/s for its original release (now known as Classical CAN) and up
+diff --git a/net/can/Kconfig b/net/can/Kconfig
+index a9ac5ffab286..cb56be8e3862 100644
+--- a/net/can/Kconfig
++++ b/net/can/Kconfig
+@@ -15,7 +15,8 @@ menuconfig CAN
+ 	  PF_CAN is contained in <Documentation/networking/can.rst>.
  
-@@ -162,6 +177,7 @@ config CAN_SUN4I
- config CAN_TI_HECC
- 	depends on ARM
- 	tristate "TI High End CAN Controller"
-+	select CAN_RX_OFFLOAD
- 	help
- 	  Driver for TI HECC (High End CAN Controller) module found on many
- 	  TI devices. The device specifications are available from www.ti.com
-diff --git a/drivers/net/can/dev/Makefile b/drivers/net/can/dev/Makefile
-index 791e6b297ea3..633687d6b6c0 100644
---- a/drivers/net/can/dev/Makefile
-+++ b/drivers/net/can/dev/Makefile
-@@ -9,4 +9,4 @@ can-dev-$(CONFIG_CAN_NETLINK) += bittiming.o
- can-dev-$(CONFIG_CAN_NETLINK) += dev.o
- can-dev-$(CONFIG_CAN_NETLINK) += length.o
- can-dev-$(CONFIG_CAN_NETLINK) += netlink.o
--can-dev-$(CONFIG_CAN_NETLINK) += rx-offload.o
-+can-dev-$(CONFIG_CAN_RX_OFFLOAD) += rx-offload.o
-diff --git a/drivers/net/can/m_can/Kconfig b/drivers/net/can/m_can/Kconfig
-index 45ad1b3f0cd0..fc2afab36279 100644
---- a/drivers/net/can/m_can/Kconfig
-+++ b/drivers/net/can/m_can/Kconfig
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- menuconfig CAN_M_CAN
- 	tristate "Bosch M_CAN support"
-+	select CAN_RX_OFFLOAD
- 	help
- 	  Say Y here if you want support for Bosch M_CAN controller framework.
- 	  This is common support for devices that embed the Bosch M_CAN IP.
-diff --git a/drivers/net/can/spi/mcp251xfd/Kconfig b/drivers/net/can/spi/mcp251xfd/Kconfig
-index dd0fc0a54be1..877e4356010d 100644
---- a/drivers/net/can/spi/mcp251xfd/Kconfig
-+++ b/drivers/net/can/spi/mcp251xfd/Kconfig
-@@ -2,6 +2,7 @@
+ 	  If you want CAN support you should say Y here and also to the
+-	  specific driver for your controller(s) below.
++	  specific driver for your controller(s) under the Network device
++	  support section.
  
- config CAN_MCP251XFD
- 	tristate "Microchip MCP251xFD SPI CAN controllers"
-+	select CAN_RX_OFFLOAD
- 	select REGMAP
- 	select WANT_DEV_COREDUMP
- 	help
+ if CAN
+ 
+@@ -69,6 +70,4 @@ config CAN_ISOTP
+ 	  If you want to perform automotive vehicle diagnostic services (UDS),
+ 	  say 'y'.
+ 
+-source "drivers/net/can/Kconfig"
+-
+ endif
 -- 
 2.35.1
 
