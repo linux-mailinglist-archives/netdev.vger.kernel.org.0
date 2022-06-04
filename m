@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1A6953D7CF
-	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 18:33:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25C7853D7CA
+	for <lists+netdev@lfdr.de>; Sat,  4 Jun 2022 18:33:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238276AbiFDQcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jun 2022 12:32:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49222 "EHLO
+        id S238522AbiFDQcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jun 2022 12:32:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238241AbiFDQcb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 12:32:31 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0F32E9DE;
-        Sat,  4 Jun 2022 09:32:30 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id z17so9429371pff.7;
-        Sat, 04 Jun 2022 09:32:30 -0700 (PDT)
+        with ESMTP id S238330AbiFDQcf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 12:32:35 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C342F2FFF7;
+        Sat,  4 Jun 2022 09:32:34 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id v5-20020a17090a7c0500b001df84fa82f8so9321430pjf.5;
+        Sat, 04 Jun 2022 09:32:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rY6s6UKeLnm+D3xTqRvRX6JWn4apA8wvV2U2MEacJzA=;
-        b=idvrIETV7qOZY97PHSWHUnCWf8gcAwnZBazj7jzwiTAFq/iWcJhMStIXw2SzjARl+6
-         fdcOW5FzN7mofaD798x9KUgQOcGceIGvRGyVP3d9nE5l2EVvm/D3tEDS6jrDLSVj2UsZ
-         +ewnoXqdZVP6nL+09YgX19tPi13WMZBgXqnfA7eOActNydhVIORH0vDuGVE3hUrAQzMS
-         stuHCzwA92DrFbuIv69J9y2ST2eHmJEUeN+SfjpPT24XvzG/XuarQros4SldjtXroshR
-         wqZ99PrLmH2aBtysRZghk13sUzXYlO4ubIdzQAGkNWIHInmXDjen6qMtIu2C0dF1vn+l
-         ye5A==
+        bh=feBvHz91O0Ca33nvuwSIX9xdV8Z7lZ5W40GP9R4BSMI=;
+        b=LwiGcTyfxTOW9WABE+s7IvGJ6XlZSvazqmpmdyJustl2rnAhLz6BCI7hMhuka1IilF
+         i5FMm3jREvV++bz3Je8EO+Y5OLwMnv264mxUdN0S/ex1DhBUWDF0PqhXNJ8BXpzZmpmi
+         AjA9ZwunaQ2IcgAvr7XL2/kvBxhrKxNXZB0ykycpL+2XRxJBeNFy4RSKNo3DIhwPhxYU
+         PEPrPABnRRw7JsUHWbVG9Bv+hRxHTjM4w0L9O33G2rH496FkcMXmd4HnCoW/87iIa4/F
+         RQnGz3AyJuMAuNUvHBuxmjP1xFpKaJvMck0M5yY+/fbFTMcwowT8BYUbmSAs6pimFliN
+         yNVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=rY6s6UKeLnm+D3xTqRvRX6JWn4apA8wvV2U2MEacJzA=;
-        b=spfm31x8OsyMCIWYIDlRX3KlSxvFX3NyxLi6ySArBccii6y5k2tD2Pihqwa/xYpA7H
-         HwE4ZyBifFfmc7d/5nMrUJhdINISUBr4ANqaSFHRNN5Q0QiuIXhnnCPxxspwgJ9yp348
-         XtJzL7ra+RVnoTt+M7zvpx1KQSk4WFhHLmdQ90IDeTJAfCYyuRBquwI9GmwLv9K2xV2H
-         wI1KXsK5uO7NZuk2EU8Di7fTpl4FBW4Hy5S54Vu2B6Vzqqhx/M+G1vBTe5/rlJZk5xGr
-         /ml3MysVOLZXCqvhA2xy0hqp4LxyOA7tcISWxUSG8FMGXCSu+dQAkTe6tcThJsLJ3Yny
-         faUQ==
-X-Gm-Message-State: AOAM530oYgVqGFCJRv0gy/Z62eKmFUYgsGrLOUfPBTu8mmruYbTJ3Fb1
-        amC/tq3ETIkguDR2+JGC6sbOUfMZPc9oWg==
-X-Google-Smtp-Source: ABdhPJwel/+bDRKY66D5kWyTVik9xKizDEUlOwYdxrZ+5hnFZbOtfV1kTAoIkMP0AfkggKe+xh8lTA==
-X-Received: by 2002:a63:1c26:0:b0:3fc:602c:844d with SMTP id c38-20020a631c26000000b003fc602c844dmr13321006pgc.208.1654360349620;
-        Sat, 04 Jun 2022 09:32:29 -0700 (PDT)
+        bh=feBvHz91O0Ca33nvuwSIX9xdV8Z7lZ5W40GP9R4BSMI=;
+        b=lMXSMb0bg13Nf/pgJ8T1Ou5t18y3AGLRoD6utqtD1X1qX9GJIkktLEszaMXkt48iVb
+         Xt5y9dvSnGCMI290/6NgZoGuyHHKlFez4gDltYxPg6MJPdxmAzdNKfblGPYxlTVU+P/t
+         W8p3GTNb/9efJXME6fQUH0C/oE4Lj80fkAjKe9x+rNp69JFs05K62WA3R0Mh07pDlK1y
+         mnXICOI/NysGXbKjOQbHngRt81raluCbDSfhXo7YG/j5A3mLtA8+S7QDfP3VR3RrB63m
+         pcFLhpbEW9BGohdovZ1Ri5uhA5hXwcoSbOe9rnONhbbe7+gaJFj6+zIHWCXeG+zvVmUX
+         T96A==
+X-Gm-Message-State: AOAM532xqqMtA3+oxzaLqAUxvcds23930lc3Ur8Lhka8yHIYnpXzs0bU
+        98AHXb+pg0UanVvCEeat1LuQy73YMw4znQ==
+X-Google-Smtp-Source: ABdhPJw/tFtB/fpogoWUXEBp3ozjrY5MVlk78+SuO8TssXthNkp6QPGXQNE49ybo+mYyaBoUSblaCA==
+X-Received: by 2002:a17:902:cf0a:b0:156:39c9:4c44 with SMTP id i10-20020a170902cf0a00b0015639c94c44mr15485713plg.124.1654360354184;
+        Sat, 04 Jun 2022 09:32:34 -0700 (PDT)
 Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id t8-20020a17090a3b4800b001e34b5ed5a7sm8424874pjf.35.2022.06.04.09.32.27
+        by smtp.gmail.com with ESMTPSA id t8-20020a17090a3b4800b001e34b5ed5a7sm8424874pjf.35.2022.06.04.09.32.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jun 2022 09:32:29 -0700 (PDT)
+        Sat, 04 Jun 2022 09:32:33 -0700 (PDT)
 Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>
@@ -55,12 +55,13 @@ Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
         Oliver Hartkopp <socketcan@hartkopp.net>,
         netdev@vger.kernel.org,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v5 0/7] can: refactoring of can-dev module and of Kbuild
-Date:   Sun,  5 Jun 2022 01:29:53 +0900
-Message-Id: <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v5 1/7] can: Kbuild: rename config symbol CAN_DEV into CAN_NETLINK
+Date:   Sun,  5 Jun 2022 01:29:54 +0900
+Message-Id: <20220604163000.211077-2-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+In-Reply-To: <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
 References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -74,143 +75,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Aside of calc_bittiming.o which can be configured with
-CAN_CALC_BITTIMING, all objects from drivers/net/can/dev/ get linked
-unconditionally to can-dev.o even if not needed by the user.
+In the next patches, the scope of the can-dev module will grow to
+engloble the software/virtual drivers (slcan, v(x)can). To this
+extent, release CAN_DEV by renaming it into CAN_NETLINK. The config
+symbol CAN_DEV will be reused to cover this extended scope.
 
-This series first goal it to split the can-dev modules so that the
-user can decide which features get built in during
-compilation. Additionally, the CAN Device Drivers menu is moved from
-the "Networking support" category to the "Device Drivers" category
-(where all drivers are supposed to be).
+The rationale for the name CAN_NETLINK is that netlink is the
+predominant feature added here.
 
-Below diagrams illustrate the changes made.
-The arrow symbol "x --> y" denotes that "y depends on x".
+The current description only mentions platform drivers despite the
+fact that this symbol is also required by "normal" devices (e.g. USB
+or PCI) which do not fall under the platform devices category. The
+description is updated accordingly to fix this gap.
 
-* menu before this series *
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+Please share if you have any suggestion on the name. I hesitated a lot
+between CAN_NETLINK or CAN_DEV_NETLINK (because netlink is the
+predominant feature) and CAN_DEV_HW (because this targets the
+non-software only drivers, i.e. the hardware ones).
+---
+ drivers/net/can/Kconfig      | 18 +++++++++++-------
+ drivers/net/can/dev/Makefile |  2 +-
+ 2 files changed, 12 insertions(+), 8 deletions(-)
 
-CAN bus subsystem support
-  symbol: CONFIG_CAN
-  |
-  +-> CAN Device Drivers
-      (no symbol)
-      |
-      +-> software/virtual CAN device drivers
-      |   (at time of writing: slcan, vcan, vxcan)
-      |
-      +-> Platform CAN drivers with Netlink support
-          symbol: CONFIG_CAN_DEV
-          |
-          +-> CAN bit-timing calculation  (optional for hardware drivers)
-          |   symbol: CONFIG_CAN_BITTIMING
-          |
-          +-> All other CAN devices
-
-* menu after this series *
-
-Network device support
-  symbol: CONFIG_NETDEVICES
-  |
-  +-> CAN Device Drivers
-      symbol: CONFIG_CAN_DEV
-      |
-      +-> software/virtual CAN device drivers
-      |   (at time of writing: slcan, vcan, vxcan)
-      |
-      +-> CAN device drivers with Netlink support
-          symbol: CONFIG_CAN_NETLINK (matches previous CONFIG_CAN_DEV)
-          |
-          +-> CAN bit-timing calculation (optional for all drivers)
-          |   symbol: CONFIG_CAN_BITTIMING
-          |
-          +-> All other CAN devices not relying on RX offload
-          |
-          +-> CAN rx offload
-              symbol: CONFIG_CAN_RX_OFFLOAD
-              |
-              +-> CAN devices relying on rx offload
-                  (at time of writing: flexcan, m_can, mcp251xfd and ti_hecc)
-
-Patches 1 to 5 of this series do above modification.
-
-The last two patches add a check toward CAN_CTRLMODE_LISTENONLY in
-can_dropped_invalid_skb() to discard tx skb (such skb can potentially
-reach the driver if injected via the packet socket). In more details,
-patch 6 moves can_dropped_invalid_skb() from skb.h to skb.o and patch
-7 is the actual change.
-
-Those last two patches are actually connected to the first five ones:
-because slcan and v(x)can requires can_dropped_invalid_skb(), it was
-necessary to add those three devices to the scope of can-dev before
-moving the function to skb.o.
-
-This design results from the lengthy discussion in [1].
-
-[1] https://lore.kernel.org/linux-can/20220514141650.1109542-1-mailhol.vincent@wanadoo.fr/
-
-
-** Changelog **
-
-v4 -> v5:
-
-  * m_can is also requires RX offload. Add the "select CAN_RX_OFFLOAD"
-    to its Makefile.
-
-  * Reorder the lines of drivers/net/can/dev/Makefile.
-
-  * Remove duplicated rx-offload.o target in drivers/net/can/dev/Makefile
-
-  * Remove the Nota Bene in the cover letter.
-
-
-v3 -> v4:
-
-  * Five additional patches added to split can-dev module and refactor
-    Kbuild. c.f. below (lengthy) thread:
-    https://lore.kernel.org/linux-can/20220514141650.1109542-1-mailhol.vincent@wanadoo.fr/
-
-
-v2 -> v3:
-
-  * Apply can_dropped_invalid_skb() to slcan.
-
-  * Make vcan, vxcan and slcan dependent of CONFIG_CAN_DEV by
-    modifying Kbuild.
-
-  * fix small typos.
-
-v1 -> v2:
-
-  * move can_dropped_invalid_skb() to skb.c instead of dev.h
-
-  * also move can_skb_headroom_valid() to skb.c
-
-Vincent Mailhol (7):
-  can: Kbuild: rename config symbol CAN_DEV into CAN_NETLINK
-  can: Kconfig: turn menu "CAN Device Drivers" into a menuconfig using
-    CAN_DEV
-  can: bittiming: move bittiming calculation functions to
-    calc_bittiming.c
-  can: Kconfig: add CONFIG_CAN_RX_OFFLOAD
-  net: Kconfig: move the CAN device menu to the "Device Drivers" section
-  can: skb: move can_dropped_invalid_skb() and can_skb_headroom_valid()
-    to skb.c
-  can: skb: drop tx skb if in listen only mode
-
- drivers/net/Kconfig                   |   2 +
- drivers/net/can/Kconfig               |  66 +++++++--
- drivers/net/can/dev/Makefile          |  17 ++-
- drivers/net/can/dev/bittiming.c       | 197 -------------------------
- drivers/net/can/dev/calc_bittiming.c  | 202 ++++++++++++++++++++++++++
- drivers/net/can/dev/dev.c             |   9 +-
- drivers/net/can/dev/skb.c             |  72 +++++++++
- drivers/net/can/m_can/Kconfig         |   1 +
- drivers/net/can/spi/mcp251xfd/Kconfig |   1 +
- include/linux/can/skb.h               |  59 +-------
- net/can/Kconfig                       |   5 +-
- 11 files changed, 349 insertions(+), 282 deletions(-)
- create mode 100644 drivers/net/can/dev/calc_bittiming.c
-
+diff --git a/drivers/net/can/Kconfig b/drivers/net/can/Kconfig
+index b2dcc1e5a388..99f189ad35ad 100644
+--- a/drivers/net/can/Kconfig
++++ b/drivers/net/can/Kconfig
+@@ -48,15 +48,19 @@ config CAN_SLCAN
+ 	  can be changed by the 'maxdev=xx' module option. This driver can
+ 	  also be built as a module. If so, the module will be called slcan.
+ 
+-config CAN_DEV
+-	tristate "Platform CAN drivers with Netlink support"
++config CAN_NETLINK
++	tristate "CAN device drivers with Netlink support"
+ 	default y
+ 	help
+-	  Enables the common framework for platform CAN drivers with Netlink
+-	  support. This is the standard library for CAN drivers.
+-	  If unsure, say Y.
++	  Enables the common framework for CAN device drivers. This is the
++	  standard library and provides features for the Netlink interface such
++	  as bittiming validation, support of CAN error states, device restart
++	  and others.
++
++	  This is required by all platform and hardware CAN drivers. If you
++	  plan to use such devices or if unsure, say Y.
+ 
+-if CAN_DEV
++if CAN_NETLINK
+ 
+ config CAN_CALC_BITTIMING
+ 	bool "CAN bit-timing calculation"
+@@ -164,7 +168,7 @@ source "drivers/net/can/softing/Kconfig"
+ source "drivers/net/can/spi/Kconfig"
+ source "drivers/net/can/usb/Kconfig"
+ 
+-endif
++endif #CAN_NETLINK
+ 
+ config CAN_DEBUG_DEVICES
+ 	bool "CAN devices debugging messages"
+diff --git a/drivers/net/can/dev/Makefile b/drivers/net/can/dev/Makefile
+index af2901db473c..5b4c813c6222 100644
+--- a/drivers/net/can/dev/Makefile
++++ b/drivers/net/can/dev/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0
+ 
+-obj-$(CONFIG_CAN_DEV)		+= can-dev.o
++obj-$(CONFIG_CAN_NETLINK) += can-dev.o
+ can-dev-y			+= bittiming.o
+ can-dev-y			+= dev.o
+ can-dev-y			+= length.o
 -- 
 2.35.1
 
