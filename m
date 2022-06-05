@@ -2,55 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDA7953D97F
-	for <lists+netdev@lfdr.de>; Sun,  5 Jun 2022 05:48:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3296A53D99F
+	for <lists+netdev@lfdr.de>; Sun,  5 Jun 2022 06:13:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348504AbiFEDsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jun 2022 23:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33314 "EHLO
+        id S1348645AbiFEENX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jun 2022 00:13:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348471AbiFEDsH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 23:48:07 -0400
-Received: from mail-yw1-x1131.google.com (mail-yw1-x1131.google.com [IPv6:2607:f8b0:4864:20::1131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 517481DA78
-        for <netdev@vger.kernel.org>; Sat,  4 Jun 2022 20:48:05 -0700 (PDT)
-Received: by mail-yw1-x1131.google.com with SMTP id 00721157ae682-30fa61b1a83so110245057b3.0
-        for <netdev@vger.kernel.org>; Sat, 04 Jun 2022 20:48:05 -0700 (PDT)
+        with ESMTP id S1346204AbiFEENV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jun 2022 00:13:21 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3098038DBD
+        for <netdev@vger.kernel.org>; Sat,  4 Jun 2022 21:13:20 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-2ff7b90e635so115969427b3.5
+        for <netdev@vger.kernel.org>; Sat, 04 Jun 2022 21:13:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Ui3IhTvHG08TEOp9AndOEANRcK2QqiFOkb8b6B7ZUYA=;
-        b=AddFdKx/oipuNEWUN4TnsoDh8nTD0u8HK2RqT51wdoG72syLlKDo/zEd+agic/30/e
-         WYwjcFvzl4oj/XNn32X2/ylGcuwnyf42X2JMcTlsu4msdOH1kNmwbgm+VHgtTGInga2u
-         6DJ1gMG/QM0Ak6DMaGBVtrkOzjVwCw8FnMs90R09fO4rE1yynJFOYVQdfXtEPH5OgrQZ
-         Us0JNbDV/U+tD8Pxr2CorRPyvzghTnvPjhAjLF4Ig47UDWxYO4wVa36ySy0c0R4mhP15
-         pfJp4rBVPuYHyH3f1GIkogzfn19KI8lMguaiWf9WMI8YXYJKW3RRmrJWUHuYm5hnlGsM
-         J3ow==
+        bh=2MjRSm5fzYQetqVlpQBYSrGfumNiB0ZrM39dLqOPrH4=;
+        b=iruy/VIRmrmVkPQ3JLz43LdlgzYIIgIh0TbvAdWum+0Rddx+fvFvZL+AZmkeq14EM3
+         EQj2TyKZKOx/AidEftZoePqY5YpO4cwMuitvB+yKPScFqtDTdzo5ldCi4OGAOk3+UFMp
+         j/kBbn6KV51/XQkwn8o9tfq6LNjmHBZoctzSxwBUBFOQBY/6aPKKgU+LJpKUd4lxHOLC
+         a3pKPoOaZ50Yav85+Htu9s5WpYjwMqsKV6ln5h3Ivwjaws5e9R7ngDvbV4Yh0sJleDX7
+         vOAsHme5FRTkYJMFVoEn7Vce2+XgoAYlewVpVngjjzo07L1N3f9jaxvI2/N8fznw3lB9
+         3viw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Ui3IhTvHG08TEOp9AndOEANRcK2QqiFOkb8b6B7ZUYA=;
-        b=hlVPiqaxZq30P4+NpZD9MOfY5op52oRXeMUd0SXIen0lQ8i+zWCWErcrXqlOC/cRnQ
-         JFYzJikxAcZScj7VAJcYuFpSgoVCNq0uQ3kvlzGBitxm0wdtiONhY7jskLJnroiJxf2f
-         e6Eg09RKH53YLLB+HGRTMT7QTK5BOB+Io1oX3Fw8AAxHizH9QYF4h082bZCrFi/Jv8Rg
-         Ouu6a4esMlGQIE+PQeCk4hLzBvyr+dNHjq1h+meuKeIg+BScfd1ctGivpGfCadxE6sxb
-         C5bjtXMQIdb9kSBLzW0q+GCVAfhmTxKyJd1X/qeV11ag1yI+0NXVtWYYm1zPQnbqgl3s
-         VrrQ==
-X-Gm-Message-State: AOAM533AtnfXNoU1+p0nmZ6Pmk2vu9xBEu3Tpg0VHJZKmEm0nqaqd4k7
-        t0zwU6mmsPkTsrLiB3a5KOsFFLoiEbPmc3JHcPduDg==
-X-Google-Smtp-Source: ABdhPJwfIUzHGUOY3GZySier5uLjJethOaftbfXihz53N9j35hn71WjRuf110V4OoTkXUC32BWfTpBzZA8XoLj95YRY=
-X-Received: by 2002:a0d:c984:0:b0:30c:c95c:21d0 with SMTP id
- l126-20020a0dc984000000b0030cc95c21d0mr20276334ywd.218.1654400884335; Sat, 04
- Jun 2022 20:48:04 -0700 (PDT)
+        bh=2MjRSm5fzYQetqVlpQBYSrGfumNiB0ZrM39dLqOPrH4=;
+        b=T9Q9w3zVlTUTIb6hy6MmcDFTBs+Px9tq5memXPX+gDDSEY2uqg+FAs2bwlsJvAUBG+
+         GoowVZJdt8srwARl628OlAnLEeT1uD8qFpUAcg3lsxflHign9iYpeXCYTPVdGtt6UcMb
+         KL7y/xgOj0L1CDWS+Rvsh2G8tDzI+JvrRI5kHh3innQdi0Az5f+lTNPrihRmP42LVZlq
+         MnoH8cLrfWgg7lHNmvzxGc2huC30cyOtC1aZc2Zom1Ra4iuvqurHLCM/QPLTzV00xv6q
+         CYTcIZqIYdolOn5CfWpRyaQzj/eWNIaO3pv9Lhzni9cpY/Ak8ROCu2I+3VtXDvSDbAEa
+         vTvw==
+X-Gm-Message-State: AOAM532yEJwK/7bSQ4vKfPCEXQs1G8BJXuNuqOPxFrst9812sZ+5fyJP
+        wnc/G1J9JcdXZ0qemLGiDmDZpCWCNckLx+4VdpGQjg==
+X-Google-Smtp-Source: ABdhPJzUYcFQq7wQgnRsS9UvlhN43rSEgXe2PJa6kBJxtfcgg8d502Y2JGKc3riC3LG/Qxh1ZRmB7415nK5yWOq+ZK0=
+X-Received: by 2002:a81:87c2:0:b0:2ff:c948:ae50 with SMTP id
+ x185-20020a8187c2000000b002ffc948ae50mr19620905ywf.83.1654402399190; Sat, 04
+ Jun 2022 21:13:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220526081550.1089805-1-saravanak@google.com> <CAMuHMdW+Dmi9g=Cw9g5vOa9iYRA+L_ujU9C1-j0eKE7u3EmcFQ@mail.gmail.com>
-In-Reply-To: <CAMuHMdW+Dmi9g=Cw9g5vOa9iYRA+L_ujU9C1-j0eKE7u3EmcFQ@mail.gmail.com>
+References: <20220526081550.1089805-1-saravanak@google.com>
+ <20220526081550.1089805-5-saravanak@google.com> <CAMuHMdXcHcuAn8UVS6RPsfenuCny4BgWNJFod41CFjdOF+w0sg@mail.gmail.com>
+ <CAGETcx_uXXw_OtHO+_2DmZnHA3WCT5CeKbb_RWNqZtZSU1OB2g@mail.gmail.com>
+In-Reply-To: <CAGETcx_uXXw_OtHO+_2DmZnHA3WCT5CeKbb_RWNqZtZSU1OB2g@mail.gmail.com>
 From:   Saravana Kannan <saravanak@google.com>
-Date:   Sat, 4 Jun 2022 20:47:28 -0700
-Message-ID: <CAGETcx_TGdeZWZOMyP8m+KvCWcPgH9ov1iryq4XGNjJ3kF+BNg@mail.gmail.com>
-Subject: Re: [RFC PATCH v1 0/9] deferred_probe_timeout logic clean up
+Date:   Sat, 4 Jun 2022 21:12:43 -0700
+Message-ID: <CAGETcx9=CQha3HyBmw1S2KS--Fqv_kGEKwyVT-GSQCT=Uxi0zQ@mail.gmail.com>
+Subject: Re: [RFC PATCH v1 4/9] Revert "driver core: Set default
+ deferred_probe_timeout back to 0."
 To:     Geert Uytterhoeven <geert@linux-m68k.org>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
@@ -89,59 +92,38 @@ X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 30, 2022 at 2:38 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+On Sat, Jun 4, 2022 at 8:18 PM Saravana Kannan <saravanak@google.com> wrote:
 >
-> Hi Saravana,
+> On Mon, May 30, 2022 at 2:13 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> >
+> > Hi Saravana,
+> >
+> > On Thu, May 26, 2022 at 10:16 AM Saravana Kannan <saravanak@google.com> wrote:
+> > > This reverts commit 11f7e7ef553b6b93ac1aa74a3c2011b9cc8aeb61.
+> >
+> > scripts/chdeckpatch.pl says:
+> >
+> >     WARNING: Unknown commit id
+> > '11f7e7ef553b6b93ac1aa74a3c2011b9cc8aeb61', maybe rebased or not
+> > pulled?
+> >
+> > I assume this is your local copy of
+> > https://lore.kernel.org/r/20220526034609.480766-3-saravanak@google.com?
 >
-> On Thu, May 26, 2022 at 10:15 AM Saravana Kannan <saravanak@google.com> wrote:
-> > This series is based on linux-next + these 2 small patches applies on top:
-> > https://lore.kernel.org/lkml/20220526034609.480766-1-saravanak@google.com/
-> >
-> > A lot of the deferred_probe_timeout logic is redundant with
-> > fw_devlink=on.  Also, enabling deferred_probe_timeout by default breaks
-> > a few cases.
-> >
-> > This series tries to delete the redundant logic, simplify the frameworks
-> > that use driver_deferred_probe_check_state(), enable
-> > deferred_probe_timeout=10 by default, and fixes the nfsroot failure
-> > case.
-> >
-> > Patches 1 to 3 are fairly straightforward and can probably be applied
-> > right away.
-> >
-> > Patches 4 to 9 are related and are the complicated bits of this series.
-> >
-> > Patch 8 is where someone with more knowledge of the IP auto config code
-> > can help rewrite the patch to limit the scope of the workaround by
-> > running the work around only if IP auto config fails the first time
-> > around. But it's also something that can be optimized in the future
-> > because it's already limited to the case where IP auto config is enabled
-> > using the kernel commandline.
+> I somehow missed all your replies and noticed it just now.
 >
-> Thanks for your series!
->
-> > Yoshihiro/Geert,
-> >
-> > If you can test this patch series and confirm that the NFS root case
-> > works, I'd really appreciate that.
->
-> On Salvator-XS, Micrel KSZ9031 Gigabit PHY probe is no longer delayed
-> by 9s after applying the two earlier patches, and the same is true
-> after applying this series on top.
-> Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
->
-> I will do testing on more boards, but that may take a while, as we're
-> in the middle of the merge window.
+> That commit should be based on driver-core-next.
 
-Thanks for testing. I missed your email until now. I sent out a v2
-series a few days back and that's a much better solution than v1. If
-you can test that series instead, that'd be nice.
+My bad, it was indeed a local commit, but it's one I had already sent
+to LKML. It's one of the 2 patches I asked to pull-in in the cover
+letter. I'll fix this once I get some tests/reviews on this series or
+if I need to send out a v3 series before that.
 
 -Saravana
