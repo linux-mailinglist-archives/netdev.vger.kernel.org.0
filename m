@@ -2,133 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D796753D940
-	for <lists+netdev@lfdr.de>; Sun,  5 Jun 2022 04:23:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E4A053D957
+	for <lists+netdev@lfdr.de>; Sun,  5 Jun 2022 05:15:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243400AbiFECXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jun 2022 22:23:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42104 "EHLO
+        id S238858AbiFEDOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jun 2022 23:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234978AbiFECXk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 22:23:40 -0400
-Received: from m1322.mail.163.com (m1322.mail.163.com [220.181.13.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F3F53193DA;
-        Sat,  4 Jun 2022 19:23:37 -0700 (PDT)
+        with ESMTP id S235270AbiFEDOh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 23:14:37 -0400
+Received: from m12-12.163.com (m12-12.163.com [220.181.12.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C2FB54ECFB;
+        Sat,  4 Jun 2022 20:14:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=Ou0NC
-        Ock2iTr/mjmANBuaCkErVdvPD5EtAZbFlxHnWU=; b=WEJSbHO1wgybIbJp8Ual3
-        cQyAJ3bJFkZyS4PBysP7zcDHkJdyo7ABvp8ftMbx16XCCoegZuEG9rtUXXPVj6WC
-        nz5yIMAkfXhOjylUGq+FBW95NyUlRoSC2aC1VyhWdl/G7RnsqcRg5kIdDA1thZ94
-        HtOFPkU2IFL423PYST2WN4=
-Received: from chen45464546$163.com ( [171.221.147.121] ) by
- ajax-webmail-wmsvr22 (Coremail) ; Sun, 5 Jun 2022 10:22:26 +0800 (CST)
-X-Originating-IP: [171.221.147.121]
-Date:   Sun, 5 Jun 2022 10:22:26 +0800 (CST)
-From:   "Chen Lin" <chen45464546@163.com>
-To:     "Alexander Duyck" <alexander.duyck@gmail.com>
-Cc:     "Felix Fietkau" <nbd@nbd.name>, "Jakub Kicinski" <kuba@kernel.org>,
-        "John Crispin" <john@phrozen.org>,
-        "Sean Wang" <sean.wang@mediatek.com>, Mark-MC.Lee@mediatek.com,
-        "David Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Paolo Abeni" <pabeni@redhat.com>, matthias.bgg@gmail.com,
-        Netdev <netdev@vger.kernel.org>,
+        s=s110527; h=From:Subject:Date:Message-Id; bh=TUBfwF53I+2MtjAGYa
+        pwu8YmcHWT7Pc/VRs7clOHSnE=; b=ZCqQKZAt5oWK5y3REdGO4gj2itwrzw0hCp
+        vjMDwzhzbFIT+CNKCu6HyYEssriY+d9ejF2H3ppC1IHy8KIChiT5uOskW1sxTL7Y
+        /TqK7b4EcM+LTy6o4+T4PPcBkXg2Syn8Au7RU4wqpEvEi3rE+VIVEMvK4rRxhqMy
+        lMYqZo8zU=
+Received: from localhost.localdomain (unknown [171.221.147.121])
+        by smtp8 (Coremail) with SMTP id DMCowADHgyE4H5xi7gqqGA--.22831S2;
+        Sun, 05 Jun 2022 11:13:01 +0800 (CST)
+From:   Chen Lin <chen45464546@163.com>
+To:     nbd@nbd.name, alexander.duyck@gmail.com
+Cc:     john@phrozen.org, sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, matthias.bgg@gmail.com, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re:Re: [PATCH v2] net: ethernet: mtk_eth_soc: fix misuse of mem
- alloc interface netdev[napi]_alloc_frag
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 163com
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Chen Lin <chen45464546@163.com>
+Subject: [PATCH v3] net: ethernet: mtk_eth_soc: fix misuse of mem alloc interface netdev[napi]_alloc_frag
+Date:   Sun,  5 Jun 2022 11:12:37 +0800
+Message-Id: <1654398757-2937-1-git-send-email-chen45464546@163.com>
+X-Mailer: git-send-email 1.7.9.5
 In-Reply-To: <CAKgT0UdR-bdiZXsV_=8yJUS8zjoO6jeBS5bKNWAyxwLCiOP8ZQ@mail.gmail.com>
-References: <2997c5b0-3611-5e00-466c-b2966f09f067@nbd.name>
- <1654245968-8067-1-git-send-email-chen45464546@163.com>
- <CAKgT0Uc9vSEJxrev10Uc3P==+tTip7+7W=AF2uE+VB3GVyOTxg@mail.gmail.com>
- <CAKgT0UdR-bdiZXsV_=8yJUS8zjoO6jeBS5bKNWAyxwLCiOP8ZQ@mail.gmail.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
-MIME-Version: 1.0
-Message-ID: <31d36b89.adf.18131abbaab.Coremail.chen45464546@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: FsGowAC3ezljE5xiZn4fAA--.30551W
-X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/xtbCqR0Xnl0Df0HRXwAAsT
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <CAKgT0UdR-bdiZXsV_=8yJUS8zjoO6jeBS5bKNWAyxwLCiOP8ZQ@mail.gmail.com>
+X-CM-TRANSID: DMCowADHgyE4H5xi7gqqGA--.22831S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7ZFyfKF4rCw15Jw1UJF1DZFb_yoW8AFWrpr
+        4Yya43ZFyxAr4DG395Aa1UZFs8Aw4xKryUKry3Z34fZwn8tFWrKFyktFW5uryakrWvkFyS
+        yrs0vr9I9Fn5Kw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pi22NAUUUUU=
+X-Originating-IP: [171.221.147.121]
+X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/xtbB2A0XnmBHK0PEJgAAsx
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-QXQgMjAyMi0wNi0wMyAyMzozMzoyNSwgIkFsZXhhbmRlciBEdXljayIgPGFsZXhhbmRlci5kdXlj
-a0BnbWFpbC5jb20+IHdyb3RlOgo+T24gRnJpLCBKdW4gMywgMjAyMiBhdCA4OjI1IEFNIEFsZXhh
-bmRlciBEdXljawo+PGFsZXhhbmRlci5kdXlja0BnbWFpbC5jb20+IHdyb3RlOgo+Pgo+PiBPbiBG
-cmksIEp1biAzLCAyMDIyIGF0IDI6MDMgQU0gQ2hlbiBMaW4gPGNoZW40NTQ2NDU0NkAxNjMuY29t
-PiB3cm90ZToKPj4gPgo+PiA+IFdoZW4gcnhfZmxhZyA9PSBNVEtfUlhfRkxBR1NfSFdMUk8sCj4+
-ID4gcnhfZGF0YV9sZW4gPSBNVEtfTUFYX0xST19SWF9MRU5HVEgoNDA5NiAqIDMpID4gUEFHRV9T
-SVpFLgo+PiA+IG5ldGRldl9hbGxvY19mcmFnIGlzIGZvciBhbGxvY3Rpb24gb2YgcGFnZSBmcmFn
-bWVudCBvbmx5Lgo+PiA+IFJlZmVyZW5jZSB0byBvdGhlciBkcml2ZXJzIGFuZCBEb2N1bWVudGF0
-aW9uL3ZtL3BhZ2VfZnJhZ3MucnN0Cj4+ID4KPj4gPiBCcmFuY2ggdG8gdXNlIGFsbG9jX3BhZ2Vz
-IHdoZW4gcmluZy0+ZnJhZ19zaXplID4gUEFHRV9TSVpFLgo+PiA+Cj4+ID4gU2lnbmVkLW9mZi1i
-eTogQ2hlbiBMaW4gPGNoZW40NTQ2NDU0NkAxNjMuY29tPgo+PiA+IC0tLQo+PiA+ICBkcml2ZXJz
-L25ldC9ldGhlcm5ldC9tZWRpYXRlay9tdGtfZXRoX3NvYy5jIHwgICAyMiArKysrKysrKysrKysr
-KysrKysrKy0tCj4+ID4gIDEgZmlsZSBjaGFuZ2VkLCAyMCBpbnNlcnRpb25zKCspLCAyIGRlbGV0
-aW9ucygtKQo+PiA+Cj4+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lZGlh
-dGVrL210a19ldGhfc29jLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWRpYXRlay9tdGtfZXRo
-X3NvYy5jCj4+ID4gaW5kZXggYjNiM2MwNy4uNzcyZDkwMyAxMDA2NDQKPj4gPiAtLS0gYS9kcml2
-ZXJzL25ldC9ldGhlcm5ldC9tZWRpYXRlay9tdGtfZXRoX3NvYy5jCj4+ID4gKysrIGIvZHJpdmVy
-cy9uZXQvZXRoZXJuZXQvbWVkaWF0ZWsvbXRrX2V0aF9zb2MuYwo+PiA+IEBAIC0xNDY3LDcgKzE0
-NjcsMTYgQEAgc3RhdGljIGludCBtdGtfcG9sbF9yeChzdHJ1Y3QgbmFwaV9zdHJ1Y3QgKm5hcGks
-IGludCBidWRnZXQsCj4+ID4gICAgICAgICAgICAgICAgICAgICAgICAgZ290byByZWxlYXNlX2Rl
-c2M7Cj4+ID4KPj4gPiAgICAgICAgICAgICAgICAgLyogYWxsb2MgbmV3IGJ1ZmZlciAqLwo+PiA+
-IC0gICAgICAgICAgICAgICBuZXdfZGF0YSA9IG5hcGlfYWxsb2NfZnJhZyhyaW5nLT5mcmFnX3Np
-emUpOwo+PiA+ICsgICAgICAgICAgICAgICBpZiAocmluZy0+ZnJhZ19zaXplIDw9IFBBR0VfU0la
-RSkgewo+PiA+ICsgICAgICAgICAgICAgICAgICAgICAgIG5ld19kYXRhID0gbmFwaV9hbGxvY19m
-cmFnKHJpbmctPmZyYWdfc2l6ZSk7Cj4+ID4gKyAgICAgICAgICAgICAgIH0gZWxzZSB7Cj4+ID4g
-KyAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0IHBhZ2UgKnBhZ2U7Cj4+ID4gKyAgICAgICAg
-ICAgICAgICAgICAgICAgdW5zaWduZWQgaW50IG9yZGVyID0gZ2V0X29yZGVyKHJpbmctPmZyYWdf
-c2l6ZSk7Cj4+ID4gKwo+PiA+ICsgICAgICAgICAgICAgICAgICAgICAgIHBhZ2UgPSBhbGxvY19w
-YWdlcyhHRlBfQVRPTUlDIHwgX19HRlBfQ09NUCB8Cj4+ID4gKyAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICBfX0dGUF9OT1dBUk4sIG9yZGVyKTsKPj4gPiArICAgICAg
-ICAgICAgICAgICAgICAgICBuZXdfZGF0YSA9IHBhZ2UgPyBwYWdlX2FkZHJlc3MocGFnZSkgOiBO
-VUxMOwo+PiA+ICsgICAgICAgICAgICAgICB9Cj4+ID4gICAgICAgICAgICAgICAgIGlmICh1bmxp
-a2VseSghbmV3X2RhdGEpKSB7Cj4+ID4gICAgICAgICAgICAgICAgICAgICAgICAgbmV0ZGV2LT5z
-dGF0cy5yeF9kcm9wcGVkKys7Cj4+ID4gICAgICAgICAgICAgICAgICAgICAgICAgZ290byByZWxl
-YXNlX2Rlc2M7Cj4+ID4gQEAgLTE5MTQsNyArMTkyMywxNiBAQCBzdGF0aWMgaW50IG10a19yeF9h
-bGxvYyhzdHJ1Y3QgbXRrX2V0aCAqZXRoLCBpbnQgcmluZ19ubywgaW50IHJ4X2ZsYWcpCj4+ID4g
-ICAgICAgICAgICAgICAgIHJldHVybiAtRU5PTUVNOwo+PiA+Cj4+ID4gICAgICAgICBmb3IgKGkg
-PSAwOyBpIDwgcnhfZG1hX3NpemU7IGkrKykgewo+PiA+IC0gICAgICAgICAgICAgICByaW5nLT5k
-YXRhW2ldID0gbmV0ZGV2X2FsbG9jX2ZyYWcocmluZy0+ZnJhZ19zaXplKTsKPj4gPiArICAgICAg
-ICAgICAgICAgaWYgKHJpbmctPmZyYWdfc2l6ZSA8PSBQQUdFX1NJWkUpIHsKPj4gPiArICAgICAg
-ICAgICAgICAgICAgICAgICByaW5nLT5kYXRhW2ldID0gbmV0ZGV2X2FsbG9jX2ZyYWcocmluZy0+
-ZnJhZ19zaXplKTsKPj4gPiArICAgICAgICAgICAgICAgfSBlbHNlIHsKPj4gPiArICAgICAgICAg
-ICAgICAgICAgICAgICBzdHJ1Y3QgcGFnZSAqcGFnZTsKPj4gPiArICAgICAgICAgICAgICAgICAg
-ICAgICB1bnNpZ25lZCBpbnQgb3JkZXIgPSBnZXRfb3JkZXIocmluZy0+ZnJhZ19zaXplKTsKPj4g
-PiArCj4+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgcGFnZSA9IGFsbG9jX3BhZ2VzKEdGUF9L
-RVJORUwgfCBfX0dGUF9DT01QIHwKPj4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIF9fR0ZQX05PV0FSTiwgb3JkZXIpOwo+PiA+ICsgICAgICAgICAgICAgICAg
-ICAgICAgIHJpbmctPmRhdGFbaV0gPSBwYWdlID8gcGFnZV9hZGRyZXNzKHBhZ2UpIDogTlVMTDsK
-Pj4gPiArICAgICAgICAgICAgICAgfQo+PiA+ICAgICAgICAgICAgICAgICBpZiAoIXJpbmctPmRh
-dGFbaV0pCj4+ID4gICAgICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIC1FTk9NRU07Cj4+ID4g
-ICAgICAgICB9Cj4+Cj4+IEFjdHVhbGx5IEkgbG9va2VkIGNsb3NlciBhdCB0aGlzIGRyaXZlci4g
-SXMgaXQgYWJsZSB0byByZWNlaXZlIGZyYW1lcwo+PiBsYXJnZXIgdGhhbiAySz8gSWYgbm90IHRo
-ZXJlIGlzbid0IGFueSBwb2ludCBpbiB0aGlzIGNoYW5nZS4KPj4KPj4gQmFzZWQgb24gY29tbWl0
-IDRmZDU5NzkyMDk3YSAoIm5ldDogZXRoZXJuZXQ6IG1lZGlhdGVrOiBzdXBwb3J0Cj4+IHNldHRp
-bmcgTVRVIikgaXQgbG9va3MgbGlrZSBpdCBkb2Vzbid0LCBzbyBvZGRzIGFyZSB0aGlzIHBhdGNo
-IGlzIG5vdAo+PiBuZWNlc3NhcnkuCj4KPkkgc3Bva2UgdG9vIHNvb24uIEkgaGFkIG92ZXJsb29r
-ZWQgdGhlIExSTyBwYXJ0LiBXaXRoIHRoYXQgYmVpbmcgdGhlCj5jYXNlIHlvdSBjYW4gcHJvYmFi
-bHkgb3B0aW1pemUgdGhpcyBjb2RlIHRvIGRvIGF3YXkgd2l0aCB0aGUgZ2V0X29yZGVyCj5waWVj
-ZSBlbnRpcmVseSwgYXQgbGVhc3QgZHVyaW5nIHJ1bnRpbWUuIE15IG1haW4gY29uY2VybiBpcyB0
-aGF0IGRvaW5nCj50aGF0IGluIHRoZSBmYXN0LXBhdGggd2lsbCBiZSBleHBlbnNpdmUgc28geW91
-IHdvdWxkIGJlIG11Y2ggYmV0dGVyCj5vZmYgZG9pbmcgc29tZXRoaW5nIGxpa2UKPmdldF9vcmRl
-cihtdGtfbWF4X2ZyYWdfc2l6ZShNVEtfUlhfRkxBR1NfSFdMUk8pKSB3aGljaCB3b3VsZCBiZQo+
-Y29udmVydGVkIGludG8gYSBjb25zdGFudCBhdCBjb21waWxlIHRpbWUgc2luY2UgZXZlcnl0aGlu
-ZyBlbHNlIHdvdWxkCj5iZSBsZXNzIHRoYW4gMSBwYWdlIGluIHNpemUuCj4KPkFsc28geW91IGNv
-dWxkIHRoZW4gcmVwbGFjZSBhbGxvY19wYWdlcyB3aXRoIF9fZ2V0X2ZyZWVfcGFnZXMgd2hpY2gK
-PndvdWxkIHRha2UgY2FyZSBvZiB0aGUgcGFnZV9hZGRyZXNzIGNhbGwgZm9yIHlvdS4KClRoYW5r
-cyBmb3IgdGhlIHRpcHMuIEknbGwgdHJ5IGFnYWluLgpJdCBjYW4gYWxzbyBiZSBzZWVuIGZyb20g
-aGVyZSBpdCBpcyBlYXN5IHRvIG1ha2UgbWlzdGFrZXMgaW4gcGFyYW1ldGVyIGZyYWdzei4K
+When rx_flag == MTK_RX_FLAGS_HWLRO, 
+rx_data_len = MTK_MAX_LRO_RX_LENGTH(4096 * 3) > PAGE_SIZE.
+netdev_alloc_frag is for alloction of page fragment only.
+Reference to other drivers and Documentation/vm/page_frags.rst
+
+Branch to use __get_free_pages when ring->frag_size > PAGE_SIZE.
+
+Signed-off-by: Chen Lin <chen45464546@163.com>
+---
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c |   16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index b3b3c07..ba9259a 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -1467,7 +1467,13 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+ 			goto release_desc;
+ 
+ 		/* alloc new buffer */
+-		new_data = napi_alloc_frag(ring->frag_size);
++		if (ring->frag_size <= PAGE_SIZE)
++			new_data = napi_alloc_frag(ring->frag_size);
++		else
++			new_data = (void *)__get_free_pages(GFP_ATOMIC |
++			  __GFP_COMP | __GFP_NOWARN,
++			  get_order(mtk_max_frag_size(MTK_MAX_LRO_RX_LENGTH)));
++
+ 		if (unlikely(!new_data)) {
+ 			netdev->stats.rx_dropped++;
+ 			goto release_desc;
+@@ -1914,7 +1920,13 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
+ 		return -ENOMEM;
+ 
+ 	for (i = 0; i < rx_dma_size; i++) {
+-		ring->data[i] = netdev_alloc_frag(ring->frag_size);
++		if (ring->frag_size <= PAGE_SIZE)
++			ring->data[i] = netdev_alloc_frag(ring->frag_size);
++		else
++			ring->data[i] = (void *)__get_free_pages(GFP_KERNEL |
++			  __GFP_COMP | __GFP_NOWARN,
++			  get_order(mtk_max_frag_size(MTK_MAX_LRO_RX_LENGTH)));
++
+ 		if (!ring->data[i])
+ 			return -ENOMEM;
+ 	}
+-- 
+1.7.9.5
+
