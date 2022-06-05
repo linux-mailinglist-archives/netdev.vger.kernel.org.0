@@ -2,144 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B55A453DEAD
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 00:40:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADC2553DEB0
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 00:43:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348433AbiFEWkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jun 2022 18:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44328 "EHLO
+        id S1351654AbiFEWnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jun 2022 18:43:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240474AbiFEWka (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jun 2022 18:40:30 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C509F4A3D3;
-        Sun,  5 Jun 2022 15:40:29 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id k6so6760485qkf.4;
-        Sun, 05 Jun 2022 15:40:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=oJwvaGKT8SUWFne2GVF30GAVMbGCcCQB/TRP9JaEXXc=;
-        b=Er/mgnCYWFqYei8Xap7gF8LCCxEcDbQ4YP9T6p+F7o74YPGLBlHLJEy4ZQ4AV+oW0m
-         HO5ME3C5CUaolnar2S/YoK4fpjLucBfumkoBeUR8JXPaRMlwh3P2v4rmVWFXUETT7Th0
-         7DGbBghLO13a8m5U3MLe6JnNrcBDJEhvAn8D5DBbfAcUGWkFeqzaD+mNbG8Kyhkg4tR8
-         V45no08OXTqF6tToeKsn62qy3OjVHB4ad0Mga/sJVztI74X6pv/K2S6aw1aZb8qcY1Il
-         SNPHXoT5BmLhp901EzfvlHAHKcRkFlBnhuA/Ya6+VJ+BvTWfHd8M55IJyAXUaPPCS30v
-         24Aw==
+        with ESMTP id S240474AbiFEWns (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jun 2022 18:43:48 -0400
+Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB124D277;
+        Sun,  5 Jun 2022 15:43:47 -0700 (PDT)
+Received: by mail-qv1-f43.google.com with SMTP id b17so770964qvz.0;
+        Sun, 05 Jun 2022 15:43:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=oJwvaGKT8SUWFne2GVF30GAVMbGCcCQB/TRP9JaEXXc=;
-        b=tK+CTXvJzMloruK7auumpfDmNhUh2w+k4kwME8jNJ0muKZ79tMi0zYjrqCEy/yc6fl
-         Vn7rlYboJPbhAYsqql2C3rN/kTQIZASRkUk46ZEIcA9gHe1PbfrzFz3BX7bXPdQ/QfsZ
-         ssrJif3Jw/NvmEaOFO1K9SeOhODLceDvZJeJZjp5bpoB/9YlA5Q3SUyCsZ0+pN0K/enm
-         MjcpX0KuKhLNuSymSytjaXHhemlRHO7DoaJK6eTgoTdhe3M/pkEPqWoPVvJWCQxvnyxJ
-         +GAZBNtnvTvTku0Bv2XXouyqB4LSDH23pDO8drZp7eW83RsmM2Q8whkZcGCbZz7xVgkw
-         6nDw==
-X-Gm-Message-State: AOAM532z6G1Wq3WGtRJWopY9idihjVW7Cb2WYpquECzrFxxEXQvFMDJB
-        +dhw4YmMZijDfbhw9KH2B18=
-X-Google-Smtp-Source: ABdhPJyWm/hFkdThzopZDwcMz7nAWT8LrdkA/rUdyFXcHuJFjiaGHRgmU/+qt5448wUl0n1pNiWW+A==
-X-Received: by 2002:a37:6614:0:b0:6a6:9639:77f3 with SMTP id a20-20020a376614000000b006a6963977f3mr10100125qkc.516.1654468827768;
-        Sun, 05 Jun 2022 15:40:27 -0700 (PDT)
-Received: from localhost ([2601:4c1:c100:1230:7d8b:f1fe:e4c6:2059])
-        by smtp.gmail.com with ESMTPSA id s16-20020ac85ed0000000b00304e1709b1esm4991031qtx.43.2022.06.05.15.40.26
+        bh=WHCpzsbL88UyieS9mfwLLBx6jkVyGEjtCpEWb7J2FGA=;
+        b=ZCW4Aw77uRzC7Kibp4m/ND5BFOor3ZqdizUFOZrUM9YtaJMzPY56CF40QZJtF8kA//
+         FAKwnQSz1lzoIONOC4KQzq5ioL7JF0Pvao5JHFI0jW0TNq2lZrMD4fD1EaHtek3Fkmm5
+         YYUDSlRb+iUFnKWnZol10JdH4hiNakSz8pzIbXI9fxL2uharlqfeLCF1mBKiWDU//mc2
+         vw1aQn7pBGI3aKGsoc+rZhXL6C4evf6uVKAbcw6Ix1dMiudNqFjnAuFpQCEk+lmQzKs/
+         DESobylG2xloeSdD8ff0F3DpU7gHND6YMEovbOjCtwWweNBlH2pmcGqLhioqfMi/kJfu
+         QAsA==
+X-Gm-Message-State: AOAM533EXDmCnu67kx8as/A39uD9hmdzbdNc6aPtBNZqKE6K2DlZbodC
+        zJtYcFnZI8Qbpz9kaZxq1A==
+X-Google-Smtp-Source: ABdhPJzl8awkJTjp3IqvyrVtVpFHcyXx+g6RSfsnZQBxH+oLEAZKUT6/WGc4wSz7bzLVIA5pvWHLTA==
+X-Received: by 2002:a05:6214:524a:b0:464:6bed:d008 with SMTP id kf10-20020a056214524a00b004646bedd008mr18416421qvb.69.1654469026134;
+        Sun, 05 Jun 2022 15:43:46 -0700 (PDT)
+Received: from robh.at.kernel.org ([2607:fb90:1bdb:2e61:f12:452:5315:9c7e])
+        by smtp.gmail.com with ESMTPSA id v128-20020a37dc86000000b0069fc13ce244sm10338811qki.117.2022.06.05.15.43.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jun 2022 15:40:27 -0700 (PDT)
-Date:   Sun, 5 Jun 2022 15:40:27 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: linux-next: build warning after merge of the bluetooth tree
-Message-ID: <Yp0w21pH4R6WaC1R@yury-laptop>
-References: <20220516175757.6d9f47b3@canb.auug.org.au>
- <20220524082256.3b8033a9@canb.auug.org.au>
- <20220606080631.0c3014f2@canb.auug.org.au>
+        Sun, 05 Jun 2022 15:43:45 -0700 (PDT)
+Received: (nullmailer pid 3664723 invoked by uid 1000);
+        Sun, 05 Jun 2022 22:43:43 -0000
+Date:   Sun, 5 Jun 2022 17:43:43 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Siddharth Vadapalli <s-vadapalli@ti.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, krzysztof.kozlowski+dt@linaro.org,
+        linux@armlinux.org.uk, vladimir.oltean@nxp.com,
+        grygorii.strashko@ti.com, vigneshr@ti.com, nsekhar@ti.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kishon@ti.com
+Subject: Re: [PATCH v2 1/3] dt-bindings: net: ti: k3-am654-cpsw-nuss: Update
+ bindings for J7200 CPSW5G
+Message-ID: <20220605224343.GA3657277-robh@kernel.org>
+References: <20220602114558.6204-1-s-vadapalli@ti.com>
+ <20220602114558.6204-2-s-vadapalli@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220606080631.0c3014f2@canb.auug.org.au>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220602114558.6204-2-s-vadapalli@ti.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 06, 2022 at 08:06:31AM +1000, Stephen Rothwell wrote:
-> Hi all,
+On Thu, Jun 02, 2022 at 05:15:56PM +0530, Siddharth Vadapalli wrote:
+> Update bindings for TI K3 J7200 SoC which contains 5 ports (4 external
+> ports) CPSW5G module and add compatible for it.
 > 
-> On Tue, 24 May 2022 08:22:56 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> >
-> > On Mon, 16 May 2022 17:57:57 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> > > 
-> > > After merging the bluetooth tree, today's linux-next build (arm
-> > > multi_v7_defconfig) produced this warning:
-> > > 
-> > > In file included from include/linux/cpumask.h:12,
-> > >                  from include/linux/mm_types_task.h:14,
-> > >                  from include/linux/mm_types.h:5,
-> > >                  from include/linux/buildid.h:5,
-> > >                  from include/linux/module.h:14,
-> > >                  from net/bluetooth/mgmt.c:27:
-> > > In function 'bitmap_copy',
-> > >     inlined from 'bitmap_copy_clear_tail' at include/linux/bitmap.h:270:2,
-> > >     inlined from 'bitmap_from_u64' at include/linux/bitmap.h:622:2,
-> > >     inlined from 'set_device_flags' at net/bluetooth/mgmt.c:4534:4:
-> > > include/linux/bitmap.h:261:9: warning: 'memcpy' forming offset [4, 7] is out of the bounds [0, 4] of object 'flags' with type 'long unsigned int[1]' [-Warray-bounds]
-> > >   261 |         memcpy(dst, src, len);
-> > >       |         ^~~~~~~~~~~~~~~~~~~~~
-> > > In file included from include/linux/kasan-checks.h:5,
-> > >                  from include/asm-generic/rwonce.h:26,
-> > >                  from ./arch/arm/include/generated/asm/rwonce.h:1,
-> > >                  from include/linux/compiler.h:248,
-> > >                  from include/linux/build_bug.h:5,
-> > >                  from include/linux/container_of.h:5,
-> > >                  from include/linux/list.h:5,
-> > >                  from include/linux/module.h:12,
-> > >                  from net/bluetooth/mgmt.c:27:
-> > > net/bluetooth/mgmt.c: In function 'set_device_flags':
-> > > net/bluetooth/mgmt.c:4532:40: note: 'flags' declared here
-> > >  4532 |                         DECLARE_BITMAP(flags, __HCI_CONN_NUM_FLAGS);
-> > >       |                                        ^~~~~
-> > > include/linux/types.h:11:23: note: in definition of macro 'DECLARE_BITMAP'
-> > >    11 |         unsigned long name[BITS_TO_LONGS(bits)]
-> > >       |                       ^~~~
-> > > 
-> > > Introduced by commit
-> > > 
-> > >   a9a347655d22 ("Bluetooth: MGMT: Add conditions for setting HCI_CONN_FLAG_REMOTE_WAKEUP")
-> > > 
-> > > Bitmaps consist of unsigned longs (in this case 32 bits) ...
-> > > 
-> > > (This warning only happens due to chnges in the bitmap tree.)  
-> > 
-> > I still got this warning yesterday ...
+> Changes made:
+>     - Add new compatible ti,j7200-cpswxg-nuss for CPSW5G.
+>     - Extend pattern properties for new compatible.
+>     - Change maximum number of CPSW ports to 4 for new compatible.
 > 
-> And today, I get this warning when build Linus' tree :-(
+> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+> ---
+>  .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   | 140 ++++++++++++------
+>  1 file changed, 98 insertions(+), 42 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+> index b8281d8be940..ec57bde7ac26 100644
+> --- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+> +++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+> @@ -57,6 +57,7 @@ properties:
+>        - ti,am654-cpsw-nuss
+>        - ti,j721e-cpsw-nuss
+>        - ti,am642-cpsw-nuss
+> +      - ti,j7200-cpswxg-nuss
+>  
+>    reg:
+>      maxItems: 1
+> @@ -108,48 +109,103 @@ properties:
+>          const: 1
+>        '#size-cells':
+>          const: 0
+> -
+> -    patternProperties:
+> -      port@[1-2]:
+> -        type: object
+> -        description: CPSWxG NUSS external ports
+> -
+> -        $ref: ethernet-controller.yaml#
+> -
+> -        properties:
+> -          reg:
+> -            minimum: 1
+> -            maximum: 2
+> -            description: CPSW port number
+> -
+> -          phys:
+> -            maxItems: 1
+> -            description: phandle on phy-gmii-sel PHY
+> -
+> -          label:
+> -            description: label associated with this port
+> -
+> -          ti,mac-only:
+> -            $ref: /schemas/types.yaml#/definitions/flag
+> -            description:
+> -              Specifies the port works in mac-only mode.
+> -
+> -          ti,syscon-efuse:
+> -            $ref: /schemas/types.yaml#/definitions/phandle-array
+> -            items:
+> -              - items:
+> -                  - description: Phandle to the system control device node which
+> -                      provides access to efuse
+> -                  - description: offset to efuse registers???
+> -            description:
+> -              Phandle to the system control device node which provides access
+> -              to efuse IO range with MAC addresses
+> -
+> -        required:
+> -          - reg
+> -          - phys
+> -
+> -    additionalProperties: false
+> +    allOf:
+> +      - if:
+> +          properties:
+> +            compatible:
+> +              contains:
+> +                enum:
+> +                  - ti,am654-cpsw-nuss
+> +                  - ti,j721e-cpsw-nuss
+> +                  - ti,am642-cpsw-nuss
+> +        then:
+> +          patternProperties:
+> +            port@[1-2]:
+> +              type: object
+> +              description: CPSWxG NUSS external ports
+> +
+> +              $ref: ethernet-controller.yaml#
+> +
+> +              properties:
+> +                reg:
+> +                  minimum: 1
+> +                  maximum: 2
+> +                  description: CPSW port number
+> +
+> +                phys:
+> +                  maxItems: 1
+> +                  description: phandle on phy-gmii-sel PHY
+> +
+> +                label:
+> +                  description: label associated with this port
+> +
+> +                ti,mac-only:
+> +                  $ref: /schemas/types.yaml#/definitions/flag
+> +                  description:
+> +                    Specifies the port works in mac-only mode.
+> +
+> +                ti,syscon-efuse:
+> +                  $ref: /schemas/types.yaml#/definitions/phandle-array
+> +                  items:
+> +                    - items:
+> +                        - description: Phandle to the system control device node which
+> +                            provides access to efuse
+> +                        - description: offset to efuse registers???
+> +                  description:
+> +                    Phandle to the system control device node which provides access
+> +                    to efuse IO range with MAC addresses
+> +
+> +              required:
+> +                - reg
+> +                - phys
+> +      - if:
+> +          properties:
+> +            compatible:
+> +              contains:
+> +                enum:
+> +                  - ti,j7200-cpswxg-nuss
+> +        then:
+> +          patternProperties:
+> +            port@[1-4]:
+> +              type: object
+> +              description: CPSWxG NUSS external ports
+> +
+> +              $ref: ethernet-controller.yaml#
+> +
+> +              properties:
+> +                reg:
+> +                  minimum: 1
+> +                  maximum: 4
+> +                  description: CPSW port number
+> +
+> +                phys:
+> +                  maxItems: 1
+> +                  description: phandle on phy-gmii-sel PHY
+> +
+> +                label:
+> +                  description: label associated with this port
+> +
+> +                ti,mac-only:
+> +                  $ref: /schemas/types.yaml#/definitions/flag
+> +                  description:
+> +                    Specifies the port works in mac-only mode.
+> +
+> +                ti,syscon-efuse:
+> +                  $ref: /schemas/types.yaml#/definitions/phandle-array
+> +                  items:
+> +                    - items:
+> +                        - description: Phandle to the system control device node which
+> +                            provides access to efuse
+> +                        - description: offset to efuse registers???
+> +                  description:
+> +                    Phandle to the system control device node which provides access
+> +                    to efuse IO range with MAC addresses
+> +
+> +              required:
+> +                - reg
+> +                - phys
 
-Hi Stephen,
+You are now defining the same properties twice. Don't do that. Just add 
+an if/then schema restrict port nodes.
 
-I completely forgot about this bug, and sent a quick fix when this
-was spotted by Sudip [1]. Linus proposed another fix [2] that drops
-bitmap API in net/bluetooth/mgmt.c.
-
-I would prefer Linus' version, and this is the way I already suggested
-to Luiz before in this thread.
-
-Thanks,
-Yury
-
-[1] https://lore.kernel.org/lkml/YpyJ9qTNHJzz0FHY@debian/t/
-[2] https://lore.kernel.org/lkml/CAHk-=whqgEA=OOPQs7JF=xps3VxjJ5uUnfXgzTv4gqTDhraZFA@mail.gmail.com/T/#mcf29754f405443ca7d2a18db863c7a20439bd5a0
+Rob
