@@ -2,77 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3737553DE39
-	for <lists+netdev@lfdr.de>; Sun,  5 Jun 2022 22:46:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66E8153DE43
+	for <lists+netdev@lfdr.de>; Sun,  5 Jun 2022 22:51:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347366AbiFEUqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jun 2022 16:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55026 "EHLO
+        id S1347437AbiFEUu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jun 2022 16:50:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229678AbiFEUqv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jun 2022 16:46:51 -0400
-Received: from mail.enpas.org (zhong.enpas.org [IPv6:2a03:4000:2:537::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B2EB266F;
-        Sun,  5 Jun 2022 13:46:47 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        by mail.enpas.org (Postfix) with ESMTPSA id E5E28FF88D;
-        Sun,  5 Jun 2022 20:46:45 +0000 (UTC)
-Date:   Sun, 5 Jun 2022 22:46:40 +0200
-From:   Max Staudt <max@enpas.org>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v5 0/7] can: refactoring of can-dev module and of Kbuild
-Message-ID: <20220605224640.3a09e704.max@enpas.org>
-In-Reply-To: <20220605180641.tfqyxhkkauzoz2z4@pengutronix.de>
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
-        <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
-        <20220605192347.518c4b3c.max@enpas.org>
-        <20220605180641.tfqyxhkkauzoz2z4@pengutronix.de>
+        with ESMTP id S229678AbiFEUu6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jun 2022 16:50:58 -0400
+Received: from smtp.smtpout.orange.fr (smtp03.smtpout.orange.fr [80.12.242.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226F21056C
+        for <netdev@vger.kernel.org>; Sun,  5 Jun 2022 13:50:55 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id xxCznHYei4LtqxxD0nIPNF; Sun, 05 Jun 2022 22:50:53 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sun, 05 Jun 2022 22:50:53 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] stmmac: intel: Fix an error handling path in intel_eth_pci_probe()
+Date:   Sun,  5 Jun 2022 22:50:48 +0200
+Message-Id: <1ac9b6787b0db83b0095711882c55c77c8ea8da0.1654462241.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 5 Jun 2022 20:06:41 +0200
-Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+When the managed API is used, there is no need to explicitly call
+pci_free_irq_vectors().
 
-> On 05.06.2022 19:23:47, Max Staudt wrote:
-> > This seemingly splits drivers into "things that speak to hardware"
-> > and "things that don't". Except... slcan really does speak to
-> > hardware. It just so happens to not use any of BITTIMING or
-> > RX_OFFLOAD. However, my can327 (formerly elmcan) driver, which is
-> > an ldisc just like slcan, *does* use RX_OFFLOAD, so where to I put
-> > it? Next to flexcan, m_can, mcp251xfd and ti_hecc?
-> > 
-> > Is it really just a split by features used in drivers, and no
-> > longer a split by virtual/real?  
-> 
-> We can move RX_OFFLOAD out of the "if CAN_NETLINK". Who wants to
-> create an incremental patch against can-next/master?
+This looks to be a left-over from the commit in the Fixes tag. Only the
+.remove() function had been updated.
 
-Yes, this may be useful in the future. But for now, I think I can
-answer my question myself :)
+So remove this unused function call and update goto label accordingly.
 
-My driver does support Netlink to set CAN link parameters. So I'll just
-drop it into the CAN_NETLINK -> RX_OFFLOAD category in Kconfig, unless
-anyone objects.
+Fixes: 8accc467758e ("stmmac: intel: use managed PCI function on probe and resume")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index f9f80933e0c9..38fe77d1035e 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -1072,13 +1072,11 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
+ 
+ 	ret = stmmac_dvr_probe(&pdev->dev, plat, &res);
+ 	if (ret) {
+-		goto err_dvr_probe;
++		goto err_alloc_irq;
+ 	}
+ 
+ 	return 0;
+ 
+-err_dvr_probe:
+-	pci_free_irq_vectors(pdev);
+ err_alloc_irq:
+ 	clk_disable_unprepare(plat->stmmac_clk);
+ 	clk_unregister_fixed_rate(plat->stmmac_clk);
+-- 
+2.34.1
 
-I just got confused because in my mind, I'm still comparing it to
-slcan, whereas in reality, it's now functionally closer to all the other
-hardware drivers. Netlink and all.
-
-Apologies for the noise! 
-
-
-Max
