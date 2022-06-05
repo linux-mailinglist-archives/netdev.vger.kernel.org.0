@@ -2,55 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2808A53DA26
-	for <lists+netdev@lfdr.de>; Sun,  5 Jun 2022 06:52:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27E4E53DA2A
+	for <lists+netdev@lfdr.de>; Sun,  5 Jun 2022 06:52:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243850AbiFEEuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jun 2022 00:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
+        id S1348975AbiFEEus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jun 2022 00:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233427AbiFEEuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jun 2022 00:50:16 -0400
+        with ESMTP id S243886AbiFEEuq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jun 2022 00:50:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964E02B255;
-        Sat,  4 Jun 2022 21:50:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AD830549;
+        Sat,  4 Jun 2022 21:50:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4DF2FB80B1B;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69D45B80B1E;
         Sun,  5 Jun 2022 04:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DA623C3411D;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E32ACC3411E;
         Sun,  5 Jun 2022 04:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1654404612;
-        bh=RX2wEaBw82qW8ojxQw9653S7XMkj3wRobXYqpSRQXHY=;
+        bh=dcwSlAM5U/7L22E5xajUTM+Pauz9nH1K/BMqy+7wPyI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Egz0oID1xgX3HW6VgujboCzNGYko9LjV06+5OEQl7pDIhGxPeoXK1fR0ILGnN3m4P
-         v7HA1i7YdI+kxT2FifkSxNhApGx7OAavtLgd5EboylGcj83eXhcS/kwdfFqhl0LKM+
-         4gD1vX0mGNYAlKgzT7J4TQ/Q14pBjG5tzjBMn3ak3g6IDSrCI8jUC0cBarEeb6UBGJ
-         Q4uDsUztxufbv8GX47JN2N6YVj6hFvOyXZh27MWMY7GeobnsB5nGpOb/aWKb1xVuVP
-         80ukjIls+QU18BePxPxd0tUIbqzSEjDk+vcMHW2LzEwK0mhK7SNIjVfg9W2XIK3XUp
-         LuWEmWZIC1mrQ==
+        b=mOsDVRbjz5GwqQvoPcx7EqqMXPf9HkN8EK1Z1c43r+4ryOBsbI30CCbaMjm5sV01k
+         F+i97c/Sdtod0bmakwgVMfD4O23whRRtIYmgXSUMTItihHTVGRusV96a/P5V9UPNyo
+         5D54mfOUnCpYzQaOKhwl/d6STWBPKTh+4PGyyKtyul70ku1ZLbaaxcAs1VV57uVBme
+         1stgadTt3efGwGnRTpc8V9Eg4YMmOC+I8cFYTmRjHkeN9NT95F22rgEMqZ1VLR6Hq4
+         DokZq+fdZBQBa7LTtLLuW1Rp1S+V230WE0BVPhQjo0WNIS9kQf8Idw/ODkLYc7ToqG
+         wPejng/EB8bXA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BFFEFF03875;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CAEECF5F177;
         Sun,  5 Jun 2022 04:50:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 1/2] dt-bindings: bluetooth: broadcom: Add BCM4349B1 DT
- binding
+Subject: Re: [PATCH 1/2] Bluetooth: Fix index added after unregister
 From:   patchwork-bot+bluetooth@kernel.org
-Message-Id: <165440461278.31102.12185070226615381233.git-patchwork-notify@kernel.org>
+Message-Id: <165440461282.31102.17462326993445996139.git-patchwork-notify@kernel.org>
 Date:   Sun, 05 Jun 2022 04:50:12 +0000
-References: <20220524055642.1574769-1-a.fatoum@pengutronix.de>
-In-Reply-To: <20220524055642.1574769-1-a.fatoum@pengutronix.de>
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
-Cc:     kernel@pengutronix.de, krzysztof.kozlowski@linaro.org,
-        linus.walleij@linaro.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        devicetree@vger.kernel.org
+References: <20220602094645.1.I7d191480c15b45a237b927e26aa26ba806409efb@changeid>
+In-Reply-To: <20220602094645.1.I7d191480c15b45a237b927e26aa26ba806409efb@changeid>
+To:     Abhishek Pandit-Subedi <abhishekpandit@google.com>
+Cc:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
+        luiz.dentz@gmail.com, abhishekpandit@chromium.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        johan.hedberg@gmail.com, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -66,22 +64,21 @@ Hello:
 This series was applied to bluetooth/bluetooth-next.git (master)
 by Marcel Holtmann <marcel@holtmann.org>:
 
-On Tue, 24 May 2022 07:56:40 +0200 you wrote:
-> The BCM4349B1, aka CYW/BCM89359, is a WiFi+BT chip and its Bluetooth
-> portion can be controlled over serial.
-> Extend the binding with its DT compatible.
+On Thu,  2 Jun 2022 09:46:49 -0700 you wrote:
+> From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
 > 
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+> When a userchannel socket is released, we should check whether the hdev
+> is already unregistered before sending out an IndexAdded.
+> 
+> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2,1/2] dt-bindings: bluetooth: broadcom: Add BCM4349B1 DT binding
-    https://git.kernel.org/bluetooth/bluetooth-next/c/534fdae369a8
-  - [v2,2/2] Bluetooth: hci_bcm: Add BCM4349B1 variant
-    https://git.kernel.org/bluetooth/bluetooth-next/c/a589ee43644c
+  - [1/2] Bluetooth: Fix index added after unregister
+    https://git.kernel.org/bluetooth/bluetooth-next/c/8d4b73539cca
+  - [2/2] Bluetooth: Unregister suspend with userchannel
+    https://git.kernel.org/bluetooth/bluetooth-next/c/d6bb2a91f95b
 
 You are awesome, thank you!
 -- 
