@@ -2,136 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FEB653D95D
-	for <lists+netdev@lfdr.de>; Sun,  5 Jun 2022 05:19:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 618F153D963
+	for <lists+netdev@lfdr.de>; Sun,  5 Jun 2022 05:24:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243650AbiFEDTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 4 Jun 2022 23:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51658 "EHLO
+        id S243681AbiFEDYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 4 Jun 2022 23:24:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243599AbiFEDTH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 23:19:07 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F74A479
-        for <netdev@vger.kernel.org>; Sat,  4 Jun 2022 20:19:05 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id l204so20178882ybf.10
-        for <netdev@vger.kernel.org>; Sat, 04 Jun 2022 20:19:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UfT4MT7hJVtHg40L/hP1ZN+BqXhrFP6Eg8QB85TqDmI=;
-        b=i4t+Zbfv9mgXoHmCp9WTiqZCYX0GPYXzZmsD7L8UxzBPLZkybag0506qJXluqZw/9W
-         8o266yL6KiXkLkyDgqNuLuhJo8T+pJg8OYLe27e7FK62LjwxkXtDSdOJhS0pc3IxzEK5
-         3GD2dGw+8hVLPviz3mfNjR5XGZaOpWX4m78WG0B6uXq+MhadcayD4wPCAe+mCs0Zvy8S
-         4EEQcXrvjcBI9t8m7eTvR3JmMquehZ3UV7MeQzmcQjE83SWx2Ppbi+Lsf1ZuzNYM2zqv
-         qlnyYJUZ1wh9prgSQgcuZ9+WXsoJ3byzi+kzLzwt6CuS+LIitH8zkGQSOkK3pLyH86Er
-         Eghg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UfT4MT7hJVtHg40L/hP1ZN+BqXhrFP6Eg8QB85TqDmI=;
-        b=5NNK6I7ziaq7wxm/RgtqRUxzRyVYZO37gW3cJFSq/eHRhj7bPM1zu3Tfopus1GCYtI
-         99ogOoR7DEIHaFMEyQ9ZnKH8hhUVnmY2pUO82uFLeQdIxcW8abso2h7KQnEgpBEObW1a
-         ODMSiqdWg3Ft73oGCR8qaow+rmpwkmtcPAYHxAW0kSVBm/0CnefuWK29PuIGr3+8dAM6
-         GIeuOMm2lKcxibtuuERZD3s8DMScgNMF67VOROhXiVooWZ6IirXEAqXW/U0MEeu/TPiA
-         QkvjPf+565A2dgF429WVQ19YOApYrZ/ScFVHQ/I7LKFMpmkritypiHllSheIcPDosZzc
-         1guQ==
-X-Gm-Message-State: AOAM5321+14b9ci6ZRrKVYV1IAcg7JSBkoGlhJFeFx5k4zrZruk783jR
-        kP5AG6D/urvhcGMgwa/bjnHjZvQk+SS7OM0X5JeO7A==
-X-Google-Smtp-Source: ABdhPJxrTqtLCQjIW3xp8nX5d6NuEspl0eOAd6/G2L9YHazcgkJ4hRf6Qyt8EmRCHMgQo+I/rvstQNfNmIYyfaK+Hd4=
-X-Received: by 2002:a25:d803:0:b0:663:3da5:9813 with SMTP id
- p3-20020a25d803000000b006633da59813mr5189333ybg.530.1654399144708; Sat, 04
- Jun 2022 20:19:04 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220526081550.1089805-1-saravanak@google.com>
- <20220526081550.1089805-5-saravanak@google.com> <CAMuHMdXcHcuAn8UVS6RPsfenuCny4BgWNJFod41CFjdOF+w0sg@mail.gmail.com>
-In-Reply-To: <CAMuHMdXcHcuAn8UVS6RPsfenuCny4BgWNJFod41CFjdOF+w0sg@mail.gmail.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Sat, 4 Jun 2022 20:18:28 -0700
-Message-ID: <CAGETcx_uXXw_OtHO+_2DmZnHA3WCT5CeKbb_RWNqZtZSU1OB2g@mail.gmail.com>
-Subject: Re: [RFC PATCH v1 4/9] Revert "driver core: Set default
- deferred_probe_timeout back to 0."
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S239358AbiFEDYn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 4 Jun 2022 23:24:43 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2936186CD;
+        Sat,  4 Jun 2022 20:24:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=+l0GZ7z58a9WOSaF56AZ+Q4QK3euNlwmXxmDuMAYC+0=; b=K+yykGXDLEVF9Ufmqm3D0H4Shj
+        6gO8dpe4F4i8e1Pfucb+cFS4RfoYy6SGYGLVDLsl6Sjc/IDmP4LpaZyB7+jEouIdNL04if+bplwCG
+        fx/lUI/AjdVL+ox1TljEKu1wxbjrmmxFizBfiMcg3ImDC38rXPpVGJrvDOWR+czzTyMk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nxgsT-005b5j-K9; Sun, 05 Jun 2022 05:24:33 +0200
+Date:   Sun, 5 Jun 2022 05:24:33 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Piyush Malgujar <pmalgujar@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        cchavva@marvell.com, deppel@marvell.com,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        John Stultz <jstultz@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Android Kernel Team <kernel-team@android.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH v2 3/3] net: mdio: mdio-thunder: support for clock-freq
+ attribute
+Message-ID: <Ypwh8e0jdQPVyJVq@lunn.ch>
+References: <20220530125329.30717-1-pmalgujar@marvell.com>
+ <20220530125329.30717-4-pmalgujar@marvell.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220530125329.30717-4-pmalgujar@marvell.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 30, 2022 at 2:13 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Saravana,
->
-> On Thu, May 26, 2022 at 10:16 AM Saravana Kannan <saravanak@google.com> wrote:
-> > This reverts commit 11f7e7ef553b6b93ac1aa74a3c2011b9cc8aeb61.
->
-> scripts/chdeckpatch.pl says:
->
->     WARNING: Unknown commit id
-> '11f7e7ef553b6b93ac1aa74a3c2011b9cc8aeb61', maybe rebased or not
-> pulled?
->
-> I assume this is your local copy of
-> https://lore.kernel.org/r/20220526034609.480766-3-saravanak@google.com?
+> +static inline u32 clk_freq(u32 phase)
 
-I somehow missed all your replies and noticed it just now.
+Please keep with the naming scheme in the rest of the driver, 
+thunder_mdiobus_clk_freq()
 
-That commit should be based on driver-core-next.
+> +{
+> +	return (100000000U / (2 * (phase)));
+> +}
+> +
+> +static inline u32 calc_sample(u32 phase)
+> +{
 
--Saravana
+thunder_mdiobus_calc_sample()
 
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
->
-> --
-> To unsubscribe from this group and stop receiving emails from it, send an email to kernel-team+unsubscribe@android.com.
->
+> +	return (2 * (phase) - 3);
+> +}
+> +
+> +static u32 _config_clk(u32 req_freq, u32 *phase, u32 *sample)
+
+thunder_mdiobus_config_clk().
+
+> +{
+> +	unsigned int p;
+> +	u32 freq = 0, freq_prev;
+> +
+> +	for (p = PHASE_MIN; p < PHASE_DFLT; p++) {
+> +		freq_prev = freq;
+> +		freq = clk_freq(p);
+> +
+> +		if (req_freq >= freq)
+> +			break;
+> +	}
+> +
+> +	if (p == PHASE_DFLT)
+> +		freq = clk_freq(PHASE_DFLT);
+> +
+> +	if (p == PHASE_MIN || p == PHASE_DFLT)
+> +		goto out;
+> +
+> +	/* Check which clock value from the identified range
+> +	 * is closer to the requested value
+> +	 */
+> +	if ((freq_prev - req_freq) < (req_freq - freq)) {
+> +		p = p - 1;
+> +		freq = freq_prev;
+> +	}
+> +out:
+> +	*phase = p;
+> +	*sample = calc_sample(p);
+> +	return freq;
+> +}
+> +
+>  static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
+>  				     const struct pci_device_id *ent)
+>  {
+> @@ -56,6 +101,7 @@ static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
+>  	i = 0;
+>  	device_for_each_child_node(&pdev->dev, fwn) {
+>  		struct resource r;
+> +		u32 req_clk_freq;
+>  		struct mii_bus *mii_bus;
+>  		struct cavium_mdiobus *bus;
+>  		union cvmx_smix_clk smi_clk;
+> @@ -90,6 +136,23 @@ static int thunder_mdiobus_pci_probe(struct pci_dev *pdev,
+>  
+>  		smi_clk.u64 = oct_mdio_readq(bus->register_base + SMI_CLK);
+>  		smi_clk.s.clk_idle = 1;
+> +
+> +		if (!of_property_read_u32(node, "clock-frequency", &req_clk_freq)) {
+> +			u32 phase, sample;
+> +
+> +			dev_dbg(&pdev->dev, "requested bus clock frequency=%d\n",
+> +				req_clk_freq);
+> +
+> +			bus->clk_freq = _config_clk(req_clk_freq,
+> +						    &phase, &sample);
+> +
+> +			smi_clk.s.phase = phase;
+> +			smi_clk.s.sample_hi = (sample >> 4) & 0x1f;
+> +			smi_clk.s.sample = sample & 0xf;
+> +		} else {
+> +			bus->clk_freq = clk_freq(PHASE_DFLT);
+> +		}
+
+You can make this simpler by setting req_clk_freq to your odd
+default. Then call of_property_read_u32(). If the property is not
+defined, the value of req_clk_freq will not be changed, and the
+calculation should come out with the correct value.
+
+	    Andrew
