@@ -2,123 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31C5C53DD8C
-	for <lists+netdev@lfdr.de>; Sun,  5 Jun 2022 20:09:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F7F153DDC1
+	for <lists+netdev@lfdr.de>; Sun,  5 Jun 2022 20:50:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348375AbiFESJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jun 2022 14:09:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39464 "EHLO
+        id S1346862AbiFESuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jun 2022 14:50:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346682AbiFESJB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jun 2022 14:09:01 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD172B279
-        for <netdev@vger.kernel.org>; Sun,  5 Jun 2022 11:08:59 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nxugJ-0001D5-DA; Sun, 05 Jun 2022 20:08:55 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 8EA3B8C914;
-        Sun,  5 Jun 2022 18:08:54 +0000 (UTC)
-Date:   Sun, 5 Jun 2022 20:08:54 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Max Staudt <max@enpas.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v4 0/7] can: refactoring of can-dev module and of Kbuild
-Message-ID: <20220605180854.wry2wczguswaahg5@pengutronix.de>
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220603102848.17907-1-mailhol.vincent@wanadoo.fr>
- <20220604114603.hi4klmu2hwrvf75x@pengutronix.de>
- <CAMZ6RqJpJCAudv89YqFFQH80ei7WiAshyk1RtbEv=aXSyxo3hQ@mail.gmail.com>
- <20220604135541.2ki2eskyc7gsmrlu@pengutronix.de>
- <CAMZ6RqJ7qvXyxNVUK-=oJnK_oq7N94WABOb3pqeYf9Fw3G6J9A@mail.gmail.com>
- <20220604151859.hyywffrni4vo6gdl@pengutronix.de>
- <CAMZ6RqK45r-cqXvorUzRV-LA_C+mk6hNSA1b+0kLs7C-oTcDCA@mail.gmail.com>
- <20220605103909.5on3ep7lzorc35th@pengutronix.de>
- <CAMZ6RqLfJ8v+=HcSU8yprXeR8q8aSOsg4i379D9rZgE9ZmC=fg@mail.gmail.com>
+        with ESMTP id S234938AbiFESuj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jun 2022 14:50:39 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C17A4BFEA;
+        Sun,  5 Jun 2022 11:50:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=FkE53r6nZQQnAV4acYE2B3cPYu+99cXnaAWSdrSExB8=; b=nDzEMPr0RF60x3uCg2Aqx/9UxD
+        eK61NZQGsDucOJeU2sUyHecLCO8SPGTvk9aocS4yc2APaog33czsdLs+OodyLh+4IyjmHKSBAhEKk
+        I6euiO1Aey8i/RghyI0B0SBFO2AbFKvYCq4ScGELVo8D16A0iDP9/nzFI5IUdrqOIeUI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nxvKX-005fbG-CV; Sun, 05 Jun 2022 20:50:29 +0200
+Date:   Sun, 5 Jun 2022 20:50:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
+Cc:     "kuba@kernel.org" <kuba@kernel.org>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] net-sysfs: allow changing sysfs carrier when interface
+ is down
+Message-ID: <Ypz69QV6n5mW6Wl4@lunn.ch>
+References: <20220602003523.19530-1-joakim.tjernlund@infinera.com>
+ <20220601180147.40a6e8ea@kernel.org>
+ <4b700cbc93bc087115c1e400449bdff48c37298d.camel@infinera.com>
+ <20220602085645.5ecff73f@hermes.local>
+ <b4b1b8519ef9bfef0d09aeea7ab8f89e531130c8.camel@infinera.com>
+ <20220602095756.764471e8@kernel.org>
+ <f22f16c43411aafc0aaddd208e688dec1616e6bb.camel@infinera.com>
+ <20220602105215.12aff895@kernel.org>
+ <2765ed7299a05d6740ce7040b6ebe724b5979620.camel@infinera.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="e7jgsbsz7vpuyfms"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMZ6RqLfJ8v+=HcSU8yprXeR8q8aSOsg4i379D9rZgE9ZmC=fg@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <2765ed7299a05d6740ce7040b6ebe724b5979620.camel@infinera.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jun 02, 2022 at 06:01:08PM +0000, Joakim Tjernlund wrote:
+> On Thu, 2022-06-02 at 10:52 -0700, Jakub Kicinski wrote:
+> > On Thu, 2 Jun 2022 17:15:13 +0000 Joakim Tjernlund wrote:
+> > > > What is "our HW", what kernel driver does it use and why can't the
+> > > > kernel driver take care of making sure the device is not accessed
+> > > > when it'd crash the system?  
+> > > 
+> > > It is a custom asic with some homegrown controller. The full config path is too complex for kernel too
+> > > know and depends on user input.
+> > 
+> > We have a long standing tradition of not caring about user space
+> > drivers in netdev land. I see no reason to merge this patch upstream.
+> 
+> This is not a user space driver. View it as a eth controller with a dum PHY
+> which cannot convey link status. The kernel driver then needs help with managing carrier.
 
---e7jgsbsz7vpuyfms
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Please post the MAC driver then. We don't really like changes to the
+kernel without a user. You MAC driver would be such a user.
 
-On 05.06.2022 22:57:03, Vincent MAILHOL wrote:
-> > /me just realized that merged are independent of pull requests. I can
-> > create a local branch and merge it, as Davem and Jakub do it. I've added
-> > your v5 to can-next/master as a merge and I'll include this in my next
-> > PR to net-next if Davem and Jakub are OK with merges in my branch.
->=20
-> So my dreams of getting my kernel.org account swag just evaporated
-> (just kidding :))
+Could you also tell us more about the PHY. What capabilities does it
+have? I assume it is not C22 compatible. Does it at least have some
+sort of indicator of link? What might make sense is to use the
+fixed-link code. You can provide a callback which gives the actual
+link status up/down. And the fixed-link driver looks like a real PHY,
+so the MAC driver does not need to do anything special.
 
-No!
-
-> I think I will prepare a GPG key just to be ready in the opportunity
-> to get it signed pop-up one day.
->=20
-> Happy to see that this is reaching an end. Honestly speaking, the
-> menuconfig cleanup was not my most exciting contribution (euphemism)
-> but was still a necessity.
-
-Thanks for the persistence!
-
-> Glad that this is nearly over after more
-> than 80 messages in the full thread (including all five versions). If
-> I recall correctly, this is the longest thread we had in the last two
-> years. And thanks again to Max, Oliver and you for animating the
-> debate!
-
-So the longest-thread-badge goes definitely to you!
-
-Thanks again,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---e7jgsbsz7vpuyfms
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKc8TMACgkQrX5LkNig
-012qDAgAkxoqM1lCOeQSO/i/ImgmtKGiGJk9G3mWjZ6rjazclepXFOlNCI/sahDs
-Q6P0xVjutQXkAz3DD0Oajwvawyp0U9dHkZV4yI/JNKNJi5jJ/E4DqwjMb1SyaefB
-9u5E2e2id6+hADctI5fs4fZ/iK2bnXeytSev0DzRoOFYSFRrroAsaTpu/Us8SaSm
-RgK9YOpzOReo+u3uKLMgFQ2F/edk7VT8n9QgjyClG9NGiN/WagzFPewpOuM0TiCk
-EPqoztTNGxVC3jRezbGNOdpj60O+nXFJW2xkuQPCNgWVNk22YFO0OPhYgtVpHzeI
-ed2pr+qXm4bigRhO7JW2gOUaSaILFA==
-=GA7q
------END PGP SIGNATURE-----
-
---e7jgsbsz7vpuyfms--
+   Andrew
