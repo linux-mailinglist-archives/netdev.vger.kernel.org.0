@@ -2,84 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E79B53E940
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 19:08:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4030853E683
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 19:07:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241104AbiFFPp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 11:45:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32840 "EHLO
+        id S241174AbiFFP5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 11:57:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241083AbiFFPpU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 11:45:20 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3308E1F5353
-        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 08:45:19 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id j7so13118382pjn.4
-        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 08:45:19 -0700 (PDT)
+        with ESMTP id S241168AbiFFP5k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 11:57:40 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA724A3C1;
+        Mon,  6 Jun 2022 08:57:38 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id h23so18738555ejj.12;
+        Mon, 06 Jun 2022 08:57:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=aAaGz42Ssf6oh1VgdSL7hzx+O4lxtWIHreUUYK1nFB8=;
-        b=p//9qtv6Q3J7CWlWuv4+yoCyjWujQzETk6W2VU6dLEI8t3RnPYXWAjxa7O12Ae8GND
-         l6P2iTtjaHwyvr/VmaTSt1Bj/6aaP9FQgzwewCRWEFM3fceUbVcOfG1s9r+HgKCCnxDf
-         vl61D33/ldk8emGaqOoGle0O835A+wKLwu5oKcoCR16iyT6QRM4rAydBeZOq8EkdAOIu
-         sXmHPu71/B7hh80KT2HLLdK/d/IsD2pKE+9NOZzk31akKyzehlY8Wd1F58XBhRr4D9D0
-         Qx8OBQz4byFBpd+uUP2XWQ5TnqWkpI63B3hIWqQV4asDQHoV8R7pYCq+ICb69vc5VCvL
-         nDCw==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=71RW4NcxoOxxSyC8SlZA5/FRkyGZqu91M7XBBAasel4=;
+        b=YlJUTaIes/Bt7GARzsgnQ4mjZxipb0yUy5nubEIknFaFld6Zu5ST9Rx3tiEWGs0FsV
+         Xp3vjZkxVRPCVRf5SyKRUkSo60TQI/tkinNAAiAxPCTWtl5W/atNYTDcTFRjr5o0EcIs
+         faI7kg1EZbD0nxhBTwDzzlG83H55AzR8Cc74/jLaeMdoSTt+ZiHUOwY0v7eIYHNffjk2
+         I6FHn1Riqor61aU1N9rF2crwCdSDzTevoLyS6vQ1KWqL2jB3IM7ItexUMlpfUwC8be0Y
+         uOfZV7lhb09KzEaxEDhFYlfY6lT+UPdAAql/09eVEWyKXWnj1TTePcT6/JRMZ+9aEsI/
+         l1pA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=aAaGz42Ssf6oh1VgdSL7hzx+O4lxtWIHreUUYK1nFB8=;
-        b=cIlf1C7sT5U6shF1Grwld/Jt99JmDO7r1JuDVDzA6ZoqXCNJA6qhwlKVe931QmwO3R
-         f5PSgdLxBtAqbTCeIUtI/jf13coMrwXQPy+PORnpAP8LtS1+vXGzSHOWNkAYqYJf6tdL
-         sP0PzTtscebSmy60dwkfeShfTdbQZWEDSPy/nCsJ4moL+3hedyvo44lVhKLGsfOudox4
-         GKfiFToF9iEzvkDVKN4Ycl1F3BkgkDGkig4mPnJlz8suIXM77boqAg1s1ofXoc4M0zqp
-         yWPlTczt/CtuWrMFq8IsFyE2OxLOwO/ZbsxhENvGNSRSkwezLNYbIh2YqM9EkJpYgD+o
-         /sng==
-X-Gm-Message-State: AOAM530LCbK5L7yWEdi47B/SenpFCsT3UZr+vKeoYpBtKuSdOAGmdBe+
-        IhNWt/5PqG3HlqdamnCkpfT8hQ==
-X-Google-Smtp-Source: ABdhPJwYSax4yy03NbseMEpK+rfivSlFU9soPhQJ2u+L/b4lVSmI4Nu+hlsJXMbnmO4WZb6qGpVc2w==
-X-Received: by 2002:a17:90a:6b41:b0:1e0:e082:14c7 with SMTP id x1-20020a17090a6b4100b001e0e08214c7mr61618515pjl.92.1654530318715;
-        Mon, 06 Jun 2022 08:45:18 -0700 (PDT)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id g196-20020a6252cd000000b0051b9e224623sm11471634pfb.141.2022.06.06.08.45.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 08:45:18 -0700 (PDT)
-Date:   Mon, 6 Jun 2022 08:45:15 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, dsahern@gmail.com,
-        netdev@vger.kernel.org, tariqt@nvidia.com
-Subject: Re: [PATCH iproute2-next v2] ss: Shorter display format for TLS
- zerocopy sendfile
-Message-ID: <20220606084515.4705b22d@hermes.local>
-In-Reply-To: <2a1d3514-5c6a-62b6-05b7-b344e0ba3e47@nvidia.com>
-References: <20220601122343.2451706-1-maximmi@nvidia.com>
-        <20220601234249.244701-1-kuba@kernel.org>
-        <bf8c357e-6a1d-4c42-e6f8-f259879b67c6@nvidia.com>
-        <20220602094428.4464c58a@kernel.org>
-        <779eeee9-efae-56c2-5dd6-dea1a027f65d@nvidia.com>
-        <20220603085140.26f29d80@kernel.org>
-        <2a1d3514-5c6a-62b6-05b7-b344e0ba3e47@nvidia.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=71RW4NcxoOxxSyC8SlZA5/FRkyGZqu91M7XBBAasel4=;
+        b=g3+GwSTr+vO+7Zvzu6TjzByasPrIrX9Na1a/ZiTk/q41bLaZxLmDvc8ivQxSlnC/XW
+         TSJfZYyH3aVDSG8BxW/wOa8bLRvLtVp9ljPo2+QOQG2XGFIsJXbxfWev1PMJP0LDidVK
+         8XMPesqlk7biWZ287SiROloJSvhfr5jVIhkrIA/ldrI+0JCMq0wr+L/UuaToTMSDzoou
+         ZzMIY0qhx/RZRSFlx92lLG2EsYSIJSD27DJ6j1e+5+1N0Q88aQvN+ikzQWmPiskG2Fu+
+         7rcbwLR9kyjBsnQMapwp7A0/MgbR6QiotOiJBN5SJCVUskwaqZMN8Vp+8R9c2nYshLBX
+         LoIQ==
+X-Gm-Message-State: AOAM531K3JchLtILPcniCJHrw7q3ofYKEZnwFUrbhXtAF0vyiU4xl6x2
+        CH/Zu70Ikr8DB2Dz3yzl/cDtMzuspFinHbVbNeoTrm1RUX8=
+X-Google-Smtp-Source: ABdhPJwpoEaXlJdxKjWf0crjE2aWqy0H64AhFRqcFW9mVhuWXkUdSmEsIpQphFus89SILKpBVjumDM7UdLsAVJJd7pw=
+X-Received: by 2002:a17:907:72c1:b0:6ff:c5f:6b7d with SMTP id
+ du1-20020a17090772c100b006ff0c5f6b7dmr22322792ejc.676.1654531056926; Mon, 06
+ Jun 2022 08:57:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220606103734.92423-1-kurt@linutronix.de>
+In-Reply-To: <20220606103734.92423-1-kurt@linutronix.de>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 6 Jun 2022 08:57:25 -0700
+Message-ID: <CAADnVQJ--oj+iZYXOwB1Rs9Qiy6Ph9HNha9pJyumVom0tiOFgg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: Add BPF-helper for accessing CLOCK_TAI
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Joanne Koong <joannelkoong@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Geliang Tang <geliang.tang@suse.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 6 Jun 2022 14:29:02 +0300
-Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
+On Mon, Jun 6, 2022 at 3:38 AM Kurt Kanzenbach <kurt@linutronix.de> wrote:
+>
+> From: Jesper Dangaard Brouer <brouer@redhat.com>
+>
+> Commit 3dc6ffae2da2 ("timekeeping: Introduce fast accessor to clock tai")
+> introduced a fast and NMI-safe accessor for CLOCK_TAI. Especially in time
+> sensitive networks (TSN), where all nodes are synchronized by Precision Time
+> Protocol (PTP), it's helpful to have the possibility to generate timestamps
+> based on CLOCK_TAI instead of CLOCK_MONOTONIC. With a BPF helper for TAI in
+> place, it becomes very convenient to correlate activity across different
+> machines in the network.
 
-> That makes some sense to me. What about calling the ss flag 
-> "zc_sendfile_ro" or "zc_ro_sendfile"? It will still be clear it's 
-> zerocopy, but with some nuance.
-
--ENAMETOOLONG
+That's a fresh feature. It feels risky to bake it into uapi already.
+imo it would be better to annotate tk_core variable in vmlinux BTF.
+Then progs will be able to read all possible timekeeper offsets.
