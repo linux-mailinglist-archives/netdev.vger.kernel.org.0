@@ -2,145 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03AC553ECD1
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 19:14:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BACCC53ED04
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 19:32:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229734AbiFFROC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 13:14:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47292 "EHLO
+        id S229688AbiFFRcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 13:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiFFRNq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 13:13:46 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AFD366B3
-        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 10:04:16 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id u18so12604476plb.3
-        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 10:04:16 -0700 (PDT)
+        with ESMTP id S229654AbiFFRcF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 13:32:05 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C73F1A45EC
+        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 10:32:02 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id v106so26968069ybi.0
+        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 10:32:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=CyWF09OzZxcB2K1Aed72uymGrOLckmk71H2nyGVg4zY=;
-        b=cCFQHaLvQAH6GknCpb5d6lVa9a1FTUBLqcL61p2t2cdzUCV91fyyLbtB6QVoeW0eQt
-         RLUiGofDTsoQUzdlKpPLKNk1HQ6cDgDYcd9lmhZ3VSkm8+4nxGtqn64EpWmLqEPXFeqO
-         BYvSPDm9iQIrAzMyZQmIPjhUkJs3ke64Z5zeiBUx4RZojHaMZCmlmgd+i9tyRa16a7BY
-         gFwq7lBYfPOevt3UzhHQsv6Nvk1g3hwL4SWzg5Va5LR/AJ9mMl/EPBTBfTEsbhQWTgAn
-         II7C2MEBmFRut/8mwtTV81lVlGiTL+O/IUjzKMVtigqTBQRj1NxnRLvpN8ASVrcFObpW
-         M1Ew==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=h4C9WpLUh/VIc8qz9wWANgWf77RNe31qiFw7MR8/RHI=;
+        b=apHOPXnRIiSdZ45R4m8vufwr+NeG8y1pzCQXi+GrC852y1Xl9f9LsfqG9me1qaLzoh
+         8+ABu67BD5sTDqxowSSwbPqKxcasK8w2GAsOqdSP0hLndoa0EtCa2+BwsK2gFolE4pHK
+         MyQA5SJMyqdvkrg6txryVjkZMms3+fW2PzqSTz7GiB2iJhkpr/BfDOR+nBYFU0BI/U35
+         Kvzf3ek1xq8H44vc7oevhKT4Zc3yt1djSQEpcGAcQljoe/1v37kRRBZRf+k3acRGyM9L
+         YYr+/T8gGjQ1wsfAe7i6SArugJMmB9kO930+XrArPjwuVhqfo33/MTTBi20KocaK+jXW
+         cGHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=CyWF09OzZxcB2K1Aed72uymGrOLckmk71H2nyGVg4zY=;
-        b=sRZ321aidULwTOTXAw3QER+7iwRi1L2I8dz9zO7JSnRpAggYb/L19n+gglQq64z2pE
-         XBVre8F4a9NCYWfjE4jeGusI2Ww3/YqHWoreYtPaI2u7F0l+xStkTH6CQ25zfrh4vLM0
-         2Mxm7VWcM9OUSpmYaCnJ6oOu7WC/ppmtiDDKPFNlvmliU4xvWljaDK/RImIWUxYHlLev
-         +GAokfPoj37DmOmGmeMNoG3vCQ4QuKQLh3XKPhbacuULj2kGaolrOkFly7Hi6RoIj7be
-         dfknTaTqdS5CMVlTaG9jP1kp+bakAjHVAT5V4EG9zzGIKxZoKkhCEVROmp2IvizyvO5e
-         vEOw==
-X-Gm-Message-State: AOAM530rleT6dNrjnnSHIxCtlAkyi/AWarN6OOAGYQgc61/cN2Ewod6Y
-        JdGXGDZFfLvmZ2D2IA7WuW+u3znwSD8=
-X-Google-Smtp-Source: ABdhPJwRCJqhZwSHjYOtH7REGuF7ymQvvaAZeiAt4vre6Erb+On6VF4BN3QVgU708/xEZH58fZ6F3g==
-X-Received: by 2002:a17:90b:3c6:b0:1e2:e9fc:4e79 with SMTP id go6-20020a17090b03c600b001e2e9fc4e79mr47490529pjb.192.1654535056293;
-        Mon, 06 Jun 2022 10:04:16 -0700 (PDT)
-Received: from [192.168.0.128] ([98.97.37.52])
-        by smtp.googlemail.com with ESMTPSA id ju10-20020a17090b20ca00b001df264610c4sm13408910pjb.0.2022.06.06.10.04.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 10:04:15 -0700 (PDT)
-Message-ID: <83e2fd08cabc0227d105c80d8e0538f546754cc7.camel@gmail.com>
-Subject: Re: [PATCH v4] igb: Assign random MAC address instead of fail in
- case of invalid one
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     =?UTF-8?Q?=E6=A2=81=E7=A4=BC=E5=AD=A6?= <lianglixuehao@126.com>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>, anthony.l.nguyen@intel.com,
-        intel-wired-lan@lists.osuosl.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>, lianglixue@greatwall.com.cn
-Date:   Mon, 06 Jun 2022 10:04:13 -0700
-In-Reply-To: <0362CDDC-AE9B-448C-BE7C-D563B12D5A61@126.com>
-References: <20220601150428.33945-1-lianglixuehao@126.com>
-         <f16ef33a4b12cebae2e2300a509014cd5de4a0d2.camel@gmail.com>
-         <0362CDDC-AE9B-448C-BE7C-D563B12D5A61@126.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=h4C9WpLUh/VIc8qz9wWANgWf77RNe31qiFw7MR8/RHI=;
+        b=5JpGAk9Ddi3hRS9IfiAHvH1I27A8WlJ5LnKPD8apqB0W6+sQByhqssqy5pSzP0RCPb
+         XAvohcNKm02v6vl+mZnvnlT/bEh3RHBi5EGLX1iLJxhGVpOSke/xgyVFK6/tUgknG3fi
+         l5ejCMuYKashq1+YQ4xOS71XrYiqoSY3pZxSgy8z2L+ynxwEwsQtvbO2weHUJPlLifjn
+         ujkBbPVgNqhlbE2OgOfw3k23DdiyPGGVdxeEkRfcPAI15sTq6Ltx9Hh3PIN3VnZQO0lB
+         HDzWaY3+vo31oDWE/APSw36R+VU9c0domX4Gvz4QASoYfWMkIhDLY8qkVz0Y9MYUnkfP
+         P0JQ==
+X-Gm-Message-State: AOAM532EDzeL8Wu5gBtU0OMd5nY/kOArBCckMEO+e6rniCXlDgLTYfhf
+        ypxK4q0H2ymvUZ7QVOoSO6mKpD8doaHpUS998UHySA==
+X-Google-Smtp-Source: ABdhPJyln0XAhu0MGDOEEGvLmEPTQLb7ZpwI8GRDAEKgqr2CoPH8Y2XkVwUILvdNSg4aRKRJjQka6uK5s4Q9xgA9oVI=
+X-Received: by 2002:a05:6902:c9:b0:641:1998:9764 with SMTP id
+ i9-20020a05690200c900b0064119989764mr25712824ybs.427.1654536721612; Mon, 06
+ Jun 2022 10:32:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220606162138.81505-1-duoming@zju.edu.cn>
+In-Reply-To: <20220606162138.81505-1-duoming@zju.edu.cn>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 6 Jun 2022 10:31:49 -0700
+Message-ID: <CANn89i+HbdWS4JU0odCbRApuCTGFAt9_NSUoCSFo-b4-z0uWCQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] ax25: Fix deadlock caused by skb_recv_datagram
+ in ax25_recvmsg
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     LKML <linux-kernel@vger.kernel.org>, jreuter@yaina.de,
+        Ralf Baechle <ralf@linux-mips.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>, linux-hams@vger.kernel.org,
+        thomas@osterried.de
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-06-06 at 22:35 +0800, 梁礼学 wrote:
-> Hi,
-> thank you very much for your suggestion.
-> 
-> As you said, the way to cause ‘Invalid MAC address’ is not only through igb_set_eeprom,
-> but also some pre-production or uninitialized boards.
-> 
-> But if set by module parameters, especially in the case of CONFIG_IGB=y,
-> The situation may be more troublesome, because for most users, if the system does not properly load and generate 
-> the network card device, they can only ask the host supplier for help.But,
+On Mon, Jun 6, 2022 at 9:21 AM Duoming Zhou <duoming@zju.edu.cn> wrote:
+>
+> The skb_recv_datagram() in ax25_recvmsg() will hold lock_sock
+> and block until it receives a packet from the remote. If the client
+> doesn`t connect to server and calls read() directly, it will not
+> receive any packets forever. As a result, the deadlock will happen.
+>
+> The fail log caused by deadlock is shown below:
+>
+> [  861.122612] INFO: task ax25_deadlock:148 blocked for more than 737 seconds.
+> [  861.124543] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> [  861.127764] Call Trace:
+> [  861.129688]  <TASK>
+> [  861.130743]  __schedule+0x2f9/0xb20
+> [  861.131526]  schedule+0x49/0xb0
+> [  861.131640]  __lock_sock+0x92/0x100
+> [  861.131640]  ? destroy_sched_domains_rcu+0x20/0x20
+> [  861.131640]  lock_sock_nested+0x6e/0x70
+> [  861.131640]  ax25_sendmsg+0x46/0x420
+> [  861.134383]  ? ax25_recvmsg+0x1e0/0x1e0
+> [  861.135658]  sock_sendmsg+0x59/0x60
+> [  861.136791]  __sys_sendto+0xe9/0x150
+> [  861.137212]  ? __schedule+0x301/0xb20
+> [  861.137710]  ? __do_softirq+0x4a2/0x4fd
+> [  861.139153]  __x64_sys_sendto+0x20/0x30
+> [  861.140330]  do_syscall_64+0x3b/0x90
+> [  861.140731]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> [  861.141249] RIP: 0033:0x7fdf05ee4f64
+> [  861.141249] RSP: 002b:00007ffe95772fc0 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+> [  861.141249] RAX: ffffffffffffffda RBX: 0000565303a013f0 RCX: 00007fdf05ee4f64
+> [  861.141249] RDX: 0000000000000005 RSI: 0000565303a01678 RDI: 0000000000000005
+> [  861.141249] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+> [  861.141249] R10: 0000000000000000 R11: 0000000000000246 R12: 0000565303a00cf0
+> [  861.141249] R13: 00007ffe957730e0 R14: 0000000000000000 R15: 0000000000000000
+>
+> This patch moves the skb_recv_datagram() before lock_sock() in order
+> that other functions that need lock_sock could be executed.
+>
 
-A module parameter can be passed as a part of the kernel command line
-in the case of CONFIG_IGB=y. So it is still something that can be dealt
-with via module parameters.
 
-> (1) If the invalid mac address is caused by igb_set_eeprom, it is relatively more convenient for most operations engineers 
-> to change the invalid mac address to the mac address they think should be valid by ethtool, which may still be Invalid.
-> At this time,assigned random MAC address which is valid by the driver enables the network card driver to continue to complete the loading.
-> As for what you mentioned, in this case if the user does not notice that the driver had used a random mac address,
-> it may lead to other problems.but the fact is that if the user deliberately sets a customized mac address, 
-> the user should pay attention to whether the mac address is successfully changed, and also pay attention to the 
-> expected result after changing the mac address.When users find that the custom mac address cannot 
-> be successfully changed to the customized one, they can continue debugging, which is easier than looking for 
-> the host supplier’s support from the very first time of “Invalid MAC address”.
+Why is this targeting net-next tree ?
 
-The problem is, having a random MAC address automatically assigned
-makes it less likely to detect issues caused by (1). What I have seen
-in the past is people program EEPROMs and overwrite things like a MAC
-address to all 0s. This causes an obvious problem with the current
-driver. If it is changed to just default to using a random MAC address
-when this occurs the issue can be easily overlooked and will likely
-lead to more difficulty in trying to maintain the device as it becomes
-harder to identify if there may be EEPROM issues.
+1) A fix should target net tree
+2) It should include a Fixes: tag
 
-> (2) If the invalid mac address is caused during pre-production or initialization of the board, it is even more necessary 
-> to use a random mac address to complete the loading of the network card, because the user only cares about whether 
-> the network card is loaded, not what the valid MAC address is.
+Also:
+- this patch bypasses tests in ax25_recvmsg()
+- This might break applications depending on blocking read() operations.
 
-This isn't necessarily true. What I was getting at is that in the pre-
-production case there may not be an EEPROM even loaded and as one of
-the initial steps it will be necessary to put one together for the
-device.
+I feel a real fix is going to be slightly more difficult than that.
 
-The user could either make the module parameter permenant and have it
-used for every boot, or they might just have to set it once in order to
-load a valid EEPROM image on the system.
+Thank you
 
-> And I also noticed that ixgbvef_sw_init also uses a random valid mac address to continue loading the driver when 
-> the address is invalid. In addition, network card drivers such as marvell, broadcom, realtek, etc., when an invalid 
-> MAC address is detected, it also does not directly exit the driver loading, but uses a random valid MAC address.
-
-The VF drivers assign a random MAC address due to more historic reasons
-than anything else. In addition generally the use of the random MAC
-address is more-or-less frowned upon. There is logic in ixgbevf that
-will cause the PF to reject the VF MAC address and overwrite the MAC
-address from the PF side.
-
-As far as the other drivers they have their reasons. In many cases I
-suspect the driver is intended for an embedded environment where the
-user might not be able to reach the device if the NIC doesn't come up.
-
-The igb driver is meant to typically be used in a desktop environment.
-Catching a malformed MAC address is important as a part of that as it
-is one of the health checks for the device. That is why I am open to
-supporting it by default, but only if it is via a module parameter to
-specify the behavior. Otherwise we are changing a key piece of driver
-behavior and will be potentially masking EEPROM issues.
-
+> Reported-by: Thomas Habets <thomas@@habets.se>
+> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+> ---
+>  net/ax25/af_ax25.c | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
+>
+> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+> index 95393bb2760..02cd6087512 100644
+> --- a/net/ax25/af_ax25.c
+> +++ b/net/ax25/af_ax25.c
+> @@ -1665,6 +1665,11 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>         int copied;
+>         int err = 0;
+>
+> +       /* Now we can treat all alike */
+> +       skb = skb_recv_datagram(sk, flags, &err);
+> +       if (!skb)
+> +               goto done;
+> +
+>         lock_sock(sk);
+>         /*
+>          *      This works for seqpacket too. The receiver has ordered the
+> @@ -1675,11 +1680,6 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>                 goto out;
+>         }
+>
+> -       /* Now we can treat all alike */
+> -       skb = skb_recv_datagram(sk, flags, &err);
+> -       if (skb == NULL)
+> -               goto out;
+> -
+>         if (!sk_to_ax25(sk)->pidincl)
+>                 skb_pull(skb, 1);               /* Remove PID */
+>
+> @@ -1725,6 +1725,7 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>  out:
+>         release_sock(sk);
+>
+> +done:
+>         return err;
+>  }
+>
+> --
+> 2.17.1
+>
