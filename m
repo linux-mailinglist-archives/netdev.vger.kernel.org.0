@@ -2,26 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B287F53F18A
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 23:21:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F5B953F190
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 23:21:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231193AbiFFVVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S234245AbiFFVVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 6 Jun 2022 17:21:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40886 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234245AbiFFVVG (ORCPT
+        with ESMTP id S233962AbiFFVVG (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 17:21:06 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27A2BC4EBC;
-        Mon,  6 Jun 2022 14:21:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B536C3D1A;
+        Mon,  6 Jun 2022 14:21:01 -0700 (PDT)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net 0/7] Netfilter fixes for net
-Date:   Mon,  6 Jun 2022 23:20:48 +0200
-Message-Id: <20220606212055.98300-1-pablo@netfilter.org>
+Subject: [PATCH net 1/7] netfilter: nat: really support inet nat without l3 address
+Date:   Mon,  6 Jun 2022 23:20:49 +0200
+Message-Id: <20220606212055.98300-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220606212055.98300-1-pablo@netfilter.org>
+References: <20220606212055.98300-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -33,65 +35,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Florian Westphal <fw@strlen.de>
 
-The following patchset contains Netfilter fixes for net:
+When no l3 address is given, priv->family is set to NFPROTO_INET and
+the evaluation function isn't called.
 
-1) Fix NAT support for NFPROTO_INET without layer 3 address,
-   from Florian Westphal.
+Call it too so l4-only rewrite can work.
+Also add a test case for this.
 
-2) Use kfree_rcu(ptr, rcu) variant in nf_tables clean_net path.
-
-3) Use list to collect flowtable hooks to be deleted.
-
-4) Initialize list of hook field in flowtable transaction.
-
-5) Release hooks on error for flowtable updates.
-
-6) Memleak in hardware offload rule commit and abort paths.
-
-7) Early bail out in case device does not support for hardware offload.
-   This adds a new interface to net/core/flow_offload.c to check if the
-   flow indirect block list is empty.
-
-Please, pull these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git
-
-Thanks.
-
-----------------------------------------------------------------
-
-The following changes since commit 0a375c822497ed6ad6b5da0792a12a6f1af10c0b:
-
-  tcp: tcp_rtx_synack() can be called from process context (2022-05-31 21:40:10 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git HEAD
-
-for you to fetch changes up to 3a41c64d9c1185a2f3a184015e2a9b78bfc99c71:
-
-  netfilter: nf_tables: bail out early if hardware offload is not supported (2022-06-06 19:19:15 +0200)
-
-----------------------------------------------------------------
-Florian Westphal (1):
-      netfilter: nat: really support inet nat without l3 address
-
-Pablo Neira Ayuso (6):
-      netfilter: nf_tables: use kfree_rcu(ptr, rcu) to release hooks in clean_net path
-      netfilter: nf_tables: delete flowtable hooks via transaction list
-      netfilter: nf_tables: always initialize flowtable hook list in transaction
-      netfilter: nf_tables: release new hooks on unsupported flowtable flags
-      netfilter: nf_tables: memleak flow rule from commit path
-      netfilter: nf_tables: bail out early if hardware offload is not supported
-
- include/net/flow_offload.h                   |  1 +
- include/net/netfilter/nf_tables.h            |  1 -
- include/net/netfilter/nf_tables_offload.h    |  2 +-
- net/core/flow_offload.c                      |  6 ++++
- net/netfilter/nf_tables_api.c                | 54 ++++++++++++----------------
- net/netfilter/nf_tables_offload.c            | 23 +++++++++++-
+Fixes: a33f387ecd5aa ("netfilter: nft_nat: allow to specify layer 4 protocol NAT only")
+Reported-by: Yi Chen <yiche@redhat.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
  net/netfilter/nft_nat.c                      |  3 +-
- tools/testing/selftests/netfilter/nft_nat.sh | 43 ++++++++++++++++++++++
- 8 files changed, 98 insertions(+), 35 deletions(-)
+ tools/testing/selftests/netfilter/nft_nat.sh | 43 ++++++++++++++++++++
+ 2 files changed, 45 insertions(+), 1 deletion(-)
+
+diff --git a/net/netfilter/nft_nat.c b/net/netfilter/nft_nat.c
+index 4394df4bc99b..e5fd6995e4bf 100644
+--- a/net/netfilter/nft_nat.c
++++ b/net/netfilter/nft_nat.c
+@@ -335,7 +335,8 @@ static void nft_nat_inet_eval(const struct nft_expr *expr,
+ {
+ 	const struct nft_nat *priv = nft_expr_priv(expr);
+ 
+-	if (priv->family == nft_pf(pkt))
++	if (priv->family == nft_pf(pkt) ||
++	    priv->family == NFPROTO_INET)
+ 		nft_nat_eval(expr, regs, pkt);
+ }
+ 
+diff --git a/tools/testing/selftests/netfilter/nft_nat.sh b/tools/testing/selftests/netfilter/nft_nat.sh
+index eb8543b9a5c4..924ecb3f1f73 100755
+--- a/tools/testing/selftests/netfilter/nft_nat.sh
++++ b/tools/testing/selftests/netfilter/nft_nat.sh
+@@ -374,6 +374,45 @@ EOF
+ 	return $lret
+ }
+ 
++test_local_dnat_portonly()
++{
++	local family=$1
++	local daddr=$2
++	local lret=0
++	local sr_s
++	local sr_r
++
++ip netns exec "$ns0" nft -f /dev/stdin <<EOF
++table $family nat {
++	chain output {
++		type nat hook output priority 0; policy accept;
++		meta l4proto tcp dnat to :2000
++
++	}
++}
++EOF
++	if [ $? -ne 0 ]; then
++		if [ $family = "inet" ];then
++			echo "SKIP: inet port test"
++			test_inet_nat=false
++			return
++		fi
++		echo "SKIP: Could not add $family dnat hook"
++		return
++	fi
++
++	echo SERVER-$family | ip netns exec "$ns1" timeout 5 socat -u STDIN TCP-LISTEN:2000 &
++	sc_s=$!
++
++	result=$(ip netns exec "$ns0" timeout 1 socat TCP:$daddr:2000 STDOUT)
++
++	if [ "$result" = "SERVER-inet" ];then
++		echo "PASS: inet port rewrite without l3 address"
++	else
++		echo "ERROR: inet port rewrite"
++		ret=1
++	fi
++}
+ 
+ test_masquerade6()
+ {
+@@ -1148,6 +1187,10 @@ fi
+ reset_counters
+ test_local_dnat ip
+ test_local_dnat6 ip6
++
++reset_counters
++test_local_dnat_portonly inet 10.0.1.99
++
+ reset_counters
+ $test_inet_nat && test_local_dnat inet
+ $test_inet_nat && test_local_dnat6 inet
+-- 
+2.30.2
+
