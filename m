@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3324D53E0C1
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 08:03:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DB7E53E0EC
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 08:03:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229645AbiFFF1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 01:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47972 "EHLO
+        id S229578AbiFFF3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 01:29:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229660AbiFFF1k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 01:27:40 -0400
-Received: from condef-07.nifty.com (condef-07.nifty.com [202.248.20.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE529119069;
-        Sun,  5 Jun 2022 22:06:05 -0700 (PDT)
-Received: from conuserg-10.nifty.com ([10.126.8.73])by condef-07.nifty.com with ESMTP id 2564ttqF026112;
-        Mon, 6 Jun 2022 13:56:15 +0900
+        with ESMTP id S229494AbiFFF2F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 01:28:05 -0400
+Received: from condef-08.nifty.com (condef-08.nifty.com [202.248.20.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B65713A2E2;
+        Sun,  5 Jun 2022 22:07:59 -0700 (PDT)
+Received: from conuserg-10.nifty.com ([10.126.8.73])by condef-08.nifty.com with ESMTP id 2564tuC1017874;
+        Mon, 6 Jun 2022 13:56:17 +0900
 Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-10.nifty.com with ESMTP id 2564rxUA026256;
-        Mon, 6 Jun 2022 13:54:02 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 2564rxUA026256
+        by conuserg-10.nifty.com with ESMTP id 2564rxUB026256;
+        Mon, 6 Jun 2022 13:54:03 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 2564rxUB026256
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1654491243;
-        bh=ziQR3Y2YVkVjwU2FN5ZC+RUigUk86AY6lP77BM69cbg=;
+        s=dec2015msa; t=1654491244;
+        bh=8DsFZaGELYB7JvwytYb5vfoaMr6TS1NLhkVqZf+4BBQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YK9ljVsieM/Oe6LIGFVOj3act3Y+vtt/qbzrdfidezomn2THxtGDQwGpxvOTi+RZm
-         pF6qs15bi0tyntc8Wl2uv9tH2cyTx1n1tjZBxaA7Qrlo/N+bRY7zTY6r2eMQ3aucBy
-         qKx3ZvjyvPzBa0urhSQlaHECANtaYdh97M9CA1GDGnSa6nuzgE81NbhkbnNqY1mfKs
-         AazrY8ger8oAZ/HhDmhCEIVwD/G2WRymdTVF5iixsIqcsRkckW3FVQ4TLXq5X5SgJk
-         XK0lqGi8TpdbWNPWX/0Y21f68B5Gu3gNa8dTCk/FyDWtGaHASScGNl7Gm9EKZbSIb2
-         US58dmCjmgOsA==
+        b=fJ/D8hXjFIh+wPt+yETn7vdGZzNYq1/3hzgsf0g1WYd5EvNUKb7sFe09qxQP3X6gY
+         LxIASv+ka9fQHrDIPDpxMsTAaO+AlqlWnhFLkNWI+uEk/r6yTEorleWfqnhh/kdpAs
+         KwCsXgpyVxeFWbadM7lVp0wWLOmjLNGcHHyzDhgztK56+fJKLq72cUvYqKOcIbWCGA
+         ZDOFibDqFM4sFQCLqQk+ahSkZcBIpEzZRNhjqiJ2X/3NhdrYp0EOIPVBNW47lG6xNt
+         uGDsC0txo+64CJXCY3FbmnCGOFOV93uRPyVqejSorqsP8z3Z3k2oxDW4ZvKOAT4Frj
+         eu9G5Y/Yl4MSw==
 X-Nifty-SrcIP: [133.32.177.133]
 From:   Masahiro Yamada <masahiroy@kernel.org>
 To:     "David S . Miller" <davem@davemloft.net>,
@@ -39,13 +39,12 @@ Cc:     Eric Dumazet <edumazet@google.com>,
         Masahiro Yamada <masahiroy@kernel.org>,
         Stephen Rothwell <sfr@canb.auug.org.au>,
         David Ahern <dsahern@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        David Lebrun <david.lebrun@uclouvain.be>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 2/3] net: xfrm: unexport __init-annotated xfrm4_protocol_init()
-Date:   Mon,  6 Jun 2022 13:53:54 +0900
-Message-Id: <20220606045355.4160711-3-masahiroy@kernel.org>
+Subject: [PATCH 3/3] net: ipv6: unexport __init-annotated seg6_hmac_init()
+Date:   Mon,  6 Jun 2022 13:53:55 +0900
+Message-Id: <20220606045355.4160711-4-masahiroy@kernel.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220606045355.4160711-1-masahiroy@kernel.org>
 References: <20220606045355.4160711-1-masahiroy@kernel.org>
@@ -75,27 +74,30 @@ There are two ways to fix it:
   - Remove __init
   - Remove EXPORT_SYMBOL
 
-I chose the latter for this case because the only in-tree call-site,
-net/ipv4/xfrm4_policy.c is never compiled as modular.
-(CONFIG_XFRM is boolean)
+I chose the latter for this case because the caller (net/ipv6/seg6.c)
+and the callee (net/ipv6/seg6_hmac.c) belong to the same module.
+It seems an internal function call in ipv6.ko.
 
-Fixes: 2f32b51b609f ("xfrm: Introduce xfrm_input_afinfo to access the the callbacks properly")
+Fixes: bf355b8d2c30 ("ipv6: sr: add core files for SR HMAC support")
 Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
 Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
 
- net/ipv4/xfrm4_protocol.c | 1 -
+ net/ipv6/seg6_hmac.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/net/ipv4/xfrm4_protocol.c b/net/ipv4/xfrm4_protocol.c
-index 2fe5860c21d6..b146ce88c5d0 100644
---- a/net/ipv4/xfrm4_protocol.c
-+++ b/net/ipv4/xfrm4_protocol.c
-@@ -304,4 +304,3 @@ void __init xfrm4_protocol_init(void)
+diff --git a/net/ipv6/seg6_hmac.c b/net/ipv6/seg6_hmac.c
+index 29bc4e7c3046..6de01185cc68 100644
+--- a/net/ipv6/seg6_hmac.c
++++ b/net/ipv6/seg6_hmac.c
+@@ -399,7 +399,6 @@ int __init seg6_hmac_init(void)
  {
- 	xfrm_input_register_afinfo(&xfrm4_input_afinfo);
+ 	return seg6_hmac_init_algo();
  }
--EXPORT_SYMBOL(xfrm4_protocol_init);
+-EXPORT_SYMBOL(seg6_hmac_init);
+ 
+ int __net_init seg6_hmac_net_init(struct net *net)
+ {
 -- 
 2.32.0
 
