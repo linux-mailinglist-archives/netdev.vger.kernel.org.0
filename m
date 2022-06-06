@@ -2,62 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B56853EBC3
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 19:09:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3096B53EC4E
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 19:10:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241464AbiFFQEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 12:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36064 "EHLO
+        id S241462AbiFFQFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 12:05:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241478AbiFFQEh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 12:04:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336D616328D
-        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 09:04:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 83BB260B69
-        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 16:04:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5753DC385A9;
-        Mon,  6 Jun 2022 16:04:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654531469;
-        bh=QgN4ANv6NaTVFcL3hAtD9O0GcJVsKivOd345MlHqi40=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZJiZNk6pE/OMZH+rnXHyXWvBU/u8cYDo5IgAx0V1bsBjf35Ji+wHP0DbHkMfIMSag
-         TB+foMT3zby8kTcPdg3ZdJ3lh3G+qlN5YWn/KIygGVb0FMsV5FGyCZGSaBqY1r27QJ
-         5WGIqodbMMy7em/0TBoRhinPKs+HtLBSwxCQJu09kkhDtk8IF3qgSr+lnSOdfZlgtj
-         Z3kQ+wrftKgy0dnUT+C6tBM038MDpQQcSBI8dHNl0ZJ5fZNDJdH7z/SPRTezmjovyy
-         t/Yq10jaAiIaLcE/4oinIqL0quK0i1d2NFJ4a2WeNp0oRcHPrg+4UpUZ77yKSc+dES
-         5i4bSvvO7HcWg==
-Date:   Mon, 6 Jun 2022 09:04:27 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: PR with merges
-Message-ID: <20220606090427.21b5a055@kernel.org>
-In-Reply-To: <20220604115157.3xaiey6hud4fdqln@pengutronix.de>
-References: <20220604115157.3xaiey6hud4fdqln@pengutronix.de>
+        with ESMTP id S241450AbiFFQFb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 12:05:31 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F82916646E
+        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 09:05:22 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-300628e76f3so147471667b3.12
+        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 09:05:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hkb/bGVyuMqTZRXVw6tHXbfDJb2Rv/dx6ERatAJ2rC0=;
+        b=sWnen0QbVrpHJrYP5g4e/CpughJv5Xsf8460mMdBKUx4OTmW9Qr3EJjZH24KgWua78
+         7SO6mkI+7tUe89LfbJsvCFDzlzdNeMw/gz1PVyPzlV50tpFc3IhJK1mSOpN9IJnBXgIg
+         e0zSuMMRoHlevEhKJFjxeieKivjrkcWH3fivpf+3ozagiT6DrvjNMAmWx+uWXx/QH3Yb
+         hKQPIrtydMfIlf4AGKk5CQ8cjr3EG1XPrlTBkEkTQbKjS6zhKIElw0kkgYB+uUipIsRQ
+         qrBsNJCuvIfH2Ro5oe7HsiF7IpkIq6163YEEyjL0hHD0J0b/x/cAuqcGxch9bKP3rKD8
+         8n9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hkb/bGVyuMqTZRXVw6tHXbfDJb2Rv/dx6ERatAJ2rC0=;
+        b=HLgPEybKZWDRg4Y+kqhkgowIjshtuBKIxw/bnNad3GTHHcKjmI9vnEGopWt1EMaVwY
+         1gAAlSSX9JMrvN1UjkpwM6I6tBZZI5A4s0S6pIYCcic3l6mwLm2j7PomuDLkpbpP++qC
+         +3xexiob11y4oon3f18W3J0DE0yCPVIsz+74rzPwjlV6saHGUBeO5xj1cgBZyNACcsYk
+         ZxYVMyoYUdrYO5RdzvMNDj/N8jJzE5C7An3t927j5fv4JnDB0yGb26EJSaKSJvMjqWKO
+         p9ZiXGxVivRsPV88FRlFSl4V1DkbQ9ap5xmbWwZRagxKtynLcf3Z03t72OUu7ssXtqKW
+         qdNQ==
+X-Gm-Message-State: AOAM532nl6okMw/RkhDlNCchOZrq7bLXMoTI0Xz0XvsePsbB1xEMDiMX
+        /3lRQa0Nw4ZN5wP4q35cx34+dAGECt9yUNITpn3e0g==
+X-Google-Smtp-Source: ABdhPJwva2zNMNdY7W28yUe2zvaMfHOUFz8u4sZGR3aghRSe9HFp2eMiDV5XEb1NIf2ZbVxtbmqrDyTidCAc4E0ed5s=
+X-Received: by 2002:a81:4811:0:b0:30c:8021:4690 with SMTP id
+ v17-20020a814811000000b0030c80214690mr26771026ywa.47.1654531520769; Mon, 06
+ Jun 2022 09:05:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220606070804.40268-1-songmuchun@bytedance.com>
+In-Reply-To: <20220606070804.40268-1-songmuchun@bytedance.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 6 Jun 2022 09:05:09 -0700
+Message-ID: <CANn89iJwuW6PykKE03wB24KATtk88tS4eSHH42i+dBFtaK8zsg@mail.gmail.com>
+Subject: Re: [PATCH] tcp: use kvmalloc_array() to allocate table_perturb
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 4 Jun 2022 13:51:57 +0200 Marc Kleine-Budde wrote:
-> Hello David, hello Jakub,
-> 
-> I was wondering if you take pull requests from me (for net-next) which
-> are not a linear patch series but contain merges? A merge would add a
-> single feature and is based on net-next.
+On Mon, Jun 6, 2022 at 12:08 AM Muchun Song <songmuchun@bytedance.com> wrote:
+>
+> In our server, there may be no high order (>= 6) memory since we reserve
+> lots of HugeTLB pages when booting.  Then the system panic.  So use
+> kvmalloc_array() to allocate table_perturb.
+>
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
 
-Yes, that's perfectly fine.
+Please add a Fixes: tag and CC original author ?
 
+Thanks.
