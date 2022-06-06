@@ -2,234 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E09B253ED70
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 20:03:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D3F253ED72
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 20:03:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230261AbiFFSDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 14:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44120 "EHLO
+        id S230374AbiFFSDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 14:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230057AbiFFSC7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 14:02:59 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEEE6FD15;
-        Mon,  6 Jun 2022 11:02:57 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id be31so24545047lfb.10;
-        Mon, 06 Jun 2022 11:02:57 -0700 (PDT)
+        with ESMTP id S230057AbiFFSDc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 14:03:32 -0400
+Received: from EX-PRD-EDGE01.vmware.com (EX-PRD-EDGE01.vmware.com [208.91.3.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A513019FF6C;
+        Mon,  6 Jun 2022 11:03:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=97rzWQFE1AtsQDQrkeu4wHy1IeluYAPjOrBN3JDfUAQ=;
-        b=mpXT18X63OmEoHZ3hFHcWblFdaKwXBAQMhZ+WYqGEfsmLoT3U7sLE124TUStzu6mHq
-         AHfrfXGbrbRGd7o0jM5pWhUB81F0X2DEVOG2YPad83PazQ3jgGmylZKpOBVQ5v/GCJie
-         YJ8IASvmXIEVcuDyD9bm+ZXPPrjihzwNYImxnUs3lakMD4ctX6bRzmGaZqqqXn8t+wCf
-         x0xdYypbguFmnxrDbe9EERWfyglU6pv82vwb/jMpZ8khA2YMfr/S128QhgrVaWbgcUBD
-         6uTp/Bs4Fezs6xqYOiTWi3wo0X9lXZvU1QRE3thiQaGmPJiGvqtKXHzeJK1GsZXm1+G8
-         o77w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=97rzWQFE1AtsQDQrkeu4wHy1IeluYAPjOrBN3JDfUAQ=;
-        b=eMhdRNHi/2ikiuFVr/E5WeXJaibVmfGC8hF61mqAESF3tPiKNQXJklxepmDbRwPH0f
-         e1QMGbaklFcimigc06WZvmnyT6n/Sxec0oq5I9yMMG632nN7b4dLGquyMNc/YmA7fIvx
-         ULJvXR5ufdn61V+vEUYEZAe59x5GW+aSIHV0z99SBxNxnDsuVCOknt/ifQ2hftixFNKO
-         MYodHAE3349CQjLRZMPepe+r3aLQS7MfEBNGdZOTAMLxH/hmUV5H1hxKEquW/LmCzhdv
-         LYSKnJ8jI6QZZeA2ZfWOiHYFdso4Xfy4BOOg6nxW8DkOADnWq20ubRu0mgq4SUNhoPtS
-         NVtQ==
-X-Gm-Message-State: AOAM532/8iJjD5N7aiJhknyzgZ8bB+FFSpUzCxEu9U18PJ56hsPgjXVP
-        4cY5vvKXx+/Q25kCHr87NT8uYTmz+0rdlukqVjw=
-X-Google-Smtp-Source: ABdhPJwBs78td/is/dI6ZXvJhu818Ge6Ngp3wjufF0A1i17eKnVOco6n20x7KMCDPDYiAmWDCWzyn36lAHFnYQ1p498=
-X-Received: by 2002:a05:6512:b2a:b0:479:12f5:91ba with SMTP id
- w42-20020a0565120b2a00b0047912f591bamr13971198lfu.443.1654538574348; Mon, 06
- Jun 2022 11:02:54 -0700 (PDT)
+    s=s1024; d=vmware.com;
+    h=from:to:cc:subject:date:message-id:mime-version:content-type;
+    bh=0QdeZQpzPFKxooAPc4/wcd9vahVJt/ODCSvM5mr14K4=;
+    b=gfqTlQEHt9thR3u/9y+vj2JWSuKlepZwtpG02Q9dZ7rIO1ysHeK0fGmBfSVUu2
+      3C8SLKrv9dSOzljTCUU/GG5o83fPsh0dVwdrhCUp23ag3TKLBPjIyNjZV30vHI
+      KFAsdhCxCedbecZd1rwGD4e5dGzJ0vm6vxR9Fxn4fCbf3Gc=
+Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
+ EX-PRD-EDGE01.vmware.com (10.188.245.6) with Microsoft SMTP Server id
+ 15.1.2308.20; Mon, 6 Jun 2022 11:03:09 -0700
+Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
+        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id 1FDB0202A8;
+        Mon,  6 Jun 2022 11:03:24 -0700 (PDT)
+Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
+        id 13C32AA1E5; Mon,  6 Jun 2022 11:03:24 -0700 (PDT)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ronak Doshi <doshir@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next 0/8] vmxnet3: upgrade to version 7
+Date:   Mon, 6 Jun 2022 11:03:06 -0700
+Message-ID: <20220606180316.27793-1-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-References: <20220606132741.3462925-1-james.hilliard1@gmail.com>
-In-Reply-To: <20220606132741.3462925-1-james.hilliard1@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 6 Jun 2022 11:02:42 -0700
-Message-ID: <CAEf4BzZ8eTqVnsLqc52=AyHeAsuVB3Nv7uBW19t2pcb9h7p2hQ@mail.gmail.com>
-Subject: Re: [PATCH 1/1] libbpf: fix broken gcc pragma macros in bpf_helpers.h/bpf_tracing.h
-To:     James Hilliard <james.hilliard1@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+Received-SPF: None (EX-PRD-EDGE01.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 6, 2022 at 6:28 AM James Hilliard <james.hilliard1@gmail.com> wrote:
->
-> It seems the gcc preprocessor breaks unless pragmas are wrapped
-> individually inside macros.
->
-> Fixes errors like:
-> error: expected identifier or '(' before '#pragma'
->   106 | SEC("cgroup/bind6")
->       | ^~~
->
-> error: expected '=', ',', ';', 'asm' or '__attribute__' before '#pragma'
->   114 | char _license[] SEC("license") = "GPL";
->       | ^~~
->
+vmxnet3 emulation has recently added several new features including
+support for uniform passthrough(UPT). To make UPT work vmxnet3 has
+to be enhanced as per the new specification. This patch series
+extends the vmxnet3 driver to leverage these new features.
 
-We've been using this macro in this form for a while with no errors.
-How do you get these errors in the first place? _Pragma is supposed to
-be a full equivalent of #pragma specifically to be able to be used in
-macros, so these work-arounds shouldn't be necessary. Let's first try
-to root cause this.
+Compatibility is maintained using existing vmxnet3 versioning mechanism as
+follows:
+ - new features added to vmxnet3 emulation are associated with new vmxnet3
+   version viz. vmxnet3 version 7.
+ - emulation advertises all the versions it supports to the driver.
+ - during initialization, vmxnet3 driver picks the highest version number
+ supported by both the emulation and the driver and configures emulation
+ to run at that version.
 
-> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
-> ---
->  tools/lib/bpf/bpf_helpers.h | 26 ++++++++++++++------------
->  tools/lib/bpf/bpf_tracing.h | 26 ++++++++++++++------------
->  2 files changed, 28 insertions(+), 24 deletions(-)
->
-> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-> index fb04eaf367f1..6d159082727d 100644
-> --- a/tools/lib/bpf/bpf_helpers.h
-> +++ b/tools/lib/bpf/bpf_helpers.h
-> @@ -22,11 +22,13 @@
->   * To allow use of SEC() with externs (e.g., for extern .maps declarations),
->   * make sure __attribute__((unused)) doesn't trigger compilation warning.
->   */
-> +#define __gcc_helpers_pragma(x) _Pragma(#x)
-> +#define __gcc_helpers_diag_pragma(x) __gcc_helpers_pragma("GCC diagnostic " #x)
->  #define SEC(name) \
-> -       _Pragma("GCC diagnostic push")                                      \
-> -       _Pragma("GCC diagnostic ignored \"-Wignored-attributes\"")          \
-> +       __gcc_helpers_diag_pragma(push)                                     \
-> +       __gcc_helpers_diag_pragma(ignored "-Wignored-attributes")           \
->         __attribute__((section(name), used))                                \
-> -       _Pragma("GCC diagnostic pop")                                       \
-> +       __gcc_helpers_diag_pragma(pop)
->
->  /* Avoid 'linux/stddef.h' definition of '__always_inline'. */
->  #undef __always_inline
-> @@ -215,10 +217,10 @@ enum libbpf_tristate {
->         static const char ___fmt[] = fmt;                       \
->         unsigned long long ___param[___bpf_narg(args)];         \
->                                                                 \
-> -       _Pragma("GCC diagnostic push")                          \
-> -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")  \
-> +       __gcc_helpers_diag_pragma(push)                         \
-> +       __gcc_helpers_diag_pragma(ignored "-Wint-conversion")   \
->         ___bpf_fill(___param, args);                            \
-> -       _Pragma("GCC diagnostic pop")                           \
-> +       __gcc_helpers_diag_pragma(pop)                          \
->                                                                 \
->         bpf_seq_printf(seq, ___fmt, sizeof(___fmt),             \
->                        ___param, sizeof(___param));             \
-> @@ -233,10 +235,10 @@ enum libbpf_tristate {
->         static const char ___fmt[] = fmt;                       \
->         unsigned long long ___param[___bpf_narg(args)];         \
->                                                                 \
-> -       _Pragma("GCC diagnostic push")                          \
-> -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")  \
-> +       __gcc_helpers_diag_pragma(push)                         \
-> +       __gcc_helpers_diag_pragma(ignored "-Wint-conversion")   \
->         ___bpf_fill(___param, args);                            \
-> -       _Pragma("GCC diagnostic pop")                           \
-> +       __gcc_helpers_diag_pragma(pop)                          \
->                                                                 \
->         bpf_snprintf(out, out_size, ___fmt,                     \
->                      ___param, sizeof(___param));               \
-> @@ -264,10 +266,10 @@ enum libbpf_tristate {
->         static const char ___fmt[] = fmt;                       \
->         unsigned long long ___param[___bpf_narg(args)];         \
->                                                                 \
-> -       _Pragma("GCC diagnostic push")                          \
-> -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")  \
-> +       __gcc_helpers_diag_pragma(push)                         \
-> +       __gcc_helpers_diag_pragma(ignored "-Wint-conversion")   \
->         ___bpf_fill(___param, args);                            \
-> -       _Pragma("GCC diagnostic pop")                           \
-> +       __gcc_helpers_diag_pragma(pop)                          \
->                                                                 \
->         bpf_trace_vprintk(___fmt, sizeof(___fmt),               \
->                           ___param, sizeof(___param));          \
-> diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
-> index 01ce121c302d..e08ffc290b3e 100644
-> --- a/tools/lib/bpf/bpf_tracing.h
-> +++ b/tools/lib/bpf/bpf_tracing.h
-> @@ -422,16 +422,18 @@ struct pt_regs;
->   * This is useful when using BPF helpers that expect original context
->   * as one of the parameters (e.g., for bpf_perf_event_output()).
->   */
-> +#define __gcc_tracing_pragma(x) _Pragma(#x)
-> +#define __gcc_tracing_diag_pragma(x) __gcc_tracing_pragma("GCC diagnostic " #x)
->  #define BPF_PROG(name, args...)                                                    \
->  name(unsigned long long *ctx);                                             \
->  static __attribute__((always_inline)) typeof(name(0))                      \
->  ____##name(unsigned long long *ctx, ##args);                               \
->  typeof(name(0)) name(unsigned long long *ctx)                              \
->  {                                                                          \
-> -       _Pragma("GCC diagnostic push")                                      \
-> -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")              \
-> +       __gcc_tracing_diag_pragma(push)                                     \
-> +       __gcc_tracing_diag_pragma(ignored "-Wint-conversion")               \
->         return ____##name(___bpf_ctx_cast(args));                           \
-> -       _Pragma("GCC diagnostic pop")                                       \
-> +       __gcc_tracing_diag_pragma(pop)                                      \
->  }                                                                          \
->  static __attribute__((always_inline)) typeof(name(0))                      \
->  ____##name(unsigned long long *ctx, ##args)
-> @@ -462,10 +464,10 @@ static __attribute__((always_inline)) typeof(name(0))                         \
->  ____##name(struct pt_regs *ctx, ##args);                                   \
->  typeof(name(0)) name(struct pt_regs *ctx)                                  \
->  {                                                                          \
-> -       _Pragma("GCC diagnostic push")                                      \
-> -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")              \
-> +       __gcc_tracing_diag_pragma(push)                                     \
-> +       __gcc_tracing_diag_pragma(ignored "-Wint-conversion")               \
->         return ____##name(___bpf_kprobe_args(args));                        \
-> -       _Pragma("GCC diagnostic pop")                                       \
-> +       __gcc_tracing_diag_pragma(pop)                                      \
->  }                                                                          \
->  static __attribute__((always_inline)) typeof(name(0))                      \
->  ____##name(struct pt_regs *ctx, ##args)
-> @@ -486,10 +488,10 @@ static __attribute__((always_inline)) typeof(name(0))                         \
->  ____##name(struct pt_regs *ctx, ##args);                                   \
->  typeof(name(0)) name(struct pt_regs *ctx)                                  \
->  {                                                                          \
-> -       _Pragma("GCC diagnostic push")                                      \
-> -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")              \
-> +       __gcc_tracing_diag_pragma(push)                                     \
-> +       __gcc_tracing_diag_pragma(ignored "-Wint-conversion")               \
->         return ____##name(___bpf_kretprobe_args(args));                     \
-> -       _Pragma("GCC diagnostic pop")                                       \
-> +       __gcc_tracing_diag_pragma(pop)                                      \
->  }                                                                          \
->  static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args)
->
-> @@ -520,10 +522,10 @@ ____##name(struct pt_regs *ctx, ##args);                              \
->  typeof(name(0)) name(struct pt_regs *ctx)                                  \
->  {                                                                          \
->         struct pt_regs *regs = PT_REGS_SYSCALL_REGS(ctx);                   \
-> -       _Pragma("GCC diagnostic push")                                      \
-> -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")              \
-> +       __gcc_tracing_diag_pragma(push)             \
-> +       __gcc_tracing_diag_pragma(ignored "-Wint-conversion")               \
->         return ____##name(___bpf_syscall_args(args));                       \
-> -       _Pragma("GCC diagnostic pop")                                       \
-> +       __gcc_tracing_diag_pragma(pop)                                      \
->  }                                                                          \
->  static __attribute__((always_inline)) typeof(name(0))                      \
->  ____##name(struct pt_regs *ctx, ##args)
-> --
-> 2.25.1
->
+In particular, following changes are introduced:
+
+Patch 1:
+  This patch introduces utility macros for vmxnet3 version 7 comparison
+  and updates Copyright information.
+
+Patch 2:
+  This patch adds new capability registers to fine control enablement of
+  individual features based on emulation and passthrough.
+
+Patch 3:
+  This patch adds support for large passthrough BAR register.
+
+Patch 4:
+  This patch adds support for out of order rx completion processing.
+
+Patch 5:
+  This patch introduces new command to set ring buffer sizes to pass this
+  information to the hardware.
+
+Patch 6:
+  For better performance, hardware has a requirement to limit number of TSO
+  descriptors. This patch adds that support.
+
+Patch 7:
+  With vmxnet3 version 7, new descriptor fields are used to indicate
+  encapsulation offload.
+
+Patch 8:
+  With all vmxnet3 version 7 changes incorporated in the vmxnet3 driver,
+  with this patch, the driver can configure emulation to run at vmxnet3
+  version 7.
+
+Ronak Doshi (8):
+  vmxnet3: prepare for version 7 changes
+  vmxnet3: add support for capability registers
+  vmxnet3: add support for large passthrough BAR register
+  vmxnet3: add support for out of order rx completion
+  vmxnet3: add command to set ring buffer sizes
+  vmxnet3: limit number of TXDs used for TSO packet
+  vmxnet3: use ext1 field to indicate encapsulated packet
+  vmxnet3: update to version 7
+
+ drivers/net/vmxnet3/Makefile          |   2 +-
+ drivers/net/vmxnet3/upt1_defs.h       |   2 +-
+ drivers/net/vmxnet3/vmxnet3_defs.h    |  80 ++++++++--
+ drivers/net/vmxnet3/vmxnet3_drv.c     | 291 ++++++++++++++++++++++++++++++----
+ drivers/net/vmxnet3/vmxnet3_ethtool.c | 116 ++++++++++++--
+ drivers/net/vmxnet3/vmxnet3_int.h     |  24 ++-
+ 6 files changed, 457 insertions(+), 58 deletions(-)
+
+-- 
+2.11.0
+
