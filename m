@@ -2,50 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 586CC53EF63
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 22:16:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6BD553EF7A
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 22:22:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233830AbiFFUQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 16:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34796 "EHLO
+        id S233340AbiFFUWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 16:22:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233859AbiFFUQR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 16:16:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B717B7C;
-        Mon,  6 Jun 2022 13:16:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD538B81B41;
-        Mon,  6 Jun 2022 20:16:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 121CFC34115;
-        Mon,  6 Jun 2022 20:16:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654546572;
-        bh=4ekHkjqVyQuiN7Z+qLDAIpo/+34U7jys4QWy2f3LQK0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=GVJGRZokkZnyPOVuUnZtXg6IcvAfFLiXZeiHznuclEDLmEzGFTHej+afdF5heNDgQ
-         YcMz59EoDVGUyM0WoCcO4Ki0IFW+EdQVyoNez6JMwYj4hdgLHfqgk9OTNZObxNhBFE
-         OD1ddu6XYyP903U1+ZyZzh6RuhtPbUz3tLW/PzoTtlJu/WywlWvsv0xCGRrdMm7+Y1
-         Q3BBffYDIzHF4yi7HlDo+zm0yhqejRU894v1XlxhzezNIdXC5xIj0Sr2yWBQbM8rkM
-         BkWv0YkGEPGNIFV7LYmzRWSWMn0LlEH61BuRfpTsIoZowSUnXyXgAOE2tUIQrWCx+i
-         PK3A6mCVG9QFw==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     ilias.apalodimas@linaro.org, hawk@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        corbet@lwn.net, linux-doc@vger.kernel.org, jbrouer@redhat.com,
-        lorenzo.bianconi@redhat.com
-Subject: [PATCH v2 net-next] Documentation: update networking/page_pool.rst with ethtool APIs
-Date:   Mon,  6 Jun 2022 22:15:45 +0200
-Message-Id: <8c1f582d286fd5a7406dfff895eea39bb8fedca6.1654546043.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.35.3
+        with ESMTP id S232119AbiFFUWb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 16:22:31 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565F21003
+        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 13:22:28 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id kq6so18108263ejb.11
+        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 13:22:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NDvZ4UleUYUTKOU5gyNsiH8SYe6dt0N9haij8gkeJuQ=;
+        b=ekAzTc3QPUODDMjzIXzdshCFY5ExrrFiCb6vYhkn4vj2sdRYhw90nR3veL6oFstY/A
+         tmN89MKgKgXHx0XHoIMIl63g+XjpSQY91V0nzIj7yxM8Xe/VBkbALH/HyM25bemP+2PX
+         LkASjRlhdMm8e69Ov6J94eQpEhZ7cO6woLOf0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NDvZ4UleUYUTKOU5gyNsiH8SYe6dt0N9haij8gkeJuQ=;
+        b=wIH/UOmU8hsyiHqxSq52ao0u3jfC7xJfF2jaAYPleWSyl+mNDdIU0nwg7DhK0OzqCR
+         JX4iLtpLJigi0wBPl1GRRFUXL+6Hfs6AdD6ADnKB32Al10Ha6BK1/sMFzSpiEKJdFLIi
+         oJGKC/bnKETUVhsg6otABJewRaszttFozPuctEAUZwJUC6J7E0kKbH0XukxIwWQ9tDjk
+         evOB9CXGtgNK4jHFC8yoYmRnIVmtRlMJSx7zsUpkOpqK0//Ps57Gg1Baod0IspK1lCKd
+         TiJcy4dEFvQP4yX56HB3HXDOVmLAts6TeQzoY4zqiwGXlmNbMWxB8EtpLwqj1yWBXsWp
+         OhfA==
+X-Gm-Message-State: AOAM531q9tjwYpVVzu64pgvpOOHjU5j6GUFLuLhbTB6qTl55YTuUBd2/
+        moy25XIJarF7y3t9W2aHsMzmNnW3TJ8Tlg==
+X-Google-Smtp-Source: ABdhPJz7/yg9b/o2cR10nFFDSq2Ab2tXLzh90wmld7S+j8XDW6ylysOyvqFXG5LzqjkuOXraFTUIQA==
+X-Received: by 2002:a17:907:629c:b0:6e1:6ad:5dd8 with SMTP id nd28-20020a170907629c00b006e106ad5dd8mr23026451ejc.641.1654546947118;
+        Mon, 06 Jun 2022 13:22:27 -0700 (PDT)
+Received: from prevas-ravi.tritech.se ([80.208.64.233])
+        by smtp.gmail.com with ESMTPSA id d20-20020aa7ce14000000b0042dd4ccccf5sm9043789edv.82.2022.06.06.13.22.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 13:22:26 -0700 (PDT)
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dan Murphy <dmurphy@ti.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/3] net: phy: dp83867: add binding and support for io_impedance_ctrl nvmem cell
+Date:   Mon,  6 Jun 2022 22:22:17 +0200
+Message-Id: <20220606202220.1670714-1-linux@rasmusvillemoes.dk>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,50 +70,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update page_pool documentation with page_pool ethtool stats APIs.
+We have a board where measurements indicate that the current three
+options - leaving IO_IMPEDANCE_CTRL at the (factory calibrated) reset
+value or using one of the two boolean properties to set it to the
+min/max value - are too coarse.
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
-Changes since v1:
-- get rid of literal markup
----
- Documentation/networking/page_pool.rst | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+This series adds a device tree binding for an nvmem cell which can be
+populated during production with a suitable value calibrated for each
+board, and corresponding support in the driver. The second patch adds
+a trivial phy wrapper for dev_err_probe(), used in the third.
 
-diff --git a/Documentation/networking/page_pool.rst b/Documentation/networking/page_pool.rst
-index 5db8c263b0c6..a40203297cd3 100644
---- a/Documentation/networking/page_pool.rst
-+++ b/Documentation/networking/page_pool.rst
-@@ -146,6 +146,29 @@ The ``struct page_pool_recycle_stats`` has the following fields:
-   * ``ring_full``: page released from page pool because the ptr ring was full
-   * ``released_refcnt``: page released (and not recycled) because refcnt > 1
- 
-+The following APIs can be used to report page_pool stats through ethtool and
-+avoid code duplication in each driver:
-+
-+* page_pool_ethtool_stats_get_strings(): reports page_pool ethtool stats
-+  strings according to the struct page_pool_stats
-+     * rx_pp_alloc_fast
-+     * rx_pp_alloc_slow
-+     * rx_pp_alloc_slow_ho
-+     * rx_pp_alloc_empty
-+     * rx_pp_alloc_refill
-+     * rx_pp_alloc_waive
-+     * rx_pp_recycle_cached
-+     * rx_pp_recycle_cache_full
-+     * rx_pp_recycle_ring
-+     * rx_pp_recycle_ring_full
-+     * rx_pp_recycle_released_ref
-+
-+* page_pool_ethtool_stats_get_count(): reports the number of stats defined in
-+  the ethtool page_pool APIs
-+
-+* page_pool_ethtool_stats_get(u64 \*data, void \*stats): reports the page_pool statistics accounted in
-+  the stats pointer in the ethtool data pointer provided by the caller
-+
- Coding examples
- ===============
- 
+
+Rasmus Villemoes (3):
+  dt-bindings: dp83867: add binding for io_impedance_ctrl nvmem cell
+  linux/phy.h: add phydev_err_probe() wrapper for dev_err_probe()
+  net: phy: dp83867: implement support for io_impedance_ctrl nvmem cell
+
+ .../devicetree/bindings/net/ti,dp83867.yaml   | 18 +++++-
+ drivers/net/phy/dp83867.c                     | 55 +++++++++++++++++--
+ include/linux/phy.h                           |  3 +
+ 3 files changed, 67 insertions(+), 9 deletions(-)
+
 -- 
-2.35.3
+2.31.1
 
