@@ -2,144 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 940D653E899
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 19:08:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E53253EC35
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 19:10:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238783AbiFFNVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 09:21:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59806 "EHLO
+        id S238974AbiFFN2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 09:28:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238784AbiFFNVN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 09:21:13 -0400
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4AF2E59A7
-        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 06:21:11 -0700 (PDT)
-Received: by mail-qk1-x733.google.com with SMTP id n197so3742106qke.1
-        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 06:21:11 -0700 (PDT)
+        with ESMTP id S238969AbiFFN2N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 09:28:13 -0400
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B3BE27FF4;
+        Mon,  6 Jun 2022 06:28:12 -0700 (PDT)
+Received: by mail-il1-x132.google.com with SMTP id d6so1108422ilm.4;
+        Mon, 06 Jun 2022 06:28:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=kF2JkIIzVgU+z8msbPXJBNc/p52m57iR0iCBDDJhZDg=;
-        b=NnZTlw2xIkUCiqoKzYGwdEtARNXy6lCK4mzuD2R3XBXFfts6+lZ/XO39dCpfs+rlYg
-         CwsbK2VwfFRs6+/K+FmIAt7+6s3bYv6QCfMGnvXInSeL74+vGJnaDi4eDEThf0InskCs
-         27HZ7fkYLk/NGvzW73Ph2w/YaEwpT40PSIzvNHawbVSmhzrNK5YT+VwbL6Azv83qDRE4
-         4j98u3txfdwY5dNoQQpLls0cqzK3m55CSPNacf6px/o8W84AZL34yPB7P1UUS++82upg
-         U0K32DbVJbZ0BkCUtDfxhlrQL1ZQg+ME2S71g8/shyRrHjlMArGM9xvuHKlS6/Kqi33R
-         4ntw==
+        bh=vMzKJ/pAxxp57ZRIpF3s0dQuSBrLlmQcoV9kqSPPIIg=;
+        b=Xi/hphIpGKx+QJ1uQpR1Ctr88s4lQXNdKZ9YsAXjAfkaj/fW943LTMDSNgT2AztgRR
+         +N/fk+7VyuyyomkXaOxk9bh/0+KNCLNTnordoCgehaA0q4qMnyhhE/vGqUsDybjQWDEQ
+         tqhwOiTHKzDyFo7gJJwyCmzpXgSJfOuHuuj2ZNntusX63GLuoVtvtQrYBVTpT2C1ZciX
+         4XUHpy2sJVQEFCSP9ceTKuINYth23q7Tu/pFCtVi1Tt9dxw6VUDcrKx7NmI4KvZjrxDe
+         FA5oBFwV8rgaRl5g9O8BMz7R4VxBVqJpPErZeMLoaGdDjrE8+xVdeRvnP4/U4wo5KEMA
+         OXtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=kF2JkIIzVgU+z8msbPXJBNc/p52m57iR0iCBDDJhZDg=;
-        b=UA9frZFCjUKxqC86IMYs0HAR6v5Ga++wZJxkcAunw8EpK5dOnylycluAp4tOeW7c8f
-         uJ9G4GpXRGvQBml2BOg20qW7eT0LkvkEZInS7WWksltF5E3DrlCnpoB0TI6338N/4LbD
-         N2nVEDs4AEcYlGXFpHvOPFdXCL/WFuRghf7J+y38lYh8fszl0vWOvt4bhzcQomhaV6bm
-         1FR8aa7MJa0NEzvGetKK/mcYGCgNm1zRTgV34976A82e0P5DXcycV+QiCen6M1bdmMlC
-         QHP2ocFjwFtXdDsvNX9+QYyIWvdyVq1tCtVI87S4MV/X2WJ/In0VG2CNwZjrZjV170XB
-         ABVA==
-X-Gm-Message-State: AOAM530t2P11XP/2cQAk9mqQ7tLJ0UIpFhqDBvj5xZKXPZsye6InOrCF
-        aDv5yO4faQX+lQQBGy2uYNOj/jq7z/U=
-X-Google-Smtp-Source: ABdhPJwlHCPiuAkJTSLQOhmIV4s1agWyrX6MBhoDLhRlFrli9XdCsBPpdju15AwmGBvVoGa8vMZ+iw==
-X-Received: by 2002:a37:a8cb:0:b0:6a6:ae6a:f3cd with SMTP id r194-20020a37a8cb000000b006a6ae6af3cdmr6938916qke.215.1654521670715;
-        Mon, 06 Jun 2022 06:21:10 -0700 (PDT)
-Received: from willemb.c.googlers.com.com (55.87.194.35.bc.googleusercontent.com. [35.194.87.55])
-        by smtp.gmail.com with ESMTPSA id p21-20020ac87415000000b00304df352f21sm6541745qtq.42.2022.06.06.06.21.09
+        bh=vMzKJ/pAxxp57ZRIpF3s0dQuSBrLlmQcoV9kqSPPIIg=;
+        b=rjbF3FbsWpHhnqbfT3JHYflID1A0ol4ahZISYA0VlfENVsxKkBmKpM54gJ8xST6UVy
+         51roazrqcQhCErhVgBoiDSg9cUTYsHwzduHWo3Or5+LlSzPt9aBzKWfZSgzDgegFT56F
+         ihAIlOSHZNHbmf0MOnt5tmbCULKvNfzb2PHXxdU3prfGqg+ypxCN/QGyLUdDMMokKQwm
+         k+ebiatuT1JK8CJ95VopKinEkM9mJxhAS46Rb92UyyxdJc0CUGpHOttngokbIEuTexYg
+         PkxEl0hH95Vo2JONw++s9F5TyDlcNxGpRYkRGcDm20/H4R5T2JvUdv6xP8LWCpgTzR08
+         WjbA==
+X-Gm-Message-State: AOAM531zbBkfSYtAZ+nnZP7woP0ZwovAJb99ZwlPqzRY56FqF3LmRdSp
+        107NZhIw5ZWgAPMhd4qVFucLXW2vFapJIg==
+X-Google-Smtp-Source: ABdhPJx+oYqz3OZuyeQCK75PBjZdLqSzMEYQSkMj/aBcYrp8SQMdD7oDbd+GePN91U14HIzadY0Tqw==
+X-Received: by 2002:a05:6e02:15ca:b0:2d1:9146:c79a with SMTP id q10-20020a056e0215ca00b002d19146c79amr14022665ilu.97.1654522091303;
+        Mon, 06 Jun 2022 06:28:11 -0700 (PDT)
+Received: from james-x399.localdomain (71-218-113-86.hlrn.qwest.net. [71.218.113.86])
+        by smtp.gmail.com with ESMTPSA id q2-20020a056e020c2200b002d546bec2f6sm479474ilg.67.2022.06.06.06.28.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 06:21:10 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, Willem de Bruijn <willemb@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] ip_gre: test csum_start instead of transport header
-Date:   Mon,  6 Jun 2022 09:21:07 -0400
-Message-Id: <20220606132107.3582565-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+        Mon, 06 Jun 2022 06:28:10 -0700 (PDT)
+From:   James Hilliard <james.hilliard1@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     James Hilliard <james.hilliard1@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        netdev@vger.kernel.org (open list:BPF (Safe dynamic programs and tools)),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH 1/1] libbpf: fix broken gcc pragma macros in bpf_helpers.h/bpf_tracing.h
+Date:   Mon,  6 Jun 2022 07:27:40 -0600
+Message-Id: <20220606132741.3462925-1-james.hilliard1@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+It seems the gcc preprocessor breaks unless pragmas are wrapped
+individually inside macros.
 
-GRE with TUNNEL_CSUM will apply local checksum offload on
-CHECKSUM_PARTIAL packets.
+Fixes errors like:
+error: expected identifier or '(' before '#pragma'
+  106 | SEC("cgroup/bind6")
+      | ^~~
 
-ipgre_xmit must validate csum_start after an optional skb_pull,
-else lco_csum may trigger an overflow. The original check was
+error: expected '=', ',', ';', 'asm' or '__attribute__' before '#pragma'
+  114 | char _license[] SEC("license") = "GPL";
+      | ^~~
 
-	if (csum && skb_checksum_start(skb) < skb->data)
-		return -EINVAL;
-
-This had false positives when skb_checksum_start is undefined:
-when ip_summed is not CHECKSUM_PARTIAL. A discussed refinement
-was straightforward
-
-	if (csum && skb->ip_summed == CHECKSUM_PARTIAL &&
-	    skb_checksum_start(skb) < skb->data)
-		return -EINVAL;
-
-But was eventually revised more thoroughly:
-- restrict the check to the only branch where needed, in an
-  uncommon GRE path that uses header_ops and calls skb_pull.
-- test skb_transport_header, which is set along with csum_start
-  in skb_partial_csum_set in the normal header_ops datapath.
-
-Turns out skbs can arrive in this branch without the transport
-header set, e.g., through BPF redirection.
-
-Revise the check back to check csum_start directly, and only if
-CHECKSUM_PARTIAL. Do leave the check in the updated location.
-Check field regardless of whether TUNNEL_CSUM is configured.
-
-Link: https://lore.kernel.org/netdev/YS+h%2FtqCJJiQei+W@shredder/
-Link: https://lore.kernel.org/all/20210902193447.94039-2-willemdebruijn.kernel@gmail.com/T/#u
-Fixes: 8a0ed250f911 ("ip_gre: validate csum_start only on pull")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
 ---
- net/ipv4/ip_gre.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ tools/lib/bpf/bpf_helpers.h | 26 ++++++++++++++------------
+ tools/lib/bpf/bpf_tracing.h | 26 ++++++++++++++------------
+ 2 files changed, 28 insertions(+), 24 deletions(-)
 
-diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-index 7e474a85deaf..3b9cd487075a 100644
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -629,21 +629,20 @@ static netdev_tx_t ipgre_xmit(struct sk_buff *skb,
- 	}
+diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+index fb04eaf367f1..6d159082727d 100644
+--- a/tools/lib/bpf/bpf_helpers.h
++++ b/tools/lib/bpf/bpf_helpers.h
+@@ -22,11 +22,13 @@
+  * To allow use of SEC() with externs (e.g., for extern .maps declarations),
+  * make sure __attribute__((unused)) doesn't trigger compilation warning.
+  */
++#define __gcc_helpers_pragma(x) _Pragma(#x)
++#define __gcc_helpers_diag_pragma(x) __gcc_helpers_pragma("GCC diagnostic " #x)
+ #define SEC(name) \
+-	_Pragma("GCC diagnostic push")					    \
+-	_Pragma("GCC diagnostic ignored \"-Wignored-attributes\"")	    \
++	__gcc_helpers_diag_pragma(push)					    \
++	__gcc_helpers_diag_pragma(ignored "-Wignored-attributes")	    \
+ 	__attribute__((section(name), used))				    \
+-	_Pragma("GCC diagnostic pop")					    \
++	__gcc_helpers_diag_pragma(pop)
  
- 	if (dev->header_ops) {
--		const int pull_len = tunnel->hlen + sizeof(struct iphdr);
--
- 		if (skb_cow_head(skb, 0))
- 			goto free_skb;
+ /* Avoid 'linux/stddef.h' definition of '__always_inline'. */
+ #undef __always_inline
+@@ -215,10 +217,10 @@ enum libbpf_tristate {
+ 	static const char ___fmt[] = fmt;			\
+ 	unsigned long long ___param[___bpf_narg(args)];		\
+ 								\
+-	_Pragma("GCC diagnostic push")				\
+-	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")	\
++	__gcc_helpers_diag_pragma(push)				\
++	__gcc_helpers_diag_pragma(ignored "-Wint-conversion")	\
+ 	___bpf_fill(___param, args);				\
+-	_Pragma("GCC diagnostic pop")				\
++	__gcc_helpers_diag_pragma(pop)				\
+ 								\
+ 	bpf_seq_printf(seq, ___fmt, sizeof(___fmt),		\
+ 		       ___param, sizeof(___param));		\
+@@ -233,10 +235,10 @@ enum libbpf_tristate {
+ 	static const char ___fmt[] = fmt;			\
+ 	unsigned long long ___param[___bpf_narg(args)];		\
+ 								\
+-	_Pragma("GCC diagnostic push")				\
+-	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")	\
++	__gcc_helpers_diag_pragma(push)				\
++	__gcc_helpers_diag_pragma(ignored "-Wint-conversion")	\
+ 	___bpf_fill(___param, args);				\
+-	_Pragma("GCC diagnostic pop")				\
++	__gcc_helpers_diag_pragma(pop)				\
+ 								\
+ 	bpf_snprintf(out, out_size, ___fmt,			\
+ 		     ___param, sizeof(___param));		\
+@@ -264,10 +266,10 @@ enum libbpf_tristate {
+ 	static const char ___fmt[] = fmt;			\
+ 	unsigned long long ___param[___bpf_narg(args)];		\
+ 								\
+-	_Pragma("GCC diagnostic push")				\
+-	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")	\
++	__gcc_helpers_diag_pragma(push)				\
++	__gcc_helpers_diag_pragma(ignored "-Wint-conversion")	\
+ 	___bpf_fill(___param, args);				\
+-	_Pragma("GCC diagnostic pop")				\
++	__gcc_helpers_diag_pragma(pop)				\
+ 								\
+ 	bpf_trace_vprintk(___fmt, sizeof(___fmt),		\
+ 			  ___param, sizeof(___param));		\
+diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
+index 01ce121c302d..e08ffc290b3e 100644
+--- a/tools/lib/bpf/bpf_tracing.h
++++ b/tools/lib/bpf/bpf_tracing.h
+@@ -422,16 +422,18 @@ struct pt_regs;
+  * This is useful when using BPF helpers that expect original context
+  * as one of the parameters (e.g., for bpf_perf_event_output()).
+  */
++#define __gcc_tracing_pragma(x) _Pragma(#x)
++#define __gcc_tracing_diag_pragma(x) __gcc_tracing_pragma("GCC diagnostic " #x)
+ #define BPF_PROG(name, args...)						    \
+ name(unsigned long long *ctx);						    \
+ static __attribute__((always_inline)) typeof(name(0))			    \
+ ____##name(unsigned long long *ctx, ##args);				    \
+ typeof(name(0)) name(unsigned long long *ctx)				    \
+ {									    \
+-	_Pragma("GCC diagnostic push")					    \
+-	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")		    \
++	__gcc_tracing_diag_pragma(push)					    \
++	__gcc_tracing_diag_pragma(ignored "-Wint-conversion")		    \
+ 	return ____##name(___bpf_ctx_cast(args));			    \
+-	_Pragma("GCC diagnostic pop")					    \
++	__gcc_tracing_diag_pragma(pop)					    \
+ }									    \
+ static __attribute__((always_inline)) typeof(name(0))			    \
+ ____##name(unsigned long long *ctx, ##args)
+@@ -462,10 +464,10 @@ static __attribute__((always_inline)) typeof(name(0))			    \
+ ____##name(struct pt_regs *ctx, ##args);				    \
+ typeof(name(0)) name(struct pt_regs *ctx)				    \
+ {									    \
+-	_Pragma("GCC diagnostic push")					    \
+-	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")		    \
++	__gcc_tracing_diag_pragma(push)					    \
++	__gcc_tracing_diag_pragma(ignored "-Wint-conversion")		    \
+ 	return ____##name(___bpf_kprobe_args(args));			    \
+-	_Pragma("GCC diagnostic pop")					    \
++	__gcc_tracing_diag_pragma(pop)					    \
+ }									    \
+ static __attribute__((always_inline)) typeof(name(0))			    \
+ ____##name(struct pt_regs *ctx, ##args)
+@@ -486,10 +488,10 @@ static __attribute__((always_inline)) typeof(name(0))			    \
+ ____##name(struct pt_regs *ctx, ##args);				    \
+ typeof(name(0)) name(struct pt_regs *ctx)				    \
+ {									    \
+-	_Pragma("GCC diagnostic push")					    \
+-	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")		    \
++	__gcc_tracing_diag_pragma(push)					    \
++	__gcc_tracing_diag_pragma(ignored "-Wint-conversion")		    \
+ 	return ____##name(___bpf_kretprobe_args(args));			    \
+-	_Pragma("GCC diagnostic pop")					    \
++	__gcc_tracing_diag_pragma(pop)					    \
+ }									    \
+ static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args)
  
- 		tnl_params = (const struct iphdr *)skb->data;
- 
--		if (pull_len > skb_transport_offset(skb))
--			goto free_skb;
--
- 		/* Pull skb since ip_tunnel_xmit() needs skb->data pointing
- 		 * to gre header.
- 		 */
--		skb_pull(skb, pull_len);
-+		skb_pull(skb, tunnel->hlen + sizeof(struct iphdr));
- 		skb_reset_mac_header(skb);
-+
-+		if (skb->ip_summed == CHECKSUM_PARTIAL &&
-+		    skb_checksum_start(skb) < skb->data)
-+			goto free_skb;
- 	} else {
- 		if (skb_cow_head(skb, dev->needed_headroom))
- 			goto free_skb;
+@@ -520,10 +522,10 @@ ____##name(struct pt_regs *ctx, ##args);				    \
+ typeof(name(0)) name(struct pt_regs *ctx)				    \
+ {									    \
+ 	struct pt_regs *regs = PT_REGS_SYSCALL_REGS(ctx);		    \
+-	_Pragma("GCC diagnostic push")					    \
+-	_Pragma("GCC diagnostic ignored \"-Wint-conversion\"")		    \
++	__gcc_tracing_diag_pragma(push)		    \
++	__gcc_tracing_diag_pragma(ignored "-Wint-conversion")		    \
+ 	return ____##name(___bpf_syscall_args(args));			    \
+-	_Pragma("GCC diagnostic pop")					    \
++	__gcc_tracing_diag_pragma(pop)					    \
+ }									    \
+ static __attribute__((always_inline)) typeof(name(0))			    \
+ ____##name(struct pt_regs *ctx, ##args)
 -- 
-2.36.1.255.ge46751e96f-goog
+2.25.1
 
