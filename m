@@ -2,108 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF4B853DF45
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 03:16:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0749653DF52
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 03:28:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351935AbiFFBQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jun 2022 21:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39214 "EHLO
+        id S1351951AbiFFB2q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jun 2022 21:28:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241008AbiFFBQg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jun 2022 21:16:36 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D9B4E3A7;
-        Sun,  5 Jun 2022 18:16:34 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LGbDC4Cmwz4xDK;
-        Mon,  6 Jun 2022 11:16:27 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1654478188;
-        bh=NSfCInElj8gvzdEZsEIDFPfbLOUwPQ6wXjMgnxMr02Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YO4+dWPAzlntVfpe/NOJ49qS2ouQbToF/7IeeMXNa7of6KWeUZ92oyJl/I4KNV9z+
-         iv5+ZzBZFcGQSgAvSr/FP/YndTEBszgcg41kSy7r6bi5xJsQ00DoSDaY2FBoUlvqya
-         V0En6YbhbgPL9QwzQ6jZyBL9JIw8WNZ8XO/TnM2pyIOTKvIVfolHwAHj22KYfJu2Uk
-         VgbItbZiSW/Db8Yghh/If4owXMwyFRYONr9OJp1mrQvj4ieNHYNjzHgNxJM74tirbd
-         VORqyzrZkwq/zgKvLnxKW6Dawp1q2M0+piKIB5Aotr3FqYpEPPp33Gv/Auhj4sHcMh
-         FvWwdBN4vGR9A==
-Date:   Mon, 6 Jun 2022 11:16:26 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: linux-next: build warning after merge of the bluetooth tree
-Message-ID: <20220606111531.00bc960a.sfr@canb.auug.org.au>
-In-Reply-To: <Yp0w21pH4R6WaC1R@yury-laptop>
-References: <20220516175757.6d9f47b3@canb.auug.org.au>
-        <20220524082256.3b8033a9@canb.auug.org.au>
-        <20220606080631.0c3014f2@canb.auug.org.au>
-        <Yp0w21pH4R6WaC1R@yury-laptop>
+        with ESMTP id S1348931AbiFFB2p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jun 2022 21:28:45 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94B36562;
+        Sun,  5 Jun 2022 18:28:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=v2/b5FqxV2iRhS1Ykan9Lwjt+zRuUcpsfnrGF+r1rwo=; b=ahtDNE/A9/2Pzy2ITsWjUxwbex
+        4iUrMeJfGWfXjeG0gSwGcbTtXtdOX4F2c8Nkv9fpscSwVzdT0JJl1Vg9UdaHn5+hXcDItYdoyxiey
+        +QvwzIs4ulACjTMF0Fk+1kJBPDCITFsirVPIQVkeZf/KsgEJIHD8RXT2IOPfkZFxQ5es=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ny1XL-005hL6-Hk; Mon, 06 Jun 2022 03:28:07 +0200
+Date:   Mon, 6 Jun 2022 03:28:07 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ferry Toth <fntoth@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
+Subject: Re: [PATCH net-next v3 5/7] usbnet: smsc95xx: Forward PHY interrupts
+ to PHY driver to avoid polling
+Message-ID: <Yp1YJ3lHTFFdRb6P@lunn.ch>
+References: <cover.1652343655.git.lukas@wunner.de>
+ <748ac44eeb97b209f66182f3788d2a49d7bc28fe.1652343655.git.lukas@wunner.de>
+ <CGME20220517101846eucas1p2c132f7e7032ed00996e222e9cc6cdf99@eucas1p2.samsung.com>
+ <a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com>
+ <20220519190841.GA30869@wunner.de>
+ <31baa38c-b2c7-10cd-e9cd-eee140f01788@samsung.com>
+ <20220523094343.GA7237@wunner.de>
+ <Yowv95s7g7Ou5U8J@lunn.ch>
+ <20220524121341.GA10702@wunner.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/YzMUj8d/JLdDHO_PT6w4o6o";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220524121341.GA10702@wunner.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/YzMUj8d/JLdDHO_PT6w4o6o
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+> mdio_bus_phy_resume() does trigger the state machine via
+> phy_start_machine(), so link state changes *are* detected after wakeup.
+> 
+> But you're saying that's not sufficient and you really want the
+> PHY driver's IRQ handler to be called, do I understand that correctly?
 
-Hi Yury,
+It is an interrupt, so i would expect the handler to be called. I've
+never looked deeply how the kernel handles this, but maybe there is
+some core support for this. The kernel does know about wake up
+interrupts. The interesting bit is how do you defer the interrupt
+until you have enough of the system running again you can actually
+service the interrupt.
 
-On Sun, 5 Jun 2022 15:40:27 -0700 Yury Norov <yury.norov@gmail.com> wrote:
->
-> I completely forgot about this bug, and sent a quick fix when this
-> was spotted by Sudip [1]. Linus proposed another fix [2] that drops
-> bitmap API in net/bluetooth/mgmt.c.
->=20
-> I would prefer Linus' version, and this is the way I already suggested
-> to Luiz before in this thread.
->=20
-> Thanks,
-> Yury
->=20
-> [1] https://lore.kernel.org/lkml/YpyJ9qTNHJzz0FHY@debian/t/
-> [2] https://lore.kernel.org/lkml/CAHk-=3DwhqgEA=3DOOPQs7JF=3Dxps3VxjJ5uUn=
-fXgzTv4gqTDhraZFA@mail.gmail.com/T/#mcf29754f405443ca7d2a18db863c7a20439bd5=
-a0
+PHY interrupts mostly are level, not edge, because there are multiple
+sources of interrupts within the PHY. So you do need to clear the
+interrupt source, or you are going to get a storm, as you pointed out.
+But being a level might actually help you. It fires once to get you
+out of sleep, and then fires again when the interrupt controller is
+resumed and is enabled.
 
-Linus has applied his fix to his tree now (before -rc1), so it should
-be all good.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/YzMUj8d/JLdDHO_PT6w4o6o
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKdVWoACgkQAVBC80lX
-0Gxoqwf/TkPwfHFtuVTjt5YwKxTUZrA0kEaCCz+gHsxY3d9kw2Bltlbut5RH8pmZ
-AMnFFadmlw1UKNihBXku7TucJ0kehZLfYi4nyac8nut50nThf7a1sQu20B1GO5nz
-b1WEGnkVIbSfASBlQHz7m7l5JnRZf/9QofogsI7YfUEWpg6nZOL7hVX0F9pdjEIg
-RoUNUmp0UVC3dJ1NX4/wPUzKYlIRQud7QVben4bVRbEyEcF/aJaGybMQeveBbTQF
-PO8Of5lCHKpUUtw/7YZ8/kMQfuWQdhMKrcl1DK5pTpvA7yE7larfE99RQUi9ANd+
-J/Mh2Z5a+up7GQbJ+bFz+rXoMpDiLg==
-=TsjI
------END PGP SIGNATURE-----
-
---Sig_/YzMUj8d/JLdDHO_PT6w4o6o--
+	  Andrew
+ 
