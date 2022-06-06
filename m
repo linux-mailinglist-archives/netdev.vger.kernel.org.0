@@ -2,139 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3987B53DF23
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 02:48:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF4B853DF45
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 03:16:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351893AbiFFAs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jun 2022 20:48:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58976 "EHLO
+        id S1351935AbiFFBQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jun 2022 21:16:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348528AbiFFAs1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jun 2022 20:48:27 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173632BB1E;
-        Sun,  5 Jun 2022 17:48:23 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LGZZK0bcgzjXKN;
-        Mon,  6 Jun 2022 08:47:05 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 6 Jun
- 2022 08:48:20 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <hawk@kernel.org>, <john.fastabend@gmail.com>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <kpsingh@kernel.org>, <toke@kernel.org>
-CC:     <weiyongjun1@huawei.com>, <shaozhengchao@huawei.com>,
-        <yuehaibing@huawei.com>
-Subject: [PATCH v6,bpf-next] samples/bpf: check detach prog exist or not in xdp_fwd
-Date:   Mon, 6 Jun 2022 08:54:25 +0800
-Message-ID: <20220606005425.261967-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S241008AbiFFBQg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jun 2022 21:16:36 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D9B4E3A7;
+        Sun,  5 Jun 2022 18:16:34 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LGbDC4Cmwz4xDK;
+        Mon,  6 Jun 2022 11:16:27 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1654478188;
+        bh=NSfCInElj8gvzdEZsEIDFPfbLOUwPQ6wXjMgnxMr02Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YO4+dWPAzlntVfpe/NOJ49qS2ouQbToF/7IeeMXNa7of6KWeUZ92oyJl/I4KNV9z+
+         iv5+ZzBZFcGQSgAvSr/FP/YndTEBszgcg41kSy7r6bi5xJsQ00DoSDaY2FBoUlvqya
+         V0En6YbhbgPL9QwzQ6jZyBL9JIw8WNZ8XO/TnM2pyIOTKvIVfolHwAHj22KYfJu2Uk
+         VgbItbZiSW/Db8Yghh/If4owXMwyFRYONr9OJp1mrQvj4ieNHYNjzHgNxJM74tirbd
+         VORqyzrZkwq/zgKvLnxKW6Dawp1q2M0+piKIB5Aotr3FqYpEPPp33Gv/Auhj4sHcMh
+         FvWwdBN4vGR9A==
+Date:   Mon, 6 Jun 2022 11:16:26 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: linux-next: build warning after merge of the bluetooth tree
+Message-ID: <20220606111531.00bc960a.sfr@canb.auug.org.au>
+In-Reply-To: <Yp0w21pH4R6WaC1R@yury-laptop>
+References: <20220516175757.6d9f47b3@canb.auug.org.au>
+        <20220524082256.3b8033a9@canb.auug.org.au>
+        <20220606080631.0c3014f2@canb.auug.org.au>
+        <Yp0w21pH4R6WaC1R@yury-laptop>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/YzMUj8d/JLdDHO_PT6w4o6o";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before detach the prog, we should check detach prog exist or not.
+--Sig_/YzMUj8d/JLdDHO_PT6w4o6o
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- samples/bpf/xdp_fwd_user.c | 55 +++++++++++++++++++++++++++++++++-----
- 1 file changed, 49 insertions(+), 6 deletions(-)
+Hi Yury,
 
-diff --git a/samples/bpf/xdp_fwd_user.c b/samples/bpf/xdp_fwd_user.c
-index 1828487bae9a..84f57f1209ce 100644
---- a/samples/bpf/xdp_fwd_user.c
-+++ b/samples/bpf/xdp_fwd_user.c
-@@ -47,17 +47,60 @@ static int do_attach(int idx, int prog_fd, int map_fd, const char *name)
- 	return err;
- }
- 
--static int do_detach(int idx, const char *name)
-+static int do_detach(int ifindex, const char *ifname, const char *app_name)
- {
--	int err;
-+	LIBBPF_OPTS(bpf_xdp_attach_opts, opts);
-+	struct bpf_prog_info prog_info = {};
-+	char prog_name[BPF_OBJ_NAME_LEN];
-+	__u32 info_len, curr_prog_id;
-+	int prog_fd;
-+	int err = 1;
-+
-+	if (bpf_xdp_query_id(ifindex, xdp_flags, &curr_prog_id)) {
-+		printf("ERROR: bpf_xdp_query_id failed (%s)\n",
-+		       strerror(errno));
-+		return err;
-+	}
- 
--	err = bpf_xdp_detach(idx, xdp_flags, NULL);
--	if (err < 0)
--		printf("ERROR: failed to detach program from %s\n", name);
-+	if (!curr_prog_id) {
-+		printf("ERROR: flags(0x%x) xdp prog is not attached to %s\n",
-+		       xdp_flags, ifname);
-+		return err;
-+	}
- 
-+	info_len = sizeof(prog_info);
-+	prog_fd = bpf_prog_get_fd_by_id(curr_prog_id);
-+	if (prog_fd < 0) {
-+		printf("ERROR: bpf_prog_get_fd_by_id failed (%s)\n",
-+		       strerror(errno));
-+		return prog_fd;
-+	}
-+
-+	err = bpf_obj_get_info_by_fd(prog_fd, &prog_info, &info_len);
-+	if (err) {
-+		printf("ERROR: bpf_obj_get_info_by_fd failed (%s)\n",
-+		       strerror(errno));
-+		goto close_out;
-+	}
-+	snprintf(prog_name, sizeof(prog_name), "%s_prog", app_name);
-+	prog_name[BPF_OBJ_NAME_LEN - 1] = '\0';
-+
-+	if (strcmp(prog_info.name, prog_name)) {
-+		printf("ERROR: %s isn't attached to %s\n", app_name, ifname);
-+		err = 1;
-+		goto close_out;
-+	}
-+
-+	opts.old_prog_fd = prog_fd;
-+	err = bpf_xdp_detach(ifindex, xdp_flags, &opts);
-+	if (err < 0)
-+		printf("ERROR: failed to detach program from %s (%s)\n",
-+		       ifname, strerror(errno));
- 	/* TODO: Remember to cleanup map, when adding use of shared map
- 	 *  bpf_map_delete_elem((map_fd, &idx);
- 	 */
-+close_out:
-+	close(prog_fd);
- 	return err;
- }
- 
-@@ -169,7 +212,7 @@ int main(int argc, char **argv)
- 			return 1;
- 		}
- 		if (!attach) {
--			err = do_detach(idx, argv[i]);
-+			err = do_detach(idx, argv[i], prog_name);
- 			if (err)
- 				ret = err;
- 		} else {
--- 
-2.17.1
+On Sun, 5 Jun 2022 15:40:27 -0700 Yury Norov <yury.norov@gmail.com> wrote:
+>
+> I completely forgot about this bug, and sent a quick fix when this
+> was spotted by Sudip [1]. Linus proposed another fix [2] that drops
+> bitmap API in net/bluetooth/mgmt.c.
+>=20
+> I would prefer Linus' version, and this is the way I already suggested
+> to Luiz before in this thread.
+>=20
+> Thanks,
+> Yury
+>=20
+> [1] https://lore.kernel.org/lkml/YpyJ9qTNHJzz0FHY@debian/t/
+> [2] https://lore.kernel.org/lkml/CAHk-=3DwhqgEA=3DOOPQs7JF=3Dxps3VxjJ5uUn=
+fXgzTv4gqTDhraZFA@mail.gmail.com/T/#mcf29754f405443ca7d2a18db863c7a20439bd5=
+a0
 
+Linus has applied his fix to his tree now (before -rc1), so it should
+be all good.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/YzMUj8d/JLdDHO_PT6w4o6o
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKdVWoACgkQAVBC80lX
+0Gxoqwf/TkPwfHFtuVTjt5YwKxTUZrA0kEaCCz+gHsxY3d9kw2Bltlbut5RH8pmZ
+AMnFFadmlw1UKNihBXku7TucJ0kehZLfYi4nyac8nut50nThf7a1sQu20B1GO5nz
+b1WEGnkVIbSfASBlQHz7m7l5JnRZf/9QofogsI7YfUEWpg6nZOL7hVX0F9pdjEIg
+RoUNUmp0UVC3dJ1NX4/wPUzKYlIRQud7QVben4bVRbEyEcF/aJaGybMQeveBbTQF
+PO8Of5lCHKpUUtw/7YZ8/kMQfuWQdhMKrcl1DK5pTpvA7yE7larfE99RQUi9ANd+
+J/Mh2Z5a+up7GQbJ+bFz+rXoMpDiLg==
+=TsjI
+-----END PGP SIGNATURE-----
+
+--Sig_/YzMUj8d/JLdDHO_PT6w4o6o--
