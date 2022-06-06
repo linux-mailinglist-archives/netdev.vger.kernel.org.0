@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7669F53F238
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 00:46:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C878953F23B
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 00:46:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234175AbiFFWqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 18:46:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41710 "EHLO
+        id S235162AbiFFWqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 18:46:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232257AbiFFWqj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 18:46:39 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6EDCA5022
-        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 15:46:37 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id n8so13313187plh.1
-        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 15:46:37 -0700 (PDT)
+        with ESMTP id S235150AbiFFWqr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 18:46:47 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78852C5E48
+        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 15:46:42 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id e66so14122609pgc.8
+        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 15:46:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hBlp0m0FfUT/dBVAsBVVQW1rlRH6/pse+3PC/lyMh6Y=;
-        b=ahEQzHMg7A0nLLUBiMRgIv7hhXUcQOvHCaUvdeREvYoh5HcyXMR4axNkIP92BqdwwS
-         wLmKboD+bbd1ZIqlL5PyptYfDe9vRAtZrTwxAnPcq6fKbMeGKfbJFKHelpHJoUW2LH+6
-         sw5OzffXoMtAx0WUfLWTLp9pStJ/GLG7ecEK7YCxGkywL3h+OC+cDRSzYIKRNR6w8s3s
-         yLCK73Qunb1IiH5lA3z8MuXxrVWVSHMWDREGaZRZyhafG5qiqh1k56BeNjrJ32GGNlO7
-         9Bv5kSHmWA6n55Tspi3q1+lZ9fFAi3guur7/boQm/gJ4BIGEm/S0ByjgnaazyCyuuy5w
-         iyBQ==
+        bh=HLuyI2W62ZPcSsKQMknqN2Xs/HI65ZJVRyOjevQKz1w=;
+        b=SMGdYhVLh++BJZJL2oQ6GOelpSYexPW7aaCMkUJaZaEmAt2TcPjzCeFg6UGYVeBMUX
+         1ngs2kBy3mmQG4rTQV+4KQrAQfTtK6r5jAVpicJvWIpkfaReidmtqFMsx9I8MwblyPnM
+         RMP+YuJygKrwGQJqM68e4yBT4PR/jajAcmvuiyncxZ0Hw/BUs62kMQ4BC/t2lXFJITAq
+         /g7X/W3t55WRv9ZmDyRmqH7xXk9tR7FwRg4aM5m9NCt/6tK1PsM/Ai52UR3Ttn/0HRO7
+         NkUG2SaiOBgaSChi9ZjPvmYKnP3DfGqgB7YK+TcYXxz0JGS91OtW5aI7+0ggcZKjaxPM
+         pEGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hBlp0m0FfUT/dBVAsBVVQW1rlRH6/pse+3PC/lyMh6Y=;
-        b=37BityYNiAuRs+4jWaKoIaYu5h4yJNa09H4Q4NZnAFQExdp6dKZzcZUZ0ubmPyVoO9
-         R3qamDSjrVOPnFtFYQ6R5LhbDGTxwXx2Mtw7CbbHQsQX20Cjqapw1tmLB5DCKr+eZjbI
-         j2ENBRHDYN1Jz0sdcaogUU5rt0pNbYkZSUu9DNQP827AIMjYLLPXHaiK63zSQ1qp/1tT
-         KSfIIQ1S1SS15zAd34d/PRQnAsK28YhfYXr6k3mVlMd6eaAUWH+nFoLvWb59Pa8udybr
-         mvh9pxcrxG3aLMETNivQmg7r4eEz9UtqW3D2ASXhEvLd8BtP/ficDIRbs+cm7l0kqRfk
-         AhVA==
-X-Gm-Message-State: AOAM5332l5FstT/9XmQfwn7h47HiPQgBLFZcRMdg5GsEjLWSdJztXeWZ
-        7X2MhJwySXYzJYGQ94fcOHfZSsyByl6sCIE+2UhheQ==
-X-Google-Smtp-Source: ABdhPJwxl4dIW7L3VhdlltyuvMd1su3hxypaOF1H/3X27CkrHo1USKfKYXvMtmrzU2yRtacWZWmIkzYDMypJjYFOqp8=
-X-Received: by 2002:a17:90b:380b:b0:1e6:67f6:f70c with SMTP id
- mq11-20020a17090b380b00b001e667f6f70cmr31133111pjb.120.1654555596743; Mon, 06
- Jun 2022 15:46:36 -0700 (PDT)
+        bh=HLuyI2W62ZPcSsKQMknqN2Xs/HI65ZJVRyOjevQKz1w=;
+        b=H6MDAmwGlYnvm0ntWX1oft5bFDTkzaDaemXRhutLItDfZ5xAeZGcI1qMmJ5SG+lNWf
+         DqctSSZopVnjBqK0Uttyl4LAIxjxNiBYucdiC8lh0NnydN+ucscC6dKJ2KKNyMbsDpby
+         qdSWXdUXt/d5UVtB0IfGI9tMvhjbxgCWPLIzNhsjMLzIEheQPo7Z++PTAYvi+bEudqby
+         MXB9kkju155SaUMZDYNsiXZZ2VVnMWo5sdEWeOXWBscuwk4Nc7BkjVJUo3hQqLKVCHHj
+         EZX58HHpcDE1/ihHF3Xm+3UydsTUfTkPejlCgjRg5cbcAfwpdeOZA8qJHFwrU77uZ/QA
+         rKBg==
+X-Gm-Message-State: AOAM533ABPuiXw8hcezCy69OPZ4D1/SsUqoyjdcKj6f00sB2SYN0q3Pm
+        s1d1WNsqQCz6JLfv9q/3Rl/jAPntVX5MLRDZIvzkAg==
+X-Google-Smtp-Source: ABdhPJzGhwJNwldVtweTAgnJ9cJUdl6AJhb7fvxC1mDgHmN7cCRBadqy1ANJTX8aSJ8v/FomfJou9G8QNi3euCQPctw=
+X-Received: by 2002:a63:f158:0:b0:3db:8563:e8f5 with SMTP id
+ o24-20020a63f158000000b003db8563e8f5mr23516591pgk.191.1654555600833; Mon, 06
+ Jun 2022 15:46:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220601190218.2494963-1-sdf@google.com> <20220601190218.2494963-6-sdf@google.com>
- <20220604065935.lg5vegzhcqpd5laq@kafai-mbp>
-In-Reply-To: <20220604065935.lg5vegzhcqpd5laq@kafai-mbp>
+References: <20220601190218.2494963-1-sdf@google.com> <20220601190218.2494963-7-sdf@google.com>
+ <20220604071808.rwzoktja73ijr3i7@kafai-mbp>
+In-Reply-To: <20220604071808.rwzoktja73ijr3i7@kafai-mbp>
 From:   Stanislav Fomichev <sdf@google.com>
-Date:   Mon, 6 Jun 2022 15:46:25 -0700
-Message-ID: <CAKH8qBvX2OL17pLNusN_W6q8GpoNs7X9=h9YMwsx7-2-QEer1g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v8 05/11] bpf: implement BPF_PROG_QUERY for BPF_LSM_CGROUP
+Date:   Mon, 6 Jun 2022 15:46:29 -0700
+Message-ID: <CAKH8qBv-cKrqvYjPh3P1JaWGLCTpBq3JtOEg+Py=a7BN_dVrPw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v8 06/11] bpf: allow writing to a subset of sock
+ fields from lsm progtype
 To:     Martin KaFai Lau <kafai@fb.com>
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
         daniel@iogearbox.net, andrii@kernel.org
@@ -67,220 +68,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 3, 2022 at 11:59 PM Martin KaFai Lau <kafai@fb.com> wrote:
+On Sat, Jun 4, 2022 at 12:18 AM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> On Wed, Jun 01, 2022 at 12:02:12PM -0700, Stanislav Fomichev wrote:
-> > diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> > index a27a6a7bd852..cb3338ef01e0 100644
-> > --- a/kernel/bpf/cgroup.c
-> > +++ b/kernel/bpf/cgroup.c
-> > @@ -1035,6 +1035,7 @@ static int cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
-> >  static int __cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
-> >                             union bpf_attr __user *uattr)
-> >  {
-> > +     __u32 __user *prog_attach_flags = u64_to_user_ptr(attr->query.prog_attach_flags);
-> >       __u32 __user *prog_ids = u64_to_user_ptr(attr->query.prog_ids);
-> >       enum bpf_attach_type type = attr->query.attach_type;
-> >       enum cgroup_bpf_attach_type atype;
-> > @@ -1042,50 +1043,92 @@ static int __cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
-> >       struct hlist_head *progs;
-> >       struct bpf_prog *prog;
-> >       int cnt, ret = 0, i;
-> > +     int total_cnt = 0;
-> >       u32 flags;
+> On Wed, Jun 01, 2022 at 12:02:13PM -0700, Stanislav Fomichev wrote:
+> > For now, allow only the obvious ones, like sk_priority and sk_mark.
 > >
-> > -     atype = to_cgroup_bpf_attach_type(type);
-> > -     if (atype < 0)
-> > -             return -EINVAL;
-> > +     enum cgroup_bpf_attach_type from_atype, to_atype;
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >  kernel/bpf/bpf_lsm.c  | 58 +++++++++++++++++++++++++++++++++++++++++++
+> >  kernel/bpf/verifier.c |  3 ++-
+> >  2 files changed, 60 insertions(+), 1 deletion(-)
 > >
-> > -     progs = &cgrp->bpf.progs[atype];
-> > -     flags = cgrp->bpf.flags[atype];
-> > +     if (type == BPF_LSM_CGROUP) {
-> > +             from_atype = CGROUP_LSM_START;
-> > +             to_atype = CGROUP_LSM_END;
-> Enforce prog_attach_flags for BPF_LSM_CGROUP:
->
->                 if (total_cnt && !prog_attach_flags)
->                         return -EINVAL;
-
-All the comments make sense, will apply. The only thing that I'll
-probably keep as is is the copy_to_user(flags) part. We can't move it
-above because it hasn't been properly initialized there.
-
-What I think I'll do is:
-
-if (atype != to_atype) /* exported via prog_attach_flags */
-  flags = 0;
-copy_to_user(.., flags,..);
-
-That seems to better describe why we're not doing it?
-
-
-> > +     } else {
-> > +             from_atype = to_cgroup_bpf_attach_type(type);
-> > +             if (from_atype < 0)
-> > +                     return -EINVAL;
-> > +             to_atype = from_atype;
-> > +     }
+> > diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
+> > index 83aa431dd52e..feba8e96f58d 100644
+> > --- a/kernel/bpf/bpf_lsm.c
+> > +++ b/kernel/bpf/bpf_lsm.c
+> > @@ -303,7 +303,65 @@ bool bpf_lsm_is_sleepable_hook(u32 btf_id)
+> >  const struct bpf_prog_ops lsm_prog_ops = {
+> >  };
 > >
-> > -     effective = rcu_dereference_protected(cgrp->bpf.effective[atype],
-> > -                                           lockdep_is_held(&cgroup_mutex));
-> > +     for (atype = from_atype; atype <= to_atype; atype++) {
-> > +             progs = &cgrp->bpf.progs[atype];
-> > +             flags = cgrp->bpf.flags[atype];
-> >
-> > -     if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE)
-> > -             cnt = bpf_prog_array_length(effective);
-> > -     else
-> > -             cnt = prog_list_length(progs);
-> > +             effective = rcu_dereference_protected(cgrp->bpf.effective[atype],
-> > +                                                   lockdep_is_held(&cgroup_mutex));
-> nit. This can be done under the BPF_F_QUERY_EFFECTIVE case below.
->
-> >
-> > -     if (copy_to_user(&uattr->query.attach_flags, &flags, sizeof(flags)))
-> > -             return -EFAULT;
-> > -     if (copy_to_user(&uattr->query.prog_cnt, &cnt, sizeof(cnt)))
-> > +             if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE)
-> > +                     total_cnt += bpf_prog_array_length(effective);
-> > +             else
-> > +                     total_cnt += prog_list_length(progs);
+> > +static int lsm_btf_struct_access(struct bpf_verifier_log *log,
+> > +                                     const struct btf *btf,
+> > +                                     const struct btf_type *t, int off,
+> > +                                     int size, enum bpf_access_type atype,
+> > +                                     u32 *next_btf_id,
+> > +                                     enum bpf_type_flag *flag)
+> > +{
+> > +     const struct btf_type *sock_type;
+> > +     struct btf *btf_vmlinux;
+> > +     s32 type_id;
+> > +     size_t end;
+> > +
+> > +     if (atype == BPF_READ)
+> > +             return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
+> > +                                      flag);
+> > +
+> > +     btf_vmlinux = bpf_get_btf_vmlinux();
+> > +     if (!btf_vmlinux) {
+> > +             bpf_log(log, "no vmlinux btf\n");
+> > +             return -EOPNOTSUPP;
 > > +     }
 > > +
-> > +     if (type != BPF_LSM_CGROUP)
-> > +             if (copy_to_user(&uattr->query.attach_flags, &flags, sizeof(flags)))
-> > +                     return -EFAULT;
-> nit. Move this copy_to_user(&uattr->query.attach_flags,...) to the
-> 'if (type == BPF_LSM_CGROUP) { from_atype = .... } else { ... }' above.
-> That will save a BPF_LSM_CGROUP test.
->
-> I think the '== BPF_LSM_CGROUP' case needs to copy a 0 to user also.
->
-> > +     if (copy_to_user(&uattr->query.prog_cnt, &total_cnt, sizeof(total_cnt)))
-> >               return -EFAULT;
-> > -     if (attr->query.prog_cnt == 0 || !prog_ids || !cnt)
-> > +     if (attr->query.prog_cnt == 0 || !prog_ids || !total_cnt)
-> >               /* return early if user requested only program count + flags */
-> >               return 0;
-> > -     if (attr->query.prog_cnt < cnt) {
-> > -             cnt = attr->query.prog_cnt;
+> > +     type_id = btf_find_by_name_kind(btf_vmlinux, "sock", BTF_KIND_STRUCT);
+> > +     if (type_id < 0) {
+> > +             bpf_log(log, "'struct sock' not found in vmlinux btf\n");
+> > +             return -EINVAL;
+> > +     }
 > > +
-> > +     if (attr->query.prog_cnt < total_cnt) {
-> > +             total_cnt = attr->query.prog_cnt;
-> >               ret = -ENOSPC;
-> >       }
-> >
-> > -     if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE) {
-> > -             return bpf_prog_array_copy_to_user(effective, prog_ids, cnt);
-> > -     } else {
-> > -             struct bpf_prog_list *pl;
-> > -             u32 id;
-> > +     for (atype = from_atype; atype <= to_atype; atype++) {
-> > +             if (total_cnt <= 0)
-> nit. total_cnt cannot be -ve ?
-> !total_cnt instead ?
-> and may be do it in the for-loop test.
+> > +     sock_type = btf_type_by_id(btf_vmlinux, type_id);
+> > +
+> > +     if (t != sock_type) {
+> > +             bpf_log(log, "only 'struct sock' writes are supported\n");
+> > +             return -EACCES;
+> > +     }
+> > +
+> > +     switch (off) {
+> > +     case bpf_ctx_range(struct sock, sk_priority):
+> This looks wrong.  It should not allow to write at
+> any bytes of the '__u32 sk_priority'.
+
+SG, I'll change to offsetof() and will enfoce u32 size.
+
+> > +             end = offsetofend(struct sock, sk_priority);
+> > +             break;
+> > +     case bpf_ctx_range(struct sock, sk_mark):
+> Same here.
 >
-> > +                     break;
-> >
-> > -             i = 0;
-> > -             hlist_for_each_entry(pl, progs, node) {
-> > -                     prog = prog_list_prog(pl);
-> > -                     id = prog->aux->id;
-> > -                     if (copy_to_user(prog_ids + i, &id, sizeof(id)))
-> > -                             return -EFAULT;
-> > -                     if (++i == cnt)
-> > -                             break;
-> > +             progs = &cgrp->bpf.progs[atype];
-> > +             flags = cgrp->bpf.flags[atype];
+> Just came to my mind,
+> if the current need is only sk_priority and sk_mark,
+> do you think allowing bpf_setsockopt will be more useful instead ?
+
+For my use-case I only need sk_priority, but I was thinking that we
+can later extend that list as needed. But you suggestion to use
+bpf_setsockopt sounds good, let me try to use that. That might be
+better than poking directly into the fields.
+
+> It currently has SO_MARK, SO_PRIORITY, and other options.
+> Also, changing SO_MARK requires to clear the sk->sk_dst_cache.
+> In general, is it safe to do bpf_setsockopt in all bpf_lsm hooks ?
+
+It seems that we might need to more strictly control it (regardless of
+helper or direct field access). Not all lsm hooks lock sk argument, so
+we so maybe start with some allowlist of attach_btf_ids that can do
+bpf_setsockopt? (I'll add existing hooks that work on new/unreferenced
+or locked sockets to the list)
+
+
+> > +             end = offsetofend(struct sock, sk_mark);
+> > +             break;
+> > +     default:
+> > +             bpf_log(log, "no write support to 'struct sock' at off %d\n", off);
+> > +             return -EACCES;
+> > +     }
 > > +
-> > +             effective = rcu_dereference_protected(cgrp->bpf.effective[atype],
-> > +                                                   lockdep_is_held(&cgroup_mutex));
-> nit. This can be done under the BPF_F_QUERY_EFFECTIVE case below.
->
+> > +     if (off + size > end) {
+> > +             bpf_log(log,
+> > +                     "write access at off %d with size %d beyond the member of 'struct sock' ended at %zu\n",
+> > +                     off, size, end);
+> > +             return -EACCES;
+> > +     }
 > > +
-> > +             if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE)
-> > +                     cnt = bpf_prog_array_length(effective);
-> > +             else
-> > +                     cnt = prog_list_length(progs);
+> > +     return NOT_INIT;
+> > +}
 > > +
-> > +             if (cnt >= total_cnt)
-> > +                     cnt = total_cnt;
-> nit. This seems to be the only reason that
-> the "if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE)"
-> need to be broken up into two halves.  One above and one below.
-> It does not save much code.  How about repeating this one line
-> 'cnt = min_t(int, cnt, total_cnt);' instead ?
->
-> > +
-> > +             if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE) {
-> > +                     ret = bpf_prog_array_copy_to_user(effective, prog_ids, cnt);
-> > +             } else {
-> > +                     struct bpf_prog_list *pl;
-> > +                     u32 id;
-> > +
-> > +                     i = 0;
-> > +                     hlist_for_each_entry(pl, progs, node) {
-> > +                             prog = prog_list_prog(pl);
-> > +                             id = prog->aux->id;
-> > +                             if (copy_to_user(prog_ids + i, &id, sizeof(id)))
-> > +                                     return -EFAULT;
-> > +                             if (++i == cnt)
-> > +                                     break;
-> > +                     }
-> >               }
-> > +
-> > +             if (prog_attach_flags)
-> > +                     for (i = 0; i < cnt; i++)
-> > +                             if (copy_to_user(prog_attach_flags + i, &flags, sizeof(flags)))
-> > +                                     return -EFAULT;
-> > +
-> > +             prog_ids += cnt;
-> > +             total_cnt -= cnt;
-> > +             if (prog_attach_flags)
-> > +                     prog_attach_flags += cnt;
-> nit. Merge this into the above "if (prog_attach_flags)" case.
->
-> >       }
-> >       return ret;
-> >  }
-> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> > index a237be4f8bb3..27492d44133f 100644
-> > --- a/kernel/bpf/syscall.c
-> > +++ b/kernel/bpf/syscall.c
-> > @@ -3520,7 +3520,7 @@ static int bpf_prog_detach(const union bpf_attr *attr)
-> >       }
-> >  }
-> >
-> > -#define BPF_PROG_QUERY_LAST_FIELD query.prog_cnt
-> > +#define BPF_PROG_QUERY_LAST_FIELD query.prog_attach_flags
-> >
-> >  static int bpf_prog_query(const union bpf_attr *attr,
-> >                         union bpf_attr __user *uattr)
-> > @@ -3556,6 +3556,7 @@ static int bpf_prog_query(const union bpf_attr *attr,
-> >       case BPF_CGROUP_SYSCTL:
-> >       case BPF_CGROUP_GETSOCKOPT:
-> >       case BPF_CGROUP_SETSOCKOPT:
-> > +     case BPF_LSM_CGROUP:
-> >               return cgroup_bpf_prog_query(attr, uattr);
-> >       case BPF_LIRC_MODE2:
-> >               return lirc_prog_query(attr, uattr);
-> > @@ -4066,6 +4067,9 @@ static int bpf_prog_get_info_by_fd(struct file *file,
-> >
-> >       if (prog->aux->btf)
-> >               info.btf_id = btf_obj_id(prog->aux->btf);
-> > +     info.attach_btf_id = prog->aux->attach_btf_id;
-> > +     if (prog->aux->attach_btf)
-> > +             info.attach_btf_obj_id = btf_obj_id(prog->aux->attach_btf);
-> Need this also:
->
->         else if (prog->aux->dst_prog)
->                 info.attach_btf_obj_id = btf_obj_id(prog->aux->dst_prog->aux->attach_btf);
->
-> >
-> >       ulen = info.nr_func_info;
-> >       info.nr_func_info = prog->aux->func_info_cnt;
+> >  const struct bpf_verifier_ops lsm_verifier_ops = {
+> >       .get_func_proto = bpf_lsm_func_proto,
+> >       .is_valid_access = btf_ctx_access,
+> > +     .btf_struct_access = lsm_btf_struct_access,
+> >  };
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index caa5740b39b3..c54e171d9c23 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -13413,7 +13413,8 @@ static int convert_ctx_accesses(struct bpf_verifier_env *env)
+> >                               insn->code = BPF_LDX | BPF_PROBE_MEM |
+> >                                       BPF_SIZE((insn)->code);
+> >                               env->prog->aux->num_exentries++;
+> > -                     } else if (resolve_prog_type(env->prog) != BPF_PROG_TYPE_STRUCT_OPS) {
+> > +                     } else if (resolve_prog_type(env->prog) != BPF_PROG_TYPE_STRUCT_OPS &&
+> > +                                resolve_prog_type(env->prog) != BPF_PROG_TYPE_LSM) {
+> >                               verbose(env, "Writes through BTF pointers are not allowed\n");
+> >                               return -EINVAL;
+> >                       }
 > > --
 > > 2.36.1.255.ge46751e96f-goog
 > >
