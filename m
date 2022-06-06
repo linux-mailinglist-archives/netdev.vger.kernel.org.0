@@ -2,68 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE8C453DF70
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 03:42:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1880053DF96
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 04:03:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352007AbiFFBms (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 5 Jun 2022 21:42:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33872 "EHLO
+        id S1349026AbiFFCDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 5 Jun 2022 22:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233230AbiFFBmr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jun 2022 21:42:47 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7259115A29;
-        Sun,  5 Jun 2022 18:42:45 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id z17so11573059pff.7;
-        Sun, 05 Jun 2022 18:42:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TPsp63SRNfrlmWUFAaYwuy4IKLsk/bOVD4a+ZunMsqU=;
-        b=gjSrYOahe4ZLVzp+dfg7eA/1/f2LLxTxb5YR5WNC/aHtzoCApg7tia110SIVMLb/JB
-         jF41Lgu8lVCgVsJ+jsa6Yg8tseg0rOULxnHmdoeD3UogqkGhTbGQU1zGQxpnlMZZASnY
-         jnpGzw9EuOK8gFK/rw76R1Xa05nDFkOVM9hl18LfgQ3jWLLxYDoJHds83M1XhOVgPz3W
-         tEecS/JBq7gIIUWllp9GrsUBfE5FJLda+imOMWjAiEdqvSB26ej9DFN+/vCfffNEb/Jb
-         /DlzGHoGGK0BovrjLQ4l3Kov90IhXVQY87xgwR/Ja+oRLojuVtcCkJETwH5c+ZBGaiyb
-         H3qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TPsp63SRNfrlmWUFAaYwuy4IKLsk/bOVD4a+ZunMsqU=;
-        b=ms38wAE8PHQ0QdC4WbX5JR02dFbwojqzihAai09ggNHyDbSLRcozyfU8JDyal6ZZl0
-         y5TIFUlLkZkMBvlp8IWcwN3k7utREda2QtgmVkXJ0U66LP2z9Gh+b9fKhmJqHvv9TeNP
-         kZa98QGih/Kn4JJOg/I4nizUcUaayVpqzjrGrDwdTxd+iFBjCTPLwTUtE0lyYMZHDZ7X
-         2qv25BDva6eum1J3rXbcHK8LFbgum34kZ2TV97CTz+VinL/tTr4D8EkGeTQt8mgFx2Fb
-         DZbuTvNa+01aNWPbcHs94AMUJNKnSaakqDlIhKu4DbXp97Cm+5DEt30+zLFuMOjpkdkK
-         klwA==
-X-Gm-Message-State: AOAM53122wwJSGiz5QLh85YvKw2XyIzo3JhaYpGz7EWttHUPDc7YzD/w
-        RXP8I0QSLFnH99DiiasMk0A=
-X-Google-Smtp-Source: ABdhPJyDPELFrkCUWQ71OuoRmUSZwuyyBnGmeVqPqh4orOJwbE0n8P5LAnI03IY0dWYYdrRjjnTf5w==
-X-Received: by 2002:a63:7d4:0:b0:3fc:7507:cb09 with SMTP id 203-20020a6307d4000000b003fc7507cb09mr19384751pgh.582.1654479765030;
-        Sun, 05 Jun 2022 18:42:45 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id a6-20020a1709027e4600b0015e8d4eb24bsm9430487pln.149.2022.06.05.18.42.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 05 Jun 2022 18:42:44 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     jerome.pouiller@silabs.com
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] staging: wfx: Remove redundant NULL check before release_firmware() call
-Date:   Mon,  6 Jun 2022 01:42:37 +0000
-Message-Id: <20220606014237.290466-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S240339AbiFFCDd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 5 Jun 2022 22:03:33 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1BA2B1A5;
+        Sun,  5 Jun 2022 19:03:30 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LGcG84jmTzKmKy;
+        Mon,  6 Jun 2022 10:03:12 +0800 (CST)
+Received: from [10.174.177.215] (10.174.177.215) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 6 Jun 2022 10:03:28 +0800
+Subject: Re: [PATCH net-next v4] ipv6: Fix signed integer overflow in
+ __ip6_append_data
+To:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
+        <dsahern@kernel.org>, <edumazet@google.com>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <john.fastabend@gmail.com>,
+        <kpsingh@kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+References: <20220601084803.1833344-1-wangyufen@huawei.com>
+ <4c9e3cf5122f4c2f8a2473c493891362e0a13b4a.camel@redhat.com>
+ <20220602090228.1e493e47@kernel.org>
+ <34c12525e133402e9d49601974b3deb390991e74.camel@redhat.com>
+From:   wangyufen <wangyufen@huawei.com>
+Message-ID: <9b09cb01-07ee-6b33-5351-74a40edbda3d@huawei.com>
+Date:   Mon, 6 Jun 2022 10:03:27 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
+In-Reply-To: <34c12525e133402e9d49601974b3deb390991e74.camel@redhat.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-Originating-IP: [10.174.177.215]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,32 +56,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
 
-release_firmware() checks for NULL pointers internally so checking
-before calling it is redundant.
+在 2022/6/3 16:58, Paolo Abeni 写道:
+> On Thu, 2022-06-02 at 09:02 -0700, Jakub Kicinski wrote:
+>> On Thu, 02 Jun 2022 12:38:10 +0200 Paolo Abeni wrote:
+>>> I'm sorry for the multiple incremental feedback on this patch. It's
+>>> somewhat tricky.
+>>>
+>>> AFAICS Jakub mentioned only udpv6_sendmsg(). In l2tp_ip6_sendmsg() we
+>>> can have an overflow:
+>>>
+>>>          int transhdrlen = 4; /* zero session-id */
+>>>          int ulen = len + transhdrlen;
+>>>
+>>> when len >= INT_MAX - 4. That will be harmless, but I guess it could
+>>> still trigger a noisy UBSAN splat.
+>> Good point, I wonder if that's a separate issue. Should we
+>> follow what UDP does and subtract the transhdr from the max?
+>> My gut feeling is that stricter checks are cleaner than just
+>> bumping variable sizes.
+>>
+>> diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+>> index c6ff8bf9b55f..9dbd801ddb98 100644
+>> --- a/net/l2tp/l2tp_ip6.c
+>> +++ b/net/l2tp/l2tp_ip6.c
+>> @@ -504,14 +504,15 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+>>          struct ipcm6_cookie ipc6;
+>>          int addr_len = msg->msg_namelen;
+>>          int transhdrlen = 4; /* zero session-id */
+>> -       int ulen = len + transhdrlen;
+>> +       int ulen;
+>>          int err;
+>>   
+>>          /* Rough check on arithmetic overflow,
+>>           * better check is made in ip6_append_data().
+>>           */
+>> -       if (len > INT_MAX)
+>> +       if (len > INT_MAX - transhdrlen)
+>>                  return -EMSGSIZE;
+>> +       ulen = len + transhdrlen;
+>>   
+>>          /* Mirror BSD error message compatibility */
+>>          if (msg->msg_flags & MSG_OOB)
+>>
+> LGTM. Imho this can even land in a separated patch (whatever is easier)
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
- drivers/net/wireless/silabs/wfx/fwio.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Thanks for all the feedback.
+So, Jakub will send a new patch to fix the l2tp_ip6_sendmsg issue?
 
-diff --git a/drivers/net/wireless/silabs/wfx/fwio.c b/drivers/net/wireless/silabs/wfx/fwio.c
-index 3d1b8a135dc0..52c7f560b062 100644
---- a/drivers/net/wireless/silabs/wfx/fwio.c
-+++ b/drivers/net/wireless/silabs/wfx/fwio.c
-@@ -286,8 +286,7 @@ static int load_firmware_secure(struct wfx_dev *wdev)
- 
- error:
- 	kfree(buf);
--	if (fw)
--		release_firmware(fw);
-+	release_firmware(fw);
- 	if (ret)
- 		print_boot_status(wdev);
- 	return ret;
--- 
-2.25.1
-
+Thanks.
 
