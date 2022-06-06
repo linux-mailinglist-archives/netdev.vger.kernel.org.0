@@ -2,85 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 334B453E397
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 10:56:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DB0953E30D
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 10:55:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231563AbiFFH7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 03:59:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43230 "EHLO
+        id S231615AbiFFIJc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 04:09:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231480AbiFFH64 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 03:58:56 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B19615728
-        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 00:58:53 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-73-mfL3pS3cOhmr6EtnnLsIdw-1; Mon, 06 Jun 2022 08:58:50 +0100
-X-MC-Unique: mfL3pS3cOhmr6EtnnLsIdw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Mon, 6 Jun 2022 08:58:48 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Mon, 6 Jun 2022 08:58:48 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Willem de Bruijn' <willemdebruijn.kernel@gmail.com>
-CC:     Frederik Deweerdt <frederik.deweerdt@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH] [doc] msg_zerocopy.rst: clarify the TCP shutdown scenario
-Thread-Topic: [PATCH] [doc] msg_zerocopy.rst: clarify the TCP shutdown
- scenario
-Thread-Index: AQHYdguKgdO0O+cjykaafLt/qHAria09qgMg///1QwCABGpjUA==
-Date:   Mon, 6 Jun 2022 07:58:48 +0000
-Message-ID: <748d3eab042345258b5d4f50eaa56104@AcuMS.aculab.com>
-References: <20220601024744.626323-1-frederik.deweerdt@gmail.com>
- <CA+FuTSeCC=sKJhKEnavLA7qdwbGz=MC1wqFPoJQA04mZBqebow@mail.gmail.com>
- <Ypfvs+VsNHWQKT6H@fractal.lan>
- <8362c86f9b004b449ad4105d8f7489e9@AcuMS.aculab.com>
- <CA+FuTSeqbu=MPdmOVSHBDy39ZxrHZUjgGmP4LhPXjWsfc_Qa+g@mail.gmail.com>
-In-Reply-To: <CA+FuTSeqbu=MPdmOVSHBDy39ZxrHZUjgGmP4LhPXjWsfc_Qa+g@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S231495AbiFFIJb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 04:09:31 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B807D5EDEA;
+        Mon,  6 Jun 2022 01:09:29 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id x17so18765833wrg.6;
+        Mon, 06 Jun 2022 01:09:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=55gnPINtsFPFd2IhvtfL5C51CaXoml0DfEKveP/xXyE=;
+        b=FY14aHG+M1ivaNxoVyt6bw617tg7SLpmHKJkKnw7ZiBFa5bcMH28PRhbF+5/CxEB4M
+         RWPw5VAU3V8FsqwgzENi2il9HokLiJ8/fX8mE8TDBR3hWvJkacNEF+ErJKm9tHl7RaB+
+         npldND8zTlpuqQsFRhYByq9G+D4Rnstqaxn3Bi56xRS2uT6Di07qbbS0s52dunRaqaCC
+         K7yISRTRLLu4/QXGVd+wO+NorRCg958iO5PSHn8wCNESTQTickgj7RU28Mtrdu/leXNh
+         0iOXFuJiyJ/CeYgIwRwkvOTKjJarPOO26jtKGRF4jZLOLnPHZx5wvC5WTL2AgPiWiwyK
+         0tUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=55gnPINtsFPFd2IhvtfL5C51CaXoml0DfEKveP/xXyE=;
+        b=fQas94U0twhcYI7nNfTl4cGk7kf6CuvIpQLcV2sY4i06feks2yTtZ8SGDyYPzkn6cC
+         m/eLgirnQhH2kjLwnwTjHMrd37P+WXC/wLzeaaBxvM8dy5W7XvUrQe+t7tF0wDbyenIK
+         nvabE3CxnRbb92aEF6lCLRiY0Az9TRkW0qkuEU0jCYQl/pqQh2BGq+IpVPO91AnQa+AZ
+         sEnLWV1lELBQrMH/bSEdBI5vE+9h3tGPke+4pQVWw51DGuKZUsl3fhi7b21R4jio5hg+
+         M78fDHhxTTuBEo6uwn76WmEPQy8MLuTiheFursTKubApKDCn5Nm2gTpzSY4zhVVGKr2N
+         cTWw==
+X-Gm-Message-State: AOAM533Dn0JcsKx+GZoPfqbCTINrDNA2pdxe6xNxvuirTzuq1JefPfh0
+        QeSQnfwcfvLFOVHgxHjXc7M=
+X-Google-Smtp-Source: ABdhPJxs7oVThXBAjBXXkUL5eYBbt54XbarGQN20qK31IXQ/6R4+6z2LD1zS/sezB+Av3llV24Ko0g==
+X-Received: by 2002:adf:ed41:0:b0:210:20a5:26c2 with SMTP id u1-20020adfed41000000b0021020a526c2mr19871874wro.603.1654502968088;
+        Mon, 06 Jun 2022 01:09:28 -0700 (PDT)
+Received: from ?IPV6:2a01:cb05:86cb:1c00:f508:89e3:8d18:b335? (2a01cb0586cb1c00f50889e38d18b335.ipv6.abo.wanadoo.fr. [2a01:cb05:86cb:1c00:f508:89e3:8d18:b335])
+        by smtp.gmail.com with ESMTPSA id y3-20020a7bcd83000000b0039747cf8354sm16206206wmj.39.2022.06.06.01.09.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jun 2022 01:09:27 -0700 (PDT)
+Message-ID: <53818857-18b8-c7d8-8003-43452c9aa003@gmail.com>
+Date:   Mon, 6 Jun 2022 10:09:25 +0200
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/3] net: mdio: unexport __init-annotated mdio_bus_init()
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+To:     Masahiro Yamada <masahiroy@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org
+References: <20220606045355.4160711-1-masahiroy@kernel.org>
+ <20220606045355.4160711-2-masahiroy@kernel.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220606045355.4160711-2-masahiroy@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogV2lsbGVtIGRlIEJydWlqbg0KPiBTZW50OiAwMyBKdW5lIDIwMjIgMTQ6MzANCj4gDQo+
-IE9uIEZyaSwgSnVuIDMsIDIwMjIgYXQgOToxOCBBTSBEYXZpZCBMYWlnaHQgPERhdmlkLkxhaWdo
-dEBhY3VsYWIuY29tPiB3cm90ZToNCj4gPg0KPiA+IEZyb206IEZyZWRlcmlrIERld2VlcmR0IDxm
-cmVkZXJpay5kZXdlZXJkdEBnbWFpbC5jb20+DQo+ID4gPiBTZW50OiAwMiBKdW5lIDIwMjIgMDA6
-MDENCj4gPiA+ID4NCj4gPiA+ID4gQSBzb2NrZXQgbXVzdCBub3QgYmUgY2xvc2VkIHVudGlsIGFs
-bCBjb21wbGV0aW9uIG5vdGlmaWNhdGlvbnMgaGF2ZQ0KPiA+ID4gPiBiZWVuIHJlY2VpdmVkLg0K
-PiA+ID4gPg0KPiA+ID4gPiBDYWxsaW5nIHNodXRkb3duIGlzIGFuIG9wdGlvbmFsIHN0ZXAuIEl0
-IG1heSBiZSBzdWZmaWNpZW50IHRvIHNpbXBseQ0KPiA+ID4gPiBkZWxheSBjbG9zZS4NCj4gPg0K
-PiA+IFdoYXQgaGFwcGVucyBpZiB0aGUgcHJvY2VzcyBnZXRzIGtpbGxlZCAtIGVnIGJ5IFNJR1NF
-R1Y/DQo+IA0KPiBUaGUgc2tiIGZyYWdzIGhvbGQgaW5kZXBlbmRlbnQgcmVmZXJlbmNlcyBvbiB0
-aGUgcGFnZXMuIE9uY2Ugc2ticyBhcmUNCj4gZnJlZWQgb24gdHJhbnNtaXQgY29tcGxldGlvbiBv
-ciBzb2NrZXQgcHVyZ2UgdGhlIHBhZ2VzIGFyZSByZWxlYXNlZCBpZg0KPiB0aGVyZSBhcmUgbm8g
-b3RoZXIgcGFnZSByZWZlcmVuY2VzLg0KPiANCj4gT3RoZXJ3aXNlIHRoZXJlIGlzIG5vdGhpbmcg
-emVyb2NvcHkgc3BlY2lmaWMgYWJvdXQgY2xvc2luZyBUQ1ANCj4gY29ubmVjdGlvbnMgd2hlbiBh
-IHByb2Nlc3MgY3Jhc2hlcy4NCg0KU28gdGhlIHByb3Bvc2VkIHRleHQgZm9yIHRoZSBkb2N1bWVu
-dGF0aW9uIGlzIGp1c3Qgd3JvbmcuDQoNClNvbWV0aGluZyB0aGF0IHNheXMgdGhhdCByZXRyYW5z
-bWlzc2lvbnMgY2FuIHJlLXJlYWQgdGhlDQpwYWdlcyBhZnRlciB0aGUgc29ja2V0IGlzIGNsb3Nl
-ZCB3b3VsZCBiZSBtb3JlIHJlbGV2YW50Lg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRy
-ZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1L
-MSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
+
+On 6/6/2022 6:53 AM, Masahiro Yamada wrote:
+> EXPORT_SYMBOL and __init is a bad combination because the .init.text
+> section is freed up after the initialization. Hence, modules cannot
+> use symbols annotated __init. The access to a freed symbol may end up
+> with kernel panic.
+> 
+> modpost used to detect it, but it has been broken for a decade.
+> 
+> Recently, I fixed modpost so it started to warn it again, then this
+> showed up in linux-next builds.
+> 
+> There are two ways to fix it:
+> 
+>    - Remove __init
+>    - Remove EXPORT_SYMBOL
+> 
+> I chose the latter for this case because the only in-tree call-site,
+> drivers/net/phy/phy_device.c is never compiled as modular.
+> (CONFIG_PHYLIB is boolean)
+> 
+> Fixes: 90eff9096c01 ("net: phy: Allow splitting MDIO bus/device support from PHYs")
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
