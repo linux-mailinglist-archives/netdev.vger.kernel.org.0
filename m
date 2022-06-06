@@ -2,195 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F1F653EC58
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 19:10:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1A2853E7A7
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 19:07:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233959AbiFFKim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 06:38:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40958 "EHLO
+        id S234255AbiFFKqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 06:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233906AbiFFKil (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 06:38:41 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679A11EEEA;
-        Mon,  6 Jun 2022 03:38:39 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1654511917;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=erdy93WinNJjx6uD82mv+yWGkqgDaA0e53sz3wPEsFQ=;
-        b=3UrNR+7IZ25/Ac1Qmcdc46k78hzdqV2gd78pScar/t9rp2sT4hSvEE7klo3xyQFQRoJ7sn
-        P/YhaWQto8MUrwEE1xhMUG9cuMMS+j77wbF3huxubSh00qd7XAxVZTLQmswKBJa6FLut+L
-        MlTwACnMnFg9VBYD6joZMkvARpkzRDZh3vTRyrYX5bETXM0BP1hIAtk/cTLD7HV8WLXZLB
-        erLXm6PEj8ONHeP3yEo59BaBB2iRYMhY+sIj63/wWx8vpjoP0Huigdi2SQOMoT5cIKLXxE
-        S/rQBq6I0G/jr8WgBuEqqyQXOa2/o2Z2atBSbGYukVEXS4NTD3HOz5HD9qdU7g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1654511917;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=erdy93WinNJjx6uD82mv+yWGkqgDaA0e53sz3wPEsFQ=;
-        b=AeTkxR2jswDHlpY2O1kzWTPlLR8FdedY4RBvGXpFrNKULaFioC4TgCZznW0BPz00sLNWWk
-        eGBBiT1zU+UE/2Ag==
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Joanne Koong <joannelkoong@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [PATCH bpf-next] bpf: Add BPF-helper for accessing CLOCK_TAI
-Date:   Mon,  6 Jun 2022 12:37:34 +0200
-Message-Id: <20220606103734.92423-1-kurt@linutronix.de>
+        with ESMTP id S234243AbiFFKqP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 06:46:15 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EA83D02B8
+        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 03:46:11 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id me5so27580001ejb.2
+        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 03:46:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=GPYQ+AuyiK9k5AoDNUEqPMRN9dkEbEVU3yU8yAlgQoU=;
+        b=BEv/JTxRgpGr7BGlfYF0U0qsD54SzLKZzQkeX5W/aGHpqjBXxHNmd0E4Gj5UVWAJyX
+         BDYIhO/7JRo43hEmkPXy/6XwVNk/Jb7jJx8KkBtEiyqGRjrDacUR1ZMjjSDd50K+1rHo
+         hM7ihbV1mYd3vwkKEMGEvuLCMeAIGPNrND5jrOwTgOsT3XzOLqql8lOVC1kUi4bAgVgF
+         NQQuzxXQzxDeAQqgAZuS8Vw1TDlqpI4/F3Yje1H0tUCsxRKr2tNfMGSk+7TN/hZbVByV
+         WAv15G7nbkKPF0Uu3oGPvIamY+2p8Ek6iCmbOoyzbS7svPnnVHsdgwjPE6neMlakC+tz
+         Np1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=GPYQ+AuyiK9k5AoDNUEqPMRN9dkEbEVU3yU8yAlgQoU=;
+        b=TIDHyf/T7QgXnLxUZf8V4bnoukRdH0Rxd9LYSxzPiaZUpWXQnoZF6C8aSafYpev3lN
+         2qss/2d4M81A48MK++3kH0WAHoxklbAeHPnLjGqDzStLQ8MP6pjuN8Edq4soxwKaKqkk
+         rZQ5Yvvo5CfdM4qDMBOcJwM7ENS5j7ma8qMgUYHrsWtUY5ixHUQyTqGB95t4ycdAghsF
+         SWH5t6Fy4Pn/N8URIguwSpo8nWYKO0gnzXOpXoZna9LuV7P/G63yvjj70OcXCkMs2fY3
+         1l0FhcCg+ra72R/0EQEA9CM8z4gwJ7jwu+kPexPy5/BpCR48hjSK8ENCl035jRMA6mLO
+         MENA==
+X-Gm-Message-State: AOAM531E1yla9T6RyUD7W6bnVYMVregg25lYgSO7+YYTWsYIwt0/8i1D
+        SNRHrbqV5N0X3ixQdGVSOW7O/A6OHqPDgQ==
+X-Google-Smtp-Source: ABdhPJw3Gcs+m6/c2jbbElb142U1e3voZcEH6hO7Gp5nRMsTCw9B4WCDP0CMjSTAGUBINsW4ooXnqw==
+X-Received: by 2002:a17:907:60d4:b0:708:850:bc91 with SMTP id hv20-20020a17090760d400b007080850bc91mr21580631ejc.102.1654512369943;
+        Mon, 06 Jun 2022 03:46:09 -0700 (PDT)
+Received: from [192.168.0.181] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id c24-20020a056402159800b0042617ba63c2sm8422723edv.76.2022.06.06.03.46.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 Jun 2022 03:46:09 -0700 (PDT)
+Message-ID: <80637186-e3ef-14c1-78e5-bfa6deec595a@linaro.org>
+Date:   Mon, 6 Jun 2022 12:46:08 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/1] nfc: nfcmrvl: Fix memory leak in
+ nfcmrvl_play_deferred
+Content-Language: en-US
+To:     Xiaohui Zhang <ruc_zhangxiaohui@163.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220605081455.34610-1-ruc_zhangxiaohui@163.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220605081455.34610-1-ruc_zhangxiaohui@163.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jesper Dangaard Brouer <brouer@redhat.com>
+On 05/06/2022 10:14, Xiaohui Zhang wrote:
+> From: xiaohuizhang98 <ruc_zhangxiaohui@163.com>
+> 
+> We detected a suspected bug with our code clone detection tool.
+> 
+> Similar to the handling of play_deferred in commit 19cfe912c37b
+> ("Bluetooth: btusb: Fix memory leak in play_deferred"), we thought
+> a patch might be needed here as well.
+> 
+> Currently usb_submit_urb is called directly to submit deferred tx
+> urbs after unanchor them.
+> 
+> So the usb_giveback_urb_bh would failed to unref it in usb_unanchor_urb
+> and cause memory leak.
+> 
+> Put those urbs in tx_anchor to avoid the leak, and also fix the error
+> handling.
+> 
+> Signed-off-by: xiaohuizhang98 <ruc_zhangxiaohui@163.com>
 
-Commit 3dc6ffae2da2 ("timekeeping: Introduce fast accessor to clock tai")
-introduced a fast and NMI-safe accessor for CLOCK_TAI. Especially in time
-sensitive networks (TSN), where all nodes are synchronized by Precision Time
-Protocol (PTP), it's helpful to have the possibility to generate timestamps
-based on CLOCK_TAI instead of CLOCK_MONOTONIC. With a BPF helper for TAI in
-place, it becomes very convenient to correlate activity across different
-machines in the network.
+This name still does not match your name used in email.
 
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-[Kurt: Wrote changelog and renamed helper]
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
----
- include/uapi/linux/bpf.h       | 13 +++++++++++++
- kernel/bpf/core.c              |  1 +
- kernel/bpf/helpers.c           | 14 ++++++++++++++
- tools/include/uapi/linux/bpf.h | 13 +++++++++++++
- 4 files changed, 41 insertions(+)
-
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index f4009dbdf62d..5f240d5d30f6 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -5249,6 +5249,18 @@ union bpf_attr {
-  *		Pointer to the underlying dynptr data, NULL if the dynptr is
-  *		read-only, if the dynptr is invalid, or if the offset and length
-  *		is out of bounds.
-+ *
-+ * u64 bpf_ktime_get_tai_ns(void)
-+ *	Description
-+ *		A nonsettable system-wide clock derived from wall-clock time but
-+ *		ignoring leap seconds.  This clock does not experience
-+ *		discontinuities and backwards jumps caused by NTP inserting leap
-+ *		seconds as CLOCK_REALTIME does.
-+ *
-+ *		See: **clock_gettime**\ (**CLOCK_TAI**)
-+ *	Return
-+ *		Current *ktime*.
-+ *
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5455,6 +5467,7 @@ union bpf_attr {
- 	FN(dynptr_read),		\
- 	FN(dynptr_write),		\
- 	FN(dynptr_data),		\
-+	FN(ktime_get_tai_ns),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index e78cc5eea4a5..edfa716c3528 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -2641,6 +2641,7 @@ const struct bpf_func_proto bpf_get_numa_node_id_proto __weak;
- const struct bpf_func_proto bpf_ktime_get_ns_proto __weak;
- const struct bpf_func_proto bpf_ktime_get_boot_ns_proto __weak;
- const struct bpf_func_proto bpf_ktime_get_coarse_ns_proto __weak;
-+const struct bpf_func_proto bpf_ktime_get_tai_ns_proto __weak;
- 
- const struct bpf_func_proto bpf_get_current_pid_tgid_proto __weak;
- const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index 225806a02efb..981b34d1e551 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -198,6 +198,18 @@ const struct bpf_func_proto bpf_ktime_get_coarse_ns_proto = {
- 	.ret_type	= RET_INTEGER,
- };
- 
-+BPF_CALL_0(bpf_ktime_get_tai_ns)
-+{
-+	/* NMI safe access to clock tai */
-+	return ktime_get_tai_fast_ns();
-+}
-+
-+const struct bpf_func_proto bpf_ktime_get_tai_ns_proto = {
-+	.func		= bpf_ktime_get_tai_ns,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+};
-+
- BPF_CALL_0(bpf_get_current_pid_tgid)
- {
- 	struct task_struct *task = current;
-@@ -1613,6 +1625,8 @@ bpf_base_func_proto(enum bpf_func_id func_id)
- 		return &bpf_ktime_get_ns_proto;
- 	case BPF_FUNC_ktime_get_boot_ns:
- 		return &bpf_ktime_get_boot_ns_proto;
-+	case BPF_FUNC_ktime_get_tai_ns:
-+		return &bpf_ktime_get_tai_ns_proto;
- 	case BPF_FUNC_ringbuf_output:
- 		return &bpf_ringbuf_output_proto;
- 	case BPF_FUNC_ringbuf_reserve:
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index f4009dbdf62d..5f240d5d30f6 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -5249,6 +5249,18 @@ union bpf_attr {
-  *		Pointer to the underlying dynptr data, NULL if the dynptr is
-  *		read-only, if the dynptr is invalid, or if the offset and length
-  *		is out of bounds.
-+ *
-+ * u64 bpf_ktime_get_tai_ns(void)
-+ *	Description
-+ *		A nonsettable system-wide clock derived from wall-clock time but
-+ *		ignoring leap seconds.  This clock does not experience
-+ *		discontinuities and backwards jumps caused by NTP inserting leap
-+ *		seconds as CLOCK_REALTIME does.
-+ *
-+ *		See: **clock_gettime**\ (**CLOCK_TAI**)
-+ *	Return
-+ *		Current *ktime*.
-+ *
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5455,6 +5467,7 @@ union bpf_attr {
- 	FN(dynptr_read),		\
- 	FN(dynptr_write),		\
- 	FN(dynptr_data),		\
-+	FN(ktime_get_tai_ns),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
--- 
-2.30.2
-
+Best regards,
+Krzysztof
