@@ -2,113 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B84053E2D5
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 10:55:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7AF453E35B
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 10:55:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231587AbiFFIMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 04:12:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57792 "EHLO
+        id S231688AbiFFIRt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 04:17:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231616AbiFFIMe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 04:12:34 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52AE56568
-        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 01:12:33 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id w2-20020a17090ac98200b001e0519fe5a8so11961026pjt.4
-        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 01:12:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=CrA4YBm/C0o/d7+8DPi9KXWYpOuSBuqwF7Z6o0fXbnA=;
-        b=gvremHlAPslmXudVGz4LjTSuC9ZMLa9iVUVIiYwwY4RQjPzhFMBrgkLB1zk7i2h0wj
-         CIAId/DwvN7bsuRzcpGNEDD6OLtNiymSOo3zrNIgpTilud0CYP00fgPPm+pKIk+Oq6cN
-         JpzKLgroUsDWQWWzUfgWRXss3Y31CqB1brIw6hcaLHJ3scO7Rt+EoUO0s0RcZifFGo9W
-         qAH2DzTdbxO2mp1vGgUQHJbJLH25ygp5k8CLj7IAC0wr2TfgKMssKPGu1ipOnpqYmekK
-         SFkaeiUhnZP/fJfDCZ0e4k8CzbRSmIagE56iPQPEiKDE08lI70miIMBNMzB1n2bGlezC
-         RFMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=CrA4YBm/C0o/d7+8DPi9KXWYpOuSBuqwF7Z6o0fXbnA=;
-        b=W9G5ZcqIJiQDQ7T3KkThqJoO5UQY28+Mh//A3/s3fSt9cbwejZrYN7xJ1eAQdobUsG
-         bRuvAFrTrJsQwwSJ5zLtcz3uPsXgDh/dQRI9mOfhwI4/w8KIpzJJypB8GHf0tPCWBzTx
-         b+uR4XGkvqD20LTZwqBmMBqttkNLDF+KmQK9FAaoOIbDLU77LBSL7klLGilxRVsXFU5L
-         M8LQXPHqj8wry4430OcoS8mC5BQEoibJwsqdbPu4tCZasOFpNGoDXtJInqVbJYkHVRCw
-         JvqX86yCGHCanjp6dTY4hf/bfSpL900X/gtItnKXpmeMWmdN/I6U7ZESD3nkEEiOet4k
-         eWYg==
-X-Gm-Message-State: AOAM5328Xr5UPTIf9S/Ul0X+tXCJqRhrczCecZNsDWpawWBtkeRytcCm
-        EFe1qUQ6lPlbfXfa06wqMN9qNckSMVitVdL02tA=
-X-Google-Smtp-Source: ABdhPJxq3UNkhf3RuxbwrxcMd3J9XyQkX6r4Yy7SPKnJYxV0iJdyD/VKakiuFszqR3cbB4C0h4W/WM8IkGsk6tm+SsE=
-X-Received: by 2002:a17:902:ecc1:b0:167:74c3:55b1 with SMTP id
- a1-20020a170902ecc100b0016774c355b1mr6545346plh.108.1654503152524; Mon, 06
- Jun 2022 01:12:32 -0700 (PDT)
+        with ESMTP id S231665AbiFFIRr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 04:17:47 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8638B19C03
+        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 01:17:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654503465; x=1686039465;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Ih6smTLwrxUtDtULp0+nLqvxelLQm5q7Jv5XrIxao7s=;
+  b=RyqnDvusrwsFD58Pz7BcmQfxf//0DPKAxMGxly/6H7mXFCCsh2qB8LQ1
+   C9hHJgGcMNyobs2GYt6FDqC26YwbnNTDHmiV+cWyxyuJ3vuTfBM0Tyk1h
+   j/Kk05n1MtmROWN7ny/vJKfQ5RGxAhutOZSGza4PEQ5Dm6gmbc8guY+RS
+   sAZXsLPq3yPrZqWLTKm5c1CoSmBMXLZezXetu07bpDec/1UySiaFBHx16
+   o2hqclpwv/xfz9vbvTNVnu9vwuiqOqEFARIX/btJ/tapr6P/AEjeEEexW
+   uzdS+ihnUmYw49kqa9KNcV5i6QgU7EcuGiYTmYoS+BzHLEKlEf5NrbRaE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="257079378"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="257079378"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 01:17:45 -0700
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="583512421"
+Received: from fengjia-mobl2.ccr.corp.intel.com (HELO [10.254.210.182]) ([10.254.210.182])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 01:17:43 -0700
+Message-ID: <6d7a6da6-2c7e-d006-a225-4cd67f9b9c31@intel.com>
+Date:   Mon, 6 Jun 2022 16:17:40 +0800
 MIME-Version: 1.0
-Sender: dr.alitrouni@gmail.com
-Received: by 2002:a17:902:f549:b0:167:6547:ff4d with HTTP; Mon, 6 Jun 2022
- 01:12:31 -0700 (PDT)
-From:   AISHA GADDAFI <madamisha00@gmail.com>
-Date:   Mon, 6 Jun 2022 09:12:31 +0100
-X-Google-Sender-Auth: tWZL7V8KnODIQVFiPXytdbICUOk
-Message-ID: <CAE+xecBbP--8PZHm5HCVdEX5F+qrLYS0G4sRhso-OTnVCc6UEg@mail.gmail.com>
-Subject: =?UTF-8?B?15HXkden16nXlCDXkNeg15kg16bXqNeZ15og15DXqiDXoteW16jXqtea?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=2.9 required=5.0 tests=BAYES_50,
-        BODY_EMAIL_419_FRAUD_GM,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,
-        DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLY,LOTS_OF_MONEY,
-        MILLION_HUNDRED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNDISC_MONEY,URG_BIZ autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: **
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH 1/6] vDPA/ifcvf: get_config_size should return a value no
+ greater than dev implementation
+Content-Language: en-US
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>
+References: <20220602023845.2596397-1-lingshan.zhu@intel.com>
+ <20220602023845.2596397-2-lingshan.zhu@intel.com>
+ <CACGkMEsdKaWjmOncpLo1MO1DM2KDpE61KbH8uKBrnCqCxFubvw@mail.gmail.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <CACGkMEsdKaWjmOncpLo1MO1DM2KDpE61KbH8uKBrnCqCxFubvw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-15HXkden16nXlCDXkNeg15kg16bXqNeZ15og15DXqiDXoteW16jXqteaDQrXkNeg15kg16nXldec
-15cg15zXmiDXkNeqINeR16jXm9eq15kg157XodeV15zXmNeg15XXqiDXoteV157XkNefLCDXkdei
-15nXqCDXlNeR15nXqNeUINee15XXoden15guDQrXlNeQ150g15DXldeb15wg15zXlNep16rXntep
-INeR157Xk9eZ15XXnSDXlNeW15Qg15vXk9eZINec16TXqteV15cg15DXmdeq15og16rXp9ep15XX
-qNeqINeU15PXk9eZ16osINeV15zXl9ek16kg15DXqiDXp9eR15zXqteaDQrXnNeU16nXp9ei15Qg
-15HXnteT15nXoNeUINep15zXmiDXkdeg15nXlNeV15zXmiDXm9ep15XXqtek15Qg16nXnNeZLCDX
-qdee15kg16LXmdeZ16nXlCDXp9eT15DXpNeZINeV157XqteS15XXqNeo16og15vXmdeV150NCteR
-16LXldee15DXnywg15DXoNeZINeQ15zXnteg15Qg15XXkNedINeX15Mg15TXldeo15nXqiDXoted
-INep15zXldep15Qg15nXnNeT15nXnSAsINeR16rXlSDXlNeR15nXldec15XXkteZ16og15TXmdeX
-15nXk9eUDQrXqdecINeg16nXmdeQINec15XXkSDXlNee16DXldeXICjXp9eV15zXldeg15wg15TX
-nteg15XXlyDXnteV16LXnteoINen15PXkNek15kpINeV15vXqNeS16Ig15DXoNeZINeg157XpteQ
-16og16rXl9eqINeU15LXoNeqDQrXnten15zXmCDXnteT15nXoNeZINei15wg15nXk9eZINee157X
-qdec16og16LXldee16DXmS4NCteZ16kg15zXmSDXm9eh16TXmdedINeR16nXldeV15kgItei16nX
-qNeZ150g15XXqdeR16Ig157Xmdec15nXldefINeV15fXntepINee15DXldeqINeQ15zXoyDXk9eV
-15zXqCDXkNee16jXmden15DXmSINCi0kMjcuNTAwLjAwMC4wMCDXk9eV15zXqCDXkNee16jXmden
-15DXmSDXqdeQ16DXmSDXqNeV16bXlCDXnNeU16TXp9eZ15Mg15HXmdeT15og16LXkdeV16gg16TX
-qNeV15nXp9eYINeU16nXp9ei15QNCteR15DXqNem15ouINeQ150g15DXqteUINee15XXm9efINec
-15jXpNecINeR16TXqNeV15nXp9eYINeW15Qg15HXqdee15ksINeQ16DXkCDXlNep15Eg15PXl9eV
-16Mg15vXk9eZINec15DXpNep16gg15zXmQ0K15zXodek16cg15zXmiDXpNeo15jXmdedINeg15XX
-odek15nXnSDXm9eT15kg15zXlNeq15fXmdecINeR16rXlNec15nXmiDXlNeU16LXkdeo15QuDQrX
-kNeV15PXlCDXnNeq15LXldeR16rXmiDXlNeT15fXldek15Qg15HXkNee16bXoteV16og15vXqteV
-15HXqiDXlNeT15XXkCLXnCDXqdec15kg15zXnteY15Q6IG1hZGFtZ2FkYWZpYWlzaGFAZ21haWwu
-Y29tDQrXqteV15PXlA0K16nXnNeaINeR15DXnteqINei15nXmdep15QNCiwsLCwsLCwsLCwsLCws
-LCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCws
-LCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCws
-LA0KUGxlYXNlIGkgbmVlZCB5b3VyIGhlbHANCkkgYW0gc2VuZGluZyBteSBncmVldGluZ3MgdG8g
-eW91IGZyb20gdGhlIFN1bHRhbmF0ZSBvZiBPbWFuLCBJbiB0aGUNCmNhcGl0YWwgY2l0eSBvZiBN
-dXNjYXQuDQpNYXkgaSB1c2UgdGhpcyBtZWRpdW0gdG8gb3BlbiBhIG11dHVhbCBjb21tdW5pY2F0
-aW9uIHdpdGggeW91LCBhbmQNCnNlZWtpbmcgeW91ciBhY2NlcHRhbmNlIHRvd2FyZHMgaW52ZXN0
-aW5nIGluIHlvdXIgY291bnRyeSB1bmRlciB5b3VyDQptYW5hZ2VtZW50IGFzIG15IHBhcnRuZXIs
-IE15IG5hbWUgaXMgQWlzaGEgR2FkZGFmaSBhbmQgcHJlc2VudGx5DQpsaXZpbmcgaW4gT21hbiwg
-aSBhbSBhIFdpZG93IGFuZCBzaW5nbGUgTW90aGVyIHdpdGggdGhyZWUgQ2hpbGRyZW4sDQp0aGUg
-b25seSBiaW9sb2dpY2FsIERhdWdodGVyIG9mIGxhdGUgTGlieWFuIFByZXNpZGVudCAoTGF0ZSBD
-b2xvbmVsDQpNdWFtbWFyIEdhZGRhZmkpIGFuZCBwcmVzZW50bHkgaSBhbSB1bmRlciBwb2xpdGlj
-YWwgYXN5bHVtIHByb3RlY3Rpb24NCmJ5IHRoZSBPbWFuaSBHb3Zlcm5tZW50Lg0KSSBoYXZlIGZ1
-bmRzIHdvcnRoIOKAnFR3ZW50eSBTZXZlbiBNaWxsaW9uIEZpdmUgSHVuZHJlZCBUaG91c2FuZCBV
-bml0ZWQNClN0YXRlIERvbGxhcnPigJ0gLSQyNy41MDAuMDAwLjAwIFVTIERvbGxhcnMgd2hpY2gg
-aSB3YW50IHRvIGVudHJ1c3Qgb24NCnlvdSBmb3IgaW52ZXN0bWVudCBwcm9qZWN0IGluIHlvdXIg
-Y291bnRyeS4gSWYgeW91IGFyZSB3aWxsaW5nIHRvDQpoYW5kbGUgdGhpcyBwcm9qZWN0IG9uIG15
-IGJlaGFsZiwga2luZGx5IHJlcGx5IHVyZ2VudCB0byBlbmFibGUgbWUNCnByb3ZpZGUgeW91IG1v
-cmUgZGV0YWlscyB0byBzdGFydCB0aGUgdHJhbnNmZXIgcHJvY2Vzcy4NCkkgc2hhbGwgYXBwcmVj
-aWF0ZSB5b3VyIHVyZ2VudCByZXNwb25zZSB0aHJvdWdoIG15IGVtYWlsIGFkZHJlc3MNCmJlbG93
-OiBtYWRhbWdhZGFmaWFpc2hhQGdtYWlsLmNvbQ0KVGhhbmtzDQpZb3VycyBUcnVseSBBaXNoYQ0K
+
+
+On 6/2/2022 3:11 PM, Jason Wang wrote:
+> On Thu, Jun 2, 2022 at 10:48 AM Zhu Lingshan <lingshan.zhu@intel.com> wrote:
+>> ifcvf_get_config_size() should return a virtio device type specific value,
+>> however the ret_value should not be greater than the onboard size of
+>> the device implementation. E.g., for virtio_net, config_size should be
+>> the minimum value of sizeof(struct virtio_net_config) and the onboard
+>> cap size.
+>>
+>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>> ---
+>>   drivers/vdpa/ifcvf/ifcvf_base.c | 8 ++++++--
+>>   drivers/vdpa/ifcvf/ifcvf_base.h | 2 ++
+>>   2 files changed, 8 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
+>> index 48c4dadb0c7c..6bccc8291c26 100644
+>> --- a/drivers/vdpa/ifcvf/ifcvf_base.c
+>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.c
+>> @@ -128,6 +128,7 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *pdev)
+>>                          break;
+>>                  case VIRTIO_PCI_CAP_DEVICE_CFG:
+>>                          hw->dev_cfg = get_cap_addr(hw, &cap);
+>> +                       hw->cap_dev_config_size = le32_to_cpu(cap.length);
+> One possible issue here is that, if the hardware have more size than
+> spec, we may end up with a migration compatibility issue.
+>
+> It looks to me we'd better build the config size based on the
+> features, e.g it looks to me for net, we should probably use
+>
+> offset_of(struct virtio_net_config, mtu)?
+Hi Jason,
+
+our ifcvf devices have nothing out of the spec in the device config 
+space, so I think we can trust the cap size
+>
+>>                          IFCVF_DBG(pdev, "hw->dev_cfg = %p\n", hw->dev_cfg);
+>>                          break;
+>>                  }
+>> @@ -233,15 +234,18 @@ int ifcvf_verify_min_features(struct ifcvf_hw *hw, u64 features)
+>>   u32 ifcvf_get_config_size(struct ifcvf_hw *hw)
+>>   {
+>>          struct ifcvf_adapter *adapter;
+>> +       u32 net_config_size = sizeof(struct virtio_net_config);
+>> +       u32 blk_config_size = sizeof(struct virtio_blk_config);
+>> +       u32 cap_size = hw->cap_dev_config_size;
+>>          u32 config_size;
+>>
+>>          adapter = vf_to_adapter(hw);
+>>          switch (hw->dev_type) {
+>>          case VIRTIO_ID_NET:
+>> -               config_size = sizeof(struct virtio_net_config);
+>> +               config_size = cap_size >= net_config_size ? net_config_size : cap_size;
+> I don't get the code here, any chance that net_config_size could be zero?
+This means, if the capability size is more than the size of structure 
+virtio-net-cofnig,
+there may be something out of the spec, then we only migrate the spec 
+contents, which is
+a defensive coding. If the capability size is smaller than the size in 
+spec, means
+the capability is a sub-set of the spec contents, we only migrate the 
+onboard contents.
+
+Sorry for the confusing, I will add a comment here.
+
+Thanks
+Zhu Lingshan
+>
+> Thanks
+>
+>>                  break;
+>>          case VIRTIO_ID_BLOCK:
+>> -               config_size = sizeof(struct virtio_blk_config);
+>> +               config_size = cap_size >= blk_config_size ? blk_config_size : cap_size;
+>>                  break;
+>>          default:
+>>                  config_size = 0;
+>> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
+>> index 115b61f4924b..f5563f665cc6 100644
+>> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
+>> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
+>> @@ -87,6 +87,8 @@ struct ifcvf_hw {
+>>          int config_irq;
+>>          int vqs_reused_irq;
+>>          u16 nr_vring;
+>> +       /* VIRTIO_PCI_CAP_DEVICE_CFG size */
+>> +       u32 cap_dev_config_size;
+>>   };
+>>
+>>   struct ifcvf_adapter {
+>> --
+>> 2.31.1
+>>
+
