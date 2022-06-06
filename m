@@ -2,140 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6B9F53EB26
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 19:09:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E948453E7E0
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 19:07:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239171AbiFFNm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 09:42:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48668 "EHLO
+        id S239049AbiFFNqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 09:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239168AbiFFNm4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 09:42:56 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8DDF2497C
-        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 06:42:54 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id m39-20020a05600c3b2700b0039c511ebbacso1038198wms.3
-        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 06:42:54 -0700 (PDT)
+        with ESMTP id S239044AbiFFNqO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 09:46:14 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB2D02462F7
+        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 06:46:12 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id me5so28543779ejb.2
+        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 06:46:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to
+        d=pqrs.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=94FE0xqKYNBQJ8bbUNfhKNNPOc38KM25jE5hqWXLeJ4=;
-        b=CrmEhJxq1l4OTomBhxJ7gibVbpSR4Ozlj5Nsilj9K6AFO/OohvC4DGByx8fV+QXa66
-         mGkjtKaiCp8smDnW8O1+SxaRIBIxH1tAxdu47XHKgSu7yIkpXuu9SRXmuX1aYk/ddBHY
-         /JROXXB3pXfMcv6Udz8jcnu4rM4EF0JFmIUqbaw647fCPUINGjsF/ve5yJGI6+4Rj17T
-         5Us+fVA1i9c84/U757B4JGOXlZOjM8KJnGLPh5g2kuxxzU+6W02iDRpEisHt1dvWITyW
-         hZJzLdZs9nJiqfr2PlBh22aFF3BUOOdzRIZZ6I2nSjm4xUAaVLKr1Z5q+z6+rWoW59vd
-         kKTw==
+        bh=RyE/5WkFj4kqlM+hYKkTtPD1/Znyp8cf8vJddwwLwqc=;
+        b=X2xiglIlatM2mHhAVLnJFiDCXvluwipGFTj/XlHQyveUL9xOTRIieaAtU8TGPNGFUi
+         VlWUgrHV1wVRPumV4Se6O3GnFdP4bZpKaPwRDzx6lJv2s+Kzka/MCpraBHx2SXdnhGoh
+         azcw+UNvxOSBfDYYdGcM867GBBU3m3a5j85z8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=94FE0xqKYNBQJ8bbUNfhKNNPOc38KM25jE5hqWXLeJ4=;
-        b=jGM19OJmn7UwtqSPsiuUaMpT1J7t3RHBKuN0wAka0Ux1ssB+k7hIRYNMQjoEMzcLdJ
-         hzAx0qLNQzyDQxCblCud7ooIXjAmLOhuNLvFVPMyrzrfjJOogD9gkysEbxlYsJQYe74+
-         5fasko138ifWStvRV2h7WHpyO/cmmfqTezwhUvBXlI4l8ZgsOFMNA5eoF8/jevolNg9f
-         KUT/YMV2zWHlyausxI9lsDVMQjAIVGXFbLnyrnCb4EbJQex6TiIJW+l5l0ZjyfaadaQ5
-         b4ofIpCJ6Pi681M+9dURGCPaR1F9ccqdBAioTFbdta/9w/6bBy6sYY8Z0JPn9s/KYtUa
-         X9Bg==
-X-Gm-Message-State: AOAM531pXInaXAq+VtR68+p8x5T6N/Ox/VtA6JL0nwZhKNMRgAJoEU/l
-        8ixzbk2lhej+gEr/ZcgAtINyH0BiaCOwy0z/hlk=
-X-Google-Smtp-Source: ABdhPJwGHfn5+m2S21QKhNZ99xCSwXyl0zyR6a+qzNEYJSCkl+UeEUzE54LbQgHy1vt52jj5s4mnUb0TGFQTYGiCJHM=
-X-Received: by 2002:a05:600c:1c22:b0:397:5c31:6669 with SMTP id
- j34-20020a05600c1c2200b003975c316669mr51941437wms.78.1654522973265; Mon, 06
- Jun 2022 06:42:53 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RyE/5WkFj4kqlM+hYKkTtPD1/Znyp8cf8vJddwwLwqc=;
+        b=Au9MXolY79weHHlN1OqMZdAyzoP4ljJBbCypr4pFB6UWuIyOvKaI000ZlHkj4ljLqz
+         mNUw9tFH1wd7fy2YutWYMdSQUmD3HWBbm9OjuPY+VjTdXbdeIZ7jkhhWQrx1HMkFya02
+         dC7vIJUy1JXSZDnWRlsYoiiO7Gp/lWu1evRwRapzcSVxPtC9M2c65tezXABiRFdf1nwu
+         dFNlNfsasLJlJ9EJqnbineWrpfyKG/+g5wXFoLfAddLL7j4WnK4qSv3ONK5NxBCq+NfX
+         xKH4UuEISqJ7YERiAvZLnRdpT8oYGSCkgSvHsUzUsLeEHhbdcEJqL7k7LoE+njE3bx9d
+         fM+Q==
+X-Gm-Message-State: AOAM531EK8IlRXcf9ubXm2QoKuLIh4h4BxnQINUmival8WpCcB1RtzBj
+        jC5X84qDlx5ODcDvChxzWMpxug==
+X-Google-Smtp-Source: ABdhPJyw8lLr0zTjgm1NfJVlGHX1hiA8EEPgexnjx8LGyqOURB5i6kJLJIgcQDe3DvCCb664NKohag==
+X-Received: by 2002:a17:906:27d4:b0:710:9a8a:85ef with SMTP id k20-20020a17090627d400b007109a8a85efmr11447815ejc.136.1654523171163;
+        Mon, 06 Jun 2022 06:46:11 -0700 (PDT)
+Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
+        by smtp.gmail.com with ESMTPSA id a26-20020a1709062b1a00b006f3ef214db4sm5496538ejg.26.2022.06.06.06.46.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 06:46:10 -0700 (PDT)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     luizluca@gmail.com, Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/5] net: dsa: realtek: rtl8365mb: improve handling of PHY modes
+Date:   Mon,  6 Jun 2022 15:45:48 +0200
+Message-Id: <20220606134553.2919693-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Sender: smithwilson780@gmail.com
-Received: by 2002:a05:600c:4988:0:0:0:0 with HTTP; Mon, 6 Jun 2022 06:42:52
- -0700 (PDT)
-From:   Dina Mckenna <dinamckenna1894@gmail.com>
-Date:   Mon, 6 Jun 2022 13:42:52 +0000
-X-Google-Sender-Auth: EaXXmE4OXwulyGZqiodbHO0ge1U
-Message-ID: <CADh0mysot8BCseQCf1G=QRMhL2B7U-741LWaHrC7e0N61cffRQ@mail.gmail.com>
-Subject: Please need your urgent assistance,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=5.0 required=5.0 tests=ADVANCE_FEE_5_NEW_MONEY,
-        BAYES_50,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,LOTS_OF_MONEY,MONEY_FRAUD_8,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_MONEY,URG_BIZ autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:336 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5804]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [smithwilson780[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [smithwilson780[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  0.6 URG_BIZ Contains urgent matter
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  0.0 MONEY_FRAUD_8 Lots of money and very many fraud phrases
-        *  3.0 ADVANCE_FEE_5_NEW_MONEY Advance Fee fraud and lots of money
-        *  0.6 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: *****
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello my dear.,
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
- I sent this mail praying it will get to you in a good condition of
-health, since I myself are in a very critical health condition in
-which I sleep every night without knowing if I may be alive to see the
-next day. I bring peace and love to you.. It is by the grace of God, I
-had no choice than to do what is lawful and right in the sight of God
-for eternal life and in the sight of man, for witness of God=E2=80=99s merc=
-y
-and glory upon my life. I am Mrs. Dina Howley Mckenna, a widow. I am
-suffering from a long time brain tumor, It has defiled all forms of
-medical treatment, and right now I have about a few months to leave,
-according to medical experts. The situation has gotten complicated
-recently with my inability to hear proper, am communicating with you
-with the help of the chief nurse herein the hospital, from all
-indication my conditions is really deteriorating and it is quite
-obvious that, according to my doctors they have advised me that I may
-not live too long, Because this illness has gotten to a very bad
-stage. I plead that you will not expose or betray this trust and
-confidence that I am about to repose on you for the mutual benefit of
-the orphans and the less privilege. I have some funds I inherited from
-my late husband, the sum of ($ 11,000,000.00, Eleven Million Dollars).
-Having known my condition, I decided to donate this fund to you
-believing that you will utilize it the way i am going to instruct
-herein. I need you to assist me and reclaim this money and use it for
-Charity works therein your country  for orphanages and gives justice
-and help to the poor, needy and widows says The Lord." Jeremiah
-22:15-16.=E2=80=9C and also build schools for less privilege that will be
-named after my late husband if possible and to promote the word of God
-and the effort that the house of God is maintained. I do not want a
-situation where this money will be used in an ungodly manner. That's
-why I'm taking this decision. I'm not afraid of death, so I know where
-I'm going. I accept this decision because I do not have any child who
-will inherit this money after I die.. Please I want your sincerely and
-urgent answer to know if you will be able to execute this project for
-the glory of God, and I will give you more information on how the fund
-will be transferred to your bank account. May the grace, peace, love
-and the truth in the Word of God be with you and all those that you
-love and care for..
+This series introduces some minor cleanup of the driver and improves the
+handling of PHY interface modes to break the assumption that CPU ports
+are always over an external interface, and the assumption that user
+ports are always using an internal PHY.
 
-I'm waiting for your immediate reply..
+Alvin Šipraga (5):
+  net: dsa: realtek: rtl8365mb: rename macro RTL8367RB -> RTL8367RB_VB
+  net: dsa: realtek: rtl8365mb: remove port_mask private data member
+  net: dsa: realtek: rtl8365mb: correct the max number of ports
+  net: dsa: realtek: rtl8365mb: remove learn_limit_max private data
+    member
+  net: dsa: realtek: rtl8365mb: handle PHY interface modes correctly
 
-May God Bless you.,
-Mrs. Dina Howley Mckenna..
+ drivers/net/dsa/realtek/rtl8365mb.c | 268 ++++++++++++++++++++--------
+ 1 file changed, 189 insertions(+), 79 deletions(-)
+
+-- 
+2.36.0
+
