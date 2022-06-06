@@ -2,104 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9371453E886
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 19:08:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D26053EB0F
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 19:09:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237627AbiFFMn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 08:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57742 "EHLO
+        id S238183AbiFFNBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 09:01:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237569AbiFFMn2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 08:43:28 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7135C2CBD2D;
-        Mon,  6 Jun 2022 05:43:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=S17W/Pm9YVh/HqKMgj1KO/HjHX9HcDXOf/ffbUmqK5A=; b=JQGlU/poW50DIvWBX4d2F5pO8Q
-        e1ogrNiB9rn2MCX3s6dmk7hshynvkKeM0faugenizIbvxnGl1cG24z9+v+p+aj0Hfgx94Oh6K7kW2
-        G4gcHmYRcw11ZAUPDQFGHT28a7mGox27tNRn60+UBZQkwyxn3eOPfb9FvgnAU34anaLg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nyC4O-005mXJ-7M; Mon, 06 Jun 2022 14:42:56 +0200
-Date:   Mon, 6 Jun 2022 14:42:56 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tan Tee Min <tee.min.tan@linux.intel.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S238178AbiFFNBw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 09:01:52 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C8112E298A
+        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 06:01:50 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id v25so18732058eda.6
+        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 06:01:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pqrs.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PHja6eQ6Mv2Fce3sGPE0UzxsdJMvKhiNmaMfYmc4ndA=;
+        b=URrbnH33zLvDajx/0NU5kLo58AbZNjB8rEMPICV3OEKt/mAq2Nk9jrpxpVuUI74Pa8
+         Qg5PSBqML+Zi1e9grmdCRG9zwcGZkgLL5hqRWUMvMVsc1jaBdXscOjleVrsHY3+1L1CN
+         DJieqIyP2shK2Fxwll9P/g0kXuAY9GT6ZYLzA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PHja6eQ6Mv2Fce3sGPE0UzxsdJMvKhiNmaMfYmc4ndA=;
+        b=miEcyohpJveuyR9kByfWZ/wrBmOA1yItNY5wEZD6h7DfplV6gQbzqzTmYt87xZ2tfq
+         PJPPirBH+Zf/zKXdb/TCGQlx9aiOFlxc8loFD/SNgZd6HPrUwkcyXow5OpGpDJliO1NS
+         uNDiNS63S3L8DkX98Gb41GMnlMAFzre6StcmnIVRNr/HDv5M26DGfQ+BhJ0cTeTmUKPh
+         eQdUkAzuD6xl+51lmaMk3S3CAikkFwZUEGWKwy2TDBpyw1gUiSww8pV1GEGPyc3Pepep
+         SP2qcEmhEL1bX2b0Zdj+D9DZ5Z/rbZPuYOY94fZRgrpTBpVu6KLEz8jhJjESWn8qFUMM
+         rWvw==
+X-Gm-Message-State: AOAM530nu71uvLfp8olqY8L91QBb0LBKi2jLrYhqol5hfgu0IP2mw/sH
+        4ukyWB2X57Si9mIBMfCWA0tj0g==
+X-Google-Smtp-Source: ABdhPJyzKgOqfEIRXyIehEv8SNDfgWNU6dcDZo68dVn7XI3YY9qcBYcpsDLYrBihuvISNzn/a4SAOw==
+X-Received: by 2002:a05:6402:32a6:b0:42d:ed8b:3d8 with SMTP id f38-20020a05640232a600b0042ded8b03d8mr26381739eda.225.1654520508129;
+        Mon, 06 Jun 2022 06:01:48 -0700 (PDT)
+Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
+        by smtp.gmail.com with ESMTPSA id t26-20020a17090605da00b006fe7d269db8sm6275447ejt.104.2022.06.06.06.01.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Jun 2022 06:01:47 -0700 (PDT)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     luizluca@gmail.com, Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Dan Murphy <dmurphy@ti.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Voon Wei Feng <weifeng.voon@intel.com>,
-        Sit Michael Wei Hong <michael.wei.hong.sit@intel.com>,
-        Ling Pei Lee <pei.lee.ling@intel.com>,
-        Looi Hong Aun <hong.aun.looi@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Tan Tee Min <tee.min.tan@intel.com>
-Subject: Re: [PATCH net-next v2 1/1] net: phy: dp83867: retrigger SGMII AN
- when link change
-Message-ID: <Yp32UDf7JO2pHE8z@lunn.ch>
-References: <20220526090347.128742-1-tee.min.tan@linux.intel.com>
- <Yo9zTmMduwel8XeZ@lunn.ch>
- <20220527014709.GA26992@linux.intel.com>
- <YpDHWMe7aEVWtECd@lunn.ch>
- <20220530073356.GA1199@linux.intel.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net] net: dsa: realtek: rtl8365mb: fix GMII caps for ports with internal PHY
+Date:   Mon,  6 Jun 2022 15:01:30 +0200
+Message-Id: <20220606130130.2894410-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220530073356.GA1199@linux.intel.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Below is the HW structure for Intel mGbE controller with external PHY.
-> The SERDES is located in the PHY IF in the diagram below and the EQoS
-> MAC uses pcs-xpcs driver for SGMII interface.
-> 
->     <-----------------GBE Controller---------->|<---External PHY chip--->
->     +----------+         +----+            +---+           +------------+
->     |   EQoS   | <-GMII->| DW | < ------ > |PHY| <-SGMII-> |External PHY|
->     |   MAC    |         |xPCS|            |IF |           |(TI DP83867)|
->     +----------+         +----+            +---+           +------------+
->            ^               ^                 ^                ^
->            |               |                 |                |
->            +---------------------MDIO-------------------------+
-> 
-> There are registers in the DW XPCS to read the SGMII AN status and
-> it's showing the SGMII AN has not completed and link status is down.
-> But TI PHY is showing SGMII AN is completed and the copper link is
-> established.
-> 
-> FYI, the current pcs-xpcs driver is configuring C37 SGMII as MAC-side
-> SGMII, so it's expecting to receive AN Tx Config from PHY about the
-> link state change after C28 AN is completed between PHY and Link Partner.
-> Here is the pcs-xpcs code for your reference:
-> https://elixir.bootlin.com/linux/latest/source/drivers/net/pcs/pcs-xpcs.c#L725
-> 
-> We faced a similar issue on MaxLinear GPY PHY in the past.
-> And, MaxLinear folks admitted the issue and implemented fixes/improvements
-> in the GPY PHY Firmware to overcome the SGMII AN issue.
-> Besides, they have also implemented this similar SW Workaround in their
-> PHY driver code to cater for the old Firmware.
-> Feel free to refer GPY driver code here:
-> https://elixir.bootlin.com/linux/latest/source/drivers/net/phy/mxl-gpy.c#L222
-> 
-> Apart from TI and MaxLinear PHY, we've also tested the Marvell 88E2110 and
-> 88E1512 PHY with the MAC/SERDES combination above, Marvell PHY is working
-> fine without any issue.
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-Thanks for the additional details.
+phylib defaults to GMII when no phy-mode or phy-connection-type property
+is specified in a DSA port node.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Commit a5dba0f207e5 ("net: dsa: rtl8365mb: add GMII as user port mode")
+introduced implicit support for GMII mode on ports with internal PHY to
+allow a PHY connection for device trees where the phy-mode is not
+explicitly set to "internal".
 
-    Andrew
+Commit 6ff6064605e9 ("net: dsa: realtek: convert to phylink_generic_validate()")
+then broke this behaviour by discarding the usage of
+rtl8365mb_phy_mode_supported() - where this GMII support was indicated -
+while switching to the new .phylink_get_caps API.
+
+With the new API, rtl8365mb_phy_mode_supported() is no longer needed.
+Remove it altogether and add back the GMII capability - this time to
+rtl8365mb_phylink_get_caps() - so that the above default behaviour works
+for ports with internal PHY again.
+
+Fixes: 6ff6064605e9 ("net: dsa: realtek: convert to phylink_generic_validate()")
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+---
+
+Luiz, Russel:
+
+Commit a5dba0f207e5 ought to have had a Fixes: tag I think, because it
+claims to have been fixing a regression in the net-next tree - is that
+right? I seem to have missed both referenced commits when they were
+posted and never hit this issue personally. I only found things now
+during some other refactoring and the test for GMII looked weird to me
+so I went and investigated.
+
+Could you please help me identify that Fixes: tag? Just for my own
+understanding of what caused this added requirement for GMII on ports
+with internal PHY.
+
+---
+ drivers/net/dsa/realtek/rtl8365mb.c | 38 +++++++----------------------
+ 1 file changed, 9 insertions(+), 29 deletions(-)
+
+diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
+index 3bb42a9f236d..769f672e9128 100644
+--- a/drivers/net/dsa/realtek/rtl8365mb.c
++++ b/drivers/net/dsa/realtek/rtl8365mb.c
+@@ -955,35 +955,21 @@ static int rtl8365mb_ext_config_forcemode(struct realtek_priv *priv, int port,
+ 	return 0;
+ }
+ 
+-static bool rtl8365mb_phy_mode_supported(struct dsa_switch *ds, int port,
+-					 phy_interface_t interface)
+-{
+-	int ext_int;
+-
+-	ext_int = rtl8365mb_extint_port_map[port];
+-
+-	if (ext_int < 0 &&
+-	    (interface == PHY_INTERFACE_MODE_NA ||
+-	     interface == PHY_INTERFACE_MODE_INTERNAL ||
+-	     interface == PHY_INTERFACE_MODE_GMII))
+-		/* Internal PHY */
+-		return true;
+-	else if ((ext_int >= 1) &&
+-		 phy_interface_mode_is_rgmii(interface))
+-		/* Extension MAC */
+-		return true;
+-
+-	return false;
+-}
+-
+ static void rtl8365mb_phylink_get_caps(struct dsa_switch *ds, int port,
+ 				       struct phylink_config *config)
+ {
+-	if (dsa_is_user_port(ds, port))
++	if (dsa_is_user_port(ds, port)) {
+ 		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
+ 			  config->supported_interfaces);
+-	else if (dsa_is_cpu_port(ds, port))
++
++		/* GMII is the default interface mode for phylib, so
++		 * we have to support it for ports with integrated PHY.
++		 */
++		__set_bit(PHY_INTERFACE_MODE_GMII,
++			  config->supported_interfaces);
++	} else if (dsa_is_cpu_port(ds, port)) {
+ 		phy_interface_set_rgmii(config->supported_interfaces);
++	}
+ 
+ 	config->mac_capabilities = MAC_SYM_PAUSE | MAC_ASYM_PAUSE |
+ 				   MAC_10 | MAC_100 | MAC_1000FD;
+@@ -996,12 +982,6 @@ static void rtl8365mb_phylink_mac_config(struct dsa_switch *ds, int port,
+ 	struct realtek_priv *priv = ds->priv;
+ 	int ret;
+ 
+-	if (!rtl8365mb_phy_mode_supported(ds, port, state->interface)) {
+-		dev_err(priv->dev, "phy mode %s is unsupported on port %d\n",
+-			phy_modes(state->interface), port);
+-		return;
+-	}
+-
+ 	if (mode != MLO_AN_PHY && mode != MLO_AN_FIXED) {
+ 		dev_err(priv->dev,
+ 			"port %d supports only conventional PHY or fixed-link\n",
+-- 
+2.36.0
+
