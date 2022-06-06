@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EAC6C53ED78
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 20:03:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05F4853ED7C
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 20:04:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230458AbiFFSDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 14:03:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47798 "EHLO
+        id S230514AbiFFSEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 14:04:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230431AbiFFSDr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 14:03:47 -0400
+        with ESMTP id S230452AbiFFSDt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 14:03:49 -0400
 Received: from EX-PRD-EDGE02.vmware.com (EX-PRD-EDGE02.vmware.com [208.91.3.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A43B81B19BB;
-        Mon,  6 Jun 2022 11:03:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADA51BD7D5;
+        Mon,  6 Jun 2022 11:03:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
     s=s1024; d=vmware.com;
     h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
       content-type;
-    bh=NNMVPO7g7f6Jkv3OjF+afguZ7MsAQZAz3wtqXiB2wJg=;
-    b=h1cPNuT/vLt/Lu9dMuB9QHOJwVSIjxt9pqGsrrrmsILrp7GV/VXUJ3nvotxdld
-      qtZiuWxjj94I58zqtMUWV1hyhCa0z0GgFO0yGwi5qCYDd5KgI7Gs8KlY5MCSCP
-      zOKuzxasRXU6C0aYaMMxWe89mpTVc9cuqknVsywwGESjSZM=
+    bh=yfiFBHS0DdQhUz04eMndislkSWwaoUlonL+u/bHmjUE=;
+    b=cpbFFfSlk8xNbz04dMkq5RrnSA3/FWuhvth8VfXYuunro331tzqam/G6agBTde
+      D3S5lwPFyx1ZhZqq4cXWj8/RfatsRuJm8jfImdpuWKIYTvAlMRwxrAwyUtrDc8
+      4pP63J6+35LvOFYyKhOpuUegjtX7HsEZzyK/HNtxJDELlYs=
 Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
  EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
- 15.1.2308.14; Mon, 6 Jun 2022 11:03:33 -0700
+ 15.1.2308.14; Mon, 6 Jun 2022 11:03:36 -0700
 Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id CB908202B4;
-        Mon,  6 Jun 2022 11:03:38 -0700 (PDT)
+        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id D50EB202EE;
+        Mon,  6 Jun 2022 11:03:41 -0700 (PDT)
 Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id C635DAA1E5; Mon,  6 Jun 2022 11:03:38 -0700 (PDT)
+        id CEC7BAA1E5; Mon,  6 Jun 2022 11:03:41 -0700 (PDT)
 From:   Ronak Doshi <doshir@vmware.com>
 To:     <netdev@vger.kernel.org>
 CC:     Ronak Doshi <doshir@vmware.com>,
@@ -39,9 +39,9 @@ CC:     Ronak Doshi <doshir@vmware.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 4/8] vmxnet3: add support for out of order rx completion
-Date:   Mon, 6 Jun 2022 11:03:10 -0700
-Message-ID: <20220606180316.27793-5-doshir@vmware.com>
+Subject: [PATCH net-next 5/8] vmxnet3: add command to set ring buffer sizes
+Date:   Mon, 6 Jun 2022 11:03:11 -0700
+Message-ID: <20220606180316.27793-6-doshir@vmware.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20220606180316.27793-1-doshir@vmware.com>
 References: <20220606180316.27793-1-doshir@vmware.com>
@@ -59,185 +59,189 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, vmxnet3 processes rx completions in-order i.e. no
-out of order completion descriptor is expected. With UPT, if
-hardware supports LRO, then hardware can report out of order
-rx completions. This patch enhances vmxnet3 to add this support.
-This supports gets effective only when the corresponding feature
-bit is set.
+This patch adds a new command to set ring buffer sizes. This is
+required to pass the buffer size information to passthrough devices.
+For performance reasons, with version7 and later, ring1 will contain
+only mtu size buffers (bound to 3K). Packets > 3K will use both ring1
+and ring2.
 
-Also, minor enhancements are done for performance.
+Also, ring sizes are round down to power of 2 and ring2 default
+size is increased to 512.
 
 Signed-off-by: Ronak Doshi <doshir@vmware.com>
 Acked-by: Guolin Yang <gyang@vmware.com>
 ---
- drivers/net/vmxnet3/vmxnet3_drv.c | 70 ++++++++++++++++++++++++++++++++-------
- drivers/net/vmxnet3/vmxnet3_int.h |  5 +++
- 2 files changed, 63 insertions(+), 12 deletions(-)
+ drivers/net/vmxnet3/vmxnet3_defs.h    | 11 +++++++
+ drivers/net/vmxnet3/vmxnet3_drv.c     | 57 +++++++++++++++++++++++++++--------
+ drivers/net/vmxnet3/vmxnet3_ethtool.c |  7 +++++
+ drivers/net/vmxnet3/vmxnet3_int.h     |  3 +-
+ 4 files changed, 65 insertions(+), 13 deletions(-)
 
+diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
+index 8d626611ab2d..415e4c9993ef 100644
+--- a/drivers/net/vmxnet3/vmxnet3_defs.h
++++ b/drivers/net/vmxnet3/vmxnet3_defs.h
+@@ -99,6 +99,9 @@ enum {
+ 	VMXNET3_CMD_SET_COALESCE,
+ 	VMXNET3_CMD_REGISTER_MEMREGS,
+ 	VMXNET3_CMD_SET_RSS_FIELDS,
++	VMXNET3_CMD_RESERVED4,
++	VMXNET3_CMD_RESERVED5,
++	VMXNET3_CMD_SET_RING_BUFFER_SIZE,
+ 
+ 	VMXNET3_CMD_FIRST_GET = 0xF00D0000,
+ 	VMXNET3_CMD_GET_QUEUE_STATUS = VMXNET3_CMD_FIRST_GET,
+@@ -743,6 +746,13 @@ enum Vmxnet3_RSSField {
+ 	VMXNET3_RSS_FIELDS_ESPIP6 = 0x0020,
+ };
+ 
++struct Vmxnet3_RingBufferSize {
++	__le16             ring1BufSizeType0;
++	__le16             ring1BufSizeType1;
++	__le16             ring2BufSizeType1;
++	__le16             pad;
++};
++
+ /* If the command data <= 16 bytes, use the shared memory directly.
+  * otherwise, use variable length configuration descriptor.
+  */
+@@ -750,6 +760,7 @@ union Vmxnet3_CmdInfo {
+ 	struct Vmxnet3_VariableLenConfDesc	varConf;
+ 	struct Vmxnet3_SetPolling		setPolling;
+ 	enum   Vmxnet3_RSSField                 setRssFields;
++	struct Vmxnet3_RingBufferSize           ringBufSize;
+ 	__le64					data[2];
+ };
+ 
 diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 93f237db463d..94ca3bc1d540 100644
+index 94ca3bc1d540..2ba263966989 100644
 --- a/drivers/net/vmxnet3/vmxnet3_drv.c
 +++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -585,6 +585,7 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
- 
- 		rbi = rbi_base + ring->next2fill;
- 		gd = ring->base + ring->next2fill;
-+		rbi->comp_state = VMXNET3_RXD_COMP_PENDING;
- 
- 		if (rbi->buf_type == VMXNET3_RX_BUF_SKB) {
- 			if (rbi->skb == NULL) {
-@@ -644,8 +645,10 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
- 
- 		/* Fill the last buffer but dont mark it ready, or else the
- 		 * device will think that the queue is full */
--		if (num_allocated == num_to_alloc)
-+		if (num_allocated == num_to_alloc) {
-+			rbi->comp_state = VMXNET3_RXD_COMP_DONE;
- 			break;
-+		}
- 
- 		gd->dword[2] |= cpu_to_le32(ring->gen << VMXNET3_RXD_GEN_SHIFT);
- 		num_allocated++;
-@@ -1367,6 +1370,7 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
- 	struct Vmxnet3_RxCompDesc *rcd;
- 	struct vmxnet3_rx_ctx *ctx = &rq->rx_ctx;
- 	u16 segCnt = 0, mss = 0;
-+	int comp_offset, fill_offset;
- #ifdef __BIG_ENDIAN_BITFIELD
- 	struct Vmxnet3_RxDesc rxCmdDesc;
- 	struct Vmxnet3_RxCompDesc rxComp;
-@@ -1639,9 +1643,15 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
- 
- rcd_done:
- 		/* device may have skipped some rx descs */
--		ring->next2comp = idx;
--		num_to_alloc = vmxnet3_cmd_ring_desc_avail(ring);
- 		ring = rq->rx_ring + ring_idx;
-+		rbi->comp_state = VMXNET3_RXD_COMP_DONE;
-+
-+		comp_offset = vmxnet3_cmd_ring_desc_avail(ring);
-+		fill_offset = (idx > ring->next2fill ? 0 : ring->size) +
-+			      idx - ring->next2fill - 1;
-+		if (!ring->isOutOfOrder || fill_offset >= comp_offset)
-+			ring->next2comp = idx;
-+		num_to_alloc = vmxnet3_cmd_ring_desc_avail(ring);
- 
- 		/* Ensure that the writes to rxd->gen bits will be observed
- 		 * after all other writes to rxd objects.
-@@ -1649,18 +1659,38 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
- 		dma_wmb();
- 
- 		while (num_to_alloc) {
--			vmxnet3_getRxDesc(rxd, &ring->base[ring->next2fill].rxd,
--					  &rxCmdDesc);
--			BUG_ON(!rxd->addr);
--
--			/* Recv desc is ready to be used by the device */
--			rxd->gen = ring->gen;
--			vmxnet3_cmd_ring_adv_next2fill(ring);
--			num_to_alloc--;
-+			rbi = rq->buf_info[ring_idx] + ring->next2fill;
-+			if (!(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_OOORX_COMP)))
-+				goto refill_buf;
-+			if (ring_idx == 0) {
-+				/* ring0 Type1 buffers can get skipped; re-fill them */
-+				if (rbi->buf_type != VMXNET3_RX_BUF_SKB)
-+					goto refill_buf;
-+			}
-+			if (rbi->comp_state == VMXNET3_RXD_COMP_DONE) {
-+refill_buf:
-+				vmxnet3_getRxDesc(rxd, &ring->base[ring->next2fill].rxd,
-+						  &rxCmdDesc);
-+				WARN_ON(!rxd->addr);
-+
-+				/* Recv desc is ready to be used by the device */
-+				rxd->gen = ring->gen;
-+				vmxnet3_cmd_ring_adv_next2fill(ring);
-+				rbi->comp_state = VMXNET3_RXD_COMP_PENDING;
-+				num_to_alloc--;
-+			} else {
-+				/* rx completion hasn't occurred */
-+				ring->isOutOfOrder = 1;
-+				break;
-+			}
-+		}
-+
-+		if (num_to_alloc == 0) {
-+			ring->isOutOfOrder = 0;
- 		}
- 
- 		/* if needed, update the register */
--		if (unlikely(rq->shared->updateRxProd)) {
-+		if (unlikely(rq->shared->updateRxProd) && (ring->next2fill & 0xf) == 0) {
- 			VMXNET3_WRITE_BAR0_REG(adapter,
- 					       rxprod_reg[ring_idx] + rq->qid * 8,
- 					       ring->next2fill);
-@@ -1824,6 +1854,7 @@ vmxnet3_rq_init(struct vmxnet3_rx_queue *rq,
- 		memset(rq->rx_ring[i].base, 0, rq->rx_ring[i].size *
- 		       sizeof(struct Vmxnet3_RxDesc));
- 		rq->rx_ring[i].gen = VMXNET3_INIT_GEN;
-+		rq->rx_ring[i].isOutOfOrder = 0;
- 	}
- 	if (vmxnet3_rq_alloc_rx_buf(rq, 0, rq->rx_ring[0].size - 1,
- 				    adapter) == 0) {
-@@ -2014,8 +2045,17 @@ vmxnet3_poll_rx_only(struct napi_struct *napi, int budget)
- 	rxd_done = vmxnet3_rq_rx_complete(rq, adapter, budget);
- 
- 	if (rxd_done < budget) {
-+		struct Vmxnet3_RxCompDesc *rcd;
-+#ifdef __BIG_ENDIAN_BITFIELD
-+		struct Vmxnet3_RxCompDesc rxComp;
-+#endif
- 		napi_complete_done(napi, rxd_done);
- 		vmxnet3_enable_intr(adapter, rq->comp_ring.intr_idx);
-+		/* after unmasking the interrupt, check if any descriptors were completed */
-+		vmxnet3_getRxComp(rcd, &rq->comp_ring.base[rq->comp_ring.next2proc].rcd,
-+				  &rxComp);
-+		if (rcd->gen == rq->comp_ring.gen && napi_reschedule(napi))
-+			vmxnet3_disable_intr(adapter, rq->comp_ring.intr_idx);
- 	}
- 	return rxd_done;
+@@ -2681,6 +2681,23 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
  }
-@@ -3612,6 +3652,12 @@ vmxnet3_probe_device(struct pci_dev *pdev,
- 			adapter->dev_caps[0] = adapter->devcap_supported[0] &
- 							(1UL << VMXNET3_CAP_LARGE_BAR);
- 		}
-+		if (!(adapter->ptcap_supported[0] & (1UL << VMXNET3_DCR_ERROR)) &&
-+		    adapter->ptcap_supported[0] & (1UL << VMXNET3_CAP_OOORX_COMP) &&
-+		    adapter->devcap_supported[0] & (1UL << VMXNET3_CAP_OOORX_COMP)) {
-+			adapter->dev_caps[0] |= adapter->devcap_supported[0] &
-+						(1UL << VMXNET3_CAP_OOORX_COMP);
-+		}
- 		if (adapter->dev_caps[0])
- 			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_DCR, adapter->dev_caps[0]);
  
+ static void
++vmxnet3_init_bufsize(struct vmxnet3_adapter *adapter)
++{
++	struct Vmxnet3_DriverShared *shared = adapter->shared;
++	union Vmxnet3_CmdInfo *cmdInfo = &shared->cu.cmdInfo;
++	unsigned long flags;
++
++	if (!VMXNET3_VERSION_GE_7(adapter))
++		return;
++
++	cmdInfo->ringBufSize = adapter->ringBufSize;
++	spin_lock_irqsave(&adapter->cmd_lock, flags);
++	VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
++			       VMXNET3_CMD_SET_RING_BUFFER_SIZE);
++	spin_unlock_irqrestore(&adapter->cmd_lock, flags);
++}
++
++static void
+ vmxnet3_init_coalesce(struct vmxnet3_adapter *adapter)
+ {
+ 	struct Vmxnet3_DriverShared *shared = adapter->shared;
+@@ -2818,6 +2835,7 @@ vmxnet3_activate_dev(struct vmxnet3_adapter *adapter)
+ 		goto activate_err;
+ 	}
+ 
++	vmxnet3_init_bufsize(adapter);
+ 	vmxnet3_init_coalesce(adapter);
+ 	vmxnet3_init_rssfields(adapter);
+ 
+@@ -2991,19 +3009,29 @@ static void
+ vmxnet3_adjust_rx_ring_size(struct vmxnet3_adapter *adapter)
+ {
+ 	size_t sz, i, ring0_size, ring1_size, comp_size;
+-	if (adapter->netdev->mtu <= VMXNET3_MAX_SKB_BUF_SIZE -
+-				    VMXNET3_MAX_ETH_HDR_SIZE) {
+-		adapter->skb_buf_size = adapter->netdev->mtu +
+-					VMXNET3_MAX_ETH_HDR_SIZE;
+-		if (adapter->skb_buf_size < VMXNET3_MIN_T0_BUF_SIZE)
+-			adapter->skb_buf_size = VMXNET3_MIN_T0_BUF_SIZE;
+-
+-		adapter->rx_buf_per_pkt = 1;
++	/* With version7 ring1 will have only T0 buffers */
++	if (!VMXNET3_VERSION_GE_7(adapter)) {
++		if (adapter->netdev->mtu <= VMXNET3_MAX_SKB_BUF_SIZE -
++					    VMXNET3_MAX_ETH_HDR_SIZE) {
++			adapter->skb_buf_size = adapter->netdev->mtu +
++						VMXNET3_MAX_ETH_HDR_SIZE;
++			if (adapter->skb_buf_size < VMXNET3_MIN_T0_BUF_SIZE)
++				adapter->skb_buf_size = VMXNET3_MIN_T0_BUF_SIZE;
++
++			adapter->rx_buf_per_pkt = 1;
++		} else {
++			adapter->skb_buf_size = VMXNET3_MAX_SKB_BUF_SIZE;
++			sz = adapter->netdev->mtu - VMXNET3_MAX_SKB_BUF_SIZE +
++						    VMXNET3_MAX_ETH_HDR_SIZE;
++			adapter->rx_buf_per_pkt = 1 + (sz + PAGE_SIZE - 1) / PAGE_SIZE;
++		}
+ 	} else {
+-		adapter->skb_buf_size = VMXNET3_MAX_SKB_BUF_SIZE;
+-		sz = adapter->netdev->mtu - VMXNET3_MAX_SKB_BUF_SIZE +
+-					    VMXNET3_MAX_ETH_HDR_SIZE;
+-		adapter->rx_buf_per_pkt = 1 + (sz + PAGE_SIZE - 1) / PAGE_SIZE;
++		adapter->skb_buf_size = min((int)adapter->netdev->mtu + VMXNET3_MAX_ETH_HDR_SIZE,
++					    VMXNET3_MAX_SKB_BUF_SIZE);
++		adapter->rx_buf_per_pkt = 1;
++		adapter->ringBufSize.ring1BufSizeType0 = adapter->skb_buf_size;
++		adapter->ringBufSize.ring1BufSizeType1 = 0;
++		adapter->ringBufSize.ring2BufSizeType1 = PAGE_SIZE;
+ 	}
+ 
+ 	/*
+@@ -3019,6 +3047,11 @@ vmxnet3_adjust_rx_ring_size(struct vmxnet3_adapter *adapter)
+ 	ring1_size = (ring1_size + sz - 1) / sz * sz;
+ 	ring1_size = min_t(u32, ring1_size, VMXNET3_RX_RING2_MAX_SIZE /
+ 			   sz * sz);
++	/* For v7 and later, keep ring size power of 2 for UPT */
++	if (VMXNET3_VERSION_GE_7(adapter)) {
++		ring0_size = rounddown_pow_of_two(ring0_size);
++		ring1_size = rounddown_pow_of_two(ring1_size);
++	}
+ 	comp_size = ring0_size + ring1_size;
+ 
+ 	for (i = 0; i < adapter->num_rx_queues; i++) {
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index a755199f0176..b5568070b1b5 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -718,6 +718,13 @@ vmxnet3_set_ringparam(struct net_device *netdev,
+ 	new_rx_ring2_size = min_t(u32, new_rx_ring2_size,
+ 				  VMXNET3_RX_RING2_MAX_SIZE);
+ 
++	/* For v7 and later, keep ring size power of 2 for UPT */
++	if (VMXNET3_VERSION_GE_7(adapter)) {
++		new_tx_ring_size = rounddown_pow_of_two(new_tx_ring_size);
++		new_rx_ring_size = rounddown_pow_of_two(new_rx_ring_size);
++		new_rx_ring2_size = rounddown_pow_of_two(new_rx_ring2_size);
++	}
++
+ 	/* rx data ring buffer size has to be a multiple of
+ 	 * VMXNET3_RXDATA_DESC_SIZE_ALIGN
+ 	 */
 diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
-index a4f832f0ad5b..5b495ef253e8 100644
+index 5b495ef253e8..cb87731f5f1c 100644
 --- a/drivers/net/vmxnet3/vmxnet3_int.h
 +++ b/drivers/net/vmxnet3/vmxnet3_int.h
-@@ -136,6 +136,7 @@ struct vmxnet3_cmd_ring {
- 	u32		next2fill;
- 	u32		next2comp;
- 	u8		gen;
-+	u8              isOutOfOrder;
- 	dma_addr_t	basePA;
- };
+@@ -408,6 +408,7 @@ struct vmxnet3_adapter {
+ 	dma_addr_t pm_conf_pa;
+ 	dma_addr_t rss_conf_pa;
+ 	bool   queuesExtEnabled;
++	struct Vmxnet3_RingBufferSize     ringBufSize;
+ 	u32    devcap_supported[8];
+ 	u32    ptcap_supported[8];
+ 	u32    dev_caps[8];
+@@ -449,7 +450,7 @@ struct vmxnet3_adapter {
+ /* must be a multiple of VMXNET3_RING_SIZE_ALIGN */
+ #define VMXNET3_DEF_TX_RING_SIZE    512
+ #define VMXNET3_DEF_RX_RING_SIZE    1024
+-#define VMXNET3_DEF_RX_RING2_SIZE   256
++#define VMXNET3_DEF_RX_RING2_SIZE   512
  
-@@ -260,9 +261,13 @@ enum vmxnet3_rx_buf_type {
- 	VMXNET3_RX_BUF_PAGE = 2
- };
+ #define VMXNET3_DEF_RXDATA_DESC_SIZE 128
  
-+#define VMXNET3_RXD_COMP_PENDING        0
-+#define VMXNET3_RXD_COMP_DONE           1
-+
- struct vmxnet3_rx_buf_info {
- 	enum vmxnet3_rx_buf_type buf_type;
- 	u16     len;
-+	u8      comp_state;
- 	union {
- 		struct sk_buff *skb;
- 		struct page    *page;
 -- 
 2.11.0
 
