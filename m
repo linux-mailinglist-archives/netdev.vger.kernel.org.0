@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7AF453E35B
-	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 10:55:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 088D753E220
+	for <lists+netdev@lfdr.de>; Mon,  6 Jun 2022 10:54:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231688AbiFFIRt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 04:17:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48406 "EHLO
+        id S231651AbiFFITI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 04:19:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231665AbiFFIRr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 04:17:47 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8638B19C03
-        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 01:17:45 -0700 (PDT)
+        with ESMTP id S231640AbiFFITF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 04:19:05 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400716B67B
+        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 01:19:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654503465; x=1686039465;
+  t=1654503544; x=1686039544;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=Ih6smTLwrxUtDtULp0+nLqvxelLQm5q7Jv5XrIxao7s=;
-  b=RyqnDvusrwsFD58Pz7BcmQfxf//0DPKAxMGxly/6H7mXFCCsh2qB8LQ1
-   C9hHJgGcMNyobs2GYt6FDqC26YwbnNTDHmiV+cWyxyuJ3vuTfBM0Tyk1h
-   j/Kk05n1MtmROWN7ny/vJKfQ5RGxAhutOZSGza4PEQ5Dm6gmbc8guY+RS
-   sAZXsLPq3yPrZqWLTKm5c1CoSmBMXLZezXetu07bpDec/1UySiaFBHx16
-   o2hqclpwv/xfz9vbvTNVnu9vwuiqOqEFARIX/btJ/tapr6P/AEjeEEexW
-   uzdS+ihnUmYw49kqa9KNcV5i6QgU7EcuGiYTmYoS+BzHLEKlEf5NrbRaE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="257079378"
+  bh=krEV5UO21BxbfNc/SmNJO4rXokG8UWITxwU3wuXLcW8=;
+  b=H1AytD0+gOPI/wi6qcR/ReBpg7sb8vOLFV80vw3Ls5ahW5WPjVtOPXy8
+   ym4x1Z7aWNMRxWx1F2svgqXMN3unQzdtiWJ1OkBh+TBVc14A2Qu5qmvIc
+   KxsZOY+VBXfndInyC7OO/br7yWG6DsK5zA2OazTrtSBy+QVYv8Rpvwtsk
+   TNsFKd26ACtp3psJwtQLdc8yj+bbBUnVoWavqxLWswKS0zXMD9qWRT5u7
+   N3z0oZdrbARPV/n9LJogYleZRMmBt2TXmtf1aGMSkeMAvzevXQiLCHoak
+   rAP5oE9fR6E+igC+Fo1L8fryL4jAqkEnGS50yPf3KkRsqEtwQy9lXXr7B
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="258879299"
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="257079378"
+   d="scan'208";a="258879299"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 01:17:45 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 01:19:03 -0700
 X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
-   d="scan'208";a="583512421"
+   d="scan'208";a="583512923"
 Received: from fengjia-mobl2.ccr.corp.intel.com (HELO [10.254.210.182]) ([10.254.210.182])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 01:17:43 -0700
-Message-ID: <6d7a6da6-2c7e-d006-a225-4cd67f9b9c31@intel.com>
-Date:   Mon, 6 Jun 2022 16:17:40 +0800
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 01:19:00 -0700
+Message-ID: <f4eba581-31e8-58ac-8996-1729befaf5c6@intel.com>
+Date:   Mon, 6 Jun 2022 16:18:58 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Firefox/91.0 Thunderbird/91.9.1
-Subject: Re: [PATCH 1/6] vDPA/ifcvf: get_config_size should return a value no
- greater than dev implementation
+Subject: Re: [PATCH 2/6] vDPA/ifcvf: support userspace to query features and
+ MQ of a management device
 Content-Language: en-US
 To:     Jason Wang <jasowang@redhat.com>
 Cc:     mst <mst@redhat.com>,
         virtualization <virtualization@lists.linux-foundation.org>,
         netdev <netdev@vger.kernel.org>
 References: <20220602023845.2596397-1-lingshan.zhu@intel.com>
- <20220602023845.2596397-2-lingshan.zhu@intel.com>
- <CACGkMEsdKaWjmOncpLo1MO1DM2KDpE61KbH8uKBrnCqCxFubvw@mail.gmail.com>
+ <20220602023845.2596397-3-lingshan.zhu@intel.com>
+ <CACGkMEt4u2R9y8f3S0rAhrEmOi-N=1NCfLxLTR+U6ddcu9iYWg@mail.gmail.com>
 From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <CACGkMEsdKaWjmOncpLo1MO1DM2KDpE61KbH8uKBrnCqCxFubvw@mail.gmail.com>
+In-Reply-To: <CACGkMEt4u2R9y8f3S0rAhrEmOi-N=1NCfLxLTR+U6ddcu9iYWg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-6.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -67,95 +67,86 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 6/2/2022 3:11 PM, Jason Wang wrote:
+On 6/2/2022 3:21 PM, Jason Wang wrote:
 > On Thu, Jun 2, 2022 at 10:48 AM Zhu Lingshan <lingshan.zhu@intel.com> wrote:
->> ifcvf_get_config_size() should return a virtio device type specific value,
->> however the ret_value should not be greater than the onboard size of
->> the device implementation. E.g., for virtio_net, config_size should be
->> the minimum value of sizeof(struct virtio_net_config) and the onboard
->> cap size.
+>> Adapting to current netlink interfaces, this commit allows userspace
+>> to query feature bits and MQ capability of a management device.
 >>
 >> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 >> ---
->>   drivers/vdpa/ifcvf/ifcvf_base.c | 8 ++++++--
->>   drivers/vdpa/ifcvf/ifcvf_base.h | 2 ++
->>   2 files changed, 8 insertions(+), 2 deletions(-)
+>>   drivers/vdpa/ifcvf/ifcvf_base.c | 12 ++++++++++++
+>>   drivers/vdpa/ifcvf/ifcvf_base.h |  1 +
+>>   drivers/vdpa/ifcvf/ifcvf_main.c |  3 +++
+>>   3 files changed, 16 insertions(+)
 >>
 >> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
->> index 48c4dadb0c7c..6bccc8291c26 100644
+>> index 6bccc8291c26..7be703b5d1f4 100644
 >> --- a/drivers/vdpa/ifcvf/ifcvf_base.c
 >> +++ b/drivers/vdpa/ifcvf/ifcvf_base.c
->> @@ -128,6 +128,7 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *pdev)
->>                          break;
->>                  case VIRTIO_PCI_CAP_DEVICE_CFG:
->>                          hw->dev_cfg = get_cap_addr(hw, &cap);
->> +                       hw->cap_dev_config_size = le32_to_cpu(cap.length);
-> One possible issue here is that, if the hardware have more size than
-> spec, we may end up with a migration compatibility issue.
->
-> It looks to me we'd better build the config size based on the
-> features, e.g it looks to me for net, we should probably use
->
-> offset_of(struct virtio_net_config, mtu)?
-Hi Jason,
-
-our ifcvf devices have nothing out of the spec in the device config 
-space, so I think we can trust the cap size
->
->>                          IFCVF_DBG(pdev, "hw->dev_cfg = %p\n", hw->dev_cfg);
->>                          break;
->>                  }
->> @@ -233,15 +234,18 @@ int ifcvf_verify_min_features(struct ifcvf_hw *hw, u64 features)
->>   u32 ifcvf_get_config_size(struct ifcvf_hw *hw)
->>   {
->>          struct ifcvf_adapter *adapter;
->> +       u32 net_config_size = sizeof(struct virtio_net_config);
->> +       u32 blk_config_size = sizeof(struct virtio_blk_config);
->> +       u32 cap_size = hw->cap_dev_config_size;
->>          u32 config_size;
+>> @@ -341,6 +341,18 @@ int ifcvf_set_vq_state(struct ifcvf_hw *hw, u16 qid, u16 num)
+>>          return 0;
+>>   }
 >>
->>          adapter = vf_to_adapter(hw);
->>          switch (hw->dev_type) {
->>          case VIRTIO_ID_NET:
->> -               config_size = sizeof(struct virtio_net_config);
->> +               config_size = cap_size >= net_config_size ? net_config_size : cap_size;
-> I don't get the code here, any chance that net_config_size could be zero?
-This means, if the capability size is more than the size of structure 
-virtio-net-cofnig,
-there may be something out of the spec, then we only migrate the spec 
-contents, which is
-a defensive coding. If the capability size is smaller than the size in 
-spec, means
-the capability is a sub-set of the spec contents, we only migrate the 
-onboard contents.
+>> +u16 ifcvf_get_max_vq_pairs(struct ifcvf_hw *hw)
+>> +{
+>> +       struct virtio_net_config __iomem *config;
+>> +       u16 val, mq;
+>> +
+>> +       config  = (struct virtio_net_config __iomem *)hw->dev_cfg;
+> Any reason we need the cast here? (cast from void * seems not necessary).
+This cast is unnecessary.
+>
+>> +       val = vp_ioread16((__le16 __iomem *)&config->max_virtqueue_pairs);
+> I don't see any __le16 cast for the callers of vp_ioread16, anything
+> make max_virtqueue_pairs different here?
+I think we still need it here since hw->dev_cfg and its contents are __iomem
 
-Sorry for the confusing, I will add a comment here.
-
-Thanks
-Zhu Lingshan
+THanks
 >
 > Thanks
 >
->>                  break;
->>          case VIRTIO_ID_BLOCK:
->> -               config_size = sizeof(struct virtio_blk_config);
->> +               config_size = cap_size >= blk_config_size ? blk_config_size : cap_size;
->>                  break;
->>          default:
->>                  config_size = 0;
+>> +       mq = le16_to_cpu((__force __le16)val);
+>> +
+>> +       return mq;
+>> +}
+>> +
+>>   static int ifcvf_hw_enable(struct ifcvf_hw *hw)
+>>   {
+>>          struct virtio_pci_common_cfg __iomem *cfg;
 >> diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
->> index 115b61f4924b..f5563f665cc6 100644
+>> index f5563f665cc6..d54a1bed212e 100644
 >> --- a/drivers/vdpa/ifcvf/ifcvf_base.h
 >> +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
->> @@ -87,6 +87,8 @@ struct ifcvf_hw {
->>          int config_irq;
->>          int vqs_reused_irq;
->>          u16 nr_vring;
->> +       /* VIRTIO_PCI_CAP_DEVICE_CFG size */
->> +       u32 cap_dev_config_size;
->>   };
+>> @@ -130,6 +130,7 @@ u64 ifcvf_get_hw_features(struct ifcvf_hw *hw);
+>>   int ifcvf_verify_min_features(struct ifcvf_hw *hw, u64 features);
+>>   u16 ifcvf_get_vq_state(struct ifcvf_hw *hw, u16 qid);
+>>   int ifcvf_set_vq_state(struct ifcvf_hw *hw, u16 qid, u16 num);
+>> +u16 ifcvf_get_max_vq_pairs(struct ifcvf_hw *hw);
+>>   struct ifcvf_adapter *vf_to_adapter(struct ifcvf_hw *hw);
+>>   int ifcvf_probed_virtio_net(struct ifcvf_hw *hw);
+>>   u32 ifcvf_get_config_size(struct ifcvf_hw *hw);
+>> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+>> index 4366320fb68d..0c3af30b297e 100644
+>> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+>> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+>> @@ -786,6 +786,9 @@ static int ifcvf_vdpa_dev_add(struct vdpa_mgmt_dev *mdev, const char *name,
+>>          vf->hw_features = ifcvf_get_hw_features(vf);
+>>          vf->config_size = ifcvf_get_config_size(vf);
 >>
->>   struct ifcvf_adapter {
+>> +       ifcvf_mgmt_dev->mdev.max_supported_vqs = ifcvf_get_max_vq_pairs(vf);
+> Btw, I think current IFCVF doesn't support the provisioning of a
+> $max_qps that is smaller than what hardware did.
+>
+> Then I wonder if we need a min_supported_vqs attribute or doing
+> mediation in the ifcvf parent.
+>
+> Thanks
+>
+>> +       ifcvf_mgmt_dev->mdev.supported_features = vf->hw_features;
+>> +
+>>          adapter->vdpa.mdev = &ifcvf_mgmt_dev->mdev;
+>>          ret = _vdpa_register_device(&adapter->vdpa, vf->nr_vring);
+>>          if (ret) {
 >> --
 >> 2.31.1
 >>
