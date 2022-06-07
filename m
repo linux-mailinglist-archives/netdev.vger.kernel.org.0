@@ -2,63 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24C6154203D
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:24:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ED0D542047
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:24:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384504AbiFHATx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 20:19:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
+        id S1384909AbiFHAUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 20:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442074AbiFGW6d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 18:58:33 -0400
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 827073351D9
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 13:03:50 -0700 (PDT)
-Received: by mail-qv1-xf35.google.com with SMTP id h18so13067905qvj.11
-        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 13:03:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Om3MvdQAS3nKu64/e5dGUxUwumOruzWxGu07pA/tJes=;
-        b=hddgR5o4VDWGC7k8SiryzlGNlZDhe2Hq11IAbj8rNL7qQBcqntFs755Xu/ls4cVziu
-         42Ev5YGGvfz2aaOSE+H0WDNRe+usRGnnPXPNWLCgu7s1dv9Bc+OiQe8gSJEho6T7QtRQ
-         Wk58jk3n7PaeXeTfRCdalM7MaZMsDg7TKGyi8tMLSy73y3A2QOXsfbllue3SBjbKBOAN
-         dDEDQh0EgPLgl0U9hO5+68fZ3q6Gme6t96/Fo5Wp0SgQEG08+NH9yqyY4F2sVM27hM35
-         eXc8Zn9CzsD+Aotm2Ak6+3gUNOseE+OygIqB3cHl6NX9t7Z90Xa4m7Osn2prPrzUPW/f
-         RZXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Om3MvdQAS3nKu64/e5dGUxUwumOruzWxGu07pA/tJes=;
-        b=hkyjcjyOLAw5bwpDp6Jy8zFgUcHEa699vE4/6No/QOs0y6nDru7Hh9TC5Rj17Bd0ou
-         HhefJ/oZvQ0XntJt6fd9oZ+/uqrr0QLKRsVqdW3XTkTbSb5g/QilSfP90Dd8bO9H8EJM
-         3KS52tos9Iugt3ENr7AySPg8Fj9Vrwsmkg8Wo783bCLVLpkeIKWipD6qp57vtVY1MfO2
-         b3/LQMKKxdGOyL7mTISS5pgavUdTgHlWARvyrCqyi0yJ54CbYHI7fgYg5Q9U5T3k+g8S
-         PcBZJyEbnKL4zjdIF7UaegQ3c1QzJ1V6k/BUOla4XH881iRHtsr47cGXNKg5ocITPOmH
-         3LkQ==
-X-Gm-Message-State: AOAM531YXo6CidteTt3oIK2ujGjLOI+Mr3G491KKqfwdewvIVgT698gM
-        xCr0K392kXJTHWBCny07g4nzrBBrCrAspGkkITrAsg==
-X-Google-Smtp-Source: ABdhPJz7TcgiDc29zFfdxzsqSF2U/8DOho5BpM81w0d/Cthw1JRCD74Df+eoJDhj38GI0v5a5e3eHaQ/pqzXv71zB+A=
-X-Received: by 2002:a05:6214:2688:b0:46a:471a:dc83 with SMTP id
- gm8-20020a056214268800b0046a471adc83mr15262081qvb.22.1654632226533; Tue, 07
- Jun 2022 13:03:46 -0700 (PDT)
+        with ESMTP id S1842144AbiFHAIt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 20:08:49 -0400
+Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [85.215.255.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6909FA3383;
+        Tue,  7 Jun 2022 13:13:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1654632773;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=Gst6T9vPJJaniT6EGkMvyNGdNEUusbhezNnjdPnMqmg=;
+    b=g1VjUKQATbB0IZd8VWSCRFshb/yOD6xJfQE3NXB3Kvi9R5u8sXOCG7AdarC/E98UbS
+    DyZnu8VuR99GNxcC41Vj0cOXlAY5TBGuf2ku4hohnvaBEisgrl9MWu9X5apaRMTJE44o
+    O1XxKUWDosL4oaUljokmeqTrUzGv3uknTdGPiM5Gfr/Yty1MJpmrL2bYyVj2xD6vRZA/
+    n9833TLOjV7jJBAEer8V08fv0kRqZxuBhyCXtEGmsllyPR/rhXbDbKMi2zIQpucu+Mg5
+    WHl0DydCzu6DUXkISNhP/8R1rMNhf+3YTdmHG2L8HwX1HywbhecMalmBW9y7GVXI1sZW
+    BlHw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1q3DbdV+Ofo7wY7W6Qxgy"
+X-RZG-CLASS-ID: mo00
+Received: from [172.20.10.8]
+    by smtp.strato.de (RZmta 47.45.0 DYNA|AUTH)
+    with ESMTPSA id R0691fy57KCq8b5
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 7 Jun 2022 22:12:52 +0200 (CEST)
+Subject: Re: [PATCH v5 0/7] can: refactoring of can-dev module and of Kbuild
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can <linux-can@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Max Staudt <max@enpas.org>, netdev <netdev@vger.kernel.org>
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
+ <2e8666f3-1bd9-8610-6b72-e56e669d3484@hartkopp.net>
+ <CAMZ6RqKWUyf6dZmxG809-yvjg5wbLwPSLtEfv-MgPpJ5ra=iGQ@mail.gmail.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <f161fdd0-415a-8ea1-0aad-3a3a19f1bfa8@hartkopp.net>
+Date:   Tue, 7 Jun 2022 22:12:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220606230107.D70B55EC0B30@us226.sjc.aristanetworks.com>
- <ed6768c1-80b8-aee2-e545-b51661d49336@nvidia.com> <20220606201910.2da95056@hermes.local>
- <CA+HUmGidY4BwEJ0_ArRRUKY7BkERsKomYnOwjPEayNUaS8wv=w@mail.gmail.com> <20220607103218.532ff62c@hermes.local>
-In-Reply-To: <20220607103218.532ff62c@hermes.local>
-From:   Francesco Ruggeri <fruggeri@arista.com>
-Date:   Tue, 7 Jun 2022 13:03:35 -0700
-Message-ID: <CA+HUmGjmq4bMOEg50nQYHN_R49aEJSofxUhpLbY+LG7vK2fUdw@mail.gmail.com>
-Subject: Re: neighbour netlink notifications delivered in wrong order
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     Andy Roulin <aroulin@nvidia.com>, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <CAMZ6RqKWUyf6dZmxG809-yvjg5wbLwPSLtEfv-MgPpJ5ra=iGQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,45 +65,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 10:32 AM Stephen Hemminger
-<stephen@networkplumber.org> wrote:
->
-> On Tue, 7 Jun 2022 09:29:45 -0700
-> Francesco Ruggeri <fruggeri@arista.com> wrote:
->
-> > On Mon, Jun 6, 2022 at 8:19 PM Stephen Hemminger
-> > <stephen@networkplumber.org> wrote:
-> > >
-> > > On Mon, 6 Jun 2022 19:07:04 -0700
-> > > Andy Roulin <aroulin@nvidia.com> wrote:
-> > >
-> > > > diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> > > > index 54625287ee5b..a91dfcbfc01c 100644
-> > > > --- a/net/core/neighbour.c
-> > > > +++ b/net/core/neighbour.c
-> > > > @@ -2531,23 +2531,19 @@ static int neigh_fill_info(struct sk_buff *skb,
-> > > > struct neighbour *neigh,
-> > > >       if (nla_put(skb, NDA_DST, neigh->tbl->key_len, neigh->primary_key))
-> > > >               goto nla_put_failure;
-> > > >
-> > > > -     read_lock_bh(&neigh->lock);
-> > > >       ndm->ndm_state   = neigh->nud_state;
-> > >
-> > > Accessing neighbor state outside of lock is not safe.
-> > >
-> > > But you should be able to use RCU here??
-> >
-> > I think the patch removes the lock from neigh_fill_info but it then uses it
-> > to protect all calls to neigh_fill_info, so the access should still be safe.
-> > In case of __neigh_notify the lock also extends to protect rtnl_notify,
-> > guaranteeing that the state cannot be changed while the notification
-> > is in progress (I assume all state changes are protected by the same lock).
-> > Andy, is that the idea?
->
-> Neigh info is already protected by RCU, is per neighbour reader/writer lock
-> still needed at all?
+Hi Vincent,
 
-The goal of the patch seems to be to make changing a neighbour's state and
-delivering the corresponding notification atomic, in order to prevent
-reordering of notifications. It uses the existing lock to do so.
-Can reordering be prevented if the lock is replaced with rcu?
+On 07.06.22 04:49, Vincent MAILHOL wrote:
+> On Tue. 7 Jun. 2022 at 04:43, Oliver Hartkopp <socketcan@hartkopp.net> wrote:
+>>
+
+>>>             |
+>>>             +-> All other CAN devices not relying on RX offload
+>>>             |
+>>>             +-> CAN rx offload
+>>>                 symbol: CONFIG_CAN_RX_OFFLOAD
+>>
+>> Is this still true in patch series 5?
+>>
+>> If I understood it correctly CONFIG_CAN_BITTIMING and
+>> CONFIG_CAN_RX_OFFLOAD can be enabled by the user and
+>> (alternatively/additionally) the selection of "flexcan, m_can, mcp251xfd
+>> and ti_hecc" enables CONFIG_CAN_RX_OFFLOAD too.
+>>
+>> Right?
+> 
+> Yes, this is correct. Maybe what troubles you is the meaning of the
+> "x --> y" arrow in the graph. I said it denotes that "y depends on x".
+> Here "depends on" has a loose meaning. It translates to either:
+>    * Feature Y is encapsulated in Kbuild by some "if X/endif" and won't
+> show up unless X is selected.
+>    * Feature Y has a "selects X" tag and will forcibly enable X if selected.
+> 
+> CONFIG_CAN_*CALC*_BITTIMING is on the left side of an arrow starting
+> from CONFIG_CAN_NETLINK so it "depends" on CONFIG_CAN_NETLINK. On the
+> other hand, CONFIG_CAN_*CALC*_BITTIMING does not have any arrow
+> starting from it so indeed, it can be enabled by the user
+> independently of the other features as long as CONFIG_CAN_NETLINK is
+> selected.
+
+Ok.
+
+> CONFIG_CAN_RX_OFFLOAD is also on the left side of an arrow starting
+> from CONFIG_CAN_NETLINK. Furthermore, there is an arrow starting from
+> CONFIG_CAN_RX_OFFLOAD going to the "rx offload drivers". So those
+> drivers need CONFIG_CAN_RX_OFFLOAD (which is implemented using the
+> "selects CONFIG_CAN_RX_OFFLOAD"). However, CONFIG_CAN_RX_OFFLOAD can
+> be selected independently of the "rx offload drivers" as long as its
+> CONFIG_CAN_NETLINK dependency is met.
+> 
+> So I think that the diagram is correct. Maybe rephrasing the cover
+> letter as below would address your concerns?
+I applied your series and played with the options and it works like 
+charm - and as expected.
+
+But the point remains that from your figure I would still assume that 
+the M_CAN driver would only show up when CONFIG_CAN_RX_OFFLOAD was 
+selected by the user.
+
+But the current (good) implementation shows *all* drivers and selects 
+CONFIG_CAN_RX_OFFLOAD when e.g. M_CAN is selected.
+
+So what about:
+
+   symbol: CONFIG_NETDEVICES
+   |
+   +-> CAN Device Drivers
+       symbol: CONFIG_CAN_DEV
+       |
+       +-> software/virtual CAN device drivers
+       |   (at time of writing: slcan, vcan, vxcan)
+       |
+       +-> hardware CAN device drivers with Netlink support
+           symbol: CONFIG_CAN_NETLINK (matches previous CONFIG_CAN_DEV)
+           |
+           +-> CAN bit-timing calculation (optional for all drivers)
+           |   symbol: CONFIG_CAN_BITTIMING
+           |
+           +-> CAN rx offload (optional but selected by some drivers)
+           |   symbol: CONFIG_CAN_RX_OFFLOAD
+           |
+           +-> CAN devices drivers
+               (some may select CONFIG_CAN_RX_OFFLOAD)
+
+(I also added 'hardware' to CAN device drivers with Netlink support) to 
+have a distinction to 'software/virtual' CAN device drivers)
+
+At least this would help me to understand the new configuration setup.
+
+Best regards,
+Oliver
