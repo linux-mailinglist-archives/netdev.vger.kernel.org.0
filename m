@@ -2,52 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E73CA54014E
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 16:25:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6812D54013B
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 16:23:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245350AbiFGOZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 10:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39344 "EHLO
+        id S245391AbiFGOXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 10:23:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245492AbiFGOZS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 10:25:18 -0400
-X-Greylist: delayed 7443 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 07:25:13 PDT
-Received: from azure-sdnproxy-1.icoremail.net (azure-sdnproxy.icoremail.net [52.237.72.81])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 33CC3F1353;
-        Tue,  7 Jun 2022 07:25:10 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [106.117.78.144])
-        by mail-app2 (Coremail) with SMTP id by_KCgCHjopqX59izNVuAQ--.20134S2;
-        Tue, 07 Jun 2022 22:23:46 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org
-Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-hams@vger.kernel.org,
-        thomas@osterried.de, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH v2] net: ax25: Fix deadlock caused by skb_recv_datagram in ax25_recvmsg
-Date:   Tue,  7 Jun 2022 22:23:37 +0800
-Message-Id: <20220607142337.78458-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: by_KCgCHjopqX59izNVuAQ--.20134S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxZw43ZFyfAF1kWFy3KFW3Jrb_yoW5CrWxpF
-        yUKF18Wr48JFy2qF47JFWDXr1xAFsFyFWUXrW7W3yxZFnxW3WrJryrtr4jk34jgrZ8A347
-        t3Wqga1ftF43WaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvK14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
-        Y2ka0xkIwI1lc2xSY4AK67AK6ry5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
-        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
-        b7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
-        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAI
-        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8Jr0_Cr1UYxBIdaVFxh
-        VjvjDU0xZFpf9x0JUmzuXUUUUU=
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAg0OAVZdtaF12QABsy
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        with ESMTP id S245408AbiFGOXx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 10:23:53 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E4AEABA1;
+        Tue,  7 Jun 2022 07:23:52 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id q12-20020a17090a304c00b001e2d4fb0eb4so20950528pjl.4;
+        Tue, 07 Jun 2022 07:23:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=a9HfVW17dxPowaFnT2mXtkCX/E8emMITEyMLwiyTVkg=;
+        b=Xv5SNQfwwRE7/iVegGgC2rCLpaMrSYGaHhQDnbxDcPXmV8Df47dGp+rIOVg9yu3Isb
+         GI8AwbaePfyxZPx4+2Zi95o9bBkVwUcqPonpPkG09Co52Wk4peG+O1Yt82Gkka98UAka
+         6gIJJh1+7+YnZhtK6fcJ94br5y/UmgzxMOq8NBY9cT2EktOfdLUW61D10xMM2eeIrpDN
+         fglHzpk3Ab+25wVLo/ll6GUSHwSiAG26EC3WjAhWmu84mNNSJaT48V034T6Q8M7VdGGJ
+         EXYib4Dp9Xtho5JCe/s+sIF443XpYROtVW7WJgM1nxXdvP1xAhgaVNo/3GgRcSvcnkFn
+         fFXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=a9HfVW17dxPowaFnT2mXtkCX/E8emMITEyMLwiyTVkg=;
+        b=06gn53fOkwGDQX8gfDJHAwwNKSFNk9SN4weriaA6fC6HAs35Il/T9mOjNZpfkDwsEE
+         O0oDax5bs8BLNwHCevk/pG8X+Y12sw/G7J/7CFl1xy2r0m/GTfnXfVeJg+7mA8Vw1V/d
+         8ni6qgHdL08glIfeM+GjlsPDWZ4LqSl1PWqoPCeEo/XODsU2W3jwYUoCXPnecoQ5skpB
+         JEKoYaqYNKissIMdp0Iys90H6kNGtvrRbn2/vjlGNx9VC95jvJy7essto0OYXa3Jsx0D
+         lofPwqMfPR9zp/QJlJIyAg0h6pc+1uc8IgLbaTJSj8dJ2Pa/rvFu2oWd4qAVWl6w9mCh
+         MYoQ==
+X-Gm-Message-State: AOAM532YW9Pgv/Ak+IuagsXJESy9OXQ9UQPgkGdtfNKGldFxw0wrhayu
+        yt+v9Qsx/uflCdSCdhlvm/39iRz5oxJFqxIFU6Q=
+X-Google-Smtp-Source: ABdhPJzG9mlso5RyygzzP9Q0jn2BCiPgRSWzusTjeftT3K7Laty41V3lt9GPwNVy90UYvCe93uf67brhFKIaDD0ehzk=
+X-Received: by 2002:a17:903:32d2:b0:166:3747:8465 with SMTP id
+ i18-20020a17090332d200b0016637478465mr29083003plr.143.1654611831619; Tue, 07
+ Jun 2022 07:23:51 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220606134553.2919693-1-alvin@pqrs.dk> <20220606134553.2919693-6-alvin@pqrs.dk>
+In-Reply-To: <20220606134553.2919693-6-alvin@pqrs.dk>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Tue, 7 Jun 2022 11:23:40 -0300
+Message-ID: <CAJq09z7gRosx0uBRCyP6xc0GUFMgnKCdry3BL-iB13M=JEY3hQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 5/5] net: dsa: realtek: rtl8365mb: handle PHY
+ interface modes correctly
+To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,87 +78,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The skb_recv_datagram() in ax25_recvmsg() will hold lock_sock
-and block until it receives a packet from the remote. If the client
-doesn`t connect to server and calls read() directly, it will not
-receive any packets forever. As a result, the deadlock will happen.
+> From: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
+>
+> Realtek switches in the rtl8365mb family always have at least one port
+> with a so-called external interface, supporting PHY interface modes such
+> as RGMII or SGMII. The purpose of this patch is to improve the driver's
+> handling of these ports.
+>
+> A new struct rtl8365mb_chip_info is introduced. A static instance of
+> this struct is added for each supported switch, which is distinguished
+> by its chip ID and version. Embedded in each chip_info struct is an
+> array of struct rtl8365mb_extint, describing the external interfaces
+> available. This is more specific than the old rtl8365mb_extint_port_map,
+> which was only valid for switches with up to 6 ports.
+>
+> The struct rtl8365mb_extint also contains a bitmask of supported PHY
+> interface modes, which allows the driver to distinguish which ports
+> support RGMII. This corrects a previous mistake in the driver whereby it
+> was assumed that any port with an external interface supports RGMII.
+> This is not actually the case: for example, the RTL8367S has two
+> external interfaces, only the second of which supports RGMII. The first
+> supports only SGMII and HSGMII. This new design will make it easier to
+> add support for other interface modes.
+>
+> Finally, rtl8365mb_phylink_get_caps() is fixed up to return supported
+> capabilities based on the external interface properties described above.
+> This allows for ports with an external interface to be treated as DSA
+> user ports, and for ports with an internal PHY to be treated as DSA CPU
+> ports.
 
-The fail log caused by deadlock is shown below:
+That's a nice patch. But while dealing with ext interfaces, wouldn't
+it be nice to also add
+a mask for user ports? We could easily validate if a declared dsa port
+really exists.
 
-[  369.606973] INFO: task ax25_deadlock:157 blocked for more than 245 seconds.
-[  369.608919] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[  369.613058] Call Trace:
-[  369.613315]  <TASK>
-[  369.614072]  __schedule+0x2f9/0xb20
-[  369.615029]  schedule+0x49/0xb0
-[  369.615734]  __lock_sock+0x92/0x100
-[  369.616763]  ? destroy_sched_domains_rcu+0x20/0x20
-[  369.617941]  lock_sock_nested+0x6e/0x70
-[  369.618809]  ax25_bind+0xaa/0x210
-[  369.619736]  __sys_bind+0xca/0xf0
-[  369.620039]  ? do_futex+0xae/0x1b0
-[  369.620387]  ? __x64_sys_futex+0x7c/0x1c0
-[  369.620601]  ? fpregs_assert_state_consistent+0x19/0x40
-[  369.620613]  __x64_sys_bind+0x11/0x20
-[  369.621791]  do_syscall_64+0x3b/0x90
-[  369.622423]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-[  369.623319] RIP: 0033:0x7f43c8aa8af7
-[  369.624301] RSP: 002b:00007f43c8197ef8 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
-[  369.625756] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f43c8aa8af7
-[  369.626724] RDX: 0000000000000010 RSI: 000055768e2021d0 RDI: 0000000000000005
-[  369.628569] RBP: 00007f43c8197f00 R08: 0000000000000011 R09: 00007f43c8198700
-[  369.630208] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff845e6afe
-[  369.632240] R13: 00007fff845e6aff R14: 00007f43c8197fc0 R15: 00007f43c8198700
+...
 
-This patch moves the skb_recv_datagram() before lock_sock() in order
-that other functions that need lock_sock could be executed.
+> @@ -1997,33 +2122,27 @@ static int rtl8365mb_detect(struct realtek_priv *=
+priv)
+>         case RTL8365MB_CHIP_ID_8365MB_VC:
+>                 switch (chip_ver) {
+>                 case RTL8365MB_CHIP_VER_8365MB_VC:
+> -                       dev_info(priv->dev,
+> -                                "found an RTL8365MB-VC switch (ver=3D0x%=
+04x)\n",
+> -                                chip_ver);
+> +                       mb->chip_info =3D &rtl8365mb_chip_info_8365mb_vc;
+>                         break;
+>                 case RTL8365MB_CHIP_VER_8367RB_VB:
+> -                       dev_info(priv->dev,
+> -                                "found an RTL8367RB-VB switch (ver=3D0x%=
+04x)\n",
+> -                                chip_ver);
+> +                       mb->chip_info =3D &rtl8365mb_chip_info_8367rb_vb;
+>                         break;
+>                 case RTL8365MB_CHIP_VER_8367S:
+> -                       dev_info(priv->dev,
+> -                                "found an RTL8367S switch (ver=3D0x%04x)=
+\n",
+> -                                chip_ver);
+> +                       mb->chip_info =3D &rtl8365mb_chip_info_8367s;
+>                         break;
+>                 default:
+> -                       dev_err(priv->dev, "unrecognized switch version (=
+ver=3D0x%04x)",
+> -                               chip_ver);
+> +                       dev_err(priv->dev,
+> +                               "unrecognized switch (id=3D0x%04x, ver=3D=
+0x%04x)",
+> +                               chip_id, chip_ver);
+>                         return -ENODEV;
+>                 }
 
-Suggested-by: Thomas Osterried <thomas@osterried.de>
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reported-by: Thomas Habets <thomas@@habets.se>
----
-Changes in v2:
-  - Make commit messages clearer.
+With this patch, we now have a nice chip_info for each device. If we
+group all of them in an array, we could iterate over them instead of
+switching over chip_id/ver. In this case, adding a new variant is just
+a matter of creating a new chip_info and adding to the array. When the
+chip id/ver is only used inside a single chip_info, I don't know if we
+should keep a macro declaring each value. For example,
 
- net/ax25/af_ax25.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+#define RTL8365MB_CHIP_ID_8367S         0x6367
+#define RTL8365MB_CHIP_VER_8367S        0x00A0
+...
++static const struct rtl8365mb_chip_info rtl8365mb_chip_info_8367s =3D {
++       .name =3D "RTL8367S",
++       .chip_id =3D RTL8365MB_CHIP_ID_8367S,
++       .chip_ver =3D RTL8365MB_CHIP_VER_8367S,
++       .extints =3D {
++               { 6, 1, PHY_INTF(SGMII) | PHY_INTF(HSGMII) },
++               { 7, 2, PHY_INTF(MII) | PHY_INTF(TMII) | PHY_INTF(RMII) |
++                       PHY_INTF(RGMII) },
++               { /* sentinel */ }
++       },
++       .jam_table =3D rtl8365mb_init_jam_8365mb_vc,
++       .jam_size =3D ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc),
++};
 
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 95393bb2760..02cd6087512 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -1665,6 +1665,11 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 	int copied;
- 	int err = 0;
- 
-+	/* Now we can treat all alike */
-+	skb = skb_recv_datagram(sk, flags, &err);
-+	if (!skb)
-+		goto done;
-+
- 	lock_sock(sk);
- 	/*
- 	 * 	This works for seqpacket too. The receiver has ordered the
-@@ -1675,11 +1680,6 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 		goto out;
- 	}
- 
--	/* Now we can treat all alike */
--	skb = skb_recv_datagram(sk, flags, &err);
--	if (skb == NULL)
--		goto out;
--
- 	if (!sk_to_ax25(sk)->pidincl)
- 		skb_pull(skb, 1);		/* Remove PID */
- 
-@@ -1725,6 +1725,7 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- out:
- 	release_sock(sk);
- 
-+done:
- 	return err;
- }
- 
--- 
-2.17.1
+seems to be as clear as:
 
++static const struct rtl8365mb_chip_info rtl8365mb_chip_info_8367s =3D {
++       .name =3D "RTL8367S",
++       .chip_id =3D 0x6367,
++       .chip_ver =3D 0x00A0,
++       .extints =3D {
++               { 6, 1, PHY_INTF(SGMII) | PHY_INTF(HSGMII) },
++               { 7, 2, PHY_INTF(MII) | PHY_INTF(TMII) | PHY_INTF(RMII) |
++                       PHY_INTF(RGMII) },
++               { /* sentinel */ }
++       },
++       .jam_table =3D rtl8365mb_init_jam_8365mb_vc,
++       .jam_size =3D ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc),
++};
+
+but smaller and not spread over the source.
+
+Regards,
+
+Luiz
