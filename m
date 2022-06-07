@@ -2,56 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 358BF5424B2
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:52:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CA935426DA
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:58:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346123AbiFHCQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 22:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42212 "EHLO
+        id S1443810AbiFHCDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 22:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445452AbiFHCM2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 22:12:28 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71161D7867
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 13:27:16 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nyfnA-0004V9-Bf; Tue, 07 Jun 2022 22:27:08 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 07BAC8E60C;
-        Tue,  7 Jun 2022 20:27:06 +0000 (UTC)
-Date:   Tue, 7 Jun 2022 22:27:06 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
+        with ESMTP id S243368AbiFHBzQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 21:55:16 -0400
+Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [81.169.146.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41531F7DAA;
+        Tue,  7 Jun 2022 13:52:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1654635116;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=JXSiYxgFZZ2tjAxBcyTrI4C3XZX0DeCU5mEV+jv6R6k=;
+    b=tTIXRIwQyepuLXyRIEgr8laM1lqaJ/fmrXqiArmaPMoqiCXCC9HO6/UVS7VAqP3tyf
+    Vvfg+spfS8Cm5h5lUdih2JmXw5jluDL4lUFeB1qpQp3K2x5isOTq+wYHGfHQYo5gLxwA
+    OU/VijO4lXs8jPIFuQB4aGnGyrcuHQ0Zj2qZ3JGOISSO7aSY7GXlI0tQFZ/UpOoPulPm
+    mIQ4fC8b1hbuyCmvdX1MTezHbP+PUoRwMz3VZx6jFc3Y51OUltbeZkk/p1RGCaHV4zpk
+    aYB3UdEu1zQMZMoJ4SaU17Zv9/Eal9EHj+jLOJSaN0mY78t3tCexZXA3TrRj2qs2yNbc
+    JmpA==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1q3DbdV+Ofo7wY7W6Qxgy"
+X-RZG-CLASS-ID: mo00
+Received: from [172.20.10.8]
+    by smtp.strato.de (RZmta 47.45.0 DYNA|AUTH)
+    with ESMTPSA id R0691fy57Kpt8dN
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 7 Jun 2022 22:51:55 +0200 (CEST)
+Subject: Re: [PATCH v5 0/7] can: refactoring of can-dev module and of Kbuild
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
 Cc:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
         linux-can <linux-can@vger.kernel.org>,
         open list <linux-kernel@vger.kernel.org>,
         Max Staudt <max@enpas.org>, netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH v5 0/7] can: refactoring of can-dev module and of Kbuild
-Message-ID: <20220607202706.7fbongzs3ixzpydm@pengutronix.de>
 References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
  <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
  <2e8666f3-1bd9-8610-6b72-e56e669d3484@hartkopp.net>
  <CAMZ6RqKWUyf6dZmxG809-yvjg5wbLwPSLtEfv-MgPpJ5ra=iGQ@mail.gmail.com>
  <f161fdd0-415a-8ea1-0aad-3a3a19f1bfa8@hartkopp.net>
+ <20220607202706.7fbongzs3ixzpydm@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <44670e69-6d67-c6c7-160c-1ae6e740aabb@hartkopp.net>
+Date:   Tue, 7 Jun 2022 22:51:54 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="be3gaq45kmwca64p"
-Content-Disposition: inline
-In-Reply-To: <f161fdd0-415a-8ea1-0aad-3a3a19f1bfa8@hartkopp.net>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220607202706.7fbongzs3ixzpydm@pengutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -59,65 +68,43 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---be3gaq45kmwca64p
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On 07.06.2022 22:12:46, Oliver Hartkopp wrote:
-> So what about:
->=20
->   symbol: CONFIG_NETDEVICES
->   |
->   +-> CAN Device Drivers
->       symbol: CONFIG_CAN_DEV
->       |
->       +-> software/virtual CAN device drivers
->       |   (at time of writing: slcan, vcan, vxcan)
->       |
->       +-> hardware CAN device drivers with Netlink support
->           symbol: CONFIG_CAN_NETLINK (matches previous CONFIG_CAN_DEV)
->           |
->           +-> CAN bit-timing calculation (optional for all drivers)
->           |   symbol: CONFIG_CAN_BITTIMING
->           |
->           +-> CAN rx offload (optional but selected by some drivers)
->           |   symbol: CONFIG_CAN_RX_OFFLOAD
->           |
->           +-> CAN devices drivers
->               (some may select CONFIG_CAN_RX_OFFLOAD)
->=20
-> (I also added 'hardware' to CAN device drivers with Netlink support) to h=
-ave
-> a distinction to 'software/virtual' CAN device drivers)
+On 07.06.22 22:27, Marc Kleine-Budde wrote:
+> On 07.06.2022 22:12:46, Oliver Hartkopp wrote:
+>> So what about:
+>>
+>>    symbol: CONFIG_NETDEVICES
+>>    |
+>>    +-> CAN Device Drivers
+>>        symbol: CONFIG_CAN_DEV
+>>        |
+>>        +-> software/virtual CAN device drivers
+>>        |   (at time of writing: slcan, vcan, vxcan)
+>>        |
+>>        +-> hardware CAN device drivers with Netlink support
+>>            symbol: CONFIG_CAN_NETLINK (matches previous CONFIG_CAN_DEV)
+>>            |
+>>            +-> CAN bit-timing calculation (optional for all drivers)
+>>            |   symbol: CONFIG_CAN_BITTIMING
+>>            |
+>>            +-> CAN rx offload (optional but selected by some drivers)
+>>            |   symbol: CONFIG_CAN_RX_OFFLOAD
+>>            |
+>>            +-> CAN devices drivers
+>>                (some may select CONFIG_CAN_RX_OFFLOAD)
+>>
+>> (I also added 'hardware' to CAN device drivers with Netlink support) to have
+>> a distinction to 'software/virtual' CAN device drivers)
+> 
+> The line between hardware and software/virtual devices ist blurry, the
+> new can327 driver uses netlink and the slcan is currently being
+> converted....
 
-The line between hardware and software/virtual devices ist blurry, the
-new can327 driver uses netlink and the slcan is currently being
-converted....
+Right, which could mean that slcan and can327 should be located in the 
+'usual' CAN device driver section and not in the sw/virtual device section.
 
-> At least this would help me to understand the new configuration setup.
+The slcan and can327 need some kind of hardware - while vcan and vxcan 
+don't.
 
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---be3gaq45kmwca64p
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKftJcACgkQrX5LkNig
-010rdwf5AUPYBTdJwcRgNV7YEssM6aMUpKhLxP4yEIJIYnySSUNhKOtPk4M4EUbr
-Kotj3KZDHtuwOQWG/IVr+1Amf3D3U1D0O5uJI7MzrUevZB1SJLmLJZINNETlg6OB
-Qkc0PTP2QApy8WSp/p5v50p3/JXKI87dnw3voHZaMR3GtWRdV5oLvY6PMXAFonjg
-i9jtJebTbTddPujmvBMXW6SglL1f+0Xm52JLC+aMQ4uCnBFMG9f4WxAblZ5JNGJI
-PrT74Nh6w9jwOyG46IMUe446DLEAu/v2zvt8nbbknsyM0Pt59+bZYWlrVFU025Dz
-6NvUd0zOM47E/CCmCCfb7wIEWIC/Gg==
-=XKVp
------END PGP SIGNATURE-----
-
---be3gaq45kmwca64p--
+Best regards,
+Oliver
