@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4E7753F6AA
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 08:57:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 797A353F6AF
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 08:57:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237295AbiFGG5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 02:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56304 "EHLO
+        id S237316AbiFGG5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 02:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232418AbiFGG5C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 02:57:02 -0400
+        with ESMTP id S237294AbiFGG5K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 02:57:10 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2892DFF68;
-        Mon,  6 Jun 2022 23:57:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FDEE15F4;
+        Mon,  6 Jun 2022 23:57:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1654585020; x=1686121020;
+  t=1654585022; x=1686121022;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=hlo1WukUYxzK83xoEPYlRos2jIXat8SOHdXU82yGAEc=;
-  b=xZ/ORtwa9P/eU5Kl9P0RnF2tNmLGrp20/tu8TbUrDJthPFpMZHizhF4J
-   5L9cIEtSv9H70RlTI8LMwQZkHIw127dKOJiK/S1KLDOqchENBlWLRIfZR
-   fztjXwOa4+IWPkSzOcS4nCynWYrvUWxUsju2FdU7UBbIM7/EFyBX9qR2z
-   rK+lovFsZzDOAOJVr0y3/r7kIWTJuPvCRnwppHy3aA/EXquqbA2itipCT
-   qDq8RTH1Y7xBne0o4IV5hqczteQjx/qaKTDcHf8+NaB9C+cXKM+XbgJ4m
-   w8qELpxRt6Sp3rIizNK4bF1WhqTZp5d9M5RNkq7ZLS9A3ubVqKzqUrPZF
-   Q==;
+  bh=+1xGChpqZuNDz0197+AGmRutrzG/VT3GEtYD/psoI14=;
+  b=0linqtrBWmCQcHMdkYHfKOkx5Phj7/1mU59sKRohlTwL5s53kJZHlEfb
+   G3XVSPsGRpliwc7dThRqErU4jFsY1bezaDQEkaW7h/OZQw6BPy2bCaUbE
+   FcPmgV+tzayrG7mqSFVnaRHaVnh4DKjlRk0Fo+Lgc19EfEPTrytGEDqib
+   ZoXfJ1pNkvVAzB3TdH6ug7lKxo4KmYY/EwHStB1dneEOiS94o2UPHt/Qn
+   8f3YT8ySY+oMVxf8mafRDxXwIV9YaJPsqE7H1SEP6tZlDLslzvjdl7jPJ
+   ga0bMOWc3rSEDFjb0dZWCi21IX+d2Dw9dUFBEBMpFTNdAHrEnaGQGnip3
+   A==;
 X-IronPort-AV: E=Sophos;i="5.91,283,1647327600"; 
-   d="scan'208";a="162177021"
+   d="scan'208";a="98872876"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jun 2022 23:56:57 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Jun 2022 23:57:01 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 6 Jun 2022 23:56:56 -0700
+ 15.1.2375.17; Mon, 6 Jun 2022 23:57:00 -0700
 Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
  (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 6 Jun 2022 23:56:53 -0700
+ Transport; Mon, 6 Jun 2022 23:56:57 -0700
 From:   Conor Dooley <conor.dooley@microchip.com>
 To:     Wolfgang Grandegger <wg@grandegger.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
@@ -55,9 +55,9 @@ CC:     Conor Dooley <conor.dooley@microchip.com>,
         <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-riscv@lists.infradead.org>
-Subject: [PATCH net-next 1/2] dt-bindings: can: mpfs: document the mpfs can controller
-Date:   Tue, 7 Jun 2022 07:54:59 +0100
-Message-ID: <20220607065459.2035746-2-conor.dooley@microchip.com>
+Subject: [PATCH net-next 2/2] riscv: dts: microchip: add mpfs's can controllers
+Date:   Tue, 7 Jun 2022 07:55:00 +0100
+Message-ID: <20220607065459.2035746-3-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220607065459.2035746-1-conor.dooley@microchip.com>
 References: <20220607065459.2035746-1-conor.dooley@microchip.com>
@@ -74,65 +74,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a binding for the can controller on PolarFire SoC (MPFS).
+PolarFire SoC has a pair of can controllers, but as they were
+undocumented there were omitted from the device tree. Add them.
 
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- .../bindings/net/can/microchip,mpfs-can.yaml  | 45 +++++++++++++++++++
- 1 file changed, 45 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/can/microchip,mpfs-can.yaml
+ .../boot/dts/microchip/microchip-mpfs.dtsi     | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/can/microchip,mpfs-can.yaml b/Documentation/devicetree/bindings/net/can/microchip,mpfs-can.yaml
-new file mode 100644
-index 000000000000..45aa3de7cf01
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/can/microchip,mpfs-can.yaml
-@@ -0,0 +1,45 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/can/microchip,mpfs-can.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+index cf2f55e1dcb6..059a671314bf 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+@@ -326,6 +326,24 @@ i2c1: i2c@2010b000 {
+ 			status = "disabled";
+ 		};
+ 
++		can0: can@2010c000 {
++			compatible = "microchip,mpfs-can";
++			reg = <0x0 0x2010c000 0x0 0x1000>;
++			clocks = <&clkcfg CLK_CAN0>;
++			interrupt-parent = <&plic>;
++			interrupts = <56>;
++			status = "disabled";
++		};
 +
-+title:
-+  Microchip PolarFire SoC (MPFS) can controller
++		can1: can@2010d000 {
++			compatible = "microchip,mpfs-can";
++			reg = <0x0 0x2010d000 0x0 0x1000>;
++			clocks = <&clkcfg CLK_CAN1>;
++			interrupt-parent = <&plic>;
++			interrupts = <57>;
++			status = "disabled";
++		};
 +
-+maintainers:
-+  - Conor Dooley <conor.dooley@microchip.com>
-+
-+allOf:
-+  - $ref: can-controller.yaml#
-+
-+properties:
-+  compatible:
-+    const: microchip,mpfs-can
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    can@2010c000 {
-+        compatible = "microchip,mpfs-can";
-+        reg = <0x2010c000 0x1000>;
-+        clocks = <&clkcfg 17>;
-+        interrupt-parent = <&plic>;
-+        interrupts = <56>;
-+    };
+ 		mac0: ethernet@20110000 {
+ 			compatible = "cdns,macb";
+ 			reg = <0x0 0x20110000 0x0 0x2000>;
 -- 
 2.36.1
 
