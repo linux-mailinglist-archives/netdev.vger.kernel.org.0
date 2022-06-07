@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0325B540374
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 18:11:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 406F454037A
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 18:11:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344879AbiFGQLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 12:11:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
+        id S1344918AbiFGQLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 12:11:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344867AbiFGQLJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 12:11:09 -0400
+        with ESMTP id S1344889AbiFGQLZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 12:11:25 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5245CF5068;
-        Tue,  7 Jun 2022 09:11:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E657F5070;
+        Tue,  7 Jun 2022 09:11:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E0669617AC;
-        Tue,  7 Jun 2022 16:11:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BEC1C385A5;
-        Tue,  7 Jun 2022 16:11:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED366617C5;
+        Tue,  7 Jun 2022 16:11:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F0F5C385A5;
+        Tue,  7 Jun 2022 16:11:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654618267;
-        bh=qtc/embRhXHPiGp25zYBFWJdV1Ybg67cCQgLPhgAAmk=;
+        s=k20201202; t=1654618277;
+        bh=fMhk/18pmmnDcqEOb0reql1pDujGd2QhKD4ugwhr/VY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Djq+uw1XLpfVGayus11RDJXercv/w7NBIVHDvJddJb0wH7s1rBHaJ30RN8F+H0yZK
-         46ial4A6sq4mN0PJYGh0kX3RMJzDxFp8KqSDbBQEm6jaakkH9u+S/N5HkEPi+UrTI8
-         mzHx3QDr62uq+rg5T8wxdx/H7ZeKk3i/LjpLxuonz18HXi/bZoRydHugLaaY4rpXip
-         iSCQNQwVilySL9O1XwjZKdNzbw+KoVVls4U+8IRKppf+YhnnJbcL4TOMTz+15DaPeU
-         f53KUa5F5wRAHZ1glKJC3LK3Ynw7GvN9cFZUl5lj28AGL1fuQrdEEyvr8bmd177sy3
-         7calfSg7D3tvQ==
+        b=dhwnhMMITGHny83aSk9t14jqUCSH9AmezMjMuVRFdJbPy93LeAgL9+b2f6UnraR1B
+         U4o4bENjO40cbgbXiG51dStQZKs6cmjnkMHpN0FJ26Ml5meLWwaElejmeYT9OAAN5I
+         ESsERD8FX0Wtohk2iWlLwNrdqB38Hg2Z99zNEG8hjhSTMIvZaZZJeu6Bic7OduibRR
+         u959e5smm26vQilkM9Ae24fovWn46VY/mtAWi3goUDtRDEfeZ+9doZYgAMBSypzumr
+         8mSVmCbH3K+4/EkJa5OnTZKL8TuP6GGyfp+3O97St1vOxNLEzMhK9+hO49EjIu/y65
+         TsTfnT8UpHsug==
 From:   "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -40,9 +40,9 @@ Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [PATCH bpf v2 1/2] fprobe: samples: Add use_trace option and show hit/missed counter
-Date:   Wed,  8 Jun 2022 01:11:02 +0900
-Message-Id: <165461826247.280167.11939123218334322352.stgit@devnote2>
+Subject: [PATCH bpf v2 2/2] rethook: Reject getting a rethook if RCU is not watching
+Date:   Wed,  8 Jun 2022 01:11:12 +0900
+Message-Id: <165461827269.280167.7379263615545598958.stgit@devnote2>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <165461825202.280167.12903689442217921817.stgit@devnote2>
 References: <165461825202.280167.12903689442217921817.stgit@devnote2>
@@ -62,74 +62,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 
-Add use_trace option to use trace_printk() instead of pr_info()
-so that the handler doesn't involve the RCU operations.
-And show the hit and missed counter so that the user can check
-how many times the probe handler hit and missed.
+Since the rethook_recycle() will involve the call_rcu() for reclaiming
+the rethook_instance, the rethook must be set up at the RCU available
+context (non idle). This rethook_recycle() in the rethook trampoline
+handler is inevitable, thus the RCU available check must be done before
+setting the rethook trampoline.
 
+This adds a rcu_is_watching() check in the rethook_try_get() so that
+it will return NULL if it is called when !rcu_is_watching().
+
+Fixes: 54ecbe6f1ed5 ("rethook: Add a generic return hook")
 Signed-off-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 ---
- samples/fprobe/fprobe_example.c |   21 +++++++++++++++++----
- 1 file changed, 17 insertions(+), 4 deletions(-)
+ kernel/trace/rethook.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/samples/fprobe/fprobe_example.c b/samples/fprobe/fprobe_example.c
-index 24d3cf109140..aad5af0278f4 100644
---- a/samples/fprobe/fprobe_example.c
-+++ b/samples/fprobe/fprobe_example.c
-@@ -21,6 +21,7 @@
- #define BACKTRACE_DEPTH 16
- #define MAX_SYMBOL_LEN 4096
- struct fprobe sample_probe;
-+static unsigned long nhit;
+diff --git a/kernel/trace/rethook.c b/kernel/trace/rethook.c
+index b56833700d23..c69d82273ce7 100644
+--- a/kernel/trace/rethook.c
++++ b/kernel/trace/rethook.c
+@@ -154,6 +154,15 @@ struct rethook_node *rethook_try_get(struct rethook *rh)
+ 	if (unlikely(!handler))
+ 		return NULL;
  
- static char symbol[MAX_SYMBOL_LEN] = "kernel_clone";
- module_param_string(symbol, symbol, sizeof(symbol), 0644);
-@@ -28,6 +29,8 @@ static char nosymbol[MAX_SYMBOL_LEN] = "";
- module_param_string(nosymbol, nosymbol, sizeof(nosymbol), 0644);
- static bool stackdump = true;
- module_param(stackdump, bool, 0644);
-+static bool use_trace = false;
-+module_param(use_trace, bool, 0644);
- 
- static void show_backtrace(void)
- {
-@@ -40,7 +43,11 @@ static void show_backtrace(void)
- 
- static void sample_entry_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
- {
--	pr_info("Enter <%pS> ip = 0x%p\n", (void *)ip, (void *)ip);
-+	if (use_trace)
-+		trace_printk("Enter <%pS> ip = 0x%p\n", (void *)ip, (void *)ip);
-+	else
-+		pr_info("Enter <%pS> ip = 0x%p\n", (void *)ip, (void *)ip);
-+	nhit++;
- 	if (stackdump)
- 		show_backtrace();
- }
-@@ -49,8 +56,13 @@ static void sample_exit_handler(struct fprobe *fp, unsigned long ip, struct pt_r
- {
- 	unsigned long rip = instruction_pointer(regs);
- 
--	pr_info("Return from <%pS> ip = 0x%p to rip = 0x%p (%pS)\n",
--		(void *)ip, (void *)ip, (void *)rip, (void *)rip);
-+	if (use_trace)
-+		trace_printk("Return from <%pS> ip = 0x%p to rip = 0x%p (%pS)\n",
-+			(void *)ip, (void *)ip, (void *)rip, (void *)rip);
-+	else
-+		pr_info("Return from <%pS> ip = 0x%p to rip = 0x%p (%pS)\n",
-+			(void *)ip, (void *)ip, (void *)rip, (void *)rip);
-+	nhit++;
- 	if (stackdump)
- 		show_backtrace();
- }
-@@ -112,7 +124,8 @@ static void __exit fprobe_exit(void)
- {
- 	unregister_fprobe(&sample_probe);
- 
--	pr_info("fprobe at %s unregistered\n", symbol);
-+	pr_info("fprobe at %s unregistered. %ld times hit, %ld times missed\n",
-+		symbol, nhit, sample_probe.nmissed);
- }
- 
- module_init(fprobe_init)
++	/*
++	 * This expects the caller will set up a rethook on a function entry.
++	 * When the function returns, the rethook will eventually be reclaimed
++	 * or released in the rethook_recycle() with call_rcu().
++	 * This means the caller must be run in the RCU-availabe context.
++	 */
++	if (unlikely(!rcu_is_watching()))
++		return NULL;
++
+ 	fn = freelist_try_get(&rh->pool);
+ 	if (!fn)
+ 		return NULL;
 
