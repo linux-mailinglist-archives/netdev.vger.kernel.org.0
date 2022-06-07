@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A957554036C
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 18:11:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0325B540374
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 18:11:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344849AbiFGQK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 12:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50256 "EHLO
+        id S1344879AbiFGQLK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 12:11:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343591AbiFGQK7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 12:10:59 -0400
+        with ESMTP id S1344867AbiFGQLJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 12:11:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F86C85EC6;
-        Tue,  7 Jun 2022 09:10:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5245CF5068;
+        Tue,  7 Jun 2022 09:11:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE16261680;
-        Tue,  7 Jun 2022 16:10:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCAA3C385A5;
-        Tue,  7 Jun 2022 16:10:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0669617AC;
+        Tue,  7 Jun 2022 16:11:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BEC1C385A5;
+        Tue,  7 Jun 2022 16:11:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654618257;
-        bh=8ifnsinOmvqwHnK+WRL4Ye2Y78l6jmJecGk3v2CYFjA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WIA1F3GuuNqJ48lMQUzZ2T4uF5lmq1glfTX2D0NxtMUOwduOME6Gk5mS//U8QS1Lf
-         30ZF3mXk10JENt8XyziLxfHYTiIL2NiVsfha9qXUaMLzKqle2JyyzHTLY/hyZu3NMl
-         ZxtnOOA8Hqt+Ec/vsSo8Y1mezHiVwBDHS0KP+o1g0i8b6qlZuj9IqUfdgJ2KWOF3n+
-         nTi4oepvf/XYnvjDeSQL87hIQSuK7AJuxmOx+IiofF9Hjrb5bB7p64Z8tjQmD/OJmI
-         syuAM19WBW3ctP3ygJkOPNs0EHOtX9vCdDkMDxG5WefYdQpFj5ukEpRyIyVIPHXl1s
-         sVLGc+pBMPt6w==
+        s=k20201202; t=1654618267;
+        bh=qtc/embRhXHPiGp25zYBFWJdV1Ybg67cCQgLPhgAAmk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Djq+uw1XLpfVGayus11RDJXercv/w7NBIVHDvJddJb0wH7s1rBHaJ30RN8F+H0yZK
+         46ial4A6sq4mN0PJYGh0kX3RMJzDxFp8KqSDbBQEm6jaakkH9u+S/N5HkEPi+UrTI8
+         mzHx3QDr62uq+rg5T8wxdx/H7ZeKk3i/LjpLxuonz18HXi/bZoRydHugLaaY4rpXip
+         iSCQNQwVilySL9O1XwjZKdNzbw+KoVVls4U+8IRKppf+YhnnJbcL4TOMTz+15DaPeU
+         f53KUa5F5wRAHZ1glKJC3LK3Ynw7GvN9cFZUl5lj28AGL1fuQrdEEyvr8bmd177sy3
+         7calfSg7D3tvQ==
 From:   "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -40,10 +40,12 @@ Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [PATCH bpf v2 0/2] rethook: Reject getting a rethook if RCU is not watching
-Date:   Wed,  8 Jun 2022 01:10:52 +0900
-Message-Id: <165461825202.280167.12903689442217921817.stgit@devnote2>
+Subject: [PATCH bpf v2 1/2] fprobe: samples: Add use_trace option and show hit/missed counter
+Date:   Wed,  8 Jun 2022 01:11:02 +0900
+Message-Id: <165461826247.280167.11939123218334322352.stgit@devnote2>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <165461825202.280167.12903689442217921817.stgit@devnote2>
+References: <165461825202.280167.12903689442217921817.stgit@devnote2>
 User-Agent: StGit/0.19
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -58,77 +60,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 
-Here is the 2nd version of the patches to reject rethook if RCU is
-not watching. The 1st version is here;
+Add use_trace option to use trace_printk() instead of pr_info()
+so that the handler doesn't involve the RCU operations.
+And show the hit and missed counter so that the user can check
+how many times the probe handler hit and missed.
 
-https://lore.kernel.org/all/165189881197.175864.14757002789194211860.stgit@devnote2/
-
-This is actually related to the idle function tracing issue
-reported by Jiri on LKML (*)
-
-(*) https://lore.kernel.org/bpf/20220515203653.4039075-1-jolsa@kernel.org/
-
-Jiri reported that fprobe (and rethook) based kprobe-multi bpf
-trace kicks "suspicious RCU usage" warning. This is because the
-RCU operation is used in the kprobe-multi handler. However, I
-also found that the similar issue exists in the rethook because
-the rethook uses RCU operation.
-
-I added a new patch [1/2] to test this issue by fprobe_example.ko.
-(with this patch, it can avoid using printk() which also involves
-the RCU operation.)
-
- ------
- # insmod fprobe_example.ko symbol=arch_cpu_idle use_trace=1 stackdump=0 
- fprobe_init: Planted fprobe at arch_cpu_idle
- # rmmod fprobe_example.ko 
- 
- =============================
- WARNING: suspicious RCU usage
- 5.18.0-rc5-00019-gcae4ec21e87a-dirty #30 Not tainted
- -----------------------------
- include/trace/events/lock.h:37 suspicious rcu_dereference_check() usage!
- 
- other info that might help us debug this:
- 
- rcu_scheduler_active = 2, debug_locks = 1
- 
- 
- RCU used illegally from extended quiescent state!
- no locks held by swapper/0/0.
- 
- stack backtrace:
- CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.18.0-rc5-00019-gcae4ec21e87a-dirty #30
- ------
- 
-After applying [2/2] fix (which avoid initializing rethook on
-function entry if !rcu_watching()), this warning was gone.
-
- ------
- # insmod fprobe_example.ko symbol=arch_cpu_idle use_trace=1 stackdump=0
- fprobe_init: Planted fprobe at arch_cpu_idle
- # rmmod fprobe_example.ko 
- fprobe_exit: fprobe at arch_cpu_idle unregistered. 225 times hit, 230 times missed
- ------
-
-Note that you can test this program until the arch_cpu_idle()
-is marked as noinstr. After that, the function can not be
-traced.
-
-Thank you,
-
+Signed-off-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 ---
-
-Masami Hiramatsu (Google) (2):
-      fprobe: samples: Add use_trace option and show hit/missed counter
-      rethook: Reject getting a rethook if RCU is not watching
-
-
- kernel/trace/rethook.c          |    9 +++++++++
  samples/fprobe/fprobe_example.c |   21 +++++++++++++++++----
- 2 files changed, 26 insertions(+), 4 deletions(-)
+ 1 file changed, 17 insertions(+), 4 deletions(-)
 
---
-Signature
+diff --git a/samples/fprobe/fprobe_example.c b/samples/fprobe/fprobe_example.c
+index 24d3cf109140..aad5af0278f4 100644
+--- a/samples/fprobe/fprobe_example.c
++++ b/samples/fprobe/fprobe_example.c
+@@ -21,6 +21,7 @@
+ #define BACKTRACE_DEPTH 16
+ #define MAX_SYMBOL_LEN 4096
+ struct fprobe sample_probe;
++static unsigned long nhit;
+ 
+ static char symbol[MAX_SYMBOL_LEN] = "kernel_clone";
+ module_param_string(symbol, symbol, sizeof(symbol), 0644);
+@@ -28,6 +29,8 @@ static char nosymbol[MAX_SYMBOL_LEN] = "";
+ module_param_string(nosymbol, nosymbol, sizeof(nosymbol), 0644);
+ static bool stackdump = true;
+ module_param(stackdump, bool, 0644);
++static bool use_trace = false;
++module_param(use_trace, bool, 0644);
+ 
+ static void show_backtrace(void)
+ {
+@@ -40,7 +43,11 @@ static void show_backtrace(void)
+ 
+ static void sample_entry_handler(struct fprobe *fp, unsigned long ip, struct pt_regs *regs)
+ {
+-	pr_info("Enter <%pS> ip = 0x%p\n", (void *)ip, (void *)ip);
++	if (use_trace)
++		trace_printk("Enter <%pS> ip = 0x%p\n", (void *)ip, (void *)ip);
++	else
++		pr_info("Enter <%pS> ip = 0x%p\n", (void *)ip, (void *)ip);
++	nhit++;
+ 	if (stackdump)
+ 		show_backtrace();
+ }
+@@ -49,8 +56,13 @@ static void sample_exit_handler(struct fprobe *fp, unsigned long ip, struct pt_r
+ {
+ 	unsigned long rip = instruction_pointer(regs);
+ 
+-	pr_info("Return from <%pS> ip = 0x%p to rip = 0x%p (%pS)\n",
+-		(void *)ip, (void *)ip, (void *)rip, (void *)rip);
++	if (use_trace)
++		trace_printk("Return from <%pS> ip = 0x%p to rip = 0x%p (%pS)\n",
++			(void *)ip, (void *)ip, (void *)rip, (void *)rip);
++	else
++		pr_info("Return from <%pS> ip = 0x%p to rip = 0x%p (%pS)\n",
++			(void *)ip, (void *)ip, (void *)rip, (void *)rip);
++	nhit++;
+ 	if (stackdump)
+ 		show_backtrace();
+ }
+@@ -112,7 +124,8 @@ static void __exit fprobe_exit(void)
+ {
+ 	unregister_fprobe(&sample_probe);
+ 
+-	pr_info("fprobe at %s unregistered\n", symbol);
++	pr_info("fprobe at %s unregistered. %ld times hit, %ld times missed\n",
++		symbol, nhit, sample_probe.nmissed);
+ }
+ 
+ module_init(fprobe_init)
+
