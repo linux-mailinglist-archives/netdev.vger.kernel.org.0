@@ -2,64 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CA935426DA
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:58:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 335B054236E
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:51:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443810AbiFHCDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 22:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53492 "EHLO
+        id S229984AbiFHEGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 00:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243368AbiFHBzQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 21:55:16 -0400
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [81.169.146.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41531F7DAA;
-        Tue,  7 Jun 2022 13:52:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1654635116;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=JXSiYxgFZZ2tjAxBcyTrI4C3XZX0DeCU5mEV+jv6R6k=;
-    b=tTIXRIwQyepuLXyRIEgr8laM1lqaJ/fmrXqiArmaPMoqiCXCC9HO6/UVS7VAqP3tyf
-    Vvfg+spfS8Cm5h5lUdih2JmXw5jluDL4lUFeB1qpQp3K2x5isOTq+wYHGfHQYo5gLxwA
-    OU/VijO4lXs8jPIFuQB4aGnGyrcuHQ0Zj2qZ3JGOISSO7aSY7GXlI0tQFZ/UpOoPulPm
-    mIQ4fC8b1hbuyCmvdX1MTezHbP+PUoRwMz3VZx6jFc3Y51OUltbeZkk/p1RGCaHV4zpk
-    aYB3UdEu1zQMZMoJ4SaU17Zv9/Eal9EHj+jLOJSaN0mY78t3tCexZXA3TrRj2qs2yNbc
-    JmpA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1q3DbdV+Ofo7wY7W6Qxgy"
-X-RZG-CLASS-ID: mo00
-Received: from [172.20.10.8]
-    by smtp.strato.de (RZmta 47.45.0 DYNA|AUTH)
-    with ESMTPSA id R0691fy57Kpt8dN
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Tue, 7 Jun 2022 22:51:55 +0200 (CEST)
-Subject: Re: [PATCH v5 0/7] can: refactoring of can-dev module and of Kbuild
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        linux-can <linux-can@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Max Staudt <max@enpas.org>, netdev <netdev@vger.kernel.org>
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
- <2e8666f3-1bd9-8610-6b72-e56e669d3484@hartkopp.net>
- <CAMZ6RqKWUyf6dZmxG809-yvjg5wbLwPSLtEfv-MgPpJ5ra=iGQ@mail.gmail.com>
- <f161fdd0-415a-8ea1-0aad-3a3a19f1bfa8@hartkopp.net>
- <20220607202706.7fbongzs3ixzpydm@pengutronix.de>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <44670e69-6d67-c6c7-160c-1ae6e740aabb@hartkopp.net>
-Date:   Tue, 7 Jun 2022 22:51:54 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S233651AbiFHEEK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 00:04:10 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4827A3BC3D6
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 14:08:13 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id q140so1969716pgq.6
+        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 14:08:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=qY3ImzQmPyYp4zmTKDa1FVVD2FqPxYiHknCrVUu3peE=;
+        b=1fHeTxSFwJ/XeT5fB2gPMsk7nTYPbAOD5KOafPUlw+YVonXY1hEeru5jSVEgyloZSo
+         AbYaxyxJMbngsNMju0U/1sD+eTP+81jzPG1FSHuTAg4Iwnow9q8dYIiF5tQw7ghtKNU9
+         T2tq9SSw0l20gE9IiFHppPH7Tmi/yGIW9zEbptL441zXWnVKa4wzCw13eQa9UET+K+YN
+         u3Djy2CkG6JJvYQ6wP4dPy/LEB4DGfcklcvLp+Hh75Lj0OZwbKALni2p3m5E9dk99Vwq
+         2zv9Y5g8j0YQ0t6yHWL6p5zCnArZghLUgX0nnT4nvZnBDOcAwQk/hF6nXvITnKCutLkv
+         MZdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=qY3ImzQmPyYp4zmTKDa1FVVD2FqPxYiHknCrVUu3peE=;
+        b=IIXn+zDIK+TrzXg7SFBO2GpUCAExAsMLhUUG79BMkXBmTbicEIRMHlIu6sKb4zoGzm
+         5sNri+gCtkNejUDbdJZVzDAhcQqLrd/J4+FsR2hq81YViRcTt0+SPF4JCTMs12b45JQy
+         yqG5Iueoq0EYRFTtLI9PZzv/EDCLGLTuOFkajv6T519p/o4x2ACcqw+x7fcRWlgnh0wT
+         0MF9IInCH6vQCAWurwkD20jc8+TlaAGbqek7SspwVBVv5YBNoygwj91rqp6TW15skQDO
+         i5mg1mvA2nIjm963740W5XfkUYitvFx41XIdmW6ntFuXX1zc++mbHx5N0E3boq/Cg7SD
+         l6Tg==
+X-Gm-Message-State: AOAM532sKF9/yX/GCa79oicgSofZrDC/XBrEUr/ImCC51ITSPmDUNayq
+        AnhqqqgfN13y04tr3nr77R69Bg==
+X-Google-Smtp-Source: ABdhPJxSrGveG0peDo9dsRbBs4C9v73b5hqAVfoJM/YgiesGJCsq5OKZZtnHeDiAtu1ALo9mJ1ozTg==
+X-Received: by 2002:a65:6a15:0:b0:3f6:13ea:1cfb with SMTP id m21-20020a656a15000000b003f613ea1cfbmr27448127pgu.495.1654636083806;
+        Tue, 07 Jun 2022 14:08:03 -0700 (PDT)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id z8-20020a17090a1fc800b001e0c5da6a51sm12334312pjz.50.2022.06.07.14.08.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 14:08:03 -0700 (PDT)
+Date:   Tue, 7 Jun 2022 14:08:00 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Maxim Mikityanskiy <maximmi@nvidia.com>, dsahern@gmail.com,
+        netdev@vger.kernel.org, tariqt@nvidia.com
+Subject: Re: [PATCH iproute2-next v2] ss: Shorter display format for TLS
+ zerocopy sendfile
+Message-ID: <20220607140800.5258250d@hermes.local>
+In-Reply-To: <20220607103028.15f70be6@kernel.org>
+References: <20220601122343.2451706-1-maximmi@nvidia.com>
+        <20220601234249.244701-1-kuba@kernel.org>
+        <bf8c357e-6a1d-4c42-e6f8-f259879b67c6@nvidia.com>
+        <20220602094428.4464c58a@kernel.org>
+        <779eeee9-efae-56c2-5dd6-dea1a027f65d@nvidia.com>
+        <20220603085140.26f29d80@kernel.org>
+        <2a1d3514-5c6a-62b6-05b7-b344e0ba3e47@nvidia.com>
+        <20220606105936.4162fe65@kernel.org>
+        <21b34b86-d43b-e86a-57ec-0689a9931824@nvidia.com>
+        <20220607103028.15f70be6@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20220607202706.7fbongzs3ixzpydm@pengutronix.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,44 +78,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 7 Jun 2022 10:30:28 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-
-On 07.06.22 22:27, Marc Kleine-Budde wrote:
-> On 07.06.2022 22:12:46, Oliver Hartkopp wrote:
->> So what about:
->>
->>    symbol: CONFIG_NETDEVICES
->>    |
->>    +-> CAN Device Drivers
->>        symbol: CONFIG_CAN_DEV
->>        |
->>        +-> software/virtual CAN device drivers
->>        |   (at time of writing: slcan, vcan, vxcan)
->>        |
->>        +-> hardware CAN device drivers with Netlink support
->>            symbol: CONFIG_CAN_NETLINK (matches previous CONFIG_CAN_DEV)
->>            |
->>            +-> CAN bit-timing calculation (optional for all drivers)
->>            |   symbol: CONFIG_CAN_BITTIMING
->>            |
->>            +-> CAN rx offload (optional but selected by some drivers)
->>            |   symbol: CONFIG_CAN_RX_OFFLOAD
->>            |
->>            +-> CAN devices drivers
->>                (some may select CONFIG_CAN_RX_OFFLOAD)
->>
->> (I also added 'hardware' to CAN device drivers with Netlink support) to have
->> a distinction to 'software/virtual' CAN device drivers)
+> On Tue, 7 Jun 2022 13:35:19 +0300 Maxim Mikityanskiy wrote:
+> > > That'd be an acceptable compromise. Hopefully sufficiently forewarned
+> > > users will mentally remove the zc_ part and still have a meaningful
+> > > amount of info about what the flag does.
+> > > 
+> > > Any reason why we wouldn't reuse the same knob for zc sendmsg()? If we
+> > > plan to reuse it we can s/sendfile/send/ to shorten the name, perhaps.    
+> > 
+> > We can even make it as short as zc_ro_tx in that case.  
 > 
-> The line between hardware and software/virtual devices ist blurry, the
-> new can327 driver uses netlink and the slcan is currently being
-> converted....
+> SG
+> 
+> > Regarding sendmsg, I can't anticipate what knob will be used. There is 
+> > MSG_ZEROCOPY which is also a candidate.  
+> 
+> Right, that's what I'm wondering. MSG_ZEROCOPY already has some
+> restrictions on user not touching the data but technically a pure 
+> TCP connection will not be broken if the data is modified. I'd lean
+> towards requiring the user setting zc_ro_tx, but admittedly I don't
+> have a very strong reason.
+> 
+> > Note that the constant in the header file has "SENDFILE" in its name, so 
+> > if you want to reuse it for the future sendmsg zerocopy, we should think 
+> > about renaming it in advance, before anyone starts using it. 
+> > Alternatively, an alias for this constant can be added in the future.  
+> 
+> Would be good to rename it to whatever we settle for on the iproute2
+> side. Are we going with zc_ro_tx, then?
 
-Right, which could mean that slcan and can327 should be located in the 
-'usual' CAN device driver section and not in the sw/virtual device section.
-
-The slcan and can327 need some kind of hardware - while vcan and vxcan 
-don't.
-
-Best regards,
-Oliver
+Works for me
