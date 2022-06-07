@@ -2,57 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AB9E540B47
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 20:28:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 974475413AF
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 22:04:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350248AbiFGS1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 14:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43378 "EHLO
+        id S1357494AbiFGUEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 16:04:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352114AbiFGSZd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 14:25:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80DA0ED8FD;
-        Tue,  7 Jun 2022 10:54:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EAD74B82372;
-        Tue,  7 Jun 2022 17:54:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F087C34119;
-        Tue,  7 Jun 2022 17:54:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624480;
-        bh=aitm0DDS0jj0cpMndljk1lZmzQ3kflQqheX4kr0zhTM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PA7Y/G+PDxnB5sCNoC1wucF7uGT+HbLhDjb86JFodyk7RihgjqcPwgPvLfD1QREdY
-         hnFn7X06b56Xia91kCfm/rLj3J54J80SHohm3wA9+qgZJV5QT6tpsIatQGaj1jxJIq
-         ckmZ62+R9cggCWt1LEU0cmHxJEU88lFnr8wrGn8DrpENAtY/jMEEvUvwYsRKzmAY40
-         ExOxJgPJXT5EqFKs1HyjQx3S7NPnHT1w83jYGnOusxuvbX2+l+l/J84Pez2EioHJAs
-         B1pB7jH585SGUsfhzVsJltNb+aKVbtJSfgjdui1l95EEQSWriSv+NCBOGl7/nHBAOS
-         6cu9JLOUbx17Q==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, dsahern@kernel.org,
-        yajun.deng@linux.dev, roopa@nvidia.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 40/60] net, neigh: Set lower cap for neigh_managed_work rearming
-Date:   Tue,  7 Jun 2022 13:52:37 -0400
-Message-Id: <20220607175259.478835-40-sashal@kernel.org>
+        with ESMTP id S1357741AbiFGUDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 16:03:13 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F71EBAB9
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 11:25:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654626337; x=1686162337;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=UlWWtTixyRHuYk/oVZxuTojCViL4/CX0skXNoHplpdA=;
+  b=DUunGW8lZc4JfAAeP+k0mRUPsQb2/dW6xtKai2WnnLEF3npFxdTjE/Mn
+   jpuz/0foyMl2f9MbgcZH3cpHvZlWrbQ5D/9T8476WyQyjeJkwnXmbo039
+   ijoZWYJnHqdgg9K5Jlg42dnFelYq3oXo57wSJOYBXtrKy2tRNMtgmzw7x
+   Novg/NvFIlgbmxjz3Zu2GQzFZ0Z/WWlgJ4Sou2SyBMX/OUOEGVrAF/Bwn
+   X39g5zAM7RbVSnqy5zXp55A8FxHwbHpKN+ZIrvocNsw/4gMO+++dtLDtV
+   29op2E3YNOuub7ZiKLUx79Dj+HIE3Nelj/nO5nnmG4ZPR9okAX6rpByPq
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="340629544"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="340629544"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 10:58:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="579699387"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga007.jf.intel.com with ESMTP; 07 Jun 2022 10:58:11 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net-next v2 0/2][pull request] 40GbE Intel Wired LAN Driver Updates 2022-06-07
+Date:   Tue,  7 Jun 2022 10:55:04 -0700
+Message-Id: <20220607175506.696671-1-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
-References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,41 +58,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Daniel Borkmann <daniel@iogearbox.net>
+This series contains updates to i40e and iavf drivers.
 
-[ Upstream commit ed6cd6a17896561b9f51ab4c0d9bbb29e762b597 ]
-
-Yuwei reported that plain reuse of DELAY_PROBE_TIME to rearm work queue
-in neigh_managed_work is problematic if user explicitly configures the
-DELAY_PROBE_TIME to 0 for a neighbor table. Such misconfig can then hog
-CPU to 100% processing the system work queue. Instead, set lower interval
-bound to HZ which is totally sufficient. Yuwei is additionally looking
-into making the interval separately configurable from DELAY_PROBE_TIME.
-
-Reported-by: Yuwei Wang <wangyuweihx@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/netdev/797c3c53-ce1b-9f60-e253-cda615788f4a@iogearbox.net
-Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
-Link: https://lore.kernel.org/r/3b8c5aa906c52c3a8c995d1b2e8ccf650ea7c716.1653432794.git.daniel@iogearbox.net
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Mateusz adds implementation for setting VF VLAN pruning to allow user to
+specify visibility of VLAN tagged traffic to VFs for i40e. He also adds
+waiting for result from PF for setting MAC address in iavf.
 ---
- net/core/neighbour.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v2: Rewrote some code to avoid passing a value as a condition (patch 2)
 
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index ec0bf737b076..a252f4090d75 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -1579,7 +1579,7 @@ static void neigh_managed_work(struct work_struct *work)
- 	list_for_each_entry(neigh, &tbl->managed_list, managed_list)
- 		neigh_event_send_probe(neigh, NULL, false);
- 	queue_delayed_work(system_power_efficient_wq, &tbl->managed_work,
--			   NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME));
-+			   max(NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME), HZ));
- 	write_unlock_bh(&tbl->lock);
- }
- 
+The following are changes since commit ba36c5b7ac9399a8dc521c44ece72db43d192f9b:
+  Merge branch 'reorganize-the-code-of-the-enum-skb_drop_reason'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 40GbE
+
+Mateusz Palczewski (2):
+  i40e: Add VF VLAN pruning
+  iavf: Add waiting for response from PF in set mac
+
+ drivers/net/ethernet/intel/i40e/i40e.h        |   1 +
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    |   9 ++
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 135 +++++++++++++++++-
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    |   8 +-
+ drivers/net/ethernet/intel/iavf/iavf.h        |   7 +-
+ drivers/net/ethernet/intel/iavf/iavf_main.c   | 127 +++++++++++++---
+ .../net/ethernet/intel/iavf/iavf_virtchnl.c   |  61 +++++++-
+ 7 files changed, 321 insertions(+), 27 deletions(-)
+
 -- 
 2.35.1
 
