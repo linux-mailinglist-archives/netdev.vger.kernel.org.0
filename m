@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A17F540498
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 19:17:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 477A0540499
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 19:17:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345488AbiFGRRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 13:17:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33350 "EHLO
+        id S1345495AbiFGRRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 13:17:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344627AbiFGRRi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 13:17:38 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B714D26A
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 10:17:37 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id 15so16093911pfy.3
-        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 10:17:37 -0700 (PDT)
+        with ESMTP id S1344707AbiFGRRo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 13:17:44 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA8E4FC5E
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 10:17:43 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id w13-20020a17090a780d00b001e8961b355dso4251966pjk.5
+        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 10:17:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=10cxczHKBZ+4DvEoUdvi+p/5cLvVVYIjyKUpFH0W394=;
-        b=Exp1KP7zwqiJgEcBMbtEDz+b0GlbVAiC6+wF3NXn5oFZzkXfaXwUEwdf4zPN0AH6wS
-         GI0LmLAPS7R09kqSraYu/wjTXcRGgstQYj2eytlR7J06lE/MqEv5heELH5M1/pc2lIF8
-         gQEMxMaRHffCu8+UABGMEmYAxrKX6VZs/9WvYo22+tZSOJJ5gVafWDdIUPwVRsd5sg9R
-         QW651NiQKmlkMf10ETYuhetYhG/BexyecFmuz0qd9P2htH7zScdktTyKeak3rtwjHp9t
-         shPSO4Sv0F2/2dORSJJ2zqCPeX1FJChoqKh6Ce77QkMhqy9lkpGr6On/o640ia/Ljoda
-         idQQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8PPQ+e5B3bo3oZ0FlS4Jz6Ii1VVUtQoGFiulGS3lIN4=;
+        b=PdnqY4K33C3bUAhljq+1Ewak3BgOSbtDq3wmbUBUIE9aYfW+bkHKna9jJrPSb/uawO
+         XnvykqSNlKkcmp9ppjKq+O7Dh67oe0t9zfLFPcKKhlsBZ8DyozRQfZUIwCMEJqJ13bAL
+         BoTadRf8UCUMnvBzFHKGSCALyGj0uZ1M1Ixq0+SMxBSq3lCON620SRwlcZ0JDkzUTAlG
+         NHlkACCV54nGbTjXIjf81D0yQM1Vbx1AiZy5iPke44wTCgv32XXrBVxSVd4aX3H2iQvr
+         rfND9CNFqoyDhATEXy1JJ3R8mWXcNHChRgTSl6mkIrmoO8TMM787O29KFc9hxMBuBHxR
+         87fA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=10cxczHKBZ+4DvEoUdvi+p/5cLvVVYIjyKUpFH0W394=;
-        b=XgAiifO2YEaNc41FBK+4L4uWYuPfjL5qRkwFhfeRj5KRx9E93lcHwNc3n4lDEH8ip9
-         T6SaP7ENBvN1H3SbJdAHQMkVJ0Y1zREPmaGAuhKZNPn6Mhe3EaGLNX6+Lo73ICG4eZ8n
-         DqZwYTitbX728tgI9VXqxLakZ/bc+OjYLmArU/g69AYMEm+cBnaDHyEn/XEAOUMEKJFj
-         jLoh6R67/TuXdkk6z/JY7o/X8kehJr4euSAEM9QnvyyV6KZUqXJ1UvC74KsjmlN1AqLV
-         t27qlOqfmxthtgTL5B3A2HME/zviF/z2kK9b1ZHbFgO4pCZRNc177Hab1oXWZkvSHDSS
-         UO4w==
-X-Gm-Message-State: AOAM531Mddv9cs1tHQg3fR4KSEyqph1JdloOHlOfAxdmHfgOY99G//El
-        5D4QVwOAPnBU8z3mzdxJ3t4=
-X-Google-Smtp-Source: ABdhPJxrHK5xL+cD1RV0WO2CQis2FDSnSH5+Ouii0gV1aMMG4Gic4ARfnxoX04bpWCgytscif1izUQ==
-X-Received: by 2002:a63:2154:0:b0:3fe:2814:bd74 with SMTP id s20-20020a632154000000b003fe2814bd74mr187627pgm.148.1654622256639;
-        Tue, 07 Jun 2022 10:17:36 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8PPQ+e5B3bo3oZ0FlS4Jz6Ii1VVUtQoGFiulGS3lIN4=;
+        b=Yu1i+LjGBYYJpy4tBZLe9CZg4u8ShWxjdHoF5Wak3j1ArXppUMEABGxFagwK/l7sXJ
+         YMLBmYTekU/WRdgrSKsvjz4KL1IpMdcDDUw70qk4PycgPgRn/wPdmdSll94A9eJluE17
+         Ymb+ETSM1V790GpFDy0LSq4pcG6UWx/BSBYdXl3zvPaZQt2dmfvXtJJLNiB4n2AXrQ4T
+         Pe/T/aE7VSIM7XHM90zAo2vPRZG4JDiZgndY12RK/Hak2t9OwiOIQUbxrb8+xhfvRCf3
+         xmCC2zq6cB+kRVdhcY5hSDl7qhHPX7i5hm4q2FA2hqyPE/2yPweQgQhx+a3QFTum0Y73
+         gWCA==
+X-Gm-Message-State: AOAM533GdcrGkWywqijWLwiYcyKoPE9lH3qe3gPJKMD4qiHOOEAEspcL
+        ZtQWRF2OZi3kfM1MmQKqCFM=
+X-Google-Smtp-Source: ABdhPJyjCv1ZRd4GhaEC30IDNdRUQoWW3sJMrA3iU52RWoReDKOWOM/a13hgNZ0yfpr6NWP3gw5NgA==
+X-Received: by 2002:a17:903:1103:b0:167:839e:7ba1 with SMTP id n3-20020a170903110300b00167839e7ba1mr9469146plh.136.1654622262648;
+        Tue, 07 Jun 2022 10:17:42 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:191a:13a7:b80a:f36e])
-        by smtp.gmail.com with ESMTPSA id d4-20020a621d04000000b0051b930b7bbesm13001616pfd.135.2022.06.07.10.17.35
+        by smtp.gmail.com with ESMTPSA id d4-20020a621d04000000b0051b930b7bbesm13001616pfd.135.2022.06.07.10.17.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 10:17:36 -0700 (PDT)
+        Tue, 07 Jun 2022 10:17:37 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -54,10 +54,12 @@ To:     "David S . Miller" <davem@davemloft.net>,
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 0/8] net: few debug refinements
-Date:   Tue,  7 Jun 2022 10:17:24 -0700
-Message-Id: <20220607171732.21191-1-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 1/8] net: use DEBUG_NET_WARN_ON_ONCE() in __release_sock()
+Date:   Tue,  7 Jun 2022 10:17:25 -0700
+Message-Id: <20220607171732.21191-2-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
+In-Reply-To: <20220607171732.21191-1-eric.dumazet@gmail.com>
+References: <20220607171732.21191-1-eric.dumazet@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -72,31 +74,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-Adopt DEBUG_NET_WARN_ON_ONCE() in some places where it makes sense.
+Check against skb dst in socket backlog has never triggered
+in past years.
 
-Add checks in napi_consume_skb() and __napi_alloc_skb()
+Keep the check only for CONFIG_DEBUG_NET=y builds.
 
-Make sure napi_get_frags() does not use page fragments
-for skb->head.
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/core/sock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Eric Dumazet (8):
-  net: use DEBUG_NET_WARN_ON_ONCE() in __release_sock()
-  net: use DEBUG_NET_WARN_ON_ONCE() in dev_loopback_xmit()
-  net: use DEBUG_NET_WARN_ON_ONCE() in inet_sock_destruct()
-  net: use DEBUG_NET_WARN_ON_ONCE() in sk_stream_kill_queues()
-  af_unix: use DEBUG_NET_WARN_ON_ONCE()
-  net: use DEBUG_NET_WARN_ON_ONCE() in skb_release_head_state()
-  net: add debug checks in napi_consume_skb and __napi_alloc_skb()
-  net: add napi_get_frags_check() helper
-
- net/core/dev.c     | 20 +++++++++++++++++++-
- net/core/skbuff.c  |  5 +++--
- net/core/sock.c    |  2 +-
- net/core/stream.c  |  6 +++---
- net/ipv4/af_inet.c |  8 ++++----
- net/unix/af_unix.c |  8 ++++----
- 6 files changed, 34 insertions(+), 15 deletions(-)
-
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 2ff40dd0a7a652029cca1743109286b50c2a17f3..f5062d9e122275a511efbc4d30de2ee501182498 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2844,7 +2844,7 @@ void __release_sock(struct sock *sk)
+ 		do {
+ 			next = skb->next;
+ 			prefetch(next);
+-			WARN_ON_ONCE(skb_dst_is_noref(skb));
++			DEBUG_NET_WARN_ON_ONCE(skb_dst_is_noref(skb));
+ 			skb_mark_not_on_list(skb);
+ 			sk_backlog_rcv(sk, skb);
+ 
 -- 
 2.36.1.255.ge46751e96f-goog
 
