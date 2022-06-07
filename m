@@ -2,309 +2,473 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D603542039
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:24:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0165954204C
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:24:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384203AbiFHATg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 20:19:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34592 "EHLO
+        id S1385253AbiFHAVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 20:21:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444859AbiFGXCu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 19:02:50 -0400
-Received: from mail-vs1-xe29.google.com (mail-vs1-xe29.google.com [IPv6:2607:f8b0:4864:20::e29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6E0134B188;
-        Tue,  7 Jun 2022 13:20:25 -0700 (PDT)
-Received: by mail-vs1-xe29.google.com with SMTP id k4so17767729vsp.3;
-        Tue, 07 Jun 2022 13:20:25 -0700 (PDT)
+        with ESMTP id S1446223AbiFGXE4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 19:04:56 -0400
+Received: from mail-vk1-xa31.google.com (mail-vk1-xa31.google.com [IPv6:2607:f8b0:4864:20::a31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECDD51D8A55
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 13:24:57 -0700 (PDT)
+Received: by mail-vk1-xa31.google.com with SMTP id d2so6938854vkg.5
+        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 13:24:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=pIwx280greMynELa2baZ/JDaDGdhcRYDlmq5MlCPU+8=;
-        b=ieN/n/VeyoFu+MqTedbzfvv5SNvnIoPViWDR4kQY382EbBO+j+SRG7mhvtJ8G6X16w
-         zGerOMc0Divl5UYJSLPsHxlmMLXgjm0zNEbrQ/8S4FH6BD6bZfeT4yCgq29zeysxXCXc
-         i/Drnhlgf1+FPFIc+QWsVhHSbvQO8T0UJvecyvZf+eqqdNnX/4OsXAe9VwNbwavRTSPi
-         NeTbxCHnEI5STDgef6T0B/el36av31KJRmXXTSTKL9ZHeSJDALDm4yNi3Y/qijMJi48w
-         VUMDShCZ/laNhTU0nup23+FqcRCF+DR7fd/0dXPCIbpDQokfXwUd/SmJg4A3n0ASJ7nz
-         XJoQ==
+        bh=oJCY90WPGyCKr8TJVIABoCQECAcvfv7jUh9SLE8AnGg=;
+        b=WaL7SpgnIeMBwenenYzBINLtsot+8mPvz9w2LT9XR9yjA006MAgYsDNlsqJJJAnj/W
+         yOaipTLS6X0W7Fs7TC/wuEhtXFZ30ISpuqtLjz9F90+kMZbLG5KZUd81FSp9sk3mytvo
+         q2JDLaMYDv6LgAXR0AhqHfDPyyshW9/5J+jozcGd98XGq8goGOMbB0+3ydSajV4xBSuL
+         aFngzByzrk7G0AojMX5xjz5fhMYXScjh23HXsl6Vb2xWhkk6ZAvJ9d/P1gx0l3aNX8dp
+         DNRMjTiVsovXvZkh4Ur7+XYMMkgm/3dYNphOZ/joISi4VjMLvHT4b/S+DpKIkcUPofJC
+         0Rtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=pIwx280greMynELa2baZ/JDaDGdhcRYDlmq5MlCPU+8=;
-        b=1Bkij5e9tumjcPzoC05gdE9L0Ewm1WtFduwkH39YOQGMD8hrkw9Czfsv+kryjd3W/o
-         ET8J2vSOaF8tWaY5muIFQoXByrlpkujQteO2EDaFfhPFJ5VojA2LBNHayU4XsGh+XP2n
-         PgaE9rSxlwQxyjbX1Ai+GxqWifFRGFPlNSPiZ/MQoBuL+oC36Aqe4lm0/hrShQcIkP28
-         vHFxhPpAVICsqTqtb3yvjWB0apVa3rdVNpgB2ojFPZ3SnL4/Htio3UV45fMKseWF5ip8
-         7mbbVW31Img6KYQFnwD4RKum9m77Y9oMRy2a66ujtXSIDfE/2rGsatApss9lakLSU7oX
-         lvOw==
-X-Gm-Message-State: AOAM530RZ2pUsDfp6RfrrIJ4arvl42t1VhS2+gkml0EROebl8BGbTn4a
-        gXVBbrEPsd9VOOodXpov318t01jm079g9UjCCW0=
-X-Google-Smtp-Source: ABdhPJzC8ALee7832B6/ijx30YULeOCsqKWLFcfL9wtjARZ6swbIbLgPY/WOy9WRyyYz3UHYvgusIB7MB/S/cCJKNBE=
-X-Received: by 2002:a05:6102:3f4d:b0:32a:101c:9b33 with SMTP id
- l13-20020a0561023f4d00b0032a101c9b33mr39903402vsv.4.1654633224517; Tue, 07
- Jun 2022 13:20:24 -0700 (PDT)
+        bh=oJCY90WPGyCKr8TJVIABoCQECAcvfv7jUh9SLE8AnGg=;
+        b=z+ibuWuIRAL59vJBR3XUGt6WEXecjkiev+o3DICJX0GWrJgFNwHQ55cjqRuu1phf4A
+         zUQ+TW880UHPxBKHzJuMVBs58figqMzC6fhpQiYuuOSKRKEW1esy4Z+eV15YTqsvvOqM
+         atn7KEbYZT0JYFzdOgfs8UKxZMxrqbB8SK0lP/31d1t2y5LsdlwHXpJdUfkj/RyS3Sgv
+         PUw3BaoZcLr4tRH5gyUVa0iUzWPbR9JwUZshxoUqBJPGfTGCWzHyItTg3FzK0MW6dzqU
+         rU3kbU36ND50RU3eOhPWfNB9WUcr+jpbuoY4qKqTjDWGYFAcOVxSy/Z/tmIvNBJJc8wM
+         fjNA==
+X-Gm-Message-State: AOAM532WVnQmgnWKsP254NEwpmE/+I4JmTR+KLGdLocIJrEPYPq89pNm
+        JpdWA4v7GOKYrsGf4oCSepzgZYKC8xqnr3peGz0=
+X-Google-Smtp-Source: ABdhPJxmGfqixxrspbu99hKmxTOrDfb0z10YL7bmC82FWeXdpWR0UDuGXyVo413Fv1GftrqvOqvykHUVliqTjyzvwAo=
+X-Received: by 2002:a1f:5dc7:0:b0:35b:6fac:cea7 with SMTP id
+ r190-20020a1f5dc7000000b0035b6faccea7mr13064083vkb.25.1654633496542; Tue, 07
+ Jun 2022 13:24:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <00000000000022208805e0df247a@google.com>
-In-Reply-To: <00000000000022208805e0df247a@google.com>
+References: <20220602165101.3188482-1-joannelkoong@gmail.com>
+ <20220602165101.3188482-2-joannelkoong@gmail.com> <e73d11bde2d8ead36296d814ba555e60880ce9be.camel@redhat.com>
+In-Reply-To: <e73d11bde2d8ead36296d814ba555e60880ce9be.camel@redhat.com>
 From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Tue, 7 Jun 2022 13:20:12 -0700
-Message-ID: <CAJnrk1YyQnBGd9j_89vYxeZy0NWOGW=yJ+kdxYPvGPGpScX4dQ@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in inet_bind2_bucket_find
-To:     syzbot <syzbot+98fd2d1422063b0f8c44@syzkaller.appspotmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, dsahern@kernel.org,
+Date:   Tue, 7 Jun 2022 13:24:45 -0700
+Message-ID: <CAJnrk1Zv2ZYyRHdpW6ZZEVh+n=ryvJqmLTDbfa=_Y-A2gD8ANQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/2] net: Update bhash2 when socket's rcv
+ saddr changes
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        John Fastabend <john.fastabend@gmail.com>,
         Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, kuniyu@amazon.co.jp,
-        linux-kernel@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs@googlegroups.com, Yonghong Song <yhs@fb.com>,
-        yoshfuji@linux-ipv6.org
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        syzbot <syzbot+015d756bbd1f8b5c8f09@syzkaller.appspotmail.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 10:44 AM syzbot
-<syzbot+98fd2d1422063b0f8c44@syzkaller.appspotmail.com> wrote:
+On Tue, Jun 7, 2022 at 1:33 AM Paolo Abeni <pabeni@redhat.com> wrote:
 >
 > Hello,
 >
-> syzbot found the following issue on:
+> On Thu, 2022-06-02 at 09:51 -0700, Joanne Koong wrote:
+> > Commit d5a42de8bdbe ("net: Add a second bind table hashed by port and
+> > address") added a second bind table, bhash2, that hashes by a socket's port
+> > and rcv address.
+> >
+> > However, there are two cases where the socket's rcv saddr can change
+> > after it has been binded:
+> >
+> > 1) The case where there is a bind() call on "::" (IPADDR_ANY) and then
+> > a connect() call. The kernel will assign the socket an address when it
+> > handles the connect()
+> >
+> > 2) In inet_sk_reselect_saddr(), which is called when rerouting fails
+> > when rebuilding the sk header (invoked by inet_sk_rebuild_header)
+> >
+> > In these two cases, we need to update the bhash2 table by removing the
+> > entry for the old address, and adding a new entry reflecting the updated
+> > address.
+> >
+> > Reported-by: syzbot+015d756bbd1f8b5c8f09@syzkaller.appspotmail.com
+> > Fixes: d5a42de8bdbe ("net: Add a second bind table hashed by port and address")
+> > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
+> > Reviewed-by: Eric Dumazet <edumazet@google.com>
+> > ---
+> >  include/net/inet_hashtables.h |  6 ++-
+> >  include/net/ipv6.h            |  2 +-
+> >  net/dccp/ipv4.c               | 10 +++--
+> >  net/dccp/ipv6.c               |  4 +-
+> >  net/ipv4/af_inet.c            |  7 +++-
+> >  net/ipv4/inet_hashtables.c    | 70 ++++++++++++++++++++++++++++++++---
+> >  net/ipv4/tcp_ipv4.c           |  8 +++-
+> >  net/ipv6/inet6_hashtables.c   |  4 +-
+> >  net/ipv6/tcp_ipv6.c           |  4 +-
+> >  9 files changed, 97 insertions(+), 18 deletions(-)
+> >
+> > diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+> > index a0887b70967b..2c331ce6ca73 100644
+> > --- a/include/net/inet_hashtables.h
+> > +++ b/include/net/inet_hashtables.h
+> > @@ -448,11 +448,13 @@ static inline void sk_rcv_saddr_set(struct sock *sk, __be32 addr)
+> >  }
+> >
+> >  int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+> > -                     struct sock *sk, u64 port_offset,
+> > +                     struct sock *sk, u64 port_offset, bool prev_inaddr_any,
+> >                       int (*check_established)(struct inet_timewait_death_row *,
+> >                                                struct sock *, __u16,
+> >                                                struct inet_timewait_sock **));
+> >
+> >  int inet_hash_connect(struct inet_timewait_death_row *death_row,
+> > -                   struct sock *sk);
+> > +                   struct sock *sk, bool prev_inaddr_any);
+> > +
+> > +int inet_bhash2_update_saddr(struct sock *sk);
+> >  #endif /* _INET_HASHTABLES_H */
+> > diff --git a/include/net/ipv6.h b/include/net/ipv6.h
+> > index 5b38bf1a586b..6a50aca56d50 100644
+> > --- a/include/net/ipv6.h
+> > +++ b/include/net/ipv6.h
+> > @@ -1187,7 +1187,7 @@ int inet6_compat_ioctl(struct socket *sock, unsigned int cmd,
+> >               unsigned long arg);
+> >
+> >  int inet6_hash_connect(struct inet_timewait_death_row *death_row,
+> > -                           struct sock *sk);
+> > +                    struct sock *sk, bool prev_inaddr_any);
+> >  int inet6_sendmsg(struct socket *sock, struct msghdr *msg, size_t size);
+> >  int inet6_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+> >                 int flags);
+> > diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
+> > index da6e3b20cd75..37a8bc3ee49e 100644
+> > --- a/net/dccp/ipv4.c
+> > +++ b/net/dccp/ipv4.c
+> > @@ -47,12 +47,13 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> >       const struct sockaddr_in *usin = (struct sockaddr_in *)uaddr;
+> >       struct inet_sock *inet = inet_sk(sk);
+> >       struct dccp_sock *dp = dccp_sk(sk);
+> > +     struct ip_options_rcu *inet_opt;
+> >       __be16 orig_sport, orig_dport;
+> > +     bool prev_inaddr_any = false;
+> >       __be32 daddr, nexthop;
+> >       struct flowi4 *fl4;
+> >       struct rtable *rt;
+> >       int err;
+> > -     struct ip_options_rcu *inet_opt;
+> >
+> >       dp->dccps_role = DCCP_ROLE_CLIENT;
+> >
+> > @@ -89,8 +90,11 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> >       if (inet_opt == NULL || !inet_opt->opt.srr)
+> >               daddr = fl4->daddr;
+> >
+> > -     if (inet->inet_saddr == 0)
+> > +     if (inet->inet_saddr == 0) {
+> >               inet->inet_saddr = fl4->saddr;
+> > +             prev_inaddr_any = true;
+> > +     }
+> > +
+> >       sk_rcv_saddr_set(sk, inet->inet_saddr);
+> >       inet->inet_dport = usin->sin_port;
+> >       sk_daddr_set(sk, daddr);
+> > @@ -105,7 +109,7 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> >        * complete initialization after this.
+> >        */
+> >       dccp_set_state(sk, DCCP_REQUESTING);
+> > -     err = inet_hash_connect(&dccp_death_row, sk);
+> > +     err = inet_hash_connect(&dccp_death_row, sk, prev_inaddr_any);
+> >       if (err != 0)
+> >               goto failure;
+> >
+> > diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+> > index fd44638ec16b..03013522acab 100644
+> > --- a/net/dccp/ipv6.c
+> > +++ b/net/dccp/ipv6.c
+> > @@ -824,6 +824,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> >       struct ipv6_pinfo *np = inet6_sk(sk);
+> >       struct dccp_sock *dp = dccp_sk(sk);
+> >       struct in6_addr *saddr = NULL, *final_p, final;
+> > +     bool prev_inaddr_any = false;
+> >       struct ipv6_txoptions *opt;
+> >       struct flowi6 fl6;
+> >       struct dst_entry *dst;
+> > @@ -936,6 +937,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> >       if (saddr == NULL) {
+> >               saddr = &fl6.saddr;
+> >               sk->sk_v6_rcv_saddr = *saddr;
+> > +             prev_inaddr_any = true;
+> >       }
+> >
+> >       /* set the source address */
+> > @@ -951,7 +953,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> >       inet->inet_dport = usin->sin6_port;
+> >
+> >       dccp_set_state(sk, DCCP_REQUESTING);
+> > -     err = inet6_hash_connect(&dccp_death_row, sk);
+> > +     err = inet6_hash_connect(&dccp_death_row, sk, prev_inaddr_any);
+> >       if (err)
+> >               goto late_failure;
+> >
+> > diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+> > index 93da9f783bec..ad627a99ff9d 100644
+> > --- a/net/ipv4/af_inet.c
+> > +++ b/net/ipv4/af_inet.c
+> > @@ -1221,10 +1221,11 @@ static int inet_sk_reselect_saddr(struct sock *sk)
+> >       struct inet_sock *inet = inet_sk(sk);
+> >       __be32 old_saddr = inet->inet_saddr;
+> >       __be32 daddr = inet->inet_daddr;
+> > +     struct ip_options_rcu *inet_opt;
+> >       struct flowi4 *fl4;
+> >       struct rtable *rt;
+> >       __be32 new_saddr;
+> > -     struct ip_options_rcu *inet_opt;
+> > +     int err;
+> >
+> >       inet_opt = rcu_dereference_protected(inet->inet_opt,
+> >                                            lockdep_sock_is_held(sk));
+> > @@ -1253,6 +1254,10 @@ static int inet_sk_reselect_saddr(struct sock *sk)
+> >
+> >       inet->inet_saddr = inet->inet_rcv_saddr = new_saddr;
+> >
+> > +     err = inet_bhash2_update_saddr(sk);
+> > +     if (err)
+> > +             return err;
+> > +
+> >       /*
+> >        * XXX The only one ugly spot where we need to
+> >        * XXX really change the sockets identity after
+> > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+> > index e8de5e699b3f..592b70663a3b 100644
+> > --- a/net/ipv4/inet_hashtables.c
+> > +++ b/net/ipv4/inet_hashtables.c
+> > @@ -826,6 +826,55 @@ inet_bind2_bucket_find(struct inet_hashinfo *hinfo, struct net *net,
+> >       return bhash2;
+> >  }
+> >
+> > +/* the lock for the socket's corresponding bhash entry must be held */
+> > +static int __inet_bhash2_update_saddr(struct sock *sk,
+> > +                                   struct inet_hashinfo *hinfo,
+> > +                                   struct net *net, int port, int l3mdev)
+> > +{
+> > +     struct inet_bind2_hashbucket *head2;
+> > +     struct inet_bind2_bucket *tb2;
+> > +
+> > +     tb2 = inet_bind2_bucket_find(hinfo, net, port, l3mdev, sk,
+> > +                                  &head2);
+> > +     if (!tb2) {
+> > +             tb2 = inet_bind2_bucket_create(hinfo->bind2_bucket_cachep,
+> > +                                            net, head2, port, l3mdev, sk);
+> > +             if (!tb2)
+> > +                     return -ENOMEM;
+> > +     }
+> > +
+> > +     /* Remove the socket's old entry from bhash2 */
+> > +     __sk_del_bind2_node(sk);
+> > +
+> > +     sk_add_bind2_node(sk, &tb2->owners);
+> > +     inet_csk(sk)->icsk_bind2_hash = tb2;
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +/* This should be called if/when a socket's rcv saddr changes after it has
+> > + * been binded.
+> > + */
+> > +int inet_bhash2_update_saddr(struct sock *sk)
+> > +{
+> > +     struct inet_hashinfo *hinfo = sk->sk_prot->h.hashinfo;
+> > +     int l3mdev = inet_sk_bound_l3mdev(sk);
+> > +     struct inet_bind_hashbucket *head;
+> > +     int port = inet_sk(sk)->inet_num;
+> > +     struct net *net = sock_net(sk);
+> > +     int err;
+> > +
+> > +     head = &hinfo->bhash[inet_bhashfn(net, port, hinfo->bhash_size)];
+> > +
+> > +     spin_lock_bh(&head->lock);
+> > +
+> > +     err = __inet_bhash2_update_saddr(sk, hinfo, net, port, l3mdev);
+> > +
+> > +     spin_unlock_bh(&head->lock);
+> > +
+> > +     return err;
+> > +}
+> > +
+> >  /* RFC 6056 3.3.4.  Algorithm 4: Double-Hash Port Selection Algorithm
+> >   * Note that we use 32bit integers (vs RFC 'short integers')
+> >   * because 2^16 is not a multiple of num_ephemeral and this
+> > @@ -840,7 +889,7 @@ inet_bind2_bucket_find(struct inet_hashinfo *hinfo, struct net *net,
+> >  static u32 *table_perturb;
+> >
+> >  int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+> > -             struct sock *sk, u64 port_offset,
+> > +             struct sock *sk, u64 port_offset, bool prev_inaddr_any,
+> >               int (*check_established)(struct inet_timewait_death_row *,
+> >                       struct sock *, __u16, struct inet_timewait_sock **))
+> >  {
+> > @@ -858,11 +907,24 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+> >       int l3mdev;
+> >       u32 index;
+> >
+> > +     l3mdev = inet_sk_bound_l3mdev(sk);
+> > +
+> >       if (port) {
+> >               head = &hinfo->bhash[inet_bhashfn(net, port,
+> >                                                 hinfo->bhash_size)];
+> >               tb = inet_csk(sk)->icsk_bind_hash;
+> > +
+> >               spin_lock_bh(&head->lock);
+> > +
+> > +             if (prev_inaddr_any) {
+> > +                     ret = __inet_bhash2_update_saddr(sk, hinfo, net, port,
+> > +                                                      l3mdev);
+> > +                     if (ret) {
+> > +                             spin_unlock_bh(&head->lock);
+> > +                             return ret;
+> > +                     }
+> > +             }
+> > +
+> >               if (sk_head(&tb->owners) == sk && !sk->sk_bind_node.next) {
+> >                       inet_ehash_nolisten(sk, NULL, NULL);
+> >                       spin_unlock_bh(&head->lock);
+> > @@ -875,8 +937,6 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+> >               return ret;
+> >       }
+> >
+> > -     l3mdev = inet_sk_bound_l3mdev(sk);
+> > -
+> >       inet_get_local_port_range(net, &low, &high);
+> >       high++; /* [32768, 60999] -> [32768, 61000[ */
+> >       remaining = high - low;
+> > @@ -987,13 +1047,13 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
+> >   * Bind a port for a connect operation and hash it.
+> >   */
+> >  int inet_hash_connect(struct inet_timewait_death_row *death_row,
+> > -                   struct sock *sk)
+> > +                   struct sock *sk, bool prev_inaddr_any)
+> >  {
+> >       u64 port_offset = 0;
+> >
+> >       if (!inet_sk(sk)->inet_num)
+> >               port_offset = inet_sk_port_offset(sk);
+> > -     return __inet_hash_connect(death_row, sk, port_offset,
+> > +     return __inet_hash_connect(death_row, sk, port_offset, prev_inaddr_any,
+> >                                  __inet_check_established);
+> >  }
+> >  EXPORT_SYMBOL_GPL(inet_hash_connect);
+> > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> > index dac2650f3863..adf8d750933d 100644
+> > --- a/net/ipv4/tcp_ipv4.c
+> > +++ b/net/ipv4/tcp_ipv4.c
+> > @@ -203,6 +203,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> >       struct inet_sock *inet = inet_sk(sk);
+> >       struct tcp_sock *tp = tcp_sk(sk);
+> >       __be16 orig_sport, orig_dport;
+> > +     bool prev_inaddr_any = false;
+> >       __be32 daddr, nexthop;
+> >       struct flowi4 *fl4;
+> >       struct rtable *rt;
+> > @@ -246,8 +247,11 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> >       if (!inet_opt || !inet_opt->opt.srr)
+> >               daddr = fl4->daddr;
+> >
+> > -     if (!inet->inet_saddr)
+> > +     if (!inet->inet_saddr) {
+> >               inet->inet_saddr = fl4->saddr;
+> > +             prev_inaddr_any = true;
+> > +     }
+> > +
+> >       sk_rcv_saddr_set(sk, inet->inet_saddr);
+> >
+> >       if (tp->rx_opt.ts_recent_stamp && inet->inet_daddr != daddr) {
+> > @@ -273,7 +277,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+> >        * complete initialization after this.
+> >        */
+> >       tcp_set_state(sk, TCP_SYN_SENT);
+> > -     err = inet_hash_connect(tcp_death_row, sk);
+> > +     err = inet_hash_connect(tcp_death_row, sk, prev_inaddr_any);
+> >       if (err)
+> >               goto failure;
+> >
+> > diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
+> > index 7d53d62783b1..c87c5933f3be 100644
+> > --- a/net/ipv6/inet6_hashtables.c
+> > +++ b/net/ipv6/inet6_hashtables.c
+> > @@ -317,13 +317,13 @@ static u64 inet6_sk_port_offset(const struct sock *sk)
+> >  }
+> >
+> >  int inet6_hash_connect(struct inet_timewait_death_row *death_row,
+> > -                    struct sock *sk)
+> > +                    struct sock *sk, bool prev_inaddr_any)
+> >  {
+> >       u64 port_offset = 0;
+> >
+> >       if (!inet_sk(sk)->inet_num)
+> >               port_offset = inet6_sk_port_offset(sk);
+> > -     return __inet_hash_connect(death_row, sk, port_offset,
+> > +     return __inet_hash_connect(death_row, sk, port_offset, prev_inaddr_any,
+> >                                  __inet6_check_established);
+> >  }
+> >  EXPORT_SYMBOL_GPL(inet6_hash_connect);
+> > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+> > index f37dd4aa91c6..81e3312c2a97 100644
+> > --- a/net/ipv6/tcp_ipv6.c
+> > +++ b/net/ipv6/tcp_ipv6.c
+> > @@ -152,6 +152,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> >       struct ipv6_pinfo *np = tcp_inet6_sk(sk);
+> >       struct tcp_sock *tp = tcp_sk(sk);
+> >       struct in6_addr *saddr = NULL, *final_p, final;
+> > +     bool prev_inaddr_any = false;
+> >       struct ipv6_txoptions *opt;
+> >       struct flowi6 fl6;
+> >       struct dst_entry *dst;
+> > @@ -289,6 +290,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> >       if (!saddr) {
+> >               saddr = &fl6.saddr;
+> >               sk->sk_v6_rcv_saddr = *saddr;
+> > +             prev_inaddr_any = true;
+> >       }
+> >
+> >       /* set the source address */
+> > @@ -309,7 +311,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
+> >
+> >       tcp_set_state(sk, TCP_SYN_SENT);
+> >       tcp_death_row = sock_net(sk)->ipv4.tcp_death_row;
+> > -     err = inet6_hash_connect(tcp_death_row, sk);
+> > +     err = inet6_hash_connect(tcp_death_row, sk, prev_inaddr_any);
+> >       if (err)
+> >               goto late_failure;
+> >
 >
-> HEAD commit:    664a393a2663 Merge tag 'input-for-v5.19-rc0' of git://git...
-> git tree:       upstream
-> console+strace: https://syzkaller.appspot.com/x/log.txt?x=10c9bf5bf00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=9b19cdd2d45cc221
-> dashboard link: https://syzkaller.appspot.com/bug?extid=98fd2d1422063b0f8c44
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=154a123df00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13b9d8cdf00000
+> I'm sorry for the late notice, but it looks like that the mptcp
+> syzkaller instance is still hitting the Warning in icsk_get_port on top
+> of the v1 of this series:
 >
-> The issue was bisected to:
+> https://github.com/multipath-tcp/mptcp_net-next/issues/279
 >
-> commit d5a42de8bdbe25081f07b801d8b35f4d75a791f4
-> Author: Joanne Koong <joannelkoong@gmail.com>
-> Date:   Fri May 20 00:18:33 2022 +0000
+> and the change in v2 should not address that. @Mat could you please
+> confirm the above?
 >
->     net: Add a second bind table hashed by port and address
+> Dumb question: I don't understand how the locking in bhash2 works.
+> Could you explain that?
 >
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15c72eedf00000
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=17c72eedf00000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=13c72eedf00000
+> What happens when 2 different processes bind different sockets on
+> different ports (with different bhash buckets) using different
+> addresses so that they hit the same bhash2 bucket? AFAICS each process
+> will use a different lock and access/modification to bhash2 could
+> happen simultaneusly?
+Hi Paolo. Yes, I think you are correct here that there could be a
+scenario where this happens. Unfortunately, I think this means the
+bhash2 table will need its own lock. I will submit a follow-up for
+this.
 >
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+98fd2d1422063b0f8c44@syzkaller.appspotmail.com
-> Fixes: d5a42de8bdbe ("net: Add a second bind table hashed by port and address")
+> Thanks!
 >
-> ==================================================================
-> BUG: KASAN: use-after-free in read_pnet include/net/net_namespace.h:361 [inline]
-> BUG: KASAN: use-after-free in ib2_net include/net/inet_hashtables.h:116 [inline]
-> BUG: KASAN: use-after-free in check_bind2_bucket_match net/ipv4/inet_hashtables.c:765 [inline]
-> BUG: KASAN: use-after-free in inet_bind2_bucket_find+0x562/0x620 net/ipv4/inet_hashtables.c:819
-> Read of size 8 at addr ffff888020cbc980 by task syz-executor537/3958
+> Paolo
 >
-> CPU: 0 PID: 3958 Comm: syz-executor537 Not tainted 5.18.0-syzkaller-11080-g664a393a2663 #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
->  print_report mm/kasan/report.c:429 [inline]
->  kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
->  read_pnet include/net/net_namespace.h:361 [inline]
->  ib2_net include/net/inet_hashtables.h:116 [inline]
->  check_bind2_bucket_match net/ipv4/inet_hashtables.c:765 [inline]
->  inet_bind2_bucket_find+0x562/0x620 net/ipv4/inet_hashtables.c:819
->  __inet_hash_connect+0xaaa/0x1450 net/ipv4/inet_hashtables.c:949
->  dccp_v4_connect+0xc5c/0x16f0 net/dccp/ipv4.c:108
->  __inet_stream_connect+0x8cf/0xed0 net/ipv4/af_inet.c:660
->  inet_stream_connect+0x53/0xa0 net/ipv4/af_inet.c:724
->  __sys_connect_file+0x14f/0x190 net/socket.c:1979
->  io_connect+0x15f/0x690 fs/io_uring.c:6724
->  io_issue_sqe+0x40c6/0xa9c0 fs/io_uring.c:8351
->  io_queue_sqe fs/io_uring.c:8706 [inline]
->  io_req_task_submit+0xce/0x400 fs/io_uring.c:3066
->  handle_tw_list fs/io_uring.c:2938 [inline]
->  tctx_task_work+0x16a/0xe10 fs/io_uring.c:2967
->  task_work_run+0xdd/0x1a0 kernel/task_work.c:177
->  ptrace_notify+0x114/0x140 kernel/signal.c:2372
->  ptrace_report_syscall include/linux/ptrace.h:427 [inline]
->  ptrace_report_syscall_exit include/linux/ptrace.h:489 [inline]
->  syscall_exit_work kernel/entry/common.c:249 [inline]
->  syscall_exit_to_user_mode_prepare+0xdb/0x230 kernel/entry/common.c:276
->  __syscall_exit_to_user_mode_work kernel/entry/common.c:281 [inline]
->  syscall_exit_to_user_mode+0x9/0x50 kernel/entry/common.c:294
->  do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
->  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> RIP: 0033:0x7f0041a50b99
-> Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> RSP: 002b:00007f0041a022f8 EFLAGS: 00000246 ORIG_RAX: 00000000000001aa
-> RAX: 0000000000000200 RBX: 00007f0041ad8428 RCX: 00007f0041a50b99
-> RDX: 0000000000000000 RSI: 00000000000045f5 RDI: 0000000000000003
-> RBP: 00007f0041ad8420 R08: 0000000000000000 R09: 0000000000000004
-> R10: 0000000000000009 R11: 0000000000000246 R12: 00007f0041aa6064
-> R13: 0000000000000003 R14: 00007f0041a02400 R15: 0000000000022000
->  </TASK>
 >
-> Allocated by task 3861:
->  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
->  kasan_set_track mm/kasan/common.c:45 [inline]
->  set_alloc_info mm/kasan/common.c:436 [inline]
->  __kasan_slab_alloc+0x90/0xc0 mm/kasan/common.c:469
->  kasan_slab_alloc include/linux/kasan.h:224 [inline]
->  slab_post_alloc_hook mm/slab.h:750 [inline]
->  slab_alloc_node mm/slub.c:3214 [inline]
->  slab_alloc mm/slub.c:3222 [inline]
->  __kmem_cache_alloc_lru mm/slub.c:3229 [inline]
->  kmem_cache_alloc+0x204/0x3b0 mm/slub.c:3239
->  inet_bind2_bucket_create+0x37/0x360 net/ipv4/inet_hashtables.c:91
->  __inet_hash_connect+0xef5/0x1450 net/ipv4/inet_hashtables.c:951
->  dccp_v4_connect+0xc5c/0x16f0 net/dccp/ipv4.c:108
->  __inet_stream_connect+0x8cf/0xed0 net/ipv4/af_inet.c:660
->  inet_stream_connect+0x53/0xa0 net/ipv4/af_inet.c:724
->  __sys_connect_file+0x14f/0x190 net/socket.c:1979
->  io_connect+0x15f/0x690 fs/io_uring.c:6724
->  io_issue_sqe+0x40c6/0xa9c0 fs/io_uring.c:8351
->  io_queue_sqe fs/io_uring.c:8706 [inline]
->  io_submit_sqe fs/io_uring.c:8968 [inline]
->  io_submit_sqes+0x16b0/0x8020 fs/io_uring.c:9079
->  __do_sys_io_uring_enter+0x117f/0x2360 fs/io_uring.c:12008
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x46/0xb0
->
-> Freed by task 3861:
->  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
->  kasan_set_track+0x21/0x30 mm/kasan/common.c:45
->  kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
->  ____kasan_slab_free mm/kasan/common.c:366 [inline]
->  ____kasan_slab_free+0x166/0x1a0 mm/kasan/common.c:328
->  kasan_slab_free include/linux/kasan.h:200 [inline]
->  slab_free_hook mm/slub.c:1727 [inline]
->  slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1753
->  slab_free mm/slub.c:3507 [inline]
->  kmem_cache_free+0xdd/0x5a0 mm/slub.c:3524
->  inet_bind2_bucket_destroy net/ipv4/inet_hashtables.c:137 [inline]
->  inet_bind2_bucket_destroy net/ipv4/inet_hashtables.c:133 [inline]
->  __inet_put_port net/ipv4/inet_hashtables.c:174 [inline]
->  inet_put_port+0x4a0/0x6f0 net/ipv4/inet_hashtables.c:182
->  dccp_set_state+0x1be/0x3a0 net/dccp/proto.c:103
->  dccp_done+0x19/0x100 net/dccp/proto.c:138
->  dccp_rcv_state_process+0xc31/0x1820 net/dccp/input.c:662
->  dccp_v4_do_rcv+0xf9/0x1a0 net/dccp/ipv4.c:695
->  sk_backlog_rcv include/net/sock.h:1061 [inline]
->  __release_sock+0x134/0x3b0 net/core/sock.c:2849
->  release_sock+0x54/0x1b0 net/core/sock.c:3404
->  inet_stream_connect+0x76/0xa0 net/ipv4/af_inet.c:725
->  __sys_connect_file+0x14f/0x190 net/socket.c:1979
->  io_connect+0x15f/0x690 fs/io_uring.c:6724
->  io_issue_sqe+0x40c6/0xa9c0 fs/io_uring.c:8351
->  io_queue_sqe fs/io_uring.c:8706 [inline]
->  io_submit_sqe fs/io_uring.c:8968 [inline]
->  io_submit_sqes+0x16b0/0x8020 fs/io_uring.c:9079
->  __do_sys_io_uring_enter+0x117f/0x2360 fs/io_uring.c:12008
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x46/0xb0
->
-> The buggy address belongs to the object at ffff888020cbc980
->  which belongs to the cache dccp_bind2_bucket of size 56
-> The buggy address is located 0 bytes inside of
->  56-byte region [ffff888020cbc980, ffff888020cbc9b8)
->
-> The buggy address belongs to the physical page:
-> page:ffffea0000832f00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x20cbc
-> flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
-> raw: 00fff00000000200 0000000000000000 dead000000000122 ffff88802393ca00
-> raw: 0000000000000000 0000000000200020 00000001ffffffff 0000000000000000
-> page dumped because: kasan: bad access detected
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Unmovable, gfp_mask 0x12a20(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY), pid 3856, tgid 3855 (syz-executor537), ts 156131029362, free_ts 153495137859
->  prep_new_page mm/page_alloc.c:2456 [inline]
->  get_page_from_freelist+0x1290/0x3b70 mm/page_alloc.c:4198
->  __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5426
->  alloc_pages+0x1aa/0x310 mm/mempolicy.c:2272
->  alloc_slab_page mm/slub.c:1797 [inline]
->  allocate_slab+0x26c/0x3c0 mm/slub.c:1942
->  new_slab mm/slub.c:2002 [inline]
->  ___slab_alloc+0x985/0xd90 mm/slub.c:3002
->  __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3089
->  slab_alloc_node mm/slub.c:3180 [inline]
->  slab_alloc mm/slub.c:3222 [inline]
->  __kmem_cache_alloc_lru mm/slub.c:3229 [inline]
->  kmem_cache_alloc+0x360/0x3b0 mm/slub.c:3239
->  inet_bind2_bucket_create+0x37/0x360 net/ipv4/inet_hashtables.c:91
->  __inet_hash_connect+0xef5/0x1450 net/ipv4/inet_hashtables.c:951
->  dccp_v4_connect+0xc5c/0x16f0 net/dccp/ipv4.c:108
->  __inet_stream_connect+0x8cf/0xed0 net/ipv4/af_inet.c:660
->  inet_stream_connect+0x53/0xa0 net/ipv4/af_inet.c:724
->  __sys_connect_file+0x14f/0x190 net/socket.c:1979
->  io_connect+0x15f/0x690 fs/io_uring.c:6724
->  io_issue_sqe+0x40c6/0xa9c0 fs/io_uring.c:8351
->  io_queue_sqe fs/io_uring.c:8706 [inline]
->  io_submit_sqe fs/io_uring.c:8968 [inline]
->  io_submit_sqes+0x16b0/0x8020 fs/io_uring.c:9079
-> page last free stack trace:
->  reset_page_owner include/linux/page_owner.h:24 [inline]
->  free_pages_prepare mm/page_alloc.c:1371 [inline]
->  free_pcp_prepare+0x549/0xd20 mm/page_alloc.c:1421
->  free_unref_page_prepare mm/page_alloc.c:3343 [inline]
->  free_unref_page+0x19/0x6a0 mm/page_alloc.c:3438
->  __unfreeze_partials+0x17c/0x1a0 mm/slub.c:2521
->  qlink_free mm/kasan/quarantine.c:168 [inline]
->  qlist_free_all+0x6a/0x170 mm/kasan/quarantine.c:187
->  kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:294
->  __kasan_slab_alloc+0xa2/0xc0 mm/kasan/common.c:446
->  kasan_slab_alloc include/linux/kasan.h:224 [inline]
->  slab_post_alloc_hook mm/slab.h:750 [inline]
->  slab_alloc_node mm/slub.c:3214 [inline]
->  kmem_cache_alloc_node+0x255/0x3f0 mm/slub.c:3264
->  __alloc_skb+0x215/0x340 net/core/skbuff.c:414
->  alloc_skb include/linux/skbuff.h:1426 [inline]
->  dccp_connect+0x204/0x720 net/dccp/output.c:560
->  dccp_v4_connect+0x1140/0x16f0 net/dccp/ipv4.c:128
->  __inet_stream_connect+0x8cf/0xed0 net/ipv4/af_inet.c:660
->  inet_stream_connect+0x53/0xa0 net/ipv4/af_inet.c:724
->  __sys_connect_file+0x14f/0x190 net/socket.c:1979
->  io_connect+0x15f/0x690 fs/io_uring.c:6724
->  io_issue_sqe+0x40c6/0xa9c0 fs/io_uring.c:8351
->  io_queue_sqe fs/io_uring.c:8706 [inline]
->  io_submit_sqe fs/io_uring.c:8968 [inline]
->  io_submit_sqes+0x16b0/0x8020 fs/io_uring.c:9079
->
-> Memory state around the buggy address:
->  ffff888020cbc880: fa fb fb fb fb fb fb fc fc fc fc fc fc fc fc fc
->  ffff888020cbc900: fa fb fb fb fb fb fb fc fc fc fc fc fc fc fc fc
-> >ffff888020cbc980: fa fb fb fb fb fb fb fc fc fc fc fc fc fc fc fc
->                    ^
->  ffff888020cbca00: fa fb fb fb fb fb fb fc fc fc fc fc fc fc fc fc
->  ffff888020cbca80: fa fb fb fb fb fb fb fc fc fc fc fc fc fc fc fc
-> ==================================================================
->
-I will look into where inet_bind_bucket_create gets passed in a NULL
-net and submit a follow-up.
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> syzbot can test patches for this issue, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
