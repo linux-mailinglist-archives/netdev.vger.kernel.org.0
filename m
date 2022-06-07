@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A399542042
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:24:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C4A7542032
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:24:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384790AbiFHAUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 20:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48954 "EHLO
+        id S1383412AbiFHATK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 20:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588647AbiFGXyx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 19:54:53 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F381B174F
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 16:36:26 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id s14so16128787plk.8
-        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 16:36:26 -0700 (PDT)
+        with ESMTP id S1588583AbiFGXys (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 19:54:48 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE181B175E
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 16:36:28 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id w2-20020a17090ac98200b001e0519fe5a8so16785224pjt.4
+        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 16:36:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=c/jFKJo8dPrv8P1o1Qlvafe9/ckmgvMeT8+RnXzRv0Y=;
-        b=TFn1fsUvGI7DYZIicg8zsHTX8VehAWIJnpGmIrpgPvmAetR8b8qTzoensHpD2+APA7
-         x1XQwlKaBQZ/5MqEhw192CfZ2USq4taQQUzBlevKCNiOTAgBAeynT4mWR7i0ewzmMIov
-         SSkUqqUUoGX6IbUfZIeNQjl7eLKSj41VbbTXs7PN6Dj+RywDRQK9jSby3NQwExuNfKa1
-         q8IO+2lm0qJDrR2700uCMgsybtSoqXV7tZ78NZwq8UhL2Th0piSZB6gIbGLBBa7E4jOX
-         nHZPVjkDzF2BqmiECrad88iEkSIg+up879sl0rEsgW/DDbJvIXA8/YGM3BHl9W/RMghp
-         GdSw==
+        bh=EaypB14xKLH/WHSl6QOUJBVM+ha8jwdOhj6eXdaj77M=;
+        b=dQbDQNWTdO3M57zJJp14ZF9p8EMYoiTxohrHZyrwIKE8l5T/PMD+2Zi+NFxhQgHtrP
+         qpHaqZydS5kMqU7UD6mAblg6v8iM92P8zzCt8Dt5be67NdhoGnWVhcaN/atbNlAf03JS
+         Ql2FjocrnZssgllCAmK+rsUt0VZjJg8A4RwZtO98CPVkIC3JE6/Try8ag08gAOGhuyb/
+         V3+S9f6WPxK3l90N5uWB6Sa40GQzU8C/GY32Eyah4IX2DP76Bnv3n0WU2nIpY6+IKX4w
+         N3WcZ3TBnhXlUwLiNX5RSdVwM5NIxHokxYSBP3y+l6GTOyVE3agvpXs50qLlgksG4x4H
+         WtGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=c/jFKJo8dPrv8P1o1Qlvafe9/ckmgvMeT8+RnXzRv0Y=;
-        b=4FCRbOyHziqCZuQfBi2myJPaLoYS0Cr4eUCQt7WkWrQ1qY/sBIraZ3p5e1Cmbaiyhv
-         1JQYatKg5DgbUwzMKr5FsLYm+0N9T7lSJBb/jGgGkevJ14DHNEjXFScjQKhgs7FKpNfm
-         vGn97Kw9+E02gXDrtXBpoHVtMhPTE0IcLy5AWaXOTHfyiWhBM9tJvhlMHwbMhOVnwFS0
-         OsN990Z27NRs1GP9+foRpUE85xXCGLMnZY/DLcjjfuC8XtStdmoXT6tOVhY66W6knujs
-         +wA1AVpM7ZKstl2SScOrRerIzINswaPp6Z96c87ixpHYdRwurJ9XFai3UpuNl2vCKK/w
-         claw==
-X-Gm-Message-State: AOAM5315XznBLYVSyQ1tU8jv3uNPZHHI9vCOFY2MLho3fW3s9PY8crIO
-        OfKEUAsvvZwBNumzR+4Dnlc=
-X-Google-Smtp-Source: ABdhPJyY4tz/QnNAeibfl58mjXIlR4NGR+UW1L2NZLnlmHxdBDX4zGweZ/BEfJLdzzm4TU5LRXLCZQ==
-X-Received: by 2002:a17:90b:1e46:b0:1e6:826e:73ea with SMTP id pi6-20020a17090b1e4600b001e6826e73eamr34090046pjb.68.1654644986298;
-        Tue, 07 Jun 2022 16:36:26 -0700 (PDT)
+        bh=EaypB14xKLH/WHSl6QOUJBVM+ha8jwdOhj6eXdaj77M=;
+        b=HGdDwqyYU7wFqW94bT1QrjJq5o73q6kRfHVfwNRole5IKkrytJaSzTaQbnLmfdXGTh
+         Mf7JTEcY8mmdAx0EhWFOI7k932sDYwDCw/U3yrRL8YQYM1xqMuzcRgtYu9oXCXZhStqC
+         rWiygBLLRJL9MUzisjuTHLZoI/vDA5s5faf3Os4Zm7k0/TN3kiVeXnR11huDfF088YBe
+         5XsqyLs6zxJrkdJ4WEc3kmnyay8xDqP4G1m5xteLiENeRR4e3M8461rVmal0++yyc4bj
+         rmurFZJ9OKbDL+yL5b2ymfN3YaQZKkiFDgOurY958Oo5qCugaY4gRRLJcKNTc9bOp9z8
+         DOmg==
+X-Gm-Message-State: AOAM531P1rwP1JGJ/xTErU1wVdkCkRygIfn1oh2zpcaIFGygINpRj46/
+        inLnZRtKrBloRitGYRz9EQA=
+X-Google-Smtp-Source: ABdhPJywoExQQYXNjokBPFGzz1X3wxWLT89jYBo7mh3BCTLTJgWQjKd14rrudzqtTmG1p/zCaLPPVg==
+X-Received: by 2002:a17:90a:fb90:b0:1e3:809:9296 with SMTP id cp16-20020a17090afb9000b001e308099296mr34439470pjb.26.1654644988339;
+        Tue, 07 Jun 2022 16:36:28 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:191a:13a7:b80a:f36e])
-        by smtp.gmail.com with ESMTPSA id u79-20020a627952000000b0051ba7515e0dsm13550947pfc.54.2022.06.07.16.36.24
+        by smtp.gmail.com with ESMTPSA id u79-20020a627952000000b0051ba7515e0dsm13550947pfc.54.2022.06.07.16.36.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 16:36:25 -0700 (PDT)
+        Tue, 07 Jun 2022 16:36:27 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -55,9 +55,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         "Jason A . Donenfeld" <Jason@zx2c4.com>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 3/9] sit: use dev_sw_netstats_rx_add()
-Date:   Tue,  7 Jun 2022 16:36:08 -0700
-Message-Id: <20220607233614.1133902-4-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 4/9] ip6_tunnel: use dev_sw_netstats_rx_add()
+Date:   Tue,  7 Jun 2022 16:36:09 -0700
+Message-Id: <20220607233614.1133902-5-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 In-Reply-To: <20220607233614.1133902-1-eric.dumazet@gmail.com>
 References: <20220607233614.1133902-1-eric.dumazet@gmail.com>
@@ -79,34 +79,33 @@ We have a convenient helper, let's use it.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv6/sit.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ net/ipv6/ip6_tunnel.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-index c0b138c2099256bdcb041caa72407f234963c601..d3254aa80a5251bea50dd061cc437dbf793f96fd 100644
---- a/net/ipv6/sit.c
-+++ b/net/ipv6/sit.c
-@@ -686,8 +686,6 @@ static int ipip6_rcv(struct sk_buff *skb)
- 	tunnel = ipip6_tunnel_lookup(dev_net(skb->dev), skb->dev,
- 				     iph->saddr, iph->daddr, sifindex);
- 	if (tunnel) {
--		struct pcpu_sw_netstats *tstats;
--
- 		if (tunnel->parms.iph.protocol != IPPROTO_IPV6 &&
- 		    tunnel->parms.iph.protocol != 0)
- 			goto out;
-@@ -724,11 +722,7 @@ static int ipip6_rcv(struct sk_buff *skb)
- 			}
+diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
+index 19325b7600bba3a8c8bd5a41be9d2340186d44aa..ded5b813e21fa28ea3c9c9c10f6b89de893990c2 100644
+--- a/net/ipv6/ip6_tunnel.c
++++ b/net/ipv6/ip6_tunnel.c
+@@ -796,7 +796,6 @@ static int __ip6_tnl_rcv(struct ip6_tnl *tunnel, struct sk_buff *skb,
+ 						struct sk_buff *skb),
+ 			 bool log_ecn_err)
+ {
+-	struct pcpu_sw_netstats *tstats;
+ 	const struct ipv6hdr *ipv6h = ipv6_hdr(skb);
+ 	int err;
+ 
+@@ -856,11 +855,7 @@ static int __ip6_tnl_rcv(struct ip6_tnl *tunnel, struct sk_buff *skb,
  		}
+ 	}
  
--		tstats = this_cpu_ptr(tunnel->dev->tstats);
--		u64_stats_update_begin(&tstats->syncp);
--		tstats->rx_packets++;
--		tstats->rx_bytes += skb->len;
--		u64_stats_update_end(&tstats->syncp);
-+		dev_sw_netstats_rx_add(tunnel->dev, skb->len);
+-	tstats = this_cpu_ptr(tunnel->dev->tstats);
+-	u64_stats_update_begin(&tstats->syncp);
+-	tstats->rx_packets++;
+-	tstats->rx_bytes += skb->len;
+-	u64_stats_update_end(&tstats->syncp);
++	dev_sw_netstats_rx_add(tunnel->dev, skb->len);
  
- 		netif_rx(skb);
+ 	skb_scrub_packet(skb, !net_eq(tunnel->net, dev_net(tunnel->dev)));
  
 -- 
 2.36.1.255.ge46751e96f-goog
