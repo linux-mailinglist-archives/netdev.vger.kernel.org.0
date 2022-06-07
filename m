@@ -2,121 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99E2753FB89
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 12:40:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 786BE53FC83
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 12:56:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241245AbiFGKkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 06:40:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55096 "EHLO
+        id S241076AbiFGK40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 06:56:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241302AbiFGKkV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 06:40:21 -0400
-Received: from mail-wm1-x349.google.com (mail-wm1-x349.google.com [IPv6:2a00:1450:4864:20::349])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C708B0B5
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 03:40:20 -0700 (PDT)
-Received: by mail-wm1-x349.google.com with SMTP id k32-20020a05600c1ca000b0039c4cf75023so3613450wms.9
-        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 03:40:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=vp9jkXdHUO1DqPeSha9qftW6M3HjLENX1BSG2nBOYec=;
-        b=L/d7E0ruhw+z2PEX2oHfo6yWRopH97esndR0q5+CmlZeJcbqdrUV8/COiJxOtIG0mm
-         uYwk+VyPn16RgA4huLOrZrZsXIOaCruMp49r6YxJBKthhqGSZVrcrXq3PbT4xtHWV6eU
-         aUqXBTKpn5cHoj6AVfsSTU/PGYHPETZtbWXB/ghILI84Y8mvyJgnnCJNcA4HbhmN4DsE
-         RYLEcz0t08E8DrBIIZ4JUfbmd65v7ZrH0y/k8WU3/PMgrCBj8jsCtq70X/5K4CD42JPY
-         2a5dsw7c0NDzrOcLlNqWxsmUwmtOrOCrT1qaKzFBilsVDLx79rkdiI/Fvo976sYI3ojk
-         oJAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=vp9jkXdHUO1DqPeSha9qftW6M3HjLENX1BSG2nBOYec=;
-        b=11hFnyyNpZvTTQr7NorBfNtbfc+psHubH8Wgj64YRSn8GCFNqlzp+ZpYXSxYE0zMah
-         zM8YmVnDcxh4phdQvYY8E6kOiH6pjvu+bORIp+L7KzZ0+9hleQUn8D6l1GweF85JNDY+
-         NUmE73d/Xfzo1edWGyYAxpXeGXvej6run24dn5G0xqOXEKU+nsw40ddloghOmDpfew6e
-         qicUMsnQiqiQ9tDB59WZjLvyHRmr7v1nRCw2pkMAvp/vcPhuP0KiJqGYJj+UubIaoD48
-         +bTIrBnZA2/8DTYcQNz8gDlenrtxHvFV9Te5C0F8EcOMHv1n0KTz2RGSWm6iD9hSMgND
-         LY6A==
-X-Gm-Message-State: AOAM533dpMrl9TdRRoRiktLFcza+5epRS0GnH5WaK+7GxD/wbW/2290d
-        C17OQJB/mwesHF/5G26H3HiMjEsiJwA=
-X-Google-Smtp-Source: ABdhPJxvgrwfIpz22Ce0KF1SX3sfY5UznmDI7jTzxHwiwBUCn7AzSj/qJzgUh+eQCswzXd/lic9iRHAa+Xc=
-X-Received: from rax.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:2a98])
- (user=poprdi job=sendgmr) by 2002:a7b:cd83:0:b0:39c:46d2:6ebb with SMTP id
- y3-20020a7bcd83000000b0039c46d26ebbmr17251855wmj.187.1654598419076; Tue, 07
- Jun 2022 03:40:19 -0700 (PDT)
-Date:   Tue,  7 Jun 2022 10:40:15 +0000
-Message-Id: <20220607104015.2126118-1-poprdi@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH v2] Bluetooth: Collect kcov coverage from hci_rx_work
-From:   Tamas Koczka <poprdi@google.com>
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        with ESMTP id S242662AbiFGK4C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 06:56:02 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F4EA500F
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 03:52:43 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nyWp1-00068N-Le; Tue, 07 Jun 2022 12:52:27 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id C13678DBA9;
+        Tue,  7 Jun 2022 10:52:25 +0000 (UTC)
+Date:   Tue, 7 Jun 2022 12:52:25 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        michael@amarulasolutions.com,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, theflow@google.com,
-        nogikh@google.com, Tamas Koczka <poprdi@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 11/13] can: slcan: add ethtool support to reset
+ adapter errors
+Message-ID: <20220607105225.xw33w32en7fd4vmh@pengutronix.de>
+References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
+ <20220607094752.1029295-12-dario.binacchi@amarulasolutions.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="iuaxzdq6irzebpfy"
+Content-Disposition: inline
+In-Reply-To: <20220607094752.1029295-12-dario.binacchi@amarulasolutions.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Annotate hci_rx_work() with kcov_remote_start() and kcov_remote_stop()
-calls, so remote KCOV coverage is collected while processing the rx_q
-queue which is the main incoming Bluetooth packet queue.
 
-Coverage is associated with the thread which created the packet skb.
+--iuaxzdq6irzebpfy
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The collected extra coverage helps kernel fuzzing efforts in finding
-vulnerabilities.
+On 07.06.2022 11:47:50, Dario Binacchi wrote:
+> This patch adds a private flag to the slcan driver to switch the
+> "err-rst-on-open" setting on and off.
+>=20
+> "err-rst-on-open" on  - Reset error states on opening command
+>=20
+> "err-rst-on-open" off - Don't reset error states on opening command
+>                         (default)
+>=20
+> The setting can only be changed if the interface is down:
+>=20
+>     ip link set dev can0 down
+>     ethtool --set-priv-flags can0 err-rst-on-open {off|on}
+>     ip link set dev can0 up
+>=20
+> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 
-Signed-off-by: Tamas Koczka <poprdi@google.com>
----
-Changelog since v1:
- - add comment about why kcov_remote functions are called
+I'm a big fan of bringing the device into a well known good state during
+ifup. What would be the reasons/use cases to not reset the device?
 
-v1: https://lore.kernel.org/all/20220517094532.2729049-1-poprdi@google.com/
+Marc
 
- net/bluetooth/hci_core.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 45c2dd2e1590..0af43844c55a 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -29,6 +29,7 @@
- #include <linux/rfkill.h>
- #include <linux/debugfs.h>
- #include <linux/crypto.h>
-+#include <linux/kcov.h>
- #include <linux/property.h>
- #include <linux/suspend.h>
- #include <linux/wait.h>
-@@ -3780,7 +3781,14 @@ static void hci_rx_work(struct work_struct *work)
- 
- 	BT_DBG("%s", hdev->name);
- 
--	while ((skb = skb_dequeue(&hdev->rx_q))) {
-+	/* The kcov_remote functions used for collecting packet parsing
-+	 * coverage information from this background thread and associate
-+	 * the coverage with the syscall's thread which originally injected
-+	 * the packet. This helps fuzzing the kernel.
-+	 */
-+	for (; (skb = skb_dequeue(&hdev->rx_q)); kcov_remote_stop()) {
-+		kcov_remote_start_common(skb_get_kcov_handle(skb));
-+
- 		/* Send copy to monitor */
- 		hci_send_to_monitor(hdev, skb);
- 
--- 
-2.36.1.255.ge46751e96f-goog
+--iuaxzdq6irzebpfy
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKfLeYACgkQrX5LkNig
+012aSQf/XyECEKk/TwoC1qpcrU6CZDRxLCJs8tO38g6r8u6mGtbNQEwIhtUIYwPZ
+4bPJ+V4a3GaJ1QyY0uAQUZVvrJLergmgsAw+xXg4wYHFzwSG46M7gxtAFiHP7JE8
+rT9u+6IYs7gnhDsp24FpscyE/B7PJ+DaJRvqXe6WO74cPR9hIYlNHgNX5NElUWcz
+IT1rFeGbnYpuW481T0PELKvF7sx8QnGSMPFtrij3vxaNOE9iI5ikMaTiotYM3u2S
+9rG8i3HKyN8xpGt5WXr4mDei4ZQrxSFrUdGQnl6bsDve27+3os44YrXWeFF/+Opa
+T9DFUSWf/2gt3UrSmFM/Kfb6qvxL0Q==
+=PcMi
+-----END PGP SIGNATURE-----
+
+--iuaxzdq6irzebpfy--
