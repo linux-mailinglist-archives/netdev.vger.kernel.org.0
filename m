@@ -2,69 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F3455404A0
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 19:18:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAEF05405F6
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 19:32:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345507AbiFGRSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 13:18:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34702 "EHLO
+        id S1347001AbiFGRce (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 13:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345504AbiFGRR7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 13:17:59 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5DE74DC5
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 10:17:56 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id 187so16068639pfu.9
-        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 10:17:56 -0700 (PDT)
+        with ESMTP id S1347876AbiFGRbU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 13:31:20 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF9410A63B
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 10:28:40 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-30fdbe7467cso148272677b3.1
+        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 10:28:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=57cyzJoBPE7FvApVXx2h64j/hlX4+tffn7QLQfhu8gE=;
-        b=kJGzch64mvLQOnlCNITM6GUuQRrL0SxXbvTx+fLHOdB3rEDv1Mrn082kRx3FOvDFg+
-         gUbaVQCLRVkXQVQbi5hRqxMIkflL8itvSyFD2hosUiEBwdQsbTd/4b4d4lYLAwMSjVOV
-         PHpAOhE63SXeVGtLJjZGAUOG0T0hyCcvNNalM5kaS3ZBncURDi942uW8gAITKNf+xRX2
-         B3HkFu8G3hrvaunW7Gw9gDDvfxGDvzYJcVfyezFkWM1wAk57Q67BY+KXBAcQdI3qerWG
-         3J0i/AQvlqrW4tGLi8U0NeAbosd5C6RYJZWI8FZ4Pz4axjxX+jIkhhkEpqUXPZHTVKj9
-         0asw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7rYLYDe80leH68JeXvH0gMR/2Fmm2d87F6uzTt2pDIM=;
+        b=HYlFKKTCVa93BZYhT6TxJ+x/USTpqJ/7Br94kTb9fWRan1dSpVoztuo1fRWt1T2KCH
+         1nU2eNJzrBr2D5nnRP28LbTPlSCUw9H6nzMwsDGoQALupB1swupdNFxFltBegYWSVQrC
+         qlOJ+aUvtGgyT7oz2n+nfdLhkcbWCfI0X7G4ib83LbaRm+figmlx8wymkW1JkBDFSxMJ
+         4afp6SCGn/O69V2UEoPnZoh98FXuOhYb658C/8ZWF4HMnO2aOt0YvDW4flgHbW3m2vyR
+         Zzyf8lCPIof03dKksgOZadwpduhXQWXQ1gcLQkHofbMIrkFytzc7+/mjhel3KMJdnds3
+         ZexA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=57cyzJoBPE7FvApVXx2h64j/hlX4+tffn7QLQfhu8gE=;
-        b=VrNxmug84MtbnJ/1aPEns+6L2Np60ENgzFGqXz7siiOkywDamCm0tVs/DrP4al/BL2
-         Lz1Gnv+TihvGg8t9sgc2ILXm/lNu2uVuC4SRwo3yRsk7wlivB+uoQXiPTnzOInZPVFR9
-         JekdZL8HwaIy30B5EbSvebjivVdnkSMsoLSe+wK8PVFtH6tfW80tmOCNj0QHbe604zRZ
-         7EUgnPcRr936Al27sQz/y5EpyuUI0VUrfkldITc8az5za7qwfg4RpGO5w/0XEPQaF+nH
-         PW7Uh2iFRn/68NnJiXkJZk20XpmtPaGSD7R7dBNm2eYhSLsw8RDzcltr+eE9/LWOBQJp
-         kxYg==
-X-Gm-Message-State: AOAM530yEAqwuhOAZl7N2bCIpYqZRDJ4hkQFalOx/NNTxL1K8IvxBiVI
-        GyWe9fifiXhYR4HoLzgIl4ogK7KYkzE=
-X-Google-Smtp-Source: ABdhPJxzIZfN5DeDanoJurkdVMap8nE6NfDYu0RbLDJiBOIY2WB8ulxkeVBbNSIkzsZacxUnpLaexw==
-X-Received: by 2002:a63:5711:0:b0:3fd:b97e:3c0c with SMTP id l17-20020a635711000000b003fdb97e3c0cmr10241989pgb.570.1654622276063;
-        Tue, 07 Jun 2022 10:17:56 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:191a:13a7:b80a:f36e])
-        by smtp.gmail.com with ESMTPSA id d4-20020a621d04000000b0051b930b7bbesm13001616pfd.135.2022.06.07.10.17.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 10:17:55 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 8/8] net: add napi_get_frags_check() helper
-Date:   Tue,  7 Jun 2022 10:17:32 -0700
-Message-Id: <20220607171732.21191-9-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-In-Reply-To: <20220607171732.21191-1-eric.dumazet@gmail.com>
-References: <20220607171732.21191-1-eric.dumazet@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7rYLYDe80leH68JeXvH0gMR/2Fmm2d87F6uzTt2pDIM=;
+        b=ZIxazkDo/mzHL6MJ1udR2Jzvw7jTFA3wXM8siHRulgE2yt+gXWnM2+hFRLO+dXjToH
+         2zkeXYFh4a6x94iYSlZkn0RzCuqN8vgZ1yzdwg1UM8P2Wigo/ZwggBK/9OlK1Yck3jAo
+         uysQBDllmi7zbNYygXr2px78L4bb+YFGfDSlxTD3sji4xI/jKQChjSiEKnlO1bRHde6h
+         IV7z0mmrDx3+AGZa8NgCGxmZSTF4otvlOehmSTyTbbRbpgCLwzqcXYaOEluXklqotmpl
+         1OhAX4H1Ea1EN01dzi2Dah5CMYmsR7d4YBtx7tO00md4x/4paH4ZvsLytz9AyY/zMVnn
+         1q0g==
+X-Gm-Message-State: AOAM530z59YEjAsau1nvQ7TYYHUUsf1qldHwh7op1dwn9BILR1paDAS2
+        rk92oHl35fsJoEYi4n6Xqk8Aj0IjeYLmMFX/K+DqajTiQQzESvtR
+X-Google-Smtp-Source: ABdhPJwhe6eTXmsaYuozzlw5/bcPNSakjdg8PilLKL1XuLwlc3FBrHJdRi2+PAGvz5p/+mSNyQPuI/0hQmwPHWTyxiY=
+X-Received: by 2002:a81:b401:0:b0:300:2e86:e7e5 with SMTP id
+ h1-20020a81b401000000b003002e86e7e5mr31623346ywi.467.1654622919171; Tue, 07
+ Jun 2022 10:28:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20220607161627.25035-1-xiaohuizhang@ruc.edu.cn>
+In-Reply-To: <20220607161627.25035-1-xiaohuizhang@ruc.edu.cn>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 7 Jun 2022 10:28:27 -0700
+Message-ID: <CANn89iLwEFrb7q2ifqRxc2nvi_-YOwQpdFf0X1N5AH_wSSZ48Q@mail.gmail.com>
+Subject: Re: [PATCH 2/2] l2tp: fix possible use-after-free
+To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Xin Xiong <xiongx18@fudan.edu.cn>,
+        Tom Parkin <tparkin@katalix.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,58 +73,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Tue, Jun 7, 2022 at 9:16 AM Xiaohui Zhang <xiaohuizhang@ruc.edu.cn> wrote:
+>
+> We detected a suspected bug with our code clone detection tool.
+>
+> Similar to the handling of l2tp_tunnel_get in commit a622b40035d1
+> ("l2ip: fix possible use-after-free"), we thought a patch might
+> be needed here as well.
+>
+> Before taking a refcount on a rcu protected structure,
+> we need to make sure the refcount is not zero.
+>
+> Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+> ---
+>  net/l2tp/l2tp_core.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+> index b759fbd09b65..c5de6d4e0818 100644
+> --- a/net/l2tp/l2tp_core.c
+> +++ b/net/l2tp/l2tp_core.c
+> @@ -273,8 +273,8 @@ struct l2tp_session *l2tp_session_get(const struct net *net, u32 session_id)
+>
+>         rcu_read_lock_bh();
+>         hlist_for_each_entry_rcu(session, session_list, global_hlist)
+> -               if (session->session_id == session_id) {
+> -                       l2tp_session_inc_refcount(session);
+> +               if (session->session_id == session_id &&
+> +                   refcount_inc_not_zero(&session->ref_count)) {
+>                         rcu_read_unlock_bh();
+>
+>                         return session;
+> --
+> 2.17.1
+>
 
-This is a follow up of commit 3226b158e67c
-("net: avoid 32 x truesize under-estimation for tiny skbs")
+Please fix all bugs in a single patch.
 
-When/if we increase MAX_SKB_FRAGS, we better make sure
-the old bug will not come back.
-
-Adding a check in napi_get_frags() would be costly,
-even if using DEBUG_NET_WARN_ON_ONCE().
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/core/dev.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 27ad09ad80a4550097ce4d113719a558b5e2a811..4ce9b2563a116066d85bae7a862e38fb160ef0e2 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6351,6 +6351,23 @@ int dev_set_threaded(struct net_device *dev, bool threaded)
- }
- EXPORT_SYMBOL(dev_set_threaded);
- 
-+/* Double check that napi_get_frags() allocates skbs with
-+ * skb->head being backed by slab, not a page fragment.
-+ * This is to make sure bug fixed in 3226b158e67c
-+ * ("net: avoid 32 x truesize under-estimation for tiny skbs")
-+ * does not accidentally come back.
-+ */
-+static void napi_get_frags_check(struct napi_struct *napi)
-+{
-+	struct sk_buff *skb;
-+
-+	local_bh_disable();
-+	skb = napi_get_frags(napi);
-+	WARN_ON_ONCE(skb && skb->head_frag);
-+	napi_free_frags(napi);
-+	local_bh_enable();
-+}
-+
- void netif_napi_add_weight(struct net_device *dev, struct napi_struct *napi,
- 			   int (*poll)(struct napi_struct *, int), int weight)
- {
-@@ -6378,6 +6395,7 @@ void netif_napi_add_weight(struct net_device *dev, struct napi_struct *napi,
- 	set_bit(NAPI_STATE_NPSVC, &napi->state);
- 	list_add_rcu(&napi->dev_list, &dev->napi_list);
- 	napi_hash_add(napi);
-+	napi_get_frags_check(napi);
- 	/* Create kthread for this napi if dev->threaded is set.
- 	 * Clear dev->threaded if kthread creation failed so that
- 	 * threaded mode will not be enabled in napi_enable().
--- 
-2.36.1.255.ge46751e96f-goog
-
+net/l2tp/l2tp_core.c contains four suspect calls to l2tp_session_inc_refcount()
