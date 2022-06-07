@@ -2,473 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0165954204C
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:24:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CF9E542045
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:24:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385253AbiFHAVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 20:21:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34674 "EHLO
+        id S1384855AbiFHAUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 20:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446223AbiFGXE4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 19:04:56 -0400
-Received: from mail-vk1-xa31.google.com (mail-vk1-xa31.google.com [IPv6:2607:f8b0:4864:20::a31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECDD51D8A55
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 13:24:57 -0700 (PDT)
-Received: by mail-vk1-xa31.google.com with SMTP id d2so6938854vkg.5
-        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 13:24:57 -0700 (PDT)
+        with ESMTP id S1842353AbiFHAJM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 20:09:12 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D31914A933
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 13:36:55 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id t25so30068270lfg.7
+        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 13:36:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=oJCY90WPGyCKr8TJVIABoCQECAcvfv7jUh9SLE8AnGg=;
-        b=WaL7SpgnIeMBwenenYzBINLtsot+8mPvz9w2LT9XR9yjA006MAgYsDNlsqJJJAnj/W
-         yOaipTLS6X0W7Fs7TC/wuEhtXFZ30ISpuqtLjz9F90+kMZbLG5KZUd81FSp9sk3mytvo
-         q2JDLaMYDv6LgAXR0AhqHfDPyyshW9/5J+jozcGd98XGq8goGOMbB0+3ydSajV4xBSuL
-         aFngzByzrk7G0AojMX5xjz5fhMYXScjh23HXsl6Vb2xWhkk6ZAvJ9d/P1gx0l3aNX8dp
-         DNRMjTiVsovXvZkh4Ur7+XYMMkgm/3dYNphOZ/joISi4VjMLvHT4b/S+DpKIkcUPofJC
-         0Rtw==
+        bh=3q6TfnyhK/JVdpGe1sn/i51UuwyEe8WKDR0Bhpepgkw=;
+        b=tnMvdL81BwwXW6yVLeadSVxqoY40YLtneqyhtf7dzDEpjVWIgYH2iRPKp6eha1ETf/
+         Smnkr1PDED9FhO6HiPjOWfoRl+qtY5bDl2zV8/T21F7omzHIsh8REiwWKm7rynrFC7ha
+         9z+rlqOGw5hX23QjtYQZk2+zXzfNjdTLnK4vrIWAqzEASTEjsvOOPjhpZ6f40Z7QrcnB
+         /r0WaquGT7aHMBd+33JvbWRYcNc6jPuoNu/Lox9ShGV826J9aHUp1scqdqE5EYLGSHfx
+         gfWYSsAzMjOPFQwNOxPDSeXLbznp8dwHpy4bYBa63aLMO72Y8VFdbnm8Wo5j+lC8f2hp
+         o8GA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=oJCY90WPGyCKr8TJVIABoCQECAcvfv7jUh9SLE8AnGg=;
-        b=z+ibuWuIRAL59vJBR3XUGt6WEXecjkiev+o3DICJX0GWrJgFNwHQ55cjqRuu1phf4A
-         zUQ+TW880UHPxBKHzJuMVBs58figqMzC6fhpQiYuuOSKRKEW1esy4Z+eV15YTqsvvOqM
-         atn7KEbYZT0JYFzdOgfs8UKxZMxrqbB8SK0lP/31d1t2y5LsdlwHXpJdUfkj/RyS3Sgv
-         PUw3BaoZcLr4tRH5gyUVa0iUzWPbR9JwUZshxoUqBJPGfTGCWzHyItTg3FzK0MW6dzqU
-         rU3kbU36ND50RU3eOhPWfNB9WUcr+jpbuoY4qKqTjDWGYFAcOVxSy/Z/tmIvNBJJc8wM
-         fjNA==
-X-Gm-Message-State: AOAM532WVnQmgnWKsP254NEwpmE/+I4JmTR+KLGdLocIJrEPYPq89pNm
-        JpdWA4v7GOKYrsGf4oCSepzgZYKC8xqnr3peGz0=
-X-Google-Smtp-Source: ABdhPJxmGfqixxrspbu99hKmxTOrDfb0z10YL7bmC82FWeXdpWR0UDuGXyVo413Fv1GftrqvOqvykHUVliqTjyzvwAo=
-X-Received: by 2002:a1f:5dc7:0:b0:35b:6fac:cea7 with SMTP id
- r190-20020a1f5dc7000000b0035b6faccea7mr13064083vkb.25.1654633496542; Tue, 07
- Jun 2022 13:24:56 -0700 (PDT)
+        bh=3q6TfnyhK/JVdpGe1sn/i51UuwyEe8WKDR0Bhpepgkw=;
+        b=TEuRDX7CLNgxdoChqxpiN/EzENZP7GXbnS7qnufOvcrEE9ii52uddU/ja2hHGbxitg
+         pE9hFj7/gS5nkxxM16le17HhjjKALdVQeVs/XX10QsdnIZWIIyAGuxVCqPRpKYx9ZYif
+         qEwdmWyz3HwzTfhj/rLlEri76UfPoZOHhHuUiPQFmEJfWIkG5QBb6e520jaP+/v4qWpN
+         QDfLRV0kMCL5vViCZzPBOORlOv/oSgZtwCQOFcFMyARrXA/KWt3Up7ujAGHgtcPBhDOl
+         axifo9aLiSInVl0FGspf7q/poI//t75XMFMt0p6OFsA8JlDYnptEblwAueM7DlbWD7eu
+         oIhQ==
+X-Gm-Message-State: AOAM532xA2SV5LOFtMXb15ymI4hN2XKBJjLCAb8/dCFJTjkpcGtDmw7x
+        qxlKtGz1PwP5JtbmqyPXsMBt51jAeqUlGuvDo1UImg==
+X-Google-Smtp-Source: ABdhPJy8Duzb8ouGhVTvWRJ84NdalTVXSBgNTWEcv3+UOHIOpiHr/k9nNY8Ntdn5isOX7HonVhqmVDniLFKJXZMbJLw=
+X-Received: by 2002:a05:6512:3132:b0:478:f2f1:3a75 with SMTP id
+ p18-20020a056512313200b00478f2f13a75mr21381284lfd.100.1654634213023; Tue, 07
+ Jun 2022 13:36:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220602165101.3188482-1-joannelkoong@gmail.com>
- <20220602165101.3188482-2-joannelkoong@gmail.com> <e73d11bde2d8ead36296d814ba555e60880ce9be.camel@redhat.com>
-In-Reply-To: <e73d11bde2d8ead36296d814ba555e60880ce9be.camel@redhat.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Tue, 7 Jun 2022 13:24:45 -0700
-Message-ID: <CAJnrk1Zv2ZYyRHdpW6ZZEVh+n=ryvJqmLTDbfa=_Y-A2gD8ANQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/2] net: Update bhash2 when socket's rcv
- saddr changes
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
+References: <Yp9uRz40J24vWLSb@dev-arch.thelio-3990X> <20220607180847.13482-1-jstitt007@gmail.com>
+ <CAKwvOd=C2kyMVLYTKJcBQNnqK0T4nEBMeaS3DpTM2ez1P+qcqQ@mail.gmail.com>
+In-Reply-To: <CAKwvOd=C2kyMVLYTKJcBQNnqK0T4nEBMeaS3DpTM2ez1P+qcqQ@mail.gmail.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 7 Jun 2022 13:36:41 -0700
+Message-ID: <CAKwvOdnAALywDS6aZKCu1xnocc8LR5q_-UdLwSkBJ83nS-bL6g@mail.gmail.com>
+Subject: Re: [PATCH v2] netfilter: conntrack: Fix clang -Wformat warning in print_tuple()
+To:     Justin Stitt <jstitt007@gmail.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>, llvm@lists.linux.dev,
+        Nathan Chancellor <nathan@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        syzbot <syzbot+015d756bbd1f8b5c8f09@syzkaller.appspotmail.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Tom Rix <trix@redhat.com>, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 1:33 AM Paolo Abeni <pabeni@redhat.com> wrote:
+Also, please make sure to run scripts/get_maintainer.pl on your patch
+file and CC everyone it recommends, with the maintainers you want to
+pick up your patch in the To field.
+https://lore.kernel.org/llvm/20220607180847.13482-1-jstitt007@gmail.com/T/#u
+
+$ ./scripts/get_maintainer.pl
+0001-netfilter-conntrack-Fix-clang-Wformat-warning-in-pri.patch
+Pablo Neira Ayuso <pablo@netfilter.org> (maintainer:NETFILTER)
+Jozsef Kadlecsik <kadlec@netfilter.org> (maintainer:NETFILTER)
+Florian Westphal <fw@strlen.de> (maintainer:NETFILTER)
+"David S. Miller" <davem@davemloft.net> (maintainer:NETWORKING [GENERAL])
+Eric Dumazet <edumazet@google.com> (maintainer:NETWORKING [GENERAL])
+Jakub Kicinski <kuba@kernel.org> (maintainer:NETWORKING [GENERAL])
+Paolo Abeni <pabeni@redhat.com> (maintainer:NETWORKING [GENERAL])
+Nathan Chancellor <nathan@kernel.org> (supporter:CLANG/LLVM BUILD SUPPORT)
+Nick Desaulniers <ndesaulniers@google.com> (supporter:CLANG/LLVM BUILD SUPPORT)
+Tom Rix <trix@redhat.com> (reviewer:CLANG/LLVM BUILD SUPPORT)
+netfilter-devel@vger.kernel.org (open list:NETFILTER)
+coreteam@netfilter.org (open list:NETFILTER)
+netdev@vger.kernel.org (open list:NETWORKING [GENERAL])
+linux-kernel@vger.kernel.org (open list)
+llvm@lists.linux.dev (open list:CLANG/LLVM BUILD SUPPORT
+
+On Tue, Jun 7, 2022 at 1:33 PM Nick Desaulniers <ndesaulniers@google.com> wrote:
 >
-> Hello,
+> On Tue, Jun 7, 2022 at 11:09 AM Justin Stitt <jstitt007@gmail.com> wrote:
+> >
+> >  | net/netfilter/nf_conntrack_standalone.c:63:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->src.u.tcp.port),
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:64:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->dst.u.tcp.port));
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:69:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->src.u.udp.port),
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:70:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->dst.u.udp.port));
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:75:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->src.u.dccp.port),
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:76:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->dst.u.dccp.port));
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:80:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->src.u.sctp.port),
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >  | net/netfilter/nf_conntrack_standalone.c:81:7: warning: format specifies type
+> >  | 'unsigned short' but the argument has type 'int' [-Wformat]
+> >  |                            ntohs(tuple->dst.u.sctp.port));
+> >  |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >
+> > Variadic functions (printf-like) undergo default argument promotion.
+> > Documentation/core-api/printk-formats.rst specifically recommends
+> > using the promoted-to-type's format flag.
+> >
+> > Also, as per C11 6.3.1.1:
+> > (https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1548.pdf)
+> > `If an int can represent all values of the original type ..., the
+> > value is converted to an int; otherwise, it is converted to an
+> > unsigned int. These are called the integer promotions.`
+> > Thus it makes sense to change %hu (as well as %u) to %d.
+> >
+> > It should be noted that %u does not produce the same warning as %hu in this
+> > context. However, it should probably be changed as well for consistency.
 >
-> On Thu, 2022-06-02 at 09:51 -0700, Joanne Koong wrote:
-> > Commit d5a42de8bdbe ("net: Add a second bind table hashed by port and
-> > address") added a second bind table, bhash2, that hashes by a socket's port
-> > and rcv address.
+> Right, because they are `unsigned char` and the parameter is unnamed
+> for variadic functions they are also default-argument-promoted to int.
+> -Wformat won't warn on signedness.
+>
+> Thanks for the patch!
+>
+> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+> Link: https://github.com/ClangBuiltLinux/linux/issues/378
+>
+> Also, Nathan supplied his RB tag on v1; it's ok next time to include
+> it on subsequent revisions of patches, so long as you don't change the
+> patch too much between revisions.
+>
 > >
-> > However, there are two cases where the socket's rcv saddr can change
-> > after it has been binded:
-> >
-> > 1) The case where there is a bind() call on "::" (IPADDR_ANY) and then
-> > a connect() call. The kernel will assign the socket an address when it
-> > handles the connect()
-> >
-> > 2) In inet_sk_reselect_saddr(), which is called when rerouting fails
-> > when rebuilding the sk header (invoked by inet_sk_rebuild_header)
-> >
-> > In these two cases, we need to update the bhash2 table by removing the
-> > entry for the old address, and adding a new entry reflecting the updated
-> > address.
-> >
-> > Reported-by: syzbot+015d756bbd1f8b5c8f09@syzkaller.appspotmail.com
-> > Fixes: d5a42de8bdbe ("net: Add a second bind table hashed by port and address")
-> > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
-> > Reviewed-by: Eric Dumazet <edumazet@google.com>
+> > Signed-off-by: Justin Stitt <jstitt007@gmail.com>
 > > ---
-> >  include/net/inet_hashtables.h |  6 ++-
-> >  include/net/ipv6.h            |  2 +-
-> >  net/dccp/ipv4.c               | 10 +++--
-> >  net/dccp/ipv6.c               |  4 +-
-> >  net/ipv4/af_inet.c            |  7 +++-
-> >  net/ipv4/inet_hashtables.c    | 70 ++++++++++++++++++++++++++++++++---
-> >  net/ipv4/tcp_ipv4.c           |  8 +++-
-> >  net/ipv6/inet6_hashtables.c   |  4 +-
-> >  net/ipv6/tcp_ipv6.c           |  4 +-
-> >  9 files changed, 97 insertions(+), 18 deletions(-)
+> >  Diff between v1 -> v2:
+> >  * update commit message and subject line
 > >
-> > diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-> > index a0887b70967b..2c331ce6ca73 100644
-> > --- a/include/net/inet_hashtables.h
-> > +++ b/include/net/inet_hashtables.h
-> > @@ -448,11 +448,13 @@ static inline void sk_rcv_saddr_set(struct sock *sk, __be32 addr)
-> >  }
+> >  Note: The architecture (arm64) is critical for reproducing this warning.
 > >
-> >  int __inet_hash_connect(struct inet_timewait_death_row *death_row,
-> > -                     struct sock *sk, u64 port_offset,
-> > +                     struct sock *sk, u64 port_offset, bool prev_inaddr_any,
-> >                       int (*check_established)(struct inet_timewait_death_row *,
-> >                                                struct sock *, __u16,
-> >                                                struct inet_timewait_sock **));
+> >  net/netfilter/nf_conntrack_standalone.c | 10 +++++-----
+> >  1 file changed, 5 insertions(+), 5 deletions(-)
 > >
-> >  int inet_hash_connect(struct inet_timewait_death_row *death_row,
-> > -                   struct sock *sk);
-> > +                   struct sock *sk, bool prev_inaddr_any);
-> > +
-> > +int inet_bhash2_update_saddr(struct sock *sk);
-> >  #endif /* _INET_HASHTABLES_H */
-> > diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-> > index 5b38bf1a586b..6a50aca56d50 100644
-> > --- a/include/net/ipv6.h
-> > +++ b/include/net/ipv6.h
-> > @@ -1187,7 +1187,7 @@ int inet6_compat_ioctl(struct socket *sock, unsigned int cmd,
-> >               unsigned long arg);
+> > diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
+> > index 6ad7bbc90d38..afbec8a12c5e 100644
+> > --- a/net/netfilter/nf_conntrack_standalone.c
+> > +++ b/net/netfilter/nf_conntrack_standalone.c
+> > @@ -53,30 +53,30 @@ print_tuple(struct seq_file *s, const struct nf_conntrack_tuple *tuple,
 > >
-> >  int inet6_hash_connect(struct inet_timewait_death_row *death_row,
-> > -                           struct sock *sk);
-> > +                    struct sock *sk, bool prev_inaddr_any);
-> >  int inet6_sendmsg(struct socket *sock, struct msghdr *msg, size_t size);
-> >  int inet6_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
-> >                 int flags);
-> > diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-> > index da6e3b20cd75..37a8bc3ee49e 100644
-> > --- a/net/dccp/ipv4.c
-> > +++ b/net/dccp/ipv4.c
-> > @@ -47,12 +47,13 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> >       const struct sockaddr_in *usin = (struct sockaddr_in *)uaddr;
-> >       struct inet_sock *inet = inet_sk(sk);
-> >       struct dccp_sock *dp = dccp_sk(sk);
-> > +     struct ip_options_rcu *inet_opt;
-> >       __be16 orig_sport, orig_dport;
-> > +     bool prev_inaddr_any = false;
-> >       __be32 daddr, nexthop;
-> >       struct flowi4 *fl4;
-> >       struct rtable *rt;
-> >       int err;
-> > -     struct ip_options_rcu *inet_opt;
+> >         switch (l4proto->l4proto) {
+> >         case IPPROTO_ICMP:
+> > -               seq_printf(s, "type=%u code=%u id=%u ",
+> > +               seq_printf(s, "type=%d code=%d id=%d ",
+> >                            tuple->dst.u.icmp.type,
+> >                            tuple->dst.u.icmp.code,
+> >                            ntohs(tuple->src.u.icmp.id));
+> >                 break;
+> >         case IPPROTO_TCP:
+> > -               seq_printf(s, "sport=%hu dport=%hu ",
+> > +               seq_printf(s, "sport=%d dport=%d ",
+> >                            ntohs(tuple->src.u.tcp.port),
+> >                            ntohs(tuple->dst.u.tcp.port));
+> >                 break;
+> >         case IPPROTO_UDPLITE:
+> >         case IPPROTO_UDP:
+> > -               seq_printf(s, "sport=%hu dport=%hu ",
+> > +               seq_printf(s, "sport=%d dport=%d ",
+> >                            ntohs(tuple->src.u.udp.port),
+> >                            ntohs(tuple->dst.u.udp.port));
 > >
-> >       dp->dccps_role = DCCP_ROLE_CLIENT;
-> >
-> > @@ -89,8 +90,11 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> >       if (inet_opt == NULL || !inet_opt->opt.srr)
-> >               daddr = fl4->daddr;
-> >
-> > -     if (inet->inet_saddr == 0)
-> > +     if (inet->inet_saddr == 0) {
-> >               inet->inet_saddr = fl4->saddr;
-> > +             prev_inaddr_any = true;
-> > +     }
-> > +
-> >       sk_rcv_saddr_set(sk, inet->inet_saddr);
-> >       inet->inet_dport = usin->sin_port;
-> >       sk_daddr_set(sk, daddr);
-> > @@ -105,7 +109,7 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> >        * complete initialization after this.
-> >        */
-> >       dccp_set_state(sk, DCCP_REQUESTING);
-> > -     err = inet_hash_connect(&dccp_death_row, sk);
-> > +     err = inet_hash_connect(&dccp_death_row, sk, prev_inaddr_any);
-> >       if (err != 0)
-> >               goto failure;
-> >
-> > diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-> > index fd44638ec16b..03013522acab 100644
-> > --- a/net/dccp/ipv6.c
-> > +++ b/net/dccp/ipv6.c
-> > @@ -824,6 +824,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> >       struct ipv6_pinfo *np = inet6_sk(sk);
-> >       struct dccp_sock *dp = dccp_sk(sk);
-> >       struct in6_addr *saddr = NULL, *final_p, final;
-> > +     bool prev_inaddr_any = false;
-> >       struct ipv6_txoptions *opt;
-> >       struct flowi6 fl6;
-> >       struct dst_entry *dst;
-> > @@ -936,6 +937,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> >       if (saddr == NULL) {
-> >               saddr = &fl6.saddr;
-> >               sk->sk_v6_rcv_saddr = *saddr;
-> > +             prev_inaddr_any = true;
-> >       }
-> >
-> >       /* set the source address */
-> > @@ -951,7 +953,7 @@ static int dccp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> >       inet->inet_dport = usin->sin6_port;
-> >
-> >       dccp_set_state(sk, DCCP_REQUESTING);
-> > -     err = inet6_hash_connect(&dccp_death_row, sk);
-> > +     err = inet6_hash_connect(&dccp_death_row, sk, prev_inaddr_any);
-> >       if (err)
-> >               goto late_failure;
-> >
-> > diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-> > index 93da9f783bec..ad627a99ff9d 100644
-> > --- a/net/ipv4/af_inet.c
-> > +++ b/net/ipv4/af_inet.c
-> > @@ -1221,10 +1221,11 @@ static int inet_sk_reselect_saddr(struct sock *sk)
-> >       struct inet_sock *inet = inet_sk(sk);
-> >       __be32 old_saddr = inet->inet_saddr;
-> >       __be32 daddr = inet->inet_daddr;
-> > +     struct ip_options_rcu *inet_opt;
-> >       struct flowi4 *fl4;
-> >       struct rtable *rt;
-> >       __be32 new_saddr;
-> > -     struct ip_options_rcu *inet_opt;
-> > +     int err;
-> >
-> >       inet_opt = rcu_dereference_protected(inet->inet_opt,
-> >                                            lockdep_sock_is_held(sk));
-> > @@ -1253,6 +1254,10 @@ static int inet_sk_reselect_saddr(struct sock *sk)
-> >
-> >       inet->inet_saddr = inet->inet_rcv_saddr = new_saddr;
-> >
-> > +     err = inet_bhash2_update_saddr(sk);
-> > +     if (err)
-> > +             return err;
-> > +
-> >       /*
-> >        * XXX The only one ugly spot where we need to
-> >        * XXX really change the sockets identity after
-> > diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-> > index e8de5e699b3f..592b70663a3b 100644
-> > --- a/net/ipv4/inet_hashtables.c
-> > +++ b/net/ipv4/inet_hashtables.c
-> > @@ -826,6 +826,55 @@ inet_bind2_bucket_find(struct inet_hashinfo *hinfo, struct net *net,
-> >       return bhash2;
-> >  }
-> >
-> > +/* the lock for the socket's corresponding bhash entry must be held */
-> > +static int __inet_bhash2_update_saddr(struct sock *sk,
-> > +                                   struct inet_hashinfo *hinfo,
-> > +                                   struct net *net, int port, int l3mdev)
-> > +{
-> > +     struct inet_bind2_hashbucket *head2;
-> > +     struct inet_bind2_bucket *tb2;
-> > +
-> > +     tb2 = inet_bind2_bucket_find(hinfo, net, port, l3mdev, sk,
-> > +                                  &head2);
-> > +     if (!tb2) {
-> > +             tb2 = inet_bind2_bucket_create(hinfo->bind2_bucket_cachep,
-> > +                                            net, head2, port, l3mdev, sk);
-> > +             if (!tb2)
-> > +                     return -ENOMEM;
-> > +     }
-> > +
-> > +     /* Remove the socket's old entry from bhash2 */
-> > +     __sk_del_bind2_node(sk);
-> > +
-> > +     sk_add_bind2_node(sk, &tb2->owners);
-> > +     inet_csk(sk)->icsk_bind2_hash = tb2;
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +/* This should be called if/when a socket's rcv saddr changes after it has
-> > + * been binded.
-> > + */
-> > +int inet_bhash2_update_saddr(struct sock *sk)
-> > +{
-> > +     struct inet_hashinfo *hinfo = sk->sk_prot->h.hashinfo;
-> > +     int l3mdev = inet_sk_bound_l3mdev(sk);
-> > +     struct inet_bind_hashbucket *head;
-> > +     int port = inet_sk(sk)->inet_num;
-> > +     struct net *net = sock_net(sk);
-> > +     int err;
-> > +
-> > +     head = &hinfo->bhash[inet_bhashfn(net, port, hinfo->bhash_size)];
-> > +
-> > +     spin_lock_bh(&head->lock);
-> > +
-> > +     err = __inet_bhash2_update_saddr(sk, hinfo, net, port, l3mdev);
-> > +
-> > +     spin_unlock_bh(&head->lock);
-> > +
-> > +     return err;
-> > +}
-> > +
-> >  /* RFC 6056 3.3.4.  Algorithm 4: Double-Hash Port Selection Algorithm
-> >   * Note that we use 32bit integers (vs RFC 'short integers')
-> >   * because 2^16 is not a multiple of num_ephemeral and this
-> > @@ -840,7 +889,7 @@ inet_bind2_bucket_find(struct inet_hashinfo *hinfo, struct net *net,
-> >  static u32 *table_perturb;
-> >
-> >  int __inet_hash_connect(struct inet_timewait_death_row *death_row,
-> > -             struct sock *sk, u64 port_offset,
-> > +             struct sock *sk, u64 port_offset, bool prev_inaddr_any,
-> >               int (*check_established)(struct inet_timewait_death_row *,
-> >                       struct sock *, __u16, struct inet_timewait_sock **))
-> >  {
-> > @@ -858,11 +907,24 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
-> >       int l3mdev;
-> >       u32 index;
-> >
-> > +     l3mdev = inet_sk_bound_l3mdev(sk);
-> > +
-> >       if (port) {
-> >               head = &hinfo->bhash[inet_bhashfn(net, port,
-> >                                                 hinfo->bhash_size)];
-> >               tb = inet_csk(sk)->icsk_bind_hash;
-> > +
-> >               spin_lock_bh(&head->lock);
-> > +
-> > +             if (prev_inaddr_any) {
-> > +                     ret = __inet_bhash2_update_saddr(sk, hinfo, net, port,
-> > +                                                      l3mdev);
-> > +                     if (ret) {
-> > +                             spin_unlock_bh(&head->lock);
-> > +                             return ret;
-> > +                     }
-> > +             }
-> > +
-> >               if (sk_head(&tb->owners) == sk && !sk->sk_bind_node.next) {
-> >                       inet_ehash_nolisten(sk, NULL, NULL);
-> >                       spin_unlock_bh(&head->lock);
-> > @@ -875,8 +937,6 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
-> >               return ret;
-> >       }
-> >
-> > -     l3mdev = inet_sk_bound_l3mdev(sk);
-> > -
-> >       inet_get_local_port_range(net, &low, &high);
-> >       high++; /* [32768, 60999] -> [32768, 61000[ */
-> >       remaining = high - low;
-> > @@ -987,13 +1047,13 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
-> >   * Bind a port for a connect operation and hash it.
-> >   */
-> >  int inet_hash_connect(struct inet_timewait_death_row *death_row,
-> > -                   struct sock *sk)
-> > +                   struct sock *sk, bool prev_inaddr_any)
-> >  {
-> >       u64 port_offset = 0;
-> >
-> >       if (!inet_sk(sk)->inet_num)
-> >               port_offset = inet_sk_port_offset(sk);
-> > -     return __inet_hash_connect(death_row, sk, port_offset,
-> > +     return __inet_hash_connect(death_row, sk, port_offset, prev_inaddr_any,
-> >                                  __inet_check_established);
-> >  }
-> >  EXPORT_SYMBOL_GPL(inet_hash_connect);
-> > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> > index dac2650f3863..adf8d750933d 100644
-> > --- a/net/ipv4/tcp_ipv4.c
-> > +++ b/net/ipv4/tcp_ipv4.c
-> > @@ -203,6 +203,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> >       struct inet_sock *inet = inet_sk(sk);
-> >       struct tcp_sock *tp = tcp_sk(sk);
-> >       __be16 orig_sport, orig_dport;
-> > +     bool prev_inaddr_any = false;
-> >       __be32 daddr, nexthop;
-> >       struct flowi4 *fl4;
-> >       struct rtable *rt;
-> > @@ -246,8 +247,11 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> >       if (!inet_opt || !inet_opt->opt.srr)
-> >               daddr = fl4->daddr;
-> >
-> > -     if (!inet->inet_saddr)
-> > +     if (!inet->inet_saddr) {
-> >               inet->inet_saddr = fl4->saddr;
-> > +             prev_inaddr_any = true;
-> > +     }
-> > +
-> >       sk_rcv_saddr_set(sk, inet->inet_saddr);
-> >
-> >       if (tp->rx_opt.ts_recent_stamp && inet->inet_daddr != daddr) {
-> > @@ -273,7 +277,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
-> >        * complete initialization after this.
-> >        */
-> >       tcp_set_state(sk, TCP_SYN_SENT);
-> > -     err = inet_hash_connect(tcp_death_row, sk);
-> > +     err = inet_hash_connect(tcp_death_row, sk, prev_inaddr_any);
-> >       if (err)
-> >               goto failure;
-> >
-> > diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
-> > index 7d53d62783b1..c87c5933f3be 100644
-> > --- a/net/ipv6/inet6_hashtables.c
-> > +++ b/net/ipv6/inet6_hashtables.c
-> > @@ -317,13 +317,13 @@ static u64 inet6_sk_port_offset(const struct sock *sk)
-> >  }
-> >
-> >  int inet6_hash_connect(struct inet_timewait_death_row *death_row,
-> > -                    struct sock *sk)
-> > +                    struct sock *sk, bool prev_inaddr_any)
-> >  {
-> >       u64 port_offset = 0;
-> >
-> >       if (!inet_sk(sk)->inet_num)
-> >               port_offset = inet6_sk_port_offset(sk);
-> > -     return __inet_hash_connect(death_row, sk, port_offset,
-> > +     return __inet_hash_connect(death_row, sk, port_offset, prev_inaddr_any,
-> >                                  __inet6_check_established);
-> >  }
-> >  EXPORT_SYMBOL_GPL(inet6_hash_connect);
-> > diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-> > index f37dd4aa91c6..81e3312c2a97 100644
-> > --- a/net/ipv6/tcp_ipv6.c
-> > +++ b/net/ipv6/tcp_ipv6.c
-> > @@ -152,6 +152,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> >       struct ipv6_pinfo *np = tcp_inet6_sk(sk);
-> >       struct tcp_sock *tp = tcp_sk(sk);
-> >       struct in6_addr *saddr = NULL, *final_p, final;
-> > +     bool prev_inaddr_any = false;
-> >       struct ipv6_txoptions *opt;
-> >       struct flowi6 fl6;
-> >       struct dst_entry *dst;
-> > @@ -289,6 +290,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> >       if (!saddr) {
-> >               saddr = &fl6.saddr;
-> >               sk->sk_v6_rcv_saddr = *saddr;
-> > +             prev_inaddr_any = true;
-> >       }
-> >
-> >       /* set the source address */
-> > @@ -309,7 +311,7 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
-> >
-> >       tcp_set_state(sk, TCP_SYN_SENT);
-> >       tcp_death_row = sock_net(sk)->ipv4.tcp_death_row;
-> > -     err = inet6_hash_connect(tcp_death_row, sk);
-> > +     err = inet6_hash_connect(tcp_death_row, sk, prev_inaddr_any);
-> >       if (err)
-> >               goto late_failure;
+> >                 break;
+> >         case IPPROTO_DCCP:
+> > -               seq_printf(s, "sport=%hu dport=%hu ",
+> > +               seq_printf(s, "sport=%d dport=%d ",
+> >                            ntohs(tuple->src.u.dccp.port),
+> >                            ntohs(tuple->dst.u.dccp.port));
+> >                 break;
+> >         case IPPROTO_SCTP:
+> > -               seq_printf(s, "sport=%hu dport=%hu ",
+> > +               seq_printf(s, "sport=%d dport=%d ",
+> >                            ntohs(tuple->src.u.sctp.port),
+> >                            ntohs(tuple->dst.u.sctp.port));
+> >                 break;
+> > --
+> > 2.30.2
 > >
 >
-> I'm sorry for the late notice, but it looks like that the mptcp
-> syzkaller instance is still hitting the Warning in icsk_get_port on top
-> of the v1 of this series:
 >
-> https://github.com/multipath-tcp/mptcp_net-next/issues/279
->
-> and the change in v2 should not address that. @Mat could you please
-> confirm the above?
->
-> Dumb question: I don't understand how the locking in bhash2 works.
-> Could you explain that?
->
-> What happens when 2 different processes bind different sockets on
-> different ports (with different bhash buckets) using different
-> addresses so that they hit the same bhash2 bucket? AFAICS each process
-> will use a different lock and access/modification to bhash2 could
-> happen simultaneusly?
-Hi Paolo. Yes, I think you are correct here that there could be a
-scenario where this happens. Unfortunately, I think this means the
-bhash2 table will need its own lock. I will submit a follow-up for
-this.
->
-> Thanks!
->
-> Paolo
->
->
+> --
+> Thanks,
+> ~Nick Desaulniers
+
+
+
+-- 
+Thanks,
+~Nick Desaulniers
