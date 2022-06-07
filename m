@@ -2,95 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E115D54203F
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:24:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3572154201F
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:23:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384600AbiFHAUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 20:20:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43874 "EHLO
+        id S1349492AbiFHARK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 20:17:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386032AbiFGWrt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 18:47:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 42F7F29ADED
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 12:35:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654630518;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UjNab3OFn3CMBFJ3OlfmcWlYRbnKmNUls/dl1r6BUHg=;
-        b=g3JR1WgbRnUTOkQBBqUdydIwnE90mJlCrHJLu+YAtHSXpQQoEXgVv5o3XowoA/LkNEN5cU
-        X6KpwoDlPFUUkT+CtVNPypj/dpqWGc0behPRFDYjvJgTHo2J6antcvJq01X63/xTLDNz+w
-        Tl33BkQKbdVtx0hcIKi60OPZokjWTSA=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-272-BOujvjvmONSq6B555rcGVQ-1; Tue, 07 Jun 2022 15:35:09 -0400
-X-MC-Unique: BOujvjvmONSq6B555rcGVQ-1
-Received: by mail-lj1-f199.google.com with SMTP id e3-20020a2e9303000000b00249765c005cso3333665ljh.17
-        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 12:35:09 -0700 (PDT)
+        with ESMTP id S1390694AbiFGWzK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 18:55:10 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7902FCB48;
+        Tue,  7 Jun 2022 12:56:02 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id n10so37357004ejk.5;
+        Tue, 07 Jun 2022 12:56:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AzG944M7Q+QdZRVrg3uoX9H8fss9xlzIVhvRVcj+Xxk=;
+        b=qCdJLf0gqFOVWjVnO8oDc3EOsx2BPC/bihsg/OyUd2KQS4jOTfaPb8xU99cRETstKT
+         hGPDO78M9DqKlNlKA5oivoZGj7FkgiIua7m7moHiIYp2qudjKPD4KpgwYde/OGXs1YKj
+         hzYEbbebe1tlRf1F55bZc9ceDc97W19sSXHgV43Jy2lVk05PfnCQxqGb2ht9So+5nZPJ
+         Txnt8W0kYDnEidiKjV4AP1R4BhDaLQkWtloPowW4S1+c5UfdPgK4lJoGn/CRAlEeFuEG
+         vMJGpYsq3kdowizns7xYdkCACj0J6Hxv8Q8aonGz35/iA/C9axz8qmuzivFjRY7ImMJ/
+         dYQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent:cc
-         :subject:content-language:to:references:in-reply-to
-         :content-transfer-encoding;
-        bh=UjNab3OFn3CMBFJ3OlfmcWlYRbnKmNUls/dl1r6BUHg=;
-        b=7hV0e6RyDrTHqWn6YS5l3x6x6wOflhehy7PWbeLRPg6J4U0vFL3UEkd0avZNj5kA+b
-         WhLPsK85nMAGFrAshgtQFuCkUwu7LrVzfagCCWgQeKhJ1cYfOZ6rNksHJzKVFXYMc6gq
-         XcGbQDnK/pKaHUetZFDeA1V8WC9MApjPhTXJ651HDL7YJEGph80ozBWD1SQFwRsMx44I
-         JPk2YTH4iaDsVJa6Ha1k4x4hIHdAg+m2TckIyGfPq/E42A6+/A1AoMsJweJRN5dj0AJF
-         vzKqsbvQVMsNr7oy9/SPZSm1TsvZQxaM0aODwgma35O7XaNFXFGtSoYuV/K+1eOM03/5
-         7/SQ==
-X-Gm-Message-State: AOAM531hbQZynp6A8ZjP9z6civ5lDHF741jG0p5Jq615omAE5S5ndiYV
-        wJRt0IbxuSxzsQzgwCRTubNQPDsoVOk1iBFq0lwu56vKfoDZX55L7d9Va8wosOIRQO7+q1J0b8/
-        iYFhD5APrAC/TEq8w
-X-Received: by 2002:ac2:4f03:0:b0:443:5d9d:819d with SMTP id k3-20020ac24f03000000b004435d9d819dmr19621238lfr.165.1654630508294;
-        Tue, 07 Jun 2022 12:35:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwvF3BUwFtYxvL9h0b+osvQaLHMOi+Ofm/f91Bphma8+znCnqMrYutpro42GkT2juwG1RcYtA==
-X-Received: by 2002:ac2:4f03:0:b0:443:5d9d:819d with SMTP id k3-20020ac24f03000000b004435d9d819dmr19621218lfr.165.1654630508058;
-        Tue, 07 Jun 2022 12:35:08 -0700 (PDT)
-Received: from [192.168.0.50] (87-59-106-155-cable.dk.customer.tdc.net. [87.59.106.155])
-        by smtp.gmail.com with ESMTPSA id c8-20020a056512104800b004796a17246esm296155lfb.252.2022.06.07.12.35.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 12:35:07 -0700 (PDT)
-From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
-X-Google-Original-From: Jesper Dangaard Brouer <brouer@redhat.com>
-Message-ID: <c166aa47-e404-e6ee-0ec5-0ead1923f412@redhat.com>
-Date:   Tue, 7 Jun 2022 21:35:05 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Cc:     brouer@redhat.com, Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AzG944M7Q+QdZRVrg3uoX9H8fss9xlzIVhvRVcj+Xxk=;
+        b=bD6lfEPceOJQeL3JcMK4ejFnrHPbazFzjVPCjwyche3TeXTTltXc2Obq2sCaexOIrx
+         m/99Ko3gsyCO2CamWoF2ejOCcig9ajgH9YcPiplMascroz951jePAQEM6RtX+mU4GwkA
+         zuONv/Ph6lIFhMosUw96xrBE1o3euX/VUf4679DWcxwNWwhfF3hyggSk3zBe0IyguuWv
+         0XC9lfVKFJj+62O0qhaSvVfuRiBubCO0biDaOK27Tj3Orw5dV0e2qZF0TBj12Ft8xl6H
+         G8GLWuCLOg3ncWBT0Gv1M83dkC7wbrKtsA4ad9JSBuptpqAv2EIWnHZQSf/s0HUlkB0H
+         WJbA==
+X-Gm-Message-State: AOAM531mbC6WiKxeHGhikA1EOx9VwnUm1H97ZZ7/LKyg81W/2r1mNc93
+        b5jy/5ve3AB+eXHjqABE0eY=
+X-Google-Smtp-Source: ABdhPJxLB07Hd+oSB65fjGf3cd4TpJKDXbD7y52i3IOIXwqAKUeDpW6fl+UDsMFPzoG+hpPZK78p2Q==
+X-Received: by 2002:a17:907:162c:b0:6fe:d93d:21a3 with SMTP id hb44-20020a170907162c00b006fed93d21a3mr28316492ejc.596.1654631760907;
+        Tue, 07 Jun 2022 12:56:00 -0700 (PDT)
+Received: from krava ([83.240.60.46])
+        by smtp.gmail.com with ESMTPSA id f27-20020a17090624db00b006f3ef214dcdsm8177827ejb.51.2022.06.07.12.55.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 12:56:00 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Tue, 7 Jun 2022 21:55:58 +0200
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Joanne Koong <joannelkoong@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next] bpf: Add BPF-helper for accessing CLOCK_TAI
-Content-Language: en-US
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-References: <20220606103734.92423-1-kurt@linutronix.de>
- <CAADnVQJ--oj+iZYXOwB1Rs9Qiy6Ph9HNha9pJyumVom0tiOFgg@mail.gmail.com>
- <875ylc6djv.ffs@tglx>
-In-Reply-To: <875ylc6djv.ffs@tglx>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCHv2 bpf 3/3] bpf: Force cookies array to follow symbols
+ sorting
+Message-ID: <Yp+tTsqPOuVdjpba@krava>
+References: <20220606184731.437300-1-jolsa@kernel.org>
+ <20220606184731.437300-4-jolsa@kernel.org>
+ <CAADnVQJA54Ra8+tV0e0KwSXAg93JRoiefDXWR-Lqatya5YWKpg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQJA54Ra8+tV0e0KwSXAg93JRoiefDXWR-Lqatya5YWKpg@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -98,58 +82,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 07/06/2022 11.14, Thomas Gleixner wrote:
-> Alexei,
+On Tue, Jun 07, 2022 at 11:40:47AM -0700, Alexei Starovoitov wrote:
+> On Mon, Jun 6, 2022 at 11:48 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > When user specifies symbols and cookies for kprobe_multi link
+> > interface it's very likely the cookies will be misplaced and
+> > returned to wrong functions (via get_attach_cookie helper).
+> >
+> > The reason is that to resolve the provided functions we sort
+> > them before passing them to ftrace_lookup_symbols, but we do
+> > not do the same sort on the cookie values.
+> >
+> > Fixing this by using sort_r function with custom swap callback
+> > that swaps cookie values as well.
+> >
+> > Fixes: 0236fec57a15 ("bpf: Resolve symbols with ftrace_lookup_symbols for kprobe multi link")
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > 
-> On Mon, Jun 06 2022 at 08:57, Alexei Starovoitov wrote:
->> On Mon, Jun 6, 2022 at 3:38 AM Kurt Kanzenbach <kurt@linutronix.de> wrote:
->>>
->>> From: Jesper Dangaard Brouer <brouer@redhat.com>
->>>
->>> Commit 3dc6ffae2da2 ("timekeeping: Introduce fast accessor to clock tai")
->>> introduced a fast and NMI-safe accessor for CLOCK_TAI. Especially in time
->>> sensitive networks (TSN), where all nodes are synchronized by Precision Time
->>> Protocol (PTP), it's helpful to have the possibility to generate timestamps
->>> based on CLOCK_TAI instead of CLOCK_MONOTONIC. With a BPF helper for TAI in
->>> place, it becomes very convenient to correlate activity across different
->>> machines in the network.
->>
->> That's a fresh feature. It feels risky to bake it into uapi already.
+> It looks good, but something in this patch is causing a regression:
+> ./test_progs -t kprobe_multi
+> test_kprobe_multi_test:PASS:load_kallsyms 0 nsec
+> #80/1    kprobe_multi_test/skel_api:OK
+> #80/2    kprobe_multi_test/link_api_addrs:OK
+> #80/3    kprobe_multi_test/link_api_syms:OK
+> #80/4    kprobe_multi_test/attach_api_pattern:OK
+> #80/5    kprobe_multi_test/attach_api_addrs:OK
+> #80/6    kprobe_multi_test/attach_api_syms:OK
+> #80/7    kprobe_multi_test/attach_api_fails:OK
+> test_bench_attach:PASS:get_syms 0 nsec
+> test_bench_attach:PASS:kprobe_multi_empty__open_and_load 0 nsec
+> libbpf: prog 'test_kprobe_empty': failed to attach: No such process
+> test_bench_attach:FAIL:bpf_program__attach_kprobe_multi_opts
+> unexpected error: -3
+> #80/8    kprobe_multi_test/bench_attach:FAIL
+> #80      kprobe_multi_test:FAIL
+
+looks like kallsyms search failed to find some symbol,
+but I can't reproduce with:
+
+  ./vmtest.sh -- ./test_progs -t kprobe_multi
+
+can you share .config you used?
+
+thanks,
+jirka
+
 > 
-> What? That's just support for a different CLOCK. What's so risky about
-> it?
-
-I didn't think it was "risky" as this is already exported as:
-  EXPORT_SYMBOL_GPL(ktime_get_tai_fast_ns);
-
-Correct me if I'm wrong, but this simple gives BPF access to CLOCK_TAI
-(see man clock_gettime(2)), right?
-And CLOCK_TAI is not really a new/fresh type of CLOCK.
-
-Especially for networking we need this CLOCK_TAI time as HW LaunchTime
-need this (e.g. see qdisc's sch_etf.c and sch_taprio.c).
-
-> 
->> imo it would be better to annotate tk_core variable in vmlinux BTF.
->> Then progs will be able to read all possible timekeeper offsets.
-> 
-> We are exposing APIs. APIs can be supported, but exposing implementation
-> details creates ABIs of the worst sort because that prevents the kernel
-> from changing the implementation. We've seen the fallout with the recent
-> tracepoint changes already.
-
-Hmm... annotate tk_core variable in vmlinux BTF and letting BPF progs
-access this seems like an unsafe approach and we tempt BPF-developers to
-think other parts are okay to access.
-
-Accessing timekeeper->offs_tai might be okay as it is already "marked" 
-with data_race(tk->offs_tai), but I'm not sure about other members, as 
-I'm not expert in this area.
-
-I assume that the include filename <linux/timekeeper_internal.h>
-indicate that the maintainers don't want to open up access to struct
-timekeeper...
-
---Jesper
-
+> CI is unfortunately green, because we don't run it there:
+> #80/1 kprobe_multi_test/skel_api:OK
+> #80/2 kprobe_multi_test/link_api_addrs:OK
+> #80/3 kprobe_multi_test/link_api_syms:OK
+> #80/4 kprobe_multi_test/attach_api_pattern:OK
+> #80/5 kprobe_multi_test/attach_api_addrs:OK
+> #80/6 kprobe_multi_test/attach_api_syms:OK
+> #80/7 kprobe_multi_test/attach_api_fails:OK
+> #80 kprobe_multi_test:OK
