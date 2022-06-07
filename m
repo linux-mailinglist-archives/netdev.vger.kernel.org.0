@@ -2,107 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29125540479
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 19:13:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1109540549
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 19:24:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345373AbiFGRNn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 13:13:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51330 "EHLO
+        id S1346244AbiFGRYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 13:24:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344575AbiFGRNm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 13:13:42 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61137A5012
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 10:13:41 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id bg6so16711914ejb.0
-        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 10:13:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=l5jecJ7m6j6+wfJuaqL9TGi12DzOxHHnCuf6mP4CPsk=;
-        b=w7M+C0ahijC0B5bCeZUW56ccB+U14/4XaFNlbPajEWNY4D3QmZd+Z/NAU9yzJyYr4U
-         R7Jx/ojQ8aPKjojbyH/h1fab4Md0weTfxuTxVCpLeZVanf2ezcYP0pfFLiNtfQjfXuQ4
-         jLSq1U4egGPuSPIiN4zbA8XSua49XD0PMrAsJ0eapthyJQSSuHJWohuQBjrJSDZxaojC
-         V6U+tchZeJ+U9/fISn3ka080i+l4dupD0mPfUZ8+fjI1mXJ2bWHreq9cESDHxTSuz2uT
-         1fBFpmEaljN9m2CUBO8zQ5kHPGdGaeZ39kt+ioHEXadSFWbhxev4cYsEbLoCZZCMRUg5
-         hkkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=l5jecJ7m6j6+wfJuaqL9TGi12DzOxHHnCuf6mP4CPsk=;
-        b=NONxqfAo4PWwpnKfDQGI4yF3czGZIxsE9WVH/5es4OSRdIZ55fjTvGgc6qmw1At9nC
-         7GSEEnKeHpwEqcr4TQm57G+G/bZXu6EKaecATeTXrn0nPw7AMxgzpH1yYE46rglxV97C
-         ku2d1LoiGx4ClVxlJgjQ2Tf5uEYgwOSy3j3+PKbdweqz6go3otHWKKPCHk/tWrsQEueZ
-         nTCACThbst+wAAzDS+bWuW9z9Xz/xVtINpZAw9cd57o9RlaxbgP/dsAdq0yIpFQPRxme
-         YlHSP3VPMEWBLhSVODTrH+5nwmThLYBLD+zT8pvlIzH/R6GtuDrNSI9UmCCOxK4eepZe
-         GYVA==
-X-Gm-Message-State: AOAM530KcrkfgzPxgEdd2uEx2LBVb6eTV7Vko6VMU2PKOabSA4BEBUFg
-        oSr2Fs4p5ZDwzUWq0WGWmNAVSg==
-X-Google-Smtp-Source: ABdhPJyW10sSpBHf1hhEgmGHXRYXoBPu1ntTLE8Y/VNzIW34xyZ5qg5+Mno2iViaMjRzgjN9HrJCdQ==
-X-Received: by 2002:a17:906:7944:b0:6da:b834:2f3e with SMTP id l4-20020a170906794400b006dab8342f3emr28510928ejo.353.1654622019855;
-        Tue, 07 Jun 2022 10:13:39 -0700 (PDT)
-Received: from [192.168.0.186] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id a23-20020aa7cf17000000b0042dc882c823sm10738047edy.70.2022.06.07.10.13.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 10:13:39 -0700 (PDT)
-Message-ID: <e24f904b-0eaa-dd48-2647-8aaee510beca@linaro.org>
-Date:   Tue, 7 Jun 2022 19:13:37 +0200
+        with ESMTP id S1346273AbiFGRXk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 13:23:40 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 696481091A1
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 10:21:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654622498; x=1686158498;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=LiSe1LDqlMypTndNF75ktuzk1D7Qf2I7Oy09Hpeq6p0=;
+  b=JoZB7RQ4KUNLD++8yHU0JKjVGmFI6i90ctcU8jaVF6MUUww1Bma9ac4u
+   WUu9o0dsGuNqO8U1eW4pgTX7oeBCickLpP0V36qY4bt1/W8EvSF6WJVpI
+   YWWN8FFzAl738kGGpJprtWyulPv8kSfCiRKX5O/jR8Rjixum7A13b4eAm
+   7iMMW0UcXM0remE9AF45Hj+vI2oBBlkpk8Y2H2APaSM/ryFm6NAiDh3G0
+   I2gH7yTgwm6W5GZuPwfAOYhm6CwAEirdTeYRV3ij2R+Us7QRPoIXU6vVc
+   poErAYim5LRXp1xPOAdHd0u7PIvt+/LUA8Y1UL0Asm0hRpx1AZfu+YvK6
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="259627480"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="259627480"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 10:14:53 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="826449311"
+Received: from jurbank-mobl1.amr.corp.intel.com (HELO vcostago-mobl3) ([10.212.41.17])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 10:14:52 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] igc: Lift TAPRIO schedule restriction
+In-Reply-To: <87k09tar5e.fsf@kurt>
+References: <20220606092747.16730-1-kurt@linutronix.de>
+ <8735ghny8m.fsf@intel.com> <87k09tar5e.fsf@kurt>
+Date:   Tue, 07 Jun 2022 10:14:52 -0700
+Message-ID: <87wndsmm43.fsf@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH net v3 1/3] nfc: st21nfca: fix incorrect validating logic
- in EVT_TRANSACTION
-Content-Language: en-US
-To:     Martin Faltesek <mfaltesek@google.com>, kuba@kernel.org
-Cc:     christophe.ricard@gmail.com, gregkh@linuxfoundation.org,
-        groeck@google.com, jordy@pwning.systems, krzk@kernel.org,
-        martin.faltesek@gmail.com, netdev@vger.kernel.org,
-        linux-nfc@lists.01.org, sameo@linux.intel.com, wklin@google.com,
-        theflamefire89@gmail.com, stable@vger.kernel.org
-References: <20220607025729.1673212-1-mfaltesek@google.com>
- <20220607025729.1673212-2-mfaltesek@google.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220607025729.1673212-2-mfaltesek@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/06/2022 04:57, Martin Faltesek wrote:
-> The first validation check for EVT_TRANSACTION has two different checks
-> tied together with logical AND. One is a check for minimum packet length,
-> and the other is for a valid aid_tag. If either condition is true (fails),
-> then an error should be triggered.  The fix is to change && to ||.
-> 
-> Fixes: 26fc6c7f02cb ("NFC: st21nfca: Add HCI transaction event support")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Martin Faltesek <mfaltesek@google.com>
-> ---
->  drivers/nfc/st21nfca/se.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Kurt,
 
-Please add Acked-by/Reviewed-by tags when posting new versions. However,
-there's no need to repost patches *only* to add the tags. The upstream
-maintainer will do that for acks received on the version they apply.
+Kurt Kanzenbach <kurt@linutronix.de> writes:
 
-https://elixir.bootlin.com/linux/v5.17/source/Documentation/process/submitting-patches.rst#L540
+> Hi Vinicius,
+>
+> On Mon Jun 06 2022, Vinicius Costa Gomes wrote:
+>> Hi Kurt,
+>>
+>> Kurt Kanzenbach <kurt@linutronix.de> writes:
+>>
+>>> Add support for Qbv schedules where one queue stays open
+>>> in consecutive entries. Currently that's not supported.
+>>>
+>>> Example schedule:
+>>>
+>>> |tc qdisc replace dev ${INTERFACE} handle 100 parent root taprio num_tc 3 \
+>>> |   map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
+>>> |   queues 1@0 1@1 2@2 \
+>>> |   base-time ${BASETIME} \
+>>> |   sched-entry S 0x01 300000 \ # Stream High/Low
+>>> |   sched-entry S 0x06 500000 \ # Management and Best Effort
+>>> |   sched-entry S 0x04 200000 \ # Best Effort
+>>> |   flags 0x02
+>>>
+>>> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+>>> ---
+>>>  drivers/net/ethernet/intel/igc/igc_main.c | 23 +++++++++++++++++------
+>>>  1 file changed, 17 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+>>> index ae17af44fe02..4758bdbe5df3 100644
+>>> --- a/drivers/net/ethernet/intel/igc/igc_main.c
+>>> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
+>>> @@ -5813,9 +5813,10 @@ static bool validate_schedule(struct igc_adapter *adapter,
+>>>  		return false;
+>>>  
+>>>  	for (n = 0; n < qopt->num_entries; n++) {
+>>> -		const struct tc_taprio_sched_entry *e;
+>>> +		const struct tc_taprio_sched_entry *e, *prev;
+>>>  		int i;
+>>>  
+>>> +		prev = n ? &qopt->entries[n - 1] : NULL;
+>>>  		e = &qopt->entries[n];
+>>>  
+>>>  		/* i225 only supports "global" frame preemption
+>>> @@ -5828,7 +5829,12 @@ static bool validate_schedule(struct igc_adapter *adapter,
+>>>  			if (e->gate_mask & BIT(i))
+>>>  				queue_uses[i]++;
+>>>  
+>>> -			if (queue_uses[i] > 1)
+>>> +			/* There are limitations: A single queue cannot be
+>>> +			 * opened and closed multiple times per cycle unless the
+>>> +			 * gate stays open. Check for it.
+>>> +			 */
+>>> +			if (queue_uses[i] > 1 &&
+>>> +			    !(prev->gate_mask & BIT(i)))
+>>
+>> Perhaps I am missing something, I didn't try to run, but not checking if
+>> 'prev' can be NULL, could lead to crashes for some schedules, no?
+>
+> My thinking was that `prev` can never be NULL, as `queue_uses[i] > 1` is
+> checked first. This condition can only be true if there are at least two
+> entries.
+>
 
-If a tag was not added on purpose, please state why and what changed.
+Oh, yeah! That's true. I have missed that.
 
+>>
+>> What I have in mind is a schedule that queue 0 is mentioned multiple
+>> times, for example:
+>>
+>>  |   sched-entry S 0x01 300000 \ # Stream High/Low
+>>  |   sched-entry S 0x03 500000 \ # Management and Best Effort
+>>  |   sched-entry S 0x05 200000 \ # Best Effort
+>>
+>
+> So, this schedule works with the proposed patch. Queue 0 is opened in
+> all three entries. My debug code shows:
+>
+> |tc-6145    [010] .......   616.190589: igc_setup_tc: Qbv configuration:
+> |tc-6145    [010] .......   616.190592: igc_setup_tc: Queue 0 -- start_time=0 [ns]
+> |tc-6145    [010] .......   616.190592: igc_setup_tc: Queue 0 -- end_time=1000000 [ns]
+> |tc-6145    [010] .......   616.190593: igc_setup_tc: Queue 1 -- start_time=300000 [ns]
+> |tc-6145    [010] .......   616.190593: igc_setup_tc: Queue 1 -- end_time=800000 [ns]
+> |tc-6145    [010] .......   616.190593: igc_setup_tc: Queue 2 -- start_time=800000 [ns]
+> |tc-6145    [010] .......   616.190594: igc_setup_tc: Queue 2 -- end_time=1000000 [ns]
+> |tc-6145    [010] .......   616.190594: igc_setup_tc: Queue 3 -- start_time=800000 [ns]
+> |tc-6145    [010] .......   616.190594: igc_setup_tc: Queue 3 -- end_time=1000000 [ns]
+>
+> Anyway, I'd appreciate some testing on your side too :).
 
+Sure, I can give it a spin, but it'll have to be later in the week, kind
+of swamped right now.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>
+> Thanks,
+> Kurt
 
-
-Best regards,
-Krzysztof
+-- 
+Vinicius
