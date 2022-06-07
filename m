@@ -2,87 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2450540270
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 17:31:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ACDA5402A9
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 17:41:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344104AbiFGPby (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 11:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51008 "EHLO
+        id S1344279AbiFGPlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 11:41:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245305AbiFGPbw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 11:31:52 -0400
-Received: from m12-11.163.com (m12-11.163.com [220.181.12.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B0B6F45DE;
-        Tue,  7 Jun 2022 08:31:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=uNPsyShOFiuwQGXJNt
-        ++4+eFtCC9VoD+9K2/mAYK9QI=; b=ILXys8kBZMpjoIDZoqm9tHve4Jy6dqU3Ul
-        1RWqpQVQHZWue1xgMBwJ4QzgfLM6RZerSdeMo9k3woQ1aZp/NEJaQogIoGa51mdG
-        Z2tbEJ8boPcW5VrGSwTg77NCLeYpwvMJEx6+JYJ3yrkcyVVe1qVKhud9GB4l7iKc
-        xM+e5xo+Y=
-Received: from localhost.localdomain (unknown [202.112.113.212])
-        by smtp7 (Coremail) with SMTP id C8CowADncKANb59i1gX+Gg--.1343S4;
-        Tue, 07 Jun 2022 23:30:26 +0800 (CST)
-From:   Xiaohui Zhang <ruc_zhangxiaohui@163.com>
-To:     Xiaohui Zhang <ruc_zhangxiaohui@163.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-Subject: [PATCH 1/1] Bluetooth: use memset avoid memory leaks
-Date:   Tue,  7 Jun 2022 23:30:20 +0800
-Message-Id: <20220607153020.29430-1-ruc_zhangxiaohui@163.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: C8CowADncKANb59i1gX+Gg--.1343S4
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtw18JFy3Xw48AFW5WF4xtFb_yoWfWFX_uw
-        4ruayfZa1rJ34Iya12yF48u3W2yan5ZrZ5GrnaqrWUX34UGw47Krs2gFnxWrn7K39ruFy3
-        ArZ8JryrAw48JjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRMvtCDUUUUU==
-X-Originating-IP: [202.112.113.212]
-X-CM-SenderInfo: puxfs6pkdqw5xldrx3rl6rljoofrz/1tbiThIZMFUDPaLqywAAsd
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S245474AbiFGPln (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 11:41:43 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED49FC8BF3;
+        Tue,  7 Jun 2022 08:41:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2805FCE2261;
+        Tue,  7 Jun 2022 15:41:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8580C385A5;
+        Tue,  7 Jun 2022 15:41:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654616497;
+        bh=l+5X2UysSRek17uhSCRhsYUdPC9HnxURWjLyyr9B1U8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LJRKSWL+bB2h3/PYLBLj68c/xV0Q5L1GHSFMPBkDcWFKldIxEdTny/qPVFoFfPvHl
+         smMJVtm7sg1wKE6U6992txTarsRq3JiJbIsQ2Pl7zrn2v/I5ENWOFCl+x512tV5/G6
+         IZ2yQTLZL6lqAHSvEU0w+le5tH19cYZrhhBccZ9M=
+Date:   Tue, 7 Jun 2022 17:41:34 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     =?utf-8?B?5bGx56u55bCP?= <mangosteen728@gmail.com>
+Cc:     ast <ast@kernel.org>, daniel <daniel@iogearbox.net>,
+        andrii <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH] bpf:add function
+Message-ID: <Yp9xrkeqUEWvZm9x@kroah.com>
+References: <CAB8PBH+EVX3iTr7Nu-QFHAom+VnjPLEk0hpWSi0QiyD5u-bKag@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAB8PBH+EVX3iTr7Nu-QFHAom+VnjPLEk0hpWSi0QiyD5u-bKag@mail.gmail.com>
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+On Tue, Jun 07, 2022 at 09:28:58PM +0800, 山竹小 wrote:
+> Add the absolute path to get the executable corresponding tothe task
+> 
+> Signed-off-by: mangosteen728 < mangosteen728@gmail.com>
+> ---
+> Hi
+> This is my first attempt to submit patch, there are shortcomings
+> please more but wait.
+> 
+> In security audit often need to get the absolute path to the
+> executable of the process so I tried to add bpf_get_task_exe_path in
+> the helpers function to get.
+> 
+> The code currently only submits the implementation of the function and
+> how is this patch merge possible if I then add the relevant places。
+> 
+> thanks
+> mangosteen728
+> kernel/bpf/helpers.c | 37 +++++++++++++++++++++++++++++++++++++
+> 1 file changed, 37 insertions(+)
+> diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> index 225806a..797f 850 100644
+> --- a/kernel/bpf/helpers.c
+> +++ b/kernel/bpf/helpers.c
+> @@ -257,6 +257,43 @@
+> .arg2_type = ARG_CONST_SIZE,
+> };
+> 
+> +BPF_CALL_3(bpf_get_task_exe_path, struct task_struct *, task, char *,
+> buf, u32, sz)
+> +{
+> + struct file *exe_file = NULL;
+> + char *p = NULL;
+> + long len = 0;
+> +
+> + if (!sz)
+> + return 0;
+> + exe_file = get_task_exe_file(tsk);
+> + if (IS_ERR_OR_NULL(exe_file))
+> + return 0;
+> + p = d_path(&exe_file->f_path, buf, sz);
+> + if (IS_ERR_OR_NULL(path)) {
+> + len = PTR_ERR(p);
+> + } else {
+> + len = buf + sz - p;
+> + memmove(buf, p, len);
+> + }
+> + fput(exe_file);
+> + return len;
+> +}
+> +
+> +static const struct bpf_func_proto bpf_get_task_exe_path_proto = {
+> + .func       = bpf_get_task_exe_path,
+> + .gpl_only   = false,
+> + .ret_type   = RET_INTEGER,
+> + .arg1_type  = ARG_PTR_TO_BTF_ID,
+> + .arg2_type  = ARG_PTR_TO_MEM,
+> + .arg3_type  = ARG_CONST_SIZE_OR_ZERO,
+> +};
+> +
 
-Similar to the handling of l2cap_ecred_connect in commit d3715b2333e9
-("Bluetooth: use memset avoid memory leaks"), we thought a patch
-might be needed here as well.
+Something went really wrong with your patch :(
 
-Use memset to initialize structs to prevent memory leaks
-in l2cap_le_connect
+But the larger issue is, there is no such thing as a "absolute path to a
+file" within the kernel, sorry.  This just is not going to work, and it
+has come up again and again and again with regards to other kernel
+subsystems many times.
 
-Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
----
- net/bluetooth/l2cap_core.c | 1 +
- 1 file changed, 1 insertion(+)
+Step back and answer "why" you think you need a path to an executable?
+What needs this that you can not do it in userspace?  What are you going
+to do with this supposed information if you get it?
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index ae78490ecd3d..09ecaf556de5 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -1369,6 +1369,7 @@ static void l2cap_le_connect(struct l2cap_chan *chan)
- 
- 	l2cap_le_flowctl_init(chan, 0);
- 
-+	memset(&req, 0, sizeof(req));
- 	req.psm     = chan->psm;
- 	req.scid    = cpu_to_le16(chan->scid);
- 	req.mtu     = cpu_to_le16(chan->imtu);
--- 
-2.17.1
+And then think about filesystem namespaces...
 
+sorry, this isn't going to work.
+
+greg k-h
