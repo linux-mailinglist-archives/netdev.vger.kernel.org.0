@@ -2,100 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B61D053F91F
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 11:09:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE5B953F929
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 11:14:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236240AbiFGJJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 05:09:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53586 "EHLO
+        id S239046AbiFGJOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 05:14:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238998AbiFGJJa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 05:09:30 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC3F2B0D27
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 02:09:20 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nyVD2-0004Hy-Ni; Tue, 07 Jun 2022 11:09:08 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 1A6408D96B;
-        Tue,  7 Jun 2022 09:09:07 +0000 (UTC)
-Date:   Tue, 7 Jun 2022 11:09:06 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Srinivas Neeli <srinivas.neeli@xilinx.com>
-Cc:     wg@grandegger.com, davem@davemloft.net, edumazet@google.com,
-        appana.durga.rao@xilinx.com, sgoud@xilinx.com,
-        michal.simek@xilinx.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        git@xilinx.com
-Subject: Re: [PATCH V2 1/2] Revert "can: xilinx_can: Limit CANFD brp to 2"
-Message-ID: <20220607090906.pdkvr2pcflcvzq2e@pengutronix.de>
-References: <20220607085654.4178-1-srinivas.neeli@xilinx.com>
- <20220607085654.4178-2-srinivas.neeli@xilinx.com>
+        with ESMTP id S238703AbiFGJOS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 05:14:18 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA7169B53;
+        Tue,  7 Jun 2022 02:14:14 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1654593252;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bezUUwZTcrVCpPMRY2+6dN6//+KpHkGmqvWXkpIPhNU=;
+        b=Cs/VMGvhIXHBotoccSXQdMLGz/D+jPs57h++NHgNdhmYEW5ts7QKRrtItm+qSQz+1X29dv
+        Qrlo+ZmRSRLr9CU7iE25N049w0EYdxZQv24CY3e1r7H5Oiu9mA8fIqesjduNkOQoSoV4yA
+        u/bPmRhcIB5kPNv7OO7KEd/tdjnpZJgQlGmHozAgNAzgy3DB60UzcuBQtLk4ftjYGfR6V2
+        2EyMe1cKjfSVutlWvew8MLSk1v8Fre+4zON1lu25mneaSvS03xdM5nKOB5wdoAPaL0j2ht
+        7fSUIR9suTfbm716bIvxDxfqCF6POnOmH+PYXblSQncHX6BS5RxSphUgkvfJ+w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1654593252;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bezUUwZTcrVCpPMRY2+6dN6//+KpHkGmqvWXkpIPhNU=;
+        b=pYAGvdTIZ9X8TbLxsUdPagFnvFAgjv9BIuXSUxHX8dsmfPgKYxwyv3gbwc9/MQhnwzVx1N
+        iKb8Pc20Uyf1/NDA==
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Joanne Koong <joannelkoong@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Geliang Tang <geliang.tang@suse.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: Re: [PATCH bpf-next] bpf: Add BPF-helper for accessing CLOCK_TAI
+In-Reply-To: <CAADnVQJ--oj+iZYXOwB1Rs9Qiy6Ph9HNha9pJyumVom0tiOFgg@mail.gmail.com>
+References: <20220606103734.92423-1-kurt@linutronix.de>
+ <CAADnVQJ--oj+iZYXOwB1Rs9Qiy6Ph9HNha9pJyumVom0tiOFgg@mail.gmail.com>
+Date:   Tue, 07 Jun 2022 11:14:12 +0200
+Message-ID: <875ylc6djv.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="wjnyn3zhqqn26n52"
-Content-Disposition: inline
-In-Reply-To: <20220607085654.4178-2-srinivas.neeli@xilinx.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Alexei,
 
---wjnyn3zhqqn26n52
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Mon, Jun 06 2022 at 08:57, Alexei Starovoitov wrote:
+> On Mon, Jun 6, 2022 at 3:38 AM Kurt Kanzenbach <kurt@linutronix.de> wrote:
+>>
+>> From: Jesper Dangaard Brouer <brouer@redhat.com>
+>>
+>> Commit 3dc6ffae2da2 ("timekeeping: Introduce fast accessor to clock tai")
+>> introduced a fast and NMI-safe accessor for CLOCK_TAI. Especially in time
+>> sensitive networks (TSN), where all nodes are synchronized by Precision Time
+>> Protocol (PTP), it's helpful to have the possibility to generate timestamps
+>> based on CLOCK_TAI instead of CLOCK_MONOTONIC. With a BPF helper for TAI in
+>> place, it becomes very convenient to correlate activity across different
+>> machines in the network.
+>
+> That's a fresh feature. It feels risky to bake it into uapi already.
 
-On 07.06.2022 14:26:53, Srinivas Neeli wrote:
-> This reverts commit 05ca14fdb6fe65614e0652d03e44b02748d25af7.
->=20
-> On early silicon engineering samples observed
-> bit shrinking issue when we use brp as 1.
-> Hence updated brp_min as 2. As in production
-> silicon this issue is fixed,so reverting the patch.
->=20
-> Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+What? That's just support for a different CLOCK. What's so risky about
+it?
 
-Should this be applied to -stable?
+> imo it would be better to annotate tk_core variable in vmlinux BTF.
+> Then progs will be able to read all possible timekeeper offsets.
 
-Marc
+We are exposing APIs. APIs can be supported, but exposing implementation
+details creates ABIs of the worst sort because that prevents the kernel
+from changing the implementation. We've seen the fallout with the recent
+tracepoint changes already.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Thanks,
 
---wjnyn3zhqqn26n52
-Content-Type: application/pgp-signature; name="signature.asc"
+        tglx
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKfFa4ACgkQrX5LkNig
-0122OAf/RurJH8hnAPHVTFf7YxHqOj7HUZ9X9ulYzwRbDkQyQaVX0YVYi7f640Gn
-iEBUiIJcABRbR2cdMIltb8IkIDlh3l5jB+zFdAxOoM0dBSjh771mhr28lGNmazSe
-br6iZ0WUkVRO60MG4Rjn/8WlG0zqw2OoW4494MBmNizfdLJztKgdihMUVLrm9t52
-glqRdIrl4E/BY1fLzutyS9ZLsoaGk3iMg76XsrzUmOwlPldDiTdVv4pH5h2kmbf5
-HApcjPFdHShIIKsDcFID9xMbbBfBq6P+Ud3SFZgE8FqvHnh4ID9u6jTfI58OGflx
-6auGWgoyaHn+XxFq1/e4/x5Ue8gf2g==
-=qzBd
------END PGP SIGNATURE-----
-
---wjnyn3zhqqn26n52--
