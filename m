@@ -2,53 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8685F53F98B
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 11:23:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB11553F974
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 11:20:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239285AbiFGJXn convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Jun 2022 05:23:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59658 "EHLO
+        id S238949AbiFGJUO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 05:20:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239008AbiFGJXl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 05:23:41 -0400
-X-Greylist: delayed 514 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 02:23:39 PDT
-Received: from einhorn-mail-out.in-berlin.de (einhorn.in-berlin.de [192.109.42.8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C7D340E2
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 02:23:38 -0700 (PDT)
-X-Envelope-From: thomas@osterried.de
-Received: from x-berg.in-berlin.de (x-change.in-berlin.de [217.197.86.40])
-        by einhorn.in-berlin.de  with ESMTPS id 2579Eat51498908
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Tue, 7 Jun 2022 11:14:36 +0200
-Received: from x-berg.in-berlin.de ([217.197.86.42] helo=smtpclient.apple)
-        by x-berg.in-berlin.de with esmtpa (Exim 4.94.2)
-        (envelope-from <thomas@osterried.de>)
-        id 1nyVIJ-0001s8-OQ; Tue, 07 Jun 2022 11:14:35 +0200
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
-Subject: Re: [PATCH net-next] ax25: Fix deadlock caused by skb_recv_datagram
- in ax25_recvmsg
-From:   Thomas Osterried <thomas@osterried.de>
-In-Reply-To: <CANn89i+HbdWS4JU0odCbRApuCTGFAt9_NSUoCSFo-b4-z0uWCQ@mail.gmail.com>
-Date:   Tue, 7 Jun 2022 11:14:34 +0200
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        LKML <linux-kernel@vger.kernel.org>, jreuter@yaina.de,
-        =?utf-8?Q?Ralf_B=C3=A4chle_DL5RB?= <ralf@linux-mips.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>, linux-hams@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <E5F82D12-56D3-4040-A92B-C658772FD8DD@osterried.de>
-References: <20220606162138.81505-1-duoming@zju.edu.cn>
- <CANn89i+HbdWS4JU0odCbRApuCTGFAt9_NSUoCSFo-b4-z0uWCQ@mail.gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-X-Mailer: Apple Mail (2.3696.100.31)
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        with ESMTP id S239458AbiFGJUI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 05:20:08 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4626FE52A5
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 02:20:07 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nyVNS-0006EU-PP; Tue, 07 Jun 2022 11:19:54 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id D4C648D99B;
+        Tue,  7 Jun 2022 09:19:52 +0000 (UTC)
+Date:   Tue, 7 Jun 2022 11:19:52 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Srinivas Neeli <srinivas.neeli@xilinx.com>
+Cc:     wg@grandegger.com, davem@davemloft.net, edumazet@google.com,
+        appana.durga.rao@xilinx.com, sgoud@xilinx.com,
+        michal.simek@xilinx.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        git@xilinx.com, Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: Re: [PATCH V2 2/2] can: xilinx_can: Add Transmitter delay
+ compensation (TDC) feature support
+Message-ID: <20220607091952.gls5bgwplytbhmoq@pengutronix.de>
+References: <20220607085654.4178-1-srinivas.neeli@xilinx.com>
+ <20220607085654.4178-3-srinivas.neeli@xilinx.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="wul5pjtdvnfd2zlk"
+Content-Disposition: inline
+In-Reply-To: <20220607085654.4178-3-srinivas.neeli@xilinx.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -56,181 +59,190 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--wul5pjtdvnfd2zlk
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Am 06.06.2022 um 19:31 schrieb Eric Dumazet <edumazet@google.com>:
-> 
-> On Mon, Jun 6, 2022 at 9:21 AM Duoming Zhou <duoming@zju.edu.cn> wrote:
->> 
->> The skb_recv_datagram() in ax25_recvmsg() will hold lock_sock
->> and block until it receives a packet from the remote. If the client
->> doesn`t connect to server and calls read() directly, it will not
->> receive any packets forever. As a result, the deadlock will happen.
->> 
->> The fail log caused by deadlock is shown below:
->> 
->> [  861.122612] INFO: task ax25_deadlock:148 blocked for more than 737 seconds.
->> [  861.124543] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
->> [  861.127764] Call Trace:
->> [  861.129688]  <TASK>
->> [  861.130743]  __schedule+0x2f9/0xb20
->> [  861.131526]  schedule+0x49/0xb0
->> [  861.131640]  __lock_sock+0x92/0x100
->> [  861.131640]  ? destroy_sched_domains_rcu+0x20/0x20
->> [  861.131640]  lock_sock_nested+0x6e/0x70
->> [  861.131640]  ax25_sendmsg+0x46/0x420
->> [  861.134383]  ? ax25_recvmsg+0x1e0/0x1e0
->> [  861.135658]  sock_sendmsg+0x59/0x60
->> [  861.136791]  __sys_sendto+0xe9/0x150
->> [  861.137212]  ? __schedule+0x301/0xb20
->> [  861.137710]  ? __do_softirq+0x4a2/0x4fd
->> [  861.139153]  __x64_sys_sendto+0x20/0x30
->> [  861.140330]  do_syscall_64+0x3b/0x90
->> [  861.140731]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
->> [  861.141249] RIP: 0033:0x7fdf05ee4f64
->> [  861.141249] RSP: 002b:00007ffe95772fc0 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
->> [  861.141249] RAX: ffffffffffffffda RBX: 0000565303a013f0 RCX: 00007fdf05ee4f64
->> [  861.141249] RDX: 0000000000000005 RSI: 0000565303a01678 RDI: 0000000000000005
->> [  861.141249] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
->> [  861.141249] R10: 0000000000000000 R11: 0000000000000246 R12: 0000565303a00cf0
->> [  861.141249] R13: 00007ffe957730e0 R14: 0000000000000000 R15: 0000000000000000
->> 
->> This patch moves the skb_recv_datagram() before lock_sock() in order
->> that other functions that need lock_sock could be executed.
->> 
-> 
-> 
-> Why is this targeting net-next tree ?
+Hello Srinivas Neeli,
 
-Off-topic question for better understanding: when patches go to netdev,
-when to net-next tree? Ah, found explanation it here (mentioning it
-for our readers at linux-hams@):
-  https://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt
+thanks for your patch!
 
-> 1) A fix should target net tree
-> 2) It should include a Fixes: tag
+On 07.06.2022 14:26:54, Srinivas Neeli wrote:
+> Added Transmitter delay compensation (TDC) feature support.
+> In the case of higher measured loop delay with higher baud rates,
+> observed bit stuff errors. By enabling the TDC feature in a controller,
+> will compensate for the measure loop delay in the receive path.
 
-tnx for info. "Fix" in subject is not enough?
+Wich controllers support TDC?
 
+XAXI_CANFD doesn't have do_get_auto_tdc assigned, but
+CAN_CTRLMODE_TDC_AUTO is set.
 
-> Also:
-> - this patch bypasses tests in ax25_recvmsg()
-> - This might break applications depending on blocking read() operations.
+> Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+> ---
+>  drivers/net/can/xilinx_can.c | 46 +++++++++++++++++++++++++++++++++---
+>  1 file changed, 43 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
+> index e179d311aa28..d0edd1bca33c 100644
+> --- a/drivers/net/can/xilinx_can.c
+> +++ b/drivers/net/can/xilinx_can.c
+> @@ -1,7 +1,7 @@
+>  // SPDX-License-Identifier: GPL-2.0-or-later
+>  /* Xilinx CAN device driver
+>   *
+> - * Copyright (C) 2012 - 2014 Xilinx, Inc.
+> + * Copyright (C) 2012 - 2022 Xilinx, Inc.
+>   * Copyright (C) 2009 PetaLogix. All rights reserved.
+>   * Copyright (C) 2017 - 2018 Sandvik Mining and Construction Oy
+>   *
+> @@ -99,6 +99,7 @@ enum xcan_reg {
+>  #define XCAN_ESR_STER_MASK		0x00000004 /* Stuff error */
+>  #define XCAN_ESR_FMER_MASK		0x00000002 /* Form error */
+>  #define XCAN_ESR_CRCER_MASK		0x00000001 /* CRC error */
+> +#define XCAN_SR_TDCV_MASK		0x007F0000 /* TDCV Value */
+>  #define XCAN_SR_TXFLL_MASK		0x00000400 /* TX FIFO is full */
+>  #define XCAN_SR_ESTAT_MASK		0x00000180 /* Error status */
+>  #define XCAN_SR_ERRWRN_MASK		0x00000040 /* Error warning */
+> @@ -132,6 +133,8 @@ enum xcan_reg {
+>  #define XCAN_DLCR_BRS_MASK		0x04000000 /* BRS Mask in DLC */
+> =20
+>  /* CAN register bit shift - XCAN_<REG>_<BIT>_SHIFT */
+> +#define XCAN_BRPR_TDCO_SHIFT		8  /* Transmitter Delay Compensation Offse=
+t */
+> +#define XCAN_BRPR_TDC_ENABLE		BIT(16) /* Transmitter Delay Compensation =
+(TDC) Enable */
+>  #define XCAN_BTR_SJW_SHIFT		7  /* Synchronous jump width */
+>  #define XCAN_BTR_TS2_SHIFT		4  /* Time segment 2 */
+>  #define XCAN_BTR_SJW_SHIFT_CANFD	16 /* Synchronous jump width */
+> @@ -140,6 +143,7 @@ enum xcan_reg {
+>  #define XCAN_IDR_ID2_SHIFT		1  /* Extended Message Identifier */
+>  #define XCAN_DLCR_DLC_SHIFT		28 /* Data length code */
+>  #define XCAN_ESR_REC_SHIFT		8  /* Rx Error Count */
+> +#define XCAN_SR_TDCV_SHIFT		16 /* TDCV Value */
+> =20
+>  /* CAN frame length constants */
+>  #define XCAN_FRAME_MAX_DATA_LEN		8
+> @@ -276,6 +280,16 @@ static const struct can_bittiming_const xcan_data_bi=
+ttiming_const_canfd2 =3D {
+>  	.brp_inc =3D 1,
+>  };
+> =20
+> +/* Transmission Delay Compensation constants for CANFD2.0 and Versal  */
+> +static const struct can_tdc_const xcan_tdc_const =3D {
+> +	.tdcv_min =3D 0,
+> +	.tdcv_max =3D 0, /* Manual mode not supported. */
+> +	.tdco_min =3D 0,
+> +	.tdco_max =3D 64,
+> +	.tdcf_min =3D 0, /* Filter window not supported */
+> +	.tdcf_max =3D 0,
+> +};
+> +
+>  /**
+>   * xcan_write_reg_le - Write a value to the device register little endian
+>   * @priv:	Driver private data structure
+> @@ -424,6 +438,11 @@ static int xcan_set_bittiming(struct net_device *nde=
+v)
+>  	    priv->devtype.cantype =3D=3D XAXI_CANFD_2_0) {
+>  		/* Setting Baud Rate prescalar value in F_BRPR Register */
+>  		btr0 =3D dbt->brp - 1;
+> +		if (can_tdc_is_enabled(&priv->can)) {
+> +			btr0 =3D btr0 |
 
-We have discussed and verified it.
+Make use of "|=3D" and properly indent.
 
-We had a deadlock problem (during concurrent read/write),
-found by Thomas Habets, in
-  https://marc.info/?l=linux-hams&m=159319049624305&w=2
-Duoming found a second problem with current ax.25 implementation, that causes
-deadlock not only for the userspace program Thomas had, but also in the kernel.
+> +			priv->can.tdc.tdco << XCAN_BRPR_TDCO_SHIFT |
 
-Thomas' patch did not made it to the git kernel net, because the testing bot
-complained that there was no "goto out:" left, for label "out:".
+Please include <linux/bitfield.h> and make use of "FIELD_PREP".
 
-Furhermore, before the test
-          if (sk->sk_type == SOCK_SEQPACKET && sk->sk_state != TCP_ESTABLISHED) {
-it's useful to do lock_sock(sk);
+> +			XCAN_BRPR_TDC_ENABLE;
+> +		}
+> =20
+>  		/* Setting Time Segment 1 in BTR Register */
+>  		btr1 =3D dbt->prop_seg + dbt->phase_seg1 - 1;
+> @@ -1483,6 +1502,23 @@ static int xcan_get_berr_counter(const struct net_=
+device *ndev,
+>  	return 0;
+>  }
+> =20
+> +/**
+> + * xcan_get_auto_tdcv - Get Transmitter Delay Compensation Value
+> + * @ndev:	Pointer to net_device structure
+> + * @tdcv:	Pointer to TDCV value
+> + *
+> + * Return: 0 on success
+> + */
+> +static int xcan_get_auto_tdcv(const struct net_device *ndev, u32 *tdcv)
+> +{
+> +	struct xcan_priv *priv =3D netdev_priv(ndev);
+> +
+> +	*tdcv =3D (priv->read_reg(priv, XCAN_SR_OFFSET) & XCAN_SR_TDCV_MASK) >>
+> +		 XCAN_SR_TDCV_SHIFT;
 
-After reading through the documentation in the code above the skb_recv_datagram()
-function, it should be safe to use this function without locking.
-That's why we moved it to the top of ax25_recvmsg().
+Please use FIELD_GET.
 
+> +
+> +	return 0;
+> +}
+> +
+>  static const struct net_device_ops xcan_netdev_ops =3D {
+>  	.ndo_open	=3D xcan_open,
+>  	.ndo_stop	=3D xcan_close,
+> @@ -1734,18 +1770,22 @@ static int xcan_probe(struct platform_device *pde=
+v)
+>  	priv->can.do_get_berr_counter =3D xcan_get_berr_counter;
+>  	priv->can.ctrlmode_supported =3D CAN_CTRLMODE_LOOPBACK |
+>  					CAN_CTRLMODE_BERR_REPORTING;
+> +	priv->can.do_get_auto_tdcv =3D xcan_get_auto_tdcv;
 
-> I feel a real fix is going to be slightly more difficult than that.
+I'm not sure, if it has any side effects, if you assign do_get_auto_tdc
+for all controllers, even the ones that don't support it. Vincent can
+probably clarify this.
 
-It's interesting to see how other kernel drivers use skb_recv_datagram().
-Many have copied the code of others. But in the end, there are various variants:
+> =20
+>  	if (devtype->cantype =3D=3D XAXI_CANFD)
+>  		priv->can.data_bittiming_const =3D
+>  			&xcan_data_bittiming_const_canfd;
+> =20
+> -	if (devtype->cantype =3D=3D XAXI_CANFD_2_0)
+> +	if (devtype->cantype =3D=3D XAXI_CANFD_2_0) {
+>  		priv->can.data_bittiming_const =3D
+>  			&xcan_data_bittiming_const_canfd2;
+> +		priv->can.tdc_const =3D &xcan_tdc_const;
+> +	}
+> =20
+>  	if (devtype->cantype =3D=3D XAXI_CANFD ||
+>  	    devtype->cantype =3D=3D XAXI_CANFD_2_0)
+> -		priv->can.ctrlmode_supported |=3D CAN_CTRLMODE_FD;
+> +		priv->can.ctrlmode_supported |=3D CAN_CTRLMODE_FD |
+> +						CAN_CTRLMODE_TDC_AUTO;
+> =20
+>  	priv->reg_base =3D addr;
+>  	priv->tx_max =3D tx_max;
 
+regards
+Marc
 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-af_x25.c (for X.25) does it this way:
+--wul5pjtdvnfd2zlk
+Content-Type: application/pgp-signature; name="signature.asc"
 
-	lock_sock(sk);
-if (x25->neighbour == NULL)
-goto out;
-..
-if (sk->sk_state != TCP_ESTABLISHED)
-goto out;
-..
-release_sock(sk);
-skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT,
-flags & MSG_DONTWAIT, &rc);
-lock_sock(sk);
+-----BEGIN PGP SIGNATURE-----
 
--> They lock for sk->sk_state tests, and then
-release lock for skb_recv_datagram()
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKfGDUACgkQrX5LkNig
+011Ongf/RRwccaV+ZRKLpspCQSOABYzlA8AgPw4sbuqlOMLiEtK67YrEFniOv9Xn
+T1qzkcRz7bMEFLSuOCe+pKUXL+kAcWYPYWhlsJ2nvwnf6FvqRQfNMyLKIrW5cpja
+bUmulsofHGz5RmCg3HVuZrokdM87s7zcqpSClsSbGsvwNm/7YW+Z5zA9Ags1pAB9
+gOPwUzcO5AdQAb5aBuA6/JBckxi1VXFPRGKI79hnNhvmvSrcqRn1nabIFlIM5eTN
+daMRZnhT8iw4pUu21yXX9ZGZ5zD7XECro1cuh/js/fjaGe8BYMYOaDn5smGuqbHw
+JwRY3Hfn78N4rtAcqgPzBV+YFiVY1Q==
+=traN
+-----END PGP SIGNATURE-----
 
-
-
-unix.c does it with a local lock in the unix socket struct:
-
-mutex_lock(&u->iolock);
-skb = skb_recv_datagram(sk, 0, 1, &err);
-mutex_unlock(&u->iolock);
-if (!skb)
-return err;
-
-
-
-netrom/af_netrom.c: It may have the same "deadlog hang" like af_ax25.c that Thomas observed.
--> may also be needed to fix.
-
-
-rose/af_rose.c: does not use any locks (!)
-
-
-vy 73,
-	- Thomas  dl9sau
-
-
-> 
-> 
-> Thank you
-> 
->> Reported-by: Thomas Habets <thomas@@habets.se>
->> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
->> ---
->> net/ax25/af_ax25.c | 11 ++++++-----
->> 1 file changed, 6 insertions(+), 5 deletions(-)
->> 
->> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
->> index 95393bb2760..02cd6087512 100644
->> --- a/net/ax25/af_ax25.c
->> +++ b/net/ax25/af_ax25.c
->> @@ -1665,6 +1665,11 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
->>        int copied;
->>        int err = 0;
->> 
->> +       /* Now we can treat all alike */
->> +       skb = skb_recv_datagram(sk, flags, &err);
->> +       if (!skb)
->> +               goto done;
->> +
->>        lock_sock(sk);
->>        /*
->>         *      This works for seqpacket too. The receiver has ordered the
->> @@ -1675,11 +1680,6 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
->>                goto out;
->>        }
->> 
->> -       /* Now we can treat all alike */
->> -       skb = skb_recv_datagram(sk, flags, &err);
->> -       if (skb == NULL)
->> -               goto out;
->> -
->>        if (!sk_to_ax25(sk)->pidincl)
->>                skb_pull(skb, 1);               /* Remove PID */
->> 
->> @@ -1725,6 +1725,7 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
->> out:
->>        release_sock(sk);
->> 
->> +done:
->>        return err;
->> }
->> 
->> --
->> 2.17.1
->> 
-> 
-
+--wul5pjtdvnfd2zlk--
