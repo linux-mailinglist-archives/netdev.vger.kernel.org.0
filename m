@@ -2,195 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11F9C53F439
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 04:58:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 790B953F445
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 05:04:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236154AbiFGC6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 6 Jun 2022 22:58:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54846 "EHLO
+        id S236170AbiFGDEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 6 Jun 2022 23:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236141AbiFGC56 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 22:57:58 -0400
-Received: from mail-il1-x149.google.com (mail-il1-x149.google.com [IPv6:2607:f8b0:4864:20::149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B539564D15
-        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 19:57:57 -0700 (PDT)
-Received: by mail-il1-x149.google.com with SMTP id 3-20020a056e0220c300b002d3d7ebdfdeso12538696ilq.16
-        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 19:57:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=h0VUAZ+/P4d+rcM7OhdmQUwR8fhTt/+FRpwZ4ssNaoY=;
-        b=KQf6dUggN5nsG14QDq4LREfknFtH+AYRehyVfITQSFywcXQOVe5xpRbCbuQ+0XXQC5
-         lZvozjBDhXgm5bwOtMY5mfayninAbsZP8h0HLFAWhJT5L9qNgAkuXzE97CECqohwKPOj
-         t/qTRtR0aXDBN7IduWydnZ05TbSKOhj4j1YkULmapAPOu8wZybDkVKvvLcUAuuOYzflp
-         vBjAdGXLh8yijKq3Rw0KcPlyat3BW2CI8KGublys9AP5xJ2wue92OcaNBX4GU7gJ/i8w
-         gk0XQXHC4dw/g4xM6KCekf0M/ucZWHaCK4Q/a5SHkbhVi4QO7rzqwUqAacOwa7aBkYEV
-         4ntg==
+        with ESMTP id S236141AbiFGDEX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 6 Jun 2022 23:04:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5C1AE8217A
+        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 20:04:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654571059;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SQhfKMsVuNsue9Bo/8dSPtMyaBIV0FNl9cHVowhaNTI=;
+        b=Zc1cg8XhQmn/P90EmwxG6ROtk5DPiVhAzynatBs+A1pv5QjKrCzesHTUfE2GsSqqmwy3dE
+        Zz4Sb9+1M1WOlney0iS9aaQaa5q/ixSndxXwVgtc0+H2/Hmh7G9u8h3HIwFk3pC1prdsf+
+        1QfMdHLqrKqkp3Y9LWrRHxcSVV+6ra4=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-502-pkvfowQoMTetyI06MnuTBA-1; Mon, 06 Jun 2022 23:04:18 -0400
+X-MC-Unique: pkvfowQoMTetyI06MnuTBA-1
+Received: by mail-qv1-f71.google.com with SMTP id z10-20020ad4414a000000b004644d6dafe3so9992600qvp.11
+        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 20:04:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=h0VUAZ+/P4d+rcM7OhdmQUwR8fhTt/+FRpwZ4ssNaoY=;
-        b=ge4v1hVdjrtD3vAu0zMhNbVhiBSvZs4TfFEgExvE75hANwjhR2qfZAdirazNvWJ1WZ
-         Bf90X6KV/3oqVoKbp/czH+IVpG4PkIYeaAHrLYOsPCb24sOjrF6+/iKUMkPgoXfrSVit
-         h1prCAwGZZFh7k39h8z9lebhLKoxpY9NdhNwAk6vlc1gij6nnP8xNbyCAXFQYNAJ0kDw
-         VkQ9HEJIwzkZFTu7umwiwKxeM0XIi5JQ84I8//kd5fqOaxodUWhKDDfwOXUNhuOL7Aw0
-         7897y4fZXHwF9qi+xTcMPBWtzYcMS+4MGfi6XLzRdl39o0bTv84aJgWocY8B9KO4esBt
-         wEPQ==
-X-Gm-Message-State: AOAM531gjzvLsXSbiqAI4Sj4U9LU8JNP+Fjz/7Jk6tRj/qnPaBrOQP9r
-        /aU075rMsOeUMAeg2o9fjsmIdF/7MCF05Ow=
-X-Google-Smtp-Source: ABdhPJzjIo6i5SEs2c/82eKPbA5G+HcAvxhnbyglvD/5PCyDp4OXYbIYn8yTGEqoGZgS0EHtQ98TZCnG4utf26s=
-X-Received: from sunrising.c.googlers.com ([fda3:e722:ac3:cc00:2b:ff92:c0a8:fb8])
- (user=mfaltesek job=sendgmr) by 2002:a05:6e02:198e:b0:2d3:f382:bbc1 with SMTP
- id g14-20020a056e02198e00b002d3f382bbc1mr13051254ilf.129.1654570677049; Mon,
- 06 Jun 2022 19:57:57 -0700 (PDT)
-Date:   Mon,  6 Jun 2022 21:57:29 -0500
-In-Reply-To: <20220607025729.1673212-1-mfaltesek@google.com>
-Message-Id: <20220607025729.1673212-4-mfaltesek@google.com>
-Mime-Version: 1.0
-References: <20220607025729.1673212-1-mfaltesek@google.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-Subject: [PATCH net v3 3/3] nfc: st21nfca: fix incorrect sizing calculations
- in EVT_TRANSACTION
-From:   Martin Faltesek <mfaltesek@google.com>
-To:     kuba@kernel.org, krzysztof.kozlowski@linaro.org
-Cc:     christophe.ricard@gmail.com, gregkh@linuxfoundation.org,
-        groeck@google.com, jordy@pwning.systems, krzk@kernel.org,
-        mfaltesek@google.com, martin.faltesek@gmail.com,
-        netdev@vger.kernel.org, linux-nfc@lists.01.org,
-        sameo@linux.intel.com, wklin@google.com, theflamefire89@gmail.com,
-        stable@vger.kernel.org
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SQhfKMsVuNsue9Bo/8dSPtMyaBIV0FNl9cHVowhaNTI=;
+        b=tGWfLV7y//pgKVrqUA3E3qqsAKkKM+wZz0PsxDjHDT1x2Iik9pCLoz2bb+duHgfT7V
+         Iit/4nuAVdNelqEZDoarpSuh+SwdxLSg6mYu08rOIbVh5fQ/ZYEcoMcWPFt9HCNp2BOR
+         docBrqqp/0CJpbMkTTrKQQ3taEQH07FiIXPf6qIw8E1dQJR1rvXFQ6mK1JO1q2xelj6b
+         P/ImGL1NVIAdFLXGcKkEdLQz5yqgjdfDJtAVwYQACXU9ywBEujgwruPReptnNr0oungu
+         7kQrdv9ePS5zZcHazPE7qFG6/DASllklNritKBaWv1FB9QcAWA1fbC3Kmy29m0diuXCy
+         2q3Q==
+X-Gm-Message-State: AOAM531jBSDLp77gI6K14IL7EqYUv0cKcY5Esqi5rYjzeUHSYOjdbg9+
+        PQprUBJrItyLhbl53tMB1Qk2og1HDu6JjcXOAlB8tUuOjuPZRM9STf8JJoqM7TxBhQ3+cAuaxP7
+        qe8smJr+M4AvdRj/Pr2eIzemcaWDF9tPH
+X-Received: by 2002:ac8:5a91:0:b0:304:d3b6:ff5 with SMTP id c17-20020ac85a91000000b00304d3b60ff5mr18954967qtc.470.1654571057559;
+        Mon, 06 Jun 2022 20:04:17 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxTBrxg4VlIVGlSVT71V3tF0QqEvqQsNFvEZ/wL6qRU+cXzB8OTzuA5IDI2v5gYLHZ+AWVlaQoaxPJ9z2yfVYs=
+X-Received: by 2002:ac8:5a91:0:b0:304:d3b6:ff5 with SMTP id
+ c17-20020ac85a91000000b00304d3b60ff5mr18954956qtc.470.1654571057316; Mon, 06
+ Jun 2022 20:04:17 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220603182143.692576-1-miquel.raynal@bootlin.com>
+ <20220603182143.692576-2-miquel.raynal@bootlin.com> <CAK-6q+hAZMqsN=S9uWAm4rTN+uZwz7_L42=emPHz7+MvfW6ZpQ@mail.gmail.com>
+ <20220606174319.0924f80d@xps-13>
+In-Reply-To: <20220606174319.0924f80d@xps-13>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Mon, 6 Jun 2022 23:04:06 -0400
+Message-ID: <CAK-6q+itswJrmy-AhZ5DpnHH0UsfAeTPQTmX8WfG8=PteumVLg@mail.gmail.com>
+Subject: Re: [PATCH wpan-next 1/6] net: ieee802154: Drop coordinator interface type
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The transaction buffer is allocated by using the size of the packet buf,
-and subtracting two which seem intended to remove the two tags which are
-not present in the target structure. This calculation leads to under
-counting memory because of differences between the packet contents and the
-target structure. The aid_len field is a u8 in the packet, but a u32 in
-the structure, resulting in at least 3 bytes always being under counted.
-Further, the aid data is a variable length field in the packet, but fixed
-in the structure, so if this field is less than the max, the difference is
-added to the under counting.
+Hi,
 
-The last validation check for transaction->params_len is also incorrect
-since it employs the same accounting error.
+On Mon, Jun 6, 2022 at 11:43 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> Hi Alexander,
+>
+> aahringo@redhat.com wrote on Fri, 3 Jun 2022 22:01:38 -0400:
+>
+> > Hi,
+> >
+> > On Fri, Jun 3, 2022 at 2:34 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > >
+> > > The current enum is wrong. A device can either be an RFD, an RFD-RX, an
+> > > RFD-TX or an FFD. If it is an FFD, it can also be a coordinator. While
+> > > defining a node type might make sense from a strict software point of
+> > > view, opposing node and coordinator seems meaningless in the ieee
+> > > 802.15.4 world. As this enumeration is not used anywhere, let's just
+> > > drop it. We will in a second time add a new "node type" enumeration
+> > > which apply only to nodes, and does differentiates the type of devices
+> > > mentioned above.
+> > >
+> >
+> > First you cannot say if this is not used anywhere else.
+>
+> Mmmh, that's tricky, I really don't see how that might be a
+> problem because there is literally nowhere in the kernel that uses this
+> type, besides ieee802154_setup_sdata() which would just BUG() if this
+> type was to be used. So I assumed it was safe to be removed.
+>
 
-To fix, perform validation checks progressively to safely reach the
-next field, to determine the size of both buffers and verify both tags.
-Once all validation checks pass, allocate the buffer and copy the data.
-This eliminates freeing memory on the error path, as those checks are
-moved ahead of memory allocation.
+this header is somehow half uapi where we copy it into some other
+software e.g. wpan-tools as you noticed.
 
-Fixes: 26fc6c7f02cb ("NFC: st21nfca: Add HCI transaction event support")
-Fixes: 4fbcc1a4cb20 ("nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION")
-Cc: stable@vger.kernel.org
-Signed-off-by: Martin Faltesek <mfaltesek@google.com>
----
- drivers/nfc/st21nfca/se.c | 60 +++++++++++++++++++--------------------
- 1 file changed, 30 insertions(+), 30 deletions(-)
+> > Second I have
+> > a different opinion here that you cannot just "switch" the role from
+> > RFD, FFD, whatever.
+>
+> I agree with this, and that's why I don't understand this enum.
+>
+> A device can either be a NODE (an active device) or a MONITOR (a
+> passive device) at a time. We can certainly switch from one to
+> another at run time.
+>
+> A NODE can be either an RFD or an FFD. That is a static property which
+> cannot change.
+>
+> However being a coordinator is just an additional property of a NODE
+> which is of type FFD, and this can change over time.
+>
+> So I don't get what having a coordinator interface would bring. What
+> was the idea behind its introduction then?
+>
 
-diff --git a/drivers/nfc/st21nfca/se.c b/drivers/nfc/st21nfca/se.c
-index 8e1113ce139b..df8d27cf2956 100644
---- a/drivers/nfc/st21nfca/se.c
-+++ b/drivers/nfc/st21nfca/se.c
-@@ -300,6 +300,8 @@ int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
- 	int r = 0;
- 	struct device *dev = &hdev->ndev->dev;
- 	struct nfc_evt_transaction *transaction;
-+	u32 aid_len;
-+	u8 params_len;
- 
- 	pr_debug("connectivity gate event: %x\n", event);
- 
-@@ -308,50 +310,48 @@ int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
- 		r = nfc_se_connectivity(hdev->ndev, host);
- 	break;
- 	case ST21NFCA_EVT_TRANSACTION:
--		/*
--		 * According to specification etsi 102 622
-+		/* According to specification etsi 102 622
- 		 * 11.2.2.4 EVT_TRANSACTION Table 52
- 		 * Description	Tag	Length
- 		 * AID		81	5 to 16
- 		 * PARAMETERS	82	0 to 255
-+		 *
-+		 * The key differences are aid storage length is variably sized
-+		 * in the packet, but fixed in nfc_evt_transaction, and that the aid_len
-+		 * is u8 in the packet, but u32 in the structure, and the tags in
-+		 * the packet are not included in nfc_evt_transaction.
-+		 *
-+		 * size in bytes: 1          1       5-16 1             1           0-255
-+		 * offset:        0          1       2    aid_len + 2   aid_len + 3 aid_len + 4
-+		 * member name:   aid_tag(M) aid_len aid  params_tag(M) params_len  params
-+		 * example:       0x81       5-16    X    0x82 0-255    X
- 		 */
--		if (skb->len < NFC_MIN_AID_LENGTH + 2 ||
--		    skb->data[0] != NFC_EVT_TRANSACTION_AID_TAG)
-+		if (skb->len < 2 || skb->data[0] != NFC_EVT_TRANSACTION_AID_TAG)
- 			return -EPROTO;
- 
--		transaction = devm_kzalloc(dev, skb->len - 2, GFP_KERNEL);
--		if (!transaction)
--			return -ENOMEM;
--
--		transaction->aid_len = skb->data[1];
-+		aid_len = skb->data[1];
- 
--		/* Checking if the length of the AID is valid */
--		if (transaction->aid_len > sizeof(transaction->aid)) {
--			devm_kfree(dev, transaction);
--			return -EINVAL;
--		}
-+		if (skb->len < aid_len + 4 || aid_len > sizeof(transaction->aid))
-+			return -EPROTO;
- 
--		memcpy(transaction->aid, &skb->data[2],
--		       transaction->aid_len);
-+		params_len = skb->data[aid_len + 3];
- 
--		/* Check next byte is PARAMETERS tag (82) */
--		if (skb->data[transaction->aid_len + 2] !=
--		    NFC_EVT_TRANSACTION_PARAMS_TAG) {
--			devm_kfree(dev, transaction);
-+		/* Verify PARAMETERS tag is (82), and final check that there is enough
-+		 * space in the packet to read everything.
-+		 */
-+		if ((skb->data[aid_len + 2] != NFC_EVT_TRANSACTION_PARAMS_TAG) ||
-+		    (skb->len < aid_len + 4 + params_len))
- 			return -EPROTO;
--		}
- 
--		transaction->params_len = skb->data[transaction->aid_len + 3];
-+		transaction = devm_kzalloc(dev, sizeof(*transaction) + params_len, GFP_KERNEL);
-+		if (!transaction)
-+			return -ENOMEM;
- 
--		/* Total size is allocated (skb->len - 2) minus fixed array members */
--		if (transaction->params_len > ((skb->len - 2) -
--		    sizeof(struct nfc_evt_transaction))) {
--			devm_kfree(dev, transaction);
--			return -EINVAL;
--		}
-+		transaction->aid_len = aid_len;
-+		transaction->params_len = params_len;
- 
--		memcpy(transaction->params, skb->data +
--		       transaction->aid_len + 4, transaction->params_len);
-+		memcpy(transaction->aid, &skb->data[2], aid_len);
-+		memcpy(transaction->params, &skb->data[aid_len + 4], params_len);
- 
- 		r = nfc_se_transaction(hdev->ndev, host, transaction);
- 	break;
--- 
-2.36.1.255.ge46751e96f-goog
+There exists arguments which I have in my mind right now:
+
+1. frame parsing/address filter (which is somehow missing in your patches)
+
+The parsing of frames is different from other types (just as monitor
+interfaces). You will notice that setting up the address filter will
+require a parameter if coordinator or not. Changing the address
+filterung during runtime of an interface is somehow _not_ supported.
+The reason is that the datasheets tell you to first set up an address
+filter and then switch into receiving mode. Changing the address
+filter during receive mode (start()/stop()) is not a specified
+behaviour. Due to bus communication it also cannot be done atomically.
+This might be avoidable but is a pain to synchronize if you really
+depend on hw address filtering which we might do in future. It should
+end in a different receiving path e.g. node_rx/monitor_rx.
+
+2. HardMAC transceivers
+
+The add_interface() callback will be directly forwarded to the driver
+and the driver will during the lifetime of this interface act as a
+coordinator and not a mixed mode which can be disabled and enabled
+anytime. I am not even sure if this can ever be handled in such a way
+from hardmac transceivers, it might depend on the transceiver
+interface but we should assume some strict "static" handling. Static
+handling means here that the transceiver is unable to switch from
+coordinator and vice versa after some initialization state.
+
+3. coordinator (any $TYPE specific) userspace software
+
+May the main argument. Some coordinator specific user space daemon
+does specific type handling (e.g. hostapd) maybe because some library
+is required. It is a pain to deal with changing roles during the
+lifetime of an interface and synchronize user space software with it.
+We should keep in mind that some of those handlings will maybe be
+moved to user space instead of doing it in the kernel. I am fine with
+the solution now, but keep in mind to offer such a possibility.
+
+I think the above arguments are probably the same why wireless is
+doing something similar and I would avoid running into issues or it's
+really difficult to handle because you need to solve other Linux net
+architecture handling at first.
+
+> > You are mixing things here with "role in the network" and what the
+> > transceiver capability (RFD, FFD) is, which are two different things.
+>
+> I don't think I am, however maybe our vision differ on what an
+> interface should be.
+>
+> > You should use those defines and the user needs to create a new
+> > interface type and probably have a different extended address to act
+> > as a coordinator.
+>
+> Can't we just simply switch from coordinator to !coordinator (that's
+> what I currently implemented)? Why would we need the user to create a
+> new interface type *and* to provide a new address?
+>
+> Note that these are real questions that I am asking myself. I'm fine
+> adapting my implementation, as long as I get the main idea.
+>
+
+See above.
+
+- Alex
 
