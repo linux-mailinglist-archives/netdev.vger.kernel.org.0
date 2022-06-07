@@ -2,111 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B177353F87C
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 10:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BE4B53F89F
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 10:50:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238444AbiFGIqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 04:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60130 "EHLO
+        id S238452AbiFGIut convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Jun 2022 04:50:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238429AbiFGIpx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 04:45:53 -0400
-Received: from EX-PRD-EDGE01.vmware.com (EX-PRD-EDGE01.vmware.com [208.91.3.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17D4D246B;
-        Tue,  7 Jun 2022 01:45:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-    s=s1024; d=vmware.com;
-    h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
-      content-type;
-    bh=SV77H0OmyZG86LnB/951XAXqvbh/6VYp/F55lWugqXA=;
-    b=sjWXBWENm+RpC+tvRLQsmhYA5E8zhCtBqIF5nxhBFq1QUfXjIqPrT5wKe4zkzC
-      LnIgST/HDUOs05XfST9NVLaQsez0Sbhaxouo/5k4cJcCAUzUqMStxsPSikis9j
-      qFPf426bUlNGdSTfsEXs03manKuxGDtv8/HOWzbmMcL7tKY=
-Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
- EX-PRD-EDGE01.vmware.com (10.188.245.6) with Microsoft SMTP Server id
- 15.1.2308.20; Tue, 7 Jun 2022 01:45:30 -0700
-Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id 24652201BC;
-        Tue,  7 Jun 2022 01:45:45 -0700 (PDT)
-Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 1FD2FAA2B0; Tue,  7 Jun 2022 01:45:45 -0700 (PDT)
-From:   Ronak Doshi <doshir@vmware.com>
-To:     <netdev@vger.kernel.org>
-CC:     Ronak Doshi <doshir@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 net-next 8/8] vmxnet3: update to version 7
-Date:   Tue, 7 Jun 2022 01:45:18 -0700
-Message-ID: <20220607084518.30316-9-doshir@vmware.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20220607084518.30316-1-doshir@vmware.com>
-References: <20220607084518.30316-1-doshir@vmware.com>
+        with ESMTP id S238794AbiFGIuL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 04:50:11 -0400
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 923C1F04;
+        Tue,  7 Jun 2022 01:49:41 -0700 (PDT)
+Received: by mail-yb1-f179.google.com with SMTP id w2so30005219ybi.7;
+        Tue, 07 Jun 2022 01:49:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=rntn/tCRx1lKBz+y/6qXmacJXp7/iYXkar6tLR/7k/M=;
+        b=RSiU2YF/CtlT3NCxAWRTTViQ0i0Iw7rv6GOipEAQermpmGbgnKLZLaYYkvQ2sbnD1R
+         tM3QcRvOtJPDS6m00koskGV4sAjX0/xKOd5UGE2/7IgSAcYUM+RtmLQKgBvcNGr4Mejv
+         Sx5QMzLWhZ3d1hLAfmUJuLtCgMwqxLBK2Y0NRNV+iPRz0L41RcKlWk/ffe4JL5PbLdWj
+         F7BPZRjRKk0xrxouW5luQipbl3VDvCocYGW6sEpweqnwXvznMHIyCoDBQYie/VqGZsnB
+         6m4ENEHhpmuMzjqp6y3T8ZLmPGSuTpNXTjotIVCfv9bPX/0h+qxA1XPVmERX5+gjq1j+
+         vwQw==
+X-Gm-Message-State: AOAM5321TVgzX+aeIYP5rX2m66eujlf0PhsSaaSa+fB+nR+pqSImMo8Q
+        leDoMaxHoeL264CG8QJ/TyiJJWwVLORNE7O2/olYx8EJ+HI=
+X-Google-Smtp-Source: ABdhPJwWWRPNwbUCUePbec/w4+tOfNMuOQ+dvHHeMqQL11PvXfqLmCR/ywlVEJb7EpGz0GBcU5Z6C0Ln7Bi4GtQfjdI=
+X-Received: by 2002:a25:9841:0:b0:663:eaf2:4866 with SMTP id
+ k1-20020a259841000000b00663eaf24866mr291844ybo.381.1654591780761; Tue, 07 Jun
+ 2022 01:49:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-Received-SPF: None (EX-PRD-EDGE01.vmware.com: doshir@vmware.com does not
- designate permitted sender hosts)
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220604163000.211077-1-mailhol.vincent@wanadoo.fr> <2e8666f3-1bd9-8610-6b72-e56e669d3484@hartkopp.net>
+ <CAMZ6RqKWUyf6dZmxG809-yvjg5wbLwPSLtEfv-MgPpJ5ra=iGQ@mail.gmail.com> <20220607071305.olsrshjqtmkrp5et@pengutronix.de>
+In-Reply-To: <20220607071305.olsrshjqtmkrp5et@pengutronix.de>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Tue, 7 Jun 2022 17:49:29 +0900
+Message-ID: <CAMZ6RqK9cN9y3gtMCBc-NYmGT15ArvHU60KK6RyWp9dkA+WNLA@mail.gmail.com>
+Subject: Re: [PATCH v5 0/7] can: refactoring of can-dev module and of Kbuild
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        linux-can <linux-can@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Max Staudt <max@enpas.org>, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With all vmxnet3 version 7 changes incorporated in the vmxnet3 driver,
-the driver can configure emulation to run at vmxnet3 version 7, provided
-the emulation advertises support for version 7.
+On Tue. 7 Jun. 2022 at 16:13, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> On 07.06.2022 11:49:30, Vincent MAILHOL wrote:
+> [...]
+> > So I think that the diagram is correct. Maybe rephrasing the cover
+> > letter as below would address your concerns?
+>
+> BTW: I got the OK from Jakub to send PR with merges.
+>
+> If you think the cover letter needs rephrasing, send a new series and
+> I'm going to force push that over can-next/master. After that let's
+> consider can-next/master as fast-forward only.
 
-Signed-off-by: Ronak Doshi <doshir@vmware.com>
-Acked-by: Guolin Yang <gyang@vmware.com>
----
- drivers/net/vmxnet3/vmxnet3_drv.c | 7 ++++++-
- drivers/net/vmxnet3/vmxnet3_int.h | 4 ++--
- 2 files changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index aa96441ea86c..e88c5459abd5 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -3659,7 +3659,12 @@ vmxnet3_probe_device(struct pci_dev *pdev,
- 		goto err_alloc_pci;
- 
- 	ver = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_VRRS);
--	if (ver & (1 << VMXNET3_REV_6)) {
-+	if (ver & (1 << VMXNET3_REV_7)) {
-+		VMXNET3_WRITE_BAR1_REG(adapter,
-+				       VMXNET3_REG_VRRS,
-+				       1 << VMXNET3_REV_7);
-+		adapter->version = VMXNET3_REV_7 + 1;
-+	} else if (ver & (1 << VMXNET3_REV_6)) {
- 		VMXNET3_WRITE_BAR1_REG(adapter,
- 				       VMXNET3_REG_VRRS,
- 				       1 << VMXNET3_REV_6);
-diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
-index cb87731f5f1c..3367db23aa13 100644
---- a/drivers/net/vmxnet3/vmxnet3_int.h
-+++ b/drivers/net/vmxnet3/vmxnet3_int.h
-@@ -69,12 +69,12 @@
- /*
-  * Version numbers
-  */
--#define VMXNET3_DRIVER_VERSION_STRING   "1.6.0.0-k"
-+#define VMXNET3_DRIVER_VERSION_STRING   "1.7.0.0-k"
- 
- /* Each byte of this 32-bit integer encodes a version number in
-  * VMXNET3_DRIVER_VERSION_STRING.
-  */
--#define VMXNET3_DRIVER_VERSION_NUM      0x01060000
-+#define VMXNET3_DRIVER_VERSION_NUM      0x01070000
- 
- #if defined(CONFIG_PCI_MSI)
- 	/* RSS only makes sense if MSI-X is supported. */
--- 
-2.11.0
-
+I will first wait for Oliver’s feedback. Once we are aligned, I can do
+the v6 and I really hope that would be the last one.
