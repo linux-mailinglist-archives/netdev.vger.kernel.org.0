@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3614E540DEA
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 20:52:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D933540D76
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 20:49:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347634AbiFGSvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 14:51:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57864 "EHLO
+        id S1344796AbiFGSsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 14:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353988AbiFGSqX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 14:46:23 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF7118E44B;
-        Tue,  7 Jun 2022 10:59:54 -0700 (PDT)
+        with ESMTP id S1354438AbiFGSrC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 14:47:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E5D3EF11;
+        Tue,  7 Jun 2022 11:01:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 5A4A8CE2439;
-        Tue,  7 Jun 2022 17:59:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4300C36AFE;
-        Tue,  7 Jun 2022 17:59:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A154B618E2;
+        Tue,  7 Jun 2022 18:01:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDA3EC34119;
+        Tue,  7 Jun 2022 18:01:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624790;
-        bh=l5ObCqWV5DtUWe/84mfk11TbqDN6Yq+o0TqAqpuILE8=;
+        s=k20201202; t=1654624873;
+        bh=B3CqHOh+r9Ah6UrcI7btJ319nsIqtZeEw+NhcbAMHUo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IyhDWij30qNzIgcGLky5WolvOB8cMz9Wjrd+rCCl1v5Bmo23G/L/xuQJEX8zqyhNQ
-         oqa/yAWtUnKPSdWs0em5NIpTSk6qNyZtLLxPDR90lvx+YKWHlwJJ+DKaU161zM7Fe/
-         BIw7JHpBchas994tGVWFocAWIcKK3dWGGYP1SitVk9Eb9OR0RMOZvU7KyUyjBgDfb2
-         BKzunNHllMZx4Fck07yeePKux1oLh9RzKw4fncTvBrtf7svJlwuCwElOKGqSkfEwVA
-         faDJ6lzRnMj126al9BNTO1vFGBCCZOnhzQPAfSdmbPgpM/76Q2/FZFIfdYcsLzymn3
-         ATsy15BbQ5cGA==
+        b=I8ostYNIwz+RPMX8KCuv2dhh0luLHadoyGGbBPvPKJQVZvYbjYcEMnWt14az1SI7M
+         /26dl45WSWE9gUoy90/9mkmRrU6XJX55kBOkj8CSY6m7EeXGWzzVNPKl+wuKJx46tn
+         gnVw9l7NZ2SbWQilhPSgqZ0UU+n8YId68i+PKE80JLfouKZlnwq5VZ6ba3k768HUP6
+         MZngh4hRZkvHrBcvQgMo23YdQGY3QDU4uxC3iY7bYfP4T4XK6lTBHdh8Ioo+sJVAzG
+         nZTmq2uzpU8pQLtA8BTmNJru/kIgaMeDV0voaBfe+bitisRlZCI7MJBCrFqLrymIXi
+         a+WRsXQ+65Ekw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Michal Kubecek <mkubecek@suse.cz>,
@@ -38,12 +38,12 @@ Cc:     Michal Kubecek <mkubecek@suse.cz>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 27/38] Revert "net: af_key: add check for pfkey_broadcast in function pfkey_process"
-Date:   Tue,  7 Jun 2022 13:58:22 -0400
-Message-Id: <20220607175835.480735-27-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 24/34] Revert "net: af_key: add check for pfkey_broadcast in function pfkey_process"
+Date:   Tue,  7 Jun 2022 13:59:59 -0400
+Message-Id: <20220607180011.481266-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607175835.480735-1-sashal@kernel.org>
-References: <20220607175835.480735-1-sashal@kernel.org>
+In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
+References: <20220607180011.481266-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -89,7 +89,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 6b7ed5568c09..2aa16a171285 100644
+index dd064d5eff6e..32fe99cd01fc 100644
 --- a/net/key/af_key.c
 +++ b/net/key/af_key.c
 @@ -2830,10 +2830,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
