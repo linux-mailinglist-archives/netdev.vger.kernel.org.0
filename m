@@ -2,149 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82A465419ED
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 23:27:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45667541C51
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 23:59:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378290AbiFGV1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 17:27:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38942 "EHLO
+        id S1382822AbiFGV6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 17:58:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379397AbiFGVZd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 17:25:33 -0400
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B62228713;
-        Tue,  7 Jun 2022 12:01:51 -0700 (PDT)
+        with ESMTP id S1383337AbiFGVxF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 17:53:05 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EEC4243BAE
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 12:11:32 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id i1so15607532plg.7
+        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 12:11:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1654628511; x=1686164511;
-  h=references:from:to:cc:subject:date:in-reply-to:
-   message-id:mime-version;
-  bh=pniHEHRrB59YTtTNBTHlm1oMkttAh1nN6oBL1H5yKWM=;
-  b=ANVUJX2nD5MBjE4xE8mXlELzhYCcWe/+Jjk6Fn2gQX00oNSvIIJlolKa
-   tVCbgKKGTkwO9bX1MTdvsYvgG2skpgojt3B9HwlKWco+VxO9zz7BSj3DT
-   rBt20It5InNCsLFmj91Vo9HOkGE5fVr0veBOhmgCifeK6q6FGRdyKjOsL
-   4=;
-X-IronPort-AV: E=Sophos;i="5.91,284,1647302400"; 
-   d="scan'208";a="200518085"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-2d7489a4.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 07 Jun 2022 19:01:36 +0000
-Received: from EX13D28EUC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1a-2d7489a4.us-east-1.amazon.com (Postfix) with ESMTPS id 9C7E4A2532;
-        Tue,  7 Jun 2022 19:01:33 +0000 (UTC)
-Received: from u570694869fb251.ant.amazon.com.amazon.com (10.43.160.26) by
- EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Tue, 7 Jun 2022 19:01:27 +0000
-References: <20220607122831.32738-1-xiaohuizhang@ruc.edu.cn>
-User-agent: mu4e 1.6.10; emacs 28.0.91
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-CC:     Arthur Kiyanovski <akiyano@amazon.com>,
-        David Arinzon <darinzon@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        Saeed Bishara <saeedb@amazon.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sameeh Jubran <sameehj@amazon.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] net: ena_netdev: fix resource leak
-Date:   Tue, 7 Jun 2022 21:57:43 +0300
-In-Reply-To: <20220607122831.32738-1-xiaohuizhang@ruc.edu.cn>
-Message-ID: <pj41zly1y8pabi.fsf@u570694869fb251.ant.amazon.com>
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4x0y2QOtFjngDKfaT5qelc7FJCWVTdt0sgBSsQXwCE0=;
+        b=eHmJKxQLN7wtUiQ4NOfbbRm0UYnDGyzk72gCLWYI53P9WjH0RIwf6Sg6rC+JT9teK2
+         tFgeD1AhuY7oexEw5rO0lF1GBF8Cz9XPuNRu24Qpc8+01U7xcQwe3xqAMEWEmvFLyBej
+         JpF3cQOf9eEWaTCRCkoaOGa0O980JV7iyYVAx3DBD9xhdOUADaZ2c6GYvtEa2holGjYI
+         I6LguBnG5E35TmdmFsCeYH0glPMWEKmWuJGJAYOCq+vmQYdZ/gPAvAKypTyFN1B40P9O
+         adMS5H8iBAREvpZ7kM4SbgGzJ8LnMc2JXPfP8nmYWNHUKq+N7DvcGpgqAtKfX95IX+jF
+         s25g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4x0y2QOtFjngDKfaT5qelc7FJCWVTdt0sgBSsQXwCE0=;
+        b=kAQGy0LUwuTOh/spAq1nmsu/nI/5Pc1la0y+S5pHdU+qMQ4gzcbgVaOjOZVDQ90TU0
+         6PEneWtPBKVOtm3H4PYdPCsW1f0kfqgLxvn8mD9NJXy4Rjuz0O1/FHqXqa+Ic1O8dB7e
+         wtwmJw9LVB4ioKimhWoP3GcSMgNU0hCD3A/A7zEIm+bHygDu6IgF2MwppLpSJ18/a1eF
+         LinGM272MZYiY2ApCfSigjv02DvZamQmoNvGJaWGQzrKFXkrPJuPPUhbiFiJZw5Ze+5c
+         YS/HXJodMNch3SXfNRHmHOlvfNzpFbTBpjNuedzLz1/9sRwkOtP3xVuqGOWggcNYmYyg
+         yuPQ==
+X-Gm-Message-State: AOAM532+VGIZVTauBDdICKDxWEzNYKBQ7xWGqqQcmDmApSU4rXHqK6D8
+        DintnRi1zlveGAafr+u2BRw=
+X-Google-Smtp-Source: ABdhPJyVeaL+7PkM+tPf2NIFdB9NxjxGzs8Bd9iU4R/7V5NDbuFIKp+wiq9OK+n+urNHUzlvr2MFeA==
+X-Received: by 2002:a17:903:290:b0:15c:1c87:e66c with SMTP id j16-20020a170903029000b0015c1c87e66cmr30703101plr.61.1654629091980;
+        Tue, 07 Jun 2022 12:11:31 -0700 (PDT)
+Received: from penguin.lxd ([2620:0:1000:2514:216:3eff:fe31:a1ca])
+        by smtp.googlemail.com with ESMTPSA id go13-20020a17090b03cd00b001e667f932cdsm11713950pjb.53.2022.06.07.12.11.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 12:11:31 -0700 (PDT)
+From:   Justin Stitt <jstitt007@gmail.com>
+To:     Tom Lendacky <thomas.lendacky@amd.com>
+Cc:     llvm@lists.linux.dev, Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
+        Justin Stitt <jstitt007@gmail.com>
+Subject: [PATCH] net: amd-xgbe: fix clang -Wformat warning
+Date:   Tue,  7 Jun 2022 12:11:19 -0700
+Message-Id: <20220607191119.20686-1-jstitt007@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.43.160.26]
-X-ClientProxiedBy: EX13D32UWB003.ant.amazon.com (10.43.161.220) To
- EX13D28EUC001.ant.amazon.com (10.43.164.4)
-X-Spam-Status: No, score=-13.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+see warning:
+| drivers/net/ethernet/amd/xgbe/xgbe-drv.c:2787:43: warning: format specifies
+| type 'unsigned short' but the argument has type 'int' [-Wformat]
+|        netdev_dbg(netdev, "Protocol: %#06hx\n", ntohs(eth->h_proto));
+|                                      ~~~~~~     ^~~~~~~~~~~~~~~~~~~
 
-Xiaohui Zhang <xiaohuizhang@ruc.edu.cn> writes:
+Variadic functions (printf-like) undergo default argument promotion.
+Documentation/core-api/printk-formats.rst specifically recommends
+using the promoted-to-type's format flag.
 
-> Similar to the handling of u132_hcd_init in commit f276e002793c
-> ("usb: u132-hcd: fix resource leak"), we thought a patch might 
-> be
-> needed here as well.
->
-> If platform_driver_register fails, cleanup the allocated 
-> resource
-> gracefully.
->
-> Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-> ---
->  drivers/net/ethernet/amazon/ena/ena_netdev.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
-> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> index 6a356a6cee15..c0624ee8d867 100644
-> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> @@ -4545,13 +4545,17 @@ static struct pci_driver ena_pci_driver 
-> = {
->  
->  static int __init ena_init(void)
->  {
-> +	int retval;
->  	ena_wq = create_singlethread_workqueue(DRV_MODULE_NAME);
->  	if (!ena_wq) {
->  		pr_err("Failed to create workqueue\n");
->  		return -ENOMEM;
->  	}
-> +	retval = pci_register_driver(&ena_pci_driver);
-> +	if (retval)
-> +		destroy_workqueue(ena_wq);
->  
-> -	return pci_register_driver(&ena_pci_driver);
-> +	return retval;
->  }
->  
->  static void __exit ena_cleanup(void)
+Also, as per C11 6.3.1.1:
+(https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1548.pdf)
+`If an int can represent all values of the original type ..., the
+value is converted to an int; otherwise, it is converted to an
+unsigned int. These are called the integer promotions.`
 
-Hi,
-thanks a lot for this patch. I made a few small changes in it to 
-make it more consistent with the rest of driver's code
-(sorry don't really know how to insert an inline diff)
+Since the argument is a u16 it will get promoted to an int and thus it is
+most accurate to use the %x format specifier here. It should be noted that the
+`#06` formatting sugar does not alter the promotion rules.
 
-thanks,
-Shay
-
+Link: https://github.com/ClangBuiltLinux/linux/issues/378
+Signed-off-by: Justin Stitt <jstitt007@gmail.com>
 ---
-diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c 
-b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 6a356a6cee15..be8d3c26c9bb 100644
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -4545,13 +4545,19 @@ static struct pci_driver ena_pci_driver = 
-{
- 
- static int __init ena_init(void)
- {
-+	int rc;
-+
- 	ena_wq = create_singlethread_workqueue(DRV_MODULE_NAME);
- 	if (!ena_wq) {
- 		pr_err("Failed to create workqueue\n");
- 		return -ENOMEM;
- 	}
- 
--	return pci_register_driver(&ena_pci_driver);
-+	rc = pci_register_driver(&ena_pci_driver);
-+	if (rc)
-+		destroy_workqueue(ena_wq);
-+
-+	return rc;
- }
- 
- static void __exit ena_cleanup(void)
+ drivers/net/ethernet/amd/xgbe/xgbe-drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+index a3593290886f..4d46780fad13 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-drv.c
+@@ -2784,7 +2784,7 @@ void xgbe_print_pkt(struct net_device *netdev, struct sk_buff *skb, bool tx_rx)
+ 
+ 	netdev_dbg(netdev, "Dst MAC addr: %pM\n", eth->h_dest);
+ 	netdev_dbg(netdev, "Src MAC addr: %pM\n", eth->h_source);
+-	netdev_dbg(netdev, "Protocol: %#06hx\n", ntohs(eth->h_proto));
++	netdev_dbg(netdev, "Protocol: %#06x\n", ntohs(eth->h_proto));
+ 
+ 	for (i = 0; i < skb->len; i += 32) {
+ 		unsigned int len = min(skb->len - i, 32U);
+-- 
+2.30.2
 
