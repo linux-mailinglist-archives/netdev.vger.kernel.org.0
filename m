@@ -2,168 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 369E6542050
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:24:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFD8854202D
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:24:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385374AbiFHAVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 20:21:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
+        id S241057AbiFHASy convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Jun 2022 20:18:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588661AbiFGXyz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 19:54:55 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F231B187D
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 16:36:37 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id gc3-20020a17090b310300b001e33092c737so16782769pjb.3
-        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 16:36:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=c7ZxjBhd9r0DJDMboQQNSRkeIfCRgvQImpqF0uM/P4U=;
-        b=XczANK+jExAUcWXhV20j1B1Porpas6jvvAehD0meFWO0o4wx49aepcY2+A+wp7ZqgF
-         jllCMd0AMZLAEIcWeQzD1AsLcmYKfGy8GICIO2sYbSAfQ6Y+mZEWG++vhzlVH1nqZ9lL
-         f3lZo4eetiMNEQMtJBMXCWj3wZwU475Z2zSFkViCRhNYi37XwNqHnRXOCwGvKAZ4svsS
-         //6jlMLX13atECKRsygGz1XWtftmcmRlH58weXYcgsQzUpY5ap8ZAwC2t70OdUsTBzxV
-         FqpjB2md1+iKwudngbwOu/X+48g0aJyJe6tEYv7DfyTlwPbm8VauTBHJR3ijo9J1O1dp
-         NyrA==
+        with ESMTP id S1588570AbiFGXyr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 19:54:47 -0400
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 673F8152B9F;
+        Tue,  7 Jun 2022 16:40:31 -0700 (PDT)
+Received: by mail-yb1-f170.google.com with SMTP id v22so33715034ybd.5;
+        Tue, 07 Jun 2022 16:40:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=c7ZxjBhd9r0DJDMboQQNSRkeIfCRgvQImpqF0uM/P4U=;
-        b=RJnQg71Ar+eOdavcy+bcx9j+t342Drq0EqE3VS6i36Q9jITGBcI96l6iTPC+tzbtWo
-         DUQY+jEu19rYO+UqnZpX+8PCpKcmXo0QVb9sK6tUGUz+fLn9tVYC4khLhrihxa9VCwTQ
-         HEUt7PweVtwiZ6nKC2YvQ9w3XH4V66W97s3LtBmUVkrIukD3l8J4Q+vjJnc/HUgQ36Sj
-         vyeKMDHBRmiyGJpb2oGyWZhNkR2CJIUCldz2B2Sb6oMQIsPthZvGhxcmGX+r82/qUF28
-         ZzgJDM9qOVWHqED3Q9G5d+JF2MiofflYKdNL/cDMhW1JHMuKIQKxcG3kn0qg68u6HfxO
-         PRdQ==
-X-Gm-Message-State: AOAM530pop/WLYiAW6LB+sLx0ZhD/qnjSr+k0YPFiVql4nDKqqJEhcK3
-        5FuELebj0dJW4Cp0LZ1aaLSvO/W0S+g=
-X-Google-Smtp-Source: ABdhPJyquZZ1hAxNQMVjvg7ca8gFr3xmu8IXa4UayiAHS878IS3POM36h21eqT3hWkXxWCYxHXTCIA==
-X-Received: by 2002:a17:902:dacd:b0:164:17ef:54c6 with SMTP id q13-20020a170902dacd00b0016417ef54c6mr31983701plx.11.1654644997428;
-        Tue, 07 Jun 2022 16:36:37 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:191a:13a7:b80a:f36e])
-        by smtp.gmail.com with ESMTPSA id u79-20020a627952000000b0051ba7515e0dsm13550947pfc.54.2022.06.07.16.36.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 16:36:37 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 9/9] team: adopt u64_stats_t
-Date:   Tue,  7 Jun 2022 16:36:14 -0700
-Message-Id: <20220607233614.1133902-10-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
-In-Reply-To: <20220607233614.1133902-1-eric.dumazet@gmail.com>
-References: <20220607233614.1133902-1-eric.dumazet@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=1/qjcxsmWGOF/l/i6wu2yu8n5nSie7FdU/Wmm/ZoLiA=;
+        b=FEGo4BIPhQ6rBbGz/te7oqzvA6sPIIClqGH2fSRL/KFEGxOhtEiybtDTS+vgZEm1r5
+         aay+2R1bCo22yVd2roumhMahJRxzKur8qeFNlu0thHw0t9SU5Uxq2381c3a0R18/igl3
+         Vb+bEz5tG0nVv0uPSPJ8nacweRcKl1saeUN10duxf5e5RERJoXosIMlnLBRnSfFTh0ix
+         4Myu1gTArDUXXqnISIEn5yZ63tltcuVLWHHGA7gMh0a+ooUu1JRG0g6mEAxKi/E0cA6B
+         SnRfuWO7qqUYBM/i5eSIoO7NcItzN4YsjE3XLCBYFDU0rT8Fa9wEJWiBRy1rVMwQTEIL
+         dVJA==
+X-Gm-Message-State: AOAM532co8w+i4fP0Aw9d6cNPMEHs4u9CMNqFVyTbc3qzbQEPaq/nI+g
+        /QVOGBRaCefsFUz/y5t4LbEdrzx6JkyU6ImZL8E=
+X-Google-Smtp-Source: ABdhPJx2grNnlWzYraRXZjQ0ZQiMaFvd8I8Sz3hAXA1NCs5u0ESEaB4A+/hoH1sM/bQfc6KjRyjZAXo4eFe0VimxJzM=
+X-Received: by 2002:a25:9841:0:b0:663:eaf2:4866 with SMTP id
+ k1-20020a259841000000b00663eaf24866mr3790359ybo.381.1654645230591; Tue, 07
+ Jun 2022 16:40:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220604163000.211077-1-mailhol.vincent@wanadoo.fr> <20220604163000.211077-5-mailhol.vincent@wanadoo.fr>
+ <CAMuHMdXkq7+yvD=ju-LY14yOPkiiHwL6H+9G-4KgX=GJjX=h9g@mail.gmail.com>
+ <CAMZ6RqLEEHOZjrMH+-GLC--jjfOaWYOPLf+PpefHwy=cLpWTYg@mail.gmail.com>
+ <20220607182216.5fb1084e.max@enpas.org> <20220607150614.6248c504@kernel.org>
+In-Reply-To: <20220607150614.6248c504@kernel.org>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Wed, 8 Jun 2022 08:40:19 +0900
+Message-ID: <CAMZ6Rq+vYNvrTcToqVqqKSPJXAdjs3RkUY_SNuwB7n9FMuqQiQ@mail.gmail.com>
+Subject: Re: [PATCH v5 4/7] can: Kconfig: add CONFIG_CAN_RX_OFFLOAD
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Max Staudt <max@enpas.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Wed. 8 Jun 2022 à 07:06, Jakub Kicinski <kuba@kernel.org> wrote:
+> On Tue, 7 Jun 2022 18:22:16 +0200 Max Staudt wrote:
+> > > Honestly, I am totally happy to have the "default y" tag, the "if
+> > > unsure, say Y" comment and the "select CAN_RX_OFFLOAD" all together.
+> > >
+> > > Unless I am violating some kind of best practices, I prefer to keep it
+> > > as-is. Hope this makes sense.
+>
+> AFAIU Linus likes for everything that results in code being added to
+> the kernel to default to n.
 
-As explained in commit 316580b69d0a ("u64_stats: provide u64_stats_t type")
-we should use u64_stats_t and related accessors to avoid load/store tearing.
+A "make defconfig" would not select CONFIG_CAN (on which
+CAN_RX_OFFLOAD indirectly depends) and so by default this code is not
+added to the kernel.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- drivers/net/team/team.c | 26 +++++++++++++-------------
- include/linux/if_team.h | 10 +++++-----
- 2 files changed, 18 insertions(+), 18 deletions(-)
+> If the drivers hard-select that Kconfig
+> why bother user with the question at all? My understanding is that
+> Linus also likes to keep Kconfig as simple as possible.
 
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index b07dde6f0abf273195ff0f60217bd7158535b153..aac133a1e27a5f64fe8f83a456aa0598fad6824c 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -749,10 +749,10 @@ static rx_handler_result_t team_handle_frame(struct sk_buff **pskb)
- 
- 		pcpu_stats = this_cpu_ptr(team->pcpu_stats);
- 		u64_stats_update_begin(&pcpu_stats->syncp);
--		pcpu_stats->rx_packets++;
--		pcpu_stats->rx_bytes += skb->len;
-+		u64_stats_inc(&pcpu_stats->rx_packets);
-+		u64_stats_add(&pcpu_stats->rx_bytes, skb->len);
- 		if (skb->pkt_type == PACKET_MULTICAST)
--			pcpu_stats->rx_multicast++;
-+			u64_stats_inc(&pcpu_stats->rx_multicast);
- 		u64_stats_update_end(&pcpu_stats->syncp);
- 
- 		skb->dev = team->dev;
-@@ -1720,8 +1720,8 @@ static netdev_tx_t team_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 		pcpu_stats = this_cpu_ptr(team->pcpu_stats);
- 		u64_stats_update_begin(&pcpu_stats->syncp);
--		pcpu_stats->tx_packets++;
--		pcpu_stats->tx_bytes += len;
-+		u64_stats_inc(&pcpu_stats->tx_packets);
-+		u64_stats_add(&pcpu_stats->tx_bytes, len);
- 		u64_stats_update_end(&pcpu_stats->syncp);
- 	} else {
- 		this_cpu_inc(team->pcpu_stats->tx_dropped);
-@@ -1854,11 +1854,11 @@ team_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
- 		p = per_cpu_ptr(team->pcpu_stats, i);
- 		do {
- 			start = u64_stats_fetch_begin_irq(&p->syncp);
--			rx_packets	= p->rx_packets;
--			rx_bytes	= p->rx_bytes;
--			rx_multicast	= p->rx_multicast;
--			tx_packets	= p->tx_packets;
--			tx_bytes	= p->tx_bytes;
-+			rx_packets	= u64_stats_read(&p->rx_packets);
-+			rx_bytes	= u64_stats_read(&p->rx_bytes);
-+			rx_multicast	= u64_stats_read(&p->rx_multicast);
-+			tx_packets	= u64_stats_read(&p->tx_packets);
-+			tx_bytes	= u64_stats_read(&p->tx_bytes);
- 		} while (u64_stats_fetch_retry_irq(&p->syncp, start));
- 
- 		stats->rx_packets	+= rx_packets;
-@@ -1870,9 +1870,9 @@ team_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
- 		 * rx_dropped, tx_dropped & rx_nohandler are u32,
- 		 * updated without syncp protection.
- 		 */
--		rx_dropped	+= p->rx_dropped;
--		tx_dropped	+= p->tx_dropped;
--		rx_nohandler	+= p->rx_nohandler;
-+		rx_dropped	+= READ_ONCE(p->rx_dropped);
-+		tx_dropped	+= READ_ONCE(p->tx_dropped);
-+		rx_nohandler	+= READ_ONCE(p->rx_nohandler);
- 	}
- 	stats->rx_dropped	= rx_dropped;
- 	stats->tx_dropped	= tx_dropped;
-diff --git a/include/linux/if_team.h b/include/linux/if_team.h
-index add607943c9564365e8d72d7522291d7a3d899d2..fc985e5c739d434148e8ff19d30ebc3ee8abf1d8 100644
---- a/include/linux/if_team.h
-+++ b/include/linux/if_team.h
-@@ -12,11 +12,11 @@
- #include <uapi/linux/if_team.h>
- 
- struct team_pcpu_stats {
--	u64			rx_packets;
--	u64			rx_bytes;
--	u64			rx_multicast;
--	u64			tx_packets;
--	u64			tx_bytes;
-+	u64_stats_t		rx_packets;
-+	u64_stats_t		rx_bytes;
-+	u64_stats_t		rx_multicast;
-+	u64_stats_t		tx_packets;
-+	u64_stats_t		tx_bytes;
- 	struct u64_stats_sync	syncp;
- 	u32			rx_dropped;
- 	u32			tx_dropped;
--- 
-2.36.1.255.ge46751e96f-goog
+I do not think that this is so convoluted. What would bother me is
+that RX offload is not a new feature. Before this series, RX offload
+is built-in the can-dev.o by default. If this new CAN_RX_OFFLOAD does
+not default to yes, then the default features built-in can-dev.o would
+change before and after this series.
+But you being one of the maintainers, if you insist I will go in your
+direction. So will removing the "default yes" and the comment "If
+unsure, say yes" from the CAN_RX_OFFLOAD satisfy you?
 
+> > I wholeheartedly agree with Vincent's decision.
+> >
+> > One example case would be users of my can327 driver, as long as it is
+> > not upstream yet. They need to have RX_OFFLOAD built into their
+> > distribution's can_dev.ko, otherwise they will have no choice but to
+> > build their own kernel.
+>
+> Upstream mentioning out-of-tree modules may have the opposite effect
+> to what you intend :( Forgive my ignorance, what's the reason to keep
+> the driver out of tree?
+
+I can answer for Max. The can327 patch is under review with the clear
+intent to have it upstream. c.f.:
+https://lore.kernel.org/linux-can/20220602213544.68273-1-max@enpas.org/
+
+But until the patch gets accepted, it is defacto an out of tree module.
+
+
+Yours sincerely,
+Vincent Mailhol
