@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8416A542041
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:24:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2FC542020
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:23:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384699AbiFHAUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 20:20:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48594 "EHLO
+        id S1381080AbiFHAR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 20:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588649AbiFGXyx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 19:54:53 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FC71B184D
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 16:36:33 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id g205so16823866pfb.11
-        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 16:36:33 -0700 (PDT)
+        with ESMTP id S1588659AbiFGXyz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 19:54:55 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EFBD1B1857
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 16:36:35 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso16823242pjg.0
+        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 16:36:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wcDYmTC7D1WoG3L634icWQ9nQjK/Mpq74OFhq4Q9p9w=;
-        b=NrAQNkk8keYySNwTYX/B0XE7cPjL13yTQtIsbrXbx/twn1G25e/Hj3VFxYkXpCDoss
-         ngXoY41Jldb/MnFOSCj3iZo2hMrz84zXtviwVwUNky0s9K5rXpJX77HV0lPpM1MzvWpd
-         3E+znEGUL8Ir/pqdRphHO0H69M1pSy7H47R3JgxsCc3ZDI3kzEstycix+kW3nHbTRlun
-         Vw5MLt/TXMXEC95k144JgswCTv19VrotJ8fH+NXv5akO8RwPLf9PXxcL//Bj5yfEInpY
-         4ZrspsC44Vkkt8BlOMXuJF3gIB/u6/MXUunIHP9beIK0hPayoJvWUfQojatuSZ5Nylfy
-         eESw==
+        bh=oo4VNLQ32ZUWs+xj1GEnWGce/STbLBZ5K8YuYmraaxI=;
+        b=i5u5pxeq5/uEJKzNM9ULNsWvaQie6meicLDBzjB/uCZqE8XYgLbR6NMuDenSRqu7D9
+         jmvR00Xzq6rbS4PrqdP2HaapU4V9LEe3k5M590JhfwUJpCvHQQugYcSt77Uv7ZZvrHCD
+         eeBpRAHkkO7Wx0ZwU3zr/dLDe8L7s1EE+g3K+5aDMasFVJjp/5Z8w/WP5xC5/sC780q9
+         Ian/q1ecDRpURG1CG0SHBaSieRMr4QpD3QoVodRwbBR4238feAwD5p6jyhmZ5s37lXu/
+         /FugmmlT5/qZVWUSqafmW0X9G4O3tGPxv4V3eUxLk/qeSHeEoWbSxAYKJr8ccwaMCygo
+         x6mw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wcDYmTC7D1WoG3L634icWQ9nQjK/Mpq74OFhq4Q9p9w=;
-        b=NfAqxwk0oJ4IIvs/IaJFd3KYdGppkUgKnvOtY1BG6TlWdkZnlLCmIo0aK77B6ZV2rQ
-         jwvB/yNKdPXYvLHDWQd1n2DvyWKs01aGUoIpfTf2loi8BKDPF0x3b1SXrwwWgQIzjHa8
-         J3d55Ggc5LfCZLRIUjkNnS3E5zBQs57XC3JaDXaGHjLjXDjGfBYZ0ozXHUZNcNgE3Tb+
-         taJm1C7zVhljErb1RX3AcCAZk98zg3cDda35GJT2vV4Zw8ApEajaulzq8E55z80WNxLr
-         VZvEhQTrb/68xrE3TkZE/sbOh2fnWZOWGsjSZd+jl1H4w0YdWWtPS70oPpaN78XFnm4F
-         h35w==
-X-Gm-Message-State: AOAM532vEutxHbAc30NLMQSGC3os/QOCL5cQo6Z8lEDwhTGPDz3Eyc5N
-        0QDGh9d4qcaOhsbeJhd/HRU=
-X-Google-Smtp-Source: ABdhPJyXEULYqbchZR5cAoeTkVpp/BUNxBl/fudcql2ACmzFyoqIjs73G1SMXj8o86sfl9vsfDm7VQ==
-X-Received: by 2002:aa7:8d0f:0:b0:518:d867:bae8 with SMTP id j15-20020aa78d0f000000b00518d867bae8mr30988612pfe.13.1654644993157;
-        Tue, 07 Jun 2022 16:36:33 -0700 (PDT)
+        bh=oo4VNLQ32ZUWs+xj1GEnWGce/STbLBZ5K8YuYmraaxI=;
+        b=niWj+mDy4SUSV20RS6NJrZKC2xe+j8gMEWZmpPFGmbPY9YxE3l4AB32QCvgoUAvRmW
+         YpmH8fP8hlNTJPsYz6lF5U3fy8krBEFqUmT5gC4k5V5u3gVuOVGR1GcpysrNT8frxz9J
+         BUpKvs4Vkx/n+C2b8shQTaky8Dh9B5bIRbWH4ChM9e9ZeW8jOsROqSXbq/zcM1PB/Tz3
+         ZTCro4RVj2oM1wap9Cjd/Q6NnH4Np6AlUnIAKLs6iu2zeo9e1zs2zfP5N8g/Tj1Q8L/w
+         UH9xgRRZ//BI6qZljbNqSPGSy1PqI5sPXj545F01iqLxC9orqD52DgiSDDOgfu4ahxo1
+         4nTw==
+X-Gm-Message-State: AOAM53017bI75/pr88M1Ppq2dOBikxHd9d7FNRNkddZKBymWi33bqyWG
+        06KTPdJPoDHrfMf5LZviBEg=
+X-Google-Smtp-Source: ABdhPJwajoF6n4Lpippxk93vNe9Qjb9r7px0vMvnW+ghZHpwCjglPap0EVJ4tx3kt1/h3g0gdlLiBg==
+X-Received: by 2002:a17:903:2445:b0:164:16dd:a94a with SMTP id l5-20020a170903244500b0016416dda94amr31932688pls.46.1654644994885;
+        Tue, 07 Jun 2022 16:36:34 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:191a:13a7:b80a:f36e])
-        by smtp.gmail.com with ESMTPSA id u79-20020a627952000000b0051ba7515e0dsm13550947pfc.54.2022.06.07.16.36.32
+        by smtp.gmail.com with ESMTPSA id u79-20020a627952000000b0051ba7515e0dsm13550947pfc.54.2022.06.07.16.36.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 16:36:32 -0700 (PDT)
+        Tue, 07 Jun 2022 16:36:34 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -55,9 +55,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         "Jason A . Donenfeld" <Jason@zx2c4.com>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 7/9] devlink: adopt u64_stats_t
-Date:   Tue,  7 Jun 2022 16:36:12 -0700
-Message-Id: <20220607233614.1133902-8-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 8/9] drop_monitor: adopt u64_stats_t
+Date:   Tue,  7 Jun 2022 16:36:13 -0700
+Message-Id: <20220607233614.1133902-9-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 In-Reply-To: <20220607233614.1133902-1-eric.dumazet@gmail.com>
 References: <20220607233614.1133902-1-eric.dumazet@gmail.com>
@@ -80,84 +80,84 @@ we should use u64_stats_t and related accessors to avoid load/store tearing.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/core/devlink.c | 28 ++++++++++++++++------------
- 1 file changed, 16 insertions(+), 12 deletions(-)
+ net/core/drop_monitor.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 5cc88490f18fd24329df0a83a425ed680b7a10fb..db61f3a341cb24b4de79198db7ae11b5e3132d42 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -7946,8 +7946,8 @@ static int devlink_nl_cmd_health_reporter_test_doit(struct sk_buff *skb,
- }
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index 4ad1decce72418818aa4c2415b202e4311061a8c..98952ffcee452fe8437b0d020ce834496cd26570 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -55,7 +55,7 @@ static bool monitor_hw;
+ static DEFINE_MUTEX(net_dm_mutex);
  
- struct devlink_stats {
--	u64 rx_bytes;
--	u64 rx_packets;
-+	u64_stats_t rx_bytes;
-+	u64_stats_t rx_packets;
+ struct net_dm_stats {
+-	u64 dropped;
++	u64_stats_t dropped;
  	struct u64_stats_sync syncp;
  };
  
-@@ -8104,12 +8104,12 @@ static void devlink_trap_stats_read(struct devlink_stats __percpu *trap_stats,
- 		cpu_stats = per_cpu_ptr(trap_stats, i);
+@@ -530,7 +530,7 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+ unlock_free:
+ 	spin_unlock_irqrestore(&data->drop_queue.lock, flags);
+ 	u64_stats_update_begin(&data->stats.syncp);
+-	data->stats.dropped++;
++	u64_stats_inc(&data->stats.dropped);
+ 	u64_stats_update_end(&data->stats.syncp);
+ 	consume_skb(nskb);
+ }
+@@ -985,7 +985,7 @@ net_dm_hw_trap_packet_probe(void *ignore, const struct devlink *devlink,
+ unlock_free:
+ 	spin_unlock_irqrestore(&hw_data->drop_queue.lock, flags);
+ 	u64_stats_update_begin(&hw_data->stats.syncp);
+-	hw_data->stats.dropped++;
++	u64_stats_inc(&hw_data->stats.dropped);
+ 	u64_stats_update_end(&hw_data->stats.syncp);
+ 	net_dm_hw_metadata_free(n_hw_metadata);
+ free:
+@@ -1432,10 +1432,10 @@ static void net_dm_stats_read(struct net_dm_stats *stats)
+ 
  		do {
  			start = u64_stats_fetch_begin_irq(&cpu_stats->syncp);
--			rx_packets = cpu_stats->rx_packets;
--			rx_bytes = cpu_stats->rx_bytes;
-+			rx_packets = u64_stats_read(&cpu_stats->rx_packets);
-+			rx_bytes = u64_stats_read(&cpu_stats->rx_bytes);
+-			dropped = cpu_stats->dropped;
++			dropped = u64_stats_read(&cpu_stats->dropped);
  		} while (u64_stats_fetch_retry_irq(&cpu_stats->syncp, start));
  
--		stats->rx_packets += rx_packets;
--		stats->rx_bytes += rx_bytes;
-+		u64_stats_add(&stats->rx_packets, rx_packets);
-+		u64_stats_add(&stats->rx_bytes, rx_bytes);
+-		stats->dropped += dropped;
++		u64_stats_add(&stats->dropped, dropped);
  	}
  }
  
-@@ -8127,11 +8127,13 @@ devlink_trap_group_stats_put(struct sk_buff *msg,
+@@ -1451,7 +1451,7 @@ static int net_dm_stats_put(struct sk_buff *msg)
  		return -EMSGSIZE;
  
- 	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_STATS_RX_PACKETS,
--			      stats.rx_packets, DEVLINK_ATTR_PAD))
-+			      u64_stats_read(&stats.rx_packets),
-+			      DEVLINK_ATTR_PAD))
- 		goto nla_put_failure;
- 
- 	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_STATS_RX_BYTES,
--			      stats.rx_bytes, DEVLINK_ATTR_PAD))
-+			      u64_stats_read(&stats.rx_bytes),
-+			      DEVLINK_ATTR_PAD))
+ 	if (nla_put_u64_64bit(msg, NET_DM_ATTR_STATS_DROPPED,
+-			      stats.dropped, NET_DM_ATTR_PAD))
++			      u64_stats_read(&stats.dropped), NET_DM_ATTR_PAD))
  		goto nla_put_failure;
  
  	nla_nest_end(msg, attr);
-@@ -8171,11 +8173,13 @@ static int devlink_trap_stats_put(struct sk_buff *msg, struct devlink *devlink,
- 		goto nla_put_failure;
+@@ -1476,10 +1476,10 @@ static void net_dm_hw_stats_read(struct net_dm_stats *stats)
  
- 	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_STATS_RX_PACKETS,
--			      stats.rx_packets, DEVLINK_ATTR_PAD))
-+			      u64_stats_read(&stats.rx_packets),
-+			      DEVLINK_ATTR_PAD))
- 		goto nla_put_failure;
+ 		do {
+ 			start = u64_stats_fetch_begin_irq(&cpu_stats->syncp);
+-			dropped = cpu_stats->dropped;
++			dropped = u64_stats_read(&cpu_stats->dropped);
+ 		} while (u64_stats_fetch_retry_irq(&cpu_stats->syncp, start));
  
- 	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_STATS_RX_BYTES,
--			      stats.rx_bytes, DEVLINK_ATTR_PAD))
-+			      u64_stats_read(&stats.rx_bytes),
-+			      DEVLINK_ATTR_PAD))
- 		goto nla_put_failure;
- 
- 	nla_nest_end(msg, attr);
-@@ -11641,8 +11645,8 @@ devlink_trap_stats_update(struct devlink_stats __percpu *trap_stats,
- 
- 	stats = this_cpu_ptr(trap_stats);
- 	u64_stats_update_begin(&stats->syncp);
--	stats->rx_bytes += skb_len;
--	stats->rx_packets++;
-+	u64_stats_add(&stats->rx_bytes, skb_len);
-+	u64_stats_inc(&stats->rx_packets);
- 	u64_stats_update_end(&stats->syncp);
+-		stats->dropped += dropped;
++		u64_stats_add(&stats->dropped, dropped);
+ 	}
  }
  
+@@ -1495,7 +1495,7 @@ static int net_dm_hw_stats_put(struct sk_buff *msg)
+ 		return -EMSGSIZE;
+ 
+ 	if (nla_put_u64_64bit(msg, NET_DM_ATTR_STATS_DROPPED,
+-			      stats.dropped, NET_DM_ATTR_PAD))
++			      u64_stats_read(&stats.dropped), NET_DM_ATTR_PAD))
+ 		goto nla_put_failure;
+ 
+ 	nla_nest_end(msg, attr);
 -- 
 2.36.1.255.ge46751e96f-goog
 
