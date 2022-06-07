@@ -2,141 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 78E745401AC
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 16:45:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E95B75401CF
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 16:53:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238850AbiFGOpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 10:45:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42662 "EHLO
+        id S1343585AbiFGOw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 10:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244641AbiFGOpo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 10:45:44 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54BE34474E;
-        Tue,  7 Jun 2022 07:45:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=7rNMDeDx4T7YoKNaSO1w0qFDUszwAfmML4PKjeMx32o=; b=duVZ8Cv8kSYWaiAPwvDGRyUCLc
-        TkqjYDEDgtPGgBTzekHCiNFIP7nQmYo1b9iDwZGrEFfquSQ/SnNneDMKCyyCildK0IskT6FsHU4El
-        WOpwDgXKCfNLRnfSCJE6Sd4r+IauRpCpbwMv+c5Y3U62tzpYkqEwFWEaf3vvI1LCJ0Sj9Mp70Za1D
-        vJF7eg7dJCOsS9xRuLgfa2A43pboAie4uYeYcF3idUbsPHwOfhhALEODKKcMeDTJh3Zi69J5e0Lz2
-        MfSI/95cffnnZ89ZIX+EUcaPJvOWnfjV+dFEbU8morurvQ9WJN4rdidsS+iMo93NIrOt132rjjYJq
-        ODWZDJvQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32770)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nyaSc-0003cV-Dc; Tue, 07 Jun 2022 15:45:34 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nyaSa-0000so-6n; Tue, 07 Jun 2022 15:45:32 +0100
-Date:   Tue, 7 Jun 2022 15:45:32 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Alvin =?utf-8?Q?=C5=A0ipraga?= <ALSI@bang-olufsen.dk>
-Cc:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alvin@pqrs.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] net: dsa: realtek: rtl8365mb: fix GMII caps for
- ports with internal PHY
-Message-ID: <Yp9kjD0D9XYIvran@shell.armlinux.org.uk>
-References: <20220606130130.2894410-1-alvin@pqrs.dk>
- <Yp4BpJkZx4szsLfm@shell.armlinux.org.uk>
- <20220606134708.x2s6hbrvyz4tp5ii@bang-olufsen.dk>
- <CAJq09z6YLza5v7fzfH2FCDrS8v8cC=B5pKg0_GiqX=fEYaGoqQ@mail.gmail.com>
- <Yp9bNLRV/7kYweCS@shell.armlinux.org.uk>
- <20220607141744.l2yhwnix6aoiwl54@bang-olufsen.dk>
+        with ESMTP id S1343577AbiFGOwx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 10:52:53 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60076.outbound.protection.outlook.com [40.107.6.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DB8F5068;
+        Tue,  7 Jun 2022 07:52:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XdOZp01ekCtmar+I2n5mGag2jtPP4udmiKgXabXofSpgyi6BQFPeHK+xdN7ZsRdHoYOe3lSQ107UsFW+1ghp2jnEYKq6n738X+tPdNEK0gCW4frR54zVNrVG4sZugbRxMMDI31vAGvJRfG3cCh3eBZRSKrvj8Khu6sKrs9YtpBOVYjvooH7nzDdOahPsFpVprniqt+1hn9VHoL/6xSuaOdslna3B70WxCmvmTSJmQc6DkOU+R4MJQ2qGjUOz1zndnfbq7sYkQNbzEMhv0mklhodjWeTjavbWq1I6E0oIwU3YuMsCTTgqFunslG1+8DWsx3Fj3NC4fDlM+zV0WzJkLA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lI/aZPgWW0y2Ak0A4mWyYKTTJ17eFAACIX6vfD3VRR8=;
+ b=e4gue+5DeAjyXs8nymf7qCUlYbzo6YLPKWAKh2Wf45+PaEemYtSMwD/IRb2/7u/o9Kvw5WOT3IrwwjNSRxv82uAT51PjdVghASy6lUIIViuw6mSRV67oy3yTrCWYTPc4QBV67dIAdjBf8SuvgZMG5cOYylq00GI8pPKOXgdzsk5jc3kynwVpPkTgHSFnRKku/kqXxIaUXleuQiC0jN968o1z+5LHyPkpniu6NZRgEc7YEc8vV23Z1WDwC3XPGMYI1edHjaC6cEauJ25QDDJkyLn0KCt4BmJOwBOuzJVmtZbnF3be+VzU1Fgq7irpagZ3LiAMzcG4aUZgZMEQAwMQJQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lI/aZPgWW0y2Ak0A4mWyYKTTJ17eFAACIX6vfD3VRR8=;
+ b=EzaLbqji6LBiriMbZz8g0xhDwHrkrMxEDnYRYCwqf1NvGMOfEkfYT6QzJT2WiwNqy5RN5ki09hsD1FfWGXHWlLSBd1JsJFjj7UZlBBtUz7pA5bsU6tcLtR5vihL625FxT4cF3AAzHO76ojmQtDE6SZtxdviet35GtXwyd3Fpuj4=
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
+ by VI1PR04MB4319.eurprd04.prod.outlook.com (2603:10a6:803:43::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.19; Tue, 7 Jun
+ 2022 14:52:48 +0000
+Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::ac4a:d6c6:35f6:84fb]) by VI1PR04MB5807.eurprd04.prod.outlook.com
+ ([fe80::ac4a:d6c6:35f6:84fb%6]) with mapi id 15.20.5314.019; Tue, 7 Jun 2022
+ 14:52:48 +0000
+From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
+To:     Sean Anderson <sean.anderson@seco.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        netdev <netdev@vger.kernel.org>
+CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Florinel Iordache <florinel.iordache@nxp.com>
+Subject: RE: net: fman: IRQ races
+Thread-Topic: net: fman: IRQ races
+Thread-Index: AQHYdSHwFebLnfwxmE+xbiOpPp5Baq1EDdZg
+Date:   Tue, 7 Jun 2022 14:52:47 +0000
+Message-ID: <VI1PR04MB5807729BF02C130EEEB65DFCF2A59@VI1PR04MB5807.eurprd04.prod.outlook.com>
+References: <c6c6f425-d12b-3a16-2573-4c70b9c48b7e@seco.com>
+In-Reply-To: <c6c6f425-d12b-3a16-2573-4c70b9c48b7e@seco.com>
+Accept-Language: en-GB, ro-RO, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: dced0c80-5962-427f-3eaa-08da4895635a
+x-ms-traffictypediagnostic: VI1PR04MB4319:EE_
+x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+x-microsoft-antispam-prvs: <VI1PR04MB4319DCB35DEE035B2735C289F2A59@VI1PR04MB4319.eurprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: y0g4pZZYe3u2UddedMdR9pH8koU1GBUPgQ86UG/iNPhmV8BfUjUvqXk7dw3/lwu5enodibfmKMadZk2kGY89HfHgeUEBppdByiTGx0yDOgDhlFmwYkp5UQ9+hNaNCSoQHncWqtRqAmNhmYsRS107uI0S7Y2D//yWrmThj3ZZwbAY4gsAhO+7W6JbkyPZrgrHlc4sracXhj2aFM9zmI2uBlu3gypWVJvhbw9vSjfT4fLuTMF9eg7FkZRvnE4/asp7WTj3X8QJp9bUwxJIUsgCbmuikyDVrCGjyu60auSqIrLSbaHEk4miQ9QiPUTwv9gHMKd51nkCzo9DEDoZp89uwh8nOM7r7fqcJIV+jA2Q4jcEMSKojoAWB17g0Zmys2WqYL9x1Chzb+f/lwdzhDZKIyvi5fPpGC4hvTpftWnWWtegFcCfdxzfd5317Ew4pOcw6CZk8D74iQoP9y0TphEunW2YSSEXOg0HVo3C4+6mqfGKcKgb911yAaNadQIy0C0pYTdrynSX3GQyLE57M4ycOcD+poZY+5uZHXIzN+jbOVCHp05SWp+BuvY2xS7TwfaERikLpDfNcJ3oqRaGEDmZtHTo6G5XXWG6h34HsFx8URtvNrU84ro5zN094WioAbPdIitnnNpUax8tlIxjIGbbNNPelhmQ5yZt1BA4mUPqJLOB0zrmcn0rIR8gPGcTN01IEX+sQv9yCqU03hbN5PFQsg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66446008)(66556008)(38070700005)(8676002)(2906002)(64756008)(83380400001)(8936002)(71200400001)(55016003)(186003)(26005)(9686003)(110136005)(54906003)(316002)(6506007)(55236004)(53546011)(7696005)(33656002)(76116006)(66476007)(508600001)(5660300002)(66946007)(4326008)(38100700002)(52536014)(122000001)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?SE1oYk00SUpsQy8zUm1xTEpDcEV1eHVUQlcyMEpDUG1qU3RZdGZiVGlnUFJ5?=
+ =?utf-8?B?aWNRWTVWd1BkMTRqNCtha3E0THdHRGoxZzM5RndXdTh0c0NwWUtnVmxENWN0?=
+ =?utf-8?B?c05KY09DVnhUU2ZNQS9kWEpQcmtRblFrOTZyT2UrelY0U01RWWgybUNEWEpv?=
+ =?utf-8?B?TlNRM0xHWWhEcXhhcFhIU3MzUEcvQXhSWGdTb0VKUHVPcVl1R3V0cWFzTUUy?=
+ =?utf-8?B?YkJGSnNab1Nrc1ZhRW8rZkdJRUFSclllaXZ0R1Q1WCtBdkxlZXM3QXZteDhB?=
+ =?utf-8?B?OC8xdWY2ZVUyNzB1YlQ0UW5KYWl2azc5eDFlZ2VHcERTTHJOOEFRTGF5SUta?=
+ =?utf-8?B?NkVNOGFkTWkxekFJQmZKVW8yWFFCb3B6U2N5blAvSUUvV0UySWhuQ2toR1pO?=
+ =?utf-8?B?T3RZbE1tTU5DU0syRFcyVkJxTzhVWlo0anQ5UTZHR1VyMDdDU0hCTEprT2RY?=
+ =?utf-8?B?Z0dRT2NsYUxSU3FXNUkzRkdib2paUkh4d25hRlBNQ3IyZEJnM1VKdFAyL3cz?=
+ =?utf-8?B?bWtVbCs3SXJhN1dEbWtWb1dua2J5aW8xWlNJL0JKREhNZ3lobUFhQ0V0YlQ1?=
+ =?utf-8?B?c2wveGgybmszcWFSemU4dERNeU1aQ0FvQ21GdXNFc1UxcVBaUXlDdHpCMWJP?=
+ =?utf-8?B?Ym1uSkNQTDlWNG5FZmx6NzhHY0dFYUhHcSt3T0xScWw3SU5Gb081NENBVy94?=
+ =?utf-8?B?M2pzQW1zWEN6d1loUGZkRThpNXprN3hiM3I1R1BGaUhMNVFJQmdXMTYrYlV2?=
+ =?utf-8?B?SXVJczhtdHBxNFNpT3Baa0RoL2VYcmRYZ2N5WSt6bkxld3RzbjZpY1o0djlF?=
+ =?utf-8?B?ZTdkeXRQYmJVZ3NvOHk3TjQyeVFpcGxDQkZ5VlR2N1ZLdHZBQ1l4MjJUeFQv?=
+ =?utf-8?B?MlBqWkM1VHlNZHljNytybnViS2pqcGRBZmw4K2tVZU1BQVBCaG5BOFAyelJB?=
+ =?utf-8?B?bFpXM1E1Z1R3MnZNQUdZYUlQN3R1SVZOajlqNFFUVkdOMHlPSWlQSHhMRWRZ?=
+ =?utf-8?B?MCtkVUNMQm1pWUw3MEdzQjYyTDk1Q29lSjhwemNkNWcrVnlvYUhJV1E5R1Bl?=
+ =?utf-8?B?a1hYSHNEeUJIYnVlUTYyS0dkNHo5QjROOGl4SDBCbEZmUklmV1BFVGdqekh2?=
+ =?utf-8?B?MkVmTnVQWi9Wd0Z6R2V6RUJoU3psVWt5UFJqLzBwKzlEVi9nbncyeDNHOXIr?=
+ =?utf-8?B?bTlYcHM4YThnYVgxK0JoakJ4b0hXUVpmblhwa0tSYS9JY2RjRDR6VHRFd0ta?=
+ =?utf-8?B?VlF5Sms1UVo1VzFoUlFYM01kV0xzZkpzc1VVNkxqNlhZSENmZFM2T2hodGRB?=
+ =?utf-8?B?TERaK0NqM1Bxa2t4Z3RhMHhQb1NVTzBuU0lHUEVJMEVGSTBEZFVGZ0tqb3RX?=
+ =?utf-8?B?aklXT0NqOFpuVDFBMEMramxHVlZzRWI3RE1FTmdXLzFRQ2JLYTNUZWkweUJH?=
+ =?utf-8?B?dXBNTzM4djl3M0NCNm9VWGNnT21tRXZNd0IyNlNvS3Z4d1l4RE81Nzg5Zmxm?=
+ =?utf-8?B?UGQwT3p6U3Z3YmI2U2JKR29MVFYxTGMwbWExTFU3TzNnM2pjeUpoMlE5OFN4?=
+ =?utf-8?B?dCtSYW84dWZodVZ5M05PQVkyelM3dWJFQ3NjbUlCWHJQUC9yUzhtdm5IWHpC?=
+ =?utf-8?B?cXZ3U012bEV1cjB0STVYVFlSVGUrNUNxUExqUDRLcHorM0VsL3c5cEFNWGJ6?=
+ =?utf-8?B?OFhQL0NzaENLNjZYTzd6SEJtYi9WVlEyekJ6NFBzT3ZKQzdwcUZnK3dnNHFa?=
+ =?utf-8?B?K2EvNU1MV2Rsc0xESXNqN0JMV2l1Qk44ZzUzQ1ZxWU05M21wRmVlbjEyTkpi?=
+ =?utf-8?B?YzVWNEpYUzJLR0Qyb2xyZ3JQQVAyakJYbW1vd2xOc21vajdpYjd0K3ArZGNp?=
+ =?utf-8?B?VDlET0RRcyt1Y0dsT08wNnVBTkRkYjBZKzBLaERhS29NMG9iVmJCN2FOUDlP?=
+ =?utf-8?B?WFN5NUhEL0xWLzhpYUxyeDNWNWcvV2FjM1VvNzkrTHR0ZllUZ2NWWUtXdjVW?=
+ =?utf-8?B?VEt4MjdqUFhENFJnc2JFTTJQeWZNNG00eGd4ME04M0pOZ0F5czR5VG5RQTNG?=
+ =?utf-8?B?OEZqS2hOb2hjdkVMY011QnRYVFFCVnVkTGljdUlhMUtCR0JlR1JSOFUxQTkx?=
+ =?utf-8?B?bHNYM0RPTlZWT1Nib1hKVXVmQjJScTNFTno3RXZhQkcyY2tLTGtuM3JZVEd0?=
+ =?utf-8?B?SWpHRGZBMXVpOWpTdkRtZ1F1bkJVaWJQbThnNXZYM0lNejRmdGJUMnN4R2xa?=
+ =?utf-8?B?VU9kSVowOW8yZXRucFNHQTFyS05tWmg5WHl3UnB6VmkybjJUVmZKYlFwZTYx?=
+ =?utf-8?B?SHZSK0lLQVUxSlZnUUw2MmRKOHJCTDJwOWJ2ejhHbDBlb3VjR0lDUT09?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220607141744.l2yhwnix6aoiwl54@bang-olufsen.dk>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dced0c80-5962-427f-3eaa-08da4895635a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jun 2022 14:52:47.9907
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: VUDHm5MA6pUj01NrusqRFp2i2Hp8+AqIK32nTcvljRNjZ++4WoLGQD164R1up7jnd1u9NbXhpi1+scCwPSPk5w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4319
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 02:17:44PM +0000, Alvin Šipraga wrote:
-> On Tue, Jun 07, 2022 at 03:05:40PM +0100, Russell King (Oracle) wrote:
-> > On Tue, Jun 07, 2022 at 10:52:48AM -0300, Luiz Angelo Daros de Luca wrote:
-> > > > > > Luiz, Russel:
-> > > > > >
-> > > > > > Commit a5dba0f207e5 ought to have had a Fixes: tag I think, because it
-> > > > > > claims to have been fixing a regression in the net-next tree - is that
-> > > > > > right? I seem to have missed both referenced commits when they were
-> > > > > > posted and never hit this issue personally. I only found things now
-> > > > > > during some other refactoring and the test for GMII looked weird to me
-> > > > > > so I went and investigated.
-> > > > > >
-> > > > > > Could you please help me identify that Fixes: tag? Just for my own
-> > > > > > understanding of what caused this added requirement for GMII on ports
-> > > > > > with internal PHY.
-> > > > >
-> > > > > I have absolutely no idea. I don't think any "requirement" has ever been
-> > > > > added - phylib has always defaulted to GMII, so as the driver stood when
-> > > > > it was first submitted on Oct 18 2021, I don't see how it could have
-> > > > > worked, unless the DT it was being tested with specified a phy-mode of
-> > > > > "internal". As you were the one who submitted it, you would have a
-> > > > > better idea.
-> > > > >
-> > > > > The only suggestion I have is to bisect to find out exactly what caused
-> > > > > the GMII vs INTERNAL issue to crop up.
-> > > >
-> > > > Alright, thanks for the quick response. Maybe Luiz has a better idea, otherwise
-> > > > I will try bisecting if I find the time.
-> > > 
-> > > I don't know. I just got hit by the issue after a rebase (sorry, I
-> > > don't know exactly from which commit I was rebasing).
-> > > But I did test the net (!-next) and left a working commit note. You
-> > > can diff 3dd7d40b43..a5dba0f20.
-> > > If I'm to guess, I would blame:
-> > > 
-> > > 21bd64bd717de: net: dsa: consolidate phylink creation
-> > 
-> > Why do you suspect that commit? I fail to see any functional change in
-> > that commit that would cause the problem.
-> 
-> Agree, seems like the referenced commit makes no functional change.
-> 
-> But thanks for the range of commits Luiz, I found one that looks like the
-> culprit. It's small so I will reproduce the whole thing below. Will test later.
-
-This one I agree could well be the culpret, but it means that the
-original premise that PHY_INTERFACE_MODE_INTERNAL was being used is
-incorrect - it's actually been relying on using PHY_INTERFACE_MODE_NA.
-
-It instead means that PHY_INTERFACE_MODE_NA was being used, which
-really isn't good, because PHY_INTERFACE_MODE_NA internally inside
-phylink has always had a special meaning - that being with the
-validate step which has been used to get _all_ possible modes from
-the MAC. This was never intended to be used for anything except
-phylink's internal use to retrieve that information from the MAC
-driver to make decisions about what mode(s) a SFP should use.
-
-So yes, this is most likely the culpret, and if proven, please use
-it for the Fixes: tag for any fixes to drivers that incorrectly
-relied upon that behaviour.
-
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBTZWFuIEFuZGVyc29uIDxzZWFu
+LmFuZGVyc29uQHNlY28uY29tPg0KPiBTZW50OiBUdWVzZGF5LCBNYXkgMzEsIDIwMjIgMjI6MDkN
+Cj4gVG86IE1hZGFsaW4gQnVjdXIgPG1hZGFsaW4uYnVjdXJAbnhwLmNvbT47IG5ldGRldg0KPiA8
+bmV0ZGV2QHZnZXIua2VybmVsLm9yZz4NCj4gQ2M6IExpbnV4IEtlcm5lbCBNYWlsaW5nIExpc3Qg
+PGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc+OyBGbG9yaW5lbA0KPiBJb3JkYWNoZSA8Zmxv
+cmluZWwuaW9yZGFjaGVAbnhwLmNvbT4NCj4gU3ViamVjdDogbmV0OiBmbWFuOiBJUlEgcmFjZXMN
+Cj4gDQo+IEhpIGFsbCwNCj4gDQo+IEknbSBkb2luZyBzb21lIHJlZmFjdG9yaW5nIG9mIHRoZSBk
+cGFhL2ZtYW4gZHJpdmVycywgYW5kIEknbSBhIGJpdA0KPiBjb25mdXNlZCBieSB0aGUgd2F5IElS
+UXMgYXJlIGhhbmRsZWQuIFRvIGNvbnRyYXN0LCBpbiBHQU0vTUFDQiwgb25lIG9mDQo+IHRoZSBm
+aXJzdCB0aGluZ3MgSVJRIGhhbmRsZXIgZG9lcyBpcyBncmFiIGEgc3BpbmxvY2sgZ3VhcmRpbmcg
+cmVnaXN0ZXINCj4gYWNjZXNzLiBUaGlzIGxldHMgaXQgZG8gcmVhZC9tb2RpZnkvd3JpdGVzIGFs
+bCBpdCB3YW50cy4gSG93ZXZlciwgSQ0KPiBkb24ndCBzZWUgYW55dGhpbmcgbGlrZSB0aGF0IGlu
+IHRoZSBGTWFuIGNvZGUuIEknZCBsaWtlIHRvIHVzZSB0d28NCj4gZXhhbXBsZXMgdG8gaWxsdXN0
+cmF0ZS4NCj4gDQo+IEZpcnN0LCBjb25zaWRlciBjYWxsX21hY19pc3IuIEl0IHdpbGwgcmFjZSB3
+aXRoIGJvdGggZm1hbl9yZWdpc3Rlcl9pbnRyOg0KPiANCj4gQ1BVMCAoY2FsbF9tYWNfaXNyKQkJ
+Q1BVMSAoZm1hbl9yZWdpc3Rlcl9pbnRyKQ0KPiAJCQkJaXNyX2NiID0gZm9vDQo+IGlzcl9jYihz
+cmNfaGFuZGxlKQ0KPiAJCQkJc3JjX2hhbmRsZSA9IGJhcg0KPiANCj4gYW5kIHdpdGggZm1hbl91
+bnJlZ2lzdGVyX2ludHINCj4gDQo+IENQVTAgKGNhbGxfbWFjX2lzcikJCUNQVTEgKGZtYW5fdW5y
+ZWdpc3Rlcl9pbnRyKQ0KPiBpZiAoaXNyX2NiKQ0KPiAJCQkJaXNyX2NiID0gTlVMTA0KPiAJCQkJ
+c3JjX2hhbmRsZSA9IE5VTEwNCj4gaXNyX2NiKHNyY19oYW5kbGUpDQo+IA0KPiBUaGlzIGlzIHBy
+b2JhYmx5IG5vdCB0b28gY3JpdGljYWwgKHNpbmNlIGhvcGVmdWxseSB0aGVyZSBhcmUgbm8NCj4g
+aW50ZXJydXB0cyBiZWZvcmUvYWZ0ZXIgdGhlIGhhbmRsZXIgaXMgcmVnaXN0ZXJlZCksIGJ1dCBp
+dCBjZXJ0YWlubHkNCj4gbG9va3MgdmVyeSBzdHJhbmdlLg0KPiANCj4gU2Vjb25kLCBjb25zaWRl
+ciBkdHNlY19pc3IuIEl0IHdpbGwgcmFjZSB3aXRoIChmb3IgZXhhbXBsZSkgZHRzZWNfc2V0X2Fs
+bG11bHRpOg0KPiANCj4gQ1BVMCAoZHRzZWNfaXNyKQkJQ1BVMSAoZHRzZWNfc2V0X2FsbG11bHRp
+KQ0KPiA8WEZVTkVOIGludGVycnVwdD4NCj4gaW9yZWFkMzJiZShyY3RybCkJCWlvcmVhZDMyYmUo
+cmN0cmwpDQo+IAkJCQlpb3dyaXRlMzJiZShyY3RybCB8IE1QUk9NKQ0KPiBpb3dyaXRlMzJiZShy
+Y3RybCB8IEdSUykNCj4gDQo+IGFuZCBzdWRkZW5seSB0aGUgTVBST00gd3JpdGUgaXMgZHJvcHBl
+ZC4gKEFjdHVhbGx5LCB0aGUgd2hvbGUNCj4gRk1fVFhfTE9DS1VQX0VSUkFUQV9EVFNFQzYgZXJy
+YXRhIGNvZGUgc2VlbXMgZnVua3ksIHNpbmNlIGFmdGVyDQo+IGNhbGxpbmcNCj4gZm1hbl9yZXNl
+dF9tYWMgaXQgc2VlbXMgbGlrZSBldmVyeXRoaW5nIHdvdWxkIG5lZWQgdG8gYmUgcmVpbml0aWFs
+aXplZCkuDQo+IA0KPiBTbyB3aGF0J3MgZ29pbmcgb24gaGVyZT8gSXMgdGhlcmUgYWN0dWFsbHkg
+bm8gbG9ja2luZywgb3IgYW0gSSBtaXNzaW5nDQo+IHNvbWV0aGluZz8NCg0KSGkNCg0KWW91IGFy
+ZSByaWdodCwgdGhlcmUgaXMgbm8gbG9ja2luZy4gVGhlIG9yaWdpbmFsIEZNYW4gZHJpdmVyIGRl
+c2lnbiBkaWRuJ3QgaW50ZW5kDQpvbiBzdXBwb3J0aW5nIHJ1bnRpbWUgcmVnaXN0ZXIgY2hhbmdl
+cy4gQ2xlYXJseSB0aGlzIHdhcyBhIG1pc3Rha2UgYXMgeW91DQpwb2ludGVkIG91dC4NCg0KQ2Ft
+ZWxpYQ0K
