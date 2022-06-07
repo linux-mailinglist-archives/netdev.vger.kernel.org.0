@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6472B53F884
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 10:47:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFEE753F888
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 10:47:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238482AbiFGIrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 04:47:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33594 "EHLO
+        id S238536AbiFGIrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 04:47:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238510AbiFGIqo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 04:46:44 -0400
+        with ESMTP id S238535AbiFGIqt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 04:46:49 -0400
 Received: from EX-PRD-EDGE02.vmware.com (EX-PRD-EDGE02.vmware.com [208.91.3.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49824E5287;
-        Tue,  7 Jun 2022 01:46:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B81E64C6;
+        Tue,  7 Jun 2022 01:46:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
     s=s1024; d=vmware.com;
     h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
       content-type;
-    bh=8jUo5ILLnzzIFtft13bYw8jpL7wDw6YblekTQ1WZdNs=;
-    b=eFOh+k7HdLV4xx3GEEULIXdp+MZ3g7KW1Ac6ttO51wBMZtf+rWReWWAz+aIyKx
-      8tl7zesemDpuAMEloY9AJFLRmRb330q6NvGW7JOsVZWVoS2nST5s5a63BZoutX
-      TSkscoiPRHnygp+s36X5xvB8OI8b0p9LAK842Ix0Ia8D6TQ=
-Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
+    bh=4lj7Pjrsj0fjGG1tY7xV5D9Zi+bYPl6gA2VIwx7whPA=;
+    b=lnBUnMPdfUlTrifI824SKy5tSqiYEZKHwUJChPR0LceprGcXnrmnF5Y5YbHMBZ
+      v3Wxhhi7wW/bxVT0K5yO3LwwLHKjbOIDvoRANJlwMpF4I1Ql2+EvtUksCVdLpX
+      VGeE0JUDtrpQ+Y2E/Hjb5h3Z7kh4DmZxX7yu46YuJyJv1Z4=
+Received: from sc9-mailhost2.vmware.com (10.113.161.72) by
  EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
- 15.1.2308.14; Tue, 7 Jun 2022 01:45:36 -0700
+ 15.1.2308.14; Tue, 7 Jun 2022 01:45:37 -0700
 Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id 2811020194;
-        Tue,  7 Jun 2022 01:45:42 -0700 (PDT)
+        by sc9-mailhost2.vmware.com (Postfix) with ESMTP id 906D82023C;
+        Tue,  7 Jun 2022 01:45:43 -0700 (PDT)
 Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 2350FAA2B0; Tue,  7 Jun 2022 01:45:42 -0700 (PDT)
+        id 8A64FAA2B0; Tue,  7 Jun 2022 01:45:43 -0700 (PDT)
 From:   Ronak Doshi <doshir@vmware.com>
 To:     <netdev@vger.kernel.org>
 CC:     Ronak Doshi <doshir@vmware.com>,
@@ -39,9 +39,9 @@ CC:     Ronak Doshi <doshir@vmware.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 net-next 6/8] vmxnet3: limit number of TXDs used for TSO packet
-Date:   Tue, 7 Jun 2022 01:45:16 -0700
-Message-ID: <20220607084518.30316-7-doshir@vmware.com>
+Subject: [PATCH v2 net-next 7/8] vmxnet3: use ext1 field to indicate encapsulated packet
+Date:   Tue, 7 Jun 2022 01:45:17 -0700
+Message-ID: <20220607084518.30316-8-doshir@vmware.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20220607084518.30316-1-doshir@vmware.com>
 References: <20220607084518.30316-1-doshir@vmware.com>
@@ -59,59 +59,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, vmxnet3 does not have a limit on number of descriptors
-used for a TSO packet. However, with UPT, for hardware performance
-reasons, this patch limits the number of transmit descriptors to 24
-for a TSO packet.
+Till vmxnet3 version 6, om field of transmit descriptor was used
+to indicate encapsulated offload packet and msscof was used to
+indirectly indicate TSO/CSO. From version 7 and later, ext1 field
+will be used to indicate whether packet is encapsulated or not and
+om fields will continue to indicate if the packet is TSO or CSO.
 
 Signed-off-by: Ronak Doshi <doshir@vmware.com>
 Acked-by: Guolin Yang <gyang@vmware.com>
 ---
- drivers/net/vmxnet3/vmxnet3_defs.h |  2 ++
- drivers/net/vmxnet3/vmxnet3_drv.c  | 17 +++++++++++++++++
- 2 files changed, 19 insertions(+)
+ drivers/net/vmxnet3/vmxnet3_defs.h | 14 ++++++++------
+ drivers/net/vmxnet3/vmxnet3_drv.c  | 18 +++++++++++++++---
+ 2 files changed, 23 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
-index 415e4c9993ef..cb9dc72f2b3d 100644
+index cb9dc72f2b3d..41d6767283a6 100644
 --- a/drivers/net/vmxnet3/vmxnet3_defs.h
 +++ b/drivers/net/vmxnet3/vmxnet3_defs.h
-@@ -400,6 +400,8 @@ union Vmxnet3_GenericDesc {
+@@ -148,17 +148,17 @@ struct Vmxnet3_TxDesc {
  
- /* max # of tx descs for a non-tso pkt */
- #define VMXNET3_MAX_TXD_PER_PKT 16
-+/* max # of tx descs for a tso pkt */
-+#define VMXNET3_MAX_TSO_TXD_PER_PKT 24
+ #ifdef __BIG_ENDIAN_BITFIELD
+ 	u32 msscof:14;  /* MSS, checksum offset, flags */
+-	u32 ext1:1;
++	u32 ext1:1;     /* set to 1 to indicate inner csum/tso, vmxnet3 v7 */
+ 	u32 dtype:1;    /* descriptor type */
+-	u32 oco:1;
++	u32 oco:1;      /* Outer csum offload */
+ 	u32 gen:1;      /* generation bit */
+ 	u32 len:14;
+ #else
+ 	u32 len:14;
+ 	u32 gen:1;      /* generation bit */
+-	u32 oco:1;
++	u32 oco:1;      /* Outer csum offload */
+ 	u32 dtype:1;    /* descriptor type */
+-	u32 ext1:1;
++	u32 ext1:1;     /* set to 1 to indicate inner csum/tso, vmxnet3 v7 */
+ 	u32 msscof:14;  /* MSS, checksum offset, flags */
+ #endif  /* __BIG_ENDIAN_BITFIELD */
  
- /* Max size of a single rx buffer */
- #define VMXNET3_MAX_RX_BUF_SIZE  ((1 << 14) - 1)
+@@ -262,11 +262,13 @@ struct Vmxnet3_RxCompDesc {
+ 	u32		rqID:10;      /* rx queue/ring ID */
+ 	u32		sop:1;        /* Start of Packet */
+ 	u32		eop:1;        /* End of Packet */
+-	u32		ext1:2;
++	u32		ext1:2;       /* bit 0: indicating v4/v6/.. is for inner header */
++				      /* bit 1: indicating rssType is based on inner header */
+ 	u32		rxdIdx:12;    /* Index of the RxDesc */
+ #else
+ 	u32		rxdIdx:12;    /* Index of the RxDesc */
+-	u32		ext1:2;
++	u32		ext1:2;       /* bit 0: indicating v4/v6/.. is for inner header */
++				      /* bit 1: indicating rssType is based on inner header */
+ 	u32		eop:1;        /* End of Packet */
+ 	u32		sop:1;        /* Start of Packet */
+ 	u32		rqID:10;      /* rx queue/ring ID */
 diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 2ba263966989..6e013ae0b5ea 100644
+index 6e013ae0b5ea..aa96441ea86c 100644
 --- a/drivers/net/vmxnet3/vmxnet3_drv.c
 +++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -1061,6 +1061,23 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
- 			}
- 			tq->stats.copy_skb_header++;
- 		}
-+		if (unlikely(count > VMXNET3_MAX_TSO_TXD_PER_PKT)) {
-+			/* tso pkts must not use more than
-+			 * VMXNET3_MAX_TSO_TXD_PER_PKT entries
-+			 */
-+			if (skb_linearize(skb) != 0) {
-+				tq->stats.drop_too_many_frags++;
-+				goto drop_pkt;
+@@ -1161,7 +1161,12 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 	if (ctx.mss) {
+ 		if (VMXNET3_VERSION_GE_4(adapter) && skb->encapsulation) {
+ 			gdesc->txd.hlen = ctx.l4_offset + ctx.l4_hdr_size;
+-			gdesc->txd.om = VMXNET3_OM_ENCAP;
++			if (VMXNET3_VERSION_GE_7(adapter)) {
++				gdesc->txd.om = VMXNET3_OM_TSO;
++				gdesc->txd.ext1 = 1;
++			} else {
++				gdesc->txd.om = VMXNET3_OM_ENCAP;
 +			}
-+			tq->stats.linearized++;
-+
-+			/* recalculate the # of descriptors to use */
-+			count = VMXNET3_TXD_NEEDED(skb_headlen(skb)) + 1;
-+			if (unlikely(count > VMXNET3_MAX_TSO_TXD_PER_PKT)) {
-+				tq->stats.drop_too_many_frags++;
-+				goto drop_pkt;
-+			}
-+		}
- 		if (skb->encapsulation) {
- 			vmxnet3_prepare_inner_tso(skb, &ctx);
- 		} else {
+ 			gdesc->txd.msscof = ctx.mss;
+ 
+ 			if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_TUNNEL_CSUM)
+@@ -1178,8 +1183,15 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 			    skb->encapsulation) {
+ 				gdesc->txd.hlen = ctx.l4_offset +
+ 						  ctx.l4_hdr_size;
+-				gdesc->txd.om = VMXNET3_OM_ENCAP;
+-				gdesc->txd.msscof = 0;		/* Reserved */
++				if (VMXNET3_VERSION_GE_7(adapter)) {
++					gdesc->txd.om = VMXNET3_OM_CSUM;
++					gdesc->txd.msscof = ctx.l4_offset +
++							    skb->csum_offset;
++					gdesc->txd.ext1 = 1;
++				} else {
++					gdesc->txd.om = VMXNET3_OM_ENCAP;
++					gdesc->txd.msscof = 0;		/* Reserved */
++				}
+ 			} else {
+ 				gdesc->txd.hlen = ctx.l4_offset;
+ 				gdesc->txd.om = VMXNET3_OM_CSUM;
 -- 
 2.11.0
 
