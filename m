@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 041A053F858
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 10:40:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB0D153F85A
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 10:40:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238169AbiFGIkk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 04:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43734 "EHLO
+        id S232211AbiFGIks (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 04:40:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232211AbiFGIkh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 04:40:37 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CE27D244B;
-        Tue,  7 Jun 2022 01:40:37 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id gd1so15075422pjb.2;
-        Tue, 07 Jun 2022 01:40:37 -0700 (PDT)
+        with ESMTP id S238317AbiFGIkq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 04:40:46 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4F8D2477;
+        Tue,  7 Jun 2022 01:40:44 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id u12-20020a17090a1d4c00b001df78c7c209so20222110pju.1;
+        Tue, 07 Jun 2022 01:40:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ATdsPi2nyPJrCtSwjLDoIDI28BDhkul0ZHRuVKbiVeU=;
-        b=aTy3ycsVlPjY2qR2JGGXUJiDrOZTgH3ksWv8C+c7GZWR6X5euX9vCQ06ZcimtSh3D8
-         +J59gFQneB3bS7Qz4Mv7kATRie5734whWmBkOKk/cuYU31JprsKSZR+6ABk002gTpQ37
-         9U6Exmp9rcinLsPTr8DLWK0nhJFYMUVabMKRQPhdC64bXltPt08xV4EqaH8/nq9Nzts/
-         OFcAZszvD8nQks0k+YpVTJcMbDaK15BcA21Rilf+jPLXKbGiqAhT+l0y/j86fnC+NRjt
-         B6yIEz3ZN5r86DgHkuegURVkDEMd8hp6HkyWlrfhpSSuOdH40VDuZJHxeDyM5Ty8T6E9
-         QoTw==
+        bh=pb593Np/kp86l+3oqzrBPdLokFUVR5dWHJspHdhIfzs=;
+        b=cLrN67vbRxCdpdjlvYUO6Ulby8YvLpTdjcj16eRv0n4B+JzvZGTyMxkjUgUA47jyRT
+         75SCSSOqe1SS6qKy3jvpFpcIKuisFOzmlw1MlCZl9hzSvvpPLbNEB1yY9wo5in5Lkly0
+         yhxWx6dY6BxumUpLhDGnSWWJEEkJCmHCn7+eTSOtxR4pDS2obooydmkkIbp74t6lSANd
+         uWaXj4rbYm7G4TSFHdR5LVj4z2uZXe7U6CC95NsqI78SDLA8DAH1oRdqsGRxggYsK3FK
+         f2W0LvT5KqVhkrLMYR2XSnxiz4RE1igks0OjksmwVWPHygl16+Y1a0yvgFubMvyN281s
+         YsPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ATdsPi2nyPJrCtSwjLDoIDI28BDhkul0ZHRuVKbiVeU=;
-        b=2sgu8y8gOsKU33mf4kngFmXQ2f6i5chLUADiJOQfOOR5wDX+oq8o9VGx/KoARzpj/t
-         qamA53Uyp+qgD6qyIc2u5Y+Wdsp3/jxUKGe2I6/YweSggW11SZ3U7sHbVUY24CQFvioy
-         lUxY7q6B2bXLofwtmBX5gvszW8nmbCn/TrooxvyDJd9jhTpXuhUXuBxGhzx+AWprETbc
-         xoxLkCkXzvkBK7G+LondjDvqnYBoUq8kha+cES0dwv0grtXP3oWoAvdtiUxKq4D+ikQ4
-         KiubgfcynHXYvNUauBePBHm+tL6jo5ToF2jhQZMYLXJ/uS4fsk8Fvzz2WuhpimYGUJfm
-         WJ1w==
-X-Gm-Message-State: AOAM533C5jbee8Emz7WdFE4ow5Sxy+L8KtsvWuQ63SarRuilpfMRLtHL
-        g8f1rEGnnINFo8m9KnLN0uy9GHsWG2ID+g==
-X-Google-Smtp-Source: ABdhPJzQSf5HJ9aGj1DdppbvbqcD+LOGyg5qhBgm5/amGSZFnYzAYZPoHzc1o1ucHFW11Lj66PD/Kg==
-X-Received: by 2002:a17:90b:38c4:b0:1e6:89f9:73da with SMTP id nn4-20020a17090b38c400b001e689f973damr28443486pjb.220.1654591236349;
-        Tue, 07 Jun 2022 01:40:36 -0700 (PDT)
+        bh=pb593Np/kp86l+3oqzrBPdLokFUVR5dWHJspHdhIfzs=;
+        b=HcTx06qC0oL90iAqtLLfLhD5qAgk77s+C3HdCB5VsCpi5XBsvLep9DUgu1fLuPFBLI
+         beWjfKxnFi6NxBUyfrtPXzlSMD1ai1U03ekTQpt9wsef06ZDKn8t7khFpFO3R77sph+Z
+         n7b8gP95HBgbbu+brrDeNRWBmlhpSq0zNFA6vJi5C3JyOalWPxVth4jCSEERr0PgrhnS
+         +ti55RDU7QJladhAFl9QkuQPxZ8S5qpSXqWEE7O5x/SE+AVhmM5N49om58nzcdHCgGz8
+         Ir4BFRYUT4glaOVLxCWFbfchDOKpFeQ88MyQm3Ybe21b9SA1WmweaPBJ8JValCcAh83i
+         Sz9A==
+X-Gm-Message-State: AOAM530Bi2K87rVcYyGzSEdEdeuYe2p0wN4h+AZ7UBRdbGwVjYJOlkNV
+        slr+AUUi2zHcV7CJFCMsgd0qTRk6c9O0tQ==
+X-Google-Smtp-Source: ABdhPJyf+h78/PFDk+dzQ3AwiE4bphgwwiFJEwrlmygYOj4BkEO0ehgcQ17xppJogGh8Do/KOyoRaA==
+X-Received: by 2002:a17:90b:4b51:b0:1e8:71cb:4d18 with SMTP id mi17-20020a17090b4b5100b001e871cb4d18mr13495757pjb.108.1654591243672;
+        Tue, 07 Jun 2022 01:40:43 -0700 (PDT)
 Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id s18-20020aa78d52000000b0050dc76281fdsm12134047pfe.215.2022.06.07.01.40.29
+        by smtp.gmail.com with ESMTPSA id s18-20020aa78d52000000b0050dc76281fdsm12134047pfe.215.2022.06.07.01.40.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 01:40:35 -0700 (PDT)
+        Tue, 07 Jun 2022 01:40:43 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -65,9 +65,9 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         KP Singh <kpsingh@kernel.org>, bpf@vger.kernel.org,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH bpf-next 1/3] samples/bpf/xdpsock_user.c: Get rid of bpf_prog_load_xattr()
-Date:   Tue,  7 Jun 2022 16:40:01 +0800
-Message-Id: <20220607084003.898387-2-liuhangbin@gmail.com>
+Subject: [PATCH bpf-next 2/3] samples/bpf: move AF_XDP APIs to libxdp
+Date:   Tue,  7 Jun 2022 16:40:02 +0800
+Message-Id: <20220607084003.898387-3-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607084003.898387-1-liuhangbin@gmail.com>
 References: <20220607084003.898387-1-liuhangbin@gmail.com>
@@ -83,60 +83,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 1e4edb6d8c4f ("samples/bpf: Get rid of bpf_prog_load_xattr()
-use") tried to remove all the deprecated bpf_prog_load_xattr() API..
-But xdpsock_user.c was left as it set GCC diagnostic ignored
-"-Wdeprecated-declarations".
+libbpf APIs for AF_XDP are deprecated starting from v0.7.
+Let's move to libxdp.
 
 Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- samples/bpf/xdpsock_user.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ samples/bpf/xdpsock_ctrl_proc.c | 5 +----
+ samples/bpf/xdpsock_user.c      | 5 +----
+ samples/bpf/xsk_fwd.c           | 5 +----
+ 3 files changed, 3 insertions(+), 12 deletions(-)
 
+diff --git a/samples/bpf/xdpsock_ctrl_proc.c b/samples/bpf/xdpsock_ctrl_proc.c
+index 28b5f2a9fa08..964fb3f9c12b 100644
+--- a/samples/bpf/xdpsock_ctrl_proc.c
++++ b/samples/bpf/xdpsock_ctrl_proc.c
+@@ -12,12 +12,9 @@
+ #include <unistd.h>
+ 
+ #include <bpf/bpf.h>
+-#include <bpf/xsk.h>
++#include <xdp/xsk.h>
+ #include "xdpsock.h"
+ 
+-/* libbpf APIs for AF_XDP are deprecated starting from v0.7 */
+-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+-
+ static const char *opt_if = "";
+ 
+ static struct option long_options[] = {
 diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index be7d2572e3e6..3ea46c300df2 100644
+index 3ea46c300df2..9231bfadf419 100644
 --- a/samples/bpf/xdpsock_user.c
 +++ b/samples/bpf/xdpsock_user.c
-@@ -1742,17 +1742,22 @@ static void l2fwd_all(void)
+@@ -33,13 +33,10 @@
+ #include <sched.h>
  
- static void load_xdp_program(char **argv, struct bpf_object **obj)
- {
--	struct bpf_prog_load_attr prog_load_attr = {
--		.prog_type      = BPF_PROG_TYPE_XDP,
--	};
-+	struct bpf_program *prog;
- 	char xdp_filename[256];
- 	int prog_fd;
+ #include <bpf/libbpf.h>
+-#include <bpf/xsk.h>
++#include <xdp/xsk.h>
+ #include <bpf/bpf.h>
+ #include "xdpsock.h"
  
- 	snprintf(xdp_filename, sizeof(xdp_filename), "%s_kern.o", argv[0]);
--	prog_load_attr.file = xdp_filename;
-+	*obj = bpf_object__open_file(xdp_filename, NULL);
-+	if (libbpf_get_error(*obj))
-+		exit(EXIT_FAILURE);
+-/* libbpf APIs for AF_XDP are deprecated starting from v0.7 */
+-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+-
+ #ifndef SOL_XDP
+ #define SOL_XDP 283
+ #endif
+diff --git a/samples/bpf/xsk_fwd.c b/samples/bpf/xsk_fwd.c
+index 2324e18ccc7e..946d29dd2a9e 100644
+--- a/samples/bpf/xsk_fwd.c
++++ b/samples/bpf/xsk_fwd.c
+@@ -23,12 +23,9 @@
+ #include <linux/if_xdp.h>
  
--	if (bpf_prog_load_xattr(&prog_load_attr, obj, &prog_fd))
-+	prog = bpf_object__next_program(*obj, NULL);
-+	bpf_program__set_type(prog, BPF_PROG_TYPE_XDP);
-+
-+	if (bpf_object__load(*obj))
- 		exit(EXIT_FAILURE);
-+
-+	prog_fd = bpf_program__fd(prog);
- 	if (prog_fd < 0) {
- 		fprintf(stderr, "ERROR: no program found: %s\n",
- 			strerror(prog_fd));
-@@ -1885,10 +1890,10 @@ int main(int argc, char **argv)
- {
- 	struct __user_cap_header_struct hdr = { _LINUX_CAPABILITY_VERSION_3, 0 };
- 	struct __user_cap_data_struct data[2] = { { 0 } };
-+	struct bpf_object *obj = NULL;
- 	bool rx = false, tx = false;
- 	struct sched_param schparam;
- 	struct xsk_umem_info *umem;
--	struct bpf_object *obj;
- 	int xsks_map_fd = 0;
- 	pthread_t pt;
- 	int i, ret;
+ #include <bpf/libbpf.h>
+-#include <bpf/xsk.h>
++#include <xdp/xsk.h>
+ #include <bpf/bpf.h>
+ 
+-/* libbpf APIs for AF_XDP are deprecated starting from v0.7 */
+-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+-
+ #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+ 
+ typedef __u64 u64;
 -- 
 2.35.1
 
