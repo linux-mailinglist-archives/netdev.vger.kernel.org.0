@@ -2,67 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE5B953F929
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 11:14:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8685F53F98B
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 11:23:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239046AbiFGJOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 05:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38058 "EHLO
+        id S239285AbiFGJXn convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Jun 2022 05:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238703AbiFGJOS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 05:14:18 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA7169B53;
-        Tue,  7 Jun 2022 02:14:14 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1654593252;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bezUUwZTcrVCpPMRY2+6dN6//+KpHkGmqvWXkpIPhNU=;
-        b=Cs/VMGvhIXHBotoccSXQdMLGz/D+jPs57h++NHgNdhmYEW5ts7QKRrtItm+qSQz+1X29dv
-        Qrlo+ZmRSRLr9CU7iE25N049w0EYdxZQv24CY3e1r7H5Oiu9mA8fIqesjduNkOQoSoV4yA
-        u/bPmRhcIB5kPNv7OO7KEd/tdjnpZJgQlGmHozAgNAzgy3DB60UzcuBQtLk4ftjYGfR6V2
-        2EyMe1cKjfSVutlWvew8MLSk1v8Fre+4zON1lu25mneaSvS03xdM5nKOB5wdoAPaL0j2ht
-        7fSUIR9suTfbm716bIvxDxfqCF6POnOmH+PYXblSQncHX6BS5RxSphUgkvfJ+w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1654593252;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bezUUwZTcrVCpPMRY2+6dN6//+KpHkGmqvWXkpIPhNU=;
-        b=pYAGvdTIZ9X8TbLxsUdPagFnvFAgjv9BIuXSUxHX8dsmfPgKYxwyv3gbwc9/MQhnwzVx1N
-        iKb8Pc20Uyf1/NDA==
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Joanne Koong <joannelkoong@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Subject: Re: [PATCH bpf-next] bpf: Add BPF-helper for accessing CLOCK_TAI
-In-Reply-To: <CAADnVQJ--oj+iZYXOwB1Rs9Qiy6Ph9HNha9pJyumVom0tiOFgg@mail.gmail.com>
-References: <20220606103734.92423-1-kurt@linutronix.de>
- <CAADnVQJ--oj+iZYXOwB1Rs9Qiy6Ph9HNha9pJyumVom0tiOFgg@mail.gmail.com>
-Date:   Tue, 07 Jun 2022 11:14:12 +0200
-Message-ID: <875ylc6djv.ffs@tglx>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        with ESMTP id S239008AbiFGJXl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 05:23:41 -0400
+X-Greylist: delayed 514 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 02:23:39 PDT
+Received: from einhorn-mail-out.in-berlin.de (einhorn.in-berlin.de [192.109.42.8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C7D340E2
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 02:23:38 -0700 (PDT)
+X-Envelope-From: thomas@osterried.de
+Received: from x-berg.in-berlin.de (x-change.in-berlin.de [217.197.86.40])
+        by einhorn.in-berlin.de  with ESMTPS id 2579Eat51498908
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Tue, 7 Jun 2022 11:14:36 +0200
+Received: from x-berg.in-berlin.de ([217.197.86.42] helo=smtpclient.apple)
+        by x-berg.in-berlin.de with esmtpa (Exim 4.94.2)
+        (envelope-from <thomas@osterried.de>)
+        id 1nyVIJ-0001s8-OQ; Tue, 07 Jun 2022 11:14:35 +0200
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
+Subject: Re: [PATCH net-next] ax25: Fix deadlock caused by skb_recv_datagram
+ in ax25_recvmsg
+From:   Thomas Osterried <thomas@osterried.de>
+In-Reply-To: <CANn89i+HbdWS4JU0odCbRApuCTGFAt9_NSUoCSFo-b4-z0uWCQ@mail.gmail.com>
+Date:   Tue, 7 Jun 2022 11:14:34 +0200
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        LKML <linux-kernel@vger.kernel.org>, jreuter@yaina.de,
+        =?utf-8?Q?Ralf_B=C3=A4chle_DL5RB?= <ralf@linux-mips.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>, linux-hams@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <E5F82D12-56D3-4040-A92B-C658772FD8DD@osterried.de>
+References: <20220606162138.81505-1-duoming@zju.edu.cn>
+ <CANn89i+HbdWS4JU0odCbRApuCTGFAt9_NSUoCSFo-b4-z0uWCQ@mail.gmail.com>
+To:     Eric Dumazet <edumazet@google.com>
+X-Mailer: Apple Mail (2.3696.100.31)
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,36 +55,182 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei,
 
-On Mon, Jun 06 2022 at 08:57, Alexei Starovoitov wrote:
-> On Mon, Jun 6, 2022 at 3:38 AM Kurt Kanzenbach <kurt@linutronix.de> wrote:
->>
->> From: Jesper Dangaard Brouer <brouer@redhat.com>
->>
->> Commit 3dc6ffae2da2 ("timekeeping: Introduce fast accessor to clock tai")
->> introduced a fast and NMI-safe accessor for CLOCK_TAI. Especially in time
->> sensitive networks (TSN), where all nodes are synchronized by Precision Time
->> Protocol (PTP), it's helpful to have the possibility to generate timestamps
->> based on CLOCK_TAI instead of CLOCK_MONOTONIC. With a BPF helper for TAI in
->> place, it becomes very convenient to correlate activity across different
->> machines in the network.
->
-> That's a fresh feature. It feels risky to bake it into uapi already.
 
-What? That's just support for a different CLOCK. What's so risky about
-it?
+> Am 06.06.2022 um 19:31 schrieb Eric Dumazet <edumazet@google.com>:
+> 
+> On Mon, Jun 6, 2022 at 9:21 AM Duoming Zhou <duoming@zju.edu.cn> wrote:
+>> 
+>> The skb_recv_datagram() in ax25_recvmsg() will hold lock_sock
+>> and block until it receives a packet from the remote. If the client
+>> doesn`t connect to server and calls read() directly, it will not
+>> receive any packets forever. As a result, the deadlock will happen.
+>> 
+>> The fail log caused by deadlock is shown below:
+>> 
+>> [  861.122612] INFO: task ax25_deadlock:148 blocked for more than 737 seconds.
+>> [  861.124543] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+>> [  861.127764] Call Trace:
+>> [  861.129688]  <TASK>
+>> [  861.130743]  __schedule+0x2f9/0xb20
+>> [  861.131526]  schedule+0x49/0xb0
+>> [  861.131640]  __lock_sock+0x92/0x100
+>> [  861.131640]  ? destroy_sched_domains_rcu+0x20/0x20
+>> [  861.131640]  lock_sock_nested+0x6e/0x70
+>> [  861.131640]  ax25_sendmsg+0x46/0x420
+>> [  861.134383]  ? ax25_recvmsg+0x1e0/0x1e0
+>> [  861.135658]  sock_sendmsg+0x59/0x60
+>> [  861.136791]  __sys_sendto+0xe9/0x150
+>> [  861.137212]  ? __schedule+0x301/0xb20
+>> [  861.137710]  ? __do_softirq+0x4a2/0x4fd
+>> [  861.139153]  __x64_sys_sendto+0x20/0x30
+>> [  861.140330]  do_syscall_64+0x3b/0x90
+>> [  861.140731]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+>> [  861.141249] RIP: 0033:0x7fdf05ee4f64
+>> [  861.141249] RSP: 002b:00007ffe95772fc0 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+>> [  861.141249] RAX: ffffffffffffffda RBX: 0000565303a013f0 RCX: 00007fdf05ee4f64
+>> [  861.141249] RDX: 0000000000000005 RSI: 0000565303a01678 RDI: 0000000000000005
+>> [  861.141249] RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+>> [  861.141249] R10: 0000000000000000 R11: 0000000000000246 R12: 0000565303a00cf0
+>> [  861.141249] R13: 00007ffe957730e0 R14: 0000000000000000 R15: 0000000000000000
+>> 
+>> This patch moves the skb_recv_datagram() before lock_sock() in order
+>> that other functions that need lock_sock could be executed.
+>> 
+> 
+> 
+> Why is this targeting net-next tree ?
 
-> imo it would be better to annotate tk_core variable in vmlinux BTF.
-> Then progs will be able to read all possible timekeeper offsets.
+Off-topic question for better understanding: when patches go to netdev,
+when to net-next tree? Ah, found explanation it here (mentioning it
+for our readers at linux-hams@):
+  https://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt
 
-We are exposing APIs. APIs can be supported, but exposing implementation
-details creates ABIs of the worst sort because that prevents the kernel
-from changing the implementation. We've seen the fallout with the recent
-tracepoint changes already.
+> 1) A fix should target net tree
+> 2) It should include a Fixes: tag
 
-Thanks,
+tnx for info. "Fix" in subject is not enough?
 
-        tglx
 
+> Also:
+> - this patch bypasses tests in ax25_recvmsg()
+> - This might break applications depending on blocking read() operations.
+
+We have discussed and verified it.
+
+We had a deadlock problem (during concurrent read/write),
+found by Thomas Habets, in
+  https://marc.info/?l=linux-hams&m=159319049624305&w=2
+Duoming found a second problem with current ax.25 implementation, that causes
+deadlock not only for the userspace program Thomas had, but also in the kernel.
+
+Thomas' patch did not made it to the git kernel net, because the testing bot
+complained that there was no "goto out:" left, for label "out:".
+
+Furhermore, before the test
+          if (sk->sk_type == SOCK_SEQPACKET && sk->sk_state != TCP_ESTABLISHED) {
+it's useful to do lock_sock(sk);
+
+After reading through the documentation in the code above the skb_recv_datagram()
+function, it should be safe to use this function without locking.
+That's why we moved it to the top of ax25_recvmsg().
+
+
+> I feel a real fix is going to be slightly more difficult than that.
+
+It's interesting to see how other kernel drivers use skb_recv_datagram().
+Many have copied the code of others. But in the end, there are various variants:
+
+
+
+af_x25.c (for X.25) does it this way:
+
+	lock_sock(sk);
+if (x25->neighbour == NULL)
+goto out;
+..
+if (sk->sk_state != TCP_ESTABLISHED)
+goto out;
+..
+release_sock(sk);
+skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT,
+flags & MSG_DONTWAIT, &rc);
+lock_sock(sk);
+
+-> They lock for sk->sk_state tests, and then
+release lock for skb_recv_datagram()
+
+
+
+unix.c does it with a local lock in the unix socket struct:
+
+mutex_lock(&u->iolock);
+skb = skb_recv_datagram(sk, 0, 1, &err);
+mutex_unlock(&u->iolock);
+if (!skb)
+return err;
+
+
+
+netrom/af_netrom.c: It may have the same "deadlog hang" like af_ax25.c that Thomas observed.
+-> may also be needed to fix.
+
+
+rose/af_rose.c: does not use any locks (!)
+
+
+vy 73,
+	- Thomas  dl9sau
+
+
+> 
+> 
+> Thank you
+> 
+>> Reported-by: Thomas Habets <thomas@@habets.se>
+>> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+>> ---
+>> net/ax25/af_ax25.c | 11 ++++++-----
+>> 1 file changed, 6 insertions(+), 5 deletions(-)
+>> 
+>> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+>> index 95393bb2760..02cd6087512 100644
+>> --- a/net/ax25/af_ax25.c
+>> +++ b/net/ax25/af_ax25.c
+>> @@ -1665,6 +1665,11 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>>        int copied;
+>>        int err = 0;
+>> 
+>> +       /* Now we can treat all alike */
+>> +       skb = skb_recv_datagram(sk, flags, &err);
+>> +       if (!skb)
+>> +               goto done;
+>> +
+>>        lock_sock(sk);
+>>        /*
+>>         *      This works for seqpacket too. The receiver has ordered the
+>> @@ -1675,11 +1680,6 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>>                goto out;
+>>        }
+>> 
+>> -       /* Now we can treat all alike */
+>> -       skb = skb_recv_datagram(sk, flags, &err);
+>> -       if (skb == NULL)
+>> -               goto out;
+>> -
+>>        if (!sk_to_ax25(sk)->pidincl)
+>>                skb_pull(skb, 1);               /* Remove PID */
+>> 
+>> @@ -1725,6 +1725,7 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>> out:
+>>        release_sock(sk);
+>> 
+>> +done:
+>>        return err;
+>> }
+>> 
+>> --
+>> 2.17.1
+>> 
+> 
 
