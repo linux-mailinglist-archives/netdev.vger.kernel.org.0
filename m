@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A35B253FF5B
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 14:48:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2216953FF54
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 14:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244086AbiFGMsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 08:48:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37094 "EHLO
+        id S243018AbiFGMsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 08:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244191AbiFGMsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 08:48:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9931313EBD;
-        Tue,  7 Jun 2022 05:48:05 -0700 (PDT)
+        with ESMTP id S244194AbiFGMsF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 08:48:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED3E1DA56;
+        Tue,  7 Jun 2022 05:47:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A785B81F6E;
-        Tue,  7 Jun 2022 12:48:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75C4BC385A5;
-        Tue,  7 Jun 2022 12:48:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9AB60B81F6E;
+        Tue,  7 Jun 2022 12:47:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7DA1C34115;
+        Tue,  7 Jun 2022 12:47:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654606083;
-        bh=/6NsrWgjW5XlNWz0DHm3gy/B2YKwhVrCWYTDLXV0/wY=;
+        s=k20201202; t=1654606075;
+        bh=nr5wIX3n7k/7HKazdVulI9YN/hkkFCBYkUVklQ4tDKM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ft8NqcJkj3muFkOVLl48cCAFdAVtWn0E8vVnW3Hjr9QU2xjxq1MKc0Y6tDdGGrej9
-         Dg3pXdkEcl5SM5881fV/2jXnUDKt3l1huSZzw2dbIB3pgNcYT24ONH7P22viyD7qNc
-         AMC2zLuiuYjKCpcL8moTgno/78YukP6BOLgfxeGISEBllwViSvBhrTWvLZFfZTnAzX
-         URZQEly3ksAyy1J+ls4AiQMMT7eFa0xt3XxnbyCSlTyGot1nQC4ylLFd6KgAaY1NyH
-         GkFLTk+GewI9k6ECmRE9JLUmzKKtmYz3GWGMla+yYWc4otqCmWTdPSuuUpI/7iGUiI
-         wfBu2EPrc9xvA==
+        b=jbPJyqtZ0fgPtPa2BnAsSpjZquOLKjgMFDQCJ3JQ6CaT/JDYPqu59UnMtv2MZiLgh
+         EbfBcHLGg6RVNVT4M/72erBhKxzNoNbvCwTGfRzvuIvFru0m5qBpSp3BnWNbjMMEhv
+         d4+LdJuRt4IlGso8Vaufm69k5eBV6ibSwnlt2V1ybLFNxtu+lcjeLKyqcejYxX0IRG
+         L4NMghNURUDZUo3gO0iXjWAkBUr9uNuSb5KVRelDhWaBMglFnBvRkSAVqLEQhpR0W+
+         zGTgJQZ8f0qR9Wz32mA63ufkaYTRRUC6VYdeaft3MXMI8ztw3IMzEKoLgd1T4RIO6y
+         7Wj96tNWHRpDQ==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Jason Gunthorpe <jgg@nvidia.com>
 Cc:     Yevgeny Kliteynik <kliteyn@nvidia.com>,
@@ -39,9 +39,9 @@ Cc:     Yevgeny Kliteynik <kliteyn@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
         netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH mlx5-next 1/3] net/mlx5: Introduce header-modify-pattern ICM properties
-Date:   Tue,  7 Jun 2022 15:47:43 +0300
-Message-Id: <66f4096ce4d4c8451f0b781284c650f97e545d41.1654605768.git.leonro@nvidia.com>
+Subject: [PATCH mlx5-next 2/3] net/mlx5: Manage ICM of type modify-header pattern
+Date:   Tue,  7 Jun 2022 15:47:44 +0300
+Message-Id: <3d76cbb6e498c23aead29359b88e07facdfe817e.1654605768.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1654605768.git.leonro@nvidia.com>
 References: <cover.1654605768.git.leonro@nvidia.com>
@@ -59,37 +59,119 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-Added new fields for device memory capabilities, in order to
-support creation of ICM memory for modify header patterns.
+Added support for managing new type of ICM for devices that
+support sw_owner_v2.
 
 Signed-off-by: Erez Shitrit <erezsh@mellanox.com>
 Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- include/linux/mlx5/mlx5_ifc.h | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/lib/dm.c  | 42 +++++++++++++++++++
+ include/linux/mlx5/driver.h                   |  1 +
+ 2 files changed, 43 insertions(+)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 006836ae7e43..4e41b3164dc8 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -1086,11 +1086,14 @@ struct mlx5_ifc_device_mem_cap_bits {
- 	u8         log_sw_icm_alloc_granularity[0x6];
- 	u8         log_steering_sw_icm_size[0x8];
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c
+index 3d5e57ff558c..7e02cbe8c3b9 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/dm.c
+@@ -12,13 +12,16 @@ struct mlx5_dm {
+ 	spinlock_t lock;
+ 	unsigned long *steering_sw_icm_alloc_blocks;
+ 	unsigned long *header_modify_sw_icm_alloc_blocks;
++	unsigned long *header_modify_pattern_sw_icm_alloc_blocks;
+ };
  
--	u8         reserved_at_120[0x20];
-+	u8         reserved_at_120[0x18];
-+	u8         log_header_modify_pattern_sw_icm_size[0x8];
+ struct mlx5_dm *mlx5_dm_create(struct mlx5_core_dev *dev)
+ {
++	u64 header_modify_pattern_icm_blocks = 0;
+ 	u64 header_modify_icm_blocks = 0;
+ 	u64 steering_icm_blocks = 0;
+ 	struct mlx5_dm *dm;
++	bool support_v2;
  
- 	u8         header_modify_sw_icm_start_address[0x40];
+ 	if (!(MLX5_CAP_GEN_64(dev, general_obj_types) & MLX5_GENERAL_OBJ_TYPES_CAP_SW_ICM))
+ 		return NULL;
+@@ -53,8 +56,27 @@ struct mlx5_dm *mlx5_dm_create(struct mlx5_core_dev *dev)
+ 			goto err_modify_hdr;
+ 	}
  
--	u8         reserved_at_180[0x80];
-+	u8         reserved_at_180[0x40];
++	support_v2 = MLX5_CAP_FLOWTABLE_NIC_RX(dev, sw_owner_v2) &&
++		     MLX5_CAP_FLOWTABLE_NIC_TX(dev, sw_owner_v2) &&
++		     MLX5_CAP64_DEV_MEM(dev, header_modify_pattern_sw_icm_start_address);
 +
-+	u8         header_modify_pattern_sw_icm_start_address[0x40];
++	if (support_v2) {
++		header_modify_pattern_icm_blocks =
++			BIT(MLX5_CAP_DEV_MEM(dev, log_header_modify_pattern_sw_icm_size) -
++			    MLX5_LOG_SW_ICM_BLOCK_SIZE(dev));
++
++		dm->header_modify_pattern_sw_icm_alloc_blocks =
++			kcalloc(BITS_TO_LONGS(header_modify_pattern_icm_blocks),
++				sizeof(unsigned long), GFP_KERNEL);
++		if (!dm->header_modify_pattern_sw_icm_alloc_blocks)
++			goto err_pattern;
++	}
++
+ 	return dm;
  
- 	u8         memic_operations[0x20];
++err_pattern:
++	kfree(dm->header_modify_sw_icm_alloc_blocks);
++
+ err_modify_hdr:
+ 	kfree(dm->steering_sw_icm_alloc_blocks);
  
+@@ -86,6 +108,14 @@ void mlx5_dm_cleanup(struct mlx5_core_dev *dev)
+ 		kfree(dm->header_modify_sw_icm_alloc_blocks);
+ 	}
+ 
++	if (dm->header_modify_pattern_sw_icm_alloc_blocks) {
++		WARN_ON(!bitmap_empty(dm->header_modify_pattern_sw_icm_alloc_blocks,
++				      BIT(MLX5_CAP_DEV_MEM(dev,
++							   log_header_modify_pattern_sw_icm_size) -
++					  MLX5_LOG_SW_ICM_BLOCK_SIZE(dev))));
++		kfree(dm->header_modify_pattern_sw_icm_alloc_blocks);
++	}
++
+ 	kfree(dm);
+ }
+ 
+@@ -130,6 +160,13 @@ int mlx5_dm_sw_icm_alloc(struct mlx5_core_dev *dev, enum mlx5_sw_icm_type type,
+ 						log_header_modify_sw_icm_size);
+ 		block_map = dm->header_modify_sw_icm_alloc_blocks;
+ 		break;
++	case MLX5_SW_ICM_TYPE_HEADER_MODIFY_PATTERN:
++		icm_start_addr = MLX5_CAP64_DEV_MEM(dev,
++						    header_modify_pattern_sw_icm_start_address);
++		log_icm_size = MLX5_CAP_DEV_MEM(dev,
++						log_header_modify_pattern_sw_icm_size);
++		block_map = dm->header_modify_pattern_sw_icm_alloc_blocks;
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -203,6 +240,11 @@ int mlx5_dm_sw_icm_dealloc(struct mlx5_core_dev *dev, enum mlx5_sw_icm_type type
+ 		icm_start_addr = MLX5_CAP64_DEV_MEM(dev, header_modify_sw_icm_start_address);
+ 		block_map = dm->header_modify_sw_icm_alloc_blocks;
+ 		break;
++	case MLX5_SW_ICM_TYPE_HEADER_MODIFY_PATTERN:
++		icm_start_addr = MLX5_CAP64_DEV_MEM(dev,
++						    header_modify_pattern_sw_icm_start_address);
++		block_map = dm->header_modify_pattern_sw_icm_alloc_blocks;
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index aeaedb985c1f..220597c2f436 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -676,6 +676,7 @@ struct mlx5e_resources {
+ enum mlx5_sw_icm_type {
+ 	MLX5_SW_ICM_TYPE_STEERING,
+ 	MLX5_SW_ICM_TYPE_HEADER_MODIFY,
++	MLX5_SW_ICM_TYPE_HEADER_MODIFY_PATTERN,
+ };
+ 
+ #define MLX5_MAX_RESERVED_GIDS 8
 -- 
 2.36.1
 
