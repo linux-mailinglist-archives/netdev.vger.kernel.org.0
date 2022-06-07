@@ -2,53 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01F1153FAF9
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 12:15:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C13D153FB05
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 12:17:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238671AbiFGKPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 06:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45166 "EHLO
+        id S240803AbiFGKRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 06:17:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233464AbiFGKPm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 06:15:42 -0400
+        with ESMTP id S240800AbiFGKRW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 06:17:22 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817BBC8BC2
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 03:15:41 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A11FDD110
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 03:17:20 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nyWFI-0007ir-LV; Tue, 07 Jun 2022 12:15:32 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 234908DAF7;
-        Tue,  7 Jun 2022 10:15:31 +0000 (UTC)
-Date:   Tue, 7 Jun 2022 12:15:30 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
+        (envelope-from <ore@pengutronix.de>)
+        id 1nyWGv-0008Dn-Lh; Tue, 07 Jun 2022 12:17:13 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nyWGv-006yMw-Tl; Tue, 07 Jun 2022 12:17:12 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nyWGt-00BtG7-Tv; Tue, 07 Jun 2022 12:17:11 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 03/13] can: slcan: use the alloc_can_skb() helper
-Message-ID: <20220607101530.54gezhyq6goxwckz@pengutronix.de>
-References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
- <20220607094752.1029295-4-dario.binacchi@amarulasolutions.com>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v1 1/3] net: phy: dp83td510: add SQI support
+Date:   Tue,  7 Jun 2022 12:17:08 +0200
+Message-Id: <20220607101710.2833332-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="r3lgh2urouzfbnrf"
-Content-Disposition: inline
-In-Reply-To: <20220607094752.1029295-4-dario.binacchi@amarulasolutions.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: netdev@vger.kernel.org
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
@@ -60,41 +54,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Convert MSE (mean-square error) values to SNR and split it SQI (Signal Quality
+Indicator) ranges. The used ranges are taken from "OPEN ALLIANCE - Advanced
+diagnostic features for 100BASE-T1 automotive Ethernet PHYs"
+specification.
 
---r3lgh2urouzfbnrf
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/phy/dp83td510.c | 56 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 56 insertions(+)
 
-On 07.06.2022 11:47:42, Dario Binacchi wrote:
-> It is used successfully by most (if not all) CAN device drivers. It
-> allows to remove replicated code.
+diff --git a/drivers/net/phy/dp83td510.c b/drivers/net/phy/dp83td510.c
+index 1ae792b0daaa..441f77bfc9f2 100644
+--- a/drivers/net/phy/dp83td510.c
++++ b/drivers/net/phy/dp83td510.c
+@@ -27,6 +27,32 @@
+ #define DP83TD510E_AN_STAT_1			0x60c
+ #define DP83TD510E_MASTER_SLAVE_RESOL_FAIL	BIT(15)
+ 
++#define DP83TD510E_MSE_DETECT			0xa85
++
++#define DP83TD510_SQI_MAX	7
++
++struct dp83td510_mse_sqi_range {
++	u16 end;
++	u16 start;
++};
++
++/* Register values are converted to SNR(dB) as suggested by
++ * "Application Report - DP83TD510E Cable Diagnostics Toolkit":
++ * SNR(dB) = -10 * log10 (VAL/2^17) - 1.76 dB.
++ * SQI ranges are implemented according to "OPEN ALLIANCE - Advanced diagnostic
++ * features for 100BASE-T1 automotive Ethernet PHYs"
++ */
++static const struct dp83td510_mse_sqi_range dp83td510_mse_sqi_map[] = {
++	{ 0xffff, 0x0569 }, /* < 18dB */
++	{ 0x0569, 0x044c }, /* 18dB =< SNR < 19dB */
++	{ 0x044c, 0x0369 }, /* 19dB =< SNR < 20dB */
++	{ 0x0369, 0x02b6 }, /* 20dB =< SNR < 21dB */
++	{ 0x02b6, 0x0227 }, /* 21dB =< SNR < 22dB */
++	{ 0x0227, 0x01b6 }, /* 22dB =< SNR < 23dB */
++	{ 0x01b6, 0x015b }, /* 23dB =< SNR < 24dB */
++	{ 0x015b, 0x0000 }, /* 24dB =< SNR */
++};
++
+ static int dp83td510_config_intr(struct phy_device *phydev)
+ {
+ 	int ret;
+@@ -164,6 +190,34 @@ static int dp83td510_config_aneg(struct phy_device *phydev)
+ 	return genphy_c45_check_and_restart_aneg(phydev, changed);
+ }
+ 
++static int dp83td510_get_sqi(struct phy_device *phydev)
++{
++	u16 mse_val;
++	int sqi;
++	int ret;
++
++	if (!phydev->link)
++		return 0;
++
++	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_MSE_DETECT);
++	if (ret < 0)
++		return ret;
++
++	mse_val = 0xFFFF & ret;
++	for (sqi = 0; sqi < ARRAY_SIZE(dp83td510_mse_sqi_map); sqi++) {
++		if (mse_val >= dp83td510_mse_sqi_map[sqi].start &&
++		    mse_val <= dp83td510_mse_sqi_map[sqi].end)
++			return sqi;
++	}
++
++	return -EINVAL;
++}
++
++static int dp83td510_get_sqi_max(struct phy_device *phydev)
++{
++	return DP83TD510_SQI_MAX;
++}
++
+ static int dp83td510_get_features(struct phy_device *phydev)
+ {
+ 	/* This PHY can't respond on MDIO bus if no RMII clock is enabled.
+@@ -192,6 +246,8 @@ static struct phy_driver dp83td510_driver[] = {
+ 	.get_features	= dp83td510_get_features,
+ 	.config_intr	= dp83td510_config_intr,
+ 	.handle_interrupt = dp83td510_handle_interrupt,
++	.get_sqi	= dp83td510_get_sqi,
++	.get_sqi_max	= dp83td510_get_sqi_max,
+ 
+ 	.suspend	= genphy_suspend,
+ 	.resume		= genphy_resume,
+-- 
+2.30.2
 
-While you're at it, you can change the function to put the data into the
-allocated skb directly instead of first filling the "cf" on the stack
-and then doing a memcpy();
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---r3lgh2urouzfbnrf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKfJUAACgkQrX5LkNig
-011FFQf/e7SAr4zvYs50K56wjpR7g5D+cUH7S1ta0y07du1xPlxbJM5aYvJyoSE9
-TfkFuoj77+DEbtnJz3BcmqseB2GE76YvkcyLLCdyWyY41wgCCFSzKcU4vCZ7SdlT
-Koia7yO4YlqJm1keua9OKVhtGVeP5xOgRmhuzLJkHKhO+Mg10MX0y8pXHIrinuCN
-+xIroJWNVd/I3Xwd5O+svnQgW60+8rfqb9/Lvx9zT89dD/fvXnr9Kjtd4nkljYjT
-/r//8CzmgWszLomt+7Yb+khwOpIsvEp2c2eyv/pKYuuX6vyzQ6F9fhRE5F4+i42g
-kJsP+Z+1S+mws9gb5Wm8Z1ttmvV28w==
-=lReK
------END PGP SIGNATURE-----
-
---r3lgh2urouzfbnrf--
