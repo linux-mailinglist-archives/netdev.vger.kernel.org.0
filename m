@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2F2753F883
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 10:47:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6472B53F884
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 10:47:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238429AbiFGIq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 04:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33476 "EHLO
+        id S238482AbiFGIrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 04:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238482AbiFGIqo (ORCPT
+        with ESMTP id S238510AbiFGIqo (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 04:46:44 -0400
 Received: from EX-PRD-EDGE02.vmware.com (EX-PRD-EDGE02.vmware.com [208.91.3.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A866D4A2A;
-        Tue,  7 Jun 2022 01:46:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49824E5287;
+        Tue,  7 Jun 2022 01:46:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
     s=s1024; d=vmware.com;
     h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
       content-type;
-    bh=MNxs0Ms+Ao+eLKMjQjI6dwW1EKVBHHcQhnS5Fjqr0bE=;
-    b=FjaNh6vGt/ph0il9zeYJDBDYakvztP4nsPap8ue4QQstzKXvPMVa+SR6G/KSC/
-      /zDYGUDfRqDaMSZqBmxJ9mZRFfC39LAqyVv9nMTZSj1xjbDNjR9Q7DSemRdZDN
-      HjrTFhVV6JeuG2FCrRyL+3OmR79Jy8E8eDJg/5n8yT8XkEQ=
+    bh=8jUo5ILLnzzIFtft13bYw8jpL7wDw6YblekTQ1WZdNs=;
+    b=eFOh+k7HdLV4xx3GEEULIXdp+MZ3g7KW1Ac6ttO51wBMZtf+rWReWWAz+aIyKx
+      8tl7zesemDpuAMEloY9AJFLRmRb330q6NvGW7JOsVZWVoS2nST5s5a63BZoutX
+      TSkscoiPRHnygp+s36X5xvB8OI8b0p9LAK842Ix0Ia8D6TQ=
 Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
  EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
- 15.1.2308.14; Tue, 7 Jun 2022 01:45:34 -0700
+ 15.1.2308.14; Tue, 7 Jun 2022 01:45:36 -0700
 Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id A2E40202CB;
-        Tue,  7 Jun 2022 01:45:40 -0700 (PDT)
+        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id 2811020194;
+        Tue,  7 Jun 2022 01:45:42 -0700 (PDT)
 Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 9A149AA2B0; Tue,  7 Jun 2022 01:45:40 -0700 (PDT)
+        id 2350FAA2B0; Tue,  7 Jun 2022 01:45:42 -0700 (PDT)
 From:   Ronak Doshi <doshir@vmware.com>
 To:     <netdev@vger.kernel.org>
 CC:     Ronak Doshi <doshir@vmware.com>,
@@ -39,9 +39,9 @@ CC:     Ronak Doshi <doshir@vmware.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 net-next 5/8] vmxnet3: add command to set ring buffer sizes
-Date:   Tue, 7 Jun 2022 01:45:15 -0700
-Message-ID: <20220607084518.30316-6-doshir@vmware.com>
+Subject: [PATCH v2 net-next 6/8] vmxnet3: limit number of TXDs used for TSO packet
+Date:   Tue, 7 Jun 2022 01:45:16 -0700
+Message-ID: <20220607084518.30316-7-doshir@vmware.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20220607084518.30316-1-doshir@vmware.com>
 References: <20220607084518.30316-1-doshir@vmware.com>
@@ -59,189 +59,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a new command to set ring buffer sizes. This is
-required to pass the buffer size information to passthrough devices.
-For performance reasons, with version7 and later, ring1 will contain
-only mtu size buffers (bound to 3K). Packets > 3K will use both ring1
-and ring2.
-
-Also, ring sizes are round down to power of 2 and ring2 default
-size is increased to 512.
+Currently, vmxnet3 does not have a limit on number of descriptors
+used for a TSO packet. However, with UPT, for hardware performance
+reasons, this patch limits the number of transmit descriptors to 24
+for a TSO packet.
 
 Signed-off-by: Ronak Doshi <doshir@vmware.com>
 Acked-by: Guolin Yang <gyang@vmware.com>
 ---
- drivers/net/vmxnet3/vmxnet3_defs.h    | 11 +++++++
- drivers/net/vmxnet3/vmxnet3_drv.c     | 57 +++++++++++++++++++++++++++--------
- drivers/net/vmxnet3/vmxnet3_ethtool.c |  7 +++++
- drivers/net/vmxnet3/vmxnet3_int.h     |  3 +-
- 4 files changed, 65 insertions(+), 13 deletions(-)
+ drivers/net/vmxnet3/vmxnet3_defs.h |  2 ++
+ drivers/net/vmxnet3/vmxnet3_drv.c  | 17 +++++++++++++++++
+ 2 files changed, 19 insertions(+)
 
 diff --git a/drivers/net/vmxnet3/vmxnet3_defs.h b/drivers/net/vmxnet3/vmxnet3_defs.h
-index 8d626611ab2d..415e4c9993ef 100644
+index 415e4c9993ef..cb9dc72f2b3d 100644
 --- a/drivers/net/vmxnet3/vmxnet3_defs.h
 +++ b/drivers/net/vmxnet3/vmxnet3_defs.h
-@@ -99,6 +99,9 @@ enum {
- 	VMXNET3_CMD_SET_COALESCE,
- 	VMXNET3_CMD_REGISTER_MEMREGS,
- 	VMXNET3_CMD_SET_RSS_FIELDS,
-+	VMXNET3_CMD_RESERVED4,
-+	VMXNET3_CMD_RESERVED5,
-+	VMXNET3_CMD_SET_RING_BUFFER_SIZE,
+@@ -400,6 +400,8 @@ union Vmxnet3_GenericDesc {
  
- 	VMXNET3_CMD_FIRST_GET = 0xF00D0000,
- 	VMXNET3_CMD_GET_QUEUE_STATUS = VMXNET3_CMD_FIRST_GET,
-@@ -743,6 +746,13 @@ enum Vmxnet3_RSSField {
- 	VMXNET3_RSS_FIELDS_ESPIP6 = 0x0020,
- };
+ /* max # of tx descs for a non-tso pkt */
+ #define VMXNET3_MAX_TXD_PER_PKT 16
++/* max # of tx descs for a tso pkt */
++#define VMXNET3_MAX_TSO_TXD_PER_PKT 24
  
-+struct Vmxnet3_RingBufferSize {
-+	__le16             ring1BufSizeType0;
-+	__le16             ring1BufSizeType1;
-+	__le16             ring2BufSizeType1;
-+	__le16             pad;
-+};
-+
- /* If the command data <= 16 bytes, use the shared memory directly.
-  * otherwise, use variable length configuration descriptor.
-  */
-@@ -750,6 +760,7 @@ union Vmxnet3_CmdInfo {
- 	struct Vmxnet3_VariableLenConfDesc	varConf;
- 	struct Vmxnet3_SetPolling		setPolling;
- 	enum   Vmxnet3_RSSField                 setRssFields;
-+	struct Vmxnet3_RingBufferSize           ringBufSize;
- 	__le64					data[2];
- };
- 
+ /* Max size of a single rx buffer */
+ #define VMXNET3_MAX_RX_BUF_SIZE  ((1 << 14) - 1)
 diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 94ca3bc1d540..2ba263966989 100644
+index 2ba263966989..6e013ae0b5ea 100644
 --- a/drivers/net/vmxnet3/vmxnet3_drv.c
 +++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -2681,6 +2681,23 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
- }
- 
- static void
-+vmxnet3_init_bufsize(struct vmxnet3_adapter *adapter)
-+{
-+	struct Vmxnet3_DriverShared *shared = adapter->shared;
-+	union Vmxnet3_CmdInfo *cmdInfo = &shared->cu.cmdInfo;
-+	unsigned long flags;
+@@ -1061,6 +1061,23 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 			}
+ 			tq->stats.copy_skb_header++;
+ 		}
++		if (unlikely(count > VMXNET3_MAX_TSO_TXD_PER_PKT)) {
++			/* tso pkts must not use more than
++			 * VMXNET3_MAX_TSO_TXD_PER_PKT entries
++			 */
++			if (skb_linearize(skb) != 0) {
++				tq->stats.drop_too_many_frags++;
++				goto drop_pkt;
++			}
++			tq->stats.linearized++;
 +
-+	if (!VMXNET3_VERSION_GE_7(adapter))
-+		return;
-+
-+	cmdInfo->ringBufSize = adapter->ringBufSize;
-+	spin_lock_irqsave(&adapter->cmd_lock, flags);
-+	VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
-+			       VMXNET3_CMD_SET_RING_BUFFER_SIZE);
-+	spin_unlock_irqrestore(&adapter->cmd_lock, flags);
-+}
-+
-+static void
- vmxnet3_init_coalesce(struct vmxnet3_adapter *adapter)
- {
- 	struct Vmxnet3_DriverShared *shared = adapter->shared;
-@@ -2818,6 +2835,7 @@ vmxnet3_activate_dev(struct vmxnet3_adapter *adapter)
- 		goto activate_err;
- 	}
- 
-+	vmxnet3_init_bufsize(adapter);
- 	vmxnet3_init_coalesce(adapter);
- 	vmxnet3_init_rssfields(adapter);
- 
-@@ -2991,19 +3009,29 @@ static void
- vmxnet3_adjust_rx_ring_size(struct vmxnet3_adapter *adapter)
- {
- 	size_t sz, i, ring0_size, ring1_size, comp_size;
--	if (adapter->netdev->mtu <= VMXNET3_MAX_SKB_BUF_SIZE -
--				    VMXNET3_MAX_ETH_HDR_SIZE) {
--		adapter->skb_buf_size = adapter->netdev->mtu +
--					VMXNET3_MAX_ETH_HDR_SIZE;
--		if (adapter->skb_buf_size < VMXNET3_MIN_T0_BUF_SIZE)
--			adapter->skb_buf_size = VMXNET3_MIN_T0_BUF_SIZE;
--
--		adapter->rx_buf_per_pkt = 1;
-+	/* With version7 ring1 will have only T0 buffers */
-+	if (!VMXNET3_VERSION_GE_7(adapter)) {
-+		if (adapter->netdev->mtu <= VMXNET3_MAX_SKB_BUF_SIZE -
-+					    VMXNET3_MAX_ETH_HDR_SIZE) {
-+			adapter->skb_buf_size = adapter->netdev->mtu +
-+						VMXNET3_MAX_ETH_HDR_SIZE;
-+			if (adapter->skb_buf_size < VMXNET3_MIN_T0_BUF_SIZE)
-+				adapter->skb_buf_size = VMXNET3_MIN_T0_BUF_SIZE;
-+
-+			adapter->rx_buf_per_pkt = 1;
-+		} else {
-+			adapter->skb_buf_size = VMXNET3_MAX_SKB_BUF_SIZE;
-+			sz = adapter->netdev->mtu - VMXNET3_MAX_SKB_BUF_SIZE +
-+						    VMXNET3_MAX_ETH_HDR_SIZE;
-+			adapter->rx_buf_per_pkt = 1 + (sz + PAGE_SIZE - 1) / PAGE_SIZE;
++			/* recalculate the # of descriptors to use */
++			count = VMXNET3_TXD_NEEDED(skb_headlen(skb)) + 1;
++			if (unlikely(count > VMXNET3_MAX_TSO_TXD_PER_PKT)) {
++				tq->stats.drop_too_many_frags++;
++				goto drop_pkt;
++			}
 +		}
- 	} else {
--		adapter->skb_buf_size = VMXNET3_MAX_SKB_BUF_SIZE;
--		sz = adapter->netdev->mtu - VMXNET3_MAX_SKB_BUF_SIZE +
--					    VMXNET3_MAX_ETH_HDR_SIZE;
--		adapter->rx_buf_per_pkt = 1 + (sz + PAGE_SIZE - 1) / PAGE_SIZE;
-+		adapter->skb_buf_size = min((int)adapter->netdev->mtu + VMXNET3_MAX_ETH_HDR_SIZE,
-+					    VMXNET3_MAX_SKB_BUF_SIZE);
-+		adapter->rx_buf_per_pkt = 1;
-+		adapter->ringBufSize.ring1BufSizeType0 = adapter->skb_buf_size;
-+		adapter->ringBufSize.ring1BufSizeType1 = 0;
-+		adapter->ringBufSize.ring2BufSizeType1 = PAGE_SIZE;
- 	}
- 
- 	/*
-@@ -3019,6 +3047,11 @@ vmxnet3_adjust_rx_ring_size(struct vmxnet3_adapter *adapter)
- 	ring1_size = (ring1_size + sz - 1) / sz * sz;
- 	ring1_size = min_t(u32, ring1_size, VMXNET3_RX_RING2_MAX_SIZE /
- 			   sz * sz);
-+	/* For v7 and later, keep ring size power of 2 for UPT */
-+	if (VMXNET3_VERSION_GE_7(adapter)) {
-+		ring0_size = rounddown_pow_of_two(ring0_size);
-+		ring1_size = rounddown_pow_of_two(ring1_size);
-+	}
- 	comp_size = ring0_size + ring1_size;
- 
- 	for (i = 0; i < adapter->num_rx_queues; i++) {
-diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-index 397b268f7bc5..ce3993282c0f 100644
---- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
-+++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-@@ -718,6 +718,13 @@ vmxnet3_set_ringparam(struct net_device *netdev,
- 	new_rx_ring2_size = min_t(u32, new_rx_ring2_size,
- 				  VMXNET3_RX_RING2_MAX_SIZE);
- 
-+	/* For v7 and later, keep ring size power of 2 for UPT */
-+	if (VMXNET3_VERSION_GE_7(adapter)) {
-+		new_tx_ring_size = rounddown_pow_of_two(new_tx_ring_size);
-+		new_rx_ring_size = rounddown_pow_of_two(new_rx_ring_size);
-+		new_rx_ring2_size = rounddown_pow_of_two(new_rx_ring2_size);
-+	}
-+
- 	/* rx data ring buffer size has to be a multiple of
- 	 * VMXNET3_RXDATA_DESC_SIZE_ALIGN
- 	 */
-diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
-index 5b495ef253e8..cb87731f5f1c 100644
---- a/drivers/net/vmxnet3/vmxnet3_int.h
-+++ b/drivers/net/vmxnet3/vmxnet3_int.h
-@@ -408,6 +408,7 @@ struct vmxnet3_adapter {
- 	dma_addr_t pm_conf_pa;
- 	dma_addr_t rss_conf_pa;
- 	bool   queuesExtEnabled;
-+	struct Vmxnet3_RingBufferSize     ringBufSize;
- 	u32    devcap_supported[8];
- 	u32    ptcap_supported[8];
- 	u32    dev_caps[8];
-@@ -449,7 +450,7 @@ struct vmxnet3_adapter {
- /* must be a multiple of VMXNET3_RING_SIZE_ALIGN */
- #define VMXNET3_DEF_TX_RING_SIZE    512
- #define VMXNET3_DEF_RX_RING_SIZE    1024
--#define VMXNET3_DEF_RX_RING2_SIZE   256
-+#define VMXNET3_DEF_RX_RING2_SIZE   512
- 
- #define VMXNET3_DEF_RXDATA_DESC_SIZE 128
- 
+ 		if (skb->encapsulation) {
+ 			vmxnet3_prepare_inner_tso(skb, &ctx);
+ 		} else {
 -- 
 2.11.0
 
