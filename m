@@ -2,145 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1A6D53FEFF
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 14:37:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9278253FF39
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 14:44:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243880AbiFGMho convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 7 Jun 2022 08:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54942 "EHLO
+        id S243213AbiFGMox (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 08:44:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243802AbiFGMg4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 08:36:56 -0400
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C848FE27BE;
-        Tue,  7 Jun 2022 05:36:52 -0700 (PDT)
-Received: by mail-qt1-f175.google.com with SMTP id y15so12480292qtx.4;
-        Tue, 07 Jun 2022 05:36:52 -0700 (PDT)
+        with ESMTP id S239633AbiFGMow (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 08:44:52 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F52A49251
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 05:44:51 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id q1so34968482ejz.9
+        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 05:44:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=uQiTgrKp2j5ylnfr6ZLy6DqHacfk0nHCMZVLuHI5zrg=;
+        b=TZbf5La9krEQsFLerRcSFIYX1Q/ggP05UNSLG2d2k6lUkLydtbDJvUuwIh686qn5Bn
+         fWT4JHjy0OK5221hYNKq9rlsA/UIpRn9VvOlX3NIMdGONUqodV+I1ycFDv/aoE9qiTFp
+         7wP9Qi9tgguDfaqBYWxpWWhU1B6TsTwPPrIXuT0D8aauT6O4DUyxg3DvOu4O0b98K/Rc
+         vqPwXBhZN2tP6xAckRMggsTbmwrSeEC8zmI2VenpslEuL6StTBuCncDQEQf3Kw/YPNgh
+         /8Igi0JtbftgiKmAqJt3uj+8L6ErFttxRBfc4yCUDEvRBwXsV0OylV8f45XtvpIAsLaY
+         TSLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=jI9Eiy9NqYqthM/bM2aEWTmdS6Ov8FCqsQpj0jvzrm0=;
-        b=i3xBIdu0Imzpn7+GeYihuu7FZqWWmUkazEo4w0O0JfJkM7NFbnww16nSsMSFMTi63J
-         JTWuN+HETtLS1Y5fkmYBDcUOVvWwqhvOpWH6xy6RoqPkMkUfQso5BzvgDQ6o4T4VS1Rt
-         EF3ySOVUrBr1UbmGhLHYW6vWT09lScATSRKYr9hGX9Mul0eAmxpJLyFo3LksEE5gqTM/
-         +RvOAS1OXDaFm1XVKfh0OPFKEyODmUKNf9SIK9ZcLDLgkNKOfYWydhzrZRr7udEiV18O
-         UcfMvwm5Qjsh7J+AoSH7zaULP/wWZM06S11g97yWYCTho902T+y11AxyNShLqgafZ/KA
-         II4A==
-X-Gm-Message-State: AOAM532Wsv1yYYwZaR6/bKwMD1Yfb8coa9nL0sMVLNRUD9oWdOs03zZP
-        IdjRE0PZG/l9Pxp67ej1t3agCddLmjgyCQ==
-X-Google-Smtp-Source: ABdhPJwGod2ZTC35dVzxa46M26uqJXqucakYCo0RId/YXLNI8RDb6tjB9wj6NF6g49Hm73uxz8q1Ig==
-X-Received: by 2002:ac8:58ca:0:b0:2f3:da32:ab1 with SMTP id u10-20020ac858ca000000b002f3da320ab1mr22157947qta.308.1654605400840;
-        Tue, 07 Jun 2022 05:36:40 -0700 (PDT)
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
-        by smtp.gmail.com with ESMTPSA id f12-20020a05620a280c00b0069fe1dfbeffsm218111qkp.92.2022.06.07.05.36.40
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=uQiTgrKp2j5ylnfr6ZLy6DqHacfk0nHCMZVLuHI5zrg=;
+        b=Yc2/1IeWtLFY2bf8qug//QDVXPqSesoo2BL0A/AEgyp2hR20fB0Oux1g9F+D4kzGAl
+         dRHtaqpIY2EoxjKjZM8TFr/bnqobvIE0up5uA/qC/dsNimAusbAEySZ+fa926TK74tSH
+         CxkAyde/h+XsGVkRe6yB/MeWcfXb6LMZGvPlKLyL0tZ6eMhsnuKRGdJ6efe5DScZktv1
+         ELfZrWzfzhBsw8opgSgHTJatkLxI/BfGvd4touh2P5Yjf3z8RGt+i/5UAJKVt11sq7Z5
+         PfnKP4QG9mZxXGmMWa7mCHq1MzwEeUUJoJN7MoaZj/MlNlE8kplWrcG/eOCWD9kkSNLZ
+         c1gQ==
+X-Gm-Message-State: AOAM530PqRvM/vA1/sem1+w++dEB9sUNpfIe1y6OIxv8/o+pOtNWPqcT
+        KOwLBSOF5RqOIzdOU+kY8ZI4tKBXQdJeog==
+X-Google-Smtp-Source: ABdhPJzKh0VsB6f0Ke44cBMK6Efz5LUw/feuZP1UFv8kvNQc1NaRuCcTlz+/ibqdTUZrOV7TSosCkQ==
+X-Received: by 2002:a17:907:3e09:b0:6ff:20f:9b1a with SMTP id hp9-20020a1709073e0900b006ff020f9b1amr26736563ejc.679.1654605889604;
+        Tue, 07 Jun 2022 05:44:49 -0700 (PDT)
+Received: from [192.168.0.184] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id h15-20020a170906110f00b006fe98c7c7a9sm7552672eja.85.2022.06.07.05.44.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jun 2022 05:36:40 -0700 (PDT)
-Received: by mail-yb1-f179.google.com with SMTP id p13so30908697ybm.1;
-        Tue, 07 Jun 2022 05:36:40 -0700 (PDT)
-X-Received: by 2002:a05:6902:a:b0:65c:b38e:6d9f with SMTP id
- l10-20020a056902000a00b0065cb38e6d9fmr30887112ybh.36.1654605399923; Tue, 07
- Jun 2022 05:36:39 -0700 (PDT)
+        Tue, 07 Jun 2022 05:44:49 -0700 (PDT)
+Message-ID: <aaa0979c-abd0-b3cf-ac3e-3813aaa84185@linaro.org>
+Date:   Tue, 7 Jun 2022 14:44:48 +0200
 MIME-Version: 1.0
-References: <20220526081550.1089805-1-saravanak@google.com> <20220526081550.1089805-9-saravanak@google.com>
-In-Reply-To: <20220526081550.1089805-9-saravanak@google.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 7 Jun 2022 14:36:28 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXrTjjNcqro+FA0BPJ+rK3bCAX+boYdf5=ZvGGocVJPMw@mail.gmail.com>
-Message-ID: <CAMuHMdXrTjjNcqro+FA0BPJ+rK3bCAX+boYdf5=ZvGGocVJPMw@mail.gmail.com>
-Subject: Re: [RFC PATCH v1 8/9] net: ipconfig: Force fw_devlink to unblock any
- devices that might probe
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        John Stultz <jstultz@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Android Kernel Team <kernel-team@android.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/1] nfc: nfcmrvl: Fix memory leak in
+ nfcmrvl_play_deferred
+Content-Language: en-US
+To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220607083230.6182-1-xiaohuizhang@ruc.edu.cn>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220607083230.6182-1-xiaohuizhang@ruc.edu.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Saravana,
+On 07/06/2022 10:32, Xiaohui Zhang wrote:
+> Similar to the handling of play_deferred in commit 19cfe912c37b
+> ("Bluetooth: btusb: Fix memory leak in play_deferred"), we thought
+> a patch might be needed here as well.
+> 
+> Currently usb_submit_urb is called directly to submit deferred tx
+> urbs after unanchor them.
+> 
+> So the usb_giveback_urb_bh would failed to unref it in usb_unanchor_urb
+> and cause memory leak.
+> 
+> Put those urbs in tx_anchor to avoid the leak, and also fix the error
+> handling.
+> 
+> Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
 
-On Thu, May 26, 2022 at 10:16 AM Saravana Kannan <saravanak@google.com> wrote:
-> If there are network devices that could probe without some of their
-> suppliers probing and those network devices are needed for IP auto
-> config to work, then fw_devlink=on might break that usecase by blocking
-> the network devices from probing by the time IP auto config starts.
->
-> So, when IP auto config is enabled, make sure fw_devlink doesn't block
-> the probing of any device that has a driver by the time we get to IP
-> auto config.
->
-> Signed-off-by: Saravana Kannan <saravanak@google.com>
-> ---
->  net/ipv4/ipconfig.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/net/ipv4/ipconfig.c b/net/ipv4/ipconfig.c
-> index 9d41d5d5cd1e..aa7b8ba68ca6 100644
-> --- a/net/ipv4/ipconfig.c
-> +++ b/net/ipv4/ipconfig.c
-> @@ -1435,6 +1435,8 @@ static int __init wait_for_devices(void)
->  {
->         int i;
->
-> +       fw_devlink_unblock_may_probe();
-> +
->         for (i = 0; i < DEVICE_WAIT_MAX; i++) {
->                 struct net_device *dev;
->                 int found = 0;
 
-FTR, this lacks an include <linux/fwnode.h>, as my mips rbtx4927
-build fails with:
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-net/ipv4/ipconfig.c:1438:2: error: implicit declaration of function
-‘fw_devlink_unblock_may_probe’ [-Werror=implicit-function-declaration]
 
-Switching to v2 instead...
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Best regards,
+Krzysztof
