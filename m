@@ -2,91 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15633540694
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 19:37:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB52554098D
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 20:11:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346814AbiFGRg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 13:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53310 "EHLO
+        id S1349535AbiFGSKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 14:10:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347526AbiFGRfU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 13:35:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4AD11045F
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 10:30:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62A4F60BC6
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 17:30:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 944EBC385A5;
-        Tue,  7 Jun 2022 17:30:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654623029;
-        bh=uGWqClOrwfAziPiUCxLZQ36qn9wzXoeytlSo/Tc+6Q8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=d2cQILm1QCPYMFm8Ys3VpuvSklErSjtmbFruT1R3Q8g0K/zbpD8cPVpWsRjiag699
-         w+ADGxx00AUVyx22sMNw5s/74cgkJJY+QRxe1VUwf6HNFoB6bDDZiNZQGoJEIWKlnk
-         7bXS8Tc/UaxGPtCa2loboE4a8Va3FiOAfpaGBMNbbIiTbpslM9Uryg14zYjsgJ4RSc
-         YTjgcQfq9by+gEo/Ydr8r+8jpD1EDAjqQDi3dANjtzkwFHBGK6YW6M0AbnTY1TNmGs
-         eqFALoFhKFPmefsEa+UpTnzlBhKwucmi0EM5eq92hL42SaVcdkcBpODRXs2F7g9G0L
-         +LunJFz5TVBWQ==
-Date:   Tue, 7 Jun 2022 10:30:28 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     dsahern@gmail.com, netdev@vger.kernel.org,
-        stephen@networkplumber.org, tariqt@nvidia.com
-Subject: Re: [PATCH iproute2-next v2] ss: Shorter display format for TLS
- zerocopy sendfile
-Message-ID: <20220607103028.15f70be6@kernel.org>
-In-Reply-To: <21b34b86-d43b-e86a-57ec-0689a9931824@nvidia.com>
-References: <20220601122343.2451706-1-maximmi@nvidia.com>
-        <20220601234249.244701-1-kuba@kernel.org>
-        <bf8c357e-6a1d-4c42-e6f8-f259879b67c6@nvidia.com>
-        <20220602094428.4464c58a@kernel.org>
-        <779eeee9-efae-56c2-5dd6-dea1a027f65d@nvidia.com>
-        <20220603085140.26f29d80@kernel.org>
-        <2a1d3514-5c6a-62b6-05b7-b344e0ba3e47@nvidia.com>
-        <20220606105936.4162fe65@kernel.org>
-        <21b34b86-d43b-e86a-57ec-0689a9931824@nvidia.com>
+        with ESMTP id S240123AbiFGSIw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 14:08:52 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51334694BC
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 10:48:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654624099; x=1686160099;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=AzIWpIlcnXayHzOZdAy7dGI7bNXHAn/EkOOZmYSdnUo=;
+  b=jW26ru7ksKI9rPyWK3fX3NOnRNLgTmUCCH0OnymXoLH+KRWLAaO98HlJ
+   r2TkmT4UDt+ebVypJVeCpDiI6IQRJGw8Jp8fPb1JIZh3q1T+bdOY1kYA3
+   Yoho6aojv5hWhaHof1XJLtb5DixVZQ5Kazf0oQd+zGa6c63WQbuuVW/SF
+   sIF4OoB5tszsLXhVLprsi2Fi5/XEv6xxjoFzOyLSEM0Gr+n6k1B/5uIP5
+   viF+ijul/dsQ23h7rKo7fQ2gBomOUCFLZ28njFfLTZTIEq+b2g73MoNVY
+   8nZDM272js3BfGEjhDjM7PCh1coRlcRuwimWKyBU0DSvUT/BI3x/vb11y
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="265271389"
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="265271389"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 10:31:41 -0700
+X-IronPort-AV: E=Sophos;i="5.91,284,1647327600"; 
+   d="scan'208";a="636230717"
+Received: from iairuoyo-mobl.amr.corp.intel.com ([10.212.204.75])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jun 2022 10:31:40 -0700
+Date:   Tue, 7 Jun 2022 10:31:39 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Joanne Koong <joannelkoong@gmail.com>
+cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v2 0/2] Update bhash2 when socket's rcv saddr
+ changes
+In-Reply-To: <CAJnrk1bF=TD2b+RaYqH10i6LXkzbzsVHmM=-wR7S2_bHGxMuNw@mail.gmail.com>
+Message-ID: <e14e34b-2a1c-18b2-7c25-5ad72c5fc8@linux.intel.com>
+References: <20220602165101.3188482-1-joannelkoong@gmail.com> <4bae9df4-42c1-85c3-d350-119a151d29@linux.intel.com> <CAJnrk1buk-hK3nwyPz+o+wZLDdZTPpBSNniY3sJtgXZtJXOROQ@mail.gmail.com> <CAJnrk1bF=TD2b+RaYqH10i6LXkzbzsVHmM=-wR7S2_bHGxMuNw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 7 Jun 2022 13:35:19 +0300 Maxim Mikityanskiy wrote:
-> > That'd be an acceptable compromise. Hopefully sufficiently forewarned
-> > users will mentally remove the zc_ part and still have a meaningful
-> > amount of info about what the flag does.
-> > 
-> > Any reason why we wouldn't reuse the same knob for zc sendmsg()? If we
-> > plan to reuse it we can s/sendfile/send/ to shorten the name, perhaps.  
-> 
-> We can even make it as short as zc_ro_tx in that case.
+On Mon, 6 Jun 2022, Joanne Koong wrote:
 
-SG
+> On Fri, Jun 3, 2022 at 5:38 PM Joanne Koong <joannelkoong@gmail.com> wrote:
+>>
+>> On Fri, Jun 3, 2022 at 11:55 AM Mat Martineau
+>> <mathew.j.martineau@linux.intel.com> wrote:
+>>>
+>>> On Thu, 2 Jun 2022, Joanne Koong wrote:
+>>>
+>>>> As syzbot noted [1], there is an inconsistency in the bhash2 table in the
+>>>> case where a socket's rcv saddr changes after it is binded. (For more
+>>>> details, please see the commit message of the first patch)
+>>>>
+>>>> This patchset fixes that and adds a test that triggers the case where the
+>>>> sk's rcv saddr changes. The subsequent listen() call should succeed.
+>>>>
+>>>> [1] https://lore.kernel.org/netdev/0000000000003f33bc05dfaf44fe@google.com/
+>>>>
+>>>> --
+>>>> v1 -> v2:
+>>>> v1: https://lore.kernel.org/netdev/20220601201434.1710931-1-joannekoong@fb.com/
+>>>> * Mark __inet_bhash2_update_saddr as static
+>>>>
+>>>> Joanne Koong (2):
+>>>>  net: Update bhash2 when socket's rcv saddr changes
+>>>>  selftests/net: Add sk_bind_sendto_listen test
+>>>>
+>>>
+>>> Hi Joanne -
+>>>
+>>> I've been running my own syzkaller instance with v1 of this fix for a
+>>> couple of days. Before this patch, syzkaller would trigger the
+>>> inet_csk_get_port warning a couple of times per hour. After this patch it
+>>> took two days to show the warning:
+>>>
+>>> ------------[ cut here ]------------
+>>>
+>>> WARNING: CPU: 0 PID: 9430 at net/ipv4/inet_connection_sock.c:525
+>>> inet_csk_get_port+0x938/0xe80 net/ipv4/inet_connection_sock.c:525
+>>> Modules linked in:
+>>> CPU: 0 PID: 9430 Comm: syz-executor.5 Not tainted 5.18.0-05016-g433fde5b4119 #3
+>>> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+>>> RIP: 0010:inet_csk_get_port+0x938/0xe80 net/ipv4/inet_connection_sock.c:525
+>>> Code: ff 48 89 84 24 b0 00 00 00 48 85 c0 0f 84 6a 01 00 00 e8 2b 0f db fd 48 8b 6c 24 70 c6 04 24 01 e9 fb fb ff ff e8 18 0f db fd <0f> 0b e9 70 f9 ff ff e8 0c 0f db fd 0f 0b e9 28 f9 ff ff e8 00 0f
+>>> RSP: 0018:ffffc90000b5fbc0 EFLAGS: 00010212
+>>> RAX: 00000000000000e7 RBX: ffff88803c410040 RCX: ffffc9000e419000
+>>> RDX: 0000000000040000 RSI: ffffffff836f47e8 RDI: ffff88803c4106e0
+>>> RBP: ffff88810b773840 R08: 0000000000000001 R09: 0000000000000001
+>>> R10: fffffbfff0f64303 R11: 0000000000000001 R12: 0000000000000000
+>>> R13: ffff88810605e2f0 R14: ffffffff88606040 R15: 000000000000c1ff
+>>> FS:  00007fada4d03640(0000) GS:ffff88811ac00000(0000) knlGS:0000000000000000
+>>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>> CR2: 0000001b32e24000 CR3: 00000001016de001 CR4: 0000000000770ef0
+>>> PKRU: 55555554
+>>> Call Trace:
+>>>   <TASK>
+>>>   inet_csk_listen_start+0x143/0x3d0 net/ipv4/inet_connection_sock.c:1178
+>>>   inet_listen+0x22f/0x650 net/ipv4/af_inet.c:228
+>>>   mptcp_listen+0x205/0x440 net/mptcp/protocol.c:3564
+>>>   __sys_listen+0x189/0x260 net/socket.c:1810
+>>>   __do_sys_listen net/socket.c:1819 [inline]
+>>>   __se_sys_listen net/socket.c:1817 [inline]
+>>>   __x64_sys_listen+0x54/0x80 net/socket.c:1817
+>>>   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>>>   do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
+>>>   entry_SYSCALL_64_after_hwframe+0x46/0xb0
+>>> RIP: 0033:0x7fada558f92d
+>>> Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89 01 48
+>>> RSP: 002b:00007fada4d03028 EFLAGS: 00000246 ORIG_RAX: 0000000000000032
+>>> RAX: ffffffffffffffda RBX: 00007fada56aff60 RCX: 00007fada558f92d
+>>> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000004
+>>> RBP: 00007fada56000a0 R08: 0000000000000000 R09: 0000000000000000
+>>> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+>>> R13: 000000000000000b R14: 00007fada56aff60 R15: 00007fada4ce3000
+>>>   </TASK>
+>>> irq event stamp: 2078
+>>> hardirqs last  enabled at (2092): [<ffffffff812f1be3>] __up_console_sem+0xb3/0xd0 kernel/printk/printk.c:291
+>>> hardirqs last disabled at (2103): [<ffffffff812f1bc8>] __up_console_sem+0x98/0xd0 kernel/printk/printk.c:289
+>>> softirqs last  enabled at (1498): [<ffffffff83807dd4>] lock_sock include/net/sock.h:1691 [inline]
+>>> softirqs last  enabled at (1498): [<ffffffff83807dd4>] inet_listen+0x94/0x650 net/ipv4/af_inet.c:199
+>>> softirqs last disabled at (1500): [<ffffffff836f425c>] spin_lock_bh include/linux/spinlock.h:354 [inline]
+>>> softirqs last disabled at (1500): [<ffffffff836f425c>] inet_csk_get_port+0x3ac/0xe80 net/ipv4/inet_connection_sock.c:483
+>>> ---[ end trace 0000000000000000 ]---
+>>>
+>>>
+>>> In the full log file it does look like syskaller is doing something
+>>> strange since it's calling bind, connect, and listen on the same socket:
+>>>
+>>> r4 = socket$inet_mptcp(0x2, 0x1, 0x106)
+>>> bind$inet(r4, &(0x7f0000000000)={0x2, 0x4e23, @empty}, 0x10)
+>>> connect$inet(r4, &(0x7f0000000040)={0x2, 0x0, @local}, 0x10)
+>>> listen(r4, 0x0)
+>>>
+>>> ...but it is a fuzz tester after all.
+>>>
+>>> I've uploaded the full syzkaller logs to this GitHub issue:
+>>>
+>>> https://github.com/multipath-tcp/mptcp_net-next/issues/279
+>>>
+>>>
+>>> Not sure yet if this is MPTCP-related. I don't think MPTCP
+>>> changes anything with the subflow TCP socket bind hashes.
+>>>
+>> Hi Mat,
+>>
+>> Thanks for bringing this up and for uploading the logs. I will look into this.
+>>>
+> Hi Mat,
+>
+> I am still trying to configure my local environment for mptcp to repro
+> + test the fix to verify that it is correct. I think the fix is to add
+> "inet_bhash2_update_saddr(msk);" to the end of the
+> "mptcp_copy_inaddrs" function in net/mptcp/protocol.c.  Would you be
+> able to run an instance on your local syzkaller environment with this
+> line added to see if that fixes the warning?
 
-> Regarding sendmsg, I can't anticipate what knob will be used. There is 
-> MSG_ZEROCOPY which is also a candidate.
+Hi Joanne -
 
-Right, that's what I'm wondering. MSG_ZEROCOPY already has some
-restrictions on user not touching the data but technically a pure 
-TCP connection will not be broken if the data is modified. I'd lean
-towards requiring the user setting zc_ro_tx, but admittedly I don't
-have a very strong reason.
+I also investigated that function when trying to figure out why this 
+warning might be happening in MPTCP.
 
-> Note that the constant in the header file has "SENDFILE" in its name, so 
-> if you want to reuse it for the future sendmsg zerocopy, we should think 
-> about renaming it in advance, before anyone starts using it. 
-> Alternatively, an alias for this constant can be added in the future.
+In MPTCP, the userspace-facing MPTCP socket (msk) doesn't directly bind or 
+connect. The msk creates and manages TCP subflow sockets (ssk in 
+mptcp_copy_inaddrs()), and passes through bind and connect calls to the 
+subflows. The msk depends on the subflow to do the hash updates, since 
+those subflow sockets are the ones interacting with the inet layer.
 
-Would be good to rename it to whatever we settle for on the iproute2
-side. Are we going with zc_ro_tx, then?
+mptcp_copy_inaddrs() copies the already-hashed addresses and ports from 
+the ssk to the msk, and we only want the ssk in the hash table.
+
+--
+Mat Martineau
+Intel
