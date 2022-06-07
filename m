@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E82FE5409EB
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 20:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3AA2540A92
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 20:23:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348716AbiFGSSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 14:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52706 "EHLO
+        id S1350892AbiFGSXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 14:23:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352253AbiFGSRA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 14:17:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5936FA38;
-        Tue,  7 Jun 2022 10:51:15 -0700 (PDT)
+        with ESMTP id S1352333AbiFGSRC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 14:17:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE24187200;
+        Tue,  7 Jun 2022 10:51:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9605616B6;
-        Tue,  7 Jun 2022 17:51:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFCE9C341C0;
-        Tue,  7 Jun 2022 17:51:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 745D6B82354;
+        Tue,  7 Jun 2022 17:51:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CC92C36AFF;
+        Tue,  7 Jun 2022 17:51:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624274;
-        bh=3TszrS3lAtEjZ2rupo4rzyU9qtS2/kAgbkhSgz7ytFE=;
+        s=k20201202; t=1654624282;
+        bh=r5614ar8AFRRifn5VCsO52srNzCnoert+XWIpkRypVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oZEvebjtMkPxMJkb03CD2dOqJT8SJsnzbKiPr4bruTzhySHNkLNws/8kB4PwGq/cZ
-         o6pMYfc6iTAy/HB8rFoqcwRY2bCbC/tYfhexlsgmyr3t3/T3aUhTv/edK6X5zEyqej
-         T6bm8q2o+b3I9RZ/lWtxF08xjxHrKun3PW5miuQzH+eCNK8zmh8QQiznVoO4Z3Q5Ur
-         yE51FNUSRBQYWd4ocjRi8kUVGmre/DgaBoDlBj+enKijiyLcXJDOULKnftQnnC/yWF
-         lHlKJUWKmKZSGZP19hU976MCZzBedf6Pffk7XrdhI63NDYX6AEmHm9IQIYL3dAsU4W
-         jlrjLybGVxacw==
+        b=Z48XsQBg8FkTUA/Ajg2CwX6i+bKFTx8EGdMDMm5wmZJKcpBGRit9ZN0KOMTdVC1Y5
+         ZkQPkz3k/kBBv+JB/BqOcG2axiWEkiUg3SUVHqLOmV2v9Bmv0KdIKTkaSd/9QMyf+H
+         kOlwbT31qqrTvacixz3DVJrSFxM7GFvxxl3X7LshRWOfQupkYPGz2LTo1gkacmaX4j
+         LABeug1WliF/OSfDSxKzrbC1AUrVh3UaNi6KHkxhPU/Jem6NqMNMM8z5ruaYpgXf7Y
+         vBYkOJJPehWTet8pMhj9m352MfBTMC5+lXhXWgVM7F8PvdmJbLA3uVlkHcmwh7AcQT
+         OKzFZaLh5m6GQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michal Kubecek <mkubecek@suse.cz>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 40/68] Revert "net: af_key: add check for pfkey_broadcast in function pfkey_process"
-Date:   Tue,  7 Jun 2022 13:48:06 -0400
-Message-Id: <20220607174846.477972-40-sashal@kernel.org>
+        edumazet@google.com, pabeni@redhat.com, dsahern@kernel.org,
+        roopa@nvidia.com, yajun.deng@linux.dev, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 44/68] net, neigh: Set lower cap for neigh_managed_work rearming
+Date:   Tue,  7 Jun 2022 13:48:10 -0400
+Message-Id: <20220607174846.477972-44-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
 References: <20220607174846.477972-1-sashal@kernel.org>
@@ -58,57 +60,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Kubecek <mkubecek@suse.cz>
+From: Daniel Borkmann <daniel@iogearbox.net>
 
-[ Upstream commit 9c90c9b3e50e16d03c7f87d63e9db373974781e0 ]
+[ Upstream commit ed6cd6a17896561b9f51ab4c0d9bbb29e762b597 ]
 
-This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
+Yuwei reported that plain reuse of DELAY_PROBE_TIME to rearm work queue
+in neigh_managed_work is problematic if user explicitly configures the
+DELAY_PROBE_TIME to 0 for a neighbor table. Such misconfig can then hog
+CPU to 100% processing the system work queue. Instead, set lower interval
+bound to HZ which is totally sufficient. Yuwei is additionally looking
+into making the interval separately configurable from DELAY_PROBE_TIME.
 
-A non-zero return value from pfkey_broadcast() does not necessarily mean
-an error occurred as this function returns -ESRCH when no registered
-listener received the message. In particular, a call with
-BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
-zero so that this commit in fact prevents processing any PF_KEY message.
-One visible effect is that racoon daemon fails to find encryption
-algorithms like aes and refuses to start.
-
-Excluding -ESRCH return value would fix this but it's not obvious that
-we really want to bail out here and most other callers of
-pfkey_broadcast() also ignore the return value. Also, as pointed out by
-Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
-should use netlink instead so that we should only disturb the code for
-really important fixes.
-
-v2: add a comment explaining why is the return value ignored
-
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Reported-by: Yuwei Wang <wangyuweihx@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/netdev/797c3c53-ce1b-9f60-e253-cda615788f4a@iogearbox.net
+Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
+Link: https://lore.kernel.org/r/3b8c5aa906c52c3a8c995d1b2e8ccf650ea7c716.1653432794.git.daniel@iogearbox.net
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/key/af_key.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ net/core/neighbour.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 339d95df19d3..d93bde657359 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2826,10 +2826,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
- 	void *ext_hdrs[SADB_EXT_MAX];
- 	int err;
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index f64ebd050f6c..fd69133dc7c5 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -1579,7 +1579,7 @@ static void neigh_managed_work(struct work_struct *work)
+ 	list_for_each_entry(neigh, &tbl->managed_list, managed_list)
+ 		neigh_event_send_probe(neigh, NULL, false);
+ 	queue_delayed_work(system_power_efficient_wq, &tbl->managed_work,
+-			   NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME));
++			   max(NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME), HZ));
+ 	write_unlock_bh(&tbl->lock);
+ }
  
--	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
--			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
--	if (err)
--		return err;
-+	/* Non-zero return value of pfkey_broadcast() does not always signal
-+	 * an error and even on an actual error we may still want to process
-+	 * the message so rather ignore the return value.
-+	 */
-+	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
-+			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
- 
- 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
- 	err = parse_exthdrs(skb, hdr, ext_hdrs);
 -- 
 2.35.1
 
