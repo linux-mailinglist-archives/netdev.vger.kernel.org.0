@@ -2,128 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE05D540002
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 15:29:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E333540008
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 15:30:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243585AbiFGN3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 09:29:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56244 "EHLO
+        id S244705AbiFGNaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 09:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241776AbiFGN3D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 09:29:03 -0400
-Received: from mail-ua1-x941.google.com (mail-ua1-x941.google.com [IPv6:2607:f8b0:4864:20::941])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC91CFE21;
-        Tue,  7 Jun 2022 06:29:00 -0700 (PDT)
-Received: by mail-ua1-x941.google.com with SMTP id d18so998388uaw.2;
-        Tue, 07 Jun 2022 06:28:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=yEGHB2BrxKL7cY6kwmYKkzwTgijl/nVGelSJgZbIzBo=;
-        b=lGJ7jXORiaDik/GNLcaeBlA9u6JLILUJTTL+MfTg3VoY4WdGNkAcPtB0M+XbiWOrzl
-         uqlBylKILfTWFd4Wbv2BNMr1JjlqoZvooLmD4pPOfZoQaHaJKidpoMtG/cMj8F5W5W3E
-         BWzeCid2CGXBlkcw5T76vcei8mbd/erVqnyt3z4WC4JJvFXmpM0x8beV2W0cdTdHYktC
-         iOq6ZOMpdkvM1Tdvvp0vN7xFTiqxBU3qo2+E7dfp53UVBlFf5pUa9Py85ei73lK60WvC
-         NoP1gx+6IsUeZusUi9lnGtHPgBM8pVgbNWzOweWfDxQx4oVyM6uGDqgzvxUhTH+A9ySh
-         N5qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=yEGHB2BrxKL7cY6kwmYKkzwTgijl/nVGelSJgZbIzBo=;
-        b=LU1NyzBzBA2+WbWi+az6QZIkhOS2HrFLQqJU0WJswBqUDVTzBSXS5Q50ZS8IudvDhP
-         FByu33Pfw8v7qcNdNAvmD0onbVQ3/3gxfWZZ4dpuZCBmCXnjT7/r6uwM+wKFcMlFiC3X
-         DblrTa3bxWopy7cHFH79cGRZiUZQ2Xycjn3fN/9+EWF2OdK9Y/YCQyNTyCNZAeA0eTXB
-         JfOWswQL/O50g3MDr51F4x+FHoM/6c1QXOkIUkYrsE7KowP2q8L2ggVdKwzyl47NRpZe
-         s73n1X3YFOmZ6rJHPi6QhfTFUxWtFS9iZKgrskodDtV/wlJHwUgQdaC7b7LW/wlaN07c
-         zQyA==
-X-Gm-Message-State: AOAM5330wDX6cWasHUw3EtWs8UzqH5sSbzcemOca8V8SVf6uUXUjG9SP
-        rVfXKV2HgfBk2lYVLBzTYBwnlPnPCHPGsZHe9ecWHRwZRRWhBOr3
-X-Google-Smtp-Source: ABdhPJzG5TWZ2RJwBrhNkuCYKHW//C8Gw4BuPOosxZlcgj31wGPEgLtuYp1JiAhKT6s4J7uiB6lSBbX5NdP7Lnjf2rc=
-X-Received: by 2002:ab0:5971:0:b0:378:f212:dc6a with SMTP id
- o46-20020ab05971000000b00378f212dc6amr3991235uad.122.1654608539092; Tue, 07
- Jun 2022 06:28:59 -0700 (PDT)
+        with ESMTP id S232553AbiFGNaO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 09:30:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F7F3D19E6;
+        Tue,  7 Jun 2022 06:30:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07AE561484;
+        Tue,  7 Jun 2022 13:30:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5159BC34119;
+        Tue,  7 Jun 2022 13:30:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654608612;
+        bh=zyhrWRXdVXO+HYqEJk8OrrgU5Np0Uk7LNBouSz/WdWk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ScN+2e1u3+nDzZk/Al7r1+6WF1/wNS0eV+otewgvoNfOjHPb2KfMd1X/bldLpTCnb
+         AAbYk3HnKiIUFUlMwrPUF2rpCiJ+dd2+0MN8sFOWVoxJ+wlUZpc4JoqEs1bcvuB9a2
+         h2ZiF1bKQsR8b6YchGandWN+7DtI5GRgYVNhKiaTL6aLSxes4cN4BLcdyTW3axXO7H
+         Xko5T/ioQy3I7z40H1xCTLC80OtIyWMg/YNyKyLZelyTEkYa6Z6kYzw+nbKIxEn7qZ
+         EPEKyNQBM7QQkm3L4hhfic9xpioxdOLfYPMvpLbhrSbYRTByyTsq2yvXK/sbbL1HaH
+         gUd/mRMYm4+Zg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 33CDEE737E2;
+        Tue,  7 Jun 2022 13:30:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Received: by 2002:a05:612c:210c:b0:2c9:af1c:ae32 with HTTP; Tue, 7 Jun 2022
- 06:28:58 -0700 (PDT)
-From:   =?UTF-8?B?5bGx56u55bCP?= <mangosteen728@gmail.com>
-Date:   Tue, 7 Jun 2022 21:28:58 +0800
-Message-ID: <CAB8PBH+EVX3iTr7Nu-QFHAom+VnjPLEk0hpWSi0QiyD5u-bKag@mail.gmail.com>
-Subject: [PATCH] bpf:add function
-To:     ast <ast@kernel.org>, daniel <daniel@iogearbox.net>,
-        andrii <andrii@kernel.org>
-Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        mangosteen728 <mangosteen728@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v3] selftests net: fix bpf build error
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165460861220.26982.2362920387757777214.git-patchwork-notify@kernel.org>
+Date:   Tue, 07 Jun 2022 13:30:12 +0000
+References: <20220606064517.8175-1-lina.wang@mediatek.com>
+In-Reply-To: <20220606064517.8175-1-lina.wang@mediatek.com>
+To:     Lina Wang <lina.wang@mediatek.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, shuah@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, matthias.bgg@gmail.com, maze@google.com,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the absolute path to get the executable corresponding tothe task
+Hello:
 
-Signed-off-by: mangosteen728 < mangosteen728@gmail.com>
----
-Hi
-This is my first attempt to submit patch, there are shortcomings
-please more but wait.
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-In security audit often need to get the absolute path to the
-executable of the process so I tried to add bpf_get_task_exe_path in
-the helpers function to get.
+On Mon, 6 Jun 2022 14:45:17 +0800 you wrote:
+> bpf_helpers.h has been moved to tools/lib/bpf since 5.10, so add more
+> including path.
+> 
+> Fixes: edae34a3ed92 ("selftests net: add UDP GRO fraglist + bpf self-tests")
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> Signed-off-by: Lina Wang <lina.wang@mediatek.com>
+> Acked-by: Song Liu <songliubraving@fb.com>
+> 
+> [...]
 
-The code currently only submits the implementation of the function and
-how is this patch merge possible if I then add the relevant places=E3=80=82
+Here is the summary with links:
+  - [v3] selftests net: fix bpf build error
+    https://git.kernel.org/netdev/net/c/cf67838c4422
 
-thanks
-mangosteen728
-kernel/bpf/helpers.c | 37 +++++++++++++++++++++++++++++++++++++
-1 file changed, 37 insertions(+)
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index 225806a..797f 850 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -257,6 +257,43 @@
-.arg2_type =3D ARG_CONST_SIZE,
-};
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-+BPF_CALL_3(bpf_get_task_exe_path, struct task_struct *, task, char *,
-buf, u32, sz)
-+{
-+ struct file *exe_file =3D NULL;
-+ char *p =3D NULL;
-+ long len =3D 0;
-+
-+ if (!sz)
-+ return 0;
-+ exe_file =3D get_task_exe_file(tsk);
-+ if (IS_ERR_OR_NULL(exe_file))
-+ return 0;
-+ p =3D d_path(&exe_file->f_path, buf, sz);
-+ if (IS_ERR_OR_NULL(path)) {
-+ len =3D PTR_ERR(p);
-+ } else {
-+ len =3D buf + sz - p;
-+ memmove(buf, p, len);
-+ }
-+ fput(exe_file);
-+ return len;
-+}
-+
-+static const struct bpf_func_proto bpf_get_task_exe_path_proto =3D {
-+ .func       =3D bpf_get_task_exe_path,
-+ .gpl_only   =3D false,
-+ .ret_type   =3D RET_INTEGER,
-+ .arg1_type  =3D ARG_PTR_TO_BTF_ID,
-+ .arg2_type  =3D ARG_PTR_TO_MEM,
-+ .arg3_type  =3D ARG_CONST_SIZE_OR_ZERO,
-+};
-+
---
+
