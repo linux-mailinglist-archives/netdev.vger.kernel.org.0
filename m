@@ -2,102 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A4CB53FE9F
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 14:21:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7810553FEC4
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 14:28:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243743AbiFGMVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 08:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38810 "EHLO
+        id S240266AbiFGM2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 08:28:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243582AbiFGMVn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 08:21:43 -0400
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC951C5DBD;
-        Tue,  7 Jun 2022 05:20:48 -0700 (PDT)
-Received: by mail-yb1-f169.google.com with SMTP id w2so30835586ybi.7;
-        Tue, 07 Jun 2022 05:20:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VpZMM3nIIUg8SAe8O5vBSQaTSRtJGAcQXYQ3T0pf1NQ=;
-        b=7N9KlPz1+u3IKG8y0tWAogfbqNchVdAVjUxWOr6piBciSI3brlYpNEBG2OROWyWh8L
-         2n4XkeAoeeo/qLADsi1zv2KQVwElY/IR9+455n2Y1vOoRGvWJ+h7I8E1nZ8kHSy9ntKR
-         9uFR+GjhpdsJPxMRRqRn+D1JcENiex1+afbGlEXkoY8kpis1BE/qUbUuFl49sv8HDbyT
-         XlYlCqh4c2d5k1iioJGYzhQ0Q3ANjj+a2lmpp1+7Z2j33nB8GvyLgt0PUo6fAaIdI/w2
-         lV9HEibr47U40FvBOBNTKEn0oGkPrdVUNSBBdcRKv1SCN2s67MTLhEvHNdKAazIc0iN3
-         L/bQ==
-X-Gm-Message-State: AOAM532SJ+NrhVeL+sfzcT1gE5MbPdlVka90Ennl3LbRBEyU0XDJxvJE
-        4vHv1gMvgpAUz/xHkhC+wln2o5Sk0NlL41T2usE=
-X-Google-Smtp-Source: ABdhPJy7JbRPJ+kyEBxwBQ0h03CKHs4s0yzfq7fFavfnLZyLDYAcMebORrDsmuSgoFJc7oG18sfBfS6wYgkFsfGxJ5w=
-X-Received: by 2002:a25:6588:0:b0:65d:57b9:c470 with SMTP id
- z130-20020a256588000000b0065d57b9c470mr30465552ybb.142.1654604447877; Tue, 07
- Jun 2022 05:20:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
- <CAMZ6RqLNq2tQjjJudSZ5c_fJ2VR9cX5ihjhhuNszm4wG-DgLfw@mail.gmail.com> <20220607103923.5m6j4rykvitofsv4@pengutronix.de>
-In-Reply-To: <20220607103923.5m6j4rykvitofsv4@pengutronix.de>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 7 Jun 2022 21:20:36 +0900
-Message-ID: <CAMZ6RqJt8dBrYe+DdOKoVSpak8-5qi7B1vwT2wpe16H+29Ay=g@mail.gmail.com>
-Subject: Re: [RFC PATCH 00/13] can: slcan: extend supported features
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        linux-kernel@vger.kernel.org,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229549AbiFGM2r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 08:28:47 -0400
+Received: from smtp.ruc.edu.cn (m177126.mail.qiye.163.com [123.58.177.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD7B5F8D0;
+        Tue,  7 Jun 2022 05:28:43 -0700 (PDT)
+Received: from localhost.localdomain (unknown [202.112.113.212])
+        by smtp.ruc.edu.cn (Hmail) with ESMTPSA id D86058008D;
+        Tue,  7 Jun 2022 20:28:40 +0800 (CST)
+From:   Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
+        Shay Agroskin <shayagr@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        David Arinzon <darinzon@amazon.com>,
+        Noam Dagan <ndagan@amazon.com>,
+        Saeed Bishara <saeedb@amazon.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        Sameeh Jubran <sameehj@amazon.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/1] net: ena_netdev: fix resource leak
+Date:   Tue,  7 Jun 2022 20:28:31 +0800
+Message-Id: <20220607122831.32738-1-xiaohuizhang@ruc.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
+        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWUMYTE5WSUtIQ01ITxkaGB
+        kaVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktITUpVS1kG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6P006Cio6MT0*Fxc8AU8iSzUe
+        S1EwCkxVSlVKTU5PTUtPQklKTElNVTMWGhIXVQMSGhQTDhIBExoVHDsJDhhVHh8OVRgVRVlXWRIL
+        WUFZSUtJVUpKSVVKSkhVSUpJWVdZCAFZQUlOSUo3Bg++
+X-HM-Tid: 0a813e2379f42c20kusnd86058008d
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue. 7 Jun 2022 at 19:39, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> On 07.06.2022 19:27:05, Vincent MAILHOL wrote:
-> > On Tue. 7 juin 2022 at 18:47, Dario Binacchi
-> > <dario.binacchi@amarulasolutions.com> wrote:
-> > > This series originated as a result of CAN communication tests for an
-> > > application using the USBtin adapter (https://www.fischl.de/usbtin/).
-> > > The tests showed some errors but for the driver everything was ok.
-> > > Also, being the first time I used the slcan driver, I was amazed that
-> > > it was not possible to configure the bitrate via the ip tool.
-> > > For these two reasons, I started looking at the driver code and realized
-> > > that it didn't use the CAN network device driver interface.
-> >
-> > That's funny! Yesterday, I sent this comment:
-> > https://lore.kernel.org/linux-can/CAMZ6RqKZwC_OKcgH+WPacY6kbNbj4xR2Gdg2NQtm5Ka5Hfw79A@mail.gmail.com/
-> >
-> > And today, you send a full series to remove all the dust from the
-> > slcan driver. Do I have some kind of mystical power to summon people
-> > on the mailing list?
->
-> That would be very useful and awesome super power, I'm a bit jealous. :D
->
-> > > Starting from these assumptions, I tried to:
-> > > - Use the CAN network device driver interface.
-> >
-> > In order to use the CAN network device driver, a.k.a. can-dev module,
-> > drivers/net/can/Kbuild has to be adjusted: move slcan inside CAN_DEV
-> > scope.
-> >
-> > @Mark: because I will have to send a new version for my can-dev/Kbuild
-> > cleanup, maybe I can take that change and add it to my series?
->
-> Let's get the your Kconfig/Makefile changes into can-next/master first.
-> Then Dario can then base this series on that branch.
+Similar to the handling of u132_hcd_init in commit f276e002793c
+("usb: u132-hcd: fix resource leak"), we thought a patch might be
+needed here as well.
 
-ACK. I'll keep my series as-is.
+If platform_driver_register fails, cleanup the allocated resource
+gracefully.
+
+Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+---
+ drivers/net/ethernet/amazon/ena/ena_netdev.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 6a356a6cee15..c0624ee8d867 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -4545,13 +4545,17 @@ static struct pci_driver ena_pci_driver = {
+ 
+ static int __init ena_init(void)
+ {
++	int retval;
+ 	ena_wq = create_singlethread_workqueue(DRV_MODULE_NAME);
+ 	if (!ena_wq) {
+ 		pr_err("Failed to create workqueue\n");
+ 		return -ENOMEM;
+ 	}
++	retval = pci_register_driver(&ena_pci_driver);
++	if (retval)
++		destroy_workqueue(ena_wq);
+ 
+-	return pci_register_driver(&ena_pci_driver);
++	return retval;
+ }
+ 
+ static void __exit ena_cleanup(void)
+-- 
+2.17.1
+
