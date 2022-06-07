@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED0E553F5F5
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 08:15:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F76C53F5F8
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 08:16:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236950AbiFGGPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 02:15:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57542 "EHLO
+        id S236937AbiFGGQI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 02:16:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230292AbiFGGPO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 02:15:14 -0400
+        with ESMTP id S230292AbiFGGQH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 02:16:07 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 26F2BD6820
-        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 23:15:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3BB27D7710
+        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 23:16:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654582512;
+        s=mimecast20190719; t=1654582565;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=IwobWdiv7zoiQQTttGF2XO0A4bzubaGTbiuN7Fw0a3s=;
-        b=M5U15PZDsr8jUWgNqWeUASbhrjHWS8DmDpnjQm1OedSjPcGIFhdT8oZJFYIFjqRfB7KPTu
-        /I574UZXO3oxlB53aJvS1gUSdk2/vAynMmisnxv2RGrkUoqEVIrYPn9pEAT9b5dDBQmGDk
-        GOV+hWHY+ToG2E8CYAmq+rBD87WgRtQ=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=mfFt9YB7FAG4KKOd5cKTjk9ERTgqrvpSR7iiUCrN8L4=;
+        b=Zh0w9JH2nNaN/xQca72ys+0mWPSzR+3MxUin+DuNBVvSYNKc0Q4T4eSAiVaE4Y26x4DwGu
+        2RFdiQEA9duIzUrFnFZleGMzoRhQMepSozJFhLVimi31fuCjtdg4jTGa7bFbqxQfk1k3Yl
+        2s7VRMPJ6Q6/qiDHcyG6y9Zg6ZVjrkw=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-675-Gm4_lvs5PDyvWC69klu8_w-1; Tue, 07 Jun 2022 02:15:10 -0400
-X-MC-Unique: Gm4_lvs5PDyvWC69klu8_w-1
-Received: by mail-lj1-f198.google.com with SMTP id g13-20020a2eb5cd000000b00255ac505e62so143297ljn.1
-        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 23:15:10 -0700 (PDT)
+ us-mta-433-xQEUXpzkPcmx0_N8VZ3R8A-1; Tue, 07 Jun 2022 02:16:03 -0400
+X-MC-Unique: xQEUXpzkPcmx0_N8VZ3R8A-1
+Received: by mail-lf1-f71.google.com with SMTP id w16-20020a197b10000000b004795bcb0bbbso1339637lfc.14
+        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 23:16:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=IwobWdiv7zoiQQTttGF2XO0A4bzubaGTbiuN7Fw0a3s=;
-        b=x1PIYCXGLYISqqst9Svi2u35JjT2yGQUDlsjovGavzYfGm1p3khz0e6acNv1gp+7eN
-         W81Ywr/hj7zjwzGssVmkH8rA1YWBRhqCURN58UTORlTIA6Q9D75qn63x5m1YlbgtGo5h
-         u1I0nIChk9Zzs/lNRELJ9KI9kTUTfd/NDVIGczfIuvqyHI7HuZ8BOQLxC6qmF47yJkBB
-         fHJ9vdIggfrxXrkn9Jvtnjz5E4AhoUR8z9aN62Wb2tC11rtoT3/+lmhwdzN0435dgx/H
-         f7k2dlmIwsQllVE0QDYYWp/YHBW8oP0gCwOGRvKf2c4fBoXu4X14OZGBocy2mv643Jt6
-         phtw==
-X-Gm-Message-State: AOAM531t1BTh4/IzuGwLOT8f21C69eQBYtmkajHzhBbF1+w1Pm6XiERk
-        QZZUmv+gjqU1Svy8vc0L/zxE94hoNWm7s1rThNwZ2NruBPoxVXTd+tbfT1IQenONzipMkLdhN0H
-        17spKmVEe3+ZVVXEqnktDYaZfaNYqgmYN
-X-Received: by 2002:ac2:4e0f:0:b0:479:54a6:f9bb with SMTP id e15-20020ac24e0f000000b0047954a6f9bbmr3745343lfr.257.1654582508791;
-        Mon, 06 Jun 2022 23:15:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxwbCHzOStBHS1kLdIsx0TiIAu+B9gjJ7P5zEhkh8poeSMqphGgkX5Eleo+aghrpoYD9Dn3nIpc/a1Ofv3vqOc=
-X-Received: by 2002:ac2:4e0f:0:b0:479:54a6:f9bb with SMTP id
- e15-20020ac24e0f000000b0047954a6f9bbmr3745336lfr.257.1654582508590; Mon, 06
- Jun 2022 23:15:08 -0700 (PDT)
+        bh=mfFt9YB7FAG4KKOd5cKTjk9ERTgqrvpSR7iiUCrN8L4=;
+        b=Vgkow0ok83BOFOb46m+KbCUROMTHuYgmb7yea/r60ixctOq+tYyhWkPmiAf88VunXm
+         6rSpElbl0KWn2WNunvdu/JOonPMzp0KRc9DKPEd+M6OzY/TaMpC+diLL8w3sU2vrz9wW
+         d4wWCvtvZxi5TnO46DVsZyjcItHUvfulDSPMlwJCWasnTdqUbNlloR/O7vlr4IlP8dkO
+         9PfVfbHmap+hqzcftIT45Mvsp6dSbheGqxmfYEnJlb1Pcb4riC7Fpv2lxxNSi9s/XQav
+         dWGYqxyr7PA/VYxiDnOxvvX8QNR5F3zWipcPKf8ZXyHL1PViSM7ypOCjplPak1UGhnmt
+         9q6Q==
+X-Gm-Message-State: AOAM5305EBX9dbLc4NZp43oyhdFhdsVSpYDFneoL+2w7ZzX3jIsY61Vk
+        adNpZ+7FeLEVx9n0vWJZHaZXb7Jb3Qi0wUzglsqDaFHJ/bCkjTWil/rkfRk6kLtlgX+orTGd8b3
+        x22ei/2v1CDkwlE+1KUxqLBW8ALJtpsOd
+X-Received: by 2002:a05:6512:3e1d:b0:479:3cfa:f2c4 with SMTP id i29-20020a0565123e1d00b004793cfaf2c4mr6986711lfv.98.1654582561645;
+        Mon, 06 Jun 2022 23:16:01 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzZzTuBn3IIguYCiZKP5oHvXhD16W7D6wTFb71MJ8M2FxxZx+S93j4cdDUj1/zy38Fq4cdFG9Ckb6I3T6j/8GY=
+X-Received: by 2002:a05:6512:3e1d:b0:479:3cfa:f2c4 with SMTP id
+ i29-20020a0565123e1d00b004793cfaf2c4mr6986701lfv.98.1654582561471; Mon, 06
+ Jun 2022 23:16:01 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220602023845.2596397-1-lingshan.zhu@intel.com>
- <20220602023845.2596397-6-lingshan.zhu@intel.com> <CACGkMEtCKT5ib_+gUdryDXfxntTr_JF7fZpeePZ+=BFjY_TG+w@mail.gmail.com>
- <f86049b5-1eb1-97e7-654c-d3cde0e62aa7@intel.com>
-In-Reply-To: <f86049b5-1eb1-97e7-654c-d3cde0e62aa7@intel.com>
+ <20220602023845.2596397-7-lingshan.zhu@intel.com> <CACGkMEtS6W8wXdrXbQuniZ-ox1WsCAc1UQHJGD=J4PViviQYpA@mail.gmail.com>
+ <054679a9-16ed-6cf6-ba8d-037aedc29357@intel.com>
+In-Reply-To: <054679a9-16ed-6cf6-ba8d-037aedc29357@intel.com>
 From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 7 Jun 2022 14:14:57 +0800
-Message-ID: <CACGkMEuXjUMUTNAQUHr=_n1BiQkz0FD5+t52636uTuM36h-0Kw@mail.gmail.com>
-Subject: Re: [PATCH 5/6] vDPA: answer num of queue pairs = 1 to userspace when
- VIRTIO_NET_F_MQ == 0
+Date:   Tue, 7 Jun 2022 14:15:50 +0800
+Message-ID: <CACGkMEvGidNuYJ6Lww7CgAAx8Es7UvoDNfwDB_pJY7b0W3U6cQ@mail.gmail.com>
+Subject: Re: [PATCH 6/6] vDPA: fix 'cast to restricted le16' warnings in vdpa_dev_net_config_fill()
 To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>
 Cc:     mst <mst@redhat.com>,
         virtualization <virtualization@lists.linux-foundation.org>,
@@ -79,51 +78,46 @@ On Mon, Jun 6, 2022 at 4:22 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
 >
 >
 >
-> On 6/2/2022 3:38 PM, Jason Wang wrote:
+> On 6/2/2022 3:40 PM, Jason Wang wrote:
 > > On Thu, Jun 2, 2022 at 10:48 AM Zhu Lingshan <lingshan.zhu@intel.com> wrote:
-> >> If VIRTIO_NET_F_MQ == 0, the virtio device should have one queue pair,
-> >> so when userspace querying queue pair numbers, it should return mq=1
-> >> than zero
-> > Spec said:
-> >
-> > "max_virtqueue_pairs only exists if VIRTIO_NET_F_MQ is set"
-> >
-> > So we are probably fine.
-> I thinks it is asking how many queue
-> pairs(VDPA_ATTR_DEV_NET_CFG_MAX_VQP), so answering 0 may not be correct.
->
-> Thanks,
-> Zhu Lingshan
+> >> This commit fixes spars warnings: cast to restricted __le16
+> >> in function vdpa_dev_net_config_fill()
+> >>
+> >> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> >> ---
+> >>   drivers/vdpa/vdpa.c | 4 ++--
+> >>   1 file changed, 2 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+> >> index 50a11ece603e..2719ce9962fc 100644
+> >> --- a/drivers/vdpa/vdpa.c
+> >> +++ b/drivers/vdpa/vdpa.c
+> >> @@ -837,11 +837,11 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
+> >>                      config.mac))
+> >>                  return -EMSGSIZE;
+> >>
+> >> -       val_u16 = le16_to_cpu(config.status);
+> >> +       val_u16 = le16_to_cpu((__force __le16)config.status);
+> > Can we use virtio accessors like virtio16_to_cpu()?
+> I will work out a vdpa16_to_cpu()
 
-Please add the result of the userspace vdpa tool before and after this
-patch in the changlog in next version.
+I meant __virtio16_to_cpu(true, xxx) actually here.
 
 Thanks
 
+>
+> Thanks,
+> Zhu Lingshan
 > >
 > > Thanks
 > >
-> >> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> >> ---
-> >>   drivers/vdpa/vdpa.c | 5 +++--
-> >>   1 file changed, 3 insertions(+), 2 deletions(-)
+> >>          if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_STATUS, val_u16))
+> >>                  return -EMSGSIZE;
 > >>
-> >> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-> >> index 030d96bdeed2..50a11ece603e 100644
-> >> --- a/drivers/vdpa/vdpa.c
-> >> +++ b/drivers/vdpa/vdpa.c
-> >> @@ -818,9 +818,10 @@ static int vdpa_dev_net_mq_config_fill(struct vdpa_device *vdev,
-> >>          u16 val_u16;
-> >>
-> >>          if ((features & BIT_ULL(VIRTIO_NET_F_MQ)) == 0)
-> >> -               return 0;
-> >> +               val_u16 = 1;
-> >> +       else
-> >> +               val_u16 = le16_to_cpu((__force __le16)config->max_virtqueue_pairs);
-> >>
-> >> -       val_u16 = le16_to_cpu(config->max_virtqueue_pairs);
-> >>          return nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, val_u16);
-> >>   }
+> >> -       val_u16 = le16_to_cpu(config.mtu);
+> >> +       val_u16 = le16_to_cpu((__force __le16)config.mtu);
+> >>          if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
+> >>                  return -EMSGSIZE;
 > >>
 > >> --
 > >> 2.31.1
