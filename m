@@ -2,138 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F10C53F5CE
-	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 08:00:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED0E553F5F5
+	for <lists+netdev@lfdr.de>; Tue,  7 Jun 2022 08:15:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236898AbiFGGA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 02:00:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51568 "EHLO
+        id S236950AbiFGGPQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 02:15:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234924AbiFGGA0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 02:00:26 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 931DFD6814;
-        Mon,  6 Jun 2022 23:00:25 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id d22so13938343plr.9;
-        Mon, 06 Jun 2022 23:00:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=06YiQnCTLd5+IQB6eXqgaLf++LDjcMK7rR414je5dOY=;
-        b=jWviNME3YsmPHQnUEFob9W3TsQfumpYy3G2hoT8Xwv+bPVLL0AShvAoofPWPEj27/9
-         JAeEd/zyzotrim6XDv/yXxxBLWTs9//AgGOG/lRiRCKGNm4XpSMkAiMB7XQf3AayZ/AN
-         jZq7wQTMz6cfyNsKRVe3/rlft4ePiH5RYVCHrPC6a6TUYd1Qm8xIVkPUMu8Hplvhct1r
-         +orzG3sdIj7Ngtycmk2DUfbk6kBHVAkTsq/Iy8sz2aCJgLPrnThKP5Yku0nqs+DRsWIs
-         HlVFJHex+z87DaXfZTqDbf9ov46Cnooq6G3R+jCdEjZ/0PZTYDifiZxSp+udkWALl0n6
-         dHIg==
+        with ESMTP id S230292AbiFGGPO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 02:15:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 26F2BD6820
+        for <netdev@vger.kernel.org>; Mon,  6 Jun 2022 23:15:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654582512;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=IwobWdiv7zoiQQTttGF2XO0A4bzubaGTbiuN7Fw0a3s=;
+        b=M5U15PZDsr8jUWgNqWeUASbhrjHWS8DmDpnjQm1OedSjPcGIFhdT8oZJFYIFjqRfB7KPTu
+        /I574UZXO3oxlB53aJvS1gUSdk2/vAynMmisnxv2RGrkUoqEVIrYPn9pEAT9b5dDBQmGDk
+        GOV+hWHY+ToG2E8CYAmq+rBD87WgRtQ=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-675-Gm4_lvs5PDyvWC69klu8_w-1; Tue, 07 Jun 2022 02:15:10 -0400
+X-MC-Unique: Gm4_lvs5PDyvWC69klu8_w-1
+Received: by mail-lj1-f198.google.com with SMTP id g13-20020a2eb5cd000000b00255ac505e62so143297ljn.1
+        for <netdev@vger.kernel.org>; Mon, 06 Jun 2022 23:15:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=06YiQnCTLd5+IQB6eXqgaLf++LDjcMK7rR414je5dOY=;
-        b=APvnTLqa15ynQivEOHImlBTIcZ56goKdbSLFjY2rcmL3d8BweTJglybwJw3U30gsGi
-         o1kkTEnSISeeF8I5eJx50wC+Eskuyqo8i/0UoPF301nPND8b5RCaRAWdmwnOrqvc+XZw
-         VYGAxcjOFTUdeTGC2rEwHIoGBOtByOCraNRzpE5HWDYtbfWt0xeiCcZKwcCW4fY3unKP
-         cpYkFx+Cd2EBPyH2cSvnxBc36b4WulRSKLp5UbNbrk9npRzpN9SeYcfabWln1kvws3rt
-         c1NXB5JhR2A1ua/S1r8WQAhavwZrrNJjtx94bZzXFyIBL7+IBCX1QnN9evCIuEFjGP4D
-         kFyw==
-X-Gm-Message-State: AOAM5311JsX5WEj/Fxfi/2wjY2pn23Aj7AI3dMYkbMfM+DyTS5NXXm4p
-        bxLddd9DgWHlHpmd9BG/NTfW9nLHpBkZQDWam4o=
-X-Google-Smtp-Source: ABdhPJy98K3dFZdWUpY1H5byGsN7XsxK98I40zUcgCabUgZi04SNg6kbDuJYCQH2TmvqTsb9yx5saMbPMAin0dx/mR4=
-X-Received: by 2002:a17:902:7884:b0:167:4d5b:7a2f with SMTP id
- q4-20020a170902788400b001674d5b7a2fmr20240300pll.18.1654581624998; Mon, 06
- Jun 2022 23:00:24 -0700 (PDT)
+        bh=IwobWdiv7zoiQQTttGF2XO0A4bzubaGTbiuN7Fw0a3s=;
+        b=x1PIYCXGLYISqqst9Svi2u35JjT2yGQUDlsjovGavzYfGm1p3khz0e6acNv1gp+7eN
+         W81Ywr/hj7zjwzGssVmkH8rA1YWBRhqCURN58UTORlTIA6Q9D75qn63x5m1YlbgtGo5h
+         u1I0nIChk9Zzs/lNRELJ9KI9kTUTfd/NDVIGczfIuvqyHI7HuZ8BOQLxC6qmF47yJkBB
+         fHJ9vdIggfrxXrkn9Jvtnjz5E4AhoUR8z9aN62Wb2tC11rtoT3/+lmhwdzN0435dgx/H
+         f7k2dlmIwsQllVE0QDYYWp/YHBW8oP0gCwOGRvKf2c4fBoXu4X14OZGBocy2mv643Jt6
+         phtw==
+X-Gm-Message-State: AOAM531t1BTh4/IzuGwLOT8f21C69eQBYtmkajHzhBbF1+w1Pm6XiERk
+        QZZUmv+gjqU1Svy8vc0L/zxE94hoNWm7s1rThNwZ2NruBPoxVXTd+tbfT1IQenONzipMkLdhN0H
+        17spKmVEe3+ZVVXEqnktDYaZfaNYqgmYN
+X-Received: by 2002:ac2:4e0f:0:b0:479:54a6:f9bb with SMTP id e15-20020ac24e0f000000b0047954a6f9bbmr3745343lfr.257.1654582508791;
+        Mon, 06 Jun 2022 23:15:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxwbCHzOStBHS1kLdIsx0TiIAu+B9gjJ7P5zEhkh8poeSMqphGgkX5Eleo+aghrpoYD9Dn3nIpc/a1Ofv3vqOc=
+X-Received: by 2002:ac2:4e0f:0:b0:479:54a6:f9bb with SMTP id
+ e15-20020ac24e0f000000b0047954a6f9bbmr3745336lfr.257.1654582508590; Mon, 06
+ Jun 2022 23:15:08 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220605162537.1604762-1-yury.norov@gmail.com>
- <CAHk-=whqgEA=OOPQs7JF=xps3VxjJ5uUnfXgzTv4gqTDhraZFA@mail.gmail.com>
- <CAHk-=wib4F=71sXhamdPzLEZ9S4Lw4Dv3N2jLxv6-i8fHfMeDQ@mail.gmail.com> <CAHk-=wicWxvuaL7GCj+1uEvpvpntdcB=AHot_h3j4wpenwyZ2Q@mail.gmail.com>
-In-Reply-To: <CAHk-=wicWxvuaL7GCj+1uEvpvpntdcB=AHot_h3j4wpenwyZ2Q@mail.gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Mon, 6 Jun 2022 23:00:13 -0700
-Message-ID: <CABBYNZJfqAU-o7f9HhLCgTmL46WfwNQbM5NsCACsVVDLACMLYw@mail.gmail.com>
-Subject: Re: [PATCH] net/bluetooth: fix erroneous use of bitmap_from_u64()
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Yury Norov <yury.norov@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Guo Ren <guoren@kernel.org>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-csky@vger.kernel.org,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
+References: <20220602023845.2596397-1-lingshan.zhu@intel.com>
+ <20220602023845.2596397-6-lingshan.zhu@intel.com> <CACGkMEtCKT5ib_+gUdryDXfxntTr_JF7fZpeePZ+=BFjY_TG+w@mail.gmail.com>
+ <f86049b5-1eb1-97e7-654c-d3cde0e62aa7@intel.com>
+In-Reply-To: <f86049b5-1eb1-97e7-654c-d3cde0e62aa7@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Tue, 7 Jun 2022 14:14:57 +0800
+Message-ID: <CACGkMEuXjUMUTNAQUHr=_n1BiQkz0FD5+t52636uTuM36h-0Kw@mail.gmail.com>
+Subject: Re: [PATCH 5/6] vDPA: answer num of queue pairs = 1 to userspace when
+ VIRTIO_NET_F_MQ == 0
+To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>
+Cc:     mst <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Linus,
-
-On Sun, Jun 5, 2022 at 5:02 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
+On Mon, Jun 6, 2022 at 4:22 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
 >
-> On Sun, Jun 5, 2022 at 11:51 AM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
+>
+>
+> On 6/2/2022 3:38 PM, Jason Wang wrote:
+> > On Thu, Jun 2, 2022 at 10:48 AM Zhu Lingshan <lingshan.zhu@intel.com> wrote:
+> >> If VIRTIO_NET_F_MQ == 0, the virtio device should have one queue pair,
+> >> so when userspace querying queue pair numbers, it should return mq=1
+> >> than zero
+> > Spec said:
 > >
-> > *Most* of the accesses to those connection flags seem to be with
-> > hci_dev_lock() held, and the ones that aren't can't possibly depend on
-> > atomicity since those things are currently copied around with random
-> > other "copy bitmaps" functions.
+> > "max_virtqueue_pairs only exists if VIRTIO_NET_F_MQ is set"
+> >
+> > So we are probably fine.
+> I thinks it is asking how many queue
+> pairs(VDPA_ATTR_DEV_NET_CFG_MAX_VQP), so answering 0 may not be correct.
 >
-> I've committed that patch as commit e1cff7002b71 ("bluetooth: don't
-> use bitmaps for random flag accesses").
->
-> That basically ends up reverting
->
->   a9a347655d22 ("Bluetooth: MGMT: Add conditions for setting
-> HCI_CONN_FLAG_REMOTE_WAKEUP")
->   6126ffabba6b ("Bluetooth: Introduce HCI_CONN_FLAG_DEVICE_PRIVACY device flag")
->
-> which did horrible things, and would end up overwriting the end of the
-> bitmap allocation on 32-bit architectures.
->
-> Luiz, if the reason for the change to use a bitmap type was because of
-> some atomicity concerns, then you can do that by
->
->  (a) change 'hci_conn_flags_t' to be an 'atomic_t' instead of a 'u8'
->
->  (b) change the regular accesses to it to use 'atomic_read/write()'
->
->  (c) change the "bitfield" operations to use 'atomic_or/andnot()'
->
-> but honestly, when it used to mix atomic ops
-> (set_bit/clear_bit/test_bit) with random non-atomic users
-> (bitmap_from_u64(), bitmap_to_arr32() etc) it was never atomic to
-> begin with.
->
-> Regardless, trying to use bitmaps for this was absolutely not the
-> right thing to ever do. It looks like gcc randomly started complaining
-> when 'bitmap_from_u64()' was changed, but it was buggy before that
-> too.
+> Thanks,
+> Zhu Lingshan
 
-Right, thanks for fixing it. About some of the changes perhaps we
-should use BIT when declaring values in enum hci_conn_flags?
+Please add the result of the userspace vdpa tool before and after this
+patch in the changlog in next version.
 
+Thanks
 
--- 
-Luiz Augusto von Dentz
+> >
+> > Thanks
+> >
+> >> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> >> ---
+> >>   drivers/vdpa/vdpa.c | 5 +++--
+> >>   1 file changed, 3 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+> >> index 030d96bdeed2..50a11ece603e 100644
+> >> --- a/drivers/vdpa/vdpa.c
+> >> +++ b/drivers/vdpa/vdpa.c
+> >> @@ -818,9 +818,10 @@ static int vdpa_dev_net_mq_config_fill(struct vdpa_device *vdev,
+> >>          u16 val_u16;
+> >>
+> >>          if ((features & BIT_ULL(VIRTIO_NET_F_MQ)) == 0)
+> >> -               return 0;
+> >> +               val_u16 = 1;
+> >> +       else
+> >> +               val_u16 = le16_to_cpu((__force __le16)config->max_virtqueue_pairs);
+> >>
+> >> -       val_u16 = le16_to_cpu(config->max_virtqueue_pairs);
+> >>          return nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, val_u16);
+> >>   }
+> >>
+> >> --
+> >> 2.31.1
+> >>
+>
+
