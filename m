@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D2FC542020
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:23:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 369E6542050
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 02:24:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381080AbiFHAR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 20:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49504 "EHLO
+        id S1385374AbiFHAVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 20:21:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588659AbiFGXyz (ORCPT
+        with ESMTP id S1588661AbiFGXyz (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 19:54:55 -0400
 Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EFBD1B1857
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 16:36:35 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso16823242pjg.0
-        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 16:36:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F231B187D
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 16:36:37 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id gc3-20020a17090b310300b001e33092c737so16782769pjb.3
+        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 16:36:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=oo4VNLQ32ZUWs+xj1GEnWGce/STbLBZ5K8YuYmraaxI=;
-        b=i5u5pxeq5/uEJKzNM9ULNsWvaQie6meicLDBzjB/uCZqE8XYgLbR6NMuDenSRqu7D9
-         jmvR00Xzq6rbS4PrqdP2HaapU4V9LEe3k5M590JhfwUJpCvHQQugYcSt77Uv7ZZvrHCD
-         eeBpRAHkkO7Wx0ZwU3zr/dLDe8L7s1EE+g3K+5aDMasFVJjp/5Z8w/WP5xC5/sC780q9
-         Ian/q1ecDRpURG1CG0SHBaSieRMr4QpD3QoVodRwbBR4238feAwD5p6jyhmZ5s37lXu/
-         /FugmmlT5/qZVWUSqafmW0X9G4O3tGPxv4V3eUxLk/qeSHeEoWbSxAYKJr8ccwaMCygo
-         x6mw==
+        bh=c7ZxjBhd9r0DJDMboQQNSRkeIfCRgvQImpqF0uM/P4U=;
+        b=XczANK+jExAUcWXhV20j1B1Porpas6jvvAehD0meFWO0o4wx49aepcY2+A+wp7ZqgF
+         jllCMd0AMZLAEIcWeQzD1AsLcmYKfGy8GICIO2sYbSAfQ6Y+mZEWG++vhzlVH1nqZ9lL
+         f3lZo4eetiMNEQMtJBMXCWj3wZwU475Z2zSFkViCRhNYi37XwNqHnRXOCwGvKAZ4svsS
+         //6jlMLX13atECKRsygGz1XWtftmcmRlH58weXYcgsQzUpY5ap8ZAwC2t70OdUsTBzxV
+         FqpjB2md1+iKwudngbwOu/X+48g0aJyJe6tEYv7DfyTlwPbm8VauTBHJR3ijo9J1O1dp
+         NyrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=oo4VNLQ32ZUWs+xj1GEnWGce/STbLBZ5K8YuYmraaxI=;
-        b=niWj+mDy4SUSV20RS6NJrZKC2xe+j8gMEWZmpPFGmbPY9YxE3l4AB32QCvgoUAvRmW
-         YpmH8fP8hlNTJPsYz6lF5U3fy8krBEFqUmT5gC4k5V5u3gVuOVGR1GcpysrNT8frxz9J
-         BUpKvs4Vkx/n+C2b8shQTaky8Dh9B5bIRbWH4ChM9e9ZeW8jOsROqSXbq/zcM1PB/Tz3
-         ZTCro4RVj2oM1wap9Cjd/Q6NnH4Np6AlUnIAKLs6iu2zeo9e1zs2zfP5N8g/Tj1Q8L/w
-         UH9xgRRZ//BI6qZljbNqSPGSy1PqI5sPXj545F01iqLxC9orqD52DgiSDDOgfu4ahxo1
-         4nTw==
-X-Gm-Message-State: AOAM53017bI75/pr88M1Ppq2dOBikxHd9d7FNRNkddZKBymWi33bqyWG
-        06KTPdJPoDHrfMf5LZviBEg=
-X-Google-Smtp-Source: ABdhPJwajoF6n4Lpippxk93vNe9Qjb9r7px0vMvnW+ghZHpwCjglPap0EVJ4tx3kt1/h3g0gdlLiBg==
-X-Received: by 2002:a17:903:2445:b0:164:16dd:a94a with SMTP id l5-20020a170903244500b0016416dda94amr31932688pls.46.1654644994885;
-        Tue, 07 Jun 2022 16:36:34 -0700 (PDT)
+        bh=c7ZxjBhd9r0DJDMboQQNSRkeIfCRgvQImpqF0uM/P4U=;
+        b=RJnQg71Ar+eOdavcy+bcx9j+t342Drq0EqE3VS6i36Q9jITGBcI96l6iTPC+tzbtWo
+         DUQY+jEu19rYO+UqnZpX+8PCpKcmXo0QVb9sK6tUGUz+fLn9tVYC4khLhrihxa9VCwTQ
+         HEUt7PweVtwiZ6nKC2YvQ9w3XH4V66W97s3LtBmUVkrIukD3l8J4Q+vjJnc/HUgQ36Sj
+         vyeKMDHBRmiyGJpb2oGyWZhNkR2CJIUCldz2B2Sb6oMQIsPthZvGhxcmGX+r82/qUF28
+         ZzgJDM9qOVWHqED3Q9G5d+JF2MiofflYKdNL/cDMhW1JHMuKIQKxcG3kn0qg68u6HfxO
+         PRdQ==
+X-Gm-Message-State: AOAM530pop/WLYiAW6LB+sLx0ZhD/qnjSr+k0YPFiVql4nDKqqJEhcK3
+        5FuELebj0dJW4Cp0LZ1aaLSvO/W0S+g=
+X-Google-Smtp-Source: ABdhPJyquZZ1hAxNQMVjvg7ca8gFr3xmu8IXa4UayiAHS878IS3POM36h21eqT3hWkXxWCYxHXTCIA==
+X-Received: by 2002:a17:902:dacd:b0:164:17ef:54c6 with SMTP id q13-20020a170902dacd00b0016417ef54c6mr31983701plx.11.1654644997428;
+        Tue, 07 Jun 2022 16:36:37 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:191a:13a7:b80a:f36e])
-        by smtp.gmail.com with ESMTPSA id u79-20020a627952000000b0051ba7515e0dsm13550947pfc.54.2022.06.07.16.36.34
+        by smtp.gmail.com with ESMTPSA id u79-20020a627952000000b0051ba7515e0dsm13550947pfc.54.2022.06.07.16.36.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 16:36:34 -0700 (PDT)
+        Tue, 07 Jun 2022 16:36:37 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -55,9 +55,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         "Jason A . Donenfeld" <Jason@zx2c4.com>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 8/9] drop_monitor: adopt u64_stats_t
-Date:   Tue,  7 Jun 2022 16:36:13 -0700
-Message-Id: <20220607233614.1133902-9-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 9/9] team: adopt u64_stats_t
+Date:   Tue,  7 Jun 2022 16:36:14 -0700
+Message-Id: <20220607233614.1133902-10-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 In-Reply-To: <20220607233614.1133902-1-eric.dumazet@gmail.com>
 References: <20220607233614.1133902-1-eric.dumazet@gmail.com>
@@ -80,84 +80,90 @@ we should use u64_stats_t and related accessors to avoid load/store tearing.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/core/drop_monitor.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/net/team/team.c | 26 +++++++++++++-------------
+ include/linux/if_team.h | 10 +++++-----
+ 2 files changed, 18 insertions(+), 18 deletions(-)
 
-diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index 4ad1decce72418818aa4c2415b202e4311061a8c..98952ffcee452fe8437b0d020ce834496cd26570 100644
---- a/net/core/drop_monitor.c
-+++ b/net/core/drop_monitor.c
-@@ -55,7 +55,7 @@ static bool monitor_hw;
- static DEFINE_MUTEX(net_dm_mutex);
+diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
+index b07dde6f0abf273195ff0f60217bd7158535b153..aac133a1e27a5f64fe8f83a456aa0598fad6824c 100644
+--- a/drivers/net/team/team.c
++++ b/drivers/net/team/team.c
+@@ -749,10 +749,10 @@ static rx_handler_result_t team_handle_frame(struct sk_buff **pskb)
  
- struct net_dm_stats {
--	u64 dropped;
-+	u64_stats_t dropped;
- 	struct u64_stats_sync syncp;
- };
+ 		pcpu_stats = this_cpu_ptr(team->pcpu_stats);
+ 		u64_stats_update_begin(&pcpu_stats->syncp);
+-		pcpu_stats->rx_packets++;
+-		pcpu_stats->rx_bytes += skb->len;
++		u64_stats_inc(&pcpu_stats->rx_packets);
++		u64_stats_add(&pcpu_stats->rx_bytes, skb->len);
+ 		if (skb->pkt_type == PACKET_MULTICAST)
+-			pcpu_stats->rx_multicast++;
++			u64_stats_inc(&pcpu_stats->rx_multicast);
+ 		u64_stats_update_end(&pcpu_stats->syncp);
  
-@@ -530,7 +530,7 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
- unlock_free:
- 	spin_unlock_irqrestore(&data->drop_queue.lock, flags);
- 	u64_stats_update_begin(&data->stats.syncp);
--	data->stats.dropped++;
-+	u64_stats_inc(&data->stats.dropped);
- 	u64_stats_update_end(&data->stats.syncp);
- 	consume_skb(nskb);
- }
-@@ -985,7 +985,7 @@ net_dm_hw_trap_packet_probe(void *ignore, const struct devlink *devlink,
- unlock_free:
- 	spin_unlock_irqrestore(&hw_data->drop_queue.lock, flags);
- 	u64_stats_update_begin(&hw_data->stats.syncp);
--	hw_data->stats.dropped++;
-+	u64_stats_inc(&hw_data->stats.dropped);
- 	u64_stats_update_end(&hw_data->stats.syncp);
- 	net_dm_hw_metadata_free(n_hw_metadata);
- free:
-@@ -1432,10 +1432,10 @@ static void net_dm_stats_read(struct net_dm_stats *stats)
+ 		skb->dev = team->dev;
+@@ -1720,8 +1720,8 @@ static netdev_tx_t team_xmit(struct sk_buff *skb, struct net_device *dev)
  
+ 		pcpu_stats = this_cpu_ptr(team->pcpu_stats);
+ 		u64_stats_update_begin(&pcpu_stats->syncp);
+-		pcpu_stats->tx_packets++;
+-		pcpu_stats->tx_bytes += len;
++		u64_stats_inc(&pcpu_stats->tx_packets);
++		u64_stats_add(&pcpu_stats->tx_bytes, len);
+ 		u64_stats_update_end(&pcpu_stats->syncp);
+ 	} else {
+ 		this_cpu_inc(team->pcpu_stats->tx_dropped);
+@@ -1854,11 +1854,11 @@ team_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
+ 		p = per_cpu_ptr(team->pcpu_stats, i);
  		do {
- 			start = u64_stats_fetch_begin_irq(&cpu_stats->syncp);
--			dropped = cpu_stats->dropped;
-+			dropped = u64_stats_read(&cpu_stats->dropped);
- 		} while (u64_stats_fetch_retry_irq(&cpu_stats->syncp, start));
+ 			start = u64_stats_fetch_begin_irq(&p->syncp);
+-			rx_packets	= p->rx_packets;
+-			rx_bytes	= p->rx_bytes;
+-			rx_multicast	= p->rx_multicast;
+-			tx_packets	= p->tx_packets;
+-			tx_bytes	= p->tx_bytes;
++			rx_packets	= u64_stats_read(&p->rx_packets);
++			rx_bytes	= u64_stats_read(&p->rx_bytes);
++			rx_multicast	= u64_stats_read(&p->rx_multicast);
++			tx_packets	= u64_stats_read(&p->tx_packets);
++			tx_bytes	= u64_stats_read(&p->tx_bytes);
+ 		} while (u64_stats_fetch_retry_irq(&p->syncp, start));
  
--		stats->dropped += dropped;
-+		u64_stats_add(&stats->dropped, dropped);
+ 		stats->rx_packets	+= rx_packets;
+@@ -1870,9 +1870,9 @@ team_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
+ 		 * rx_dropped, tx_dropped & rx_nohandler are u32,
+ 		 * updated without syncp protection.
+ 		 */
+-		rx_dropped	+= p->rx_dropped;
+-		tx_dropped	+= p->tx_dropped;
+-		rx_nohandler	+= p->rx_nohandler;
++		rx_dropped	+= READ_ONCE(p->rx_dropped);
++		tx_dropped	+= READ_ONCE(p->tx_dropped);
++		rx_nohandler	+= READ_ONCE(p->rx_nohandler);
  	}
- }
+ 	stats->rx_dropped	= rx_dropped;
+ 	stats->tx_dropped	= tx_dropped;
+diff --git a/include/linux/if_team.h b/include/linux/if_team.h
+index add607943c9564365e8d72d7522291d7a3d899d2..fc985e5c739d434148e8ff19d30ebc3ee8abf1d8 100644
+--- a/include/linux/if_team.h
++++ b/include/linux/if_team.h
+@@ -12,11 +12,11 @@
+ #include <uapi/linux/if_team.h>
  
-@@ -1451,7 +1451,7 @@ static int net_dm_stats_put(struct sk_buff *msg)
- 		return -EMSGSIZE;
- 
- 	if (nla_put_u64_64bit(msg, NET_DM_ATTR_STATS_DROPPED,
--			      stats.dropped, NET_DM_ATTR_PAD))
-+			      u64_stats_read(&stats.dropped), NET_DM_ATTR_PAD))
- 		goto nla_put_failure;
- 
- 	nla_nest_end(msg, attr);
-@@ -1476,10 +1476,10 @@ static void net_dm_hw_stats_read(struct net_dm_stats *stats)
- 
- 		do {
- 			start = u64_stats_fetch_begin_irq(&cpu_stats->syncp);
--			dropped = cpu_stats->dropped;
-+			dropped = u64_stats_read(&cpu_stats->dropped);
- 		} while (u64_stats_fetch_retry_irq(&cpu_stats->syncp, start));
- 
--		stats->dropped += dropped;
-+		u64_stats_add(&stats->dropped, dropped);
- 	}
- }
- 
-@@ -1495,7 +1495,7 @@ static int net_dm_hw_stats_put(struct sk_buff *msg)
- 		return -EMSGSIZE;
- 
- 	if (nla_put_u64_64bit(msg, NET_DM_ATTR_STATS_DROPPED,
--			      stats.dropped, NET_DM_ATTR_PAD))
-+			      u64_stats_read(&stats.dropped), NET_DM_ATTR_PAD))
- 		goto nla_put_failure;
- 
- 	nla_nest_end(msg, attr);
+ struct team_pcpu_stats {
+-	u64			rx_packets;
+-	u64			rx_bytes;
+-	u64			rx_multicast;
+-	u64			tx_packets;
+-	u64			tx_bytes;
++	u64_stats_t		rx_packets;
++	u64_stats_t		rx_bytes;
++	u64_stats_t		rx_multicast;
++	u64_stats_t		tx_packets;
++	u64_stats_t		tx_bytes;
+ 	struct u64_stats_sync	syncp;
+ 	u32			rx_dropped;
+ 	u32			tx_dropped;
 -- 
 2.36.1.255.ge46751e96f-goog
 
