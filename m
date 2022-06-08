@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8567543063
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 14:31:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FB05543064
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 14:31:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239238AbiFHMbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 08:31:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
+        id S239240AbiFHMbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 08:31:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239172AbiFHMau (ORCPT
+        with ESMTP id S239210AbiFHMau (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 08:30:50 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 136F525BFA1
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 05:30:46 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id v25so26875635eda.6
-        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 05:30:46 -0700 (PDT)
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7058325B059
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 05:30:48 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id h19so26903538edj.0
+        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 05:30:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Mw+TeLN00urjm5eSG5gWepTM2y3SQReXF09d+sH2RpI=;
-        b=pF6zGpn0hiNgwNbZmYFIjRtiR+LxGEunDpOS3rjx/K59qsHvLy1EVFnrjw7OGgCIKO
-         S7GyUQvbKsVo9/oDsL77cI+ymN5XcLWXzolZgwEF4h4prsW+P4rr2NqxH0Vitjb2gtMb
-         6jEVc8pXrEx16ajRW90dsZ3lhjuSFg6Xql3y9v9Swja0K56rjZJFFU+WwwTn/Q/DQW3N
-         tAW6IVm0Io7TGXCeDH1WCgiMl4poZ7JFwrMg7XxmzWLCkgIkrQYLup6bKslQGEmWzIdv
-         MC6ekCg8GRgoUOt2sZltVebWBzAjGwoefYQw8AUBLmvSLoCIrMXfJc2J7sZLf1ADxV5k
-         M4eA==
+        bh=aufacjr97z0R0RcEiapQwUaRj/Widdv+CgCH2LPXq7I=;
+        b=WaUuER6DMxWTBMltbxpLxppNMQreWxMpy68AArqzUOc5pqN6KvS/KafB4wxKs+g4u5
+         vjLC4OcxhR90rlzN4PrniIJ1bAiLJ6ccPaAZJcQhkINcciYXS6KnE262rb/vvHBCgai+
+         eXA0yFq8y+52S1ESnETtSyAEzVJxHeLQKCXtjbtPM0Lh1qWrjyTuc425+j/0JgfNBL/v
+         UVktaIJlYcif4Dm2OuJm0RsDycL2U8XNyiuG4SyzUqsAnErWj4UNjWGp7KGTvBoQKglB
+         1OQyZV+hhsgkY1mcBAsVen11UlKJbcBlM3M30vH4S2KZlH0sSsMXftmxmq5dIz84hpbI
+         BUqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Mw+TeLN00urjm5eSG5gWepTM2y3SQReXF09d+sH2RpI=;
-        b=ExIO9E5N+8rmZF/qZIxAV0IWSD2xhuhdOE6LXKHRFYXv5iCC4iqUNYpWkBzKe8i79Z
-         6D2Zb16I3942q/9wqjt9pn1TDb25+kMCTBnHNoogGnbjOd8hH5IVKnzyOOQF4J4lQ3Y4
-         eO4rZ6M05xbTRIT433kRGTZ6IkZdUaXePh/UWTKGZXn/ggI7WxPCQDzu8yBf7745dMEN
-         fpUeoaUei45FhwKt3zIJwS6iNxaUZzh1AHcHrASpd4ITT5EpPsaeMa7PsfeK5ayA7xDZ
-         Qi2Nx0fwjNYeEtD5Mec8NWHPo+dhvsjJK2hD+P/0TBzzwuVnUwz5Aeevq56Khp+04EQJ
-         cyQA==
-X-Gm-Message-State: AOAM531k4LWc9fDHxcotHx51oVnB8Bvpks0kKzkN80XDHk8NbiGAG+xC
-        Qz8d3SmUV+Fhz9IByH752h1ntv/3Q5IfY5IO
-X-Google-Smtp-Source: ABdhPJw9Ya7MMGIXglzptt8zufwuQ7Us73YZ1Ih9Y0JZK/Rt7HBgLvGI+VyWywVO208zutU5Ch3KpQ==
-X-Received: by 2002:a05:6402:4309:b0:42f:9ff8:3f11 with SMTP id m9-20020a056402430900b0042f9ff83f11mr29741084edc.67.1654691445095;
-        Wed, 08 Jun 2022 05:30:45 -0700 (PDT)
+        bh=aufacjr97z0R0RcEiapQwUaRj/Widdv+CgCH2LPXq7I=;
+        b=g41y2JIZvBoX+vBrsotb9Osw6ipVdOm+mCt0Xp7A0ZMNT6nPa0NGmBmyt18hW+OE7J
+         rGK+6nfnyYmBbodOKXe73IxHSufdHlbYV3ZyEgXK2IwGQ6ZWmCxSEVB1Cc5EuuEtOAsW
+         4DIOMDRePGmwy6AynHAtc8YzBzs0GXrLm6IGQ1VDuu8MPhPR3psnBCd2k0kcKYVcaAFd
+         cCjDMkG+lVXSjCEgKmb7413zqLBxzGcon5iazkWrHclWrWfqYCOYbqFhQLndyUBzPr+Z
+         EamS/oU2508S3rtu5sUN91sF939F3VKbSYlM7D9T20IKSTZCTxICJ0Bdp1tx8UNFgzhr
+         XIkw==
+X-Gm-Message-State: AOAM532nAl2ooeyy355w7+XPlnnjwpZoKDP+OcbRR9rdJJ2djmUuWraW
+        dIxB/cFxYA99v9fp4OIQaqzSzO6tmhjLTWJv
+X-Google-Smtp-Source: ABdhPJwgwQSOtB2Y6DN9JLUqPaYS6RpRkg5CTrbJE6PVpmjgD3xxnRhVuZZmQj20YfrCKCZqaXb7oA==
+X-Received: by 2002:a05:6402:3318:b0:42d:f04b:f50a with SMTP id e24-20020a056402331800b0042df04bf50amr38803401eda.210.1654691446422;
+        Wed, 08 Jun 2022 05:30:46 -0700 (PDT)
 Received: from debil.. (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id o7-20020a50fd87000000b0042dc25fdf5bsm12161687edt.29.2022.06.08.05.30.43
+        by smtp.gmail.com with ESMTPSA id o7-20020a50fd87000000b0042dc25fdf5bsm12161687edt.29.2022.06.08.05.30.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 05:30:44 -0700 (PDT)
+        Wed, 08 Jun 2022 05:30:45 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     dsahern@gmail.com, stephen@networkplumber.org, roopa@nvidia.com,
         Nikolay Aleksandrov <razor@blackwall.org>
-Subject: [PATCH iproute2-next 09/10] bridge: fdb: add flush [no]sticky entry matching
-Date:   Wed,  8 Jun 2022 15:29:20 +0300
-Message-Id: <20220608122921.3962382-10-razor@blackwall.org>
+Subject: [PATCH iproute2-next 10/10] bridge: fdb: add flush [no]offloaded entry matching
+Date:   Wed,  8 Jun 2022 15:29:21 +0300
+Message-Id: <20220608122921.3962382-11-razor@blackwall.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220608122921.3962382-1-razor@blackwall.org>
 References: <20220608122921.3962382-1-razor@blackwall.org>
@@ -69,71 +69,71 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Add flush support to match entries with or without (if "no" is
-prepended) sticky flag.
+prepended) offloaded flag.
 
 Examples:
-$ bridge fdb flush dev br0 sticky
-This will delete all sticky entries in br0's fdb table.
+$ bridge fdb flush dev br0 offloaded
+This will delete all offloaded entries in br0's fdb table.
 
-$ bridge fdb flush dev br0 nosticky
-This will delete all entries except the ones with sticky flag in
+$ bridge fdb flush dev br0 nooffloaded
+This will delete all entries except the ones with offloaded flag in
 br0's fdb table.
 
 Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
 ---
- bridge/fdb.c      | 8 +++++++-
- man/man8/bridge.8 | 8 +++++++-
+ bridge/fdb.c      | 9 ++++++++-
+ man/man8/bridge.8 | 7 ++++++-
  2 files changed, 14 insertions(+), 2 deletions(-)
 
 diff --git a/bridge/fdb.c b/bridge/fdb.c
-index e64e21cb0cba..d268e702d257 100644
+index d268e702d257..b71b20c8b6e6 100644
 --- a/bridge/fdb.c
 +++ b/bridge/fdb.c
-@@ -47,7 +47,7 @@ static void usage(void)
+@@ -47,7 +47,8 @@ static void usage(void)
  		"              [ vlan VID ] [ vni VNI ] [ self ] [ master ] [ dynamic ]\n"
  		"       bridge fdb flush dev DEV [ brport DEV ] [ vlan VID ]\n"
  		"              [ self ] [ master ] [ [no]permanent | [no]static | [no]dynamic ]\n"
--		"              [ [no]added_by_user ] [ [no]extern_learn ]\n");
-+		"              [ [no]added_by_user ] [ [no]extern_learn ] [ [no]sticky ]\n");
+-		"              [ [no]added_by_user ] [ [no]extern_learn ] [ [no]sticky ]\n");
++		"              [ [no]added_by_user ] [ [no]extern_learn ] [ [no]sticky ]\n"
++		"              [ [no]offloaded ]\n");
  	exit(-1);
  }
  
-@@ -726,6 +726,12 @@ static int fdb_flush(int argc, char **argv)
- 		} else if (strcmp(*argv, "noextern_learn") == 0) {
- 			ndm_flags &= ~NTF_EXT_LEARNED;
- 			ndm_flags_mask |= NTF_EXT_LEARNED;
-+		} else if (strcmp(*argv, "sticky") == 0) {
-+			ndm_flags |= NTF_STICKY;
-+			ndm_flags_mask |= NTF_STICKY;
-+		} else if (strcmp(*argv, "nosticky") == 0) {
-+			ndm_flags &= ~NTF_STICKY;
-+			ndm_flags_mask |= NTF_STICKY;
+@@ -732,6 +733,12 @@ static int fdb_flush(int argc, char **argv)
+ 		} else if (strcmp(*argv, "nosticky") == 0) {
+ 			ndm_flags &= ~NTF_STICKY;
+ 			ndm_flags_mask |= NTF_STICKY;
++		} else if (strcmp(*argv, "offloaded") == 0) {
++			ndm_flags |= NTF_OFFLOADED;
++			ndm_flags_mask |= NTF_OFFLOADED;
++		} else if (strcmp(*argv, "nooffloaded") == 0) {
++			ndm_flags &= ~NTF_OFFLOADED;
++			ndm_flags_mask |= NTF_OFFLOADED;
  		} else if (strcmp(*argv, "brport") == 0) {
  			if (port)
  				duparg2("brport", *argv);
 diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
-index af343cc1a719..ad16b4fe0940 100644
+index ad16b4fe0940..d4df772ea3b2 100644
 --- a/man/man8/bridge.8
 +++ b/man/man8/bridge.8
-@@ -122,7 +122,8 @@ bridge \- show / manipulate bridge addresses and devices
- .IR VID " ] [ "
+@@ -123,7 +123,7 @@ bridge \- show / manipulate bridge addresses and devices
  .BR self " ] [ " master " ] [ "
  .BR [no]permanent " | " [no]static " | " [no]dynamic " ] [ "
--.BR [no]added_by_user " ] [ " [no]extern_learn " ]"
-+.BR [no]added_by_user " ] [ " [no]extern_learn " ] [ "
-+.BR [no]sticky " ]"
+ .BR [no]added_by_user " ] [ " [no]extern_learn " ] [ "
+-.BR [no]sticky " ]"
++.BR [no]sticky " ] [ " [no]offloaded " ]"
  
  .ti -8
  .BR "bridge mdb" " { " add " | " del " } "
-@@ -854,6 +855,11 @@ if "no" is prepended then only entries without added_by_user flag will be delete
- .B [no]extern_learn
- if specified then only entries with extern_learn flag will be deleted or respectively
- if "no" is prepended then only entries without extern_learn flag will be deleted.
+@@ -860,6 +860,11 @@ if "no" is prepended then only entries without extern_learn flag will be deleted
+ .B [no]sticky
+ if specified then only entries with sticky flag will be deleted or respectively
+ if "no" is prepended then only entries without sticky flag will be deleted.
 +
 +.TP
-+.B [no]sticky
-+if specified then only entries with sticky flag will be deleted or respectively
-+if "no" is prepended then only entries without sticky flag will be deleted.
++.B [no]offloaded
++if specified then only entries with offloaded flag will be deleted or respectively
++if "no" is prepended then only entries without offloaded flag will be deleted.
  .sp
  
  .SH bridge mdb - multicast group database management
