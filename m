@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A09EB5439BB
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 18:55:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 184395439C4
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 18:55:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232556AbiFHQzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 12:55:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33354 "EHLO
+        id S240750AbiFHQzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 12:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243574AbiFHQxV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 12:53:21 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E374E3C6D8B
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 09:51:27 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id fd25so27931336edb.3
-        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 09:51:27 -0700 (PDT)
+        with ESMTP id S243660AbiFHQx0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 12:53:26 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F25E3C6D95
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 09:51:29 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id bg6so22807970ejb.0
+        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 09:51:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=amarulasolutions.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=El3W9x0OB1VE70B0Lt3SBVyO+pC/HDeoL5aPqYtLRdg=;
-        b=ofPeQ4nOnRiV0JF8uxnd4QmlVQSgooaO19HSVx/tZLG3+veOye/ByzTR/HcFO9Q/tI
-         e/be3ODSpfzJ87HtXgq5GRVhFan097ZAlwFdRS38X7Ij3FvV8uj3ZLaqM62YLR1zPpU9
-         10bWbhJ5bH5BhdZB8EBUacC5a9qvqBgTQYHeQ=
+        bh=I5VTRziMnkGl4xU+BjwtCkmgql6hb+Z7QIN+Rj1ilOY=;
+        b=GL2/5+TAp2pCEdHfQjTf3qp6TnHIgDKiGZCM9GYA8KeppoGt7LaELuW2XfFj50OSGV
+         +ms6qSWcZgedGSWQOsfL6aFERIBd8eSMCSsty6uIUF0t/ZMQtv+mfrB5sRhpMXrq+Se7
+         t375ns2CbOCjT/WTu6fER4CUTRIteo+P7v+KA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=El3W9x0OB1VE70B0Lt3SBVyO+pC/HDeoL5aPqYtLRdg=;
-        b=NI+uqw+GpF9eYswsW42bsaRMwcOOxL2xhHpgtBTQ8x/kKycHl0OG1fL7NjTAsZ1QXe
-         0fIDjgkEu8iAzhknE1MLR2FDKtLGUhnN3eoeioZadTwtss2MmSkSp0VsX12+bvPqcmrd
-         Bgtb9kl/Q5EHrdb5nzlTLv1+CiVB+GYeiavERZg+DOhl1JrCx0ryrKFdsih5gt6nUzuj
-         yUbMIQocnjvRrkCxOfyP8QZvZM3yKSrBt80kS9+gdgVjCzGwHvCuAwl76FSWHEV+OLtO
-         qPUcsC6CjMde+OFDnhpWzek1P1k7PKUuJSx/aZz88T533XIfChakDjpSrdArZk0mUjkO
-         fz9A==
-X-Gm-Message-State: AOAM5323T0M2HArJquRFKqfMp1KQudIcuW9ya6QHE2l9+xdnfMVhb8V+
-        lImHlZzxpNk941P3AxuLGPlt6w==
-X-Google-Smtp-Source: ABdhPJwjP2b4f/NRRms4orlourt1Bsz3XkRyDBXTZTW4to64rEm6B+tMWyZgCtr9Yp4mnYOW5uSRiA==
-X-Received: by 2002:a05:6402:1cb5:b0:42d:ddda:7459 with SMTP id cz21-20020a0564021cb500b0042dddda7459mr41312011edb.16.1654707086472;
-        Wed, 08 Jun 2022 09:51:26 -0700 (PDT)
+        bh=I5VTRziMnkGl4xU+BjwtCkmgql6hb+Z7QIN+Rj1ilOY=;
+        b=nXVG2HYiwuf2j4aVgku9y767ASncJx69i7RLiYuKnCqI6W7Veylgb9R59cKLlp/a0+
+         4/wPVhuBL22qWScbv0chILGCdvvWvxiHALohwTixoY+N3E38oZCPkj6h3d87CUmiMeFS
+         DzRbzO6ZK5EY1xQ74JNFkeH2AC941VXqNzQ6vVPpFIPgVAP06fY2km5pyHVVNksUDNhL
+         Px8MnIVqq54LkI28/LjKzgYZ0VJmnGSXn6pcTOmBKj9IZln9MgrIqxmydUUGJbftM1h7
+         3vRhyP3jC0HRFzxdH8ViVo3LTjZyTjh4Qdb/g8b9CF3Q1cWMzcxQZYvv7W6R0P9Wdcqz
+         3z0g==
+X-Gm-Message-State: AOAM531joMLqbPbBfD2ifl0ducWpLo16Wc9XEuOvV6Yq239Bldf6yQJ7
+        VE5bD+230ZSyPBq6MldWiaTdlA==
+X-Google-Smtp-Source: ABdhPJyZoLJRVZQupGQWtXsIWh3QTK3xk6DJUkI7csBK98pda16YzwvC04ry6ZVCTx7GS1yDfbvy3g==
+X-Received: by 2002:a17:906:9f1c:b0:711:cdda:a01f with SMTP id fy28-20020a1709069f1c00b00711cddaa01fmr16104703ejc.372.1654707087890;
+        Wed, 08 Jun 2022 09:51:27 -0700 (PDT)
 Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
-        by smtp.gmail.com with ESMTPSA id c22-20020a17090654d600b0070587f81bcfsm9569071ejp.19.2022.06.08.09.51.25
+        by smtp.gmail.com with ESMTPSA id c22-20020a17090654d600b0070587f81bcfsm9569071ejp.19.2022.06.08.09.51.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 09:51:26 -0700 (PDT)
+        Wed, 08 Jun 2022 09:51:27 -0700 (PDT)
 From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
@@ -56,9 +56,9 @@ Cc:     Amarula patchwork <linux-amarula@amarulasolutions.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v2 02/13] can: slcan: use netdev helpers to print out messages
-Date:   Wed,  8 Jun 2022 18:51:05 +0200
-Message-Id: <20220608165116.1575390-3-dario.binacchi@amarulasolutions.com>
+Subject: [PATCH v2 03/13] can: slcan: use the alloc_can_skb() helper
+Date:   Wed,  8 Jun 2022 18:51:06 +0200
+Message-Id: <20220608165116.1575390-4-dario.binacchi@amarulasolutions.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220608165116.1575390-1-dario.binacchi@amarulasolutions.com>
 References: <20220608165116.1575390-1-dario.binacchi@amarulasolutions.com>
@@ -74,39 +74,149 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace printk() calls with corresponding netdev helpers.
+It is used successfully by most (if not all) CAN device drivers. It
+allows to remove replicated code.
 
 Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+
 ---
 
-(no changes since v1)
+Changes in v2:
+- Put the data into the allocated skb directly instead of first
+  filling the "cf" on the stack and then doing a memcpy().
 
- drivers/net/can/slcan.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/can/slcan.c | 69 +++++++++++++++++++----------------------
+ 1 file changed, 32 insertions(+), 37 deletions(-)
 
 diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-index b37d35c2a23a..6162a9c21672 100644
+index 6162a9c21672..5d87e25e2285 100644
 --- a/drivers/net/can/slcan.c
 +++ b/drivers/net/can/slcan.c
-@@ -365,7 +365,7 @@ static netdev_tx_t slc_xmit(struct sk_buff *skb, struct net_device *dev)
- 	spin_lock(&sl->lock);
- 	if (!netif_running(dev))  {
- 		spin_unlock(&sl->lock);
--		printk(KERN_WARNING "%s: xmit: iface is down\n", dev->name);
-+		netdev_warn(dev, "xmit: iface is down\n");
- 		goto out;
+@@ -54,6 +54,7 @@
+ #include <linux/kernel.h>
+ #include <linux/workqueue.h>
+ #include <linux/can.h>
++#include <linux/can/dev.h>
+ #include <linux/can/skb.h>
+ #include <linux/can/can-ml.h>
+ 
+@@ -143,85 +144,79 @@ static struct net_device **slcan_devs;
+ static void slc_bump(struct slcan *sl)
+ {
+ 	struct sk_buff *skb;
+-	struct can_frame cf;
++	struct can_frame *cf;
+ 	int i, tmp;
+ 	u32 tmpid;
+ 	char *cmd = sl->rbuff;
+ 
+-	memset(&cf, 0, sizeof(cf));
++	skb = alloc_can_skb(sl->dev, &cf);
++	if (unlikely(!skb)) {
++		sl->dev->stats.rx_dropped++;
++		return;
++	}
+ 
+ 	switch (*cmd) {
+ 	case 'r':
+-		cf.can_id = CAN_RTR_FLAG;
++		cf->can_id = CAN_RTR_FLAG;
+ 		fallthrough;
+ 	case 't':
+ 		/* store dlc ASCII value and terminate SFF CAN ID string */
+-		cf.len = sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN];
++		cf->len = sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN];
+ 		sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN] = 0;
+ 		/* point to payload data behind the dlc */
+ 		cmd += SLC_CMD_LEN + SLC_SFF_ID_LEN + 1;
+ 		break;
+ 	case 'R':
+-		cf.can_id = CAN_RTR_FLAG;
++		cf->can_id = CAN_RTR_FLAG;
+ 		fallthrough;
+ 	case 'T':
+-		cf.can_id |= CAN_EFF_FLAG;
++		cf->can_id |= CAN_EFF_FLAG;
+ 		/* store dlc ASCII value and terminate EFF CAN ID string */
+-		cf.len = sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN];
++		cf->len = sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN];
+ 		sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN] = 0;
+ 		/* point to payload data behind the dlc */
+ 		cmd += SLC_CMD_LEN + SLC_EFF_ID_LEN + 1;
+ 		break;
+ 	default:
+-		return;
++		goto decode_failed;
  	}
- 	if (sl->tty == NULL) {
-@@ -776,8 +776,7 @@ static void __exit slcan_exit(void)
  
- 		sl = netdev_priv(dev);
- 		if (sl->tty) {
--			printk(KERN_ERR "%s: tty discipline still running\n",
--			       dev->name);
-+			netdev_err(dev, "tty discipline still running\n");
+ 	if (kstrtou32(sl->rbuff + SLC_CMD_LEN, 16, &tmpid))
+-		return;
++		goto decode_failed;
+ 
+-	cf.can_id |= tmpid;
++	cf->can_id |= tmpid;
+ 
+ 	/* get len from sanitized ASCII value */
+-	if (cf.len >= '0' && cf.len < '9')
+-		cf.len -= '0';
++	if (cf->len >= '0' && cf->len < '9')
++		cf->len -= '0';
+ 	else
+-		return;
++		goto decode_failed;
+ 
+ 	/* RTR frames may have a dlc > 0 but they never have any data bytes */
+-	if (!(cf.can_id & CAN_RTR_FLAG)) {
+-		for (i = 0; i < cf.len; i++) {
++	if (!(cf->can_id & CAN_RTR_FLAG)) {
++		for (i = 0; i < cf->len; i++) {
+ 			tmp = hex_to_bin(*cmd++);
+ 			if (tmp < 0)
+-				return;
+-			cf.data[i] = (tmp << 4);
++				goto decode_failed;
++
++			cf->data[i] = (tmp << 4);
+ 			tmp = hex_to_bin(*cmd++);
+ 			if (tmp < 0)
+-				return;
+-			cf.data[i] |= tmp;
++				goto decode_failed;
++
++			cf->data[i] |= tmp;
  		}
+ 	}
  
- 		unregister_netdev(dev);
+-	skb = dev_alloc_skb(sizeof(struct can_frame) +
+-			    sizeof(struct can_skb_priv));
+-	if (!skb)
+-		return;
+-
+-	skb->dev = sl->dev;
+-	skb->protocol = htons(ETH_P_CAN);
+-	skb->pkt_type = PACKET_BROADCAST;
+-	skb->ip_summed = CHECKSUM_UNNECESSARY;
+-
+-	can_skb_reserve(skb);
+-	can_skb_prv(skb)->ifindex = sl->dev->ifindex;
+-	can_skb_prv(skb)->skbcnt = 0;
+-
+-	skb_put_data(skb, &cf, sizeof(struct can_frame));
+-
+ 	sl->dev->stats.rx_packets++;
+-	if (!(cf.can_id & CAN_RTR_FLAG))
+-		sl->dev->stats.rx_bytes += cf.len;
++	if (!(cf->can_id & CAN_RTR_FLAG))
++		sl->dev->stats.rx_bytes += cf->len;
+ 
+ 	netif_rx(skb);
++	return;
++
++decode_failed:
++	dev_kfree_skb(skb);
+ }
+ 
+ /* parse tty input stream */
 -- 
 2.32.0
 
