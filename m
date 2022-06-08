@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02120543856
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 18:04:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D38B4543859
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 18:05:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245076AbiFHQEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 12:04:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60740 "EHLO
+        id S245090AbiFHQE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 12:04:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244799AbiFHQEs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 12:04:48 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9244327CD6A
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 09:04:46 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id z17so18705727pff.7
-        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 09:04:46 -0700 (PDT)
+        with ESMTP id S245079AbiFHQEu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 12:04:50 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF7D27EBCA
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 09:04:48 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id r71so19343551pgr.0
+        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 09:04:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=3qmIlwzFDR6fdFmAUyrSAM3P3hLoEa2XcvXoRMhOA5Y=;
-        b=DtUhv3nZZG1hiufCai0WOO4f6QTDVj0gx8ZyoXMfMP/GhqQHK/nBp8CdH1LNr40cdh
-         LcgWTcrjQE5CFZ9cvvwdER8Ggip0pgWsiLFlmls5oMk1A4KyQEmdCRHnFO1pFnAPd5zk
-         /7rAmT9hzQMsEp4Q0YgQCikLkQxDlXg5/jlk/MNrKPSTmRMeHqZJi5qhj9g3d7bi68Sz
-         0R90Gnd3aiZVEtDuhfixil04jsGqEGGt6nxdasJM8uL4x3X1IpuGi7S/eL3rnaK2DGE7
-         s6YwnmVpa+hIJeMuC/Cfko/dVM0Sbu6DZY2F4CQ9UWsRNxIgOD4gCQmAVM44fR/X6UcT
-         rr5Q==
+        bh=s/yjgAWN6ga6buAhDAV9p3FMONiUhJ1Xnyb57YPRcdg=;
+        b=be2yqTzc4suwMQb845QjAzjSwZBOEM1X8h8Uc5ft62whkCOjpdpFiA8am46rBd0X4O
+         KehCNoC9oSEFBkigAeX2tbRpj6R0M4fabapJR7HwygAPQA6HcEBnEdKoMzYpkNSxUq9g
+         7n4xIJnnZilW+zIhpbd7q8iM5qkV7+vuDdlJvLDi/WtiIp8EMtPApjnjknflsfn/z61z
+         wOFjtRowm+mF6itF5TwXb7beA5cx5Lj6Y8q9cfqYEYQ/h92an7326FoGBa7LwRfRAguk
+         4mLLPpJhogL85pLkhQPTeJtdnol/DPMdqUZYhH+YyCzW1kzz5/oTRL+Oo9VDS0+D7xw6
+         jXYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=3qmIlwzFDR6fdFmAUyrSAM3P3hLoEa2XcvXoRMhOA5Y=;
-        b=7YI3xFGUjEIeHYo5gf7j4quL+gqr858jHGf5Juodg6zPnztDC0lG0IEqxiN2DbMu8Y
-         5UwvMnQF3uYSr9GsgVlnHfI6o8COJY3qkZVVu+QmwAqcZV7C5O2aMXEx2t7XydAe9ZKT
-         RjY/wiUca/A0TwgLZHP+UQndVtmeoxOvo7z4QrMkuFsxfxO9OKfvov45RW4WqF1DUccT
-         ujcyiQJEEzQ0Ks6WHL5RiS2iYuEJOgmn2yoxcQRU5A1Z7hNJXaNay6raFBk0PifhgUs6
-         ++Vp0nEJxH81p4blCEw8vJxApSydQcyd6mvexZWVitf/JPOCSEQ3s4E38S5LvwsY7E6t
-         AKQw==
-X-Gm-Message-State: AOAM532VH8r02qqTj+jZYbbSiTAPP8juJ1NoiQHPgVBGcUMmxBSNnDuf
-        +s2LI3T/niZfkn7WuFpj23oWOZqexr4=
-X-Google-Smtp-Source: ABdhPJwCK+kIJbvZCk4DI6oEFrgZEqCrt80MPCBSMJ5VJVMLS+RgxiIJ2uWdCWjWa815BlnfG0Ud1w==
-X-Received: by 2002:a63:5610:0:b0:3f2:7e19:1697 with SMTP id k16-20020a635610000000b003f27e191697mr30232043pgb.74.1654704285588;
-        Wed, 08 Jun 2022 09:04:45 -0700 (PDT)
+        bh=s/yjgAWN6ga6buAhDAV9p3FMONiUhJ1Xnyb57YPRcdg=;
+        b=ndmCsSy0Js/nD3pYBNlcpk8MYn4lnzc3GIn+EiIHwUtTTqhlXj3IKes7yatuUr4/pQ
+         6eOgwUiv2+ZKzC17Boz0zLdxHjSGWE17s9SJvtIkWZkqHRHlr4YkwZGz2RAToChC0M1i
+         Ft+XbdlTfr6Ute1GrtUk+w18o6NFmWCxU57oLWZmNdws4ukSVkLGH9pyuwZ9Bu2IRkOT
+         4gaFcL/ggHvSWNLu2SYp7Ub4MsO72qr5acu+gH73sQWoKpO4rHYHWbtyaphWhQeG87FU
+         78qjKZ9p1d4ujdyGm8OcxTbDjrNUHuXUBYlMbJ0fNpSpXE34ZtR1Duk1Eap/E6pPqVNu
+         fMBQ==
+X-Gm-Message-State: AOAM532yRvLAWtcSx1eQCG/0l0XJnAGz7CW3vNNZYG2zPy55Qh+uOWs5
+        Q8Ly/+V+Q4hZHfQhSlsWfyc=
+X-Google-Smtp-Source: ABdhPJxLckQ41XwJfT7PLMjiUZZrTxgFkJtsKlXvD+OXcqL+6htbSbPCBX/B44ekpkndOEEQu/JvJQ==
+X-Received: by 2002:a63:5515:0:b0:3fd:9833:d9f7 with SMTP id j21-20020a635515000000b003fd9833d9f7mr16934374pgb.16.1654704287261;
+        Wed, 08 Jun 2022 09:04:47 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:f579:a14f:f943:9d9a])
-        by smtp.gmail.com with ESMTPSA id ju10-20020a17090b20ca00b001df264610c4sm18622019pjb.0.2022.06.08.09.04.45
+        by smtp.gmail.com with ESMTPSA id ju10-20020a17090b20ca00b001df264610c4sm18622019pjb.0.2022.06.08.09.04.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 09:04:45 -0700 (PDT)
+        Wed, 08 Jun 2022 09:04:47 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -54,9 +54,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v2 net-next 3/8] net: use WARN_ON_ONCE() in inet_sock_destruct()
-Date:   Wed,  8 Jun 2022 09:04:33 -0700
-Message-Id: <20220608160438.1342569-4-eric.dumazet@gmail.com>
+Subject: [PATCH v2 net-next 4/8] net: use WARN_ON_ONCE() in sk_stream_kill_queues()
+Date:   Wed,  8 Jun 2022 09:04:34 -0700
+Message-Id: <20220608160438.1342569-5-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 In-Reply-To: <20220608160438.1342569-1-eric.dumazet@gmail.com>
 References: <20220608160438.1342569-1-eric.dumazet@gmail.com>
@@ -74,36 +74,38 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-inet_sock_destruct() has four warnings which have been
-useful to point to kernel bugs in the past.
+sk_stream_kill_queues() has three checks which have been
+useful to detect kernel bugs in the past.
 
 However they are potentially a problem because they
 could flood the syslog.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv4/af_inet.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/core/stream.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 93da9f783bec52e4bda6213dc78ef3820e180cc4..30e0e8992085d5d4ac5941b5f3a101f798588be9 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -148,10 +148,10 @@ void inet_sock_destruct(struct sock *sk)
- 		return;
- 	}
+diff --git a/net/core/stream.c b/net/core/stream.c
+index 06b36c730ce8a29bb2d8984495e780931907ca72..ccc083cdef23266dc100368a7183bdeb0e99cbb7 100644
+--- a/net/core/stream.c
++++ b/net/core/stream.c
+@@ -196,13 +196,13 @@ void sk_stream_kill_queues(struct sock *sk)
+ 	__skb_queue_purge(&sk->sk_receive_queue);
  
--	WARN_ON(atomic_read(&sk->sk_rmem_alloc));
--	WARN_ON(refcount_read(&sk->sk_wmem_alloc));
+ 	/* Next, the write queue. */
+-	WARN_ON(!skb_queue_empty(&sk->sk_write_queue));
++	WARN_ON_ONCE(!skb_queue_empty(&sk->sk_write_queue));
+ 
+ 	/* Account for returned memory. */
+ 	sk_mem_reclaim_final(sk);
+ 
 -	WARN_ON(sk->sk_wmem_queued);
--	WARN_ON(sk_forward_alloc_get(sk));
-+	WARN_ON_ONCE(atomic_read(&sk->sk_rmem_alloc));
-+	WARN_ON_ONCE(refcount_read(&sk->sk_wmem_alloc));
+-	WARN_ON(sk->sk_forward_alloc);
 +	WARN_ON_ONCE(sk->sk_wmem_queued);
-+	WARN_ON_ONCE(sk_forward_alloc_get(sk));
++	WARN_ON_ONCE(sk->sk_forward_alloc);
  
- 	kfree(rcu_dereference_protected(inet->inet_opt, 1));
- 	dst_release(rcu_dereference_protected(sk->sk_dst_cache, 1));
+ 	/* It is _impossible_ for the backlog to contain anything
+ 	 * when we get here.  All user references to this socket
 -- 
 2.36.1.255.ge46751e96f-goog
 
