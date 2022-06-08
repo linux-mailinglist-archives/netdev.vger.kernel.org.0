@@ -2,147 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CB63543136
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 15:19:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49458543147
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 15:26:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240105AbiFHNTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 09:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58402 "EHLO
+        id S240166AbiFHN0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 09:26:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240103AbiFHNTi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 09:19:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27FF738BE6
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 06:19:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654694376;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bYfqG+mmrZsYnB3Q4WWY9yIatSaBCKfG6eFWUGz94/w=;
-        b=ZGq2/8NVrR1xvB44EC+8SkqzP7X9e2WtNWPODqb+/Xlk/0zDNjFjhNzhz3x3Scw/WPeltB
-        /9w0b4sFiGo7XciFGheqelvGkfyDVNkr0UJb2oiyLgOV1rAermpBDTlvZr2mgAVV+o4GOW
-        7pb0dVNK4nYkMtCksid/dIGNe/olHmc=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-210-w3NGAFBUP0a4avKCc4cTtw-1; Wed, 08 Jun 2022 09:19:33 -0400
-X-MC-Unique: w3NGAFBUP0a4avKCc4cTtw-1
-Received: by mail-ed1-f71.google.com with SMTP id t14-20020a056402020e00b0042bd6f4467cso14763726edv.9
-        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 06:19:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=bYfqG+mmrZsYnB3Q4WWY9yIatSaBCKfG6eFWUGz94/w=;
-        b=TYRVaqt+Zy612hYW6bt7qwtMNV3bVkhMAIqhLjMx/uNMFRO0uhHmD2WyuCmtYxCL2L
-         fzgK9NWL8Ji1Y9DF+UdgFmFY5zKWsUKf5WWW/oH1LII6kElxDJb9YIO1OuPIYxVtQzsv
-         zYk66StbPp8ezBihFd912SqDtM1+0McvWWIiOFTYbXm61KpRd+KsObLvenuuMucTqWrW
-         Ahi85U7Rylmcjxg1f8nXGz4OysBRWlQR2oBJzILxusJ2JBuqhgW1YZ+Pt/kDpqSuxtdF
-         mZxN6BluTpaWLwgNmQ8Gw+GDOvCnnIa/SDHRXGHzkvz7PCpmDYJYQdJCC9p30pA1LJOv
-         KpvA==
-X-Gm-Message-State: AOAM5300zRsite7R/fQFcZwAKD4dWXj1TmCUvZ4E73hqejfEueKfWfiQ
-        X/AGfzU6cr4cUaRxoJe0J3gqZZ++3375Ew/BQoaqBpolYLZcQjFrbTxUXwnlcDHjxnZSaGJvEju
-        +5EeyyZLTG5RmWwOv
-X-Received: by 2002:a05:6402:5412:b0:42d:cf78:6479 with SMTP id ev18-20020a056402541200b0042dcf786479mr38921207edb.18.1654694371245;
-        Wed, 08 Jun 2022 06:19:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyJR7nP64yd4YZRsPhWHmm59xX78RLn8pWZ0uVCy9QR4GDl1fZWhfXW4CbNL/YItnMe9arVAA==
-X-Received: by 2002:a05:6402:5412:b0:42d:cf78:6479 with SMTP id ev18-20020a056402541200b0042dcf786479mr38921189edb.18.1654694371055;
-        Wed, 08 Jun 2022 06:19:31 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id m25-20020a509999000000b0042bd25ca29asm12567155edb.59.2022.06.08.06.19.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 06:19:30 -0700 (PDT)
-Message-ID: <3fdb48d6-4892-8004-bcff-5cbbcaf4d9a3@redhat.com>
-Date:   Wed, 8 Jun 2022 15:19:29 +0200
+        with ESMTP id S240083AbiFHN0O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 09:26:14 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDCAD366BD;
+        Wed,  8 Jun 2022 06:26:10 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 258DPZRI0001741, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 258DPZRI0001741
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 8 Jun 2022 21:25:35 +0800
+Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 8 Jun 2022 21:25:34 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 8 Jun 2022 21:25:34 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
+ RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
+ 15.01.2308.021; Wed, 8 Jun 2022 21:25:34 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
+CC:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "neojou@gmail.com" <neojou@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux@ulli-kroll.de" <linux@ulli-kroll.de>
+Subject: Re: [PATCH v2 05/10] rtw88: iterate over vif/sta list non-atomically
+Thread-Topic: [PATCH v2 05/10] rtw88: iterate over vif/sta list non-atomically
+Thread-Index: AQHYdDPOvAC5P6vVz0elhZc8Fv6eZa1EBxiAgAEAxQA=
+Date:   Wed, 8 Jun 2022 13:25:34 +0000
+Message-ID: <e0aa1ba4336ab130712e1fcb425e6fd0adca4145.camel@realtek.com>
+References: <20220530135457.1104091-1-s.hauer@pengutronix.de>
+         <20220530135457.1104091-6-s.hauer@pengutronix.de>
+         <CAFBinCDgErZzFs5NiDT0JAOhziz5WLiy0+yxF9Z-kXPxD1j8Dw@mail.gmail.com>
+In-Reply-To: <CAFBinCDgErZzFs5NiDT0JAOhziz5WLiy0+yxF9Z-kXPxD1j8Dw@mail.gmail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.1-2 
+x-originating-ip: [172.16.16.197]
+x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzYvOCDkuIrljYggMTE6NDg6MDA=?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DBBE19CD6A59C140B7AC1D457E96405D@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [REGRESSION] r8169: RTL8168h "transmit queue 0 timed out" after
- ASPM L1 enablement
-Content-Language: en-US
-To:     Bernhard Hampel-Waffenthal <bernhard.hampelw@posteo.at>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     nic_swsd@realtek.com, netdev@vger.kernel.org,
-        regressions@lists.linux.dev, Jakub Kicinski <kuba@kernel.org>
-References: <9ebb43ee-52a1-c77d-d609-ca447a32f3e6@posteo.at>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <9ebb43ee-52a1-c77d-d609-ca447a32f3e6@posteo.at>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On 6/8/22 02:44, Bernhard Hampel-Waffenthal wrote:
-> #regzbot introduced: 4b5f82f6aaef3fa95cce52deb8510f55ddda6a71
-> 
-> Hi,
-> 
-> since the last major kernel version upgrade to 5.18 on Arch Linux I'm unable to get a usable ethernet connection on my desktop PC.
-> 
-> I can see a timeout in the logs
-> 
->> kernel: NETDEV WATCHDOG: enp37s0 (r8169): transmit queue 0 timed out
-> 
-> and regular very likely related errors after
-> 
->> kernel: r8169 0000:25:00.0 enp37s0: rtl_rxtx_empty_cond == 0 (loop: 42, delay: 100).
-> 
-> 
-> The link does manage to go up at nominal full 1Gbps speed, but there is no usable connection to speak of and pings are very bursty and take multiple seconds.
-> 
-> I was able to pinpoint that the problems were introduced in commit 4b5f82f6aaef3fa95cce52deb8510f55ddda6a71 with the enablement of ASPM L1/L1.1 for ">= RTL_GIGA_MAC_VER_45", which my chip falls under. Adding pcie_aspm=off the kernel command line or changing that check to ">= RTL_GIGA_MAC_VER_60" for testing purposes and recompiling the kernel fixes my problems.
-> 
-> 
-> I'm using a MSI B450I GAMING PLUS AC motherboard with a RTL8168h chip as per dmesg:
-
-Hmm, my main workstation has a "MSI B550M PRO-VDH" which is similar(ish)
-to your motherboard and is using the exact same ethernet controller and
-I'm not seeing any issues with 5.18.0.
-
-ASPM issues may be BIOS related, are you at the latest BIOS version?
-
-And are all your (relevant) BIOS settings set to the default settings?
-
-Regards,
-
-Hans
-
-
-> 
->> r8169 0000:25:00.0 eth0: RTL8168h/8111h, 30:9c:23:de:97:a9, XID 541, IRQ 101
-> 
-> lspci says:
-> 
->> 25:00.0 Ethernet controller [0200]: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller [10ec:8168] (rev 15)
->         Subsystem: Micro-Star International Co., Ltd. [MSI] Device [1462:7a40]
->         Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx+
->         Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
->         Latency: 0, Cache Line Size: 64 bytes
->         Interrupt: pin A routed to IRQ 30
->         IOMMU group: 14
->         Region 0: I/O ports at f000 [size=256]
->         Region 2: Memory at fcb04000 (64-bit, non-prefetchable) [size=4K]
->         Region 4: Memory at fcb00000 (64-bit, non-prefetchable) [size=16K]
->         Capabilities: <access denied>
->         Kernel driver in use: r8169
->         Kernel modules: r8169
-> 
-> 
-> If you need more info I'll do my best to provide what I can, hope that helps already.
-> 
-> Regards,
-> Bernhard
-> 
-
+SGkgTWFydGluIGFuZCBTYXNjaGEsDQoNClRoYW5rIHlvdSBib3RoLg0KDQpPbiBXZWQsIDIwMjIt
+MDYtMDggYXQgMDA6MDYgKzAyMDAsIE1hcnRpbiBCbHVtZW5zdGluZ2wgd3JvdGU6DQo+IEhpIFNh
+c2NoYSwNCj4gDQo+IHRoYW5rcyBmb3IgdGhpcyBwYXRjaCENCj4gDQo+IE9uIE1vbiwgTWF5IDMw
+LCAyMDIyIGF0IDM6NTUgUE0gU2FzY2hhIEhhdWVyIDxzLmhhdWVyQHBlbmd1dHJvbml4LmRlPiB3
+cm90ZToNCj4gWy4uLl0NCj4gPiAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9w
+aHkuYyAgfCAgIDYgKy0NCj4gPiAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9w
+cy5jICAgfCAgIDIgKy0NCj4gPiAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC91
+dGlsLmMgfCAxMDMgKysrKysrKysrKysrKysrKysrKysrKw0KPiA+ICBkcml2ZXJzL25ldC93aXJl
+bGVzcy9yZWFsdGVrL3J0dzg4L3V0aWwuaCB8ICAxMiArKy0NCj4gPiAgNCBmaWxlcyBjaGFuZ2Vk
+LCAxMTYgaW5zZXJ0aW9ucygrKSwgNyBkZWxldGlvbnMoLSkNCj4gSSBjb21wYXJlZCB0aGUgY2hh
+bmdlcyBmcm9tIHRoaXMgcGF0Y2ggd2l0aCBteSBlYXJsaWVyIHdvcmsuIEkgd291bGQNCj4gbGlr
+ZSB0byBoaWdobGlnaHQgYSBmZXcgZnVuY3Rpb25zIHRvIHVuZGVyc3RhbmQgaWYgdGhleSB3ZXJl
+IGxlZnQgb3V0DQo+IG9uIHB1cnBvc2Ugb3IgYnkgYWNjaWRlbnQuDQo+IA0KPiBfX2Z3X3JlY292
+ZXJ5X3dvcmsoKSBpbiBtYWluLmMgKHVuZm9ydHVuYXRlbHkgSSBhbSBub3Qgc3VyZSBob3cgdG8N
+Cj4gdHJpZ2dlci90ZXN0IHRoaXMgImZpcm13YXJlIHJlY292ZXJ5IiBsb2dpYyk6DQoNClRoaXMg
+Y2FuIGJlIHRyaWdnZXJlZCBieSAnZWNobyAxID4gL3N5cy9rZXJuZWwvZGVidWcvaWVlZTgwMjEx
+L3J0dzg4L2Z3X2NyYXNoJywNCmJ1dCBvbmx5IHRoZSBsYXRlc3QgZmlybXdhcmUgb2YgODgyMmMg
+Y2FuIHN1cHBvcnQgdGhpcy4NCg0KPiAtIHRoaXMgaXMgYWxyZWFkeSBjYWxsZWQgd2l0aCAmcnR3
+ZGV2LT5tdXRleCBoZWxkDQo+IC0gaXQgdXNlcyBydHdfaXRlcmF0ZV9rZXlzX3JjdSgpICh3aGlj
+aCBpbnRlcm5hbGx5IHVzZXMgcnR3X3dyaXRlMzINCj4gZnJvbSBydHdfc2VjX2NsZWFyX2NhbSku
+IGZlZWwgZnJlZSB0byBlaXRoZXIgYWRkIFswXSB0byB5b3VyIHNlcmllcyBvcg0KPiBldmVuIHNx
+dWFzaCBpdCBpbnRvIGFuIGV4aXN0aW5nIHBhdGNoDQoNCmllZWU4MDIxMV9pdGVyX2tleXMoKSBj
+aGVjayBsb2NrZGVwX2Fzc2VydF93aXBoeShody0+d2lwaHkpLCBidXQgd2UgZG9uJ3QNCmhvbGQg
+dGhlIGxvY2sgaW4gdGhpcyB3b3JrOyBpdCBhbHNvIGRvIG11dGV4X2xvY2soJmxvY2FsLT5rZXlf
+bXR4KSB0aGF0IA0KSSdtIGFmcmFpZCBpdCBjb3VsZCBjYXVzZSBkZWFkbG9jay4NCiANClNvLCBJ
+IHRoaW5rIHdlIGNhbiB1c2UgX3JjdSB2ZXJzaW9uIHRvIGNvbGxlY3Qga2V5IGxpc3QgbGlrZSBz
+dGEgYW5kIHZpZi4NCg0KPiAtIGl0IHVzZXMgcnR3X2l0ZXJhdGVfc3Rhc19hdG9taWMoKSAod2hp
+Y2ggaW50ZXJuYWxseSB1c2VzDQo+IHJ0d19md19zZW5kX2gyY19jb21tYW5kIGZyb20gcnR3X2Z3
+X21lZGlhX3N0YXR1c19yZXBvcnQpDQo+IC0gaXQgdXNlcyBydHdfaXRlcmF0ZV92aWZzX2F0b21p
+YygpICh3aGljaCBpbnRlcm5hbGx5IGNhbiByZWFkL3dyaXRlDQo+IHJlZ2lzdGVycyBmcm9tIHJ0
+d19jaGlwX2NvbmZpZ19iZmVlKQ0KPiAtIGluIG15IHByZXZpb3VzIHNlcmllcyBJIHNpbXBseSBy
+ZXBsYWNlZCB0aGUNCj4gcnR3X2l0ZXJhdGVfc3Rhc19hdG9taWMoKSBhbmQgcnR3X2l0ZXJhdGVf
+dmlmc19hdG9taWMoKSBjYWxscyB3aXRoIHRoZQ0KPiBub24tYXRvbWljIHZhcmlhbnRzIChmb3Ig
+dGhlIHJ0d19pdGVyYXRlX2tleXNfcmN1KCkgY2FsbCBJIGRpZCBzb21lDQo+IGV4dHJhIGNsZWFu
+dXAsIHNlZSBbMF0pDQo+IA0KPiBydHdfd293X2Z3X21lZGlhX3N0YXR1cygpIGluIHdvdy5jICh1
+bmZvcnR1bmF0ZWx5IEkgYW0gYWxzbyBub3Qgc3VyZQ0KPiBob3cgdG8gdGVzdCBXb1dMQU4pOg0K
+PiAtIEkgYW0gbm90IHN1cmUgaWYgJnJ0d2Rldi0+bXV0ZXggaXMgaGVsZCB3aGVuIHRoaXMgZnVu
+Y3Rpb24gaXMgY2FsbGVkDQo+IC0gaXQgdXNlcyBydHdfaXRlcmF0ZV9zdGFzX2F0b21pYygpICh3
+aGljaCBpbnRlcm5hbGx5IHVzZXMNCj4gcnR3X2Z3X3NlbmRfaDJjX2NvbW1hbmQgZnJvbSBydHdf
+ZndfbWVkaWFfc3RhdHVzX3JlcG9ydCkNCj4gLSBpbiBteSBwcmV2aW91cyBzZXJpZXMgSSBzaW1w
+bHkgcmVwbGFjZWQgcnR3X2l0ZXJhdGVfc3Rhc19hdG9taWMoKQ0KPiB3aXRoIGl0J3Mgbm9uLWF0
+b21pYyB2YXJpYW50DQo+IA0KPiBBZGRpdGlvbmFsbHkgSSByZWJhc2VkIG15IFNESU8gd29yayBv
+biB0b3Agb2YgeW91ciBVU0Igc2VyaWVzLg0KPiBUaGlzIG1ha2VzIFNESU8gc3VwcG9ydCBhIGxv
+dCBlYXNpZXIgLSBzbyB0aGFuayB5b3UgZm9yIHlvdXIgd29yayENCj4gSSBmb3VuZCB0aGF0IHRo
+cmVlIG9mIG15IHByZXZpb3VzIHBhdGNoZXMgKGluIGFkZGl0aW9uIHRvIFswXSB3aGljaCBJDQo+
+IGFscmVhZHkgbWVudGlvbmVkIGVhcmxpZXIpIGFyZSBzdGlsbCBuZWVkZWQgdG8gZ2V0IHJpZCBv
+ZiBzb21lDQo+IHdhcm5pbmdzIHdoZW4gdXNpbmcgdGhlIFNESU8gaW50ZXJmYWNlICh0aGUgc2Ft
+ZSB3YXJuaW5ncyBtYXkgb3IgbWF5DQo+IG5vdCBiZSB0aGVyZSB3aXRoIHRoZSBVU0IgaW50ZXJm
+YWNlIC0gaXQganVzdCBkZXBlbmRzIG9uIHdoZXRoZXIgeW91cg0KPiBBUCBtYWtlcyBydHc4OCBo
+aXQgdGhhdCBzcGVjaWZpYyBjb2RlLXBhdGgpOg0KPiAtIFsxXTogcnR3ODg6IENvbmZpZ3VyZSB0
+aGUgcmVnaXN0ZXJzIGZyb20gcnR3X2JmX2Fzc29jKCkgb3V0c2lkZSB0aGUgUkNVIGxvY2sNCg0K
+SSB0aGluayB3ZSBuZWVkIHRoaXMuDQoNCj4gLSBbMl06IHJ0dzg4OiBNb3ZlIHJ0d19jaGlwX2Nm
+Z19jc2lfcmF0ZSgpIG91dCBvZiBydHdfdmlmX3dhdGNoX2RvZ19pdGVyKCkNCg0KSSB0aGluayB3
+ZSBkb24ndCBuZWVkIHRoaXMsIGJ1dCBqdXN0IHVzZSBydHdfaXRlcmF0ZV92aWZzKCkgdG8NCml0
+ZXJhdGUgcnR3X3ZpZl93YXRjaF9kb2dfaXRlci4NCg0KPiAtIFszXTogcnR3ODg6IE1vdmUgcnR3
+X3VwZGF0ZV9zdGFfaW5mbygpIG91dCBvZiBydHdfcmFfbWFza19pbmZvX3VwZGF0ZV9pdGVyKCkN
+Cg0KTmVlZCBwYXJ0aWFsIC0tIGhvbGQgcnR3ZGV2LT5tdXRleCBiZWZvcmUgZW50ZXJpbmcgcnR3
+X3JhX21hc2tfaW5mb191cGRhdGUoKS4NCg0KVGhlbiwgdXNlIHJ0d19pdGVyYXRlX3N0YXMoKSB0
+byBpdGVyYXRlIHJ0d19yYV9tYXNrX2luZm9fdXBkYXRlX2l0ZXIuIA0KTm8gbmVlZCBvdGhlcnMu
+DQoNCg0KU2FzY2hhLCBjb3VsZCB5b3Ugc3F1YXNoIE1hcnRpbidzIHBhdGNoZXMgaW50byB5b3Vy
+IHBhdGNoc2V0Pw0KQW5kLCB0aGVuIEkgY2FuIGRvIG1vcmUgdGVzdHMgb24gUENJIGNhcmRzLg0K
+DQpJIGRvIGxvbmcgcnVuIG9uIDg4MjJDRSB3aXRoIHRoZSBwYXRjaHNldCB2Mi4gSXQgd29ya3Mg
+ZmluZS4NCkFmdGVyIGFkZGluZyBtb3JlLCBJIHdpbGwgdmVyaWZ5IGl0IGFnYWluLg0KDQpCeSB0
+aGUgd2F5LCBJIHN0aWxsIGRvbid0IGhhdmUgcmVzb3VyY2UgdG8gY2hlY2sgUFMgb2YgODgyMkNV
+Lg0KU29ycnkgZm9yIHRoYXQuDQoNClBpbmctS2UNCg0K
