@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB08E5425C1
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:55:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C55425426D7
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:58:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232119AbiFHGAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 02:00:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55836 "EHLO
+        id S235023AbiFHGCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 02:02:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244921AbiFHFzg (ORCPT
+        with ESMTP id S244898AbiFHFzg (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 01:55:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C277C253331
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 21:00:16 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA1B54272EC;
+        Tue,  7 Jun 2022 21:00:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64D65B823D1
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 04:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 006F1C3411F;
-        Wed,  8 Jun 2022 04:00:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE3AB618C8;
+        Wed,  8 Jun 2022 04:00:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6392C3411D;
+        Wed,  8 Jun 2022 04:00:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654660813;
-        bh=J78qmcL3/83GPOhPPS0UeoDCI6UIp7tCQfg/62aGFNQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=l8HC+pAwifzMh5nJC7xleDDXOokjWTQFlTPdxjQ4qj6S6vNLMy5Mn63Sj13M02v8L
-         7I7LE8feL7eohuiqnM9VI7DIp+5Vl9MM6anyhGxAF5Zwg6oXSYp4PSszhnVT3yPAzM
-         JJ5z2KWXOH21sby3/zXeMVamCSUafmS5W/D84nyjnvgs8voRTHHQK7uUxh7jLcJ4No
-         jMFo7StNG1FqBgtYpflX82oD6rf7MP4eky92Zx6ED64Mwr3//wXsQHQiY2XyqlrZZ0
-         x3Vu0FUupzZ+uya9MNzlfdEBW1/FD6dZPL958tgOLe8aSN7TvqoFdZjy8+u/UFrt2S
-         mZ39eviTn89tg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D7848E737EF;
-        Wed,  8 Jun 2022 04:00:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1654660823;
+        bh=CHx2w8CDbdu1UEVfiO99Fd0U2aB18Ou5KXph1hmlutA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HrCaiVWlSgWJ5eqXD2U9W4A/8jagvC3FWBUFoBEIvx/Og1opWtZRoijO31mX6ZcZf
+         q0VC6qKNw4ea4YkCjOtyejN/D0JtAfscU9vtCupUURQ34wRpvNrrMyvmsg+pxAYXVm
+         yXZPFVr2CNip5paQv84sqw0ZVo4l00Vy8J8EUszLigXziq25drHZaNJLiAGeFn4ja7
+         FVQmP+woii/HegK7mdvzz4MYpM9gWk4z4bwsjCL4BqDNxP0N63XigjZcKaOg+R6n4Q
+         +j2Xdd68YD8yq6ZeWQahVdHz6mpQVorVBxLUSXKWHUXIjwZONjvq4n6EWlBWDP9ex9
+         bVDi6Y0nrm9qw==
+Date:   Tue, 7 Jun 2022 21:00:21 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
+        hawk@kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, corbet@lwn.net, linux-doc@vger.kernel.org,
+        jbrouer@redhat.com, lorenzo.bianconi@redhat.com
+Subject: Re: [PATCH v2 net-next] Documentation: update
+ networking/page_pool.rst with ethtool APIs
+Message-ID: <20220607210021.05263978@kernel.org>
+In-Reply-To: <8c1f582d286fd5a7406dfff895eea39bb8fedca6.1654546043.git.lorenzo@kernel.org>
+References: <8c1f582d286fd5a7406dfff895eea39bb8fedca6.1654546043.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net/mlx4_en: Fix wrong return value on ioctl EEPROM query
- failure
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165466081287.15005.15481065449511570566.git-patchwork-notify@kernel.org>
-Date:   Wed, 08 Jun 2022 04:00:12 +0000
-References: <20220606115718.14233-1-tariqt@nvidia.com>
-In-Reply-To: <20220606115718.14233-1-tariqt@nvidia.com>
-To:     Tariq Toukan <tariqt@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org, gal@nvidia.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,30 +56,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 6 Jun 2022 14:57:18 +0300 you wrote:
-> From: Gal Pressman <gal@nvidia.com>
+On Mon,  6 Jun 2022 22:15:45 +0200 Lorenzo Bianconi wrote:
+> Update page_pool documentation with page_pool ethtool stats APIs.
 > 
-> The ioctl EEPROM query wrongly returns success on read failures, fix
-> that by returning the appropriate error code.
-> 
-> Fixes: 7202da8b7f71 ("ethtool, net/mlx4_en: Cable info, get_module_info/eeprom ethtool support")
-> Signed-off-by: Gal Pressman <gal@nvidia.com>
-> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-> 
-> [...]
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+> Changes since v1:
+> - get rid of literal markup
 
-Here is the summary with links:
-  - [net] net/mlx4_en: Fix wrong return value on ioctl EEPROM query failure
-    https://git.kernel.org/netdev/net/c/f5826c8c9d57
+This is not what Andrew and I meant, I don't think. The suggestion was
+to put the information in kdoc of the function, in the source code, and
+then render the kdoc here by adding something like:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+.. kernel-doc:: whatever/the/source/is.c
+   :identifiers: page_pool_ethtool_stats_get_strings page_pool_ethtool_stats_get_count page_pool_ethtool_stats_get
 
