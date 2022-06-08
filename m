@@ -2,49 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FE3354288B
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 09:52:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B57465428B0
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 09:58:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231877AbiFHHv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 03:51:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36472 "EHLO
+        id S232462AbiFHH4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 03:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230423AbiFHHvS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 03:51:18 -0400
+        with ESMTP id S233354AbiFHHzz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 03:55:55 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06203100B13
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 00:17:59 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612C719CED3
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 00:25:03 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nypwu-0005bf-56; Wed, 08 Jun 2022 09:17:52 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nypwu-0078u8-Jz; Wed, 08 Jun 2022 09:17:51 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nypws-00G1Pj-9g; Wed, 08 Jun 2022 09:17:50 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nyq2V-0006tL-8N; Wed, 08 Jun 2022 09:23:39 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 09B2E8EA6B;
+        Wed,  8 Jun 2022 07:19:47 +0000 (UTC)
+Date:   Wed, 8 Jun 2022 09:19:47 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Max Staudt <max@enpas.org>
+Cc:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        linux-kernel@vger.kernel.org,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        michael@amarulasolutions.com,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 3/3] net: phy: dp83td510: disable cable test support for 1Vpp PHYs
-Date:   Wed,  8 Jun 2022 09:17:49 +0200
-Message-Id: <20220608071749.3818602-4-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220608071749.3818602-1-o.rempel@pengutronix.de>
-References: <20220608071749.3818602-1-o.rempel@pengutronix.de>
+        Jiri Slaby <jirislaby@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 00/13] can: slcan: extend supported features
+Message-ID: <20220608071947.pwl4whyzqpyubzqn@pengutronix.de>
+References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
+ <20220608021537.04c45cf9.max@enpas.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zltmsl6xgx33hokg"
+Content-Disposition: inline
+In-Reply-To: <20220608021537.04c45cf9.max@enpas.org>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: netdev@vger.kernel.org
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
@@ -56,117 +65,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using 1Vpp pulse provides most unreliable results. So, disable cable
-testing if PHY is bootstrapped to use 1Vpp-only mode.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/net/phy/dp83td510.c | 52 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 51 insertions(+), 1 deletion(-)
+--zltmsl6xgx33hokg
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/net/phy/dp83td510.c b/drivers/net/phy/dp83td510.c
-index de32ab1a262d..1eaf2ceaca8c 100644
---- a/drivers/net/phy/dp83td510.c
-+++ b/drivers/net/phy/dp83td510.c
-@@ -31,6 +31,8 @@
- #define DP83TD510E_TDR_FAIL			BIT(0)
- 
- #define DP83TD510E_TDR_CFG1			0x300
-+/* TX_TYPE: Transmit voltage level for TDR. 0 = 1V, 1 = 2.4V */
-+#define DP83TD510E_TDR_TX_TYPE			BIT(12)
- 
- #define DP83TD510E_TDR_CFG2			0x301
- #define DP83TD510E_TDR_END_TAP_INDEX_1		GENMASK(14, 8)
-@@ -71,6 +73,10 @@
- #define DP83TD510E_UNKN_0310			0x310
- #define DP83TD510E_0310_VAL			0x0036
- 
-+#define DP83TD510E_CHIP_SOR_1			0x467
-+/* If LED_2 is set, blacklist 2.4V mode */
-+#define DP83TD510E_SOR_LED_2			BIT(7)
-+
- #define DP83TD510E_AN_STAT_1			0x60c
- #define DP83TD510E_MASTER_SLAVE_RESOL_FAIL	BIT(15)
- 
-@@ -78,6 +84,10 @@
- 
- #define DP83TD510_SQI_MAX	7
- 
-+struct dp83td510_priv {
-+	bool allow_v2_4_mode;
-+};
-+
- /* Register values are converted to SNR(dB) as suggested by
-  * "Application Report - DP83TD510E Cable Diagnostics Toolkit":
-  * SNR(dB) = -10 * log10 (VAL/2^17) - 1.76 dB.
-@@ -308,12 +318,29 @@ static int dp83td510_tdr_init(struct phy_device *phydev)
- 
- static int dp83td510_cable_test_start(struct phy_device *phydev)
- {
--	int ret;
-+	struct dp83td510_priv *priv = phydev->priv;
-+	int ret, cfg = 0;
-+
-+	/* Generate 2.4Vpp pulse if HW is allowed to do so */
-+	if (priv->allow_v2_4_mode) {
-+		cfg |= DP83TD510E_TDR_TX_TYPE;
-+	} else {
-+		/* This PHY do not provide usable results with 1Vpp pulse.
-+		 * Potentially different dp83td510_tdr_init() values are
-+		 * needed.
-+		 */
-+		return -EOPNOTSUPP;
-+	}
- 
- 	ret = dp83td510_tdr_init(phydev);
- 	if (ret)
- 		return ret;
- 
-+	ret = phy_modify_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_TDR_CFG1,
-+			     DP83TD510E_TDR_TX_TYPE, cfg);
-+	if (ret)
-+		return ret;
-+
- 	return phy_set_bits_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_TDR_CFG,
- 				DP83TD510E_TDR_START);
- }
-@@ -369,6 +396,28 @@ static int dp83td510_cable_test_get_status(struct phy_device *phydev,
- 	return phy_set_bits(phydev, MII_BMCR, BMCR_RESET);
- }
- 
-+static int dp83td510_probe(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	struct dp83td510_priv *priv;
-+	int ret;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	phydev->priv = priv;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_CHIP_SOR_1);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (!(ret & DP83TD510E_SOR_LED_2))
-+		priv->allow_v2_4_mode = true;
-+
-+	return 0;
-+}
-+
- static int dp83td510_get_features(struct phy_device *phydev)
- {
- 	/* This PHY can't respond on MDIO bus if no RMII clock is enabled.
-@@ -393,6 +442,7 @@ static struct phy_driver dp83td510_driver[] = {
- 	.name		= "TI DP83TD510E",
- 
- 	.flags          = PHY_POLL_CABLE_TEST,
-+	.probe		= dp83td510_probe,
- 	.config_aneg	= dp83td510_config_aneg,
- 	.read_status	= dp83td510_read_status,
- 	.get_features	= dp83td510_get_features,
--- 
-2.30.2
+On 08.06.2022 02:15:37, Max Staudt wrote:
+> To speed up the slcan cleanup, may I suggest looking at can327?
+>=20
+> It started as a modification of slcan, and over the past few months,
+> it has gone through several review rounds in upstreaming. In fact, a
+> *ton* of things pointed out during reviews would apply 1:1 to slcan.
+>=20
+> What's more, there's legacy stuff that's no longer needed. No
+> SLCAN_MAGIC, no slcan_devs, ... it's all gone in can327. May I suggest
+> you have a look at it and bring slcan's boilerplate in line with it?
 
++1
+
+Most of Dario's series looks good. I suggest that we mainline this
+first. If there's interest and energy the slcan driver can be reworked
+to re-use the more modern concepts of the can327 driver.
+
+> It's certainly not perfect (7 patch series and counting, and that's
+> just the public ones), but I'm sure that looking at the two drivers
+> side-by-side could serve as a good starting point, to avoid
+> re-reviewing the same things all over again.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--zltmsl6xgx33hokg
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKgTZAACgkQrX5LkNig
+013DMQf+Oowv9u1tls3YgQbK2Ek0zFsMF5BZXa9eBmGDKBf+HIIQx5g0+pzec8gq
+wBRNRaOlS1KGLewF86lK9yPxUG/CpwB9NpIDDsLtG+kL/AGfuj4Kguf/LfbjtOpV
+0vAibm8x7iyJB5AKmAgnyf9F32He0evcBCam2ZbItdLLVJT3txmhCQmvIK5gQj8S
+v342uBUKiTfyy+q1Z+7OfzX+iPsmRgjgz4IGNr4d/x8GvD3LMtMdFWCSKmyv0ZJ6
+JTdoUILLkMj6R2w9xnurIsz1RtJXJXMHNgBu1gDx9SMGxw9MlhTC7Bv0LKJ+bJZ6
+A05xF3jOzD+bLkfQF9X7a5702XOG8g==
+=1VoJ
+-----END PGP SIGNATURE-----
+
+--zltmsl6xgx33hokg--
