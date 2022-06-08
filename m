@@ -2,241 +2,523 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E104542C33
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 11:58:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DEAE542C5A
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 12:00:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235180AbiFHJ6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 05:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47398 "EHLO
+        id S235913AbiFHKAZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 06:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235879AbiFHJ5t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 05:57:49 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2096.outbound.protection.outlook.com [40.107.223.96])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E61E20
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 02:30:14 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nBRKeCDQdP1uA56rFlSBAdtq0wor19OM89tbHLSbHRkSyLvzaYp12UTwxbw+XaMO7JG7uKy/y185uUMXgT5R+Lg9lFsRBiGcar8eddg5XCWxvZI7WoJef/P7cYU5k7sYYi7HuphlIiSK77dMI0qR14q+5vnJft7YXCxT0RL5Bh0Dfjg9chf8xihZ46QkeC0utiRmrZR0PKi2ky8Spva+RiRIUT/kb1YkGxlfSldZqO35aj5ECZK4z1QTwL7k89XGlGrwn9WqQm0oBfHAvUOhU8X7BS9BEnmJmIL/2s7JmE5b64TBFzcMX3exHwUnX+NY8YL3WbPdJ1uUs0uk+e/EVQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=b8gd9IN6M/HGRAWkn0Ut8QBW7hAiRv0jBqVOyoJ8Y6Y=;
- b=QVY17908q9GBytxSKFURAN3JkzcuUomheMIuc503L8qYS79LQHBQBMBN8UTZt8WxArChpLMpUDlKx2SXHZNE5gJy4utGAkJTHxuKnmlh9xJcuQBrxdk48Ndrqe3pUEMz0OkOorOQoW50lKo5S9hQs8LK705U037KD4UlZx9DIwfrrnqDSqpqQDjiah+k4ST3gDpgYEKtgsPo0cwiCPha7o0cFB1Zq9qHVtnAAHEFtolteewqUfMoOiy7uOwpFaJws4YfOQNpBMRjlil9cgbmQspFE1nLyTdrkVUH1sAeyrLNXqJixYFTGzWwZWUlbzyLqz7iV+mFVMoSgUBFO3kVQg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=b8gd9IN6M/HGRAWkn0Ut8QBW7hAiRv0jBqVOyoJ8Y6Y=;
- b=d7QtkmNfKnvCAAnWJyh7aWyvphO9ClfzgX8smHiT0P3UH8Y4OGvQX4w8+tZ01uOfYp1i/bw3zACuINMhl+oWzM956cCyohnseN/nwBxqJtxBDh1GgoE9gerivS6SUoil9503VYfg+szMtfAq4ctdXqkGe6knNS10m0pzHtYsDjQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by PH7PR13MB5575.namprd13.prod.outlook.com (2603:10b6:510:139::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.4; Wed, 8 Jun
- 2022 09:29:58 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::b18b:5e90:6805:a8fa]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::b18b:5e90:6805:a8fa%8]) with mapi id 15.20.5332.011; Wed, 8 Jun 2022
- 09:29:58 +0000
-From:   Simon Horman <simon.horman@corigine.com>
-To:     David Miller <davem@davemloft.net>,
+        with ESMTP id S235781AbiFHJ7q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 05:59:46 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E795533E83
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 02:34:19 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nys4l-0005DQ-FN; Wed, 08 Jun 2022 11:34:07 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nys4l-0079u2-7X; Wed, 08 Jun 2022 11:34:05 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nys4j-00GmUH-2J; Wed, 08 Jun 2022 11:34:05 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Fei Qin <fei.qin@corigine.com>,
-        Etienne van der Linde <etienne.vanderlinde@corigine.com>
-Subject: [PATCH net 2/2] nfp: flower: restructure flow-key for gre+vlan combination
-Date:   Wed,  8 Jun 2022 11:29:01 +0200
-Message-Id: <20220608092901.124780-3-simon.horman@corigine.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v1 1/1] net: phy: add remote fault support
+Date:   Wed,  8 Jun 2022 11:34:03 +0200
+Message-Id: <20220608093403.3999446-1-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220608092901.124780-1-simon.horman@corigine.com>
-References: <20220608092901.124780-1-simon.horman@corigine.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM3PR07CA0071.eurprd07.prod.outlook.com
- (2603:10a6:207:4::29) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f05cff7d-3fbd-4644-32a6-08da493174b4
-X-MS-TrafficTypeDiagnostic: PH7PR13MB5575:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR13MB55755653864127F424C9DFF5E8A49@PH7PR13MB5575.namprd13.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: n2nZ0cUUbbm5IBxm7xDm7PCLAI7LGDCD575hs497gPauGvVwj+wXs6R636iFL49/5Ct3dGWTtW3jpk4GSobLLc3LNqvleFf+gCprnn/G+IUCQCG4JlR8pYgrlyUeR351/RMTLNofsVzrDus9Auv7wMKS6urmJVFslHsD++y/i7brgrgghZw0V65IH6oY+WV+/7yDnXEx7cyDYl9Uc2AHbueka8HOZ/8GVAzSbWcx2eEQGQspe1oTQy6qviKDMT364vrDIZJX9z7NU16f831ycYk0Zn9z3095BNhGWausiRaEewNycfZiHiY8lzuIdaOsRoPgq2tp37v+P35E7sC/reZjb/xR6SrbGOSM+jlU2a4QQr3JZFxO1YY4uGTKxy2L3omZatl8MBccjLHa6/sjGBk4lxL9looWFaIoXUGxI3yJYOeRktXzo/OMrvqWYYwmK2ZIYlwnq2rFenMnsCGyHF7TWRgbbh4WLAWrvmILICVT1WBtbHa7rn9fv+InWnKYT+Lwn6x2lVubA+JcQJbccNEUfAE4NJ+ABZxp6UVUgAWMTMIatgcY0o9QBMTD6YY7ckkdcj7PLLDrkfOEaqez4IQZfgo4eIh+hjH7lMc+bY+ieaZ4YEChnMIvSuGhYZjiTmcec42lGVX3vDj6mAQNu3hZ8HOzWXpj7nSW+8KN39I6Yf4/L/ix3tfuiYcHtEKD
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(346002)(396003)(136003)(366004)(39840400004)(41300700001)(1076003)(186003)(508600001)(8936002)(2906002)(54906003)(83380400001)(36756003)(6486002)(38100700002)(44832011)(86362001)(2616005)(316002)(110136005)(107886003)(5660300002)(6666004)(6506007)(4326008)(52116002)(8676002)(66556008)(66476007)(66946007)(6512007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bAJ1ONONGEJE2CiTG88m9p2FsLkYZyPLI4bLzMbFlkjjnaWaRCuzkj7zDAt7?=
- =?us-ascii?Q?tAj/aPNFx5O7YpE1ejTkRc4eomTMCEaKn1/NFNCbcE6/jjzu3nuF1V/4wD1G?=
- =?us-ascii?Q?Bu5rd5heSc8+/Bw8bOEEVTLjIryiY0WFK29rN2Z9zfS+PBjN/fqBhvhwSfJD?=
- =?us-ascii?Q?TBRO2wiOFdvYoQQfTGdMNY4MxuORg9//O4orB6RoUJXUYncwac+B98ecGybi?=
- =?us-ascii?Q?GzwRt0q7YsmDXHon76PEPJFNXJvHyTR7MyiETX+I7Af7mrNlFHdi0QJB3+ni?=
- =?us-ascii?Q?VkVvQVA+YdyyjZp4j//jaxE7iwAFTdD9wRyXiKmuLjtZYt/ECl1uRJ/C02QG?=
- =?us-ascii?Q?yIcigLAdReI3BsmgNY9HjHnPZPvgLL7Mlrx2t0XL5Bn+LorMEMtNyECVY81r?=
- =?us-ascii?Q?qPlSICEmvkpmmbW7eskgzFeZCxTdouH3X+QTUlwIJVsqBi+g05nepzh2Hyet?=
- =?us-ascii?Q?i/El2VhlUQtBZ0r2yfnir+68xH4zBa0rBaoACk/xGPQIpWiZgOiuzbd54IPZ?=
- =?us-ascii?Q?fFcI/7hW1KtyL7hWYLfVlSwAuCSeUgSspwII6aSMC0/8uzZJh45TZgvFAtmt?=
- =?us-ascii?Q?garxwvs/QBVJJuekfRME8AdNbiSUa28HtFHQVTSnen7xD8pUyCDZ/DLyYae3?=
- =?us-ascii?Q?/GVdQUqdCnOcDmO5sVN3uDOOtDKqa1on4FRfEySaTnTVkOZE/VrB8Lvd1c2Y?=
- =?us-ascii?Q?hvweFH5zKzPon3SQXpF/vTD2dnkM43mEYRNOeQHmLltaCbvDjKN1DQOs6hrE?=
- =?us-ascii?Q?/7khdKxBaIdEIPoRMs8K4jk1q4OK4j/HR7H2NU4rofn8PbLj2cSXjQiYZEm/?=
- =?us-ascii?Q?x9NdgY3k3egs2Rw8zI3t9NGvUpKMj6YCGXAteRAC2DAPdKyMk5hkYwER/WWM?=
- =?us-ascii?Q?mAPO65s4BkpDYR/+p6QQTitPVTCpD02ykc7JF3Pg/Ssu/O4Ana7kOpy5NUGD?=
- =?us-ascii?Q?XPsvQxIgzUN2v2PJc4waZA4mAf5YQ/zVBZXb8l6q6JZQO+NhJYH7BYPxgBLM?=
- =?us-ascii?Q?MnBR7FklJ8QI8JKdHQNasd2lNnXf1GGYUojFrw7VM2dAzoLV3Em/9kOBItRy?=
- =?us-ascii?Q?U+jqNznjvjH51WwH9IvdxCA2wGQ2meHTxY/eZXil76hXpvSJZrQRcH20o/Ix?=
- =?us-ascii?Q?+lGB07fEGKNaNkZpdnpHkl9fVxmngRtXMrk2xKys0ldDfhSmsUzUrUYaKwhC?=
- =?us-ascii?Q?BkMe2GhKIlAjIlv9OIFE8mc5vmcvCFmHjK5WpXmPLIowStAOW2LjW99IY7nh?=
- =?us-ascii?Q?WcYEgaaKjb/MRc0Sq/xBEosh1vbHZIQGpwDCeclSsQ88U0jStgK8Ud2tu1Sp?=
- =?us-ascii?Q?umR+q190W5ToUyBAECr9+uPiMh6fTRV2zuWOsuA4KBnYWUNnqmk8ARF+iD+R?=
- =?us-ascii?Q?In18JF7H9YUvHgZIQOWNS5f2WGNObt2GUSbcZSJSSweiBamuBzEpM1X6zpX/?=
- =?us-ascii?Q?Vwe6DNBc16EdKAeFDSa103a9e8V/P8gL4bpcpLu3fNlLyS4JMOf5nEq95ZUb?=
- =?us-ascii?Q?QrsRjYUsyPp77xD6iWND44HxR2somGINJ8WMSAQyx/U/RYlVjkjREKZn9YJI?=
- =?us-ascii?Q?MhgXowhHiDbR9S3IMmrZNVKsUJztlR5/j7mZ4fBjQd/U0GsUdo3huMOVyay8?=
- =?us-ascii?Q?c27bQnolQFZClC3ENYe5GHqp36rtxdl7kO1m8T7+YbbwanXLA/EjHkLF1Dci?=
- =?us-ascii?Q?8U90BrBg/U/i5s+eftFN1Fy0f9V6BoFETE5G3qTNpymlXLUS+YakyKFCStoW?=
- =?us-ascii?Q?rq2C173t3a/wXAYbsRpL/OLjfAZyR2C8PLoxaG1uj2nrIghfdOqRYAYi7MMo?=
-X-MS-Exchange-AntiSpam-MessageData-1: cF30SwdS0geASl87m3wAZeJHS+Mr95KiBIk=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f05cff7d-3fbd-4644-32a6-08da493174b4
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2022 09:29:58.7631
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1rwNMVcwHA4yfSJ7VdPxM8+Md+36nYYbCpg211CLDXyzI3Rfkt3GrBFDx+kBMgAVt53EhQizCbJeRTSuZN+mPAJeAIfywaktp/Dv/WSUxgA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR13MB5575
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Etienne van der Linde <etienne.vanderlinde@corigine.com>
+This patch implements PHY remote fault support for C45 BaseT1 compatible
+PHYs. It has been tested on TI DP83TD510 T1L PHYs.
 
-Swap around the GRE and VLAN parts in the flow-key offloaded by
-the driver to fit in with other tunnel types and the firmware.
-Without this change used cases with GRE+VLAN on the outer header
-does not get offloaded as the flow-key mismatches what the
-firmware expect.
+Remote fault is defined by IEEE 802.3-2018 and provides the possibility
+to notify the link partner about different kinds of issues. Here is the
+list of error codes which can be potentially transfered as autoneg next
+page message:
 
-Fixes: 0d630f58989a ("nfp: flower: add support to offload QinQ match")
-Fixes: 5a2b93041646 ("nfp: flower-ct: compile match sections of flow_payload")
-Signed-off-by: Etienne van der Linde <etienne.vanderlinde@corigine.com>
-Signed-off-by: Louis Peens <louis.peens@corigine.com>
-Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
+/* IEEE 802.3-2018 28.2.1.2.4 Fault without additional information */
+/* IEEE 802.3-2018 28C.5 Message code 4: 0 - RF Test */
+/* IEEE 802.3-2018 28C.5 Message code 4: 1 - Link Loss */
+/* IEEE 802.3-2018 28C.5 Message code 4: 2 - Jabber */
+/* IEEE 802.3-2018 28C.5 Message code 4: 3 - Parallel Detection Fault */
+/* IEEE 802.3-2018 37.2.1.5.2 Offline */
+/* IEEE 802.3-2018 37.2.1.5.3 Link_Failure */
+/* IEEE 802.3-2018 37.2.1.5.4 Auto-Negotiation_Error */
+
+The code added by this patch does not provide any handlers (no effect on
+PHY state machine nor netif_carrier) and only allows to read and send
+the remote fault (currently without next page extensions). But even now,
+in this state, it can be used to see if the link partner is reporting
+some remote fault state, or we can use it to test the functionality of
+the link partner.
+
+This example illustrates the ethtool interface, here eth1 and eth2 are
+connected via a T1L link:
+
+$ ethtool eth1 | grep remote
+    remote fault cfg: ok
+    remote fault status: ok
+$ ethtool eth2 | grep remote
+    remote fault cfg: ok
+    remote fault status: ok
+
+$ ethtool -s eth1 remote-fault error
+$ ethtool eth1 | grep remote
+        remote fault cfg: error
+        remote fault status: ok
+$ ethtool eth2 | grep remote
+        remote fault cfg: ok
+        remote fault status: error
+
+$ ethtool -s eth1 remote-fault ok
+$ ethtool eth1 | grep remote
+        remote fault cfg: ok
+        remote fault status: ok
+$ ethtool eth2 | grep remote
+        remote fault cfg: ok
+        remote fault status: error
+$ ethtool -s eth2 remote-fault-state clr
+$ ethtool eth2 | grep remote
+        remote fault cfg: ok
+        remote fault status: ok
+
+My personal idea is to use this functionality for the cooperative link
+diagnostic. For example, set remote fault with vendor specific next page
+extension (as described in IEEE 802.3-2018 28C.6 Message code 5) to ask
+link partner to stop transmitting for some amount of time or to enable
+remote loopback.
+
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- .../ethernet/netronome/nfp/flower/conntrack.c | 32 +++++++++----------
- .../net/ethernet/netronome/nfp/flower/match.c | 16 +++++-----
- 2 files changed, 24 insertions(+), 24 deletions(-)
+ Documentation/networking/ethtool-netlink.rst |  2 +
+ drivers/net/phy/phy-c45.c                    | 26 +++++-
+ drivers/net/phy/phy.c                        |  4 +
+ include/linux/phy.h                          |  5 ++
+ include/uapi/linux/ethtool.h                 | 46 +++++++++-
+ include/uapi/linux/ethtool_netlink.h         |  2 +
+ net/ethtool/ioctl.c                          |  6 ++
+ net/ethtool/linkmodes.c                      | 88 +++++++++++++++++++-
+ net/ethtool/netlink.h                        |  2 +-
+ 9 files changed, 173 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-index 443a5d6eb57b..7c31a46195b2 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/conntrack.c
-@@ -507,6 +507,11 @@ nfp_fl_calc_key_layers_sz(struct nfp_fl_key_ls in_key_ls, uint16_t *map)
- 		key_size += sizeof(struct nfp_flower_ipv6);
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+index dbca3e9ec782..0747602ac3a7 100644
+--- a/Documentation/networking/ethtool-netlink.rst
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -426,6 +426,8 @@ Kernel response contents:
+   ``ETHTOOL_A_LINKMODES_DUPLEX``              u8      duplex mode
+   ``ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG``    u8      Master/slave port mode
+   ``ETHTOOL_A_LINKMODES_MASTER_SLAVE_STATE``  u8      Master/slave port state
++  ``ETHTOOL_A_LINKMODES_REMOTE_FAULT_CFG``    u8      Remote fault port mode
++  ``ETHTOOL_A_LINKMODES_REMOTE_FAULT_STATE``  u8      Remote fault port state
+   ==========================================  ======  ==========================
+ 
+ For ``ETHTOOL_A_LINKMODES_OURS``, value represents advertised modes and mask
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index c67bf3060173..6c55c7f9b680 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -205,7 +205,7 @@ static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
+ 		break;
+ 	case MASTER_SLAVE_CFG_UNKNOWN:
+ 	case MASTER_SLAVE_CFG_UNSUPPORTED:
+-		return 0;
++		break;
+ 	default:
+ 		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
+ 		return -EOPNOTSUPP;
+@@ -223,11 +223,16 @@ static int genphy_c45_baset1_an_config_aneg(struct phy_device *phydev)
+ 		break;
  	}
  
-+	if (in_key_ls.key_layer_two & NFP_FLOWER_LAYER2_QINQ) {
-+		map[FLOW_PAY_QINQ] = key_size;
-+		key_size += sizeof(struct nfp_flower_vlan);
++	if (phydev->remote_fault_set >= REMOTE_FAULT_CFG_ERROR)
++		adv_l |= MDIO_AN_T1_ADV_L_REMOTE_FAULT;
++
+ 	adv_l |= linkmode_adv_to_mii_t1_adv_l_t(phydev->advertising);
+ 
+ 	ret = phy_modify_mmd_changed(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_L,
+-				     (MDIO_AN_T1_ADV_L_FORCE_MS | MDIO_AN_T1_ADV_L_PAUSE_CAP
+-				     | MDIO_AN_T1_ADV_L_PAUSE_ASYM), adv_l);
++				     (MDIO_AN_T1_ADV_L_FORCE_MS |
++				      MDIO_AN_T1_ADV_L_PAUSE_CAP |
++				      MDIO_AN_T1_ADV_L_PAUSE_ASYM |
++				      MDIO_AN_T1_ADV_L_REMOTE_FAULT), adv_l);
+ 	if (ret < 0)
+ 		return ret;
+ 	if (ret > 0)
+@@ -389,6 +394,15 @@ int genphy_c45_aneg_done(struct phy_device *phydev)
+ 
+ 	val = phy_read_mmd(phydev, MDIO_MMD_AN, reg);
+ 
++	if (val & MDIO_AN_STAT1_RFAULT) {
++		phydev->remote_fault_state = REMOTE_FAULT_STATE_ERROR;
++	} else if (phydev->remote_fault_state <= REMOTE_FAULT_STATE_UNKNOWN) {
++		/* keep error state until it is cleared by kernel or users space
++		 * handler
++		 */
++		phydev->remote_fault_state = REMOTE_FAULT_STATE_NO_ERROR;
 +	}
 +
- 	if (in_key_ls.key_layer_two & NFP_FLOWER_LAYER2_GRE) {
- 		map[FLOW_PAY_GRE] = key_size;
- 		if (in_key_ls.key_layer_two & NFP_FLOWER_LAYER2_TUN_IPV6)
-@@ -515,11 +520,6 @@ nfp_fl_calc_key_layers_sz(struct nfp_fl_key_ls in_key_ls, uint16_t *map)
- 			key_size += sizeof(struct nfp_flower_ipv4_gre_tun);
+ 	return val < 0 ? val : val & MDIO_AN_STAT1_COMPLETE ? 1 : 0;
+ }
+ EXPORT_SYMBOL_GPL(genphy_c45_aneg_done);
+@@ -792,6 +806,7 @@ int genphy_c45_baset1_read_status(struct phy_device *phydev)
+ 
+ 	phydev->master_slave_get = MASTER_SLAVE_CFG_UNKNOWN;
+ 	phydev->master_slave_state = MASTER_SLAVE_STATE_UNKNOWN;
++	phydev->remote_fault_get = REMOTE_FAULT_CFG_UNKNOWN;
+ 
+ 	ret = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_T1_ADV_L);
+ 	if (ret < 0)
+@@ -813,6 +828,11 @@ int genphy_c45_baset1_read_status(struct phy_device *phydev)
+ 			phydev->master_slave_get = MASTER_SLAVE_CFG_SLAVE_PREFERRED;
  	}
  
--	if (in_key_ls.key_layer_two & NFP_FLOWER_LAYER2_QINQ) {
--		map[FLOW_PAY_QINQ] = key_size;
--		key_size += sizeof(struct nfp_flower_vlan);
--	}
--
- 	if ((in_key_ls.key_layer & NFP_FLOWER_LAYER_VXLAN) ||
- 	    (in_key_ls.key_layer_two & NFP_FLOWER_LAYER2_GENEVE)) {
- 		map[FLOW_PAY_UDP_TUN] = key_size;
-@@ -758,6 +758,17 @@ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
++	if (ret & MDIO_AN_T1_ADV_L_REMOTE_FAULT)
++		phydev->remote_fault_get = REMOTE_FAULT_CFG_ERROR;
++	else
++		phydev->remote_fault_get = REMOTE_FAULT_CFG_NO_ERROR;
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(genphy_c45_baset1_read_status);
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index ef62f357b76d..5751ef831b2e 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -255,6 +255,8 @@ void phy_ethtool_ksettings_get(struct phy_device *phydev,
+ 	cmd->base.duplex = phydev->duplex;
+ 	cmd->base.master_slave_cfg = phydev->master_slave_get;
+ 	cmd->base.master_slave_state = phydev->master_slave_state;
++	cmd->base.remote_fault_cfg = phydev->remote_fault_get;
++	cmd->base.remote_fault_state = phydev->remote_fault_state;
+ 	if (phydev->interface == PHY_INTERFACE_MODE_MOCA)
+ 		cmd->base.port = PORT_BNC;
+ 	else
+@@ -816,6 +818,8 @@ int phy_ethtool_ksettings_set(struct phy_device *phydev,
+ 			 phydev->advertising, autoneg == AUTONEG_ENABLE);
+ 
+ 	phydev->master_slave_set = cmd->base.master_slave_cfg;
++	phydev->remote_fault_set = cmd->base.remote_fault_cfg;
++	phydev->remote_fault_state = cmd->base.remote_fault_state;
+ 	phydev->mdix_ctrl = cmd->base.eth_tp_mdix_ctrl;
+ 
+ 	/* Restart the PHY */
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 508f1149665b..94a95e60cb45 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -564,6 +564,7 @@ struct macsec_ops;
+  * @advertising: Currently advertised linkmodes
+  * @adv_old: Saved advertised while power saving for WoL
+  * @lp_advertising: Current link partner advertised linkmodes
++ * @lp_remote_fault: Current link partner advertised remote fault
+  * @eee_broken_modes: Energy efficient ethernet modes which should be prohibited
+  * @autoneg: Flag autoneg being used
+  * @link: Current link state
+@@ -646,6 +647,10 @@ struct phy_device {
+ 	u8 master_slave_set;
+ 	u8 master_slave_state;
+ 
++	u8 remote_fault_set;
++	u8 remote_fault_get;
++	u8 remote_fault_state;
++
+ 	/* Union of PHY and Attached devices' supported link modes */
+ 	/* See ethtool.h for more info */
+ 	__ETHTOOL_DECLARE_LINK_MODE_MASK(supported);
+diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+index e0f0ee9bc89e..7d04e9e5ea1a 100644
+--- a/include/uapi/linux/ethtool.h
++++ b/include/uapi/linux/ethtool.h
+@@ -1840,6 +1840,46 @@ static inline int ethtool_validate_duplex(__u8 duplex)
+ #define MASTER_SLAVE_STATE_SLAVE		3
+ #define MASTER_SLAVE_STATE_ERR			4
+ 
++#define REMOTE_FAULT_CFG_UNSUPPORTED		0
++#define REMOTE_FAULT_CFG_UNKNOWN		1
++#define REMOTE_FAULT_CFG_NO_ERROR		2
++/* IEEE 802.3-2018 28.2.1.2.4 Fault without additional information */
++#define REMOTE_FAULT_CFG_ERROR			3
++/* IEEE 802.3-2018 28C.5 Message code 4: 0 - RF Test */
++#define REMOTE_FAULT_CFG_TEST			4
++/* IEEE 802.3-2018 28C.5 Message code 4: 1 - Link Loss */
++#define REMOTE_FAULT_CFG_LINK_LOSS		5
++/* IEEE 802.3-2018 28C.5 Message code 4: 2 - Jabber */
++#define REMOTE_FAULT_CFG_JABBER			6
++/* IEEE 802.3-2018 28C.5 Message code 4: 3 - Parallel Detection Fault */
++#define REMOTE_FAULT_CFG_PDF			7
++/* IEEE 802.3-2018 37.2.1.5.2 Offline */
++#define REMOTE_FAULT_CFG_OFFLINE		8
++/* IEEE 802.3-2018 37.2.1.5.3 Link_Failure */
++#define REMOTE_FAULT_CFG_LINK_FAIL		9
++/* IEEE 802.3-2018 37.2.1.5.4 Auto-Negotiation_Error */
++#define REMOTE_FAULT_CFG_AN_ERROR		10
++
++#define REMOTE_FAULT_STATE_UNSUPPORTED		0
++#define REMOTE_FAULT_STATE_UNKNOWN		1
++#define REMOTE_FAULT_STATE_NO_ERROR		2
++/* IEEE 802.3-2018 28.2.1.2.4 Fault without additional information */
++#define REMOTE_FAULT_STATE_ERROR		3
++/* IEEE 802.3-2018 28C.5 Message code 4: 0 - RF Test */
++#define REMOTE_FAULT_STATE_TEST			4
++/* IEEE 802.3-2018 28C.5 Message code 4: 1 - Link Loss */
++#define REMOTE_FAULT_STATE_LINK_LOSS		5
++/* IEEE 802.3-2018 28C.5 Message code 4: 2 - Jabber */
++#define REMOTE_FAULT_STATE_JABBER		6
++/* IEEE 802.3-2018 28C.5 Message code 4: 3 - Parallel Detection Fault */
++#define REMOTE_FAULT_STATE_PDF			7
++/* IEEE 802.3-2018 37.2.1.5.2 Offline */
++#define REMOTE_FAULT_STATE_OFFLINE		8
++/* IEEE 802.3-2018 37.2.1.5.3 Link_Failure */
++#define REMOTE_FAULT_STATE_LINK_FAIL		9
++/* IEEE 802.3-2018 37.2.1.5.4 Auto-Negotiation_Error */
++#define REMOTE_FAULT_STATE_AN_ERROR		10
++
+ /* Which connector port. */
+ #define PORT_TP			0x00
+ #define PORT_AUI		0x01
+@@ -2085,8 +2125,10 @@ struct ethtool_link_settings {
+ 	__u8	transceiver;
+ 	__u8	master_slave_cfg;
+ 	__u8	master_slave_state;
+-	__u8	reserved1[1];
+-	__u32	reserved[7];
++	__u8	remote_fault_cfg;
++	__u8	remote_fault_state;
++	__u8	reserved1[3];
++	__u32	reserved[6];
+ 	__u32	link_mode_masks[0];
+ 	/* layout of link_mode_masks fields:
+ 	 * __u32 map_supported[link_mode_masks_nwords];
+diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+index d2fb4f7be61b..35563d8f5776 100644
+--- a/include/uapi/linux/ethtool_netlink.h
++++ b/include/uapi/linux/ethtool_netlink.h
+@@ -242,6 +242,8 @@ enum {
+ 	ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG,	/* u8 */
+ 	ETHTOOL_A_LINKMODES_MASTER_SLAVE_STATE,	/* u8 */
+ 	ETHTOOL_A_LINKMODES_LANES,		/* u32 */
++	ETHTOOL_A_LINKMODES_REMOTE_FAULT_CFG,	/* u8 */
++	ETHTOOL_A_LINKMODES_REMOTE_FAULT_STATE,	/* u8 */
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_A_LINKMODES_CNT,
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 326e14ee05db..64aaa73f50a2 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -584,6 +584,8 @@ static int ethtool_get_link_ksettings(struct net_device *dev,
+ 		= __ETHTOOL_LINK_MODE_MASK_NU32;
+ 	link_ksettings.base.master_slave_cfg = MASTER_SLAVE_CFG_UNSUPPORTED;
+ 	link_ksettings.base.master_slave_state = MASTER_SLAVE_STATE_UNSUPPORTED;
++	link_ksettings.base.remote_fault_cfg = REMOTE_FAULT_CFG_UNSUPPORTED;
++	link_ksettings.base.remote_fault_state = REMOTE_FAULT_STATE_UNSUPPORTED;
+ 
+ 	return store_link_ksettings_for_user(useraddr, &link_ksettings);
+ }
+@@ -625,6 +627,10 @@ static int ethtool_set_link_ksettings(struct net_device *dev,
+ 	    link_ksettings.base.master_slave_state)
+ 		return -EINVAL;
+ 
++	if (link_ksettings.base.remote_fault_cfg ||
++	    link_ksettings.base.remote_fault_state)
++		return -EINVAL;
++
+ 	err = dev->ethtool_ops->set_link_ksettings(dev, &link_ksettings);
+ 	if (err >= 0) {
+ 		ethtool_notify(dev, ETHTOOL_MSG_LINKINFO_NTF, NULL);
+diff --git a/net/ethtool/linkmodes.c b/net/ethtool/linkmodes.c
+index 99b29b4fe947..dc4fdaf414c8 100644
+--- a/net/ethtool/linkmodes.c
++++ b/net/ethtool/linkmodes.c
+@@ -93,6 +93,12 @@ static int linkmodes_reply_size(const struct ethnl_req_info *req_base,
+ 	if (lsettings->master_slave_state != MASTER_SLAVE_STATE_UNSUPPORTED)
+ 		len += nla_total_size(sizeof(u8));
+ 
++	if (lsettings->remote_fault_cfg != REMOTE_FAULT_CFG_UNSUPPORTED)
++		len += nla_total_size(sizeof(u8));
++
++	if (lsettings->remote_fault_state != REMOTE_FAULT_STATE_UNSUPPORTED)
++		len += nla_total_size(sizeof(u8));
++
+ 	return len;
+ }
+ 
+@@ -143,6 +149,16 @@ static int linkmodes_fill_reply(struct sk_buff *skb,
+ 		       lsettings->master_slave_state))
+ 		return -EMSGSIZE;
+ 
++	if (lsettings->remote_fault_cfg != REMOTE_FAULT_CFG_UNSUPPORTED &&
++	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_REMOTE_FAULT_CFG,
++		       lsettings->remote_fault_cfg))
++		return -EMSGSIZE;
++
++	if (lsettings->remote_fault_state != REMOTE_FAULT_STATE_UNSUPPORTED &&
++	    nla_put_u8(skb, ETHTOOL_A_LINKMODES_REMOTE_FAULT_STATE,
++		       lsettings->remote_fault_state))
++		return -EMSGSIZE;
++
+ 	return 0;
+ }
+ 
+@@ -169,6 +185,8 @@ const struct nla_policy ethnl_linkmodes_set_policy[] = {
+ 	[ETHTOOL_A_LINKMODES_DUPLEX]		= { .type = NLA_U8 },
+ 	[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG]	= { .type = NLA_U8 },
+ 	[ETHTOOL_A_LINKMODES_LANES]		= NLA_POLICY_RANGE(NLA_U32, 1, 8),
++	[ETHTOOL_A_LINKMODES_REMOTE_FAULT_CFG]	= { .type = NLA_U8 },
++	[ETHTOOL_A_LINKMODES_REMOTE_FAULT_STATE] = { .type = NLA_U8 },
+ };
+ 
+ /* Set advertised link modes to all supported modes matching requested speed,
+@@ -218,9 +236,38 @@ static bool ethnl_validate_master_slave_cfg(u8 cfg)
+ 	return false;
+ }
+ 
++static bool ethnl_validate_remote_fault_cfg(u8 cfg)
++{
++	switch (cfg) {
++	case REMOTE_FAULT_CFG_NO_ERROR:
++	case REMOTE_FAULT_CFG_ERROR:
++	case REMOTE_FAULT_CFG_TEST:
++	case REMOTE_FAULT_CFG_LINK_LOSS:
++	case REMOTE_FAULT_CFG_JABBER:
++	case REMOTE_FAULT_CFG_PDF:
++	case REMOTE_FAULT_CFG_OFFLINE:
++	case REMOTE_FAULT_CFG_LINK_FAIL:
++	case REMOTE_FAULT_CFG_AN_ERROR:
++		return true;
++	}
++
++	return false;
++}
++
++static bool ethnl_validate_remote_fault_state(u8 cfg)
++{
++	switch (cfg) {
++	case REMOTE_FAULT_STATE_UNKNOWN:
++		return true;
++	}
++
++	return false;
++}
++
+ static int ethnl_check_linkmodes(struct genl_info *info, struct nlattr **tb)
+ {
+-	const struct nlattr *master_slave_cfg, *lanes_cfg;
++	const struct nlattr *master_slave_cfg, *lanes_cfg, *remote_fault_cfg,
++	      *remote_fault_state;
+ 
+ 	master_slave_cfg = tb[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG];
+ 	if (master_slave_cfg &&
+@@ -230,6 +277,22 @@ static int ethnl_check_linkmodes(struct genl_info *info, struct nlattr **tb)
+ 		return -EOPNOTSUPP;
+ 	}
+ 
++	remote_fault_cfg = tb[ETHTOOL_A_LINKMODES_REMOTE_FAULT_CFG];
++	if (remote_fault_cfg &&
++	    !ethnl_validate_remote_fault_cfg(nla_get_u8(remote_fault_cfg))) {
++		NL_SET_ERR_MSG_ATTR(info->extack, remote_fault_cfg,
++				    "remote-fault-cfg value is invalid");
++		return -EOPNOTSUPP;
++	}
++
++	remote_fault_state = tb[ETHTOOL_A_LINKMODES_REMOTE_FAULT_STATE];
++	if (remote_fault_state &&
++	    !ethnl_validate_remote_fault_state(nla_get_u8(remote_fault_state))) {
++		NL_SET_ERR_MSG_ATTR(info->extack, remote_fault_state,
++				    "remote-fault-state value is invalid");
++		return -EOPNOTSUPP;
++	}
++
+ 	lanes_cfg = tb[ETHTOOL_A_LINKMODES_LANES];
+ 	if (lanes_cfg && !is_power_of_2(nla_get_u32(lanes_cfg))) {
+ 		NL_SET_ERR_MSG_ATTR(info->extack, lanes_cfg,
+@@ -246,7 +309,8 @@ static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
+ {
+ 	struct ethtool_link_settings *lsettings = &ksettings->base;
+ 	bool req_speed, req_lanes, req_duplex;
+-	const struct nlattr *master_slave_cfg, *lanes_cfg;
++	const struct nlattr *master_slave_cfg, *lanes_cfg, *remote_fault_cfg,
++	      *remote_fault_state;
+ 	int ret;
+ 
+ 	master_slave_cfg = tb[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG];
+@@ -258,6 +322,24 @@ static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
  		}
  	}
  
-+	if (NFP_FLOWER_LAYER2_QINQ & key_layer.key_layer_two) {
-+		offset = key_map[FLOW_PAY_QINQ];
-+		key = kdata + offset;
-+		msk = mdata + offset;
-+		for (i = 0; i < _CT_TYPE_MAX; i++) {
-+			nfp_flower_compile_vlan((struct nfp_flower_vlan *)key,
-+						(struct nfp_flower_vlan *)msk,
-+						rules[i]);
++	remote_fault_cfg = tb[ETHTOOL_A_LINKMODES_REMOTE_FAULT_CFG];
++	if (remote_fault_cfg) {
++		if (lsettings->remote_fault_cfg == REMOTE_FAULT_CFG_UNSUPPORTED) {
++			NL_SET_ERR_MSG_ATTR(info->extack, remote_fault_cfg,
++					    "Remote fault notification is not supported by device");
++			return -EOPNOTSUPP;
 +		}
 +	}
 +
- 	if (key_layer.key_layer_two & NFP_FLOWER_LAYER2_GRE) {
- 		offset = key_map[FLOW_PAY_GRE];
- 		key = kdata + offset;
-@@ -798,17 +809,6 @@ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
- 		}
- 	}
- 
--	if (NFP_FLOWER_LAYER2_QINQ & key_layer.key_layer_two) {
--		offset = key_map[FLOW_PAY_QINQ];
--		key = kdata + offset;
--		msk = mdata + offset;
--		for (i = 0; i < _CT_TYPE_MAX; i++) {
--			nfp_flower_compile_vlan((struct nfp_flower_vlan *)key,
--						(struct nfp_flower_vlan *)msk,
--						rules[i]);
--		}
--	}
--
- 	if (key_layer.key_layer & NFP_FLOWER_LAYER_VXLAN ||
- 	    key_layer.key_layer_two & NFP_FLOWER_LAYER2_GENEVE) {
- 		offset = key_map[FLOW_PAY_UDP_TUN];
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/match.c b/drivers/net/ethernet/netronome/nfp/flower/match.c
-index 193a167a6762..e01430139b6d 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/match.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/match.c
-@@ -625,6 +625,14 @@ int nfp_flower_compile_flow_match(struct nfp_app *app,
- 		msk += sizeof(struct nfp_flower_ipv6);
- 	}
- 
-+	if (NFP_FLOWER_LAYER2_QINQ & key_ls->key_layer_two) {
-+		nfp_flower_compile_vlan((struct nfp_flower_vlan *)ext,
-+					(struct nfp_flower_vlan *)msk,
-+					rule);
-+		ext += sizeof(struct nfp_flower_vlan);
-+		msk += sizeof(struct nfp_flower_vlan);
++	remote_fault_state = tb[ETHTOOL_A_LINKMODES_REMOTE_FAULT_STATE];
++	if (remote_fault_state) {
++		if (lsettings->remote_fault_state == REMOTE_FAULT_STATE_UNSUPPORTED) {
++			NL_SET_ERR_MSG_ATTR(info->extack, remote_fault_state,
++					    "Remote fault notification is not supported by device");
++			return -EOPNOTSUPP;
++		}
 +	}
 +
- 	if (key_ls->key_layer_two & NFP_FLOWER_LAYER2_GRE) {
- 		if (key_ls->key_layer_two & NFP_FLOWER_LAYER2_TUN_IPV6) {
- 			struct nfp_flower_ipv6_gre_tun *gre_match;
-@@ -660,14 +668,6 @@ int nfp_flower_compile_flow_match(struct nfp_app *app,
- 		}
- 	}
+ 	*mod = false;
+ 	req_speed = tb[ETHTOOL_A_LINKMODES_SPEED];
+ 	req_lanes = tb[ETHTOOL_A_LINKMODES_LANES];
+@@ -296,6 +378,8 @@ static int ethnl_update_linkmodes(struct genl_info *info, struct nlattr **tb,
+ 	ethnl_update_u8(&lsettings->duplex, tb[ETHTOOL_A_LINKMODES_DUPLEX],
+ 			mod);
+ 	ethnl_update_u8(&lsettings->master_slave_cfg, master_slave_cfg, mod);
++	ethnl_update_u8(&lsettings->remote_fault_cfg, remote_fault_cfg, mod);
++	ethnl_update_u8(&lsettings->remote_fault_state, remote_fault_state, mod);
  
--	if (NFP_FLOWER_LAYER2_QINQ & key_ls->key_layer_two) {
--		nfp_flower_compile_vlan((struct nfp_flower_vlan *)ext,
--					(struct nfp_flower_vlan *)msk,
--					rule);
--		ext += sizeof(struct nfp_flower_vlan);
--		msk += sizeof(struct nfp_flower_vlan);
--	}
--
- 	if (key_ls->key_layer & NFP_FLOWER_LAYER_VXLAN ||
- 	    key_ls->key_layer_two & NFP_FLOWER_LAYER2_GENEVE) {
- 		if (key_ls->key_layer_two & NFP_FLOWER_LAYER2_TUN_IPV6) {
+ 	if (!tb[ETHTOOL_A_LINKMODES_OURS] && lsettings->autoneg &&
+ 	    (req_speed || req_lanes || req_duplex) &&
+diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
+index 7919ddb2371c..a6d4187d82e2 100644
+--- a/net/ethtool/netlink.h
++++ b/net/ethtool/netlink.h
+@@ -352,7 +352,7 @@ extern const struct nla_policy ethnl_strset_get_policy[ETHTOOL_A_STRSET_COUNTS_O
+ extern const struct nla_policy ethnl_linkinfo_get_policy[ETHTOOL_A_LINKINFO_HEADER + 1];
+ extern const struct nla_policy ethnl_linkinfo_set_policy[ETHTOOL_A_LINKINFO_TP_MDIX_CTRL + 1];
+ extern const struct nla_policy ethnl_linkmodes_get_policy[ETHTOOL_A_LINKMODES_HEADER + 1];
+-extern const struct nla_policy ethnl_linkmodes_set_policy[ETHTOOL_A_LINKMODES_LANES + 1];
++extern const struct nla_policy ethnl_linkmodes_set_policy[ETHTOOL_A_LINKMODES_REMOTE_FAULT_STATE + 1];
+ extern const struct nla_policy ethnl_linkstate_get_policy[ETHTOOL_A_LINKSTATE_HEADER + 1];
+ extern const struct nla_policy ethnl_debug_get_policy[ETHTOOL_A_DEBUG_HEADER + 1];
+ extern const struct nla_policy ethnl_debug_set_policy[ETHTOOL_A_DEBUG_MSGMASK + 1];
 -- 
 2.30.2
 
