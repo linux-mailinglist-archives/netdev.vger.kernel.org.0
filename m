@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23332542E42
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 12:47:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76AA1542D11
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 12:20:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237247AbiFHKrm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 06:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38078 "EHLO
+        id S236383AbiFHKUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 06:20:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237318AbiFHKrl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 06:47:41 -0400
-X-Greylist: delayed 1799 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 08 Jun 2022 03:47:36 PDT
-Received: from mailout3.hostsharing.net (mailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f236:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C8419B6AD;
-        Wed,  8 Jun 2022 03:47:35 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        with ESMTP id S237008AbiFHKTE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 06:19:04 -0400
+Received: from mailout2.hostsharing.net (mailout2.hostsharing.net [IPv6:2a01:37:3000::53df:4ee9:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EE22A15A875;
+        Wed,  8 Jun 2022 03:06:18 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
          client-signature RSA-PSS (4096 bits) client-digest SHA256)
         (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by mailout3.hostsharing.net (Postfix) with ESMTPS id D7E4A101E6C50;
-        Wed,  8 Jun 2022 11:52:35 +0200 (CEST)
+        by mailout2.hostsharing.net (Postfix) with ESMTPS id 02DB410189E0A;
+        Wed,  8 Jun 2022 11:56:58 +0200 (CEST)
 Received: from localhost (unknown [89.246.108.87])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by h08.hostsharing.net (Postfix) with ESMTPSA id 94BC5621B6E1;
-        Wed,  8 Jun 2022 11:52:35 +0200 (CEST)
+        by h08.hostsharing.net (Postfix) with ESMTPSA id D4542621B6E1;
+        Wed,  8 Jun 2022 11:56:57 +0200 (CEST)
 X-Mailbox-Line: From 78ad73b93adb59edfa2d68e44a9fcfea65e98131 Mon Sep 17 00:00:00 2001
-Message-Id: <cover.1654680790.git.lukas@wunner.de>
+Message-Id: <78ad73b93adb59edfa2d68e44a9fcfea65e98131.1654680790.git.lukas@wunner.de>
+In-Reply-To: <cover.1654680790.git.lukas@wunner.de>
+References: <cover.1654680790.git.lukas@wunner.de>
 From:   Lukas Wunner <lukas@wunner.de>
-Date:   Wed, 8 Jun 2022 11:52:10 +0200
-Subject: [PATCH net v2 0/1] PHY interruptus horribilis
+Date:   Wed, 8 Jun 2022 11:52:11 +0200
+Subject: [PATCH net v2 1/1] net: phy: Don't trigger state machine while in
+ suspend
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
@@ -59,7 +61,7 @@ Cc:     netdev@vger.kernel.org,
         linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-pm@vger.kernel.org
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,42 +69,153 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrew Lunn (PHY maintainer) asked me to resend this patch and cc the
-IRQ maintainer.  I'm also cc'ing PM maintainers for good measure.
+Upon system sleep, mdio_bus_phy_suspend() stops the phy_state_machine(),
+but subsequent interrupts may retrigger it:
 
-The patch addresses an issue with PHY interrupts occurring during a
-system sleep transition after the PHY has already been suspended.
+They may have been left enabled to facilitate wakeup and are not
+quiesced until the ->suspend_noirq() phase.  Unwanted interrupts may
+hence occur between mdio_bus_phy_suspend() and dpm_suspend_noirq(),
+as well as between dpm_resume_noirq() and mdio_bus_phy_resume().
 
-The IRQ subsystem uses an internal flag IRQD_WAKEUP_ARMED to avoid
-handling such interrupts, but it's not set until suspend_device_irqs()
-is called during the ->suspend_noirq() phase.  That's too late in this
-case as PHYs are suspended in the ->suspend() phase.  And there's
-no external interface to set the flag earlier.
+Retriggering the phy_state_machine() through an interrupt is not only
+undesirable for the reason given in mdio_bus_phy_suspend() (freezing it
+midway with phydev->lock held), but also because the PHY may be
+inaccessible after it's suspended:  Accesses to USB-attached PHYs are
+blocked once usb_suspend_both() clears the can_submit flag and PHYs on
+PCI network cards may become inaccessible upon suspend as well.
 
-As I'm lacking access to the flag, I'm open coding its functionality
-in this patch.  Is this the correct approach or should I instead look
-into providing an external interface to the flag?
+Amend phy_interrupt() to avoid triggering the state machine if the PHY
+is suspended.  Signal wakeup instead if the attached net_device or its
+parent has been configured as a wakeup source.  (Those conditions are
+identical to mdio_bus_phy_may_suspend().)  Postpone handling of the
+interrupt until the PHY has resumed.
 
-Side note: suspend_device_irqs() and resume_device_irqs() have been
-exported since forever even though there's no module user...
+Before stopping the phy_state_machine() in mdio_bus_phy_suspend(),
+wait for a concurrent phy_interrupt() to run to completion.  That is
+necessary because phy_interrupt() may have checked the PHY's suspend
+status before the system sleep transition commenced and it may thus
+retrigger the state machine after it was stopped.
 
-Thanks!
+Likewise, after re-enabling interrupt handling in mdio_bus_phy_resume(),
+wait for a concurrent phy_interrupt() to complete to ensure that
+interrupts which it postponed are properly rerun.
 
-Changes since v1:
-* Extend rationale in the commit message.
-* Drop Fixes tag, add Tested-by tag (Marek).
-
-Link to v1:
-https://lore.kernel.org/netdev/688f559346ea747d3b47a4d16ef8277e093f9ebe.1653556322.git.lukas@wunner.de/
-
-Lukas Wunner (1):
-  net: phy: Don't trigger state machine while in suspend
-
+Link: https://lore.kernel.org/netdev/a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com/
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+---
  drivers/net/phy/phy.c        | 23 +++++++++++++++++++++++
  drivers/net/phy/phy_device.c | 23 +++++++++++++++++++++++
  include/linux/phy.h          |  6 ++++++
  3 files changed, 52 insertions(+)
 
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index ef62f357b76d..8d3ee3a6495b 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -31,6 +31,7 @@
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
+ #include <linux/atomic.h>
++#include <linux/suspend.h>
+ #include <net/netlink.h>
+ #include <net/genetlink.h>
+ #include <net/sock.h>
+@@ -976,6 +977,28 @@ static irqreturn_t phy_interrupt(int irq, void *phy_dat)
+ 	struct phy_driver *drv = phydev->drv;
+ 	irqreturn_t ret;
+ 
++	/* Wakeup interrupts may occur during a system sleep transition.
++	 * Postpone handling until the PHY has resumed.
++	 */
++	if (IS_ENABLED(CONFIG_PM_SLEEP) && phydev->irq_suspended) {
++		struct net_device *netdev = phydev->attached_dev;
++
++		if (netdev) {
++			struct device *parent = netdev->dev.parent;
++
++			if (netdev->wol_enabled)
++				pm_system_wakeup();
++			else if (device_may_wakeup(&netdev->dev))
++				pm_wakeup_dev_event(&netdev->dev, 0, true);
++			else if (parent && device_may_wakeup(parent))
++				pm_wakeup_dev_event(parent, 0, true);
++		}
++
++		phydev->irq_rerun = 1;
++		disable_irq_nosync(irq);
++		return IRQ_HANDLED;
++	}
++
+ 	mutex_lock(&phydev->lock);
+ 	ret = drv->handle_interrupt(phydev);
+ 	mutex_unlock(&phydev->lock);
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 431a8719c635..46acddd865a7 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -278,6 +278,15 @@ static __maybe_unused int mdio_bus_phy_suspend(struct device *dev)
+ 	if (phydev->mac_managed_pm)
+ 		return 0;
+ 
++	/* Wakeup interrupts may occur during the system sleep transition when
++	 * the PHY is inaccessible. Set flag to postpone handling until the PHY
++	 * has resumed. Wait for concurrent interrupt handler to complete.
++	 */
++	if (phy_interrupt_is_valid(phydev)) {
++		phydev->irq_suspended = 1;
++		synchronize_irq(phydev->irq);
++	}
++
+ 	/* We must stop the state machine manually, otherwise it stops out of
+ 	 * control, possibly with the phydev->lock held. Upon resume, netdev
+ 	 * may call phy routines that try to grab the same lock, and that may
+@@ -315,6 +324,20 @@ static __maybe_unused int mdio_bus_phy_resume(struct device *dev)
+ 	if (ret < 0)
+ 		return ret;
+ no_resume:
++	if (phy_interrupt_is_valid(phydev)) {
++		phydev->irq_suspended = 0;
++		synchronize_irq(phydev->irq);
++
++		/* Rerun interrupts which were postponed by phy_interrupt()
++		 * because they occurred during the system sleep transition.
++		 */
++		if (phydev->irq_rerun) {
++			phydev->irq_rerun = 0;
++			enable_irq(phydev->irq);
++			irq_wake_thread(phydev->irq, phydev);
++		}
++	}
++
+ 	if (phydev->attached_dev && phydev->adjust_link)
+ 		phy_start_machine(phydev);
+ 
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 508f1149665b..b09f7d36cff2 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -572,6 +572,10 @@ struct macsec_ops;
+  * @mdix_ctrl: User setting of crossover
+  * @pma_extable: Cached value of PMA/PMD Extended Abilities Register
+  * @interrupts: Flag interrupts have been enabled
++ * @irq_suspended: Flag indicating PHY is suspended and therefore interrupt
++ *                 handling shall be postponed until PHY has resumed
++ * @irq_rerun: Flag indicating interrupts occurred while PHY was suspended,
++ *             requiring a rerun of the interrupt handler after resume
+  * @interface: enum phy_interface_t value
+  * @skb: Netlink message for cable diagnostics
+  * @nest: Netlink nest used for cable diagnostics
+@@ -626,6 +630,8 @@ struct phy_device {
+ 
+ 	/* Interrupts are enabled */
+ 	unsigned interrupts:1;
++	unsigned irq_suspended:1;
++	unsigned irq_rerun:1;
+ 
+ 	enum phy_state state;
+ 
 -- 
 2.35.2
 
