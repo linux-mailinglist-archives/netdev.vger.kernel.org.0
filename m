@@ -2,41 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47FEB5427E6
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 09:47:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD0B95427FA
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 09:48:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235221AbiFHHXq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 03:23:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53218 "EHLO
+        id S232017AbiFHHWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 03:22:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351731AbiFHGPY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 02:15:24 -0400
-Received: from 1wt.eu (wtarreau.pck.nerim.net [62.212.114.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5387E1EEBA1;
-        Tue,  7 Jun 2022 22:46:14 -0700 (PDT)
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 2585jrgk007510;
-        Wed, 8 Jun 2022 07:45:53 +0200
-Date:   Wed, 8 Jun 2022 07:45:53 +0200
-From:   Willy Tarreau <w@1wt.eu>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     kernel test robot <oliver.sang@intel.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-        lkp@lists.01.org, lkp@intel.com, rui.zhang@intel.com,
-        yu.c.chen@intel.com
-Subject: Re: [net]  6922110d15: suspend-stress.fail
-Message-ID: <20220608054553.GA7499@1wt.eu>
-References: <20220605143935.GA27576@xsang-OptiPlex-9020>
- <20220607174730.018fe58e@kernel.org>
+        with ESMTP id S1353253AbiFHGQf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 02:16:35 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A13A3391
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 23:00:40 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1654668038;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Xdbpm7rEw5pv+R6HDC4sqpJiOYOsoxsHStsgWZduYnM=;
+        b=UDfWj9LL2TRANBMSQkcdwwRcRRfpu3E/zzefmRdAzb5KkIGEhAHVb8EX3FSTKiOP6zrYDd
+        VT/XTBQaPUpqFcwTIZvO+XnN5x7gHbRNWQKVSzt9SUrfFuD01moQvC7vZlVijrTwcIVmSw
+        lRJBAdHo/8agJSgpn3I9Dlca9jnNiEhCSkQtmSs7SfQIj2aamWpR233hxm2uQws8ERwtWj
+        AKOFHoI0E3E4W84LBy9bVmlhgMpN6jmdF/a7A+SVPcxCsmPaOpeOqDGWeBrSinuVN1MTfD
+        uDda1MywXnxdKyvZEMbiPBKvN/KI/C4hzLyf1LJp78h77ajKoV0lMIQ6+YPFcw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1654668038;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Xdbpm7rEw5pv+R6HDC4sqpJiOYOsoxsHStsgWZduYnM=;
+        b=AtfFfi+JsCobOQ+a/eHwTJEBu0zbLQDpsS3keyz0BnhEsnYuOywUm5qiDVbVaU/doGPyWB
+        w1hIItaPU4ZkN5Bg==
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] igc: Lift TAPRIO schedule restriction
+In-Reply-To: <87wndsmm43.fsf@intel.com>
+References: <20220606092747.16730-1-kurt@linutronix.de>
+ <8735ghny8m.fsf@intel.com> <87k09tar5e.fsf@kurt>
+ <87wndsmm43.fsf@intel.com>
+Date:   Wed, 08 Jun 2022 08:00:37 +0200
+Message-ID: <8735gfzoca.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220607174730.018fe58e@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -45,63 +62,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 05:47:30PM -0700, Jakub Kicinski wrote:
-> On Sun, 5 Jun 2022 22:39:35 +0800 kernel test robot wrote:
-> > Greeting,
-> > 
-> > FYI, we noticed the following commit (built with gcc-11):
-> > 
-> > commit: 6922110d152e56d7569616b45a1f02876cf3eb9f ("net: linkwatch: fix failure to restore device state across suspend/resume")
-> > https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
-> > 
-> > in testcase: suspend-stress
-> > version: 
-> > with following parameters:
-> > 
-> > 	mode: freeze
-> > 	iterations: 10
-> > 
-> > 
-> > 
-> > on test machine: 4 threads Ivy Bridge with 4G memory
-> > 
-> > caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
-> > 
-> > 
-> > 
-> > 
-> > If you fix the issue, kindly add following tag
-> > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > 
-> > 
-> > Suspend to freeze 1/10:
-> > Done
-> > Suspend to freeze 2/10:
-> > network not ready
-> > network not ready
-> > network not ready
-> > network not ready
-> > network not ready
-> > network not ready
-> > network not ready
-> > network not ready
-> > network not ready
-> > network not ready
-> > network not ready
-> > Done
-> 
-> What's the failure? I'm looking at this script:
-> 
-> https://github.com/intel/lkp-tests/blob/master/tests/suspend-stress
-> 
-> And it seems that we are not actually hitting any "exit 1" paths here.
+--=-=-=
+Content-Type: text/plain
 
-I'm not sure how the test has to be interpreted but one possible
-interpretation is that the link really takes time to re-appear and
-that prior to the fix, the link was believed to still be up since
-the event was silently lost during suspend, while now the link is
-correctly being reported as being down and something is waiting for
-it to be up again, as it possibly should. Thus it could be possible
-that the fix revealed an incorrect expectation in that test.
+>>> What I have in mind is a schedule that queue 0 is mentioned multiple
+>>> times, for example:
+>>>
+>>>  |   sched-entry S 0x01 300000 \ # Stream High/Low
+>>>  |   sched-entry S 0x03 500000 \ # Management and Best Effort
+>>>  |   sched-entry S 0x05 200000 \ # Best Effort
+>>>
+>>
+>> So, this schedule works with the proposed patch. Queue 0 is opened in
+>> all three entries. My debug code shows:
+>>
+>> |tc-6145    [010] .......   616.190589: igc_setup_tc: Qbv configuration:
+>> |tc-6145    [010] .......   616.190592: igc_setup_tc: Queue 0 -- start_time=0 [ns]
+>> |tc-6145    [010] .......   616.190592: igc_setup_tc: Queue 0 -- end_time=1000000 [ns]
+>> |tc-6145    [010] .......   616.190593: igc_setup_tc: Queue 1 -- start_time=300000 [ns]
+>> |tc-6145    [010] .......   616.190593: igc_setup_tc: Queue 1 -- end_time=800000 [ns]
+>> |tc-6145    [010] .......   616.190593: igc_setup_tc: Queue 2 -- start_time=800000 [ns]
+>> |tc-6145    [010] .......   616.190594: igc_setup_tc: Queue 2 -- end_time=1000000 [ns]
+>> |tc-6145    [010] .......   616.190594: igc_setup_tc: Queue 3 -- start_time=800000 [ns]
+>> |tc-6145    [010] .......   616.190594: igc_setup_tc: Queue 3 -- end_time=1000000 [ns]
+>>
+>> Anyway, I'd appreciate some testing on your side too :).
+>
+> Sure, I can give it a spin, but it'll have to be later in the week, kind
+> of swamped right now.
 
-Willy
+No problem. Actually i'm out of office for the next two weeks. I'll
+update the patch afterwards if required.
+
+Thanks,
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmKgOwUTHGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgnqOEACKdxFr2sRg1n7xQR5Gk8Tch/q16Tqg
+qQrUZXlNcv5dMgBmyUXWLXXT/K3u4QOE9djy1KsS74GYo8fdfcXpOUHaeNxKn1ZP
+RajheEG8Jkjo5Es2pLITqyMkTZ+Toc0EFC6uuuAZiTRqKb/5LXYQSHlWiLaav/UP
+MoG+5/7NIAg/a+xAP9jtEUw6aALAH/18mHeHITsIqG8Pu6z05gvGMlR/VqYOU1tr
+DAwv0F+2YCLx20HimMvLAUe0ar42fbaUkcL3bYoplihaoJev+A22FmNNRGsk6qtP
+3a3vw9VhbtiGTmKgOdivzklBKk5k1lAPPLngTM568qD6nhYp+oiupwa3vj0wD4+5
+XajAmlODe9hQAbXVuTOFu78Enkp9D7rHl33+BChTsx1BYTORGe9w8E9eTJ0PtNRJ
+2smDUOAb2it7h283a/oaIr9p2tQF8BD4mNyFOJmkSMiTVX/PwC6VXIRyunYO6i1+
+4pOfChu8ibDN4zoXnB0o8ANHsQQ8j4NoP1PJ56953Iahp4i95OB5ZmEnRz9b8aOn
+ppYI8RvyQr4f9HEHYvGUeNPSgy7lMYlYzSVGTUT8P69QAQwNDqeMxP4bzyXMPAcx
+2h0SgiAdnRcaziJ3Q6A6RC6J99Lg3g3+LKHxVjVumDNHI9RaODqoGQztTSuavA7n
+DSoug1zWqshy5g==
+=j42X
+-----END PGP SIGNATURE-----
+--=-=-=--
