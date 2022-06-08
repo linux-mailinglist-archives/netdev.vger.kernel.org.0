@@ -2,65 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A6D15424C3
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:52:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 253305422AE
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:47:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377982AbiFHCqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 22:46:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37342 "EHLO
+        id S1353795AbiFHCqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 22:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447467AbiFHClu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 22:41:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB122194BC6
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 17:21:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3D5D6177B
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 00:21:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF157C34114;
-        Wed,  8 Jun 2022 00:21:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654647690;
-        bh=5W0lVFzCVq8dtXQaVp/LRZSfyXpDIxUm2LbMIl+ZW6c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CU3O/L9UKCOVHxMzqKuf281eu1M1hlWA1mrvJO1NsqLc/e7GKdYifkJjV2NG3kqVx
-         8JqpmyFdOmo6CBKuQnC3S1F0XJvO8xcMJyJ9BnQbj6tw1hd9O/GPzC6AQ1WQgdSWd8
-         3p6dMBssaPymZlAD3K5QkN8w4BFjh7AxhJTOUIJH1/pro+zASsfKDkawj/zMyvBX1A
-         2+UcksvGJ45aGCLhg5VvuTInh6KKE+FSwmEvVYYv+xAjAXT76dZFvkBcU5vlYpSYbs
-         2qxgsrRWe3gDeF2ma71OmDJD8sMRsKoTybicgo9uQ1P5+NZWTnOvfXAo1PzY8D6nXS
-         GyR71xiBQVFLA==
-Date:   Tue, 7 Jun 2022 17:21:29 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Anton Makarov <antonmakarov11235@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        david.lebrun@uclouvain.be
-Subject: Re: [net-next 1/1] seg6: add support for SRv6 Headend Reduced
- Encapsulation
-Message-ID: <20220607172129.73d7b307@kernel.org>
-In-Reply-To: <4f26bfaf-3c91-fe19-ede1-d47d852c17f6@gmail.com>
-References: <4f26bfaf-3c91-fe19-ede1-d47d852c17f6@gmail.com>
+        with ESMTP id S1447685AbiFHCmF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 22:42:05 -0400
+Received: from mail.enpas.org (zhong.enpas.org [46.38.239.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A54E197633;
+        Tue,  7 Jun 2022 17:22:13 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        by mail.enpas.org (Postfix) with ESMTPSA id CD01CFFB6C;
+        Wed,  8 Jun 2022 00:22:12 +0000 (UTC)
+Date:   Wed, 8 Jun 2022 02:22:10 +0200
+From:   Max Staudt <max@enpas.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH v5 4/7] can: Kconfig: add CONFIG_CAN_RX_OFFLOAD
+Message-ID: <20220608022123.05f73356.max@enpas.org>
+In-Reply-To: <20220607171455.0a75020c@kernel.org>
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+        <20220604163000.211077-1-mailhol.vincent@wanadoo.fr>
+        <20220604163000.211077-5-mailhol.vincent@wanadoo.fr>
+        <CAMuHMdXkq7+yvD=ju-LY14yOPkiiHwL6H+9G-4KgX=GJjX=h9g@mail.gmail.com>
+        <CAMZ6RqLEEHOZjrMH+-GLC--jjfOaWYOPLf+PpefHwy=cLpWTYg@mail.gmail.com>
+        <20220607182216.5fb1084e.max@enpas.org>
+        <20220607150614.6248c504@kernel.org>
+        <20220608014248.6e0045ae.max@enpas.org>
+        <20220607171455.0a75020c@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 6 Jun 2022 21:41:59 +0300 Anton Makarov wrote:
-> This patch extends SRv6 Headend behaviors with reduced SRH encapsulation
-> accordingly to RFC 8986. Additional SRv6 Headend behaviors H.Encaps.Red and
-> H.Encaps.L2.Red optimize overhead of network traffic for SRv6 L2 and L3 
-> VPNs.
-> 
-> Signed-off-by: Anton Makarov <anton.makarov11235@gmail.com>
+On Tue, 7 Jun 2022 17:14:55 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-Thurnderbird line-wrapped the patch contents. Could you try reposting
-with git send-email?
+> We have a ton of "magical" / hidden Kconfigs in networking, take a
+> look at net/Kconfig. Quick grep, likely not very accurate but FWIW:
+
+Fair enough. Thinking about it, I've grepped my distro's kernel config
+for features more than just a handful of times...
+
+
+> > How about making RX_OFFLOAD a separate .ko file, so we don't have
+> > various possible versions of can_dev.ko?
+> > 
+> > @Vincent, I think you suggested that some time ago, IIRC?
+> > 
+> > (I know, I was against a ton of little modules, but I'm changing my
+> > ways here now since it seems to help...)  
+> 
+> A separate module wouldn't help with my objections, I don't think.
+
+In a system where the CAN stack is compiled as modules (i.e. a regular
+desktop distribution), the feature's presence/absence would be easily
+visible via the .ko file's presence/absence.
+
+Then again, I have to agree, distributing a system where RX_OFFLOAD is
+present, but no drivers using it whatsoever, seems... strange.
+
+I guess I got lost in my thinking there, with my out of tree
+development and all. Sorry for the noise.
+
+
+
+Max
