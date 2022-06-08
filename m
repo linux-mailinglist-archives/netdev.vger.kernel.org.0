@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D10954226F
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:47:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 645455423D7
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:51:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232430AbiFHFLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 01:11:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58814 "EHLO
+        id S233362AbiFHFIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 01:08:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233117AbiFHFIe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 01:08:34 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21DEC31C160
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 19:11:08 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id 15so17111349pfy.3
-        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 19:11:08 -0700 (PDT)
+        with ESMTP id S232971AbiFHFIj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 01:08:39 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F56D27F5EC
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 19:11:14 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id s135so1955954pgs.10
+        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 19:11:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dMvIprJKpqVm1nDz0kfJ3Jj5Bc2iux0n51Ws1UxqiS4=;
-        b=TmVIB1otskysTfUT+G6blioVtLMwNOjDWEWThiuTYzbVnJUtm/lTkt8CS59JqbcHHA
-         KxO2AV6pXGw2X+fUNk5w1ks2ccrcPORaocH/Y51ehDoh5vlF1e1sSrFqYtHm8UTnDfvg
-         B7NFjuZepba7EkWRwu5s6HqtMzNPXMs5LyHgebyKJXKhrWh5uqo1weePw6wOQ2fUne6q
-         PUXiq2NFqmSMTbEPIZA3r8npjMUdc4ert2mzG7lZSy22KddEQe4mQ6ntMlaq5H5+FplT
-         u41y2hLJsVDb5WTxo7L0Muj8kWL02hbtOJUMvmcX1O0b2gPAtm1BB2mjPhsxBNhyo52H
-         SeyA==
+        bh=HsSWvRhgYr7ETk9FdUAVbsLKcIQhM7arQ/2gG+Hd28A=;
+        b=xC6W/crvoGoM9WkmjE50AuE9pk3grBgJHMcTZV0nAg24A2K6/fG3ruw8wNPkCRyUDW
+         woTmzBrEl4ZbQlD6j275l1LWSzS8Y46eTsgOHJyfLxd3lA4eomKsKVWK7PmtsldwHXa+
+         4anh966IqTJNRjcOcMgyCh6nJkII/pxxLJwilFA42fQl0+Z0sFCAxK4M4bWWV1/PDu1Z
+         8XYdxw0lp3zw5RxgFTL/h+jRbKhaZU909vpXioo916EaRiDw3xTBOE51hC/h4m0SO/YJ
+         5meTb55kQKg0J5R36t2ll8K4Ta0FElbVJvpvyrCV/ovi6xWZVdXhiaRkyIm2RNx22hgT
+         0zIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dMvIprJKpqVm1nDz0kfJ3Jj5Bc2iux0n51Ws1UxqiS4=;
-        b=x6SAUVySP5s0mR0il+JUSJlQZJmCK0h5j0wgflfblInWPuXKL6UCheTC81JDDy0v+5
-         OdLcCPhfHaGa3bbi81oHIoQJ8OiBTVEedCXv/yG0K2G9IyXEFRF3Q/WBEl2obV8oaKlb
-         92SAewXoaDYimbH1+Ovct/d2WkUWjrvIOH1cnllRX9Gd6fGF9UZqiOD/KuuxG3cLhqD1
-         rT/EaTHb48OZMsTTIPRlt3ACzPyn8d/w31whGPvRbuBMoYr80+yTmZyo59Ea8XMTZ49/
-         xSi6wA99gCotE4Ei/iDSpgnSY98pDou5+ZLrJwEYkflPCSpCmuCoNQO0o9irGxJ4KvaX
-         7Mlw==
-X-Gm-Message-State: AOAM531cahc9fZxfn0mwd88QwEBwut1sJ76WXR6eHHwBO49+fHsL8bjE
-        OudF8yexpoT4kxVlShh2Ztvc9A==
-X-Google-Smtp-Source: ABdhPJwrEf2OhF7qePmxWoJku4aNQ0eCTtLEHx0LpW53rWvTnmRyI5ukZHIMAANW7hETPDkLsowCiQ==
-X-Received: by 2002:a63:8a49:0:b0:3fc:9492:33c1 with SMTP id y70-20020a638a49000000b003fc949233c1mr27870733pgd.421.1654654267601;
-        Tue, 07 Jun 2022 19:11:07 -0700 (PDT)
+        bh=HsSWvRhgYr7ETk9FdUAVbsLKcIQhM7arQ/2gG+Hd28A=;
+        b=i+eKQ2qBwN8KIavnxeRKPtWexnrUlfl0fyve/QZyyPO/7+YWqWwcDfHa1AFqq1W7Ld
+         1y93l0RzNJkmOiLZHbeBrOFtQJewvfwb9ICx0qSL11RSODnOmkWjtu7chFSw8G8PHowO
+         wQWHoUYFdWXj/AOmj/I4qtMBI20+CDCw6pX+21Ae++dqVTuyrI2tUPaPDkxfWWhrtUCK
+         2Z4HPuuvuSYnL5SLZu2P7xyu22Bq9+HTSYzNOvs+nEp804PfAB28V8ZIlqmC63sB93RL
+         BoeXkg9JnL8dRbwVNsFXxNnxiRMHarJGFjuUwk+2rLbdRjGmTmGZZhMdhz9Q6Z4KUxnY
+         jrIQ==
+X-Gm-Message-State: AOAM531yyIjydbXb7burA5/Gf9W2qFiMuTP5NF3jG860JTalDH+akOeM
+        Jez+p7f0XzJBlt7O9ryGVwV3Yg==
+X-Google-Smtp-Source: ABdhPJwQXQTM9erjUb4YNzD2I7ZRl2/zcTo7teSMoPv0Y4brYEpf4PO4jiR418bbIkyuKbp5L8GtXA==
+X-Received: by 2002:aa7:999c:0:b0:51c:1a04:5b79 with SMTP id k28-20020aa7999c000000b0051c1a045b79mr13525909pfh.77.1654654273762;
+        Tue, 07 Jun 2022 19:11:13 -0700 (PDT)
 Received: from C02F52LSML85.bytedance.net ([139.177.225.241])
-        by smtp.gmail.com with ESMTPSA id h7-20020a170902680700b001651562eb16sm13166636plk.124.2022.06.07.19.11.01
+        by smtp.gmail.com with ESMTPSA id h7-20020a170902680700b001651562eb16sm13166636plk.124.2022.06.07.19.11.08
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 07 Jun 2022 19:11:07 -0700 (PDT)
+        Tue, 07 Jun 2022 19:11:13 -0700 (PDT)
 From:   Feng zhou <zhoufeng.zf@bytedance.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
@@ -56,9 +56,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         songmuchun@bytedance.com, wangdongdong.6@bytedance.com,
         cong.wang@bytedance.com, zhouchengming@bytedance.com,
         zhoufeng.zf@bytedance.com
-Subject: [PATCH v5 1/2] bpf: avoid grabbing spin_locks of all cpus when no free elems
-Date:   Wed,  8 Jun 2022 10:10:49 +0800
-Message-Id: <20220608021050.47279-2-zhoufeng.zf@bytedance.com>
+Subject: [PATCH v5 2/2] selftest/bpf/benchs: Add bpf_map benchmark
+Date:   Wed,  8 Jun 2022 10:10:50 +0800
+Message-Id: <20220608021050.47279-3-zhoufeng.zf@bytedance.com>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 In-Reply-To: <20220608021050.47279-1-zhoufeng.zf@bytedance.com>
 References: <20220608021050.47279-1-zhoufeng.zf@bytedance.com>
@@ -76,224 +76,267 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Feng Zhou <zhoufeng.zf@bytedance.com>
 
-This patch use head->first in pcpu_freelist_head to check freelist
-having free or not. If having, grab spin_lock, or check next cpu's
-freelist.
+Add benchmark for hash_map to reproduce the worst case
+that non-stop update when map's free is zero.
 
-Before patch: hash_map performance
-./map_perf_test 1
-0:hash_map_perf pre-alloc 975345 events per sec
-4:hash_map_perf pre-alloc 855367 events per sec
-12:hash_map_perf pre-alloc 860862 events per sec
-8:hash_map_perf pre-alloc 849561 events per sec
-3:hash_map_perf pre-alloc 849074 events per sec
-6:hash_map_perf pre-alloc 847120 events per sec
-10:hash_map_perf pre-alloc 845047 events per sec
-5:hash_map_perf pre-alloc 841266 events per sec
-14:hash_map_perf pre-alloc 849740 events per sec
-2:hash_map_perf pre-alloc 839598 events per sec
-9:hash_map_perf pre-alloc 838695 events per sec
-11:hash_map_perf pre-alloc 845390 events per sec
-7:hash_map_perf pre-alloc 834865 events per sec
-13:hash_map_perf pre-alloc 842619 events per sec
-1:hash_map_perf pre-alloc 804231 events per sec
-15:hash_map_perf pre-alloc 795314 events per sec
+before patch:
+Setting up benchmark 'bpf-hashmap-ful-update'...
+Benchmark 'bpf-hashmap-ful-update' started.
+1:hash_map_full_perf 107796 events per sec
+2:hash_map_full_perf 108072 events per sec
+3:hash_map_full_perf 112169 events per sec
+4:hash_map_full_perf 111423 events per sec
+5:hash_map_full_perf 110778 events per sec
+6:hash_map_full_perf 121336 events per sec
+7:hash_map_full_perf 98676 events per sec
+8:hash_map_full_perf 105860 events per sec
+9:hash_map_full_perf 109930 events per sec
+10:hash_map_full_perf 123434 events per sec
+11:hash_map_full_perf 125374 events per sec
+12:hash_map_full_perf 121979 events per sec
+13:hash_map_full_perf 123014 events per sec
+14:hash_map_full_perf 126219 events per sec
+15:hash_map_full_perf 104793 events per sec
 
-hash_map the worst: no free
-./map_perf_test 2048
-6:worse hash_map_perf pre-alloc 28628 events per sec
-5:worse hash_map_perf pre-alloc 28553 events per sec
-11:worse hash_map_perf pre-alloc 28543 events per sec
-3:worse hash_map_perf pre-alloc 28444 events per sec
-1:worse hash_map_perf pre-alloc 28418 events per sec
-7:worse hash_map_perf pre-alloc 28427 events per sec
-13:worse hash_map_perf pre-alloc 28330 events per sec
-14:worse hash_map_perf pre-alloc 28263 events per sec
-9:worse hash_map_perf pre-alloc 28211 events per sec
-15:worse hash_map_perf pre-alloc 28193 events per sec
-12:worse hash_map_perf pre-alloc 28190 events per sec
-10:worse hash_map_perf pre-alloc 28129 events per sec
-8:worse hash_map_perf pre-alloc 28116 events per sec
-4:worse hash_map_perf pre-alloc 27906 events per sec
-2:worse hash_map_perf pre-alloc 27801 events per sec
-0:worse hash_map_perf pre-alloc 27416 events per sec
-3:worse hash_map_perf pre-alloc 28188 events per sec
+after patch:
+Setting up benchmark 'bpf-hashmap-ful-update'...
+Benchmark 'bpf-hashmap-ful-update' started.
+0:hash_map_full_perf 1219230 events per sec
+1:hash_map_full_perf 1320256 events per sec
+2:hash_map_full_perf 1196550 events per sec
+3:hash_map_full_perf 1375684 events per sec
+4:hash_map_full_perf 1365551 events per sec
+5:hash_map_full_perf 1318432 events per sec
+6:hash_map_full_perf 1222007 events per sec
+7:hash_map_full_perf 1240786 events per sec
+8:hash_map_full_perf 1190005 events per sec
+9:hash_map_full_perf 1562336 events per sec
+10:hash_map_full_perf 1385241 events per sec
+11:hash_map_full_perf 1387909 events per sec
+12:hash_map_full_perf 1371877 events per sec
+13:hash_map_full_perf 1561836 events per sec
+14:hash_map_full_perf 1388895 events per sec
+15:hash_map_full_perf 1579054 events per sec
 
-ftrace trace
-
-0)               |  htab_map_update_elem() {
-0)   0.198 us    |    migrate_disable();
-0)               |    _raw_spin_lock_irqsave() {
-0)   0.157 us    |      preempt_count_add();
-0)   0.538 us    |    }
-0)   0.260 us    |    lookup_elem_raw();
-0)               |    alloc_htab_elem() {
-0)               |      __pcpu_freelist_pop() {
-0)               |        _raw_spin_lock() {
-0)   0.152 us    |          preempt_count_add();
-0)   0.352 us    |          native_queued_spin_lock_slowpath();
-0)   1.065 us    |        }
-		 |	  ...
-0)               |        _raw_spin_unlock() {
-0)   0.254 us    |          preempt_count_sub();
-0)   0.555 us    |        }
-0) + 25.188 us   |      }
-0) + 25.486 us   |    }
-0)               |    _raw_spin_unlock_irqrestore() {
-0)   0.155 us    |      preempt_count_sub();
-0)   0.454 us    |    }
-0)   0.148 us    |    migrate_enable();
-0) + 28.439 us   |  }
-
-The test machine is 16C, trying to get spin_lock 17 times, in addition
-to 16c, there is an extralist.
-
-after patch: hash_map performance
-./map_perf_test 1
-0:hash_map_perf pre-alloc 969348 events per sec
-10:hash_map_perf pre-alloc 906526 events per sec
-11:hash_map_perf pre-alloc 904557 events per sec
-9:hash_map_perf pre-alloc 902384 events per sec
-15:hash_map_perf pre-alloc 912287 events per sec
-14:hash_map_perf pre-alloc 905689 events per sec
-12:hash_map_perf pre-alloc 903680 events per sec
-13:hash_map_perf pre-alloc 902631 events per sec
-8:hash_map_perf pre-alloc 875369 events per sec
-4:hash_map_perf pre-alloc 862808 events per sec
-1:hash_map_perf pre-alloc 857218 events per sec
-2:hash_map_perf pre-alloc 852875 events per sec
-5:hash_map_perf pre-alloc 846497 events per sec
-6:hash_map_perf pre-alloc 828467 events per sec
-3:hash_map_perf pre-alloc 812542 events per sec
-7:hash_map_perf pre-alloc 805336 events per sec
-
-hash_map worst: no free
-./map_perf_test 2048
-7:worse hash_map_perf pre-alloc 391104 events per sec
-4:worse hash_map_perf pre-alloc 388073 events per sec
-5:worse hash_map_perf pre-alloc 387038 events per sec
-1:worse hash_map_perf pre-alloc 386546 events per sec
-0:worse hash_map_perf pre-alloc 384590 events per sec
-11:worse hash_map_perf pre-alloc 379378 events per sec
-10:worse hash_map_perf pre-alloc 375480 events per sec
-12:worse hash_map_perf pre-alloc 372394 events per sec
-6:worse hash_map_perf pre-alloc 367692 events per sec
-3:worse hash_map_perf pre-alloc 363970 events per sec
-9:worse hash_map_perf pre-alloc 364008 events per sec
-8:worse hash_map_perf pre-alloc 363759 events per sec
-2:worse hash_map_perf pre-alloc 360743 events per sec
-14:worse hash_map_perf pre-alloc 361195 events per sec
-13:worse hash_map_perf pre-alloc 360276 events per sec
-15:worse hash_map_perf pre-alloc 360057 events per sec
-0:worse hash_map_perf pre-alloc 378177 events per sec
-
-ftrace trace
-0)               |  htab_map_update_elem() {
-0)   0.317 us    |    migrate_disable();
-0)               |    _raw_spin_lock_irqsave() {
-0)   0.260 us    |      preempt_count_add();
-0)   1.803 us    |    }
-0)   0.276 us    |    lookup_elem_raw();
-0)               |    alloc_htab_elem() {
-0)   0.586 us    |      __pcpu_freelist_pop();
-0)   0.945 us    |    }
-0)               |    _raw_spin_unlock_irqrestore() {
-0)   0.160 us    |      preempt_count_sub();
-0)   0.972 us    |    }
-0)   0.657 us    |    migrate_enable();
-0)   8.669 us    |  }
-
-It can be seen that after adding this patch, the map performance is
-almost not degraded, and when free=0, first check head->first instead of
-directly acquiring spin_lock.
-
-Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
 ---
- kernel/bpf/percpu_freelist.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ tools/testing/selftests/bpf/Makefile          |  4 +-
+ tools/testing/selftests/bpf/bench.c           |  2 +
+ .../benchs/bench_bpf_hashmap_full_update.c    | 96 +++++++++++++++++++
+ .../run_bench_bpf_hashmap_full_update.sh      | 11 +++
+ .../bpf/progs/bpf_hashmap_full_update_bench.c | 40 ++++++++
+ 5 files changed, 152 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/bpf/benchs/bench_bpf_hashmap_full_update.c
+ create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_bpf_hashmap_full_update.sh
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_hashmap_full_update_bench.c
 
-diff --git a/kernel/bpf/percpu_freelist.c b/kernel/bpf/percpu_freelist.c
-index 3d897de89061..00b874c8e889 100644
---- a/kernel/bpf/percpu_freelist.c
-+++ b/kernel/bpf/percpu_freelist.c
-@@ -31,7 +31,7 @@ static inline void pcpu_freelist_push_node(struct pcpu_freelist_head *head,
- 					   struct pcpu_freelist_node *node)
- {
- 	node->next = head->first;
--	head->first = node;
-+	WRITE_ONCE(head->first, node);
- }
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 2d3c8c8f558a..8ad7a733a505 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -560,6 +560,7 @@ $(OUTPUT)/bench_ringbufs.o: $(OUTPUT)/ringbuf_bench.skel.h \
+ $(OUTPUT)/bench_bloom_filter_map.o: $(OUTPUT)/bloom_filter_bench.skel.h
+ $(OUTPUT)/bench_bpf_loop.o: $(OUTPUT)/bpf_loop_bench.skel.h
+ $(OUTPUT)/bench_strncmp.o: $(OUTPUT)/strncmp_bench.skel.h
++$(OUTPUT)/bench_bpf_hashmap_full_update.o: $(OUTPUT)/bpf_hashmap_full_update_bench.skel.h
+ $(OUTPUT)/bench.o: bench.h testing_helpers.h $(BPFOBJ)
+ $(OUTPUT)/bench: LDLIBS += -lm
+ $(OUTPUT)/bench: $(OUTPUT)/bench.o \
+@@ -571,7 +572,8 @@ $(OUTPUT)/bench: $(OUTPUT)/bench.o \
+ 		 $(OUTPUT)/bench_ringbufs.o \
+ 		 $(OUTPUT)/bench_bloom_filter_map.o \
+ 		 $(OUTPUT)/bench_bpf_loop.o \
+-		 $(OUTPUT)/bench_strncmp.o
++		 $(OUTPUT)/bench_strncmp.o \
++		 $(OUTPUT)/bench_bpf_hashmap_full_update.o
+ 	$(call msg,BINARY,,$@)
+ 	$(Q)$(CC) $(CFLAGS) $(LDFLAGS) $(filter %.a %.o,$^) $(LDLIBS) -o $@
  
- static inline void ___pcpu_freelist_push(struct pcpu_freelist_head *head,
-@@ -130,14 +130,17 @@ static struct pcpu_freelist_node *___pcpu_freelist_pop(struct pcpu_freelist *s)
- 	orig_cpu = cpu = raw_smp_processor_id();
- 	while (1) {
- 		head = per_cpu_ptr(s->freelist, cpu);
-+		if (!READ_ONCE(head->first))
-+			goto next_cpu;
- 		raw_spin_lock(&head->lock);
- 		node = head->first;
- 		if (node) {
--			head->first = node->next;
-+			WRITE_ONCE(head->first, node->next);
- 			raw_spin_unlock(&head->lock);
- 			return node;
- 		}
- 		raw_spin_unlock(&head->lock);
-+next_cpu:
- 		cpu = cpumask_next(cpu, cpu_possible_mask);
- 		if (cpu >= nr_cpu_ids)
- 			cpu = 0;
-@@ -146,10 +149,12 @@ static struct pcpu_freelist_node *___pcpu_freelist_pop(struct pcpu_freelist *s)
- 	}
+diff --git a/tools/testing/selftests/bpf/bench.c b/tools/testing/selftests/bpf/bench.c
+index f061cc20e776..d8aa62be996b 100644
+--- a/tools/testing/selftests/bpf/bench.c
++++ b/tools/testing/selftests/bpf/bench.c
+@@ -396,6 +396,7 @@ extern const struct bench bench_hashmap_with_bloom;
+ extern const struct bench bench_bpf_loop;
+ extern const struct bench bench_strncmp_no_helper;
+ extern const struct bench bench_strncmp_helper;
++extern const struct bench bench_bpf_hashmap_full_update;
  
- 	/* per cpu lists are all empty, try extralist */
-+	if (!READ_ONCE(s->extralist.first))
-+		return NULL;
- 	raw_spin_lock(&s->extralist.lock);
- 	node = s->extralist.first;
- 	if (node)
--		s->extralist.first = node->next;
-+		WRITE_ONCE(s->extralist.first, node->next);
- 	raw_spin_unlock(&s->extralist.lock);
- 	return node;
- }
-@@ -164,15 +169,18 @@ ___pcpu_freelist_pop_nmi(struct pcpu_freelist *s)
- 	orig_cpu = cpu = raw_smp_processor_id();
- 	while (1) {
- 		head = per_cpu_ptr(s->freelist, cpu);
-+		if (!READ_ONCE(head->first))
-+			goto next_cpu;
- 		if (raw_spin_trylock(&head->lock)) {
- 			node = head->first;
- 			if (node) {
--				head->first = node->next;
-+				WRITE_ONCE(head->first, node->next);
- 				raw_spin_unlock(&head->lock);
- 				return node;
- 			}
- 			raw_spin_unlock(&head->lock);
- 		}
-+next_cpu:
- 		cpu = cpumask_next(cpu, cpu_possible_mask);
- 		if (cpu >= nr_cpu_ids)
- 			cpu = 0;
-@@ -181,11 +189,11 @@ ___pcpu_freelist_pop_nmi(struct pcpu_freelist *s)
- 	}
+ static const struct bench *benchs[] = {
+ 	&bench_count_global,
+@@ -430,6 +431,7 @@ static const struct bench *benchs[] = {
+ 	&bench_bpf_loop,
+ 	&bench_strncmp_no_helper,
+ 	&bench_strncmp_helper,
++	&bench_bpf_hashmap_full_update,
+ };
  
- 	/* cannot pop from per cpu lists, try extralist */
--	if (!raw_spin_trylock(&s->extralist.lock))
-+	if (!READ_ONCE(s->extralist.first) || !raw_spin_trylock(&s->extralist.lock))
- 		return NULL;
- 	node = s->extralist.first;
- 	if (node)
--		s->extralist.first = node->next;
-+		WRITE_ONCE(s->extralist.first, node->next);
- 	raw_spin_unlock(&s->extralist.lock);
- 	return node;
- }
+ static void setup_benchmark()
+diff --git a/tools/testing/selftests/bpf/benchs/bench_bpf_hashmap_full_update.c b/tools/testing/selftests/bpf/benchs/bench_bpf_hashmap_full_update.c
+new file mode 100644
+index 000000000000..cec51e0ff4b8
+--- /dev/null
++++ b/tools/testing/selftests/bpf/benchs/bench_bpf_hashmap_full_update.c
+@@ -0,0 +1,96 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2022 Bytedance */
++
++#include <argp.h>
++#include "bench.h"
++#include "bpf_hashmap_full_update_bench.skel.h"
++#include "bpf_util.h"
++
++/* BPF triggering benchmarks */
++static struct ctx {
++	struct bpf_hashmap_full_update_bench *skel;
++} ctx;
++
++#define MAX_LOOP_NUM 10000
++
++static void validate(void)
++{
++	if (env.consumer_cnt != 1) {
++		fprintf(stderr, "benchmark doesn't support multi-consumer!\n");
++		exit(1);
++	}
++}
++
++static void *producer(void *input)
++{
++	while (true) {
++		/* trigger the bpf program */
++		syscall(__NR_getpgid);
++	}
++
++	return NULL;
++}
++
++static void *consumer(void *input)
++{
++	return NULL;
++}
++
++static void measure(struct bench_res *res)
++{
++}
++
++static void setup(void)
++{
++	struct bpf_link *link;
++	int map_fd, i, max_entries;
++
++	setup_libbpf();
++
++	ctx.skel = bpf_hashmap_full_update_bench__open_and_load();
++	if (!ctx.skel) {
++		fprintf(stderr, "failed to open skeleton\n");
++		exit(1);
++	}
++
++	ctx.skel->bss->nr_loops = MAX_LOOP_NUM;
++
++	link = bpf_program__attach(ctx.skel->progs.benchmark);
++	if (!link) {
++		fprintf(stderr, "failed to attach program!\n");
++		exit(1);
++	}
++
++	/* fill hash_map */
++	map_fd = bpf_map__fd(ctx.skel->maps.hash_map_bench);
++	max_entries = bpf_map__max_entries(ctx.skel->maps.hash_map_bench);
++	for (i = 0; i < max_entries; i++)
++		bpf_map_update_elem(map_fd, &i, &i, BPF_ANY);
++}
++
++void hashmap_report_final(struct bench_res res[], int res_cnt)
++{
++	unsigned int nr_cpus = bpf_num_possible_cpus();
++	int i;
++
++	for (i = 0; i < nr_cpus; i++) {
++		u64 time = ctx.skel->bss->percpu_time[i];
++
++		if (!time)
++			continue;
++
++		printf("%d:hash_map_full_perf %lld events per sec\n",
++		       i, ctx.skel->bss->nr_loops * 1000000000ll / time);
++	}
++}
++
++const struct bench bench_bpf_hashmap_full_update = {
++	.name = "bpf-hashmap-ful-update",
++	.validate = validate,
++	.setup = setup,
++	.producer_thread = producer,
++	.consumer_thread = consumer,
++	.measure = measure,
++	.report_progress = NULL,
++	.report_final = hashmap_report_final,
++};
+diff --git a/tools/testing/selftests/bpf/benchs/run_bench_bpf_hashmap_full_update.sh b/tools/testing/selftests/bpf/benchs/run_bench_bpf_hashmap_full_update.sh
+new file mode 100755
+index 000000000000..1e2de838f9fa
+--- /dev/null
++++ b/tools/testing/selftests/bpf/benchs/run_bench_bpf_hashmap_full_update.sh
+@@ -0,0 +1,11 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++source ./benchs/run_common.sh
++
++set -eufo pipefail
++
++nr_threads=`expr $(cat /proc/cpuinfo | grep "processor"| wc -l) - 1`
++summary=$($RUN_BENCH -p $nr_threads bpf-hashmap-ful-update)
++printf "$summary"
++printf "\n"
+diff --git a/tools/testing/selftests/bpf/progs/bpf_hashmap_full_update_bench.c b/tools/testing/selftests/bpf/progs/bpf_hashmap_full_update_bench.c
+new file mode 100644
+index 000000000000..56957557e3e1
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/bpf_hashmap_full_update_bench.c
+@@ -0,0 +1,40 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2022 Bytedance */
++
++#include "vmlinux.h"
++#include <bpf/bpf_helpers.h>
++#include "bpf_misc.h"
++
++char _license[] SEC("license") = "GPL";
++
++#define MAX_ENTRIES 1000
++
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__type(key, u32);
++	__type(value, u64);
++	__uint(max_entries, MAX_ENTRIES);
++} hash_map_bench SEC(".maps");
++
++u64 __attribute__((__aligned__(256))) percpu_time[256];
++u64 nr_loops;
++
++static int loop_update_callback(__u32 index, u32 *key)
++{
++	u64 init_val = 1;
++
++	bpf_map_update_elem(&hash_map_bench, key, &init_val, BPF_ANY);
++	return 0;
++}
++
++SEC("fentry/" SYS_PREFIX "sys_getpgid")
++int benchmark(void *ctx)
++{
++	u32 cpu = bpf_get_smp_processor_id();
++	u32 key = cpu + MAX_ENTRIES;
++	u64 start_time = bpf_ktime_get_ns();
++
++	bpf_loop(nr_loops, loop_update_callback, &key, 0);
++	percpu_time[cpu & 255] = bpf_ktime_get_ns() - start_time;
++	return 0;
++}
 -- 
 2.20.1
 
