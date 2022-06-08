@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EB28542886
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 09:52:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FE3354288B
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 09:52:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229967AbiFHHwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 03:52:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46134 "EHLO
+        id S231877AbiFHHv6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 03:51:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229662AbiFHHvT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 03:51:19 -0400
+        with ESMTP id S230423AbiFHHvS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 03:51:18 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA7C1078A6
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 00:18:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06203100B13
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 00:17:59 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1nypwu-0005bh-56; Wed, 08 Jun 2022 09:17:52 +0200
+        id 1nypwu-0005bf-56; Wed, 08 Jun 2022 09:17:52 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nypwu-0078uE-Mr; Wed, 08 Jun 2022 09:17:51 +0200
+        id 1nypwu-0078u8-Jz; Wed, 08 Jun 2022 09:17:51 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nypws-00G1Pa-8r; Wed, 08 Jun 2022 09:17:50 +0200
+        id 1nypws-00G1Pj-9g; Wed, 08 Jun 2022 09:17:50 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -35,9 +35,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 2/3] net: phy: dp83td510: add cable testing support
-Date:   Wed,  8 Jun 2022 09:17:48 +0200
-Message-Id: <20220608071749.3818602-3-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 3/3] net: phy: dp83td510: disable cable test support for 1Vpp PHYs
+Date:   Wed,  8 Jun 2022 09:17:49 +0200
+Message-Id: <20220608071749.3818602-4-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220608071749.3818602-1-o.rempel@pengutronix.de>
 References: <20220608071749.3818602-1-o.rempel@pengutronix.de>
@@ -56,220 +56,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cable testing was tested in different HW configurations and cables:
-- SJA1105 + DP83TD510
-- ASIX + DP83TD510
-- STM32MP1 + DP83TD510
-
-Results provided by this PHY should be interpreted with grain of sold.
-For example testing unshielded and shielded twisted pair may give
-different results. Nevertheless, it still can be usable.
+Using 1Vpp pulse provides most unreliable results. So, disable cable
+testing if PHY is bootstrapped to use 1Vpp-only mode.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/phy/dp83td510.c | 161 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 161 insertions(+)
+ drivers/net/phy/dp83td510.c | 52 ++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 51 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/phy/dp83td510.c b/drivers/net/phy/dp83td510.c
-index 3cd9a77f9532..de32ab1a262d 100644
+index de32ab1a262d..1eaf2ceaca8c 100644
 --- a/drivers/net/phy/dp83td510.c
 +++ b/drivers/net/phy/dp83td510.c
-@@ -4,6 +4,7 @@
-  */
+@@ -31,6 +31,8 @@
+ #define DP83TD510E_TDR_FAIL			BIT(0)
  
- #include <linux/bitfield.h>
-+#include <linux/ethtool_netlink.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/phy.h>
-@@ -24,6 +25,52 @@
- #define DP83TD510E_INT1_LINK			BIT(13)
- #define DP83TD510E_INT1_LINK_EN			BIT(5)
+ #define DP83TD510E_TDR_CFG1			0x300
++/* TX_TYPE: Transmit voltage level for TDR. 0 = 1V, 1 = 2.4V */
++#define DP83TD510E_TDR_TX_TYPE			BIT(12)
  
-+#define DP83TD510E_TDR_CFG			0x1e
-+#define DP83TD510E_TDR_START			BIT(15)
-+#define DP83TD510E_TDR_DONE			BIT(1)
-+#define DP83TD510E_TDR_FAIL			BIT(0)
-+
-+#define DP83TD510E_TDR_CFG1			0x300
-+
-+#define DP83TD510E_TDR_CFG2			0x301
-+#define DP83TD510E_TDR_END_TAP_INDEX_1		GENMASK(14, 8)
-+#define DP83TD510E_TDR_START_TAP_INDEX_1	GENMASK(6, 0)
-+
-+#define DP83TD510E_TDR_CFG3			0x302
-+#define DP83TD510E_TDR_TX_DURATION_US		GENMASK(15, 0)
-+
-+#define DP83TD510E_TDR_FAULT_CFG1		0x303
-+#define DP83TD510E_TDR_FLT_LOC_OFFSET_1		GENMASK(14, 8)
-+#define DP83TD510E_TDR_FLT_INIT_1		GENMASK(7, 0)
-+
-+#define DP83TD510E_TDR_FAULT_CFG2		0x304
-+#define DP83TD510E_TDR_FLT_SLOPE_1		GENMASK(7, 0)
-+
-+#define DP83TD510E_TDR_FAULT_STAT1		0x305
-+#define DP83TD510E_TDR_FAULT_STAT2		0x306
-+#define DP83TD510E_TDR_FAULT_STAT3		0x307
-+#define DP83TD510E_TDR_FAULT_STAT4		0x308
-+#define DP83TD510E_TDR_FAULT_STAT5		0x309
-+#define DP83TD510E_TDR_FAULT_STAT6		0x30a
-+
-+#define DP83TD510E_TDR_FAULT_STAT		0x30c
-+#define DP83TD510E_TDR_PEAK_DETECT		BIT(11)
-+#define DP83TD510E_TDR_PEAK_SIGN		BIT(10)
-+#define DP83TD510E_TDR_PEAK_LOCATION		GENMASK(9, 0)
-+
-+
-+/* Not documented registers and values but recommended according to
-+ * "DP83TD510E Cable Diagnostics Toolkit"
-+ */
-+#define DP83TD510E_UNKN_030D			0x30d
-+#define DP83TD510E_030D_VAL			0x5f25
-+#define DP83TD510E_UNKN_030E			0x30e
-+#define DP83TD510E_030E_VAL			0x0536
-+#define DP83TD510E_UNKN_030F			0x30f
-+#define DP83TD510E_030F_VAL			0x0008
-+#define DP83TD510E_UNKN_0310			0x310
-+#define DP83TD510E_0310_VAL			0x0036
+ #define DP83TD510E_TDR_CFG2			0x301
+ #define DP83TD510E_TDR_END_TAP_INDEX_1		GENMASK(14, 8)
+@@ -71,6 +73,10 @@
+ #define DP83TD510E_UNKN_0310			0x310
+ #define DP83TD510E_0310_VAL			0x0036
+ 
++#define DP83TD510E_CHIP_SOR_1			0x467
++/* If LED_2 is set, blacklist 2.4V mode */
++#define DP83TD510E_SOR_LED_2			BIT(7)
 +
  #define DP83TD510E_AN_STAT_1			0x60c
  #define DP83TD510E_MASTER_SLAVE_RESOL_FAIL	BIT(15)
  
-@@ -211,6 +258,117 @@ static int dp83td510_get_sqi_max(struct phy_device *phydev)
- 	return DP83TD510_SQI_MAX;
+@@ -78,6 +84,10 @@
+ 
+ #define DP83TD510_SQI_MAX	7
+ 
++struct dp83td510_priv {
++	bool allow_v2_4_mode;
++};
++
+ /* Register values are converted to SNR(dB) as suggested by
+  * "Application Report - DP83TD510E Cable Diagnostics Toolkit":
+  * SNR(dB) = -10 * log10 (VAL/2^17) - 1.76 dB.
+@@ -308,12 +318,29 @@ static int dp83td510_tdr_init(struct phy_device *phydev)
+ 
+ static int dp83td510_cable_test_start(struct phy_device *phydev)
+ {
+-	int ret;
++	struct dp83td510_priv *priv = phydev->priv;
++	int ret, cfg = 0;
++
++	/* Generate 2.4Vpp pulse if HW is allowed to do so */
++	if (priv->allow_v2_4_mode) {
++		cfg |= DP83TD510E_TDR_TX_TYPE;
++	} else {
++		/* This PHY do not provide usable results with 1Vpp pulse.
++		 * Potentially different dp83td510_tdr_init() values are
++		 * needed.
++		 */
++		return -EOPNOTSUPP;
++	}
+ 
+ 	ret = dp83td510_tdr_init(phydev);
+ 	if (ret)
+ 		return ret;
+ 
++	ret = phy_modify_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_TDR_CFG1,
++			     DP83TD510E_TDR_TX_TYPE, cfg);
++	if (ret)
++		return ret;
++
+ 	return phy_set_bits_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_TDR_CFG,
+ 				DP83TD510E_TDR_START);
+ }
+@@ -369,6 +396,28 @@ static int dp83td510_cable_test_get_status(struct phy_device *phydev,
+ 	return phy_set_bits(phydev, MII_BMCR, BMCR_RESET);
  }
  
-+/* Configure the TDR circuitry within the PHY as described in
-+ * "Application Report - DP83TD510E Cable Diagnostics Toolkit"
-+ */
-+static int dp83td510_tdr_init(struct phy_device *phydev)
++static int dp83td510_probe(struct phy_device *phydev)
 +{
++	struct device *dev = &phydev->mdio.dev;
++	struct dp83td510_priv *priv;
 +	int ret;
 +
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_TDR_CFG2,
-+			    FIELD_PREP(DP83TD510E_TDR_END_TAP_INDEX_1, 36) |
-+			    FIELD_PREP(DP83TD510E_TDR_START_TAP_INDEX_1, 4));
-+	if (ret)
-+		return ret;
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
 +
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_UNKN_030D,
-+			    DP83TD510E_030D_VAL);
-+	if (ret)
-+		return ret;
++	phydev->priv = priv;
 +
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_TDR_FAULT_CFG1,
-+			    FIELD_PREP(DP83TD510E_TDR_FLT_LOC_OFFSET_1, 0x5) |
-+			    FIELD_PREP(DP83TD510E_TDR_FLT_INIT_1, 0x3e));
-+	if (ret)
-+		return ret;
-+
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_UNKN_030E,
-+			    DP83TD510E_030E_VAL);
-+	if (ret)
-+		return ret;
-+
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_TDR_FAULT_CFG2,
-+			    FIELD_PREP(DP83TD510E_TDR_FLT_SLOPE_1, 0xa));
-+	if (ret)
-+		return ret;
-+
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_UNKN_030F,
-+			    DP83TD510E_030F_VAL);
-+	if (ret)
-+		return ret;
-+
-+	ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_TDR_CFG3,
-+			    FIELD_PREP(DP83TD510E_TDR_TX_DURATION_US, 16000));
-+	if (ret)
-+		return ret;
-+
-+	return phy_write_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_UNKN_0310,
-+			     DP83TD510E_0310_VAL);
-+}
-+
-+static int dp83td510_cable_test_start(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = dp83td510_tdr_init(phydev);
-+	if (ret)
-+		return ret;
-+
-+	return phy_set_bits_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_TDR_CFG,
-+				DP83TD510E_TDR_START);
-+}
-+
-+static int dp83td510_cable_test_get_status(struct phy_device *phydev,
-+					   bool *finished)
-+{
-+	int ret, stat;
-+
-+	*finished = false;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_TDR_CFG);
++	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_CHIP_SOR_1);
 +	if (ret < 0)
 +		return ret;
 +
-+	if (!(ret & DP83TD510E_TDR_DONE))
-+		return 0;
++	if (!(ret & DP83TD510E_SOR_LED_2))
++		priv->allow_v2_4_mode = true;
 +
-+	if (!(ret & DP83TD510E_TDR_FAIL)) {
-+		int location;
-+
-+		ret = phy_read_mmd(phydev, MDIO_MMD_VEND2,
-+				   DP83TD510E_TDR_FAULT_STAT);
-+		if (ret < 0)
-+			return ret;
-+
-+		if (ret & DP83TD510E_TDR_PEAK_DETECT) {
-+			if (ret & DP83TD510E_TDR_PEAK_SIGN)
-+				stat = ETHTOOL_A_CABLE_RESULT_CODE_OPEN;
-+			else
-+				stat = ETHTOOL_A_CABLE_RESULT_CODE_SAME_SHORT;
-+
-+			location = FIELD_GET(DP83TD510E_TDR_PEAK_LOCATION,
-+					     ret) * 100;
-+			ethnl_cable_test_fault_length(phydev,
-+						      ETHTOOL_A_CABLE_PAIR_A,
-+						      location);
-+		} else {
-+			stat = ETHTOOL_A_CABLE_RESULT_CODE_OK;
-+		}
-+	} else {
-+		/* Most probably we have active link partner */
-+		stat = ETHTOOL_A_CABLE_RESULT_CODE_UNSPEC;
-+	}
-+
-+	*finished = true;
-+
-+	ethnl_cable_test_result(phydev, ETHTOOL_A_CABLE_PAIR_A, stat);
-+
-+	/* Reset state machine, otherwise at least other TDR attempts may
-+	 * provide not reliable results.
-+	 */
-+	return phy_set_bits(phydev, MII_BMCR, BMCR_RESET);
++	return 0;
 +}
 +
  static int dp83td510_get_features(struct phy_device *phydev)
  {
  	/* This PHY can't respond on MDIO bus if no RMII clock is enabled.
-@@ -234,6 +392,7 @@ static struct phy_driver dp83td510_driver[] = {
- 	PHY_ID_MATCH_MODEL(DP83TD510E_PHY_ID),
+@@ -393,6 +442,7 @@ static struct phy_driver dp83td510_driver[] = {
  	.name		= "TI DP83TD510E",
  
-+	.flags          = PHY_POLL_CABLE_TEST,
+ 	.flags          = PHY_POLL_CABLE_TEST,
++	.probe		= dp83td510_probe,
  	.config_aneg	= dp83td510_config_aneg,
  	.read_status	= dp83td510_read_status,
  	.get_features	= dp83td510_get_features,
-@@ -241,6 +400,8 @@ static struct phy_driver dp83td510_driver[] = {
- 	.handle_interrupt = dp83td510_handle_interrupt,
- 	.get_sqi	= dp83td510_get_sqi,
- 	.get_sqi_max	= dp83td510_get_sqi_max,
-+	.cable_test_start = dp83td510_cable_test_start,
-+	.cable_test_get_status = dp83td510_cable_test_get_status,
- 
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
 -- 
 2.30.2
 
