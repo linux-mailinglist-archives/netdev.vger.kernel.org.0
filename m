@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FDAF543CB0
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 21:19:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2130C543CB1
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 21:19:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235337AbiFHTTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 15:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51352 "EHLO
+        id S235341AbiFHTTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 15:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235341AbiFHTTd (ORCPT
+        with ESMTP id S235362AbiFHTTd (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 15:19:33 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D9272DC8
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FAB93BF9D
         for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 12:19:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1654715972; x=1686251972;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=BQQdLKEaLaTl/b8/Z9nSyx946gsulvh5RHu3JZjqrns=;
-  b=W0ySh9vap+cwuGvy+W0SQ0Y/0rY0D2zfA5cja0BIBirIVv1HVRHZBjG1
-   kVcrHEVEuXE+dVI2Sn/W0f5AP84KoLat23w+QEG31Jvzdxrbb4EHMgZX0
-   o+784KpiPfa4/ZjqLXdv0Fa6WBnw+L34Tt6xEChltmCvJ0dnQ1QXc9A80
-   z/4njbaY12SnfkLFAO2tAYu2Rnh1cnBah3bbdfq7Kk1bSIVeX0xJ8X0AW
-   ukOMkiSFRBQYfdQpNPeNiCFly4kXy4mj0G9XU9FVbhuY0UMaXvfpAQgn+
-   s9xvsE/qZ/t0MlBzubunjQ8wx2x3S/MRg9Rr9F0TPeVn56dp4Jd3l8CqJ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="257442772"
+  bh=ypaTwO0pQdtrccJnIA7clYfA5CtbDAy0cfvBFehY6Fg=;
+  b=mEnTP61NyJC6Ss7aRKt8YnbJVodSkCLYIYMY0HWyjGiaqbSqAx/9jHjs
+   rm44oA2kYJ6HrRfv2KzTnBxczpOgLYQrTHEoFbxykxLPTfGZCd4Qw6W0/
+   OQzuOoK0RaAIb5ZbLj/L0z777VO8oZle1cnOeAaj6dYFQu/2tUSyGapAE
+   rknqks5u1vQGyeE8/eaezZ87Znmy1NpsQ+KXSWVfhecklNFiIlbflSaj7
+   OSi5A9dmADPJaMvlbthIn2sDj53Cxthqp+Wj0Dd17yxr/42xBwrZMoPkT
+   wEVlh8Tq+urvMgzfjH6BSkrMVRX7YAN+hGF+OsKt3+nD0YN+nX0JtWBHt
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="257442774"
 X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="257442772"
+   d="scan'208";a="257442774"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 12:19:29 -0700
 X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="580206809"
+   d="scan'208";a="580206810"
 Received: from pperi-mobl.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.252.138.161])
   by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 12:19:29 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Ossama Othman <ossama.othman@intel.com>, davem@davemloft.net,
+Cc:     Geliang Tang <geliang.tang@suse.com>, davem@davemloft.net,
         kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
         matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 1/2] mptcp: fix conflict with <netinet/in.h>
-Date:   Wed,  8 Jun 2022 12:19:18 -0700
-Message-Id: <20220608191919.327705-2-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 2/2] mptcp: move MPTCPOPT_HMAC_LEN to net/mptcp.h
+Date:   Wed,  8 Jun 2022 12:19:19 -0700
+Message-Id: <20220608191919.327705-3-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220608191919.327705-1-mathew.j.martineau@linux.intel.com>
 References: <20220608191919.327705-1-mathew.j.martineau@linux.intel.com>
@@ -60,51 +60,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ossama Othman <ossama.othman@intel.com>
+From: Geliang Tang <geliang.tang@suse.com>
 
-Including <linux/mptcp.h> before the C library <netinet/in.h> header
-causes symbol redefinition errors at compile-time due to duplicate
-declarations and definitions in the <linux/in.h> header included by
-<linux/mptcp.h>.
+Move macro MPTCPOPT_HMAC_LEN definition from net/mptcp/protocol.h to
+include/net/mptcp.h.
 
-Explicitly include <netinet/in.h> before <linux/in.h> in
-<linux/mptcp.h> when __KERNEL__ is not defined so that the C library
-compatibility logic in <linux/libc-compat.h> is enabled when including
-<linux/mptcp.h> in user space code.
-
-Fixes: c11c5906bc0a ("mptcp: add MPTCP_SUBFLOW_ADDRS getsockopt support")
-Signed-off-by: Ossama Othman <ossama.othman@intel.com>
+Signed-off-by: Geliang Tang <geliang.tang@suse.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- include/uapi/linux/mptcp.h | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ include/net/mptcp.h  | 3 ++-
+ net/mptcp/protocol.h | 1 -
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/uapi/linux/mptcp.h b/include/uapi/linux/mptcp.h
-index 921963589904..dfe19bf13f4c 100644
---- a/include/uapi/linux/mptcp.h
-+++ b/include/uapi/linux/mptcp.h
-@@ -2,16 +2,17 @@
- #ifndef _UAPI_MPTCP_H
- #define _UAPI_MPTCP_H
+diff --git a/include/net/mptcp.h b/include/net/mptcp.h
+index 4d761ad530c9..ac9cf7271d46 100644
+--- a/include/net/mptcp.h
++++ b/include/net/mptcp.h
+@@ -39,6 +39,7 @@ struct mptcp_ext {
+ 			infinite_map:1;
+ };
  
-+#ifndef __KERNEL__
-+#include <netinet/in.h>		/* for sockaddr_in and sockaddr_in6	*/
-+#include <sys/socket.h>		/* for struct sockaddr			*/
-+#endif
-+
- #include <linux/const.h>
- #include <linux/types.h>
- #include <linux/in.h>		/* for sockaddr_in			*/
- #include <linux/in6.h>		/* for sockaddr_in6			*/
- #include <linux/socket.h>	/* for sockaddr_storage and sa_family	*/
++#define MPTCPOPT_HMAC_LEN	20
+ #define MPTCP_RM_IDS_MAX	8
  
--#ifndef __KERNEL__
--#include <sys/socket.h>		/* for struct sockaddr			*/
--#endif
--
- #define MPTCP_SUBFLOW_FLAG_MCAP_REM		_BITUL(0)
- #define MPTCP_SUBFLOW_FLAG_MCAP_LOC		_BITUL(1)
- #define MPTCP_SUBFLOW_FLAG_JOIN_REM		_BITUL(2)
+ struct mptcp_rm_list {
+@@ -89,7 +90,7 @@ struct mptcp_out_options {
+ 			u32 nonce;
+ 			u32 token;
+ 			u64 thmac;
+-			u8 hmac[20];
++			u8 hmac[MPTCPOPT_HMAC_LEN];
+ 		};
+ 	};
+ #endif
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 200f89f6d62f..8f03775a2f22 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -83,7 +83,6 @@
+ 
+ /* MPTCP MP_JOIN flags */
+ #define MPTCPOPT_BACKUP		BIT(0)
+-#define MPTCPOPT_HMAC_LEN	20
+ #define MPTCPOPT_THMAC_LEN	8
+ 
+ /* MPTCP MP_CAPABLE flags */
 -- 
 2.36.1
 
