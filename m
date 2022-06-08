@@ -2,81 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEAA554320C
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 15:58:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90222543268
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 16:21:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240961AbiFHN6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 09:58:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40226 "EHLO
+        id S241179AbiFHOVH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 10:21:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240878AbiFHN6l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 09:58:41 -0400
-X-Greylist: delayed 401 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 08 Jun 2022 06:58:36 PDT
-Received: from giacobini.uberspace.de (giacobini.uberspace.de [185.26.156.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3287210F1F3
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 06:58:35 -0700 (PDT)
-Received: (qmail 27567 invoked by uid 990); 8 Jun 2022 13:51:52 -0000
-Authentication-Results: giacobini.uberspace.de;
-        auth=pass (plain)
-From:   Soenke Huster <soenke.huster@eknoes.de>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Soenke Huster <soenke.huster@eknoes.de>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] Bluetooth: RFCOMM: Use skb_trim to trim checksum
-Date:   Wed,  8 Jun 2022 15:51:06 +0200
-Message-Id: <20220608135105.146452-1-soenke.huster@eknoes.de>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S241166AbiFHOVG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 10:21:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D4B275D2;
+        Wed,  8 Jun 2022 07:21:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E19E61B49;
+        Wed,  8 Jun 2022 14:21:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45131C34116;
+        Wed,  8 Jun 2022 14:21:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654698063;
+        bh=KAoNP2RonjZuyrd+HPQv+ZY8dqn7U1ZxChKuH/t6LrA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Wbs9MQd9sGKsD8YP8ICpPYn+56jvE5MLb4soG4OXbZ71czL4FwA/MBjzpJaOoMQ1N
+         swO6hpk2Nl1CK6lUtTcvMYaUXyyjFVMiMcO8LTkQIXGbaVb1C0GiW/V7PskgG05ZiP
+         WgLunl4OPLQZwd0WuzSWMr+bpGZnurgBXY7z30oFKLhfUZgsOhwBzgzl0Pu2+J6M5F
+         GWrQOHOuX+zXKcSSugdFjEgDNFp7ZAc1dQtCpilQA6bmTOZsh9DfhOjDx8rRSkEOLG
+         LngsK4ZCXvaklLJ4sjylBD7GBVkCCPSu/SXTDkna4lTYUx+OCpSCd/rxZdkNlOOcNR
+         w6lOlzvv+3ALw==
+Date:   Wed, 8 Jun 2022 16:20:59 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
+        hawk@kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, corbet@lwn.net, linux-doc@vger.kernel.org,
+        jbrouer@redhat.com, lorenzo.bianconi@redhat.com
+Subject: Re: [PATCH v2 net-next] Documentation: update
+ networking/page_pool.rst with ethtool APIs
+Message-ID: <YqCwS540gMwD7T3f@lore-desk>
+References: <8c1f582d286fd5a7406dfff895eea39bb8fedca6.1654546043.git.lorenzo@kernel.org>
+ <20220607210021.05263978@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Bar: /
-X-Rspamd-Report: BAYES_HAM(-2.970374) R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) SUSPICIOUS_RECIPS(1.5)
-X-Rspamd-Score: -0.070374
-Received: from unknown (HELO unkown) (::1)
-        by giacobini.uberspace.de (Haraka/2.8.28) with ESMTPSA; Wed, 08 Jun 2022 15:51:52 +0200
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,
-        MSGID_FROM_MTA_HEADER,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="n2JhVsl7RIJhU8Em"
+Content-Disposition: inline
+In-Reply-To: <20220607210021.05263978@kernel.org>
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the skb helper instead of direct manipulation. This fixes the
-following page fault, when connecting my Android phone:
 
-    BUG: unable to handle page fault for address: ffffed1021de29ff
-    #PF: supervisor read access in kernel mode
-    #PF: error_code(0x0000) - not-present page
-    RIP: 0010:rfcomm_run+0x831/0x4040 (net/bluetooth/rfcomm/core.c:1751)
+--n2JhVsl7RIJhU8Em
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
----
- net/bluetooth/rfcomm/core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> On Mon,  6 Jun 2022 22:15:45 +0200 Lorenzo Bianconi wrote:
+> > Update page_pool documentation with page_pool ethtool stats APIs.
+> >=20
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> > Changes since v1:
+> > - get rid of literal markup
+>=20
+> This is not what Andrew and I meant, I don't think. The suggestion was
+> to put the information in kdoc of the function, in the source code, and
+> then render the kdoc here by adding something like:
+>=20
+> .. kernel-doc:: whatever/the/source/is.c
+>    :identifiers: page_pool_ethtool_stats_get_strings page_pool_ethtool_st=
+ats_get_count page_pool_ethtool_stats_get
+>=20
 
-diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.c
-index 7324764384b6..7360e905d045 100644
---- a/net/bluetooth/rfcomm/core.c
-+++ b/net/bluetooth/rfcomm/core.c
-@@ -1747,8 +1747,8 @@ static struct rfcomm_session *rfcomm_recv_frame(struct rfcomm_session *s,
- 	type = __get_type(hdr->ctrl);
- 
- 	/* Trim FCS */
--	skb->len--; skb->tail--;
--	fcs = *(u8 *)skb_tail_pointer(skb);
-+	skb_trim(skb, skb->len - 1);
-+	fcs = *(skb->data + skb->len);
- 
- 	if (__check_fcs(skb->data, type, fcs)) {
- 		BT_ERR("bad checksum in packet");
--- 
-2.36.1
+ack, I misunderstood Jonathan's comments. I will fix it.
 
+Regards,
+Lorenzo
+
+--n2JhVsl7RIJhU8Em
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYqCwSwAKCRA6cBh0uS2t
+rEesAQCMqM06C2g3Y4SmicWcNkjOz5w9yU1CkkmmjhBA4oqfVQEAwIoUFCY60qUi
+pzmiPaZ/bRljwRsyRaYOjus+hyPY3AE=
+=uW3B
+-----END PGP SIGNATURE-----
+
+--n2JhVsl7RIJhU8Em--
