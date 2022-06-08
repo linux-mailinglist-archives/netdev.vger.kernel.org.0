@@ -2,101 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDB0A542F0F
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 13:23:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5887F542F2A
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 13:27:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237451AbiFHLXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 07:23:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57110 "EHLO
+        id S238172AbiFHL1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 07:27:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237500AbiFHLXJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 07:23:09 -0400
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2077.outbound.protection.outlook.com [40.107.212.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1873BC3E0
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 04:23:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bhz7kyolchezqZvNlKKegGjB8lQQ1Bj3io1ZR9zkyu4sooGUjZqUr62pqmBWf/dqMLwDVQcxFWeYqKsX2LKRaMxLhTDSoSR/5FV/sVP+G/QG08ZGSm2hf+dwi73wa72BY1z6j5Nspg6kJnDj5BuiH7FADITGOHWd8T+IgnM/KEuvszh4Co7U0SoagKbM3lAKC6btpzeykeNMNhwamKNC+VdcAnxVCFtZYzAKWqmVCSZDvDRR/7G+hkGT++BhruZKEh4d6H9qZHZhwQnFkw8BajnxuFrfU6lhigaBTBykYBlHh6KgwUkCV09nbXjl8EAmHrXF4ZJeB3+0MWSkocggIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=03ubAIsOqsdP3U+VwtFbBtLmIcy/jSNPXCWVzHwaLoY=;
- b=R81MG9ECQdPhLqNgHN+RZQ9kbx6OtLZCA0K3uvLg+sjXjPRU72d4Fgg0qJsjp52GnLRY8LrsChKU0zqAmN9qVssvPlNxTuqzxMWI9gHm13H3scD3Qo94tzuVnG/BOFyztrzxcskMveNIQTTtEmmDA1wO8CqjeifUTeO+mI54qZN+jCgMpiZRKaiHr6KKNqX3zYbEXmZ1tCv6lxo0IEB3+zjtuUvmDilCQtZwxM4QTWIJlXRf+o9e9NBTVTCSln3eE3CzqsYoUlc4VOsPUOLg8BDGNm2wWoPDv9ESwIWOY6xk1646GWV1nH2Qvd1+4VWMTCK29ggBqyQcoxVaUCnWaQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=03ubAIsOqsdP3U+VwtFbBtLmIcy/jSNPXCWVzHwaLoY=;
- b=kpI5IPwc5osL9C273k5pUpJgC/GBX0XAdWr5sCdDnDLrAYqWiDCjj9EhIuGr05El8A3M0Is6YZ4qitt2JsSyniXA3OG/YiVUBEUitdNukaoYipbD4EIOJCL925Cq8XpcRTPO7Oz/ANxjKJrUaxw2/TEcMtWbbW3LGx4WyABnMtXHtWCQtidXaGN3gnyYgCZuDA+JjdGP7+YgqgYak5k9nuEr/FXvfnR6WWePcQ5DqJLEGe/QgRyk5cPz0V2hM7RHU+4Xz3BeEssVu5mFzZxDpAEQA8xIXZescfx2arEl9eOtwisFiBp13pOIDNPP1Es9fme2WULREBo6QUkp4GE/GQ==
-Received: from BN9PR03CA0141.namprd03.prod.outlook.com (2603:10b6:408:fe::26)
- by BN6PR12MB1458.namprd12.prod.outlook.com (2603:10b6:405:d::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.13; Wed, 8 Jun
- 2022 11:23:05 +0000
-Received: from BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:fe:cafe::70) by BN9PR03CA0141.outlook.office365.com
- (2603:10b6:408:fe::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.17 via Frontend
- Transport; Wed, 8 Jun 2022 11:23:05 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.238) by
- BN8NAM11FT049.mail.protection.outlook.com (10.13.177.157) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5332.12 via Frontend Transport; Wed, 8 Jun 2022 11:23:05 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Wed, 8 Jun
- 2022 11:23:04 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 8 Jun 2022
- 04:23:03 -0700
-Received: from vdi.nvidia.com (10.127.8.12) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server id 15.2.986.22 via Frontend Transport; Wed, 8 Jun
- 2022 04:23:01 -0700
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-To:     David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-CC:     Tariq Toukan <tariqt@nvidia.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH iproute2-next v3] ss: Shorter display format for TLS zerocopy sendfile
-Date:   Wed, 8 Jun 2022 14:22:59 +0300
-Message-ID: <20220608112259.3132037-1-maximmi@nvidia.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S238158AbiFHL1D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 07:27:03 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E171FBF101
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 04:27:01 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id y32so32739691lfa.6
+        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 04:27:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V2ONoospc3ZQNgnh+gWOpWLbb0lokYbJX+4sKWAZmo8=;
+        b=iGLqCYyDk4W1FC7IyTXCRtnRWZmR5U7tMjGPoS/3uegO9vLpmlKRUSAC8+3MC5hFJY
+         or3vJ9l5WDMNJmqMBvpVSZvOX+3Rg5kxXFu503HUyOn/iQ+Aa3K/ZFcroWq4Vk1lKrjG
+         KU9tPHMKzkDL3jbnngVvbhPHrp0/YMZnbopUbTJVNUowlrTa3FyvaKfwAVUQImGya9wh
+         MLo8U9TqTdbt30uXLwi1r8ZJVt7Fl/aWqfZBolPEbyL17FY4tmGkwAnGURxXZN/qts4y
+         0vrb5oi4pmvIQWqL9tV7etJ1b3z0EaX4YWWi2e7y0j86WdeNick6PHNkYxpYTSXzzRsK
+         GRdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=V2ONoospc3ZQNgnh+gWOpWLbb0lokYbJX+4sKWAZmo8=;
+        b=RLlonXrElmrj/5Rhy9C9tuCqNxWS3mLjS7Ze5uomk6aGm5fnPsZPtxN9l478QhTEyq
+         6fsQQnkpZ7CPIIkZsuhSH+eg8G7Jv50vTA8rRvR66mUR7uVe3NL9nsNH1SEa+Osf9fRq
+         X5AplP4y3Zh2vsNmMhmz+e0sPPVLQ4EcPfcnGa4su6nAte0Ifu0JBmZIwTreFCgyrU7Y
+         ishbbiTar5VNn44CodpmFBp0NjyQcY//7cqklLKxo0wPc/dagzCPbDj2/Sa49p9t6mMM
+         pQN2bzKkxsuWutiVfv2u46v6PJ8e0x3DwENCpSLXSugAjASU2PKoqT0bKYPB62IJyAcK
+         5P3Q==
+X-Gm-Message-State: AOAM530VX5GydyED+IQVFUBXuXcayo/ERBUsMzJGEiBzowD2A/8LohZg
+        eu7nkEsmRj8ST4scvQzc+Lo=
+X-Google-Smtp-Source: ABdhPJyN33Bvhf0U7IT1DGwPT6mzZ3axkUNo3cpfovOjyXzk2wg1moD8kYjSto4oiuO4eAfCtpUxeg==
+X-Received: by 2002:a05:6512:3118:b0:479:216f:4e36 with SMTP id n24-20020a056512311800b00479216f4e36mr13774805lfb.568.1654687620130;
+        Wed, 08 Jun 2022 04:27:00 -0700 (PDT)
+Received: from extra.gateflow.net ([46.109.159.121])
+        by smtp.gmail.com with ESMTPSA id v20-20020a056512349400b00478f3bb79d6sm3675678lfr.194.2022.06.08.04.26.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 04:26:59 -0700 (PDT)
+From:   Anton Makarov <antonmakarov11235@gmail.com>
+X-Google-Original-From: Anton Makarov <anton.makarov11235@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org,
+        david.lebrun@uclouvain.be, kuba@kernel.org
+Cc:     Anton Makarov <anton.makarov11235@gmail.com>
+Subject: [net-next 1/1] net: seg6: Add support for SRv6 Headend Reduced Encapsulation
+Date:   Wed,  8 Jun 2022 14:26:46 +0300
+Message-Id: <20220608112646.9331-1-anton.makarov11235@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7113393b-b7f1-4726-126a-08da494141da
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1458:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR12MB14586C81C3EF8A90A0B5A427DCA49@BN6PR12MB1458.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kQtT3Gmp+2PgXbyIlwdabHE8X9pXIgz0UN9n/lBpmtyMpdvTfxHRRgzeZimiY91H96ETqWheJx3GEZsx1OMOWmL5qDCA/ddoFb/LC5hMPyad6kgNGjNeiOVUbuj6D5JzJfP4ETiIFW705hQ5vrcoCGA+YFMNwLivy5LFS3nx26EyqPeyGwUo9b9YXsomi479SmRKz+CZPIT6wXscLsjnTG1Vs5rNzq/pJf75QWhDDNqW9Y6LkeCk4+OeatvSxfGXSeKURuy0YLhCklXJi449/xdzJ8MBPrBaq7bnMpD+IRoahrvuo23bjuny9xT4ZuY6e6bRBs3nWfzMIDmwU51Eh6jJIM3BqDgjx81rrUSvNDmNybIu6dnZPqW4vzXImYvPlHRtwie6PUhdRpP7PdIs2VJZQ6ZH06sfQhhiYrz2rgG6feOZQib6XXRX0JjQjs8PwqSNa2KMgmxomg4GLUSomiIH1m5g+VDV3j0EPdZkMULYO1HNbrEMNFBko/tQwdQZaQkjO7TpIWNueX/Ersl0w96KHg4/hfUeVH0R2YxFAL8PKX7nPG1rHnSwUXuNjQD+zn1kHtgPAv8sh4NtcrbCX8KPG6M8lxxCqWvug00cYUKUnDr/5NhDrgiwdNb65SCA+IREIxz3eqbzMZ1gJNmIHQQbCXPji7EyGOHuxLpQ1NaC11nLlvvu2qdTk/vOPp1N61kr/CsSuHp9YfGHsfwmxw==
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(83380400001)(356005)(2616005)(186003)(110136005)(40460700003)(8676002)(81166007)(8936002)(70206006)(54906003)(5660300002)(70586007)(2906002)(82310400005)(316002)(4326008)(86362001)(508600001)(336012)(47076005)(1076003)(426003)(36756003)(7696005)(26005)(36860700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jun 2022 11:23:05.0984
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7113393b-b7f1-4726-126a-08da494141da
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT049.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1458
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -104,58 +68,201 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 21c07b45688f ("ss: Show zerocopy sendfile status of TLS
-sockets") started displaying the activation status of zerocopy sendfile
-on TLS sockets, exposed via sock_diag. This commit makes the format more
-compact: the flag's name is shorter and is printed only when the feature
-is active, similar to other flag options.
+SRv6 Headend H.Encaps.Red and H.Encaps.L2.Red behaviors are implemented
+accordingly to RFC 8986. The H.Encaps.Red is an optimization of
+The H.Encaps behavior. The H.Encaps.L2.Red is an optimization of
+the H.Encaps.L2 behavior. Both new behaviors reduce the length of
+the SRH by excluding the first SID in the SRH of the pushed IPv6 header.
+The first SID is only placed in the Destination Address field
+of the pushed IPv6 header.
 
-The flag's name is also generalized ("sendfile" -> "tx") to embrace
-possible future optimizations, and includes an explicit indication that
-the underlying data must not be modified during transfer ("ro").
+The push of the SRH is omitted when the SRv6 Policy only contains
+one segment.
 
-Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Signed-off-by: Anton Makarov <anton.makarov11235@gmail.com>
 ---
- include/uapi/linux/tls.h | 2 +-
- misc/ss.c                | 5 +++--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ include/net/seg6.h                 |  2 +
+ include/uapi/linux/seg6_iptunnel.h |  2 +
+ net/ipv6/seg6_iptunnel.c           | 95 +++++++++++++++++++++++++++++-
+ 3 files changed, 97 insertions(+), 2 deletions(-)
 
-diff --git a/include/uapi/linux/tls.h b/include/uapi/linux/tls.h
-index 83a3cea4..e9eeccd2 100644
---- a/include/uapi/linux/tls.h
-+++ b/include/uapi/linux/tls.h
-@@ -161,7 +161,7 @@ enum {
- 	TLS_INFO_CIPHER,
- 	TLS_INFO_TXCONF,
- 	TLS_INFO_RXCONF,
--	TLS_INFO_ZC_SENDFILE,
-+	TLS_INFO_ZC_TX,
- 	__TLS_INFO_MAX,
+diff --git a/include/net/seg6.h b/include/net/seg6.h
+index af668f17b398..8d0ce782f830 100644
+--- a/include/net/seg6.h
++++ b/include/net/seg6.h
+@@ -62,6 +62,8 @@ extern struct ipv6_sr_hdr *seg6_get_srh(struct sk_buff *skb, int flags);
+ extern void seg6_icmp_srh(struct sk_buff *skb, struct inet6_skb_parm *opt);
+ extern int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh,
+ 			     int proto);
++extern int seg6_do_srh_encap_red(struct sk_buff *skb, struct ipv6_sr_hdr *osrh,
++			     int proto);
+ extern int seg6_do_srh_inline(struct sk_buff *skb, struct ipv6_sr_hdr *osrh);
+ extern int seg6_lookup_nexthop(struct sk_buff *skb, struct in6_addr *nhaddr,
+ 			       u32 tbl_id);
+diff --git a/include/uapi/linux/seg6_iptunnel.h b/include/uapi/linux/seg6_iptunnel.h
+index eb815e0d0ac3..a9fa777f16de 100644
+--- a/include/uapi/linux/seg6_iptunnel.h
++++ b/include/uapi/linux/seg6_iptunnel.h
+@@ -35,6 +35,8 @@ enum {
+ 	SEG6_IPTUN_MODE_INLINE,
+ 	SEG6_IPTUN_MODE_ENCAP,
+ 	SEG6_IPTUN_MODE_L2ENCAP,
++	SEG6_IPTUN_MODE_ENCAP_RED,
++	SEG6_IPTUN_MODE_L2ENCAP_RED,
  };
- #define TLS_INFO_MAX (__TLS_INFO_MAX - 1)
-diff --git a/misc/ss.c b/misc/ss.c
-index c4434a20..78e52ba2 100644
---- a/misc/ss.c
-+++ b/misc/ss.c
-@@ -2988,7 +2988,8 @@ static void tcp_tls_conf(const char *name, struct rtattr *attr)
  
- static void tcp_tls_zc_sendfile(struct rtattr *attr)
- {
--	out(" zerocopy_sendfile: %s", attr ? "active" : "inactive");
-+	if (attr)
-+		out(" zc_ro_tx");
+ #endif
+diff --git a/net/ipv6/seg6_iptunnel.c b/net/ipv6/seg6_iptunnel.c
+index d64855010948..430975b03597 100644
+--- a/net/ipv6/seg6_iptunnel.c
++++ b/net/ipv6/seg6_iptunnel.c
+@@ -36,9 +36,11 @@ static size_t seg6_lwt_headroom(struct seg6_iptunnel_encap *tuninfo)
+ 	case SEG6_IPTUN_MODE_INLINE:
+ 		break;
+ 	case SEG6_IPTUN_MODE_ENCAP:
++	case SEG6_IPTUN_MODE_ENCAP_RED:
+ 		head = sizeof(struct ipv6hdr);
+ 		break;
+ 	case SEG6_IPTUN_MODE_L2ENCAP:
++	case SEG6_IPTUN_MODE_L2ENCAP_RED:
+ 		return 0;
+ 	}
+ 
+@@ -195,6 +197,81 @@ int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
  }
+ EXPORT_SYMBOL_GPL(seg6_do_srh_encap);
  
- static void mptcp_subflow_info(struct rtattr *tb[])
-@@ -3221,7 +3222,7 @@ static void tcp_show_info(const struct nlmsghdr *nlh, struct inet_diag_msg *r,
- 			tcp_tls_cipher(tlsinfo[TLS_INFO_CIPHER]);
- 			tcp_tls_conf("rxconf", tlsinfo[TLS_INFO_RXCONF]);
- 			tcp_tls_conf("txconf", tlsinfo[TLS_INFO_TXCONF]);
--			tcp_tls_zc_sendfile(tlsinfo[TLS_INFO_ZC_SENDFILE]);
-+			tcp_tls_zc_sendfile(tlsinfo[TLS_INFO_ZC_TX]);
- 		}
- 		if (ulpinfo[INET_ULP_INFO_MPTCP]) {
- 			struct rtattr *sfinfo[MPTCP_SUBFLOW_ATTR_MAX + 1] =
++/* encapsulate an IPv6 packet within an outer IPv6 header with reduced SRH */
++int seg6_do_srh_encap_red(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
++{
++	struct dst_entry *dst = skb_dst(skb);
++	struct net *net = dev_net(dst->dev);
++	struct ipv6hdr *hdr, *inner_hdr6;
++	struct iphdr *inner_hdr4;
++	struct ipv6_sr_hdr *isrh;
++	int hdrlen = 0, tot_len, err;
++	__be32 flowlabel = 0;
++
++	if (osrh->first_segment > 0)
++		hdrlen = (osrh->hdrlen - 1) << 3;
++
++	tot_len = hdrlen + sizeof(struct ipv6hdr);
++
++	err = skb_cow_head(skb, tot_len + skb->mac_len);
++	if (unlikely(err))
++		return err;
++
++	inner_hdr6 = ipv6_hdr(skb);
++	inner_hdr4 = ip_hdr(skb);
++	flowlabel = seg6_make_flowlabel(net, skb, inner_hdr6);
++
++	skb_push(skb, tot_len);
++	skb_reset_network_header(skb);
++	skb_mac_header_rebuild(skb);
++	hdr = ipv6_hdr(skb);
++
++	memset(skb->cb, 0, 48);
++	IP6CB(skb)->iif = skb->skb_iif;
++
++	if (skb->protocol == htons(ETH_P_IPV6)) {
++		ip6_flow_hdr(hdr, ip6_tclass(ip6_flowinfo(inner_hdr6)),
++			     flowlabel);
++		hdr->hop_limit = inner_hdr6->hop_limit;
++	} else if (skb->protocol == htons(ETH_P_IP)) {
++		ip6_flow_hdr(hdr, ip6_tclass(inner_hdr4->tos), flowlabel);
++		hdr->hop_limit = inner_hdr4->ttl;
++	}
++
++	skb->protocol = htons(ETH_P_IPV6);
++
++	hdr->daddr = osrh->segments[osrh->first_segment];
++	hdr->version = 6;
++
++	if (osrh->first_segment > 0) {
++		hdr->nexthdr = NEXTHDR_ROUTING;
++
++		isrh = (void *)hdr + sizeof(struct ipv6hdr);
++		memcpy(isrh, osrh, hdrlen);
++
++		isrh->nexthdr = proto;
++		isrh->first_segment--;
++		isrh->hdrlen -= 2;
++	} else {
++		hdr->nexthdr = proto;
++	}
++
++	set_tun_src(net, dst->dev, &hdr->daddr, &hdr->saddr);
++
++#ifdef CONFIG_IPV6_SEG6_HMAC
++	if (osrh->first_segment > 0 && sr_has_hmac(isrh)) {
++		err = seg6_push_hmac(net, &hdr->saddr, isrh);
++		if (unlikely(err))
++			return err;
++	}
++#endif
++
++	skb_postpush_rcsum(skb, hdr, tot_len);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(seg6_do_srh_encap_red);
++
+ /* insert an SRH within an IPv6 packet, just after the IPv6 header */
+ int seg6_do_srh_inline(struct sk_buff *skb, struct ipv6_sr_hdr *osrh)
+ {
+@@ -265,6 +342,7 @@ static int seg6_do_srh(struct sk_buff *skb)
+ 			return err;
+ 		break;
+ 	case SEG6_IPTUN_MODE_ENCAP:
++	case SEG6_IPTUN_MODE_ENCAP_RED:
+ 		err = iptunnel_handle_offloads(skb, SKB_GSO_IPXIP6);
+ 		if (err)
+ 			return err;
+@@ -276,7 +354,11 @@ static int seg6_do_srh(struct sk_buff *skb)
+ 		else
+ 			return -EINVAL;
+ 
+-		err = seg6_do_srh_encap(skb, tinfo->srh, proto);
++		if (tinfo->mode == SEG6_IPTUN_MODE_ENCAP)
++			err = seg6_do_srh_encap(skb, tinfo->srh, proto);
++		else
++			err = seg6_do_srh_encap_red(skb, tinfo->srh, proto);
++
+ 		if (err)
+ 			return err;
+ 
+@@ -285,6 +367,7 @@ static int seg6_do_srh(struct sk_buff *skb)
+ 		skb->protocol = htons(ETH_P_IPV6);
+ 		break;
+ 	case SEG6_IPTUN_MODE_L2ENCAP:
++	case SEG6_IPTUN_MODE_L2ENCAP_RED:
+ 		if (!skb_mac_header_was_set(skb))
+ 			return -EINVAL;
+ 
+@@ -294,7 +377,11 @@ static int seg6_do_srh(struct sk_buff *skb)
+ 		skb_mac_header_rebuild(skb);
+ 		skb_push(skb, skb->mac_len);
+ 
+-		err = seg6_do_srh_encap(skb, tinfo->srh, IPPROTO_ETHERNET);
++		if (tinfo->mode == SEG6_IPTUN_MODE_L2ENCAP)
++			err = seg6_do_srh_encap(skb, tinfo->srh, IPPROTO_ETHERNET);
++		else
++			err = seg6_do_srh_encap_red(skb, tinfo->srh, IPPROTO_ETHERNET);
++
+ 		if (err)
+ 			return err;
+ 
+@@ -514,6 +601,10 @@ static int seg6_build_state(struct net *net, struct nlattr *nla,
+ 		break;
+ 	case SEG6_IPTUN_MODE_L2ENCAP:
+ 		break;
++	case SEG6_IPTUN_MODE_ENCAP_RED:
++		break;
++	case SEG6_IPTUN_MODE_L2ENCAP_RED:
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
 -- 
-2.25.1
+2.20.1
 
