@@ -2,220 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76AA1542D11
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 12:20:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60F53542CC9
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 12:12:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236383AbiFHKUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 06:20:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53024 "EHLO
+        id S236538AbiFHKLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 06:11:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237008AbiFHKTE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 06:19:04 -0400
-Received: from mailout2.hostsharing.net (mailout2.hostsharing.net [IPv6:2a01:37:3000::53df:4ee9:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EE22A15A875;
-        Wed,  8 Jun 2022 03:06:18 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by mailout2.hostsharing.net (Postfix) with ESMTPS id 02DB410189E0A;
-        Wed,  8 Jun 2022 11:56:58 +0200 (CEST)
-Received: from localhost (unknown [89.246.108.87])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by h08.hostsharing.net (Postfix) with ESMTPSA id D4542621B6E1;
-        Wed,  8 Jun 2022 11:56:57 +0200 (CEST)
-X-Mailbox-Line: From 78ad73b93adb59edfa2d68e44a9fcfea65e98131 Mon Sep 17 00:00:00 2001
-Message-Id: <78ad73b93adb59edfa2d68e44a9fcfea65e98131.1654680790.git.lukas@wunner.de>
-In-Reply-To: <cover.1654680790.git.lukas@wunner.de>
-References: <cover.1654680790.git.lukas@wunner.de>
-From:   Lukas Wunner <lukas@wunner.de>
-Date:   Wed, 8 Jun 2022 11:52:11 +0200
-Subject: [PATCH net v2 1/1] net: phy: Don't trigger state machine while in
- suspend
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>
-Cc:     netdev@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Ferry Toth <fntoth@gmail.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S236079AbiFHKKe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 06:10:34 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB1E1F98ED;
+        Wed,  8 Jun 2022 02:55:49 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id f65so8223611pgc.7;
+        Wed, 08 Jun 2022 02:55:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EQQonAR/17w7429qFSvl74TS1SwJXlMBX+AGITM2SpE=;
+        b=fF4Mmpd/Y/QkgrJOZAWtOY9fZ2suYowaB1GZQuFrfZczoKKtjLjGOg70nZ/P3ozQE5
+         BvAoxRoAvFOSZAJ5Ra11YGaN4yaKnS82bJqEI5FM+3aJd2YwI0WR1GCujxBFAn6m4a1X
+         1N6K6mDGloH7h1CD3IOPV4Z9pw590XNzkW40/BOxKjJvSArRgQ5iXEo47flnhFNcAUyR
+         gxJXc3O6KPYBKvVggfNmgZzAGMQ1DSgt9iSYNK1BmIx4ckq9ryQVqayQwwini0IE5Auj
+         0tQL7wer2qKtnNxfkIQH0YfvMJnJ+un65QiH1DPLFNTP0IVlbj0dZ+2R9q5f4tnIs952
+         rFmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EQQonAR/17w7429qFSvl74TS1SwJXlMBX+AGITM2SpE=;
+        b=vOjEq7iDZQJvdN8i2OZh8j08V61DSRJPh7RS9UO/gDhVHsl49ByClX2wjFz7rEbfYX
+         296woGyZR5MRqVPIiesuCX/78z/Wh3nChev8RvoqCNJV1Z9przfIe4GHeYpg/UY4YJO2
+         isvYgT3vt5ZnG6J7zRrpKxi0o0+966QwEjS9XLsaqPQBw9nSYMvLmQYB49n4eVJE4vrM
+         5pcvI2AEK8RE0xJvNId1gVkLzjwdAohZ6zkFLiKY0scsZyhIaaUxnDTKr3GrS07cPB6v
+         AQ3MSvM0fzietCXGW9Akq62SBIp38qInAE7w/6nMKQ75lc0SYMH/+QFisdi+2jGoYrRt
+         Or1g==
+X-Gm-Message-State: AOAM531E5wUPbCtajmQJTdM0jluX/F9Ymxgbj26MMp8iKRSJHp4MCvVe
+        g3N9V62b+5XFVvXfUwFzzYulvQn3F9E0LxSeFmzm1044HCo+UQ==
+X-Google-Smtp-Source: ABdhPJxI45k6hpRTPF0dfmUz7W6IW9C5yI2jf78AE8/IXHDCrIns1Bea6cdgCUBEh7nuv66v7fmSC8k6xPbiLMGx5zk=
+X-Received: by 2002:a62:868c:0:b0:51b:bd62:4c87 with SMTP id
+ x134-20020a62868c000000b0051bbd624c87mr33401883pfd.83.1654682148458; Wed, 08
+ Jun 2022 02:55:48 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220607142200.576735-1-maciej.fijalkowski@intel.com>
+In-Reply-To: <20220607142200.576735-1-maciej.fijalkowski@intel.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Wed, 8 Jun 2022 11:55:37 +0200
+Message-ID: <CAJ8uoz0XWd=rWUupMnGEBTcwZ0xixKUx1pLuqGm=xXWJEnqvrA@mail.gmail.com>
+Subject: Re: [PATCH bpf] xsk: Fix handling of invalid descriptors in XSK Tx
+ batching API
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Upon system sleep, mdio_bus_phy_suspend() stops the phy_state_machine(),
-but subsequent interrupts may retrigger it:
+On Tue, Jun 7, 2022 at 7:16 PM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> Xdpxceiver run on a AF_XDP ZC enabled driver revealed a problem with XSK
+> Tx batching API. There is a test that checks how invalid Tx descriptors
+> are handled by AF_XDP. Each valid descriptor is followed by invalid one
+> on Tx side whereas the Rx side expects only to receive a set of valid
+> descriptors.
+>
+> In current xsk_tx_peek_release_desc_batch() function, the amount of
+> available descriptors is hidden inside xskq_cons_peek_desc_batch(). This
+> can be problematic in cases where invalid descriptors are present due to
+> the fact that xskq_cons_peek_desc_batch() returns only a count of valid
+> descriptors. This means that it is impossible to properly update XSK
+> ring state when calling xskq_cons_release_n().
+>
+> To address this issue, pull out the contents of
+> xskq_cons_peek_desc_batch() so that callers (currently only
+> xsk_tx_peek_release_desc_batch()) will always be able to update the
+> state of ring properly, as total count of entries is now available and
+> use this value as an argument in xskq_cons_release_n(). By
+> doing so, xskq_cons_peek_desc_batch() can be dropped altogether.
 
-They may have been left enabled to facilitate wakeup and are not
-quiesced until the ->suspend_noirq() phase.  Unwanted interrupts may
-hence occur between mdio_bus_phy_suspend() and dpm_suspend_noirq(),
-as well as between dpm_resume_noirq() and mdio_bus_phy_resume().
+Thank you for catching this Maciej!
 
-Retriggering the phy_state_machine() through an interrupt is not only
-undesirable for the reason given in mdio_bus_phy_suspend() (freezing it
-midway with phydev->lock held), but also because the PHY may be
-inaccessible after it's suspended:  Accesses to USB-attached PHYs are
-blocked once usb_suspend_both() clears the can_submit flag and PHYs on
-PCI network cards may become inaccessible upon suspend as well.
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Amend phy_interrupt() to avoid triggering the state machine if the PHY
-is suspended.  Signal wakeup instead if the attached net_device or its
-parent has been configured as a wakeup source.  (Those conditions are
-identical to mdio_bus_phy_may_suspend().)  Postpone handling of the
-interrupt until the PHY has resumed.
-
-Before stopping the phy_state_machine() in mdio_bus_phy_suspend(),
-wait for a concurrent phy_interrupt() to run to completion.  That is
-necessary because phy_interrupt() may have checked the PHY's suspend
-status before the system sleep transition commenced and it may thus
-retrigger the state machine after it was stopped.
-
-Likewise, after re-enabling interrupt handling in mdio_bus_phy_resume(),
-wait for a concurrent phy_interrupt() to complete to ensure that
-interrupts which it postponed are properly rerun.
-
-Link: https://lore.kernel.org/netdev/a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com/
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
----
- drivers/net/phy/phy.c        | 23 +++++++++++++++++++++++
- drivers/net/phy/phy_device.c | 23 +++++++++++++++++++++++
- include/linux/phy.h          |  6 ++++++
- 3 files changed, 52 insertions(+)
-
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index ef62f357b76d..8d3ee3a6495b 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -31,6 +31,7 @@
- #include <linux/io.h>
- #include <linux/uaccess.h>
- #include <linux/atomic.h>
-+#include <linux/suspend.h>
- #include <net/netlink.h>
- #include <net/genetlink.h>
- #include <net/sock.h>
-@@ -976,6 +977,28 @@ static irqreturn_t phy_interrupt(int irq, void *phy_dat)
- 	struct phy_driver *drv = phydev->drv;
- 	irqreturn_t ret;
- 
-+	/* Wakeup interrupts may occur during a system sleep transition.
-+	 * Postpone handling until the PHY has resumed.
-+	 */
-+	if (IS_ENABLED(CONFIG_PM_SLEEP) && phydev->irq_suspended) {
-+		struct net_device *netdev = phydev->attached_dev;
-+
-+		if (netdev) {
-+			struct device *parent = netdev->dev.parent;
-+
-+			if (netdev->wol_enabled)
-+				pm_system_wakeup();
-+			else if (device_may_wakeup(&netdev->dev))
-+				pm_wakeup_dev_event(&netdev->dev, 0, true);
-+			else if (parent && device_may_wakeup(parent))
-+				pm_wakeup_dev_event(parent, 0, true);
-+		}
-+
-+		phydev->irq_rerun = 1;
-+		disable_irq_nosync(irq);
-+		return IRQ_HANDLED;
-+	}
-+
- 	mutex_lock(&phydev->lock);
- 	ret = drv->handle_interrupt(phydev);
- 	mutex_unlock(&phydev->lock);
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 431a8719c635..46acddd865a7 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -278,6 +278,15 @@ static __maybe_unused int mdio_bus_phy_suspend(struct device *dev)
- 	if (phydev->mac_managed_pm)
- 		return 0;
- 
-+	/* Wakeup interrupts may occur during the system sleep transition when
-+	 * the PHY is inaccessible. Set flag to postpone handling until the PHY
-+	 * has resumed. Wait for concurrent interrupt handler to complete.
-+	 */
-+	if (phy_interrupt_is_valid(phydev)) {
-+		phydev->irq_suspended = 1;
-+		synchronize_irq(phydev->irq);
-+	}
-+
- 	/* We must stop the state machine manually, otherwise it stops out of
- 	 * control, possibly with the phydev->lock held. Upon resume, netdev
- 	 * may call phy routines that try to grab the same lock, and that may
-@@ -315,6 +324,20 @@ static __maybe_unused int mdio_bus_phy_resume(struct device *dev)
- 	if (ret < 0)
- 		return ret;
- no_resume:
-+	if (phy_interrupt_is_valid(phydev)) {
-+		phydev->irq_suspended = 0;
-+		synchronize_irq(phydev->irq);
-+
-+		/* Rerun interrupts which were postponed by phy_interrupt()
-+		 * because they occurred during the system sleep transition.
-+		 */
-+		if (phydev->irq_rerun) {
-+			phydev->irq_rerun = 0;
-+			enable_irq(phydev->irq);
-+			irq_wake_thread(phydev->irq, phydev);
-+		}
-+	}
-+
- 	if (phydev->attached_dev && phydev->adjust_link)
- 		phy_start_machine(phydev);
- 
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 508f1149665b..b09f7d36cff2 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -572,6 +572,10 @@ struct macsec_ops;
-  * @mdix_ctrl: User setting of crossover
-  * @pma_extable: Cached value of PMA/PMD Extended Abilities Register
-  * @interrupts: Flag interrupts have been enabled
-+ * @irq_suspended: Flag indicating PHY is suspended and therefore interrupt
-+ *                 handling shall be postponed until PHY has resumed
-+ * @irq_rerun: Flag indicating interrupts occurred while PHY was suspended,
-+ *             requiring a rerun of the interrupt handler after resume
-  * @interface: enum phy_interface_t value
-  * @skb: Netlink message for cable diagnostics
-  * @nest: Netlink nest used for cable diagnostics
-@@ -626,6 +630,8 @@ struct phy_device {
- 
- 	/* Interrupts are enabled */
- 	unsigned interrupts:1;
-+	unsigned irq_suspended:1;
-+	unsigned irq_rerun:1;
- 
- 	enum phy_state state;
- 
--- 
-2.35.2
-
+> Fixes: 9349eb3a9d2a ("xsk: Introduce batched Tx descriptor interfaces")
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> ---
+>  net/xdp/xsk.c       | 5 +++--
+>  net/xdp/xsk_queue.h | 8 --------
+>  2 files changed, 3 insertions(+), 10 deletions(-)
+>
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index e0a4526ab66b..19ac872a6624 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -373,7 +373,8 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, u32 max_entries)
+>                 goto out;
+>         }
+>
+> -       nb_pkts = xskq_cons_peek_desc_batch(xs->tx, pool, max_entries);
+> +       max_entries = xskq_cons_nb_entries(xs->tx, max_entries);
+> +       nb_pkts = xskq_cons_read_desc_batch(xs->tx, pool, max_entries);
+>         if (!nb_pkts) {
+>                 xs->tx->queue_empty_descs++;
+>                 goto out;
+> @@ -389,7 +390,7 @@ u32 xsk_tx_peek_release_desc_batch(struct xsk_buff_pool *pool, u32 max_entries)
+>         if (!nb_pkts)
+>                 goto out;
+>
+> -       xskq_cons_release_n(xs->tx, nb_pkts);
+> +       xskq_cons_release_n(xs->tx, max_entries);
+>         __xskq_cons_release(xs->tx);
+>         xs->sk.sk_write_space(&xs->sk);
+>
+> diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+> index a794410989cc..fb20bf7207cf 100644
+> --- a/net/xdp/xsk_queue.h
+> +++ b/net/xdp/xsk_queue.h
+> @@ -282,14 +282,6 @@ static inline bool xskq_cons_peek_desc(struct xsk_queue *q,
+>         return xskq_cons_read_desc(q, desc, pool);
+>  }
+>
+> -static inline u32 xskq_cons_peek_desc_batch(struct xsk_queue *q, struct xsk_buff_pool *pool,
+> -                                           u32 max)
+> -{
+> -       u32 entries = xskq_cons_nb_entries(q, max);
+> -
+> -       return xskq_cons_read_desc_batch(q, pool, entries);
+> -}
+> -
+>  /* To improve performance in the xskq_cons_release functions, only update local state here.
+>   * Reflect this to global state when we get new entries from the ring in
+>   * xskq_cons_get_entries() and whenever Rx or Tx processing are completed in the NAPI loop.
+> --
+> 2.27.0
+>
