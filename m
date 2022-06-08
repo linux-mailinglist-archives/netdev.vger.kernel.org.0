@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBCD2543BDD
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 20:59:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4507B543BDF
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 20:59:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233381AbiFHS70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 14:59:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41224 "EHLO
+        id S233443AbiFHS71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 14:59:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiFHS7T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 14:59:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4ECD3AA5A
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 11:59:17 -0700 (PDT)
+        with ESMTP id S230366AbiFHS7U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 14:59:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B254B3B576
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 11:59:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E75061C43
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 18:59:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E16EC34116;
-        Wed,  8 Jun 2022 18:59:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BAD061C2E
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 18:59:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75F5EC3411C;
+        Wed,  8 Jun 2022 18:59:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654714756;
-        bh=EETfE/n6kUmG1QcAkgO3z9o4bg4CHY8Jxq4D90qcF6U=;
+        s=k20201202; t=1654714757;
+        bh=UuU4GDhxOhY5aB0nUinZMPYrFOuTOR9i5EGrnujDF/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jHX4BaoufGrmHyJ2Bv9akNAxgBVMwbWx1gHCrSkWEvr6nwWMeuEc6PfUVpxZfndWv
-         BsZkmKkqfOBpIeANDkASPo4JbZU+D9N8E77Eb/mBbyeJaUwiKOnfsGubfgNms5Rg/0
-         VieAAwxR4BpLjj7seyhlvMK5AtYiSoc0u6XVpbdT8v4wDFRnXL3BICayXSyZRj/Jqa
-         ArtBW09dKbEw6XKOwYL9S+2uGnoLZgzkFizMp7G0fBguG7ksqVNabCMckqz/gR47Rn
-         IcZjfPHbbd41XN7x23KwbFBEPV+XObaJ7yibWlM0Hy/2XgX7oqDuBKBaZ69PC24FyA
-         I64+2QbtbPDgA==
+        b=Va41AGzwtFjseYNajTbBMns0sTa7V2bTmd17jX1xNDAXrIEMBuaLRIkQtKJg8/ZHZ
+         59W4WSk532GgantZg/8VAr9p23jTMXurAu//4aJuGPSq/crVuHbXi0vaTQ+2IqbuqS
+         WBdKUx+8qBT53IgoqYftPnyAZ3N6OzKzDl1v8InOJlo5fvby3I6E0Y+Zet5+gku584
+         GuqHPGbxyq7m7mCDJlAmO0GCSokIj7K4JQHfAr9mAlB62PqMrqRe03aKCOrasJHDDX
+         eNjUav8zvFiW2FW+ysKVKLmZpEW3yNKgf17oCuz3ZQLdAGL4cQXBK5mxyhU0tWz3m6
+         xOtmrg/IWLDNg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 2/6] Revert "net/mlx5e: Allow relaxed ordering over VFs"
-Date:   Wed,  8 Jun 2022 11:58:51 -0700
-Message-Id: <20220608185855.19818-3-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
+        Oz Shlomo <ozsh@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net 3/6] net/mlx5e: CT: Fix cleanup of CT before cleanup of TC ct rules
+Date:   Wed,  8 Jun 2022 11:58:52 -0700
+Message-Id: <20220608185855.19818-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220608185855.19818-1-saeed@kernel.org>
 References: <20220608185855.19818-1-saeed@kernel.org>
@@ -55,51 +56,154 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Paul Blakey <paulb@nvidia.com>
 
-FW is not ready, fix was sent too soon.
-This reverts commit f05ec8d9d0d62367b6e1f2cb50d7d2a45e7747cf.
+CT cleanup assumes that all tc rules were deleted first, and so
+is free to delete the CT shared resources (e.g the dr_action
+fwd_action which is shared for all tuples). But currently for
+uplink, this is happens in reverse, causing the below trace.
 
-Fixes: f05ec8d9d0d6 ("net/mlx5e: Allow relaxed ordering over VFs")
+CT cleanup is called from:
+mlx5e_cleanup_rep_tx()->mlx5e_cleanup_uplink_rep_tx()->
+mlx5e_rep_tc_cleanup()->mlx5e_tc_esw_cleanup()->
+mlx5_tc_ct_clean()
+
+Only afterwards, tc cleanup is called from:
+mlx5e_cleanup_rep_tx()->mlx5e_tc_ht_cleanup()
+which would have deleted all the tc ct rules, and so delete
+all the offloaded tuples.
+
+Fix this reversing the order of init and on cleanup, which
+will result in tc cleanup then ct cleanup.
+
+[ 9443.593347] WARNING: CPU: 2 PID: 206774 at drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c:1882 mlx5dr_action_destroy+0x188/0x1a0 [mlx5_core]
+[ 9443.593349] Modules linked in: act_ct nf_flow_table rdma_ucm(O) rdma_cm(O) iw_cm(O) ib_ipoib(O) ib_cm(O) ib_umad(O) mlx5_core(O-) mlxfw(O) mlxdevm(O) auxiliary(O) ib_uverbs(O) psample ib_core(O) mlx_compat(O) ip_gre gre ip_tunnel act_vlan bonding geneve esp6_offload esp6 esp4_offload esp4 act_tunnel_key vxlan ip6_udp_tunnel udp_tunnel act_mirred act_skbedit act_gact cls_flower sch_ingress nfnetlink_cttimeout nfnetlink xfrm_user xfrm_algo 8021q garp stp ipmi_devintf mrp ipmi_msghandler llc openvswitch nsh nf_conncount nf_nat mst_pciconf(O) dm_multipath sbsa_gwdt uio_pdrv_genirq uio mlxbf_pmc mlxbf_pka mlx_trio mlx_bootctl(O) bluefield_edac sch_fq_codel ip_tables ipv6 crc_ccitt btrfs zstd_compress raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor xor_neon raid6_pq raid1 raid0 crct10dif_ce i2c_mlxbf gpio_mlxbf2 mlxbf_gige aes_neon_bs aes_neon_blk [last unloaded: mlx5_ib]
+[ 9443.593419] CPU: 2 PID: 206774 Comm: modprobe Tainted: G           O      5.4.0-1023.24.gc14613d-bluefield #1
+[ 9443.593422] Hardware name: https://www.mellanox.com BlueField SoC/BlueField SoC, BIOS BlueField:143ebaf Jan 11 2022
+[ 9443.593424] pstate: 20000005 (nzCv daif -PAN -UAO)
+[ 9443.593489] pc : mlx5dr_action_destroy+0x188/0x1a0 [mlx5_core]
+[ 9443.593545] lr : mlx5_ct_fs_smfs_destroy+0x24/0x30 [mlx5_core]
+[ 9443.593546] sp : ffff8000135dbab0
+[ 9443.593548] x29: ffff8000135dbab0 x28: ffff0003a6ab8e80
+[ 9443.593550] x27: 0000000000000000 x26: ffff0003e07d7000
+[ 9443.593552] x25: ffff800009609de0 x24: ffff000397fb2120
+[ 9443.593554] x23: ffff0003975c0000 x22: 0000000000000000
+[ 9443.593556] x21: ffff0003975f08c0 x20: ffff800009609de0
+[ 9443.593558] x19: ffff0003c8a13380 x18: 0000000000000014
+[ 9443.593560] x17: 0000000067f5f125 x16: 000000006529c620
+[ 9443.593561] x15: 000000000000000b x14: 0000000000000000
+[ 9443.593563] x13: 0000000000000002 x12: 0000000000000001
+[ 9443.593565] x11: ffff800011108868 x10: 0000000000000000
+[ 9443.593567] x9 : 0000000000000000 x8 : ffff8000117fb270
+[ 9443.593569] x7 : ffff0003ebc01288 x6 : 0000000000000000
+[ 9443.593571] x5 : ffff800009591ab8 x4 : fffffe000f6d9a20
+[ 9443.593572] x3 : 0000000080040001 x2 : fffffe000f6d9a20
+[ 9443.593574] x1 : ffff8000095901d8 x0 : 0000000000000025
+[ 9443.593577] Call trace:
+[ 9443.593634]  mlx5dr_action_destroy+0x188/0x1a0 [mlx5_core]
+[ 9443.593688]  mlx5_ct_fs_smfs_destroy+0x24/0x30 [mlx5_core]
+[ 9443.593743]  mlx5_tc_ct_clean+0x34/0xa8 [mlx5_core]
+[ 9443.593797]  mlx5e_tc_esw_cleanup+0x58/0x88 [mlx5_core]
+[ 9443.593851]  mlx5e_rep_tc_cleanup+0x24/0x30 [mlx5_core]
+[ 9443.593905]  mlx5e_cleanup_rep_tx+0x6c/0x78 [mlx5_core]
+[ 9443.593959]  mlx5e_detach_netdev+0x74/0x98 [mlx5_core]
+[ 9443.594013]  mlx5e_netdev_change_profile+0x70/0x180 [mlx5_core]
+[ 9443.594067]  mlx5e_netdev_attach_nic_profile+0x34/0x40 [mlx5_core]
+[ 9443.594122]  mlx5e_vport_rep_unload+0x15c/0x1a8 [mlx5_core]
+[ 9443.594177]  mlx5_eswitch_unregister_vport_reps+0x228/0x298 [mlx5_core]
+[ 9443.594231]  mlx5e_rep_remove+0x2c/0x38 [mlx5_core]
+[ 9443.594236]  auxiliary_bus_remove+0x30/0x50 [auxiliary]
+[ 9443.594246]  device_release_driver_internal+0x108/0x1d0
+[ 9443.594248]  driver_detach+0x5c/0xe8
+[ 9443.594250]  bus_remove_driver+0x64/0xd8
+[ 9443.594253]  driver_unregister+0x38/0x60
+[ 9443.594255]  auxiliary_driver_unregister+0x24/0x38 [auxiliary]
+[ 9443.594311]  mlx5e_rep_cleanup+0x20/0x38 [mlx5_core]
+[ 9443.594365]  mlx5e_cleanup+0x18/0x30 [mlx5_core]
+[ 9443.594419]  cleanup+0xc/0x20cc [mlx5_core]
+[ 9443.594424]  __arm64_sys_delete_module+0x154/0x2b0
+[ 9443.594429]  el0_svc_common.constprop.0+0xf4/0x200
+[ 9443.594432]  el0_svc_handler+0x38/0xa8
+[ 9443.594435]  el0_svc+0x10/0x26c
+
+Fixes: d1a3138f7913 ("net/mlx5e: TC, Move flow hashtable to be per rep")
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
+Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/params.c | 3 ++-
- drivers/net/ethernet/mellanox/mlx5/core/en_common.c | 5 +++--
- 2 files changed, 5 insertions(+), 3 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  | 31 ++++++++++---------
+ 1 file changed, 16 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-index 68364484a435..3c1edfa33aa7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/params.c
-@@ -565,7 +565,8 @@ static void mlx5e_build_rx_cq_param(struct mlx5_core_dev *mdev,
- static u8 rq_end_pad_mode(struct mlx5_core_dev *mdev, struct mlx5e_params *params)
- {
- 	bool lro_en = params->packet_merge.type == MLX5E_PACKET_MERGE_LRO;
--	bool ro = MLX5_CAP_GEN(mdev, relaxed_ordering_write);
-+	bool ro = pcie_relaxed_ordering_enabled(mdev->pdev) &&
-+		MLX5_CAP_GEN(mdev, relaxed_ordering_write);
- 
- 	return ro && lro_en ?
- 		MLX5_WQ_END_PAD_MODE_NONE : MLX5_WQ_END_PAD_MODE_ALIGN;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_common.c b/drivers/net/ethernet/mellanox/mlx5/core/en_common.c
-index 43a536cb81db..c0f409c195bf 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_common.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_common.c
-@@ -38,11 +38,12 @@
- 
- void mlx5e_mkey_set_relaxed_ordering(struct mlx5_core_dev *mdev, void *mkc)
- {
-+	bool ro_pci_enable = pcie_relaxed_ordering_enabled(mdev->pdev);
- 	bool ro_write = MLX5_CAP_GEN(mdev, relaxed_ordering_write);
- 	bool ro_read = MLX5_CAP_GEN(mdev, relaxed_ordering_read);
- 
--	MLX5_SET(mkc, mkc, relaxed_ordering_read, ro_read);
--	MLX5_SET(mkc, mkc, relaxed_ordering_write, ro_write);
-+	MLX5_SET(mkc, mkc, relaxed_ordering_read, ro_pci_enable && ro_read);
-+	MLX5_SET(mkc, mkc, relaxed_ordering_write, ro_pci_enable && ro_write);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+index eb90e79388f1..f797fd97d305 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+@@ -950,6 +950,13 @@ static int mlx5e_init_uplink_rep_tx(struct mlx5e_rep_priv *rpriv)
+ 	return err;
  }
  
- static int mlx5e_create_mkey(struct mlx5_core_dev *mdev, u32 pdn,
++static void mlx5e_cleanup_uplink_rep_tx(struct mlx5e_rep_priv *rpriv)
++{
++	mlx5e_rep_tc_netdevice_event_unregister(rpriv);
++	mlx5e_rep_bond_cleanup(rpriv);
++	mlx5e_rep_tc_cleanup(rpriv);
++}
++
+ static int mlx5e_init_rep_tx(struct mlx5e_priv *priv)
+ {
+ 	struct mlx5e_rep_priv *rpriv = priv->ppriv;
+@@ -961,42 +968,36 @@ static int mlx5e_init_rep_tx(struct mlx5e_priv *priv)
+ 		return err;
+ 	}
+ 
+-	err = mlx5e_tc_ht_init(&rpriv->tc_ht);
+-	if (err)
+-		goto err_ht_init;
+-
+ 	if (rpriv->rep->vport == MLX5_VPORT_UPLINK) {
+ 		err = mlx5e_init_uplink_rep_tx(rpriv);
+ 		if (err)
+ 			goto err_init_tx;
+ 	}
+ 
++	err = mlx5e_tc_ht_init(&rpriv->tc_ht);
++	if (err)
++		goto err_ht_init;
++
+ 	return 0;
+ 
+-err_init_tx:
+-	mlx5e_tc_ht_cleanup(&rpriv->tc_ht);
+ err_ht_init:
++	if (rpriv->rep->vport == MLX5_VPORT_UPLINK)
++		mlx5e_cleanup_uplink_rep_tx(rpriv);
++err_init_tx:
+ 	mlx5e_destroy_tises(priv);
+ 	return err;
+ }
+ 
+-static void mlx5e_cleanup_uplink_rep_tx(struct mlx5e_rep_priv *rpriv)
+-{
+-	mlx5e_rep_tc_netdevice_event_unregister(rpriv);
+-	mlx5e_rep_bond_cleanup(rpriv);
+-	mlx5e_rep_tc_cleanup(rpriv);
+-}
+-
+ static void mlx5e_cleanup_rep_tx(struct mlx5e_priv *priv)
+ {
+ 	struct mlx5e_rep_priv *rpriv = priv->ppriv;
+ 
+-	mlx5e_destroy_tises(priv);
++	mlx5e_tc_ht_cleanup(&rpriv->tc_ht);
+ 
+ 	if (rpriv->rep->vport == MLX5_VPORT_UPLINK)
+ 		mlx5e_cleanup_uplink_rep_tx(rpriv);
+ 
+-	mlx5e_tc_ht_cleanup(&rpriv->tc_ht);
++	mlx5e_destroy_tises(priv);
+ }
+ 
+ static void mlx5e_rep_enable(struct mlx5e_priv *priv)
 -- 
 2.36.1
 
