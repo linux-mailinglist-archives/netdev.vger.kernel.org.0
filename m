@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F052A543D49
+	by mail.lfdr.de (Postfix) with ESMTP id 9F861543D48
 	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 22:06:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235331AbiFHUFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 16:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
+        id S234219AbiFHUFi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 16:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235843AbiFHUFa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 16:05:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA99D374263;
-        Wed,  8 Jun 2022 13:05:29 -0700 (PDT)
+        with ESMTP id S233791AbiFHUFb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 16:05:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76111374EEB;
+        Wed,  8 Jun 2022 13:05:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4373761C67;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1266661C5E;
+        Wed,  8 Jun 2022 20:05:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63D3DC34116;
         Wed,  8 Jun 2022 20:05:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82D34C3411C;
-        Wed,  8 Jun 2022 20:05:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654718728;
-        bh=rQOZdTGUzVpAQ8lvgTxnLrp3uf90qnRhjfVxe0pcF3U=;
+        s=k20201202; t=1654718729;
+        bh=pdxv8fPnJR9QcNRfmvbcq1nieY8myrWQmFjIeQniGjg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ps8vaCPUrkr0pHOk16eTTHngqKVwyA5d2GAeGPAFXMTC8So5w05eP+Z3SLVOPQFxL
-         dQu5kFShGdczZaT5G0quXeznNkgNJFAbFVdeaBcs7YA/V7NT+Iat0zcUTXSXZiscdM
-         zQUOAWJ9hZHsLw57ft/7VoMoBRMMHTuKN/GkUIIuzh49QIhlgjdxoBM3XCp0A6nssr
-         YttcNY6zK6cTG7/lVHuoskjTZ8QvJfW77Vr+/c5XnZSmD+EqTmNpjQW3KlpoUriscE
-         zL0zL9FG5dogjR5xGQWdeajO7KWH85d7CO/KftWPiUcKDl5wMPVqceb4v5c2kqABIw
-         8QBkyDhMbqcKQ==
+        b=pUoKwSqVZjUW6Rs2/GAsUgOfrdcAMHShcQ+wdKrsP6CP+rvu+YEBYqR0dRqcAv2yx
+         O4+298seRdH4q56YYZAPS5akaDV+6lIWxhc1czMgK8TS9nyoIExtM4igFJRz/zq/nS
+         7uUCFDqzM+6pSPio0b7O4k/v7rvsBGa6mEWOctzXZ6fORKquKFq42eMw4aXBAU2HtW
+         pAzP/07zS0MKnmE1KK7n4le9RyjuD40jMnqf3T3FuTK5tDJsbk/3KH57ouP8SRnFej
+         Ry3h4fzOrfnUfL4P2RBsKXqLKS+F+/g1t93B/wEPoOSV7g6XyaDWL1Be1pQpeO5RUr
+         V3cGU/v7OBBIw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     Leon Romanovsky <leonro@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
@@ -40,9 +40,9 @@ Cc:     Jason Gunthorpe <jgg@nvidia.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org, Shay Drory <shayd@nvidia.com>
-Subject: [PATCH mlx5-next 4/6] net/mlx5: group fdb cleanup to single function
-Date:   Wed,  8 Jun 2022 13:04:50 -0700
-Message-Id: <20220608200452.43880-5-saeed@kernel.org>
+Subject: [PATCH mlx5-next 5/6] net/mlx5: Remove not used MLX5_CAP_BITS_RW_MASK
+Date:   Wed,  8 Jun 2022 13:04:51 -0700
+Message-Id: <20220608200452.43880-6-saeed@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220608200452.43880-1-saeed@kernel.org>
 References: <20220608200452.43880-1-saeed@kernel.org>
@@ -60,59 +60,73 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Shay Drory <shayd@nvidia.com>
 
-Currently, the allocation of fdb software objects are done is single
-function, oppose to the cleanup of them.
-Group the cleanup of fdb software objects to single function.
+Remove not used MLX5_CAP_BITS_RW_MASK.
+While at it, remove CAP_MASK, MLX5_CAP_OFF_CMDIF_CSUM
+and MLX5_DEV_CAP_FLAG_*, since MLX5_CAP_BITS_RW_MASK
+was their only user.
 
 Signed-off-by: Shay Drory <shayd@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/fs_core.c  | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  7 -------
+ include/linux/mlx5/device.h                   | 19 -------------------
+ 2 files changed, 26 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-index fdcf7f529330..14187e50e2f9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -2866,6 +2866,14 @@ static int create_fdb_bypass(struct mlx5_flow_steering *steering)
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index c9b4e50a593e..2078d9f03a5f 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -314,13 +314,6 @@ struct mlx5_reg_host_endianness {
+ 	u8      rsvd[15];
+ };
  
-+static void cleanup_fdb_root_ns(struct mlx5_flow_steering *steering)
-+{
-+	cleanup_root_ns(steering->fdb_root_ns);
-+	steering->fdb_root_ns = NULL;
-+	kfree(steering->fdb_sub_ns);
-+	steering->fdb_sub_ns = NULL;
-+}
-+
- static int init_fdb_root_ns(struct mlx5_flow_steering *steering)
+-#define CAP_MASK(pos, size) ((u64)((1 << (size)) - 1) << (pos))
+-
+-enum {
+-	MLX5_CAP_BITS_RW_MASK = CAP_MASK(MLX5_CAP_OFF_CMDIF_CSUM, 2) |
+-				MLX5_DEV_CAP_FLAG_DCT,
+-};
+-
+ static u16 to_fw_pkey_sz(struct mlx5_core_dev *dev, u32 size)
  {
- 	struct fs_prio *maj_prio;
-@@ -2916,10 +2924,7 @@ static int init_fdb_root_ns(struct mlx5_flow_steering *steering)
- 	return 0;
+ 	switch (size) {
+diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
+index 15ac02eeed4f..95a4fa0fd40a 100644
+--- a/include/linux/mlx5/device.h
++++ b/include/linux/mlx5/device.h
+@@ -386,21 +386,6 @@ enum {
+ 	MLX5_PORT_CHANGE_SUBTYPE_CLIENT_REREG	= 9,
+ };
  
- out_err:
--	cleanup_root_ns(steering->fdb_root_ns);
--	kfree(steering->fdb_sub_ns);
--	steering->fdb_sub_ns = NULL;
--	steering->fdb_root_ns = NULL;
-+	cleanup_fdb_root_ns(steering);
- 	return err;
- }
+-enum {
+-	MLX5_DEV_CAP_FLAG_XRC		= 1LL <<  3,
+-	MLX5_DEV_CAP_FLAG_BAD_PKEY_CNTR	= 1LL <<  8,
+-	MLX5_DEV_CAP_FLAG_BAD_QKEY_CNTR	= 1LL <<  9,
+-	MLX5_DEV_CAP_FLAG_APM		= 1LL << 17,
+-	MLX5_DEV_CAP_FLAG_ATOMIC	= 1LL << 18,
+-	MLX5_DEV_CAP_FLAG_BLOCK_MCAST	= 1LL << 23,
+-	MLX5_DEV_CAP_FLAG_ON_DMND_PG	= 1LL << 24,
+-	MLX5_DEV_CAP_FLAG_CQ_MODER	= 1LL << 29,
+-	MLX5_DEV_CAP_FLAG_RESIZE_CQ	= 1LL << 30,
+-	MLX5_DEV_CAP_FLAG_DCT		= 1LL << 37,
+-	MLX5_DEV_CAP_FLAG_SIG_HAND_OVER	= 1LL << 40,
+-	MLX5_DEV_CAP_FLAG_CMDIF_CSUM	= 3LL << 46,
+-};
+-
+ enum {
+ 	MLX5_ROCE_VERSION_1		= 0,
+ 	MLX5_ROCE_VERSION_2		= 2,
+@@ -496,10 +481,6 @@ enum {
+ 	MLX5_MAX_PAGE_SHIFT		= 31
+ };
  
-@@ -3079,10 +3084,7 @@ void mlx5_fs_core_cleanup(struct mlx5_core_dev *dev)
- 	struct mlx5_flow_steering *steering = dev->priv.steering;
- 
- 	cleanup_root_ns(steering->root_ns);
--	cleanup_root_ns(steering->fdb_root_ns);
--	steering->fdb_root_ns = NULL;
--	kfree(steering->fdb_sub_ns);
--	steering->fdb_sub_ns = NULL;
-+	cleanup_fdb_root_ns(steering);
- 	cleanup_root_ns(steering->port_sel_root_ns);
- 	cleanup_root_ns(steering->sniffer_rx_root_ns);
- 	cleanup_root_ns(steering->sniffer_tx_root_ns);
+-enum {
+-	MLX5_CAP_OFF_CMDIF_CSUM		= 46,
+-};
+-
+ enum {
+ 	/*
+ 	 * Max wqe size for rdma read is 512 bytes, so this
 -- 
 2.36.1
 
