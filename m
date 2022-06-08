@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 428F2543ECA
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 23:46:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F59D543EBE
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 23:41:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230284AbiFHVqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 17:46:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32942 "EHLO
+        id S235623AbiFHVlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 17:41:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229837AbiFHVqW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 17:46:22 -0400
+        with ESMTP id S231826AbiFHVlj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 17:41:39 -0400
+X-Greylist: delayed 216 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 08 Jun 2022 14:41:36 PDT
 Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFB68355010;
-        Wed,  8 Jun 2022 14:46:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F472FCB55;
+        Wed,  8 Jun 2022 14:41:35 -0700 (PDT)
 Received: from [192.168.0.18] (unknown [37.228.234.7])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id AA68950486A;
-        Thu,  9 Jun 2022 00:36:39 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru AA68950486A
+        by novek.ru (Postfix) with ESMTPSA id B12DC5048B3;
+        Thu,  9 Jun 2022 00:40:16 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru B12DC5048B3
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1654724201; bh=iX5XhnoJ8IJeLdJYm71Tdp3Q8pDYLXJ2V7qlWvCBRro=;
+        t=1654724418; bh=J6wgd6h+yO4aYKw8SmBVZQ46x2TJ8dmCurBnhwlHQpU=;
         h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=0c8hLYv9JJGlCMRjRNc1CUFUGTV6ZBloqA29nrnuYcjT2IscbwgvNMBk60ahCR/rF
-         mrGgi42yAvTCYZ14hZH8VwrDqtjK6la97a+rnxb2tTPJGnDKp5egCcGyH5filuDLCl
-         7WtB865QoSmM0eTxojCFuWYH9PMqwGEGelOuuFx4=
-Message-ID: <5504ae89-befc-9db0-0cc5-6f425d5414be@novek.ru>
-Date:   Wed, 8 Jun 2022 22:37:54 +0100
+        b=IlYXTG6Q6wboLJYGUXbzB9tdRe/5rvSR8p1/n8UbG6ab2Wd7AP2eqFSwqkHf6BOgi
+         8XiJE9OnZ15H3Vdh8GorNELmZlXtIsEzd7wFsThTBhtzJDxlswNEws7Wo9enKy5K3u
+         5hcMJSBEa8xc5FX++P6WCht2pqcaWoRtKGk1uLx0=
+Message-ID: <b71b0463-cb8b-2c1a-62a9-8be5b14ff1f2@novek.ru>
+Date:   Wed, 8 Jun 2022 22:41:31 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH net-next v1 1/5] ptp_ocp: use dev_err_probe()
+Subject: Re: [PATCH v1 net-next 2/5] ptp_ocp: use bits.h macros for all masks
 Content-Language: en-US
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Jonathan Lemon <jonathan.lemon@gmail.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Richard Cochran <richardcochran@gmail.com>
 References: <20220608120358.81147-1-andriy.shevchenko@linux.intel.com>
- <20220608120358.81147-2-andriy.shevchenko@linux.intel.com>
+ <20220608120358.81147-3-andriy.shevchenko@linux.intel.com>
 From:   Vadim Fedorenko <vfedorenko@novek.ru>
-In-Reply-To: <20220608120358.81147-2-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220608120358.81147-3-andriy.shevchenko@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -54,8 +55,8 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 08.06.2022 13:03, Andy Shevchenko wrote:
-> Simplify the error path in ->probe() and unify message format a bit
-> by using dev_err_probe().
+> Currently we are using BIT(), but GENMASK(). Make use of the latter one
+> as well (far less error-prone, far more concise).
 > 
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
@@ -63,48 +64,62 @@ LGTM
 
 Acked-by: Vadim Fedorenko <vfedorenko@novek.ru>
 > ---
->   drivers/ptp/ptp_ocp.c | 13 +++++--------
->   1 file changed, 5 insertions(+), 8 deletions(-)
+>   drivers/ptp/ptp_ocp.c | 13 +++++++------
+>   1 file changed, 7 insertions(+), 6 deletions(-)
 > 
 > diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-> index 4519ef42b458..17930762fde9 100644
+> index 17930762fde9..926add7be9a2 100644
 > --- a/drivers/ptp/ptp_ocp.c
 > +++ b/drivers/ptp/ptp_ocp.c
-> @@ -3722,14 +3722,12 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->   	int err;
+> @@ -1,6 +1,7 @@
+>   // SPDX-License-Identifier: GPL-2.0-only
+>   /* Copyright (c) 2020 Facebook */
 >   
->   	devlink = devlink_alloc(&ptp_ocp_devlink_ops, sizeof(*bp), &pdev->dev);
-> -	if (!devlink) {
-> -		dev_err(&pdev->dev, "devlink_alloc failed\n");
-> -		return -ENOMEM;
-> -	}
-> +	if (!devlink)
-> +		return dev_err_probe(&pdev->dev, -ENOMEM, "devlink_alloc failed\n");
+> +#include <linux/bits.h>
+>   #include <linux/err.h>
+>   #include <linux/kernel.h>
+>   #include <linux/module.h>
+> @@ -88,10 +89,10 @@ struct tod_reg {
+>   #define TOD_CTRL_DISABLE_FMT_A	BIT(17)
+>   #define TOD_CTRL_DISABLE_FMT_B	BIT(16)
+>   #define TOD_CTRL_ENABLE		BIT(0)
+> -#define TOD_CTRL_GNSS_MASK	((1U << 4) - 1)
+> +#define TOD_CTRL_GNSS_MASK	GENMASK(3, 0)
+>   #define TOD_CTRL_GNSS_SHIFT	24
 >   
->   	err = pci_enable_device(pdev);
->   	if (err) {
-> -		dev_err(&pdev->dev, "pci_enable_device\n");
-> +		dev_err_probe(&pdev->dev, err, "pci_enable_device\n");
->   		goto out_free;
->   	}
+> -#define TOD_STATUS_UTC_MASK		0xff
+> +#define TOD_STATUS_UTC_MASK		GENMASK(7, 0)
+>   #define TOD_STATUS_UTC_VALID		BIT(8)
+>   #define TOD_STATUS_LEAP_ANNOUNCE	BIT(12)
+>   #define TOD_STATUS_LEAP_VALID		BIT(16)
+> @@ -205,7 +206,7 @@ struct frequency_reg {
+>   #define FREQ_STATUS_VALID	BIT(31)
+>   #define FREQ_STATUS_ERROR	BIT(30)
+>   #define FREQ_STATUS_OVERRUN	BIT(29)
+> -#define FREQ_STATUS_MASK	(BIT(24) - 1)
+> +#define FREQ_STATUS_MASK	GENMASK(23, 0)
 >   
-> @@ -3745,7 +3743,7 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->   	 */
->   	err = pci_alloc_irq_vectors(pdev, 1, 17, PCI_IRQ_MSI | PCI_IRQ_MSIX);
->   	if (err < 0) {
-> -		dev_err(&pdev->dev, "alloc_irq_vectors err: %d\n", err);
-> +		dev_err_probe(&pdev->dev, err, "alloc_irq_vectors\n");
->   		goto out;
->   	}
->   	bp->n_irqs = err;
-> @@ -3757,8 +3755,7 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>   struct ptp_ocp_flash_info {
+>   	const char *name;
+> @@ -674,9 +675,9 @@ static const struct ocp_selector ptp_ocp_clock[] = {
+>   	{ }
+>   };
 >   
->   	bp->ptp = ptp_clock_register(&bp->ptp_info, &pdev->dev);
->   	if (IS_ERR(bp->ptp)) {
-> -		err = PTR_ERR(bp->ptp);
-> -		dev_err(&pdev->dev, "ptp_clock_register: %d\n", err);
-> +		err = dev_err_probe(&pdev->dev, PTR_ERR(bp->ptp), "ptp_clock_register\n");
->   		bp->ptp = NULL;
->   		goto out;
->   	}
+> +#define SMA_DISABLE		BIT(16)
+>   #define SMA_ENABLE		BIT(15)
+> -#define SMA_SELECT_MASK		((1U << 15) - 1)
+> -#define SMA_DISABLE		0x10000
+> +#define SMA_SELECT_MASK		GENMASK(14, 0)
+>   
+>   static const struct ocp_selector ptp_ocp_sma_in[] = {
+>   	{ .name = "10Mhz",	.value = 0x0000 },
+> @@ -3440,7 +3441,7 @@ ptp_ocp_tod_status_show(struct seq_file *s, void *data)
+>   
+>   	val = ioread32(&bp->tod->utc_status);
+>   	seq_printf(s, "UTC status register: 0x%08X\n", val);
+> -	seq_printf(s, "UTC offset: %d  valid:%d\n",
+> +	seq_printf(s, "UTC offset: %ld  valid:%d\n",
+>   		val & TOD_STATUS_UTC_MASK, val & TOD_STATUS_UTC_VALID ? 1 : 0);
+>   	seq_printf(s, "Leap second info valid:%d, Leap second announce %d\n",
+>   		val & TOD_STATUS_LEAP_VALID ? 1 : 0,
 
