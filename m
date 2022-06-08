@@ -2,46 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B19F54239D
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:51:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 809975425A2
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:55:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357461AbiFHCqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 22:46:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
+        id S1350946AbiFHCqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 22:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388040AbiFHCjc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 22:39:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56AAE17ED3C
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 17:18:27 -0700 (PDT)
+        with ESMTP id S1391769AbiFHClF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 22:41:05 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B57118E44B;
+        Tue,  7 Jun 2022 17:20:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1BE86177B
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 00:18:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0281C34114;
-        Wed,  8 Jun 2022 00:18:22 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A5DDBCE252F;
+        Wed,  8 Jun 2022 00:19:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1AECC34114;
+        Wed,  8 Jun 2022 00:19:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654647503;
-        bh=JPst8MF1UxNkF8vN+tqCJssdV1C1Mq44XnyefYWXr2E=;
+        s=k20201202; t=1654647591;
+        bh=fq4GpmIoMBpe6Gkv7KefRfP5KgwGRQ83n3I5kKZKWGM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PnaPmhArHl+LMYYra0do30IYWxP+Mt5T2Vl7q6QcaQB9116dZhypzaOxXDv4M04gh
-         j6c7ldbR05rmsiiW50na6zPIIZfXmup6MyG9W1G6szEWqZe+L8U3ZqO7zfdFsioAWq
-         GttVnC0ZhBKTAOcG20K5QZCgJ8VXff7e5frKQ/THp0Zs+mxrser1LKQxG4G+IlvJQW
-         lBUuPF32ayhH56YaqU2fMwrdhdebJZqDUUkh15q386sKITkcz5wu/n2PZk1hmNxz6R
-         O2x1F3xC24bGFPsgNazAuxvRvKov07A09RcJoTcrsl2FNVNPBk3AnZmUrqhzs0AdLR
-         EqTYBONjg1BCg==
-Date:   Tue, 7 Jun 2022 17:18:21 -0700
+        b=RH7DATHTyY+lEXNxdqkE4reMrwRkel4Bdp3YHDJH3l8vdj9DUxExUl2WPoNz7QNnm
+         TZBTZbprN1yh6oon7E2HlEm/YldiyYkHbITWDpcOAdLsnSUt0nEGx1DQsTJtslgE3J
+         AwubBSFNgAaV0OiiYfB+cF6kAL7LeNKLb2iFdd/9rqRkslaedHaTcPwjwyFrvlNk98
+         bxXl121UoqrpMDURAqIfMVORdioSXDgWnIsJC5c8EIfDARi0baa0nEOd/PmwvgiRwn
+         sEfEeMm7bd5lwqAT8qcXA3kk9ZJpcG+1R9WkeQQ1wMNqHhzTqGzmUoPdCT04HM5Dw5
+         HUCz7evZCnvzA==
+Date:   Tue, 7 Jun 2022 17:19:49 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, Willem de Bruijn <willemb@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [PATCH net] ip_gre: test csum_start instead of transport header
-Message-ID: <20220607171821.74bc4f87@kernel.org>
-In-Reply-To: <20220606132107.3582565-1-willemdebruijn.kernel@gmail.com>
-References: <20220606132107.3582565-1-willemdebruijn.kernel@gmail.com>
+To:     Jonathan Toppins <jtoppins@redhat.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [net-next 1/2] bonding: netlink error message support for
+ options
+Message-ID: <20220607171949.764e3286@kernel.org>
+In-Reply-To: <ac422216e35732c59ef8ca543fb4b381655da2bf.1654528729.git.jtoppins@redhat.com>
+References: <cover.1654528729.git.jtoppins@redhat.com>
+        <ac422216e35732c59ef8ca543fb4b381655da2bf.1654528729.git.jtoppins@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,43 +59,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  6 Jun 2022 09:21:07 -0400 Willem de Bruijn wrote:
-> From: Willem de Bruijn <willemb@google.com>
+On Mon,  6 Jun 2022 11:26:52 -0400 Jonathan Toppins wrote:
+> Add support for reporting errors via extack in both bond_newlink
+> and bond_changelink.
 > 
-> GRE with TUNNEL_CSUM will apply local checksum offload on
-> CHECKSUM_PARTIAL packets.
+> Instead of having to look in the kernel log for why an option was not
+> correct just report the error to the user via the extack variable.
 > 
-> ipgre_xmit must validate csum_start after an optional skb_pull,
-> else lco_csum may trigger an overflow. The original check was
+> What is currently reported today:
+>   ip link add bond0 type bond
+>   ip link set bond0 up
+>   ip link set bond0 type bond mode 4
+>  RTNETLINK answers: Device or resource busy
 > 
-> 	if (csum && skb_checksum_start(skb) < skb->data)
-> 		return -EINVAL;
+> After this change:
+>   ip link add bond0 type bond
+>   ip link set bond0 up
+>   ip link set bond0 type bond mode 4
+>  Error: unable to set option because the bond is up.
 > 
-> This had false positives when skb_checksum_start is undefined:
-> when ip_summed is not CHECKSUM_PARTIAL. A discussed refinement
-> was straightforward
+> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+> ---
 > 
-> 	if (csum && skb->ip_summed == CHECKSUM_PARTIAL &&
-> 	    skb_checksum_start(skb) < skb->data)
-> 		return -EINVAL;
-> 
-> But was eventually revised more thoroughly:
-> - restrict the check to the only branch where needed, in an
->   uncommon GRE path that uses header_ops and calls skb_pull.
-> - test skb_transport_header, which is set along with csum_start
->   in skb_partial_csum_set in the normal header_ops datapath.
-> 
-> Turns out skbs can arrive in this branch without the transport
-> header set, e.g., through BPF redirection.
-> 
-> Revise the check back to check csum_start directly, and only if
-> CHECKSUM_PARTIAL. Do leave the check in the updated location.
-> Check field regardless of whether TUNNEL_CSUM is configured.
-> 
-> Link: https://lore.kernel.org/netdev/YS+h%2FtqCJJiQei+W@shredder/
-> Link: https://lore.kernel.org/all/20210902193447.94039-2-willemdebruijn.kernel@gmail.com/T/#u
-> Fixes: 8a0ed250f911 ("ip_gre: validate csum_start only on pull")
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Signed-off-by: Willem de Bruijn <willemb@google.com>
+> Notes:
+>     Removed the printf support and just added static messages for various
+>     error events.
 
-Missing a CC for Alex, adding now.
+Thanks! nit, missing kdoc:
+
+drivers/net/bonding/bond_options.c:729: warning: Function parameter or member 'bad_attr' not described in '__bond_opt_set'
+drivers/net/bonding/bond_options.c:729: warning: Function parameter or member 'extack' not described in '__bond_opt_set'
