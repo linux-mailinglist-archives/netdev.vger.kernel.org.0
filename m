@@ -2,81 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F0FDC54236B
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:51:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1A39542238
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:46:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231469AbiFHCz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 7 Jun 2022 22:55:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
+        id S234659AbiFHCzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 7 Jun 2022 22:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442442AbiFHCwc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 22:52:32 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0691A04A3
-        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 17:24:54 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-30c1c9b9b6cso192807897b3.13
-        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 17:24:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fVwpegGHiLEJYUfgCGY6xrStHaKjaQ53gSOs9QMJll0=;
-        b=HAfOjcDhaOCD2pHcLlVJsvBvouBVgzJhzrdxCP+MbU6cE680LHIaEI6prYz/VfymVI
-         7brK+DPoE8RR7YuhJ8OJ43ii4CVehxPlpedhVPCiDmx6xGtgSOrRmvJCedaUjLDb+4LO
-         kx72K4u1rANJqxsn5zPNb3JK11RE7gffMxL/Z0TjSnovYvXcpz+R+UC/0SnpPL2Fggix
-         cXGSAgejZHy+ffmh0qkWmaBIBEbEFFw17uH97hRH4cNXRLhyV2tG/AKWgFklo0FEQNO5
-         mSUHN7YBo9GXjSrIHBalr7H+cPsZWo0NZTVLU8MdBUTBG2fOGH3iCD5+JaFwbO2t46Y2
-         8/fg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fVwpegGHiLEJYUfgCGY6xrStHaKjaQ53gSOs9QMJll0=;
-        b=r/1OIysUA67f4GTdrQRLYDS3AOUecRsuqsrYc5h0bIK9LmGWtoi3nydvs+culqSGd6
-         gRiMBUu20al+1aPKcpOahTjf9PUh2ij1XpVloeErgx2bAzI8JqXecJePY7N/N48wJc0L
-         1tyyr1u/ZSSrn/VqQmln2Q+EDCe5/gXwVYDNrS08EqPkm0D+0iaqoWaQO/7IzQKaS46G
-         3zsjjCDqAwW22DXiMvjRufCEJFdE2rqRTcPLlLmq5Jn/22GqBs8NF5761wIECtiFBzSU
-         6epEbH6aLr8Kmw2JqX9zO1xODqq/fKwUdZDMCjHACdZLeNQT9/CwJ24a/u7ex7W9CZiW
-         uy8w==
-X-Gm-Message-State: AOAM533TBcmnixIQ0bD1JWNKIFWl0nfSlqKqUGYw/ZL9fglk8qrvnMKL
-        H/zLpKs0RWNt8xtmHr6h6CuPqiPBUFZM3XUrTZdai80sabU33A==
-X-Google-Smtp-Source: ABdhPJzypSawcFrP1JEuhsI8jAP607O5WWQytyOVGWPuXBhhebSmqFIVRRklQa6b7Yi4CXdM4nuefMch/LB8lk0p8oY=
-X-Received: by 2002:a81:4811:0:b0:30c:8021:4690 with SMTP id
- v17-20020a814811000000b0030c80214690mr34499432ywa.47.1654647891026; Tue, 07
- Jun 2022 17:24:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1654528729.git.jtoppins@redhat.com> <ac422216e35732c59ef8ca543fb4b381655da2bf.1654528729.git.jtoppins@redhat.com>
- <20220607171949.764e3286@kernel.org> <8b94a750-dc64-d689-0553-eba55a51a484@redhat.com>
-In-Reply-To: <8b94a750-dc64-d689-0553-eba55a51a484@redhat.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 7 Jun 2022 17:24:39 -0700
-Message-ID: <CANn89iJEyV2uDsh4jybyePuv1CaTW2zKrdkUTcoyMsH8rXiMKA@mail.gmail.com>
-Subject: Re: [net-next 1/2] bonding: netlink error message support for options
-To:     Jonathan Toppins <jtoppins@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
+        with ESMTP id S1444406AbiFHCxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 7 Jun 2022 22:53:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F7AC1BBAC5;
+        Tue,  7 Jun 2022 17:26:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F157617A1;
+        Wed,  8 Jun 2022 00:25:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9750BC34114;
+        Wed,  8 Jun 2022 00:25:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654647956;
+        bh=Swm8frSQYF0dasnZJ7rfGFppedE+tAaQ3A6Qn1RLL4w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rzzogDpbsRIe8kdUfMX4KxxsBmYM5b21oee7lee8hmr0Hu2pzI8Xk8IDGxFFIfx7l
+         wF0TmrAZA+kfgY7aYxSXJLGt6NeWzXlBPbldOXGTi+AVdtUvQIfpYX0VDsfq65p1PL
+         sVyK3V8cLsn0mkRbDJzQUkvQ2fVzqBgaiu7ccT/+ewiLuDEm96HxRvUQ1/gs2wezWy
+         tL22JChrMYkoKKSeR9c6gPwv18/GIg/psS+1LqYd5c5oN6h0mlXUL1GIF8nYN2HALe
+         ku2HPHMg1vetN5eB0JE1bkbD1QF0c2H7zTfm9Zknr3LT0L47JlrdN18HCWjrQmjplH
+         GrfKrj+F4MKSw==
+Date:   Tue, 7 Jun 2022 17:25:54 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Juergen Gross <jgross@suse.com>
+Cc:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH Resend] xen/netback: do some code cleanup
+Message-ID: <20220607172554.4b24d138@kernel.org>
+In-Reply-To: <6507870c-1c32-ebf6-f85f-4bf2ede41367@suse.com>
+References: <6507870c-1c32-ebf6-f85f-4bf2ede41367@suse.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 5:23 PM Jonathan Toppins <jtoppins@redhat.com> wrote:
+On Tue, 7 Jun 2022 07:28:38 +0200 Juergen Gross wrote:
+> Remove some unused macros and functions, make local functions static.
 
->
-> Thanks, will post a v2 tomorrow. What tool was used to generate the
-> errors? sparse? checkpatch reported zero errors.
->
+> --- a/drivers/net/xen-netback/rx.c
+> +++ b/drivers/net/xen-netback/rx.c
+> @@ -486,7 +486,7 @@ static void xenvif_rx_skb(struct xenvif_queue *queue)
+>    #define RX_BATCH_SIZE 64
+>   -void xenvif_rx_action(struct xenvif_queue *queue)
+> +static void xenvif_rx_action(struct xenvif_queue *queue)
 
-make htmldocs
+Strange, I haven't seen this kind of corruption before, but the patch
+certainly looks corrupted. It doesn't apply.
+Could you "git send-email" it?
+
+>   {
+
