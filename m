@@ -2,26 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0CF3543DAC
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 22:45:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55322543DCD
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 22:50:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232786AbiFHUpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 16:45:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39586 "EHLO
+        id S231423AbiFHUuo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 16:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230231AbiFHUpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 16:45:03 -0400
-Received: from smtp1.emailarray.com (smtp1.emailarray.com [65.39.216.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 050C2EBAB5
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 13:44:58 -0700 (PDT)
-Received: (qmail 40884 invoked by uid 89); 8 Jun 2022 20:44:57 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjg0LjIwNQ==) (POLARISLOCAL)  
-  by smtp1.emailarray.com with SMTP; 8 Jun 2022 20:44:57 -0000
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     kernel-team@fb.com, Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S229713AbiFHUun (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 16:50:43 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82043EE8E5
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 13:50:42 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id g186so11132225pgc.1
+        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 13:50:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=/Dg4kiVBHxFqbs5dhBwOYmopbK+1eNN0B9eaH2AOaok=;
+        b=HHE8nvYlNUgLEbPUJRRNw/lWsRwqbbXAYzFawhObGR9RU45yR9FinjcxCSyt+oOi7I
+         HbF6b6zTaBJunmb70wtttY4os6v0DvVhw2NDRNJ0o8/kUgoR2fTF+KMdkjcQ/mXKnpTs
+         F0RGGLyM8oHdwrSq9zgewU0L+204T0GGVWZFeoWgFrtJMPvbyKAehh8Rz9XuMXYQMfy0
+         88K9APLBmo8s6L3gbhVIY9IVpc9zfMCnhsa0UCOSi9I65RiqabHDEgeLyEKSOYYREs1t
+         Z2b9F06kg6GQn0nWGupLVcUzcoCm6Ogjz1PmAxE0eYFmtIgKmgXK8nr+CJnPNba+FTbx
+         79qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=/Dg4kiVBHxFqbs5dhBwOYmopbK+1eNN0B9eaH2AOaok=;
+        b=BoUR6OSzqbo2FtD1Ou6he1FZRGYXTWLUEVo0LHXhIGfAYWYhM48Fg8kgAemNMYqEXd
+         MvSL07Q+M7ojx8qwStD4g5oIEyILPAET3DIAyDQt79gdTydQHYwPzVJ+bkd+WD/OZBGg
+         N6oUNAl0ixLjppkr16krPoFMnPyuKDyqaYDQ1NApj4jNOWIPOUj4mq+7U71aiqQB/+Tl
+         DbTlYSD/1QacK1AYJiZw+baxLuU/0utS1nSodaJhuJ0bLQ/rcEUnMXADuDjJUEX4tWhd
+         AZsqWHLmZkc8SF4CTs1w4v63VinfR39Z5oVN2zR4c1YXuoO1fR3FK4bw81JnAdcX6Fbm
+         yFaw==
+X-Gm-Message-State: AOAM531J0jX60/CKcET6BZchOdTDqxKZSvWHnCztq0q/8o8WzjapQh1A
+        cDHDPU7yv0wZqIwZh0+5jo0=
+X-Google-Smtp-Source: ABdhPJzV6dLnSCrq98qO2xF1XcLtBxKmWzLq0/PbZNLtjbZ/isA8g7x/MFNkxAXTQECj+GBltGhcJg==
+X-Received: by 2002:a62:6144:0:b0:51b:99a7:5164 with SMTP id v65-20020a626144000000b0051b99a75164mr35974916pfb.61.1654721441980;
+        Wed, 08 Jun 2022 13:50:41 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id g85-20020a625258000000b00518142f8c37sm16007154pfb.171.2022.06.08.13.50.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 13:50:41 -0700 (PDT)
+Date:   Wed, 8 Jun 2022 13:50:39 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
+        Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
         Lasse Johnsen <l@ssejohnsen.me>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
@@ -31,335 +62,34 @@ Cc:     kernel-team@fb.com, Andrew Lunn <andrew@lunn.ch>,
         Paolo Abeni <pabeni@redhat.com>,
         Broadcom internal kernel review list 
         <bcm-kernel-feedback-list@broadcom.com>
-Subject: [PATCH net-next v6 3/3] net: phy: Add support for 1PPS out and external timestamps
-Date:   Wed,  8 Jun 2022 13:44:51 -0700
-Message-Id: <20220608204451.3124320-4-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.34.3
-In-Reply-To: <20220608204451.3124320-1-jonathan.lemon@gmail.com>
+Subject: Re: [PATCH net-next v6 3/3] net: phy: Add support for 1PPS out and
+ external timestamps
+Message-ID: <20220608205039.GA16693@hoboy.vegasvil.org>
 References: <20220608204451.3124320-1-jonathan.lemon@gmail.com>
+ <20220608204451.3124320-4-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,NML_ADSP_CUSTOM_MED,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220608204451.3124320-4-jonathan.lemon@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The perout function is used to generate a 1PPS signal, synchronized
-to the PHC.  This is accomplished by a using the hardware oneshot
-functionality, which is reset by a timer.
+On Wed, Jun 08, 2022 at 01:44:51PM -0700, Jonathan Lemon wrote:
+> The perout function is used to generate a 1PPS signal, synchronized
+> to the PHC.  This is accomplished by a using the hardware oneshot
+> functionality, which is reset by a timer.
 
-The external timestamp function is set up for a 1PPS input pulse,
-and uses a timer to poll for temestamps.
+Is this now really in sync with the PHC?
 
-Both functions use the SYNC_OUT/SYNC_IN1 pin, so cannot run
-simultaneously.
+(previously there was talk about it being random phase/frequency)
 
-Co-developed-by: Lasse Johnsen <l@ssejohnsen.me>
-Signed-off-by: Lasse Johnsen <l@ssejohnsen.me>
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- drivers/net/phy/bcm-phy-ptp.c | 227 ++++++++++++++++++++++++++++++++++
- 1 file changed, 227 insertions(+)
-
-diff --git a/drivers/net/phy/bcm-phy-ptp.c b/drivers/net/phy/bcm-phy-ptp.c
-index 6f462c232e9e..cd8dab4d4e10 100644
---- a/drivers/net/phy/bcm-phy-ptp.c
-+++ b/drivers/net/phy/bcm-phy-ptp.c
-@@ -80,6 +80,8 @@
- #define SYNC_OUT_1		0x0879
- #define SYNC_OUT_2		0x087a
- 
-+#define SYNC_IN_DIVIDER		0x087b
-+
- #define SYNOUT_TS_0		0x087c
- #define SYNOUT_TS_1		0x087d
- #define SYNOUT_TS_2		0x087e
-@@ -89,6 +91,7 @@
- #define  NSE_CAPTURE_EN			BIT(13)
- #define  NSE_INIT			BIT(12)
- #define  NSE_CPU_FRAMESYNC		BIT(5)
-+#define  NSE_SYNC1_FRAMESYNC		BIT(3)
- #define  NSE_FRAMESYNC_MASK		GENMASK(5, 2)
- #define  NSE_PEROUT_EN			BIT(1)
- #define  NSE_ONESHOT_EN			BIT(0)
-@@ -128,11 +131,14 @@ struct bcm_ptp_private {
- 	struct mii_timestamper mii_ts;
- 	struct ptp_clock *ptp_clock;
- 	struct ptp_clock_info ptp_info;
-+	struct ptp_pin_desc pin;
- 	struct mutex mutex;
- 	struct sk_buff_head tx_queue;
- 	int tx_type;
- 	bool hwts_rx;
- 	u16 nse_ctrl;
-+	bool pin_active;
-+	struct delayed_work pin_work;
- };
- 
- struct bcm_ptp_skb_cb {
-@@ -511,6 +517,216 @@ static long bcm_ptp_do_aux_work(struct ptp_clock_info *info)
- 	return reschedule ? 1 : -1;
- }
- 
-+static int bcm_ptp_cancel_func(struct bcm_ptp_private *priv)
-+{
-+	if (priv->pin_active) {
-+		priv->pin_active = false;
-+		priv->nse_ctrl &= ~(NSE_SYNC_OUT_MASK | NSE_SYNC1_FRAMESYNC |
-+				    NSE_CAPTURE_EN);
-+		bcm_phy_write_exp(priv->phydev, NSE_CTRL, priv->nse_ctrl);
-+		cancel_delayed_work_sync(&priv->pin_work);
-+	}
-+	return 0;
-+}
-+
-+static void bcm_ptp_perout_work(struct work_struct *pin_work)
-+{
-+	struct bcm_ptp_private *priv =
-+		container_of(pin_work, struct bcm_ptp_private, pin_work.work);
-+	struct phy_device *phydev = priv->phydev;
-+	struct timespec64 ts;
-+	u64 ns, next;
-+	u16 ctrl;
-+
-+	mutex_lock(&priv->mutex);
-+
-+	/* no longer running */
-+	if (!priv->pin_active) {
-+		mutex_unlock(&priv->mutex);
-+		return;
-+	}
-+
-+	bcm_ptp_framesync_ts(phydev, NULL, &ts, priv->nse_ctrl);
-+
-+	/* this is 1PPS only */
-+	next = NSEC_PER_SEC - ts.tv_nsec;
-+	ts.tv_sec += next < NSEC_PER_MSEC ? 2 : 1;
-+	ts.tv_nsec = 0;
-+
-+	ns = timespec64_to_ns(&ts);
-+
-+	/* force 0->1 transition for ONESHOT */
-+	ctrl = bcm_ptp_framesync_disable(phydev,
-+					 priv->nse_ctrl & ~NSE_ONESHOT_EN);
-+
-+	bcm_phy_write_exp(phydev, SYNOUT_TS_0, ns & 0xfff0);
-+	bcm_phy_write_exp(phydev, SYNOUT_TS_1, ns >> 16);
-+	bcm_phy_write_exp(phydev, SYNOUT_TS_2, ns >> 32);
-+
-+	/* load values on next framesync */
-+	bcm_phy_write_exp(phydev, SHADOW_LOAD, SYNC_OUT_LOAD);
-+
-+	bcm_ptp_framesync(phydev, ctrl | NSE_ONESHOT_EN | NSE_INIT);
-+
-+	priv->nse_ctrl |= NSE_ONESHOT_EN;
-+	bcm_ptp_framesync_restore(phydev, priv->nse_ctrl);
-+
-+	mutex_unlock(&priv->mutex);
-+
-+	next = next + NSEC_PER_MSEC;
-+	schedule_delayed_work(&priv->pin_work, nsecs_to_jiffies(next));
-+}
-+
-+static int bcm_ptp_perout_locked(struct bcm_ptp_private *priv,
-+				 struct ptp_perout_request *req, int on)
-+{
-+	struct phy_device *phydev = priv->phydev;
-+	u64 period, pulse;
-+	u16 val;
-+
-+	if (!on)
-+		return bcm_ptp_cancel_func(priv);
-+
-+	/* 1PPS */
-+	if (req->period.sec != 1 || req->period.nsec != 0)
-+		return -EINVAL;
-+	period = BCM_MAX_PERIOD_8NS;	/* write nonzero value */
-+
-+	if (req->flags & PTP_PEROUT_PHASE)
-+		return -EOPNOTSUPP;
-+
-+	if (req->flags & PTP_PEROUT_DUTY_CYCLE)
-+		pulse = ktime_to_ns(ktime_set(req->on.sec, req->on.nsec));
-+	else
-+		pulse = (u64)BCM_MAX_PULSE_8NS << 3;
-+
-+	/* convert to 8ns units */
-+	pulse >>= 3;
-+
-+	if (!pulse)
-+		return -EINVAL;
-+
-+	if (pulse > period)
-+		return -EINVAL;
-+
-+	if (pulse > BCM_MAX_PULSE_8NS)
-+		return -EINVAL;
-+
-+	bcm_phy_write_exp(phydev, SYNC_OUT_0, period);
-+
-+	val = ((pulse & 0x3) << 14) | ((period >> 16) & 0x3fff);
-+	bcm_phy_write_exp(phydev, SYNC_OUT_1, val);
-+
-+	val = ((pulse >> 2) & 0x7f) | (pulse << 7);
-+	bcm_phy_write_exp(phydev, SYNC_OUT_2, val);
-+
-+	if (priv->pin_active)
-+		cancel_delayed_work_sync(&priv->pin_work);
-+
-+	priv->pin_active = true;
-+	INIT_DELAYED_WORK(&priv->pin_work, bcm_ptp_perout_work);
-+	schedule_delayed_work(&priv->pin_work, 0);
-+
-+	return 0;
-+}
-+
-+static void bcm_ptp_extts_work(struct work_struct *pin_work)
-+{
-+	struct bcm_ptp_private *priv =
-+		container_of(pin_work, struct bcm_ptp_private, pin_work.work);
-+	struct phy_device *phydev = priv->phydev;
-+	struct ptp_clock_event event;
-+	struct timespec64 ts;
-+	u16 reg;
-+
-+	mutex_lock(&priv->mutex);
-+
-+	/* no longer running */
-+	if (!priv->pin_active) {
-+		mutex_unlock(&priv->mutex);
-+		return;
-+	}
-+
-+	reg = bcm_phy_read_exp(phydev, INTR_STATUS);
-+	if ((reg & INTC_FSYNC) == 0)
-+		goto out;
-+
-+	bcm_ptp_get_framesync_ts(phydev, &ts);
-+
-+	event.index = 0;
-+	event.type = PTP_CLOCK_EXTTS;
-+	event.timestamp = timespec64_to_ns(&ts);
-+	ptp_clock_event(priv->ptp_clock, &event);
-+
-+out:
-+	mutex_unlock(&priv->mutex);
-+	schedule_delayed_work(&priv->pin_work, HZ / 4);
-+}
-+
-+static int bcm_ptp_extts_locked(struct bcm_ptp_private *priv, int on)
-+{
-+	struct phy_device *phydev = priv->phydev;
-+
-+	if (!on)
-+		return bcm_ptp_cancel_func(priv);
-+
-+	if (priv->pin_active)
-+		cancel_delayed_work_sync(&priv->pin_work);
-+
-+	bcm_ptp_framesync_disable(phydev, priv->nse_ctrl);
-+
-+	priv->nse_ctrl |= NSE_SYNC1_FRAMESYNC | NSE_CAPTURE_EN;
-+
-+	bcm_ptp_framesync_restore(phydev, priv->nse_ctrl);
-+
-+	priv->pin_active = true;
-+	INIT_DELAYED_WORK(&priv->pin_work, bcm_ptp_extts_work);
-+	schedule_delayed_work(&priv->pin_work, 0);
-+
-+	return 0;
-+}
-+
-+static int bcm_ptp_enable(struct ptp_clock_info *info,
-+			  struct ptp_clock_request *rq, int on)
-+{
-+	struct bcm_ptp_private *priv = ptp2priv(info);
-+	int err = -EBUSY;
-+
-+	mutex_lock(&priv->mutex);
-+
-+	switch (rq->type) {
-+	case PTP_CLK_REQ_PEROUT:
-+		if (priv->pin.func == PTP_PF_PEROUT)
-+			err = bcm_ptp_perout_locked(priv, &rq->perout, on);
-+		break;
-+	case PTP_CLK_REQ_EXTTS:
-+		if (priv->pin.func == PTP_PF_EXTTS)
-+			err = bcm_ptp_extts_locked(priv, on);
-+		break;
-+	default:
-+		err = -EOPNOTSUPP;
-+		break;
-+	}
-+
-+	mutex_unlock(&priv->mutex);
-+
-+	return err;
-+}
-+
-+static int bcm_ptp_verify(struct ptp_clock_info *info, unsigned int pin,
-+			  enum ptp_pin_function func, unsigned int chan)
-+{
-+	switch (func) {
-+	case PTP_PF_NONE:
-+	case PTP_PF_EXTTS:
-+	case PTP_PF_PEROUT:
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+	return 0;
-+}
-+
- static const struct ptp_clock_info bcm_ptp_clock_info = {
- 	.owner		= THIS_MODULE,
- 	.name		= KBUILD_MODNAME,
-@@ -519,7 +735,12 @@ static const struct ptp_clock_info bcm_ptp_clock_info = {
- 	.settime64	= bcm_ptp_settime,
- 	.adjtime	= bcm_ptp_adjtime,
- 	.adjfine	= bcm_ptp_adjfine,
-+	.enable		= bcm_ptp_enable,
-+	.verify		= bcm_ptp_verify,
- 	.do_aux_work	= bcm_ptp_do_aux_work,
-+	.n_pins		= 1,
-+	.n_per_out	= 1,
-+	.n_ext_ts	= 1,
- };
- 
- static void bcm_ptp_txtstamp(struct mii_timestamper *mii_ts,
-@@ -648,6 +869,7 @@ static int bcm_ptp_ts_info(struct mii_timestamper *mii_ts,
- void bcm_ptp_stop(struct bcm_ptp_private *priv)
- {
- 	ptp_cancel_worker_sync(priv->ptp_clock);
-+	bcm_ptp_cancel_func(priv);
- }
- EXPORT_SYMBOL_GPL(bcm_ptp_stop);
- 
-@@ -667,6 +889,8 @@ void bcm_ptp_config_init(struct phy_device *phydev)
- 
- 	/* always allow FREQ_LOAD on framesync */
- 	bcm_phy_write_exp(phydev, SHADOW_CTRL, FREQ_LOAD);
-+
-+	bcm_phy_write_exp(phydev, SYNC_IN_DIVIDER, 1);
- }
- EXPORT_SYMBOL_GPL(bcm_ptp_config_init);
- 
-@@ -703,6 +927,9 @@ struct bcm_ptp_private *bcm_ptp_probe(struct phy_device *phydev)
- 
- 	priv->ptp_info = bcm_ptp_clock_info;
- 
-+	snprintf(priv->pin.name, sizeof(priv->pin.name), "SYNC_OUT");
-+	priv->ptp_info.pin_config = &priv->pin;
-+
- 	clock = ptp_clock_register(&priv->ptp_info, &phydev->mdio.dev);
- 	if (IS_ERR(clock))
- 		return ERR_CAST(clock);
--- 
-2.34.3
-
+Thanks,
+Richard
