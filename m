@@ -2,128 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D33754360F
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 17:07:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32A5A5435CA
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 17:00:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243054AbiFHPGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 11:06:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35360 "EHLO
+        id S242199AbiFHPAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 11:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242504AbiFHPFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 11:05:32 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5173826B96B;
-        Wed,  8 Jun 2022 07:57:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654700253; x=1686236253;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=vabkUfz2r5crtrIrJqk2A20R0OQx7I0ukNGf+NHVR10=;
-  b=Uqh6wab9Ud1bgRlPBUeeVRCWsKzFyQoenBrbzHpT/tqGlTxEb50VXH5E
-   4ChG/dmZkRrNE/Z2Pv5nhiwPCQswMfoSt8/nPyexC+ciPcUK4JyNhn99+
-   VhbRWgStb2moKesatl/QnWX5cGKVL3H8Y7GjIrImldmHHSAw7eJ+8OfhP
-   3NiQ4Ft2WqoKfkueCAutmYAAYpaUwJskwcNHa5ckTtGiggt9dl6Ohav94
-   ZoEfV04Qqc1+dCp63JwYEg3JaZnHtfccCR1+EUry/aZOL+YFZEjSrvoeh
-   UmfMcAXuVcc0z7IO/beu1tef4q6rWoDOs8sfDHQKCtPj5bg6wZNrERWvY
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="363250872"
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="363250872"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 07:49:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="580090504"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 08 Jun 2022 07:49:35 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nyx03-000EiI-8k;
-        Wed, 08 Jun 2022 14:49:35 +0000
-Date:   Wed, 8 Jun 2022 22:48:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Roberto Sassu <roberto.sassu@huawei.com>, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kpsingh@kernel.org
-Cc:     kbuild-all@lists.01.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: Re: [PATCH v2 1/3] bpf: Add bpf_verify_pkcs7_signature() helper
-Message-ID: <202206082219.09oAvCwe-lkp@intel.com>
-References: <20220608111221.373833-2-roberto.sassu@huawei.com>
+        with ESMTP id S243383AbiFHO6W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 10:58:22 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 717F913F0A
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 07:55:12 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id z17so18544391pff.7
+        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 07:55:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=ouIv3yuMD+fs6onJQHmG4NBDLGih2MdXqdMrDSRKCsQ=;
+        b=iHdOGy51SISYIjCKOSiKDzub3ag/c/YB/M+J0IrPPaHIE1iOQUXAPEPy75WiPIJmas
+         TegGXF0wEPRekd5eH/mgbOvUNHIGl45HdnK9CHe5xOncmZj1TWKOD7HNIOuHd2iceTGB
+         MirjXSzk/xlmPpCpJkOm8jGYauGjlnptfp1/m0fGbHfg8GMV7XixG7+IWfWLX7IcxiJc
+         2cnW9+gRjSSYm3dunGVkFWhqZhwGEbFdJT+o1dIGT1e6SjT5DaQJuEh9mdoQ2+71e7FF
+         AokLHIxv0mYX53SrjnlsL4+oPwhfDlT9wmQqp5K6BzypW+Yx94wm/Kwx/3j9aBTZEazD
+         jVWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=ouIv3yuMD+fs6onJQHmG4NBDLGih2MdXqdMrDSRKCsQ=;
+        b=aOfpT5/z+TsXCaZUdmp4MT1+LtoiiKwthur/Yyl22AH1xdjLjykeSunBoSy3KsxPNV
+         S+JQrExdeR8KDX3pXtbAIh9HDyZ5cw3gCWzuzKgMabpAg+8PiFIzNI3SYuMi3sEAMhfx
+         3mR7UiAgQc8q3+YKeU/OPoRTRTLhck+0y9QnX3f7gy59raO7c7pR5QZf+EvkJkz9p6G2
+         77slZy1Jm4f+bNz7gpY3tVfLO+HElRTsVrrmPOEAHiATSgufQRb8d1aDCKGienTyoI3p
+         AfVuyjjfoSoCIy5itSgF66s9Lw1zn8h8YEcF1ifsPt3aUAIl1ZDagLBnSs+AqFr6wDDs
+         RtzQ==
+X-Gm-Message-State: AOAM532lI+cwIXwhZDeVt13/YcJNBaaHyBS17RXnDFBVcidQ0xwABrez
+        UmITDgQPyNlu3LN3/Pb6zE6rbjX4QNg=
+X-Google-Smtp-Source: ABdhPJxnkIxdsvtyP4/uiQLov88i9KHNpaLJ3rPYd85OHciGo3TjAXCjuyAtcLnJjHf7CSluSUki3Q==
+X-Received: by 2002:a63:6c42:0:b0:3fe:465:7a71 with SMTP id h63-20020a636c42000000b003fe04657a71mr7284318pgc.101.1654700090376;
+        Wed, 08 Jun 2022 07:54:50 -0700 (PDT)
+Received: from [192.168.0.128] ([98.97.38.167])
+        by smtp.googlemail.com with ESMTPSA id b11-20020a170902d50b00b0015e8d4eb276sm14992859plg.192.2022.06.08.07.54.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 07:54:49 -0700 (PDT)
+Message-ID: <5c3f80585b414afb4b6bd49f46bcec77c1ba5fc8.camel@gmail.com>
+Subject: Re: [PATCH net] ip_gre: test csum_start instead of transport header
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, Willem de Bruijn <willemb@google.com>,
+        syzbot <syzkaller@googlegroups.com>
+Date:   Wed, 08 Jun 2022 07:54:48 -0700
+In-Reply-To: <20220606132107.3582565-1-willemdebruijn.kernel@gmail.com>
+References: <20220606132107.3582565-1-willemdebruijn.kernel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220608111221.373833-2-roberto.sassu@huawei.com>
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Roberto,
+On Mon, 2022-06-06 at 09:21 -0400, Willem de Bruijn wrote:
+> From: Willem de Bruijn <willemb@google.com>
+> 
+> GRE with TUNNEL_CSUM will apply local checksum offload on
+> CHECKSUM_PARTIAL packets.
+> 
+> ipgre_xmit must validate csum_start after an optional skb_pull,
+> else lco_csum may trigger an overflow. The original check was
+> 
+> 	if (csum && skb_checksum_start(skb) < skb->data)
+> 		return -EINVAL;
+> 
+> This had false positives when skb_checksum_start is undefined:
+> when ip_summed is not CHECKSUM_PARTIAL. A discussed refinement
+> was straightforward
+> 
+> 	if (csum && skb->ip_summed == CHECKSUM_PARTIAL &&
+> 	    skb_checksum_start(skb) < skb->data)
+> 		return -EINVAL;
+> 
+> But was eventually revised more thoroughly:
+> - restrict the check to the only branch where needed, in an
+>   uncommon GRE path that uses header_ops and calls skb_pull.
+> - test skb_transport_header, which is set along with csum_start
+>   in skb_partial_csum_set in the normal header_ops datapath.
+> 
+> Turns out skbs can arrive in this branch without the transport
+> header set, e.g., through BPF redirection.
+> 
+> Revise the check back to check csum_start directly, and only if
+> CHECKSUM_PARTIAL. Do leave the check in the updated location.
+> Check field regardless of whether TUNNEL_CSUM is configured.
+> 
+> Link: https://lore.kernel.org/netdev/YS+h%2FtqCJJiQei+W@shredder/
+> Link: https://lore.kernel.org/all/20210902193447.94039-2-willemdebruijn.kernel@gmail.com/T/#u
+> Fixes: 8a0ed250f911 ("ip_gre: validate csum_start only on pull")
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Signed-off-by: Willem de Bruijn <willemb@google.com>
+> ---
+>  net/ipv4/ip_gre.c | 11 +++++------
+>  1 file changed, 5 insertions(+), 6 deletions(-)
+> 
+> diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+> index 7e474a85deaf..3b9cd487075a 100644
+> --- a/net/ipv4/ip_gre.c
+> +++ b/net/ipv4/ip_gre.c
+> @@ -629,21 +629,20 @@ static netdev_tx_t ipgre_xmit(struct sk_buff *skb,
+>  	}
+>  
+>  	if (dev->header_ops) {
+> -		const int pull_len = tunnel->hlen + sizeof(struct iphdr);
+> -
+>  		if (skb_cow_head(skb, 0))
+>  			goto free_skb;
+>  
+>  		tnl_params = (const struct iphdr *)skb->data;
+>  
+> -		if (pull_len > skb_transport_offset(skb))
+> -			goto free_skb;
+> -
+>  		/* Pull skb since ip_tunnel_xmit() needs skb->data pointing
+>  		 * to gre header.
+>  		 */
+> -		skb_pull(skb, pull_len);
+> +		skb_pull(skb, tunnel->hlen + sizeof(struct iphdr));
+>  		skb_reset_mac_header(skb);
+> +
+> +		if (skb->ip_summed == CHECKSUM_PARTIAL &&
+> +		    skb_checksum_start(skb) < skb->data)
+> +			goto free_skb;
+>  	} else {
+>  		if (skb_cow_head(skb, dev->needed_headroom))
+>  			goto free_skb;
 
-Thank you for the patch! Perhaps something to improve:
+The one thing I might change would be the ordering of your two tests at
+the end. It is more likely that skb_checksum_start will be less than
+skb->data in most cases as skb->csum_start is initialized to 0 at
+allocation. So cases where it is greater than skb->data should be rare
+whereas the CHECKSUM_PARTIAL check will come up as true probably more
+often then not as it isn't uncommon to see checksum or TSO offloaded
+frames.
 
-[auto build test WARNING on bpf-next/master]
-[also build test WARNING on bpf/master]
-[cannot apply to horms-ipvs/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Anyway functionality-wise this looks good to me and what I suggested is
+more of an optimization anyway.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Roberto-Sassu/bpf-Add-bpf_verify_pkcs7_signature-helper/20220608-192110
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220608/202206082219.09oAvCwe-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/223914a2278b692d4120315d2fc7a29e3b89512a
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Roberto-Sassu/bpf-Add-bpf_verify_pkcs7_signature-helper/20220608-192110
-        git checkout 223914a2278b692d4120315d2fc7a29e3b89512a
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash kernel/bpf/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   kernel/bpf/bpf_lsm.c: In function '____bpf_verify_pkcs7_signature':
->> kernel/bpf/bpf_lsm.c:146:38: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-     146 |                                      (struct key *)keyring,
-         |                                      ^
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
 
 
-vim +146 kernel/bpf/bpf_lsm.c
-
-   135	
-   136	BPF_CALL_5(bpf_verify_pkcs7_signature, u8 *, data, u32, datalen, u8 *, sig,
-   137		   u32, siglen, u64, keyring)
-   138	{
-   139		int ret = -EOPNOTSUPP;
-   140	
-   141	#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
-   142		if (keyring > (unsigned long)VERIFY_USE_PLATFORM_KEYRING)
-   143			return -EINVAL;
-   144	
-   145		ret = verify_pkcs7_signature(data, datalen, sig, siglen,
- > 146					     (struct key *)keyring,
-   147					     VERIFYING_UNSPECIFIED_SIGNATURE, NULL,
-   148					     NULL);
-   149	#endif
-   150		return ret;
-   151	}
-   152	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
