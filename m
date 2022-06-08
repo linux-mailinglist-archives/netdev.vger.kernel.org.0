@@ -2,119 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 264A1542ACE
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 11:12:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7A60542AEF
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 11:12:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233840AbiFHJKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 05:10:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39392 "EHLO
+        id S233697AbiFHJK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 05:10:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233193AbiFHJJS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 05:09:18 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7343F114AAE
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 01:27:19 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id x5so20959235edi.2
-        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 01:27:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=RO+2GICEalTGWxqDS+LJ84EPVrBk/pFANY3/dBpnczA=;
-        b=iu/4+hXctfQAi/PtOuus7Ng+2TGisjH8LOIQ9UWUu2nOercAT2Cd30VUAnyTfknNLH
-         WdK6uKicZdZC0TbPF5J7HIFl4TsLBF4H31zMAbmY0aCKC3xZ3e/ztKH5NIEPBPP6p5vb
-         4E0qwO85pXzuGOofQC0LImH2xumsNiLSqpRYJAazUnZPeRKALEdhxmhv2HNaAAd67MB1
-         xq8XigI4Rn4w7GBhBzsoZaK0ul6XLDXJTr0X/XG0srSvzlvnBiswdMZex1xSxz6yDNVL
-         8SCfZe/q1NzKDkfDZHtQUZPwF1CzgjpFRnTfTTb2OeBSNcMUk7nUBDaqyDoOooU3ARJx
-         s4sQ==
+        with ESMTP id S233867AbiFHJJT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 05:09:19 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B5551DD4F8
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 01:27:21 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id v1-20020a922e01000000b002d40b2f60e5so10230704ile.13
+        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 01:27:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RO+2GICEalTGWxqDS+LJ84EPVrBk/pFANY3/dBpnczA=;
-        b=A7tonGhlFT36AiGJ5ZJXPwkwads8MSuZdO3xu+a/XQS7zUrO6hmRSE8pYm/rMon0zR
-         cu5ZQklPYkdkt5Ajwt5mpYGeUtTEezDNhz67BEb+3+HpcPDRIitoXlSRFNlvRhvu7IbQ
-         uASC6b8luSWO0+T42E56pv6PR3YWblAxR9GJ7knumh5LPex60/LbDI/oLy9KgHMss0FL
-         ywEtxe6lvkqtkDT9z+0TsVLd2mWBYB1h93d7aLG5CZzkv3gCR+pUh+y6ZeIag3H0wpTa
-         /BzLy/K6gb7jwAcnYFL8HFFCCm+Ei0iwVJzYPoiNFk6I98jHrsI+NDzOdeQ7OnVbwSRD
-         I2Kg==
-X-Gm-Message-State: AOAM533BhdjupcQCw8Z8v0p2UHso2ur+OB+w3fuK9tr9UeHiOjqOG9VY
-        CFkfj6pz4cUUzPvYaH76BiJGzw==
-X-Google-Smtp-Source: ABdhPJyu16RW47JnUBMKMuQ1vP3Jnqw3nPe2kNHMjMTrXF2Irw1fBYzJAanmcc85nOFSTAJtUYYUrQ==
-X-Received: by 2002:a05:6402:241d:b0:42e:8f7f:3188 with SMTP id t29-20020a056402241d00b0042e8f7f3188mr29981202eda.78.1654676837684;
-        Wed, 08 Jun 2022 01:27:17 -0700 (PDT)
-Received: from localhost (37-48-36-122.nat.epc.tmcz.cz. [37.48.36.122])
-        by smtp.gmail.com with ESMTPSA id n24-20020aa7c698000000b0042bb229e81esm11729464edq.15.2022.06.08.01.27.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 01:27:17 -0700 (PDT)
-Date:   Wed, 8 Jun 2022 10:27:15 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, dsahern@kernel.org,
-        steffen.klassert@secunet.com, jreuter@yaina.de,
-        razor@blackwall.org, kgraul@linux.ibm.com, ivecera@redhat.com,
-        jmaloy@redhat.com, ying.xue@windriver.com, lucien.xin@gmail.com,
-        arnd@arndb.de, yajun.deng@linux.dev, atenart@kernel.org,
-        richardsonnick@google.com, hkallweit1@gmail.com,
-        linux-hams@vger.kernel.org, dev@openvswitch.org,
-        linux-s390@vger.kernel.org, tipc-discussion@lists.sourceforge.net
-Subject: Re: [PATCH net-next] net: rename reference+tracking helpers
-Message-ID: <YqBdY0NzK9XJG7HC@nanopsycho>
-References: <20220608043955.919359-1-kuba@kernel.org>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=t0gc/xzcJt5stiUMCfeqVbf3IgQyudlht9hZER0u1/o=;
+        b=KIep9lF3bhq57feUgT4qgmDYhzZUAI0p3rQ2nkEpjm7llK7uP5j6SQrNvjfkZZMPQW
+         i1EI6ZHgVZIHSQEkdX3PgYtK9vZYX41j6IszMbGO5B4PplawiD6r8i8PcAkXYbvyLEwK
+         /Bu3lbhudx4PVdkSRdo8LxOmY1x5FLtJ152kFEBD1uHu3yq0jv6ELHB4fu5ut32QBPDd
+         zkexdq71GZDiiEhL8SzXasR8kbC5psx3vzR3Zru2AauBIlTOcfPBToIThDhHRWY0RDCk
+         zYOzoyilA+IMGXtpevRvvdC5HbQ2XARHmpH4P0b/8gzh0fxt43QtCiB3dfljHUgkBZZw
+         eVIQ==
+X-Gm-Message-State: AOAM531QoDA7dMkF+M3v1Pyam5NVCW4o+ACt3trSM84M651bd3rJTuPN
+        UFGaeSnohsw7NNnhylzyi3GcO+5lFlEO532v9L1KxBzjMox8
+X-Google-Smtp-Source: ABdhPJy208H1/vg6mOS+YoCh8pcCwNJM7S0gj2tmb6mTfO3y45mAEVpOfNlxURU11Uc27dLH5j56Z47T04K1ADO+rBEwP1KnjFod
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220608043955.919359-1-kuba@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6602:1682:b0:65d:f539:e30 with SMTP id
+ s2-20020a056602168200b0065df5390e30mr15247981iow.81.1654676840937; Wed, 08
+ Jun 2022 01:27:20 -0700 (PDT)
+Date:   Wed, 08 Jun 2022 01:27:20 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000527f4505e0eb795f@google.com>
+Subject: [syzbot] WARNING: locking bug in __inet_bind
+From:   syzbot <syzbot+089524dd375b122cfc88@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, dsahern@kernel.org,
+        edumazet@google.com, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jun 08, 2022 at 06:39:55AM CEST, kuba@kernel.org wrote:
->Netdev reference helpers have a dev_ prefix for historic
->reasons. Renaming the old helpers would be too much churn
+Hello,
 
-Hmm, I think it would be great to eventually rename the rest too in
-order to maintain unique prefix for netdev things. Why do you think the
-"churn" would be an issue?
+syzbot found the following issue on:
+
+HEAD commit:    7e062cda7d90 Merge tag 'net-next-5.19' of git://git.kernel..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=11ae654df00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e2c9c27babb4d679
+dashboard link: https://syzkaller.appspot.com/bug?extid=089524dd375b122cfc88
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+089524dd375b122cfc88@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 11123 at kernel/locking/lockdep.c:906 look_up_lock_class+0x6a/0xd0 kernel/locking/lockdep.c:906
+Modules linked in:
+CPU: 0 PID: 11123 Comm: syz-executor.5 Not tainted 5.18.0-syzkaller-03023-g7e062cda7d90 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:look_up_lock_class+0x6a/0xd0 kernel/locking/lockdep.c:906
+Code: 85 c0 75 0a eb 57 48 8b 00 48 85 c0 74 4f 48 39 70 40 75 f2 48 8b 4f 18 48 39 88 b0 00 00 00 74 0b 48 81 3f a0 13 2a 8f 74 02 <0f> 0b 5d c3 9c 5a 80 e6 02 74 c2 e8 36 10 83 fa 85 c0 74 1f 8b 05
+RSP: 0018:ffffc9000551f888 EFLAGS: 00010006
+RAX: ffffffff900e6720 RBX: ffffffff905eb8c0 RCX: ffffffff8aee8220
+RDX: 0000000000000046 RSI: ffffffff90965fa0 RDI: ffff88806cacd070
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000001
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: ffff88806cacd070 R14: 0000000000000000 R15: 0000000000000000
+FS:  00007fd663eb2700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fd662d9c028 CR3: 000000007854a000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ register_lock_class+0xbe/0x11b0 kernel/locking/lockdep.c:1256
+ __lock_acquire+0x10a/0x56c0 kernel/locking/lockdep.c:4901
+ lock_acquire kernel/locking/lockdep.c:5634 [inline]
+ lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5599
+ __raw_spin_lock_bh include/linux/spinlock_api_smp.h:126 [inline]
+ _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:178
+ spin_lock_bh include/linux/spinlock.h:354 [inline]
+ __lock_sock+0x145/0x260 net/core/sock.c:2826
+ lock_sock_nested+0xd6/0xf0 net/core/sock.c:3394
+ lock_sock include/net/sock.h:1691 [inline]
+ __inet_bind+0x8c4/0xc90 net/ipv4/af_inet.c:511
+ inet_bind+0x173/0x220 net/ipv4/af_inet.c:456
+ __sys_bind+0x1e9/0x250 net/socket.c:1776
+ __do_sys_bind net/socket.c:1787 [inline]
+ __se_sys_bind net/socket.c:1785 [inline]
+ __x64_sys_bind+0x6f/0xb0 net/socket.c:1785
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7fd662c89109
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fd663eb2168 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
+RAX: ffffffffffffffda RBX: 00007fd662d9bf60 RCX: 00007fd662c89109
+RDX: 0000000000000010 RSI: 00000000200001c0 RDI: 0000000000000015
+RBP: 00007fd662ce308d R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffd235ff65f R14: 00007fd663eb2300 R15: 0000000000022000
+ </TASK>
 
 
->but we can rename the tracking ones which are relatively
->recent and should be the default for new code.
->
->Rename:
-> dev_hold_track()    -> netdev_hold()
-> dev_put_track()     -> netdev_put()
-> dev_replace_track() -> netdev_ref_replace()
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-[...]
-
-
->diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
->index 817577e713d7..815738c0e067 100644
->--- a/drivers/net/macsec.c
->+++ b/drivers/net/macsec.c
->@@ -3462,7 +3462,7 @@ static int macsec_dev_init(struct net_device *dev)
-> 		memcpy(dev->broadcast, real_dev->broadcast, dev->addr_len);
-> 
-> 	/* Get macsec's reference to real_dev */
->-	dev_hold_track(real_dev, &macsec->dev_tracker, GFP_KERNEL);
->+	netdev_hold(real_dev, &macsec->dev_tracker, GFP_KERNEL);
-
-So we later decide to rename dev_hold() to obey the netdev_*() naming
-scheme, we would have collision. Also, seems to me odd to have:
-OLDPREFIX_x()
-and
-NEWPREFIX_x()
-to be different functions.
-
-For the sake of not making naming mess, could we rather have:
-netdev_hold_track()
-or
-netdev_hold_tr() if the prior is too long
-?
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
