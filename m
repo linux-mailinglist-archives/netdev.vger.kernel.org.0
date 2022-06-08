@@ -2,64 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46B9A542F70
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 13:49:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2264B542FB1
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 14:04:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238381AbiFHLse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 07:48:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40982 "EHLO
+        id S238607AbiFHMEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 08:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238098AbiFHLse (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 07:48:34 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D01EDF9F;
-        Wed,  8 Jun 2022 04:48:32 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4C0F6143D;
-        Wed,  8 Jun 2022 04:48:32 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id DB5053F73B;
-        Wed,  8 Jun 2022 04:48:30 -0700 (PDT)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     mst@redhat.com, jasowang@redhat.com
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] vdpa: Use device_iommu_capable()
-Date:   Wed,  8 Jun 2022 12:48:26 +0100
-Message-Id: <548e316fa282ce513fabb991a4c4d92258062eb5.1654688822.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.36.1.dirty
+        with ESMTP id S238551AbiFHMD7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 08:03:59 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A283117656;
+        Wed,  8 Jun 2022 05:03:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654689839; x=1686225839;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=u6KvyscW+4tTQVyeDXB/L7hOF5WmF9Q2JgTsY/byqX8=;
+  b=BDuo+189zgj3lo+J7oubfiPlYapl26R9bm6fsaONmfLt2bf9FD33yF30
+   qHKrMgVxT1gD7nTtK67peWmeFnJmwb1ZPNblopYL9jnUrTgmXoLGAMQgt
+   0OcQARtT/eb+/lADcGtGbT7Sks7F+tMGgL00wwoLh3xHVBuFhY2GLCgHs
+   kK17mjKPDZfWkguhegR1wP9nR+pThFu6EO9fY4azDa3Cc4s7xYItu3UQR
+   mO8LgcyHF3FpyOVjWRYDmgwNrDWaX7cFEekmUTja1hnSiI1rucf2Zsoe2
+   LQ96lFb0+JpNT8b1n2Y+BNIyouUOfwZrrBGbTx0Pg2rNU7xieMruqC7hR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10371"; a="256701612"
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="256701612"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 05:03:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="636792039"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga008.fm.intel.com with ESMTP; 08 Jun 2022 05:03:56 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id A2D8E1F8; Wed,  8 Jun 2022 15:03:59 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH net-next v1 0/5] ptp_ocp: set of small cleanups
+Date:   Wed,  8 Jun 2022 15:03:53 +0300
+Message-Id: <20220608120358.81147-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new interface to check the capability for our device
-specifically.
+The set of (independent) cleanups against ptp_ocp driver.
+Each patch has its own description, no need to repeat it here.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/vhost/vdpa.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Andy Shevchenko (5):
+  ptp_ocp: use dev_err_probe()
+  ptp_ocp: use bits.h macros for all masks
+  ptp_ocp: drop duplicate NULL check in ptp_ocp_detach()
+  ptp_ocp: do not call pci_set_drvdata(pdev, NULL)
+  ptp_ocp: replace kzalloc(x*y) by kcalloc(y, x)
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index 935a1d0ddb97..4cfebcc24a03 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -1074,7 +1074,7 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
- 	if (!bus)
- 		return -EFAULT;
- 
--	if (!iommu_capable(bus, IOMMU_CAP_CACHE_COHERENCY))
-+	if (!device_iommu_capable(dma_dev, IOMMU_CAP_CACHE_COHERENCY))
- 		return -ENOTSUPP;
- 
- 	v->domain = iommu_domain_alloc(bus);
+ drivers/ptp/ptp_ocp.c | 36 +++++++++++++++---------------------
+ 1 file changed, 15 insertions(+), 21 deletions(-)
+
 -- 
-2.36.1.dirty
+2.35.1
 
