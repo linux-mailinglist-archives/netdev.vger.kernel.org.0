@@ -2,111 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51177542559
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:54:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B765A5423DC
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:51:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234449AbiFHGBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 02:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34010 "EHLO
+        id S233416AbiFHFfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 01:35:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234711AbiFHFtH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 01:49:07 -0400
-Received: from EX-PRD-EDGE02.vmware.com (ex-prd-edge02.vmware.com [208.91.3.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6842AE24;
-        Tue,  7 Jun 2022 20:24:26 -0700 (PDT)
+        with ESMTP id S234199AbiFHFe6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 01:34:58 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08102200A7;
+        Tue,  7 Jun 2022 20:39:24 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id s12so31665549ejx.3;
+        Tue, 07 Jun 2022 20:39:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-    s=s1024; d=vmware.com;
-    h=from:to:cc:subject:date:message-id:in-reply-to:mime-version:
-      content-type;
-    bh=6GTDcHZ+adrQnA/VnTSgw7BGahrkpZagZo7aeFM/ljc=;
-    b=NNAKRooLP9E2TXgb1dE2/lqKXjYH5UCsNhbCouGNthDKzSr/FxHLSGi8S+eooI
-      3ZwJPZ6+1LqxK4aTNlRbTL3+w1LV5mzyJbpodUU/SVP8YxMWBQcAF4xUG3QHQ4
-      qROp13/2c+bsIX0junZqeaNS0FQ5RKXPWe50rfNk7ikP73M=
-Received: from sc9-mailhost2.vmware.com (10.113.161.72) by
- EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
- 15.1.2308.14; Tue, 7 Jun 2022 20:24:04 -0700
-Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost2.vmware.com (Postfix) with ESMTP id 019F620327;
-        Tue,  7 Jun 2022 20:24:10 -0700 (PDT)
-Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id F02E5AA454; Tue,  7 Jun 2022 20:24:09 -0700 (PDT)
-From:   Ronak Doshi <doshir@vmware.com>
-To:     <netdev@vger.kernel.org>
-CC:     Ronak Doshi <doshir@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 net-next 8/8] vmxnet3: update to version 7
-Date:   Tue, 7 Jun 2022 20:23:53 -0700
-Message-ID: <20220608032353.964-9-doshir@vmware.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20220608032353.964-1-doshir@vmware.com>
-References: <20220608032353.964-1-doshir@vmware.com>
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TIpn0h2PVrPJC3SI/KH0xb5zHLGy1ws/TaSSWL1fafE=;
+        b=ZRJirNsPmCJEJ8/xnwMXrjipNEdCoSO+YJlycAp6wr+Y+VIu9Qm0TsQ/xbl2UkI0+L
+         4WtwcGHsG9iVn4/DIpsadFXw37zZd/kzciybUhbJUVdirBgGDXwswi20O0rYsy33imxk
+         WOdvvDtoGHSR0AT1DeC5aC/zJU4qRzE9WDGZg4+yARXJ4aPFocpV1utF703vXaxXkcF8
+         2o99mSaoPk3pMZ0VXE1okpFArQCfwpN58epmZHq+KhOyf3XnBNjkKH9pB+rduYl6A+t1
+         6st4ECCjKlV3uSgIlbdKMgdHUbMOP4lsjNhBQm4/ewYKQUkQuwVd/k1SLR7fewMpO+g/
+         gsiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TIpn0h2PVrPJC3SI/KH0xb5zHLGy1ws/TaSSWL1fafE=;
+        b=EEEXA3RYaiJi6o0uvuZoJi3ZUozJV1nktXisLztxtfl4J3UKIeQZQPyrxLDjGu/BRm
+         SEkaS2Z31MvSOChcwrQQFFLtjdNy9agZp9QPQB4SOYDOkV1svyG6iu3BTBbupWb5zR5G
+         JHlkuxUahnweg6NRS8gkjVBhTvaDs2zd0zzHiXSREsrNkjYlwZAJ5jfD48yI6U03ocQP
+         Oq9iFL3lYQ6MVODW2InpIPtHSnB9Y9KICqKmP+P1l0Nl73oY9iU+I/k9dBXAYk76MS9a
+         lyUu32tofN+hfGQoCxXRtfrzYqm1AdEaoqhERp9pDBCv8xcZ/czh4qivvQjcEfZRjBGK
+         hCQA==
+X-Gm-Message-State: AOAM532HIDNVwRxM7GaE8zyyj0JfjcSUDrVbUHbw/rSaA2IKaCK5n1Y1
+        OKevs7yVBKmK4NNp4CGt1fI4IE6GWtugg89TvxXpD/LT
+X-Google-Smtp-Source: ABdhPJwRFRiobbRMerKEWIQI1+TgMyhJlXgcDWNvSFn2bKG23OUrbLI/1rcC8WMLQLdj12I5e7ypkHrs+Lu0noqKSLg=
+X-Received: by 2002:a17:906:c156:b0:6ff:2415:fc18 with SMTP id
+ dp22-20020a170906c15600b006ff2415fc18mr29466294ejc.94.1654659563312; Tue, 07
+ Jun 2022 20:39:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-Received-SPF: None (EX-PRD-EDGE02.vmware.com: doshir@vmware.com does not
- designate permitted sender hosts)
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220608021050.47279-1-zhoufeng.zf@bytedance.com> <20220608021050.47279-2-zhoufeng.zf@bytedance.com>
+In-Reply-To: <20220608021050.47279-2-zhoufeng.zf@bytedance.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 7 Jun 2022 20:39:11 -0700
+Message-ID: <CAADnVQ+kcONngR5mVm53KJZJOVQhR99TzZzv4KONcVY_H1rqEQ@mail.gmail.com>
+Subject: Re: [PATCH v5 1/2] bpf: avoid grabbing spin_locks of all cpus when no
+ free elems
+To:     Feng zhou <zhoufeng.zf@bytedance.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Chengming Zhou <zhouchengming@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With all vmxnet3 version 7 changes incorporated in the vmxnet3 driver,
-the driver can configure emulation to run at vmxnet3 version 7, provided
-the emulation advertises support for version 7.
+On Tue, Jun 7, 2022 at 7:11 PM Feng zhou <zhoufeng.zf@bytedance.com> wrote:
+>
+> From: Feng Zhou <zhoufeng.zf@bytedance.com>
+>
+> This patch use head->first in pcpu_freelist_head to check freelist
+> having free or not. If having, grab spin_lock, or check next cpu's
+> freelist.
+>
+> Before patch: hash_map performance
+> ./map_perf_test 1
+> 0:hash_map_perf pre-alloc 975345 events per sec
+> 4:hash_map_perf pre-alloc 855367 events per sec
+> 12:hash_map_perf pre-alloc 860862 events per sec
+> 8:hash_map_perf pre-alloc 849561 events per sec
+> 3:hash_map_perf pre-alloc 849074 events per sec
+> 6:hash_map_perf pre-alloc 847120 events per sec
+> 10:hash_map_perf pre-alloc 845047 events per sec
+> 5:hash_map_perf pre-alloc 841266 events per sec
+> 14:hash_map_perf pre-alloc 849740 events per sec
+> 2:hash_map_perf pre-alloc 839598 events per sec
+> 9:hash_map_perf pre-alloc 838695 events per sec
+> 11:hash_map_perf pre-alloc 845390 events per sec
+> 7:hash_map_perf pre-alloc 834865 events per sec
+> 13:hash_map_perf pre-alloc 842619 events per sec
+> 1:hash_map_perf pre-alloc 804231 events per sec
+> 15:hash_map_perf pre-alloc 795314 events per sec
+>
+> hash_map the worst: no free
+> ./map_perf_test 2048
 
-Signed-off-by: Ronak Doshi <doshir@vmware.com>
-Acked-by: Guolin Yang <gyang@vmware.com>
----
- drivers/net/vmxnet3/vmxnet3_drv.c | 7 ++++++-
- drivers/net/vmxnet3/vmxnet3_int.h | 4 ++--
- 2 files changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 5c42b4a008e8..1565e1808a19 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -3659,7 +3659,12 @@ vmxnet3_probe_device(struct pci_dev *pdev,
- 		goto err_alloc_pci;
- 
- 	ver = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_VRRS);
--	if (ver & (1 << VMXNET3_REV_6)) {
-+	if (ver & (1 << VMXNET3_REV_7)) {
-+		VMXNET3_WRITE_BAR1_REG(adapter,
-+				       VMXNET3_REG_VRRS,
-+				       1 << VMXNET3_REV_7);
-+		adapter->version = VMXNET3_REV_7 + 1;
-+	} else if (ver & (1 << VMXNET3_REV_6)) {
- 		VMXNET3_WRITE_BAR1_REG(adapter,
- 				       VMXNET3_REG_VRRS,
- 				       1 << VMXNET3_REV_6);
-diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
-index cb87731f5f1c..3367db23aa13 100644
---- a/drivers/net/vmxnet3/vmxnet3_int.h
-+++ b/drivers/net/vmxnet3/vmxnet3_int.h
-@@ -69,12 +69,12 @@
- /*
-  * Version numbers
-  */
--#define VMXNET3_DRIVER_VERSION_STRING   "1.6.0.0-k"
-+#define VMXNET3_DRIVER_VERSION_STRING   "1.7.0.0-k"
- 
- /* Each byte of this 32-bit integer encodes a version number in
-  * VMXNET3_DRIVER_VERSION_STRING.
-  */
--#define VMXNET3_DRIVER_VERSION_NUM      0x01060000
-+#define VMXNET3_DRIVER_VERSION_NUM      0x01070000
- 
- #if defined(CONFIG_PCI_MSI)
- 	/* RSS only makes sense if MSI-X is supported. */
--- 
-2.11.0
-
+The commit log talks about some private patch
+you've made to map_perf_test.
+Please use numbers from the bench added in the 2nd patch.
+Also trim commit log to only relevant parts.
+ftrace dumps and numbers from all cpus are too verbose
+for commit log.
