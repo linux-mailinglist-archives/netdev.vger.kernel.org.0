@@ -2,109 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2130C543CB1
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 21:19:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C5A0543D51
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 22:06:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235341AbiFHTTf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 15:19:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51308 "EHLO
+        id S233870AbiFHUFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 16:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235362AbiFHTTd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 15:19:33 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FAB93BF9D
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 12:19:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654715972; x=1686251972;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ypaTwO0pQdtrccJnIA7clYfA5CtbDAy0cfvBFehY6Fg=;
-  b=mEnTP61NyJC6Ss7aRKt8YnbJVodSkCLYIYMY0HWyjGiaqbSqAx/9jHjs
-   rm44oA2kYJ6HrRfv2KzTnBxczpOgLYQrTHEoFbxykxLPTfGZCd4Qw6W0/
-   OQzuOoK0RaAIb5ZbLj/L0z777VO8oZle1cnOeAaj6dYFQu/2tUSyGapAE
-   rknqks5u1vQGyeE8/eaezZ87Znmy1NpsQ+KXSWVfhecklNFiIlbflSaj7
-   OSi5A9dmADPJaMvlbthIn2sDj53Cxthqp+Wj0Dd17yxr/42xBwrZMoPkT
-   wEVlh8Tq+urvMgzfjH6BSkrMVRX7YAN+hGF+OsKt3+nD0YN+nX0JtWBHt
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="257442774"
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="257442774"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 12:19:29 -0700
-X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
-   d="scan'208";a="580206810"
-Received: from pperi-mobl.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.252.138.161])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 12:19:29 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Geliang Tang <geliang.tang@suse.com>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 2/2] mptcp: move MPTCPOPT_HMAC_LEN to net/mptcp.h
-Date:   Wed,  8 Jun 2022 12:19:19 -0700
-Message-Id: <20220608191919.327705-3-mathew.j.martineau@linux.intel.com>
+        with ESMTP id S233904AbiFHUF1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 16:05:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19C3374270;
+        Wed,  8 Jun 2022 13:05:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B492961978;
+        Wed,  8 Jun 2022 20:05:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11EA3C34116;
+        Wed,  8 Jun 2022 20:05:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654718725;
+        bh=Xsitfxpa9SAiyjEFJ3rFzKOoSCANgcCbda2AMgv57kQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ueHbtuB8zXtwlhLpmBo0kGP/RjMBO4pdgXF1Cag+GIbhRsDplAu6tLOJ22u4imHvo
+         dSGplBnEXtou/SuVBlqZwiJDsM2A5O9zV5yf2oNGqk4XXOvdl3c/U2yBFYTNRcPTNc
+         PsmujyopG0AH/5pHp0/HmdB3FB3gSW76Uj032luV6dQ5PSmA5vin66ll6HZKjEC4Oq
+         1ceESMw7chQbRBGJ+hOAuItCAfOfwNUg0NFx6Fo8WIWyRFO87Y/HvZ2A5Bt4wbBbLm
+         EoWaaxyJo0kqUVjt+/qfAkCsfZ/1Z/5hV3ViXm1mwycNIvVUjPqNNB7TAce9w8Wjj0
+         y97wG9sVLqDgA==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Leon Romanovsky <leonro@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH mlx5-next 0/6] mlx5-next HW bits and definitions updates 2022-06-08
+Date:   Wed,  8 Jun 2022 13:04:46 -0700
+Message-Id: <20220608200452.43880-1-saeed@kernel.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220608191919.327705-1-mathew.j.martineau@linux.intel.com>
-References: <20220608191919.327705-1-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliang.tang@suse.com>
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Move macro MPTCPOPT_HMAC_LEN definition from net/mptcp/protocol.h to
-include/net/mptcp.h.
+Updates to mlx5 HW bits and definitions for upcoming rdma and netdev
+features.
 
-Signed-off-by: Geliang Tang <geliang.tang@suse.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- include/net/mptcp.h  | 3 ++-
- net/mptcp/protocol.h | 1 -
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Jianbo Liu (2):
+  net/mlx5: Add IFC bits and enums for flow meter
+  net/mlx5: Add support EXECUTE_ASO action for flow entry
 
-diff --git a/include/net/mptcp.h b/include/net/mptcp.h
-index 4d761ad530c9..ac9cf7271d46 100644
---- a/include/net/mptcp.h
-+++ b/include/net/mptcp.h
-@@ -39,6 +39,7 @@ struct mptcp_ext {
- 			infinite_map:1;
- };
- 
-+#define MPTCPOPT_HMAC_LEN	20
- #define MPTCP_RM_IDS_MAX	8
- 
- struct mptcp_rm_list {
-@@ -89,7 +90,7 @@ struct mptcp_out_options {
- 			u32 nonce;
- 			u32 token;
- 			u64 thmac;
--			u8 hmac[20];
-+			u8 hmac[MPTCPOPT_HMAC_LEN];
- 		};
- 	};
- #endif
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 200f89f6d62f..8f03775a2f22 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -83,7 +83,6 @@
- 
- /* MPTCP MP_JOIN flags */
- #define MPTCPOPT_BACKUP		BIT(0)
--#define MPTCPOPT_HMAC_LEN	20
- #define MPTCPOPT_THMAC_LEN	8
- 
- /* MPTCP MP_CAPABLE flags */
+Ofer Levi (1):
+  net/mlx5: Add bits and fields to support enhanced CQE compression
+
+Saeed Mahameed (1):
+  net/mlx5: Add HW definitions of vport debug counters
+
+Shay Drory (2):
+  net/mlx5: group fdb cleanup to single function
+  net/mlx5: Remove not used MLX5_CAP_BITS_RW_MASK
+
+ .../net/ethernet/mellanox/mlx5/core/fs_cmd.c  |  33 ++++
+ .../net/ethernet/mellanox/mlx5/core/fs_core.c |  18 ++-
+ .../net/ethernet/mellanox/mlx5/core/main.c    |   7 -
+ include/linux/mlx5/device.h                   |  36 ++---
+ include/linux/mlx5/fs.h                       |  14 ++
+ include/linux/mlx5/mlx5_ifc.h                 | 144 ++++++++++++++++--
+ 6 files changed, 207 insertions(+), 45 deletions(-)
+
 -- 
 2.36.1
 
