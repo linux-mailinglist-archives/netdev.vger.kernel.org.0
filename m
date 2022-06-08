@@ -2,97 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40D3F54221B
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:46:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9ADF5424C4
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:52:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231840AbiFHEGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 00:06:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59164 "EHLO
+        id S231821AbiFHE5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 00:57:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236380AbiFHEFu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 00:05:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7924F29B172;
-        Tue,  7 Jun 2022 18:24:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E032B82510;
-        Wed,  8 Jun 2022 01:20:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CC56BC3411F;
-        Wed,  8 Jun 2022 01:20:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654651212;
-        bh=MQRPsAV6Vy1dIdbfnrFfh1xR5VTgXLhHDM9lc6+65nM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hUM/9NHs3PspR1eb+AK23FOkMXN8vkMVHatE6n+0OaifW4jVLGbjV4NDce9jHli9z
-         p91p9s0jTARbXKofTuhS/sHM47OMREC5rlzT68Ti1H9CAg8J0x6GOE83BtWwJkBms8
-         RnB1Qsb54ab4GRisxP35phaGAso62os7PnybNpNlKrvO9Sda6tjk3L5TircvmBNYob
-         DjLQ4+sITz4j0MRG8H3BflDW28IqRUoS2NU1ApsbIxZM0ZB/XUjKiWco+XP3DR+GmA
-         JPVN1HdwU7b+yMxP+CJPWSeBok4NIoW9J5l8/rnCkNWmU2ySU3E4EhAgOuskvvefIy
-         LbyCeH7V9s+/w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AD220E737F4;
-        Wed,  8 Jun 2022 01:20:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/7] netfilter: nat: really support inet nat without l3
- address
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165465121270.21593.8118957727937720312.git-patchwork-notify@kernel.org>
-Date:   Wed, 08 Jun 2022 01:20:12 +0000
-References: <20220606212055.98300-2-pablo@netfilter.org>
-In-Reply-To: <20220606212055.98300-2-pablo@netfilter.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S232446AbiFHE5Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 00:57:24 -0400
+Received: from azure-sdnproxy-2.icoremail.net (azure-sdnproxy.icoremail.net [52.175.55.52])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 490BC279C23;
+        Tue,  7 Jun 2022 18:30:29 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [106.117.78.144])
+        by mail-app3 (Coremail) with SMTP id cC_KCgDX36N1+59ibce0AQ--.23205S2;
+        Wed, 08 Jun 2022 09:29:46 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-kernel@vger.kernel.org
+Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-hams@vger.kernel.org,
+        thomas@osterried.de, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH v3] net: ax25: Fix deadlock caused by skb_recv_datagram in ax25_recvmsg
+Date:   Wed,  8 Jun 2022 09:29:23 +0800
+Message-Id: <20220608012923.17505-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgDX36N1+59ibce0AQ--.23205S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxZw43ZFyfAF1kWFy3KFW3Jrb_yoW5uF43pF
+        yUKFyxWr48Jry2qr47JFyDXr1xAFsFyayUXryxW3yxZFnxG3WrAryrtr4jy3yjgrZ8A347
+        tFn0ga1xKFn3WaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4U
+        JVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
+        n2kIc2xKxwCY02Avz4vE14v_KwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJV
+        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
+        1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
+        IIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvE
+        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvj
+        DU0xZFpf9x0JUHpB-UUUUU=
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAggPAVZdtaGLfQAFso
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The skb_recv_datagram() in ax25_recvmsg() will hold lock_sock
+and block until it receives a packet from the remote. If the client
+doesn`t connect to server and calls read() directly, it will not
+receive any packets forever. As a result, the deadlock will happen.
 
-This series was applied to netdev/net.git (master)
-by Pablo Neira Ayuso <pablo@netfilter.org>:
+The fail log caused by deadlock is shown below:
 
-On Mon,  6 Jun 2022 23:20:49 +0200 you wrote:
-> From: Florian Westphal <fw@strlen.de>
-> 
-> When no l3 address is given, priv->family is set to NFPROTO_INET and
-> the evaluation function isn't called.
-> 
-> Call it too so l4-only rewrite can work.
-> Also add a test case for this.
-> 
-> [...]
+[  369.606973] INFO: task ax25_deadlock:157 blocked for more than 245 seconds.
+[  369.608919] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[  369.613058] Call Trace:
+[  369.613315]  <TASK>
+[  369.614072]  __schedule+0x2f9/0xb20
+[  369.615029]  schedule+0x49/0xb0
+[  369.615734]  __lock_sock+0x92/0x100
+[  369.616763]  ? destroy_sched_domains_rcu+0x20/0x20
+[  369.617941]  lock_sock_nested+0x6e/0x70
+[  369.618809]  ax25_bind+0xaa/0x210
+[  369.619736]  __sys_bind+0xca/0xf0
+[  369.620039]  ? do_futex+0xae/0x1b0
+[  369.620387]  ? __x64_sys_futex+0x7c/0x1c0
+[  369.620601]  ? fpregs_assert_state_consistent+0x19/0x40
+[  369.620613]  __x64_sys_bind+0x11/0x20
+[  369.621791]  do_syscall_64+0x3b/0x90
+[  369.622423]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+[  369.623319] RIP: 0033:0x7f43c8aa8af7
+[  369.624301] RSP: 002b:00007f43c8197ef8 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
+[  369.625756] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f43c8aa8af7
+[  369.626724] RDX: 0000000000000010 RSI: 000055768e2021d0 RDI: 0000000000000005
+[  369.628569] RBP: 00007f43c8197f00 R08: 0000000000000011 R09: 00007f43c8198700
+[  369.630208] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff845e6afe
+[  369.632240] R13: 00007fff845e6aff R14: 00007f43c8197fc0 R15: 00007f43c8198700
 
-Here is the summary with links:
-  - [net,1/7] netfilter: nat: really support inet nat without l3 address
-    https://git.kernel.org/netdev/net/c/282e5f8fe907
-  - [net,2/7] netfilter: nf_tables: use kfree_rcu(ptr, rcu) to release hooks in clean_net path
-    https://git.kernel.org/netdev/net/c/ab5e5c062f67
-  - [net,3/7] netfilter: nf_tables: delete flowtable hooks via transaction list
-    https://git.kernel.org/netdev/net/c/b6d9014a3335
-  - [net,4/7] netfilter: nf_tables: always initialize flowtable hook list in transaction
-    https://git.kernel.org/netdev/net/c/2c9e4559773c
-  - [net,5/7] netfilter: nf_tables: release new hooks on unsupported flowtable flags
-    https://git.kernel.org/netdev/net/c/c271cc9febaa
-  - [net,6/7] netfilter: nf_tables: memleak flow rule from commit path
-    https://git.kernel.org/netdev/net/c/9dd732e0bdf5
-  - [net,7/7] netfilter: nf_tables: bail out early if hardware offload is not supported
-    https://git.kernel.org/netdev/net/c/3a41c64d9c11
+This patch moves the skb_recv_datagram() before lock_sock() in order that
+other functions that need lock_sock could be executed. What`s more, we
+add skb_free_datagram() before goto out in order to mitigate memory leak.
 
-You are awesome, thank you!
+Suggested-by: Thomas Osterried <thomas@osterried.de>
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reported-by: Thomas Habets <thomas@@habets.se>
+---
+Changes in v3:
+  - Add skb_free_datagram() before goto out in order to mitigate memory leak.
+
+ net/ax25/af_ax25.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+index 95393bb2760..62aa5993093 100644
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -1665,6 +1665,11 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 	int copied;
+ 	int err = 0;
+ 
++	/* Now we can treat all alike */
++	skb = skb_recv_datagram(sk, flags, &err);
++	if (!skb)
++		goto done;
++
+ 	lock_sock(sk);
+ 	/*
+ 	 * 	This works for seqpacket too. The receiver has ordered the
+@@ -1672,14 +1677,10 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 	 */
+ 	if (sk->sk_type == SOCK_SEQPACKET && sk->sk_state != TCP_ESTABLISHED) {
+ 		err =  -ENOTCONN;
++		skb_free_datagram(sk, skb);
+ 		goto out;
+ 	}
+ 
+-	/* Now we can treat all alike */
+-	skb = skb_recv_datagram(sk, flags, &err);
+-	if (skb == NULL)
+-		goto out;
+-
+ 	if (!sk_to_ax25(sk)->pidincl)
+ 		skb_pull(skb, 1);		/* Remove PID */
+ 
+@@ -1725,6 +1726,7 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ out:
+ 	release_sock(sk);
+ 
++done:
+ 	return err;
+ }
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.17.1
 
