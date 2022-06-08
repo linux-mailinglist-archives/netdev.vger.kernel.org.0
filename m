@@ -2,181 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C8C25424E3
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:53:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8B49542537
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:54:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233278AbiFHFF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 01:05:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39478 "EHLO
+        id S233023AbiFHFIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 01:08:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233487AbiFHFEo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 01:04:44 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40AAF2F91AF;
-        Tue,  7 Jun 2022 19:01:43 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id er5so25167292edb.12;
-        Tue, 07 Jun 2022 19:01:43 -0700 (PDT)
+        with ESMTP id S232996AbiFHFIc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 01:08:32 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8607270403
+        for <netdev@vger.kernel.org>; Tue,  7 Jun 2022 19:11:01 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id n8so16412104plh.1
+        for <netdev@vger.kernel.org>; Tue, 07 Jun 2022 19:11:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hEdnGDbCA+kjfc/VIIcZxsDhGurHoaavILbT6X67kyg=;
-        b=cQIUjFP+F6YiiIhR2cdRRxWXvb4XMU1iLT7Zb1NhwqnRURCGl3G3NtwJTw4Ghwc/wW
-         wWqFkL/DshKNdnuowK6e27tsuGxNULjPY5MoH/eP2HP4MRPSP8eYrUrOx+OzkEDcGDZw
-         YWlbUyUO729PqRijuAmSyQEyOCwdlW4q1txqA4jIAx7q6BQG3BD/j8MgUfBawGfNNCNl
-         MmJibTV5AON1UlzhvpYzXc7nblm+Ac6oTcOxZdCW6V8aMVPjNo0MtTrFgTzMU/BbVjYc
-         0WFTfZkSJk4KzBRCoAm1Pv/3i1+v63xOrqCQ04gYfU0MZkCTGso2GQ9PLWxIQNfzt86n
-         QxfQ==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=J1xTU6kj0/mXxD+Ml9TPjDN30P//McYOe7F06FaSLhc=;
+        b=BDN2paihn1LCyhLcp4pP9rIPTRr4vLDEEADf8vnc8LBhTkSHVMtYpbHSDk0LmEpJ3P
+         0QsQ4xcEAQ6mR7KHehHmVsf/fWbrWOLJqMA3C7wB6W0RRpM5JnLPlHPzW42eEYGlPD/g
+         b7ixAiiAizc05j6l9TC8iNb+FhfSxSIB5GedeD9cRRDbw1VBHgLVM1zA3K+OvirQHDY9
+         FocZ73WmXw3ISGxpOAwzf7naIyjAfY8oIYw2cwaOCfx8pg4yLYQkpkc6ZXboWo67BlHe
+         uizjLucbvk/HRFRcL/5fzFkl1+jMmyDycdLqETntdULGwTRhc+EKVReGZB8AI/d1KALW
+         KIEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hEdnGDbCA+kjfc/VIIcZxsDhGurHoaavILbT6X67kyg=;
-        b=vfogoTV4eK4dbJ4/1PQQphTQ8KKnu+C5YcxQEPADGM4+KS3xovULPunjvMudwGHE1M
-         iaHNbpWjakqajpDX1tIJGcsXzo76BgX2Dhtiygqd5NML7I0+n8/2pPhVuVv8jdxc9zUJ
-         JyW3IPOrOqo4/SC7KTlAl/7YppfxKzmpowrGJsEFvegB83iwRi1UP0s1UTL4n2Vrp/2p
-         NzDPKlafABq3JwTsvkOoCwbBASpkL/rZUtvy3KJaY/CSJqYtmHzkebS+iFPBy91HQN3F
-         RY06Ras4fyut5K/6D06sr/+twjIrBz+DfZuCymqwKmWVJRKLKZsEdfpBeu8RlWfSyEQ0
-         W6SQ==
-X-Gm-Message-State: AOAM533Lw8ePrA8p1hnktzE1PzzdjuB3LR1T1CEK10qGq9DL1TQOLAGb
-        JS4A3U1FPQIwV9cVAHMLpmVVvVtFKFeLVFxq9lk=
-X-Google-Smtp-Source: ABdhPJwuc8VC/RiWW4sM66ztXfWl92bMfnCwuwUheAWuApGkFMr1ZAcWSLjahwZnJ+kHT20IxBvzekzbwF3gOztePxQ=
-X-Received: by 2002:a05:6402:3895:b0:430:6a14:8ca3 with SMTP id
- fd21-20020a056402389500b004306a148ca3mr23928805edb.421.1654653701506; Tue, 07
- Jun 2022 19:01:41 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=J1xTU6kj0/mXxD+Ml9TPjDN30P//McYOe7F06FaSLhc=;
+        b=4dNX+L39wiwn9VXMhc1/piPuDmdfibojzUhafrJktLnDggGZgI0aOR9EpLIfB4fz0F
+         36vmvoKB2OGsdqsqB32pAaMYfBK8Hx/P9ZB754wg6X/s+9oMOpwdPGaze72DfSbQ0oOr
+         OXDouRhMb9hzUJpkI+pHjUoqAr4GqK6Qhs8P0GvNbnV2P2HzYH/mF+0SojzhDfJgzSKa
+         HARAIeYlyeACI0406iEQPsh3i5KUlKQ0uIXOeu7rQNpxOOzNoRFxbqPxSDZLs8MYd3AL
+         q+Msf1sBNUKofFB9eJaSe/eyXkG2IvDupGTCd/75kxd1/yKTNaWhOkEDWEmvJcVulJt7
+         nskA==
+X-Gm-Message-State: AOAM5318mj9tMU+E+pE5UeaecYfFi6FVzWgoIBxrznZNIKe1OAsmARN0
+        Axs5X7yS+IExn/1tot05J0TS4g==
+X-Google-Smtp-Source: ABdhPJyOtBnUKFIXKz2YiKYmMkeKDNdYHJ5kDFk1kSUTeqre5MwAtUnqpD/YnlfoT75RoZ8erq6BzQ==
+X-Received: by 2002:a17:902:ee54:b0:163:bdf4:1112 with SMTP id 20-20020a170902ee5400b00163bdf41112mr31483056plo.89.1654654260881;
+        Tue, 07 Jun 2022 19:11:00 -0700 (PDT)
+Received: from C02F52LSML85.bytedance.net ([139.177.225.241])
+        by smtp.gmail.com with ESMTPSA id h7-20020a170902680700b001651562eb16sm13166636plk.124.2022.06.07.19.10.54
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 07 Jun 2022 19:11:00 -0700 (PDT)
+From:   Feng zhou <zhoufeng.zf@bytedance.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
+        songmuchun@bytedance.com, wangdongdong.6@bytedance.com,
+        cong.wang@bytedance.com, zhouchengming@bytedance.com,
+        zhoufeng.zf@bytedance.com
+Subject: [PATCH v5 0/2] Optimize performance of update hash-map when free is zero
+Date:   Wed,  8 Jun 2022 10:10:48 +0800
+Message-Id: <20220608021050.47279-1-zhoufeng.zf@bytedance.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
-References: <20220606103734.92423-1-kurt@linutronix.de> <CAADnVQJ--oj+iZYXOwB1Rs9Qiy6Ph9HNha9pJyumVom0tiOFgg@mail.gmail.com>
- <875ylc6djv.ffs@tglx> <c166aa47-e404-e6ee-0ec5-0ead1923f412@redhat.com>
-In-Reply-To: <c166aa47-e404-e6ee-0ec5-0ead1923f412@redhat.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 7 Jun 2022 19:01:29 -0700
-Message-ID: <CAADnVQKqo1XfrPO8OYA1VpArKHZotuDjGNtxM0AftUj_R+vU7g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: Add BPF-helper for accessing CLOCK_TAI
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Joanne Koong <joannelkoong@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 12:35 PM Jesper Dangaard Brouer
-<jbrouer@redhat.com> wrote:
->
->
-> On 07/06/2022 11.14, Thomas Gleixner wrote:
-> > Alexei,
-> >
-> > On Mon, Jun 06 2022 at 08:57, Alexei Starovoitov wrote:
-> >> On Mon, Jun 6, 2022 at 3:38 AM Kurt Kanzenbach <kurt@linutronix.de> wrote:
-> >>>
-> >>> From: Jesper Dangaard Brouer <brouer@redhat.com>
-> >>>
-> >>> Commit 3dc6ffae2da2 ("timekeeping: Introduce fast accessor to clock tai")
-> >>> introduced a fast and NMI-safe accessor for CLOCK_TAI. Especially in time
-> >>> sensitive networks (TSN), where all nodes are synchronized by Precision Time
-> >>> Protocol (PTP), it's helpful to have the possibility to generate timestamps
-> >>> based on CLOCK_TAI instead of CLOCK_MONOTONIC. With a BPF helper for TAI in
-> >>> place, it becomes very convenient to correlate activity across different
-> >>> machines in the network.
-> >>
-> >> That's a fresh feature. It feels risky to bake it into uapi already.
-> >
-> > What? That's just support for a different CLOCK. What's so risky about
-> > it?
->
-> I didn't think it was "risky" as this is already exported as:
->   EXPORT_SYMBOL_GPL(ktime_get_tai_fast_ns);
->
-> Correct me if I'm wrong, but this simple gives BPF access to CLOCK_TAI
-> (see man clock_gettime(2)), right?
-> And CLOCK_TAI is not really a new/fresh type of CLOCK.
->
-> Especially for networking we need this CLOCK_TAI time as HW LaunchTime
-> need this (e.g. see qdisc's sch_etf.c and sch_taprio.c).
+From: Feng Zhou <zhoufeng.zf@bytedance.com>
 
-I see. I interpreted the commit log that commit 3dc6ffae2da2
-introduced TAI into the kernel for the first time.
-But it introduced the NMI safe version of it, right?
+We encountered bad case on big system with 96 CPUs that
+alloc_htab_elem() would last for 1ms. The reason is that after the
+prealloc hashtab has no free elems, when trying to update, it will still
+grab spin_locks of all cpus. If there are multiple update users, the
+competition is very serious.
 
-> >
-> >> imo it would be better to annotate tk_core variable in vmlinux BTF.
-> >> Then progs will be able to read all possible timekeeper offsets.
-> >
-> > We are exposing APIs. APIs can be supported, but exposing implementation
-> > details creates ABIs of the worst sort because that prevents the kernel
-> > from changing the implementation. We've seen the fallout with the recent
-> > tracepoint changes already.
->
-> Hmm... annotate tk_core variable in vmlinux BTF and letting BPF progs
-> access this seems like an unsafe approach and we tempt BPF-developers to
-> think other parts are okay to access.
+0001: Use head->first to check whether the free list is empty or not before taking
+the lock.
+0002: Add benchmark to reproduce this worst case.
 
-It is safe to access.
-Whether garbage will be read it's a different story.
+Changelog:
+v4->v5: Addressed comments from Alexei Starovoitov.
+- Use head->first.
+- Use cpu+max_entries.
+some details in here:
+https://lore.kernel.org/bpf/20220601084149.13097-1-zhoufeng.zf@bytedance.com/
 
-The following works (with lose definition of 'works'):
+v3->v4: Addressed comments from Daniel Borkmann.
+- Use READ_ONCE/WRITE_ONCE.
+some details in here:
+https://lore.kernel.org/all/20220530091340.53443-1-zhoufeng.zf@bytedance.com/
 
-extern const void tk_core __ksym;
+v2->v3: Addressed comments from Alexei Starovoitov, Andrii Nakryiko.
+- Adjust the way the benchmark is tested.
+- Adjust the code format.
+some details in here:
+https://lore.kernel.org/all/20220524075306.32306-1-zhoufeng.zf@bytedance.com/T/
 
-struct timekeeper {
-        long long offs_tai;
-} __attribute__((preserve_access_index));
+v1->v2: Addressed comments from Alexei Starovoitov.
+- add a benchmark to reproduce the issue.
+- Adjust the code format that avoid adding indent.
+some details in here:
+https://lore.kernel.org/all/877ac441-045b-1844-6938-fcaee5eee7f2@bytedance.com/T/
 
-struct seqcount_raw_spinlock {
-} __attribute__((preserve_access_index));
+Feng Zhou (2):
+  bpf: avoid grabbing spin_locks of all cpus when no free elems
+  selftest/bpf/benchs: Add bpf_map benchmark
 
-long get_clock_tai(void)
-{
-   long long off = 0;
-   void *addr = (void *)&tk_core +
-      ((bpf_core_type_size(struct seqcount_raw_spinlock) + 7) / 8) * 8 +
-      bpf_core_field_offset(struct timekeeper, offs_tai);
+ kernel/bpf/percpu_freelist.c                  | 20 ++--
+ tools/testing/selftests/bpf/Makefile          |  4 +-
+ tools/testing/selftests/bpf/bench.c           |  2 +
+ .../benchs/bench_bpf_hashmap_full_update.c    | 96 +++++++++++++++++++
+ .../run_bench_bpf_hashmap_full_update.sh      | 11 +++
+ .../bpf/progs/bpf_hashmap_full_update_bench.c | 40 ++++++++
+ 6 files changed, 166 insertions(+), 7 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/benchs/bench_bpf_hashmap_full_update.c
+ create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_bpf_hashmap_full_update.sh
+ create mode 100644 tools/testing/selftests/bpf/progs/bpf_hashmap_full_update_bench.c
 
-   bpf_probe_read_kernel(&off, sizeof(off), addr);
-   return bpf_ktime_get_ns() + off;
-}
+-- 
+2.20.1
 
-It's ugly, but no kernel changes are necessary.
-If you need to access clock_tai you can do so on older kernels too.
-Even on android 4.19 kernels.
-
-It's not foolproof. Future kernel changes will break it,
-but CO-RE will detect the breakage.
-The prog author would have to adjust the prog every time.
-
-People do these kinds of tricks all the time.
-
-Note that above was possible even before CO-RE came to existence.
-The first day bpf_probe_read_kernel() became available 8 years ago
-the tracing progs could read any kernel memory.
-Even earlier kprobes could read it for 10+ years.
-
-And in all those years bpf progs accessing kernel internals
-didn't freeze kernel development. bpf progs don't extend
-uapi surface unless the changes are in uapi/bpf.h.
-
-Anyway I guess new helper bpf_ktime_get_tai_ns() is ok, since
-it's so trivial, but selftest is necessary.
