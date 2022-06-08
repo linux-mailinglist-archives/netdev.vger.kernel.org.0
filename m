@@ -2,188 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC94D543BB8
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 20:47:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63F38543BC1
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 20:51:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231773AbiFHSrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 14:47:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43908 "EHLO
+        id S231334AbiFHSv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 14:51:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbiFHSrv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 14:47:51 -0400
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E83955365;
-        Wed,  8 Jun 2022 11:47:50 -0700 (PDT)
-Received: by mail-qk1-f172.google.com with SMTP id k6so13121005qkf.4;
-        Wed, 08 Jun 2022 11:47:50 -0700 (PDT)
+        with ESMTP id S229922AbiFHSv1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 14:51:27 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6483CD289
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 11:51:26 -0700 (PDT)
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 47C673F20D
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 18:51:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1654714285;
+        bh=amIVXY7ikJGtMrtlzCqfcbWeYSbhJ0XADNsYuBoNUxM=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=kUTuUh6u9SQyrKXzxHHn8/dfI72q4G+d3tcI8WG2XBdH5jSzM7ulCQLnCwerZTG64
+         AB0ida5WAZqySrHhgazzAwR7bANXg+qXIxTsy8J0Fi4uKSm7mjQvKe+Nq8GQZvxQUG
+         IuILTQoBvIu1ijrlLzB1R0QN8Xe4ayzIdrfc+47D/hQFPVM5UTv0P+1+cc7vas4BS4
+         YaboS9AfeYomljJazFrXz4+h0DWnkRyxGh0BOGT+xDyjd861WEOX7UotTCQOgbdrsw
+         JHwYqEA8yqAWs0Whfo69TNCi0HufTGdu5cac7+9x/1y+y8v3/9CpqUUC6U6Rc7GTjH
+         Dk++M8UU2+BNQ==
+Received: by mail-pg1-f199.google.com with SMTP id w32-20020a631620000000b003fbb0d4d3ffso10517217pgl.21
+        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 11:51:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cCx4uVeqQeSUmVm0iqQB2vFXf1PboEGJhslplIjAGsc=;
-        b=TJqV7fzzDU9w7+AJrBGLLjYSJ8hmFRr81LI/DC6KsqmGZNz2yRLNmfTDwQxRg37/bO
-         ba7RFBEnIxWhsyLdGB72v52NQ0oMt+9pkheBzvmKy/gM1gNK+YzEte//ASOSBKH19Qe+
-         GESQBiEbTYAgzEnj2235r3jdRaxBNe4CKQaArBdXn68oG73+PmbAZTla2xpFNT2KyMBg
-         WIsAoVQ0mAR1pXoDTIokH4aBviu3YsfAx2pSjTkB9WS+7I9hzWfNa3IlGNr11/s4EwRY
-         Hifp3UxZE4cCplHTzjA5vWTgPxU05Aaf/fKA23XaJiNxSl1JQX/XhDhdI3jPp3nI6gjk
-         L9Zg==
-X-Gm-Message-State: AOAM5335xLTr3ZL0t4t5y+ir5Wa6U+MGA1UzqgvLNohCy51RRm8AeXbQ
-        DDQefOv6UZK9zHBAlEui8FhC8xh8+osMcA==
-X-Google-Smtp-Source: ABdhPJzc/ORM8GGBI29tjlSFStybvgxYar63zFoTbShoSlq/iV8cI5JOCLGaMDCmPC7O0P5Bhmg1eg==
-X-Received: by 2002:a05:620a:12e6:b0:6a6:a5b9:1c57 with SMTP id f6-20020a05620a12e600b006a6a5b91c57mr17865292qkl.393.1654714069233;
-        Wed, 08 Jun 2022 11:47:49 -0700 (PDT)
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com. [209.85.219.181])
-        by smtp.gmail.com with ESMTPSA id g22-20020ac870d6000000b00304e0245d88sm10868542qtp.48.2022.06.08.11.47.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Jun 2022 11:47:48 -0700 (PDT)
-Received: by mail-yb1-f181.google.com with SMTP id w2so38002867ybi.7;
-        Wed, 08 Jun 2022 11:47:48 -0700 (PDT)
-X-Received: by 2002:a05:6902:124c:b0:663:9db4:671c with SMTP id
- t12-20020a056902124c00b006639db4671cmr16391806ybu.543.1654714068446; Wed, 08
- Jun 2022 11:47:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220601070707.3946847-1-saravanak@google.com>
- <CAMuHMdXkX-SXtBuTRGJOUnpw9goSP6RFr_PTt_3w_yWgBpWsqg@mail.gmail.com>
- <CAGETcx9f0UBhpp6dM+KJwtYpLx19wwsq6_ygi3En7FrXobOSpA@mail.gmail.com>
- <CAGETcx8VM+xOCe7HEx9FUU-1B9nrX8Q=tE=NjTyb9uX2_8RXLQ@mail.gmail.com>
- <CAMuHMdXzu8Vp=a7fyjOB=xt04aee=vWXV=TcRZeeKUGYFFZ1CA@mail.gmail.com> <CAGETcx_Nqo4ju7cWwO3dP3YM2wpCb0jx23OHOReexOjpT5pATA@mail.gmail.com>
-In-Reply-To: <CAGETcx_Nqo4ju7cWwO3dP3YM2wpCb0jx23OHOReexOjpT5pATA@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 8 Jun 2022 20:47:36 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXQCwMQj_ZiOBAzusdCxd8w6NbTqD_7nzykhVs+UWx8Gw@mail.gmail.com>
-Message-ID: <CAMuHMdXQCwMQj_ZiOBAzusdCxd8w6NbTqD_7nzykhVs+UWx8Gw@mail.gmail.com>
-Subject: Re: [PATCH v2 0/9] deferred_probe_timeout logic clean up
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
+         :comments:mime-version:content-id:content-transfer-encoding:date
+         :message-id;
+        bh=amIVXY7ikJGtMrtlzCqfcbWeYSbhJ0XADNsYuBoNUxM=;
+        b=wG50RVaW9Fq3q+j1fTBG61ZxSfloecznR6FQDuI33lFNPdV0uK6vVeksfXoPwk49Yr
+         pdzS0DhdvkjcZUwpYUy2ausotn0rNrPKSovgjn1k/OYh0/kv4xdLbTb3NKJP5pyNUBgJ
+         x03L9obJfD1mNXgsTY/c1hEzZoTUtIAPf0x0MHbndi/0lPfV+GIw09ntVtUOwplxLEoU
+         d3WR2KeWVyrg4v452VsVmF0yl9o071Dw497JZH1UWbuS02S5xuePHHZJqKnMUPIKmIfX
+         kgD+SKlPCV6NVZyEPuIGlId3x2Mh8a4vx1nPWvYDSVRmVLxXPMzfbxYqgugdC2x+bZ98
+         Ea+g==
+X-Gm-Message-State: AOAM5327FsWq3F96Wylm8Io48Nwx1ZSpY/9QRvCwuyBfOSJs+jDekT2U
+        A1DFTM/kzMMrCFFCiGGxN0d/2gJYSgEVY2On27gzvTQq6RfkcgvEDK66QdNoXNQ7zf5UH+IzOeC
+        fAscIi37TjbRvJ2HJpNXO3s6z7dQJ9DaNkw==
+X-Received: by 2002:a05:6a00:8c5:b0:510:6eae:6fa1 with SMTP id s5-20020a056a0008c500b005106eae6fa1mr35377288pfu.12.1654714283964;
+        Wed, 08 Jun 2022 11:51:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyVwWJq/PBME8kj71zFKppLqLlW8XEtTEpi5EROmQmm0rAB4Jl/KR7Egz0D8qlmi9LSDHl6LQ==
+X-Received: by 2002:a05:6a00:8c5:b0:510:6eae:6fa1 with SMTP id s5-20020a056a0008c500b005106eae6fa1mr35377265pfu.12.1654714283722;
+        Wed, 08 Jun 2022 11:51:23 -0700 (PDT)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id f70-20020a623849000000b0050dc762817esm15335839pfa.88.2022.06.08.11.51.23
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 08 Jun 2022 11:51:23 -0700 (PDT)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id D68C962730; Wed,  8 Jun 2022 11:51:22 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id CF147A0B36;
+        Wed,  8 Jun 2022 11:51:22 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jonathan Toppins <jtoppins@redhat.com>
+cc:     netdev@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        David Ahern <dsahern@kernel.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        =?UTF-8?Q?Niklas_S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URI_HEX autolearn=no autolearn_force=no
-        version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [net-next v2 2/2] bonding: cleanup bond_create
+In-reply-to: <03db585475d164343991f90b268d2d08fa42afb6.1654711315.git.jtoppins@redhat.com>
+References: <cover.1654711315.git.jtoppins@redhat.com> <03db585475d164343991f90b268d2d08fa42afb6.1654711315.git.jtoppins@redhat.com>
+Comments: In-reply-to Jonathan Toppins <jtoppins@redhat.com>
+   message dated "Wed, 08 Jun 2022 14:14:57 -0400."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <12961.1654714282.1@famine>
+Content-Transfer-Encoding: quoted-printable
+Date:   Wed, 08 Jun 2022 11:51:22 -0700
+Message-ID: <12962.1654714282@famine>
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Saravana,
+Jonathan Toppins <jtoppins@redhat.com> wrote:
 
-On Wed, Jun 8, 2022 at 8:13 PM Saravana Kannan <saravanak@google.com> wrote:
-> On Wed, Jun 8, 2022 at 3:26 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > On Wed, Jun 8, 2022 at 6:17 AM Saravana Kannan <saravanak@google.com> wrote:
-> > > On Tue, Jun 7, 2022 at 5:55 PM Saravana Kannan <saravanak@google.com> wrote:
-> > > > On Tue, Jun 7, 2022 at 11:13 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > > > > On Wed, Jun 1, 2022 at 12:46 PM Saravana Kannan <saravanak@google.com> wrote:
-> > > > > > This series is based on linux-next + these 2 small patches applies on top:
-> > > > > > https://lore.kernel.org/lkml/20220526034609.480766-1-saravanak@google.com/
-> > > > > >
-> > > > > > A lot of the deferred_probe_timeout logic is redundant with
-> > > > > > fw_devlink=on.  Also, enabling deferred_probe_timeout by default breaks
-> > > > > > a few cases.
-> > > > > >
-> > > > > > This series tries to delete the redundant logic, simplify the frameworks
-> > > > > > that use driver_deferred_probe_check_state(), enable
-> > > > > > deferred_probe_timeout=10 by default, and fixes the nfsroot failure
-> > > > > > case.
-> > > > > >
-> > > > > > The overall idea of this series is to replace the global behavior of
-> > > > > > driver_deferred_probe_check_state() where all devices give up waiting on
-> > > > > > supplier at the same time with a more granular behavior:
-> > > > > >
-> > > > > > 1. Devices with all their suppliers successfully probed by late_initcall
-> > > > > >    probe as usual and avoid unnecessary deferred probe attempts.
-> > > > > >
-> > > > > > 2. At or after late_initcall, in cases where boot would break because of
-> > > > > >    fw_devlink=on being strict about the ordering, we
-> > > > > >
-> > > > > >    a. Temporarily relax the enforcement to probe any unprobed devices
-> > > > > >       that can probe successfully in the current state of the system.
-> > > > > >       For example, when we boot with a NFS rootfs and no network device
-> > > > > >       has probed.
-> > > > > >    b. Go back to enforcing the ordering for any devices that haven't
-> > > > > >       probed.
-> > > > > >
-> > > > > > 3. After deferred probe timeout expires, we permanently give up waiting
-> > > > > >    on supplier devices without drivers. At this point, whatever devices
-> > > > > >    can probe without some of their optional suppliers end up probing.
-> > > > > >
-> > > > > > In the case where module support is disabled, it's fairly
-> > > > > > straightforward and all device probes are completed before the initcalls
-> > > > > > are done.
-> > > > > >
-> > > > > > Patches 1 to 3 are fairly straightforward and can probably be applied
-> > > > > > right away.
-> > > > > >
-> > > > > > Patches 4 to 6 are for fixing the NFS rootfs issue and setting the
-> > > > > > default deferred_probe_timeout back to 10 seconds when modules are
-> > > > > > enabled.
-> > > > > >
-> > > > > > Patches 7 to 9 are further clean up of the deferred_probe_timeout logic
-> > > > > > so that no framework has to know/care about deferred_probe_timeout.
-> > > > > >
-> > > > > > Yoshihiro/Geert,
-> > > > > >
-> > > > > > If you can test this patch series and confirm that the NFS root case
-> > > > > > works, I'd really appreciate that.
-> > > > >
-> > > > > Thanks, I gave this a try on various boards I have access to.
-> > > > > The results were quite positive. E.g. the compile error I saw on v1
-> > > > > (implicit declation of fw_devlink_unblock_may_probe(), which is no longer
-> > > > >  used in v2) is gone.
-> > > >
-> > > > Thanks a lot for testing these.
-> > > >
-> > > > > However, I'm seeing a weird error when userspace (Debian9 nfsroot) is
-> > > > > starting:
-
-> > Setting fw_devlink_strict to true vs. false seems to influence which of
-> > two different failures will happen:
-> >   - rcar-csi2: probe of feaa0000.csi2 failed with error -22
-> >   - rcar-vin: probe of e6ef5000.video failed with error -22
-> > The former causes the NULL pointer dereference later.
-> > The latter existed before, but I hadn't noticed it, and bisection
-> > led to the real culprit (commit 3e52419ec04f9769 ("media: rcar-{csi2,vin}:
-> > Move to full Virtual Channel routing per CSI-2 IP").
+>Setting RLB_NULL_INDEX is not needed as this is done in bond_alb_initiali=
+ze
+>which is called by bond_open.
 >
-> If you revert that patch, does this series work fine? If yes, are you
-> happy with giving this a Tested-by?
+>Also reduce the number of rtnl_unlock calls by just using the standard
+>goto cleanup path.
+>
+>Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
 
-Sure, sorry for forgetting that ;-)
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
 
-Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Gr{oetje,eeting}s,
+>---
+> drivers/net/bonding/bond_main.c | 24 ++++++------------------
+> 1 file changed, 6 insertions(+), 18 deletions(-)
+>
+>diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_m=
+ain.c
+>index f85372adf042..3d427183ec8e 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -6218,45 +6218,33 @@ int bond_create(struct net *net, const char *name=
+)
+> {
+> 	struct net_device *bond_dev;
+> 	struct bonding *bond;
+>-	struct alb_bond_info *bond_info;
+>-	int res;
+>+	int res =3D -ENOMEM;
+> =
 
-                        Geert
+> 	rtnl_lock();
+> =
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> 	bond_dev =3D alloc_netdev_mq(sizeof(struct bonding),
+> 				   name ? name : "bond%d", NET_NAME_UNKNOWN,
+> 				   bond_setup, tx_queues);
+>-	if (!bond_dev) {
+>-		pr_err("%s: eek! can't alloc netdev!\n", name);
+>-		rtnl_unlock();
+>-		return -ENOMEM;
+>-	}
+>+	if (!bond_dev)
+>+		goto out;
+> =
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>-	/*
+>-	 * Initialize rx_hashtbl_used_head to RLB_NULL_INDEX.
+>-	 * It is set to 0 by default which is wrong.
+>-	 */
+> 	bond =3D netdev_priv(bond_dev);
+>-	bond_info =3D &(BOND_ALB_INFO(bond));
+>-	bond_info->rx_hashtbl_used_head =3D RLB_NULL_INDEX;
+>-
+> 	dev_net_set(bond_dev, net);
+> 	bond_dev->rtnl_link_ops =3D &bond_link_ops;
+> =
+
+> 	res =3D register_netdevice(bond_dev);
+> 	if (res < 0) {
+> 		free_netdev(bond_dev);
+>-		rtnl_unlock();
+>-
+>-		return res;
+>+		goto out;
+> 	}
+> =
+
+> 	netif_carrier_off(bond_dev);
+> =
+
+> 	bond_work_init_all(bond);
+> =
+
+>+out:
+> 	rtnl_unlock();
+>-	return 0;
+>+	return res;
+> }
+> =
+
+> static int __net_init bond_net_init(struct net *net)
+>-- =
+
+>2.27.0
+>
