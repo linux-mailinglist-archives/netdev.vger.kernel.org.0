@@ -2,59 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F577543750
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 17:26:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB991543762
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 17:31:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244395AbiFHP0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 11:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
+        id S243812AbiFHPay (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 11:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244543AbiFHP0K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 11:26:10 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82FAB13F439;
-        Wed,  8 Jun 2022 08:22:39 -0700 (PDT)
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nyxW0-00004u-8F; Wed, 08 Jun 2022 17:22:36 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nyxVz-000O7y-Rn; Wed, 08 Jun 2022 17:22:35 +0200
-Subject: Re: [PATCH v2 1/1] libbpf: replace typeof with __typeof__
-To:     James Hilliard <james.hilliard1@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-References: <20220608064004.1493239-1-james.hilliard1@gmail.com>
- <b05401b0-308e-03a2-af94-4ecc5322fd1f@iogearbox.net>
- <CADvTj4pUd2zH8M6BBQGVf9C3dpfhfFEN9ogwKXODj+sarzqPcg@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <3230febd-d346-8348-76e7-b9548f01cb87@iogearbox.net>
-Date:   Wed, 8 Jun 2022 17:22:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S245261AbiFHP27 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 11:28:59 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 189034A3D5
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 08:25:48 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id r82so37026955ybc.13
+        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 08:25:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7xKEZM3T6Cl7AFVjSSOtW8PGdwlrdWJAcI+Dp8+iwpY=;
+        b=A8iTpdRNZJZUNAQRqKil5G5nj0QS+7OlHhgwOUrfIE4xk2461qi/C0eFyPuPYLiNAW
+         bPjfabEMiQ++U1/sbhj8sNjDB0mBT0cN3zIV4CJYAeSTCVEih1sJvlXtll9dR1OgCgyi
+         MuynF8hpslZrRHpXYjp6QKV4s/Hk3k9HVwzJ52mAjc+VCLA7YtrRDtf4Rw614gqaqID1
+         EJqwh68KFB5j+XLM9jEyFjMZdDVCH6ol4BzVRYj9soAVl/tslWjWFHh9Pf/F9eRcCBDw
+         fgdjyywXvVfptd4M67SvSMZ29XHRBYeny3E/zx1Hbs3P8/Q+TP5FVoMZ1PEL8cpPHp/M
+         NwWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7xKEZM3T6Cl7AFVjSSOtW8PGdwlrdWJAcI+Dp8+iwpY=;
+        b=NPzLhGRrARxmXbDZrA/Ca9ChUR8CA9lX70oCMA/xO7H7HFc0oI96MZC+tugWpFS42J
+         aIQ1V00AFPN8VCHgJtOXCKS1rdgdPTvelB+jyxVOaF7CHvSZkoYLfd663GrHwma1tDEb
+         RbkNUYnYNeHIeOHQjpQrGrjYziQIckEOSsOjAFXte87GoYnYNzWWT7D6GcAUVM/Jl430
+         +LXtkQIJSuFG5MQ1BAXE+4wjfQpGMpjPI7aknpWwOOhEG1xPJ5ZTjzY9NL317oYeoV1p
+         2vmoJNNiaAlVTjxQGWT6Iu5OJQrHaTYIS93E+CyR9Xi2bVn+3/xLoxA0KRsSmHmlOi4H
+         4FzA==
+X-Gm-Message-State: AOAM531LMiT7BEx/fnlNAHpuy6B2xnU4cM0fwmHKdPWpLbzCXGvznI8r
+        v5iIYgx3s/vfPXQ9d6M1JN9z3sZhqIjkjxkkI4ho2g==
+X-Google-Smtp-Source: ABdhPJwDxk9ZQtigwuGnUiKGaGbAf5M49x+gXBM0yoOCIb5zfe2sfZde3v+UGTkez7Ph7u70EyM//rK3H5HYn+YkbZE=
+X-Received: by 2002:a25:aa32:0:b0:65c:af6a:3502 with SMTP id
+ s47-20020a25aa32000000b0065caf6a3502mr35639790ybi.598.1654701946574; Wed, 08
+ Jun 2022 08:25:46 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CADvTj4pUd2zH8M6BBQGVf9C3dpfhfFEN9ogwKXODj+sarzqPcg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26566/Wed Jun  8 10:05:45 2022)
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20220607171732.21191-1-eric.dumazet@gmail.com>
+ <20220607171732.21191-5-eric.dumazet@gmail.com> <20220607211023.33a139b2@kernel.org>
+ <b3dda032cac1feafeffa89bb71c5b574d9e88845.camel@redhat.com>
+In-Reply-To: <b3dda032cac1feafeffa89bb71c5b574d9e88845.camel@redhat.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 8 Jun 2022 08:25:32 -0700
+Message-ID: <CANn89iJ2n8D+0UbbcQVyTyNqhrtaYQBSoFM0fvo85RD2VPkTCQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/8] net: use DEBUG_NET_WARN_ON_ONCE() in sk_stream_kill_queues()
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,68 +70,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/8/22 3:04 PM, James Hilliard wrote:
-> On Wed, Jun 8, 2022 at 6:50 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->> On 6/8/22 8:40 AM, James Hilliard wrote:
->>> It seems the gcc preprocessor breaks when typeof is used with
->>> macros.
->>>
->>> Fixes errors like:
->>> error: expected identifier or '(' before '#pragma'
->>>     106 | SEC("cgroup/bind6")
->>>         | ^~~
->>>
->>> error: expected '=', ',', ';', 'asm' or '__attribute__' before '#pragma'
->>>     114 | char _license[] SEC("license") = "GPL";
->>>         | ^~~
->>>
->>> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
->>> ---
->>> Changes v1 -> v2:
->>>     - replace typeof with __typeof__ instead of changing pragma macros
->>> ---
->>>    tools/lib/bpf/bpf_core_read.h   | 16 ++++++++--------
->>>    tools/lib/bpf/bpf_helpers.h     |  4 ++--
->>>    tools/lib/bpf/bpf_tracing.h     | 24 ++++++++++++------------
->>>    tools/lib/bpf/btf.h             |  4 ++--
->>>    tools/lib/bpf/libbpf_internal.h |  6 +++---
->>>    tools/lib/bpf/usdt.bpf.h        |  6 +++---
->>>    tools/lib/bpf/xsk.h             | 12 ++++++------
->>>    7 files changed, 36 insertions(+), 36 deletions(-)
->>>
->>> diff --git a/tools/lib/bpf/bpf_core_read.h b/tools/lib/bpf/bpf_core_read.h
->>> index fd48b1ff59ca..d3a88721c9e7 100644
->>> --- a/tools/lib/bpf/bpf_core_read.h
->>> +++ b/tools/lib/bpf/bpf_core_read.h
->>> @@ -111,7 +111,7 @@ enum bpf_enum_value_kind {
->>>    })
->>>
->>>    #define ___bpf_field_ref1(field)    (field)
->>> -#define ___bpf_field_ref2(type, field)       (((typeof(type) *)0)->field)
->>> +#define ___bpf_field_ref2(type, field)       (((__typeof__(type) *)0)->field)
->>>    #define ___bpf_field_ref(args...)                                       \
->>>        ___bpf_apply(___bpf_field_ref, ___bpf_narg(args))(args)
->>>
->>
->> Can't we just add the below?
->>
->> #ifndef typeof
->> # define typeof __typeof__
->> #endif
-> 
->  From what I can tell it's not actually missing, but rather is
-> preprocessed differently
-> as the errors seem to be macro related.
+On Wed, Jun 8, 2022 at 1:11 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Tue, 2022-06-07 at 21:10 -0700, Jakub Kicinski wrote:
+> > On Tue,  7 Jun 2022 10:17:28 -0700 Eric Dumazet wrote:
+> > > sk_stream_kill_queues() has three checks which have been
+> > > useful to detect kernel bugs in the past.
+> > >
+> > > However they are potentially a problem because they
+> > > could flood the syslog, and really only a developper
+> > > can make sense of them.
+> > >
+> > > Keep the checks for CONFIG_DEBUG_NET=y builds,
+> > > and issue them once only.
+> >
+> > I feel like 3 & 4 had caught plenty of bugs which triggered only
+> > in production / at scale.
+> >
+> I have a somewhat similar experience: I hit a few races spotted by the
+> warnings in patches 3 and 4 observable only in non-debug build.
+>
+> The checks in patch 4 are almost rendundant with the ones in patch 3 -
+> at least in my experience I could not trigger the first without hitting
+> the latter. Perhaps we could use WARN_ON_ONCE only in patch 3?
+>
 
-Are you saying that the above suggestion wouldn't work? Do you have some more
-details? I'm mainly wondering if there's a way where we could prevent letting
-typeof() usage slip through in future given from kernel side people are used
-to it.
+Well, I certainly can stick to WARN_ON_ONCE().
 
-> I did also find this change which seems related:
-> https://github.com/torvalds/linux/commit/8faf7fc597d59b142af41ddd4a2d59485f75f88a
-> 
->>
->> Thanks,
->> Daniel
-
+For syzbot it is really the same thing.
