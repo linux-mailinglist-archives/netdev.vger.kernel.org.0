@@ -2,51 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9F445430B0
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 14:49:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48E405430CA
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 14:51:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239493AbiFHMsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 08:48:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33180 "EHLO
+        id S239717AbiFHMvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 08:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230261AbiFHMsB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 08:48:01 -0400
-Received: from m12-17.163.com (m12-17.163.com [220.181.12.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 077EEBC9B;
-        Wed,  8 Jun 2022 05:47:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=LvqB+oCn++tayjaTVT
-        UBZXPkGSvkcgZKDldpZZY9yS8=; b=VBm9IRZqrjQMnsWOoil6bShC0ooCRYhb7j
-        VLEpL/PeIbHgWz0AP5twjtd9xakdtQTNIdjwdZwaSYPtHwPMQc34I5/C3f+wdtYj
-        2aphTboobzoNVqtgOpR/sFx3YeXjXipSQYrvl9WHB/S8h9Ju60xceH8M6WCrWM+0
-        8CqeXHGhs=
-Received: from localhost.localdomain (unknown [171.221.147.121])
-        by smtp13 (Coremail) with SMTP id EcCowAC3rJxTmqBiHla6Gw--.54176S2;
-        Wed, 08 Jun 2022 20:47:19 +0800 (CST)
-From:   Chen Lin <chen45464546@163.com>
-To:     kuba@kernel.org
-Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, matthias.bgg@gmail.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        alexander.duyck@gmail.com, Chen Lin <chen45464546@163.com>
-Subject: [PATCH v5] net: ethernet: mtk_eth_soc: fix misuse of mem alloc interface netdev[napi]_alloc_frag
-Date:   Wed,  8 Jun 2022 20:46:53 +0800
-Message-Id: <1654692413-2598-1-git-send-email-chen45464546@163.com>
-X-Mailer: git-send-email 1.7.9.5
-In-Reply-To: <20220607161413.655dd63f@kernel.org>
-References: <20220607161413.655dd63f@kernel.org>
-X-CM-TRANSID: EcCowAC3rJxTmqBiHla6Gw--.54176S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7ZFyfKF13AF45WF15tr45GFg_yoW8uryrpr
-        4UKa43AF48Jr47G395Aa1DZa1Yyw4IgrWUKFy3Z34fZ345tFWrtFyktFW5WFySkrWvkF1S
-        yFs8Zr9xursxtw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0piIPf9UUUUU=
-X-Originating-IP: [171.221.147.121]
-X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/1tbiGhganlaECDCbOQAAsO
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        with ESMTP id S239764AbiFHMvG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 08:51:06 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1157B232DB8;
+        Wed,  8 Jun 2022 05:50:59 -0700 (PDT)
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nyv9B-000A77-Kb; Wed, 08 Jun 2022 14:50:53 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nyv9B-000GGw-8K; Wed, 08 Jun 2022 14:50:53 +0200
+Subject: Re: [PATCH v2 1/1] libbpf: replace typeof with __typeof__
+To:     James Hilliard <james.hilliard1@gmail.com>, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+References: <20220608064004.1493239-1-james.hilliard1@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <b05401b0-308e-03a2-af94-4ecc5322fd1f@iogearbox.net>
+Date:   Wed, 8 Jun 2022 14:50:52 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20220608064004.1493239-1-james.hilliard1@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26566/Wed Jun  8 10:05:45 2022)
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,64 +60,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When rx_flag == MTK_RX_FLAGS_HWLRO,
-rx_data_len = MTK_MAX_LRO_RX_LENGTH(4096 * 3) > PAGE_SIZE.
-netdev_alloc_frag is for alloction of page fragment only.
-Reference to other drivers and Documentation/vm/page_frags.rst
+Hi James,
 
-Branch to use __get_free_pages when ring->frag_size > PAGE_SIZE.
+On 6/8/22 8:40 AM, James Hilliard wrote:
+> It seems the gcc preprocessor breaks when typeof is used with
+> macros.
+> 
+> Fixes errors like:
+> error: expected identifier or '(' before '#pragma'
+>    106 | SEC("cgroup/bind6")
+>        | ^~~
+> 
+> error: expected '=', ',', ';', 'asm' or '__attribute__' before '#pragma'
+>    114 | char _license[] SEC("license") = "GPL";
+>        | ^~~
+> 
+> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+> ---
+> Changes v1 -> v2:
+>    - replace typeof with __typeof__ instead of changing pragma macros
+> ---
+>   tools/lib/bpf/bpf_core_read.h   | 16 ++++++++--------
+>   tools/lib/bpf/bpf_helpers.h     |  4 ++--
+>   tools/lib/bpf/bpf_tracing.h     | 24 ++++++++++++------------
+>   tools/lib/bpf/btf.h             |  4 ++--
+>   tools/lib/bpf/libbpf_internal.h |  6 +++---
+>   tools/lib/bpf/usdt.bpf.h        |  6 +++---
+>   tools/lib/bpf/xsk.h             | 12 ++++++------
+>   7 files changed, 36 insertions(+), 36 deletions(-)
+> 
+> diff --git a/tools/lib/bpf/bpf_core_read.h b/tools/lib/bpf/bpf_core_read.h
+> index fd48b1ff59ca..d3a88721c9e7 100644
+> --- a/tools/lib/bpf/bpf_core_read.h
+> +++ b/tools/lib/bpf/bpf_core_read.h
+> @@ -111,7 +111,7 @@ enum bpf_enum_value_kind {
+>   })
+>   
+>   #define ___bpf_field_ref1(field)	(field)
+> -#define ___bpf_field_ref2(type, field)	(((typeof(type) *)0)->field)
+> +#define ___bpf_field_ref2(type, field)	(((__typeof__(type) *)0)->field)
+>   #define ___bpf_field_ref(args...)					    \
+>   	___bpf_apply(___bpf_field_ref, ___bpf_narg(args))(args)
+>   
 
-Signed-off-by: Chen Lin <chen45464546@163.com>
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c |   21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+Can't we just add the below?
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index b3b3c07..aba0d84 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -899,6 +899,17 @@ static bool mtk_rx_get_desc(struct mtk_eth *eth, struct mtk_rx_dma_v2 *rxd,
- 	return true;
- }
- 
-+static void *mtk_max_lro_buf_alloc(gfp_t gfp_mask)
-+{
-+	unsigned long data;
-+	unsigned int size = mtk_max_frag_size(MTK_MAX_LRO_RX_LENGTH);
-+
-+	data = __get_free_pages(gfp_mask | __GFP_COMP | __GFP_NOWARN,
-+				get_order(size));
-+
-+	return (void *)data;
-+}
-+
- /* the qdma core needs scratch memory to be setup */
- static int mtk_init_fq_dma(struct mtk_eth *eth)
- {
-@@ -1467,7 +1478,10 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			goto release_desc;
- 
- 		/* alloc new buffer */
--		new_data = napi_alloc_frag(ring->frag_size);
-+		if (ring->frag_size <= PAGE_SIZE)
-+			new_data = napi_alloc_frag(ring->frag_size);
-+		else
-+			new_data = mtk_max_lro_buf_alloc(GFP_ATOMIC);
- 		if (unlikely(!new_data)) {
- 			netdev->stats.rx_dropped++;
- 			goto release_desc;
-@@ -1914,7 +1928,10 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
- 		return -ENOMEM;
- 
- 	for (i = 0; i < rx_dma_size; i++) {
--		ring->data[i] = netdev_alloc_frag(ring->frag_size);
-+		if (ring->frag_size <= PAGE_SIZE)
-+			ring->data[i] = netdev_alloc_frag(ring->frag_size);
-+		else
-+			ring->data[i] = mtk_max_lro_buf_alloc(GFP_KERNEL);
- 		if (!ring->data[i])
- 			return -ENOMEM;
- 	}
--- 
-1.7.9.5
+#ifndef typeof
+# define typeof __typeof__
+#endif
 
+Thanks,
+Daniel
