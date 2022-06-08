@@ -2,126 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E632542EE2
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 13:13:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EE62542EE8
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 13:15:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238065AbiFHLLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 07:11:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33572 "EHLO
+        id S237755AbiFHLPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 07:15:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238228AbiFHLKo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 07:10:44 -0400
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D712200B2;
-        Wed,  8 Jun 2022 04:10:03 -0700 (PDT)
-Received: by mail-yb1-f175.google.com with SMTP id l204so35903331ybf.10;
-        Wed, 08 Jun 2022 04:10:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Pc8sxjRlyZLiUc2vjV2mNnQdPSrQGggcOwRrmtPvRmQ=;
-        b=qe4IyOMZ1enGiEf1hklCCFUi3b60/6BlA5Lg/UspYBtAOyv0XMu9/oKSbuc3JFHEYf
-         K5HVWjr13x2ZZqbt6+Qgb0IhV/GR4LEH2dKXjk8WnFsnvCIsp7+DQbmAsd6VWECEJvbK
-         4dhpMtk5cK2w69gqeS9/p/96DXD4OGZ4GI6JtQcfG/CVNgATHQg/HRSIBYR+czqTGTeU
-         Om5DmRJ8AqmFUEVwY/uWkeApI7PEUjazHu+sZYZ5GRaQq7421CHYTLNR6BVA+qf83n9J
-         w5EkumHngZxtsvCUBkV00gXXseSCSfN1A8KVNKKYJBhg44gP1DliJn771LN6Cgbr+css
-         LNqg==
-X-Gm-Message-State: AOAM531ouiHgI3ieRHcSXolGy+SBFr/HQxFyrRxFaZiQKFvTizm/yGR7
-        eUw9Aiq1P1E8QvW42APNoJ/wj0PudKoXEqEmnOk=
-X-Google-Smtp-Source: ABdhPJwRKE+6ldZEiFkLjFAW/hFfOibVBLhzJ4mgNxUf5xFcMaFnctaDFCd44iSd/rY55Z6W8yVwkhAYYTiu/pGflk8=
-X-Received: by 2002:a25:84ca:0:b0:65c:b5a4:3d0a with SMTP id
- x10-20020a2584ca000000b0065cb5a43d0amr34085830ybm.137.1654686601554; Wed, 08
- Jun 2022 04:10:01 -0700 (PDT)
+        with ESMTP id S237552AbiFHLPM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 07:15:12 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1D93A1B1;
+        Wed,  8 Jun 2022 04:15:09 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LJ4JY6gJgz6GD5l;
+        Wed,  8 Jun 2022 19:10:21 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 8 Jun 2022 13:15:06 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kpsingh@kernel.org>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v2 0/3] bpf: Add bpf_verify_pkcs7_signature() helper
+Date:   Wed, 8 Jun 2022 13:12:18 +0200
+Message-ID: <20220608111221.373833-1-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <cover.1654680790.git.lukas@wunner.de> <CAJZ5v0i1p=oReS5Ki69-uOLQNBu2Y=MkqDQ4fUU-ih=n_kshwQ@mail.gmail.com>
-In-Reply-To: <CAJZ5v0i1p=oReS5Ki69-uOLQNBu2Y=MkqDQ4fUU-ih=n_kshwQ@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 8 Jun 2022 13:09:50 +0200
-Message-ID: <CAJZ5v0jocgtgZxA2wiDTbtOypQFy2WeHRCeNn9U4cvCZ_p48Bg@mail.gmail.com>
-Subject: Re: [PATCH net v2 0/1] PHY interruptus horribilis
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        netdev <netdev@vger.kernel.org>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Ferry Toth <fntoth@gmail.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Linux Samsung SoC <linux-samsung-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml753-chm.china.huawei.com (10.201.108.203) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 12:35 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
->
-> On Wed, Jun 8, 2022 at 11:52 AM Lukas Wunner <lukas@wunner.de> wrote:
-> >
-> > Andrew Lunn (PHY maintainer) asked me to resend this patch and cc the
-> > IRQ maintainer.  I'm also cc'ing PM maintainers for good measure.
-> >
-> > The patch addresses an issue with PHY interrupts occurring during a
-> > system sleep transition after the PHY has already been suspended.
-> >
-> > The IRQ subsystem uses an internal flag IRQD_WAKEUP_ARMED to avoid
-> > handling such interrupts, but it's not set until suspend_device_irqs()
-> > is called during the ->suspend_noirq() phase.  That's too late in this
-> > case as PHYs are suspended in the ->suspend() phase.  And there's
-> > no external interface to set the flag earlier.
->
-> Yes, it is not there intentionally.
->
-> Strictly speaking, IRQD_WAKEUP_ARMED is there to indicate to the IRQ
-> subsystem that the given IRQ is a system wakeup one and has been left
-> enabled specifically in order to signal system wakeup.  It allows the
-> IRQ to trigger between suspend_device_irqs() and resume_device_irqs()
-> exactly once, which causes the system to wake up from suspend-to-idle
-> (that's the primary use case for it) or aborts system suspends in
-> progress.
->
-> As you have noticed, it is set automatically by suspend_device_irqs()
-> if the given IRQ has IRQD_WAKEUP_STATE which is the case when it has
-> been enabled for system wakeup.
->
-> > As I'm lacking access to the flag, I'm open coding its functionality
-> > in this patch.  Is this the correct approach or should I instead look
-> > into providing an external interface to the flag?
->
-> The idea is that the regular IRQ "action" handler will run before
-> suspend_device_irqs(), so it should take care of signaling wakeup if
-> need be.  IRQD_WAKEUP_ARMED to trigger wakeup when IRQ "action"
-> handlers don't run.
+One of the desirable features in security is the ability to restrict import
+of data to a given system based on data authenticity. If data import can be
+restricted, it would be possible to enforce a system-wide policy based on
+the signing keys the system owner trusts.
 
-That said IMV there could be a wrapper around suspend_device_irq() to
-mark a specific IRQ as "suspended" before running
-suspend_device_irqs(), but that would require adding "suspend depth"
-to struct irq_desc, so the IRQ is not "resumed" prematurely by
-resume_device_irqs().  And there needs to be an analogous wrapper
-around resume_irq() for the resume path.
+This feature is widely used in the kernel. For example, if the restriction
+is enabled, kernel modules can be plugged in only if they are signed with a
+key whose public part is in the primary or secondary keyring.
 
-Does the single prospective user justify this?
+For eBPF, it can be useful as well. For example, it might be useful to
+authenticate data an eBPF program makes security decisions on.
+
+After a discussion in the eBPF mailing list, it was decided that the stated
+goal should be accomplished by introducing a new helper:
+bpf_verify_pkcs7_signature(). It is simply a wrapper of
+verify_pkcs7_signature(), and does the signature verification with a key in
+the selected keyring (primary, secondary or platform).
+
+Since verify_pkcs7_signature() is doing crypto operations, it must be
+called by a sleepable program. This restricts the set of functions that can
+call the associated helper (for example, lsm.s/bpf is suitable,
+fexit/array_map_update_elem is not).
+
+The added test check the ability of an eBPF program to verify module-style
+appended signatures, as produced by the kernel tool sign-file, currently
+used to sign kernel modules.
+
+The patch set is organized as follows.
+
+Patch 1 introduces the new helper. Patch 2 adds two new options to
+test_progs (the eBPF selftest binary), to specify the path of sign-file and
+the file containing the kernel private key and certificate. Finally,
+patch 3 adds the test for the new helper.
+
+Roberto Sassu (3):
+  bpf: Add bpf_verify_pkcs7_signature() helper
+  selftests/bpf: Add test_progs opts for sign-file and kernel priv key +
+    cert
+  selftests/bpf: Add test for bpf_verify_pkcs7_signature() helper
+
+ include/uapi/linux/bpf.h                      |   8 +
+ kernel/bpf/bpf_lsm.c                          |  32 ++++
+ tools/include/uapi/linux/bpf.h                |   8 +
+ tools/testing/selftests/bpf/config            |   2 +
+ .../bpf/prog_tests/verify_pkcs7_sig.c         | 149 ++++++++++++++++++
+ .../bpf/progs/test_verify_pkcs7_sig.c         | 127 +++++++++++++++
+ tools/testing/selftests/bpf/test_progs.c      |  12 ++
+ tools/testing/selftests/bpf/test_progs.h      |   3 +
+ 8 files changed, 341 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/verify_pkcs7_sig.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_verify_pkcs7_sig.c
+
+-- 
+2.25.1
+
