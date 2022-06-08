@@ -2,67 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8AAE5424A4
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:52:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75476542736
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 08:59:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234334AbiFHGBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 02:01:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44714 "EHLO
+        id S231454AbiFHEkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 00:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238717AbiFHFwB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 01:52:01 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E750AFAED;
-        Tue,  7 Jun 2022 20:35:49 -0700 (PDT)
-Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 257NfeKx014363;
-        Wed, 8 Jun 2022 02:28:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=tzFAQqmTFkqGsbHjDHQsRsNbCV384tWaHO9lvOcIrVs=;
- b=Ye+YGeenYcBmScBViqtGQxdm8aYdrLc1wFf4SWxFxyM9LDqk7CgodqnhhtPMD8AGjrBP
- ZOyb10NoJv1+xYfcVuhBBfIuPl18rTGGpRrZNwbOJoeHXK+Lt+R7pOqjie+yXcmmAbjF
- s/JNFhHDkaSqfY446cIx2gs5DrmtM+QRAcprkntZZti3vYGorY+8NQlI/93/Apx0DmJc
- qZczfSQlOacWc7e4w3xarGhw9uFKFxcdKJc2/8eQSogzOWZl/JFUVkVFRCU67qdyz4Oh
- H0ZugGbLmfu1Hd3aTo9JhrhAXrIbxa8OZuND3cDzv3qLvrE6OPgPg68VbtLaUc5TCXoN Kg== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3ggvxmwff6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 08 Jun 2022 02:28:00 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 2582ATYg037917;
-        Wed, 8 Jun 2022 02:28:00 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gfwu3349h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 08 Jun 2022 02:27:59 +0000
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 2582RxlP032073;
-        Wed, 8 Jun 2022 02:27:59 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3gfwu33499-1;
-        Wed, 08 Jun 2022 02:27:59 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     linux-staging@lists.linux.dev, netdev@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        Chengguang Xu <cgxu519@mykernel.net>,
-        linux-media@vger.kernel.org
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>
-Subject: Re: [PATCH 0/6] fix a common error of while loop condition in error path
-Date:   Tue,  7 Jun 2022 22:27:53 -0400
-Message-Id: <165465514543.8982.16992682001018007600.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.35.2
-In-Reply-To: <20220529153456.4183738-1-cgxu519@mykernel.net>
-References: <20220529153456.4183738-1-cgxu519@mykernel.net>
+        with ESMTP id S233084AbiFHEhw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 00:37:52 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626F13F62EA;
+        Tue,  7 Jun 2022 19:29:40 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id w2-20020a17090ac98200b001e0519fe5a8so17089125pjt.4;
+        Tue, 07 Jun 2022 19:29:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=x8jfXCoRdNo81j+YuOPFSNctg2Xa/rnwTNhEDAgXG5w=;
+        b=eha6Dy6wDGcKn1duwJ2Ok5ihZilh12rRdY4tzkCvkPTN+hImcZ3sA/5ttBQhFWCFsx
+         tV6Ng9/QrD+DBBLMdPr9u18mJTLd36JowYC+9CxqP+rlCO2UHy18iIBqHqxTDHOJ8ZSy
+         xu1Zv7uKflZjdzZZ/QQJ1LO2ykRrUW5F8DWxxcPjesWKq/esCCQkz6UmYucA8U4jviBJ
+         V3u4IYaDchwx2GkJzPhXILqbEbGsjr20Px0tD2XJ876BMGvuHaJJGPM6UQqFKTp05oOS
+         EltY9lfAkpGIi3+/S4t7ZjzThdskDM3sK2G6crlGfllqDebkIU9V4q+v8Otse91ZwzYG
+         yZ8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=x8jfXCoRdNo81j+YuOPFSNctg2Xa/rnwTNhEDAgXG5w=;
+        b=k3RXyBpb1ayORSutg1M/SDKJPW/v+eDwMQHwkoG2LQ8N/hur0Mb18pyoNpEdn1Z4/v
+         +g782zM5djmxy2jf0GaWYTNnchU0HnyQJ07PPElsswzY8/yPbg3HhZ8LtPrlOWeZ7nAX
+         vzwOI1pevuZZRnP2lK+7f+Wadahevq+mda+6syX4AX2ONP4afJmNugDFqdh4AHWRYy91
+         WStqQ24GZ6xTI4tFqxbYYXU/KIljl54RXyYpfkvQdyCzZJ8Hu8ETWajmiPpefjr3WijP
+         /cJZ+qsfOlqoZquP6h+eb24mJmG21N18qJORsJ9m+CZ0q61ugOw6vPk0HaNN5VRYR0EU
+         88ZQ==
+X-Gm-Message-State: AOAM531VMf5SE6g2TCp7CQc2id5k0ccuYyGHu0XvH0RxTintrKMq7lFe
+        TWH/ADrzcwJx1IZ+DBAOlNc=
+X-Google-Smtp-Source: ABdhPJwWSThahXMN4+i+EkbaZL0/wp99vhCBE+iKn2UwLEOs+eAF9DubXmQ1ZdhyE+nIOArhLyNHjQ==
+X-Received: by 2002:a17:902:db0a:b0:165:1672:480e with SMTP id m10-20020a170902db0a00b001651672480emr31655064plx.165.1654655362665;
+        Tue, 07 Jun 2022 19:29:22 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id w143-20020a627b95000000b0051b8e7765edsm13731862pfc.67.2022.06.07.19.29.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 19:29:21 -0700 (PDT)
+Date:   Wed, 8 Jun 2022 10:29:12 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, bpf@vger.kernel.org,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Subject: Re: [PATCH bpf-next 0/3] move AF_XDP APIs to libxdp
+Message-ID: <YqAJeHAL57cB9qJk@Laptop-X1>
+References: <20220607084003.898387-1-liuhangbin@gmail.com>
+ <87tu8w6cqa.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: 41BhbBr77pfcU9Yr9dVAy-63i_lQGxSG
-X-Proofpoint-ORIG-GUID: 41BhbBr77pfcU9Yr9dVAy-63i_lQGxSG
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+In-Reply-To: <87tu8w6cqa.fsf@toke.dk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,23 +85,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 29 May 2022 23:34:50 +0800, Chengguang Xu wrote:
-
-> There is a common error of while loop condition which misses
-> the case '(--i) == 0' in error path. This patch series just
-> tries to fix it in several driver's code.
+On Tue, Jun 07, 2022 at 11:31:57AM +0200, Toke Høiland-Jørgensen wrote:
+> Hangbin Liu <liuhangbin@gmail.com> writes:
 > 
-> Note: I'm not specialist of specific drivers so just compile tested
-> for the fixes.
+> > libbpf APIs for AF_XDP are deprecated starting from v0.7.
+> > Let's move to libxdp.
+> >
+> > The first patch removed the usage of bpf_prog_load_xattr(). As we
+> > will remove the GCC diagnostic declaration in later patches.
 > 
-> [...]
+> Kartikeya started working on moving some of the XDP-related samples into
+> the xdp-tools repo[0]; maybe it's better to just include these AF_XDP
+> programs into that instead of adding a build-dep on libxdp to the kernel
+> samples?
 
-Applied to 5.19/scsi-fixes, thanks!
+OK, makes sense to me. Should we remove these samples after the xdp-tools PR
+merged? What about xdpxceiver.c in selftests/bpf? Should that also be moved to
+xdp-tools?
 
-[3/6] scsi: ipr: fix missing/incorrect resource cleanup in error case
-      https://git.kernel.org/mkp/scsi/c/d64c49191132
-[5/6] scsi: pmcraid: fix missing resource cleanup in error case
-      https://git.kernel.org/mkp/scsi/c/ec1e8adcbdf6
-
--- 
-Martin K. Petersen	Oracle Linux Engineering
+Thanks
+Hangbin
