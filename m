@@ -2,62 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B57465428B0
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 09:58:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58BA75428B2
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 09:58:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232462AbiFHH4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 03:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46010 "EHLO
+        id S231437AbiFHH4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 03:56:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233354AbiFHHzz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 03:55:55 -0400
+        with ESMTP id S231450AbiFHHys (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 03:54:48 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612C719CED3
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 00:25:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E259A1D81AB
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 00:23:55 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1nyq2V-0006tL-8N; Wed, 08 Jun 2022 09:23:39 +0200
+        id 1nyq2V-0006tM-78; Wed, 08 Jun 2022 09:23:39 +0200
 Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
         (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 09B2E8EA6B;
-        Wed,  8 Jun 2022 07:19:47 +0000 (UTC)
-Date:   Wed, 8 Jun 2022 09:19:47 +0200
+        by smtp.blackshift.org (Postfix) with ESMTPSA id EC4F88EA76;
+        Wed,  8 Jun 2022 07:21:24 +0000 (UTC)
+Date:   Wed, 8 Jun 2022 09:21:24 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Max Staudt <max@enpas.org>
-Cc:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        linux-kernel@vger.kernel.org,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 00/13] can: slcan: extend supported features
-Message-ID: <20220608071947.pwl4whyzqpyubzqn@pengutronix.de>
-References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
- <20220608021537.04c45cf9.max@enpas.org>
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 2/3] net: phy: dp83td510: add cable testing
+ support
+Message-ID: <20220608072124.epd6zq6r4ttl6du4@pengutronix.de>
+References: <20220608071749.3818602-1-o.rempel@pengutronix.de>
+ <20220608071749.3818602-3-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zltmsl6xgx33hokg"
+        protocol="application/pgp-signature"; boundary="aodkzja2s5fdzm6x"
 Content-Disposition: inline
-In-Reply-To: <20220608021537.04c45cf9.max@enpas.org>
+In-Reply-To: <20220608071749.3818602-3-o.rempel@pengutronix.de>
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: netdev@vger.kernel.org
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,34 +60,25 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---zltmsl6xgx33hokg
+--aodkzja2s5fdzm6x
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On 08.06.2022 02:15:37, Max Staudt wrote:
-> To speed up the slcan cleanup, may I suggest looking at can327?
+On 08.06.2022 09:17:48, Oleksij Rempel wrote:
+> Cable testing was tested in different HW configurations and cables:
+> - SJA1105 + DP83TD510
+> - ASIX + DP83TD510
+> - STM32MP1 + DP83TD510
 >=20
-> It started as a modification of slcan, and over the past few months,
-> it has gone through several review rounds in upstreaming. In fact, a
-> *ton* of things pointed out during reviews would apply 1:1 to slcan.
+> Results provided by this PHY should be interpreted with grain of sold.
+                                                                   ^^^^
+                                                                   salt
+> For example testing unshielded and shielded twisted pair may give
+> different results. Nevertheless, it still can be usable.
 >=20
-> What's more, there's legacy stuff that's no longer needed. No
-> SLCAN_MAGIC, no slcan_devs, ... it's all gone in can327. May I suggest
-> you have a look at it and bring slcan's boilerplate in line with it?
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-+1
-
-Most of Dario's series looks good. I suggest that we mainline this
-first. If there's interest and energy the slcan driver can be reworked
-to re-use the more modern concepts of the can327 driver.
-
-> It's certainly not perfect (7 patch series and counting, and that's
-> just the public ones), but I'm sure that looking at the two drivers
-> side-by-side could serve as a good starting point, to avoid
-> re-reviewing the same things all over again.
-
-regards,
 Marc
 
 --=20
@@ -102,19 +87,19 @@ Embedded Linux                   | https://www.pengutronix.de  |
 Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---zltmsl6xgx33hokg
+--aodkzja2s5fdzm6x
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKgTZAACgkQrX5LkNig
-013DMQf+Oowv9u1tls3YgQbK2Ek0zFsMF5BZXa9eBmGDKBf+HIIQx5g0+pzec8gq
-wBRNRaOlS1KGLewF86lK9yPxUG/CpwB9NpIDDsLtG+kL/AGfuj4Kguf/LfbjtOpV
-0vAibm8x7iyJB5AKmAgnyf9F32He0evcBCam2ZbItdLLVJT3txmhCQmvIK5gQj8S
-v342uBUKiTfyy+q1Z+7OfzX+iPsmRgjgz4IGNr4d/x8GvD3LMtMdFWCSKmyv0ZJ6
-JTdoUILLkMj6R2w9xnurIsz1RtJXJXMHNgBu1gDx9SMGxw9MlhTC7Bv0LKJ+bJZ6
-A05xF3jOzD+bLkfQF9X7a5702XOG8g==
-=1VoJ
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKgTfEACgkQrX5LkNig
+010vdwf/bDkW4meDh4hBrBPhJembo+zcC64ORWdIN9AFn5p64e8hrm29IBmoJ/pV
+Vxz90aHP2bz8eC10T2IwghV44QRSIaIfwHrdfEtgxHPB4wNE/gnGwLMWJ7oCObC/
+vIES+M2t9aRq9Wt+8ELn66SnN8txWHhprQZu9ZkYX76ihMR2nMcNt3xIywBpXPJZ
+8CEui29oMcyt9qVA24EpKQqTafRQvjPmCiBKy8zqrFSPZ0jn4ZbbU0/2l67grGWn
+hrbQBnSAwU17eiKkQ/cYyEC0moul2Ut/nSXT5wTOBeAFt7v+Kei8/Ksq9wFKo6P0
+h34KLOBRppih7JdT5BPSd5jDrVxsdg==
+=+uWu
 -----END PGP SIGNATURE-----
 
---zltmsl6xgx33hokg--
+--aodkzja2s5fdzm6x--
