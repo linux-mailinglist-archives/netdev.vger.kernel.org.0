@@ -2,64 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E1F9543CA4
-	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 21:16:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4D78543CAF
+	for <lists+netdev@lfdr.de>; Wed,  8 Jun 2022 21:19:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235230AbiFHTQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 15:16:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36764 "EHLO
+        id S235344AbiFHTTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 15:19:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234573AbiFHTQZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 15:16:25 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CBDD49F24
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 12:16:22 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id j5-20020a922005000000b002d1c2659644so16284774ile.8
-        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 12:16:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=Zd7VaJ+t20Ip39Sfs4fMNAc8bfbYqGcyc9hWSuHpp9U=;
-        b=Uuxkf/3R6r6J4D1HdrQ5Ye9K+hapaHQX4qpNK5t0IfnYlsUzSluT4dnZZd6eDOvN0P
-         VgnIkoxOPtKOnZvk/nIxu0nCDhjbmsBwt2rvEhy/7GQvtcXhG+0os+BpcSpSe08bCQS2
-         4+34Dbep03zdWbA+3BHMPd2ip6UPNWWpmn2XrfMzMOUpTNPPcpsrHL7VJ+1u8tzWGMZ1
-         y3wmgTurR/1F+N45bBf3ejzs4LaDRctBbxTT++vTgltmh9ASfO2XIAIPgVzny+NZQIQE
-         Mm4DSC7Tk/jgogPS2/sfe3+PaMBG5eiaIIsQWHm5TcaeOgQU+J8TxIReYdzajZ61ndSh
-         kb0w==
-X-Gm-Message-State: AOAM531rd8iZ+pzVJmyIojDbhdLCpwmAjnJCAL+VS2FZuWgZewWSOVmZ
-        PpO6LO6+IfnD25LXsMLEFwACizZm3TKgkBj4xQFWTLui2rPb
-X-Google-Smtp-Source: ABdhPJy0UBXD5u8aWdBLoB3V1Aplx2c/xnxS4MzYAvEgDjQyzbYMEbEVHsASiYiBFtBhWSQ6nWTs6GmjnjgMjJLm7tFgBzEoUm21
+        with ESMTP id S235339AbiFHTTb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 15:19:31 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378001409B
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 12:19:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654715970; x=1686251970;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NgCAFu644p+mL9pknZJLYxOx2NlTb8UgHMuWs+dGx4U=;
+  b=l4yuSyQzH6wfKuOFApN8OXtAE9n02TXw57f4Z43s38+gDR2T2ZDt5HQD
+   J1Fu3+6+0PkurUWqvGqb9pfW/E9Skrm+vEnqidaZ00y1k9I8RvLf9rtBc
+   cV1XaswzJok1XrGEsgeCY1Pw0M9dMQD5s0Zz+LBmkbKcnbniFZVQptGoL
+   DmfUhUWt/HDo7wXEDpWrO28bwzFlJ9IKyxzW2e3JUHrug3avoHeYjzBrY
+   vF14DigdgFH1e0a4rxmLv5p0mqQBjaa0gBl+UGDGboQdUW+J2AdQY8RLt
+   c8jBaJ5H8HBIMJs7nh/S6RfSyGU4jkRxeC0S2cjyrhTWaLEMLHj0zJa/3
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10372"; a="257442769"
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="257442769"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 12:19:29 -0700
+X-IronPort-AV: E=Sophos;i="5.91,286,1647327600"; 
+   d="scan'208";a="580206806"
+Received: from pperi-mobl.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.252.138.161])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jun 2022 12:19:29 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+Subject: [PATCH net-next 0/2] mptcp: Header fixups
+Date:   Wed,  8 Jun 2022 12:19:17 -0700
+Message-Id: <20220608191919.327705-1-mathew.j.martineau@linux.intel.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:4705:b0:331:7c49:7048 with SMTP id
- cs5-20020a056638470500b003317c497048mr14416586jab.182.1654715781780; Wed, 08
- Jun 2022 12:16:21 -0700 (PDT)
-Date:   Wed, 08 Jun 2022 12:16:21 -0700
-In-Reply-To: <0000000000009962dc05d7a6b27f@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006097c505e0f48aa2@google.com>
-Subject: Re: [syzbot] WARNING in mroute_clean_tables
-From:   syzbot <syzbot+a7c030a05218db921de5@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dsahern@kernel.org, erdnetdev@gmail.com,
-        eric.dumazet@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This bug is marked as fixed by commit:
-ipmr,ip6mr: acquire RTNL before calling ip[6]mr_free_table()
-But I can't find it in any tested tree for more than 90 days.
-Is it a correct commit? Please update it by replying:
-#syz fix: exact-commit-title
-Until then the bug is still considered open and
-new crashes with the same signature are ignored.
+Patch 1 makes the linux/mptcp.h header easier to use in userspace.
+
+Patch 2 cleans up a magic number.
+
+
+Geliang Tang (1):
+  mptcp: move MPTCPOPT_HMAC_LEN to net/mptcp.h
+
+Ossama Othman (1):
+  mptcp: fix conflict with <netinet/in.h>
+
+ include/net/mptcp.h        | 3 ++-
+ include/uapi/linux/mptcp.h | 9 +++++----
+ net/mptcp/protocol.h       | 1 -
+ 3 files changed, 7 insertions(+), 6 deletions(-)
+
+
+base-commit: a84a434baf9427a1c49782fb1f0973d1308016df
+-- 
+2.36.1
+
