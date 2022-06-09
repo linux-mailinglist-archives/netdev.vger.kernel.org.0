@@ -2,97 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3590C5455A7
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 22:30:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B6C45455B0
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 22:32:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344722AbiFIUaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 16:30:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54362 "EHLO
+        id S1344914AbiFIUcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 16:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230017AbiFIUaI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 16:30:08 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [78.47.171.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9395C2941FC
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 13:30:07 -0700 (PDT)
-Received: from localhost.localdomain.datenfreihafen.local (p200300e9d72f7220bc8f3831994f1895.dip0.t-ipconnect.de [IPv6:2003:e9:d72f:7220:bc8f:3831:994f:1895])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@sostec.de)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 034D2C03A0;
-        Thu,  9 Jun 2022 22:30:00 +0200 (CEST)
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, alex.aring@gmail.com,
-        netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org
-Subject: pull-request: ieee802154-next 2022-06-09
-Date:   Thu,  9 Jun 2022 22:29:56 +0200
-Message-Id: <20220609202956.1512156-1-stefan@datenfreihafen.org>
-X-Mailer: git-send-email 2.35.3
+        with ESMTP id S235367AbiFIUcH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 16:32:07 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F402D2315E;
+        Thu,  9 Jun 2022 13:32:05 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id l18so20128745lje.13;
+        Thu, 09 Jun 2022 13:32:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cBK6/mXz5yDC7klt1oq1cf3xvjwR6jBvhdS+cTpC2Kc=;
+        b=CiGCRkuu73W3M46UnvqsubR3XsaquRcx+ygNWQGVmPGSXGMJnWH9oai48a4suWLLU5
+         Pq36AelyxvjQHlrb455eOX5/tFaxlZrat58v1EGJgbBwcymaJBnGIP3tNIyIiOiOvvsQ
+         GNfgA25u2NkDcsoc2ecPhN8Wtz6w6kI/qFqqd9DHXkXqSX/a9P8Wh5hjdrsT1/eaXmHr
+         xS0q+LuGnBy+SYmuJKmcQUeduUUajQdpjb75xjQ0K+LJq1ppIpsYdQZF/OcijyghJevM
+         XDViHckOlQqAIx2Y+MORfOu2USE5Y3+SZ8wUby3hjoXalZ0ToTeMsliD/xURqBr+smu+
+         oSBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cBK6/mXz5yDC7klt1oq1cf3xvjwR6jBvhdS+cTpC2Kc=;
+        b=1Y2qSxGEJfvkPLAZfbA5FXSJL42FqVYuPc5svJuKmi8ZuqGKm7h/PEpWHgq+xpXYX4
+         tMoYuKuAE3Eb+G0+zdd7JTnkM9hV+4qsqGqru8wpEertxYT/6CjaBFZgnycrFpAbhgwZ
+         zNfKpIsbau29dQx8zg8rrW3EbGpQ3QuE9WlSsgKQCO7C+psNVNYSRPY2QuYFGimFUbvN
+         jc1mp91YhZi8h1keYMBfU2E6SMPdxOjVhcV37KEhfINE4nc02ySlwGxLCQ3OgwYT3et1
+         yfk7DVZ2E+7Z7WHdcEr7c8AIr6u3hecD/jYQLe5NDvzip2iJ/jiE9aMBCWDAeBMyVGFp
+         3jpA==
+X-Gm-Message-State: AOAM533CqPdeUxpniyr1d3XujfOt7Szrh+Kszx+WbTk9DaMr2ICy73Fl
+        iBEADqNF8hk+NKX0JsW2NDb+ezHKsy0NBPDIumc=
+X-Google-Smtp-Source: ABdhPJxou4cMHEUqYdwxbHH6tZ0jconZwUVRjvAMuutMRmYAI1AQ2jy33QjIuBiX17OJCemD6QJo1dLyoLOgEoTD+Qo=
+X-Received: by 2002:a2e:3a16:0:b0:255:7811:2827 with SMTP id
+ h22-20020a2e3a16000000b0025578112827mr20036524lja.130.1654806724358; Thu, 09
+ Jun 2022 13:32:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+References: <20220603204509.15044-1-jolsa@kernel.org>
+In-Reply-To: <20220603204509.15044-1-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 9 Jun 2022 13:31:52 -0700
+Message-ID: <CAEf4BzbT4Z=B2hZxTQf1MrCp6TGiMgP+_t7p8G5A+RdVyNP+8w@mail.gmail.com>
+Subject: Re: [PATCHv4 bpf-next 0/2] perf tools: Fix prologue generation
+To:     Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dave, Jakub.
+On Fri, Jun 3, 2022 at 1:45 PM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> hi,
+> sending change we discussed some time ago [1] to get rid of
+> some deprecated functions we use in perf prologue code.
+>
+> Despite the gloomy discussion I think the final code does
+> not look that bad ;-)
+>
+> This patchset removes following libbpf functions from perf:
+>   bpf_program__set_prep
+>   bpf_program__nth_fd
+>   struct bpf_prog_prep_result
+>
+> v4 changes:
+>   - fix typo [Andrii]
+>
+> v3 changes:
+>   - removed R0/R1 zero init in libbpf_prog_prepare_load_fn,
+>     because it's not needed [Andrii]
+>   - rebased/post on top of bpf-next/master which now has
+>     all the needed perf/core changes
+>
+> v2 changes:
+>   - use fallback section prog handler, so we don't need to
+>     use section prefix [Andrii]
+>   - realloc prog->insns array in bpf_program__set_insns [Andrii]
+>   - squash patch 1 from previous version with
+>     bpf_program__set_insns change [Daniel]
+>   - patch 3 already merged [Arnaldo]
+>   - added more comments
+>
+> thanks,
+> jirka
+>
 
-An update from ieee802154 for your *net-next* tree.
+Arnaldo, can I get an ack from you for this patch set? Thank you!
 
-This is a separate pull request for 6lowpan changes. We agreed with the
-bluetooth maintainers to switch the trees these changing are going into
-from bluetooth to ieee802154.
-
-Jukka Rissanen stepped down as a co-maintainer of 6lowpan (Thanks for the
-work!). Alexander is staying as maintainer.
-
-Alexander reworked the nhc_id lookup in 6lowpan to be way simpler.
-Moved the data structure from rb to an array, which is all we need in this
-case.
-
-regards
-Stefan Schmidt
-
-The following changes since commit 0530a683fc858aa641d88ad83315ea53c27bce10:
-
-  Merge branch 'vsock-virtio-add-support-for-device-suspend-resume' (2022-05-02 16:04:37 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan-next.git tags/ieee802154-for-net-next-2022-06-09
-
-for you to fetch changes up to 260b5c694bd41fd53b1aa21fbea369568c7b5a4a:
-
-  MAINTAINERS: Remove Jukka Rissanen as 6lowpan maintainer (2022-06-09 21:53:28 +0200)
-
-----------------------------------------------------------------
-Alexander Aring (3):
-      net: 6lowpan: remove const from scalars
-      net: 6lowpan: use array for find nhc id
-      net: 6lowpan: constify lowpan_nhc structures
-
-Jukka Rissanen (1):
-      MAINTAINERS: Remove Jukka Rissanen as 6lowpan maintainer
-
- MAINTAINERS                     |   1 -
- net/6lowpan/nhc.c               | 103 ++++++++--------------------------------
- net/6lowpan/nhc.h               |  38 ++++++---------
- net/6lowpan/nhc_dest.c          |   9 +---
- net/6lowpan/nhc_fragment.c      |   9 +---
- net/6lowpan/nhc_ghc_ext_dest.c  |   9 +---
- net/6lowpan/nhc_ghc_ext_frag.c  |  11 +----
- net/6lowpan/nhc_ghc_ext_hop.c   |   9 +---
- net/6lowpan/nhc_ghc_ext_route.c |   9 +---
- net/6lowpan/nhc_ghc_icmpv6.c    |   9 +---
- net/6lowpan/nhc_ghc_udp.c       |   9 +---
- net/6lowpan/nhc_hop.c           |   9 +---
- net/6lowpan/nhc_ipv6.c          |  11 +----
- net/6lowpan/nhc_mobility.c      |   9 +---
- net/6lowpan/nhc_routing.c       |   9 +---
- net/6lowpan/nhc_udp.c           |   9 +---
- 16 files changed, 48 insertions(+), 215 deletions(-)
+>
+> [1] https://lore.kernel.org/bpf/CAEf4BzaiBO3_617kkXZdYJ8hS8YF--ZLgapNbgeeEJ-pY0H88g@mail.gmail.com/
+> ---
+> Jiri Olsa (2):
+>       perf tools: Register fallback libbpf section handler
+>       perf tools: Rework prologue generation code
+>
+>  tools/perf/util/bpf-loader.c | 173 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++------------------
+>  1 file changed, 155 insertions(+), 18 deletions(-)
