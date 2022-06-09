@@ -2,128 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B762154575A
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 00:24:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 322F454574E
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 00:23:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345734AbiFIWV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 18:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36496 "EHLO
+        id S239136AbiFIWWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 18:22:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345695AbiFIWV4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 18:21:56 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E76E53C6E
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 15:21:50 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-3135d02968bso63319357b3.0
-        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 15:21:50 -0700 (PDT)
+        with ESMTP id S233887AbiFIWWb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 18:22:31 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1526D942
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 15:22:26 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id i66so33521881oia.11
+        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 15:22:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        d=cilium-io.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=yboyFArx2lHvBt01l8NpldAEI3xLVVvkRY3YCO31PQs=;
-        b=E9tSuZ6hKkd5R9UrAClvzMvLuSapw21MRvFh9K5m/Q4W/Ne6NP2WMWfSPzasz8wKZX
-         Mng11d6Obxtbq83lWoSaFsdBiVCu3gb6X9dNoHMi3E7qOKWwZUm9cJAU6WOY5s+S4WcD
-         k0KWGk2jmTkZOAqD94Ix96O/6kgOmQ/r+QpHomefwKvJ5cV0MNofmxceF2lXxoFWF6gg
-         j5Cs7IkuMhKv2Pf+5++JwO5hcoMx6SP3if8FmA4NjIla9U/uK2//v1BfU0Tfe7AV8KrT
-         Ey/sE8DleSJieRPHEDBL1hPn4naIWW02H/aWpnYArbukY4zZLmv4GV2t/e5g12dM+Qzj
-         ZcQg==
+        bh=mYG71zyz/SPXXyMsRW0M/+syUQ4xnWNQdng1XXVyMeg=;
+        b=kUYk5aKK8Gcenrn6VsrYrfD7GOTSn0xPHMsH7v5/p1KzkgwSpRj9nJoH/DIDBhUrrL
+         j+oGrjkg9457GhpZn/IRiDYnA6oQiMv91l4sak5sAppAxn3SzfNUG/OyJwrB0h3LXDqk
+         BpplcVZLalEAYDoRZO0dyjxONiEfxa3yYFJ1aJjQfVW6fD1cXn8gaHsxZ7lXLrVFmyAi
+         tu0nFnPYM9ilcHwzTPuDYdwaA8jsf+tZLUVnEXNIoQBLmLmgNVR59PDH4Lxdh+lVoLzS
+         TpDS0M+wsrI73UDcGzN5Gs5eRzjBFxvsfK2XAjNRsdkL840TrxsArxmlBcZdUwdcURCH
+         lk7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=yboyFArx2lHvBt01l8NpldAEI3xLVVvkRY3YCO31PQs=;
-        b=K//G/iEW4WgOjBs5UZsP7Ck8sjusLjI5j60E5B3wMYJ0pLwKyF4Lk+tmKbJconID3o
-         hZQCfbUDFV1zGXQQXEta+jOt3QirgoLnAjpnGTBqPLmzTbdJFC3gWJ90U5hBd/P3adkR
-         uC1wi26qsKIB0yaSaD2z+6/ZVAVYBXALw+s488J+8mOJV+s38Jyn9yztkRCxbRfyvmGp
-         v4311tXqwF0hZ4cy4IQe+/rpe+xgb1BKI2Wx8CvrLZYJQgnGxOPqT/0y0s9rP0bUlz9X
-         VsElEUT7Gj/5HI4zFB7sIHji7EEoMumv5QZYVpItlTPFYrXFNDKzs7NchMEDQSAhFCis
-         SegA==
-X-Gm-Message-State: AOAM533icSwi7Gm00vdk3YZWUNvpLsuVg21q7/phDJgpj6Pi0GqmP1s2
-        Gu4w/XRtNQo0NKYTPCFAZiR6ERB7
-X-Google-Smtp-Source: ABdhPJzx/fiV7355Fpicwsezz0b2tB8XbCEkcbb8KPwyuPviI/0AOw7BwG+AXnNZJgmFqRPAiS2WX3p4fQ==
-X-Received: from fawn.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5795])
- (user=morbo job=sendgmr) by 2002:a81:c248:0:b0:313:3c2c:89cd with SMTP id
- t8-20020a81c248000000b003133c2c89cdmr17003210ywg.175.1654813309307; Thu, 09
- Jun 2022 15:21:49 -0700 (PDT)
-Date:   Thu,  9 Jun 2022 22:16:31 +0000
-In-Reply-To: <20220609221702.347522-1-morbo@google.com>
-Message-Id: <20220609221702.347522-13-morbo@google.com>
-Mime-Version: 1.0
-References: <20220609221702.347522-1-morbo@google.com>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH 12/12] netfilter: conntrack: use correct format characters
-From:   Bill Wendling <morbo@google.com>
-To:     isanbard@gmail.com
-Cc:     Tony Luck <tony.luck@intel.com>, Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Jan Kara <jack@suse.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        Daniel Kiper <daniel.kiper@oracle.com>,
-        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-mm@kvack.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        llvm@lists.linux.dev
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mYG71zyz/SPXXyMsRW0M/+syUQ4xnWNQdng1XXVyMeg=;
+        b=Ly8wkvYHCCZ0IPZV9EMHnzrtfS/8gpFum42vxA6wtRjWlEPQid2O+r2OzMh61InfFB
+         rGKBmZawQtTmvsrmdUK0MwH7mge95iHBeVFZO6Un6bWvxUGiumy7SSAq+Nl53d7RaSWp
+         +BLK/uonk6YteZl6JP+VCmEfM5SRVeVwLABt0RIrrL+RbGxCJk2imssArJgzBAGb0ejE
+         ceJTApSGpAttyhgv+xSDd/CYoAm2C9pSilloW7bXmzb/xaC/vDzhq9PunwAZe+bJes2v
+         I7HhosfTZAUHeuUKFoKR0UvjmuztvORuK+OHGl8t2XrSX+fQBRohBjxuAs2252vhQTHp
+         cmXA==
+X-Gm-Message-State: AOAM533FEJUwvmY/rGDBHQ+NL1VL2VPG/1m4l4Rt3SjiYSUFeCMSfPLW
+        RIKUtRaDeW8FtldorE1qNO+vB5wFqSjldz9naU4=
+X-Google-Smtp-Source: ABdhPJyPIQLMoja685CD7b+09xLGlRe1+VADh35XIPvCRRa8/pqbl6myeEswQUAJr/6p6cedxD/MvA==
+X-Received: by 2002:a05:6808:14c5:b0:32e:f7b9:99a2 with SMTP id f5-20020a05680814c500b0032ef7b999a2mr1541235oiw.174.1654813345096;
+        Thu, 09 Jun 2022 15:22:25 -0700 (PDT)
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com. [209.85.210.44])
+        by smtp.gmail.com with ESMTPSA id bf1-20020a056808190100b0032af3cffac7sm14242848oib.2.2022.06.09.15.22.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 09 Jun 2022 15:22:22 -0700 (PDT)
+Received: by mail-ot1-f44.google.com with SMTP id g17-20020a9d6491000000b0060c0f0101ffso6118946otl.7;
+        Thu, 09 Jun 2022 15:22:22 -0700 (PDT)
+X-Received: by 2002:a05:6830:348e:b0:60b:f4b:c306 with SMTP id
+ c14-20020a056830348e00b0060b0f4bc306mr17525569otu.297.1654813342247; Thu, 09
+ Jun 2022 15:22:22 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220609011844.404011-1-jmaxwell37@gmail.com> <56d6f898-bde0-bb25-3427-12a330b29fb8@iogearbox.net>
+In-Reply-To: <56d6f898-bde0-bb25-3427-12a330b29fb8@iogearbox.net>
+From:   Joe Stringer <joe@cilium.io>
+Date:   Thu, 9 Jun 2022 15:22:10 -0700
+X-Gmail-Original-Message-ID: <CAOftzPgU6EaCgf9E407JrbTfWXBYZL=nECWjySVjw8EPtJb6Cg@mail.gmail.com>
+Message-ID: <CAOftzPgU6EaCgf9E407JrbTfWXBYZL=nECWjySVjw8EPtJb6Cg@mail.gmail.com>
+Subject: Re: [PATCH net] net: bpf: fix request_sock leak in filter.c
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Jon Maxwell <jmaxwell37@gmail.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, atenart@kernel.org, cutaylor-pub@yahoo.com,
+        alexei.starovoitov@gmail.com, kafai@fb.com, i@lmb.io,
+        bpf@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bill Wendling <isanbard@gmail.com>
+On Thu, Jun 9, 2022 at 1:30 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 6/9/22 3:18 AM, Jon Maxwell wrote:
+> > A customer reported a request_socket leak in a Calico cloud environment. We
+> > found that a BPF program was doing a socket lookup with takes a refcnt on
+> > the socket and that it was finding the request_socket but returning the parent
+> > LISTEN socket via sk_to_full_sk() without decrementing the child request socket
+> > 1st, resulting in request_sock slab object leak. This patch retains the
+> > existing behaviour of returning full socks to the caller but it also decrements
+> > the child request_socket if one is present before doing so to prevent the leak.
+> >
+> > Thanks to Curtis Taylor for all the help in diagnosing and testing this. And
+> > thanks to Antoine Tenart for the reproducer and patch input.
+> >
+> > Fixes: f7355a6c0497 bpf: ("Check sk_fullsock() before returning from bpf_sk_lookup()")
+> > Fixes: edbf8c01de5a bpf: ("add skc_lookup_tcp helper")
+> > Tested-by: Curtis Taylor <cutaylor-pub@yahoo.com>
+> > Co-developed-by: Antoine Tenart <atenart@kernel.org>
+> > Signed-off-by:: Antoine Tenart <atenart@kernel.org>
+> > Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
+> > ---
+> >   net/core/filter.c | 20 ++++++++++++++------
+> >   1 file changed, 14 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index 2e32cee2c469..e3c04ae7381f 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -6202,13 +6202,17 @@ __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
+> >   {
+> >       struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
+> >                                          ifindex, proto, netns_id, flags);
+> > +     struct sock *sk1 = sk;
+> >
+> >       if (sk) {
+> >               sk = sk_to_full_sk(sk);
+> > -             if (!sk_fullsock(sk)) {
+> > -                     sock_gen_put(sk);
+> > +             /* sk_to_full_sk() may return (sk)->rsk_listener, so make sure the original sk1
+> > +              * sock refcnt is decremented to prevent a request_sock leak.
+> > +              */
+> > +             if (!sk_fullsock(sk1))
+> > +                     sock_gen_put(sk1);
+> > +             if (!sk_fullsock(sk))
+> >                       return NULL;
+>
+> [ +Martin/Joe/Lorenz ]
+>
+> I wonder, should we also add some asserts in here to ensure we don't get an unbalance for the
+> bpf_sk_release() case later on? Rough pseudocode could be something like below:
+>
+> static struct sock *
+> __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
+>                  struct net *caller_net, u32 ifindex, u8 proto, u64 netns_id,
+>                  u64 flags)
+> {
+>          struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
+>                                             ifindex, proto, netns_id, flags);
+>          if (sk) {
+>                  struct sock *sk2 = sk_to_full_sk(sk);
+>
+>                  if (!sk_fullsock(sk2))
+>                          sk2 = NULL;
+>                  if (sk2 != sk) {
+>                          sock_gen_put(sk);
+>                          if (unlikely(sk2 && !sock_flag(sk2, SOCK_RCU_FREE))) {
+>                                  WARN_ONCE(1, "Found non-RCU, unreferenced socket!");
+>                                  sk2 = NULL;
+>                          }
+>                  }
+>                  sk = sk2;
+>          }
+>          return sk;
+> }
 
-When compiling with -Wformat, clang emits the following warnings:
-
-net/netfilter/nf_conntrack_helper.c:168:18: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
-                request_module(mod_name);
-                               ^~~~~~~~
-
-Use a string literal for the format string.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/378
-Signed-off-by: Bill Wendling <isanbard@gmail.com>
----
- net/netfilter/nf_conntrack_helper.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/netfilter/nf_conntrack_helper.c b/net/netfilter/nf_conntrack_helper.c
-index c12a87ebc3ee..1e0424d37abc 100644
---- a/net/netfilter/nf_conntrack_helper.c
-+++ b/net/netfilter/nf_conntrack_helper.c
-@@ -165,7 +165,7 @@ nf_nat_helper_try_module_get(const char *name, u16 l3num, u8 protonum)
- 	if (!nat) {
- 		snprintf(mod_name, sizeof(mod_name), "%s", h->nat_mod_name);
- 		rcu_read_unlock();
--		request_module(mod_name);
-+		request_module("%s", mod_name);
- 
- 		rcu_read_lock();
- 		nat = nf_conntrack_nat_helper_find(mod_name);
--- 
-2.36.1.255.ge46751e96f-goog
-
+This seems a bit more readable to me from the perspective of
+understanding the way that the socket references are tracked & freed.
