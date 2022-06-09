@@ -2,159 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 530B35458A8
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 01:33:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DD185458D0
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 01:46:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242409AbiFIXdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 19:33:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47414 "EHLO
+        id S233080AbiFIXq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 19:46:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345329AbiFIXdJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 19:33:09 -0400
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26FE63503;
-        Thu,  9 Jun 2022 16:33:05 -0700 (PDT)
-Received: by mail-il1-x131.google.com with SMTP id r3so19850023ilt.8;
-        Thu, 09 Jun 2022 16:33:05 -0700 (PDT)
+        with ESMTP id S232670AbiFIXq0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 19:46:26 -0400
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81BB62C11A;
+        Thu,  9 Jun 2022 16:46:25 -0700 (PDT)
+Received: by mail-ot1-x333.google.com with SMTP id g17-20020a9d6491000000b0060c0f0101ffso6240432otl.7;
+        Thu, 09 Jun 2022 16:46:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=GjKCdHOKOJXiqOWxK8wP3ZWw1JOreBSaiDhIoPu+1D0=;
-        b=AtPZ/xUWiWGDXu4TFxdox7hx7FKMio2mzUqlzzmB4MeykzrhzoIy/MDPDPnbJN1F1v
-         19om9EPXIBlh/jpfSTuNvN5oK7gk6a1MGfKW+1oZGAhjoVTh0kHqIocY8xxRgH6YIJH9
-         5JAFVa1B3yMVktEoudZuVJhWZWEo3dfMhE8UAhzNeJ8S6pZs2SulMR7VaI8JqarrfNUq
-         FwKqhlWP2v1zP+QAQmOQFX/IzHd9cUkNdxxkOH6gLGHPX8whfRsk/3e7vjXgge0Oy86m
-         hkNWHUgmw3npqAIgr3OA1qcqi9srV1lyiaz9xV8KwyW9/ATzQ7cl+QLlyriNQ6QBwBVU
-         +dJw==
+        bh=X141ZafwMnCya6zJqjlrPW7zfFJHx0toBuGRvDUmsjo=;
+        b=q0XI0ntOLGfgMtPYG+icei7LjXutXp3f1wiAcFHblSBQLpArWvXjxTipBntsbcUa5q
+         uAuctNRnldKvWtYq1gkFDgB0kTpQYPQIC4IdHb3vJRdBCTUM3tHQ+6BQhB72M0DncDaP
+         yGYp2E8WiYKx8Nwhm/0h+jHI+rgeCZ9oNfNwrpxtlosamsr5k61n8hFpO5GsQjhwIDJa
+         VW4o3S/K1xWzXFEHGkPWiCfCFeLECZpOXn8Upu9Ca3TFWp67de63HE5Sny5P9kCMfbXW
+         24yo2TyJtFDppyZtP58oWsTlrhFr8CZpZ+rusNdW9ccuMJqpDUXamp6uWijgttsrgCzY
+         TgRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=GjKCdHOKOJXiqOWxK8wP3ZWw1JOreBSaiDhIoPu+1D0=;
-        b=v8ietYF7pFPCnECUBt26gFlXZOjb3nB+4ps8IPOaFYkrPyaI7fPNukmqM2QTdFEEhA
-         3FoeplBuZQ0qz2+4W+X9RRcyJciirmicxOjAlh+mS3/S1euzimMitRnn/4NwP97A6AAX
-         F4gxEte9I4zz4iuGblsJyWeInMCgzPlLAKBPovczxjlcRXv4TrDwcGzCeFO9yaaDN10R
-         pHYIFQz1cFDxMeLLXc3o4E6DDoZKjjBYdg+wBZ4oD9M6DOcwKFe/HzqBfdI+CMvqULat
-         lHzTPlN7Ov7zHzgZfFQu8B4p+KydoZ7BANxkK+jTNwFqIi78NpZImhwtVFNMU/1hFn9L
-         xYiQ==
-X-Gm-Message-State: AOAM531EqqzhtjarMK29laremK16ShYf674SkrpgBqZICJwi2Tqk8Vkt
-        oVG3p7ggt8tYhW9mJw00g/2I1kbIpifcWOjcTHFY200m3eKKlw==
-X-Google-Smtp-Source: ABdhPJw02J7vPYbtqUK/pc01O0WCpPtewBcihZkUNMYeMWAvLy5xie0vAvmlyGnd/gxosoGcIWPYFP2MFH/UzJpnpO0=
-X-Received: by 2002:a05:6e02:b49:b0:2d1:c232:42af with SMTP id
- f9-20020a056e020b4900b002d1c23242afmr25439128ilu.292.1654817585020; Thu, 09
- Jun 2022 16:33:05 -0700 (PDT)
+        bh=X141ZafwMnCya6zJqjlrPW7zfFJHx0toBuGRvDUmsjo=;
+        b=eB3SZGWyztcjnWRt/aW2qQZnrm2YKQinq+6AddxQPyP3Gr9IJpzVGSG6wY8DdBx8Gq
+         uDLoqUU4UZVBmM4uvsLFrq85FzlgRmfQtO7OBt+b/cMQRoGCQAGkLAXcUO8PWRbCxhYN
+         D8pyWjIyQD6Le4VNKM3IyukArZxQVvrWOfdKwsxiEwL6DmDb5ZVeriighVnKGihQ3xwM
+         g4gqAuGcV3hqiYI4vhoaaTAyzFijgvyA0u6PjGXpBnAWisPSIUTW6oOhItOVPalLt6H/
+         dSJqSyY/4/Oetej45oakQeBiDAqQyGLLzIxzWV5AJlbJNN0mBql/rZXSxCMFaTYWdWT/
+         sEaw==
+X-Gm-Message-State: AOAM531ePWeK13rd9711Kz8RQ1Y8ngCzUkv7hD4mvaiVg4oUIvLXnwhc
+        zNl8HmxCRUkj6rbfK3dVYKpsMuAzM7RqajIFqUWk/z+KABxoxA==
+X-Google-Smtp-Source: ABdhPJzn+Em+TQCsBFUUWarhAuEu/9+7NVktDF+yx31ZZZuLx3eXMPhCu3l/Pbw48K8J5jaRzoC/3IURySvaJsp3BiE=
+X-Received: by 2002:a9d:7056:0:b0:60c:f8b:afac with SMTP id
+ x22-20020a9d7056000000b0060c0f8bafacmr6250091otj.30.1654818384775; Thu, 09
+ Jun 2022 16:46:24 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220609011844.404011-1-jmaxwell37@gmail.com> <56d6f898-bde0-bb25-3427-12a330b29fb8@iogearbox.net>
- <CAOftzPgU6EaCgf9E407JrbTfWXBYZL=nECWjySVjw8EPtJb6Cg@mail.gmail.com>
-In-Reply-To: <CAOftzPgU6EaCgf9E407JrbTfWXBYZL=nECWjySVjw8EPtJb6Cg@mail.gmail.com>
-From:   Jonathan Maxwell <jmaxwell37@gmail.com>
-Date:   Fri, 10 Jun 2022 09:32:29 +1000
-Message-ID: <CAGHK07A_5ZZJkN6vYOTiy50SgF8MnKcO33CmiTzWMTj-YQ+DVg@mail.gmail.com>
-Subject: Re: [PATCH net] net: bpf: fix request_sock leak in filter.c
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Joe Stringer <joe@cilium.io>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
-        Antoine Tenart <atenart@kernel.org>, cutaylor-pub@yahoo.com,
-        alexei.starovoitov@gmail.com, kafai@fb.com, i@lmb.io,
-        bpf@vger.kernel.org
+References: <20220609062829.293217-1-james.hilliard1@gmail.com> <CAEf4BzaNBcW8ZDWcH5USd9jFshFF78psAjn2mqZp6uVGn0ZK+g@mail.gmail.com>
+In-Reply-To: <CAEf4BzaNBcW8ZDWcH5USd9jFshFF78psAjn2mqZp6uVGn0ZK+g@mail.gmail.com>
+From:   James Hilliard <james.hilliard1@gmail.com>
+Date:   Thu, 9 Jun 2022 17:46:13 -0600
+Message-ID: <CADvTj4oBy3nP3s2BaN_+75dYfkq2x72wG3dC3K09osRzkcw2eA@mail.gmail.com>
+Subject: Re: [PATCH 1/1] libbpf: replace typeof with __typeof__ for -std=c17 compatibility
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
         FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 8:22 AM Joe Stringer <joe@cilium.io> wrote:
+On Thu, Jun 9, 2022 at 12:11 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> On Thu, Jun 9, 2022 at 1:30 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> On Wed, Jun 8, 2022 at 11:28 PM James Hilliard
+> <james.hilliard1@gmail.com> wrote:
 > >
-> > On 6/9/22 3:18 AM, Jon Maxwell wrote:
-> > > A customer reported a request_socket leak in a Calico cloud environment. We
-> > > found that a BPF program was doing a socket lookup with takes a refcnt on
-> > > the socket and that it was finding the request_socket but returning the parent
-> > > LISTEN socket via sk_to_full_sk() without decrementing the child request socket
-> > > 1st, resulting in request_sock slab object leak. This patch retains the
-> > > existing behaviour of returning full socks to the caller but it also decrements
-> > > the child request_socket if one is present before doing so to prevent the leak.
-> > >
-> > > Thanks to Curtis Taylor for all the help in diagnosing and testing this. And
-> > > thanks to Antoine Tenart for the reproducer and patch input.
-> > >
-> > > Fixes: f7355a6c0497 bpf: ("Check sk_fullsock() before returning from bpf_sk_lookup()")
-> > > Fixes: edbf8c01de5a bpf: ("add skc_lookup_tcp helper")
-> > > Tested-by: Curtis Taylor <cutaylor-pub@yahoo.com>
-> > > Co-developed-by: Antoine Tenart <atenart@kernel.org>
-> > > Signed-off-by:: Antoine Tenart <atenart@kernel.org>
-> > > Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
-> > > ---
-> > >   net/core/filter.c | 20 ++++++++++++++------
-> > >   1 file changed, 14 insertions(+), 6 deletions(-)
-> > >
-> > > diff --git a/net/core/filter.c b/net/core/filter.c
-> > > index 2e32cee2c469..e3c04ae7381f 100644
-> > > --- a/net/core/filter.c
-> > > +++ b/net/core/filter.c
-> > > @@ -6202,13 +6202,17 @@ __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
-> > >   {
-> > >       struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
-> > >                                          ifindex, proto, netns_id, flags);
-> > > +     struct sock *sk1 = sk;
-> > >
-> > >       if (sk) {
-> > >               sk = sk_to_full_sk(sk);
-> > > -             if (!sk_fullsock(sk)) {
-> > > -                     sock_gen_put(sk);
-> > > +             /* sk_to_full_sk() may return (sk)->rsk_listener, so make sure the original sk1
-> > > +              * sock refcnt is decremented to prevent a request_sock leak.
-> > > +              */
-> > > +             if (!sk_fullsock(sk1))
-> > > +                     sock_gen_put(sk1);
-> > > +             if (!sk_fullsock(sk))
-> > >                       return NULL;
+> > Fixes errors like:
+> > error: expected specifier-qualifier-list before 'typeof'
+> >    14 | #define __type(name, val) typeof(val) *name
+> >       |                           ^~~~~~
+> > ../src/core/bpf/socket_bind/socket-bind.bpf.c:25:9: note: in expansion of macro '__type'
+> >    25 |         __type(key, __u32);
+> >       |         ^~~~~~
 > >
-> > [ +Martin/Joe/Lorenz ]
-> >
-> > I wonder, should we also add some asserts in here to ensure we don't get an unbalance for the
-> > bpf_sk_release() case later on? Rough pseudocode could be something like below:
-> >
-> > static struct sock *
-> > __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
-> >                  struct net *caller_net, u32 ifindex, u8 proto, u64 netns_id,
-> >                  u64 flags)
-> > {
-> >          struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
-> >                                             ifindex, proto, netns_id, flags);
-> >          if (sk) {
-> >                  struct sock *sk2 = sk_to_full_sk(sk);
-> >
-> >                  if (!sk_fullsock(sk2))
-> >                          sk2 = NULL;
-> >                  if (sk2 != sk) {
-> >                          sock_gen_put(sk);
-> >                          if (unlikely(sk2 && !sock_flag(sk2, SOCK_RCU_FREE))) {
-> >                                  WARN_ONCE(1, "Found non-RCU, unreferenced socket!");
-> >                                  sk2 = NULL;
-> >                          }
-> >                  }
-> >                  sk = sk2;
-> >          }
-> >          return sk;
-> > }
+> > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+> > ---
 >
-> This seems a bit more readable to me from the perspective of
-> understanding the way that the socket references are tracked & freed.
+> If you follow DPDK link you gave me ([0]), you'll see that they ended up doing
+>
+> #ifndef typeof
+> #define typeof __typeof__
+> #endif
+>
+> It's way more localized. Let's do that.
 
-Thanks for the suggestion Daniel and Joe, looks good to me, we will run some
-tests with that implemented in our reproducer.
+Won't that potentially leak the redefinition into external code including the
+header file?
 
-Regards
+I don't see a redefinition of typeof like that used elsewhere in the kernel.
 
-Jon
+However I do see __typeof__ used in many headers already so that approach
+seems to follow normal conventions and seems less risky.
+
+FYI using -std=gnu17 instead of -std=c17 works around this issue with bpf-gcc
+at least so this issue isn't really a blocker like the SEC macro
+issue, I had just
+accidentally mixed the two issues up due to accidentally not clearing out some
+header files when testing, they seem to be entirely separate.
+
+>
+> But also I tried to build libbpf-bootstrap with -std=c17 and
+> immediately ran into issue with asm, so we need to do the same with
+> asm -> __asm__. Can you please update your patch and fix both issues?
+
+Are you hitting that with clang/llvm or bpf-gcc? It doesn't appear that the
+libbpf-bootstrap build system is set up to build with bpf-gcc yet.
+
+>
+>   [0] https://patches.dpdk.org/project/dpdk/patch/2601191342CEEE43887BDE71AB977258213F3012@irsmsx105.ger.corp.intel.com/
+>   [1] https://github.com/libbpf/libbpf-bootstrap
+>
+>
+> >  tools/lib/bpf/bpf_core_read.h   | 16 ++++++++--------
+> >  tools/lib/bpf/bpf_helpers.h     |  4 ++--
+> >  tools/lib/bpf/bpf_tracing.h     | 24 ++++++++++++------------
+> >  tools/lib/bpf/btf.h             |  4 ++--
+> >  tools/lib/bpf/libbpf_internal.h |  6 +++---
+> >  tools/lib/bpf/usdt.bpf.h        |  6 +++---
+> >  tools/lib/bpf/xsk.h             | 12 ++++++------
+> >  7 files changed, 36 insertions(+), 36 deletions(-)
+> >
+>
+> [...]
