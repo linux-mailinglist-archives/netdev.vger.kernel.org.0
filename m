@@ -2,320 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9701A54568A
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 23:37:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B68395456C7
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 23:58:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241579AbiFIVhu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 17:37:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
+        id S233773AbiFIV57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 17:57:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232003AbiFIVht (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 17:37:49 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C434926523C;
-        Thu,  9 Jun 2022 14:37:47 -0700 (PDT)
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nzPqV-00023F-Uo; Thu, 09 Jun 2022 23:37:40 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nzPqV-000Hf9-Hs; Thu, 09 Jun 2022 23:37:39 +0200
-Subject: Re: [PATCH bpf-next] selftests/bpf: add lwt ip encap tests to
- test_progs
-To:     Eyal Birger <eyal.birger@gmail.com>, shuah@kernel.org,
-        ast@kernel.org, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, posk@google.com
-Cc:     linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <20220607133135.271788-1-eyal.birger@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f80edf4f-c795-1e1e-bac2-414189988156@iogearbox.net>
-Date:   Thu, 9 Jun 2022 23:37:38 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S231699AbiFIV5z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 17:57:55 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-bgr052101064020.outbound.protection.outlook.com [52.101.64.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5627665D39;
+        Thu,  9 Jun 2022 14:57:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YcPDCO0Y18Enms8qKNccpbab/IF/3XK/SXjs7U2EoKoBhPPkngkCDA6cBQWuDt7ek1qje9tr4zUeHQaOn9+6MGrww+ta4cgs+mc7pEpgkq5kQS3Rg7emeu3I7aUJYJSP1lgcmO7PWG1W+zQYAKm01L1v8c8KDwxJsBM7eg+Ajp79mdSQgS4TH8WUSdy9/ACFdqsyQ6sV4KOxRnp6HjYDCbBTkUDQuzIkCX3VI218ossfw4D+/zDQbdhgltu71OP0oFI+Hfw2+rIUMcqxGQ18NKllxgHxXExSaH9M0lB2qPQ80qPe9qsaLPcEAfWEnYED6epJQLmZqkVTc8RWHxzaPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=p6QMxEqA2iGGLukTTl0VpGpIOMNiCbSxVnHUTRKm4n4=;
+ b=c/Bo2U046M6G4LQkWUIfC4tsicteqx0RcJOkpzbRsht4r6wJ18n5dXrTzXOSqc0tX1z/3rHL+BmaZBt8H+ZFZsNT9KST8utiZw3UVhEA62qM6MaC48ThFHjK71HyVK1CfBpy6f7CNQE2GGdD/2T7l7yx/iW/lQhZAA1EgXOOkWyDWLkq8Yf6lyAK7DkQbPNsKzjNkpC8yL45aQmQmAdf832XeVZTS5FzlIjFEiM4HQQ9GtgGpeskjsJ0DzzJWF1wF1UBa/IEPaZUbuNYFcKlttdOPuGja5Y4QcaOt5qiy9i5QkPY+KScsWzzwR2p0FanWB+wAbn8vAjTTHOHP2pkaA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p6QMxEqA2iGGLukTTl0VpGpIOMNiCbSxVnHUTRKm4n4=;
+ b=KKZMCLO5NUP+JbSRi93Du6LAhhFEHeep6+z1cKNz4WDtGlGwK0TwQkXMHQTZVcqyZEA8RcJLPHDuZ1JdOzekTIob1f0aKhkijXMexqX1p3C1Nvvc/lmPGceN/QG8TNVuN7WcpDHqHpQdEcU7p/PRRzrVesy4ncdlfANlNub4mTg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+Received: from BYAPR21MB1223.namprd21.prod.outlook.com (2603:10b6:a03:103::11)
+ by SJ0PR21MB1871.namprd21.prod.outlook.com (2603:10b6:a03:299::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.6; Thu, 9 Jun
+ 2022 21:57:43 +0000
+Received: from BYAPR21MB1223.namprd21.prod.outlook.com
+ ([fe80::7ceb:34aa:b695:d8ac]) by BYAPR21MB1223.namprd21.prod.outlook.com
+ ([fe80::7ceb:34aa:b695:d8ac%5]) with mapi id 15.20.5353.001; Thu, 9 Jun 2022
+ 21:57:43 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
+Cc:     haiyangz@microsoft.com, decui@microsoft.com, kys@microsoft.com,
+        sthemmin@microsoft.com, paulros@microsoft.com,
+        shacharr@microsoft.com, olaf@aepfle.de, vkuznets@redhat.com,
+        davem@davemloft.net, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next,0/2] net: mana: Add PF and XDP_REDIRECT support
+Date:   Thu,  9 Jun 2022 14:57:06 -0700
+Message-Id: <1654811828-25339-1-git-send-email-haiyangz@microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: MWHPR19CA0060.namprd19.prod.outlook.com
+ (2603:10b6:300:94::22) To BYAPR21MB1223.namprd21.prod.outlook.com
+ (2603:10b6:a03:103::11)
 MIME-Version: 1.0
-In-Reply-To: <20220607133135.271788-1-eyal.birger@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26567/Thu Jun  9 10:06:06 2022)
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Sender: LKML haiyangz <lkmlhyz@microsoft.com>
+X-MS-Exchange-MessageSentRepresentingType: 2
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a19de5e5-a13b-45e6-c07f-08da4a63142a
+X-MS-TrafficTypeDiagnostic: SJ0PR21MB1871:EE_
+X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+X-Microsoft-Antispam-PRVS: <SJ0PR21MB187163DEF38EF3B7D96CA9CBACA79@SJ0PR21MB1871.namprd21.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: lOofB1CtlUB34ZaLrE7IW5g3eSfJQBS7xYu5z9yqm+QpXXGl2qaTA4PEL1Ox+OriHNAbgXuV4S0YzSnDDf5olOc8e0Ohft7PmUPExgIc/E7DcfUduQDVN3MTV2ISrpTnYQy2RpCw9knacsHjPjRvPXa1Rs0ZeRF0kSZ7c2gKlKrG/Tg03OZvcQrEpInV/bjcGQg9j4fBEcMnO+KUXekvYNfmMrpTGzzVsNuAWN5WSneWJSJQoPjkiEM1+xwdGgzPhi07Ziq7IwFvqV9XHYCfY+U1JkToFm9VHGMaoYImRoeeh0lBnF8PDXYW939e5nS174QAi8UXwSE4Sc0VDG8BAcd29j2Fz+Y4tUDJnnh5gb/Cqfkb+bfX+LJkWlrZAbEKH5gqGtyh/5AzycBXA+p4MuH8tTKvWKu0I/IymWpIkyOEetrqYUIBICEFwpcNXWYAQtg7MFmok2CPghu0h2YZ4h/dBjSdRbRV39KFpTsUKdDpMad6OInvjR3NOQL0jYkS6SGVf+hletQdN3IUVsMwuBh/dh7vDp4rnWAW8XTIH1kztrdNeVMDCFsyOiweaHafNB9TiR0JHgKDXVmYBr686QkZf1KZpguzSGB+P3Es7EkxRtpWEA5Z+m4KVBK/ppAsVBqU56oRLBmLLMWkO3c4ZhOj1mCuXw3E/lsyd1ML0DD+TWl9jrZM3NguwNS5wcOeYVIMlWZB6yrbXlio9eA/wj3G3DmygM8nCqVvcICu8BAkR3rVub58gWduRgCVxmGk
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1223.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(83380400001)(10290500003)(36756003)(4326008)(38350700002)(6666004)(2906002)(38100700002)(4744005)(5660300002)(66556008)(66946007)(66476007)(8676002)(186003)(316002)(2616005)(6486002)(7846003)(6506007)(52116002)(82960400001)(6512007)(8936002)(82950400001)(26005)(508600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2Zu8Um+5s8fHuV1e5c8VTl5eQNHyBR+xwhdFZBKt+Nh8LDfYPiss8GWd25mN?=
+ =?us-ascii?Q?2T6ToJQlCVYOIF5lJSh49reDNV+R2czRohui9EPuDLSqWCBBfUA4lll/asjq?=
+ =?us-ascii?Q?YIxtcoz6zQprIS2tXfTkiMkK84wZLv3RzookHwO5IVanyL6EibirGdDQLhNE?=
+ =?us-ascii?Q?HrFZDLdC0u5CaRX1eYL+JcNGwBu9wF9jLUh3FdO3rQRyFArs6oW5e7ds1XtU?=
+ =?us-ascii?Q?uf7JISHxZGJex4W4w7e5XVJCUcOTQ6A2yy0oZ3hHBOyaaMKPdi7BdJvQFyDO?=
+ =?us-ascii?Q?V0ON2NJifWxTm3SowS5o+as9nacsPAzgwlhq5Gqg1sgBsLfZxhqqj9ZyLP1D?=
+ =?us-ascii?Q?n+Y0TKqboKgb0I/495zMSrJYrqkbghLnDlE8zjCDGXd5LC/6WBnVYnp7qRml?=
+ =?us-ascii?Q?DZlyiCDTTAaMrsdU+wv8Ru/945+pItz6UGzZFho6bUNiX3LCJlhtrk+bNy48?=
+ =?us-ascii?Q?ASkzEf75lwwm9E8MXFq+2DHX7Tbm/WEvQnNozxX5bU7/SAfpEVi/PAupFcQw?=
+ =?us-ascii?Q?u2NFUZASzgZLU475NlH70I6pnsZ6n6n5iOfKReM78KDmRK9/Jt9zZr5HRFMS?=
+ =?us-ascii?Q?sLL8eH//K7Vtlg8CREmxBUfIonLmZCaph01oa0xt5sgxqZwUnHoICybR2SpS?=
+ =?us-ascii?Q?ZJapOJR+KjTWWQGKHyVLaQVtuEjAANrGnu/3dLtiSAPGNJNNwwn93qb/sjKh?=
+ =?us-ascii?Q?hexa+Nj/HEalqLcNA8Ja2+rVTcUBf2ubzlYnQlu3zJSUlS1cSZUGwztu5vDZ?=
+ =?us-ascii?Q?imHPd8BJibdCgCdlGW+qsXOtvxCBAwobkg/pXZlrgrBKb2ZBEYZ6irYExXbk?=
+ =?us-ascii?Q?jDU+Y6TS/UEEv99ZKGgTu2mESlcgYYGfjl76jBmOP54xobBmSDxiwbDNr11P?=
+ =?us-ascii?Q?EnCzAcQWryPPYUV1IIjxIrK0C1nDuzU+Gssax4ERrQuBITgNN4Z1pXevp0Ng?=
+ =?us-ascii?Q?m9BwEr2dSQdxt8kz7q/968MRG/UbAw/TovPnjrhxmOd5YyJY6KD61f860ihJ?=
+ =?us-ascii?Q?bo6mzXKrlE088p27rRaaMLvM+Gp8ZS1mjjTmOQhlNkZb6iEpHNWxvMsoQXYU?=
+ =?us-ascii?Q?blDr0Eq7i7cpRoOv9OlnSZCLR9qx49hpTV4gF+6dtCVA83PmCFyY6RyYd/yD?=
+ =?us-ascii?Q?T0AOOKRBl19ub8nYhq2NTZH2wxuGK8iE00+ukOouaKw0yfUxPaNNeb+357uZ?=
+ =?us-ascii?Q?JFwG4IZmJu95HP73J4OoezLbXdxmSbKATezDMXIlWJpQEdj1iP0SY+4fCdoc?=
+ =?us-ascii?Q?onV60O3FOE2NlC6iKT/ERvpRmcZMuJkptNMptn1nm+DENLjvzHwltyARwpCA?=
+ =?us-ascii?Q?cltAlG/vysKP3vhTd2FVeCpUYK1zUYjEAzrqDMj+VA8fghIHhdg811/ElD/E?=
+ =?us-ascii?Q?QgJTZtbJstsxQq/8tgP9ubEB6Vkz5h4RKAUXHD/wguC1xfP12l+R2M37AP9j?=
+ =?us-ascii?Q?iBQN6eJIBY/n8bXw66OKs8VvChzOrzXWwIrJArXYW2oK+a4pE+EwHlLc9xk9?=
+ =?us-ascii?Q?uM60Wus4SHxcLfVLD+90Uz/ZOS5yNYSLT8l4jXbdUt8amoeUWAP7okQ7KpsB?=
+ =?us-ascii?Q?gj2kgBE3nXRpeuSdwy4UBbfrE0fawnI+EpUXtED6AmCYAhQfqxSGXvWNUw7Z?=
+ =?us-ascii?Q?/E0p6ChlXu+16bzjzalt30sygMjOetVctWA+TRYe+r+34qjLv3ui88607aMK?=
+ =?us-ascii?Q?8CiZN+St8J9yQiyup0t4pVSYPHGJbTP6A2IfPsnZ6fGgj6MdNUuXC3rdnaOs?=
+ =?us-ascii?Q?W9abp9AECQ=3D=3D?=
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a19de5e5-a13b-45e6-c07f-08da4a63142a
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1223.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2022 21:57:43.0972
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7MklPaEdA8SY+CrBUiMzHTnRo5wCyH2knzq41m5dX+8gVW6qBcQFaFZvBXtO4cjEVsoBp/Y27DY9R4JN43f2aA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR21MB1871
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eyal,
+The patch set adds PF and XDP_REDIRECT support.
 
-On 6/7/22 3:31 PM, Eyal Birger wrote:
-> Port test_lwt_ip_encap.sh tests onto test_progs.
-> 
-> In addition, this commit adds "egress_md" tests which test a similar
-> flow as egress tests only they use gre devices in collect_md mode
-> for encapsulation and set the tunnel key using bpf_set_tunnel_key().
-> 
-> This introduces minor changes to test_lwt_ip_encap.{sh,c} for consistency
-> with the new tests:
-> 
-> - GRE key must exist as bpf_set_tunnel_key() explicitly sets the
->    TUNNEL_KEY flag
-> 
-> - Source address for GRE traffic is set to IP*_5 instead of IP*_1 since
->    GRE traffic is sent via veth5 so its address is selected when using
->    bpf_set_tunnel_key()
-> 
-> Note: currently these programs use the legacy section name convention
-> as iproute2 lwt configuration does not support providing function names.
-> 
-> Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
-> ---
->   .../selftests/bpf/prog_tests/lwt_ip_encap.c   | 582 ++++++++++++++++++
->   .../selftests/bpf/progs/test_lwt_ip_encap.c   |  51 +-
->   .../selftests/bpf/test_lwt_ip_encap.sh        |   6 +-
->   3 files changed, 633 insertions(+), 6 deletions(-)
->   create mode 100644 tools/testing/selftests/bpf/prog_tests/lwt_ip_encap.c
-> 
-> diff --git a/tools/testing/selftests/bpf/prog_tests/lwt_ip_encap.c b/tools/testing/selftests/bpf/prog_tests/lwt_ip_encap.c
-> new file mode 100644
-> index 000000000000..e1b6f3ce6045
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/lwt_ip_encap.c
-> @@ -0,0 +1,582 @@
-> +// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-> +
-> +/* Setup/topology:
-> + *
-> + *    NS1             NS2             NS3
-> + *   veth1 <---> veth2   veth3 <---> veth4 (the top route)
-> + *   veth5 <---> veth6   veth7 <---> veth8 (the bottom route)
-> + *
-> + *   each vethN gets IP[4|6]_N address
-> + *
-> + *   IP*_SRC = IP*_1
-> + *   IP*_DST = IP*_4
-> + *
-> + *   all tests test pings from IP*_SRC to IP*_DST
-> + *
-> + *   by default, routes are configured to allow packets to go
-> + *   IP*_1 <=> IP*_2 <=> IP*_3 <=> IP*_4 (the top route)
-> + *
-> + *   a GRE device is installed in NS3 with IP*_GRE, and
-> + *   NS1/NS2 are configured to route packets to IP*_GRE via IP*_8
-> + *   (the bottom route)
-> + *
-> + * Tests:
-> + *
-> + *   1. routes NS2->IP*_DST are brought down, so the only way a ping
-> + *      from IP*_SRC to IP*_DST can work is via IP*_GRE
-> + *
-> + *   2a. in an egress test, a bpf LWT_XMIT program is installed on veth1
-> + *       that encaps the packets with an IP/GRE header to route to IP*_GRE
-> + *
-> + *       ping: SRC->[encap at veth1:egress]->GRE:decap->DST
-> + *       ping replies go DST->SRC directly
-> + *
-> + *   2b. in an ingress test, a bpf LWT_IN program is installed on veth2
-> + *       that encaps the packets with an IP/GRE header to route to IP*_GRE
-> + *
-> + *       ping: SRC->[encap at veth2:ingress]->GRE:decap->DST
-> + *       ping replies go DST->SRC directly
-> + *
-> + *   2c. in an egress_md test, a bpf LWT_XMIT program is installed on a
-> + *       route towards collect_md gre{,6} devices in NS1 and sets the tunnel
-> + *       key such that packets are encapsulated with an IP/GRE header to route
-> + *       to IP*_GRE
-> + *
-> + *       ping: SRC->[encap at gre{,6}_md:xmit]->GRE:decap->DST
-> + *       ping replies go DST->SRC directly
-> + */
-> +
-[...]
+Dexuan Cui (1):
+  net: mana: Add the Linux MANA PF driver
 
-Thanks a lot for porting the test into test_progs! Looks like the BPF CI currently
-bails out here:
+Haiyang Zhang (1):
+  net: mana: Add support of XDP_REDIRECT action
 
-https://github.com/kernel-patches/bpf/runs/6812283921?check_suite_focus=true
+ drivers/net/ethernet/microsoft/mana/gdma.h    |  10 ++
+ .../net/ethernet/microsoft/mana/gdma_main.c   |  39 ++++-
+ .../net/ethernet/microsoft/mana/hw_channel.c  |  18 ++-
+ .../net/ethernet/microsoft/mana/hw_channel.h  |   5 +
+ drivers/net/ethernet/microsoft/mana/mana.h    |  70 +++++++++
+ .../net/ethernet/microsoft/mana/mana_bpf.c    |  64 ++++++++
+ drivers/net/ethernet/microsoft/mana/mana_en.c | 148 +++++++++++++++++-
+ .../ethernet/microsoft/mana/mana_ethtool.c    |  12 +-
+ 8 files changed, 360 insertions(+), 6 deletions(-)
 
-Andrii, looks like we might be missing CONFIG_NET_VRF in vmtest config-latest.*?
+-- 
+2.25.1
 
-[...]
-   #98/1    lwt_ip_encap/lwt_ipv4_encap_egress:OK
-   #98/2    lwt_ip_encap/lwt_ipv6_encap_egress:OK
-   setup_namespaces:PASS:ip netns add ns_lwt_1 0 nsec
-   setup_namespaces:PASS:ip netns add ns_lwt_2 0 nsec
-   setup_namespaces:PASS:ip netns add ns_lwt_3 0 nsec
-   lwt_ip_encap_test:PASS:setup namespaces 0 nsec
-   setup_links_and_routes:PASS:ip link add veth1 netns ns_lwt_1 type veth peer name veth2 netns ns_lwt_2 0 nsec
-   setup_links_and_routes:PASS:ip link add veth3 netns ns_lwt_2 type veth peer name veth4 netns ns_lwt_3 0 nsec
-   setup_links_and_routes:PASS:ip link add veth5 netns ns_lwt_1 type veth peer name veth6 netns ns_lwt_2 0 nsec
-   setup_links_and_routes:PASS:ip link add veth7 netns ns_lwt_2 type veth peer name veth8 netns ns_lwt_3 0 nsec
-   open_netns:PASS:malloc token 0 nsec
-   open_netns:PASS:open /proc/self/ns/net 0 nsec
-   open_netns:PASS:open netns fd 0 nsec
-   setns_by_fd:PASS:setns 0 nsec
-   setns_by_fd:PASS:unshare 0 nsec
-   setns_by_fd:PASS:remount private /sys 0 nsec
-   setns_by_fd:PASS:umount2 /sys 0 nsec
-   setns_by_fd:PASS:mount /sys 0 nsec
-   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
-   open_netns:PASS:setns_by_fd 0 nsec
-   setup_ns:PASS:setns 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   setup_vrf:FAIL:ip link add red type vrf table 1001 unexpected error: 512 (errno 0)
-   setns_by_fd:PASS:setns 0 nsec
-   setns_by_fd:PASS:unshare 0 nsec
-   setns_by_fd:PASS:remount private /sys 0 nsec
-   setns_by_fd:PASS:umount2 /sys 0 nsec
-   setns_by_fd:PASS:mount /sys 0 nsec
-   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
-   close_netns:PASS:setns_by_fd 0 nsec
-   lwt_ip_encap_test:FAIL:setup links and routes unexpected error: -1 (errno 0)
-   setup_namespaces:PASS:ip netns delete ns_lwt_1 0 nsec
-   setup_namespaces:PASS:ip netns delete ns_lwt_2 0 nsec
-   setup_namespaces:PASS:ip netns delete ns_lwt_3 0 nsec
-   #98/3    lwt_ip_encap/lwt_ipv4_encap_egress_vrf:FAIL
-   setup_namespaces:PASS:ip netns add ns_lwt_1 0 nsec
-   setup_namespaces:PASS:ip netns add ns_lwt_2 0 nsec
-   setup_namespaces:PASS:ip netns add ns_lwt_3 0 nsec
-   lwt_ip_encap_test:PASS:setup namespaces 0 nsec
-   setup_links_and_routes:PASS:ip link add veth1 netns ns_lwt_1 type veth peer name veth2 netns ns_lwt_2 0 nsec
-   setup_links_and_routes:PASS:ip link add veth3 netns ns_lwt_2 type veth peer name veth4 netns ns_lwt_3 0 nsec
-   setup_links_and_routes:PASS:ip link add veth5 netns ns_lwt_1 type veth peer name veth6 netns ns_lwt_2 0 nsec
-   setup_links_and_routes:PASS:ip link add veth7 netns ns_lwt_2 type veth peer name veth8 netns ns_lwt_3 0 nsec
-   open_netns:PASS:malloc token 0 nsec
-   open_netns:PASS:open /proc/self/ns/net 0 nsec
-   open_netns:PASS:open netns fd 0 nsec
-   setns_by_fd:PASS:setns 0 nsec
-   setns_by_fd:PASS:unshare 0 nsec
-   setns_by_fd:PASS:remount private /sys 0 nsec
-   setns_by_fd:PASS:umount2 /sys 0 nsec
-   setns_by_fd:PASS:mount /sys 0 nsec
-   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
-   open_netns:PASS:setns_by_fd 0 nsec
-   setup_ns:PASS:setns 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   setup_vrf:FAIL:ip link add red type vrf table 1001 unexpected error: 512 (errno 0)
-   setns_by_fd:PASS:setns 0 nsec
-   setns_by_fd:PASS:unshare 0 nsec
-   setns_by_fd:PASS:remount private /sys 0 nsec
-   setns_by_fd:PASS:umount2 /sys 0 nsec
-   setns_by_fd:PASS:mount /sys 0 nsec
-   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
-   close_netns:PASS:setns_by_fd 0 nsec
-   lwt_ip_encap_test:FAIL:setup links and routes unexpected error: -1 (errno 0)
-   setup_namespaces:PASS:ip netns delete ns_lwt_1 0 nsec
-   setup_namespaces:PASS:ip netns delete ns_lwt_2 0 nsec
-   setup_namespaces:PASS:ip netns delete ns_lwt_3 0 nsec
-   #98/4    lwt_ip_encap/lwt_ipv6_encap_egress_vrf:FAIL
-   #98/5    lwt_ip_encap/lwt_ipv4_encap_ingress:OK
-   #98/6    lwt_ip_encap/lwt_ipv6_encap_ingress:OK
-   setup_namespaces:PASS:ip netns add ns_lwt_1 0 nsec
-   setup_namespaces:PASS:ip netns add ns_lwt_2 0 nsec
-   setup_namespaces:PASS:ip netns add ns_lwt_3 0 nsec
-   lwt_ip_encap_test:PASS:setup namespaces 0 nsec
-   setup_links_and_routes:PASS:ip link add veth1 netns ns_lwt_1 type veth peer name veth2 netns ns_lwt_2 0 nsec
-   setup_links_and_routes:PASS:ip link add veth3 netns ns_lwt_2 type veth peer name veth4 netns ns_lwt_3 0 nsec
-   setup_links_and_routes:PASS:ip link add veth5 netns ns_lwt_1 type veth peer name veth6 netns ns_lwt_2 0 nsec
-   setup_links_and_routes:PASS:ip link add veth7 netns ns_lwt_2 type veth peer name veth8 netns ns_lwt_3 0 nsec
-   open_netns:PASS:malloc token 0 nsec
-   open_netns:PASS:open /proc/self/ns/net 0 nsec
-   open_netns:PASS:open netns fd 0 nsec
-   setns_by_fd:PASS:setns 0 nsec
-   setns_by_fd:PASS:unshare 0 nsec
-   setns_by_fd:PASS:remount private /sys 0 nsec
-   setns_by_fd:PASS:umount2 /sys 0 nsec
-   setns_by_fd:PASS:mount /sys 0 nsec
-   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
-   open_netns:PASS:setns_by_fd 0 nsec
-   setup_ns:PASS:setns 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   setup_vrf:FAIL:ip link add red type vrf table 1001 unexpected error: 512 (errno 0)
-   setns_by_fd:PASS:setns 0 nsec
-   setns_by_fd:PASS:unshare 0 nsec
-   setns_by_fd:PASS:remount private /sys 0 nsec
-   setns_by_fd:PASS:umount2 /sys 0 nsec
-   setns_by_fd:PASS:mount /sys 0 nsec
-   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
-   close_netns:PASS:setns_by_fd 0 nsec
-   lwt_ip_encap_test:FAIL:setup links and routes unexpected error: -1 (errno 0)
-   setup_namespaces:PASS:ip netns delete ns_lwt_1 0 nsec
-   setup_namespaces:PASS:ip netns delete ns_lwt_2 0 nsec
-   setup_namespaces:PASS:ip netns delete ns_lwt_3 0 nsec
-   #98/7    lwt_ip_encap/lwt_ipv4_encap_ingress_vrf:FAIL
-   setup_namespaces:PASS:ip netns add ns_lwt_1 0 nsec
-   setup_namespaces:PASS:ip netns add ns_lwt_2 0 nsec
-   setup_namespaces:PASS:ip netns add ns_lwt_3 0 nsec
-   lwt_ip_encap_test:PASS:setup namespaces 0 nsec
-   setup_links_and_routes:PASS:ip link add veth1 netns ns_lwt_1 type veth peer name veth2 netns ns_lwt_2 0 nsec
-   setup_links_and_routes:PASS:ip link add veth3 netns ns_lwt_2 type veth peer name veth4 netns ns_lwt_3 0 nsec
-   setup_links_and_routes:PASS:ip link add veth5 netns ns_lwt_1 type veth peer name veth6 netns ns_lwt_2 0 nsec
-   setup_links_and_routes:PASS:ip link add veth7 netns ns_lwt_2 type veth peer name veth8 netns ns_lwt_3 0 nsec
-   open_netns:PASS:malloc token 0 nsec
-   open_netns:PASS:open /proc/self/ns/net 0 nsec
-   open_netns:PASS:open netns fd 0 nsec
-   setns_by_fd:PASS:setns 0 nsec
-   setns_by_fd:PASS:unshare 0 nsec
-   setns_by_fd:PASS:remount private /sys 0 nsec
-   setns_by_fd:PASS:umount2 /sys 0 nsec
-   setns_by_fd:PASS:mount /sys 0 nsec
-   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
-   open_netns:PASS:setns_by_fd 0 nsec
-   setup_ns:PASS:setns 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   write_sysctl:PASS:open sysctl 0 nsec
-   write_sysctl:PASS:write sysctl 0 nsec
-   setup_vrf:FAIL:ip link add red type vrf table 1001 unexpected error: 512 (errno 0)
-   setns_by_fd:PASS:setns 0 nsec
-   setns_by_fd:PASS:unshare 0 nsec
-   setns_by_fd:PASS:remount private /sys 0 nsec
-   setns_by_fd:PASS:umount2 /sys 0 nsec
-   setns_by_fd:PASS:mount /sys 0 nsec
-   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
-   close_netns:PASS:setns_by_fd 0 nsec
-   lwt_ip_encap_test:FAIL:setup links and routes unexpected error: -1 (errno 0)
-   setup_namespaces:PASS:ip netns delete ns_lwt_1 0 nsec
-   setup_namespaces:PASS:ip netns delete ns_lwt_2 0 nsec
-   setup_namespaces:PASS:ip netns delete ns_lwt_3 0 nsec
-   #98/8    lwt_ip_encap/lwt_ipv6_encap_ingress_vrf:FAIL
-   #98/9    lwt_ip_encap/lwt_ipv4_encap_egress_md:OK
-   #98/10   lwt_ip_encap/lwt_ipv6_encap_egress_md:OK
-   #98      lwt_ip_encap:FAIL
-   #99/1    map_init/pcpu_map_init:OK
-   #99/2    map_init/pcpu_lru_map_init:OK
-   #99      map_init:OK
-[...]
