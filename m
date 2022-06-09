@@ -2,48 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EA955455A3
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 22:29:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E21AD5455A6
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 22:30:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245178AbiFIU3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 16:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51366 "EHLO
+        id S1344749AbiFIUaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 16:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234754AbiFIU32 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 16:29:28 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593E327234F;
-        Thu,  9 Jun 2022 13:29:20 -0700 (PDT)
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nzOmK-000AgO-G9; Thu, 09 Jun 2022 22:29:16 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nzOmK-000MoD-5H; Thu, 09 Jun 2022 22:29:16 +0200
-Subject: Re: [PATCH net] net: bpf: fix request_sock leak in filter.c
-To:     Jon Maxwell <jmaxwell37@gmail.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, atenart@kernel.org, cutaylor-pub@yahoo.com,
-        alexei.starovoitov@gmail.com, kafai@fb.com, joe@cilium.io,
-        i@lmb.io, bpf@vger.kernel.org
-References: <20220609011844.404011-1-jmaxwell37@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <56d6f898-bde0-bb25-3427-12a330b29fb8@iogearbox.net>
-Date:   Thu, 9 Jun 2022 22:29:15 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S1344729AbiFIUaK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 16:30:10 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C418295675;
+        Thu,  9 Jun 2022 13:30:09 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id g25so27414083ljm.2;
+        Thu, 09 Jun 2022 13:30:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Im/1dji55QotCSQ32JdC8nKliWN1E2VO9pn32O1vay4=;
+        b=XBaW8tnJ3hxh7yGrgvzH5BLJhWkMX3X27iKWx+SyGXqPTZk64QZYsTE7qZYIb9XMmu
+         SKIpUG157RO1sOYyx/1Iqi+r2rjlAllchlui3/Fg3iPfwAKQB13lQnT6bzF0L4bhjXI+
+         gyJB5wjp5jvJMPHCWYT0I2R0yFdUE+pwkPneMl1wm55O/eDL7iEZ7DcCfHnBLaYSt3Lv
+         xxymqosH2dFUPvd/zK/9F9rMg0qCTmq1RFAcocS1nF/Frh1tIvN3MzN2fupHPBFez41Z
+         4mJzTcn98Bd9vIUCydJ/hUnILg1/01gpQcCAIe3f07vqnfcpdNsZET8tbnjmAMmJmMBE
+         3wCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Im/1dji55QotCSQ32JdC8nKliWN1E2VO9pn32O1vay4=;
+        b=H/2n/dTurfsA27EW0VQf5SKjJO+qkBk3GDH4D2mq2EWG/p3SFAoN8xY+LMoThdNMiT
+         Uya2mxSHBby+BqSr7LxSjbmMiVKsK4WqbJtzuz9QrAqQuJrpH1qxq9XDAsey4fPF6hwh
+         WaIdngpteSxWxoVhMgtuXYM+5jm7dB0jZAdSBYThkbqN0D6XqjX2tHtpSTyJiNo1uNih
+         81N1SJ891YhHOQcMjbDbMkIrJZS5ZUUgJ/2ipXvE6rWMZOPiKOC+FnAP2ZnRrYHwhzmx
+         HPeOR/xEoerU4ENKB3LjuQof+cOJ42Mt2I615lCXwT3yNDSs6oV/Mc1Vv8YHEb2Lgcst
+         iDvA==
+X-Gm-Message-State: AOAM532raeF+Yh+gOO3jV25VmeXan9W5x45Zpj7aq49yMaqj4HnLMgRv
+        Qx5voB/p/WqUrs7zr+5IU1OErrDjc458HDFljRs=
+X-Google-Smtp-Source: ABdhPJy65AuRPY+RNbYh+M8zg6nJsGQ2kG2bHRZNWp3wmUepxtM9LV8iXjzr6gwHCup0zgjRxhkuyJJCytXfNde4w6E=
+X-Received: by 2002:a2e:87c8:0:b0:255:6d59:ebce with SMTP id
+ v8-20020a2e87c8000000b002556d59ebcemr22145411ljj.455.1654806607340; Thu, 09
+ Jun 2022 13:30:07 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220609011844.404011-1-jmaxwell37@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26567/Thu Jun  9 10:06:06 2022)
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+References: <20220607084003.898387-1-liuhangbin@gmail.com> <87tu8w6cqa.fsf@toke.dk>
+ <YqAJeHAL57cB9qJk@Laptop-X1> <CAJ8uoz2g99N6HESyX1cGUWahSJRYQjXDG3m3f4_8APAvJNMHXw@mail.gmail.com>
+In-Reply-To: <CAJ8uoz2g99N6HESyX1cGUWahSJRYQjXDG3m3f4_8APAvJNMHXw@mail.gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 9 Jun 2022 13:29:55 -0700
+Message-ID: <CAEf4BzZsAqq4rOpE2FWA-GHB4OSntv9rMUvt=6sOj6+1wKMMZw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/3] move AF_XDP APIs to libxdp
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     Hangbin Liu <liuhangbin@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -52,78 +83,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/9/22 3:18 AM, Jon Maxwell wrote:
-> A customer reported a request_socket leak in a Calico cloud environment. We
-> found that a BPF program was doing a socket lookup with takes a refcnt on
-> the socket and that it was finding the request_socket but returning the parent
-> LISTEN socket via sk_to_full_sk() without decrementing the child request socket
-> 1st, resulting in request_sock slab object leak. This patch retains the
-> existing behaviour of returning full socks to the caller but it also decrements
-> the child request_socket if one is present before doing so to prevent the leak.
-> 
-> Thanks to Curtis Taylor for all the help in diagnosing and testing this. And
-> thanks to Antoine Tenart for the reproducer and patch input.
-> 
-> Fixes: f7355a6c0497 bpf: ("Check sk_fullsock() before returning from bpf_sk_lookup()")
-> Fixes: edbf8c01de5a bpf: ("add skc_lookup_tcp helper")
-> Tested-by: Curtis Taylor <cutaylor-pub@yahoo.com>
-> Co-developed-by: Antoine Tenart <atenart@kernel.org>
-> Signed-off-by:: Antoine Tenart <atenart@kernel.org>
-> Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
-> ---
->   net/core/filter.c | 20 ++++++++++++++------
->   1 file changed, 14 insertions(+), 6 deletions(-)
-> 
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index 2e32cee2c469..e3c04ae7381f 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -6202,13 +6202,17 @@ __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
->   {
->   	struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
->   					   ifindex, proto, netns_id, flags);
-> +	struct sock *sk1 = sk;
->   
->   	if (sk) {
->   		sk = sk_to_full_sk(sk);
-> -		if (!sk_fullsock(sk)) {
-> -			sock_gen_put(sk);
-> +		/* sk_to_full_sk() may return (sk)->rsk_listener, so make sure the original sk1
-> +		 * sock refcnt is decremented to prevent a request_sock leak.
-> +		 */
-> +		if (!sk_fullsock(sk1))
-> +			sock_gen_put(sk1);
-> +		if (!sk_fullsock(sk))
->   			return NULL;
+On Wed, Jun 8, 2022 at 3:18 AM Magnus Karlsson
+<magnus.karlsson@gmail.com> wrote:
+>
+> On Wed, Jun 8, 2022 at 9:55 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
+> >
+> > On Tue, Jun 07, 2022 at 11:31:57AM +0200, Toke H=C3=B8iland-J=C3=B8rgen=
+sen wrote:
+> > > Hangbin Liu <liuhangbin@gmail.com> writes:
+> > >
+> > > > libbpf APIs for AF_XDP are deprecated starting from v0.7.
+> > > > Let's move to libxdp.
+> > > >
+> > > > The first patch removed the usage of bpf_prog_load_xattr(). As we
+> > > > will remove the GCC diagnostic declaration in later patches.
+> > >
+> > > Kartikeya started working on moving some of the XDP-related samples i=
+nto
+> > > the xdp-tools repo[0]; maybe it's better to just include these AF_XDP
+> > > programs into that instead of adding a build-dep on libxdp to the ker=
+nel
+> > > samples?
+> >
+> > OK, makes sense to me. Should we remove these samples after the xdp-too=
+ls PR
+> > merged? What about xdpxceiver.c in selftests/bpf? Should that also be m=
+oved to
+> > xdp-tools?
+>
+> Andrii has submitted a patch [1] for moving xsk.[ch] from libbpf to
+> the xsk selftests so it can be used by xdpxceiver. This is a good idea
+> since xdpxceiver tests the low level kernel interfaces and should not
+> be in libxdp. I can also use those files as a start for implementing
+> control interface tests which are in the planning stages. But the
+> xdpsock sample shows how to use libxdp to write an AF_XDP program and
+> belongs more naturally with libxdp. So good that Kartikeya is moving
+> it over. Thanks!
+>
+> Another option would be to keep the xdpsock sample and require libxdp
+> as in your patch set, but you would have to make sure that everything
+> else in samples/bpf compiles neatly even if you do not have libxdp.
+> Test for the presence of libxdp in the Makefile and degrade gracefully
+> if you do not. But we would then have to freeze the xdpsock app as all
+> new development of samples should be in libxdp. Or we just turn
+> xdpsock into a README file and direct people to the samples in libxdp?
+> What do you think?
+>
 
-[ +Martin/Joe/Lorenz ]
+I think adding libxdp dependency for samples/bpf is a bad idea. Moving
+samples to near libxdp makes more sense to me.
 
-I wonder, should we also add some asserts in here to ensure we don't get an unbalance for the
-bpf_sk_release() case later on? Rough pseudocode could be something like below:
 
-static struct sock *
-__bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
-                 struct net *caller_net, u32 ifindex, u8 proto, u64 netns_id,
-                 u64 flags)
-{
-         struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
-                                            ifindex, proto, netns_id, flags);
-         if (sk) {
-                 struct sock *sk2 = sk_to_full_sk(sk);
-
-                 if (!sk_fullsock(sk2))
-                         sk2 = NULL;
-                 if (sk2 != sk) {
-                         sock_gen_put(sk);
-                         if (unlikely(sk2 && !sock_flag(sk2, SOCK_RCU_FREE))) {
-                                 WARN_ONCE(1, "Found non-RCU, unreferenced socket!");
-                                 sk2 = NULL;
-                         }
-                 }
-                 sk = sk2;
-         }
-         return sk;
-}
-
-Thanks,
-Daniel
+> [1] https://lore.kernel.org/bpf/20220603190155.3924899-2-andrii@kernel.or=
+g/
+>
+> > Thanks
+> > Hangbin
