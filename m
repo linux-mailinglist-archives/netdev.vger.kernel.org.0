@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFE48544471
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 09:08:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ABAE544495
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 09:17:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233158AbiFIHIH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 03:08:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35914 "EHLO
+        id S237469AbiFIHQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 03:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233834AbiFIHIE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 03:08:04 -0400
+        with ESMTP id S238900AbiFIHQv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 03:16:51 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D680C206106
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 00:08:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6052428D4
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 00:16:51 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1nzCGm-0003g0-3o; Thu, 09 Jun 2022 09:07:52 +0200
+        id 1nzCPH-0004ve-Ff; Thu, 09 Jun 2022 09:16:39 +0200
 Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
         (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id E149F8FC74;
-        Thu,  9 Jun 2022 07:07:49 +0000 (UTC)
-Date:   Thu, 9 Jun 2022 09:07:49 +0200
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1D9A78FC8B;
+        Thu,  9 Jun 2022 07:16:37 +0000 (UTC)
+Date:   Thu, 9 Jun 2022 09:16:36 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
 Cc:     linux-kernel@vger.kernel.org,
@@ -38,17 +38,16 @@ Cc:     linux-kernel@vger.kernel.org,
         Paolo Abeni <pabeni@redhat.com>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 04/13] can: slcan: use CAN network device driver API
-Message-ID: <20220609070749.fjcqsw3nuolgr5wh@pengutronix.de>
+Subject: Re: [RFC PATCH 06/13] can: slcan: allow to send commands to the
+ adapter
+Message-ID: <20220609071636.6tbspftu3yclip55@pengutronix.de>
 References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
- <20220607094752.1029295-5-dario.binacchi@amarulasolutions.com>
- <20220607111330.tkpaplzeupfq3peh@pengutronix.de>
- <CABGWkvotv4Ebm7OSbp=oQ7vwHhR_=sXfAAEkngjLm2faYrUFPw@mail.gmail.com>
+ <20220607094752.1029295-7-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="frh4n6rpdoueeja7"
+        protocol="application/pgp-signature"; boundary="7stl6ydzt5xshu4k"
 Content-Disposition: inline
-In-Reply-To: <CABGWkvotv4Ebm7OSbp=oQ7vwHhR_=sXfAAEkngjLm2faYrUFPw@mail.gmail.com>
+In-Reply-To: <20220607094752.1029295-7-dario.binacchi@amarulasolutions.com>
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -63,83 +62,29 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---frh4n6rpdoueeja7
+--7stl6ydzt5xshu4k
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On 08.06.2022 18:42:09, Dario Binacchi wrote:
-> > > In doing so, the struct can_priv::bittiming.bitrate of the driver is =
-not
-> > > set and since the open_candev() checks that the bitrate has been set,=
- it
-> > > must be a non-zero value, the bitrate is set to a fake value (-1) bef=
-ore
-> > > it is called.
-> >
-> > What does
-> >
-> > | ip --details -s -s link show
-> >
-> > show as the bit rate?
+On 07.06.2022 11:47:45, Dario Binacchi wrote:
+> This is a preparation patch for the upcoming support to change the
+> bitrate via ip tool, reset the adapter error states via the ethtool API
+> and, more generally, send commands to the adapter.
 >=20
-> # ip --details -s -s link show dev can0
-
-This is the bitrate configured with "ip"?
-
->  can0: <NOARP,UP,LOWER_UP> mtu 16 qdisc pfifo_fast state UP mode
-> DEFAULT group default qlen 10
->     link/can  promiscuity 0 minmtu 0 maxmtu 0
->     can state ERROR-ACTIVE restart-ms 0
->   bitrate 500000 sample-point 0.875
->   tq 41 prop-seg 20 phase-seg1 21 phase-seg2 6 sjw 1
->   slcan: tseg1 2..256 tseg2 1..128 sjw 1..128 brp 1..256 brp-inc 1
->   clock 24000000
->   re-started bus-errors arbit-lost error-warn error-pass bus-off
->   0          0          0          0          0          0
-> numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
->     RX: bytes  packets  errors  dropped overrun mcast
->     292        75       0       0       0       0
->     RX errors: length   crc     frame   fifo    missed
->                0        0       0       0       0
->     TX: bytes  packets  errors  dropped carrier collsns
->     0          0        0       0       0       0
->     TX errors: aborted  fifo   window heartbeat transns
->                0        0       0       0       1
+> Since some commands (e. g. setting the bitrate) will be sent before
+> calling the open_candev(), the netif_running() will return false and so
+> a new flag bit (i. e. SLF_XCMD) for serial transmission has to be added.
 >=20
-> And after applying your suggestions about using the CAN framework
-> support for setting the fixed bit rates (you'll
-> find it in V2), this is the output instead:
+> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 
-This looks good.
+I think this patch can be dropped, let me explain:
 
-> # ip --details -s -s link show dev can0
-> 5: can0: <NOARP,UP,LOWER_UP> mtu 16 qdisc pfifo_fast state UP mode
-> DEFAULT group default qlen 10
->     link/can  promiscuity 0 minmtu 0 maxmtu 0
->     can state ERROR-ACTIVE restart-ms 0
->   bitrate 500000
->      [   10000,    20000,    50000,   100000,   125000,   250000,
->         500000,   800000,  1000000 ]
->   clock 0
->   re-started bus-errors arbit-lost error-warn error-pass bus-off
->   0          0          0          0          0          0
-> numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
->     RX: bytes  packets  errors  dropped overrun mcast
->     37307      4789     0       0       0       0
->     RX errors: length   crc     frame   fifo    missed
->                0        0       0       0       0
->     TX: bytes  packets  errors  dropped carrier collsns
->     7276       988      0       0       0       0
->     TX errors: aborted  fifo   window heartbeat transns
->                0        0       0       0       1
+You don't have to implement the do_set_bittiming callback. It's
+perfectly OK to set the bitrate during the ndo_open callback after
+open_candev().
 
-Can you configure the bitrate with slcand and show the output of "ip
---details -s -s link show dev can0". I fear it will show 4294967295 as
-the bitrate, which I don't like.
-
-A hack would be to replace the -1 by 0 in the CAN netlink code.
-
+regards,
 Marc
 
 --=20
@@ -148,19 +93,19 @@ Embedded Linux                   | https://www.pengutronix.de  |
 Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---frh4n6rpdoueeja7
+--7stl6ydzt5xshu4k
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKhnEIACgkQrX5LkNig
-010WSwgAqA3crYZc6TRJlUHLRrLUxsKdkX7A47KeCFQr0JtvQMjb2Z3VB4DsPmtB
-M61CVDQ/NRcS4HuuJqyshQsEknOB14BRkgKcZbYqX8BUpcqz2/ghxr23/7J4UT2B
-cg7hDrUoXRb4eUCscBdxNT+RTr5K11voeYrcl9XjJ4/0VrC1mv5gCN0oIN11b8qp
-973FZd4FBS5X40coGxvT+KIRu8gYcZ048vnFXsB1/L1T2yX7kEdz4uNzxCBF2ajW
-qAuhGBR34vb1JVn4Mhfppkfu0TMIdRV8NsOX4wYzDJCS5EQxc8er1vf/57hW3zkU
-JwxEDHoFIZrEuOc+umOO1ZpftIkBbw==
-=pLef
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKhnlEACgkQrX5LkNig
+011KPAf+MP0nAePFTpQQJOwpxv468csZ37atHCgPNOWmGIw4u0n3zvQnLJzPOzY3
+G5hckJvFCJblep4Dxm3k2XU0zYo8cK/nQ5lLJ1jYQ1rh1RZzlET/7bV2nu/yCFzm
+aiRzEksO6SZMDLCy6BwMB6lwXEtMYdwpDrS2fOcn5Rcv17NJez2bJH5C3kIa5Wrp
+XPzVcgUYeD8Z+ARdkOsUvbwWnl1bHmGZaLrZWWtEbmqQ5w/Kq0z4zwvwUKo14mNx
+4d3KUwFcbJMtuwpz65qc5De9YjESWawuCqJfLw19InkhJElsxNQAUuWIEt+SE8jR
+UZJRpgRPRue7e1aXyRiGPwmuGwTgEQ==
+=jCQx
 -----END PGP SIGNATURE-----
 
---frh4n6rpdoueeja7--
+--7stl6ydzt5xshu4k--
