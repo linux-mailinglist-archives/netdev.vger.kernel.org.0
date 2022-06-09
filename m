@@ -2,102 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74ED95449CC
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 13:15:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E925544A80
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 13:41:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235094AbiFILPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 07:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34568 "EHLO
+        id S244291AbiFILlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 07:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234050AbiFILPH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 07:15:07 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9655E30F5F
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 04:15:06 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nzG7p-0000Bd-Tr; Thu, 09 Jun 2022 13:14:53 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 625239005B;
-        Thu,  9 Jun 2022 11:14:51 +0000 (UTC)
-Date:   Thu, 9 Jun 2022 13:14:50 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Srinivas Neeli <srinivas.neeli@xilinx.com>
-Cc:     wg@grandegger.com, davem@davemloft.net, edumazet@google.com,
-        srinivas.neeli@amd.com, neelisrinivas18@gmail.com,
-        appana.durga.rao@xilinx.com, sgoud@xilinx.com,
-        michal.simek@xilinx.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        git@xilinx.com, Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: Re: [PATCH V4] can: xilinx_can: Add Transmitter delay compensation
- (TDC) feature support
-Message-ID: <20220609111450.3xzujeaotuxhiynn@pengutronix.de>
-References: <20220609103157.1425730-1-srinivas.neeli@xilinx.com>
+        with ESMTP id S243953AbiFILkn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 07:40:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842071E2888;
+        Thu,  9 Jun 2022 04:40:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0A666B82D3B;
+        Thu,  9 Jun 2022 11:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8449AC385A5;
+        Thu,  9 Jun 2022 11:40:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654774812;
+        bh=+dbHoNN5ilLTw3ZAKZTv0yssemHwdX0ISjTNs2oxV3I=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YVKNn39ul7zcsK8uMOoUCKa4YtWYE0MzBizVv1Ibc7TBA13z+ZH5dt3pcZd5k2aNO
+         8fC24cmH5oRT3m/G1DLnevXNEHQ1RXiMeale/9XVNW5qSZdE1fd6QjLbL3TNvYrYHU
+         HZ+fJx9ezzfMLZlkDzFxgrHCWKYo1YsL7kq9uH8ww34wH0PzSgEKL/5iSX1jXJhokY
+         wDF+amLxGyW7KOwsGlwmyomc1sRjf3tYYpVuTNJOEtW9m3lCworpYNSY+uokOv3R8c
+         rCJV2xjNLFmKld4/rW50shQkcnT0OhjYYClShDt2ZGBgix3q756LEsy6p5UAAEt6Ur
+         wZRBQZKW7q71A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 684BEE737EE;
+        Thu,  9 Jun 2022 11:40:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="exsvwmuiszhj5uie"
-Content-Disposition: inline
-In-Reply-To: <20220609103157.1425730-1-srinivas.neeli@xilinx.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [RESEND][PATCH net-next] net: macb: change return type for
+ gem_ptp_set_one_step_sync()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165477481242.25118.14247813922782865952.git-patchwork-notify@kernel.org>
+Date:   Thu, 09 Jun 2022 11:40:12 +0000
+References: <20220608080818.1495044-1-claudiu.beznea@microchip.com>
+In-Reply-To: <20220608080818.1495044-1-claudiu.beznea@microchip.com>
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>
+Cc:     nicolas.ferre@microchip.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
---exsvwmuiszhj5uie
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-On 09.06.2022 16:01:57, Srinivas Neeli wrote:
-> Added Transmitter delay compensation (TDC) feature support.
-> In the case of higher measured loop delay with higher baud rates,
-> observed bit stuff errors. By enabling the TDC feature in
-> CANFD controllers, will compensate for the measure loop delay in
-> the receive path.
->=20
-> Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
-> Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+On Wed, 8 Jun 2022 11:08:18 +0300 you wrote:
+> gem_ptp_set_one_step_sync() always returns zero thus change its return
+> type to void.
+> 
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> ---
+>  drivers/net/ethernet/cadence/macb_ptp.c | 7 ++-----
+>  1 file changed, 2 insertions(+), 5 deletions(-)
 
-Applied to linux-can-next.
+Here is the summary with links:
+  - [RESEND,net-next] net: macb: change return type for gem_ptp_set_one_step_sync()
+    https://git.kernel.org/netdev/net-next/c/263efe85a4b6
 
-regards,
-Marc
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---exsvwmuiszhj5uie
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKh1igACgkQrX5LkNig
-013GGAgAkDEQ2tJEeQl8XtbET8qwGIPJ7RtH/bhnaB6f/ezsWnF3aVUMJLULn1YJ
-JrPx7iKrTCLtrdwc4woL2GN9p+mCe1qHGElUIDIyUf36XD2X8yKKESSqOJ2Slxo7
-70evg11a2DfXrHgKLZCn1c/8MPHL+iJc/chl93KrZdJ1fn3Yr4Pe29sB0I0zakko
-aOfyA1ae7SGRUC0DK37zD6xqMmVAfuAhEF62AC0U8PnBcsRbH+FfyuNlvuvdg4GD
-xZSvh6jl+zvmGjHwEnP/Uzor0pdd4UpFFo7aNJyeIRcEKSSEWLMXpIe3x8XXDeR9
-qFiPAgUwuCqA+vxFcliIWfV6BLPyCA==
-=Dm2/
------END PGP SIGNATURE-----
-
---exsvwmuiszhj5uie--
