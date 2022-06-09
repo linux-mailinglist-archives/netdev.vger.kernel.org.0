@@ -2,108 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C11A3544E0A
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 15:50:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8652544E1B
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 15:53:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235951AbiFINuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 09:50:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51116 "EHLO
+        id S239633AbiFINxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 09:53:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235801AbiFINuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 09:50:20 -0400
-Received: from h3.fbrelay.privateemail.com (h3.fbrelay.privateemail.com [131.153.2.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C3243ED3C;
-        Thu,  9 Jun 2022 06:50:18 -0700 (PDT)
-Received: from MTA-09-3.privateemail.com (mta-09-1.privateemail.com [66.29.159.59])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by h3.fbrelay.privateemail.com (Postfix) with ESMTPS id 83CA21802638;
-        Thu,  9 Jun 2022 09:50:17 -0400 (EDT)
-Received: from mta-09.privateemail.com (localhost [127.0.0.1])
-        by mta-09.privateemail.com (Postfix) with ESMTP id 7398B18004E0;
-        Thu,  9 Jun 2022 09:50:16 -0400 (EDT)
-Received: from warhead.local (unknown [10.20.151.190])
-        by mta-09.privateemail.com (Postfix) with ESMTPA id 9C8CA18000B0;
-        Thu,  9 Jun 2022 09:50:08 -0400 (EDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mebeim.net; s=default;
-        t=1654782616; bh=TnKjhqksMncdEY2RXthuQsk5fek7maCh5+VoEJsnvcw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cDo7NPGXTBcbHJ7kNpttq7zGjkoaNZcENz7LnMeKSobbuH4ehiXruFuGzkX9+/2pQ
-         8aILWDQ7+d3VBa4KyrQQL16m60shrJKdzq5HwbJaBINRwlsNh+on0CAyOmi6Kyk82+
-         Uz4xssyJkNjSIr8AXTbLg4Bv+2pS/1fc6DsaBHwCDZuq+ox1XSDtahrkOcoMMcSnDE
-         eajH+klWZqEJFshehD6UXhQ4dl0s/hORxZeGnXxebj8wiD51sWov54V8ZgooufX9lF
-         g9FFDpgaDuVObWHtE9pP6D+K5AAyaQAQ9WIE9UlWNZ9Xo09NBD/CrTyX5WtOe1nlx7
-         tGS4TpJzYkTpQ==
-From:   Marco Bonelli <marco@mebeim.net>
-To:     netdev@vger.kernel.org
-Cc:     Marco Bonelli <marco@mebeim.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH] ethtool: Fix and simplify ethtool_convert_link_mode_to_legacy_u32()
-Date:   Thu,  9 Jun 2022 15:49:01 +0200
-Message-Id: <20220609134900.11201-1-marco@mebeim.net>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S236453AbiFINxf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 09:53:35 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4406F1F2325
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 06:53:33 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id r82so41822298ybc.13
+        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 06:53:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lxk3erEnK6X8l1h+c5LR7dYudSNnktRPy2YkDiUavZk=;
+        b=bf+4vrjXiHJ31KIu4Gn9fz0kzCJfCOU1lBmNIi3MPCYOGfE+K+yZz1oe4L1g+wVUzE
+         LNi2rjTseY7kRuZiBASR8T18LSqHIttiHYhOXHbfJASuY4nO5P0MjXUPUy+4QXCqQ7fC
+         zgGR+NTJmwqnmycnN0CYnqt72iPvh/9kRB7iy+1bF6srWKu1VG90EwBAsbXMKIVy9p8s
+         0S72jwsSQeSoBdx+gWSUIeOzQfx5ouizQ1XoVOqAo3zD+FDIH5a9G048GwSJhTs2GoOC
+         00B1oEzBvVvfgVWdJ9rXYDIVasCp7iBVzWF92aj83aQp+MbBwJyDHHrCC5LeDJn91mm1
+         bL7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lxk3erEnK6X8l1h+c5LR7dYudSNnktRPy2YkDiUavZk=;
+        b=MX/r2QDZJIMQHh6i4NhXiwfjHLOTZow3WdiTYHuSUJX2z+0dQ10FS7/gXQFOTVKXrb
+         htTV1o8VuWgYzbbmmkaiqDsVs+NalNHJ+wVXndk29Tgh7+SgtqBUJz3YNSqlWJtd1uDj
+         AOMCWU7KKEeFq42LqvnPd7Teq5iQgEA5UEYS8Ny+DLkF+1vfHmllg7v6E8ixBSZznbAE
+         8Pwwt288fk27NTjgOU+lmS4qWg23o3y5lFO4RYCWu6rAmhmROKZsqMd9oAb95+ekASPi
+         EjwEDoPGJkzkIIMvqFWGVZ66shhLLpumLkuowBmflheiHSl5HUPcfcetD31B6RE6gPUX
+         y98A==
+X-Gm-Message-State: AOAM531otvYhiqRaBlrCPKNX/z8gTUiHV1OLvWMrwqswi7fIZoy1JLdJ
+        U6wwACpUyXJ1A2hR5b0Yc1bsnTLovSlX7sD2RE4DkA==
+X-Google-Smtp-Source: ABdhPJw3jCDO7EzaAolIFjfqgZekBWsECCoOQScBqYlIlPgNDL+TjdXws2goS7JCvG7bHlkOzJhOqX9Tqqd4sB82cao=
+X-Received: by 2002:a25:aa32:0:b0:65c:af6a:3502 with SMTP id
+ s47-20020a25aa32000000b0065caf6a3502mr40088926ybi.598.1654782812194; Thu, 09
+ Jun 2022 06:53:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220608043955.919359-1-kuba@kernel.org> <YqBdY0NzK9XJG7HC@nanopsycho>
+ <20220608075827.2af7a35f@kernel.org> <f263209c-509c-5f6b-865c-cd5d38d29549@kernel.org>
+ <CANn89i+RCCXQDVVTB+hHasGmjdXwdm8CvkPQv3nYSLgr=MYmpA@mail.gmail.com> <b00ab3c4a12fb11ed95b2a4634e50e3cba10ec28.camel@redhat.com>
+In-Reply-To: <b00ab3c4a12fb11ed95b2a4634e50e3cba10ec28.camel@redhat.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 9 Jun 2022 06:53:21 -0700
+Message-ID: <CANn89iLzAY1FAJASwrDcV9xB8UvhPAWfuFsjfiRiu1F9Tu0ciA@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: rename reference+tracking helpers
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     David Ahern <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        jreuter@yaina.de, razor@blackwall.org,
+        Karsten Graul <kgraul@linux.ibm.com>, ivecera@redhat.com,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>,
+        Xin Long <lucien.xin@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Antoine Tenart <atenart@kernel.org>, richardsonnick@google.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        linux-hams@vger.kernel.org, dev@openvswitch.org,
+        linux-s390@vger.kernel.org, tipc-discussion@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the implementation of ethtool_convert_link_mode_to_legacy_u32(), which
-is supposed to return false if src has bits higher than 31 set. The current
-implementation uses the complement of bitmap_fill(ext, 32) to test high
-bits of src, which is wrong as bitmap_fill() fills _with long granularity_,
-and sizeof(long) can be > 4. No users of this function currently check the
-return value, so the bug was dormant.
+On Thu, Jun 9, 2022 at 4:50 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> On Wed, 2022-06-08 at 16:00 -0700, Eric Dumazet wrote:
+> > On Wed, Jun 8, 2022 at 3:58 PM David Ahern <dsahern@kernel.org> wrote:
+> > >
+> > > On 6/8/22 8:58 AM, Jakub Kicinski wrote:
+> > > > IMO to encourage use of the track-capable API we could keep their names
+> > > > short and call the legacy functions __netdev_hold() as I mentioned or
+> > > > maybe netdev_hold_notrack().
+> > >
+> > > I like that option. Similar to the old nla_parse functions that were
+> > > renamed with _deprecated - makes it easier to catch new uses.
+> >
+> > I think we need to clearly document the needed conversions for future
+> > bugfix backports.
+> >
+>
+> To be on the same page: do you think we need something under
+> Documentation with this patch? or with the later dev_hold rename? or
+> did I misunderstood completely?
 
-Also remove the check for __ETHTOOL_LINK_MODE_MASK_NBITS > 32, as the enum
-ethtool_link_mode_bit_indices contains far beyond 32 values. Using
-find_next_bit() to test the src bitmask works regardless of this anyway.
+Adding instructions in the comments describing the functions would probably help
+stable teams (or ourselves because they will ask us to take care of conflicts)
 
-Signed-off-by: Marco Bonelli <marco@mebeim.net>
----
- net/ethtool/ioctl.c | 17 ++---------------
- 1 file changed, 2 insertions(+), 15 deletions(-)
+And backport the dev_put()/dev_hold() rename to kernels without
+CONFIG_NET_DEV_REFCNT_TRACKER infra.
 
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 326e14ee05db..7fb3f3fd6f3c 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -369,22 +369,9 @@ EXPORT_SYMBOL(ethtool_convert_legacy_u32_to_link_mode);
- bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
- 					     const unsigned long *src)
- {
--	bool retval = true;
--
--	/* TODO: following test will soon always be true */
--	if (__ETHTOOL_LINK_MODE_MASK_NBITS > 32) {
--		__ETHTOOL_DECLARE_LINK_MODE_MASK(ext);
--
--		linkmode_zero(ext);
--		bitmap_fill(ext, 32);
--		bitmap_complement(ext, ext, __ETHTOOL_LINK_MODE_MASK_NBITS);
--		if (linkmode_intersects(ext, src)) {
--			/* src mask goes beyond bit 31 */
--			retval = false;
--		}
--	}
- 	*legacy_u32 = src[0];
--	return retval;
-+	return find_next_bit(src, __ETHTOOL_LINK_MODE_MASK_NBITS, 32) ==
-+		__ETHTOOL_LINK_MODE_MASK_NBITS;
- }
- EXPORT_SYMBOL(ethtool_convert_link_mode_to_legacy_u32);
- 
--- 
-2.30.2
-
+s/dev_put()/netdev_put_notrack()/
+s/dev_hold()/netdev_hold_notrack()/
