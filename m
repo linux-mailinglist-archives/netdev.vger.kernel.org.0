@@ -2,306 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1F8554465B
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 10:48:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E0DA544614
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 10:39:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242220AbiFIIlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 04:41:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41128 "EHLO
+        id S241674AbiFIIiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 04:38:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242251AbiFIIjj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 04:39:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC49E55A4
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 01:39:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654763975;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FkEmK5Yjp3T2Zha/9EpqMwyl5wd2BEswY0cUWBW6j8E=;
-        b=HLhWBYpxmgl5DFdeSKfyBhBXvXi1VPEORXFwvYlOzzEqZ7jR6UD92grTSaIwvqcD09uLcY
-        R7s30RkWKu69AVLV6QcBO7UJi100W5C1pWYRpMUQ97aXdnlJwjSR1HoaJ1nuHBrEqm3TE7
-        0Xg2X4+sk7uFgCG67UpI+u0SYWANJg0=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-241-xj34mgrsPWa91MN5APg21g-1; Thu, 09 Jun 2022 04:39:34 -0400
-X-MC-Unique: xj34mgrsPWa91MN5APg21g-1
-Received: by mail-wm1-f70.google.com with SMTP id p18-20020a05600c23d200b0039c40c05687so4903164wmb.2
-        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 01:39:34 -0700 (PDT)
+        with ESMTP id S232184AbiFIIiH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 04:38:07 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C8A188;
+        Thu,  9 Jun 2022 01:38:06 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id 187so20480488pfu.9;
+        Thu, 09 Jun 2022 01:38:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eOJK9crUYKXyIABR6BLtgcFnqJSYVkj6ggY7lPw/iao=;
+        b=LAl1d08X8q2e31YN0ruuS4C7xF3BExBRczatwKid46gwkpweQBeZKpjY7IebrKADy1
+         B7gBZE2l/EjyLooNLPI1woQOhXCMT4w/6CCwrIKjjA/wyOhCDiJDad3WBp5NRzj8iyTp
+         ivM979eTiOXFmrGA9KNWhDed+wEC75jzkpoP/12Q7gwAI+R+hnU9sVTdb4o1UJ1wSokk
+         /IOuclVZTU6yLneviGtZ9JKi/MEdLCZAqahoEYDyxsU913IVvHOwJT9cPJ/06d4T8xM6
+         2nZiH5pc6hKisud0BvrIHVflWYMCvna2CuzYPOb4Mo1K2wP4i/cLe/51/WpgGZR9u6Ny
+         BCgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FkEmK5Yjp3T2Zha/9EpqMwyl5wd2BEswY0cUWBW6j8E=;
-        b=65ClNZMeEWGSGt+V9zU9oR/azdHsWofU+Aw04U3PTjx5uWeHE48PjKec0lV0LHf2Zw
-         WpZIbNtnHamCfRnYfsI5BYL/zDCd5Q5KcG/u8Pcw24Ry3de3ppGBhcX+ou9tGEQxqqXp
-         R1TI9/dV6A+eu6UTzGSypuUWBtScqLJpqwBNqqN5OnpSZqFuKAwzFwVBEHJk1Oxh5K/y
-         1sElJ4lAlp+OnSYthQCEcHJ7RGHZfNt195x4XHMaxRy+Pp3Vi2g6vkihVmpMqWLF+X0h
-         pMx0rqIUh17nFdBDQhNrfukAJKxoPeGJxqXzAlhZ8mwvXTPTXq6dtCzFNVD27u8MAm8N
-         hYmw==
-X-Gm-Message-State: AOAM5312dzifaJPIWQrKVGg4DYuhLIDoIJlKsFTJXX8Kus1vJEvv0FS5
-        UY9qX9FRdTSINoIKgWeRSFyAuddJpPVhQkOdusjclR/+N9WYNqxQvVqpP6mJoF9mNi9KEXcZMEW
-        GcUAXvHoEbapRKMOa
-X-Received: by 2002:a05:600c:d0:b0:39c:5927:3fa7 with SMTP id u16-20020a05600c00d000b0039c59273fa7mr2178813wmm.36.1654763973475;
-        Thu, 09 Jun 2022 01:39:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwipOC17XpHdu2HZYnw61hrXrs5XVkMTXD2WI/C7Xf1w4B5Nd4hlKO567xMpO1R9xcMkD1aqQ==
-X-Received: by 2002:a05:600c:d0:b0:39c:5927:3fa7 with SMTP id u16-20020a05600c00d000b0039c59273fa7mr2178778wmm.36.1654763973160;
-        Thu, 09 Jun 2022 01:39:33 -0700 (PDT)
-Received: from sgarzare-redhat (host-79-46-200-40.retail.telecomitalia.it. [79.46.200.40])
-        by smtp.gmail.com with ESMTPSA id d16-20020a05600c34d000b003973d425a7fsm2047244wmq.41.2022.06.09.01.39.31
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eOJK9crUYKXyIABR6BLtgcFnqJSYVkj6ggY7lPw/iao=;
+        b=Y5aRPtsQAybKJNBxKVo5zta2QtYoo/h1f+SCVX++jq2kt7lYpnRK8VveheczAuJs2a
+         BOl794m0gm9TVgt2FIuSZTfOKVeAx8m+GTz7jKQ/9ftFJCZ3Cc1YRhpewiDEty2rpPfA
+         o7xiNS/8UdLnjHPqpN18BiS9Xlzh4Vb2tu+OJtcxqO8S1MY7wokweijj57Ro+AXC4w67
+         EMjYc5N4N8Cs97T/tDfJXGL/jtmpb9/vzz536ms6+jM5MlblrjnYtAobUT3j3wS6MYz0
+         XVFpZMYaR5kcGOMNatU+eUnGl/gIYadiTHYQtuzszuB1W39hXbbWWy32apa7JOffL1r7
+         06NA==
+X-Gm-Message-State: AOAM531I7HrZwojwzNNP9s0rbLiLAvsyyGr1f/zGmNjeKemGJ2HtIJrP
+        wqC80o8Ml2tdAiCX7FOFnqU=
+X-Google-Smtp-Source: ABdhPJx8jI/nVpRWlGVbTToQMkEUzvbfXlIkQWgiOaIqr9dbjO8e3D+CJoRKgGSCIm6aa374Ikqu1w==
+X-Received: by 2002:a05:6a00:1502:b0:51c:2991:f1c with SMTP id q2-20020a056a00150200b0051c29910f1cmr16805716pfu.37.1654763885935;
+        Thu, 09 Jun 2022 01:38:05 -0700 (PDT)
+Received: from localhost.localdomain ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id ru12-20020a17090b2bcc00b001cb6527ca39sm18206436pjb.0.2022.06.09.01.38.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 01:39:32 -0700 (PDT)
-Date:   Thu, 9 Jun 2022 10:39:29 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>
-Subject: Re: [RFC PATCH v2 3/8] af_vsock: add zerocopy receive logic
-Message-ID: <20220609083929.5k37tajo3qli4kr2@sgarzare-redhat>
-References: <e37fdf9b-be80-35e1-ae7b-c9dfeae3e3db@sberdevices.ru>
- <129aa328-ad4d-cb2c-4a51-4a2bf9c9be37@sberdevices.ru>
+        Thu, 09 Jun 2022 01:38:05 -0700 (PDT)
+From:   Kosuke Fujimoto <fujimotokosuke0@gmail.com>
+X-Google-Original-From: Kosuke Fujimoto <fujimotoksouke0@gmail.com>
+To:     corbet@lwn.net, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org
+Cc:     linux-doc@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kosuke Fujimoto <fujimotoksouke0@gmail.com>,
+        Kosuke Fujimoto <fujimotokosuke0@gmail.com>
+Subject: [PATCH] bpf, docs: Fix typo "BFP_ALU" to "BPF_ALU"
+Date:   Thu,  9 Jun 2022 04:39:37 -0400
+Message-Id: <20220609083937.245749-1-fujimotoksouke0@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <129aa328-ad4d-cb2c-4a51-4a2bf9c9be37@sberdevices.ru>
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 05:35:48AM +0000, Arseniy Krasnov wrote:
->This:
->1) Adds callback for 'mmap()' call on socket. It checks vm
->   area flags and sets vm area ops.
->2) Adds special 'getsockopt()' case which calls transport
->   zerocopy callback. Input argument is vm area address.
->3) Adds 'getsockopt()/setsockopt()' for switching on/off rx
->   zerocopy mode.
->
->Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->---
-> include/net/af_vsock.h          |   7 +++
-> include/uapi/linux/vm_sockets.h |   3 +
-> net/vmw_vsock/af_vsock.c        | 100 ++++++++++++++++++++++++++++++++
-> 3 files changed, 110 insertions(+)
->
->diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
->index f742e50207fb..f15f84c648ff 100644
->--- a/include/net/af_vsock.h
->+++ b/include/net/af_vsock.h
->@@ -135,6 +135,13 @@ struct vsock_transport {
-> 	bool (*stream_is_active)(struct vsock_sock *);
-> 	bool (*stream_allow)(u32 cid, u32 port);
->
->+	int (*rx_zerocopy_set)(struct vsock_sock *vsk,
->+			       bool enable);
->+	int (*rx_zerocopy_get)(struct vsock_sock *vsk);
->+	int (*zerocopy_dequeue)(struct vsock_sock *vsk,
->+				struct vm_area_struct *vma,
->+				unsigned long addr);
->+
-> 	/* SEQ_PACKET. */
-> 	ssize_t (*seqpacket_dequeue)(struct vsock_sock *vsk, struct msghdr *msg,
-> 				     int flags);
->diff --git a/include/uapi/linux/vm_sockets.h b/include/uapi/linux/vm_sockets.h
->index c60ca33eac59..d1f792bed1a7 100644
->--- a/include/uapi/linux/vm_sockets.h
->+++ b/include/uapi/linux/vm_sockets.h
->@@ -83,6 +83,9 @@
->
-> #define SO_VM_SOCKETS_CONNECT_TIMEOUT_NEW 8
->
->+#define SO_VM_SOCKETS_MAP_RX 9
->+#define SO_VM_SOCKETS_ZEROCOPY 10
->+
-> #if !defined(__KERNEL__)
-> #if __BITS_PER_LONG == 64 || (defined(__x86_64__) && defined(__ILP32__))
-> #define SO_VM_SOCKETS_CONNECT_TIMEOUT SO_VM_SOCKETS_CONNECT_TIMEOUT_OLD
->diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->index f04abf662ec6..10061ef21730 100644
->--- a/net/vmw_vsock/af_vsock.c
->+++ b/net/vmw_vsock/af_vsock.c
->@@ -1644,6 +1644,17 @@ static int vsock_connectible_setsockopt(struct socket *sock,
-> 		}
-> 		break;
-> 	}
->+	case SO_VM_SOCKETS_ZEROCOPY: {
->+		if (!transport || !transport->rx_zerocopy_set) {
->+			err = -EOPNOTSUPP;
->+		} else {
->+			COPY_IN(val);
->+
->+			if (transport->rx_zerocopy_set(vsk, val))
->+				err = -EINVAL;
->+		}
->+		break;
->+	}
->
-> 	default:
-> 		err = -ENOPROTOOPT;
->@@ -1657,6 +1668,48 @@ static int vsock_connectible_setsockopt(struct socket *sock,
-> 	return err;
-> }
->
->+static const struct vm_operations_struct afvsock_vm_ops = {
->+};
->+
->+static int vsock_recv_zerocopy(struct socket *sock,
->+			       unsigned long address)
->+{
->+	struct sock *sk = sock->sk;
->+	struct vsock_sock *vsk = vsock_sk(sk);
->+	struct vm_area_struct *vma;
->+	const struct vsock_transport *transport;
->+	int res;
->+
->+	transport = vsk->transport;
->+
->+	if (!transport->rx_zerocopy_get)
->+		return -EOPNOTSUPP;
->+
->+	if (!transport->rx_zerocopy_get(vsk))
->+		return -EOPNOTSUPP;
+"BFP" should be "BPF"
 
-Maybe we can merge in
-         if (!transport->rx_zerocopy_get ||
-             !transport->rx_zerocopy_get(vsk)}
-                 return -EOPNOTSUPP;
+Signed-off-by: Kosuke Fujimoto <fujimotokosuke0@gmail.com>
+---
+ Documentation/bpf/instruction-set.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->+
->+	if (!transport->zerocopy_dequeue)
->+		return -EOPNOTSUPP;
->+
->+	lock_sock(sk);
->+	mmap_write_lock(current->mm);
-
-So, multiple threads using different sockets are serialized if they use 
-zero-copy?
-
-IIUC this is necessary because the callback calls vm_insert_page().
-
-At this point I think it's better not to do this in every transport, but 
-have the callback return an array of pages to map and we map them here 
-trying to limit as much as possible the critical section to protect with 
-mmap_write_lock().
-
->+
->+	vma = vma_lookup(current->mm, address);
->+
->+	if (!vma || vma->vm_ops != &afvsock_vm_ops) {
->+		mmap_write_unlock(current->mm);
->+		release_sock(sk);
->+		return -EINVAL;
->+	}
->+
->+	res = transport->zerocopy_dequeue(vsk, vma, address);
->+
->+	mmap_write_unlock(current->mm);
->+	release_sock(sk);
->+
->+	return res;
->+}
->+
-> static int vsock_connectible_getsockopt(struct socket *sock,
-> 					int level, int optname,
-> 					char __user *optval,
->@@ -1701,6 +1754,39 @@ static int vsock_connectible_getsockopt(struct socket *sock,
-> 		lv = sock_get_timeout(vsk->connect_timeout, &v,
-> 				      optname == SO_VM_SOCKETS_CONNECT_TIMEOUT_OLD);
-> 		break;
->+	case SO_VM_SOCKETS_ZEROCOPY: {
->+		const struct vsock_transport *transport;
->+		int res;
->+
->+		transport = vsk->transport;
->+
->+		if (!transport->rx_zerocopy_get)
->+			return -EOPNOTSUPP;
->+
->+		lock_sock(sk);
-
-I think we should call lock_sock() before reading the transport to avoid 
-races and we should check if it is assigned.
-
-At that point I think is better to store this info in vsock_sock and not 
-in the transport.
-
-And maybe we should allow to change it only if the socket state is 
-SS_UNCONNECTED, inheriting from the parent the setting for sockets that 
-have it.
-
->+
->+		res = transport->rx_zerocopy_get(vsk);
->+
->+		release_sock(sk);
->+
->+		if (res < 0)
->+			return -EINVAL;
->+
->+		v.val64 = res;
->+
->+		break;
->+	}
->+	case SO_VM_SOCKETS_MAP_RX: {
->+		unsigned long vma_addr;
->+
->+		if (len < sizeof(vma_addr))
->+			return -EINVAL;
->+
->+		if (copy_from_user(&vma_addr, optval, sizeof(vma_addr)))
->+			return -EFAULT;
->+
->+		return vsock_recv_zerocopy(sock, vma_addr);
->+	}
->
-> 	default:
-> 		return -ENOPROTOOPT;
->@@ -2129,6 +2215,19 @@ vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
-> 	return err;
-> }
->
->+static int afvsock_mmap(struct file *file, struct socket *sock,
->+			struct vm_area_struct *vma)
->+{
->+	if (vma->vm_flags & (VM_WRITE | VM_EXEC))
->+		return -EPERM;
->+
->+	vma->vm_flags &= ~(VM_MAYWRITE | VM_MAYEXEC);
->+	vma->vm_flags |= (VM_MIXEDMAP);
->+	vma->vm_ops = &afvsock_vm_ops;
->+
->+	return 0;
->+}
->+
-> static const struct proto_ops vsock_stream_ops = {
-> 	.family = PF_VSOCK,
-> 	.owner = THIS_MODULE,
->@@ -2148,6 +2247,7 @@ static const struct proto_ops vsock_stream_ops = {
-> 	.recvmsg = vsock_connectible_recvmsg,
-> 	.mmap = sock_no_mmap,
-> 	.sendpage = sock_no_sendpage,
->+	.mmap = afvsock_mmap,
-> };
->
-> static const struct proto_ops vsock_seqpacket_ops = {
->-- 
->2.25.1
+diff --git a/Documentation/bpf/instruction-set.rst b/Documentation/bpf/instruction-set.rst
+index 1de6a57c7e1e..9e27fbdb2206 100644
+--- a/Documentation/bpf/instruction-set.rst
++++ b/Documentation/bpf/instruction-set.rst
+@@ -127,7 +127,7 @@ BPF_XOR | BPF_K | BPF_ALU64 means::
+ Byte swap instructions
+ ----------------------
+ 
+-The byte swap instructions use an instruction class of ``BFP_ALU`` and a 4-bit
++The byte swap instructions use an instruction class of ``BPF_ALU`` and a 4-bit
+ code field of ``BPF_END``.
+ 
+ The byte swap instructions operate on the destination register
+-- 
+2.31.1
 
