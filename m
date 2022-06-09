@@ -2,162 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ABA6544548
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 10:02:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46ABE544555
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 10:07:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238569AbiFIICf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 04:02:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34682 "EHLO
+        id S240308AbiFIIHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 04:07:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240457AbiFIIC1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 04:02:27 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2102.outbound.protection.outlook.com [40.107.244.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A59D63C8
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 01:02:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P+98m7hV820zOyrTLwkv1vr9ek00VjN3jjRpUBI2PnxWDZwIiSgj36lRo9T45yVCtmAxHEB5J7F2v6joWnS5DeFrBkTdfP4VndDJ6qHThVZOuaZ7lFb+3o0mlVlIxZ2cpSZuKbLLgVkbCqgfZ/C23T6YLk/ShgkhLCizphiBNVfMIGll8X+sTA12PN7fGOSf7spp/n/mkrVoGTP9yQdiiXMZYfR1Cv3gg/EOpcw7v503VPoeKC0TEe7oeXSjeE1Wm99jslo7r8iU0dd8tf8jxf834+uNVVUx185uwdXBwe6popNB/GdH9Kr+lrM5ovMPVYWOH2G7zHJ2cqxyQNdu0Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OwDaRjXbCndo/vf01CkC4ZyDfoUW7FWks47FvHKmA7c=;
- b=Qh4XG77XWSbrphzJksusLo4QJ6CfYVtE2HdgyTcfIkqARvDfOnAEEoqSD9+FqoRwnbfLa8NTeJ2/xVVBlzFSd9/nswBVrTT45j1WydZqKlgFiC8fnULCO9NBEwhLmJgZONTz36UZlCNUD37RlLt6SoviYPnNQca9M9eOapTPCIxtWliTuyHHflqUpYmRqnn/6tdDfQsbbxay8LeUUrW1Pc0wZhs5guXwX10XlChaQWBkCZ2H+2Lp1gL6KoWfLx5FzI7NDqKd1aoY+y/H/Keb6K0t4yBYj15Ffb2JJd0IVgPFBBRr4stSyo82pfBPrrvCnfGwYHIHLjeEasYea90cgQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OwDaRjXbCndo/vf01CkC4ZyDfoUW7FWks47FvHKmA7c=;
- b=dIFzvViIcJaGQW61f50J0RlkFQFrLeyXW9qssNn8TFcAY8zXK2ZPXvQ/4krck+t642KtaWTSfdG7DAGd9cyDGWpW4KfRBb84y6xQUwaiERIsc6j5TIgpnipSoSOWjp7cQtJniTjZdTYiBsJbbNv0Vz5rnZ/3tOEJnKj2fmUYqc4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM5PR1301MB1915.namprd13.prod.outlook.com (2603:10b6:4:36::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.11; Thu, 9 Jun
- 2022 08:02:04 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::b18b:5e90:6805:a8fa]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::b18b:5e90:6805:a8fa%8]) with mapi id 15.20.5332.011; Thu, 9 Jun 2022
- 08:02:03 +0000
-From:   Simon Horman <simon.horman@corigine.com>
-To:     David Miller <davem@davemloft.net>,
+        with ESMTP id S240483AbiFIIHh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 04:07:37 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F6743584A
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 01:07:36 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nzDCQ-0005Kt-3M; Thu, 09 Jun 2022 10:07:26 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id B728C8FD63;
+        Thu,  9 Jun 2022 08:07:24 +0000 (UTC)
+Date:   Thu, 9 Jun 2022 10:07:24 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        michael@amarulasolutions.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com
-Subject: [PATCH net-next] nfp: flower: support to offload pedit of IPv6 flowinto fields
-Date:   Thu,  9 Jun 2022 10:01:36 +0200
-Message-Id: <20220609080136.151830-1-simon.horman@corigine.com>
-X-Mailer: git-send-email 2.30.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR01CA0120.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:168::25) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 03/13] can: slcan: use the alloc_can_skb() helper
+Message-ID: <20220609080724.z2ouwivtgu36b423@pengutronix.de>
+References: <20220608165116.1575390-1-dario.binacchi@amarulasolutions.com>
+ <20220608165116.1575390-4-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d1e36335-127a-41bd-d4c5-08da49ee5708
-X-MS-TrafficTypeDiagnostic: DM5PR1301MB1915:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR1301MB1915C2B7B903E43301462D56E8A79@DM5PR1301MB1915.namprd13.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MDYcxEVO+iM2ilkh1Ucqd1TBxPPoE83rUKTK+r+u4ybDGmG4l1eQyHsAWnuUddVqEjt2McbdTh3NEnIvRla2RLaDW14OnAlgg7zoH5IeWtxbgBL3wM8/BiTTEV4diFsCbtuoa5GtstQflI+iXGcON9cHjOJNoHxTcyoOyQZtINv9qLm0GFJFwSpDl3SONifM8z5hmacACKehAuGEO6Nl5FVNZSnoaxWt0kJRqQGu/JFoypMYpeXBKaOpNMpHjYaBichZ+namAhExT0SVf/Nk6nXOamkrGid9KHf1Mw4q1vHtQvRm4AwOpV0VtWBJ/QBubM50zjRKnNEC+kQFidOQ/EuYGZBkyWV/4Zve7AJVOX+nIIpoR9pF1upy6KpVMwwM7Qw7uHK9yl/s6Nrcii24tfyuiGYuwupOpZfXmrQwF8/vW9QLjpC14FvggxoMTt3xAIg9cMpnwZWYkefLplaOdck6j7cKP+5hGtNETJDdQn2f+Fx5hij8mck8f/K6ZEB8tQfWXtXC1hKK2Cx0GphGqIrMaAM54mPJLZr/VXDXgnv74UuPpr2mo6UeOWx3ra1Z2fjzZxby6Bws6FvwwYC2spLtNe1Dp32yZeS1V+0si6crp37WFFeKyZp3q3UBBY6i3QY0p2YiSw0ZKh/UQqk2z2fTg5lKc+fNQAt06+CCEFXsNpVfHL790fWwflvWBrMb
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(136003)(39840400004)(346002)(396003)(366004)(110136005)(8676002)(41300700001)(107886003)(186003)(1076003)(2906002)(6512007)(38100700002)(44832011)(5660300002)(6666004)(4326008)(508600001)(8936002)(36756003)(6486002)(52116002)(2616005)(6506007)(316002)(66946007)(66556008)(83380400001)(66476007)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZagDlXxfj8j66pYCoEvgAmhxHdCjFW8T3HvsNO8uGwYxV2/EUM9AFZQOqkSJ?=
- =?us-ascii?Q?MprgElKnYhNIlN4mg6gQtFnvF3nVapSJhtQJwH5p2gfX9k6Z+JDZy5Di7HTM?=
- =?us-ascii?Q?WHCJOyGd8EVasV9n6kt9PKnn0LvU8UsW96dzX9PpaOoyBGN2Oe+4LszYrAOA?=
- =?us-ascii?Q?s9eFvC9hd2askGFqJZGeQ6SZ00K4X3fyNJU0PWikJtk9iQC1i9+mb5sNT7KH?=
- =?us-ascii?Q?UJY7dv30s66THXVjU+UVOQ7o0P4/p+8G/z4YU4vzyGy8Qfk+ClNJQpVe92O9?=
- =?us-ascii?Q?/tS9rYZCELQicMXOI+n0zc9u5S5PxtDJQ32/GswJb+Sh17V1+ECfDw8F8t/e?=
- =?us-ascii?Q?HX9eAlYjFebgYBjESM2nLDWK8ANipNGf0D9Fscp5ymEeNrhxF/WUzFC5ReBa?=
- =?us-ascii?Q?m0gidwP0r4Put5hy8MPbPTTRS+Wa7U+9V4KZ7u4bELESLkb+8m02zlaWE4I2?=
- =?us-ascii?Q?NnO+wWfFCg4nv1+wXBGG1H77XMTa/Azkq280vRjO8tx0+9U4T/hMri3Dqjgq?=
- =?us-ascii?Q?bhGn05xnu6HRhZZYl6vnZsDPD07GovWxuV2y6rStNwjaxMPHScXnNFmMpwXY?=
- =?us-ascii?Q?ZNfomDlsLXumZNcSeDWHZZWcKSOQElO+rNOUIE0RqkezW0U4RaBbCP29q/9p?=
- =?us-ascii?Q?C9+I8B1XIURNQgtKE/5hDgh+TEk/zDcOmktBEUgH1CkrTSH/4c9ZH1/XPxYP?=
- =?us-ascii?Q?uEznPrym2EuBdK0c+/oZBqjptC7lWT8ezhfJNnaQUoVRZ98rWAP3VInbySPj?=
- =?us-ascii?Q?RBgl7xlxTLPB/xF0preX13skBZ4OvI0JD2ubet0OdMTWGZLX2gaTQvmnDI8K?=
- =?us-ascii?Q?+ZaOzBLIpeKYNoPwhH+bzVMyYalLrVjpzugz1sGpeqsX54L21pXEyOCQws20?=
- =?us-ascii?Q?VplZsUTnbMRx5Z+TFflYSeqfy6OJdwQujrGM81+OaMbDZGcqaTv+YlDe04Lp?=
- =?us-ascii?Q?EtQMVEvEkD4yNIE2pAfNZ3oBZNvX7+t3pmzEKEYisXWwUmApYX9rRwTqab/1?=
- =?us-ascii?Q?i6YF1ZLZ9DSFruv3y/gAx55uPqo1CZtwGkIvWQDsRwzsk/ZG3a0vMeNGwrCo?=
- =?us-ascii?Q?c3T6DKBdDniTYhX7LHg10ai5aRc56QS53llRjwZhwzC7xbQNTD7ay61Zh6y2?=
- =?us-ascii?Q?61TeMMQbhyAJkHFTYguckvel0Mu/VtnEi1ECZo9ut7jlgriA7kzaOjoNvYNh?=
- =?us-ascii?Q?RCcwpUny9vpUOVb4bdrvlm6Xf4+9sMzK8XrrUOiDDCoMVD1G3QEMTyQVRxEn?=
- =?us-ascii?Q?4Imd5yFeT/uEF7PYxL6qiM+G6Ct/mTK6W1GLkG2OGv8VeD6Qd+2W0Ij+/B5p?=
- =?us-ascii?Q?4dCz13+FasSAIVXqmuVjnUtaJyXttb47rFTyV71bmbtDpn3cldDlSNKZyafA?=
- =?us-ascii?Q?LJV8b3CEN6cURkHBVmyOu2RHQdFOVvvbD3xCHbrFtPLbl26ci8BGBtA/FKyu?=
- =?us-ascii?Q?bVAsRZABfVrdRozYE/Q3muGWWOtbVMQz8PQx4EMzul7Ob9Qattsv674hQilx?=
- =?us-ascii?Q?9qiIMaMIS3CWdTxmfleZP/pT0/t3F3h7vCFzrxE3U73jlbag4xJYk1uGhINK?=
- =?us-ascii?Q?+q5CPxYtCztiw4G8XmNbif/sPL5qpypctK8MOSq1XC3ONjthXcPmGX9UtSwJ?=
- =?us-ascii?Q?hVHQh1nFtYCNhNypO4WsPMlqdbCHmKyzUWIAjOyCOR+cEVKdLKEqtciC9pm7?=
- =?us-ascii?Q?MZbuukANav6e3UzqG/rLBIUjeZCYuzfzeRjr3lrWHn2M6rbcw/9MQ2tSCz2y?=
- =?us-ascii?Q?n3x/3NiPckc1S/pp/9KgT7+ogv9k5om/Vx+Y5dl/Wf42nbACBLd/EYb8Uw2X?=
-X-MS-Exchange-AntiSpam-MessageData-1: ssJ4K2D+eoJt96vjpT20tD6iAwoW0iHFA/8=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d1e36335-127a-41bd-d4c5-08da49ee5708
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2022 08:02:03.8814
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: b/9bTcRZPVRBO6v/Cqhkycnugv3hNC5bKOQpVIwbkjntn+RueWdZhtdpsLL4u8khbxMlns7YN6Qt6yhTMQJ2FaL6VYxRV5axaXt9WKT7grs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1301MB1915
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="atjba7zcmgsgdmzd"
+Content-Disposition: inline
+In-Reply-To: <20220608165116.1575390-4-dario.binacchi@amarulasolutions.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yinjun Zhang <yinjun.zhang@corigine.com>
 
-Previously the traffic class field is ignored while firmware has
-already supported to pedit flowinfo fields, including traffic
-class and flow label, now add it back.
+--atjba7zcmgsgdmzd
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
----
- drivers/net/ethernet/netronome/nfp/flower/action.c | 6 +++---
- drivers/net/ethernet/netronome/nfp/flower/cmsg.h   | 2 --
- 2 files changed, 3 insertions(+), 5 deletions(-)
+On 08.06.2022 18:51:06, Dario Binacchi wrote:
+> It is used successfully by most (if not all) CAN device drivers. It
+> allows to remove replicated code.
+>=20
+> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+>=20
+> ---
+>=20
+> Changes in v2:
+> - Put the data into the allocated skb directly instead of first
+>   filling the "cf" on the stack and then doing a memcpy().
+>=20
+>  drivers/net/can/slcan.c | 69 +++++++++++++++++++----------------------
+>  1 file changed, 32 insertions(+), 37 deletions(-)
+>=20
+> diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
+> index 6162a9c21672..5d87e25e2285 100644
+> --- a/drivers/net/can/slcan.c
+> +++ b/drivers/net/can/slcan.c
+> @@ -54,6 +54,7 @@
+>  #include <linux/kernel.h>
+>  #include <linux/workqueue.h>
+>  #include <linux/can.h>
+> +#include <linux/can/dev.h>
+>  #include <linux/can/skb.h>
+>  #include <linux/can/can-ml.h>
+> =20
+> @@ -143,85 +144,79 @@ static struct net_device **slcan_devs;
+>  static void slc_bump(struct slcan *sl)
+>  {
+>  	struct sk_buff *skb;
+> -	struct can_frame cf;
+> +	struct can_frame *cf;
+>  	int i, tmp;
+>  	u32 tmpid;
+>  	char *cmd =3D sl->rbuff;
+> =20
+> -	memset(&cf, 0, sizeof(cf));
+> +	skb =3D alloc_can_skb(sl->dev, &cf);
+> +	if (unlikely(!skb)) {
+> +		sl->dev->stats.rx_dropped++;
+> +		return;
+> +	}
+> =20
+>  	switch (*cmd) {
+>  	case 'r':
+> -		cf.can_id =3D CAN_RTR_FLAG;
+> +		cf->can_id =3D CAN_RTR_FLAG;
+>  		fallthrough;
+>  	case 't':
+>  		/* store dlc ASCII value and terminate SFF CAN ID string */
+> -		cf.len =3D sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN];
+> +		cf->len =3D sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN];
+>  		sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN] =3D 0;
+>  		/* point to payload data behind the dlc */
+>  		cmd +=3D SLC_CMD_LEN + SLC_SFF_ID_LEN + 1;
+>  		break;
+>  	case 'R':
+> -		cf.can_id =3D CAN_RTR_FLAG;
+> +		cf->can_id =3D CAN_RTR_FLAG;
+>  		fallthrough;
+>  	case 'T':
+> -		cf.can_id |=3D CAN_EFF_FLAG;
+> +		cf->can_id |=3D CAN_EFF_FLAG;
+>  		/* store dlc ASCII value and terminate EFF CAN ID string */
+> -		cf.len =3D sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN];
+> +		cf->len =3D sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN];
+>  		sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN] =3D 0;
+>  		/* point to payload data behind the dlc */
+>  		cmd +=3D SLC_CMD_LEN + SLC_EFF_ID_LEN + 1;
+>  		break;
+>  	default:
+> -		return;
+> +		goto decode_failed;
+>  	}
+> =20
+>  	if (kstrtou32(sl->rbuff + SLC_CMD_LEN, 16, &tmpid))
+> -		return;
+> +		goto decode_failed;
+> =20
+> -	cf.can_id |=3D tmpid;
+> +	cf->can_id |=3D tmpid;
+> =20
+>  	/* get len from sanitized ASCII value */
+> -	if (cf.len >=3D '0' && cf.len < '9')
+> -		cf.len -=3D '0';
+> +	if (cf->len >=3D '0' && cf->len < '9')
+> +		cf->len -=3D '0';
+>  	else
+> -		return;
+> +		goto decode_failed;
+> =20
+>  	/* RTR frames may have a dlc > 0 but they never have any data bytes */
+> -	if (!(cf.can_id & CAN_RTR_FLAG)) {
+> -		for (i =3D 0; i < cf.len; i++) {
+> +	if (!(cf->can_id & CAN_RTR_FLAG)) {
+> +		for (i =3D 0; i < cf->len; i++) {
+>  			tmp =3D hex_to_bin(*cmd++);
+>  			if (tmp < 0)
+> -				return;
+> -			cf.data[i] =3D (tmp << 4);
+> +				goto decode_failed;
+> +
+> +			cf->data[i] =3D (tmp << 4);
+>  			tmp =3D hex_to_bin(*cmd++);
+>  			if (tmp < 0)
+> -				return;
+> -			cf.data[i] |=3D tmp;
+> +				goto decode_failed;
+> +
+> +			cf->data[i] |=3D tmp;
+>  		}
+>  	}
+> =20
+> -	skb =3D dev_alloc_skb(sizeof(struct can_frame) +
+> -			    sizeof(struct can_skb_priv));
+> -	if (!skb)
+> -		return;
+> -
+> -	skb->dev =3D sl->dev;
+> -	skb->protocol =3D htons(ETH_P_CAN);
+> -	skb->pkt_type =3D PACKET_BROADCAST;
+> -	skb->ip_summed =3D CHECKSUM_UNNECESSARY;
+> -
+> -	can_skb_reserve(skb);
+> -	can_skb_prv(skb)->ifindex =3D sl->dev->ifindex;
+> -	can_skb_prv(skb)->skbcnt =3D 0;
+> -
+> -	skb_put_data(skb, &cf, sizeof(struct can_frame));
+> -
+>  	sl->dev->stats.rx_packets++;
+> -	if (!(cf.can_id & CAN_RTR_FLAG))
+> -		sl->dev->stats.rx_bytes +=3D cf.len;
+> +	if (!(cf->can_id & CAN_RTR_FLAG))
+> +		sl->dev->stats.rx_bytes +=3D cf->len;
+> =20
+>  	netif_rx(skb);
+> +	return;
+> +
+> +decode_failed:
+> +	dev_kfree_skb(skb);
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/action.c b/drivers/net/ethernet/netronome/nfp/flower/action.c
-index 0147de405365..b456e81a73a4 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/action.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/action.c
-@@ -674,9 +674,9 @@ nfp_fl_set_ip6_hop_limit_flow_label(u32 off, __be32 exact, __be32 mask,
- 					    fl_hl_mask->hop_limit;
- 		break;
- 	case round_down(offsetof(struct ipv6hdr, flow_lbl), 4):
--		if (mask & ~IPV6_FLOW_LABEL_MASK ||
--		    exact & ~IPV6_FLOW_LABEL_MASK) {
--			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: invalid pedit IPv6 flow label action");
-+		if (mask & ~IPV6_FLOWINFO_MASK ||
-+		    exact & ~IPV6_FLOWINFO_MASK) {
-+			NL_SET_ERR_MSG_MOD(extack, "unsupported offload: invalid pedit IPv6 flow info action");
- 			return -EOPNOTSUPP;
- 		}
- 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/cmsg.h b/drivers/net/ethernet/netronome/nfp/flower/cmsg.h
-index 68e8a2fb1a29..2df2af1da716 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/cmsg.h
-+++ b/drivers/net/ethernet/netronome/nfp/flower/cmsg.h
-@@ -96,8 +96,6 @@
- #define NFP_FL_PUSH_VLAN_PRIO		GENMASK(15, 13)
- #define NFP_FL_PUSH_VLAN_VID		GENMASK(11, 0)
- 
--#define IPV6_FLOW_LABEL_MASK		cpu_to_be32(0x000fffff)
--
- /* LAG ports */
- #define NFP_FL_LAG_OUT			0xC0DE0000
- 
--- 
-2.30.2
+Can you increase an error counter in this situation, too?
 
+Marc
+
+>  }
+> =20
+>  /* parse tty input stream */
+> --=20
+> 2.32.0
+>=20
+>=20
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--atjba7zcmgsgdmzd
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKhqjkACgkQrX5LkNig
+013HUAgAqNyG+WGjiiRutxQFcDB8sjKXLB7vK7+Nxuo1idJ6Ez84UYz7yXxBNub4
+Tj9sLTzWmBocBoRVYOM5shThBLKYABOTJjpU90EyjtsaecGWzZ31GVmtfx95vVFK
+JDMHZP0yQZ45315d0P1/U+XV6uK03MMoUwKvb1fw0dKZ14ZhCgJrHK13n5uvX/by
+Sz8uHCJlp1X2u/ULoNFJLyFFBZt6zSQnh9dOC7Qfq612QzxZZ51mfkQjUwIvsuNx
+fwFav+zthhYOkJZdwcJpTp7ChuHxAuhFF3WTXJI6hMTpVdNDTJaFsVtzjkwz7faF
+HZsSgWXZQ2ASFS1epIjNbjb1yiQ6rg==
+=bf3D
+-----END PGP SIGNATURE-----
+
+--atjba7zcmgsgdmzd--
