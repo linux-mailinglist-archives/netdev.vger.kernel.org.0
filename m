@@ -2,65 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28FF5545604
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 22:53:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7B5F54561E
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 23:05:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236352AbiFIUw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 16:52:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44084 "EHLO
+        id S236595AbiFIVFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 17:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235732AbiFIUw4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 16:52:56 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE472010CC;
-        Thu,  9 Jun 2022 13:52:54 -0700 (PDT)
-Received: from sslproxy04.your-server.de ([78.46.152.42])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nzP95-000CoU-Ro; Thu, 09 Jun 2022 22:52:47 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nzP95-0006w1-Bv; Thu, 09 Jun 2022 22:52:47 +0200
-Subject: Re: [PATCH bpf-next 0/3] move AF_XDP APIs to libxdp
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
-        <toke@redhat.com>, Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-References: <20220607084003.898387-1-liuhangbin@gmail.com>
- <87tu8w6cqa.fsf@toke.dk> <YqAJeHAL57cB9qJk@Laptop-X1>
- <CAJ8uoz2g99N6HESyX1cGUWahSJRYQjXDG3m3f4_8APAvJNMHXw@mail.gmail.com>
- <CAEf4BzZsAqq4rOpE2FWA-GHB4OSntv9rMUvt=6sOj6+1wKMMZw@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <59b8dda9-0cbb-4a70-2625-eaa8796ae5e5@iogearbox.net>
-Date:   Thu, 9 Jun 2022 22:52:46 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S231946AbiFIVFX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 17:05:23 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C034265230
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 14:05:22 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id u12-20020a17090a1d4c00b001df78c7c209so453302pju.1
+        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 14:05:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VEf6uJJ9Rqn3qK0MT0WXSjL5ADmXkgwO2f5jI1otFnA=;
+        b=bodoldQsaK/6tGeVwAdLiDyOwDQr5fMo+hPcss6tLiDowflDbkzyQ9XhaLi2DHvmut
+         enneli+66p33T+CgC18lkQpyJTjrkettqhw2AMN8IIF/fXoIyuUB6FH9mW6Wj+E3HIMq
+         G2lKkNiFPkXYqLcgqlk20yY70lafO/KNYdQ5Y5ZZH3vEWDmaUZxYzndrruZ5J0VmLJRD
+         2oZ2pvtY0WGR8d3FtXk+XzUrEZKhq0YIcYtQRimSXGhvmGZJlcszq+d9XOBZlW7OVITv
+         o/ehZDDWX/i+sgyCi4Ejm0eegSLbFJtFNtJH2SnH85Meopyv/JxQiRsTBk6YtqLwl3Jc
+         hoJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VEf6uJJ9Rqn3qK0MT0WXSjL5ADmXkgwO2f5jI1otFnA=;
+        b=z/I9ojOWpRLQA0ngv/+BoFipKCgabAFFNEZ9oNC/qkn2xR95IgQfqCOwNhWmhWi7jB
+         9vMl+w/q4To+PRKiYC1DaxqHVjXr7IENMGg9S+dcbYENxx63kxE0tM+vfQPcKElxUzSl
+         T9Hg7xWb25/fc2NhketNj1gUPJwo4g7xV6pLxTfcQmtW9n6CPskqHGujj6TOsknsa9+G
+         lr82gj1KFsvI2NI8IGuhCV55Qn99VzkskFDVUIzAa8qE93khnWutJpioK6wOgegO/Z+N
+         XgA/+On4dzYcdWWMcBoVwYndIkxQuLOjk29tKsKFFIaFFs2U+Wi0Hx5Y1RaqETil9gfC
+         Nipw==
+X-Gm-Message-State: AOAM533Oyg8gefoOvTaFpwiqWU0nkuhwJCWhOWkCWMYIJpu0djlHdyxo
+        shwOEYpOi+uLxR+K72dCbC0=
+X-Google-Smtp-Source: ABdhPJywoIVGlqEMvq772NUVtlcd8L5QVJFcdOvvx1JtKfYbCV1XtkMX0mKmwD+LlRfUr8R4YJD1sQ==
+X-Received: by 2002:a17:90a:b894:b0:1e2:d8f8:41e9 with SMTP id o20-20020a17090ab89400b001e2d8f841e9mr5168585pjr.20.1654808721443;
+        Thu, 09 Jun 2022 14:05:21 -0700 (PDT)
+Received: from jeffreyji1.c.googlers.com.com (180.145.227.35.bc.googleusercontent.com. [35.227.145.180])
+        by smtp.gmail.com with ESMTPSA id b15-20020a170903228f00b001620960f1dfsm17371447plh.198.2022.06.09.14.05.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 14:05:20 -0700 (PDT)
+From:   Jeffrey Ji <jeffreyjilinux@gmail.com>
+To:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Brian Vazquez <brianvv@google.com>, netdev@vger.kernel.org,
+        Jeffrey Ji <jeffreyji@google.com>
+Subject: [PATCH iproute2-next v2] show rx_otherehost_dropped stat in ip link show
+Date:   Thu,  9 Jun 2022 21:05:16 +0000
+Message-Id: <20220609210516.2311379-1-jeffreyjilinux@gmail.com>
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzZsAqq4rOpE2FWA-GHB4OSntv9rMUvt=6sOj6+1wKMMZw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26567/Thu Jun  9 10:06:06 2022)
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -69,68 +68,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/9/22 10:29 PM, Andrii Nakryiko wrote:
-> On Wed, Jun 8, 2022 at 3:18 AM Magnus Karlsson
-> <magnus.karlsson@gmail.com> wrote:
->> On Wed, Jun 8, 2022 at 9:55 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
->>> On Tue, Jun 07, 2022 at 11:31:57AM +0200, Toke Høiland-Jørgensen wrote:
->>>> Hangbin Liu <liuhangbin@gmail.com> writes:
->>>>
->>>>> libbpf APIs for AF_XDP are deprecated starting from v0.7.
->>>>> Let's move to libxdp.
->>>>>
->>>>> The first patch removed the usage of bpf_prog_load_xattr(). As we
->>>>> will remove the GCC diagnostic declaration in later patches.
->>>>
->>>> Kartikeya started working on moving some of the XDP-related samples into
->>>> the xdp-tools repo[0]; maybe it's better to just include these AF_XDP
->>>> programs into that instead of adding a build-dep on libxdp to the kernel
->>>> samples?
->>>
->>> OK, makes sense to me. Should we remove these samples after the xdp-tools PR
->>> merged? What about xdpxceiver.c in selftests/bpf? Should that also be moved to
->>> xdp-tools?
->>
->> Andrii has submitted a patch [1] for moving xsk.[ch] from libbpf to
->> the xsk selftests so it can be used by xdpxceiver. This is a good idea
->> since xdpxceiver tests the low level kernel interfaces and should not
->> be in libxdp. I can also use those files as a start for implementing
->> control interface tests which are in the planning stages. But the
->> xdpsock sample shows how to use libxdp to write an AF_XDP program and
->> belongs more naturally with libxdp. So good that Kartikeya is moving
->> it over. Thanks!
->>
->> Another option would be to keep the xdpsock sample and require libxdp
->> as in your patch set, but you would have to make sure that everything
->> else in samples/bpf compiles neatly even if you do not have libxdp.
->> Test for the presence of libxdp in the Makefile and degrade gracefully
->> if you do not. But we would then have to freeze the xdpsock app as all
->> new development of samples should be in libxdp. Or we just turn
->> xdpsock into a README file and direct people to the samples in libxdp?
->> What do you think?
-> 
-> I think adding libxdp dependency for samples/bpf is a bad idea. Moving
-> samples to near libxdp makes more sense to me.
+From: Jeffrey Ji <jeffreyji@google.com>
 
-+1 on moving them out from samples/bpf/ to somewhere near libxdp repo given
-it'll be usage example of libxdp.
+This stat was added in commit 794c24e9921f ("net-core: rx_otherhost_dropped to core_stats")
 
-More generally, the useful XDP-related things could migrate from samples/bpf/
-over to either https://github.com/xdp-project/bpf-examples/ or
-https://github.com/xdp-project/xdp-tools and then we could potentially toss
-the samples/bpf/ dir from the kernel tree.
+Tested: sent packet with wrong MAC address from 1
+network namespace to another, verified that counter showed "1" in
+`ip -s -s link sh` and `ip -s -s -j link sh`
 
-These days there are tons of howtos and example progs out in the wild and
-better tooling/framework available for users to get started. Taking XDP
-aside for a bit, a lot of stuff in samples/bpf/ is just outdated.
+Signed-off-by: Jeffrey Ji <jeffreyji@google.com>
+---
+changelog:
+v2: otherhost <- otherhost_dropped
 
-Brendan recently also started drafting guidelines (wip) for newbies getting
-into development with pointers where to look [0]. So really, there's less and
-less good reason for samples/bpf/ these days.
+ ip/ipaddress.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
-   [0] http://vger.kernel.org/bpfconf2022_material/lsfmmbpf2022-bpf-wip-guidelines.pdf
+diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+index 142731933ba3..d7d047cf901e 100644
+--- a/ip/ipaddress.c
++++ b/ip/ipaddress.c
+@@ -692,6 +692,7 @@ void print_stats64(FILE *fp, struct rtnl_link_stats64 *s,
+ 		strlen("heartbt"),
+ 		strlen("overrun"),
+ 		strlen("compressed"),
++		strlen("otherhost"),
+ 	};
+ 
+ 	if (is_json_context()) {
+@@ -730,6 +731,10 @@ void print_stats64(FILE *fp, struct rtnl_link_stats64 *s,
+ 			if (s->rx_nohandler)
+ 				print_u64(PRINT_JSON,
+ 					   "nohandler", NULL, s->rx_nohandler);
++			if (s->rx_otherhost_dropped)
++				print_u64(PRINT_JSON,
++					   "otherhost", NULL,
++					   s->rx_otherhost_dropped);
+ 		}
+ 		close_json_object();
+ 
+@@ -778,7 +783,8 @@ void print_stats64(FILE *fp, struct rtnl_link_stats64 *s,
+ 			size_columns(cols, ARRAY_SIZE(cols), 0,
+ 				     s->rx_length_errors, s->rx_crc_errors,
+ 				     s->rx_frame_errors, s->rx_fifo_errors,
+-				     s->rx_over_errors, s->rx_nohandler);
++				     s->rx_over_errors, s->rx_nohandler,
++				     s->rx_otherhost_dropped);
+ 		size_columns(cols, ARRAY_SIZE(cols),
+ 			     s->tx_bytes, s->tx_packets, s->tx_errors,
+ 			     s->tx_dropped, s->tx_carrier_errors,
+@@ -811,11 +817,14 @@ void print_stats64(FILE *fp, struct rtnl_link_stats64 *s,
+ 		/* RX error stats */
+ 		if (show_stats > 1) {
+ 			fprintf(fp, "%s", _SL_);
+-			fprintf(fp, "    RX errors:%*s %*s %*s %*s %*s %*s %*s%s",
++			fprintf(fp, "    RX errors:%*s %*s %*s %*s %*s %*s%*s%*s%s",
+ 				cols[0] - 10, "", cols[1], "length",
+ 				cols[2], "crc", cols[3], "frame",
+ 				cols[4], "fifo", cols[5], "overrun",
+-				cols[6], s->rx_nohandler ? "nohandler" : "",
++				s->rx_nohandler ? cols[6] + 1 : 0,
++				s->rx_nohandler ? " nohandler" : "",
++				s->rx_otherhost_dropped ? cols[7] + 1 : 0,
++				s->rx_otherhost_dropped ? " otherhost" : "",
+ 				_SL_);
+ 			fprintf(fp, "%*s", cols[0] + 5, "");
+ 			print_num(fp, cols[1], s->rx_length_errors);
+@@ -825,6 +834,9 @@ void print_stats64(FILE *fp, struct rtnl_link_stats64 *s,
+ 			print_num(fp, cols[5], s->rx_over_errors);
+ 			if (s->rx_nohandler)
+ 				print_num(fp, cols[6], s->rx_nohandler);
++			if (s->rx_otherhost_dropped)
++				print_num(fp, cols[7],
++				s->rx_otherhost_dropped);
+ 		}
+ 		fprintf(fp, "%s", _SL_);
+ 
+-- 
+2.36.1.476.g0c4daa206d-goog
 
->> [1] https://lore.kernel.org/bpf/20220603190155.3924899-2-andrii@kernel.org/
->>
->>> Thanks
->>> Hangbin
