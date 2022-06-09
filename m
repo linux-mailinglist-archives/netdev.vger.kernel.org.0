@@ -2,110 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B0A05445F9
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 10:35:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDB45544612
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 10:39:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241621AbiFIIef (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 04:34:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57654 "EHLO
+        id S241427AbiFIIhy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 04:37:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230119AbiFIIeR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 04:34:17 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28DAE19F040
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 01:34:15 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nzDcA-00016O-Vd; Thu, 09 Jun 2022 10:34:03 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 6F7938FDDD;
-        Thu,  9 Jun 2022 08:34:01 +0000 (UTC)
-Date:   Thu, 9 Jun 2022 10:34:00 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Srinivas Neeli <srinivas.neeli@xilinx.com>
-Cc:     wg@grandegger.com, davem@davemloft.net, edumazet@google.com,
-        srinivas.neeli@amd.com, neelisrinivas18@gmail.com,
-        appana.durga.rao@xilinx.com, sgoud@xilinx.com,
-        michal.simek@xilinx.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        git@xilinx.com
-Subject: Re: [PATCH V3 0/2] xilinx_can: Update on xilinx can
-Message-ID: <20220609083400.pb5q2fxhexhdqrec@pengutronix.de>
-References: <20220609082433.1191060-1-srinivas.neeli@xilinx.com>
+        with ESMTP id S232120AbiFIIhx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 04:37:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD3FD53C42
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 01:37:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654763871;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=694gobC9lwyLqW5J3peoYMEWnd+AT+IRtqYjzog1lRg=;
+        b=PcLHF1oftXOyIZ/cRVnIReAJEKI784DkRIbZDe97ZfB8cGcK20kYPpKa6BFAU+QMg5tRxo
+        5q/a2H6SZh/JnflcwYBnyTvpTvbl1gUmr0F0UTLNheYXwWEk9YhgEr+fse705Hcm7Oj90Y
+        wtRKtgz7+HNy6QSegmkB+5AShLVRYBk=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-338-9xpNCMniPQW15eoMXCAKDg-1; Thu, 09 Jun 2022 04:37:50 -0400
+X-MC-Unique: 9xpNCMniPQW15eoMXCAKDg-1
+Received: by mail-wm1-f72.google.com with SMTP id 130-20020a1c0288000000b0039c6608296dso1553250wmc.4
+        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 01:37:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=694gobC9lwyLqW5J3peoYMEWnd+AT+IRtqYjzog1lRg=;
+        b=zKEXWAki2r1cZIQNfTHu7/7BL7f0OCt/EWkU6gioyYXSEayjE225zSUvTAtVpO6zfd
+         qmYma/sUD4VeEAGwth4pV72KBGHvYCCppDlFbKETYrzLjo9lFkz8t+U20s9v1bvDuFpz
+         /lE/OBiW/dLfSGGCBuLbn3CkqhX/qjrQ2+ItuuI58PPlmNiNQff/s/486JVI8kAMWecC
+         7NFALnhQWyuJGds/Gazc7BtjAgEtM9lwiAjy40tGO2o013jzupLHaXsWbUqdul0QTLqW
+         EqN48TdKLuM3IaZ1z5szAX1SI7kMMX5FTtCqqEncBvcKsx3SIc8QryRhMJx1KE12IwQ/
+         EHqw==
+X-Gm-Message-State: AOAM530E51VABfQLPxXADTSbzDhLmwiy5ccqIGmaBMSqDTnR5j1nwIqk
+        H0FZMFmbUlkiSYM0ZBs3Okl/UMz8Z+3T8PAL9yLP4oGrJRrDpbK5SRTs7TB8EZr9zLBHhGIY6PC
+        bjyWnZh8P7bdJKHNA
+X-Received: by 2002:a5d:4b90:0:b0:210:2b99:3862 with SMTP id b16-20020a5d4b90000000b002102b993862mr35493373wrt.586.1654763869333;
+        Thu, 09 Jun 2022 01:37:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzwiqT3Yvpq9pYGfhjPxNPxWZqR6y14eJJY0ZyXFqShFrcIt83mK03m0/3Oo0tgjuYoxDJ5vA==
+X-Received: by 2002:a5d:4b90:0:b0:210:2b99:3862 with SMTP id b16-20020a5d4b90000000b002102b993862mr35493350wrt.586.1654763869063;
+        Thu, 09 Jun 2022 01:37:49 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-40.retail.telecomitalia.it. [79.46.200.40])
+        by smtp.gmail.com with ESMTPSA id h1-20020a5d4fc1000000b0020fc4cd81f6sm23434686wrw.60.2022.06.09.01.37.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 01:37:48 -0700 (PDT)
+Date:   Thu, 9 Jun 2022 10:37:45 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jason Wang <jasowang@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        Krasnov Arseniy <oxffffaa@gmail.com>
+Subject: Re: [RFC PATCH v2 1/8] virtio/vsock: rework packet allocation logic
+Message-ID: <20220609083745.hgqzaq6i7s4u2cgx@sgarzare-redhat>
+References: <e37fdf9b-be80-35e1-ae7b-c9dfeae3e3db@sberdevices.ru>
+ <78157286-3663-202f-da94-1a17e4ffe819@sberdevices.ru>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="h4ux6p3yn7okbj3o"
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220609082433.1191060-1-srinivas.neeli@xilinx.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+In-Reply-To: <78157286-3663-202f-da94-1a17e4ffe819@sberdevices.ru>
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jun 03, 2022 at 05:31:00AM +0000, Arseniy Krasnov wrote:
+>To support zerocopy receive, packet's buffer allocation
+>is changed: for buffers which could be mapped to user's
+>vma we can't use 'kmalloc()'(as kernel restricts to map
+>slab pages to user's vma) and raw buddy allocator now
+>called. But, for tx packets(such packets won't be mapped
+>to user), previous 'kmalloc()' way is used, but with special
+>flag in packet's structure which allows to distinguish
+>between 'kmalloc()' and raw pages buffers.
+>
+>Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+>---
+> include/linux/virtio_vsock.h            | 1 +
+> net/vmw_vsock/virtio_transport.c        | 8 ++++++--
+> net/vmw_vsock/virtio_transport_common.c | 9 ++++++++-
+> 3 files changed, 15 insertions(+), 3 deletions(-)
 
---h4ux6p3yn7okbj3o
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Each patch should as much as possible work to not break the 
+bisectability, and here we are not touching vhost_vsock_alloc_pkt() that 
+uses kmalloc to allocate the buffer.
 
-On 09.06.2022 13:54:31, Srinivas Neeli wrote:
-> This patch series addresses
-> 1) Reverts the limiting CANFD brp_min to 2.
-> 2) Adds TDC support for Xilinx can driver.
+I see you updated it in the next patch, that should be fine, but here 
+you should set slab_buf in vhost_vsock_alloc_pkt(), or you can merge the 
+two patches.
 
-Thanks for your patches!
+>
+>diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+>index 35d7eedb5e8e..d02cb7aa922f 100644
+>--- a/include/linux/virtio_vsock.h
+>+++ b/include/linux/virtio_vsock.h
+>@@ -50,6 +50,7 @@ struct virtio_vsock_pkt {
+> 	u32 off;
+> 	bool reply;
+> 	bool tap_delivered;
+>+	bool slab_buf;
+> };
+>
+> struct virtio_vsock_pkt_info {
+>diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
+>index ad64f403536a..19909c1e9ba3 100644
+>--- a/net/vmw_vsock/virtio_transport.c
+>+++ b/net/vmw_vsock/virtio_transport.c
+>@@ -255,16 +255,20 @@ static void virtio_vsock_rx_fill(struct virtio_vsock *vsock)
+> 	vq = vsock->vqs[VSOCK_VQ_RX];
+>
+> 	do {
+>+		struct page *buf_page;
+>+
+> 		pkt = kzalloc(sizeof(*pkt), GFP_KERNEL);
+> 		if (!pkt)
+> 			break;
+>
+>-		pkt->buf = kmalloc(buf_len, GFP_KERNEL);
+>-		if (!pkt->buf) {
+>+		buf_page = alloc_page(GFP_KERNEL);
+>+
+>+		if (!buf_page) {
+> 			virtio_transport_free_pkt(pkt);
+> 			break;
+> 		}
+>
+>+		pkt->buf = page_to_virt(buf_page);
+> 		pkt->buf_len = buf_len;
+> 		pkt->len = buf_len;
+>
+>diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>index ec2c2afbf0d0..278567f748f2 100644
+>--- a/net/vmw_vsock/virtio_transport_common.c
+>+++ b/net/vmw_vsock/virtio_transport_common.c
+>@@ -69,6 +69,7 @@ virtio_transport_alloc_pkt(struct virtio_vsock_pkt_info *info,
+> 		if (!pkt->buf)
+> 			goto out_pkt;
+>
+>+		pkt->slab_buf = true;
+> 		pkt->buf_len = len;
+>
+> 		err = memcpy_from_msg(pkt->buf, info->msg, len);
+>@@ -1342,7 +1343,13 @@ EXPORT_SYMBOL_GPL(virtio_transport_recv_pkt);
+>
+> void virtio_transport_free_pkt(struct virtio_vsock_pkt *pkt)
+> {
+>-	kfree(pkt->buf);
+>+	if (pkt->buf_len) {
+>+		if (pkt->slab_buf)
+>+			kfree(pkt->buf);
+>+		else
+>+			free_pages(buf, get_order(pkt->buf_len));
+>+	}
+>+
+> 	kfree(pkt);
+> }
+> EXPORT_SYMBOL_GPL(virtio_transport_free_pkt);
+>-- 
+>2.25.1
 
-> Hi Marc,
-> Please apply PATCH V3 1/2 on stable branch.
-> Due to some mailing issue i didn't receive your mail.
-
-Applied to can/testing, please don't mix patches for can and can-next in
-on series in the future.
-
-> Changes in V3:
-> -Implemented GENMASK,FIELD_PERP & FIELD_GET Calls.
-> -Implemented TDC feature for all Xilinx CANFD controllers.
-> -corrected prescalar to prescaler(typo).
-
-Pleas make this a separate patch.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---h4ux6p3yn7okbj3o
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKhsHYACgkQrX5LkNig
-010CkwgAr0Yn7uNWp2Rx87P8xbIi6hVYVLuyQarsLg75Xp2IjC1KG4KpIEBgY2uH
-im/FjZiJvUi1TCuFCjck+qNSdA22Jfn5rk0uyEmn7g0l1BZq7UlkK1tdAHqoQ/Cn
-Dcw9BMQqQfdm4btLikc4h1stqAH0CeZOwNXUkzjBga65ZmUaJIVowN55st01M1T3
-qO5elkWFftg1JOsbd594rh2mSDHXB/c3+a929hrAtk1KfC96F7tL+0lSdccFFL4f
-cN2+jGrt2mPCdawxZC/EGU6nr4zqCxDLsrbgMdQBkuH5l+O9ssfP3DI8MSIRuqtN
-8MaCL4sqduJssOhRn9qxccN72AwhaQ==
-=Q3e1
------END PGP SIGNATURE-----
-
---h4ux6p3yn7okbj3o--
