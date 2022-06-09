@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9CB554425A
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 06:10:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59742544267
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 06:19:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237754AbiFIEKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 00:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36774 "EHLO
+        id S236633AbiFIETS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 00:19:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236683AbiFIEKS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 00:10:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30F1895A04
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 21:10:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S236029AbiFIETP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 00:19:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 40DA62FA608
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 21:19:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654748353;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=2EUgTmBmBQS8TADvNh3w+eG84Zb6i5oxbEJ7TRa74m8=;
+        b=Et2s9jOUUDBSP5hzOYrIXb+hMnmFQr7LrcFVLbpEVpNN+0AgfJQs8lLa4y8w4hxg1ParMs
+        vqceXCnYa4JsHlF3eOnvmZmztB77EYHrrlOYJMLHBD/sD6nJDZiMWB3eJl5/7KF6Ue1XS2
+        ZIoFVml3XpPNCFlGcR+OYXqVPqn63fI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-575-z2rJ_Z0XPfueqmTPLXd04A-1; Thu, 09 Jun 2022 00:19:07 -0400
+X-MC-Unique: z2rJ_Z0XPfueqmTPLXd04A-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4F7BB82BFF
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 04:10:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 84C34C341CB;
-        Thu,  9 Jun 2022 04:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654747814;
-        bh=jv58ysazWEutxgJbrPABHjGvimUtikSXSh9QU+aihT0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=E2gVDDVPI+qOC0LP5demKBwlw4jNvtLrxMmCCZ2cGxKRMkMJLfGYTLYO3euVpojNr
-         pBOhga7buguhHUc4/H87qmu0CE7iWtt9s9LUaM5FMs/GGKzHaGT7/S1rNhNajafwJe
-         /hZfJp27ves5n09BcGHi7wnxW9qyKYymrIeAjo0odjRRLucHokWm/gh8WrX2sNTmN8
-         HNEFwVOHfIKLixI1MGwz6QpqZMEGqje4T0nIAarDq1JU1KaAIoolkhBF7kx9Ndc9fl
-         aogsFZM6k7/oN5nFZvMj1anuLaK7GKwrKSKsHg+9sZUc+npS+4gA21h/ZFg7ZmmjTN
-         AiMfLMm8SdkIQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 713E9E737E8;
-        Thu,  9 Jun 2022 04:10:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7F6C3811E75;
+        Thu,  9 Jun 2022 04:19:07 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-14-4.pek2.redhat.com [10.72.14.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7733A1730C;
+        Thu,  9 Jun 2022 04:19:04 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Gautam Dawar <gautam.dawar@xilinx.com>
+Subject: [PATCH] vdpa: make get_vq_group and set_group_asid optional
+Date:   Thu,  9 Jun 2022 12:19:01 +0800
+Message-Id: <20220609041901.2029-1-jasowang@redhat.com>
 MIME-Version: 1.0
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/2][pull request] 40GbE Intel Wired LAN Driver
- Updates 2022-06-07
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165474781446.435.4802491825076485771.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Jun 2022 04:10:14 +0000
-References: <20220607175506.696671-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220607175506.696671-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org, sassmann@redhat.com
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,31 +58,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This patch makes get_vq_group and set_group_asid optional. This is
+needed to unbreak the vDPA parent that doesn't support multiple
+address spaces.
 
-This series was applied to netdev/net-next.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+Cc: Gautam Dawar <gautam.dawar@xilinx.com>
+Fixes: aaca8373c4b1 ("vhost-vdpa: support ASID based IOTLB API")
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+---
+ drivers/vhost/vdpa.c | 2 ++
+ include/linux/vdpa.h | 5 +++--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-On Tue,  7 Jun 2022 10:55:04 -0700 you wrote:
-> This series contains updates to i40e and iavf drivers.
-> 
-> Mateusz adds implementation for setting VF VLAN pruning to allow user to
-> specify visibility of VLAN tagged traffic to VFs for i40e. He also adds
-> waiting for result from PF for setting MAC address in iavf.
-> ---
-> v2: Rewrote some code to avoid passing a value as a condition (patch 2)
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,v2,1/2] i40e: Add VF VLAN pruning
-    https://git.kernel.org/netdev/net-next/c/c87c938f62d8
-  - [net-next,v2,2/2] iavf: Add waiting for response from PF in set mac
-    https://git.kernel.org/netdev/net-next/c/35a2443d0910
-
-You are awesome, thank you!
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 935a1d0ddb97..5ad2596c6e8a 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -499,6 +499,8 @@ static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+ 		ops->set_vq_ready(vdpa, idx, s.num);
+ 		return 0;
+ 	case VHOST_VDPA_GET_VRING_GROUP:
++		if (!ops->get_vq_group)
++			return -EOPNOTSUPP;
+ 		s.index = idx;
+ 		s.num = ops->get_vq_group(vdpa, idx);
+ 		if (s.num >= vdpa->ngroups)
+diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+index 15af802d41c4..6113a978fbcd 100644
+--- a/include/linux/vdpa.h
++++ b/include/linux/vdpa.h
+@@ -176,7 +176,8 @@ struct vdpa_map_file {
+  *				for the device
+  *				@vdev: vdpa device
+  *				Returns virtqueue algin requirement
+- * @get_vq_group:		Get the group id for a specific virtqueue
++ * @get_vq_group:		Get the group id for a specific
++ *				virtqueue (optional)
+  *				@vdev: vdpa device
+  *				@idx: virtqueue index
+  *				Returns u32: group id for this virtqueue
+@@ -241,7 +242,7 @@ struct vdpa_map_file {
+  *				Returns the iova range supported by
+  *				the device.
+  * @set_group_asid:		Set address space identifier for a
+- *				virtqueue group
++ *				virtqueue group (optional)
+  *				@vdev: vdpa device
+  *				@group: virtqueue group
+  *				@asid: address space id for this group
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
