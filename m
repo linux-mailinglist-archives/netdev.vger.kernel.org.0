@@ -2,70 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CD8054502B
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 17:07:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEDAF545031
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 17:08:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343645AbiFIPHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 11:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57192 "EHLO
+        id S1344121AbiFIPIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 11:08:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241180AbiFIPHr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 11:07:47 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EFA7140A2
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 08:07:46 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so21271746pjq.2
-        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 08:07:46 -0700 (PDT)
+        with ESMTP id S1343967AbiFIPIh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 11:08:37 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F3D33AB1D8;
+        Thu,  9 Jun 2022 08:08:36 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id f12so18982339ilj.1;
+        Thu, 09 Jun 2022 08:08:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0KrY227oU07VwF06wfMzozGFOTiDnRFrMaZf80tnZ/A=;
-        b=Ep//Y+hIlZwPzFZ+7wgH1zrS+gCH0D/8dSQix5Pkljx1EPLhYhLpkSwM1WxKp9Eq1L
-         sxpLKppmFtYAGbdgQVXCPTDhAFw36nE3E/ZSyoHT8OEzaV8xe/uWolUZytN3xbg7EvFN
-         04gfWxpHJwTRtq+OF/+8vBEwvI410mdwlULXCe7YrkMQyWElAdfcJ1Q/iaxg/m5FUM3i
-         hWJxW/q1gqd4eBiOJWzmLcVKTt29qjYTPM5j4psDKJsh6F9DT2fYo3Jx6wYVyTPtjuLf
-         I+AiDzWAgxOnrmqATlZqJVVzx2ts+VMME/0KEKdVHkCT9I8NfWC/T32znbOC9ALwNFiI
-         WXWg==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=RuRAsoq3kuC2fdfy0p3uN9pJb+y+NfwDk7/S/TecTMU=;
+        b=PqErSSsTDO/K7H06mxzgyq3EqMjIORjKQKyE2pbepnVMmafrgl3CiJ5X/3+PXH0b2x
+         zYTFD1mSei9m2jigv/WB1JwXjvI5CDw6rSlpccX1RWtuvWjW6os5zrfDbTlSlIrYMTeZ
+         yIwnNmTuXM3RbLZvAWmPCSiWNZzU4YvLBstTFue4LLMsYksmOtBp09fZU1m3m4vGKVta
+         aDrKrCqv0ormdRcp94XUe/s4RDrWVchfSF3GdbI2I474+2OdwHdfwWnjopIbPeORryAj
+         ATPiAyM29GAdZkVjWg5At9Oq6eTOKZFbCfhF5LRO7NjUk22FE1riyKYyAnpoTXC6o+uK
+         sJpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0KrY227oU07VwF06wfMzozGFOTiDnRFrMaZf80tnZ/A=;
-        b=thvJAJysl4HLLSxTBzPlaDRcNjEsSTtM/m4ZmwQmTPTOvOibfO2Qerl21YTCotRtf2
-         2yJR19ofNpSVtxN4fDuNSSPqELxFcp3x+LX9+K6D3S85iRBkE/GEHA2l9JpJvJ91oAO6
-         D4vCg1FFSJ2E08QhVUfP6eYKOR0xJ6frQN5En8zg5qVbZcLBVwApZIuW9Puug4RnkdAm
-         ieg/bsDCAR/k7567cw5NCiKCTg56xXINz9d1CfLBJzq8d9xXCeq2hZn8TIC8654Yhxdl
-         pHn1524M3yqGHMNNlQqZ6yd05zSYP0FL0VR3iAmIpYWIAJ6+QjFwhrOC7V8GcZT5BJRf
-         C/tQ==
-X-Gm-Message-State: AOAM5313igf1mkq1LxLhtT9+MqjYs9kWyc1vRWZ9UjNgNLSJjteAlPbX
-        QxZwGoMVsNr60prYYcV03WWsJ3fgD3LIsL/RHUiW8A==
-X-Google-Smtp-Source: ABdhPJx6dATKqF5qj49H7FrsfvhDzY/DunCnvvx3LEC83Qy0PCgOqiTBnLJugrRHsaDY5Q3Im30CkszuwNRMG90UD0A=
-X-Received: by 2002:a17:90b:1d90:b0:1e8:5a98:d591 with SMTP id
- pf16-20020a17090b1d9000b001e85a98d591mr3885123pjb.126.1654787265407; Thu, 09
- Jun 2022 08:07:45 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220609063412.2205738-1-eric.dumazet@gmail.com>
- <20220609063412.2205738-5-eric.dumazet@gmail.com> <CADVnQynuQjbi67or7E_6JRy3SDznyp+9dT-hGbnAuqOSVJ+PUA@mail.gmail.com>
-In-Reply-To: <CADVnQynuQjbi67or7E_6JRy3SDznyp+9dT-hGbnAuqOSVJ+PUA@mail.gmail.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Thu, 9 Jun 2022 08:07:34 -0700
-Message-ID: <CALvZod78+NA+x4Fd2rwytCyf4rBQd8aGbWa=-kQ=zFGGTjcp-w@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/7] net: implement per-cpu reserves for memory_allocated
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=RuRAsoq3kuC2fdfy0p3uN9pJb+y+NfwDk7/S/TecTMU=;
+        b=7vWWQtl8i773V3gp/pzH+qR1Sm+ba72d5zAZdo/Daopc1y/MozN7stJWgkg3XmGvXT
+         A2erfHlX7Zy0kV9kXP5gnC8j159w7QnY3akRgyH6c8A300OceMXgHZK7dFsZOzBdPHQL
+         5spx8fg12yCMmr7/aa3WkcaoUOQEj2X9MqUhENe110vSqPTua8EC7pVEQ73cefi1eiSU
+         16RGh07RPXNdLRCmRhpP1Lmer5fg7ORKLpbaHqOaaChRmVrkCFvO/bPNQ0XLdkGnXHNj
+         EMg5jMe9gJI02YcHIFKXmMkQyzYld2vpNubejZ+5IN4YoAB3MwaLCnkVq9qUrIuz0WKZ
+         Yraw==
+X-Gm-Message-State: AOAM531skC33lK0JAG4T8cjtvtUBura+51pFm/MBwDk7OUN72t8qHcWo
+        8umPQ5KESaIJGhWb71OtjAQ=
+X-Google-Smtp-Source: ABdhPJwvuq5omzgm4ljNMtSKF7jLsO/HzGvkPNeItVjSPtaP4AlYNIsj0e+ylcXKzUf4luoG7SV4Vw==
+X-Received: by 2002:a05:6e02:1a8e:b0:2d3:bd16:40ee with SMTP id k14-20020a056e021a8e00b002d3bd1640eemr23091084ilv.20.1654787315336;
+        Thu, 09 Jun 2022 08:08:35 -0700 (PDT)
+Received: from localhost ([172.243.153.43])
+        by smtp.gmail.com with ESMTPSA id x8-20020a92d648000000b002d517c65c51sm6926875ilp.88.2022.06.09.08.08.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 08:08:34 -0700 (PDT)
+Date:   Thu, 09 Jun 2022 08:08:26 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        Eric Dumazet <edumazet@google.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>
+Message-ID: <62a20ceaba3d4_b28ac2082c@john.notmuch>
+In-Reply-To: <20220602012105.58853-2-xiyou.wangcong@gmail.com>
+References: <20220602012105.58853-1-xiyou.wangcong@gmail.com>
+ <20220602012105.58853-2-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf-next v3 1/4] tcp: introduce tcp_read_skb()
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,94 +74,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 9, 2022 at 7:46 AM Neal Cardwell <ncardwell@google.com> wrote:
->
-> /
->
->
-> On Thu, Jun 9, 2022 at 2:34 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> >
-> > From: Eric Dumazet <edumazet@google.com>
-> >
-> > We plan keeping sk->sk_forward_alloc as small as possible
-> > in future patches.
-> >
-> > This means we are going to call sk_memory_allocated_add()
-> > and sk_memory_allocated_sub() more often.
-> >
-> > Implement a per-cpu cache of +1/-1 MB, to reduce number
-> > of changes to sk->sk_prot->memory_allocated, which
-> > would otherwise be cause of false sharing.
-> >
-> > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > ---
-> >  include/net/sock.h | 38 +++++++++++++++++++++++++++++---------
-> >  1 file changed, 29 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/include/net/sock.h b/include/net/sock.h
-> > index 825f8cbf791f02d798f17dd4f7a2659cebb0e98a..59040fee74e7de8d63fbf719f46e172906c134bb 100644
-> > --- a/include/net/sock.h
-> > +++ b/include/net/sock.h
-> > @@ -1397,22 +1397,48 @@ static inline bool sk_under_memory_pressure(const struct sock *sk)
-> >         return !!*sk->sk_prot->memory_pressure;
-> >  }
-> >
-> > +static inline long
-> > +proto_memory_allocated(const struct proto *prot)
-> > +{
-> > +       return max(0L, atomic_long_read(prot->memory_allocated));
-> > +}
-> > +
-> >  static inline long
-> >  sk_memory_allocated(const struct sock *sk)
-> >  {
-> > -       return atomic_long_read(sk->sk_prot->memory_allocated);
-> > +       return proto_memory_allocated(sk->sk_prot);
-> >  }
-> >
-> > +/* 1 MB per cpu, in page units */
-> > +#define SK_MEMORY_PCPU_RESERVE (1 << (20 - PAGE_SHIFT))
-> > +
-> >  static inline long
-> >  sk_memory_allocated_add(struct sock *sk, int amt)
-> >  {
-> > -       return atomic_long_add_return(amt, sk->sk_prot->memory_allocated);
-> > +       int local_reserve;
-> > +
-> > +       preempt_disable();
-> > +       local_reserve = __this_cpu_add_return(*sk->sk_prot->per_cpu_fw_alloc, amt);
-> > +       if (local_reserve >= SK_MEMORY_PCPU_RESERVE) {
-> > +               __this_cpu_sub(*sk->sk_prot->per_cpu_fw_alloc, local_reserve);
-> > +               atomic_long_add(local_reserve, sk->sk_prot->memory_allocated);
-> > +       }
-> > +       preempt_enable();
-> > +       return sk_memory_allocated(sk);
-> >  }
-> >
-> >  static inline void
-> >  sk_memory_allocated_sub(struct sock *sk, int amt)
-> >  {
-> > -       atomic_long_sub(amt, sk->sk_prot->memory_allocated);
-> > +       int local_reserve;
-> > +
-> > +       preempt_disable();
-> > +       local_reserve = __this_cpu_sub_return(*sk->sk_prot->per_cpu_fw_alloc, amt);
-> > +       if (local_reserve <= -SK_MEMORY_PCPU_RESERVE) {
-> > +               __this_cpu_sub(*sk->sk_prot->per_cpu_fw_alloc, local_reserve);
-> > +               atomic_long_add(local_reserve, sk->sk_prot->memory_allocated);
->
-> I would have thought these last two lines would be:
->
->                __this_cpu_add(*sk->sk_prot->per_cpu_fw_alloc, local_reserve);
->                atomic_long_sub(local_reserve, sk->sk_prot->memory_allocated);
->
-> Otherwise I don't see how sk->sk_prot->memory_allocated) ever
-> decreases in these sk_memory_allocated_add/sk_memory_allocated_sub
-> functions?
->
-> That is, is there a copy-and-paste/typo issue in these two lines? Or
-> is my understanding backwards? (In which case I apologize for the
-> noise!)
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+> 
+> This patch inroduces tcp_read_skb() based on tcp_read_sock(),
+> a preparation for the next patch which actually introduces
+> a new sock ops.
+> 
+> TCP is special here, because it has tcp_read_sock() which is
+> mainly used by splice(). tcp_read_sock() supports partial read
+> and arbitrary offset, neither of them is needed for sockmap.
+> 
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> ---
+>  include/net/tcp.h |  2 ++
+>  net/ipv4/tcp.c    | 47 +++++++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 49 insertions(+)
+> 
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index 1e99f5c61f84..878544d0f8f9 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -669,6 +669,8 @@ void tcp_get_info(struct sock *, struct tcp_info *);
+>  /* Read 'sendfile()'-style from a TCP socket */
+>  int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
+>  		  sk_read_actor_t recv_actor);
+> +int tcp_read_skb(struct sock *sk, read_descriptor_t *desc,
+> +		 sk_read_actor_t recv_actor);
+>  
+>  void tcp_initialize_rcv_mss(struct sock *sk);
+>  
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 9984d23a7f3e..a18e9ababf54 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -1709,6 +1709,53 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
+>  }
+>  EXPORT_SYMBOL(tcp_read_sock);
+>  
+> +int tcp_read_skb(struct sock *sk, read_descriptor_t *desc,
+> +		 sk_read_actor_t recv_actor)
+> +{
+> +	struct tcp_sock *tp = tcp_sk(sk);
+> +	u32 seq = tp->copied_seq;
+> +	struct sk_buff *skb;
+> +	int copied = 0;
+> +	u32 offset;
+> +
+> +	if (sk->sk_state == TCP_LISTEN)
+> +		return -ENOTCONN;
+> +
+> +	while ((skb = tcp_recv_skb(sk, seq, &offset)) != NULL) {
+> +		int used;
+> +
+> +		__skb_unlink(skb, &sk->sk_receive_queue);
+> +		used = recv_actor(desc, skb, 0, skb->len);
+> +		if (used <= 0) {
+> +			if (!copied)
+> +				copied = used;
+> +			break;
+> +		}
+> +		seq += used;
+> +		copied += used;
+> +
+> +		if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN) {
+> +			kfree_skb(skb);
 
-local_reserve is negative in that case and adding a negative number is
-subtraction.
+Hi Cong, can you elaborate here from v2 comment.
+
+"Hm, it is tricky here, we use the skb refcount after this patchset, so
+it could be a real drop from another kfree_skb() in net/core/skmsg.c
+which initiates the drop."
+
+The tcp_read_sock() hook is using tcp_eat_recv_skb(). Are we going
+to kick tracing infra even on good cases with kfree_skb()? In
+sk_psock_verdict_recv() we do an skb_clone() there.
+
+.John
