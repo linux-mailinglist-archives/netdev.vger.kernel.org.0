@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA53554572C
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 00:21:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEE2B545736
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 00:21:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239812AbiFIWVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 18:21:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53970 "EHLO
+        id S1344024AbiFIWVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 18:21:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345772AbiFIWUr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 18:20:47 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 812A3AFAE9
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 15:20:41 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id c4-20020a170902d48400b001640bfb2b4fso13425185plg.20
-        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 15:20:41 -0700 (PDT)
+        with ESMTP id S1345671AbiFIWVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 18:21:05 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D722D4EA3F
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 15:21:03 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id j11-20020a05690212cb00b006454988d225so21189971ybu.10
+        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 15:21:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=25alQ5NbvDA/tAT/crdGxszOxkEet+uV+RiKp6teCtQ=;
-        b=oZfJo/SXd3Qwc4Nv44GXKhWDAFTO95PgXKfM9e9BiPA93gnZilAa51s/ZcMgeZyQDX
-         bdQWpsU2Iq0YRK8nhoojrl6Ovztg/h1fX8YAfPzB2dwLHljaWKbdC8Mk4yXY/4KToKYJ
-         ovK2hyHWLN7o69TaNinVFAZmPIf4qo8PHxZBtzNCHZvyhMz5aDyGPm8IzfmTRY3xhkY5
-         HV52VK6dmyAZeje85nLNYwU1K6dOCF/suK14Mfn4D1Y16vY/jjL7/9lAyFEiDPQ1QSGP
-         J6zMvdrdFc5DFPuif5nPyA2QWjOTwZ7NUnTVPFwq/IivldY6hoaIhzn4fUtrg8kNe7N/
-         zK6Q==
+        bh=v4Xn62a8gwv09PX197f2KX5K6c68JUg+Unaoh5Rs3zU=;
+        b=rIM31hja6TacLFy83ekGaYY6NocbE3+qp06k1AYSWqT3YCOM3vKnexoLoVRg3/QFrC
+         NK6lDPMraatUaGV4ysDVq7Ma73A8ej30mShvcnMynXPj4q1s4HwLXHsyE5NReacxVqEF
+         SN/r5DNjRMP1h9Yx1PS5+t5PqoRBJ1DmF1KeRqex3FpyMoNRbYlXt2tQwLA6Cftv+3aS
+         xU6s22QmO1Pl1Kwrbe6vsMz+d3Z4FRfHNfEK9twj222QTX3BVZNBOKgun1MV8xBDAQQA
+         +IscNJZzBGaDfdE3Gg++zvAyvxAsnUQ0EJis1knVDwKv7m2aWEOPArINp5NiPyNi+Z2n
+         h4Ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=25alQ5NbvDA/tAT/crdGxszOxkEet+uV+RiKp6teCtQ=;
-        b=WoSQ3ATSmOap0oYaPf9FhLHmOOHkwUoniL/iGHrG8PvjN2r4G8+Dm1UiX5xAU7pjUE
-         ueuf3oDXk1Nv98phxZKHHs7vnqcHuVMH4YzLlBV6z9Alfv3Tacqli8uKNASq0RV7OtLH
-         T2PtcXYwJSyPKHd5fsLviCvizudgOtuhyjwiWZqemepNRa6SJ6bjAax0FaIx24NWjEPW
-         TfzubhsaW7clWP99NuflIxRkq7J31sl8cPYpzmyeYY/dieGJyXnzlDZBm/ZPi8FHS+bq
-         EGTc7utildrkQmuZbVbprscziJmHRBTYbQxygV/bIouTrFe0Wfr7bpK9s8v+g6b7dqsk
-         9ccw==
-X-Gm-Message-State: AOAM533wH31/JTy3b1Y3QTKktLQP8zUBrl5oacPz5S9xaY1siiKOJ6l1
-        c7RlOsrnk2UQ102n9y2oa4dzvHH5
-X-Google-Smtp-Source: ABdhPJw9W1H1jWw/58e5xPpEUFA37qKciU2RFZ0YGfr9UAt18WH9PywE6TBxCqfkRuUXpq4m2jNc2xi7ug==
+        bh=v4Xn62a8gwv09PX197f2KX5K6c68JUg+Unaoh5Rs3zU=;
+        b=CZm7tWJP8PMYU8uoc6nzHuuoz+8NO9AchxC+6eKD7fM4pY6BbEZBUdLBCpoh6sAK3Y
+         qu39lLQ49d4daTcMBUV8u4f2UleywvMSkxu6UX0VHVZRkEW1RwfmSK+RDdTy4um9t4eI
+         VIS1W7sBmdmwktkCfdhrTc5A/+zJUqR4tdhjyHD3Np/EJP6wbEv8ZKJAaHyF2oSgqecO
+         qywgyroVPsBhjjPluBtIp+5dTcke2nTaSZMj3YX6HpCuatzrlVIWFv/uVdeWjZsxpYBO
+         QEI6yptH5SrsXxAl4/WC6f9iQI12UifiRLR4zVJRzQqpbo0qs579XexEMXeAoyWIfoW9
+         ng9w==
+X-Gm-Message-State: AOAM533MiHBEZsI0zGupZyFmkVtlVa0CUl2Pz0ppkkeBrvHEDHGOG9l+
+        rbmSIzhqrS+A6TEUDc+f4u61HjV8
+X-Google-Smtp-Source: ABdhPJwSDxouzP8D6734EA8fpYrXSwixl1FJKKaGzKk8Ee6TEpQt79esVExDoO3PJGM+WWqOyJq6+ArWEg==
 X-Received: from fawn.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5795])
- (user=morbo job=sendgmr) by 2002:a17:902:cf06:b0:161:53b6:474d with SMTP id
- i6-20020a170902cf0600b0016153b6474dmr41957402plg.63.1654813240658; Thu, 09
- Jun 2022 15:20:40 -0700 (PDT)
-Date:   Thu,  9 Jun 2022 22:16:28 +0000
+ (user=morbo job=sendgmr) by 2002:a25:76d5:0:b0:663:ad77:8d48 with SMTP id
+ r204-20020a2576d5000000b00663ad778d48mr18678005ybc.633.1654813262959; Thu, 09
+ Jun 2022 15:21:02 -0700 (PDT)
+Date:   Thu,  9 Jun 2022 22:16:29 +0000
 In-Reply-To: <20220609221702.347522-1-morbo@google.com>
-Message-Id: <20220609221702.347522-10-morbo@google.com>
+Message-Id: <20220609221702.347522-11-morbo@google.com>
 Mime-Version: 1.0
 References: <20220609221702.347522-1-morbo@google.com>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH 09/12] ALSA: seq: use correct format characters
+Subject: [PATCH 10/12] ALSA: seq: use correct format characters
 From:   Bill Wendling <morbo@google.com>
 To:     isanbard@gmail.com
 Cc:     Tony Luck <tony.luck@intel.com>, Borislav Petkov <bp@alien8.de>,
@@ -99,31 +99,31 @@ From: Bill Wendling <isanbard@gmail.com>
 
 When compiling with -Wformat, clang emits the following warnings:
 
-sound/core/seq/seq_clientmgr.c:2414:22: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
-        snd_iprintf(buffer, msg);
-                            ^~~
+sound/core/sound.c:79:17: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
+        request_module(str);
+                       ^~~
 
 Use a string literal for the format string.
 
 Link: https://github.com/ClangBuiltLinux/linux/issues/378
 Signed-off-by: Bill Wendling <isanbard@gmail.com>
 ---
- sound/core/seq/seq_clientmgr.c | 2 +-
+ sound/core/sound.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/core/seq/seq_clientmgr.c b/sound/core/seq/seq_clientmgr.c
-index 2e9d695d336c..2340f3e14eeb 100644
---- a/sound/core/seq/seq_clientmgr.c
-+++ b/sound/core/seq/seq_clientmgr.c
-@@ -2411,7 +2411,7 @@ static void snd_seq_info_dump_subscribers(struct snd_info_buffer *buffer,
- 		up_read(&group->list_mutex);
- 		return;
+diff --git a/sound/core/sound.c b/sound/core/sound.c
+index df5571d98629..7866f29621bf 100644
+--- a/sound/core/sound.c
++++ b/sound/core/sound.c
+@@ -76,7 +76,7 @@ static void snd_request_other(int minor)
+ 	case SNDRV_MINOR_TIMER:		str = "snd-timer";	break;
+ 	default:			return;
  	}
--	snd_iprintf(buffer, msg);
-+	snd_iprintf(buffer, "%s", msg);
- 	list_for_each(p, &group->list_head) {
- 		if (is_src)
- 			s = list_entry(p, struct snd_seq_subscribers, src_list);
+-	request_module(str);
++	request_module("%s", str);
+ }
+ 
+ #endif	/* modular kernel */
 -- 
 2.36.1.255.ge46751e96f-goog
 
