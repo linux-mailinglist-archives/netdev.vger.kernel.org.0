@@ -2,63 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E031545440
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 20:38:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79323545469
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 20:50:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345472AbiFISiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 14:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42472 "EHLO
+        id S1345170AbiFISuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 14:50:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233030AbiFISiH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 14:38:07 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A8E936154;
-        Thu,  9 Jun 2022 11:38:06 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id a29so10818394lfk.2;
-        Thu, 09 Jun 2022 11:38:06 -0700 (PDT)
+        with ESMTP id S1344304AbiFISut (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 14:50:49 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41EDA644F6;
+        Thu,  9 Jun 2022 11:50:47 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id v11-20020a17090a4ecb00b001e2c5b837ccso144290pjl.3;
+        Thu, 09 Jun 2022 11:50:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=xcC9e3Ls6scUGYBCv/pj4mSQg2WflFuIPw1XkOXhT80=;
-        b=cRQtIssJzA7YIDi/Q1J2LKPKhJeon0x1Cxw02/Qv7ji5puJTX8PMhaQTQBuRe2BSHJ
-         pkt5TK3P55qE9cxqHI/gjykpVQRa7ek01m/BFHNvgjLpd0TgNlJTGXb+kLijomWwY6G7
-         FJV7cWcUQzX1ZkHBGkSX5RsXdADQFW+MbVUrTxThdEE1ooX8IhSYwalRuor0pnvOouBB
-         7B65kOGlUSTcgP144P4Bx8YrZIGeX3/i7Qk9FSd5Oe9MQfNtSqjPV+0T8o+8+qG4GCt1
-         XVuaXDKXSmjofKV9RQB7uJcOjmMAhLl3ti4+CcY7SJVo7z7pI2JlCdKee0FfSOAcr5sd
-         km6Q==
+        bh=UQARwMq4bydzOot7fmffdQ50f6I/B00IarAq7BlnCbg=;
+        b=TvUMLFVtmHxB4aFQn2UYxsDLbd0w59I5h+hDH7G5uIEJl4xD+mn23T/O7MNj5YBXiF
+         ydDGgyPPxuiZpgBjndpbxFMaU8zTkF1wA/4YWzyOjeSdSTMhbDTJGvSoKGm/nljNBXvs
+         ae7X8MGoxFC99rTR7N/3XGZ2uRJ6diXNEbiINJJw+bW3B1doRjvTxBlIpHFMA/iC6a/w
+         tSdhpIrhI8CHhUrPsSwaQNNNCbBfXvEaSZsUH/q6qdUfFJgztijGepIIHWFTQHVTcO5p
+         v5x8vKLRRMa/oHh4vg/WXZy6Re0sTBocMI9lOd+iWpY9zw7o8UH8NDJjc9qpi3wrUz0r
+         bY3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=xcC9e3Ls6scUGYBCv/pj4mSQg2WflFuIPw1XkOXhT80=;
-        b=mOdEejR5z25ljE0wTPTgepb+c3dQaQtf5rSrv325Eo1krHr1bm8yamfTrcUAZoJq3A
-         ak5Li01Z9BO/knEO5dheXomDErMJ8DTPDyWWN5Ltdl9izzZBZ6sy9eKoIxy09Wje5YQ4
-         HDc5LVjgxYdn8Uen+zZAyNYiR0tpKQ3utMIBqhpomQS/+8Z+sHbSpzDojk4J8SoCuQLK
-         u5QYY62RPSP8+pEyIsfdQ3QE711JAbenDGlQpNImRq7MmtORK+DfR8IZaAJvBe236seF
-         WYPgdxlORkp6xaoG1B3kEhRmAu2XgB+0e9dg0whm9bhSvB/RwjaXeQ7ZV/DCFQhT50Od
-         o8Mg==
-X-Gm-Message-State: AOAM5302GTNCW61V9BLuaT34z5qn/kcOmXdoIpwximlaTddsS48Vl25Q
-        5XpMoUkSqiURiSygK9HGbpTBobyZLj05NSCmhbA=
-X-Google-Smtp-Source: ABdhPJxXqR1rcvK9yxO2cXMt4qckgf7CSOHhXQo8EQQgyTw4cMYZf1+EYhbP+RHTX8R/kJox6qHyhUIfComxPBI/s5w=
-X-Received: by 2002:a05:6512:1398:b0:448:bda0:99f2 with SMTP id
- p24-20020a056512139800b00448bda099f2mr72098283lfa.681.1654799884769; Thu, 09
- Jun 2022 11:38:04 -0700 (PDT)
+        bh=UQARwMq4bydzOot7fmffdQ50f6I/B00IarAq7BlnCbg=;
+        b=lYybgz4cqA94vQKuN7323EjwNwoRRVwwlVVj+d2H+YbbzSvxHkRZuNHq3acUjTN4QP
+         2Pc2a5dmXV5b61XxDiVtWC1IVP6+4Q6yNWwPCkZEtnt3EpX9yAZ6EruVVPco0nu6qf+H
+         vLttTBK3+x2RRaGusMHBWOR87znWRa7FwCXtsjeU8+9ei6c3+ddTdnmQ/Rxlo+GApuCd
+         0qen+cl9zX0Gkh9SOX9wcY/DOA33C0d+26AjAFGNZiCtOdKkQzxyEx6NNJPkLd4hkY5C
+         ENZwLd/3Iurclu64mAM9FcIw/Sj8cHu1OMy8HJBUGaQYpp0rjUpekooGA/SlaqUZ6tqR
+         JCrQ==
+X-Gm-Message-State: AOAM532HrNQ/CaE00qWYEX6Zmv7RNe+GV+el7DadmS10WU6rM3lEEfU3
+        yby3CzBGozAVjA+ONarcUSrSW00vL7ERTSdmU+I=
+X-Google-Smtp-Source: ABdhPJzd1wu1Ub9bDy4dEqmWJfnlS5l8Se7kN7M+yXrSvfO4HL3PRMYuTzpQpzWkB5KhkVaG2SQK3LBgQHDRccqbCT0=
+X-Received: by 2002:a17:903:1c2:b0:163:ef7b:e10f with SMTP id
+ e2-20020a17090301c200b00163ef7be10fmr40494627plh.158.1654800646597; Thu, 09
+ Jun 2022 11:50:46 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220609143614.97837-1-quentin@isovalent.com> <YqI4XrKeQkENT/+w@google.com>
-In-Reply-To: <YqI4XrKeQkENT/+w@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 9 Jun 2022 11:37:52 -0700
-Message-ID: <CAEf4BzZYWGKA7S_1jWcGcNyPmrDJeGo8YfKXpmboRdDSeEmOZw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: Improve probing for memcg-based memory accounting
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Quentin Monnet <quentin@isovalent.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+References: <20220602012105.58853-1-xiyou.wangcong@gmail.com>
+ <20220602012105.58853-2-xiyou.wangcong@gmail.com> <62a20ceaba3d4_b28ac2082c@john.notmuch>
+In-Reply-To: <62a20ceaba3d4_b28ac2082c@john.notmuch>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 9 Jun 2022 11:50:34 -0700
+Message-ID: <CAM_iQpWN-PidFerX+2jdKNaNpx4wTVRbp+gGDow=1qKx12i4qA@mail.gmail.com>
+Subject: Re: [Patch bpf-next v3 1/4] tcp: introduce tcp_read_skb()
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
+        Eric Dumazet <edumazet@google.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Harsh Modi <harshmodi@google.com>,
-        Paul Chaignon <paul@cilium.io>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+        Jakub Sitnicki <jakub@cloudflare.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -70,123 +69,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 9, 2022 at 11:13 AM <sdf@google.com> wrote:
+On Thu, Jun 9, 2022 at 8:08 AM John Fastabend <john.fastabend@gmail.com> wrote:
 >
-> On 06/09, Quentin Monnet wrote:
-> > To ensure that memory accounting will not hinder the load of BPF
-> > objects, libbpf may raise the memlock rlimit before proceeding to some
-> > operations. Whether this limit needs to be raised depends on the version
-> > of the kernel: newer versions use cgroup-based (memcg) memory
-> > accounting, and do not require any adjustment.
->
-> > There is a probe in libbpf to determine whether memcg-based accounting
-> > is supported. But this probe currently relies on the availability of a
-> > given BPF helper, bpf_ktime_get_coarse_ns(), which landed in the same
-> > kernel version as the memory accounting change. This works in the
-> > generic case, but it may fail, for example, if the helper function has
-> > been backported to an older kernel. This has been observed for Google
-> > Cloud's Container-Optimized OS (COS), where the helper is available but
-> > rlimit is still in use. The probe succeeds, the rlimit is not raised,
-> > and probing features with bpftool, for example, fails.
->
-> > Here we attempt to improve this probe and to effectively rely on memory
-> > accounting. Function probe_memcg_account() in libbpf is updated to set
-> > the rlimit to 0, then attempt to load a BPF object, and then to reset
-> > the rlimit. If the load still succeeds, then this means we're running
-> > with memcg-based accounting.
->
-> > This probe was inspired by the similar one from the cilium/ebpf Go
-> > library [0].
->
-> > [0] https://github.com/cilium/ebpf/blob/v0.9.0/rlimit/rlimit.go#L39
->
-> > Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+> Cong Wang wrote:
+> > From: Cong Wang <cong.wang@bytedance.com>
+> >
+> > This patch inroduces tcp_read_skb() based on tcp_read_sock(),
+> > a preparation for the next patch which actually introduces
+> > a new sock ops.
+> >
+> > TCP is special here, because it has tcp_read_sock() which is
+> > mainly used by splice(). tcp_read_sock() supports partial read
+> > and arbitrary offset, neither of them is needed for sockmap.
+> >
+> > Cc: Eric Dumazet <edumazet@google.com>
+> > Cc: John Fastabend <john.fastabend@gmail.com>
+> > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > Cc: Jakub Sitnicki <jakub@cloudflare.com>
+> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 > > ---
-> >   tools/lib/bpf/bpf.c | 23 ++++++++++++++++++-----
-> >   1 file changed, 18 insertions(+), 5 deletions(-)
->
-> > diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-> > index 240186aac8e6..781387e6f66b 100644
-> > --- a/tools/lib/bpf/bpf.c
-> > +++ b/tools/lib/bpf/bpf.c
-> > @@ -99,31 +99,44 @@ static inline int sys_bpf_prog_load(union bpf_attr
-> > *attr, unsigned int size, int
->
-> >   /* Probe whether kernel switched from memlock-based (RLIMIT_MEMLOCK) to
-> >    * memcg-based memory accounting for BPF maps and progs. This was done
-> > in [0].
-> > - * We use the support for bpf_ktime_get_coarse_ns() helper, which was
-> > added in
-> > - * the same 5.11 Linux release ([1]), to detect memcg-based accounting
-> > for BPF.
-> > + * To do so, we lower the soft memlock rlimit to 0 and attempt to create
-> > a BPF
-> > + * object. If it succeeds, then memcg-based accounting for BPF is
-> > available.
-> >    *
-> >    *   [0]
-> > https://lore.kernel.org/bpf/20201201215900.3569844-1-guro@fb.com/
-> > - *   [1] d05512618056 ("bpf: Add bpf_ktime_get_coarse_ns helper")
-> >    */
-> >   int probe_memcg_account(void)
-> >   {
-> >       const size_t prog_load_attr_sz = offsetofend(union bpf_attr,
-> > attach_btf_obj_fd);
-> >       struct bpf_insn insns[] = {
-> > -             BPF_EMIT_CALL(BPF_FUNC_ktime_get_coarse_ns),
-> >               BPF_EXIT_INSN(),
-> >       };
-> > +     struct rlimit rlim_init, rlim_cur_zero = {};
-> >       size_t insn_cnt = ARRAY_SIZE(insns);
-> >       union bpf_attr attr;
-> >       int prog_fd;
->
-> > -     /* attempt loading freplace trying to use custom BTF */
-> >       memset(&attr, 0, prog_load_attr_sz);
-> >       attr.prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
-> >       attr.insns = ptr_to_u64(insns);
-> >       attr.insn_cnt = insn_cnt;
-> >       attr.license = ptr_to_u64("GPL");
->
-> > +     if (getrlimit(RLIMIT_MEMLOCK, &rlim_init))
-> > +             return -1;
+> >  include/net/tcp.h |  2 ++
+> >  net/ipv4/tcp.c    | 47 +++++++++++++++++++++++++++++++++++++++++++++++
+> >  2 files changed, 49 insertions(+)
+> >
+> > diff --git a/include/net/tcp.h b/include/net/tcp.h
+> > index 1e99f5c61f84..878544d0f8f9 100644
+> > --- a/include/net/tcp.h
+> > +++ b/include/net/tcp.h
+> > @@ -669,6 +669,8 @@ void tcp_get_info(struct sock *, struct tcp_info *);
+> >  /* Read 'sendfile()'-style from a TCP socket */
+> >  int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
+> >                 sk_read_actor_t recv_actor);
+> > +int tcp_read_skb(struct sock *sk, read_descriptor_t *desc,
+> > +              sk_read_actor_t recv_actor);
+> >
+> >  void tcp_initialize_rcv_mss(struct sock *sk);
+> >
+> > diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> > index 9984d23a7f3e..a18e9ababf54 100644
+> > --- a/net/ipv4/tcp.c
+> > +++ b/net/ipv4/tcp.c
+> > @@ -1709,6 +1709,53 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
+> >  }
+> >  EXPORT_SYMBOL(tcp_read_sock);
+> >
+> > +int tcp_read_skb(struct sock *sk, read_descriptor_t *desc,
+> > +              sk_read_actor_t recv_actor)
+> > +{
+> > +     struct tcp_sock *tp = tcp_sk(sk);
+> > +     u32 seq = tp->copied_seq;
+> > +     struct sk_buff *skb;
+> > +     int copied = 0;
+> > +     u32 offset;
 > > +
-> > +     /* Drop the soft limit to zero. We maintain the hard limit to its
-> > +      * current value, because lowering it would be a permanent operation
-> > +      * for unprivileged users.
-> > +      */
-> > +     rlim_cur_zero.rlim_max = rlim_init.rlim_max;
-> > +     if (setrlimit(RLIMIT_MEMLOCK, &rlim_cur_zero))
-> > +             return -1;
+> > +     if (sk->sk_state == TCP_LISTEN)
+> > +             return -ENOTCONN;
 > > +
-> >       prog_fd = sys_bpf_fd(BPF_PROG_LOAD, &attr, prog_load_attr_sz);
+> > +     while ((skb = tcp_recv_skb(sk, seq, &offset)) != NULL) {
+> > +             int used;
 > > +
-> > +     /* reset soft rlimit as soon as possible */
-> > +     setrlimit(RLIMIT_MEMLOCK, &rlim_init);
->
-> Isn't that adding more flakiness to the other daemons running as
-> the same user? Also, there might be surprises if another daemon that
-> has libbpf in it starts right when we've set the limit temporarily to zero.
->
-
-I agree, it briefly changes global process state and can introduce
-some undesirable (and very non-obvious) side effects.
-
-> Can we push these decisions to the users as part of libbpf 1.0 cleanup?
-
-
-Quentin, at least for bpftool, I think it's totally fine to just
-always bump RLIMIT_MEMLOCK to avoid this issue. That would solve the
-issue with probing, right? And for end applications I think I agree
-with Stanislav that application might need to ensure rlimit bumping
-for such backported changes.
-
-
->
+> > +             __skb_unlink(skb, &sk->sk_receive_queue);
+> > +             used = recv_actor(desc, skb, 0, skb->len);
+> > +             if (used <= 0) {
+> > +                     if (!copied)
+> > +                             copied = used;
+> > +                     break;
+> > +             }
+> > +             seq += used;
+> > +             copied += used;
 > > +
-> >       if (prog_fd >= 0) {
-> >               close(prog_fd);
-> >               return 1;
-> > --
-> > 2.34.1
+> > +             if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN) {
+> > +                     kfree_skb(skb);
 >
+> Hi Cong, can you elaborate here from v2 comment.
+>
+> "Hm, it is tricky here, we use the skb refcount after this patchset, so
+> it could be a real drop from another kfree_skb() in net/core/skmsg.c
+> which initiates the drop."
+
+Sure.
+
+This is the source code of consume_skb():
+
+ 911 void consume_skb(struct sk_buff *skb)
+ 912 {
+ 913         if (!skb_unref(skb))
+ 914                 return;
+ 915
+ 916         trace_consume_skb(skb);
+ 917         __kfree_skb(skb);
+ 918 }
+
+and this is kfree_skb (or kfree_skb_reason()):
+
+ 770 void kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
+ 771 {
+ 772         if (!skb_unref(skb))
+ 773                 return;
+ 774
+ 775         DEBUG_NET_WARN_ON_ONCE(reason <= 0 || reason >=
+SKB_DROP_REASON_MAX);
+ 776
+ 777         trace_kfree_skb(skb, __builtin_return_address(0), reason);
+ 778         __kfree_skb(skb);
+ 779 }
+
+So, both do refcnt before tracing, very clearly.
+
+Now, let's do a simple case:
+
+tcp_read_skb():
+ -> tcp_recv_skb() // Let's assume skb refcnt == 1 here
+  -> recv_actor()
+   -> skb_get() // refcnt == 2
+   -> kfree_skb() // Let's assume users drop it intentionally
+ ->kfree_skb() // refcnt == 0 here, if we had consume_skb() it would
+not be counted as a drop
+
+Of course you can give another example where consume_skb() is
+correct, but the point here is it is very tricky when refcnt, I even doubt
+we can do anything here, maybe moving trace before refcnt.
+
+>
+> The tcp_read_sock() hook is using tcp_eat_recv_skb(). Are we going
+> to kick tracing infra even on good cases with kfree_skb()? In
+> sk_psock_verdict_recv() we do an skb_clone() there.
+
+I don't get your point here, are you suggesting we should sacrifice
+performance just to make the drop tracing more accurate??
+
+Thanks.
