@@ -2,53 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28A6754504A
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 17:11:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D1A854504C
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 17:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236865AbiFIPLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 11:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43444 "EHLO
+        id S241025AbiFIPL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 11:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232315AbiFIPK5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 11:10:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5198E24BF8
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 08:10:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB37B61E73
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 15:10:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 197ECC34114;
-        Thu,  9 Jun 2022 15:10:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654787456;
-        bh=0Ge820OGa4te98WIS0UG3zxikC3DjwfI23VV/ZGDhtA=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=bMm4ubweenRSG9QBa8FwPmuo88IcWvGmfgkD+yzqwVNPbzBmliR1hI6Y2NTGvFRJW
-         it7BGqkI+6I3V83YVIYBaP+bYvMy3JTVUpvsyM3xyw36nZqaOL5sHj/reNaucQt0Ug
-         ++VCsq37bRGyc0WuBB3RgKv6ggch7qsXkMTqOx/G9tyPrP4ZgKA0cgpwV7n6GwqrvX
-         /PYsQ30+b2wiCIryDrug8HBU1pUWHEb9WNcTWp6BiBuk9inyyJI/anDstEW+LqTVIl
-         tVqf/ZViX2Fu4SYZu/ZancCuCtoEP9h116sMYI3fyEAKIUPNN5wCMrb6Kv68aYnXzv
-         pRPKS1T0+DUKg==
-Message-ID: <05585cd3-95e9-1379-967a-7fa6e8d065f3@kernel.org>
-Date:   Thu, 9 Jun 2022 09:10:53 -0600
+        with ESMTP id S236467AbiFIPL1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 11:11:27 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04D7279E68
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 08:11:26 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id k5-20020a17090a404500b001e8875e6242so10522465pjg.5
+        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 08:11:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yU2liZBb1/R9zzlFduk1rfGjpCANCCvi9sD6MMV0JfM=;
+        b=Q65ZJVoqNYl7ZmVhFsqtWLaqSnU21vy37feUhBivrwZjZTuPmACfsvRdWorG0fIgmn
+         fjfYmdHEmM8zZ5B6Ylq664ga0I1OPChx3JrpWNRUn8N3UXnZ5wuFtUsmct7RPjq3CkZz
+         6zcODL23pilG10PEKeXxkfqvSepvDit2qzlY+ymveJZqPFderWhFxT2ZEqh/OHsWNZ6n
+         b5unLl3ZBk7SMwfq0HPaQMIO99Fw7BxTWeDJwyyB3zn4cZFcQncczW2DswcmEgtUIF6S
+         r+r3EJVwqheFkfCmdPyQL3PBB+hiWNVN9D2l3pJzl63oBbYW2u+/eCooObenZWftyOa/
+         yUAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yU2liZBb1/R9zzlFduk1rfGjpCANCCvi9sD6MMV0JfM=;
+        b=U/iH2qFWyU+wkuwOrA4Xg2r/74LotoviWomuVqFMNY8GYMBxd5Wf3HNVFyhyogqdpw
+         IZMbk2lXBVIVpJa5VZNrKPY+uT0pPDqd5J4aNrxATwXL7+zc8xaR0UsEcdNx+ki8fO52
+         r3CQQvcPqhialmbF3NE9xHpxSuangbYUHq/pIKsi3qgdR8LPsMWMLBA4RDSUmy5vkLSE
+         7kcaHzs+DpD5bWz+29PG6BCWk/eF898oB55YubjkgPfHO7tjCpKDEgHrnkna/vVGKxjk
+         tJAJ57/FXoTxGviEvGmfuhz3CwEVkQUCSQaS6PWmMaGI4NKxZPMN45sLTQ3T0AKjTjzZ
+         STFg==
+X-Gm-Message-State: AOAM5301U15eAUa5jg9605yIavduJdfOPr71h6iKu43vGyj/b5IVLJUM
+        8AyS6YZMuWc6tNEtcC6yVVcWTYi1wM2RLkqI2Ww5Jw==
+X-Google-Smtp-Source: ABdhPJzLaOQLIHZTxI3HE3yWNOJwXDi/cV7ccWABoEtlr6JCMQNvWt0GjE1jj7l/eKHbHX0NZcoFo0o3+426rNUPoak=
+X-Received: by 2002:a17:903:2cb:b0:14f:4fb6:2fb0 with SMTP id
+ s11-20020a17090302cb00b0014f4fb62fb0mr39343698plk.172.1654787486109; Thu, 09
+ Jun 2022 08:11:26 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: [PATCH] vdpa: Add support for reading vdpa device statistics
-Content-Language: en-US
-To:     Eli Cohen <elic@nvidia.com>, netdev@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, jasowang@redhat.com,
-        si-wei.liu@oracle.com, mst@redhat.com
-References: <20220601121021.487664-1-elic@nvidia.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <20220601121021.487664-1-elic@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-9.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20220609063412.2205738-1-eric.dumazet@gmail.com> <20220609063412.2205738-4-eric.dumazet@gmail.com>
+In-Reply-To: <20220609063412.2205738-4-eric.dumazet@gmail.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Thu, 9 Jun 2022 08:11:15 -0700
+Message-ID: <CALvZod5pfJgcg0C=56aYpOe0KLfqoLNfoqv_=Eohd01=ZGqV-w@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/7] net: add per_cpu_fw_alloc field to struct proto
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -56,33 +72,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/1/22 6:10 AM, Eli Cohen wrote:
-> diff --git a/vdpa/include/uapi/linux/vdpa.h b/vdpa/include/uapi/linux/vdpa.h
-> index cc575a825a7c..7f52e703f1ad 100644
-> --- a/vdpa/include/uapi/linux/vdpa.h
-> +++ b/vdpa/include/uapi/linux/vdpa.h
-> @@ -18,6 +18,7 @@ enum vdpa_command {
->  	VDPA_CMD_DEV_DEL,
->  	VDPA_CMD_DEV_GET,		/* can dump */
->  	VDPA_CMD_DEV_CONFIG_GET,	/* can dump */
-> +	VDPA_CMD_DEV_STATS_GET,
->  };
->  
->  enum vdpa_attr {
-> @@ -46,6 +47,11 @@ enum vdpa_attr {
->  	VDPA_ATTR_DEV_NEGOTIATED_FEATURES,	/* u64 */
->  	VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,		/* u32 */
->  	VDPA_ATTR_DEV_SUPPORTED_FEATURES,	/* u64 */
-> +
-> +	VDPA_ATTR_DEV_QUEUE_INDEX,		/* u32 */
-> +	VDPA_ATTR_DEV_VENDOR_ATTR_NAME,		/* string */
-> +	VDPA_ATTR_DEV_VENDOR_ATTR_VALUE,	/* u64 */
-> +
->  	/* new attributes must be added above here */
->  	VDPA_ATTR_MAX,
->  };
+On Wed, Jun 8, 2022 at 11:34 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> From: Eric Dumazet <edumazet@google.com>
+>
+> Each protocol having a ->memory_allocated pointer gets a corresponding
+> per-cpu reserve, that following patches will use.
+>
+> Instead of having reserved bytes per socket,
+> we want to have per-cpu reserves.
+>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-
-no reference to the kernel patch, so I have no idea if this uapi has
-been committed to a kernel tree.
-
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
