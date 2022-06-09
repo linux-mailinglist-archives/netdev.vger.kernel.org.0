@@ -2,69 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97759545044
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 17:10:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28A6754504A
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 17:11:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344297AbiFIPKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 11:10:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38668 "EHLO
+        id S236865AbiFIPLA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 11:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344286AbiFIPJ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 11:09:57 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97DE43B1E87
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 08:09:53 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id e24so21639278pjt.0
-        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 08:09:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W7zthL8JawVTFaVcJT9IyjKl9SMa/+bSjdI5LUHigE0=;
-        b=FHyWDICwhlWHZewo2AQ7jEhwKHuNcLEV6UMdmv2BmhcyVw8NCT8bXM2kckO5Fq/utX
-         w1k5Ageq0blDJ5p5rjPztZ0SBMNKtCz47Y0EcaThM0/yiOHme0wzyyBiCTW31fM5Xd+g
-         KcJvgaf5nmh9SM8w9rdBOWHXPGzSY8YQH/dR4UTgd8Taz6JEnRgq3acAeC6CqjUNiz87
-         5rW56D1KjlummgSOhBOujqVU7bHE0L5rUHs1rKRCa2xOng20RuBFLTkip5KNkusGovvS
-         homyfNiUOFKDfY2PEvEvmoOKN3IehpbfgBpkAAMarrBxWgvwy0RgxmdXCzHIcXtWhT6Z
-         RCIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W7zthL8JawVTFaVcJT9IyjKl9SMa/+bSjdI5LUHigE0=;
-        b=QQGoi7k2RYgiOL0IdWVNqGfaW7aVsaTdDy3j+w6eRrpBu5+cRbBQ3460V69CLvKB+1
-         kwdIOnmiyNgx7Dck4yETKX/Mrb5dw3sEKnugUEUfBZED2MwkN2q9Nl+xBgsfB9szxMT0
-         NFNNpR84poY8Qh7Oz/OW66W2A6qZVzXwnrYyQeyap7f8cecKuagnBKzAqnZvTz666RPz
-         H54+TEHwxR8XXekipf/s5Daoyj6mFgX6XKdCbcHyQVp7Ubzog6afl5oPflXTZx+7CSpZ
-         rhLNbqlR5imTjEodQsGY/fjGRgsYss2KnWZCrGqFgEup8GF2q9HM5a5I9FcyuWqkrgfA
-         0Alw==
-X-Gm-Message-State: AOAM533NQd7zOVfD+AwaedFFqptaBfeKK0suIEbX+/WMS3TpUaLm2u/l
-        9P5S8S81XQkQ4fhFmvm4ZUBwARw/XtR2AZvBNSOM/w==
-X-Google-Smtp-Source: ABdhPJybuAhNhAK8Al5jAabTr4Cp6oLJTqTQFqiumH2uG5mrl9i+KSLSImxxMxkl4hoEBh8s73XmpE7GzINQlinxhXI=
-X-Received: by 2002:a17:902:f68a:b0:167:52ee:2c00 with SMTP id
- l10-20020a170902f68a00b0016752ee2c00mr30503592plg.106.1654787392637; Thu, 09
- Jun 2022 08:09:52 -0700 (PDT)
+        with ESMTP id S232315AbiFIPK5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 11:10:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5198E24BF8
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 08:10:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB37B61E73
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 15:10:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 197ECC34114;
+        Thu,  9 Jun 2022 15:10:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654787456;
+        bh=0Ge820OGa4te98WIS0UG3zxikC3DjwfI23VV/ZGDhtA=;
+        h=Date:Subject:To:References:From:In-Reply-To:From;
+        b=bMm4ubweenRSG9QBa8FwPmuo88IcWvGmfgkD+yzqwVNPbzBmliR1hI6Y2NTGvFRJW
+         it7BGqkI+6I3V83YVIYBaP+bYvMy3JTVUpvsyM3xyw36nZqaOL5sHj/reNaucQt0Ug
+         ++VCsq37bRGyc0WuBB3RgKv6ggch7qsXkMTqOx/G9tyPrP4ZgKA0cgpwV7n6GwqrvX
+         /PYsQ30+b2wiCIryDrug8HBU1pUWHEb9WNcTWp6BiBuk9inyyJI/anDstEW+LqTVIl
+         tVqf/ZViX2Fu4SYZu/ZancCuCtoEP9h116sMYI3fyEAKIUPNN5wCMrb6Kv68aYnXzv
+         pRPKS1T0+DUKg==
+Message-ID: <05585cd3-95e9-1379-967a-7fa6e8d065f3@kernel.org>
+Date:   Thu, 9 Jun 2022 09:10:53 -0600
 MIME-Version: 1.0
-References: <20220609063412.2205738-1-eric.dumazet@gmail.com> <20220609063412.2205738-3-eric.dumazet@gmail.com>
-In-Reply-To: <20220609063412.2205738-3-eric.dumazet@gmail.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Thu, 9 Jun 2022 08:09:41 -0700
-Message-ID: <CALvZod4ovzrDC-ydT5RKqK0DEdJzqba1nAY21epYWN0T1Mj3Ng@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/7] net: remove SK_MEM_QUANTUM and SK_MEM_QUANTUM_SHIFT
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: [PATCH] vdpa: Add support for reading vdpa device statistics
+Content-Language: en-US
+To:     Eli Cohen <elic@nvidia.com>, netdev@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, jasowang@redhat.com,
+        si-wei.liu@oracle.com, mst@redhat.com
+References: <20220601121021.487664-1-elic@nvidia.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220601121021.487664-1-elic@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-9.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,15 +56,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 11:34 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
->
-> Due to memcg interface, SK_MEM_QUANTUM is effectively PAGE_SIZE.
->
-> This might change in the future, but it seems better to avoid the
-> confusion.
->
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+On 6/1/22 6:10 AM, Eli Cohen wrote:
+> diff --git a/vdpa/include/uapi/linux/vdpa.h b/vdpa/include/uapi/linux/vdpa.h
+> index cc575a825a7c..7f52e703f1ad 100644
+> --- a/vdpa/include/uapi/linux/vdpa.h
+> +++ b/vdpa/include/uapi/linux/vdpa.h
+> @@ -18,6 +18,7 @@ enum vdpa_command {
+>  	VDPA_CMD_DEV_DEL,
+>  	VDPA_CMD_DEV_GET,		/* can dump */
+>  	VDPA_CMD_DEV_CONFIG_GET,	/* can dump */
+> +	VDPA_CMD_DEV_STATS_GET,
+>  };
+>  
+>  enum vdpa_attr {
+> @@ -46,6 +47,11 @@ enum vdpa_attr {
+>  	VDPA_ATTR_DEV_NEGOTIATED_FEATURES,	/* u64 */
+>  	VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,		/* u32 */
+>  	VDPA_ATTR_DEV_SUPPORTED_FEATURES,	/* u64 */
+> +
+> +	VDPA_ATTR_DEV_QUEUE_INDEX,		/* u32 */
+> +	VDPA_ATTR_DEV_VENDOR_ATTR_NAME,		/* string */
+> +	VDPA_ATTR_DEV_VENDOR_ATTR_VALUE,	/* u64 */
+> +
+>  	/* new attributes must be added above here */
+>  	VDPA_ATTR_MAX,
+>  };
 
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
+
+no reference to the kernel patch, so I have no idea if this uapi has
+been committed to a kernel tree.
+
