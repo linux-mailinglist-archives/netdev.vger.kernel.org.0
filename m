@@ -2,291 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 270355443D1
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 08:32:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29FCC5443D4
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 08:34:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238305AbiFIGcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 02:32:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42240 "EHLO
+        id S238274AbiFIGeX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 02:34:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229754AbiFIGcc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 02:32:32 -0400
-Received: from mail-oa1-x32.google.com (mail-oa1-x32.google.com [IPv6:2001:4860:4864:20::32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D64A12AB6;
-        Wed,  8 Jun 2022 23:32:31 -0700 (PDT)
-Received: by mail-oa1-x32.google.com with SMTP id 586e51a60fabf-e5e433d66dso29909037fac.5;
-        Wed, 08 Jun 2022 23:32:31 -0700 (PDT)
+        with ESMTP id S229754AbiFIGeV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 02:34:21 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6202F65A
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 23:34:17 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id n18so19517372plg.5
+        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 23:34:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DOoHRHCqF9Uw79QAov5iGk1D3tQsN8GR5CeCGUSa2eU=;
-        b=MZkkI1n/EvsXg4vs1Z+p//NsUcnFW8exdoABgPXG40amKrcMoCWUSK4BfFkEjg6f7W
-         RWyAl3DQkSWv+EOZ/J5pqjFvJY6B1k9ZHT4VciC8ye0FoTSFoipvVsA51m+4UL/XbwDi
-         HGEjD7AUvnuOPdrpZNHMj54Uqcl0Z/e5OXY9Dkw7mXcMHMUeBw18/KEaTzcWXCpbI9RK
-         VujHzMsrciXFIS+U7KN4h4Q+YJq2VRnVEIAMxzPfPbhj1lV0m0G8MVJyZIuoOWNMQsyP
-         hqF3I4eTuFVnikpp7H3U7IT95YWLMI7z4X8fQ/JZybr3XlNKO/UbP8q0FPZfEW/s8TAo
-         hYzA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DkfH4EncSeYhKy7wA40UP82ZK5eG6K7ssTY8ilojiRM=;
+        b=esJB3CbnMuRoXvwRSOiWI/2IBbTCdpPfbKOid95mhova3NZ8Gyr1ynD37aCcDCSYea
+         N5R1p13aK2fWtkzteroYhk/vBqEFgGalB+YdClnXrbtpBtsh9EvzD2VrS/n91t/uOupz
+         es12lwRxFoJT+j2+7/1gScpExUZ9St0ez83G5FvdyZudxxiXej9SJjto1uHYdYepXL5Y
+         RxoqEenHJTJqdUJExZO+67jhEg5L8UtmVfWHJ8XeiiIr0LzMY2+gqZLC+NOusRKLXGUX
+         +geRCOI26htG6mJm7rVpfv3F5h2cO+3fueAQwsUKiLd/Bh2ApzKSrOOr+jmlkkoKXZJW
+         LSpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DOoHRHCqF9Uw79QAov5iGk1D3tQsN8GR5CeCGUSa2eU=;
-        b=KsK/vj0msOwkzQ1XW36WUANYi0Tf4QRUqwoZi+eOcfWla2lMacOSgitET1zFhLsB5O
-         iFJVzp48ZkcbhT0XEbnImy3suIPcmDdZ5SbdgZvdv83596lvozEUBL6hfKslsahm8mDH
-         RLtLDi2JteaCkBXCAYDVEaRoggVeUeKJVDGGX9zZ1JyjtGhRJNXgvaGmZCWGXz2wEy+r
-         qLC1uNiTwNj3cr/vOkWzW2SfDw8YLndo8LH2TgqyB6REBeHtdjVY2LX2Z1nrVRlA74ZM
-         HU2OidquBNcWfF+IxwJlt6yjXo1JCH6oRTEoGXuIubhrp7rjUjgprqXwqI9X30s+puzx
-         FXxg==
-X-Gm-Message-State: AOAM531Kq3FneTPruzPVmHkDvAKr2xkKxXxYTUYGVQJHwH7e++3Nkspq
-        8/yotqtfhIOJd2p+hl905z0JyNwjfEvZgi6i9TU=
-X-Google-Smtp-Source: ABdhPJx7jfTF+1gqutoTuMpuHPyBNSohGVmVj2gONs6EyyZm8RdwWec5NrIoBw0CPdp4v8lGFPTb8RilUTYv62Jdf/w=
-X-Received: by 2002:a05:6870:3105:b0:f2:9615:ff8e with SMTP id
- v5-20020a056870310500b000f29615ff8emr825151oaa.200.1654756350402; Wed, 08 Jun
- 2022 23:32:30 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DkfH4EncSeYhKy7wA40UP82ZK5eG6K7ssTY8ilojiRM=;
+        b=J2z2C51o7+AbZesU6QroJtDokXOY9i785UOExL9x46wa4Lw1421m256HG7C+cUQVGN
+         xBorjO6dmrRBj3dLhrVfo+pcXMJAxWY3C+R5ANaSEJn97UPzHtopnYzEyZfAo2k1NsqU
+         NwcIV/NxyVnzQ5mPJlrfQK8H0zFpaeXR51Pcyp+i8e7iYbuNpvEt+HqRwhqFKOIKzSnc
+         ywyWUk6TeT8eFG7XsM59VKiHnnP7OIly3s8WH01Dj74ds1b17zrxDCAhPjIpNlAte3rP
+         J7FruMf1Qte1KZpfIM4WvHV60eCG5r1cqgykc4wOQW81pnqS96VkX/13cb4RK6GLdM2K
+         AXcg==
+X-Gm-Message-State: AOAM5326WnVeifKKI9/+IoAQYVcf4uXoIlVrXhaVYAHRuYRM8fwHZToH
+        Awtgve52da8zHVeMIObZRG4=
+X-Google-Smtp-Source: ABdhPJywJfLvcJC5GVriVqqFxJePHOQOZhiAO4mh1mW4kETWj4/VtcSHmt5P34P9JoYTrxmjtVsexw==
+X-Received: by 2002:a17:90b:38c8:b0:1e8:5202:f6d4 with SMTP id nn8-20020a17090b38c800b001e85202f6d4mr1872721pjb.149.1654756456678;
+        Wed, 08 Jun 2022 23:34:16 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:f579:a14f:f943:9d9a])
+        by smtp.gmail.com with ESMTPSA id 199-20020a6215d0000000b0051b9c0af43dsm16340050pfv.155.2022.06.08.23.34.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jun 2022 23:34:16 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next 0/7] net: reduce tcp_memory_allocated inflation
+Date:   Wed,  8 Jun 2022 23:34:05 -0700
+Message-Id: <20220609063412.2205738-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 MIME-Version: 1.0
-References: <20220606132741.3462925-1-james.hilliard1@gmail.com>
- <CAEf4BzZ8eTqVnsLqc52=AyHeAsuVB3Nv7uBW19t2pcb9h7p2hQ@mail.gmail.com>
- <CADvTj4o2cbCpC40487=rgzSJZ8i94U4RR3=_s8ANE=phPQA6VQ@mail.gmail.com> <CAEf4BzaH0ZzEabjq43eZ4pZ7=SufYswffHwi1POn93Ty9SPJ6Q@mail.gmail.com>
-In-Reply-To: <CAEf4BzaH0ZzEabjq43eZ4pZ7=SufYswffHwi1POn93Ty9SPJ6Q@mail.gmail.com>
-From:   James Hilliard <james.hilliard1@gmail.com>
-Date:   Thu, 9 Jun 2022 00:32:19 -0600
-Message-ID: <CADvTj4r_RmvPbz_+W-E3TFrPwwgHb4Z4XpWYYieTfPhcZWV39g@mail.gmail.com>
-Subject: Re: [PATCH 1/1] libbpf: fix broken gcc pragma macros in bpf_helpers.h/bpf_tracing.h
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 7, 2022 at 5:21 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Mon, Jun 6, 2022 at 2:20 PM James Hilliard <james.hilliard1@gmail.com> wrote:
-> >
-> > On Mon, Jun 6, 2022 at 12:02 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Mon, Jun 6, 2022 at 6:28 AM James Hilliard <james.hilliard1@gmail.com> wrote:
-> > > >
-> > > > It seems the gcc preprocessor breaks unless pragmas are wrapped
-> > > > individually inside macros.
-> > > >
-> > > > Fixes errors like:
-> > > > error: expected identifier or '(' before '#pragma'
-> > > >   106 | SEC("cgroup/bind6")
-> > > >       | ^~~
-> > > >
-> > > > error: expected '=', ',', ';', 'asm' or '__attribute__' before '#pragma'
-> > > >   114 | char _license[] SEC("license") = "GPL";
-> > > >       | ^~~
-> > > >
-> > >
-> > > We've been using this macro in this form for a while with no errors.
-> > > How do you get these errors in the first place?
-> >
-> > I was attempting to compile the systemd bpf programs using gcc 12.1.
-> > https://github.com/systemd/systemd/tree/main/src/core/bpf
->
-> It would be great to be able to repro it as part of selftests. Can you
-> try gcc 12 with selftests/bpf and see if you get the same problem?
->
-> >
-> > > _Pragma is supposed to
-> > > be a full equivalent of #pragma specifically to be able to be used in
-> > > macros, so these work-arounds shouldn't be necessary.
-> >
-> > I did try and style this like the nested macro example here:
-> > https://gcc.gnu.org/onlinedocs/gcc/Diagnostic-Pragmas.html
->
->
-> If you are referring to DO_PRAGMA example? That example is done that
-> way to do argument stringification, but not because _Pragma can't be
-> used as is in macros.
->
-> >
-> > > Let's first try
-> > > to root cause this.
-> >
-> > I was looking around and it seems there's a bunch of gcc preprocessor
-> > pragma issues in general, restyling this seemed to be the best option
-> > at the moment since a lot looked to be unfixed:
-> > https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53431
-> > https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55578
-> > https://gcc.gnu.org/bugzilla/show_bug.cgi?id=89718
-> > https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91669
-> >
->
-> I don't like the obscurity of the changes in this patch and don't see
-> how it fundamentally changes anything. So I'd like to actually try to
-> be able to repro it and see what other solutions there are before
-> committing to this.
->
-> I also suspect that it's only the SEC() macro that's problematic and
-> we shouldn't touch any other macro at all. But again, I'd like to get
-> a repro first.
+From: Eric Dumazet <edumazet@google.com>
 
-Ok, yeah looks like it's just the SEC() macro, resent with just that changed:
-https://lore.kernel.org/bpf/20220609062412.3950380-1-james.hilliard1@gmail.com/
+Hosts with a lot of sockets tend to hit so called TCP memory pressure,
+leading to very bad TCP performance and/or OOM.
 
-Seems there's a separate issue with -std=c17 and typeof():
-https://lore.kernel.org/bpf/20220609062829.293217-1-james.hilliard1@gmail.com/
+The problem is that some TCP sockets can hold up to 2MB of 'forward
+allocations' in their per-socket cache (sk->sk_forward_alloc),
+and there is no mechanism to make them relinquish their share
+under mem pressure.
+Only under some potentially rare events their share is reclaimed,
+one socket at a time.
 
->
-> > >
-> > > > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
-> > > > ---
-> > > >  tools/lib/bpf/bpf_helpers.h | 26 ++++++++++++++------------
-> > > >  tools/lib/bpf/bpf_tracing.h | 26 ++++++++++++++------------
-> > > >  2 files changed, 28 insertions(+), 24 deletions(-)
-> > > >
-> > > > diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-> > > > index fb04eaf367f1..6d159082727d 100644
-> > > > --- a/tools/lib/bpf/bpf_helpers.h
-> > > > +++ b/tools/lib/bpf/bpf_helpers.h
-> > > > @@ -22,11 +22,13 @@
-> > > >   * To allow use of SEC() with externs (e.g., for extern .maps declarations),
-> > > >   * make sure __attribute__((unused)) doesn't trigger compilation warning.
-> > > >   */
-> > > > +#define __gcc_helpers_pragma(x) _Pragma(#x)
-> > > > +#define __gcc_helpers_diag_pragma(x) __gcc_helpers_pragma("GCC diagnostic " #x)
-> > > >  #define SEC(name) \
-> > > > -       _Pragma("GCC diagnostic push")                                      \
-> > > > -       _Pragma("GCC diagnostic ignored \"-Wignored-attributes\"")          \
-> > > > +       __gcc_helpers_diag_pragma(push)                                     \
-> > > > +       __gcc_helpers_diag_pragma(ignored "-Wignored-attributes")           \
-> > > >         __attribute__((section(name), used))                                \
-> > > > -       _Pragma("GCC diagnostic pop")                                       \
-> > > > +       __gcc_helpers_diag_pragma(pop)
-> > > >
-> > > >  /* Avoid 'linux/stddef.h' definition of '__always_inline'. */
-> > > >  #undef __always_inline
-> > > > @@ -215,10 +217,10 @@ enum libbpf_tristate {
-> > > >         static const char ___fmt[] = fmt;                       \
-> > > >         unsigned long long ___param[___bpf_narg(args)];         \
-> > > >                                                                 \
-> > > > -       _Pragma("GCC diagnostic push")                          \
-> > > > -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")  \
-> > > > +       __gcc_helpers_diag_pragma(push)                         \
-> > > > +       __gcc_helpers_diag_pragma(ignored "-Wint-conversion")   \
-> > > >         ___bpf_fill(___param, args);                            \
-> > > > -       _Pragma("GCC diagnostic pop")                           \
-> > > > +       __gcc_helpers_diag_pragma(pop)                          \
-> > > >                                                                 \
-> > > >         bpf_seq_printf(seq, ___fmt, sizeof(___fmt),             \
-> > > >                        ___param, sizeof(___param));             \
-> > > > @@ -233,10 +235,10 @@ enum libbpf_tristate {
-> > > >         static const char ___fmt[] = fmt;                       \
-> > > >         unsigned long long ___param[___bpf_narg(args)];         \
-> > > >                                                                 \
-> > > > -       _Pragma("GCC diagnostic push")                          \
-> > > > -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")  \
-> > > > +       __gcc_helpers_diag_pragma(push)                         \
-> > > > +       __gcc_helpers_diag_pragma(ignored "-Wint-conversion")   \
-> > > >         ___bpf_fill(___param, args);                            \
-> > > > -       _Pragma("GCC diagnostic pop")                           \
-> > > > +       __gcc_helpers_diag_pragma(pop)                          \
-> > > >                                                                 \
-> > > >         bpf_snprintf(out, out_size, ___fmt,                     \
-> > > >                      ___param, sizeof(___param));               \
-> > > > @@ -264,10 +266,10 @@ enum libbpf_tristate {
-> > > >         static const char ___fmt[] = fmt;                       \
-> > > >         unsigned long long ___param[___bpf_narg(args)];         \
-> > > >                                                                 \
-> > > > -       _Pragma("GCC diagnostic push")                          \
-> > > > -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")  \
-> > > > +       __gcc_helpers_diag_pragma(push)                         \
-> > > > +       __gcc_helpers_diag_pragma(ignored "-Wint-conversion")   \
-> > > >         ___bpf_fill(___param, args);                            \
-> > > > -       _Pragma("GCC diagnostic pop")                           \
-> > > > +       __gcc_helpers_diag_pragma(pop)                          \
-> > > >                                                                 \
-> > > >         bpf_trace_vprintk(___fmt, sizeof(___fmt),               \
-> > > >                           ___param, sizeof(___param));          \
-> > > > diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
-> > > > index 01ce121c302d..e08ffc290b3e 100644
-> > > > --- a/tools/lib/bpf/bpf_tracing.h
-> > > > +++ b/tools/lib/bpf/bpf_tracing.h
-> > > > @@ -422,16 +422,18 @@ struct pt_regs;
-> > > >   * This is useful when using BPF helpers that expect original context
-> > > >   * as one of the parameters (e.g., for bpf_perf_event_output()).
-> > > >   */
-> > > > +#define __gcc_tracing_pragma(x) _Pragma(#x)
-> > > > +#define __gcc_tracing_diag_pragma(x) __gcc_tracing_pragma("GCC diagnostic " #x)
-> > > >  #define BPF_PROG(name, args...)                                                    \
-> > > >  name(unsigned long long *ctx);                                             \
-> > > >  static __attribute__((always_inline)) typeof(name(0))                      \
-> > > >  ____##name(unsigned long long *ctx, ##args);                               \
-> > > >  typeof(name(0)) name(unsigned long long *ctx)                              \
-> > > >  {                                                                          \
-> > > > -       _Pragma("GCC diagnostic push")                                      \
-> > > > -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")              \
-> > > > +       __gcc_tracing_diag_pragma(push)                                     \
-> > > > +       __gcc_tracing_diag_pragma(ignored "-Wint-conversion")               \
-> > > >         return ____##name(___bpf_ctx_cast(args));                           \
-> > > > -       _Pragma("GCC diagnostic pop")                                       \
-> > > > +       __gcc_tracing_diag_pragma(pop)                                      \
-> > > >  }                                                                          \
-> > > >  static __attribute__((always_inline)) typeof(name(0))                      \
-> > > >  ____##name(unsigned long long *ctx, ##args)
-> > > > @@ -462,10 +464,10 @@ static __attribute__((always_inline)) typeof(name(0))                         \
-> > > >  ____##name(struct pt_regs *ctx, ##args);                                   \
-> > > >  typeof(name(0)) name(struct pt_regs *ctx)                                  \
-> > > >  {                                                                          \
-> > > > -       _Pragma("GCC diagnostic push")                                      \
-> > > > -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")              \
-> > > > +       __gcc_tracing_diag_pragma(push)                                     \
-> > > > +       __gcc_tracing_diag_pragma(ignored "-Wint-conversion")               \
-> > > >         return ____##name(___bpf_kprobe_args(args));                        \
-> > > > -       _Pragma("GCC diagnostic pop")                                       \
-> > > > +       __gcc_tracing_diag_pragma(pop)                                      \
-> > > >  }                                                                          \
-> > > >  static __attribute__((always_inline)) typeof(name(0))                      \
-> > > >  ____##name(struct pt_regs *ctx, ##args)
-> > > > @@ -486,10 +488,10 @@ static __attribute__((always_inline)) typeof(name(0))                         \
-> > > >  ____##name(struct pt_regs *ctx, ##args);                                   \
-> > > >  typeof(name(0)) name(struct pt_regs *ctx)                                  \
-> > > >  {                                                                          \
-> > > > -       _Pragma("GCC diagnostic push")                                      \
-> > > > -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")              \
-> > > > +       __gcc_tracing_diag_pragma(push)                                     \
-> > > > +       __gcc_tracing_diag_pragma(ignored "-Wint-conversion")               \
-> > > >         return ____##name(___bpf_kretprobe_args(args));                     \
-> > > > -       _Pragma("GCC diagnostic pop")                                       \
-> > > > +       __gcc_tracing_diag_pragma(pop)                                      \
-> > > >  }                                                                          \
-> > > >  static __always_inline typeof(name(0)) ____##name(struct pt_regs *ctx, ##args)
-> > > >
-> > > > @@ -520,10 +522,10 @@ ____##name(struct pt_regs *ctx, ##args);                              \
-> > > >  typeof(name(0)) name(struct pt_regs *ctx)                                  \
-> > > >  {                                                                          \
-> > > >         struct pt_regs *regs = PT_REGS_SYSCALL_REGS(ctx);                   \
-> > > > -       _Pragma("GCC diagnostic push")                                      \
-> > > > -       _Pragma("GCC diagnostic ignored \"-Wint-conversion\"")              \
-> > > > +       __gcc_tracing_diag_pragma(push)             \
-> > > > +       __gcc_tracing_diag_pragma(ignored "-Wint-conversion")               \
-> > > >         return ____##name(___bpf_syscall_args(args));                       \
-> > > > -       _Pragma("GCC diagnostic pop")                                       \
-> > > > +       __gcc_tracing_diag_pragma(pop)                                      \
-> > > >  }                                                                          \
-> > > >  static __attribute__((always_inline)) typeof(name(0))                      \
-> > > >  ____##name(struct pt_regs *ctx, ##args)
-> > > > --
-> > > > 2.25.1
-> > > >
+In this series, I implemented a per-cpu cache instead of a per-socket one.
+
+Each CPU has a +1/-1 MB (256 pages on x86) forward alloc cache, in order
+to not dirty tcp_memory_allocated shared cache line too often.
+
+We keep sk->sk_forward_alloc values as small as possible, to meet
+memcg page granularity constraint.
+
+Note that memcg already has a per-cpu cache, although MEMCG_CHARGE_BATCH
+is defined to 32 pages, which seems a bit small.
+
+Note that while this cover letter mentions TCP, this work is generic
+and supports TCP, UDP, DECNET, SCTP.
+
+Eric Dumazet (7):
+  Revert "net: set SK_MEM_QUANTUM to 4096"
+  net: remove SK_MEM_QUANTUM and SK_MEM_QUANTUM_SHIFT
+  net: add per_cpu_fw_alloc field to struct proto
+  net: implement per-cpu reserves for memory_allocated
+  net: fix sk_wmem_schedule() and sk_rmem_schedule() errors
+  net: keep sk->sk_forward_alloc as small as possible
+  net: unexport __sk_mem_{raise|reduce}_allocated
+
+ include/net/sock.h           | 100 +++++++++++++++--------------------
+ include/net/tcp.h            |   2 +
+ include/net/udp.h            |   1 +
+ net/core/datagram.c          |   3 --
+ net/core/sock.c              |  22 ++++----
+ net/decnet/af_decnet.c       |   4 ++
+ net/ipv4/tcp.c               |  13 ++---
+ net/ipv4/tcp_input.c         |   6 +--
+ net/ipv4/tcp_ipv4.c          |   3 ++
+ net/ipv4/tcp_output.c        |   2 +-
+ net/ipv4/tcp_timer.c         |  19 ++-----
+ net/ipv4/udp.c               |  14 +++--
+ net/ipv4/udplite.c           |   3 ++
+ net/ipv6/tcp_ipv6.c          |   3 ++
+ net/ipv6/udp.c               |   3 ++
+ net/ipv6/udplite.c           |   3 ++
+ net/iucv/af_iucv.c           |   2 -
+ net/mptcp/protocol.c         |  13 +++--
+ net/sctp/protocol.c          |   4 +-
+ net/sctp/sm_statefuns.c      |   2 -
+ net/sctp/socket.c            |  12 +++--
+ net/sctp/stream_interleave.c |   2 -
+ net/sctp/ulpqueue.c          |   4 --
+ 23 files changed, 114 insertions(+), 126 deletions(-)
+
+-- 
+2.36.1.255.ge46751e96f-goog
+
