@@ -2,60 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 838BB5451ED
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 18:29:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6CDB545222
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 18:38:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344744AbiFIQ3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 12:29:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34990 "EHLO
+        id S244601AbiFIQix (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 12:38:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241494AbiFIQ3X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 12:29:23 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6CFD1BAE91
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 09:29:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654792162; x=1686328162;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=nORWRWRP3MST4Rzpy3Izfg+OXdWs1VITQAZo3lG4bw4=;
-  b=D7cGYTWcZV+yTQj7mewfH21xi7GA5d2Pr+VN4jYGhNe/wKM+EQa0+xrX
-   Lk1K6woMLf9PUOLDobEr6uYucKFPuMXk51sjzuRuKT3UInQLYihZOUtgt
-   TuiyEQdN+4+u1xxwl7a7W+owqn1SxAh4fLfsayaqSWKxmvrPHTv6XHTV+
-   xaD6FWTd6Y4f3HHssw+PnkGvWHa4msXNlhZpXP+Ih5pEjpexhZtoBm0fa
-   NU7p5cotJIhuw6yORUkCBvkaYGH6etddk1CnsO+qNG4qFQ56JZ5bcNVjV
-   4FY3xP6+5VlwkxEuyLTaM7PzYEOm9Zvty7VoZjL0j6TTSGA+4s5lnCLO4
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="278486090"
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="278486090"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 09:29:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="615975892"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga001.jf.intel.com with ESMTP; 09 Jun 2022 09:29:20 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Michal Wilczynski <michal.wilczynski@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sassmann@redhat.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net 4/4] iavf: Fix issue with MAC address of VF shown as zero
-Date:   Thu,  9 Jun 2022 09:26:20 -0700
-Message-Id: <20220609162620.2619258-5-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220609162620.2619258-1-anthony.l.nguyen@intel.com>
-References: <20220609162620.2619258-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S244063AbiFIQiv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 12:38:51 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00230105
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 09:38:50 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id n18so20672611plg.5
+        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 09:38:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tzH4KO5Xmg79pH8VBcjCTysNpRFoMHI2d8K5dxrOVGU=;
+        b=Ju2lMFNneLcQNnoj0DK0djALCL6fpRlvOUx7NaKoyVLxLvm6teiu2k6wUQyu33/+71
+         SdCx8FoxmYA9rjeWRh62k/rjdcqceNS0FcTs+cOz0ACist2h3/7i/+6yW/0zrQXUtbwF
+         0Q3+0f8/LJijqOfAqpUkqJZ+ht0EXklJiE8s8anF5qkqFs7F3urzR4MDTK7I7wd58GDL
+         gDlO1aIbZzPM1KXFKH+h7TzRICYclWZSwDv29vXO6eGENLuM51fpdoyuTr1mFnZTPWTb
+         /pIFiX6t7qVqG9tH9B3LQZsBfg3RfGXZ8uAwOxoAr086HBsb+fw2FzsXv5Ck5RnlEzB/
+         IY5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tzH4KO5Xmg79pH8VBcjCTysNpRFoMHI2d8K5dxrOVGU=;
+        b=v8leVDaqVTYfCQqPqi3cqzNKgOv9dyn7ngRpd9mMhBNuxRQjmzWjmL2y+fhKLDFOl2
+         var76EsBvvCg3552avr+yHswIOOhIAvKF3x6aOaaaYCK39PkbF0tNvtvp0/A1cUqfEm6
+         wKPdCNGEgQjBGLHaAyNV6l0hYa5de46qSHkzjRkZtQjc2aPbG6VZ7N5+nrCAXKj8lMs5
+         vjfNEH3EVnwTa0aajSFAVk+dw1YnxdF7nYEmXXgLFXnGazeRaSiPy/a/zZ6G89uIpogp
+         xBgoF9ieKXQ1XNERAA0v5+EVleIW5q/N2ebdIfvH+Z7XaYlmpwHZqjHfLMakZrZneq6r
+         AzPw==
+X-Gm-Message-State: AOAM5321j7ZAJAR6gLcJdYHAetthUY48xiZMsVg6XtMawQOIqTpKaFhs
+        Y2wzA8MgU4WfnRb97RCo5kvbz53AVeFwXj7jz+fOFQ==
+X-Google-Smtp-Source: ABdhPJy7OQkgfqLRBmSyDMR2qY/iTJOsWRFjkgmOoBrv0z5RbdUk5RoXwAuoruNSfkQTMgh2kRxGdXD5XOqPCFqrTtg=
+X-Received: by 2002:a17:903:2cb:b0:14f:4fb6:2fb0 with SMTP id
+ s11-20020a17090302cb00b0014f4fb62fb0mr39694775plk.172.1654792730302; Thu, 09
+ Jun 2022 09:38:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+References: <20220609063412.2205738-1-eric.dumazet@gmail.com> <20220609063412.2205738-7-eric.dumazet@gmail.com>
+In-Reply-To: <20220609063412.2205738-7-eric.dumazet@gmail.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Thu, 9 Jun 2022 09:38:38 -0700
+Message-ID: <CALvZod7hMHkfk+ivUrRHP7ej2Mx7nFQcOSMx00bYq=8qsE=y3w@mail.gmail.com>
+Subject: Re: [PATCH net-next 6/7] net: keep sk->sk_forward_alloc as small as possible
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,49 +72,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Wilczynski <michal.wilczynski@intel.com>
+On Wed, Jun 8, 2022 at 11:34 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> From: Eric Dumazet <edumazet@google.com>
+>
+> Currently, tcp_memory_allocated can hit tcp_mem[] limits quite fast.
+>
+> Each TCP socket can forward allocate up to 2 MB of memory, even after
+> flow became less active.
+>
+> 10,000 sockets can have reserved 20 GB of memory,
+> and we have no shrinker in place to reclaim that.
+>
+> Instead of trying to reclaim the extra allocations in some places,
+> just keep sk->sk_forward_alloc values as small as possible.
+>
+> This should not impact performance too much now we have per-cpu
+> reserves: Changes to tcp_memory_allocated should not be too frequent.
+>
+> For sockets not using SO_RESERVE_MEM:
+>  - idle sockets (no packets in tx/rx queues) have zero forward alloc.
+>  - non idle sockets have a forward alloc smaller than one page.
+>
+> Note:
+>
+>  - Removal of SK_RECLAIM_CHUNK and SK_RECLAIM_THRESHOLD
+>    is left to MPTCP maintainers as a follow up.
+>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-After reinitialization of iavf, ice driver gets VIRTCHNL_OP_ADD_ETH_ADDR
-message with incorrectly set type of MAC address. Hardware address should
-have is_primary flag set as true. This way ice driver knows what it has
-to set as a MAC address.
+This is a nice cleanup.
 
-Check if the address is primary in iavf_add_filter function and set flag
-accordingly.
-
-To test set all-zero MAC on a VF. This triggers iavf re-initialization
-and VIRTCHNL_OP_ADD_ETH_ADDR message gets sent to PF.
-For example:
-
-ip link set dev ens785 vf 0 mac 00:00:00:00:00:00
-
-This triggers re-initialization of iavf. New MAC should be assigned.
-Now check if MAC is non-zero:
-
-ip link show dev ens785
-
-Fixes: a3e839d539e0 ("iavf: Add usage of new virtchnl format to set default MAC")
-Signed-off-by: Michal Wilczynski <michal.wilczynski@intel.com>
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/iavf/iavf_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index 7dfcf78b57fb..f3ecb3bca33d 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -984,7 +984,7 @@ struct iavf_mac_filter *iavf_add_filter(struct iavf_adapter *adapter,
- 		list_add_tail(&f->list, &adapter->mac_filter_list);
- 		f->add = true;
- 		f->is_new_mac = true;
--		f->is_primary = false;
-+		f->is_primary = ether_addr_equal(macaddr, adapter->hw.mac.addr);
- 		adapter->aq_required |= IAVF_FLAG_AQ_ADD_MAC_FILTER;
- 	} else {
- 		f->remove = false;
--- 
-2.35.1
-
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
