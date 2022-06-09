@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19F8C545722
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 00:19:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9F4B545726
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 00:21:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345634AbiFIWS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 18:18:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48606 "EHLO
+        id S1345654AbiFIWTY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 18:19:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345607AbiFIWSy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 18:18:54 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A91454BB86
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 15:18:48 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id m5-20020a17090a4d8500b001e0cfe135c7so270462pjh.3
-        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 15:18:48 -0700 (PDT)
+        with ESMTP id S1345695AbiFIWTT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 18:19:19 -0400
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E094CD5F
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 15:19:11 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id x29-20020a056a000bdd00b0051c0902c1f3so7621872pfu.20
+        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 15:19:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=HlrKEzC+OauxSUT5xZtPYeK0f3N3z3B8pf9PvEyK7vc=;
-        b=qNUPK/S5iHdXgPK57Bkixsq++QOQQMHfyV6r2MtPs7v9I3SUg8azHVdlWi+Vmpdk0V
-         e9swXJWEpf/dXShWMQkD9tdieecIjQpQiuIyNIyGp6c4DhP+OHtn6lVN3Jb0aUWnt0zX
-         6WRDoSX5skQyQJy1DXGgbB1frbSREBbKFeP8ovCXNP1nwpzQihNeuZDVsxzVVQEW/FTO
-         oasKzV38q06qXK4hlfrcDIvuu6az9YMh+LOMOYwAEM/GaKPtPsyF6cfogObTYmCvxbsF
-         HDhlFK8BOzg5MG7pql3z3B69jG4uxkigcwMhH0FMhZG9+AiHWiMvxTL/b/XFzI/yrt60
-         XE4w==
+        bh=fWdTUxWRVXkKLWYheGOI11e0mL2XAHFKbZxg8ksMoZM=;
+        b=ezNDouTkewW/awvW/cRvKC6jHhcMBl4eQkJi6sdP+X2J6iJMkd00jA2jaRJhpFY7aw
+         yxivdcEq++4iV1GgB2ziv1ayV3oP8FWg/GB0Zo4bN9LSRrIbKMWW4pYYedFNqaZbtBdq
+         LI7orAiKEXNDUMTMRTz+eYmtPr0ihFSVRZhCMEgns7LQjXXffU9ysRs8Jm7/xp/mkHV8
+         hqJ/WTn4IigfYhYdyyonY3s//N3eKAKkW8RZYgrVC9YsY682gIJn1c0bZa76vTplgKaA
+         3OGnJiqbOGhiGk4PrcLnGinCbRAB3xGsfKwPwyZscTB2mgetoP8/LmB/5HB6hMrHCgU0
+         s7qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=HlrKEzC+OauxSUT5xZtPYeK0f3N3z3B8pf9PvEyK7vc=;
-        b=xA/PSePTLu5CoiNg6ICdGxiVEW61R5+q+3vmWYu+/hy3zLJoPSx77CzMxU3j7ruWz6
-         CsmnvUM45Fc0tgt0WL+yKxwoFoKNz/nMEkltxAuG0b6dtEtM/bI+yd0qrChR5xvX4TMH
-         QqucZKfyO633rNFkt6TTTPALP0X77+hmJI7uq7J+R3fMs+N6cbHuorm1H8/awFJIYrPs
-         JUvcY8w/vQ02cPdA9+SHdAxNAQG6y9IAnwWRdEUWGUCwLkbR8QV6phuOLlBUSerp5+lV
-         AXUBWoOQv9tsi1DkhAd+ye8subOcIyI4TdOXx8n6UTdB4MCdm1SaqvLHOSP2tk3ffMlU
-         dwqQ==
-X-Gm-Message-State: AOAM531fuY7IMtoz7eFNqB2P3dAxDrOU6jDaDXHokxetbS7ATbIaj9uP
-        q+Bnn799DMB3t/Dedgf799ZKEMp6
-X-Google-Smtp-Source: ABdhPJxktSZZjGsZMg+ncs7oCo7UsGcqz2MItXnZVpN7aAWxKCb/sSBN71lrVJLJ6nxui+334t4TDARu1w==
+        bh=fWdTUxWRVXkKLWYheGOI11e0mL2XAHFKbZxg8ksMoZM=;
+        b=h89yQsPxXd5nJ6zndjk7XpuTQi6Jfj2bZRZX4hel0E1Y8/H6sAuuQfSJb+DTcEUR61
+         OvZFNQMhiLrMmDuNAkdncE9j6JBWZnKxuORBXLjnmrSPhfyhEfTijXz7I3ikNALR/H8F
+         A09mSYx+NS4mBf9ZFQa7cKjEfldnv6bmrfgYOuBRwUafIzsddiADgWqML/rKfpg4XL+v
+         avmWiThbBZIWkwfWzARhfKeYC24ucSn287g/+ilPn5uDFf1EsHnnJqA7P98mtc30XiwX
+         dWToXWsGj8pLLkTEGvM1mSZEAlnl04bO50qsCuk6ajgNnrQO+u0TduoZsKohogm6VQrD
+         f6YA==
+X-Gm-Message-State: AOAM533Kai888BiAOpXZF1LSSzOrSX0tSVOB+yaXbRBPoxc/+Sh5XLo+
+        eiXMUJiOXS6hktQiQLtXdbeBc3Vz
+X-Google-Smtp-Source: ABdhPJymRh8XdI6qUr+0U3jn9BPA1WS3MroiwqAq54XxkobNI9HSYvmGC6qhWN+ZtdS8zin/gyNAdfGHUw==
 X-Received: from fawn.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5795])
- (user=morbo job=sendgmr) by 2002:a63:5924:0:b0:3fb:a75e:9e8a with SMTP id
- n36-20020a635924000000b003fba75e9e8amr36694755pgb.394.1654813127925; Thu, 09
- Jun 2022 15:18:47 -0700 (PDT)
-Date:   Thu,  9 Jun 2022 22:16:23 +0000
+ (user=morbo job=sendgmr) by 2002:a63:c5:0:b0:3fe:26a0:7abe with SMTP id
+ 188-20020a6300c5000000b003fe26a07abemr10973746pga.152.1654813150612; Thu, 09
+ Jun 2022 15:19:10 -0700 (PDT)
+Date:   Thu,  9 Jun 2022 22:16:24 +0000
 In-Reply-To: <20220609221702.347522-1-morbo@google.com>
-Message-Id: <20220609221702.347522-5-morbo@google.com>
+Message-Id: <20220609221702.347522-6-morbo@google.com>
 Mime-Version: 1.0
 References: <20220609221702.347522-1-morbo@google.com>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH 04/12] blk-cgroup: use correct format characters
+Subject: [PATCH 05/12] fs: quota: use correct format characters
 From:   Bill Wendling <morbo@google.com>
 To:     isanbard@gmail.com
 Cc:     Tony Luck <tony.luck@intel.com>, Borislav Petkov <bp@alien8.de>,
@@ -99,31 +99,31 @@ From: Bill Wendling <isanbard@gmail.com>
 
 When compiling with -Wformat, clang emits the following warnings:
 
-mm/backing-dev.c:880:57: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
-        dev = device_create(bdi_class, NULL, MKDEV(0, 0), bdi, bdi->dev_name);
-                                                               ^~~~~~~~~~~~~
+fs/quota/dquot.c:206:22: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
+                    request_module(module_names[qm].qm_mod_name))
+                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Use a string literal for the format string.
 
 Link: https://github.com/ClangBuiltLinux/linux/issues/378
 Signed-off-by: Bill Wendling <isanbard@gmail.com>
 ---
- mm/backing-dev.c | 2 +-
+ fs/quota/dquot.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/mm/backing-dev.c b/mm/backing-dev.c
-index ff60bd7d74e0..7b7786dceff3 100644
---- a/mm/backing-dev.c
-+++ b/mm/backing-dev.c
-@@ -877,7 +877,7 @@ int bdi_register_va(struct backing_dev_info *bdi, const char *fmt, va_list args)
- 		return 0;
+diff --git a/fs/quota/dquot.c b/fs/quota/dquot.c
+index a74aef99bd3d..3b613de3b371 100644
+--- a/fs/quota/dquot.c
++++ b/fs/quota/dquot.c
+@@ -203,7 +203,7 @@ static struct quota_format_type *find_quota_format(int id)
+ 			     module_names[qm].qm_fmt_id != id; qm++)
+ 			;
+ 		if (!module_names[qm].qm_fmt_id ||
+-		    request_module(module_names[qm].qm_mod_name))
++		    request_module("%s", module_names[qm].qm_mod_name))
+ 			return NULL;
  
- 	vsnprintf(bdi->dev_name, sizeof(bdi->dev_name), fmt, args);
--	dev = device_create(bdi_class, NULL, MKDEV(0, 0), bdi, bdi->dev_name);
-+	dev = device_create(bdi_class, NULL, MKDEV(0, 0), bdi, "%s", bdi->dev_name);
- 	if (IS_ERR(dev))
- 		return PTR_ERR(dev);
- 
+ 		spin_lock(&dq_list_lock);
 -- 
 2.36.1.255.ge46751e96f-goog
 
