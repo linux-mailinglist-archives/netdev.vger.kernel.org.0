@@ -2,50 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 672FC5452BF
+	by mail.lfdr.de (Postfix) with ESMTP id B39A05452C0
 	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 19:16:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240802AbiFIRQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 13:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48390 "EHLO
+        id S1343784AbiFIRQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 13:16:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242696AbiFIRP7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 13:15:59 -0400
+        with ESMTP id S244311AbiFIRQA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 13:16:00 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6908F6583
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 10:15:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 751CEC50BC
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 10:15:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654794958; x=1686330958;
+  t=1654794959; x=1686330959;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=zw1fy+TvFvsmxfkCQ3ahAneCeI7q/3Gb9rDuZXmldQA=;
-  b=FhIjVynEWMOUHyVWg2ojaht6BVEfeegWFAQpc9OqQsT9rGu3PhH/rkHd
-   bo0RpHj5mMTctZ9c8YaOZaDhNtTrPBGIMR29PckYFw/bVqHN65d/zWLUL
-   TEZGnJ0976KWDeJfVCh2txYCWdXco2ahlmGOgqysuBfIIPlpjuHjQSSk4
-   TajeI2iRF25juVTZjUpvhYeCJGqOXFEqaZnGeAQ4QZxfVXYTkvhGF01IE
-   IuQlArRxF2zBlmzivtLeP4xndpMUYnndP59lnxyiSnnvvWCVQhDZgE/mq
-   UB1tPI6UOV4Xo/BAixxc0B5aWcuMeE0B0y1j4WTsMvbK6VX+x84VloQP1
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="276124439"
+  bh=cHPBJ6V0IvAWwSGFppRmDZpqR+HYpQpRif0JvcVK+oc=;
+  b=UVGg2IksGq7VVkDkeNswCYGA5WVXRya5Y7SbXoF6lfGRGDjtL97k4TBo
+   LKaL3//FbrYrnR2zrt9AYkTjWbdfB+eswZmyfCMnjt9cLdIlkxbTlAi0f
+   Je9Twmua96kJ4vhdp5g8sZv8+WjYVUQWrrNQ5wNUVehVmD5UnfqXSYwxD
+   MPkdYGZB0yCup8hhxLO5SVe6fQE/T+Pdxt4bJa0+bzV6WJ4tRLUEGoQuD
+   aPeu7HxsMumGeNGLrPh55DsT/cbkDNkbit+TIkE6zZhPOTXuCKSFlSqAL
+   2ka71YqFThZvM2LDWLpCCcCiCCOHDodAuB9V7bCiYO5RiKhyS6xH3miEh
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="276124440"
 X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="276124439"
+   d="scan'208";a="276124440"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
   by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 10:15:57 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="566487534"
+   d="scan'208";a="566487537"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga002.jf.intel.com with ESMTP; 09 Jun 2022 10:15:57 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Maximilian Heyne <mheyne@amazon.de>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net-next 1/6] drivers, ixgbe: export vf statistics
-Date:   Thu,  9 Jun 2022 10:12:52 -0700
-Message-Id: <20220609171257.2727150-2-anthony.l.nguyen@intel.com>
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com
+Subject: [PATCH net-next 2/6] igb: Remove duplicate defines
+Date:   Thu,  9 Jun 2022 10:12:53 -0700
+Message-Id: <20220609171257.2727150-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220609171257.2727150-1-anthony.l.nguyen@intel.com>
 References: <20220609171257.2727150-1-anthony.l.nguyen@intel.com>
@@ -61,224 +60,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maximilian Heyne <mheyne@amazon.de>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-This change retrieves network metrics for virtual functions from the
-device and exports them via the iproute2 interface.
+There's no need to define same thing twice.
 
-The code for retrieving the statistics from the device is taken from the
-out-of-tree driver.  The feature was introduced with version 2.0.75.7,
-so the diff between this version and the previous version 2.0.72.4 was
-used to identify required changes. The export via ethtool is omitted in
-favor of using the standard ndo_get_vf_stats interface.
-
-Per-VF statistics can now be printed, for instance, via
-
-  ip --statistics link show dev eth0
-
-Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe.h      | 34 ++++++++
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 86 +++++++++++++++++++
- drivers/net/ethernet/intel/ixgbe/ixgbe_type.h |  7 ++
- 3 files changed, 127 insertions(+)
+ drivers/net/ethernet/intel/igb/e1000_defines.h | 3 ---
+ drivers/net/ethernet/intel/igb/e1000_regs.h    | 1 -
+ 2 files changed, 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-index 921a4d977d65..48444ab9e0b1 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-@@ -167,12 +167,46 @@ enum ixgbe_tx_flags {
- #define IXGBE_82599_VF_DEVICE_ID        0x10ED
- #define IXGBE_X540_VF_DEVICE_ID         0x1515
+diff --git a/drivers/net/ethernet/intel/igb/e1000_defines.h b/drivers/net/ethernet/intel/igb/e1000_defines.h
+index ca5429774994..fa028928482f 100644
+--- a/drivers/net/ethernet/intel/igb/e1000_defines.h
++++ b/drivers/net/ethernet/intel/igb/e1000_defines.h
+@@ -1033,9 +1033,6 @@
+ #define E1000_VFTA_ENTRY_MASK                0x7F
+ #define E1000_VFTA_ENTRY_BIT_SHIFT_MASK      0x1F
  
-+#define UPDATE_VF_COUNTER_32bit(reg, last_counter, counter)	\
-+	{							\
-+		u32 current_counter = IXGBE_READ_REG(hw, reg);	\
-+		if (current_counter < last_counter)		\
-+			counter += 0x100000000LL;		\
-+		last_counter = current_counter;			\
-+		counter &= 0xFFFFFFFF00000000LL;		\
-+		counter |= current_counter;			\
-+	}
-+
-+#define UPDATE_VF_COUNTER_36bit(reg_lsb, reg_msb, last_counter, counter) \
-+	{								 \
-+		u64 current_counter_lsb = IXGBE_READ_REG(hw, reg_lsb);	 \
-+		u64 current_counter_msb = IXGBE_READ_REG(hw, reg_msb);	 \
-+		u64 current_counter = (current_counter_msb << 32) |	 \
-+			current_counter_lsb;				 \
-+		if (current_counter < last_counter)			 \
-+			counter += 0x1000000000LL;			 \
-+		last_counter = current_counter;				 \
-+		counter &= 0xFFFFFFF000000000LL;			 \
-+		counter |= current_counter;				 \
-+	}
-+
-+struct vf_stats {
-+	u64 gprc;
-+	u64 gorc;
-+	u64 gptc;
-+	u64 gotc;
-+	u64 mprc;
-+};
-+
- struct vf_data_storage {
- 	struct pci_dev *vfdev;
- 	unsigned char vf_mac_addresses[ETH_ALEN];
- 	u16 vf_mc_hashes[IXGBE_MAX_VF_MC_ENTRIES];
- 	u16 num_vf_mc_hashes;
- 	bool clear_to_send;
-+	struct vf_stats vfstats;
-+	struct vf_stats last_vfstats;
-+	struct vf_stats saved_rst_vfstats;
- 	bool pf_set_mac;
- 	u16 pf_vlan; /* When set, guest VLAN config not allowed. */
- 	u16 pf_qos;
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 77c2e70b0860..5c62e9963650 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -5549,6 +5549,47 @@ static int ixgbe_non_sfp_link_config(struct ixgbe_hw *hw)
- 	return ret;
- }
+-/* DMA Coalescing register fields */
+-#define E1000_PCIEMISC_LX_DECISION      0x00000080 /* Lx power on DMA coal */
+-
+ /* Tx Rate-Scheduler Config fields */
+ #define E1000_RTTBCNRC_RS_ENA		0x80000000
+ #define E1000_RTTBCNRC_RF_DEC_MASK	0x00003FFF
+diff --git a/drivers/net/ethernet/intel/igb/e1000_regs.h b/drivers/net/ethernet/intel/igb/e1000_regs.h
+index 9cb49980ec2d..eb9f6da9208a 100644
+--- a/drivers/net/ethernet/intel/igb/e1000_regs.h
++++ b/drivers/net/ethernet/intel/igb/e1000_regs.h
+@@ -116,7 +116,6 @@
+ #define E1000_DMCRTRH	0x05DD0 /* Receive Packet Rate Threshold */
+ #define E1000_DMCCNT	0x05DD4 /* Current Rx Count */
+ #define E1000_FCRTC	0x02170 /* Flow Control Rx high watermark */
+-#define E1000_PCIEMISC	0x05BB8 /* PCIE misc config register */
  
-+/**
-+ * ixgbe_clear_vf_stats_counters - Clear out VF stats after reset
-+ * @adapter: board private structure
-+ *
-+ * On a reset we need to clear out the VF stats or accounting gets
-+ * messed up because they're not clear on read.
-+ **/
-+static void ixgbe_clear_vf_stats_counters(struct ixgbe_adapter *adapter)
-+{
-+	struct ixgbe_hw *hw = &adapter->hw;
-+	int i;
-+
-+	for (i = 0; i < adapter->num_vfs; i++) {
-+		adapter->vfinfo[i].last_vfstats.gprc =
-+			IXGBE_READ_REG(hw, IXGBE_PVFGPRC(i));
-+		adapter->vfinfo[i].saved_rst_vfstats.gprc +=
-+			adapter->vfinfo[i].vfstats.gprc;
-+		adapter->vfinfo[i].vfstats.gprc = 0;
-+		adapter->vfinfo[i].last_vfstats.gptc =
-+			IXGBE_READ_REG(hw, IXGBE_PVFGPTC(i));
-+		adapter->vfinfo[i].saved_rst_vfstats.gptc +=
-+			adapter->vfinfo[i].vfstats.gptc;
-+		adapter->vfinfo[i].vfstats.gptc = 0;
-+		adapter->vfinfo[i].last_vfstats.gorc =
-+			IXGBE_READ_REG(hw, IXGBE_PVFGORC_LSB(i));
-+		adapter->vfinfo[i].saved_rst_vfstats.gorc +=
-+			adapter->vfinfo[i].vfstats.gorc;
-+		adapter->vfinfo[i].vfstats.gorc = 0;
-+		adapter->vfinfo[i].last_vfstats.gotc =
-+			IXGBE_READ_REG(hw, IXGBE_PVFGOTC_LSB(i));
-+		adapter->vfinfo[i].saved_rst_vfstats.gotc +=
-+			adapter->vfinfo[i].vfstats.gotc;
-+		adapter->vfinfo[i].vfstats.gotc = 0;
-+		adapter->vfinfo[i].last_vfstats.mprc =
-+			IXGBE_READ_REG(hw, IXGBE_PVFMPRC(i));
-+		adapter->vfinfo[i].saved_rst_vfstats.mprc +=
-+			adapter->vfinfo[i].vfstats.mprc;
-+		adapter->vfinfo[i].vfstats.mprc = 0;
-+	}
-+}
-+
- static void ixgbe_setup_gpie(struct ixgbe_adapter *adapter)
- {
- 	struct ixgbe_hw *hw = &adapter->hw;
-@@ -5684,6 +5725,7 @@ static void ixgbe_up_complete(struct ixgbe_adapter *adapter)
- 	adapter->link_check_timeout = jiffies;
- 	mod_timer(&adapter->service_timer, jiffies);
- 
-+	ixgbe_clear_vf_stats_counters(adapter);
- 	/* Set PF Reset Done bit so PF/VF Mail Ops can work */
- 	ctrl_ext = IXGBE_READ_REG(hw, IXGBE_CTRL_EXT);
- 	ctrl_ext |= IXGBE_CTRL_EXT_PFRSTD;
-@@ -7271,6 +7313,32 @@ void ixgbe_update_stats(struct ixgbe_adapter *adapter)
- 	netdev->stats.rx_length_errors = hwstats->rlec;
- 	netdev->stats.rx_crc_errors = hwstats->crcerrs;
- 	netdev->stats.rx_missed_errors = total_mpc;
-+
-+	/* VF Stats Collection - skip while resetting because these
-+	 * are not clear on read and otherwise you'll sometimes get
-+	 * crazy values.
-+	 */
-+	if (!test_bit(__IXGBE_RESETTING, &adapter->state)) {
-+		for (i = 0; i < adapter->num_vfs; i++) {
-+			UPDATE_VF_COUNTER_32bit(IXGBE_PVFGPRC(i),
-+						adapter->vfinfo[i].last_vfstats.gprc,
-+						adapter->vfinfo[i].vfstats.gprc);
-+			UPDATE_VF_COUNTER_32bit(IXGBE_PVFGPTC(i),
-+						adapter->vfinfo[i].last_vfstats.gptc,
-+						adapter->vfinfo[i].vfstats.gptc);
-+			UPDATE_VF_COUNTER_36bit(IXGBE_PVFGORC_LSB(i),
-+						IXGBE_PVFGORC_MSB(i),
-+						adapter->vfinfo[i].last_vfstats.gorc,
-+						adapter->vfinfo[i].vfstats.gorc);
-+			UPDATE_VF_COUNTER_36bit(IXGBE_PVFGOTC_LSB(i),
-+						IXGBE_PVFGOTC_MSB(i),
-+						adapter->vfinfo[i].last_vfstats.gotc,
-+						adapter->vfinfo[i].vfstats.gotc);
-+			UPDATE_VF_COUNTER_32bit(IXGBE_PVFMPRC(i),
-+						adapter->vfinfo[i].last_vfstats.mprc,
-+						adapter->vfinfo[i].vfstats.mprc);
-+		}
-+	}
- }
- 
- /**
-@@ -9022,6 +9090,23 @@ static void ixgbe_get_stats64(struct net_device *netdev,
- 	stats->rx_missed_errors	= netdev->stats.rx_missed_errors;
- }
- 
-+static int ixgbe_ndo_get_vf_stats(struct net_device *netdev, int vf,
-+				  struct ifla_vf_stats *vf_stats)
-+{
-+	struct ixgbe_adapter *adapter = netdev_priv(netdev);
-+
-+	if (vf < 0 || vf >= adapter->num_vfs)
-+		return -EINVAL;
-+
-+	vf_stats->rx_packets = adapter->vfinfo[vf].vfstats.gprc;
-+	vf_stats->rx_bytes   = adapter->vfinfo[vf].vfstats.gorc;
-+	vf_stats->tx_packets = adapter->vfinfo[vf].vfstats.gptc;
-+	vf_stats->tx_bytes   = adapter->vfinfo[vf].vfstats.gotc;
-+	vf_stats->multicast  = adapter->vfinfo[vf].vfstats.mprc;
-+
-+	return 0;
-+}
-+
- #ifdef CONFIG_IXGBE_DCB
- /**
-  * ixgbe_validate_rtr - verify 802.1Qp to Rx packet buffer mapping is valid.
-@@ -10338,6 +10423,7 @@ static const struct net_device_ops ixgbe_netdev_ops = {
- 	.ndo_set_vf_rss_query_en = ixgbe_ndo_set_vf_rss_query_en,
- 	.ndo_set_vf_trust	= ixgbe_ndo_set_vf_trust,
- 	.ndo_get_vf_config	= ixgbe_ndo_get_vf_config,
-+	.ndo_get_vf_stats	= ixgbe_ndo_get_vf_stats,
- 	.ndo_get_stats64	= ixgbe_get_stats64,
- 	.ndo_setup_tc		= __ixgbe_setup_tc,
- #ifdef IXGBE_FCOE
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h b/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
-index 6da9880d766a..7f7ea468ffa9 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_type.h
-@@ -2533,6 +2533,13 @@ enum {
- #define IXGBE_PVFTXDCTL(P)	(0x06028 + (0x40 * (P)))
- #define IXGBE_PVFTDWBAL(P)	(0x06038 + (0x40 * (P)))
- #define IXGBE_PVFTDWBAH(P)	(0x0603C + (0x40 * (P)))
-+#define IXGBE_PVFGPRC(x)	(0x0101C + (0x40 * (x)))
-+#define IXGBE_PVFGPTC(x)	(0x08300 + (0x04 * (x)))
-+#define IXGBE_PVFGORC_LSB(x)	(0x01020 + (0x40 * (x)))
-+#define IXGBE_PVFGORC_MSB(x)	(0x0D020 + (0x40 * (x)))
-+#define IXGBE_PVFGOTC_LSB(x)	(0x08400 + (0x08 * (x)))
-+#define IXGBE_PVFGOTC_MSB(x)	(0x08404 + (0x08 * (x)))
-+#define IXGBE_PVFMPRC(x)	(0x0D01C + (0x40 * (x)))
- 
- #define IXGBE_PVFTDWBALn(q_per_pool, vf_number, vf_q_index) \
- 		(IXGBE_PVFTDWBAL((q_per_pool)*(vf_number) + (vf_q_index)))
+ /* TX Rate Limit Registers */
+ #define E1000_RTTDQSEL	0x3604 /* Tx Desc Plane Queue Select - WO */
 -- 
 2.35.1
 
