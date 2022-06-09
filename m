@@ -2,51 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CD6A544DCC
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 15:35:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD430544E02
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 15:47:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343875AbiFINf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 09:35:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38970 "EHLO
+        id S244932AbiFINrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 09:47:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343869AbiFINf1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 09:35:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9B44B86D
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 06:35:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0315361D41
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 13:35:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F6CFC34114;
-        Thu,  9 Jun 2022 13:35:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654781725;
-        bh=aKFwRxrLeZ1Jm9AKt4HneNtBVicSwksGlK16+1EEMec=;
-        h=In-Reply-To:References:Cc:From:Subject:To:Date:From;
-        b=O0QAhzvoc30BjiYYaIYaIeINkm5S6/lWwmktOtqSoF7vxA0fDkklak1YTJmg867DH
-         IffrzCy/oaaTeWSm8IpdBtSqyjXPVnT2HB4kKYH5KXaXEkM3kvHRGk4Vl60pcsIaop
-         tpwTDIj4G5vPWYfP54oHpOsr8fV2eiResaAgl/rbLrsbVdH9eIyb9x/Pj830ZwcQG3
-         v//4Y6xAflCQxbpP3R3M7rpOpLukBM5NRkBozZ1r8fham1j8Wfp8ct+k0WShagi3Ba
-         Q5K+Ftfr2sYoyljCN6COboKul5VpbWQj5jTtnVPMhb4c+GemeT61Td1aQyfzzRM9Qb
-         EsguAgbE84xGQ==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S244194AbiFINrc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 09:47:32 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39DA63CF
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 06:47:29 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-3135519f95fso71414887b3.6
+        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 06:47:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CANwsuZ+/FfUoa7+NEGbAT/bvub08rzdBfpcv9TbzJ4=;
+        b=YQ5kvphzv7Nxt9qx6e8jew0LM5CJcOp7JVra7GNinFZXxEnATYdfjDEXyg6d20tjJZ
+         t1tjnvAeeV1Xwesru0dgZC0Xy1Y5rsVytxS1k/FwJVzSEfsimwY2kDTtfSNvU8NbKBsQ
+         oPTmwzgVDNA9VaXPW93iPKw8gDcYHppKwHZAqPaxXXYRX5WF8gWmGe63YuWQD1cdoPSa
+         q75fySZL0mz32Eb/OjvLifbfHIyQKWCaaRbCx5Jkv4mNJDkZUxV7MchQK7PIkHGLk1lQ
+         57j0fa8b/VETwumreotZhD/nBp96UPuZ2kbDkyFjNjaKQcWCnC5B0W7SLsoMdKJ+y86F
+         8bEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CANwsuZ+/FfUoa7+NEGbAT/bvub08rzdBfpcv9TbzJ4=;
+        b=08Gx2ouqW5BBUTAIVSVDuvwVcu+y49XIXQ3n4HEnF+pfZNV+yYLQvG6UfHiGKsEK8X
+         T2OSVrFpS/cBL0bpD+MJbKkttO7NFb5JDp6Jx3qsqySgT1N2A1tgBOpGZiXtD7yKh4N3
+         posmY7pB/VgyDWMP/ZPZ0ZlbPpnA/3XFoc2o5UtJF0e4kc8ZPg76K4zRByOSc4bHlCvG
+         51yWh0xyvWVCdpcEB4F6Xb8acBuyXuwp5t6d/DZqnwwwiJ7yotpPv4ocyWxecUzYbLv3
+         HKT4I9qu2uL9PPqrVYdTsOFBxbqaqD+o2GS+yVqexxkA1lF+XDQAM57PjrmkhPFsLb6X
+         khXA==
+X-Gm-Message-State: AOAM530Gv6QrTCdcdy6ztVxBBc8//I61uIBMoXAHNDHUCewh5YYKX5aA
+        xR988J9FG5z+S2WvmokR2NOm0DMnIKKRSJvnR3Z5Iw==
+X-Google-Smtp-Source: ABdhPJxCx1oQzq2gg+Sg0gB8ekOHMmyL141cay7dPY5xHK6//ZgixYU3Jl7+TS8MqJASg2Ys6VXZ3/i6Ng5XlG+AtG4=
+X-Received: by 2002:a81:4811:0:b0:30c:8021:4690 with SMTP id
+ v17-20020a814811000000b0030c80214690mr43000175ywa.47.1654782448671; Thu, 09
+ Jun 2022 06:47:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220609011844.404011-1-jmaxwell37@gmail.com>
-References: <20220609011844.404011-1-jmaxwell37@gmail.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, cutaylor-pub@yahoo.com,
-        Jon Maxwell <jmaxwell37@gmail.com>
-From:   Antoine Tenart <atenart@kernel.org>
-Subject: Re: [PATCH net] net: bpf: fix request_sock leak in filter.c
-To:     Jon Maxwell <jmaxwell37@gmail.com>, netdev@vger.kernel.org
-Message-ID: <165478172265.3884.13579040217428050738@kwain>
-Date:   Thu, 09 Jun 2022 15:35:22 +0200
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+References: <20220609063412.2205738-1-eric.dumazet@gmail.com>
+ <20220609063412.2205738-5-eric.dumazet@gmail.com> <CACSApvYEwczGVvOxOfDXNHd_x5LDb1vXT03y-=6CcrTv1uR9Kw@mail.gmail.com>
+In-Reply-To: <CACSApvYEwczGVvOxOfDXNHd_x5LDb1vXT03y-=6CcrTv1uR9Kw@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 9 Jun 2022 06:47:17 -0700
+Message-ID: <CANn89iKbam05mjKCN4bS6H42x1_Jw1a=G3vbrNM3FTTjvXABWg@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/7] net: implement per-cpu reserves for memory_allocated
+To:     Soheil Hassas Yeganeh <soheil@google.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>, Wei Wang <weiwan@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Neal Cardwell <ncardwell@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,109 +72,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jon,
+On Thu, Jun 9, 2022 at 6:34 AM Soheil Hassas Yeganeh <soheil@google.com> wrote:
+>
+> On Thu, Jun 9, 2022 at 2:34 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >
+> > From: Eric Dumazet <edumazet@google.com>
+> >
+> > We plan keeping sk->sk_forward_alloc as small as possible
+> > in future patches.
+> >
+> > This means we are going to call sk_memory_allocated_add()
+> > and sk_memory_allocated_sub() more often.
+> >
+> > Implement a per-cpu cache of +1/-1 MB, to reduce number
+> > of changes to sk->sk_prot->memory_allocated, which
+> > would otherwise be cause of false sharing.
+> >
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+>
+> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+>
+> > ---
+> >  include/net/sock.h | 38 +++++++++++++++++++++++++++++---------
+> >  1 file changed, 29 insertions(+), 9 deletions(-)
+> >
+> > diff --git a/include/net/sock.h b/include/net/sock.h
+> > index 825f8cbf791f02d798f17dd4f7a2659cebb0e98a..59040fee74e7de8d63fbf719f46e172906c134bb 100644
+> > --- a/include/net/sock.h
+> > +++ b/include/net/sock.h
+> > @@ -1397,22 +1397,48 @@ static inline bool sk_under_memory_pressure(const struct sock *sk)
+> >         return !!*sk->sk_prot->memory_pressure;
+> >  }
+> >
+> > +static inline long
+> > +proto_memory_allocated(const struct proto *prot)
+> > +{
+> > +       return max(0L, atomic_long_read(prot->memory_allocated));
+> > +}
+> > +
+> >  static inline long
+> >  sk_memory_allocated(const struct sock *sk)
+> >  {
+> > -       return atomic_long_read(sk->sk_prot->memory_allocated);
+> > +       return proto_memory_allocated(sk->sk_prot);
+> >  }
+> >
+> > +/* 1 MB per cpu, in page units */
+> > +#define SK_MEMORY_PCPU_RESERVE (1 << (20 - PAGE_SHIFT))
+> > +
+> >  static inline long
+> >  sk_memory_allocated_add(struct sock *sk, int amt)
+> >  {
+> > -       return atomic_long_add_return(amt, sk->sk_prot->memory_allocated);
+> > +       int local_reserve;
+> > +
+> > +       preempt_disable();
+> > +       local_reserve = __this_cpu_add_return(*sk->sk_prot->per_cpu_fw_alloc, amt);
+> > +       if (local_reserve >= SK_MEMORY_PCPU_RESERVE) {
+> > +               __this_cpu_sub(*sk->sk_prot->per_cpu_fw_alloc, local_reserve);
+>
+> This is just a nitpick, but we could
+> __this_cpu_write(*sk->sk_prot->per_cpu_fw_alloc, 0) instead which
+> should be slightly faster.
 
-Quoting Jon Maxwell (2022-06-09 03:18:44)
-> A customer reported a request_socket leak in a Calico cloud environment. =
-We=20
-> found that a BPF program was doing a socket lookup with takes a refcnt on=
-=20
-> the socket and that it was finding the request_socket but returning the p=
-arent=20
-> LISTEN socket via sk_to_full_sk() without decrementing the child request =
-socket=20
-> 1st, resulting in request_sock slab object leak. This patch retains the=20
-> existing behaviour of returning full socks to the caller but it also decr=
-ements
-> the child request_socket if one is present before doing so to prevent the=
- leak.
->=20
-> Thanks to Curtis Taylor for all the help in diagnosing and testing this. =
-And=20
-> thanks to Antoine Tenart for the reproducer and patch input.
->=20
-> Fixes: f7355a6c0497 bpf: ("Check sk_fullsock() before returning from bpf_=
-sk_lookup()")
-> Fixes: edbf8c01de5a bpf: ("add skc_lookup_tcp helper")
+This would require us to block irqs, not only preempt_disable()/preempt_enable()
 
-"bpf:" should be inside the parenthesis in the two above lines.
+Otherwise when doing the write, there is no guarantee we replace the
+intended value,
+as an interrupt could have changed this cpu per_cpu_fw_alloc.
 
-Isn't the issue from before edbf8c01de5a for bpf_sk_lookup? Looking at a
-5.1 kernel[1], __bpf_sk_lookup was called and also did the full socket
-translation[2]. bpf_sk_release would not be called on the original
-socket when that happens.
+A __this_cpu_cmpxchg() would make sure of that, but would be more
+expensive than __this_cpu_sub() and would require a loop.
 
-[1] https://elixir.bootlin.com/linux/v5.1/source/net/core/filter.c#L5204
-[2] https://elixir.bootlin.com/linux/v5.1/source/net/core/filter.c#L5198
+ With my change, there is a tiny possibility that
+*sk->sk_prot->per_cpu_fw_alloc, is not in the -1/+1 1MB range,
+but no lasting consequences, next update will consolidate things, and
+tcp_memory_allocated will not drift.
 
-> Tested-by: Curtis Taylor <cutaylor-pub@yahoo.com>
-> Co-developed-by: Antoine Tenart <atenart@kernel.org>
-> Signed-off-by:: Antoine Tenart <atenart@kernel.org>
-
-Please remove the extra ':'.
-
-Thanks!
-Antoine
-
-> Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
-> ---
->  net/core/filter.c | 20 ++++++++++++++------
->  1 file changed, 14 insertions(+), 6 deletions(-)
->=20
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index 2e32cee2c469..e3c04ae7381f 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -6202,13 +6202,17 @@ __bpf_sk_lookup(struct sk_buff *skb, struct bpf_s=
-ock_tuple *tuple, u32 len,
->  {
->         struct sock *sk =3D __bpf_skc_lookup(skb, tuple, len, caller_net,
->                                            ifindex, proto, netns_id, flag=
-s);
-> +       struct sock *sk1 =3D sk;
-> =20
->         if (sk) {
->                 sk =3D sk_to_full_sk(sk);
-> -               if (!sk_fullsock(sk)) {
-> -                       sock_gen_put(sk);
-> +               /* sk_to_full_sk() may return (sk)->rsk_listener, so make=
- sure the original sk1
-> +                * sock refcnt is decremented to prevent a request_sock l=
-eak.
-> +                */
-> +               if (!sk_fullsock(sk1))
-> +                       sock_gen_put(sk1);
-> +               if (!sk_fullsock(sk))
->                         return NULL;
-> -               }
->         }
-> =20
->         return sk;
-> @@ -6239,13 +6243,17 @@ bpf_sk_lookup(struct sk_buff *skb, struct bpf_soc=
-k_tuple *tuple, u32 len,
->  {
->         struct sock *sk =3D bpf_skc_lookup(skb, tuple, len, proto, netns_=
-id,
->                                          flags);
-> +       struct sock *sk1 =3D sk;
-> =20
->         if (sk) {
->                 sk =3D sk_to_full_sk(sk);
-> -               if (!sk_fullsock(sk)) {
-> -                       sock_gen_put(sk);
-> +               /* sk_to_full_sk() may return (sk)->rsk_listener, so make=
- sure the original sk1
-> +                * sock refcnt is decremented to prevent a request_sock l=
-eak.
-> +                */
-> +               if (!sk_fullsock(sk1))
-> +                       sock_gen_put(sk1);
-> +               if (!sk_fullsock(sk))
->                         return NULL;
-> -               }
->         }
-> =20
->         return sk;
-> --=20
-> 2.31.1
->=20
+>
+> > +               atomic_long_add(local_reserve, sk->sk_prot->memory_allocated);
+> > +       }
+> > +       preempt_enable();
+> > +       return sk_memory_allocated(sk);
+> >  }
+> >
+> >  static inline void
+> >  sk_memory_allocated_sub(struct sock *sk, int amt)
+> >  {
+> > -       atomic_long_sub(amt, sk->sk_prot->memory_allocated);
+> > +       int local_reserve;
+> > +
+> > +       preempt_disable();
+> > +       local_reserve = __this_cpu_sub_return(*sk->sk_prot->per_cpu_fw_alloc, amt);
+> > +       if (local_reserve <= -SK_MEMORY_PCPU_RESERVE) {
+> > +               __this_cpu_sub(*sk->sk_prot->per_cpu_fw_alloc, local_reserve);
+> > +               atomic_long_add(local_reserve, sk->sk_prot->memory_allocated);
+> > +       }
+> > +       preempt_enable();
+> >  }
+> >
+> >  #define SK_ALLOC_PERCPU_COUNTER_BATCH 16
+> > @@ -1441,12 +1467,6 @@ proto_sockets_allocated_sum_positive(struct proto *prot)
+> >         return percpu_counter_sum_positive(prot->sockets_allocated);
+> >  }
+> >
+> > -static inline long
+> > -proto_memory_allocated(struct proto *prot)
+> > -{
+> > -       return atomic_long_read(prot->memory_allocated);
+> > -}
+> > -
+> >  static inline bool
+> >  proto_memory_pressure(struct proto *prot)
+> >  {
+> > --
+> > 2.36.1.255.ge46751e96f-goog
+> >
