@@ -2,134 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8F3A545366
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 19:51:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A443C5453C6
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 20:11:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345138AbiFIRvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 13:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33500 "EHLO
+        id S1345174AbiFISL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 14:11:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345148AbiFIRvB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 13:51:01 -0400
-Received: from mail-vk1-xa2a.google.com (mail-vk1-xa2a.google.com [IPv6:2607:f8b0:4864:20::a2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59B232B12FF
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 10:51:00 -0700 (PDT)
-Received: by mail-vk1-xa2a.google.com with SMTP id p83so3888628vkf.6
-        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 10:51:00 -0700 (PDT)
+        with ESMTP id S229632AbiFISL4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 14:11:56 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EDFEBA89;
+        Thu,  9 Jun 2022 11:11:55 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id w20so17576468lfa.11;
+        Thu, 09 Jun 2022 11:11:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=8d0a50vlXPwK/evqvKND5Qkww0VWt34LxBu4KEjcCqk=;
-        b=Jsq8gp37iudaP8bTyIOKStDp8h/YBsNe+gf6Cau0+Lpx/uKh3rzwH6c5q+WUemGRzf
-         MN3ab69FKEyBcUGiXGQNcfbm0rXzTCPeQjMCRdg2GVjrGcNKf9HSPglaViv5DuohuNHU
-         NciKFnRjxnosBatApJgyeunO4q7EaKHT7NVTwFLIzmSc8+OGFpPn4GhL2RiZSk/yxpK6
-         qqBpCb4ZQRaZzkyVY4BTQIm+TYfro4e5Bw87OKuMbV7cjEaf728QHg0XsmjCFlRg2cHh
-         C9Kes+qxENs/uq2lWkfzPRDlQ0idC+xc6sjlR4C8jCGRKzHi/O3rtE4nT8R4FmeihRb+
-         JTkw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wa5+7Ua+o1gsnunSmNIYAMm6Jg9lLaYkR4rgU6BaP74=;
+        b=gyS/q+Ndb+nVDe4qMwR01ny3c0CwbotAbR8WzWWTiRTU+dI0xvcLlNcdo9W8DKldbN
+         xIZzvY9H7TL5LihL2SaN4Dme0knRtLU0ascZZxUQzH0hNaUDAd1ZBil3Oi0SS8Oc/3mI
+         qhly9sIogMShRAuZHao2pMS3wvcej9HQDWp1dJppE1RJHYyBlDkzbjH2jGIcvtIGuLb+
+         8QGCTMxZoHTZp02VLdsZdr0lBD9aQx4hNkPT+gD7r8pFL3xGMkTK7s926balR+mT13/O
+         Oh/JkzQslIF7He7WdMqCer7Kvp4Sy1CNiVFN8CjJxNYKfa4nEnabPAw35yBZM2taGVzA
+         zZJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=8d0a50vlXPwK/evqvKND5Qkww0VWt34LxBu4KEjcCqk=;
-        b=XzEgN3IGFbgAPyRNMr+PcxB/u3Uk+iaZsLUoQiO7b9ZuknCaYDv59RzjbltOXFKY2G
-         ONdRdiz08xxSbVZp2z6re4SttswN4gVMo1ZyQD/p3xfsf7ay4Ym5Ppzp5cfNvezb28+y
-         Uml+AjuX6Jwaz0XOF3CfKyJaWvb7wJYsowkQskbyucGNqeWSnIorKrGYfw2wPkbLLuic
-         Cj8jO+387bYw8T6mm02Rxul1bewVx30D6g0e0zz245LJNSuWvPGFCEDNseWCzGh22ioe
-         F17Y7/yvcMHpqK04yY5Y/VYctTx/w3YWIUAsDpVwEVI+h6RDUT4LPb8WOqyQE+qAMnNF
-         Xu8A==
-X-Gm-Message-State: AOAM532w2yABxzRXxSYATt6puYuVkpe+qENPRdHl55tAHuRDapYPQmRP
-        iFqOJEhriIpL4R/VFC9VxuRoMwJWNT+Z1R0lyYY=
-X-Google-Smtp-Source: ABdhPJyco0jmI9j1LTlr29BP6+FVZHdtLanDxoTVkceSHjv/cA47v4//gLK+J0hEJD4D9X1Yp4AjF4CrlOxGXniSzKA=
-X-Received: by 2002:a1f:46:0:b0:35d:4de2:5ada with SMTP id 67-20020a1f0046000000b0035d4de25adamr16046699vka.26.1654797059440;
- Thu, 09 Jun 2022 10:50:59 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wa5+7Ua+o1gsnunSmNIYAMm6Jg9lLaYkR4rgU6BaP74=;
+        b=aZh0J+H/9pAVSb8jVDGa9ivpRbIq2uZV0edPFS5b+cgUzycCjoQxy9ztaMeDdhfv6X
+         NTfv38W1MO2cM5zpSpFLJJGBXRboZKPOVJ3hvq6+6dP+6XFGS45MsgAsDh3LVoMiEG06
+         FVHEAgSaTOcQEw2yZKHlhNOOMsq/S8OuGk/Wdm6G0LHp4cg1BPVZUGSHYK6uaOyGFMUg
+         R6aS4PhGFFMzrTTl8g7lHC7AyqLEcJTXUKO9b7mjYXNgw034NuqKyFT8bWZmE+rob/7N
+         3nEOaC0tjZQd34KtYZErrParzEuvNyib8gzP2mGmjW0aiUFIHmHZ6nzJnGNUMQnWUDnc
+         FNFQ==
+X-Gm-Message-State: AOAM533nMAoBf30Dh4gSyWPnrpUPCCEFEr2ohmcucWHV40rvip14wJox
+        6zoJkXZQoc0QsGvtbrDtOaBiu2MgLYlWx9LlKfc65xlHolM=
+X-Google-Smtp-Source: ABdhPJzATVkjnSUu7Exdv94wsFS5xYaIBAzIfK2YdLU94NNSCHpegCGreT/e9JkUL0anRMP8sHjXa0O+sRWABw3plEg=
+X-Received: by 2002:a05:6512:2296:b0:479:5805:6f05 with SMTP id
+ f22-20020a056512229600b0047958056f05mr10801238lfu.302.1654798313751; Thu, 09
+ Jun 2022 11:11:53 -0700 (PDT)
 MIME-Version: 1.0
-Reply-To: evelynjecob47@gmail.com
-Sender: dr.daouda.augustin198@gmail.com
-Received: by 2002:a59:d66a:0:b0:2ca:36ed:79d9 with HTTP; Thu, 9 Jun 2022
- 10:50:59 -0700 (PDT)
-From:   Evelyn Jacob <evelynjecob47@gmail.com>
-Date:   Thu, 9 Jun 2022 10:50:59 -0700
-X-Google-Sender-Auth: ag0JUXjlVljz4GIX5GNCMD3qqg8
-Message-ID: <CAMyj+W4Jmix+MU-r-R0T_Zm1ja2GaZnh_7Jh47WZspgR-Pa6SQ@mail.gmail.com>
-Subject: Ms.Evelyn
-To:     undisclosed-recipients:;
+References: <20220609062829.293217-1-james.hilliard1@gmail.com>
+In-Reply-To: <20220609062829.293217-1-james.hilliard1@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 9 Jun 2022 11:11:42 -0700
+Message-ID: <CAEf4BzaNBcW8ZDWcH5USd9jFshFF78psAjn2mqZp6uVGn0ZK+g@mail.gmail.com>
+Subject: Re: [PATCH 1/1] libbpf: replace typeof with __typeof__ for -std=c17 compatibility
+To:     James Hilliard <james.hilliard1@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=6.5 required=5.0 tests=BAYES_80,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO_END_DIGIT,LOTS_OF_MONEY,MILLION_HUNDRED,
-        MONEY_FORM_SHORT,MONEY_FRAUD_3,MONEY_FREEMAIL_REPTO,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_FILL_THIS_FORM_SHORT,T_SCC_BODY_TEXT_LINE,
-        UNDISC_MONEY autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:a2a listed in]
-        [list.dnswl.org]
-        *  2.0 BAYES_80 BODY: Bayes spam probability is 80 to 95%
-        *      [score: 0.9090]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [dr.daouda.augustin198[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [dr.daouda.augustin198[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [evelynjecob47[at]gmail.com]
-        *  0.0 MILLION_HUNDRED BODY: Million "One to Nine" Hundred
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  2.0 MONEY_FREEMAIL_REPTO Lots of money from someone using free
-        *      email?
-        *  0.0 T_FILL_THIS_FORM_SHORT Fill in a short form with personal
-        *      information
-        *  0.0 MONEY_FORM_SHORT Lots of money if you fill out a short form
-        *  0.6 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-        *  1.6 MONEY_FRAUD_3 Lots of money and several fraud phrases
-X-Spam-Level: ******
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings dearest
+On Wed, Jun 8, 2022 at 11:28 PM James Hilliard
+<james.hilliard1@gmail.com> wrote:
+>
+> Fixes errors like:
+> error: expected specifier-qualifier-list before 'typeof'
+>    14 | #define __type(name, val) typeof(val) *name
+>       |                           ^~~~~~
+> ../src/core/bpf/socket_bind/socket-bind.bpf.c:25:9: note: in expansion of macro '__type'
+>    25 |         __type(key, __u32);
+>       |         ^~~~~~
+>
+> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+> ---
 
-I'm a 75 year old woman. I was born an orphan and GOD blessed me
-abundantly with riches but no children nor husband which makes me an
-unhappy woman. Now I am affected with cancer of the lung and breast
-with a partial stroke which has affected my speech. I can no longer
-talk well. and half of my body is paralyzed, I sent this email to you
-with the help of my private female nurse.
+If you follow DPDK link you gave me ([0]), you'll see that they ended up doing
 
-My condition is really deteriorating day by day and it is really
-giving me lots to think about.  This has prompted my decision to
-donate all I have for charity; I have made numerous donations all over
-the world. After going through your profile, I decided to make my last
-donation of Ten Million Five Hundred Thousand United Kingdom Pounds
-(UK=C2=A310.500, 000, 00) to you as my investment manager. I want you to
-build an Orphanage Home With my name (  Ms.Evelyn Jacob) in your
-country.
+#ifndef typeof
+#define typeof __typeof__
+#endif
 
-If you are willing and able to do this task for the sake of humanity
-then send me below information for more details to receive the funds.
+It's way more localized. Let's do that.
 
-1. Name...................................................
+But also I tried to build libbpf-bootstrap with -std=c17 and
+immediately ran into issue with asm, so we need to do the same with
+asm -> __asm__. Can you please update your patch and fix both issues?
 
-2. Phone number...............................
+  [0] https://patches.dpdk.org/project/dpdk/patch/2601191342CEEE43887BDE71AB977258213F3012@irsmsx105.ger.corp.intel.com/
+  [1] https://github.com/libbpf/libbpf-bootstrap
 
-3. Address.............................................
 
-4. Country of Origin and residence
+>  tools/lib/bpf/bpf_core_read.h   | 16 ++++++++--------
+>  tools/lib/bpf/bpf_helpers.h     |  4 ++--
+>  tools/lib/bpf/bpf_tracing.h     | 24 ++++++++++++------------
+>  tools/lib/bpf/btf.h             |  4 ++--
+>  tools/lib/bpf/libbpf_internal.h |  6 +++---
+>  tools/lib/bpf/usdt.bpf.h        |  6 +++---
+>  tools/lib/bpf/xsk.h             | 12 ++++++------
+>  7 files changed, 36 insertions(+), 36 deletions(-)
+>
 
- Ms.Evelyn Jecob  ,
+[...]
