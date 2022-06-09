@@ -2,194 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CD96544E05
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 15:48:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C11A3544E0A
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 15:50:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245012AbiFINsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 09:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43284 "EHLO
+        id S235951AbiFINuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 09:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238119AbiFINso (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 09:48:44 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25ECCF5D
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 06:48:42 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id o7so14309682eja.1
-        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 06:48:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/ab9n2DdESSJpQ0b0br3k8UCrFg30AxA5ilFTDz+zsc=;
-        b=khvo6ahNN36LOgOgeMIjubG2FFbVjkGWku0JV00uwn4cA5BWvLL/dNcSye5gs0wb6l
-         JOBX3mr8W6jOo/NypiiuF/Ja13OFBdtkKa6muYift0ywFAa/oNax0oa6ygy1Da7/iUOY
-         cNCNWEgWsRSNaMEjMmG3gvgLTzKopv0FgWQshyP4HU9zqxaiXYy1FcLu+0bxugels7FF
-         2wjPMXE1Dx2crG3iBzKQ9eB7Bh89wwP2CxHFJU7PSNZLAWtT2Ay/gIFl0pcY/3Trkl63
-         CfmMQRTNVbK+8lh2f8k/VqIWJ/UJT7xeK+pZx9+xumxEtKeL4ova9Ub0r6Jc0Xi5/Roz
-         /xHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/ab9n2DdESSJpQ0b0br3k8UCrFg30AxA5ilFTDz+zsc=;
-        b=RL12bHYYZ6NlcJsS2a0BumceE0HH4KXzk6cDvyYaFdXJxVst6+TMrq8Ca4e/oSs9Wk
-         3vpe6GYMiW2cEjMFdZT2v2it3/jAlmefjWup4GOKZI3lrmAJ78A6vVTm3IUhnxN/xmDC
-         D8o3XOe0y9KAERV/cCiDiATc0vRN2czfKHfnpzrAo6UbF92eICMPtOsP+0xBcUY+Zlh1
-         Mbrfi1uCgtEdDKMcCRiV6wK6t28M7TnLi1oKGnoGuEGO/1fO+FeXmPPUSmWBl8yqLGlF
-         46jlsR1PWQWwBHvKgHQix74aA+7J3qKXBMqE6ioER7MuByIenD8InH/k6uPvR2X0XuGE
-         CYFQ==
-X-Gm-Message-State: AOAM53281yNcGRu9MebeKj39DWdofH8/CD+oIgwZ4mGz6XuHGQZCueH6
-        j1qqETvBGWzo79XTNjWCshx5RQkxTyYelkq+Kv78Ig==
-X-Google-Smtp-Source: ABdhPJwmOReHTwbETJ5huBXV523AuDL5Uj160nXyvyH6/krbSHVMyGJ3yPN/v7cfhPyuw/dXNdZaFqAvL/o386WYRYI=
-X-Received: by 2002:a17:907:7da5:b0:711:c9cd:61e0 with SMTP id
- oz37-20020a1709077da500b00711c9cd61e0mr21000761ejc.443.1654782520340; Thu, 09
- Jun 2022 06:48:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220609063412.2205738-1-eric.dumazet@gmail.com>
- <20220609063412.2205738-5-eric.dumazet@gmail.com> <CACSApvYEwczGVvOxOfDXNHd_x5LDb1vXT03y-=6CcrTv1uR9Kw@mail.gmail.com>
- <CANn89iKbam05mjKCN4bS6H42x1_Jw1a=G3vbrNM3FTTjvXABWg@mail.gmail.com>
-In-Reply-To: <CANn89iKbam05mjKCN4bS6H42x1_Jw1a=G3vbrNM3FTTjvXABWg@mail.gmail.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Thu, 9 Jun 2022 09:48:03 -0400
-Message-ID: <CACSApvYGhsswH6yJQDbrT0FYLwm6ost057_7uu+H1TWVY8JkjA@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/7] net: implement per-cpu reserves for memory_allocated
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S235801AbiFINuU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 09:50:20 -0400
+Received: from h3.fbrelay.privateemail.com (h3.fbrelay.privateemail.com [131.153.2.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C3243ED3C;
+        Thu,  9 Jun 2022 06:50:18 -0700 (PDT)
+Received: from MTA-09-3.privateemail.com (mta-09-1.privateemail.com [66.29.159.59])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by h3.fbrelay.privateemail.com (Postfix) with ESMTPS id 83CA21802638;
+        Thu,  9 Jun 2022 09:50:17 -0400 (EDT)
+Received: from mta-09.privateemail.com (localhost [127.0.0.1])
+        by mta-09.privateemail.com (Postfix) with ESMTP id 7398B18004E0;
+        Thu,  9 Jun 2022 09:50:16 -0400 (EDT)
+Received: from warhead.local (unknown [10.20.151.190])
+        by mta-09.privateemail.com (Postfix) with ESMTPA id 9C8CA18000B0;
+        Thu,  9 Jun 2022 09:50:08 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mebeim.net; s=default;
+        t=1654782616; bh=TnKjhqksMncdEY2RXthuQsk5fek7maCh5+VoEJsnvcw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=cDo7NPGXTBcbHJ7kNpttq7zGjkoaNZcENz7LnMeKSobbuH4ehiXruFuGzkX9+/2pQ
+         8aILWDQ7+d3VBa4KyrQQL16m60shrJKdzq5HwbJaBINRwlsNh+on0CAyOmi6Kyk82+
+         Uz4xssyJkNjSIr8AXTbLg4Bv+2pS/1fc6DsaBHwCDZuq+ox1XSDtahrkOcoMMcSnDE
+         eajH+klWZqEJFshehD6UXhQ4dl0s/hORxZeGnXxebj8wiD51sWov54V8ZgooufX9lF
+         g9FFDpgaDuVObWHtE9pP6D+K5AAyaQAQ9WIE9UlWNZ9Xo09NBD/CrTyX5WtOe1nlx7
+         tGS4TpJzYkTpQ==
+From:   Marco Bonelli <marco@mebeim.net>
+To:     netdev@vger.kernel.org
+Cc:     Marco Bonelli <marco@mebeim.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>, Wei Wang <weiwan@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Neal Cardwell <ncardwell@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH] ethtool: Fix and simplify ethtool_convert_link_mode_to_legacy_u32()
+Date:   Thu,  9 Jun 2022 15:49:01 +0200
+Message-Id: <20220609134900.11201-1-marco@mebeim.net>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 9, 2022 at 9:47 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Thu, Jun 9, 2022 at 6:34 AM Soheil Hassas Yeganeh <soheil@google.com> wrote:
-> >
-> > On Thu, Jun 9, 2022 at 2:34 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> > >
-> > > From: Eric Dumazet <edumazet@google.com>
-> > >
-> > > We plan keeping sk->sk_forward_alloc as small as possible
-> > > in future patches.
-> > >
-> > > This means we are going to call sk_memory_allocated_add()
-> > > and sk_memory_allocated_sub() more often.
-> > >
-> > > Implement a per-cpu cache of +1/-1 MB, to reduce number
-> > > of changes to sk->sk_prot->memory_allocated, which
-> > > would otherwise be cause of false sharing.
-> > >
-> > > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> >
-> > Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-> >
-> > > ---
-> > >  include/net/sock.h | 38 +++++++++++++++++++++++++++++---------
-> > >  1 file changed, 29 insertions(+), 9 deletions(-)
-> > >
-> > > diff --git a/include/net/sock.h b/include/net/sock.h
-> > > index 825f8cbf791f02d798f17dd4f7a2659cebb0e98a..59040fee74e7de8d63fbf719f46e172906c134bb 100644
-> > > --- a/include/net/sock.h
-> > > +++ b/include/net/sock.h
-> > > @@ -1397,22 +1397,48 @@ static inline bool sk_under_memory_pressure(const struct sock *sk)
-> > >         return !!*sk->sk_prot->memory_pressure;
-> > >  }
-> > >
-> > > +static inline long
-> > > +proto_memory_allocated(const struct proto *prot)
-> > > +{
-> > > +       return max(0L, atomic_long_read(prot->memory_allocated));
-> > > +}
-> > > +
-> > >  static inline long
-> > >  sk_memory_allocated(const struct sock *sk)
-> > >  {
-> > > -       return atomic_long_read(sk->sk_prot->memory_allocated);
-> > > +       return proto_memory_allocated(sk->sk_prot);
-> > >  }
-> > >
-> > > +/* 1 MB per cpu, in page units */
-> > > +#define SK_MEMORY_PCPU_RESERVE (1 << (20 - PAGE_SHIFT))
-> > > +
-> > >  static inline long
-> > >  sk_memory_allocated_add(struct sock *sk, int amt)
-> > >  {
-> > > -       return atomic_long_add_return(amt, sk->sk_prot->memory_allocated);
-> > > +       int local_reserve;
-> > > +
-> > > +       preempt_disable();
-> > > +       local_reserve = __this_cpu_add_return(*sk->sk_prot->per_cpu_fw_alloc, amt);
-> > > +       if (local_reserve >= SK_MEMORY_PCPU_RESERVE) {
-> > > +               __this_cpu_sub(*sk->sk_prot->per_cpu_fw_alloc, local_reserve);
-> >
-> > This is just a nitpick, but we could
-> > __this_cpu_write(*sk->sk_prot->per_cpu_fw_alloc, 0) instead which
-> > should be slightly faster.
->
-> This would require us to block irqs, not only preempt_disable()/preempt_enable()
->
-> Otherwise when doing the write, there is no guarantee we replace the
-> intended value,
-> as an interrupt could have changed this cpu per_cpu_fw_alloc.
->
-> A __this_cpu_cmpxchg() would make sure of that, but would be more
-> expensive than __this_cpu_sub() and would require a loop.
->
->  With my change, there is a tiny possibility that
-> *sk->sk_prot->per_cpu_fw_alloc, is not in the -1/+1 1MB range,
-> but no lasting consequences, next update will consolidate things, and
-> tcp_memory_allocated will not drift.
+Fix the implementation of ethtool_convert_link_mode_to_legacy_u32(), which
+is supposed to return false if src has bits higher than 31 set. The current
+implementation uses the complement of bitmap_fill(ext, 32) to test high
+bits of src, which is wrong as bitmap_fill() fills _with long granularity_,
+and sizeof(long) can be > 4. No users of this function currently check the
+return value, so the bug was dormant.
 
-Ah that makes sense. Thank you for the explanation!
+Also remove the check for __ETHTOOL_LINK_MODE_MASK_NBITS > 32, as the enum
+ethtool_link_mode_bit_indices contains far beyond 32 values. Using
+find_next_bit() to test the src bitmask works regardless of this anyway.
 
-> >
-> > > +               atomic_long_add(local_reserve, sk->sk_prot->memory_allocated);
-> > > +       }
-> > > +       preempt_enable();
-> > > +       return sk_memory_allocated(sk);
-> > >  }
-> > >
-> > >  static inline void
-> > >  sk_memory_allocated_sub(struct sock *sk, int amt)
-> > >  {
-> > > -       atomic_long_sub(amt, sk->sk_prot->memory_allocated);
-> > > +       int local_reserve;
-> > > +
-> > > +       preempt_disable();
-> > > +       local_reserve = __this_cpu_sub_return(*sk->sk_prot->per_cpu_fw_alloc, amt);
-> > > +       if (local_reserve <= -SK_MEMORY_PCPU_RESERVE) {
-> > > +               __this_cpu_sub(*sk->sk_prot->per_cpu_fw_alloc, local_reserve);
-> > > +               atomic_long_add(local_reserve, sk->sk_prot->memory_allocated);
-> > > +       }
-> > > +       preempt_enable();
-> > >  }
-> > >
-> > >  #define SK_ALLOC_PERCPU_COUNTER_BATCH 16
-> > > @@ -1441,12 +1467,6 @@ proto_sockets_allocated_sum_positive(struct proto *prot)
-> > >         return percpu_counter_sum_positive(prot->sockets_allocated);
-> > >  }
-> > >
-> > > -static inline long
-> > > -proto_memory_allocated(struct proto *prot)
-> > > -{
-> > > -       return atomic_long_read(prot->memory_allocated);
-> > > -}
-> > > -
-> > >  static inline bool
-> > >  proto_memory_pressure(struct proto *prot)
-> > >  {
-> > > --
-> > > 2.36.1.255.ge46751e96f-goog
-> > >
+Signed-off-by: Marco Bonelli <marco@mebeim.net>
+---
+ net/ethtool/ioctl.c | 17 ++---------------
+ 1 file changed, 2 insertions(+), 15 deletions(-)
+
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 326e14ee05db..7fb3f3fd6f3c 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -369,22 +369,9 @@ EXPORT_SYMBOL(ethtool_convert_legacy_u32_to_link_mode);
+ bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
+ 					     const unsigned long *src)
+ {
+-	bool retval = true;
+-
+-	/* TODO: following test will soon always be true */
+-	if (__ETHTOOL_LINK_MODE_MASK_NBITS > 32) {
+-		__ETHTOOL_DECLARE_LINK_MODE_MASK(ext);
+-
+-		linkmode_zero(ext);
+-		bitmap_fill(ext, 32);
+-		bitmap_complement(ext, ext, __ETHTOOL_LINK_MODE_MASK_NBITS);
+-		if (linkmode_intersects(ext, src)) {
+-			/* src mask goes beyond bit 31 */
+-			retval = false;
+-		}
+-	}
+ 	*legacy_u32 = src[0];
+-	return retval;
++	return find_next_bit(src, __ETHTOOL_LINK_MODE_MASK_NBITS, 32) ==
++		__ETHTOOL_LINK_MODE_MASK_NBITS;
+ }
+ EXPORT_SYMBOL(ethtool_convert_link_mode_to_legacy_u32);
+ 
+-- 
+2.30.2
+
