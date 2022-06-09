@@ -2,243 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46ABE544555
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 10:07:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58BB9544583
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 10:17:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240308AbiFIIHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 04:07:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57560 "EHLO
+        id S233926AbiFIIRV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 04:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240483AbiFIIHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 04:07:37 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F6743584A
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 01:07:36 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nzDCQ-0005Kt-3M; Thu, 09 Jun 2022 10:07:26 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id B728C8FD63;
-        Thu,  9 Jun 2022 08:07:24 +0000 (UTC)
-Date:   Thu, 9 Jun 2022 10:07:24 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 03/13] can: slcan: use the alloc_can_skb() helper
-Message-ID: <20220609080724.z2ouwivtgu36b423@pengutronix.de>
-References: <20220608165116.1575390-1-dario.binacchi@amarulasolutions.com>
- <20220608165116.1575390-4-dario.binacchi@amarulasolutions.com>
+        with ESMTP id S238587AbiFIIRS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 04:17:18 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CF4F2D3B11
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 01:17:16 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id u8so26964892wrm.13
+        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 01:17:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=0XYuJwlWcPhF5wKwZj6AX0M1ehVlcZ8wjqHIDg46ZGY=;
+        b=AM0Ouch9SskiVkwlvSo46QPpB1USADN/fWMaPZpBNKvgTSiB4lUfzNF8Nz9rP0asNm
+         WHuuWHvL4drWpFZcsaabaLZlpL0I6Dy6eJU1XtzWIncX1ZGpW2iej5fFJdDOiyVjugkI
+         zZ74NAe6EZm1GIindkJAQlhw0nxoyxIFcxIMHyWdQVr5HE+IL6NAzcgoxx5SzfnaPz3p
+         xaB76vcsoG9RX76Ejddm7wz9ELuRpARZZm2QeQUBu5Trut/c469LNqIIXEIPxMPV15Pn
+         AyJcMd3eXE84lWlcOXEV8KZxubFb3iA3YFQC8y1BdldkC2KwXsaJ++HjZ7XkaZziO2hF
+         nd/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=0XYuJwlWcPhF5wKwZj6AX0M1ehVlcZ8wjqHIDg46ZGY=;
+        b=ey0/FP5IPG5UXng/1rwSB+7MWF0fadxVoDKTzOhk9GzJ/R9QrDITTXsK80jYLtylpn
+         zWZYT0tN9Ow+2SKB3u5sa2mcE1jdyU/pHOLZ9Ok7R6HEQYBfEWkQD32j6w57AgfkMOyA
+         1wXvX0uv+8j/kXyreQelfZWCS3kSyMmyjCm9ed9gUHul8NacTBrIOT3iqfw9uXsDdUyf
+         bqLy76X1beffKuAOg+o9t3YL7+tFazWpqVR8jN+b+1G/kOgbx+olVIM7h2w+QUnlMEzg
+         jfzOAgHNCe0W71P1kkXi9vyrOVn92Hvl1DKazScqu8GuTIUWrZQxd68wdcowHFgDzgyW
+         U3rg==
+X-Gm-Message-State: AOAM533N09GuMI6/7pL9hycl1HJW9OV6zoxNclUIqFKX488YgTW/et/A
+        jJm/URyjHbOsD23nDINLfixHoKdl+xrDN88WNdvOfDC9dU7I2Q==
+X-Google-Smtp-Source: ABdhPJxCLtrvuGGqjK9MUEywc238jy6DsEdFup9DS+6ueF3kvAfOrN9QoTt5lwDxB8btTlDccRQ4V3C5S+pV1YN0Cz8=
+X-Received: by 2002:adf:eb82:0:b0:20c:a2eb:5fe6 with SMTP id
+ t2-20020adfeb82000000b0020ca2eb5fe6mr36973647wrn.563.1654762634833; Thu, 09
+ Jun 2022 01:17:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="atjba7zcmgsgdmzd"
-Content-Disposition: inline
-In-Reply-To: <20220608165116.1575390-4-dario.binacchi@amarulasolutions.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Sender: smithwilson780@gmail.com
+Received: by 2002:a7b:c391:0:0:0:0:0 with HTTP; Thu, 9 Jun 2022 01:17:13 -0700 (PDT)
+From:   Dina Mckenna <dinamckenna1894@gmail.com>
+Date:   Thu, 9 Jun 2022 08:17:13 +0000
+X-Google-Sender-Auth: vhfy8VP3oulQVV2A1tZn2IguKj0
+Message-ID: <CADh0myu-YTtmCwB_d4Kh1pxJ5uhkMQVcyg96A3pS7--vhMgYZg@mail.gmail.com>
+Subject: Please need your urgent assistance,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: Yes, score=6.2 required=5.0 tests=ADVANCE_FEE_5_NEW_MONEY,
+        BAYES_80,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,LOTS_OF_MONEY,MONEY_FRAUD_8,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNDISC_MONEY,URG_BIZ autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:431 listed in]
+        [list.dnswl.org]
+        *  2.0 BAYES_80 BODY: Bayes spam probability is 80 to 95%
+        *      [score: 0.9314]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [smithwilson780[at]gmail.com]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [smithwilson780[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  0.6 URG_BIZ Contains urgent matter
+        *  0.0 MONEY_FRAUD_8 Lots of money and very many fraud phrases
+        *  3.0 ADVANCE_FEE_5_NEW_MONEY Advance Fee fraud and lots of money
+        *  0.6 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello my dear,
 
---atjba7zcmgsgdmzd
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+ I sent this mail praying it will get to you in a good condition of
+health, since I myself are in a very critical health condition in
+which I sleep every night without knowing if I may be alive to see the
+next day. I bring peace and love to you.. It is by the grace of God, I
+had no choice than to do what is lawful and right in the sight of God
+for eternal life and in the sight of man, for witness of God=E2=80=99s merc=
+y
+and glory upon my life. I am Mrs. Dina Howley. Mckenna, a widow. I am
+suffering from a long time brain tumor, It has defiled all forms of
+medical treatment, and right now I have about a few months to leave,
+according to medical experts. The situation has gotten complicated
+recently with my inability to hear proper, am communicating with you
+with the help of the chief nurse herein the hospital, from all
+indication my conditions is really deteriorating and it is quite
+obvious that, according to my doctors they have advised me that I may
+not live too long, Because this illness has gotten to a very bad
+stage. I plead that you will not expose or betray this trust and
+confidence that I am about to repose on you for the mutual benefit of
+the orphans and the less privilege. I have some funds I inherited from
+my late husband, the sum of ($ 11,000,000.00, Eleven Million Dollars).
+Having known my condition, I decided to donate this fund to you
+believing that you will utilize it the way i am going to instruct
+herein. I need you to assist me and reclaim this money and use it for
+Charity works therein your country  for orphanages and gives justice
+and help to the poor, needy and widows says The Lord." Jeremiah
+22:15-16.=E2=80=9C and also build schools for less privilege that will be
+named after my late husband if possible and to promote the word of God
+and the effort that the house of God is maintained. I do not want a
+situation where this money will be used in an ungodly manner. That's
+why I'm taking this decision. I'm not afraid of death, so I know where
+I'm going. I accept this decision because I do not have any child who
+will inherit this money after I die.. Please I want your sincerely and
+urgent answer to know if you will be able to execute this project for
+the glory of God, and I will give you more information on how the fund
+will be transferred to your bank account. May the grace, peace, love
+and the truth in the Word of God be with you and all those that you
+love and care for.
 
-On 08.06.2022 18:51:06, Dario Binacchi wrote:
-> It is used successfully by most (if not all) CAN device drivers. It
-> allows to remove replicated code.
->=20
-> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
->=20
-> ---
->=20
-> Changes in v2:
-> - Put the data into the allocated skb directly instead of first
->   filling the "cf" on the stack and then doing a memcpy().
->=20
->  drivers/net/can/slcan.c | 69 +++++++++++++++++++----------------------
->  1 file changed, 32 insertions(+), 37 deletions(-)
->=20
-> diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-> index 6162a9c21672..5d87e25e2285 100644
-> --- a/drivers/net/can/slcan.c
-> +++ b/drivers/net/can/slcan.c
-> @@ -54,6 +54,7 @@
->  #include <linux/kernel.h>
->  #include <linux/workqueue.h>
->  #include <linux/can.h>
-> +#include <linux/can/dev.h>
->  #include <linux/can/skb.h>
->  #include <linux/can/can-ml.h>
-> =20
-> @@ -143,85 +144,79 @@ static struct net_device **slcan_devs;
->  static void slc_bump(struct slcan *sl)
->  {
->  	struct sk_buff *skb;
-> -	struct can_frame cf;
-> +	struct can_frame *cf;
->  	int i, tmp;
->  	u32 tmpid;
->  	char *cmd =3D sl->rbuff;
-> =20
-> -	memset(&cf, 0, sizeof(cf));
-> +	skb =3D alloc_can_skb(sl->dev, &cf);
-> +	if (unlikely(!skb)) {
-> +		sl->dev->stats.rx_dropped++;
-> +		return;
-> +	}
-> =20
->  	switch (*cmd) {
->  	case 'r':
-> -		cf.can_id =3D CAN_RTR_FLAG;
-> +		cf->can_id =3D CAN_RTR_FLAG;
->  		fallthrough;
->  	case 't':
->  		/* store dlc ASCII value and terminate SFF CAN ID string */
-> -		cf.len =3D sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN];
-> +		cf->len =3D sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN];
->  		sl->rbuff[SLC_CMD_LEN + SLC_SFF_ID_LEN] =3D 0;
->  		/* point to payload data behind the dlc */
->  		cmd +=3D SLC_CMD_LEN + SLC_SFF_ID_LEN + 1;
->  		break;
->  	case 'R':
-> -		cf.can_id =3D CAN_RTR_FLAG;
-> +		cf->can_id =3D CAN_RTR_FLAG;
->  		fallthrough;
->  	case 'T':
-> -		cf.can_id |=3D CAN_EFF_FLAG;
-> +		cf->can_id |=3D CAN_EFF_FLAG;
->  		/* store dlc ASCII value and terminate EFF CAN ID string */
-> -		cf.len =3D sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN];
-> +		cf->len =3D sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN];
->  		sl->rbuff[SLC_CMD_LEN + SLC_EFF_ID_LEN] =3D 0;
->  		/* point to payload data behind the dlc */
->  		cmd +=3D SLC_CMD_LEN + SLC_EFF_ID_LEN + 1;
->  		break;
->  	default:
-> -		return;
-> +		goto decode_failed;
->  	}
-> =20
->  	if (kstrtou32(sl->rbuff + SLC_CMD_LEN, 16, &tmpid))
-> -		return;
-> +		goto decode_failed;
-> =20
-> -	cf.can_id |=3D tmpid;
-> +	cf->can_id |=3D tmpid;
-> =20
->  	/* get len from sanitized ASCII value */
-> -	if (cf.len >=3D '0' && cf.len < '9')
-> -		cf.len -=3D '0';
-> +	if (cf->len >=3D '0' && cf->len < '9')
-> +		cf->len -=3D '0';
->  	else
-> -		return;
-> +		goto decode_failed;
-> =20
->  	/* RTR frames may have a dlc > 0 but they never have any data bytes */
-> -	if (!(cf.can_id & CAN_RTR_FLAG)) {
-> -		for (i =3D 0; i < cf.len; i++) {
-> +	if (!(cf->can_id & CAN_RTR_FLAG)) {
-> +		for (i =3D 0; i < cf->len; i++) {
->  			tmp =3D hex_to_bin(*cmd++);
->  			if (tmp < 0)
-> -				return;
-> -			cf.data[i] =3D (tmp << 4);
-> +				goto decode_failed;
-> +
-> +			cf->data[i] =3D (tmp << 4);
->  			tmp =3D hex_to_bin(*cmd++);
->  			if (tmp < 0)
-> -				return;
-> -			cf.data[i] |=3D tmp;
-> +				goto decode_failed;
-> +
-> +			cf->data[i] |=3D tmp;
->  		}
->  	}
-> =20
-> -	skb =3D dev_alloc_skb(sizeof(struct can_frame) +
-> -			    sizeof(struct can_skb_priv));
-> -	if (!skb)
-> -		return;
-> -
-> -	skb->dev =3D sl->dev;
-> -	skb->protocol =3D htons(ETH_P_CAN);
-> -	skb->pkt_type =3D PACKET_BROADCAST;
-> -	skb->ip_summed =3D CHECKSUM_UNNECESSARY;
-> -
-> -	can_skb_reserve(skb);
-> -	can_skb_prv(skb)->ifindex =3D sl->dev->ifindex;
-> -	can_skb_prv(skb)->skbcnt =3D 0;
-> -
-> -	skb_put_data(skb, &cf, sizeof(struct can_frame));
-> -
->  	sl->dev->stats.rx_packets++;
-> -	if (!(cf.can_id & CAN_RTR_FLAG))
-> -		sl->dev->stats.rx_bytes +=3D cf.len;
-> +	if (!(cf->can_id & CAN_RTR_FLAG))
-> +		sl->dev->stats.rx_bytes +=3D cf->len;
-> =20
->  	netif_rx(skb);
-> +	return;
-> +
-> +decode_failed:
-> +	dev_kfree_skb(skb);
+I'm waiting for your immediate reply.
 
-Can you increase an error counter in this situation, too?
-
-Marc
-
->  }
-> =20
->  /* parse tty input stream */
-> --=20
-> 2.32.0
->=20
->=20
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---atjba7zcmgsgdmzd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKhqjkACgkQrX5LkNig
-013HUAgAqNyG+WGjiiRutxQFcDB8sjKXLB7vK7+Nxuo1idJ6Ez84UYz7yXxBNub4
-Tj9sLTzWmBocBoRVYOM5shThBLKYABOTJjpU90EyjtsaecGWzZ31GVmtfx95vVFK
-JDMHZP0yQZ45315d0P1/U+XV6uK03MMoUwKvb1fw0dKZ14ZhCgJrHK13n5uvX/by
-Sz8uHCJlp1X2u/ULoNFJLyFFBZt6zSQnh9dOC7Qfq612QzxZZ51mfkQjUwIvsuNx
-fwFav+zthhYOkJZdwcJpTp7ChuHxAuhFF3WTXJI6hMTpVdNDTJaFsVtzjkwz7faF
-HZsSgWXZQ2ASFS1epIjNbjb1yiQ6rg==
-=bf3D
------END PGP SIGNATURE-----
-
---atjba7zcmgsgdmzd--
+May God Bless you,
+Mrs. Dina Howley. Mckenna.
