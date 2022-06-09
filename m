@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F9305452C3
+	by mail.lfdr.de (Postfix) with ESMTP id 0757E5452C1
 	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 19:16:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241299AbiFIRQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 13:16:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48612 "EHLO
+        id S1344635AbiFIRQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 13:16:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245360AbiFIRQB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 13:16:01 -0400
+        with ESMTP id S245466AbiFIRQC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 13:16:02 -0400
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 659062C369A
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 10:16:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B8FC50BC
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 10:16:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654794960; x=1686330960;
+  t=1654794961; x=1686330961;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=dJ6fX6qEgIRqmojQz/Z7q2AHXD/ls+TuzE/aRNid0fg=;
-  b=dKpr+Cp/Zmt42wLOR4I4b+GHCpdrhNCqOye+qlz8zhlpcjtmvyj1Aqi4
-   xWu59d/XU/W+oQ+6fWNVhQlBFG5Gq0fDg5flc3d/cHSb+z3Munu5QLoRH
-   OQHbJi5hGiA5a6kSRRxpAmMxy9yUbJLrU0cTqOC/I9/4MBiHF8hRcpmeA
-   lic/whiLwozVuIjTvopwFJWLLlQe0ZlARD3MAcbkjcVQLOYpUYo5SbmoA
-   GTC76HYp9Wqy+XNh3z/vMquOc28PiXNASTKd62l4pxTTFosNNJv6j7BlI
-   29CyjmwltMx8IKoKFxIk+qCOC2z6gx6K88NJHZoTSYQatUtEhVzohj5HT
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="276124447"
+  bh=MnRpKOHLVwmJQ8YGnVz/s6jljKnGiCM+Umm5fBWZxiw=;
+  b=WJTa5A311HICiuGJaHxEpHrrKwCLn8z5DbPI9wYndMnBQi43SwzTRqjV
+   9wQUKmoZ2PIaC+kiicIGP7m8YyoUAJ5nuybCqBJWPJ/kmZY6PVs6nRy1+
+   uMcAv8LKISLOjmQB/FS+bZ6dZpD7sTMlE8qT9ewnXw8iS7AkGX+gwuBMw
+   KLOtZ+RKqsuv4/Z1ryWZpLAGQkFeXXqIHS6qFNmHgB+VvtC3Pp1hhoFZV
+   rTDlHJi1rhtvSApPuLFaRXoU/UUdps/1ux6fPobdQrMAuHiK9BtOTm6PR
+   RIKdt5FIrwR67D8twhMjt9GoAnoDdGSdGF+SLvOfq37A6Xv7GVYZzpWbq
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="276124450"
 X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="276124447"
+   d="scan'208";a="276124450"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 10:15:57 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 10:15:58 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="566487546"
+   d="scan'208";a="566487551"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga002.jf.intel.com with ESMTP; 09 Jun 2022 10:15:57 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com
-Subject: [PATCH net-next 5/6] ixgbe: Fix typos in comments
-Date:   Thu,  9 Jun 2022 10:12:56 -0700
-Message-Id: <20220609171257.2727150-6-anthony.l.nguyen@intel.com>
+Cc:     Julia Lawall <Julia.Lawall@inria.fr>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, Paul Menzel <pmenzel@molgen.mpg.de>
+Subject: [PATCH net-next 6/6] drivers/net/ethernet/intel: fix typos in comments
+Date:   Thu,  9 Jun 2022 10:12:57 -0700
+Message-Id: <20220609171257.2727150-7-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220609171257.2727150-1-anthony.l.nguyen@intel.com>
 References: <20220609171257.2727150-1-anthony.l.nguyen@intel.com>
@@ -60,43 +60,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+From: Julia Lawall <Julia.Lawall@inria.fr>
 
-"VLAN filter" was misspelled as "VLAN filer" in some comments.
+Spelling mistakes (triple letters) in comments.
+Detected with the help of Coccinelle.
 
-Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_82598.c  | 2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_common.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/fm10k/fm10k_mbx.c   | 2 +-
+ drivers/net/ethernet/intel/ice/ice_lib.c       | 2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_82598.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_82598.c
-index 95c92fe890a1..100388968e4d 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_82598.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_82598.c
-@@ -879,7 +879,7 @@ static s32 ixgbe_set_vfta_82598(struct ixgbe_hw *hw, u32 vlan, u32 vind,
-  *  ixgbe_clear_vfta_82598 - Clear VLAN filter table
-  *  @hw: pointer to hardware structure
-  *
-- *  Clears the VLAN filer table, and the VMDq index associated with the filter
-+ *  Clears the VLAN filter table, and the VMDq index associated with the filter
-  **/
- static s32 ixgbe_clear_vfta_82598(struct ixgbe_hw *hw)
- {
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-index 4c26c4b92f07..38c4609bd429 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_common.c
-@@ -3237,7 +3237,7 @@ s32 ixgbe_set_vfta_generic(struct ixgbe_hw *hw, u32 vlan, u32 vind,
-  *  ixgbe_clear_vfta_generic - Clear VLAN filter table
-  *  @hw: pointer to hardware structure
-  *
-- *  Clears the VLAN filer table, and the VMDq index associated with the filter
-+ *  Clears the VLAN filter table, and the VMDq index associated with the filter
-  **/
- s32 ixgbe_clear_vfta_generic(struct ixgbe_hw *hw)
- {
+diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c b/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c
+index 30ca9ee1900b..f2fba6e1d0f7 100644
+--- a/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c
++++ b/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c
+@@ -1825,7 +1825,7 @@ static void fm10k_sm_mbx_process_error(struct fm10k_mbx_info *mbx)
+ 		fm10k_sm_mbx_connect_reset(mbx);
+ 		break;
+ 	case FM10K_STATE_CONNECT:
+-		/* try connnecting at lower version */
++		/* try connecting at lower version */
+ 		if (mbx->remote) {
+ 			while (mbx->local > 1)
+ 				mbx->local--;
+diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
+index 454e01ae09b9..70961c0343e7 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_lib.c
+@@ -2403,7 +2403,7 @@ static void ice_set_agg_vsi(struct ice_vsi *vsi)
+ 				agg_id);
+ 			return;
+ 		}
+-		/* aggregator node is created, store the neeeded info */
++		/* aggregator node is created, store the needed info */
+ 		agg_node->valid = true;
+ 		agg_node->agg_id = agg_id;
+ 	}
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+index 7f11c0a8e7a9..07b982e473b2 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+@@ -77,7 +77,7 @@ static int __ixgbe_enable_sriov(struct ixgbe_adapter *adapter,
+ 	IXGBE_WRITE_REG(hw, IXGBE_PFDTXGSWC, IXGBE_PFDTXGSWC_VT_LBEN);
+ 	adapter->bridge_mode = BRIDGE_MODE_VEB;
+ 
+-	/* limit trafffic classes based on VFs enabled */
++	/* limit traffic classes based on VFs enabled */
+ 	if ((adapter->hw.mac.type == ixgbe_mac_82599EB) && (num_vfs < 16)) {
+ 		adapter->dcb_cfg.num_tcs.pg_tcs = MAX_TRAFFIC_CLASS;
+ 		adapter->dcb_cfg.num_tcs.pfc_tcs = MAX_TRAFFIC_CLASS;
 -- 
 2.35.1
 
