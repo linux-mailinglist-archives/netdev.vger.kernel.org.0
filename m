@@ -2,71 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEDAF545031
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 17:08:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32AE4545033
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 17:09:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344121AbiFIPIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 11:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60838 "EHLO
+        id S1343967AbiFIPJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 11:09:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343967AbiFIPIh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 11:08:37 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F3D33AB1D8;
-        Thu,  9 Jun 2022 08:08:36 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id f12so18982339ilj.1;
-        Thu, 09 Jun 2022 08:08:36 -0700 (PDT)
+        with ESMTP id S237082AbiFIPJJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 11:09:09 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9452DF45C9
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 08:09:08 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id d13so4807852plh.13
+        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 08:09:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=RuRAsoq3kuC2fdfy0p3uN9pJb+y+NfwDk7/S/TecTMU=;
-        b=PqErSSsTDO/K7H06mxzgyq3EqMjIORjKQKyE2pbepnVMmafrgl3CiJ5X/3+PXH0b2x
-         zYTFD1mSei9m2jigv/WB1JwXjvI5CDw6rSlpccX1RWtuvWjW6os5zrfDbTlSlIrYMTeZ
-         yIwnNmTuXM3RbLZvAWmPCSiWNZzU4YvLBstTFue4LLMsYksmOtBp09fZU1m3m4vGKVta
-         aDrKrCqv0ormdRcp94XUe/s4RDrWVchfSF3GdbI2I474+2OdwHdfwWnjopIbPeORryAj
-         ATPiAyM29GAdZkVjWg5At9Oq6eTOKZFbCfhF5LRO7NjUk22FE1riyKYyAnpoTXC6o+uK
-         sJpg==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OVICZjf0wN2Cx7clP5TRTEbT5tJi8HBFxWPpWO0x2Hs=;
+        b=mG1frb4CDL7Gzg8Nv0wdXsLm/r3LYKGwjaEl2ub1Jl+qFJwMSNRnSwh6Dzo8rWmj5y
+         U5ZeFb9F3I/A9AkK65MSdbxXyM5AzMgXRuJYxyAL/tT88oacC44txfxvzBTrVVlyyE2O
+         5UDrsOZ8CEHj6wnNSn5ujlkTRXKYnyktWqUycnat7l/AN14DhT4VmXcuwVkfB0A1G7Q/
+         5eb7UrXr3JfDXcMWiBdVozjscWNZEITpTJRAdxqOIgXb6X2ChuyaC6K9XByt2fjH3R0R
+         wd6SxyjY/Tsrbiy5hUOFPRSgNvSMZnrSgr+N1WNokhEsKPJHzud+5PoclzB7HH8PXI+2
+         TyCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=RuRAsoq3kuC2fdfy0p3uN9pJb+y+NfwDk7/S/TecTMU=;
-        b=7vWWQtl8i773V3gp/pzH+qR1Sm+ba72d5zAZdo/Daopc1y/MozN7stJWgkg3XmGvXT
-         A2erfHlX7Zy0kV9kXP5gnC8j159w7QnY3akRgyH6c8A300OceMXgHZK7dFsZOzBdPHQL
-         5spx8fg12yCMmr7/aa3WkcaoUOQEj2X9MqUhENe110vSqPTua8EC7pVEQ73cefi1eiSU
-         16RGh07RPXNdLRCmRhpP1Lmer5fg7ORKLpbaHqOaaChRmVrkCFvO/bPNQ0XLdkGnXHNj
-         EMg5jMe9gJI02YcHIFKXmMkQyzYld2vpNubejZ+5IN4YoAB3MwaLCnkVq9qUrIuz0WKZ
-         Yraw==
-X-Gm-Message-State: AOAM531skC33lK0JAG4T8cjtvtUBura+51pFm/MBwDk7OUN72t8qHcWo
-        8umPQ5KESaIJGhWb71OtjAQ=
-X-Google-Smtp-Source: ABdhPJwvuq5omzgm4ljNMtSKF7jLsO/HzGvkPNeItVjSPtaP4AlYNIsj0e+ylcXKzUf4luoG7SV4Vw==
-X-Received: by 2002:a05:6e02:1a8e:b0:2d3:bd16:40ee with SMTP id k14-20020a056e021a8e00b002d3bd1640eemr23091084ilv.20.1654787315336;
-        Thu, 09 Jun 2022 08:08:35 -0700 (PDT)
-Received: from localhost ([172.243.153.43])
-        by smtp.gmail.com with ESMTPSA id x8-20020a92d648000000b002d517c65c51sm6926875ilp.88.2022.06.09.08.08.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 08:08:34 -0700 (PDT)
-Date:   Thu, 09 Jun 2022 08:08:26 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Eric Dumazet <edumazet@google.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Message-ID: <62a20ceaba3d4_b28ac2082c@john.notmuch>
-In-Reply-To: <20220602012105.58853-2-xiyou.wangcong@gmail.com>
-References: <20220602012105.58853-1-xiyou.wangcong@gmail.com>
- <20220602012105.58853-2-xiyou.wangcong@gmail.com>
-Subject: RE: [Patch bpf-next v3 1/4] tcp: introduce tcp_read_skb()
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OVICZjf0wN2Cx7clP5TRTEbT5tJi8HBFxWPpWO0x2Hs=;
+        b=e1RzoHAdBgil8hboiYpSpQiMM6HCjySUvT9AIA6bwmwLuoWGKDLVCx+nocYRfyF8KH
+         Q89q2IfTrBPCfPgiTf/uXT4Fg62XUqbHnyvfr38gJoJUeEmDDhddLbu0KsC/vkWLuzUH
+         MdZtVNfI4Mn4hz4B3Cbh4DxtSqQHVa9UcQL1j3NQf/6XCmN3R7+cqUiZkg/PbGFwUPe1
+         4h6srsLznY9zwSVtOSVQva5TREUrcSHbhtP3XKkQuMFax4ADJUai7n5Xu/km34/Rkh7t
+         s4MDojBhr6L4QsZT/rrv31Wa6eZgZV0qngtdEVTa8olynR8URue7ax17zFBbuX77FjQl
+         P+xg==
+X-Gm-Message-State: AOAM530xIqNKxTVXQtYPGTlAN3bZ4e8iu7f0wsBRqwDTrac8A5p4Mjwn
+        241g6i+fQK84gZuhGTyByAKnzXyjCnv7QJSYfK5tevVS/xo=
+X-Google-Smtp-Source: ABdhPJyEjgUOR+HlF5Gi6tpD9E+hoItYxOt2bJRmAfqWuaHa90JII2XAL8XBqI+RPk2g/6Y1TcZrP1DB8yOXgz3UZqY=
+X-Received: by 2002:a17:902:f68a:b0:167:52ee:2c00 with SMTP id
+ l10-20020a170902f68a00b0016752ee2c00mr30500415plg.106.1654787347859; Thu, 09
+ Jun 2022 08:09:07 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220609063412.2205738-1-eric.dumazet@gmail.com> <20220609063412.2205738-2-eric.dumazet@gmail.com>
+In-Reply-To: <20220609063412.2205738-2-eric.dumazet@gmail.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Thu, 9 Jun 2022 08:08:51 -0700
+Message-ID: <CALvZod5g_Qev+0JzEHm+EGY08L7t_afwhnhtLwhVmkN-E7QqEA@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/7] Revert "net: set SK_MEM_QUANTUM to 4096"
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,84 +72,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
-> 
-> This patch inroduces tcp_read_skb() based on tcp_read_sock(),
-> a preparation for the next patch which actually introduces
-> a new sock ops.
-> 
-> TCP is special here, because it has tcp_read_sock() which is
-> mainly used by splice(). tcp_read_sock() supports partial read
-> and arbitrary offset, neither of them is needed for sockmap.
-> 
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
->  include/net/tcp.h |  2 ++
->  net/ipv4/tcp.c    | 47 +++++++++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 49 insertions(+)
-> 
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index 1e99f5c61f84..878544d0f8f9 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -669,6 +669,8 @@ void tcp_get_info(struct sock *, struct tcp_info *);
->  /* Read 'sendfile()'-style from a TCP socket */
->  int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
->  		  sk_read_actor_t recv_actor);
-> +int tcp_read_skb(struct sock *sk, read_descriptor_t *desc,
-> +		 sk_read_actor_t recv_actor);
->  
->  void tcp_initialize_rcv_mss(struct sock *sk);
->  
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 9984d23a7f3e..a18e9ababf54 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -1709,6 +1709,53 @@ int tcp_read_sock(struct sock *sk, read_descriptor_t *desc,
->  }
->  EXPORT_SYMBOL(tcp_read_sock);
->  
-> +int tcp_read_skb(struct sock *sk, read_descriptor_t *desc,
-> +		 sk_read_actor_t recv_actor)
-> +{
-> +	struct tcp_sock *tp = tcp_sk(sk);
-> +	u32 seq = tp->copied_seq;
-> +	struct sk_buff *skb;
-> +	int copied = 0;
-> +	u32 offset;
-> +
-> +	if (sk->sk_state == TCP_LISTEN)
-> +		return -ENOTCONN;
-> +
-> +	while ((skb = tcp_recv_skb(sk, seq, &offset)) != NULL) {
-> +		int used;
-> +
-> +		__skb_unlink(skb, &sk->sk_receive_queue);
-> +		used = recv_actor(desc, skb, 0, skb->len);
-> +		if (used <= 0) {
-> +			if (!copied)
-> +				copied = used;
-> +			break;
-> +		}
-> +		seq += used;
-> +		copied += used;
-> +
-> +		if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN) {
-> +			kfree_skb(skb);
+On Wed, Jun 8, 2022 at 11:34 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> From: Eric Dumazet <edumazet@google.com>
+>
+> This reverts commit bd68a2a854ad5a85f0c8d0a9c8048ca3f6391efb.
+>
+> This change broke memcg on arches with PAGE_SIZE != 4096
+>
+> Later, commit 2bb2f5fb21b04 ("net: add new socket option SO_RESERVE_MEM")
+> also assumed PAGE_SIZE==SK_MEM_QUANTUM
+>
+> Following patches in the series will greatly reduce the over allocations
+> problem.
+>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-Hi Cong, can you elaborate here from v2 comment.
-
-"Hm, it is tricky here, we use the skb refcount after this patchset, so
-it could be a real drop from another kfree_skb() in net/core/skmsg.c
-which initiates the drop."
-
-The tcp_read_sock() hook is using tcp_eat_recv_skb(). Are we going
-to kick tracing infra even on good cases with kfree_skb()? In
-sk_psock_verdict_recv() we do an skb_clone() there.
-
-.John
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
