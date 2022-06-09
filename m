@@ -2,51 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BF78544209
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 05:40:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C622754420E
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 05:41:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237621AbiFIDkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 8 Jun 2022 23:40:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41654 "EHLO
+        id S237629AbiFIDkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 8 Jun 2022 23:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234162AbiFIDkP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 23:40:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518451B9FA8;
-        Wed,  8 Jun 2022 20:40:14 -0700 (PDT)
+        with ESMTP id S236796AbiFIDks (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 8 Jun 2022 23:40:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D053262E1A;
+        Wed,  8 Jun 2022 20:40:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAA5161C19;
-        Thu,  9 Jun 2022 03:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 42935C3411F;
-        Thu,  9 Jun 2022 03:40:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 779E861BC5;
+        Thu,  9 Jun 2022 03:40:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CCF9C34116;
+        Thu,  9 Jun 2022 03:40:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654746013;
-        bh=kiLOIP5WjeZDVO35apta6hCF/6orpsY3bqoJ/fTHDio=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=HFmKH1iP2Wx4nMg/8lacqY/KZOeDzD2q7v6H5mIrwRiEJdkohvjLAzVR/jGldya91
-         awvCr0ZqUZLDnCJfzluQ22zAfhyvkCv+QkZ/O05SjIagn9GSfuJR6K0NO0hdgDs3Wd
-         c9fZdxs+RNY0tgCJHktRvJY0gihb99gBXtTrwfwdw2HTaBPmcuVo4IdokxnU58Y3TM
-         389eED3M40HkPutdYt6U5vFaIC50ypOD99IHXymEcHU8kv1sd/1A7lx4EAP/gV6H+Q
-         spZo6267fq5cGGsDwgLXKnr2dUKxPkUW/cg4B/UghhvY/sm+JJEvjy6sqNDLwMiRsV
-         ZrF8Rx785sFAw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 264A3E737F6;
-        Thu,  9 Jun 2022 03:40:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1654746045;
+        bh=uOVAkZAMO898II4tmJkr10MTJAY1+0aeGcHcp56vwn0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=km9pb/UT02/HOFRHtyOFnalEoMVSCxHvuOQoqVmwe02D13ciiCzeC4Mu0/GExgYj4
+         aQ4vmBAjI6KTutZcwppmKt8+kQu07F0qXTBw26q6kov6Pqdo9X9mIyYqcu+kGtl69o
+         EtMlkKq+jCGJx6vAzywO9MtOx7nRA/gde+5VXjq8lTQnCqRq8AQowXXRPb2eqgJOhN
+         pDB1zu5dI+cpSCvGcyhV1Wyoh4NlOdOwYp7U52e8zKCZYi7bQlGSxG+YZliPw7n3yj
+         er9wJnM2epYUXQ/IFz619t1VURQ/eSHlCCa1wA9BkyMT0QdrQNBeXcrpAq9UwwrM/h
+         dXocumFTRG7Ng==
+Date:   Wed, 8 Jun 2022 20:40:44 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 2/2] net: phy: add remote fault support
+Message-ID: <20220608204044.5a09bc59@kernel.org>
+In-Reply-To: <20220608122322.772950-3-o.rempel@pengutronix.de>
+References: <20220608122322.772950-1-o.rempel@pengutronix.de>
+        <20220608122322.772950-3-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: bpf 2022-06-09
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165474601315.17710.6777625210369645593.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Jun 2022 03:40:13 +0000
-References: <20220608234133.32265-1-daniel@iogearbox.net>
-In-Reply-To: <20220608234133.32265-1-daniel@iogearbox.net>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, ast@kernel.org, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,28 +60,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed,  8 Jun 2022 14:23:22 +0200 Oleksij Rempel wrote:
+> diff --git a/include/linux/phy.h b/include/linux/phy.h
+> index 508f1149665b..94a95e60cb45 100644
+> --- a/include/linux/phy.h
+> +++ b/include/linux/phy.h
+> @@ -564,6 +564,7 @@ struct macsec_ops;
+>   * @advertising: Currently advertised linkmodes
+>   * @adv_old: Saved advertised while power saving for WoL
+>   * @lp_advertising: Current link partner advertised linkmodes
+> + * @lp_remote_fault: Current link partner advertised remote fault
+>   * @eee_broken_modes: Energy efficient ethernet modes which should be prohibited
+>   * @autoneg: Flag autoneg being used
+>   * @link: Current link state
+> @@ -646,6 +647,10 @@ struct phy_device {
+>  	u8 master_slave_set;
+>  	u8 master_slave_state;
+>  
+> +	u8 remote_fault_set;
+> +	u8 remote_fault_get;
+> +	u8 remote_fault_state;
 
-This pull request was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+./scripts/kernel-doc :
 
-On Thu,  9 Jun 2022 01:41:33 +0200 you wrote:
-> Hi David, hi Jakub, hi Paolo, hi Eric,
-> 
-> The following pull-request contains BPF updates for your *net* tree.
-> 
-> We've added 6 non-merge commits during the last 2 day(s) which contain
-> a total of 8 files changed, 49 insertions(+), 15 deletions(-).
-> 
-> [...]
-
-Here is the summary with links:
-  - pull-request: bpf 2022-06-09
-    https://git.kernel.org/netdev/net/c/d5d4c36398ba
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+include/linux/phy.h:717: warning: Function parameter or member 'remote_fault_set' not described in 'phy_device'
+include/linux/phy.h:717: warning: Function parameter or member 'remote_fault_get' not described in 'phy_device'
+include/linux/phy.h:717: warning: Function parameter or member 'remote_fault_state' not described in 'phy_device'
+include/uapi/linux/ethtool.h:2139: warning: Function parameter or member 'remote_fault_cfg' not described in 'ethtool_link_settings'
+include/uapi/linux/ethtool.h:2139: warning: Function parameter or member 'remote_fault_state' not described in 'ethtool_link_settings'
