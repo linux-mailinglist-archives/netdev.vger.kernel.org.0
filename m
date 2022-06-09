@@ -2,97 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58C57544242
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 06:02:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD77554424C
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 06:04:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237758AbiFIEBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 00:01:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52270 "EHLO
+        id S232363AbiFIEDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 00:03:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229937AbiFIEBp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 00:01:45 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6408D21F9C8
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 21:01:44 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id 15so20042213pfy.3
-        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 21:01:44 -0700 (PDT)
+        with ESMTP id S230172AbiFIEDo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 00:03:44 -0400
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9D631FE4C5
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 21:03:43 -0700 (PDT)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-3137316bb69so34018047b3.10
+        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 21:03:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=62+PWQiLxPjZjQYgRhko08/Ww2TxqASYsuAZ9j7CFfs=;
-        b=YytZSjB/mbEabrafnck2Z0amlWBP4vlIly+oI/4EgteMU6Kdu2nXiQngO2IVPhGhQc
-         VxVXL3zGLhHk+srEYTqlhA1B6Z2z8MIqFo9+RFC8nzGrUaeDUM8ayLTLoZt7wPyv/DCa
-         kbTKQ9llasNtpONKZSpAKqchTXx97r7HJOTt20UwpOtiRnHepUjfNjyFIMW5uCn+O3Fj
-         7zkGcZVaEafh3TnNRj5EBEZVjxGoxa57HVfWVBDYGyPzfEVuztwClzpTcHcmsli0nqcH
-         ++R6CWmBnV/5+RM/Lkz8AMXVHtUT5RMQjHPbH5l6yH2SAIBXvMLXP4eomRfZ+oqMnqYy
-         p9RA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bhGauVid88M2xfzqgH6+LgDOjyyWjact/QPhQzDbR78=;
+        b=tV/gAoUoowgLPEjzHoq4Upm0xFu3ArE2deAaoABjpx5ze3SNxLcMV+K4/bnZX4/B0u
+         m5j6yUQRocdDqWrnUUvQK+to5PTCe8UyNcLPhGGj6jyPR65lT9DdRbaZb3q3RFW+DbJt
+         PQnPNHEquFsN2Kmux+Lh4eRBR04amv/NRnIbra7cUhtoU4VImvtlahQ90gjMtFIV/6FM
+         X0lufO+vycL9++U34MppjoJHDNAG6aPP3PrOcBOEMJQr38bi4vihQ/ivpj5a0Ab2N/rg
+         lCslEiVifNPekaX4WmWLPpFjBPhqX/hRsGhTjxwWbGnQgByPE9KMOvNoi6AYgXFBUd8+
+         9jHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=62+PWQiLxPjZjQYgRhko08/Ww2TxqASYsuAZ9j7CFfs=;
-        b=ggTQvZrXVL30mAqcyH5IkegK/RLWY4S0Ilh+pkeRxLkzhna13cHj/MXvzgsYzTFKmx
-         8cPEVgCvWeWOp2hlIwCvUHKtTyD0JZN4+yst0z0AUVBFyRWxjTBfO7WZyUb5G7xqTm08
-         9KNBkVyQK6c+EbOKJr+7aChGV155WvpLlEJ6GIKwfrJV4RFF3M/cEdUYCpk649letH5x
-         reW7Bj5Jj9w5/SpRUuPKvA89bMf2nF/UDRNIZs3/aFwONeYtXg0kEqeUqkzbmpTTj9jV
-         NArZlB9ALD+LBIRRYdTe9bBNfcnt28kdIhzwoyuX3KWQIEA7J4cVP8kZLJaKz3oUJ4SP
-         psdQ==
-X-Gm-Message-State: AOAM530AfCf6JhcoexA5kpCJhbb8mniPlHfufv0JR2VN1iqkSKB2Xy0L
-        RUnfydB7rb4DZptOvROQlow=
-X-Google-Smtp-Source: ABdhPJxR/4O/CCYyF/boaSLknWj+u49IrCYZx4ezm/CeRP2NLVb+prjrBVXZbYtWsLKEvGP3UAh7nQ==
-X-Received: by 2002:a63:8941:0:b0:3fc:7efa:119d with SMTP id v62-20020a638941000000b003fc7efa119dmr33383239pgd.340.1654747303787;
-        Wed, 08 Jun 2022 21:01:43 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id 205-20020a6216d6000000b0050dc76281f0sm15854527pfw.202.2022.06.08.21.01.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 21:01:43 -0700 (PDT)
-Date:   Wed, 8 Jun 2022 21:01:41 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Lasse Johnsen <l@ssejohnsen.me>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bhGauVid88M2xfzqgH6+LgDOjyyWjact/QPhQzDbR78=;
+        b=EhYiwzOM7RaGuoip/4X1x9uwXLpYYqrYrafZQxJPJZZ1EVFq2YCUARym5Q5aJ2Zbd2
+         dV5H+WJ7H2loMbUNIR/mZO6pHMWQXIArqxT3TqQR/eOstNCOFR/ijdo7Utt3Ukth0ptV
+         5UdVxcRYatuPfnYRthbHfSh1zSsvdrCbaUGgJ3Q2r1DV9VSYUQR1BFMn6CPi9vE+WpFL
+         yxMO/MqTg8M+xLGE+dldTvA8OsROQ/a8oP8dXCdH0th/PzYiIb8mVKbxvCKu49gyjZ9C
+         XaM4MIIeOvXlWzqD6q9+m1v2Qf+DT0rmtwuLLoP4KmCw7SJFRcGydWtMJx2ToyzFFKP8
+         AODQ==
+X-Gm-Message-State: AOAM533m82bNkJ0SewoxceBji2Hjp9eZPQ+TfZ9nQoCBmBn4Nn7y1cAF
+        7E8EnIbqWj6uv0pgUAAEhKn0v8PhldFE29Sy6n22hg==
+X-Google-Smtp-Source: ABdhPJw50GpSGcOi3ONcY1gJm8BwLu4C4krZfIrPlbH0Yc9FUEBkBSynLT8zXpsU8+LvuJPQt8aEbs7RCzZkw2dHaqA=
+X-Received: by 2002:a0d:d997:0:b0:30c:962e:7aa6 with SMTP id
+ b145-20020a0dd997000000b0030c962e7aa6mr42075679ywe.278.1654747422845; Wed, 08
+ Jun 2022 21:03:42 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220607070214.94443-1-songmuchun@bytedance.com>
+In-Reply-To: <20220607070214.94443-1-songmuchun@bytedance.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 8 Jun 2022 21:03:31 -0700
+Message-ID: <CANn89i+wqVnfwOcpvnBwoF4ZvjZL-RcsqdT5khu-3CHpCcoKTQ@mail.gmail.com>
+Subject: Re: [PATCH v2] tcp: use alloc_large_system_hash() to allocate table_perturb
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>
-Subject: Re: [PATCH net-next v6 2/3] net: phy: broadcom: Add PTP support for
- some Broadcom PHYs.
-Message-ID: <20220609040141.GA21971@hoboy.vegasvil.org>
-References: <20220608204451.3124320-1-jonathan.lemon@gmail.com>
- <20220608204451.3124320-3-jonathan.lemon@gmail.com>
- <20220608205558.GB16693@hoboy.vegasvil.org>
- <BCC0CDAF-B59D-4A7A-ABDD-7DEBBADAF3A3@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BCC0CDAF-B59D-4A7A-ABDD-7DEBBADAF3A3@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, Willy Tarreau <w@1wt.eu>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 08, 2022 at 02:29:15PM -0700, Jonathan Lemon wrote:
-> Do you have a stress test to verify one way or the other?
+On Tue, Jun 7, 2022 at 12:02 AM Muchun Song <songmuchun@bytedance.com> wrote:
+>
+> In our server, there may be no high order (>= 6) memory since we reserve
+> lots of HugeTLB pages when booting.  Then the system panic.  So use
+> alloc_large_system_hash() to allocate table_perturb.
+>
+> Fixes: e9261476184b ("tcp: dynamically allocate the perturb table used by source ports")
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> ---
+> v2:
+>  - Add Fixes tag and replace kvmalloc_array with alloc_large_system_hash suggested
+>    by Eric Dumazet.
+>
 
-You can set a large freq. offset on the server.  For example
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 
-   phc_ctl eth0 -- freq 500000
-
-for 500 ppm and see what the client does.
-
-Thanks,
-Richard
-
+Thanks.
