@@ -2,223 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C19C54460E
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 10:39:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0ED1544637
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 10:47:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241957AbiFIIjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 04:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35074 "EHLO
+        id S242545AbiFIInG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 04:43:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241986AbiFIIia (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 04:38:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC5A7FF8
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 01:38:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654763906;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HgVXSci/QOseQPVoykiPl1OOcwRCzNz17MjAcM9uq8w=;
-        b=Ae24BzLDvu1s2hRcTqfN9U8lGQTyDYBBtmV/7+9ps2sNCsEnFBycEwOhuPzkRGP4CzHWh8
-        v0L0E2a3KUtQAw1DLpmxSdKI66t6T/OTVcvcqA033k7cv94mx8WbFWj1nm/XuyX9Uf/rqq
-        XvI0ACUNR2o/3PiAqbMlnDaaTmsahbg=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-557-QivRxRl2NFKBXaSzPaSizw-1; Thu, 09 Jun 2022 04:38:17 -0400
-X-MC-Unique: QivRxRl2NFKBXaSzPaSizw-1
-Received: by mail-wm1-f71.google.com with SMTP id k5-20020a05600c0b4500b003941ca130f9so8014985wmr.0
-        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 01:38:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HgVXSci/QOseQPVoykiPl1OOcwRCzNz17MjAcM9uq8w=;
-        b=TyCi6WWftf2CqHFkIs0L2uvOHba4XIDXjInSzbxg4un6imTLHQjv4StfhCr8fAOHk3
-         hp5hv47Bu5StAbMtExMXmegcrA36RyUZK4CD+ApTMn5qfm8T8rYrd1gyLKHXgfWU+2KT
-         2aC3vy7FJd8h0AL/jBghzxucYKL+soUJ+vf9ICEPfBuyeHs9MyLqhHAyUsJsyWXarf0S
-         TjLtPDYOXIYnlG1gAcmpP+M2lKKJR7G8wC8BPLhF72/0QMUCf8usdSYyeIDDiHjLeznq
-         lQBXawQ49CuERNZm3K9m8EhjR+beH+enRavVY484uFvihevDWMkdkxOxH5RYqKMyCIkV
-         gNLw==
-X-Gm-Message-State: AOAM531uPWxl2Ef+UY2tBcRtifpZvTHcjSAT23WV/QePh/FPaVzmofce
-        GCEFpzvP2KHjl79Bh7XvjfekFAKnya8sguwe6Fy0q52XUA7A6JM50IYV8u/ry2bio83wxH5y9+i
-        Ql4DiyCTNkZN5uLMr
-X-Received: by 2002:a5d:5046:0:b0:210:20ba:843b with SMTP id h6-20020a5d5046000000b0021020ba843bmr36990358wrt.447.1654763896051;
-        Thu, 09 Jun 2022 01:38:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz2I/pxTFn4lag98n3atuyy6yg43sEFm9gDOXjfWj6fo6AxS/nQEcBo9Zu5aQvJUCNQyNASrw==
-X-Received: by 2002:a5d:5046:0:b0:210:20ba:843b with SMTP id h6-20020a5d5046000000b0021020ba843bmr36990340wrt.447.1654763895841;
-        Thu, 09 Jun 2022 01:38:15 -0700 (PDT)
-Received: from sgarzare-redhat (host-79-46-200-40.retail.telecomitalia.it. [79.46.200.40])
-        by smtp.gmail.com with ESMTPSA id h7-20020a05600c350700b0039c3b05540fsm25002292wmq.27.2022.06.09.01.38.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 01:38:15 -0700 (PDT)
-Date:   Thu, 9 Jun 2022 10:38:12 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>
-Subject: Re: [RFC PATCH v2 2/8] vhost/vsock: rework packet allocation logic
-Message-ID: <20220609083812.kfsmteh6cm5v3ag2@sgarzare-redhat>
-References: <e37fdf9b-be80-35e1-ae7b-c9dfeae3e3db@sberdevices.ru>
- <72ae7f76-ffee-3e64-d445-7a0f4261d891@sberdevices.ru>
+        with ESMTP id S242359AbiFIIlB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 04:41:01 -0400
+Received: from m15112.mail.126.com (m15112.mail.126.com [220.181.15.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C9AB1A809
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 01:40:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=TTVHM
+        YekiVzHqVSZZqlsEXzEIs7mbYbLei3TTp2AbsY=; b=XioNkFUgJEn/eZayWzv7M
+        XOJJ2+Y8+3Sukxjc2zdNBckBVwrA3t82OiT+gdLAqpL6bhXSyVQKPSPVkmve9QiK
+        WAFs4pPQM2MKo9V8O+IdrGxlXCcNITas/XDJIQWdSEbbOvjAKAuxXzvUZMfERz6S
+        jESiYXby/WJf4D16FkNTr0=
+Received: from localhost.localdomain (unknown [223.104.63.29])
+        by smtp2 (Coremail) with SMTP id DMmowADX3wO+saFiyuE9Cw--.2894S2;
+        Thu, 09 Jun 2022 16:39:28 +0800 (CST)
+From:   Lixue Liang <lianglixuehao@126.com>
+To:     pmenzel@molgen.mpg.de
+Cc:     anthony.l.nguyen@intel.com, intel-wired-lan@lists.osuosl.org,
+        jesse.brandeburg@intel.com, kuba@kernel.org,
+        lianglixue@greatwall.com.cn, netdev@vger.kernel.org
+Subject: [PATCH v5] igb: Assign random MAC address instead of fail in case of invalid one
+Date:   Thu,  9 Jun 2022 08:39:04 +0000
+Message-Id: <20220609083904.91778-1-lianglixuehao@126.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <72ae7f76-ffee-3e64-d445-7a0f4261d891@sberdevices.ru>
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DMmowADX3wO+saFiyuE9Cw--.2894S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxZrWUuw1kKrWkGry8CFW3KFg_yoW5Aw13pa
+        yUJayaqrykJr42q3ykXw48Xa45Ca4qqw45CrZxAw1F9Fn0qr4DArW8try7tryrGrWkCa17
+        tr17ZFsrua1DAFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07j8HUDUUUUU=
+X-Originating-IP: [223.104.63.29]
+X-CM-SenderInfo: xold0w5ol03vxkdrqiyswou0bp/1tbizgcbFl8RPQHANAABsD
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 05:33:04AM +0000, Arseniy Krasnov wrote:
->For packets received from virtio RX queue, use buddy
->allocator instead of 'kmalloc()' to be able to insert
->such pages to user provided vma. Single call to
->'copy_from_iter()' replaced with per-page loop.
->
->Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->---
-> drivers/vhost/vsock.c | 81 ++++++++++++++++++++++++++++++++++++-------
-> 1 file changed, 69 insertions(+), 12 deletions(-)
->
->diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
->index e6c9d41db1de..0dc2229f18f7 100644
->--- a/drivers/vhost/vsock.c
->+++ b/drivers/vhost/vsock.c
->@@ -58,6 +58,7 @@ struct vhost_vsock {
->
-> 	u32 guest_cid;
-> 	bool seqpacket_allow;
->+	bool zerocopy_rx_on;
+From: Lixue Liang <lianglixue@greatwall.com.cn>
 
-This is per-device, so a single socket can change the behaviour of all 
-the sockets of this device.
+In some cases, when the user uses igb_set_eeprom to modify the MAC address
+to be invalid, or an invalid MAC address appears when with uninitialized
+samples, the igb driver will fail to load. If there is no network card
+device, the user could not conveniently modify it to a valid MAC address,
+for example using ethtool to modify.
 
-Can we do something better?
+Through module parameter to set，when the MAC address is invalid, a random
+valid MAC address can be used to continue loading and output relevant log
+reminders. In this way, users can conveniently correct invalid MAC address.
 
-Maybe we can allocate the header, copy it, find the socket and check if 
-zero-copy is enabled or not for that socket.
+Signed-off-by: Lixue Liang <lianglixue@greatwall.com.cn>
+---
+Changelog:
+* v5:
+  - Through the setting of module parameters, it is allowed to complete
+    the loading of the igb network card driver with an invalid MAC address.
+  Suggested-by <alexander.duyck@gmail.com>
+* v4:
+  - Change the igb_mian in the title to igb
+  - Fix dev_err message: replace "already assigned random MAC address"
+    with "Invalid MAC address. Assigned random MAC address"
+  Suggested-by Tony <anthony.l.nguyen@intel.com>
 
-Of course we should change or extend virtio_transport_recv_pkt() to 
-avoid to find the socket again.
+* v3:
+  - Add space after comma in commit message
+  - Correct spelling of MAC address
+  Suggested-by Paul <pmenzel@molgen.mpg.de>
 
+* v2:
+  - Change memcpy to ether_addr_copy
+  - Change dev_info to dev_err
+  - Fix the description of the commit message
+  - Change eth_random_addr to eth_hw_addr_random
+  Reported-by: kernel test robot <lkp@intel.com>
 
-> };
->
-> static u32 vhost_transport_get_local_cid(void)
->@@ -357,6 +358,7 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
-> 		      unsigned int out, unsigned int in)
-> {
-> 	struct virtio_vsock_pkt *pkt;
->+	struct vhost_vsock *vsock;
-> 	struct iov_iter iov_iter;
-> 	size_t nbytes;
-> 	size_t len;
->@@ -393,20 +395,75 @@ vhost_vsock_alloc_pkt(struct vhost_virtqueue *vq,
-> 		return NULL;
-> 	}
->
->-	pkt->buf = kmalloc(pkt->len, GFP_KERNEL);
->-	if (!pkt->buf) {
->-		kfree(pkt);
->-		return NULL;
->-	}
->-
-> 	pkt->buf_len = pkt->len;
->+	vsock = container_of(vq->dev, struct vhost_vsock, dev);
->
->-	nbytes = copy_from_iter(pkt->buf, pkt->len, &iov_iter);
->-	if (nbytes != pkt->len) {
->-		vq_err(vq, "Expected %u byte payload, got %zu bytes\n",
->-		       pkt->len, nbytes);
->-		virtio_transport_free_pkt(pkt);
->-		return NULL;
->+	if (!vsock->zerocopy_rx_on) {
->+		pkt->buf = kmalloc(pkt->len, GFP_KERNEL);
->+
->+		if (!pkt->buf) {
->+			kfree(pkt);
->+			return NULL;
->+		}
->+
->+		pkt->slab_buf = true;
->+		nbytes = copy_from_iter(pkt->buf, pkt->len, &iov_iter);
->+		if (nbytes != pkt->len) {
->+			vq_err(vq, "Expected %u byte payload, got %zu bytes\n",
->+				pkt->len, nbytes);
->+			virtio_transport_free_pkt(pkt);
->+			return NULL;
->+		}
->+	} else {
->+		struct page *buf_page;
->+		ssize_t pkt_len;
->+		int page_idx;
->+
->+		/* This creates memory overrun, as we allocate
->+		 * at least one page for each packet.
->+		 */
->+		buf_page = alloc_pages(GFP_KERNEL, get_order(pkt->len));
->+
->+		if (buf_page == NULL) {
->+			kfree(pkt);
->+			return NULL;
->+		}
->+
->+		pkt->buf = page_to_virt(buf_page);
->+
->+		page_idx = 0;
->+		pkt_len = pkt->len;
->+
->+		/* As allocated pages are not mapped, process
->+		 * pages one by one.
->+		 */
->+		while (pkt_len > 0) {
->+			void *mapped;
->+			size_t to_copy;
->+
->+			mapped = kmap(buf_page + page_idx);
->+
->+			if (mapped == NULL) {
->+				virtio_transport_free_pkt(pkt);
->+				return NULL;
->+			}
->+
->+			to_copy = min(pkt_len, ((ssize_t)PAGE_SIZE));
->+
->+			nbytes = copy_from_iter(mapped, to_copy, &iov_iter);
->+			if (nbytes != to_copy) {
->+				vq_err(vq, "Expected %zu byte payload, got %zu bytes\n",
->+				       to_copy, nbytes);
->+				kunmap(mapped);
->+				virtio_transport_free_pkt(pkt);
->+				return NULL;
->+			}
->+
->+			kunmap(mapped);
->+
->+			pkt_len -= to_copy;
->+			page_idx++;
->+		}
-> 	}
->
-> 	return pkt;
->-- 
->2.25.1
+ drivers/net/ethernet/intel/igb/igb_main.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 34b33b21e0dc..8162e8999ccb 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -238,8 +238,11 @@ MODULE_LICENSE("GPL v2");
+ 
+ #define DEFAULT_MSG_ENABLE (NETIF_MSG_DRV|NETIF_MSG_PROBE|NETIF_MSG_LINK)
+ static int debug = -1;
++static unsigned int invalid_mac_address_allow;
+ module_param(debug, int, 0);
++module_param(invalid_mac_address_allow, uint, 0);
+ MODULE_PARM_DESC(debug, "Debug level (0=none,...,16=all)");
++MODULE_PARM_DESC(invalid_mac_address_allow, "Allow NIC driver to be loaded with invalid MAC address");
+ 
+ struct igb_reg_info {
+ 	u32 ofs;
+@@ -3359,9 +3362,16 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	eth_hw_addr_set(netdev, hw->mac.addr);
+ 
+ 	if (!is_valid_ether_addr(netdev->dev_addr)) {
+-		dev_err(&pdev->dev, "Invalid MAC Address\n");
+-		err = -EIO;
+-		goto err_eeprom;
++		if (!invalid_mac_address_allow) {
++			dev_err(&pdev->dev, "Invalid MAC Address\n");
++			err = -EIO;
++			goto err_eeprom;
++		} else {
++			eth_hw_addr_random(netdev);
++			ether_addr_copy(hw->mac.addr, netdev->dev_addr);
++			dev_err(&pdev->dev,
++				"Invalid MAC address. Assigned random MAC address\n");
++		}
+ 	}
+ 
+ 	igb_set_default_mac_filter(adapter);
+-- 
+2.27.0
 
