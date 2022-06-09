@@ -2,113 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BADD54458D
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 10:21:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AF255445A4
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 10:26:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233451AbiFIIU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 04:20:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33844 "EHLO
+        id S240696AbiFIIZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 04:25:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231911AbiFIIU4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 04:20:56 -0400
-Received: from giacobini.uberspace.de (giacobini.uberspace.de [185.26.156.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAADF3B9267
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 01:20:50 -0700 (PDT)
-Received: (qmail 26772 invoked by uid 990); 9 Jun 2022 08:20:48 -0000
-Authentication-Results: giacobini.uberspace.de;
-        auth=pass (plain)
-Message-ID: <d950a0cb-72d3-aa1a-24c1-5a9380681dfd@eknoes.de>
-Date:   Thu, 9 Jun 2022 10:20:47 +0200
+        with ESMTP id S235876AbiFIIZB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 04:25:01 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2074.outbound.protection.outlook.com [40.107.92.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657BF149D8D;
+        Thu,  9 Jun 2022 01:24:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Z7BSn7IGY6HD3zbkHo+Ce3DTGKRhfnLoWx2QffpV7WpL/gTDbPP+xIoqqWclR35pw2n5SvPAEvSvhMIoE5IP7JqFcBH0K7fsyxD1jZDhooN+s+4pu7i4vPSYncFIEDFJYJvifSCD4GUCZG/Q9tdBGqOi2dN6iNzCCvJKf8G479v+h7cFrehxdQGQTalQNLYqGDLE7fegpu/34T+C8YUK+i4QDbxxPlPe/1cnbqyic3SC7cqSs2ICMXcR3QU95LXXODXu2BWASLQEKyQVwZcqGoRWDaB1svnox2PQFPCKNOLGvsxb2T743rrsigdC6ZvONmFBqL0kkX2SUznJW7x3zg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RwxFh3BM6fI1LyvUZq2hprAOoTb1DT+YPNd2IiuuPQ4=;
+ b=ZKqFGesrFCpsHKi2Y8OnMIcStsu+p2uocXk6CWLJS97H52YtA/2Ku5skPGIifr/Ik+vnxjBXb2c+DxvxpZ9qIwFJ8JxJV+Ky2mUR1v/T3uafbmPBom00PsrnqJ9msHc/beQqJ89U3s7f+QWXFotKtzq7U6F0EPPFUIUeHr+ynTuVHJGzoytIPlxjEWeOQlnScHqP90xHhIl7GFDlXMV3jCCnJ9p/u/EvvzzPqmaePI1t0o2IFXeArpdTZdet54xvFK8jE40PLJcxkgpTLG/wWP+gc3V8LbmGdyF6tIPLGSJFAcQzqkjPbWowML3MXxO2Td3bH7t2t0s2bHc3aVy0mg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=grandegger.com smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RwxFh3BM6fI1LyvUZq2hprAOoTb1DT+YPNd2IiuuPQ4=;
+ b=EtfBr9S2JrdY6xxhK8EQDzm3yO0UDqU8qLEcB8CCM+rRHaJGeIvkKu8gbT5YjuAABsRNPUFE8P2ksXkyjpFFk7HMX5apoYUpaOQjMrOrwrRGRYLYSaBDOmxwu0fJRzfNXX1Ag1TaPM+Vh/HRRD19Y4EqEZPt4Vo3D3LXiQXVp3Y=
+Received: from DM5PR18CA0082.namprd18.prod.outlook.com (2603:10b6:3:3::20) by
+ DM6PR02MB4073.namprd02.prod.outlook.com (2603:10b6:5:a5::32) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5314.13; Thu, 9 Jun 2022 08:24:56 +0000
+Received: from DM3NAM02FT032.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:3:3:cafe::f6) by DM5PR18CA0082.outlook.office365.com
+ (2603:10b6:3:3::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13 via Frontend
+ Transport; Thu, 9 Jun 2022 08:24:56 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com; pr=C
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT032.mail.protection.outlook.com (10.13.5.65) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5332.12 via Frontend Transport; Thu, 9 Jun 2022 08:24:55 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 9 Jun 2022 01:24:54 -0700
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Thu, 9 Jun 2022 01:24:54 -0700
+Envelope-to: git@xilinx.com,
+ wg@grandegger.com,
+ mkl@pengutronix.de,
+ davem@davemloft.net,
+ edumazet@google.com,
+ srinivas.neeli@amd.com,
+ neelisrinivas18@gmail.com,
+ kuba@kernel.org,
+ pabeni@redhat.com,
+ linux-can@vger.kernel.org,
+ netdev@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+Received: from [10.140.6.39] (port=37838 helo=xhdsgoud40.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <srinivas.neeli@xilinx.com>)
+        id 1nzDTJ-0008BE-RE; Thu, 09 Jun 2022 01:24:54 -0700
+From:   Srinivas Neeli <srinivas.neeli@xilinx.com>
+To:     <wg@grandegger.com>, <mkl@pengutronix.de>, <davem@davemloft.net>,
+        <edumazet@google.com>, <srinivas.neeli@amd.com>,
+        <neelisrinivas18@gmail.com>, <appana.durga.rao@xilinx.com>,
+        <sgoud@xilinx.com>, <michal.simek@xilinx.com>
+CC:     <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <git@xilinx.com>,
+        Srinivas Neeli <srinivas.neeli@xilinx.com>
+Subject: [PATCH V3 0/2] xilinx_can: Update on xilinx can
+Date:   Thu, 9 Jun 2022 13:54:31 +0530
+Message-ID: <20220609082433.1191060-1-srinivas.neeli@xilinx.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] Bluetooth: RFCOMM: Use skb_trim to trim checksum
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220608135105.146452-1-soenke.huster@eknoes.de>
- <CANn89iJ2gf4JfU8KZUYFSA8KgS-gEjhBZtX9WvUmWv2c8kPkJQ@mail.gmail.com>
-From:   =?UTF-8?Q?S=c3=b6nke_Huster?= <soenke.huster@eknoes.de>
-In-Reply-To: <CANn89iJ2gf4JfU8KZUYFSA8KgS-gEjhBZtX9WvUmWv2c8kPkJQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Bar: /
-X-Rspamd-Report: MIME_GOOD(-0.1) BAYES_HAM(-1.07202) SUSPICIOUS_RECIPS(1.5)
-X-Rspamd-Score: 0.327979
-Received: from unknown (HELO unkown) (::1)
-        by giacobini.uberspace.de (Haraka/2.8.28) with ESMTPSA; Thu, 09 Jun 2022 10:20:48 +0200
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,
-        MSGID_FROM_MTA_HEADER,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 834141eb-1637-4535-7f45-08da49f188c5
+X-MS-TrafficTypeDiagnostic: DM6PR02MB4073:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR02MB40732DE94AEAC6A6A517AD77AFA79@DM6PR02MB4073.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: EwV0hJ6FQZXI9hg8tV/zyBtpU5jtwO70m7fcUCztQ4hoWvWs/e9/MhdxzDLQKvOaDz+eqqP6hqeL2gE9rT2miYVBWogDXbMesHaYLP+iB5p5Be0FSFEaFQY8PVBNE7fBHJTGCwbl/wpau7BiuWIanhsm/lH9daEaKRYzXdRk3v6GgSxZGgwL9fOhaA3HdWcDJyW6KvOKGbLOFmSpB1fYzTVTtQKc+sFK4rBYu4J0vefwGaTRx0ZWivD/RqgeCRKbmz5JvHA4Pi6/NatMzw5kaVsGrZGAZwLjnSYxOKemDeOKzE2WcBS1dN47NurFfrpt+UTLBql5tU3ukVovyi3JUE4e2KaZNaylmtwL/bWK1MzoE4AI/2EQhlv/IwBlDpT0tQqbFxuaIfQBbA0XNNliC+LsTvtG4Kw6sjDeT6S6+oXGR6UDSjkRSCGXouN//Q3W81w/mAu5U1trXYA5NSlgWIOk1yDiQPJ+VdXXDCm7tINeOFepp55xf6U87LQgR+7LJ07U2S1EnQibGnh4V61qg1sILBr5Y2haCDo7iEedB6irb50BR2A2Yg1hnHdylX7yiFGVl758B5a/RaUUqued+Qc1lDg6cUEJ35RWs8iCVcVr6P72vwfipnndzANG1+IOOy2ZBtrhOnnFLPv7s4WOZFuY+IXTDKwHCM1PoYiXiKrS3oxcpcuQaqVsnNPltiqxg8ktc/nDHn9DlH0HMokdCA==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(82310400005)(7416002)(8936002)(186003)(2616005)(83380400001)(54906003)(316002)(6636002)(110136005)(26005)(336012)(47076005)(426003)(7636003)(2906002)(36756003)(508600001)(9786002)(356005)(7696005)(4744005)(36860700001)(4326008)(44832011)(8676002)(40460700003)(5660300002)(107886003)(70586007)(70206006)(6666004)(1076003)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2022 08:24:55.5999
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 834141eb-1637-4535-7f45-08da49f188c5
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT032.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB4073
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+This patch series addresses
+1) Reverts the limiting CANFD brp_min to 2.
+2) Adds TDC support for Xilinx can driver.
 
-On 08.06.22 17:33, Eric Dumazet wrote:
-> On Wed, Jun 8, 2022 at 6:51 AM Soenke Huster <soenke.huster@eknoes.de> wrote:
->>
->> Use the skb helper instead of direct manipulation. This fixes the
->> following page fault, when connecting my Android phone:
->>
->>     BUG: unable to handle page fault for address: ffffed1021de29ff
->>     #PF: supervisor read access in kernel mode
->>     #PF: error_code(0x0000) - not-present page
->>     RIP: 0010:rfcomm_run+0x831/0x4040 (net/bluetooth/rfcomm/core.c:1751)
->>
->> Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
->> ---
->>  net/bluetooth/rfcomm/core.c | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.c
->> index 7324764384b6..7360e905d045 100644
->> --- a/net/bluetooth/rfcomm/core.c
->> +++ b/net/bluetooth/rfcomm/core.c
->> @@ -1747,8 +1747,8 @@ static struct rfcomm_session *rfcomm_recv_frame(struct rfcomm_session *s,
->>         type = __get_type(hdr->ctrl);
->>
->>         /* Trim FCS */
->> -       skb->len--; skb->tail--;
->> -       fcs = *(u8 *)skb_tail_pointer(skb);
->> +       skb_trim(skb, skb->len - 1);
->> +       fcs = *(skb->data + skb->len);
->>
-> 
-> Hmmm... I do not see any difference before/after in term of memory
-> dereference to get fcs.
-> 
-> I think you should give more details on how exactly the bug triggers.
+Hi Marc,
+Please apply PATCH V3 1/2 on stable branch.
+Due to some mailing issue i didn't receive your mail.
 
-Sorry, yesterday I was not able to track down why exactly it crashes,
-but by now I think I figured it out.
+Changes in V3:
+-Implemented GENMASK,FIELD_PERP & FIELD_GET Calls.
+-Implemented TDC feature for all Xilinx CANFD controllers.
+-corrected prescalar to prescaler(typo).
 
-The crash happens when using Bluetooth in a virtual machine.
-On connecting my Android phone to the physical controller which I use 
-inside the virtual machine via the VirtIO driver, after some seconds
-the crash occurs.
+Changes in V2:
+- Created two patches one for revert another for TDC support.
 
-Before the trimming step, I examined the skb in gdb and saw, that 
-skb->tail is zero. Thus, skb->tail--; modifies the unsigned integer to -1
-resp. MAX_UINT. In skb_tail_pointer, skb->head + skb->tail is calculated
-which results in the page fault.
+Srinivas Neeli (2):
+  Revert "can: xilinx_can: Limit CANFD brp to 2"
+  can: xilinx_can: Add Transmitter delay compensation (TDC) feature
+    support
 
-By using skb_trim, skb->tail is set to the accurate value and thus the
-issue is fixed.
+ drivers/net/can/xilinx_can.c | 52 +++++++++++++++++++++++++++++++-----
+ 1 file changed, 45 insertions(+), 7 deletions(-)
 
-I am not an expert in the Linux kernel area, do you think there is an
-underlying issue anywhere else? When using my Android phone on my host
-computer, I do not have that problem - it might be in some 
-(e.g. virtio_bt?) driver? On the other hand, with the patch my problem
-is solved and the phone is usable in the virtual machine!
+-- 
+2.25.1
+
