@@ -2,221 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 575FC5458A0
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 01:27:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 530B35458A8
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 01:33:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236603AbiFIX1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 19:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50432 "EHLO
+        id S242409AbiFIXdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 19:33:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229520AbiFIX1g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 19:27:36 -0400
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9481FC509E;
-        Thu,  9 Jun 2022 16:27:32 -0700 (PDT)
-Received: by mail-oi1-x230.google.com with SMTP id q11so18397955oih.10;
-        Thu, 09 Jun 2022 16:27:32 -0700 (PDT)
+        with ESMTP id S1345329AbiFIXdJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 19:33:09 -0400
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26FE63503;
+        Thu,  9 Jun 2022 16:33:05 -0700 (PDT)
+Received: by mail-il1-x131.google.com with SMTP id r3so19850023ilt.8;
+        Thu, 09 Jun 2022 16:33:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=r2zquoBlyQYb0xUw0WILuwwlhoJAz1Yr+gxlaVgrIzQ=;
-        b=R9yQw97QyVFjpGwK8iCen+SZo/CqYIuXT9YhYg3LIK26/6cPYcqu75zN1VeGrrulwi
-         B0kU0Z19+kYrX9XwGMWTTUl/oJJkaTs1ToNxZtQGPOL38kS3ZiT/cz1P09bJX/0XxseJ
-         wHbJE6sIpQNKnPEriRrVq7ZOq4PVd8kQcF/QNUJ6Tpb9aWmBamIFSv/9L2ZYmnFGUBgg
-         8mpJBRPrlaBBtaaVqa8eWQRnSJOTQPSvuK5Z1+avTvuy8SKAgro+iti6Aq8KY+f9Q4rb
-         1vrQNkUilVVQYkZ/ab40rJw/oo2obFyM1dExRcFLx1gB1XBtlpH7F9DKukfH8AgbXeDT
-         Ybug==
+        bh=GjKCdHOKOJXiqOWxK8wP3ZWw1JOreBSaiDhIoPu+1D0=;
+        b=AtPZ/xUWiWGDXu4TFxdox7hx7FKMio2mzUqlzzmB4MeykzrhzoIy/MDPDPnbJN1F1v
+         19om9EPXIBlh/jpfSTuNvN5oK7gk6a1MGfKW+1oZGAhjoVTh0kHqIocY8xxRgH6YIJH9
+         5JAFVa1B3yMVktEoudZuVJhWZWEo3dfMhE8UAhzNeJ8S6pZs2SulMR7VaI8JqarrfNUq
+         FwKqhlWP2v1zP+QAQmOQFX/IzHd9cUkNdxxkOH6gLGHPX8whfRsk/3e7vjXgge0Oy86m
+         hkNWHUgmw3npqAIgr3OA1qcqi9srV1lyiaz9xV8KwyW9/ATzQ7cl+QLlyriNQ6QBwBVU
+         +dJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=r2zquoBlyQYb0xUw0WILuwwlhoJAz1Yr+gxlaVgrIzQ=;
-        b=gN/hMvP2eIyWqX969WIp2ndmIqpyrdkv+PxYKvCWYE36JcMsHChju+IClybfFqUJTr
-         EMX6yi/vo6Cc6xFe7ytQ6CdmbYmW5xuA3ocoTIEY8VaSI+pN2GZZRwgeud9z/ff05aln
-         +nUsgrkCw9ZfcuM7iiS3jSrJDqZhemnHHmKBE84ru2sqt8E/ftAv4QeOGYBY7ElenPLZ
-         CuuFx4vjLIVEFLTZ4jAqV9cCDpV2xer8JOBpZv6Cb0WuH/zJEOaCuozV7x2ytYeE63fv
-         GXSOllsXb2otNdrtqy4O3TyoPI+mK1j4vhuFt7axGIuZ0rqwseNCxst2bWooWbfT36m0
-         Oexw==
-X-Gm-Message-State: AOAM530PapR0XHZ5jVqqh3gJvZHOBfghYz61fgEE5WU1QoR0pDXZ62nI
-        4047jdrVirC6iqQmxWm/5gEu3X5sN7IBgikV7mEqfSo5zlIdZQ==
-X-Google-Smtp-Source: ABdhPJxQdHqD9ikHF8uja9enFoxxY+vHyOeATZhP2LNha+l6nKgYPdtNdI/s5t3zAjGuESut420aKAAZKvvknWFmbL8=
-X-Received: by 2002:a05:6808:114f:b0:32b:1be0:2316 with SMTP id
- u15-20020a056808114f00b0032b1be02316mr2900052oiu.200.1654817251717; Thu, 09
- Jun 2022 16:27:31 -0700 (PDT)
+        bh=GjKCdHOKOJXiqOWxK8wP3ZWw1JOreBSaiDhIoPu+1D0=;
+        b=v8ietYF7pFPCnECUBt26gFlXZOjb3nB+4ps8IPOaFYkrPyaI7fPNukmqM2QTdFEEhA
+         3FoeplBuZQ0qz2+4W+X9RRcyJciirmicxOjAlh+mS3/S1euzimMitRnn/4NwP97A6AAX
+         F4gxEte9I4zz4iuGblsJyWeInMCgzPlLAKBPovczxjlcRXv4TrDwcGzCeFO9yaaDN10R
+         pHYIFQz1cFDxMeLLXc3o4E6DDoZKjjBYdg+wBZ4oD9M6DOcwKFe/HzqBfdI+CMvqULat
+         lHzTPlN7Ov7zHzgZfFQu8B4p+KydoZ7BANxkK+jTNwFqIi78NpZImhwtVFNMU/1hFn9L
+         xYiQ==
+X-Gm-Message-State: AOAM531EqqzhtjarMK29laremK16ShYf674SkrpgBqZICJwi2Tqk8Vkt
+        oVG3p7ggt8tYhW9mJw00g/2I1kbIpifcWOjcTHFY200m3eKKlw==
+X-Google-Smtp-Source: ABdhPJw02J7vPYbtqUK/pc01O0WCpPtewBcihZkUNMYeMWAvLy5xie0vAvmlyGnd/gxosoGcIWPYFP2MFH/UzJpnpO0=
+X-Received: by 2002:a05:6e02:b49:b0:2d1:c232:42af with SMTP id
+ f9-20020a056e020b4900b002d1c23242afmr25439128ilu.292.1654817585020; Thu, 09
+ Jun 2022 16:33:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220609062412.3950380-1-james.hilliard1@gmail.com> <CAEf4BzbL8ivLH=HZDFTNyCTFjhWrWLcY3K34Ef+q4Pr+oDe_Gw@mail.gmail.com>
-In-Reply-To: <CAEf4BzbL8ivLH=HZDFTNyCTFjhWrWLcY3K34Ef+q4Pr+oDe_Gw@mail.gmail.com>
-From:   James Hilliard <james.hilliard1@gmail.com>
-Date:   Thu, 9 Jun 2022 17:27:20 -0600
-Message-ID: <CADvTj4opMh978fMBV7cH89wbS1N_PK31AybZJ5NUacnp4kBeqg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/1] libbpf: fix broken gcc SEC pragma macro
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>
+References: <20220609011844.404011-1-jmaxwell37@gmail.com> <56d6f898-bde0-bb25-3427-12a330b29fb8@iogearbox.net>
+ <CAOftzPgU6EaCgf9E407JrbTfWXBYZL=nECWjySVjw8EPtJb6Cg@mail.gmail.com>
+In-Reply-To: <CAOftzPgU6EaCgf9E407JrbTfWXBYZL=nECWjySVjw8EPtJb6Cg@mail.gmail.com>
+From:   Jonathan Maxwell <jmaxwell37@gmail.com>
+Date:   Fri, 10 Jun 2022 09:32:29 +1000
+Message-ID: <CAGHK07A_5ZZJkN6vYOTiy50SgF8MnKcO33CmiTzWMTj-YQ+DVg@mail.gmail.com>
+Subject: Re: [PATCH net] net: bpf: fix request_sock leak in filter.c
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Joe Stringer <joe@cilium.io>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Antoine Tenart <atenart@kernel.org>, cutaylor-pub@yahoo.com,
+        alexei.starovoitov@gmail.com, kafai@fb.com, i@lmb.io,
+        bpf@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
         FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 9, 2022 at 12:13 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
+On Fri, Jun 10, 2022 at 8:22 AM Joe Stringer <joe@cilium.io> wrote:
 >
-> On Wed, Jun 8, 2022 at 11:24 PM James Hilliard
-> <james.hilliard1@gmail.com> wrote:
+> On Thu, Jun 9, 2022 at 1:30 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
 > >
-> > It seems the gcc preprocessor breaks unless pragmas are wrapped
-> > individually inside macros when surrounding __attribute__.
+> > On 6/9/22 3:18 AM, Jon Maxwell wrote:
+> > > A customer reported a request_socket leak in a Calico cloud environment. We
+> > > found that a BPF program was doing a socket lookup with takes a refcnt on
+> > > the socket and that it was finding the request_socket but returning the parent
+> > > LISTEN socket via sk_to_full_sk() without decrementing the child request socket
+> > > 1st, resulting in request_sock slab object leak. This patch retains the
+> > > existing behaviour of returning full socks to the caller but it also decrements
+> > > the child request_socket if one is present before doing so to prevent the leak.
+> > >
+> > > Thanks to Curtis Taylor for all the help in diagnosing and testing this. And
+> > > thanks to Antoine Tenart for the reproducer and patch input.
+> > >
+> > > Fixes: f7355a6c0497 bpf: ("Check sk_fullsock() before returning from bpf_sk_lookup()")
+> > > Fixes: edbf8c01de5a bpf: ("add skc_lookup_tcp helper")
+> > > Tested-by: Curtis Taylor <cutaylor-pub@yahoo.com>
+> > > Co-developed-by: Antoine Tenart <atenart@kernel.org>
+> > > Signed-off-by:: Antoine Tenart <atenart@kernel.org>
+> > > Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
+> > > ---
+> > >   net/core/filter.c | 20 ++++++++++++++------
+> > >   1 file changed, 14 insertions(+), 6 deletions(-)
+> > >
+> > > diff --git a/net/core/filter.c b/net/core/filter.c
+> > > index 2e32cee2c469..e3c04ae7381f 100644
+> > > --- a/net/core/filter.c
+> > > +++ b/net/core/filter.c
+> > > @@ -6202,13 +6202,17 @@ __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
+> > >   {
+> > >       struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
+> > >                                          ifindex, proto, netns_id, flags);
+> > > +     struct sock *sk1 = sk;
+> > >
+> > >       if (sk) {
+> > >               sk = sk_to_full_sk(sk);
+> > > -             if (!sk_fullsock(sk)) {
+> > > -                     sock_gen_put(sk);
+> > > +             /* sk_to_full_sk() may return (sk)->rsk_listener, so make sure the original sk1
+> > > +              * sock refcnt is decremented to prevent a request_sock leak.
+> > > +              */
+> > > +             if (!sk_fullsock(sk1))
+> > > +                     sock_gen_put(sk1);
+> > > +             if (!sk_fullsock(sk))
+> > >                       return NULL;
 > >
-> > Fixes errors like:
-> > error: expected identifier or '(' before '#pragma'
-> >   106 | SEC("cgroup/bind6")
-> >       | ^~~
+> > [ +Martin/Joe/Lorenz ]
 > >
-> > error: expected '=', ',', ';', 'asm' or '__attribute__' before '#pragma'
-> >   114 | char _license[] SEC("license") = "GPL";
-> >       | ^~~
+> > I wonder, should we also add some asserts in here to ensure we don't get an unbalance for the
+> > bpf_sk_release() case later on? Rough pseudocode could be something like below:
 > >
-> > Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
-> > ---
-> > Changes v2 -> v3:
-> >   - just fix SEC pragma
-> > Changes v1 -> v2:
-> >   - replace typeof with __typeof__ instead of changing pragma macros
-> > ---
-> >  tools/lib/bpf/bpf_helpers.h | 7 ++++---
-> >  1 file changed, 4 insertions(+), 3 deletions(-)
+> > static struct sock *
+> > __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
+> >                  struct net *caller_net, u32 ifindex, u8 proto, u64 netns_id,
+> >                  u64 flags)
+> > {
+> >          struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
+> >                                             ifindex, proto, netns_id, flags);
+> >          if (sk) {
+> >                  struct sock *sk2 = sk_to_full_sk(sk);
 > >
-> > diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-> > index fb04eaf367f1..66d23c47c206 100644
-> > --- a/tools/lib/bpf/bpf_helpers.h
-> > +++ b/tools/lib/bpf/bpf_helpers.h
-> > @@ -22,11 +22,12 @@
-> >   * To allow use of SEC() with externs (e.g., for extern .maps declarations),
-> >   * make sure __attribute__((unused)) doesn't trigger compilation warning.
-> >   */
-> > +#define DO_PRAGMA(x) _Pragma(#x)
-> >  #define SEC(name) \
-> > -       _Pragma("GCC diagnostic push")                                      \
-> > -       _Pragma("GCC diagnostic ignored \"-Wignored-attributes\"")          \
-> > +       DO_PRAGMA("GCC diagnostic push")                                    \
-> > +       DO_PRAGMA("GCC diagnostic ignored \"-Wignored-attributes\"")        \
-> >         __attribute__((section(name), used))                                \
-> > -       _Pragma("GCC diagnostic pop")                                       \
-> > +       DO_PRAGMA("GCC diagnostic pop")                                     \
-> >
+> >                  if (!sk_fullsock(sk2))
+> >                          sk2 = NULL;
+> >                  if (sk2 != sk) {
+> >                          sock_gen_put(sk);
+> >                          if (unlikely(sk2 && !sock_flag(sk2, SOCK_RCU_FREE))) {
+> >                                  WARN_ONCE(1, "Found non-RCU, unreferenced socket!");
+> >                                  sk2 = NULL;
+> >                          }
+> >                  }
+> >                  sk = sk2;
+> >          }
+> >          return sk;
+> > }
 >
-> I'm not going to accept this unless I can repro it in the first place.
-> Using -std=c17 doesn't trigger such issue. Please provide the repro
-> first. Building systemd is not a repro, unfortunately. Please try to
-> do it based on libbpf-bootstrap ([0])
->
->   [0] https://github.com/libbpf/libbpf-bootstrap
+> This seems a bit more readable to me from the perspective of
+> understanding the way that the socket references are tracked & freed.
 
-Seems to reproduce just fine already there with:
-https://github.com/libbpf/libbpf-bootstrap/blob/31face36d469a0e3e4c4ac1cafc66747d3150930/examples/c/minimal.bpf.c
+Thanks for the suggestion Daniel and Joe, looks good to me, we will run some
+tests with that implemented in our reproducer.
 
-See here:
-$ /home/buildroot/buildroot/output/per-package/libbpf/host/bin/bpf-gcc
--Winline -O2 -mframe-limit=32767 -mco-re -gbtf -std=gnu17 -v
--D__x86_64__ -mlittle-endian -I
-/home/buildroot/buildroot/output/per-package/libbpf/host/x86_64-buildroot-linux-gnu/sysroot/usr/include
-minimal.bpf.c -o minimal.bpf.o
-Using built-in specs.
-COLLECT_GCC=/home/buildroot/buildroot/output/per-package/libbpf/host/bin/bpf-gcc.br_real
-COLLECT_LTO_WRAPPER=/home/buildroot/buildroot/output/per-package/libbpf/host/bin/../libexec/gcc/bpf-buildroot-none/12.1.0/lto-wrapper
-Target: bpf-buildroot-none
-Configured with: ./configure
---prefix=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host
---sysconfdir=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host/etc
---localstatedir=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host/var
---enable-shared --disable-static --disable-gtk-doc
---disable-gtk-doc-html --disable-doc --disable-docs
---disable-documentation --disable-debug --with-xmlto=no --with-fop=no
---disable-nls --disable-dependency-tracking
---target=bpf-buildroot-none
---prefix=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host
---sysconfdir=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host/etc
---enable-languages=c --with-gnu-ld --enable-static
---disable-decimal-float --disable-gcov --disable-libssp
---disable-multilib --disable-shared
---with-gmp=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host
---with-mpc=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host
---with-mpfr=/home/buildroot/buildroot/output/per-package/host-gcc-bpf/host
---with-pkgversion='Buildroot 2022.05-118-ge052166011-dirty'
---with-bugurl=http://bugs.buildroot.net/ --without-zstd --without-isl
---without-cloog
-Thread model: single
-Supported LTO compression algorithms: zlib
-gcc version 12.1.0 (Buildroot 2022.05-118-ge052166011-dirty)
-COLLECT_GCC_OPTIONS='--sysroot=/home/buildroot/buildroot/output/per-package/libbpf/host/x86_64-buildroot-linux-gnu/sysroot'
-'-Winline' '-O2' '-mframe-limit=32767' '-mco-re' '-gbtf' '-std=gnu17'
-'-v' '-D' '__x86_64__' '-mlittle-endian' '-I'
-'/home/buildroot/buildroot/output/per-package/libbpf/host/x86_64-buildroot-linux-gnu/sysroot/usr/include'
-'-o' 'minimal.bpf.o' '-dumpdir' 'minimal.bpf.o-'
- /home/buildroot/buildroot/output/per-package/libbpf/host/bin/../libexec/gcc/bpf-buildroot-none/12.1.0/cc1
--quiet -v -I /home/buildroot/buildroot/output/per-package/libbpf/host/x86_64-buildroot-linux-gnu/sysroot/usr/include
--iprefix /home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/bpf-buildroot-none/12.1.0/
--isysroot /home/buildroot/buildroot/output/per-package/libbpf/host/x86_64-buildroot-linux-gnu/sysroot
--D __x86_64__ minimal.bpf.c -quiet -dumpdir minimal.bpf.o- -dumpbase
-minimal.bpf.c -dumpbase-ext .c -mframe-limit=32767 -mco-re
--mlittle-endian -gbtf -O2 -Winline -std=gnu17 -version -o
-/tmp/cct4AXvg.s
-GNU C17 (Buildroot 2022.05-118-ge052166011-dirty) version 12.1.0
-(bpf-buildroot-none)
-    compiled by GNU C version 12.1.0, GMP version 6.2.1, MPFR version
-4.1.0, MPC version 1.2.1, isl version none
-GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
-ignoring nonexistent directory
-"/home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/bpf-buildroot-none/12.1.0/../../../../bpf-buildroot-none/sys-include"
-ignoring nonexistent directory
-"/home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/bpf-buildroot-none/12.1.0/../../../../bpf-buildroot-none/include"
-ignoring duplicate directory
-"/home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/../../lib/gcc/bpf-buildroot-none/12.1.0/include"
-ignoring duplicate directory
-"/home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/../../lib/gcc/bpf-buildroot-none/12.1.0/include-fixed"
-ignoring nonexistent directory
-"/home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/../../lib/gcc/bpf-buildroot-none/12.1.0/../../../../bpf-buildroot-none/sys-include"
-ignoring nonexistent directory
-"/home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/../../lib/gcc/bpf-buildroot-none/12.1.0/../../../../bpf-buildroot-none/include"
-#include "..." search starts here:
-#include <...> search starts here:
- /home/buildroot/buildroot/output/per-package/libbpf/host/x86_64-buildroot-linux-gnu/sysroot/usr/include
- /home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/bpf-buildroot-none/12.1.0/include
- /home/buildroot/buildroot/output/per-package/libbpf/host/bin/../lib/gcc/bpf-buildroot-none/12.1.0/include-fixed
-End of search list.
-GNU C17 (Buildroot 2022.05-118-ge052166011-dirty) version 12.1.0
-(bpf-buildroot-none)
-    compiled by GNU C version 12.1.0, GMP version 6.2.1, MPFR version
-4.1.0, MPC version 1.2.1, isl version none
-GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
-Compiler executable checksum: 9bf241ca1a2dd4ffd7652c5e247c9be8
-minimal.bpf.c:6:1: error: expected '=', ',', ';', 'asm' or
-'__attribute__' before '#pragma'
-    6 | char LICENSE[] SEC("license") = "Dual BSD/GPL";
-      | ^~~
-minimal.bpf.c:6:1: error: expected identifier or '(' before '#pragma'
-minimal.bpf.c:10:1: error: expected identifier or '(' before '#pragma'
-   10 | SEC("tp/syscalls/sys_enter_write")
-      | ^~~
+Regards
 
->
-> >  /* Avoid 'linux/stddef.h' definition of '__always_inline'. */
-> >  #undef __always_inline
-> > --
-> > 2.25.1
-> >
+Jon
