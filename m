@@ -2,159 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6F81544F9A
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 16:42:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5CF5544F9D
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 16:42:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344183AbiFIOhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 10:37:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36094 "EHLO
+        id S236776AbiFIOmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 10:42:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344174AbiFIOgY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 10:36:24 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE0132388C
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 07:36:22 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id x6-20020a1c7c06000000b003972dfca96cso1363095wmc.4
-        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 07:36:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XXt0AjifX4sZi/mItsYRB7C1EVTETD4Ra1f87tpY7Po=;
-        b=mjg+gBqRQTviC0qWMlPAM4XmBRuRW2tvScNKNjmS5UNrlPcdwRrKmKMSGLReHjXlIb
-         /sPnrwD0bc2p2/fGWJUkk0NqThc6r/Pu+8ICvVDYE3CsjCQjTs56OugKlVSVp8sdfPJ8
-         LbmxLC6ZqBZuBc2gLZ4IjNb8VNJYaDzUrJeMdEGP4W2sMBShk+XOH8djtFRelFvRXOcN
-         bFbIPb8A4LxZ+4SJgmL7G9hAVbECI+uap1rygytw5Z45AqiML5zXVsNg9SmzfBYjbj9T
-         pNbicTExPsane7ACp9N3rqsE9M8+ASOauzM/neiZnYPeaAdmxIWonmeNYQG+uQqs++d2
-         YWyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XXt0AjifX4sZi/mItsYRB7C1EVTETD4Ra1f87tpY7Po=;
-        b=2GNBWHFgAP6byG3CZwKCBHAGQzHxS9S1ilgpXLOLhhe1RO3uXuWcp2RIADP4uFfHBn
-         pd0KFqsOs/oU6R8WbAmBzg9EP6VxR4gxJSJqijmX2LbClcsj0RLaTCL/G/sm5VMGyV24
-         2rapPzAbXY/HxPKt7CdGN3aefYqNaNqtflzr/iVKkhXExopsAAcYLMGdRHzfSVBFGU/B
-         52OUykUnvY9l7iYt/Fg9/Ci3ujF5khyg6CA/hy8lLc7kUilf/9Fj2fJcteJEJ0J1DT4L
-         DYl+YnG36mI7e+utXcNwmWDt+AQzlXYqa8Q6EUvn4zprLcHR3xDJU8NUQaalR1pHMsxz
-         UBwA==
-X-Gm-Message-State: AOAM531Exm8RzwtdDSsO8AO/Scn8oDBaHxV2VnOS80BCXx7gJjBR2gPc
-        9m4tH2LBtWCgNjhasNJECyb/6Q==
-X-Google-Smtp-Source: ABdhPJxlMte9LkEGe+Gi0Q6FGEuK/JeL1kIj0MDHeLRaombVGYD6rGuvGMddiguz5mEZZFXMrofpUw==
-X-Received: by 2002:a05:600c:19cb:b0:397:51db:446f with SMTP id u11-20020a05600c19cb00b0039751db446fmr3673983wmq.182.1654785381264;
-        Thu, 09 Jun 2022 07:36:21 -0700 (PDT)
-Received: from harfang.fritz.box ([51.155.200.13])
-        by smtp.gmail.com with ESMTPSA id k1-20020a1ca101000000b0039c4ff5e0a7sm13265207wme.38.2022.06.09.07.36.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 07:36:20 -0700 (PDT)
-From:   Quentin Monnet <quentin@isovalent.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Harsh Modi <harshmodi@google.com>, Paul Chaignon <paul@cilium.io>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next] libbpf: Improve probing for memcg-based memory accounting
-Date:   Thu,  9 Jun 2022 15:36:14 +0100
-Message-Id: <20220609143614.97837-1-quentin@isovalent.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S233780AbiFIOmr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 10:42:47 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263F915716;
+        Thu,  9 Jun 2022 07:42:44 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id AA1AB40006;
+        Thu,  9 Jun 2022 14:42:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1654785763;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Uh4LLt/6JdErlzEN+2wYIYsmkK+wNN4OCN8Gh0tycMQ=;
+        b=Ef89YXxwmnlOCM6NACM9/Wy6lYrP2AuwfAQ02+G61O0fP+zcKU4efMI1qeKLvy2LPmF/Ik
+        rScxA9uLddVRc7JjSS8s5xkJDwrRwMWpat5T1HADkzhbRGfocIWeo7kQ7ROE+xDqYlmEet
+        +2TxbaDF41a2PPkzjAYkmvilNPRurcaFFelOyyqzxOBILrOTAp1zcGunS5Ts/+j2r/o0WV
+        IulLJUjN2sAaP8ryhPfzV++rS9kswMvom7gp807JFDh4wQpVoq7xRFWR2YVpjjKAKwRXwR
+        3HeZv3c9IAg4HBrN8o1SUQk3TS9hDXxCGSXiyyGHfKt0RZRM1P2X2uOjlK2SuA==
+Date:   Thu, 9 Jun 2022 16:42:40 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next 1/6] net: ieee802154: Drop coordinator
+ interface type
+Message-ID: <20220609164240.4e7515d4@xps-13>
+In-Reply-To: <CAK-6q+gf2_aVt4m7z77aLH+Rkc_sRTEjoykk5Dn+04wbu5n7Xg@mail.gmail.com>
+References: <20220603182143.692576-1-miquel.raynal@bootlin.com>
+        <20220603182143.692576-2-miquel.raynal@bootlin.com>
+        <CAK-6q+hAZMqsN=S9uWAm4rTN+uZwz7_L42=emPHz7+MvfW6ZpQ@mail.gmail.com>
+        <20220606174319.0924f80d@xps-13>
+        <CAK-6q+itswJrmy-AhZ5DpnHH0UsfAeTPQTmX8WfG8=PteumVLg@mail.gmail.com>
+        <20220607181608.609429cb@xps-13>
+        <CAK-6q+gf2_aVt4m7z77aLH+Rkc_sRTEjoykk5Dn+04wbu5n7Xg@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To ensure that memory accounting will not hinder the load of BPF
-objects, libbpf may raise the memlock rlimit before proceeding to some
-operations. Whether this limit needs to be raised depends on the version
-of the kernel: newer versions use cgroup-based (memcg) memory
-accounting, and do not require any adjustment.
+Hi Alex,
 
-There is a probe in libbpf to determine whether memcg-based accounting
-is supported. But this probe currently relies on the availability of a
-given BPF helper, bpf_ktime_get_coarse_ns(), which landed in the same
-kernel version as the memory accounting change. This works in the
-generic case, but it may fail, for example, if the helper function has
-been backported to an older kernel. This has been observed for Google
-Cloud's Container-Optimized OS (COS), where the helper is available but
-rlimit is still in use. The probe succeeds, the rlimit is not raised,
-and probing features with bpftool, for example, fails.
+> > > > > Second I have
+> > > > > a different opinion here that you cannot just "switch" the role f=
+rom
+> > > > > RFD, FFD, whatever. =20
+> > > >
+> > > > I agree with this, and that's why I don't understand this enum.
+> > > >
+> > > > A device can either be a NODE (an active device) or a MONITOR (a
+> > > > passive device) at a time. We can certainly switch from one to
+> > > > another at run time.
+> > > >
+> > > > A NODE can be either an RFD or an FFD. That is a static property wh=
+ich
+> > > > cannot change.
+> > > >
+> > > > However being a coordinator is just an additional property of a NODE
+> > > > which is of type FFD, and this can change over time.
+> > > >
+> > > > So I don't get what having a coordinator interface would bring. What
+> > > > was the idea behind its introduction then?
+> > > > =20
+> > >
+> > > There exists arguments which I have in my mind right now:
+> > >
+> > > 1. frame parsing/address filter (which is somehow missing in your pat=
+ches)
+> > >
+> > > The parsing of frames is different from other types (just as monitor
+> > > interfaces). You will notice that setting up the address filter will
+> > > require a parameter if coordinator or not. =20
+> >
+> > I think this is something that I completely missed until now, can you
+> > point me to where/how this is expected to be done? I don't see anything
+> > wpan specific filtering implementation. What is expected on this area
+> > and is there code that I missed already?
+> > =20
+>=20
+> https://elixir.bootlin.com/linux/v5.19-rc1/source/net/mac802154/rx.c#L284
 
-Here we attempt to improve this probe and to effectively rely on memory
-accounting. Function probe_memcg_account() in libbpf is updated to set
-the rlimit to 0, then attempt to load a BPF object, and then to reset
-the rlimit. If the load still succeeds, then this means we're running
-with memcg-based accounting.
+Oh okay now I get what you mean. Indeed, I had to look into this
+function to allow coordinators to receive packets with the IFACE_COORD
+implementation, but so far the filtering is "the same" as for a node.
+We can improve that later if needed.
+=20
+> > > Changing the address
+> > > filterung during runtime of an interface is somehow _not_ supported.
+> > > The reason is that the datasheets tell you to first set up an address
+> > > filter and then switch into receiving mode. Changing the address
+> > > filter during receive mode (start()/stop()) is not a specified
+> > > behaviour. Due to bus communication it also cannot be done atomically.
+> > > This might be avoidable but is a pain to synchronize if you really
+> > > depend on hw address filtering which we might do in future. It should
+> > > end in a different receiving path e.g. node_rx/monitor_rx. =20
+> >
+> > Got it.
+> > =20
+>=20
+> I had some thoughts about this as well when going to promiscuous mode
+> while in "receiving mode"... this is "normally" not supported...
+>=20
+> > >
+> > > 2. HardMAC transceivers
+> > >
+> > > The add_interface() callback will be directly forwarded to the driver
+> > > and the driver will during the lifetime of this interface act as a
+> > > coordinator and not a mixed mode which can be disabled and enabled
+> > > anytime. I am not even sure if this can ever be handled in such a way
+> > > from hardmac transceivers, it might depend on the transceiver
+> > > interface but we should assume some strict "static" handling. Static
+> > > handling means here that the transceiver is unable to switch from
+> > > coordinator and vice versa after some initialization state. =20
+> >
+> > Okay. I just completely missed the "interface add" command. So your
+> > advice is to treat the "PAN coordinator" property as a static property
+> > for a given interface, which seems reasonable.
+> >
+> > For now I will assume the same treatment when adding the interface is
+> > required compared to a NODE, but if something comes to your mind,
+> > please let me know.
+> >
+> > By the way, is there a mechanism limiting the number of interfaces on a
+> > device? Should we prevent the introduction of a coordinator iface if
+> > there is a node iface active?
+> > =20
+>=20
+> such a mechanism already exists, look at the code when trying to ifup
+> an interface in mac802154. You cannot simply have a monitor and node
+> up at the same time. Hardware could have multiple address filters and
+> run multiple mac stack instances on one phy, which is in my opinion
+> not different than macvlan and in wireless running multiple access
+> points on the same phy.
 
-This probe was inspired by the similar one from the cilium/ebpf Go
-library [0].
+Oh nice, I didn't pay enough attention to figure out that this was
+executed during ifup. So I already changed that code to refuse two node
+*and* coordinators to be up at the same time, we should be on the safe
+side.
 
-[0] https://github.com/cilium/ebpf/blob/v0.9.0/rlimit/rlimit.go#L39
-
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
----
- tools/lib/bpf/bpf.c | 23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
-
-diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-index 240186aac8e6..781387e6f66b 100644
---- a/tools/lib/bpf/bpf.c
-+++ b/tools/lib/bpf/bpf.c
-@@ -99,31 +99,44 @@ static inline int sys_bpf_prog_load(union bpf_attr *attr, unsigned int size, int
- 
- /* Probe whether kernel switched from memlock-based (RLIMIT_MEMLOCK) to
-  * memcg-based memory accounting for BPF maps and progs. This was done in [0].
-- * We use the support for bpf_ktime_get_coarse_ns() helper, which was added in
-- * the same 5.11 Linux release ([1]), to detect memcg-based accounting for BPF.
-+ * To do so, we lower the soft memlock rlimit to 0 and attempt to create a BPF
-+ * object. If it succeeds, then memcg-based accounting for BPF is available.
-  *
-  *   [0] https://lore.kernel.org/bpf/20201201215900.3569844-1-guro@fb.com/
-- *   [1] d05512618056 ("bpf: Add bpf_ktime_get_coarse_ns helper")
-  */
- int probe_memcg_account(void)
- {
- 	const size_t prog_load_attr_sz = offsetofend(union bpf_attr, attach_btf_obj_fd);
- 	struct bpf_insn insns[] = {
--		BPF_EMIT_CALL(BPF_FUNC_ktime_get_coarse_ns),
- 		BPF_EXIT_INSN(),
- 	};
-+	struct rlimit rlim_init, rlim_cur_zero = {};
- 	size_t insn_cnt = ARRAY_SIZE(insns);
- 	union bpf_attr attr;
- 	int prog_fd;
- 
--	/* attempt loading freplace trying to use custom BTF */
- 	memset(&attr, 0, prog_load_attr_sz);
- 	attr.prog_type = BPF_PROG_TYPE_SOCKET_FILTER;
- 	attr.insns = ptr_to_u64(insns);
- 	attr.insn_cnt = insn_cnt;
- 	attr.license = ptr_to_u64("GPL");
- 
-+	if (getrlimit(RLIMIT_MEMLOCK, &rlim_init))
-+		return -1;
-+
-+	/* Drop the soft limit to zero. We maintain the hard limit to its
-+	 * current value, because lowering it would be a permanent operation
-+	 * for unprivileged users.
-+	 */
-+	rlim_cur_zero.rlim_max = rlim_init.rlim_max;
-+	if (setrlimit(RLIMIT_MEMLOCK, &rlim_cur_zero))
-+		return -1;
-+
- 	prog_fd = sys_bpf_fd(BPF_PROG_LOAD, &attr, prog_load_attr_sz);
-+
-+	/* reset soft rlimit as soon as possible */
-+	setrlimit(RLIMIT_MEMLOCK, &rlim_init);
-+
- 	if (prog_fd >= 0) {
- 		close(prog_fd);
- 		return 1;
--- 
-2.34.1
-
+Thanks,
+Miqu=C3=A8l
