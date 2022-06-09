@@ -2,138 +2,271 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E69A6544D4D
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 15:18:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9E89544DA7
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 15:28:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245041AbiFINSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 09:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46506 "EHLO
+        id S239900AbiFIN2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 09:28:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239163AbiFINR7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 09:17:59 -0400
-Received: from zg8tndyumtaxlji0oc4xnzya.icoremail.net (zg8tndyumtaxlji0oc4xnzya.icoremail.net [46.101.248.176])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 5333F3CBE2A;
-        Thu,  9 Jun 2022 06:17:54 -0700 (PDT)
-Received: by ajax-webmail-mail-app3 (Coremail) ; Thu, 9 Jun 2022 21:17:27
- +0800 (GMT+08:00)
-X-Originating-IP: [106.117.78.144]
-Date:   Thu, 9 Jun 2022 21:17:27 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Paolo Abeni" <pabeni@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, jreuter@yaina.de,
-        ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-hams@vger.kernel.org, thomas@osterried.de
-Subject: Re: [PATCH v3] net: ax25: Fix deadlock caused by skb_recv_datagram
- in ax25_recvmsg
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <22175690a4e89a78abcb8244dfd0bdd0005267a5.camel@redhat.com>
-References: <20220608012923.17505-1-duoming@zju.edu.cn>
- <22175690a4e89a78abcb8244dfd0bdd0005267a5.camel@redhat.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S237813AbiFIN2J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 09:28:09 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B0E43AE7
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 06:28:06 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id w20so16334733lfa.11
+        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 06:28:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CA1vcPqBgIxBCQLD168Th5vuI9AxY5IDAMreZAed/SE=;
+        b=KCvWAKNMcqgLDDADqLLijIylHwdi8A9s2Rk0ugCRt0sUpyjm2oam8a0qH9tUr4Fce3
+         YBg+9USaHfz4uPma9YC6UUed9Hh8FFtRRBiBJR//6I/1i0Oeie+S7d7NWtQwolDTAhHa
+         woEfJkpVfAbiq8mc4LN1WyBnDuvdJ78QafPuaW/b/Hprp982c9HZ4hvwfn0vIEPVB3V8
+         po426tbKLYAH9cDYVG0w6Mza9GvCKY3bTBK3hAfyjphb3zQ087TOigV96ND2oVqRJ/yO
+         pEH2j0rOPwrS6C3vJ3b0yqQnavqpNcW31axKJeOIVag1usezcLexlNomFdi3EMQKGQmY
+         ieCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CA1vcPqBgIxBCQLD168Th5vuI9AxY5IDAMreZAed/SE=;
+        b=6zkRfVETPIGyodenXCCIjnCyQbqQ8ph6STtwCGf4WZpCbSJJRWmcfmm/NteX6wis73
+         XFg6YPZ3nXEQ/DzmkExC5HTc2DPN7k3vJvFWtqECFFFOajkwbAPQxX19wkmGq+Awsi5n
+         /mcGTDYbfHbgbozB5TfyxnjYd/+z4p8mYCnnJIk7g/m5dsEnJi8i5oMHNkGiajMsIGJc
+         c9im4bdlbudUvw+UdS8KL5ULQ01U0GtZl8fNKmyLGSFtkiy/7uvuVPTU2aufQK3MrTUA
+         rKeqdNhVm74XRGDwR7I2kcrLmjHia9sgJLDiHoFNN+8tlcTmpEOS5HSXJ+ZN7/b51ugh
+         hnvA==
+X-Gm-Message-State: AOAM530PrggP8FRopV5JcsBfZ67XdR47Vu1sYdzBkOgsA3Tl1cnhof/O
+        Tyfge8W4j73Zv8xCU9I0Hcs=
+X-Google-Smtp-Source: ABdhPJxWa9Qtih6An3k/ErVJUZsdwyXkk4Ec/z4VZiJuXxP/+aTdhMcTbLSok3ctz2mDlskz8hddZw==
+X-Received: by 2002:a05:6512:3a81:b0:44a:616f:f75b with SMTP id q1-20020a0565123a8100b0044a616ff75bmr24379599lfu.2.1654781284432;
+        Thu, 09 Jun 2022 06:28:04 -0700 (PDT)
+Received: from extra.gateflow.net ([46.109.159.121])
+        by smtp.gmail.com with ESMTPSA id 1-20020a05651c12c100b0025550585f8bsm3712106lje.31.2022.06.09.06.28.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Jun 2022 06:28:03 -0700 (PDT)
+From:   Anton Makarov <antonmakarov11235@gmail.com>
+X-Google-Original-From: Anton Makarov <anton.makarov11235@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org,
+        david.lebrun@uclouvain.be, kuba@kernel.org
+Cc:     Anton Makarov <anton.makarov11235@gmail.com>
+Subject: [net-next v2 1/1] net: seg6: Add support for SRv6 Headend Reduced Encapsulation
+Date:   Thu,  9 Jun 2022 16:27:50 +0300
+Message-Id: <20220609132750.4917-1-anton.makarov11235@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Message-ID: <4ccdba76.5ee33.181489cd6e4.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cC_KCgAHbtjn8qFiI3DWAQ--.44508W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgIQAVZdtaIJ7gABsr
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpPbiBUaHUsIDA5IEp1biAyMDIyIDEwOjQxOjAyICswMjAwIFBhb2xvIHdyb3RlOgoK
-PiBPbiBXZWQsIDIwMjItMDYtMDggYXQgMDk6MjkgKzA4MDAsIER1b21pbmcgWmhvdSB3cm90ZToK
-PiA+IFRoZSBza2JfcmVjdl9kYXRhZ3JhbSgpIGluIGF4MjVfcmVjdm1zZygpIHdpbGwgaG9sZCBs
-b2NrX3NvY2sKPiA+IGFuZCBibG9jayB1bnRpbCBpdCByZWNlaXZlcyBhIHBhY2tldCBmcm9tIHRo
-ZSByZW1vdGUuIElmIHRoZSBjbGllbnQKPiA+IGRvZXNuYHQgY29ubmVjdCB0byBzZXJ2ZXIgYW5k
-IGNhbGxzIHJlYWQoKSBkaXJlY3RseSwgaXQgd2lsbCBub3QKPiA+IHJlY2VpdmUgYW55IHBhY2tl
-dHMgZm9yZXZlci4gQXMgYSByZXN1bHQsIHRoZSBkZWFkbG9jayB3aWxsIGhhcHBlbi4KPiA+IAo+
-ID4gVGhlIGZhaWwgbG9nIGNhdXNlZCBieSBkZWFkbG9jayBpcyBzaG93biBiZWxvdzoKPiA+IAo+
-ID4gWyAgMzY5LjYwNjk3M10gSU5GTzogdGFzayBheDI1X2RlYWRsb2NrOjE1NyBibG9ja2VkIGZv
-ciBtb3JlIHRoYW4gMjQ1IHNlY29uZHMuCj4gPiBbICAzNjkuNjA4OTE5XSAiZWNobyAwID4gL3By
-b2Mvc3lzL2tlcm5lbC9odW5nX3Rhc2tfdGltZW91dF9zZWNzIiBkaXNhYmxlcyB0aGlzIG1lc3Nh
-Z2UuCj4gPiBbICAzNjkuNjEzMDU4XSBDYWxsIFRyYWNlOgo+ID4gWyAgMzY5LjYxMzMxNV0gIDxU
-QVNLPgo+ID4gWyAgMzY5LjYxNDA3Ml0gIF9fc2NoZWR1bGUrMHgyZjkvMHhiMjAKPiA+IFsgIDM2
-OS42MTUwMjldICBzY2hlZHVsZSsweDQ5LzB4YjAKPiA+IFsgIDM2OS42MTU3MzRdICBfX2xvY2tf
-c29jaysweDkyLzB4MTAwCj4gPiBbICAzNjkuNjE2NzYzXSAgPyBkZXN0cm95X3NjaGVkX2RvbWFp
-bnNfcmN1KzB4MjAvMHgyMAo+ID4gWyAgMzY5LjYxNzk0MV0gIGxvY2tfc29ja19uZXN0ZWQrMHg2
-ZS8weDcwCj4gPiBbICAzNjkuNjE4ODA5XSAgYXgyNV9iaW5kKzB4YWEvMHgyMTAKPiA+IFsgIDM2
-OS42MTk3MzZdICBfX3N5c19iaW5kKzB4Y2EvMHhmMAo+ID4gWyAgMzY5LjYyMDAzOV0gID8gZG9f
-ZnV0ZXgrMHhhZS8weDFiMAo+ID4gWyAgMzY5LjYyMDM4N10gID8gX194NjRfc3lzX2Z1dGV4KzB4
-N2MvMHgxYzAKPiA+IFsgIDM2OS42MjA2MDFdICA/IGZwcmVnc19hc3NlcnRfc3RhdGVfY29uc2lz
-dGVudCsweDE5LzB4NDAKPiA+IFsgIDM2OS42MjA2MTNdICBfX3g2NF9zeXNfYmluZCsweDExLzB4
-MjAKPiA+IFsgIDM2OS42MjE3OTFdICBkb19zeXNjYWxsXzY0KzB4M2IvMHg5MAo+ID4gWyAgMzY5
-LjYyMjQyM10gIGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdmcmFtZSsweDQ2LzB4YjAKPiA+IFsg
-IDM2OS42MjMzMTldIFJJUDogMDAzMzoweDdmNDNjOGFhOGFmNwo+ID4gWyAgMzY5LjYyNDMwMV0g
-UlNQOiAwMDJiOjAwMDA3ZjQzYzgxOTdlZjggRUZMQUdTOiAwMDAwMDI0NiBPUklHX1JBWDogMDAw
-MDAwMDAwMDAwMDAzMQo+ID4gWyAgMzY5LjYyNTc1Nl0gUkFYOiBmZmZmZmZmZmZmZmZmZmRhIFJC
-WDogMDAwMDAwMDAwMDAwMDAwMCBSQ1g6IDAwMDA3ZjQzYzhhYThhZjcKPiA+IFsgIDM2OS42MjY3
-MjRdIFJEWDogMDAwMDAwMDAwMDAwMDAxMCBSU0k6IDAwMDA1NTc2OGUyMDIxZDAgUkRJOiAwMDAw
-MDAwMDAwMDAwMDA1Cj4gPiBbICAzNjkuNjI4NTY5XSBSQlA6IDAwMDA3ZjQzYzgxOTdmMDAgUjA4
-OiAwMDAwMDAwMDAwMDAwMDExIFIwOTogMDAwMDdmNDNjODE5ODcwMAo+ID4gWyAgMzY5LjYzMDIw
-OF0gUjEwOiAwMDAwMDAwMDAwMDAwMDAwIFIxMTogMDAwMDAwMDAwMDAwMDI0NiBSMTI6IDAwMDA3
-ZmZmODQ1ZTZhZmUKPiA+IFsgIDM2OS42MzIyNDBdIFIxMzogMDAwMDdmZmY4NDVlNmFmZiBSMTQ6
-IDAwMDA3ZjQzYzgxOTdmYzAgUjE1OiAwMDAwN2Y0M2M4MTk4NzAwCj4gPiAKPiA+IFRoaXMgcGF0
-Y2ggbW92ZXMgdGhlIHNrYl9yZWN2X2RhdGFncmFtKCkgYmVmb3JlIGxvY2tfc29jaygpIGluIG9y
-ZGVyIHRoYXQKPiA+IG90aGVyIGZ1bmN0aW9ucyB0aGF0IG5lZWQgbG9ja19zb2NrIGNvdWxkIGJl
-IGV4ZWN1dGVkLiBXaGF0YHMgbW9yZSwgd2UKPiA+IGFkZCBza2JfZnJlZV9kYXRhZ3JhbSgpIGJl
-Zm9yZSBnb3RvIG91dCBpbiBvcmRlciB0byBtaXRpZ2F0ZSBtZW1vcnkgbGVhay4KPiA+IAo+ID4g
-U3VnZ2VzdGVkLWJ5OiBUaG9tYXMgT3N0ZXJyaWVkIDx0aG9tYXNAb3N0ZXJyaWVkLmRlPgo+ID4g
-U2lnbmVkLW9mZi1ieTogRHVvbWluZyBaaG91IDxkdW9taW5nQHpqdS5lZHUuY24+Cj4gPiBSZXBv
-cnRlZC1ieTogVGhvbWFzIEhhYmV0cyA8dGhvbWFzQEBoYWJldHMuc2U+Cj4gPiAtLS0KPiA+IENo
-YW5nZXMgaW4gdjM6Cj4gPiAgIC0gQWRkIHNrYl9mcmVlX2RhdGFncmFtKCkgYmVmb3JlIGdvdG8g
-b3V0IGluIG9yZGVyIHRvIG1pdGlnYXRlIG1lbW9yeSBsZWFrLgo+ID4gCj4gPiAgbmV0L2F4MjUv
-YWZfYXgyNS5jIHwgMTIgKysrKysrKy0tLS0tCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDcgaW5zZXJ0
-aW9ucygrKSwgNSBkZWxldGlvbnMoLSkKPiA+IAo+ID4gZGlmZiAtLWdpdCBhL25ldC9heDI1L2Fm
-X2F4MjUuYyBiL25ldC9heDI1L2FmX2F4MjUuYwo+ID4gaW5kZXggOTUzOTNiYjI3NjAuLjYyYWE1
-OTkzMDkzIDEwMDY0NAo+ID4gLS0tIGEvbmV0L2F4MjUvYWZfYXgyNS5jCj4gPiArKysgYi9uZXQv
-YXgyNS9hZl9heDI1LmMKPiA+IEBAIC0xNjY1LDYgKzE2NjUsMTEgQEAgc3RhdGljIGludCBheDI1
-X3JlY3Ztc2coc3RydWN0IHNvY2tldCAqc29jaywgc3RydWN0IG1zZ2hkciAqbXNnLCBzaXplX3Qg
-c2l6ZSwKPiA+ICAJaW50IGNvcGllZDsKPiA+ICAJaW50IGVyciA9IDA7Cj4gPiAgCj4gPiArCS8q
-IE5vdyB3ZSBjYW4gdHJlYXQgYWxsIGFsaWtlICovCj4gPiArCXNrYiA9IHNrYl9yZWN2X2RhdGFn
-cmFtKHNrLCBmbGFncywgJmVycik7Cj4gPiArCWlmICghc2tiKQo+ID4gKwkJZ290byBkb25lOwo+
-ID4gKwo+IAo+IE5vdGUgdGhhdCB0aGlzIGNhdXNlcyBhIGJlaGF2aW9yIGNoYW5nZTogYmVmb3Jl
-IHRoaXMgcGF0Y2gsIGNhbGxpbmcKPiByZWN2bXNnKCkgb24gdW5jb25uZWN0ZWQgc2VxcGFja2V0
-IHNvY2tldHMgcmV0dXJuZWQgaW1tZWRpYXRlbGx5IHdpdGgKPiBhbiBlcnJvciAoZHVlIHRvIHRo
-ZSB0aGUgY2hlY2sgYmVsb3cpLCBub3cgaXQgYmxvY2tzLiAKPiAKPiBUaGUgY2hhbmdlIG1heSBj
-b25mdXNlICg9PSBicmVhaykgdXNlci1zcGFjZSBhcHBsaWNhdGlvbnMuIEkgdGhpbmsgaXQKPiB3
-b3VsZCBiZSBiZXR0ZXIgcmVwbGFjaW5nIHNrYl9yZWN2X2RhdGFncmFtIHdpdGggYW4gb3Blbi1j
-b2RlZCB2YXJpYW50Cj4gb2YgaXQgcmVsZWFzaW5nIHRoZSBzb2NrZXQgbG9jayBiZWZvcmUgdGhl
-Cj4gX19za2Jfd2FpdF9mb3JfbW9yZV9wYWNrZXRzKCkgY2FsbCBhbmQgcmUtYWNxdWlyaW5nIGl0
-IGFmdGVyIHN1Y2ggY2FsbC4KPiBTb21ld2hhdCBhbGlrZSBfX3VuaXhfZGdyYW1fcmVjdm1zZygp
-LgoKVGhhbmsgeW91IGZvciB5b3VyIHRpbWUgYW5kIHN1Z2dlc3Rpb25zIQpJIHRoaW5rIHRoZSBm
-b2xsb3dpbmcgbWV0aG9kIG1heSBzb2x2ZSB0aGUgcHJvYmxlbS4KCmRpZmYgLS1naXQgYS9uZXQv
-YXgyNS9hZl9heDI1LmMgYi9uZXQvYXgyNS9hZl9heDI1LmMKaW5kZXggOTUzOTNiYjI3NjAuLjUx
-YjQ0MWM4MzdjIDEwMDY0NAotLS0gYS9uZXQvYXgyNS9hZl9heDI1LmMKKysrIGIvbmV0L2F4MjUv
-YWZfYXgyNS5jCkBAIC0xNjc1LDggKzE2NzUsMTAgQEAgc3RhdGljIGludCBheDI1X3JlY3Ztc2co
-c3RydWN0IHNvY2tldCAqc29jaywgc3RydWN0IG1zZ2hkciAqbXNnLCBzaXplX3Qgc2l6ZSwKICAg
-ICAgICAgICAgICAgIGdvdG8gb3V0OwogICAgICAgIH0KCisgICAgICAgcmVsZWFzZV9zb2NrKHNr
-KTsKICAgICAgICAvKiBOb3cgd2UgY2FuIHRyZWF0IGFsbCBhbGlrZSAqLwogICAgICAgIHNrYiA9
-IHNrYl9yZWN2X2RhdGFncmFtKHNrLCBmbGFncywgJmVycik7CisgICAgICAgbG9ja19zb2NrKHNr
-KTsKICAgICAgICBpZiAoc2tiID09IE5VTEwpCiAgICAgICAgICAgICAgICBnb3RvIG91dDsKClRo
-ZSBza2JfcmVjdl9kYXRhZ3JhbSgpIGlzIGZyZWUgb2YgcmFjZSBjb25kaXRpb25zIGFuZCBjb3Vs
-ZCBiZSByZS1lbnRyYW50LgpTbyBjYWxsaW5nIHNrYl9yZWN2X2RhdGFncmFtKCkgd2l0aG91dCB0
-aGUgcHJvdGVjdGlvbiBvZiBsb2NrX3NvY2soKSBpcyBvay4KCldoYXQncyBtb3JlLCByZWxlYXNp
-bmcgdGhlIGxvY2tfc29jaygpIGJlZm9yZSBza2JfcmVjdl9kYXRhZ3JhbSgpIHdpbGwgbm90CmNh
-dXNlIFVBRiBidWdzLiBCZWNhdXNlIHRoZSBzb2NrIHdpbGwgbm90IGJlIGRlYWxsb2NhdGVkIHVu
-bGVzcyB3ZSBjYWxsCmF4MjVfcmVsZWFzZSgpLCBidXQgYXgyNV9yZWxlYXNlKCkgYW5kIGF4MjVf
-cmVjdm1zZygpIGNvdWxkIG5vdCBydW4gaW4gcGFyYWxsZWwuCgpBbHRob3VnaCB0aGUgInNrLT5z
-a19zdGF0ZSIgbWF5IGJlIGNoYW5nZWQgZHVlIHRvIHRoZSByZWxlYXNlIG9mIGxvY2tfc29jaygp
-LAppdCB3aWxsIG5vdCBpbmZsdWVuY2UgdGhlIGZvbGxvd2luZyBvcGVyYXRpb25zIGluIGF4MjVf
-cmVjdm1zZygpLgoKPiBJbiBhbnkgY2FzZSB0aGlzIGxhY2tzIGEgJ0ZpeGVzJyBwb2ludGluZyB0
-byB0aGUgY29tbWl0IGludHJvZHVjaW5nIHRoZQo+IGlzc3VlIGFkZHJlc3NlZCBoZXJlLgoKVGhl
-IGNvbW1pdCB0aGF0IG5lZWQgdG8gYmUgZml4ZWQgaXMgYmVsb3c6CkZpeGVzOiA0MGQwYTkyM2Y1
-NWEgKCJJbXBsZW1lbnQgbG9ja2luZyBvZiBpbnRlcm5hbCBkYXRhIGZvciBORVQvUk9NIGFuZCBS
-T1NFLiAiKQppbiBsaW51eC0yLjYuMTItcmMyLgoKQmVzdCByZWdhcmRzLApEdW9taW5nIFpob3U=
+SRv6 Headend H.Encaps.Red and H.Encaps.L2.Red behaviors are implemented
+accordingly to RFC 8986. The H.Encaps.Red is an optimization of
+The H.Encaps behavior. The H.Encaps.L2.Red is an optimization of
+the H.Encaps.L2 behavior. Both new behaviors reduce the length of
+the SRH by excluding the first SID in the SRH of the pushed IPv6 header.
+The first SID is only placed in the Destination Address field
+of the pushed IPv6 header.
+
+The push of the SRH is omitted when the SRv6 Policy only contains
+one segment.
+
+Signed-off-by: Anton Makarov <anton.makarov11235@gmail.com>
+---
+v2: 1) Fixed sparse warnings
+    2) memset now uses sizeof() instead of hardcoded value
+    3) Removed EXPORT_SYMBOL_GPL
+---
+ include/net/seg6.h                 |  2 +
+ include/uapi/linux/seg6_iptunnel.h |  2 +
+ net/ipv6/seg6_iptunnel.c           | 94 +++++++++++++++++++++++++++++-
+ 3 files changed, 96 insertions(+), 2 deletions(-)
+
+diff --git a/include/net/seg6.h b/include/net/seg6.h
+index af668f17b398..8d0ce782f830 100644
+--- a/include/net/seg6.h
++++ b/include/net/seg6.h
+@@ -62,6 +62,8 @@ extern struct ipv6_sr_hdr *seg6_get_srh(struct sk_buff *skb, int flags);
+ extern void seg6_icmp_srh(struct sk_buff *skb, struct inet6_skb_parm *opt);
+ extern int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh,
+ 			     int proto);
++extern int seg6_do_srh_encap_red(struct sk_buff *skb, struct ipv6_sr_hdr *osrh,
++			     int proto);
+ extern int seg6_do_srh_inline(struct sk_buff *skb, struct ipv6_sr_hdr *osrh);
+ extern int seg6_lookup_nexthop(struct sk_buff *skb, struct in6_addr *nhaddr,
+ 			       u32 tbl_id);
+diff --git a/include/uapi/linux/seg6_iptunnel.h b/include/uapi/linux/seg6_iptunnel.h
+index eb815e0d0ac3..a9fa777f16de 100644
+--- a/include/uapi/linux/seg6_iptunnel.h
++++ b/include/uapi/linux/seg6_iptunnel.h
+@@ -35,6 +35,8 @@ enum {
+ 	SEG6_IPTUN_MODE_INLINE,
+ 	SEG6_IPTUN_MODE_ENCAP,
+ 	SEG6_IPTUN_MODE_L2ENCAP,
++	SEG6_IPTUN_MODE_ENCAP_RED,
++	SEG6_IPTUN_MODE_L2ENCAP_RED,
+ };
+ 
+ #endif
+diff --git a/net/ipv6/seg6_iptunnel.c b/net/ipv6/seg6_iptunnel.c
+index d64855010948..e70c0401715e 100644
+--- a/net/ipv6/seg6_iptunnel.c
++++ b/net/ipv6/seg6_iptunnel.c
+@@ -36,9 +36,11 @@ static size_t seg6_lwt_headroom(struct seg6_iptunnel_encap *tuninfo)
+ 	case SEG6_IPTUN_MODE_INLINE:
+ 		break;
+ 	case SEG6_IPTUN_MODE_ENCAP:
++	case SEG6_IPTUN_MODE_ENCAP_RED:
+ 		head = sizeof(struct ipv6hdr);
+ 		break;
+ 	case SEG6_IPTUN_MODE_L2ENCAP:
++	case SEG6_IPTUN_MODE_L2ENCAP_RED:
+ 		return 0;
+ 	}
+ 
+@@ -195,6 +197,80 @@ int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
+ }
+ EXPORT_SYMBOL_GPL(seg6_do_srh_encap);
+ 
++/* encapsulate an IPv6 packet within an outer IPv6 header with reduced SRH */
++int seg6_do_srh_encap_red(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
++{
++	struct dst_entry *dst = skb_dst(skb);
++	struct net *net = dev_net(dst->dev);
++	struct ipv6hdr *hdr, *inner_hdr6;
++	struct iphdr *inner_hdr4;
++	struct ipv6_sr_hdr *isrh;
++	int hdrlen = 0, tot_len, err;
++	__be32 flowlabel = 0;
++
++	if (osrh->first_segment > 0)
++		hdrlen = (osrh->hdrlen - 1) << 3;
++
++	tot_len = hdrlen + sizeof(struct ipv6hdr);
++
++	err = skb_cow_head(skb, tot_len + skb->mac_len);
++	if (unlikely(err))
++		return err;
++
++	inner_hdr6 = ipv6_hdr(skb);
++	inner_hdr4 = ip_hdr(skb);
++	flowlabel = seg6_make_flowlabel(net, skb, inner_hdr6);
++
++	skb_push(skb, tot_len);
++	skb_reset_network_header(skb);
++	skb_mac_header_rebuild(skb);
++	hdr = ipv6_hdr(skb);
++
++	memset(skb->cb, 0, sizeof(skb->cb));
++	IP6CB(skb)->iif = skb->skb_iif;
++
++	if (skb->protocol == htons(ETH_P_IPV6)) {
++		ip6_flow_hdr(hdr, ip6_tclass(ip6_flowinfo(inner_hdr6)),
++			     flowlabel);
++		hdr->hop_limit = inner_hdr6->hop_limit;
++	} else if (skb->protocol == htons(ETH_P_IP)) {
++		ip6_flow_hdr(hdr, (unsigned int) inner_hdr4->tos, flowlabel);
++		hdr->hop_limit = inner_hdr4->ttl;
++	}
++
++	skb->protocol = htons(ETH_P_IPV6);
++
++	hdr->daddr = osrh->segments[osrh->first_segment];
++	hdr->version = 6;
++
++	if (osrh->first_segment > 0) {
++		hdr->nexthdr = NEXTHDR_ROUTING;
++
++		isrh = (void *)hdr + sizeof(struct ipv6hdr);
++		memcpy(isrh, osrh, hdrlen);
++
++		isrh->nexthdr = proto;
++		isrh->first_segment--;
++		isrh->hdrlen -= 2;
++	} else {
++		hdr->nexthdr = proto;
++	}
++
++	set_tun_src(net, dst->dev, &hdr->daddr, &hdr->saddr);
++
++#ifdef CONFIG_IPV6_SEG6_HMAC
++	if (osrh->first_segment > 0 && sr_has_hmac(isrh)) {
++		err = seg6_push_hmac(net, &hdr->saddr, isrh);
++		if (unlikely(err))
++			return err;
++	}
++#endif
++
++	skb_postpush_rcsum(skb, hdr, tot_len);
++
++	return 0;
++}
++
+ /* insert an SRH within an IPv6 packet, just after the IPv6 header */
+ int seg6_do_srh_inline(struct sk_buff *skb, struct ipv6_sr_hdr *osrh)
+ {
+@@ -265,6 +341,7 @@ static int seg6_do_srh(struct sk_buff *skb)
+ 			return err;
+ 		break;
+ 	case SEG6_IPTUN_MODE_ENCAP:
++	case SEG6_IPTUN_MODE_ENCAP_RED:
+ 		err = iptunnel_handle_offloads(skb, SKB_GSO_IPXIP6);
+ 		if (err)
+ 			return err;
+@@ -276,7 +353,11 @@ static int seg6_do_srh(struct sk_buff *skb)
+ 		else
+ 			return -EINVAL;
+ 
+-		err = seg6_do_srh_encap(skb, tinfo->srh, proto);
++		if (tinfo->mode == SEG6_IPTUN_MODE_ENCAP)
++			err = seg6_do_srh_encap(skb, tinfo->srh, proto);
++		else
++			err = seg6_do_srh_encap_red(skb, tinfo->srh, proto);
++
+ 		if (err)
+ 			return err;
+ 
+@@ -285,6 +366,7 @@ static int seg6_do_srh(struct sk_buff *skb)
+ 		skb->protocol = htons(ETH_P_IPV6);
+ 		break;
+ 	case SEG6_IPTUN_MODE_L2ENCAP:
++	case SEG6_IPTUN_MODE_L2ENCAP_RED:
+ 		if (!skb_mac_header_was_set(skb))
+ 			return -EINVAL;
+ 
+@@ -294,7 +376,11 @@ static int seg6_do_srh(struct sk_buff *skb)
+ 		skb_mac_header_rebuild(skb);
+ 		skb_push(skb, skb->mac_len);
+ 
+-		err = seg6_do_srh_encap(skb, tinfo->srh, IPPROTO_ETHERNET);
++		if (tinfo->mode == SEG6_IPTUN_MODE_L2ENCAP)
++			err = seg6_do_srh_encap(skb, tinfo->srh, IPPROTO_ETHERNET);
++		else
++			err = seg6_do_srh_encap_red(skb, tinfo->srh, IPPROTO_ETHERNET);
++
+ 		if (err)
+ 			return err;
+ 
+@@ -514,6 +600,10 @@ static int seg6_build_state(struct net *net, struct nlattr *nla,
+ 		break;
+ 	case SEG6_IPTUN_MODE_L2ENCAP:
+ 		break;
++	case SEG6_IPTUN_MODE_ENCAP_RED:
++		break;
++	case SEG6_IPTUN_MODE_L2ENCAP_RED:
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+-- 
+2.20.1
 
