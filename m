@@ -2,63 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32AE4545033
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 17:09:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47CF4545035
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 17:09:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343967AbiFIPJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 11:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35174 "EHLO
+        id S241833AbiFIPJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 11:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237082AbiFIPJJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 11:09:09 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9452DF45C9
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 08:09:08 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id d13so4807852plh.13
-        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 08:09:08 -0700 (PDT)
+        with ESMTP id S240677AbiFIPJ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 11:09:28 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC1C0F45C9
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 08:09:26 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id c144so15413682qkg.11
+        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 08:09:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=OVICZjf0wN2Cx7clP5TRTEbT5tJi8HBFxWPpWO0x2Hs=;
-        b=mG1frb4CDL7Gzg8Nv0wdXsLm/r3LYKGwjaEl2ub1Jl+qFJwMSNRnSwh6Dzo8rWmj5y
-         U5ZeFb9F3I/A9AkK65MSdbxXyM5AzMgXRuJYxyAL/tT88oacC44txfxvzBTrVVlyyE2O
-         5UDrsOZ8CEHj6wnNSn5ujlkTRXKYnyktWqUycnat7l/AN14DhT4VmXcuwVkfB0A1G7Q/
-         5eb7UrXr3JfDXcMWiBdVozjscWNZEITpTJRAdxqOIgXb6X2ChuyaC6K9XByt2fjH3R0R
-         wd6SxyjY/Tsrbiy5hUOFPRSgNvSMZnrSgr+N1WNokhEsKPJHzud+5PoclzB7HH8PXI+2
-         TyCg==
+        bh=ADHjY3SHXEBPLJO0n3GQmEYpl9o6dZBV1HcMhBv5F2M=;
+        b=VwTtBts/jwqYFulzibQ7sRUR0luC2hYOgAWmLVHQcXVIeosBREPHLZy0JsWm2rsmL1
+         e3H/+EHj03au5dVX//9nBbbfhEiDOgs+hIEwsXwW8T31D3UaS6jth0z17179JkPURG4Q
+         m0e7Wllc/KOKOQnd0AXHXhH5XucDNr5jKMYo51mtgdYa1UznGyETBgtjmpA0WS+fmYMw
+         Xnc2H4ELDgcW/DZhjgDqgLjcHU5ViR7SnE0FjvrVDYW4+t6Gjs3SQcpRs/OrQ3Uz2HDt
+         osfzmLYECOMHZOTTdlGRxFE5NLG2xoI3sK3fzmlypfAl1PKT/Hnb5ektkGqMA1pVFbhb
+         zqwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=OVICZjf0wN2Cx7clP5TRTEbT5tJi8HBFxWPpWO0x2Hs=;
-        b=e1RzoHAdBgil8hboiYpSpQiMM6HCjySUvT9AIA6bwmwLuoWGKDLVCx+nocYRfyF8KH
-         Q89q2IfTrBPCfPgiTf/uXT4Fg62XUqbHnyvfr38gJoJUeEmDDhddLbu0KsC/vkWLuzUH
-         MdZtVNfI4Mn4hz4B3Cbh4DxtSqQHVa9UcQL1j3NQf/6XCmN3R7+cqUiZkg/PbGFwUPe1
-         4h6srsLznY9zwSVtOSVQva5TREUrcSHbhtP3XKkQuMFax4ADJUai7n5Xu/km34/Rkh7t
-         s4MDojBhr6L4QsZT/rrv31Wa6eZgZV0qngtdEVTa8olynR8URue7ax17zFBbuX77FjQl
-         P+xg==
-X-Gm-Message-State: AOAM530xIqNKxTVXQtYPGTlAN3bZ4e8iu7f0wsBRqwDTrac8A5p4Mjwn
-        241g6i+fQK84gZuhGTyByAKnzXyjCnv7QJSYfK5tevVS/xo=
-X-Google-Smtp-Source: ABdhPJyEjgUOR+HlF5Gi6tpD9E+hoItYxOt2bJRmAfqWuaHa90JII2XAL8XBqI+RPk2g/6Y1TcZrP1DB8yOXgz3UZqY=
-X-Received: by 2002:a17:902:f68a:b0:167:52ee:2c00 with SMTP id
- l10-20020a170902f68a00b0016752ee2c00mr30500415plg.106.1654787347859; Thu, 09
- Jun 2022 08:09:07 -0700 (PDT)
+        bh=ADHjY3SHXEBPLJO0n3GQmEYpl9o6dZBV1HcMhBv5F2M=;
+        b=SDwtg9seuBuX0/POpPm/A65qkQ+SvBhveWXlWN+12E3HoGBOmhbal8UXwFWYiqRab1
+         zGqsQDTF3Ets7bdKLCTcXaWE7nIi6BERD8ksMatktvHpA4FoPNkjZXDY/1AYYfFmIoln
+         CbIUO1s7Gnfo5MBiMQSpJlbdEPKb+y/hZUtAuTQQHaufQmGSsIjf7NTRvy3Rlqh+6pM+
+         1ymLkIYbCxWSr3Zf9fByI9tcOkIiXEQ2kSRG96CTiR72PJnq/THeHlRIZanP1quBUIKE
+         9G0ZefPAE3iYUbzb/XefEuYq+NeELRMqzh+0z9i7vmP76qHhmBiNseEMAL3BXDKUeBEG
+         YgmQ==
+X-Gm-Message-State: AOAM533cj4K8n1f0vucqKQwuTlPID92aTii1Pvk8j74yhdEkUbugLELK
+        xQs+bH2ldLQr2UGLSTnYCB4S9udnr75fnq+HrseKDQ==
+X-Google-Smtp-Source: ABdhPJz1JBB8zrYUKaijheHHzSDCnBvjSmAwqSTFfWKmOsr4EYEulF9FTxIxTiwlIl/wU8Pl6PgbCo8vYZG6cGIS1Hk=
+X-Received: by 2002:a05:620a:25cd:b0:699:c467:fab0 with SMTP id
+ y13-20020a05620a25cd00b00699c467fab0mr26691025qko.395.1654787365421; Thu, 09
+ Jun 2022 08:09:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220609063412.2205738-1-eric.dumazet@gmail.com> <20220609063412.2205738-2-eric.dumazet@gmail.com>
-In-Reply-To: <20220609063412.2205738-2-eric.dumazet@gmail.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Thu, 9 Jun 2022 08:08:51 -0700
-Message-ID: <CALvZod5g_Qev+0JzEHm+EGY08L7t_afwhnhtLwhVmkN-E7QqEA@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/7] Revert "net: set SK_MEM_QUANTUM to 4096"
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+References: <20220609063412.2205738-1-eric.dumazet@gmail.com>
+ <20220609063412.2205738-5-eric.dumazet@gmail.com> <CADVnQynuQjbi67or7E_6JRy3SDznyp+9dT-hGbnAuqOSVJ+PUA@mail.gmail.com>
+ <CALvZod78+NA+x4Fd2rwytCyf4rBQd8aGbWa=-kQ=zFGGTjcp-w@mail.gmail.com>
+In-Reply-To: <CALvZod78+NA+x4Fd2rwytCyf4rBQd8aGbWa=-kQ=zFGGTjcp-w@mail.gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Thu, 9 Jun 2022 11:09:09 -0400
+Message-ID: <CADVnQynhMUCYMSO5BopDEuhaDPia7vEAtMnmT0aNwh0cfxNDnQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/7] net: implement per-cpu reserves for memory_allocated
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         netdev <netdev@vger.kernel.org>,
         Soheil Hassas Yeganeh <soheil@google.com>,
         Wei Wang <weiwan@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
         Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
@@ -72,20 +74,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 8, 2022 at 11:34 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+On Thu, Jun 9, 2022 at 11:07 AM Shakeel Butt <shakeelb@google.com> wrote:
 >
-> From: Eric Dumazet <edumazet@google.com>
+> On Thu, Jun 9, 2022 at 7:46 AM Neal Cardwell <ncardwell@google.com> wrote:
+> >
+> > /
+> >
+> >
+> > On Thu, Jun 9, 2022 at 2:34 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> > >
+> > > From: Eric Dumazet <edumazet@google.com>
+> > >
+> > > We plan keeping sk->sk_forward_alloc as small as possible
+> > > in future patches.
+> > >
+> > > This means we are going to call sk_memory_allocated_add()
+> > > and sk_memory_allocated_sub() more often.
+> > >
+> > > Implement a per-cpu cache of +1/-1 MB, to reduce number
+> > > of changes to sk->sk_prot->memory_allocated, which
+> > > would otherwise be cause of false sharing.
+> > >
+> > > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > > ---
+> > >  include/net/sock.h | 38 +++++++++++++++++++++++++++++---------
+> > >  1 file changed, 29 insertions(+), 9 deletions(-)
+> > >
+> > > diff --git a/include/net/sock.h b/include/net/sock.h
+> > > index 825f8cbf791f02d798f17dd4f7a2659cebb0e98a..59040fee74e7de8d63fbf719f46e172906c134bb 100644
+> > > --- a/include/net/sock.h
+> > > +++ b/include/net/sock.h
+> > > @@ -1397,22 +1397,48 @@ static inline bool sk_under_memory_pressure(const struct sock *sk)
+> > >         return !!*sk->sk_prot->memory_pressure;
+> > >  }
+> > >
+> > > +static inline long
+> > > +proto_memory_allocated(const struct proto *prot)
+> > > +{
+> > > +       return max(0L, atomic_long_read(prot->memory_allocated));
+> > > +}
+> > > +
+> > >  static inline long
+> > >  sk_memory_allocated(const struct sock *sk)
+> > >  {
+> > > -       return atomic_long_read(sk->sk_prot->memory_allocated);
+> > > +       return proto_memory_allocated(sk->sk_prot);
+> > >  }
+> > >
+> > > +/* 1 MB per cpu, in page units */
+> > > +#define SK_MEMORY_PCPU_RESERVE (1 << (20 - PAGE_SHIFT))
+> > > +
+> > >  static inline long
+> > >  sk_memory_allocated_add(struct sock *sk, int amt)
+> > >  {
+> > > -       return atomic_long_add_return(amt, sk->sk_prot->memory_allocated);
+> > > +       int local_reserve;
+> > > +
+> > > +       preempt_disable();
+> > > +       local_reserve = __this_cpu_add_return(*sk->sk_prot->per_cpu_fw_alloc, amt);
+> > > +       if (local_reserve >= SK_MEMORY_PCPU_RESERVE) {
+> > > +               __this_cpu_sub(*sk->sk_prot->per_cpu_fw_alloc, local_reserve);
+> > > +               atomic_long_add(local_reserve, sk->sk_prot->memory_allocated);
+> > > +       }
+> > > +       preempt_enable();
+> > > +       return sk_memory_allocated(sk);
+> > >  }
+> > >
+> > >  static inline void
+> > >  sk_memory_allocated_sub(struct sock *sk, int amt)
+> > >  {
+> > > -       atomic_long_sub(amt, sk->sk_prot->memory_allocated);
+> > > +       int local_reserve;
+> > > +
+> > > +       preempt_disable();
+> > > +       local_reserve = __this_cpu_sub_return(*sk->sk_prot->per_cpu_fw_alloc, amt);
+> > > +       if (local_reserve <= -SK_MEMORY_PCPU_RESERVE) {
+> > > +               __this_cpu_sub(*sk->sk_prot->per_cpu_fw_alloc, local_reserve);
+> > > +               atomic_long_add(local_reserve, sk->sk_prot->memory_allocated);
+> >
+> > I would have thought these last two lines would be:
+> >
+> >                __this_cpu_add(*sk->sk_prot->per_cpu_fw_alloc, local_reserve);
+> >                atomic_long_sub(local_reserve, sk->sk_prot->memory_allocated);
+> >
+> > Otherwise I don't see how sk->sk_prot->memory_allocated) ever
+> > decreases in these sk_memory_allocated_add/sk_memory_allocated_sub
+> > functions?
+> >
+> > That is, is there a copy-and-paste/typo issue in these two lines? Or
+> > is my understanding backwards? (In which case I apologize for the
+> > noise!)
 >
-> This reverts commit bd68a2a854ad5a85f0c8d0a9c8048ca3f6391efb.
->
-> This change broke memcg on arches with PAGE_SIZE != 4096
->
-> Later, commit 2bb2f5fb21b04 ("net: add new socket option SO_RESERVE_MEM")
-> also assumed PAGE_SIZE==SK_MEM_QUANTUM
->
-> Following patches in the series will greatly reduce the over allocations
-> problem.
->
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> local_reserve is negative in that case and adding a negative number is
+> subtraction.
 
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
+Yes, sorry about that. In parallel Soheil just pointed out to me OOB
+that the code is correct because at that point in the code we know
+that local_reserve is negative...
+
+Sorry for the noise!
+
+neal
