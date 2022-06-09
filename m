@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F26EA5443D8
+	by mail.lfdr.de (Postfix) with ESMTP id 2C9AE5443D6
 	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 08:34:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238514AbiFIGeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 02:34:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50158 "EHLO
+        id S238687AbiFIGe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 02:34:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237314AbiFIGeW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 02:34:22 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B7B2FFD8
-        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 23:34:21 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id n18so19517483plg.5
-        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 23:34:20 -0700 (PDT)
+        with ESMTP id S238404AbiFIGeY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 02:34:24 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6B8326EE
+        for <netdev@vger.kernel.org>; Wed,  8 Jun 2022 23:34:22 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id h1so19489408plf.11
+        for <netdev@vger.kernel.org>; Wed, 08 Jun 2022 23:34:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fhWyeWhT9LwHFgXSPn+7wxyv2FqOKN3ir1NGekf3NRw=;
-        b=NUTnoKQ+aPiz36k+CZatMIILvI682jMO7gn9wDKmA86cHASrxzKdlhLlEqgrMYxmV2
-         oEFeWrwVq9XbDetboYZ5AddXxCrRkOjdzXdpKHEgBLZNVNrJSA75zZFcuXqsEzIDLSGR
-         BifB0Wd2oRjK33+I0OEaA5J8jmXEUoABTLcTJKTsSqBURVEtatEUB8xioyqL+jNf44SK
-         In2RtMvxnpy+O0qURApQu1yZtJ7yfaQNFpP8nE/9m4ivAUm7RS3qDw3ZPZA5ja1bb/Al
-         hzTKmzyQ1/iTpSR5fvjADLwGTQvS5UFpxPshgYKZy/SxIzf9tODWs0lRt79YBZS1ZNWH
-         Y8YA==
+        bh=gDZCiATz4+88NA7QeL5ZEdLf1h8/4cV4veaCgP5CCF0=;
+        b=FPckFk8k0LL06aVygqxmc0roO1XGokTuRUu7YWenlPNaDs8ZwT3x70eivmN2YDBujP
+         J2IhNWlj6T5ilZf+spbpkXztc6iws+5g5Rdgi0JVwJBFz9znP62lojexlQxmsikR6lsT
+         A6KUjivlgbkfAMi6eM2yawsW39WhMJSwF1EbtXBM9zTy1k4mF818EZaJB+Icm0YxnNEj
+         TM69FebxlVGDrhmxclBGc7vxLsl1VJ6OjjRc1UtihkPUYHIU7KNifxu1eeVr8hYmc6+n
+         QUy4aHBijhyA/iKi3QrLVjYsTg8ACRYLS1zI+ZDNcq7bQLyd4sXoBPcTUNhubBmcTBAT
+         uTgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fhWyeWhT9LwHFgXSPn+7wxyv2FqOKN3ir1NGekf3NRw=;
-        b=3JeXzkCom7vF4+EK1QhepJg6hzkPiibYCOVpLvflbGpL+z6apuoFzi00r0gAhoV6W+
-         2DNPB5rSlfBh5p0Fvx4NXFzWkIeKw1PT+XDOW7LaPDrdi1cvEkoI15S//4sKtFSCnWwA
-         GgCTUtM66NfoSA+xcwf0c4HexP3PGZTCKcFvsHlKakopFjLfmLhZGhg79nlVPb5e4U3S
-         T62TEfIZofOhgGIoHXZq8CaSAuw1l/U9qKwUjqf7kTl8k4CqF1DYlS1eDZ9U5+im8bYf
-         Q0TLvt+8U2pDBjhHDlTyyUYD1OUAKlKmnNxEZyox6V3vAz8ziYQUsQ0e4dfDXSQ+j1ZG
-         gLDA==
-X-Gm-Message-State: AOAM531gRpS1FA0JmSQr4ekyQGed+C01BDqjEj4HxBY3JOnfuELbn8WR
-        +MeTt8QL3BHvH7JCHi3tPSQ=
-X-Google-Smtp-Source: ABdhPJwEi24tlEUZQnD/tmOv02ysZhDPLkftZrASzabAHxG4CTDxc/wxf2jsLAKusXDM5MqEvhWlLA==
-X-Received: by 2002:a17:902:ecc9:b0:163:f779:f97a with SMTP id a9-20020a170902ecc900b00163f779f97amr37455965plh.167.1654756460417;
-        Wed, 08 Jun 2022 23:34:20 -0700 (PDT)
+        bh=gDZCiATz4+88NA7QeL5ZEdLf1h8/4cV4veaCgP5CCF0=;
+        b=FHjBOfWJuE6W030E9gUBzNKM7p6QlJAPt1O6yDh4H6R6bn8XduqlLtHh63E9ay6ToO
+         D9trGyo3Nh1Dqtv1nQPAHT664/lwqcWnbsEfsHWCCIUTQyc7k1znjaYaxz7RSryqSTdr
+         qsks2i1K3ArTIs7TaZ3OsUcETnog609QprRnJD/GwUnlUmLeXYKOfUs0+ZvY1k7zdQ6g
+         Jr2h5sUdV8gPEXzcXoSiyQmV3vpNjmtivmAz8hyhGMq4Jh3X4lSGNFESwsOzKq2P/xr+
+         1//tVig/2Je1N3yxb4x2872GOjrKtjlASwsfTGp5p75mfDFCs9rd3OC9NmdNGyOv9Rj6
+         PhDg==
+X-Gm-Message-State: AOAM530y5kk1jK2AuQt9ML3G5a9+zMViWx7qHfQE+zqY1TzKSW7sw1aj
+        MfGBMAEtxwLbQJyO9XbcK5A=
+X-Google-Smtp-Source: ABdhPJyUBVE10o4y7h/V6mVF+OIGgN9M/uF5UQD5kvX1uUtzpYqOBDP8oY52knezhrH/ATU7uhSq9w==
+X-Received: by 2002:a17:902:d551:b0:168:93b6:a94a with SMTP id z17-20020a170902d55100b0016893b6a94amr7410806plf.149.1654756462367;
+        Wed, 08 Jun 2022 23:34:22 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:f579:a14f:f943:9d9a])
-        by smtp.gmail.com with ESMTPSA id 199-20020a6215d0000000b0051b9c0af43dsm16340050pfv.155.2022.06.08.23.34.19
+        by smtp.gmail.com with ESMTPSA id 199-20020a6215d0000000b0051b9c0af43dsm16340050pfv.155.2022.06.08.23.34.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jun 2022 23:34:20 -0700 (PDT)
+        Wed, 08 Jun 2022 23:34:22 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -58,9 +58,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Neal Cardwell <ncardwell@google.com>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 2/7] net: remove SK_MEM_QUANTUM and SK_MEM_QUANTUM_SHIFT
-Date:   Wed,  8 Jun 2022 23:34:07 -0700
-Message-Id: <20220609063412.2205738-3-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 3/7] net: add per_cpu_fw_alloc field to struct proto
+Date:   Wed,  8 Jun 2022 23:34:08 -0700
+Message-Id: <20220609063412.2205738-4-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.36.1.255.ge46751e96f-goog
 In-Reply-To: <20220609063412.2205738-1-eric.dumazet@gmail.com>
 References: <20220609063412.2205738-1-eric.dumazet@gmail.com>
@@ -78,250 +78,264 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-Due to memcg interface, SK_MEM_QUANTUM is effectively PAGE_SIZE.
+Each protocol having a ->memory_allocated pointer gets a corresponding
+per-cpu reserve, that following patches will use.
 
-This might change in the future, but it seems better to avoid the
-confusion.
+Instead of having reserved bytes per socket,
+we want to have per-cpu reserves.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/sock.h    |  8 +++-----
- net/core/sock.c       | 16 ++++++++--------
- net/ipv4/tcp.c        |  4 ++--
- net/ipv4/tcp_input.c  |  2 +-
- net/ipv4/tcp_output.c |  2 +-
- net/ipv4/udp.c        | 10 +++++-----
- net/mptcp/protocol.c  |  8 ++++----
- net/sctp/protocol.c   |  4 ++--
- 8 files changed, 26 insertions(+), 28 deletions(-)
+ include/net/sock.h     | 1 +
+ include/net/tcp.h      | 2 ++
+ include/net/udp.h      | 1 +
+ net/core/sock.c        | 4 ++++
+ net/decnet/af_decnet.c | 4 ++++
+ net/ipv4/tcp.c         | 2 ++
+ net/ipv4/tcp_ipv4.c    | 3 +++
+ net/ipv4/udp.c         | 4 ++++
+ net/ipv4/udplite.c     | 3 +++
+ net/ipv6/tcp_ipv6.c    | 3 +++
+ net/ipv6/udp.c         | 3 +++
+ net/ipv6/udplite.c     | 3 +++
+ net/mptcp/protocol.c   | 3 +++
+ net/sctp/socket.c      | 7 +++++++
+ 14 files changed, 43 insertions(+)
 
 diff --git a/include/net/sock.h b/include/net/sock.h
-index 5c5265269899091a7bb8f14766085a463a476403..298897bbfb3a3ea6ba88f76bc486ae636e2b1cfd 100644
+index 298897bbfb3a3ea6ba88f76bc486ae636e2b1cfd..825f8cbf791f02d798f17dd4f7a2659cebb0e98a 100644
 --- a/include/net/sock.h
 +++ b/include/net/sock.h
-@@ -1532,8 +1532,6 @@ int __sk_mem_schedule(struct sock *sk, int size, int kind);
- void __sk_mem_reduce_allocated(struct sock *sk, int amount);
- void __sk_mem_reclaim(struct sock *sk, int amount);
+@@ -1254,6 +1254,7 @@ struct proto {
+ 	void			(*enter_memory_pressure)(struct sock *sk);
+ 	void			(*leave_memory_pressure)(struct sock *sk);
+ 	atomic_long_t		*memory_allocated;	/* Current allocated memory. */
++	int  __percpu		*per_cpu_fw_alloc;
+ 	struct percpu_counter	*sockets_allocated;	/* Current number of sockets. */
  
--#define SK_MEM_QUANTUM ((int)PAGE_SIZE)
--#define SK_MEM_QUANTUM_SHIFT ilog2(SK_MEM_QUANTUM)
- #define SK_MEM_SEND	0
- #define SK_MEM_RECV	1
+ 	/*
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 1e99f5c61f8499c121a9fc50643db559a6021a38..4794cae4577e4c64ce2664ed734ae90bbc531782 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -253,6 +253,8 @@ extern long sysctl_tcp_mem[3];
+ #define TCP_RACK_NO_DUPTHRESH    0x4 /* Do not use DUPACK threshold in RACK */
  
-@@ -1545,7 +1543,7 @@ static inline long sk_prot_mem_limits(const struct sock *sk, int index)
+ extern atomic_long_t tcp_memory_allocated;
++DECLARE_PER_CPU(int, tcp_memory_per_cpu_fw_alloc);
++
+ extern struct percpu_counter tcp_sockets_allocated;
+ extern unsigned long tcp_memory_pressure;
  
- static inline int sk_mem_pages(int amt)
- {
--	return (amt + SK_MEM_QUANTUM - 1) >> SK_MEM_QUANTUM_SHIFT;
-+	return (amt + PAGE_SIZE - 1) >> PAGE_SHIFT;
- }
+diff --git a/include/net/udp.h b/include/net/udp.h
+index b83a003305667d1c1cd1bac00580fec9164958b0..b60eea2e3fae2f3f2d2acfdffdb7f442bcef4478 100644
+--- a/include/net/udp.h
++++ b/include/net/udp.h
+@@ -95,6 +95,7 @@ static inline struct udp_hslot *udp_hashslot2(struct udp_table *table,
+ extern struct proto udp_prot;
  
- static inline bool sk_has_account(struct sock *sk)
-@@ -1594,7 +1592,7 @@ static inline void sk_mem_reclaim(struct sock *sk)
+ extern atomic_long_t udp_memory_allocated;
++DECLARE_PER_CPU(int, udp_memory_per_cpu_fw_alloc);
  
- 	reclaimable = sk->sk_forward_alloc - sk_unused_reserved_mem(sk);
- 
--	if (reclaimable >= SK_MEM_QUANTUM)
-+	if (reclaimable >= (int)PAGE_SIZE)
- 		__sk_mem_reclaim(sk, reclaimable);
- }
- 
-@@ -1613,7 +1611,7 @@ static inline void sk_mem_reclaim_partial(struct sock *sk)
- 
- 	reclaimable = sk->sk_forward_alloc - sk_unused_reserved_mem(sk);
- 
--	if (reclaimable > SK_MEM_QUANTUM)
-+	if (reclaimable > (int)PAGE_SIZE)
- 		__sk_mem_reclaim(sk, reclaimable - 1);
- }
- 
+ /* sysctl variables for udp */
+ extern long sysctl_udp_mem[3];
 diff --git a/net/core/sock.c b/net/core/sock.c
-index 2ff40dd0a7a652029cca1743109286b50c2a17f3..6b786e836c7f5fc74307f050d4f32b4b554eb53b 100644
+index 6b786e836c7f5fc74307f050d4f32b4b554eb53b..3bb406167da93b7526ff85787b89fa65e44dce8b 100644
 --- a/net/core/sock.c
 +++ b/net/core/sock.c
-@@ -991,7 +991,7 @@ EXPORT_SYMBOL(sock_set_mark);
- static void sock_release_reserved_memory(struct sock *sk, int bytes)
- {
- 	/* Round down bytes to multiple of pages */
--	bytes &= ~(SK_MEM_QUANTUM - 1);
-+	bytes = round_down(bytes, PAGE_SIZE);
- 
- 	WARN_ON(bytes > sk->sk_reserved_mem);
- 	sk->sk_reserved_mem -= bytes;
-@@ -1028,9 +1028,9 @@ static int sock_reserve_memory(struct sock *sk, int bytes)
- 		mem_cgroup_uncharge_skmem(sk->sk_memcg, pages);
- 		return -ENOMEM;
+@@ -3798,6 +3798,10 @@ int proto_register(struct proto *prot, int alloc_slab)
+ 		pr_err("%s: missing sysctl_mem\n", prot->name);
+ 		return -EINVAL;
  	}
--	sk->sk_forward_alloc += pages << SK_MEM_QUANTUM_SHIFT;
-+	sk->sk_forward_alloc += pages << PAGE_SHIFT;
++	if (prot->memory_allocated && !prot->per_cpu_fw_alloc) {
++		pr_err("%s: missing per_cpu_fw_alloc\n", prot->name);
++		return -EINVAL;
++	}
+ 	if (alloc_slab) {
+ 		prot->slab = kmem_cache_create_usercopy(prot->name,
+ 					prot->obj_size, 0,
+diff --git a/net/decnet/af_decnet.c b/net/decnet/af_decnet.c
+index dc92a67baea39484cd4c93913d3eae8ac4463538..aa4f43f52499b55309784de0a2b5a3e434e9a19c 100644
+--- a/net/decnet/af_decnet.c
++++ b/net/decnet/af_decnet.c
+@@ -149,6 +149,7 @@ static DEFINE_RWLOCK(dn_hash_lock);
+ static struct hlist_head dn_sk_hash[DN_SK_HASH_SIZE];
+ static struct hlist_head dn_wild_sk;
+ static atomic_long_t decnet_memory_allocated;
++static DEFINE_PER_CPU(int, decnet_memory_per_cpu_fw_alloc);
  
--	sk->sk_reserved_mem += pages << SK_MEM_QUANTUM_SHIFT;
-+	sk->sk_reserved_mem += pages << PAGE_SHIFT;
- 
- 	return 0;
- }
-@@ -3003,10 +3003,10 @@ int __sk_mem_schedule(struct sock *sk, int size, int kind)
- {
- 	int ret, amt = sk_mem_pages(size);
- 
--	sk->sk_forward_alloc += amt << SK_MEM_QUANTUM_SHIFT;
-+	sk->sk_forward_alloc += amt << PAGE_SHIFT;
- 	ret = __sk_mem_raise_allocated(sk, size, amt, kind);
- 	if (!ret)
--		sk->sk_forward_alloc -= amt << SK_MEM_QUANTUM_SHIFT;
-+		sk->sk_forward_alloc -= amt << PAGE_SHIFT;
- 	return ret;
- }
- EXPORT_SYMBOL(__sk_mem_schedule);
-@@ -3034,12 +3034,12 @@ EXPORT_SYMBOL(__sk_mem_reduce_allocated);
- /**
-  *	__sk_mem_reclaim - reclaim sk_forward_alloc and memory_allocated
-  *	@sk: socket
-- *	@amount: number of bytes (rounded down to a SK_MEM_QUANTUM multiple)
-+ *	@amount: number of bytes (rounded down to a PAGE_SIZE multiple)
-  */
- void __sk_mem_reclaim(struct sock *sk, int amount)
- {
--	amount >>= SK_MEM_QUANTUM_SHIFT;
--	sk->sk_forward_alloc -= amount << SK_MEM_QUANTUM_SHIFT;
-+	amount >>= PAGE_SHIFT;
-+	sk->sk_forward_alloc -= amount << PAGE_SHIFT;
- 	__sk_mem_reduce_allocated(sk, amount);
- }
- EXPORT_SYMBOL(__sk_mem_reclaim);
+ static int __dn_setsockopt(struct socket *sock, int level, int optname,
+ 		sockptr_t optval, unsigned int optlen, int flags);
+@@ -454,7 +455,10 @@ static struct proto dn_proto = {
+ 	.owner			= THIS_MODULE,
+ 	.enter_memory_pressure	= dn_enter_memory_pressure,
+ 	.memory_pressure	= &dn_memory_pressure,
++
+ 	.memory_allocated	= &decnet_memory_allocated,
++	.per_cpu_fw_alloc	= &decnet_memory_per_cpu_fw_alloc,
++
+ 	.sysctl_mem		= sysctl_decnet_mem,
+ 	.sysctl_wmem		= sysctl_decnet_wmem,
+ 	.sysctl_rmem		= sysctl_decnet_rmem,
 diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 9984d23a7f3e1353d2e1fc9053d98c77268c577e..9e696758a4c213f22919483dcd6740b10ee3294b 100644
+index 9e696758a4c213f22919483dcd6740b10ee3294b..e6bdf8e2c09a156c45eae9490419b93b35f6e191 100644
 --- a/net/ipv4/tcp.c
 +++ b/net/ipv4/tcp.c
-@@ -4661,11 +4661,11 @@ void __init tcp_init(void)
- 	max_wshare = min(4UL*1024*1024, limit);
- 	max_rshare = min(6UL*1024*1024, limit);
+@@ -294,6 +294,8 @@ EXPORT_SYMBOL(sysctl_tcp_mem);
  
--	init_net.ipv4.sysctl_tcp_wmem[0] = SK_MEM_QUANTUM;
-+	init_net.ipv4.sysctl_tcp_wmem[0] = PAGE_SIZE;
- 	init_net.ipv4.sysctl_tcp_wmem[1] = 16*1024;
- 	init_net.ipv4.sysctl_tcp_wmem[2] = max(64*1024, max_wshare);
+ atomic_long_t tcp_memory_allocated ____cacheline_aligned_in_smp;	/* Current allocated memory. */
+ EXPORT_SYMBOL(tcp_memory_allocated);
++DEFINE_PER_CPU(int, tcp_memory_per_cpu_fw_alloc);
++EXPORT_PER_CPU_SYMBOL_GPL(tcp_memory_per_cpu_fw_alloc);
  
--	init_net.ipv4.sysctl_tcp_rmem[0] = SK_MEM_QUANTUM;
-+	init_net.ipv4.sysctl_tcp_rmem[0] = PAGE_SIZE;
- 	init_net.ipv4.sysctl_tcp_rmem[1] = 131072;
- 	init_net.ipv4.sysctl_tcp_rmem[2] = max(131072, max_rshare);
- 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 2e2a9ece9af27372e6b653d685a89a2c71ba05d1..3fb117022558a408a664ea7c8fe2303296247ead 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -5287,7 +5287,7 @@ static void tcp_collapse_ofo_queue(struct sock *sk)
- 		    before(TCP_SKB_CB(skb)->end_seq, start)) {
- 			/* Do not attempt collapsing tiny skbs */
- 			if (range_truesize != head->truesize ||
--			    end - start >= SKB_WITH_OVERHEAD(SK_MEM_QUANTUM)) {
-+			    end - start >= SKB_WITH_OVERHEAD(PAGE_SIZE)) {
- 				tcp_collapse(sk, NULL, &tp->out_of_order_queue,
- 					     head, skb, start, end);
- 			} else {
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 1c054431e358328fe3849f5a45aaa88308a1e1c8..8ab98e1aca6797a51eaaf8886680d2001a616948 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3367,7 +3367,7 @@ void sk_forced_mem_schedule(struct sock *sk, int size)
- 	if (size <= sk->sk_forward_alloc)
- 		return;
- 	amt = sk_mem_pages(size);
--	sk->sk_forward_alloc += amt * SK_MEM_QUANTUM;
-+	sk->sk_forward_alloc += amt << PAGE_SHIFT;
- 	sk_memory_allocated_add(sk, amt);
- 
- 	if (mem_cgroup_sockets_enabled && sk->sk_memcg)
+ #if IS_ENABLED(CONFIG_SMC)
+ DEFINE_STATIC_KEY_FALSE(tcp_have_smc);
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index fe8f23b95d32ca4a35d05166d471327bc608fa91..fda811a5251f2d76ac24a036e6b4f4e7d7d96d6f 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -3045,7 +3045,10 @@ struct proto tcp_prot = {
+ 	.stream_memory_free	= tcp_stream_memory_free,
+ 	.sockets_allocated	= &tcp_sockets_allocated,
+ 	.orphan_count		= &tcp_orphan_count,
++
+ 	.memory_allocated	= &tcp_memory_allocated,
++	.per_cpu_fw_alloc	= &tcp_memory_per_cpu_fw_alloc,
++
+ 	.memory_pressure	= &tcp_memory_pressure,
+ 	.sysctl_mem		= sysctl_tcp_mem,
+ 	.sysctl_wmem_offset	= offsetof(struct net, ipv4.sysctl_tcp_wmem),
 diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index aa9f2ec3dc4681f767e8be9d580096ba8b439327..bbc9970fa2e947ce8fdd08763033b6b5912af042 100644
+index bbc9970fa2e947ce8fdd08763033b6b5912af042..6172b4750a888bf792650a59f8ce0cd97d781fad 100644
 --- a/net/ipv4/udp.c
 +++ b/net/ipv4/udp.c
-@@ -1461,11 +1461,11 @@ static void udp_rmem_release(struct sock *sk, int size, int partial,
+@@ -125,6 +125,8 @@ EXPORT_SYMBOL(sysctl_udp_mem);
  
+ atomic_long_t udp_memory_allocated ____cacheline_aligned_in_smp;
+ EXPORT_SYMBOL(udp_memory_allocated);
++DEFINE_PER_CPU(int, udp_memory_per_cpu_fw_alloc);
++EXPORT_PER_CPU_SYMBOL_GPL(udp_memory_per_cpu_fw_alloc);
  
- 	sk->sk_forward_alloc += size;
--	amt = (sk->sk_forward_alloc - partial) & ~(SK_MEM_QUANTUM - 1);
-+	amt = (sk->sk_forward_alloc - partial) & ~(PAGE_SIZE - 1);
- 	sk->sk_forward_alloc -= amt;
- 
- 	if (amt)
--		__sk_mem_reduce_allocated(sk, amt >> SK_MEM_QUANTUM_SHIFT);
-+		__sk_mem_reduce_allocated(sk, amt >> PAGE_SHIFT);
- 
- 	atomic_sub(size, &sk->sk_rmem_alloc);
- 
-@@ -1558,7 +1558,7 @@ int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
- 	spin_lock(&list->lock);
- 	if (size >= sk->sk_forward_alloc) {
- 		amt = sk_mem_pages(size);
--		delta = amt << SK_MEM_QUANTUM_SHIFT;
-+		delta = amt << PAGE_SHIFT;
- 		if (!__sk_mem_raise_allocated(sk, delta, amt, SK_MEM_RECV)) {
- 			err = -ENOBUFS;
- 			spin_unlock(&list->lock);
-@@ -3263,8 +3263,8 @@ EXPORT_SYMBOL(udp_flow_hashrnd);
- 
- static void __udp_sysctl_init(struct net *net)
- {
--	net->ipv4.sysctl_udp_rmem_min = SK_MEM_QUANTUM;
--	net->ipv4.sysctl_udp_wmem_min = SK_MEM_QUANTUM;
-+	net->ipv4.sysctl_udp_rmem_min = PAGE_SIZE;
-+	net->ipv4.sysctl_udp_wmem_min = PAGE_SIZE;
- 
- #ifdef CONFIG_NET_L3_MASTER_DEV
- 	net->ipv4.sysctl_udp_l3mdev_accept = 0;
+ #define MAX_UDP_PORTS 65536
+ #define PORTS_PER_CHAIN (MAX_UDP_PORTS / UDP_HTABLE_SIZE_MIN)
+@@ -2946,6 +2948,8 @@ struct proto udp_prot = {
+ 	.psock_update_sk_prot	= udp_bpf_update_proto,
+ #endif
+ 	.memory_allocated	= &udp_memory_allocated,
++	.per_cpu_fw_alloc	= &udp_memory_per_cpu_fw_alloc,
++
+ 	.sysctl_mem		= sysctl_udp_mem,
+ 	.sysctl_wmem_offset	= offsetof(struct net, ipv4.sysctl_udp_wmem_min),
+ 	.sysctl_rmem_offset	= offsetof(struct net, ipv4.sysctl_udp_rmem_min),
+diff --git a/net/ipv4/udplite.c b/net/ipv4/udplite.c
+index cd1cd68adeec88e4cfcc75c3f32b6243229df670..6e08a76ae1e7e13905fa13ea12e075b94308a8ff 100644
+--- a/net/ipv4/udplite.c
++++ b/net/ipv4/udplite.c
+@@ -51,7 +51,10 @@ struct proto 	udplite_prot = {
+ 	.unhash		   = udp_lib_unhash,
+ 	.rehash		   = udp_v4_rehash,
+ 	.get_port	   = udp_v4_get_port,
++
+ 	.memory_allocated  = &udp_memory_allocated,
++	.per_cpu_fw_alloc  = &udp_memory_per_cpu_fw_alloc,
++
+ 	.sysctl_mem	   = sysctl_udp_mem,
+ 	.obj_size	   = sizeof(struct udp_sock),
+ 	.h.udp_table	   = &udplite_table,
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index f37dd4aa91c6bae1df92a1e4edca362c50cd97b9..c72448ba6dc9c9e8762f2ff84e55fd5d50987c49 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -2159,7 +2159,10 @@ struct proto tcpv6_prot = {
+ 	.leave_memory_pressure	= tcp_leave_memory_pressure,
+ 	.stream_memory_free	= tcp_stream_memory_free,
+ 	.sockets_allocated	= &tcp_sockets_allocated,
++
+ 	.memory_allocated	= &tcp_memory_allocated,
++	.per_cpu_fw_alloc	= &tcp_memory_per_cpu_fw_alloc,
++
+ 	.memory_pressure	= &tcp_memory_pressure,
+ 	.orphan_count		= &tcp_orphan_count,
+ 	.sysctl_mem		= sysctl_tcp_mem,
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 55afd7f39c0450ff442a0499b7f8e42bf1a613bc..be074f07073a532d47b83497a2b6808f4271d43e 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -1740,7 +1740,10 @@ struct proto udpv6_prot = {
+ #ifdef CONFIG_BPF_SYSCALL
+ 	.psock_update_sk_prot	= udp_bpf_update_proto,
+ #endif
++
+ 	.memory_allocated	= &udp_memory_allocated,
++	.per_cpu_fw_alloc	= &udp_memory_per_cpu_fw_alloc,
++
+ 	.sysctl_mem		= sysctl_udp_mem,
+ 	.sysctl_wmem_offset     = offsetof(struct net, ipv4.sysctl_udp_wmem_min),
+ 	.sysctl_rmem_offset     = offsetof(struct net, ipv4.sysctl_udp_rmem_min),
+diff --git a/net/ipv6/udplite.c b/net/ipv6/udplite.c
+index fbb700d3f437ee73824b369486010e152a659abb..b707258562597ebddf5e0d75e6415b6f967cca33 100644
+--- a/net/ipv6/udplite.c
++++ b/net/ipv6/udplite.c
+@@ -48,7 +48,10 @@ struct proto udplitev6_prot = {
+ 	.unhash		   = udp_lib_unhash,
+ 	.rehash		   = udp_v6_rehash,
+ 	.get_port	   = udp_v6_get_port,
++
+ 	.memory_allocated  = &udp_memory_allocated,
++	.per_cpu_fw_alloc  = &udp_memory_per_cpu_fw_alloc,
++
+ 	.sysctl_mem	   = sysctl_udp_mem,
+ 	.obj_size	   = sizeof(struct udp6_sock),
+ 	.h.udp_table	   = &udplite_table,
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 17e13396024ad8807ce00a28ab1d86c23a582e32..080a630d6902caa2022fda1c6b3edb65e4e74a8c 100644
+index 080a630d6902caa2022fda1c6b3edb65e4e74a8c..9563124ac8af9f9f45b16f23d5d77f17dd83d0c5 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -167,8 +167,8 @@ static bool mptcp_ooo_try_coalesce(struct mptcp_sock *msk, struct sk_buff *to,
+@@ -3437,7 +3437,10 @@ static struct proto mptcp_prot = {
+ 	.get_port	= mptcp_get_port,
+ 	.forward_alloc_get	= mptcp_forward_alloc_get,
+ 	.sockets_allocated	= &mptcp_sockets_allocated,
++
+ 	.memory_allocated	= &tcp_memory_allocated,
++	.per_cpu_fw_alloc	= &tcp_memory_per_cpu_fw_alloc,
++
+ 	.memory_pressure	= &tcp_memory_pressure,
+ 	.sysctl_wmem_offset	= offsetof(struct net, ipv4.sysctl_tcp_wmem),
+ 	.sysctl_rmem_offset	= offsetof(struct net, ipv4.sysctl_tcp_rmem),
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index 6d37d2dfb3da87fd509c21121d743f44bf6ee00c..05174acd981a8c304300b7a39b366d758d6fbafa 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -93,6 +93,7 @@ static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
  
- static void __mptcp_rmem_reclaim(struct sock *sk, int amount)
- {
--	amount >>= SK_MEM_QUANTUM_SHIFT;
--	mptcp_sk(sk)->rmem_fwd_alloc -= amount << SK_MEM_QUANTUM_SHIFT;
-+	amount >>= PAGE_SHIFT;
-+	mptcp_sk(sk)->rmem_fwd_alloc -= amount << PAGE_SHIFT;
- 	__sk_mem_reduce_allocated(sk, amount);
- }
+ static unsigned long sctp_memory_pressure;
+ static atomic_long_t sctp_memory_allocated;
++static DEFINE_PER_CPU(int, sctp_memory_per_cpu_fw_alloc);
+ struct percpu_counter sctp_sockets_allocated;
  
-@@ -327,7 +327,7 @@ static bool mptcp_rmem_schedule(struct sock *sk, struct sock *ssk, int size)
- 		return true;
+ static void sctp_enter_memory_pressure(struct sock *sk)
+@@ -9657,7 +9658,10 @@ struct proto sctp_prot = {
+ 	.sysctl_wmem =  sysctl_sctp_wmem,
+ 	.memory_pressure = &sctp_memory_pressure,
+ 	.enter_memory_pressure = sctp_enter_memory_pressure,
++
+ 	.memory_allocated = &sctp_memory_allocated,
++	.per_cpu_fw_alloc = &sctp_memory_per_cpu_fw_alloc,
++
+ 	.sockets_allocated = &sctp_sockets_allocated,
+ };
  
- 	amt = sk_mem_pages(size);
--	amount = amt << SK_MEM_QUANTUM_SHIFT;
-+	amount = amt << PAGE_SHIFT;
- 	msk->rmem_fwd_alloc += amount;
- 	if (!__sk_mem_raise_allocated(sk, size, amt, SK_MEM_RECV)) {
- 		if (ssk->sk_forward_alloc < amount) {
-@@ -972,7 +972,7 @@ static void __mptcp_mem_reclaim_partial(struct sock *sk)
- 
- 	lockdep_assert_held_once(&sk->sk_lock.slock);
- 
--	if (reclaimable > SK_MEM_QUANTUM)
-+	if (reclaimable > (int)PAGE_SIZE)
- 		__mptcp_rmem_reclaim(sk, reclaimable - 1);
- 
- 	sk_mem_reclaim_partial(sk);
-diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
-index 35928fefae3327f97688f0857de63bc17e3429d6..fa500ea3a1f1bb779e264ee999ac4b7252e716ee 100644
---- a/net/sctp/protocol.c
-+++ b/net/sctp/protocol.c
-@@ -1523,11 +1523,11 @@ static __init int sctp_init(void)
- 	limit = (sysctl_sctp_mem[1]) << (PAGE_SHIFT - 7);
- 	max_share = min(4UL*1024*1024, limit);
- 
--	sysctl_sctp_rmem[0] = SK_MEM_QUANTUM; /* give each asoc 1 page min */
-+	sysctl_sctp_rmem[0] = PAGE_SIZE; /* give each asoc 1 page min */
- 	sysctl_sctp_rmem[1] = 1500 * SKB_TRUESIZE(1);
- 	sysctl_sctp_rmem[2] = max(sysctl_sctp_rmem[1], max_share);
- 
--	sysctl_sctp_wmem[0] = SK_MEM_QUANTUM;
-+	sysctl_sctp_wmem[0] = PAGE_SIZE;
- 	sysctl_sctp_wmem[1] = 16*1024;
- 	sysctl_sctp_wmem[2] = max(64*1024, max_share);
- 
+@@ -9700,7 +9704,10 @@ struct proto sctpv6_prot = {
+ 	.sysctl_wmem	= sysctl_sctp_wmem,
+ 	.memory_pressure = &sctp_memory_pressure,
+ 	.enter_memory_pressure = sctp_enter_memory_pressure,
++
+ 	.memory_allocated = &sctp_memory_allocated,
++	.per_cpu_fw_alloc = &sctp_memory_per_cpu_fw_alloc,
++
+ 	.sockets_allocated = &sctp_sockets_allocated,
+ };
+ #endif /* IS_ENABLED(CONFIG_IPV6) */
 -- 
 2.36.1.255.ge46751e96f-goog
 
