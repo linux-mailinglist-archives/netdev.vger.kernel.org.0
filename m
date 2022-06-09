@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D1A854504C
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 17:11:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BDAF545055
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 17:13:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241025AbiFIPL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 11:11:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
+        id S241973AbiFIPNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 11:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236467AbiFIPL1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 11:11:27 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04D7279E68
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 08:11:26 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id k5-20020a17090a404500b001e8875e6242so10522465pjg.5
-        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 08:11:26 -0700 (PDT)
+        with ESMTP id S234554AbiFIPNK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 11:13:10 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C8D147059
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 08:13:10 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id i15so3717458plr.1
+        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 08:13:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=yU2liZBb1/R9zzlFduk1rfGjpCANCCvi9sD6MMV0JfM=;
-        b=Q65ZJVoqNYl7ZmVhFsqtWLaqSnU21vy37feUhBivrwZjZTuPmACfsvRdWorG0fIgmn
-         fjfYmdHEmM8zZ5B6Ylq664ga0I1OPChx3JrpWNRUn8N3UXnZ5wuFtUsmct7RPjq3CkZz
-         6zcODL23pilG10PEKeXxkfqvSepvDit2qzlY+ymveJZqPFderWhFxT2ZEqh/OHsWNZ6n
-         b5unLl3ZBk7SMwfq0HPaQMIO99Fw7BxTWeDJwyyB3zn4cZFcQncczW2DswcmEgtUIF6S
-         r+r3EJVwqheFkfCmdPyQL3PBB+hiWNVN9D2l3pJzl63oBbYW2u+/eCooObenZWftyOa/
-         yUAQ==
+        bh=DNe53S94xC+XUfNNqNVcyWfPCB1Hy5WhFvMQYjAdjxg=;
+        b=MnmJv7r6ykoLBSvEmQcrEhBQ35E8XcenBpJCtME5zx7uula4ZxiBEk0z0J0OcUeSaB
+         yyHoM1BAtz7sb7C1EmtWxnzCHckX2kj7Y/z53h5vnQw/7z2iZoWjw3pEpl1sWJD7RXss
+         WPZ0kNHYZmLqTYjwLzWHludkzTd0fVTIg1Dd78Gnnmdyjn/dRrI752oaSetijYPsDlEN
+         Md7fkzDperOZe+3SiB9hGw6miHYPfdHbQLkW6fSxtfb4nJuayvzrzavSSxzJCWUStvtU
+         ExJGcqvH9RdtIpdsA0wyErVhKSqA4MUWPuvWFNDWSx5dw7DaPavO9s8cTR8mhda9hyJa
+         XWIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=yU2liZBb1/R9zzlFduk1rfGjpCANCCvi9sD6MMV0JfM=;
-        b=U/iH2qFWyU+wkuwOrA4Xg2r/74LotoviWomuVqFMNY8GYMBxd5Wf3HNVFyhyogqdpw
-         IZMbk2lXBVIVpJa5VZNrKPY+uT0pPDqd5J4aNrxATwXL7+zc8xaR0UsEcdNx+ki8fO52
-         r3CQQvcPqhialmbF3NE9xHpxSuangbYUHq/pIKsi3qgdR8LPsMWMLBA4RDSUmy5vkLSE
-         7kcaHzs+DpD5bWz+29PG6BCWk/eF898oB55YubjkgPfHO7tjCpKDEgHrnkna/vVGKxjk
-         tJAJ57/FXoTxGviEvGmfuhz3CwEVkQUCSQaS6PWmMaGI4NKxZPMN45sLTQ3T0AKjTjzZ
-         STFg==
-X-Gm-Message-State: AOAM5301U15eAUa5jg9605yIavduJdfOPr71h6iKu43vGyj/b5IVLJUM
-        8AyS6YZMuWc6tNEtcC6yVVcWTYi1wM2RLkqI2Ww5Jw==
-X-Google-Smtp-Source: ABdhPJzLaOQLIHZTxI3HE3yWNOJwXDi/cV7ccWABoEtlr6JCMQNvWt0GjE1jj7l/eKHbHX0NZcoFo0o3+426rNUPoak=
-X-Received: by 2002:a17:903:2cb:b0:14f:4fb6:2fb0 with SMTP id
- s11-20020a17090302cb00b0014f4fb62fb0mr39343698plk.172.1654787486109; Thu, 09
- Jun 2022 08:11:26 -0700 (PDT)
+        bh=DNe53S94xC+XUfNNqNVcyWfPCB1Hy5WhFvMQYjAdjxg=;
+        b=tZPzfvnu45OUPN5EI+f4nG1M53yay2CbjmuZRtgYzYb5y5w32inF7XOPbuhIOCb+Nf
+         5/vxlNbAZYiOUAas2Zv3CYGOWsItcJ7vx09i1Z1xpvKMJcFr+XWLXk0h1XsNUhJzNDaY
+         yJjfqeIdIrIG7QkTXpnEy8/LKEzGxH/g5T8Lvn3aL1w1+kB1H57jnsgifjiuegN0TWqt
+         N/sD9bUB2HxKpgpoE6zLpdH6vxb6OMLoZasJFVH1qRXUWXoGcuOFDdIYveCvI3oQfX8s
+         kRVhi2Y/eiKjytJ1x5/Od4Hs9kjVys9XsLTOLB/1sEzkqveTMJWNUbe84isjoirZ9sYK
+         DNzg==
+X-Gm-Message-State: AOAM532QhnN1Pr9WhVBLX9lcQo6zi2XyVzXIWU43C+0aOCZx8GknC7Zq
+        hPwUKeMbA55AXtbcsXFGu2rLPRI/ZvQzuKdMpsr9QA==
+X-Google-Smtp-Source: ABdhPJwbpraoRQssFMTX4GAIoWX2plM9eA2Z9YzhVW1+LwEj1m126ojeT02pdOeyDv49NiP1uyX/HvxfdTv1lzA/TRU=
+X-Received: by 2002:a17:90b:1d90:b0:1e8:5a98:d591 with SMTP id
+ pf16-20020a17090b1d9000b001e85a98d591mr3906541pjb.126.1654787589672; Thu, 09
+ Jun 2022 08:13:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220609063412.2205738-1-eric.dumazet@gmail.com> <20220609063412.2205738-4-eric.dumazet@gmail.com>
-In-Reply-To: <20220609063412.2205738-4-eric.dumazet@gmail.com>
+References: <20220609063412.2205738-1-eric.dumazet@gmail.com> <20220609063412.2205738-5-eric.dumazet@gmail.com>
+In-Reply-To: <20220609063412.2205738-5-eric.dumazet@gmail.com>
 From:   Shakeel Butt <shakeelb@google.com>
-Date:   Thu, 9 Jun 2022 08:11:15 -0700
-Message-ID: <CALvZod5pfJgcg0C=56aYpOe0KLfqoLNfoqv_=Eohd01=ZGqV-w@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/7] net: add per_cpu_fw_alloc field to struct proto
+Date:   Thu, 9 Jun 2022 08:12:58 -0700
+Message-ID: <CALvZod7oB__SWvvODwqCxLNj3zDFX5MTKXwVRpYzuNcSeQ3eqw@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/7] net: implement per-cpu reserves for memory_allocated
 To:     Eric Dumazet <eric.dumazet@gmail.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -76,11 +76,15 @@ On Wed, Jun 8, 2022 at 11:34 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
 >
 > From: Eric Dumazet <edumazet@google.com>
 >
-> Each protocol having a ->memory_allocated pointer gets a corresponding
-> per-cpu reserve, that following patches will use.
+> We plan keeping sk->sk_forward_alloc as small as possible
+> in future patches.
 >
-> Instead of having reserved bytes per socket,
-> we want to have per-cpu reserves.
+> This means we are going to call sk_memory_allocated_add()
+> and sk_memory_allocated_sub() more often.
+>
+> Implement a per-cpu cache of +1/-1 MB, to reduce number
+> of changes to sk->sk_prot->memory_allocated, which
+> would otherwise be cause of false sharing.
 >
 > Signed-off-by: Eric Dumazet <edumazet@google.com>
 
