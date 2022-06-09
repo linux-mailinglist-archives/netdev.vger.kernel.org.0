@@ -2,104 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0293D5449C2
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 13:10:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74ED95449CC
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 13:15:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236028AbiFILKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 07:10:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40174 "EHLO
+        id S235094AbiFILPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 07:15:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbiFILKS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 07:10:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA401F67;
-        Thu,  9 Jun 2022 04:10:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18589B82D01;
-        Thu,  9 Jun 2022 11:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B4845C3411B;
-        Thu,  9 Jun 2022 11:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654773014;
-        bh=angQ9HgEabaRWnSSsP84W4WjFN02l2ikuHAuguZUxZc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=EpJ4Pj1dOd0aoG4OPpTAuHCDXbH9fry1o9YdEq6b0Zbb5vegpYfBQMhO09M7IjZXm
-         wf8MKz73kZVPEXQwWywNXAzGcV/A5JACuqUvGKJC0LicEYJVeQ1apKkuxiaFwC7L2I
-         bktb1m2ryzrNZqdaU7OOOcHz9GyW+V6H3lz0mWh2JYwl6L+pR/YIU4Erix+hf8Gd9C
-         MLVT/rOGF8ryN1iHlECPEaSAKk8f1XXgv/slwu560KjV3fIXslFaL1jyhMHmXyxIQr
-         ti6sHqHzWOmI9bQFL+WUUTCHmew8GLuqfq5MbxohK8Z44YNuWpYDpbgkroiwroH6Kv
-         GKBZP0wUGFwAw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9D0AFE737ED;
-        Thu,  9 Jun 2022 11:10:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S234050AbiFILPH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 07:15:07 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9655E30F5F
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 04:15:06 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nzG7p-0000Bd-Tr; Thu, 09 Jun 2022 13:14:53 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 625239005B;
+        Thu,  9 Jun 2022 11:14:51 +0000 (UTC)
+Date:   Thu, 9 Jun 2022 13:14:50 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Srinivas Neeli <srinivas.neeli@xilinx.com>
+Cc:     wg@grandegger.com, davem@davemloft.net, edumazet@google.com,
+        srinivas.neeli@amd.com, neelisrinivas18@gmail.com,
+        appana.durga.rao@xilinx.com, sgoud@xilinx.com,
+        michal.simek@xilinx.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        git@xilinx.com, Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: Re: [PATCH V4] can: xilinx_can: Add Transmitter delay compensation
+ (TDC) feature support
+Message-ID: <20220609111450.3xzujeaotuxhiynn@pengutronix.de>
+References: <20220609103157.1425730-1-srinivas.neeli@xilinx.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 net-next 0/8] vmxnet3: upgrade to version 7
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165477301463.8270.15863308665525214047.git-patchwork-notify@kernel.org>
-Date:   Thu, 09 Jun 2022 11:10:14 +0000
-References: <20220608032353.964-1-doshir@vmware.com>
-In-Reply-To: <20220608032353.964-1-doshir@vmware.com>
-To:     Ronak Doshi <doshir@vmware.com>
-Cc:     netdev@vger.kernel.org, pv-drivers@vmware.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="exsvwmuiszhj5uie"
+Content-Disposition: inline
+In-Reply-To: <20220609103157.1425730-1-srinivas.neeli@xilinx.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+--exsvwmuiszhj5uie
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 7 Jun 2022 20:23:45 -0700 you wrote:
-> vmxnet3 emulation has recently added several new features including
-> support for uniform passthrough(UPT). To make UPT work vmxnet3 has
-> to be enhanced as per the new specification. This patch series
-> extends the vmxnet3 driver to leverage these new features.
-> 
-> Compatibility is maintained using existing vmxnet3 versioning mechanism as
-> follows:
->  - new features added to vmxnet3 emulation are associated with new vmxnet3
->    version viz. vmxnet3 version 7.
->  - emulation advertises all the versions it supports to the driver.
->  - during initialization, vmxnet3 driver picks the highest version number
->  supported by both the emulation and the driver and configures emulation
->  to run at that version.
-> 
-> [...]
+On 09.06.2022 16:01:57, Srinivas Neeli wrote:
+> Added Transmitter delay compensation (TDC) feature support.
+> In the case of higher measured loop delay with higher baud rates,
+> observed bit stuff errors. By enabling the TDC feature in
+> CANFD controllers, will compensate for the measure loop delay in
+> the receive path.
+>=20
+> Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+> Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-Here is the summary with links:
-  - [v3,net-next,1/8] vmxnet3: prepare for version 7 changes
-    https://git.kernel.org/netdev/net-next/c/55f0395fcace
-  - [v3,net-next,2/8] vmxnet3: add support for capability registers
-    https://git.kernel.org/netdev/net-next/c/6f91f4ba046e
-  - [v3,net-next,3/8] vmxnet3: add support for large passthrough BAR register
-    https://git.kernel.org/netdev/net-next/c/543fb6740541
-  - [v3,net-next,4/8] vmxnet3: add support for out of order rx completion
-    https://git.kernel.org/netdev/net-next/c/2c5a5748105a
-  - [v3,net-next,5/8] vmxnet3: add command to set ring buffer sizes
-    (no matching commit)
-  - [v3,net-next,6/8] vmxnet3: limit number of TXDs used for TSO packet
-    https://git.kernel.org/netdev/net-next/c/d2857b99a74b
-  - [v3,net-next,7/8] vmxnet3: use ext1 field to indicate encapsulated packet
-    https://git.kernel.org/netdev/net-next/c/60cafa0395c2
-  - [v3,net-next,8/8] vmxnet3: update to version 7
-    https://git.kernel.org/netdev/net-next/c/acc38e041bd3
+Applied to linux-can-next.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+regards,
+Marc
 
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
+--exsvwmuiszhj5uie
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKh1igACgkQrX5LkNig
+013GGAgAkDEQ2tJEeQl8XtbET8qwGIPJ7RtH/bhnaB6f/ezsWnF3aVUMJLULn1YJ
+JrPx7iKrTCLtrdwc4woL2GN9p+mCe1qHGElUIDIyUf36XD2X8yKKESSqOJ2Slxo7
+70evg11a2DfXrHgKLZCn1c/8MPHL+iJc/chl93KrZdJ1fn3Yr4Pe29sB0I0zakko
+aOfyA1ae7SGRUC0DK37zD6xqMmVAfuAhEF62AC0U8PnBcsRbH+FfyuNlvuvdg4GD
+xZSvh6jl+zvmGjHwEnP/Uzor0pdd4UpFFo7aNJyeIRcEKSSEWLMXpIe3x8XXDeR9
+qFiPAgUwuCqA+vxFcliIWfV6BLPyCA==
+=Dm2/
+-----END PGP SIGNATURE-----
+
+--exsvwmuiszhj5uie--
