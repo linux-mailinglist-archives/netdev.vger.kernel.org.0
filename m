@@ -2,395 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E249E54465E
-	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 10:48:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B29CF544665
+	for <lists+netdev@lfdr.de>; Thu,  9 Jun 2022 10:51:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242298AbiFIIoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 04:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40476 "EHLO
+        id S242561AbiFIIur (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 04:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242739AbiFIInz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 04:43:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6751D4553E
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 01:42:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1654764123;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hbvCaL1wOfOFrYCFWGLThfbo1GLwl4GEM9yi4TGDwQo=;
-        b=Rb9BD6SI2VyFlmArRQCTYYOlI8/8OuGmrUStlrcLKbOCqUnBkCK/UPHU6VFohwAGyKmKsT
-        z1oUqLkqep/W6/p4xlJuwP51CObTuHiEz1zJuos2ew7IPuz3jSXLPZ0QRwLWq5yv52pIeb
-        dEYpThvoUIguQMWAQecUWuX2Nb0f5po=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-404-t3mWrajVOHqNtnZm75RLEQ-1; Thu, 09 Jun 2022 04:42:02 -0400
-X-MC-Unique: t3mWrajVOHqNtnZm75RLEQ-1
-Received: by mail-wm1-f71.google.com with SMTP id be12-20020a05600c1e8c00b0039c506b52a4so396163wmb.1
-        for <netdev@vger.kernel.org>; Thu, 09 Jun 2022 01:42:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hbvCaL1wOfOFrYCFWGLThfbo1GLwl4GEM9yi4TGDwQo=;
-        b=vXxx3b7g64zRSzFoxXrbsboSqSacaQICFgh5wbFXzY6c/PQeZ5YAuEQxzIZN37dGa5
-         wQ2bB0TCkVpAIz84jCs+lRVSDrb0gtEbNo1aYJtEveFZXm6qCCc32CRGamVzVIs+iCuB
-         GiU+Gv5M9aNdcgCv5s8GTvYIxqQsOnVBMj65CTnO49A0PqhEF07Wmx1E2iWKi0misT0W
-         accV23sh87PCW9kdocED+6FrlAHTKFkNM6AZAuqCJhQU91ORhkYyom789OSjZcPqkgFM
-         JtRQVyrQI1bhXV4Y8Pps7TRfcPqSEJm5eC5qXHKHibcH2FSxAaupA0IqezfA7ZClX8I3
-         WT+g==
-X-Gm-Message-State: AOAM533uI9Mp3ncy8/C7udj0QWclZb7RzuOMCz9nFT+SI9GTAwt+wx8N
-        5n7k2XKKYSXJ3mkg+BlnJ8y6HDQr/aZNuEaz2t61hyFso13MU6hdnRIJTYeLpqR0zhvsJoY4xhS
-        e9p/4Zihj6V47Ieto
-X-Received: by 2002:adf:e189:0:b0:218:45f0:5c0a with SMTP id az9-20020adfe189000000b0021845f05c0amr17559330wrb.683.1654764118262;
-        Thu, 09 Jun 2022 01:41:58 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJysiPURDeTjXE66ZO6ZgkFeDnfAlmBehDg4QQ8l/XXYzqjWiblxWAsfpyM1NHDhusMQyK9a/Q==
-X-Received: by 2002:adf:e189:0:b0:218:45f0:5c0a with SMTP id az9-20020adfe189000000b0021845f05c0amr17559297wrb.683.1654764117949;
-        Thu, 09 Jun 2022 01:41:57 -0700 (PDT)
-Received: from sgarzare-redhat (host-79-46-200-40.retail.telecomitalia.it. [79.46.200.40])
-        by smtp.gmail.com with ESMTPSA id p9-20020a5d4589000000b0020fcf070f61sm23705284wrq.59.2022.06.09.01.41.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 01:41:57 -0700 (PDT)
-Date:   Thu, 9 Jun 2022 10:41:54 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S232860AbiFIIuj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 04:50:39 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2113.outbound.protection.outlook.com [40.107.93.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D393E2914C1
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 01:47:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=A9rgielCpM8S6gpFK3lqCoUBX17rCS+r3qrAoCx0EHNfGsscmuSPdUmP3TaSgFjT98CcAAsj0mDLkISVJgqTrYM3T4nRBgqjoVFqU2zwpAD4pstjt0W0PNsyxiOxYL4Oq20bLoaUeE/3M3eiIdYuk8303EwEqxJmppyP9ECq4WYe3mZ3T6TYrgIzDmjdHbHTr3/6L+xAS6poa/G2EEIUx0XKrGbEQ27CliaCkd3wsGoIeD9LhKX0BZZFcZO5yMmaFlEfrcMlpzpbq4LDxo9OGBLQ8zic3BU1AWBMhGXyz1Q5sMtyyXlG2WEDmlVRXeRTShFy7moIK3Rv4BcGeOD4OQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KvFcQNbX+v1+tAOIrmC3eFwDbivjSmLz5FbuZ0eH5hA=;
+ b=EZDXERutbC+U8YmTOvhFXNRX19msTbKjj4G1Yat9qrdIYTq/FJQj9umDtavmn8Me7qmCLZOC56G315Turz81cOS2gmbHkZXAxheq6bzUP+qFBQZuBFOHLtUvtJSCTbQChkqGo00kkY35N1pdJL7AAkomDQqYzEppERHQHtavt9sdz682pEo+Pv4pU7TMqMO5t+pV8GXdVMcOpmfDxOXHjGyzvIhEDTLQ8UZeISE+H60974qDYpFVIC+F9IwY6S2srWxQF8aADXNk35aNV0zAgWCHQ8JOSe+Cun1BOoWBidsJ0HwHF0WhW7zrcsnSS1KVr1oQHXWJBEG8F0BPOhEUWQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KvFcQNbX+v1+tAOIrmC3eFwDbivjSmLz5FbuZ0eH5hA=;
+ b=LAqsT7zAAM1mhbb87xX4X1EMWFPw84Bi5E+AAqw65dnJVqNF10kDg+CqpZgRQYkyz6ZeqcWmV/lsYh1Pv4B9j3kRuEZiRp5G8Lh447FUbOM/OdSkVGQ69Z4GUB8/ClY2V1TgV3ijYTdyilpOakyRJjUt7QaxEa3A0NBLPS/n61Q=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by BY5PR13MB3240.namprd13.prod.outlook.com (2603:10b6:a03:192::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.12; Thu, 9 Jun
+ 2022 08:47:32 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::b18b:5e90:6805:a8fa]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::b18b:5e90:6805:a8fa%8]) with mapi id 15.20.5332.011; Thu, 9 Jun 2022
+ 08:47:32 +0000
+From:   Simon Horman <simon.horman@corigine.com>
+To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>
-Subject: Re: [RFC PATCH v2 4/8] virtio/vsock: add transport zerocopy callback
-Message-ID: <20220609084154.kvkkc2iax456lvud@sgarzare-redhat>
-References: <e37fdf9b-be80-35e1-ae7b-c9dfeae3e3db@sberdevices.ru>
- <6f76eed7-decc-68d1-6ae7-7bafb09fdad3@sberdevices.ru>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Shahed Shaikh <shshaikh@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Bin Chen <bin.chen@corigine.com>, GR-Linux-NIC-Dev@marvell.com,
+        netdev@vger.kernel.org, oss-drivers@corigine.com
+Subject: [PATCH net-next] ethernet: Remove vf rate limit check for drivers
+Date:   Thu,  9 Jun 2022 10:47:17 +0200
+Message-Id: <20220609084717.155154-1-simon.horman@corigine.com>
+X-Mailer: git-send-email 2.30.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR10CA0038.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:150::18) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <6f76eed7-decc-68d1-6ae7-7bafb09fdad3@sberdevices.ru>
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cd0239fd-74e0-4cd3-a15c-08da49f4b111
+X-MS-TrafficTypeDiagnostic: BY5PR13MB3240:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR13MB3240545D2D89C909E3875E93E8A79@BY5PR13MB3240.namprd13.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pjFpdz25il/UMk1rLsFCphCUlk1FaXtn1x+6mzxKJv+yvMOfXv3coR5CoxrkQCaq/QO03ckPnZOWh6KuIXccSHiOqbpExg70lgzmHspNYp4ZJdk8FT0R9Z9Ia8w24msoqXOz6OQnC6JV0nTE4h1yXgrmtimtdbe3H0NmTOUxQL0OiNfvSb49Ya5pmLKVDfeBHOAbL0Cn31yiBGVp1mjVHpro2I4NIzJH1jIWyHwpDLTz4egk6gbdFUXoIPkszLE7DEm+ItQGteUDBWgpO1PPw+3VhZJJO2x2S1qccSsQMlxRPOG6XOsFVWWUms2Q5ogmZyaiJSsS7YM6cX7MRgWXx9qCyytb+YSSO7Jbk5MjIYwYrKnB0oCX2cQP5JEsU09Kjm2RGPSUCLufDtkFNnU+5yQmOA93S2nBUFP0k6rvEWGhKk66WkY+D8Dz+C1kHoh1qr2JCIEQHjRHYXgjbT6zKcg0BVKME3t6S8FLUI5nQage43PIadxWxNF2IKa7F6SLKZJA/cOvNq3XIhDuaKAWwMotiYfMP2kIyLgM9rTy6NHomSf5dgFa/YKwO8FqTQM2rLIMDDo+E1GRT/RnnDOqQzILbnGG+9s+Q0/fUJTnf+8WUbxGOM4j/Ooxbc+oG2nwczjE0+0eJ6QoxHoQuS6+nQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(136003)(39840400004)(396003)(346002)(7416002)(86362001)(66556008)(66476007)(508600001)(6506007)(44832011)(66946007)(52116002)(5660300002)(4326008)(8676002)(6666004)(2906002)(6486002)(186003)(36756003)(8936002)(38100700002)(316002)(1076003)(54906003)(41300700001)(2616005)(107886003)(110136005)(83380400001)(6512007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dMi4zVWOO2WU5d6f0LK+agL1wjDF7mlXRzptgNwjz10Exl5cQz7Yk/3vLEsK?=
+ =?us-ascii?Q?8gY8ZbQWiBD5+7HxXmO6FNkR/fhy4Cdv+5fefRAetgOb7mnRVr4NbHaLZ4K3?=
+ =?us-ascii?Q?qlKOh6NDUHrYG3+ZfyvCShVepJCshOfARa0g1Gvg2VbB6DNAVAv1v/AWV6XK?=
+ =?us-ascii?Q?e13GZZuP25cP/FypLQDKeOYQKaQGZXXwQCRAmrNQuYwaObFGugLjvE8+Et+t?=
+ =?us-ascii?Q?lKTLDbhmCglarqakK4Iu9277A3EZUtOKEOZ0N9Q/rW1Lb9BSOP8M9yWi4h8J?=
+ =?us-ascii?Q?NIQX2NzSOpOovXMZrwvy2ZlqgMTM8WO9DRe6ugjYxG+cSLOP5KylwRWWWVIR?=
+ =?us-ascii?Q?mEBMGhh7kNxTtPfCMzXOPAK+UsSysF8aY2qjCbhMngHhHG7PQkkTxiSFuuia?=
+ =?us-ascii?Q?2Hf0Qhb4dwxy0c4tfVHjxbSN6klCF+4l7iau4QzotnG2pZal8Sayk2Wwefm0?=
+ =?us-ascii?Q?6KQdSRxZmUChHBck+Kdxryly7YWwLs6ViI1lQJkU8ztXZ2VZGd4YAnN5zSwJ?=
+ =?us-ascii?Q?DN+9vnL9UDMTWapPGuoxV0tqjqgVmcaM8ZwKdE2Zku403Qq2hv7ilQE6NWUi?=
+ =?us-ascii?Q?pUd77CZ7H8mY6bnP3/cn6klEo/QVxkNKVs+pDZf+a9tJbvegVutlzhvLRW9u?=
+ =?us-ascii?Q?iwFjhRTAvNW2ZaMqB1dvcxsxD3TVYbKXz4lUlnmTsEQki70BF0t2HD+acwhh?=
+ =?us-ascii?Q?Ly24Vcl8VLGQO+jTM4y1yJY/C9TdOBOF0vRZGJIYOxrabgE4g44qUyBa5cx2?=
+ =?us-ascii?Q?jITOsHVV8Mg/du9SspRhCe/aqNzZddsDPiAYiLbJu3O51nnvRXtR3l2WLD/h?=
+ =?us-ascii?Q?OFTouT2oi3JrB/b6m0yk1CjdJqGBLpWn77MgeJepkLdg1hCQcloagamfNAMQ?=
+ =?us-ascii?Q?qBp/y7aeEGE2OHasSjQcFyzRzwBOjXTFLlT9WaAGRZYZEGjcunwszbmetbHJ?=
+ =?us-ascii?Q?7uWJ+c65uucg+8q90lAqtCI3RtryHnEXsWOEDb/KunK0+aquH03LY1VdrmDQ?=
+ =?us-ascii?Q?vAtYjLdM587gwovQHG+4feh6mmrW0gOcs/eNcc+BF6suL+7WblJBrgOgEXmg?=
+ =?us-ascii?Q?vbgVY37OtpRqM5YFIRHG2iqao8xja2RyUtTM2OpFqmy/tmD6gFpeO/+Z5dXg?=
+ =?us-ascii?Q?C5WfFW+NED+1La+69diAW75gGV69l7U/xuINywXJs67PupP0dt4rg1XrwCbQ?=
+ =?us-ascii?Q?NDDEBhyKYhwfxBgBAGjThPM57UDhDzHIG1djQcqBZT9uQUQJxXO9jVkXLY/O?=
+ =?us-ascii?Q?s/TyLF9iNub4Hylg41pkSZYUSQZAPkpDPM/qIfuFWU1xj4ZmFyWbJ0nWPriq?=
+ =?us-ascii?Q?rfT/Id61FmVMzr5iYFuABfwoynprMFymtwSxdHlzlmm2zY1YPclO0qSgaJXa?=
+ =?us-ascii?Q?ibYlOrKhjnDCcbUI1b/hqo+bO97CzA59aIogRUo10R6Guqm87sNWEQKGmgSS?=
+ =?us-ascii?Q?1DdPU1yJeTEEL7mSNGGUqgFfVr7kfqmVF+NZBCrTzaodl2CUxIwMH1fp6XA9?=
+ =?us-ascii?Q?HLQjfKR/F0TQZVkVhpFihPW3HMqeh7ncqfoq7y1HNc0D0kLQ4p+RHlRe6lni?=
+ =?us-ascii?Q?2iI0m+t2pVY3UnARuHzIIOW6utyTHlRT8bQ/SJ5aLGzSvj4lucHA+C27uP4R?=
+ =?us-ascii?Q?PNaLCnGalvX7WIIZI/3Emw6kywIdj7uryfOZipqj1RzzqtisbGdlXubQN1ue?=
+ =?us-ascii?Q?hgNuRSTtTqgy7fPvd560cvyKQU28zU5e41k6gwaNdLBPR/Rr3XeoQz0OWIPB?=
+ =?us-ascii?Q?SAgVS0JQRyxQFXzrv3W8y5SqSsfD/1dTr0lS7Iu+GE/vLBxjOpuNEXNx7iwi?=
+X-MS-Exchange-AntiSpam-MessageData-1: XNeREnTS6Z/e2k4bZnyG8XX//ODBv3/qByE=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd0239fd-74e0-4cd3-a15c-08da49f4b111
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2022 08:47:31.9010
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ie9xOBe+5n2rY+ILVO32sIuzpyPAKok0jhc1PBMWdlGTkKHzkevqVlfCab0KrqklnixWRdHnJetKGS856Cc/UR/c284d/iL/U1F8eC4FUbk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR13MB3240
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 05:37:48AM +0000, Arseniy Krasnov wrote:
->This adds transport callback which processes rx
->queue of socket and instead of copying data to
->user provided buffer, it inserts data pages of
->each packet to user's vm area.
->
->Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->---
-> include/linux/virtio_vsock.h            |   4 +
-> include/uapi/linux/virtio_vsock.h       |   6 +
-> net/vmw_vsock/virtio_transport_common.c | 208 +++++++++++++++++++++++-
-> 3 files changed, 215 insertions(+), 3 deletions(-)
->
->diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
->index d02cb7aa922f..47a68a2ea838 100644
->--- a/include/linux/virtio_vsock.h
->+++ b/include/linux/virtio_vsock.h
->@@ -51,6 +51,7 @@ struct virtio_vsock_pkt {
-> 	bool reply;
-> 	bool tap_delivered;
-> 	bool slab_buf;
->+	bool split;
-> };
->
-> struct virtio_vsock_pkt_info {
->@@ -131,6 +132,9 @@ int virtio_transport_dgram_bind(struct vsock_sock *vsk,
-> 				struct sockaddr_vm *addr);
-> bool virtio_transport_dgram_allow(u32 cid, u32 port);
->
->+int virtio_transport_zerocopy_dequeue(struct vsock_sock *vsk,
->+				      struct vm_area_struct *vma,
->+				      unsigned long addr);
-> int virtio_transport_connect(struct vsock_sock *vsk);
->
-> int virtio_transport_shutdown(struct vsock_sock *vsk, int mode);
->diff --git a/include/uapi/linux/virtio_vsock.h b/include/uapi/linux/virtio_vsock.h
->index 64738838bee5..6775c6c44b5b 100644
->--- a/include/uapi/linux/virtio_vsock.h
->+++ b/include/uapi/linux/virtio_vsock.h
->@@ -66,6 +66,12 @@ struct virtio_vsock_hdr {
-> 	__le32	fwd_cnt;
-> } __attribute__((packed));
->
->+struct virtio_vsock_usr_hdr {
->+	u32 flags;
->+	u32 len;
->+	u32 copy_len;
->+} __attribute__((packed));
->+
-> enum virtio_vsock_type {
-> 	VIRTIO_VSOCK_TYPE_STREAM = 1,
-> 	VIRTIO_VSOCK_TYPE_SEQPACKET = 2,
->diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
->index 278567f748f2..3a3e84176c75 100644
->--- a/net/vmw_vsock/virtio_transport_common.c
->+++ b/net/vmw_vsock/virtio_transport_common.c
->@@ -12,6 +12,7 @@
-> #include <linux/ctype.h>
-> #include <linux/list.h>
-> #include <linux/virtio_vsock.h>
->+#include <linux/mm.h>
-> #include <uapi/linux/vsockmon.h>
->
-> #include <net/sock.h>
->@@ -347,6 +348,196 @@ virtio_transport_stream_do_peek(struct vsock_sock *vsk,
-> 	return err;
-> }
->
->+#define MAX_PAGES_TO_MAP 256
->+
->+int virtio_transport_zerocopy_dequeue(struct vsock_sock *vsk,
->+				      struct vm_area_struct *vma,
->+				      unsigned long addr)
->+{
->+	struct virtio_vsock_sock *vvs = vsk->trans;
->+	struct virtio_vsock_usr_hdr *usr_hdr_buffer;
->+	unsigned long max_pages_to_insert;
->+	unsigned long tmp_pages_inserted;
->+	unsigned long pages_to_insert;
->+	struct page *usr_hdr_page;
->+	unsigned long vma_size;
->+	struct page **pages;
->+	int max_vma_pages;
->+	int max_usr_hdrs;
->+	int res;
->+	int err;
->+	int i;
->+
->+	/* Only use VMA from first page. */
->+	if (vma->vm_start != addr)
->+		return -EFAULT;
->+
->+	vma_size = vma->vm_end - vma->vm_start;
->+
->+	/* Too small vma(at least one page for headers
->+	 * and one page for data).
->+	 */
->+	if (vma_size < 2 * PAGE_SIZE)
->+		return -EFAULT;
->+
->+	/* Page for meta data. */
->+	usr_hdr_page = alloc_page(GFP_KERNEL);
+From: Bin Chen <bin.chen@corigine.com>
 
-I think all these checks should be done in af_vsock.c.
+The commit a14857c27a50 ("rtnetlink: verify rate parameters for calls to
+ndo_set_vf_rate") has been merged to master, so we can to remove the
+now-duplicate checks in drivers.
 
-It would be nice to avoid that every transport reimplements the same 
-thing and especially that all transports have the same behavior.
+Signed-off-by: Bin Chen <bin.chen@corigine.com>
+Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c      |  2 +-
+ drivers/net/ethernet/huawei/hinic/hinic_sriov.c      |  6 ------
+ drivers/net/ethernet/intel/ice/ice_sriov.c           | 10 ----------
+ drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c |  6 ++----
+ 4 files changed, 3 insertions(+), 21 deletions(-)
 
-If you can would be nice to have the transports to return an array of 
-pages to map, and af_vsock will handle it and the usr_hdr_page.
-
-Do you think it's doable?
-
->+
->+	if (!usr_hdr_page)
->+		return -EFAULT;
->+
->+	pages = kmalloc_array(MAX_PAGES_TO_MAP, sizeof(pages[0]), GFP_KERNEL);
->+
->+	if (!pages)
->+		return -EFAULT;
->+
->+	pages[pages_to_insert++] = usr_hdr_page;
->+
->+	usr_hdr_buffer = page_to_virt(usr_hdr_page);
->+
->+	err = 0;
->+
->+	/* As we use first page for headers, so total number of
->+	 * pages for user is min between number of headers in
->+	 * first page and size of vma(in pages, except first page).
->+	 */
->+	max_usr_hdrs = PAGE_SIZE / sizeof(*usr_hdr_buffer);
->+	max_vma_pages = (vma_size / PAGE_SIZE) - 1;
->+	max_pages_to_insert = min(max_usr_hdrs, max_vma_pages);
->+
->+	if (max_pages_to_insert > MAX_PAGES_TO_MAP)
->+		max_pages_to_insert = MAX_PAGES_TO_MAP;
->+
->+	spin_lock_bh(&vvs->rx_lock);
->+
->+	while (!list_empty(&vvs->rx_queue) &&
->+	       pages_to_insert < max_pages_to_insert) {
->+		struct virtio_vsock_pkt *pkt;
->+		ssize_t rest_data_bytes;
->+		size_t moved_data_bytes;
->+		unsigned long pg_offs;
->+
->+		pkt = list_first_entry(&vvs->rx_queue,
->+				       struct virtio_vsock_pkt, list);
->+
->+		/* Buffer was allocated by 'kmalloc()'. This could
->+		 * happen, when zerocopy was enabled, but we still
->+		 * have pending packet which was created before it.
->+		 */
->+		if (pkt->slab_buf) {
->+			usr_hdr_buffer->flags = le32_to_cpu(pkt->hdr.flags);
->+			usr_hdr_buffer->len = 0;
->+			usr_hdr_buffer->copy_len = le32_to_cpu(pkt->hdr.len);
->+			/* Report user to read it using copy. */
-
-Is it a "to do"?
-
->+			break;
->+		}
->+
->+		/* This could happen, when packet was dequeued before
->+		 * by an ordinary 'read()' call. We can't handle such
->+		 * packet. Drop it.
-
-We can't drop packets.
-I think we should allow to enable/disable this new feature before the 
-connection.
-
->+		 */
->+		if (pkt->off % PAGE_SIZE) {
->+			list_del(&pkt->list);
->+			virtio_transport_dec_rx_pkt(vvs, pkt);
->+			virtio_transport_free_pkt(pkt);
->+			continue;
->+		}
->+
->+		rest_data_bytes = le32_to_cpu(pkt->hdr.len) - pkt->off;
->+
->+		/* For packets, bigger than one page, split it's
->+		 * high order allocated buffer to 0 order pages.
->+		 * Otherwise 'vm_insert_pages()' will fail, for
->+		 * all pages except first.
->+		 */
->+		if (rest_data_bytes > PAGE_SIZE) {
->+			/* High order buffer not split yet. */
->+			if (!pkt->split) {
->+				split_page(virt_to_page(pkt->buf),
->+					   get_order(le32_to_cpu(pkt->hdr.len)));
->+				pkt->split = true;
->+			}
->+		}
->+
->+		pg_offs = pkt->off;
->+		moved_data_bytes = 0;
->+
->+		while (rest_data_bytes &&
->+		       pages_to_insert < max_pages_to_insert) {
->+			struct page *buf_page;
->+
->+			buf_page = virt_to_page(pkt->buf + pg_offs);
->+
->+			pages[pages_to_insert++] = buf_page;
->+			/* Get reference to prevent this page being
->+			 * returned to page allocator when packet will
->+			 * be freed. Ref count will be 2.
->+			 */
->+			get_page(buf_page);
->+			pg_offs += PAGE_SIZE;
->+
->+			if (rest_data_bytes >= PAGE_SIZE) {
->+				moved_data_bytes += PAGE_SIZE;
->+				rest_data_bytes -= PAGE_SIZE;
->+			} else {
->+				moved_data_bytes += rest_data_bytes;
->+				rest_data_bytes = 0;
->+			}
->+		}
->+
->+		usr_hdr_buffer->flags = le32_to_cpu(pkt->hdr.flags);
->+		usr_hdr_buffer->len = moved_data_bytes;
->+		usr_hdr_buffer->copy_len = 0;
->+		usr_hdr_buffer++;
->+
->+		pkt->off = pg_offs;
->+
->+		if (rest_data_bytes == 0) {
->+			list_del(&pkt->list);
->+			virtio_transport_dec_rx_pkt(vvs, pkt);
->+			virtio_transport_free_pkt(pkt);
->+		}
->+
->+		/* Now ref count for all pages of packet is 1. */
->+	}
->+
->+	/* Set last buffer empty(if we have one). */
->+	if (pages_to_insert - 1 < max_usr_hdrs)
->+		usr_hdr_buffer->len = 0;
->+
->+	spin_unlock_bh(&vvs->rx_lock);
->+
->+	tmp_pages_inserted = pages_to_insert;
->+
->+	res = vm_insert_pages(vma, addr, pages, &tmp_pages_inserted);
->+
->+	if (res || tmp_pages_inserted) {
->+		/* Failed to insert some pages, we have "partially"
->+		 * mapped vma. Do not return, set error code. This
->+		 * code will be returned to user. User needs to call
->+		 * 'madvise()/mmap()' to clear this vma. Anyway,
->+		 * references to all pages will to be dropped below.
->+		 */
->+		err = -EFAULT;
->+	}
->+
->+	/* Put reference for every page. */
->+	for (i = 0; i < pages_to_insert; i++) {
->+		/* Ref count is 2 ('get_page()' + 'vm_insert_pages()' above).
->+		 * Put reference once, page will be returned to allocator
->+		 * after user's 'madvice()/munmap()' call(or it wasn't mapped
->+		 * if 'vm_insert_pages()' failed).
->+		 */
->+		put_page(pages[i]);
->+	}
->+
->+	virtio_transport_send_credit_update(vsk);
->+	kfree(pages);
->+
->+	return err;
->+}
->+EXPORT_SYMBOL_GPL(virtio_transport_zerocopy_dequeue);
->+
-> static ssize_t
-> virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
-> 				   struct msghdr *msg,
->@@ -1344,10 +1535,21 @@ EXPORT_SYMBOL_GPL(virtio_transport_recv_pkt);
-> void virtio_transport_free_pkt(struct virtio_vsock_pkt *pkt)
-> {
-> 	if (pkt->buf_len) {
->-		if (pkt->slab_buf)
->+		if (pkt->slab_buf) {
-> 			kfree(pkt->buf);
->-		else
->-			free_pages(buf, get_order(pkt->buf_len));
->+		} else {
->+			unsigned int order = get_order(pkt->buf_len);
->+			unsigned long buf = (unsigned long)pkt->buf;
->+
->+			if (pkt->split) {
->+				int i;
->+
->+				for (i = 0; i < (1 << order); i++)
->+					free_page(buf + i * PAGE_SIZE);
->+			} else {
->+				free_pages(buf, order);
->+			}
->+		}
-> 	}
->
-> 	kfree(pkt);
->-- 2.25.1
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+index ddf2f3963abe..c4ed43604ddc 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+@@ -307,7 +307,7 @@ int bnxt_set_vf_bw(struct net_device *dev, int vf_id, int min_tx_rate,
+ 		return -EINVAL;
+ 	}
+ 
+-	if (min_tx_rate > pf_link_speed || min_tx_rate > max_tx_rate) {
++	if (min_tx_rate > pf_link_speed) {
+ 		netdev_info(bp->dev, "min tx rate %d is invalid for VF %d\n",
+ 			    min_tx_rate, vf_id);
+ 		return -EINVAL;
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
+index 01e7d3c0b68e..df555847afb5 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_sriov.c
+@@ -852,12 +852,6 @@ int hinic_ndo_set_vf_bw(struct net_device *netdev,
+ 		return -EINVAL;
+ 	}
+ 
+-	if (max_tx_rate < min_tx_rate) {
+-		netif_err(nic_dev, drv, netdev, "Max rate %d must be greater than or equal to min rate %d\n",
+-			  max_tx_rate, min_tx_rate);
+-		return -EINVAL;
+-	}
+-
+ 	err = hinic_port_link_state(nic_dev, &link_state);
+ 	if (err) {
+ 		netif_err(nic_dev, drv, netdev,
+diff --git a/drivers/net/ethernet/intel/ice/ice_sriov.c b/drivers/net/ethernet/intel/ice/ice_sriov.c
+index bb1721f1321d..86093b2511d8 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sriov.c
++++ b/drivers/net/ethernet/intel/ice/ice_sriov.c
+@@ -1593,16 +1593,6 @@ ice_set_vf_bw(struct net_device *netdev, int vf_id, int min_tx_rate,
+ 		goto out_put_vf;
+ 	}
+ 
+-	/* when max_tx_rate is zero that means no max Tx rate limiting, so only
+-	 * check if max_tx_rate is non-zero
+-	 */
+-	if (max_tx_rate && min_tx_rate > max_tx_rate) {
+-		dev_err(dev, "Cannot set min Tx rate %d Mbps greater than max Tx rate %d Mbps\n",
+-			min_tx_rate, max_tx_rate);
+-		ret = -EINVAL;
+-		goto out_put_vf;
+-	}
+-
+ 	if (min_tx_rate && ice_is_dcb_active(pf)) {
+ 		dev_err(dev, "DCB on PF is currently enabled. VF min Tx rate limiting not allowed on this PF.\n");
+ 		ret = -EOPNOTSUPP;
+diff --git a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c
+index e90fa97c0ae6..8dd7aa08ecfb 100644
+--- a/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c
++++ b/drivers/net/ethernet/qlogic/qlcnic/qlcnic_sriov_pf.c
+@@ -1869,8 +1869,7 @@ int qlcnic_sriov_set_vf_tx_rate(struct net_device *netdev, int vf,
+ 	if (!min_tx_rate)
+ 		min_tx_rate = QLC_VF_MIN_TX_RATE;
+ 
+-	if (max_tx_rate &&
+-	    (max_tx_rate >= 10000 || max_tx_rate < min_tx_rate)) {
++	if (max_tx_rate && max_tx_rate >= 10000) {
+ 		netdev_err(netdev,
+ 			   "Invalid max Tx rate, allowed range is [%d - %d]",
+ 			   min_tx_rate, QLC_VF_MAX_TX_RATE);
+@@ -1880,8 +1879,7 @@ int qlcnic_sriov_set_vf_tx_rate(struct net_device *netdev, int vf,
+ 	if (!max_tx_rate)
+ 		max_tx_rate = 10000;
+ 
+-	if (min_tx_rate &&
+-	    (min_tx_rate > max_tx_rate || min_tx_rate < QLC_VF_MIN_TX_RATE)) {
++	if (min_tx_rate && min_tx_rate < QLC_VF_MIN_TX_RATE) {
+ 		netdev_err(netdev,
+ 			   "Invalid min Tx rate, allowed range is [%d - %d]",
+ 			   QLC_VF_MIN_TX_RATE, max_tx_rate);
+-- 
+2.30.2
 
