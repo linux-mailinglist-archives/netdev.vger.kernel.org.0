@@ -2,122 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF835545983
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 03:19:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D7C4545A00
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 04:16:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240165AbiFJBTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 21:19:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32888 "EHLO
+        id S237001AbiFJCQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 22:16:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231573AbiFJBTV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 21:19:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B7C536E2B;
-        Thu,  9 Jun 2022 18:19:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1544616C9;
-        Fri, 10 Jun 2022 01:19:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 107EEC34114;
-        Fri, 10 Jun 2022 01:19:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1654823959;
-        bh=NUfNzI+Lzqk+ZMoLBcXdIunumPdQxiKPTgtDE7N0Sgk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=k2K3VAI6SDQeixfuxmPLxZgpiSqDGd0SM+Ll9mgkEIzO4uveLGhDNJt0+TSFK+7Dy
-         zU2YexZB9zyyJafX9UAhTSLsmxBgnx4E4qwGlBqJCxclBsikRqriCf9H277tXNvHi5
-         35QHlBHe+SBvbWDdRMsPbHvFhnkfmzsajDvPN4sk=
-Date:   Thu, 9 Jun 2022 18:19:17 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Bill Wendling <morbo@google.com>
-Cc:     Jan Engelhardt <jengelh@inai.de>,
-        Bill Wendling <isanbard@gmail.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Jan Kara <jack@suse.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        Daniel Kiper <daniel.kiper@oracle.com>,
-        linux-edac@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        linux-mm@kvack.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, Networking <netdev@vger.kernel.org>,
-        alsa-devel@alsa-project.org,
-        clang-built-linux <llvm@lists.linux.dev>
-Subject: Re: [PATCH 00/12] Clang -Wformat warning fixes
-Message-Id: <20220609181917.32e0169b3d33e42b8eb8dcac@linux-foundation.org>
-In-Reply-To: <CAGG=3QU0XJhQKJXLMayOkQSiF2yjBi2p2TEZ9KNTzU5mmye-gg@mail.gmail.com>
-References: <20220609221702.347522-1-morbo@google.com>
-        <20220609152527.4ad7862d4126e276e6f76315@linux-foundation.org>
-        <CAGG=3QXDt9AeCQOAp1311POFRSByJru4=Q=oFiQn3u2iZYk2_w@mail.gmail.com>
-        <nssn2ps-6n86-nqq6-9039-72847760nnq@vanv.qr>
-        <CAGG=3QU0XJhQKJXLMayOkQSiF2yjBi2p2TEZ9KNTzU5mmye-gg@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229934AbiFJCQ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 22:16:26 -0400
+Received: from qq.com (smtpbg465.qq.com [59.36.132.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76162CD3;
+        Thu,  9 Jun 2022 19:16:22 -0700 (PDT)
+X-QQ-mid: bizesmtp74t1654827294t2xerqow
+Received: from jianhao-PC.epfl.ch ( [128.178.122.135])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Fri, 10 Jun 2022 10:14:49 +0800 (CST)
+X-QQ-SSF: 01400000000000D0K000000A0000000
+X-QQ-FEAT: 0Eq+cbWb7RweksxJbjIcBPlRoOn9zEogU0m1O4YgteBGLYlCdBB51N97DA011
+        YtCajeqiDMvwTC8UtxMVEv8n5kGYejWx+h8FKN975awu0jX3HYMMiopGXxz0NbDcBg+o3VZ
+        dpkyvE9RwUy5KT1vLOnu5O0uPqE810kc4G1HUmukpjIs278MGWDtWZI4YWlWxykVRtTMbzF
+        zPFGbeO/sNTvzejZ+K/DCfYlSP5Lxc2E1j2chSSZ6OX5fB1TThCE+7hMWytpdKm0Opw62oq
+        S4Ffc8U+ONPcxkESA36VBk8oISXNUxdAeII9UraqpjUHEEAAqzkLEb247CLPRrLWrS2KTuz
+        YA3zf9uhw9jpQ2AURw=
+X-QQ-GoodBg: 1
+From:   Jianhao Xu <jianhao_xu@smail.nju.edu.cn>
+To:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jianhao Xu <jianhao_xu@smail.nju.edu.cn>
+Subject: [PATCH] net: sched: fix potential null pointer deref
+Date:   Fri, 10 Jun 2022 04:14:45 +0200
+Message-Id: <20220610021445.2441579-1-jianhao_xu@smail.nju.edu.cn>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:smail.nju.edu.cn:qybgforeign:qybgforeign4
+X-QQ-Bgrelay: 1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 9 Jun 2022 16:16:16 -0700 Bill Wendling <morbo@google.com> wrote:
+mq_queue_get() may return NULL, a check is needed to avoid using
+the NULL pointer.
 
-> On Thu, Jun 9, 2022 at 4:03 PM Jan Engelhardt <jengelh@inai.de> wrote:
-> > On Friday 2022-06-10 00:49, Bill Wendling wrote:
-> > >On Thu, Jun 9, 2022 at 3:25 PM Andrew Morton <akpm@linux-foundation.org> wrote:
-> > >> On Thu,  9 Jun 2022 22:16:19 +0000 Bill Wendling <morbo@google.com> wrote:
-> > >>
-> > >> > This patch set fixes some clang warnings when -Wformat is enabled.
-> > >>
-> > >> tldr:
-> > >>
-> > >> -       printk(msg);
-> > >> +       printk("%s", msg);
-> > >>
-> > >> Otherwise these changes are a
-> > >> useless consumer of runtime resources.
-> > >
-> > >Calling a "printf" style function is already insanely expensive.
-> > >[...]
-> > >The "printk" and similar functions all have the "__printf" attribute.
-> > >I don't know of a modification to that attribute which can turn off
-> > >this type of check.
-> >
-> > Perhaps you can split vprintk_store in the middle (after the call to
-> > vsnprintf), and offer the second half as a function of its own (e.g.
-> > "puts"). Then the tldr could be
-> >
-> > - printk(msg);
-> > + puts(msg);
-> 
-> That might be a nice compromise. Andrew, what do you think?
-> 
+Signed-off-by: Jianhao Xu <jianhao_xu@smail.nju.edu.cn>
+---
+ net/sched/sch_mq.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Sure.  It's surprising that we don't already have a puts().
+diff --git a/net/sched/sch_mq.c b/net/sched/sch_mq.c
+index 83d2e54bf303..9aca4ca82947 100644
+--- a/net/sched/sch_mq.c
++++ b/net/sched/sch_mq.c
+@@ -201,6 +201,8 @@ static int mq_graft(struct Qdisc *sch, unsigned long cl, struct Qdisc *new,
+ static struct Qdisc *mq_leaf(struct Qdisc *sch, unsigned long cl)
+ {
+ 	struct netdev_queue *dev_queue = mq_queue_get(sch, cl);
++	if (!dev_queue)
++		return NULL;
+ 
+ 	return dev_queue->qdisc_sleeping;
+ }
+@@ -218,6 +220,8 @@ static int mq_dump_class(struct Qdisc *sch, unsigned long cl,
+ 			 struct sk_buff *skb, struct tcmsg *tcm)
+ {
+ 	struct netdev_queue *dev_queue = mq_queue_get(sch, cl);
++	if (!dev_queue)
++		return -1;
+ 
+ 	tcm->tcm_parent = TC_H_ROOT;
+ 	tcm->tcm_handle |= TC_H_MIN(cl);
+@@ -229,6 +233,8 @@ static int mq_dump_class_stats(struct Qdisc *sch, unsigned long cl,
+ 			       struct gnet_dump *d)
+ {
+ 	struct netdev_queue *dev_queue = mq_queue_get(sch, cl);
++	if (!dev_queue)
++		return -1;
+ 
+ 	sch = dev_queue->qdisc_sleeping;
+ 	if (gnet_stats_copy_basic(d, sch->cpu_bstats, &sch->bstats, true) < 0 ||
+-- 
+2.25.1
+
+
+
