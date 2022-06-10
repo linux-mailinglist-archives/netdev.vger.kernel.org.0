@@ -2,224 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2382B546831
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 16:21:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C069E546837
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 16:23:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234503AbiFJOVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 10:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52474 "EHLO
+        id S1345695AbiFJOXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 10:23:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236440AbiFJOVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 10:21:36 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77AE439E4B1
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 07:21:35 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id n18so22901701plg.5
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 07:21:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=Ip37p4JXqfaw+X19khYjnbd6SvmM4oe+pBMUPaWaZZg=;
-        b=RYrTWkjZk7hQFVGtb8L0briTdtwXCWt2Fiv6OlrCGnrZmuXbtZkgWg+ozQwbPIUXeD
-         zziBN9PxN24PU6Pwmk5/e/KeDSZ0wbTD4cH0d1+h/kiMjBQ9FQLpagHAKvSD06iU25qw
-         1XqZOT+bp2hHAfVCDw6v9XzxONM6DX3YHQoakhUMF/Dob2ZC9BTFWhGEAx3ALL9y9g9x
-         4Cfx6i+0a/f/IHhpKtMjUe0YT+odLu3tY95MPq4f5Few9DwWbgttcsZVhsmNSmRvwd5J
-         W627Af3xIVr7PWbhM5d6+IpZbrtPqnmrUNlQD8jkxign5W5/lkshUjvCY2GCDNzQNzRj
-         tcpw==
+        with ESMTP id S1349337AbiFJOXb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 10:23:31 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA09170F0A
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 07:23:21 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id a2-20020a923302000000b002d1ad5053feso19697404ilf.17
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 07:23:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Ip37p4JXqfaw+X19khYjnbd6SvmM4oe+pBMUPaWaZZg=;
-        b=Mk6pDQAU2eYVNzJywKldMW1Gcw++fszJ22bAon/Z0sKByE/t6kcgL0NDviwuyMRvFq
-         ms9SA6TM5Mgg70GdMW+HOZrPTpY3Ecu4eCDqmfEeGqaWlPFUcprMckgZH/vnIxrqM8ZT
-         3qKoOb3fvvoP2J2EPW7lsBgixBhi9QvEr5icqyplPqLjm8iM8UehEwfde46XeQOSBOHi
-         AMynZ0xwWK8n2bvt9iWkhCD3pQ2glz685TJ41WRBhjpVKdOG+SM7H5bzEeQRiwODLi7d
-         ISR9p91NWPuxs4v3NONvI7t6SSenD4fccoFVNN3592WGXMLcbrnPNEsUHuZu3fsfIgrS
-         g4/A==
-X-Gm-Message-State: AOAM533BK3nkgB/jXaY6VKoTWInyGA7y0rjFdtLRGvHYyk7YAMlDlpNB
-        MfhDTgZZXB/pyYCTAUOcnmE=
-X-Google-Smtp-Source: ABdhPJw5/udFV2EfdbLiB1Ouf9lPfd9YowuZNUM8GPk2wo6BXjKkB2zJxq2YGVs9eHowuokHTxb23g==
-X-Received: by 2002:a17:902:ce8f:b0:163:cc85:ba89 with SMTP id f15-20020a170902ce8f00b00163cc85ba89mr44012004plg.79.1654870894954;
-        Fri, 10 Jun 2022 07:21:34 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id u30-20020a63b55e000000b003fc136f9a7dsm7208439pgo.38.2022.06.10.07.21.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Jun 2022 07:21:34 -0700 (PDT)
-Message-ID: <f0f30591-f503-ae7c-9293-35cca4ceec84@gmail.com>
-Date:   Fri, 10 Jun 2022 07:21:33 -0700
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=XjrtYqNiT5vEa6+Vuf9aZLxSiV1HsY2+vhx3VyfeILM=;
+        b=SPZLYvwv9LbYnihT8DC3vbnnkoihozfpTZnzWrWZ3/fH+KYHXvYthiWr1wecORSmXd
+         7Yvo8r2wUFZvIXmD1p2JvSR/pvLt7/XGeUJj+47h9hZVxsTOOae7ZtTIRfCwxvJTg23k
+         3rdlg1yANtLf2Tq6OSe0Ny1qLtSM5etjLpIJZmK2JQ+X7kyD4EFZqhKk36SQE1mzDhrD
+         lOAsFi6qhLJLFe5MdFOHPgsIxr/zi4HvNjzSs2BIa2r1qY8sjxbGfAsyr29CknRHpFsD
+         Y+0wUxegUjAIoANhmRdcJ7ITyAouDDMB7VbLwcK8+kagFAyGJqqJi/MDfK6xj/NbLyyS
+         +aXw==
+X-Gm-Message-State: AOAM532/v38RCanKAMki2Vsw071L69g3+XfzVPW1AfGrTafTuIwL+xVQ
+        PCI1mjXL2CG2kEc/G3ykdbZ2qnVAkg0PUi9bdtVLqbD4lUhk
+X-Google-Smtp-Source: ABdhPJxdU7ph+1O6uNJ43i/VXnOf3VJRWymxSsZwPNYAarUi5cziesFNY651vf+6wPlOBYjUuUfeeiPPjH2vVsVR8oHmyxQcKU96
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: TCP socket send return EAGAIN unexpectedly when sending small
- fragments
-Content-Language: en-US
-To:     Ronny Meeus <ronny.meeus@gmail.com>,
-        netdev <netdev@vger.kernel.org>
-References: <CAMJ=MEcPzkBLynL7tpjdv0TCRA=Cmy13e7wmFXrr-+dOVcshKA@mail.gmail.com>
-From:   Eric Dumazet <erdnetdev@gmail.com>
-In-Reply-To: <CAMJ=MEcPzkBLynL7tpjdv0TCRA=Cmy13e7wmFXrr-+dOVcshKA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6e02:12ce:b0:2d3:de67:9f96 with SMTP id
+ i14-20020a056e0212ce00b002d3de679f96mr26904551ilm.261.1654871001228; Fri, 10
+ Jun 2022 07:23:21 -0700 (PDT)
+Date:   Fri, 10 Jun 2022 07:23:21 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000002d6bc305e118ae24@google.com>
+Subject: [syzbot] BUG: sleeping function called from invalid context in sk_psock_stop
+From:   syzbot <syzbot+140186ceba0c496183bc@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
+        jakub@cloudflare.com, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, wangyufen@huawei.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 6/10/22 05:48, Ronny Meeus wrote:
-> Hello
->
-> I have a small test application written in C that creates a local (in
-> process) TCP channel via loopback.
-> (kernel version is 3.10.0 but the same issue is also seen for example
-> on a 4.9 kernel).
->
-> On the client side, an SO_SNDBUF of 5Kb is configured (which is
-> doubled by the kernel) while on the server side the default size is
-> used.
-> Both client and server side are running in non-blocking mode.
->
-> The server side is not reading its socket so all data is simply queued
-> in the socket's receive buffer.
-> On the client side, the client is writing data into the socket in a
-> loop until the write returns an error (EAGAIN in this case).
->
-> Depending on the size of data I send on this socket, I get the EAGAIN
-> on the client side already after a small number of messages.
-> For example when sending 106 byte messages, I see the first EAGAIN
-> after 21 write calls:
-> # ./tcp_client_server 106
-> using data size 106
-> client send buffer size 5000
-> client socket snd_buf: 10000
-> ERRNO = 11 count=21
->
-> The same is observed for all sizes smaller than or equal to 107 bytes.
->
-> When getting the socket stats using ss I see all data (2226b) pending
-> in the socket on the server side:
-> # ss -tmi  | grep -i X11 -A 1
-> ESTAB      0      0      127.0.0.1:59792                127.0.0.1:x11
-> skmem:(r0,rb1061296,t0,tb10000,f0,w0,o0,bl0,d0) cubic wscale:7,7
-> rto:202 rtt:1.276/2.504 mss:21888 rcvmss:536 advmss:65483 cwnd:10
-> bytes_acked:2227 segs_out:24 segs_in:18 send 1372.3Mbps lastsnd:3883
-> lastrcv:771546999 lastack:3883 pacing_rate 2744.3Mbps retrans:0/1
-> rcv_space:43690
-> --
-> ESTAB      2226   0      127.0.0.1:x11
-> 127.0.0.1:59792
-> skmem:(r4608,rb1061488,t0,tb2626560,f3584,w0,o0,bl0,d1) cubic
-> wscale:7,7 rto:200 ato:40 mss:21888 rcvmss:536 advmss:65483 cwnd:10
-> bytes_received:2226 segs_out:17 segs_in:24 lastsnd:3893 lastrcv:3893
-> lastack:3883 rcv_space:43690
->
->
-> When sending larger messages, the EAGAIN only is seen after 2116 writes.
-> # ./tcp_client_server 108
-> using data size 108
-> client send buffer size 5000
-> client socket snd_buf: 10000
-> ERRNO = 11 count=2116
->
-> Again, the ss shows all data being present on the server side (108 *
-> 2116 = 228528)
-> ESTAB      228528 0      127.0.0.1:x11
-> 127.0.0.1:59830
-> skmem:(r976896,rb1061488,t0,tb2626560,f2048,w0,o0,bl0,d1) cubic
-> wscale:7,7 rto:200 ato:80 mss:21888 rcvmss:536 advmss:65483 cwnd:10
-> bytes_received:228528 segs_out:436 segs_in:2119 lastsnd:3615
-> lastrcv:3606 lastack:3596 rcv_rtt:1 rcv_space:43690
-> --
-> ESTAB      0      0      127.0.0.1:59830                127.0.0.1:x11
-> skmem:(r0,rb1061296,t0,tb10000,f0,w0,o0,bl0,d0) cubic wscale:7,7
-> rto:206 rtt:5.016/9.996 mss:21888 rcvmss:536 advmss:65483 cwnd:10
-> bytes_acked:228529 segs_out:2119 segs_in:437 send 349.1Mbps
-> lastsnd:3596 lastrcv:771704718 lastack:3566 pacing_rate 698.1Mbps
-> retrans:0/1 rcv_space:43690
->
->
->
-> When I enlarge the SNDBUF on the client side to for example 10K, I see
-> that more messages can be sent:
-> # ./tcp_client_server 106 10000
-> using data size 106
-> client send buffer size 10000
-> client socket snd_buf: 20000
-> ERRNO = 11 count=1291
->
-> I also captured the packets on the interface using wireshark and it
-> looks like the error is returned after the TCP layer has done a
-> retransmit (after 10ms) of the last packet sent on the connection.
->
-> 10:12:38.186451 IP localhost.48470 > localhost.etlservicemgr: Flags
-> [P.], seq 1165:1265, ack 165, win 342, options [nop,nop,TS val
-> 593860562 ecr 593860562], length 100
-> 10:12:38.186461 IP localhost.etlservicemgr > localhost.48470: Flags
-> [.], ack 1265, win 342, options [nop,nop,TS val 593860562 ecr
-> 593860562], length 0
-> 10:12:38.186478 IP localhost.48470 > localhost.etlservicemgr: Flags
-> [P.], seq 1265:1365, ack 165, win 342, options [nop,nop,TS val
-> 593860562 ecr 593860562], length 100
-> 10:12:38.186488 IP localhost.etlservicemgr > localhost.48470: Flags
-> [.], ack 1365, win 342, options [nop,nop,TS val 593860562 ecr
-> 593860562], length 0
-> 10:12:38.186505 IP localhost.48470 > localhost.etlservicemgr: Flags
-> [P.], seq 1365:1465, ack 165, win 342, options [nop,nop,TS val
-> 593860562 ecr 593860562], length 100
-> 10:12:38.186516 IP localhost.etlservicemgr > localhost.48470: Flags
-> [.], ack 1465, win 342, options [nop,nop,TS val 593860562 ecr
-> 593860562], length 0
-> 10:12:38.186533 IP localhost.48470 > localhost.etlservicemgr: Flags
-> [P.], seq 1465:1565, ack 165, win 342, options [nop,nop,TS val
-> 593860562 ecr 593860562], length 100
-> 10:12:38.186543 IP localhost.etlservicemgr > localhost.48470: Flags
-> [.], ack 1565, win 342, options [nop,nop,TS val 593860562 ecr
-> 593860562], length 0
-> 10:12:38.186560 IP localhost.48470 > localhost.etlservicemgr: Flags
-> [P.], seq 1565:1665, ack 165, win 342, options [nop,nop,TS val
-> 593860562 ecr 593860562], length 100
-> 10:12:38.186578 IP localhost.48470 > localhost.etlservicemgr: Flags
-> [P.], seq 1665:1765, ack 165, win 342, options [nop,nop,TS val
-> 593860562 ecr 593860562], length 100
-> 10:12:38.186595 IP localhost.48470 > localhost.etlservicemgr: Flags
-> [P.], seq 1765:1865, ack 165, win 342, options [nop,nop,TS val
-> 593860562 ecr 593860562], length 100
-> 10:12:38.186615 IP localhost.48470 > localhost.etlservicemgr: Flags
-> [P.], seq 1865:1965, ack 165, win 342, options [nop,nop,TS val
-> 593860562 ecr 593860562], length 100
-> 10:12:38.186632 IP localhost.48470 > localhost.etlservicemgr: Flags
-> [P.], seq 1965:2065, ack 165, win 342, options [nop,nop,TS val
-> 593860562 ecr 593860562], length 100
-> 10:12:38.196064 IP localhost.48470 > localhost.etlservicemgr: Flags
-> [P.], seq 1965:2065, ack 165, win 342, options [nop,nop,TS val
-> 593860572 ecr 593860562], length 100
-> 10:12:38.196128 IP localhost.etlservicemgr > localhost.48470: Flags
-> [.], ack 2065, win 342, options [nop,nop,TS val 593860572 ecr
-> 593860562,nop,nop,sack 1 {1965:2065}], length 0
->
-> Now my question is: how is it possible that I can only send 21
-> messages of 106 bytes before I see the EAGAIN while when sending
-> larger messages I can send 2K+ messages.
+syzbot found the following issue on:
+
+HEAD commit:    ff539ac73ea5 Add linux-next specific files for 20220609
+git tree:       linux-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=176c121bf00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a5002042f00a8bce
+dashboard link: https://syzkaller.appspot.com/bug?extid=140186ceba0c496183bc
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13083353f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=173e67f0080000
+
+The issue was bisected to:
+
+commit d8616ee2affcff37c5d315310da557a694a3303d
+Author: Wang Yufen <wangyufen@huawei.com>
+Date:   Tue May 24 07:53:11 2022 +0000
+
+    bpf, sockmap: Fix sk->sk_forward_alloc warn_on in sk_stream_kill_queues
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1556d7cff00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=1756d7cff00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1356d7cff00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+140186ceba0c496183bc@syzkaller.appspotmail.com
+Fixes: d8616ee2affc ("bpf, sockmap: Fix sk->sk_forward_alloc warn_on in sk_stream_kill_queues")
+
+BUG: sleeping function called from invalid context at kernel/workqueue.c:3010
+in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 3612, name: syz-executor475
+preempt_count: 201, expected: 0
+RCU nest depth: 0, expected: 0
+3 locks held by syz-executor475/3612:
+ #0: ffff888072eb9410 (&sb->s_type->i_mutex_key#10){+.+.}-{3:3}, at: inode_lock include/linux/fs.h:740 [inline]
+ #0: ffff888072eb9410 (&sb->s_type->i_mutex_key#10){+.+.}-{3:3}, at: __sock_release+0x86/0x280 net/socket.c:649
+ #1: ffff888027259ab0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1691 [inline]
+ #1: ffff888027259ab0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: tcp_close+0x1e/0xc0 net/ipv4/tcp.c:2908
+ #2: ffff888027259a30 (slock-AF_INET6){+...}-{2:2}, at: spin_lock include/linux/spinlock.h:360 [inline]
+ #2: ffff888027259a30 (slock-AF_INET6){+...}-{2:2}, at: __tcp_close+0x722/0x12b0 net/ipv4/tcp.c:2830
+Preemption disabled at:
+[<ffffffff87ddddca>] local_bh_disable include/linux/bottom_half.h:20 [inline]
+[<ffffffff87ddddca>] __tcp_close+0x71a/0x12b0 net/ipv4/tcp.c:2829
+CPU: 1 PID: 3612 Comm: syz-executor475 Not tainted 5.19.0-rc1-next-20220609-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ __might_resched.cold+0x222/0x26b kernel/sched/core.c:9823
+ start_flush_work kernel/workqueue.c:3010 [inline]
+ __flush_work+0x109/0xb10 kernel/workqueue.c:3074
+ __cancel_work_timer+0x3f9/0x570 kernel/workqueue.c:3162
+ sk_psock_stop+0x4cb/0x630 net/core/skmsg.c:802
+ sock_map_destroy+0x333/0x760 net/core/sock_map.c:1581
+ inet_csk_destroy_sock+0x196/0x440 net/ipv4/inet_connection_sock.c:1130
+ __tcp_close+0xd5b/0x12b0 net/ipv4/tcp.c:2897
+ tcp_close+0x29/0xc0 net/ipv4/tcp.c:2909
+ sock_map_close+0x3b9/0x780 net/core/sock_map.c:1607
+ inet_release+0x12e/0x280 net/ipv4/af_inet.c:428
+ inet6_release+0x4c/0x70 net/ipv6/af_inet6.c:481
+ __sock_release+0xcd/0x280 net/socket.c:650
+ sock_close+0x18/0x20 net/socket.c:1365
+ __fput+0x277/0x9d0 fs/file_table.c:317
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:177
+ ptrace_notify+0x114/0x140 kernel/signal.c:2353
+ ptrace_report_syscall include/linux/ptrace.h:420 [inline]
+ ptrace_report_syscall_exit include/linux/ptrace.h:482 [inline]
+ syscall_exit_work kernel/entry/common.c:249 [inline]
+ syscall_exit_to_user_mode_prepare+0xdb/0x230 kernel/entry/common.c:276
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:281 [inline]
+ syscall_exit_to_user_mode+0x9/0x50 kernel/entry/common.c:294
+ do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7fe7b3b8b6a3
+Code: c7 c2 c0 ff ff ff f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb ba 0f 1f 00 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 45 c3 0f 1f 40 00 48 83 ec 18 89 7c 24 0c e8
+RSP: 002b:00007ffce5903258 EFLAGS: 00000246 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 0000000000000005 RCX: 00007fe7b3b8b6a3
+RDX: 0000000000000020 RSI: 0000000020000240 RDI: 0000000000000004
+RBP: 0000000000000000 R08: 00007fe7b3c36e40 R09: 00007fe7b3c36e40
+R10: 00007fe7b3c36e40 R11: 0000000000000246 R12: 00007ffce5903290
+R13: 00007ffce5903280 R14: 00007ffce5903270 R15: 0000000000000000
+ </TASK>
 
 
-This is because kernel tracks kernel memory usage.
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Small packets incur more overhead.
-
-The doubling of SO_SNDBUF user value, is an heuristic based on the fact 
-the kernel
-
-uses a 2x overhead estimation,
-
-while effective overhead can vary from ~1.001x to ~768x depending on 
-number of bytes per skb.
-
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
