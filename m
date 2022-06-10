@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D845545AC2
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 05:45:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA744545ABD
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 05:45:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346212AbiFJDpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 23:45:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43786 "EHLO
+        id S1346198AbiFJDpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 23:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345994AbiFJDo5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 23:44:57 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F3E380839;
-        Thu,  9 Jun 2022 20:44:56 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id i15so5045646plr.1;
-        Thu, 09 Jun 2022 20:44:56 -0700 (PDT)
+        with ESMTP id S1346216AbiFJDpC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 23:45:02 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C2B3835AB;
+        Thu,  9 Jun 2022 20:45:00 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id o6-20020a17090a0a0600b001e2c6566046so1129693pjo.0;
+        Thu, 09 Jun 2022 20:45:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=nLTpWfEYARxnaBZe2tmsRz6wbhK6fZ6IiWkByiKDceA=;
-        b=WH6UUBMrnFxq5pWLa7MsNH2J14XF29eCtBTrTaQvSsdnO+srquKuC0LowcntUG7rPF
-         mj37pD3J6Hh1PBOI4ltrMtCsqM9ngRCw1Fb6Ry+R6x8AlObIIYqX5zhNZPvfp+fP5Jx2
-         50Z74KjShS5bG9A16SWVSghZ7i/sWFYWOPatcxqIiuAIxVRPiAF0bW+7dVot0gwlP3cw
-         Zl3CceAZh8hC+qtjtEH8r71LZwauLM8GsJUqd19IXpo2JunP4tNAV2g0rLUmt/xlYPuj
-         LBjF/31Z2Qw4M2FaWU8w4VOD2lVfcqSnDNriebh3lfWP7qd14qkNL7UQAcNF7JCs5UaF
-         VULA==
+        bh=QJe7PVbXz86Kb4R4oqK5wg/U0E77BJ26lLBZaQP/WYU=;
+        b=FifS37iwKw0BYE4KXEq1ksVTy8m0AGIKwe5a3eqfgb6SP6J5YiXHUmrAq/JVQlo8+J
+         NzBwz3XzNO4BJJsO+bpH6oN4ez2qrB0bvvTW1vteXIisgtrcsJU7lZg3odgRI8ynR4er
+         r4MlDdHnDrwVVAHu4UU6/9pQRcE5iA6sWNBNCWFZDLfhbK3Ui2JzgVbEB4gYOOf9QdJp
+         i2Onts3mzVsVFWNDoIKkYAzBKixChoElVwNsgpNzXuTzzgLpWuT+i7Ni0cKixT8Op3u6
+         w/8KmNoJso2KXn6Zv1/LNUP+SBwcIq4KzJNbMRvasjvyGHU5CTxAH0U6eY4bAk+PopEZ
+         r3ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nLTpWfEYARxnaBZe2tmsRz6wbhK6fZ6IiWkByiKDceA=;
-        b=7cA5BCdf3i+GUgWKHmzr9SBpJqzJ857ErkAOJ/kOEZ3EUbuTjgUKVdtscxlGrU5wfU
-         X6L/HVW1iWZC5XyW/Na+A49dHrRcMX2OPdMeWT+ruHeUR+GKqPG0x/mo8APRKQkn73HX
-         m9/6m2i4RonyVzmL9iJSIlBboSyB2fjhRzQZf9oF+QMxvZDUta5PauW3ql206gzPj809
-         d9sG/UyFPoShTW9jZNVAmQKGT8bq2xCSS8/G0LyJwJ6ZK0/bAE8cv2Ezz3Dl59QE+pdl
-         t0QsIrNZGIlg8SfYAyrF/5qC6hh4fAljm6tWPIB5r64bcc97suUD9kTGo9Tn59oKhoP3
-         Uxtw==
-X-Gm-Message-State: AOAM531Ep7/fwMS7CH6zn7mzNR9qCiksxWeRUSZCo0w1OR7qlgHYchne
-        pXynLAkl0TUiQ6dJHgxTFYg=
-X-Google-Smtp-Source: ABdhPJxFOjQUQMQvh+McDuc5ckf06fMo+WdtXUr+NnJhN1UV7fUMPe903WR/5MNopMhzlEg6cK4dJg==
-X-Received: by 2002:a17:902:e0d1:b0:168:bedf:7146 with SMTP id e17-20020a170902e0d100b00168bedf7146mr200378pla.107.1654832696233;
-        Thu, 09 Jun 2022 20:44:56 -0700 (PDT)
+        bh=QJe7PVbXz86Kb4R4oqK5wg/U0E77BJ26lLBZaQP/WYU=;
+        b=PuMsc/R9O0Oul+ZiSEM1bwWo0KKqlrMF9B2BKxWpClgt+kopTaX9TtLzM8Y3Ky9RI2
+         7Y7FPZkX1vk5rYyASg47rJNyo8b/FhLHuVnOwCaxQt4idgxovgSr7nxMdyDDLuu9XOmy
+         NzNLWGynQqkmXKymIpl17Tl7GWHItL5KlfVFNAPCOvbB8jDnjZOi0bc9CPpz/EJ5P9os
+         mxdpmcAzfuKVqoQbcBc4tjJTxw6lnDK2RVEhh/mjnl6s4jbqc0CUk4V4X58nAMU6UGx9
+         d5rDnqZI/hB6jOjfihTXnRHgIRP02qW1jsW4m3tPwqIWYk4ve0mk1cBuPbP+XH+JtBU7
+         MgOg==
+X-Gm-Message-State: AOAM530ogPLS5/BaBL3X0bpf652Sf5nTAfMS9r8lOT5WPhr2AetA09jK
+        irAbqD4uJmIEuErg5hUC3ZI=
+X-Google-Smtp-Source: ABdhPJz1hoVe76gMHZ11Cdff4NKjceUwtcRuooFagV6mePqvzotGsEvysuDDhiKiHHiDdxnERpeYAQ==
+X-Received: by 2002:a17:902:f650:b0:15f:3a10:a020 with SMTP id m16-20020a170902f65000b0015f3a10a020mr42377378plg.61.1654832700353;
+        Thu, 09 Jun 2022 20:45:00 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.27])
-        by smtp.gmail.com with ESMTPSA id u30-20020a63b55e000000b003fc136f9a7dsm5908368pgo.38.2022.06.09.20.44.52
+        by smtp.gmail.com with ESMTPSA id u30-20020a63b55e000000b003fc136f9a7dsm5908368pgo.38.2022.06.09.20.44.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 20:44:55 -0700 (PDT)
+        Thu, 09 Jun 2022 20:44:59 -0700 (PDT)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     edumazet@google.com
@@ -57,9 +57,9 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
         dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, Jiang Biao <benbjiang@tencent.com>,
         Hao Peng <flyingpeng@tencent.com>
-Subject: [PATCH net-next v3 3/9] net: inet: add skb drop reason to inet_csk_destroy_sock()
-Date:   Fri, 10 Jun 2022 11:41:58 +0800
-Message-Id: <20220610034204.67901-4-imagedong@tencent.com>
+Subject: [PATCH net-next v3 4/9] net: tcp: make tcp_rcv_synsent_state_process() return drop reasons
+Date:   Fri, 10 Jun 2022 11:41:59 +0800
+Message-Id: <20220610034204.67901-5-imagedong@tencent.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220610034204.67901-1-imagedong@tencent.com>
 References: <20220610034204.67901-1-imagedong@tencent.com>
@@ -77,47 +77,75 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-skb dropping in inet_csk_destroy_sock() seems to be a common case. Add
-the new drop reason 'SKB_DROP_REASON_SOCKET_DESTROIED' and apply it to
-inet_csk_destroy_sock() to stop confusing users with 'NOT_SPECIFIED'.
+The return value of tcp_rcv_synsent_state_process() can be -1, 0 or 1:
+
+- -1: free skb silently
+- 0: success and skb is already freed
+- 1: drop packet and send a RST
+
+Therefore, we can make it return skb drop reasons instead of '1' on
+'reset_and_undo' path, which will not impact the caller.
+
+The new reason 'TCP_PAWSACTIVEREJECTED' is added, which is corresponding
+to LINUX_MIB_PAWSACTIVEREJECTED.
 
 Reviewed-by: Jiang Biao <benbjiang@tencent.com>
 Reviewed-by: Hao Peng <flyingpeng@tencent.com>
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- include/net/dropreason.h        | 5 +++++
- net/ipv4/inet_connection_sock.c | 2 +-
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ include/net/dropreason.h | 6 ++++++
+ net/ipv4/tcp_input.c     | 7 ++++++-
+ 2 files changed, 12 insertions(+), 1 deletion(-)
 
 diff --git a/include/net/dropreason.h b/include/net/dropreason.h
-index fae9b40e54fa..3c6f1e299c35 100644
+index 3c6f1e299c35..c60913aba0e9 100644
 --- a/include/net/dropreason.h
 +++ b/include/net/dropreason.h
-@@ -231,6 +231,11 @@ enum skb_drop_reason {
- 	 * MTU)
+@@ -236,6 +236,12 @@ enum skb_drop_reason {
+ 	 * skb in its receive or send queue are all dropped
  	 */
- 	SKB_DROP_REASON_PKT_TOO_BIG,
+ 	SKB_DROP_REASON_SOCKET_DESTROYED,
 +	/**
-+	 * @SKB_DROP_REASON_SOCKET_DESTROYED: socket is destroyed and the
-+	 * skb in its receive or send queue are all dropped
++	 * @SKB_DROP_REASON_TCP_PAWSACTIVEREJECTED: PAWS check failed for
++	 * active TCP connection, corresponding to
++	 * LINUX_MIB_PAWSACTIVEREJECTED
 +	 */
-+	SKB_DROP_REASON_SOCKET_DESTROYED,
++	SKB_DROP_REASON_TCP_PAWSACTIVEREJECTED,
  	/**
  	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
  	 * used as a real 'reason'
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index c0b7e6c21360..1812060f24cb 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -1129,7 +1129,7 @@ void inet_csk_destroy_sock(struct sock *sk)
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 2e2a9ece9af2..9254f14def43 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6177,6 +6177,10 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+ 				inet_csk_reset_xmit_timer(sk,
+ 						ICSK_TIME_RETRANS,
+ 						TCP_TIMEOUT_MIN, TCP_RTO_MAX);
++			if (after(TCP_SKB_CB(skb)->ack_seq, tp->snd_nxt))
++				SKB_DR_SET(reason, TCP_ACK_UNSENT_DATA);
++			else
++				SKB_DR_SET(reason, TCP_TOO_OLD_ACK);
+ 			goto reset_and_undo;
+ 		}
  
- 	sk->sk_prot->destroy(sk);
+@@ -6185,6 +6189,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+ 			     tcp_time_stamp(tp))) {
+ 			NET_INC_STATS(sock_net(sk),
+ 					LINUX_MIB_PAWSACTIVEREJECTED);
++			SKB_DR_SET(reason, TCP_PAWSACTIVEREJECTED);
+ 			goto reset_and_undo;
+ 		}
  
--	sk_stream_kill_queues(sk);
-+	sk_stream_kill_queues_reason(sk, SKB_DROP_REASON_SOCKET_DESTROYED);
+@@ -6378,7 +6383,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+ reset_and_undo:
+ 	tcp_clear_options(&tp->rx_opt);
+ 	tp->rx_opt.mss_clamp = saved_clamp;
+-	return 1;
++	return reason;
+ }
  
- 	xfrm_sk_free_policy(sk);
- 
+ static void tcp_rcv_synrecv_state_fastopen(struct sock *sk)
 -- 
 2.36.1
 
