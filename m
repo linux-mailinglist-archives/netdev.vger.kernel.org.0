@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9336C545BF5
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 07:57:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EED5545BFA
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 07:59:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345917AbiFJF5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 01:57:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39422 "EHLO
+        id S1346349AbiFJF7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 01:59:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239380AbiFJF5A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 01:57:00 -0400
+        with ESMTP id S1346338AbiFJF7j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 01:59:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65883968E;
-        Thu,  9 Jun 2022 22:56:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E0D3AA42
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 22:59:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53A9C61E74;
-        Fri, 10 Jun 2022 05:56:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 628A2C34114;
-        Fri, 10 Jun 2022 05:56:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E7A7361E97
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 05:59:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04FF6C34114;
+        Fri, 10 Jun 2022 05:59:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654840618;
-        bh=tqa2qEghji7NeZCEwmQNGRGe3Peh47Szj8Wj0xWJipk=;
+        s=k20201202; t=1654840777;
+        bh=YbfypFmuQC43lxzwogq0gMu+VD4tHkQZ1HN6nIGwKSE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SA4yX79lC4gBdjrAJmZHSkoJIB6XmnYR9Dkv3xys+wkMOaqA3IcKBiN31i1Va8/QI
-         TNQJLAbLyJJl53jh8SU+ScDaJU8XZqikRq+2eVt2AvnvCUjIDhiNurQyZozib7oQo2
-         aGgfy0gdQb6tH/qGTzcXkz/MCMUS8woh/6U2uWvldKMGyL8jgIQCHYDGLhujXaLaTn
-         mUygU67M7OMfK9y2Eq+1csaf4HYwJrp+/EVuW9mnXATtPaHPAhnahTNVUFvob+/UbK
-         edv+auyUSAYYA7V6tXXK6gpBWq/chCkbGb62jDfPuVvAuHfmilS+PGxOnixl/Dv9hO
-         NBkn8KJOHsWOw==
-Date:   Thu, 9 Jun 2022 22:56:57 -0700
+        b=dGjJhV9hDJ4aXc9i5SuX6yhdIsHcmUbFrm+evjsLkgZp4UcK7EV800PYqUxdTJhGs
+         jwi0je8NiTe1BjSd6+//fKCdIDFfoMypPPFBLs/wXl/HsSOixAPM5HibV3Ewl8DcEp
+         x64UYhirXJ/gYGRk8gVA5hdjEhkVAsTTDT99IIqmSfIk9rj0DoE5tFpbl7p9W/Xmtk
+         Evc0voIl9GG6rlKS57ceUDqVVNh0AuGmFv2oUV03eUuaqe3+kJIBEvRm0CtZauZwtk
+         mm9VSqlisJ69lQT+abTc2jC/pwf1GpDBb7shjIAsZ0c9XxAJTQFV3Rzh4V1o4f2Ojb
+         26ZqPyiroBUtw==
+Date:   Thu, 9 Jun 2022 22:59:36 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>, leonro@nvidia.com,
-        borisp@nvidia.com, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: adjust MELLANOX ETHERNET INNOVA DRIVERS to
- TLS support removal
-Message-ID: <20220609225657.299278f7@kernel.org>
-In-Reply-To: <165483841435.4442.11942577289291510346.git-patchwork-notify@kernel.org>
-References: <20220601045738.19608-1-lukas.bulwahn@gmail.com>
-        <165483841435.4442.11942577289291510346.git-patchwork-notify@kernel.org>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, Ossama Othman <ossama.othman@intel.com>,
+        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
+Subject: Re: [PATCH net-next 1/2] mptcp: fix conflict with <netinet/in.h>
+Message-ID: <20220609225936.4cba4860@kernel.org>
+In-Reply-To: <20220608191919.327705-2-mathew.j.martineau@linux.intel.com>
+References: <20220608191919.327705-1-mathew.j.martineau@linux.intel.com>
+        <20220608191919.327705-2-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,30 +55,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Jun 2022 05:20:14 +0000 patchwork-bot+netdevbpf@kernel.org
-wrote:
-> Hello:
+On Wed,  8 Jun 2022 12:19:18 -0700 Mat Martineau wrote:
+> From: Ossama Othman <ossama.othman@intel.com>
 > 
-> This patch was applied to netdev/net.git (master)
-> by Saeed Mahameed <saeedm@nvidia.com>:
+> Including <linux/mptcp.h> before the C library <netinet/in.h> header
+> causes symbol redefinition errors at compile-time due to duplicate
+> declarations and definitions in the <linux/in.h> header included by
+> <linux/mptcp.h>.
 > 
-> On Wed,  1 Jun 2022 06:57:38 +0200 you wrote:
-> > Commit 40379a0084c2 ("net/mlx5_fpga: Drop INNOVA TLS support") removes all
-> > files in the directory drivers/net/ethernet/mellanox/mlx5/core/accel/, but
-> > misses to adjust its reference in MAINTAINERS.
-> > 
-> > Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
-> > broken reference.
-> > 
-> > [...]  
+> Explicitly include <netinet/in.h> before <linux/in.h> in
+> <linux/mptcp.h> when __KERNEL__ is not defined so that the C library
+> compatibility logic in <linux/libc-compat.h> is enabled when including
+> <linux/mptcp.h> in user space code.
 > 
-> Here is the summary with links:
->   - MAINTAINERS: adjust MELLANOX ETHERNET INNOVA DRIVERS to TLS support removal
->     https://git.kernel.org/netdev/net/c/ed872f92fd09
+> Fixes: c11c5906bc0a ("mptcp: add MPTCP_SUBFLOW_ADDRS getsockopt support")
 
-What luck. I was trying to see if pw-bot will respond to the PR rather
-than the series if I mark the series as accepted first but apparently
-it found this random posting and replied to it instead :S
-
-That's a roundabout way of saying that I pulled "mlx5 fixes 2022-06-08",
-thanks!
+What does it break, tho? The commit under Fixes is in net, if it's
+really a fix it needs to go to net. If it's just prep for another
+change we don't need to fixes tag.
