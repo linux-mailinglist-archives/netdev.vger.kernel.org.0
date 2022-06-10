@@ -2,53 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0B8A545B65
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 07:00:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EE54545B83
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 07:16:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238984AbiFJFAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 01:00:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44870 "EHLO
+        id S242153AbiFJFQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 01:16:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231392AbiFJFAR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 01:00:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB63420BE10
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 22:00:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66395B82EF0
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 05:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2294AC3411C;
-        Fri, 10 Jun 2022 05:00:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654837213;
-        bh=dkeWPlyyyp1DfX91mxaqGlPjB/ghVtwpI8kAwMVh3UA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bN2s47JHSr9F5ZxHim2pKwn7gd7xUG3YHTUdQEUSOyUsceccgLZhKLZnfdwo7yS01
-         UhIxjhGAwMnUn1Lf5uEkQI2am1GJCwmuynz3kcCBac2LV0u6xBXYmpJVmvwlPAjHsA
-         J7pM6IxhLW9P6ujzhmkGNsmFv4CkVxP0i/+OWb8ps+zB9jKgF4onZyW+jB/8kbtFF7
-         vMjP7Iift7s2rMiaLVnyxN+xQY/9/GwNABGMxzjKLenXj4Q2OmLuPDKRxxYO/lGzGx
-         BB83GvLkPJ6FrTWOovlONsCMct3nl3JASLUYZCEzBpvX5XTWdDNn4vmK34ib845c9B
-         GUgHaGORI3pug==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 08FCAE737F6;
-        Fri, 10 Jun 2022 05:00:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] tls: Rename TLS_INFO_ZC_SENDFILE to TLS_INFO_ZC_TX
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165483721303.27235.2158003345591843875.git-patchwork-notify@kernel.org>
-Date:   Fri, 10 Jun 2022 05:00:13 +0000
-References: <20220608153425.3151146-1-maximmi@nvidia.com>
-In-Reply-To: <20220608153425.3151146-1-maximmi@nvidia.com>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, daniel@iogearbox.net,
-        pabeni@redhat.com, borisp@nvidia.com, tariqt@nvidia.com,
-        saeedm@nvidia.com, gal@nvidia.com, netdev@vger.kernel.org
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        with ESMTP id S235342AbiFJFQp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 01:16:45 -0400
+Received: from smtp.ruc.edu.cn (m177126.mail.qiye.163.com [123.58.177.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9307765C;
+        Thu,  9 Jun 2022 22:16:40 -0700 (PDT)
+Received: from localhost.localdomain (unknown [202.112.113.212])
+        by smtp.ruc.edu.cn (Hmail) with ESMTPSA id 337D98009D;
+        Fri, 10 Jun 2022 13:16:38 +0800 (CST)
+From:   Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Xin Xiong <xiongx18@fudan.edu.cn>,
+        Tom Parkin <tparkin@katalix.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/1] l2tp: fix possible use-after-free
+Date:   Fri, 10 Jun 2022 13:16:33 +0800
+Message-Id: <20220610051633.8582-1-xiaohuizhang@ruc.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
+        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWUJOT05WTEgZQ05CSUwfGR
+        9JVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktISkNVS1kG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Pgw6Syo*Cj00HwoBEAJNLRxN
+        HyIaCjdVSlVKTU5PQ0hDSkJCS0lJVTMWGhIXVQMSGhQTDhIBExoVHDsJDhhVHh8OVRgVRVlXWRIL
+        WUFZSUtJVUpKSVVKSkhVSUpJWVdZCAFZQUhOQ0o3Bg++
+X-HM-Tid: 0a814c0b01282c20kusn337d98009d
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -57,31 +48,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Similar to the handling of l2tp_tunnel_get in commit a622b40035d1
+("l2ip: fix possible use-after-free"), we thought a patch might
+be needed here as well.
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Before taking a refcount on a rcu protected structure,
+we need to make sure the refcount is not zero.
 
-On Wed, 8 Jun 2022 18:34:25 +0300 you wrote:
-> To embrace possible future optimizations of TLS, rename zerocopy
-> sendfile definitions to more generic ones:
-> 
-> * setsockopt: TLS_TX_ZEROCOPY_SENDFILE- > TLS_TX_ZEROCOPY_RO
-> * sock_diag: TLS_INFO_ZC_SENDFILE -> TLS_INFO_ZC_RO_TX
-> 
-> RO stands for readonly and emphasizes that the application shouldn't
-> modify the data being transmitted with zerocopy to avoid potential
-> disconnection.
-> 
-> [...]
+Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+---
+ net/l2tp/l2tp_core.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-Here is the summary with links:
-  - [net,v2] tls: Rename TLS_INFO_ZC_SENDFILE to TLS_INFO_ZC_TX
-    https://git.kernel.org/netdev/net/c/b489a6e58716
-
-You are awesome, thank you!
+diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+index 7499c51b1850..96e8966f900d 100644
+--- a/net/l2tp/l2tp_core.c
++++ b/net/l2tp/l2tp_core.c
+@@ -252,8 +252,8 @@ struct l2tp_session *l2tp_tunnel_get_session(struct l2tp_tunnel *tunnel,
+ 
+ 	rcu_read_lock_bh();
+ 	hlist_for_each_entry_rcu(session, session_list, hlist)
+-		if (session->session_id == session_id) {
+-			l2tp_session_inc_refcount(session);
++		if (session->session_id == session_id &&
++		    refcount_inc_not_zero(&session->ref_count)) {
+ 			rcu_read_unlock_bh();
+ 
+ 			return session;
+@@ -273,8 +273,8 @@ struct l2tp_session *l2tp_session_get(const struct net *net, u32 session_id)
+ 
+ 	rcu_read_lock_bh();
+ 	hlist_for_each_entry_rcu(session, session_list, global_hlist)
+-		if (session->session_id == session_id) {
+-			l2tp_session_inc_refcount(session);
++		if (session->session_id == session_id &&
++		    refcount_inc_not_zero(&session->ref_count)) {
+ 			rcu_read_unlock_bh();
+ 
+ 			return session;
+@@ -294,8 +294,8 @@ struct l2tp_session *l2tp_session_get_nth(struct l2tp_tunnel *tunnel, int nth)
+ 	rcu_read_lock_bh();
+ 	for (hash = 0; hash < L2TP_HASH_SIZE; hash++) {
+ 		hlist_for_each_entry_rcu(session, &tunnel->session_hlist[hash], hlist) {
+-			if (++count > nth) {
+-				l2tp_session_inc_refcount(session);
++			if (++count > nth &&
++			    refcount_inc_not_zero(&session->ref_count)) {
+ 				rcu_read_unlock_bh();
+ 				return session;
+ 			}
+@@ -321,8 +321,8 @@ struct l2tp_session *l2tp_session_get_by_ifname(const struct net *net,
+ 	rcu_read_lock_bh();
+ 	for (hash = 0; hash < L2TP_HASH_SIZE_2; hash++) {
+ 		hlist_for_each_entry_rcu(session, &pn->l2tp_session_hlist[hash], global_hlist) {
+-			if (!strcmp(session->ifname, ifname)) {
+-				l2tp_session_inc_refcount(session);
++			if (!strcmp(session->ifname, ifname) &&
++			    refcount_inc_not_zero(&session->ref_count)) {
+ 				rcu_read_unlock_bh();
+ 
+ 				return session;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.17.1
 
