@@ -2,112 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EE54545B83
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 07:16:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5400545B8B
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 07:19:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242153AbiFJFQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 01:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48572 "EHLO
+        id S244385AbiFJFTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 01:19:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235342AbiFJFQp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 01:16:45 -0400
-Received: from smtp.ruc.edu.cn (m177126.mail.qiye.163.com [123.58.177.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9307765C;
-        Thu,  9 Jun 2022 22:16:40 -0700 (PDT)
-Received: from localhost.localdomain (unknown [202.112.113.212])
-        by smtp.ruc.edu.cn (Hmail) with ESMTPSA id 337D98009D;
-        Fri, 10 Jun 2022 13:16:38 +0800 (CST)
-From:   Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
-To:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
-        "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S243933AbiFJFS6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 01:18:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58B935A8A;
+        Thu,  9 Jun 2022 22:18:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F7F161E2B;
+        Fri, 10 Jun 2022 05:18:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C60CC34114;
+        Fri, 10 Jun 2022 05:18:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1654838336;
+        bh=2yFCZugsiNQZN0gkgMSO/PLnnK4cDobzksJyDLjp9Ts=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rh1PySG6mRmieZPY8cY0A1hPrIcbkuP807V49e98ihkLxbZ06HxYRwIuVMf+wTLDn
+         X/yCYKI3C60vy05a003Jfa/l8d0up/cE/3SCBy/NuCOYNPxYpirlNBYrpXNy/Wd9yS
+         jlJr0CyMDaP1q3f/tt8/VcfJ3YUsM+y3ifSXc9V4=
+Date:   Fri, 10 Jun 2022 07:18:49 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Bill Wendling <morbo@google.com>
+Cc:     isanbard@gmail.com, Tony Luck <tony.luck@intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Jan Kara <jack@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        Tom Parkin <tparkin@katalix.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] l2tp: fix possible use-after-free
-Date:   Fri, 10 Jun 2022 13:16:33 +0800
-Message-Id: <20220610051633.8582-1-xiaohuizhang@ruc.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWUJOT05WTEgZQ05CSUwfGR
-        9JVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWU9LSFVKSktISkNVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Pgw6Syo*Cj00HwoBEAJNLRxN
-        HyIaCjdVSlVKTU5PQ0hDSkJCS0lJVTMWGhIXVQMSGhQTDhIBExoVHDsJDhhVHh8OVRgVRVlXWRIL
-        WUFZSUtJVUpKSVVKSkhVSUpJWVdZCAFZQUhOQ0o3Bg++
-X-HM-Tid: 0a814c0b01282c20kusn337d98009d
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        Daniel Kiper <daniel.kiper@oracle.com>,
+        Ross Philipson <ross.philipson@oracle.com>,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-mm@kvack.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, alsa-devel@alsa-project.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH 07/12] driver/char: use correct format characters
+Message-ID: <YqLUORmZQgG1D6lc@kroah.com>
+References: <20220609221702.347522-1-morbo@google.com>
+ <20220609221702.347522-8-morbo@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220609221702.347522-8-morbo@google.com>
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to the handling of l2tp_tunnel_get in commit a622b40035d1
-("l2ip: fix possible use-after-free"), we thought a patch might
-be needed here as well.
+On Thu, Jun 09, 2022 at 10:16:26PM +0000, Bill Wendling wrote:
+> From: Bill Wendling <isanbard@gmail.com>
 
-Before taking a refcount on a rcu protected structure,
-we need to make sure the refcount is not zero.
+Why isn't that matching your From: line in the email?
 
-Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
----
- net/l2tp/l2tp_core.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+> 
+> When compiling with -Wformat, clang emits the following warnings:
 
-diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
-index 7499c51b1850..96e8966f900d 100644
---- a/net/l2tp/l2tp_core.c
-+++ b/net/l2tp/l2tp_core.c
-@@ -252,8 +252,8 @@ struct l2tp_session *l2tp_tunnel_get_session(struct l2tp_tunnel *tunnel,
- 
- 	rcu_read_lock_bh();
- 	hlist_for_each_entry_rcu(session, session_list, hlist)
--		if (session->session_id == session_id) {
--			l2tp_session_inc_refcount(session);
-+		if (session->session_id == session_id &&
-+		    refcount_inc_not_zero(&session->ref_count)) {
- 			rcu_read_unlock_bh();
- 
- 			return session;
-@@ -273,8 +273,8 @@ struct l2tp_session *l2tp_session_get(const struct net *net, u32 session_id)
- 
- 	rcu_read_lock_bh();
- 	hlist_for_each_entry_rcu(session, session_list, global_hlist)
--		if (session->session_id == session_id) {
--			l2tp_session_inc_refcount(session);
-+		if (session->session_id == session_id &&
-+		    refcount_inc_not_zero(&session->ref_count)) {
- 			rcu_read_unlock_bh();
- 
- 			return session;
-@@ -294,8 +294,8 @@ struct l2tp_session *l2tp_session_get_nth(struct l2tp_tunnel *tunnel, int nth)
- 	rcu_read_lock_bh();
- 	for (hash = 0; hash < L2TP_HASH_SIZE; hash++) {
- 		hlist_for_each_entry_rcu(session, &tunnel->session_hlist[hash], hlist) {
--			if (++count > nth) {
--				l2tp_session_inc_refcount(session);
-+			if (++count > nth &&
-+			    refcount_inc_not_zero(&session->ref_count)) {
- 				rcu_read_unlock_bh();
- 				return session;
- 			}
-@@ -321,8 +321,8 @@ struct l2tp_session *l2tp_session_get_by_ifname(const struct net *net,
- 	rcu_read_lock_bh();
- 	for (hash = 0; hash < L2TP_HASH_SIZE_2; hash++) {
- 		hlist_for_each_entry_rcu(session, &pn->l2tp_session_hlist[hash], global_hlist) {
--			if (!strcmp(session->ifname, ifname)) {
--				l2tp_session_inc_refcount(session);
-+			if (!strcmp(session->ifname, ifname) &&
-+			    refcount_inc_not_zero(&session->ref_count)) {
- 				rcu_read_unlock_bh();
- 
- 				return session;
--- 
-2.17.1
+Is that ever a default build option for the kernel?
 
+> 
+> drivers/char/mem.c:775:16: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
+>                               NULL, devlist[minor].name);
+>                                     ^~~~~~~~~~~~~~~~~~~
+> 
+> Use a string literal for the format string.
+> 
+> Link: https://github.com/ClangBuiltLinux/linux/issues/378
+> Signed-off-by: Bill Wendling <isanbard@gmail.com>
+> ---
+>  drivers/char/mem.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/char/mem.c b/drivers/char/mem.c
+> index 84ca98ed1dad..32d821ba9e4d 100644
+> --- a/drivers/char/mem.c
+> +++ b/drivers/char/mem.c
+> @@ -772,7 +772,7 @@ static int __init chr_dev_init(void)
+>  			continue;
+>  
+>  		device_create(mem_class, NULL, MKDEV(MEM_MAJOR, minor),
+> -			      NULL, devlist[minor].name);
+> +			      NULL, "%s", devlist[minor].name);
+
+Please explain how this static string can ever be user controlled.
+
+thanks,
+
+greg k-h
