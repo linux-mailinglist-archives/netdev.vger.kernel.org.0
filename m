@@ -2,148 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F198546B4E
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 19:08:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B8E2546B82
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 19:15:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346775AbiFJRGy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 13:06:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44390 "EHLO
+        id S1350137AbiFJRJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 13:09:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350068AbiFJRGn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 13:06:43 -0400
-Received: from mxout4.routing.net (mxout4.routing.net [IPv6:2a03:2900:1:a::9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A893631E;
-        Fri, 10 Jun 2022 10:06:15 -0700 (PDT)
-Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
-        by mxout4.routing.net (Postfix) with ESMTP id 08C30100770;
-        Fri, 10 Jun 2022 17:06:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1654880774;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=js+mZvUFXnwqGgCGciplzUqL6UKY6LhPbZ2QpREU94c=;
-        b=c+phttVDs2fWl3s6ahHslf2+Zvj3eT2b+FSpol1ryEn0w3JazB48GH+tXK5Buy9cTElBAD
-        AzjKzybdS/FnFOFIbl2NaaKhNNfoWFD4SiLxyFkZvJ5ztxjtOku1/d9uIiS4siMtj8nuS5
-        maTDYHnXfX5hvDCy+N2NSuTMVHFbC9Y=
-Received: from frank-G5.. (fttx-pool-217.61.154.155.bambit.de [217.61.154.155])
-        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id D4D61100394;
-        Fri, 10 Jun 2022 17:06:12 +0000 (UTC)
-From:   Frank Wunderlich <linux@fw-web.de>
-To:     linux-rockchip@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Greg Ungerer <gerg@kernel.org>,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
-        "Mauro Carvalho Chehab" <mchehab+samsung@kernel.org>
-Subject: [PATCH v4 6/6] arm64: dts: rockchip: Add mt7531 dsa node to BPI-R2-Pro board
-Date:   Fri, 10 Jun 2022 19:05:41 +0200
-Message-Id: <20220610170541.8643-7-linux@fw-web.de>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220610170541.8643-1-linux@fw-web.de>
-References: <20220610170541.8643-1-linux@fw-web.de>
+        with ESMTP id S1350116AbiFJRJ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 13:09:26 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D085450B33
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 10:09:23 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id n28so36129555edb.9
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 10:09:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7NGj/fRsB8QNhSe369jbVTtv9ZIQI4UquOcWKaIS3lw=;
+        b=EDxuEBSySIkS0wX9UtgEWpdaZ5Rkk+ceY4FD2zvv24FQoI0QnCjliwtHZ5rtDY13Wa
+         /Eo1coASUZ3gqT6dIuUaR+vjQAIZO4ZOodC6LYg8XqX1lajtUhNUr0Kaj+XbuAK8CkNb
+         z33Wa9Cj1RwJWTC+jSvNwO5raxNOUS/Gu5Mh8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7NGj/fRsB8QNhSe369jbVTtv9ZIQI4UquOcWKaIS3lw=;
+        b=hRcnYW8VCXOcmtMNHAPvQg/SHRcdX6SIaLKzPvVrvnBxwhUFQTPAgjmt/MBGOEQCZk
+         YbVD8lNRjfKWOlFpT+fq7Pf3blbR4mxteuT1mCAttiCNWplqKof+sYI9KtBjqfwPtT4U
+         IV+JRLctoXxl8BREdgh7mnJ8bYu//cLJkapaFYWQWYzndOP2d68ROH7xpb5jqpmylOTT
+         1UJ7Cm3InN1BCspub5TL2I9sBl8KiAKYs1ywnIvoUM6Og0KGk4+IzEHDzN9Tr7JvUuiF
+         oA7HShXxxhzsFkHvrEI6EKsfi1fxB9PLjc21M1qEf63Scb13SU3g2+DG3glPSdXpFAjd
+         n3/A==
+X-Gm-Message-State: AOAM531+IfZ3OyUeXYVa2mZZj7oTT7pryZ57LWJscalD7SOBxmt2UDNB
+        1bYHH5RiW/0Km3oYJ+rgnOACPFFLKHxIJQnBv68=
+X-Google-Smtp-Source: ABdhPJzpXs07wsiCatVKPj3XG5hOGBFpqu99iDt+WV9kh1LczZyq8LMrVqALKnTWD7o5FRVuWB8SNQ==
+X-Received: by 2002:a05:6402:370f:b0:428:11f5:509d with SMTP id ek15-20020a056402370f00b0042811f5509dmr400200edb.253.1654880962141;
+        Fri, 10 Jun 2022 10:09:22 -0700 (PDT)
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com. [209.85.128.46])
+        by smtp.gmail.com with ESMTPSA id e13-20020a170906248d00b006fee7b5dff2sm12588496ejb.143.2022.06.10.10.09.21
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Jun 2022 10:09:21 -0700 (PDT)
+Received: by mail-wm1-f46.google.com with SMTP id i131-20020a1c3b89000000b0039c6fd897b4so959518wma.4
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 10:09:21 -0700 (PDT)
+X-Received: by 2002:a05:600c:4ec9:b0:39c:69c7:715d with SMTP id
+ g9-20020a05600c4ec900b0039c69c7715dmr738538wmq.154.1654880961101; Fri, 10 Jun
+ 2022 10:09:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Mail-ID: 44a36d37-a351-4272-a63f-a3dc4cfe27d1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220610053544.417023-1-kuba@kernel.org>
+In-Reply-To: <20220610053544.417023-1-kuba@kernel.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 10 Jun 2022 10:09:04 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whAx7AgD59HyZuaLor1afAk=kYCQiG4gacMR8-_GmmBLQ@mail.gmail.com>
+Message-ID: <CAHk-=whAx7AgD59HyZuaLor1afAk=kYCQiG4gacMR8-_GmmBLQ@mail.gmail.com>
+Subject: Re: [GIT PULL] Networking for 5.19-rc2 (follow up)
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
+On Thu, Jun 9, 2022 at 10:35 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> Quick follow up PR, I managed to catch your tree at a point where AFS
+> did not build on GCC < 12. Before I tried building it on an older distro
+> I already pushed a few things. I figured cleanest if I just send a quick
+> follow up and forward again. Please LMK if I should have just merged
+> your tree in.
 
-Add Device Tree node for mt7531 switch connected to gmac0.
+This looks fine to me, and I think preferred over backmerges.
 
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
----
-v2:
-- drop status=disabled
----
- .../boot/dts/rockchip/rk3568-bpi-r2-pro.dts   | 48 +++++++++++++++++++
- 1 file changed, 48 insertions(+)
+Thanks,
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
-index 40cf2236c0b6..7df8cfb1d3b9 100644
---- a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
-@@ -394,6 +394,54 @@ &i2c5 {
- 	status = "disabled";
- };
- 
-+&mdio0 {
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+
-+	switch@0 {
-+		compatible = "mediatek,mt7531";
-+		reg = <0>;
-+
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@1 {
-+				reg = <1>;
-+				label = "lan0";
-+			};
-+
-+			port@2 {
-+				reg = <2>;
-+				label = "lan1";
-+			};
-+
-+			port@3 {
-+				reg = <3>;
-+				label = "lan2";
-+			};
-+
-+			port@4 {
-+				reg = <4>;
-+				label = "lan3";
-+			};
-+
-+			port@5 {
-+				reg = <5>;
-+				label = "cpu";
-+				ethernet = <&gmac0>;
-+				phy-mode = "rgmii";
-+
-+				fixed-link {
-+					speed = <1000>;
-+					full-duplex;
-+					pause;
-+				};
-+			};
-+		};
-+	};
-+};
-+
- &mdio1 {
- 	rgmii_phy1: ethernet-phy@0 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
--- 
-2.34.1
-
+                Linus
