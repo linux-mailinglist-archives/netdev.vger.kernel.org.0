@@ -2,70 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F76C545D82
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 09:31:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2D14545D8A
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 09:33:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346762AbiFJHbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 03:31:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46992 "EHLO
+        id S1347025AbiFJHdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 03:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244746AbiFJHba (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 03:31:30 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 860B0193FD;
-        Fri, 10 Jun 2022 00:31:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=7ehVVnHGNeCX8STqn/z69kwtCQzGXB+Z+xZvMBLoGV0=; b=nL86lEnP25nxC0q/9AYMxQQufI
-        6E/ykfudlRfKm08L712JdI5gUFi5e8MhHsIYXZTXLuCgSHiLOIVnU2UMZ3GmVzqrp+b6iYWNZSITi
-        VIIAnTTc76krunIBP+857GXkdhzrTYli8RWzCawcAq03kmqK9/+ufu0rtGUHgiRUd08/FFhzHKFhB
-        3wLcLvXPQBgnvpqBNmL0ES6RyzDY0likckmumfQkFQfvtfoc7raVC+LEiptPxKpWX+dvcVsOh8WCK
-        k4JqWmVK85+TjN+2h5MXVNQ9fCcY1p8oegaj5QNE70O9O5EWpektE2M4RoydHDf3IRSEtTLHT+whk
-        MtY2Hlkg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32814)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nzZ6x-0007EW-1V; Fri, 10 Jun 2022 08:31:15 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nzZ6s-0003V8-W6; Fri, 10 Jun 2022 08:31:11 +0100
-Date:   Fri, 10 Jun 2022 08:31:10 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Ong Boon Leong <boon.leong.ong@intel.com>
-Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Emilio Riva <emilio.riva@ericsson.com>
-Subject: Re: [PATCH net-next v2 4/6] net: phylink: unset ovr_an_inband if
- fixed-link is selected
-Message-ID: <YqLzPrEfcwqeKNX0@shell.armlinux.org.uk>
-References: <20220610032941.113690-1-boon.leong.ong@intel.com>
- <20220610032941.113690-5-boon.leong.ong@intel.com>
+        with ESMTP id S1346826AbiFJHcv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 03:32:51 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EDB712C94B
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 00:32:32 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id t32so1136749ybt.12
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 00:32:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VpciQYHvryj/PequWAT65fK8eJ0KET3ZyhRRjOWqX1M=;
+        b=UQ/yeNEKOtigurLd3J5UurzMzK/E0NubjoHgaLV+IJcD/aIMXKfBefiPuvfEu1Xp94
+         oao/op3nyn/VBSVwZYQ9FboihtQcWlOGwGbhJEX3Ypq0CJDExUsCR726Oqua5Z8X+Bd3
+         klgenZZQ7M2aOLizpFGil8fRF5QP8nA4zixyH8sZ2X+Hi3OQTasZPW7XIjCxORtrUi7f
+         j9LGi8hfxudJgV/noJCWT24jBloCNlc6+Hlt0bNWiZVrb8VGz9pw5PFUypzoEeV+A1hx
+         rhpTqPtB0beClKdRNPHpqt/lW1DO6YlKlxpbAKi5bxLsB9Ab7cXnUo8B/CGc2k+33JqQ
+         WBFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VpciQYHvryj/PequWAT65fK8eJ0KET3ZyhRRjOWqX1M=;
+        b=cjqZqRyePE/Md2GcR8AVwR6qRP4kS89pFkW/xxVXbrqqdRK16z9cQBSbq8x5PYAbyC
+         fQagGeeMnbHLCNaWviUE40g9np/GrTJ0aCY8Zp2f+jvjVS+/NEfpn1EDeEDZ4PwcgFi+
+         1ID2OjvZs2rc4R1dMQrfDLAe7lyaUxmPVEA7NUiLUxK/JP0YrTHBU0QCrZjWbHXGNDAn
+         nFNWbN9zc2Tpu8hErvsv91vf1cTohaIb3o2HEG/yAoKIYvWzSq6vYnFGuXk+Cug65DSl
+         A9jTUGdveiYez+d++SkNw0pcWWY2FL6G8AHkFtfOVuYK7DwRAqHk4KDiJZ9o26InCYOM
+         h1Gg==
+X-Gm-Message-State: AOAM532tEE0Hbasvyb7fPX63Jld0jalwPDxM67tkHYurDLwOu/Jr64w1
+        eV1n7CYJiN19sJ69MGfa6ylDctrSE9uvDC5xx1yq7A==
+X-Google-Smtp-Source: ABdhPJyodnCZYSm5uCy1IFU1S5PAg2DfIXbShb1DCSPfCarwHd2KuFRpUkN6RVaisqspfcszAh5pzkAxuGGPbpUlM24=
+X-Received: by 2002:a05:6902:c9:b0:641:1998:9764 with SMTP id
+ i9-20020a05690200c900b0064119989764mr42673115ybs.427.1654846350939; Fri, 10
+ Jun 2022 00:32:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610032941.113690-5-boon.leong.ong@intel.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+References: <20220610070529.1623-1-zhudi2@huawei.com>
+In-Reply-To: <20220610070529.1623-1-zhudi2@huawei.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 10 Jun 2022 00:32:19 -0700
+Message-ID: <CANn89iKvXUbunP6UtNE1tNCH7FwCux22_rqwhGigvGn_64-6FA@mail.gmail.com>
+Subject: Re: [PATCH] fq_codel: Discard problematic packets with pkt_len 0
+To:     Di Zhu <zhudi2@huawei.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, rose.chen@huawei.com,
+        syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,37 +74,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 11:29:39AM +0800, Ong Boon Leong wrote:
-> If "fixed-link" DT or ACPI _DSD subnode is selected, it should take
-> precedence over the value of ovr_an_inband passed by MAC driver.
-> 
-> Fixes: ab39385021d1 ("net: phylink: make phylink_parse_mode() support non-DT platform")
-> Tested-by: Emilio Riva <emilio.riva@ericsson.com>
-> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+On Fri, Jun 10, 2022 at 12:07 AM Di Zhu <zhudi2@huawei.com> wrote:
+>
+> Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
+> skbs, that is, the flow->head is null.
+> The root cause is that: when the first queued skb with pkt_len 0, backlogs
+> of the flow that this skb enqueued is still 0 and if sch->limit is set to
+> 0 then fq_codel_drop() will be called. At this point, the backlogs of all
+> flows are all 0, so flow with idx 0 is selected to drop, but this flow have
+> not any skbs.
+> skb with pkt_len 0 can break existing processing logic, so just discard
+> these invalid skbs.
+>
+> LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
+>
+> Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
+> Signed-off-by: Di Zhu <zhudi2@huawei.com>
 > ---
->  drivers/net/phy/phylink.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> index 066684b8091..566852815e0 100644
-> --- a/drivers/net/phy/phylink.c
-> +++ b/drivers/net/phy/phylink.c
-> @@ -609,8 +609,10 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
->  	const char *managed;
->  
->  	dn = fwnode_get_named_child_node(fwnode, "fixed-link");
-> -	if (dn || fwnode_property_present(fwnode, "fixed-link"))
-> +	if (dn || fwnode_property_present(fwnode, "fixed-link")) {
->  		pl->cfg_link_an_mode = MLO_AN_FIXED;
-> +		pl->config->ovr_an_inband = false;
-> +	}
+>  net/sched/sch_fq_codel.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
+> index 839e1235db05..c0f82b7358e1 100644
+> --- a/net/sched/sch_fq_codel.c
+> +++ b/net/sched/sch_fq_codel.c
+> @@ -191,6 +191,9 @@ static int fq_codel_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+>         unsigned int pkt_len;
+>         bool memory_limited;
+>
+> +       if (unlikely(!qdisc_pkt_len(skb)))
+> +               return qdisc_drop(skb, sch, to_free);
+> +
 
-ovr_an_inband was added to support "non-DT" platforms, and the only
-place it's set is stmmac. I don't see why you'd want a driver to always
-set this member, and then have phylink clear it - the driver should be
-setting it correctly itself, otherwise it becomes a "maybe override AN
-inband if certain conditions are met" flag inside phylink.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+This has been discussed in the past.
+
+Feeding ndo_start_xmit() in hundreds of drivers with zero-length
+packets will crash anyway.
+
+We are not going to add such silly tests in all qdiscs, and then all
+ndo_start_xmit(), since qdiscs are not mandatory.
+
+Please instead fix BPF layer, instead of hundreds of drivers/qdiscs.
