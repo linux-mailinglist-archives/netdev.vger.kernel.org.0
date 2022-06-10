@@ -2,143 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 665655466C5
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 14:44:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABE865466CD
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 14:49:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233309AbiFJMoj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 10 Jun 2022 08:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47276 "EHLO
+        id S239074AbiFJMtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 08:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbiFJMoi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 08:44:38 -0400
-Received: from relay5.hostedemail.com (smtprelay0012.hostedemail.com [216.40.44.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E5D18E;
-        Fri, 10 Jun 2022 05:44:35 -0700 (PDT)
-Received: from omf09.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay12.hostedemail.com (Postfix) with ESMTP id 06E07121083;
-        Fri, 10 Jun 2022 12:44:30 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf09.hostedemail.com (Postfix) with ESMTPA id 08E1F2002A;
-        Fri, 10 Jun 2022 12:44:18 +0000 (UTC)
-Message-ID: <cd59f3eab3d2b4f069f4ebf169b33307eaa9e50d.camel@perches.com>
-Subject: Re: [PATCH 00/12] Clang -Wformat warning fixes
-From:   Joe Perches <joe@perches.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bill Wendling <morbo@google.com>
-Cc:     Jan Engelhardt <jengelh@inai.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Bill Wendling <isanbard@gmail.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Jan Kara <jack@suse.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        Daniel Kiper <daniel.kiper@oracle.com>,
-        linux-edac@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        linux-mm@kvack.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, Networking <netdev@vger.kernel.org>,
-        alsa-devel@alsa-project.org,
-        clang-built-linux <llvm@lists.linux.dev>
-Date:   Fri, 10 Jun 2022 05:44:18 -0700
-In-Reply-To: <YqLUn3RdZ9HAKZKu@kroah.com>
-References: <20220609221702.347522-1-morbo@google.com>
-         <20220609152527.4ad7862d4126e276e6f76315@linux-foundation.org>
-         <CAGG=3QXDt9AeCQOAp1311POFRSByJru4=Q=oFiQn3u2iZYk2_w@mail.gmail.com>
-         <nssn2ps-6n86-nqq6-9039-72847760nnq@vanv.qr>
-         <CAGG=3QU0XJhQKJXLMayOkQSiF2yjBi2p2TEZ9KNTzU5mmye-gg@mail.gmail.com>
-         <YqLUn3RdZ9HAKZKu@kroah.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        with ESMTP id S237558AbiFJMtG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 08:49:06 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D46C41EEF6
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 05:49:04 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id c2so23239981lfk.0
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 05:49:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=Upvl78vueRpYBKOyapV5c91eTIz+vJdRCEr2z81Joc4=;
+        b=kt3QB8DVqumiglWOkVOtJk+Xj3SbbvYV+xp6e+vQZevX7E29zgm+hAqKV8FdBP6TvA
+         ChvMa6nU6IKaNkEMFtPno0dC1TxolajDVzcuWhA6FzWwDDVaIl/Fu27V99q7JpKpdP20
+         dAE7hmDNDEvKeR0hGjC5szLUaIJOANUIbc+UNftGR+WWVODaSmUqRTiTZxtZEfxMlkFS
+         2LcjsY0KpjIhmXRTAhIetw1He74LNCAl88gCpQTc7zvJfoKgVvGadaTS+i3Aylm0R17D
+         d6zT0aggstSoa4BtSo6fQEot2N2qh3fGwAKKIYNSoKjzySTvYwf+xi3FmgF+b3H39gw2
+         qujw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=Upvl78vueRpYBKOyapV5c91eTIz+vJdRCEr2z81Joc4=;
+        b=EjBasUQ06EaqYiph9nn6raQbioWdmaBKPgVHwJn8NO/w1cQUA6MRR0S1wl96UCifcI
+         kYeibxhOTb10n8+Zf0bdH1IE+WZnuCzatucHRD1y9RGoIbgLNEQRY4qr79yV+4Nxenxv
+         iekuFks1MjgG42Ezum37LR9qWXUE1zm/YR17ZP9uMYKXKnuaOskoSa2OA8M2bTzx89l2
+         fiy7GzFQ5NPLYEpsRFHUsPzmE/9nkvfcKm4ZkKai1CAGmrYDyK9neoL9czHWDJKD4Qou
+         xgXTbx9k0fw5fZT+OsF3eotxB0QfeZ1zXSULAh6Xmq30OrXF3w4kGslR20EaZgwvkA6K
+         5mQQ==
+X-Gm-Message-State: AOAM532i+56w1MeulwuvHIfB6e/S/eOsalRw+GdtGRZfzFTvlhWPPibl
+        l83YiALGnhPJULD0jzF7at1I5fuzPs3rotLI/Ww41CDPwkHLUg==
+X-Google-Smtp-Source: ABdhPJxNwzHj5dw4KjN/l9OSiFjNXYbIuReFaCWcJRpoZ+L22Vz4CWkN/Lk3Wglf+C4MbV8aqzjy9xS6Y4jBfAgrJ9o=
+X-Received: by 2002:a05:6512:3991:b0:479:2e05:2ee4 with SMTP id
+ j17-20020a056512399100b004792e052ee4mr19588124lfu.64.1654865342576; Fri, 10
+ Jun 2022 05:49:02 -0700 (PDT)
 MIME-Version: 1.0
-X-Rspamd-Server: rspamout05
-X-Rspamd-Queue-Id: 08E1F2002A
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Stat-Signature: r8ecgxf89uwg9qffzdumnqfsj56kpo1p
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19T013fSZHIO4BR28mlFWzRzi2PPI2hbJs=
-X-HE-Tag: 1654865058-93434
+From:   Ronny Meeus <ronny.meeus@gmail.com>
+Date:   Fri, 10 Jun 2022 14:48:50 +0200
+Message-ID: <CAMJ=MEcPzkBLynL7tpjdv0TCRA=Cmy13e7wmFXrr-+dOVcshKA@mail.gmail.com>
+Subject: TCP socket send return EAGAIN unexpectedly when sending small fragments
+To:     netdev <netdev@vger.kernel.org>
+Cc:     Ronny Meeus <ronny.meeus@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-06-10 at 07:20 +0200, Greg Kroah-Hartman wrote:
-> On Thu, Jun 09, 2022 at 04:16:16PM -0700, Bill Wendling wrote:
-> > On Thu, Jun 9, 2022 at 4:03 PM Jan Engelhardt <jengelh@inai.de> wrote:
-> > > On Friday 2022-06-10 00:49, Bill Wendling wrote:
-> > > > On Thu, Jun 9, 2022 at 3:25 PM Andrew Morton <akpm@linux-foundation.org> wrote:
-> > > > > On Thu,  9 Jun 2022 22:16:19 +0000 Bill Wendling <morbo@google.com> wrote:
-> > > > > 
-> > > > > > This patch set fixes some clang warnings when -Wformat is enabled.
-> > > > > 
-> > > > > tldr:
-> > > > > 
-> > > > > -       printk(msg);
-> > > > > +       printk("%s", msg);
-> > > > > 
-> > > > > Otherwise these changes are a
-> > > > > useless consumer of runtime resources.
+Hello
 
-> > > > Calling a "printf" style function is already insanely expensive.
+I have a small test application written in C that creates a local (in
+process) TCP channel via loopback.
+(kernel version is 3.10.0 but the same issue is also seen for example
+on a 4.9 kernel).
 
-I expect the printk code itself dominates, not the % scan cost.
+On the client side, an SO_SNDBUF of 5Kb is configured (which is
+doubled by the kernel) while on the server side the default size is
+used.
+Both client and server side are running in non-blocking mode.
 
-> > > Perhaps you can split vprintk_store in the middle (after the call to
-> > > vsnprintf), and offer the second half as a function of its own (e.g.
-> > > "puts"). Then the tldr could be
-> > > 
-> > > - printk(msg);
-> > > + puts(msg);
-> > 
-> > That might be a nice compromise. Andrew, what do you think?
-> 
-> You would need to do that for all of the dev_printk() variants, so I
-> doubt that would ever be all that useful as almost no one should be
-> using a "raw" printk() these days.
+The server side is not reading its socket so all data is simply queued
+in the socket's receive buffer.
+On the client side, the client is writing data into the socket in a
+loop until the write returns an error (EAGAIN in this case).
 
-True.  The kernel has ~20K variants like that.
+Depending on the size of data I send on this socket, I get the EAGAIN
+on the client side already after a small number of messages.
+For example when sending 106 byte messages, I see the first EAGAIN
+after 21 write calls:
+# ./tcp_client_server 106
+using data size 106
+client send buffer size 5000
+client socket snd_buf: 10000
+ERRNO = 11 count=21
 
-$ git grep -P '\b(?:(?:\w+_){1,3}(?:alert|emerg|crit|err|warn|notice|info|cont|debug|dbg)|printk)\s*\(".*"\s*\)\s*;' | wc -l
-21160
+The same is observed for all sizes smaller than or equal to 107 bytes.
 
-That doesn't include the ~3K uses like
+When getting the socket stats using ss I see all data (2226b) pending
+in the socket on the server side:
+# ss -tmi  | grep -i X11 -A 1
+ESTAB      0      0      127.0.0.1:59792                127.0.0.1:x11
+skmem:(r0,rb1061296,t0,tb10000,f0,w0,o0,bl0,d0) cubic wscale:7,7
+rto:202 rtt:1.276/2.504 mss:21888 rcvmss:536 advmss:65483 cwnd:10
+bytes_acked:2227 segs_out:24 segs_in:18 send 1372.3Mbps lastsnd:3883
+lastrcv:771546999 lastack:3883 pacing_rate 2744.3Mbps retrans:0/1
+rcv_space:43690
+--
+ESTAB      2226   0      127.0.0.1:x11
+127.0.0.1:59792
+skmem:(r4608,rb1061488,t0,tb2626560,f3584,w0,o0,bl0,d1) cubic
+wscale:7,7 rto:200 ato:40 mss:21888 rcvmss:536 advmss:65483 cwnd:10
+bytes_received:2226 segs_out:17 segs_in:24 lastsnd:3893 lastrcv:3893
+lastack:3883 rcv_space:43690
 
-#define foo "bar"
-	printk(foo);
 
-$ git grep -P '\b(?:(?:\w+_){1,3}(?:alert|emerg|crit|err|warn|info|notice|debug|dbg|cont)|printk)\s*\((?:\s*\w+){1,3}\s*\)\s*;'|wc -l
-2922
+When sending larger messages, the EAGAIN only is seen after 2116 writes.
+# ./tcp_client_server 108
+using data size 108
+client send buffer size 5000
+client socket snd_buf: 10000
+ERRNO = 11 count=2116
 
-There are apparently only a few hundred uses of variants like:
+Again, the ss shows all data being present on the server side (108 *
+2116 = 228528)
+ESTAB      228528 0      127.0.0.1:x11
+127.0.0.1:59830
+skmem:(r976896,rb1061488,t0,tb2626560,f2048,w0,o0,bl0,d1) cubic
+wscale:7,7 rto:200 ato:80 mss:21888 rcvmss:536 advmss:65483 cwnd:10
+bytes_received:228528 segs_out:436 segs_in:2119 lastsnd:3615
+lastrcv:3606 lastack:3596 rcv_rtt:1 rcv_space:43690
+--
+ESTAB      0      0      127.0.0.1:59830                127.0.0.1:x11
+skmem:(r0,rb1061296,t0,tb10000,f0,w0,o0,bl0,d0) cubic wscale:7,7
+rto:206 rtt:5.016/9.996 mss:21888 rcvmss:536 advmss:65483 cwnd:10
+bytes_acked:228529 segs_out:2119 segs_in:437 send 349.1Mbps
+lastsnd:3596 lastrcv:771704718 lastack:3566 pacing_rate 698.1Mbps
+retrans:0/1 rcv_space:43690
 
-	printk("%s", foo)
 
-$ git grep -P '\b(?:(?:\w+_){1,3}(?:alert|emerg|crit|err|warn|info|notice|debug|dbg|cont)|printk)\s*\(\s*"%s(?:\\n)?"\s*,\s*(?:".*"|\w+)\s*\)\s*;' | wc -l
-305
 
-unless I screwed up my greps (which of course is quite possible)
+When I enlarge the SNDBUF on the client side to for example 10K, I see
+that more messages can be sent:
+# ./tcp_client_server 106 10000
+using data size 106
+client send buffer size 10000
+client socket snd_buf: 20000
+ERRNO = 11 count=1291
 
+I also captured the packets on the interface using wireshark and it
+looks like the error is returned after the TCP layer has done a
+retransmit (after 10ms) of the last packet sent on the connection.
+
+10:12:38.186451 IP localhost.48470 > localhost.etlservicemgr: Flags
+[P.], seq 1165:1265, ack 165, win 342, options [nop,nop,TS val
+593860562 ecr 593860562], length 100
+10:12:38.186461 IP localhost.etlservicemgr > localhost.48470: Flags
+[.], ack 1265, win 342, options [nop,nop,TS val 593860562 ecr
+593860562], length 0
+10:12:38.186478 IP localhost.48470 > localhost.etlservicemgr: Flags
+[P.], seq 1265:1365, ack 165, win 342, options [nop,nop,TS val
+593860562 ecr 593860562], length 100
+10:12:38.186488 IP localhost.etlservicemgr > localhost.48470: Flags
+[.], ack 1365, win 342, options [nop,nop,TS val 593860562 ecr
+593860562], length 0
+10:12:38.186505 IP localhost.48470 > localhost.etlservicemgr: Flags
+[P.], seq 1365:1465, ack 165, win 342, options [nop,nop,TS val
+593860562 ecr 593860562], length 100
+10:12:38.186516 IP localhost.etlservicemgr > localhost.48470: Flags
+[.], ack 1465, win 342, options [nop,nop,TS val 593860562 ecr
+593860562], length 0
+10:12:38.186533 IP localhost.48470 > localhost.etlservicemgr: Flags
+[P.], seq 1465:1565, ack 165, win 342, options [nop,nop,TS val
+593860562 ecr 593860562], length 100
+10:12:38.186543 IP localhost.etlservicemgr > localhost.48470: Flags
+[.], ack 1565, win 342, options [nop,nop,TS val 593860562 ecr
+593860562], length 0
+10:12:38.186560 IP localhost.48470 > localhost.etlservicemgr: Flags
+[P.], seq 1565:1665, ack 165, win 342, options [nop,nop,TS val
+593860562 ecr 593860562], length 100
+10:12:38.186578 IP localhost.48470 > localhost.etlservicemgr: Flags
+[P.], seq 1665:1765, ack 165, win 342, options [nop,nop,TS val
+593860562 ecr 593860562], length 100
+10:12:38.186595 IP localhost.48470 > localhost.etlservicemgr: Flags
+[P.], seq 1765:1865, ack 165, win 342, options [nop,nop,TS val
+593860562 ecr 593860562], length 100
+10:12:38.186615 IP localhost.48470 > localhost.etlservicemgr: Flags
+[P.], seq 1865:1965, ack 165, win 342, options [nop,nop,TS val
+593860562 ecr 593860562], length 100
+10:12:38.186632 IP localhost.48470 > localhost.etlservicemgr: Flags
+[P.], seq 1965:2065, ack 165, win 342, options [nop,nop,TS val
+593860562 ecr 593860562], length 100
+10:12:38.196064 IP localhost.48470 > localhost.etlservicemgr: Flags
+[P.], seq 1965:2065, ack 165, win 342, options [nop,nop,TS val
+593860572 ecr 593860562], length 100
+10:12:38.196128 IP localhost.etlservicemgr > localhost.48470: Flags
+[.], ack 2065, win 342, options [nop,nop,TS val 593860572 ecr
+593860562,nop,nop,sack 1 {1965:2065}], length 0
+
+Now my question is: how is it possible that I can only send 21
+messages of 106 bytes before I see the EAGAIN while when sending
+larger messages I can send 2K+ messages.
+
+Thanks
+
+Best regards,
+Ronny
