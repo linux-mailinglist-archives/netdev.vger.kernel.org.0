@@ -2,122 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3F695464BA
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 12:55:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 046EF546513
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 13:09:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349180AbiFJKzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 06:55:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56678 "EHLO
+        id S1345469AbiFJLIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 07:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349192AbiFJKyp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 06:54:45 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D267921256B
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 03:51:36 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nzcEU-0000CS-8q; Fri, 10 Jun 2022 12:51:14 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 775AE91008;
-        Fri, 10 Jun 2022 10:51:10 +0000 (UTC)
-Date:   Fri, 10 Jun 2022 12:51:09 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
+        with ESMTP id S1347307AbiFJLIW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 07:08:22 -0400
+Received: from giacobini.uberspace.de (giacobini.uberspace.de [185.26.156.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C4A1451D8
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 04:08:18 -0700 (PDT)
+Received: (qmail 14172 invoked by uid 990); 10 Jun 2022 11:08:16 -0000
+Authentication-Results: giacobini.uberspace.de;
+        auth=pass (plain)
+From:   Soenke Huster <soenke.huster@eknoes.de>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 11/13] can: slcan: add ethtool support to reset
- adapter errors
-Message-ID: <20220610105109.he4tiihbxggxhx7f@pengutronix.de>
-References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
- <20220607094752.1029295-12-dario.binacchi@amarulasolutions.com>
- <20220607105225.xw33w32en7fd4vmh@pengutronix.de>
- <CABGWkvozX51zeQt16bdh+edsjwqST5A11qtfxYjTvP030DnToQ@mail.gmail.com>
- <20220609063813.jf5u6iaghoae5dv3@pengutronix.de>
- <CABGWkvrViDyWfU=PUfKq2HXnDjhiZdOMWSBt3xcmxFKxhHKCyw@mail.gmail.com>
- <20220609080112.24bw2764ov767pqc@pengutronix.de>
- <CABGWkvq2nbfYRww0KWB1YxLQ92hjsWjfV9+nT-cKzc5FPF=DzA@mail.gmail.com>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Soenke Huster <soenke.huster@eknoes.de>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] Bluetooth: RFCOMM: Use skb_trim to trim checksum
+Date:   Fri, 10 Jun 2022 13:07:49 +0200
+Message-Id: <20220610110749.110881-1-soenke.huster@eknoes.de>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="fmv4lnkvnggz7rbr"
-Content-Disposition: inline
-In-Reply-To: <CABGWkvq2nbfYRww0KWB1YxLQ92hjsWjfV9+nT-cKzc5FPF=DzA@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Bar: /
+X-Rspamd-Report: BAYES_HAM(-2.920938) R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) SUSPICIOUS_RECIPS(1.5)
+X-Rspamd-Score: -0.020938
+Received: from unknown (HELO unkown) (::1)
+        by giacobini.uberspace.de (Haraka/2.8.28) with ESMTPSA; Fri, 10 Jun 2022 13:08:16 +0200
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,
+        MSGID_FROM_MTA_HEADER,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+As skb->tail might be zero, it can underflow. This leads to a page
+fault: skb_tail_pointer simply adds skb->tail (which is now MAX_UINT)
+to skb->head.
 
---fmv4lnkvnggz7rbr
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+    BUG: unable to handle page fault for address: ffffed1021de29ff
+    #PF: supervisor read access in kernel mode
+    #PF: error_code(0x0000) - not-present page
+    RIP: 0010:rfcomm_run+0x831/0x4040 (net/bluetooth/rfcomm/core.c:1751)
 
-On 09.06.2022 10:52:03, Dario Binacchi wrote:
-> > > The help option of slcan_attach and slcand prints " -f (read status
-> > > flags with 'F\\r' to reset error states)\n" I looked at the sources of
-> > > the adapter I am using (USBtin, which uses the mcp2515 controller).
-> > > The 'F' command reads the EFLG register (0x2d) without resetting the
-> > > RX0OVR and RX1OVR overrun bits.
-> >
-> > The Lawicel doc [1] says 'F' is to read the status flags not to clear
-> > it. However commit 7ef581fec029 ("slcan_attach: added '-f' commandline
-> > option to read status flags") [2] suggests that there are some adapters
-> > that the reading of the status flag clears the errors. IMHO the 'F'
-> > command should be send unconditionally during open.
->=20
-> When in doubt I would follow the slcand / slcan_attach approach, that don=
-'t
-> send the 'F \ r' command by default. We would be more backward compatible
-> as regards the sequence of commands to be sent to the controller.
+By using skb_trim instead of the direct manipulation, skb->tail
+is reset. Thus, the correct pointer to the checksum is used.
 
-Ok, keep it this way.
+Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
+---
+v2: Clarified how the bug triggers, minimize code change
 
-Marc
+ net/bluetooth/rfcomm/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.c
+index 7324764384b6..443b55edb3ab 100644
+--- a/net/bluetooth/rfcomm/core.c
++++ b/net/bluetooth/rfcomm/core.c
+@@ -1747,7 +1747,7 @@ static struct rfcomm_session *rfcomm_recv_frame(struct rfcomm_session *s,
+ 	type = __get_type(hdr->ctrl);
+ 
+ 	/* Trim FCS */
+-	skb->len--; skb->tail--;
++	skb_trim(skb, skb->len - 1);
+ 	fcs = *(u8 *)skb_tail_pointer(skb);
+ 
+ 	if (__check_fcs(skb->data, type, fcs)) {
+-- 
+2.36.1
 
---fmv4lnkvnggz7rbr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKjIhsACgkQrX5LkNig
-010VdggAgzCPnmFDsBxLr+elg2NDIiGGSoOr+fWEHtMIkE37bCM9+3W7Ykh5lb1E
-/g/eElBH89yLwRVxZfSHuWiu4uFTYflF6/4Jh1sOmOWLHHiFt9XhWDDNw4lOwZ/t
-Y7gxaOiSgf5lUdcAvpFhBDP75GuH14uP3zeZTdpHbE836gFjXh9gPe5+1MJc6YJb
-rTD2omTEBR8a01XUzTuooRdCoChRj3ekr7fzVxQZYpLPxnsZVJRabwEfKT4+iEr4
-B7HfOdIeqtgVpOMj/hnns99US6Izxzz7gVxZLBH8gucqy3WoietOWZ7VI+tOirE+
-JTA0661k6mExdytVRzUMgZRhYVfEGA==
-=Fqe+
------END PGP SIGNATURE-----
-
---fmv4lnkvnggz7rbr--
