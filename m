@@ -2,215 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B6255458E5
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 01:59:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2BD8545917
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 02:18:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236578AbiFIX7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 19:59:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46376 "EHLO
+        id S235687AbiFJASL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 20:18:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbiFIX7D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 19:59:03 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558AC229103
-        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 16:59:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654819142; x=1686355142;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=gYEk9H96D9GqCPGXazJ0chRJoxWXBbx19MVZzNhUqIw=;
-  b=B2g6OPgeBIyNw6xCQYUPF5ORd0a8/y8v4cMVhGwiH1oAg+YJjPRdWWmC
-   4UVOpfkAmh9Quh7EE7wkYLXEz/ebF/xK9umQz1hRuJOS+iYsop/8cP8IF
-   dXwXEzXGP/XsmD+NkKGeC0jHjYoIunLwOymdK5sJEWxdXsN7jQVcxeaDU
-   ARUZNvdyiWZyoeVr+QMoVtyWv2Xml1yZjsQkDKZSr8DKoYyXSq3moZ7PO
-   3HQDt33enhPUPTQHYLBKZXKA5Lh0VWlR4ndb7UrXc7Rt73XLjPGFAmFQ/
-   siZNaNVZjhFrvhg0WcCi/l+lC6EfRSngUvFqM0vDN1CjvB5IHQ7i+29hr
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="276230909"
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
-   d="scan'208";a="276230909"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 16:59:02 -0700
-X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
-   d="scan'208";a="616158198"
-Received: from stolud-mobl1.ger.corp.intel.com ([10.212.124.13])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 16:59:01 -0700
-Date:   Thu, 9 Jun 2022 16:59:00 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     Joanne Koong <joannelkoong@gmail.com>
-cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next v2 0/2] Update bhash2 when socket's rcv saddr
- changes
-In-Reply-To: <CAJnrk1banJ13wqeAa9nqU1vdgFuizvU+fp6svwXRh5=XVS3c+g@mail.gmail.com>
-Message-ID: <4fd8484-8da-efaa-ab28-f75f639b754d@linux.intel.com>
-References: <20220602165101.3188482-1-joannelkoong@gmail.com> <4bae9df4-42c1-85c3-d350-119a151d29@linux.intel.com> <CAJnrk1buk-hK3nwyPz+o+wZLDdZTPpBSNniY3sJtgXZtJXOROQ@mail.gmail.com> <CAJnrk1bF=TD2b+RaYqH10i6LXkzbzsVHmM=-wR7S2_bHGxMuNw@mail.gmail.com>
- <e14e34b-2a1c-18b2-7c25-5ad72c5fc8@linux.intel.com> <CAJnrk1banJ13wqeAa9nqU1vdgFuizvU+fp6svwXRh5=XVS3c+g@mail.gmail.com>
+        with ESMTP id S230371AbiFJASK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 20:18:10 -0400
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C5CE4F1F6;
+        Thu,  9 Jun 2022 17:18:08 -0700 (PDT)
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 259LPaJI013977;
+        Thu, 9 Jun 2022 17:17:49 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=O4EMEJYUPaBSwBn2vHP5uUiASN5JoXY+2rJfE6OEm1o=;
+ b=TLAoDBONbul/uXfRcn1Ja9RHwy8weWHktCQJixM0PUTB88M518X9JXr5lXaN4KiWF3wg
+ cCZ+3YacmDIz+YDp4eXS/FUH7oCD/rm6qCoR4dA3PS1EPeDnFB6AWTInQPoHshQGHSNK
+ bxx5wljob4jG9nklQQ3+VbG0ERegaC06r4c= 
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2042.outbound.protection.outlook.com [104.47.66.42])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3gkajge3e6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 09 Jun 2022 17:17:49 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Oa7lJw2iIAk3/YC3pAT/brB00++Li5w60XyqMay2t/d6slM0k2/5mSv4G8BxS0zYYBNH79pLFlbKxjq+fxXfYOiLSU524EZ+rLIM1IDaGueXJ3ujEjNVr1ELwGbeIU7i9EQYQBCMPB1WKikWQmKEhLS0tKR8IQXHmpT/fKCAA1zVFU57S1jnFFoHsIDxQ45niYRAWv06ekQ4HiTTAnfIGXC8OR+7HdieXysNMQGoVWZd5ERPf35Klhv0semsBwsaRaCr/jnTxj1UiqgNJSIW5mdzM1F4+YoWRoRsh0rze0xvPLx6uy5c5BkQf9ciA6vYMhlr6ujX/kB7hHawFclzow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=O4EMEJYUPaBSwBn2vHP5uUiASN5JoXY+2rJfE6OEm1o=;
+ b=D9Y6f5dYzujnkAvE3ijd5ShvnlLzm0UpuNgBcFTul1l+ICcquPyI8HUo9GuTwwuKIbiAGKTeIPaZdPfX6yig0mmxFVhmhSpYn5lSe4DkfrarFfFvZDpcAcNIu0wvzGz1w/QfdqB6AsYCqYok18pyZ0+JciAPBfMjSazez9taxK6lr1cPPc58GApw6LZeU92VQajAfoL4LY7rceY1V3olYOjmck+ZKoIDlCEO9AsrbZHTqWym4lI9T6hilnQVnYOBXue1tTD2tRFI5vtwJ/DXB2e4I5BFuQrsdlBlB051gvQCoVtxtip9QozhwMNR5iy6m6GuHL0BNbO3gmZveI90iw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from CO1PR15MB5017.namprd15.prod.outlook.com (2603:10b6:303:e8::19)
+ by DS0PR15MB5421.namprd15.prod.outlook.com (2603:10b6:8:ce::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.19; Fri, 10 Jun
+ 2022 00:17:47 +0000
+Received: from CO1PR15MB5017.namprd15.prod.outlook.com
+ ([fe80::31b7:473f:3995:c117]) by CO1PR15MB5017.namprd15.prod.outlook.com
+ ([fe80::31b7:473f:3995:c117%7]) with mapi id 15.20.5332.013; Fri, 10 Jun 2022
+ 00:17:47 +0000
+Date:   Thu, 9 Jun 2022 17:17:43 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Jon Maxwell <jmaxwell37@gmail.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, atenart@kernel.org, cutaylor-pub@yahoo.com,
+        alexei.starovoitov@gmail.com, joe@cilium.io, i@lmb.io,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH net] net: bpf: fix request_sock leak in filter.c
+Message-ID: <20220610001743.z5nxapagwknlfjqi@kafai-mbp>
+References: <20220609011844.404011-1-jmaxwell37@gmail.com>
+ <56d6f898-bde0-bb25-3427-12a330b29fb8@iogearbox.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <56d6f898-bde0-bb25-3427-12a330b29fb8@iogearbox.net>
+X-ClientProxiedBy: CO2PR04CA0010.namprd04.prod.outlook.com
+ (2603:10b6:102:1::20) To CO1PR15MB5017.namprd15.prod.outlook.com
+ (2603:10b6:303:e8::19)
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed; charset=US-ASCII
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7c0aebde-c365-4cba-0f25-08da4a76a551
+X-MS-TrafficTypeDiagnostic: DS0PR15MB5421:EE_
+X-Microsoft-Antispam-PRVS: <DS0PR15MB5421BAA04C673DF5C5F6E1EFD5A69@DS0PR15MB5421.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ustKEL4MoRyN3oCAWIfbbwyMCceLSHJ5tKr3rZT6H+l6QsblY674GmGXkKNc3GVAd71RbV61vDAGGOnJOOYflVWW1s+EWBStV0SJtUzTk+AXBmWsdln9KLLCG43cQjIJ4olNqMQY3OccIhS3h7mLzmUDa/SnnSIWetlNi27doEGjcSQ4rQfa94HP1fb3Jlm/B+6oCKERiws/P1tRixagM3sUv/1xsvksZqLx1QiVUlw/xkpF3uEr1MPPP2yhBOU7uAviCEg8ssUhOu6eNqkmQuo5SUxa+WApIOnuriwQOCcjPB40hJUqb3BTNn3aMWLSZCmAUYbxWdla9itm3zETjS4snzz3OG/8PDD1fK9mR73yQWH7tyPSu9Pi7JJVPrZ/B0/g3vEUqwXrnxDD+IokmDtlZSAbPQFmgCGKoJW0V1o3PkkfvV1LejIY/hq1Pj9GYEC+NU+okXcZjXopPWviS1nh+nWy0VIAaUQfnVqwtAj7RE2dGg2xgjUx7MnwfThhfC183wa+Y0743mEsqR5Vcx2JJGH3zAnGfyWRk1fCCBgqY/WxsYcFsAk+VY4wkcIxSKKVQaA7c5J98fVsCT/aZBxuqjlHIJL+YhjFk0zvOFdn53/J7ow+X+Yn//N4mJKlVmZT39Maenxv2VJdmKgo3A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR15MB5017.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(6916009)(6666004)(38100700002)(83380400001)(8676002)(5660300002)(86362001)(6486002)(66476007)(6506007)(8936002)(6512007)(53546011)(4326008)(52116002)(2906002)(508600001)(9686003)(7416002)(186003)(33716001)(1076003)(66556008)(66946007)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sqNEkkDw29Zy65Z0nySZ0M/L8Q5JZjRnmHAeSUvtBzEQVVIQlwxRPhEeq/N3?=
+ =?us-ascii?Q?azKllLtQJ+lk/uLb6qRxqaZ5KaiRXnHxCIpLqgzWE3gULQYBga5KSVlFu7r9?=
+ =?us-ascii?Q?GZZXYMregGnDiwa6FjP6eg2I22pxqsTAUF9kg4RnzRBE3pqUzig21wrvyH26?=
+ =?us-ascii?Q?YRsIcLOWjpzxacF8JXxzQ+wyKbraSmOJDYwxAQu/8RcHNrNu2roaJDTxxUPX?=
+ =?us-ascii?Q?2tWko8khP+9++tU9CUsldce9/Kcuw6pdkarJar6tQvCuWxA4aXt5mRB3mf9s?=
+ =?us-ascii?Q?UvEbOqr38uygm9KjGjcNSm67aDYLHWMoGCFCnSZD4NOKWQKM40qvMOfb86gr?=
+ =?us-ascii?Q?Ch06q5Vakhh+8cHOh+odklq9ykLas4Oy4fWYhk/gFDRncWj5HPNvIr6wKnl7?=
+ =?us-ascii?Q?/VWwie3gB8BZIxRbqpQBNpylnza288xw4jaqHlLRWHEqOpwshpcdOwTnKgf2?=
+ =?us-ascii?Q?cJVQp/LIcqyLCK1vAapSERzn46HCscvUNZcFm53E48LNIVbNMTZ1SgM3Ba6J?=
+ =?us-ascii?Q?XlA9KJHsUHqQajJVa8k1QIO+Dqh/N9stV53Gx1spEI2IYzF+C7l06/tPZbCZ?=
+ =?us-ascii?Q?emkEaMeXa7NeYTGgr/opbNFTjEUgqjIjoTMvYqdSDf/ZeBgDNbOfw65pLafI?=
+ =?us-ascii?Q?0cHDz2AwUsXyYZ4GRr5kqZP4fCghqUZUEo0Y1sSBHFVvZzx7fHDfXJmPeiDX?=
+ =?us-ascii?Q?dB+GeWNpidGTY/TDYZBEL9qLzgtOeQydVTlIiksCDVSzJPFzbfsEcCGLXv+I?=
+ =?us-ascii?Q?ShA0b6PMhmOJNh4YNsUUHSlgr/RxAoqV8yRy9Qmzq4zLU3xYggxmjCOeTI8o?=
+ =?us-ascii?Q?1t9HoDoUUm/RUfLG9pZ4YrzkTKMAL/bTxtEGNkmiyL5+EPCCG59DG2sPmzHk?=
+ =?us-ascii?Q?A+dgttXN9E9a9h2x7BVb2fv6LQuGWs6gAPR1xJ9qHLr1iMx2SA5yeiuBQ+aG?=
+ =?us-ascii?Q?R/lKSqK9L03DCIRZGOCAsKWyySZNigDO1rGcdOluEVnyU1ZyxVQQDFtBwer3?=
+ =?us-ascii?Q?ZRl4T7UcU6oAIG4PtcE5qwCKa4ermdaUo3RVqTVvqbaIMJO7w5atrHpnCkPV?=
+ =?us-ascii?Q?JoCW/zPHHsCRnq9i/3XxLMlfv2MqIMsQaxwzdKGlaBf0FBlIqwXwU+ymaKpg?=
+ =?us-ascii?Q?SM88e6BCUmye9L173fvOraZOIXqq1HP09tN1KPEctGpVIE/kIH5FJj33YfP9?=
+ =?us-ascii?Q?keHpW+4F4+P5zj+ARuiMlRqxfY1aT6KIUvyiokdQdSQaJ/SDycuYf48QGJAz?=
+ =?us-ascii?Q?Ch5sF62YlY8IcPX8LvGdcvOGR/r7qcTSNbi1jjw5BK7NgZjy9DhW2i/VMwg4?=
+ =?us-ascii?Q?cKd4DUVL1sdYNoZoe0uqltz7nvqhIaH6YhKsU8j4eL3M+7n7SqqmLiGZmjbr?=
+ =?us-ascii?Q?p4JC8FPgrKxKlkgRAMLiDgaFhaols9vXeSTLlQNjQJAXp91e1Ts22uPuecO5?=
+ =?us-ascii?Q?c9/IMKrMYYv1t+eR5juNv0pAkXWGDzDfKXTcez5rh8an/VJKLk8zs6RS4PpS?=
+ =?us-ascii?Q?aC0WJLHgDdOM3xapBMjR0vZpJLR4zg4R4tPhe8UiDS9Wgx7fp/+LcZbRx3UW?=
+ =?us-ascii?Q?IXVEGH/0ffCX2ltC8mOzklMsfqQHsHobBYNCbJ1wqvGW0eaX+1cDapGXiBNQ?=
+ =?us-ascii?Q?8MGXdV3zWnv0JnywWQvAqoDUb8RvvV0KqbXC9+xEU5GzKIBfP8s/OvYmmEfz?=
+ =?us-ascii?Q?pdYy8WT0gd+KF56T2KnwL6VoVkg5kIv2mSDMIlId/C+K2jLJymYoXBlW5ST/?=
+ =?us-ascii?Q?JnsGFTs6YWoIK0kJfgMcMkvolcaQGZo=3D?=
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7c0aebde-c365-4cba-0f25-08da4a76a551
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR15MB5017.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2022 00:17:46.9140
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uQoV31nguQkE4wJC7UuNfIbHN4vEhaamxeFf4Kxa6E7KGoE0P2wC9+ERqn2ZY6j0
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR15MB5421
+X-Proofpoint-GUID: nokUl5H8J3kgRx9_k0WPVW4vhrx2t0EW
+X-Proofpoint-ORIG-GUID: nokUl5H8J3kgRx9_k0WPVW4vhrx2t0EW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-09_16,2022-06-09_02,2022-02-23_01
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 8 Jun 2022, Joanne Koong wrote:
+On Thu, Jun 09, 2022 at 10:29:15PM +0200, Daniel Borkmann wrote:
+> On 6/9/22 3:18 AM, Jon Maxwell wrote:
+> > A customer reported a request_socket leak in a Calico cloud environment. We
+> > found that a BPF program was doing a socket lookup with takes a refcnt on
+> > the socket and that it was finding the request_socket but returning the parent
+> > LISTEN socket via sk_to_full_sk() without decrementing the child request socket
+> > 1st, resulting in request_sock slab object leak. This patch retains the
+Great catch and debug indeed!
 
-> On Tue, Jun 7, 2022 at 10:33 AM Mat Martineau
-> <mathew.j.martineau@linux.intel.com> wrote:
->>
->> On Mon, 6 Jun 2022, Joanne Koong wrote:
->>
->>> On Fri, Jun 3, 2022 at 5:38 PM Joanne Koong <joannelkoong@gmail.com> wrote:
->>>>
->>>> On Fri, Jun 3, 2022 at 11:55 AM Mat Martineau
->>>> <mathew.j.martineau@linux.intel.com> wrote:
->>>>>
->>>>> On Thu, 2 Jun 2022, Joanne Koong wrote:
->>>>>
->>>>>> As syzbot noted [1], there is an inconsistency in the bhash2 table in the
->>>>>> case where a socket's rcv saddr changes after it is binded. (For more
->>>>>> details, please see the commit message of the first patch)
->>>>>>
->>>>>> This patchset fixes that and adds a test that triggers the case where the
->>>>>> sk's rcv saddr changes. The subsequent listen() call should succeed.
->>>>>>
->>>>>> [1] https://lore.kernel.org/netdev/0000000000003f33bc05dfaf44fe@google.com/
->>>>>>
->>>>>> --
->>>>>> v1 -> v2:
->>>>>> v1: https://lore.kernel.org/netdev/20220601201434.1710931-1-joannekoong@fb.com/
->>>>>> * Mark __inet_bhash2_update_saddr as static
->>>>>>
->>>>>> Joanne Koong (2):
->>>>>>  net: Update bhash2 when socket's rcv saddr changes
->>>>>>  selftests/net: Add sk_bind_sendto_listen test
->>>>>>
->>>>>
->>>>> Hi Joanne -
->>>>>
->>>>> I've been running my own syzkaller instance with v1 of this fix for a
->>>>> couple of days. Before this patch, syzkaller would trigger the
->>>>> inet_csk_get_port warning a couple of times per hour. After this patch it
->>>>> took two days to show the warning:
->>>>>
->>>>> ------------[ cut here ]------------
->>>>>
->>>>> WARNING: CPU: 0 PID: 9430 at net/ipv4/inet_connection_sock.c:525
->>>>> inet_csk_get_port+0x938/0xe80 net/ipv4/inet_connection_sock.c:525
->>>>> Modules linked in:
->>>>> CPU: 0 PID: 9430 Comm: syz-executor.5 Not tainted 5.18.0-05016-g433fde5b4119 #3
->>>>> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
->>>>> RIP: 0010:inet_csk_get_port+0x938/0xe80 net/ipv4/inet_connection_sock.c:525
->>>>> Code: ff 48 89 84 24 b0 00 00 00 48 85 c0 0f 84 6a 01 00 00 e8 2b 0f db fd 48 8b 6c 24 70 c6 04 24 01 e9 fb fb ff ff e8 18 0f db fd <0f> 0b e9 70 f9 ff ff e8 0c 0f db fd 0f 0b e9 28 f9 ff ff e8 00 0f
->>>>> RSP: 0018:ffffc90000b5fbc0 EFLAGS: 00010212
->>>>> RAX: 00000000000000e7 RBX: ffff88803c410040 RCX: ffffc9000e419000
->>>>> RDX: 0000000000040000 RSI: ffffffff836f47e8 RDI: ffff88803c4106e0
->>>>> RBP: ffff88810b773840 R08: 0000000000000001 R09: 0000000000000001
->>>>> R10: fffffbfff0f64303 R11: 0000000000000001 R12: 0000000000000000
->>>>> R13: ffff88810605e2f0 R14: ffffffff88606040 R15: 000000000000c1ff
->>>>> FS:  00007fada4d03640(0000) GS:ffff88811ac00000(0000) knlGS:0000000000000000
->>>>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>>>> CR2: 0000001b32e24000 CR3: 00000001016de001 CR4: 0000000000770ef0
->>>>> PKRU: 55555554
->>>>> Call Trace:
->>>>>   <TASK>
->>>>>   inet_csk_listen_start+0x143/0x3d0 net/ipv4/inet_connection_sock.c:1178
->>>>>   inet_listen+0x22f/0x650 net/ipv4/af_inet.c:228
->>>>>   mptcp_listen+0x205/0x440 net/mptcp/protocol.c:3564
->>>>>   __sys_listen+0x189/0x260 net/socket.c:1810
->>>>>   __do_sys_listen net/socket.c:1819 [inline]
->>>>>   __se_sys_listen net/socket.c:1817 [inline]
->>>>>   __x64_sys_listen+0x54/0x80 net/socket.c:1817
->>>>>   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->>>>>   do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
->>>>>   entry_SYSCALL_64_after_hwframe+0x46/0xb0
->>>>> RIP: 0033:0x7fada558f92d
->>>>> Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89 01 48
->>>>> RSP: 002b:00007fada4d03028 EFLAGS: 00000246 ORIG_RAX: 0000000000000032
->>>>> RAX: ffffffffffffffda RBX: 00007fada56aff60 RCX: 00007fada558f92d
->>>>> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000004
->>>>> RBP: 00007fada56000a0 R08: 0000000000000000 R09: 0000000000000000
->>>>> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
->>>>> R13: 000000000000000b R14: 00007fada56aff60 R15: 00007fada4ce3000
->>>>>   </TASK>
->>>>> irq event stamp: 2078
->>>>> hardirqs last  enabled at (2092): [<ffffffff812f1be3>] __up_console_sem+0xb3/0xd0 kernel/printk/printk.c:291
->>>>> hardirqs last disabled at (2103): [<ffffffff812f1bc8>] __up_console_sem+0x98/0xd0 kernel/printk/printk.c:289
->>>>> softirqs last  enabled at (1498): [<ffffffff83807dd4>] lock_sock include/net/sock.h:1691 [inline]
->>>>> softirqs last  enabled at (1498): [<ffffffff83807dd4>] inet_listen+0x94/0x650 net/ipv4/af_inet.c:199
->>>>> softirqs last disabled at (1500): [<ffffffff836f425c>] spin_lock_bh include/linux/spinlock.h:354 [inline]
->>>>> softirqs last disabled at (1500): [<ffffffff836f425c>] inet_csk_get_port+0x3ac/0xe80 net/ipv4/inet_connection_sock.c:483
->>>>> ---[ end trace 0000000000000000 ]---
->>>>>
->>>>>
->>>>> In the full log file it does look like syskaller is doing something
->>>>> strange since it's calling bind, connect, and listen on the same socket:
->>>>>
->>>>> r4 = socket$inet_mptcp(0x2, 0x1, 0x106)
->>>>> bind$inet(r4, &(0x7f0000000000)={0x2, 0x4e23, @empty}, 0x10)
->>>>> connect$inet(r4, &(0x7f0000000040)={0x2, 0x0, @local}, 0x10)
->>>>> listen(r4, 0x0)
->>>>>
->>>>> ...but it is a fuzz tester after all.
->>>>>
->>>>> I've uploaded the full syzkaller logs to this GitHub issue:
->>>>>
->>>>> https://github.com/multipath-tcp/mptcp_net-next/issues/279
->>>>>
->>>>>
->>>>> Not sure yet if this is MPTCP-related. I don't think MPTCP
->>>>> changes anything with the subflow TCP socket bind hashes.
->>>>>
->>>> Hi Mat,
->>>>
->>>> Thanks for bringing this up and for uploading the logs. I will look into this.
->>>>>
->>> Hi Mat,
->>>
->>> I am still trying to configure my local environment for mptcp to repro
->>> + test the fix to verify that it is correct. I think the fix is to add
->>> "inet_bhash2_update_saddr(msk);" to the end of the
->>> "mptcp_copy_inaddrs" function in net/mptcp/protocol.c.  Would you be
->>> able to run an instance on your local syzkaller environment with this
->>> line added to see if that fixes the warning?
->>
->> Hi Joanne -
->>
->> I also investigated that function when trying to figure out why this
->> warning might be happening in MPTCP.
->>
->> In MPTCP, the userspace-facing MPTCP socket (msk) doesn't directly bind or
->> connect. The msk creates and manages TCP subflow sockets (ssk in
->> mptcp_copy_inaddrs()), and passes through bind and connect calls to the
->> subflows. The msk depends on the subflow to do the hash updates, since
->> those subflow sockets are the ones interacting with the inet layer.
->>
->> mptcp_copy_inaddrs() copies the already-hashed addresses and ports from
->> the ssk to the msk, and we only want the ssk in the hash table.
->>
-> I see, thanks for the explanation, Mat! I will keep investigating.
+> > existing behaviour of returning full socks to the caller but it also decrements
+> > the child request_socket if one is present before doing so to prevent the leak.
+> > 
+> > Thanks to Curtis Taylor for all the help in diagnosing and testing this. And
+> > thanks to Antoine Tenart for the reproducer and patch input.
+> > 
+> > Fixes: f7355a6c0497 bpf: ("Check sk_fullsock() before returning from bpf_sk_lookup()")
+> > Fixes: edbf8c01de5a bpf: ("add skc_lookup_tcp helper")
+Instead of the above commits, I think this dated back to
+6acc9b432e67 ("bpf: Add helper to retrieve socket in BPF")
 
-No problem!
+> > Tested-by: Curtis Taylor <cutaylor-pub@yahoo.com>
+> > Co-developed-by: Antoine Tenart <atenart@kernel.org>
+> > Signed-off-by:: Antoine Tenart <atenart@kernel.org>
+> > Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
+> > ---
+> >   net/core/filter.c | 20 ++++++++++++++------
+> >   1 file changed, 14 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index 2e32cee2c469..e3c04ae7381f 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -6202,13 +6202,17 @@ __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
+> >   {
+> >   	struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
+> >   					   ifindex, proto, netns_id, flags);
+> > +	struct sock *sk1 = sk;
+> >   	if (sk) {
+> >   		sk = sk_to_full_sk(sk);
+> > -		if (!sk_fullsock(sk)) {
+> > -			sock_gen_put(sk);
+> > +		/* sk_to_full_sk() may return (sk)->rsk_listener, so make sure the original sk1
+> > +		 * sock refcnt is decremented to prevent a request_sock leak.
+> > +		 */
+> > +		if (!sk_fullsock(sk1))
+> > +			sock_gen_put(sk1);
+> > +		if (!sk_fullsock(sk))
+In this case, sk1 == sk (timewait).  It is a bit worrying to pass
+sk to sk_fullsock(sk) after the above sock_gen_put().
+I think Daniel's 'if (sk2 != sk) { sock_gen_put(sk); }' check is better.
 
-To give you an update, I have not seen the warning again in nearly a week 
-of running syzkaller. My theory is that the one I saw last Friday was not 
-MPTCP-specific, but may have been related to the locking concern Paolo 
-noted.
+> 
+> [ +Martin/Joe/Lorenz ]
+> 
+> I wonder, should we also add some asserts in here to ensure we don't get an unbalance for the
+> bpf_sk_release() case later on? Rough pseudocode could be something like below:
+> 
+> static struct sock *
+> __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
+>                 struct net *caller_net, u32 ifindex, u8 proto, u64 netns_id,
+>                 u64 flags)
+> {
+>         struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
+>                                            ifindex, proto, netns_id, flags);
+>         if (sk) {
+>                 struct sock *sk2 = sk_to_full_sk(sk);
+> 
+>                 if (!sk_fullsock(sk2))
+>                         sk2 = NULL;
+>                 if (sk2 != sk) {
+>                         sock_gen_put(sk);
+>                         if (unlikely(sk2 && !sock_flag(sk2, SOCK_RCU_FREE))) {
+I don't think it matters if the helper-returned sk2 is refcounted or not (SOCK_RCU_FREE).
+The verifier has ensured the bpf_sk_lookup() and bpf_sk_release() are
+always balanced regardless of the type of sk2.
 
-If I see the warning again I will update you.
+bpf_sk_release() will do the right thing to check the sk2 is refcounted or not
+before calling sock_gen_put().
 
-Thanks,
+The bug here is the helper forgot to call sock_gen_put(sk) while
+the verifier only tracks the sk2, so I think the 'if (unlikely...) { WARN_ONCE(...); }'
+can be saved.
 
---
-Mat Martineau
-Intel
+>                                 WARN_ONCE(1, "Found non-RCU, unreferenced socket!");
+>                                 sk2 = NULL;
+>                         }
+>                 }
+>                 sk = sk2;
+>         }
+>         return sk;
+> }
