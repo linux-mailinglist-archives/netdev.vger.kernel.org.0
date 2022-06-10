@@ -2,129 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DD90545937
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 02:36:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9A80545939
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 02:37:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239373AbiFJAgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 20:36:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39116 "EHLO
+        id S239863AbiFJAhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 20:37:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233015AbiFJAgq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 20:36:46 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8B62228CD;
-        Thu,  9 Jun 2022 17:36:45 -0700 (PDT)
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 259LPoN1007534;
-        Thu, 9 Jun 2022 17:36:22 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=wbAeM2Drf08u36kfllsgpKbesUj2QSXqIXwOj8hNNTU=;
- b=BnKZfUw7UVMYmv1oU3ZukgPDaU+XQeypl3XgcscyOE1mAAHMjBwBDO00Ta1jmECjEFNV
- aiID7ke1yIIXH2RdEAtq0TTGPsuBSmDOEh+ONuYTHS7sosx0q5JT5AqYm/dC2hZfQa6W
- z85WgU7hHWQ8mrASNt+aZYnzBMkp+rsyObU= 
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2169.outbound.protection.outlook.com [104.47.57.169])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3gke7w57nr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 09 Jun 2022 17:36:22 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=f4v8G4mgx6vheXR1VTkbG1DLqdX4jPGQqQ8aYeCvY4XZA/dQBoiL0fdWFWy8W3DvhyNLj9cgdW40NCffxZ/AJEUVpfSErpkbf6c8Ouq9FkT/gmMZkSOlJST0KAs2l6f8jxlkuvxRupDkPno2Ub1gYnoSMcMXuFzU78TkO1kUsa2aYbzwT0T4uBDlwb+TkGLANYIIZRSBANqTsBFnOU46r3FM06ek4Vf4RBylwQ1cAWoPg4MHQvLBps3xzc82Z9znsB07p1ZoS+Aix/OR9lZLRcVS4k+hBXCmBcrhHz0CbrFslcMoYY5onmrMx4Q2CNUHA4tzPCNgeLHplSRDZVnqzg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wbAeM2Drf08u36kfllsgpKbesUj2QSXqIXwOj8hNNTU=;
- b=TwL/3sZad5379lcBs2+tGlq+bmdpxw92Tmu/yNYXs8EfpMcW1Dt8Ek2KY9IdPFi3gkRmMpGw0qc7ZNZR3J6Kcq+0MUywYApF1RRI4O+YHsj3S5G8jeazJ60OUIuE+we8hHhRIDW2CN0Aqxhg3wgUZDOn8XtxJwxEobtI0J/eIDGMOuF8AVOhiwACRjGeslUMONS+jiGQR6wH4ZdzSqYgnlqbimfS4hTbtI8TBxpHT1xrrQ0gCGpevYwCkeSxomzwX61vDOSPFRYUv9fFLvbHmZRO7SIZcuI1OySyO/tUuAvKm1hK/eMa6D0At0sfAfnge8efODFurfG4BpIIHSFP1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from CO1PR15MB5017.namprd15.prod.outlook.com (2603:10b6:303:e8::19)
- by MN2PR15MB3375.namprd15.prod.outlook.com (2603:10b6:208:39::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Fri, 10 Jun
- 2022 00:36:20 +0000
-Received: from CO1PR15MB5017.namprd15.prod.outlook.com
- ([fe80::31b7:473f:3995:c117]) by CO1PR15MB5017.namprd15.prod.outlook.com
- ([fe80::31b7:473f:3995:c117%7]) with mapi id 15.20.5332.013; Fri, 10 Jun 2022
- 00:36:20 +0000
-Date:   Thu, 9 Jun 2022 17:36:18 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Jon Maxwell <jmaxwell37@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, atenart@kernel.org, cutaylor-pub@yahoo.com,
-        alexei.starovoitov@gmail.com, joe@cilium.io, i@lmb.io,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH net] net: bpf: fix request_sock leak in filter.c
-Message-ID: <20220610003618.um4qya5rl6hirvnz@kafai-mbp>
-References: <20220609011844.404011-1-jmaxwell37@gmail.com>
- <56d6f898-bde0-bb25-3427-12a330b29fb8@iogearbox.net>
- <20220610001743.z5nxapagwknlfjqi@kafai-mbp>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610001743.z5nxapagwknlfjqi@kafai-mbp>
-X-ClientProxiedBy: MW3PR06CA0010.namprd06.prod.outlook.com
- (2603:10b6:303:2a::15) To CO1PR15MB5017.namprd15.prod.outlook.com
- (2603:10b6:303:e8::19)
+        with ESMTP id S233015AbiFJAhe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 20:37:34 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48BC3289A30
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 17:37:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654821453; x=1686357453;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=+e8enzIGttZHuYehjyxPWdiqVar7Z2paXEXVxCEB98w=;
+  b=cVaAUh+yNhINw2mOx34VsWsB+LsjBSN41bnJAaW0iv4nEb0T7L8y5gCv
+   Qi2L3OmkIiTj+D05IiG4xbQe5mgV84Y+YAPLVWsw/b84KIAX3Jd7T4+iK
+   EL6Lj5e2ocwr7w9GoFK5X1wFrmY2cUaOu00OkP2Sg/mF/nXVCnxcI6Si7
+   9JgaPpkPTDlSFtJK7sy9ht+3mEGmZUPhkFBt7n1kRI1TonRLepSX3ZQsC
+   BsycC9Br1LYn1I+/urDKZFQ6evNRZequCivkIuF0bejjRJFrWJ6ckbzPW
+   v3///YqgeLgKHlyRkrDD4d9G2K4p5kpYQBMEmZO8j7vg0BCBbs+805dLf
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="278274483"
+X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
+   d="scan'208";a="278274483"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 17:37:17 -0700
+X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
+   d="scan'208";a="908612987"
+Received: from stolud-mobl1.ger.corp.intel.com ([10.212.124.13])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 17:37:17 -0700
+Date:   Thu, 9 Jun 2022 17:37:16 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Joanne Koong <joannelkoong@gmail.com>
+cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v2 0/2] Update bhash2 when socket's rcv saddr
+ changes
+In-Reply-To: <CAJnrk1bcVzLf2pKSV8r2JL6f-co+OYR3z8gtSt7uyLkoiGAPpA@mail.gmail.com>
+Message-ID: <7df42be8-7170-d649-cf22-6bf176ffcd33@linux.intel.com>
+References: <20220602165101.3188482-1-joannelkoong@gmail.com> <4bae9df4-42c1-85c3-d350-119a151d29@linux.intel.com> <CAJnrk1buk-hK3nwyPz+o+wZLDdZTPpBSNniY3sJtgXZtJXOROQ@mail.gmail.com> <CAJnrk1bF=TD2b+RaYqH10i6LXkzbzsVHmM=-wR7S2_bHGxMuNw@mail.gmail.com>
+ <e14e34b-2a1c-18b2-7c25-5ad72c5fc8@linux.intel.com> <CAJnrk1banJ13wqeAa9nqU1vdgFuizvU+fp6svwXRh5=XVS3c+g@mail.gmail.com> <CAJnrk1bcVzLf2pKSV8r2JL6f-co+OYR3z8gtSt7uyLkoiGAPpA@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 66b928eb-74eb-43e6-9778-08da4a793d18
-X-MS-TrafficTypeDiagnostic: MN2PR15MB3375:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR15MB3375FA2E0CFA1DF090493B94D5A69@MN2PR15MB3375.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: WyotM0aCGoFcYeQMim/9OUfEd5Tv/MxlsUp/liMO6fm2BCbsEXZnBhnMbJ4gxZxufiOf9TQBTbW6z+T062MDAVSW2accHD09/V6MniKjGX2FJnHU/SYf+s8mZ/4FHFNyzovm/ns4oquOGtp69X1wjhXFkwP7xO/GqF705aSTXi4Oi10LgEQAAZ6YB0Ov78f4jUV8CVav/S+8lj2ILoUke7IpGofzP9CmXT6IBt8jgSQoJ/Iv35Olp8T33Q3uw3tcVKaEw5jscCzyK5yhUDXqaRQrhgH8w4eYh4Y0ioycd0VeBtwZx26GjEmbXPPR13d01dgSQROm+rXJrnBMxOdCywhhHl0ImOc/gRJSG5/nSr+Q5DEbQrrTT7EX/IgUHz4U3fk3RQw3H+1DvGUWeYh7MrW6cREzOEP52ELDEDI5wb+mrq2FpC/OUV4TXapWhC70ZmKlyV/GWw4YN9aeFJPUvgyj5WqEo2t3XY6xZ0BEQDh9m559RlSg9Tux3ArN/T+mCTpUZtv9FqOcmqyD2CrUfaweGWwrrmxjHvXLLXJAEB0BNKehUnGjXHphMDUdh0f8MgF8GuUE7jAg1K9I47ZOaDxWIDQOCzxL1rB6uZ2zlNiogBWh+5C+3p4O9uycC70AglusuAWCtvVnPWkM43zTbQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR15MB5017.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(7416002)(5660300002)(6512007)(9686003)(508600001)(52116002)(86362001)(53546011)(2906002)(6506007)(8936002)(6486002)(33716001)(38100700002)(1076003)(186003)(66476007)(83380400001)(8676002)(66946007)(6916009)(4326008)(66556008)(316002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sMt4TTtxYUsZkHiY7hx6wpDfyxGwTiy0jLsHupyDW2GHIRwMaFOdm6mV2tKB?=
- =?us-ascii?Q?r3fi4MguDYYV2GyELGn0j5S7avagzcdRD7no9l7obKsJ2xOnCx9tXjntmUKE?=
- =?us-ascii?Q?0zB5dsQelXYO7zQlYVX/B0SZLxPIxH3XAA/FI/UaJ9GUQULTNoFSncnH461e?=
- =?us-ascii?Q?qNxdaf+TA/l7bKiRgBP5JbEhIRWa52T5A4PDMd5ka2g14/S3ZdQq4GBg6VMN?=
- =?us-ascii?Q?iVojZcr3sVKrSMIPCID0w4dqW11pPaSUuYkDmkXgMSKm4wdCK1xGHh49D1tT?=
- =?us-ascii?Q?Z9MzHNNNhF5sjBFh33+Z0t51UAr1lcDbr2jstR5wlbbRfiGgVq24i5WHDpqj?=
- =?us-ascii?Q?P4uga/tRHftmbeaY3Rp2qlIZJWDYy0NXaBYkHOsmSky4w/i6xxBSFMWAL9tO?=
- =?us-ascii?Q?58i6GHv7A9qrY0C2ymcJs9Av7sajtL1ROtkbNxP7FcJB4VVYzAtNlsSnc8Z2?=
- =?us-ascii?Q?TAYrc9RlY1uxs7s6I0rs2gUya+ZvsnDf0KRa+EDS+hmd4pNCkPyLaPxZaD7W?=
- =?us-ascii?Q?hAZLDMTOhjaUUmkrp8+5ObYXKwJF1qAaB5l7g6AsZvnSKDK032E0dRVxuqkA?=
- =?us-ascii?Q?Y3pW8GtNxHJOLsbMjPyhoQJ2yANKSm5/rw9kHbHtJIn1KiKtCK+PbIcbDppP?=
- =?us-ascii?Q?oh0M+5oTl2EZDpVbCWFBgWAZ/h5n7yXgAxKjMxRRvP/2hnZtrxAL7PtYKles?=
- =?us-ascii?Q?Lx8dPYPz82iCqYoymJ48X0q0bZk9VcH7gzGdvKU8BbbEdPhQwEdhSzr/Lk8J?=
- =?us-ascii?Q?kIB8q8iNSXTVezXarTSquhaGNSBMpoQfO+xRG9vrm+eNOszQDYry6d8kAv0F?=
- =?us-ascii?Q?3q1crrII/iQKi2iIxS5AKsO90RGGMhFwAn0zBNR0lWV4Dp+rEBDG2gq24AVW?=
- =?us-ascii?Q?ilUnIz/dr7yGfJHoWi8evEXJjxflU27D6ljUnbbMb6K1aeTYovq/bnLLxi0V?=
- =?us-ascii?Q?XbwA7xSK70UvzMBdpkeUoi7eN/oPvy4iFlf/S/0ZatF3gPx1ddwL2vqIjXDP?=
- =?us-ascii?Q?JBDFM0n5rabyW7glU8CjalVLWZQokb/4sUfIJJawnFg9HLas7nNEOk5PWiHQ?=
- =?us-ascii?Q?ygKB/yhU93IEc9vYTPjCTp+lbMcgv4UD/byUk0wlSXCnzF5Xfx9VIjHUVQ8+?=
- =?us-ascii?Q?dGyeqzl6yp4yXDq3NsMa2anmisuyUYslovq4lVzucK09Yfqt+AuTtFETFXQr?=
- =?us-ascii?Q?fsiE28JKzcfk+IJtIR32IX8oE0YSilpbK/V1mIeEKknbMdEWxb5heYL7LhM3?=
- =?us-ascii?Q?NDw0jhkPYU8nRKUCgukauuOmFlQW7iGF6nSEUn8FibH9wmEadNGa2DJ9gqvv?=
- =?us-ascii?Q?xxAfdsJYr0YBBi5WJrjZW5EVF9dwX3oDcbbwy7jJyGqZYaiMjjNlGigHLKXV?=
- =?us-ascii?Q?4j0iFOWzI/SF1FIzEIF+9c9oaSgklA2bBjadCvpxjMSWcopHYKmJVu/xpWiY?=
- =?us-ascii?Q?p+3btVf0ntxlyjKVgLOMwVXIs3sOhsJa7ip+a+DkQh5fL13nHCYUU2eLKxt/?=
- =?us-ascii?Q?bq5dpUlFqueVgRxWJ/mcENWa7NqVNIC5P49ZQF+mzusap1ZvPBi74OOzJdQO?=
- =?us-ascii?Q?Vu//CsCWTxZsrbdkLeYFswjV7rT7mDeqO80hsVeN4w4nGfn1K4YMMCMy7toz?=
- =?us-ascii?Q?v1bhI0hlBMhbF3P3KJeF2u7Gp4TnRoxbbZIf8pW0zo17m5u3e0HENsxKJ+cp?=
- =?us-ascii?Q?RW6HRGWje1BkYdf1f/pjNgoFfp88FFx0F4rmRoF8dLLaftzrJEtQckkuIYND?=
- =?us-ascii?Q?GguWeRxECQlvlMP/189yD1/aqdmdeq0=3D?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 66b928eb-74eb-43e6-9778-08da4a793d18
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR15MB5017.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2022 00:36:20.4897
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KL1Uh5OZ0Nz9Fw1ZP3qxfWQH0R6mrX+BWZcRRcyK9KKKIhG1yrxxaZ3X/m8GI3ct
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3375
-X-Proofpoint-ORIG-GUID: 24FDu8HeYSMqijRbEwEgUMzzosQVtrLk
-X-Proofpoint-GUID: 24FDu8HeYSMqijRbEwEgUMzzosQVtrLk
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-09_16,2022-06-09_02,2022-02-23_01
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+Content-Type: text/plain; format=flowed; charset=US-ASCII
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
@@ -134,26 +64,199 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 05:17:47PM -0700, Martin KaFai Lau wrote:
-> On Thu, Jun 09, 2022 at 10:29:15PM +0200, Daniel Borkmann wrote:
-> > On 6/9/22 3:18 AM, Jon Maxwell wrote:
-> > > A customer reported a request_socket leak in a Calico cloud environment. We
-> > > found that a BPF program was doing a socket lookup with takes a refcnt on
-> > > the socket and that it was finding the request_socket but returning the parent
-> > > LISTEN socket via sk_to_full_sk() without decrementing the child request socket
-> > > 1st, resulting in request_sock slab object leak. This patch retains the
-> Great catch and debug indeed!
-> 
-> > > existing behaviour of returning full socks to the caller but it also decrements
-> > > the child request_socket if one is present before doing so to prevent the leak.
-> > > 
-> > > Thanks to Curtis Taylor for all the help in diagnosing and testing this. And
-> > > thanks to Antoine Tenart for the reproducer and patch input.
-> > > 
-> > > Fixes: f7355a6c0497 bpf: ("Check sk_fullsock() before returning from bpf_sk_lookup()")
-> > > Fixes: edbf8c01de5a bpf: ("add skc_lookup_tcp helper")
-> Instead of the above commits, I think this dated back to
-> 6acc9b432e67 ("bpf: Add helper to retrieve socket in BPF")
+On Thu, 9 Jun 2022, Joanne Koong wrote:
 
-Since this is more bpf specific, I think it could go to the bpf tree.
-In v2, please cc bpf@vger.kernel.org and tag it with 'PATCH v2 bpf'.
+> On Wed, Jun 8, 2022 at 1:27 PM Joanne Koong <joannelkoong@gmail.com> wrote:
+>>
+>> On Tue, Jun 7, 2022 at 10:33 AM Mat Martineau
+>> <mathew.j.martineau@linux.intel.com> wrote:
+>>>
+>>> On Mon, 6 Jun 2022, Joanne Koong wrote:
+>>>
+>>>> On Fri, Jun 3, 2022 at 5:38 PM Joanne Koong <joannelkoong@gmail.com> wrote:
+>>>>>
+>>>>> On Fri, Jun 3, 2022 at 11:55 AM Mat Martineau
+>>>>> <mathew.j.martineau@linux.intel.com> wrote:
+>>>>>>
+>>>>>> On Thu, 2 Jun 2022, Joanne Koong wrote:
+>>>>>>
+>>>>>>> As syzbot noted [1], there is an inconsistency in the bhash2 table in the
+>>>>>>> case where a socket's rcv saddr changes after it is binded. (For more
+>>>>>>> details, please see the commit message of the first patch)
+>>>>>>>
+>>>>>>> This patchset fixes that and adds a test that triggers the case where the
+>>>>>>> sk's rcv saddr changes. The subsequent listen() call should succeed.
+>>>>>>>
+>>>>>>> [1] https://lore.kernel.org/netdev/0000000000003f33bc05dfaf44fe@google.com/
+>>>>>>>
+>>>>>>> --
+>>>>>>> v1 -> v2:
+>>>>>>> v1: https://lore.kernel.org/netdev/20220601201434.1710931-1-joannekoong@fb.com/
+>>>>>>> * Mark __inet_bhash2_update_saddr as static
+>>>>>>>
+>>>>>>> Joanne Koong (2):
+>>>>>>>  net: Update bhash2 when socket's rcv saddr changes
+>>>>>>>  selftests/net: Add sk_bind_sendto_listen test
+>>>>>>>
+>>>>>>
+>>>>>> Hi Joanne -
+>>>>>>
+>>>>>> I've been running my own syzkaller instance with v1 of this fix for a
+>>>>>> couple of days. Before this patch, syzkaller would trigger the
+>>>>>> inet_csk_get_port warning a couple of times per hour. After this patch it
+>>>>>> took two days to show the warning:
+>>>>>>
+>>>>>> ------------[ cut here ]------------
+>>>>>>
+>>>>>> WARNING: CPU: 0 PID: 9430 at net/ipv4/inet_connection_sock.c:525
+>>>>>> inet_csk_get_port+0x938/0xe80 net/ipv4/inet_connection_sock.c:525
+>>>>>> Modules linked in:
+>>>>>> CPU: 0 PID: 9430 Comm: syz-executor.5 Not tainted 5.18.0-05016-g433fde5b4119 #3
+>>>>>> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+>>>>>> RIP: 0010:inet_csk_get_port+0x938/0xe80 net/ipv4/inet_connection_sock.c:525
+>>>>>> Code: ff 48 89 84 24 b0 00 00 00 48 85 c0 0f 84 6a 01 00 00 e8 2b 0f db fd 48 8b 6c 24 70 c6 04 24 01 e9 fb fb ff ff e8 18 0f db fd <0f> 0b e9 70 f9 ff ff e8 0c 0f db fd 0f 0b e9 28 f9 ff ff e8 00 0f
+>>>>>> RSP: 0018:ffffc90000b5fbc0 EFLAGS: 00010212
+>>>>>> RAX: 00000000000000e7 RBX: ffff88803c410040 RCX: ffffc9000e419000
+>>>>>> RDX: 0000000000040000 RSI: ffffffff836f47e8 RDI: ffff88803c4106e0
+>>>>>> RBP: ffff88810b773840 R08: 0000000000000001 R09: 0000000000000001
+>>>>>> R10: fffffbfff0f64303 R11: 0000000000000001 R12: 0000000000000000
+>>>>>> R13: ffff88810605e2f0 R14: ffffffff88606040 R15: 000000000000c1ff
+>>>>>> FS:  00007fada4d03640(0000) GS:ffff88811ac00000(0000) knlGS:0000000000000000
+>>>>>> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>>>>> CR2: 0000001b32e24000 CR3: 00000001016de001 CR4: 0000000000770ef0
+>>>>>> PKRU: 55555554
+>>>>>> Call Trace:
+>>>>>>   <TASK>
+>>>>>>   inet_csk_listen_start+0x143/0x3d0 net/ipv4/inet_connection_sock.c:1178
+>>>>>>   inet_listen+0x22f/0x650 net/ipv4/af_inet.c:228
+>>>>>>   mptcp_listen+0x205/0x440 net/mptcp/protocol.c:3564
+>>>>>>   __sys_listen+0x189/0x260 net/socket.c:1810
+>>>>>>   __do_sys_listen net/socket.c:1819 [inline]
+>>>>>>   __se_sys_listen net/socket.c:1817 [inline]
+>>>>>>   __x64_sys_listen+0x54/0x80 net/socket.c:1817
+>>>>>>   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>>>>>>   do_syscall_64+0x38/0x90 arch/x86/entry/common.c:80
+>>>>>>   entry_SYSCALL_64_after_hwframe+0x46/0xb0
+>>>>>> RIP: 0033:0x7fada558f92d
+>>>>>> Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b0 ff ff ff f7 d8 64 89 01 48
+>>>>>> RSP: 002b:00007fada4d03028 EFLAGS: 00000246 ORIG_RAX: 0000000000000032
+>>>>>> RAX: ffffffffffffffda RBX: 00007fada56aff60 RCX: 00007fada558f92d
+>>>>>> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000004
+>>>>>> RBP: 00007fada56000a0 R08: 0000000000000000 R09: 0000000000000000
+>>>>>> R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+>>>>>> R13: 000000000000000b R14: 00007fada56aff60 R15: 00007fada4ce3000
+>>>>>>   </TASK>
+>>>>>> irq event stamp: 2078
+>>>>>> hardirqs last  enabled at (2092): [<ffffffff812f1be3>] __up_console_sem+0xb3/0xd0 kernel/printk/printk.c:291
+>>>>>> hardirqs last disabled at (2103): [<ffffffff812f1bc8>] __up_console_sem+0x98/0xd0 kernel/printk/printk.c:289
+>>>>>> softirqs last  enabled at (1498): [<ffffffff83807dd4>] lock_sock include/net/sock.h:1691 [inline]
+>>>>>> softirqs last  enabled at (1498): [<ffffffff83807dd4>] inet_listen+0x94/0x650 net/ipv4/af_inet.c:199
+>>>>>> softirqs last disabled at (1500): [<ffffffff836f425c>] spin_lock_bh include/linux/spinlock.h:354 [inline]
+>>>>>> softirqs last disabled at (1500): [<ffffffff836f425c>] inet_csk_get_port+0x3ac/0xe80 net/ipv4/inet_connection_sock.c:483
+>>>>>> ---[ end trace 0000000000000000 ]---
+>>>>>>
+>>>>>>
+>>>>>> In the full log file it does look like syskaller is doing something
+>>>>>> strange since it's calling bind, connect, and listen on the same socket:
+>>>>>>
+>>>>>> r4 = socket$inet_mptcp(0x2, 0x1, 0x106)
+>>>>>> bind$inet(r4, &(0x7f0000000000)={0x2, 0x4e23, @empty}, 0x10)
+>>>>>> connect$inet(r4, &(0x7f0000000040)={0x2, 0x0, @local}, 0x10)
+>>>>>> listen(r4, 0x0)
+>>>>>>
+>>>>>> ...but it is a fuzz tester after all.
+>>>>>>
+>>>>>> I've uploaded the full syzkaller logs to this GitHub issue:
+>>>>>>
+>>>>>> https://github.com/multipath-tcp/mptcp_net-next/issues/279
+>>>>>>
+>>>>>>
+>>>>>> Not sure yet if this is MPTCP-related. I don't think MPTCP
+>>>>>> changes anything with the subflow TCP socket bind hashes.
+>>>>>>
+>>>>> Hi Mat,
+>>>>>
+>>>>> Thanks for bringing this up and for uploading the logs. I will look into this.
+>>>>>>
+>>>> Hi Mat,
+>>>>
+>>>> I am still trying to configure my local environment for mptcp to repro
+>>>> + test the fix to verify that it is correct. I think the fix is to add
+>>>> "inet_bhash2_update_saddr(msk);" to the end of the
+>>>> "mptcp_copy_inaddrs" function in net/mptcp/protocol.c.  Would you be
+>>>> able to run an instance on your local syzkaller environment with this
+>>>> line added to see if that fixes the warning?
+>>>
+>>> Hi Joanne -
+>>>
+>>> I also investigated that function when trying to figure out why this
+>>> warning might be happening in MPTCP.
+>>>
+>>> In MPTCP, the userspace-facing MPTCP socket (msk) doesn't directly bind or
+>>> connect. The msk creates and manages TCP subflow sockets (ssk in
+>>> mptcp_copy_inaddrs()), and passes through bind and connect calls to the
+>>> subflows. The msk depends on the subflow to do the hash updates, since
+>>> those subflow sockets are the ones interacting with the inet layer.
+>>>
+>>> mptcp_copy_inaddrs() copies the already-hashed addresses and ports from
+>>> the ssk to the msk, and we only want the ssk in the hash table.
+>>>
+>> I see, thanks for the explanation, Mat! I will keep investigating.\
+>
+> Are you able to repro this warning locally, Mat?
+>
+
+This message made it to my inbox after hitting 'send' on my last reply to 
+this thread!
+
+As I said there, I haven't seen syzkaller trigger this again. It only 
+happened one time after applying the fix, and not at all in the last week 
+running syzkaller (nearly) continuously.
+
+> I have a test program that calls:
+> struct addrinfo hints = {
+>          .ai_protocol = IPPROTO_TCP,
+>          .ai_socktype = SOCK_STREAM,
+>         .ai_family = AF_INET,
+> };
+> getaddrinfo("127.0.0.1", "15432", &hints, &addr);
+> socket(AF_INET, SOCK_STREAM, IPPROTO_MPTCP);
+> bind(sock_fd, addr->ai_addr, addr->ai_addrlen)
+> connect(sock_fd, &zeroed_sockaddr, sizeof(zeroed_sockaddr));
+> listen(sock_fd, 0);
+>
+> but I'm unable to trigger this warning in my local environment.
+>
+> I'm not understanding how this warning can get triggered
+> non-deterministically when the socket resides only within the program.
+> The only theory that makes sense to me is that the subflow sockets'
+> saddr changes somewhere after it has been binded, but then wouldn't
+> that trigger this warning deterministically?
+
+I agree, if the MPTCP code was modifying the subflow saddr this would 
+trigger more consistently. But as far as I can tell, MPTCP isn't 
+changing those values.
+
+>
+> How often are you seeing this warning show up in the mptcp syzkaller?
+> Is there a way to run a local patch on the mptcp syzkaller (eg like a
+> patch that prints out extraneous debugging information about
+> icsk_bind2_hash address, tb2 address, and the socket's saddr changes)
+> - if so, how can I do this?
+>
+
+Since the warning has not repeated in the last week, I'm wondering if 
+maybe the fuzz tester happened across the locking issue that Paolo noted? 
+The lack of determinism makes me suspect some kind of concurrency issue.
+
+I'm running syzkaller on a large-ish datacenter VM with a kernel I 
+compiled, so I can add any patches myself and run with those. Setup for 
+syzkaller as I've been using it with MPTCP is documented here: 
+https://github.com/multipath-tcp/mptcp_net-next/wiki/Testing#syzkaller
+
+If you have a patch with some extra debug output that you can point me to, 
+I can apply that to the kernel I'm running.
+
+--
+Mat Martineau
+Intel
