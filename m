@@ -2,50 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 149255468D2
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 16:50:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA29A5468EE
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 16:59:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245170AbiFJOtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 10:49:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56420 "EHLO
+        id S235843AbiFJO7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 10:59:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344919AbiFJOtU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 10:49:20 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2193DE93;
-        Fri, 10 Jun 2022 07:48:48 -0700 (PDT)
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nzfwF-0000ZJ-IP; Fri, 10 Jun 2022 16:48:39 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nzfwF-000IXa-9T; Fri, 10 Jun 2022 16:48:39 +0200
-Subject: Re: [PATCH v3 1/2] bpf: Add bpf_verify_signature() helper
-To:     Roberto Sassu <roberto.sassu@huawei.com>, ast@kernel.org,
-        andrii@kernel.org, kpsingh@kernel.org
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel test robot <lkp@intel.com>, john.fastabend@gmail.com
+        with ESMTP id S234213AbiFJO7T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 10:59:19 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A27C755B3;
+        Fri, 10 Jun 2022 07:59:17 -0700 (PDT)
+Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LKPGB13xtz6H6gn;
+        Fri, 10 Jun 2022 22:57:54 +0800 (CST)
+Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
+ fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 10 Jun 2022 16:59:15 +0200
+Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
+ fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
+ Fri, 10 Jun 2022 16:59:15 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>
+CC:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>
+Subject: RE: [PATCH v3 1/2] bpf: Add bpf_verify_signature() helper
+Thread-Topic: [PATCH v3 1/2] bpf: Add bpf_verify_signature() helper
+Thread-Index: AQHYfNJOLkuAPTIx0UWgp628OQsidK1IlyoAgAAjA/A=
+Date:   Fri, 10 Jun 2022 14:59:15 +0000
+Message-ID: <4b877d4877be495787cb431d0a42cbc9@huawei.com>
 References: <20220610135916.1285509-1-roberto.sassu@huawei.com>
  <20220610135916.1285509-2-roberto.sassu@huawei.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <ce56c551-019f-9e10-885f-4e88001a8f6b@iogearbox.net>
-Date:   Fri, 10 Jun 2022 16:48:38 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20220610135916.1285509-2-roberto.sassu@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+ <ce56c551-019f-9e10-885f-4e88001a8f6b@iogearbox.net>
+In-Reply-To: <ce56c551-019f-9e10-885f-4e88001a8f6b@iogearbox.net>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26568/Fri Jun 10 10:06:23 2022)
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.204.63.21]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,159 +62,130 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/10/22 3:59 PM, Roberto Sassu wrote:
-> Add the bpf_verify_signature() helper, to give eBPF security modules the
-> ability to check the validity of a signature against supplied data, by
-> using system-provided keys as trust anchor.
-> 
-> The new helper makes it possible to enforce mandatory policies, as eBPF
-> programs might be allowed to make security decisions only based on data
-> sources the system administrator approves.
-> 
-> The caller should specify the identifier of the keyring containing the keys
-> for signature verification: 0 for the primary keyring (immutable keyring of
-> system keys); 1 for both the primary and secondary keyring (where keys can
-> be added only if they are vouched for by existing keys in those keyrings);
-> 2 for the platform keyring (primarily used by the integrity subsystem to
-> verify a kexec'ed kerned image and, possibly, the initramfs signature);
-> 0xffff for the session keyring (for testing purposes).
-> 
-> The caller should also specify the type of signature. Currently only PKCS#7
-> is supported.
-> 
-> Since the maximum number of parameters of an eBPF helper is 5, the keyring
-> and signature types share one (keyring ID: low 16 bits, signature type:
-> high 16 bits).
-> 
-> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-> Reported-by: kernel test robot <lkp@intel.com> (cast warning)
-> ---
->   include/uapi/linux/bpf.h       | 17 +++++++++++++
->   kernel/bpf/bpf_lsm.c           | 46 ++++++++++++++++++++++++++++++++++
->   tools/include/uapi/linux/bpf.h | 17 +++++++++++++
->   3 files changed, 80 insertions(+)
-> 
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index f4009dbdf62d..97521857e44a 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -5249,6 +5249,22 @@ union bpf_attr {
->    *		Pointer to the underlying dynptr data, NULL if the dynptr is
->    *		read-only, if the dynptr is invalid, or if the offset and length
->    *		is out of bounds.
-> + *
-> + * long bpf_verify_signature(u8 *data, u32 datalen, u8 *sig, u32 siglen, u32 info)
-> + *	Description
-> + *		Verify a signature of length *siglen* against the supplied data
-> + *		with length *datalen*. *info* contains the keyring identifier
-> + *		(low 16 bits) and the signature type (high 16 bits). The keyring
-> + *		identifier can have the following values (some defined in
-> + *		verification.h): 0 for the primary keyring (immutable keyring of
-> + *		system keys); 1 for both the primary and secondary keyring
-> + *		(where keys can be added only if they are vouched for by
-> + *		existing keys in those keyrings); 2 for the platform keyring
-> + *		(primarily used by the integrity subsystem to verify a kexec'ed
-> + *		kerned image and, possibly, the initramfs signature); 0xffff for
-> + *		the session keyring (for testing purposes).
-> + *	Return
-> + *		0 on success, a negative value on error.
->    */
->   #define __BPF_FUNC_MAPPER(FN)		\
->   	FN(unspec),			\
-> @@ -5455,6 +5471,7 @@ union bpf_attr {
->   	FN(dynptr_read),		\
->   	FN(dynptr_write),		\
->   	FN(dynptr_data),		\
-> +	FN(verify_signature),		\
->   	/* */
->   
->   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-> diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
-> index c1351df9f7ee..20bd850ea3ee 100644
-> --- a/kernel/bpf/bpf_lsm.c
-> +++ b/kernel/bpf/bpf_lsm.c
-> @@ -16,6 +16,8 @@
->   #include <linux/bpf_local_storage.h>
->   #include <linux/btf_ids.h>
->   #include <linux/ima.h>
-> +#include <linux/verification.h>
-> +#include <linux/module_signature.h>
->   
->   /* For every LSM hook that allows attachment of BPF programs, declare a nop
->    * function where a BPF program can be attached.
-> @@ -132,6 +134,46 @@ static const struct bpf_func_proto bpf_get_attach_cookie_proto = {
->   	.arg1_type	= ARG_PTR_TO_CTX,
->   };
->   
-> +#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
-> +BPF_CALL_5(bpf_verify_signature, u8 *, data, u32, datalen, u8 *, sig,
-> +	   u32, siglen, u32, info)
-> +{
-> +	unsigned long keyring_id = info & U16_MAX;
-> +	enum pkey_id_type id_type = info >> 16;
-> +	const struct cred *cred = current_cred();
-> +	struct key *keyring;
-> +
-> +	if (keyring_id > (unsigned long)VERIFY_USE_PLATFORM_KEYRING &&
-> +	    keyring_id != U16_MAX)
-> +		return -EINVAL;
-> +
-> +	keyring = (keyring_id == U16_MAX) ?
-> +		  cred->session_keyring : (struct key *)keyring_id;
-> +
-> +	switch (id_type) {
-> +	case PKEY_ID_PKCS7:
-> +		return verify_pkcs7_signature(data, datalen, sig, siglen,
-> +					      keyring,
-> +					      VERIFYING_UNSPECIFIED_SIGNATURE,
-> +					      NULL, NULL);
-> +	default:
-> +		return -EOPNOTSUPP;
-
-Question to you & KP:
-
- > Can we keep the helper generic so that it can be extended to more types of
- > signatures and pass the signature type as an enum?
-
-How many different signature types do we expect, say, in the next 6mo, to land
-here? Just thinking out loud whether it is better to keep it simple as with the
-last iteration where we have a helper specific to pkcs7, and if needed in future
-we add others. We only have the last reg as auxillary arg where we need to squeeze
-all info into it now. What if for other, future signature types this won't suffice?
-
-> +	}
-> +}
-> +
-> +static const struct bpf_func_proto bpf_verify_signature_proto = {
-> +	.func		= bpf_verify_signature,
-> +	.gpl_only	= false,
-> +	.ret_type	= RET_INTEGER,
-> +	.arg1_type	= ARG_PTR_TO_MEM,
-> +	.arg2_type	= ARG_CONST_SIZE_OR_ZERO,
-
-Can verify_pkcs7_signature() handle null/0 len for data* args?
-
-> +	.arg3_type	= ARG_PTR_TO_MEM,
-> +	.arg4_type	= ARG_CONST_SIZE_OR_ZERO,
-
-Ditto for sig* args?
-
-> +	.arg5_type	= ARG_ANYTHING,
-> +	.allowed	= bpf_ima_inode_hash_allowed,
-> +};
-> +#endif
-> +
->   static const struct bpf_func_proto *
->   bpf_lsm_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->   {
-> @@ -158,6 +200,10 @@ bpf_lsm_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->   		return prog->aux->sleepable ? &bpf_ima_file_hash_proto : NULL;
->   	case BPF_FUNC_get_attach_cookie:
->   		return bpf_prog_has_trampoline(prog) ? &bpf_get_attach_cookie_proto : NULL;
-> +#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
-> +	case BPF_FUNC_verify_signature:
-> +		return prog->aux->sleepable ? &bpf_verify_signature_proto : NULL;
-> +#endif
->   	default:
->   		return tracing_prog_func_proto(func_id, prog);
->   	}
+PiBGcm9tOiBEYW5pZWwgQm9ya21hbm4gW21haWx0bzpkYW5pZWxAaW9nZWFyYm94Lm5ldF0NCj4g
+U2VudDogRnJpZGF5LCBKdW5lIDEwLCAyMDIyIDQ6NDkgUE0NCj4gT24gNi8xMC8yMiAzOjU5IFBN
+LCBSb2JlcnRvIFNhc3N1IHdyb3RlOg0KPiA+IEFkZCB0aGUgYnBmX3ZlcmlmeV9zaWduYXR1cmUo
+KSBoZWxwZXIsIHRvIGdpdmUgZUJQRiBzZWN1cml0eSBtb2R1bGVzIHRoZQ0KPiA+IGFiaWxpdHkg
+dG8gY2hlY2sgdGhlIHZhbGlkaXR5IG9mIGEgc2lnbmF0dXJlIGFnYWluc3Qgc3VwcGxpZWQgZGF0
+YSwgYnkNCj4gPiB1c2luZyBzeXN0ZW0tcHJvdmlkZWQga2V5cyBhcyB0cnVzdCBhbmNob3IuDQo+
+ID4NCj4gPiBUaGUgbmV3IGhlbHBlciBtYWtlcyBpdCBwb3NzaWJsZSB0byBlbmZvcmNlIG1hbmRh
+dG9yeSBwb2xpY2llcywgYXMgZUJQRg0KPiA+IHByb2dyYW1zIG1pZ2h0IGJlIGFsbG93ZWQgdG8g
+bWFrZSBzZWN1cml0eSBkZWNpc2lvbnMgb25seSBiYXNlZCBvbiBkYXRhDQo+ID4gc291cmNlcyB0
+aGUgc3lzdGVtIGFkbWluaXN0cmF0b3IgYXBwcm92ZXMuDQo+ID4NCj4gPiBUaGUgY2FsbGVyIHNo
+b3VsZCBzcGVjaWZ5IHRoZSBpZGVudGlmaWVyIG9mIHRoZSBrZXlyaW5nIGNvbnRhaW5pbmcgdGhl
+IGtleXMNCj4gPiBmb3Igc2lnbmF0dXJlIHZlcmlmaWNhdGlvbjogMCBmb3IgdGhlIHByaW1hcnkg
+a2V5cmluZyAoaW1tdXRhYmxlIGtleXJpbmcgb2YNCj4gPiBzeXN0ZW0ga2V5cyk7IDEgZm9yIGJv
+dGggdGhlIHByaW1hcnkgYW5kIHNlY29uZGFyeSBrZXlyaW5nICh3aGVyZSBrZXlzIGNhbg0KPiA+
+IGJlIGFkZGVkIG9ubHkgaWYgdGhleSBhcmUgdm91Y2hlZCBmb3IgYnkgZXhpc3Rpbmcga2V5cyBp
+biB0aG9zZSBrZXlyaW5ncyk7DQo+ID4gMiBmb3IgdGhlIHBsYXRmb3JtIGtleXJpbmcgKHByaW1h
+cmlseSB1c2VkIGJ5IHRoZSBpbnRlZ3JpdHkgc3Vic3lzdGVtIHRvDQo+ID4gdmVyaWZ5IGEga2V4
+ZWMnZWQga2VybmVkIGltYWdlIGFuZCwgcG9zc2libHksIHRoZSBpbml0cmFtZnMgc2lnbmF0dXJl
+KTsNCj4gPiAweGZmZmYgZm9yIHRoZSBzZXNzaW9uIGtleXJpbmcgKGZvciB0ZXN0aW5nIHB1cnBv
+c2VzKS4NCj4gPg0KPiA+IFRoZSBjYWxsZXIgc2hvdWxkIGFsc28gc3BlY2lmeSB0aGUgdHlwZSBv
+ZiBzaWduYXR1cmUuIEN1cnJlbnRseSBvbmx5IFBLQ1MjNw0KPiA+IGlzIHN1cHBvcnRlZC4NCj4g
+Pg0KPiA+IFNpbmNlIHRoZSBtYXhpbXVtIG51bWJlciBvZiBwYXJhbWV0ZXJzIG9mIGFuIGVCUEYg
+aGVscGVyIGlzIDUsIHRoZSBrZXlyaW5nDQo+ID4gYW5kIHNpZ25hdHVyZSB0eXBlcyBzaGFyZSBv
+bmUgKGtleXJpbmcgSUQ6IGxvdyAxNiBiaXRzLCBzaWduYXR1cmUgdHlwZToNCj4gPiBoaWdoIDE2
+IGJpdHMpLg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogUm9iZXJ0byBTYXNzdSA8cm9iZXJ0by5z
+YXNzdUBodWF3ZWkuY29tPg0KPiA+IFJlcG9ydGVkLWJ5OiBrZXJuZWwgdGVzdCByb2JvdCA8bGtw
+QGludGVsLmNvbT4gKGNhc3Qgd2FybmluZykNCj4gPiAtLS0NCj4gPiAgIGluY2x1ZGUvdWFwaS9s
+aW51eC9icGYuaCAgICAgICB8IDE3ICsrKysrKysrKysrKysNCj4gPiAgIGtlcm5lbC9icGYvYnBm
+X2xzbS5jICAgICAgICAgICB8IDQ2ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysN
+Cj4gPiAgIHRvb2xzL2luY2x1ZGUvdWFwaS9saW51eC9icGYuaCB8IDE3ICsrKysrKysrKysrKysN
+Cj4gPiAgIDMgZmlsZXMgY2hhbmdlZCwgODAgaW5zZXJ0aW9ucygrKQ0KPiA+DQo+ID4gZGlmZiAt
+LWdpdCBhL2luY2x1ZGUvdWFwaS9saW51eC9icGYuaCBiL2luY2x1ZGUvdWFwaS9saW51eC9icGYu
+aA0KPiA+IGluZGV4IGY0MDA5ZGJkZjYyZC4uOTc1MjE4NTdlNDRhIDEwMDY0NA0KPiA+IC0tLSBh
+L2luY2x1ZGUvdWFwaS9saW51eC9icGYuaA0KPiA+ICsrKyBiL2luY2x1ZGUvdWFwaS9saW51eC9i
+cGYuaA0KPiA+IEBAIC01MjQ5LDYgKzUyNDksMjIgQEAgdW5pb24gYnBmX2F0dHIgew0KPiA+ICAg
+ICoJCVBvaW50ZXIgdG8gdGhlIHVuZGVybHlpbmcgZHlucHRyIGRhdGEsIE5VTEwgaWYgdGhlIGR5
+bnB0ciBpcw0KPiA+ICAgICoJCXJlYWQtb25seSwgaWYgdGhlIGR5bnB0ciBpcyBpbnZhbGlkLCBv
+ciBpZiB0aGUgb2Zmc2V0IGFuZCBsZW5ndGgNCj4gPiAgICAqCQlpcyBvdXQgb2YgYm91bmRzLg0K
+PiA+ICsgKg0KPiA+ICsgKiBsb25nIGJwZl92ZXJpZnlfc2lnbmF0dXJlKHU4ICpkYXRhLCB1MzIg
+ZGF0YWxlbiwgdTggKnNpZywgdTMyIHNpZ2xlbiwgdTMyDQo+IGluZm8pDQo+ID4gKyAqCURlc2Ny
+aXB0aW9uDQo+ID4gKyAqCQlWZXJpZnkgYSBzaWduYXR1cmUgb2YgbGVuZ3RoICpzaWdsZW4qIGFn
+YWluc3QgdGhlIHN1cHBsaWVkIGRhdGENCj4gPiArICoJCXdpdGggbGVuZ3RoICpkYXRhbGVuKi4g
+KmluZm8qIGNvbnRhaW5zIHRoZSBrZXlyaW5nIGlkZW50aWZpZXINCj4gPiArICoJCShsb3cgMTYg
+Yml0cykgYW5kIHRoZSBzaWduYXR1cmUgdHlwZSAoaGlnaCAxNiBiaXRzKS4gVGhlIGtleXJpbmcN
+Cj4gPiArICoJCWlkZW50aWZpZXIgY2FuIGhhdmUgdGhlIGZvbGxvd2luZyB2YWx1ZXMgKHNvbWUg
+ZGVmaW5lZCBpbg0KPiA+ICsgKgkJdmVyaWZpY2F0aW9uLmgpOiAwIGZvciB0aGUgcHJpbWFyeSBr
+ZXlyaW5nIChpbW11dGFibGUga2V5cmluZyBvZg0KPiA+ICsgKgkJc3lzdGVtIGtleXMpOyAxIGZv
+ciBib3RoIHRoZSBwcmltYXJ5IGFuZCBzZWNvbmRhcnkga2V5cmluZw0KPiA+ICsgKgkJKHdoZXJl
+IGtleXMgY2FuIGJlIGFkZGVkIG9ubHkgaWYgdGhleSBhcmUgdm91Y2hlZCBmb3IgYnkNCj4gPiAr
+ICoJCWV4aXN0aW5nIGtleXMgaW4gdGhvc2Uga2V5cmluZ3MpOyAyIGZvciB0aGUgcGxhdGZvcm0g
+a2V5cmluZw0KPiA+ICsgKgkJKHByaW1hcmlseSB1c2VkIGJ5IHRoZSBpbnRlZ3JpdHkgc3Vic3lz
+dGVtIHRvIHZlcmlmeSBhIGtleGVjJ2VkDQo+ID4gKyAqCQlrZXJuZWQgaW1hZ2UgYW5kLCBwb3Nz
+aWJseSwgdGhlIGluaXRyYW1mcyBzaWduYXR1cmUpOyAweGZmZmYgZm9yDQo+ID4gKyAqCQl0aGUg
+c2Vzc2lvbiBrZXlyaW5nIChmb3IgdGVzdGluZyBwdXJwb3NlcykuDQo+ID4gKyAqCVJldHVybg0K
+PiA+ICsgKgkJMCBvbiBzdWNjZXNzLCBhIG5lZ2F0aXZlIHZhbHVlIG9uIGVycm9yLg0KPiA+ICAg
+ICovDQo+ID4gICAjZGVmaW5lIF9fQlBGX0ZVTkNfTUFQUEVSKEZOKQkJXA0KPiA+ICAgCUZOKHVu
+c3BlYyksCQkJXA0KPiA+IEBAIC01NDU1LDYgKzU0NzEsNyBAQCB1bmlvbiBicGZfYXR0ciB7DQo+
+ID4gICAJRk4oZHlucHRyX3JlYWQpLAkJXA0KPiA+ICAgCUZOKGR5bnB0cl93cml0ZSksCQlcDQo+
+ID4gICAJRk4oZHlucHRyX2RhdGEpLAkJXA0KPiA+ICsJRk4odmVyaWZ5X3NpZ25hdHVyZSksCQlc
+DQo+ID4gICAJLyogKi8NCj4gPg0KPiA+ICAgLyogaW50ZWdlciB2YWx1ZSBpbiAnaW1tJyBmaWVs
+ZCBvZiBCUEZfQ0FMTCBpbnN0cnVjdGlvbiBzZWxlY3RzIHdoaWNoIGhlbHBlcg0KPiA+IGRpZmYg
+LS1naXQgYS9rZXJuZWwvYnBmL2JwZl9sc20uYyBiL2tlcm5lbC9icGYvYnBmX2xzbS5jDQo+ID4g
+aW5kZXggYzEzNTFkZjlmN2VlLi4yMGJkODUwZWEzZWUgMTAwNjQ0DQo+ID4gLS0tIGEva2VybmVs
+L2JwZi9icGZfbHNtLmMNCj4gPiArKysgYi9rZXJuZWwvYnBmL2JwZl9sc20uYw0KPiA+IEBAIC0x
+Niw2ICsxNiw4IEBADQo+ID4gICAjaW5jbHVkZSA8bGludXgvYnBmX2xvY2FsX3N0b3JhZ2UuaD4N
+Cj4gPiAgICNpbmNsdWRlIDxsaW51eC9idGZfaWRzLmg+DQo+ID4gICAjaW5jbHVkZSA8bGludXgv
+aW1hLmg+DQo+ID4gKyNpbmNsdWRlIDxsaW51eC92ZXJpZmljYXRpb24uaD4NCj4gPiArI2luY2x1
+ZGUgPGxpbnV4L21vZHVsZV9zaWduYXR1cmUuaD4NCj4gPg0KPiA+ICAgLyogRm9yIGV2ZXJ5IExT
+TSBob29rIHRoYXQgYWxsb3dzIGF0dGFjaG1lbnQgb2YgQlBGIHByb2dyYW1zLCBkZWNsYXJlIGEN
+Cj4gbm9wDQo+ID4gICAgKiBmdW5jdGlvbiB3aGVyZSBhIEJQRiBwcm9ncmFtIGNhbiBiZSBhdHRh
+Y2hlZC4NCj4gPiBAQCAtMTMyLDYgKzEzNCw0NiBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IGJwZl9m
+dW5jX3Byb3RvDQo+IGJwZl9nZXRfYXR0YWNoX2Nvb2tpZV9wcm90byA9IHsNCj4gPiAgIAkuYXJn
+MV90eXBlCT0gQVJHX1BUUl9UT19DVFgsDQo+ID4gICB9Ow0KPiA+DQo+ID4gKyNpZmRlZiBDT05G
+SUdfU1lTVEVNX0RBVEFfVkVSSUZJQ0FUSU9ODQo+ID4gK0JQRl9DQUxMXzUoYnBmX3ZlcmlmeV9z
+aWduYXR1cmUsIHU4ICosIGRhdGEsIHUzMiwgZGF0YWxlbiwgdTggKiwgc2lnLA0KPiA+ICsJICAg
+dTMyLCBzaWdsZW4sIHUzMiwgaW5mbykNCj4gPiArew0KPiA+ICsJdW5zaWduZWQgbG9uZyBrZXly
+aW5nX2lkID0gaW5mbyAmIFUxNl9NQVg7DQo+ID4gKwllbnVtIHBrZXlfaWRfdHlwZSBpZF90eXBl
+ID0gaW5mbyA+PiAxNjsNCj4gPiArCWNvbnN0IHN0cnVjdCBjcmVkICpjcmVkID0gY3VycmVudF9j
+cmVkKCk7DQo+ID4gKwlzdHJ1Y3Qga2V5ICprZXlyaW5nOw0KPiA+ICsNCj4gPiArCWlmIChrZXly
+aW5nX2lkID4gKHVuc2lnbmVkIGxvbmcpVkVSSUZZX1VTRV9QTEFURk9STV9LRVlSSU5HICYmDQo+
+ID4gKwkgICAga2V5cmluZ19pZCAhPSBVMTZfTUFYKQ0KPiA+ICsJCXJldHVybiAtRUlOVkFMOw0K
+PiA+ICsNCj4gPiArCWtleXJpbmcgPSAoa2V5cmluZ19pZCA9PSBVMTZfTUFYKSA/DQo+ID4gKwkJ
+ICBjcmVkLT5zZXNzaW9uX2tleXJpbmcgOiAoc3RydWN0IGtleSAqKWtleXJpbmdfaWQ7DQo+ID4g
+Kw0KPiA+ICsJc3dpdGNoIChpZF90eXBlKSB7DQo+ID4gKwljYXNlIFBLRVlfSURfUEtDUzc6DQo+
+ID4gKwkJcmV0dXJuIHZlcmlmeV9wa2NzN19zaWduYXR1cmUoZGF0YSwgZGF0YWxlbiwgc2lnLCBz
+aWdsZW4sDQo+ID4gKwkJCQkJICAgICAga2V5cmluZywNCj4gPiArDQo+IFZFUklGWUlOR19VTlNQ
+RUNJRklFRF9TSUdOQVRVUkUsDQo+ID4gKwkJCQkJICAgICAgTlVMTCwgTlVMTCk7DQo+ID4gKwlk
+ZWZhdWx0Og0KPiA+ICsJCXJldHVybiAtRU9QTk9UU1VQUDsNCj4gDQo+IFF1ZXN0aW9uIHRvIHlv
+dSAmIEtQOg0KPiANCj4gID4gQ2FuIHdlIGtlZXAgdGhlIGhlbHBlciBnZW5lcmljIHNvIHRoYXQg
+aXQgY2FuIGJlIGV4dGVuZGVkIHRvIG1vcmUgdHlwZXMgb2YNCj4gID4gc2lnbmF0dXJlcyBhbmQg
+cGFzcyB0aGUgc2lnbmF0dXJlIHR5cGUgYXMgYW4gZW51bT8NCj4gDQo+IEhvdyBtYW55IGRpZmZl
+cmVudCBzaWduYXR1cmUgdHlwZXMgZG8gd2UgZXhwZWN0LCBzYXksIGluIHRoZSBuZXh0IDZtbywg
+dG8gbGFuZA0KPiBoZXJlPyBKdXN0IHRoaW5raW5nIG91dCBsb3VkIHdoZXRoZXIgaXQgaXMgYmV0
+dGVyIHRvIGtlZXAgaXQgc2ltcGxlIGFzIHdpdGggdGhlDQo+IGxhc3QgaXRlcmF0aW9uIHdoZXJl
+IHdlIGhhdmUgYSBoZWxwZXIgc3BlY2lmaWMgdG8gcGtjczcsIGFuZCBpZiBuZWVkZWQgaW4gZnV0
+dXJlDQo+IHdlIGFkZCBvdGhlcnMuIFdlIG9ubHkgaGF2ZSB0aGUgbGFzdCByZWcgYXMgYXV4aWxs
+YXJ5IGFyZyB3aGVyZSB3ZSBuZWVkIHRvDQo+IHNxdWVlemUNCj4gYWxsIGluZm8gaW50byBpdCBu
+b3cuIFdoYXQgaWYgZm9yIG90aGVyLCBmdXR1cmUgc2lnbmF0dXJlIHR5cGVzIHRoaXMgd29uJ3Qg
+c3VmZmljZT8NCg0KSSB3b3VsZCBhZGQgYXQgbGVhc3QgYW5vdGhlciBmb3IgUEdQLCBhc3N1bWlu
+ZyB0aGF0IHRoZSBjb2RlIHdpbGwgYmUNCnVwc3RyZWFtZWQuIEJ1dCBJIGFncmVlLCB0aGUgbnVt
+YmVyIHNob3VsZCBub3QgYmUgdGhhdCBoaWdoLg0KDQo+ID4gKwl9DQo+ID4gK30NCj4gPiArDQo+
+ID4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgYnBmX2Z1bmNfcHJvdG8gYnBmX3ZlcmlmeV9zaWduYXR1
+cmVfcHJvdG8gPSB7DQo+ID4gKwkuZnVuYwkJPSBicGZfdmVyaWZ5X3NpZ25hdHVyZSwNCj4gPiAr
+CS5ncGxfb25seQk9IGZhbHNlLA0KPiA+ICsJLnJldF90eXBlCT0gUkVUX0lOVEVHRVIsDQo+ID4g
+KwkuYXJnMV90eXBlCT0gQVJHX1BUUl9UT19NRU0sDQo+ID4gKwkuYXJnMl90eXBlCT0gQVJHX0NP
+TlNUX1NJWkVfT1JfWkVSTywNCj4gDQo+IENhbiB2ZXJpZnlfcGtjczdfc2lnbmF0dXJlKCkgaGFu
+ZGxlIG51bGwvMCBsZW4gZm9yIGRhdGEqIGFyZ3M/DQoNClNob3VsZG4ndCBBUkdfUFRSX1RPX01F
+TSByZXF1aXJlIHZhbGlkIG1lbW9yeT8gMCBsZW4gc2hvdWxkDQpub3QgYmUgYSBwcm9ibGVtLg0K
+DQpUaGFua3MNCg0KUm9iZXJ0bw0KDQpIVUFXRUkgVEVDSE5PTE9HSUVTIER1ZXNzZWxkb3JmIEdt
+YkgsIEhSQiA1NjA2Mw0KTWFuYWdpbmcgRGlyZWN0b3I6IExpIFBlbmcsIFlhbmcgWGksIExpIEhl
+DQoNCj4gPiArCS5hcmczX3R5cGUJPSBBUkdfUFRSX1RPX01FTSwNCj4gPiArCS5hcmc0X3R5cGUJ
+PSBBUkdfQ09OU1RfU0laRV9PUl9aRVJPLA0KPiANCj4gRGl0dG8gZm9yIHNpZyogYXJncz8NCj4g
+DQo+ID4gKwkuYXJnNV90eXBlCT0gQVJHX0FOWVRISU5HLA0KPiA+ICsJLmFsbG93ZWQJPSBicGZf
+aW1hX2lub2RlX2hhc2hfYWxsb3dlZCwNCj4gPiArfTsNCj4gPiArI2VuZGlmDQo+ID4gKw0KPiA+
+ICAgc3RhdGljIGNvbnN0IHN0cnVjdCBicGZfZnVuY19wcm90byAqDQo+ID4gICBicGZfbHNtX2Z1
+bmNfcHJvdG8oZW51bSBicGZfZnVuY19pZCBmdW5jX2lkLCBjb25zdCBzdHJ1Y3QgYnBmX3Byb2cg
+KnByb2cpDQo+ID4gICB7DQo+ID4gQEAgLTE1OCw2ICsyMDAsMTAgQEAgYnBmX2xzbV9mdW5jX3By
+b3RvKGVudW0gYnBmX2Z1bmNfaWQgZnVuY19pZCwNCj4gY29uc3Qgc3RydWN0IGJwZl9wcm9nICpw
+cm9nKQ0KPiA+ICAgCQlyZXR1cm4gcHJvZy0+YXV4LT5zbGVlcGFibGUgPyAmYnBmX2ltYV9maWxl
+X2hhc2hfcHJvdG8gOg0KPiBOVUxMOw0KPiA+ICAgCWNhc2UgQlBGX0ZVTkNfZ2V0X2F0dGFjaF9j
+b29raWU6DQo+ID4gICAJCXJldHVybiBicGZfcHJvZ19oYXNfdHJhbXBvbGluZShwcm9nKSA/DQo+
+ICZicGZfZ2V0X2F0dGFjaF9jb29raWVfcHJvdG8gOiBOVUxMOw0KPiA+ICsjaWZkZWYgQ09ORklH
+X1NZU1RFTV9EQVRBX1ZFUklGSUNBVElPTg0KPiA+ICsJY2FzZSBCUEZfRlVOQ192ZXJpZnlfc2ln
+bmF0dXJlOg0KPiA+ICsJCXJldHVybiBwcm9nLT5hdXgtPnNsZWVwYWJsZSA/ICZicGZfdmVyaWZ5
+X3NpZ25hdHVyZV9wcm90byA6DQo+IE5VTEw7DQo+ID4gKyNlbmRpZg0KPiA+ICAgCWRlZmF1bHQ6
+DQo+ID4gICAJCXJldHVybiB0cmFjaW5nX3Byb2dfZnVuY19wcm90byhmdW5jX2lkLCBwcm9nKTsN
+Cj4gPiAgIAl9DQo=
