@@ -2,51 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33ACD546974
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 17:35:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13081546984
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 17:39:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345063AbiFJPfn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 11:35:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34344 "EHLO
+        id S1345426AbiFJPjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 11:39:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344961AbiFJPfm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 11:35:42 -0400
-Received: from giacobini.uberspace.de (giacobini.uberspace.de [185.26.156.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49ECD228489
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 08:35:38 -0700 (PDT)
-Received: (qmail 21352 invoked by uid 990); 10 Jun 2022 15:35:37 -0000
-Authentication-Results: giacobini.uberspace.de;
-        auth=pass (plain)
-Message-ID: <9f214837-dc68-ef1a-0199-27d6af582115@eknoes.de>
-Date:   Fri, 10 Jun 2022 17:35:32 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2] Bluetooth: RFCOMM: Use skb_trim to trim checksum
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        with ESMTP id S242029AbiFJPjR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 11:39:17 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FD2128D68C
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 08:39:13 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id x5so30715214edi.2
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 08:39:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pqrs.dk; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ttBUCbYGFLdzm2aXxZ1IGyfndCTrcRAN4ru0azsH/58=;
+        b=cZYmDUDy0wu5c9j6ewi0ELxc7qQdw0DCbocteP7SGDeSU/o89n1z5e1aVYndYZuLf8
+         vcmhpeWbwh5y1mYzyOM22ClVplmgYc831kwVHywjMRjHAgsz3d28u3WIXtmfaxFYWNyU
+         e16JsDO1awPiuGSta1Vrs/klJXTKa0bU9VpMc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ttBUCbYGFLdzm2aXxZ1IGyfndCTrcRAN4ru0azsH/58=;
+        b=CLCWYEWXcnXcuX8EeIte7OwmDfBcEH+wxy1UHFSVUsLJ7stJ3I0Lvchrkxx24xe9DR
+         o6bzcDELMyN407fit3lUlZYNd9Y9foVnEESeRE+EQMZ5zA1cPhpZc1K2HqKLK4j7MO7+
+         54gCXEI6fc6lLgHZmX9B9skiWyRSz8GClRWfa0PWXUrD9tTT864fZUfHZsCB+PF+RkeR
+         u5pbZ9dof0zkzNQ91a04siYCnCuDyr94l7XXMzIZeayFLMef1MWym5b57lK/BqiRYmUY
+         zinQCUaCPSj+3b9wAOkbqLv8lGci3CObFhQEojplZarhTHpSwhCpy5Ua/av0UvUG4nN+
+         6+FQ==
+X-Gm-Message-State: AOAM5320D8jrL6cOAptXUp1pYGPIoea2cbElPNNI94su+1kWlk9dIsaZ
+        7PC3lXwrwKbu+/RWRobv3kfKtA==
+X-Google-Smtp-Source: ABdhPJyspXoMrwetgWUuQuUkvvnhDg0orQX5YpJax1xZh6BFYrS78uu1TShKsDkAnTFa3pXF0usKJA==
+X-Received: by 2002:a05:6402:22eb:b0:42d:d578:25d9 with SMTP id dn11-20020a05640222eb00b0042dd57825d9mr52318904edb.310.1654875552048;
+        Fri, 10 Jun 2022 08:39:12 -0700 (PDT)
+Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
+        by smtp.gmail.com with ESMTPSA id h24-20020a170906829800b0070f7d1c5a18sm9783857ejx.55.2022.06.10.08.39.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jun 2022 08:39:10 -0700 (PDT)
+From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
+To:     hauke@hauke-m.de, Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220610110749.110881-1-soenke.huster@eknoes.de>
- <CANn89i+YHqMddY68Qk1rZexqhYYX9gah-==WGttFbp4urLS7Qg@mail.gmail.com>
-From:   =?UTF-8?Q?S=c3=b6nke_Huster?= <soenke.huster@eknoes.de>
-In-Reply-To: <CANn89i+YHqMddY68Qk1rZexqhYYX9gah-==WGttFbp4urLS7Qg@mail.gmail.com>
+        Russell King <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 0/5] net: dsa: realtek: rtl8365mb: improve handling of PHY modes
+Date:   Fri, 10 Jun 2022 17:38:24 +0200
+Message-Id: <20220610153829.446516-1-alvin@pqrs.dk>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Bar: -
-X-Rspamd-Report: MIME_GOOD(-0.1) BAYES_HAM(-2.998944) SUSPICIOUS_RECIPS(1.5)
-X-Rspamd-Score: -1.598944
-Received: from unknown (HELO unkown) (::1)
-        by giacobini.uberspace.de (Haraka/2.8.28) with ESMTPSA; Fri, 10 Jun 2022 17:35:37 +0200
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,
-        MSGID_FROM_MTA_HEADER,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,104 +74,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-On 10.06.22 15:59, Eric Dumazet wrote:
-> On Fri, Jun 10, 2022 at 4:08 AM Soenke Huster <soenke.huster@eknoes.de> wrote:
->>
->> As skb->tail might be zero, it can underflow. This leads to a page
->> fault: skb_tail_pointer simply adds skb->tail (which is now MAX_UINT)
->> to skb->head.
->>
->>     BUG: unable to handle page fault for address: ffffed1021de29ff
->>     #PF: supervisor read access in kernel mode
->>     #PF: error_code(0x0000) - not-present page
->>     RIP: 0010:rfcomm_run+0x831/0x4040 (net/bluetooth/rfcomm/core.c:1751)
->>
->> By using skb_trim instead of the direct manipulation, skb->tail
->> is reset. Thus, the correct pointer to the checksum is used.
->>
->> Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
->> ---
->> v2: Clarified how the bug triggers, minimize code change
->>
->>  net/bluetooth/rfcomm/core.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.c
->> index 7324764384b6..443b55edb3ab 100644
->> --- a/net/bluetooth/rfcomm/core.c
->> +++ b/net/bluetooth/rfcomm/core.c
->> @@ -1747,7 +1747,7 @@ static struct rfcomm_session *rfcomm_recv_frame(struct rfcomm_session *s,
->>         type = __get_type(hdr->ctrl);
->>
->>         /* Trim FCS */
->> -       skb->len--; skb->tail--;
->> +       skb_trim(skb, skb->len - 1);
->>         fcs = *(u8 *)skb_tail_pointer(skb);
->>
->>         if (__check_fcs(skb->data, type, fcs)) {
->> --
->> 2.36.1
->>
-> 
-> Again, I do not see how skb->tail could possibly zero at this point.
-> 
-> If it was, skb with illegal layout has been queued in the first place,
-> we need to fix the producer, not the consumer.
-> 
+This series introduces some minor cleanup of the driver and improves the
+handling of PHY interface modes to break the assumption that CPU ports
+are always over an external interface, and the assumption that user
+ports are always using an internal PHY.
 
-Sorry, I thought that might be a right place as there is not much code in the kernel
-that manipulates ->tail directly.
+Changes v1 -> v2:
 
-> A driver missed an skb_put() perhaps.
-> 
+ - patches 1-4: no code change
 
-I am using the (I guess quite unused) virtio_bt driver, and figured out that the following
-fixes the bug:
+ - add Luiz' reviewed-by to some of the patches
 
---- a/drivers/bluetooth/virtio_bt.c
-+++ b/drivers/bluetooth/virtio_bt.c
-@@ -219,7 +219,7 @@ static void virtbt_rx_work(struct work_struct *work)
-        if (!skb)
-                return;
- 
--       skb->len = len;
-+       skb_put(skb, len);
-        virtbt_rx_handle(vbt, skb);
- 
-        if (virtbt_add_inbuf(vbt) < 0)
+ - patch 5: put the chip_infos into a static array and get rid of the
+   switch in the detect function; also remove the macros for various
+   chip ID/versions and embed them directly into the array
 
-I guess this is the root cause? I just used Bluetooth for a while in the VM
-and no error occurred, everything worked fine.
+ - patch 5: use array of size 3 rather than flexible array for extints
+   in the chip_info struct; gcc complained about initialization of
+   flexible array members in a nested context, and anyway, we know that
+   the max number of external interfaces is 3
 
-> Can you please dump the skb here  ?
-> 
-> diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.c
-> index 7324764384b6773074032ad671777bf86bd3360e..358ccb4fe7214aea0bb4084188c7658316fe0ff7
-> 100644
-> --- a/net/bluetooth/rfcomm/core.c
-> +++ b/net/bluetooth/rfcomm/core.c
-> @@ -1746,6 +1746,11 @@ static struct rfcomm_session
-> *rfcomm_recv_frame(struct rfcomm_session *s,
->         dlci = __get_dlci(hdr->addr);
->         type = __get_type(hdr->ctrl);
-> 
-> +       if (!skb->tail) {
-> +               DO_ONCE_LITE(skb_dump(KERN_ERR, skb, false));
-> +               kfree_skb(skb);
-> +               return s;
-> +       }
->         /* Trim FCS */
->         skb->len--; skb->tail--;
->         fcs = *(u8 *)skb_tail_pointer(skb);
+Alvin Šipraga (5):
+  net: dsa: realtek: rtl8365mb: rename macro RTL8367RB -> RTL8367RB_VB
+  net: dsa: realtek: rtl8365mb: remove port_mask private data member
+  net: dsa: realtek: rtl8365mb: correct the max number of ports
+  net: dsa: realtek: rtl8365mb: remove learn_limit_max private data
+    member
+  net: dsa: realtek: rtl8365mb: handle PHY interface modes correctly
 
-If it might still help:
+ drivers/net/dsa/realtek/rtl8365mb.c | 299 ++++++++++++++++------------
+ 1 file changed, 177 insertions(+), 122 deletions(-)
 
-skb len=4 headroom=9 headlen=4 tailroom=1728          
-mac=(-1,-1) net=(0,-1) trans=-1                       
-shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-csum(0x0 ip_summed=0 complete_sw=0 valid=0 level=0)   
-hash(0x0 sw=0 l4=0) proto=0x0000 pkttype=0 iif=0      
-skb linear:   00000000: 03 3f 01 1c                   
+-- 
+2.36.1
 
