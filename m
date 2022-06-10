@@ -2,225 +2,298 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2BD8545917
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 02:18:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1028545927
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 02:24:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235687AbiFJASL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 20:18:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49540 "EHLO
+        id S238374AbiFJAYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 20:24:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230371AbiFJASK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 20:18:10 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C5CE4F1F6;
-        Thu,  9 Jun 2022 17:18:08 -0700 (PDT)
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 259LPaJI013977;
-        Thu, 9 Jun 2022 17:17:49 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=O4EMEJYUPaBSwBn2vHP5uUiASN5JoXY+2rJfE6OEm1o=;
- b=TLAoDBONbul/uXfRcn1Ja9RHwy8weWHktCQJixM0PUTB88M518X9JXr5lXaN4KiWF3wg
- cCZ+3YacmDIz+YDp4eXS/FUH7oCD/rm6qCoR4dA3PS1EPeDnFB6AWTInQPoHshQGHSNK
- bxx5wljob4jG9nklQQ3+VbG0ERegaC06r4c= 
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2042.outbound.protection.outlook.com [104.47.66.42])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3gkajge3e6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 09 Jun 2022 17:17:49 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Oa7lJw2iIAk3/YC3pAT/brB00++Li5w60XyqMay2t/d6slM0k2/5mSv4G8BxS0zYYBNH79pLFlbKxjq+fxXfYOiLSU524EZ+rLIM1IDaGueXJ3ujEjNVr1ELwGbeIU7i9EQYQBCMPB1WKikWQmKEhLS0tKR8IQXHmpT/fKCAA1zVFU57S1jnFFoHsIDxQ45niYRAWv06ekQ4HiTTAnfIGXC8OR+7HdieXysNMQGoVWZd5ERPf35Klhv0semsBwsaRaCr/jnTxj1UiqgNJSIW5mdzM1F4+YoWRoRsh0rze0xvPLx6uy5c5BkQf9ciA6vYMhlr6ujX/kB7hHawFclzow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=O4EMEJYUPaBSwBn2vHP5uUiASN5JoXY+2rJfE6OEm1o=;
- b=D9Y6f5dYzujnkAvE3ijd5ShvnlLzm0UpuNgBcFTul1l+ICcquPyI8HUo9GuTwwuKIbiAGKTeIPaZdPfX6yig0mmxFVhmhSpYn5lSe4DkfrarFfFvZDpcAcNIu0wvzGz1w/QfdqB6AsYCqYok18pyZ0+JciAPBfMjSazez9taxK6lr1cPPc58GApw6LZeU92VQajAfoL4LY7rceY1V3olYOjmck+ZKoIDlCEO9AsrbZHTqWym4lI9T6hilnQVnYOBXue1tTD2tRFI5vtwJ/DXB2e4I5BFuQrsdlBlB051gvQCoVtxtip9QozhwMNR5iy6m6GuHL0BNbO3gmZveI90iw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from CO1PR15MB5017.namprd15.prod.outlook.com (2603:10b6:303:e8::19)
- by DS0PR15MB5421.namprd15.prod.outlook.com (2603:10b6:8:ce::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.19; Fri, 10 Jun
- 2022 00:17:47 +0000
-Received: from CO1PR15MB5017.namprd15.prod.outlook.com
- ([fe80::31b7:473f:3995:c117]) by CO1PR15MB5017.namprd15.prod.outlook.com
- ([fe80::31b7:473f:3995:c117%7]) with mapi id 15.20.5332.013; Fri, 10 Jun 2022
- 00:17:47 +0000
-Date:   Thu, 9 Jun 2022 17:17:43 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Jon Maxwell <jmaxwell37@gmail.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, atenart@kernel.org, cutaylor-pub@yahoo.com,
-        alexei.starovoitov@gmail.com, joe@cilium.io, i@lmb.io,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH net] net: bpf: fix request_sock leak in filter.c
-Message-ID: <20220610001743.z5nxapagwknlfjqi@kafai-mbp>
-References: <20220609011844.404011-1-jmaxwell37@gmail.com>
- <56d6f898-bde0-bb25-3427-12a330b29fb8@iogearbox.net>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <56d6f898-bde0-bb25-3427-12a330b29fb8@iogearbox.net>
-X-ClientProxiedBy: CO2PR04CA0010.namprd04.prod.outlook.com
- (2603:10b6:102:1::20) To CO1PR15MB5017.namprd15.prod.outlook.com
- (2603:10b6:303:e8::19)
+        with ESMTP id S234508AbiFJAYt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 20:24:49 -0400
+Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3409F42A01;
+        Thu,  9 Jun 2022 17:24:39 -0700 (PDT)
+Received: by mail-ua1-x92c.google.com with SMTP id z20so1676017ual.3;
+        Thu, 09 Jun 2022 17:24:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=n1pHArJx3OaCc9LWiRnAZYn+ldDpFaEituhirBQxMKE=;
+        b=Sd+0LnZWGLppLgWsHqEBJAjf7ra3qoWN5zjiKSwY+I1XUBbv/xsFQVLMUwS9SkgQpB
+         9GnUiRsEb27H1wyQb7nshGE1FooiiWm3HXV0gAEEE+JFpnBv3HEI+4damkZeerplvazJ
+         iEi3dnJvXDXr/hNpIV3EYDRXx5Y7yoaL6qVT7USKBmMrdstWKoMntG17CXe+GwrfOeN8
+         XIpOC6vh/UTlQ93hh4CcyHfx/RZm0i9SmuSf2QoSO1iyv0Qy4cB/a4CZn1TXdac7gKew
+         +5YuRmq6+55Q4rvMcVRRJ0pNriI1l3AWhqKF6C38zIRk6YO1YPTUBdTqnkl0RM3vNzY9
+         YNEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=n1pHArJx3OaCc9LWiRnAZYn+ldDpFaEituhirBQxMKE=;
+        b=wFvbH+KFdITAHcJrdtpf9ypQXkRs+N/m2ZD3Tah2auEvzhZPI2qrBdLVPZ9TkliqLk
+         bGzQopqS55HRhbfdz4DXJ/AvlvhLI280ypNYn/rvzJkKvaQ+pe09BSsaZQhBTZOVC001
+         azkHmlhERk8QaMXr+8xbKAffVPoZJa1AGi7SrnLx3qvaDDLl7noSt9gW8dI5efeD33qn
+         KIseNPPEyY8JSiNfXCPf5jjKqsVYkVAHf37ghbU7gOfBhrW3u+EwiYR6H/iDcrteOB08
+         NcAo97u9lawWZbaDMTG98wKqgdseKvlMidkhRxJSqgjz488bDiOzF3tJrxIj3xkzeswh
+         MNQg==
+X-Gm-Message-State: AOAM532ljZZXbKwQZjUPlGpXMhRlPbOYtlNolKFi6YModk6U3sv9WuR3
+        ZISNg9IZDHLUfHVpoCyyV1dok0oTcQSRwg3l40M=
+X-Google-Smtp-Source: ABdhPJxhxwBOzYZLMjFV0C5h+6Ev3SKpN9qUJdU5zR4tSvPuI2uk/hLycx3l10cY+5JRsWHUiHAkLaKkqaKiuU6IZXU=
+X-Received: by 2002:ab0:1343:0:b0:362:9e6c:74f5 with SMTP id
+ h3-20020ab01343000000b003629e6c74f5mr39082622uae.15.1654820678727; Thu, 09
+ Jun 2022 17:24:38 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7c0aebde-c365-4cba-0f25-08da4a76a551
-X-MS-TrafficTypeDiagnostic: DS0PR15MB5421:EE_
-X-Microsoft-Antispam-PRVS: <DS0PR15MB5421BAA04C673DF5C5F6E1EFD5A69@DS0PR15MB5421.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ustKEL4MoRyN3oCAWIfbbwyMCceLSHJ5tKr3rZT6H+l6QsblY674GmGXkKNc3GVAd71RbV61vDAGGOnJOOYflVWW1s+EWBStV0SJtUzTk+AXBmWsdln9KLLCG43cQjIJ4olNqMQY3OccIhS3h7mLzmUDa/SnnSIWetlNi27doEGjcSQ4rQfa94HP1fb3Jlm/B+6oCKERiws/P1tRixagM3sUv/1xsvksZqLx1QiVUlw/xkpF3uEr1MPPP2yhBOU7uAviCEg8ssUhOu6eNqkmQuo5SUxa+WApIOnuriwQOCcjPB40hJUqb3BTNn3aMWLSZCmAUYbxWdla9itm3zETjS4snzz3OG/8PDD1fK9mR73yQWH7tyPSu9Pi7JJVPrZ/B0/g3vEUqwXrnxDD+IokmDtlZSAbPQFmgCGKoJW0V1o3PkkfvV1LejIY/hq1Pj9GYEC+NU+okXcZjXopPWviS1nh+nWy0VIAaUQfnVqwtAj7RE2dGg2xgjUx7MnwfThhfC183wa+Y0743mEsqR5Vcx2JJGH3zAnGfyWRk1fCCBgqY/WxsYcFsAk+VY4wkcIxSKKVQaA7c5J98fVsCT/aZBxuqjlHIJL+YhjFk0zvOFdn53/J7ow+X+Yn//N4mJKlVmZT39Maenxv2VJdmKgo3A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR15MB5017.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(6916009)(6666004)(38100700002)(83380400001)(8676002)(5660300002)(86362001)(6486002)(66476007)(6506007)(8936002)(6512007)(53546011)(4326008)(52116002)(2906002)(508600001)(9686003)(7416002)(186003)(33716001)(1076003)(66556008)(66946007)(316002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sqNEkkDw29Zy65Z0nySZ0M/L8Q5JZjRnmHAeSUvtBzEQVVIQlwxRPhEeq/N3?=
- =?us-ascii?Q?azKllLtQJ+lk/uLb6qRxqaZ5KaiRXnHxCIpLqgzWE3gULQYBga5KSVlFu7r9?=
- =?us-ascii?Q?GZZXYMregGnDiwa6FjP6eg2I22pxqsTAUF9kg4RnzRBE3pqUzig21wrvyH26?=
- =?us-ascii?Q?YRsIcLOWjpzxacF8JXxzQ+wyKbraSmOJDYwxAQu/8RcHNrNu2roaJDTxxUPX?=
- =?us-ascii?Q?2tWko8khP+9++tU9CUsldce9/Kcuw6pdkarJar6tQvCuWxA4aXt5mRB3mf9s?=
- =?us-ascii?Q?UvEbOqr38uygm9KjGjcNSm67aDYLHWMoGCFCnSZD4NOKWQKM40qvMOfb86gr?=
- =?us-ascii?Q?Ch06q5Vakhh+8cHOh+odklq9ykLas4Oy4fWYhk/gFDRncWj5HPNvIr6wKnl7?=
- =?us-ascii?Q?/VWwie3gB8BZIxRbqpQBNpylnza288xw4jaqHlLRWHEqOpwshpcdOwTnKgf2?=
- =?us-ascii?Q?cJVQp/LIcqyLCK1vAapSERzn46HCscvUNZcFm53E48LNIVbNMTZ1SgM3Ba6J?=
- =?us-ascii?Q?XlA9KJHsUHqQajJVa8k1QIO+Dqh/N9stV53Gx1spEI2IYzF+C7l06/tPZbCZ?=
- =?us-ascii?Q?emkEaMeXa7NeYTGgr/opbNFTjEUgqjIjoTMvYqdSDf/ZeBgDNbOfw65pLafI?=
- =?us-ascii?Q?0cHDz2AwUsXyYZ4GRr5kqZP4fCghqUZUEo0Y1sSBHFVvZzx7fHDfXJmPeiDX?=
- =?us-ascii?Q?dB+GeWNpidGTY/TDYZBEL9qLzgtOeQydVTlIiksCDVSzJPFzbfsEcCGLXv+I?=
- =?us-ascii?Q?ShA0b6PMhmOJNh4YNsUUHSlgr/RxAoqV8yRy9Qmzq4zLU3xYggxmjCOeTI8o?=
- =?us-ascii?Q?1t9HoDoUUm/RUfLG9pZ4YrzkTKMAL/bTxtEGNkmiyL5+EPCCG59DG2sPmzHk?=
- =?us-ascii?Q?A+dgttXN9E9a9h2x7BVb2fv6LQuGWs6gAPR1xJ9qHLr1iMx2SA5yeiuBQ+aG?=
- =?us-ascii?Q?R/lKSqK9L03DCIRZGOCAsKWyySZNigDO1rGcdOluEVnyU1ZyxVQQDFtBwer3?=
- =?us-ascii?Q?ZRl4T7UcU6oAIG4PtcE5qwCKa4ermdaUo3RVqTVvqbaIMJO7w5atrHpnCkPV?=
- =?us-ascii?Q?JoCW/zPHHsCRnq9i/3XxLMlfv2MqIMsQaxwzdKGlaBf0FBlIqwXwU+ymaKpg?=
- =?us-ascii?Q?SM88e6BCUmye9L173fvOraZOIXqq1HP09tN1KPEctGpVIE/kIH5FJj33YfP9?=
- =?us-ascii?Q?keHpW+4F4+P5zj+ARuiMlRqxfY1aT6KIUvyiokdQdSQaJ/SDycuYf48QGJAz?=
- =?us-ascii?Q?Ch5sF62YlY8IcPX8LvGdcvOGR/r7qcTSNbi1jjw5BK7NgZjy9DhW2i/VMwg4?=
- =?us-ascii?Q?cKd4DUVL1sdYNoZoe0uqltz7nvqhIaH6YhKsU8j4eL3M+7n7SqqmLiGZmjbr?=
- =?us-ascii?Q?p4JC8FPgrKxKlkgRAMLiDgaFhaols9vXeSTLlQNjQJAXp91e1Ts22uPuecO5?=
- =?us-ascii?Q?c9/IMKrMYYv1t+eR5juNv0pAkXWGDzDfKXTcez5rh8an/VJKLk8zs6RS4PpS?=
- =?us-ascii?Q?aC0WJLHgDdOM3xapBMjR0vZpJLR4zg4R4tPhe8UiDS9Wgx7fp/+LcZbRx3UW?=
- =?us-ascii?Q?IXVEGH/0ffCX2ltC8mOzklMsfqQHsHobBYNCbJ1wqvGW0eaX+1cDapGXiBNQ?=
- =?us-ascii?Q?8MGXdV3zWnv0JnywWQvAqoDUb8RvvV0KqbXC9+xEU5GzKIBfP8s/OvYmmEfz?=
- =?us-ascii?Q?pdYy8WT0gd+KF56T2KnwL6VoVkg5kIv2mSDMIlId/C+K2jLJymYoXBlW5ST/?=
- =?us-ascii?Q?JnsGFTs6YWoIK0kJfgMcMkvolcaQGZo=3D?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7c0aebde-c365-4cba-0f25-08da4a76a551
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR15MB5017.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2022 00:17:46.9140
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uQoV31nguQkE4wJC7UuNfIbHN4vEhaamxeFf4Kxa6E7KGoE0P2wC9+ERqn2ZY6j0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR15MB5421
-X-Proofpoint-GUID: nokUl5H8J3kgRx9_k0WPVW4vhrx2t0EW
-X-Proofpoint-ORIG-GUID: nokUl5H8J3kgRx9_k0WPVW4vhrx2t0EW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-09_16,2022-06-09_02,2022-02-23_01
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20210604063116.234316-1-memxor@gmail.com>
+In-Reply-To: <20210604063116.234316-1-memxor@gmail.com>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Thu, 9 Jun 2022 17:24:27 -0700
+Message-ID: <CAJnrk1YJe-wtXFF0U2cuZUdd-gH1Y80Ewf3ePo=vh-nbsSBZgg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 0/7] Add bpf_link based TC-BPF API
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 10:29:15PM +0200, Daniel Borkmann wrote:
-> On 6/9/22 3:18 AM, Jon Maxwell wrote:
-> > A customer reported a request_socket leak in a Calico cloud environment. We
-> > found that a BPF program was doing a socket lookup with takes a refcnt on
-> > the socket and that it was finding the request_socket but returning the parent
-> > LISTEN socket via sk_to_full_sk() without decrementing the child request socket
-> > 1st, resulting in request_sock slab object leak. This patch retains the
-Great catch and debug indeed!
+On Thu, Jun 3, 2021 at 11:31 PM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> This is the second (non-RFC) version.
+>
+> This adds a bpf_link path to create TC filters tied to cls_bpf classifier=
+, and
+> introduces fd based ownership for such TC filters. Netlink cannot delete =
+or
+> replace such filters, but the bpf_link is severed on indirect destruction=
+ of the
+> filter (backing qdisc being deleted, or chain being flushed, etc.). To en=
+sure
+> that filters remain attached beyond process lifetime, the usual bpf_link =
+fd
+> pinning approach can be used.
+>
+> The individual patches contain more details and comments, but the overall=
+ kernel
+> API and libbpf helper mirrors the semantics of the netlink based TC-BPF A=
+PI
+> merged recently. This means that we start by always setting direct action=
+ mode,
+> protocol to ETH_P_ALL, chain_index as 0, etc. If there is a need for more
+> options in the future, they can be easily exposed through the bpf_link AP=
+I in
+> the future.
+>
+> Patch 1 refactors cls_bpf change function to extract two helpers that wil=
+l be
+> reused in bpf_link creation.
+>
+> Patch 2 exports some bpf_link management functions to modules. This is ne=
+eded
+> because our bpf_link object is tied to the cls_bpf_prog object. Tying it =
+to
+> tcf_proto would be weird, because the update path has to replace offloade=
+d bpf
+> prog, which happens using internal cls_bpf helpers, and would in general =
+be more
+> code to abstract over an operation that is unlikely to be implemented for=
+ other
+> filter types.
+>
+> Patch 3 adds the main bpf_link API. A function in cls_api takes care of
+> obtaining block reference, creating the filter object, and then calls the
+> bpf_link_change tcf_proto op (only supported by cls_bpf) that returns a f=
+d after
+> setting up the internal structures. An optimization is made to not keep a=
+round
+> resources for extended actions, which is explained in a code comment as i=
+t wasn't
+> immediately obvious.
+>
+> Patch 4 adds an update path for bpf_link. Since bpf_link_update only supp=
+orts
+> replacing the bpf_prog, we can skip tc filter's change path by reusing th=
+e
+> filter object but swapping its bpf_prog. This takes care of replacing the
+> offloaded prog as well (if that fails, update is aborted). So far however=
+,
+> tcf_classify could do normal load (possibly torn) as the cls_bpf_prog->fi=
+lter
+> would never be modified concurrently. This is no longer true, and to not
+> penalize the classify hot path, we also cannot impose serialization aroun=
+d
+> its load. Hence the load is changed to READ_ONCE, so that the pointer val=
+ue is
+> always consistent. Due to invocation in a RCU critical section, the lifet=
+ime of
+> the prog is guaranteed for the duration of the call.
+>
+> Patch 5, 6 take care of updating the userspace bits and add a bpf_link re=
+turning
+> function to libbpf.
+>
+> Patch 7 adds a selftest that exercises all possible problematic interacti=
+ons
+> that I could think of.
+>
+> Design:
+>
+> This is where in the object hierarchy our bpf_link object is attached.
+>
+>                                                                          =
+   =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=90
+>                                                                          =
+   =E2=94=82     =E2=94=82
+>                                                                          =
+   =E2=94=82 BPF =E2=94=82
+>                                                                          =
+   program
+>                                                                          =
+   =E2=94=82     =E2=94=82
+>                                                                          =
+   =E2=94=94=E2=94=80=E2=94=80=E2=96=B2=E2=94=80=E2=94=80=E2=94=98
+>                                                       =E2=94=8C=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=90            =
+    =E2=94=82
+>                                                       =E2=94=82       =E2=
+=94=82         =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=B4=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=90
+>                                                       =E2=94=82  mod  =E2=
+=94=9C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=96=BA cls_bpf_prog =E2=94=82
+> =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=90                                    =E2=94=82cls_bpf=E2=94=
+=82         =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=AC=E2=94=80=
+=E2=94=80=E2=94=80=E2=96=B2=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=98
+> =E2=94=82    tcf_block   =E2=94=82                                    =E2=
+=94=82       =E2=94=82              =E2=94=82   =E2=94=82
+> =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=AC=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=98                                    =E2=94=94=E2=94=80=E2=94=
+=80=E2=94=80=E2=96=B2=E2=94=80=E2=94=80=E2=94=80=E2=94=98              =E2=
+=94=82   =E2=94=82
+>          =E2=94=82          =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=90                       =E2=94=82                =E2=94=8C=E2=
+=94=80=E2=96=BC=E2=94=80=E2=94=80=E2=94=80=E2=94=B4=E2=94=80=E2=94=80=E2=94=
+=90
+>          =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=96=BA  tcf_chain  =E2=94=82        =
+               =E2=94=82                =E2=94=82bpf_link=E2=94=82
+>                     =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=AC=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=98                       =E2=94=82                =E2=94=94=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=98
+>                             =E2=94=82          =E2=94=8C=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=90    =E2=94=82
+>                             =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=96=BA  tcf_proto =
+ =E2=94=9C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=98
+>                                        =E2=94=94=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=98
+>
+> The bpf_link is detached on destruction of the cls_bpf_prog.  Doing it th=
+is way
+> allows us to implement update in a lightweight manner without having to r=
+ecreate
+> a new filter, where we can just replace the BPF prog attached to cls_bpf_=
+prog.
+>
+> The other way to do it would be to link the bpf_link to tcf_proto, there =
+are
+> numerous downsides to this:
+>
+> 1. All filters have to embed the pointer even though they won't be using =
+it when
+> cls_bpf is compiled in.
+> 2. This probably won't make sense to be extended to other filter types an=
+yway.
+> 3. We aren't able to optimize the update case without adding another bpf_=
+link
+> specific update operation to tcf_proto ops.
+>
+> The downside with tying this to the module is having to export bpf_link
+> management functions and introducing a tcf_proto op. Hopefully the cost o=
+f
+> another operation func pointer is not big enough (as there is only one op=
+s
+> struct per module).
+>
+Hi Kumar,
 
-> > existing behaviour of returning full socks to the caller but it also decrements
-> > the child request_socket if one is present before doing so to prevent the leak.
-> > 
-> > Thanks to Curtis Taylor for all the help in diagnosing and testing this. And
-> > thanks to Antoine Tenart for the reproducer and patch input.
-> > 
-> > Fixes: f7355a6c0497 bpf: ("Check sk_fullsock() before returning from bpf_sk_lookup()")
-> > Fixes: edbf8c01de5a bpf: ("add skc_lookup_tcp helper")
-Instead of the above commits, I think this dated back to
-6acc9b432e67 ("bpf: Add helper to retrieve socket in BPF")
+Do you have any plans / bandwidth to land this feature upstream? If
+so, do you have a tentative estimation for when you'll be able to work
+on this? And if not, are you okay with someone else working on this to
+get it merged in?
 
-> > Tested-by: Curtis Taylor <cutaylor-pub@yahoo.com>
-> > Co-developed-by: Antoine Tenart <atenart@kernel.org>
-> > Signed-off-by:: Antoine Tenart <atenart@kernel.org>
-> > Signed-off-by: Jon Maxwell <jmaxwell37@gmail.com>
-> > ---
-> >   net/core/filter.c | 20 ++++++++++++++------
-> >   1 file changed, 14 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/net/core/filter.c b/net/core/filter.c
-> > index 2e32cee2c469..e3c04ae7381f 100644
-> > --- a/net/core/filter.c
-> > +++ b/net/core/filter.c
-> > @@ -6202,13 +6202,17 @@ __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
-> >   {
-> >   	struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
-> >   					   ifindex, proto, netns_id, flags);
-> > +	struct sock *sk1 = sk;
-> >   	if (sk) {
-> >   		sk = sk_to_full_sk(sk);
-> > -		if (!sk_fullsock(sk)) {
-> > -			sock_gen_put(sk);
-> > +		/* sk_to_full_sk() may return (sk)->rsk_listener, so make sure the original sk1
-> > +		 * sock refcnt is decremented to prevent a request_sock leak.
-> > +		 */
-> > +		if (!sk_fullsock(sk1))
-> > +			sock_gen_put(sk1);
-> > +		if (!sk_fullsock(sk))
-In this case, sk1 == sk (timewait).  It is a bit worrying to pass
-sk to sk_fullsock(sk) after the above sock_gen_put().
-I think Daniel's 'if (sk2 != sk) { sock_gen_put(sk); }' check is better.
+The reason I'm asking is because there are a few networking teams
+within Meta that have been requesting this feature :)
 
-> 
-> [ +Martin/Joe/Lorenz ]
-> 
-> I wonder, should we also add some asserts in here to ensure we don't get an unbalance for the
-> bpf_sk_release() case later on? Rough pseudocode could be something like below:
-> 
-> static struct sock *
-> __bpf_sk_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
->                 struct net *caller_net, u32 ifindex, u8 proto, u64 netns_id,
->                 u64 flags)
-> {
->         struct sock *sk = __bpf_skc_lookup(skb, tuple, len, caller_net,
->                                            ifindex, proto, netns_id, flags);
->         if (sk) {
->                 struct sock *sk2 = sk_to_full_sk(sk);
-> 
->                 if (!sk_fullsock(sk2))
->                         sk2 = NULL;
->                 if (sk2 != sk) {
->                         sock_gen_put(sk);
->                         if (unlikely(sk2 && !sock_flag(sk2, SOCK_RCU_FREE))) {
-I don't think it matters if the helper-returned sk2 is refcounted or not (SOCK_RCU_FREE).
-The verifier has ensured the bpf_sk_lookup() and bpf_sk_release() are
-always balanced regardless of the type of sk2.
+Thanks,
+Joanne
 
-bpf_sk_release() will do the right thing to check the sk2 is refcounted or not
-before calling sock_gen_put().
-
-The bug here is the helper forgot to call sock_gen_put(sk) while
-the verifier only tracks the sk2, so I think the 'if (unlikely...) { WARN_ONCE(...); }'
-can be saved.
-
->                                 WARN_ONCE(1, "Found non-RCU, unreferenced socket!");
->                                 sk2 = NULL;
->                         }
->                 }
->                 sk = sk2;
->         }
->         return sk;
-> }
+> Changelog:
+> ----------
+> v1 (RFC) -> v2
+> v1: https://lore.kernel.org/bpf/20210528195946.2375109-1-memxor@gmail.com
+>
+>  * Avoid overwriting other members of union in bpf_attr (Andrii)
+>  * Set link to NULL after bpf_link_cleanup to avoid double free (Andrii)
+>  * Use __be16 to store the result of htons (Kernel Test Robot)
+>  * Make assignment of tcf_exts::net conditional on CONFIG_NET_CLS_ACT
+>    (Kernel Test Robot)
+>
+> Kumar Kartikeya Dwivedi (7):
+>   net: sched: refactor cls_bpf creation code
+>   bpf: export bpf_link functions for modules
+>   net: sched: add bpf_link API for bpf classifier
+>   net: sched: add lightweight update path for cls_bpf
+>   tools: bpf.h: sync with kernel sources
+>   libbpf: add bpf_link based TC-BPF management API
+>   libbpf: add selftest for bpf_link based TC-BPF management API
+>
+>  include/linux/bpf_types.h                     |   3 +
+>  include/net/pkt_cls.h                         |  13 +
+>  include/net/sch_generic.h                     |   6 +-
+>  include/uapi/linux/bpf.h                      |  15 +
+>  kernel/bpf/syscall.c                          |  14 +-
+>  net/sched/cls_api.c                           | 139 ++++++-
+>  net/sched/cls_bpf.c                           | 389 ++++++++++++++++--
+>  tools/include/uapi/linux/bpf.h                |  15 +
+>  tools/lib/bpf/bpf.c                           |   8 +-
+>  tools/lib/bpf/bpf.h                           |   8 +-
+>  tools/lib/bpf/libbpf.c                        |  59 ++-
+>  tools/lib/bpf/libbpf.h                        |  17 +
+>  tools/lib/bpf/libbpf.map                      |   1 +
+>  tools/lib/bpf/netlink.c                       |   5 +-
+>  tools/lib/bpf/netlink.h                       |   8 +
+>  .../selftests/bpf/prog_tests/tc_bpf_link.c    | 285 +++++++++++++
+>  16 files changed, 940 insertions(+), 45 deletions(-)
+>  create mode 100644 tools/lib/bpf/netlink.h
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_bpf_link.c
+>
+> --
+> 2.31.1
+>
