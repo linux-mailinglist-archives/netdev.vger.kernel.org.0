@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50BAC546D7D
+	by mail.lfdr.de (Postfix) with ESMTP id 98EEF546D7E
 	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 21:46:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350484AbiFJTpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 15:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46842 "EHLO
+        id S1350538AbiFJTpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 15:45:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350458AbiFJTpG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 15:45:06 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A6674A3E5
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 12:44:55 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id z11-20020a17090a468b00b001dc792e8660so69618pjf.1
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 12:44:55 -0700 (PDT)
+        with ESMTP id S1350487AbiFJTpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 15:45:07 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B193EAB0
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 12:44:57 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id e189-20020a6369c6000000b003fd31d5990fso15538pgc.20
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 12:44:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=oRuIKTHAXVx2qi3tHQJbk8XpV2yh8hB/V8KDZipN6tA=;
-        b=TI72DMc+oDDJbadh/6AIMi2vw+3qkHTBDo22gztwk7REVFDfDYGxwvhAirACTdhZG2
-         Q5MYzFJ06TgKCrRYsP5tgPwwWv7vm7cHQCrEMkVIUSevwuR+s/e/i6fyxwDyKM2NwK3r
-         +aeMYl9zH3wUpz7Q3U1XFUguNtf633jW1YQmI7Nj1eUcFs8mYgIKeaqhpnMfKncNx72j
-         +LRncSb0P5jjvCrzlNoNdUwZGw8z+yIS7F6eo07GaLhwIw4qfdgjj+QhH3gidRFgUHnR
-         fLJUftwnATY0L0I8fMsAe6XoZSZeurxhsu4Nx+50tufjD7RoXMDQ8BzSs3WOabVWZCel
-         8EpQ==
+        bh=KbC0X46hVkP2Aymvw4+td8Fli/k3NItWmz1VnlYQjNw=;
+        b=cFc7G65g17J1qsVq4XuwdXsAwEkyBvPQfnm+oZdh1vv1mzKNdONAIGKQKZSHZbIJiU
+         v8DHsC6mUuWRi552EmF9U9U833ySNQZ47Tn5iJdX4GxouI4TvZTAg764CW17uNvk635E
+         NhxRRwd4LfHJutrSqQX0u1D7ok93k1QTTqRtKxFqcKZ6+73EJTVOexT42RqoGZJVBxzY
+         JFPSRw6WuA5m9m672mtArFAE2FA65OQsNs529we7imAQ0EDUsnuBSyjPZWlKGJHLWTfH
+         f3AWvGmp9giTB6PcWzusKXjzT7jsEv+2ifBI2pc9IGUkC/a67/ljr8axnmdMykl865L9
+         qzfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=oRuIKTHAXVx2qi3tHQJbk8XpV2yh8hB/V8KDZipN6tA=;
-        b=l3ntfQuOGUpWosvAdn1XinmmsI0pK3aNPjx+91F0sDafppibRmyrpLUiTwU7gLEsFz
-         iqLQR9vRNgs4gfT8MXxyXiSizx6MTm4AVssHvaVUT3yUBD75ZEaFURK2QS/oFxDq3HeH
-         xa7uoA06bPf+RhWcjerJBiJOS5tIrQNXDP3Fx0bVG6zArqOPM3/WCbQH+JVMq+uDnKaH
-         22duD0h3WOLOpWp/lcbWIcTalMU4+wZ23BdHQ8yBHGMdwVuKgAJtq2gHN41YMK+fydjl
-         1PkHBrPKqcS1loRYWOOqIlBggjhmBIsvYUpzQg4m+1QcE4oyfVHSIlMKk6s7PiHvwQ9m
-         Mdpg==
-X-Gm-Message-State: AOAM531xpZ5C3fKL4QwwsYvPKObKCZIvOL8xfXxeCcAJCQcprkszY9Tg
-        FLWyA0KQpTWkb4HC+2PJozHdiMq/mbarKg/r
-X-Google-Smtp-Source: ABdhPJzXalUZugjS/CxK5G09bwZ0u1M6sYmGZGGqnKTGajGb3Qzg1w4ijE04ZWt1w0DhEYDcfhMe3gZ6gbhYcLwU
+        bh=KbC0X46hVkP2Aymvw4+td8Fli/k3NItWmz1VnlYQjNw=;
+        b=LnWfoOW6hByyCMJSygbH9YJNO3P2WGM/2yd6LqHeuDO8y/iIW5ExIzAer8FZsrn056
+         22ZBQXtQdPHYxTwBp9EXkqAmwVgUdCJYHfoOe+xppst+lJ8b3vuPYkzXXc6OhCxwZci5
+         mRyBi8WYWtU3XPzS4NWERyzAed9AyNDMfiSHgPYLu1lezikFnfdB6lwZuXHlq0adLt+q
+         fneyryGZD1aOQ8nNOGjVjcP8rzXjzEr1aTULl2B0kAjRZc/H8y9EjZ9Ld/DHxmSsW28I
+         9f5yfiThjEY2/QZXgrXyR8010VvENDoNjLMgxi25QrlfylMTt7pJvRYdSGOjYt5BYDlT
+         y4LA==
+X-Gm-Message-State: AOAM531MJ71IUF+5Rm43MtzhsX78PEFqR2xNJVAipMryDnp/6v4IuXC2
+        jl+ifSQSTrZuOct6pRLsQEoUhyy1FlnIc9gn
+X-Google-Smtp-Source: ABdhPJyjJ7zJWXPp3v5REZjT3OvBcA0CPPbIuMx+cxAZucKwmGy9wBwH3pqi6VWiJ2aqphSyXZqSjWgsnuYPK7jb
 X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
- (user=yosryahmed job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP
- id t9-20020a17090a024900b001e0a8a33c6cmr2525pje.0.1654890293919; Fri, 10 Jun
- 2022 12:44:53 -0700 (PDT)
-Date:   Fri, 10 Jun 2022 19:44:34 +0000
+ (user=yosryahmed job=sendgmr) by 2002:a05:6a00:1350:b0:51c:26d2:9ce5 with
+ SMTP id k16-20020a056a00135000b0051c26d29ce5mr26479904pfu.69.1654890296722;
+ Fri, 10 Jun 2022 12:44:56 -0700 (PDT)
+Date:   Fri, 10 Jun 2022 19:44:35 +0000
 In-Reply-To: <20220610194435.2268290-1-yosryahmed@google.com>
-Message-Id: <20220610194435.2268290-8-yosryahmed@google.com>
+Message-Id: <20220610194435.2268290-9-yosryahmed@google.com>
 Mime-Version: 1.0
 References: <20220610194435.2268290-1-yosryahmed@google.com>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [PATCH bpf-next v2 7/8] selftests/bpf: extend cgroup helpers
+Subject: [PATCH bpf-next v2 8/8] bpf: add a selftest for cgroup hierarchical
+ stats collection
 From:   Yosry Ahmed <yosryahmed@google.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -82,332 +83,649 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch extends bpf selftests cgroup helpers in various ways:
-- Add enable_controllers() that allows tests to enable all or a
-  subset of controllers for a specific cgroup.
-- Add write_cgroup_file().
-- Add join_cgroup_parent(). The cgroup workdir is based on the pid,
-  therefore a spawned child cannot join the same cgroup hierarchy of the
-  test through join_cgroup(). join_cgroup_parent() is used in child
-  processes to join a cgroup under the parent's workdir.
-- Distinguish relative and absolute cgroup paths in function arguments.
-  Now relative paths are called relative_path, and absolute paths are
-  called cgroup_path.
+Add a selftest that tests the whole workflow for collecting,
+aggregating (flushing), and displaying cgroup hierarchical stats.
+
+TL;DR:
+- Whenever reclaim happens, vmscan_start and vmscan_end update
+  per-cgroup percpu readings, and tell rstat which (cgroup, cpu) pairs
+  have updates.
+- When userspace tries to read the stats, vmscan_dump calls rstat to flush
+  the stats, and outputs the stats in text format to userspace (similar
+  to cgroupfs stats).
+- rstat calls vmscan_flush once for every (cgroup, cpu) pair that has
+  updates, vmscan_flush aggregates cpu readings and propagates updates
+  to parents.
+
+Detailed explanation:
+- The test loads tracing bpf programs, vmscan_start and vmscan_end, to
+  measure the latency of cgroup reclaim. Per-cgroup ratings are stored in
+  percpu maps for efficiency. When a cgroup reading is updated on a cpu,
+  cgroup_rstat_updated(cgroup, cpu) is called to add the cgroup to the
+  rstat updated tree on that cpu.
+
+- A cgroup_iter program, vmscan_dump, is loaded and pinned to a file, for
+  each cgroup. Reading this file invokes the program, which calls
+  cgroup_rstat_flush(cgroup) to ask rstat to propagate the updates for all
+  cpus and cgroups that have updates in this cgroup's subtree. Afterwards,
+  the stats are exposed to the user. vmscan_dump returns 1 to terminate
+  iteration early, so that we only expose stats for one cgroup per read.
+
+- An ftrace program, vmscan_flush, is also loaded and attached to
+  bpf_rstat_flush. When rstat flushing is ongoing, vmscan_flush is invoked
+  once for each (cgroup, cpu) pair that has updates. cgroups are popped
+  from the rstat tree in a bottom-up fashion, so calls will always be
+  made for cgroups that have updates before their parents. The program
+  aggregates percpu readings to a total per-cgroup reading, and also
+  propagates them to the parent cgroup. After rstat flushing is over, all
+  cgroups will have correct updated hierarchical readings (including all
+  cpus and all their descendants).
 
 Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
 ---
- tools/testing/selftests/bpf/cgroup_helpers.c | 173 ++++++++++++++-----
- tools/testing/selftests/bpf/cgroup_helpers.h |  15 +-
- 2 files changed, 142 insertions(+), 46 deletions(-)
+ .../prog_tests/cgroup_hierarchical_stats.c    | 351 ++++++++++++++++++
+ .../bpf/progs/cgroup_hierarchical_stats.c     | 234 ++++++++++++
+ 2 files changed, 585 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
+ create mode 100644 tools/testing/selftests/bpf/progs/cgroup_hierarchical_stats.c
 
-diff --git a/tools/testing/selftests/bpf/cgroup_helpers.c b/tools/testing/selftests/bpf/cgroup_helpers.c
-index 9d59c3990ca8d..98c5f2f3d3c60 100644
---- a/tools/testing/selftests/bpf/cgroup_helpers.c
-+++ b/tools/testing/selftests/bpf/cgroup_helpers.c
-@@ -33,49 +33,51 @@
- #define CGROUP_MOUNT_DFLT		"/sys/fs/cgroup"
- #define NETCLS_MOUNT_PATH		CGROUP_MOUNT_DFLT "/net_cls"
- #define CGROUP_WORK_DIR			"/cgroup-test-work-dir"
--#define format_cgroup_path(buf, path) \
-+
-+#define format_cgroup_path_pid(buf, path, pid) \
- 	snprintf(buf, sizeof(buf), "%s%s%d%s", CGROUP_MOUNT_PATH, \
--	CGROUP_WORK_DIR, getpid(), path)
-+	CGROUP_WORK_DIR, pid, path)
-+
-+#define format_cgroup_path(buf, path) \
-+	format_cgroup_path_pid(buf, path, getpid())
-+
-+#define format_parent_cgroup_path(buf, path) \
-+	format_cgroup_path_pid(buf, path, getppid())
- 
- #define format_classid_path(buf)				\
- 	snprintf(buf, sizeof(buf), "%s%s", NETCLS_MOUNT_PATH,	\
- 		 CGROUP_WORK_DIR)
- 
--/**
-- * enable_all_controllers() - Enable all available cgroup v2 controllers
-- *
-- * Enable all available cgroup v2 controllers in order to increase
-- * the code coverage.
-- *
-- * If successful, 0 is returned.
-- */
--static int enable_all_controllers(char *cgroup_path)
-+
-+static int __enable_controllers(const char *cgroup_path, const char *controllers)
- {
- 	char path[PATH_MAX + 1];
--	char buf[PATH_MAX];
-+	char enable[PATH_MAX + 1];
- 	char *c, *c2;
- 	int fd, cfd;
- 	ssize_t len;
- 
--	snprintf(path, sizeof(path), "%s/cgroup.controllers", cgroup_path);
--	fd = open(path, O_RDONLY);
--	if (fd < 0) {
--		log_err("Opening cgroup.controllers: %s", path);
--		return 1;
--	}
-+	/* If not controllers are passed, enable all available controllers */
-+	if (!controllers) {
-+		snprintf(path, sizeof(path), "%s/cgroup.controllers",
-+			 cgroup_path);
-+		fd = open(path, O_RDONLY);
-+		if (fd < 0) {
-+			log_err("Opening cgroup.controllers: %s", path);
-+			return 1;
-+		}
- 
--	len = read(fd, buf, sizeof(buf) - 1);
--	if (len < 0) {
-+		len = read(fd, enable, sizeof(enable) - 1);
-+		if (len < 0) {
-+			close(fd);
-+			log_err("Reading cgroup.controllers: %s", path);
-+			return 1;
-+		} else if (len == 0) /* No controllers to enable */
-+			return 0;
-+		enable[len] = 0;
- 		close(fd);
--		log_err("Reading cgroup.controllers: %s", path);
--		return 1;
--	}
--	buf[len] = 0;
--	close(fd);
--
--	/* No controllers available? We're probably on cgroup v1. */
--	if (len == 0)
--		return 0;
-+	} else
-+		strncpy(enable, controllers, sizeof(enable));
- 
- 	snprintf(path, sizeof(path), "%s/cgroup.subtree_control", cgroup_path);
- 	cfd = open(path, O_RDWR);
-@@ -84,7 +86,7 @@ static int enable_all_controllers(char *cgroup_path)
- 		return 1;
- 	}
- 
--	for (c = strtok_r(buf, " ", &c2); c; c = strtok_r(NULL, " ", &c2)) {
-+	for (c = strtok_r(enable, " ", &c2); c; c = strtok_r(NULL, " ", &c2)) {
- 		if (dprintf(cfd, "+%s\n", c) <= 0) {
- 			log_err("Enabling controller %s: %s", c, path);
- 			close(cfd);
-@@ -95,6 +97,59 @@ static int enable_all_controllers(char *cgroup_path)
- 	return 0;
- }
- 
-+/**
-+ * enable_controllers() - Enable cgroup v2 controllers
-+ * @relative_path: The cgroup path, relative to the workdir
-+ * @controllers: List of controllers to enable in cgroup.controllers format
+diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c b/tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
+new file mode 100644
+index 0000000000000..b78a4043da49a
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
+@@ -0,0 +1,351 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Functions to manage eBPF programs attached to cgroup subsystems
 + *
-+ *
-+ * Enable given cgroup v2 controllers, if @controllers is NULL, enable all
-+ * available controllers.
-+ *
-+ * If successful, 0 is returned.
++ * Copyright 2022 Google LLC.
 + */
-+int enable_controllers(const char *relative_path, const char *controllers)
-+{
-+	char cgroup_path[PATH_MAX + 1];
++#include <errno.h>
++#include <sys/types.h>
++#include <sys/mount.h>
++#include <sys/stat.h>
++#include <unistd.h>
 +
-+	format_cgroup_path(cgroup_path, relative_path);
-+	return __enable_controllers(cgroup_path, controllers);
++#include <test_progs.h>
++#include <bpf/libbpf.h>
++#include <bpf/bpf.h>
++
++#include "cgroup_helpers.h"
++#include "cgroup_hierarchical_stats.skel.h"
++
++#define PAGE_SIZE 4096
++#define MB(x) (x << 20)
++
++#define BPFFS_ROOT "/sys/fs/bpf/"
++#define BPFFS_VMSCAN BPFFS_ROOT"vmscan/"
++
++#define CG_ROOT_NAME "root"
++#define CG_ROOT_ID 1
++
++#define CGROUP_PATH(p, n) {.path = #p"/"#n, .name = #n}
++
++static struct {
++	const char *path, *name;
++	unsigned long long id;
++	int fd;
++} cgroups[] = {
++	CGROUP_PATH(/, test),
++	CGROUP_PATH(/test, child1),
++	CGROUP_PATH(/test, child2),
++	CGROUP_PATH(/test/child1, child1_1),
++	CGROUP_PATH(/test/child1, child1_2),
++	CGROUP_PATH(/test/child2, child2_1),
++	CGROUP_PATH(/test/child2, child2_2),
++};
++
++#define N_CGROUPS ARRAY_SIZE(cgroups)
++#define N_NON_LEAF_CGROUPS 3
++
++int root_cgroup_fd;
++bool mounted_bpffs;
++
++static int read_from_file(const char *path, char *buf, size_t size)
++{
++	int fd, len;
++
++	fd = open(path, O_RDONLY);
++	if (fd < 0) {
++		log_err("Open %s", path);
++		return -errno;
++	}
++	len = read(fd, buf, size);
++	if (len < 0)
++		log_err("Read %s", path);
++	else
++		buf[len] = 0;
++	close(fd);
++	return len < 0 ? -errno : 0;
 +}
 +
-+/**
-+ * write_cgroup_file() - Write to a cgroup file
-+ * @relative_path: The cgroup path, relative to the workdir
-+ * @buf: Buffer to write to the file
-+ *
-+ * Write to a file in the given cgroup's directory.
-+ *
-+ * If successful, 0 is returned.
-+ */
-+int write_cgroup_file(const char *relative_path, const char *file,
-+		      const char *buf)
++static int setup_bpffs(void)
 +{
-+	char cgroup_path[PATH_MAX - 24];
-+	char file_path[PATH_MAX + 1];
-+	int fd;
++	int err;
 +
-+	format_cgroup_path(cgroup_path, relative_path);
++	/* Mount bpffs */
++	err = mount("bpf", BPFFS_ROOT, "bpf", 0, NULL);
++	mounted_bpffs = !err;
++	if (!ASSERT_OK(err && errno != EBUSY, "mount bpffs"))
++		return err;
 +
-+	snprintf(file_path, sizeof(file_path), "%s/%s", cgroup_path, file);
-+	fd = open(file_path, O_RDWR);
-+	if (fd < 0) {
-+		log_err("Opening cgroup.subtree_control: %s", file_path);
-+		return 1;
++	/* Create a directory to contain stat files in bpffs */
++	err = mkdir(BPFFS_VMSCAN, 0755);
++	ASSERT_OK(err, "mkdir bpffs");
++	return err;
++}
++
++static void cleanup_bpffs(void)
++{
++	/* Remove created directory in bpffs */
++	ASSERT_OK(rmdir(BPFFS_VMSCAN), "rmdir "BPFFS_VMSCAN);
++
++	/* Unmount bpffs, if it wasn't already mounted when we started */
++	if (mounted_bpffs)
++		return;
++	ASSERT_OK(umount(BPFFS_ROOT), "unmount bpffs");
++}
++
++static int setup_cgroups(void)
++{
++	int i, fd, err;
++
++	err = setup_cgroup_environment();
++	if (!ASSERT_OK(err, "setup_cgroup_environment"))
++		return err;
++
++	root_cgroup_fd = get_root_cgroup();
++	if (!ASSERT_GE(root_cgroup_fd, 0, "get_root_cgroup"))
++		return root_cgroup_fd;
++
++	for (i = 0; i < N_CGROUPS; i++) {
++		fd = create_and_get_cgroup(cgroups[i].path);
++		if (!ASSERT_GE(fd, 0, "create_and_get_cgroup"))
++			return fd;
++
++		cgroups[i].fd = fd;
++		cgroups[i].id = get_cgroup_id(cgroups[i].path);
++
++		/*
++		 * Enable memcg controller for the entire hierarchy.
++		 * Note that stats are collected for all cgroups in a hierarchy
++		 * with memcg enabled anyway, but are only exposed for cgroups
++		 * that have memcg enabled.
++		 */
++		if (i < N_NON_LEAF_CGROUPS) {
++			err = enable_controllers(cgroups[i].path, "memory");
++			if (!ASSERT_OK(err, "enable_controllers"))
++				return err;
++		}
 +	}
-+
-+	if (dprintf(fd, "%s", buf) <= 0) {
-+		log_err("Writing to %s", file_path);
-+		close(fd);
-+		return 1;
-+	}
-+	close(fd);
 +	return 0;
 +}
 +
- /**
-  * setup_cgroup_environment() - Setup the cgroup environment
-  *
-@@ -133,7 +188,9 @@ int setup_cgroup_environment(void)
- 		return 1;
- 	}
- 
--	if (enable_all_controllers(cgroup_workdir))
-+	/* Enable all available controllers to increase test coverage */
-+	if (__enable_controllers(CGROUP_MOUNT_PATH, NULL) ||
-+	    __enable_controllers(cgroup_workdir, NULL))
- 		return 1;
- 
- 	return 0;
-@@ -173,7 +230,7 @@ static int join_cgroup_from_top(const char *cgroup_path)
- 
- /**
-  * join_cgroup() - Join a cgroup
-- * @path: The cgroup path, relative to the workdir, to join
-+ * @relative_path: The cgroup path, relative to the workdir, to join
-  *
-  * This function expects a cgroup to already be created, relative to the cgroup
-  * work dir, and it joins it. For example, passing "/my-cgroup" as the path
-@@ -182,11 +239,27 @@ static int join_cgroup_from_top(const char *cgroup_path)
-  *
-  * On success, it returns 0, otherwise on failure it returns 1.
-  */
--int join_cgroup(const char *path)
-+int join_cgroup(const char *relative_path)
++static void cleanup_cgroups(void)
 +{
-+	char cgroup_path[PATH_MAX + 1];
-+
-+	format_cgroup_path(cgroup_path, relative_path);
-+	return join_cgroup_from_top(cgroup_path);
++	close(root_cgroup_fd);
++	for (int i = 0; i < N_CGROUPS; i++)
++		close(cgroups[i].fd);
++	cleanup_cgroup_environment();
 +}
 +
-+/**
-+ * join_parent_cgroup() - Join a cgroup in the parent process workdir
-+ * @relative_path: The cgroup path, relative to parent process workdir, to join
-+ *
-+ * See join_cgroup().
-+ *
-+ * On success, it returns 0, otherwise on failure it returns 1.
-+ */
-+int join_parent_cgroup(const char *relative_path)
- {
- 	char cgroup_path[PATH_MAX + 1];
- 
--	format_cgroup_path(cgroup_path, path);
-+	format_parent_cgroup_path(cgroup_path, relative_path);
- 	return join_cgroup_from_top(cgroup_path);
- }
- 
-@@ -212,9 +285,27 @@ void cleanup_cgroup_environment(void)
- 	nftw(cgroup_workdir, nftwfunc, WALK_FD_LIMIT, FTW_DEPTH | FTW_MOUNT);
- }
- 
-+/**
-+ * get_root_cgroup() - Get the FD of the root cgroup
-+ *
-+ * On success, it returns the file descriptor. On failure, it returns -1.
-+ * If there is a failure, it prints the error to stderr.
-+ */
-+int get_root_cgroup(void)
-+{
-+	int fd;
 +
-+	fd = open(CGROUP_MOUNT_PATH, O_RDONLY);
-+	if (fd < 0) {
-+		log_err("Opening root cgroup");
-+		return -1;
++static int setup_hierarchy(void)
++{
++	return setup_bpffs() || setup_cgroups();
++}
++
++static void destroy_hierarchy(void)
++{
++	cleanup_cgroups();
++	cleanup_bpffs();
++}
++
++static void alloc_anon(size_t size)
++{
++	char *buf, *ptr;
++
++	buf = malloc(size);
++	for (ptr = buf; ptr < buf + size; ptr += PAGE_SIZE)
++		*ptr = 0;
++	free(buf);
++}
++
++static int induce_vmscan(void)
++{
++	char size[128];
++	int i, err;
++
++	/*
++	 * Set memory.high for test parent cgroup to 1 MB to throttle
++	 * allocations and invoke reclaim in children.
++	 */
++	snprintf(size, 128, "%d", MB(1));
++	err = write_cgroup_file(cgroups[0].path, "memory.high",	size);
++	if (!ASSERT_OK(err, "write memory.high"))
++		return err;
++	/*
++	 * In every leaf cgroup, run a memory hog for a few seconds to induce
++	 * reclaim then kill it.
++	 */
++	for (i = N_NON_LEAF_CGROUPS; i < N_CGROUPS; i++) {
++		pid_t pid = fork();
++
++		if (pid == 0) {
++			/* Join cgroup in the parent process workdir */
++			join_parent_cgroup(cgroups[i].path);
++
++			/* Allocate more memory than memory.high */
++			alloc_anon(MB(2));
++			exit(0);
++		} else {
++			/* Wait for child to cause reclaim then kill it */
++			if (!ASSERT_GT(pid, 0, "fork"))
++				return pid;
++			sleep(2);
++			kill(pid, SIGKILL);
++			waitpid(pid, NULL, 0);
++		}
 +	}
-+	return fd;
++	return 0;
 +}
 +
- /**
-  * create_and_get_cgroup() - Create a cgroup, relative to workdir, and get the FD
-- * @path: The cgroup path, relative to the workdir, to join
-+ * @relative_path: The cgroup path, relative to the workdir, to join
-  *
-  * This function creates a cgroup under the top level workdir and returns the
-  * file descriptor. It is idempotent.
-@@ -222,14 +313,14 @@ void cleanup_cgroup_environment(void)
-  * On success, it returns the file descriptor. On failure it returns -1.
-  * If there is a failure, it prints the error to stderr.
-  */
--int create_and_get_cgroup(const char *path)
-+int create_and_get_cgroup(const char *relative_path)
- {
- 	char cgroup_path[PATH_MAX + 1];
- 	int fd;
- 
--	format_cgroup_path(cgroup_path, path);
-+	format_cgroup_path(cgroup_path, relative_path);
- 	if (mkdir(cgroup_path, 0777) && errno != EEXIST) {
--		log_err("mkdiring cgroup %s .. %s", path, cgroup_path);
-+		log_err("mkdiring cgroup %s .. %s", relative_path, cgroup_path);
- 		return -1;
- 	}
- 
-@@ -244,13 +335,13 @@ int create_and_get_cgroup(const char *path)
- 
- /**
-  * get_cgroup_id() - Get cgroup id for a particular cgroup path
-- * @path: The cgroup path, relative to the workdir, to join
-+ * @relative_path: The cgroup path, relative to the workdir, to join
-  *
-  * On success, it returns the cgroup id. On failure it returns 0,
-  * which is an invalid cgroup id.
-  * If there is a failure, it prints the error to stderr.
-  */
--unsigned long long get_cgroup_id(const char *path)
-+unsigned long long get_cgroup_id(const char *relative_path)
- {
- 	int dirfd, err, flags, mount_id, fhsize;
- 	union {
-@@ -261,7 +352,7 @@ unsigned long long get_cgroup_id(const char *path)
- 	struct file_handle *fhp, *fhp2;
- 	unsigned long long ret = 0;
- 
--	format_cgroup_path(cgroup_workdir, path);
-+	format_cgroup_path(cgroup_workdir, relative_path);
- 
- 	dirfd = AT_FDCWD;
- 	flags = 0;
-diff --git a/tools/testing/selftests/bpf/cgroup_helpers.h b/tools/testing/selftests/bpf/cgroup_helpers.h
-index fcc9cb91b2111..895e4de1174c9 100644
---- a/tools/testing/selftests/bpf/cgroup_helpers.h
-+++ b/tools/testing/selftests/bpf/cgroup_helpers.h
-@@ -10,11 +10,16 @@
- 	__FILE__, __LINE__, clean_errno(), ##__VA_ARGS__)
- 
- /* cgroupv2 related */
--int cgroup_setup_and_join(const char *path);
--int create_and_get_cgroup(const char *path);
--unsigned long long get_cgroup_id(const char *path);
-+int enable_controllers(const char *relative_path, const char *controllers);
-+int write_cgroup_file(const char *relative_path, const char *file,
-+		      const char *buf);
-+int cgroup_setup_and_join(const char *relative_path);
-+int get_root_cgroup(void);
-+int create_and_get_cgroup(const char *relative_path);
-+unsigned long long get_cgroup_id(const char *relative_path);
- 
--int join_cgroup(const char *path);
-+int join_cgroup(const char *relative_path);
-+int join_parent_cgroup(const char *relative_path);
- 
- int setup_cgroup_environment(void);
- void cleanup_cgroup_environment(void);
-@@ -26,4 +31,4 @@ int join_classid(void);
- int setup_classid_environment(void);
- void cleanup_classid_environment(void);
- 
--#endif /* __CGROUP_HELPERS_H */
-\ No newline at end of file
-+#endif /* __CGROUP_HELPERS_H */
++static unsigned long long get_cgroup_vmscan_delay(unsigned long long cgroup_id,
++						  const char *file_name)
++{
++	char buf[128], path[128];
++	unsigned long long vmscan = 0, id = 0;
++	int err;
++
++	/* For every cgroup, read the file generated by cgroup_iter */
++	snprintf(path, 128, "%s%s", BPFFS_VMSCAN, file_name);
++	err = read_from_file(path, buf, 128);
++	if (!ASSERT_OK(err, "read cgroup_iter"))
++		return 0;
++
++	/* Check the output file formatting */
++	ASSERT_EQ(sscanf(buf, "cg_id: %llu, total_vmscan_delay: %llu\n",
++			 &id, &vmscan), 2, "output format");
++
++	/* Check that the cgroup_id is displayed correctly */
++	ASSERT_EQ(id, cgroup_id, "cgroup_id");
++	/* Check that the vmscan reading is non-zero */
++	ASSERT_GT(vmscan, 0, "vmscan_reading");
++	return vmscan;
++}
++
++static void check_vmscan_stats(void)
++{
++	int i;
++	unsigned long long vmscan_readings[N_CGROUPS], vmscan_root;
++
++	for (i = 0; i < N_CGROUPS; i++)
++		vmscan_readings[i] = get_cgroup_vmscan_delay(cgroups[i].id,
++							     cgroups[i].name);
++
++	/* Read stats for root too */
++	vmscan_root = get_cgroup_vmscan_delay(CG_ROOT_ID, CG_ROOT_NAME);
++
++	/* Check that child1 == child1_1 + child1_2 */
++	ASSERT_EQ(vmscan_readings[1], vmscan_readings[3] + vmscan_readings[4],
++		  "child1_vmscan");
++	/* Check that child2 == child2_1 + child2_2 */
++	ASSERT_EQ(vmscan_readings[2], vmscan_readings[5] + vmscan_readings[6],
++		  "child2_vmscan");
++	/* Check that test == child1 + child2 */
++	ASSERT_EQ(vmscan_readings[0], vmscan_readings[1] + vmscan_readings[2],
++		  "test_vmscan");
++	/* Check that root >= test */
++	ASSERT_GE(vmscan_root, vmscan_readings[1], "root_vmscan");
++}
++
++static int setup_cgroup_iter(struct cgroup_hierarchical_stats *obj, int cgroup_fd,
++			     const char *file_name)
++{
++	DECLARE_LIBBPF_OPTS(bpf_iter_attach_opts, opts);
++	union bpf_iter_link_info linfo = {};
++	struct bpf_link *link;
++	char path[128];
++	int err;
++
++	/*
++	 * Create an iter link, parameterized by cgroup_fd.
++	 * We only want to traverse one cgroup, so set the traversal order to
++	 * "pre", and return 1 from dump_vmscan to stop iteration after the
++	 * first cgroup.
++	 */
++	linfo.cgroup.cgroup_fd = cgroup_fd;
++	linfo.cgroup.traversal_order = BPF_ITER_CGROUP_PRE;
++	opts.link_info = &linfo;
++	opts.link_info_len = sizeof(linfo);
++	link = bpf_program__attach_iter(obj->progs.dump_vmscan, &opts);
++	if (!ASSERT_OK_PTR(link, "attach iter"))
++		return libbpf_get_error(link);
++
++	/* Pin the link to a bpffs file */
++	snprintf(path, 128, "%s%s", BPFFS_VMSCAN, file_name);
++	err = bpf_link__pin(link, path);
++	ASSERT_OK(err, "pin cgroup_iter");
++	return err;
++}
++
++static int setup_progs(struct cgroup_hierarchical_stats **skel)
++{
++	int i, err;
++	struct bpf_link *link;
++	struct cgroup_hierarchical_stats *obj;
++
++	obj = cgroup_hierarchical_stats__open_and_load();
++	if (!ASSERT_OK_PTR(obj, "open_and_load"))
++		return libbpf_get_error(obj);
++
++	/* Attach cgroup_iter program that will dump the stats to cgroups */
++	for (i = 0; i < N_CGROUPS; i++) {
++		err = setup_cgroup_iter(obj, cgroups[i].fd, cgroups[i].name);
++		if (!ASSERT_OK(err, "setup_cgroup_iter"))
++			return err;
++	}
++	/* Also dump stats for root */
++	err = setup_cgroup_iter(obj, root_cgroup_fd, CG_ROOT_NAME);
++	if (!ASSERT_OK(err, "setup_cgroup_iter"))
++		return err;
++
++	/* Attach rstat flusher */
++	link = bpf_program__attach(obj->progs.vmscan_flush);
++	if (!ASSERT_OK_PTR(link, "attach rstat"))
++		return libbpf_get_error(link);
++
++	/* Attach tracing programs that will calculate vmscan delays */
++	link = bpf_program__attach(obj->progs.vmscan_start);
++	if (!ASSERT_OK_PTR(obj, "attach raw_tracepoint"))
++		return libbpf_get_error(obj);
++
++	link = bpf_program__attach(obj->progs.vmscan_end);
++	if (!ASSERT_OK_PTR(obj, "attach raw_tracepoint"))
++		return libbpf_get_error(obj);
++
++	*skel = obj;
++	return 0;
++}
++
++void destroy_progs(struct cgroup_hierarchical_stats *skel)
++{
++	char path[128];
++	int i;
++
++	for (i = 0; i < N_CGROUPS; i++) {
++		/* Delete files in bpffs that cgroup_iters are pinned in */
++		snprintf(path, 128, "%s%s", BPFFS_VMSCAN,
++			 cgroups[i].name);
++		ASSERT_OK(remove(path), "remove cgroup_iter pin");
++	}
++
++	/* Delete root file in bpffs */
++	snprintf(path, 128, "%s%s", BPFFS_VMSCAN, CG_ROOT_NAME);
++	ASSERT_OK(remove(path), "remove cgroup_iter root pin");
++	cgroup_hierarchical_stats__destroy(skel);
++}
++
++void test_cgroup_hierarchical_stats(void)
++{
++	struct cgroup_hierarchical_stats *skel = NULL;
++
++	if (setup_hierarchy())
++		goto hierarchy_cleanup;
++	if (setup_progs(&skel))
++		goto cleanup;
++	if (induce_vmscan())
++		goto cleanup;
++	check_vmscan_stats();
++cleanup:
++	destroy_progs(skel);
++hierarchy_cleanup:
++	destroy_hierarchy();
++}
+diff --git a/tools/testing/selftests/bpf/progs/cgroup_hierarchical_stats.c b/tools/testing/selftests/bpf/progs/cgroup_hierarchical_stats.c
+new file mode 100644
+index 0000000000000..fd2028f1ed70b
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/cgroup_hierarchical_stats.c
+@@ -0,0 +1,234 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Functions to manage eBPF programs attached to cgroup subsystems
++ *
++ * Copyright 2022 Google LLC.
++ */
++#include "vmlinux.h"
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++char _license[] SEC("license") = "GPL";
++
++/*
++ * Start times are stored per-task, not per-cgroup, as multiple tasks in one
++ * cgroup can perform reclain concurrently.
++ */
++struct {
++	__uint(type, BPF_MAP_TYPE_TASK_STORAGE);
++	__uint(map_flags, BPF_F_NO_PREALLOC);
++	__type(key, int);
++	__type(value, __u64);
++} vmscan_start_time SEC(".maps");
++
++struct vmscan_percpu {
++	/* Previous percpu state, to figure out if we have new updates */
++	__u64 prev;
++	/* Current percpu state */
++	__u64 state;
++};
++
++struct vmscan {
++	/* State propagated through children, pending aggregation */
++	__u64 pending;
++	/* Total state, including all cpus and all children */
++	__u64 state;
++};
++
++struct {
++	__uint(type, BPF_MAP_TYPE_PERCPU_HASH);
++	__uint(max_entries, 10);
++	__type(key, __u64);
++	__type(value, struct vmscan_percpu);
++} pcpu_cgroup_vmscan_elapsed SEC(".maps");
++
++struct {
++	__uint(type, BPF_MAP_TYPE_HASH);
++	__uint(max_entries, 10);
++	__type(key, __u64);
++	__type(value, struct vmscan);
++} cgroup_vmscan_elapsed SEC(".maps");
++
++extern void cgroup_rstat_updated(struct cgroup *cgrp, int cpu) __ksym;
++extern void cgroup_rstat_flush(struct cgroup *cgrp) __ksym;
++
++static inline struct cgroup *task_memcg(struct task_struct *task)
++{
++	return task->cgroups->subsys[memory_cgrp_id]->cgroup;
++}
++
++static inline uint64_t cgroup_id(struct cgroup *cgrp)
++{
++	return cgrp->kn->id;
++}
++
++static inline int create_vmscan_percpu_elem(__u64 cg_id, __u64 state)
++{
++	struct vmscan_percpu pcpu_init = {.state = state, .prev = 0};
++
++	if (bpf_map_update_elem(&pcpu_cgroup_vmscan_elapsed, &cg_id,
++				&pcpu_init, BPF_NOEXIST)) {
++		bpf_printk("failed to create pcpu entry for cgroup %llu\n"
++			   , cg_id);
++		return 1;
++	}
++	return 0;
++}
++
++static inline int create_vmscan_elem(__u64 cg_id, __u64 state, __u64 pending)
++{
++	struct vmscan init = {.state = state, .pending = pending};
++
++	if (bpf_map_update_elem(&cgroup_vmscan_elapsed, &cg_id,
++				&init, BPF_NOEXIST)) {
++		bpf_printk("failed to create entry for cgroup %llu\n"
++			   , cg_id);
++		return 1;
++	}
++	return 0;
++}
++
++SEC("tp_btf/mm_vmscan_memcg_reclaim_begin")
++int BPF_PROG(vmscan_start, struct lruvec *lruvec, struct scan_control *sc)
++{
++	struct task_struct *task = bpf_get_current_task_btf();
++	__u64 *start_time_ptr;
++
++	start_time_ptr = bpf_task_storage_get(&vmscan_start_time, task, 0,
++					  BPF_LOCAL_STORAGE_GET_F_CREATE);
++	if (!start_time_ptr) {
++		bpf_printk("error retrieving storage\n");
++		return 0;
++	}
++
++	*start_time_ptr = bpf_ktime_get_ns();
++	return 0;
++}
++
++SEC("tp_btf/mm_vmscan_memcg_reclaim_end")
++int BPF_PROG(vmscan_end, struct lruvec *lruvec, struct scan_control *sc)
++{
++	struct vmscan_percpu *pcpu_stat;
++	struct task_struct *current = bpf_get_current_task_btf();
++	struct cgroup *cgrp;
++	__u64 *start_time_ptr;
++	__u64 current_elapsed, cg_id;
++	__u64 end_time = bpf_ktime_get_ns();
++
++	/*
++	 * cgrp is the first parent cgroup of current that has memcg enabled in
++	 * its subtree_control, or NULL if memcg is disabled in the entire tree.
++	 * In a cgroup hierarchy like this:
++	 *                               a
++	 *                              / \
++	 *                             b   c
++	 *  If "a" has memcg enabled, while "b" doesn't, then processes in "b"
++	 *  will accumulate their stats directly to "a". This makes sure that no
++	 *  stats are lost from processes in leaf cgroups that don't have memcg
++	 *  enabled, but only exposes stats for cgroups that have memcg enabled.
++	 */
++	cgrp = task_memcg(current);
++	if (!cgrp)
++		return 0;
++
++	cg_id = cgroup_id(cgrp);
++	start_time_ptr = bpf_task_storage_get(&vmscan_start_time, current, 0,
++					      BPF_LOCAL_STORAGE_GET_F_CREATE);
++	if (!start_time_ptr) {
++		bpf_printk("error retrieving storage local storage\n");
++		return 0;
++	}
++
++	current_elapsed = end_time - *start_time_ptr;
++	pcpu_stat = bpf_map_lookup_elem(&pcpu_cgroup_vmscan_elapsed,
++					&cg_id);
++	if (pcpu_stat)
++		__sync_fetch_and_add(&pcpu_stat->state, current_elapsed);
++	else
++		create_vmscan_percpu_elem(cg_id, current_elapsed);
++
++	cgroup_rstat_updated(cgrp, bpf_get_smp_processor_id());
++	return 0;
++}
++
++SEC("fentry/bpf_rstat_flush")
++int BPF_PROG(vmscan_flush, struct cgroup *cgrp, struct cgroup *parent, int cpu)
++{
++	struct vmscan_percpu *pcpu_stat;
++	struct vmscan *total_stat, *parent_stat;
++	__u64 cg_id = cgroup_id(cgrp);
++	__u64 parent_cg_id = parent ? cgroup_id(parent) : 0;
++	__u64 *pcpu_vmscan;
++	__u64 state;
++	__u64 delta = 0;
++
++	/* Add CPU changes on this level since the last flush */
++	pcpu_stat = bpf_map_lookup_percpu_elem(&pcpu_cgroup_vmscan_elapsed,
++					       &cg_id, cpu);
++	if (pcpu_stat) {
++		state = pcpu_stat->state;
++		delta += state - pcpu_stat->prev;
++		pcpu_stat->prev = state;
++	}
++
++	total_stat = bpf_map_lookup_elem(&cgroup_vmscan_elapsed, &cg_id);
++	if (!total_stat) {
++		create_vmscan_elem(cg_id, delta, 0);
++		goto update_parent;
++	}
++
++	/* Collect pending stats from subtree */
++	if (total_stat->pending) {
++		delta += total_stat->pending;
++		total_stat->pending = 0;
++	}
++
++	/* Propagate changes to this cgroup's total */
++	total_stat->state += delta;
++
++update_parent:
++	/* Skip if there are no changes to propagate, or no parent */
++	if (!delta || !parent_cg_id)
++		return 0;
++
++	/* Propagate changes to cgroup's parent */
++	parent_stat = bpf_map_lookup_elem(&cgroup_vmscan_elapsed,
++					  &parent_cg_id);
++	if (parent_stat)
++		parent_stat->pending += delta;
++	else
++		create_vmscan_elem(parent_cg_id, 0, delta);
++
++	return 0;
++}
++
++SEC("iter.s/cgroup")
++int BPF_PROG(dump_vmscan, struct bpf_iter_meta *meta, struct cgroup *cgrp)
++{
++	struct seq_file *seq = meta->seq;
++	struct vmscan *total_stat;
++	__u64 cg_id = cgroup_id(cgrp);
++
++	/* Do nothing for the terminal call */
++	if (!cgrp)
++		return 1;
++
++	/* Flush the stats to make sure we get the most updated numbers */
++	cgroup_rstat_flush(cgrp);
++
++	total_stat = bpf_map_lookup_elem(&cgroup_vmscan_elapsed, &cg_id);
++	if (!total_stat) {
++		bpf_printk("error finding stats for cgroup %llu\n", cg_id);
++		BPF_SEQ_PRINTF(seq, "cg_id: %llu, total_vmscan_delay: -1\n",
++			       cg_id);
++		return 1;
++	}
++	BPF_SEQ_PRINTF(seq, "cg_id: %llu, total_vmscan_delay: %llu\n",
++		       cg_id, total_stat->state);
++
++	/*
++	 * We only dump stats for one cgroup here, so return 1 to stop
++	 * iteration after the first cgroup.
++	 */
++	return 1;
++}
 -- 
 2.36.1.476.g0c4daa206d-goog
 
