@@ -2,102 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94F9154692D
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 17:10:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BA3E546938
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 17:14:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344140AbiFJPKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 11:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42248 "EHLO
+        id S233194AbiFJPOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 11:14:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344041AbiFJPKT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 11:10:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7725419FF6F
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 08:10:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B40D361F77
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 15:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 219F2C3411D;
-        Fri, 10 Jun 2022 15:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654873814;
-        bh=CdSZiam5BQZOkZsZ2205Bw/AlEtSUZx58kjGjbIDBUA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kP4IfMS97YFTGiB+Zj1dGMd2V2QtLBTwYOxQxysnJxCgfhZDsfQB5RXvNNMazxZ2W
-         ju0C+WMV9WEWDcagc4Fv/Kf9nKwRPL7+4lrXn2soxujpZA7f3z8HfmGjxgKfPba0vS
-         1c13mF5iPUtnX8BRWVpdAGudQPKrYB67MSnR1hAkW4txDTP/OI3W/vt+1yXow/5n5/
-         yAiLqaf+71lqCP86U21MUBLc8PhMsLYWtYpWR6xVmqiwyAkJ+qVW3xOIVIsavDZV3J
-         /hLjXXbGrFGeRzzGl4F9eu3Hi2DBmkju5PsHjEfG/eCNCJgKnEtuI3Ne3QTYbHj3Ho
-         dwo8xUOu3KLtQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 057F2E737F0;
-        Fri, 10 Jun 2022 15:10:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229553AbiFJPOh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 11:14:37 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC4E95A3;
+        Fri, 10 Jun 2022 08:14:35 -0700 (PDT)
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nzgLE-0003a9-0M; Fri, 10 Jun 2022 17:14:28 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nzgLD-000Tc0-Mu; Fri, 10 Jun 2022 17:14:27 +0200
+Subject: Re: [PATCH v3 1/2] bpf: Add bpf_verify_signature() helper
+To:     Roberto Sassu <roberto.sassu@huawei.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>
+Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>
+References: <20220610135916.1285509-1-roberto.sassu@huawei.com>
+ <20220610135916.1285509-2-roberto.sassu@huawei.com>
+ <ce56c551-019f-9e10-885f-4e88001a8f6b@iogearbox.net>
+ <4b877d4877be495787cb431d0a42cbc9@huawei.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <1a5534e6-4d63-7c91-8dcd-41b22f1ea2ba@iogearbox.net>
+Date:   Fri, 10 Jun 2022 17:14:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH iproute2-next 00/10] bridge: fdb: add extended flush support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165487381401.23380.16753813786292392416.git-patchwork-notify@kernel.org>
-Date:   Fri, 10 Jun 2022 15:10:14 +0000
-References: <20220608122921.3962382-1-razor@blackwall.org>
-In-Reply-To: <20220608122921.3962382-1-razor@blackwall.org>
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
-        stephen@networkplumber.org, roopa@nvidia.com
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <4b877d4877be495787cb431d0a42cbc9@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26568/Fri Jun 10 10:06:23 2022)
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to iproute2/iproute2-next.git (main)
-by David Ahern <dsahern@kernel.org>:
-
-On Wed,  8 Jun 2022 15:29:11 +0300 you wrote:
-> Hi,
-> This set adds support for the new bulk delete flag to allow fdb flushing
-> for specific entries which are matched based on the supplied options.
-> The new bridge fdb subcommand is "flush", and as can be seen from the
-> commits it allows to delete entries based on many different criteria:
->  - matching vlan
->  - matching port
->  - matching all sorts of flags (combinations are allowed)
+On 6/10/22 4:59 PM, Roberto Sassu wrote:
+>> From: Daniel Borkmann [mailto:daniel@iogearbox.net]
+>> Sent: Friday, June 10, 2022 4:49 PM
+>> On 6/10/22 3:59 PM, Roberto Sassu wrote:
+>>> Add the bpf_verify_signature() helper, to give eBPF security modules the
+>>> ability to check the validity of a signature against supplied data, by
+>>> using system-provided keys as trust anchor.
+>>>
+>>> The new helper makes it possible to enforce mandatory policies, as eBPF
+>>> programs might be allowed to make security decisions only based on data
+>>> sources the system administrator approves.
+>>>
+>>> The caller should specify the identifier of the keyring containing the keys
+>>> for signature verification: 0 for the primary keyring (immutable keyring of
+>>> system keys); 1 for both the primary and secondary keyring (where keys can
+>>> be added only if they are vouched for by existing keys in those keyrings);
+>>> 2 for the platform keyring (primarily used by the integrity subsystem to
+>>> verify a kexec'ed kerned image and, possibly, the initramfs signature);
+>>> 0xffff for the session keyring (for testing purposes).
+>>>
+>>> The caller should also specify the type of signature. Currently only PKCS#7
+>>> is supported.
+>>>
+>>> Since the maximum number of parameters of an eBPF helper is 5, the keyring
+>>> and signature types share one (keyring ID: low 16 bits, signature type:
+>>> high 16 bits).
+>>>
+>>> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+>>> Reported-by: kernel test robot <lkp@intel.com> (cast warning)
+>>> ---
+>>>    include/uapi/linux/bpf.h       | 17 +++++++++++++
+>>>    kernel/bpf/bpf_lsm.c           | 46 ++++++++++++++++++++++++++++++++++
+>>>    tools/include/uapi/linux/bpf.h | 17 +++++++++++++
+>>>    3 files changed, 80 insertions(+)
+>>>
+>>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>>> index f4009dbdf62d..97521857e44a 100644
+>>> --- a/include/uapi/linux/bpf.h
+>>> +++ b/include/uapi/linux/bpf.h
+>>> @@ -5249,6 +5249,22 @@ union bpf_attr {
+>>>     *		Pointer to the underlying dynptr data, NULL if the dynptr is
+>>>     *		read-only, if the dynptr is invalid, or if the offset and length
+>>>     *		is out of bounds.
+>>> + *
+>>> + * long bpf_verify_signature(u8 *data, u32 datalen, u8 *sig, u32 siglen, u32
+>> info)
+>>> + *	Description
+>>> + *		Verify a signature of length *siglen* against the supplied data
+>>> + *		with length *datalen*. *info* contains the keyring identifier
+>>> + *		(low 16 bits) and the signature type (high 16 bits). The keyring
+>>> + *		identifier can have the following values (some defined in
+>>> + *		verification.h): 0 for the primary keyring (immutable keyring of
+>>> + *		system keys); 1 for both the primary and secondary keyring
+>>> + *		(where keys can be added only if they are vouched for by
+>>> + *		existing keys in those keyrings); 2 for the platform keyring
+>>> + *		(primarily used by the integrity subsystem to verify a kexec'ed
+>>> + *		kerned image and, possibly, the initramfs signature); 0xffff for
+>>> + *		the session keyring (for testing purposes).
+>>> + *	Return
+>>> + *		0 on success, a negative value on error.
+>>>     */
+>>>    #define __BPF_FUNC_MAPPER(FN)		\
+>>>    	FN(unspec),			\
+>>> @@ -5455,6 +5471,7 @@ union bpf_attr {
+>>>    	FN(dynptr_read),		\
+>>>    	FN(dynptr_write),		\
+>>>    	FN(dynptr_data),		\
+>>> +	FN(verify_signature),		\
+>>>    	/* */
+>>>
+>>>    /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>>> diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
+>>> index c1351df9f7ee..20bd850ea3ee 100644
+>>> --- a/kernel/bpf/bpf_lsm.c
+>>> +++ b/kernel/bpf/bpf_lsm.c
+>>> @@ -16,6 +16,8 @@
+>>>    #include <linux/bpf_local_storage.h>
+>>>    #include <linux/btf_ids.h>
+>>>    #include <linux/ima.h>
+>>> +#include <linux/verification.h>
+>>> +#include <linux/module_signature.h>
+>>>
+>>>    /* For every LSM hook that allows attachment of BPF programs, declare a
+>> nop
+>>>     * function where a BPF program can be attached.
+>>> @@ -132,6 +134,46 @@ static const struct bpf_func_proto
+>> bpf_get_attach_cookie_proto = {
+>>>    	.arg1_type	= ARG_PTR_TO_CTX,
+>>>    };
+>>>
+>>> +#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
+>>> +BPF_CALL_5(bpf_verify_signature, u8 *, data, u32, datalen, u8 *, sig,
+>>> +	   u32, siglen, u32, info)
+>>> +{
+>>> +	unsigned long keyring_id = info & U16_MAX;
+>>> +	enum pkey_id_type id_type = info >> 16;
+>>> +	const struct cred *cred = current_cred();
+>>> +	struct key *keyring;
+>>> +
+>>> +	if (keyring_id > (unsigned long)VERIFY_USE_PLATFORM_KEYRING &&
+>>> +	    keyring_id != U16_MAX)
+>>> +		return -EINVAL;
+>>> +
+>>> +	keyring = (keyring_id == U16_MAX) ?
+>>> +		  cred->session_keyring : (struct key *)keyring_id;
+>>> +
+>>> +	switch (id_type) {
+>>> +	case PKEY_ID_PKCS7:
+>>> +		return verify_pkcs7_signature(data, datalen, sig, siglen,
+>>> +					      keyring,
+>>> +
+>> VERIFYING_UNSPECIFIED_SIGNATURE,
+>>> +					      NULL, NULL);
+>>> +	default:
+>>> +		return -EOPNOTSUPP;
+>>
+>> Question to you & KP:
+>>
+>>   > Can we keep the helper generic so that it can be extended to more types of
+>>   > signatures and pass the signature type as an enum?
+>>
+>> How many different signature types do we expect, say, in the next 6mo, to land
+>> here? Just thinking out loud whether it is better to keep it simple as with the
+>> last iteration where we have a helper specific to pkcs7, and if needed in future
+>> we add others. We only have the last reg as auxillary arg where we need to
+>> squeeze
+>> all info into it now. What if for other, future signature types this won't suffice?
 > 
-> [...]
+> I would add at least another for PGP, assuming that the code will be
+> upstreamed. But I agree, the number should not be that high.
 
-Here is the summary with links:
-  - [iproute2-next,01/10] bridge: fdb: add new flush command
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=6e1ca489c5a2
-  - [iproute2-next,02/10] bridge: fdb: add flush vlan matching
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=d9c15896f1d3
-  - [iproute2-next,03/10] bridge: fdb: add flush port matching
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=bb9e453c1406
-  - [iproute2-next,04/10] bridge: fdb: add flush [no]permanent entry matching
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=988c31980750
-  - [iproute2-next,05/10] bridge: fdb: add flush [no]static entry matching
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=0f6c81a63c50
-  - [iproute2-next,06/10] bridge: fdb: add flush [no]dynamic entry matching
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=8198f75073ed
-  - [iproute2-next,07/10] bridge: fdb: add flush [no]added_by_user entry matching
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=ef5425739fb8
-  - [iproute2-next,08/10] bridge: fdb: add flush [no]extern_learn entry matching
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=b78036468886
-  - [iproute2-next,09/10] bridge: fdb: add flush [no]sticky entry matching
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=259795676e90
-  - [iproute2-next,10/10] bridge: fdb: add flush [no]offloaded entry matching
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=4a4e32a92b56
+If realistically expected is really just two helpers, what speaks against a
+bpf_verify_signature_pkcs7() and bpf_verify_signature_pgp() in that case, for
+sake of better user experience?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Maybe one other angle.. if CONFIG_SYSTEM_DATA_VERIFICATION is enabled, it may
+not be clear whether verify_pkcs7_signature() or a verify_pgp_signature() are
+both always builtin. And then, we run into the issue again of more complex probing
+for availability of the algs compared to simple ...
 
+#if defined(CONFIG_SYSTEM_DATA_VERIFICATION) && defined(CONFIG_XYZ)
+	case BPF_FUNC_verify_signature_xyz:
+		return ..._proto;
+#endif
+
+... which bpftool and others easily understand.
+
+>>> +	}
+>>> +}
+>>> +
+>>> +static const struct bpf_func_proto bpf_verify_signature_proto = {
+>>> +	.func		= bpf_verify_signature,
+>>> +	.gpl_only	= false,
+>>> +	.ret_type	= RET_INTEGER,
+>>> +	.arg1_type	= ARG_PTR_TO_MEM,
+>>> +	.arg2_type	= ARG_CONST_SIZE_OR_ZERO,
+>>
+>> Can verify_pkcs7_signature() handle null/0 len for data* args?
+> 
+> Shouldn't ARG_PTR_TO_MEM require valid memory? 0 len should
+> not be a problem.
+
+check_helper_mem_access() has:
+
+      /* Allow zero-byte read from NULL, regardless of pointer type */
+      if (zero_size_allowed && access_size == 0 &&
+          register_is_null(reg))
+              return 0;
+
+So NULL/0 pair can be passed. Maybe good to add these corner cases to the test_progs
+selftest additions then if it's needed.
+
+>>> +	.arg3_type	= ARG_PTR_TO_MEM,
+>>> +	.arg4_type	= ARG_CONST_SIZE_OR_ZERO,
+>>
+>> Ditto for sig* args?
+>>
+>>> +	.arg5_type	= ARG_ANYTHING,
+>>> +	.allowed	= bpf_ima_inode_hash_allowed,
+>>> +};
+>>> +#endif
+>>> +
+>>>    static const struct bpf_func_proto *
+>>>    bpf_lsm_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>>>    {
+>>> @@ -158,6 +200,10 @@ bpf_lsm_func_proto(enum bpf_func_id func_id,
+>> const struct bpf_prog *prog)
+>>>    		return prog->aux->sleepable ? &bpf_ima_file_hash_proto :
+>> NULL;
+>>>    	case BPF_FUNC_get_attach_cookie:
+>>>    		return bpf_prog_has_trampoline(prog) ?
+>> &bpf_get_attach_cookie_proto : NULL;
+>>> +#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
+>>> +	case BPF_FUNC_verify_signature:
+>>> +		return prog->aux->sleepable ? &bpf_verify_signature_proto :
+>> NULL;
+>>> +#endif
+>>>    	default:
+>>>    		return tracing_prog_func_proto(func_id, prog);
+>>>    	}
 
