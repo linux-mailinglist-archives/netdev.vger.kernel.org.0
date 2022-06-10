@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F357546421
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 12:44:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAB9E54641C
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 12:44:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345359AbiFJKoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 06:44:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48768 "EHLO
+        id S1348508AbiFJKoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 06:44:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348505AbiFJKnZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 06:43:25 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DB619C751;
-        Fri, 10 Jun 2022 03:39:18 -0700 (PDT)
+        with ESMTP id S1348538AbiFJKn0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 06:43:26 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 549862383E0;
+        Fri, 10 Jun 2022 03:39:22 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3F967240010;
-        Fri, 10 Jun 2022 10:39:15 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id C0F6924000A;
+        Fri, 10 Jun 2022 10:39:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1654857557;
+        t=1654857560;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Cpq3W0jL+oQn72QlKIKpppPCasq5ASqrxR/Gu97K6+Y=;
-        b=Tcpaor50dOqkBKFuDGvakuhyPqFwoCGXLxUT9odlRwToYenCB+L1pQSsSiHbCrJ60Dogbg
-        24IMVgvT5QVycm2kkByd+jhXGn95EiOvzrnnrJ1BHmjAmydm5B+VrPsz5G0NRATufYTj7Z
-        WjkQvEeHeEonT6b2UnwXEyhvOjdWLE/c37MJ9blp/X4gxLBPSreBoga1UDiaNvSbVRlzNm
-        jm6YJ47Yn6nTY9YSqF0eHUEkoLZ1XSNob2ExxizOYVBO5Xo9Zaa12KrrLTNPu24tdd3m8B
-        qzHudjo4zxFBaAIc3bgPyqMelJDuae0ggqTPBscvrGoUJNbgm5j1QIuHjlxX4A==
+        bh=SSefSRe/OnLbKThCn6MkGPJqsyO8MBgggjjINgZSYHI=;
+        b=hQ6OCx9n4lIbuHLLYBNAAaSaLB6lcW6C3At12pav01SVpPHBZ4jVqeLd7g/A5R0Buzbrdh
+        +DUxSng/DvFiyiTjDDyuXG80ZgtmWbJ0rSnepdVfomXF84ByBt19cv6YYinBZjO2ZoqR4e
+        o7PpHG0MhYsxp5Xz8Qasnx5Da1cHSSbnzsQXQs/W80ikNma+4dcmFH81lhWhEooUUdmkB9
+        Hq2l6Wy4gKy9Zy+n3uXmxkCobs4XzjiWHQ43jN/TJ5ItP2SG7gpKD+0Gi9bbxIHby5m8uC
+        VY8X/r467z7TtFeVLxBmk8Tbs0wP6Doyo/JTnvirNFF+F+TSEfdpUVsOy3K0dg==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,18 +56,17 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Pascal Eberhard <pascal.eberhard@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH RESEND net-next v7 08/16] net: dsa: rzn1-a5psw: add statistics support
-Date:   Fri, 10 Jun 2022 12:37:04 +0200
-Message-Id: <20220610103712.550644-9-clement.leger@bootlin.com>
+Subject: [PATCH RESEND net-next v7 09/16] net: dsa: rzn1-a5psw: add FDB support
+Date:   Fri, 10 Jun 2022 12:37:05 +0200
+Message-Id: <20220610103712.550644-10-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220610103712.550644-1-clement.leger@bootlin.com>
 References: <20220610103712.550644-1-clement.leger@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -76,284 +75,229 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add statistics support to the rzn1-a5psw driver by implementing the
-following dsa_switch_ops callbacks:
-- get_sset_count()
-- get_strings()
-- get_ethtool_stats()
-- get_eth_mac_stats()
-- get_eth_ctrl_stats()
-- get_rmon_stats()
+This commits add forwarding database support to the driver. It
+implements fdb_add(), fdb_del() and fdb_dump().
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- drivers/net/dsa/rzn1_a5psw.c | 174 +++++++++++++++++++++++++++++++++++
- drivers/net/dsa/rzn1_a5psw.h |  46 +++++++++
- 2 files changed, 220 insertions(+)
+ drivers/net/dsa/rzn1_a5psw.c | 168 +++++++++++++++++++++++++++++++++++
+ drivers/net/dsa/rzn1_a5psw.h |  17 ++++
+ 2 files changed, 185 insertions(+)
 
 diff --git a/drivers/net/dsa/rzn1_a5psw.c b/drivers/net/dsa/rzn1_a5psw.c
-index ad9a8073a4d3..4c2401fbaf9a 100644
+index 4c2401fbaf9a..3e910da98ae2 100644
 --- a/drivers/net/dsa/rzn1_a5psw.c
 +++ b/drivers/net/dsa/rzn1_a5psw.c
-@@ -17,6 +17,57 @@
- 
- #include "rzn1_a5psw.h"
- 
-+struct a5psw_stats {
-+	u16 offset;
-+	const char name[ETH_GSTRING_LEN];
-+};
-+
-+#define STAT_DESC(_offset) {	\
-+	.offset = A5PSW_##_offset,	\
-+	.name = __stringify(_offset),	\
-+}
-+
-+static const struct a5psw_stats a5psw_stats[] = {
-+	STAT_DESC(aFramesTransmittedOK),
-+	STAT_DESC(aFramesReceivedOK),
-+	STAT_DESC(aFrameCheckSequenceErrors),
-+	STAT_DESC(aAlignmentErrors),
-+	STAT_DESC(aOctetsTransmittedOK),
-+	STAT_DESC(aOctetsReceivedOK),
-+	STAT_DESC(aTxPAUSEMACCtrlFrames),
-+	STAT_DESC(aRxPAUSEMACCtrlFrames),
-+	STAT_DESC(ifInErrors),
-+	STAT_DESC(ifOutErrors),
-+	STAT_DESC(ifInUcastPkts),
-+	STAT_DESC(ifInMulticastPkts),
-+	STAT_DESC(ifInBroadcastPkts),
-+	STAT_DESC(ifOutDiscards),
-+	STAT_DESC(ifOutUcastPkts),
-+	STAT_DESC(ifOutMulticastPkts),
-+	STAT_DESC(ifOutBroadcastPkts),
-+	STAT_DESC(etherStatsDropEvents),
-+	STAT_DESC(etherStatsOctets),
-+	STAT_DESC(etherStatsPkts),
-+	STAT_DESC(etherStatsUndersizePkts),
-+	STAT_DESC(etherStatsOversizePkts),
-+	STAT_DESC(etherStatsPkts64Octets),
-+	STAT_DESC(etherStatsPkts65to127Octets),
-+	STAT_DESC(etherStatsPkts128to255Octets),
-+	STAT_DESC(etherStatsPkts256to511Octets),
-+	STAT_DESC(etherStatsPkts1024to1518Octets),
-+	STAT_DESC(etherStatsPkts1519toXOctets),
-+	STAT_DESC(etherStatsJabbers),
-+	STAT_DESC(etherStatsFragments),
-+	STAT_DESC(VLANReceived),
-+	STAT_DESC(VLANTransmitted),
-+	STAT_DESC(aDeferred),
-+	STAT_DESC(aMultipleCollisions),
-+	STAT_DESC(aSingleCollisions),
-+	STAT_DESC(aLateCollisions),
-+	STAT_DESC(aExcessiveCollisions),
-+	STAT_DESC(aCarrierSenseErrors),
-+};
-+
- static void a5psw_reg_writel(struct a5psw *a5psw, int offset, u32 value)
- {
- 	writel(value, a5psw->base + offset);
-@@ -324,6 +375,123 @@ static void a5psw_port_fast_age(struct dsa_switch *ds, int port)
+@@ -375,6 +375,171 @@ static void a5psw_port_fast_age(struct dsa_switch *ds, int port)
  	a5psw_port_fdb_flush(a5psw, port);
  }
  
-+static u64 a5psw_read_stat(struct a5psw *a5psw, u32 offset, int port)
++static int a5psw_lk_execute_lookup(struct a5psw *a5psw, union lk_data *lk_data,
++				   u16 *entry)
 +{
-+	u32 reg_lo, reg_hi;
++	u32 ctrl;
++	int ret;
 +
-+	reg_lo = a5psw_reg_readl(a5psw, offset + A5PSW_PORT_OFFSET(port));
-+	/* A5PSW_STATS_HIWORD is latched on stat read */
-+	reg_hi = a5psw_reg_readl(a5psw, A5PSW_STATS_HIWORD);
++	a5psw_reg_writel(a5psw, A5PSW_LK_DATA_LO, lk_data->lo);
++	a5psw_reg_writel(a5psw, A5PSW_LK_DATA_HI, lk_data->hi);
 +
-+	return ((u64)reg_hi << 32) | reg_lo;
++	ctrl = A5PSW_LK_ADDR_CTRL_LOOKUP;
++	ret = a5psw_lk_execute_ctrl(a5psw, &ctrl);
++	if (ret)
++		return ret;
++
++	*entry = ctrl & A5PSW_LK_ADDR_CTRL_ADDRESS;
++
++	return 0;
 +}
 +
-+static void a5psw_get_strings(struct dsa_switch *ds, int port, u32 stringset,
-+			      uint8_t *data)
++static int a5psw_port_fdb_add(struct dsa_switch *ds, int port,
++			      const unsigned char *addr, u16 vid,
++			      struct dsa_db db)
 +{
-+	unsigned int u;
++	struct a5psw *a5psw = ds->priv;
++	union lk_data lk_data = {0};
++	bool inc_learncount = false;
++	int ret = 0;
++	u16 entry;
++	u32 reg;
 +
-+	if (stringset != ETH_SS_STATS)
-+		return;
++	ether_addr_copy(lk_data.entry.mac, addr);
++	lk_data.entry.port_mask = BIT(port);
 +
-+	for (u = 0; u < ARRAY_SIZE(a5psw_stats); u++) {
-+		memcpy(data + u * ETH_GSTRING_LEN, a5psw_stats[u].name,
-+		       ETH_GSTRING_LEN);
++	mutex_lock(&a5psw->lk_lock);
++
++	/* Set the value to be written in the lookup table */
++	ret = a5psw_lk_execute_lookup(a5psw, &lk_data, &entry);
++	if (ret)
++		goto lk_unlock;
++
++	lk_data.hi = a5psw_reg_readl(a5psw, A5PSW_LK_DATA_HI);
++	if (!lk_data.entry.valid) {
++		inc_learncount = true;
++		/* port_mask set to 0x1f when entry is not valid, clear it */
++		lk_data.entry.port_mask = 0;
++		lk_data.entry.prio = 0;
 +	}
++
++	lk_data.entry.port_mask |= BIT(port);
++	lk_data.entry.is_static = 1;
++	lk_data.entry.valid = 1;
++
++	a5psw_reg_writel(a5psw, A5PSW_LK_DATA_HI, lk_data.hi);
++
++	reg = A5PSW_LK_ADDR_CTRL_WRITE | entry;
++	ret = a5psw_lk_execute_ctrl(a5psw, &reg);
++	if (ret)
++		goto lk_unlock;
++
++	if (inc_learncount) {
++		reg = A5PSW_LK_LEARNCOUNT_MODE_INC;
++		a5psw_reg_writel(a5psw, A5PSW_LK_LEARNCOUNT, reg);
++	}
++
++lk_unlock:
++	mutex_unlock(&a5psw->lk_lock);
++
++	return ret;
 +}
 +
-+static void a5psw_get_ethtool_stats(struct dsa_switch *ds, int port,
-+				    uint64_t *data)
++static int a5psw_port_fdb_del(struct dsa_switch *ds, int port,
++			      const unsigned char *addr, u16 vid,
++			      struct dsa_db db)
 +{
 +	struct a5psw *a5psw = ds->priv;
-+	unsigned int u;
++	union lk_data lk_data = {0};
++	bool clear = false;
++	u16 entry;
++	u32 reg;
++	int ret;
 +
-+	for (u = 0; u < ARRAY_SIZE(a5psw_stats); u++)
-+		data[u] = a5psw_read_stat(a5psw, a5psw_stats[u].offset, port);
++	ether_addr_copy(lk_data.entry.mac, addr);
++
++	mutex_lock(&a5psw->lk_lock);
++
++	ret = a5psw_lk_execute_lookup(a5psw, &lk_data, &entry);
++	if (ret)
++		goto lk_unlock;
++
++	lk_data.hi = a5psw_reg_readl(a5psw, A5PSW_LK_DATA_HI);
++
++	/* Our hardware does not associate any VID to the FDB entries so this
++	 * means that if two entries were added for the same mac but for
++	 * different VID, then, on the deletion of the first one, we would also
++	 * delete the second one. Since there is unfortunately nothing we can do
++	 * about that, do not return an error...
++	 */
++	if (!lk_data.entry.valid)
++		goto lk_unlock;
++
++	lk_data.entry.port_mask &= ~BIT(port);
++	/* If there is no more port in the mask, clear the entry */
++	if (lk_data.entry.port_mask == 0)
++		clear = true;
++
++	a5psw_reg_writel(a5psw, A5PSW_LK_DATA_HI, lk_data.hi);
++
++	reg = entry;
++	if (clear)
++		reg |= A5PSW_LK_ADDR_CTRL_CLEAR;
++	else
++		reg |= A5PSW_LK_ADDR_CTRL_WRITE;
++
++	ret = a5psw_lk_execute_ctrl(a5psw, &reg);
++	if (ret)
++		goto lk_unlock;
++
++	/* Decrement LEARNCOUNT */
++	if (clear) {
++		reg = A5PSW_LK_LEARNCOUNT_MODE_DEC;
++		a5psw_reg_writel(a5psw, A5PSW_LK_LEARNCOUNT, reg);
++	}
++
++lk_unlock:
++	mutex_unlock(&a5psw->lk_lock);
++
++	return ret;
 +}
 +
-+static int a5psw_get_sset_count(struct dsa_switch *ds, int port, int sset)
-+{
-+	if (sset != ETH_SS_STATS)
-+		return 0;
-+
-+	return ARRAY_SIZE(a5psw_stats);
-+}
-+
-+static void a5psw_get_eth_mac_stats(struct dsa_switch *ds, int port,
-+				    struct ethtool_eth_mac_stats *mac_stats)
-+{
-+	struct a5psw *a5psw = ds->priv;
-+
-+#define RD(name) a5psw_read_stat(a5psw, A5PSW_##name, port)
-+	mac_stats->FramesTransmittedOK = RD(aFramesTransmittedOK);
-+	mac_stats->SingleCollisionFrames = RD(aSingleCollisions);
-+	mac_stats->MultipleCollisionFrames = RD(aMultipleCollisions);
-+	mac_stats->FramesReceivedOK = RD(aFramesReceivedOK);
-+	mac_stats->FrameCheckSequenceErrors = RD(aFrameCheckSequenceErrors);
-+	mac_stats->AlignmentErrors = RD(aAlignmentErrors);
-+	mac_stats->OctetsTransmittedOK = RD(aOctetsTransmittedOK);
-+	mac_stats->FramesWithDeferredXmissions = RD(aDeferred);
-+	mac_stats->LateCollisions = RD(aLateCollisions);
-+	mac_stats->FramesAbortedDueToXSColls = RD(aExcessiveCollisions);
-+	mac_stats->FramesLostDueToIntMACXmitError = RD(ifOutErrors);
-+	mac_stats->CarrierSenseErrors = RD(aCarrierSenseErrors);
-+	mac_stats->OctetsReceivedOK = RD(aOctetsReceivedOK);
-+	mac_stats->FramesLostDueToIntMACRcvError = RD(ifInErrors);
-+	mac_stats->MulticastFramesXmittedOK = RD(ifOutMulticastPkts);
-+	mac_stats->BroadcastFramesXmittedOK = RD(ifOutBroadcastPkts);
-+	mac_stats->FramesWithExcessiveDeferral = RD(aDeferred);
-+	mac_stats->MulticastFramesReceivedOK = RD(ifInMulticastPkts);
-+	mac_stats->BroadcastFramesReceivedOK = RD(ifInBroadcastPkts);
-+#undef RD
-+}
-+
-+static const struct ethtool_rmon_hist_range a5psw_rmon_ranges[] = {
-+	{ 0, 64 },
-+	{ 65, 127 },
-+	{ 128, 255 },
-+	{ 256, 511 },
-+	{ 512, 1023 },
-+	{ 1024, 1518 },
-+	{ 1519, A5PSW_MAX_MTU },
-+	{}
-+};
-+
-+static void a5psw_get_rmon_stats(struct dsa_switch *ds, int port,
-+				 struct ethtool_rmon_stats *rmon_stats,
-+				 const struct ethtool_rmon_hist_range **ranges)
-+{
-+	struct a5psw *a5psw = ds->priv;
-+
-+#define RD(name) a5psw_read_stat(a5psw, A5PSW_##name, port)
-+	rmon_stats->undersize_pkts = RD(etherStatsUndersizePkts);
-+	rmon_stats->oversize_pkts = RD(etherStatsOversizePkts);
-+	rmon_stats->fragments = RD(etherStatsFragments);
-+	rmon_stats->jabbers = RD(etherStatsJabbers);
-+	rmon_stats->hist[0] = RD(etherStatsPkts64Octets);
-+	rmon_stats->hist[1] = RD(etherStatsPkts65to127Octets);
-+	rmon_stats->hist[2] = RD(etherStatsPkts128to255Octets);
-+	rmon_stats->hist[3] = RD(etherStatsPkts256to511Octets);
-+	rmon_stats->hist[4] = RD(etherStatsPkts512to1023Octets);
-+	rmon_stats->hist[5] = RD(etherStatsPkts1024to1518Octets);
-+	rmon_stats->hist[6] = RD(etherStatsPkts1519toXOctets);
-+#undef RD
-+
-+	*ranges = a5psw_rmon_ranges;
-+}
-+
-+static void a5psw_get_eth_ctrl_stats(struct dsa_switch *ds, int port,
-+				     struct ethtool_eth_ctrl_stats *ctrl_stats)
++static int a5psw_port_fdb_dump(struct dsa_switch *ds, int port,
++			       dsa_fdb_dump_cb_t *cb, void *data)
 +{
 +	struct a5psw *a5psw = ds->priv;
-+	u64 stat;
++	union lk_data lk_data;
++	int i = 0, ret = 0;
++	u32 reg;
 +
-+	stat = a5psw_read_stat(a5psw, A5PSW_aTxPAUSEMACCtrlFrames, port);
-+	ctrl_stats->MACControlFramesTransmitted = stat;
-+	stat = a5psw_read_stat(a5psw, A5PSW_aRxPAUSEMACCtrlFrames, port);
-+	ctrl_stats->MACControlFramesReceived = stat;
++	mutex_lock(&a5psw->lk_lock);
++
++	for (i = 0; i < A5PSW_TABLE_ENTRIES; i++) {
++		reg = A5PSW_LK_ADDR_CTRL_READ | A5PSW_LK_ADDR_CTRL_WAIT | i;
++
++		ret = a5psw_lk_execute_ctrl(a5psw, &reg);
++		if (ret)
++			goto out_unlock;
++
++		lk_data.hi = a5psw_reg_readl(a5psw, A5PSW_LK_DATA_HI);
++		/* If entry is not valid or does not contain the port, skip */
++		if (!lk_data.entry.valid ||
++		    !(lk_data.entry.port_mask & BIT(port)))
++			continue;
++
++		lk_data.lo = a5psw_reg_readl(a5psw, A5PSW_LK_DATA_LO);
++
++		ret = cb(lk_data.entry.mac, 0, lk_data.entry.is_static, data);
++		if (ret)
++			goto out_unlock;
++	}
++
++out_unlock:
++	mutex_unlock(&a5psw->lk_lock);
++
++	return ret;
 +}
 +
- static int a5psw_setup(struct dsa_switch *ds)
+ static u64 a5psw_read_stat(struct a5psw *a5psw, u32 offset, int port)
  {
- 	struct a5psw *a5psw = ds->priv;
-@@ -412,6 +580,12 @@ static const struct dsa_switch_ops a5psw_switch_ops = {
- 	.phylink_mac_link_up = a5psw_phylink_mac_link_up,
- 	.port_change_mtu = a5psw_port_change_mtu,
- 	.port_max_mtu = a5psw_port_max_mtu,
-+	.get_sset_count = a5psw_get_sset_count,
-+	.get_strings = a5psw_get_strings,
-+	.get_ethtool_stats = a5psw_get_ethtool_stats,
-+	.get_eth_mac_stats = a5psw_get_eth_mac_stats,
-+	.get_eth_ctrl_stats = a5psw_get_eth_ctrl_stats,
-+	.get_rmon_stats = a5psw_get_rmon_stats,
- 	.set_ageing_time = a5psw_set_ageing_time,
- 	.port_bridge_join = a5psw_port_bridge_join,
+ 	u32 reg_lo, reg_hi;
+@@ -591,6 +756,9 @@ static const struct dsa_switch_ops a5psw_switch_ops = {
  	.port_bridge_leave = a5psw_port_bridge_leave,
+ 	.port_stp_state_set = a5psw_port_stp_state_set,
+ 	.port_fast_age = a5psw_port_fast_age,
++	.port_fdb_add = a5psw_port_fdb_add,
++	.port_fdb_del = a5psw_port_fdb_del,
++	.port_fdb_dump = a5psw_port_fdb_dump,
+ };
+ 
+ static int a5psw_mdio_wait_busy(struct a5psw *a5psw)
 diff --git a/drivers/net/dsa/rzn1_a5psw.h b/drivers/net/dsa/rzn1_a5psw.h
-index 13397ac02e7c..6b0ce2b15eca 100644
+index 6b0ce2b15eca..c67abd49c013 100644
 --- a/drivers/net/dsa/rzn1_a5psw.h
 +++ b/drivers/net/dsa/rzn1_a5psw.h
-@@ -146,6 +146,51 @@
+@@ -211,6 +211,23 @@
+ #define A5PSW_CTRL_TIMEOUT		1000
+ #define A5PSW_TABLE_ENTRIES		8192
  
- #define A5PSW_STATS_HIWORD		0x900
- 
-+/* Stats */
-+#define A5PSW_aFramesTransmittedOK		0x868
-+#define A5PSW_aFramesReceivedOK			0x86C
-+#define A5PSW_aFrameCheckSequenceErrors		0x870
-+#define A5PSW_aAlignmentErrors			0x874
-+#define A5PSW_aOctetsTransmittedOK		0x878
-+#define A5PSW_aOctetsReceivedOK			0x87C
-+#define A5PSW_aTxPAUSEMACCtrlFrames		0x880
-+#define A5PSW_aRxPAUSEMACCtrlFrames		0x884
-+/* If */
-+#define A5PSW_ifInErrors			0x888
-+#define A5PSW_ifOutErrors			0x88C
-+#define A5PSW_ifInUcastPkts			0x890
-+#define A5PSW_ifInMulticastPkts			0x894
-+#define A5PSW_ifInBroadcastPkts			0x898
-+#define A5PSW_ifOutDiscards			0x89C
-+#define A5PSW_ifOutUcastPkts			0x8A0
-+#define A5PSW_ifOutMulticastPkts		0x8A4
-+#define A5PSW_ifOutBroadcastPkts		0x8A8
-+/* Ether */
-+#define A5PSW_etherStatsDropEvents		0x8AC
-+#define A5PSW_etherStatsOctets			0x8B0
-+#define A5PSW_etherStatsPkts			0x8B4
-+#define A5PSW_etherStatsUndersizePkts		0x8B8
-+#define A5PSW_etherStatsOversizePkts		0x8BC
-+#define A5PSW_etherStatsPkts64Octets		0x8C0
-+#define A5PSW_etherStatsPkts65to127Octets	0x8C4
-+#define A5PSW_etherStatsPkts128to255Octets	0x8C8
-+#define A5PSW_etherStatsPkts256to511Octets	0x8CC
-+#define A5PSW_etherStatsPkts512to1023Octets	0x8D0
-+#define A5PSW_etherStatsPkts1024to1518Octets	0x8D4
-+#define A5PSW_etherStatsPkts1519toXOctets	0x8D8
-+#define A5PSW_etherStatsJabbers			0x8DC
-+#define A5PSW_etherStatsFragments		0x8E0
++struct fdb_entry {
++	u8 mac[ETH_ALEN];
++	u16 valid:1;
++	u16 is_static:1;
++	u16 prio:3;
++	u16 port_mask:5;
++	u16 reserved:6;
++} __packed;
 +
-+#define A5PSW_VLANReceived			0x8E8
-+#define A5PSW_VLANTransmitted			0x8EC
++union lk_data {
++	struct {
++		u32 lo;
++		u32 hi;
++	};
++	struct fdb_entry entry;
++};
 +
-+#define A5PSW_aDeferred				0x910
-+#define A5PSW_aMultipleCollisions		0x914
-+#define A5PSW_aSingleCollisions			0x918
-+#define A5PSW_aLateCollisions			0x91C
-+#define A5PSW_aExcessiveCollisions		0x920
-+#define A5PSW_aCarrierSenseErrors		0x924
-+
- #define A5PSW_VLAN_TAG(prio, id)	(((prio) << 12) | (id))
- #define A5PSW_PORTS_NUM			5
- #define A5PSW_CPU_PORT			(A5PSW_PORTS_NUM - 1)
-@@ -176,6 +221,7 @@
-  * @mdio_freq: MDIO bus frequency requested
-  * @pcs: Array of PCS connected to the switch ports (not for the CPU)
-  * @ds: DSA switch struct
-+ * @stats_lock: lock to access statistics (shared HI counter)
-  * @lk_lock: Lock for the lookup table
-  * @reg_lock: Lock for register read-modify-write operation
-  * @bridged_ports: Mask of ports that are bridged and should be flooded
+ /**
+  * struct a5psw - switch struct
+  * @base: Base address of the switch
 -- 
 2.36.1
 
