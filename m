@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BA0A545AA7
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 05:40:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22D9E545AB5
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 05:43:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242826AbiFJDkw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 23:40:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55052 "EHLO
+        id S1345737AbiFJDlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 23:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242266AbiFJDkv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 23:40:51 -0400
+        with ESMTP id S1343814AbiFJDkz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 23:40:55 -0400
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F47A20E17B;
-        Thu,  9 Jun 2022 20:40:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7902214825;
+        Thu,  9 Jun 2022 20:40:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654832450; x=1686368450;
+  t=1654832454; x=1686368454;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7k7HcB44rqwUtLS1IEz9qgWJASb6b1ZUMkYhi6CGeEg=;
-  b=A0UiJtZzpdN9Ec69ATyIn1GgD1xJfaYRUs1upAqtlRhktfg0+a8+kOZg
-   F0ATteR+OL/IaipdUJkZ13vR+CMZR7v27hZzBm/mxSTh6TXypwdGAHMbC
-   cxinOcf3aGW8V0fDwtV5YzsawT2FtpXPuog7RPpCo07BL8z4xDJXVynHF
-   0OjIFclMgEP1otGZH9vFUsBiSUuzeEzKF7SiwuBzCOZvIFpqcCiqg11dV
-   P5+ZRcVAZcP887k0XBWQheP2uPve/6b0kBtAteDf5f9v+shjbFJZP4w2R
-   0VOHHq6YH/hN5wxjG4ZTfK/kQYmY8VQeF0hqojIiV05BbOX6BMH2h5jcp
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="278305233"
+  bh=YKMttFBPE2wCzfsgWycExPpf2Tu2U5inMYPLhQKTMdY=;
+  b=YnUdof2NlVBfgqZ0EVE70FKLkqjXQN2UKeV0Z0f5DqHosHoj1h4bQtBY
+   kykD1ULavHlsKaRZ/Ce3GoeAayvktMN6vZA3+ED04pez4Q98naKlViWuL
+   LoY6f6xJzPfJo9ksR7SH1xkPb17lDIJFgKxJuXut1GSHEcNTiwHOo318w
+   KHzpURZJQ9gzxOmLH9dcghvFwb7GdAMX1xAQ+XXwvMTS4Xj4/EFqY05g1
+   N9grPuenNtNS1V6ATGdpltTCli5TFtQv5lcIiDyEhRP0FTyhAFa/KuOJi
+   +mkgZZHNhtovJf0Fz7x4mONQJNIGvR8/7Uz6o3WLlvynzvhU9/8I0W23i
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="278305242"
 X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
-   d="scan'208";a="278305233"
+   d="scan'208";a="278305242"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 20:40:50 -0700
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2022 20:40:54 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,288,1647327600"; 
-   d="scan'208";a="827993945"
+   d="scan'208";a="827993958"
 Received: from p12hl98bong5.png.intel.com ([10.158.65.178])
-  by fmsmga006.fm.intel.com with ESMTP; 09 Jun 2022 20:40:45 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 09 Jun 2022 20:40:50 -0700
 From:   Ong Boon Leong <boon.leong.ong@intel.com>
 To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Jose Abreu <Jose.Abreu@synopsys.com>,
@@ -56,9 +56,9 @@ Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Emilio Riva <emilio.riva@ericsson.com>,
         Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net-next v3 2/7] net: dsa: sja1105: update xpcs_do_config additional input
-Date:   Fri, 10 Jun 2022 11:36:05 +0800
-Message-Id: <20220610033610.114084-3-boon.leong.ong@intel.com>
+Subject: [PATCH net-next v3 3/7] stmmac: intel: prepare to support 1000BASE-X phy interface setting
+Date:   Fri, 10 Jun 2022 11:36:06 +0800
+Message-Id: <20220610033610.114084-4-boon.leong.ong@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220610033610.114084-1-boon.leong.ong@intel.com>
 References: <20220610033610.114084-1-boon.leong.ong@intel.com>
@@ -75,28 +75,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-xpcs_do_config() is used for xpcs configuration without depending on
-advertising input, so set to NULL.
+Currently, intel_speed_mode_2500() redundantly fix-up phy_interface to
+PHY_INTERFACE_MODE_SGMII if the underlying controller is in 1000Mbps
+SGMII mode. The value of phy_interface has been initialized earlier.
 
-Reported-by: kernel test robot <lkp@intel.com>
+This patch removes such redundancy to prepare for setting 1000BASE-X
+mode for certain hardware platform configuration.
+
+Also update the intel_mgbe_common_data() to include 1000BASE-X setup.
+
 Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 72b6fc1932b..b253e27bcfb 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -2330,7 +2330,7 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
- 		else
- 			mode = MLO_AN_PHY;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 38fe77d1035..675dfb89b76 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -251,7 +251,6 @@ static void intel_speed_mode_2500(struct net_device *ndev, void *intel_data)
+ 		priv->plat->mdio_bus_data->xpcs_an_inband = false;
+ 	} else {
+ 		priv->plat->max_speed = 1000;
+-		priv->plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
+ 		priv->plat->mdio_bus_data->xpcs_an_inband = true;
+ 	}
+ }
+@@ -562,7 +561,8 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
+ 	plat->vlan_fail_q = plat->rx_queues_to_use - 1;
  
--		rc = xpcs_do_config(xpcs, priv->phy_mode[i], mode);
-+		rc = xpcs_do_config(xpcs, priv->phy_mode[i], mode, NULL);
- 		if (rc < 0)
- 			goto out;
- 
+ 	/* Intel mgbe SGMII interface uses pcs-xcps */
+-	if (plat->phy_interface == PHY_INTERFACE_MODE_SGMII) {
++	if (plat->phy_interface == PHY_INTERFACE_MODE_SGMII ||
++	    plat->phy_interface == PHY_INTERFACE_MODE_1000BASEX) {
+ 		plat->mdio_bus_data->has_xpcs = true;
+ 		plat->mdio_bus_data->xpcs_an_inband = true;
+ 	}
 -- 
 2.25.1
 
