@@ -2,58 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1C08545BC4
+	by mail.lfdr.de (Postfix) with ESMTP id 180A1545BC3
 	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 07:40:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346215AbiFJFkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 01:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53188 "EHLO
+        id S1346231AbiFJFk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 01:40:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243357AbiFJFkW (ORCPT
+        with ESMTP id S244868AbiFJFkW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 01:40:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A63349256;
-        Thu,  9 Jun 2022 22:40:17 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89FEB4198E
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 22:40:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2259661E6D;
-        Fri, 10 Jun 2022 05:40:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 65838C3411C;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0320961E67
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 05:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 531BEC3411B;
         Fri, 10 Jun 2022 05:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1654839616;
-        bh=piL3ZUsVXKLpnDEjDM8fV8VxAK87PAtjngdGcTceFhY=;
+        bh=Mm5UXV+lk4cnIeIKQjczDlqJPRRpr2aNazB+Ie9/vQg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bZlgtvihg6Vva7Kcpfx4fg9/usXpMClwd3MBNr+K2bi2LwFBFb5/wrYpE+o7N87GF
-         T1TaIW+pKzzeRD3sxEhbrfRUIXam5v1vdqzUIgLyv+LQX1XPtMuncB47k3Z6Jc7gZa
-         pRU8fbeMk7mxFKPkHUJbfr+hzd5WNI+O33NtHY9M+btwu7612BWtjKvvuq74tT5FGe
-         olAyOzF33iMacLoGp9NE9GwoKdG8rjE6Pr1inP5X8Djsd7jfFyMr7JrJf/2BtZMx7C
-         QrKzFFnqDCQq+LkM3Dp6pe/QtVNa9OIw1esqaEWeShyzWgcllt/Mh9Ps9DCHy//J0B
-         F1PY32q+dUGBw==
+        b=bxipXuYHCs7fkwUBgQgKvbRr8L+06cv/XFMgF0xuqjkk8tVdZ5EmhRzdtKjQ7LLF6
+         GON1t/kaaGRbkWK2QzEt+HXidmuQT60+gYUVX4lQFyHSdPC8YKof06rgyfcoYvQIJS
+         heyYSTtqt110Jb6NU5+MiGzrvj9XKXNbqMWqRHi/5nRLzxdelchS6ZX7xFd/JO7q7d
+         Pt2aEz6p5H6fakLPivWqefcgud6LFlOkeab3z0q0ogv7G3E8PThWs9sNLHCcy4mFCq
+         V94Rid5Gjf0EIcfPd0jdBDHYgdFH3tLH2nIKUE1C3c/K451qFAhGJRj4dwgcjOvTlR
+         7q14+oKU3oA7g==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 481E5E73803;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 368E4E737F6;
         Fri, 10 Jun 2022 05:40:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: rename reference+tracking helpers
+Subject: Re: [PATCH v2 net-next 0/9] net: adopt u64_stats_t type
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165483961628.13976.4015696054691394649.git-patchwork-notify@kernel.org>
+Message-Id: <165483961621.13976.13189343193189487946.git-patchwork-notify@kernel.org>
 Date:   Fri, 10 Jun 2022 05:40:16 +0000
-References: <20220608043955.919359-1-kuba@kernel.org>
-In-Reply-To: <20220608043955.919359-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, dsahern@kernel.org,
-        steffen.klassert@secunet.com, jreuter@yaina.de,
-        razor@blackwall.org, jiri@resnulli.us, kgraul@linux.ibm.com,
-        ivecera@redhat.com, jmaloy@redhat.com, ying.xue@windriver.com,
-        lucien.xin@gmail.com, arnd@arndb.de, yajun.deng@linux.dev,
-        atenart@kernel.org, richardsonnick@google.com,
-        hkallweit1@gmail.com, linux-hams@vger.kernel.org,
-        dev@openvswitch.org, linux-s390@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
+References: <20220608154640.1235958-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220608154640.1235958-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, edumazet@google.com
 X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -66,25 +58,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This series was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue,  7 Jun 2022 21:39:55 -0700 you wrote:
-> Netdev reference helpers have a dev_ prefix for historic
-> reasons. Renaming the old helpers would be too much churn
-> but we can rename the tracking ones which are relatively
-> recent and should be the default for new code.
+On Wed,  8 Jun 2022 08:46:31 -0700 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
 > 
-> Rename:
->  dev_hold_track()    -> netdev_hold()
->  dev_put_track()     -> netdev_put()
->  dev_replace_track() -> netdev_ref_replace()
+> While KCSAN has not raised any reports yet, we should address the
+> potential load/store tearing problem happening with per cpu stats.
+> 
+> This series is not exhaustive, but hopefully a step in the right
+> direction.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] net: rename reference+tracking helpers
-    https://git.kernel.org/netdev/net-next/c/d62607c3fe45
+  - [v2,net-next,1/9] vlan: adopt u64_stats_t
+    https://git.kernel.org/netdev/net-next/c/09cca53c1656
+  - [v2,net-next,2/9] ipvlan: adopt u64_stats_t
+    https://git.kernel.org/netdev/net-next/c/5665f48ef309
+  - [v2,net-next,3/9] sit: use dev_sw_netstats_rx_add()
+    https://git.kernel.org/netdev/net-next/c/3a960ca7f6e5
+  - [v2,net-next,4/9] ip6_tunnel: use dev_sw_netstats_rx_add()
+    https://git.kernel.org/netdev/net-next/c/afd2051b1840
+  - [v2,net-next,5/9] wireguard: receive: use dev_sw_netstats_rx_add()
+    https://git.kernel.org/netdev/net-next/c/eeb15885ca30
+  - [v2,net-next,6/9] net: adopt u64_stats_t in struct pcpu_sw_netstats
+    https://git.kernel.org/netdev/net-next/c/9962acefbcb9
+  - [v2,net-next,7/9] devlink: adopt u64_stats_t
+    https://git.kernel.org/netdev/net-next/c/958751e0807d
+  - [v2,net-next,8/9] drop_monitor: adopt u64_stats_t
+    https://git.kernel.org/netdev/net-next/c/c6cce71e7468
+  - [v2,net-next,9/9] team: adopt u64_stats_t
+    https://git.kernel.org/netdev/net-next/c/9ec321aba2ea
 
 You are awesome, thank you!
 -- 
