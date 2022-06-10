@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6D67546996
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 17:40:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 643E3546992
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 17:40:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345858AbiFJPj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 11:39:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45496 "EHLO
+        id S1346073AbiFJPjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 11:39:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345256AbiFJPjW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 11:39:22 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE1E294230
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 08:39:20 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id x62so35796139ede.10
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 08:39:20 -0700 (PDT)
+        with ESMTP id S1345557AbiFJPjY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 11:39:24 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B7FE29565B
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 08:39:21 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id x5so30715706edi.2
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 08:39:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pqrs.dk; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=AareH3Xp+hp4A5FOtY4uNivgTY9OEK29GzGPxmxFOws=;
-        b=cerH8wlG313nA0z0Y7JIP0fnogppEEaTDR4YmPZvIIxv2wRJq3Kq8l+xWfW7dFVRN/
-         jyeFFxTIn5hReE15OTzXVG8bqJG0kAI3ueQkwX8823WsOL3xlFtg5cCOeczLROZmimhL
-         1LZBzKju0bGg2IsnaN6U4rS8A8QuS9MTKReaE=
+        bh=XAvd/bebljSGbPHB80e06PJO3wtLWBnMCQi4VNFkeJw=;
+        b=HS4MOr00e8OUJGy96mSpevgVD3r6ljz5fE4FxAm99Aj8y3Hz0qec0VbuejQOY1Mp/E
+         DW+n+FX6bVhDRSsDIOSoAutSe1sPkJJhKrD6mSt34G/yCHs8E5hNOGB3V30tXzJy+qEh
+         cow8XWa+3Z84eKnPQhMPssjWo69rGIbIvz/Qw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=AareH3Xp+hp4A5FOtY4uNivgTY9OEK29GzGPxmxFOws=;
-        b=qwYaN/cLcW5nhw16K1wD2V3iluuOeMK5qLNFn0apYXj8oN6No6IJFRDfw4PlPNUPN9
-         Be8Evm0f3XxK8mAIEDNaYtpqhEp5ByzBvG33bRVKUBbU5y4kJxj2d0qg5YUw/kzGigTR
-         9cGBWaOf/70PK6zEnGLGuIwvjqCy6UnACJUW2rmk3r5YVJQppQLdvpWVo80sjdjh/bRo
-         S8oRgtjpRM9MQYvuMkgf7cQcM8MyLd8ImKks4Mxre3d9blm/sodUXi2o7xhFY92I7wGY
-         +A/N51/T1ZTRg0B812J0I2Q+bnQe98gE1R20gyXJmhwZ94fqTO6I+5HoPs7dTiu+24Xj
-         e6dg==
-X-Gm-Message-State: AOAM533LKVCIEq+hrugiz9g0QORVT8znd7gKVAudB7Zz3vxREeiBbdby
-        Ql/rXwf19m8aV6eccRLWjJ2h3g==
-X-Google-Smtp-Source: ABdhPJy4raIs0VwqrQPiBQc3E+6FgvT/KawaF9u4p4aP/jcqe9nJxFcsMMLVxxPhpWnrV5KLM9ze4g==
-X-Received: by 2002:aa7:c752:0:b0:42d:ee9d:5ace with SMTP id c18-20020aa7c752000000b0042dee9d5acemr52401926eds.318.1654875558812;
-        Fri, 10 Jun 2022 08:39:18 -0700 (PDT)
+        bh=XAvd/bebljSGbPHB80e06PJO3wtLWBnMCQi4VNFkeJw=;
+        b=yEz5ov6NQkwBvo8dBzs+5TAlFZFV7Z/CaY6jATvuQAXshlcbrNj+TGhHR+Z1Yc6gOj
+         L1aq7rOH87Gn7po4E7eiYHGXgvhLDRSPKRxDkjxyyYQgB2n/aZUJ5CyXwhJhjjXPy0Y2
+         RbtS771UU/ko1fhSLr3ZyvX+tojMRs47RK/XAestnjnXLtq/1LhEhT+0zwaVlqABISJF
+         PKYvGzI3FCUsn28j4jS5q9L9dH/SfmdL2nzKv0pLPZPr8ZcUddT8NpFsg2AHA0Z6hSZb
+         NyBFh689ysIEJ/y5LBsmCoSjUIvdDoJJASGaAklpqMwNJ6sesF4mi/r/C58VXCY9VLd5
+         pm2g==
+X-Gm-Message-State: AOAM533lSucltQ2rdrKvwwojVCEU013hqnftsxS0uSBHJXjLQtkF6nzI
+        zoymLPVnc88SqzeDm+HSjh3c2g==
+X-Google-Smtp-Source: ABdhPJy7+5EakkFd8iv7P60QtpuybJE1MLX4OUVVb4vymjJcJpdzyLq2E+ezoxDHYNdwYFDcwCnkVw==
+X-Received: by 2002:a05:6402:28a9:b0:42d:cde1:cf87 with SMTP id eg41-20020a05640228a900b0042dcde1cf87mr52841870edb.368.1654875560405;
+        Fri, 10 Jun 2022 08:39:20 -0700 (PDT)
 Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id h24-20020a170906829800b0070f7d1c5a18sm9783857ejx.55.2022.06.10.08.39.17
+        by smtp.gmail.com with ESMTPSA id h24-20020a170906829800b0070f7d1c5a18sm9783857ejx.55.2022.06.10.08.39.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 08:39:17 -0700 (PDT)
+        Fri, 10 Jun 2022 08:39:20 -0700 (PDT)
 From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
 To:     hauke@hauke-m.de, Linus Walleij <linus.walleij@linaro.org>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
@@ -57,9 +57,9 @@ To:     hauke@hauke-m.de, Linus Walleij <linus.walleij@linaro.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Russell King <linux@armlinux.org.uk>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 4/5] net: dsa: realtek: rtl8365mb: remove learn_limit_max private data member
-Date:   Fri, 10 Jun 2022 17:38:28 +0200
-Message-Id: <20220610153829.446516-5-alvin@pqrs.dk>
+Subject: [PATCH net-next v2 5/5] net: dsa: realtek: rtl8365mb: handle PHY interface modes correctly
+Date:   Fri, 10 Jun 2022 17:38:29 +0200
+Message-Id: <20220610153829.446516-6-alvin@pqrs.dk>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220610153829.446516-1-alvin@pqrs.dk>
 References: <20220610153829.446516-1-alvin@pqrs.dk>
@@ -78,58 +78,511 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-The variable is just assigned the value of a macro, so it can be
-removed.
+Realtek switches in the rtl8365mb family always have at least one port
+with a so-called external interface, supporting PHY interface modes such
+as RGMII or SGMII. The purpose of this patch is to improve the driver's
+handling of these ports.
 
+A new struct rtl8365mb_chip_info is introduced together with a static
+array of such structs. An instance of this struct is added for each
+supported switch, distinguished by its chip ID and version. Embedded in
+each chip_info struct is an array of struct rtl8365mb_extint, describing
+the external interfaces available. This is more specific than the old
+rtl8365mb_extint_port_map, which was only valid for switches with up to
+6 ports.
+
+The struct rtl8365mb_extint also contains a bitmask of supported PHY
+interface modes, which allows the driver to distinguish which ports
+support RGMII. This corrects a previous mistake in the driver whereby it
+was assumed that any port with an external interface supports RGMII.
+This is not actually the case: for example, the RTL8367S has two
+external interfaces, only the second of which supports RGMII. The first
+supports only SGMII and HSGMII. This new design will make it easier to
+add support for other interface modes.
+
+Finally, rtl8365mb_phylink_get_caps() is fixed up to return supported
+capabilities based on the external interface properties described above.
+This allows for ports with an external interface to be treated as DSA
+user ports, and for ports with an internal PHY to be treated as DSA CPU
+ports.
+
+Link: https://lore.kernel.org/netdev/20220510192301.5djdt3ghoavxulhl@bang-olufsen.dk/
 Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
 ---
- drivers/net/dsa/realtek/rtl8365mb.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/net/dsa/realtek/rtl8365mb.c | 281 +++++++++++++++++-----------
+ 1 file changed, 174 insertions(+), 107 deletions(-)
 
 diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-index 3599fa5d9f14..676b88798976 100644
+index 676b88798976..da31d8b839ac 100644
 --- a/drivers/net/dsa/realtek/rtl8365mb.c
 +++ b/drivers/net/dsa/realtek/rtl8365mb.c
-@@ -563,7 +563,6 @@ struct rtl8365mb_port {
+@@ -101,26 +101,14 @@
+ 
+ #include "realtek.h"
+ 
+-/* Chip-specific data and limits */
+-#define RTL8365MB_CHIP_ID_8365MB_VC	0x6367
+-#define RTL8365MB_CHIP_VER_8365MB_VC	0x0040
+-
+-#define RTL8365MB_CHIP_ID_8367S		0x6367
+-#define RTL8365MB_CHIP_VER_8367S	0x00A0
+-
+-#define RTL8365MB_CHIP_ID_8367RB_VB	0x6367
+-#define RTL8365MB_CHIP_VER_8367RB_VB	0x0020
+-
+ /* Family-specific data and limits */
+ #define RTL8365MB_PHYADDRMAX		7
+ #define RTL8365MB_NUM_PHYREGS		32
+ #define RTL8365MB_PHYREGMAX		(RTL8365MB_NUM_PHYREGS - 1)
+ #define RTL8365MB_MAX_NUM_PORTS		11
++#define RTL8365MB_MAX_NUM_EXTINTS	3
+ #define RTL8365MB_LEARN_LIMIT_MAX	2112
+ 
+-/* valid for all 6-port or less variants */
+-static const int rtl8365mb_extint_port_map[]  = { -1, -1, -1, -1, -1, -1, 1, 2, -1, -1};
+-
+ /* Chip identification registers */
+ #define RTL8365MB_CHIP_ID_REG		0x1300
+ 
+@@ -200,7 +188,7 @@ static const int rtl8365mb_extint_port_map[]  = { -1, -1, -1, -1, -1, -1, 1, 2,
+ /* The PHY OCP addresses of PHY registers 0~31 start here */
+ #define RTL8365MB_PHY_OCP_ADDR_PHYREG_BASE		0xA400
+ 
+-/* EXT interface port mode values - used in DIGITAL_INTERFACE_SELECT */
++/* External interface port mode values - used in DIGITAL_INTERFACE_SELECT */
+ #define RTL8365MB_EXT_PORT_MODE_DISABLE		0
+ #define RTL8365MB_EXT_PORT_MODE_RGMII		1
+ #define RTL8365MB_EXT_PORT_MODE_MII_MAC		2
+@@ -216,19 +204,7 @@ static const int rtl8365mb_extint_port_map[]  = { -1, -1, -1, -1, -1, -1, 1, 2,
+ #define RTL8365MB_EXT_PORT_MODE_1000X		12
+ #define RTL8365MB_EXT_PORT_MODE_100FX		13
+ 
+-/* Realtek docs and driver uses logic number as EXT_PORT0=16, EXT_PORT1=17,
+- * EXT_PORT2=18, to interact with switch ports. That logic number is internally
+- * converted to either a physical port number (0..9) or an external interface id (0..2),
+- * depending on which function was called. The external interface id is calculated as
+- * (ext_id=logic_port-15), while the logical to physical map depends on the chip id/version.
+- *
+- * EXT_PORT0 mentioned in datasheets and rtl8367c driver is used in this driver
+- * as extid==1, EXT_PORT2, mentioned in Realtek rtl8367c driver for 10-port switches,
+- * would have an ext_id of 3 (out of range for most extint macros) and ext_id 0 does
+- * not seem to be used as well for this family.
+- */
+-
+-/* EXT interface mode configuration registers 0~1 */
++/* External interface mode configuration registers 0~1 */
+ #define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG0		0x1305 /* EXT1 */
+ #define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG1		0x13C3 /* EXT2 */
+ #define RTL8365MB_DIGITAL_INTERFACE_SELECT_REG(_extint) \
+@@ -240,7 +216,7 @@ static const int rtl8365mb_extint_port_map[]  = { -1, -1, -1, -1, -1, -1, 1, 2,
+ #define   RTL8365MB_DIGITAL_INTERFACE_SELECT_MODE_OFFSET(_extint) \
+ 		(((_extint) % 2) * 4)
+ 
+-/* EXT interface RGMII TX/RX delay configuration registers 0~2 */
++/* External interface RGMII TX/RX delay configuration registers 0~2 */
+ #define RTL8365MB_EXT_RGMXF_REG0		0x1306 /* EXT0 */
+ #define RTL8365MB_EXT_RGMXF_REG1		0x1307 /* EXT1 */
+ #define RTL8365MB_EXT_RGMXF_REG2		0x13C5 /* EXT2 */
+@@ -257,7 +233,7 @@ static const int rtl8365mb_extint_port_map[]  = { -1, -1, -1, -1, -1, -1, 1, 2,
+ #define RTL8365MB_PORT_SPEED_100M	1
+ #define RTL8365MB_PORT_SPEED_1000M	2
+ 
+-/* EXT interface force configuration registers 0~2 */
++/* External interface force configuration registers 0~2 */
+ #define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG0		0x1310 /* EXT0 */
+ #define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG1		0x1311 /* EXT1 */
+ #define RTL8365MB_DIGITAL_INTERFACE_FORCE_REG2		0x13C4 /* EXT2 */
+@@ -489,6 +465,95 @@ static const struct rtl8365mb_jam_tbl_entry rtl8365mb_init_jam_common[] = {
+ 	{ 0x1D32, 0x0002 },
+ };
+ 
++enum rtl8365mb_phy_interface_mode {
++	RTL8365MB_PHY_INTERFACE_MODE_INVAL = 0,
++	RTL8365MB_PHY_INTERFACE_MODE_INTERNAL = BIT(0),
++	RTL8365MB_PHY_INTERFACE_MODE_MII = BIT(1),
++	RTL8365MB_PHY_INTERFACE_MODE_TMII = BIT(2),
++	RTL8365MB_PHY_INTERFACE_MODE_RMII = BIT(3),
++	RTL8365MB_PHY_INTERFACE_MODE_RGMII = BIT(4),
++	RTL8365MB_PHY_INTERFACE_MODE_SGMII = BIT(5),
++	RTL8365MB_PHY_INTERFACE_MODE_HSGMII = BIT(6),
++};
++
++/**
++ * struct rtl8365mb_extint - external interface info
++ * @port: the port with an external interface
++ * @id: the external interface ID, which is either 0, 1, or 2
++ * @supported_interfaces: a bitmask of supported PHY interface modes
++ *
++ * Represents a mapping: port -> { id, supported_interfaces }. To be embedded
++ * in &struct rtl8365mb_chip_info for every port with an external interface.
++ */
++struct rtl8365mb_extint {
++	int port;
++	int id;
++	unsigned int supported_interfaces;
++};
++
++/**
++ * struct rtl8365mb_chip_info - static chip-specific info
++ * @name: human-readable chip name
++ * @chip_id: chip identifier
++ * @chip_ver: chip silicon revision
++ * @extints: available external interfaces
++ * @jam_table: chip-specific initialization jam table
++ * @jam_size: size of the chip's jam table
++ *
++ * These data are specific to a given chip in the family of switches supported
++ * by this driver. When adding support for another chip in the family, a new
++ * chip info should be added to the rtl8365mb_chip_infos array.
++ */
++struct rtl8365mb_chip_info {
++	const char *name;
++	u32 chip_id;
++	u32 chip_ver;
++	const struct rtl8365mb_extint extints[RTL8365MB_MAX_NUM_EXTINTS];
++	const struct rtl8365mb_jam_tbl_entry *jam_table;
++	size_t jam_size;
++};
++
++/* Chip info for each supported switch in the family */
++#define PHY_INTF(_mode) (RTL8365MB_PHY_INTERFACE_MODE_ ## _mode)
++static const struct rtl8365mb_chip_info rtl8365mb_chip_infos[] = {
++	{
++		.name = "RTL8365MB-VC",
++		.chip_id = 0x6367,
++		.chip_ver = 0x0040,
++		.extints = {
++			{ 6, 1, PHY_INTF(MII) | PHY_INTF(TMII) |
++				PHY_INTF(RMII) | PHY_INTF(RGMII) },
++		},
++		.jam_table = rtl8365mb_init_jam_8365mb_vc,
++		.jam_size = ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc),
++	},
++	{
++		.name = "RTL8367S",
++		.chip_id = 0x6367,
++		.chip_ver = 0x00A0,
++		.extints = {
++			{ 6, 1, PHY_INTF(SGMII) | PHY_INTF(HSGMII) },
++			{ 7, 2, PHY_INTF(MII) | PHY_INTF(TMII) |
++				PHY_INTF(RMII) | PHY_INTF(RGMII) },
++		},
++		.jam_table = rtl8365mb_init_jam_8365mb_vc,
++		.jam_size = ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc),
++	},
++	{
++		.name = "RTL8367RB-VB",
++		.chip_id = 0x6367,
++		.chip_ver = 0x0020,
++		.extints = {
++			{ 6, 1, PHY_INTF(MII) | PHY_INTF(TMII) |
++				PHY_INTF(RMII) | PHY_INTF(RGMII) },
++			{ 7, 2, PHY_INTF(MII) | PHY_INTF(TMII) |
++				PHY_INTF(RMII) | PHY_INTF(RGMII) },
++		},
++		.jam_table = rtl8365mb_init_jam_8365mb_vc,
++		.jam_size = ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc),
++	},
++};
++
+ enum rtl8365mb_stp_state {
+ 	RTL8365MB_STP_STATE_DISABLED = 0,
+ 	RTL8365MB_STP_STATE_BLOCKING = 1,
+@@ -558,29 +623,23 @@ struct rtl8365mb_port {
+ };
+ 
+ /**
+- * struct rtl8365mb - private chip-specific driver data
++ * struct rtl8365mb - driver private data
+  * @priv: pointer to parent realtek_priv data
   * @irq: registered IRQ or zero
-  * @chip_id: chip identifier
-  * @chip_ver: chip silicon revision
-- * @learn_limit_max: maximum number of L2 addresses the chip can learn
+- * @chip_id: chip identifier
+- * @chip_ver: chip silicon revision
++ * @chip_info: chip-specific info about the attached switch
   * @cpu: CPU tagging and CPU port configuration for this chip
   * @mib_lock: prevent concurrent reads of MIB counters
   * @ports: per-port data
-@@ -577,7 +576,6 @@ struct rtl8365mb {
+- * @jam_table: chip-specific initialization jam table
+- * @jam_size: size of the chip's jam table
+  *
+  * Private data for this driver.
+  */
+ struct rtl8365mb {
+ 	struct realtek_priv *priv;
  	int irq;
- 	u32 chip_id;
- 	u32 chip_ver;
--	u32 learn_limit_max;
+-	u32 chip_id;
+-	u32 chip_ver;
++	const struct rtl8365mb_chip_info *chip_info;
  	struct rtl8365mb_cpu cpu;
  	struct mutex mib_lock;
  	struct rtl8365mb_port ports[RTL8365MB_MAX_NUM_PORTS];
-@@ -1088,15 +1086,13 @@ static void rtl8365mb_port_stp_state_set(struct dsa_switch *ds, int port,
- static int rtl8365mb_port_set_learning(struct realtek_priv *priv, int port,
- 				       bool enable)
- {
--	struct rtl8365mb *mb = priv->chip_data;
--
- 	/* Enable/disable learning by limiting the number of L2 addresses the
- 	 * port can learn. Realtek documentation states that a limit of zero
- 	 * disables learning. When enabling learning, set it to the chip's
- 	 * maximum.
- 	 */
- 	return regmap_write(priv->map, RTL8365MB_LUT_PORT_LEARN_LIMIT_REG(port),
--			    enable ? mb->learn_limit_max : 0);
-+			    enable ? RTL8365MB_LEARN_LIMIT_MAX : 0);
+-	const struct rtl8365mb_jam_tbl_entry *jam_table;
+-	size_t jam_size;
+ };
+ 
+ static int rtl8365mb_phy_poll_busy(struct realtek_priv *priv)
+@@ -775,6 +834,26 @@ static int rtl8365mb_dsa_phy_write(struct dsa_switch *ds, int phy, int regnum,
+ 	return rtl8365mb_phy_write(ds->priv, phy, regnum, val);
  }
  
- static int rtl8365mb_port_set_isolation(struct realtek_priv *priv, int port,
-@@ -2003,7 +1999,6 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
- 		mb->priv = priv;
- 		mb->chip_id = chip_id;
- 		mb->chip_ver = chip_ver;
--		mb->learn_limit_max = RTL8365MB_LEARN_LIMIT_MAX;
- 		mb->jam_table = rtl8365mb_init_jam_8365mb_vc;
- 		mb->jam_size = ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc);
++static const struct rtl8365mb_extint *
++rtl8365mb_get_port_extint(struct realtek_priv *priv, int port)
++{
++	struct rtl8365mb *mb = priv->chip_data;
++	int i;
++
++	for (i = 0; i < RTL8365MB_MAX_NUM_EXTINTS; i++) {
++		const struct rtl8365mb_extint *extint =
++			&mb->chip_info->extints[i];
++
++		if (!extint->supported_interfaces)
++			continue;
++
++		if (extint->port == port)
++			return extint;
++	}
++
++	return NULL;
++}
++
+ static enum dsa_tag_protocol
+ rtl8365mb_get_tag_protocol(struct dsa_switch *ds, int port,
+ 			   enum dsa_tag_protocol mp)
+@@ -795,20 +874,17 @@ rtl8365mb_get_tag_protocol(struct dsa_switch *ds, int port,
+ static int rtl8365mb_ext_config_rgmii(struct realtek_priv *priv, int port,
+ 				      phy_interface_t interface)
+ {
++	const struct rtl8365mb_extint *extint =
++		rtl8365mb_get_port_extint(priv, port);
+ 	struct device_node *dn;
+ 	struct dsa_port *dp;
+ 	int tx_delay = 0;
+ 	int rx_delay = 0;
+-	int ext_int;
+ 	u32 val;
+ 	int ret;
+ 
+-	ext_int = rtl8365mb_extint_port_map[port];
+-
+-	if (ext_int <= 0) {
+-		dev_err(priv->dev, "Port %d is not an external interface port\n", port);
+-		return -EINVAL;
+-	}
++	if (!extint)
++		return -ENODEV;
+ 
+ 	dp = dsa_to_port(priv->ds, port);
+ 	dn = dp->dn;
+@@ -842,7 +918,7 @@ static int rtl8365mb_ext_config_rgmii(struct realtek_priv *priv, int port,
+ 			tx_delay = val / 2;
+ 		else
+ 			dev_warn(priv->dev,
+-				 "EXT interface TX delay must be 0 or 2 ns\n");
++				 "RGMII TX delay must be 0 or 2 ns\n");
+ 	}
+ 
+ 	if (!of_property_read_u32(dn, "rx-internal-delay-ps", &val)) {
+@@ -852,11 +928,11 @@ static int rtl8365mb_ext_config_rgmii(struct realtek_priv *priv, int port,
+ 			rx_delay = val;
+ 		else
+ 			dev_warn(priv->dev,
+-				 "EXT interface RX delay must be 0 to 2.1 ns\n");
++				 "RGMII RX delay must be 0 to 2.1 ns\n");
+ 	}
+ 
+ 	ret = regmap_update_bits(
+-		priv->map, RTL8365MB_EXT_RGMXF_REG(ext_int),
++		priv->map, RTL8365MB_EXT_RGMXF_REG(extint->id),
+ 		RTL8365MB_EXT_RGMXF_TXDELAY_MASK |
+ 			RTL8365MB_EXT_RGMXF_RXDELAY_MASK,
+ 		FIELD_PREP(RTL8365MB_EXT_RGMXF_TXDELAY_MASK, tx_delay) |
+@@ -865,11 +941,11 @@ static int rtl8365mb_ext_config_rgmii(struct realtek_priv *priv, int port,
+ 		return ret;
+ 
+ 	ret = regmap_update_bits(
+-		priv->map, RTL8365MB_DIGITAL_INTERFACE_SELECT_REG(ext_int),
+-		RTL8365MB_DIGITAL_INTERFACE_SELECT_MODE_MASK(ext_int),
++		priv->map, RTL8365MB_DIGITAL_INTERFACE_SELECT_REG(extint->id),
++		RTL8365MB_DIGITAL_INTERFACE_SELECT_MODE_MASK(extint->id),
+ 		RTL8365MB_EXT_PORT_MODE_RGMII
+ 			<< RTL8365MB_DIGITAL_INTERFACE_SELECT_MODE_OFFSET(
+-				   ext_int));
++				   extint->id));
+ 	if (ret)
+ 		return ret;
+ 
+@@ -880,21 +956,18 @@ static int rtl8365mb_ext_config_forcemode(struct realtek_priv *priv, int port,
+ 					  bool link, int speed, int duplex,
+ 					  bool tx_pause, bool rx_pause)
+ {
++	const struct rtl8365mb_extint *extint =
++		rtl8365mb_get_port_extint(priv, port);
+ 	u32 r_tx_pause;
+ 	u32 r_rx_pause;
+ 	u32 r_duplex;
+ 	u32 r_speed;
+ 	u32 r_link;
+-	int ext_int;
+ 	int val;
+ 	int ret;
+ 
+-	ext_int = rtl8365mb_extint_port_map[port];
+-
+-	if (ext_int <= 0) {
+-		dev_err(priv->dev, "Port %d is not an external interface port\n", port);
+-		return -EINVAL;
+-	}
++	if (!extint)
++		return -ENODEV;
+ 
+ 	if (link) {
+ 		/* Force the link up with the desired configuration */
+@@ -942,7 +1015,7 @@ static int rtl8365mb_ext_config_forcemode(struct realtek_priv *priv, int port,
+ 			 r_duplex) |
+ 	      FIELD_PREP(RTL8365MB_DIGITAL_INTERFACE_FORCE_SPEED_MASK, r_speed);
+ 	ret = regmap_write(priv->map,
+-			   RTL8365MB_DIGITAL_INTERFACE_FORCE_REG(ext_int),
++			   RTL8365MB_DIGITAL_INTERFACE_FORCE_REG(extint->id),
+ 			   val);
+ 	if (ret)
+ 		return ret;
+@@ -953,7 +1026,13 @@ static int rtl8365mb_ext_config_forcemode(struct realtek_priv *priv, int port,
+ static void rtl8365mb_phylink_get_caps(struct dsa_switch *ds, int port,
+ 				       struct phylink_config *config)
+ {
+-	if (dsa_is_user_port(ds, port)) {
++	const struct rtl8365mb_extint *extint =
++		rtl8365mb_get_port_extint(ds->priv, port);
++
++	config->mac_capabilities = MAC_SYM_PAUSE | MAC_ASYM_PAUSE |
++				   MAC_10 | MAC_100 | MAC_1000FD;
++
++	if (!extint) {
+ 		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
+ 			  config->supported_interfaces);
+ 
+@@ -962,12 +1041,16 @@ static void rtl8365mb_phylink_get_caps(struct dsa_switch *ds, int port,
+ 		 */
+ 		__set_bit(PHY_INTERFACE_MODE_GMII,
+ 			  config->supported_interfaces);
+-	} else if (dsa_is_cpu_port(ds, port)) {
+-		phy_interface_set_rgmii(config->supported_interfaces);
++		return;
+ 	}
+ 
+-	config->mac_capabilities = MAC_SYM_PAUSE | MAC_ASYM_PAUSE |
+-				   MAC_10 | MAC_100 | MAC_1000FD;
++	/* Populate according to the modes supported by _this driver_,
++	 * not necessarily the modes supported by the hardware, some of
++	 * which remain unimplemented.
++	 */
++
++	if (extint->supported_interfaces & RTL8365MB_PHY_INTERFACE_MODE_RGMII)
++		phy_interface_set_rgmii(config->supported_interfaces);
+ }
+ 
+ static void rtl8365mb_phylink_mac_config(struct dsa_switch *ds, int port,
+@@ -1782,14 +1865,17 @@ static int rtl8365mb_change_tag_protocol(struct dsa_switch *ds,
+ static int rtl8365mb_switch_init(struct realtek_priv *priv)
+ {
+ 	struct rtl8365mb *mb = priv->chip_data;
++	const struct rtl8365mb_chip_info *ci;
+ 	int ret;
+ 	int i;
+ 
++	ci = mb->chip_info;
++
+ 	/* Do any chip-specific init jam before getting to the common stuff */
+-	if (mb->jam_table) {
+-		for (i = 0; i < mb->jam_size; i++) {
+-			ret = regmap_write(priv->map, mb->jam_table[i].reg,
+-					   mb->jam_table[i].val);
++	if (ci->jam_table) {
++		for (i = 0; i < ci->jam_size; i++) {
++			ret = regmap_write(priv->map, ci->jam_table[i].reg,
++					   ci->jam_table[i].val);
+ 			if (ret)
+ 				return ret;
+ 		}
+@@ -1962,6 +2048,7 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
+ 	u32 chip_id;
+ 	u32 chip_ver;
+ 	int ret;
++	int i;
+ 
+ 	ret = rtl8365mb_get_chip_id_and_ver(priv->map, &chip_id, &chip_ver);
+ 	if (ret) {
+@@ -1970,52 +2057,32 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
+ 		return ret;
+ 	}
+ 
+-	switch (chip_id) {
+-	case RTL8365MB_CHIP_ID_8365MB_VC:
+-		switch (chip_ver) {
+-		case RTL8365MB_CHIP_VER_8365MB_VC:
+-			dev_info(priv->dev,
+-				 "found an RTL8365MB-VC switch (ver=0x%04x)\n",
+-				 chip_ver);
+-			break;
+-		case RTL8365MB_CHIP_VER_8367RB_VB:
+-			dev_info(priv->dev,
+-				 "found an RTL8367RB-VB switch (ver=0x%04x)\n",
+-				 chip_ver);
+-			break;
+-		case RTL8365MB_CHIP_VER_8367S:
+-			dev_info(priv->dev,
+-				 "found an RTL8367S switch (ver=0x%04x)\n",
+-				 chip_ver);
++	for (i = 0; i < ARRAY_SIZE(rtl8365mb_chip_infos); i++) {
++		const struct rtl8365mb_chip_info *ci = &rtl8365mb_chip_infos[i];
++
++		if (ci->chip_id == chip_id && ci->chip_ver == chip_ver) {
++			mb->chip_info = ci;
+ 			break;
+-		default:
+-			dev_err(priv->dev, "unrecognized switch version (ver=0x%04x)",
+-				chip_ver);
+-			return -ENODEV;
+ 		}
++	}
+ 
+-		priv->num_ports = RTL8365MB_MAX_NUM_PORTS;
+-
+-		mb->priv = priv;
+-		mb->chip_id = chip_id;
+-		mb->chip_ver = chip_ver;
+-		mb->jam_table = rtl8365mb_init_jam_8365mb_vc;
+-		mb->jam_size = ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc);
+-
+-		mb->cpu.trap_port = RTL8365MB_MAX_NUM_PORTS;
+-		mb->cpu.insert = RTL8365MB_CPU_INSERT_TO_ALL;
+-		mb->cpu.position = RTL8365MB_CPU_POS_AFTER_SA;
+-		mb->cpu.rx_length = RTL8365MB_CPU_RXLEN_64BYTES;
+-		mb->cpu.format = RTL8365MB_CPU_FORMAT_8BYTES;
+-
+-		break;
+-	default:
++	if (!mb->chip_info) {
+ 		dev_err(priv->dev,
+-			"found an unknown Realtek switch (id=0x%04x, ver=0x%04x)\n",
+-			chip_id, chip_ver);
++			"unrecognized switch (id=0x%04x, ver=0x%04x)", chip_id,
++			chip_ver);
+ 		return -ENODEV;
+ 	}
+ 
++	dev_info(priv->dev, "found an %s switch\n", mb->chip_info->name);
++
++	priv->num_ports = RTL8365MB_MAX_NUM_PORTS;
++	mb->priv = priv;
++	mb->cpu.trap_port = RTL8365MB_MAX_NUM_PORTS;
++	mb->cpu.insert = RTL8365MB_CPU_INSERT_TO_ALL;
++	mb->cpu.position = RTL8365MB_CPU_POS_AFTER_SA;
++	mb->cpu.rx_length = RTL8365MB_CPU_RXLEN_64BYTES;
++	mb->cpu.format = RTL8365MB_CPU_FORMAT_8BYTES;
++
+ 	return 0;
+ }
  
 -- 
 2.36.1
