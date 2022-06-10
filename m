@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D3D0546A44
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 18:21:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A9CB546A61
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 18:30:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349490AbiFJQVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 12:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58290 "EHLO
+        id S1349597AbiFJQaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 12:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242991AbiFJQU7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 12:20:59 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35EB3392A0B;
-        Fri, 10 Jun 2022 09:20:58 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id z7so35938510edm.13;
-        Fri, 10 Jun 2022 09:20:58 -0700 (PDT)
+        with ESMTP id S240625AbiFJQap (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 12:30:45 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C5D5676F;
+        Fri, 10 Jun 2022 09:30:42 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id bg6so34671888ejb.0;
+        Fri, 10 Jun 2022 09:30:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=L4it2eyJHyN8t1fOMqjVlgvqQJ+rz5N7UVDB3nB9u44=;
-        b=K50pcIsA+qwcFU9iH9P9p8e1nglHZJAOqtEakftPNdwSO2KzgxX4z+gbz8vSQU9fV8
-         vz3g/9+5n4Z+lo0PTGSRt063uif4BRt2/AnKW5/it3n0o7BX4lZDNSmGyvcMixu4bfLr
-         CBmd+6daJMpQOWH3Hu+YbWkOIkRJGIHVy9nmvqtMoWNB/6iK4jHgeONxWrgzrTF0ZwSQ
-         TCvd3QTJqsO/4/sZKzDMKfbUWZtM+ycNJQpz6FrdGnPdTahuTwi/DoeKGOwOoyT6HSOG
-         ZCelkPytaS/Wrx8JN8FBd6/R4fZrkl5939p7y2eCRQWsuFWvawK3NrzaCJ5cnSoHRRZj
-         pzSw==
+        bh=dsz7BLFfG2oDPkvGvetFh42i9n6sbqi6LYnQ4Q8V5Nw=;
+        b=iVQ5rq62texvFkMsTIBY380T29UAa1mfCM5uJRzZfThalwM7JfUG6a61eWKvURYPxN
+         3zp2AUnuu3MGfVljxTr77/XBl643VdY4Be/qlSqXv9QCDyaqf7rEtTbtZpfCLsxbCr8K
+         3jBNfvOpKUrG+frMXcqgWnJ3pgXph8F9UaEob2wfVPDynCd7pUlJtBOkTV+ZAjQcGQx2
+         SPZCE+ZNq9a1xOiwab8cpCTJtGPG/ucqQlqkgnu1Xw5qx83NHFOhCFT3UIbSEYlYqY5o
+         Dpm+pDbLjq8/NPqWaOBT4LezSGCgAANlBLOAz0V1cHeIHhuCRfl75AZHKxlkjSYl0MHp
+         SY+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=L4it2eyJHyN8t1fOMqjVlgvqQJ+rz5N7UVDB3nB9u44=;
-        b=tfO6CtXsiy9NnqS1rCagoa/M6SZFzPgMW3GEiBDkZY1v7pKtnU2c8UFfPMOJSgxSM1
-         HqVFW38z+YRcvGfbbjtqDB3wu/k2FWBL8uTwSwLHHHOHpU0bxaE2UUpmVjPIcplBGW0U
-         d9t+SHGRW5erESscC2kPQf7KQIEcp6k+HVonvCQ+nDduAWGBIdpOgswjEezKfAgisq0r
-         vyG+NYrj7Z3lposFiESQ6UXXvSv+SQlk1KZKnCL2GKvNzvj8DBrq/PU65l20887l7Q78
-         ohIxgigO7rINXnJKbjO0Y1SMYY/jB2+dMKxeC9IPDzLeXLMoOSMvt9muJc1VWXxHmCr+
-         1ClQ==
-X-Gm-Message-State: AOAM533IpZe5haL/OqPCJntgK2Weg9/2t69tvPTyR6vKxePReri0Axl9
-        s0j6W6fiN9tSNbDBBO026Wk8Ww67wtfko2ZaF6VKjOnDFm8=
-X-Google-Smtp-Source: ABdhPJyfLZAobuekWBFHlpOaOs5JxtoWWf3vcfvczaZsS7370i2OnQVyszhKYnZqfsdDp1FfbvC8KFe9Q/atGTNyjr4=
-X-Received: by 2002:a05:6402:120b:b0:42f:aa44:4d85 with SMTP id
- c11-20020a056402120b00b0042faa444d85mr42817903edw.338.1654878056591; Fri, 10
- Jun 2022 09:20:56 -0700 (PDT)
+        bh=dsz7BLFfG2oDPkvGvetFh42i9n6sbqi6LYnQ4Q8V5Nw=;
+        b=h4bk5GCgaUSPVQl7GNtD/Hi88ey6lxNu5IvVrTkoitLisRKuSMuUs4/pITl5V5Vdtt
+         2qBo6cyB+vhihrEvbqLZ3IYAoXEwYwZk5bX5fEujB4QbvXHQQZsM1H7e7hXQdcUkNFRG
+         jq5d5EXhFs/Pb57b4tDGEOmZBa7PN1C4rhBiKHfgS0dE75gp8LluMW8IYrm3ET5DIA8o
+         cOe85op9y0fI17t1jRHiLvg57x7jJeb0OnXgSa+81pzmsarUvLlChFvjFIeJHYkPmdSA
+         Etlg5QgvUiwhHvyYKn4+bz3P1th9m87bi3QUjI/yrnqgXTfvo5O1Gr/VMuq5XsX7SE1j
+         87Uw==
+X-Gm-Message-State: AOAM530ZMOKPTWv/b1vrVjJpxixeyhDNjLTqy2FQwPZKjGwR7eBZyvdU
+        shSe9SKRhj5Ld0Jzir8pBx56N99vTkmKXPBkL6g=
+X-Google-Smtp-Source: ABdhPJxxETMbtYHXdaNXqDm0kkF8eBxec4mWAMVfVoFyWU1k2p2uWimGmAJ4WZNQ6S2p2b6vni3i4dOrlgcuxR8007Q=
+X-Received: by 2002:a17:906:14d5:b0:711:c55a:998 with SMTP id
+ y21-20020a17090614d500b00711c55a0998mr27458446ejc.708.1654878638548; Fri, 10
+ Jun 2022 09:30:38 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220610135916.1285509-1-roberto.sassu@huawei.com> <20220610135916.1285509-2-roberto.sassu@huawei.com>
 In-Reply-To: <20220610135916.1285509-2-roberto.sassu@huawei.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 10 Jun 2022 09:20:44 -0700
-Message-ID: <CAADnVQLOWsqs1=MS=k2uJu01vNJzd9EZxtEwHW24t4+myj5s0w@mail.gmail.com>
+Date:   Fri, 10 Jun 2022 09:30:26 -0700
+Message-ID: <CAADnVQKWS5kQ-ekzDFV=2+y9kkCYCKaAStNJhAr6G2G-N6Q+9w@mail.gmail.com>
 Subject: Re: [PATCH v3 1/2] bpf: Add bpf_verify_signature() helper
 To:     Roberto Sassu <roberto.sassu@huawei.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -73,25 +73,11 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Jun 10, 2022 at 6:59 AM Roberto Sassu <roberto.sassu@huawei.com> wrote:
->
-> Since the maximum number of parameters of an eBPF helper is 5, the keyring
-> and signature types share one (keyring ID: low 16 bits, signature type:
-> high 16 bits).
-...
-> + * long bpf_verify_signature(u8 *data, u32 datalen, u8 *sig, u32 siglen, u32 info)
-> + *     Description
-> + *             Verify a signature of length *siglen* against the supplied data
-> + *             with length *datalen*. *info* contains the keyring identifier
-> + *             (low 16 bits) and the signature type (high 16 bits). The keyring
-> + *             identifier can have the following values (some defined in
-> + *             verification.h): 0 for the primary keyring (immutable keyring of
-> + *             system keys); 1 for both the primary and secondary keyring
-> + *             (where keys can be added only if they are vouched for by
-> + *             existing keys in those keyrings); 2 for the platform keyring
-> + *             (primarily used by the integrity subsystem to verify a kexec'ed
-> + *             kerned image and, possibly, the initramfs signature); 0xffff for
-> + *             the session keyring (for testing purposes).
+> +       keyring = (keyring_id == U16_MAX) ?
+> +                 cred->session_keyring : (struct key *)keyring_id;
 
-Muxing all kinds of info in the 5th arg isn't great.
-It's better to use dynptr here for data and sig.
-It will free up two extra arguments.
+This is too limiting.
+bpf prog should be able to do what *key syscalls can do.
+By doing lookup_user_key(id) -> keyring.
+Maybe it's ok to have a special reserved id that does
+cred->sessions_keyring as a shortcut, but that's an optimization.
