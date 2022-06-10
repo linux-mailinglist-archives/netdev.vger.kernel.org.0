@@ -2,291 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B88B546D4E
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 21:34:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65F24546D67
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 21:44:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348059AbiFJTec (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 15:34:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56452 "EHLO
+        id S1347623AbiFJToo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 15:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346441AbiFJTeb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 15:34:31 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3A0D2F007;
-        Fri, 10 Jun 2022 12:34:29 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id n18so57792plg.5;
-        Fri, 10 Jun 2022 12:34:29 -0700 (PDT)
+        with ESMTP id S1343917AbiFJTon (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 15:44:43 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B79DE3631E
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 12:44:41 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id c14-20020a17090a1d0e00b001e328238e7eso62978pjd.4
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 12:44:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=uMppHvYmW4hJizHMgM7CHY0Ie3GXJDXQCP8lyH550Z8=;
-        b=Z6erPk3qN5zlNE+6WND2J1LT2vfMukG7a1yvCVYkRuv4XRlXUngglObyj5wNtyQ6pA
-         NiqwNd4sZt2WaDHr7SWO/JUzfS6ZjFeswDwlrz8mAMZgEYg0ham3OjC/N14IalWIIu6F
-         eo57LzA0q91kfTYtl6UdT0Vwym6D1I34Es4kNiDnIq4MJo0XkZWc52gdUU0a3OqucZz6
-         UeITl+axX7EqST80Nqhz0refDXOCokgQSkTm+JUeeFO8VLNSk2zAIeK84Z000w1uJ9Cs
-         QPgs2BquxU17zjibegQP4h6aX4idDmFNpE7g7v4eu9dRUKULNmYGTGIiRPR5u42QwyXW
-         iPMA==
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=i6zkq+SbTrXADRy8+ig+1J4qQLsOeKLI1rJct5wsC9M=;
+        b=oENthMDx1DemDENCKb7+vR7A7KrZ7ow+cOkqgpT6ERoa9Z51W1sj50TrJ8NjWW1e7P
+         WmwmpRLa7IBRpvSKKK3KUypFHi2UYXbl0mXpkeIz92R+yq1Fz7WLAs1pikLdRUzShb7K
+         praWX/XjS3A+mYEZwW48swWq4dZ3WOkvu4+a3TCJCw7VCvhFP7xbEM458N5UQU23aDfK
+         kWthEGQRt9h8V/8C+thO62LIRmy3vTEFjdRiW0h8/xgNU3DX5oa+r2NIvHypB0cPOhAb
+         JymCgAsdgRzr4Dp5NWTjkV0Q13YtYxhwnRKyqajWXITueq4CrMS5Sc/KVlolYNq8nplF
+         QVMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=uMppHvYmW4hJizHMgM7CHY0Ie3GXJDXQCP8lyH550Z8=;
-        b=MIcX9cyIfZQ87tT0Q09JuixDEh/4BbqyhDhS/WE77Q+PpNAwTPtOhPy7C6C5mW36nU
-         sFufB+ZVjPrI6CaP5uaRwHF4yq+CmKUzD97lZiXBr8kjUwyq+MRBQyhBr6xZTkaH9ocS
-         f6UDXn21yCNRX3U8/qgvF74Ua6iyOABuLPS6VekCh7wm2JWFW16U1+W004n0lEbM8Qlk
-         nj9EKrPpCqFxbC/C8fDr+iJrHsoiQyiL2xP/imoq7EjschRVFXiGPuddlJokwK6XPCoA
-         Dy3wFsB5bs3KPp+T1JadJWQ/VfjO7zAnBjLFP5VY2BdSroc5SXhAYi/CU43drMVDXQc5
-         UE7g==
-X-Gm-Message-State: AOAM533X8Rcf745ERk9zfvIAyWKuUv6GFtrnUI6VHWOIA54wwxWQV5sI
-        0fG8WGcx0KwWkcdvQuPAbNw=
-X-Google-Smtp-Source: ABdhPJySSn5CxcJb4CrN+qz4AVjRlrQu6FlYgbh8XEw+fN6jIOUuqC9gKuklgaHymJWavHlh0ZIJFQ==
-X-Received: by 2002:a17:903:40c9:b0:167:5fce:a5e with SMTP id t9-20020a17090340c900b001675fce0a5emr36013272pld.6.1654889669227;
-        Fri, 10 Jun 2022 12:34:29 -0700 (PDT)
-Received: from localhost ([2405:201:6014:d0c0:79de:f3f4:353c:8616])
-        by smtp.gmail.com with ESMTPSA id p10-20020a63950a000000b003fbfe88be17sm5702pgd.24.2022.06.10.12.34.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 12:34:28 -0700 (PDT)
-Date:   Sat, 11 Jun 2022 01:04:18 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Joanne Koong <joannelkoong@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=i6zkq+SbTrXADRy8+ig+1J4qQLsOeKLI1rJct5wsC9M=;
+        b=z95EBevtpOg7l/xYWp/GUDzVcZdVVTmvqzQnv7mlxrWDMuEtJa5yRhBfLfsb1On0y7
+         h6HhkQyTs5yQt9+W7icuSstAdhrI4OcphwGuy3FL7OBylEiKnx8vBe8ueCKHzXND3yKq
+         aATd8mDUUXjCewjqOrRj+1Oc9E7JUsnI2dnm3dA+AdXa7gqTv8w5+zLqRXKeBEUT7w6k
+         ss8HDMiYZzPO2ATXWdcwd+oe79EHrB7q4x1qUw+guVb/1GWjMbxQ/NGQXnPTbtayNwjZ
+         xJImw8aOUjX0C1YAZlP+xckj8I1470xyGuiBn26ZnOI9I7R9wQ48/XCoFaBk3x31hEuQ
+         T5IQ==
+X-Gm-Message-State: AOAM530iFrHGpm/KVHphyZWfhzSqraXl36ZI1goe5unM0CVoUU9g/E/L
+        vzDD8CUpvmpEdKuaXgEqLnhDnEefP8uXq6/Y
+X-Google-Smtp-Source: ABdhPJxtdO6pRShCr96FVJhsqRyi3L1gIlwPDweIzWvz3ftA8aV64mUawP4Nqp2M5P34aQSrYCK2YEWR/tPv4pIU
+X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
+ (user=yosryahmed job=sendgmr) by 2002:a05:6a00:2341:b0:51c:6413:ab2e with
+ SMTP id j1-20020a056a00234100b0051c6413ab2emr16265298pfj.63.1654890281125;
+ Fri, 10 Jun 2022 12:44:41 -0700 (PDT)
+Date:   Fri, 10 Jun 2022 19:44:27 +0000
+Message-Id: <20220610194435.2268290-1-yosryahmed@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
+Subject: [PATCH bpf-next v2 0/8] bpf: rstat: cgroup hierarchical stats
+From:   Yosry Ahmed <yosryahmed@google.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v2 0/7] Add bpf_link based TC-BPF API
-Message-ID: <20220610193418.4kqpu7crwfb5efzy@apollo.legion>
-References: <20210604063116.234316-1-memxor@gmail.com>
- <CAJnrk1YJe-wtXFF0U2cuZUdd-gH1Y80Ewf3ePo=vh-nbsSBZgg@mail.gmail.com>
- <20220610125830.2tx6syagl2rphl35@apollo.legion>
- <CAJnrk1YCBn2EkVK89f5f3ijFYUDhLNpjiH8buw8K3p=JMwAc1Q@mail.gmail.com>
- <CAJnrk1YCSaRjd88WCzg4ccv59h0Dn99XXsDDT4ddzz4UYiZmbg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJnrk1YCSaRjd88WCzg4ccv59h0Dn99XXsDDT4ddzz4UYiZmbg@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>, Michal Hocko <mhocko@kernel.org>
+Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, cgroups@vger.kernel.org,
+        Yosry Ahmed <yosryahmed@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 11, 2022 at 12:37:50AM IST, Joanne Koong wrote:
-> On Fri, Jun 10, 2022 at 10:23 AM Joanne Koong <joannelkoong@gmail.com> wrote:
-> >
-> > On Fri, Jun 10, 2022 at 5:58 AM Kumar Kartikeya Dwivedi
-> > <memxor@gmail.com> wrote:
-> > >
-> > > On Fri, Jun 10, 2022 at 05:54:27AM IST, Joanne Koong wrote:
-> > > > On Thu, Jun 3, 2021 at 11:31 PM Kumar Kartikeya Dwivedi
-> > > > <memxor@gmail.com> wrote:
-> > > > >
-> > > > > This is the second (non-RFC) version.
-> > > > >
-> > > > > This adds a bpf_link path to create TC filters tied to cls_bpf classifier, and
-> > > > > introduces fd based ownership for such TC filters. Netlink cannot delete or
-> > > > > replace such filters, but the bpf_link is severed on indirect destruction of the
-> > > > > filter (backing qdisc being deleted, or chain being flushed, etc.). To ensure
-> > > > > that filters remain attached beyond process lifetime, the usual bpf_link fd
-> > > > > pinning approach can be used.
-> > > > >
-> > > > > The individual patches contain more details and comments, but the overall kernel
-> > > > > API and libbpf helper mirrors the semantics of the netlink based TC-BPF API
-> > > > > merged recently. This means that we start by always setting direct action mode,
-> > > > > protocol to ETH_P_ALL, chain_index as 0, etc. If there is a need for more
-> > > > > options in the future, they can be easily exposed through the bpf_link API in
-> > > > > the future.
-> > > > >
-> > > > > Patch 1 refactors cls_bpf change function to extract two helpers that will be
-> > > > > reused in bpf_link creation.
-> > > > >
-> > > > > Patch 2 exports some bpf_link management functions to modules. This is needed
-> > > > > because our bpf_link object is tied to the cls_bpf_prog object. Tying it to
-> > > > > tcf_proto would be weird, because the update path has to replace offloaded bpf
-> > > > > prog, which happens using internal cls_bpf helpers, and would in general be more
-> > > > > code to abstract over an operation that is unlikely to be implemented for other
-> > > > > filter types.
-> > > > >
-> > > > > Patch 3 adds the main bpf_link API. A function in cls_api takes care of
-> > > > > obtaining block reference, creating the filter object, and then calls the
-> > > > > bpf_link_change tcf_proto op (only supported by cls_bpf) that returns a fd after
-> > > > > setting up the internal structures. An optimization is made to not keep around
-> > > > > resources for extended actions, which is explained in a code comment as it wasn't
-> > > > > immediately obvious.
-> > > > >
-> > > > > Patch 4 adds an update path for bpf_link. Since bpf_link_update only supports
-> > > > > replacing the bpf_prog, we can skip tc filter's change path by reusing the
-> > > > > filter object but swapping its bpf_prog. This takes care of replacing the
-> > > > > offloaded prog as well (if that fails, update is aborted). So far however,
-> > > > > tcf_classify could do normal load (possibly torn) as the cls_bpf_prog->filter
-> > > > > would never be modified concurrently. This is no longer true, and to not
-> > > > > penalize the classify hot path, we also cannot impose serialization around
-> > > > > its load. Hence the load is changed to READ_ONCE, so that the pointer value is
-> > > > > always consistent. Due to invocation in a RCU critical section, the lifetime of
-> > > > > the prog is guaranteed for the duration of the call.
-> > > > >
-> > > > > Patch 5, 6 take care of updating the userspace bits and add a bpf_link returning
-> > > > > function to libbpf.
-> > > > >
-> > > > > Patch 7 adds a selftest that exercises all possible problematic interactions
-> > > > > that I could think of.
-> > > > >
-> > > > > Design:
-> > > > >
-> > > > > This is where in the object hierarchy our bpf_link object is attached.
-> > > > >
-> > > > >                                                                             ┌─────┐
-> > > > >                                                                             │     │
-> > > > >                                                                             │ BPF │
-> > > > >                                                                             program
-> > > > >                                                                             │     │
-> > > > >                                                                             └──▲──┘
-> > > > >                                                       ┌───────┐                │
-> > > > >                                                       │       │         ┌──────┴───────┐
-> > > > >                                                       │  mod  ├─────────► cls_bpf_prog │
-> > > > > ┌────────────────┐                                    │cls_bpf│         └────┬───▲─────┘
-> > > > > │    tcf_block   │                                    │       │              │   │
-> > > > > └────────┬───────┘                                    └───▲───┘              │   │
-> > > > >          │          ┌─────────────┐                       │                ┌─▼───┴──┐
-> > > > >          └──────────►  tcf_chain  │                       │                │bpf_link│
-> > > > >                     └───────┬─────┘                       │                └────────┘
-> > > > >                             │          ┌─────────────┐    │
-> > > > >                             └──────────►  tcf_proto  ├────┘
-> > > > >                                        └─────────────┘
-> > > > >
-> > > > > The bpf_link is detached on destruction of the cls_bpf_prog.  Doing it this way
-> > > > > allows us to implement update in a lightweight manner without having to recreate
-> > > > > a new filter, where we can just replace the BPF prog attached to cls_bpf_prog.
-> > > > >
-> > > > > The other way to do it would be to link the bpf_link to tcf_proto, there are
-> > > > > numerous downsides to this:
-> > > > >
-> > > > > 1. All filters have to embed the pointer even though they won't be using it when
-> > > > > cls_bpf is compiled in.
-> > > > > 2. This probably won't make sense to be extended to other filter types anyway.
-> > > > > 3. We aren't able to optimize the update case without adding another bpf_link
-> > > > > specific update operation to tcf_proto ops.
-> > > > >
-> > > > > The downside with tying this to the module is having to export bpf_link
-> > > > > management functions and introducing a tcf_proto op. Hopefully the cost of
-> > > > > another operation func pointer is not big enough (as there is only one ops
-> > > > > struct per module).
-> > > > >
-> > > > Hi Kumar,
-> > > >
-> > > > Do you have any plans / bandwidth to land this feature upstream? If
-> > > > so, do you have a tentative estimation for when you'll be able to work
-> > > > on this? And if not, are you okay with someone else working on this to
-> > > > get it merged in?
-> > > >
-> > >
-> > > I can have a look at resurrecting it later this month, if you're ok with waiting
-> > > until then, otherwise if someone else wants to pick this up before that it's
-> > > fine by me, just let me know so we avoid duplicated effort. Note that the
-> > > approach in v2 is dead/unlikely to get accepted by the TC maintainers, so we'd
-> > > have to implement the way Daniel mentioned in [0].
-> >
-> > Sounds great! We'll wait and check back in with you later this month.
-> >
-> After reading the linked thread (which I should have done before
-> submitting my previous reply :)),  if I'm understanding it correctly,
-> it seems then that the work needed for tc bpf_link will be in a new
-> direction that's not based on the code in this v2 patchset. I'm
-> interested in learning more about bpf link and tc - I can pick this up
-> to work on. But if this was something you wanted to work on though,
-> please don't hesitate to let me know; I can find some other bpf link
-> thing to work on instead if that's the case.
->
+This patch series allows for using bpf to collect hierarchical cgroup
+stats efficiently by integrating with the rstat framework. The rstat
+framework provides an efficient way to collect cgroup stats percpu and
+propagate them through the cgroup hierarchy.
 
-Feel free to take it. And yes, it's going to be much simpler than this. I think
-you can just add two bpf_prog pointers in struct net_device, use rtnl_lock to
-protect the updates, and invoke using bpf_prog_run in sch_handle_ingress and
-sch_handle_egress. You could also split the old and new path so that there are
-less branches when the ingress/egress static key is enabled only for bpf_link
-mode (as clsact will become redundant after this). It should be similar to how
-XDP's bpf_link works. Auto detach can be handled similarly by unlinking dev from
-the link when net_device teardown occurs, same as XDP's bpf_link, to sever it.
+The stats are exposed to userspace in textual form by reading files in
+bpffs, similar to cgroupfs stats by using a cgroup_iter program.
+cgroup_iter is a type of bpf_iter. It walks over cgroups in two modes:
 
-The other thing to keep in mind is that not all return codes are permitted in
-direct action mode, so you may want to lift cls_bpf_exec_opcode out into a
-header as a helper and then repurpose it for the switch statement in
-sch_handle_ingress/egress to handle only those. Also need to document for the
-user that only direct action mode is supported for TC bpf_link mode.
+ - walking a cgroup's descendants.
+ - walking a cgroup's ancestors.
 
-You can look at the cls_bpf_classify function in net/sched/cls_bpf.c. The
-branches protected by prog->exts_integrated is for direct action mode, so the
-handling for bpf_link will be similar. Also need to handle mono_delivery_time
-unsetting that Martin added recently.
+When attaching cgroup_iter, one needs to set a cgroup to the iter_link
+created from attaching. This cgroup is passed as a file descriptor and
+serves as the starting point of the walk.
 
-That's all from my notes from that time. Best of luck! :)
+For walking descendants, one can specify the order: either pre-order or
+post-order. For walking ancestors, the walk starts at the specified
+cgroup and ends at the root.
 
->
-> > >
-> > >   [0]: https://lore.kernel.org/bpf/15cd0a9c-95a1-9766-fca1-4bf9d09e4100@iogearbox.net
-> > >
-> > > > The reason I'm asking is because there are a few networking teams
-> > > > within Meta that have been requesting this feature :)
-> > > >
-> > > > Thanks,
-> > > > Joanne
-> > > >
-> > > > > Changelog:
-> > > > > ----------
-> > > > > v1 (RFC) -> v2
-> > > > > v1: https://lore.kernel.org/bpf/20210528195946.2375109-1-memxor@gmail.com
-> > > > >
-> > > > >  * Avoid overwriting other members of union in bpf_attr (Andrii)
-> > > > >  * Set link to NULL after bpf_link_cleanup to avoid double free (Andrii)
-> > > > >  * Use __be16 to store the result of htons (Kernel Test Robot)
-> > > > >  * Make assignment of tcf_exts::net conditional on CONFIG_NET_CLS_ACT
-> > > > >    (Kernel Test Robot)
-> > > > >
-> > > > > Kumar Kartikeya Dwivedi (7):
-> > > > >   net: sched: refactor cls_bpf creation code
-> > > > >   bpf: export bpf_link functions for modules
-> > > > >   net: sched: add bpf_link API for bpf classifier
-> > > > >   net: sched: add lightweight update path for cls_bpf
-> > > > >   tools: bpf.h: sync with kernel sources
-> > > > >   libbpf: add bpf_link based TC-BPF management API
-> > > > >   libbpf: add selftest for bpf_link based TC-BPF management API
-> > > > >
-> > > > >  include/linux/bpf_types.h                     |   3 +
-> > > > >  include/net/pkt_cls.h                         |  13 +
-> > > > >  include/net/sch_generic.h                     |   6 +-
-> > > > >  include/uapi/linux/bpf.h                      |  15 +
-> > > > >  kernel/bpf/syscall.c                          |  14 +-
-> > > > >  net/sched/cls_api.c                           | 139 ++++++-
-> > > > >  net/sched/cls_bpf.c                           | 389 ++++++++++++++++--
-> > > > >  tools/include/uapi/linux/bpf.h                |  15 +
-> > > > >  tools/lib/bpf/bpf.c                           |   8 +-
-> > > > >  tools/lib/bpf/bpf.h                           |   8 +-
-> > > > >  tools/lib/bpf/libbpf.c                        |  59 ++-
-> > > > >  tools/lib/bpf/libbpf.h                        |  17 +
-> > > > >  tools/lib/bpf/libbpf.map                      |   1 +
-> > > > >  tools/lib/bpf/netlink.c                       |   5 +-
-> > > > >  tools/lib/bpf/netlink.h                       |   8 +
-> > > > >  .../selftests/bpf/prog_tests/tc_bpf_link.c    | 285 +++++++++++++
-> > > > >  16 files changed, 940 insertions(+), 45 deletions(-)
-> > > > >  create mode 100644 tools/lib/bpf/netlink.h
-> > > > >  create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_bpf_link.c
-> > > > >
-> > > > > --
-> > > > > 2.31.1
-> > > > >
-> > >
-> > > --
-> > > Kartikeya
+One can also terminate the walk early by returning 1 from the iter
+program.
 
---
-Kartikeya
+Note that because walking cgroup hierarchy holds cgroup_mutex, the iter
+program is called with cgroup_mutex held.
+
+** Background on rstat for stats collection **
+(I am using a subscriber analogy that is not commonly used)
+
+The rstat framework maintains a tree of cgroups that have updates and
+which cpus have updates. A subscriber to the rstat framework maintains
+their own stats. The framework is used to tell the subscriber when
+and what to flush, for the most efficient stats propagation. The
+workflow is as follows:
+
+- When a subscriber updates a cgroup on a cpu, it informs the rstat
+  framework by calling cgroup_rstat_updated(cgrp, cpu).
+
+- When a subscriber wants to read some stats for a cgroup, it asks
+  the rstat framework to initiate a stats flush (propagation) by calling
+  cgroup_rstat_flush(cgrp).
+
+- When the rstat framework initiates a flush, it makes callbacks to
+  subscribers to aggregate stats on cpus that have updates, and
+  propagate updates to their parent.
+
+Currently, the main subscribers to the rstat framework are cgroup
+subsystems (e.g. memory, block). This patch series allow bpf programs to
+become subscribers as well.
+
+Patches in this series are based off a patch in the mailing
+list which adds a new kfunc set for sleepable functions:
+"btf: Add a new kfunc set which allows to mark a function to be
+sleepable" [1].
+
+Patches in this series are organized as follows:
+* Patch 1 enables the use of cgroup_get_from_file() in cgroup1.
+  This is useful because it enables cgroup_iter to work with cgroup1, and
+  allows the entire stat collection workflow to be cgroup1-compatible.
+* Patches 2-5 introduce cgroup_iter prog, and a selftest.
+* Patches 6-8 allow bpf programs to integrate with rstat by adding the
+  necessary hook points and kfunc. A comprehensive selftest that
+  demonstrates the entire workflow for using bpf and rstat to
+  efficiently collect and output cgroup stats is added.
+
+v1 -> v2:
+- Redesign of cgroup_iter from v1, based on Alexei's idea [2]:
+  - supports walking cgroup subtree.
+  - supports walking ancestors of a cgroup. (Andrii)
+  - supports terminating the walk early.
+  - uses fd instead of cgroup_id as parameter for iter_link. Using fd is
+    a convention in bpf.
+  - gets cgroup's ref at attach time and deref at detach.
+  - brought back cgroup1 support for cgroup_iter.
+- Squashed the patches adding the rstat flush hook points and kfuncs
+  (Tejun).
+- Added a comment explaining why bpf_rstat_flush() needs to be weak
+  (Tejun).
+- Updated the final selftest with the new cgroup_iter design.
+- Changed CHECKs in the selftest with ASSERTs (Yonghong, Andrii).
+- Removed empty line at the end of the selftest (Yonghong).
+- Renamed test files to cgroup_hierarchical_stats.c.
+- Reordered CGROUP_PATH params order to match struct declaration
+  in the selftest (Michal).
+- Removed memory_subsys_enabled() and made sure memcg controller
+  enablement checks make sense and are documented (Michal).
+
+RFC v2 -> v1:
+- Instead of introducing a new program type for rstat flushing, add an
+  empty hook point, bpf_rstat_flush(), and use fentry bpf programs to
+  attach to it and flush bpf stats.
+- Instead of using helpers, use kfuncs for rstat functions.
+- These changes simplify the patchset greatly, with minimal changes to
+  uapi.
+
+RFC v1 -> RFC v2:
+- Instead of rstat flush programs attach to subsystems, they now attach
+  to rstat (global flushers, not per-subsystem), based on discussions
+  with Tejun. The first patch is entirely rewritten.
+- Pass cgroup pointers to rstat flushers instead of cgroup ids. This is
+  much more flexibility and less likely to need a uapi update later.
+- rstat helpers are now only defined if CGROUP_CONFIG.
+- Most of the code is now only defined if CGROUP_CONFIG and
+  CONFIG_BPF_SYSCALL.
+- Move rstat helper protos from bpf_base_func_proto() to
+  tracing_prog_func_proto().
+- rstat helpers argument (cgroup pointer) is now ARG_PTR_TO_BTF_ID, not
+  ARG_ANYTHING.
+- Rewrote the selftest to use the cgroup helpers.
+- Dropped bpf_map_lookup_percpu_elem (already added by Feng).
+- Dropped patch to support cgroup v1 for cgroup_iter.
+- Dropped patch to define some cgroup_put() when !CONFIG_CGROUP. The
+  code that calls it is no longer compiled when !CONFIG_CGROUP.
+
+cgroup_iter was originally introduced in a different patch series[3].
+Hao and I agreed that it fits better as part of this series.
+RFC v1 of this patch series had the following changes from [3]:
+- Getting the cgroup's reference at the time at attaching, instead of
+  at the time when iterating. (Yonghong)
+- Remove .init_seq_private and .fini_seq_private callbacks for
+  cgroup_iter. They are not needed now. (Yonghong)
+
+[1] https://lore.kernel.org/bpf/20220421140740.459558-5-benjamin.tissoires@redhat.com/
+[2] https://lore.kernel.org/bpf/20220520221919.jnqgv52k4ajlgzcl@MBP-98dd607d3435.dhcp.thefacebook.com/
+[3] https://lore.kernel.org/lkml/20220225234339.2386398-9-haoluo@google.com/
+
+Hao Luo (4):
+  cgroup: Add cgroup_put() in !CONFIG_CGROUPS case
+  bpf, iter: Fix the condition on p when calling stop.
+  bpf: Introduce cgroup iter
+  selftests/bpf: Test cgroup_iter.
+
+Yosry Ahmed (4):
+  cgroup: enable cgroup_get_from_file() on cgroup1
+  cgroup: bpf: enable bpf programs to integrate with rstat
+  selftests/bpf: extend cgroup helpers
+  bpf: add a selftest for cgroup hierarchical stats collection
+
+ include/linux/bpf.h                           |   8 +
+ include/linux/cgroup.h                        |   3 +
+ include/uapi/linux/bpf.h                      |  21 ++
+ kernel/bpf/Makefile                           |   2 +-
+ kernel/bpf/bpf_iter.c                         |   5 +
+ kernel/bpf/cgroup_iter.c                      | 235 ++++++++++++
+ kernel/cgroup/cgroup.c                        |   5 -
+ kernel/cgroup/rstat.c                         |  46 +++
+ tools/include/uapi/linux/bpf.h                |  21 ++
+ tools/testing/selftests/bpf/cgroup_helpers.c  | 173 +++++++--
+ tools/testing/selftests/bpf/cgroup_helpers.h  |  15 +-
+ .../prog_tests/cgroup_hierarchical_stats.c    | 351 ++++++++++++++++++
+ .../selftests/bpf/prog_tests/cgroup_iter.c    | 190 ++++++++++
+ tools/testing/selftests/bpf/progs/bpf_iter.h  |   7 +
+ .../bpf/progs/cgroup_hierarchical_stats.c     | 234 ++++++++++++
+ .../testing/selftests/bpf/progs/cgroup_iter.c |  39 ++
+ 16 files changed, 1303 insertions(+), 52 deletions(-)
+ create mode 100644 kernel/bpf/cgroup_iter.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_iter.c
+ create mode 100644 tools/testing/selftests/bpf/progs/cgroup_hierarchical_stats.c
+ create mode 100644 tools/testing/selftests/bpf/progs/cgroup_iter.c
+
+-- 
+2.36.1.476.g0c4daa206d-goog
+
