@@ -2,103 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3B62546804
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 16:04:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6494A54680E
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 16:08:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234350AbiFJOEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 10:04:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60290 "EHLO
+        id S244177AbiFJOIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 10:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229974AbiFJOEi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 10:04:38 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A8195BF
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 07:04:36 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id y16so20954948ili.13
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 07:04:36 -0700 (PDT)
+        with ESMTP id S239938AbiFJOIo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 10:08:44 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7844D11A1E
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 07:08:41 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id e184so47193154ybf.8
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 07:08:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=UhzQ8TCLc8aemqWVBrVPCVsWAXJJAEoAT5VE2jsbIco=;
-        b=kkA4w5DdkzVaH4HFt2qLl9iliKMbI4J+ud2iZdWa5MNLdZLmqv8oQN7vsPE2wnecWe
-         +zorWBHkkAPqvlzr/fRxgQ6SCgwWLMVF5MELlSr8/TtmS5mwfBChbNL8q286m79LX9wU
-         IPULAju7cauN59HSawyj9GTeyUhN/Bw8FcnfB+F/ooFNiTBkOAl5ZAt3O8iQMS/6vGE8
-         PvvwYjVXMaL4xXyvyQUO3J0Q2Yew8WrfzuK/Xfy3hzL/pMspZg/eb4BowGt4G3xi+nAJ
-         sBJl20p/gUKORMXbi7gr31rO5WbDPiy72f2/I21ard7pChd2SpkiOsiU9RohDo+uTutO
-         ibsw==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=PyDV1j65Lx1TNpp+HfLz4mmPCTfG4DwRYS5sO/K+ka8=;
+        b=Sdeh8Fo6066+bfOd2m5fJVKaFZzEJ7erlT2qu9MZfJRo/zyyp2dIeM0aBETQyXe1/s
+         lJBndoNzAmI4C/EVWjalMxJ/QHsjyg6vZs+MkIxTG+htjfdgvXLvrUMxw9Sr2onWYxqB
+         7WEG+czk++2nwPWU3DscC7pbaO5F650hxELX7M/WZHwZxlPa4FZYiNEbn9d4UY9fdFuD
+         VJRyXq1wBbArx+Lev+T5fv1vBnwjTiLaFQ8MAYdZQazR0uonpnn1qWyloxZ7unMIE108
+         ihpKkBbuJNB+Qs45XTDAef54IuzKgqopy6AgN2iqCl7g+7C73+0MFRA57QPiKBHZqUbX
+         pD8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=UhzQ8TCLc8aemqWVBrVPCVsWAXJJAEoAT5VE2jsbIco=;
-        b=OxNUoOoxGYrJXk4CmIraO4ALtW8XVTi5peQLd/X6S+oe+tIdPSp+F7xPmW6Q87Ll7A
-         HhieFn34zuox1dTgSAvAHpaVYWLuJJAlYq/DpgcgxTZP4xqoQQZSJbtKLkcmWNZr2mxT
-         8ew8+GL5tqqdf+xTotoP/UCSXx3mtXePibIHY78dk9Y/Gny9aynZSHb1dquyHsMzykPO
-         UYNxXm5IRWDxBajAOPcDlsnPttDxnbYVo3AzGbLE3ppdsCrLzUMOYoqy8CMqMgiMDVA9
-         G1boTfOqYIt38iz03uIj6ZRlsDGqavSyQgJYmlcy8tc6th4qPWuzn03B0anIn64B0ekK
-         gmPA==
-X-Gm-Message-State: AOAM533X7cx5dLm14H6IowS26dGJAxFLRsRr4+ruW6Jx0GaoAvh9Ha4F
-        cUtzXQTSWPyY+e4vwFL0scEWwoMpAXswtK3kj64=
-X-Google-Smtp-Source: ABdhPJxlpUA4dB+PoX5o0gy4wdPDFCXVifhTIpfxBGSrnbctL8Fm/vS9uJxmJbFSPMyVllysh97Je4nc/AlnBQTrzX0=
-X-Received: by 2002:a92:cda6:0:b0:2d1:bc06:1d9b with SMTP id
- g6-20020a92cda6000000b002d1bc061d9bmr25833295ild.16.1654869876395; Fri, 10
- Jun 2022 07:04:36 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=PyDV1j65Lx1TNpp+HfLz4mmPCTfG4DwRYS5sO/K+ka8=;
+        b=A//4hJXuLoGEC9USXA5+GKcRm1oSfuvyz1P0li/V3Qab4vnKXTt4kcIEGFVV3vsCoO
+         TeqyJDrQW7WgpXeu5ITKwRWY4zhzmpA6lY24VjzeKV5O96/L0urj91gPLc+m8kedTQlc
+         Xr6lxR45ZiqGWXIJHzK3fsMS+UO0t68L7Vg0vh5V2wyUgEZeM2hpL88KC6Xy6gkMprvI
+         1cz8UyYcqXep3c90+kDQzQq6elUWIhEilUA1272gzlnroD1U4jGCjR60LWhoWO6ojJ6x
+         fmFbCACu0n+MPznfujL9yINnqxezS1k0HOQ+5gCq9Z/X1hyid2lnvbg2Wcl2v/WFg+Xc
+         zltw==
+X-Gm-Message-State: AOAM531SmLDOJLJm24d9s4GOnsUt9yShbJDv9JwoIIp8IXVloc3MEB9I
+        WZm42mYPEudhq9xYI68wvLei0gpOOrSQKucDY5M+8g==
+X-Google-Smtp-Source: ABdhPJygPVRT7z0US6HV++lxmvLlfxhcHVO3Vgdal0mZt/+tPtS7Xx+Lc3STO5t1a7w3CvHR0oCFLEgO9ilfgHl16/Y=
+X-Received: by 2002:a05:6902:c9:b0:641:1998:9764 with SMTP id
+ i9-20020a05690200c900b0064119989764mr44237460ybs.427.1654870120190; Fri, 10
+ Jun 2022 07:08:40 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a6b:d613:0:0:0:0:0 with HTTP; Fri, 10 Jun 2022 07:04:36
- -0700 (PDT)
-Reply-To: howardnewell406@gmail.com
-From:   "Howard F. Nwell" <ayoubasadou292@gmail.com>
-Date:   Fri, 10 Jun 2022 16:04:36 +0200
-Message-ID: <CAC=+3ucq8szoL-SeveCbxX1_Y5LQyEVRjBN889uznmJsce-JEA@mail.gmail.com>
-Subject: RE
-To:     undisclosed-recipients:;
+References: <20220610103653.15261-1-zajec5@gmail.com>
+In-Reply-To: <20220610103653.15261-1-zajec5@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 10 Jun 2022 07:08:28 -0700
+Message-ID: <CANn89iLJwdKXcfCHuEkRT7tknsXpD=UgFh-f61M1UAL9b8JMJw@mail.gmail.com>
+Subject: Re: [PATCH] net: gro: respect nf_conntrack_checksum for skipping csum verification
+To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     openwrt-devel@lists.openwrt.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=5.1 required=5.0 tests=BAYES_60,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: *  1.5 BAYES_60 BODY: Bayes spam probability is 60 to 80%
-        *      [score: 0.7050]
-        * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:134 listed in]
-        [list.dnswl.org]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [ayoubasadou292[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [ayoubasadou292[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [howardnewell406[at]gmail.com]
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  2.3 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-Ich habe Ihnen bereits eine E-Mail gesendet, aber noch keine Antwort
-von Ihnen erhalten.
-Vielen Dank,
-Howard Newell
+On Fri, Jun 10, 2022 at 3:37 AM Rafa=C5=82 Mi=C5=82ecki <zajec5@gmail.com> =
+wrote:
+>
+> From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
+>
+> Netfilter allows disabling checksum verification of incoming packets by
+> setting nf_conntrack_checksum variable. That feature is very useful for
+> home routers which:
+> 1. Most of the time just /forward/ network traffic
+> 2. Have slow CPU(s) and csum calculation is a challenge
+>
+> Some projects like OpenWrt set nf_conntrack_checksum to 0 by default.
+>
+> It would be nice to allow similar optimization in the GRO code paths.
+> This patch simply reuses nf_conntrack_checksum variable to skip
+> skb_gro_checksum_validate() calls if applicable.
+>
 
-mailen Sie mir; howardnewell406@gmail.com f=C3=BCr weitere Einzelheiten
+Problem is that GRO will be followed by TSO on the egress side.
+
+TSO will generate segments with recomputed checksums for each one of them.
+
+GRO only keeps one copy of the headers, so does not track original
+checksums for all
+segments at ingress side.
+
+So if you want to use TSO, GRO has to validate checksums.
+
+I am afraid this nf_conntrack_checksum idea can not be transposed to GRO.
+
+> Signed-off-by: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
+> ---
+> Hi guys,
+>
+> I'm not very familiar with net subsystem, please let me know if there is
+> a better way of implementing such a feature.
+> ---
+>  net/ipv4/tcp_offload.c   | 3 +++
+>  net/ipv6/tcpv6_offload.c | 3 +++
+>  2 files changed, 6 insertions(+)
+>
+> diff --git a/net/ipv4/tcp_offload.c b/net/ipv4/tcp_offload.c
+> index 30abde86db45..734a3c0f3d4a 100644
+> --- a/net/ipv4/tcp_offload.c
+> +++ b/net/ipv4/tcp_offload.c
+> @@ -311,6 +311,9 @@ struct sk_buff *tcp4_gro_receive(struct list_head *he=
+ad, struct sk_buff *skb)
+>  {
+>         /* Don't bother verifying checksum if we're going to flush anyway=
+. */
+>         if (!NAPI_GRO_CB(skb)->flush &&
+> +#if IS_ENABLED(CONFIG_NF_CONNTRACK)
+> +           dev_net(skb->dev)->ct.sysctl_checksum &&
+> +#endif
+>             skb_gro_checksum_validate(skb, IPPROTO_TCP,
+>                                       inet_gro_compute_pseudo)) {
+>                 NAPI_GRO_CB(skb)->flush =3D 1;
+> diff --git a/net/ipv6/tcpv6_offload.c b/net/ipv6/tcpv6_offload.c
+> index 39db5a226855..2144afa56fa3 100644
+> --- a/net/ipv6/tcpv6_offload.c
+> +++ b/net/ipv6/tcpv6_offload.c
+> @@ -18,6 +18,9 @@ struct sk_buff *tcp6_gro_receive(struct list_head *head=
+, struct sk_buff *skb)
+>  {
+>         /* Don't bother verifying checksum if we're going to flush anyway=
+. */
+>         if (!NAPI_GRO_CB(skb)->flush &&
+> +#if IS_ENABLED(CONFIG_NF_CONNTRACK)
+> +           dev_net(skb->dev)->ct.sysctl_checksum &&
+> +#endif
+>             skb_gro_checksum_validate(skb, IPPROTO_TCP,
+>                                       ip6_gro_compute_pseudo)) {
+>                 NAPI_GRO_CB(skb)->flush =3D 1;
+> --
+> 2.34.1
+>
