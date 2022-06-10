@@ -2,151 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9745754664E
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 14:10:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBC835466B2
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 14:34:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347649AbiFJMKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 08:10:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56378 "EHLO
+        id S241755AbiFJMds (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 08:33:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345027AbiFJMKL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 08:10:11 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA8E104;
-        Fri, 10 Jun 2022 05:10:06 -0700 (PDT)
-Received: from fraeml711-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LKKSN66TKz683mZ;
-        Fri, 10 Jun 2022 20:06:28 +0800 (CST)
-Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
- fraeml711-chm.china.huawei.com (10.206.15.60) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 10 Jun 2022 14:10:04 +0200
-Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
- fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
- Fri, 10 Jun 2022 14:10:04 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        KP Singh <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 2/3] selftests/bpf: Add test_progs opts for sign-file
- and kernel priv key + cert
-Thread-Topic: [PATCH v2 2/3] selftests/bpf: Add test_progs opts for sign-file
- and kernel priv key + cert
-Thread-Index: AQHYeykDmMQe6s5OOEy585q2owjOQ61GE2uAgACxe7CAAFEpAIABeTEA
-Date:   Fri, 10 Jun 2022 12:10:04 +0000
-Message-ID: <f09b219668ee45e087f47d87cf2962f1@huawei.com>
-References: <20220608111221.373833-1-roberto.sassu@huawei.com>
- <20220608111221.373833-3-roberto.sassu@huawei.com>
- <CAADnVQJ4RCSAeDMqFpF5bQznPQaTWFr=kL7GdssDQuzLof06fg@mail.gmail.com>
- <92d8b9c08e20449782f19f64cc3ec5fa@huawei.com>
- <CAADnVQLd2d+_2iJ84u9zK3Nnb+LL3Gw7k=XQCVOHuekb2hLf_g@mail.gmail.com>
-In-Reply-To: <CAADnVQLd2d+_2iJ84u9zK3Nnb+LL3Gw7k=XQCVOHuekb2hLf_g@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.204.63.21]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232158AbiFJMdr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 08:33:47 -0400
+X-Greylist: delayed 83743 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 10 Jun 2022 05:33:43 PDT
+Received: from zg8tmja5ljk3lje4ms43mwaa.icoremail.net (zg8tmja5ljk3lje4ms43mwaa.icoremail.net [209.97.181.73])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id F2E1F341AB6;
+        Fri, 10 Jun 2022 05:33:42 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [106.117.78.144])
+        by mail-app4 (Coremail) with SMTP id cS_KCgB37o0POqNiJzebAQ--.43212S2;
+        Fri, 10 Jun 2022 20:33:28 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-kernel@vger.kernel.org
+Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-hams@vger.kernel.org,
+        thomas@osterried.de, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net v4] net: ax25: Fix deadlock caused by skb_recv_datagram in ax25_recvmsg
+Date:   Fri, 10 Jun 2022 20:33:19 +0800
+Message-Id: <20220610123319.32118-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cS_KCgB37o0POqNiJzebAQ--.43212S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxZw43ZFyfAF1kWFy3KFW3Jrb_yoWrWFykpF
+        WUKFyrWr4kJFW2qr43tFWDXr4fA3Z5CFy7Xr1xX3yxAFn8W3WrXryrtr4jyayjqrWDA347
+        tF1qga1xKr13WaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4U
+        JVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
+        n2kIc2xKxwCY02Avz4vE14v_Xr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr
+        0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY
+        17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcV
+        C0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY
+        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa
+        73UjIFyTuYvjfU5rWrDUUUU
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgARAVZdtaJW2gAZsb
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBGcm9tOiBBbGV4ZWkgU3Rhcm92b2l0b3YgW21haWx0bzphbGV4ZWkuc3Rhcm92b2l0b3ZAZ21h
-aWwuY29tXQ0KPiBTZW50OiBUaHVyc2RheSwgSnVuZSA5LCAyMDIyIDU6MzggUE0NCj4gT24gVGh1
-LCBKdW4gOSwgMjAyMiBhdCAyOjAwIEFNIFJvYmVydG8gU2Fzc3UgPHJvYmVydG8uc2Fzc3VAaHVh
-d2VpLmNvbT4NCj4gd3JvdGU6DQo+ID4NCj4gPiA+IEZyb206IEFsZXhlaSBTdGFyb3ZvaXRvdiBb
-bWFpbHRvOmFsZXhlaS5zdGFyb3ZvaXRvdkBnbWFpbC5jb21dDQo+ID4gPiBTZW50OiBUaHVyc2Rh
-eSwgSnVuZSA5LCAyMDIyIDI6MTMgQU0NCj4gPiA+IE9uIFdlZCwgSnVuIDgsIDIwMjIgYXQgNDox
-NSBBTSBSb2JlcnRvIFNhc3N1DQo+IDxyb2JlcnRvLnNhc3N1QGh1YXdlaS5jb20+DQo+ID4gPiB3
-cm90ZToNCj4gPiA+ID4NCj4gPiA+ID4gQWNjb3JkaW5nIHRvIHRoZSBsb2dzIG9mIHRoZSBlQlBG
-IENJLCBidWlsdCBrZXJuZWwgYW5kIHRlc3RzIGFyZSBjb3BpZWQgdG8NCj4gPiA+ID4gYSB2aXJ0
-dWFsIG1hY2hpbmUgdG8gcnVuIHRoZXJlLg0KPiA+ID4gPg0KPiA+ID4gPiBTaW5jZSBhIHRlc3Qg
-Zm9yIGEgbmV3IGhlbHBlciB0byB2ZXJpZnkgUEtDUyM3IHNpZ25hdHVyZXMgcmVxdWlyZXMgdG8g
-c2lnbg0KPiA+ID4gPiBkYXRhIHRvIGJlIHZlcmlmaWVkLCBleHRlbmQgdGVzdF9wcm9ncyB0byBz
-dG9yZSBpbiB0aGUgdGVzdF9lbnYgZGF0YQ0KPiA+ID4gPiBzdHJ1Y3R1cmUgKGFjY2Vzc2libGUg
-YnkgaW5kaXZpZHVhbCB0ZXN0cykgdGhlIHBhdGggb2Ygc2lnbi1maWxlIGFuZCBvZiB0aGUNCj4g
-PiA+ID4ga2VybmVsIHByaXZhdGUga2V5IGFuZCBjZXJ0Lg0KPiA+ID4gPg0KPiA+ID4gPiBTaWdu
-ZWQtb2ZmLWJ5OiBSb2JlcnRvIFNhc3N1IDxyb2JlcnRvLnNhc3N1QGh1YXdlaS5jb20+DQo+ID4g
-PiA+IC0tLQ0KPiA+ID4gPiAgdG9vbHMvdGVzdGluZy9zZWxmdGVzdHMvYnBmL3Rlc3RfcHJvZ3Mu
-YyB8IDEyICsrKysrKysrKysrKw0KPiA+ID4gPiAgdG9vbHMvdGVzdGluZy9zZWxmdGVzdHMvYnBm
-L3Rlc3RfcHJvZ3MuaCB8ICAzICsrKw0KPiA+ID4gPiAgMiBmaWxlcyBjaGFuZ2VkLCAxNSBpbnNl
-cnRpb25zKCspDQo+ID4gPiA+DQo+ID4gPiA+IGRpZmYgLS1naXQgYS90b29scy90ZXN0aW5nL3Nl
-bGZ0ZXN0cy9icGYvdGVzdF9wcm9ncy5jDQo+ID4gPiBiL3Rvb2xzL3Rlc3Rpbmcvc2VsZnRlc3Rz
-L2JwZi90ZXN0X3Byb2dzLmMNCj4gPiA+ID4gaW5kZXggYzYzOWYyZTU2ZmM1Li45MGNlMmMwNmEx
-NWUgMTAwNjQ0DQo+ID4gPiA+IC0tLSBhL3Rvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL2JwZi90ZXN0
-X3Byb2dzLmMNCj4gPiA+ID4gKysrIGIvdG9vbHMvdGVzdGluZy9zZWxmdGVzdHMvYnBmL3Rlc3Rf
-cHJvZ3MuYw0KPiA+ID4gPiBAQCAtNzA3LDYgKzcwNyw4IEBAIGVudW0gQVJHX0tFWVMgew0KPiA+
-ID4gPiAgICAgICAgIEFSR19URVNUX05BTUVfR0xPQl9ERU5ZTElTVCA9ICdkJywNCj4gPiA+ID4g
-ICAgICAgICBBUkdfTlVNX1dPUktFUlMgPSAnaicsDQo+ID4gPiA+ICAgICAgICAgQVJHX0RFQlVH
-ID0gLTEsDQo+ID4gPiA+ICsgICAgICAgQVJHX1NJR05fRklMRSA9ICdTJywNCj4gPiA+ID4gKyAg
-ICAgICBBUkdfS0VSTkVMX1BSSVZfQ0VSVCA9ICdDJywNCj4gPiA+ID4gIH07DQo+ID4gPiA+DQo+
-ID4gPiA+ICBzdGF0aWMgY29uc3Qgc3RydWN0IGFyZ3Bfb3B0aW9uIG9wdHNbXSA9IHsNCj4gPiA+
-ID4gQEAgLTczMiw2ICs3MzQsMTAgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBhcmdwX29wdGlvbiBv
-cHRzW10gPSB7DQo+ID4gPiA+ICAgICAgICAgICAiTnVtYmVyIG9mIHdvcmtlcnMgdG8gcnVuIGlu
-IHBhcmFsbGVsLCBkZWZhdWx0IHRvIG51bWJlciBvZiBjcHVzLiIgfSwNCj4gPiA+ID4gICAgICAg
-ICB7ICJkZWJ1ZyIsIEFSR19ERUJVRywgTlVMTCwgMCwNCj4gPiA+ID4gICAgICAgICAgICJwcmlu
-dCBleHRyYSBkZWJ1ZyBpbmZvcm1hdGlvbiBmb3IgdGVzdF9wcm9ncy4iIH0sDQo+ID4gPiA+ICsg
-ICAgICAgeyAic2lnbi1maWxlIiwgQVJHX1NJR05fRklMRSwgIlBBVEgiLCAwLA0KPiA+ID4gPiAr
-ICAgICAgICAgInNpZ24tZmlsZSBwYXRoICIgfSwNCj4gPiA+ID4gKyAgICAgICB7ICJrZXJuZWwt
-cHJpdi1jZXJ0IiwgQVJHX0tFUk5FTF9QUklWX0NFUlQsICJQQVRIIiwgMCwNCj4gPiA+ID4gKyAg
-ICAgICAgICJrZXJuZWwgcHJpdmF0ZSBrZXkgYW5kIGNlcnQgcGF0aCAiIH0sDQo+ID4gPiA+ICAg
-ICAgICAge30sDQo+ID4gPiA+ICB9Ow0KPiA+ID4gPg0KPiA+ID4gPiBAQCAtODYyLDYgKzg2OCwx
-MiBAQCBzdGF0aWMgZXJyb3JfdCBwYXJzZV9hcmcoaW50IGtleSwgY2hhciAqYXJnLCBzdHJ1Y3QN
-Cj4gPiA+IGFyZ3Bfc3RhdGUgKnN0YXRlKQ0KPiA+ID4gPiAgICAgICAgIGNhc2UgQVJHX0RFQlVH
-Og0KPiA+ID4gPiAgICAgICAgICAgICAgICAgZW52LT5kZWJ1ZyA9IHRydWU7DQo+ID4gPiA+ICAg
-ICAgICAgICAgICAgICBicmVhazsNCj4gPiA+ID4gKyAgICAgICBjYXNlIEFSR19TSUdOX0ZJTEU6
-DQo+ID4gPiA+ICsgICAgICAgICAgICAgICBlbnYtPnNpZ25fZmlsZV9wYXRoID0gYXJnOw0KPiA+
-ID4gPiArICAgICAgICAgICAgICAgYnJlYWs7DQo+ID4gPiA+ICsgICAgICAgY2FzZSBBUkdfS0VS
-TkVMX1BSSVZfQ0VSVDoNCj4gPiA+ID4gKyAgICAgICAgICAgICAgIGVudi0+a2VybmVsX3ByaXZf
-Y2VydF9wYXRoID0gYXJnOw0KPiA+ID4gPiArICAgICAgICAgICAgICAgYnJlYWs7DQo+ID4gPg0K
-PiA+ID4gVGhhdCdzIGN1bWJlcnNvbWUgYXBwcm9hY2ggdG8gdXNlIHRvIGZvcmNlIENJIGFuZA0K
-PiA+ID4gdXNlcnMgdG8gcGFzcyB0aGVzZSBhcmdzIG9uIGNvbW1hbmQgbGluZS4NCj4gPiA+IFRo
-ZSB0ZXN0IGhhcyB0byBiZSBzZWxmIGNvbnRhaW5lZC4NCj4gPiA+IHRlc3RfcHJvZ3Mgc2hvdWxk
-IGV4ZWN1dGUgaXQgd2l0aG91dCBhbnkgYWRkaXRpb25hbCBpbnB1dC4NCj4gPiA+IEZvciBleGFt
-cGxlIGJ5IGhhdmluZyB0ZXN0LW9ubHkgcHJpdmF0ZS9wdWJsaWMga2V5DQo+ID4gPiB0aGF0IGlz
-IHVzZWQgdG8gc2lnbiBhbmQgdmVyaWZ5IHRoZSBzaWduYXR1cmUuDQo+ID4NCj4gPiBJIHRob3Vn
-aHQgYSBiaXQgYWJvdXQgdGhpcy4gSnVzdCBnZW5lcmF0aW5nIGEgdGVzdCBrZXkgZG9lcyBub3Qg
-d29yaywNCj4gPiBhcyBpdCBtdXN0IGJlIHNpZ25lZCBieSB0aGUga2VybmVsIHNpZ25pbmcga2V5
-IChvdGhlcndpc2UsIGxvYWRpbmcNCj4gPiBpbiB0aGUgc2Vjb25kYXJ5IGtleXJpbmcgd2lsbCBi
-ZSByZWplY3RlZCkuIEhhdmluZyB0aGUgdGVzdCBrZXkgYXJvdW5kDQo+ID4gaXMgYXMgZGFuZ2Vy
-b3VzIGFzIGhhdmluZyB0aGUga2VybmVsIHNpZ25pbmcga2V5IGFyb3VuZCBjb3BpZWQNCj4gPiBz
-b21ld2hlcmUuDQo+ID4NCj4gPiBBbGxvd2luZyB1c2VycyB0byBzcGVjaWZ5IGEgdGVzdCBrZXly
-aW5nIGluIHRoZSBoZWxwZXIgaXMgcG9zc2libGUuDQo+IA0KPiBXZSBzaG91bGRuJ3QgbmVlZCB0
-byBsb2FkIGludG8gdGhlIHNlY29uZGFyeSBrZXlyaW5nLg0KPiBUaGUgaGVscGVyIG5lZWRzIHRv
-IHN1cHBvcnQgYW4gYXJiaXRyYXJ5IGtleSByaW5nLg0KPiBUaGUga2VybmVsIHNob3VsZG4ndCBp
-bnRlcmZlcmUgd2l0aCBsb2FkaW5nIHRoYXQgdGVzdCBrZXkgaW50bw0KPiBhIHRlc3QgcmluZy4N
-Cj4gDQo+ID4gQnV0IGl0IHdvdWxkIGludHJvZHVjZSB1bm5lY2Vzc2FyeSBjb2RlLCBwbHVzIHRo
-ZSBrZXlyaW5nIGlkZW50aWZpZXINCj4gDQo+IFdoYXQga2luZCBvZiAndW5uZWNlc3NhcnkgY29k
-ZScgPw0KDQpUaGUgY29kZSBmb3IgaGFuZGxpbmcgZUJQRi1zcGVjaWZpYyBrZXlyaW5nIGlkZW50
-aWZpZXJzLg0KDQpCdXQgYXQgdGhlIGVuZCwgaXQgaXMgbm90IHRoYXQgbXVjaC4NCg0KUm9iZXJ0
-bw0KDQpIVUFXRUkgVEVDSE5PTE9HSUVTIER1ZXNzZWxkb3JmIEdtYkgsIEhSQiA1NjA2Mw0KTWFu
-YWdpbmcgRGlyZWN0b3I6IExpIFBlbmcsIFlhbmcgWGksIExpIEhlDQoNCj4gPiB3aWxsIGJlIHVu
-ZGVyc3Rvb2QgYnkgZUJQRiBvbmx5IGFuZCBub3QgYnkgdmVyaWZ5X3BrY3M3X3NpZ25hdHVyZSgp
-LA0KPiA+IGFzIGl0IGhhcHBlbnMgZm9yIG90aGVyIGtleXJpbmcgaWRlbnRpZmllcnMuDQo+IA0K
-PiBNYXliZSB3cmFwcGluZyB2ZXJpZnlfcGtjczdfc2lnbmF0dXJlIGFzIGEgaGVscGVyIGlzIHRv
-byBoaWdoIGxldmVsPw0KPiANCj4gPiBXZSBtYXkgaGF2ZSBlbnZpcm9ubWVudCB2YXJpYWJsZXMg
-ZGlyZWN0bHkgaW4gdGhlIGVCUEYgdGVzdCwgdG8NCj4gPiBzcGVjaWZ5IHRoZSBsb2NhdGlvbiBv
-ZiB0aGUgc2lnbmluZyBrZXksIGJ1dCB0aGVyZSBpcyBhIHJpc2sgb2YNCj4gPiBkdXBsaWNhdGlv
-biwgYXMgb3RoZXIgdGVzdHMgd2FudGluZyB0aGUgc2FtZSBpbmZvcm1hdGlvbiBtaWdodA0KPiA+
-IG5vdCBiZSBhd2FyZSBvZiB0aGVtLg0KPiANCj4gVGhhdCdzIG5vIGdvLg0KPiANCj4gPiBJIHdv
-dWxkIG5vdCBpbnRyb2R1Y2UgYW55IGNvZGUgdGhhdCBoYW5kbGVzIHRoZSBrZXJuZWwgc2lnbmlu
-Zw0KPiA+IGtleSAoaW4gdGhlIE1ha2VmaWxlLCBvciBpbiBhIHNlcGFyYXRlIHNjcmlwdCkuIFRo
-aXMgaW5mb3JtYXRpb24gaXMNCj4gPiBzbyBzZW5zaWJsZSwgdGhhdCBpdCBtdXN0IGJlIHJlc3Bv
-bnNpYmlsaXR5IG9mIGFuIGV4dGVybmFsIHBhcnR5DQo+ID4gdG8gZG8gdGhlIHdvcmsgb2YgbWFr
-aW5nIHRoYXQga2V5IGF2YWlsYWJsZSBhbmQgdGVsbCB3aGVyZSBpdCBpcy4NCj4gPg0KPiA+IFJv
-YmVydG8NCj4gPg0KPiA+IEhVQVdFSSBURUNITk9MT0dJRVMgRHVlc3NlbGRvcmYgR21iSCwgSFJC
-IDU2MDYzDQo+ID4gTWFuYWdpbmcgRGlyZWN0b3I6IExpIFBlbmcsIFlhbmcgWGksIExpIEhlDQo=
+The skb_recv_datagram() in ax25_recvmsg() will hold lock_sock
+and block until it receives a packet from the remote. If the client
+doesn`t connect to server and calls read() directly, it will not
+receive any packets forever. As a result, the deadlock will happen.
+
+The fail log caused by deadlock is shown below:
+
+[  369.606973] INFO: task ax25_deadlock:157 blocked for more than 245 seconds.
+[  369.608919] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[  369.613058] Call Trace:
+[  369.613315]  <TASK>
+[  369.614072]  __schedule+0x2f9/0xb20
+[  369.615029]  schedule+0x49/0xb0
+[  369.615734]  __lock_sock+0x92/0x100
+[  369.616763]  ? destroy_sched_domains_rcu+0x20/0x20
+[  369.617941]  lock_sock_nested+0x6e/0x70
+[  369.618809]  ax25_bind+0xaa/0x210
+[  369.619736]  __sys_bind+0xca/0xf0
+[  369.620039]  ? do_futex+0xae/0x1b0
+[  369.620387]  ? __x64_sys_futex+0x7c/0x1c0
+[  369.620601]  ? fpregs_assert_state_consistent+0x19/0x40
+[  369.620613]  __x64_sys_bind+0x11/0x20
+[  369.621791]  do_syscall_64+0x3b/0x90
+[  369.622423]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+[  369.623319] RIP: 0033:0x7f43c8aa8af7
+[  369.624301] RSP: 002b:00007f43c8197ef8 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
+[  369.625756] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f43c8aa8af7
+[  369.626724] RDX: 0000000000000010 RSI: 000055768e2021d0 RDI: 0000000000000005
+[  369.628569] RBP: 00007f43c8197f00 R08: 0000000000000011 R09: 00007f43c8198700
+[  369.630208] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff845e6afe
+[  369.632240] R13: 00007fff845e6aff R14: 00007f43c8197fc0 R15: 00007f43c8198700
+
+This patch replaces skb_recv_datagram() with an open-coded variant of it
+releasing the socket lock before the __skb_wait_for_more_packets() call
+and re-acquiring it after such call in order that other functions that
+need socket lock could be executed.
+
+what's more, the socket lock will be released only when recvmsg() will
+block and that should produce nicer overall behavior.
+
+Fixes: 40d0a923f55a ("Implement locking of internal data for NET/ROM and ROSE.")
+Suggested-by: Thomas Osterried <thomas@osterried.de>
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reported-by: Thomas Habets <thomas@@habets.se>
+---
+Changes in v4:
+  - Replaces skb_recv_datagram() with an open-coded variant of it.
+
+ net/ax25/af_ax25.c | 33 ++++++++++++++++++++++++++++-----
+ 1 file changed, 28 insertions(+), 5 deletions(-)
+
+diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+index 95393bb2760..4c7030ed8d3 100644
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -1661,9 +1661,12 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 			int flags)
+ {
+ 	struct sock *sk = sock->sk;
+-	struct sk_buff *skb;
++	struct sk_buff *skb, *last;
++	struct sk_buff_head *sk_queue;
+ 	int copied;
+ 	int err = 0;
++	int off = 0;
++	long timeo;
+ 
+ 	lock_sock(sk);
+ 	/*
+@@ -1675,10 +1678,29 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 		goto out;
+ 	}
+ 
+-	/* Now we can treat all alike */
+-	skb = skb_recv_datagram(sk, flags, &err);
+-	if (skb == NULL)
+-		goto out;
++	/*  We need support for non-blocking reads. */
++	sk_queue = &sk->sk_receive_queue;
++	skb = __skb_try_recv_datagram(sk, sk_queue, flags, &off, &err, &last);
++	/* If no packet is available, release_sock(sk) and try again. */
++	if (!skb) {
++		if (err != -EAGAIN)
++			goto out;
++		release_sock(sk);
++		timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
++		while (timeo && !__skb_wait_for_more_packets(sk, sk_queue, &err,
++							     &timeo, last)) {
++			skb = __skb_try_recv_datagram(sk, sk_queue, flags, &off,
++						      &err, &last);
++			if (skb)
++				break;
++
++			if (err != -EAGAIN)
++				goto done;
++		}
++		if (!skb)
++			goto done;
++		lock_sock(sk);
++	}
+ 
+ 	if (!sk_to_ax25(sk)->pidincl)
+ 		skb_pull(skb, 1);		/* Remove PID */
+@@ -1725,6 +1747,7 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ out:
+ 	release_sock(sk);
+ 
++done:
+ 	return err;
+ }
+ 
+-- 
+2.17.1
+
