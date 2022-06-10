@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13081546984
+	by mail.lfdr.de (Postfix) with ESMTP id 5BC46546985
 	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 17:39:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345426AbiFJPjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 11:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45366 "EHLO
+        id S1345437AbiFJPjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 11:39:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242029AbiFJPjR (ORCPT
+        with ESMTP id S229515AbiFJPjR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 11:39:17 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FD2128D68C
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 08:39:13 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id x5so30715214edi.2
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 08:39:13 -0700 (PDT)
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA2628D6BC
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 08:39:14 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id u12so54230812eja.8
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 08:39:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pqrs.dk; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ttBUCbYGFLdzm2aXxZ1IGyfndCTrcRAN4ru0azsH/58=;
-        b=cZYmDUDy0wu5c9j6ewi0ELxc7qQdw0DCbocteP7SGDeSU/o89n1z5e1aVYndYZuLf8
-         vcmhpeWbwh5y1mYzyOM22ClVplmgYc831kwVHywjMRjHAgsz3d28u3WIXtmfaxFYWNyU
-         e16JsDO1awPiuGSta1Vrs/klJXTKa0bU9VpMc=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zSzdOiSgxbYWZxXEulfQBrTFa8jqymfNEasGrW3oI+Y=;
+        b=BPEmtox0n4YIgD5pdsnW8UPNk7FQIIjlxClCKmWF/iwqmna5QAKAU4Ay2sZXrFrSGb
+         qLvBN+iGNL5enuUhzJcIuk4RzV9IqYQls3SMwywGk2rulm6zHenPdmhcBR5M1y6zTWOD
+         m3UHA75ASQNhLjzsq+FXBl7NeMm/LMFSVda2o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ttBUCbYGFLdzm2aXxZ1IGyfndCTrcRAN4ru0azsH/58=;
-        b=CLCWYEWXcnXcuX8EeIte7OwmDfBcEH+wxy1UHFSVUsLJ7stJ3I0Lvchrkxx24xe9DR
-         o6bzcDELMyN407fit3lUlZYNd9Y9foVnEESeRE+EQMZ5zA1cPhpZc1K2HqKLK4j7MO7+
-         54gCXEI6fc6lLgHZmX9B9skiWyRSz8GClRWfa0PWXUrD9tTT864fZUfHZsCB+PF+RkeR
-         u5pbZ9dof0zkzNQ91a04siYCnCuDyr94l7XXMzIZeayFLMef1MWym5b57lK/BqiRYmUY
-         zinQCUaCPSj+3b9wAOkbqLv8lGci3CObFhQEojplZarhTHpSwhCpy5Ua/av0UvUG4nN+
-         6+FQ==
-X-Gm-Message-State: AOAM5320D8jrL6cOAptXUp1pYGPIoea2cbElPNNI94su+1kWlk9dIsaZ
-        7PC3lXwrwKbu+/RWRobv3kfKtA==
-X-Google-Smtp-Source: ABdhPJyspXoMrwetgWUuQuUkvvnhDg0orQX5YpJax1xZh6BFYrS78uu1TShKsDkAnTFa3pXF0usKJA==
-X-Received: by 2002:a05:6402:22eb:b0:42d:d578:25d9 with SMTP id dn11-20020a05640222eb00b0042dd57825d9mr52318904edb.310.1654875552048;
-        Fri, 10 Jun 2022 08:39:12 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zSzdOiSgxbYWZxXEulfQBrTFa8jqymfNEasGrW3oI+Y=;
+        b=OsRvTHj49H4Dv1gp82rAkmFlw90WdgXEpZQRagto8JVOVny4/sZsEZlQXoFiyjgGkC
+         L4WRAtrGUXtJWHGzWPJ5clpWOvxs+OQtnc02x92Zwvb90+VNOCvBGcqUuo8+xswUky6O
+         jtQpzAqThmMjGZ7xv1BGZ038ovxRxHlmaLmqkCUnT1KQYkLZ2kXa0Wk/hV5A4PlHCBLl
+         UAxgvUe2N59KTx8nbcuQZ2DoDiFwtgahoZHigrxfnpRDJgAIBygwFngt22TYhN/6uUVZ
+         iya7l8XL5VC6ZBFEvC3ODoNdcO4FIFVzkzeaj8lCGbHixjclSt7AlEbg0R0XDV0u7Xbf
+         iYiQ==
+X-Gm-Message-State: AOAM533VYdVNumpZA+AqwJxFrKW0fvuLWuSRTET/RX7Vw4a44lasARif
+        zxwcutlrdTx1jg5daI/XlbNqFA==
+X-Google-Smtp-Source: ABdhPJwLkPofOgkmwwTW5y657ZZueqYXAm92lnRmx/cPA3J9dB09qvdmngmA6YNBDpyc8LlgoYVDKA==
+X-Received: by 2002:a17:907:7b9b:b0:711:d8ca:c282 with SMTP id ne27-20020a1709077b9b00b00711d8cac282mr21076740ejc.167.1654875553534;
+        Fri, 10 Jun 2022 08:39:13 -0700 (PDT)
 Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id h24-20020a170906829800b0070f7d1c5a18sm9783857ejx.55.2022.06.10.08.39.10
+        by smtp.gmail.com with ESMTPSA id h24-20020a170906829800b0070f7d1c5a18sm9783857ejx.55.2022.06.10.08.39.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 08:39:10 -0700 (PDT)
+        Fri, 10 Jun 2022 08:39:13 -0700 (PDT)
 From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
 To:     hauke@hauke-m.de, Linus Walleij <linus.walleij@linaro.org>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
@@ -56,11 +56,14 @@ To:     hauke@hauke-m.de, Linus Walleij <linus.walleij@linaro.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 0/5] net: dsa: realtek: rtl8365mb: improve handling of PHY modes
-Date:   Fri, 10 Jun 2022 17:38:24 +0200
-Message-Id: <20220610153829.446516-1-alvin@pqrs.dk>
+Cc:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 1/5] net: dsa: realtek: rtl8365mb: rename macro RTL8367RB -> RTL8367RB_VB
+Date:   Fri, 10 Jun 2022 17:38:25 +0200
+Message-Id: <20220610153829.446516-2-alvin@pqrs.dk>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220610153829.446516-1-alvin@pqrs.dk>
+References: <20220610153829.446516-1-alvin@pqrs.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -76,37 +79,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-This series introduces some minor cleanup of the driver and improves the
-handling of PHY interface modes to break the assumption that CPU ports
-are always over an external interface, and the assumption that user
-ports are always using an internal PHY.
+The official name of this switch is RTL8367RB-VB, not RTL8367RB. There
+is also an RTL8367RB-VC which is rather different. Change the name of
+the CHIP_ID/_VER macros for reasons of consistency.
 
-Changes v1 -> v2:
+Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+Reviewed-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
+---
+ drivers/net/dsa/realtek/rtl8365mb.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
- - patches 1-4: no code change
-
- - add Luiz' reviewed-by to some of the patches
-
- - patch 5: put the chip_infos into a static array and get rid of the
-   switch in the detect function; also remove the macros for various
-   chip ID/versions and embed them directly into the array
-
- - patch 5: use array of size 3 rather than flexible array for extints
-   in the chip_info struct; gcc complained about initialization of
-   flexible array members in a nested context, and anyway, we know that
-   the max number of external interfaces is 3
-
-Alvin Šipraga (5):
-  net: dsa: realtek: rtl8365mb: rename macro RTL8367RB -> RTL8367RB_VB
-  net: dsa: realtek: rtl8365mb: remove port_mask private data member
-  net: dsa: realtek: rtl8365mb: correct the max number of ports
-  net: dsa: realtek: rtl8365mb: remove learn_limit_max private data
-    member
-  net: dsa: realtek: rtl8365mb: handle PHY interface modes correctly
-
- drivers/net/dsa/realtek/rtl8365mb.c | 299 ++++++++++++++++------------
- 1 file changed, 177 insertions(+), 122 deletions(-)
-
+diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
+index 769f672e9128..905056250b88 100644
+--- a/drivers/net/dsa/realtek/rtl8365mb.c
++++ b/drivers/net/dsa/realtek/rtl8365mb.c
+@@ -108,8 +108,8 @@
+ #define RTL8365MB_CHIP_ID_8367S		0x6367
+ #define RTL8365MB_CHIP_VER_8367S	0x00A0
+ 
+-#define RTL8365MB_CHIP_ID_8367RB	0x6367
+-#define RTL8365MB_CHIP_VER_8367RB	0x0020
++#define RTL8365MB_CHIP_ID_8367RB_VB	0x6367
++#define RTL8365MB_CHIP_VER_8367RB_VB	0x0020
+ 
+ /* Family-specific data and limits */
+ #define RTL8365MB_PHYADDRMAX		7
+@@ -1988,7 +1988,7 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
+ 				 "found an RTL8365MB-VC switch (ver=0x%04x)\n",
+ 				 chip_ver);
+ 			break;
+-		case RTL8365MB_CHIP_VER_8367RB:
++		case RTL8365MB_CHIP_VER_8367RB_VB:
+ 			dev_info(priv->dev,
+ 				 "found an RTL8367RB-VB switch (ver=0x%04x)\n",
+ 				 chip_ver);
 -- 
 2.36.1
 
