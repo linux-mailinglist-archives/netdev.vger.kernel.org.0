@@ -2,222 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8A4954683F
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 16:28:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7101254684A
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 16:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231605AbiFJO2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 10:28:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51828 "EHLO
+        id S240103AbiFJOai (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 10:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230258AbiFJO2r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 10:28:47 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3382C116;
-        Fri, 10 Jun 2022 07:28:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
-        Resent-Message-ID:In-Reply-To:References;
-        bh=4RuO1+wQoFbN2SsMygy9LNDebYQnZnP1T7Jr2H7hzqE=; t=1654871325; x=1656080925; 
-        b=OUn3nVzTB1lMCz6LZzTNBdIa6Kw+luggfFGSV0E+oUwquR/zkbH8t9s27z8WLImd/J9TAFcQs9v
-        lMfjfX7Wn8SY+BTTVGReeeX7Hbi6jGWCQ2cCFwSjPnXucCsynaEhH9qv9aNDlqaOqOMXoXqBUp0O4
-        rtNaUwQXtDGpoCMaEgd0aAsmUeNBtlRC4lwhQE9zCpe+tgbsRRFe83S+cPOih2fpmRGGzDjkTWALH
-        8vvoqbg1AmE9fR1V8A2RIsW4nDr8oACwqc4Q+1nxttnQ4JF2y2MSPfLioHvHdQTDuhd6pl5CIPg4k
-        6FAm7BxgjiXv+I5TPS0LiZaVGSfxAhRlEs8g==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1nzfcx-001X1m-KZ;
-        Fri, 10 Jun 2022 16:28:43 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: wireless-next-2022-06-10
-Date:   Fri, 10 Jun 2022 16:28:37 +0200
-Message-Id: <20220610142838.330862-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S238857AbiFJOag (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 10:30:36 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D2B62E0;
+        Fri, 10 Jun 2022 07:30:35 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id r1so5668056plo.10;
+        Fri, 10 Jun 2022 07:30:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=/mjtA9MLjpbHOH3mFEMMpFyEg+q0nrj1i3jXYc4/cy0=;
+        b=kf552z2RLbozvVb/HnIWAXj5mQ9L2bbOg50xc+8aPxezVhZNWNBw9+UxJdgFzAClpj
+         8p6T5frqptElPXLuTR8l+B9OLDiXxGp6vVd643oVrW7A3ssSN6mB6UXaZxkvV29a+ok4
+         R56+OGTCRaI1nkA3piurWJMAIre+LqHMWc4mHNge4/UxnV58rcLvLKlqETMLntPbDHHL
+         Kl9j8YSEn10OZAlKZONuLmvsIB222DKcg1fh6ZgdDmlZlAps5cfEgjXjQduAaQr+KhJ8
+         59bbhR0kmT8TYQEOHMIi6ebV1FAi2L5ty/lUE7VlkEOqlvjhOCyYMZgQUtdUUWaELN0g
+         +CcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=/mjtA9MLjpbHOH3mFEMMpFyEg+q0nrj1i3jXYc4/cy0=;
+        b=vIVRBgD6fHdGwnJ3fdLrPMHqFBWB6D1+gy9ptZ/4vvtYzSAztMynHGQuk1hmlhPN3H
+         sUO18ckX5API5ZFK6q1dXdalQ/sW+l0yhuaHlAUIyVal3zKHlqx+JrLCz9YvYM1gZw+A
+         e44CfBJzGavw8eQqL7VxTGiIpc65xyXV9j6TjNiAamy2LRMIlVMGqdnHeGAFdGwBRQ1F
+         NrFzJzQt7IaCcyq26tE5rSP0sm1Yd6fdGzvp6hOBjnHZuygRDD6xdQAxjqYjhoLJSVEN
+         B/huxpz+2ZA6n4HLJCL04Qf+AMqVsypXgqeLQKKj65j4VY7qn1pE4mwfaGmzvkloKP1Y
+         O3BQ==
+X-Gm-Message-State: AOAM533xT7uiQyvR4fV7gTgAp3F8toCQtt+XReHH/9RWYruPgpDR/+S6
+        Qbl3bCef7iAFuUQ+EnXNcs5N+R/03qhJ+A==
+X-Google-Smtp-Source: ABdhPJzjuYHAMdTge3IJvoeI8We4lcS6sC8AyHf6aJj1MLj/WyEiFyb+lJ1luGQkCn/Dz9l01ADGwg==
+X-Received: by 2002:a17:90a:a096:b0:1df:58d7:5b20 with SMTP id r22-20020a17090aa09600b001df58d75b20mr54234pjp.212.1654871434516;
+        Fri, 10 Jun 2022 07:30:34 -0700 (PDT)
+Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
+        by smtp.gmail.com with ESMTPSA id s6-20020a170902ea0600b0016232dbd01fsm18851339plg.292.2022.06.10.07.30.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jun 2022 07:30:33 -0700 (PDT)
+Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Max Staudt <max@enpas.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        netdev@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v6 0/7] can: refactoring of can-dev module and of Kbuild
+Date:   Fri, 10 Jun 2022 23:30:02 +0900
+Message-Id: <20220610143009.323579-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Aside of calc_bittiming.o which can be configured with
+CAN_CALC_BITTIMING, all objects from drivers/net/can/dev/ get linked
+unconditionally to can-dev.o even if not needed by the user.
 
-A first set of -next material. As I mention in the tag below
-as well, this is mostly to align/flush, so we can start adding
-MLD work that would otherwise have some conflicts.
-
-Please pull and let me know if there's any problem.
-
-Thanks,
-johannes
-
+This series first goal it to split the can-dev modules so that the
+only the needed features get built in during compilation.
+Additionally, the CAN Device Drivers menu is moved from the
+"Networking support" category to the "Device Drivers" category (where
+all drivers are supposed to be).
 
 
-The following changes since commit 805cb5aadc2a88c453cfe620b28e12ff2fac27a6:
+* menu before this series *
 
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next (2022-05-19 21:53:08 -0700)
+CAN bus subsystem support
+  symbol: CONFIG_CAN
+  |
+  +-> CAN Device Drivers
+      (no symbol)
+      |
+      +-> software/virtual CAN device drivers
+      |   (at time of writing: slcan, vcan, vxcan)
+      |
+      +-> Platform CAN drivers with Netlink support
+          symbol: CONFIG_CAN_DEV
+          |
+          +-> CAN bit-timing calculation  (optional for hardware drivers)
+          |   symbol: CONFIG_CAN_CALC_BITTIMING
+          |
+          +-> All other CAN devices drivers
 
-are available in the Git repository at:
+* menu after this series *
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git tags/wireless-next-2022-06-10
+Network device support
+  symbol: CONFIG_NETDEVICES
+  |
+  +-> CAN Device Drivers
+      symbol: CONFIG_CAN_DEV
+      |
+      +-> software/virtual CAN device drivers
+      |   (at time of writing: slcan, vcan, vxcan)
+      |
+      +-> CAN device drivers with Netlink support
+          symbol: CONFIG_CAN_NETLINK (matches previous CONFIG_CAN_DEV)
+          |
+          +-> CAN bit-timing calculation (optional for all drivers)
+          |   symbol: CONFIG_CAN_CALC_BITTIMING
+          |
+          +-> All other CAN devices drivers
+              (some may select CONFIG_CAN_RX_OFFLOAD)
+              |
+              +-> CAN rx offload (automatically selected by some drivers)
+                  (hidden symbol: CONFIG_CAN_RX_OFFLOAD)
 
-for you to fetch changes up to 1449c24e71a343a033af8de0842d1edb8a37926a:
+Patches 1 to 5 of this series do above modification.
 
-  wifi: mac80211_hwsim: Directly use ida_alloc()/free() (2022-06-10 16:13:01 +0200)
+The last two patches add a check toward CAN_CTRLMODE_LISTENONLY in
+can_dropped_invalid_skb() to discard tx skb (such skb can potentially
+reach the driver if injected via the packet socket). In more details,
+patch 6 moves can_dropped_invalid_skb() from skb.h to skb.o and patch
+7 is the actual change.
 
-----------------------------------------------------------------
-wireless-next patches for v5.20
+Those last two patches are actually connected to the first five ones:
+because slcan and v(x)can requires can_dropped_invalid_skb(), it was
+necessary to add those three devices to the scope of can-dev before
+moving the function to skb.o.
 
-Here's a first set of patches for v5.20. This is just a
-queue flush, before we get things back from net-next that
-are causing conflicts, and then can start merging a lot
-of MLO (multi-link operation, part of 802.11be) code.
+This design results from the lengthy discussion in [1].
 
-Lots of cleanups all over.
+[1] https://lore.kernel.org/linux-can/20220514141650.1109542-1-mailhol.vincent@wanadoo.fr/
 
-The only notable change is perhaps wilc1000 being the
-first driver to disable WEP (while enabling WPA3).
 
-----------------------------------------------------------------
-Ajay Singh (4):
-      wifi: wilc1000: use correct sequence of RESET for chip Power-UP/Down
-      wifi: wilc1000: remove WEP security support
-      wifi: wilc1000: add WPA3 SAE support
-      wifi: wilc1000: add IGTK support
+** Changelog **
 
-Andy Shevchenko (3):
-      wifi: rtw88: use %*ph to print small buffer
-      wifi: ray_cs: Utilize strnlen() in parse_addr()
-      wifi: ray_cs: Drop useless status variable in parse_addr()
+v5 -> v6:
 
-Bernard Zhao (1):
-      wifi: cw1200: cleanup the code a bit
+  * fix typo in patch #1's title: Kbuild -> Kconfig.
 
-Dan Carpenter (1):
-      wifi: rtlwifi: fix error codes in rtl_debugfs_set_write_h2c()
+  * make CONFIG_RX_CAN an hidden config symbol and modify the diagram
+    in the cover letter accordingly.
 
-Eric Huang (1):
-      rtw89: add new state to CFO state machine for UL-OFDMA
+    @Oliver, with CONFIG_CAN_RX_OFFLOAD now being an hidden config,
+    that option fully depends on the drivers. So contrary to your
+    suggestion, I put CONFIG_CAN_RX_OFFLOAD below the device drivers
+    in the diagram.
 
-Johannes Berg (2):
-      wifi: mac80211: remove cipher scheme support
-      wifi: mac80211: refactor some key code
+  * fix typo in cover letter: CONFIG_CAN_BITTIMING -> CONFIG_CAN_CALC_BITTIMING.
 
-Julia Lawall (2):
-      wifi: virt_wifi: fix typo in comment
-      wifi: nl80211: fix typo in comment
+v4 -> v5:
 
-Ke Liu (1):
-      wifi: mac80211_hwsim: Directly use ida_alloc()/free()
+  * m_can is also requires RX offload. Add the "select CAN_RX_OFFLOAD"
+    to its Makefile.
 
-Larry Finger (4):
-      wifi: rtw88: Fix sparse warning for rtw8822b_hw_spec
-      wifi: rtw88: Fix Sparse warning for rtw8822c_hw_spec
-      wifi: rtw88: Fix Sparse warning for rtw8723d_hw_spec
-      wifi: rtw88: Fix Sparse warning for rtw8821c_hw_spec
+  * Reorder the lines of drivers/net/can/dev/Makefile.
 
-Minghao Chi (1):
-      wifi: wfx: Remove redundant NULL check before release_firmware() call
+  * Remove duplicated rx-offload.o target in drivers/net/can/dev/Makefile
 
-Ping-Ke Shih (3):
-      rtw89: pci: handle hardware watchdog timeout interrupt status
-      rtw89: 8852c: rfk: re-calibrate RX DCK once thermal changes a lot
-      wifi: rtw89: support MULTI_BSSID and correct BSSID mask of H2C
+  * Remove the Nota Bene in the cover letter.
 
-Po Hao Huang (4):
-      rtw89: fix channel inconsistency during hw_scan
-      rtw89: fix null vif pointer when hw_scan fails
-      ieee80211: add trigger frame definition
-      rtw89: 8852c: add trigger frame counter
 
-Po-Hao Huang (1):
-      rtw88: fix null vif pointer when hw_scan fails
+v3 -> v4:
 
-Zong-Zhe Yang (1):
-      rtw89: sar: adjust and support SAR on 6GHz band
+  * Five additional patches added to split can-dev module and refactor
+    Kbuild. c.f. below (lengthy) thread:
+    https://lore.kernel.org/linux-can/20220514141650.1109542-1-mailhol.vincent@wanadoo.fr/
 
- drivers/net/wireless/mac80211_hwsim.c              |   5 +-
- drivers/net/wireless/microchip/wilc1000/cfg80211.c | 246 +++++++++++++--------
- drivers/net/wireless/microchip/wilc1000/fw.h       |  21 +-
- drivers/net/wireless/microchip/wilc1000/hif.c      | 202 ++++++++---------
- drivers/net/wireless/microchip/wilc1000/hif.h      |  14 +-
- drivers/net/wireless/microchip/wilc1000/netdev.c   |  11 +-
- drivers/net/wireless/microchip/wilc1000/netdev.h   |  14 +-
- drivers/net/wireless/microchip/wilc1000/spi.c      |   6 +-
- drivers/net/wireless/microchip/wilc1000/wlan.c     |   3 +-
- drivers/net/wireless/microchip/wilc1000/wlan.h     |   2 +
- drivers/net/wireless/microchip/wilc1000/wlan_if.h  |  20 +-
- drivers/net/wireless/ray_cs.c                      |  20 +-
- drivers/net/wireless/realtek/rtlwifi/debug.c       |   8 +-
- drivers/net/wireless/realtek/rtw88/debug.c         |   6 +-
- drivers/net/wireless/realtek/rtw88/main.c          |   5 +-
- drivers/net/wireless/realtek/rtw88/rtw8723d.c      |   2 +-
- drivers/net/wireless/realtek/rtw88/rtw8723d.h      |   2 +
- drivers/net/wireless/realtek/rtw88/rtw8723de.c     |   2 +-
- drivers/net/wireless/realtek/rtw88/rtw8723de.h     |  10 -
- drivers/net/wireless/realtek/rtw88/rtw8821c.c      |   2 +-
- drivers/net/wireless/realtek/rtw88/rtw8821c.h      |   2 +
- drivers/net/wireless/realtek/rtw88/rtw8821ce.c     |   2 +-
- drivers/net/wireless/realtek/rtw88/rtw8821ce.h     |  10 -
- drivers/net/wireless/realtek/rtw88/rtw8822b.c      |   2 +-
- drivers/net/wireless/realtek/rtw88/rtw8822b.h      |   2 +
- drivers/net/wireless/realtek/rtw88/rtw8822be.c     |   2 +-
- drivers/net/wireless/realtek/rtw88/rtw8822be.h     |  10 -
- drivers/net/wireless/realtek/rtw88/rtw8822c.c      |   2 +-
- drivers/net/wireless/realtek/rtw88/rtw8822c.h      |   2 +
- drivers/net/wireless/realtek/rtw88/rtw8822ce.c     |   2 +-
- drivers/net/wireless/realtek/rtw88/rtw8822ce.h     |  10 -
- drivers/net/wireless/realtek/rtw89/cam.c           |   7 +
- drivers/net/wireless/realtek/rtw89/cam.h           |   8 +
- drivers/net/wireless/realtek/rtw89/core.c          |  56 ++++-
- drivers/net/wireless/realtek/rtw89/core.h          |  45 +++-
- drivers/net/wireless/realtek/rtw89/debug.c         |   3 +-
- drivers/net/wireless/realtek/rtw89/debug.h         |   1 +
- drivers/net/wireless/realtek/rtw89/fw.c            |  24 +-
- drivers/net/wireless/realtek/rtw89/fw.h            |   5 +-
- drivers/net/wireless/realtek/rtw89/mac.c           |  15 +-
- drivers/net/wireless/realtek/rtw89/mac.h           |   1 +
- drivers/net/wireless/realtek/rtw89/mac80211.c      |   2 +-
- drivers/net/wireless/realtek/rtw89/pci.c           |   9 +-
- drivers/net/wireless/realtek/rtw89/pci.h           |   1 +
- drivers/net/wireless/realtek/rtw89/phy.c           |  24 +-
- drivers/net/wireless/realtek/rtw89/phy.h           |   1 +
- drivers/net/wireless/realtek/rtw89/rtw8852c.c      |   1 +
- drivers/net/wireless/realtek/rtw89/rtw8852c_rfk.c  |  27 +++
- drivers/net/wireless/realtek/rtw89/rtw8852c_rfk.h  |   1 +
- drivers/net/wireless/realtek/rtw89/sar.c           | 140 ++++++++++--
- drivers/net/wireless/silabs/wfx/fwio.c             |   3 +-
- drivers/net/wireless/st/cw1200/bh.c                |  10 +-
- drivers/net/wireless/virt_wifi.c                   |   2 +-
- include/linux/ieee80211.h                          |  31 +++
- include/net/mac80211.h                             |  35 ---
- include/uapi/linux/nl80211.h                       |   2 +-
- net/mac80211/cfg.c                                 |  98 ++++----
- net/mac80211/ieee80211_i.h                         |  11 +-
- net/mac80211/iface.c                               |   7 +-
- net/mac80211/key.c                                 |  22 +-
- net/mac80211/key.h                                 |   9 +-
- net/mac80211/main.c                                |  69 +-----
- net/mac80211/mesh_hwmp.c                           |   6 +-
- net/mac80211/mlme.c                                |   6 +-
- net/mac80211/rx.c                                  |  49 +---
- net/mac80211/sta_info.h                            |   4 +-
- net/mac80211/tx.c                                  |  21 +-
- net/mac80211/util.c                                |  70 +-----
- net/mac80211/wpa.c                                 | 133 +----------
- net/mac80211/wpa.h                                 |   5 +-
- 70 files changed, 780 insertions(+), 831 deletions(-)
- delete mode 100644 drivers/net/wireless/realtek/rtw88/rtw8723de.h
- delete mode 100644 drivers/net/wireless/realtek/rtw88/rtw8821ce.h
- delete mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822be.h
- delete mode 100644 drivers/net/wireless/realtek/rtw88/rtw8822ce.h
+
+v2 -> v3:
+
+  * Apply can_dropped_invalid_skb() to slcan.
+
+  * Make vcan, vxcan and slcan dependent of CONFIG_CAN_DEV by
+    modifying Kbuild.
+
+  * fix small typos.
+
+v1 -> v2:
+
+  * move can_dropped_invalid_skb() to skb.c instead of dev.h
+
+  * also move can_skb_headroom_valid() to skb.c
+
+Vincent Mailhol (7):
+  can: Kconfig: rename config symbol CAN_DEV into CAN_NETLINK
+  can: Kconfig: turn menu "CAN Device Drivers" into a menuconfig using
+    CAN_DEV
+  can: bittiming: move bittiming calculation functions to
+    calc_bittiming.c
+  can: Kconfig: add CONFIG_CAN_RX_OFFLOAD
+  net: Kconfig: move the CAN device menu to the "Device Drivers" section
+  can: skb: move can_dropped_invalid_skb() and can_skb_headroom_valid()
+    to skb.c
+  can: skb: drop tx skb if in listen only mode
+
+ drivers/net/Kconfig                   |   2 +
+ drivers/net/can/Kconfig               |  55 +++++--
+ drivers/net/can/dev/Makefile          |  17 ++-
+ drivers/net/can/dev/bittiming.c       | 197 -------------------------
+ drivers/net/can/dev/calc_bittiming.c  | 202 ++++++++++++++++++++++++++
+ drivers/net/can/dev/dev.c             |   9 +-
+ drivers/net/can/dev/skb.c             |  72 +++++++++
+ drivers/net/can/m_can/Kconfig         |   1 +
+ drivers/net/can/spi/mcp251xfd/Kconfig |   1 +
+ include/linux/can/skb.h               |  59 +-------
+ net/can/Kconfig                       |   5 +-
+ 11 files changed, 338 insertions(+), 282 deletions(-)
+ create mode 100644 drivers/net/can/dev/calc_bittiming.c
+
+-- 
+2.35.1
 
