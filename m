@@ -2,151 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6494A54680E
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 16:08:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2382B546831
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 16:21:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244177AbiFJOIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 10:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49960 "EHLO
+        id S234503AbiFJOVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 10:21:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239938AbiFJOIo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 10:08:44 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7844D11A1E
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 07:08:41 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id e184so47193154ybf.8
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 07:08:41 -0700 (PDT)
+        with ESMTP id S236440AbiFJOVg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 10:21:36 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77AE439E4B1
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 07:21:35 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id n18so22901701plg.5
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 07:21:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=PyDV1j65Lx1TNpp+HfLz4mmPCTfG4DwRYS5sO/K+ka8=;
-        b=Sdeh8Fo6066+bfOd2m5fJVKaFZzEJ7erlT2qu9MZfJRo/zyyp2dIeM0aBETQyXe1/s
-         lJBndoNzAmI4C/EVWjalMxJ/QHsjyg6vZs+MkIxTG+htjfdgvXLvrUMxw9Sr2onWYxqB
-         7WEG+czk++2nwPWU3DscC7pbaO5F650hxELX7M/WZHwZxlPa4FZYiNEbn9d4UY9fdFuD
-         VJRyXq1wBbArx+Lev+T5fv1vBnwjTiLaFQ8MAYdZQazR0uonpnn1qWyloxZ7unMIE108
-         ihpKkBbuJNB+Qs45XTDAef54IuzKgqopy6AgN2iqCl7g+7C73+0MFRA57QPiKBHZqUbX
-         pD8w==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=Ip37p4JXqfaw+X19khYjnbd6SvmM4oe+pBMUPaWaZZg=;
+        b=RYrTWkjZk7hQFVGtb8L0briTdtwXCWt2Fiv6OlrCGnrZmuXbtZkgWg+ozQwbPIUXeD
+         zziBN9PxN24PU6Pwmk5/e/KeDSZ0wbTD4cH0d1+h/kiMjBQ9FQLpagHAKvSD06iU25qw
+         1XqZOT+bp2hHAfVCDw6v9XzxONM6DX3YHQoakhUMF/Dob2ZC9BTFWhGEAx3ALL9y9g9x
+         4Cfx6i+0a/f/IHhpKtMjUe0YT+odLu3tY95MPq4f5Few9DwWbgttcsZVhsmNSmRvwd5J
+         W627Af3xIVr7PWbhM5d6+IpZbrtPqnmrUNlQD8jkxign5W5/lkshUjvCY2GCDNzQNzRj
+         tcpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=PyDV1j65Lx1TNpp+HfLz4mmPCTfG4DwRYS5sO/K+ka8=;
-        b=A//4hJXuLoGEC9USXA5+GKcRm1oSfuvyz1P0li/V3Qab4vnKXTt4kcIEGFVV3vsCoO
-         TeqyJDrQW7WgpXeu5ITKwRWY4zhzmpA6lY24VjzeKV5O96/L0urj91gPLc+m8kedTQlc
-         Xr6lxR45ZiqGWXIJHzK3fsMS+UO0t68L7Vg0vh5V2wyUgEZeM2hpL88KC6Xy6gkMprvI
-         1cz8UyYcqXep3c90+kDQzQq6elUWIhEilUA1272gzlnroD1U4jGCjR60LWhoWO6ojJ6x
-         fmFbCACu0n+MPznfujL9yINnqxezS1k0HOQ+5gCq9Z/X1hyid2lnvbg2Wcl2v/WFg+Xc
-         zltw==
-X-Gm-Message-State: AOAM531SmLDOJLJm24d9s4GOnsUt9yShbJDv9JwoIIp8IXVloc3MEB9I
-        WZm42mYPEudhq9xYI68wvLei0gpOOrSQKucDY5M+8g==
-X-Google-Smtp-Source: ABdhPJygPVRT7z0US6HV++lxmvLlfxhcHVO3Vgdal0mZt/+tPtS7Xx+Lc3STO5t1a7w3CvHR0oCFLEgO9ilfgHl16/Y=
-X-Received: by 2002:a05:6902:c9:b0:641:1998:9764 with SMTP id
- i9-20020a05690200c900b0064119989764mr44237460ybs.427.1654870120190; Fri, 10
- Jun 2022 07:08:40 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Ip37p4JXqfaw+X19khYjnbd6SvmM4oe+pBMUPaWaZZg=;
+        b=Mk6pDQAU2eYVNzJywKldMW1Gcw++fszJ22bAon/Z0sKByE/t6kcgL0NDviwuyMRvFq
+         ms9SA6TM5Mgg70GdMW+HOZrPTpY3Ecu4eCDqmfEeGqaWlPFUcprMckgZH/vnIxrqM8ZT
+         3qKoOb3fvvoP2J2EPW7lsBgixBhi9QvEr5icqyplPqLjm8iM8UehEwfde46XeQOSBOHi
+         AMynZ0xwWK8n2bvt9iWkhCD3pQ2glz685TJ41WRBhjpVKdOG+SM7H5bzEeQRiwODLi7d
+         ISR9p91NWPuxs4v3NONvI7t6SSenD4fccoFVNN3592WGXMLcbrnPNEsUHuZu3fsfIgrS
+         g4/A==
+X-Gm-Message-State: AOAM533BK3nkgB/jXaY6VKoTWInyGA7y0rjFdtLRGvHYyk7YAMlDlpNB
+        MfhDTgZZXB/pyYCTAUOcnmE=
+X-Google-Smtp-Source: ABdhPJw5/udFV2EfdbLiB1Ouf9lPfd9YowuZNUM8GPk2wo6BXjKkB2zJxq2YGVs9eHowuokHTxb23g==
+X-Received: by 2002:a17:902:ce8f:b0:163:cc85:ba89 with SMTP id f15-20020a170902ce8f00b00163cc85ba89mr44012004plg.79.1654870894954;
+        Fri, 10 Jun 2022 07:21:34 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id u30-20020a63b55e000000b003fc136f9a7dsm7208439pgo.38.2022.06.10.07.21.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 10 Jun 2022 07:21:34 -0700 (PDT)
+Message-ID: <f0f30591-f503-ae7c-9293-35cca4ceec84@gmail.com>
+Date:   Fri, 10 Jun 2022 07:21:33 -0700
 MIME-Version: 1.0
-References: <20220610103653.15261-1-zajec5@gmail.com>
-In-Reply-To: <20220610103653.15261-1-zajec5@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 10 Jun 2022 07:08:28 -0700
-Message-ID: <CANn89iLJwdKXcfCHuEkRT7tknsXpD=UgFh-f61M1UAL9b8JMJw@mail.gmail.com>
-Subject: Re: [PATCH] net: gro: respect nf_conntrack_checksum for skipping csum verification
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Cc:     openwrt-devel@lists.openwrt.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: TCP socket send return EAGAIN unexpectedly when sending small
+ fragments
+Content-Language: en-US
+To:     Ronny Meeus <ronny.meeus@gmail.com>,
+        netdev <netdev@vger.kernel.org>
+References: <CAMJ=MEcPzkBLynL7tpjdv0TCRA=Cmy13e7wmFXrr-+dOVcshKA@mail.gmail.com>
+From:   Eric Dumazet <erdnetdev@gmail.com>
+In-Reply-To: <CAMJ=MEcPzkBLynL7tpjdv0TCRA=Cmy13e7wmFXrr-+dOVcshKA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 3:37 AM Rafa=C5=82 Mi=C5=82ecki <zajec5@gmail.com> =
-wrote:
->
-> From: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
->
-> Netfilter allows disabling checksum verification of incoming packets by
-> setting nf_conntrack_checksum variable. That feature is very useful for
-> home routers which:
-> 1. Most of the time just /forward/ network traffic
-> 2. Have slow CPU(s) and csum calculation is a challenge
->
-> Some projects like OpenWrt set nf_conntrack_checksum to 0 by default.
->
-> It would be nice to allow similar optimization in the GRO code paths.
-> This patch simply reuses nf_conntrack_checksum variable to skip
-> skb_gro_checksum_validate() calls if applicable.
->
 
-Problem is that GRO will be followed by TSO on the egress side.
-
-TSO will generate segments with recomputed checksums for each one of them.
-
-GRO only keeps one copy of the headers, so does not track original
-checksums for all
-segments at ingress side.
-
-So if you want to use TSO, GRO has to validate checksums.
-
-I am afraid this nf_conntrack_checksum idea can not be transposed to GRO.
-
-> Signed-off-by: Rafa=C5=82 Mi=C5=82ecki <rafal@milecki.pl>
-> ---
-> Hi guys,
+On 6/10/22 05:48, Ronny Meeus wrote:
+> Hello
 >
-> I'm not very familiar with net subsystem, please let me know if there is
-> a better way of implementing such a feature.
-> ---
->  net/ipv4/tcp_offload.c   | 3 +++
->  net/ipv6/tcpv6_offload.c | 3 +++
->  2 files changed, 6 insertions(+)
+> I have a small test application written in C that creates a local (in
+> process) TCP channel via loopback.
+> (kernel version is 3.10.0 but the same issue is also seen for example
+> on a 4.9 kernel).
 >
-> diff --git a/net/ipv4/tcp_offload.c b/net/ipv4/tcp_offload.c
-> index 30abde86db45..734a3c0f3d4a 100644
-> --- a/net/ipv4/tcp_offload.c
-> +++ b/net/ipv4/tcp_offload.c
-> @@ -311,6 +311,9 @@ struct sk_buff *tcp4_gro_receive(struct list_head *he=
-ad, struct sk_buff *skb)
->  {
->         /* Don't bother verifying checksum if we're going to flush anyway=
-. */
->         if (!NAPI_GRO_CB(skb)->flush &&
-> +#if IS_ENABLED(CONFIG_NF_CONNTRACK)
-> +           dev_net(skb->dev)->ct.sysctl_checksum &&
-> +#endif
->             skb_gro_checksum_validate(skb, IPPROTO_TCP,
->                                       inet_gro_compute_pseudo)) {
->                 NAPI_GRO_CB(skb)->flush =3D 1;
-> diff --git a/net/ipv6/tcpv6_offload.c b/net/ipv6/tcpv6_offload.c
-> index 39db5a226855..2144afa56fa3 100644
-> --- a/net/ipv6/tcpv6_offload.c
-> +++ b/net/ipv6/tcpv6_offload.c
-> @@ -18,6 +18,9 @@ struct sk_buff *tcp6_gro_receive(struct list_head *head=
-, struct sk_buff *skb)
->  {
->         /* Don't bother verifying checksum if we're going to flush anyway=
-. */
->         if (!NAPI_GRO_CB(skb)->flush &&
-> +#if IS_ENABLED(CONFIG_NF_CONNTRACK)
-> +           dev_net(skb->dev)->ct.sysctl_checksum &&
-> +#endif
->             skb_gro_checksum_validate(skb, IPPROTO_TCP,
->                                       ip6_gro_compute_pseudo)) {
->                 NAPI_GRO_CB(skb)->flush =3D 1;
+> On the client side, an SO_SNDBUF of 5Kb is configured (which is
+> doubled by the kernel) while on the server side the default size is
+> used.
+> Both client and server side are running in non-blocking mode.
+>
+> The server side is not reading its socket so all data is simply queued
+> in the socket's receive buffer.
+> On the client side, the client is writing data into the socket in a
+> loop until the write returns an error (EAGAIN in this case).
+>
+> Depending on the size of data I send on this socket, I get the EAGAIN
+> on the client side already after a small number of messages.
+> For example when sending 106 byte messages, I see the first EAGAIN
+> after 21 write calls:
+> # ./tcp_client_server 106
+> using data size 106
+> client send buffer size 5000
+> client socket snd_buf: 10000
+> ERRNO = 11 count=21
+>
+> The same is observed for all sizes smaller than or equal to 107 bytes.
+>
+> When getting the socket stats using ss I see all data (2226b) pending
+> in the socket on the server side:
+> # ss -tmi  | grep -i X11 -A 1
+> ESTAB      0      0      127.0.0.1:59792                127.0.0.1:x11
+> skmem:(r0,rb1061296,t0,tb10000,f0,w0,o0,bl0,d0) cubic wscale:7,7
+> rto:202 rtt:1.276/2.504 mss:21888 rcvmss:536 advmss:65483 cwnd:10
+> bytes_acked:2227 segs_out:24 segs_in:18 send 1372.3Mbps lastsnd:3883
+> lastrcv:771546999 lastack:3883 pacing_rate 2744.3Mbps retrans:0/1
+> rcv_space:43690
 > --
-> 2.34.1
+> ESTAB      2226   0      127.0.0.1:x11
+> 127.0.0.1:59792
+> skmem:(r4608,rb1061488,t0,tb2626560,f3584,w0,o0,bl0,d1) cubic
+> wscale:7,7 rto:200 ato:40 mss:21888 rcvmss:536 advmss:65483 cwnd:10
+> bytes_received:2226 segs_out:17 segs_in:24 lastsnd:3893 lastrcv:3893
+> lastack:3883 rcv_space:43690
 >
+>
+> When sending larger messages, the EAGAIN only is seen after 2116 writes.
+> # ./tcp_client_server 108
+> using data size 108
+> client send buffer size 5000
+> client socket snd_buf: 10000
+> ERRNO = 11 count=2116
+>
+> Again, the ss shows all data being present on the server side (108 *
+> 2116 = 228528)
+> ESTAB      228528 0      127.0.0.1:x11
+> 127.0.0.1:59830
+> skmem:(r976896,rb1061488,t0,tb2626560,f2048,w0,o0,bl0,d1) cubic
+> wscale:7,7 rto:200 ato:80 mss:21888 rcvmss:536 advmss:65483 cwnd:10
+> bytes_received:228528 segs_out:436 segs_in:2119 lastsnd:3615
+> lastrcv:3606 lastack:3596 rcv_rtt:1 rcv_space:43690
+> --
+> ESTAB      0      0      127.0.0.1:59830                127.0.0.1:x11
+> skmem:(r0,rb1061296,t0,tb10000,f0,w0,o0,bl0,d0) cubic wscale:7,7
+> rto:206 rtt:5.016/9.996 mss:21888 rcvmss:536 advmss:65483 cwnd:10
+> bytes_acked:228529 segs_out:2119 segs_in:437 send 349.1Mbps
+> lastsnd:3596 lastrcv:771704718 lastack:3566 pacing_rate 698.1Mbps
+> retrans:0/1 rcv_space:43690
+>
+>
+>
+> When I enlarge the SNDBUF on the client side to for example 10K, I see
+> that more messages can be sent:
+> # ./tcp_client_server 106 10000
+> using data size 106
+> client send buffer size 10000
+> client socket snd_buf: 20000
+> ERRNO = 11 count=1291
+>
+> I also captured the packets on the interface using wireshark and it
+> looks like the error is returned after the TCP layer has done a
+> retransmit (after 10ms) of the last packet sent on the connection.
+>
+> 10:12:38.186451 IP localhost.48470 > localhost.etlservicemgr: Flags
+> [P.], seq 1165:1265, ack 165, win 342, options [nop,nop,TS val
+> 593860562 ecr 593860562], length 100
+> 10:12:38.186461 IP localhost.etlservicemgr > localhost.48470: Flags
+> [.], ack 1265, win 342, options [nop,nop,TS val 593860562 ecr
+> 593860562], length 0
+> 10:12:38.186478 IP localhost.48470 > localhost.etlservicemgr: Flags
+> [P.], seq 1265:1365, ack 165, win 342, options [nop,nop,TS val
+> 593860562 ecr 593860562], length 100
+> 10:12:38.186488 IP localhost.etlservicemgr > localhost.48470: Flags
+> [.], ack 1365, win 342, options [nop,nop,TS val 593860562 ecr
+> 593860562], length 0
+> 10:12:38.186505 IP localhost.48470 > localhost.etlservicemgr: Flags
+> [P.], seq 1365:1465, ack 165, win 342, options [nop,nop,TS val
+> 593860562 ecr 593860562], length 100
+> 10:12:38.186516 IP localhost.etlservicemgr > localhost.48470: Flags
+> [.], ack 1465, win 342, options [nop,nop,TS val 593860562 ecr
+> 593860562], length 0
+> 10:12:38.186533 IP localhost.48470 > localhost.etlservicemgr: Flags
+> [P.], seq 1465:1565, ack 165, win 342, options [nop,nop,TS val
+> 593860562 ecr 593860562], length 100
+> 10:12:38.186543 IP localhost.etlservicemgr > localhost.48470: Flags
+> [.], ack 1565, win 342, options [nop,nop,TS val 593860562 ecr
+> 593860562], length 0
+> 10:12:38.186560 IP localhost.48470 > localhost.etlservicemgr: Flags
+> [P.], seq 1565:1665, ack 165, win 342, options [nop,nop,TS val
+> 593860562 ecr 593860562], length 100
+> 10:12:38.186578 IP localhost.48470 > localhost.etlservicemgr: Flags
+> [P.], seq 1665:1765, ack 165, win 342, options [nop,nop,TS val
+> 593860562 ecr 593860562], length 100
+> 10:12:38.186595 IP localhost.48470 > localhost.etlservicemgr: Flags
+> [P.], seq 1765:1865, ack 165, win 342, options [nop,nop,TS val
+> 593860562 ecr 593860562], length 100
+> 10:12:38.186615 IP localhost.48470 > localhost.etlservicemgr: Flags
+> [P.], seq 1865:1965, ack 165, win 342, options [nop,nop,TS val
+> 593860562 ecr 593860562], length 100
+> 10:12:38.186632 IP localhost.48470 > localhost.etlservicemgr: Flags
+> [P.], seq 1965:2065, ack 165, win 342, options [nop,nop,TS val
+> 593860562 ecr 593860562], length 100
+> 10:12:38.196064 IP localhost.48470 > localhost.etlservicemgr: Flags
+> [P.], seq 1965:2065, ack 165, win 342, options [nop,nop,TS val
+> 593860572 ecr 593860562], length 100
+> 10:12:38.196128 IP localhost.etlservicemgr > localhost.48470: Flags
+> [.], ack 2065, win 342, options [nop,nop,TS val 593860572 ecr
+> 593860562,nop,nop,sack 1 {1965:2065}], length 0
+>
+> Now my question is: how is it possible that I can only send 21
+> messages of 106 bytes before I see the EAGAIN while when sending
+> larger messages I can send 2K+ messages.
+
+
+This is because kernel tracks kernel memory usage.
+
+Small packets incur more overhead.
+
+The doubling of SO_SNDBUF user value, is an heuristic based on the fact 
+the kernel
+
+uses a 2x overhead estimation,
+
+while effective overhead can vary from ~1.001x to ~768x depending on 
+number of bytes per skb.
+
+
