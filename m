@@ -2,125 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7737545B9D
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 07:21:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E748E545BB5
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 07:35:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346018AbiFJFUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 01:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36338 "EHLO
+        id S238894AbiFJFfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 01:35:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346132AbiFJFUk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 01:20:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A643B3C2;
-        Thu,  9 Jun 2022 22:20:36 -0700 (PDT)
+        with ESMTP id S234813AbiFJFfu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 01:35:50 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 155C47A455;
+        Thu,  9 Jun 2022 22:35:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43230B830F6;
-        Fri, 10 Jun 2022 05:20:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6278AC34114;
-        Fri, 10 Jun 2022 05:20:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654838433;
-        bh=obJOg0nC5+NFcMbSl//FLvr+ceUwgMoc50Ko3u2Lf80=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=k/PjXRW3Ejm3OWA0ILi7O80zfEKst1OpP7BC0SxRltN5BaZsp6jjKtr3wXBUDO5zB
-         e4Raz/E5WEJs1UM/fE5IzTFZTwR5xBef7mdwfpGnTFs6jcYygdrsalBjswLqjAwcn8
-         xxzJxOn25O10o5RwvKHTCaY9QGZ0KZC/wv3VRoMA=
-Date:   Fri, 10 Jun 2022 07:20:31 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Bill Wendling <morbo@google.com>
-Cc:     Jan Engelhardt <jengelh@inai.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Bill Wendling <isanbard@gmail.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Jan Kara <jack@suse.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        Daniel Kiper <daniel.kiper@oracle.com>,
-        linux-edac@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        linux-mm@kvack.org, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, Networking <netdev@vger.kernel.org>,
-        alsa-devel@alsa-project.org,
-        clang-built-linux <llvm@lists.linux.dev>
-Subject: Re: [PATCH 00/12] Clang -Wformat warning fixes
-Message-ID: <YqLUn3RdZ9HAKZKu@kroah.com>
-References: <20220609221702.347522-1-morbo@google.com>
- <20220609152527.4ad7862d4126e276e6f76315@linux-foundation.org>
- <CAGG=3QXDt9AeCQOAp1311POFRSByJru4=Q=oFiQn3u2iZYk2_w@mail.gmail.com>
- <nssn2ps-6n86-nqq6-9039-72847760nnq@vanv.qr>
- <CAGG=3QU0XJhQKJXLMayOkQSiF2yjBi2p2TEZ9KNTzU5mmye-gg@mail.gmail.com>
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8107BCE31C0;
+        Fri, 10 Jun 2022 05:35:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E213C3411B;
+        Fri, 10 Jun 2022 05:35:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654839345;
+        bh=ALsvmGxxP/RujwthTDr4s5rJuyAwyD4iIWuXDGgTq/s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=dFRG6wfjdOExRn+CHQcmLpP9blzV929mo5XHAwzF1fwpwCccnqC+447h5CkaYNiH6
+         RevcgMKLjYWClcMtMNitZgWumdaTQVhRHs+ga7cXIKwnn7ZWur/GUOSb91OK9+XNlu
+         ImXQ8i1Ci7G1YDVqz/7ZpoXA4gCkUVG6e7/aW5n+gUu08Cxv+equj5rR6vS0v1sKEr
+         JzjRG+Nf2hDEmuOWgsoEcrTaFx/iinDYZe6mvF/gxsT0/zVxIbNTjZAiZcogmjuFaF
+         53wOT7OH+AAfkanNRvNg4sIeH4yGbur6uPjp5sLhsd8IpG7UYNyR4abLhTm8loPz9T
+         lOibleb109MMA==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     torvalds@linux-foundation.org
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Networking for 5.19-rc2 (follow up)
+Date:   Thu,  9 Jun 2022 22:35:44 -0700
+Message-Id: <20220610053544.417023-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGG=3QU0XJhQKJXLMayOkQSiF2yjBi2p2TEZ9KNTzU5mmye-gg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 04:16:16PM -0700, Bill Wendling wrote:
-> On Thu, Jun 9, 2022 at 4:03 PM Jan Engelhardt <jengelh@inai.de> wrote:
-> > On Friday 2022-06-10 00:49, Bill Wendling wrote:
-> > >On Thu, Jun 9, 2022 at 3:25 PM Andrew Morton <akpm@linux-foundation.org> wrote:
-> > >> On Thu,  9 Jun 2022 22:16:19 +0000 Bill Wendling <morbo@google.com> wrote:
-> > >>
-> > >> > This patch set fixes some clang warnings when -Wformat is enabled.
-> > >>
-> > >> tldr:
-> > >>
-> > >> -       printk(msg);
-> > >> +       printk("%s", msg);
-> > >>
-> > >> Otherwise these changes are a
-> > >> useless consumer of runtime resources.
-> > >
-> > >Calling a "printf" style function is already insanely expensive.
-> > >[...]
-> > >The "printk" and similar functions all have the "__printf" attribute.
-> > >I don't know of a modification to that attribute which can turn off
-> > >this type of check.
-> >
-> > Perhaps you can split vprintk_store in the middle (after the call to
-> > vsnprintf), and offer the second half as a function of its own (e.g.
-> > "puts"). Then the tldr could be
-> >
-> > - printk(msg);
-> > + puts(msg);
-> 
-> That might be a nice compromise. Andrew, what do you think?
+Hi Linus!
 
-You would need to do that for all of the dev_printk() variants, so I
-doubt that would ever be all that useful as almost no one should be
-using a "raw" printk() these days.
+Quick follow up PR, I managed to catch your tree at a point where AFS
+did not build on GCC < 12. Before I tried building it on an older distro
+I already pushed a few things. I figured cleanest if I just send a quick
+follow up and forward again. Please LMK if I should have just merged
+your tree in.
 
-thanks,
+The following changes since commit 825464e79db4aac936e0fdae62cdfb7546d0028f:
 
-greg k-h
+  Merge tag 'net-5.19-rc2' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-06-09 12:06:52 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.19-rc2-2
+
+for you to fetch changes up to bf56a0917fd329d5adecfd405e681ff7ba1abb52:
+
+  Merge tag 'mlx5-fixes-2022-06-08' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux (2022-06-09 22:05:37 -0700)
+
+----------------------------------------------------------------
+Quick follow up, to cleanly fast-forward net again.
+
+Current release - new code bugs:
+
+ - Revert "net/mlx5e: Allow relaxed ordering over VFs"
+
+Previous releases - regressions:
+
+ - seg6: fix seg6_lookup_any_nexthop() to handle VRFs using
+   flowi_l3mdev
+
+Misc:
+
+ - rename TLS_INFO_ZC_SENDFILE to better express the meaning
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+----------------------------------------------------------------
+Andrea Mayer (1):
+      net: seg6: fix seg6_lookup_any_nexthop() to handle VRFs using flowi_l3mdev
+
+Etienne van der Linde (1):
+      nfp: flower: restructure flow-key for gre+vlan combination
+
+Fei Qin (1):
+      nfp: avoid unnecessary check warnings in nfp_app_get_vf_config
+
+Feras Daoud (1):
+      net/mlx5: Rearm the FW tracer after each tracer event
+
+Jakub Kicinski (2):
+      Merge branch 'nfp-fixes-for-v5-19'
+      Merge tag 'mlx5-fixes-2022-06-08' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux
+
+Lukas Bulwahn (1):
+      MAINTAINERS: adjust MELLANOX ETHERNET INNOVA DRIVERS to TLS support removal
+
+Mark Bloch (2):
+      net/mlx5: E-Switch, pair only capable devices
+      net/mlx5: fs, fail conflicting actions
+
+Maxim Mikityanskiy (1):
+      tls: Rename TLS_INFO_ZC_SENDFILE to TLS_INFO_ZC_TX
+
+Paul Blakey (1):
+      net/mlx5e: CT: Fix cleanup of CT before cleanup of TC ct rules
+
+Saeed Mahameed (1):
+      Revert "net/mlx5e: Allow relaxed ordering over VFs"
+
+ MAINTAINERS                                        |  1 -
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c      | 18 -----------
+ .../ethernet/mellanox/mlx5/core/diag/fw_tracer.c   |  7 +++--
+ .../net/ethernet/mellanox/mlx5/core/en/params.c    |  3 +-
+ .../net/ethernet/mellanox/mlx5/core/en_common.c    |  5 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   | 31 +++++++++----------
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  9 ++++--
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  | 35 ++++++++++++++++++++--
+ drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h  | 10 +++++++
+ .../net/ethernet/mellanox/mlx5/core/mlx5_core.h    |  1 -
+ .../net/ethernet/netronome/nfp/flower/conntrack.c  | 32 ++++++++++----------
+ drivers/net/ethernet/netronome/nfp/flower/match.c  | 16 +++++-----
+ drivers/net/ethernet/netronome/nfp/nfp_net_sriov.c | 28 +++++++++--------
+ include/uapi/linux/tls.h                           |  4 +--
+ net/ipv6/seg6_local.c                              |  1 +
+ net/tls/tls_main.c                                 |  8 ++---
+ 16 files changed, 120 insertions(+), 89 deletions(-)
