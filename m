@@ -2,426 +2,351 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 752C0546CAC
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 20:46:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D44A546CE8
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 21:08:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347681AbiFJSqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 14:46:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41130 "EHLO
+        id S1348179AbiFJTIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 15:08:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346688AbiFJSqF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 14:46:05 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 812E5270427;
-        Fri, 10 Jun 2022 11:46:03 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id e4so95372ljl.1;
-        Fri, 10 Jun 2022 11:46:03 -0700 (PDT)
+        with ESMTP id S1347158AbiFJTIE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 15:08:04 -0400
+Received: from mail-vk1-xa29.google.com (mail-vk1-xa29.google.com [IPv6:2607:f8b0:4864:20::a29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1997338A7;
+        Fri, 10 Jun 2022 12:08:02 -0700 (PDT)
+Received: by mail-vk1-xa29.google.com with SMTP id d2so10914333vkg.5;
+        Fri, 10 Jun 2022 12:08:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=SXZybrEFLbvb/l2ppLyGyg3imtiTWccdLLwduakgTi4=;
-        b=RrV0/OAbbh1lYjYIwEq257CXO5Em3jLnnRuzDWq2VZUeR2UnIt3zQONaBTGcliOYk8
-         TNSFQw3P1kQheBwIatzQbqPpuLEYCdCIJS+TICFflRP72efIf88Nm5yJ8ehVpliCQJf1
-         wjcL0L0ItqGURBxEdmxGrwMqSJpnZ9NJgxSCgbx+g6wXAq05UYGi0JdDGnx6T33MKsfi
-         o2WGvMOnb7Rw5UN6GiJlH+MFiZRv0QMFieit2l8oAROWYZ72doxwVxStU1O9WWkrJXI0
-         yjueiYCQQBMJFjrIAZV/JhrQlaPvjIXVtpxVabtRr7PRVuxblbSal+DGCEdwGvcH4ItM
-         rLnA==
+        bh=/wKpsUZTVZzFsn+0pB4qY49TnnBFteH3SawTEzaMwX0=;
+        b=fAwFzTd3IGelw1Bn4tuJ3Cktuit62ljIqAGXnlrBhdmZR423btKpXGi/Nk+RXM5bvz
+         dZnjjknk8dsvAEBOObEZBxL/OUyru7+W/BAeqMpOHfJwpCjv+kY9JBaFGcKjPAjr9exw
+         0iQjl0bHCxquxhPjUOOAep/pZAnYb3UN0wouvZ8eerILqxKEiz8Eb9UXhfvo+nIz/1L/
+         iLBgcwJcPj+4ts8q2YZ4ptmEBP8y7FQrhdE1zdw4uVBEH7ithChKnmi+mGEce8zXLKtc
+         YjxWZvEDTFK3ZXU0JSl+WdzE5XlSESE5cGXzBc0Q6SpgpJHUQyyBZmOpP5TTQ3cNNLPc
+         Z6iQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=SXZybrEFLbvb/l2ppLyGyg3imtiTWccdLLwduakgTi4=;
-        b=7WtmkJyt/J85NTvbT4WCrsMjyPb7C0GugFG09VuBwerWWWkE7yurQkpVTYh2lM52R3
-         hLYPgGAyT1er6q71iX3G4OY737hfGwOZYgawlCsZbCQcZKdus+LJYlsgbpkpPoCQrhjv
-         2DU9nx+daY/57qvktNM5XqTg7lGb0nUIcHLumuYaKxAx7lg/jIYlWQm+rLtEwsTemlE3
-         BGJFrkfpG90qBtAt/BQ8Q7cl9eLD5zcxWUD1aaR1vacHpYrmOXar6+81aNdKLPFS99r/
-         uSPh7tdHbq1CWOMs9vZQSrM2phrjwrFBVXxp3JL/Y2zHHv9euIRhIJjrAOu8GdZUBVyu
-         1FHA==
-X-Gm-Message-State: AOAM530ah+jpkUIGBcLj26d37cXr8t1v99KuN20hfZojWrjSMTYYbigv
-        ro+aZkT4vx6arQTzZHI6v6mU/lHUN9nF5/j6GSo=
-X-Google-Smtp-Source: ABdhPJw3n2I1LbpbUJxSqiv3HRlIhH9D8R2chaCVYtkx9QlLh3Vy0ULAG9lrultP1AL04nUz3H2hpPyzp7gLi8L3W9Y=
-X-Received: by 2002:a2e:a7c7:0:b0:255:8ecd:14b0 with SMTP id
- x7-20020a2ea7c7000000b002558ecd14b0mr16746244ljp.472.1654886761426; Fri, 10
- Jun 2022 11:46:01 -0700 (PDT)
+        bh=/wKpsUZTVZzFsn+0pB4qY49TnnBFteH3SawTEzaMwX0=;
+        b=ZBNH3XRQ3a2VZZ17AJEgq2I3bOAyeFjNgqt6i7wGpqO24Tg6eonuU2M9q2/YIC595T
+         wKg4ROZHf6uJ9mRRvz+fAyyOhnT6n/k+lVQcdfAfp+JMF8GiWeLQVwEPpUKt63UKGr1d
+         QNq9DEm/P5z9WnPqgEsp+YpyjwCZg4E6iHvg+lT81tCiPSWUXXNsW5yytm4+gOlYVy2B
+         xvLD7lRi0hDko5kA3yi3fP6ykvxw9FL5IQzNbI9W8yphzjHj2NVpq7bxe+RtoUfQccp0
+         EDIetODcLnunrVdURH7yxjUSxRMnUbIw0AGCLdVtT94/ZrjFBFxsgd2FqnPw/6c9M92h
+         dMZg==
+X-Gm-Message-State: AOAM533aJ+4yyd1qIbYLGAG/TbwB9PkdqsCoyn3yykncdcqUGOsDM4ZW
+        6czRp78VU2JZcdc8i4ddS/AArHGFuxcYgPhWGNM=
+X-Google-Smtp-Source: ABdhPJxLfXe7yOz3armlBoECQN961LlhqEjCUN1lANq0D6k5xqQh5ZYjGBM82oOaeH9b9Xa0Ehbf/luVgytb1LMjd5E=
+X-Received: by 2002:ac5:c902:0:b0:35d:aee2:dc50 with SMTP id
+ t2-20020ac5c902000000b0035daee2dc50mr14088600vkl.23.1654888081792; Fri, 10
+ Jun 2022 12:08:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220603204509.15044-1-jolsa@kernel.org> <CAEf4BzbT4Z=B2hZxTQf1MrCp6TGiMgP+_t7p8G5A+RdVyNP+8w@mail.gmail.com>
- <YqOOsL8EbbO3lhmC@kernel.org>
-In-Reply-To: <YqOOsL8EbbO3lhmC@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 10 Jun 2022 11:45:48 -0700
-Message-ID: <CAEf4BzaKP8MHtGZDVSpwbCxNUD4zY9wkjEa4HKR0LWxYKW5cGQ@mail.gmail.com>
-Subject: Re: [PATCHv4 bpf-next 0/2] perf tools: Fix prologue generation
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+References: <20210604063116.234316-1-memxor@gmail.com> <CAJnrk1YJe-wtXFF0U2cuZUdd-gH1Y80Ewf3ePo=vh-nbsSBZgg@mail.gmail.com>
+ <20220610125830.2tx6syagl2rphl35@apollo.legion> <CAJnrk1YCBn2EkVK89f5f3ijFYUDhLNpjiH8buw8K3p=JMwAc1Q@mail.gmail.com>
+In-Reply-To: <CAJnrk1YCBn2EkVK89f5f3ijFYUDhLNpjiH8buw8K3p=JMwAc1Q@mail.gmail.com>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Fri, 10 Jun 2022 12:07:50 -0700
+Message-ID: <CAJnrk1YCSaRjd88WCzg4ccv59h0Dn99XXsDDT4ddzz4UYiZmbg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 0/7] Add bpf_link based TC-BPF API
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Ian Rogers <irogers@google.com>
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 11:34 AM Arnaldo Carvalho de Melo
-<acme@kernel.org> wrote:
+On Fri, Jun 10, 2022 at 10:23 AM Joanne Koong <joannelkoong@gmail.com> wrot=
+e:
 >
-> Em Thu, Jun 09, 2022 at 01:31:52PM -0700, Andrii Nakryiko escreveu:
-> > On Fri, Jun 3, 2022 at 1:45 PM Jiri Olsa <jolsa@kernel.org> wrote:
+> On Fri, Jun 10, 2022 at 5:58 AM Kumar Kartikeya Dwivedi
+> <memxor@gmail.com> wrote:
+> >
+> > On Fri, Jun 10, 2022 at 05:54:27AM IST, Joanne Koong wrote:
+> > > On Thu, Jun 3, 2021 at 11:31 PM Kumar Kartikeya Dwivedi
+> > > <memxor@gmail.com> wrote:
+> > > >
+> > > > This is the second (non-RFC) version.
+> > > >
+> > > > This adds a bpf_link path to create TC filters tied to cls_bpf clas=
+sifier, and
+> > > > introduces fd based ownership for such TC filters. Netlink cannot d=
+elete or
+> > > > replace such filters, but the bpf_link is severed on indirect destr=
+uction of the
+> > > > filter (backing qdisc being deleted, or chain being flushed, etc.).=
+ To ensure
+> > > > that filters remain attached beyond process lifetime, the usual bpf=
+_link fd
+> > > > pinning approach can be used.
+> > > >
+> > > > The individual patches contain more details and comments, but the o=
+verall kernel
+> > > > API and libbpf helper mirrors the semantics of the netlink based TC=
+-BPF API
+> > > > merged recently. This means that we start by always setting direct =
+action mode,
+> > > > protocol to ETH_P_ALL, chain_index as 0, etc. If there is a need fo=
+r more
+> > > > options in the future, they can be easily exposed through the bpf_l=
+ink API in
+> > > > the future.
+> > > >
+> > > > Patch 1 refactors cls_bpf change function to extract two helpers th=
+at will be
+> > > > reused in bpf_link creation.
+> > > >
+> > > > Patch 2 exports some bpf_link management functions to modules. This=
+ is needed
+> > > > because our bpf_link object is tied to the cls_bpf_prog object. Tyi=
+ng it to
+> > > > tcf_proto would be weird, because the update path has to replace of=
+floaded bpf
+> > > > prog, which happens using internal cls_bpf helpers, and would in ge=
+neral be more
+> > > > code to abstract over an operation that is unlikely to be implement=
+ed for other
+> > > > filter types.
+> > > >
+> > > > Patch 3 adds the main bpf_link API. A function in cls_api takes car=
+e of
+> > > > obtaining block reference, creating the filter object, and then cal=
+ls the
+> > > > bpf_link_change tcf_proto op (only supported by cls_bpf) that retur=
+ns a fd after
+> > > > setting up the internal structures. An optimization is made to not =
+keep around
+> > > > resources for extended actions, which is explained in a code commen=
+t as it wasn't
+> > > > immediately obvious.
+> > > >
+> > > > Patch 4 adds an update path for bpf_link. Since bpf_link_update onl=
+y supports
+> > > > replacing the bpf_prog, we can skip tc filter's change path by reus=
+ing the
+> > > > filter object but swapping its bpf_prog. This takes care of replaci=
+ng the
+> > > > offloaded prog as well (if that fails, update is aborted). So far h=
+owever,
+> > > > tcf_classify could do normal load (possibly torn) as the cls_bpf_pr=
+og->filter
+> > > > would never be modified concurrently. This is no longer true, and t=
+o not
+> > > > penalize the classify hot path, we also cannot impose serialization=
+ around
+> > > > its load. Hence the load is changed to READ_ONCE, so that the point=
+er value is
+> > > > always consistent. Due to invocation in a RCU critical section, the=
+ lifetime of
+> > > > the prog is guaranteed for the duration of the call.
+> > > >
+> > > > Patch 5, 6 take care of updating the userspace bits and add a bpf_l=
+ink returning
+> > > > function to libbpf.
+> > > >
+> > > > Patch 7 adds a selftest that exercises all possible problematic int=
+eractions
+> > > > that I could think of.
+> > > >
+> > > > Design:
+> > > >
+> > > > This is where in the object hierarchy our bpf_link object is attach=
+ed.
+> > > >
+> > > >                                                                    =
+         =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=90
+> > > >                                                                    =
+         =E2=94=82     =E2=94=82
+> > > >                                                                    =
+         =E2=94=82 BPF =E2=94=82
+> > > >                                                                    =
+         program
+> > > >                                                                    =
+         =E2=94=82     =E2=94=82
+> > > >                                                                    =
+         =E2=94=94=E2=94=80=E2=94=80=E2=96=B2=E2=94=80=E2=94=80=E2=94=98
+> > > >                                                       =E2=94=8C=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=90      =
+          =E2=94=82
+> > > >                                                       =E2=94=82    =
+   =E2=94=82         =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=B4=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=90
+> > > >                                                       =E2=94=82  mo=
+d  =E2=94=9C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=96=BA cls_bpf_prog =E2=94=82
+> > > > =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=90                                    =E2=94=82cls_bpf=
+=E2=94=82         =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=AC=E2=
+=94=80=E2=94=80=E2=94=80=E2=96=B2=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=98
+> > > > =E2=94=82    tcf_block   =E2=94=82                                 =
+   =E2=94=82       =E2=94=82              =E2=94=82   =E2=94=82
+> > > > =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=AC=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=98                                    =E2=94=94=E2=94=80=
+=E2=94=80=E2=94=80=E2=96=B2=E2=94=80=E2=94=80=E2=94=80=E2=94=98            =
+  =E2=94=82   =E2=94=82
+> > > >          =E2=94=82          =E2=94=8C=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=80=E2=94=80=E2=94=90                       =E2=94=82                =E2=94=
+=8C=E2=94=80=E2=96=BC=E2=94=80=E2=94=80=E2=94=80=E2=94=B4=E2=94=80=E2=94=80=
+=E2=94=90
+> > > >          =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=96=BA  tcf_chain  =E2=94=82  =
+                     =E2=94=82                =E2=94=82bpf_link=E2=94=82
+> > > >                     =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=AC=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=98                       =E2=94=82                =E2=94=94=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=
+=98
+> > > >                             =E2=94=82          =E2=94=8C=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=90    =E2=94=82
+> > > >                             =E2=94=94=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=96=BA  tcf_=
+proto  =E2=94=9C=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=98
+> > > >                                        =E2=94=94=E2=94=80=E2=94=80=
+=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=94=80=E2=
+=94=80=E2=94=80=E2=94=80=E2=94=98
+> > > >
+> > > > The bpf_link is detached on destruction of the cls_bpf_prog.  Doing=
+ it this way
+> > > > allows us to implement update in a lightweight manner without havin=
+g to recreate
+> > > > a new filter, where we can just replace the BPF prog attached to cl=
+s_bpf_prog.
+> > > >
+> > > > The other way to do it would be to link the bpf_link to tcf_proto, =
+there are
+> > > > numerous downsides to this:
+> > > >
+> > > > 1. All filters have to embed the pointer even though they won't be =
+using it when
+> > > > cls_bpf is compiled in.
+> > > > 2. This probably won't make sense to be extended to other filter ty=
+pes anyway.
+> > > > 3. We aren't able to optimize the update case without adding anothe=
+r bpf_link
+> > > > specific update operation to tcf_proto ops.
+> > > >
+> > > > The downside with tying this to the module is having to export bpf_=
+link
+> > > > management functions and introducing a tcf_proto op. Hopefully the =
+cost of
+> > > > another operation func pointer is not big enough (as there is only =
+one ops
+> > > > struct per module).
+> > > >
+> > > Hi Kumar,
 > > >
-> > > hi,
-> > > sending change we discussed some time ago [1] to get rid of
-> > > some deprecated functions we use in perf prologue code.
-> > >
-> > > Despite the gloomy discussion I think the final code does
-> > > not look that bad ;-)
-> > >
-> > > This patchset removes following libbpf functions from perf:
-> > >   bpf_program__set_prep
-> > >   bpf_program__nth_fd
-> > >   struct bpf_prog_prep_result
-> > >
-> > > v4 changes:
-> > >   - fix typo [Andrii]
-> > >
-> > > v3 changes:
-> > >   - removed R0/R1 zero init in libbpf_prog_prepare_load_fn,
-> > >     because it's not needed [Andrii]
-> > >   - rebased/post on top of bpf-next/master which now has
-> > >     all the needed perf/core changes
-> > >
-> > > v2 changes:
-> > >   - use fallback section prog handler, so we don't need to
-> > >     use section prefix [Andrii]
-> > >   - realloc prog->insns array in bpf_program__set_insns [Andrii]
-> > >   - squash patch 1 from previous version with
-> > >     bpf_program__set_insns change [Daniel]
-> > >   - patch 3 already merged [Arnaldo]
-> > >   - added more comments
-> > >
-> > > thanks,
-> > > jirka
+> > > Do you have any plans / bandwidth to land this feature upstream? If
+> > > so, do you have a tentative estimation for when you'll be able to wor=
+k
+> > > on this? And if not, are you okay with someone else working on this t=
+o
+> > > get it merged in?
 > > >
 > >
-> > Arnaldo, can I get an ack from you for this patch set? Thank you!
+> > I can have a look at resurrecting it later this month, if you're ok wit=
+h waiting
+> > until then, otherwise if someone else wants to pick this up before that=
+ it's
+> > fine by me, just let me know so we avoid duplicated effort. Note that t=
+he
+> > approach in v2 is dead/unlikely to get accepted by the TC maintainers, =
+so we'd
+> > have to implement the way Daniel mentioned in [0].
 >
-> So, before these patches:
+> Sounds great! We'll wait and check back in with you later this month.
 >
-> [acme@quaco perf-urgent]$ git log --oneline -5
-> 22905f78d181f446 (HEAD) libperf evsel: Open shouldn't leak fd on failure
-> a3c6da3dbd4bdf9c perf test: Fix "perf stat CSV output linter" test on s39=
-0
-> 785cb9e85e8ba66f perf unwind: Fix uninitialized variable
-> 874c8ca1e60b2c56 netfs: Fix gcc-12 warning by embedding vfs inode in netf=
-s_i_context
-> 3d9f55c57bc3659f Merge tag 'fs_for_v5.19-rc2' of git://git.kernel.org/pub=
-/scm/linux/kernel/git/jack/linux-fs
-> [acme@quaco perf-urgent]$ sudo su -
-> [root@quaco ~]# perf -v
-> perf version 5.19.rc1.g22905f78d181
-> [root@quaco ~]# perf test 42
->  42: BPF filter                                                      :
->  42.1: Basic BPF filtering                                           : Ok
->  42.2: BPF pinning                                                   : Ok
->  42.3: BPF prologue generation                                       : Ok
-> [root@quaco ~]#
->
-> And after:
->
-> [acme@quaco perf-urgent]$ git log --oneline -5
-> f8ec656242acf2de (HEAD -> perf/urgent) perf tools: Rework prologue genera=
-tion code
-> a750a8dd7e5d2d4b perf tools: Register fallback libbpf section handler
-> d28f2a8ad42af160 libperf evsel: Open shouldn't leak fd on failure
-> a3c6da3dbd4bdf9c perf test: Fix "perf stat CSV output linter" test on s39=
-0
-> 785cb9e85e8ba66f perf unwind: Fix uninitialized variable
-> [acme@quaco perf-urgent]$ sudo su -
-> [root@quaco ~]# perf -v
-> perf version 5.19.rc1.gf8ec656242ac
-> [root@quaco ~]# perf test 42
->  42: BPF filter                                                      :
->  42.1: Basic BPF filtering                                           : FA=
-ILED!
->  42.2: BPF pinning                                                   : FA=
-ILED!
->  42.3: BPF prologue generation                                       : Ok
-> [root@quaco ~]#
->
-> Jiri, can you try reproducing these? Do this require some other work
-> that is in bpf-next/master? Lemme try...
->
-> Further details:
->
-> [acme@quaco perf-urgent]$ clang -v
-> clang version 13.0.0 (five:git/llvm-project d667b96c98438edcc00ec85a3b151=
-ac2dae862f3)
-> Target: x86_64-unknown-linux-gnu
-> Thread model: posix
-> InstalledDir: /usr/local/bin
-> Found candidate GCC installation: /usr/lib/gcc/x86_64-redhat-linux/12
-> Selected GCC installation: /usr/lib/gcc/x86_64-redhat-linux/12
-> Candidate multilib: .;@m64
-> Candidate multilib: 32;@m32
-> Selected multilib: .;@m64
-> [acme@quaco perf-urgent]$ cat /etc/fedora-release
-> Fedora release 36 (Thirty Six)
-> [acme@quaco perf-urgent]$ gcc -v
-> Using built-in specs.
-> COLLECT_GCC=3D/usr/bin/gcc
-> COLLECT_LTO_WRAPPER=3D/usr/libexec/gcc/x86_64-redhat-linux/12/lto-wrapper
-> OFFLOAD_TARGET_NAMES=3Dnvptx-none
-> OFFLOAD_TARGET_DEFAULT=3D1
-> Target: x86_64-redhat-linux
-> Configured with: ../configure --enable-bootstrap --enable-languages=3Dc,c=
-++,fortran,objc,obj-c++,ada,go,d,lto --prefix=3D/usr --mandir=3D/usr/share/=
-man --infodir=3D/usr/share/info --with-bugurl=3Dhttp://bugzilla.redhat.com/=
-bugzilla --enable-shared --enable-threads=3Dposix --enable-checking=3Drelea=
-se --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-lib=
-unwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --wit=
-h-gcc-major-version-only --enable-libstdcxx-backtrace --with-linker-hash-st=
-yle=3Dgnu --enable-plugin --enable-initfini-array --with-isl=3D/builddir/bu=
-ild/BUILD/gcc-12.1.1-20220507/obj-x86_64-redhat-linux/isl-install --enable-=
-offload-targets=3Dnvptx-none --without-cuda-driver --enable-offload-default=
-ed --enable-gnu-indirect-function --enable-cet --with-tune=3Dgeneric --with=
--arch_32=3Di686 --build=3Dx86_64-redhat-linux --with-build-config=3Dbootstr=
-ap-lto --enable-link-serialization=3D1
-> Thread model: posix
-> Supported LTO compression algorithms: zlib zstd
-> gcc version 12.1.1 20220507 (Red Hat 12.1.1-1) (GCC)
-> [acme@quaco perf-urgent]$
->
-> [root@quaco ~]# perf test -v 42
->  42: BPF filter                                                      :
->  42.1: Basic BPF filtering                                           :
-> --- start ---
-> test child forked, pid 638881
-> Kernel build dir is set to /lib/modules/5.17.11-300.fc36.x86_64/build
-> set env: KBUILD_DIR=3D/lib/modules/5.17.11-300.fc36.x86_64/build
-> unset env: KBUILD_OPTS
-> include option is set to -nostdinc -I./arch/x86/include -I./arch/x86/incl=
-ude/generated  -I./include -I./arch/x86/include/uapi -I./arch/x86/include/g=
-enerated/uapi -I./include/uapi -I./include/generated/uapi -include ./includ=
-e/linux/compiler-version.h -include ./include/linux/kconfig.h
-> set env: NR_CPUS=3D8
-> set env: LINUX_VERSION_CODE=3D0x5110b
-> set env: CLANG_EXEC=3D/usr/lib64/ccache/clang
-> set env: CLANG_OPTIONS=3D-xc -g
-> set env: KERNEL_INC_OPTIONS=3D-nostdinc -I./arch/x86/include -I./arch/x86=
-/include/generated  -I./include -I./arch/x86/include/uapi -I./arch/x86/incl=
-ude/generated/uapi -I./include/uapi -I./include/generated/uapi -include ./i=
-nclude/linux/compiler-version.h -include ./include/linux/kconfig.h
-> set env: PERF_BPF_INC_OPTIONS=3D-I/home/acme/lib/perf/include/bpf
-> set env: WORKING_DIR=3D/lib/modules/5.17.11-300.fc36.x86_64/build
-> set env: CLANG_SOURCE=3D-
-> llvm compiling command template: echo '// SPDX-License-Identifier: GPL-2.=
-0
-> /*
->  * bpf-script-example.c
->  * Test basic LLVM building
->  */
-> #ifndef LINUX_VERSION_CODE
-> # error Need LINUX_VERSION_CODE
-> # error Example: for 4.2 kernel, put 'clang-opt=3D"-DLINUX_VERSION_CODE=
-=3D0x40200" into llvm section of ~/.perfconfig'
-> #endif
-> #define BPF_ANY 0
-> #define BPF_MAP_TYPE_ARRAY 2
-> #define BPF_FUNC_map_lookup_elem 1
-> #define BPF_FUNC_map_update_elem 2
->
-> static void *(*bpf_map_lookup_elem)(void *map, void *key) =3D
->         (void *) BPF_FUNC_map_lookup_elem;
-> static void *(*bpf_map_update_elem)(void *map, void *key, void *value, in=
-t flags) =3D
->         (void *) BPF_FUNC_map_update_elem;
->
-> struct bpf_map_def {
->         unsigned int type;
->         unsigned int key_size;
->         unsigned int value_size;
->         unsigned int max_entries;
-> };
->
-> #define SEC(NAME) __attribute__((section(NAME), used))
-> struct bpf_map_def SEC("maps") flip_table =3D {
->         .type =3D BPF_MAP_TYPE_ARRAY,
->         .key_size =3D sizeof(int),
->         .value_size =3D sizeof(int),
->         .max_entries =3D 1,
-> };
->
-> SEC("func=3Ddo_epoll_wait")
-> int bpf_func__SyS_epoll_pwait(void *ctx)
-> {
->         int ind =3D0;
->         int *flag =3D bpf_map_lookup_elem(&flip_table, &ind);
->         int new_flag;
->         if (!flag)
->                 return 0;
->         /* flip flag and store back */
->         new_flag =3D !*flag;
->         bpf_map_update_elem(&flip_table, &ind, &new_flag, BPF_ANY);
->         return new_flag;
-> }
-> char _license[] SEC("license") =3D "GPL";
-> int _version SEC("version") =3D LINUX_VERSION_CODE;
-> ' | $CLANG_EXEC -D__KERNEL__ -D__NR_CPUS__=3D$NR_CPUS -DLINUX_VERSION_COD=
-E=3D$LINUX_VERSION_CODE $CLANG_OPTIONS $PERF_BPF_INC_OPTIONS $KERNEL_INC_OP=
-TIONS -Wno-unused-value -Wno-pointer-sign -working-directory $WORKING_DIR -=
-c "$CLANG_SOURCE" -target bpf $CLANG_EMIT_LLVM -O2 -o - $LLVM_OPTIONS_PIPE
-> llvm compiling command : echo '// SPDX-License-Identifier: GPL-2.0
-> /*
->  * bpf-script-example.c
->  * Test basic LLVM building
->  */
-> #ifndef LINUX_VERSION_CODE
-> # error Need LINUX_VERSION_CODE
-> # error Example: for 4.2 kernel, put 'clang-opt=3D-DLINUX_VERSION_CODE=3D=
-0x40200 into llvm section of ~/.perfconfig'
-> #endif
-> #define BPF_ANY 0
-> #define BPF_MAP_TYPE_ARRAY 2
-> #define BPF_FUNC_map_lookup_elem 1
-> #define BPF_FUNC_map_update_elem 2
->
-> static void *(*bpf_map_lookup_elem)(void *map, void *key) =3D
->         (void *) BPF_FUNC_map_lookup_elem;
-> static void *(*bpf_map_update_elem)(void *map, void *key, void *value, in=
-t flags) =3D
->         (void *) BPF_FUNC_map_update_elem;
->
-> struct bpf_map_def {
->         unsigned int type;
->         unsigned int key_size;
->         unsigned int value_size;
->         unsigned int max_entries;
-> };
->
-> #define SEC(NAME) __attribute__((section(NAME), used))
-> struct bpf_map_def SEC(maps) flip_table =3D {
->         .type =3D BPF_MAP_TYPE_ARRAY,
->         .key_size =3D sizeof(int),
->         .value_size =3D sizeof(int),
->         .max_entries =3D 1,
-> };
->
-> SEC(func=3Ddo_epoll_wait)
-> int bpf_func__SyS_epoll_pwait(void *ctx)
-> {
->         int ind =3D0;
->         int *flag =3D bpf_map_lookup_elem(&flip_table, &ind);
->         int new_flag;
->         if (!flag)
->                 return 0;
->         /* flip flag and store back */
->         new_flag =3D !*flag;
->         bpf_map_update_elem(&flip_table, &ind, &new_flag, BPF_ANY);
->         return new_flag;
-> }
-> char _license[] SEC(license) =3D GPL;
-> int _version SEC(version) =3D LINUX_VERSION_CODE;
-> ' | /usr/lib64/ccache/clang -D__KERNEL__ -D__NR_CPUS__=3D8 -DLINUX_VERSIO=
-N_CODE=3D0x5110b -xc -g -I/home/acme/lib/perf/include/bpf -nostdinc -I./arc=
-h/x86/include -I./arch/x86/include/generated  -I./include -I./arch/x86/incl=
-ude/uapi -I./arch/x86/include/generated/uapi -I./include/uapi -I./include/g=
-enerated/uapi -include ./include/linux/compiler-version.h -include ./includ=
-e/linux/kconfig.h  -Wno-unused-value -Wno-pointer-sign -working-directory /=
-lib/modules/5.17.11-300.fc36.x86_64/build -c - -target bpf  -O2 -o -
-> libbpf: loading object '[basic_bpf_test]' from buffer
-> libbpf: elf: section(3) func=3Ddo_epoll_wait, size 192, link 0, flags 6, =
-type=3D1
-> libbpf: sec 'func=3Ddo_epoll_wait': found program 'bpf_func__SyS_epoll_pw=
-ait' at insn offset 0 (0 bytes), code size 24 insns (192 bytes)
-> libbpf: elf: section(4) .relfunc=3Ddo_epoll_wait, size 32, link 22, flags=
- 0, type=3D9
-> libbpf: elf: section(5) maps, size 16, link 0, flags 3, type=3D1
-> libbpf: elf: section(6) license, size 4, link 0, flags 3, type=3D1
-> libbpf: license of [basic_bpf_test] is GPL
-> libbpf: elf: section(7) version, size 4, link 0, flags 3, type=3D1
-> libbpf: kernel version of [basic_bpf_test] is 5110b
-> libbpf: elf: section(13) .BTF, size 576, link 0, flags 0, type=3D1
-> libbpf: elf: section(15) .BTF.ext, size 256, link 0, flags 0, type=3D1
-> libbpf: elf: section(22) .symtab, size 336, link 1, flags 0, type=3D2
-> libbpf: looking for externs among 14 symbols...
-> libbpf: collected 0 externs total
-> libbpf: elf: found 1 legacy map definitions (16 bytes) in [basic_bpf_test=
-]
-> libbpf: map 'flip_table' (legacy): legacy map definitions are deprecated,=
- use BTF-defined maps instead
-> libbpf: map 'flip_table' (legacy): at sec_idx 5, offset 0.
-> libbpf: map 11 is "flip_table"
-> libbpf: Use of BPF_ANNOTATE_KV_PAIR is deprecated, use BTF-defined maps i=
-n .maps section instead
-> libbpf: map:flip_table container_name:____btf_map_flip_table cannot be fo=
-und in BTF. Missing BPF_ANNOTATE_KV_PAIR?
-> libbpf: sec '.relfunc=3Ddo_epoll_wait': collecting relocation for section=
-(3) 'func=3Ddo_epoll_wait'
-> libbpf: sec '.relfunc=3Ddo_epoll_wait': relo #0: insn #4 against 'flip_ta=
-ble'
-> libbpf: prog 'bpf_func__SyS_epoll_pwait': found map 0 (flip_table, sec 5,=
- off 0) for insn #4
-> libbpf: sec '.relfunc=3Ddo_epoll_wait': relo #1: insn #17 against 'flip_t=
-able'
-> libbpf: prog 'bpf_func__SyS_epoll_pwait': found map 0 (flip_table, sec 5,=
- off 0) for insn #17
-> bpf: config program 'func=3Ddo_epoll_wait'
-> symbol:do_epoll_wait file:(null) line:0 offset:0 return:0 lazy:(null)
-> bpf: config 'func=3Ddo_epoll_wait' is ok
-> Looking at the vmlinux_path (8 entries long)
-> symsrc__init: build id mismatch for vmlinux.
-> Using /usr/lib/debug/lib/modules/5.17.11-300.fc36.x86_64/vmlinux for symb=
-ols
-> Open Debuginfo file: /usr/lib/debug/.build-id/f2/26f5d75e6842add57095a061=
-5a1e5c16783dd7.debug
-> Try to find probe point from debuginfo.
-> Matched function: do_epoll_wait [38063fb]
-> Probe point found: do_epoll_wait+0
-> Found 1 probe_trace_events.
-> Opening /sys/kernel/tracing//kprobe_events write=3D1
-> Opening /sys/kernel/tracing//README write=3D0
-> Writing event: p:perf_bpf_probe/func _text+3943040
-> libbpf: map 'flip_table': created successfully, fd=3D4
-> libbpf: prog 'bpf_func__SyS_epoll_pwait': BPF program load failed: Invali=
-d argument
-> libbpf: prog 'bpf_func__SyS_epoll_pwait': -- BEGIN PROG LOAD LOG --
-> Invalid insn code at line_info[11].insn_off
+After reading the linked thread (which I should have done before
+submitting my previous reply :)),  if I'm understanding it correctly,
+it seems then that the work needed for tc bpf_link will be in a new
+direction that's not based on the code in this v2 patchset. I'm
+interested in learning more about bpf link and tc - I can pick this up
+to work on. But if this was something you wanted to work on though,
+please don't hesitate to let me know; I can find some other bpf link
+thing to work on instead if that's the case.
 
-Mismatched line_info.
 
-Jiri, I think we need to clear func_info and line_info in
-bpf_program__set_insns() because at that point func/line info can be
-mismatched and won't correspond to the actual set of instructions.
-
-Arnaldo, thanks for testing and providing details!
-
-> processed 0 insns (limit 1000000) max_states_per_insn 0 total_states 0 pe=
-ak_states 0 mark_read 0
-> -- END PROG LOAD LOG --
-> libbpf: failed to load program 'bpf_func__SyS_epoll_pwait'
-> libbpf: failed to load object '[basic_bpf_test]'
-> bpf: load objects failed: err=3D-22: (Invalid argument)
-> Failed to add events selected by BPF
-> Opening /sys/kernel/tracing//kprobe_events write=3D1
-> Opening /sys/kernel/tracing//uprobe_events write=3D1
-> Parsing probe_events: p:perf_bpf_probe/func _text+3943040
-> Group:perf_bpf_probe Event:func probe:p
-> Writing event: -:perf_bpf_probe/func
-> test child finished with -1
-
-[...]
+> >
+> >   [0]: https://lore.kernel.org/bpf/15cd0a9c-95a1-9766-fca1-4bf9d09e4100=
+@iogearbox.net
+> >
+> > > The reason I'm asking is because there are a few networking teams
+> > > within Meta that have been requesting this feature :)
+> > >
+> > > Thanks,
+> > > Joanne
+> > >
+> > > > Changelog:
+> > > > ----------
+> > > > v1 (RFC) -> v2
+> > > > v1: https://lore.kernel.org/bpf/20210528195946.2375109-1-memxor@gma=
+il.com
+> > > >
+> > > >  * Avoid overwriting other members of union in bpf_attr (Andrii)
+> > > >  * Set link to NULL after bpf_link_cleanup to avoid double free (An=
+drii)
+> > > >  * Use __be16 to store the result of htons (Kernel Test Robot)
+> > > >  * Make assignment of tcf_exts::net conditional on CONFIG_NET_CLS_A=
+CT
+> > > >    (Kernel Test Robot)
+> > > >
+> > > > Kumar Kartikeya Dwivedi (7):
+> > > >   net: sched: refactor cls_bpf creation code
+> > > >   bpf: export bpf_link functions for modules
+> > > >   net: sched: add bpf_link API for bpf classifier
+> > > >   net: sched: add lightweight update path for cls_bpf
+> > > >   tools: bpf.h: sync with kernel sources
+> > > >   libbpf: add bpf_link based TC-BPF management API
+> > > >   libbpf: add selftest for bpf_link based TC-BPF management API
+> > > >
+> > > >  include/linux/bpf_types.h                     |   3 +
+> > > >  include/net/pkt_cls.h                         |  13 +
+> > > >  include/net/sch_generic.h                     |   6 +-
+> > > >  include/uapi/linux/bpf.h                      |  15 +
+> > > >  kernel/bpf/syscall.c                          |  14 +-
+> > > >  net/sched/cls_api.c                           | 139 ++++++-
+> > > >  net/sched/cls_bpf.c                           | 389 ++++++++++++++=
+++--
+> > > >  tools/include/uapi/linux/bpf.h                |  15 +
+> > > >  tools/lib/bpf/bpf.c                           |   8 +-
+> > > >  tools/lib/bpf/bpf.h                           |   8 +-
+> > > >  tools/lib/bpf/libbpf.c                        |  59 ++-
+> > > >  tools/lib/bpf/libbpf.h                        |  17 +
+> > > >  tools/lib/bpf/libbpf.map                      |   1 +
+> > > >  tools/lib/bpf/netlink.c                       |   5 +-
+> > > >  tools/lib/bpf/netlink.h                       |   8 +
+> > > >  .../selftests/bpf/prog_tests/tc_bpf_link.c    | 285 +++++++++++++
+> > > >  16 files changed, 940 insertions(+), 45 deletions(-)
+> > > >  create mode 100644 tools/lib/bpf/netlink.h
+> > > >  create mode 100644 tools/testing/selftests/bpf/prog_tests/tc_bpf_l=
+ink.c
+> > > >
+> > > > --
+> > > > 2.31.1
+> > > >
+> >
+> > --
+> > Kartikeya
