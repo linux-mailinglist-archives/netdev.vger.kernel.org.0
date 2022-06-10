@@ -2,269 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C9C8546C3C
+	by mail.lfdr.de (Postfix) with ESMTP id E635D546C3D
 	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 20:21:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349436AbiFJSVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 14:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42752 "EHLO
+        id S1346543AbiFJSVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 14:21:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235665AbiFJSVS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 14:21:18 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 045E9A5AB1
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 11:21:17 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id c30so13867892ljr.9
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 11:21:16 -0700 (PDT)
+        with ESMTP id S235665AbiFJSVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 14:21:13 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00EC5A5AB1
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 11:21:11 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id g25so30248ljm.2
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 11:21:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=X9snqEMH/Ix6Dli1RP50OG94L6ccIMvYVQKbL6sOtAw=;
-        b=f+jgp7E7S9ANufp44+Ow9tf3HKLh0tJjTrsCy4BlATa9Gu4Penj5a4XnbZOwzNDsL2
-         wyvFice2qNSvnZo/xVkC7t3TMsJuHJIAl8oJVohlWCb7xu9yW74m8cYlivD5BQURRyLf
-         AuR81xBsCeI7/k/YQd8GY/YmL7G3lHc8/GB+xb50b7B3AczPnTBqZcxelduvNRW4jEdC
-         L5i4BMXrYNqNFp6hIjQ1ilfnyDQe24a1cohEAyrmlZOqI+9PYm9UVc1nkE8DX0LaJ9Sa
-         NPAl5YnTs02o5CYtjmvoV1Bis+a0C5xIGZALbxrFDCZhZfF6POph3NXfK+WtqrAhkuAa
-         7gAw==
+        h=from:date:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=WDbQGcHRB7r7S5NMylyIuOM8frRwF1KEs/FSKYlEImA=;
+        b=RCZWuazzpcQjwWjy4ZXSkRLut2iEIdBtngnIPrU8I5h9Cw5Rhs559+xRaaphblYkAL
+         mCRlTjuQbV30c3ldu91ime6bZznoJ0jfLyRVDxIupVIysJG29NSenRSvhUOC46xNGyel
+         MYd3Iu0JdkN+l9w6BG2fjE/SV9vq/wUNSSutybSGQHRrUkyVY7oEcrzL3CnmTgt2yoqf
+         53Y+ILg197cC9S1zjHY9TDIrpN4xmEJgmzW+xN03j5hyQPvDzWMgCZfmpxPr3Z7iJk+V
+         vvMkftt2ONgO2NOs7xOywG0YRiZ2wBQUZOyoT6Jl6jmbXCVp26S00F/EsUMMMTvQzkR/
+         JhKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=X9snqEMH/Ix6Dli1RP50OG94L6ccIMvYVQKbL6sOtAw=;
-        b=I/vO9fbZxLRsZ6sf6OJGBVsYYTNZsc84XeEf1dv3LNsZXZ3Dn1CiRkyayY757Yomo7
-         0q2tJHPE311bPmILDD4Go1BdHga/VoDbd9tBThKP0L0IRkR0v1KZx9/FcP3B08ZyzO0p
-         NmFMyA8oSFGP34n3IQ3DMx8RqWfcQ5vefXQIaMXpTrMWHyEBvgbr8fw2/sWPi4L+FNhD
-         fv9vCyO24jmivPTSEO8sFSxFYOcNO3NzO3skUJoEWRnnk1plvXrx+DWSl9YEbHZRjnOk
-         W4u72rFOwRgs/X+/TzEyXHrOJGP3jS5CWrNgbHCq4J1LKdJ3XEOqSaLgKTo4YOj8jp+8
-         F2Pg==
-X-Gm-Message-State: AOAM53198XZpO2Mga9tfd5uKhJkY5JObWyG9zyzgqn6dEgeU45r+L0p5
-        yevaC9IYcv0s5CzgfrZSckeeaQwHu6DSW4lOzD4TyO19MdVjyA==
-X-Google-Smtp-Source: ABdhPJy5jObSqH1LJzpnVjYFBkgQIsUppxjo00fJh8uVp75EpEt+fksSO1g5RkteBZM5zlnGh57hOSFU09sd/g7QCt8=
-X-Received: by 2002:a2e:83c9:0:b0:24d:a95d:7b7a with SMTP id
- s9-20020a2e83c9000000b0024da95d7b7amr63485268ljh.254.1654885275121; Fri, 10
- Jun 2022 11:21:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAMJ=MEcPzkBLynL7tpjdv0TCRA=Cmy13e7wmFXrr-+dOVcshKA@mail.gmail.com>
- <f0f30591-f503-ae7c-9293-35cca4ceec84@gmail.com> <CAMJ=MEdctBNSihixym1ZO9RVaCa_FpTQ8e4xFukz3eN8F1P8bQ@mail.gmail.com>
- <13735ebc-fc54-22ff-21a1-da1895a74446@gmail.com>
-In-Reply-To: <13735ebc-fc54-22ff-21a1-da1895a74446@gmail.com>
-From:   Ronny Meeus <ronny.meeus@gmail.com>
-Date:   Fri, 10 Jun 2022 20:21:03 +0200
-Message-ID: <CAMJ=MEdP0eYVEUT+6LS7O8Mj5NMXzdOP_gfRtsc8_JubV+7oOA@mail.gmail.com>
-Subject: Re: TCP socket send return EAGAIN unexpectedly when sending small fragments
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=WDbQGcHRB7r7S5NMylyIuOM8frRwF1KEs/FSKYlEImA=;
+        b=Wl7m4b4Z0oGQRcQl/c+PGFvp6CBdPbFqUKave4WQMlxTLzH5qsLX4xVAzTBepdK6JX
+         hq2eqW1OfF/0LjVHGnt5ozWkKZJx8sFt6BWXsgM3VDJegYyb64Si8mt0P2jp8D2mfTdn
+         GwqAHi9qVIiK1euFmhDinCLi1q2cWemeh1uijGBojyVvcL+w6/myhUPk91DCFfgoIFPc
+         8DqlTimolHPZsrsmRf/VBg4EUFNWkUtdldm22R1FSil2m2p2U0Qg9HrM6CPJ7ihnw8/4
+         lbWeo5qRMJu6Qz/Ho4YmjFyznb8KkjltQDUPRpIVdH23Ok8sgrRXfv77pSCzvORW/o1p
+         LbBQ==
+X-Gm-Message-State: AOAM5311HpUE2goqnobQBZWiQVYLHHucuZiQmkh8egSmNGdYPN9e4uWf
+        1AkFz9A96b0icFBq8aZzsKM=
+X-Google-Smtp-Source: ABdhPJwSSodiYyKV/+NOlpi/bm4vHoSjdYNUY/Tq/aH0efvciBkXBvvqLJ19HM43Lq4cyQsiiu4cGQ==
+X-Received: by 2002:a2e:96c1:0:b0:258:e8ec:3889 with SMTP id d1-20020a2e96c1000000b00258e8ec3889mr2225723ljj.6.1654885270056;
+        Fri, 10 Jun 2022 11:21:10 -0700 (PDT)
+Received: from extra.gateflow.net ([46.109.159.121])
+        by smtp.gmail.com with ESMTPSA id i26-20020ac25b5a000000b00477c0365b20sm4803984lfp.188.2022.06.10.11.21.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Jun 2022 11:21:09 -0700 (PDT)
+From:   Anton Makarov <antonmakarov11235@gmail.com>
+X-Google-Original-From: Anton Makarov <anton.makarov11235@gmail.com>
+Date:   Fri, 10 Jun 2022 21:21:08 +0300
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>
+Cc:     Anton Makarov <antonmakarov11235@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, david.lebrun@uclouvain.be,
+        netdev@vger.kernel.org,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+Subject: Re: [net-next v2 1/1] net: seg6: Add support for SRv6 Headend
+ Reduced Encapsulation
+Message-Id: <20220610212108.ed54aa540f4b01d4018b04ee@gmail.com>
+In-Reply-To: <20220610135958.cb99b9122925b62eba634337@uniroma2.it>
+References: <20220609132750.4917-1-anton.makarov11235@gmail.com>
+        <20220610135958.cb99b9122925b62eba634337@uniroma2.it>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Op vr 10 jun. 2022 om 19:47 schreef Eric Dumazet <eric.dumazet@gmail.com>:
->
->
-> On 6/10/22 08:16, Ronny Meeus wrote:
-> > Op vr 10 jun. 2022 om 16:21 schreef Eric Dumazet <erdnetdev@gmail.com>:
-> >>
-> >> On 6/10/22 05:48, Ronny Meeus wrote:
-> >>> Hello
-> >>>
-> >>> I have a small test application written in C that creates a local (in
-> >>> process) TCP channel via loopback.
-> >>> (kernel version is 3.10.0 but the same issue is also seen for example
-> >>> on a 4.9 kernel).
-> >>>
-> >>> On the client side, an SO_SNDBUF of 5Kb is configured (which is
-> >>> doubled by the kernel) while on the server side the default size is
-> >>> used.
-> >>> Both client and server side are running in non-blocking mode.
-> >>>
-> >>> The server side is not reading its socket so all data is simply queued
-> >>> in the socket's receive buffer.
-> >>> On the client side, the client is writing data into the socket in a
-> >>> loop until the write returns an error (EAGAIN in this case).
-> >>>
-> >>> Depending on the size of data I send on this socket, I get the EAGAIN
-> >>> on the client side already after a small number of messages.
-> >>> For example when sending 106 byte messages, I see the first EAGAIN
-> >>> after 21 write calls:
-> >>> # ./tcp_client_server 106
-> >>> using data size 106
-> >>> client send buffer size 5000
-> >>> client socket snd_buf: 10000
-> >>> ERRNO = 11 count=21
-> >>>
-> >>> The same is observed for all sizes smaller than or equal to 107 bytes.
-> >>>
-> >>> When getting the socket stats using ss I see all data (2226b) pending
-> >>> in the socket on the server side:
-> >>> # ss -tmi  | grep -i X11 -A 1
-> >>> ESTAB      0      0      127.0.0.1:59792                127.0.0.1:x11
-> >>> skmem:(r0,rb1061296,t0,tb10000,f0,w0,o0,bl0,d0) cubic wscale:7,7
-> >>> rto:202 rtt:1.276/2.504 mss:21888 rcvmss:536 advmss:65483 cwnd:10
-> >>> bytes_acked:2227 segs_out:24 segs_in:18 send 1372.3Mbps lastsnd:3883
-> >>> lastrcv:771546999 lastack:3883 pacing_rate 2744.3Mbps retrans:0/1
-> >>> rcv_space:43690
-> >>> --
-> >>> ESTAB      2226   0      127.0.0.1:x11
-> >>> 127.0.0.1:59792
-> >>> skmem:(r4608,rb1061488,t0,tb2626560,f3584,w0,o0,bl0,d1) cubic
-> >>> wscale:7,7 rto:200 ato:40 mss:21888 rcvmss:536 advmss:65483 cwnd:10
-> >>> bytes_received:2226 segs_out:17 segs_in:24 lastsnd:3893 lastrcv:3893
-> >>> lastack:3883 rcv_space:43690
-> >>>
-> >>>
-> >>> When sending larger messages, the EAGAIN only is seen after 2116 writes.
-> >>> # ./tcp_client_server 108
-> >>> using data size 108
-> >>> client send buffer size 5000
-> >>> client socket snd_buf: 10000
-> >>> ERRNO = 11 count=2116
-> >>>
-> >>> Again, the ss shows all data being present on the server side (108 *
-> >>> 2116 = 228528)
-> >>> ESTAB      228528 0      127.0.0.1:x11
-> >>> 127.0.0.1:59830
-> >>> skmem:(r976896,rb1061488,t0,tb2626560,f2048,w0,o0,bl0,d1) cubic
-> >>> wscale:7,7 rto:200 ato:80 mss:21888 rcvmss:536 advmss:65483 cwnd:10
-> >>> bytes_received:228528 segs_out:436 segs_in:2119 lastsnd:3615
-> >>> lastrcv:3606 lastack:3596 rcv_rtt:1 rcv_space:43690
-> >>> --
-> >>> ESTAB      0      0      127.0.0.1:59830                127.0.0.1:x11
-> >>> skmem:(r0,rb1061296,t0,tb10000,f0,w0,o0,bl0,d0) cubic wscale:7,7
-> >>> rto:206 rtt:5.016/9.996 mss:21888 rcvmss:536 advmss:65483 cwnd:10
-> >>> bytes_acked:228529 segs_out:2119 segs_in:437 send 349.1Mbps
-> >>> lastsnd:3596 lastrcv:771704718 lastack:3566 pacing_rate 698.1Mbps
-> >>> retrans:0/1 rcv_space:43690
-> >>>
-> >>>
-> >>>
-> >>> When I enlarge the SNDBUF on the client side to for example 10K, I see
-> >>> that more messages can be sent:
-> >>> # ./tcp_client_server 106 10000
-> >>> using data size 106
-> >>> client send buffer size 10000
-> >>> client socket snd_buf: 20000
-> >>> ERRNO = 11 count=1291
-> >>>
-> >>> I also captured the packets on the interface using wireshark and it
-> >>> looks like the error is returned after the TCP layer has done a
-> >>> retransmit (after 10ms) of the last packet sent on the connection.
-> >>>
-> >>> 10:12:38.186451 IP localhost.48470 > localhost.etlservicemgr: Flags
-> >>> [P.], seq 1165:1265, ack 165, win 342, options [nop,nop,TS val
-> >>> 593860562 ecr 593860562], length 100
-> >>> 10:12:38.186461 IP localhost.etlservicemgr > localhost.48470: Flags
-> >>> [.], ack 1265, win 342, options [nop,nop,TS val 593860562 ecr
-> >>> 593860562], length 0
-> >>> 10:12:38.186478 IP localhost.48470 > localhost.etlservicemgr: Flags
-> >>> [P.], seq 1265:1365, ack 165, win 342, options [nop,nop,TS val
-> >>> 593860562 ecr 593860562], length 100
-> >>> 10:12:38.186488 IP localhost.etlservicemgr > localhost.48470: Flags
-> >>> [.], ack 1365, win 342, options [nop,nop,TS val 593860562 ecr
-> >>> 593860562], length 0
-> >>> 10:12:38.186505 IP localhost.48470 > localhost.etlservicemgr: Flags
-> >>> [P.], seq 1365:1465, ack 165, win 342, options [nop,nop,TS val
-> >>> 593860562 ecr 593860562], length 100
-> >>> 10:12:38.186516 IP localhost.etlservicemgr > localhost.48470: Flags
-> >>> [.], ack 1465, win 342, options [nop,nop,TS val 593860562 ecr
-> >>> 593860562], length 0
-> >>> 10:12:38.186533 IP localhost.48470 > localhost.etlservicemgr: Flags
-> >>> [P.], seq 1465:1565, ack 165, win 342, options [nop,nop,TS val
-> >>> 593860562 ecr 593860562], length 100
-> >>> 10:12:38.186543 IP localhost.etlservicemgr > localhost.48470: Flags
-> >>> [.], ack 1565, win 342, options [nop,nop,TS val 593860562 ecr
-> >>> 593860562], length 0
-> >>> 10:12:38.186560 IP localhost.48470 > localhost.etlservicemgr: Flags
-> >>> [P.], seq 1565:1665, ack 165, win 342, options [nop,nop,TS val
-> >>> 593860562 ecr 593860562], length 100
-> >>> 10:12:38.186578 IP localhost.48470 > localhost.etlservicemgr: Flags
-> >>> [P.], seq 1665:1765, ack 165, win 342, options [nop,nop,TS val
-> >>> 593860562 ecr 593860562], length 100
-> >>> 10:12:38.186595 IP localhost.48470 > localhost.etlservicemgr: Flags
-> >>> [P.], seq 1765:1865, ack 165, win 342, options [nop,nop,TS val
-> >>> 593860562 ecr 593860562], length 100
-> >>> 10:12:38.186615 IP localhost.48470 > localhost.etlservicemgr: Flags
-> >>> [P.], seq 1865:1965, ack 165, win 342, options [nop,nop,TS val
-> >>> 593860562 ecr 593860562], length 100
-> >>> 10:12:38.186632 IP localhost.48470 > localhost.etlservicemgr: Flags
-> >>> [P.], seq 1965:2065, ack 165, win 342, options [nop,nop,TS val
-> >>> 593860562 ecr 593860562], length 100
-> >>> 10:12:38.196064 IP localhost.48470 > localhost.etlservicemgr: Flags
-> >>> [P.], seq 1965:2065, ack 165, win 342, options [nop,nop,TS val
-> >>> 593860572 ecr 593860562], length 100
-> >>> 10:12:38.196128 IP localhost.etlservicemgr > localhost.48470: Flags
-> >>> [.], ack 2065, win 342, options [nop,nop,TS val 593860572 ecr
-> >>> 593860562,nop,nop,sack 1 {1965:2065}], length 0
-> >>>
-> >>> Now my question is: how is it possible that I can only send 21
-> >>> messages of 106 bytes before I see the EAGAIN while when sending
-> >>> larger messages I can send 2K+ messages.
-> >>
-> >> This is because kernel tracks kernel memory usage.
-> >>
-> >> Small packets incur more overhead.
-> >>
-> >> The doubling of SO_SNDBUF user value, is an heuristic based on the fact
-> >> the kernel
-> >>
-> >> uses a 2x overhead estimation,
-> >>
-> >> while effective overhead can vary from ~1.001x to ~768x depending on
-> >> number of bytes per skb.
-> >>
-> > Hi Eric,
-> >
-> > thanks for the feedback but it is not completely clear to me.
-> >
-> > The small SNDBUF is on the client side and a large part of the data
-> > has already ACKed by the receiving side.
-> > Only the last 5 or 6 messages are waiting to be ACKed.
-> > So I would expect that the biggest part of the overhead is located on
-> > the receiving side where there is sufficient memory space (default
-> > RCVBUF size is used).
-> >
-> > If the 5 queued packets on the sending side would cause the EAGAIN
-> > issue, the real question maybe is why the receiving side is not
-> > sending the ACK within the 10ms while for earlier messages the ACK is
-> > sent much sooner.
->
->
-> delayed acks on receiver, when receiving small packet(s)
->
+Hi Andrea,
+Thank you very much for your feedback! Plese look at my response inline
+and let me know what you think about that. Many thanks!
 
-Great feedback.
+On Fri, 10 Jun 2022 13:59:58 +0200
+Andrea Mayer <andrea.mayer@uniroma2.it> wrote:
 
->
-> >
-> > Do you have any clue which kernel function does generate this EAGAIN?
-> > And what would be the correct solution to this problem?
->
->
-> I do not really see what is the problem you have.
+> Hi Anton,
+> please see my comments inline, thanks.
+> 
+> On Thu,  9 Jun 2022 16:27:50 +0300
+> Anton Makarov <antonmakarov11235@gmail.com> wrote:
+> 
+> > SRv6 Headend H.Encaps.Red and H.Encaps.L2.Red behaviors are implemented
+> > accordingly to RFC 8986. The H.Encaps.Red is an optimization of
+> > The H.Encaps behavior. The H.Encaps.L2.Red is an optimization of
+> > the H.Encaps.L2 behavior. Both new behaviors reduce the length of
+> > the SRH by excluding the first SID in the SRH of the pushed IPv6 header.
+> > The first SID is only placed in the Destination Address field
+> > of the pushed IPv6 header.
+> > 
+> > The push of the SRH is omitted when the SRv6 Policy only contains
+> > one segment.
+> > 
+> > Signed-off-by: Anton Makarov <anton.makarov11235@gmail.com>
+> > 
+> > ...
+> >  
+> > +/* encapsulate an IPv6 packet within an outer IPv6 header with reduced SRH */
+> > +int seg6_do_srh_encap_red(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
+> > +{
+> > +	struct dst_entry *dst = skb_dst(skb);
+> > +	struct net *net = dev_net(dst->dev);
+> > +	struct ipv6hdr *hdr, *inner_hdr6;
+> > +	struct iphdr *inner_hdr4;
+> > +	struct ipv6_sr_hdr *isrh;
+> > +	int hdrlen = 0, tot_len, err;
+> 
+> I suppose we should stick with the reverse XMAS tree code style.
 
-The actual problem I have is that the application behavior is
-completely different depending on the message size.
-I created the test application to be able to investigate something we
-see in the real-application and that is that libevent either queues a
-lot or does not queue anything.
-Libevent starts to queue data as soon as it sees the EAGAIN error.
+Sure, no problem.
 
->
-> Perhaps you should not set SO_SNDBUF, and let the kernel decide (auto
-> tune, and auto cork)
->
+> 
+> > +	__be32 flowlabel = 0;
+> 
+> this initialization is unnecessary since the variable is accessed for the first
+> time in writing, later in the code.
 
-I think this might indeed be a solution. Just remove the SO_SNDBUF, or
-at least use a much larger value.
+Sorry, missed this extra action. You are correct.
 
-> >
-> > Best regards,
-> > Ronny
-> >
+> 
+> > +	if (osrh->first_segment > 0)
+> > +		hdrlen = (osrh->hdrlen - 1) << 3;
+> > +
+> > +	tot_len = hdrlen + sizeof(struct ipv6hdr);
+> > +
+> > +	err = skb_cow_head(skb, tot_len + skb->mac_len);
+> > +	if (unlikely(err))
+> > +		return err;
+> > +
+> > +	inner_hdr6 = ipv6_hdr(skb);
+> > +	inner_hdr4 = ip_hdr(skb);
+> 
+> inner_hdr4 is only used in the *if* block that follows later on.
+
+Do you mean it has to be defined inside *if* block and assigned via
+inner_ip_hdr()?
+
+> 
+> > +	flowlabel = seg6_make_flowlabel(net, skb, inner_hdr6);
+> > +
+> > +	skb_push(skb, tot_len);
+> > +	skb_reset_network_header(skb);
+> > +	skb_mac_header_rebuild(skb);
+> > +	hdr = ipv6_hdr(skb);
+> > +
+> > +	memset(skb->cb, 0, sizeof(skb->cb));
+> 
+> is there a specific reason why we should consider the whole CB size and not
+> only the part covered by the struct inet6_skb_parm?
+
+Oh yes, memset(IP6CB(skb), 0, sizeof(*IP6CB(skb))) would be better. You
+are correct.
+
+> 
+> > +	IP6CB(skb)->iif = skb->skb_iif;
+> > +
+> > +	if (skb->protocol == htons(ETH_P_IPV6)) {
+> > +		ip6_flow_hdr(hdr, ip6_tclass(ip6_flowinfo(inner_hdr6)),
+> > +			     flowlabel);
+> > +		hdr->hop_limit = inner_hdr6->hop_limit;
+> > +	} else if (skb->protocol == htons(ETH_P_IP)) {
+> > +		ip6_flow_hdr(hdr, (unsigned int) inner_hdr4->tos, flowlabel);
+> > +		hdr->hop_limit = inner_hdr4->ttl;
+> > +	}
+> > +
+> 
+> Don't IPv4 and IPv6 cover all possible cases?
+
+In fact while case SEG6_IPTUN_MODE_ENCAP in seg6_do_srh() does
+preliminary check of protocol value, case SEG6_IPTUN_MODE_L2ENCAP does
+not. So potentially skb->protocol can be of any value. Although
+additional check brings extra impact on performance, sure.
+
+> 
+> > +	skb->protocol = htons(ETH_P_IPV6);
+> > +
+> > +	hdr->daddr = osrh->segments[osrh->first_segment];
+> > +	hdr->version = 6;
+> > +
+> > +	if (osrh->first_segment > 0) {
+> > +		hdr->nexthdr = NEXTHDR_ROUTING;
+> > +
+> > +		isrh = (void *)hdr + sizeof(struct ipv6hdr);
+> > +		memcpy(isrh, osrh, hdrlen);
+> > +
+> > +		isrh->nexthdr = proto;
+> > +		isrh->first_segment--;
+> > +		isrh->hdrlen -= 2;
+> > +	} else {
+> > +		hdr->nexthdr = proto;
+> > +	}
+> > +
+> > +	set_tun_src(net, dst->dev, &hdr->daddr, &hdr->saddr);
+> > +
+> > +#ifdef CONFIG_IPV6_SEG6_HMAC
+> > +	if (osrh->first_segment > 0 && sr_has_hmac(isrh)) {
+> > +		err = seg6_push_hmac(net, &hdr->saddr, isrh);
+> > +		if (unlikely(err))
+> > +			return err;
+> > +	}
+> > +#endif
+> > +
+> 
+> When there is only one SID and HMAC is configured, the SRH is not kept.
+> Aren't we losing information this way?
+
+Yes, but HMAC is just an optional part of SRH. RFC 8986 allows us to
+omit entire SRH in reduced encapsulation when the SRv6 Policy only
+contains one segment. And it seems to be the most usefull approach as
+far as:
+1) About all hardware implementations do not procede HMAC at all
+2) Too many networking guys have a great concern about huge overhead of
+SRv6 in compare with MPLS, so they are not happy to get extra 256 bits
+3) If one consider HMAC mandatory then there is still basic (not
+reduced) encapsulation option
+
+What do you think about it?
+
+> 
+> Andrea
+
+Anton
+
