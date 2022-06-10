@@ -2,119 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5400545B8B
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 07:19:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42C54545B98
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 07:20:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244385AbiFJFTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 01:19:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57740 "EHLO
+        id S1345679AbiFJFUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 01:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243933AbiFJFS6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 01:18:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58B935A8A;
-        Thu,  9 Jun 2022 22:18:57 -0700 (PDT)
+        with ESMTP id S1344794AbiFJFUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 01:20:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B520F3B02E
+        for <netdev@vger.kernel.org>; Thu,  9 Jun 2022 22:20:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F7F161E2B;
-        Fri, 10 Jun 2022 05:18:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C60CC34114;
-        Fri, 10 Jun 2022 05:18:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1654838336;
-        bh=2yFCZugsiNQZN0gkgMSO/PLnnK4cDobzksJyDLjp9Ts=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rh1PySG6mRmieZPY8cY0A1hPrIcbkuP807V49e98ihkLxbZ06HxYRwIuVMf+wTLDn
-         X/yCYKI3C60vy05a003Jfa/l8d0up/cE/3SCBy/NuCOYNPxYpirlNBYrpXNy/Wd9yS
-         jlJr0CyMDaP1q3f/tt8/VcfJ3YUsM+y3ifSXc9V4=
-Date:   Fri, 10 Jun 2022 07:18:49 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Bill Wendling <morbo@google.com>
-Cc:     isanbard@gmail.com, Tony Luck <tony.luck@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Jan Kara <jack@suse.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>,
-        Daniel Kiper <daniel.kiper@oracle.com>,
-        Ross Philipson <ross.philipson@oracle.com>,
-        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-mm@kvack.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, alsa-devel@alsa-project.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH 07/12] driver/char: use correct format characters
-Message-ID: <YqLUORmZQgG1D6lc@kroah.com>
-References: <20220609221702.347522-1-morbo@google.com>
- <20220609221702.347522-8-morbo@google.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 37A0861E21
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 05:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 82436C3411B;
+        Fri, 10 Jun 2022 05:20:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654838414;
+        bh=KxwWVK2e1SFoKzyThOLG3c8oR1poVvzW2TJYyN2quNY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=q+2JlbMPUPo5hjiaYYuOXlZ+/Uxhm5sHgtkPdwx30zl4bD9R3IJY+wtLN2BlpWjKR
+         f32cIPKeEqHMYbzzP1iuNVLfcJ8HK5JaNGUvoGJ4Zg9qU2IB9HFDm8+HmHosBSaD3s
+         yfnKHknTU3Ww5Y0esKZPTDLllLYZQPdKbjBA0mw3+z075MRXrF1gfIldOLVLEC4d+q
+         JzE0fC7YPmB6lUHSwzxli1zC3e68aRDe07pgdyt/AVpA9ziFfIs+PvG99LDfGmbkUE
+         zvq+/cZG0LvDH6qSaw5GT+qKNmgpIo1bqRI3Sx7ZS0aTBKxqbxiXAcfSNXHwmXjnI9
+         hJhoKPj9x+y8Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 639FEE737FE;
+        Fri, 10 Jun 2022 05:20:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220609221702.347522-8-morbo@google.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/2] nfp: fixes for v5.19
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165483841439.4442.2421968117974193794.git-patchwork-notify@kernel.org>
+Date:   Fri, 10 Jun 2022 05:20:14 +0000
+References: <20220608092901.124780-1-simon.horman@corigine.com>
+In-Reply-To: <20220608092901.124780-1-simon.horman@corigine.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        fei.qin@corigine.com, etienne.vanderlinde@corigine.com
 X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 10:16:26PM +0000, Bill Wendling wrote:
-> From: Bill Wendling <isanbard@gmail.com>
+Hello:
 
-Why isn't that matching your From: line in the email?
+This series was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
+On Wed,  8 Jun 2022 11:28:59 +0200 you wrote:
+> Hi,
 > 
-> When compiling with -Wformat, clang emits the following warnings:
-
-Is that ever a default build option for the kernel?
-
+> this short series includes two fixes for the NFP driver.
 > 
-> drivers/char/mem.c:775:16: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
->                               NULL, devlist[minor].name);
->                                     ^~~~~~~~~~~~~~~~~~~
+> 1. Restructure GRE+VLAN flower offload to address a miss match
+>    between the NIC firmware and driver implementation which
+>    prevented these features from working in combination.
 > 
-> Use a string literal for the format string.
-> 
-> Link: https://github.com/ClangBuiltLinux/linux/issues/378
-> Signed-off-by: Bill Wendling <isanbard@gmail.com>
-> ---
->  drivers/char/mem.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/char/mem.c b/drivers/char/mem.c
-> index 84ca98ed1dad..32d821ba9e4d 100644
-> --- a/drivers/char/mem.c
-> +++ b/drivers/char/mem.c
-> @@ -772,7 +772,7 @@ static int __init chr_dev_init(void)
->  			continue;
->  
->  		device_create(mem_class, NULL, MKDEV(MEM_MAJOR, minor),
-> -			      NULL, devlist[minor].name);
-> +			      NULL, "%s", devlist[minor].name);
+> [...]
 
-Please explain how this static string can ever be user controlled.
+Here is the summary with links:
+  - [net,1/2] nfp: avoid unnecessary check warnings in nfp_app_get_vf_config
+    https://git.kernel.org/netdev/net/c/03d5005ff735
+  - [net,2/2] nfp: flower: restructure flow-key for gre+vlan combination
+    https://git.kernel.org/netdev/net/c/a0b843340dae
 
-thanks,
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-greg k-h
+
