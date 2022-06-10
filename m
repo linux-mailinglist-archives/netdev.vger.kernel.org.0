@@ -2,95 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1D72546DE2
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 21:59:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EA1F546DF7
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 22:04:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346609AbiFJT7m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 15:59:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
+        id S1348521AbiFJUE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 16:04:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234379AbiFJT7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 15:59:40 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878198CB32
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 12:59:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654891177; x=1686427177;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=yUqjYbg9XEfuol0E9AvETNcK/5MwJ8Do8WYSgi731to=;
-  b=DpgPHyxnTCaWUdaqitorF2zR8WSYeqYDE8W6yCq3Jz6XHK6blYycpuM0
-   takfJyAPwF8FnR76DzHqR6eULw7eTbLKe/HDPeDxN3mG/pGY5M9Gy2qA7
-   x6WPbiv44YqvbxZbWfAphO8FIrtmhwS16SlYhplI+PQC+nm40HQwrEiy6
-   R9z6kw3lG1hCVYnPOSbDTJM2sO7zGePOWM286QdNhvH6chjvtRagl+EqQ
-   X5Snd30GuauNjgVw96cmvnwCcicEF4/vnM1JUJfxwkrsSLbqvPHtN0xN2
-   y2JQAJ06S3Fy5FEfiM9LI/725LcuO/VCYPJQWFzGG1DeVdrKLj3sqc6hN
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="339482408"
-X-IronPort-AV: E=Sophos;i="5.91,291,1647327600"; 
-   d="scan'208";a="339482408"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 12:59:27 -0700
-X-IronPort-AV: E=Sophos;i="5.91,291,1647327600"; 
-   d="scan'208";a="909088282"
-Received: from efbarbud-mobl1.amr.corp.intel.com (HELO csouzax-mobl2.amr.corp.intel.com) ([10.212.104.59])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 12:59:27 -0700
-Date:   Fri, 10 Jun 2022 12:59:26 -0700 (PDT)
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-cc:     netdev@vger.kernel.org, Ossama Othman <ossama.othman@intel.com>,
-        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
-        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
-Subject: Re: [PATCH net-next 1/2] mptcp: fix conflict with <netinet/in.h>
-In-Reply-To: <20220610111607.38b003e1@kernel.org>
-Message-ID: <a74a82cf-130-9eef-d128-2c88e081ba31@linux.intel.com>
-References: <20220608191919.327705-1-mathew.j.martineau@linux.intel.com> <20220608191919.327705-2-mathew.j.martineau@linux.intel.com> <20220609225936.4cba4860@kernel.org> <d4c74484-da9-8af3-e25b-93de29443840@linux.intel.com>
- <20220610111607.38b003e1@kernel.org>
+        with ESMTP id S1347324AbiFJUEY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 16:04:24 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0463C4A3;
+        Fri, 10 Jun 2022 13:04:22 -0700 (PDT)
+Received: from sslproxy04.your-server.de ([78.46.152.42])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nzkrk-0004ln-KS; Fri, 10 Jun 2022 22:04:20 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nzkrk-000NXv-Aq; Fri, 10 Jun 2022 22:04:20 +0200
+Subject: Re: [PATCH bpf-next v2 0/7] Add bpf_link based TC-BPF API
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Joanne Koong <joannelkoong@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        netdev <netdev@vger.kernel.org>, john.fastabend@gmail.com
+References: <20210604063116.234316-1-memxor@gmail.com>
+ <CAJnrk1YJe-wtXFF0U2cuZUdd-gH1Y80Ewf3ePo=vh-nbsSBZgg@mail.gmail.com>
+ <20220610125830.2tx6syagl2rphl35@apollo.legion>
+ <CAJnrk1YCBn2EkVK89f5f3ijFYUDhLNpjiH8buw8K3p=JMwAc1Q@mail.gmail.com>
+ <CAJnrk1YCSaRjd88WCzg4ccv59h0Dn99XXsDDT4ddzz4UYiZmbg@mail.gmail.com>
+ <20220610193418.4kqpu7crwfb5efzy@apollo.legion>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <e82d41e4-c1c0-7387-8c83-b71ecb9d92d2@iogearbox.net>
+Date:   Fri, 10 Jun 2022 22:04:19 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220610193418.4kqpu7crwfb5efzy@apollo.legion>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26568/Fri Jun 10 10:06:23 2022)
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Jun 2022, Jakub Kicinski wrote:
+Hi Joanne, hi Kumar,
 
-> On Fri, 10 Jun 2022 11:00:28 -0700 (PDT) Mat Martineau wrote:
->> This is a minor "fix" to be sure, which I thought did not meet the bar for
->> net and therefore submitted for net-next. It's not prep for another
->> change, it's something Ossama and I noticed when doing code review for a
->> userspace program that included the header. There's no problem with kernel
->> compilation, and there's also no issue if the userspace program happens to
->> include netinet/in.h before linux/mptcp.h
->>
->>
->> If my threshold for the net branch is too high, I have no objection to
->> having this patch applied there and will recalibrate :)
->>
->> Do you prefer to have no Fixes: tags in net-next, or did that just seem
->> ambiguous in this case?
->
-> The important point is that the middle ground of marking things as fixes
-> and at the same time putting them in -next, to still get them
-> backported but with an extended settling time -- that middle ground
-> does not exist.
->
-> If we look at the patch from the "do we want it backported or not"
-> perspective I think the answer is yes, hence I'd lean towards net.
-> If you think it doesn't matter enough for backport - we can drop the
-> fixes tag and go with net-next. Unfortunately I don't have enough
-> direct experience to tell how annoying this will be to the user space.
-> netinet/in.h vs linux/in.h is a mess :(
->
+On 6/10/22 9:34 PM, Kumar Kartikeya Dwivedi wrote:
+> On Sat, Jun 11, 2022 at 12:37:50AM IST, Joanne Koong wrote:
+>> On Fri, Jun 10, 2022 at 10:23 AM Joanne Koong <joannelkoong@gmail.com> wrote:
+>>> On Fri, Jun 10, 2022 at 5:58 AM Kumar Kartikeya Dwivedi
+>>> <memxor@gmail.com> wrote:
+>>>> On Fri, Jun 10, 2022 at 05:54:27AM IST, Joanne Koong wrote:
+>>>>> On Thu, Jun 3, 2021 at 11:31 PM Kumar Kartikeya Dwivedi
+>>>>> <memxor@gmail.com> wrote:
+[...]
+>>>> I can have a look at resurrecting it later this month, if you're ok with waiting
+>>>> until then, otherwise if someone else wants to pick this up before that it's
+>>>> fine by me, just let me know so we avoid duplicated effort. Note that the
+>>>> approach in v2 is dead/unlikely to get accepted by the TC maintainers, so we'd
+>>>> have to implement the way Daniel mentioned in [0].
+>>>
+>>> Sounds great! We'll wait and check back in with you later this month.
+>>>
+>> After reading the linked thread (which I should have done before
+>> submitting my previous reply :)),  if I'm understanding it correctly,
+>> it seems then that the work needed for tc bpf_link will be in a new
+>> direction that's not based on the code in this v2 patchset. I'm
+>> interested in learning more about bpf link and tc - I can pick this up
+>> to work on. But if this was something you wanted to work on though,
+>> please don't hesitate to let me know; I can find some other bpf link
+>> thing to work on instead if that's the case.
 
-By that criteria, I lean towards net too. Thanks Jakub.
+The tc ingress/egress overhaul we also discussed at lsf/mm/bpf in our session
+with John and pretty much is along the lines as in the earlier link you sent.
+We need it from Cilium & Tetragon as well, so it's wip from our side at the
+moment, modulo the bpf link part. Would you be okay if I pinged you once something
+that is plateable is ready?
 
---
-Mat Martineau
-Intel
+Thanks,
+Daniel
