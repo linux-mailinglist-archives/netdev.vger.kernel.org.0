@@ -2,59 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EA1F546DF7
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 22:04:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 327B5546E13
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 22:09:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348521AbiFJUE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 16:04:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47634 "EHLO
+        id S1350557AbiFJUJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 16:09:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347324AbiFJUEY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 16:04:24 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB0463C4A3;
-        Fri, 10 Jun 2022 13:04:22 -0700 (PDT)
-Received: from sslproxy04.your-server.de ([78.46.152.42])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nzkrk-0004ln-KS; Fri, 10 Jun 2022 22:04:20 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nzkrk-000NXv-Aq; Fri, 10 Jun 2022 22:04:20 +0200
-Subject: Re: [PATCH bpf-next v2 0/7] Add bpf_link based TC-BPF API
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Joanne Koong <joannelkoong@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        netdev <netdev@vger.kernel.org>, john.fastabend@gmail.com
-References: <20210604063116.234316-1-memxor@gmail.com>
- <CAJnrk1YJe-wtXFF0U2cuZUdd-gH1Y80Ewf3ePo=vh-nbsSBZgg@mail.gmail.com>
- <20220610125830.2tx6syagl2rphl35@apollo.legion>
- <CAJnrk1YCBn2EkVK89f5f3ijFYUDhLNpjiH8buw8K3p=JMwAc1Q@mail.gmail.com>
- <CAJnrk1YCSaRjd88WCzg4ccv59h0Dn99XXsDDT4ddzz4UYiZmbg@mail.gmail.com>
- <20220610193418.4kqpu7crwfb5efzy@apollo.legion>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <e82d41e4-c1c0-7387-8c83-b71ecb9d92d2@iogearbox.net>
-Date:   Fri, 10 Jun 2022 22:04:19 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S1350511AbiFJUJG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 16:09:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D6C23D9B9;
+        Fri, 10 Jun 2022 13:09:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4AFF60908;
+        Fri, 10 Jun 2022 20:09:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10B2AC341C0;
+        Fri, 10 Jun 2022 20:09:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654891744;
+        bh=iwnIUaWssTlHqycGijCDdgg7r32DPi0ilgri/+5YyAU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RZqW19XiHxniX1vI+hPIGPdhpVzh1qA+4vF7yCUG5w3gttxIs0U64yy4B4ZWvXzHC
+         GdSaR2FYi3wsghxQS7AEmdiBLt4qehKK/48UCZCGjEBE0b9Myh6imoUb2PposDfimo
+         SLUK7XTxWnApGDRFTwkFX2gpuOD6OZBqB2UmVhXlIB3DfX0sQcHrBtpTKY5vaDo0Yp
+         /hcXWudhme0PUKm5UKADcIohLrwmG44dl0+LnKJK2O4S3JDNhutsp4GHYJsVXyRnUB
+         B/qAGDlZMQ0gew0+SggS0lbmhm+zSHVc+xlvUezvaH6TlPtJyQuOmkTuLjVcpW/iy6
+         IBtewMQAhYCyg==
+Date:   Fri, 10 Jun 2022 13:09:03 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+Cc:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        openbmc@lists.ozlabs.org
+Subject: Re: [PATCH v2 0/6] Configurable VLAN mode for NCSI driver
+Message-ID: <20220610130903.0386c0d9@kernel.org>
+In-Reply-To: <20220610165940.2326777-1-jiaqing.zhao@linux.intel.com>
+References: <20220610165940.2326777-1-jiaqing.zhao@linux.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220610193418.4kqpu7crwfb5efzy@apollo.legion>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26568/Fri Jun 10 10:06:23 2022)
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,39 +55,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joanne, hi Kumar,
+On Sat, 11 Jun 2022 00:59:34 +0800 Jiaqing Zhao wrote:
+> Currently kernel NCSI driver only supports the "VLAN + non-VLAN" mode
+> (Mode #2), but this mode is an optional mode [1] defined in NCSI spec
+> and some NCSI devices like Intel E810 Network Adapter [2] does not
+> support that mode. This patchset adds a new "ncsi,vlan-mode" device
+> tree property for configuring the VLAN mode of NCSI device.
+> 
+> [1] Table 58 - VLAN Enable Modes
+>     https://www.dmtf.org/sites/default/files/standards/documents/DSP0222_1.0.0.pdf
+> [2] 12.6.5.4.3 VLAN
+>     https://cdrdv2.intel.com/v1/dl/getContent/613875
 
-On 6/10/22 9:34 PM, Kumar Kartikeya Dwivedi wrote:
-> On Sat, Jun 11, 2022 at 12:37:50AM IST, Joanne Koong wrote:
->> On Fri, Jun 10, 2022 at 10:23 AM Joanne Koong <joannelkoong@gmail.com> wrote:
->>> On Fri, Jun 10, 2022 at 5:58 AM Kumar Kartikeya Dwivedi
->>> <memxor@gmail.com> wrote:
->>>> On Fri, Jun 10, 2022 at 05:54:27AM IST, Joanne Koong wrote:
->>>>> On Thu, Jun 3, 2021 at 11:31 PM Kumar Kartikeya Dwivedi
->>>>> <memxor@gmail.com> wrote:
-[...]
->>>> I can have a look at resurrecting it later this month, if you're ok with waiting
->>>> until then, otherwise if someone else wants to pick this up before that it's
->>>> fine by me, just let me know so we avoid duplicated effort. Note that the
->>>> approach in v2 is dead/unlikely to get accepted by the TC maintainers, so we'd
->>>> have to implement the way Daniel mentioned in [0].
->>>
->>> Sounds great! We'll wait and check back in with you later this month.
->>>
->> After reading the linked thread (which I should have done before
->> submitting my previous reply :)),  if I'm understanding it correctly,
->> it seems then that the work needed for tc bpf_link will be in a new
->> direction that's not based on the code in this v2 patchset. I'm
->> interested in learning more about bpf link and tc - I can pick this up
->> to work on. But if this was something you wanted to work on though,
->> please don't hesitate to let me know; I can find some other bpf link
->> thing to work on instead if that's the case.
+Please don't post the same patches more than once a day. You posted the
+same patches 3 times within 15 minutes with no major difference :/
 
-The tc ingress/egress overhaul we also discussed at lsf/mm/bpf in our session
-with John and pretty much is along the lines as in the earlier link you sent.
-We need it from Cilium & Tetragon as well, so it's wip from our side at the
-moment, modulo the bpf link part. Would you be okay if I pinged you once something
-that is plateable is ready?
-
-Thanks,
-Daniel
+Why is "ncsi,vlan-mode" set via the device tree? Looks like something
+that can be configured at runtime. 
