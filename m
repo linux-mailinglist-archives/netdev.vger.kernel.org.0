@@ -2,168 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1310E546AD1
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 18:49:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92BA7546AC0
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 18:46:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349814AbiFJQsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 12:48:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38852 "EHLO
+        id S1345769AbiFJQqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 12:46:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349815AbiFJQsG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 12:48:06 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE462B2EB6;
-        Fri, 10 Jun 2022 09:47:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654879674; x=1686415674;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=dTbJGn1wT4KOCMCBcHh3vCtqTv4ul5foDXW+RuzFICU=;
-  b=LhhTH24iqh+l/4hFBcayLgBPEEqtNq/KcYS23TFGO6OjTY5ApSX9MEFe
-   y4pxEkynT6ZRNcbj1OmVQtGfBW51UOKh2uYJik5tizVhhnO3fLYqLdY4D
-   e83sPvlPZkTEkAZQwx2cW3AGtHsWYOgfPKs/lGD3zaxQfeksmbQpWpojY
-   gfC3+w534za4VrvAt2v5d3aVzD4qgp3xK7ovuu9IGaok9uan3ekVni+La
-   +kegdEeAMUDv478cb91aH+WlfzWuA5mZPhj+ATnv0I6QVXMu/jRgoHdjk
-   Aqg5TbrKr1Qh4hRvL9ZwnlnlyRN2mDa++4V1XKyd0jgwOmDDPam1b1wKT
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="275209640"
-X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
-   d="scan'208";a="275209640"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 09:47:54 -0700
-X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
-   d="scan'208";a="638211067"
-Received: from unknown (HELO jiaqingz-server.sh.intel.com) ([10.239.48.171])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 09:47:53 -0700
-From:   Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-To:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-Subject: [PATCH 6/6] net/ncsi: Support VLAN mode configuration
-Date:   Sat, 11 Jun 2022 00:45:55 +0800
-Message-Id: <20220610164555.2322930-7-jiaqing.zhao@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220610164555.2322930-1-jiaqing.zhao@linux.intel.com>
-References: <20220610164555.2322930-1-jiaqing.zhao@linux.intel.com>
+        with ESMTP id S231317AbiFJQqX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 12:46:23 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86F4F3D6CC5
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 09:46:21 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id g205so24297702pfb.11
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 09:46:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ecpvMPuAyXcCjvwI1Npa8TvEd7kevWUyn9zD5VUs/PE=;
+        b=XiSiLvofh+Rrlod91RsrLAeXHYUPt0jR9Q5YzAM+O+8ALxrQimD3f33qUqjsbxbhnD
+         CV2uPoA3Pg1qqaiTM9HORR/8Y1NrKmlsXlDo+yJDlp6KfH9qDyzA0AdtOG4ZwBAiESBz
+         CcdMjt3YohoyryfEMuxVLP+wywth51Odiyk0Rbapn1n5GdE//wmrh2jK4h4IsVg+zZMU
+         RxoEA2AMjLLr6dI/4XHvSgN8mOACIXtVAnTdsSOhpbl+IEmpjEzz4m+xxWwHAKGBoJUB
+         f6d/WM6Wcuw8iKTVUQp8QPd93u+yDStERQClF8UnI+r9jYZfdiZH+TaKdtzM0jklj6LR
+         E1Jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ecpvMPuAyXcCjvwI1Npa8TvEd7kevWUyn9zD5VUs/PE=;
+        b=tT/OAqrO+jldmrFiilMJhdPNVYgGaV/R+WezXyWc1NroS9H9hr2t8J2CA9guuf8k2O
+         rRkdDJIUGY6sbxy0+PYobOaHQg/PrphpbITi0AOhxoR5jt93c0LSInYgVqd87dFkYfZL
+         pN6gu19h/SE8ntyhw0DW8PfcYV0wn+UJk89JTPZaKNas/aNts82SJkyjL5ZkCo4cDIq0
+         tbmQslcKVNuEmzUo5D+NrdNgbgY+k6SPrA4+VfhyfLpTcDMprmIOfr0dv6H8wxqsYQzl
+         GjF9zKlRxW7huO1/ZS2RMwuMLV0crCxxFeos7op6MJMKW6WpAblIqta+wThLe3tfTwYX
+         Ofhw==
+X-Gm-Message-State: AOAM532MD4LZqMe0EoodeBwJRW9dYs684xcFIgN2fRpK2etrDN6pzzBf
+        JOqIUCNynA6zPHgQWV11c/lokgGcX/Cznhh+lPDcUg==
+X-Google-Smtp-Source: ABdhPJwiIpPHxVZlw/H96OZQ+sBcfoH5Rz9RKwAJH1LQ5d0DaPM0F/uRmKEcD+UA0+3CzoRFNrWIpTAlgzdnwgR5nmo=
+X-Received: by 2002:a65:6bce:0:b0:3f2:5f88:6f7d with SMTP id
+ e14-20020a656bce000000b003f25f886f7dmr41568649pgw.253.1654879580595; Fri, 10
+ Jun 2022 09:46:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220610112648.29695-1-quentin@isovalent.com> <20220610112648.29695-2-quentin@isovalent.com>
+ <YqNsWAH24bAIPjqy@google.com> <cb05a59e-07d5-ddd1-b028-82133faaf67e@isovalent.com>
+In-Reply-To: <cb05a59e-07d5-ddd1-b028-82133faaf67e@isovalent.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Fri, 10 Jun 2022 09:46:09 -0700
+Message-ID: <CAKH8qBvvq0f+D8BXChw_8krH896J_cYg0yhRfnDOSO_U1n394w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] Revert "bpftool: Use libbpf 1.0 API mode
+ instead of RLIMIT_MEMLOCK"
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yafang Shao <laoar.shao@gmail.com>,
+        Harsh Modi <harshmodi@google.com>,
+        Paul Chaignon <paul@cilium.io>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NCSI specification defines 4 VLAN modes, currently kernel NCSI driver
-only supports the "VLAN + non-VLAN" mode (Mode #2), and there is no
-way to detect which modes are supported by the device. This patch adds
-support for configuring VLAN mode via the "ncsi,vlan-mode" devicetree
-node.
+On Fri, Jun 10, 2022 at 9:34 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> 2022-06-10 09:07 UTC-0700 ~ sdf@google.com
+> > On 06/10, Quentin Monnet wrote:
+> >> This reverts commit a777e18f1bcd32528ff5dfd10a6629b655b05eb8.
+> >
+> >> In commit a777e18f1bcd ("bpftool: Use libbpf 1.0 API mode instead of
+> >> RLIMIT_MEMLOCK"), we removed the rlimit bump in bpftool, because the
+> >> kernel has switched to memcg-based memory accounting. Thanks to the
+> >> LIBBPF_STRICT_AUTO_RLIMIT_MEMLOCK, we attempted to keep compatibility
+> >> with other systems and ask libbpf to raise the limit for us if
+> >> necessary.
+> >
+> >> How do we know if memcg-based accounting is supported? There is a probe
+> >> in libbpf to check this. But this probe currently relies on the
+> >> availability of a given BPF helper, bpf_ktime_get_coarse_ns(), which
+> >> landed in the same kernel version as the memory accounting change. This
+> >> works in the generic case, but it may fail, for example, if the helper
+> >> function has been backported to an older kernel. This has been observed
+> >> for Google Cloud's Container-Optimized OS (COS), where the helper is
+> >> available but rlimit is still in use. The probe succeeds, the rlimit is
+> >> not raised, and probing features with bpftool, for example, fails.
+> >
+> >> A patch was submitted [0] to update this probe in libbpf, based on what
+> >> the cilium/ebpf Go library does [1]. It would lower the soft rlimit to
+> >> 0, attempt to load a BPF object, and reset the rlimit. But it may induce
+> >> some hard-to-debug flakiness if another process starts, or the current
+> >> application is killed, while the rlimit is reduced, and the approach was
+> >> discarded.
+> >
+> >> As a workaround to ensure that the rlimit bump does not depend on the
+> >> availability of a given helper, we restore the unconditional rlimit bump
+> >> in bpftool for now.
+> >
+> >> [0]
+> >> https://lore.kernel.org/bpf/20220609143614.97837-1-quentin@isovalent.com/
+> >> [1] https://github.com/cilium/ebpf/blob/v0.9.0/rlimit/rlimit.go#L39
+> >
+> >> Cc: Yafang Shao <laoar.shao@gmail.com>
+> >> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+> >> ---
+> >>   tools/bpf/bpftool/common.c     | 8 ++++++++
+> >>   tools/bpf/bpftool/feature.c    | 2 ++
+> >>   tools/bpf/bpftool/main.c       | 6 +++---
+> >>   tools/bpf/bpftool/main.h       | 2 ++
+> >>   tools/bpf/bpftool/map.c        | 2 ++
+> >>   tools/bpf/bpftool/pids.c       | 1 +
+> >>   tools/bpf/bpftool/prog.c       | 3 +++
+> >>   tools/bpf/bpftool/struct_ops.c | 2 ++
+> >>   8 files changed, 23 insertions(+), 3 deletions(-)
+> >
+> >> diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
+> >> index a45b42ee8ab0..a0d4acd7c54a 100644
+> >> --- a/tools/bpf/bpftool/common.c
+> >> +++ b/tools/bpf/bpftool/common.c
+> >> @@ -17,6 +17,7 @@
+> >>   #include <linux/magic.h>
+> >>   #include <net/if.h>
+> >>   #include <sys/mount.h>
+> >> +#include <sys/resource.h>
+> >>   #include <sys/stat.h>
+> >>   #include <sys/vfs.h>
+> >
+> >> @@ -72,6 +73,13 @@ static bool is_bpffs(char *path)
+> >>       return (unsigned long)st_fs.f_type == BPF_FS_MAGIC;
+> >>   }
+> >
+> >> +void set_max_rlimit(void)
+> >> +{
+> >> +    struct rlimit rinf = { RLIM_INFINITY, RLIM_INFINITY };
+> >> +
+> >> +    setrlimit(RLIMIT_MEMLOCK, &rinf);
+> >
+> > Do you think it might make sense to print to stderr some warning if
+> > we actually happen to adjust this limit?
+> >
+> > if (getrlimit(MEMLOCK) != RLIM_INFINITY) {
+> >     fprintf(stderr, "Warning: resetting MEMLOCK rlimit to
+> >     infinity!\n");
+> >     setrlimit(RLIMIT_MEMLOCK, &rinf);
+> > }
+> >
+> > ?
+> >
+> > Because while it's nice that we automatically do this, this might still
+> > lead to surprises for some users. OTOH, not sure whether people
+> > actually read those warnings? :-/
+>
+> I'm not strictly opposed to a warning, but I'm not completely sure this
+> is desirable.
+>
+> Bpftool has raised the rlimit for a long time, it changed only in April,
+> so I don't think it would come up as a surprise for people who have used
+> it for a while. I think this is also something that several other
+> BPF-related applications (BCC I think?, bpftrace, Cilium come to mind)
+> have been doing too.
 
-Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
----
- net/ncsi/internal.h    |  1 +
- net/ncsi/ncsi-manage.c | 41 ++++++++++++++++++++++++++++++++++-------
- 2 files changed, 35 insertions(+), 7 deletions(-)
+In this case ignore me and let's continue doing that :-)
 
-diff --git a/net/ncsi/internal.h b/net/ncsi/internal.h
-index 7f384f841019..b868e07f7ffd 100644
---- a/net/ncsi/internal.h
-+++ b/net/ncsi/internal.h
-@@ -334,6 +334,7 @@ struct ncsi_dev_priv {
- 	struct work_struct  work;            /* For channel management     */
- 	struct packet_type  ptype;           /* NCSI packet Rx handler     */
- 	struct list_head    node;            /* Form NCSI device list      */
-+	u32                  vlan_mode;      /* VLAN mode                  */
- #define NCSI_MAX_VLAN_VIDS	15
- 	struct list_head    vlan_vids;       /* List of active VLAN IDs */
- 
-diff --git a/net/ncsi/ncsi-manage.c b/net/ncsi/ncsi-manage.c
-index 3fb95f29e3e2..a398b0eb72b2 100644
---- a/net/ncsi/ncsi-manage.c
-+++ b/net/ncsi/ncsi-manage.c
-@@ -10,6 +10,7 @@
- #include <linux/skbuff.h>
- #include <linux/of.h>
- #include <linux/platform_device.h>
-+#include <dt-bindings/net/ncsi.h>
- 
- #include <net/ncsi.h>
- #include <net/net_namespace.h>
-@@ -1042,7 +1043,11 @@ static void ncsi_configure_channel(struct ncsi_dev_priv *ndp)
- 		nd->state = ncsi_dev_state_config_oem_gma;
- 		break;
- 	case ncsi_dev_state_config_oem_gma:
--		nd->state = ncsi_dev_state_config_clear_vids;
-+		/* Only set up hardware VLAN filters in filtered mode */
-+		if (ndp->vlan_mode == NCSI_VLAN_MODE_FILTERED)
-+			nd->state = ncsi_dev_state_config_clear_vids;
-+		else
-+			nd->state = ncsi_dev_state_config_ev;
- 		ret = -1;
- 
- #if IS_ENABLED(CONFIG_NCSI_OEM_CMD_GET_MAC)
-@@ -1094,11 +1099,15 @@ static void ncsi_configure_channel(struct ncsi_dev_priv *ndp)
- 			nd->state = ncsi_dev_state_config_svf;
- 		/* Enable/Disable the VLAN filter */
- 		} else if (nd->state == ncsi_dev_state_config_ev) {
--			if (list_empty(&ndp->vlan_vids)) {
--				nca.type = NCSI_PKT_CMD_DV;
--			} else {
-+			if (ndp->vlan_mode == NCSI_VLAN_MODE_FILTERED &&
-+			    !list_empty(&ndp->vlan_vids)) {
- 				nca.type = NCSI_PKT_CMD_EV;
- 				nca.bytes[3] = NCSI_CAP_VLAN_FILTERED;
-+			} else if (ndp->vlan_mode == NCSI_VLAN_MODE_ANY) {
-+				nca.type = NCSI_PKT_CMD_EV;
-+				nca.bytes[3] = NCSI_CAP_VLAN_ANY;
-+			} else {
-+				nca.type = NCSI_PKT_CMD_DV;
- 			}
- 			nd->state = ncsi_dev_state_config_sma;
- 		} else if (nd->state == ncsi_dev_state_config_sma) {
-@@ -1800,15 +1809,33 @@ struct ncsi_dev *ncsi_register_dev(struct net_device *dev,
- 	ndp->ptype.dev = dev;
- 	dev_add_pack(&ndp->ptype);
- 
-+	/* Set default VLAN mode (filtered) */
-+	ndp->vlan_mode = NCSI_VLAN_MODE_FILTERED;
-+
- 	pdev = to_platform_device(dev->dev.parent);
- 	if (pdev) {
- 		np = pdev->dev.of_node;
--		if (np && of_get_property(np, "mlx,multi-host", NULL))
--			ndp->mlx_multi_host = true;
-+		if (np) {
-+			u32 vlan_mode;
-+
-+			if (!of_property_read_u32(np, "ncsi,vlan-mode", &vlan_mode)) {
-+				if (vlan_mode > NCSI_VLAN_MODE_ANY ||
-+				    vlan_mode == NCSI_VLAN_MODE_ONLY)
-+					dev_warn(&pdev->dev, "NCSI: Unsupported VLAN mode %u",
-+						 vlan_mode);
-+				else
-+					ndp->vlan_mode = vlan_mode;
-+				dev_info(&pdev->dev, "NCSI: Configured VLAN mode %u",
-+					 ndp->vlan_mode);
-+			}
-+			if (of_get_property(np, "mlx,multi-host", NULL))
-+				ndp->mlx_multi_host = true;
-+		}
- 	}
- 
- 	/* Enable hardware VLAN filtering */
--	if (dev->netdev_ops->ndo_vlan_rx_add_vid == ncsi_vlan_rx_add_vid &&
-+	if (ndp->vlan_mode == NCSI_VLAN_MODE_FILTERED &&
-+	    dev->netdev_ops->ndo_vlan_rx_add_vid == ncsi_vlan_rx_add_vid &&
- 	    dev->netdev_ops->ndo_vlan_rx_kill_vid == ncsi_vlan_rx_kill_vid)
- 		dev->hw_features |= NETIF_F_HW_VLAN_CTAG_FILTER;
- 
--- 
-2.34.1
+Btw, eventually we'd still like to stop doing that I'd presume? Should
+we at some point follow up with something like:
 
+if (kernel_version >= 5.11) { don't touch memlock; }
+
+?
+
+I guess we care only about <5.11 because of the backports, but 5.11+
+kernels are guaranteed to have memcg.
+
+I'm not sure whether memlock is used out there in the distros (and
+especially for root/bpf_capable), so I'm also not sure whether we
+really care or not.
+
+> For new users, I agree the warning may be helpful. But then the message
+> is likely to appear the very first time a user runs the command - likely
+> as root - and I fear this might worry people not familiar with rlimits,
+> who would wonder if they just broke something on their system? Maybe
+> with a different phrasing.
+>
+> Alternatively we could document it in the relevant man pages (not that
+> people would see it better, but at least it would be mentioned somewhere
+> if people take the time to read the docs)? What do you think?
+>
+> Quentin
