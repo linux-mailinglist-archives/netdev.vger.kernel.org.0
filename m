@@ -2,262 +2,301 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C194C546BD9
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 19:47:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A06D546C0B
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 19:58:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350208AbiFJRrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 13:47:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60374 "EHLO
+        id S1350235AbiFJR5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 13:57:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350205AbiFJRrC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 13:47:02 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD7A562E2
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 10:47:01 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id a10so41260pju.3
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 10:47:01 -0700 (PDT)
+        with ESMTP id S1350229AbiFJR5L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 13:57:11 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2121.outbound.protection.outlook.com [40.107.223.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 270E76AA72;
+        Fri, 10 Jun 2022 10:57:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oS/CTuf4oK0on/xMjrfvE0hdchwZwS6QE6ohMCPdsTFt/6wmboN5KsFW+gmgqptRCb9AUD9ZEP6hZ50m9XlH/WCALw4jfPtkJlG+JHNUjHlM81+RkbdxDk1e81oDhyyYbp/gmZ9IwwN72QG2p9I+FVEwY2H2KcZCcYYQAA4km9SnxIrmxXHUebFaEMrvSfXGOLzK99nyw9mjqJmK7zQ7uIdTrz2J0P+dT6NJUJbu0SWJRF7RyI/fgBuQDL6gLaMdRxczLBGnoZDJC19W9ANlUaMnChCjhyZJULaUhehPGAjRBqemMG33JtGmRS8MpOODhHPX/+D/UgywFXGtjIxA+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yfoRC535zL7s7jBaHbqCVKXoM/gj57GffkONTm+sSKM=;
+ b=VUzIlZGdOfsFYWYv3qr7ODc11T+8jObHIUIqJAwm9CZfHgA71S0j8wqMgeWfcO5TvK9dxu8D8IsRE9DsM5uSZVMRrNiSKn1O0F1mvZ0wbV0m6udryxpkG6ceJaWnrEwxXlBIrp0MhF6NFoawul4jkQmP9SCOSeQjeQ4RM3otGrZ+jXuvdYlhtqSo27iD62ZTWE9HNdgvmR23wF4mLdUXOcoezt2V+L0Zh0vWyslmSsiIVlrEIhF/e5rY3dLbIQ16/hZwaLtxtQZkv1hcQbpmcrMbsU9FEv9rq7667QC6AvU14hE6YPbEXuDfnT/ZZrr6GsI06dOj2xI1usi7AotwGQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=nPV7bHjk6cC69Qa3PWuTqwqwGOQptYH4hjHynfw8FwI=;
-        b=G9UxsdXGVOZYKmAX9lm7WNjXRlCGfWNTD96KmWqFcw1+60hHZff17l6pgM2qu/+pan
-         cm+TW9ML2sTjnTzVoOurJ+YNLVkl2++46STMFEhcTjmogDUxQDZywFrdU2vf8V2cXaKA
-         GfvsoCl6C2STggNkHs7S87kYtVMKy6j/C4OZsZYIjON8wIBLhHsfiY5/ZVOxBC8xaFY0
-         FLMSojsNjiNGv92r4GxqtO26bkzHaxutXN5wWAhwTeEdzxQ9hRHOx8syakNfKUYynkB2
-         7otN6jn+9Rv9+CfF4/VePbWLBjbrKMIZ37VLNHBPAQp8m0PUcp40djO9RKV0dAMAPTw2
-         ErGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=nPV7bHjk6cC69Qa3PWuTqwqwGOQptYH4hjHynfw8FwI=;
-        b=IeaVDXcEfKOBdxYBvNZg2NTco1UZlGvdqMA+3TTPgG5ZuAp+s0Al36/j0J/MLKjn3L
-         yQro9MG2FP6QldnXDJvolwkItc+eGamMsxN6vrc4Me2VD4xeP0dsZI2z5tUulxr6OgQ/
-         tWpU2+wjSObWZD6l7E1ohPQDSgFKkgZM5ldm9h63mCpWMabJYOwTdwW+Lwe3YupxjPhu
-         o5zrhvvOTTsUga+15MAq9cUmLJBKGezCIvtmM/voteGG/1K7UOeKmZ/tu8afcR46eifc
-         N8ZcPMKCXAADZJXJ5OkHqUfn7GU4IKRBfDljVANWRHNKFLxoWhLQ8HcgU73Fp4M9dD9G
-         b4Mw==
-X-Gm-Message-State: AOAM5313c0I6GlKCDI7waZtuPlpfJUObloAcfetHISK/EXjY9+heEB84
-        6vfQcDyU61Q79u7zRVEOrnFJ3Gng/+4=
-X-Google-Smtp-Source: ABdhPJxgbJsnnOIPFagCDDNAG0xETV026P/gpX3iuBeFTDcodXOnEH5kl7Dn6peKeN+VJME9GCwVzw==
-X-Received: by 2002:a17:90a:1c02:b0:1e0:df7:31f2 with SMTP id s2-20020a17090a1c0200b001e00df731f2mr854822pjs.222.1654883220891;
-        Fri, 10 Jun 2022 10:47:00 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id q6-20020a170902a3c600b00165105518f6sm19186279plb.287.2022.06.10.10.46.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Jun 2022 10:47:00 -0700 (PDT)
-Message-ID: <13735ebc-fc54-22ff-21a1-da1895a74446@gmail.com>
-Date:   Fri, 10 Jun 2022 10:46:58 -0700
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yfoRC535zL7s7jBaHbqCVKXoM/gj57GffkONTm+sSKM=;
+ b=RukwsAoWXhMEJu8C0/giPzbLCqq1SfU4chA3lTh6O8i2wq78XyOW0fgxLvu0xB77NlKj/zRsUN9PVcFXOvkZcpGedTRgliKZy3S7irjsGNMO8H1H2lYZOw3ElI2pI2Dwnc9ZP1fBI9PjO9E4/6xORTrTzByShSxEuFF0jW9vLBI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by DM6PR10MB3356.namprd10.prod.outlook.com
+ (2603:10b6:5:1a9::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5314.15; Fri, 10 Jun
+ 2022 17:57:05 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b8c0:76a2:4c89:d10f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b8c0:76a2:4c89:d10f%7]) with mapi id 15.20.5332.014; Fri, 10 Jun 2022
+ 17:57:05 +0000
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Wolfram Sang <wsa@kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v9 net-next 0/7] add support for VSC7512 control over SPI
+Date:   Fri, 10 Jun 2022 10:56:48 -0700
+Message-Id: <20220610175655.776153-1-colin.foster@in-advantage.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MWHPR19CA0070.namprd19.prod.outlook.com
+ (2603:10b6:300:94::32) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: TCP socket send return EAGAIN unexpectedly when sending small
- fragments
-Content-Language: en-US
-To:     Ronny Meeus <ronny.meeus@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>
-References: <CAMJ=MEcPzkBLynL7tpjdv0TCRA=Cmy13e7wmFXrr-+dOVcshKA@mail.gmail.com>
- <f0f30591-f503-ae7c-9293-35cca4ceec84@gmail.com>
- <CAMJ=MEdctBNSihixym1ZO9RVaCa_FpTQ8e4xFukz3eN8F1P8bQ@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <CAMJ=MEdctBNSihixym1ZO9RVaCa_FpTQ8e4xFukz3eN8F1P8bQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a19aad16-0e14-42ac-ae6b-08da4b0aa101
+X-MS-TrafficTypeDiagnostic: DM6PR10MB3356:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR10MB33568886A48A7C3D22987419A4A69@DM6PR10MB3356.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: IJyN/Plz7sTazClPjc01pL0QCAw1Z92CVbqupHO7uZDxuG78BQnxGS9W8hy0Opq7UWBTUYdRAKh6X8qTQSO5gWHrVlowqMePRiMpv+xG5QaqUXObg6CPssyQ502hFDIjUMLXANk5T48dRcI+M6cudKXD8HSzoUkgAYXgKYiMH6H37aRSIpYb4CB6w1+QfJOINmDDM2apaCKD7KyayS9yZx023bdfSky6kAaURbJjOPW0spIu4n4H38l0mckn6Y17UpvSDF1p3hZDQaWEcxaU5A9RjG8zmlO5X+9lJ752vMI1NGlS2XRmELdMyrlfzJ68e0zMClpaw9+CubF5wb057MztPaCL4E4mG5/VQxhQBJTTOTSQeP7B0DR7dGI0XgVcBT6kmDLWTcsfaAZ5Cfb0SlGO9z7rQz/VSCDHcJfEveE7zwaUUZhdUhmdFSAaTL4SIiMRV0d5rDOT/iG8cbz+UpvXv3GxfkkajY8FEtwxARSFbEUaoSVIDeDa8UyeZekDMCQCAJtVlGiFgA/M68Zyk74DB7MIlp+T6ZKi8+TADlQWlwAksK2DhmfXnB8TEVOkMnBJrdTUeJXvHkwJ9XIaIucagxr6H69qdqpdlM7KOCNrAYOMano4tL3Fu2Q5ZjeRwcPpMZb50q3nZZ8mVj5IU4eep/yo75bDYXEn8QpGc1laPaTmUi4U3dyW6lK3GVNSHkcWZ/i9bvm/xz3vkh/DOw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(346002)(366004)(396003)(136003)(39830400003)(1076003)(54906003)(316002)(4326008)(52116002)(8676002)(2616005)(86362001)(508600001)(6512007)(26005)(6506007)(6666004)(41300700001)(6486002)(186003)(83380400001)(2906002)(38350700002)(44832011)(8936002)(36756003)(38100700002)(66556008)(66946007)(66476007)(7416002)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KSljU+cGYcvdwwEo/bqIL6T6xqr1FduPlVi32ogIP22wccze4FUOgojRzsKj?=
+ =?us-ascii?Q?E0HU5fYZ2T84iRCO1L7ibt0BbC6jNbRpNtFa75OUwQF8r1H0t1QFnGDqSXe+?=
+ =?us-ascii?Q?qJJrKYWuVTUjMliTBC+TEGdSG8b7g0qguMl+rpkr0paYq1YQ9mJ5EsS1EyhG?=
+ =?us-ascii?Q?N602t/sajj8diwEV9GkGldmCX7ipvv7Ol3bLNwM+6ARAzPTRPXgY22RKLxS6?=
+ =?us-ascii?Q?EYWXdAmp1b9U7g0Mnk202JNCp4Tu3hf0pyNurxIS1HVV4+fRcfJI2/QFWP92?=
+ =?us-ascii?Q?PiOoygP6Xc8gVHVG24Mme6Bq5z1D1ynaG9Y72dsN8EjDc9vdn1qpPkpxZ08o?=
+ =?us-ascii?Q?zYzvTk/xS92esk4e15PucS5pMUSQQ46H+5DnQX+wyrJQlpQN+EuYdsJedV7Y?=
+ =?us-ascii?Q?Gg0DebK5vF5C1tkDzQ8blhQYqrc4iDoip/O3mzThpevfDgP4E1PIV1W6rRqJ?=
+ =?us-ascii?Q?MUlNLY0oKeKK4W+F8bznBUWSaxrJ7Nj/eNyXaA4YSEzKwJac2/E4lbnP2yCD?=
+ =?us-ascii?Q?8qE5ThWqg1ExW+9uSjDTGHbeNIfgWt8WgwPNPdZpmH0pMiCQ2t3WqXCiMLNk?=
+ =?us-ascii?Q?K6UVGwI16ZMgIPdlzeBFuwCvbCKC6SEddoobsG3FJjN0iQs+UTWvqZTxGFRQ?=
+ =?us-ascii?Q?sxVY01s5gNjIOO/sgGEji7SE3ltsy7493aCDFg86M0Fk0kk+GDkefYtHTxFd?=
+ =?us-ascii?Q?ZjslNOqHitzByzwSeIe4/NBkiitPUZvJup4RVrKdVN2h/cw3YIbghQ1dDtqV?=
+ =?us-ascii?Q?ymeVAqoLohrEh9YN3T45/daEjntXu7FUtrfonV8WEBF1vpFg1G9ckEtzHZEp?=
+ =?us-ascii?Q?O/sAmMFWXPJ899WaEjPi6/Ww/8NiTE9dYS1T/18Pn+fdiIjEFRfBgYp9NF2e?=
+ =?us-ascii?Q?yIs8JI2Gji68canZ+1cEtibz5TQBRtt7nuiGNaEG1SOtdW8C0SkDlHZyKBSr?=
+ =?us-ascii?Q?oEcX00eEqatw+JFESCmiQJn3xEb46FqL/iNKDcJHTZizpaNLeiiGzZeG6TPj?=
+ =?us-ascii?Q?X1JLrfeSkU77QlCsQU+nyL/40bWw8v1bqjH0iF5r790ACFFVK5yRILPn8hVV?=
+ =?us-ascii?Q?vfJSYnRU5RS3IEh777CFCLGflOh5O5trK2PRa9g8EWU/Hd1CrYr5YMFyoI8x?=
+ =?us-ascii?Q?N/9+gLE6fkv39JdCGvEUfxRDQlTigv1Bi5tTZFtyv06MuKrJH2BIcSNcaFuT?=
+ =?us-ascii?Q?FzjglCpVdbPwqaDb1SOvDXYVByBkwQvSK5EEDqeoYXy/hpRxqfRogNB1Nobr?=
+ =?us-ascii?Q?jzP+kREM/SBV7RGleUuPRb+Dk1EttALB8cEu4RJACgZI+6Veo2hNNzoaNEGa?=
+ =?us-ascii?Q?9tI9TMh3lr6UMZAkYu/K8km1UZ9N1K2Qy0TA7mAr5ObIPQeSvveUMTFtzGpb?=
+ =?us-ascii?Q?1Z4rhQPMLy9tbTm/d23iiGh2LYqnFr+P1NGM/yLywvt+8ubMKAkb/prYg9+0?=
+ =?us-ascii?Q?mz56h+W5SdaYhQD75i9ikSutmAH8mvElquKuWx+kh43J+a0z3lMzplowLFe0?=
+ =?us-ascii?Q?wT6sVojmpkuVMgqSIV/mL0KCud20hvEY8CZe4EcHsNXuAQYnMhqJawUFRvln?=
+ =?us-ascii?Q?vGOat6EG8erRQc1KFYReOgkjxuvHmx3Mw96WFjh4y27JjdrHEGAyL4V1kbR8?=
+ =?us-ascii?Q?AGp5/5HaztdtUUxAO1JkXdGQgesQecOSGzWjnnueCfyMXAitpmSIZvdqkBLL?=
+ =?us-ascii?Q?X59NUAVja1rzyeYpgxWSJgEYOoCWfi3HgvRQE3vnMP+a+8JBpIHbN5TsOcAp?=
+ =?us-ascii?Q?ArDdLvp5EDeHKHLmT5vLpVi4KLPgxYdto0KXSX2s6NWEhbAaUbdn?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a19aad16-0e14-42ac-ae6b-08da4b0aa101
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2022 17:57:05.2781
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kL5g6PHh8geNS4Y3ndoFmy6TY2PKF0Us+4XrGw9cysDytd2uJUegW2ceqYQjYGylMnaxyLLYbI2Fpv+kKXwAusqsvBsj8htirHCE0w5Mbj4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB3356
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The patch set in general is to add support for the VSC7512, and
+eventually the VSC7511, VSC7513 and VSC7514 devices controlled over
+SPI. Specifically this patch set enables pinctrl, serial gpio expander
+access, and control of an internal and an external MDIO bus.
 
-On 6/10/22 08:16, Ronny Meeus wrote:
-> Op vr 10 jun. 2022 om 16:21 schreef Eric Dumazet <erdnetdev@gmail.com>:
->>
->> On 6/10/22 05:48, Ronny Meeus wrote:
->>> Hello
->>>
->>> I have a small test application written in C that creates a local (in
->>> process) TCP channel via loopback.
->>> (kernel version is 3.10.0 but the same issue is also seen for example
->>> on a 4.9 kernel).
->>>
->>> On the client side, an SO_SNDBUF of 5Kb is configured (which is
->>> doubled by the kernel) while on the server side the default size is
->>> used.
->>> Both client and server side are running in non-blocking mode.
->>>
->>> The server side is not reading its socket so all data is simply queued
->>> in the socket's receive buffer.
->>> On the client side, the client is writing data into the socket in a
->>> loop until the write returns an error (EAGAIN in this case).
->>>
->>> Depending on the size of data I send on this socket, I get the EAGAIN
->>> on the client side already after a small number of messages.
->>> For example when sending 106 byte messages, I see the first EAGAIN
->>> after 21 write calls:
->>> # ./tcp_client_server 106
->>> using data size 106
->>> client send buffer size 5000
->>> client socket snd_buf: 10000
->>> ERRNO = 11 count=21
->>>
->>> The same is observed for all sizes smaller than or equal to 107 bytes.
->>>
->>> When getting the socket stats using ss I see all data (2226b) pending
->>> in the socket on the server side:
->>> # ss -tmi  | grep -i X11 -A 1
->>> ESTAB      0      0      127.0.0.1:59792                127.0.0.1:x11
->>> skmem:(r0,rb1061296,t0,tb10000,f0,w0,o0,bl0,d0) cubic wscale:7,7
->>> rto:202 rtt:1.276/2.504 mss:21888 rcvmss:536 advmss:65483 cwnd:10
->>> bytes_acked:2227 segs_out:24 segs_in:18 send 1372.3Mbps lastsnd:3883
->>> lastrcv:771546999 lastack:3883 pacing_rate 2744.3Mbps retrans:0/1
->>> rcv_space:43690
->>> --
->>> ESTAB      2226   0      127.0.0.1:x11
->>> 127.0.0.1:59792
->>> skmem:(r4608,rb1061488,t0,tb2626560,f3584,w0,o0,bl0,d1) cubic
->>> wscale:7,7 rto:200 ato:40 mss:21888 rcvmss:536 advmss:65483 cwnd:10
->>> bytes_received:2226 segs_out:17 segs_in:24 lastsnd:3893 lastrcv:3893
->>> lastack:3883 rcv_space:43690
->>>
->>>
->>> When sending larger messages, the EAGAIN only is seen after 2116 writes.
->>> # ./tcp_client_server 108
->>> using data size 108
->>> client send buffer size 5000
->>> client socket snd_buf: 10000
->>> ERRNO = 11 count=2116
->>>
->>> Again, the ss shows all data being present on the server side (108 *
->>> 2116 = 228528)
->>> ESTAB      228528 0      127.0.0.1:x11
->>> 127.0.0.1:59830
->>> skmem:(r976896,rb1061488,t0,tb2626560,f2048,w0,o0,bl0,d1) cubic
->>> wscale:7,7 rto:200 ato:80 mss:21888 rcvmss:536 advmss:65483 cwnd:10
->>> bytes_received:228528 segs_out:436 segs_in:2119 lastsnd:3615
->>> lastrcv:3606 lastack:3596 rcv_rtt:1 rcv_space:43690
->>> --
->>> ESTAB      0      0      127.0.0.1:59830                127.0.0.1:x11
->>> skmem:(r0,rb1061296,t0,tb10000,f0,w0,o0,bl0,d0) cubic wscale:7,7
->>> rto:206 rtt:5.016/9.996 mss:21888 rcvmss:536 advmss:65483 cwnd:10
->>> bytes_acked:228529 segs_out:2119 segs_in:437 send 349.1Mbps
->>> lastsnd:3596 lastrcv:771704718 lastack:3566 pacing_rate 698.1Mbps
->>> retrans:0/1 rcv_space:43690
->>>
->>>
->>>
->>> When I enlarge the SNDBUF on the client side to for example 10K, I see
->>> that more messages can be sent:
->>> # ./tcp_client_server 106 10000
->>> using data size 106
->>> client send buffer size 10000
->>> client socket snd_buf: 20000
->>> ERRNO = 11 count=1291
->>>
->>> I also captured the packets on the interface using wireshark and it
->>> looks like the error is returned after the TCP layer has done a
->>> retransmit (after 10ms) of the last packet sent on the connection.
->>>
->>> 10:12:38.186451 IP localhost.48470 > localhost.etlservicemgr: Flags
->>> [P.], seq 1165:1265, ack 165, win 342, options [nop,nop,TS val
->>> 593860562 ecr 593860562], length 100
->>> 10:12:38.186461 IP localhost.etlservicemgr > localhost.48470: Flags
->>> [.], ack 1265, win 342, options [nop,nop,TS val 593860562 ecr
->>> 593860562], length 0
->>> 10:12:38.186478 IP localhost.48470 > localhost.etlservicemgr: Flags
->>> [P.], seq 1265:1365, ack 165, win 342, options [nop,nop,TS val
->>> 593860562 ecr 593860562], length 100
->>> 10:12:38.186488 IP localhost.etlservicemgr > localhost.48470: Flags
->>> [.], ack 1365, win 342, options [nop,nop,TS val 593860562 ecr
->>> 593860562], length 0
->>> 10:12:38.186505 IP localhost.48470 > localhost.etlservicemgr: Flags
->>> [P.], seq 1365:1465, ack 165, win 342, options [nop,nop,TS val
->>> 593860562 ecr 593860562], length 100
->>> 10:12:38.186516 IP localhost.etlservicemgr > localhost.48470: Flags
->>> [.], ack 1465, win 342, options [nop,nop,TS val 593860562 ecr
->>> 593860562], length 0
->>> 10:12:38.186533 IP localhost.48470 > localhost.etlservicemgr: Flags
->>> [P.], seq 1465:1565, ack 165, win 342, options [nop,nop,TS val
->>> 593860562 ecr 593860562], length 100
->>> 10:12:38.186543 IP localhost.etlservicemgr > localhost.48470: Flags
->>> [.], ack 1565, win 342, options [nop,nop,TS val 593860562 ecr
->>> 593860562], length 0
->>> 10:12:38.186560 IP localhost.48470 > localhost.etlservicemgr: Flags
->>> [P.], seq 1565:1665, ack 165, win 342, options [nop,nop,TS val
->>> 593860562 ecr 593860562], length 100
->>> 10:12:38.186578 IP localhost.48470 > localhost.etlservicemgr: Flags
->>> [P.], seq 1665:1765, ack 165, win 342, options [nop,nop,TS val
->>> 593860562 ecr 593860562], length 100
->>> 10:12:38.186595 IP localhost.48470 > localhost.etlservicemgr: Flags
->>> [P.], seq 1765:1865, ack 165, win 342, options [nop,nop,TS val
->>> 593860562 ecr 593860562], length 100
->>> 10:12:38.186615 IP localhost.48470 > localhost.etlservicemgr: Flags
->>> [P.], seq 1865:1965, ack 165, win 342, options [nop,nop,TS val
->>> 593860562 ecr 593860562], length 100
->>> 10:12:38.186632 IP localhost.48470 > localhost.etlservicemgr: Flags
->>> [P.], seq 1965:2065, ack 165, win 342, options [nop,nop,TS val
->>> 593860562 ecr 593860562], length 100
->>> 10:12:38.196064 IP localhost.48470 > localhost.etlservicemgr: Flags
->>> [P.], seq 1965:2065, ack 165, win 342, options [nop,nop,TS val
->>> 593860572 ecr 593860562], length 100
->>> 10:12:38.196128 IP localhost.etlservicemgr > localhost.48470: Flags
->>> [.], ack 2065, win 342, options [nop,nop,TS val 593860572 ecr
->>> 593860562,nop,nop,sack 1 {1965:2065}], length 0
->>>
->>> Now my question is: how is it possible that I can only send 21
->>> messages of 106 bytes before I see the EAGAIN while when sending
->>> larger messages I can send 2K+ messages.
->>
->> This is because kernel tracks kernel memory usage.
->>
->> Small packets incur more overhead.
->>
->> The doubling of SO_SNDBUF user value, is an heuristic based on the fact
->> the kernel
->>
->> uses a 2x overhead estimation,
->>
->> while effective overhead can vary from ~1.001x to ~768x depending on
->> number of bytes per skb.
->>
-> Hi Eric,
->
-> thanks for the feedback but it is not completely clear to me.
->
-> The small SNDBUF is on the client side and a large part of the data
-> has already ACKed by the receiving side.
-> Only the last 5 or 6 messages are waiting to be ACKed.
-> So I would expect that the biggest part of the overhead is located on
-> the receiving side where there is sufficient memory space (default
-> RCVBUF size is used).
->
-> If the 5 queued packets on the sending side would cause the EAGAIN
-> issue, the real question maybe is why the receiving side is not
-> sending the ACK within the 10ms while for earlier messages the ACK is
-> sent much sooner.
+I have mentioned previously:
+The hardware setup I'm using for development is a beaglebone black, with
+jumpers from SPI0 to the microchip VSC7512 dev board. The microchip dev
+board has been modified to not boot from flash, but wait for SPI. An
+ethernet cable is connected from the beaglebone ethernet to port 0 of
+the dev board. Network functionality will be included in a future patch set.
+
+The device tree I'm using is included in the documentation, so I'll not
+include that in this cover letter. I have exported the serial GPIOs to the
+LEDs, and verified functionality via
+"echo heartbeat > sys/class/leds/port0led/trigger"
+
+/ {
+	vscleds {
+		compatible = "gpio-leds";
+		vscled@0 {
+			label = "port0led";
+			gpios = <&sgpio_out1 0 0 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+		vscled@1 {
+			label = "port0led1";
+			gpios = <&sgpio_out1 0 1 GPIO_ACTIVE_LOW>;
+			default-state = "off";
+		};
+[ ... ]
+	};
+};
+
+And I'll include the relevant dmesg prints - I don't love the "invalid
+resource" prints, as they seem to be misleading. They're a byproduct of
+looking for IO resources before falling back to REG, which succeeds.
+
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Linux version 5.18.0-12138-g89bf3be45d34 (colin@euler) (arm-linux-gnueabi-gcc (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0, GNU ld (GNU Binutils for Ubuntu) 2.34) #702 SMP PREEMPT Fri Jun 10 10:12:20 PDT 2022
+...
+[    1.923330] pinctrl-ocelot ocelot-pinctrl.0.auto: DMA mask not set
+[    1.923498] pinctrl-ocelot ocelot-pinctrl.0.auto: invalid resource
+[    1.935102] pinctrl-ocelot ocelot-pinctrl.0.auto: driver registered
+[    1.954499] pinctrl-microchip-sgpio ocelot-sgpio.1.auto: DMA mask not set
+[    1.954708] pinctrl-microchip-sgpio ocelot-sgpio.1.auto: invalid resource
+[    1.966000] mscc-miim ocelot-miim0.2.auto: DMA mask not set
+[    1.966154] mscc-miim ocelot-miim0.2.auto: invalid resource
+[    1.966307] mscc-miim ocelot-miim0.2.auto: invalid resource
+[    2.995959] mscc-miim ocelot-miim1.3.auto: DMA mask not set
+[    2.996118] mscc-miim ocelot-miim1.3.auto: invalid resource
+[    2.996274] mscc-miim ocelot-miim1.3.auto: invalid resource
+[    2.996286] mscc-miim ocelot-miim1.3.auto: error 00000000: Failed to get resource
+
+Lastly, I removed the Kconfig tristate patches for pinctrl and ocelot-mfd.
+They broke the last RFC build, so I'll probably want to add that at a
+later time.
 
 
-delayed acks on receiver, when receiving small packet(s)
+I only have hardware to test the last patch, so any testers are welcome.
+I've been extra cautious about the
+ocelot_platform_init_regmap_from_resource helper function, both before
+and after the last patch. I accidentally broke it in the past and would
+like to avoid doing so again.
 
 
->
-> Do you have any clue which kernel function does generate this EAGAIN?
-> And what would be the correct solution to this problem?
+RFC history:
+v1 (accidentally named vN)
+	* Initial architecture. Not functional
+	* General concepts laid out
+
+v2
+	* Near functional. No CPU port communication, but control over all
+	external ports
+	* Cleaned up regmap implementation from v1
+
+v3
+	* Functional
+	* Shared MDIO transactions routed through mdio-mscc-miim
+	* CPU / NPI port enabled by way of vsc7512_enable_npi_port /
+	felix->info->enable_npi_port
+	* NPI port tagging functional - Requires a CPU port driver that supports
+	frames of 1520 bytes. Verified with a patch to the cpsw driver
+
+v4
+    * Functional
+    * Device tree fixes
+    * Add hooks for pinctrl-ocelot - some functionality by way of sysfs
+    * Add hooks for pinctrl-microsemi-sgpio - not yet fully functional
+    * Remove lynx_pcs interface for a generic phylink_pcs. The goal here
+    is to have an ocelot_pcs that will work for each configuration of
+    every port.
+
+v5
+    * Restructured to MFD
+    * Several commits were split out, submitted, and accepted
+    * pinctrl-ocelot believed to be fully functional (requires commits
+    from the linux-pinctrl tree)
+    * External MDIO bus believed to be fully functional
+
+v6
+    * Applied several suggestions from the last RFC from Lee Jones. I
+      hope I didn't miss anything.
+    * Clean up MFD core - SPI interaction. They no longer use callbacks.
+    * regmaps get registered to the child device, and don't attempt to
+      get shared. It seems if a regmap is to be shared, that should be
+      solved with syscon, not dev or mfd.
+
+v7
+    * Applied as much as I could from Lee and Vladimir's suggestions. As
+      always, the feedback is greatly appreciated!
+    * Remove "ocelot_spi" container complication
+    * Move internal MDIO bus from ocelot_ext to MFD, with a devicetree
+      change to match
+    * Add initial HSIO support
+    * Switch to IORESOURCE_REG for resource definitions
+
+v8
+    * Applied another round of suggestions from Lee and Vladimir
+    * Utilize regmap bus reads, which speeds bulk transfers up by an
+      order of magnitude
+    * Add two additional patches to utilize phylink_generic_validate
+    * Changed GPL V2 to GPL in licenses where applicable (checkpatch)
+    * Remove initial hsio/serdes changes from the RFC
+
+v9
+    * Submitting as a PATCH instead of an RFC
+    * Remove switch functionality - will be a separate patch set
+    * Remove Kconfig tristate module options
+    * Another round of suggestions from Lee, Vladimir, and Andy. Many
+      thanks!
+    * Add documentation
+    * Update maintainers
 
 
-I do not really see what is the problem you have.
+Colin Foster (7):
+  mfd: ocelot: add helper to get regmap from a resource
+  net: mdio: mscc-miim: add ability to be used in a non-mmio
+    configuration
+  pinctrl: ocelot: add ability to be used in a non-mmio configuration
+  pinctrl: microchip-sgpio: add ability to be used in a non-mmio
+    configuration
+  resource: add define macro for register address resources
+  dt-bindings: mfd: ocelot: add bindings for VSC7512
+  mfd: ocelot: add support for the vsc7512 chip via spi
 
-Perhaps you should not set SO_SNDBUF, and let the kernel decide (auto 
-tune, and auto cork)
+ .../devicetree/bindings/mfd/mscc,ocelot.yaml  | 160 +++++++++
+ MAINTAINERS                                   |   7 +
+ drivers/mfd/Kconfig                           |  18 +
+ drivers/mfd/Makefile                          |   2 +
+ drivers/mfd/ocelot-core.c                     | 184 ++++++++++
+ drivers/mfd/ocelot-spi.c                      | 313 ++++++++++++++++++
+ drivers/mfd/ocelot.h                          |  28 ++
+ drivers/net/mdio/mdio-mscc-miim.c             |  27 +-
+ drivers/pinctrl/pinctrl-microchip-sgpio.c     |   9 +-
+ drivers/pinctrl/pinctrl-ocelot.c              |  10 +-
+ include/linux/ioport.h                        |   5 +
+ include/linux/mfd/ocelot.h                    |  32 ++
+ 12 files changed, 763 insertions(+), 32 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/mfd/mscc,ocelot.yaml
+ create mode 100644 drivers/mfd/ocelot-core.c
+ create mode 100644 drivers/mfd/ocelot-spi.c
+ create mode 100644 drivers/mfd/ocelot.h
+ create mode 100644 include/linux/mfd/ocelot.h
 
+-- 
+2.25.1
 
->
-> Best regards,
-> Ronny
->
