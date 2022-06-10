@@ -2,70 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34AD454658B
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 13:27:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E964546629
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 14:01:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349308AbiFJL1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 07:27:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35016 "EHLO
+        id S245383AbiFJMAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 08:00:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233916AbiFJL1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 07:27:01 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0E6722AE79
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 04:26:55 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id z17so8920533wmi.1
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 04:26:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=99g/H9hORM8QK7xT+vs5uD4GZTI6jZJp2du0cH8N2LY=;
-        b=CahFhHENPeNQXpEJhMG/HPnrrccC9bgyah6cccG6vgwSE915ECBBpsIXn6eqxe4vI1
-         WpyQtu9gN4B/KUb1Cg9jwk0zZeVl7qa7npP4lMxuH4W8/YmciMyFaovsL5293zcNPX5W
-         NzCvKwmPePppGlIwC7o0v2qh4J0uGbxlIJRh2vPUcPJ7yg9XDsNaup8PN9jmAL6hK9ZG
-         Emm4YD4qg74WzLh8z8JSBKeFYzRNAtlWFHR0DfAD+w0zAE7XDq1yecFA20He00NMjR6+
-         b8gGzENOmBirp+8cyj+80T/ajyAP0DAwk3NR+iknORAvvcIVu7HK55r8aQfsEicdzpp5
-         eqqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=99g/H9hORM8QK7xT+vs5uD4GZTI6jZJp2du0cH8N2LY=;
-        b=r1zU54fiASiPorsY5KGcqSOV10+9QaNBDYUSO7TyG4tenMKrwjJS+U5N/QEtotgxZ1
-         Bu0a+Bn1yTgF8Zzodma/aw9rYBlUp4SPAy9hnkaXEiZA2/jxad+zNV/LH/9pq8amQZkT
-         uYEYvSKfZzjfPAHpTdl+YYglR/Fy4PxraayOZVdo/AD5cBar4lHtzUg0uxBxZrd4avyA
-         YiwuiB9XESO9IWx25DdhXUoagjTu57d4LnWLcEmyQ697n/xX6txJET3qLdsIu0Dctlal
-         ZJFnrfZUM1rsg7dDQZ7NUmNS/CZf+5cn4wgGKiFM7R8gCooi6ZQewLAiajKnlqbevbhe
-         I+1A==
-X-Gm-Message-State: AOAM533TozQLB4SE/04rElJa4OKOg9WATvBuAx63QnS46JoEutFBWSmC
-        Ml6jtSuHvfP1LOAvXy4KdkXxuQ==
-X-Google-Smtp-Source: ABdhPJwsBI+YOWDl8NwJJiNoTpF+Lg6pJpL8aeP2+035r6YnNJ39PCfteQ1I7oOJKsToTdzUqjqa8Q==
-X-Received: by 2002:a05:600c:35c1:b0:39c:7930:7b5b with SMTP id r1-20020a05600c35c100b0039c79307b5bmr4744956wmq.162.1654860414169;
-        Fri, 10 Jun 2022 04:26:54 -0700 (PDT)
-Received: from harfang.fritz.box ([51.155.200.13])
-        by smtp.gmail.com with ESMTPSA id z2-20020adff1c2000000b0020c5253d8dcsm25893202wro.40.2022.06.10.04.26.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jun 2022 04:26:53 -0700 (PDT)
-From:   Quentin Monnet <quentin@isovalent.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Yafang Shao <laoar.shao@gmail.com>,
-        Harsh Modi <harshmodi@google.com>,
-        Paul Chaignon <paul@cilium.io>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Quentin Monnet <quentin@isovalent.com>
-Subject: [PATCH bpf-next 2/2] bpftool: Do not check return value from libbpf_set_strict_mode()
-Date:   Fri, 10 Jun 2022 12:26:48 +0100
-Message-Id: <20220610112648.29695-3-quentin@isovalent.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220610112648.29695-1-quentin@isovalent.com>
-References: <20220610112648.29695-1-quentin@isovalent.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        with ESMTP id S241978AbiFJMAp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 08:00:45 -0400
+Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D85B3E0E9
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 05:00:41 -0700 (PDT)
+Received: from smtpauth-2019-1.uniroma2.it (smtpauth.uniroma2.it [160.80.5.46])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 25AC03lS003098;
+        Fri, 10 Jun 2022 14:00:09 +0200
+Received: from lubuntu-18.04 (unknown [160.80.103.126])
+        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id C42A612005F;
+        Fri, 10 Jun 2022 13:59:58 +0200 (CEST)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
+        s=ed201904; t=1654862398; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+dL/FaE19RRrceGAE72bOAXe+DXrZsDQ/akjhWLokNk=;
+        b=Pxf+RZWTBJBActMhgCq7npVRHkQXyBkHlns2KHx3hhMPK7XPlvcBzwtDo8gQF/IfZtX/zO
+        jdtZjSQsf8jY/hDQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
+        t=1654862398; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+dL/FaE19RRrceGAE72bOAXe+DXrZsDQ/akjhWLokNk=;
+        b=F7NCghCmLK3HG+tZ2Cz0k2I6qs4RnDIohHGVaDUtgGIVgfWqQt0maC9IqfKAXU8ZAf1gJ/
+        ZxKPeMZ7e/djyDi+/flEij5swWug4C39nfDbE6hnE95H+igw56fI+pKQLI9tfts7AkfKsN
+        X0lztF5HXyRb/mAPIbT2nscabbktFnNmhxLdi2CbGePg/lxUK2IoWUH0fvXo3f5Pul+4xG
+        WDA9JOKdlKgmFYT+NRL9ujQkyNpAtEmG4UMZjtolCVGElEbchSYUkZPHweQgPJflgyAIrw
+        Dx9R/rDXM1/op53MECNryOnL+FjH/gpZiwTKsh56VD/5Nth8b5BiSxFoNh3e4A==
+Date:   Fri, 10 Jun 2022 13:59:58 +0200
+From:   Andrea Mayer <andrea.mayer@uniroma2.it>
+To:     Anton Makarov <antonmakarov11235@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, david.lebrun@uclouvain.be,
+        netdev@vger.kernel.org,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: Re: [net-next v2 1/1] net: seg6: Add support for SRv6 Headend
+ Reduced Encapsulation
+Message-Id: <20220610135958.cb99b9122925b62eba634337@uniroma2.it>
+In-Reply-To: <20220609132750.4917-1-anton.makarov11235@gmail.com>
+References: <20220609132750.4917-1-anton.makarov11235@gmail.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,34 +77,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function always returns 0, so we don't need to check whether the
-return value is 0 or not.
+Hi Anton,
+please see my comments inline, thanks.
 
-This change was first introduced in commit a777e18f1bcd ("bpftool: Use
-libbpf 1.0 API mode instead of RLIMIT_MEMLOCK"), but later reverted to
-restore the unconditional rlimit bump in bpftool. Let's re-add it.
+On Thu,  9 Jun 2022 16:27:50 +0300
+Anton Makarov <antonmakarov11235@gmail.com> wrote:
 
-Co-developed-by: Yafang Shao <laoar.shao@gmail.com>
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
----
- tools/bpf/bpftool/main.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+> SRv6 Headend H.Encaps.Red and H.Encaps.L2.Red behaviors are implemented
+> accordingly to RFC 8986. The H.Encaps.Red is an optimization of
+> The H.Encaps behavior. The H.Encaps.L2.Red is an optimization of
+> the H.Encaps.L2 behavior. Both new behaviors reduce the length of
+> the SRH by excluding the first SID in the SRH of the pushed IPv6 header.
+> The first SID is only placed in the Destination Address field
+> of the pushed IPv6 header.
+> 
+> The push of the SRH is omitted when the SRv6 Policy only contains
+> one segment.
+> 
+> Signed-off-by: Anton Makarov <anton.makarov11235@gmail.com>
+> 
+> ...
+>  
+> +/* encapsulate an IPv6 packet within an outer IPv6 header with reduced SRH */
+> +int seg6_do_srh_encap_red(struct sk_buff *skb, struct ipv6_sr_hdr *osrh, int proto)
+> +{
+> +	struct dst_entry *dst = skb_dst(skb);
+> +	struct net *net = dev_net(dst->dev);
+> +	struct ipv6hdr *hdr, *inner_hdr6;
+> +	struct iphdr *inner_hdr4;
+> +	struct ipv6_sr_hdr *isrh;
+> +	int hdrlen = 0, tot_len, err;
 
-diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
-index e81227761f5d..451cefc2d0da 100644
---- a/tools/bpf/bpftool/main.c
-+++ b/tools/bpf/bpftool/main.c
-@@ -507,9 +507,7 @@ int main(int argc, char **argv)
- 		 * It will still be rejected if users use LIBBPF_STRICT_ALL
- 		 * mode for loading generated skeleton.
- 		 */
--		ret = libbpf_set_strict_mode(LIBBPF_STRICT_ALL & ~LIBBPF_STRICT_MAP_DEFINITIONS);
--		if (ret)
--			p_err("failed to enable libbpf strict mode: %d", ret);
-+		libbpf_set_strict_mode(LIBBPF_STRICT_ALL & ~LIBBPF_STRICT_MAP_DEFINITIONS);
- 	}
- 
- 	argc -= optind;
--- 
-2.34.1
+I suppose we should stick with the reverse XMAS tree code style.
 
+> +	__be32 flowlabel = 0;
+
+this initialization is unnecessary since the variable is accessed for the first
+time in writing, later in the code.
+
+> +	if (osrh->first_segment > 0)
+> +		hdrlen = (osrh->hdrlen - 1) << 3;
+> +
+> +	tot_len = hdrlen + sizeof(struct ipv6hdr);
+> +
+> +	err = skb_cow_head(skb, tot_len + skb->mac_len);
+> +	if (unlikely(err))
+> +		return err;
+> +
+> +	inner_hdr6 = ipv6_hdr(skb);
+> +	inner_hdr4 = ip_hdr(skb);
+
+inner_hdr4 is only used in the *if* block that follows later on.
+
+> +	flowlabel = seg6_make_flowlabel(net, skb, inner_hdr6);
+> +
+> +	skb_push(skb, tot_len);
+> +	skb_reset_network_header(skb);
+> +	skb_mac_header_rebuild(skb);
+> +	hdr = ipv6_hdr(skb);
+> +
+> +	memset(skb->cb, 0, sizeof(skb->cb));
+
+is there a specific reason why we should consider the whole CB size and not
+only the part covered by the struct inet6_skb_parm?
+
+> +	IP6CB(skb)->iif = skb->skb_iif;
+> +
+> +	if (skb->protocol == htons(ETH_P_IPV6)) {
+> +		ip6_flow_hdr(hdr, ip6_tclass(ip6_flowinfo(inner_hdr6)),
+> +			     flowlabel);
+> +		hdr->hop_limit = inner_hdr6->hop_limit;
+> +	} else if (skb->protocol == htons(ETH_P_IP)) {
+> +		ip6_flow_hdr(hdr, (unsigned int) inner_hdr4->tos, flowlabel);
+> +		hdr->hop_limit = inner_hdr4->ttl;
+> +	}
+> +
+
+Don't IPv4 and IPv6 cover all possible cases?
+
+> +	skb->protocol = htons(ETH_P_IPV6);
+> +
+> +	hdr->daddr = osrh->segments[osrh->first_segment];
+> +	hdr->version = 6;
+> +
+> +	if (osrh->first_segment > 0) {
+> +		hdr->nexthdr = NEXTHDR_ROUTING;
+> +
+> +		isrh = (void *)hdr + sizeof(struct ipv6hdr);
+> +		memcpy(isrh, osrh, hdrlen);
+> +
+> +		isrh->nexthdr = proto;
+> +		isrh->first_segment--;
+> +		isrh->hdrlen -= 2;
+> +	} else {
+> +		hdr->nexthdr = proto;
+> +	}
+> +
+> +	set_tun_src(net, dst->dev, &hdr->daddr, &hdr->saddr);
+> +
+> +#ifdef CONFIG_IPV6_SEG6_HMAC
+> +	if (osrh->first_segment > 0 && sr_has_hmac(isrh)) {
+> +		err = seg6_push_hmac(net, &hdr->saddr, isrh);
+> +		if (unlikely(err))
+> +			return err;
+> +	}
+> +#endif
+> +
+
+When there is only one SID and HMAC is configured, the SRH is not kept.
+Aren't we losing information this way?
+
+Andrea
