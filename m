@@ -2,121 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 397D7545DA2
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 09:35:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A324F545DA9
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 09:37:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346519AbiFJHf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 03:35:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51412 "EHLO
+        id S244274AbiFJHhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 03:37:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243558AbiFJHfR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 03:35:17 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF502F64B
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 00:35:16 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id w2so45627576ybi.7
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 00:35:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7ePcvtrAfkDDMXBENLN5wUjeDPbbwzDe0oZvNvxzKMI=;
-        b=iQ33QWZUIB+joeFDLf2jIZ39BXXh2xjPLpwX+yXbb6yVQYYr/hGUn97AjuBRUn5bzq
-         MIBXrrIYvx+amFBeh2i4c0ZtPFJQKOmnKiJ+olioV+zq5N2EVcPdp97VpYEjRYhmaf/X
-         9zqr5NAzlWJzvUnLyshBIzzJ1GPEAfFFs/spS29v1myE0I1H/MjFlnhLA2QR/IibECz2
-         2oU2Vm0HgY1nlXFkBfpAu6wEugw/gstzWYQuows3fZWTw94iWyzi8YhiT/+J0avFdcAt
-         lLb8vc6PpBZwhl6pdfHHnGSziPqJpn1cqYuBaAj2gZZZlccVu+Xh0kuWUWN9cqOBS2gg
-         gFCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7ePcvtrAfkDDMXBENLN5wUjeDPbbwzDe0oZvNvxzKMI=;
-        b=IE3aTi9+6iV0JFx/830Y/wk9DQnXwU9XVrpVCWT/WiMLgqneh/UFKReePhwB6LSOhu
-         5lpG/WYgI1e1AdwDcPSGNsmV5lf7ibHauRbGmUN4k2iw7SLN7Zf+CqxLBBLWe2nQyCJy
-         9nhdtLftR5DAwOwAzMi6R5zYrk3w/J/YEEt8yU57ZcBpM/pTnMcXU2aNA45nqF5ENE15
-         Fu2IQYkqUOxhOuhZ/nmiaSgbkjYsUTFLJpXaj2w24d95g9L10/8wYzpXt+iSDqbH2wey
-         y0+GARTNKCEwF/BF3oseClpSDS/k906JeGA15hZOiq64ogOnDqwPMIiyc3yzjY6ME8Lg
-         aLmA==
-X-Gm-Message-State: AOAM5300WW82D3HDdNlbxr2q6npEbSlBp4V7AL2NeUOPU9WnQtu/mSeM
-        nwO1nJgcceOcoF1tS2uaNH7tr8Hj8Kpy17IYX3dwDw==
-X-Google-Smtp-Source: ABdhPJxUeoqxYCw43kLFvWl9u/XspDZQiRg+1tO44tOFvdv0fzp7Aauqg6TmGklPZmpqMozaFMOe+EVigVqG53ea6EU=
-X-Received: by 2002:a25:504:0:b0:664:621d:1af4 with SMTP id
- 4-20020a250504000000b00664621d1af4mr1869951ybf.55.1654846515784; Fri, 10 Jun
- 2022 00:35:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220610070529.1623-1-zhudi2@huawei.com> <CANn89iKvXUbunP6UtNE1tNCH7FwCux22_rqwhGigvGn_64-6FA@mail.gmail.com>
-In-Reply-To: <CANn89iKvXUbunP6UtNE1tNCH7FwCux22_rqwhGigvGn_64-6FA@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 10 Jun 2022 00:35:04 -0700
-Message-ID: <CANn89i+PQ0Z5LHoTfBixJ9gzAcWD9_8dWccO80gSPx+uZ_wujA@mail.gmail.com>
-Subject: Re: [PATCH] fq_codel: Discard problematic packets with pkt_len 0
-To:     Di Zhu <zhudi2@huawei.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        with ESMTP id S229590AbiFJHhm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 03:37:42 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F3512DBE0;
+        Fri, 10 Jun 2022 00:37:39 -0700 (PDT)
+Received: from kwepemi500006.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LKCSZ0KYhzjXVp;
+        Fri, 10 Jun 2022 15:36:14 +0800 (CST)
+Received: from dggpeml500011.china.huawei.com (7.185.36.84) by
+ kwepemi500006.china.huawei.com (7.221.188.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 10 Jun 2022 15:37:37 +0800
+Received: from dggpeml500011.china.huawei.com ([7.185.36.84]) by
+ dggpeml500011.china.huawei.com ([7.185.36.84]) with mapi id 15.01.2375.024;
+ Fri, 10 Jun 2022 15:37:36 +0800
+From:   "zhudi (E)" <zhudi2@huawei.com>
+To:     Eric Dumazet <edumazet@google.com>
+CC:     Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
         David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        "Jakub Kicinski" <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, rose.chen@huawei.com,
-        syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+        LKML <linux-kernel@vger.kernel.org>,
+        "Chenxiang (EulerOS)" <rose.chen@huawei.com>,
+        "syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com" 
+        <syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0hdIGZxX2NvZGVsOiBEaXNjYXJkIHByb2JsZW1hdGlj?=
+ =?utf-8?Q?_packets_with_pkt=5Flen_0?=
+Thread-Topic: [PATCH] fq_codel: Discard problematic packets with pkt_len 0
+Thread-Index: AQHYfJjG9k49X3aJiUuEmDHyLJhsLa1HuSCAgAAAxQCAAIZ4UA==
+Date:   Fri, 10 Jun 2022 07:37:36 +0000
+Message-ID: <6adad85fe8ae4c04a24c3c7ce3bc0628@huawei.com>
+References: <20220610070529.1623-1-zhudi2@huawei.com>
+ <CANn89iKvXUbunP6UtNE1tNCH7FwCux22_rqwhGigvGn_64-6FA@mail.gmail.com>
+ <CANn89i+PQ0Z5LHoTfBixJ9gzAcWD9_8dWccO80gSPx+uZ_wujA@mail.gmail.com>
+In-Reply-To: <CANn89i+PQ0Z5LHoTfBixJ9gzAcWD9_8dWccO80gSPx+uZ_wujA@mail.gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.136.114.155]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 12:32 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Fri, Jun 10, 2022 at 12:07 AM Di Zhu <zhudi2@huawei.com> wrote:
-> >
-> > Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
-> > skbs, that is, the flow->head is null.
-> > The root cause is that: when the first queued skb with pkt_len 0, backlogs
-> > of the flow that this skb enqueued is still 0 and if sch->limit is set to
-> > 0 then fq_codel_drop() will be called. At this point, the backlogs of all
-> > flows are all 0, so flow with idx 0 is selected to drop, but this flow have
-> > not any skbs.
-> > skb with pkt_len 0 can break existing processing logic, so just discard
-> > these invalid skbs.
-> >
-> > LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
-> >
-> > Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
-> > Signed-off-by: Di Zhu <zhudi2@huawei.com>
-> > ---
-> >  net/sched/sch_fq_codel.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >
-> > diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
-> > index 839e1235db05..c0f82b7358e1 100644
-> > --- a/net/sched/sch_fq_codel.c
-> > +++ b/net/sched/sch_fq_codel.c
-> > @@ -191,6 +191,9 @@ static int fq_codel_enqueue(struct sk_buff *skb, struct Qdisc *sch,
-> >         unsigned int pkt_len;
-> >         bool memory_limited;
-> >
-> > +       if (unlikely(!qdisc_pkt_len(skb)))
-> > +               return qdisc_drop(skb, sch, to_free);
-> > +
->
->
-> This has been discussed in the past.
->
-
-https://www.spinics.net/lists/netdev/msg777503.html
-
-> Feeding ndo_start_xmit() in hundreds of drivers with zero-length
-> packets will crash anyway.
->
-> We are not going to add such silly tests in all qdiscs, and then all
-> ndo_start_xmit(), since qdiscs are not mandatory.
->
-> Please instead fix BPF layer, instead of hundreds of drivers/qdiscs.
+VGhhbmtzIEVyaWMsIEknbGwgdGFrZSBhIGxvb2suDQoNCg0KPiBPbiBGcmksIEp1biAxMCwgMjAy
+MiBhdCAxMjozMiBBTSBFcmljIER1bWF6ZXQgPGVkdW1hemV0QGdvb2dsZS5jb20+IHdyb3RlOg0K
+PiA+DQo+ID4gT24gRnJpLCBKdW4gMTAsIDIwMjIgYXQgMTI6MDcgQU0gRGkgWmh1IDx6aHVkaTJA
+aHVhd2VpLmNvbT4gd3JvdGU6DQo+ID4gPg0KPiA+ID4gU3l6Ym90IGZvdW5kIGFuIGlzc3VlIFsx
+XTogZnFfY29kZWxfZHJvcCgpIHRyeSB0byBkcm9wIGEgZmxvdyB3aGl0b3V0IGFueQ0KPiA+ID4g
+c2ticywgdGhhdCBpcywgdGhlIGZsb3ctPmhlYWQgaXMgbnVsbC4NCj4gPiA+IFRoZSByb290IGNh
+dXNlIGlzIHRoYXQ6IHdoZW4gdGhlIGZpcnN0IHF1ZXVlZCBza2Igd2l0aCBwa3RfbGVuIDAsIGJh
+Y2tsb2dzDQo+ID4gPiBvZiB0aGUgZmxvdyB0aGF0IHRoaXMgc2tiIGVucXVldWVkIGlzIHN0aWxs
+IDAgYW5kIGlmIHNjaC0+bGltaXQgaXMgc2V0IHRvDQo+ID4gPiAwIHRoZW4gZnFfY29kZWxfZHJv
+cCgpIHdpbGwgYmUgY2FsbGVkLiBBdCB0aGlzIHBvaW50LCB0aGUgYmFja2xvZ3Mgb2YgYWxsDQo+
+ID4gPiBmbG93cyBhcmUgYWxsIDAsIHNvIGZsb3cgd2l0aCBpZHggMCBpcyBzZWxlY3RlZCB0byBk
+cm9wLCBidXQgdGhpcyBmbG93IGhhdmUNCj4gPiA+IG5vdCBhbnkgc2ticy4NCj4gPiA+IHNrYiB3
+aXRoIHBrdF9sZW4gMCBjYW4gYnJlYWsgZXhpc3RpbmcgcHJvY2Vzc2luZyBsb2dpYywgc28ganVz
+dCBkaXNjYXJkDQo+ID4gPiB0aGVzZSBpbnZhbGlkIHNrYnMuDQo+ID4gPg0KPiA+ID4gTElOSzog
+WzFdDQo+IGh0dHBzOi8vc3l6a2FsbGVyLmFwcHNwb3QuY29tL2J1Zz9pZD0wYjg0ZGE4MGMyOTE3
+NzU3OTE1YWZhODlmNzczOGE5ZDE2ZQ0KPiBjOTZjNQ0KPiA+ID4NCj4gPiA+IFJlcG9ydGVkLWJ5
+OiBzeXpib3QrN2ExMjkwOTQ4NWI5NDQyNmFjZWJAc3l6a2FsbGVyLmFwcHNwb3RtYWlsLmNvbQ0K
+PiA+ID4gU2lnbmVkLW9mZi1ieTogRGkgWmh1IDx6aHVkaTJAaHVhd2VpLmNvbT4NCj4gPiA+IC0t
+LQ0KPiA+ID4gIG5ldC9zY2hlZC9zY2hfZnFfY29kZWwuYyB8IDMgKysrDQo+ID4gPiAgMSBmaWxl
+IGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKQ0KPiA+ID4NCj4gPiA+IGRpZmYgLS1naXQgYS9uZXQv
+c2NoZWQvc2NoX2ZxX2NvZGVsLmMgYi9uZXQvc2NoZWQvc2NoX2ZxX2NvZGVsLmMNCj4gPiA+IGlu
+ZGV4IDgzOWUxMjM1ZGIwNS4uYzBmODJiNzM1OGUxIDEwMDY0NA0KPiA+ID4gLS0tIGEvbmV0L3Nj
+aGVkL3NjaF9mcV9jb2RlbC5jDQo+ID4gPiArKysgYi9uZXQvc2NoZWQvc2NoX2ZxX2NvZGVsLmMN
+Cj4gPiA+IEBAIC0xOTEsNiArMTkxLDkgQEAgc3RhdGljIGludCBmcV9jb2RlbF9lbnF1ZXVlKHN0
+cnVjdCBza19idWZmICpza2IsDQo+IHN0cnVjdCBRZGlzYyAqc2NoLA0KPiA+ID4gICAgICAgICB1
+bnNpZ25lZCBpbnQgcGt0X2xlbjsNCj4gPiA+ICAgICAgICAgYm9vbCBtZW1vcnlfbGltaXRlZDsN
+Cj4gPiA+DQo+ID4gPiArICAgICAgIGlmICh1bmxpa2VseSghcWRpc2NfcGt0X2xlbihza2IpKSkN
+Cj4gPiA+ICsgICAgICAgICAgICAgICByZXR1cm4gcWRpc2NfZHJvcChza2IsIHNjaCwgdG9fZnJl
+ZSk7DQo+ID4gPiArDQo+ID4NCj4gPg0KPiA+IFRoaXMgaGFzIGJlZW4gZGlzY3Vzc2VkIGluIHRo
+ZSBwYXN0Lg0KPiA+DQo+IA0KPiBodHRwczovL3d3dy5zcGluaWNzLm5ldC9saXN0cy9uZXRkZXYv
+bXNnNzc3NTAzLmh0bWwNCj4gDQo+ID4gRmVlZGluZyBuZG9fc3RhcnRfeG1pdCgpIGluIGh1bmRy
+ZWRzIG9mIGRyaXZlcnMgd2l0aCB6ZXJvLWxlbmd0aA0KPiA+IHBhY2tldHMgd2lsbCBjcmFzaCBh
+bnl3YXkuDQo+ID4NCj4gPiBXZSBhcmUgbm90IGdvaW5nIHRvIGFkZCBzdWNoIHNpbGx5IHRlc3Rz
+IGluIGFsbCBxZGlzY3MsIGFuZCB0aGVuIGFsbA0KPiA+IG5kb19zdGFydF94bWl0KCksIHNpbmNl
+IHFkaXNjcyBhcmUgbm90IG1hbmRhdG9yeS4NCj4gPg0KPiA+IFBsZWFzZSBpbnN0ZWFkIGZpeCBC
+UEYgbGF5ZXIsIGluc3RlYWQgb2YgaHVuZHJlZHMgb2YgZHJpdmVycy9xZGlzY3MuDQo=
