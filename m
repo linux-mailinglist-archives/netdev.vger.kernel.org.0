@@ -2,158 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C625D546750
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 15:26:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6080854675C
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 15:29:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245504AbiFJN0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 09:26:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46202 "EHLO
+        id S1348074AbiFJN1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 09:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238705AbiFJN0o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 09:26:44 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12601D9B7C
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 06:26:42 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1nzeei-00034e-KG; Fri, 10 Jun 2022 15:26:28 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1nzeeh-0008VP-8f; Fri, 10 Jun 2022 15:26:27 +0200
-Date:   Fri, 10 Jun 2022 15:26:27 +0200
-From:   "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
-To:     Ping-Ke Shih <pkshih@realtek.com>
-Cc:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "neojou@gmail.com" <neojou@gmail.com>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "martin.blumenstingl@googlemail.com" 
-        <martin.blumenstingl@googlemail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux@ulli-kroll.de" <linux@ulli-kroll.de>
-Subject: Re: [PATCH v2 10/10] rtw88: disable powersave modes for USB devices
-Message-ID: <20220610132627.GO1615@pengutronix.de>
-References: <20220530135457.1104091-1-s.hauer@pengutronix.de>
- <20220530135457.1104091-11-s.hauer@pengutronix.de>
- <1493412d473614dfafd4c03832e71f86831fa43b.camel@realtek.com>
- <20220531074244.GN1615@pengutronix.de>
- <8443f8e51774a4f80fed494321fcc410e7174bf1.camel@realtek.com>
+        with ESMTP id S237423AbiFJN1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 09:27:44 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB1E206113;
+        Fri, 10 Jun 2022 06:27:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654867662; x=1686403662;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=eTW19iyv8bmGlE74qdXZDVFsCItRJ8cEpvPZFZ3XmRo=;
+  b=HVLl6o+jVNSa3OLtunwQvY85fPJ/Np6OqEL7J5tduz+2iv7SGrBlLt/I
+   mpSUF6KcB3KArBqX6ghJG1jwTRr3HW7OQBmarr3pw92WFty8hEcs/g+rv
+   gkA9IHpeHId7LNs1+arhqbS+kj0FDvXfW1VaUa3nG8KGzhmyBqKH5E0wM
+   Azw1T5h0BIDDFqV/mNyBJRwllrLi4PyO2qnwkLWaTOndl60ufBhYQJbnm
+   Ebk3s/SrZWV+enDBkPJEsHlwT3CgiDqev/OP4YoRb1cVM4hUGTtwTrVAJ
+   sULBBi9g0wYwKdUhK0EpLnnSVGBPpvzVzumUC0dWgur6m8PBOV1i71LfL
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="277662252"
+X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
+   d="scan'208";a="277662252"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 06:27:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
+   d="scan'208";a="724969786"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 10 Jun 2022 06:27:40 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nzefr-000HyT-Sf;
+        Fri, 10 Jun 2022 13:27:39 +0000
+Date:   Fri, 10 Jun 2022 21:26:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     =?iso-8859-1?Q?J=F6rn-Thorben?= Hinz 
+        <jthinz@mailbox.tu-berlin.de>, bpf@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org,
+        =?iso-8859-1?Q?J=F6rn-Thorben?= Hinz 
+        <jthinz@mailbox.tu-berlin.de>
+Subject: Re: [PATCH bpf-next v2 2/2] bpf: Require only one of cong_avoid()
+ and cong_control() from a TCP CC
+Message-ID: <202206102106.exquHIbr-lkp@intel.com>
+References: <20220609204702.2351369-3-jthinz@mailbox.tu-berlin.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <8443f8e51774a4f80fed494321fcc410e7174bf1.camel@realtek.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220609204702.2351369-3-jthinz@mailbox.tu-berlin.de>
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 12:51:49PM +0000, Ping-Ke Shih wrote:
-> On Tue, 2022-05-31 at 09:42 +0200, s.hauer@pengutronix.de wrote:
-> > On Tue, May 31, 2022 at 01:07:36AM +0000, Ping-Ke Shih wrote:
-> > > On Mon, 2022-05-30 at 15:54 +0200, Sascha Hauer wrote:
-> > > > The powersave modes do not work with USB devices (tested with a
-> > > > RTW8822CU) properly. With powersave modes enabled the driver issues
-> > > > messages like:
-> > > > 
-> > > > rtw_8822cu 1-1:1.2: firmware failed to leave lps state
-> > > > rtw_8822cu 1-1:1.2: timed out to flush queue 3
-> > > 
-> > > Could you try module parameter rtw_disable_lps_deep_mode=1 to see
-> > > if it can work?
-> > 
-> > No, this module parameter doesn't seem to make any difference.
-> > 
-> > # cat /sys/module/rtw88_core/parameters/disable_lps_deep
-> > Y
-> > 
-> > Still "firmware failed to leave lps state" and poor performance.
-> > 
-> > Any other ideas what may go wrong here?
-> > 
-> 
-> Today, I borrow a 8822cu, and use your patchset but revert
-> patch 10/10 to reproduce this issue. With firmware 7.3.0,
-> it looks bad. After checking something about firmware, I
-> found the firmware is old, so upgrade to 9.9.11, and then
-> it works well for 10 minutes, no abnormal messages.
+Hi "Jörn-Thorben,
 
-I originally used firmware 5.0.0. Then I have tried 9.9.6 I have lying
-around here from my distro. That version behaves like the old 5.0.0
-version. Finally I switched to 9.9.11 from current linux-firmware
-repository. That doesn't work at all for me unfortunately:
+Thank you for the patch! Perhaps something to improve:
 
-[  221.076279] rtw_8822cu 2-1:1.2: Firmware version 9.9.11, H2C version 15
-[  221.078405] rtw_8822cu 2-1:1.2: Firmware version 9.9.4, H2C version 15
-[  239.783261] wlan0: authenticate with 76:83:c2:ce:83:0b
-[  242.398435] wlan0: send auth to 76:83:c2:ce:83:0b (try 1/3)
-[  242.402992] wlan0: authenticated
-[  242.420735] wlan0: associate with 76:83:c2:ce:83:0b (try 1/3)
-[  242.437094] wlan0: RX AssocResp from 76:83:c2:ce:83:0b (capab=0x1411 status=0 aid=4)
-[  242.485521] wlan0: associated
-[  242.564847] wlan0: Connection to AP 76:83:c2:ce:83:0b lost
-[  244.577617] wlan0: authenticate with 76:83:c2:cd:83:0b
-[  244.578257] wlan0: bad VHT capabilities, disabling VHT
-[  246.866182] wlan0: send auth to 76:83:c2:cd:83:0b (try 1/3)
-[  246.871830] wlan0: authenticated
-[  246.892754] wlan0: associate with 76:83:c2:cd:83:0b (try 1/3)
-[  246.911045] wlan0: RX AssocResp from 76:83:c2:cd:83:0b (capab=0x1431 status=0 aid=3)
-[  246.940608] wlan0: associated
-[  247.152308] wlan0: Connection to AP 76:83:c2:cd:83:0b lost
-[  248.912821] wlan0: Connection to AP 00:00:00:00:00:00 lost
-[  249.105517] wlan0: authenticate with 76:83:c2:ce:83:0b
-[  251.482183] wlan0: send auth to 76:83:c2:ce:83:0b (try 1/3)
-[  251.486765] wlan0: authenticated
-[  251.508731] wlan0: associate with 76:83:c2:ce:83:0b (try 1/3)
-[  251.521904] wlan0: RX AssocResp from 76:83:c2:ce:83:0b (capab=0x1411 status=0 aid=4)
-[  251.565233] wlan0: associated
-[  251.720602] wlan0: Connection to AP 76:83:c2:ce:83:0b lost
-[  253.527904] wlan0: Connection to AP 00:00:00:00:00:00 lost
-[  253.728243] wlan0: authenticate with 76:83:c2:cd:83:0b
-[  253.728921] wlan0: bad VHT capabilities, disabling VHT
-[  256.014184] wlan0: send auth to 76:83:c2:cd:83:0b (try 1/3)
-[  256.019608] wlan0: authenticated
-[  256.044702] wlan0: associate with 76:83:c2:cd:83:0b (try 1/3)
-[  256.062049] wlan0: RX AssocResp from 76:83:c2:cd:83:0b (capab=0x1431 status=0 aid=3)
-[  256.093117] wlan0: associated
-[  256.169071] wlan0: Connection to AP 76:83:c2:cd:83:0b lost
-[  258.145286] wlan0: authenticate with 76:83:c2:ce:83:0b
-[  260.626182] wlan0: send auth to 76:83:c2:ce:83:0b (try 1/3)
-[  260.630495] wlan0: authenticated
-[  260.652783] wlan0: associate with 76:83:c2:ce:83:0b (try 1/3)
-[  260.666201] wlan0: RX AssocResp from 76:83:c2:ce:83:0b (capab=0x1411 status=0 aid=4)
-[  260.708596] wlan0: associated
-[  260.769613] wlan0: Connection to AP 76:83:c2:ce:83:0b lost
-[  262.770668] wlan0: authenticate with 76:83:c2:cd:83:0b
-[  262.771272] wlan0: bad VHT capabilities, disabling VHT
-[  265.158184] wlan0: send auth to 76:83:c2:cd:83:0b (try 1/3)
+[auto build test WARNING on bpf-next/master]
 
-This goes on forever. I finally tried 9.9.10 and 9.9.9, they also behave
-like 9.9.11.
+url:    https://github.com/intel-lab-lkp/linux/commits/J-rn-Thorben-Hinz/bpf-Allow-a-TCP-CC-to-write-sk_pacing_rate-and-sk_pacing_status/20220610-054718
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: i386-randconfig-a003 (https://download.01.org/0day-ci/archive/20220610/202206102106.exquHIbr-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/ac2a3c95ce28ad79c2ef7e6c52c4fd25af9f3c6d
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review J-rn-Thorben-Hinz/bpf-Allow-a-TCP-CC-to-write-sk_pacing_rate-and-sk_pacing_status/20220610-054718
+        git checkout ac2a3c95ce28ad79c2ef7e6c52c4fd25af9f3c6d
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/ipv4/
 
-No luck today :(
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Sascha
+All warnings (new ones prefixed by >>):
+
+   net/ipv4/bpf_tcp_ca.c: In function 'bpf_tcp_ca_init_member':
+>> net/ipv4/bpf_tcp_ca.c:225:13: warning: unused variable 'prog_fd' [-Wunused-variable]
+     225 |         int prog_fd;
+         |             ^~~~~~~
+
+
+vim +/prog_fd +225 net/ipv4/bpf_tcp_ca.c
+
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  218  
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  219  static int bpf_tcp_ca_init_member(const struct btf_type *t,
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  220  				  const struct btf_member *member,
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  221  				  void *kdata, const void *udata)
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  222  {
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  223  	const struct tcp_congestion_ops *utcp_ca;
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  224  	struct tcp_congestion_ops *tcp_ca;
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08 @225  	int prog_fd;
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  226  	u32 moff;
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  227  
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  228  	utcp_ca = (const struct tcp_congestion_ops *)udata;
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  229  	tcp_ca = (struct tcp_congestion_ops *)kdata;
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  230  
+8293eb995f349a Alexei Starovoitov 2021-12-01  231  	moff = __btf_member_bit_offset(t, member) / 8;
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  232  	switch (moff) {
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  233  	case offsetof(struct tcp_congestion_ops, flags):
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  234  		if (utcp_ca->flags & ~TCP_CONG_MASK)
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  235  			return -EINVAL;
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  236  		tcp_ca->flags = utcp_ca->flags;
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  237  		return 1;
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  238  	case offsetof(struct tcp_congestion_ops, name):
+8e7ae2518f5265 Martin KaFai Lau   2020-03-13  239  		if (bpf_obj_name_cpy(tcp_ca->name, utcp_ca->name,
+8e7ae2518f5265 Martin KaFai Lau   2020-03-13  240  				     sizeof(tcp_ca->name)) <= 0)
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  241  			return -EINVAL;
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  242  		if (tcp_ca_find(utcp_ca->name))
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  243  			return -EEXIST;
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  244  		return 1;
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  245  	}
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  246  
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  247  	return 0;
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  248  }
+0baf26b0fcd74b Martin KaFai Lau   2020-01-08  249  
 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+0-DAY CI Kernel Test Service
+https://01.org/lkp
