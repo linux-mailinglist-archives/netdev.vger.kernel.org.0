@@ -2,56 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BA3E546938
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 17:14:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1592854693D
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 17:16:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233194AbiFJPOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 11:14:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33098 "EHLO
+        id S235343AbiFJPQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 11:16:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiFJPOh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 11:14:37 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAC4E95A3;
-        Fri, 10 Jun 2022 08:14:35 -0700 (PDT)
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nzgLE-0003a9-0M; Fri, 10 Jun 2022 17:14:28 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1nzgLD-000Tc0-Mu; Fri, 10 Jun 2022 17:14:27 +0200
-Subject: Re: [PATCH v3 1/2] bpf: Add bpf_verify_signature() helper
-To:     Roberto Sassu <roberto.sassu@huawei.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>
-Cc:     "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>
-References: <20220610135916.1285509-1-roberto.sassu@huawei.com>
- <20220610135916.1285509-2-roberto.sassu@huawei.com>
- <ce56c551-019f-9e10-885f-4e88001a8f6b@iogearbox.net>
- <4b877d4877be495787cb431d0a42cbc9@huawei.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <1a5534e6-4d63-7c91-8dcd-41b22f1ea2ba@iogearbox.net>
-Date:   Fri, 10 Jun 2022 17:14:27 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S229553AbiFJPQe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 11:16:34 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C40336328
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 08:16:33 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id s6so43312015lfo.13
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 08:16:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=O7d/DcQSpNnqD6jmzwL5DZSEckfjAlcTK6K1oAptkDM=;
+        b=gO0+0W6+3PoOWRQ4PR3kKxigiW1/bxRU9kkoAdlHJ/x0bolIH6Ol6MaWZ/e6sqdHrr
+         SrnmmRFYzR0ewZyJZTPYyx9mmnC57Ghwy3Qi2ryIRymb2iJC68DxI5hRkDaDFwZMHnLl
+         K09BmHmahkiRZXJLaDgwA7vHy8oDHh9k+wRi8owO5fmoQaMAf5S0xJEuytraWqLhe6bO
+         mJp+EFDUD11ULw9EuacNvM2Qi+thwHoabCG2TvdO59NbsnrQmD+RrBKIt4EfSTW0lg6s
+         5cMe/Hvh1pJK7vwj5cPqWjAm6iNDTaIhtykd2P5XKrwE8RQ0aXJYq9FMm7Zpgpi3+051
+         OnTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=O7d/DcQSpNnqD6jmzwL5DZSEckfjAlcTK6K1oAptkDM=;
+        b=unJSBBYx5/cpqpPQTClWsXwVH44fgh3da2Zy5dWHWpNnPi8uRNfuXu68MUW5ZQSbDg
+         j5ZJRcRijNYCCvr1lBHrKL+GVDVPq0NcwQ7Bj+j/M6V/jgcpjAOipEgW9YxI8YfBWgdM
+         GhoR9rNcbMPX+oEjiOP7KfR9u2Sjoqa3XOcT9l1xTyH9bXkRpiriLIskCxHUK0wC+4zj
+         aeay1qyQQ0XHLgsZXpEQaee0tB6DUtgZ33peUCFmm6V34WmOPz2oBjjZZp03bB6JAwlc
+         jWm+5oWa7jZIuUxJzmlvDoC4XrPCGNO8g/pMJHrWWISLv/oyE6SDdUzg8MHQDCc336LV
+         Z/iQ==
+X-Gm-Message-State: AOAM531kH+7XNTAfLk7/GgL5KioPPxtakJ3Y5YPs+/8/8tr4C70wblMX
+        oDZIEbKpowJWQNh69OrPj7dAgOZl+MGkqWK6NKOPElz+Rsw=
+X-Google-Smtp-Source: ABdhPJw5kSrhW6EaThMI0wt+hyLpgqQebk2XISNZt6TBwdIjgzO6aDAIbk+OCz4D0tyLEJiOEcgePAdJzXZUXBy45G0=
+X-Received: by 2002:ac2:51c5:0:b0:479:732e:e93e with SMTP id
+ u5-20020ac251c5000000b00479732ee93emr10384274lfm.421.1654874191100; Fri, 10
+ Jun 2022 08:16:31 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <4b877d4877be495787cb431d0a42cbc9@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26568/Fri Jun 10 10:06:23 2022)
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+References: <CAMJ=MEcPzkBLynL7tpjdv0TCRA=Cmy13e7wmFXrr-+dOVcshKA@mail.gmail.com>
+ <f0f30591-f503-ae7c-9293-35cca4ceec84@gmail.com>
+In-Reply-To: <f0f30591-f503-ae7c-9293-35cca4ceec84@gmail.com>
+From:   Ronny Meeus <ronny.meeus@gmail.com>
+Date:   Fri, 10 Jun 2022 17:16:20 +0200
+Message-ID: <CAMJ=MEdctBNSihixym1ZO9RVaCa_FpTQ8e4xFukz3eN8F1P8bQ@mail.gmail.com>
+Subject: Re: TCP socket send return EAGAIN unexpectedly when sending small fragments
+To:     Eric Dumazet <erdnetdev@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -60,204 +65,178 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/10/22 4:59 PM, Roberto Sassu wrote:
->> From: Daniel Borkmann [mailto:daniel@iogearbox.net]
->> Sent: Friday, June 10, 2022 4:49 PM
->> On 6/10/22 3:59 PM, Roberto Sassu wrote:
->>> Add the bpf_verify_signature() helper, to give eBPF security modules the
->>> ability to check the validity of a signature against supplied data, by
->>> using system-provided keys as trust anchor.
->>>
->>> The new helper makes it possible to enforce mandatory policies, as eBPF
->>> programs might be allowed to make security decisions only based on data
->>> sources the system administrator approves.
->>>
->>> The caller should specify the identifier of the keyring containing the keys
->>> for signature verification: 0 for the primary keyring (immutable keyring of
->>> system keys); 1 for both the primary and secondary keyring (where keys can
->>> be added only if they are vouched for by existing keys in those keyrings);
->>> 2 for the platform keyring (primarily used by the integrity subsystem to
->>> verify a kexec'ed kerned image and, possibly, the initramfs signature);
->>> 0xffff for the session keyring (for testing purposes).
->>>
->>> The caller should also specify the type of signature. Currently only PKCS#7
->>> is supported.
->>>
->>> Since the maximum number of parameters of an eBPF helper is 5, the keyring
->>> and signature types share one (keyring ID: low 16 bits, signature type:
->>> high 16 bits).
->>>
->>> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
->>> Reported-by: kernel test robot <lkp@intel.com> (cast warning)
->>> ---
->>>    include/uapi/linux/bpf.h       | 17 +++++++++++++
->>>    kernel/bpf/bpf_lsm.c           | 46 ++++++++++++++++++++++++++++++++++
->>>    tools/include/uapi/linux/bpf.h | 17 +++++++++++++
->>>    3 files changed, 80 insertions(+)
->>>
->>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->>> index f4009dbdf62d..97521857e44a 100644
->>> --- a/include/uapi/linux/bpf.h
->>> +++ b/include/uapi/linux/bpf.h
->>> @@ -5249,6 +5249,22 @@ union bpf_attr {
->>>     *		Pointer to the underlying dynptr data, NULL if the dynptr is
->>>     *		read-only, if the dynptr is invalid, or if the offset and length
->>>     *		is out of bounds.
->>> + *
->>> + * long bpf_verify_signature(u8 *data, u32 datalen, u8 *sig, u32 siglen, u32
->> info)
->>> + *	Description
->>> + *		Verify a signature of length *siglen* against the supplied data
->>> + *		with length *datalen*. *info* contains the keyring identifier
->>> + *		(low 16 bits) and the signature type (high 16 bits). The keyring
->>> + *		identifier can have the following values (some defined in
->>> + *		verification.h): 0 for the primary keyring (immutable keyring of
->>> + *		system keys); 1 for both the primary and secondary keyring
->>> + *		(where keys can be added only if they are vouched for by
->>> + *		existing keys in those keyrings); 2 for the platform keyring
->>> + *		(primarily used by the integrity subsystem to verify a kexec'ed
->>> + *		kerned image and, possibly, the initramfs signature); 0xffff for
->>> + *		the session keyring (for testing purposes).
->>> + *	Return
->>> + *		0 on success, a negative value on error.
->>>     */
->>>    #define __BPF_FUNC_MAPPER(FN)		\
->>>    	FN(unspec),			\
->>> @@ -5455,6 +5471,7 @@ union bpf_attr {
->>>    	FN(dynptr_read),		\
->>>    	FN(dynptr_write),		\
->>>    	FN(dynptr_data),		\
->>> +	FN(verify_signature),		\
->>>    	/* */
->>>
->>>    /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->>> diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
->>> index c1351df9f7ee..20bd850ea3ee 100644
->>> --- a/kernel/bpf/bpf_lsm.c
->>> +++ b/kernel/bpf/bpf_lsm.c
->>> @@ -16,6 +16,8 @@
->>>    #include <linux/bpf_local_storage.h>
->>>    #include <linux/btf_ids.h>
->>>    #include <linux/ima.h>
->>> +#include <linux/verification.h>
->>> +#include <linux/module_signature.h>
->>>
->>>    /* For every LSM hook that allows attachment of BPF programs, declare a
->> nop
->>>     * function where a BPF program can be attached.
->>> @@ -132,6 +134,46 @@ static const struct bpf_func_proto
->> bpf_get_attach_cookie_proto = {
->>>    	.arg1_type	= ARG_PTR_TO_CTX,
->>>    };
->>>
->>> +#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
->>> +BPF_CALL_5(bpf_verify_signature, u8 *, data, u32, datalen, u8 *, sig,
->>> +	   u32, siglen, u32, info)
->>> +{
->>> +	unsigned long keyring_id = info & U16_MAX;
->>> +	enum pkey_id_type id_type = info >> 16;
->>> +	const struct cred *cred = current_cred();
->>> +	struct key *keyring;
->>> +
->>> +	if (keyring_id > (unsigned long)VERIFY_USE_PLATFORM_KEYRING &&
->>> +	    keyring_id != U16_MAX)
->>> +		return -EINVAL;
->>> +
->>> +	keyring = (keyring_id == U16_MAX) ?
->>> +		  cred->session_keyring : (struct key *)keyring_id;
->>> +
->>> +	switch (id_type) {
->>> +	case PKEY_ID_PKCS7:
->>> +		return verify_pkcs7_signature(data, datalen, sig, siglen,
->>> +					      keyring,
->>> +
->> VERIFYING_UNSPECIFIED_SIGNATURE,
->>> +					      NULL, NULL);
->>> +	default:
->>> +		return -EOPNOTSUPP;
->>
->> Question to you & KP:
->>
->>   > Can we keep the helper generic so that it can be extended to more types of
->>   > signatures and pass the signature type as an enum?
->>
->> How many different signature types do we expect, say, in the next 6mo, to land
->> here? Just thinking out loud whether it is better to keep it simple as with the
->> last iteration where we have a helper specific to pkcs7, and if needed in future
->> we add others. We only have the last reg as auxillary arg where we need to
->> squeeze
->> all info into it now. What if for other, future signature types this won't suffice?
-> 
-> I would add at least another for PGP, assuming that the code will be
-> upstreamed. But I agree, the number should not be that high.
+Op vr 10 jun. 2022 om 16:21 schreef Eric Dumazet <erdnetdev@gmail.com>:
+>
+>
+> On 6/10/22 05:48, Ronny Meeus wrote:
+> > Hello
+> >
+> > I have a small test application written in C that creates a local (in
+> > process) TCP channel via loopback.
+> > (kernel version is 3.10.0 but the same issue is also seen for example
+> > on a 4.9 kernel).
+> >
+> > On the client side, an SO_SNDBUF of 5Kb is configured (which is
+> > doubled by the kernel) while on the server side the default size is
+> > used.
+> > Both client and server side are running in non-blocking mode.
+> >
+> > The server side is not reading its socket so all data is simply queued
+> > in the socket's receive buffer.
+> > On the client side, the client is writing data into the socket in a
+> > loop until the write returns an error (EAGAIN in this case).
+> >
+> > Depending on the size of data I send on this socket, I get the EAGAIN
+> > on the client side already after a small number of messages.
+> > For example when sending 106 byte messages, I see the first EAGAIN
+> > after 21 write calls:
+> > # ./tcp_client_server 106
+> > using data size 106
+> > client send buffer size 5000
+> > client socket snd_buf: 10000
+> > ERRNO = 11 count=21
+> >
+> > The same is observed for all sizes smaller than or equal to 107 bytes.
+> >
+> > When getting the socket stats using ss I see all data (2226b) pending
+> > in the socket on the server side:
+> > # ss -tmi  | grep -i X11 -A 1
+> > ESTAB      0      0      127.0.0.1:59792                127.0.0.1:x11
+> > skmem:(r0,rb1061296,t0,tb10000,f0,w0,o0,bl0,d0) cubic wscale:7,7
+> > rto:202 rtt:1.276/2.504 mss:21888 rcvmss:536 advmss:65483 cwnd:10
+> > bytes_acked:2227 segs_out:24 segs_in:18 send 1372.3Mbps lastsnd:3883
+> > lastrcv:771546999 lastack:3883 pacing_rate 2744.3Mbps retrans:0/1
+> > rcv_space:43690
+> > --
+> > ESTAB      2226   0      127.0.0.1:x11
+> > 127.0.0.1:59792
+> > skmem:(r4608,rb1061488,t0,tb2626560,f3584,w0,o0,bl0,d1) cubic
+> > wscale:7,7 rto:200 ato:40 mss:21888 rcvmss:536 advmss:65483 cwnd:10
+> > bytes_received:2226 segs_out:17 segs_in:24 lastsnd:3893 lastrcv:3893
+> > lastack:3883 rcv_space:43690
+> >
+> >
+> > When sending larger messages, the EAGAIN only is seen after 2116 writes.
+> > # ./tcp_client_server 108
+> > using data size 108
+> > client send buffer size 5000
+> > client socket snd_buf: 10000
+> > ERRNO = 11 count=2116
+> >
+> > Again, the ss shows all data being present on the server side (108 *
+> > 2116 = 228528)
+> > ESTAB      228528 0      127.0.0.1:x11
+> > 127.0.0.1:59830
+> > skmem:(r976896,rb1061488,t0,tb2626560,f2048,w0,o0,bl0,d1) cubic
+> > wscale:7,7 rto:200 ato:80 mss:21888 rcvmss:536 advmss:65483 cwnd:10
+> > bytes_received:228528 segs_out:436 segs_in:2119 lastsnd:3615
+> > lastrcv:3606 lastack:3596 rcv_rtt:1 rcv_space:43690
+> > --
+> > ESTAB      0      0      127.0.0.1:59830                127.0.0.1:x11
+> > skmem:(r0,rb1061296,t0,tb10000,f0,w0,o0,bl0,d0) cubic wscale:7,7
+> > rto:206 rtt:5.016/9.996 mss:21888 rcvmss:536 advmss:65483 cwnd:10
+> > bytes_acked:228529 segs_out:2119 segs_in:437 send 349.1Mbps
+> > lastsnd:3596 lastrcv:771704718 lastack:3566 pacing_rate 698.1Mbps
+> > retrans:0/1 rcv_space:43690
+> >
+> >
+> >
+> > When I enlarge the SNDBUF on the client side to for example 10K, I see
+> > that more messages can be sent:
+> > # ./tcp_client_server 106 10000
+> > using data size 106
+> > client send buffer size 10000
+> > client socket snd_buf: 20000
+> > ERRNO = 11 count=1291
+> >
+> > I also captured the packets on the interface using wireshark and it
+> > looks like the error is returned after the TCP layer has done a
+> > retransmit (after 10ms) of the last packet sent on the connection.
+> >
+> > 10:12:38.186451 IP localhost.48470 > localhost.etlservicemgr: Flags
+> > [P.], seq 1165:1265, ack 165, win 342, options [nop,nop,TS val
+> > 593860562 ecr 593860562], length 100
+> > 10:12:38.186461 IP localhost.etlservicemgr > localhost.48470: Flags
+> > [.], ack 1265, win 342, options [nop,nop,TS val 593860562 ecr
+> > 593860562], length 0
+> > 10:12:38.186478 IP localhost.48470 > localhost.etlservicemgr: Flags
+> > [P.], seq 1265:1365, ack 165, win 342, options [nop,nop,TS val
+> > 593860562 ecr 593860562], length 100
+> > 10:12:38.186488 IP localhost.etlservicemgr > localhost.48470: Flags
+> > [.], ack 1365, win 342, options [nop,nop,TS val 593860562 ecr
+> > 593860562], length 0
+> > 10:12:38.186505 IP localhost.48470 > localhost.etlservicemgr: Flags
+> > [P.], seq 1365:1465, ack 165, win 342, options [nop,nop,TS val
+> > 593860562 ecr 593860562], length 100
+> > 10:12:38.186516 IP localhost.etlservicemgr > localhost.48470: Flags
+> > [.], ack 1465, win 342, options [nop,nop,TS val 593860562 ecr
+> > 593860562], length 0
+> > 10:12:38.186533 IP localhost.48470 > localhost.etlservicemgr: Flags
+> > [P.], seq 1465:1565, ack 165, win 342, options [nop,nop,TS val
+> > 593860562 ecr 593860562], length 100
+> > 10:12:38.186543 IP localhost.etlservicemgr > localhost.48470: Flags
+> > [.], ack 1565, win 342, options [nop,nop,TS val 593860562 ecr
+> > 593860562], length 0
+> > 10:12:38.186560 IP localhost.48470 > localhost.etlservicemgr: Flags
+> > [P.], seq 1565:1665, ack 165, win 342, options [nop,nop,TS val
+> > 593860562 ecr 593860562], length 100
+> > 10:12:38.186578 IP localhost.48470 > localhost.etlservicemgr: Flags
+> > [P.], seq 1665:1765, ack 165, win 342, options [nop,nop,TS val
+> > 593860562 ecr 593860562], length 100
+> > 10:12:38.186595 IP localhost.48470 > localhost.etlservicemgr: Flags
+> > [P.], seq 1765:1865, ack 165, win 342, options [nop,nop,TS val
+> > 593860562 ecr 593860562], length 100
+> > 10:12:38.186615 IP localhost.48470 > localhost.etlservicemgr: Flags
+> > [P.], seq 1865:1965, ack 165, win 342, options [nop,nop,TS val
+> > 593860562 ecr 593860562], length 100
+> > 10:12:38.186632 IP localhost.48470 > localhost.etlservicemgr: Flags
+> > [P.], seq 1965:2065, ack 165, win 342, options [nop,nop,TS val
+> > 593860562 ecr 593860562], length 100
+> > 10:12:38.196064 IP localhost.48470 > localhost.etlservicemgr: Flags
+> > [P.], seq 1965:2065, ack 165, win 342, options [nop,nop,TS val
+> > 593860572 ecr 593860562], length 100
+> > 10:12:38.196128 IP localhost.etlservicemgr > localhost.48470: Flags
+> > [.], ack 2065, win 342, options [nop,nop,TS val 593860572 ecr
+> > 593860562,nop,nop,sack 1 {1965:2065}], length 0
+> >
+> > Now my question is: how is it possible that I can only send 21
+> > messages of 106 bytes before I see the EAGAIN while when sending
+> > larger messages I can send 2K+ messages.
+>
+>
+> This is because kernel tracks kernel memory usage.
+>
+> Small packets incur more overhead.
+>
+> The doubling of SO_SNDBUF user value, is an heuristic based on the fact
+> the kernel
+>
+> uses a 2x overhead estimation,
+>
+> while effective overhead can vary from ~1.001x to ~768x depending on
+> number of bytes per skb.
+>
 
-If realistically expected is really just two helpers, what speaks against a
-bpf_verify_signature_pkcs7() and bpf_verify_signature_pgp() in that case, for
-sake of better user experience?
+Hi Eric,
 
-Maybe one other angle.. if CONFIG_SYSTEM_DATA_VERIFICATION is enabled, it may
-not be clear whether verify_pkcs7_signature() or a verify_pgp_signature() are
-both always builtin. And then, we run into the issue again of more complex probing
-for availability of the algs compared to simple ...
+thanks for the feedback but it is not completely clear to me.
 
-#if defined(CONFIG_SYSTEM_DATA_VERIFICATION) && defined(CONFIG_XYZ)
-	case BPF_FUNC_verify_signature_xyz:
-		return ..._proto;
-#endif
+The small SNDBUF is on the client side and a large part of the data
+has already ACKed by the receiving side.
+Only the last 5 or 6 messages are waiting to be ACKed.
+So I would expect that the biggest part of the overhead is located on
+the receiving side where there is sufficient memory space (default
+RCVBUF size is used).
 
-... which bpftool and others easily understand.
+If the 5 queued packets on the sending side would cause the EAGAIN
+issue, the real question maybe is why the receiving side is not
+sending the ACK within the 10ms while for earlier messages the ACK is
+sent much sooner.
 
->>> +	}
->>> +}
->>> +
->>> +static const struct bpf_func_proto bpf_verify_signature_proto = {
->>> +	.func		= bpf_verify_signature,
->>> +	.gpl_only	= false,
->>> +	.ret_type	= RET_INTEGER,
->>> +	.arg1_type	= ARG_PTR_TO_MEM,
->>> +	.arg2_type	= ARG_CONST_SIZE_OR_ZERO,
->>
->> Can verify_pkcs7_signature() handle null/0 len for data* args?
-> 
-> Shouldn't ARG_PTR_TO_MEM require valid memory? 0 len should
-> not be a problem.
+Do you have any clue which kernel function does generate this EAGAIN?
+And what would be the correct solution to this problem?
 
-check_helper_mem_access() has:
+Best regards,
+Ronny
 
-      /* Allow zero-byte read from NULL, regardless of pointer type */
-      if (zero_size_allowed && access_size == 0 &&
-          register_is_null(reg))
-              return 0;
-
-So NULL/0 pair can be passed. Maybe good to add these corner cases to the test_progs
-selftest additions then if it's needed.
-
->>> +	.arg3_type	= ARG_PTR_TO_MEM,
->>> +	.arg4_type	= ARG_CONST_SIZE_OR_ZERO,
->>
->> Ditto for sig* args?
->>
->>> +	.arg5_type	= ARG_ANYTHING,
->>> +	.allowed	= bpf_ima_inode_hash_allowed,
->>> +};
->>> +#endif
->>> +
->>>    static const struct bpf_func_proto *
->>>    bpf_lsm_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->>>    {
->>> @@ -158,6 +200,10 @@ bpf_lsm_func_proto(enum bpf_func_id func_id,
->> const struct bpf_prog *prog)
->>>    		return prog->aux->sleepable ? &bpf_ima_file_hash_proto :
->> NULL;
->>>    	case BPF_FUNC_get_attach_cookie:
->>>    		return bpf_prog_has_trampoline(prog) ?
->> &bpf_get_attach_cookie_proto : NULL;
->>> +#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
->>> +	case BPF_FUNC_verify_signature:
->>> +		return prog->aux->sleepable ? &bpf_verify_signature_proto :
->> NULL;
->>> +#endif
->>>    	default:
->>>    		return tracing_prog_func_proto(func_id, prog);
->>>    	}
-
+>
