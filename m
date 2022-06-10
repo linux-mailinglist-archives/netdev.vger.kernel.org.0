@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05535545ABB
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 05:45:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D845545AC2
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 05:45:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346208AbiFJDpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 9 Jun 2022 23:45:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
+        id S1346212AbiFJDpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 9 Jun 2022 23:45:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239311AbiFJDox (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 23:44:53 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 866F937F912;
-        Thu,  9 Jun 2022 20:44:52 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id o6-20020a17090a0a0600b001e2c6566046so1129693pjo.0;
-        Thu, 09 Jun 2022 20:44:52 -0700 (PDT)
+        with ESMTP id S1345994AbiFJDo5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 9 Jun 2022 23:44:57 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F3E380839;
+        Thu,  9 Jun 2022 20:44:56 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id i15so5045646plr.1;
+        Thu, 09 Jun 2022 20:44:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GmjrKEQYPgZPTRJ4jJxsOeeTsxk0UvR5BruchnIbbJc=;
-        b=CQgeL72vUPpt+QhX/573LxrK6q6bh9PS+by6UFO4zShednyrlRuPYM1efYxqjoYvts
-         AwT5cbpjJ41hqa+R7Fhx+uKU2KapffVNSQaaP0OanPmqx5JuOqNnAUz0abWMBKdrpmRp
-         biyOCuU1pW8tX6lGRMLOZ+H9kz3QQ9Bb6Cl/yXP3lpICbEwz5xXkI+EHFDwwgpJ02uRB
-         5CP70lCSrNMaOjCjbWlGIQG3KmRitwdTY//dg222QZUqr/loopTyiagIvOP4SnKIg9Y1
-         +7dbb+oXEpflWfdvKJBO57M9/7wJyDw7rgMK2R2PGKPtuIFSmrQh7HiI8vDKtGfphl/4
-         IcRQ==
+        bh=nLTpWfEYARxnaBZe2tmsRz6wbhK6fZ6IiWkByiKDceA=;
+        b=WH6UUBMrnFxq5pWLa7MsNH2J14XF29eCtBTrTaQvSsdnO+srquKuC0LowcntUG7rPF
+         mj37pD3J6Hh1PBOI4ltrMtCsqM9ngRCw1Fb6Ry+R6x8AlObIIYqX5zhNZPvfp+fP5Jx2
+         50Z74KjShS5bG9A16SWVSghZ7i/sWFYWOPatcxqIiuAIxVRPiAF0bW+7dVot0gwlP3cw
+         Zl3CceAZh8hC+qtjtEH8r71LZwauLM8GsJUqd19IXpo2JunP4tNAV2g0rLUmt/xlYPuj
+         LBjF/31Z2Qw4M2FaWU8w4VOD2lVfcqSnDNriebh3lfWP7qd14qkNL7UQAcNF7JCs5UaF
+         VULA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GmjrKEQYPgZPTRJ4jJxsOeeTsxk0UvR5BruchnIbbJc=;
-        b=kTZjBsKJwQZoN8upYgCNJgyFyROHuBQIq9ka250ZIgTD4ru71WL/HL96UgxGlkeUaS
-         LgyQnnxwV8iSqrdLGmzsGg+smyKUFRAh+Rx302rSXgLf+PEM3p9+CprTKrnIjrSta+ti
-         uJ+XKaGPHZPwn0ym76ZjIV5bhs4MnjG2F/zqWHXp/XS0MdGtZZOSQmx18M34ATcBmU0e
-         becsTCkLuIQgFM1TKX0XREht9WhUsuEsQWRpoUY6gIEFMDj4kh/AklGGYAIyRE/WiWsz
-         9BtFTGj6NXzsRQOcJ6hdJRVHMO8Kh3gZ15Qd8Pn49V/B2gAYoEW8JT4Y3gd7z0JdkPF6
-         8SgQ==
-X-Gm-Message-State: AOAM532zI+s2IQPSgu+URqsrh94M8D2aej5vn6pg81afQedzggffYJng
-        R4pH8q3bygKVhavig5dMWX4=
-X-Google-Smtp-Source: ABdhPJxzAU+PuPbIhoN42pBXo1oJVG8BBuM/qPiVn38TuJN55d4DT0CFf3Qko6LGylSlZU1PMda5cA==
-X-Received: by 2002:a17:903:2485:b0:161:da96:1701 with SMTP id p5-20020a170903248500b00161da961701mr43282206plw.58.1654832692069;
-        Thu, 09 Jun 2022 20:44:52 -0700 (PDT)
+        bh=nLTpWfEYARxnaBZe2tmsRz6wbhK6fZ6IiWkByiKDceA=;
+        b=7cA5BCdf3i+GUgWKHmzr9SBpJqzJ857ErkAOJ/kOEZ3EUbuTjgUKVdtscxlGrU5wfU
+         X6L/HVW1iWZC5XyW/Na+A49dHrRcMX2OPdMeWT+ruHeUR+GKqPG0x/mo8APRKQkn73HX
+         m9/6m2i4RonyVzmL9iJSIlBboSyB2fjhRzQZf9oF+QMxvZDUta5PauW3ql206gzPj809
+         d9sG/UyFPoShTW9jZNVAmQKGT8bq2xCSS8/G0LyJwJ6ZK0/bAE8cv2Ezz3Dl59QE+pdl
+         t0QsIrNZGIlg8SfYAyrF/5qC6hh4fAljm6tWPIB5r64bcc97suUD9kTGo9Tn59oKhoP3
+         Uxtw==
+X-Gm-Message-State: AOAM531Ep7/fwMS7CH6zn7mzNR9qCiksxWeRUSZCo0w1OR7qlgHYchne
+        pXynLAkl0TUiQ6dJHgxTFYg=
+X-Google-Smtp-Source: ABdhPJxFOjQUQMQvh+McDuc5ckf06fMo+WdtXUr+NnJhN1UV7fUMPe903WR/5MNopMhzlEg6cK4dJg==
+X-Received: by 2002:a17:902:e0d1:b0:168:bedf:7146 with SMTP id e17-20020a170902e0d100b00168bedf7146mr200378pla.107.1654832696233;
+        Thu, 09 Jun 2022 20:44:56 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.27])
-        by smtp.gmail.com with ESMTPSA id u30-20020a63b55e000000b003fc136f9a7dsm5908368pgo.38.2022.06.09.20.44.48
+        by smtp.gmail.com with ESMTPSA id u30-20020a63b55e000000b003fc136f9a7dsm5908368pgo.38.2022.06.09.20.44.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jun 2022 20:44:51 -0700 (PDT)
+        Thu, 09 Jun 2022 20:44:55 -0700 (PDT)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     edumazet@google.com
@@ -57,9 +57,9 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
         dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, Jiang Biao <benbjiang@tencent.com>,
         Hao Peng <flyingpeng@tencent.com>
-Subject: [PATCH net-next v3 2/9] net: sock: introduce sk_stream_kill_queues_reason()
-Date:   Fri, 10 Jun 2022 11:41:57 +0800
-Message-Id: <20220610034204.67901-3-imagedong@tencent.com>
+Subject: [PATCH net-next v3 3/9] net: inet: add skb drop reason to inet_csk_destroy_sock()
+Date:   Fri, 10 Jun 2022 11:41:58 +0800
+Message-Id: <20220610034204.67901-4-imagedong@tencent.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220610034204.67901-1-imagedong@tencent.com>
 References: <20220610034204.67901-1-imagedong@tencent.com>
@@ -77,65 +77,47 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-Introduce the function sk_stream_kill_queues_reason() and make the
-origin sk_stream_kill_queues() an inline call to it.
+skb dropping in inet_csk_destroy_sock() seems to be a common case. Add
+the new drop reason 'SKB_DROP_REASON_SOCKET_DESTROIED' and apply it to
+inet_csk_destroy_sock() to stop confusing users with 'NOT_SPECIFIED'.
 
 Reviewed-by: Jiang Biao <benbjiang@tencent.com>
 Reviewed-by: Hao Peng <flyingpeng@tencent.com>
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- include/net/sock.h | 8 +++++++-
- net/core/stream.c  | 7 ++++---
- 2 files changed, 11 insertions(+), 4 deletions(-)
+ include/net/dropreason.h        | 5 +++++
+ net/ipv4/inet_connection_sock.c | 2 +-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 657873e2d90f..208c87807f23 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -1139,12 +1139,18 @@ int sk_stream_wait_connect(struct sock *sk, long *timeo_p);
- int sk_stream_wait_memory(struct sock *sk, long *timeo_p);
- void sk_stream_wait_close(struct sock *sk, long timeo_p);
- int sk_stream_error(struct sock *sk, int flags, int err);
--void sk_stream_kill_queues(struct sock *sk);
-+void sk_stream_kill_queues_reason(struct sock *sk,
-+				  enum skb_drop_reason reason);
- void sk_set_memalloc(struct sock *sk);
- void sk_clear_memalloc(struct sock *sk);
- 
- void __sk_flush_backlog(struct sock *sk);
- 
-+static inline void sk_stream_kill_queues(struct sock *sk)
-+{
-+	sk_stream_kill_queues_reason(sk, SKB_DROP_REASON_NOT_SPECIFIED);
-+}
-+
- static inline bool sk_flush_backlog(struct sock *sk)
- {
- 	if (unlikely(READ_ONCE(sk->sk_backlog.tail))) {
-diff --git a/net/core/stream.c b/net/core/stream.c
-index 06b36c730ce8..a562b23a1a6e 100644
---- a/net/core/stream.c
-+++ b/net/core/stream.c
-@@ -190,10 +190,11 @@ int sk_stream_error(struct sock *sk, int flags, int err)
- }
- EXPORT_SYMBOL(sk_stream_error);
- 
--void sk_stream_kill_queues(struct sock *sk)
-+void sk_stream_kill_queues_reason(struct sock *sk,
-+				  enum skb_drop_reason reason)
- {
- 	/* First the read buffer. */
--	__skb_queue_purge(&sk->sk_receive_queue);
-+	__skb_queue_purge_reason(&sk->sk_receive_queue, reason);
- 
- 	/* Next, the write queue. */
- 	WARN_ON(!skb_queue_empty(&sk->sk_write_queue));
-@@ -209,4 +210,4 @@ void sk_stream_kill_queues(struct sock *sk)
- 	 * have gone away, only the net layer knows can touch it.
+diff --git a/include/net/dropreason.h b/include/net/dropreason.h
+index fae9b40e54fa..3c6f1e299c35 100644
+--- a/include/net/dropreason.h
++++ b/include/net/dropreason.h
+@@ -231,6 +231,11 @@ enum skb_drop_reason {
+ 	 * MTU)
  	 */
- }
--EXPORT_SYMBOL(sk_stream_kill_queues);
-+EXPORT_SYMBOL(sk_stream_kill_queues_reason);
+ 	SKB_DROP_REASON_PKT_TOO_BIG,
++	/**
++	 * @SKB_DROP_REASON_SOCKET_DESTROYED: socket is destroyed and the
++	 * skb in its receive or send queue are all dropped
++	 */
++	SKB_DROP_REASON_SOCKET_DESTROYED,
+ 	/**
+ 	 * @SKB_DROP_REASON_MAX: the maximum of drop reason, which shouldn't be
+ 	 * used as a real 'reason'
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index c0b7e6c21360..1812060f24cb 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -1129,7 +1129,7 @@ void inet_csk_destroy_sock(struct sock *sk)
+ 
+ 	sk->sk_prot->destroy(sk);
+ 
+-	sk_stream_kill_queues(sk);
++	sk_stream_kill_queues_reason(sk, SKB_DROP_REASON_SOCKET_DESTROYED);
+ 
+ 	xfrm_sk_free_policy(sk);
+ 
 -- 
 2.36.1
 
