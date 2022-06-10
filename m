@@ -2,46 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 046EF546513
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 13:09:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 123D254652A
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 13:10:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345469AbiFJLIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 07:08:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56220 "EHLO
+        id S1348456AbiFJLJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 07:09:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347307AbiFJLIW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 07:08:22 -0400
-Received: from giacobini.uberspace.de (giacobini.uberspace.de [185.26.156.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C4A1451D8
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 04:08:18 -0700 (PDT)
-Received: (qmail 14172 invoked by uid 990); 10 Jun 2022 11:08:16 -0000
-Authentication-Results: giacobini.uberspace.de;
-        auth=pass (plain)
-From:   Soenke Huster <soenke.huster@eknoes.de>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Soenke Huster <soenke.huster@eknoes.de>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] Bluetooth: RFCOMM: Use skb_trim to trim checksum
-Date:   Fri, 10 Jun 2022 13:07:49 +0200
-Message-Id: <20220610110749.110881-1-soenke.huster@eknoes.de>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S1348925AbiFJLJa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 07:09:30 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56889146405;
+        Fri, 10 Jun 2022 04:09:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654859369; x=1686395369;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vPekLyqtRJctV4Stin8NJxATqTgWrggk5f+uvZ5RiY4=;
+  b=mlE4Tmqgoy77Aww4AoEDge+/k+DG8EpjN+XoMIQUiWv0LNPziHVs+iZj
+   aqg/rx7mQ6gPM7NeHPO4lbyt4ju5EUjtuMzZUFRLO9pgIraBJOFw4z3Q7
+   QlEzidfPr5woW9HWPH7CbX1kfpiAKG7Ww++nvTMbDlyh7WOcF4gMIfe3T
+   MmuZjtojpsivgY+rvZldsPr8mkX92AiElXh9a6dQ7HQWeT1QStxkNEYC1
+   LnI4fMA2CFftLl3iijOEs7Z9hJN/2ojFq2ortYUWPL4EvhYYbXJ3aC+MY
+   seR0Nt6nl4erCVfaXhcBKqy3G5l3UEudHG0zyj5HymO1ToXdca0JF18iJ
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10373"; a="260714419"
+X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
+   d="scan'208";a="260714419"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 04:09:28 -0700
+X-IronPort-AV: E=Sophos;i="5.91,290,1647327600"; 
+   d="scan'208";a="671798863"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2022 04:09:27 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nzcW4-000Yhm-EE;
+        Fri, 10 Jun 2022 14:09:24 +0300
+Date:   Fri, 10 Jun 2022 14:09:24 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Richard Cochran <richardcochran@gmail.com>
+Subject: Re: [PATCH net-next v1 1/5] ptp_ocp: use dev_err_probe()
+Message-ID: <YqMmZBEsCv+f19se@smile.fi.intel.com>
+References: <20220608120358.81147-1-andriy.shevchenko@linux.intel.com>
+ <20220608120358.81147-2-andriy.shevchenko@linux.intel.com>
+ <20220609224523.78b6a6e6@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Bar: /
-X-Rspamd-Report: BAYES_HAM(-2.920938) R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) SUSPICIOUS_RECIPS(1.5)
-X-Rspamd-Score: -0.020938
-Received: from unknown (HELO unkown) (::1)
-        by giacobini.uberspace.de (Haraka/2.8.28) with ESMTPSA; Fri, 10 Jun 2022 13:08:16 +0200
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,
-        MSGID_FROM_MTA_HEADER,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220609224523.78b6a6e6@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -49,38 +66,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As skb->tail might be zero, it can underflow. This leads to a page
-fault: skb_tail_pointer simply adds skb->tail (which is now MAX_UINT)
-to skb->head.
+On Thu, Jun 09, 2022 at 10:45:23PM -0700, Jakub Kicinski wrote:
+> On Wed,  8 Jun 2022 15:03:54 +0300 Andy Shevchenko wrote:
+> > Simplify the error path in ->probe() and unify message format a bit
+> > by using dev_err_probe().
+> 
+> Let's not do this. I get that using dev_err_probe() even without
+> possibility of -EPROBE_DEFER is acceptable, but converting
+> existing drivers is too much IMO. Acceptable < best practice.
 
-    BUG: unable to handle page fault for address: ffffed1021de29ff
-    #PF: supervisor read access in kernel mode
-    #PF: error_code(0x0000) - not-present page
-    RIP: 0010:rfcomm_run+0x831/0x4040 (net/bluetooth/rfcomm/core.c:1751)
+Noted.
 
-By using skb_trim instead of the direct manipulation, skb->tail
-is reset. Thus, the correct pointer to the checksum is used.
+I have just checked that if you drop this patch the rest will be still
+applicable. If you have no objections, can you apply patches 2-5 then?
 
-Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
----
-v2: Clarified how the bug triggers, minimize code change
-
- net/bluetooth/rfcomm/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.c
-index 7324764384b6..443b55edb3ab 100644
---- a/net/bluetooth/rfcomm/core.c
-+++ b/net/bluetooth/rfcomm/core.c
-@@ -1747,7 +1747,7 @@ static struct rfcomm_session *rfcomm_recv_frame(struct rfcomm_session *s,
- 	type = __get_type(hdr->ctrl);
- 
- 	/* Trim FCS */
--	skb->len--; skb->tail--;
-+	skb_trim(skb, skb->len - 1);
- 	fcs = *(u8 *)skb_tail_pointer(skb);
- 
- 	if (__check_fcs(skb->data, type, fcs)) {
 -- 
-2.36.1
+With Best Regards,
+Andy Shevchenko
+
 
