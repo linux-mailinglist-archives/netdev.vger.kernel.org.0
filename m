@@ -2,85 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC433546756
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 15:26:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C625D546750
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 15:26:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236985AbiFJN0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 09:26:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43452 "EHLO
+        id S245504AbiFJN0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 09:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229906AbiFJN0A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 09:26:00 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 685FC8CB36;
-        Fri, 10 Jun 2022 06:25:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=/SmzHm2SiyCKPEGhx/85VV7/8vei9NgvWmD9d3PyooE=;
-        t=1654867558; x=1656077158; b=cTmycZAeIa7CYmfSg4u9WMQM6H/xxzhkYhZ+ene4cVXeocP
-        Q597hNd7CgDgfG+oxqbJc1QMwTcqyOO1/vOqlfslyTk3siVgCzjBbFNABntxNUpqoA0OfdaMOt3HI
-        CFkMFxsCfzJLd/3gkPMrsWN8rMgBdKJKXnUjrsXdhVoLNoAJBwcOy3xXLj/0T09dHu+26c5fMRAas
-        5pJAOz1FgWEc3PCLcyopImdJ4Thz4P2RDSIoec8TfTvEG9/8DCWNIsVa2rbAN+yhDabJ7//ZAvQ34
-        UKiQ7OwacaX2uKCCg+eO5JOkdzRBE1DlIqzGi5B3CFTggD42j1Suh6n/wb6xlpUg==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1nzedz-001VLK-5i;
-        Fri, 10 Jun 2022 15:25:43 +0200
-Message-ID: <a74c86e2d6a7272d206ba44e40d69f48a25be4c1.camel@sipsolutions.net>
-Subject: Re: [PATCH v6 1/2] devcoredump: remove the useless gfp_t parameter
- in dev_coredumpv and dev_coredumpm
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Duoming Zhou <duoming@zju.edu.cn>, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, briannorris@chromium.org
-Cc:     amitkarwar@gmail.com, ganapathi017@gmail.com,
-        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
-        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        gregkh@linuxfoundation.org, rafael@kernel.org
-Date:   Fri, 10 Jun 2022 15:25:42 +0200
-In-Reply-To: <df72af3b1862bac7d8e793d1f3931857d3779dfd.1654569290.git.duoming@zju.edu.cn>
-References: <cover.1654569290.git.duoming@zju.edu.cn>
-         <df72af3b1862bac7d8e793d1f3931857d3779dfd.1654569290.git.duoming@zju.edu.cn>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
+        with ESMTP id S238705AbiFJN0o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 09:26:44 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12601D9B7C
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 06:26:42 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1nzeei-00034e-KG; Fri, 10 Jun 2022 15:26:28 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1nzeeh-0008VP-8f; Fri, 10 Jun 2022 15:26:27 +0200
+Date:   Fri, 10 Jun 2022 15:26:27 +0200
+From:   "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
+To:     Ping-Ke Shih <pkshih@realtek.com>
+Cc:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "neojou@gmail.com" <neojou@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux@ulli-kroll.de" <linux@ulli-kroll.de>
+Subject: Re: [PATCH v2 10/10] rtw88: disable powersave modes for USB devices
+Message-ID: <20220610132627.GO1615@pengutronix.de>
+References: <20220530135457.1104091-1-s.hauer@pengutronix.de>
+ <20220530135457.1104091-11-s.hauer@pengutronix.de>
+ <1493412d473614dfafd4c03832e71f86831fa43b.camel@realtek.com>
+ <20220531074244.GN1615@pengutronix.de>
+ <8443f8e51774a4f80fed494321fcc410e7174bf1.camel@realtek.com>
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8443f8e51774a4f80fed494321fcc410e7174bf1.camel@realtek.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-06-07 at 11:26 +0800, Duoming Zhou wrote:
-> The dev_coredumpv() and dev_coredumpm() could not be used in atomic
-> context, because they call kvasprintf_const() and kstrdup() with
-> GFP_KERNEL parameter. The process is shown below:
->=20
-> dev_coredumpv(.., gfp_t gfp)
->   dev_coredumpm(.., gfp_t gfp)
->     dev_set_name
->       kobject_set_name_vargs
->         kvasprintf_const(GFP_KERNEL, ...); //may sleep
->           kstrdup(s, GFP_KERNEL); //may sleep
->=20
-> This patch removes gfp_t parameter of dev_coredumpv() and dev_coredumpm()
-> and changes the gfp_t parameter of kzalloc() in dev_coredumpm() to
-> GFP_KERNEL in order to show they could not be used in atomic context.
->=20
-> Fixes: 833c95456a70 ("device coredump: add new device coredump class")
-> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-> Reviewed-by: Brian Norris <briannorris@chromium.org>
+On Thu, Jun 09, 2022 at 12:51:49PM +0000, Ping-Ke Shih wrote:
+> On Tue, 2022-05-31 at 09:42 +0200, s.hauer@pengutronix.de wrote:
+> > On Tue, May 31, 2022 at 01:07:36AM +0000, Ping-Ke Shih wrote:
+> > > On Mon, 2022-05-30 at 15:54 +0200, Sascha Hauer wrote:
+> > > > The powersave modes do not work with USB devices (tested with a
+> > > > RTW8822CU) properly. With powersave modes enabled the driver issues
+> > > > messages like:
+> > > > 
+> > > > rtw_8822cu 1-1:1.2: firmware failed to leave lps state
+> > > > rtw_8822cu 1-1:1.2: timed out to flush queue 3
+> > > 
+> > > Could you try module parameter rtw_disable_lps_deep_mode=1 to see
+> > > if it can work?
+> > 
+> > No, this module parameter doesn't seem to make any difference.
+> > 
+> > # cat /sys/module/rtw88_core/parameters/disable_lps_deep
+> > Y
+> > 
+> > Still "firmware failed to leave lps state" and poor performance.
+> > 
+> > Any other ideas what may go wrong here?
+> > 
+> 
+> Today, I borrow a 8822cu, and use your patchset but revert
+> patch 10/10 to reproduce this issue. With firmware 7.3.0,
+> it looks bad. After checking something about firmware, I
+> found the firmware is old, so upgrade to 9.9.11, and then
+> it works well for 10 minutes, no abnormal messages.
 
-Sorry I've been buried in WiFi 7 (and kind of still am...)
+I originally used firmware 5.0.0. Then I have tried 9.9.6 I have lying
+around here from my distro. That version behaves like the old 5.0.0
+version. Finally I switched to 9.9.11 from current linux-firmware
+repository. That doesn't work at all for me unfortunately:
 
-Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
+[  221.076279] rtw_8822cu 2-1:1.2: Firmware version 9.9.11, H2C version 15
+[  221.078405] rtw_8822cu 2-1:1.2: Firmware version 9.9.4, H2C version 15
+[  239.783261] wlan0: authenticate with 76:83:c2:ce:83:0b
+[  242.398435] wlan0: send auth to 76:83:c2:ce:83:0b (try 1/3)
+[  242.402992] wlan0: authenticated
+[  242.420735] wlan0: associate with 76:83:c2:ce:83:0b (try 1/3)
+[  242.437094] wlan0: RX AssocResp from 76:83:c2:ce:83:0b (capab=0x1411 status=0 aid=4)
+[  242.485521] wlan0: associated
+[  242.564847] wlan0: Connection to AP 76:83:c2:ce:83:0b lost
+[  244.577617] wlan0: authenticate with 76:83:c2:cd:83:0b
+[  244.578257] wlan0: bad VHT capabilities, disabling VHT
+[  246.866182] wlan0: send auth to 76:83:c2:cd:83:0b (try 1/3)
+[  246.871830] wlan0: authenticated
+[  246.892754] wlan0: associate with 76:83:c2:cd:83:0b (try 1/3)
+[  246.911045] wlan0: RX AssocResp from 76:83:c2:cd:83:0b (capab=0x1431 status=0 aid=3)
+[  246.940608] wlan0: associated
+[  247.152308] wlan0: Connection to AP 76:83:c2:cd:83:0b lost
+[  248.912821] wlan0: Connection to AP 00:00:00:00:00:00 lost
+[  249.105517] wlan0: authenticate with 76:83:c2:ce:83:0b
+[  251.482183] wlan0: send auth to 76:83:c2:ce:83:0b (try 1/3)
+[  251.486765] wlan0: authenticated
+[  251.508731] wlan0: associate with 76:83:c2:ce:83:0b (try 1/3)
+[  251.521904] wlan0: RX AssocResp from 76:83:c2:ce:83:0b (capab=0x1411 status=0 aid=4)
+[  251.565233] wlan0: associated
+[  251.720602] wlan0: Connection to AP 76:83:c2:ce:83:0b lost
+[  253.527904] wlan0: Connection to AP 00:00:00:00:00:00 lost
+[  253.728243] wlan0: authenticate with 76:83:c2:cd:83:0b
+[  253.728921] wlan0: bad VHT capabilities, disabling VHT
+[  256.014184] wlan0: send auth to 76:83:c2:cd:83:0b (try 1/3)
+[  256.019608] wlan0: authenticated
+[  256.044702] wlan0: associate with 76:83:c2:cd:83:0b (try 1/3)
+[  256.062049] wlan0: RX AssocResp from 76:83:c2:cd:83:0b (capab=0x1431 status=0 aid=3)
+[  256.093117] wlan0: associated
+[  256.169071] wlan0: Connection to AP 76:83:c2:cd:83:0b lost
+[  258.145286] wlan0: authenticate with 76:83:c2:ce:83:0b
+[  260.626182] wlan0: send auth to 76:83:c2:ce:83:0b (try 1/3)
+[  260.630495] wlan0: authenticated
+[  260.652783] wlan0: associate with 76:83:c2:ce:83:0b (try 1/3)
+[  260.666201] wlan0: RX AssocResp from 76:83:c2:ce:83:0b (capab=0x1411 status=0 aid=4)
+[  260.708596] wlan0: associated
+[  260.769613] wlan0: Connection to AP 76:83:c2:ce:83:0b lost
+[  262.770668] wlan0: authenticate with 76:83:c2:cd:83:0b
+[  262.771272] wlan0: bad VHT capabilities, disabling VHT
+[  265.158184] wlan0: send auth to 76:83:c2:cd:83:0b (try 1/3)
 
-johannes
+This goes on forever. I finally tried 9.9.10 and 9.9.9, they also behave
+like 9.9.11.
+
+No luck today :(
+
+Sascha
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
