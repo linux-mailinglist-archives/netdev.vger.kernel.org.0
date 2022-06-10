@@ -2,87 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B8E2546B82
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 19:15:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 005EB546B8D
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 19:17:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350137AbiFJRJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 13:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57508 "EHLO
+        id S1346194AbiFJRQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 13:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350116AbiFJRJ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 13:09:26 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D085450B33
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 10:09:23 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id n28so36129555edb.9
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 10:09:23 -0700 (PDT)
+        with ESMTP id S235359AbiFJRQX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 13:16:23 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC8B3980A
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 10:16:18 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id c2so24409412lfk.0
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 10:16:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=7NGj/fRsB8QNhSe369jbVTtv9ZIQI4UquOcWKaIS3lw=;
-        b=EDxuEBSySIkS0wX9UtgEWpdaZ5Rkk+ceY4FD2zvv24FQoI0QnCjliwtHZ5rtDY13Wa
-         /Eo1coASUZ3gqT6dIuUaR+vjQAIZO4ZOodC6LYg8XqX1lajtUhNUr0Kaj+XbuAK8CkNb
-         z33Wa9Cj1RwJWTC+jSvNwO5raxNOUS/Gu5Mh8=
+        bh=1f4PdYI0+XFCfgDcQE6pqyWgELABzPTyKvtYjGN3WCs=;
+        b=Jfx04haGJd2f1gEw0cWrEMpj4k7OifBXLDunHuOHCFs0EJuXmVN5tFo8lDzDI7INKR
+         4/Jz7rX0udk4zTLXSk7s0ng368SLZyW5Pk0E+wsxg3jpVyILQrcVAwnpduAIJD+1fM8Q
+         Uopr9NfrByj7lPkVaNK4zV5BiXTdhnGsPEZlY8mjjIjLLvxi+VMk2dBs+OYht6DmTzOx
+         9Xy/yP0vmauBpJMbfi788LOxr59LsxmhrB4JpsiWS1ZWv/+DAwD6GT6Ak39vYXnp9GbQ
+         dNn7HS8cwkKJ0wSBReIGD6oXtZju3i+oXjIQ8C9yf0xKXdRGyiWHQCVlSesFgFv6yLRG
+         /97A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=7NGj/fRsB8QNhSe369jbVTtv9ZIQI4UquOcWKaIS3lw=;
-        b=hRcnYW8VCXOcmtMNHAPvQg/SHRcdX6SIaLKzPvVrvnBxwhUFQTPAgjmt/MBGOEQCZk
-         YbVD8lNRjfKWOlFpT+fq7Pf3blbR4mxteuT1mCAttiCNWplqKof+sYI9KtBjqfwPtT4U
-         IV+JRLctoXxl8BREdgh7mnJ8bYu//cLJkapaFYWQWYzndOP2d68ROH7xpb5jqpmylOTT
-         1UJ7Cm3InN1BCspub5TL2I9sBl8KiAKYs1ywnIvoUM6Og0KGk4+IzEHDzN9Tr7JvUuiF
-         oA7HShXxxhzsFkHvrEI6EKsfi1fxB9PLjc21M1qEf63Scb13SU3g2+DG3glPSdXpFAjd
-         n3/A==
-X-Gm-Message-State: AOAM531+IfZ3OyUeXYVa2mZZj7oTT7pryZ57LWJscalD7SOBxmt2UDNB
-        1bYHH5RiW/0Km3oYJ+rgnOACPFFLKHxIJQnBv68=
-X-Google-Smtp-Source: ABdhPJzpXs07wsiCatVKPj3XG5hOGBFpqu99iDt+WV9kh1LczZyq8LMrVqALKnTWD7o5FRVuWB8SNQ==
-X-Received: by 2002:a05:6402:370f:b0:428:11f5:509d with SMTP id ek15-20020a056402370f00b0042811f5509dmr400200edb.253.1654880962141;
-        Fri, 10 Jun 2022 10:09:22 -0700 (PDT)
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com. [209.85.128.46])
-        by smtp.gmail.com with ESMTPSA id e13-20020a170906248d00b006fee7b5dff2sm12588496ejb.143.2022.06.10.10.09.21
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Jun 2022 10:09:21 -0700 (PDT)
-Received: by mail-wm1-f46.google.com with SMTP id i131-20020a1c3b89000000b0039c6fd897b4so959518wma.4
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 10:09:21 -0700 (PDT)
-X-Received: by 2002:a05:600c:4ec9:b0:39c:69c7:715d with SMTP id
- g9-20020a05600c4ec900b0039c69c7715dmr738538wmq.154.1654880961101; Fri, 10 Jun
- 2022 10:09:21 -0700 (PDT)
+        bh=1f4PdYI0+XFCfgDcQE6pqyWgELABzPTyKvtYjGN3WCs=;
+        b=TxYp2rebW1GDAak2N01tyy1ikwvEmtKkAsUFcWHdn1ptkCFdcQYdyFDL0LzwbRUUZW
+         0HPu1Hh4b/oPeS7cgZN1CB8zJAcLedgKGDTmRRjcWZku6cFAofscVTxZ2saYItOytfzo
+         qakJ9xPp3tlSk2a6FXNRSy3/2nSexL7M8igVGtRsM3GVxQ+KPZF/JZwpCSy21PFF7zSD
+         QBDHFLMCfGfxKs+TT7M9/twjG5MQuLP3BKOAifkS+hxRs8oZOL0lYuZxCFxtuV+aXdoi
+         QpsdSbumhUkDuNGTIjnuysiCvGA+shWqj0UiKZpKJNA+cGFQdEaaJ9bfkYc0GJIld2Fl
+         qmrQ==
+X-Gm-Message-State: AOAM533VFfFmVRlzFZV2RBTS61Lvd/pc9n588SlmQFQBNHe2eZ+0kzeV
+        lpBLI8vncSN4ZoHpqxx9gfavPbKL49fCBq8Wq7U=
+X-Google-Smtp-Source: ABdhPJzkRC5SLLrAgkNX4bUXXO+fdG0/qLFeeQows2+0y1rLy/wtFSq0i6Js6e4znT6yklzkUh+aGxS0ul76MODUgD4=
+X-Received: by 2002:a05:6512:3049:b0:479:1c62:77af with SMTP id
+ b9-20020a056512304900b004791c6277afmr22735590lfb.149.1654881376981; Fri, 10
+ Jun 2022 10:16:16 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220610053544.417023-1-kuba@kernel.org>
-In-Reply-To: <20220610053544.417023-1-kuba@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 10 Jun 2022 10:09:04 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whAx7AgD59HyZuaLor1afAk=kYCQiG4gacMR8-_GmmBLQ@mail.gmail.com>
-Message-ID: <CAHk-=whAx7AgD59HyZuaLor1afAk=kYCQiG4gacMR8-_GmmBLQ@mail.gmail.com>
-Subject: Re: [GIT PULL] Networking for 5.19-rc2 (follow up)
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <CAMJ=MEcPzkBLynL7tpjdv0TCRA=Cmy13e7wmFXrr-+dOVcshKA@mail.gmail.com>
+ <f0f30591-f503-ae7c-9293-35cca4ceec84@gmail.com> <CAMJ=MEdctBNSihixym1ZO9RVaCa_FpTQ8e4xFukz3eN8F1P8bQ@mail.gmail.com>
+ <0e02ea2593204cd9805c6ed4b7f46c98@AcuMS.aculab.com>
+In-Reply-To: <0e02ea2593204cd9805c6ed4b7f46c98@AcuMS.aculab.com>
+From:   Ronny Meeus <ronny.meeus@gmail.com>
+Date:   Fri, 10 Jun 2022 19:16:06 +0200
+Message-ID: <CAMJ=MEe3r+ZrAONTciQgU4yqtXTJJvXc0OFvJYwYg20kPGQtdA@mail.gmail.com>
+Subject: Re: TCP socket send return EAGAIN unexpectedly when sending small fragments
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Eric Dumazet <erdnetdev@gmail.com>, netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 9, 2022 at 10:35 PM Jakub Kicinski <kuba@kernel.org> wrote:
+Op vr 10 jun. 2022 om 17:21 schreef David Laight <David.Laight@aculab.com>:
 >
-> Quick follow up PR, I managed to catch your tree at a point where AFS
-> did not build on GCC < 12. Before I tried building it on an older distro
-> I already pushed a few things. I figured cleanest if I just send a quick
-> follow up and forward again. Please LMK if I should have just merged
-> your tree in.
+> ...
+> > If the 5 queued packets on the sending side would cause the EAGAIN
+> > issue, the real question maybe is why the receiving side is not
+> > sending the ACK within the 10ms while for earlier messages the ACK is
+> > sent much sooner.
+>
+> Have you disabled Nagle (TCP_NODELAY) ?
 
-This looks fine to me, and I think preferred over backmerges.
+Yes I enabled TCP_NODELAY so the Nagle algo is disabled.
+I did a lot of tests over the last couple of days but if I remember well
+enable or disable TCP_NODELAY does not influence the result.
 
-Thanks,
-
-                Linus
+> Nagle only really works for bulk data transfer (large sends)
+> and interactive sessions (command - response).
+> For nearly everything else it adds unwanted 100ms delays.
+>
+>         David
+>
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
