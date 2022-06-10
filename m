@@ -2,170 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBC835466B2
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 14:34:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 665655466C5
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 14:44:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241755AbiFJMds (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 08:33:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52156 "EHLO
+        id S233309AbiFJMoj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 10 Jun 2022 08:44:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232158AbiFJMdr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 08:33:47 -0400
-X-Greylist: delayed 83743 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 10 Jun 2022 05:33:43 PDT
-Received: from zg8tmja5ljk3lje4ms43mwaa.icoremail.net (zg8tmja5ljk3lje4ms43mwaa.icoremail.net [209.97.181.73])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id F2E1F341AB6;
-        Fri, 10 Jun 2022 05:33:42 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [106.117.78.144])
-        by mail-app4 (Coremail) with SMTP id cS_KCgB37o0POqNiJzebAQ--.43212S2;
-        Fri, 10 Jun 2022 20:33:28 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org
-Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-hams@vger.kernel.org,
-        thomas@osterried.de, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH net v4] net: ax25: Fix deadlock caused by skb_recv_datagram in ax25_recvmsg
-Date:   Fri, 10 Jun 2022 20:33:19 +0800
-Message-Id: <20220610123319.32118-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cS_KCgB37o0POqNiJzebAQ--.43212S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxZw43ZFyfAF1kWFy3KFW3Jrb_yoWrWFykpF
-        WUKFyrWr4kJFW2qr43tFWDXr4fA3Z5CFy7Xr1xX3yxAFn8W3WrXryrtr4jyayjqrWDA347
-        tF1qga1xKr13WaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4U
-        JVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-        n2kIc2xKxwCY02Avz4vE14v_Xr1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr
-        0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY
-        17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcV
-        C0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY
-        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa
-        73UjIFyTuYvjfU5rWrDUUUU
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgARAVZdtaJW2gAZsb
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S229608AbiFJMoi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 08:44:38 -0400
+Received: from relay5.hostedemail.com (smtprelay0012.hostedemail.com [216.40.44.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E5D18E;
+        Fri, 10 Jun 2022 05:44:35 -0700 (PDT)
+Received: from omf09.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay12.hostedemail.com (Postfix) with ESMTP id 06E07121083;
+        Fri, 10 Jun 2022 12:44:30 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf09.hostedemail.com (Postfix) with ESMTPA id 08E1F2002A;
+        Fri, 10 Jun 2022 12:44:18 +0000 (UTC)
+Message-ID: <cd59f3eab3d2b4f069f4ebf169b33307eaa9e50d.camel@perches.com>
+Subject: Re: [PATCH 00/12] Clang -Wformat warning fixes
+From:   Joe Perches <joe@perches.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bill Wendling <morbo@google.com>
+Cc:     Jan Engelhardt <jengelh@inai.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Bill Wendling <isanbard@gmail.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Jan Kara <jack@suse.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>,
+        Ross Philipson <ross.philipson@oracle.com>,
+        Daniel Kiper <daniel.kiper@oracle.com>,
+        linux-edac@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux-mm@kvack.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, Networking <netdev@vger.kernel.org>,
+        alsa-devel@alsa-project.org,
+        clang-built-linux <llvm@lists.linux.dev>
+Date:   Fri, 10 Jun 2022 05:44:18 -0700
+In-Reply-To: <YqLUn3RdZ9HAKZKu@kroah.com>
+References: <20220609221702.347522-1-morbo@google.com>
+         <20220609152527.4ad7862d4126e276e6f76315@linux-foundation.org>
+         <CAGG=3QXDt9AeCQOAp1311POFRSByJru4=Q=oFiQn3u2iZYk2_w@mail.gmail.com>
+         <nssn2ps-6n86-nqq6-9039-72847760nnq@vanv.qr>
+         <CAGG=3QU0XJhQKJXLMayOkQSiF2yjBi2p2TEZ9KNTzU5mmye-gg@mail.gmail.com>
+         <YqLUn3RdZ9HAKZKu@kroah.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.1-0ubuntu1 
+MIME-Version: 1.0
+X-Rspamd-Server: rspamout05
+X-Rspamd-Queue-Id: 08E1F2002A
+X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=no
+        autolearn_force=no version=3.4.6
+X-Stat-Signature: r8ecgxf89uwg9qffzdumnqfsj56kpo1p
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX19T013fSZHIO4BR28mlFWzRzi2PPI2hbJs=
+X-HE-Tag: 1654865058-93434
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The skb_recv_datagram() in ax25_recvmsg() will hold lock_sock
-and block until it receives a packet from the remote. If the client
-doesn`t connect to server and calls read() directly, it will not
-receive any packets forever. As a result, the deadlock will happen.
+On Fri, 2022-06-10 at 07:20 +0200, Greg Kroah-Hartman wrote:
+> On Thu, Jun 09, 2022 at 04:16:16PM -0700, Bill Wendling wrote:
+> > On Thu, Jun 9, 2022 at 4:03 PM Jan Engelhardt <jengelh@inai.de> wrote:
+> > > On Friday 2022-06-10 00:49, Bill Wendling wrote:
+> > > > On Thu, Jun 9, 2022 at 3:25 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+> > > > > On Thu,  9 Jun 2022 22:16:19 +0000 Bill Wendling <morbo@google.com> wrote:
+> > > > > 
+> > > > > > This patch set fixes some clang warnings when -Wformat is enabled.
+> > > > > 
+> > > > > tldr:
+> > > > > 
+> > > > > -       printk(msg);
+> > > > > +       printk("%s", msg);
+> > > > > 
+> > > > > Otherwise these changes are a
+> > > > > useless consumer of runtime resources.
 
-The fail log caused by deadlock is shown below:
+> > > > Calling a "printf" style function is already insanely expensive.
 
-[  369.606973] INFO: task ax25_deadlock:157 blocked for more than 245 seconds.
-[  369.608919] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[  369.613058] Call Trace:
-[  369.613315]  <TASK>
-[  369.614072]  __schedule+0x2f9/0xb20
-[  369.615029]  schedule+0x49/0xb0
-[  369.615734]  __lock_sock+0x92/0x100
-[  369.616763]  ? destroy_sched_domains_rcu+0x20/0x20
-[  369.617941]  lock_sock_nested+0x6e/0x70
-[  369.618809]  ax25_bind+0xaa/0x210
-[  369.619736]  __sys_bind+0xca/0xf0
-[  369.620039]  ? do_futex+0xae/0x1b0
-[  369.620387]  ? __x64_sys_futex+0x7c/0x1c0
-[  369.620601]  ? fpregs_assert_state_consistent+0x19/0x40
-[  369.620613]  __x64_sys_bind+0x11/0x20
-[  369.621791]  do_syscall_64+0x3b/0x90
-[  369.622423]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-[  369.623319] RIP: 0033:0x7f43c8aa8af7
-[  369.624301] RSP: 002b:00007f43c8197ef8 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
-[  369.625756] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f43c8aa8af7
-[  369.626724] RDX: 0000000000000010 RSI: 000055768e2021d0 RDI: 0000000000000005
-[  369.628569] RBP: 00007f43c8197f00 R08: 0000000000000011 R09: 00007f43c8198700
-[  369.630208] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff845e6afe
-[  369.632240] R13: 00007fff845e6aff R14: 00007f43c8197fc0 R15: 00007f43c8198700
+I expect the printk code itself dominates, not the % scan cost.
 
-This patch replaces skb_recv_datagram() with an open-coded variant of it
-releasing the socket lock before the __skb_wait_for_more_packets() call
-and re-acquiring it after such call in order that other functions that
-need socket lock could be executed.
+> > > Perhaps you can split vprintk_store in the middle (after the call to
+> > > vsnprintf), and offer the second half as a function of its own (e.g.
+> > > "puts"). Then the tldr could be
+> > > 
+> > > - printk(msg);
+> > > + puts(msg);
+> > 
+> > That might be a nice compromise. Andrew, what do you think?
+> 
+> You would need to do that for all of the dev_printk() variants, so I
+> doubt that would ever be all that useful as almost no one should be
+> using a "raw" printk() these days.
 
-what's more, the socket lock will be released only when recvmsg() will
-block and that should produce nicer overall behavior.
+True.  The kernel has ~20K variants like that.
 
-Fixes: 40d0a923f55a ("Implement locking of internal data for NET/ROM and ROSE.")
-Suggested-by: Thomas Osterried <thomas@osterried.de>
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reported-by: Thomas Habets <thomas@@habets.se>
----
-Changes in v4:
-  - Replaces skb_recv_datagram() with an open-coded variant of it.
+$ git grep -P '\b(?:(?:\w+_){1,3}(?:alert|emerg|crit|err|warn|notice|info|cont|debug|dbg)|printk)\s*\(".*"\s*\)\s*;' | wc -l
+21160
 
- net/ax25/af_ax25.c | 33 ++++++++++++++++++++++++++++-----
- 1 file changed, 28 insertions(+), 5 deletions(-)
+That doesn't include the ~3K uses like
 
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 95393bb2760..4c7030ed8d3 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -1661,9 +1661,12 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 			int flags)
- {
- 	struct sock *sk = sock->sk;
--	struct sk_buff *skb;
-+	struct sk_buff *skb, *last;
-+	struct sk_buff_head *sk_queue;
- 	int copied;
- 	int err = 0;
-+	int off = 0;
-+	long timeo;
- 
- 	lock_sock(sk);
- 	/*
-@@ -1675,10 +1678,29 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 		goto out;
- 	}
- 
--	/* Now we can treat all alike */
--	skb = skb_recv_datagram(sk, flags, &err);
--	if (skb == NULL)
--		goto out;
-+	/*  We need support for non-blocking reads. */
-+	sk_queue = &sk->sk_receive_queue;
-+	skb = __skb_try_recv_datagram(sk, sk_queue, flags, &off, &err, &last);
-+	/* If no packet is available, release_sock(sk) and try again. */
-+	if (!skb) {
-+		if (err != -EAGAIN)
-+			goto out;
-+		release_sock(sk);
-+		timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
-+		while (timeo && !__skb_wait_for_more_packets(sk, sk_queue, &err,
-+							     &timeo, last)) {
-+			skb = __skb_try_recv_datagram(sk, sk_queue, flags, &off,
-+						      &err, &last);
-+			if (skb)
-+				break;
-+
-+			if (err != -EAGAIN)
-+				goto done;
-+		}
-+		if (!skb)
-+			goto done;
-+		lock_sock(sk);
-+	}
- 
- 	if (!sk_to_ax25(sk)->pidincl)
- 		skb_pull(skb, 1);		/* Remove PID */
-@@ -1725,6 +1747,7 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- out:
- 	release_sock(sk);
- 
-+done:
- 	return err;
- }
- 
--- 
-2.17.1
+#define foo "bar"
+	printk(foo);
+
+$ git grep -P '\b(?:(?:\w+_){1,3}(?:alert|emerg|crit|err|warn|info|notice|debug|dbg|cont)|printk)\s*\((?:\s*\w+){1,3}\s*\)\s*;'|wc -l
+2922
+
+There are apparently only a few hundred uses of variants like:
+
+	printk("%s", foo)
+
+$ git grep -P '\b(?:(?:\w+_){1,3}(?:alert|emerg|crit|err|warn|info|notice|debug|dbg|cont)|printk)\s*\(\s*"%s(?:\\n)?"\s*,\s*(?:".*"|\w+)\s*\)\s*;' | wc -l
+305
+
+unless I screwed up my greps (which of course is quite possible)
 
