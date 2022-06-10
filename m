@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 685C3546B65
-	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 19:08:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 982EF546B77
+	for <lists+netdev@lfdr.de>; Fri, 10 Jun 2022 19:08:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350112AbiFJRGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 10 Jun 2022 13:06:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42430 "EHLO
+        id S1350140AbiFJRGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 10 Jun 2022 13:06:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346775AbiFJRGP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 13:06:15 -0400
-Received: from mxout1.routing.net (mxout1.routing.net [IPv6:2a03:2900:1:a::a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CF719F8F;
-        Fri, 10 Jun 2022 10:06:13 -0700 (PDT)
+        with ESMTP id S1349135AbiFJRGS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 10 Jun 2022 13:06:18 -0400
+Received: from mxout2.routing.net (mxout2.routing.net [IPv6:2a03:2900:1:a::b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998C627FE2;
+        Fri, 10 Jun 2022 10:06:14 -0700 (PDT)
 Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
-        by mxout1.routing.net (Postfix) with ESMTP id E0E68402D7;
-        Fri, 10 Jun 2022 17:06:11 +0000 (UTC)
+        by mxout2.routing.net (Postfix) with ESMTP id 015A060407;
+        Fri, 10 Jun 2022 17:06:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1654880772;
+        s=20200217; t=1654880773;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=uLlva8Emcc5RehlfDPvdMknMWn6EeajUkWuEMhCA/yw=;
-        b=MYF4NpavEXZUGNrlPUnY4d7VCGpcE+cCV1AJmIXmkPAFkEik6n9g5Rpl/QvrxjJXDVJM9w
-        EqMqKFYe18nc7NVPPmF4alYGD3yxTxlaqqqFOdDUSjPCB7buEAU1Dm0WM/CEvk60A7GPs1
-        JWJioWOeUjn1luaNGn0eBgLYxWNmpeY=
+        bh=muhHy3u6o7qlrEhJK4TIIhDI8FS0kFjcupuOglkyEww=;
+        b=Ea8GWlilsZRa7b9SZmJA/cus7/asdVVglnpJSOV5gEioGqrq7ZHA/W15M3iYNfAjiKHvaX
+        Qsot5FRIG+5R8x2m/yr1E/9CBG22RHvZyFf1KqCRMDsimU4aHz4B7M8l/KaVCWBuwyJ22B
+        3MWLvHbscK4z429CMe8yfYt27RMcPJU=
 Received: from frank-G5.. (fttx-pool-217.61.154.155.bambit.de [217.61.154.155])
-        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id 76410100394;
-        Fri, 10 Jun 2022 17:06:10 +0000 (UTC)
+        by mxbox2.masterlogin.de (Postfix) with ESMTPSA id BA712100863;
+        Fri, 10 Jun 2022 17:06:11 +0000 (UTC)
 From:   Frank Wunderlich <linux@fw-web.de>
 To:     linux-rockchip@lists.infradead.org,
         linux-mediatek@lists.infradead.org
@@ -54,15 +54,15 @@ Cc:     Frank Wunderlich <frank-w@public-files.de>,
         linux-kernel@vger.kernel.org, Greg Ungerer <gerg@kernel.org>,
         =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
         "Mauro Carvalho Chehab" <mchehab+samsung@kernel.org>
-Subject: [PATCH v4 4/6] net: dsa: mt7530: get cpu-port via dp->cpu_dp instead of constant
-Date:   Fri, 10 Jun 2022 19:05:39 +0200
-Message-Id: <20220610170541.8643-5-linux@fw-web.de>
+Subject: [PATCH v4 5/6] dt-bindings: net: dsa: make reset optional and add rgmii-mode to mt7531
+Date:   Fri, 10 Jun 2022 19:05:40 +0200
+Message-Id: <20220610170541.8643-6-linux@fw-web.de>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220610170541.8643-1-linux@fw-web.de>
 References: <20220610170541.8643-1-linux@fw-web.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Mail-ID: 8b3b788e-848e-4a56-8530-0d42429e9387
+X-Mail-ID: 608a6b67-0651-4348-8dfb-93f736e41a27
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
@@ -75,119 +75,68 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Frank Wunderlich <frank-w@public-files.de>
 
-Replace last occurences of hardcoded cpu-port by cpu_dp member of
-dsa_port struct.
+A board may have no independent reset-line, so reset cannot be used
+inside switch driver.
 
-Now the constant can be dropped.
+E.g. on Bananapi-R2 Pro switch and gmac are connected to same reset-line.
 
-Suggested-by: Vladimir Oltean <olteanv@gmail.com>
+Resets should be acquired only to 1 device/driver. This prevents reset to
+be bound to switch-driver if reset is already used for gmac. If reset is
+only used by switch driver it resets the switch *and* the gmac after the
+mdio bus comes up resulting in mdio bus goes down. It takes some time
+until all is up again, switch driver tries to read from mdio, will fail
+and defer the probe. On next try the reset does the same again.
+
+Make reset optional for such boards.
+
+Allow port 5 as cpu-port and phy-mode rgmii for mt7531.
+
+- MT7530 supports RGMII on port 5 and RGMII/TRGMII on port 6.
+- MT7531 supports on port 5 RGMII and SGMII (dual-sgmii) and
+  SGMII on port 6.
+
 Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/mt7530.c | 27 ++++++++++++++++++++-------
- drivers/net/dsa/mt7530.h |  1 -
- 2 files changed, 20 insertions(+), 8 deletions(-)
+v4:
+ - add port 5 as CPU-Port
+ - change description
+---
+ .../devicetree/bindings/net/dsa/mediatek,mt7530.yaml      | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 9c14e46692ee..835807911be0 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -1038,6 +1038,7 @@ static int
- mt7530_port_enable(struct dsa_switch *ds, int port,
- 		   struct phy_device *phy)
- {
-+	struct dsa_port *dp = dsa_to_port(ds, port);
- 	struct mt7530_priv *priv = ds->priv;
+diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+index 112cfaa7e3f6..a3bf432960d8 100644
+--- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+@@ -55,6 +55,7 @@ description: |
+     On mt7531:
+       - "1000base-x"
+       - "2500base-x"
++      - "rgmii"
+       - "sgmii"
  
- 	mutex_lock(&priv->reg_mutex);
-@@ -1046,7 +1047,11 @@ mt7530_port_enable(struct dsa_switch *ds, int port,
- 	 * restore the port matrix if the port is the member of a certain
- 	 * bridge.
- 	 */
--	priv->ports[port].pm |= PCR_MATRIX(BIT(MT7530_CPU_PORT));
-+	if (dsa_port_is_user(dp)) {
-+		struct dsa_port *cpu_dp = dp->cpu_dp;
-+
-+		priv->ports[port].pm |= PCR_MATRIX(BIT(cpu_dp->index));
-+	}
- 	priv->ports[port].enable = true;
- 	mt7530_rmw(priv, MT7530_PCR_P(port), PCR_MATRIX_MASK,
- 		   priv->ports[port].pm);
-@@ -1195,7 +1200,8 @@ mt7530_port_bridge_join(struct dsa_switch *ds, int port,
- 			struct netlink_ext_ack *extack)
- {
- 	struct dsa_port *dp = dsa_to_port(ds, port), *other_dp;
--	u32 port_bitmap = BIT(MT7530_CPU_PORT);
-+	struct dsa_port *cpu_dp = dp->cpu_dp;
-+	u32 port_bitmap = BIT(cpu_dp->index);
- 	struct mt7530_priv *priv = ds->priv;
  
- 	mutex_lock(&priv->reg_mutex);
-@@ -1272,9 +1278,12 @@ mt7530_port_set_vlan_unaware(struct dsa_switch *ds, int port)
- 	 * the CPU port get out of VLAN filtering mode.
- 	 */
- 	if (all_user_ports_removed) {
--		mt7530_write(priv, MT7530_PCR_P(MT7530_CPU_PORT),
-+		struct dsa_port *dp = dsa_to_port(ds, port);
-+		struct dsa_port *cpu_dp = dp->cpu_dp;
-+
-+		mt7530_write(priv, MT7530_PCR_P(cpu_dp->index),
- 			     PCR_MATRIX(dsa_user_ports(priv->ds)));
--		mt7530_write(priv, MT7530_PVC_P(MT7530_CPU_PORT), PORT_SPEC_TAG
-+		mt7530_write(priv, MT7530_PVC_P(cpu_dp->index), PORT_SPEC_TAG
- 			     | PVC_EG_TAG(MT7530_VLAN_EG_CONSISTENT));
- 	}
- }
-@@ -1312,6 +1321,7 @@ mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
- 			 struct dsa_bridge bridge)
- {
- 	struct dsa_port *dp = dsa_to_port(ds, port), *other_dp;
-+	struct dsa_port *cpu_dp = dp->cpu_dp;
- 	struct mt7530_priv *priv = ds->priv;
+@@ -124,8 +125,8 @@ patternProperties:
+         properties:
+           reg:
+             description:
+-              Port address described must be 6 for CPU port and from 0 to
+-              5 for user ports.
++              Port address described must be 5 or 6 for CPU port and from 0
++              to 5 for user ports.
  
- 	mutex_lock(&priv->reg_mutex);
-@@ -1340,8 +1350,8 @@ mt7530_port_bridge_leave(struct dsa_switch *ds, int port,
- 	 */
- 	if (priv->ports[port].enable)
- 		mt7530_rmw(priv, MT7530_PCR_P(port), PCR_MATRIX_MASK,
--			   PCR_MATRIX(BIT(MT7530_CPU_PORT)));
--	priv->ports[port].pm = PCR_MATRIX(BIT(MT7530_CPU_PORT));
-+			   PCR_MATRIX(BIT(cpu_dp->index)));
-+	priv->ports[port].pm = PCR_MATRIX(BIT(cpu_dp->index));
+         allOf:
+           - $ref: dsa-port.yaml#
+@@ -152,9 +153,6 @@ allOf:
+       required:
+         - resets
+         - reset-names
+-    else:
+-      required:
+-        - reset-gpios
  
- 	/* When a port is removed from the bridge, the port would be set up
- 	 * back to the default as is at initial boot which is a VLAN-unaware
-@@ -1508,6 +1518,9 @@ static int
- mt7530_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
- 			   struct netlink_ext_ack *extack)
- {
-+	struct dsa_port *dp = dsa_to_port(ds, port);
-+	struct dsa_port *cpu_dp = dp->cpu_dp;
-+
- 	if (vlan_filtering) {
- 		/* The port is being kept as VLAN-unaware port when bridge is
- 		 * set up with vlan_filtering not being set, Otherwise, the
-@@ -1515,7 +1528,7 @@ mt7530_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
- 		 * for becoming a VLAN-aware port.
- 		 */
- 		mt7530_port_set_vlan_aware(ds, port);
--		mt7530_port_set_vlan_aware(ds, MT7530_CPU_PORT);
-+		mt7530_port_set_vlan_aware(ds, cpu_dp->index);
- 	} else {
- 		mt7530_port_set_vlan_unaware(ds, port);
- 	}
-diff --git a/drivers/net/dsa/mt7530.h b/drivers/net/dsa/mt7530.h
-index 71e36b69b96d..e509af95c354 100644
---- a/drivers/net/dsa/mt7530.h
-+++ b/drivers/net/dsa/mt7530.h
-@@ -8,7 +8,6 @@
- 
- #define MT7530_NUM_PORTS		7
- #define MT7530_NUM_PHYS			5
--#define MT7530_CPU_PORT			6
- #define MT7530_NUM_FDB_RECORDS		2048
- #define MT7530_ALL_MEMBERS		0xff
- 
+   - dependencies:
+       interrupt-controller: [ interrupts ]
 -- 
 2.34.1
 
