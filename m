@@ -2,128 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA5B5547376
-	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 11:59:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A4DF5473A2
+	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 12:11:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230127AbiFKJ6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jun 2022 05:58:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56260 "EHLO
+        id S230207AbiFKKLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jun 2022 06:11:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230255AbiFKJ6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 05:58:53 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF2AB845;
-        Sat, 11 Jun 2022 02:58:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654941531; x=1686477531;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=LoUQFEJVS8iKP4KHv45pEyco3cBp3wRIOlEANLpEqfM=;
-  b=bgqfdzNy1BveqUBhjYb6qcGV+ohpGMNQ46SREXJwgR9RUHpNzE2Ow7hG
-   URzohwV8QilFj0qNop1kR2MKQB/6VW2ZeeIOyDhXp8dTGWp1Jhs3Au2X3
-   m0ok7U9ptNXNrs/AaxrKA8xH5Oy86aeXbLXxN7qBsCLMu2yUyymDPufrE
-   JnbmCd1ySdNk9tvJX7YkQHvrv5e50aa+dwnSPz3AwrtbL/dP+PA8L9Da7
-   8+thFf7xqYYz1Q9tgCAnmwN67ZuBEtHDy2JzZh76mWTNWSrksEX3pRc+s
-   R4GIO4QpKT5vh3UEgeCW5KemWxH96VDQBeaiBlei1S+0QAG93VJ0fOhE9
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="257694015"
-X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="257694015"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2022 02:58:51 -0700
-X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="638638184"
-Received: from jiaqingz-mobl.ccr.corp.intel.com (HELO [10.255.31.17]) ([10.255.31.17])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2022 02:58:49 -0700
-Message-ID: <bf66a840-594a-d90a-2ca6-595e95c09514@linux.intel.com>
-Date:   Sat, 11 Jun 2022 17:58:46 +0800
+        with ESMTP id S229821AbiFKKLN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 06:11:13 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD137C39
+        for <netdev@vger.kernel.org>; Sat, 11 Jun 2022 03:11:12 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id 25so1681095edw.8
+        for <netdev@vger.kernel.org>; Sat, 11 Jun 2022 03:11:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=fE13mG9CKvIUbMO9JtlL0pZ2ijxEEYtHb1Jlhe49Vto=;
+        b=lEi35FKLPLvTX4V85cKVN9rW0PKI+0An7uK1c53oNl+MjC2LCid2nW7uhaw53UGdkl
+         8dCfPOzOqz+35y4DMRly2kUoH5SuzcYnymjIBVsipHhrVO2nqIbTFFgWsH3DURbNsim9
+         Xbwb75VnpIU0zlyXFOoizRPSpRTe+C8GSf1YS3s/9Is4N5Im1AAJ4mHYPv0+T4ODE/3+
+         W9A7CW653hF6rlLMA73SZXcYRJE+21Lfsn/4XbLe9beBrHkfilv6RilMSRqPxnBOUWN8
+         5eTu7z0Gq9QFssghmbw+PUtIkSr5FdB3u4wmKVhmJNutLbGHM1aMWEBZN8tHBXVczi2O
+         0ZJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=fE13mG9CKvIUbMO9JtlL0pZ2ijxEEYtHb1Jlhe49Vto=;
+        b=gKD3yd26tDvJA7wIXPR9ox0RXdJuht9uxZNgZJD2iOa54LvP1dcazXuSjuevmuQpYE
+         Bg2t6CGRgbnHmpyNzXAbpaoj24jtMIA3q2cC1ZLlTmqiH0Wuo0xw/MDaCLz46O2AocJA
+         zfRH0JiXEo2JgP/NW2vFmLz7XKalWPDlTyhd4EdXnqLw98/BuhD0X7MW0hAvnTHVG1Ta
+         nm4YSxzKM/JmmHWAox0tWj6APt2NPHSi9jmtG+cgLRZp1Co3IK1OEdlkPWiTsVYCkN5Q
+         fGKZ3P+CpQFO87OUk/MLwf07lzFUdDYJJhmXa5FOp07JPUfFR4z0vmRfE22Wgxhuf/R0
+         5H8Q==
+X-Gm-Message-State: AOAM532PvcFC730/9/FcbSuJiO1eZuzZyADix4sXd1ymNTqRGzrOxa9b
+        XW2IGD64GeehnRH/ENERjOItm0Dc2CKVfrv5L7g=
+X-Google-Smtp-Source: ABdhPJxmSrUuHeAQ/fBQ8ioqbon5qU7QC4uS9c8Rzx3QMIGIstpSg3q8hQ9WEjLCH5IQaUzub+C1IxZMBCaH1EBhAkY=
+X-Received: by 2002:a05:6402:50d2:b0:431:53c8:2356 with SMTP id
+ h18-20020a05640250d200b0043153c82356mr36118348edb.300.1654942271324; Sat, 11
+ Jun 2022 03:11:11 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 0/6] Configurable VLAN mode for NCSI driver
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        openbmc@lists.ozlabs.org
-References: <20220610165940.2326777-1-jiaqing.zhao@linux.intel.com>
- <20220610130903.0386c0d9@kernel.org>
- <3c9fa928-f416-3526-be23-12644d18db3b@linux.intel.com>
- <20220610214506.74c3f89c@kernel.org>
- <6f067302-74a8-702f-bf38-4477a805a528@linux.intel.com>
- <20220610224407.4e58dc5a@kernel.org>
-From:   Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-In-Reply-To: <20220610224407.4e58dc5a@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Received: by 2002:a50:64c2:0:0:0:0:0 with HTTP; Sat, 11 Jun 2022 03:11:10
+ -0700 (PDT)
+Reply-To: schlumbergerrecruitmentteam@gmail.com
+From:   "Schlumberger Oil & Gas" <schlumbergernoilgas@gmail.com>
+Date:   Sat, 11 Jun 2022 11:11:10 +0100
+Message-ID: <CAF-xUUhhHD33y2EW9T6DP1cUgtCiGy4cWht9P=20E4kpHuy0WA@mail.gmail.com>
+Subject: ONGOING EMPLOYMENT IN UK
+To:     optionsschlumbergernoilgas@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=4.1 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        LOTS_OF_MONEY,MONEY_FREEMAIL_REPTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,SUBJ_ALL_CAPS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--=20
+The Schlumberger United Kingdom, We are recruiting all professionals for
+our ongoing project . Salary Rate from =C2=A3 2,000 British pounds to =C2=
+=A3
+65,000 British pounds depending on working experience and
+qualification, you are hereby advised to send us your recently updated
+CV/Resume with the below information if you are ready to relocate to
+the United Kingdom.
 
-On 2022-06-11 13:44, Jakub Kicinski wrote:
-> On Sat, 11 Jun 2022 13:18:51 +0800 Jiaqing Zhao wrote:
->> All ncsi devices uses the same driver as they uses same command set,
->> so the driver doesn't know what modes are supported. And in current
->> driver, the vlan related parameters are configured when registering
->> the device, adding an ncsi-netlink command to do so seems to be
->> unsuitable.
-> 
-> Maybe you could draw a diagram? NC-SI is a bit confusing.
+1) Your present monthly salary in the US .....?
+2) Expected monthly Salary....?
+3) Are you willing to relocate now.....?
+4) Your present Position....?
+5)  WhatsApp Number for interview
 
-Yes I admit NC-SI is confusing as its design is not as straightforward
-as the MAC-PHY structure. In NC-SI, there are two macs like below.
+Thanks,
 
-        Packets + NCSI commands                        Packets
-    MAC-------------------------External controller MAC---------PHY
-
-The NCSI commands are used to set the behavior of the External controller
-MAC, like it's MAC address filter, VLAN filters. Those filtered packets
-will be transferred back to the MAC.
-
-Unlike PHY has standard registers to determine its model and capabilities,
-NC-SI seems does not have such way.
->> And adding a netlink command requires extra application in userspace
->> to switch the mode. In my opinion, it would be more user-friendly to
->> make it usable on boot.
-> 
-> Unfortunately convenience is not reason to start adding system config
-> into DT.
-
-Currently there is already a DT config "use-ncsi" is used to choose using
-MDIO PHY or NCSI stack in the MAC driver with NCSI support like ftgmac100.
-That's why I choose adding another DT option here.
-
->> Netdev also does not work as the ncsi device itself does not have
->> its own netdev, the netdev comes from the mac device. For different
->> vlan modes, the netdev feature set of its parent mac device are the
->> same.
-> 
-> You say that, yet the command handling already takes into account the
-> VLAN list:
-> 
-> 	if (list_empty(&ndp->vlan_vids)) {
-> 
-> which come from the MAC netdev. What's wrong with setting the filtering
-> mode based on NETIF_F_HW_VLAN_CTAG_FILTER ?
-
-When configuring the mac driver, there might be two net_device_ops sets
-for MDIO or NC-SI. When using NC-SI, some features need to be delegated
-to the external controller MAC, like VLAN hardware filtering, different
-ndo_vlan_rx_{add,kill}_vid callbacks need to be assigned.
-
-The filtering mode is an optional mode defined in NC-SI spec, some
-devices does not support it. In this case, to support VLAN, I would
-personally in favor of using the "Any VLAN" mode to let the external
-MAC pass all packets to the internal one, and let the internal MAC
-handle it either with its own hardware filter or software filter. In
-this case, the VLAN list in NC-SI driver (used for setting the external
-MAC filter) is not used.
+HR MANAGER
+The Schlumberger Recruitment team
