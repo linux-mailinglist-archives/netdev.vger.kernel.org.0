@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BA09547241
-	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 07:44:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66CA7547245
+	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 07:50:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229643AbiFKFoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jun 2022 01:44:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45664 "EHLO
+        id S229578AbiFKFuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jun 2022 01:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbiFKFoN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 01:44:13 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6533110E;
-        Fri, 10 Jun 2022 22:44:12 -0700 (PDT)
+        with ESMTP id S229605AbiFKFuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 01:50:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D63029A
+        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 22:50:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6E3ADCE39A2;
-        Sat, 11 Jun 2022 05:44:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 516A0C34116;
-        Sat, 11 Jun 2022 05:44:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54FF8B8387E
+        for <netdev@vger.kernel.org>; Sat, 11 Jun 2022 05:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0DCABC3411D;
+        Sat, 11 Jun 2022 05:50:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654926248;
-        bh=bNJ/EL0jamyP3ajtQm3Cp8mZ0bWZwskKQfExHfBnmMU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=B2yosn8uvfbrKAOZHzdoOpCDU8RmlYKVMSplAT7FxaoouqYZBeX72btIDo8UKNNSu
-         wNxSWs6XantGFr2v7xV58Um8FlKs3pL0GIyHua2DdhDGAwBKFR4bE3DlCf2XqsGsPL
-         64AC++OcwLstXPPY3y/IrCheS1L7XD1/u8r/41JNz04b/jR1n/YTbPXlCWLDDLtJRU
-         Q2vjGZuFZkyVB5+sV53NwK3L7xYdp1fznIr7h0zxYyVFTnhCMRl5gF9IgBZNP9NOQZ
-         2Z2/qCMTFs2lSiMYLf2Plt5j6ojSdSuEVcc/2yyw8FyKH9Kf9uQ/7NeI1yJyCQma53
-         hMmSQTtRMon2g==
-Date:   Fri, 10 Jun 2022 22:44:07 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
-Cc:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        openbmc@lists.ozlabs.org
-Subject: Re: [PATCH v2 0/6] Configurable VLAN mode for NCSI driver
-Message-ID: <20220610224407.4e58dc5a@kernel.org>
-In-Reply-To: <6f067302-74a8-702f-bf38-4477a805a528@linux.intel.com>
-References: <20220610165940.2326777-1-jiaqing.zhao@linux.intel.com>
-        <20220610130903.0386c0d9@kernel.org>
-        <3c9fa928-f416-3526-be23-12644d18db3b@linux.intel.com>
-        <20220610214506.74c3f89c@kernel.org>
-        <6f067302-74a8-702f-bf38-4477a805a528@linux.intel.com>
+        s=k20201202; t=1654926616;
+        bh=RAXujIIrVOWNUYXahr8tbAP+dse9eofmrcbPKMKuDb0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Xg5F6TT1tnl27uW106Pe2i3SsVGBwDvlKECbAh96Ky6P6o6uYp0EU2bVNx5j4GQ5j
+         tmW9e48QWGLQHaVIv6biZhzpF1PAo4XJesEnVzfV+j4N/JmddnTP4lZfwd7uwqp4pW
+         zDsW/uCmo0zO6veR2zURJlDJr+7n6ni6ZoxCG+BaYBSKTs/WlhiGYc8f0AHp0LoxS2
+         CcZOac+IhKZquz9LRu+bAx3Z5gl0QPjeK0iYu6NKTJJu+NIh9k3NYCUbj7REi65X35
+         854c467f1Ijv9TzwYbCule0dhDc/K78QRx1L2h9lSh2HNjpuS5gWpL4R2gCUt/aKmn
+         tOrvkwgI/V8tw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E781DE737E8;
+        Sat, 11 Jun 2022 05:50:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] nfp: flower: support to offload pedit of IPv6
+ flowinto fields
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165492661594.29780.7283941415835258546.git-patchwork-notify@kernel.org>
+Date:   Sat, 11 Jun 2022 05:50:15 +0000
+References: <20220609080136.151830-1-simon.horman@corigine.com>
+In-Reply-To: <20220609080136.151830-1-simon.horman@corigine.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, oss-drivers@corigine.com
 X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,31 +57,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 11 Jun 2022 13:18:51 +0800 Jiaqing Zhao wrote:
-> All ncsi devices uses the same driver as they uses same command set,
-> so the driver doesn't know what modes are supported. And in current
-> driver, the vlan related parameters are configured when registering
-> the device, adding an ncsi-netlink command to do so seems to be
-> unsuitable.
+Hello:
 
-Maybe you could draw a diagram? NC-SI is a bit confusing.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> And adding a netlink command requires extra application in userspace
-> to switch the mode. In my opinion, it would be more user-friendly to
-> make it usable on boot.
+On Thu,  9 Jun 2022 10:01:36 +0200 you wrote:
+> From: Yinjun Zhang <yinjun.zhang@corigine.com>
+> 
+> Previously the traffic class field is ignored while firmware has
+> already supported to pedit flowinfo fields, including traffic
+> class and flow label, now add it back.
+> 
+> Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
+> 
+> [...]
 
-Unfortunately convenience is not reason to start adding system config
-into DT.
+Here is the summary with links:
+  - [net-next] nfp: flower: support to offload pedit of IPv6 flowinto fields
+    https://git.kernel.org/netdev/net-next/c/27f2533bcc6e
 
-> Netdev also does not work as the ncsi device itself does not have
-> its own netdev, the netdev comes from the mac device. For different
-> vlan modes, the netdev feature set of its parent mac device are the
-> same.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-You say that, yet the command handling already takes into account the
-VLAN list:
 
-	if (list_empty(&ndp->vlan_vids)) {
-
-which come from the MAC netdev. What's wrong with setting the filtering
-mode based on NETIF_F_HW_VLAN_CTAG_FILTER ?
