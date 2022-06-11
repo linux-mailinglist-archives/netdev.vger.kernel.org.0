@@ -2,135 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AEFCB5477BD
-	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 23:52:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEE205477E8
+	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 01:21:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232282AbiFKVoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jun 2022 17:44:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39410 "EHLO
+        id S229982AbiFKXVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jun 2022 19:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232259AbiFKVoC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 17:44:02 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E424E6B0B5
-        for <netdev@vger.kernel.org>; Sat, 11 Jun 2022 14:43:59 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id 20so3498728lfz.8
-        for <netdev@vger.kernel.org>; Sat, 11 Jun 2022 14:43:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hfPbQWxVdTCOJ0ARtfuxn4tIfyfSZbkVjOIz2CyS9yM=;
-        b=XUz9K1yVXlY0DRBDL7zr/EEftWakgFSk5edf9xSmnaFRtK8w9R41V9cED2gfDsxEy5
-         +ghpvR7TdhpG17i3HH6k/VZMJtPeqY1wECzCPja2oejHzdpgpCOW1Eb9esT/j76u2Ix7
-         8ES6QIHr1rMCVQL33PdI6tJCgOqKOBLQtjeOE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hfPbQWxVdTCOJ0ARtfuxn4tIfyfSZbkVjOIz2CyS9yM=;
-        b=GiaWITecZbXahuxDzTRrdWHyqmMyh2PGYT8YWZF1tj8Tc0Q8mydbQmxq9LkOCdiDJ1
-         bNEbEcy6mZcKPQNJxWE8NZbHeBT1wKj0cofsdQ6z+PM83uLUu5sAVutjsQDa7EpHNvNd
-         XxkUh2UCeeYz9VXn4KMwaqAkFL2Ryu+2GecfYEUtws33VVX7PHOFOyFhcmq/i9XcYgnd
-         2ucl4iTHQkfnwoSedO7Mm59znHBwi57hVNvbR9TAUq/Y8x8gidctmdCgp6yiMvBlpt50
-         pRI/yTpDMlWG4hg5rjzzXT4hTsLusLcc4SHSDHz16uzR/E41dPsheXOBUDDfT4HXuey9
-         udXA==
-X-Gm-Message-State: AOAM533IdiN/hoQW7E2Xz/5QbckOZlEa3Y2NqF3jdx8UEJ44vSoJTwNg
-        iez/Z+BBQtoIqrr4wD1zUZZbdCPLoXrUrLUaREZWbg==
-X-Google-Smtp-Source: ABdhPJyyzlstOLJKa7Sv0E2yREoSKkKVxNfagzqdjNKZ4h9exDcco/HgBxeywj+hla4Pw8YrJxCcqUytnhupMLzQo6Q=
-X-Received: by 2002:a19:431c:0:b0:479:2053:178e with SMTP id
- q28-20020a19431c000000b004792053178emr25009561lfa.117.1654983838112; Sat, 11
- Jun 2022 14:43:58 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220607094752.1029295-1-dario.binacchi@amarulasolutions.com>
- <20220607094752.1029295-7-dario.binacchi@amarulasolutions.com> <20220609071636.6tbspftu3yclip55@pengutronix.de>
-In-Reply-To: <20220609071636.6tbspftu3yclip55@pengutronix.de>
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Date:   Sat, 11 Jun 2022 23:43:47 +0200
-Message-ID: <CABGWkvp1=DF1uok4ZoCRt1EqpdrgdcytG==Ex6zuWgT5mrvdwQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 06/13] can: slcan: allow to send commands to the adapter
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-kernel@vger.kernel.org,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
+        with ESMTP id S229454AbiFKXVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 19:21:05 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 064DE40927
+        for <netdev@vger.kernel.org>; Sat, 11 Jun 2022 16:21:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=OgNSZfp/DOCClZiOWSwf+Uj0eHw2qFY0qZvyFRoqdD8=; b=qRyRRMNgKvG1JmqMeaBDbZj6r3
+        HyPbLdd4pxF/X4vQpbDRtSxm5T0tC331UI8u5OU8lYdfn/tzzTUKTeyJJvB4/UL0/k6EiOVxy2KBK
+        POsOzzvLuDiMp1cJMLyOUm1rUMgdsbb89xfiZ+4nbMmigNfV03epJfYmrg9833RD7A9M=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o0APR-006YeZ-Q1; Sun, 12 Jun 2022 01:20:49 +0200
+Date:   Sun, 12 Jun 2022 01:20:49 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ondrej Spacek <ondrej.spacek@nxp.com>
+Subject: Re: [PATCH, net] phy: aquantia: Fix AN when higher speeds than 1G
+ are not advertised
+Message-ID: <YqUjUQLOHUo55egO@lunn.ch>
+References: <20220610084037.7625-1-claudiu.manoil@nxp.com>
+ <YqSt5Rysq110xpA3@lunn.ch>
+ <AM9PR04MB8397DF04A87E32E6B7E690E096A99@AM9PR04MB8397.eurprd04.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM9PR04MB8397DF04A87E32E6B7E690E096A99@AM9PR04MB8397.eurprd04.prod.outlook.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+On Sat, Jun 11, 2022 at 06:13:12PM +0000, Claudiu Manoil wrote:
+> > -----Original Message-----
+> > From: Andrew Lunn <andrew@lunn.ch>
+> > Sent: Saturday, June 11, 2022 6:00 PM
+> [...]
+> > Subject: Re: [PATCH, net] phy: aquantia: Fix AN when higher speeds than 1G are
+> > not advertised
+> > 
+> > On Fri, Jun 10, 2022 at 11:40:37AM +0300, Claudiu Manoil wrote:
+> > > Even when the eth port is resticted to work with speeds not higher than 1G,
+> > > and so the eth driver is requesting the phy (via phylink) to advertise up
+> > > to 1000BASET support, the aquantia phy device is still advertising for 2.5G
+> > > and 5G speeds.
+> > > Clear these advertising defaults when requested.
+> > 
+> > Hi Claudiu
+> > 
+> > genphy_c45_an_config_aneg(phydev) is called in aqr_config_aneg, which
+> > should set/clear MDIO_AN_10GBT_CTRL_ADV5G and
+> > MDIO_AN_10GBT_CTRL_ADV2_5G. Does the aQuantia PHY not have these bits?
+> > 
+> 
+> Hi Andrew,
+> 
+> Apparently it's not enough to clear the 7.20h register (aka MDIO_AN_10GBT_CTRL)
+> to stop AQR advertising for higher speeds, otherwise I wouldn't have bothered with
+> the patch.
 
-On Thu, Jun 9, 2022 at 9:16 AM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->
-> On 07.06.2022 11:47:45, Dario Binacchi wrote:
-> > This is a preparation patch for the upcoming support to change the
-> > bitrate via ip tool, reset the adapter error states via the ethtool API
-> > and, more generally, send commands to the adapter.
-> >
-> > Since some commands (e. g. setting the bitrate) will be sent before
-> > calling the open_candev(), the netif_running() will return false and so
-> > a new flag bit (i. e. SLF_XCMD) for serial transmission has to be added.
-> >
-> > Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
->
-> I think this patch can be dropped, let me explain:
->
-> You don't have to implement the do_set_bittiming callback. It's
-> perfectly OK to set the bitrate during the ndo_open callback after
-> open_candev().
+I'm just trying to ensure we are not papering over a crack. I wanted
+to eliminate the possibility of a bug in that code which is changing
+7.20h. If the datasheet for the aquantia states those bits are not
+used, then this patch is fine. If on the other hand the datasheet says
+7.20 can be used to change the advertisement, we should investigate
+further what is really going on.
 
-I developed what you suggested (i. e. remove the SLF_XCMD bit and set the
-bitrate, as well as send the "F\r" and "O\r" commands, after calling
-the open_candev(),
-but now I can't send the close command ("C\r") during the ndo_stop() since
-netif_running() returns false. The CAN framework clears netif_running() before
-calling the ndo_stop(). IMHO the SLF_XCMD bit then becomes necessary to
-transmit the commands to the adapter from the ndo_open() and
-ndo_stop() routines.
-Any suggestions ?
-
-Thanks and regards,
-Dario
->
-> regards,
-> Marc
->
-> --
-> Pengutronix e.K.                 | Marc Kleine-Budde           |
-> Embedded Linux                   | https://www.pengutronix.de  |
-> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
-
--- 
-
-Dario Binacchi
-
-Embedded Linux Developer
-
-dario.binacchi@amarulasolutions.com
-
-__________________________________
-
-
-Amarula Solutions SRL
-
-Via Le Canevare 30, 31100 Treviso, Veneto, IT
-
-T. +39 042 243 5310
-info@amarulasolutions.com
-
-www.amarulasolutions.com
+	Andrew
