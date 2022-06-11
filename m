@@ -2,77 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 260985472AA
-	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 09:35:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72BB65472B4
+	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 09:49:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230362AbiFKHfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jun 2022 03:35:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
+        id S231366AbiFKHtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jun 2022 03:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230327AbiFKHfQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 03:35:16 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34BFDE8B88;
-        Sat, 11 Jun 2022 00:35:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654932914; x=1686468914;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=O40TrZUlRL9YzE746VelewMzcK6KC/tvdxPq5f4zq6Q=;
-  b=IlXY07rQmWWebaBmjfdU4WCf0emKEG92U13+9Tu/dGTM/QXTKz/CAcCI
-   cUwbU8DDFnhztoi4uPt+h67RLgtmDbb98iLlmxdpAew6wXdrUYhsE6/Ys
-   BFSE7Ph2CaRDdx1xvfn+WsyJOCYpdNFMwkn8NWcxoIFLcPLY31wwK+4s+
-   QCd5Uffft9q4aGz269uUY0yvNgGkr6hP5Qd/ybYRMId7D/cEcUTScCENx
-   z4C7yqIlaIPfvv3ENa7GeRXjfCvUPxDJDzwbTs+c4FmBZLCogLR8FEYbV
-   Pn9vqFkNEboSZaXKmLfJn1XbC1JU26tZewti6RCh4/826aKybCNmFzsQy
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10374"; a="275375455"
-X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="275375455"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2022 00:35:13 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,293,1647327600"; 
-   d="scan'208";a="611055537"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 11 Jun 2022 00:35:07 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nzveF-000Iht-4o;
-        Sat, 11 Jun 2022 07:35:07 +0000
-Date:   Sat, 11 Jun 2022 15:34:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yosry Ahmed <yosryahmed@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Michal Hocko <mhocko@kernel.org>
-Cc:     kbuild-all@lists.01.org, Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, cgroups@vger.kernel.org,
-        Yosry Ahmed <yosryahmed@google.com>
-Subject: Re: [PATCH bpf-next v2 4/8] bpf: Introduce cgroup iter
-Message-ID: <202206111529.2okIVRo9-lkp@intel.com>
-References: <20220610194435.2268290-5-yosryahmed@google.com>
+        with ESMTP id S231171AbiFKHs7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 03:48:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1D0E29C99
+        for <netdev@vger.kernel.org>; Sat, 11 Jun 2022 00:48:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1654933736;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=qyk9g0ELjVAhO4lsyGp9C9P5YSNZEspWcN+xPCYvwJY=;
+        b=bj+MYL2j5TwpOUPlKRSlCp585JtnbDXvqih5LqBen+jEtrZtPIYloCGHrZkZqsGVV63GSC
+        +NyCpgBW+2XqBHYZ99vKieluSQn4lPCAjA35l63dIKuYWJNk2qvmqBuU7heifUTJdnnrE9
+        FJIy7Q0cPMoxhaIfcGR1/aAHqjPaIFo=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-443-MS8bRiG0O8itcnMXu2ZrkQ-1; Sat, 11 Jun 2022 03:48:54 -0400
+X-MC-Unique: MS8bRiG0O8itcnMXu2ZrkQ-1
+Received: by mail-ed1-f71.google.com with SMTP id z20-20020a05640235d400b0042dfc1c0e80so924031edc.21
+        for <netdev@vger.kernel.org>; Sat, 11 Jun 2022 00:48:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=qyk9g0ELjVAhO4lsyGp9C9P5YSNZEspWcN+xPCYvwJY=;
+        b=pSqXWWMOM5N8NcMt3fblV8tcEDrTc/jHMuf86Ltc9oryAoOAjy7P8v5SBKtODbM3ec
+         mmlW9u0yw22r91TuKTsi2XAdyrFO4aDD/+yg+AX6o00/X8/i5OXtXrHsqFR735PcX0Sg
+         3fZ6oAyHbG0f8wPzUKjh9TORVQRjyCEvbi9Ux2+NktWuxaexEDs4n8vEsaJaNz9Ep64m
+         H8DkIcW7J2AGv8IsFaNQHh7Rrosx24u0Qo0DQxL/4n8u/khTuE0vhzSY/m3Vovb4vvmG
+         fKPsInzLgSWYcWNe6AnivmP+fzFTt8eIBIbXCmF3o588cKcl5oFzfRfF0RP6l2XYd6ZF
+         mpJA==
+X-Gm-Message-State: AOAM53008UDn/fJ9rDTIl/EUkUTfHLgfMCYoqf85WNXNUKzfPvRDw6z4
+        2VfmJ5CSkOeYYDRAJ5HEfOj6h6iI/Za3y3R5Sjo8jojj1sUfFIZiaGvPVwFCCSvGQZu9cqeJvm4
+        90YcyXJ87PSUBRwXF
+X-Received: by 2002:a05:6402:2553:b0:431:6e08:56de with SMTP id l19-20020a056402255300b004316e0856demr31201057edb.406.1654933733331;
+        Sat, 11 Jun 2022 00:48:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwwLx5bFdq30xI5P4i3ZyKGrtOytrp9e+V51+s6ADqB5Q4i9rEt7pLobi3Np6OXDutzcfAAxQ==
+X-Received: by 2002:a05:6402:2553:b0:431:6e08:56de with SMTP id l19-20020a056402255300b004316e0856demr31201044edb.406.1654933733098;
+        Sat, 11 Jun 2022 00:48:53 -0700 (PDT)
+Received: from redhat.com ([212.116.178.142])
+        by smtp.gmail.com with ESMTPSA id zj11-20020a170907338b00b006ff0fe78cb7sm664853ejb.133.2022.06.11.00.48.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 11 Jun 2022 00:48:52 -0700 (PDT)
+Date:   Sat, 11 Jun 2022 03:48:48 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dan.carpenter@oracle.com, elic@nvidia.com, fam.zheng@bytedance.com,
+        gautam.dawar@xilinx.com, jasowang@redhat.com,
+        johannes@sipsolutions.net, liubo03@inspur.com, mst@redhat.com,
+        oliver.sang@intel.com, pilgrimtao@gmail.com, si-wei.liu@oracle.com,
+        stable@vger.kernel.org,
+        syzbot+5b59d6d459306a556f54@syzkaller.appspotmail.com,
+        vincent.whitchurch@axis.com, wangxiang@cdjrlc.com,
+        xieyongji@bytedance.com
+Subject: [GIT PULL] virtio,vdpa: fixes
+Message-ID: <20220611034848-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220610194435.2268290-5-yosryahmed@google.com>
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Mutt-Fcc: =sent
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,146 +81,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yosry,
+The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
 
-Thank you for the patch! Yet something to improve:
+  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
 
-[auto build test ERROR on bpf-next/master]
+are available in the Git repository at:
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Yosry-Ahmed/bpf-rstat-cgroup-hierarchical-stats/20220611-034720
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: m68k-defconfig (https://download.01.org/0day-ci/archive/20220611/202206111529.2okIVRo9-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/619857fd1ec4f351376ffcaaec20acc9aae9486f
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Yosry-Ahmed/bpf-rstat-cgroup-hierarchical-stats/20220611-034720
-        git checkout 619857fd1ec4f351376ffcaaec20acc9aae9486f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+for you to fetch changes up to eacea844594ff338db06437806707313210d4865:
 
-All errors (new ones prefixed by >>):
+  um: virt-pci: set device ready in probe() (2022-06-10 20:38:06 -0400)
 
-   In file included from kernel/bpf/cgroup_iter.c:9:
->> kernel/bpf/../cgroup/cgroup-internal.h:78:41: error: field 'iter' has incomplete type
-      78 |                 struct css_task_iter    iter;
-         |                                         ^~~~
-   kernel/bpf/../cgroup/cgroup-internal.h: In function 'cgroup_is_dead':
-   kernel/bpf/../cgroup/cgroup-internal.h:188:22: error: invalid use of undefined type 'const struct cgroup'
-     188 |         return !(cgrp->self.flags & CSS_ONLINE);
-         |                      ^~
-   kernel/bpf/../cgroup/cgroup-internal.h:188:37: error: 'CSS_ONLINE' undeclared (first use in this function); did you mean 'N_ONLINE'?
-     188 |         return !(cgrp->self.flags & CSS_ONLINE);
-         |                                     ^~~~~~~~~~
-         |                                     N_ONLINE
-   kernel/bpf/../cgroup/cgroup-internal.h:188:37: note: each undeclared identifier is reported only once for each function it appears in
-   kernel/bpf/../cgroup/cgroup-internal.h: In function 'notify_on_release':
-   kernel/bpf/../cgroup/cgroup-internal.h:193:25: error: 'CGRP_NOTIFY_ON_RELEASE' undeclared (first use in this function)
-     193 |         return test_bit(CGRP_NOTIFY_ON_RELEASE, &cgrp->flags);
-         |                         ^~~~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/../cgroup/cgroup-internal.h:193:54: error: invalid use of undefined type 'const struct cgroup'
-     193 |         return test_bit(CGRP_NOTIFY_ON_RELEASE, &cgrp->flags);
-         |                                                      ^~
-   kernel/bpf/../cgroup/cgroup-internal.h: In function 'put_css_set':
-   kernel/bpf/../cgroup/cgroup-internal.h:207:39: error: invalid use of undefined type 'struct css_set'
-     207 |         if (refcount_dec_not_one(&cset->refcount))
-         |                                       ^~
-   kernel/bpf/../cgroup/cgroup-internal.h: In function 'get_css_set':
-   kernel/bpf/../cgroup/cgroup-internal.h:220:27: error: invalid use of undefined type 'struct css_set'
-     220 |         refcount_inc(&cset->refcount);
-         |                           ^~
-   kernel/bpf/../cgroup/cgroup-internal.h: At top level:
-   kernel/bpf/../cgroup/cgroup-internal.h:284:22: error: array type has incomplete element type 'struct cftype'
-     284 | extern struct cftype cgroup1_base_files[];
-         |                      ^~~~~~~~~~~~~~~~~~
-   kernel/bpf/cgroup_iter.c: In function 'cgroup_iter_seq_start':
->> kernel/bpf/cgroup_iter.c:55:24: error: implicit declaration of function 'css_next_descendant_pre' [-Werror=implicit-function-declaration]
-      55 |                 return css_next_descendant_pre(NULL, p->start_css);
-         |                        ^~~~~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/cgroup_iter.c:55:24: warning: returning 'int' from a function with return type 'void *' makes pointer from integer without a cast [-Wint-conversion]
-      55 |                 return css_next_descendant_pre(NULL, p->start_css);
-         |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> kernel/bpf/cgroup_iter.c:57:24: error: implicit declaration of function 'css_next_descendant_post' [-Werror=implicit-function-declaration]
-      57 |                 return css_next_descendant_post(NULL, p->start_css);
-         |                        ^~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/cgroup_iter.c:57:24: warning: returning 'int' from a function with return type 'void *' makes pointer from integer without a cast [-Wint-conversion]
-      57 |                 return css_next_descendant_post(NULL, p->start_css);
-         |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/cgroup_iter.c: In function 'cgroup_iter_seq_next':
-   kernel/bpf/cgroup_iter.c:83:24: warning: returning 'int' from a function with return type 'void *' makes pointer from integer without a cast [-Wint-conversion]
-      83 |                 return css_next_descendant_pre(curr, p->start_css);
-         |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/cgroup_iter.c:85:24: warning: returning 'int' from a function with return type 'void *' makes pointer from integer without a cast [-Wint-conversion]
-      85 |                 return css_next_descendant_post(curr, p->start_css);
-         |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> kernel/bpf/cgroup_iter.c:87:28: error: invalid use of undefined type 'struct cgroup_subsys_state'
-      87 |                 return curr->parent;
-         |                            ^~
-   kernel/bpf/cgroup_iter.c: In function '__cgroup_iter_seq_show':
-   kernel/bpf/cgroup_iter.c:100:38: error: invalid use of undefined type 'struct cgroup_subsys_state'
-     100 |         if (css && cgroup_is_dead(css->cgroup))
-         |                                      ^~
-   kernel/bpf/cgroup_iter.c:104:31: error: invalid use of undefined type 'struct cgroup_subsys_state'
-     104 |         ctx.cgroup = css ? css->cgroup : NULL;
-         |                               ^~
-   kernel/bpf/cgroup_iter.c: In function 'cgroup_iter_seq_init':
->> kernel/bpf/cgroup_iter.c:137:29: error: invalid use of undefined type 'struct cgroup'
-     137 |         p->start_css = &cgrp->self;
-         |                             ^~
-   kernel/bpf/cgroup_iter.c: In function 'bpf_iter_attach_cgroup':
->> kernel/bpf/cgroup_iter.c:157:24: error: implicit declaration of function 'cgroup_get_from_fd'; did you mean 'cgroup_get_from_id'? [-Werror=implicit-function-declaration]
-     157 |                 cgrp = cgroup_get_from_fd(fd);
-         |                        ^~~~~~~~~~~~~~~~~~
-         |                        cgroup_get_from_id
-   kernel/bpf/cgroup_iter.c:157:22: warning: assignment to 'struct cgroup *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     157 |                 cgrp = cgroup_get_from_fd(fd);
-         |                      ^
->> kernel/bpf/cgroup_iter.c:159:24: error: implicit declaration of function 'cgroup_get_from_path'; did you mean 'cgroup_get_from_id'? [-Werror=implicit-function-declaration]
-     159 |                 cgrp = cgroup_get_from_path("/");
-         |                        ^~~~~~~~~~~~~~~~~~~~
-         |                        cgroup_get_from_id
-   kernel/bpf/cgroup_iter.c:159:22: warning: assignment to 'struct cgroup *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-     159 |                 cgrp = cgroup_get_from_path("/");
-         |                      ^
-   kernel/bpf/cgroup_iter.c: In function 'bpf_iter_cgroup_show_fdinfo':
->> kernel/bpf/cgroup_iter.c:190:9: error: implicit declaration of function 'cgroup_path_ns'; did you mean 'cgroup_parent'? [-Werror=implicit-function-declaration]
-     190 |         cgroup_path_ns(aux->cgroup.start, buf, PATH_MAX,
-         |         ^~~~~~~~~~~~~~
-         |         cgroup_parent
-   kernel/bpf/cgroup_iter.c: In function 'cgroup_iter_seq_next':
-   kernel/bpf/cgroup_iter.c:88:1: error: control reaches end of non-void function [-Werror=return-type]
-      88 | }
-         | ^
-   cc1: some warnings being treated as errors
+----------------------------------------------------------------
+virtio,vdpa: fixes
 
+Fixes all over the place, most notably fixes for latent
+bugs in drivers that got exposed by suppressing
+interrupts before DRIVER_OK, which in turn has been
+done by 8b4ec69d7e09 ("virtio: harden vring IRQ").
 
-vim +/iter +78 kernel/bpf/../cgroup/cgroup-internal.h
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-0d2b5955b36250 Tejun Heo 2022-01-06  68  
-0d2b5955b36250 Tejun Heo 2022-01-06  69  struct cgroup_file_ctx {
-e57457641613fe Tejun Heo 2022-01-06  70  	struct cgroup_namespace	*ns;
-e57457641613fe Tejun Heo 2022-01-06  71  
-0d2b5955b36250 Tejun Heo 2022-01-06  72  	struct {
-0d2b5955b36250 Tejun Heo 2022-01-06  73  		void			*trigger;
-0d2b5955b36250 Tejun Heo 2022-01-06  74  	} psi;
-0d2b5955b36250 Tejun Heo 2022-01-06  75  
-0d2b5955b36250 Tejun Heo 2022-01-06  76  	struct {
-0d2b5955b36250 Tejun Heo 2022-01-06  77  		bool			started;
-0d2b5955b36250 Tejun Heo 2022-01-06 @78  		struct css_task_iter	iter;
-0d2b5955b36250 Tejun Heo 2022-01-06  79  	} procs;
-0d2b5955b36250 Tejun Heo 2022-01-06  80  
-0d2b5955b36250 Tejun Heo 2022-01-06  81  	struct {
-0d2b5955b36250 Tejun Heo 2022-01-06  82  		struct cgroup_pidlist	*pidlist;
-0d2b5955b36250 Tejun Heo 2022-01-06  83  	} procs1;
-0d2b5955b36250 Tejun Heo 2022-01-06  84  };
-0d2b5955b36250 Tejun Heo 2022-01-06  85  
+----------------------------------------------------------------
+Bo Liu (1):
+      virtio: Fix all occurences of the "the the" typo
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Dan Carpenter (2):
+      vdpa/mlx5: fix error code for deleting vlan
+      vdpa/mlx5: clean up indenting in handle_ctrl_vlan()
+
+Jason Wang (2):
+      virtio-rng: make device ready before making request
+      vdpa: make get_vq_group and set_group_asid optional
+
+Vincent Whitchurch (1):
+      um: virt-pci: set device ready in probe()
+
+Xiang wangx (1):
+      vdpa/mlx5: Fix syntax errors in comments
+
+Xie Yongji (2):
+      vringh: Fix loop descriptors check in the indirect cases
+      vduse: Fix NULL pointer dereference on sysfs access
+
+chengkaitao (1):
+      virtio-mmio: fix missing put_device() when vm_cmdline_parent registration failed
+
+ arch/um/drivers/virt-pci.c             |  7 ++++++-
+ drivers/char/hw_random/virtio-rng.c    |  2 ++
+ drivers/vdpa/mlx5/net/mlx5_vnet.c      |  9 +++++----
+ drivers/vdpa/vdpa_user/vduse_dev.c     |  7 +++----
+ drivers/vhost/vdpa.c                   |  2 ++
+ drivers/vhost/vringh.c                 | 10 ++++++++--
+ drivers/virtio/virtio_mmio.c           |  3 ++-
+ drivers/virtio/virtio_pci_modern_dev.c |  2 +-
+ include/linux/vdpa.h                   |  5 +++--
+ 9 files changed, 32 insertions(+), 15 deletions(-)
+
