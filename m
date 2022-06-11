@@ -2,103 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0495547664
-	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 18:21:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7420547689
+	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 18:44:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233936AbiFKQU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jun 2022 12:20:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43270 "EHLO
+        id S235689AbiFKQoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jun 2022 12:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233786AbiFKQUy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 12:20:54 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C3BED98;
-        Sat, 11 Jun 2022 09:20:53 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id gd1so1979951pjb.2;
-        Sat, 11 Jun 2022 09:20:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=52FEawlxx2XEiajDreVr4B3bR3J/54lh0TNcaiAALg0=;
-        b=ab0xT3CV4RuMF2OiZPI2xLVnhRW5/shoC498Em+y8YYDEYcbMvP9qE+0CrXXuGYXDZ
-         7adMdG5Yk5R8vWiiyTC+caNJKMNj4mMwHBGfhIdh0H1s+4PUIjJs5a1l1Hhj8AF+OD5U
-         zPbH0CnWeY2+iIzQbJtNVAqy0Dob1LbtaPZBUIQYftBbJbh45QJu3iwzc4Csd9v+SEbO
-         V5aQqxcQ9kTpXo7Whe0D4KQ3Tc6A2BxU6XgsIOH9qncWbIiTLYyM0FG7JQb8/LkqLKll
-         Hf9P1QgIT+EBxyRYmolJ17kcsnVm0Tf5h4/I5sca+OM9bCJvILT1kH1Re23b0JEHtNR6
-         x6gA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=52FEawlxx2XEiajDreVr4B3bR3J/54lh0TNcaiAALg0=;
-        b=GczezX7xucMaSxOSAlQmQDQbe7W+q5ygj3EErxPkSNXvUIjyoBWRTUKjaGL/dliYPc
-         gMKjBuYZLNao+nSl3zpkqYHAW0/xaV+hzqAuhrZYbbYfhGC9inDVTIO2vRtSGh5mx/5D
-         xYd5upjL/xm7gW1Vw+XjWa2ssgiDel5Y9s7diPzqt7ivVI0B4kJ4ygWxI9vDydx4VUY6
-         oDjvSr3IJ74ymNss5CtIdqrd9fgG+LTkobWI5u2iVc70a/xxXjsZEkKfAodt7eprFDYs
-         VBPRfCkTVfayk+yEotytE/r1zc9pdAkf+TF0+LXBk2aedfOEOeZS1+eNTP4qrNq66NBI
-         J6dw==
-X-Gm-Message-State: AOAM533kzlC5s2a1TVlqcdrEAILQXKHx1ObX+WHDzalE3LyZ1elvhulP
-        bMaehtYyPJjXJKePG9w7KDxCPE30aB9EjQ==
-X-Google-Smtp-Source: ABdhPJw6r3T6eGmWuqAklyCuOxc8EvgaHFctN+cJSKeE6vFCz3HGkpFK4sGIkNZ0F1va5sjswgR38A==
-X-Received: by 2002:a17:90a:2d89:b0:1dc:a406:3566 with SMTP id p9-20020a17090a2d8900b001dca4063566mr5906026pjd.135.1654964452408;
-        Sat, 11 Jun 2022 09:20:52 -0700 (PDT)
-Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id je9-20020a170903264900b0015e8d4eb2e3sm1692469plb.301.2022.06.11.09.20.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jun 2022 09:20:52 -0700 (PDT)
-Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH 2/2] can: etas_es58x: fix signedness of USB RX and TX pipes
-Date:   Sun, 12 Jun 2022 01:20:37 +0900
-Message-Id: <20220611162037.1507-3-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220611162037.1507-1-mailhol.vincent@wanadoo.fr>
-References: <20220611162037.1507-1-mailhol.vincent@wanadoo.fr>
+        with ESMTP id S230518AbiFKQoy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 12:44:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E5D140DE;
+        Sat, 11 Jun 2022 09:44:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8013361197;
+        Sat, 11 Jun 2022 16:44:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75F21C34116;
+        Sat, 11 Jun 2022 16:44:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654965891;
+        bh=ghuGRd/Z1xd0bQJRFUBDaFRmlY9Al7Fa1PVRTFvEztg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Ah79EYQQ1Lbel4/ydfUhCZ/zH3iHLyB0lO3GeVQrrnCIpp9P3C2QYzPFcsm1ln4jE
+         NEePSWFqfrEOcShIgX7UDuXNZRVDGC1ZqxwVj9/WgdGDAjJNLErFT+TSv773A+rxwT
+         I79HiiyXW734tJKW6sNCJOwVXVlNX0gVtndY8EXNWoumak3oJBoYbwwgOuauWklXi+
+         kaCiwJGTmS9Q+kaDwp6RT1nlbgztPuWVewUTJjlEsky3lKt9ivHcwK/yY4nR6UbbLN
+         EgC2oSflm8T1enM8WPtQXqBsK7QlEsmbIB0hzoaBkcoQoFljx3cSLJUJf28GYOlZOt
+         vTAyJBg9dykBw==
+Message-ID: <6410890e-333d-5f0e-52f2-1041667c80f8@kernel.org>
+Date:   Sat, 11 Jun 2022 10:44:50 -0600
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: [REGRESSION] connection timeout with routes to VRF
+Content-Language: en-US
+To:     Jan Luebbe <jluebbe@lasnet.de>,
+        Robert Shearman <robertshearman@gmail.com>,
+        Andy Roulin <aroulin@nvidia.com>
+Cc:     Mike Manning <mvrmanning@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        regressions@lists.linux.dev,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <a54c149aed38fded2d3b5fdb1a6c89e36a083b74.camel@lasnet.de>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <a54c149aed38fded2d3b5fdb1a6c89e36a083b74.camel@lasnet.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_SBL_CSS,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Level: *
+X-Spam-Status: No, score=-9.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-USB pipes are meant to be unsigned int (c.f. [1]). However, fields
-rx_pipe and tx_pipe of struct es58x_device are both signed
-integers. Change the type of those two fields from int to unsigned
-int.
+On 6/11/22 5:14 AM, Jan Luebbe wrote:
+> Hi,
+> 
+> TL;DR: We think we have found a regression in the handling of VRF route leaking
+> caused by "net: allow binding socket in a VRF when there's an unbound socket"
+> (3c82a21f4320).
 
-[1] https://elixir.bootlin.com/linux/v5.18/source/include/linux/usb.h#L1571
+This is the 3rd report in the past few months about this commit.
 
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
- drivers/net/can/usb/etas_es58x/es58x_core.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+...
 
-diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.h b/drivers/net/can/usb/etas_es58x/es58x_core.h
-index 512c5b7a1cfa..d769bdf740b7 100644
---- a/drivers/net/can/usb/etas_es58x/es58x_core.h
-+++ b/drivers/net/can/usb/etas_es58x/es58x_core.h
-@@ -400,8 +400,8 @@ struct es58x_device {
- 	const struct es58x_parameters *param;
- 	const struct es58x_operators *ops;
- 
--	int rx_pipe;
--	int tx_pipe;
-+	unsigned int rx_pipe;
-+	unsigned int tx_pipe;
- 
- 	struct usb_anchor rx_urbs;
- 	struct usb_anchor tx_urbs_busy;
--- 
-2.35.1
+> 
+> Our minimized test case looks like this:
+>  ip rule add pref 32765 from all lookup local
+>  ip rule del pref 0 from all lookup local
+>  ip link add red type vrf table 1000
+>  ip link set red up
+>  ip route add vrf red unreachable default metric 8192
+>  ip addr add dev red 172.16.0.1/24
+>  ip route add 172.16.0.0/24 dev red
+>  ip vrf exec red socat -dd TCP-LISTEN:1234,reuseaddr,fork SYSTEM:"echo connected" &
+>  sleep 1
+>  nc 172.16.0.1 1234 < /dev/null
+> 
 
+...
+Thanks for the detailed analysis and reproducer.
+
+> 
+> The partial revert
+> diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+> index 98e1ec1a14f0..41e7f20d7e51 100644
+> --- a/include/net/inet_hashtables.h
+> +++ b/include/net/inet_hashtables.h
+> @@ -310,8 +310,9 @@ static inline struct sock *inet_lookup_listener(struct net *net,
+>  #define INET_MATCH(__sk, __net, __cookie, __saddr, __daddr, __ports, __dif, __sdif) \
+>         (((__sk)->sk_portpair == (__ports))                     &&      \
+>          ((__sk)->sk_addrpair == (__cookie))                    &&      \
+> -        (((__sk)->sk_bound_dev_if == (__dif))                  ||      \
+> -         ((__sk)->sk_bound_dev_if == (__sdif)))                &&      \
+> +        (!(__sk)->sk_bound_dev_if      ||                              \
+> +          ((__sk)->sk_bound_dev_if == (__dif))                 ||      \
+> +          ((__sk)->sk_bound_dev_if == (__sdif)))               &&      \
+>          net_eq(sock_net(__sk), (__net)))
+>  #else /* 32-bit arch */
+>  #define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
+> @@ -321,8 +322,9 @@ static inline struct sock *inet_lookup_listener(struct net *net,
+>         (((__sk)->sk_portpair == (__ports))             &&              \
+>          ((__sk)->sk_daddr      == (__saddr))           &&              \
+>          ((__sk)->sk_rcv_saddr  == (__daddr))           &&              \
+> -        (((__sk)->sk_bound_dev_if == (__dif))          ||              \
+> -         ((__sk)->sk_bound_dev_if == (__sdif)))        &&              \
+> +        (!(__sk)->sk_bound_dev_if      ||                              \
+> +          ((__sk)->sk_bound_dev_if == (__dif))         ||              \
+> +          ((__sk)->sk_bound_dev_if == (__sdif)))       &&              \
+>          net_eq(sock_net(__sk), (__net)))
+>  #endif /* 64-bit arch */
+> 
+> restores the original behavior when applied on v5.18. This doesn't apply
+> directly on master, as the macro was replaced by an inline function in "inet:
+> add READ_ONCE(sk->sk_bound_dev_if) in INET_MATCH()" (4915d50e300e).
+> 
+> I have to admit I don't quite understand 3c82a21f4320, so I'm not sure how to
+> proceed. What would be broken by the partial revert above? Are there better ways
+> to configure routing into the VRF than simply "ip route add 172.16.0.0/24 dev
+> red" that still work?
+> 
+> Thanks,
+> Jan
+> 
+> #regzbot introduced: 3c82a21f4320
+> 
+> 
+> 
+
+Andy Roulin suggested the same fix to the same problem a few weeks back.
+Let's do it along with a test case in fcnl-test.sh which covers all of
+these vrf permutations.
