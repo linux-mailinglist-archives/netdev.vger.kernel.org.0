@@ -2,45 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCB145471C0
-	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 06:09:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6119547211
+	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 06:45:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348539AbiFKEJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jun 2022 00:09:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40290 "EHLO
+        id S1344892AbiFKEpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jun 2022 00:45:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234118AbiFKEJK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 00:09:10 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6500F32;
-        Fri, 10 Jun 2022 21:09:08 -0700 (PDT)
-Received: from canpemm500007.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LKknV4htvzjXKR;
-        Sat, 11 Jun 2022 12:07:42 +0800 (CST)
-Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
- (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 11 Jun
- 2022 12:09:06 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <illusionist.neo@gmail.com>, <linux@armlinux.org.uk>,
-        <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>,
-        <johan.almbladh@anyfinetworks.com>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH -next] bpf, arm: Remove unused function emit_a32_alu_r()
-Date:   Sat, 11 Jun 2022 12:09:04 +0800
-Message-ID: <20220611040904.8976-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        with ESMTP id S229501AbiFKEpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 00:45:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD6D6D3BE;
+        Fri, 10 Jun 2022 21:45:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CDD060AB2;
+        Sat, 11 Jun 2022 04:45:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FDABC34116;
+        Sat, 11 Jun 2022 04:45:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654922708;
+        bh=wGn2rPCuxew5qwldJYSVq19UhC8f95uZDKrBI+AiCAs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EOyxoKLc9zXozWV7DhcLaFfbrZrgbhBfWXvYbc+Lt4wFOIHKclOPGOCzoYGcMtDZh
+         RG+SyRAXenLZQC7KMgi/e5wAXA9dlIAaqo4FYwicuklL6O0V9bglXECa/erWrP4892
+         sw28v8UNUIYjuFFFMlOHMn/BdLYAZIHQRGrzcV/XzvwhmGAi9GgAUU1+7j9oQpVSZu
+         KEAJfI1eUdBhkdaITLN7U9feUtgkZEAQHZnP6BAj4Ky1qSqXNF/e0sJZ9ONuARh66L
+         ayhkV6fKRt1LWfXp0iWBx92ZBISS7NHAaodySUd+q6PFhPK39pZ2YFQtu5IxElOEY1
+         U14TuxV1zh5dQ==
+Date:   Fri, 10 Jun 2022 21:45:06 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+Cc:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        openbmc@lists.ozlabs.org
+Subject: Re: [PATCH v2 0/6] Configurable VLAN mode for NCSI driver
+Message-ID: <20220610214506.74c3f89c@kernel.org>
+In-Reply-To: <3c9fa928-f416-3526-be23-12644d18db3b@linux.intel.com>
+References: <20220610165940.2326777-1-jiaqing.zhao@linux.intel.com>
+        <20220610130903.0386c0d9@kernel.org>
+        <3c9fa928-f416-3526-be23-12644d18db3b@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.174.179.215]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500007.china.huawei.com (7.192.104.62)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -49,41 +57,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since commit b18bea2a45b1 ("ARM: net: bpf: improve 64-bit ALU implementation")
-this is unused anymore, so can remove it.
+On Sat, 11 Jun 2022 11:25:03 +0800 Jiaqing Zhao wrote:
+> > Why is "ncsi,vlan-mode" set via the device tree? Looks like something
+> > that can be configured at runtime.   
+> 
+> Actually this cannot be configured at runtime, the NCSI spec defines no
+> command or register to determine which mode is supported by the device.
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- arch/arm/net/bpf_jit_32.c | 16 ----------------
- 1 file changed, 16 deletions(-)
+To be clear I'm not saying that it should be auto-detected and
+auto-configured. Just that user space can issue a command to change 
+the config.
 
-diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
-index 9e457156ad4d..6a1c9fca5260 100644
---- a/arch/arm/net/bpf_jit_32.c
-+++ b/arch/arm/net/bpf_jit_32.c
-@@ -712,22 +712,6 @@ static inline void emit_alu_r(const u8 dst, const u8 src, const bool is64,
- 	}
- }
- 
--/* ALU operation (32 bit)
-- * dst = dst (op) src
-- */
--static inline void emit_a32_alu_r(const s8 dst, const s8 src,
--				  struct jit_ctx *ctx, const bool is64,
--				  const bool hi, const u8 op) {
--	const s8 *tmp = bpf2a32[TMP_REG_1];
--	s8 rn, rd;
--
--	rn = arm_bpf_get_reg32(src, tmp[1], ctx);
--	rd = arm_bpf_get_reg32(dst, tmp[0], ctx);
--	/* ALU operation */
--	emit_alu_r(rd, rn, is64, hi, op, ctx);
--	arm_bpf_put_reg32(dst, rd, ctx);
--}
--
- /* ALU operation (64 bit) */
- static inline void emit_a32_alu_r64(const bool is64, const s8 dst[],
- 				  const s8 src[], struct jit_ctx *ctx,
--- 
-2.17.1
+> If kernel want to enable VLAN on the NCSI device, either "Filtered tagged
+> + Untagged" (current default) or "Any tagged + untagged" mode should be
+> enabled, but unfortunately both of these two modes are documented to be
+> optionally supported in the spec. And in real cases, there are devices
+> that only supports one of them, or neither of them. So I added the device
+> tree property to configure which mode to use.
 
+But for a given device its driver knows what modes are supported.
+Is it not possible to make the VLAN mode passed thru ncsi-netlink?
+
+Better still, can't "Filtered tagged + Untagged" vs "Any tagged +
+untagged" be decided based on netdev features being enabled like it
+is for normal netdevs?
