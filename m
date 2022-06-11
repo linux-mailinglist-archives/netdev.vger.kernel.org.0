@@ -2,123 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A705547617
-	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 17:23:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE77954763B
+	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 17:50:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238512AbiFKPXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jun 2022 11:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37098 "EHLO
+        id S238865AbiFKPus (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jun 2022 11:50:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238330AbiFKPXS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 11:23:18 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65DBC222B9
-        for <netdev@vger.kernel.org>; Sat, 11 Jun 2022 08:23:17 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1o02x8-0000FO-7V; Sat, 11 Jun 2022 17:23:06 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 07D6492EBF;
-        Sat, 11 Jun 2022 15:23:02 +0000 (UTC)
-Date:   Sat, 11 Jun 2022 17:23:02 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        kernel@pengutronix.de, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S233305AbiFKPur (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 11:50:47 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F7D2E8;
+        Sat, 11 Jun 2022 08:50:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Xv1QWDfN+pMOMjcRPK9HZ6apjXb/JqFW9eOeMHDl0ko=; b=6Z7MqSXb+AeT9JnALtIjBFGwGO
+        bEvIKhH2/5lWYoQ8bP+A4FMPGwo5Y2l0aPuqWPZrapsf2OYKQPRhmy5CmYu61dzoMrRLAsrXgM/oM
+        VeCnEeXlzXQYy4ihgqi+isJzGIWPPZ6mRyvESECh2JwYDBpUd4S9f8BIT0jrlJNvmO4Q=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o03Nj-006War-69; Sat, 11 Jun 2022 17:50:35 +0200
+Date:   Sat, 11 Jun 2022 17:50:35 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next v3 3/3] net: phy: dp83td510: disable cable test
- support for 1Vpp PHYs
-Message-ID: <20220611152302.fw76ws75olzcwasp@pengutronix.de>
-References: <20220608123236.792405-1-o.rempel@pengutronix.de>
- <20220608123236.792405-4-o.rempel@pengutronix.de>
- <YqSxtvZUEmaxmihV@lunn.ch>
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/1] net: phy: add remote fault support
+Message-ID: <YqS5yxrRX4Y4LTWd@lunn.ch>
+References: <20220608093403.3999446-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="oh2oxnswzfmcsdq3"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YqSxtvZUEmaxmihV@lunn.ch>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220608093403.3999446-1-o.rempel@pengutronix.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> --- a/include/uapi/linux/ethtool.h
+> +++ b/include/uapi/linux/ethtool.h
+> @@ -1840,6 +1840,46 @@ static inline int ethtool_validate_duplex(__u8 duplex)
+>  #define MASTER_SLAVE_STATE_SLAVE		3
+>  #define MASTER_SLAVE_STATE_ERR			4
+>  
+> +#define REMOTE_FAULT_CFG_UNSUPPORTED		0
+> +#define REMOTE_FAULT_CFG_UNKNOWN		1
+> +#define REMOTE_FAULT_CFG_NO_ERROR		2
+> +/* IEEE 802.3-2018 28.2.1.2.4 Fault without additional information */
+> +#define REMOTE_FAULT_CFG_ERROR			3
+> +/* IEEE 802.3-2018 28C.5 Message code 4: 0 - RF Test */
+> +#define REMOTE_FAULT_CFG_TEST			4
+> +/* IEEE 802.3-2018 28C.5 Message code 4: 1 - Link Loss */
+> +#define REMOTE_FAULT_CFG_LINK_LOSS		5
+> +/* IEEE 802.3-2018 28C.5 Message code 4: 2 - Jabber */
+> +#define REMOTE_FAULT_CFG_JABBER			6
+> +/* IEEE 802.3-2018 28C.5 Message code 4: 3 - Parallel Detection Fault */
+> +#define REMOTE_FAULT_CFG_PDF			7
+> +/* IEEE 802.3-2018 37.2.1.5.2 Offline */
+> +#define REMOTE_FAULT_CFG_OFFLINE		8
+> +/* IEEE 802.3-2018 37.2.1.5.3 Link_Failure */
+> +#define REMOTE_FAULT_CFG_LINK_FAIL		9
+> +/* IEEE 802.3-2018 37.2.1.5.4 Auto-Negotiation_Error */
+> +#define REMOTE_FAULT_CFG_AN_ERROR		10
+> +
+> +#define REMOTE_FAULT_STATE_UNSUPPORTED		0
+> +#define REMOTE_FAULT_STATE_UNKNOWN		1
+> +#define REMOTE_FAULT_STATE_NO_ERROR		2
+> +/* IEEE 802.3-2018 28.2.1.2.4 Fault without additional information */
+> +#define REMOTE_FAULT_STATE_ERROR		3
+> +/* IEEE 802.3-2018 28C.5 Message code 4: 0 - RF Test */
+> +#define REMOTE_FAULT_STATE_TEST			4
+> +/* IEEE 802.3-2018 28C.5 Message code 4: 1 - Link Loss */
+> +#define REMOTE_FAULT_STATE_LINK_LOSS		5
+> +/* IEEE 802.3-2018 28C.5 Message code 4: 2 - Jabber */
+> +#define REMOTE_FAULT_STATE_JABBER		6
+> +/* IEEE 802.3-2018 28C.5 Message code 4: 3 - Parallel Detection Fault */
+> +#define REMOTE_FAULT_STATE_PDF			7
+> +/* IEEE 802.3-2018 37.2.1.5.2 Offline */
+> +#define REMOTE_FAULT_STATE_OFFLINE		8
+> +/* IEEE 802.3-2018 37.2.1.5.3 Link_Failure */
+> +#define REMOTE_FAULT_STATE_LINK_FAIL		9
+> +/* IEEE 802.3-2018 37.2.1.5.4 Auto-Negotiation_Error */
+> +#define REMOTE_FAULT_STATE_AN_ERROR		10
 
---oh2oxnswzfmcsdq3
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I'm not sure there is any value in having these values twice. They are
+expected to be identical, so one set should be enough.
 
-On 11.06.2022 17:16:06, Andrew Lunn wrote:
-> >  static int dp83td510_cable_test_start(struct phy_device *phydev)
-> >  {
-> > -	int ret;
-> > +	struct dp83td510_priv *priv =3D phydev->priv;
-> > +	int ret, cfg =3D 0;
-> > +
-> > +	/* Generate 2.4Vpp pulse if HW is allowed to do so */
-> > +	if (priv->allow_v2_4_mode) {
-> > +		cfg |=3D DP83TD510E_TDR_TX_TYPE;
-> > +	} else {
-> > +		/* This PHY do not provide usable results with 1Vpp pulse.
->=20
-> s/do/does
->=20
->=20
-> > +		 * Potentially different dp83td510_tdr_init() values are
-> > +		 * needed.
-> > +		 */
-> > +		return -EOPNOTSUPP;
-> > +	}
->=20
-> I don't remember the details for v2.4. Is it possible to change up
-> from 1v to 2.4v for the duration of the cable test? Is there a danger
-> to damage the link peer? I guess not, since you need to pass EMC
-> testing which zaps it with 100Kv or something. So is this more a local
-> supply issue?
-
-In some industrial areas (e.g. ATEX (explosion protection)) 2.4V is not
-allowed due to regulations. If the PHY is strapped to 1.0V we assume for
-now this has a good reason and don't crank up the voltage :)
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---oh2oxnswzfmcsdq3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKks1MACgkQrX5LkNig
-011eugf+PjsR7mtKLNTUA0tdq9/3obqmNjr/cGsx9jYZ8YSzcBWZXOEZ3YkNbopa
-9SwfmMpXqvbSFXOBMt0N0pV+LJEikamhOlJLxMyL+/UhRiO/zRuX5IGHKwm/k1Cv
-B/rxUS6r+9cmFNu0splGcsP9U5K6RCko9ByxU4GL8P5TUwFxxro8MVNVTzuhxTVI
-hA8ooncenDJsYQ4Gk/LBtGsp6VemGf3DJLD2lCX1HfeMyBB7PhvyjJc/ov92dcC2
-3t0YaBiOumHr1vQOcFGAGS2XxSieeoCRBnNw/5CpQZyhPCXK7303ieCA8s6YeTAS
-WXhsL4dPcNAZfB84E1mEKwkLLeXDIw==
-=VE56
------END PGP SIGNATURE-----
-
---oh2oxnswzfmcsdq3--
+	 Andrew
