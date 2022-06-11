@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08D365473B9
-	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 12:27:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 539A55473C8
+	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 12:35:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231567AbiFKK1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jun 2022 06:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60520 "EHLO
+        id S231815AbiFKKfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jun 2022 06:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229877AbiFKK1K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 06:27:10 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8D117E32;
-        Sat, 11 Jun 2022 03:27:09 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id gl15so2384521ejb.4;
-        Sat, 11 Jun 2022 03:27:09 -0700 (PDT)
+        with ESMTP id S229659AbiFKKfi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 06:35:38 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B29459316;
+        Sat, 11 Jun 2022 03:35:37 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id me5so2430208ejb.2;
+        Sat, 11 Jun 2022 03:35:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=KIxsSmffb8RfNqJlYqJ6d8OJHZPkWprEKP9BjZRzvY4=;
-        b=DmYimP8x9+fBNO5W9V+LPablLcvvdeYRzWgAyGF0whEQX/wYY7V7xjcwFUKEmTPA4c
-         mpZwcvHCTA94+Rc/oh9sohMYfnkdY/QD/+ajvNzddutXAIRnHGaHfEdUiT7A6kIGR8VB
-         3hxsumzh0hOJO2uOzb5Kf5O7TuaeHjmPiTjMisReEAEHaIb5TQzgYdsUZ05rGi1KmXYk
-         nvOvAaw+8EeVsJq8dqk6STcfHJxHMJn9cAwO+rqpoTQe4fhw6pMIwMxLREhi74AbadqK
-         GO5nNxLEUnaDjjnuSKthP4JbD0kjff9Fpuox0s56DCAGKppd1bJ7+lCMRw3hpOEQK3jb
-         +7zg==
+        bh=GpxAqJ7MKT7TBnj7STiXSamQkAfUNiRyf59KUsb+gv4=;
+        b=GRW5JRHPVpqNWylUW4116B6JDuh7H+nKErw9Vh1eVDSFt1+KAEwoM9mNBWgjDD8wLp
+         zVupH5fPj6tyUnILQAZIRiBAL6w8LKHXO8klEKDZ+SaBJCw/R/bH8lGWiZW/ARejk7sc
+         oBx4HA3c6h5QFS/2KgL4YCNtMBfjzqT5JSt16/ZW55i5tVmbNdIlRZJpiM+MnfFTdgGq
+         AzutQnuAGQ5HLnLwICZhy7eb2o+HAs2120syTv7GEW2WWNZUVT9v4Y8WuCYFDZDu8lwj
+         429MiSqAA6YeC7Ex8wt2FghkxvhosaKKYp+LD+oGqSkkt3tl2v4E9kVbJo1vZQpaIi4d
+         9iPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=KIxsSmffb8RfNqJlYqJ6d8OJHZPkWprEKP9BjZRzvY4=;
-        b=sQqS6KWTdhhFzPntIjnW+GkqH8ANaINxKWyBoJkNK46iNYExtB2NtwVPZchB/17Q9R
-         Z93MFEFGkh83j5s9pNI18bVOp1wZ6po9qNx3ruMNnwxVAEVTfs35sV6xVfKG2aYIP8Qi
-         2HX5+wk0GrrQVp2Skj02UHbihxLeJ6wpOhIlC9bsVCICLD/xlOsoNCFjBPP5O4yC5/tT
-         emhhNt27xaU4JPEXrxiJpnO1NEoI2p8UES51KaRjnzJsBgorxzuVahptZk6+/xrh6WHo
-         IEDVoXtfRZcF6uojR0gncKf93AnCNWMsXtsPMvfJhQMzUpy3sPyQu136i8Y2NaBGPmm3
-         WFpw==
-X-Gm-Message-State: AOAM533VzGJkYhSARxADkSJJB8S6DWM76kZV2AENWoGoy+8A4Eo9TuV5
-        l99jtGebKfPcUf7bSdS59botTmL+xImYH7lm7pg=
-X-Google-Smtp-Source: ABdhPJxGPAH3/4MNl4wJEhbi2aKPLJTgIIWnYOFq1wyqCO3Loa4a3ZXM4nLfZG8DtQD+7/hhnXIHdoiPxgckHoYpOaE=
-X-Received: by 2002:a17:906:1193:b0:70d:cf39:a4db with SMTP id
- n19-20020a170906119300b0070dcf39a4dbmr38814493eja.44.1654943227473; Sat, 11
- Jun 2022 03:27:07 -0700 (PDT)
+        bh=GpxAqJ7MKT7TBnj7STiXSamQkAfUNiRyf59KUsb+gv4=;
+        b=xLEWBDhd47WFZBkY4SHZ/K2BjjMQjnLEJBTEvbA7VHAO/WLYPC5AT3921LdEHfaWWu
+         f91zrRk0ewD4zy79vAfiHTA4P/9Kn6WxvflTDvvBQLla31J2Zx0QmlE5hiyAB27Mmu8X
+         /ZIhmS78RujvG4I9aHEL5DU/kN7KdJwEYAeowfAJH+aAK1puNNJWXKrjaS3OzjVujKnM
+         YUNl0SC1TrhVIxAghkk2g+WcLsytLmjZiNwlGnEdabMsIMSzV7pObSDUTfsxFxqdWS3F
+         3xLtQNle+0BvLQoBZ71kQROT6i1f6CHYE4FDdZPchSkGHlSb4e+xhUVrSRAVtgSsxvHK
+         bJpw==
+X-Gm-Message-State: AOAM533twvPHZuYVEushiO1r0YJ5lwq6tpmW9ejPOQc2Ok74+/FWvFJG
+        37D+IDcH7OBwJ0qgJ0lpqNQg6tU16i8YaonX4n8=
+X-Google-Smtp-Source: ABdhPJxpcSDRnUXCS0yc8Wrs123Y2/OoSN/jBzDYC0syi3Aiu+Tdm1gm/qtLUHgc59KvMmiRRDSgej0BPu4GyEcGpLs=
+X-Received: by 2002:a17:906:434f:b0:711:eb76:c320 with SMTP id
+ z15-20020a170906434f00b00711eb76c320mr18646521ejm.636.1654943735816; Sat, 11
+ Jun 2022 03:35:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220610175655.776153-1-colin.foster@in-advantage.com> <20220610175655.776153-2-colin.foster@in-advantage.com>
-In-Reply-To: <20220610175655.776153-2-colin.foster@in-advantage.com>
+References: <20220610175655.776153-1-colin.foster@in-advantage.com> <20220610175655.776153-3-colin.foster@in-advantage.com>
+In-Reply-To: <20220610175655.776153-3-colin.foster@in-advantage.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sat, 11 Jun 2022 12:26:31 +0200
-Message-ID: <CAHp75VfHG7pqvTLcBu=vqx9PzXVrJhxyu6XHr9xaiMmhqke-Tg@mail.gmail.com>
-Subject: Re: [PATCH v9 net-next 1/7] mfd: ocelot: add helper to get regmap
- from a resource
+Date:   Sat, 11 Jun 2022 12:34:59 +0200
+Message-ID: <CAHp75Vd0ZhP3TcpH2LGsb7=6Bqe1hoNU5i6DRyovKm7Vnz=HCw@mail.gmail.com>
+Subject: Re: [PATCH v9 net-next 2/7] net: mdio: mscc-miim: add ability to be
+ used in a non-mmio configuration
 To:     Colin Foster <colin.foster@in-advantage.com>
 Cc:     devicetree <devicetree@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
@@ -89,44 +89,59 @@ X-Mailing-List: netdev@vger.kernel.org
 On Fri, Jun 10, 2022 at 7:57 PM Colin Foster
 <colin.foster@in-advantage.com> wrote:
 >
-> Several ocelot-related modules are designed for MMIO / regmaps. As such,
-> they often use a combination of devm_platform_get_and_ioremap_resource and
-> devm_regmap_init_mmio.
+> There are a few Ocelot chips that contain the logic for this bus, but are
+> controlled externally. Specifically the VSC7511, 7512, 7513, and 7514. In
+> the externally controlled configurations these registers are not
+> memory-mapped.
 >
-> Operating in an MFD might be different, in that it could be memory mapped,
-> or it could be SPI, I2C... In these cases a fallback to use IORESOURCE_REG
-> instead of IORESOURCE_MEM becomes necessary.
->
-> When this happens, there's redundant logic that needs to be implemented in
-> every driver. In order to avoid this redundancy, utilize a single function
-> that, if the MFD scenario is enabled, will perform this fallback logic.
+> Add support for these non-memory-mapped configurations.
 
 ...
 
-> +#include <linux/err.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regmap.h>
+> +       ocelot_platform_init_regmap_from_resource(pdev, 0, &mii_regmap, NULL,
+> +                                                 &mscc_miim_regmap_config);
 
-Since it's header the rule of thumb is to include headers this one is
-a direct user of. Here I see missed
-types.h
+This is a bit non-standard, why not to follow the previously used API
+design, i.e.
 
-Also missed forward declarations
+mii_regmap.map = ...
 
-struct resource;
+?
 
 ...
 
-> +       if (!IS_ERR(regs))
+> +       ocelot_platform_init_regmap_from_resource(pdev, 1, &phy_regmap, &res,
+> +                                                 &mscc_miim_phy_regmap_config);
 
-Why not positive conditional?
+Ditto.
 
-> +               *map = devm_regmap_init_mmio(&pdev->dev, regs, config);
-> +       else
-> +               *map = ERR_PTR(ENODEV);
+Also here is the question how '_from_'  is aligned with '&res'. If
+it's _from_ a resource then the resource is already a pointer.
 
-Missed -.
+...
 
--- 
+>         if (res) {
+> -               phy_regs = devm_ioremap_resource(dev, res);
+> -               if (IS_ERR(phy_regs)) {
+> -                       dev_err(dev, "Unable to map internal phy registers\n");
+> -                       return PTR_ERR(phy_regs);
+> -               }
+> -
+> -               phy_regmap = devm_regmap_init_mmio(dev, phy_regs,
+> -                                                  &mscc_miim_phy_regmap_config);
+>                 if (IS_ERR(phy_regmap)) {
+>                         dev_err(dev, "Unable to create phy register regmap\n");
+>                         return PTR_ERR(phy_regmap);
+>                 }
+
+This looks weird. You check an error here instead of the API you
+called. It's a weird design, the rationale of which is doubtful and
+has to be at least explained.
+
+> +       } else {
+> +               phy_regmap = NULL;
+>         }
+
+--
 With Best Regards,
 Andy Shevchenko
