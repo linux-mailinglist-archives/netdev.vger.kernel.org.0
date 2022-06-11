@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 493B254723C
-	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 07:30:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BA09547241
+	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 07:44:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345447AbiFKFa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jun 2022 01:30:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49524 "EHLO
+        id S229643AbiFKFoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jun 2022 01:44:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229643AbiFKFaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 01:30:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1368A29A
-        for <netdev@vger.kernel.org>; Fri, 10 Jun 2022 22:30:16 -0700 (PDT)
+        with ESMTP id S229650AbiFKFoN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 01:44:13 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6533110E;
+        Fri, 10 Jun 2022 22:44:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51A60B8389F
-        for <netdev@vger.kernel.org>; Sat, 11 Jun 2022 05:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DFE32C34116;
-        Sat, 11 Jun 2022 05:30:12 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6E3ADCE39A2;
+        Sat, 11 Jun 2022 05:44:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 516A0C34116;
+        Sat, 11 Jun 2022 05:44:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654925414;
-        bh=Ak/niIvp9K90rkmgnQe3ORJQw5Hceu6RCl0gLsHXtlI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ND7+e9id/MQxGHrog9dqatpT0rmc3nMfXLmtaG6/alYSzlhVKDjUiXRrOwUg1rfzk
-         Bqdk2ZSlfC+89aem8QGdxUVKv341Yvk5vG2QsmYN+okl37x9L6jiC70D4/pvj1dslj
-         zOkb3YRL60IwkuYFG7Tqm0Pfh10ivzaJo3G4rNF9Gufs9eNFwF5FPzwaP7SYgGLlKF
-         DYn577YmF8h3BEbk48QKMpj3ClrJotZeUHRcXwFykzXdThf0K/SXlWPt7FmaXHKxnj
-         4N2pjIjRi7fEAma/KQfRBL9RRyxsiK3jBnc5f/4GrbVIstYo/sFHnRmm3OCyLHDZQN
-         AKhM4XuQFJG+w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C553FE737E8;
-        Sat, 11 Jun 2022 05:30:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1654926248;
+        bh=bNJ/EL0jamyP3ajtQm3Cp8mZ0bWZwskKQfExHfBnmMU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=B2yosn8uvfbrKAOZHzdoOpCDU8RmlYKVMSplAT7FxaoouqYZBeX72btIDo8UKNNSu
+         wNxSWs6XantGFr2v7xV58Um8FlKs3pL0GIyHua2DdhDGAwBKFR4bE3DlCf2XqsGsPL
+         64AC++OcwLstXPPY3y/IrCheS1L7XD1/u8r/41JNz04b/jR1n/YTbPXlCWLDDLtJRU
+         Q2vjGZuFZkyVB5+sV53NwK3L7xYdp1fznIr7h0zxYyVFTnhCMRl5gF9IgBZNP9NOQZ
+         2Z2/qCMTFs2lSiMYLf2Plt5j6ojSdSuEVcc/2yyw8FyKH9Kf9uQ/7NeI1yJyCQma53
+         hMmSQTtRMon2g==
+Date:   Fri, 10 Jun 2022 22:44:07 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+Cc:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        openbmc@lists.ozlabs.org
+Subject: Re: [PATCH v2 0/6] Configurable VLAN mode for NCSI driver
+Message-ID: <20220610224407.4e58dc5a@kernel.org>
+In-Reply-To: <6f067302-74a8-702f-bf38-4477a805a528@linux.intel.com>
+References: <20220610165940.2326777-1-jiaqing.zhao@linux.intel.com>
+        <20220610130903.0386c0d9@kernel.org>
+        <3c9fa928-f416-3526-be23-12644d18db3b@linux.intel.com>
+        <20220610214506.74c3f89c@kernel.org>
+        <6f067302-74a8-702f-bf38-4477a805a528@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] ethernet: Remove vf rate limit check for drivers
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165492541280.21310.3317091740668140358.git-patchwork-notify@kernel.org>
-Date:   Sat, 11 Jun 2022 05:30:12 +0000
-References: <20220609084717.155154-1-simon.horman@corigine.com>
-In-Reply-To: <20220609084717.155154-1-simon.horman@corigine.com>
-To:     Simon Horman <simon.horman@corigine.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        michael.chan@broadcom.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, shshaikh@marvell.com,
-        manishc@marvell.com, bin.chen@corigine.com,
-        GR-Linux-NIC-Dev@marvell.com, netdev@vger.kernel.org,
-        oss-drivers@corigine.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,31 +59,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Sat, 11 Jun 2022 13:18:51 +0800 Jiaqing Zhao wrote:
+> All ncsi devices uses the same driver as they uses same command set,
+> so the driver doesn't know what modes are supported. And in current
+> driver, the vlan related parameters are configured when registering
+> the device, adding an ncsi-netlink command to do so seems to be
+> unsuitable.
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Maybe you could draw a diagram? NC-SI is a bit confusing.
 
-On Thu,  9 Jun 2022 10:47:17 +0200 you wrote:
-> From: Bin Chen <bin.chen@corigine.com>
-> 
-> The commit a14857c27a50 ("rtnetlink: verify rate parameters for calls to
-> ndo_set_vf_rate") has been merged to master, so we can to remove the
-> now-duplicate checks in drivers.
-> 
-> Signed-off-by: Bin Chen <bin.chen@corigine.com>
-> Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
-> Signed-off-by: Simon Horman <simon.horman@corigine.com>
-> 
-> [...]
+> And adding a netlink command requires extra application in userspace
+> to switch the mode. In my opinion, it would be more user-friendly to
+> make it usable on boot.
 
-Here is the summary with links:
-  - [net-next] ethernet: Remove vf rate limit check for drivers
-    https://git.kernel.org/netdev/net-next/c/10e11aa241b6
+Unfortunately convenience is not reason to start adding system config
+into DT.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Netdev also does not work as the ncsi device itself does not have
+> its own netdev, the netdev comes from the mac device. For different
+> vlan modes, the netdev feature set of its parent mac device are the
+> same.
 
+You say that, yet the command handling already takes into account the
+VLAN list:
 
+	if (list_empty(&ndp->vlan_vids)) {
+
+which come from the MAC netdev. What's wrong with setting the filtering
+mode based on NETIF_F_HW_VLAN_CTAG_FILTER ?
