@@ -2,93 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1058547772
-	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 22:11:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA1AA547796
+	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 22:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231682AbiFKULY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jun 2022 16:11:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38114 "EHLO
+        id S232194AbiFKUtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jun 2022 16:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbiFKULX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 16:11:23 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB1F50E2E;
-        Sat, 11 Jun 2022 13:11:22 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id n18so1978987plg.5;
-        Sat, 11 Jun 2022 13:11:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZiH4TRfnRyLIeMYFGZRSlq6I0QJI5DZKCK6Q6FfZ+dI=;
-        b=TroryHdp+Mh9Uxb/90OFg6dcmzsKzod+wGc0iByUCHTEejhEVJ2mQ8oEQBGpxAr8uP
-         GBUAuuDvcSClS8i5iCy+aaKgBuNTldlUQa06bj86DAhLFI4NbDfrIqn9xhHhwm3QL4cz
-         WpWUhY3APEsZHxoVtj6a2VS66IyRMNp6uoICdYUet4kYWtMEqDdD+GoskpCIlX4QzGrN
-         9HmNYEAPKPsPEQM9d/sy4IwO1qRziE5PYSYkc1JHhcAONpzES1eguad1/GGREPILDaEG
-         xZmDj0GS6kGLCRzzfDoscUij4FzffnI9f0FbdcSlXs3D6mqk3gWZjiitcs4DF9CBHWVG
-         QBOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZiH4TRfnRyLIeMYFGZRSlq6I0QJI5DZKCK6Q6FfZ+dI=;
-        b=CDW5PjuT91mq7tRumCm43+WWAexvOhXsDW5vdwbQsAebQmLzE6MfyS591SwTkxhvNq
-         YsCLMtVO1u3GwIKiVfY1jaxSCvTEKgXoIn9knjYELyJoeLEqMoTKD1jSdZQsxyIn7txY
-         bd8I3PbvRheC4RTcWin+77uDuYQZNKOG3FpGzWUltQ0ALVYxfvEaw4/5StsxPLddb2tN
-         kfeOm22M28G3CTvjHtf02kr6IlVt875vd3xnVf7qiqd2uF70S7NjgtCVeEviyKrQPa3o
-         1STUMCJPm/uuuXhmaG1g8OgDJev4HdpoH8rO1Nb7Wg+Pwo7DMOvimDNNaYobodh4veJ2
-         JOzA==
-X-Gm-Message-State: AOAM533/9IxKB7PP/EfqyaISVZV/kVatHNc+KaRuQH/+mYpjjqhFm971
-        U6q+EfzmX1TSOwOIhBKtLVCLFtqAqcw=
-X-Google-Smtp-Source: ABdhPJyhptHUrnDjl1evG9JYHqVjnDS7ugr+WiBysKcwjuWyzOqHZ1dVrLcUWIaPvIG1lSeiEwXTQQ==
-X-Received: by 2002:a17:902:ceca:b0:166:3418:5267 with SMTP id d10-20020a170902ceca00b0016634185267mr50810227plg.136.1654978281465;
-        Sat, 11 Jun 2022 13:11:21 -0700 (PDT)
-Received: from macbook-pro-3.dhcp.thefacebook.com ([2620:10d:c090:400::4:93e3])
-        by smtp.gmail.com with ESMTPSA id a13-20020a62e20d000000b0051c2fc79aa8sm2029560pfi.91.2022.06.11.13.11.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jun 2022 13:11:20 -0700 (PDT)
-Date:   Sat, 11 Jun 2022 13:11:17 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        pablo@netfilter.org, fw@strlen.de, netfilter-devel@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
-        memxor@gmail.com, yhs@fb.com
-Subject: Re: [PATCH v4 bpf-next 00/14] net: netfilter: add kfunc helper to
- update ct timeout
-Message-ID: <20220611201117.euqca7rgn5wydlwk@macbook-pro-3.dhcp.thefacebook.com>
-References: <cover.1653600577.git.lorenzo@kernel.org>
+        with ESMTP id S232155AbiFKUtm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 16:49:42 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4304731921
+        for <netdev@vger.kernel.org>; Sat, 11 Jun 2022 13:49:39 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1o0835-0005kG-E0; Sat, 11 Jun 2022 22:49:35 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 725F892FE9;
+        Sat, 11 Jun 2022 20:49:34 +0000 (UTC)
+Date:   Sat, 11 Jun 2022 22:49:33 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 0/2] can: etas_es58x: cleanups on struct es58x_device
+Message-ID: <20220611204933.ztf3tuwr72mowutr@pengutronix.de>
+References: <20220611162037.1507-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="35fdasoia5asrz2r"
 Content-Disposition: inline
-In-Reply-To: <cover.1653600577.git.lorenzo@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220611162037.1507-1-mailhol.vincent@wanadoo.fr>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 26, 2022 at 11:34:48PM +0200, Lorenzo Bianconi wrote:
-> Changes since v3:
-> - split bpf_xdp_ct_add in bpf_xdp_ct_alloc/bpf_skb_ct_alloc and
->   bpf_ct_insert_entry
-> - add verifier code to properly populate/configure ct entry
-> - improve selftests
 
-Kumar, Lorenzo,
+--35fdasoia5asrz2r
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-are you planning on sending v5 ?
-The patches 1-5 look good.
-Patch 6 is questionable as Florian pointed out.
-What is the motivation to allow writes into ct->status?
-The selftest doesn't do that anyway.
-Patch 7 (acquire-release pairs) is too narrow.
-The concept of a pair will not work well. There could be two acq funcs and one release.
-Please think of some other mechanism. Maybe type based? BTF?
-Or encode that info into type name? or some other way.
+On 12.06.2022 01:20:35, Vincent Mailhol wrote:
+> This series contains two clean up patches toward struct es58x_device
+> of the CAN etas_es58x driver. The first one removes the field
+> rx_max_packet_size which value can actually be retrieved from the
+> helper function usb_maxpacket(). The second one fixes the signedness
+> of the TX and RX pipes.
+>=20
+> No functional changes.
+
+Applied to linux-can-next/testing.
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--35fdasoia5asrz2r
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKk/9sACgkQrX5LkNig
+011BcQf9H6Y7Nba+v8y5LOeF13X7eS1vQxt1Wk6bV/t7XnfANhkhdjzBH6dCaMu3
+WuPat3HzETAQqaVDCTlY1tN736nfhoTjPfz+qEN21owTQl86GTc4oZzRJbGNNHWx
+i2L06YqbwgUTBijR7DGaooAmqooHOX+/kxqHRWHZ1mPNKyn6uTe+JPgICAb4UMD1
+/OWkCnvpMVtHSnB/Pn7OCdRyMRMiZXA3O16koyhoGWSI2+SRG4ihNDPqlP6eJvGC
+B5J4/b8LEo0ZY2bhjWKcYEFFVa7rmyirQVmaI5/xTE9HI8109EUPB7zVXlv0Ggqe
+6ySsueKKzkAUERsNt3CcyyQdzRpzKQ==
+=FGYU
+-----END PGP SIGNATURE-----
+
+--35fdasoia5asrz2r--
