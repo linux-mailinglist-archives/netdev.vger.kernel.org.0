@@ -2,84 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33A56547760
-	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 21:57:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1058547772
+	for <lists+netdev@lfdr.de>; Sat, 11 Jun 2022 22:11:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231234AbiFKT5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 11 Jun 2022 15:57:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37134 "EHLO
+        id S231682AbiFKULY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 11 Jun 2022 16:11:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiFKT5N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 15:57:13 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41046B7A;
-        Sat, 11 Jun 2022 12:57:12 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id 3-20020a17090a174300b001e426a02ac5so5261800pjm.2;
-        Sat, 11 Jun 2022 12:57:12 -0700 (PDT)
+        with ESMTP id S229846AbiFKULX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 11 Jun 2022 16:11:23 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB1F50E2E;
+        Sat, 11 Jun 2022 13:11:22 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id n18so1978987plg.5;
+        Sat, 11 Jun 2022 13:11:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=69qufdjHZYbeHsBwGe+HrL6zSpg4GE3ElfZE/CEpkyQ=;
-        b=f++YpzR5KW9PWNVQnwBZeC4BYVySUNWUywzBPcqEkDMsHP7whRtKdbDnED0JnsAIUY
-         DuNFL3fl5QyGoXE1x1+G0bZaVqZQL+D4Z619LX9xiI4NOLrPokU9c3QjLyuygt3seQzj
-         7dEK/IY5CU31UAi8ZqkoiEM1kp1xp0wKpL5N2gQqr1EP7UrZANkI8+S1Ilv7Ca+Wr38K
-         6M1N0uWjM87BhWhVVx6drQ5VybmkFoRqGepvynIsSIUMBHPUKuR88corOkKV92gJg2e8
-         UR2HpKIwpu4cZJIw9tdjlxDmupZrQs2ugBNEhO9hQw7cGynYbMO8Uk666TNMu7cQwkwf
-         O80Q==
+        bh=ZiH4TRfnRyLIeMYFGZRSlq6I0QJI5DZKCK6Q6FfZ+dI=;
+        b=TroryHdp+Mh9Uxb/90OFg6dcmzsKzod+wGc0iByUCHTEejhEVJ2mQ8oEQBGpxAr8uP
+         GBUAuuDvcSClS8i5iCy+aaKgBuNTldlUQa06bj86DAhLFI4NbDfrIqn9xhHhwm3QL4cz
+         WpWUhY3APEsZHxoVtj6a2VS66IyRMNp6uoICdYUet4kYWtMEqDdD+GoskpCIlX4QzGrN
+         9HmNYEAPKPsPEQM9d/sy4IwO1qRziE5PYSYkc1JHhcAONpzES1eguad1/GGREPILDaEG
+         xZmDj0GS6kGLCRzzfDoscUij4FzffnI9f0FbdcSlXs3D6mqk3gWZjiitcs4DF9CBHWVG
+         QBOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=69qufdjHZYbeHsBwGe+HrL6zSpg4GE3ElfZE/CEpkyQ=;
-        b=HJd2RrPBUer/JpBFvSqa+J0X4r13qV9P9XcWaViY5SSS/ncqdxMbt1prPHmYe3Vl/P
-         eHSqKyaR1Ak+tJEQNbS/Sgz32n9Z8brMP5dw0loV1MfOIrebiovORner4ygawnv9i//w
-         GDLFvnZvpOKEii2EoFLTXuzYbwv8cyfiYK22iRrJ9D0TW8FAT1su5lhJOnMSh+boQCzH
-         ekhS8huo0MZQm/8rspG9yriBEHEGDau84NFF6aBmTK2k0D9WxEUPiZ95B6Fnnay1Xfk5
-         y0xGqTTgxQ1gqeWd3dWG0EgH8xh+K5vN7aEdHS3TAUlhYcMmQVqdDrwlvjMG4+FiL4rq
-         riog==
-X-Gm-Message-State: AOAM531POjvDgPMktGv5VUN+d5wACxfYHVXFfhwntlHLZIvul78wHx/M
-        ErBFWBP9jD/3WC9FfVKLCUE=
-X-Google-Smtp-Source: ABdhPJz6sVxevR2EC7IdVU5xVRIhXQzrxc0LNvyBp78nOWXzKhD+dJuZKt+yjFTOjzu5UZ7OHK2wTw==
-X-Received: by 2002:a17:90b:17c7:b0:1e8:5136:c32a with SMTP id me7-20020a17090b17c700b001e85136c32amr6690635pjb.43.1654977431686;
-        Sat, 11 Jun 2022 12:57:11 -0700 (PDT)
+        bh=ZiH4TRfnRyLIeMYFGZRSlq6I0QJI5DZKCK6Q6FfZ+dI=;
+        b=CDW5PjuT91mq7tRumCm43+WWAexvOhXsDW5vdwbQsAebQmLzE6MfyS591SwTkxhvNq
+         YsCLMtVO1u3GwIKiVfY1jaxSCvTEKgXoIn9knjYELyJoeLEqMoTKD1jSdZQsxyIn7txY
+         bd8I3PbvRheC4RTcWin+77uDuYQZNKOG3FpGzWUltQ0ALVYxfvEaw4/5StsxPLddb2tN
+         kfeOm22M28G3CTvjHtf02kr6IlVt875vd3xnVf7qiqd2uF70S7NjgtCVeEviyKrQPa3o
+         1STUMCJPm/uuuXhmaG1g8OgDJev4HdpoH8rO1Nb7Wg+Pwo7DMOvimDNNaYobodh4veJ2
+         JOzA==
+X-Gm-Message-State: AOAM533/9IxKB7PP/EfqyaISVZV/kVatHNc+KaRuQH/+mYpjjqhFm971
+        U6q+EfzmX1TSOwOIhBKtLVCLFtqAqcw=
+X-Google-Smtp-Source: ABdhPJyhptHUrnDjl1evG9JYHqVjnDS7ugr+WiBysKcwjuWyzOqHZ1dVrLcUWIaPvIG1lSeiEwXTQQ==
+X-Received: by 2002:a17:902:ceca:b0:166:3418:5267 with SMTP id d10-20020a170902ceca00b0016634185267mr50810227plg.136.1654978281465;
+        Sat, 11 Jun 2022 13:11:21 -0700 (PDT)
 Received: from macbook-pro-3.dhcp.thefacebook.com ([2620:10d:c090:400::4:93e3])
-        by smtp.gmail.com with ESMTPSA id cp20-20020a056a00349400b0050dc7628150sm1966521pfb.42.2022.06.11.12.57.08
+        by smtp.gmail.com with ESMTPSA id a13-20020a62e20d000000b0051c2fc79aa8sm2029560pfi.91.2022.06.11.13.11.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 11 Jun 2022 12:57:10 -0700 (PDT)
-Date:   Sat, 11 Jun 2022 12:57:06 -0700
+        Sat, 11 Jun 2022 13:11:20 -0700 (PDT)
+Date:   Sat, 11 Jun 2022 13:11:17 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Yosry Ahmed <yosryahmed@google.com>
-Cc:     kernel test robot <lkp@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Michal Hocko <mhocko@kernel.org>, kbuild-all@lists.01.org,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v2 6/8] cgroup: bpf: enable bpf programs to
- integrate with rstat
-Message-ID: <20220611195706.j62cqsodmlnd2ba3@macbook-pro-3.dhcp.thefacebook.com>
-References: <20220610194435.2268290-7-yosryahmed@google.com>
- <202206110544.D5cTU0WQ-lkp@intel.com>
- <CAJD7tkZqCrqx0UFHVXv3VMNNk8YJrJGtVVy_tP3GDTryh375PQ@mail.gmail.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
+        pablo@netfilter.org, fw@strlen.de, netfilter-devel@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
+        memxor@gmail.com, yhs@fb.com
+Subject: Re: [PATCH v4 bpf-next 00/14] net: netfilter: add kfunc helper to
+ update ct timeout
+Message-ID: <20220611201117.euqca7rgn5wydlwk@macbook-pro-3.dhcp.thefacebook.com>
+References: <cover.1653600577.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAJD7tkZqCrqx0UFHVXv3VMNNk8YJrJGtVVy_tP3GDTryh375PQ@mail.gmail.com>
+In-Reply-To: <cover.1653600577.git.lorenzo@kernel.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -90,14 +74,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 02:30:00PM -0700, Yosry Ahmed wrote:
-> 
-> AFAICT these failures are because the patch series depends on a patch
-> in the mailing list [1] that is not in bpf-next, as explained by the
-> cover letter.
-> 
-> [1] https://lore.kernel.org/bpf/20220421140740.459558-5-benjamin.tissoires@redhat.com/
+On Thu, May 26, 2022 at 11:34:48PM +0200, Lorenzo Bianconi wrote:
+> Changes since v3:
+> - split bpf_xdp_ct_add in bpf_xdp_ct_alloc/bpf_skb_ct_alloc and
+>   bpf_ct_insert_entry
+> - add verifier code to properly populate/configure ct entry
+> - improve selftests
 
-You probably want to rebase and include that patch as patch 1 in your series
-preserving Benjamin's SOB and cc-ing him on the series.
-Otherwise we cannot land the set, BPF CI cannot test it, and review is hard to do.
+Kumar, Lorenzo,
+
+are you planning on sending v5 ?
+The patches 1-5 look good.
+Patch 6 is questionable as Florian pointed out.
+What is the motivation to allow writes into ct->status?
+The selftest doesn't do that anyway.
+Patch 7 (acquire-release pairs) is too narrow.
+The concept of a pair will not work well. There could be two acq funcs and one release.
+Please think of some other mechanism. Maybe type based? BTF?
+Or encode that info into type name? or some other way.
