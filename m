@@ -2,199 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF584547982
-	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 11:11:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1F7A5479AD
+	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 12:03:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235624AbiFLJLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jun 2022 05:11:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57348 "EHLO
+        id S232578AbiFLKC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jun 2022 06:02:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235439AbiFLJLq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 05:11:46 -0400
-Received: from mailout1.hostsharing.net (mailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5fcc:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 672D656437;
-        Sun, 12 Jun 2022 02:11:45 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by mailout1.hostsharing.net (Postfix) with ESMTPS id 8846A10043734;
-        Sun, 12 Jun 2022 11:11:43 +0200 (CEST)
-Received: from localhost (unknown [89.246.108.87])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by h08.hostsharing.net (Postfix) with ESMTPSA id 5AFDA61A0C1F;
-        Sun, 12 Jun 2022 11:11:43 +0200 (CEST)
-X-Mailbox-Line: From ecd2ab4160b700b99820ae91c35c30ffda3864e7 Mon Sep 17 00:00:00 2001
-Message-Id: <ecd2ab4160b700b99820ae91c35c30ffda3864e7.1655024266.git.lukas@wunner.de>
-In-Reply-To: <cover.1655024266.git.lukas@wunner.de>
-References: <cover.1655024266.git.lukas@wunner.de>
-From:   Lukas Wunner <lukas@wunner.de>
-Date:   Sun, 12 Jun 2022 11:08:47 +0200
-Subject: [PATCH net-next v2 1/1] net: linkwatch: ignore events for
- unregistered netdevs
-To:     Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Jann Horn <jannh@google.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Jacky Chou <jackychou@asix.com.tw>, Willy Tarreau <w@1wt.eu>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S232186AbiFLKC4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 06:02:56 -0400
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486D443EFB;
+        Sun, 12 Jun 2022 03:02:53 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id E99C9C021; Sun, 12 Jun 2022 12:02:51 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1655028171; bh=9iYYPUBMwsHySjLDiTlVPvdJJdAhgA81ZQiGNHcHfNA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=yO3FtOpgpAxer63Z1GXbrZ+gQLJu642e8OpF80jzhpIiB4m2dmiZLOyeXVFomnZSS
+         SAbu2gO4RWoCj7jstiUXA4q28Ua/wXgtcdcqoL8VV5EkgcCTsf47+Y4/Fy8Xrljzrf
+         u/B0BOKM9P49kJaKS2D5sVsmljLOwtvzB00lAS5KM1MlD1fdXR44VQR+pTUSZJZqja
+         ggwdoUF8pS2pnLr8C5VzN4EKqa0K3cPXS4vS/rstM8ABtN/67L9MptX4Nabc8nH7SS
+         1hKN2ty9B9WcGf7ZEfVrOo9OCrWQOR/n6hssK662YA8TCMUKIsEgvTHNdLHXBsbAo9
+         gXrO2RnhrKpfQ==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 4875FC009;
+        Sun, 12 Jun 2022 12:02:47 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1655028170; bh=9iYYPUBMwsHySjLDiTlVPvdJJdAhgA81ZQiGNHcHfNA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EeTC0ebUcRiISvGDUnwsaU34a9zolEPSV10j4IXlfo4lyS3EINqQGQWVOKYgjBMUP
+         uyvDlVq9cUBtsLoyn8LzosM5g0HgLL5w8GhzEF2assNb43/xW8ZjJqMXbGo9YS3Q67
+         MWOi9Kp38t5QFqSoOoVDOx966P4kyYZEy6ajylPiQ3E9iiYpmjjrecngOekXRg7GI9
+         Spo30AvsOJtERGFuD/OzDL7mUb4O359JAoWJfS4XPgO/jHVFJPYvmmCplYR1jvwCd6
+         c/OqulvVjaVkJ5SSXgj95uXWIdLW1y6s2+vjB+YwoSCk1xNzeGHv50VLV/QSYA8tmq
+         9pm8YjJq7yTPg==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 4ae5bd25;
+        Sun, 12 Jun 2022 10:02:42 +0000 (UTC)
+Date:   Sun, 12 Jun 2022 19:02:27 +0900
+From:   asmadeus@codewreck.org
+To:     David Howells <dhowells@redhat.com>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net, Greg Kurz <groug@kaod.org>
+Subject: Re: 9p EBADF with cache enabled (Was: 9p fs-cache tests/benchmark
+ (was: 9p fscache Duplicate cookie detected))
+Message-ID: <YqW5s+GQZwZ/DP5q@codewreck.org>
+References: <YmKp68xvZEjBFell@codewreck.org>
+ <YnL0vzcdJjgyq8rQ@codewreck.org>
+ <7091002.4ErQJAuLzZ@silver>
+ <3645230.Tf70N6zClz@silver>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <3645230.Tf70N6zClz@silver>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Upon unregistering, a netdev is deleted from the linkwatch event list by
-linkwatch_forget_dev(), but nothing prevents a driver from re-adding it.
 
-Such belated events cause a use-after-free if the linkwatch queue
-happens to run after free_netdev().  Jann Horn and Oleksij Rempel
-independently report such use-after-frees with different USB Ethernet
-adapters.
+Sorry, I had planned on working on this today but the other patchset
+ended up taking all my time... I think I'm bad at priorities, this
+is definitely important...
 
-netdev_wait_allrefs_any() attempts to wait for belated events, but
-cannot catch any after it has returned.  Additionally it can get stuck
-in an infinite loop if a driver keeps signaling link events.
-
-Avoid both problems by ignoring events in linkwatch_add_event() once a
-netdev's state has been set to NETREG_UNREGISTERED.
-
-This state change happens in netdev_run_todo() right before
-linkwatch_forget_dev().  linkwatch_add_event() is serialized with
-linkwatch_forget_dev() through lweventlist_lock.  By checking the netdev
-state under that lock, linkwatch_add_event() is guaranteed to never add
-a netdev to the linkwatch queue after linkwatch_forget_dev().
-
-It thus becomes unnecessary to wait for belated events in
-netdev_wait_allrefs_any(), allowing us to simplify and speed up
-unregistration.
-
-The rationale of ignoring belated events is that nobody cares about
-operstate changes of a netdev once it's unregistered.
-
-A belated event will cause a netdev's __LINK_STATE_LINKWATCH_PENDING bit
-to remain set perpetually.  That will speed up processing of further
-belated events, as they are immediately ignored through the
-test_and_set_bit() call in linkwatch_fire_event().
-
-Note that we already ignore linkwatch events of *not yet* registered
-netdevs since commit b47300168e77 ("net: Do not fire linkwatch events
-until the device is registered.").  The present commit does the same for
-*no longer* registered netdevs.
-
-As an alternative to the present commit, I've considered amending USB
-Ethernet drivers to avoid signaling belated events:  That is achieved by
-holding a reference on the netdev while calling linkwatch_fire_event().
-A concurrent netdev_wait_allrefs_any() is thus forced to keep spinning.
-To avoid calling linkwatch_fire_event() after netdev_wait_allrefs_any()
-has returned, the netdev's state must not be NETREG_UNREGISTERED.
-Here's the resulting patch:
-https://lore.kernel.org/netdev/20220430100541.GA18507@wunner.de/
-
-I consider that alternative approach to be inferior:  It puts the onus
-on drivers to call linkwatch_fire_event() only under specific conditions,
-which is error-prone.  The present approach instead changes the core API
-to be defensive and avoid use-after-frees even if the driver neglected
-these checks.  While I've examined all USB drivers and provided fixes in
-the above-linked patch, other network drivers may well remain vulnerable.
-Another disadvantage of the alternative approach is that it inflates
-code size, whereas the solution presented herein *reduces* LoC and
-complexity.
-
-Reported-by: Jann Horn <jannh@google.com>
-Link: https://lore.kernel.org/netdev/CAG48ez0MHBbENX5gCdHAUXZ7h7s20LnepBF-pa5M=7Bi-jZrEA@mail.gmail.com/
-Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/netdev/20220315113841.GA22337@pengutronix.de/
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Cc: stable@vger.kernel.org
-Cc: Oliver Neukum <oneukum@suse.com>
+David, I think with the latest comments we made it should be relatively
+straightforward to make netfs use the writeback fid? Could you find some
+time to have a look? It should be trivial to reproduce, I gave these
+commands a few mails ago (needs to run as a regular user, on a fscache mount)
 ---
- net/core/dev.c        | 17 -----------------
- net/core/dev.h        |  1 -
- net/core/link_watch.c | 10 ++--------
- 3 files changed, 2 insertions(+), 26 deletions(-)
+$ dd if=/dev/zero of=test bs=1M count=1
+$ chmod 200 test
+# drop cache or remount
+$ dd if=/dev/urandom of=test bs=102 seek=2 count=1 conv=notrunc
+dd: error writing 'test': Bad file descriptor
+---
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 8958c4227b67..bbfcd70b3e7c 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10242,23 +10242,6 @@ static struct net_device *netdev_wait_allrefs_any(struct list_head *list)
- 			list_for_each_entry(dev, list, todo_list)
- 				call_netdevice_notifiers(NETDEV_UNREGISTER, dev);
- 
--			__rtnl_unlock();
--			rcu_barrier();
--			rtnl_lock();
--
--			list_for_each_entry(dev, list, todo_list)
--				if (test_bit(__LINK_STATE_LINKWATCH_PENDING,
--					     &dev->state)) {
--					/* We must not have linkwatch events
--					 * pending on unregister. If this
--					 * happens, we simply run the queue
--					 * unscheduled, resulting in a noop
--					 * for this device.
--					 */
--					linkwatch_run_queue();
--					break;
--				}
--
- 			__rtnl_unlock();
- 
- 			rebroadcast_time = jiffies;
-diff --git a/net/core/dev.h b/net/core/dev.h
-index cbb8a925175a..dd0a47ddaac3 100644
---- a/net/core/dev.h
-+++ b/net/core/dev.h
-@@ -30,7 +30,6 @@ int __init dev_proc_init(void);
- 
- void linkwatch_init_dev(struct net_device *dev);
- void linkwatch_forget_dev(struct net_device *dev);
--void linkwatch_run_queue(void);
- 
- void dev_addr_flush(struct net_device *dev);
- int dev_addr_init(struct net_device *dev);
-diff --git a/net/core/link_watch.c b/net/core/link_watch.c
-index aa6cb1f90966..20634a55e1ce 100644
---- a/net/core/link_watch.c
-+++ b/net/core/link_watch.c
-@@ -108,7 +108,8 @@ static void linkwatch_add_event(struct net_device *dev)
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&lweventlist_lock, flags);
--	if (list_empty(&dev->link_watch_list)) {
-+	if (list_empty(&dev->link_watch_list) &&
-+	    dev->reg_state < NETREG_UNREGISTERED) {
- 		list_add_tail(&dev->link_watch_list, &lweventlist);
- 		netdev_hold(dev, &dev->linkwatch_dev_tracker, GFP_ATOMIC);
- 	}
-@@ -251,13 +252,6 @@ void linkwatch_forget_dev(struct net_device *dev)
- }
- 
- 
--/* Must be called with the rtnl semaphore held */
--void linkwatch_run_queue(void)
--{
--	__linkwatch_run_queue(0);
--}
--
--
- static void linkwatch_event(struct work_struct *dummy)
- {
- 	rtnl_lock();
+Otherwise I'll try to make some more 9p time again, but it's getting
+more and more difficult for me...
+
+Christian Schoenebeck wrote on Fri, Jun 03, 2022 at 06:46:04PM +0200:
+> I had another time slice on this issue today. As Dominique pointed out before,
+> the writeback_fid was and still is opened with O_RDWR [fs/9p/fid.c]:
+> 
+> struct p9_fid *v9fs_writeback_fid(struct dentry *dentry)
+> {
+> 	int err;
+> 	struct p9_fid *fid, *ofid;
+> 
+> 	ofid = v9fs_fid_lookup_with_uid(dentry, GLOBAL_ROOT_UID, 0);
+> 	fid = clone_fid(ofid);
+> 	if (IS_ERR(fid))
+> 		goto error_out;
+> 	p9_client_clunk(ofid);
+> 	/*
+> 	 * writeback fid will only be used to write back the
+> 	 * dirty pages. We always request for the open fid in read-write
+> 	 * mode so that a partial page write which result in page
+> 	 * read can work.
+> 	 */
+> 	err = p9_client_open(fid, O_RDWR);
+> 	if (err < 0) {
+> 		p9_client_clunk(fid);
+> 		fid = ERR_PTR(err);
+> 		goto error_out;
+> 	}
+> error_out:
+> 	return fid;
+> }
+> 
+> The problem rather seems to be that the new netfs code does not use the
+> writeback_fid when doing an implied read before the actual partial writeback.
+> 
+> As I showed in my previous email, the old pre-netfs kernel versions also did a
+> read before partial writebacks, but apparently used the special writeback_fid
+> for that.
+
+This looks good! Thanks for keeping it up.
+
+> 
+> I added some trap code to recent netfs kernel version:
+> 
+> diff --git a/net/9p/client.c b/net/9p/client.c
+> index 8bba0d9cf975..11ff1ee2130e 100644
+> --- a/net/9p/client.c
+> +++ b/net/9p/client.c
+> @@ -1549,12 +1549,21 @@ int p9_client_unlinkat(struct p9_fid *dfid, const char *name, int flags)
+>  }
+>  EXPORT_SYMBOL(p9_client_unlinkat);
+>  
+> +void p9_bug(void) {
+> +    BUG_ON(true);
+> +}
+> +EXPORT_SYMBOL(p9_bug);
+> +
+>  int
+>  p9_client_read(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *err)
+>  {
+>         int total = 0;
+>         *err = 0;
+>  
+> +    if ((fid->mode & O_ACCMODE) == O_WRONLY) {
+> +        p9_bug();
+> +    }
+> +
+>         while (iov_iter_count(to)) {
+>                 int count;
+>  
+> @@ -1648,6 +1657,10 @@ p9_client_write(struct p9_fid *fid, u64 offset, struct iov_iter *from, int *err)
+>         p9_debug(P9_DEBUG_9P, ">>> TWRITE fid %d offset %llu count %zd\n",
+>                  fid->fid, offset, iov_iter_count(from));
+>  
+> +    if ((fid->mode & O_ACCMODE) == O_RDONLY) {
+> +        p9_bug();
+> +    }
+> +
+>         while (iov_iter_count(from)) {
+>                 int count = iov_iter_count(from);
+>                 int rsize = fid->iounit;
+> 
+> Which triggers the trap in p9_client_read() with cache=loose. Here is the
+> backtrace [based on d615b5416f8a1afeb82d13b238f8152c572d59c0]:
+> 
+> [  139.365314] p9_client_read (net/9p/client.c:1553 net/9p/client.c:1564) 9pnet
+> [  139.148806] v9fs_issue_read (fs/9p/vfs_addr.c:45) 9p
+> [  139.149268] netfs_begin_read (fs/netfs/io.c:91 fs/netfs/io.c:579 fs/netfs/io.c:625) netfs
+> [  139.149725] ? xas_load (lib/xarray.c:211 lib/xarray.c:242) 
+> [  139.150057] ? xa_load (lib/xarray.c:1469) 
+> [  139.150398] netfs_write_begin (fs/netfs/buffered_read.c:407) netfs
+> [  139.150883] v9fs_write_begin (fs/9p/vfs_addr.c:279 (discriminator 2)) 9p
+> [  139.151293] generic_perform_write (mm/filemap.c:3789) 
+> [  139.151721] ? generic_update_time (fs/inode.c:1858) 
+> [  139.152112] ? file_update_time (fs/inode.c:2089) 
+> [  139.152504] __generic_file_write_iter (mm/filemap.c:3916) 
+> [  139.152943] generic_file_write_iter (./include/linux/fs.h:753 mm/filemap.c:3948) 
+> [  139.153348] new_sync_write (fs/read_write.c:505 (discriminator 1)) 
+> [  139.153754] vfs_write (fs/read_write.c:591) 
+> [  139.154090] ksys_write (fs/read_write.c:644) 
+> [  139.154417] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80) 
+> [  139.154776] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:115)
+> 
+> I still had not time to read the netfs code part yet, but I assume netfs falls
+> back to a generic 9p read on the O_WRONLY opened fid here, instead of using
+> the special O_RDWR opened 'writeback_fid'.
+> 
+> Is there already some info available in the netfs API that the read is
+> actually part of a writeback task, so that we could force on 9p driver level
+> to use the special writeback_fid for the read in this case instead?
+
 -- 
-2.35.2
-
+Dominique
