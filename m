@@ -2,64 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2E42547C8F
-	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 23:40:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1554D547C92
+	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 23:40:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236576AbiFLVkJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jun 2022 17:40:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53780 "EHLO
+        id S237031AbiFLVkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jun 2022 17:40:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236815AbiFLVkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 17:40:04 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC661C12E
-        for <netdev@vger.kernel.org>; Sun, 12 Jun 2022 14:39:55 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id u12so7672472eja.8
-        for <netdev@vger.kernel.org>; Sun, 12 Jun 2022 14:39:55 -0700 (PDT)
+        with ESMTP id S236713AbiFLVkF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 17:40:05 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A281CFD7
+        for <netdev@vger.kernel.org>; Sun, 12 Jun 2022 14:39:59 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id kq6so7662572ejb.11
+        for <netdev@vger.kernel.org>; Sun, 12 Jun 2022 14:39:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=amarulasolutions.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=N02g9fJIqVK0hxkx5EqbV+5LJaIebbxeDuMD7HdwVFw=;
-        b=cq+XUFlbhm8YcaYhUBdQ3Xyaz4UCabeI5QP2HCXeq2ygR06KvwgpBJ8mbj7DSejdl7
-         h8dIVcGnFSGMSU2A7YStmMRxQgsGDWhq1tUznfW6HjvwqqAqXcKIdf5GO16oTDKRhChW
-         YsZ6qZ8PyqPL9lrPd39YveFXj+ZTYK46Uh8Yw=
+        bh=Hx0NO2HP0dNrW23jq3KzvYzEwbT+EuqW3kfxDZENRj0=;
+        b=d9VwXs1IvLvFf22zAwdC4zv3o35n9iN0Jkzqf+gR7xFRn7za4RlbbaSN+WZ0eahMMd
+         PuHx75bCypApa8Nj5S0A33EtZDnX0o2mtkUtRGDcmSQNXBQ+9AZTD/yX5UzKM7a5MROz
+         zrVC3G+6xoh4IgI2LIkCJzaG5IsltdFlnXkL8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=N02g9fJIqVK0hxkx5EqbV+5LJaIebbxeDuMD7HdwVFw=;
-        b=GRYjzSC1FAXRbDiwBG3yheIpybv8krCwo7sBWQrqdBfLrl77oBpKrrwJPAh62/nRgm
-         H/EbzTiI/PCFx+T9sZD8MOkl8UfYZ1Z3URbOlkCj/SSZRQAtDoBrMJK5x7b41SDja1tk
-         g7SUXxwHeu9dJVFdW4qfur5z17JdKlJKu4xn+Yi9UgCJrjbdjRCSIjLCXNKasB2dgDiM
-         kzxwN6TVJzuQI2Sp2fM6tHfIFGmfWgg4zBleaebuyY75sk8wntwzXmvHBW6Jc1iyOQY4
-         iAbd/ygZ9uLZUNCePL6kDVaaBR3ojrkx0smKlUmKSa2UZUbklmIGeLK11uY865snbKPr
-         4jIw==
-X-Gm-Message-State: AOAM532VmDE6XOAHqkxNX+1vpPFVlCm527AuNmTVDD7X+0I3vwupiZX0
-        Ov40pA8R/gl1TInSDPZSCraIeA==
-X-Google-Smtp-Source: ABdhPJx+B6448bGKBZ/J/6s5sPkVED0VAXx5ibY1dr8clb6UtKGQ8Dj23IZ+qpOcdGShfe4EvtSxtA==
-X-Received: by 2002:a17:906:9493:b0:70c:4ddf:5d5d with SMTP id t19-20020a170906949300b0070c4ddf5d5dmr44705737ejx.73.1655069994042;
-        Sun, 12 Jun 2022 14:39:54 -0700 (PDT)
+        bh=Hx0NO2HP0dNrW23jq3KzvYzEwbT+EuqW3kfxDZENRj0=;
+        b=uThLT8UwV6X0A2fjKNV5Y9BD758QxPxYn0ghGe86gFcoxJM8dd0ZbLGjIw88iPb19r
+         W85tF9/uLcU45nUZwrRzY0fIjzYcpOaNb6leUwD1JkK0nER4kuAUJlOaFnx6T3x2f4VD
+         5oecou3iXR7xjzWFVo1OHsoOfkPG/syFuJ70jk/yPQQnqqdRkANiJGGJ+yU5UySq15F/
+         ZpG1D+w0CQQiJmw4nyX9vZM8Z0UfrEf6f0Prd1HH03ENWzwTsfTteW+vI7IpIMi80IuA
+         8U8r2aQ2Am4J6zIH6J23rnSWUUOXOqbwryEIZjgHFu9HxuGMwLhpg/Es3ywxTt50iKbN
+         KVYQ==
+X-Gm-Message-State: AOAM532eHcOTqvBBg3tFHmeUy/B+zavyv0NJCaQ7+lpCtntJ0FJiPtzP
+        QAqozYFhK4C3+kITZBEpdwIcTw==
+X-Google-Smtp-Source: ABdhPJxmPNiE8Egs8cQHYE/AWnP5Ves/8od02ASU+2Mz05zD0p27lsnsJ/FcOTrEnc8mB1B9u0rhRw==
+X-Received: by 2002:a17:906:7a57:b0:711:faf1:587d with SMTP id i23-20020a1709067a5700b00711faf1587dmr20191424ejo.581.1655069997739;
+        Sun, 12 Jun 2022 14:39:57 -0700 (PDT)
 Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
-        by smtp.gmail.com with ESMTPSA id u10-20020a1709061daa00b00711d546f8a8sm2909398ejh.139.2022.06.12.14.39.50
+        by smtp.gmail.com with ESMTPSA id u10-20020a1709061daa00b00711d546f8a8sm2909398ejh.139.2022.06.12.14.39.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jun 2022 14:39:53 -0700 (PDT)
+        Sun, 12 Jun 2022 14:39:57 -0700 (PDT)
 From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     michael@amarulasolutions.com,
         Amarula patchwork <linux-amarula@amarulasolutions.com>,
         Oliver Hartkopp <socketcan@hartkopp.net>,
         Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
         Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 04/13] can: slcan: use CAN network device driver API
-Date:   Sun, 12 Jun 2022 23:39:18 +0200
-Message-Id: <20220612213927.3004444-5-dario.binacchi@amarulasolutions.com>
+Subject: [PATCH v3 05/13] can: netlink: dump bitrate 0 if can_priv::bittiming.bitrate is -1U
+Date:   Sun, 12 Jun 2022 23:39:19 +0200
+Message-Id: <20220612213927.3004444-6-dario.binacchi@amarulasolutions.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220612213927.3004444-1-dario.binacchi@amarulasolutions.com>
 References: <20220612213927.3004444-1-dario.binacchi@amarulasolutions.com>
@@ -75,352 +76,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As suggested by commit [1], now the driver uses the functions and the
-data structures provided by the CAN network device driver interface.
+Adding Netlink support to the slcan driver made it necessary to set the
+bitrate to a fake value (-1U) to prevent open_candev() from failing. In
+this case the command `ip --details -s -s link show' would print
+4294967295 as the bitrate value. The patch change this value in 0.
 
-Currently the driver doesn't implement a way to set bitrate for SLCAN
-based devices via ip tool, so you'll have to do this by slcand or
-slcan_attach invocation through the -sX parameter:
-
-- slcan_attach -f -s6 -o /dev/ttyACM0
-- slcand -f -s8 -o /dev/ttyUSB0
-
-where -s6 in will set adapter's bitrate to 500 Kbit/s and -s8 to
-1Mbit/s.
-See the table below for further CAN bitrates:
-- s0 ->   10 Kbit/s
-- s1 ->   20 Kbit/s
-- s2 ->   50 Kbit/s
-- s3 ->  100 Kbit/s
-- s4 ->  125 Kbit/s
-- s5 ->  250 Kbit/s
-- s6 ->  500 Kbit/s
-- s7 ->  800 Kbit/s
-- s8 -> 1000 Kbit/s
-
-In doing so, the struct can_priv::bittiming.bitrate of the driver is not
-set and since the open_candev() checks that the bitrate has been set, it
-must be a non-zero value, the bitrate is set to a fake value (-1U)
-before it is called.
-
-[1] 39549eef3587f ("can: CAN Network device driver and Netlink interface")
+Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-
 ---
 
-Changes in v3:
-- Replace (-1) with (-1U) in the commit description.
+(no changes since v1)
 
-Changes in v2:
-- Move CAN_SLCAN Kconfig option inside CAN_DEV scope.
-- Improve the commit message.
+ drivers/net/can/dev/netlink.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
- drivers/net/can/Kconfig |  40 +++++++-------
- drivers/net/can/slcan.c | 112 ++++++++++++++++++++--------------------
- 2 files changed, 77 insertions(+), 75 deletions(-)
-
-diff --git a/drivers/net/can/Kconfig b/drivers/net/can/Kconfig
-index b2dcc1e5a388..45997d39621c 100644
---- a/drivers/net/can/Kconfig
-+++ b/drivers/net/can/Kconfig
-@@ -28,26 +28,6 @@ config CAN_VXCAN
- 	  This driver can also be built as a module.  If so, the module
- 	  will be called vxcan.
+diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
+index 7633d98e3912..788a6752fcc7 100644
+--- a/drivers/net/can/dev/netlink.c
++++ b/drivers/net/can/dev/netlink.c
+@@ -505,11 +505,16 @@ static int can_fill_info(struct sk_buff *skb, const struct net_device *dev)
+ 	struct can_ctrlmode cm = {.flags = priv->ctrlmode};
+ 	struct can_berr_counter bec = { };
+ 	enum can_state state = priv->state;
++	__u32 bitrate = priv->bittiming.bitrate;
++	int ret = 0;
  
--config CAN_SLCAN
--	tristate "Serial / USB serial CAN Adaptors (slcan)"
--	depends on TTY
--	help
--	  CAN driver for several 'low cost' CAN interfaces that are attached
--	  via serial lines or via USB-to-serial adapters using the LAWICEL
--	  ASCII protocol. The driver implements the tty linediscipline N_SLCAN.
--
--	  As only the sending and receiving of CAN frames is implemented, this
--	  driver should work with the (serial/USB) CAN hardware from:
--	  www.canusb.com / www.can232.com / www.mictronics.de / www.canhack.de
--
--	  Userspace tools to attach the SLCAN line discipline (slcan_attach,
--	  slcand) can be found in the can-utils at the linux-can project, see
--	  https://github.com/linux-can/can-utils for details.
--
--	  The slcan driver supports up to 10 CAN netdevices by default which
--	  can be changed by the 'maxdev=xx' module option. This driver can
--	  also be built as a module. If so, the module will be called slcan.
--
- config CAN_DEV
- 	tristate "Platform CAN drivers with Netlink support"
- 	default y
-@@ -118,6 +98,26 @@ config CAN_KVASER_PCIEFD
- 	    Kvaser Mini PCI Express HS v2
- 	    Kvaser Mini PCI Express 2xHS v2
+ 	if (priv->do_get_state)
+ 		priv->do_get_state(dev, &state);
  
-+config CAN_SLCAN
-+	tristate "Serial / USB serial CAN Adaptors (slcan)"
-+	depends on TTY
-+	help
-+	  CAN driver for several 'low cost' CAN interfaces that are attached
-+	  via serial lines or via USB-to-serial adapters using the LAWICEL
-+	  ASCII protocol. The driver implements the tty linediscipline N_SLCAN.
+-	if ((priv->bittiming.bitrate &&
++	if (bitrate == -1U)
++		priv->bittiming.bitrate = 0;
 +
-+	  As only the sending and receiving of CAN frames is implemented, this
-+	  driver should work with the (serial/USB) CAN hardware from:
-+	  www.canusb.com / www.can232.com / www.mictronics.de / www.canhack.de
-+
-+	  Userspace tools to attach the SLCAN line discipline (slcan_attach,
-+	  slcand) can be found in the can-utils at the linux-can project, see
-+	  https://github.com/linux-can/can-utils for details.
-+
-+	  The slcan driver supports up to 10 CAN netdevices by default which
-+	  can be changed by the 'maxdev=xx' module option. This driver can
-+	  also be built as a module. If so, the module will be called slcan.
-+
- config CAN_SUN4I
- 	tristate "Allwinner A10 CAN controller"
- 	depends on MACH_SUN4I || MACH_SUN7I || COMPILE_TEST
-diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-index c39580b142e0..a70f930b7c3a 100644
---- a/drivers/net/can/slcan.c
-+++ b/drivers/net/can/slcan.c
-@@ -56,7 +56,6 @@
- #include <linux/can.h>
- #include <linux/can/dev.h>
- #include <linux/can/skb.h>
--#include <linux/can/can-ml.h>
++	if ((bitrate &&
+ 	     nla_put(skb, IFLA_CAN_BITTIMING,
+ 		     sizeof(priv->bittiming), &priv->bittiming)) ||
  
- MODULE_ALIAS_LDISC(N_SLCAN);
- MODULE_DESCRIPTION("serial line CAN interface");
-@@ -79,6 +78,7 @@ MODULE_PARM_DESC(maxdev, "Maximum number of slcan interfaces");
- #define SLC_EFF_ID_LEN 8
+@@ -563,9 +568,10 @@ static int can_fill_info(struct sk_buff *skb, const struct net_device *dev)
+ 	    can_ctrlmode_ext_fill_info(skb, priv)
+ 	    )
  
- struct slcan {
-+	struct can_priv         can;
- 	int			magic;
+-		return -EMSGSIZE;
++		ret = -EMSGSIZE;
  
- 	/* Various fields. */
-@@ -100,6 +100,7 @@ struct slcan {
- };
- 
- static struct net_device **slcan_devs;
-+static DEFINE_SPINLOCK(slcan_lock);
- 
-  /************************************************************************
-   *			SLCAN ENCAPSULATION FORMAT			 *
-@@ -374,7 +375,7 @@ static netdev_tx_t slc_xmit(struct sk_buff *skb, struct net_device *dev)
- 	spin_unlock(&sl->lock);
- 
- out:
--	kfree_skb(skb);
-+	can_put_echo_skb(skb, dev, 0, 0);
- 	return NETDEV_TX_OK;
+-	return 0;
++	priv->bittiming.bitrate = bitrate;
++	return ret;
  }
  
-@@ -394,6 +395,8 @@ static int slc_close(struct net_device *dev)
- 		clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
- 	}
- 	netif_stop_queue(dev);
-+	close_candev(dev);
-+	sl->can.state = CAN_STATE_STOPPED;
- 	sl->rcount   = 0;
- 	sl->xleft    = 0;
- 	spin_unlock_bh(&sl->lock);
-@@ -405,21 +408,36 @@ static int slc_close(struct net_device *dev)
- static int slc_open(struct net_device *dev)
- {
- 	struct slcan *sl = netdev_priv(dev);
-+	int err;
- 
- 	if (sl->tty == NULL)
- 		return -ENODEV;
- 
-+	/* The baud rate is not set with the command
-+	 * `ip link set <iface> type can bitrate <baud>' and therefore
-+	 * can.bittiming.bitrate is 0, causing open_candev() to fail.
-+	 * So let's set to a fake value.
-+	 */
-+	sl->can.bittiming.bitrate = -1;
-+	err = open_candev(dev);
-+	if (err) {
-+		netdev_err(dev, "failed to open can device\n");
-+		return err;
-+	}
-+
-+	sl->can.state = CAN_STATE_ERROR_ACTIVE;
- 	sl->flags &= BIT(SLF_INUSE);
- 	netif_start_queue(dev);
- 	return 0;
- }
- 
--/* Hook the destructor so we can free slcan devs at the right point in time */
--static void slc_free_netdev(struct net_device *dev)
-+static void slc_dealloc(struct slcan *sl)
- {
--	int i = dev->base_addr;
-+	int i = sl->dev->base_addr;
- 
--	slcan_devs[i] = NULL;
-+	free_candev(sl->dev);
-+	if (slcan_devs)
-+		slcan_devs[i] = NULL;
- }
- 
- static int slcan_change_mtu(struct net_device *dev, int new_mtu)
-@@ -434,24 +452,6 @@ static const struct net_device_ops slc_netdev_ops = {
- 	.ndo_change_mtu         = slcan_change_mtu,
- };
- 
--static void slc_setup(struct net_device *dev)
--{
--	dev->netdev_ops		= &slc_netdev_ops;
--	dev->needs_free_netdev	= true;
--	dev->priv_destructor	= slc_free_netdev;
--
--	dev->hard_header_len	= 0;
--	dev->addr_len		= 0;
--	dev->tx_queue_len	= 10;
--
--	dev->mtu		= CAN_MTU;
--	dev->type		= ARPHRD_CAN;
--
--	/* New-style flags. */
--	dev->flags		= IFF_NOARP;
--	dev->features           = NETIF_F_HW_CSUM;
--}
--
- /******************************************
-   Routines looking at TTY side.
-  ******************************************/
-@@ -514,11 +514,8 @@ static void slc_sync(void)
- static struct slcan *slc_alloc(void)
- {
- 	int i;
--	char name[IFNAMSIZ];
- 	struct net_device *dev = NULL;
--	struct can_ml_priv *can_ml;
- 	struct slcan       *sl;
--	int size;
- 
- 	for (i = 0; i < maxdev; i++) {
- 		dev = slcan_devs[i];
-@@ -531,16 +528,14 @@ static struct slcan *slc_alloc(void)
- 	if (i >= maxdev)
- 		return NULL;
- 
--	sprintf(name, "slcan%d", i);
--	size = ALIGN(sizeof(*sl), NETDEV_ALIGN) + sizeof(struct can_ml_priv);
--	dev = alloc_netdev(size, name, NET_NAME_UNKNOWN, slc_setup);
-+	dev = alloc_candev(sizeof(*sl), 1);
- 	if (!dev)
- 		return NULL;
- 
-+	snprintf(dev->name, sizeof(dev->name), "slcan%d", i);
-+	dev->netdev_ops = &slc_netdev_ops;
- 	dev->base_addr  = i;
- 	sl = netdev_priv(dev);
--	can_ml = (void *)sl + ALIGN(sizeof(*sl), NETDEV_ALIGN);
--	can_set_ml_priv(dev, can_ml);
- 
- 	/* Initialize channel control data */
- 	sl->magic = SLCAN_MAGIC;
-@@ -573,11 +568,7 @@ static int slcan_open(struct tty_struct *tty)
- 	if (tty->ops->write == NULL)
- 		return -EOPNOTSUPP;
- 
--	/* RTnetlink lock is misused here to serialize concurrent
--	   opens of slcan channels. There are better ways, but it is
--	   the simplest one.
--	 */
--	rtnl_lock();
-+	spin_lock(&slcan_lock);
- 
- 	/* Collect hanged up channels. */
- 	slc_sync();
-@@ -605,13 +596,15 @@ static int slcan_open(struct tty_struct *tty)
- 
- 		set_bit(SLF_INUSE, &sl->flags);
- 
--		err = register_netdevice(sl->dev);
--		if (err)
-+		err = register_candev(sl->dev);
-+		if (err) {
-+			pr_err("slcan: can't register candev\n");
- 			goto err_free_chan;
-+		}
- 	}
- 
- 	/* Done.  We have linked the TTY line to a channel. */
--	rtnl_unlock();
-+	spin_unlock(&slcan_lock);
- 	tty->receive_room = 65536;	/* We don't flow control */
- 
- 	/* TTY layer expects 0 on success */
-@@ -621,14 +614,10 @@ static int slcan_open(struct tty_struct *tty)
- 	sl->tty = NULL;
- 	tty->disc_data = NULL;
- 	clear_bit(SLF_INUSE, &sl->flags);
--	slc_free_netdev(sl->dev);
--	/* do not call free_netdev before rtnl_unlock */
--	rtnl_unlock();
--	free_netdev(sl->dev);
--	return err;
-+	slc_dealloc(sl);
- 
- err_exit:
--	rtnl_unlock();
-+	spin_unlock(&slcan_lock);
- 
- 	/* Count references from TTY module */
- 	return err;
-@@ -658,9 +647,11 @@ static void slcan_close(struct tty_struct *tty)
- 	synchronize_rcu();
- 	flush_work(&sl->tx_work);
- 
--	/* Flush network side */
--	unregister_netdev(sl->dev);
--	/* This will complete via sl_free_netdev */
-+	slc_close(sl->dev);
-+	unregister_candev(sl->dev);
-+	spin_lock(&slcan_lock);
-+	slc_dealloc(sl);
-+	spin_unlock(&slcan_lock);
- }
- 
- static void slcan_hangup(struct tty_struct *tty)
-@@ -768,18 +759,29 @@ static void __exit slcan_exit(void)
- 		dev = slcan_devs[i];
- 		if (!dev)
- 			continue;
--		slcan_devs[i] = NULL;
- 
--		sl = netdev_priv(dev);
--		if (sl->tty) {
--			netdev_err(dev, "tty discipline still running\n");
--		}
-+		spin_lock(&slcan_lock);
-+		dev = slcan_devs[i];
-+		if (dev) {
-+			slcan_devs[i] = NULL;
-+			spin_unlock(&slcan_lock);
-+			sl = netdev_priv(dev);
-+			if (sl->tty) {
-+				netdev_err(dev,
-+					   "tty discipline still running\n");
-+			}
- 
--		unregister_netdev(dev);
-+			slc_close(dev);
-+			unregister_candev(dev);
-+		} else {
-+			spin_unlock(&slcan_lock);
-+		}
- 	}
- 
-+	spin_lock(&slcan_lock);
- 	kfree(slcan_devs);
- 	slcan_devs = NULL;
-+	spin_unlock(&slcan_lock);
- 
- 	tty_unregister_ldisc(&slc_ldisc);
- }
+ static size_t can_get_xstats_size(const struct net_device *dev)
 -- 
 2.32.0
 
