@@ -2,121 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 405305479FC
-	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 13:59:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E431547A7A
+	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 16:21:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236433AbiFLLxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jun 2022 07:53:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58760 "EHLO
+        id S234169AbiFLOUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jun 2022 10:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236417AbiFLLxb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 07:53:31 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10EEA5F93
-        for <netdev@vger.kernel.org>; Sun, 12 Jun 2022 04:53:26 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id n10so6142910ejk.5
-        for <netdev@vger.kernel.org>; Sun, 12 Jun 2022 04:53:25 -0700 (PDT)
+        with ESMTP id S229800AbiFLOUt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 10:20:49 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CE818B07;
+        Sun, 12 Jun 2022 07:20:48 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id 25so4179606edw.8;
+        Sun, 12 Jun 2022 07:20:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=9FfohXFhB1sP403VxH1swwcmiEO4r97TnueS6gdgla0=;
-        b=ge8pz5PH7Z2Ns8pFbL6KNM0EzLxd4jrcOn/3pNRLfTmekkcK+qx66aigLL1BCJcUCY
-         7XSw8JCq2jjaCfl8B/OeYHFctOWyITWrYWEUmeSkiVrBHKJ9aGOC86Ds7vhzEB4Hccya
-         qnFuQDJref3aC+ntJomBudX2faXFFzjlZBeWuGh+7b/y+XOGf56Yyi6h/MaMM8HGHORp
-         04X3QZWxFNpgGZHur+Nqd5Tslh9ThtRNFhZT/1IX65LJzc355Jyn7Cqv8+rXbefHp5On
-         UpogwNa5pyHxFeD9d4QVLHD+osDguUzjR07YkH+NKYVd7elb/DO8MTitKxUUrrabCrsf
-         LfzQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=YpvWWtIrN1JqPR+ErG0VpGkwET8BJiSLY7OtI30g6vo=;
+        b=RX8GVFrcy1qG0ampRBrJgsM1HzTxM96j5S+GQdCc3DppW2+m/AslAGlcbisOFdE09o
+         jdscWeaaKOaTNDq1LYM832PPqgkX3ra9KNw08eXRH5tc+mSYkw/2Y5mXCcwmHZ5iUn8i
+         M2U0++eTPuC6TAJsSA7uKbKowaTVri2EnL/dQgyold6quP3zdlneYKdmMzWgFW+B5BPy
+         849POP/9MC3/VqeR5UtQ1vEmqy28I6K/HIbmGNq3hMHRhTTkJLkB4BkTGkNrnSgWFHwi
+         XR7ahinYme7MjIXMNvXTy2viWaWrqEwYO5yepGjwug3iSdvo0W/mUI+cJ8WR2GCyVn7i
+         Gq1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=9FfohXFhB1sP403VxH1swwcmiEO4r97TnueS6gdgla0=;
-        b=cKI/Q3wL/doeJUU5Ebcpj28ClSZcKWXLIO0Voucpzr/TEH2lekl89BIXL48GLN2VFQ
-         AsyIsVefRqeLMUBpldwpKzXTUA6qIkja8yZU9LzHazfsqulKtOYMWiPw8m/DK4IWYxjS
-         QJLJlXCRZN0dr1EyMNIxiJl/gLoDYBn/IUF35RinN0eVDzS4GvHA7Ox8WV66ubPOIMcg
-         H/AoCNb4GHMF6BZmQUXcEVJx2tituL1nzqIFTccZdEgZGrEjmAjdyYaj24Fza2NQx6pd
-         9ZtOGo9TVBaMc6+upKm+20mAS0LP44Js6vNc2d65GHyCeM14xebvuYGw2FGrAk38CGWq
-         sgIA==
-X-Gm-Message-State: AOAM5331TO/JsiaL2vOvIirwJXzV2JHf4tgYj53cMH9Fh9XsRC1cY+BS
-        0zwMBdDZkQVoeSzZjfJqW/9xJkDg36I3ZqEF1nY=
-X-Google-Smtp-Source: ABdhPJyVJ1mUD7fj0a4XuOpqoU69Y5GMfjuLLPhArJyYK/tV3ib8IFxvZ41FG+XUnfva1Mg961j/3s5GZk/QLkQn5U4=
-X-Received: by 2002:a17:906:544e:b0:6f3:bd59:1a93 with SMTP id
- d14-20020a170906544e00b006f3bd591a93mr47785148ejp.421.1655034804226; Sun, 12
- Jun 2022 04:53:24 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YpvWWtIrN1JqPR+ErG0VpGkwET8BJiSLY7OtI30g6vo=;
+        b=HLjfBAzmVtPkZd02O7f5qZ+ObhInKMbIgb1LNSHQPGmgQw9rQCkQf+Hgd+JGUFu/wL
+         Tqqy10avjl08sx8JqHAteKXwgZTcqJUCQNrJztFl0D+eCwFWWFHd26qAXlFMy4jjGZI8
+         ngqiprbR4UlNmt1aSdEjfW4ljzRnAHPOkfdsI4P5xKryySVou29gcjKpYJwkdgVU8TPF
+         MVKgJbyWUXyMZMVSpodj/a/StXMXHFulN3IAQY1ZaeqqOuqly4E0R/2bmhCMrBzUBiCr
+         P6ZYLz1kUwVbStEbLUbWovetPBOFgK/imXUMQQfplwKr0vbHE751UCX4MlbAvPSziFk5
+         V3eA==
+X-Gm-Message-State: AOAM533tZxUk1K8Lj1c+1tUBSv3K/GsaTURgu5lG3ld6gcexrYq1Nvom
+        D4LXT3ck7UgK04BqtylRizE=
+X-Google-Smtp-Source: ABdhPJxLP8WZe7gGgBmVK2NeO5bcQ2Z3pDV6uruVuvuxYt3MU2SbOwcna41ULOeAjXDflB3tyOihdg==
+X-Received: by 2002:a50:ff04:0:b0:431:6a31:f19e with SMTP id a4-20020a50ff04000000b004316a31f19emr14163539edu.89.1655043647225;
+        Sun, 12 Jun 2022 07:20:47 -0700 (PDT)
+Received: from skbuf ([188.25.255.186])
+        by smtp.gmail.com with ESMTPSA id hh14-20020a170906a94e00b00703e09dd2easm2534271ejb.147.2022.06.12.07.20.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 12 Jun 2022 07:20:46 -0700 (PDT)
+Date:   Sun, 12 Jun 2022 17:20:44 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [RFC Patch net-next v2 01/15] net: dsa: microchip: ksz9477:
+ cleanup the ksz9477_switch_detect
+Message-ID: <20220612142044.qgupbnn6u5p4seef@skbuf>
+References: <20220530104257.21485-1-arun.ramadoss@microchip.com>
+ <20220530104257.21485-2-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Sender: mariajohn0331@gmail.com
-Received: by 2002:a54:3a4a:0:0:0:0:0 with HTTP; Sun, 12 Jun 2022 04:53:22
- -0700 (PDT)
-From:   MARIA ROLAND <mariaroland74@gmail.com>
-Date:   Sun, 12 Jun 2022 04:53:22 -0700
-X-Google-Sender-Auth: 0wxfga433qiK6YjScCGAU3-3rxE
-Message-ID: <CAEmdD2WWN+1YBZ-q0mdUkrMOPUO97kVjcha53HQdL2j1zQ0H-w@mail.gmail.com>
-Subject: Greetings,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.1 required=5.0 tests=ADVANCE_FEE_5_NEW_MONEY,
-        BAYES_60,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,LOTS_OF_MONEY,MONEY_FRAUD_8,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_MONEY autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:632 listed in]
-        [list.dnswl.org]
-        *  1.5 BAYES_60 BODY: Bayes spam probability is 60 to 80%
-        *      [score: 0.6618]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [mariajohn0331[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [mariaroland74[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  0.0 MONEY_FRAUD_8 Lots of money and very many fraud phrases
-        *  3.0 ADVANCE_FEE_5_NEW_MONEY Advance Fee fraud and lots of money
-        *  0.6 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: *****
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220530104257.21485-2-arun.ramadoss@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings,
+On Mon, May 30, 2022 at 04:12:43PM +0530, Arun Ramadoss wrote:
+> The ksz9477_switch_detect performs the detecting the chip id from the
+> location 0x00 and also check gigabit compatibility check & number of
+> ports based on the register global_options0. To prepare the common ksz
+> switch detect function, routine other than chip id read is moved to
+> ksz9477_switch_init.
+> 
+> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> ---
 
-I sent this mail praying it will find you in a good condition, since I
-myself am in a very critical health condition in which I sleep every
-night  without knowing if I may be alive to see the next day. I am
-Mrs. Maria Roland, a widow suffering from a long time illness. I have
-some funds I  inherited from my late husband, the sum of
-($11,000,000.00) my Doctor told me recently that I have serious
-sickness which is a cancer problem. What disturbs me most is my stroke
-sickness. Having known my condition, I decided to donate this fund to
-a good person that will utilize it the way I am going to instruct
-herein. I need a very honest God.
-
-fearing a person who can claim this money and use it for Charity
-works, for orphanages, widows and also build schools for less
-privileges that will be named after my late husband if possible and to
-promote the word of God and the effort that the house of God is
-maintained. I do not want a situation where this money will be used in
-an ungodly manner. That's why I' making this decision. I'm not afraid
-of death so I know where I'm going. I accept this decision because I
-do not have any child who will inherit this money after I die. Please
-I want your sincere and urgent answer to know if you will be able to
-execute this project, and I will give you more information on how the
-fund will be transferred to your bank account. I am waiting for your reply,
-
-May God Bless you,
-
-Mrs. Maria Roland,
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
