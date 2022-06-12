@@ -2,93 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F37B6547A87
-	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 16:42:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FFDB547AE6
+	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 17:55:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233719AbiFLOmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jun 2022 10:42:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56476 "EHLO
+        id S237856AbiFLPzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jun 2022 11:55:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229912AbiFLOml (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 10:42:41 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD5ACE7;
-        Sun, 12 Jun 2022 07:42:39 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id j6so3599547pfe.13;
-        Sun, 12 Jun 2022 07:42:39 -0700 (PDT)
+        with ESMTP id S237900AbiFLPzJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 11:55:09 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19A83B3CF
+        for <netdev@vger.kernel.org>; Sun, 12 Jun 2022 08:55:06 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id s23so3777402iog.13
+        for <netdev@vger.kernel.org>; Sun, 12 Jun 2022 08:55:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qh4jpXPUL/lnXpEsemWdF0NXNKzKzJDmJs+zlYRBbs0=;
-        b=c5kmpyw3B+J0+0aS/DER/c1ZjN8lPNMpS0uTbDvtbaZwDvQ5UuEdxxs0GWdsn/uKA4
-         Uj+jf+qRs1MLyYS0W8Q7Rd9/ZaEwnjBJ5SOwlqraVYEGGGK9CxR8Kwu/5BsBpxkrf6BR
-         lXaBIlMZTt12lBzgulgxR+9BHjFogMgM7eIoR8iCk+QY8qhVb2qj2aMs9Ch16EBdRCXc
-         7urLWMkAujFucwpWNcGYT49iT1hrR7AJJpVuNKeVUPUzBhIuLs6XBuotHIebbdhX8V3Y
-         DB2pMS+jUPlo8OP5/NXf6gHDMquje4h8SgNiQWcVbX1cJRzSPN0cdIKdiN2c8lapSvd9
-         YaFA==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=XyVvnb7Q7wEPVWN8IYvnf1V36f9VvQfLnASNcvGg/pE=;
+        b=SVb1E5jNtdChoo3TSAaiMYVV2DtiszToj5rmWaUhemjWI1Kx+LsrMY5BKmLWOoRgl8
+         gZS2zLfKHvojwnYNuFP4eJdSkMm4JWybnE/VguozEeBV8OeFsLewxGcQA8yr8iGXU1MF
+         vKuSlQ2+lxvt1Y7VvPbDbxSzDmouqKGqjw174obwsqhDXCJ8Fg+LSEa5NmoQv8P3Hlfs
+         gYbb3Wyj7JQozPpcUlbV69jRxTuc4RJhvlCAJHgNfnM5QurGK572VseCWybqx+OP076f
+         Cqim65z+MTjvuPvO7EvlUHSw3Bb5IcjB9ft0gfe+PTvmxQ9cC0t43xRw6dTwBhxM4k8f
+         +qbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=qh4jpXPUL/lnXpEsemWdF0NXNKzKzJDmJs+zlYRBbs0=;
-        b=0ING3uGux2tkhTQsDGdPwkH0gAZhGiI1G5b4QgEHtDvyb+VxRCxk94VWSKrKUX9Get
-         TpFdgX60VompJeb96pRt/a4qDWCQL7G98bTNfB/ehGsvxBPHg36cx3rZZOX8vuti5Jyo
-         eYeo26GFBh1YBVWIEtmBHBOWeVlvFlGXkOC08+daz55Z1EbFaPzlM2S8xgFgDFJUd1ja
-         +QJc0vcmhKKzLS92uKGCExDOH/1ONbOyqwmzojfw7OhC4rB5UP1sg2hMoDL0W3Ri+spl
-         PsKKFNmtkJr44BlQwOzHLpF9bdTrePftknw0fKJ0ikEvGO9xLf/aOHCZVhe9r4OEnUCG
-         w0Aw==
-X-Gm-Message-State: AOAM5307QZJ8hI7g0/xQi2y5Fj41jlSNxDatDxGZSAsj8oLSKngmcIQN
-        AzOI+bX8QPpfIB7ePYpOhms=
-X-Google-Smtp-Source: ABdhPJwnxH3odbVtnElrJelk/AlHcF6LoZjMj+emFe31ip6yHExOQyh2+NBYUkMVBaRN9Xulx/R8tA==
-X-Received: by 2002:a63:3ce:0:b0:3fc:6a52:8668 with SMTP id 197-20020a6303ce000000b003fc6a528668mr48255062pgd.424.1655044958699;
-        Sun, 12 Jun 2022 07:42:38 -0700 (PDT)
-Received: from ubuntu.localdomain ([103.230.148.189])
-        by smtp.gmail.com with ESMTPSA id h30-20020aa79f5e000000b00519cfca8e30sm3317660pfr.209.2022.06.12.07.42.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jun 2022 07:42:38 -0700 (PDT)
-From:   Gautam Menghani <gautammenghani201@gmail.com>
-To:     rostedt@goodmis.org, mingo@redhat.com, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com
-Cc:     Gautam Menghani <gautammenghani201@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH] kernel/trace: Remove unwanted initialization in __trace_uprobe_create()
-Date:   Sun, 12 Jun 2022 07:42:32 -0700
-Message-Id: <20220612144232.145209-1-gautammenghani201@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=XyVvnb7Q7wEPVWN8IYvnf1V36f9VvQfLnASNcvGg/pE=;
+        b=PTOdqalxZH6xvmQH1kTOVkCmIPqoGCVhjQPTJnURjYyEM68ggSKkC5t2qA2BIJ7NXM
+         skZs+7HS5NM76BGkvsyWeRGAn62+2OOJcoNrQiOhye9JGEeK8SnF+v8pmvE1pwrWvrvt
+         mvMfhDfGxND2wycNBL8GESAHLaiB2C5pZaE93y1Caz5oAkaSoHt6yvv4fSvdjPQTXGwP
+         Ju8RDmZxFDc9XM7UWzn7uVukFPFIXDPGHmyrJyTzRcoK4+O9zRB7TE8Z4mcO1qsuAein
+         xC/S86HFweZwgDu3fQDlGsGPpq10lZmo6dT+dTxhqoAzwASocnXZJ/ZqjW9+2nHH55Go
+         2Fgw==
+X-Gm-Message-State: AOAM532VPCx/Q+iHyLhd5Gz/BAPndqLmrqUUCONJDA0SnqSfNyWtC4ff
+        VXvwiC5HL3MkzcqMCVRmPCG9yWOPQ8SQUg==
+X-Google-Smtp-Source: ABdhPJwnQr3cNYXaQjsfy20rOllJIUYATI0+gv9ly/jS18cezJQHZ3bPHF8bLrIVPUqZzY64p69CeQ==
+X-Received: by 2002:a02:cab3:0:b0:332:c2b:d815 with SMTP id e19-20020a02cab3000000b003320c2bd815mr8545595jap.79.1655049306293;
+        Sun, 12 Jun 2022 08:55:06 -0700 (PDT)
+Received: from ?IPV6:2601:282:800:dc80:71d0:ca72:803a:2d62? ([2601:282:800:dc80:71d0:ca72:803a:2d62])
+        by smtp.googlemail.com with ESMTPSA id h25-20020a05660224d900b00669b8999911sm2744528ioe.15.2022.06.12.08.55.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 12 Jun 2022 08:55:05 -0700 (PDT)
+Message-ID: <6ea8a63f-dbf9-bc30-82f1-1a199ff1d1bc@gmail.com>
+Date:   Sun, 12 Jun 2022 09:55:04 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: [PATCH iproute2-next v2] show rx_otherehost_dropped stat in ip
+ link show
+Content-Language: en-US
+To:     Jeffrey Ji <jeffreyjilinux@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Brian Vazquez <brianvv@google.com>, netdev@vger.kernel.org,
+        Jeffrey Ji <jeffreyji@google.com>
+References: <20220609210516.2311379-1-jeffreyjilinux@gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220609210516.2311379-1-jeffreyjilinux@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove the unwanted initialization of variable 'ret'. This fixes the clang
-scan warning: Value stored to 'ret' is never read [deadcode.DeadStores]
+On 6/9/22 3:05 PM, Jeffrey Ji wrote:
+> From: Jeffrey Ji <jeffreyji@google.com>
+> 
+> This stat was added in commit 794c24e9921f ("net-core: rx_otherhost_dropped to core_stats")
+> 
+> Tested: sent packet with wrong MAC address from 1
+> network namespace to another, verified that counter showed "1" in
+> `ip -s -s link sh` and `ip -s -s -j link sh`
+> 
+> Signed-off-by: Jeffrey Ji <jeffreyji@google.com>
+> ---
+> changelog:
+> v2: otherhost <- otherhost_dropped
+> 
+>  ip/ipaddress.c | 18 +++++++++++++++---
+>  1 file changed, 15 insertions(+), 3 deletions(-)
+> 
 
-Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
----
- kernel/trace/trace_uprobe.c | 1 -
- 1 file changed, 1 deletion(-)
+...
 
-diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
-index 9711589273cd..c3dc4f859a6b 100644
---- a/kernel/trace/trace_uprobe.c
-+++ b/kernel/trace/trace_uprobe.c
-@@ -546,7 +546,6 @@ static int __trace_uprobe_create(int argc, const char **argv)
- 	bool is_return = false;
- 	int i, ret;
- 
--	ret = 0;
- 	ref_ctr_offset = 0;
- 
- 	switch (argv[0][0]) {
--- 
-2.25.1
+> @@ -825,6 +834,9 @@ void print_stats64(FILE *fp, struct rtnl_link_stats64 *s,
+>  			print_num(fp, cols[5], s->rx_over_errors);
+>  			if (s->rx_nohandler)
+>  				print_num(fp, cols[6], s->rx_nohandler);
+> +			if (s->rx_otherhost_dropped)
+> +				print_num(fp, cols[7],
+> +				s->rx_otherhost_dropped);
+
+brought  that up to 1-line and applied to iproute2-next
+
 
