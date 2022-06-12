@@ -2,169 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B75C547B24
-	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 19:14:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CA04547B45
+	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 19:51:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230325AbiFLRNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jun 2022 13:13:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59012 "EHLO
+        id S231433AbiFLRrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jun 2022 13:47:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbiFLRNv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 13:13:51 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.167])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C44FF1;
-        Sun, 12 Jun 2022 10:13:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1655054006;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=EocYAFQcyOsOHNYOtPDLZltnmSxJMwBedC8g9UxAB0k=;
-    b=VifFVmIundfqm0uooUDEEUUVEaM7dA7JvbG0/e+jIELhH9d9xCyc4b/adUQ/m4uRe/
-    zSXg1qF/7AVO2B5j2RnxQGsZq4xokCpBz1o970SEKHLnT+8tbn7bdjh4KmPiL2qQ+t+X
-    FNJlhlF3BG7xubZ0tslXSQjU0jytwy+1oNwOMS0Cl5QL0mR9aTzGbiLE69Y0VF+Mg7us
-    DBSYKIzeRAYnPZHoJ2mzUzjrVft7r/LDNw9GZVOSgpKq17JbtrdicluHz5mSN8tIMkoD
-    W+45JzdXuEa2aHRIQsSUnB4o9Z1LO1enT06hTPSxpFyK0TS+fdMT55zhirJVrWYeKJW2
-    XH7A==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1q3DbdV+Ofov4eKq4TnA="
-X-RZG-CLASS-ID: mo00
-Received: from [172.20.10.8]
-    by smtp.strato.de (RZmta 47.45.0 DYNA|AUTH)
-    with ESMTPSA id R0691fy5CHDOKgn
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Sun, 12 Jun 2022 19:13:24 +0200 (CEST)
-Subject: Re: [PATCH v2 05/13] can: slcan: simplify the device de-allocation
-To:     Max Staudt <max@enpas.org>,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        michael@amarulasolutions.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-References: <20220608165116.1575390-1-dario.binacchi@amarulasolutions.com>
- <20220608165116.1575390-6-dario.binacchi@amarulasolutions.com>
- <eae65531-bf9f-4e2e-97ca-a79a8aa833fc@hartkopp.net>
- <CABGWkvroJG16AOu8BODhVu068jacjHWbkkY9TCF4PQ7rgANVXA@mail.gmail.com>
- <20220612182302.36bdd9b9.max@enpas.org>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <aee0c161-5418-ad56-ab33-66e34a4f2a0d@hartkopp.net>
-Date:   Sun, 12 Jun 2022 19:13:18 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S232684AbiFLRp7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 13:45:59 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AAA9E09B;
+        Sun, 12 Jun 2022 10:45:58 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25CHSRvd020600;
+        Sun, 12 Jun 2022 10:45:45 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=TBIPbzxD7kc229QvcY1UGspi3OGvEQf1TJ7KwV9roeo=;
+ b=XFp6gJV4wg+Xra/0xxN3DXnBaQbkO3kyIAOa35+Qzi9zebR2gbh5uqCbqZlokYJWndKM
+ V6aVSo1ScVj1U/bRZ+P55Ao3Ohnw40jetybKnyud++Gpps5UXIy1SW9lnNTS3JAf1CRB
+ ZB/vvc/ctKwThY/tGeIHCxI8Y4aXfYez1YF8HXmHw5Ne8YvBfwOIgb5s+NKPDAQ6gOG0
+ pvpJifu+w5gShChLdTJpRCOydFiDiyAelgf8qIsVc3p/zWpX6EnV8ZpW+NQLMLAS8T5H
+ 5y3stdNZDjKlWsHFeNu6T7k5+RDFfZHpz/6p/PGmtAe9H5DyxSXDOntTF6LfPRH1MClb pA== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3gmtjnubj7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 12 Jun 2022 10:45:45 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 12 Jun
+ 2022 10:45:43 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Sun, 12 Jun 2022 10:45:43 -0700
+Received: from localhost.localdomain (unknown [10.28.48.95])
+        by maili.marvell.com (Postfix) with ESMTP id CBF333F7070;
+        Sun, 12 Jun 2022 10:45:39 -0700 (PDT)
+From:   Suman Ghosh <sumang@marvell.com>
+To:     <sgoutham@marvell.com>, <gakula@marvell.com>,
+        <sbhatta@marvell.com>, <hkelam@marvell.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Suman Ghosh <sumang@marvell.com>
+Subject: [net PATCH] octeontx2-vf: Add support for adaptive interrupt coalescing
+Date:   Sun, 12 Jun 2022 23:15:36 +0530
+Message-ID: <20220612174536.2403843-1-sumang@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20220612182302.36bdd9b9.max@enpas.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: FvX9vWXhLoVBxW2js_lyOXMGFHEI5IUZ
+X-Proofpoint-ORIG-GUID: FvX9vWXhLoVBxW2js_lyOXMGFHEI5IUZ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-12_08,2022-06-09_02,2022-02-23_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Fixes: 6e144b47f560 (octeontx2-pf: Add support for adaptive interrupt coalescing)
+Added support for VF interfaces as well.
 
+Signed-off-by: Suman Ghosh <sumang@marvell.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-On 12.06.22 18:23, Max Staudt wrote:
-> On Sat, 11 Jun 2022 12:46:04 +0200
-> Dario Binacchi <dario.binacchi@amarulasolutions.com> wrote:
-> 
->>> As written before I would like to discuss this change out of your
->>> patch series "can: slcan: extend supported features" as it is no
->>> slcan feature extension AND has to be synchronized with the
->>> drivers/net/slip/slip.c implementation.
->>
->> Why do you need to synchronize it with  drivers/net/slip/slip.c
->> implementation ?
-> 
-> Because slcan.c is a derivative of slip.c and the code still looks
-> *very* similar, so improvements in one file should be ported to the
-> other and vice versa. This has happened several times now.
-> 
-> 
->>> When it has not real benefit and introduces more code and may create
->>> side effects, this beautification should probably be omitted at all.
->>>   
->>
->> I totally agree with you. I would have already dropped it if this
->> patch didn't make sense. But since I seem to have understood that
->> this is not the case, I do not understand why it cannot be improved
->> in this series.
-> 
-> This series is mostly about adding netlink support. If there is a point
-> of contention about a beautification, it may be easier to discuss that
-> separately, so the netlink code can be merged while the beautification
-> is still being discussed.
-> 
-> 
-> On another note, the global array of slcan_devs is really unnecessary
-> and maintaining it is a mess - as seen in some of your patches, that
-> have to account for it in tons of places and get complicated because of
-> it.
-> 
-> slcan_devs is probably grandfathered from a very old kernel, since
-> slip.c is about 30 years old, so I suggest to remove it entirely. In
-> fact, it may be easier to patch slcan_devs away first, and that will
-> simplify your open/close patches - your decision :)
-> 
-> 
-> If you wish to implement the slcan_devs removal, here are some hints:
-> 
-> The private struct can just be allocated as part of struct can_priv in
-> slcan_open(), like so:
-> 
->    struct net_device *dev;
->    dev = alloc_candev(sizeof(struct slcan), 0);
-> 
-> And then accessed like so:
-> 
->    struct slcan *sl = netdev_priv(dev);
-> 
-> Make sure to add struct can_priv as the first member of struct slcan:
-> 
->    /* This must be the first member when using alloc_candev() */
->    struct can_priv can;
-> 
-> 
->> The cover letter highlighted positive reactions to the series because
->> the module had been requiring these kinds of changes for quite
->> some time. So, why not take the opportunity to finalize this patch in
->> this series even if it doesn't extend the supported features ?
-> 
-> Because... I can only speak for myself, but I'd merge all the
-> unambiguous stuff first and discuss the difficult stuff later, if there
-> are no interdependencies :)
-> 
-> 
-> 
-> Max
-> 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+index bc614a4def9e..3f60a80e34c8 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+@@ -1390,7 +1390,8 @@ static int otx2vf_get_link_ksettings(struct net_device *netdev,
+ 
+ static const struct ethtool_ops otx2vf_ethtool_ops = {
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+-				     ETHTOOL_COALESCE_MAX_FRAMES,
++				     ETHTOOL_COALESCE_MAX_FRAMES |
++				     ETHTOOL_COALESCE_USE_ADAPTIVE,
+ 	.supported_ring_params  = ETHTOOL_RING_USE_RX_BUF_LEN |
+ 				  ETHTOOL_RING_USE_CQE_SIZE,
+ 	.get_link		= otx2_get_link,
+-- 
+2.25.1
 
-Thanks for stepping in Max!
-
-Couldn't have summarized it better ;-)
-
-When I created slcan.c from slip.c this line discipline driver was just 
-oriented at the SLIP idea including the user space tools to attach the 
-network device to the serial tty.
-
-Therefore the driver took most of the mechanics (like the slcan_devs 
-array) and did *only* the 'struct canframe' to ASCII conversion (and 
-vice versa).
-
-@Dario: Implementing the CAN netlink API with open/close/bitrate-setting 
-is a nice improvement. Especially as you wrote that you took care about 
-the former/old API with slcan_attach/slcand.
-
-Best regards,
-Oliver
