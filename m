@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC37E547CA1
-	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 23:43:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D330547CAD
+	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 23:43:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236804AbiFLVlg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jun 2022 17:41:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54496 "EHLO
+        id S236761AbiFLVlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jun 2022 17:41:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236656AbiFLVlN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 17:41:13 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B78C2AE19
-        for <netdev@vger.kernel.org>; Sun, 12 Jun 2022 14:40:30 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id n28so4896199edb.9
-        for <netdev@vger.kernel.org>; Sun, 12 Jun 2022 14:40:30 -0700 (PDT)
+        with ESMTP id S237225AbiFLVlF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 17:41:05 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFDEB2AE0D
+        for <netdev@vger.kernel.org>; Sun, 12 Jun 2022 14:40:28 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id gl15so7712299ejb.4
+        for <netdev@vger.kernel.org>; Sun, 12 Jun 2022 14:40:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=amarulasolutions.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=z9lGb6dxRaekyRJ4swSwg3PwLJAGarCfZ2Xmy0z62Lo=;
-        b=ZHd42I9XKFhWqtlM+V16J2ZuBI4feXpsVbxmxttrAIwGg/Q8Xbbf2us07BbjzmJ5Nl
-         eAEBHTuRwVGoqi2ZwF05hsFaFdd+YLZ8LC+3VvYyhgsi43LafYtrRX3s9pivBn7bQ7dA
-         K7MTj/Gm/vYu5ggvQ4H+ouH02pR2kYk1kBIn4=
+        bh=P8N6mZ+VdIxDHB3ERFZNuvKgcE/qcXFBtcxLWjsi6yU=;
+        b=qYQO15I8ouBWG3nzQVKzDy0l5yfrVKs2RfJvILCb7ee/vE9KuIwTO/uxK2j5jv0no9
+         E66rq0iKFVjF1W3vdr9JDgUdIIPrajXRxgvtUz0AOk3gJOCodQfUhtdaCBs70zf1+4i2
+         0f8o7DJFbrFzIxC6izhz/jXCYZ3QCeKkATWJE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=z9lGb6dxRaekyRJ4swSwg3PwLJAGarCfZ2Xmy0z62Lo=;
-        b=1rEq/jCpJMPkoOHFW7wnUzF+sRN1KEEVGP3UH2LHWWZFrbl95WWKvboq5MTnDiAzmA
-         v0/MClrYcPn8OB3xjlvHWlE6n3E7R8kSxvNNQLwhrVNNErf/NA0eIgwDgg+qIXgD+Y4t
-         VxYxYWj4TJu5tmRuKXOrMBzzzgl9BOVc6GnodEdBZpoUCSVNdmGi53gtWVu9VHRTNhE6
-         nEBWJpzrF7IRJsDKC+JNaKcxRTXWh48k+wWELgNBOQRp6FLD/u1liP0GkNcUCeX24s1W
-         ZU/jlOZWxQ1SN6If4Z770n+tW4KhO4MIFkqzP2VIygmyTMDoNh15QCAvwSYSOvuNVjLx
-         Mszw==
-X-Gm-Message-State: AOAM530dWB3G4TyCeucn9TO4jzwXNWwuf4/qB5qWN4OJO2r7Hqh3jYz9
-        70rsWYOCHrKIdxS5nWCZYFQzZw==
-X-Google-Smtp-Source: ABdhPJzRK11lIFMbNNiJoNaa2NvCjqL3/yg6Xea1ch/o2QLwQexscPVHfwcc2SVDNKVplaKcsKiTJw==
-X-Received: by 2002:a05:6402:51d4:b0:42f:b38d:dbb9 with SMTP id r20-20020a05640251d400b0042fb38ddbb9mr51327514edd.255.1655070023483;
-        Sun, 12 Jun 2022 14:40:23 -0700 (PDT)
+        bh=P8N6mZ+VdIxDHB3ERFZNuvKgcE/qcXFBtcxLWjsi6yU=;
+        b=Yycq6EcIuGSl6BV1xnytZy/lSMY0PK+OsyH7XehTapC2jaR7X9YeG+n6ll+EnNnpoZ
+         CErkbUz1DUHuFMVe27/9v+hjyYZSDkz12+ki2oauyqr3Oe7hkVtLMlN1wNhe8pimyjQc
+         MTdjeSoVDp1c6aL4UIBrD2bPyWYRT+AaqOojhWhsO5wE4ZHpumw/Dd8WDVI3XnZcsSOX
+         ucLeqcn1kHDCbi9QYayOTWehxc9bQ+c1J94s48OTpDt+x3bl3qTPNjA9eMsNkLWDN1zR
+         EcyRUJMGTOqW7gNO7FZ7Ivw7QiMuEgBwE1IFKXDvHgBNTI8SmzdLsf0WcHqB01RlNTrx
+         h8Yw==
+X-Gm-Message-State: AOAM5301oj+2uVjNDJYUPeDwJxaaevhIdHoynSS0mw8AsIA2qoPoj9Cw
+        eex6CPzitYHG0r9kSt5BGhfs3Q==
+X-Google-Smtp-Source: ABdhPJyUeiYzT1GYIfPFtuWvZIsAAUx4pBf+/bipXCF0qgcMdvrgIdqg9PmRTntQVDLBlBuOwtPYxA==
+X-Received: by 2002:a17:906:6947:b0:711:a86b:6780 with SMTP id c7-20020a170906694700b00711a86b6780mr37988734ejs.686.1655070028311;
+        Sun, 12 Jun 2022 14:40:28 -0700 (PDT)
 Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
-        by smtp.gmail.com with ESMTPSA id u10-20020a1709061daa00b00711d546f8a8sm2909398ejh.139.2022.06.12.14.40.19
+        by smtp.gmail.com with ESMTPSA id u10-20020a1709061daa00b00711d546f8a8sm2909398ejh.139.2022.06.12.14.40.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jun 2022 14:40:23 -0700 (PDT)
+        Sun, 12 Jun 2022 14:40:27 -0700 (PDT)
 From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     michael@amarulasolutions.com,
@@ -61,9 +61,9 @@ Cc:     michael@amarulasolutions.com,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         Wolfgang Grandegger <wg@grandegger.com>,
         linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 11/13] can: slcan: add ethtool support to reset adapter errors
-Date:   Sun, 12 Jun 2022 23:39:25 +0200
-Message-Id: <20220612213927.3004444-12-dario.binacchi@amarulasolutions.com>
+Subject: [PATCH v3 12/13] can: slcan: extend the protocol with error info
+Date:   Sun, 12 Jun 2022 23:39:26 +0200
+Message-Id: <20220612213927.3004444-13-dario.binacchi@amarulasolutions.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220612213927.3004444-1-dario.binacchi@amarulasolutions.com>
 References: <20220612213927.3004444-1-dario.binacchi@amarulasolutions.com>
@@ -79,212 +79,172 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a private flag to the slcan driver to switch the
-"err-rst-on-open" setting on and off.
-
-"err-rst-on-open" on  - Reset error states on opening command
-
-"err-rst-on-open" off - Don't reset error states on opening command
-                        (default)
-
-The setting can only be changed if the interface is down:
-
-    ip link set dev can0 down
-    ethtool --set-priv-flags can0 err-rst-on-open {off|on}
-    ip link set dev can0 up
+It extends the protocol to receive the adapter CAN communication errors
+and forward them to the netdev upper levels.
 
 Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+
 ---
 
-(no changes since v1)
+(no changes since v2)
 
- drivers/net/can/slcan/Makefile        |  1 +
- drivers/net/can/slcan/slcan-core.c    | 36 +++++++++++++++
- drivers/net/can/slcan/slcan-ethtool.c | 65 +++++++++++++++++++++++++++
- drivers/net/can/slcan/slcan.h         | 18 ++++++++
- 4 files changed, 120 insertions(+)
- create mode 100644 drivers/net/can/slcan/slcan-ethtool.c
- create mode 100644 drivers/net/can/slcan/slcan.h
+Changes in v2:
+- Protect decoding against the case the len value is longer than the
+  received data.
+- Continue error handling even if no skb can be allocated.
 
-diff --git a/drivers/net/can/slcan/Makefile b/drivers/net/can/slcan/Makefile
-index 2e84f7bf7617..8a88e484ee21 100644
---- a/drivers/net/can/slcan/Makefile
-+++ b/drivers/net/can/slcan/Makefile
-@@ -4,3 +4,4 @@ obj-$(CONFIG_CAN_SLCAN) += slcan.o
- 
- slcan-objs :=
- slcan-objs += slcan-core.o
-+slcan-objs += slcan-ethtool.o
+ drivers/net/can/slcan/slcan-core.c | 130 ++++++++++++++++++++++++++++-
+ 1 file changed, 129 insertions(+), 1 deletion(-)
+
 diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
-index 82a42cec52d3..3df35ae8f040 100644
+index 3df35ae8f040..48077edb9497 100644
 --- a/drivers/net/can/slcan/slcan-core.c
 +++ b/drivers/net/can/slcan/slcan-core.c
-@@ -57,6 +57,8 @@
- #include <linux/can/dev.h>
- #include <linux/can/skb.h>
- 
-+#include "slcan.h"
-+
- MODULE_ALIAS_LDISC(N_SLCAN);
- MODULE_DESCRIPTION("serial line CAN interface");
- MODULE_LICENSE("GPL");
-@@ -98,6 +100,8 @@ struct slcan {
- #define SLF_INUSE		0		/* Channel in use            */
- #define SLF_ERROR		1               /* Parity, etc. error        */
- #define SLF_XCMD		2               /* Command transmission      */
-+	unsigned long           cmd_flags;      /* Command flags             */
-+#define CF_ERR_RST		0               /* Reset errors on open      */
- 	wait_queue_head_t       xcmd_wait;      /* Wait queue for commands   */
- 						/* transmission              */
- };
-@@ -110,6 +114,28 @@ static const u32 slcan_bitrate_const[] = {
- 	250000, 500000, 800000, 1000000
- };
- 
-+bool slcan_err_rst_on_open(struct net_device *ndev)
-+{
-+	struct slcan *sl = netdev_priv(ndev);
-+
-+	return !!test_bit(CF_ERR_RST, &sl->cmd_flags);
-+}
-+
-+int slcan_enable_err_rst_on_open(struct net_device *ndev, bool on)
-+{
-+	struct slcan *sl = netdev_priv(ndev);
-+
-+	if (netif_running(ndev))
-+		return -EBUSY;
-+
-+	if (on)
-+		set_bit(CF_ERR_RST, &sl->cmd_flags);
-+	else
-+		clear_bit(CF_ERR_RST, &sl->cmd_flags);
-+
-+	return 0;
-+}
-+
-  /************************************************************************
-   *			SLCAN ENCAPSULATION FORMAT			 *
+@@ -175,8 +175,118 @@ int slcan_enable_err_rst_on_open(struct net_device *ndev, bool on)
+   *			STANDARD SLCAN DECAPSULATION			 *
    ************************************************************************/
-@@ -509,6 +535,15 @@ static int slc_open(struct net_device *dev)
- 			goto cmd_transmit_failed;
- 		}
  
-+		if (test_bit(CF_ERR_RST, &sl->cmd_flags)) {
-+			err = slcan_transmit_cmd(sl, "F\r");
-+			if (err) {
-+				netdev_err(dev,
-+					   "failed to send error command 'F\\r'\n");
-+				goto cmd_transmit_failed;
++static void slc_bump_err(struct slcan *sl)
++{
++	struct net_device *dev = sl->dev;
++	struct sk_buff *skb;
++	struct can_frame *cf;
++	char *cmd = sl->rbuff;
++	bool rx_errors = false, tx_errors = false;
++	int i, len;
++
++	if (*cmd != 'e')
++		return;
++
++	cmd += SLC_CMD_LEN;
++	/* get len from sanitized ASCII value */
++	len = *cmd++;
++	if (len >= '0' && len < '9')
++		len -= '0';
++	else
++		return;
++
++	skb = alloc_can_err_skb(dev, &cf);
++
++	if (skb)
++		cf->can_id |= CAN_ERR_PROT | CAN_ERR_BUSERROR;
++
++	for (i = 0; i < len; i++, cmd++) {
++		switch (*cmd) {
++		case 'a':
++			netdev_dbg(dev, "ACK error\n");
++			tx_errors = true;
++			if (skb) {
++				cf->can_id |= CAN_ERR_ACK;
++				cf->data[3] = CAN_ERR_PROT_LOC_ACK;
 +			}
++
++			break;
++		case 'b':
++			netdev_dbg(dev, "Bit0 error\n");
++			tx_errors = true;
++			if (skb)
++				cf->data[2] |= CAN_ERR_PROT_BIT0;
++
++			break;
++		case 'B':
++			netdev_dbg(dev, "Bit1 error\n");
++			tx_errors = true;
++			if (skb)
++				cf->data[2] |= CAN_ERR_PROT_BIT1;
++
++			break;
++		case 'c':
++			netdev_dbg(dev, "CRC error\n");
++			rx_errors = true;
++			if (skb) {
++				cf->data[2] |= CAN_ERR_PROT_BIT;
++				cf->data[3] = CAN_ERR_PROT_LOC_CRC_SEQ;
++			}
++
++			break;
++		case 'f':
++			netdev_dbg(dev, "Form Error\n");
++			rx_errors = true;
++			if (skb)
++				cf->data[2] |= CAN_ERR_PROT_FORM;
++
++			break;
++		case 'o':
++			netdev_dbg(dev, "Rx overrun error\n");
++			dev->stats.rx_over_errors++;
++			dev->stats.rx_errors++;
++			if (skb) {
++				cf->can_id |= CAN_ERR_CRTL;
++				cf->data[1] = CAN_ERR_CRTL_RX_OVERFLOW;
++			}
++
++			break;
++		case 'O':
++			netdev_dbg(dev, "Tx overrun error\n");
++			dev->stats.tx_errors++;
++			if (skb) {
++				cf->can_id |= CAN_ERR_CRTL;
++				cf->data[1] = CAN_ERR_CRTL_TX_OVERFLOW;
++			}
++
++			break;
++		case 's':
++			netdev_dbg(dev, "Stuff error\n");
++			rx_errors = true;
++			if (skb)
++				cf->data[2] |= CAN_ERR_PROT_STUFF;
++
++			break;
++		default:
++			if (skb)
++				dev_kfree_skb(skb);
++
++			return;
 +		}
++	}
 +
- 		err = slcan_transmit_cmd(sl, "O\r");
- 		if (err) {
- 			netdev_err(dev, "failed to send open command 'O\\r'\n");
-@@ -629,6 +664,7 @@ static struct slcan *slc_alloc(void)
- 	snprintf(dev->name, sizeof(dev->name), "slcan%d", i);
- 	dev->netdev_ops = &slc_netdev_ops;
- 	dev->base_addr  = i;
-+	slcan_set_ethtool_ops(dev);
- 	sl = netdev_priv(dev);
++	if (rx_errors)
++		dev->stats.rx_errors++;
++
++	if (tx_errors)
++		dev->stats.tx_errors++;
++
++	if (skb)
++		netif_rx(skb);
++}
++
+ /* Send one completely decapsulated can_frame to the network layer */
+-static void slc_bump(struct slcan *sl)
++static void slc_bump_frame(struct slcan *sl)
+ {
+ 	struct sk_buff *skb;
+ 	struct can_frame *cf;
+@@ -255,6 +365,24 @@ static void slc_bump(struct slcan *sl)
+ 	dev_kfree_skb(skb);
+ }
  
- 	/* Initialize channel control data */
-diff --git a/drivers/net/can/slcan/slcan-ethtool.c b/drivers/net/can/slcan/slcan-ethtool.c
-new file mode 100644
-index 000000000000..bf0afdc4e49d
---- /dev/null
-+++ b/drivers/net/can/slcan/slcan-ethtool.c
-@@ -0,0 +1,65 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/* Copyright (c) 2022 Amarula Solutions, Dario Binacchi <dario.binacchi@amarulasolutions.com>
-+ *
-+ */
-+
-+#include <linux/can/dev.h>
-+#include <linux/ethtool.h>
-+#include <linux/kernel.h>
-+#include <linux/netdevice.h>
-+#include <linux/platform_device.h>
-+
-+#include "slcan.h"
-+
-+static const char slcan_priv_flags_strings[][ETH_GSTRING_LEN] = {
-+#define SLCAN_PRIV_FLAGS_ERR_RST_ON_OPEN BIT(0)
-+	"err-rst-on-open",
-+};
-+
-+static void slcan_get_strings(struct net_device *ndev, u32 stringset, u8 *data)
++static void slc_bump(struct slcan *sl)
 +{
-+	switch (stringset) {
-+	case ETH_SS_PRIV_FLAGS:
-+		memcpy(data, slcan_priv_flags_strings,
-+		       sizeof(slcan_priv_flags_strings));
-+	}
-+}
-+
-+static u32 slcan_get_priv_flags(struct net_device *ndev)
-+{
-+	u32 flags = 0;
-+
-+	if (slcan_err_rst_on_open(ndev))
-+		flags |= SLCAN_PRIV_FLAGS_ERR_RST_ON_OPEN;
-+
-+	return flags;
-+}
-+
-+static int slcan_set_priv_flags(struct net_device *ndev, u32 flags)
-+{
-+	bool err_rst_op_open = !!(flags & SLCAN_PRIV_FLAGS_ERR_RST_ON_OPEN);
-+
-+	return slcan_enable_err_rst_on_open(ndev, err_rst_op_open);
-+}
-+
-+static int slcan_get_sset_count(struct net_device *netdev, int sset)
-+{
-+	switch (sset) {
-+	case ETH_SS_PRIV_FLAGS:
-+		return ARRAY_SIZE(slcan_priv_flags_strings);
++	switch (sl->rbuff[0]) {
++	case 'r':
++		fallthrough;
++	case 't':
++		fallthrough;
++	case 'R':
++		fallthrough;
++	case 'T':
++		return slc_bump_frame(sl);
++	case 'e':
++		return slc_bump_err(sl);
 +	default:
-+		return -EOPNOTSUPP;
++		return;
 +	}
 +}
 +
-+static const struct ethtool_ops slcan_ethtool_ops = {
-+	.get_strings = slcan_get_strings,
-+	.get_priv_flags = slcan_get_priv_flags,
-+	.set_priv_flags = slcan_set_priv_flags,
-+	.get_sset_count = slcan_get_sset_count,
-+};
-+
-+void slcan_set_ethtool_ops(struct net_device *netdev)
-+{
-+	netdev->ethtool_ops = &slcan_ethtool_ops;
-+}
-diff --git a/drivers/net/can/slcan/slcan.h b/drivers/net/can/slcan/slcan.h
-new file mode 100644
-index 000000000000..d463c8d99e22
---- /dev/null
-+++ b/drivers/net/can/slcan/slcan.h
-@@ -0,0 +1,18 @@
-+/* SPDX-License-Identifier: GPL-2.0
-+ * slcan.h - serial line CAN interface driver
-+ *
-+ * Copyright (C) Laurence Culhane <loz@holmes.demon.co.uk>
-+ * Copyright (C) Fred N. van Kempen <waltje@uwalt.nl.mugnet.org>
-+ * Copyright (C) Oliver Hartkopp <socketcan@hartkopp.net>
-+ * Copyright (C) 2022 Amarula Solutions, Dario Binacchi <dario.binacchi@amarulasolutions.com>
-+ *
-+ */
-+
-+#ifndef _SLCAN_H
-+#define _SLCAN_H
-+
-+bool slcan_err_rst_on_open(struct net_device *ndev);
-+int slcan_enable_err_rst_on_open(struct net_device *ndev, bool on);
-+void slcan_set_ethtool_ops(struct net_device *ndev);
-+
-+#endif /* _SLCAN_H */
+ /* parse tty input stream */
+ static void slcan_unesc(struct slcan *sl, unsigned char s)
+ {
 -- 
 2.32.0
 
