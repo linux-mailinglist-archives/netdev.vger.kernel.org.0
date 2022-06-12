@@ -2,91 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E431547A7A
-	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 16:21:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F37B6547A87
+	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 16:42:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234169AbiFLOUv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jun 2022 10:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42642 "EHLO
+        id S233719AbiFLOmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jun 2022 10:42:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229800AbiFLOUt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 10:20:49 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CE818B07;
-        Sun, 12 Jun 2022 07:20:48 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id 25so4179606edw.8;
-        Sun, 12 Jun 2022 07:20:48 -0700 (PDT)
+        with ESMTP id S229912AbiFLOml (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 10:42:41 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD5ACE7;
+        Sun, 12 Jun 2022 07:42:39 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id j6so3599547pfe.13;
+        Sun, 12 Jun 2022 07:42:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YpvWWtIrN1JqPR+ErG0VpGkwET8BJiSLY7OtI30g6vo=;
-        b=RX8GVFrcy1qG0ampRBrJgsM1HzTxM96j5S+GQdCc3DppW2+m/AslAGlcbisOFdE09o
-         jdscWeaaKOaTNDq1LYM832PPqgkX3ra9KNw08eXRH5tc+mSYkw/2Y5mXCcwmHZ5iUn8i
-         M2U0++eTPuC6TAJsSA7uKbKowaTVri2EnL/dQgyold6quP3zdlneYKdmMzWgFW+B5BPy
-         849POP/9MC3/VqeR5UtQ1vEmqy28I6K/HIbmGNq3hMHRhTTkJLkB4BkTGkNrnSgWFHwi
-         XR7ahinYme7MjIXMNvXTy2viWaWrqEwYO5yepGjwug3iSdvo0W/mUI+cJ8WR2GCyVn7i
-         Gq1g==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qh4jpXPUL/lnXpEsemWdF0NXNKzKzJDmJs+zlYRBbs0=;
+        b=c5kmpyw3B+J0+0aS/DER/c1ZjN8lPNMpS0uTbDvtbaZwDvQ5UuEdxxs0GWdsn/uKA4
+         Uj+jf+qRs1MLyYS0W8Q7Rd9/ZaEwnjBJ5SOwlqraVYEGGGK9CxR8Kwu/5BsBpxkrf6BR
+         lXaBIlMZTt12lBzgulgxR+9BHjFogMgM7eIoR8iCk+QY8qhVb2qj2aMs9Ch16EBdRCXc
+         7urLWMkAujFucwpWNcGYT49iT1hrR7AJJpVuNKeVUPUzBhIuLs6XBuotHIebbdhX8V3Y
+         DB2pMS+jUPlo8OP5/NXf6gHDMquje4h8SgNiQWcVbX1cJRzSPN0cdIKdiN2c8lapSvd9
+         YaFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YpvWWtIrN1JqPR+ErG0VpGkwET8BJiSLY7OtI30g6vo=;
-        b=HLjfBAzmVtPkZd02O7f5qZ+ObhInKMbIgb1LNSHQPGmgQw9rQCkQf+Hgd+JGUFu/wL
-         Tqqy10avjl08sx8JqHAteKXwgZTcqJUCQNrJztFl0D+eCwFWWFHd26qAXlFMy4jjGZI8
-         ngqiprbR4UlNmt1aSdEjfW4ljzRnAHPOkfdsI4P5xKryySVou29gcjKpYJwkdgVU8TPF
-         MVKgJbyWUXyMZMVSpodj/a/StXMXHFulN3IAQY1ZaeqqOuqly4E0R/2bmhCMrBzUBiCr
-         P6ZYLz1kUwVbStEbLUbWovetPBOFgK/imXUMQQfplwKr0vbHE751UCX4MlbAvPSziFk5
-         V3eA==
-X-Gm-Message-State: AOAM533tZxUk1K8Lj1c+1tUBSv3K/GsaTURgu5lG3ld6gcexrYq1Nvom
-        D4LXT3ck7UgK04BqtylRizE=
-X-Google-Smtp-Source: ABdhPJxLP8WZe7gGgBmVK2NeO5bcQ2Z3pDV6uruVuvuxYt3MU2SbOwcna41ULOeAjXDflB3tyOihdg==
-X-Received: by 2002:a50:ff04:0:b0:431:6a31:f19e with SMTP id a4-20020a50ff04000000b004316a31f19emr14163539edu.89.1655043647225;
-        Sun, 12 Jun 2022 07:20:47 -0700 (PDT)
-Received: from skbuf ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id hh14-20020a170906a94e00b00703e09dd2easm2534271ejb.147.2022.06.12.07.20.45
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qh4jpXPUL/lnXpEsemWdF0NXNKzKzJDmJs+zlYRBbs0=;
+        b=0ING3uGux2tkhTQsDGdPwkH0gAZhGiI1G5b4QgEHtDvyb+VxRCxk94VWSKrKUX9Get
+         TpFdgX60VompJeb96pRt/a4qDWCQL7G98bTNfB/ehGsvxBPHg36cx3rZZOX8vuti5Jyo
+         eYeo26GFBh1YBVWIEtmBHBOWeVlvFlGXkOC08+daz55Z1EbFaPzlM2S8xgFgDFJUd1ja
+         +QJc0vcmhKKzLS92uKGCExDOH/1ONbOyqwmzojfw7OhC4rB5UP1sg2hMoDL0W3Ri+spl
+         PsKKFNmtkJr44BlQwOzHLpF9bdTrePftknw0fKJ0ikEvGO9xLf/aOHCZVhe9r4OEnUCG
+         w0Aw==
+X-Gm-Message-State: AOAM5307QZJ8hI7g0/xQi2y5Fj41jlSNxDatDxGZSAsj8oLSKngmcIQN
+        AzOI+bX8QPpfIB7ePYpOhms=
+X-Google-Smtp-Source: ABdhPJwnxH3odbVtnElrJelk/AlHcF6LoZjMj+emFe31ip6yHExOQyh2+NBYUkMVBaRN9Xulx/R8tA==
+X-Received: by 2002:a63:3ce:0:b0:3fc:6a52:8668 with SMTP id 197-20020a6303ce000000b003fc6a528668mr48255062pgd.424.1655044958699;
+        Sun, 12 Jun 2022 07:42:38 -0700 (PDT)
+Received: from ubuntu.localdomain ([103.230.148.189])
+        by smtp.gmail.com with ESMTPSA id h30-20020aa79f5e000000b00519cfca8e30sm3317660pfr.209.2022.06.12.07.42.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jun 2022 07:20:46 -0700 (PDT)
-Date:   Sun, 12 Jun 2022 17:20:44 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [RFC Patch net-next v2 01/15] net: dsa: microchip: ksz9477:
- cleanup the ksz9477_switch_detect
-Message-ID: <20220612142044.qgupbnn6u5p4seef@skbuf>
-References: <20220530104257.21485-1-arun.ramadoss@microchip.com>
- <20220530104257.21485-2-arun.ramadoss@microchip.com>
+        Sun, 12 Jun 2022 07:42:38 -0700 (PDT)
+From:   Gautam Menghani <gautammenghani201@gmail.com>
+To:     rostedt@goodmis.org, mingo@redhat.com, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com
+Cc:     Gautam Menghani <gautammenghani201@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH] kernel/trace: Remove unwanted initialization in __trace_uprobe_create()
+Date:   Sun, 12 Jun 2022 07:42:32 -0700
+Message-Id: <20220612144232.145209-1-gautammenghani201@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220530104257.21485-2-arun.ramadoss@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 30, 2022 at 04:12:43PM +0530, Arun Ramadoss wrote:
-> The ksz9477_switch_detect performs the detecting the chip id from the
-> location 0x00 and also check gigabit compatibility check & number of
-> ports based on the register global_options0. To prepare the common ksz
-> switch detect function, routine other than chip id read is moved to
-> ksz9477_switch_init.
-> 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> ---
+Remove the unwanted initialization of variable 'ret'. This fixes the clang
+scan warning: Value stored to 'ret' is never read [deadcode.DeadStores]
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
+---
+ kernel/trace/trace_uprobe.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
+index 9711589273cd..c3dc4f859a6b 100644
+--- a/kernel/trace/trace_uprobe.c
++++ b/kernel/trace/trace_uprobe.c
+@@ -546,7 +546,6 @@ static int __trace_uprobe_create(int argc, const char **argv)
+ 	bool is_return = false;
+ 	int i, ret;
+ 
+-	ret = 0;
+ 	ref_ctr_offset = 0;
+ 
+ 	switch (argv[0][0]) {
+-- 
+2.25.1
+
