@@ -2,191 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF4F7547CA7
-	for <lists+netdev@lfdr.de>; Sun, 12 Jun 2022 23:43:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 590BD547CD8
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 00:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236843AbiFLVlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jun 2022 17:41:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54916 "EHLO
+        id S237379AbiFLWrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jun 2022 18:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237514AbiFLVlT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 17:41:19 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4860E2FE67
-        for <netdev@vger.kernel.org>; Sun, 12 Jun 2022 14:40:33 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id kq6so7662738ejb.11
-        for <netdev@vger.kernel.org>; Sun, 12 Jun 2022 14:40:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6efkiC5TQ5d8cecscsrXOmD2HlmxuShBu5gYbYTpObM=;
-        b=gkAi7IMOOIGcRbSgxyuwNuF+yLKH5vQfyxa+wwgE54dvDLD/gkJ65zcvVF3CVDIA99
-         Nf2msatumXRQ/PinSPOFZacm2A+UMAVMBdKGzFQGE9p68kb8QqPpPoF4ajerF5xIuFYI
-         LUIIi8dzgnhI9dI4kK3MT8SxDdKo1hcgk8qzU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6efkiC5TQ5d8cecscsrXOmD2HlmxuShBu5gYbYTpObM=;
-        b=LOqOXT9yaszlObNrVNw/E2kzqf9vkYHswa8daVjdHQH6rnfpopmqRNyl/hnvLl7gFL
-         rw/XFpoGcu0oVKwzWmXo6Y3sY8L/RoyVU+RQWlYvhuheNM3YMldJwhqUoUvlVRwqJ/QD
-         osgagXUPyBXVn72uTvRcCjkRGJeInEoX8gh+M5licwGJwF/WIm90L6jCpEZLOhhwBZyh
-         GYgqaGQGl1+qKxJKOqbLvK7V3ihTAXjZ26+KZN1AKvh1hnj3SPB61jHe946hMm+L5PQN
-         TZSBC6X1SsgBB6vYtbe4G5vv49eVqyDJaUWki5h/AMo484rPCVP6uSPg/WQMmdXQdTK6
-         jEcw==
-X-Gm-Message-State: AOAM533ScApYBzaS8Lz7EdOUDzWRrdnGEEipDVJAM9HcX+SPqecg6uX4
-        lWyyp42fxN34sbhytsB6CyUBJg==
-X-Google-Smtp-Source: ABdhPJz+w92q3G2uw+ykCJPkHvxDtHSA6uDD3Z79m2a5NYbWqLtv19nrHeaI40rCsGt5F8VVzKAqJg==
-X-Received: by 2002:a17:907:9605:b0:6f5:c66:7c13 with SMTP id gb5-20020a170907960500b006f50c667c13mr49390538ejc.66.1655070032889;
-        Sun, 12 Jun 2022 14:40:32 -0700 (PDT)
-Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-116-90-174.pool80116.interbusiness.it. [80.116.90.174])
-        by smtp.gmail.com with ESMTPSA id u10-20020a1709061daa00b00711d546f8a8sm2909398ejh.139.2022.06.12.14.40.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jun 2022 14:40:32 -0700 (PDT)
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     michael@amarulasolutions.com,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        with ESMTP id S232947AbiFLWrI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 18:47:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1007A15FD2;
+        Sun, 12 Jun 2022 15:47:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BA60B801BD;
+        Sun, 12 Jun 2022 22:47:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0503C34115;
+        Sun, 12 Jun 2022 22:47:02 +0000 (UTC)
+Date:   Sun, 12 Jun 2022 18:46:59 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Tyler Hicks <tyhicks@linux.microsoft.com>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Ingo Molnar <mingo@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
         Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3 13/13] can: slcan: extend the protocol with CAN state info
-Date:   Sun, 12 Jun 2022 23:39:27 +0200
-Message-Id: <20220612213927.3004444-14-dario.binacchi@amarulasolutions.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220612213927.3004444-1-dario.binacchi@amarulasolutions.com>
-References: <20220612213927.3004444-1-dario.binacchi@amarulasolutions.com>
+        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 05/06] 9p fid refcount: add a 9p_fid_ref tracepoint
+Message-ID: <20220612184659.6dff5107@rorschach.local.home>
+In-Reply-To: <20220612085330.1451496-6-asmadeus@codewreck.org>
+References: <20220612085330.1451496-1-asmadeus@codewreck.org>
+        <20220612085330.1451496-6-asmadeus@codewreck.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It extends the protocol to receive the adapter CAN state changes
-(warning, busoff, etc.) and forward them to the netdev upper levels.
+On Sun, 12 Jun 2022 17:53:28 +0900
+Dominique Martinet <asmadeus@codewreck.org> wrote:
 
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+This needs to have a change log. A tracepoint should never be added
+without explaining why it is being added and its purpose.
 
----
+> Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+> ---
+> 
+> This is the first time I add a tracepoint, so if anyone has time to
+> check I didn't make something too stupid please have a look.
+> I've mostly copied from netfs'.
+> 
+> Also, a question if someone has time: I'd have liked to use the
+> tracepoint in static inline wrappers for getref/putref, but it's not
+> good to add the tracepoints to a .h, right?
 
-Changes in v3:
-- Drop the patch "can: slcan: simplify the device de-allocation".
-- Add the patch "can: netlink: dump bitrate 0 if can_priv::bittiming.bitrate is -1U".
+Correct, because it can have unexpected side effects. Thus it is best
+to call a wrapper function that is defined in a C file that will then
+call the tracepoint. To avoid the overhead of the function call when
+tracing is not enabled, you should use (in the header):
 
-Changes in v2:
-- Continue error handling even if no skb can be allocated.
+  #include <linux/tracepoint-defs.h>
 
- drivers/net/can/slcan/slcan-core.c | 66 ++++++++++++++++++++++++++++++
- 1 file changed, 66 insertions(+)
+  DECLARE_TRACEPOINT(<tracepoint-name>);
 
-diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
-index 48077edb9497..5ba1c141f942 100644
---- a/drivers/net/can/slcan/slcan-core.c
-+++ b/drivers/net/can/slcan/slcan-core.c
-@@ -78,6 +78,9 @@ MODULE_PARM_DESC(maxdev, "Maximum number of slcan interfaces");
- #define SLC_CMD_LEN 1
- #define SLC_SFF_ID_LEN 3
- #define SLC_EFF_ID_LEN 8
-+#define SLC_STATE_LEN 1
-+#define SLC_STATE_BE_RXCNT_LEN 3
-+#define SLC_STATE_BE_TXCNT_LEN 3
- 
- struct slcan {
- 	struct can_priv         can;
-@@ -175,6 +178,67 @@ int slcan_enable_err_rst_on_open(struct net_device *ndev, bool on)
-   *			STANDARD SLCAN DECAPSULATION			 *
-   ************************************************************************/
- 
-+static void slc_bump_state(struct slcan *sl)
-+{
-+	struct net_device *dev = sl->dev;
-+	struct sk_buff *skb;
-+	struct can_frame *cf;
-+	char *cmd = sl->rbuff;
-+	u32 rxerr, txerr;
-+	enum can_state state, rx_state, tx_state;
-+
-+	if (*cmd != 's')
-+		return;
-+
-+	cmd += SLC_CMD_LEN;
-+	switch (*cmd) {
-+	case 'a':
-+		state = CAN_STATE_ERROR_ACTIVE;
-+		break;
-+	case 'w':
-+		state = CAN_STATE_ERROR_WARNING;
-+		break;
-+	case 'p':
-+		state = CAN_STATE_ERROR_PASSIVE;
-+		break;
-+	case 'f':
-+		state = CAN_STATE_BUS_OFF;
-+		break;
-+	default:
-+		return;
-+	}
-+
-+	if (state == sl->can.state)
-+		return;
-+
-+	cmd += SLC_STATE_BE_RXCNT_LEN + 1;
-+	cmd[SLC_STATE_BE_TXCNT_LEN] = 0;
-+	if (kstrtou32(cmd, 10, &txerr))
-+		return;
-+
-+	*cmd = 0;
-+	cmd -= SLC_STATE_BE_RXCNT_LEN;
-+	if (kstrtou32(cmd, 10, &rxerr))
-+		return;
-+
-+	skb = alloc_can_err_skb(dev, &cf);
-+
-+	if (skb) {
-+		cf->data[6] = txerr;
-+		cf->data[7] = rxerr;
-+	}
-+
-+	tx_state = txerr >= rxerr ? state : 0;
-+	rx_state = txerr <= rxerr ? state : 0;
-+	can_change_state(dev, skb ? cf : NULL, tx_state, rx_state);
-+
-+	if (state == CAN_STATE_BUS_OFF)
-+		can_bus_off(dev);
-+
-+	if (skb)
-+		netif_rx(skb);
-+}
-+
- static void slc_bump_err(struct slcan *sl)
- {
- 	struct net_device *dev = sl->dev;
-@@ -378,6 +442,8 @@ static void slc_bump(struct slcan *sl)
- 		return slc_bump_frame(sl);
- 	case 'e':
- 		return slc_bump_err(sl);
-+	case 's':
-+		return slc_bump_state(sl);
- 	default:
- 		return;
- 	}
--- 
-2.32.0
+  if (tracepoint_enabled(<tracepoint-name>))
+	do_<tracepoint-name>(...);
+
+and in the C file have:
+
+  void do_<tracepoint-name>(...)
+  {
+	trace_<tracepoint-name>(...);
+  }
+
+that calls the tracepoint. The tracepoint_enabled(<tracepoint-name>)()
+is another special function that is created by the TRACE_EVENT() macro
+to use, that is a static branch and not a real if statement. That is, it
+is a nop that skips calling the wrapper function when not enabled, and
+a jmp to call the wrapper function when the tracepoint is enabled.
+
+How to do this is described in include/linux/tracepoint-defs.h and
+there's an example of this use case in include/linux/mmap_lock.h.
+
+> Especially with the CREATE_TRACE_POINTS macro...
+> How do people usually go about that, just bite the bullet and make it
+> a real function?
+> 
+> 
+>  include/trace/events/9p.h | 48 +++++++++++++++++++++++++++++++++++++++
+>  net/9p/client.c           |  9 +++++++-
+>  2 files changed, 56 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/trace/events/9p.h b/include/trace/events/9p.h
+> index 78c5608a1648..4dfa6d7f83ba 100644
+> --- a/include/trace/events/9p.h
+> +++ b/include/trace/events/9p.h
+> @@ -77,6 +77,13 @@
+>  		EM( P9_TWSTAT,		"P9_TWSTAT" )			\
+>  		EMe(P9_RWSTAT,		"P9_RWSTAT" )
+>  
+> +
+> +#define P9_FID_REFTYPE							\
+> +		EM( P9_FID_REF_CREATE,	"create " )			\
+> +		EM( P9_FID_REF_GET,	"get    " )			\
+> +		EM( P9_FID_REF_PUT,	"put    " )			\
+> +		EMe(P9_FID_REF_DESTROY,	"destroy" )
+> +
+>  /* Define EM() to export the enums to userspace via TRACE_DEFINE_ENUM() */
+>  #undef EM
+>  #undef EMe
+> @@ -84,6 +91,21 @@
+>  #define EMe(a, b)	TRACE_DEFINE_ENUM(a);
+>  
+>  P9_MSG_T
+> +P9_FID_REFTYPE
+> +
+> +/* And also use EM/EMe to define helper enums -- once */
+> +#ifndef __9P_DECLARE_TRACE_ENUMS_ONLY_ONCE
+> +#define __9P_DECLARE_TRACE_ENUMS_ONLY_ONCE
+> +#undef EM
+> +#undef EMe
+> +#define EM(a, b)	a,
+> +#define EMe(a, b)	a
+> +
+> +enum p9_fid_reftype {
+> +	P9_FID_REFTYPE
+> +} __mode(byte);
+> +
+> +#endif
+>  
+>  /*
+>   * Now redefine the EM() and EMe() macros to map the enums to the strings
+> @@ -96,6 +118,8 @@ P9_MSG_T
+>  
+>  #define show_9p_op(type)						\
+>  	__print_symbolic(type, P9_MSG_T)
+> +#define show_9p_fid_reftype(type)					\
+> +	__print_symbolic(type, P9_FID_REFTYPE)
+>  
+>  TRACE_EVENT(9p_client_req,
+>  	    TP_PROTO(struct p9_client *clnt, int8_t type, int tag),
+> @@ -168,6 +192,30 @@ TRACE_EVENT(9p_protocol_dump,
+>  		      __entry->tag, 0, __entry->line, 16, __entry->line + 16)
+>   );
+>  
+> +
+> +TRACE_EVENT(9p_fid_ref,
+> +	    TP_PROTO(struct p9_fid *fid, __u8 type),
+> +
+> +	    TP_ARGS(fid, type),
+> +
+> +	    TP_STRUCT__entry(
+> +		    __field(	int,	fid		)
+> +		    __field(	int,	refcount	)
+> +		    __field(	__u8, type	)
+> +		    ),
+> +
+> +	    TP_fast_assign(
+> +		    __entry->fid = fid->fid;
+> +		    __entry->refcount = refcount_read(&fid->count);
+> +		    __entry->type = type;
+> +		    ),
+> +
+> +	    TP_printk("%s fid %d, refcount %d",
+> +		      show_9p_fid_reftype(__entry->type),
+> +		      __entry->fid, __entry->refcount)
+> +);
+> +
+> +
+>  #endif /* _TRACE_9P_H */
+>  
+>  /* This part must be outside protection */
+> diff --git a/net/9p/client.c b/net/9p/client.c
+> index 5531b31e0fb2..fdeeda0a811d 100644
+> --- a/net/9p/client.c
+> +++ b/net/9p/client.c
+> @@ -907,8 +907,10 @@ static struct p9_fid *p9_fid_create(struct p9_client *clnt)
+>  			    GFP_NOWAIT);
+>  	spin_unlock_irq(&clnt->lock);
+>  	idr_preload_end();
+> -	if (!ret)
+> +	if (!ret) {
+> +		trace_9p_fid_ref(fid, P9_FID_REF_CREATE);
+>  		return fid;
+> +	}
+>  
+>  	kfree(fid);
+>  	return NULL;
+> @@ -920,6 +922,7 @@ static void p9_fid_destroy(struct p9_fid *fid)
+>  	unsigned long flags;
+>  
+>  	p9_debug(P9_DEBUG_FID, "fid %d\n", fid->fid);
+> +	trace_9p_fid_ref(fid, P9_FID_REF_DESTROY);
+>  	clnt = fid->clnt;
+>  	spin_lock_irqsave(&clnt->lock, flags);
+>  	idr_remove(&clnt->fids, fid->fid);
+> @@ -932,6 +935,8 @@ static void p9_fid_destroy(struct p9_fid *fid)
+>   * because trace_* functions can't be used there easily
+>   */
+>  struct p9_fid *p9_fid_get(struct p9_fid *fid) {
+> +	trace_9p_fid_ref(fid, P9_FID_REF_GET);
+> +
+>  	refcount_inc(&fid->count);
+>  
+>  	return fid;
+> @@ -941,6 +946,8 @@ int p9_fid_put(struct p9_fid *fid) {
+>  	if (!fid || IS_ERR(fid))
+>  		return 0;
+>  
+> +	trace_9p_fid_ref(fid, P9_FID_REF_PUT);
+> +
+>          if (!refcount_dec_and_test(&fid->count))
+>                  return 0;
+>  
+
+Nothing stands out to me that would be wrong with the above.
+
+-- Steve
 
