@@ -2,227 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C1325480AD
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 09:38:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B98B548179
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 10:28:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232912AbiFMHh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 03:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42728 "EHLO
+        id S237668AbiFMIEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 04:04:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbiFMHhZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 03:37:25 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 212ACFD0
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 00:37:24 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1o0edJ-0006ct-5A; Mon, 13 Jun 2022 09:37:09 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 27A7993925;
-        Mon, 13 Jun 2022 07:37:07 +0000 (UTC)
-Date:   Mon, 13 Jun 2022 09:37:06 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     linux-kernel@vger.kernel.org, michael@amarulasolutions.com,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 13/13] can: slcan: extend the protocol with CAN state
- info
-Message-ID: <20220613073706.rk3bve57zi2p3nnz@pengutronix.de>
-References: <20220612213927.3004444-1-dario.binacchi@amarulasolutions.com>
- <20220612213927.3004444-14-dario.binacchi@amarulasolutions.com>
+        with ESMTP id S239522AbiFMIDN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 04:03:13 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2042.outbound.protection.outlook.com [40.107.236.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA5EFCB
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 01:03:08 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=drd5w4s5c4wQA8KVvwQZ8SlqJv3tvYgG2p6dxKJdYs1RF8//LcSdDbKaIMULaPubXcAcPmMVnFcRnpEbAik/wHaq3hu+lNnGR50jtd64DX3FBLj2sueu0zgKtS/mWuvKWOazCd3hgRw7kdWbjuGvIlOl2n4GXpB7ya8hxz0X123JV5tXaUbnRPabBpCmY+V1xERS+h+Ka6RGJPyZEFgVa4T9+UiBP4ayAostSWM9iOIGTL88FY5Ik4zFxYajGtqBtpmxe/ugopRj9L1DkjI+MnZ/oSV5+gX3RNHDTcdcJYB5RYbcMRRCGcAxaXfnJPVXBlCeR5fyeiLVfUoFXQK1xw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3sajMeZvXRzkpEo4NPDnsoMQ+3vftmUfR0z/Fah4sxI=;
+ b=TY1ldvxI+Lj9KAZ6WX+goff5Z20DDdlmqsaZaJXJhqlr+K1bvhY5u8jLqN8gCWxaWAaY87FiJIvxmy1/OMGvr3dSZObeqrolRdZLp4JOjFA8UcnOouR9TF+RoP6+ZqojsSK3nz+Yvh2y6qae1yy6XzcnjXui3pUyti3fdtXGt3dsBYwkEShlU/qGeA5TA/p4oRAKDGYaQHxPi8t0boE0nQhjRYbdKX3Na6ixgjyCo8Yaa+G9+afFZQMKYmMwRqkZjz/RnxoreSyLOoS0X39KpyUj139XXrqfgslEaAR/N4siUgSv8ZIopvYSBtFmADSAHBDW594GKcGBzHtgP7eqqA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synaptics.com; dmarc=pass action=none
+ header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3sajMeZvXRzkpEo4NPDnsoMQ+3vftmUfR0z/Fah4sxI=;
+ b=fZCxpUXYjWtUoh1Smxgkj7EfvyST9Bki/v7tsSa3QK9z3eauOE7OarOQPJtCVqkE2Vw45wImz3jJjSqqXZ89LvcT8DDMr864izo+quRRZfYeHeDGlgExLm0pqxNSLBhglbp2wrDFm1KEBSSwrqSbd+N6XUyPETCiVHNX9Ttml18=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=synaptics.com;
+Received: from SJ0PR03MB6533.namprd03.prod.outlook.com (2603:10b6:a03:386::12)
+ by PH0PR03MB5765.namprd03.prod.outlook.com (2603:10b6:510:40::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Mon, 13 Jun
+ 2022 08:03:06 +0000
+Received: from SJ0PR03MB6533.namprd03.prod.outlook.com
+ ([fe80::d52:5cb7:8c3b:f666]) by SJ0PR03MB6533.namprd03.prod.outlook.com
+ ([fe80::d52:5cb7:8c3b:f666%5]) with mapi id 15.20.5332.013; Mon, 13 Jun 2022
+ 08:03:06 +0000
+From:   =?UTF-8?q?=C5=81ukasz=20Spintzyk?= <lukasz.spintzyk@synaptics.com>
+To:     netdev@vger.kernel.org
+Cc:     oliver@neukum.org, ppd-posix@synaptics.com
+Subject: [PATCH 0/2] DisplayLink USB-ethernet improvements.
+Date:   Mon, 13 Jun 2022 10:02:33 +0200
+Message-Id: <20220613080235.15724-1-lukasz.spintzyk@synaptics.com>
+X-Mailer: git-send-email 2.36.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BEXP281CA0005.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10::15)
+ To SJ0PR03MB6533.namprd03.prod.outlook.com (2603:10b6:a03:386::12)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6oqspa3zxzgl76ei"
-Content-Disposition: inline
-In-Reply-To: <20220612213927.3004444-14-dario.binacchi@amarulasolutions.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ca73757b-44e2-4cd1-7769-08da4d1323a9
+X-MS-TrafficTypeDiagnostic: PH0PR03MB5765:EE_
+X-Microsoft-Antispam-PRVS: <PH0PR03MB57651585EC0F97C972ED008EE1AB9@PH0PR03MB5765.namprd03.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PLONkjBGdVvlu1IwMLnj/6nKXcjAOodbkVmMr64jVKKgeSw3jvTEJIfqDXmlTm5Ogw5V1mSDYP3nh8Sd96bIlbjknZbWAu69PpuJH0YHOV7aM1ZPD47tKcRK92dqAh0MXQ8DSTJ+R6+z7NLyuLMkq7ggnPOcs08A+dIWcTqiNriRJSYMvOQQgmD4Z4DO1Tr30xaSbodg+WBVDTxesUGlgKJdS47Mc7xttdIHWvp5+d8kRRblCvdaDxRZh6pYUTeRsPVne+q39j1MJKhF/tivGpRMrPBpa++9HZIwXtA6ZdbzHWHtXo/6ZY275y8k8XEPTRHdh/G/4jeiJxFxhfsxEUTLJ9P8uUMeNy/AN0Y+WvAMP+91af6fz7+w2RKRQwKr06KXseRcAdWb9tJXrv8O//HO7QML/7+HJwtuOjsfpBbbPpff2UUGWdn5AFYS7fiZwL9fozmEmiH8i1K70r0zwawo6P7qEPrTEDAfxIxFonfPWie2JsvPquKXet0YPgysM1aiEj7v1TpbJ/j8yiji5t6xIvYjG3k626uXsLf3Y5J0NPdHnOsQq6Zk2Wmf6ImHTcoWkGYWunfhgtJq1KaARoMBwZOFfWxDmuO9YXIs4yKLvZqlWINb/6sfzwy4Lrj3YpmjUELnGafEReUGLA71yIv8NW3TNFRzBRwOEr+6jE0gW9Ibxme8J7k2L+MivkjlnJGZsmJXpHf6YDJd6UCK5g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR03MB6533.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(36756003)(316002)(83380400001)(186003)(2616005)(107886003)(1076003)(5660300002)(4744005)(6916009)(6486002)(4326008)(66946007)(8676002)(66556008)(66476007)(2906002)(6666004)(8936002)(52116002)(38350700002)(508600001)(6506007)(38100700002)(26005)(6512007)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UTVvcTRoSGk4dW9TU3J2N1NuNVM0VDFJVVQ1bVI2MWRNbXJUcHVnU2JEV3NE?=
+ =?utf-8?B?dGxDUmFoOUxjVzU2RWI1UjlTcG1HNXhEVVRkbmNRQ3ZhRTZSSFh2dU1Lb3JF?=
+ =?utf-8?B?UkRNakZKSFhVWjZ1TGlLQnNhNWNiTHhtdVBuVjBnS1BPYzZMLzZQcmFuWFdo?=
+ =?utf-8?B?YlkzOWc3cmt4UkhkOVJiSmpKeEtEcVVBMnJHZE9Mb1hxVGVSVFNaYm80M1ht?=
+ =?utf-8?B?dVYzMklHb2lPQmM3dGFKR1g2QlpEL2pacnl4NzgrVlFIdGJuVVB4MUVhenl6?=
+ =?utf-8?B?VHg5UWtjSTVHQnVWZkN2dlh2eDhqbmRlL21ES1drVU5LMnBFQ1JpMTNzRm41?=
+ =?utf-8?B?bVEzQmVrOW9UY0toZ1R5SHdsZzdmdGc4RkJJVjVERVhTTjJ3cmNWNmV3bjla?=
+ =?utf-8?B?WCtjeU9OZFR6elFJNDFqY1lRc2lwdWk4SEhQTHY1UFFsWFpMbVg5RnYzYlYx?=
+ =?utf-8?B?dGJIM3hwRHIwQU5xUml2QUFJV1h2S2gvN0R0YnEwaU4rTVQ0d0N0S05RdCsw?=
+ =?utf-8?B?blNBR1Z1VlU2a0c1RHkyMlJhTURMTE40bHFLSTFVNXJpOVh1Tkx5TnVEWEIy?=
+ =?utf-8?B?RVptZmJRMUhWRUNMbDE5UEY4UkFaKzdudXd3MzJMYWxkSWppM2pNSS9OMDRw?=
+ =?utf-8?B?ME1KTXdyTmtZRG5URXF5akVIdDJiTFpBOEtnN0tSMHJwRTg4VkZrT1YvQ0FJ?=
+ =?utf-8?B?QnBVWEtQNmVNR1M3ZUxoaVpVRTBhcXJRYkRhTzVHblRiZS8vM0JxUytoMFlD?=
+ =?utf-8?B?a2ZLVTBOdGtleURJYUl5TEUyWmVJSzh6VmlKdjZBRUcwWXo0eDlNSFZZVXlj?=
+ =?utf-8?B?WCtDV0xoanZPcUFPRllUMUdJS1FmTmltS2wyRnJRUEdkUG9CWENRODBtWmly?=
+ =?utf-8?B?L2R5K3pSOUdVUS91YWFuanR5NHNtSkwvdm4ydnlxWC9DSC9xK3pCWHJzWlNR?=
+ =?utf-8?B?aEdObmRLaVcxdWNUZC9uRFd6MENKRDlpcGo1MnF6dnUwdUFCNDdZc1N6TUNp?=
+ =?utf-8?B?c3NsRFhWWGdZSSt4RUZ2UnFQemk0SGt3MXJFaXNKb09Vajk0bFk0c1lQdFNB?=
+ =?utf-8?B?a1pWbURNTHdiTDVVRlM4ejRUYUhEdHRLbGdUQkZMMnkxRGtmdnl5amorYkRU?=
+ =?utf-8?B?Ry9CWkNESmtZVzI3TnVrNzFsanU1alUyTlNqZFlVYmFPR1ZhQkNSdW5YTkwz?=
+ =?utf-8?B?NGRCOUt4TVBhTXVaVHJML29HS2tBelcrVUZFM25ZNUd3RUpSMmN2YnBjK25P?=
+ =?utf-8?B?SGRCUEZRRklRT2Vwdlo4SFJmMk9VZi9obUVZUlZycytQM2V3czF1ZWZCZzJZ?=
+ =?utf-8?B?RUhrUlBuYVVtNm95OUZmZkc1UWZyY1hmZWFvS2RWWjRrZWZwcUEzYzd3Z3dN?=
+ =?utf-8?B?Z1NUQVFCcjBZbEordWZrUE8xOStiVlNZL0lPRFJVa1Q0Y3VPU0h2VVl2cG1Q?=
+ =?utf-8?B?UmRmZTdHdGFMZTFtTkR6NEg5a3d4YmhQbDYwWUsrcXB6aFM1M1B3Mkg2V2Ns?=
+ =?utf-8?B?WFFNRWJlUEtEbXU2L04yeG9VTks3dDA0dFlaS2JTYVNndHF0dFlLL0hxYXJ2?=
+ =?utf-8?B?OWl0MFZBOTNxM0E0Z1JMYnlYKy95TXFER01RVWdSYUF0Qy9lNnVUSUFnYSsr?=
+ =?utf-8?B?aGF5V1NBV2NaRnBmZTVYQ3VvYnZoSUdCK0hMWi8vSVIwR01yNW40R1lYQU1v?=
+ =?utf-8?B?U3RKa1pnc0xJT3N3bEdsQ2NxSWJ4akdKdERGRnNHOGNHbFlwS0JTNmsvdVl4?=
+ =?utf-8?B?aGljSWxFbEhGdU1CS29LeU11RGFUcjdMMUFvUmZwYUVIT2VEOThLNmRQeEp1?=
+ =?utf-8?B?Wmxva252TUkwTU5leno2RWI2bjFDQnM0TVV1d2ZLWDFKcjF1enM5MWZ6Z1FL?=
+ =?utf-8?B?ZFBIRmN1SVZ0QkFtZThJckhiaWhMREwyZmVLRE5RaUozOWNEM2VlZHNXbXVJ?=
+ =?utf-8?B?MjI1c2FWRWl0NFRBZGIxUHRod3hpcDBweFFUdisxTTdXNkZ0Z3BOR05OcWc3?=
+ =?utf-8?B?QUVyREdHM0dVV2o4QUEzRjk5N24wT1ZoTGtOZkFVRGIyNUNtcG9lVStrandT?=
+ =?utf-8?B?L09HWWFTVGNQY3pnYkFSZ2VXY2ROTzVyNllZRkw5R1pDQUJ1TkQrN0puNE1j?=
+ =?utf-8?B?V3grdmJ1VGFNbEdBM0U2dmFDUFM2RUFhMWlVU3FRbXM5RDVXaXRLUDVUdXl5?=
+ =?utf-8?B?RmEzSkQ4SUp6ZytHaVJIL0lHZ0FlNHozTXNUa0c3NWNhaTg4YmZiUk1hdVU2?=
+ =?utf-8?B?aExwZmJPeFdoRTd5WHpOVk9zVSsydmVQRFFKY05QbUxtRlpDZ3dSSVdCMG8y?=
+ =?utf-8?B?dzRIbVR1TEpSdDBXR0JTZlB5U2tSWVB6bjZLdVlqT3NldEdKcVljdz09?=
+X-OriginatorOrg: synaptics.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ca73757b-44e2-4cd1-7769-08da4d1323a9
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR03MB6533.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 08:03:06.2995
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: h9JXii5O6WJfajZ79GrLjBItYgPZOI9YQSX6GDkIM9i7jHGf8m1FHwi5D6K8JgRNIYI4Ku5ntK7oS0+sRiU4Yw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR03MB5765
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi all,
+This are two patches to cdc_ncm driver used in our DisplayLink USB docking stations.
+They are independent, however both of them are improving performance and stability so it matches Windows experience.
 
---6oqspa3zxzgl76ei
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Please take a look.
+Also I want to ask for forgiveness if there is something wrong with the contribution flow.
 
-On 12.06.2022 23:39:27, Dario Binacchi wrote:
-> It extends the protocol to receive the adapter CAN state changes
-> (warning, busoff, etc.) and forward them to the netdev upper levels.
->=20
-> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
->=20
-> ---
->=20
-> Changes in v3:
-> - Drop the patch "can: slcan: simplify the device de-allocation".
-> - Add the patch "can: netlink: dump bitrate 0 if can_priv::bittiming.bitr=
-ate is -1U".
->=20
-> Changes in v2:
-> - Continue error handling even if no skb can be allocated.
->=20
->  drivers/net/can/slcan/slcan-core.c | 66 ++++++++++++++++++++++++++++++
->  1 file changed, 66 insertions(+)
->=20
-> diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/s=
-lcan-core.c
-> index 48077edb9497..5ba1c141f942 100644
-> --- a/drivers/net/can/slcan/slcan-core.c
-> +++ b/drivers/net/can/slcan/slcan-core.c
-> @@ -78,6 +78,9 @@ MODULE_PARM_DESC(maxdev, "Maximum number of slcan inter=
-faces");
->  #define SLC_CMD_LEN 1
->  #define SLC_SFF_ID_LEN 3
->  #define SLC_EFF_ID_LEN 8
-> +#define SLC_STATE_LEN 1
-> +#define SLC_STATE_BE_RXCNT_LEN 3
-> +#define SLC_STATE_BE_TXCNT_LEN 3
-> =20
->  struct slcan {
->  	struct can_priv         can;
-> @@ -175,6 +178,67 @@ int slcan_enable_err_rst_on_open(struct net_device *=
-ndev, bool on)
->    *			STANDARD SLCAN DECAPSULATION			 *
->    **********************************************************************=
-**/
-> =20
-> +static void slc_bump_state(struct slcan *sl)
-> +{
-> +	struct net_device *dev =3D sl->dev;
-> +	struct sk_buff *skb;
-> +	struct can_frame *cf;
-> +	char *cmd =3D sl->rbuff;
-> +	u32 rxerr, txerr;
-> +	enum can_state state, rx_state, tx_state;
-> +
-> +	if (*cmd !=3D 's')
-> +		return;
+Regards,
+Łukasz Spintzyk
 
-Checked by the caller?
+Software Developer at Synaptics Inc.
 
-> +
-> +	cmd +=3D SLC_CMD_LEN;
-> +	switch (*cmd) {
-> +	case 'a':
-> +		state =3D CAN_STATE_ERROR_ACTIVE;
-> +		break;
-> +	case 'w':
-> +		state =3D CAN_STATE_ERROR_WARNING;
-> +		break;
-> +	case 'p':
-> +		state =3D CAN_STATE_ERROR_PASSIVE;
-> +		break;
-> +	case 'f':
-> +		state =3D CAN_STATE_BUS_OFF;
-> +		break;
-> +	default:
-> +		return;
-> +	}
-> +
-> +	if (state =3D=3D sl->can.state)
-> +		return;
-> +
-> +	cmd +=3D SLC_STATE_BE_RXCNT_LEN + 1;
+Dominik Czerwik (1):
+  net/cdc_ncm: Enable ZLP for DisplayLink ethernet devices
 
-Have you checked that you have received that much data?
+Łukasz Spintzyk (1):
+  net/cdc_ncm: Add ntb_max_rx,ntb_max_tx cdc_ncm module parameters
 
-> +	cmd[SLC_STATE_BE_TXCNT_LEN] =3D 0;
-> +	if (kstrtou32(cmd, 10, &txerr))
-> +		return;
-> +
-> +	*cmd =3D 0;
-> +	cmd -=3D SLC_STATE_BE_RXCNT_LEN;
-> +	if (kstrtou32(cmd, 10, &rxerr))
-> +		return;
+ drivers/net/usb/cdc_ncm.c | 34 ++++++++++++++++++++++++++++++++--
+ 1 file changed, 32 insertions(+), 2 deletions(-)
 
-Why do you parse TX first and then RX?
+-- 
+2.36.1
 
-> +
-> +	skb =3D alloc_can_err_skb(dev, &cf);
-> +
-> +	if (skb) {
-> +		cf->data[6] =3D txerr;
-> +		cf->data[7] =3D rxerr;
-> +	}
-> +
-> +	tx_state =3D txerr >=3D rxerr ? state : 0;
-> +	rx_state =3D txerr <=3D rxerr ? state : 0;
-> +	can_change_state(dev, skb ? cf : NULL, tx_state, rx_state);
-
-alloc_can_err_skb() set cf to NULL if no skb can be allocated.
-
-> +
-> +	if (state =3D=3D CAN_STATE_BUS_OFF)
-> +		can_bus_off(dev);
-> +
-> +	if (skb)
-> +		netif_rx(skb);
-> +}
-> +
->  static void slc_bump_err(struct slcan *sl)
->  {
->  	struct net_device *dev =3D sl->dev;
-> @@ -378,6 +442,8 @@ static void slc_bump(struct slcan *sl)
->  		return slc_bump_frame(sl);
->  	case 'e':
->  		return slc_bump_err(sl);
-> +	case 's':
-> +		return slc_bump_state(sl);
->  	default:
->  		return;
->  	}
-> --=20
-> 2.32.0
->=20
->=20
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---6oqspa3zxzgl76ei
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKm6R8ACgkQrX5LkNig
-013IcQf/RNMwVpm+FAcGxglx3iuEuWVuSiGq7MbcJwkk76TTGqujlPrtx/PrlcPc
-80btvN7GEUIe7067Xh5bW2828IbgFLoJPqtJImGSt9Fq2g2tf+VhIREg/QVRrmOp
-tFbexW9NJRxtE8Lzv8Uwngyap2RiksFQ6ik6J7Rlb7sNYs3JHPdCNtOi/8wS+oH1
-cj2tM5yhxd491oPOqO6TAMJknsC2MErKYDn+ItY55g5mF25C/CTu5K7dU4PMMNJY
-adIgjFWWhGa/0lu/MM8Qrq27f4ZObDRN5D0HqeweicJnxrxAn20pYxVCnNgObgKW
-dXmzRRsn95N1rt+i1/1mF/lijO3Vsg==
-=5O8X
------END PGP SIGNATURE-----
-
---6oqspa3zxzgl76ei--
