@@ -2,161 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F06B548209
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 10:55:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 367645483A6
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 11:45:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240400AbiFMIye (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 04:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49190 "EHLO
+        id S240909AbiFMJj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 05:39:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233424AbiFMIyd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 04:54:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A11CB5FF7
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 01:54:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655110471;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4KjgQ8HGSq2J7WMLesh9KTKYS17SXSbspP3uqq4OPEY=;
-        b=FplIrzeUgx+JLlqGubSL0uimS0Q2/Ck7UozME/qb0CIAkAfBMXHbFS3h/JlWYzWcV1ElQr
-        rCPZSwiJrpPvC0q2hQG0aO00l/r32bhS28A7cULL2dSinvho8a5m6bizUUp9RxpgPe+Z0U
-        WOLBLHMy5gQBizKmybWh+QSQspT4jsY=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-204-QG4piJB0Py-saeK6LN8NeQ-1; Mon, 13 Jun 2022 04:54:30 -0400
-X-MC-Unique: QG4piJB0Py-saeK6LN8NeQ-1
-Received: by mail-qv1-f72.google.com with SMTP id kd24-20020a056214401800b0046d7fd4a421so3431225qvb.20
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 01:54:30 -0700 (PDT)
+        with ESMTP id S240251AbiFMJj5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 05:39:57 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D541512D3B
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 02:39:55 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id s1so6345512wra.9
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 02:39:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=MrZPrCpzMv5ZGraAtIMvxCJ7sbcfmkSDpcXF0V3831o=;
+        b=pZkFyjgLzgoi4J/6kncK8psnp1MLuKhj2iKl2jEnO4DyPUu5t94TYF9SK+uiKddRGX
+         EBgm2MQ4YorQJHgraUZqDc9oRu14EMDO18MpcATL/glxJGyvX0JJvdYXVF244lM1tUqY
+         ZKfHqgvOuQvpUb7sadTsBj6Y1a0VzfcJ+cBW5q8OPQJM8bA2sQ/dO36wJf2ClBDoTMzc
+         pQGw6ziZSrQAYMf0K3fXu9MdH+jsddx1lzVSFX6n9GmHK+C5blcxGO1ACyfY8M9xk63x
+         4LnnHYToGytg0ESbfoq5mrNeXEMJStDyxfLjMgeqyE8TJ8nJMObSyZPK/5Tmh+rwjHh5
+         UXrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=4KjgQ8HGSq2J7WMLesh9KTKYS17SXSbspP3uqq4OPEY=;
-        b=3M/vTaAdvXB0rTHIoPtdHLk76Snn7BC6mgudXSWJ2yOoV6AtF/wBdjsWgO+DsKRWFc
-         Dyis6MzytS7J2iJm6OAyPQayIRnfy0ApE8NKiel4UTRoDXqUQlneX/yMlHqEmmAaQCyv
-         Z4MhRJjPG5uaxe8Hhokn1bWszzlxnuWJmRDpVurkQocShekUuN3pVA9VCuFpr+IbrsLC
-         gKJFI667BBSS9yeMJUL9DJrenmxEn1CY62cu8iE0YM3F6DuKj5p0gXcLn0P0F6Fk6mp4
-         rnoo6Nd7DAltmdz7+k6sIuJKHMVDbYSPE/KfBr0d4yA2M1n6w/35j3/Nj/SIazNzjlPu
-         tRRg==
-X-Gm-Message-State: AOAM531aG3EI0KtsucHWg1bO+schBIMay1GdEkN2JnFzF+60To00p05j
-        zsWMTsL2/OExzJN20Nh9QFHeuDlLuEQFidIOzmDW4NOUX6FUh97/CMnnW353geqWu488KfB+RDX
-        JKIYzCRqYP1gb8aJL
-X-Received: by 2002:a37:a781:0:b0:6a6:9b4c:fc8d with SMTP id q123-20020a37a781000000b006a69b4cfc8dmr34331663qke.657.1655110470067;
-        Mon, 13 Jun 2022 01:54:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxLKAhytZFfLQQeuW9E/Pm2tvxqTqKSiAxOefCJ0tsCfeagh1tGD4fU7pLQNZ/nHVdj1LceZg==
-X-Received: by 2002:a37:a781:0:b0:6a6:9b4c:fc8d with SMTP id q123-20020a37a781000000b006a69b4cfc8dmr34331656qke.657.1655110469837;
-        Mon, 13 Jun 2022 01:54:29 -0700 (PDT)
-Received: from sgarzare-redhat (host-79-46-200-40.retail.telecomitalia.it. [79.46.200.40])
-        by smtp.gmail.com with ESMTPSA id i198-20020a379fcf000000b006a73aefce28sm5814643qke.30.2022.06.13.01.54.26
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=MrZPrCpzMv5ZGraAtIMvxCJ7sbcfmkSDpcXF0V3831o=;
+        b=koVsuxnHEcFH3Dec5WSoFnHTbm6pgzvVDV2Ap4uGzhpA/0WUESuY1bGJF1TRqA70qy
+         yx6uw7Ix1aUvgj2wxuMdbJLj+lBxCx4sjIGsEgKpFqhYyMREcGm/9hQL3/A0WO8MTfZ3
+         thgDXDq7ufpfhOhptj6SONHI54plbtPpivOwoj1eucKxj3C0vWYeR4UJa3bRGOfKPN4t
+         71q3y7x/noZ0cxqn/COLWcGFDEmawxlOu0sUyuiqhJw4TpZR8UzwioeJxlXQlGTU6iTE
+         Bu1a3nISs1u1DuaKoxyopPbfZL1i/gYXC5Dw7/gVSulO8nGFyj9XejhgvWUqiRiM8P0J
+         fFnA==
+X-Gm-Message-State: AOAM532DL/EUye+zxwfdO2I3bIbI1BptxAJj18IfCJp25fjxImf83pbY
+        3ByIp/e+pmBFw9G1DX0ZVeVttQ==
+X-Google-Smtp-Source: ABdhPJypByM9Jw1bwLYBwoXFLYaEnhkkvavblSHVHzgB0yMEgT0UuxOZdFLWBUNs9o+WNKn4mLmoCA==
+X-Received: by 2002:a05:6000:1a89:b0:219:b255:d874 with SMTP id f9-20020a0560001a8900b00219b255d874mr21656856wry.50.1655113194309;
+        Mon, 13 Jun 2022 02:39:54 -0700 (PDT)
+Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.gmail.com with ESMTPSA id c130-20020a1c3588000000b0039c693a54ecsm10357994wma.23.2022.06.13.02.39.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 01:54:29 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 10:54:20 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>
-Subject: Re: [RFC PATCH v2 0/8] virtio/vsock: experimental zerocopy receive
-Message-ID: <20220613085420.e4limzn3dneuhu6y@sgarzare-redhat>
-References: <e37fdf9b-be80-35e1-ae7b-c9dfeae3e3db@sberdevices.ru>
- <20220609085428.idi4qzydhdpzszzw@sgarzare-redhat>
- <1c58ec1f-f991-4527-726a-9f45c2ff5684@sberdevices.ru>
+        Mon, 13 Jun 2022 02:39:53 -0700 (PDT)
+References: <CAK4VdL3-BEBzgVXTMejrAmDjOorvoGDBZ14UFrDrKxVEMD2Zjg@mail.gmail.com>
+ <1jczjzt05k.fsf@starbuckisacylon.baylibre.com>
+ <CAK4VdL2=1ibpzMRJ97m02AiGD7_sN++F3SCKn6MyKRZX_nhm=g@mail.gmail.com>
+ <6b04d864-7642-3f0a-aac0-a3db84e541af@gmail.com>
+ <CAK4VdL0gpz_55aYo6pt+8h14FHxaBmo5kNookzua9+0w+E4JcA@mail.gmail.com>
+ <1e828df4-7c5d-01af-cc49-3ef9de2cf6de@gmail.com>
+ <1j8rts76te.fsf@starbuckisacylon.baylibre.com>
+ <a4d3fef1-d410-c029-cdff-4d90f578e2da@gmail.com>
+ <CAK4VdL08sdZV7o7Bw=cutdmoCEi1NYB-yisstLqRuH7QcHOHvA@mail.gmail.com>
+ <435b2a9d-c3c6-a162-331f-9f47f69be5ac@gmail.com>
+ <CAK4VdL28nWstiS09MYq5nbtiL+aMbNc=Hzv5F0-VMuNKmX9R+Q@mail.gmail.com>
+ <1j5yonnp1a.fsf@starbuckisacylon.baylibre.com>
+ <44006194-eab1-7ae2-3cc8-41c210efd0b1@gmail.com>
+ <CACdvmAhcyNXViJgk6o6oAoYvAjAg-NFD74Eym_nGHJx3YAqjzw@mail.gmail.com>
+User-agent: mu4e 1.6.10; emacs 27.1
+From:   Jerome Brunet <jbrunet@baylibre.com>
+To:     Da Xue <da@lessconfused.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Erico Nunes <nunes.erico@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        linux-sunxi@lists.linux.dev
+Subject: Re: net: stmmac: dwmac-meson8b: interface sometimes does not come
+ up at boot
+Date:   Mon, 13 Jun 2022 11:10:19 +0200
+In-reply-to: <CACdvmAhcyNXViJgk6o6oAoYvAjAg-NFD74Eym_nGHJx3YAqjzw@mail.gmail.com>
+Message-ID: <1j35g8gavs.fsf@starbuckisacylon.baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1c58ec1f-f991-4527-726a-9f45c2ff5684@sberdevices.ru>
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 09, 2022 at 12:33:32PM +0000, Arseniy Krasnov wrote:
->On 09.06.2022 11:54, Stefano Garzarella wrote:
->> Hi Arseniy,
->> I left some comments in the patches, and I'm adding something also here:
->Thanks for comments
->>
->> On Fri, Jun 03, 2022 at 05:27:56AM +0000, Arseniy Krasnov wrote:
->>>                              INTRODUCTION
->>>
->>>     Hello, this is experimental implementation of virtio vsock zerocopy
->>> receive. It was inspired by TCP zerocopy receive by Eric Dumazet. This API uses
->>> same idea: call 'mmap()' on socket's descriptor, then every 'getsockopt()' will
->>> fill provided vma area with pages of virtio RX buffers. After received data was
->>> processed by user, pages must be freed by 'madvise()'  call with MADV_DONTNEED
->>> flag set(if user won't call 'madvise()', next 'getsockopt()' will fail).
->>
->> If it is not too time-consuming, can we have a table/list to compare this and the TCP zerocopy?
->You mean compare API with more details?
 
-Yes, maybe a comparison from the user's point of view to do zero-copy 
-with TCP and VSOCK.
+On Sat 11 Jun 2022 at 17:00, Da Xue <da@lessconfused.com> wrote:
 
->>
->>>
->>>                                 DETAILS
->>>
->>>     Here is how mapping with mapped pages looks exactly: first page mapping
->>> contains array of trimmed virtio vsock packet headers (in contains only length
->>> of data on the corresponding page and 'flags' field):
->>>
->>>     struct virtio_vsock_usr_hdr {
->>>         uint32_t length;
->>>         uint32_t flags;
->>>         uint32_t copy_len;
->>>     };
->>>
->>> Field  'length' allows user to know exact size of payload within each sequence
->>> of pages and 'flags' allows user to handle SOCK_SEQPACKET flags(such as message
->>> bounds or record bounds). Field 'copy_len' is described below in 'v1->v2' part.
->>> All other pages are data pages from RX queue.
->>>
->>>             Page 0      Page 1      Page N
->>>
->>>     [ hdr1 .. hdrN ][ data ] .. [ data ]
->>>           |        |       ^           ^
->>>           |        |       |           |
->>>           |        *-------------------*
->>>           |                |
->>>           |                |
->>>           *----------------*
->>>
->>>     Of course, single header could represent array of pages (when packet's
->>> buffer is bigger than one page).So here is example of detailed mapping layout
->>> for some set of packages. Lets consider that we have the following sequence  of
->>> packages: 56 bytes, 4096 bytes and 8200 bytes. All pages: 0,1,2,3,4 and 5 will
->>> be inserted to user's vma(vma is large enough).
->>
->> In order to have a "userspace polling-friendly approach" and reduce number of syscall, can we allow for example the userspace to mmap at least the first header before packets arrive.
->> Then the userspace can poll a flag or other fields in the header to understand that there are new packets.
->You mean to avoid 'poll()' syscall, user will spin on some flag, provided by kernel on some mapped page? I think yes. This is ok. Also i think, that i can avoid 'madvise' call
->to clear memory mapping before each 'getsockopt()' - let 'getsockopt()' do 'madvise()' job by removing pages from previous data. In this case only one system call is needed - 'getsockopt()'.
+> On Wed, Mar 9, 2022 at 3:42 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>
+>  On 09.03.2022 15:57, Jerome Brunet wrote:
+>  > 
+>  > On Wed 09 Mar 2022 at 15:45, Erico Nunes <nunes.erico@gmail.com> wrote:
+>  > 
+>  >> On Sun, Mar 6, 2022 at 1:56 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>  >>> You could try the following (quick and dirty) test patch that fully mimics
+>  >>> the vendor driver as found here:
+>  >>> https://github.com/khadas/linux/blob/buildroot-aml-4.9/drivers/amlogic/ethernet/phy/amlogic.c
+>  >>>
+>  >>> First apply
+>  >>> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=a502a8f04097e038c3daa16c5202a9538116d563
+>  >>> This patch is in the net tree currently and should show up in linux-next
+>  >>> beginning of the week.
+>  >>>
+>  >>> On top please apply the following (it includes the test patch your working with).
+>  >>
+>  >> I triggered test jobs with this configuration (latest mainline +
+>  >> a502a8f0409 + test patch for vendor driver behaviour), and the results
+>  >> are pretty much the same as with the previous test patch from this
+>  >> thread only.
+>  >> That is, I never got the issue with non-functional link up anymore,
+>  >> but I get the (rare) issue with link not going up.
+>  >> The reproducibility is still extremely low, in the >1% range.
+>  > 
+>  > Low reproducibility means the problem is still there, or at least not
+>  > understood completly.
+>  > 
+>  > I understand the benefit from the user standpoint.
+>  > 
+>  > Heiner if you are going to continue from the test patch you sent,
+>  > I would welcome some explanation with each of the changes.
+>  > 
+>  The latest test patch was purely for checking whether we see any
+>  difference in behavior between vendor driver and the mainlined
+>  version. It's in no way meant to be applied to mainline.
+>
+>  > We know very little about this IP and I'm not very confortable with
+>  > tweaking/aligning with AML sdk "blindly" on a driver that has otherwise
+>  > been working well so far.
+>  > 
+>
+>  This touches one thing I wanted to ask anyway: Supposedly Amlogic
+>  didn't develop an own Ethernet PHY, and if they licensed an existing
+>  IP then it should be similar to some other existing PHY (that may
+>  have a driver in phylib).
+>
+>  Then what I'll do is submit the following small change that brought
+>  the error rate significantly down according to Erico's tests.
+>
+>  -       phy_trigger_machine(phydev);
+>  +       if (irq_status & INTSRC_ANEG_COMPLETE)
+>  +               phy_queue_state_machine(phydev, msecs_to_jiffies(100));
+>  +       else
+>  +               phy_trigger_machine(phydev);
+>
+>  > Thx
+>  > 
+>  >>
+>  >> So at this point, I'm not sure how much more effort to invest into
+>  >> this. Given the rate is very low and the fallback is it will just
+>  >> reset the link and proceed to work, I think the situation would
+>  >> already be much better with the solution from that test patch being
+>  >> merged. If you propose that as a patch separately, I'm happy to test
+>  >> the final submitted patch again and provide feedback there. Or if
+>  >> there is another solution to try, I can try with that too.
+>  >>
+>  >> Thanks
+>  >>
+>  >>
+>  >> Erico
+>  > 
+>
+>  Heiner
+>
+> To help reproduce this problem, I have had this problem for as long as I can remember and it still occurs with this patch.
 
-Yes, that's right. I mean to support both, poll() for interrupt-based 
-applications and the ability to actively poll a variable in the shared 
-memory for applications that want to minimize latency.
+Same here, on both gxl and g12a. Occurrence remains unchanged.
+The is even reproduced if the PHY is switched to polling mode so the
+merged change, related to the IRQ handling, is very unlikely to fix the
+problem.
 
-Thanks,
-Stefano
+>
+> This doesn't happen on first boot most of the time. It happens on reboot consistently. I have tested with AML-S805X-CC board, AML-S905X-CC V1, and V2 boards.
+>
+
+On my side, I confirm the network never seems to get stuck in u-boot but
+it might break in Linux, even on the first boot after a power up from
+what I have seen so far.
+
+> I am on u-boot 22.04 with 5.18.3 which includes the patch.
+> u-boot brings up ethernet on start and can grab an IP.
+> Linux brings up ethernet and can grab an IP.
+> reboot
+> u-boot can grab an IP.
+> Linux does not get anything. 
+> I have to do ip link set dev eth0 down && up once or more to get ethernet to work again.
+> Sometimes it spams meson8b-dwmac c9410000.ethernet eth0: Reset adapter. If it spams this, ethernet is dead and can't be recovered.
+
+I tried several things, none showing any improvement so far
+* Make sure LPI/EEE is disabled
+* Add the ethernet reset from the main controller on the MAC
+* Test the various DMA modes of STMMAC
+* Port the differences from u-boot and the vendor kernel in the Phy driver
+
+I have also tried to go back in time, up to v4.19 but the problem is actually
+already there. It occurs at lot less though.
+Since v5.6+ the occurence is quite high: approx 1 in 4 boots
+On v4.19: 1 in 50 boots - up to 150.
+
+>
+
+When the problem happen
+* link is reported up
+* ifconfig / MAC is claiming to be sending packets (Tx increasing - no Rx)
+* I see no traffic with wireshark
+
+The packets are getting lost somewhere. Can't say for sure if it is in
+the MAC or the PHY.
+
+> This is fixed via power cycle so I'm assuming some register is not reset or maybe the IP is stuck.
+>
+
+`ethtool -r eth0` also seems to work around the problem.
+This trigs the restart of so many things, it is close to an un/replug of
+the ethernet cable :/
+
+> Best,
+> Da Xue
 
