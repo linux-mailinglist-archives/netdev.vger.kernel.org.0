@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45A3F549D78
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 21:22:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E751549D7B
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 21:22:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243923AbiFMTWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 15:22:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44674 "EHLO
+        id S1348621AbiFMTWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 15:22:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239269AbiFMTVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 15:21:36 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A5E32058
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 10:18:07 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id e9so6203414pju.5
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 10:18:07 -0700 (PDT)
+        with ESMTP id S1348525AbiFMTVh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 15:21:37 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CCCF286CC
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 10:18:09 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id u2so6326039pfc.2
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 10:18:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=WtNMojkay1TGl3veVsLBCL1IdXBJpZKRASa03E0Bjrk=;
-        b=bD24dxGKfFGeICbVrf9DLa7VMCKl7hRiega5n95H/eRXArWOFPAijUtmC8XnhIs344
-         MVS8fyo8pPj1M5rKcmAnIfOYtcwbNMqSL9vZYMTaVwB7idEGvuS5UPOwdvUVHTkf7WJI
-         Qp+dfmBTkTqZbhSL4lQM14CfJl2WjLkE+csJXn8gFOLD75H8Swz0u6USqEWWaVkjm6Ir
-         2/OhGrtbDgC1d6vVjwqGaPGgaD0FDt3cs/mmmwQIbZgb6rkSPupDSE0bCOBWjBmYkjIU
-         tIYwarv0ZUhF0HKlinhT4RsfcZbijiu0esNDtQvbMFuiey8l6572d2ljoHbCPNklFv7j
-         cTrA==
+        bh=E83xgHGBSlrea3RuRNnmqu56ICtmNe3QaOTQd1XRhUI=;
+        b=tzG6BM+baSkEPI4er+Nz+huiMvaIlnP8LzlHaV3xyVOnFP7ZqVRuoupLMBwr56xZ05
+         NvbZ67hvGY6+DrHEeHtorK8TfFe3mUu590VgPhZGENKFb3+FMZqtPSJaQG7tNBlkJZcl
+         SNMIphuVrVSEreNDIAu13lc3fXRidszhKXlRXSn8RCFkNSpBzqpnf+II0sQLxdwmhUpY
+         PQraqwpVPDAsLbm7A8Le1Od6+gGW7naHHqTeH8kggT5HEBIq6GopqKgejHeC6Y9KuSBC
+         7Yll/LVgaP3YCjT5lKA9zqRHmmtI9nb2wuqRMjGPbhEfke5e+FVOoAwj6Swgc09oYuP0
+         323Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=WtNMojkay1TGl3veVsLBCL1IdXBJpZKRASa03E0Bjrk=;
-        b=H2YX3GQgvTqH4v/jxvpy0Io/bGU+EF0bhqy006x4QKpof0qLgqnFZ34egiEXb0PIAc
-         jm8xOOJADioBTawaWL0QlfVodqlyworyWvs+KZpKABuZ0/DGvJtp2C5bAKSdVhRo4ael
-         dqoYWrgZAILE5g5kpHEtZLQQKV6yHjJk3FvxsPr7vbohcKq27BKfHbuxTc/en+rVf3gw
-         fSKsjuLusWvE8WN3y2HMUZBYK/U8Ls54vK+2fpP70jIHTZCsJK45SlLcO9LKk9P8ZvxO
-         oGgL2Z978bAD5x0POIclvx7x/2oE1wDl5oi7WvGXXnATCI3p1bN+vru0i1Aog1YNmlLz
-         X0+g==
-X-Gm-Message-State: AJIora8yLfxz7y6x43LO5Eg+xN1HF5JL4eDmYu8454Vtad/apXxJFMD2
-        XRH1UX2pIRR6Mp0M25KEFLMeVQ==
-X-Google-Smtp-Source: AGRyM1v/xmb1YOfRGIydVrWS4Zge68b0oTo5AEN1qZItO+KXP82nbbG7O45y1BuRTZIM0E+/iHssfA==
-X-Received: by 2002:a17:902:bf45:b0:15c:df47:3d6 with SMTP id u5-20020a170902bf4500b0015cdf4703d6mr347304pls.58.1655140687192;
-        Mon, 13 Jun 2022 10:18:07 -0700 (PDT)
+        bh=E83xgHGBSlrea3RuRNnmqu56ICtmNe3QaOTQd1XRhUI=;
+        b=aH4RNUWkNhbRpzprZJciu45TQ64LVR288wncUqvHg9N6w8h9n6CJj8ySUgkojaVQf7
+         HX1mdn8gnJ5aTJfeA3bcM9QlgnVYIzvWPbxGZo6zzSoa0ZzYxCVFqIVTdjLCQWWq4DKs
+         IzQy0R0DOpEi1KuYx5X+y5qa1WrgYJYVVOSCh4hBbWgn1fjdAm0rj145UFr3PVyI/6Fm
+         KareQAiqSYd8MWDb2yYQ9+frKgo0+usPy665F+1reu78NW2qRPGlGXnHBHJj7OTQBL/k
+         g1vPp2riOkY+3X3wA8ukzN1KRU6LPPrM2/VVG9g/amNE+Z8VsIytgItpF7mIlQNDifAe
+         aj/w==
+X-Gm-Message-State: AOAM532WwscCAAeF1byYUtUj/FBFl68mVCPWjNZLL4SVIFOB5g75XBjZ
+        w3ldNNDAbG14DhOYdoH+cvHvHQ==
+X-Google-Smtp-Source: ABdhPJxvKkxI4ovaeSFS1/tZfofauDJd1SGhM+GSw9nJetd2y/4vx7vszEcxop4IOQxgxVzTgzDVrA==
+X-Received: by 2002:a63:24c7:0:b0:3fc:5c99:a196 with SMTP id k190-20020a6324c7000000b003fc5c99a196mr526249pgk.521.1655140688993;
+        Mon, 13 Jun 2022 10:18:08 -0700 (PDT)
 Received: from localhost.localdomain ([192.77.111.2])
-        by smtp.gmail.com with ESMTPSA id u17-20020a62d451000000b0050dc762812csm5646641pfl.6.2022.06.13.10.18.05
+        by smtp.gmail.com with ESMTPSA id u17-20020a62d451000000b0050dc762812csm5646641pfl.6.2022.06.13.10.18.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 10:18:06 -0700 (PDT)
+        Mon, 13 Jun 2022 10:18:08 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -55,9 +55,9 @@ Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
         quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
         elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/6] net: ipa: rename two transaction fields
-Date:   Mon, 13 Jun 2022 12:17:55 -0500
-Message-Id: <20220613171759.578856-3-elder@linaro.org>
+Subject: [PATCH net-next 3/6] net: ipa: introduce gsi_trans_tx_committed()
+Date:   Mon, 13 Jun 2022 12:17:56 -0500
+Message-Id: <20220613171759.578856-4-elder@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220613171759.578856-1-elder@linaro.org>
 References: <20220613171759.578856-1-elder@linaro.org>
@@ -74,197 +74,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are two fields in a GSI transaction that keep track of TRE
-counts.  The first represents the number of TREs reserved for the
-transaction in the TRE ring; that's currently named "tre_count".
-The second is the number of TREs that are actually *used* by the
-transaction at the time it is committed.
+Create a new function that encapsulates recording information needed
+for TX channel statistics when a transaction is committed.
 
-Rename the "tre_count" field to be "rsvd_count", to make its meaning
-a little more specific.  The "_count" is present in the name mainly
-to avoid interpreting it as a reserved (not-to-be-used) field.  This
-name also distinguishes it from the "tre_count" field associated
-with a channel.
-
-Rename the "used" field to be "used_count", to match the convention
-used for reserved TREs.
+Record the accumulated length in the transaction before the call
+(for both RX and TX), so it can be used when updating TX statistics.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/gsi_trans.c | 41 +++++++++++++++++++------------------
- drivers/net/ipa/gsi_trans.h |  8 ++++----
- 2 files changed, 25 insertions(+), 24 deletions(-)
+ drivers/net/ipa/gsi.c         | 11 +++++++++++
+ drivers/net/ipa/gsi_private.h |  9 +++++++++
+ drivers/net/ipa/gsi_trans.c   | 11 +++--------
+ drivers/net/ipa/gsi_trans.h   |  7 ++++---
+ 4 files changed, 27 insertions(+), 11 deletions(-)
 
+diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
+index 5b446d2a07c8a..1091ac23567d5 100644
+--- a/drivers/net/ipa/gsi.c
++++ b/drivers/net/ipa/gsi.c
+@@ -991,6 +991,17 @@ void gsi_resume(struct gsi *gsi)
+ 	enable_irq(gsi->irq);
+ }
+ 
++void gsi_trans_tx_committed(struct gsi_trans *trans)
++{
++	struct gsi_channel *channel = &trans->gsi->channel[trans->channel_id];
++
++	trans->trans_count = channel->trans_count;
++	trans->byte_count = channel->byte_count;
++
++	channel->trans_count++;
++	channel->byte_count += trans->len;
++}
++
+ void gsi_trans_tx_queued(struct gsi_trans *trans)
+ {
+ 	u32 channel_id = trans->channel_id;
+diff --git a/drivers/net/ipa/gsi_private.h b/drivers/net/ipa/gsi_private.h
+index 56450a1899074..74cbc287fc715 100644
+--- a/drivers/net/ipa/gsi_private.h
++++ b/drivers/net/ipa/gsi_private.h
+@@ -104,6 +104,15 @@ void gsi_channel_doorbell(struct gsi_channel *channel);
+  */
+ void *gsi_ring_virt(struct gsi_ring *ring, u32 index);
+ 
++/**
++ * gsi_trans_tx_committed() - Record bytes committed for transmit
++ * @trans:	TX endpoint transaction being committed
++ *
++ * Report that a TX transaction has been committed.  It updates some
++ * statistics used to manage transmit rates.
++ */
++void gsi_trans_tx_committed(struct gsi_trans *trans);
++
+ /**
+  * gsi_trans_tx_queued() - Report a queued TX channel transaction
+  * @trans:	Transaction being passed to hardware
 diff --git a/drivers/net/ipa/gsi_trans.c b/drivers/net/ipa/gsi_trans.c
-index e3f3c736c7409..986857eb39296 100644
+index 986857eb39296..a110be72f70b6 100644
 --- a/drivers/net/ipa/gsi_trans.c
 +++ b/drivers/net/ipa/gsi_trans.c
-@@ -355,7 +355,7 @@ struct gsi_trans *gsi_channel_trans_alloc(struct gsi *gsi, u32 channel_id,
- 	trans = gsi_trans_pool_alloc(&trans_info->pool, 1);
- 	trans->gsi = gsi;
- 	trans->channel_id = channel_id;
--	trans->tre_count = tre_count;
-+	trans->rsvd_count = tre_count;
- 	init_completion(&trans->completion);
- 
- 	/* Allocate the scatterlist and (if requested) info entries. */
-@@ -405,17 +405,17 @@ void gsi_trans_free(struct gsi_trans *trans)
- 	/* Releasing the reserved TREs implicitly frees the sgl[] and
- 	 * (if present) info[] arrays, plus the transaction itself.
- 	 */
--	gsi_trans_tre_release(trans_info, trans->tre_count);
-+	gsi_trans_tre_release(trans_info, trans->rsvd_count);
- }
- 
- /* Add an immediate command to a transaction */
- void gsi_trans_cmd_add(struct gsi_trans *trans, void *buf, u32 size,
- 		       dma_addr_t addr, enum ipa_cmd_opcode opcode)
- {
--	u32 which = trans->used++;
-+	u32 which = trans->used_count++;
- 	struct scatterlist *sg;
- 
--	WARN_ON(which >= trans->tre_count);
-+	WARN_ON(which >= trans->rsvd_count);
- 
- 	/* Commands are quite different from data transfer requests.
- 	 * Their payloads come from a pool whose memory is allocated
-@@ -446,9 +446,9 @@ int gsi_trans_page_add(struct gsi_trans *trans, struct page *page, u32 size,
- 	struct scatterlist *sg = &trans->sgl[0];
- 	int ret;
- 
--	if (WARN_ON(trans->tre_count != 1))
-+	if (WARN_ON(trans->rsvd_count != 1))
- 		return -EINVAL;
--	if (WARN_ON(trans->used))
-+	if (WARN_ON(trans->used_count))
- 		return -EINVAL;
- 
- 	sg_set_page(sg, page, size, offset);
-@@ -456,7 +456,7 @@ int gsi_trans_page_add(struct gsi_trans *trans, struct page *page, u32 size,
- 	if (!ret)
- 		return -ENOMEM;
- 
--	trans->used++;	/* Transaction now owns the (DMA mapped) page */
-+	trans->used_count++;	/* Transaction now owns the (DMA mapped) page */
- 
- 	return 0;
- }
-@@ -465,25 +465,26 @@ int gsi_trans_page_add(struct gsi_trans *trans, struct page *page, u32 size,
- int gsi_trans_skb_add(struct gsi_trans *trans, struct sk_buff *skb)
- {
- 	struct scatterlist *sg = &trans->sgl[0];
--	u32 used;
-+	u32 used_count;
- 	int ret;
- 
--	if (WARN_ON(trans->tre_count != 1))
-+	if (WARN_ON(trans->rsvd_count != 1))
- 		return -EINVAL;
--	if (WARN_ON(trans->used))
-+	if (WARN_ON(trans->used_count))
- 		return -EINVAL;
- 
- 	/* skb->len will not be 0 (checked early) */
- 	ret = skb_to_sgvec(skb, sg, 0, skb->len);
- 	if (ret < 0)
- 		return ret;
--	used = ret;
-+	used_count = ret;
- 
--	ret = dma_map_sg(trans->gsi->dev, sg, used, trans->direction);
-+	ret = dma_map_sg(trans->gsi->dev, sg, used_count, trans->direction);
- 	if (!ret)
- 		return -ENOMEM;
- 
--	trans->used += used;	/* Transaction now owns the (DMA mapped) skb */
-+	/* Transaction now owns the (DMA mapped) skb */
-+	trans->used_count += used_count;
- 
- 	return 0;
- }
-@@ -559,7 +560,7 @@ static void __gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- 	u32 avail;
- 	u32 i;
- 
--	WARN_ON(!trans->used);
-+	WARN_ON(!trans->used_count);
- 
- 	/* Consume the entries.  If we cross the end of the ring while
- 	 * filling them we'll switch to the beginning to finish.
-@@ -569,8 +570,8 @@ static void __gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- 	cmd_opcode = channel->command ? &trans->cmd_opcode[0] : NULL;
- 	avail = tre_ring->count - tre_ring->index % tre_ring->count;
- 	dest_tre = gsi_ring_virt(tre_ring, tre_ring->index);
--	for_each_sg(trans->sgl, sg, trans->used, i) {
--		bool last_tre = i == trans->used - 1;
-+	for_each_sg(trans->sgl, sg, trans->used_count, i) {
-+		bool last_tre = i == trans->used_count - 1;
- 		dma_addr_t addr = sg_dma_address(sg);
- 		u32 len = sg_dma_len(sg);
- 
-@@ -583,7 +584,7 @@ static void __gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- 		gsi_trans_tre_fill(dest_tre, addr, len, last_tre, bei, opcode);
- 		dest_tre++;
+@@ -586,14 +586,9 @@ static void __gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
  	}
--	tre_ring->index += trans->used;
-+	tre_ring->index += trans->used_count;
+ 	tre_ring->index += trans->used_count;
  
- 	if (channel->toward_ipa) {
- 		/* We record TX bytes when they are sent */
-@@ -611,7 +612,7 @@ static void __gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- /* Commit a GSI transaction */
- void gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- {
--	if (trans->used)
-+	if (trans->used_count)
- 		__gsi_trans_commit(trans, ring_db);
- 	else
- 		gsi_trans_free(trans);
-@@ -620,7 +621,7 @@ void gsi_trans_commit(struct gsi_trans *trans, bool ring_db)
- /* Commit a GSI transaction and wait for it to complete */
- void gsi_trans_commit_wait(struct gsi_trans *trans)
- {
--	if (!trans->used)
-+	if (!trans->used_count)
- 		goto out_trans_free;
+-	if (channel->toward_ipa) {
+-		/* We record TX bytes when they are sent */
+-		trans->len = byte_count;
+-		trans->trans_count = channel->trans_count;
+-		trans->byte_count = channel->byte_count;
+-		channel->trans_count++;
+-		channel->byte_count += byte_count;
+-	}
++	trans->len = byte_count;
++	if (channel->toward_ipa)
++		gsi_trans_tx_committed(trans);
  
- 	refcount_inc(&trans->refcount);
-@@ -638,7 +639,7 @@ void gsi_trans_complete(struct gsi_trans *trans)
- {
- 	/* If the entire SGL was mapped when added, unmap it now */
- 	if (trans->direction != DMA_NONE)
--		dma_unmap_sg(trans->gsi->dev, trans->sgl, trans->used,
-+		dma_unmap_sg(trans->gsi->dev, trans->sgl, trans->used_count,
- 			     trans->direction);
- 
- 	ipa_gsi_trans_complete(trans);
+ 	/* Associate the last TRE with the transaction */
+ 	gsi_channel_trans_map(channel, tre_ring->index - 1, trans);
 diff --git a/drivers/net/ipa/gsi_trans.h b/drivers/net/ipa/gsi_trans.h
-index 020c3b32de1d7..b5f80250ca006 100644
+index b5f80250ca006..7084507830c21 100644
 --- a/drivers/net/ipa/gsi_trans.h
 +++ b/drivers/net/ipa/gsi_trans.h
-@@ -33,8 +33,8 @@ struct gsi_trans_pool;
-  * @gsi:	GSI pointer
-  * @channel_id: Channel number transaction is associated with
+@@ -35,7 +35,7 @@ struct gsi_trans_pool;
   * @cancelled:	If set by the core code, transaction was cancelled
-- * @tre_count:	Number of TREs reserved for this transaction
-- * @used:	Number of TREs *used* (could be less than tre_count)
-+ * @rsvd_count:	Number of TREs reserved for this transaction
-+ * @used_count:	Number of TREs *used* (could be less than rsvd_count)
-  * @len:	Total # of transfer bytes represented in sgl[] (set by core)
+  * @rsvd_count:	Number of TREs reserved for this transaction
+  * @used_count:	Number of TREs *used* (could be less than rsvd_count)
+- * @len:	Total # of transfer bytes represented in sgl[] (set by core)
++ * @len:	Number of bytes sent or received by the transaction
   * @data:	Preserved but not touched by the core transaction code
   * @cmd_opcode:	Array of command opcodes (command channel only)
-@@ -56,8 +56,8 @@ struct gsi_trans {
- 
- 	bool cancelled;			/* true if transaction was cancelled */
- 
--	u8 tre_count;			/* # TREs requested */
--	u8 used;			/* # entries used in sgl[] */
-+	u8 rsvd_count;			/* # TREs requested */
-+	u8 used_count;			/* # entries used in sgl[] */
- 	u32 len;			/* total # bytes across sgl[] */
- 
- 	union {
+  * @sgl:	An array of scatter/gather entries managed by core code
+@@ -45,8 +45,9 @@ struct gsi_trans_pool;
+  * @byte_count:	TX channel byte count recorded when transaction committed
+  * @trans_count: Channel transaction count when committed (for BQL accounting)
+  *
+- * The size used for some fields in this structure were chosen to ensure
+- * the full structure size is no larger than 128 bytes.
++ * The @len field is set when the transaction is committed.  For RX
++ * transactions it is updated later to reflect the actual number of bytes
++ * received.
+  */
+ struct gsi_trans {
+ 	struct list_head links;		/* gsi_channel lists */
 -- 
 2.34.1
 
