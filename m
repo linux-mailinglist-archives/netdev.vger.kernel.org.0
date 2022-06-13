@@ -2,75 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EF9C547DA9
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 04:43:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA30E547DBC
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 04:52:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237498AbiFMCnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jun 2022 22:43:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41250 "EHLO
+        id S235937AbiFMCwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jun 2022 22:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231194AbiFMCnj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 22:43:39 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6D63337F;
-        Sun, 12 Jun 2022 19:43:37 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id b8so5313344edj.11;
-        Sun, 12 Jun 2022 19:43:37 -0700 (PDT)
+        with ESMTP id S232367AbiFMCwH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 22:52:07 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F0D387A0;
+        Sun, 12 Jun 2022 19:52:06 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id g10-20020a17090a708a00b001ea8aadd42bso4723062pjk.0;
+        Sun, 12 Jun 2022 19:52:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sUZpw0LopGjc0FjmXPxeWU9L6hvwiZttSZ8ZRDX50kI=;
-        b=TpFDyiS2s1I3InqSYo4+CxTLgKRw9ZSzvWWVldgOy8MQhrsa3g5q9Ba8Xm53N8R4mz
-         rS1Jy8ogN814wmB4ML3WYL3OFeA61dB1s+z1NRIJRrleQPUnvBDeuemygYSEx4f4uP8A
-         OGOeFtUtiAc1vSQeng+Fazaqigh6JB4zwXQynQBhJWGXNbhLkRWeJBH6o8lTK3FlWYbl
-         0ezDUct+wHCTcJMikPShyZZ4iD7gcvFMFREvBahPYlNo7EtnDj6YQyA8TfCxNrDEyRK7
-         X36eUtMTZCMD0DSpf83VdQD+2Je9I0/rm5BsOoEiuRtae9Pbo1ZG1AlpvxR3QNoLnxNh
-         9/8A==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+syu8zXTLNzuwkgu0YpXNp+GQJj3tWOie/YgNIKS4U0=;
+        b=M0eUrqzokBUgw6kx+SeIUwac//UqJb78eJPvjl4zcc7ye76BPFJyAFRItO4se0MfNB
+         baIgwLhM25mHwtekNXBMrtvYAjO4pGOFwzPjWjpioSf89+x0Cd1eJbR4lYcZLUkXiRDu
+         87TOZ6RXlLmR9uebqGC2BzZZwnlNrHO1qCPWtxkSvwa9eubRgcSwJYK94w2h7lPk0/mq
+         oLhlyFXohWdlZt+OmlaHfOsbz0Pyw14uhedYzP8zWmCQNJSJIEf9dKfF5SccD7kyOt5p
+         6ouMbiKRBT04OHIfOvNub3sIEcZ04uRA/pKQO/09k/lUrHvVtdzTexTf5WdAK/4gflB4
+         NwSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sUZpw0LopGjc0FjmXPxeWU9L6hvwiZttSZ8ZRDX50kI=;
-        b=PR1vyI47smMP015klPJpUO6leVk5AkQKQdpdU8shvqHNXoBCYYOzOno9NW35QablMF
-         tgStaF0ngSnd11PZ3PM/eOgoDM1ZWlSx8xgORLnEyiVu8H0m/Fym7ZUzOicvvg/czIjj
-         BcbLPVtrqcH0e5tZmcXBQpcrMM6ERKWw+M5kgCp/G3+f73LLLhUgzIjfE8Mjbj8Pi+7f
-         6OEk8YdF+RagHD+r+oYQM/eZpmHO1KcJaHoz0hUa8tPHU3YffFBAHNaY8bCUftBzVlKo
-         +IRvSyWjXhevvLBSBfNm7FUl/Iy5uuRHCVOdCw3gn8pZWwq/G65QZCLYGS9AFfHnZsuQ
-         rP7A==
-X-Gm-Message-State: AOAM5313J/oj6AXmlmucsgjN2gWF7z2UwXUCcGis3FY/bM1S8wDCcfRt
-        rTlzkhxtz8UT8XHIrp7szxpNVsQQMhx7AN1gRcQ=
-X-Google-Smtp-Source: ABdhPJyVgn8f9OWyOe0jpedEkgpDjBY7BGGJpgJbfyZ768+ya+RQtM3Jvm3BzpT1/IGaeFaG2PAK1BADDFHcEsWeSdk=
-X-Received: by 2002:a05:6402:709:b0:431:3a54:5cbb with SMTP id
- w9-20020a056402070900b004313a545cbbmr47506349edx.355.1655088216420; Sun, 12
- Jun 2022 19:43:36 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+syu8zXTLNzuwkgu0YpXNp+GQJj3tWOie/YgNIKS4U0=;
+        b=2/zvAtLBJhqtY49qZpivhl1ibHQjWhtY6KSvjy7mROjhx5lBbuR989Xqdh4UDRKtZz
+         MMSAj+B9yycNHXuGY82KmAAGCIoSguf1KkqqDzxlXR1xB91dcTFbPrnGtGf+pRy5vTr5
+         va7easW1G/2jztVC2j4RP3yJ8JERpFGirCkHlAEQZGFQtaSwD1SREffeuRNsgJPXHd5P
+         csvR3rvtBmYt8GaISyBvyqce9BnVOeGGk5Pdk37Dm/HHwhV9Q0ApwVoAxY1iT8cjaWtH
+         x3EQdFjnWIFmRfCVBmq/9CNefWj8+1Ndzo/lk6j1EWEmQT/aoU+AHMeycAlsxGjtYN4o
+         MUVg==
+X-Gm-Message-State: AOAM530oTf0cRljvl1ciSleLBdrqOYef89ehmryNov1vvMFE3r4i6R5B
+        bn93df3tTK+xpYKjXqHf+B8=
+X-Google-Smtp-Source: ABdhPJx1eYlhYQSPfX7umirYAVUsnMFMYLEGdt9XIy8VcLdLixPOVw8G2uR3P6K9i4Hs+h6lxCZoJw==
+X-Received: by 2002:a17:90b:1c82:b0:1dd:1b46:5aa9 with SMTP id oo2-20020a17090b1c8200b001dd1b465aa9mr13354049pjb.158.1655088726257;
+        Sun, 12 Jun 2022 19:52:06 -0700 (PDT)
+Received: from localhost ([2405:6580:97e0:3100:ae94:2ee7:59a:4846])
+        by smtp.gmail.com with ESMTPSA id x16-20020a1709027c1000b0015e8d4eb276sm3732099pll.192.2022.06.12.19.52.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 12 Jun 2022 19:52:04 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 11:52:01 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Srivathsan Sivakumar <sri.skumar05@gmail.com>
+Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] staging: qlge: qlge_main.c: rewrite do-while loops
+ into more compact for loops
+Message-ID: <YqamUSc3Y9TBwAEH@d3>
+References: <YqJcLwUQorZQOrkd@Sassy>
 MIME-Version: 1.0
-References: <20220610034204.67901-1-imagedong@tencent.com> <20220610034204.67901-6-imagedong@tencent.com>
- <CANn89i+NV1DgxaQbqPu2o0Du-94gDkM8DUrX_DK7=AGqvvPKdg@mail.gmail.com>
-In-Reply-To: <CANn89i+NV1DgxaQbqPu2o0Du-94gDkM8DUrX_DK7=AGqvvPKdg@mail.gmail.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Mon, 13 Jun 2022 10:43:25 +0800
-Message-ID: <CADxym3Yy1hK7g670zW__yZUmtyH-aKYnckeJfGfKTDReopEgdA@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 5/9] net: tcp: make tcp_rcv_state_process()
- return drop reason
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Menglong Dong <imagedong@tencent.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Dongli Zhang <dongli.zhang@oracle.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Jiang Biao <benbjiang@tencent.com>,
-        Hao Peng <flyingpeng@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqJcLwUQorZQOrkd@Sassy>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -81,41 +74,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 4:56 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Thu, Jun 9, 2022 at 8:45 PM <menglong8.dong@gmail.com> wrote:
-> >
-> > From: Menglong Dong <imagedong@tencent.com>
-> >
-> > For now, the return value of tcp_rcv_state_process() is treated as bool.
-> > Therefore, we can make it return the reasons of the skb drops.
-> >
-> > Meanwhile, the return value of tcp_child_process() comes from
-> > tcp_rcv_state_process(), make it drop reasons by the way.
-> >
-> > The new drop reason SKB_DROP_REASON_TCP_LINGER is added for skb dropping
-> > out of TCP linger.
-> >
-> > Reviewed-by: Jiang Biao <benbjiang@tencent.com>
-> > Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-> > Signed-off-by: Menglong Dong <imagedong@tencent.com>
-> > v3:
-> > - instead SKB_DROP_REASON_TCP_ABORTONDATA with SKB_DROP_REASON_TCP_LINGER
-> > ---
-> >  include/net/dropreason.h |  6 ++++++
-> >  include/net/tcp.h        |  8 +++++---
-> >  net/ipv4/tcp_input.c     | 36 ++++++++++++++++++++----------------
-> >  net/ipv4/tcp_ipv4.c      | 20 +++++++++++++-------
-> >  net/ipv4/tcp_minisocks.c | 11 ++++++-----
-> >  net/ipv6/tcp_ipv6.c      | 19 ++++++++++++-------
-> >  6 files changed, 62 insertions(+), 38 deletions(-)
-> >
->
-> I am sorry, this patch is too invasive, and will make future bug fix
-> backports a real nightmare.
+On 2022-06-09 16:46 -0400, Srivathsan Sivakumar wrote:
+> simplify do-while loops into for loops
+> 
+> Signed-off-by: Srivathsan Sivakumar <sri.skumar05@gmail.com>
+> ---
+> Changes in v2:
+>  - Rewrite for loops more compactly
+> 
+>  drivers/staging/qlge/qlge_main.c | 24 ++++++++++--------------
+>  1 file changed, 10 insertions(+), 14 deletions(-)
 
-Is there any advice to save this patch? Or should we just skip this
-part (for now) ?
-
-Thanks!
-Menglong Dong
+Please also update the TODO file to remove the respective entry. The
+other referenced problem instance was already fixed in commit
+41e1bf811ace ("Staging: qlge: Rewrite two while loops as simple for
+loops")
