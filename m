@@ -2,57 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C624548E1E
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 18:17:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21A42549717
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 18:35:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346303AbiFMKzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 06:55:15 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:55278 "EHLO
-        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346494AbiFMKvI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 06:51:08 -0400
-Received: from localhost (cpc147930-brnt3-2-0-cust60.4-2.cable.virginm.net [86.15.196.61])
-        by mail.monkeyblade.net (Postfix) with ESMTPSA id 2DBC183EA40E;
-        Mon, 13 Jun 2022 03:51:04 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 11:50:58 +0100 (BST)
-Message-Id: <20220613.115058.818063822562949798.davem@davemloft.net>
-To:     longli@microsoft.com, longli@linuxonhyperv.com
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, kuba@kernel.org,
-        pabeni@redhat.com, jgg@ziepe.ca, leon@kernel.org,
-        edumazet@google.com, shiraz.saleem@intel.com,
-        sharmaajay@microsoft.com, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: Re: [Patch v3 03/12] net: mana: Handle vport sharing between
- devices
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1655068494-16440-4-git-send-email-longli@linuxonhyperv.com>
-References: <1655068494-16440-1-git-send-email-longli@linuxonhyperv.com>
-        <1655068494-16440-4-git-send-email-longli@linuxonhyperv.com>
-X-Mailer: Mew version 6.8 on Emacs 27.2
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Mon, 13 Jun 2022 03:51:08 -0700 (PDT)
+        id S1350838AbiFMMJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 08:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35788 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358813AbiFMMId (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 08:08:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2727151E61;
+        Mon, 13 Jun 2022 04:00:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D2C76144A;
+        Mon, 13 Jun 2022 11:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DE64EC3411E;
+        Mon, 13 Jun 2022 11:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655118013;
+        bh=JgpchjD40vF8E9DhKlEBOn+h/yMlnzYJD8uDO46SrLs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Ra8w3rtLxe+HoYJd1Mru65Gxl05xCw+I9Kt6AuWFJRvTjC26EHmfEITGY4JS5mfOP
+         7o8pLQ03jStR/zS4+ijkcfBH/oiWUY4bKLBBmtqSyKdWDExjrRIB/X4vCmbqTWPPj7
+         QNyU0uKde/NWWhlu57u/nWGcQ+nRlyxjv/fVTwVrCx/mZKX0J6gyIy++THneOWqYo/
+         0z8IDYhdOvYJ9AIYMkH9g5QLM0aP8UfTFFN01BidUAi91YCit/7v8Eqdi8IuGB9jih
+         wqThCV9do9Fim8wIrSyHkMYACHSZTirvH9umC1mQwk7e4RDpBZy97lxbq2oFWCHysp
+         HCNFVVVODwmsw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C4518E57538;
+        Mon, 13 Jun 2022 11:00:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/6] net: hns3: add some fixes for -net
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165511801380.27055.5976208563800390037.git-patchwork-notify@kernel.org>
+Date:   Mon, 13 Jun 2022 11:00:13 +0000
+References: <20220611122529.18571-1-huangguangbin2@huawei.com>
+In-Reply-To: <20220611122529.18571-1-huangguangbin2@huawei.com>
+To:     Guangbin Huang <huangguangbin2@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lipeng321@huawei.com,
+        chenhao288@hisilicon.com
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
+X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
+        lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: longli@linuxonhyperv.com
-Date: Sun, 12 Jun 2022 14:14:45 -0700
+Hello:
 
-> +int mana_cfg_vport(struct mana_port_context *apc, u32 protection_dom_id,
-> +		   u32 doorbell_pg_id)
->  {
-> +	/* Ethernet driver and IB driver can't take the port at the same time */
-> +	refcount_inc(&apc->port_use_count);
-> +	if (refcount_read(&apc->port_use_count) > 2) {
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-This is a racy test, the count could change after the test against
-'2'.  It would be nice if there was a primitive to do the increment
-and test atomically, but I fail to see one that matches this scenerio
-currently.
+On Sat, 11 Jun 2022 20:25:23 +0800 you wrote:
+> This series adds some fixes for the HNS3 ethernet driver.
+> 
+> Guangbin Huang (3):
+>   net: hns3: set port base vlan tbl_sta to false before removing old
+>     vlan
+>   net: hns3: restore tm priority/qset to default settings when tc
+>     disabled
+>   net: hns3: fix tm port shapping of fibre port is incorrect after
+>     driver initialization
+> 
+> [...]
 
-Thank you.
+Here is the summary with links:
+  - [net,1/6] net: hns3: set port base vlan tbl_sta to false before removing old vlan
+    https://git.kernel.org/netdev/net/c/9eda7d8bcbdb
+  - [net,2/6] net: hns3: don't push link state to VF if unalive
+    https://git.kernel.org/netdev/net/c/283847e3ef6d
+  - [net,3/6] net: hns3: modify the ring param print info
+    https://git.kernel.org/netdev/net/c/cfd80687a538
+  - [net,4/6] net: hns3: restore tm priority/qset to default settings when tc disabled
+    https://git.kernel.org/netdev/net/c/e93530ae0e5d
+  - [net,5/6] net: hns3: fix PF rss size initialization bug
+    https://git.kernel.org/netdev/net/c/71b215f36dca
+  - [net,6/6] net: hns3: fix tm port shapping of fibre port is incorrect after driver initialization
+    https://git.kernel.org/netdev/net/c/12a367088772
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
