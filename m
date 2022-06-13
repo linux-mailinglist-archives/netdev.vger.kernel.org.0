@@ -2,220 +2,562 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9922548A0D
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 18:06:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 450395489F9
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 18:06:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359011AbiFMNMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 09:12:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38498 "EHLO
+        id S1378045AbiFMNkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 09:40:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359293AbiFMNJq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 09:09:46 -0400
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2086.outbound.protection.outlook.com [40.107.95.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D23DFD134
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 04:19:57 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=adt3/vnq9P4lvHu2ZzwoC6wPLU+9ggEsIYK6He8EpB2rVbXmRFE7czbHrSlGP0vZO8snzu56YRRW1sLfGX4Qd7R5YMrYGEeAOkExgNKJAc6hoDrXLadH9MBlnW16WIuGw9sq+y0b1Ur4m7p91mCQk52yLvr6N0H9jWGgX9c+IhilIeptmz3REP/77S7Q/P8ZMBnWWZWD5Ua6fdUIEPqHmpXBihE20T8lp8o8qo84xKkfO9/r2yrnXPj+XttSgHpSIvzuuEjmrwfRfxb3GQUnF2s0o8HmhkwyINNpdY9QPqDYS8b3enWFU0/TPbjxdnWV+Wbhb47s2Rdbl3jTeHNR2g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LSBSNLrysNRSUmqG8tbOw5oqqpbaxWuSpnZpGnoKtH8=;
- b=ll50YpGkXX+CaD0EVRI36rsqn8RQr9w//6U9vV2QCKvxSB21lMLaQk51f/WwKJEMk+FF/RVfg/c4TTWyFFJQI8JnVX6CpQZJjG/5nL0RK+KlUYUpHwSpAnVADeGzfdFuVtxWnkNilXnsEEOg3mhMm6U+2zQL8jw9Ky3pBFpCOdu1V/FVXyGIOTq+ArwoKfUrYsKQ89cQN6EQdI9KphQ58M2E9vTghDsFMAbyFFY13vyilOo9Y0nSwQwTERn3qZiiWKVUmi6WG8nunub/xC+Sc9cE+6OH3fDjlTHwLBnm+KXSzlEN/Cy7xbtSnP/61DlxtuKSodu6kFSJofU+FrdZbQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LSBSNLrysNRSUmqG8tbOw5oqqpbaxWuSpnZpGnoKtH8=;
- b=QYX6PH8+lHK11bYCawzWwiRShKO+ILAZ+l+FQ5Njl4wF5tUPPDFOMGO5vcvUpfaXkfu7GjYOR2xYAymXTcvVAH01hl5d64gKERu0YMX6jMtCUEf7wisChpqgWaOiGs8CnRff1dtGw7U2rAQMjQ0/4959CnbIyyel4BZPeFVgcwcWbL62DZqGVc6XMYm6jDQ1j1wA6hm/32wyfw+g6zOf8eKB/7tm20ClHu2SQIAiIjDR30z3OX5LfG3/ZxrN2ZAe0F5yEzAMdWnL1hhJYrW6oRI1ILEKwnYDL1qjuM3h7wRTE+pn1vMZrKgxDrDq+cuYXdu5fFW1KA4NrvLLnLOzug==
-Received: from DM5PR07CA0041.namprd07.prod.outlook.com (2603:10b6:3:16::27) by
- MN2PR12MB3774.namprd12.prod.outlook.com (2603:10b6:208:16a::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Mon, 13 Jun
- 2022 11:19:54 +0000
-Received: from DM6NAM11FT039.eop-nam11.prod.protection.outlook.com
- (2603:10b6:3:16:cafe::a0) by DM5PR07CA0041.outlook.office365.com
- (2603:10b6:3:16::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13 via Frontend
- Transport; Mon, 13 Jun 2022 11:19:54 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- DM6NAM11FT039.mail.protection.outlook.com (10.13.172.83) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5332.12 via Frontend Transport; Mon, 13 Jun 2022 11:19:53 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 13 Jun
- 2022 11:19:53 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 13 Jun
- 2022 04:19:52 -0700
-Received: from nps-server-31.mtl.labs.mlnx (10.127.8.9) by mail.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Mon, 13 Jun 2022 04:19:50 -0700
-From:   Lior Nahmanson <liorna@nvidia.com>
-To:     <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Lior Nahmanson <liorna@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Ben Ben-Ishay <benishay@nvidia.com>
-Subject: [PATCH net-next v3 2/3] net/macsec: Add MACsec skb extension Rx Data path support
-Date:   Mon, 13 Jun 2022 14:19:41 +0300
-Message-ID: <20220613111942.12726-3-liorna@nvidia.com>
-X-Mailer: git-send-email 2.21.3
-In-Reply-To: <20220613111942.12726-1-liorna@nvidia.com>
-References: <20220613111942.12726-1-liorna@nvidia.com>
+        with ESMTP id S1379213AbiFMNkC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 09:40:02 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D079ABF7F;
+        Mon, 13 Jun 2022 04:30:11 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id r1so4832003plo.10;
+        Mon, 13 Jun 2022 04:30:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=77RRnH9OzAKwXw8My9WVIWs5El0LQhap5QNL/eVX1mk=;
+        b=dX7E7bIL35N5fk5St+se97Wug/t1m/+8SiiqBEbjlJcXIGc2LBuAPBqjVFUW64j7wl
+         ZoW9em+skzYAdZSzUfFuUvHa2lx14I3WW4p7VH15pVZ1AqCqEzb4myGPTw1H6tyUvd30
+         Q+9jElDq7t+fOqHoNLio5j/6OauG0aXMn08pfTYgfy9KfAlTIOBjl9Q6kxvbaojDtVKm
+         6z8vaBa2m2pOFLMwtsKVmziJBDyLh+yqCmnHktWLF6N1Wcqk/ry+ePOxmmslNf1/7wfm
+         2yb+qaltX1c5C77uerRadY7O8AnQiPEwI+c+4TRIkgKwXOCqG6qyv/AyrQenQ3DS02Jw
+         lJTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=77RRnH9OzAKwXw8My9WVIWs5El0LQhap5QNL/eVX1mk=;
+        b=68fIYQUaqL2MYKe+8Xqdk/k5P5a4/6tGrWGotBIBVkr1X1aoivSgSsLSWWo9REsFzR
+         dxVSsBJurJRZ2Lp/txCGPpaUHqJSpoSsh/KYXJJr0KtT/EUgGSUEc/mmz/Jw6bO36jrl
+         MwwmnP++eB/LTG/6+LyGQk3YyqZd8GLbMpAl11QoZgqPECKhWBebXhjLxA0fN+Sn58yG
+         bQVFfvrF1/k93bMnGTBFoB24pNxMp5gsIcmAiAfmD04/GaMHCnh8tsVFHRgTqDpM2pQI
+         XSYXrYpmaspc2Tnw0uZ/ndowAjQKNsXM7QAq1aGBh71Jityv7jQfrK33RPSb6DcOiDwM
+         YPCQ==
+X-Gm-Message-State: AOAM533u1G77WYeQ8W/Matfkm9KTUmrwB/r9Frg/9dzBAaFAtaIeOFwk
+        MqpPX4+wKomr/BchpyrtkHUaJyPe9Ns/8GDV+S0=
+X-Google-Smtp-Source: ABdhPJyZvJcd2Plh33lSM2KPqynTOvSxdafhw8hjE8OHbho3WePNNx1O1rwwmGZ5XI6RAMOXL0xuMaJrtTiXkq9o0dw=
+X-Received: by 2002:a17:90a:4897:b0:1c7:5fce:cbcd with SMTP id
+ b23-20020a17090a489700b001c75fcecbcdmr15266694pjh.45.1655119811137; Mon, 13
+ Jun 2022 04:30:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2c1cbb94-5ffb-4589-5c07-08da4d2ea3e5
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3774:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB377480E7A5ADD74EA4486849BFAB9@MN2PR12MB3774.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: iI7EfqkYk3kKyWNkCAwRSKZSgyndpv6N1iSiGFMRNlKz1ARaRC8tZw4Dz0akQ0chkjCBKG+AFq7SA5uzxPhKMrnFTE92uYhrRksi1TqNfBAYGN10EmvcaUPuH1iIOwXItBPYBtBxjk3txj4aba4qfJ6QnozesecwfC8MTJQwwj2aA5i9+Y4XWmKAwEfsiQrlhQKQCG/AWGX/T+DHv1U1cGmyvrktToD7Qg29nCnZA98WVDeiEjfukj0FydUDpp0nunJzvnw1liCeKKOAg7xxxxlwQt8U3yrDfhzGuAjK6MmG1rUT0qgRAToeZkTMhSZ6v+1M6hHWh0nOUApBrf1OZcV7TeEbxkI+ECXZ5ZHWwt48XoQxa18rpLdA56OKLnCQAvDSk1WyieT7MzbdSUcjWO/0r6kz86lOo4+gcWhv2wLrZI7wJLExSyOSsszRw7AJZVbVL7DcLJC3QFipq9zVd6CeGJu12y7DxnFbM8VqVd2M5L27rqeSPaGIIXd36fDNGrEHxtI1Q+59cQNE/9z1ZmW9/vMCPIFdjHWS5cEv5blmHZbLKJNT4bzsOHEvH4t8DEUkchrpUfrh/j7vkprVYjUvdBlJ57PyLn0jzojACrDNoCD2tLX6mM1On4oq3qx7Is6sR8wihlDrhgw0AElsU/1Qei0gW7KU/fTUZR9sS5eCbx+QvUCV61YPpYcs8GCs5Q7R3KHf3O5R9Dxz/L5Fsg==
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(40470700004)(46966006)(36840700001)(8676002)(70206006)(70586007)(4326008)(6666004)(2906002)(83380400001)(508600001)(8936002)(5660300002)(40460700003)(26005)(54906003)(86362001)(316002)(36860700001)(36756003)(356005)(81166007)(110136005)(426003)(336012)(47076005)(2616005)(1076003)(107886003)(82310400005)(186003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 11:19:53.8804
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2c1cbb94-5ffb-4589-5c07-08da4d2ea3e5
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT039.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3774
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220610150923.583202-1-maciej.fijalkowski@intel.com> <20220610150923.583202-8-maciej.fijalkowski@intel.com>
+In-Reply-To: <20220610150923.583202-8-maciej.fijalkowski@intel.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Mon, 13 Jun 2022 13:29:59 +0200
+Message-ID: <CAJ8uoz1qo8ibbJe1Wkpzer1--gwz5=finGsEXO7HT-o4JsPGyQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 07/10] selftests: xsk: add support for executing
+ tests on physical device
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Like in the Tx changes, packet that don't have SecTAG
-header aren't necessary been offloaded by the HW.
-Therefore, the MACsec driver needs to distinguish if the packet
-was offloaded or not and handle accordingly.
-Moreover, if there are more than one MACsec device with the same MAC
-address as in the packet's destination MAC, the packet will forward only
-to this device and only to the desired one.
+On Fri, Jun 10, 2022 at 5:36 PM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> Currently, architecture of xdpxceiver is designed strictly for
+> conducting veth based tests. Veth pair is created together with a
+> network namespace and one of the veth interfaces is moved to the
+> mentioned netns. Then, separate threads for Tx and Rx are spawned which
+> will utilize described setup.
+>
+> Infrastructure described in the paragraph above can not be used for
+> testing AF_XDP support on physical devices. That testing will be
+> conducted on a single network interface and same queue. Xdpxceiver
+> needs to be extended to distinguish between veth tests and physical
+> interface tests.
+>
+> Since same iface/queue id pair will be used by both Tx/Rx threads for
+> physical device testing, Tx thread, which happen to run after the Rx
+> thread, is going to create XSK socket with shared umem flag. In order to
+> track this setting throughout the lifetime of spawned threads, introduce
+> 'shared_umem' boolean variable to struct ifobject and set it to true
+> when xdpxceiver is run against physical device. In such case, UMEM size
+> needs to be doubled, so half of it will be used by Rx thread and other
+> half by Tx thread. For two step based test types, value of XSKMAP
+> element under key 0 has to be updated as there is now another socket for
+> the second step. Also, to avoid race conditions when destroying XSK
+> resources, move this activity to the main thread after spawned Rx and Tx
+> threads have finished its job. This way it is possible to gracefully
+> remove shared umem without introducing synchronization mechanisms.
+>
+> To run xsk selftests suite on physical device, append "-i $IFACE" when
+> invoking test_xsk.sh. For veth based tests, simply skip it. When "-i
+> $IFACE" is in place, under the hood test_xsk.sh will use $IFACE for both
+> interfaces supplied to xdpxceiver, which in turn will interpret that
+> this execution of test suite is for a physical device.
+>
+> Note that currently this makes it possible only to test SKB and DRV mode
+> (in case underlying device has native XDP support). ZC testing support
+> is added in a later patch.
 
-Used SKB extension and marking it by the HW if the packet was offloaded
-and to which MACsec offload device it belongs according to the packet's
-SCI.
+Good one! Nice to see that we can test real NICs with this support.
 
-Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Reviewed-by: Ben Ben-Ishay <benishay@nvidia.com>
----
-v1->v2:
-- added GRO support
-- added offloaded field to struct macsec_ext
-v2->v3:
-- removed Issue and Change-Id from commit message
----
- drivers/net/macsec.c |  8 +++++++-
- include/net/macsec.h |  1 +
- net/core/gro.c       | 16 ++++++++++++++++
- 3 files changed, 24 insertions(+), 1 deletion(-)
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 9be0606d70da..7b7baf3dd596 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -999,11 +999,13 @@ static enum rx_handler_result handle_not_macsec(struct sk_buff *skb)
- 	/* Deliver to the uncontrolled port by default */
- 	enum rx_handler_result ret = RX_HANDLER_PASS;
- 	struct ethhdr *hdr = eth_hdr(skb);
-+	struct macsec_ext *macsec_ext;
- 	struct macsec_rxh_data *rxd;
- 	struct macsec_dev *macsec;
- 
- 	rcu_read_lock();
- 	rxd = macsec_data_rcu(skb->dev);
-+	macsec_ext = skb_ext_find(skb, SKB_EXT_MACSEC);
- 
- 	list_for_each_entry_rcu(macsec, &rxd->secys, secys) {
- 		struct sk_buff *nskb;
-@@ -1013,7 +1015,11 @@ static enum rx_handler_result handle_not_macsec(struct sk_buff *skb)
- 		/* If h/w offloading is enabled, HW decodes frames and strips
- 		 * the SecTAG, so we have to deduce which port to deliver to.
- 		 */
--		if (macsec_is_offloaded(macsec) && netif_running(ndev)) {
-+		if (macsec_is_offloaded(macsec) && netif_running(ndev) &&
-+		    (!macsec_ext || macsec_ext->offloaded)) {
-+			if ((macsec_ext) && (!find_rx_sc(&macsec->secy, macsec_ext->sci)))
-+				continue;
-+
- 			if (ether_addr_equal_64bits(hdr->h_dest,
- 						    ndev->dev_addr)) {
- 				/* exact match, divert skb to this port */
-diff --git a/include/net/macsec.h b/include/net/macsec.h
-index 6de49d9c98bc..fcbca963c04d 100644
---- a/include/net/macsec.h
-+++ b/include/net/macsec.h
-@@ -23,6 +23,7 @@ typedef u32 __bitwise ssci_t;
- /* MACsec sk_buff extension data */
- struct macsec_ext {
- 	sci_t sci;
-+	bool offloaded;
- };
- 
- typedef union salt {
-diff --git a/net/core/gro.c b/net/core/gro.c
-index b4190eb08467..f68e950be37f 100644
---- a/net/core/gro.c
-+++ b/net/core/gro.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- #include <net/gro.h>
-+#include <net/macsec.h>
- #include <net/dst_metadata.h>
- #include <net/busy_poll.h>
- #include <trace/events/net.h>
-@@ -390,6 +391,10 @@ static void gro_list_prepare(const struct list_head *head,
- 			struct tc_skb_ext *skb_ext;
- 			struct tc_skb_ext *p_ext;
- #endif
-+#if IS_ENABLED(CONFIG_SKB_EXTENSIONS) && IS_ENABLED(CONFIG_MACSEC)
-+			struct macsec_ext *macsec_skb_ext;
-+			struct macsec_ext *macsec_p_ext;
-+#endif
- 
- 			diffs |= p->sk != skb->sk;
- 			diffs |= skb_metadata_dst_cmp(p, skb);
-@@ -402,6 +407,17 @@ static void gro_list_prepare(const struct list_head *head,
- 			diffs |= (!!p_ext) ^ (!!skb_ext);
- 			if (!diffs && unlikely(skb_ext))
- 				diffs |= p_ext->chain ^ skb_ext->chain;
-+#endif
-+#if IS_ENABLED(CONFIG_SKB_EXTENSIONS) && IS_ENABLED(CONFIG_MACSEC)
-+			macsec_skb_ext = skb_ext_find(skb, SKB_EXT_MACSEC);
-+			macsec_p_ext = skb_ext_find(p, SKB_EXT_MACSEC);
-+
-+			diffs |= (!!macsec_p_ext) ^ (!!macsec_skb_ext);
-+			if (!diffs && unlikely(macsec_skb_ext)) {
-+				diffs |= (__force unsigned long)macsec_p_ext->sci ^
-+					 (__force unsigned long)macsec_skb_ext->sci;
-+				diffs |= macsec_p_ext->offloaded ^ macsec_skb_ext->offloaded;
-+			}
- #endif
- 		}
- 
--- 
-2.25.4
-
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> ---
+>  tools/testing/selftests/bpf/test_xsk.sh  |  52 +++++--
+>  tools/testing/selftests/bpf/xdpxceiver.c | 189 ++++++++++++++---------
+>  tools/testing/selftests/bpf/xdpxceiver.h |   1 +
+>  3 files changed, 156 insertions(+), 86 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
+> index 567500299231..19b24cce5414 100755
+> --- a/tools/testing/selftests/bpf/test_xsk.sh
+> +++ b/tools/testing/selftests/bpf/test_xsk.sh
+> @@ -73,14 +73,20 @@
+>  #
+>  # Run and dump packet contents:
+>  #   sudo ./test_xsk.sh -D
+> +#
+> +# Run test suite for physical device in loopback mode
+> +#   sudo ./test_xsk.sh -i IFACE
+>
+>  . xsk_prereqs.sh
+>
+> -while getopts "vD" flag
+> +ETH=""
+> +
+> +while getopts "vDi:" flag
+>  do
+>         case "${flag}" in
+>                 v) verbose=1;;
+>                 D) dump_pkts=1;;
+> +               i) ETH=${OPTARG};;
+>         esac
+>  done
+>
+> @@ -132,18 +138,25 @@ setup_vethPairs() {
+>         ip link set ${VETH0} up
+>  }
+>
+> -validate_root_exec
+> -validate_veth_support ${VETH0}
+> -validate_ip_utility
+> -setup_vethPairs
+> -
+> -retval=$?
+> -if [ $retval -ne 0 ]; then
+> -       test_status $retval "${TEST_NAME}"
+> -       cleanup_exit ${VETH0} ${VETH1} ${NS1}
+> -       exit $retval
+> +if [ ! -z $ETH ]; then
+> +       VETH0=${ETH}
+> +       VETH1=${ETH}
+> +       NS1=""
+> +else
+> +       validate_root_exec
+> +       validate_veth_support ${VETH0}
+> +       validate_ip_utility
+> +       setup_vethPairs
+> +
+> +       retval=$?
+> +       if [ $retval -ne 0 ]; then
+> +               test_status $retval "${TEST_NAME}"
+> +               cleanup_exit ${VETH0} ${VETH1} ${NS1}
+> +               exit $retval
+> +       fi
+>  fi
+>
+> +
+>  if [[ $verbose -eq 1 ]]; then
+>         ARGS+="-v "
+>  fi
+> @@ -152,26 +165,33 @@ if [[ $dump_pkts -eq 1 ]]; then
+>         ARGS="-D "
+>  fi
+>
+> +retval=$?
+>  test_status $retval "${TEST_NAME}"
+>
+>  ## START TESTS
+>
+>  statusList=()
+>
+> -TEST_NAME="XSK_SELFTESTS_SOFTIRQ"
+> +TEST_NAME="XSK_SELFTESTS_${VETH0}_SOFTIRQ"
+>
+>  execxdpxceiver
+>
+> -cleanup_exit ${VETH0} ${VETH1} ${NS1}
+> -TEST_NAME="XSK_SELFTESTS_BUSY_POLL"
+> +if [ -z $ETH ]; then
+> +       cleanup_exit ${VETH0} ${VETH1} ${NS1}
+> +fi
+> +TEST_NAME="XSK_SELFTESTS_${VETH0}_BUSY_POLL"
+>  busy_poll=1
+>
+> -setup_vethPairs
+> +if [ -z $ETH ]; then
+> +       setup_vethPairs
+> +fi
+>  execxdpxceiver
+>
+>  ## END TESTS
+>
+> -cleanup_exit ${VETH0} ${VETH1} ${NS1}
+> +if [ -z $ETH ]; then
+> +       cleanup_exit ${VETH0} ${VETH1} ${NS1}
+> +fi
+>
+>  failures=0
+>  echo -e "\nSummary:"
+> diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
+> index ad6c92c31026..316f1dd338fc 100644
+> --- a/tools/testing/selftests/bpf/xdpxceiver.c
+> +++ b/tools/testing/selftests/bpf/xdpxceiver.c
+> @@ -296,8 +296,8 @@ static void enable_busy_poll(struct xsk_socket_info *xsk)
+>                 exit_with_error(errno);
+>  }
+>
+> -static int xsk_configure_socket(struct xsk_socket_info *xsk, struct xsk_umem_info *umem,
+> -                               struct ifobject *ifobject, bool shared)
+> +static int __xsk_configure_socket(struct xsk_socket_info *xsk, struct xsk_umem_info *umem,
+> +                                 struct ifobject *ifobject, bool shared)
+>  {
+>         struct xsk_socket_config cfg = {};
+>         struct xsk_ring_cons *rxr;
+> @@ -443,6 +443,9 @@ static void __test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
+>                 memset(ifobj->umem, 0, sizeof(*ifobj->umem));
+>                 ifobj->umem->num_frames = DEFAULT_UMEM_BUFFERS;
+>                 ifobj->umem->frame_size = XSK_UMEM__DEFAULT_FRAME_SIZE;
+> +               if (ifobj->shared_umem && ifobj->rx_on)
+> +                       ifobj->umem->base_addr = DEFAULT_UMEM_BUFFERS *
+> +                               XSK_UMEM__DEFAULT_FRAME_SIZE;
+>
+>                 for (j = 0; j < MAX_SOCKETS; j++) {
+>                         memset(&ifobj->xsk_arr[j], 0, sizeof(ifobj->xsk_arr[j]));
+> @@ -1101,19 +1104,85 @@ static int validate_tx_invalid_descs(struct ifobject *ifobject)
+>         return TEST_PASS;
+>  }
+>
+> +static void xsk_configure_socket(struct test_spec *test, struct ifobject *ifobject,
+> +                                struct xsk_umem_info *umem, bool tx)
+> +{
+> +       int i, ret;
+> +
+> +       for (i = 0; i < test->nb_sockets; i++) {
+> +               bool shared = (ifobject->shared_umem && tx) ? true : !!i;
+> +               u32 ctr = 0;
+> +
+> +               while (ctr++ < SOCK_RECONF_CTR) {
+> +                       ret = __xsk_configure_socket(&ifobject->xsk_arr[i], umem,
+> +                                                    ifobject, shared);
+> +                       if (!ret)
+> +                               break;
+> +
+> +                       /* Retry if it fails as xsk_socket__create() is asynchronous */
+> +                       if (ctr >= SOCK_RECONF_CTR)
+> +                               exit_with_error(-ret);
+> +                       usleep(USLEEP_MAX);
+> +               }
+> +               if (ifobject->busy_poll)
+> +                       enable_busy_poll(&ifobject->xsk_arr[i]);
+> +       }
+> +}
+> +
+> +static void thread_common_ops_tx(struct test_spec *test, struct ifobject *ifobject)
+> +{
+> +       xsk_configure_socket(test, ifobject, test->ifobj_rx->umem, true);
+> +       ifobject->xsk = &ifobject->xsk_arr[0];
+> +       ifobject->xsk_map_fd = test->ifobj_rx->xsk_map_fd;
+> +       memcpy(ifobject->umem, test->ifobj_rx->umem, sizeof(struct xsk_umem_info));
+> +}
+> +
+> +static void xsk_populate_fill_ring(struct xsk_umem_info *umem, struct pkt_stream *pkt_stream)
+> +{
+> +       u32 idx = 0, i, buffers_to_fill;
+> +       int ret;
+> +
+> +       if (umem->num_frames < XSK_RING_PROD__DEFAULT_NUM_DESCS)
+> +               buffers_to_fill = umem->num_frames;
+> +       else
+> +               buffers_to_fill = XSK_RING_PROD__DEFAULT_NUM_DESCS;
+> +
+> +       ret = xsk_ring_prod__reserve(&umem->fq, buffers_to_fill, &idx);
+> +       if (ret != buffers_to_fill)
+> +               exit_with_error(ENOSPC);
+> +       for (i = 0; i < buffers_to_fill; i++) {
+> +               u64 addr;
+> +
+> +               if (pkt_stream->use_addr_for_fill) {
+> +                       struct pkt *pkt = pkt_stream_get_pkt(pkt_stream, i);
+> +
+> +                       if (!pkt)
+> +                               break;
+> +                       addr = pkt->addr;
+> +               } else {
+> +                       addr = i * umem->frame_size;
+> +               }
+> +
+> +               *xsk_ring_prod__fill_addr(&umem->fq, idx++) = addr;
+> +       }
+> +       xsk_ring_prod__submit(&umem->fq, buffers_to_fill);
+> +}
+> +
+>  static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
+>  {
+>         u64 umem_sz = ifobject->umem->num_frames * ifobject->umem->frame_size;
+>         int mmap_flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
+>         int ret, ifindex;
+>         void *bufs;
+> -       u32 i;
+>
+>         ifobject->ns_fd = switch_namespace(ifobject->nsname);
+>
+>         if (ifobject->umem->unaligned_mode)
+>                 mmap_flags |= MAP_HUGETLB;
+>
+> +       if (ifobject->shared_umem)
+> +               umem_sz *= 2;
+> +
+>         bufs = mmap(NULL, umem_sz, PROT_READ | PROT_WRITE, mmap_flags, -1, 0);
+>         if (bufs == MAP_FAILED)
+>                 exit_with_error(errno);
+> @@ -1122,24 +1191,9 @@ static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
+>         if (ret)
+>                 exit_with_error(-ret);
+>
+> -       for (i = 0; i < test->nb_sockets; i++) {
+> -               u32 ctr = 0;
+> -
+> -               while (ctr++ < SOCK_RECONF_CTR) {
+> -                       ret = xsk_configure_socket(&ifobject->xsk_arr[i], ifobject->umem,
+> -                                                  ifobject, !!i);
+> -                       if (!ret)
+> -                               break;
+> -
+> -                       /* Retry if it fails as xsk_socket__create() is asynchronous */
+> -                       if (ctr >= SOCK_RECONF_CTR)
+> -                               exit_with_error(-ret);
+> -                       usleep(USLEEP_MAX);
+> -               }
+> +       xsk_populate_fill_ring(ifobject->umem, ifobject->pkt_stream);
+>
+> -               if (ifobject->busy_poll)
+> -                       enable_busy_poll(&ifobject->xsk_arr[i]);
+> -       }
+> +       xsk_configure_socket(test, ifobject, ifobject->umem, false);
+>
+>         ifobject->xsk = &ifobject->xsk_arr[0];
+>
+> @@ -1159,22 +1213,18 @@ static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
+>                 exit_with_error(-ret);
+>  }
+>
+> -static void testapp_cleanup_xsk_res(struct ifobject *ifobj)
+> -{
+> -       print_verbose("Destroying socket\n");
+> -       xsk_socket__delete(ifobj->xsk->xsk);
+> -       munmap(ifobj->umem->buffer, ifobj->umem->num_frames * ifobj->umem->frame_size);
+> -       xsk_umem__delete(ifobj->umem->umem);
+> -}
+> -
+>  static void *worker_testapp_validate_tx(void *arg)
+>  {
+>         struct test_spec *test = (struct test_spec *)arg;
+>         struct ifobject *ifobject = test->ifobj_tx;
+>         int err;
+>
+> -       if (test->current_step == 1)
+> -               thread_common_ops(test, ifobject);
+> +       if (test->current_step == 1) {
+> +               if (!ifobject->shared_umem)
+> +                       thread_common_ops(test, ifobject);
+> +               else
+> +                       thread_common_ops_tx(test, ifobject);
+> +       }
+>
+>         print_verbose("Sending %d packets on interface %s\n", ifobject->pkt_stream->nb_pkts,
+>                       ifobject->ifname);
+> @@ -1185,53 +1235,23 @@ static void *worker_testapp_validate_tx(void *arg)
+>         if (err)
+>                 report_failure(test);
+>
+> -       if (test->total_steps == test->current_step || err)
+> -               testapp_cleanup_xsk_res(ifobject);
+>         pthread_exit(NULL);
+>  }
+>
+> -static void xsk_populate_fill_ring(struct xsk_umem_info *umem, struct pkt_stream *pkt_stream)
+> -{
+> -       u32 idx = 0, i, buffers_to_fill;
+> -       int ret;
+> -
+> -       if (umem->num_frames < XSK_RING_PROD__DEFAULT_NUM_DESCS)
+> -               buffers_to_fill = umem->num_frames;
+> -       else
+> -               buffers_to_fill = XSK_RING_PROD__DEFAULT_NUM_DESCS;
+> -
+> -       ret = xsk_ring_prod__reserve(&umem->fq, buffers_to_fill, &idx);
+> -       if (ret != buffers_to_fill)
+> -               exit_with_error(ENOSPC);
+> -       for (i = 0; i < buffers_to_fill; i++) {
+> -               u64 addr;
+> -
+> -               if (pkt_stream->use_addr_for_fill) {
+> -                       struct pkt *pkt = pkt_stream_get_pkt(pkt_stream, i);
+> -
+> -                       if (!pkt)
+> -                               break;
+> -                       addr = pkt->addr;
+> -               } else {
+> -                       addr = i * umem->frame_size;
+> -               }
+> -
+> -               *xsk_ring_prod__fill_addr(&umem->fq, idx++) = addr;
+> -       }
+> -       xsk_ring_prod__submit(&umem->fq, buffers_to_fill);
+> -}
+> -
+>  static void *worker_testapp_validate_rx(void *arg)
+>  {
+>         struct test_spec *test = (struct test_spec *)arg;
+>         struct ifobject *ifobject = test->ifobj_rx;
+>         struct pollfd fds = { };
+> +       int id = 0;
+>         int err;
+>
+> -       if (test->current_step == 1)
+> +       if (test->current_step == 1) {
+>                 thread_common_ops(test, ifobject);
+> -
+> -       xsk_populate_fill_ring(ifobject->umem, ifobject->pkt_stream);
+> +       } else {
+> +               bpf_map_delete_elem(ifobject->xsk_map_fd, &id);
+> +               xsk_socket__update_xskmap(ifobject->xsk->xsk, ifobject->xsk_map_fd);
+> +       }
+>
+>         fds.fd = xsk_socket__fd(ifobject->xsk->xsk);
+>         fds.events = POLLIN;
+> @@ -1249,11 +1269,20 @@ static void *worker_testapp_validate_rx(void *arg)
+>                 pthread_mutex_unlock(&pacing_mutex);
+>         }
+>
+> -       if (test->total_steps == test->current_step || err)
+> -               testapp_cleanup_xsk_res(ifobject);
+>         pthread_exit(NULL);
+>  }
+>
+> +static void testapp_clean_xsk_umem(struct ifobject *ifobj)
+> +{
+> +       u64 umem_sz = ifobj->umem->num_frames * ifobj->umem->frame_size;
+> +
+> +       if (ifobj->shared_umem)
+> +               umem_sz *= 2;
+> +
+> +       xsk_umem__delete(ifobj->umem->umem);
+> +       munmap(ifobj->umem->buffer, umem_sz);
+> +}
+> +
+>  static int testapp_validate_traffic(struct test_spec *test)
+>  {
+>         struct ifobject *ifobj_tx = test->ifobj_tx;
+> @@ -1280,6 +1309,14 @@ static int testapp_validate_traffic(struct test_spec *test)
+>         pthread_join(t1, NULL);
+>         pthread_join(t0, NULL);
+>
+> +       if (test->total_steps == test->current_step || test->fail) {
+> +               xsk_socket__delete(ifobj_tx->xsk->xsk);
+> +               xsk_socket__delete(ifobj_rx->xsk->xsk);
+> +               testapp_clean_xsk_umem(ifobj_rx);
+> +               if (!ifobj_tx->shared_umem)
+> +                       testapp_clean_xsk_umem(ifobj_tx);
+> +       }
+> +
+>         return !!test->fail;
+>  }
+>
+> @@ -1359,9 +1396,9 @@ static void testapp_headroom(struct test_spec *test)
+>  static void testapp_stats_rx_dropped(struct test_spec *test)
+>  {
+>         test_spec_set_name(test, "STAT_RX_DROPPED");
+> +       pkt_stream_replace_half(test, MIN_PKT_SIZE * 4, 0);
+>         test->ifobj_rx->umem->frame_headroom = test->ifobj_rx->umem->frame_size -
+>                 XDP_PACKET_HEADROOM - MIN_PKT_SIZE * 3;
+> -       pkt_stream_replace_half(test, MIN_PKT_SIZE * 4, 0);
+>         pkt_stream_receive_half(test);
+>         test->ifobj_rx->validation_func = validate_rx_dropped;
+>         testapp_validate_traffic(test);
+> @@ -1484,6 +1521,11 @@ static void testapp_invalid_desc(struct test_spec *test)
+>                 pkts[7].valid = false;
+>         }
+>
+> +       if (test->ifobj_tx->shared_umem) {
+> +               pkts[4].addr += UMEM_SIZE;
+> +               pkts[5].addr += UMEM_SIZE;
+> +       }
+> +
+>         pkt_stream_generate_custom(test, pkts, ARRAY_SIZE(pkts));
+>         testapp_validate_traffic(test);
+>         pkt_stream_restore_default(test);
+> @@ -1624,7 +1666,6 @@ static void ifobject_delete(struct ifobject *ifobj)
+>  {
+>         if (ifobj->ns_fd != -1)
+>                 close(ifobj->ns_fd);
+> -       free(ifobj->umem);
+>         free(ifobj->xsk_arr);
+>         free(ifobj);
+>  }
+> @@ -1665,6 +1706,7 @@ int main(int argc, char **argv)
+>         int modes = TEST_MODE_SKB + 1;
+>         u32 i, j, failed_tests = 0;
+>         struct test_spec test;
+> +       bool shared_umem;
+>
+>         /* Use libbpf 1.0 API mode */
+>         libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
+> @@ -1679,6 +1721,10 @@ int main(int argc, char **argv)
+>         setlocale(LC_ALL, "");
+>
+>         parse_command_line(ifobj_tx, ifobj_rx, argc, argv);
+> +       shared_umem = !strcmp(ifobj_tx->ifname, ifobj_rx->ifname);
+> +
+> +       ifobj_tx->shared_umem = shared_umem;
+> +       ifobj_rx->shared_umem = shared_umem;
+>
+>         if (!validate_interface(ifobj_tx) || !validate_interface(ifobj_rx)) {
+>                 usage(basename(argv[0]));
+> @@ -1715,6 +1761,9 @@ int main(int argc, char **argv)
+>
+>         pkt_stream_delete(tx_pkt_stream_default);
+>         pkt_stream_delete(rx_pkt_stream_default);
+> +       free(ifobj_rx->umem);
+> +       if (!ifobj_tx->shared_umem)
+> +               free(ifobj_tx->umem);
+>         ifobject_delete(ifobj_tx);
+>         ifobject_delete(ifobj_rx);
+>
+> diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
+> index ccfc829b2e5e..b7aa6c7cf2be 100644
+> --- a/tools/testing/selftests/bpf/xdpxceiver.h
+> +++ b/tools/testing/selftests/bpf/xdpxceiver.h
+> @@ -149,6 +149,7 @@ struct ifobject {
+>         bool busy_poll;
+>         bool use_fill_ring;
+>         bool release_rx;
+> +       bool shared_umem;
+>         u8 dst_mac[ETH_ALEN];
+>         u8 src_mac[ETH_ALEN];
+>  };
+> --
+> 2.27.0
+>
