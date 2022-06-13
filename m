@@ -2,90 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA30E547DBC
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 04:52:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2876B547DE0
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 05:14:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235937AbiFMCwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jun 2022 22:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47536 "EHLO
+        id S232398AbiFMDNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jun 2022 23:13:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232367AbiFMCwH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 22:52:07 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F0D387A0;
-        Sun, 12 Jun 2022 19:52:06 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id g10-20020a17090a708a00b001ea8aadd42bso4723062pjk.0;
-        Sun, 12 Jun 2022 19:52:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+syu8zXTLNzuwkgu0YpXNp+GQJj3tWOie/YgNIKS4U0=;
-        b=M0eUrqzokBUgw6kx+SeIUwac//UqJb78eJPvjl4zcc7ye76BPFJyAFRItO4se0MfNB
-         baIgwLhM25mHwtekNXBMrtvYAjO4pGOFwzPjWjpioSf89+x0Cd1eJbR4lYcZLUkXiRDu
-         87TOZ6RXlLmR9uebqGC2BzZZwnlNrHO1qCPWtxkSvwa9eubRgcSwJYK94w2h7lPk0/mq
-         oLhlyFXohWdlZt+OmlaHfOsbz0Pyw14uhedYzP8zWmCQNJSJIEf9dKfF5SccD7kyOt5p
-         6ouMbiKRBT04OHIfOvNub3sIEcZ04uRA/pKQO/09k/lUrHvVtdzTexTf5WdAK/4gflB4
-         NwSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+syu8zXTLNzuwkgu0YpXNp+GQJj3tWOie/YgNIKS4U0=;
-        b=2/zvAtLBJhqtY49qZpivhl1ibHQjWhtY6KSvjy7mROjhx5lBbuR989Xqdh4UDRKtZz
-         MMSAj+B9yycNHXuGY82KmAAGCIoSguf1KkqqDzxlXR1xB91dcTFbPrnGtGf+pRy5vTr5
-         va7easW1G/2jztVC2j4RP3yJ8JERpFGirCkHlAEQZGFQtaSwD1SREffeuRNsgJPXHd5P
-         csvR3rvtBmYt8GaISyBvyqce9BnVOeGGk5Pdk37Dm/HHwhV9Q0ApwVoAxY1iT8cjaWtH
-         x3EQdFjnWIFmRfCVBmq/9CNefWj8+1Ndzo/lk6j1EWEmQT/aoU+AHMeycAlsxGjtYN4o
-         MUVg==
-X-Gm-Message-State: AOAM530oTf0cRljvl1ciSleLBdrqOYef89ehmryNov1vvMFE3r4i6R5B
-        bn93df3tTK+xpYKjXqHf+B8=
-X-Google-Smtp-Source: ABdhPJx1eYlhYQSPfX7umirYAVUsnMFMYLEGdt9XIy8VcLdLixPOVw8G2uR3P6K9i4Hs+h6lxCZoJw==
-X-Received: by 2002:a17:90b:1c82:b0:1dd:1b46:5aa9 with SMTP id oo2-20020a17090b1c8200b001dd1b465aa9mr13354049pjb.158.1655088726257;
-        Sun, 12 Jun 2022 19:52:06 -0700 (PDT)
-Received: from localhost ([2405:6580:97e0:3100:ae94:2ee7:59a:4846])
-        by smtp.gmail.com with ESMTPSA id x16-20020a1709027c1000b0015e8d4eb276sm3732099pll.192.2022.06.12.19.52.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jun 2022 19:52:04 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 11:52:01 +0900
-From:   Benjamin Poirier <benjamin.poirier@gmail.com>
-To:     Srivathsan Sivakumar <sri.skumar05@gmail.com>
-Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        Coiby Xu <coiby.xu@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] staging: qlge: qlge_main.c: rewrite do-while loops
- into more compact for loops
-Message-ID: <YqamUSc3Y9TBwAEH@d3>
-References: <YqJcLwUQorZQOrkd@Sassy>
+        with ESMTP id S238581AbiFMDNl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 23:13:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9E18F167C3
+        for <netdev@vger.kernel.org>; Sun, 12 Jun 2022 20:13:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655090018;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=unlfd8+PTlyYF5m3vsJe++TdYCyZE4SizGmFc6U81ms=;
+        b=JE7lwE8oyCaF6NweW6auSVCU+6ghPFmEiA2VSiwjnYhLgQyOAXhCBrBA0DcsTGNtWbs04P
+        jpqc/w5sXnZEJA8KIJ9Zdyj0lJmTeYEpMdIaxYHGqzLsNS+1i6B5D+O6FKgi29URhnI2f/
+        /dAPOiH1yCgc3zkuo5SOfeN8fL1tWEw=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-227-2LrfrWBsN02Bzf407nK4OA-1; Sun, 12 Jun 2022 23:13:35 -0400
+X-MC-Unique: 2LrfrWBsN02Bzf407nK4OA-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2A053802804;
+        Mon, 13 Jun 2022 03:13:35 +0000 (UTC)
+Received: from fs-i40c-03.fs.lab.eng.bos.redhat.com (fs-i40c-03.fs.lab.eng.bos.redhat.com [10.16.224.23])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D7F40492C3B;
+        Mon, 13 Jun 2022 03:13:34 +0000 (UTC)
+From:   Alexander Aring <aahringo@redhat.com>
+To:     stefan@datenfreihafen.org
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        miquel.raynal@bootlin.com, aahringo@redhat.com
+Subject: [PATCH wpan-next] mac802154: util: fix release queue handling
+Date:   Sun, 12 Jun 2022 23:13:23 -0400
+Message-Id: <20220613031323.999280-1-aahringo@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqJcLwUQorZQOrkd@Sassy>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-06-09 16:46 -0400, Srivathsan Sivakumar wrote:
-> simplify do-while loops into for loops
-> 
-> Signed-off-by: Srivathsan Sivakumar <sri.skumar05@gmail.com>
-> ---
-> Changes in v2:
->  - Rewrite for loops more compactly
-> 
->  drivers/staging/qlge/qlge_main.c | 24 ++++++++++--------------
->  1 file changed, 10 insertions(+), 14 deletions(-)
+The semantic of atomic_dec_and_test() is to return true if zero is
+reached and we need call ieee802154_wake_queue() when zero is reached.
 
-Please also update the TODO file to remove the respective entry. The
-other referenced problem instance was already fixed in commit
-41e1bf811ace ("Staging: qlge: Rewrite two while loops as simple for
-loops")
+Fixes: f0feb3490473 ("net: mac802154: Introduce a tx queue flushing mechanism")
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+---
+ net/mac802154/util.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/mac802154/util.c b/net/mac802154/util.c
+index 60eb7bd3bfc1..60f6c0f10641 100644
+--- a/net/mac802154/util.c
++++ b/net/mac802154/util.c
+@@ -79,7 +79,7 @@ void ieee802154_release_queue(struct ieee802154_local *local)
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&local->phy->queue_lock, flags);
+-	if (!atomic_dec_and_test(&local->phy->hold_txs))
++	if (atomic_dec_and_test(&local->phy->hold_txs))
+ 		ieee802154_wake_queue(&local->hw);
+ 	spin_unlock_irqrestore(&local->phy->queue_lock, flags);
+ }
+-- 
+2.31.1
+
