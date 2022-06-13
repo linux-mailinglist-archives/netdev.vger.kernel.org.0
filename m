@@ -2,102 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8B5A54967B
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 18:34:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4F94548CB6
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 18:14:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237505AbiFMKou (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 06:44:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45588 "EHLO
+        id S1354012AbiFMLbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 07:31:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346494AbiFMKnm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 06:43:42 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD97642C
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 03:24:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655115891; x=1686651891;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=86jWivhk8meiZMigHF+qUhjT86a05RroUkEG49GRzh8=;
-  b=Y0DmwJdFDGXukn9jZ+KKRj/OKG+bWze0/nbb3MBnqhKB3d28PR0/M1tf
-   TT2hE7mDv7e9o3p6hgHT4B6CJUJ/eYwHVHXPsOjQKZc+VO7XSx4j07Ak8
-   JTjNr0QKFG/uBRrL6OpfMrw0Wk9xBezOmRDJ5aF9zeTMCi8ehgWZJGIsC
-   OZedWprALV+mHAAftqrTRpnAtS1IT8c79M6bBrcnk+hsZlHvtVf5PGIRs
-   +p5TvakUs4A5mtOtQbA/d+R4qv4a0w2RW3Ts5sbyJmKOnQOrOnz+ugpCc
-   KrKDCdOZzECo9jcwPjJX4g/oQrdK4BXGK5zfucB7Rj1Htwk4FwzyR2Wdo
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="266930324"
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="266930324"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 03:24:50 -0700
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="829730435"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 03:24:48 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     jasowang@redhat.com, mst@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        parav@nvidia.com, xieyongji@bytedance.com, gautam.dawar@amd.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH V2 4/6] vDPA: !FEATURES_OK should not block querying device config space
-Date:   Mon, 13 Jun 2022 18:16:50 +0800
-Message-Id: <20220613101652.195216-5-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220613101652.195216-1-lingshan.zhu@intel.com>
-References: <20220613101652.195216-1-lingshan.zhu@intel.com>
+        with ESMTP id S1354313AbiFML32 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 07:29:28 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09057CE12
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 03:44:08 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id f16-20020a056602071000b00669bb12a6baso2446956iox.8
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 03:44:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=fEZcgfMVZzqJc7ybxib8fa3FVpwuXcVDtcH0dPsG3A0=;
+        b=TLSSIpkG2zoGYrMssU6avILd0t7U8GyR490/lQ6fj2ajTw3qu5tt5T2KZ+CbRTXbKY
+         2QMbCpIFRRac2DaSFd3AyYVfjmit9Xe8Jfz7gXyQ87wDnCZKMUGV1MW8166UanW23K8k
+         /hyzSz1o8onnm/HQfuaE87KOomfi/cCAG4IaiWtwTQkBLxFJCZLqZ8TrNZfdpdbhJ/4a
+         QrC5jVkLd9QyvQbbyIWmiqkK4pCyafzAQlRq5Hob9FB69VK9AK7A4oa9jLDWWdq/QaiI
+         Ei6T8t3OsiPdIjT/3R/f3NGMJfTl/o4OaeGRy3p7AZeh9EjBG+z5XDCiXPGBlJstPYuP
+         bLtQ==
+X-Gm-Message-State: AOAM530rAUKSrHZiLuFAt07/8YAXkEYPMasgPdORExCaT62Z5hO5UoXk
+        8JbKkdGczpF4PDEU7JJk+x8PV4BfCqKgzey0Mp1qg3J7KTyi
+X-Google-Smtp-Source: ABdhPJzYGM8wyFXxpBqce+DRay56fuykYJTlm3Z97gco3gXVLKQDBQe+LJkoivDQ05RRSo2Ln1SRxrgMrCK2ym0icmTglewkd24E
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6638:438c:b0:331:adac:a274 with SMTP id
+ bo12-20020a056638438c00b00331adaca274mr23027146jab.192.1655117047472; Mon, 13
+ Jun 2022 03:44:07 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 03:44:07 -0700
+In-Reply-To: <000000000000e2fc3f05e141f930@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ad299205e151f7d3@google.com>
+Subject: Re: [syzbot] WARNING in exit_tasks_rcu_finish
+From:   syzbot <syzbot+9bb26e7c5e8e4fa7e641@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        brauner@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        ebiederm@xmission.com, frederic@kernel.org, hawk@kernel.org,
+        jiangshanlai@gmail.com, joel@joelfernandes.org,
+        john.fastabend@gmail.com, josh@joshtriplett.org, kafai@fb.com,
+        keescook@chromium.org, kpsingh@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, mathieu.desnoyers@efficios.com,
+        netdev@vger.kernel.org, pabeni@redhat.com, paulmck@kernel.org,
+        quic_neeraju@quicinc.com, rcu@vger.kernel.org, rostedt@goodmis.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Users may want to query the config space of a vDPA device,
-to choose a appropriate one for a certain guest. This means the
-users need to read the config space before FEATURES_OK, and
-the existence of config space contents does not depend on
-FEATURES_OK.
+syzbot has bisected this issue to:
 
-The spec says:
-The device MUST allow reading of any device-specific configuration
-field before FEATURES_OK is set by the driver. This includes
-fields which are conditional on feature bits, as long as those
-feature bits are offered by the device.
+commit 09f110d4a1597185a5ed177da8573eec997b7227
+Author: Paul E. McKenney <paulmck@kernel.org>
+Date:   Tue May 17 18:30:32 2022 +0000
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
----
- drivers/vdpa/vdpa.c | 8 --------
- 1 file changed, 8 deletions(-)
+    rcu-tasks: Track blocked RCU Tasks Trace readers
 
-diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-index 9b0e39b2f022..d76b22b2f7ae 100644
---- a/drivers/vdpa/vdpa.c
-+++ b/drivers/vdpa/vdpa.c
-@@ -851,17 +851,9 @@ vdpa_dev_config_fill(struct vdpa_device *vdev, struct sk_buff *msg, u32 portid,
- {
- 	u32 device_id;
- 	void *hdr;
--	u8 status;
- 	int err;
- 
- 	down_read(&vdev->cf_lock);
--	status = vdev->config->get_status(vdev);
--	if (!(status & VIRTIO_CONFIG_S_FEATURES_OK)) {
--		NL_SET_ERR_MSG_MOD(extack, "Features negotiation not completed");
--		err = -EAGAIN;
--		goto out;
--	}
--
- 	hdr = genlmsg_put(msg, portid, seq, &vdpa_nl_family, flags,
- 			  VDPA_CMD_DEV_CONFIG_GET);
- 	if (!hdr) {
--- 
-2.31.1
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=170f6ee7f00000
+start commit:   6d0c80680317 Add linux-next specific files for 20220610
+git tree:       linux-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=148f6ee7f00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=108f6ee7f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a30d6e3e814e5931
+dashboard link: https://syzkaller.appspot.com/bug?extid=9bb26e7c5e8e4fa7e641
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=177b6230080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=148207bff00000
 
+Reported-by: syzbot+9bb26e7c5e8e4fa7e641@syzkaller.appspotmail.com
+Fixes: 09f110d4a159 ("rcu-tasks: Track blocked RCU Tasks Trace readers")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
