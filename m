@@ -2,165 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98D64549E28
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 21:54:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF789549E42
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 22:01:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348769AbiFMTyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 15:54:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32842 "EHLO
+        id S230469AbiFMUBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 16:01:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345840AbiFMTy2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 15:54:28 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-cusazon11020019.outbound.protection.outlook.com [52.101.61.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A25E9C2C1;
-        Mon, 13 Jun 2022 11:25:46 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LdATb2WCuOUMDvKmGBwYmaCGROEe8g6jc9UaYMJRgIfsm0DAHZKS7+vecUuKZf9UN0EZOisYd1l+cX7ZTdMeIo2Um1NsOv6sr3t9JAbrYy/4LLHAc+toQ+gIFZ6gMgM097R0O1tQEQefFttrItDnDSs77sTFCarfNB29z7Xd5sPDWdYL3GvhHv+pqgW2mRZCbmY8Y6F0XrelurvBHyQyYLkXR9dXMBxshN4cHZ0ajA5jy/dt5sWndE/WF6N5FUIQGjbWJCkkmtFfmPudCP8LVXSClfvBzh2s1LN+9+Yh504pcKGmfx0y6mgxrqk832jD8dRaavJOb22kxhffrscIdw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=P05H3ZD3fdINjZqM0oLn97KJpARxYUTugfacX4/uEdg=;
- b=L7rmm8ud0kV4PHme/Dzc84lyFQHZR/59zw9KK0SOYtgAmhAcGuEGHeM+NHL2XPkZM9CMhYB7sx6l9fv09BH2a6k07sZdVyrc6YgjimqocUs5VzNSwD8baA2wi1gUlDXPRK4/lF5y1XgYLk8kiHkaeVDBSWESKG6X6n2b6/HR99+iKDkvnoRL4u4EylQSCAO8u7XYHpTkPHbepe7IKLhK2/RZOp54PHOxx9qyU0zRCfsZUdtkLYvmcbK17z0CYWSEldFcFA2OQ8DZCGIcO5lUNp1pR0oFzL4iQoVv0udMzoojNXJbMz7JDjOs7H5pcAeLV/I31kDZ6p/e2eWT6A7piw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=P05H3ZD3fdINjZqM0oLn97KJpARxYUTugfacX4/uEdg=;
- b=KkrBEfVvSfTevZv+0E0ipHeGkCX5CY44+WcfvD0rmwqBnkDPuLD05SXty03k+D5gh8Z3edXrPKE/gZkL9Cnr0licU9DuMZxKXbKCgeRwB2J7T2MILPYuLjHoaXr3TQRKdqkIeUUnp11P2vonTjPwzCBljErxyhInteOoKhqEVn4=
-Received: from PH7PR21MB3263.namprd21.prod.outlook.com (2603:10b6:510:1db::16)
- by CH2PR21MB1528.namprd21.prod.outlook.com (2603:10b6:610:80::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.6; Mon, 13 Jun
- 2022 18:25:44 +0000
-Received: from PH7PR21MB3263.namprd21.prod.outlook.com
- ([fe80::9966:f7f5:fb1d:c737]) by PH7PR21MB3263.namprd21.prod.outlook.com
- ([fe80::9966:f7f5:fb1d:c737%5]) with mapi id 15.20.5353.005; Mon, 13 Jun 2022
- 18:25:44 +0000
-From:   Long Li <longli@microsoft.com>
-To:     David Miller <davem@davemloft.net>,
-        "longli@linuxonhyperv.com" <longli@linuxonhyperv.com>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>, "leon@kernel.org" <leon@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
-        Ajay Sharma <sharmaajay@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: RE: [Patch v3 03/12] net: mana: Handle vport sharing between devices
-Thread-Topic: [Patch v3 03/12] net: mana: Handle vport sharing between devices
-Thread-Index: AQHYfqGCuf9deSlWrUuCitsFXyo7F61NKaoAgAB+zCA=
-Date:   Mon, 13 Jun 2022 18:25:43 +0000
-Message-ID: <PH7PR21MB32638B8B639FC2B9CEC99C05CEAB9@PH7PR21MB3263.namprd21.prod.outlook.com>
-References: <1655068494-16440-1-git-send-email-longli@linuxonhyperv.com>
-        <1655068494-16440-4-git-send-email-longli@linuxonhyperv.com>
- <20220613.115058.818063822562949798.davem@davemloft.net>
-In-Reply-To: <20220613.115058.818063822562949798.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=f94dd87e-10dc-49e3-a4cf-fef9d7ad4fb1;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-06-13T18:24:47Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e2366e2a-213d-4600-efe4-08da4d6a20e3
-x-ms-traffictypediagnostic: CH2PR21MB1528:EE_
-x-microsoft-antispam-prvs: <CH2PR21MB15282A353FBD6BBAA89B8C26CEAB9@CH2PR21MB1528.namprd21.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dAwJdvk+fuK8VQcxj2PAfNnrYMbWGJlRBB8BIG7DI4qlB7Zqu5wLGN+by/dZH1VkXkQnPI3M839vCCxDnQRilPVjLIr/alMcdtnKTsG/f/hwqIOh9yIG9vOe4NnejIw2KLbj4HLw3y96E5/uVViOlQQvqfiytxXZhwbCFsapGLakc+MkzIdH+dVgQqBpMYGrp7OOkGVXtrGqK6ZjmJMokowBHWa8rXrlO9T/M6yAH+bMoqadgeK+mnMlVNoeQhSyN1LOWVP6Vm1cGeaBfUg9M+YSFED+51TW55s4Kaw+tKzJrClFfH2nORp3c2ZfK0CVJKXi4hEWRA7zG53davSCA2ZlwOWitnmSmV6VmWbupLIELjjI+7YjjN02Qvg7Kv8rmjmM6eZgLVvkvW105RWE8XX/tPH5rON7ZxSqIn86rrWd0gQulNad538gZtIIQG7lk+/l4kghRa2m3ckaLd1A1BXnmO3alC1VO+ISKiDGJFKeD+7v/CNL8bNptmlg2VsZRNIQGERjMyM7ahCifeMp5lEl+2kbcGsQzD1gjtVGYZR37eN712PLzHLi0rZ7IJtx6MO2yu/GRXnPWYYRM69rm4hbKQW07pfMUay2O7AmzCPIN30gXOl4dHqhiqhMm6RSuiMxKCVvRCzHqqp5jdMedudSORZ9CqUuRrdShRqG9sSsq1asbRHo5nsukodVkzIT/I5bo/o0UuPnBDPq0/wgkshrbk7SiVeNiUTmVwEsVArCDMD8oKgU66Z6Vk0r6eFK
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR21MB3263.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(451199009)(66446008)(64756008)(8676002)(4326008)(33656002)(55016003)(316002)(8936002)(8990500004)(38070700005)(7416002)(52536014)(4744005)(2906002)(86362001)(66476007)(71200400001)(508600001)(10290500003)(5660300002)(9686003)(76116006)(26005)(38100700002)(82950400001)(82960400001)(186003)(6506007)(7696005)(122000001)(66946007)(66556008)(110136005)(54906003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?hQ7FEwcfPv/wKleUSEUNZWB5rNwU08RiuikN1SPyxZSdAnOAhODLJkwadFYr?=
- =?us-ascii?Q?sQkNesK2SyK+AO9Q+em/MHTPLpwxtOSVcfyyJwzdXkTIKliufbsvoEpuBQ/d?=
- =?us-ascii?Q?/FHIagYw8rs5KRH+8MhHrAPlfXpffjcM9HeqElBKblWo8+wKuXRB7gfhA4P7?=
- =?us-ascii?Q?J3Mw1yHp1yiNnpdQMNzLjtjAeqAE8lMflL3hsoCD4Q5awY3uEmFF8x/E+Q4s?=
- =?us-ascii?Q?RJ0XDMSOtjoXby0ILzaCQ5PSXe698jjyEKAwqbbhD0V95cjzaaHsWu2kvLff?=
- =?us-ascii?Q?qqZMR5P2QfTdjnAxS2NlCFinfEhhRrDe9DtWrpLhKBPr365E3UzOYADv7FyI?=
- =?us-ascii?Q?NqlK8sXqYMVy20t5HtRCGIukqut5l4WmrNUzqbPzw7kC8iHrQZC98Wj+fI1P?=
- =?us-ascii?Q?nVYumhT03UGcACRGNlJ2GLw2cJmilxLCjRxEFNJJZKR9IdSoHLbh1S9fdY0s?=
- =?us-ascii?Q?8i72PDVUrSR6NDoAO0P/dMs9EDv6K2rRPtRdXj7hXz08PX2EfwLvATlBhdlF?=
- =?us-ascii?Q?UFxZ6H+qajaisTNyMvt0bzAEjhzUU6dSZ17swSaEMbAyqHKDWnCz9/gd/vXk?=
- =?us-ascii?Q?4nIJT2keyyZeSqd2rLIw8zh1q4+Qg8PgzHqO5yBzG0SL5ZHnSBqYio9WqfSj?=
- =?us-ascii?Q?JoXmcKTdoKWbU2oyLVTRlzVBF7rUehw+KPDTTqZv4+BRVa/8pp5uW2TF+/1C?=
- =?us-ascii?Q?RJ6KnQksXeLkY5kclel9kwf77dZjIC2yoUyhWKYiXBQ6nH71wd9TrPepBbgw?=
- =?us-ascii?Q?cIi7F0YZuDEh+aGyaRFgyEg/Gp3gjzMaVidx/qIuR9F8X0lvKi2l0RmZEErY?=
- =?us-ascii?Q?DVsK2Gm5a73mdBS90M6i/UX19znOQSIbnpnjtfTbTDyH+3mMBoaIZowCasTa?=
- =?us-ascii?Q?oSIoyAgL1QThncigP7nVPgNDnmY/lirWRmV4KGGtsIJSwfqZJwflvIRzlxjU?=
- =?us-ascii?Q?08QPe5Bz4Ih5Yosu2rCN2viDkVOiknTEKXioewSWfiOy7+bddLFW+offLAjX?=
- =?us-ascii?Q?9Mh2vAEFDolw0XbmeMymV3t7paMPWxJMYl/hTJGh+nKb1PIm8pMhpFFpFJb6?=
- =?us-ascii?Q?NdsHPunGj4kYGEuTh3iLMUmu2gDuoeQaZyY3iC2cdUjfO+WWNnuS6VaECgiQ?=
- =?us-ascii?Q?iZQmeWJQ9NNvCz7MTpg0USMgBU9Sy49d31Stim8Oy9wivPmCqI9vaot7Y/DY?=
- =?us-ascii?Q?fQQ6xCg53Ytsk69aUFZzzGFeJLEUrbwXVf8Fn7JbEw41Xujq6/nAuqlVAaBB?=
- =?us-ascii?Q?+kmQQONjBdD/ou1G5GwttkNJg/BTleAX9g/am9+CQOxkpoWnzVAYkpVX23TU?=
- =?us-ascii?Q?WYJfmk288fQpdqSwvALs4JmPmcQ+Wn6+JmZyUZnwUJ7Xgjr2+G8sMU0elZ4w?=
- =?us-ascii?Q?f2gvdX0wqNMYTSN4uqJRpWKpjYPZ52yqF/4eswRvkkJvDhz5KoYgrDRVEbBa?=
- =?us-ascii?Q?ZzicQITktr7Z5bAISHKNWCLXIKhBvAdR3RrclHJpJlYT9QQxL8kJ9e7V7pJ1?=
- =?us-ascii?Q?WkiH6sO1580PNZY303M/lDoipBK2F1BHAwEasxfWSroNfkOLW2Tp2YJQL5T4?=
- =?us-ascii?Q?rFiHsI5EzTYLLZlzWojFksQuu6hga+Rh53aiV3C85GxzPFVr3p28mFG+2uZy?=
- =?us-ascii?Q?y34RoqSrpYPn71iHYxG5/eQHm18GEYsslnmJFIrpe2U2VoBT3q6OBneP1QX+?=
- =?us-ascii?Q?jswaFG9gWVHadBVZz1l5vSwk4EwvwiIC1Dd5D6wRgbJYLqK6G1Jl+T6eZMTG?=
- =?us-ascii?Q?ecmqPzfcXg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
+        with ESMTP id S1347484AbiFMUBV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 16:01:21 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37BA7CB70
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 11:32:49 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id p129so8763769oig.3
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 11:32:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:date:content-transfer-encoding
+         :user-agent:mime-version;
+        bh=Jm05G51fM/Kw7kqpM/WmAYUoh2cInjiy8mzUnZqemRk=;
+        b=dxRblik3h4psWYJIfgmlBGPNa4D8Zd+RtBCQZnHrL+e9/XUt1fbZF4S6mLMBBprXgY
+         Sz4RK1EANwbrlMSNY3x6zw6RAHw6tIuOcqnQk+5J2Vn4xh4h2LlIU/AODZL8GjuOdV9m
+         1kz+Ank6JV7MASlTbRciLJ3Y5RpHHsJc0pWzEeODEWLe8V3IBwYKALA/dEgOhkulwQoq
+         WqiU22he7kG29f4O2Ew+IPfOKaq81VzhtuiTnvGer/0aMi/nlL379PWpt3/4TNHY5N4c
+         Ukr0fZRKhx4OQLB1FZLuou7TLRlj4IzoHDbdIztMVMmu05bkrs4YLIbWUyYEToBNnXLJ
+         Dr8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:date
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=Jm05G51fM/Kw7kqpM/WmAYUoh2cInjiy8mzUnZqemRk=;
+        b=F5gFOBPPlYpFEBdP6HGAq9fN/EIgxo/Ri3zfHvC5kS7CnEpI5HNFhltSQbMCjEGaFr
+         pu4RbpfmqGZ04C2B+RnvFqsuNEwv/74otmLfp0TnbUGBAvKHTNBqThwmTMfHPr+9PO0T
+         DBITlWSG4jIWhZpYjy3Uo//zxzB+JiFtrLm25cUb1Ukz9W8g+qH1U4IXufnjVHlXpRWw
+         A6Vw+eDxr5ekAdrm7bFZa2cS/M5hHeoYtDgHky8Dww3aMYnc098q5u9yvIeyz0uiOCHV
+         oeAtnl0POEoWZ6t/frPmuAP5zoUbY6Xdf5AyGqPEh4VlLyaoSjE7LbMlgpWckPx7nt6O
+         kSbQ==
+X-Gm-Message-State: AOAM5312sTceahff8ev2QD4S5FYOn/og1HDqSHZ5MGDVbIxwLM8ejtr1
+        4CfekyzvWyXnyitBt3hG0ipizC319v3m/g==
+X-Google-Smtp-Source: ABdhPJzdionEiMerZSieXQZhKpQxYQOADfnFJ2tyuucW11tdWH0Aa1ePqni9qX936AGYSKmmaNlJUw==
+X-Received: by 2002:a05:6808:3c6:b0:32f:38b9:71fa with SMTP id o6-20020a05680803c600b0032f38b971famr26699oie.217.1655145168266;
+        Mon, 13 Jun 2022 11:32:48 -0700 (PDT)
+Received: from ?IPv6:2804:14c:71:8e3a:8161:7a72:233f:e435? ([2804:14c:71:8e3a:8161:7a72:233f:e435])
+        by smtp.gmail.com with ESMTPSA id o13-20020a05680803cd00b0032ebb50538fsm3524534oie.57.2022.06.13.11.32.46
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 11:32:47 -0700 (PDT)
+Message-ID: <32138cf48914f241a998480f343e199ecd9b78c3.camel@gmail.com>
+Subject: [PATCH] net: usb: ax88179_178a needs FLAG_SEND_ZLP
+From:   Jose Alonso <joalonsof@gmail.com>
+To:     netdev@vger.kernel.org
+Date:   Mon, 13 Jun 2022 15:32:44 -0300
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR21MB3263.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e2366e2a-213d-4600-efe4-08da4d6a20e3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2022 18:25:43.9871
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kbDQfgJZO3QsRsqaIWtenxec30N1ch9EkbGn48zB88rIg3+hG1fRlWOh4z0rUCVAHzOTX6WKP7mzhH2Xj4pHmg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR21MB1528
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [Patch v3 03/12] net: mana: Handle vport sharing between
-> devices
->=20
-> From: longli@linuxonhyperv.com
-> Date: Sun, 12 Jun 2022 14:14:45 -0700
->=20
-> > +int mana_cfg_vport(struct mana_port_context *apc, u32
-> protection_dom_id,
-> > +		   u32 doorbell_pg_id)
-> >  {
-> > +	/* Ethernet driver and IB driver can't take the port at the same time
-> */
-> > +	refcount_inc(&apc->port_use_count);
-> > +	if (refcount_read(&apc->port_use_count) > 2) {
->=20
-> This is a racy test, the count could change after the test against '2'.  =
-It would
-> be nice if there was a primitive to do the increment and test atomically,=
- but I
-> fail to see one that matches this scenerio currently.
->=20
-> Thank you.
 
-I'm changing it to mutex.
+The extra byte inserted by usbnet.c when
+ (length % dev->maxpacket =3D=3D 0) is causing problems to device.
 
-Thank you,
+This patch sets FLAG_SEND_ZLP to avoid this.
 
-Long
+Tested with: 0b95:1790 ASIX Electronics Corp. AX88179 Gigabit Ethernet
+
+Problems observed:
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+1) Using ssh/sshfs. The remote sshd daemon can abort with the message:
+   "message authentication code incorrect"
+   This happens because the tcp message sent is corrupted during the
+   USB "Bulk out". The device calculate the tcp checksum and send a
+   valid tcp message to the remote sshd. Then the encryption detects
+   the error and aborts.
+2) NETDEV WATCHDOG: ... (ax88179_178a): transmit queue 0 timed out
+3) Stop normal work without any log message.
+   The "Bulk in" continue receiving packets normally.
+   The host sends "Bulk out" and the device responds with -ECONNRESET.
+   (The netusb.c code tx_complete ignore -ECONNRESET)
+Under normal conditions these errors take days to happen and in
+intense usage take hours.
+
+A test with ping gives packet loss, showing that something is wrong:
+ping -4 -s 462 {destination}	# 462 =3D 512 - 42 - 8
+Not all packets fail.
+My guess is that the device tries to find another packet starting
+at the extra byte and will fail or not depending on the next
+bytes (old buffer content).
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+Signed-off-by: Jose Alonso <joalonsof@gmail.com>
+
+---
+
+diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.=
+c
+index 7a8c11a26eb5..4704ed6f00ef 100644
+--- a/drivers/net/usb/ax88179_178a.c
++++ b/drivers/net/usb/ax88179_178a.c
+@@ -1750,7 +1750,7 @@ static const struct driver_info ax88179_info =3D {
+ 	.link_reset =3D ax88179_link_reset,
+ 	.reset =3D ax88179_reset,
+ 	.stop =3D ax88179_stop,
+-	.flags =3D FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags =3D FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup =3D ax88179_rx_fixup,
+ 	.tx_fixup =3D ax88179_tx_fixup,
+ };
+@@ -1763,7 +1763,7 @@ static const struct driver_info ax88178a_info =3D {
+ 	.link_reset =3D ax88179_link_reset,
+ 	.reset =3D ax88179_reset,
+ 	.stop =3D ax88179_stop,
+-	.flags =3D FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags =3D FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup =3D ax88179_rx_fixup,
+ 	.tx_fixup =3D ax88179_tx_fixup,
+ };
+@@ -1776,7 +1776,7 @@ static const struct driver_info cypress_GX3_info =3D =
+{
+ 	.link_reset =3D ax88179_link_reset,
+ 	.reset =3D ax88179_reset,
+ 	.stop =3D ax88179_stop,
+-	.flags =3D FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags =3D FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup =3D ax88179_rx_fixup,
+ 	.tx_fixup =3D ax88179_tx_fixup,
+ };
+@@ -1789,7 +1789,7 @@ static const struct driver_info dlink_dub1312_info =
+=3D {
+ 	.link_reset =3D ax88179_link_reset,
+ 	.reset =3D ax88179_reset,
+ 	.stop =3D ax88179_stop,
+-	.flags =3D FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags =3D FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup =3D ax88179_rx_fixup,
+ 	.tx_fixup =3D ax88179_tx_fixup,
+ };
+@@ -1802,7 +1802,7 @@ static const struct driver_info sitecom_info =3D {
+ 	.link_reset =3D ax88179_link_reset,
+ 	.reset =3D ax88179_reset,
+ 	.stop =3D ax88179_stop,
+-	.flags =3D FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags =3D FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup =3D ax88179_rx_fixup,
+ 	.tx_fixup =3D ax88179_tx_fixup,
+ };
+@@ -1815,7 +1815,7 @@ static const struct driver_info samsung_info =3D {
+ 	.link_reset =3D ax88179_link_reset,
+ 	.reset =3D ax88179_reset,
+ 	.stop =3D ax88179_stop,
+-	.flags =3D FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags =3D FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup =3D ax88179_rx_fixup,
+ 	.tx_fixup =3D ax88179_tx_fixup,
+ };
+@@ -1828,7 +1828,7 @@ static const struct driver_info lenovo_info =3D {
+ 	.link_reset =3D ax88179_link_reset,
+ 	.reset =3D ax88179_reset,
+ 	.stop =3D ax88179_stop,
+-	.flags =3D FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags =3D FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup =3D ax88179_rx_fixup,
+ 	.tx_fixup =3D ax88179_tx_fixup,
+ };
+@@ -1841,7 +1841,7 @@ static const struct driver_info belkin_info =3D {
+ 	.link_reset =3D ax88179_link_reset,
+ 	.reset	=3D ax88179_reset,
+ 	.stop	=3D ax88179_stop,
+-	.flags	=3D FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags	=3D FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup =3D ax88179_rx_fixup,
+ 	.tx_fixup =3D ax88179_tx_fixup,
+ };
+@@ -1854,7 +1854,7 @@ static const struct driver_info toshiba_info =3D {
+ 	.link_reset =3D ax88179_link_reset,
+ 	.reset	=3D ax88179_reset,
+ 	.stop =3D ax88179_stop,
+-	.flags	=3D FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags	=3D FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup =3D ax88179_rx_fixup,
+ 	.tx_fixup =3D ax88179_tx_fixup,
+ };
+@@ -1867,7 +1867,7 @@ static const struct driver_info mct_info =3D {
+ 	.link_reset =3D ax88179_link_reset,
+ 	.reset	=3D ax88179_reset,
+ 	.stop	=3D ax88179_stop,
+-	.flags	=3D FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags	=3D FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup =3D ax88179_rx_fixup,
+ 	.tx_fixup =3D ax88179_tx_fixup,
+ };
+@@ -1880,7 +1880,7 @@ static const struct driver_info at_umc2000_info =3D {
+ 	.link_reset =3D ax88179_link_reset,
+ 	.reset  =3D ax88179_reset,
+ 	.stop   =3D ax88179_stop,
+-	.flags  =3D FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags  =3D FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup =3D ax88179_rx_fixup,
+ 	.tx_fixup =3D ax88179_tx_fixup,
+ };
+@@ -1893,7 +1893,7 @@ static const struct driver_info at_umc200_info =3D {
+ 	.link_reset =3D ax88179_link_reset,
+ 	.reset  =3D ax88179_reset,
+ 	.stop   =3D ax88179_stop,
+-	.flags  =3D FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags  =3D FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup =3D ax88179_rx_fixup,
+ 	.tx_fixup =3D ax88179_tx_fixup,
+ };
+@@ -1906,7 +1906,7 @@ static const struct driver_info at_umc2000sp_info =3D=
+ {
+ 	.link_reset =3D ax88179_link_reset,
+ 	.reset  =3D ax88179_reset,
+ 	.stop   =3D ax88179_stop,
+-	.flags  =3D FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags  =3D FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup =3D ax88179_rx_fixup,
+ 	.tx_fixup =3D ax88179_tx_fixup,
+ };
+--
+
