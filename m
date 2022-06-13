@@ -2,125 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F6D65482BF
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 11:15:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5ACB548342
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 11:44:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240626AbiFMJND (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 05:13:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47980 "EHLO
+        id S234433AbiFMJ3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 05:29:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240687AbiFMJNA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 05:13:00 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F69A10FE9;
-        Mon, 13 Jun 2022 02:12:55 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LM5SF52vHzDqts;
-        Mon, 13 Jun 2022 17:12:29 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 17:12:51 +0800
-Received: from localhost.localdomain (10.175.112.70) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 13 Jun 2022 17:12:50 +0800
-From:   Xu Jia <xujia39@huawei.com>
-To:     <linux-hams@vger.kernel.org>
-CC:     <ajk@comnets.uni-bremen.de>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <xujia39@huawei.com>
-Subject: [PATCH] hamradio: 6pack: fix array-index-out-of-bounds in decode_std_command()
-Date:   Mon, 13 Jun 2022 17:25:37 +0800
-Message-ID: <1655112337-48005-1-git-send-email-xujia39@huawei.com>
-X-Mailer: git-send-email 1.8.3.1
+        with ESMTP id S240892AbiFMJ2j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 05:28:39 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF4913EA6;
+        Mon, 13 Jun 2022 02:28:36 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id fu3so9965931ejc.7;
+        Mon, 13 Jun 2022 02:28:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=MyvCw3+X9veP8d/j+BQO5hDbd/SHGZ+8BAzWsLfr7TQ=;
+        b=BG3cPgSSPGTJxhUQ6Srqd/L72nNNzFPWAfBjKVPBRKDzzaZorA6RhhWHPcSUSXndQO
+         s2A8OJ+IcQg85xSRTSuPjURt9lexJ0d0cPMRrzJjyDuwdiiogzX9ur8pk9X+Mk1GguNA
+         121zJcRJd8Blk257wYz3q1aTj4TzNdDfOvFnvIlLr6XsRTdQN50tREcLlkvXT0b5euA0
+         OB7aDUEtmKcrSui+Yx9jU6GuQ4+eN7J5tgIHOBX+XRF76pU/SVPsHLfBMddwXJu9ne99
+         yoS+3D4X2D7Bdju2JLUh0BG777aLDpDZ9FwWcTvA3lgwQp+i+IVfIc3hqQSjnvJOSc9q
+         LwFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MyvCw3+X9veP8d/j+BQO5hDbd/SHGZ+8BAzWsLfr7TQ=;
+        b=eY0HyX2VissEYnXG6vaHNmTCzW4BEwyRxhVU+VCj0CGKMRqlnalhQ49K3Ugl4KM9tC
+         yPUb2VsTqPFDRdRFu1rSHBj34o/CctK+ewNFh2wESOUhm/d1hd9+SK1Ye+9Efn9XINXx
+         xgfXaXZl1Pti3x4PB+UowiTTPfWxPgkszu8LqR7jdyQ8qp3vOZRrBhz9m0MjNZ3JNBof
+         MTUcAcolv5+Zr9jfo6vpXSK+2UB+GStNvVVk168YPCcnq1xrCglV5FDgTBO2ufLivSyz
+         KdvxR5zJgD52M8KmWgXsYZ8/9um5J/WA7DuIL6N1qRDjpQKE2MnJSp+0jxqT3NkwzE8y
+         3wvA==
+X-Gm-Message-State: AOAM5329hOxaY8p7qiUGnU18g0epj+be2U5QRb8if4i5llI44/1QbaW/
+        fZ0Nvue4YoYwZSMN6XLbHxo=
+X-Google-Smtp-Source: ABdhPJwWF3n6wjpHpsjKG6R6vVAgrkc/vZvpBaHpPzozzeK6w7yX+3n/h+G+lg3hDyU93lTxi86UKQ==
+X-Received: by 2002:a17:907:7fa5:b0:711:c8e2:2f4c with SMTP id qk37-20020a1709077fa500b00711c8e22f4cmr37169341ejc.49.1655112515384;
+        Mon, 13 Jun 2022 02:28:35 -0700 (PDT)
+Received: from skbuf ([188.25.255.186])
+        by smtp.gmail.com with ESMTPSA id zj11-20020a170907338b00b006ff0fe78cb7sm3599496ejb.133.2022.06.13.02.28.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 02:28:34 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 12:28:33 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [RFC Patch net-next v2 05/15] net: dsa: microchip: move the port
+ mirror to ksz_common
+Message-ID: <20220613092833.f4sk2lhhbl64imrb@skbuf>
+References: <20220530104257.21485-1-arun.ramadoss@microchip.com>
+ <20220530104257.21485-6-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.70]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220530104257.21485-6-arun.ramadoss@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hulk Robot reports incorrect sp->rx_count_cooked value in decode_std_command().
-This should be caused by the subtracting from sp->rx_count_cooked before.
-It seems that sp->rx_count_cooked value is changed to 0, which bypassed the
-previous judgment.
-sp->rx_count_cooked is a shared variable but is not protected by a lock.
-The same applies to sp->rx_count. This patch adds a lock to fix the bug.
+On Mon, May 30, 2022 at 04:12:47PM +0530, Arun Ramadoss wrote:
+> This patch updates the common port mirror add/del dsa_switch_ops in
+> ksz_common.c. The individual switches implementation is executed based
+> on the ksz_dev_ops function pointers.
+> 
+> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> ---
 
-The fail log is shown below:
-=======================================================================
-UBSAN: array-index-out-of-bounds in drivers/net/hamradio/6pack.c:925:31
-index 400 is out of range for type 'unsigned char [400]'
-CPU: 3 PID: 7433 Comm: kworker/u10:1 Not tainted 5.18.0-rc5-00163-g4b97bac0756a #2
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
-Workqueue: events_unbound flush_to_ldisc
-Call Trace:
- <TASK>
- dump_stack_lvl+0xcd/0x134
- ubsan_epilogue+0xb/0x50
- __ubsan_handle_out_of_bounds.cold+0x62/0x6c
- sixpack_receive_buf+0xfda/0x1330
- tty_ldisc_receive_buf+0x13e/0x180
- tty_port_default_receive_buf+0x6d/0xa0
- flush_to_ldisc+0x213/0x3f0
- process_one_work+0x98f/0x1620
- worker_thread+0x665/0x1080
- kthread+0x2e9/0x3a0
- ret_from_fork+0x1f/0x30
- ...
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Xu Jia <xujia39@huawei.com>
----
- drivers/net/hamradio/6pack.c | 5 +++++
- 1 file changed, 5 insertions(+)
+>  drivers/net/dsa/microchip/ksz8795.c    | 13 ++++++-------
+>  drivers/net/dsa/microchip/ksz9477.c    | 12 ++++++------
+>  drivers/net/dsa/microchip/ksz_common.c | 25 +++++++++++++++++++++++++
+>  drivers/net/dsa/microchip/ksz_common.h | 10 ++++++++++
+>  4 files changed, 47 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+> index 157d69e46793..8657b520b336 100644
+> --- a/drivers/net/dsa/microchip/ksz8795.c
+> +++ b/drivers/net/dsa/microchip/ksz8795.c
+> @@ -1089,12 +1089,10 @@ static int ksz8_port_vlan_del(struct ksz_device *dev, int port,
+>  	return 0;
+>  }
+>  
+> -static int ksz8_port_mirror_add(struct dsa_switch *ds, int port,
+> +static int ksz8_port_mirror_add(struct ksz_device *dev, int port,
+>  				struct dsa_mall_mirror_tc_entry *mirror,
+>  				bool ingress, struct netlink_ext_ack *extack)
+>  {
+> -	struct ksz_device *dev = ds->priv;
+> -
+>  	if (ingress) {
+>  		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX, true);
+>  		dev->mirror_rx |= BIT(port);
+> @@ -1113,10 +1111,9 @@ static int ksz8_port_mirror_add(struct dsa_switch *ds, int port,
+>  	return 0;
+>  }
+>  
+> -static void ksz8_port_mirror_del(struct dsa_switch *ds, int port,
+> +static void ksz8_port_mirror_del(struct ksz_device *dev, int port,
+>  				 struct dsa_mall_mirror_tc_entry *mirror)
+>  {
+> -	struct ksz_device *dev = ds->priv;
+>  	u8 data;
+>  
+>  	if (mirror->ingress) {
+> @@ -1400,8 +1397,8 @@ static const struct dsa_switch_ops ksz8_switch_ops = {
+>  	.port_fdb_dump		= ksz_port_fdb_dump,
+>  	.port_mdb_add           = ksz_port_mdb_add,
+>  	.port_mdb_del           = ksz_port_mdb_del,
+> -	.port_mirror_add	= ksz8_port_mirror_add,
+> -	.port_mirror_del	= ksz8_port_mirror_del,
+> +	.port_mirror_add	= ksz_port_mirror_add,
+> +	.port_mirror_del	= ksz_port_mirror_del,
+>  };
+>  
+>  static u32 ksz8_get_port_addr(int port, int offset)
+> @@ -1464,6 +1461,8 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
+>  	.vlan_filtering = ksz8_port_vlan_filtering,
+>  	.vlan_add = ksz8_port_vlan_add,
+>  	.vlan_del = ksz8_port_vlan_del,
+> +	.mirror_add = ksz8_port_mirror_add,
+> +	.mirror_del = ksz8_port_mirror_del,
+>  	.shutdown = ksz8_reset_switch,
+>  	.init = ksz8_switch_init,
+>  	.exit = ksz8_switch_exit,
+> diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+> index e230fe1d1917..6796c9d89ab9 100644
+> --- a/drivers/net/dsa/microchip/ksz9477.c
+> +++ b/drivers/net/dsa/microchip/ksz9477.c
+> @@ -811,11 +811,10 @@ static int ksz9477_port_mdb_del(struct dsa_switch *ds, int port,
+>  	return ret;
+>  }
+>  
+> -static int ksz9477_port_mirror_add(struct dsa_switch *ds, int port,
+> +static int ksz9477_port_mirror_add(struct ksz_device *dev, int port,
+>  				   struct dsa_mall_mirror_tc_entry *mirror,
+>  				   bool ingress, struct netlink_ext_ack *extack)
+>  {
+> -	struct ksz_device *dev = ds->priv;
+>  	u8 data;
+>  	int p;
+>  
+> @@ -851,10 +850,9 @@ static int ksz9477_port_mirror_add(struct dsa_switch *ds, int port,
+>  	return 0;
+>  }
+>  
+> -static void ksz9477_port_mirror_del(struct dsa_switch *ds, int port,
+> +static void ksz9477_port_mirror_del(struct ksz_device *dev, int port,
+>  				    struct dsa_mall_mirror_tc_entry *mirror)
+>  {
+> -	struct ksz_device *dev = ds->priv;
+>  	bool in_use = false;
+>  	u8 data;
+>  	int p;
+> @@ -1327,8 +1325,8 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
+>  	.port_fdb_del		= ksz9477_port_fdb_del,
+>  	.port_mdb_add           = ksz9477_port_mdb_add,
+>  	.port_mdb_del           = ksz9477_port_mdb_del,
+> -	.port_mirror_add	= ksz9477_port_mirror_add,
+> -	.port_mirror_del	= ksz9477_port_mirror_del,
+> +	.port_mirror_add	= ksz_port_mirror_add,
+> +	.port_mirror_del	= ksz_port_mirror_del,
+>  	.get_stats64		= ksz_get_stats64,
+>  	.port_change_mtu	= ksz9477_change_mtu,
+>  	.port_max_mtu		= ksz9477_max_mtu,
+> @@ -1406,6 +1404,8 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
+>  	.vlan_filtering = ksz9477_port_vlan_filtering,
+>  	.vlan_add = ksz9477_port_vlan_add,
+>  	.vlan_del = ksz9477_port_vlan_del,
+> +	.mirror_add = ksz9477_port_mirror_add,
+> +	.mirror_del = ksz9477_port_mirror_del,
+>  	.shutdown = ksz9477_reset_switch,
+>  	.init = ksz9477_switch_init,
+>  	.exit = ksz9477_switch_exit,
+> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+> index a1fef9e4e36c..1ed4cc94795e 100644
+> --- a/drivers/net/dsa/microchip/ksz_common.c
+> +++ b/drivers/net/dsa/microchip/ksz_common.c
+> @@ -994,6 +994,31 @@ int ksz_port_vlan_del(struct dsa_switch *ds, int port,
+>  }
+>  EXPORT_SYMBOL_GPL(ksz_port_vlan_del);
+>  
+> +int ksz_port_mirror_add(struct dsa_switch *ds, int port,
+> +			struct dsa_mall_mirror_tc_entry *mirror,
+> +			bool ingress, struct netlink_ext_ack *extack)
+> +{
+> +	struct ksz_device *dev = ds->priv;
+> +	int ret = -EOPNOTSUPP;
+> +
+> +	if (dev->dev_ops->mirror_add)
+> +		ret = dev->dev_ops->mirror_add(dev, port, mirror, ingress,
+> +					       extack);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(ksz_port_mirror_add);
 
-diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
-index 45c3c4a..194f22f 100644
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -100,6 +100,8 @@ struct sixpack {
- 	unsigned int		rx_count;
- 	unsigned int		rx_count_cooked;
- 
-+	spinlock_t		rxlock;
-+
- 	int			mtu;		/* Our mtu (to spot changes!) */
- 	int			buffsize;       /* Max buffers sizes */
- 
-@@ -565,6 +567,7 @@ static int sixpack_open(struct tty_struct *tty)
- 	sp->dev = dev;
- 
- 	spin_lock_init(&sp->lock);
-+	spin_lock_init(&sp->rxlock);
- 	refcount_set(&sp->refcnt, 1);
- 	init_completion(&sp->dead);
- 
-@@ -913,6 +916,7 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
- 			sp->led_state = 0x60;
- 			/* fill trailing bytes with zeroes */
- 			sp->tty->ops->write(sp->tty, &sp->led_state, 1);
-+			spin_lock(&sp->rxlock);
- 			rest = sp->rx_count;
- 			if (rest != 0)
- 				 for (i = rest; i <= 3; i++)
-@@ -930,6 +934,7 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
- 				sp_bump(sp, 0);
- 			}
- 			sp->rx_count_cooked = 0;
-+			spin_unlock(&sp->rxlock);
- 		}
- 		break;
- 	case SIXP_TX_URUN: printk(KERN_DEBUG "6pack: TX underrun\n");
--- 
-1.8.3.1
+Just as a minor style comment, take it or leave it.
+
+If you switch the function pointer presence check, you reduce the
+indentation of the long statement, making it fit a single line, and you
+eliminate the need for a "ret" variable:
+
+	if (!dev->dev_ops->mirror_add)
+		return -EOPNOTSUPP;
+
+	return dev->dev_ops->mirror_add(dev, port, mirror, ingress, extack);
+
+> +
+> +void ksz_port_mirror_del(struct dsa_switch *ds, int port,
+> +			 struct dsa_mall_mirror_tc_entry *mirror)
+> +{
+> +	struct ksz_device *dev = ds->priv;
+> +
+> +	if (dev->dev_ops->mirror_del)
+> +		dev->dev_ops->mirror_del(dev, port, mirror);
+> +}
+> +EXPORT_SYMBOL_GPL(ksz_port_mirror_del);
+> +
+>  static int ksz_switch_detect(struct ksz_device *dev)
+>  {
+>  	u8 id1, id2;
+> diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+> index 03e738c0cbb8..01080ec22bf1 100644
+> --- a/drivers/net/dsa/microchip/ksz_common.h
+> +++ b/drivers/net/dsa/microchip/ksz_common.h
+> @@ -187,6 +187,11 @@ struct ksz_dev_ops {
+>  			 struct netlink_ext_ack *extack);
+>  	int  (*vlan_del)(struct ksz_device *dev, int port,
+>  			 const struct switchdev_obj_port_vlan *vlan);
+> +	int (*mirror_add)(struct ksz_device *dev, int port,
+> +			  struct dsa_mall_mirror_tc_entry *mirror,
+> +			  bool ingress, struct netlink_ext_ack *extack);
+> +	void (*mirror_del)(struct ksz_device *dev, int port,
+> +			   struct dsa_mall_mirror_tc_entry *mirror);
+>  	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
+>  	void (*port_init_cnt)(struct ksz_device *dev, int port);
+>  	int (*shutdown)(struct ksz_device *dev);
+> @@ -247,6 +252,11 @@ int ksz_port_vlan_add(struct dsa_switch *ds, int port,
+>  		      struct netlink_ext_ack *extack);
+>  int ksz_port_vlan_del(struct dsa_switch *ds, int port,
+>  		      const struct switchdev_obj_port_vlan *vlan);
+> +int ksz_port_mirror_add(struct dsa_switch *ds, int port,
+> +			struct dsa_mall_mirror_tc_entry *mirror,
+> +			bool ingress, struct netlink_ext_ack *extack);
+> +void ksz_port_mirror_del(struct dsa_switch *ds, int port,
+> +			 struct dsa_mall_mirror_tc_entry *mirror);
+>  
+>  /* Common register access functions */
+>  
+> -- 
+> 2.36.1
+> 
 
