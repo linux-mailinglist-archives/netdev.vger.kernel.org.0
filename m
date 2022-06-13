@@ -2,147 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75AB2549B98
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 20:34:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E433D549BAA
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 20:37:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242600AbiFMSer (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 14:34:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35500 "EHLO
+        id S231140AbiFMShR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 14:37:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240768AbiFMSeT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 14:34:19 -0400
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140059.outbound.protection.outlook.com [40.107.14.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D32B2F648
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 07:54:22 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S7AH5fAYyL19ORkscuIZZWEHO22QYTeOPgq+3XSiGecwQUIMaXbcfmsj4xmB6EaiSfaUlCf5PaO7BLFWnJylGTBADuCVl3nQCXojzbBHBGDXfYfNdFrACz2Fq3TlujO6khJRWNkCllRy0jAx/q0QagQhk4+qNaDEmzQ8Pu2il6U2X5ZLvl9ogUKtNxkzbi+E4Toa7BcL3G2bxro2jAauqNY1rmhpsdBA0af4oNU1+7IxackQhymb+SctiPCu/zHxje9lX0RP9/gRks85cbT7wn8X3kwbUHzdfqWMS4qtkwGx8rBoNiTzxvLMv7idP1J3Zx2rX35ySIcJ5TkC7lJB8w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=S6izWlJ/Y/ByMiLwMOFmkgLK4JuXbUlbjNdrjkEdGdY=;
- b=FSTIxNBCFW/RrtQkmjVDpfOCn5BzDA+0YFcCDCjvAZFp2b5hnpXDsdGAJCwhBr244jQqT9/5tAKPurEBXSHDFSVY48JL5zjiV1AuNg3JBf1R3saqbrPi8n/OiEVUVMBEmQ3ALKXYejS0+n71sU9WWyj1sYty+Jjl2aKXhY3UUj/cEr35dXYV06Tds16ArNpWPyR0+Cnskl1JuwQnuX2p2ZLXNm3d1P35O6pJR5mb+uXffXp5O6IPxuZ9AXjW0CqxIHuKoARXLND9QPRcMllT4jqfH8fqa+5CK//RrPvgzxPLQ4iD68qNufWamAWZVU2VNVVuMyp3wAN/LH2YAy213A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=S6izWlJ/Y/ByMiLwMOFmkgLK4JuXbUlbjNdrjkEdGdY=;
- b=2Bw7rifz1F4Y1fQmUMqvj7xpx28fVvqmiTGFMq2pD3FduKZTs8lWyl1tgiTdfOrotgEj2OD9MBJte1r8wtM93W3b4BU7bdy8Av4fZQwR+DxAsqPp8nsDrZld4EGo/VtM92/pR2Ak+D5NbZSkSqYVbDFSoXQCIZ0Ag/oicQPg8wjgjwpBXdLu1k/FiBDoI4VkqpEx8HtM1fHaf32+/x4AQioEsV9nQDDoXrKXKbovEwg5RDZuwXDem9h/w1Yw+bDk3dLdE7PUEso8HUaANd2/2HoJzTavdPufdlH3KlEnd0zoAZYibb+IGXDKtIyNvJ6C8m/Lu228s9YRJvDDrxa5Vg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from VI1PR0401MB2526.eurprd04.prod.outlook.com
- (2603:10a6:800:58::16) by AS8PR04MB8214.eurprd04.prod.outlook.com
- (2603:10a6:20b:3b0::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.20; Mon, 13 Jun
- 2022 14:54:19 +0000
-Received: from VI1PR0401MB2526.eurprd04.prod.outlook.com
- ([fe80::19e2:fafb:553f:d8c]) by VI1PR0401MB2526.eurprd04.prod.outlook.com
- ([fe80::19e2:fafb:553f:d8c%11]) with mapi id 15.20.5332.020; Mon, 13 Jun 2022
- 14:54:19 +0000
-Message-ID: <99a069df-6146-a85c-5fed-acffc4c4d2d3@suse.com>
-Date:   Mon, 13 Jun 2022 16:54:17 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 2/2] net/cdc_ncm: Add ntb_max_rx,ntb_max_tx cdc_ncm module
- parameters
-Content-Language: en-US
-To:     =?UTF-8?Q?=c5=81ukasz_Spintzyk?= <lukasz.spintzyk@synaptics.com>,
-        netdev@vger.kernel.org
-Cc:     ppd-posix@synaptics.com
-References: <20220613080235.15724-1-lukasz.spintzyk@synaptics.com>
- <20220613080235.15724-3-lukasz.spintzyk@synaptics.com>
-From:   Oliver Neukum <oneukum@suse.com>
-In-Reply-To: <20220613080235.15724-3-lukasz.spintzyk@synaptics.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: AS9PR04CA0064.eurprd04.prod.outlook.com
- (2603:10a6:20b:48b::17) To VI1PR0401MB2526.eurprd04.prod.outlook.com
- (2603:10a6:800:58::16)
+        with ESMTP id S245712AbiFMShC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 14:37:02 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7695D2452;
+        Mon, 13 Jun 2022 07:56:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=kgaOivgVuvl4d3T7CdI1Azd7OrRQH+RXo0cFw9RJT0A=; b=vTPQmgu4pXETpWR2FDU/YUpQJ/
+        yWyuh6FtLojBT7/urS3VWhyK0anC/w0ol6jnZKvZTUTF144Ff5aBbZAPEibZNQGKwIv+QfmlQkcHg
+        mMI2vk8fqokyNWjX4Ofc8+PMPtGEPAI5RLTJHHsDa05vUNdcxr7sdY5GZHF5YI8dmNag=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o0lUb-006kmW-Sz; Mon, 13 Jun 2022 16:56:37 +0200
+Date:   Mon, 13 Jun 2022 16:56:37 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/1] net: phy: add remote fault support
+Message-ID: <YqdQJepq3Klvr5n5@lunn.ch>
+References: <20220608093403.3999446-1-o.rempel@pengutronix.de>
+ <YqS+zYHf6eHMWJlD@lunn.ch>
+ <20220613125552.GA4536@pengutronix.de>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 64e1b023-1141-46f5-5f2c-08da4d4c97fb
-X-MS-TrafficTypeDiagnostic: AS8PR04MB8214:EE_
-X-Microsoft-Antispam-PRVS: <AS8PR04MB82143FFAD8869E01E33654AAC7AB9@AS8PR04MB8214.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: O+LynJ+gAnANWjHZ8fn8atEw289zzHQIjSgIth2id8UmG9vVb+4ERUqx8I8b3GCOeU7ZnPlQQVg6cWlEfMkxPOahMx/0YW/HIY4/i1JS9eLJkSpRa80Zua6wPgz6m54g+7bBwiWpEpb5eqx2Ev51wEBg8YeyqOxt5kLlZeC0y0x0g2LEVNzCU+fWpiM1LTIkCpz5vjvI4Y1iQDerapNu/vR5XbmJiwYvJten47JvDeYnv7tlEay0W+K6m7i9qmZ5Si4aCf/hAr1mO5jpUNgkUSDZLH0BwbLZLHWMFTV22ICBS3wCYgz2vmfdwSF7uwJ/LZMH8iF9bg6aB23/pEYMhgNiq6mIeC1vYGK3ci3hrtlPkHJaexWnKUfwO3tc2vA29/fOF7guClatfrRtrHLix/SMl3+QcR45aq+S5urDdUmeO3gLLn4UhU4WxMEB/Yade34wvv/PEGeIIiwrS/kdgWravgUul1Gf8H5LQctxQSFa+kgvDdLCUeaVKWWFFMGKFoTqjj391r9+gy++3nMCPYIr8Y+PF5Vmpdf8BsTyW69nLp67aTJ0EMO9Aj5r3oBDV5asDabW/0k64G8dkBk6MfmIinrry0Ee3ox635wmCivHuEFHmbPxM96WYprhOdElKSgCxKzTUSQYg0e12QkxU/k9c3ywYIardhKH10t7hJiLUUg5DQQU+DZ4yaXReaniXBfOwS3RzFoIt6WZHqA7wNT1kyzGMQB4ytfJJJqXPWM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0401MB2526.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(186003)(31696002)(8936002)(83380400001)(6506007)(38100700002)(6512007)(53546011)(66946007)(316002)(6486002)(508600001)(66476007)(4326008)(8676002)(2616005)(66556008)(31686004)(86362001)(36756003)(2906002)(4744005)(5660300002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?V3kwVGtuM2cvQm9PWDFFVjJJeFhSWjR5bXFzaFg3eDhzY1Z1LzlOeXhVUVM4?=
- =?utf-8?B?c1o4eUd3VTBsRVhPRWFvcjV4eGE3Yjd0YXVEVlpXMnJTczJiNFozZEhOSm0w?=
- =?utf-8?B?dXBRVEpUQmZsSzhrNTBabHRwbUdTWDR0V0xkdkZnVUlqOGtuRkJ4RlRjVm1L?=
- =?utf-8?B?NHgwVklTajZueGRHZE9OUXBWWUMwN1NBNG94RzhxVkExRU5iczFGRzNKaURF?=
- =?utf-8?B?c094M09YNFY1OVZubWE4SG1yMXlzZzY0c3hYVFpHY1FGbVRrYzBRS1N6eWwr?=
- =?utf-8?B?WHFNd1RRb25jM1F2Y3M4UC9vMDlTVVpGMGh6aEsyUVN5RVROT2dzMVN3WllB?=
- =?utf-8?B?c2xFdDVmNXB6U3owRkRlb1k1MjYzSUxZNzl1d1hHVU9kYzRvTGU1VEFsbXlW?=
- =?utf-8?B?bFgzNDFGR3R4WHNqdkJWdG15d3gwUVBrOTJuaUhMa09KNWZqS0pJVFI1OVlo?=
- =?utf-8?B?Z1dlSlFhSStlYU1CdjVKSG03Y2lXSjF1U00vSlNHUnhkcXJlNzM1YSs0ZHdv?=
- =?utf-8?B?MnRtalVQL2JDdENmQ2xyVjRRTWgrM0JpS1FZOEZ3ZU9LLzB5OEt0ZzlNY1Ft?=
- =?utf-8?B?THNaV1duanhkRkUrVE9BVUlEaXBLVmxmcURlbkpXaVpmNmUzclRxU3JzR3RG?=
- =?utf-8?B?ekU4MHBVM2tNSE9LYW1QK0kxc2Mya2pILzlCd2tTR01jdzRuVmJUcEdtcUIr?=
- =?utf-8?B?bkkraWFidlk0eFRXbDNLdUJzbkFiOUx5NDRJeWpGTTZxV3JZT2Q5TXhGelhn?=
- =?utf-8?B?TEluZHp6SGFwK29WdW1XZUFsRHpDV1ZxUWh3NFNSeUdnYXJNWkYvREpNQ0Np?=
- =?utf-8?B?allidWsxU2RpdisxM29icmt3WFM3eWRPbXVzQVRENHE0Rkt1dU1TQ0xIM0Zy?=
- =?utf-8?B?N2lHb1prdkQzenNOTmczem1SdjNmSDJxYUxiRm5pdGlveUhOamF3UEVuRkRS?=
- =?utf-8?B?VG9LUXI3aXJkMDc5dVp0eUIwTlNCekVUN1c0cGJEUkFtTnZCVjFwbnNteXJa?=
- =?utf-8?B?TDJRS3Vua2xGdC9qcElTSzdkVTdkTVRtK05TK3ZqOHRJMVRJSUZ6YkFSSWV6?=
- =?utf-8?B?VlMveUJuVHp6aTlWUXFldXdtbGNGNnJCMGI3bzVmL25OOHlQZlV2a2diYjdT?=
- =?utf-8?B?V0djWDdybWNvTDlWckFvclpQVGJlWWUzOXpUYy93M0FMdEUvTjE4MG1ROXRI?=
- =?utf-8?B?SlRXRHJncWlpU0hoYllERjc2T2RlR01xTWh0WkVxN0theVB3VkthWVFHdGY3?=
- =?utf-8?B?Q29IKzZCNXg5Nzk3dE1YTU0rVFpzWGNnWnAwVG51YU9IRzhmZGhNUm0xSWtM?=
- =?utf-8?B?bkR6bUs3Rkd2SHFOdE0rQlJIbUJtRVJ4NHQyY3BwcHJOUEpHMGZkTEZvT1My?=
- =?utf-8?B?Z2VieXJtZ0llYU5PN2hBamZyakFGSVNrNUk2dnhIa01NbEQyZStJcXJtYkwx?=
- =?utf-8?B?b3lGZ1NqeWcxMHMyeDA0TTlQQUUyUXowMzg2a2VGRVdJcUN2RFFJZnFSQjZh?=
- =?utf-8?B?RWJ2ZTlYNjQ3cWJ2Z2p5aVhmYnJOK3l6eGU1WTJUVHNyTksyZVBSSjFsMXI2?=
- =?utf-8?B?R0N3ZzR3RzMxcDc5N3Iya2Q0UmpWaHZOYlp5eUp3Lzh0TElSczM5c1VQeFpn?=
- =?utf-8?B?Nmh3SWYwckEvYnc0TktPejlXMkIrcU8zYmgxd0dUT21PQlNCTWFyMjg5eGlk?=
- =?utf-8?B?Z1dRZmo1WFJqeUd5TE5pK0g3cGhDdGZwYWZkaVJxTnlJYXpMVjZtNXZ5cE1M?=
- =?utf-8?B?cXZKNzMzczdha1prYnkzb2VLMGc0cFZrMko1YmFXb3ZYVy93Q2IyTWdOSW13?=
- =?utf-8?B?OXpHZ0ljU1VwNTF1eExnSWZnRmZLdVZrV09ZM3l6UlFsRWwva2E3TjVCME1S?=
- =?utf-8?B?YXpLUmVKMnZyQ1ZkYS9UdzhzSFZyVGl5TmpjTDgyT3RNWFcyM1hOR21DTnRv?=
- =?utf-8?B?RGdhYzNpcWlJN1dOMUJBVGZ1b3daV2IybXdTR2dTUGdFcHAybG1JWk1hWVJK?=
- =?utf-8?B?dUtaMDBrUDhSL1NFTGlhb0k1NFI2VENPYituRy9iazA2SEtFT24vMUxwYit0?=
- =?utf-8?B?OW9WdVF2VTFVZ2FtRnkzNG82Yk55N0s3c0JkNVVYUUtUT2dxZHIwQUV6TFM4?=
- =?utf-8?B?M0NEeFRrRXdobjJWckNmTjFmbEpaRU1PbVp3aVY4RU9OWTU2T2c1Q3lJS3hr?=
- =?utf-8?B?bmR2QStHcUk1SDJRMUFqZUxqdDFoeHFJUXBHck0vdjRwclpGRnNPQVA3MFJV?=
- =?utf-8?B?cFA4a3V3dytSbWlZTTJ1WkREemJYOE5wNUtEQ09ydmN5T3QySnNQOHlRcSsy?=
- =?utf-8?B?Ni9obUx1NkNleHdjTlovbklHRUxHdmxsYkFDL0Y5UEJBSVJYWnd5SXRURzAr?=
- =?utf-8?Q?Dl4deSL+oQ+zN719bRpppUmABfUEBzDWI52S3neO5YuWL?=
-X-MS-Exchange-AntiSpam-MessageData-1: LFmS+F4t3Emfeg==
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 64e1b023-1141-46f5-5f2c-08da4d4c97fb
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0401MB2526.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 14:54:19.3252
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FhyOKeqxdMCacF28dx7I228WGcXfDQoQu8DwA3VGZlDlilmc60UoCa5kp2olFZ+rFRo7RO7xwSIAG0XocHniXw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8214
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220613125552.GA4536@pengutronix.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> If I see it correctly, there is no way to notify about remote fault when
+> the link is up. The remote fault bit is transferred withing Link Code
+> Word as part of FLP burst. At least in this part of specification.
 
+Thanks for looking at the specification. So ksetting does seem like
+the right API.
 
-On 13.06.22 10:02, Łukasz Spintzyk wrote:
-> This change allows to optionally adjust maximum RX and TX NTB size
-> to better match specific device capabilities, leading to
-> higher achievable Ethernet bandwidth.
->
-Hi,
+Sorry, i won't have time to look at the specification until tomorrow.
+The next question is, is it a separate value, or as more link mode
+bits? Or a mixture of both? Is there a capability bit somewhere to
+indicate this PHY can advertise a remote fault? That would suggest we
+want a ETHTOOL_LINK_MODE_REMOTE_FAULT_BIT, which we can set in
+supported and maybe see in lpa? Set it in advertising when indicating
+a fault. The actual fault value could then be in a separate value
+which gets written to the extended page? Does 802.3 allow a remote
+fault to be indicated but without the reason?
 
-this is awkward a patch. If some devices need bigger buffers, the
-driver should grow its buffers for them without administrative
-intervention.
+> So receiving remote fault information via linkstate and send remote fault via
+> ksetting?
 
-	Regards
-		Oliver
+We could also just broadcast the results of a ksetting get to
+userspace?
+
+I don't have easy access to a machine at the moment. What does
+
+ip monitor all
+
+show when a link is configured up, but autoneg fails? And when autoneg
+is successful but indicates a remote fault? Are there any existing
+messages sent to userspace?
+
+> The next logical question is, if a remote fault is RX'ed (potentially with a
+> reason) who will react on this. There might be different policies on how to
+> react on same reason.
+
+Policy goes in userspace, is the general rule.
+
+The only exception might be, if we decide to make use of one of these
+to silence the link to allow cabling testing. We probably want the
+kernel to try to do that.
+
+       Andrew
