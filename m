@@ -2,209 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CF6654A0CF
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 23:07:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 017BB54A0D7
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 23:07:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351813AbiFMVG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 17:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54182 "EHLO
+        id S1351622AbiFMVHZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 17:07:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351283AbiFMVFp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 17:05:45 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2056.outbound.protection.outlook.com [40.107.93.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4CE95B9
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 13:42:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GGzE0cbDK/bPjVTC2wZ2KgcEUbNL/xJ7BwUJ8xdb2pxBoMfVgW6oIZTYyloMaQmjoH+4MRURBzItuTBUVAFaXQMTyhArj9rM72XJUHTDStLvJhTuOqHxdZ19whuWxf8xKw3XlF/wUG6+w/BB/4PbKn4qkJO2keQkitQjKalzCwV/teQ9j/Uqz2OFksYI9M5Y4IxH5Uyr8YXKmzYieb5Ivv5oU54LVtQqeDPY7jWyVepSlBIrx2M+3CHApCDmYZAFFAF5nX5YYwWioRH45Roh95Rajh3XzFVCLC1iLKDGk5m0YbNY7oc0njmMPjSS0BlZsdwp5rq1WqTJabmaRNZsdw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=T6ycQKfnPUqKXrUk4UI1Fqby2/D21P51+U4eeXEjEAI=;
- b=BsXH7Eiuvr41+v6whyX+ZogmGvK3vmNaPlbZbVRLjwMxEbrW16vWbtTQ9/HKeC/N5bBANp3Py+d49gdYooy0ZLivW1fHVJs0+NdzXfbjBiBPy9NFZjCFsYJvg+sM7snUZpH7xvGn06D0PC5rbcahhYTi3WEtaDtvPbCmmwWi271lT6fU5wZnMd9cqf7gDwRXhXc8KE86UZndvUxihXGC2DRek1+IdGYQFp6WWTjEixJlSx8D2gmbl8k/TAZljNhhW53dFWwXn8AjVqjq0EAPl8fMCy5AAJH/KSY4zGJoF4+NeDzIleFhELOZy6Nyt86P92y/IX/F6Vazh2EdgMgOzg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=T6ycQKfnPUqKXrUk4UI1Fqby2/D21P51+U4eeXEjEAI=;
- b=FgUvofgp0U2ebV8pDMTWQtGlz9RpW147062oiPNlyGQhXK99bAE5QvrFnSxHBU5PzYqY5pUueAA02PX81IpElVFAJzgwL8AX2bLlJI2ate//YIElymeStiF3Ww56/34V7M4tY+2W9yXLnTOb++XYevmQjBl/+KMZYBh4zsHBKAwCg2UdOx9lP/s0CBy5sYYYFKKVDntiKynRp7QV9MWLybkBC8DaRebABiynlMdqNPSboMpjEFZrFcJm7ojsOx7qhFWWHi+/TrztLq3elOsNj7Z+Xxz2BAVWPGYlOTW96P5pKDQP3deTeDfmD10eJ6ICi7md/lvn6MqRRyv4okrCRQ==
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com (2603:10b6:510:d4::15)
- by BL1PR12MB5141.namprd12.prod.outlook.com (2603:10b6:208:309::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Mon, 13 Jun
- 2022 20:42:23 +0000
-Received: from PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::8c53:1666:6a81:943e]) by PH0PR12MB5481.namprd12.prod.outlook.com
- ([fe80::8c53:1666:6a81:943e%3]) with mapi id 15.20.5332.020; Mon, 13 Jun 2022
- 20:42:23 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     Zhu Lingshan <lingshan.zhu@intel.com>,
-        "jasowang@redhat.com" <jasowang@redhat.com>,
-        "mst@redhat.com" <mst@redhat.com>
-CC:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
-        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
-Subject: RE: [PATCH V2 3/6] vDPA: allow userspace to query features of a vDPA
- device
-Thread-Topic: [PATCH V2 3/6] vDPA: allow userspace to query features of a vDPA
- device
-Thread-Index: AQHYfw/QFftqwiWMMkaiRAN4I7mCTa1NzPiQ
-Date:   Mon, 13 Jun 2022 20:42:23 +0000
-Message-ID: <PH0PR12MB548173EB919A97FF82E5E62BDCAB9@PH0PR12MB5481.namprd12.prod.outlook.com>
-References: <20220613101652.195216-1-lingshan.zhu@intel.com>
- <20220613101652.195216-4-lingshan.zhu@intel.com>
-In-Reply-To: <20220613101652.195216-4-lingshan.zhu@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d7724c7f-7f71-447d-35a1-08da4d7d3834
-x-ms-traffictypediagnostic: BL1PR12MB5141:EE_
-x-microsoft-antispam-prvs: <BL1PR12MB51417D25B10051409D18E36BDCAB9@BL1PR12MB5141.namprd12.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: VijiWycHU3cgiKs1RJhu11+CyyOqPsuQ6eAw4/XWoufkAc9SL83EwZSZh9ToxELnvHx650mMH4iVnWONRTWMbEZ5MsQq08IAA1WAjFB9uIBT7+EF8M2SgkRWIKbjdqhElosf1TGpNYHxsGYIj62T7L+uibLzMqK8JmyJ+6nWQM5wbYcVtLmzTjnfe17T1cWYURklolmwr4zUqbhVKCdbWx2r0mSdIqdx+FTndyv6su78HSFgHUSeaxXWh6i1gZT9t4NZB6HysFIbfAQF0llJadP8/fxFzX5po11ZLjiIi7XOd8jf8oHnVY8g+YETDffp7cL1zUuu0i2pmVmzA1XhI+k1VuURpqbXcOshJnDhlVo6+el/wzI4UFUUhK6CGVEPL6usQNQ2EY7/5d7OnESc9+J+e3lp505ObyG8c1IveMhPQK8snXWjhoyN9UlfbA1OLmkXMH4VtBDkeORqPV8GsNCGQisrp/x6lbs5IomngpmAyL+WlmiDvwq17HvaKUZ8T0etXTgt7fMTiz210RdxyMrse8GqCz4cTTI9I9TeYp4Z2XkfZ+fOeRLGQXAdBsW5Sb8VoiQaqjBaG8SR1uoMWlrZdfS1Y6qftvAO3w52qF7QDM84aUZobxhZKVVNc7qI8MriUlota60NmkNckhJh2j3Zd2ld4APNE4tRWFC5epVige0hofvCZ2b9UP5VRXwuMow/p7dM/qxwsjuNy7kvCQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR12MB5481.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(66946007)(66476007)(4326008)(66556008)(8676002)(64756008)(66446008)(76116006)(508600001)(33656002)(38100700002)(52536014)(2906002)(71200400001)(38070700005)(8936002)(86362001)(55236004)(7696005)(26005)(6506007)(5660300002)(9686003)(110136005)(54906003)(55016003)(316002)(186003)(83380400001)(122000001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?fYoYTia26F95MVkcdtiMF2q6+QDguO4Yzuqh09pKj0GysSFNbzIfPgZHlW6S?=
- =?us-ascii?Q?/pgtf3zNMcuYqHy87NfPLWWx+QAUlYgqZ+uBKM70shCZfFeDmnIx4k6ftoCY?=
- =?us-ascii?Q?fWhykvSrGkIRnfBNs2uLS4/XvA3tY6Hl7xdCQCP5jAIiAcGiA7P8KczTSwJZ?=
- =?us-ascii?Q?hJQhi2ZDNZHUHpgCb19w7BF+srYxox1D9mZc7cWxNDfX0fSBpsDvLckZnHzf?=
- =?us-ascii?Q?xoBS2pc41Bz2Gt99veLgPhvKli41rtQOi1CGG5Ua1JuO1LpI6LrB8dUAmCoT?=
- =?us-ascii?Q?s+8gvKmbDeEUmj6e4qfgzNxBzMMn2iKvnf9a54/Lf5XF8BFOwZO4kHv89Hq/?=
- =?us-ascii?Q?2z7x5x7hLAkZXbwDPBBu6WQSsSpb5IA4erraF1cKafN9dGLGbURg/0RvEe50?=
- =?us-ascii?Q?1ck0InKwms9UniQMY/N46GKCs51IJZq1CCAPO9MqFjTl5aJgJfRf7wsLYPjM?=
- =?us-ascii?Q?0LoQzMPqjB0qF8JWnVGsfyWHlypilqqNpUzoUasnf+wbY252w2c7NO/LW+TM?=
- =?us-ascii?Q?fvHmeOFa9aJ8K6AAY1gpKoP7BxGk2DYJX1CE4sTbiyIAf5hilVoqkbHfPRkE?=
- =?us-ascii?Q?d2uMtHNfE6NVrV+zwzNSZTDsqkKD3U1lSbZqLMV1P7OdcjzkZoQUtUIKBTXK?=
- =?us-ascii?Q?cjbVxstjF5J0EB1uBg7IgJjyovI6HU+UmRqDvEo1AsPKIC/a/ChqbrfnP5LX?=
- =?us-ascii?Q?KoQHumq/IMaqekWPGyQm86xP8eaoJ+NiQgnR5A9a8TvDK615Xsnb0UR3bMvr?=
- =?us-ascii?Q?ORiwsCR+u7Ia8V3ZMwq8kY7Iz6yj/vbmea6NicvNYdtSsQWBF6QyNwENhJtq?=
- =?us-ascii?Q?kl5TnxGU/Rn311KNVXEYx/i999kGz0KBgUfK4A3ihT4n4N3ZU27truoN2Kuk?=
- =?us-ascii?Q?OQhwpgRgr0+FNaj9Jbz3zZxmhz9pLIjXQ0aypKmaXNxqd9wywkn5QddBtSDY?=
- =?us-ascii?Q?hoXQXrI6NFDE3IReP4Cmz4nQpKAuhGvZjtD6zI1hjcs8hZm/MfQjA+g9PeOo?=
- =?us-ascii?Q?rQjhKdnNY466uI0EBmGRX+QFi0JW5Te8CX176dkOpVvaV4J6RuDaiwbx5BV0?=
- =?us-ascii?Q?BRT4wc8eavP9LEbU/OL9lwOpfn4Ey31odum8b5zZ+Zo44oz5Hps1Xrsh95q4?=
- =?us-ascii?Q?sRGks9Ftun3qyO/JmvAgg4bCiS9ek7Imq9UWTXqotpr2PgnlD3svoma5E0PV?=
- =?us-ascii?Q?NWFeDxiUQ1rBVpsTTTpxDvsOpVgW4Y71LhQXUmFQR0BW2RJJ0bMI6UxwEFjw?=
- =?us-ascii?Q?lid/t3PjofMmLOzLZmXwgB0sp+VHvX/lwVnpEYTc0UYItKnLPIQX+A3UdkHf?=
- =?us-ascii?Q?Nr8ntttfzbHQ8urSDu9fcIfa9gyDthiUl4IOCaHq0WSrAY68l1LBSBgWYp/y?=
- =?us-ascii?Q?Mcx/hakTNrTXSu/EjL2SBmsAK+bXXzgN2xjNJVXtwQ1F7qb+B7Z2GyeViPF/?=
- =?us-ascii?Q?0WMlESMfDacb1O0wq+OX7m4LgIQF5NfFBWPjj0gDxwCerKrcbg0fUh6CoeL1?=
- =?us-ascii?Q?qqiwyR+YBu42fL8xucXNErTV8nmtDWm0jOgsprn6U9A+DpmvpE4KoGK1yWfQ?=
- =?us-ascii?Q?RbtueBMNNKDAM2qYVgvufD4MrbZrNnLm7A8VtR04+7PCwEYMhOzvLGaLTcH0?=
- =?us-ascii?Q?FAmsYNCgKL5oBqrIyGI5Ahr5VdrdbrUlJSmtM8eO2sh1J39Azbl8+PhbQe0R?=
- =?us-ascii?Q?xRuhccW91Zeh864T6hHHbUs9tYmkJAZm4W3eOikPqMXuHoIkXDHo3e6xmSnt?=
- =?us-ascii?Q?vrOiwfKqhg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S1350934AbiFMVGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 17:06:55 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05DB86470
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 13:44:25 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id 20so10713579lfz.8
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 13:44:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1fP2miIeDd3RvdPHp79IlihT8+88/+UX2uWQapkQGE0=;
+        b=B06TDkgq/fXFEQ7rv7+RfcEt5E6ZJGzFJESw4K/NohQVvPR2uJpsrBfwtMFfjD0tUZ
+         JGypfRxs5YLGCB3dVm5KEr+4kkEIM8IRFFhd/xJNlM1QB41atBcNDpJjrGaE0JD3Nnmk
+         djTp2jho4GdmaqFpLHwg59iOp1+Oo3VNqwPu4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1fP2miIeDd3RvdPHp79IlihT8+88/+UX2uWQapkQGE0=;
+        b=DiMHVzl2rajiuuJXdVTgaCDjguo9av/KQO4XFQJlNJ9zg6FA8hjNK0eyplf469Wc5X
+         GVTl16KYwJUjzxU6Uh0jCj2FJpSVC+U7hpwpYhhXnNFg1PmzNeuhE5m+z1uz8wrjLad3
+         C64XextbAwXSdq+kjsBUzXZyyiGaTsAClHUcFyJVqYQ8s+dDf6JtaFpaDJMy/xf2ZrxF
+         XELByM0Y2yW9ffGmPsSZ6HuJ89s++KWhwLOWsdgTzZXBLMCCm7ABwrg97/BbK0Pd+TkM
+         ZZ3sFdbn6WJ869HTGxbqjUJBAM3B7cooKSXF7I6gzrjWvbihWsM+52ujVDLTDBjuAa8E
+         e5KQ==
+X-Gm-Message-State: AJIora+JBAvdelWkEog6yD/L79tzdYxGsfPbA7oQpYOtwTnNRMELN7bS
+        9Yw5IEzu6QcCosSZAKA9vEeg/1uPPAdBluHLAX2LNg==
+X-Google-Smtp-Source: AGRyM1vYPgm33tg0O4fBbd0wNlqs1m0i7xGize2Bn9uDIbrcUMhquZjXmfsuCQne+QOEb6DcTwlV9eea4WD5Msh8xtw=
+X-Received: by 2002:a19:431c:0:b0:479:2053:178e with SMTP id
+ q28-20020a19431c000000b004792053178emr967165lfa.117.1655153063053; Mon, 13
+ Jun 2022 13:44:23 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR12MB5481.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d7724c7f-7f71-447d-35a1-08da4d7d3834
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2022 20:42:23.4918
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yMT4AWi/ldd37erj98XMgP0Wyugohdi3zAnVohA35n4e1lIrVuHGBDHanNgdB0jaouxxZxoRjamGdCmeAgpi5w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5141
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220612213927.3004444-1-dario.binacchi@amarulasolutions.com>
+ <20220612213927.3004444-6-dario.binacchi@amarulasolutions.com> <20220613071058.h6bmy6emswh76q5s@pengutronix.de>
+In-Reply-To: <20220613071058.h6bmy6emswh76q5s@pengutronix.de>
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Date:   Mon, 13 Jun 2022 22:44:12 +0200
+Message-ID: <CABGWkvoNJYfK6bcjYtUi9qKvRfEfHUyrCWDBhOL4EjurW5YJ8Q@mail.gmail.com>
+Subject: Re: [PATCH v3 05/13] can: netlink: dump bitrate 0 if
+ can_priv::bittiming.bitrate is -1U
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-kernel@vger.kernel.org, michael@amarulasolutions.com,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jun 13, 2022 at 9:11 AM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+>
+> On 12.06.2022 23:39:19, Dario Binacchi wrote:
+> > Adding Netlink support to the slcan driver made it necessary to set the
+> > bitrate to a fake value (-1U) to prevent open_candev() from failing. In
+> > this case the command `ip --details -s -s link show' would print
+> > 4294967295 as the bitrate value. The patch change this value in 0.
+> >
+> > Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> > Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+> > ---
+> >
+> > (no changes since v1)
+> >
+> >  drivers/net/can/dev/netlink.c | 12 +++++++++---
+> >  1 file changed, 9 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/net/can/dev/netlink.c b/drivers/net/can/dev/netlink.c
+> > index 7633d98e3912..788a6752fcc7 100644
+> > --- a/drivers/net/can/dev/netlink.c
+> > +++ b/drivers/net/can/dev/netlink.c
+> > @@ -505,11 +505,16 @@ static int can_fill_info(struct sk_buff *skb, const struct net_device *dev)
+> >       struct can_ctrlmode cm = {.flags = priv->ctrlmode};
+> >       struct can_berr_counter bec = { };
+> >       enum can_state state = priv->state;
+> > +     __u32 bitrate = priv->bittiming.bitrate;
+> > +     int ret = 0;
+> >
+> >       if (priv->do_get_state)
+> >               priv->do_get_state(dev, &state);
+> >
+> > -     if ((priv->bittiming.bitrate &&
+>
+> What about changing this line to:
+>
+>         if ((priv->bittiming.bitrate && priv->bittiming.bitrate != -1 &&
 
+That you are right. The code becomes much cleaner.
 
-> From: Zhu Lingshan <lingshan.zhu@intel.com>
-> Sent: Monday, June 13, 2022 6:17 AM
-> device
->=20
-> This commit adds a new vDPA netlink attribution
-> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES. Userspace can query
-> features of vDPA devices through this new attr.
->=20
-> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
-> ---
->  drivers/vdpa/vdpa.c       | 13 +++++++++----
->  include/uapi/linux/vdpa.h |  1 +
->  2 files changed, 10 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c index
-> ebf2f363fbe7..9b0e39b2f022 100644
-> --- a/drivers/vdpa/vdpa.c
-> +++ b/drivers/vdpa/vdpa.c
-> @@ -815,7 +815,7 @@ static int vdpa_dev_net_mq_config_fill(struct
-> vdpa_device *vdev,  static int vdpa_dev_net_config_fill(struct vdpa_devic=
-e
-> *vdev, struct sk_buff *msg)  {
->  	struct virtio_net_config config =3D {};
-> -	u64 features;
-> +	u64 features_device, features_driver;
->  	u16 val_u16;
->=20
->  	vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config)); @@ -
-> 832,12 +832,17 @@ static int vdpa_dev_net_config_fill(struct vdpa_device
-> *vdev, struct sk_buff *ms
->  	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
->  		return -EMSGSIZE;
->=20
-> -	features =3D vdev->config->get_driver_features(vdev);
-> -	if (nla_put_u64_64bit(msg,
-> VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features,
-> +	features_driver =3D vdev->config->get_driver_features(vdev);
-> +	if (nla_put_u64_64bit(msg,
-> VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features_driver,
-> +			      VDPA_ATTR_PAD))
-> +		return -EMSGSIZE;
-> +
-> +	features_device =3D vdev->config->get_device_features(vdev);
-> +	if (nla_put_u64_64bit(msg,
-> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,
-> +features_device,
->  			      VDPA_ATTR_PAD))
->  		return -EMSGSIZE;
->=20
-> -	return vdpa_dev_net_mq_config_fill(vdev, msg, features, &config);
-> +	return vdpa_dev_net_mq_config_fill(vdev, msg, features_driver,
-> +&config);
->  }
->=20
->  static int
-> diff --git a/include/uapi/linux/vdpa.h b/include/uapi/linux/vdpa.h index
-> 25c55cab3d7c..39f1c3d7c112 100644
-> --- a/include/uapi/linux/vdpa.h
-> +++ b/include/uapi/linux/vdpa.h
-> @@ -47,6 +47,7 @@ enum vdpa_attr {
->  	VDPA_ATTR_DEV_NEGOTIATED_FEATURES,	/* u64 */
->  	VDPA_ATTR_DEV_MGMTDEV_MAX_VQS,		/* u32 */
->  	VDPA_ATTR_DEV_SUPPORTED_FEATURES,	/* u64 */
+>
+> This would make the code a lot cleaner. Can you think of a nice macro
+> name for the -1?
+>
+> 0 could be CAN_BITRATE_UNCONFIGURED or _UNSET. For -1 I cannot find a
+> catchy name, something like CAN_BITRATE_CONFIGURED_UNKOWN or
+> SET_UNKNOWN.
+>
 
-I see now what was done incorrectly with commit cd2629f6df1ca.
+Personally I would use CAN_BITRATE_UNSET (0) and CAN_BITRATE_UNKNOWN (-1).
+Let me know what your ultimate preference is.
 
-Above was done with wrong name prefix that missed MGMTDEV_. :(
-Please don't add VDPA_ prefix due to one mistake.
-Please reuse this VDPA_ATTR_DEV_SUPPORTED_FEATURES for device attribute as =
-well.
+Thanks and regards,
+Dario
 
-> +	VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES,	/* u64 */
->=20
-
->  	VDPA_ATTR_DEV_QUEUE_INDEX,              /* u32 */
->  	VDPA_ATTR_DEV_VENDOR_ATTR_NAME,		/* string */
+> The macros can be added to bittiming.h and be part of this patch. Ofq
+> course the above code (and slcan.c) would make use of the macros instead
+> of using 0 and -1.
+>
+> Marc
+>
 > --
-> 2.31.1
+> Pengutronix e.K.                 | Marc Kleine-Budde           |
+> Embedded Linux                   | https://www.pengutronix.de  |
+> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
+
+
+-- 
+
+Dario Binacchi
+
+Embedded Linux Developer
+
+dario.binacchi@amarulasolutions.com
+
+__________________________________
+
+
+Amarula Solutions SRL
+
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+
+T. +39 042 243 5310
+info@amarulasolutions.com
+
+www.amarulasolutions.com
