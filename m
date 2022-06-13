@@ -2,76 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BCA1549C03
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 20:44:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4AE2549BD5
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 20:40:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345125AbiFMSoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 14:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51974 "EHLO
+        id S1343713AbiFMSkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 14:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348583AbiFMSoR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 14:44:17 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FF355BD07
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 08:16:52 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-f2a4c51c45so8778091fac.9
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 08:16:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=4Hj6SNi11WinuYAmwn2HxWkHLAcMBXH1JVpxPEKIsW8=;
-        b=LP6t53+0pJYFiQQYdzRZRGZI6bPniIervc7fqLkNgd1B+W6+9SMQkzNmE7RsI2RuYo
-         zdNzgNSDOKBmqjmZiMazOqCuRMk6PuKL3SEPoZSOWxVPwcfzOZEWSu7LfjYMIjjrOvXb
-         cMzdLKMb+x+rLhFbxNq+ca3MwvplJbxFyZNebTlsGnqtBiMuNTRO3zY7V8vFgb7ilDM8
-         9dAfPsQdEbCqAiM2S2KUvBFCQz4TmOM+MM2Bq6BL3De2/Pt6k8BZGGumaD06cMFPzhOQ
-         mWCmRAayTA+kLKUktN8BtGG8WbojTB8cojXnAxQaraqO88mIaEyPf75REELaeS2usLCS
-         rzjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=4Hj6SNi11WinuYAmwn2HxWkHLAcMBXH1JVpxPEKIsW8=;
-        b=vNAXjMlJMgjhrUoZBXeVd4a7TkQX6c06sCHYIMkdti285Wy5npNxCXcIbVF5gnOPsE
-         GdwIN8gXvNaYQNNotqe88Z8o2yMNpEqohH0rlwb5bJgOS1qdegFDkEBDo0cGnbdXa6Xq
-         rbXsFt0u8fxeIexgfdotJ5woWSYmutDR2YK+jO/rvQA/CKE+b1n+DV37bCbsGhhtIFfE
-         mTNpmKmbLrRm2cObS1KKOe/Bo5LlQMquAhULi90zhss00rpggH61qjMhxU3InfcGe4EL
-         3ZbDcEqEd11yUXlfeCFiE3rbOzxR9f/V126bLIJ0uubqR82k1O2Wyz4ikn8Qr3G0o2s3
-         +bVQ==
-X-Gm-Message-State: AJIora9KL8GEAcBeYTg2T5Xv8FajazWFbPxPRjNiDiNlYqYGrNEFdbi1
-        i+D7mFM0e4BucQTJq0vb5LpHkvYX0UY4CRZ7mzQ=
-X-Google-Smtp-Source: AGRyM1tipkAUc1KQ4OpHWeCmK7bMKjo1SkaI1aW9Cl+8T4YR2aJ1WIbanK5jxFcVq1xwHy71WHBCWLT1l4HNq5IxEu4=
-X-Received: by 2002:a05:6870:6392:b0:f3:1b50:496a with SMTP id
- t18-20020a056870639200b000f31b50496amr116431oap.230.1655133411833; Mon, 13
- Jun 2022 08:16:51 -0700 (PDT)
+        with ESMTP id S1343707AbiFMSkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 14:40:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA18E50070;
+        Mon, 13 Jun 2022 08:28:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E915B81022;
+        Mon, 13 Jun 2022 15:28:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32C6CC34114;
+        Mon, 13 Jun 2022 15:28:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655134119;
+        bh=Dya8+t1QAtJ3oxTE/w7JBXY3Zy4dSxKdD4rHdX/ukpU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=W+9bwBPVa6gi1WBdJnbOZQ9otuTgRa+uQlfgJjus5ISO4CQoKszfbzn/2ujRSDS9w
+         YU5R9bYYkgqU5tFuUOWjLWOVA5BmosI9eYXKhxos+SrBcSuHyxQ0CFNGAcSW5YkEKZ
+         CKnrAWrLDnLKjoEPb6e+1TWmduzAzsSgmyUHhBjr9+hps+tSaZQXWk8EVyZ06PCU2z
+         kdb1Ht0264pqgRRMsIQi/OGqeG+CdxpiKjLHUrwNXX0HGDqzsyf588udukbhcTCNwX
+         QlQJPHq3iyBQMnESw/1crRKvxxikenY0sgNBGrHHXH003Fsbx+4bV88jEQ5qcTpUHK
+         Sp1Xoinc1NUUA==
+Received: by mail-vs1-f54.google.com with SMTP id x187so6274652vsb.0;
+        Mon, 13 Jun 2022 08:28:39 -0700 (PDT)
+X-Gm-Message-State: AJIora8AiJUlxK+NHA6QtueF+s4KwJGW8g+J9i53p2uTiMAYjwVmA87Z
+        H49E5TNT+64q8bkwAZY03+7PSkv5l0yKOvQqtg==
+X-Google-Smtp-Source: AGRyM1umgaHpMsDuaM9Lw94TfUrdKW7JXHhr0M5N07BAWPFzL5Dd/52HH45wQ0ShL4JTzWTYPX1477u063LUFx5tJoE=
+X-Received: by 2002:a67:d38c:0:b0:349:d028:c8ea with SMTP id
+ b12-20020a67d38c000000b00349d028c8eamr133392vsj.6.1655134118163; Mon, 13 Jun
+ 2022 08:28:38 -0700 (PDT)
 MIME-Version: 1.0
-Reply-To: sgtkaylama@gmail.com
-Sender: lambonimichel53@gmail.com
-Received: by 2002:a05:6358:187:b0:a5:22d4:f3b7 with HTTP; Mon, 13 Jun 2022
- 08:16:51 -0700 (PDT)
-From:   sgtkaylama <sgtkaylama@gmail.com>
-Date:   Mon, 13 Jun 2022 15:16:51 +0000
-X-Google-Sender-Auth: G9vuzA_CJvvZVAoZxkX-Kykvop0
-Message-ID: <CAJj108MGxkvRFH1F33s7nW51JuUk0DvwMZ0ZV=wvzg6xcrCv6Q@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
+References: <20220610165940.2326777-1-jiaqing.zhao@linux.intel.com>
+ <20220610165940.2326777-6-jiaqing.zhao@linux.intel.com> <1654903146.313095.2450355.nullmailer@robh.at.kernel.org>
+ <21c9ba6b-e84e-4545-44d2-5ffe5fea9581@linux.intel.com>
+In-Reply-To: <21c9ba6b-e84e-4545-44d2-5ffe5fea9581@linux.intel.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Mon, 13 Jun 2022 09:28:26 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+y3tkfLV8UpUe6jw7Fq7YDrzwoq3FKK4jeeZEBOxhM4g@mail.gmail.com>
+Message-ID: <CAL_Jsq+y3tkfLV8UpUe6jw7Fq7YDrzwoq3FKK4jeeZEBOxhM4g@mail.gmail.com>
+Subject: Re: [PATCH v2 5/6] dt-bindings: net: Add NCSI bindings
+To:     Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+Cc:     OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cze=C5=9B=C4=87 kochanie, jak si=C4=99 masz? Wierz=C4=99, =C5=BCe wszystko =
-w porz=C4=85dku. nie s=C5=82ysza=C5=82em
-od Ciebie w odniesieniu do moich poprzednich wiadomo=C5=9Bci, prosz=C4=99
-sprawdzi=C4=87 i odpowiedzie=C4=87
-Dla mnie.
+On Fri, Jun 10, 2022 at 9:09 PM Jiaqing Zhao
+<jiaqing.zhao@linux.intel.com> wrote:
+>
+> On 2022-06-11 07:19, Rob Herring wrote:
+> > On Sat, 11 Jun 2022 00:59:39 +0800, Jiaqing Zhao wrote:
+> >> Add devicetree bindings for NCSI VLAN modes. This allows VLAN mode to
+> >> be configured in devicetree.
+> >>
+> >> Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+> >> ---
+> >>  .../devicetree/bindings/net/ncsi.yaml         | 34 ++++++++++++++++++=
++
+> >>  MAINTAINERS                                   |  2 ++
+> >>  include/dt-bindings/net/ncsi.h                | 15 ++++++++
+> >>  3 files changed, 51 insertions(+)
+> >>  create mode 100644 Documentation/devicetree/bindings/net/ncsi.yaml
+> >>  create mode 100644 include/dt-bindings/net/ncsi.h
+> >>
+> >
+> > My bot found errors running 'make DT_CHECKER_FLAGS=3D-m dt_binding_chec=
+k'
+> > on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> >
+> > yamllint warnings/errors:
+> >
+> > dtschema/dtc warnings/errors:
+> > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/ne=
+t/ncsi.yaml: 'oneOf' conditional failed, one must be fixed:
+> >       'unevaluatedProperties' is a required property
+> >       'additionalProperties' is a required property
+> >       hint: Either unevaluatedProperties or additionalProperties must b=
+e present
+> >       from schema $id: http://devicetree.org/meta-schemas/core.yaml#
+> > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/ne=
+t/ncsi.yaml: ignoring, error in schema:
+> > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/ne=
+t/ncsi.example.dtb: ethernet@1e660000: 'ncsi,vlan-mode' does not match any =
+of the regexes
+> >       From schema: /builds/robherring/linux-dt-review/Documentation/dev=
+icetree/bindings/vendor-prefixes.yaml
+>
+> I saw vendor-prefix.yaml says do not add non-vendor prefixes to the list.=
+ Since "ncsi" is not a vendor, may I ask what is the suggested replacement =
+for 'ncsi,vlan-mode'? Will 'ncsi-vlan-mode' be fine?
 
-Z powa=C5=BCaniem.
-sier=C5=BC. Kala Manthey
+I don't know. What is NCSI? Is it specific to certain MACs? Why do you
+need to set this up in DT? Network configuration is typically done in
+userspace, so putting VLAN config in DT doesn't seem right. All
+questions your commit message should answer.
+
+>
+> > Documentation/devicetree/bindings/net/ncsi.example.dtb:0:0: /example-0/=
+ethernet@1e660000: failed to match any schema with compatible: ['aspeed,ast=
+2600-mac', 'faraday,ftgmac100']
+> > Documentation/devicetree/bindings/net/ncsi.example.dtb:0:0: /example-0/=
+ethernet@1e660000: failed to match any schema with compatible: ['aspeed,ast=
+2600-mac', 'faraday,ftgmac100']
+>
+> The ftgmac100 it depends on uses a txt document instead of an yaml schema=
+. And I see there is other schemas having the same error, can this be ignor=
+ed?
+
+No. Don't add to the list. Once all the existing warnings (~40) are
+fixed, then this will be turned on by default.
+
+>
+> And I've got one more question. The ncsi driver does not has its own comp=
+atible field, instead, it is enabled by setting the "use-ncsi" property of =
+some specific mac drivers. Though currently only ftgmac100 supports ncsi in=
+ upstream kernel, it may be used by other mac drivers in the future. What d=
+o you think is a proper way for defining the ncsi schema? Having it in a se=
+parate yaml like this patch or add the properties to all the mac yamls that=
+ supports yaml? If the former way is preferred, how should the schema be de=
+fined without "compatible"?
+
+If it is a function of driver support or not, then it doesn't belong in DT.
+
+Rob
