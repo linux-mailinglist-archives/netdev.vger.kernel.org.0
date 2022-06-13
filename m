@@ -2,262 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 912A7547CF9
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 01:46:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5501547D00
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 02:03:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237890AbiFLXqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jun 2022 19:46:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52802 "EHLO
+        id S237930AbiFMADR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jun 2022 20:03:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232350AbiFLXqr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 19:46:47 -0400
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E5733E90;
-        Sun, 12 Jun 2022 16:46:46 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 59219C021; Mon, 13 Jun 2022 01:46:44 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1655077604; bh=2pvlijFDTdPy9Af9WUD9+Wbr74cNH9134iAYt88GOw8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UuXZzdMpCQ09shJr9vF+fojJQ74BKY8yQzfvnxH5xDnKW3clFGVUummVSi5sRDfyZ
-         olP6thlDBnF1d/9N3dZiJdZ3z9ZUGj5/rbfCgKSYUzpf7AnFtN/ysDcEhuWzMtD0HG
-         PsDRke7ctH+zolmky3t55uC5qjegTeSzo9E498LIBp91Kprlx0/KaZLAEKU+MzrlBM
-         GEgbmDB+Zb5REleAZUH2nmgrtN+OYjN86UNNQ/L+I+IBeo33WOlBmlq2WdcvlP2anF
-         qg8c5+WVgYX+LdVLWsSSYy4meN0+59BxuQ235DGPEj4QJUj8ZWuWJ0VApyLriUYmVX
-         crh+OW+OZ1hbA==
+        with ESMTP id S232350AbiFMADP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 20:03:15 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9BB317058;
+        Sun, 12 Jun 2022 17:03:13 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 25D02OD60026571, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 25D02OD60026571
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 13 Jun 2022 08:02:24 +0800
+Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 13 Jun 2022 08:02:24 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 13 Jun 2022 08:02:24 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
+ RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
+ 15.01.2308.021; Mon, 13 Jun 2022 08:02:24 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
+CC:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "neojou@gmail.com" <neojou@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "linux@ulli-kroll.de" <linux@ulli-kroll.de>
+Subject: Re: [PATCH v2 10/10] rtw88: disable powersave modes for USB devices
+Thread-Topic: [PATCH v2 10/10] rtw88: disable powersave modes for USB devices
+Thread-Index: AQHYdDPI/ma2VkQlBE+TWL8Uknp8la03pxKAgABucQCADm9uAIABp+uAgAPWPgA=
+Date:   Mon, 13 Jun 2022 00:02:23 +0000
+Message-ID: <5ee547c352caee7c2ba8c0f541a305abeef0af9c.camel@realtek.com>
+References: <20220530135457.1104091-1-s.hauer@pengutronix.de>
+         <20220530135457.1104091-11-s.hauer@pengutronix.de>
+         <1493412d473614dfafd4c03832e71f86831fa43b.camel@realtek.com>
+         <20220531074244.GN1615@pengutronix.de>
+         <8443f8e51774a4f80fed494321fcc410e7174bf1.camel@realtek.com>
+         <20220610132627.GO1615@pengutronix.de>
+In-Reply-To: <20220610132627.GO1615@pengutronix.de>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.1-2 
+x-originating-ip: [172.16.16.131]
+x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzYvMTIg5LiL5Y2IIDEwOjAyOjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <2A5BC8E3DA58764F86E9A18EA082EF29@realtek.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 356DDC009;
-        Mon, 13 Jun 2022 01:46:38 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1655077602; bh=2pvlijFDTdPy9Af9WUD9+Wbr74cNH9134iAYt88GOw8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xhUREBEUmhaehV0h9eJmC0PfubUWASYQ1mb+vGrNXfqTugLMZJyxa4dYrnhApTfsN
-         P0DoTY4aeZ/QIs9zSUe4FIvFWcM/moUAPmeSBAxldYHzQ0zqd+cV/mk4f9rkQKbRbK
-         iVx3T3n4RkadZa0CnpwcHuegv3Dz/5fWBT6aILy5LM3ATs8Q5uO5TS3zSpX+y/aI5F
-         O6i6KVSYr+faQNACtHlctsmyn+U0bAE1oAg9Pzru1PUPKrznfNYlpU/In62PNrguRL
-         0BIzmjj0F+y/Zdi+RVg+YlCfhl6pfXnjjr3FDgFg9gcmuBnwfiM8c7MhlYswb5reaT
-         wrYeOOIl6QEEw==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 498e4e6d;
-        Sun, 12 Jun 2022 23:46:36 +0000 (UTC)
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Christian Schoenebeck <linux_oss@crudebyte.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH v2 05/06] 9p fid refcount: add a 9p_fid_ref tracepoint
-Date:   Mon, 13 Jun 2022 08:46:34 +0900
-Message-Id: <20220612234634.1559778-1-asmadeus@codewreck.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220612184659.6dff5107@rorschach.local.home>
-References: <20220612184659.6dff5107@rorschach.local.home>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds a tracepoint event for 9p fid lifecycle tracing: when a fid
-is created, its reference count increased/decreased, and freed.
-The new 9p_fid_ref tracepoint should help anyone wishing to debug any
-fid problem such as missing clunk (destroy) or use-after-free.
-
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
----
-
-Steven, thank you for the review!
-
-By changelog, is the commit message enough?
-
-I've applied your suggestion to use DECLARE_TRACEPOINT + enable checks,
-it doesn't seem to have many users but it looks good to me.
-
-v1-v2:
- - added rationale to commit message
- - adjusted to use DECLARE_TRACEPOINT + tracepoint_enable() in header
-
- include/net/9p/client.h   | 13 +++++++++++
- include/trace/events/9p.h | 48 +++++++++++++++++++++++++++++++++++++++
- net/9p/client.c           | 17 +++++++++++++-
- 3 files changed, 77 insertions(+), 1 deletion(-)
-
-diff --git a/include/net/9p/client.h b/include/net/9p/client.h
-index 9fd38d674057..6f347983705d 100644
---- a/include/net/9p/client.h
-+++ b/include/net/9p/client.h
-@@ -11,6 +11,7 @@
- 
- #include <linux/utsname.h>
- #include <linux/idr.h>
-+#include <linux/tracepoint-defs.h>
- 
- /* Number of requests per row */
- #define P9_ROW_MAXTAG 255
-@@ -237,8 +238,17 @@ static inline int p9_req_try_get(struct p9_req_t *r)
- 
- int p9_req_put(struct p9_req_t *r);
- 
-+/* We cannot have the real tracepoints in header files,
-+ * use a wrapper function */
-+DECLARE_TRACEPOINT(9p_fid_ref);
-+void do_trace_9p_fid_get(struct p9_fid *fid);
-+void do_trace_9p_fid_put(struct p9_fid *fid);
-+
- static inline struct p9_fid *p9_fid_get(struct p9_fid *fid)
- {
-+	if (tracepoint_enabled(9p_fid_ref))
-+		do_trace_9p_fid_get(fid);
-+
- 	refcount_inc(&fid->count);
- 
- 	return fid;
-@@ -249,6 +259,9 @@ static inline int p9_fid_put(struct p9_fid *fid)
- 	if (!fid || IS_ERR(fid))
- 		return 0;
- 
-+	if (tracepoint_enabled(9p_fid_ref))
-+		do_trace_9p_fid_put(fid);
-+
- 	if (!refcount_dec_and_test(&fid->count))
- 		return 0;
- 
-diff --git a/include/trace/events/9p.h b/include/trace/events/9p.h
-index 78c5608a1648..4dfa6d7f83ba 100644
---- a/include/trace/events/9p.h
-+++ b/include/trace/events/9p.h
-@@ -77,6 +77,13 @@
- 		EM( P9_TWSTAT,		"P9_TWSTAT" )			\
- 		EMe(P9_RWSTAT,		"P9_RWSTAT" )
- 
-+
-+#define P9_FID_REFTYPE							\
-+		EM( P9_FID_REF_CREATE,	"create " )			\
-+		EM( P9_FID_REF_GET,	"get    " )			\
-+		EM( P9_FID_REF_PUT,	"put    " )			\
-+		EMe(P9_FID_REF_DESTROY,	"destroy" )
-+
- /* Define EM() to export the enums to userspace via TRACE_DEFINE_ENUM() */
- #undef EM
- #undef EMe
-@@ -84,6 +91,21 @@
- #define EMe(a, b)	TRACE_DEFINE_ENUM(a);
- 
- P9_MSG_T
-+P9_FID_REFTYPE
-+
-+/* And also use EM/EMe to define helper enums -- once */
-+#ifndef __9P_DECLARE_TRACE_ENUMS_ONLY_ONCE
-+#define __9P_DECLARE_TRACE_ENUMS_ONLY_ONCE
-+#undef EM
-+#undef EMe
-+#define EM(a, b)	a,
-+#define EMe(a, b)	a
-+
-+enum p9_fid_reftype {
-+	P9_FID_REFTYPE
-+} __mode(byte);
-+
-+#endif
- 
- /*
-  * Now redefine the EM() and EMe() macros to map the enums to the strings
-@@ -96,6 +118,8 @@ P9_MSG_T
- 
- #define show_9p_op(type)						\
- 	__print_symbolic(type, P9_MSG_T)
-+#define show_9p_fid_reftype(type)					\
-+	__print_symbolic(type, P9_FID_REFTYPE)
- 
- TRACE_EVENT(9p_client_req,
- 	    TP_PROTO(struct p9_client *clnt, int8_t type, int tag),
-@@ -168,6 +192,30 @@ TRACE_EVENT(9p_protocol_dump,
- 		      __entry->tag, 0, __entry->line, 16, __entry->line + 16)
-  );
- 
-+
-+TRACE_EVENT(9p_fid_ref,
-+	    TP_PROTO(struct p9_fid *fid, __u8 type),
-+
-+	    TP_ARGS(fid, type),
-+
-+	    TP_STRUCT__entry(
-+		    __field(	int,	fid		)
-+		    __field(	int,	refcount	)
-+		    __field(	__u8, type	)
-+		    ),
-+
-+	    TP_fast_assign(
-+		    __entry->fid = fid->fid;
-+		    __entry->refcount = refcount_read(&fid->count);
-+		    __entry->type = type;
-+		    ),
-+
-+	    TP_printk("%s fid %d, refcount %d",
-+		      show_9p_fid_reftype(__entry->type),
-+		      __entry->fid, __entry->refcount)
-+);
-+
-+
- #endif /* _TRACE_9P_H */
- 
- /* This part must be outside protection */
-diff --git a/net/9p/client.c b/net/9p/client.c
-index f3eb280c7d9d..06d67a02d431 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -907,8 +907,10 @@ static struct p9_fid *p9_fid_create(struct p9_client *clnt)
- 			    GFP_NOWAIT);
- 	spin_unlock_irq(&clnt->lock);
- 	idr_preload_end();
--	if (!ret)
-+	if (!ret) {
-+		trace_9p_fid_ref(fid, P9_FID_REF_CREATE);
- 		return fid;
-+	}
- 
- 	kfree(fid);
- 	return NULL;
-@@ -920,6 +922,7 @@ static void p9_fid_destroy(struct p9_fid *fid)
- 	unsigned long flags;
- 
- 	p9_debug(P9_DEBUG_FID, "fid %d\n", fid->fid);
-+	trace_9p_fid_ref(fid, P9_FID_REF_DESTROY);
- 	clnt = fid->clnt;
- 	spin_lock_irqsave(&clnt->lock, flags);
- 	idr_remove(&clnt->fids, fid->fid);
-@@ -928,6 +931,18 @@ static void p9_fid_destroy(struct p9_fid *fid)
- 	kfree(fid);
- }
- 
-+void do_trace_9p_fid_get(struct p9_fid *fid)
-+{
-+	trace_9p_fid_ref(fid, P9_FID_REF_GET);
-+}
-+EXPORT_SYMBOL(do_trace_9p_fid_get);
-+
-+void do_trace_9p_fid_put(struct p9_fid *fid)
-+{
-+	trace_9p_fid_ref(fid, P9_FID_REF_PUT);
-+}
-+EXPORT_SYMBOL(do_trace_9p_fid_put);
-+
- static int p9_client_version(struct p9_client *c)
- {
- 	int err = 0;
--- 
-2.35.1
-
+T24gRnJpLCAyMDIyLTA2LTEwIGF0IDE1OjI2ICswMjAwLCBzLmhhdWVyQHBlbmd1dHJvbml4LmRl
+IHdyb3RlOg0KPiBPbiBUaHUsIEp1biAwOSwgMjAyMiBhdCAxMjo1MTo0OVBNICswMDAwLCBQaW5n
+LUtlIFNoaWggd3JvdGU6DQo+ID4gDQo+ID4gVG9kYXksIEkgYm9ycm93IGEgODgyMmN1LCBhbmQg
+dXNlIHlvdXIgcGF0Y2hzZXQgYnV0IHJldmVydA0KPiA+IHBhdGNoIDEwLzEwIHRvIHJlcHJvZHVj
+ZSB0aGlzIGlzc3VlLiBXaXRoIGZpcm13YXJlIDcuMy4wLA0KPiA+IGl0IGxvb2tzIGJhZC4gQWZ0
+ZXIgY2hlY2tpbmcgc29tZXRoaW5nIGFib3V0IGZpcm13YXJlLCBJDQo+ID4gZm91bmQgdGhlIGZp
+cm13YXJlIGlzIG9sZCwgc28gdXBncmFkZSB0byA5LjkuMTEsIGFuZCB0aGVuDQo+ID4gaXQgd29y
+a3Mgd2VsbCBmb3IgMTAgbWludXRlcywgbm8gYWJub3JtYWwgbWVzc2FnZXMuDQo+IA0KPiBJIG9y
+aWdpbmFsbHkgdXNlZCBmaXJtd2FyZSA1LjAuMC4gVGhlbiBJIGhhdmUgdHJpZWQgOS45LjYgSSBo
+YXZlIGx5aW5nDQo+IGFyb3VuZCBoZXJlIGZyb20gbXkgZGlzdHJvLiBUaGF0IHZlcnNpb24gYmVo
+YXZlcyBsaWtlIHRoZSBvbGQgNS4wLjANCj4gdmVyc2lvbi4gRmluYWxseSBJIHN3aXRjaGVkIHRv
+IDkuOS4xMSBmcm9tIGN1cnJlbnQgbGludXgtZmlybXdhcmUNCj4gcmVwb3NpdG9yeS4gVGhhdCBk
+b2Vzbid0IHdvcmsgYXQgYWxsIGZvciBtZSB1bmZvcnR1bmF0ZWx5Og0KPiANCj4gWyAgMjIxLjA3
+NjI3OV0gcnR3Xzg4MjJjdSAyLTE6MS4yOiBGaXJtd2FyZSB2ZXJzaW9uIDkuOS4xMSwgSDJDIHZl
+cnNpb24gMTUNCj4gWyAgMjIxLjA3ODQwNV0gcnR3Xzg4MjJjdSAyLTE6MS4yOiBGaXJtd2FyZSB2
+ZXJzaW9uIDkuOS40LCBIMkMgdmVyc2lvbiAxNQ0KPiBbICAyMzkuNzgzMjYxXSB3bGFuMDogYXV0
+aGVudGljYXRlIHdpdGggNzY6ODM6YzI6Y2U6ODM6MGINCj4gWyAgMjQyLjM5ODQzNV0gd2xhbjA6
+IHNlbmQgYXV0aCB0byA3Njo4MzpjMjpjZTo4MzowYiAodHJ5IDEvMykNCj4gWyAgMjQyLjQwMjk5
+Ml0gd2xhbjA6IGF1dGhlbnRpY2F0ZWQNCj4gWyAgMjQyLjQyMDczNV0gd2xhbjA6IGFzc29jaWF0
+ZSB3aXRoIDc2OjgzOmMyOmNlOjgzOjBiICh0cnkgMS8zKQ0KPiBbICAyNDIuNDM3MDk0XSB3bGFu
+MDogUlggQXNzb2NSZXNwIGZyb20gNzY6ODM6YzI6Y2U6ODM6MGIgKGNhcGFiPTB4MTQxMSBzdGF0
+dXM9MCBhaWQ9NCkNCj4gWyAgMjQyLjQ4NTUyMV0gd2xhbjA6IGFzc29jaWF0ZWQNCj4gWyAgMjQy
+LjU2NDg0N10gd2xhbjA6IENvbm5lY3Rpb24gdG8gQVAgNzY6ODM6YzI6Y2U6ODM6MGIgbG9zdA0K
+PiBbICAyNDQuNTc3NjE3XSB3bGFuMDogYXV0aGVudGljYXRlIHdpdGggNzY6ODM6YzI6Y2Q6ODM6
+MGINCj4gWyAgMjQ0LjU3ODI1N10gd2xhbjA6IGJhZCBWSFQgY2FwYWJpbGl0aWVzLCBkaXNhYmxp
+bmcgVkhUDQo+IA0KPiBUaGlzIGdvZXMgb24gZm9yZXZlci4gSSBmaW5hbGx5IHRyaWVkIDkuOS4x
+MCBhbmQgOS45LjksIHRoZXkgYWxzbyBiZWhhdmUNCj4gbGlrZSA5LjkuMTEuDQo+IA0KDQpQbGVh
+c2UgaGVscCBkbyBtb3JlIGV4cGVyaWVtZW50cyBvbiB5b3VyIDg4MjJjdSB3aXRoIHRoZQ0KbGF0
+ZXN0IGZpcm13YXJlIDkuOS4xMS4NCg0KMS4gd2hpY2ggbW9kdWxlIFJGRSB0eXBlIHlvdSBhcmUg
+dXNpbmc/DQogICBNeSA4ODIyY3UgaXMgUkZFIHR5cGUgNC4NCiAgIEdldCB0aGlzIGluZm9ybWF0
+aW9uIGZyb20gDQoNCiAgIGNhdCAvc3lzL2tlcm5lbC9kZWJ1Zy9pZWVlODAyMTEvcGh5WFhYL3J0
+dzg4L2NvZXhfaW5mbw0KDQogICBUaGUgNHRoIGxpbmU6DQogICBNZWNoLyBSRkUgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgID0gTm9uLVNoYXJlZC8gNCAgIA0KDQo0LiBEaXNhYmxlIHBv
+d2VyIHNhdmUgdG8gc2VlIGlmIGl0IHN0aWxsIGRpc2Nvbm5lY3QgZnJvbSBBUA0KDQogICBpdyB3
+bGFuMCBzZXQgcG93ZXJfc2F2ZSBvZmYNCg0KICAgSWYgdGhpcyBjYW4gd29yayB3ZWxsLCBzdGls
+bCBwb3dlciBzYXZlIG1vZGUgd29ya3MgYWJub3JtYWwuDQoNCjMuIERpc2FibGUga2VlcC1hbGl2
+ZS4gKHdpdGggcG93ZXJfc2F2ZSBvbikNCg0KLS0tIGEvbWFpbi5jDQorKysgYi9tYWluLmMNCkBA
+IC0yMTk5LDYgKzIxOTksNyBAQCBpbnQgcnR3X3JlZ2lzdGVyX2h3KHN0cnVjdCBydHdfZGV2ICpy
+dHdkZXYsIHN0cnVjdCBpZWVlODAyMTFfaHcgKmh3KQ0KICAgICAgICBpZWVlODAyMTFfaHdfc2V0
+KGh3LCBIQVNfUkFURV9DT05UUk9MKTsNCiAgICAgICAgaWVlZTgwMjExX2h3X3NldChodywgVFhf
+QU1TRFUpOw0KICAgICAgICBpZWVlODAyMTFfaHdfc2V0KGh3LCBTSU5HTEVfU0NBTl9PTl9BTExf
+QkFORFMpOw0KKyAgICAgICBpZWVlODAyMTFfaHdfc2V0KGh3LCBDT05ORUNUSU9OX01PTklUT1Ip
+Ow0KDQogICBUaGlzIGNhbiBtYWtlIGl0IHN0aWxsIGNvbm5lY3RlZCBldmVuIGl0IGRvZXNuJ3Qg
+cmVjZWl2ZSBhbnl0aGluZy4NCiAgIENoZWNrIGlmIGl0IGNhbiBsZWF2ZSBwb3dlciBzYXZlIHdp
+dGhvdXQgYWJub3JtYWwgbWVzc2FnZXMuDQoNCjQuIFVTQiBpbnRlcmZlcmVuY2UNCg0KICAgVmVy
+eSBsb3cgcG9zc2liaWxpdHksIGJ1dCBzaW1wbHkgdHJ5IFVTQiAyLjAgYW5kIDMuMCBwb3J0cy4N
+Cg0KNS4gVHJ5IGFub3RoZXIgQVAgd29ya2luZyBvbiBkaWZmZXJlbnQgYmFuZCAoMi40R0h6IG9y
+IDVHaHopDQoNCg0KSSB3aXNlIHRoZXNlIGNhbiBuYXJyb3cgZG93biB0aGUgcHJvYmxlbSB5b3Ug
+bWV0Lg0KDQpQaW5nLUtlDQoNCg0K
