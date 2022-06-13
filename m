@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26C1D548363
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 11:44:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EEED54834D
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 11:44:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240851AbiFMJc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 05:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50626 "EHLO
+        id S234726AbiFMJgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 05:36:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229926AbiFMJcq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 05:32:46 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B760B18B20;
-        Mon, 13 Jun 2022 02:32:45 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id fu3so9986540ejc.7;
-        Mon, 13 Jun 2022 02:32:45 -0700 (PDT)
+        with ESMTP id S229926AbiFMJgW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 05:36:22 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5D66356;
+        Mon, 13 Jun 2022 02:36:19 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id n10so10017468ejk.5;
+        Mon, 13 Jun 2022 02:36:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=ouugFA4wvIvBuAMFZVHlrzyWmRsNThmM8N7DKEf0gGY=;
-        b=oblnuSouSDHMuqqARXqLd++pJVy0ujuQRDiQLY4ejPoBD5wsxfGqhSrTcVzAt5Gt26
-         QiFuWxurpt5YZkOQSm0Tp3o+xudHbm87PKyI1FPii/mfmTQp3wb57k39LNfQgEWzcUuw
-         1XsQCib9W/SQti9C/PVNRuWN7jfnY4msyCtg4/4eRZqlPqy+XogtJ7RCKQJr82OPwibF
-         cyIX2cItdXwXnywtg5EwwRXFHO1cje+97NICmD3MxynF8a9kt00y+/PvexlP0UuJExTA
-         tpA6vBc642YpKduVNWMGqRHC66OD1i1VwG/rWg+nhOpRhi0vKSBXjAayFRyguvLNUNwy
-         Pv7w==
+        bh=Kxhsb4j+LHktkCeM8EHAsOHU0Xef2/yfMBziY6AVgmc=;
+        b=UVdGvKSRxf1rkD9O+mZfi9f1MOXkwIfGxIJ8NDPLZVP591C2nJTkMEljvhe2taf9BJ
+         LJiZpIAhqTLLfd+IQi50zINWtKdylmjLTZLNHvHRZe/WIhWsQXLecWkoANc4BjvrzjnJ
+         oYtUkNuko8Jn5fovpSoF2MyVDj0t3Itt9lf9fs8A9dyt4StUBtLYSoZtsA0XE4/wOjru
+         dp4VQ1XAArQ36I2qbvC4UwDvcHRRXCYTiFgcLhOW4MPG24rMYV6i+XTAere4il09TtzC
+         uMDZ3sm52bLxFfZyk1O/txRtJdUmgnGR8qD0LaEN3NhI2VUuSgPxfmrX/WrzaYSvJn9D
+         MlGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=ouugFA4wvIvBuAMFZVHlrzyWmRsNThmM8N7DKEf0gGY=;
-        b=XH7pkNp1MJJEUkN8ugSWGiZHhIFTp7l+ifY0qwUqmwlQtuUKEqmFrQu2fUr7V6cgyH
-         vu+dWFfRxonQdgjYeSNbyWFBzGPR2otEKsNObJ2qePCkUPNamp3YZ00qS744kYli4us5
-         RJSyzic3ABtQrzz7sRCmclkOdm/AK23jYg27bMArCYgt1M0kw28/afUIE2JEdP1SG4t2
-         LzTYdSotJLRMHWkK78nLbCM26zlGu5s0XKJOd2l5UOwb4WUJRiOAij3EHr4YyXuUoxvC
-         EGoiLDjEZn1RaWdB9fz/QudLVNR/uXnh2Thfnfg2V64b9YJ92WfN+h70rOcEyw4jQhd0
-         CfrQ==
-X-Gm-Message-State: AOAM5308zj8033xJ1N6I6Rq47azbZ5CM+uOniOQlcOrkpQUDtL0YG1Lv
-        aWv18kcUd/HimU5IE6z9QJM=
-X-Google-Smtp-Source: ABdhPJwAs1tRfFppx8kO1Vel1dF59AAvl8ss/jjooMB0Wgg9BxIlvxBNGJxskC/qCCUplkShMlSgzA==
-X-Received: by 2002:a17:906:fb0f:b0:715:7e23:bbbc with SMTP id lz15-20020a170906fb0f00b007157e23bbbcmr6489946ejb.373.1655112764229;
-        Mon, 13 Jun 2022 02:32:44 -0700 (PDT)
+        bh=Kxhsb4j+LHktkCeM8EHAsOHU0Xef2/yfMBziY6AVgmc=;
+        b=QW6/dXqRF+817osULhPNmO8OF3TzGm9NuwlubUn0gq+WWEGgzOntHk/2N2NC0d9Z5w
+         IvtVruyin5evOBHvQrGdqBzEtdGdXM5mcRgwfalYPjO9/AhNiJ2G+Y5SfTc0G5cPwObq
+         UAMCGXHygO+RZK/Met6xvCgPL8/3KTzUIpcs1JEQpurJQSbiKqex4fm+J+DykxMSJzYV
+         1aieaZqZERwHe8M+P6fPEfvPUd9jlHP+ommH98jvgqOaqhV5I7mTjVq2NOOiMD8Umm5B
+         MJtPdLMbL9S9wykfVSoBJZkr83qzUVH9CBztj6Yzbdtcw32653HbA5VR3KTDTb5VWrak
+         FPbw==
+X-Gm-Message-State: AOAM5330OtjuIp31mDttqMGmdLjZqpBlgr22U73ExPT/8vhm3kQFM78V
+        IrhJtJkmuKDUaYzfCfmNhCG3MggXvvg=
+X-Google-Smtp-Source: ABdhPJzgQ9L7Bl8OQAcZPxd6LcZ7d6mZk413LmeDZR/0FkrPRxwaL0vSs8nNlvuwI5e9LK5Yk2FkCA==
+X-Received: by 2002:a17:906:6009:b0:6fe:9813:14ea with SMTP id o9-20020a170906600900b006fe981314eamr51856681ejj.732.1655112978526;
+        Mon, 13 Jun 2022 02:36:18 -0700 (PDT)
 Received: from skbuf ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id h1-20020a17090791c100b006f3ef214dc7sm3614269ejz.45.2022.06.13.02.32.42
+        by smtp.gmail.com with ESMTPSA id u10-20020a1709061daa00b00711d546f8a8sm3592471ejh.139.2022.06.13.02.36.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 02:32:43 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 12:32:42 +0300
+        Mon, 13 Jun 2022 02:36:17 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 12:36:16 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Arun Ramadoss <arun.ramadoss@microchip.com>
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
@@ -60,15 +60,15 @@ Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Russell King <linux@armlinux.org.uk>
-Subject: Re: [RFC Patch net-next v2 07/15] net: dsa: microchip: update the
- ksz_phylink_get_caps
-Message-ID: <20220613093242.ja2jbmhi5uucsavn@skbuf>
+Subject: Re: [RFC Patch net-next v2 08/15] net: dsa: microchip: update the
+ ksz_port_mdb_add/del
+Message-ID: <20220613093616.mqpdzqfmapbj4svt@skbuf>
 References: <20220530104257.21485-1-arun.ramadoss@microchip.com>
- <20220530104257.21485-8-arun.ramadoss@microchip.com>
+ <20220530104257.21485-9-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220530104257.21485-8-arun.ramadoss@microchip.com>
+In-Reply-To: <20220530104257.21485-9-arun.ramadoss@microchip.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -79,10 +79,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 30, 2022 at 04:12:49PM +0530, Arun Ramadoss wrote:
-> This patch assigns the phylink_get_caps in ksz8795 and ksz9477 to
-> ksz_phylink_get_caps. And update their mac_capabilities in the
-> respective ksz_dev_ops.
+On Mon, May 30, 2022 at 04:12:50PM +0530, Arun Ramadoss wrote:
+> ksz_mdb_add/del in ksz_common.c is specific for the ksz8795.c file. The
+
+ksz_port_mdb_add
+
+> ksz9477 has its separate ksz9477_port_mdb_add/del functions.  This patch
+> moves the ksz8795 specific mdb functionality from ksz_common to ksz8795.
+> And this dsa_switch_ops hooks for ksz8795/ksz9477 are invoked through
+> the ksz_port_mdb_add/del.
 > 
 > Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 > ---
