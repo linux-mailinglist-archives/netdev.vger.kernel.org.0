@@ -2,206 +2,529 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B58F5490A4
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 18:26:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 884A5549A0E
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 19:33:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242641AbiFMP1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 11:27:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48680 "EHLO
+        id S237024AbiFMRdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 13:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238384AbiFMP1Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 11:27:16 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7A213B8FA;
-        Mon, 13 Jun 2022 05:52:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655124724; x=1686660724;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=XTEOi1MTxvCvwnh9QWQBbVNj8ztgNQQMgqiapfNzLcM=;
-  b=f+voPlvttwqzc95Hl/etJtwYLoCesuyTIHcoUKo/PmVidflpqf78yAae
-   SceEKmiDE7Noksmcqmf5snlnRMd3K93BY3sxqSbdPpO/BMVM+QIhdi+5p
-   hxCs5MPxyPkVl6ydPnd27vVnwo84D+qqwoWEw9OAm4qN4vVbOVQO8r0Y3
-   dahXaPiJOJ+RBHhPPpj8NFo1jWFFjw4XL3Od8PKuGqQuy31VcpE8ubEtO
-   m5eS/aBA83QesbRGxpWdBToEr5pv+YQkYG8mKnZJgxeJ1yT3NrSUoi6r2
-   ekW5virhD9UkNVVgggEVbxUJ4AdNZARVet/6dUbWzrUlarXb9wYSQFL27
-   A==;
-X-IronPort-AV: E=Sophos;i="5.91,297,1647327600"; 
-   d="scan'208";a="99754575"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Jun 2022 05:52:02 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 13 Jun 2022 05:52:01 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17 via Frontend Transport; Mon, 13 Jun 2022 05:52:01 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TEk2NQbBnwsC6XDLWDw/XSuUA8Q9Vw+nx9IOT4p++fG8MtjtdnyUiL3dPu36y3yNNomNwbHR6oHRkE45IHOQL9GsNjMe5bMCt1G/fVlgMgmpXF1WqLeqAVNbrMv8OCmT50DRJgkL3vP3QZrSA7ME+Q02s2BQls3K9GVVr1U4B/WltnxSrw2xGN1v4yXT5nzs4P6UoWhh7h7LyMPFGRjXyd9DxQH23mTAtQbGIu8mvo2qdw3mFhP+qOiPEBUkVKvllat61M8GbQhNU2aOROmj3hcjmwFuEzO/oJc/cb0vTA/3tjIGD0zGtBivIr0ovxiXFS4uZITdoVTTLDxQLQl6yw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XTEOi1MTxvCvwnh9QWQBbVNj8ztgNQQMgqiapfNzLcM=;
- b=C6UfWuUCqNYVqdSr9RuI6HoYCfJJRxtdsL9/6aUvvt5iUagbqUUrTndUhx9GevlIbva3kKkec5Cv/zdTz6DHf+1D5L7p0JqlB4BgzurC8Z293kcatdZ84oWkNwiOW2CiyyxFwcyJbScwPchIK5LDMuiWuhgw18ywr+C2y5eaFKiS8IaBO61BR3+bLVKtSfFgR9zhKlGNOdg7OsBMtdg0O7XuYJTl8EMgQoO/LfPU69LkLl+adfyANBHV1SfJM9l0svOQFZx0HnLpDmGfkdAdGP/CG6FpZDfjYgq3V7Q9kDj+hSaLf5eHAFlaC1unwOwwJt93uAKL3jetbbPxjk3K/A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        with ESMTP id S236911AbiFMRdA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 13:33:00 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DA9C7A
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 05:54:55 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id a29so8718224lfk.2
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 05:54:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XTEOi1MTxvCvwnh9QWQBbVNj8ztgNQQMgqiapfNzLcM=;
- b=PK1iuryxjYRBiHPntAF592Wr3CArZckMF1hI9VpSSsqEmIrtNj0Ujt2Q8A59SxLa4EnkRNOzFzkz6EH0nwY+knDlRUfGKb4PO9aQTiBjRUzrbHef9K72cKR8HepjqatBtfLGS6zUwIElt9wysAUUdM4/69Xo/NrvtmZyGcnRREE=
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:99::15)
- by MW3PR11MB4665.namprd11.prod.outlook.com (2603:10b6:303:5d::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Mon, 13 Jun
- 2022 12:52:00 +0000
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::699b:5c23:de4f:2bfa]) by CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::699b:5c23:de4f:2bfa%4]) with mapi id 15.20.5332.022; Mon, 13 Jun 2022
- 12:52:00 +0000
-From:   <Conor.Dooley@microchip.com>
-To:     <mkl@pengutronix.de>
-CC:     <wg@grandegger.com>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>, <pabeni@redhat.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <palmer@dabbelt.com>,
-        <paul.walmsley@sifive.com>, <aou@eecs.berkeley.edu>,
-        <Daire.McNamara@microchip.com>, <linux-can@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <Conor.Dooley@microchip.com>
-Subject: Re: [PATCH net-next 0/2] Document PolarFire SoC can controller
-Thread-Topic: [PATCH net-next 0/2] Document PolarFire SoC can controller
-Thread-Index: AQHYejvb6k0j61Qol0aP+WnBuEsVo61DiDiAgAAJ94CAAAp4gIAABvEAgAmwQAA=
-Date:   Mon, 13 Jun 2022 12:52:00 +0000
-Message-ID: <4c5b43bd-a255-cbc1-c7a3-9a79e34d2e91@microchip.com>
-References: <20220607065459.2035746-1-conor.dooley@microchip.com>
- <20220607071519.6m6swnl55na3vgwm@pengutronix.de>
- <51e8e297-0171-0c3f-ba86-e61add04830e@microchip.com>
- <20220607082827.iuonhektfbuqtuqo@pengutronix.de>
- <0f75a804-a0ca-e470-4a57-a5a3ad9dad11@microchip.com>
-In-Reply-To: <0f75a804-a0ca-e470-4a57-a5a3ad9dad11@microchip.com>
-Accept-Language: en-IE, en-US
-Content-Language: en-IE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3d33f39e-69ef-49b0-9fab-08da4d3b81be
-x-ms-traffictypediagnostic: MW3PR11MB4665:EE_
-x-microsoft-antispam-prvs: <MW3PR11MB4665D4DD96E61511D9A211C098AB9@MW3PR11MB4665.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 21+MzvV3EL3M6ba1jVfTNdHgJGmBGMACy0KC0GBiC+XQaDDw62C+1tGkrh54HExNpWDWxVa/4KoSLQKHlTnSgfaNosYTMecO6fujaV45o2M1HDTq+4T6yWA6TWhjGPJtRT2ZM8jE6eurbOWbZ9jh7Ca8WGYC6hH9uCv8n54llMf9ZnyjZT/SXoH7GRavgSLZF3uFbe/BcpMdJ1HIZsoz+8EiRWb5/epA702OHnc8e1eenl+S+pLxaUpbFBNauD7DAuD/UTjZ/gedsXUnzKJjDsqGTTl5Qhsspv45L6SCUqXfyAk68xoM/Aw4KPnDB/dw96RnqBln+vDTmuGgFvV9wX1rGXKR/QrGLNSDoVmdA+nXtxNC4R81uhi5dISaTmbCSSYiZV0vgrAHgJnx77IUIU1F//U0FX8uMjRskvK9blhK2cRytyCepW2/FJMOzAeBCj5f8jnF8T6wM0naYa19uk+96Til0/JgM2+pI7JzA5rKtSFhgwYSm8LJ3uGUjIuE+fbIlKuGOu9HMAPj2QTgHgwVVgbeqbaxZSUIZnFkjDTvKoFgenyA32aQvZy1agWU5t5xahCS9XFaJ1mo2197wjDIWwfev6qfHFs3wftSmE+djcxLJMTPSmBksx9lxOlSmo1Mt4Hl4QWJkcsmZnrXbFVeO2uRf3DtcomDmb5nMELKJsy+PmO7KhpELXhIaKfCW1nsNM2mFE0jN6hYUYCQSil8VlKiTPIRVL6RZTk4yJ3Rc146JLM1Pqq3SY/KF0BiDg8lur8vEj80fcBok9Zr3MyTg1njKW+evKe7rbtA94b+dCVTcsouZDgDBcW0Jt6lfn1Sw3OvtPABPOTybrRmw17Q4vATiQZ5hYOQLgQDhKSecc9AcKzj/BuyGyHkYo1UELQAYw29Enfq3WRBCQB/cA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(8676002)(64756008)(4326008)(91956017)(66556008)(66476007)(66446008)(2906002)(66946007)(76116006)(508600001)(6916009)(31686004)(966005)(7416002)(6486002)(83380400001)(5660300002)(26005)(6512007)(8936002)(38100700002)(6506007)(53546011)(71200400001)(31696002)(122000001)(54906003)(316002)(36756003)(86362001)(107886003)(2616005)(38070700005)(186003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?S1M3Y1BOMy8xeWtFNHJkNHIzdXMxa3c1d3JmVElkSFVFQ2EvWmlZTFgvb2tq?=
- =?utf-8?B?L1hEWGlTZ1RUZ2sxUnFuQ1hYMEpvQWxrL2hUUEpqekd5MlovT0xIVHdSY2JO?=
- =?utf-8?B?NUEybThpQVBreXNNeWUxcm1QdjZNWkVRblNSSWFhV1FJcmlEMHAwUnpQQTZn?=
- =?utf-8?B?TFpwRUROVElZUm1memVFcDlrZE93Y2s3VWdXR2VaUFlxUklyZVMxREtncnB3?=
- =?utf-8?B?OXVHYzltMTlaM3YrRnZ3R0FNeWRVKytjUVZ6N0JMRi9FMkhqYk11ZnJtT00v?=
- =?utf-8?B?bnNKQUMySXhlVUF1NXJvSlU4Ymw0aTFzUGNYQWxqU1Z4eFZhSFVqellSajYx?=
- =?utf-8?B?TzkzaVZ1NEpUU1N3OFE2aUFrUGdZZWR1TGZsT2ZjN2s5NnRyOC9oTjVFYTI1?=
- =?utf-8?B?UXc1NTAxSlFOT2JTd1NISXREb3pRbCtHa1BNbnZDeFhWSHErTk1veFc3NzMr?=
- =?utf-8?B?UThNb2F3dzV3YkEzbEVwZk5mS05pbFczMjdGRmtZZnBLYmN0UmF2akNEdDZK?=
- =?utf-8?B?cEUvNmVUNEYvMHlxK2FyZ09NNG9RMlFzN1Z3NmZnbms0a2o4OXhMdERySDdR?=
- =?utf-8?B?cis4Q01ub0MrMkVUbmcvVnFpUG8vUnVPVFdoVk02UUQ2cDhFeER1Z29xUHlH?=
- =?utf-8?B?M0lyK0xsUnJxZWlCZ3BWTUtYcnZWT1NXYXlHSTNTc0VYNFp1MVdpN3ZFTk9X?=
- =?utf-8?B?SGNZR0JDTmhWNm1qNzVDWmF4ZWx6c3lwVVlNNkttQlk4ajM3cksvZXkyZWRF?=
- =?utf-8?B?VEpkRnN1UWFSdSs3ZGlHRnFzb29scEd5T3VyUWhmdkQyQWcxQklZMzVxcys2?=
- =?utf-8?B?dEd5TUpmSTlGNTZaVS83WkQ3SnRGQkFDZ0lQdndlVE1Kd0xxZUlQcUxsQ2dU?=
- =?utf-8?B?VCtsN2hWcjVWZ1RtQTdxeEhFUW9CMVMyMm4rZ3RRYzkvWHh5M281ekRoYjAw?=
- =?utf-8?B?MDZMNXo0TmFQU0RFaFNVQ0MzOXhmcG56eHlFQWRtdWNQaWxLMDZNOGcxVCtz?=
- =?utf-8?B?bzBpVzBkSzR4SjNJRnZsNXIwdm1KcTNWaDMrOVlDamFJSWVsMmdEQjRadUpJ?=
- =?utf-8?B?ZkY3YWFSbTV5VzNLbzJTakpFQzFuNHZFUk5JbVg5SndDanJZSWNhR05WT0xG?=
- =?utf-8?B?VlE0QW1nbXl2U0lQWENtZ3g0TEt6VS9KR25wQy90K2kyNU52c0RYa1FqQ2dF?=
- =?utf-8?B?WHZ2VUsyRHpJdk5HNnJvN2w1WlNUd28xMlNxVnJadW82MHZ4emp6ZXFlMXJK?=
- =?utf-8?B?MEFJLzJvenZYRTZ2Q1RJVG9pMUhIQVloL2dLVy9lazJhOEJlMHBqOXNqMm5x?=
- =?utf-8?B?T1pibEk2OEN6VDE5NkhWZ3NyTjhqRmd0UGhYM2FuT3Z3SFFRY3Q3UStPODBm?=
- =?utf-8?B?aWl5TUV3czQ1blQ3Uldyc3RmazFWY1RLV1VvY2F1TjdYZnp4R0F2Q2Y3SVho?=
- =?utf-8?B?VDdEMUdQOHhGbVRQd0ZsV0JwcllkWGpWSHRyK3pBOEJuRUJGdVJYRVloMnRl?=
- =?utf-8?B?bHNVenVpZFFDS0xVUVlrZE93bVlhdVQ2cWZnT3JzdmRHdzVNK3J1ajRmY0Zv?=
- =?utf-8?B?ZHVpMUxNdWZtTlRCcmkyT051MERURFdmZFY0VUxzNjgyWDVySXJ3aDdKbzl6?=
- =?utf-8?B?QjBLWVMzNTJ2cHpMeUlrd290SzBldTNNVGJaN3FXVElXMXNYdkRuY3BxNVU2?=
- =?utf-8?B?SzJ4cVZpYktPL0RieEtSckVXdXJFaHk4cTFMdVM0K0xML2JXN1ppalFSWTRC?=
- =?utf-8?B?Y0NNNFFKSC9MUkpKb3p6bll1NVk3UFQ1NDNML1I0YzdVWEpTQmxYN3c0a3FX?=
- =?utf-8?B?Q2lBTS8rZ1huQjFOVFRGdjFtRnU3L0JlY1N3ODhpd1ltMUpqMzlDZDZzRlZo?=
- =?utf-8?B?U0VwQmNXbUNnRVJIMURla3dIY1A5eVR6VHgvZE1VSU40Y040bzljZXhrNU1Q?=
- =?utf-8?B?TS9tRzRncDVBb0FaUDZhVW5ZOXVId1Roek1aR29jVmxmeFpsK1c4Q2VVT0g3?=
- =?utf-8?B?SXF3K0dEQ3BIVUkzWEswajFIYitkUWQwZ1J6by9ZTjdFKzhQMlZ4WlRrQnEv?=
- =?utf-8?B?TThDelVDSllNV256cWx4bjFqMkhWUDdOR25xdkgzMGxJeXQxYkN0QUFiNHcx?=
- =?utf-8?B?b2VXSGNhYXVuTnhSdE5kSzJNNUMwZHl1T29HQlhTM2JwQU5MNEwySHFtUFNi?=
- =?utf-8?B?aU81WkJiSDliOE9qNVJ0MVQxS2M4ZWNjWnlack1RUXNmRW5NRk82YWdnSlNa?=
- =?utf-8?B?cWllUllOc2NhTHRTLzlHVEdpTVRtNDYzaE5UenhmUUFqOExBaG5BcHhwVGxS?=
- =?utf-8?B?SGZJblJrNnNaOG1FTi96T3RvMnhucGgraW4wcDNLSnlPSC9HcFB0b2prakNT?=
- =?utf-8?Q?wWn3gHPheFBQd6Fc=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <03EB708565E47944AD8385E3C222E96D@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3d33f39e-69ef-49b0-9fab-08da4d3b81be
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2022 12:52:00.1040
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: r7HYlq+KKBNoibx1gty/FW7KkN3WheY7t+jh5vC0b+yo238DjW/vf49MyntLvyeQbVbetHt6x+G/siuz4WtHdxB5oQUx8dNyAoHnRTBkEF0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4665
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+J192YbdIFI93VbzVn5Im74F64c6LcqFB+rj2wjG998=;
+        b=l13Mq7hHF7sO6mWn6pQ7vqWAFVJQwqEmpRnkg5vL8vrenluOKVOFsLPQzFMqYqHIKA
+         DWSLv8+GvTxpFwhjm1dJ9+Bwh674mF2cJq7/8VpK5skcFHoZwyR7JGxc1/K/QZ5Ilx0y
+         UrGLPAnwoBI6ktrt3P7YOopqkAu094anM9crrnWUYnYudjUNebCrWgJMIu+j6Jp38Tvc
+         x+9Ea7fVmBjDfGyzEAlSCZeuCFBczQpn4OQU3bndlxLh5MhHEoF/wM6PUoGxflegwRAm
+         yFHU3Kjkb673VaBH4Zzq5+z6i2slSAZkT6hEYS7vgYVb0zBfZCa46pN5YcFJdyXUC7hx
+         XPGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+J192YbdIFI93VbzVn5Im74F64c6LcqFB+rj2wjG998=;
+        b=A6Jl7YPs+PQ+cLR6oBAx2ZAIrehgF3jAH97C6U7WeGtwCg3Js2hKYORaoUQdI35vLA
+         P8WcEoDoaHUJwj37jY3jWgsevGJ4bklAa3VJU4pueOkLKQ+trsPsRDCNNYdUVZ0eVsaz
+         KNNLN6/invSKQlDqp7KNdzgeWBlIhdZAXp+yg8exzSspGg1QtSpOuwfVXzylWD21Sj+P
+         uqTs6mBMYCLjZ3muVS5DP0McCORW6zVFLQ2cA1AGsHHtrUPQ+3d4viOBJl4PvVzUeX+l
+         Hh4fhwhK+BKS+qVOSVUdkb5WjIuhkJ2K+cdkTuj1i8UFi14IAUS0/tJBMn3EIZ8WZTYX
+         R+SA==
+X-Gm-Message-State: AOAM532+/xWReE/mHhvYICujktaaYSzdy2JBvtbDEJqYGuPqBvqI3XoI
+        eoocQpfYxWf4UK83NlKSt1U=
+X-Google-Smtp-Source: ABdhPJy/+gneSuEohhpXk18gx8bIrlEL7oXgNm+8wJb+w9NNN5IVH8ZpDSGt41Xm7NDZlc8nUJ7zdQ==
+X-Received: by 2002:a05:6512:3f27:b0:478:5ac2:380d with SMTP id y39-20020a0565123f2700b004785ac2380dmr77031048lfa.427.1655124893775;
+        Mon, 13 Jun 2022 05:54:53 -0700 (PDT)
+Received: from extra.gateflow.net ([46.109.159.121])
+        by smtp.gmail.com with ESMTPSA id q15-20020a19f20f000000b004791de231b3sm975619lfh.295.2022.06.13.05.54.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 05:54:52 -0700 (PDT)
+From:   Anton Makarov <antonmakarov11235@gmail.com>
+X-Google-Original-From: Anton Makarov <anton.makarov11235@gmail.com>
+Date:   Mon, 13 Jun 2022 15:54:51 +0300
+To:     Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>
+Subject: Re: [iproute2-next v1] seg6: add support for flavors in SRv6 End*
+ behaviors
+Message-Id: <20220613155451.cd87785dcaab102cc42a3b5d@gmail.com>
+In-Reply-To: <20220611110645.29434-1-paolo.lungaroni@uniroma2.it>
+References: <20220611110645.29434-1-paolo.lungaroni@uniroma2.it>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiAwNy8wNi8yMDIyIDA5OjU0LCBDb25vci5Eb29sZXlAbWljcm9jaGlwLmNvbSB3cm90ZToN
-Cj4gT24gMDcvMDYvMjAyMiAwOToyOCwgTWFyYyBLbGVpbmUtQnVkZGUgd3JvdGU6DQo+PiBPbiAw
-Ny4wNi4yMDIyIDA3OjUyOjMwLCBDb25vci5Eb29sZXlAbWljcm9jaGlwLmNvbSB3cm90ZToNCj4+
-PiBPbiAwNy8wNi8yMDIyIDA4OjE1LCBNYXJjIEtsZWluZS1CdWRkZSB3cm90ZToNCj4+Pj4gT24g
-MDcuMDYuMjAyMiAwNzo1NDo1OCwgQ29ub3IgRG9vbGV5IHdyb3RlOg0KPj4+Pj4gV2hlbiBhZGRp
-bmcgdGhlIGR0cyBmb3IgUG9sYXJGaXJlIFNvQywgdGhlIGNhbiBjb250cm9sbGVycyB3ZXJlDQo+
-Pj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBeXl4NCj4+
-Pj4+IG9taXR0ZWQsIHNvIGhlcmUgdGhleSBhcmUuLi4NCj4+Pj4NCj4+Pj4gTml0cGljazoNCj4+
-Pj4gQ29uc2lkZXIgd3JpdGluZyAiQ0FOIiBpbiBjYXBpdGFsIGxldHRlcnMgdG8gYXZvaWQgY29u
-ZnVzaW9uIGZvciB0aGUgbm90DQo+Pj4+IGluZm9ybWVkIHJlYWRlci4NCj4+Pg0KPj4+IFllYWgs
-IHN1cmUuIEknbGwgdHJ5IHRvIGdldCBvdmVyIG15IGZlYXIgb2YgY2FwaXRhbCBsZXR0ZXJzIDsp
-DQo+Pg0KPj4gOikNCj4+DQo+Pj4+IElzIHRoZSBkb2N1bWVudGF0aW9uIGZvciB0aGUgQ0FOIGNv
-bnRyb2xsZXIgb3Blbmx5IGF2YWlsYWJsZT8gSXMgdGhlcmUgYQ0KPj4+PiBkcml2ZXIgc29tZXdo
-ZXJlPw0KPj4+DQo+Pj4gVGhlcmUgaXMgYSBkcml2ZXIgL2J1dC8gZm9yIG5vdyBvbmx5IGEgVUlP
-IG9uZSBzbyBJIGRpZG4ndCBzZW5kIGl0Lg0KPj4NCj4+IEJycnJyci4uLg0KPiANCj4gWWVhaCwg
-SSBrbm93Li4NCj4gDQo+Pg0KPj4+IFRoZXJlJ3MgYW4gb25saW5lIGRvYyAmIGlmIHRoZSBob3Jy
-aWJsZSBsaW5rIGRvZXNuJ3QgZHJvcCB5b3UgdGhlcmUNCj4+PiBkaXJlY3RseSwgaXRzIHNlY3Rp
-b24gNi4xMi4zOg0KPj4+IGh0dHBzOi8vb25saW5lZG9jcy5taWNyb2NoaXAuY29tL3ByL0dVSUQt
-MEUzMjA1NzctMjhFNi00MzY1LTlCQjgtOUUxNDE2QTBBNkU0LWVuLVVTLTMvaW5kZXguaHRtbD9H
-VUlELUEzNjJEQzNDLTgzQjctNDQ0MS1CRUNCLUIxOUY5QUQ0OEI2Ng0KPj4+DQo+Pj4gQW5kIGEg
-UERGIGRpcmVjdCBkb3dubG9hZCBoZXJlLCBzZWUgc2VjdGlvbiA0LjEyLjMgKHBhZ2UgNzIpOg0K
-Pj4+IGh0dHBzOi8vd3d3Lm1pY3Jvc2VtaS5jb20vZG9jdW1lbnQtcG9ydGFsL2RvY19kb3dubG9h
-ZC8xMjQ1NzI1LXBvbGFyZmlyZS1zb2MtZnBnYS1tc3MtdGVjaG5pY2FsLXJlZmVyZW5jZS1tYW51
-YWwNCj4+DQo+PiBUaGFua3MuIFRoZSBkb2N1bWVudGF0aW9uIGlzIHF1aXRlIHNwYXJzZSwgaXMg
-dGhlcmUgYSBtb3JlIGRldGFpbGVkIG9uZT8NCj4gDQo+IE5vcGUsIHRoYXQncyBhbGwgSSd2ZSBn
-b3QuLi4NCj4gDQo+PiBUaGUgcmVnaXN0ZXIgbWFwIGNhbm5vdCBiZSBkb3dubG9hZGVkIGRpcmVj
-dGx5IGFueW1vcmUuIEZvciByZWZlcmVuY2U6DQo+Pg0KPj4gaHR0cDovL3dlYi5hcmNoaXZlLm9y
-Zy93ZWIvMjAyMjA0MDMwMzAyMTQvaHR0cHM6Ly93d3cubWljcm9zZW1pLmNvbS9kb2N1bWVudC1w
-b3J0YWwvZG9jX2Rvd25sb2FkLzEyNDQ1ODEtcG9sYXJmaXJlLXNvYy1yZWdpc3Rlci1tYXANCj4g
-DQo+IE9oIHRoYXQgc3Vja3MuIEkga25vdyB3ZSBoYXZlIGhhZCBzb21lIHdlYnNpdGUgaXNzdWVz
-IG92ZXIgdGhlIHdlZWtlbmQNCj4gd2hpY2ggbWlnaHQgYmUgdGhlIHByb2JsZW0gdGhlcmUuIEkn
-bGwgdHJ5IHRvIGJyaW5nIGl0IHVwIGFuZCBmaW5kIG91dC4NCj4gDQoNCkhleSBNYXJjLA0KRG9j
-IGlzIHN0aWxsIG5vdCBhdmFpbGFibGUgYnV0IHNob3VsZCBiZSBnZXR0aW5nIGZpeGVkLg0KV2hh
-dCBkbyBJIG5lZWQgdG8gZG8gZm9yIHRoaXMgYmluZGluZz8gQXJlIHlvdSBoYXBweSB0byBhY2Nl
-cHQgaXQgd2l0aG91dA0KYSBkcml2ZXIgaWYgSSBhZGQgbGlua3MgdG8gdGhlIGRvY3VtZW50YXRp
-b24gYW5kIGEgd29ya2luZyBsaW5rIHRvIHRoZQ0KcmVnaXN0ZXIgbWFwPw0KVGhhbmtzLA0KQ29u
-b3IuDQo=
+Hi Paolo,
+Please see my comment inline.
+
+On Sat, 11 Jun 2022 13:06:45 +0200
+Paolo Lungaroni <paolo.lungaroni@uniroma2.it> wrote:
+
+> As described in RFC 8986 [1], processing operations carried out by SRv6
+> End, End.X and End.T (End* for short) behaviors can be modified or
+> extended using the "flavors" mechanism. This patch adds the support for
+> PSP,USP,USD flavors (defined in [1]) and for NEXT-C-SID flavor (defined
+> in [2]) in SRv6 End* behaviors. Specifically, we add a new optional
+> attribute named "flavors" that can be leveraged by the user to enable
+> specific flavors while creating an SRv6 End* behavior instance.
+> Multiple flavors can be specified together by separating them using
+> commas.
+> 
+> If a specific flavor (or a combination of flavors) is not supported by the
+> underlying Linux kernel, an error message is reported to the user and the
+> creation of the specific behavior instance is aborted.
+> 
+> When the flavors attribute is omitted, the regular SRv6 End* behavior is
+> performed.
+> 
+> Flavors such as PSP, USP and USD do not accept additional configuration
+> attributes. Conversely, the NEXT-C-SID flavor can be configured to support
+> user-provided Locator-Block and Locator-Node Function lengths using,
+> respectively, the lblen and the nflen attributes.
+> 
+> Both lblen and nflen values must be evenly divisible by 8 and their sum
+> must not exceed 128 bit (i.e. the C-SID container size).
+> 
+> If the lblen attribute is omitted, the default value chosen by the Linux
+> kernel is 32-bit. If the nflen attribute is omitted, the default value
+> chosen by the Linux kernel is 16-bit.
+> 
+> Some examples:
+> ip -6 route add 2001:db8::1 encap seg6local action End flavors next-csid dev eth0
+> ip -6 route add 2001:db8::2 encap seg6local action End flavors next-csid lblen 48 nflen 16 dev eth0
+
+As I already noted in another thread mandatory dev parameter
+of End behavior violates RFC 8986 definitions. Egress interface has
+to be defined during IP lookup.
+
+> 
+> Standard Output:
+> ip -6 route show 2001:db8::2
+> 2001:db8::2  encap seg6local action End flavors next-csid lblen 48 nflen 16 dev eth0 metric 1024 pref medium
+> 
+> JSON Output:
+> ip -6 -j -p route show 2001:db8::2
+> [ {
+>         "dst": "2001:db8::2",
+>         "encap": "seg6local",
+>         "action": "End",
+>         "flavors": [ "next-csid" ],
+>         "lblen": 48,
+>         "nflen": 16,
+>         "dev": "eth0",
+>         "metric": 1024,
+>         "flags": [ ],
+>         "pref": "medium"
+> } ]
+> 
+> [1] - https://datatracker.ietf.org/doc/html/rfc8986
+> [2] - https://datatracker.ietf.org/doc/html/draft-ietf-spring-srv6-srh-compression
+> 
+> Signed-off-by: Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
+> ---
+>  include/uapi/linux/seg6_local.h |  24 ++++
+>  ip/iproute_lwtunnel.c           | 188 +++++++++++++++++++++++++++++++-
+>  man/man8/ip-route.8.in          |  71 +++++++++++-
+>  3 files changed, 280 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/uapi/linux/seg6_local.h b/include/uapi/linux/seg6_local.h
+> index ab724498..12f76829 100644
+> --- a/include/uapi/linux/seg6_local.h
+> +++ b/include/uapi/linux/seg6_local.h
+> @@ -28,6 +28,7 @@ enum {
+>  	SEG6_LOCAL_BPF,
+>  	SEG6_LOCAL_VRFTABLE,
+>  	SEG6_LOCAL_COUNTERS,
+> +	SEG6_LOCAL_FLAVORS,
+>  	__SEG6_LOCAL_MAX,
+>  };
+>  #define SEG6_LOCAL_MAX (__SEG6_LOCAL_MAX - 1)
+> @@ -110,4 +111,27 @@ enum {
+>  
+>  #define SEG6_LOCAL_CNT_MAX (__SEG6_LOCAL_CNT_MAX - 1)
+>  
+> +/* SRv6 End* Flavor attributes */
+> +enum {
+> +	SEG6_LOCAL_FLV_UNSPEC,
+> +	SEG6_LOCAL_FLV_OPERATION,
+> +	SEG6_LOCAL_FLV_LCBLOCK_LEN,
+> +	SEG6_LOCAL_FLV_LCNODE_FN_LEN,
+> +	__SEG6_LOCAL_FLV_MAX,
+> +};
+> +
+> +#define SEG6_LOCAL_FLV_MAX (__SEG6_LOCAL_FLV_MAX - 1)
+> +
+> +/* Designed flavor operations for SRv6 End* Behavior */
+> +enum {
+> +	SEG6_LOCAL_FLV_OP_UNSPEC,
+> +	SEG6_LOCAL_FLV_OP_PSP,
+> +	SEG6_LOCAL_FLV_OP_USP,
+> +	SEG6_LOCAL_FLV_OP_USD,
+> +	SEG6_LOCAL_FLV_OP_NEXT_CSID,
+> +	__SEG6_LOCAL_FLV_OP_MAX
+> +};
+> +
+> +#define SEG6_LOCAL_FLV_OP_MAX (__SEG6_LOCAL_FLV_OP_MAX - 1)
+> +
+>  #endif
+> diff --git a/ip/iproute_lwtunnel.c b/ip/iproute_lwtunnel.c
+> index f4192229..112846cc 100644
+> --- a/ip/iproute_lwtunnel.c
+> +++ b/ip/iproute_lwtunnel.c
+> @@ -157,6 +157,102 @@ static int read_seg6mode_type(const char *mode)
+>  	return -1;
+>  }
+>  
+> +static const char *seg6_flavor_names[SEG6_LOCAL_FLV_OP_MAX + 1] = {
+> +	[SEG6_LOCAL_FLV_OP_PSP]		= "psp",
+> +	[SEG6_LOCAL_FLV_OP_USP]		= "usp",
+> +	[SEG6_LOCAL_FLV_OP_USD]		= "usd",
+> +	[SEG6_LOCAL_FLV_OP_NEXT_CSID]	= "next-csid"
+> +};
+> +
+> +static int read_seg6_local_flv_type(const char *name)
+> +{
+> +	int i;
+> +
+> +	for (i = 1; i < SEG6_LOCAL_FLV_OP_MAX + 1; ++i) {
+> +		if (!seg6_flavor_names[i])
+> +			continue;
+> +
+> +		if (strcasecmp(seg6_flavor_names[i], name) == 0)
+> +			return i;
+> +	}
+> +
+> +	return -1;
+> +}
+> +
+> +#define SEG6_LOCAL_FLV_BUF_SIZE 32
+> +static int parse_seg6local_flavors(const char *buf, __u32 *flv_mask)
+> +{
+> +	unsigned char flavor_ok[SEG6_LOCAL_FLV_OP_MAX + 1] = { 0, };
+> +	char wbuf[SEG6_LOCAL_FLV_BUF_SIZE];
+> +	__u32 mask = 0;
+> +	int index;
+> +	char *s;
+> +
+> +	/* strtok changes first parameter, so we need to make a local copy */
+> +	strlcpy(wbuf, buf, SEG6_LOCAL_FLV_BUF_SIZE);
+> +	wbuf[SEG6_LOCAL_FLV_BUF_SIZE - 1] = 0;
+> +
+> +	if (strlen(wbuf) == 0)
+> +		return -1;
+> +
+> +	for (s = strtok((char *) wbuf, ","); s; s = strtok(NULL, ",")) {
+> +		index = read_seg6_local_flv_type(s);
+> +		if (index < 0 || index > SEG6_LOCAL_FLV_OP_MAX)
+> +			return -1;
+> +		/* we check for duplicates */
+> +		if (flavor_ok[index]++)
+> +			return -1;
+> +
+> +		mask |= (1 << index);
+> +	}
+> +
+> +	*flv_mask = mask;
+> +	return 0;
+> +}
+> +
+> +static void print_flavors(FILE *fp, __u32 flavors)
+> +{
+> +	int i, fnumber = 0;
+> +	char *flv_name;
+> +
+> +	if (is_json_context())
+> +		open_json_array(PRINT_JSON, "flavors");
+> +	else
+> +		fprintf(fp, "flavors ");
+> +
+> +	for (i = 0; i < SEG6_LOCAL_FLV_OP_MAX + 1; ++i) {
+> +		if (flavors & (1 << i)) {
+> +			flv_name = (char *) seg6_flavor_names[i];
+> +			if (!flv_name)
+> +				continue;
+> +
+> +			if (is_json_context())
+> +				print_string(PRINT_JSON, NULL, NULL, flv_name);
+> +			else {
+> +				if (fnumber++ == 0)
+> +					fprintf(fp, "%s", flv_name);
+> +				else
+> +					fprintf(fp, ",%s", flv_name);
+> +			}
+> +		}
+> +	}
+> +
+> +	if (is_json_context())
+> +		close_json_array(PRINT_JSON, NULL);
+> +	else
+> +		fprintf(fp, " ");
+> +}
+> +
+> +static void print_flavors_attr(FILE *fp, const char *key, __u32 value)
+> +{
+> +	if (is_json_context()) {
+> +		print_u64(PRINT_JSON, key, NULL, value);
+> +	} else {
+> +		print_string(PRINT_FP, NULL, "%s ", key);
+> +		print_num(fp, 1, value);
+> +	}
+> +}
+> +
+>  static void print_encap_seg6(FILE *fp, struct rtattr *encap)
+>  {
+>  	struct rtattr *tb[SEG6_IPTUNNEL_MAX+1];
+> @@ -374,6 +470,30 @@ static void print_seg6_local_counters(FILE *fp, struct rtattr *encap)
+>  	}
+>  }
+>  
+> +static void print_seg6_local_flavors(FILE *fp, struct rtattr *encap)
+> +{
+> +	struct rtattr *tb[SEG6_LOCAL_FLV_MAX + 1];
+> +	__u8 lbl = 0, nfl = 0;
+> +	__u32 flavors = 0;
+> +
+> +	parse_rtattr_nested(tb, SEG6_LOCAL_FLV_MAX, encap);
+> +
+> +	if (tb[SEG6_LOCAL_FLV_OPERATION]) {
+> +		flavors = rta_getattr_u32(tb[SEG6_LOCAL_FLV_OPERATION]);
+> +		print_flavors(fp, flavors);
+> +	}
+> +
+> +	if (tb[SEG6_LOCAL_FLV_LCBLOCK_LEN]) {
+> +		lbl = rta_getattr_u8(tb[SEG6_LOCAL_FLV_LCBLOCK_LEN]);
+> +		print_flavors_attr(fp, "lblen", lbl);
+> +	}
+> +
+> +	if (tb[SEG6_LOCAL_FLV_LCNODE_FN_LEN]) {
+> +		nfl = rta_getattr_u8(tb[SEG6_LOCAL_FLV_LCNODE_FN_LEN]);
+> +		print_flavors_attr(fp, "nflen", nfl);
+> +	}
+> +}
+> +
+>  static void print_encap_seg6local(FILE *fp, struct rtattr *encap)
+>  {
+>  	struct rtattr *tb[SEG6_LOCAL_MAX + 1];
+> @@ -436,6 +556,9 @@ static void print_encap_seg6local(FILE *fp, struct rtattr *encap)
+>  
+>  	if (tb[SEG6_LOCAL_COUNTERS] && show_stats)
+>  		print_seg6_local_counters(fp, tb[SEG6_LOCAL_COUNTERS]);
+> +
+> +	if (tb[SEG6_LOCAL_FLAVORS])
+> +		print_seg6_local_flavors(fp, tb[SEG6_LOCAL_FLAVORS]);
+>  }
+>  
+>  static void print_encap_mpls(FILE *fp, struct rtattr *encap)
+> @@ -1175,12 +1298,66 @@ static int seg6local_fill_counters(struct rtattr *rta, size_t len, int attr)
+>  	return 0;
+>  }
+>  
+> +static int seg6local_parse_flavors(struct rtattr *rta, size_t len,
+> +			 int *argcp, char ***argvp, int attr)
+> +{
+> +	int lbl_ok = 0, nfl_ok = 0;
+> +	__u8 lbl = 0, nfl = 0;
+> +	struct rtattr *nest;
+> +	__u32 flavors = 0;
+> +	int ret;
+> +
+> +	char **argv = *argvp;
+> +	int argc = *argcp;
+> +
+> +	nest = rta_nest(rta, len, attr);
+> +
+> +	ret = parse_seg6local_flavors(*argv, &flavors);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = rta_addattr32(rta, len, SEG6_LOCAL_FLV_OPERATION, flavors);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (flavors & (1 << SEG6_LOCAL_FLV_OP_NEXT_CSID)) {
+> +		NEXT_ARG_FWD();
+> +		if (strcmp(*argv, "lblen") == 0){
+> +			NEXT_ARG();
+> +			if (lbl_ok++)
+> +				duparg2("lblen", *argv);
+> +			if (get_u8(&lbl, *argv, 0))
+> +				invarg("\"locator-block length\" value is invalid\n", *argv);
+> +			ret = rta_addattr8(rta, len, SEG6_LOCAL_FLV_LCBLOCK_LEN, lbl);
+> +			NEXT_ARG_FWD();
+> +		}
+> +
+> +		if (strcmp(*argv, "nflen") == 0){
+> +			NEXT_ARG();
+> +			if (nfl_ok++)
+> +				duparg2("nflen", *argv);
+> +			if (get_u8(&nfl, *argv, 0))
+> +				invarg("\"locator-node function length\" value is invalid\n", *argv);
+> +			ret = rta_addattr8(rta, len, SEG6_LOCAL_FLV_LCNODE_FN_LEN, nfl);
+> +			NEXT_ARG_FWD();
+> +		}
+> +		PREV_ARG();
+> +	}
+> +
+> +	rta_nest_end(rta, nest);
+> +
+> +	*argcp = argc;
+> +	*argvp = argv;
+> +
+> +	return 0;
+> +}
+> +
+>  static int parse_encap_seg6local(struct rtattr *rta, size_t len, int *argcp,
+>  				 char ***argvp)
+>  {
+> +	int nh4_ok = 0, nh6_ok = 0, iif_ok = 0, oif_ok = 0, flavors_ok = 0;
+>  	int segs_ok = 0, hmac_ok = 0, table_ok = 0, vrftable_ok = 0;
+>  	int action_ok = 0, srh_ok = 0, bpf_ok = 0, counters_ok = 0;
+> -	int nh4_ok = 0, nh6_ok = 0, iif_ok = 0, oif_ok = 0;
+>  	__u32 action = 0, table, vrftable, iif, oif;
+>  	struct ipv6_sr_hdr *srh;
+>  	char **argv = *argvp;
+> @@ -1250,6 +1427,15 @@ static int parse_encap_seg6local(struct rtattr *rta, size_t len, int *argcp,
+>  				duparg2("count", *argv);
+>  			ret = seg6local_fill_counters(rta, len,
+>  						      SEG6_LOCAL_COUNTERS);
+> +		} else if (strcmp(*argv, "flavors") == 0) {
+> +			NEXT_ARG();
+> +			if (flavors_ok++)
+> +				duparg2("flavors", *argv);
+> +
+> +			if (seg6local_parse_flavors(rta, len, &argc, &argv,
+> +						    SEG6_LOCAL_FLAVORS))
+> +				invarg("invalid \"flavors\" attribute\n",
+> +					*argv);
+>  		} else if (strcmp(*argv, "srh") == 0) {
+>  			NEXT_ARG();
+>  			if (srh_ok++)
+> diff --git a/man/man8/ip-route.8.in b/man/man8/ip-route.8.in
+> index 462ff269..3364815c 100644
+> --- a/man/man8/ip-route.8.in
+> +++ b/man/man8/ip-route.8.in
+> @@ -834,10 +834,14 @@ related to an action use the \fB-s\fR flag in the \fBshow\fR command.
+>  The following actions are currently supported (\fBLinux 4.14+ only\fR).
+>  .in +2
+>  
+> -.B End
+> +.BR End " [ " flavors
+> +.IR FLAVORS " ] "
+>  - Regular SRv6 processing as intermediate segment endpoint.
+>  This action only accepts packets with a non-zero Segments Left
+> -value. Other matching packets are dropped.
+> +value. Other matching packets are dropped. The presence of flavors
+> +can change the regular processing of an End behavior according to
+> +the user-provided Flavor operations and information carried in the packet.
+> +See \fBFlavors parameters\fR section.
+>  
+>  .B End.X nh6
+>  .I NEXTHOP
+> @@ -917,8 +921,61 @@ Additionally, encapsulate the matching packet within an outer IPv6 header
+>  followed by the specified SRH. The destination address of the outer IPv6
+>  header is set to the first segment of the new SRH. The source
+>  address is set as described in \fBip-sr\fR(8).
+> +
+> +.B Flavors parameters
+> +
+> +The flavors represent additional operations that can modify or extend a
+> +subset of the existing behaviors.
+> +.in +2
+> +
+> +.B flavors
+> +.IR OPERATION "[," OPERATION "] [" ATTRIBUTES "]"
+> +.in +2
+> +
+> +.IR OPERATION " := { "
+> +.BR psp " | "
+> +.BR usp " | "
+> +.BR usd " | "
+> +.BR next-csid " }"
+> +
+> +.IR ATTRIBUTES " := {"
+> +.IR "KEY VALUE" " } ["
+> +.IR ATTRIBUTES " ]"
+> +
+> +.IR KEY " := { "
+> +.BR lblen " | "
+> +.BR nflen " } "
+>  .in -2
+>  
+> +.B psp
+> +- Penultimate Segment Pop of the SRH (not yet supported in kernel)
+> +
+> +.B usp
+> +- Ultimate Segment Pop of the SRH (not yet supported in kernel)
+> +
+> +.B usd
+> +- Ultimate Segment Decapsulation (not yet supported in kernel)
+> +
+> +.B next-csid
+> +- The NEXT-C-SID mechanism offers the possibility of encoding
+> +several SRv6 segments within a single 128 bit SID address. The NEXT-C-SID
+> +flavor can be configured to support user-provided Locator-Block and
+> +Locator-Node Function lengths. If Locator-Block and/or Locator-Node Function
+> +lengths are not provided by the user during configuration of an SRv6 End
+> +behavior instance with NEXT-C-SID flavor, the default value is 32-bit for
+> +Locator-Block and 16-bit for Locator-Node Function.
+> +
+> +.BI lblen " VALUE "
+> +- defines the Locator-Block length for NEXT-C-SID flavor.
+> +The Locator Block length must be evenly divisible by 8. This attribute
+> +can be used only with NEXT-C-SID flavor.
+> +
+> +.BI nflen " VALUE "
+> +- defines the Locator-Node Function length for NEXT-C-SID
+> +flavors. The Locator-Node Function length must be evenly divisible
+> +by 8. This attribute can be used only with NEXT-C-SID flavor.
+> +.in -4
+> +
+>  .B ioam6
+>  .in +2
+>  .B freq K/N
+> @@ -1279,6 +1336,16 @@ ip -6 route add 2001:db8:1::/64 encap seg6local action End.DT46 vrftable 100 dev
+>  Adds an IPv6 route with SRv6 decapsulation and forward with lookup in VRF table.
+>  .RE
+>  .PP
+> +ip -6 route add 2001:db8:1::/64 encap seg6local action End flavors next-csid dev eth0
+> +.RS 4
+> +Adds an IPv6 route with SRv6 End behavior with next-csid flavor enabled.
+> +.RE
+> +.PP
+> +ip -6 route add 2001:db8:1::/64 encap seg6local action End flavors next-csid lblen 48 nflen 16 dev eth0
+> +.RS 4
+> +Adds an IPv6 route with SRv6 End behavior with next-csid flavor enabled and user-provided Locator-Block and Locator-Node Function lengths.
+> +.RE
+> +.PP
+>  ip -6 route add 2001:db8:1::/64 encap ioam6 freq 2/5 mode encap tundst 2001:db8:42::1 trace prealloc type 0x800000 ns 1 size 12 dev eth0
+>  .RS 4
+>  Adds an IPv6 route with an IOAM Pre-allocated Trace encapsulation (ip6ip6) that only includes the hop limit and the node id, configured for the IOAM namespace 1 and a pre-allocated data block of 12 octets (will be injected in 2 packets every 5 packets).
+> -- 
+> 2.20.1
+> 
+
+
+Anton
+
