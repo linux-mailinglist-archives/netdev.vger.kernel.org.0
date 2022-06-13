@@ -2,126 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5102E5493DA
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 18:32:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A8AD548D1B
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 18:14:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354112AbiFMPCv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 11:02:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58082 "EHLO
+        id S242723AbiFMPI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 11:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355829AbiFMPCJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 11:02:09 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD39FEC320
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 05:08:06 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id p6-20020a05600c1d8600b0039c630b8d96so3825261wms.1
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 05:08:06 -0700 (PDT)
+        with ESMTP id S1386784AbiFMPIh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 11:08:37 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676BC55352;
+        Mon, 13 Jun 2022 05:18:40 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id l126-20020a1c2584000000b0039c1a10507fso2987952wml.1;
+        Mon, 13 Jun 2022 05:18:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=N7rruoIsMJ3RkeCWCy171/3t1oq0KgMw8VchdIork7A=;
-        b=EnV/axKj6VN3b9oEKk50eyG5ILm0c8Rlr6okYx0UglOSle2KwPXhwUFOPsSa2TyNNz
-         mnTG8QJE9LAbEPla6EqD5tsgq3SVIkzVDMPrlW+v6BnXMsVghttsoRSZJVbeS7Oy2SYp
-         XxutAS2uGY1XhHNALo/IrcmZ/zNdYdOen6vLJQCbUev/XQ5LcccYyBJLFgR06/HsJfu8
-         ErgH9i8AOhnHdGDW0Lo15HkBM+rh5cg+7yIJ6PIFGX+IMtM/SUUmKflp5iwoH9yNWzxU
-         YpUHGgMAWOOdtICMAKR0iBDzyw+g/TiodBlk+rF3ev6A01HTF/6Gvw490Jb+GFYLWfG6
-         TDbw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=EjcXvUgbV0BizKDV5ZMAaJIOCl44q9DK9phUniCJ9WA=;
+        b=Z5oC8Q4vDMBhEWSeQHy+BSVKYHI7MQ69iAAp9fQTqZMqRBt2L8hODjEtRWS53kK3sC
+         ayiAQSjdm1/wdhzIX/U8QAspFT3o9f4mleLRTJABYMDHGtku1FxrWhXaAp6HR74ADtgb
+         KHods7pStS1QO5zgpbzXeIR+XuXJ2tUk2lsiWsgxqTrBTTChVrFoJtkD6I+3xzKR2BRN
+         +YXU800PEL77ekt+GrhBd8ZeSeWHm47ueAy9DIYvh7OvksbFstFcPsKth0ngsWaC0ksz
+         sc1IYsA5dMzwCC4Us7vkMOjzMZ0Ud14JaVZTscsYFwQpYh3VNtx7QUFi+p8QX8qQgcdC
+         M3nQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=N7rruoIsMJ3RkeCWCy171/3t1oq0KgMw8VchdIork7A=;
-        b=IgW8y5HDGC8mUdi5QmjgaVw06xKxUemVL/aJYjStMnHQNv/eNh+HKIaGbtL28ZkRVv
-         G21VNQcUbmWBkmbNIyHYYMWG/UXN6ylaom1gyvwIRNtshF7zZdIRobzNNPRZfXD/eXAG
-         vB+GnI8qYuMqcnVTRxmyvnMvH0pQDEC6cmCYjLiwyHbuPYKRJq2RohYg4vy+cGCf4bJL
-         jnOjAtrcD9Qfc38rjHSqgMl72fDuebyRwiM02evqndZ5EnOkSiuCZ+6k6XjAtU4urHAr
-         aEbpVun+K0XTgT+tttQ9ThlbTk0uqc0niX5aRUPvkYpq3CHN8qwA5IfUJzhVo7wFnSET
-         tidw==
-X-Gm-Message-State: AOAM531zF1uBO5IPccfn9ypS0vryX9SJxTiKinM3NAX0vxIN6nFp+XZH
-        aVMWmywjUBp4/L8N+MH+B+Jmig==
-X-Google-Smtp-Source: ABdhPJxZHfPQbqgUOWITj1lZaV6sQW6adOheR+e3UEyTwf4fUO4vsScxcoVC2XQnP9V1goOSaJ8gNA==
-X-Received: by 2002:a05:600c:1d9b:b0:39c:7e00:6b7c with SMTP id p27-20020a05600c1d9b00b0039c7e006b7cmr14109866wms.50.1655122081015;
-        Mon, 13 Jun 2022 05:08:01 -0700 (PDT)
-Received: from [192.168.178.21] ([51.155.200.13])
-        by smtp.gmail.com with ESMTPSA id f14-20020a5d58ee000000b0020fc6590a12sm8492187wrd.41.2022.06.13.05.07.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 05:08:00 -0700 (PDT)
-Message-ID: <a0ebf40e-6c21-435e-0d87-bca7a2113241@isovalent.com>
-Date:   Mon, 13 Jun 2022 13:07:59 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH bpf-next v9 09/10] bpftool: implement cgroup tree for
- BPF_LSM_CGROUP
-Content-Language: en-GB
-To:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
-References: <20220610165803.2860154-1-sdf@google.com>
- <20220610165803.2860154-10-sdf@google.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-In-Reply-To: <20220610165803.2860154-10-sdf@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=EjcXvUgbV0BizKDV5ZMAaJIOCl44q9DK9phUniCJ9WA=;
+        b=ZOqDGaSQS3P6jdUdxFhwPjOewiD7rBP4rR6Vri+icjdclKP0BgzsOQRWE9qbov89E3
+         YR1GOxQeLw3XkEfeNE9rl8JGnIYOkQ3imtvfNhs7IQJNLQQPan/VYgYr+wq0qqe/zrmF
+         hJLNSYzoyTv6qq2nD55yiVmXtrxe6Q6fkbVrMSltnj9XaozmxE04FsKdcBss2+Yda9v+
+         FSYzKDvH3gXCV91OE/f6pBkhRH8VIhVA6bJiR6cCUKjpK5KUR023WEw8N32rc5+5QfAy
+         SLkP7Rca7cVpXj45ORFoN0NkurMKuH+0sLU2rFrY1Ta+HS2keOBT2WP0cAFXfKIaowQe
+         dqiA==
+X-Gm-Message-State: AOAM531p5qFjRUb5NbDf041v7513JmmI5uTmTtZMfQPoQOs0r0yBWfTC
+        47W+G9xNsi0xQrFkeRt6Bag=
+X-Google-Smtp-Source: ABdhPJzkW71et/oNTf9zQrLlteUGEe7q964KCfykwMojUNjG/zlIoi1TNyv3IJfHsijBCiVrOlzrbQ==
+X-Received: by 2002:a05:600c:511e:b0:397:60e4:8ceb with SMTP id o30-20020a05600c511e00b0039760e48cebmr14650103wms.204.1655122718827;
+        Mon, 13 Jun 2022 05:18:38 -0700 (PDT)
+Received: from felia.fritz.box (200116b8260df50011e978c0f780de03.dip.versatel-1u1.de. [2001:16b8:260d:f500:11e9:78c0:f780:de03])
+        by smtp.gmail.com with ESMTPSA id h9-20020a05600c350900b0039c4d022a44sm9833413wmq.1.2022.06.13.05.18.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 05:18:38 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] MAINTAINERS: add include/dt-bindings/net to NETWORKING DRIVERS
+Date:   Mon, 13 Jun 2022 14:18:26 +0200
+Message-Id: <20220613121826.11484-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2022-06-10 09:58 UTC-0700 ~ Stanislav Fomichev <sdf@google.com>
-> $ bpftool --nomount prog loadall $KDIR/tools/testing/selftests/bpf/lsm_cgroup.o /sys/fs/bpf/x
-> $ bpftool cgroup attach /sys/fs/cgroup lsm_cgroup pinned /sys/fs/bpf/x/socket_alloc
-> $ bpftool cgroup attach /sys/fs/cgroup lsm_cgroup pinned /sys/fs/bpf/x/socket_bind
-> $ bpftool cgroup attach /sys/fs/cgroup lsm_cgroup pinned /sys/fs/bpf/x/socket_clone
-> $ bpftool cgroup attach /sys/fs/cgroup lsm_cgroup pinned /sys/fs/bpf/x/socket_post_create
-> $ bpftool cgroup tree
-> CgroupPath
-> ID       AttachType      AttachFlags     Name
-> /sys/fs/cgroup
-> 6        lsm_cgroup                      socket_post_create bpf_lsm_socket_post_create
-> 8        lsm_cgroup                      socket_bind     bpf_lsm_socket_bind
-> 10       lsm_cgroup                      socket_alloc    bpf_lsm_sk_alloc_security
-> 11       lsm_cgroup                      socket_clone    bpf_lsm_inet_csk_clone
-> 
-> $ bpftool cgroup detach /sys/fs/cgroup lsm_cgroup pinned /sys/fs/bpf/x/socket_post_create
-> $ bpftool cgroup tree
-> CgroupPath
-> ID       AttachType      AttachFlags     Name
-> /sys/fs/cgroup
-> 8        lsm_cgroup                      socket_bind     bpf_lsm_socket_bind
-> 10       lsm_cgroup                      socket_alloc    bpf_lsm_sk_alloc_security
-> 11       lsm_cgroup                      socket_clone    bpf_lsm_inet_csk_clone
-> 
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+Maintainers of the directory Documentation/devicetree/bindings/net
+are also the maintainers of the corresponding directory
+include/dt-bindings/net.
 
-The changes for bpftool look good to me, thanks!
-Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+Add the file entry for include/dt-bindings/net to the appropriate
+section in MAINTAINERS.
 
-> ---
->  tools/bpf/bpftool/cgroup.c | 80 +++++++++++++++++++++++++++-----------
->  1 file changed, 58 insertions(+), 22 deletions(-)
-> 
-> diff --git a/tools/bpf/bpftool/cgroup.c b/tools/bpf/bpftool/cgroup.c
-> index 42421fe47a58..6e55f583a62f 100644
-> --- a/tools/bpf/bpftool/cgroup.c
-> +++ b/tools/bpf/bpftool/cgroup.c
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+David, Eric, Jakub, Paolo, please pick this MAINTAINERS addition to your section.
 
-> @@ -542,5 +577,6 @@ static const struct cmd cmds[] = {
->  
->  int do_cgroup(int argc, char **argv)
->  {
-> +	btf_vmlinux = libbpf_find_kernel_btf();
->  	return cmd_select(cmds, argc, argv, do_help);
->  }
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-This is not required for all "bpftool cgroup" operations (attach/detach
-don't need it I think), but should be inexpensive, right?
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 6bf0c0ff935f..42fe1352137e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -13868,6 +13868,7 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
+ F:	Documentation/devicetree/bindings/net/
+ F:	drivers/connector/
+ F:	drivers/net/
++F:	include/dt-bindings/net/
+ F:	include/linux/etherdevice.h
+ F:	include/linux/fcdevice.h
+ F:	include/linux/fddidevice.h
+-- 
+2.17.1
 
-Quentin
