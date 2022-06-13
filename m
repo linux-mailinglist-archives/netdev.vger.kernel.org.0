@@ -2,288 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5577254826D
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 10:56:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F06B548209
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 10:55:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240356AbiFMIyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 04:54:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48342 "EHLO
+        id S240400AbiFMIye (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 04:54:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240716AbiFMIxs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 04:53:48 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3305FF7;
-        Mon, 13 Jun 2022 01:53:47 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 229AE21ABC;
-        Mon, 13 Jun 2022 08:53:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1655110426; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        with ESMTP id S233424AbiFMIyd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 04:54:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A11CB5FF7
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 01:54:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655110471;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+b4LT3xPTRW/dQ/mepnuYj9rWjiXM198baJsJGnsgOM=;
-        b=Pr8t0e6gDUCHZT61ZzMzfLGEmfZEVNv75Jwznn3nfx5sGzrE5YlDyVrqMTqymogDf96Ej4
-        09e7vdpknuZgxsqO4aifChvvDSDdaivsiIh7GRuTYzS3rq7TB4hxQpNUUpiF6OoWoNzdou
-        wVX/v9RHweIqoC4Tf7/lS7dEkoOWDts=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1655110426;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+b4LT3xPTRW/dQ/mepnuYj9rWjiXM198baJsJGnsgOM=;
-        b=qDM3E2M2KMhXDlcZ3whqqeNinFtpdP5WkWoD8Nd+Klu49E/yD7MrWa8u54+l4xgm8hkhTk
-        AtVCto9/lL6TepCg==
-Received: from [10.168.4.8] (unknown [10.168.4.8])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 0425C2C141;
-        Mon, 13 Jun 2022 08:53:44 +0000 (UTC)
-Date:   Mon, 13 Jun 2022 10:53:44 +0200 (CEST)
-From:   Richard Biener <rguenther@suse.de>
-To:     =?ISO-8859-2?Q?Mateusz_Jo=F1czyk?= <mat.jonczyk@o2.pl>
-cc:     Jason Gunthorpe <jgg@ziepe.ca>, netdev@vger.kernel.org,
+        bh=4KjgQ8HGSq2J7WMLesh9KTKYS17SXSbspP3uqq4OPEY=;
+        b=FplIrzeUgx+JLlqGubSL0uimS0Q2/Ck7UozME/qb0CIAkAfBMXHbFS3h/JlWYzWcV1ElQr
+        rCPZSwiJrpPvC0q2hQG0aO00l/r32bhS28A7cULL2dSinvho8a5m6bizUUp9RxpgPe+Z0U
+        WOLBLHMy5gQBizKmybWh+QSQspT4jsY=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-204-QG4piJB0Py-saeK6LN8NeQ-1; Mon, 13 Jun 2022 04:54:30 -0400
+X-MC-Unique: QG4piJB0Py-saeK6LN8NeQ-1
+Received: by mail-qv1-f72.google.com with SMTP id kd24-20020a056214401800b0046d7fd4a421so3431225qvb.20
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 01:54:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=4KjgQ8HGSq2J7WMLesh9KTKYS17SXSbspP3uqq4OPEY=;
+        b=3M/vTaAdvXB0rTHIoPtdHLk76Snn7BC6mgudXSWJ2yOoV6AtF/wBdjsWgO+DsKRWFc
+         Dyis6MzytS7J2iJm6OAyPQayIRnfy0ApE8NKiel4UTRoDXqUQlneX/yMlHqEmmAaQCyv
+         Z4MhRJjPG5uaxe8Hhokn1bWszzlxnuWJmRDpVurkQocShekUuN3pVA9VCuFpr+IbrsLC
+         gKJFI667BBSS9yeMJUL9DJrenmxEn1CY62cu8iE0YM3F6DuKj5p0gXcLn0P0F6Fk6mp4
+         rnoo6Nd7DAltmdz7+k6sIuJKHMVDbYSPE/KfBr0d4yA2M1n6w/35j3/Nj/SIazNzjlPu
+         tRRg==
+X-Gm-Message-State: AOAM531aG3EI0KtsucHWg1bO+schBIMay1GdEkN2JnFzF+60To00p05j
+        zsWMTsL2/OExzJN20Nh9QFHeuDlLuEQFidIOzmDW4NOUX6FUh97/CMnnW353geqWu488KfB+RDX
+        JKIYzCRqYP1gb8aJL
+X-Received: by 2002:a37:a781:0:b0:6a6:9b4c:fc8d with SMTP id q123-20020a37a781000000b006a69b4cfc8dmr34331663qke.657.1655110470067;
+        Mon, 13 Jun 2022 01:54:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxLKAhytZFfLQQeuW9E/Pm2tvxqTqKSiAxOefCJ0tsCfeagh1tGD4fU7pLQNZ/nHVdj1LceZg==
+X-Received: by 2002:a37:a781:0:b0:6a6:9b4c:fc8d with SMTP id q123-20020a37a781000000b006a69b4cfc8dmr34331656qke.657.1655110469837;
+        Mon, 13 Jun 2022 01:54:29 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-40.retail.telecomitalia.it. [79.46.200.40])
+        by smtp.gmail.com with ESMTPSA id i198-20020a379fcf000000b006a73aefce28sm5814643qke.30.2022.06.13.01.54.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 01:54:29 -0700 (PDT)
+Date:   Mon, 13 Jun 2022 10:54:20 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        linux-rdma@vger.kernel.org, gcc@gcc.gnu.org
-Subject: Re: Linux kernel: "mm: uninline copy_overflow()" breaks i386 build
- in Mellanox MLX4
-In-Reply-To: <9cec2686-c2dc-2750-7e07-42e450ab6081@o2.pl>
-Message-ID: <158898q2-nn8q-q31r-412s-no7475r53qp7@fhfr.qr>
-References: <dbd203b1-3988-4c9c-909c-2d1f7f173a0d@o2.pl> <20220425231305.GY64706@ziepe.ca> <9cec2686-c2dc-2750-7e07-42e450ab6081@o2.pl>
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        Krasnov Arseniy <oxffffaa@gmail.com>
+Subject: Re: [RFC PATCH v2 0/8] virtio/vsock: experimental zerocopy receive
+Message-ID: <20220613085420.e4limzn3dneuhu6y@sgarzare-redhat>
+References: <e37fdf9b-be80-35e1-ae7b-c9dfeae3e3db@sberdevices.ru>
+ <20220609085428.idi4qzydhdpzszzw@sgarzare-redhat>
+ <1c58ec1f-f991-4527-726a-9f45c2ff5684@sberdevices.ru>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="-1609908220-854494629-1655110426=:3672"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1c58ec1f-f991-4527-726a-9f45c2ff5684@sberdevices.ru>
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Thu, Jun 09, 2022 at 12:33:32PM +0000, Arseniy Krasnov wrote:
+>On 09.06.2022 11:54, Stefano Garzarella wrote:
+>> Hi Arseniy,
+>> I left some comments in the patches, and I'm adding something also here:
+>Thanks for comments
+>>
+>> On Fri, Jun 03, 2022 at 05:27:56AM +0000, Arseniy Krasnov wrote:
+>>> ���������������������������� INTRODUCTION
+>>>
+>>> ����Hello, this is experimental implementation of virtio vsock zerocopy
+>>> receive. It was inspired by TCP zerocopy receive by Eric Dumazet. This API uses
+>>> same idea: call 'mmap()' on socket's descriptor, then every 'getsockopt()' will
+>>> fill provided vma area with pages of virtio RX buffers. After received data was
+>>> processed by user, pages must be freed by 'madvise()'� call with MADV_DONTNEED
+>>> flag set(if user won't call 'madvise()', next 'getsockopt()' will fail).
+>>
+>> If it is not too time-consuming, can we have a table/list to compare this and the TCP zerocopy?
+>You mean compare API with more details?
 
----1609908220-854494629-1655110426=:3672
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Yes, maybe a comparison from the user's point of view to do zero-copy 
+with TCP and VSOCK.
 
-On Thu, 9 Jun 2022, Mateusz Jończyk wrote:
+>>
+>>>
+>>> ������������������������������� DETAILS
+>>>
+>>> ����Here is how mapping with mapped pages looks exactly: first page mapping
+>>> contains array of trimmed virtio vsock packet headers (in contains only length
+>>> of data on the corresponding page and 'flags' field):
+>>>
+>>> ����struct virtio_vsock_usr_hdr {
+>>> ������� uint32_t length;
+>>> ������� uint32_t flags;
+>>> ������� uint32_t copy_len;
+>>> ����};
+>>>
+>>> Field� 'length' allows user to know exact size of payload within each sequence
+>>> of pages and 'flags' allows user to handle SOCK_SEQPACKET flags(such as message
+>>> bounds or record bounds). Field 'copy_len' is described below in 'v1->v2' part.
+>>> All other pages are data pages from RX queue.
+>>>
+>>> ����������� Page 0����� Page 1����� Page N
+>>>
+>>> ����[ hdr1 .. hdrN ][ data ] .. [ data ]
+>>> ��������� |������� |������ ^���������� ^
+>>> ��������� |������� |������ |���������� |
+>>> ��������� |������� *-------------------*
+>>> ��������� |��������������� |
+>>> ��������� |��������������� |
+>>> ��������� *----------------*
+>>>
+>>> ����Of course, single header could represent array of pages (when packet's
+>>> buffer is bigger than one page).So here is example of detailed mapping layout
+>>> for some set of packages. Lets consider that we have the following sequence� of
+>>> packages: 56 bytes, 4096 bytes and 8200 bytes. All pages: 0,1,2,3,4 and 5 will
+>>> be inserted to user's vma(vma is large enough).
+>>
+>> In order to have a "userspace polling-friendly approach" and reduce number of syscall, can we allow for example the userspace to mmap at least the first header before packets arrive.
+>> Then the userspace can poll a flag or other fields in the header to understand that there are new packets.
+>You mean to avoid 'poll()' syscall, user will spin on some flag, provided by kernel on some mapped page? I think yes. This is ok. Also i think, that i can avoid 'madvise' call
+>to clear memory mapping before each 'getsockopt()' - let 'getsockopt()' do 'madvise()' job by removing pages from previous data. In this case only one system call is needed - 'getsockopt()'.
 
-> W dniu 26.04.2022 o 01:13, Jason Gunthorpe pisze:
-> > On Thu, Apr 21, 2022 at 10:47:01PM +0200, Mateusz Jończyk wrote:
-> >> Hello,
-> >>
-> >> commit ad7489d5262d ("mm: uninline copy_overflow()")
-> >>
-> >> breaks for me a build for i386 in the Mellanox MLX4 driver:
-> >>
-> >>         In file included from ./arch/x86/include/asm/preempt.h:7,
-> >>                          from ./include/linux/preempt.h:78,
-> >>                          from ./include/linux/percpu.h:6,
-> >>                          from ./include/linux/context_tracking_state.h:5,
-> >>                          from ./include/linux/hardirq.h:5,
-> >>                          from drivers/net/ethernet/mellanox/mlx4/cq.c:37:
-> >>         In function ‘check_copy_size’,
-> >>             inlined from ‘copy_to_user’ at ./include/linux/uaccess.h:159:6,
-> >>             inlined from ‘mlx4_init_user_cqes’ at drivers/net/ethernet/mellanox/mlx4/cq.c:317:9,
-> >>             inlined from ‘mlx4_cq_alloc’ at drivers/net/ethernet/mellanox/mlx4/cq.c:394:10:
-> >>         ./include/linux/thread_info.h:228:4: error: call to ‘__bad_copy_from’ declared with attribute error: copy source size is too small
-> >>           228 |    __bad_copy_from();
-> >>               |    ^~~~~~~~~~~~~~~~~
-> >>         make[5]: *** [scripts/Makefile.build:288: drivers/net/ethernet/mellanox/mlx4/cq.o] Błąd 1
-> >>         make[4]: *** [scripts/Makefile.build:550: drivers/net/ethernet/mellanox/mlx4] Błąd 2
-> >>         make[3]: *** [scripts/Makefile.build:550: drivers/net/ethernet/mellanox] Błąd 2
-> >>         make[2]: *** [scripts/Makefile.build:550: drivers/net/ethernet] Błąd 2
-> >>         make[1]: *** [scripts/Makefile.build:550: drivers/net] Błąd 2
-> >>
-> >> Reverting this commit fixes the build. Disabling Mellanox Ethernet drivers
-> >> in Kconfig (tested only with also disabling of all Infiniband support) also fixes the build.
-> >>
-> >> It appears that uninlining of copy_overflow() causes GCC to analyze the code deeper.
-> > This looks like a compiler bug to me, array_size(entries, cqe_size)
-> > cannot be known at compile time, so the __builtin_constant_p(bytes)
-> > should be compile time false meaning the other two bad branches should
-> > have been eliminated.
-> >
-> > Jason
-> 
-> Hello,
-> 
-> This problem also exists in Linux v5.19-rc1. Compiling with GCC 8 and GCC 9 fails,
-> but with GCC10 it compiles successfully.
-> 
-> I have extracted a standalone code snippet that triggers this bug, attaching
-> it at the bottom of this e-mail.
-> 
-> This indeed looks like a compiler bug for me, as cqe_size cannot be known at compile
-> time. What is interesting, replacing
-> 
->         err = copy_to_user2((void  *)buf, init_ents,
->                                 size_mul2(4096, cqe_size)) ? -14 : 0;
-> 
-> with
-> 
->         err = copy_to_user2((void  *)buf, init_ents,
->                                 4096 * cqe_size) ? -14 : 0;
-> 
-> makes the code compile successfully.
-> 
-> I have bisected GCC to find which commit in GCC fixes this problem and
-> obtained this:
-> 
->         46dfa8ad6c18feb45d35734eae38798edb7c38cd is the first fixed commit
->         commit 46dfa8ad6c18feb45d35734eae38798edb7c38cd
->         Author: Richard Biener <rguenther@suse.de>
->         Date:   Wed Sep 11 11:16:54 2019 +0000
-> 
->             re PR tree-optimization/90387 (__builtin_constant_p and -Warray-bounds warnings)
-> 
->             2019-09-11  Richard Biener  <rguenther@suse.de>
-> 
->                     PR tree-optimization/90387
->                     * vr-values.c (vr_values::extract_range_basic): After inlining
->                     simplify non-constant __builtin_constant_p to false.
-> 
->                     * gcc.dg/Warray-bounds-44.c: New testcase.
-> 
->             From-SVN: r275639
-> 
->          gcc/ChangeLog                           |  6 ++++++
->          gcc/testsuite/ChangeLog                 |  5 +++++
->          gcc/testsuite/gcc.dg/Warray-bounds-44.c | 23 +++++++++++++++++++++++
->          gcc/vr-values.c                         | 11 ++---------
->          4 files changed, 36 insertions(+), 9 deletions(-)
->          create mode 100644 gcc/testsuite/gcc.dg/Warray-bounds-44.c
-> 
-> Applying this patch on top of releases/gcc-9.5.0 fixes the build (of the attached snippet and of
-> drivers/net/ethernet/mellanox/mlx4/cq.c ).
-> 
-> Ccing Mr Richard Biener, as he is the author of this patch.
+Yes, that's right. I mean to support both, poll() for interrupt-based 
+applications and the ability to actively poll a variable in the shared 
+memory for applications that want to minimize latency.
 
-Note the patch simply avoids some instances of path isolation with
-__builtin_constant_p by committing to constant/non-constant earlier.
+Thanks,
+Stefano
 
-Think of
-
- for (i = 0; i < n; ++i)
-   if (__builtin_constant_p (i)) foo (); else bar ();
-
-and GCC peeling the first iteration - then to GCC i is constant zero
-in this first iteration but the remaining iterations will have i
-non-constant.
-
-The semantics of __builtin_constant_p are not strongly enough
-defined to say whether that's "correct" or not given the
-documentation suggests it is evaluated after optimization
-(inlining given as example).
-
-Richard.
-
-> I'm on Ubuntu 20.04, which ships with gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.1).
-> It was with this compiler version that I have found the problem.
-> 
-> It looks unlikely that GCC in Ubuntu 20.04 will be updated meaningfully.
-> Would a following workaround for Linux be acceptable?
-> 
-> ====================
-> 
-> diff --git a/drivers/net/ethernet/mellanox/mlx4/cq.c b/drivers/net/ethernet/mellanox/mlx4/cq.c
-> index 4d4f9cf9facb..a40701859721 100644
-> --- a/drivers/net/ethernet/mellanox/mlx4/cq.c
-> +++ b/drivers/net/ethernet/mellanox/mlx4/cq.c
-> @@ -314,8 +314,11 @@ static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
->                         buf += PAGE_SIZE;
->                 }
->         } else {
-> +                /* Don't use array_size() as this triggers a bug in GCC < 10
-> +                 * for i386. (entries * cqe_size) is guaranteed to be small.
-> +                 */
->                 err = copy_to_user((void __user *)buf, init_ents,
-> -                                  array_size(entries, cqe_size)) ?
-> +                                  entries * cqe_size) ?
->                         -EFAULT : 0;
->         }
-> 
-> ====================
-> 
-> Greetings,
-> 
-> Mateusz Jończyk
-> 
-> --------------------------------------------------
-> 
-> /* Compile with
->  * gcc -Wall -std=gnu11 -m32 -march=i686 -O2 -c -o bugtrigger.o bugtrigger.c
->  */
-> 
-> #include <stddef.h>
-> #include <stdbool.h>
-> #include <stdint.h>
-> 
-> void *__kmalloc2(size_t size) __attribute__((alloc_size(1)));
-> extern unsigned long
-> _copy_to_user(void *, const void *, unsigned long);
-> 
-> extern void __attribute__((__error__("copy source size is too small")))
-> __bad_copy_from2(void);
-> extern void __attribute__((__error__("copy destination size is too small")))
-> __bad_copy_to2(void);
-> 
-> void copy_overflow2(int size, unsigned long count);
-> 
-> static bool
-> check_copy_size2(const void *addr, size_t bytes, bool is_source)
-> {
->     int sz = __builtin_object_size(addr, 0);
->     if (sz >= 0 && sz < bytes) {
->         if (!__builtin_constant_p(bytes))
->             copy_overflow2(sz, bytes);
->         else if (is_source)
->             __bad_copy_from2();
->         else
->             __bad_copy_to2();
->         return false;
->     }
->     return true;
-> }
-> 
-> static unsigned long
-> copy_to_user2(void *to, const void *from, unsigned long n)
-> {
->     if (check_copy_size2(from, n, true))
->         n = _copy_to_user(to, from, n);
->     return n;
-> }
-> 
-> static inline size_t size_mul2(size_t factor1, size_t factor2)
-> {
->     size_t bytes;
->     if (__builtin_mul_overflow(factor1, factor2, &bytes))
->         return SIZE_MAX;
-> 
->     return bytes;
-> }
-> 
-> int foobar(void *buf, int cqe_size)
-> {
->         int err;
->         void *init_ents = __kmalloc2(4096);
->         err = copy_to_user2((void  *)buf, init_ents,
->                                 size_mul2(4096, cqe_size)) ? -14 : 0;
-> 
->     return err;
-> }
-> 
-> 
-
--- 
-Richard Biener <rguenther@suse.de>
-SUSE Software Solutions Germany GmbH, Frankenstraße 146, 90461 Nuernberg,
-Germany; GF: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman;
-HRB 36809 (AG Nuernberg)
----1609908220-854494629-1655110426=:3672--
