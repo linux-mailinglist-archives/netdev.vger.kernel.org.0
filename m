@@ -2,124 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D7E654A1AD
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 23:43:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B39F54A1EE
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 00:11:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234886AbiFMVnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 17:43:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49844 "EHLO
+        id S234158AbiFMWLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 18:11:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352282AbiFMVnf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 17:43:35 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C541D63A0
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 14:43:33 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id hf12-20020a17090aff8c00b001e2c0a2584cso2001pjb.1
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 14:43:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=+dbqcGyic4c3zYFWxW8WIDheVsDHS+XGvESBEzG7d5k=;
-        b=RfOQUrYJ7JQYov7qHkHG0D3CZvnSFd0EoNZxA2h9so3t5ghC6pS+NNf1FUtITajexh
-         7gUCIGccN3LwOTdXDbBwTD7+XrbjD2eCTvMc+5aogoJg1NLhjoh/3JkVtiEXluDPD8/L
-         62qDQT3rOniALV5GkhgmyKlJ0ekgyrY+4qVRR8hFt1yxoFe8SFc7VrHnqhP4/alrQ73A
-         c9U55RUCY452wxUYwC2/CIcZF5HS7c00CsCKbWjA9q8EMErbMw8OpDaDmyFENmglX0pi
-         VcnxlZOluUestMBBMo1Fj+JfcG64pqGogk3OFtPZrn7i+1602wbbcfm481/yPdWJKvJk
-         6tbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=+dbqcGyic4c3zYFWxW8WIDheVsDHS+XGvESBEzG7d5k=;
-        b=HaQoTU267flE+oknx4J+pImw4YpsgeoJxJTSf+re9c1UgQTt47PjL4fk3ZwWjaxgLm
-         FLiULnEROIDIbyzoednu6i7lMUUmt+WPfScAy2BXohO7nAkLdTrnJftuIhHTG7K/H3WV
-         lnNL1g6Qi7+aG01SUDSInyCje2SH38zeVud9XOwRqU8E2D1f0tpQ8ahPZ5nNUBwIaHoy
-         1yVOBXFT6jlciG6OwJ53w/LnUICN3J5wMOxp8VdmRxs8RTLuK/w4h+DHfwB6SkUprjtL
-         f+u2hwN49BulSJ9yi74ASBBxjtmfR4znoIZ+70/LpvusIGMYgLy5/6sQQhKQDKkMLSo/
-         q34A==
-X-Gm-Message-State: AOAM5316ZsAflFjhjeQXDOyVWIqKViFQpgVs1TnXoRXJk99Wj7pXXTLF
-        qBb0C0mflhmG1JZWsZRuwjVmcwNn/TYg
-X-Google-Smtp-Source: ABdhPJw9jT9qWcmLHduAjFOWxEbRFk+OM7kyD/MBa5/84G/LeQ3nXO0nTD06s+nhmadhnxgd80/26tvZV5NP
-X-Received: from jiangzp-glinux-dev.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:4c52])
- (user=jiangzp job=sendgmr) by 2002:a05:6a00:b51:b0:51c:1219:569d with SMTP id
- p17-20020a056a000b5100b0051c1219569dmr1278341pfo.2.1655156613295; Mon, 13 Jun
- 2022 14:43:33 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 14:43:27 -0700
-In-Reply-To: <20220613214327.15866-1-jiangzp@google.com>
-Message-Id: <20220613144322.kernel.v1.1.Ia621daca5b03278ee09314c59659b64c901408cf@changeid>
-Mime-Version: 1.0
-References: <20220613214327.15866-1-jiangzp@google.com>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-Subject: [kernel PATCH v1 1/1] Bluetooth: mgmt: Fix refresh cached connection info
-From:   Zhengping Jiang <jiangzp@google.com>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        Zhengping Jiang <jiangzp@google.com>,
-        Brian Gix <brian.gix@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232054AbiFMWLG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 18:11:06 -0400
+X-Greylist: delayed 485 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 13 Jun 2022 15:11:03 PDT
+Received: from hannover.ccc.de (ep.leitstelle511.net [80.147.51.183])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6548511C34
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 15:11:03 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 00:02:51 +0200
+From:   Ingo Saitz <ingo@hannover.ccc.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        Joanne Koong <joannelkoong@gmail.com>
+Subject: bhash2 WARN_ON call in net/ipv4/inet_connection_sock.c:525
+ inet_csk_get_port
+Message-ID: <Yqe0CwZhha8o5t4G@pinguin.zoo>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="SmY/0OTJntqgy1vw"
+Content-Disposition: inline
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,KHOP_HELO_FCRDNS,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set the connection data before calling get_conn_info_sync, so it can be
-verified the connection is still connected, before refreshing cached
-values.
 
-Fixes: 47db6b42991e6 ("Bluetooth: hci_sync: Convert MGMT_OP_GET_CONN_INFO")
-Signed-off-by: Zhengping Jiang <jiangzp@google.com>
----
+--SmY/0OTJntqgy1vw
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Changes in v1:
-- Set connection data before calling hci_cmd_sync_queue
+On Linux v5.19-rc2 I noticed a WARN_ON() message during the start of the
+rsync daemon. The bug was introduced by commit
+d5a42de8bdbe25081f07b801d8b35f4d75a791f4 "net: Add a second bind table
+hashed by port and address", reverting it caused the warning to go away.
+The warning message from the dmesg is attached
 
- net/bluetooth/mgmt.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+I added a reproduce.c which reproduces the same warning everytime it is
+called, even as user.
 
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 74937a8346488..cfbea6fa04335 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -6828,11 +6828,14 @@ static int get_conn_info(struct sock *sk, struct hci_dev *hdev, void *data,
- 
- 		cmd = mgmt_pending_new(sk, MGMT_OP_GET_CONN_INFO, hdev, data,
- 				       len);
--		if (!cmd)
-+		if (!cmd) {
- 			err = -ENOMEM;
--		else
-+		} else {
-+			hci_conn_hold(conn);
-+			cmd->user_data = hci_conn_get(conn);
- 			err = hci_cmd_sync_queue(hdev, get_conn_info_sync,
- 						 cmd, get_conn_info_complete);
-+		}
- 
- 		if (err < 0) {
- 			mgmt_cmd_complete(sk, hdev->id, MGMT_OP_GET_CONN_INFO,
-@@ -6844,9 +6847,6 @@ static int get_conn_info(struct sock *sk, struct hci_dev *hdev, void *data,
- 			goto unlock;
- 		}
- 
--		hci_conn_hold(conn);
--		cmd->user_data = hci_conn_get(conn);
--
- 		conn->conn_info_timestamp = jiffies;
- 	} else {
- 		/* Cache is valid, just reply with values cached in hci_conn */
+I also reproduced the same problem on the current netdev git, see 2nd
+attached dmesg.
+git git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
+commit 619c010a65391d06bc96e79fa0e7725790e5d1a9
+
+    Ingo
 -- 
-2.36.1.476.g0c4daa206d-goog
+Kennedy's Lemma:
+    If you can parse Perl, you can solve the Halting Problem.
 
+http://www.perlmonks.org/?node_id=663393
+
+--SmY/0OTJntqgy1vw
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename="WARN-5.19-rc2.txt"
+
+[   37.880931] ------------[ cut here ]------------
+[   37.880935] WARNING: CPU: 0 PID: 2673 at net/ipv4/inet_connection_sock.c:525 inet_csk_get_port+0x5d7/0x7c0
+[   37.882679] Modules linked in: xt_LOG nf_log_syslog xt_pkttype xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 nft_limit xt_limit ip6_tables ip6t_REJECT nf_reject_ipv6 xt
+_tcpudp nft_compat nf_tables x_tables nfnetlink tcp_bbr sch_fq isofs drivetemp nct6775 nct6775_core hwmon_vid wmi tun ipv6 loop parport_pc ppdev lp parport dm_crypt cbc encrypted_ke
+ys snd_hda_codec_hdmi i915 coretemp hwmon snd_hda_codec_realtek intel_rapl_msr intel_rapl_common i2c_algo_bit snd_hda_codec_generic intel_gtt x86_pkg_temp_thermal drm_buddy drm_disp
+lay_helper intel_powerclamp ledtrig_audio drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops kvm_intel mei_hdcp ttm kvm r8169 snd_hda_intel drm realtek mdio_devres snd_int
+el_dspcfg libphy snd_hda_codec irqbypass drm_panel_orientation_quirks i2c_i801 snd_hwdep evdev input_leds lpc_ich led_class i2c_smbus mei_me snd_hda_core mfd_core rtc_cmos snd_pcm m
+ei sg i2c_core snd_timer button acpi_pad pcspkr video snd soundcore raid1 dm_raid raid456 libcrc32c
+[   37.882802]  async_raid6_recov async_memcpy async_pq async_xor xor async_tx raid6_pq md_mod hid_generic usbhid hid crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel
+cryptd serio_raw xhci_pci ehci_pci xhci_hcd ehci_hcd sr_mod cdrom usbcore usb_common unix dm_mirror dm_region_hash dm_log dm_mod
+[   37.886904] CPU: 0 PID: 2673 Comm: rsync Tainted: G                T 5.19.0-rc2-pinguin20220613 #1
+[   37.888630] Hardware name: To Be Filled By O.E.M. To Be Filled By O.E.M./H97 Anniversary, BIOS P1.20 12/15/2014
+[   37.890552] RIP: 0010:inet_csk_get_port+0x5d7/0x7c0
+[   37.892498] Code: 48 8b 54 24 58 48 8b 78 28 0f b7 cd e8 02 b5 ff ff 48 85 c0 48 89 44 24 10 0f 84 36 01 00 00 41 bd 01 00 00 00 e9 ca fd ff ff <0f> 0b e9 04 fe ff ff 0f 0b e9 e9
+ fd ff ff 39 43 10 0f 85 88 fb ff
+[   37.894612] RSP: 0018:ffffb86901da7d70 EFLAGS: 00010202
+[   37.896794] RAX: ffff9873d21aa140 RBX: 0000000000000000 RCX: 0000000000000001
+[   37.899002] RDX: 000000000000000a RSI: 00000000fffffe01 RDI: ffffffff8afcbbf0
+[   37.901244] RBP: 00000000000056cc R08: 0000000000000001 R09: 0000000000000001
+[   37.903508] R10: ffff9873ca7e9180 R11: 0000000000000002 R12: 0000000000000000
+[   37.905779] R13: 0000000000000000 R14: ffff9873ca7e9180 R15: 0000000000000000
+[   37.908076] FS:  00007f08f3af1440(0000) GS:ffff9876cfe00000(0000) knlGS:0000000000000000
+[   37.910404] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   37.912753] CR2: 00007f08f35f97a0 CR3: 00000001034f6001 CR4: 00000000000706f0
+[   37.915130] Call Trace:
+[   37.917526]  <TASK>
+[   37.919680]  inet_csk_listen_start+0x7a/0x100
+[   37.921827]  inet_listen+0x70/0x100
+[   37.924000]  __sys_listen+0x52/0xc0
+[   37.925975]  __x64_sys_listen+0xb/0x40
+[   37.927932]  do_syscall_64+0x5b/0xc0
+[   37.929906]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+[   37.931731] RIP: 0033:0x7f08f3522ae7
+[   37.933541] Code: f0 ff ff 73 01 c3 48 8b 0d 86 23 0d 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 b8 32 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b
+ 0d 59 23 0d 00 f7 d8 64 89 01 48
+[   37.935320] RSP: 002b:00007ffcfb78b1b8 EFLAGS: 00000246 ORIG_RAX: 0000000000000032
+[   37.937119] RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 00007f08f3522ae7
+[   37.938799] RDX: 0000000000000004 RSI: 0000000000000005 RDI: 0000000000000004
+[   37.940461] RBP: 00000000ffffffff R08: 0000000000000007 R09: 00005565675959c0
+[   37.942024] R10: 00007ffcfb78b1f4 R11: 0000000000000246 R12: 00007ffcfb78b1f4
+[   37.943556] R13: 0000000000000000 R14: 0000000000000005 R15: 00005565675959a0
+[   37.945066]  </TASK>
+[   37.946561] ---[ end trace 0000000000000000 ]---
+
+--SmY/0OTJntqgy1vw
+Content-Type: text/x-csrc; charset=us-ascii
+Content-Disposition: attachment; filename="reproduce.c"
+
+#include <arpa/inet.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+/* changed from 873 to 8733, so it can run as user, the actual port does not
+ * matter */
+#define RSYNC_PORT (8733)
+
+int main() {
+  int so1, so2;
+  int32_t optval;
+
+  /* The following code is rewritten from a strace of rsync --daemon. */
+  so1 = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+  optval = 1;
+  setsockopt(so1, SOL_SOCKET, SO_REUSEADDR, (void *)&optval, sizeof(optval));
+
+  struct sockaddr_in sa1 = {.sin_family = AF_INET,
+                            .sin_port = htons(RSYNC_PORT),
+                            .sin_addr = inet_addr("0.0.0.0")};
+  bind(so1, (struct sockaddr *)&sa1, sizeof(sa1));
+
+  so2 = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
+
+  optval = 1;
+  setsockopt(so2, SOL_SOCKET, SO_REUSEADDR, (void *)&optval, sizeof(optval));
+
+  optval = 1;
+  setsockopt(so2, SOL_IPV6, IPV6_V6ONLY, (void *)&optval, sizeof(optval));
+
+  struct sockaddr_in6 sa2 = {.sin6_family = AF_INET6,
+                             .sin6_port = htons(RSYNC_PORT),
+                             .sin6_flowinfo = htonl(0),
+                             .sin6_scope_id = 0};
+  inet_pton(AF_INET6, "::", &sa2.sin6_addr);
+  bind(so2, (struct sockaddr *)&sa2, sizeof(sa2));
+
+  /* WARN_ON() is thrown here: */
+  listen(so1, 5);
+  /* listen(so2, 5); */
+}
+
+--SmY/0OTJntqgy1vw
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename="WARN-5.19-netdev-HEAD.txt"
+
+[   36.472185] ------------[ cut here ]------------
+[   36.472189] WARNING: CPU: 0 PID: 2696 at net/ipv4/inet_connection_sock.c:525 inet_csk_get_port+0x5d7/0x7c0
+[   36.472776] Modules linked in: xt_LOG nf_log_syslog xt_pkttype xt_conntrack nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 nft_limit xt_limit ip6_tables ip6t_REJECT nf_reject_ipv6 xt
+_tcpudp nft_compat nf_tables x_tables nfnetlink tcp_bbr sch_fq isofs drivetemp nct6775 nct6775_core hwmon_vid wmi tun ipv6 loop parport_pc ppdev lp parport dm_crypt cbc encrypted_ke
+ys snd_hda_codec_hdmi i915 snd_hda_codec_realtek i2c_algo_bit snd_hda_codec_generic intel_gtt coretemp ledtrig_audio hwmon intel_rapl_msr drm_buddy mei_hdcp drm_display_helper intel
+_rapl_common snd_hda_intel snd_intel_dspcfg x86_pkg_temp_thermal drm_kms_helper snd_hda_codec intel_powerclamp syscopyarea sysfillrect snd_hwdep sysimgblt kvm_intel fb_sys_fops ttm
+snd_hda_core snd_pcm drm r8169 snd_timer kvm drm_panel_orientation_quirks evdev realtek input_leds irqbypass snd mdio_devres led_class mei_me sg mei video libphy lpc_ich mfd_core i2
+c_i801 soundcore i2c_smbus rtc_cmos button i2c_core pcspkr acpi_pad raid1 dm_raid raid456 libcrc32c
+[   36.472826]  async_raid6_recov async_memcpy async_pq async_xor xor async_tx raid6_pq md_mod hid_generic usbhid hid crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel
+cryptd serio_raw sr_mod cdrom xhci_pci xhci_hcd ehci_pci ehci_hcd usbcore usb_common unix dm_mirror dm_region_hash dm_log dm_mod
+[   36.475539] CPU: 0 PID: 2696 Comm: rsync Tainted: G                T 5.19.0-rc1-pinguin-netdev20220613 #1
+[   36.475999] Hardware name: To Be Filled By O.E.M. To Be Filled By O.E.M./H97 Anniversary, BIOS P1.20 12/15/2014
+[   36.476466] RIP: 0010:inet_csk_get_port+0x5d7/0x7c0
+[   36.476939] Code: 48 8b 54 24 58 48 8b 78 28 0f b7 cd e8 02 b5 ff ff 48 85 c0 48 89 44 24 10 0f 84 36 01 00 00 41 bd 01 00 00 00 e9 ca fd ff ff <0f> 0b e9 04 fe ff ff 0f 0b e9 e9
+ fd ff ff 39 43 10 0f 85 88 fb ff
+[   36.477454] RSP: 0018:ffffa0bd81ddfdc0 EFLAGS: 00010283
+[   36.477982] RAX: ffff8fced2893340 RBX: 0000000000000000 RCX: 0000000000000001
+[   36.478520] RDX: 000000000000000a RSI: 00000000fffffe01 RDI: ffffffff933cc0b0
+[   36.479066] RBP: 00000000000056cc R08: 0000000000000001 R09: 0000000000000001
+[   36.479619] R10: ffff8fced29208c0 R11: 0000000000000002 R12: 0000000000000000
+[   36.480174] R13: 0000000000000000 R14: ffff8fced29208c0 R15: 0000000000000000
+[   36.480736] FS:  00007f28d78db440(0000) GS:ffff8fd1cfe00000(0000) knlGS:0000000000000000
+[   36.481303] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   36.481878] CR2: 00007f28d73f97a0 CR3: 000000010cfe0006 CR4: 00000000000706f0
+[   36.482463] Call Trace:
+[   36.483048]  <TASK>
+[   36.483631]  inet_csk_listen_start+0x7a/0x100
+[   36.484222]  inet_listen+0x70/0x100
+[   36.484816]  __sys_listen+0x52/0xc0
+[   36.485413]  __x64_sys_listen+0xb/0x40
+[   36.486012]  do_syscall_64+0x5b/0xc0
+[   36.486614]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+[   36.487222] RIP: 0033:0x7f28d7322ae7
+[   36.487832] Code: f0 ff ff 73 01 c3 48 8b 0d 86 23 0d 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 b8 32 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b
+ 0d 59 23 0d 00 f7 d8 64 89 01 48
+[   36.488475] RSP: 002b:00007ffc37bad0d8 EFLAGS: 00000246 ORIG_RAX: 0000000000000032
+[   36.489134] RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 00007f28d7322ae7
+[   36.489788] RDX: 0000000000000004 RSI: 0000000000000005 RDI: 0000000000000004
+[   36.490444] RBP: 00000000ffffffff R08: 0000000000000007 R09: 000055f337d329c0
+[   36.491104] R10: 00007ffc37bad114 R11: 0000000000000246 R12: 00007ffc37bad114
+[   36.491757] R13: 0000000000000000 R14: 0000000000000005 R15: 000055f337d329a0
+[   36.492407]  </TASK>
+[   36.493043] ---[ end trace 0000000000000000 ]---
+
+--SmY/0OTJntqgy1vw--
