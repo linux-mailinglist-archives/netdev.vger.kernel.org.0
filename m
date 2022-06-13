@@ -2,73 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B195548376
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 11:45:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DDF95483D8
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 12:15:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241045AbiFMJm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 05:42:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34772 "EHLO
+        id S239948AbiFMJrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 05:47:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240971AbiFMJmY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 05:42:24 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850FE2661;
-        Mon, 13 Jun 2022 02:42:23 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id d14so6286556eda.12;
-        Mon, 13 Jun 2022 02:42:23 -0700 (PDT)
+        with ESMTP id S239858AbiFMJrd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 05:47:33 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79AB318364;
+        Mon, 13 Jun 2022 02:47:29 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id hv24-20020a17090ae41800b001e33eebdb5dso7935437pjb.0;
+        Mon, 13 Jun 2022 02:47:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2LqYjtNa4isqkWB+lPEDKcNdn4CAaL+chKNUM4maY+k=;
-        b=XnS8r3wJAaKnAFyVSRHeszHiRS7oujbPmEUlVGTWsIw6zTh0IIjtFkASoexxmpXok+
-         L3Dc8XV8KhPQAjxWp0N/2umOyzfA2WVepb1peevus/ai3wXp98MfSqM6idWVWKOxnISZ
-         posaz3qR50twBk4uJrbuk35bfd9ew/nPkSAdUjJPqafUPXDYZJS+p1KnkAFVFLufvHcc
-         vtf77sQDVPaqBqZDXOt4fN1T0/ylMFl0WxjqbTxi8MmAFZEq2+GBSQr+F1WDNiLYDVds
-         +IhBCUtpD4abZHfx6k8m9tdccmBIC9OnCpUImi2PClKwkFQEKAanTmkNlQ2/G7Pw/4hb
-         2aTA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tMhF7UpFyMXPAr4OwfDi4X/Mo5y4My8mdBCRAqnUwMU=;
+        b=QyBkOmBNdFyl4YRcjSTNDoaa9Kdd9Oy2z9OfMbS28uuaXEQrUTMNT5LCmjR5Z3XX7n
+         MXV2NI6+DzHW+9/05omSg7+etQo8QA7IRX4K0+8UHM6tpHRxicIzY5IZxDMFijbZkf9W
+         BrkkcIBbT37V7tQMVEo3swWuh8wMNAdagEGPcQX7LfP7w2RZOeCbk4tuuzKscaSjos4Q
+         GPiJ+mhqAhMb+s3nqL/QQ+DJe4T2wNBaCosKGSerA8YJYYSdFPimA14A1Kg0qIthHEzB
+         6wRHvD8HF3RSBDGfqa90UYZI5FjTrRWO/TPEvKhsit2IQvC2n+YzN+xH3+pIrhb3CUyt
+         sN1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2LqYjtNa4isqkWB+lPEDKcNdn4CAaL+chKNUM4maY+k=;
-        b=MbsUBjtk7Xx070JJY1ddNT79otQ9b3F1zXTXxR2RGq3pKicWh2j7Pr+3evqMXrYJiw
-         gJrZhordclkKaNQUBecIiy0UPucdqSIRCTz3iieUCoZeViqq08Gv7oAcwRfps4559I6q
-         Hg4O+Tls089w5DHKIcCCu4/5oXHBwp271DoHmDySJiX1ZkmI3O8eTWCVeFGIX/2QyjJV
-         oepU2ngfco+IcwpjRu5heQ82eogXkNLE2BFWm/QVc2Y/fOA7KedIMMX9CzkDSoLTJ/N6
-         2b5bcPlrtsyRLCfZlGW0SUbI5hfW08/4sbNW1aAEliDNifF5DphWS+3f9fJp0ZA73gVB
-         Z5tQ==
-X-Gm-Message-State: AOAM532LK97Jn5Vagu6y2/KCfZIOj/1eQer0guwHOYeKJ6eGuCKfV5T1
-        FGu8Uy0Id/aHMIOnuhLw+SM=
-X-Google-Smtp-Source: ABdhPJyyzOML3rpWfzeIv72NuFkLie+UxcIx7S+c1/2MRduaLrbeZfwUzG5NjKj2eFJw7Ww9aiE1qg==
-X-Received: by 2002:a05:6402:1cb5:b0:42d:ddda:7459 with SMTP id cz21-20020a0564021cb500b0042dddda7459mr65754064edb.16.1655113341961;
-        Mon, 13 Jun 2022 02:42:21 -0700 (PDT)
-Received: from skbuf ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id ko9-20020a170907986900b006fef5088792sm3632946ejc.108.2022.06.13.02.42.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 02:42:21 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 12:42:19 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [RFC Patch net-next v2 09/15] net: dsa: microchip: update fdb
- add/del/dump in ksz_common
-Message-ID: <20220613094219.zmgbtebf32x42md6@skbuf>
-References: <20220530104257.21485-1-arun.ramadoss@microchip.com>
- <20220530104257.21485-10-arun.ramadoss@microchip.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tMhF7UpFyMXPAr4OwfDi4X/Mo5y4My8mdBCRAqnUwMU=;
+        b=P2ju/B2+fNRivXm/rl1hD1B7CdIL09Un8wLpYO/Ckp2lbtNGS/kIYduPObsm2CHTx/
+         +YtrN7HYpzzwRKfGJ1v4k4J04DuEmxiF+lN/SDFoZKmmVPdFqms5zI99EDQXcJTUsXtB
+         IRaHMh7W76tzBGX9KD7PwnlfyhNxi/TpfcUchohuzPtyP+VIB5BMQ8hoPR5V+lQrurKk
+         weMiBeR0txt9U2YvZFC0puFo30uAt95XMPL25nRm9rgxLCXepZR+83FBebH1PbBXuuWP
+         FdWYjdBi0qzFkc+hsnnDF8jOV4qNp8ir/sCwdweQGbkl4eg0Qw3H5OPZvfCSvwAMf8ZU
+         SC5Q==
+X-Gm-Message-State: AOAM533VwsAQLNV2luJN0qBd7MFdhI2Upb/22ejfbhZu4v6v5+VzmUxp
+        HYf9uDxln2arc4kMSIfT8XcTCREjaogT9Sy5emU=
+X-Google-Smtp-Source: ABdhPJxhOoHeUYbl3XkTh1JeIZv7cQH37VYq3JWfb0Ajsls1DMDxhUoRbSbphQDUwfu1e+bLB8m5RtM+lMdbiIXsm0A=
+X-Received: by 2002:a17:90b:350d:b0:1e6:7780:6c92 with SMTP id
+ ls13-20020a17090b350d00b001e677806c92mr14851809pjb.46.1655113648881; Mon, 13
+ Jun 2022 02:47:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220530104257.21485-10-arun.ramadoss@microchip.com>
+References: <20220610150923.583202-1-maciej.fijalkowski@intel.com> <20220610150923.583202-5-maciej.fijalkowski@intel.com>
+In-Reply-To: <20220610150923.583202-5-maciej.fijalkowski@intel.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Mon, 13 Jun 2022 11:47:17 +0200
+Message-ID: <CAJ8uoz3vd_Qhe9=oixMfq6zyuaHBwrQZvSQpU3OYA4Oh-9wmnQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 04/10] selftests: xsk: query for native XDP support
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -79,240 +68,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 30, 2022 at 04:12:51PM +0530, Arun Ramadoss wrote:
-> This patch makes the dsa_switch_hook for fdbs to use ksz_common.c file.
-> And from ksz_common, individual switches fdb functions are called using
-> the dev->dev_ops.
-> 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+On Fri, Jun 10, 2022 at 5:15 PM Maciej Fijalkowski
+<maciej.fijalkowski@intel.com> wrote:
+>
+> Currently, xdpxceiver assumes that underlying device supports XDP in
+> native mode - it is fine by now since tests can run only on a veth pair.
+> Future commit is going to allow running test suite against physical
+> devices, so let us query the device if it is capable of running XDP
+> programs in native mode. This way xdpxceiver will not try to run
+> TEST_MODE_DRV if device being tested is not supporting it.
+>
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 > ---
-
-I had to jump ahead and look at the other patches to see if you plan on
-doing anything about the r_dyn_mac_table, r_sta_mac_table, w_sta_mac_table
-dev_ops which are only implemented for ksz8. They become redundant when
-you introduce new dev_ops for the entire FDB dump, add, del procedure.
-
-I see those aren't touched - what's the plan there?
-
->  drivers/net/dsa/microchip/ksz8795.c    | 30 +++++++++++++++
->  drivers/net/dsa/microchip/ksz9477.c    | 28 +++++++-------
->  drivers/net/dsa/microchip/ksz_common.c | 52 +++++++++++++++-----------
->  drivers/net/dsa/microchip/ksz_common.h | 10 +++++
->  4 files changed, 84 insertions(+), 36 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-> index abd28dc44eb5..528de481b319 100644
-> --- a/drivers/net/dsa/microchip/ksz8795.c
-> +++ b/drivers/net/dsa/microchip/ksz8795.c
-> @@ -958,6 +958,35 @@ static void ksz8_flush_dyn_mac_table(struct ksz_device *dev, int port)
->  	}
+>  tools/testing/selftests/bpf/xdpxceiver.c | 38 ++++++++++++++++++++++--
+>  1 file changed, 36 insertions(+), 2 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
+> index e5992a6b5e09..da8098f1b655 100644
+> --- a/tools/testing/selftests/bpf/xdpxceiver.c
+> +++ b/tools/testing/selftests/bpf/xdpxceiver.c
+> @@ -98,6 +98,8 @@
+>  #include <unistd.h>
+>  #include <stdatomic.h>
+>  #include <bpf/xsk.h>
+> +#include <bpf/bpf.h>
+> +#include <linux/filter.h>
+>  #include "xdpxceiver.h"
+>  #include "../kselftest.h"
+>
+> @@ -1605,10 +1607,39 @@ static void ifobject_delete(struct ifobject *ifobj)
+>         free(ifobj);
 >  }
->  
-> +static int ksz8_fdb_dump(struct ksz_device *dev, int port,
-> +			 dsa_fdb_dump_cb_t *cb, void *data)
+>
+> +static bool is_xdp_supported(struct ifobject *ifobject)
 > +{
-> +	int ret = 0;
-> +	u16 i = 0;
-> +	u16 entries = 0;
-> +	u8 timestamp = 0;
-> +	u8 fid;
-> +	u8 member;
-> +	struct alu_struct alu;
+> +       int flags = XDP_FLAGS_DRV_MODE;
 > +
-> +	do {
-> +		alu.is_static = false;
-> +		ret = dev->dev_ops->r_dyn_mac_table(dev, i, alu.mac, &fid,
-> +						    &member, &timestamp,
-> +						    &entries);
-> +		if (!ret && (member & BIT(port))) {
-> +			ret = cb(alu.mac, alu.fid, alu.is_static, data);
-> +			if (ret)
-> +				break;
-> +		}
-> +		i++;
-> +	} while (i < entries);
-> +	if (i >= entries)
-> +		ret = 0;
+> +       LIBBPF_OPTS(bpf_link_create_opts, opts, .flags = flags);
+> +       struct bpf_insn insns[2] = {
+> +               BPF_MOV64_IMM(BPF_REG_0, XDP_PASS),
+> +               BPF_EXIT_INSN()
+> +       };
+> +       int ifindex = if_nametoindex(ifobject->ifname);
+> +       int prog_fd, insn_cnt = ARRAY_SIZE(insns);
+> +       bool ret = false;
+> +       int err;
 > +
-> +	return ret;
+> +       prog_fd = bpf_prog_load(BPF_PROG_TYPE_XDP, NULL, "GPL", insns, insn_cnt, NULL);
+> +       if (prog_fd < 0)
+> +               return ret;
+> +
+> +       err = bpf_xdp_attach(ifindex, prog_fd, flags, NULL);
+> +
+> +       if (!err) {
+> +               ret = true;
+> +               bpf_xdp_detach(ifindex, flags, NULL);
+> +       }
+> +
+> +       return ret;
+
+Think it would be clearer if you got rid of the bool ret and just
+wrote "return false" and "return true" where applicable.
+
 > +}
 > +
->  static int ksz8_mdb_add(struct ksz_device *dev, int port,
->  			const struct switchdev_obj_port_mdb *mdb,
->  			struct dsa_db db)
-> @@ -1528,6 +1557,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
->  	.r_mib_pkt = ksz8_r_mib_pkt,
->  	.freeze_mib = ksz8_freeze_mib,
->  	.port_init_cnt = ksz8_port_init_cnt,
-> +	.fdb_dump = ksz8_fdb_dump,
->  	.mdb_add = ksz8_mdb_add,
->  	.mdb_del = ksz8_mdb_del,
->  	.vlan_filtering = ksz8_port_vlan_filtering,
-> diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-> index 045856656466..d70e0c32b309 100644
-> --- a/drivers/net/dsa/microchip/ksz9477.c
-> +++ b/drivers/net/dsa/microchip/ksz9477.c
-> @@ -457,11 +457,10 @@ static int ksz9477_port_vlan_del(struct ksz_device *dev, int port,
->  	return 0;
->  }
->  
-> -static int ksz9477_port_fdb_add(struct dsa_switch *ds, int port,
-> -				const unsigned char *addr, u16 vid,
-> -				struct dsa_db db)
-> +static int ksz9477_fdb_add(struct ksz_device *dev, int port,
-> +			   const unsigned char *addr, u16 vid,
-> +			   struct dsa_db db)
+>  int main(int argc, char **argv)
 >  {
-> -	struct ksz_device *dev = ds->priv;
->  	u32 alu_table[4];
->  	u32 data;
->  	int ret = 0;
-> @@ -515,11 +514,10 @@ static int ksz9477_port_fdb_add(struct dsa_switch *ds, int port,
->  	return ret;
->  }
->  
-> -static int ksz9477_port_fdb_del(struct dsa_switch *ds, int port,
-> -				const unsigned char *addr, u16 vid,
-> -				struct dsa_db db)
-> +static int ksz9477_fdb_del(struct ksz_device *dev, int port,
-> +			   const unsigned char *addr, u16 vid,
-> +			   struct dsa_db db)
->  {
-> -	struct ksz_device *dev = ds->priv;
->  	u32 alu_table[4];
->  	u32 data;
->  	int ret = 0;
-> @@ -606,10 +604,9 @@ static void ksz9477_convert_alu(struct alu_struct *alu, u32 *alu_table)
->  	alu->mac[5] = alu_table[3] & 0xFF;
->  }
->  
-> -static int ksz9477_port_fdb_dump(struct dsa_switch *ds, int port,
-> -				 dsa_fdb_dump_cb_t *cb, void *data)
-> +static int ksz9477_fdb_dump(struct ksz_device *dev, int port,
-> +			    dsa_fdb_dump_cb_t *cb, void *data)
->  {
-> -	struct ksz_device *dev = ds->priv;
->  	int ret = 0;
->  	u32 ksz_data;
->  	u32 alu_table[4];
-> @@ -1315,9 +1312,9 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
->  	.port_vlan_filtering	= ksz_port_vlan_filtering,
->  	.port_vlan_add		= ksz_port_vlan_add,
->  	.port_vlan_del		= ksz_port_vlan_del,
-> -	.port_fdb_dump		= ksz9477_port_fdb_dump,
-> -	.port_fdb_add		= ksz9477_port_fdb_add,
-> -	.port_fdb_del		= ksz9477_port_fdb_del,
-> +	.port_fdb_dump		= ksz_port_fdb_dump,
-> +	.port_fdb_add		= ksz_port_fdb_add,
-> +	.port_fdb_del		= ksz_port_fdb_del,
->  	.port_mdb_add           = ksz_port_mdb_add,
->  	.port_mdb_del           = ksz_port_mdb_del,
->  	.port_mirror_add	= ksz_port_mirror_add,
-> @@ -1403,6 +1400,9 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
->  	.mirror_del = ksz9477_port_mirror_del,
->  	.get_stp_reg = ksz9477_get_stp_reg,
->  	.get_caps = ksz9477_get_caps,
-> +	.fdb_dump = ksz9477_fdb_dump,
-> +	.fdb_add = ksz9477_fdb_add,
-> +	.fdb_del = ksz9477_fdb_del,
->  	.mdb_add = ksz9477_mdb_add,
->  	.mdb_del = ksz9477_mdb_del,
->  	.shutdown = ksz9477_reset_switch,
-> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-> index b9082952db0f..8f79ff1ac648 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.c
-> +++ b/drivers/net/dsa/microchip/ksz_common.c
-> @@ -765,32 +765,40 @@ void ksz_port_fast_age(struct dsa_switch *ds, int port)
->  }
->  EXPORT_SYMBOL_GPL(ksz_port_fast_age);
->  
-> +int ksz_port_fdb_add(struct dsa_switch *ds, int port,
-> +		     const unsigned char *addr, u16 vid, struct dsa_db db)
-> +{
-> +	struct ksz_device *dev = ds->priv;
-> +	int ret = -EOPNOTSUPP;
+>         struct pkt_stream *pkt_stream_default;
+>         struct ifobject *ifobj_tx, *ifobj_rx;
+> +       int modes = TEST_MODE_SKB + 1;
+
+Why not keep it a u32? A nit in any way.
+
+>         u32 i, j, failed_tests = 0;
+>         struct test_spec test;
+>
+> @@ -1636,15 +1667,18 @@ int main(int argc, char **argv)
+>         init_iface(ifobj_rx, MAC2, MAC1, IP2, IP1, UDP_PORT2, UDP_PORT1,
+>                    worker_testapp_validate_rx);
+>
+> +       if (is_xdp_supported(ifobj_tx))
+> +               modes++;
 > +
-> +	if (dev->dev_ops->fdb_add)
-> +		ret = dev->dev_ops->fdb_add(dev, port, addr, vid, db);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(ksz_port_fdb_add);
-> +
-> +int ksz_port_fdb_del(struct dsa_switch *ds, int port,
-> +		     const unsigned char *addr, u16 vid, struct dsa_db db)
-> +{
-> +	struct ksz_device *dev = ds->priv;
-> +	int ret = -EOPNOTSUPP;
-> +
-> +	if (dev->dev_ops->fdb_del)
-> +		ret = dev->dev_ops->fdb_del(dev, port, addr, vid, db);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(ksz_port_fdb_del);
-> +
->  int ksz_port_fdb_dump(struct dsa_switch *ds, int port, dsa_fdb_dump_cb_t *cb,
->  		      void *data)
->  {
->  	struct ksz_device *dev = ds->priv;
-> -	int ret = 0;
-> -	u16 i = 0;
-> -	u16 entries = 0;
-> -	u8 timestamp = 0;
-> -	u8 fid;
-> -	u8 member;
-> -	struct alu_struct alu;
-> -
-> -	do {
-> -		alu.is_static = false;
-> -		ret = dev->dev_ops->r_dyn_mac_table(dev, i, alu.mac, &fid,
-> -						    &member, &timestamp,
-> -						    &entries);
-> -		if (!ret && (member & BIT(port))) {
-> -			ret = cb(alu.mac, alu.fid, alu.is_static, data);
-> -			if (ret)
-> -				break;
-> -		}
-> -		i++;
-> -	} while (i < entries);
-> -	if (i >= entries)
-> -		ret = 0;
-> +	int ret = -EOPNOTSUPP;
-> +
-> +	if (dev->dev_ops->fdb_dump)
-> +		ret = dev->dev_ops->fdb_dump(dev, port, cb, data);
->  
->  	return ret;
->  }
-> diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-> index 816581dd7f8e..133b1a257868 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.h
-> +++ b/drivers/net/dsa/microchip/ksz_common.h
-> @@ -192,6 +192,12 @@ struct ksz_dev_ops {
->  			  bool ingress, struct netlink_ext_ack *extack);
->  	void (*mirror_del)(struct ksz_device *dev, int port,
->  			   struct dsa_mall_mirror_tc_entry *mirror);
-> +	int (*fdb_add)(struct ksz_device *dev, int port,
-> +		       const unsigned char *addr, u16 vid, struct dsa_db db);
-> +	int (*fdb_del)(struct ksz_device *dev, int port,
-> +		       const unsigned char *addr, u16 vid, struct dsa_db db);
-> +	int (*fdb_dump)(struct ksz_device *dev, int port,
-> +			dsa_fdb_dump_cb_t *cb, void *data);
->  	int (*mdb_add)(struct ksz_device *dev, int port,
->  		       const struct switchdev_obj_port_mdb *mdb,
->  		       struct dsa_db db);
-> @@ -239,6 +245,10 @@ void ksz_port_bridge_leave(struct dsa_switch *ds, int port,
->  			   struct dsa_bridge bridge);
->  void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
->  void ksz_port_fast_age(struct dsa_switch *ds, int port);
-> +int ksz_port_fdb_add(struct dsa_switch *ds, int port,
-> +		     const unsigned char *addr, u16 vid, struct dsa_db db);
-> +int ksz_port_fdb_del(struct dsa_switch *ds, int port,
-> +		     const unsigned char *addr, u16 vid, struct dsa_db db);
->  int ksz_port_fdb_dump(struct dsa_switch *ds, int port, dsa_fdb_dump_cb_t *cb,
->  		      void *data);
->  int ksz_port_mdb_add(struct dsa_switch *ds, int port,
-> -- 
-> 2.36.1
-> 
+>         test_spec_init(&test, ifobj_tx, ifobj_rx, 0);
+>         pkt_stream_default = pkt_stream_generate(ifobj_tx->umem, DEFAULT_PKT_CNT, PKT_SIZE);
+>         if (!pkt_stream_default)
+>                 exit_with_error(ENOMEM);
+>         test.pkt_stream_default = pkt_stream_default;
+>
+> -       ksft_set_plan(TEST_MODE_MAX * TEST_TYPE_MAX);
+> +       ksft_set_plan(modes * TEST_TYPE_MAX);
+>
+> -       for (i = 0; i < TEST_MODE_MAX; i++)
+> +       for (i = 0; i < modes; i++)
+>                 for (j = 0; j < TEST_TYPE_MAX; j++) {
+>                         test_spec_init(&test, ifobj_tx, ifobj_rx, i);
+>                         run_pkt_test(&test, i, j);
+> --
+> 2.27.0
+>
