@@ -2,98 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EED435486C0
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 17:57:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8456B54862F
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 17:56:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357373AbiFMNMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 09:12:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43452 "EHLO
+        id S243559AbiFMP10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 11:27:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359294AbiFMNJq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 09:09:46 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2045.outbound.protection.outlook.com [40.107.243.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB871A040
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 04:19:58 -0700 (PDT)
+        with ESMTP id S1344792AbiFMP1L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 11:27:11 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2064.outbound.protection.outlook.com [40.107.236.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BBB13AF10
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 05:51:09 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Kc6yeR1C4ccj2X4v0U6h9c7iLzmiD0iQhxF6gS+IaScArfTfqOARKsWWM3GcsP4tBO07GhcW9WjOtDLrLK6mo5RgWjR8eKKlY8u4hELMOx+DS11agBfsICkGeZya69CSnzX+xHHBrUFcODKaizJzP8Luf75E/Z8YqpAhvK2ZMU3iGfNCi3mqpiN5JaYM/krrNMZt1nLZQAxlA8NL7nuPEZY7+RuLPWypw1HAXgSGCabKZW3FLSVqsP9nnUS+22eh7AweFsEEe0WMh0hGedD+tFnbtYc1U6d8hZY0T8U0ERgL44nhH/u3bmQv7sH9LvpD0sFcwZIVr0LTOIx3YfUqCg==
+ b=eHuSp1d989Mt9jG6atExnM5cfIVWqKiGRCXyr1kBo61Hw5K4JBRJgoSJntyFfGrJ2G9NZyDBpGvuAptBurBlohDR3B0t/4egpN6jbrFrdOtqm9H3QGp9B9I2qduGfFHz4DhD3MYtJdvdNYoOsfHVNrmvwgnBcNOIvui20eE+iQFrGoYZ2J7r3p2Di8IIeBIl41/A8eGMYUiroWL028lnSiKh+ZVVu0h+Jk+/803mk5QggANBuMRKilQEmaE1hJXr6lh0W2r0MSkvJ8bWDtTwHEOGgwDMCFBp6s/McI2IiskmO8p8ZHZGBm5QKnirYj4/jCOS7exG6buzY1/HaY496Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Dtd16y4tJyEVWqbb64SzFctrPrTO3rP20ZkhjwylwT0=;
- b=nvUlz0N0RgFExTtjEmG3Yw73H3Ctryfl0cAYJfcabjxyoefgRHNmusv8B5yOZ+qL2G9j5MA+qxhCS6X6FBM9r6utY/gmpXec3WpVkLPzoOzlkLmhSCYKSQKieuFLyqNHUV5oz7Sl8NqqLBXK1f7hQ62isP0yf/qweOMCCSLIBV/0/SPjyC4PXzbOnqopJWr6Hrdh22TXAyn7lTl1fP8nJsfgwxkANW2nRgDmnKY8JrgIDPBf0Eag7axiShW949PUoU2f4mTo5wt+pdfEALxGpcF0qgtQJqSQ2qemS8psBTYLpbYaJTBeGTBMBZyNzqmprNHNzlLTelcaP7MbzrQ4EA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
+ bh=68nT8mESuLlHbVIstWKTH+dvCwH2ZnmKOCXtukaPSZw=;
+ b=dolckB2thFmezhB2tpXMNcpm/1V9WdkffUynRpECgY7c/lf/1mvVimIjTHDybSwu1pOB4fH6Zr7lm6QTGPs6DEGd/oWkfXVgY36jo1RCcumdajUHNwxyBUO+s74kiWGBLAx60BjO5AUp4iEgwz4t9ICcrSIkmxZgg48msDXMWJZSzUR+cB8AP2OI0b9lfuFEEd52ZhKVs+QhsgcOZoLDFcBGoNEiRdEaAOKqXpSknLHsQqEkJb7m6NYKeRGhytIC78zgS4RPi68Wnu1KoON0BmzkJGjIvMGviNng+2LfJtR9r599krmywg2Cye3RpTgtz6ah9GR7V/nPmcO46P9nGA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Dtd16y4tJyEVWqbb64SzFctrPrTO3rP20ZkhjwylwT0=;
- b=E1BXOpesM/KYQI8qSBO5PMIy9FGl+o9FC220+6QyifDqYgL+qLYfXlvP55MGlsOg9xywIqROadUFFAimWWWdhdlBPO2TnlRgUGg5YNb1RcOfqInBABtfOlL6JJnH9mBC00iMzBp8uSoanssNz5PYTLriM8BHw7C/KnDVliD4+6AYMY+N79bGr0ru5ndWflp1vAYuRKbxEwWrtmt2f5/1OH3SuPDIt8Q/FRX7cmouTmsfR956h97hgsjoED8io5/Kvu+8NBIBQofIMcFk+ltRVHr8eb1Inzc1SjQJtdV9KB8UUjw9hbqvPz+i9v77VsPM55f0CameJm6h0Jjgk5zJMQ==
-Received: from DM5PR07CA0036.namprd07.prod.outlook.com (2603:10b6:3:16::22) by
- DS0PR12MB6486.namprd12.prod.outlook.com (2603:10b6:8:c5::21) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5332.20; Mon, 13 Jun 2022 11:19:57 +0000
-Received: from DM6NAM11FT039.eop-nam11.prod.protection.outlook.com
- (2603:10b6:3:16:cafe::b1) by DM5PR07CA0036.outlook.office365.com
- (2603:10b6:3:16::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13 via Frontend
- Transport; Mon, 13 Jun 2022 11:19:57 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.236) by
- DM6NAM11FT039.mail.protection.outlook.com (10.13.172.83) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5332.12 via Frontend Transport; Mon, 13 Jun 2022 11:19:57 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 13 Jun
- 2022 11:19:56 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 13 Jun
- 2022 04:19:55 -0700
-Received: from nps-server-31.mtl.labs.mlnx (10.127.8.9) by mail.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Mon, 13 Jun 2022 04:19:53 -0700
-From:   Lior Nahmanson <liorna@nvidia.com>
-To:     <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Lior Nahmanson <liorna@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Ben Ben-Ishay <benishay@nvidia.com>
-Subject: [PATCH net-next v3 3/3] net/macsec: Move some code for sharing with various drivers that implements offload
-Date:   Mon, 13 Jun 2022 14:19:42 +0300
-Message-ID: <20220613111942.12726-4-liorna@nvidia.com>
-X-Mailer: git-send-email 2.21.3
-In-Reply-To: <20220613111942.12726-1-liorna@nvidia.com>
-References: <20220613111942.12726-1-liorna@nvidia.com>
-MIME-Version: 1.0
+ bh=68nT8mESuLlHbVIstWKTH+dvCwH2ZnmKOCXtukaPSZw=;
+ b=fUcBLi7B+VRafY9s62ZsVMeKcFVCKF0Z/9RiF3FQ+vgR21K2iPeEQTZpgp3fdCs5JxbHCIyEKtHMB92EMsCGuaaT4HYItdW+uLd5ozxz+iG/XAM4spSXOjEDp1FZ4NaDBkKILNyA8mvA2bQPFWLRAJsm0VvFuYxZqP/X5NxTum59UuCwBGLoLNt2skAB+udGW3joHvYtvAL38r99QmhVItplK1/85GcrnPjPoxJd70bHGCKyvG9cOWq67C8PWhQHg7pZhZOjV1LdGUcnqlVisFF29lzFZO8BbCjkTrCN4snGpMWI6DRhFXNrb5uvrkrNIs9XkKv5kaAglE+U6zWQ2w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by BL0PR12MB2449.namprd12.prod.outlook.com (2603:10b6:207:40::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.15; Mon, 13 Jun
+ 2022 12:51:07 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::9157:69c9:ea8f:8190]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::9157:69c9:ea8f:8190%7]) with mapi id 15.20.5332.020; Mon, 13 Jun 2022
+ 12:51:06 +0000
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, petrm@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net] mlxsw: spectrum_cnt: Reorder counter pools
+Date:   Mon, 13 Jun 2022 15:50:17 +0300
+Message-Id: <20220613125017.2018162-1-idosch@nvidia.com>
+X-Mailer: git-send-email 2.36.1
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-EOPAttributedMessage: 0
+X-ClientProxiedBy: MR2P264CA0165.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:501:1::28) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
+MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 233f32b2-6c4e-49b0-19e0-08da4d2ea5ce
-X-MS-TrafficTypeDiagnostic: DS0PR12MB6486:EE_
-X-Microsoft-Antispam-PRVS: <DS0PR12MB6486E8310C82C20341F278CDBFAB9@DS0PR12MB6486.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: b626b148-e3a5-4d1f-f5c5-08da4d3b61b1
+X-MS-TrafficTypeDiagnostic: BL0PR12MB2449:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB2449A07389F99B25FC83DE93B2AB9@BL0PR12MB2449.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Xh5Pm28aRRTMqLydPPZC3dMrft7tQNeNbHOKaLSgAwPtcVJ3z0W/s6GrCszbK201/31Xc18z5Wx1a3Ubi9vOUjQIUa/i2QopIgXeIgtT1T5SG48MVIDfnvpbaYQ7kMVNzErJ/SPNAz8k2L2BQb+asuAJsROlfN+vrlT6hNqBpzSqDgWSD+HlyS5eMBjblmCHqzA0XLUlhqvXH0cYWt6Nq1HFSQTGks1TXrOJew6ckot5unYV2+h3oj/2yDH555JV7Z5dolFu1r9ZpASSKFCb58JpdUTtQnP88A2alAyXMYCt0RbfLiF5WL5AXNW8axBap/EvfLumHutqX+Wcq5pxiUiIWdTwkVP9eClAt6PUuCTaECpd0iXJE8/KlEZDuIlHrqVKaZMWCtwVJIhW14IMXhV4WbWAnHVk6LcmKd5F8NgCFupiCn8Qfy4vpTb2dGQQE80LXBpwZLJm5uruL/VvcfSkc94ySQyV7n8SMazimxqucs1CbnKF1pmz9t4pgzniS99dpzgyPBZRI79Ekwye5fJGUcypyk1wdImkB1uJB80y+LlijfaoRI7tfIgq9O5+DAKsk9/elko3mgPVbPhe+vRqhc9dAIo+GpjC04lN9jJTqV300rABqpd7pAuCM9oc2IibjjJOEQDjjpr+4xMH8b2DEyVwaSv9zRJqgFFhOAGdU+2aA6Mc5MyUGM2CgUwyOz7naqp+e8s5J2kt4UrtmQ==
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(40470700004)(46966006)(36840700001)(70586007)(5660300002)(8676002)(70206006)(316002)(508600001)(8936002)(86362001)(426003)(6666004)(26005)(4326008)(81166007)(186003)(2616005)(2906002)(110136005)(54906003)(83380400001)(36860700001)(40460700003)(356005)(336012)(82310400005)(36756003)(47076005)(1076003)(107886003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: +DZReMLGXUvm5BGOwQa2H/nInZxnOkvdQOUUw6Yfe99eB6dyHfQELwcc8iZ5preQq0W3GQYRZvLAEC/ubt4S7Zee15aRe3K2FDw+3mnDiLwEGBe2asnjjFc0lSxnaJzZmJpWnEVOVjzruuO0o3pwisA47I1+1CWbNzTx0yKMlweivVNFZVz/rS6HIq03mE+v7kIhdt/3/AZao5YbW6FRyjq5UrSUrSlkd/kvfVdlAq5G+0iQHOPpmhJedakOxsfvX91v4Ajgj07UxH1eIyYt0WmqqKuTTe4kR1pl6eDTVniGqqX+lOMkM+K6zPWy+ROMQ0xU/eeG7wyFHyLFBF9GZU/r6v3pzoSJEVnHdyOwHNxN02wPUtFbUtHQHsQZsvGeli+beSyRTrVYTA73GaEqzhh3s7slg+5+MMDQlIhPBAws7zgQAWxGQCNMauVENP1HpigTfZBjyDSq8VWSMmcpMOV9BnEMs3GCKiB0Zb5rLTAhOrOTAIcf0bVZQOrgxx/4lwT3zeuoNkqxlvUENe6uM+69BBoYjm15TCNUb77zrVlvHDDKjKtknbDjVnFHIuMYb3a37vFDWf+6oHjVjd7OYM7hsefcgk8D+KabLdkuERA1Vgb9ZdLx+w9r52Q4Revksxyc79XJ4CBk9zodyB7M8A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(6916009)(6666004)(316002)(26005)(508600001)(38100700002)(86362001)(6486002)(6506007)(186003)(1076003)(107886003)(6512007)(2616005)(83380400001)(8676002)(66556008)(4326008)(36756003)(2906002)(66946007)(66476007)(8936002)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hM8R3EHoK1cS3LDbqvGSSrW4StwdRfRghS7YWYJntJmTh8dh9Uo7kLrySg7g?=
+ =?us-ascii?Q?z/W845Ow3D4cy/rXLjjZYKIJX/yFEy6Iqen6gQNnSc2iWRe2lUYiqYr/SKgA?=
+ =?us-ascii?Q?64sKIy0Kt+G4Or1ja6dOMB/y0JigUxbMElmQWar3jPCnfLKnWbnSFTTFPk0B?=
+ =?us-ascii?Q?R6j2B1Pgi5u7q5nYPzVGYtY2Xci789Mdux2zujXLKZeBwSFZ7afumJvQTTYU?=
+ =?us-ascii?Q?GW7BDPM4ecnn33KU4kNdEbVhhMw+BkiqcvsAKPhQMqK16G9r1Ayublwn+hyw?=
+ =?us-ascii?Q?aw63WS63KOslbFtZ12HV6r5wSx0YkmP50Dbo7XurRW52Fqn2ABEwCAl6unqP?=
+ =?us-ascii?Q?yHspcShc965k0VsHalq/Gid1ENqDsowUKFXR4MIc6nPeUDYYes007g8bo+gN?=
+ =?us-ascii?Q?mdO5WmUztEmf7WUFICZwlJmKoCi0ZNlvpnbTVxEZidvNXWHWiU3WNjMKkjK9?=
+ =?us-ascii?Q?brik01IcnXUWPqnM4x0sKt5yJznQT2vOiwiyxF9BuZnLMdDQgvKDmYIPUPGa?=
+ =?us-ascii?Q?iqnelwIwJI6eGGfq+CHVailGOEnJ7m0IvAicnWr+HLr2ebPWiRGm/gB997UG?=
+ =?us-ascii?Q?RjiSnfA9BhLhksXKz1rDTO0qBFLSvO2J54JWqIj4PrLUoDHLpj5MLS/YU2Tz?=
+ =?us-ascii?Q?emC7UPzIrkqm8GWmjsNxPD8BNraMZ/v2L0javSRcYubcbrU/Qga/4OrMcZre?=
+ =?us-ascii?Q?mi0O5gt+Uy2aDjpfR5mngOamEezTN8vusf6gJEjxZkp/tnUV8HAhEoAO7RiX?=
+ =?us-ascii?Q?wxridm4guY+KM56RmuvBZv3wJpErVW+LsiQO07tImWWhtCYw8ltU1XQyH5pO?=
+ =?us-ascii?Q?YpfrI7t07qHp+eiOj14vzrBmSIgX+PnS6Iph5ggFZarkUwyLwxhIzljH+/eT?=
+ =?us-ascii?Q?rKLeIGYpJ40Am5gKuQVx+B8VhDuGYewUfkk0c/ZsoFQqHruCNCC4zbsnRtoa?=
+ =?us-ascii?Q?O5AN5rk6fOjnmwsoNTJOO3/JKpqEW5t9cgAD4l43zh9pJR7LtW5JjHUFlSct?=
+ =?us-ascii?Q?H6X7RPgrBPjqsIfj2Npe3mfkVwQTe15z7KddubLPe07vAuSBSbo4hw7Sqi7Q?=
+ =?us-ascii?Q?8aPNo47O1lBF2iGL/Aft4g6IA/wX0UsUX0hzNZHxUEwn361nGNOWjHBvfZzE?=
+ =?us-ascii?Q?N19NLBJF6dWa7IER064gbAcu5WX8O9YFlKBj2kg4zVnHqwPBLw9I481XaATs?=
+ =?us-ascii?Q?M6xKpJXjMmqLVOskVyz42tPTizOAoDHZJsSXAEnlYVFXN0XO0cwie2fkPaFZ?=
+ =?us-ascii?Q?g8RS6OBaMLJr4EM3uTQljHPzavOYBJb9VBIqz2hgmhK3l8vL3k2w3yy3Qios?=
+ =?us-ascii?Q?8tTtX+LzSrLVMWoHD9wFO0SI4Wza4WEc9f47OTnr1brY2Hy5yktdQ6QC12Re?=
+ =?us-ascii?Q?ov5IJ84OLKkDwC+Iy/Vd9D4wPXnQpDj8A+jKIq7TnEquOLchs7o7Y0qGjen5?=
+ =?us-ascii?Q?16Kgf/AKmC+QF0rQiG4RWP7AxL8L+V3sYoHIfabsQV8vBJ8WUG3Rwc6AUr0T?=
+ =?us-ascii?Q?4JdesKjLijr9ikqD8SRTYLngG8Oa85oxWd8YXXWU3apv/vZ8BjPLjwTsvAlG?=
+ =?us-ascii?Q?kk4LZDJFrY4qkyJk/oYreQvEfAWTrF/MCJeBdLONIIgTcS6VfP2H2Rc3R3cF?=
+ =?us-ascii?Q?NzmUtuyiAFVgb6rV+x21IcYWSiuQ9JY+Clt7UxpxwHJ/oT/hKMOtA3IsfQ6P?=
+ =?us-ascii?Q?k9HIWxLvhGhNfHp7f0MOlu9OavfqGv9WdtfxcLtZqn7eZg3yBcB9LNKs9VKk?=
+ =?us-ascii?Q?npqM9ja4rg=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 11:19:57.0834
+X-MS-Exchange-CrossTenant-Network-Message-Id: b626b148-e3a5-4d1f-f5c5-08da4d3b61b1
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 12:51:06.6307
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 233f32b2-6c4e-49b0-19e0-08da4d2ea5ce
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT039.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6486
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: JskKUAuxf7ShdWAnvET6arZLTZ6Ykhn/sJPfhkOriin8Yp00q2kuX5VE6aPB9JZxBI1QegpaziC6DICQhzjSVQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2449
 X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -104,176 +116,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some MACsec infrastructure like defines and functions,
-which may be useful for other drivers who implemented MACsec offload,
-aren't accessible since they aren't located in any header file.
+From: Petr Machata <petrm@nvidia.com>
 
-Moved those values to MACsec header file will allow those drivers
-to use them and avoid code duplication.
+Both RIF and ACL flow counters use a 24-bit SW-managed counter address to
+communicate which counter they want to bind.
 
-Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Reviewed-by: Ben Ben-Ishay <benishay@nvidia.com>
+In a number of Spectrum FW releases, binding a RIF counter is broken and
+slices the counter index to 16 bits. As a result, on Spectrum-2 and above,
+no more than about 410 RIF counters can be effectively used. This
+translates to 205 netdevices for which L3 HW stats can be enabled. (This
+does not happen on Spectrum-1, because there are fewer counters available
+overall and the counter index never exceeds 16 bits.)
+
+Binding counters to ACLs does not have this issue. Therefore reorder the
+counter allocation scheme so that RIF counters come first and therefore get
+lower indices that are below the 16-bit barrier.
+
+Fixes: 98e60dce4da1 ("Merge branch 'mlxsw-Introduce-initial-Spectrum-2-support'")
+Reported-by: Maksym Yaremchuk <maksymy@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
-v1->v2:
-- moved MACSEC_PORT_ES from .c to .h
-v2->v3:
-- removed Issue and Change-Id from commit message
----
- drivers/net/macsec.c | 33 ++++++---------------------------
- include/net/macsec.h | 21 +++++++++++++++++++++
- 2 files changed, 27 insertions(+), 27 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 7b7baf3dd596..01ff881f4540 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -24,8 +24,6 @@
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
+index a68d931090dd..15c8d4de8350 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.h
+@@ -8,8 +8,8 @@
+ #include "spectrum.h"
  
- #include <uapi/linux/if_macsec.h>
- 
--#define MACSEC_SCI_LEN 8
--
- /* SecTAG length = macsec_eth_header without the optional SCI */
- #define MACSEC_TAG_LEN 6
- 
-@@ -46,20 +44,10 @@ struct macsec_eth_header {
- 	u8 secure_channel_id[8]; /* optional */
- } __packed;
- 
--#define MACSEC_TCI_VERSION 0x80
--#define MACSEC_TCI_ES      0x40 /* end station */
--#define MACSEC_TCI_SC      0x20 /* SCI present */
--#define MACSEC_TCI_SCB     0x10 /* epon */
--#define MACSEC_TCI_E       0x08 /* encryption */
--#define MACSEC_TCI_C       0x04 /* changed text */
--#define MACSEC_AN_MASK     0x03 /* association number */
--#define MACSEC_TCI_CONFID  (MACSEC_TCI_E | MACSEC_TCI_C)
--
- /* minimum secure data length deemed "not short", see IEEE 802.1AE-2006 9.7 */
- #define MIN_NON_SHORT_LEN 48
- 
- #define GCM_AES_IV_LEN 12
--#define DEFAULT_ICV_LEN 16
- 
- #define for_each_rxsc(secy, sc)				\
- 	for (sc = rcu_dereference_bh(secy->rx_sc);	\
-@@ -230,7 +218,6 @@ static struct macsec_cb *macsec_skb_cb(struct sk_buff *skb)
- 	return (struct macsec_cb *)skb->cb;
- }
- 
--#define MACSEC_PORT_ES (htons(0x0001))
- #define MACSEC_PORT_SCB (0x0000)
- #define MACSEC_UNDEF_SCI ((__force sci_t)0xffffffffffffffffULL)
- #define MACSEC_UNDEF_SSCI ((__force ssci_t)0xffffffff)
-@@ -244,14 +231,6 @@ static struct macsec_cb *macsec_skb_cb(struct sk_buff *skb)
- #define DEFAULT_ENCRYPT false
- #define DEFAULT_ENCODING_SA 0
- 
--static bool send_sci(const struct macsec_secy *secy)
--{
--	const struct macsec_tx_sc *tx_sc = &secy->tx_sc;
--
--	return tx_sc->send_sci ||
--		(secy->n_rx_sc > 1 && !tx_sc->end_station && !tx_sc->scb);
--}
--
- static sci_t make_sci(const u8 *addr, __be16 port)
- {
- 	sci_t sci;
-@@ -316,7 +295,7 @@ static void macsec_fill_sectag(struct macsec_eth_header *h,
- 	/* with GCM, C/E clear for !encrypt, both set for encrypt */
- 	if (tx_sc->encrypt)
- 		h->tci_an |= MACSEC_TCI_CONFID;
--	else if (secy->icv_len != DEFAULT_ICV_LEN)
-+	else if (secy->icv_len != MACSEC_DEFAULT_ICV_LEN)
- 		h->tci_an |= MACSEC_TCI_C;
- 
- 	h->tci_an |= tx_sc->encoding_sa;
-@@ -634,7 +613,7 @@ static struct sk_buff *macsec_encrypt(struct sk_buff *skb,
- 
- 	unprotected_len = skb->len;
- 	eth = eth_hdr(skb);
--	sci_present = send_sci(secy);
-+	sci_present = macsec_send_sci(secy);
- 	hh = skb_push(skb, macsec_extra_len(sci_present));
- 	memmove(hh, eth, 2 * ETH_ALEN);
- 
-@@ -1268,7 +1247,7 @@ static rx_handler_result_t macsec_handle_frame(struct sk_buff **pskb)
- 	/* 10.6.1 if the SC is not found */
- 	cbit = !!(hdr->tci_an & MACSEC_TCI_C);
- 	if (!cbit)
--		macsec_finalize_skb(skb, DEFAULT_ICV_LEN,
-+		macsec_finalize_skb(skb, MACSEC_DEFAULT_ICV_LEN,
- 				    macsec_extra_len(macsec_skb_cb(skb)->has_sci));
- 
- 	list_for_each_entry_rcu(macsec, &rxd->secys, secys) {
-@@ -4007,7 +3986,7 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
- {
- 	struct macsec_dev *macsec = macsec_priv(dev);
- 	rx_handler_func_t *rx_handler;
--	u8 icv_len = DEFAULT_ICV_LEN;
-+	u8 icv_len = MACSEC_DEFAULT_ICV_LEN;
- 	struct net_device *real_dev;
- 	int err, mtu;
- 	sci_t sci;
-@@ -4131,7 +4110,7 @@ static int macsec_validate_attr(struct nlattr *tb[], struct nlattr *data[],
- 				struct netlink_ext_ack *extack)
- {
- 	u64 csid = MACSEC_DEFAULT_CIPHER_ID;
--	u8 icv_len = DEFAULT_ICV_LEN;
-+	u8 icv_len = MACSEC_DEFAULT_ICV_LEN;
- 	int flag;
- 	bool es, scb, sci;
- 
-@@ -4143,7 +4122,7 @@ static int macsec_validate_attr(struct nlattr *tb[], struct nlattr *data[],
- 
- 	if (data[IFLA_MACSEC_ICV_LEN]) {
- 		icv_len = nla_get_u8(data[IFLA_MACSEC_ICV_LEN]);
--		if (icv_len != DEFAULT_ICV_LEN) {
-+		if (icv_len != MACSEC_DEFAULT_ICV_LEN) {
- 			char dummy_key[DEFAULT_SAK_LEN] = { 0 };
- 			struct crypto_aead *dummy_tfm;
- 
-diff --git a/include/net/macsec.h b/include/net/macsec.h
-index fcbca963c04d..e727924c5e52 100644
---- a/include/net/macsec.h
-+++ b/include/net/macsec.h
-@@ -17,6 +17,20 @@
- #define MACSEC_SALT_LEN 12
- #define MACSEC_NUM_AN 4 /* 2 bits for the association number */
- 
-+#define MACSEC_SCI_LEN 8
-+#define MACSEC_PORT_ES (htons(0x0001))
-+
-+#define MACSEC_TCI_VERSION 0x80
-+#define MACSEC_TCI_ES      0x40 /* end station */
-+#define MACSEC_TCI_SC      0x20 /* SCI present */
-+#define MACSEC_TCI_SCB     0x10 /* epon */
-+#define MACSEC_TCI_E       0x08 /* encryption */
-+#define MACSEC_TCI_C       0x04 /* changed text */
-+#define MACSEC_AN_MASK     0x03 /* association number */
-+#define MACSEC_TCI_CONFID  (MACSEC_TCI_E | MACSEC_TCI_C)
-+
-+#define MACSEC_DEFAULT_ICV_LEN 16
-+
- typedef u64 __bitwise sci_t;
- typedef u32 __bitwise ssci_t;
- 
-@@ -295,5 +309,12 @@ struct macsec_ops {
+ enum mlxsw_sp_counter_sub_pool_id {
+-	MLXSW_SP_COUNTER_SUB_POOL_FLOW,
+ 	MLXSW_SP_COUNTER_SUB_POOL_RIF,
++	MLXSW_SP_COUNTER_SUB_POOL_FLOW,
  };
  
- void macsec_pn_wrapped(struct macsec_secy *secy, struct macsec_tx_sa *tx_sa);
-+static inline bool macsec_send_sci(const struct macsec_secy *secy)
-+{
-+	const struct macsec_tx_sc *tx_sc = &secy->tx_sc;
-+
-+	return tx_sc->send_sci ||
-+		(secy->n_rx_sc > 1 && !tx_sc->end_station && !tx_sc->scb);
-+}
- 
- #endif /* _NET_MACSEC_H_ */
+ int mlxsw_sp_counter_alloc(struct mlxsw_sp *mlxsw_sp,
 -- 
-2.25.4
+2.36.1
 
