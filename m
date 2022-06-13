@@ -2,117 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3367A549C63
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 20:58:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2521B549C72
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 20:59:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243586AbiFMS5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 14:57:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43148 "EHLO
+        id S1344610AbiFMS7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 14:59:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344610AbiFMS52 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 14:57:28 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7561040A08
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 09:04:47 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id x17so7729960wrg.6
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 09:04:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=AXautoqWPbDGQ8jIW32Yr94ZX6pp2sRp2xY2VCYt9IQ=;
-        b=Y3Zaso87YlfTlu4ajq7LPn7acVP6OEqktDetC90IXLCFuqbxDLk/ScLjQ06HUaagv5
-         54S3UZWC99l+Oove5asnkJ0zAiiVjL/71E2YiANfvFRdMsbEPRHEahP0ZrKsuS5tui2o
-         hSYFIcmjJ6p6S+vTMGHMFi2ftGzpsmVFs70EA6Ay0LaLqWnBI330dyxWgV7GViTyDae6
-         8qD9ZQMMh4yjquXLbWCzhWjK0ZPtRHQDcvpco8v4JAmSNwTS23MPV4wi6gKF4pw3mGZV
-         zeltwKrUGX9pGV5cACkHc96u/m7hVCml7LrbbfNnrmQKW/r5mms1S4N/nBGDKFXMczFM
-         1ypw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=AXautoqWPbDGQ8jIW32Yr94ZX6pp2sRp2xY2VCYt9IQ=;
-        b=z79okhj05gID17uVxKAWaLt0ZC5ljHaHzW8j5yK6vIn+2l1/ihakB0j/hjPWCSEWh0
-         XG49z8XEvNd+JlZmBHoaLJYtxIWiMGbyawsZvoUOgjMSpL0I9b37x4StgqLuvPBwkX2D
-         6KnvzU/EZuHE7qNAlIpHl9WCWHPCFuRwH6L724vPPVHshhJ+A0AjSB3DY7v7x23MxoF0
-         m9jnyfFtT6taSUNIObguqFh6DxoGaKsk2e4r1A8cRJ4kXFmt4nZnJ0qMdBr2Mx66Ngjk
-         TJdZb2jCzWrJl/ZqMcDLj+P86mQ2LofYfa/dJRaGw+hh4b2Va1yR7MLnjq1wO2ryWWDX
-         MuLg==
-X-Gm-Message-State: AJIora/1nOy5soI3nqrfo8ocqpqsn7HRZ3iyAmyfvG9AXEm0uuoomQcR
-        0/oxVwfYQXETgHoeVtb/aGZwdAm81lcJmRTlHJI=
-X-Google-Smtp-Source: AGRyM1ulfKHQ+oVC9xkJkpKGWNyo4mLoeS6sR4zeHou9luaombOz1cu7xil1EWh1T/1ovPEz8A8ywdSGjBZhhcbAByw=
-X-Received: by 2002:a5d:5142:0:b0:212:af29:530 with SMTP id
- u2-20020a5d5142000000b00212af290530mr550700wrt.444.1655136285655; Mon, 13 Jun
- 2022 09:04:45 -0700 (PDT)
+        with ESMTP id S1347753AbiFMS7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 14:59:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F7928A046
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 09:13:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82B79B810DC
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 16:13:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86D0FC34114;
+        Mon, 13 Jun 2022 16:13:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655136800;
+        bh=bkXxF/8rqiIGVLDZTwnmZ9winCNh3IvsK6ufCxdHmVI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TLZsHGBgYdoLmaLxMifGf8SIQOPbxyAxLsFO1ml+VegH+NcC2uiSB9mKHSnDNsSB8
+         l0vlF0kFAAi5nGMmvgJkPHEEFFEYh/umrwxmzwd0srxdd/Nx5BS27ZID3qz6bvq4Iv
+         R8eQKB/aH/cjt5TWwlVpCVOk4SrRQIcl7N0rqaXCqcn2lwUpADofe0/aDS1YJQU3Jt
+         ovL9gfu05jUr6OchiGKyXjcVj6C5EUOcpPQhghwZ8WmW2o8YZL9XA22Cic6xnNtTyp
+         U6jYuYpGFoQrA3ikT54yKCglcE2OeZ94Vvkd7SbOwjJTqM6NiZ088fdJ72Q+ofAOo8
+         YKNfKXppEFlSg==
+Date:   Mon, 13 Jun 2022 09:13:18 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Lasse Johnsen <l@ssejohnsen.me>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>
+Subject: Re: [PATCH net-next v6 2/3] net: phy: broadcom: Add PTP support for
+ some Broadcom PHYs.
+Message-ID: <20220613091318.72ce51e8@kernel.org>
+In-Reply-To: <20220611213355.q4gtcglc5j3kmdek@bsd-mbp.dhcp.thefacebook.com>
+References: <20220608204451.3124320-1-jonathan.lemon@gmail.com>
+        <20220608204451.3124320-3-jonathan.lemon@gmail.com>
+        <20220610180255.68586bd1@kernel.org>
+        <20220611213355.q4gtcglc5j3kmdek@bsd-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Received: by 2002:a5d:5942:0:0:0:0:0 with HTTP; Mon, 13 Jun 2022 09:04:43
- -0700 (PDT)
-From:   nnani nawafo <nnadinawafo11@gmail.com>
-Date:   Mon, 13 Jun 2022 16:04:43 +0000
-Message-ID: <CAPhDfr06DxSLgxXXHS5_LbtZcjPKPRWbb-zuMQSD+7AaRMBW+g@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=2.4 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLY,LOTS_OF_MONEY,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
-X-Spam-Level: **
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Gratulujem!
+On Sat, 11 Jun 2022 14:33:55 -0700 Jonathan Lemon wrote:
+> How about this?  Seems to work for my testing.  If this is ok, I'll
+> spin up (hopefully the last) patch on Monday.
 
-Organiz=C3=A1cia Spojen=C3=BDch n=C3=A1rodov dospela k z=C3=A1veru, =C5=BEe=
- schv=C3=A1li vyplatenie
-kompenza=C4=8Dn=C3=A9ho fondu vo v=C3=BD=C5=A1ke =C5=A1iestich mili=C3=B3no=
-v americk=C3=BDch dol=C3=A1rov (6
-000 000,00 USD) =C5=A1=C5=A5astn=C3=BDm pr=C3=ADjemcom na celom svete prost=
-redn=C3=ADctvom
-pomoci novozvolen=C3=A9ho prezidenta v d=C3=B4sledku ochorenia COVID-19
-(koronav=C3=ADrus), ktor=C3=BD sp=C3=B4sobil ekonomick=C3=BD kolaps v roku =
-r=C3=B4znych
-krajin=C3=A1ch a glob=C3=A1lne ohrozenie to=C4=BEk=C3=BDch =C5=BEivotov.
-
- Organiz=C3=A1cia Spojen=C3=BDch n=C3=A1rodov poverila =C5=A1vaj=C4=8Diarsk=
-u svetov=C3=BA banku, aby
-v spolupr=C3=A1ci s bankou IBE v Spojenom kr=C3=A1=C4=BEovstve uvo=C4=BEnil=
-a platby z
-kompenza=C4=8Dn=C3=A9ho fondu.
-
-Platba bude vystaven=C3=A1 na bankomatov=C3=BA v=C3=ADzov=C3=BA kartu a odo=
-slan=C3=A1 =C5=A1=C5=A5astn=C3=A9mu
-pr=C3=ADjemcovi, ktor=C3=BD o =C5=88u po=C5=BEiada prostredn=C3=ADctvom ban=
-ky IBE v Spojenom
-kr=C3=A1=C4=BEovstve prostredn=C3=ADctvom diplomatickej kuri=C3=A9rskej spo=
-lo=C4=8Dnosti v
-bl=C3=ADzkosti prij=C3=ADmaj=C3=BAcej krajiny.
-
-Toto s=C3=BA inform=C3=A1cie, ktor=C3=A9 vedenie Spojen=C3=A9ho kr=C3=A1=C4=
-=BEovstva vy=C5=BEaduje na
-doru=C4=8Denie platby z kompenza=C4=8Dn=C3=A9ho fondu do prij=C3=ADmacej kr=
-ajiny.
-
-1. Va=C5=A1e meno:
-2. Adresa bydliska:
-3. Mesto:
-4. Krajina:
-5. Povolanie:
-6. Sex:
-7. Rodinn=C3=BD stav:
-8. Vek:
-9. Pas / ob=C4=8Diansky preukaz / vodi=C4=8Dsk=C3=BD preukaz
-10. Telef=C3=B3nne =C4=8D=C3=ADslo:
-Kontaktujte n=C3=A1=C5=A1ho e-mailov=C3=A9ho z=C3=A1stupcu:
-n=C3=A1zov solomo brandy
-
-EMIL ADDRESS (solomonbrandyfiveone@gmail.com) pre va=C5=A1u platbu bez ome=
-=C5=A1kania,
-
-S pozdravom
-Pani Mary J Robertsonov=C3=A1.
+LGTM!
