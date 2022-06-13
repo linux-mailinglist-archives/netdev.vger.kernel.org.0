@@ -2,143 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC53C54A170
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 23:31:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF1E854A1A4
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 23:40:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242969AbiFMVbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 17:31:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32930 "EHLO
+        id S1343680AbiFMVkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 17:40:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351597AbiFMVaB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 17:30:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F02FEC
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 14:29:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBFE4613EA
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 21:29:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70DC2C34114;
-        Mon, 13 Jun 2022 21:29:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655155763;
-        bh=xpbB3z42Rnk0gOfoiIzo955qZaPiJnfc42F5d0vrE5o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hZSehpY5XxRfIktLWs3G6v5y95P5qQwbijPsKSJdYNIb5+YsPdGqZtAP5ihMpm50n
-         7x4pIH8gDZQfwqyZNFvdRY4TdxfKqZTxITRv8TYZuiyd1/qnGUG/+ruE5T0K2r0Dgr
-         PnMUklpX9qDbcxHmXjsC6he747vUYasc5bUJW8LOGQTlLAfyj7soSCdmR6khGSSePf
-         tUYb7joHQnKpX5i7NGF/K0PBU9OkW4AOS1cVjOOvJAaaDs4evE4nDmD/GVrkKK5TIh
-         wdFEQF0fl+Z6lNa8gRc84KDL0NI1LADUFYBFtyas/rIC3uggkFO0q//2m/hub/ewM2
-         ZA4biuKyWf0RA==
-Date:   Mon, 13 Jun 2022 23:29:16 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>, pali@kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S234145AbiFMVkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 17:40:31 -0400
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF9526DF;
+        Mon, 13 Jun 2022 14:40:31 -0700 (PDT)
+Received: by mail-qk1-x736.google.com with SMTP id l192so2907819qke.13;
+        Mon, 13 Jun 2022 14:40:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=UlM+CjsQsvnlIzI7YJk0mgvDOIWQBkpMOR1+7OF1hHk=;
+        b=VoS6foXu6pPH+uNF4FO1/2Kj2D0fU4up4Ag89DxC1cgBHdtd+xhTNGW8WiiUHNRRHR
+         39ENvgeUZF4nSJeuOUXvuWJzCdV8dmcnk+eiyc0SpFjFWWwZnXYm2G2fVTd6f2OGAWvg
+         FIoY30Z8Lfn1EDAcLkGei3+Xz2y1KQ0TlA18AorOPy6Mf+HCCMlVUMqlDZmtpT7xUa4U
+         dZcKQ1ZTIHHj51akLGQn4LOMZQY0H20b3cdlocbSrgmS5Md26ArwyaGnZUz/uLsetRlS
+         dDhYp66032OHqufLh/hI4ZOScAxP9g/t7rWSskpTy9KwHzMtMO2FETpm06RAdOOoqQac
+         c5TA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=UlM+CjsQsvnlIzI7YJk0mgvDOIWQBkpMOR1+7OF1hHk=;
+        b=h6oFGlZNrCGl1hRgohndzaEE0li45RzgthwRD1d2uCOmOaraRVBpXA7ewtc/SGQpo8
+         DTaevQbLbtKRxU5ZBkYNkeHRU3Fko7kO19ABKuEs50EGclu3zZ3WwtFxkdGtaBo9mfhE
+         t32Rn6CC4gV0zJ3ET95qRsP4dsEF1htL2NQ9QRjtHhkHLccFLFFR1Y+bMkx2U25vv/bO
+         tQUOeY4uWVNyyqNBD39sa02NMt/1kZaVgaVjbh0JxQ2ih72z+oAVtDeh1B1sImdQNSMu
+         yFkSo3f8/8vFHJDg8D5ltKKgTotCX3Qg6YGTFgpDtpY0SFb3qz2wiyrtdFDBJBap8Pte
+         ZF9Q==
+X-Gm-Message-State: AOAM530S1ThlRpFhYuv8xYFgcBGNzWiRC3Fj0R/LZ6L7wUZJFlONIwp1
+        FNB0k6yy6LePcejrsQw2LgE=
+X-Google-Smtp-Source: ABdhPJwyEVaKmQX/qbSw6rap8a7P4wMumpVUdU6UeAYUevHyF5Ku6BkvK8tVjJLtP84AZRb0VGz3/Q==
+X-Received: by 2002:a05:620a:22d3:b0:6a7:2202:62ba with SMTP id o19-20020a05620a22d300b006a7220262bamr1725887qki.148.1655156430164;
+        Mon, 13 Jun 2022 14:40:30 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id r145-20020a37a897000000b006a760640118sm7130943qke.27.2022.06.13.14.40.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 13 Jun 2022 14:40:29 -0700 (PDT)
+Message-ID: <d970c122-4b1b-d30e-8781-2227340b85c3@gmail.com>
+Date:   Mon, 13 Jun 2022 14:39:58 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] net: bgmac: Fix an erroneous kfree() in bgmac_remove()
+Content-Language: en-US
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next 00/15] net: dsa: mv88e6xxx: convert to phylink
- pcs
-Message-ID: <20220613232916.24888d46@thinkpad>
-In-Reply-To: <Yqc0lxn3ngWSuvdS@shell.armlinux.org.uk>
-References: <Yqc0lxn3ngWSuvdS@shell.armlinux.org.uk>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <a026153108dd21239036a032b95c25b5cece253b.1655153616.git.christophe.jaillet@wanadoo.fr>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <a026153108dd21239036a032b95c25b5cece253b.1655153616.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 13 Jun 2022 13:59:03 +0100
-"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
+On 6/13/22 13:53, Christophe JAILLET wrote:
+> 'bgmac' is part of a managed resource allocated with bgmac_alloc(). It
+> should not be freed explicitly.
+> 
+> Remove the erroneous kfree() from the .remove() function.
+> 
+> Fixes: 34a5102c3235 ("net: bgmac: allocate struct bgmac just once & don't copy it"
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-> Hi,
->=20
-> This series converts mv88e6xxx to use phylink pcs, which I believe is
-> the last DSA driver that needs to be converted before we can declare
-> the whole of DSA as non-phylink legacy.
->=20
-> Briefly:
-> Patches 1 and 2 introduce a new phylink_pcs_inband() helper to indicate
-> whether inband AN should be used. Note that the first patch fixes a bug
-> in the current c22 helper where the SGMII exchange with the PHY would
-> be disabled when AN is turned off on the PHY copper side.
->=20
-> Patch 3 gets rid of phylink's internal pcs_ops member, preferring
-> instead to always use the version in the phylink_pcs structure.
-> Changing this pointer is now no longer supported.
->=20
-> Patch 4 makes PCS polling slightly cleaner, avoiding the poll being
-> triggered while we're making changes to the configuration.
->=20
-> Patch 5 and 6 introduce several PCS methods that are fundamentally
-> necessary for mv88e6xxx to work around various issues - for example, in
-> some devices, the PCS must be powered down when the CMODE field in the
-> port control register is changed. In other devices, there are
-> workarounds that need to be performed.
->=20
-> Patch 7 adds unlocked mdiobus and mdiodev accessors to complement the
-> locking versions that are already there - which are needed for some of
-> the mv88e6xxx conversions.
->=20
-> Patch 8 prepares DSA as a whole, adding support for the phylink
-> mac_prepare() and mac_finish() methods. These two methods are used to
-> force the link down over a major reconfiguration event, which has been
-> found by people to be necessary on mv88e6xxx devices. These haven't
-> been required until now as everything has been done via the
-> mac_config() callback - which won't be true once we switch to
-> phylink_pcs.
->=20
-> Patch 9 implements patch 8 on this driver.
->=20
-> Patches 10 and 11 prepare mv88e6xxx for the conversion.
->=20
-> Patches 12 through to 14 convert each "serdes" to phylink_pcs.
->=20
-> Patch 15 cleans up after the conversion.
->=20
->  drivers/net/dsa/mv88e6xxx/Makefile   |    3 +
->  drivers/net/dsa/mv88e6xxx/chip.c     |  480 ++++----------
->  drivers/net/dsa/mv88e6xxx/chip.h     |   25 +-
->  drivers/net/dsa/mv88e6xxx/pcs-6185.c |  158 +++++
->  drivers/net/dsa/mv88e6xxx/pcs-6352.c |  383 +++++++++++
->  drivers/net/dsa/mv88e6xxx/pcs-639x.c |  834 ++++++++++++++++++++++++
->  drivers/net/dsa/mv88e6xxx/port.c     |   30 -
->  drivers/net/dsa/mv88e6xxx/serdes.c   | 1164 ++--------------------------=
-------
->  drivers/net/dsa/mv88e6xxx/serdes.h   |  110 +---
->  drivers/net/phy/mdio_bus.c           |   24 +-
->  drivers/net/phy/phylink.c            |  141 ++--
->  include/linux/mdio.h                 |   26 +
->  include/linux/phylink.h              |   44 ++
->  include/net/dsa.h                    |    6 +
->  net/dsa/port.c                       |   32 +
->  15 files changed, 1826 insertions(+), 1634 deletions(-)
->=20
-
-Tested on Turris MOX, no regressions discovered so far.
-
-Tested-by: Marek Beh=C3=BAn <kabel@kernel.org>
-
-But patches 06/15 and 14/15 need testing on CN9130-CRB: the SFP cage
-needs to be tested in 2500base-x mode, and also switching between
-2500base-x, sgmii, 5gbase-r and 10gbase-r.
-
-Pali, could you find some time for this? I can direct you about how to
-do this.
-
-Marek
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
