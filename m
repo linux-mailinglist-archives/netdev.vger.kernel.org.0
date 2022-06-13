@@ -2,89 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5C29548348
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 11:44:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F6D65482BF
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 11:15:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240791AbiFMJZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 05:25:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
+        id S240626AbiFMJND (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 05:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229577AbiFMJZA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 05:25:00 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB5912AC1;
-        Mon, 13 Jun 2022 02:24:59 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id b8so6228731edj.11;
-        Mon, 13 Jun 2022 02:24:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=D3wprETyB5Skze6ImbSTdKgKlPg/vR+JTv8MyTrSLYA=;
-        b=BkQLGnhbj4tWzVztrwSNDZskNPHTvN7OLCdNEomYH01cAKW/32vISuyW6es9G9qWaw
-         PTboTPCnXURLwRJ3zWAf3fS6s2vf+pEwMAF8TNjhoyQmehvAWc6ZGM4t+j6z90XXohnm
-         KH/VAqoqQQGKvV0KBkXVmRNO1oI/4saeTYC+MvW7wAVrB8ZDkPfE/9DHXWVhlGtRGVc5
-         ZFqWEwrvsJKNr3bKMqtSNRmFVkJPzvR7lBqtp/hibLQhYCWuy23x9sXWNYgCP//wh6Zg
-         Qs5A9s9ymwLtcV0tC9Cd9u3I41+yb+yBLmY5XYajJPyI04M0RmE+R7SEW79nRXxuvvb7
-         uhDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=D3wprETyB5Skze6ImbSTdKgKlPg/vR+JTv8MyTrSLYA=;
-        b=BKrOUveDTxfUkpSeUVNS+MZPBVLvT3vvLaALd77jeuxQ4KT8mpnqHepPoZhYpD517C
-         BdVSTo+TkiJ4gjaRNn56oehqa/8oBAtLVZqiDZsz/AOF15K6/NHT4tAgkpf/MCLCpJTR
-         cQHhnUUTXIANXF5068UmsKeqljuwzUlXgQTM+o5dlEA5HlHtHX5hlKTpKeAstjuTj0qG
-         jh+LtwfI9zea04dOGcflj5+JvWayIuFT1q7f6n9wcXe23MkYvn+OV6lLc3FkylWmZHeS
-         avns9lKWve078mdeYC7VNTQxpm5DNrTsLVeJDVjitSA4vA1mR9HlCIv1u3lfscat9pZv
-         TO8g==
-X-Gm-Message-State: AOAM533SSHeIGMV2kbauDq54F+8+m6LmMf9S656gw1Pe7Eima9B+g+yf
-        Up76VBE/apyhc1KdnZgI6sY=
-X-Google-Smtp-Source: ABdhPJyQFAEfP3q5zIqmL2hPOGbo6BIhG2XR03DQy9P+hCZW+gw5PD+uqurKFBQhqgpvJvYYgEPucQ==
-X-Received: by 2002:a05:6402:84a:b0:423:fe99:8c53 with SMTP id b10-20020a056402084a00b00423fe998c53mr63175580edz.195.1655112298357;
-        Mon, 13 Jun 2022 02:24:58 -0700 (PDT)
-Received: from skbuf ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id ew16-20020a170907951000b0070a80f03a44sm3584692ejc.119.2022.06.13.02.24.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 02:24:57 -0700 (PDT)
-Date:   Mon, 13 Jun 2022 12:24:56 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: Re: [RFC Patch net-next v2 04/15] net: dsa: microchip: move vlan
- functionality to ksz_common
-Message-ID: <20220613092456.o46fumg63vjg53sx@skbuf>
-References: <20220530104257.21485-1-arun.ramadoss@microchip.com>
- <20220530104257.21485-5-arun.ramadoss@microchip.com>
+        with ESMTP id S240687AbiFMJNA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 05:13:00 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F69A10FE9;
+        Mon, 13 Jun 2022 02:12:55 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LM5SF52vHzDqts;
+        Mon, 13 Jun 2022 17:12:29 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 13 Jun 2022 17:12:51 +0800
+Received: from localhost.localdomain (10.175.112.70) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 13 Jun 2022 17:12:50 +0800
+From:   Xu Jia <xujia39@huawei.com>
+To:     <linux-hams@vger.kernel.org>
+CC:     <ajk@comnets.uni-bremen.de>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <xujia39@huawei.com>
+Subject: [PATCH] hamradio: 6pack: fix array-index-out-of-bounds in decode_std_command()
+Date:   Mon, 13 Jun 2022 17:25:37 +0800
+Message-ID: <1655112337-48005-1-git-send-email-xujia39@huawei.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220530104257.21485-5-arun.ramadoss@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.175.112.70]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 30, 2022 at 04:12:46PM +0530, Arun Ramadoss wrote:
-> This patch moves the vlan dsa_switch_ops such as vlan_add, vlan_del and
-> vlan_filtering from the individual files ksz8795.c, ksz9477.c to
-> ksz_common.c file.
-> 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> ---
+Hulk Robot reports incorrect sp->rx_count_cooked value in decode_std_command().
+This should be caused by the subtracting from sp->rx_count_cooked before.
+It seems that sp->rx_count_cooked value is changed to 0, which bypassed the
+previous judgment.
+sp->rx_count_cooked is a shared variable but is not protected by a lock.
+The same applies to sp->rx_count. This patch adds a lock to fix the bug.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+The fail log is shown below:
+=======================================================================
+UBSAN: array-index-out-of-bounds in drivers/net/hamradio/6pack.c:925:31
+index 400 is out of range for type 'unsigned char [400]'
+CPU: 3 PID: 7433 Comm: kworker/u10:1 Not tainted 5.18.0-rc5-00163-g4b97bac0756a #2
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+Workqueue: events_unbound flush_to_ldisc
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xcd/0x134
+ ubsan_epilogue+0xb/0x50
+ __ubsan_handle_out_of_bounds.cold+0x62/0x6c
+ sixpack_receive_buf+0xfda/0x1330
+ tty_ldisc_receive_buf+0x13e/0x180
+ tty_port_default_receive_buf+0x6d/0xa0
+ flush_to_ldisc+0x213/0x3f0
+ process_one_work+0x98f/0x1620
+ worker_thread+0x665/0x1080
+ kthread+0x2e9/0x3a0
+ ret_from_fork+0x1f/0x30
+ ...
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Xu Jia <xujia39@huawei.com>
+---
+ drivers/net/hamradio/6pack.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
+index 45c3c4a..194f22f 100644
+--- a/drivers/net/hamradio/6pack.c
++++ b/drivers/net/hamradio/6pack.c
+@@ -100,6 +100,8 @@ struct sixpack {
+ 	unsigned int		rx_count;
+ 	unsigned int		rx_count_cooked;
+ 
++	spinlock_t		rxlock;
++
+ 	int			mtu;		/* Our mtu (to spot changes!) */
+ 	int			buffsize;       /* Max buffers sizes */
+ 
+@@ -565,6 +567,7 @@ static int sixpack_open(struct tty_struct *tty)
+ 	sp->dev = dev;
+ 
+ 	spin_lock_init(&sp->lock);
++	spin_lock_init(&sp->rxlock);
+ 	refcount_set(&sp->refcnt, 1);
+ 	init_completion(&sp->dead);
+ 
+@@ -913,6 +916,7 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
+ 			sp->led_state = 0x60;
+ 			/* fill trailing bytes with zeroes */
+ 			sp->tty->ops->write(sp->tty, &sp->led_state, 1);
++			spin_lock(&sp->rxlock);
+ 			rest = sp->rx_count;
+ 			if (rest != 0)
+ 				 for (i = rest; i <= 3; i++)
+@@ -930,6 +934,7 @@ static void decode_std_command(struct sixpack *sp, unsigned char cmd)
+ 				sp_bump(sp, 0);
+ 			}
+ 			sp->rx_count_cooked = 0;
++			spin_unlock(&sp->rxlock);
+ 		}
+ 		break;
+ 	case SIXP_TX_URUN: printk(KERN_DEBUG "6pack: TX underrun\n");
+-- 
+1.8.3.1
+
