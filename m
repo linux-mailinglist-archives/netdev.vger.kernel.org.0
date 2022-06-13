@@ -2,128 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4A4254A10A
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 23:14:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFFAA54A115
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 23:15:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351962AbiFMVOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 17:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37150 "EHLO
+        id S243347AbiFMVO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 17:14:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351900AbiFMVNI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 17:13:08 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97A539834
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 13:52:41 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id v143so9139428oie.13
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 13:52:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Ie2xrfdugqSnUY/lUmZJBYqEw/Jj5HQgDROYZDI7Ljg=;
-        b=q8Sos2zHH2cqeJpqAWGopwq4BFpy5d162ZHvWsGBGzD8dXmnX4TsH4oGd9xtjxFj3k
-         kkiT7ORHTaWO7TVdzrFrUtvSJwyodFHKf3kDLk5zfyB6+Q4t7bACoSZoThK4QulFXt66
-         4eu47sTHknmVkiiSbjTEY+HxauLbTxzPeZ3t8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Ie2xrfdugqSnUY/lUmZJBYqEw/Jj5HQgDROYZDI7Ljg=;
-        b=XWYNoca2E0wpdQUrPObKMza5T9e/annhY8F1spt+FhWUfMC1ov4GNIT0LsanY/vnhr
-         Rq0TYJxsr9h91FQjoOxut0zu8TYs39t9ZXCxx06R1JhgvO9PgiFfnYt1PysdXwxEaIeU
-         B3pQUsbc5kI4QcGGSj6n4pYH2TKjdpVYzfWlg/ByomHCZJ7mkMYNC2Wnxw3JwMsGkBK2
-         Pex96bSImWsdqX/LYXHGThszq/Agy5D2RuIBZV8Cpnba3jpvYQLp7ZVhjL3PqCmQqKHh
-         gl3eRpvGs4eGbAQUjZKvmFzVA98Ak+V99SwYDZjHXfoH8QH3ydSbZL0vBJ8+fmKgSvjU
-         EhNQ==
-X-Gm-Message-State: AOAM533n2lmuf+Er4oK23ROqCt9zYNv589v9LB2VgEeij9gOK6hfqrwN
-        2VZaj5fJd5Cu5W/N421pxs6SfA==
-X-Google-Smtp-Source: ABdhPJxwqO943xteTGAgFieA/vZp5/Zn/6Qxyj5rF6Le0Sf8rKMQHGa/+OpWxWOapQGjDXa0MQVMLw==
-X-Received: by 2002:a05:6808:2394:b0:326:d5d6:a4ba with SMTP id bp20-20020a056808239400b00326d5d6a4bamr321996oib.67.1655153561069;
-        Mon, 13 Jun 2022 13:52:41 -0700 (PDT)
-Received: from [192.168.0.41] ([184.4.90.121])
-        by smtp.gmail.com with ESMTPSA id dv8-20020a056870d88800b000f5eb6b409bsm4444747oab.45.2022.06.13.13.52.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 13 Jun 2022 13:52:40 -0700 (PDT)
-Message-ID: <e1b62234-9b8a-e7c2-2946-5ef9f6f23a08@cloudflare.com>
-Date:   Mon, 13 Jun 2022 15:52:38 -0500
+        with ESMTP id S1352167AbiFMVNX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 17:13:23 -0400
+Received: from smtp.smtpout.orange.fr (smtp02.smtpout.orange.fr [80.12.242.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C4BB88
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 13:53:59 -0700 (PDT)
+Received: from pop-os.home ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id 0r4Lo7Na9EMbD0r4Log35N; Mon, 13 Jun 2022 22:53:56 +0200
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Mon, 13 Jun 2022 22:53:56 +0200
+X-ME-IP: 90.11.190.129
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        netdev@vger.kernel.org
+Subject: [PATCH] net: bgmac: Fix an erroneous kfree() in bgmac_remove()
+Date:   Mon, 13 Jun 2022 22:53:50 +0200
+Message-Id: <a026153108dd21239036a032b95c25b5cece253b.1655153616.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3] cred: Propagate security_prepare_creds() error code
-Content-Language: en-US
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-cachefs@redhat.com, linux-cifs@vger.kernel.org,
-        samba-technical@lists.samba.org, linux-mm@kvack.org,
-        linux-nfs@vger.kernel.org, linux-unionfs@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        keyrings@vger.kernel.org, selinux@vger.kernel.org,
-        serge@hallyn.com, amir73il@gmail.com, kernel-team@cloudflare.com,
-        Jeff Moyer <jmoyer@redhat.com>,
-        Paul Moore <paul@paul-moore.com>
-References: <20220608150942.776446-1-fred@cloudflare.com>
- <87tu8oze94.fsf@email.froward.int.ebiederm.org>
-From:   Frederick Lawler <fred@cloudflare.com>
-In-Reply-To: <87tu8oze94.fsf@email.froward.int.ebiederm.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+'bgmac' is part of a managed resource allocated with bgmac_alloc(). It
+should not be freed explicitly.
 
-On 6/13/22 12:04 PM, Eric W. Biederman wrote:
-> Frederick Lawler <fred@cloudflare.com> writes:
-> 
->> While experimenting with the security_prepare_creds() LSM hook, we
->> noticed that our EPERM error code was not propagated up the callstack.
->> Instead ENOMEM is always returned.  As a result, some tools may send a
->> confusing error message to the user:
->>
->> $ unshare -rU
->> unshare: unshare failed: Cannot allocate memory
->>
->> A user would think that the system didn't have enough memory, when
->> instead the action was denied.
->>
->> This problem occurs because prepare_creds() and prepare_kernel_cred()
->> return NULL when security_prepare_creds() returns an error code. Later,
->> functions calling prepare_creds() and prepare_kernel_cred() return
->> ENOMEM because they assume that a NULL meant there was no memory
->> allocated.
->>
->> Fix this by propagating an error code from security_prepare_creds() up
->> the callstack.
-> 
-> Why would it make sense for security_prepare_creds to return an error
-> code other than ENOMEM?
->  > That seems a bit of a violation of what that function is supposed to do
->
+Remove the erroneous kfree() from the .remove() function.
 
-The API allows LSM authors to decide what error code is returned from 
-the cred_prepare hook. security_task_alloc() is a similar hook, and has 
-its return code propagated.
+Fixes: 34a5102c3235 ("net: bgmac: allocate struct bgmac just once & don't copy it"
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/ethernet/broadcom/bgmac-bcma.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-I'm proposing we follow security_task_allocs() pattern, and add 
-visibility for failure cases in prepare_creds().
-
-> I have probably missed a very interesting discussion where that was
-> mentioned but I don't see link to the discussion or anything explaining
-> why we want to do that in this change.
-> 
-
-AFAIK, this is the start of the discussion.
-
-> Eric
-> 
-
+diff --git a/drivers/net/ethernet/broadcom/bgmac-bcma.c b/drivers/net/ethernet/broadcom/bgmac-bcma.c
+index e6f48786949c..02bd3cf9a260 100644
+--- a/drivers/net/ethernet/broadcom/bgmac-bcma.c
++++ b/drivers/net/ethernet/broadcom/bgmac-bcma.c
+@@ -332,7 +332,6 @@ static void bgmac_remove(struct bcma_device *core)
+ 	bcma_mdio_mii_unregister(bgmac->mii_bus);
+ 	bgmac_enet_remove(bgmac);
+ 	bcma_set_drvdata(core, NULL);
+-	kfree(bgmac);
+ }
+ 
+ static struct bcma_driver bgmac_bcma_driver = {
+-- 
+2.34.1
 
