@@ -2,135 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5501547D00
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 02:03:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03A82547D8F
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 04:09:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237930AbiFMADR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 12 Jun 2022 20:03:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47516 "EHLO
+        id S235664AbiFMCJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 12 Jun 2022 22:09:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232350AbiFMADP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 20:03:15 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9BB317058;
-        Sun, 12 Jun 2022 17:03:13 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 25D02OD60026571, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 25D02OD60026571
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 13 Jun 2022 08:02:24 +0800
-Received: from RTEXMBS05.realtek.com.tw (172.21.6.98) by
- RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 13 Jun 2022 08:02:24 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS05.realtek.com.tw (172.21.6.98) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 13 Jun 2022 08:02:24 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
- RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
- 15.01.2308.021; Mon, 13 Jun 2022 08:02:24 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
-CC:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "neojou@gmail.com" <neojou@gmail.com>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "martin.blumenstingl@googlemail.com" 
-        <martin.blumenstingl@googlemail.com>,
-        "linux@ulli-kroll.de" <linux@ulli-kroll.de>
-Subject: Re: [PATCH v2 10/10] rtw88: disable powersave modes for USB devices
-Thread-Topic: [PATCH v2 10/10] rtw88: disable powersave modes for USB devices
-Thread-Index: AQHYdDPI/ma2VkQlBE+TWL8Uknp8la03pxKAgABucQCADm9uAIABp+uAgAPWPgA=
-Date:   Mon, 13 Jun 2022 00:02:23 +0000
-Message-ID: <5ee547c352caee7c2ba8c0f541a305abeef0af9c.camel@realtek.com>
-References: <20220530135457.1104091-1-s.hauer@pengutronix.de>
-         <20220530135457.1104091-11-s.hauer@pengutronix.de>
-         <1493412d473614dfafd4c03832e71f86831fa43b.camel@realtek.com>
-         <20220531074244.GN1615@pengutronix.de>
-         <8443f8e51774a4f80fed494321fcc410e7174bf1.camel@realtek.com>
-         <20220610132627.GO1615@pengutronix.de>
-In-Reply-To: <20220610132627.GO1615@pengutronix.de>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.1-2 
-x-originating-ip: [172.16.16.131]
-x-kse-serverinfo: RTEXMBS05.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzYvMTIg5LiL5Y2IIDEwOjAyOjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <2A5BC8E3DA58764F86E9A18EA082EF29@realtek.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S231376AbiFMCJs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 12 Jun 2022 22:09:48 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DCBC21250;
+        Sun, 12 Jun 2022 19:09:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655086188; x=1686622188;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=+fem5FyudAz01p+w/Af/9mmPzXNj8Wp0IAnkI0tnZHI=;
+  b=UuZBV9GPahHME/ZhZLAoX/3R0Qmgi9pphWTMAe1Jke9hd7wLXC+9Zdgm
+   B76F/osL4vRXkqnBY2ma3dc/WK8qOabL2pSjSPLzEMY0Qu6FjAvFw2Ch2
+   dW+EI/AOiLzEIGrwnOmlK53qk/zO5l9seS4TFND1T8lY5q+z61aqWFMjs
+   /PTAd2yOOWzKi/PRL74SPjVRvZLayD1YAMO/VBdw7QTpwJ0AqeifTQilv
+   1DDyDlkYcG4XOua70QDWH2wLlZRq8kAcOfN4ZI/a+0zMSKtRAbaTD4blX
+   kFx1fN71ZD1pZlObBULmCQC/+G/d9SwYIl202WfBXHMUDPy1CUgIvvGIe
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10376"; a="303526704"
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="303526704"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jun 2022 19:09:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,296,1647327600"; 
+   d="scan'208";a="587525050"
+Received: from shbuild999.sh.intel.com (HELO localhost) ([10.239.146.138])
+  by fmsmga007.fm.intel.com with ESMTP; 12 Jun 2022 19:09:43 -0700
+Date:   Mon, 13 Jun 2022 10:09:43 +0800
+From:   Feng Tang <feng.tang@intel.com>
+To:     Willy Tarreau <w@1wt.eu>, Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        fengwei.yin@intel.com
+Cc:     Moshe Kol <moshe.kol@mail.huji.ac.il>,
+        kernel test robot <oliver.sang@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yossi Gilad <yossi.gilad@mail.huji.ac.il>,
+        Amit Klein <aksecurity@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        lkp@lists.01.org, lkp@intel.com, ying.huang@intel.com,
+        zhengjun.xing@linux.intel.com, fengwei.yin@intel.com
+Subject: Re: [tcp] e926147618: stress-ng.icmp-flood.ops_per_sec -8.7%
+ regression
+Message-ID: <20220613020943.GD75244@shbuild999.sh.intel.com>
+References: <20220608060802.GA22428@xsang-OptiPlex-9020>
+ <20220608064822.GC7547@1wt.eu>
+ <CACi_AuAr70bDB79zg9aAF1rD7e1qGgFwCGCAPYtS-zCp_zA0iw@mail.gmail.com>
+ <20220608073441.GE7547@1wt.eu>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-KSE-Antivirus-Interceptor-Info: fallback
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220608073441.GE7547@1wt.eu>
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDIyLTA2LTEwIGF0IDE1OjI2ICswMjAwLCBzLmhhdWVyQHBlbmd1dHJvbml4LmRl
-IHdyb3RlOg0KPiBPbiBUaHUsIEp1biAwOSwgMjAyMiBhdCAxMjo1MTo0OVBNICswMDAwLCBQaW5n
-LUtlIFNoaWggd3JvdGU6DQo+ID4gDQo+ID4gVG9kYXksIEkgYm9ycm93IGEgODgyMmN1LCBhbmQg
-dXNlIHlvdXIgcGF0Y2hzZXQgYnV0IHJldmVydA0KPiA+IHBhdGNoIDEwLzEwIHRvIHJlcHJvZHVj
-ZSB0aGlzIGlzc3VlLiBXaXRoIGZpcm13YXJlIDcuMy4wLA0KPiA+IGl0IGxvb2tzIGJhZC4gQWZ0
-ZXIgY2hlY2tpbmcgc29tZXRoaW5nIGFib3V0IGZpcm13YXJlLCBJDQo+ID4gZm91bmQgdGhlIGZp
-cm13YXJlIGlzIG9sZCwgc28gdXBncmFkZSB0byA5LjkuMTEsIGFuZCB0aGVuDQo+ID4gaXQgd29y
-a3Mgd2VsbCBmb3IgMTAgbWludXRlcywgbm8gYWJub3JtYWwgbWVzc2FnZXMuDQo+IA0KPiBJIG9y
-aWdpbmFsbHkgdXNlZCBmaXJtd2FyZSA1LjAuMC4gVGhlbiBJIGhhdmUgdHJpZWQgOS45LjYgSSBo
-YXZlIGx5aW5nDQo+IGFyb3VuZCBoZXJlIGZyb20gbXkgZGlzdHJvLiBUaGF0IHZlcnNpb24gYmVo
-YXZlcyBsaWtlIHRoZSBvbGQgNS4wLjANCj4gdmVyc2lvbi4gRmluYWxseSBJIHN3aXRjaGVkIHRv
-IDkuOS4xMSBmcm9tIGN1cnJlbnQgbGludXgtZmlybXdhcmUNCj4gcmVwb3NpdG9yeS4gVGhhdCBk
-b2Vzbid0IHdvcmsgYXQgYWxsIGZvciBtZSB1bmZvcnR1bmF0ZWx5Og0KPiANCj4gWyAgMjIxLjA3
-NjI3OV0gcnR3Xzg4MjJjdSAyLTE6MS4yOiBGaXJtd2FyZSB2ZXJzaW9uIDkuOS4xMSwgSDJDIHZl
-cnNpb24gMTUNCj4gWyAgMjIxLjA3ODQwNV0gcnR3Xzg4MjJjdSAyLTE6MS4yOiBGaXJtd2FyZSB2
-ZXJzaW9uIDkuOS40LCBIMkMgdmVyc2lvbiAxNQ0KPiBbICAyMzkuNzgzMjYxXSB3bGFuMDogYXV0
-aGVudGljYXRlIHdpdGggNzY6ODM6YzI6Y2U6ODM6MGINCj4gWyAgMjQyLjM5ODQzNV0gd2xhbjA6
-IHNlbmQgYXV0aCB0byA3Njo4MzpjMjpjZTo4MzowYiAodHJ5IDEvMykNCj4gWyAgMjQyLjQwMjk5
-Ml0gd2xhbjA6IGF1dGhlbnRpY2F0ZWQNCj4gWyAgMjQyLjQyMDczNV0gd2xhbjA6IGFzc29jaWF0
-ZSB3aXRoIDc2OjgzOmMyOmNlOjgzOjBiICh0cnkgMS8zKQ0KPiBbICAyNDIuNDM3MDk0XSB3bGFu
-MDogUlggQXNzb2NSZXNwIGZyb20gNzY6ODM6YzI6Y2U6ODM6MGIgKGNhcGFiPTB4MTQxMSBzdGF0
-dXM9MCBhaWQ9NCkNCj4gWyAgMjQyLjQ4NTUyMV0gd2xhbjA6IGFzc29jaWF0ZWQNCj4gWyAgMjQy
-LjU2NDg0N10gd2xhbjA6IENvbm5lY3Rpb24gdG8gQVAgNzY6ODM6YzI6Y2U6ODM6MGIgbG9zdA0K
-PiBbICAyNDQuNTc3NjE3XSB3bGFuMDogYXV0aGVudGljYXRlIHdpdGggNzY6ODM6YzI6Y2Q6ODM6
-MGINCj4gWyAgMjQ0LjU3ODI1N10gd2xhbjA6IGJhZCBWSFQgY2FwYWJpbGl0aWVzLCBkaXNhYmxp
-bmcgVkhUDQo+IA0KPiBUaGlzIGdvZXMgb24gZm9yZXZlci4gSSBmaW5hbGx5IHRyaWVkIDkuOS4x
-MCBhbmQgOS45LjksIHRoZXkgYWxzbyBiZWhhdmUNCj4gbGlrZSA5LjkuMTEuDQo+IA0KDQpQbGVh
-c2UgaGVscCBkbyBtb3JlIGV4cGVyaWVtZW50cyBvbiB5b3VyIDg4MjJjdSB3aXRoIHRoZQ0KbGF0
-ZXN0IGZpcm13YXJlIDkuOS4xMS4NCg0KMS4gd2hpY2ggbW9kdWxlIFJGRSB0eXBlIHlvdSBhcmUg
-dXNpbmc/DQogICBNeSA4ODIyY3UgaXMgUkZFIHR5cGUgNC4NCiAgIEdldCB0aGlzIGluZm9ybWF0
-aW9uIGZyb20gDQoNCiAgIGNhdCAvc3lzL2tlcm5lbC9kZWJ1Zy9pZWVlODAyMTEvcGh5WFhYL3J0
-dzg4L2NvZXhfaW5mbw0KDQogICBUaGUgNHRoIGxpbmU6DQogICBNZWNoLyBSRkUgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgID0gTm9uLVNoYXJlZC8gNCAgIA0KDQo0LiBEaXNhYmxlIHBv
-d2VyIHNhdmUgdG8gc2VlIGlmIGl0IHN0aWxsIGRpc2Nvbm5lY3QgZnJvbSBBUA0KDQogICBpdyB3
-bGFuMCBzZXQgcG93ZXJfc2F2ZSBvZmYNCg0KICAgSWYgdGhpcyBjYW4gd29yayB3ZWxsLCBzdGls
-bCBwb3dlciBzYXZlIG1vZGUgd29ya3MgYWJub3JtYWwuDQoNCjMuIERpc2FibGUga2VlcC1hbGl2
-ZS4gKHdpdGggcG93ZXJfc2F2ZSBvbikNCg0KLS0tIGEvbWFpbi5jDQorKysgYi9tYWluLmMNCkBA
-IC0yMTk5LDYgKzIxOTksNyBAQCBpbnQgcnR3X3JlZ2lzdGVyX2h3KHN0cnVjdCBydHdfZGV2ICpy
-dHdkZXYsIHN0cnVjdCBpZWVlODAyMTFfaHcgKmh3KQ0KICAgICAgICBpZWVlODAyMTFfaHdfc2V0
-KGh3LCBIQVNfUkFURV9DT05UUk9MKTsNCiAgICAgICAgaWVlZTgwMjExX2h3X3NldChodywgVFhf
-QU1TRFUpOw0KICAgICAgICBpZWVlODAyMTFfaHdfc2V0KGh3LCBTSU5HTEVfU0NBTl9PTl9BTExf
-QkFORFMpOw0KKyAgICAgICBpZWVlODAyMTFfaHdfc2V0KGh3LCBDT05ORUNUSU9OX01PTklUT1Ip
-Ow0KDQogICBUaGlzIGNhbiBtYWtlIGl0IHN0aWxsIGNvbm5lY3RlZCBldmVuIGl0IGRvZXNuJ3Qg
-cmVjZWl2ZSBhbnl0aGluZy4NCiAgIENoZWNrIGlmIGl0IGNhbiBsZWF2ZSBwb3dlciBzYXZlIHdp
-dGhvdXQgYWJub3JtYWwgbWVzc2FnZXMuDQoNCjQuIFVTQiBpbnRlcmZlcmVuY2UNCg0KICAgVmVy
-eSBsb3cgcG9zc2liaWxpdHksIGJ1dCBzaW1wbHkgdHJ5IFVTQiAyLjAgYW5kIDMuMCBwb3J0cy4N
-Cg0KNS4gVHJ5IGFub3RoZXIgQVAgd29ya2luZyBvbiBkaWZmZXJlbnQgYmFuZCAoMi40R0h6IG9y
-IDVHaHopDQoNCg0KSSB3aXNlIHRoZXNlIGNhbiBuYXJyb3cgZG93biB0aGUgcHJvYmxlbSB5b3Ug
-bWV0Lg0KDQpQaW5nLUtlDQoNCg0K
+Hi,
+
+On Wed, Jun 08, 2022 at 09:34:41AM +0200, Willy Tarreau wrote:
+> On Wed, Jun 08, 2022 at 10:26:12AM +0300, Moshe Kol wrote:
+> > Hmm, How is the ICMP flood stress test related to TCP connections?
+> 
+> To me it's not directly related, unless the test pre-establishes many
+> connections, or is affected in a way or another by a larger memory
+> allocation of this part.
+
+Fengwei and I discussed and thought this could be a data alignment
+related case, that one module's data alignment change affects other
+modules' alignment, and we had a patch for detecting similar cases [1]
+
+After some debugging, this could be related with the bss section
+alignment changes, that if we forced all module's bss section to be
+4KB aligned, then the stress-ng icmp-flood case will have almost no
+performance difference for the 2 commits: 
+
+10025135            +0.8%   10105711 ±  2%  stress-ng.icmp-flood.ops_per_sec
+
+The debug patch is:
+
+diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
+index 7fda7f27e7620..7eb626b98620c 100644
+--- a/arch/x86/kernel/vmlinux.lds.S
++++ b/arch/x86/kernel/vmlinux.lds.S
+@@ -378,7 +378,9 @@ SECTIONS
+ 
+ 	/* BSS */
+ 	. = ALIGN(PAGE_SIZE);
+-	.bss : AT(ADDR(.bss) - LOAD_OFFSET) {
++	.bss : AT(ADDR(.bss) - LOAD_OFFSET)
++	SUBALIGN(PAGE_SIZE)
++	{
+ 		__bss_start = .;
+ 		*(.bss..page_aligned)
+ 		. = ALIGN(PAGE_SIZE);
+
+The 'table_perturb[]' used to be in bss section, and with the commit
+of moving it to runtime allocation, other data structures following it
+in the .bss section will get affected accordingly.
+
+Thanks,
+Feng
+
+
+> Willy
