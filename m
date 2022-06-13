@@ -2,63 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31C00548DA0
-	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 18:16:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 824CF54888E
+	for <lists+netdev@lfdr.de>; Mon, 13 Jun 2022 18:02:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345168AbiFMP3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 11:29:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48622 "EHLO
+        id S242256AbiFMPph (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 11:45:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353857AbiFMP25 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 11:28:57 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 962B213F924
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 06:01:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=GnPUcciBsNHuHtc8e8A+9JTQ3Zlg1dFERbLWHWxlr7o=; b=Cc09cWgVuot1VfVaXb9i2xD+MT
-        h5aADWOK9ejUL7WS0tszGGpB3MCJPf68zdKI5owMDgmmGiL2zWwrRvLEzT6BWDIV+8/U1/R9/kFzU
-        7x5HDpeGCO9puiYucXU62FcWZiEm/INRyRel8ZwJgFsLfH7+q4j8MymP57i6EMdlTnL113JIpB/Fb
-        HDwKm/wEVYIJFHMzxSwh2oSr4w6A7PSqBMj8e5LDlu9XieuhR3KlBVgulqETgGkEMcNgsq57/UmmH
-        d6rfwUA0KY9Q9uV7mGK0Ksdwjz4zD8YS1cKfpdGcmj5HwYP7MPK+ppARxM++VpqAV9jY2Woe+/m04
-        ii7O7NrA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:52106 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1o0jhK-0001tb-Ed; Mon, 13 Jun 2022 14:01:38 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1o0jhJ-000JZZ-Q5; Mon, 13 Jun 2022 14:01:37 +0100
-In-Reply-To: <Yqc0lxn3ngWSuvdS@shell.armlinux.org.uk>
-References: <Yqc0lxn3ngWSuvdS@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 15/15] net: dsa: mv88e6xxx: cleanup after phylink_pcs
- conversion
-MIME-Version: 1.0
-Content-Disposition: inline
+        with ESMTP id S243386AbiFMPpU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 11:45:20 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2078.outbound.protection.outlook.com [40.107.243.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B1816CF50
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 06:22:41 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Y7YXCdfOjkZVG+XGq6mgw/huflpUO+GUEzrWQsdmSGODPpQjOdr1fJQ5SEXazf7Y61aYjfyErUYKrjJIiYkHH/ysTe1Q1LleN6o5OYPRG28Usm1PtuVudz+T5VnVkxD2LkOtF6x3K60chuqa9RaduhS2HSs0TlIWxqg15OwA2khIdw9FWN5K04HMRd6Bq8b+Hr6riL3pMcnAuzhtalSTAbhV2Ggm497j2Z+k2e8mhuQsoKQYyC2KntUgZFVrHovE2PFwhLlnTNjs5d47GEf94dLYwtiHJ/xmF9jOnq5iIVWLtEcsRuWp6pL5IHTB9uW62yTagbofOSdTSQfLaUagyA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=neQNqRZanJ1OG0gOXd3Kam0wtV+AJxZKSoPM32nFZq4=;
+ b=hZovuRDICB2JFiR6UTt71imgcLtnSKjCFWvzkCZUXgwax9y8PCFKj3cfSo7QlrfNykP4i01HfqEUO8vno2zqdPaCF7gE9TMQHcCKt/rEa+fiFP+y2fz/n1vdsWFpcokVMRZ8X99KkEGgSZctQOFRf3Gtq1GASpzR/lRyLO8e9F4ueU+VP9U+8V6TV4ekJhl05dd37Jqk49fACYVMlTPcCU8xCl6/A7bIrbUdMY9GddRRiOw4xzgFi9sOLn+O7g0Y2nN23FzkIknjTiXLdDQdPemvPmvo16vegY6PDS7+PtOwC5MAwZpXTpAjeWubsQ3BYFkUsHUSvqH1TaaWq2hWSQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=neQNqRZanJ1OG0gOXd3Kam0wtV+AJxZKSoPM32nFZq4=;
+ b=EIMgKGHYeGkqJGJsrps5ybBS1AZEUG/7uWwo0in4vk1bYJ1LIPR7cc1YRGDYIpoTo+EjQUeeSeEa9peFYjdcnd6s5zARVuLq3Z9/h5avAVF7y9QwXUZcqr7j5TG40pM63JbA7V1Xt9Uk+mEUCZBlqZJwJV2WvthyWq6ZGT7/Kli/KgDA/ClS0sjpZ/9CF7TrMMqn1lc6viQ8QtTDqaOh0zvoDVAH8MBiklkgusqsDSH+CT7u4dT6jFXWiv4CbXTPsaVTnKvzukwslpNdDueEYD8iwrL2fTFnRFEEQ/sAbR/P+R0ooghwxrPgd6+7giczd/6iN1a2+h8HRmNZUXTI1Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by BL1PR12MB5361.namprd12.prod.outlook.com (2603:10b6:208:31f::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Mon, 13 Jun
+ 2022 13:21:57 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::9157:69c9:ea8f:8190]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::9157:69c9:ea8f:8190%7]) with mapi id 15.20.5332.020; Mon, 13 Jun 2022
+ 13:21:57 +0000
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, petrm@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net-next 0/3] mlxsw: Remove XM support
+Date:   Mon, 13 Jun 2022 16:21:13 +0300
+Message-Id: <20220613132116.2021055-1-idosch@nvidia.com>
+X-Mailer: git-send-email 2.36.1
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1o0jhJ-000JZZ-Q5@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Mon, 13 Jun 2022 14:01:37 +0100
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+Content-Type: text/plain
+X-ClientProxiedBy: MR1P264CA0166.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:501:55::7) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8628f1e1-9905-44d8-24d1-08da4d3fb0f2
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5361:EE_
+X-Microsoft-Antispam-PRVS: <BL1PR12MB536128FF88DA72B025E22D4AB2AB9@BL1PR12MB5361.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HYFiYyDzdpSY3b+yu8v+GwAG+czTs9i3tM2+WH/iBqbZTOSV935k/f1Opw4I9qSqVa593XLPX6a82U06+sTFs3xwVDcp7CqzwcvM+m20NQ3v+bATxir2OwSqsG2IPDk5Ph4z4lOJ+tPfUgrXvQOntzob/S5bla0vW3G+UaK/tSWO8onVqJ3Z87FSsBcrm96/tHfsdWuVgGrntdCwY2LoPzW2U3Eb0kFQhIevkYXuWEbQIOChirE4hAjFysq7dIMQSChVA9FuCoB7r+9GKXvQAou8AGfJ2iu6w/RcQEy8ORghkVG+z/aYjZwLgnjAsJt8VI1lZuMhV5DRoTFrgWgzQNfpO443ylQDxz0dqhV+N6GBBS1G1e7nVec3d4RtGAaLfuAzQn26HkF/4BOgNOk8zh4DVXIjiUZqgB6r68n86RDj3iTc/9mLDApIZK4AP88tCcoMqOVdTBo4kwpJ7zc/Pu2YvSBeJD7iJHkzNYEw4kbp05H7mQNcCoPjWBhykTLuBt5EKLKrYwaYCzkoOvC8PJyXRiBOoVB8WKCRUeExCLQoy8ewmvOUYTDi8qsgL7nv7hOYiuMfGRHRLhS/+J9BYje6ZCXC2RTkV4pNGyCvAJ3llhw8k7VSAcBfzN13eKM6d/GwRSus4iHwYoHoOc4KuQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(316002)(6916009)(36756003)(66476007)(4326008)(66946007)(38100700002)(2906002)(8676002)(107886003)(86362001)(6666004)(66556008)(66574015)(8936002)(6486002)(6512007)(2616005)(26005)(5660300002)(6506007)(83380400001)(1076003)(508600001)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DuB15BbLVSTBZ2KT4uSVkBWpAuPsHbsyFw7s0QoEmRbt1kluRxuYlQwnU3gC?=
+ =?us-ascii?Q?ehUoFxNWLiYuiEpOOaQwn6SFtxJReie+CrXSU66GzdtJb9myJ9+rgj4EvLRx?=
+ =?us-ascii?Q?D+o+VmyG8Xx7LLxXhRIR7ubMuNk51kdkNpD6J367zBz5rYqKwC4rdzC8dyk0?=
+ =?us-ascii?Q?BeFPjhIVvpYtlX7koDYRiDS3V4Ft5MtcknVUVjSoIdPyCWsPHAKMKHUdPzJL?=
+ =?us-ascii?Q?tQTPMbDaLDnNX3ZI6H7nNUhyjvX1arW5QttWRpkVBrCf6Udhs7IWi5chHLgz?=
+ =?us-ascii?Q?bGNiodSSvbHHUEBgIfD2bGFMvAs63+tH0A7M3cho6pyDOrnCV1cwWyGNb529?=
+ =?us-ascii?Q?Y1AHQ2WW0YcwlSwEegWadFrsiaQZvD94bwtgd6UoaVJhJ7Pv+TBWP8bXN2xV?=
+ =?us-ascii?Q?rr6EXM7wN6Ozd29d1/Uh7U0dY5y5YT194Qba1WG9tfnxa8lKSjYkey/hz6sI?=
+ =?us-ascii?Q?osvZNZe0Fs9+QUR3YqQYEGGM16XcvLuQKqZLcXTlUB43MBHFbZDB+KnjxeUK?=
+ =?us-ascii?Q?ahzLpvKThT/HayHtDaKlbCH/o7tEPA7bI5yTP1iMSq+lxCzGDP1zic4X10Ig?=
+ =?us-ascii?Q?sLC/zSN1FttmmCRM89GCxa6LODXozhBFZVeNiCfwPMieDCyX/ZpQwGpzYztY?=
+ =?us-ascii?Q?Vfn/htN3ocADq6kfpFCa50GAsbu1SwYqt9OtE55T8XbmGPCDJvZjHuy0hNfw?=
+ =?us-ascii?Q?duADWVHy6e6zays5ICDugZB5XlPXiiCTM1UPPHMchusKWBkNdLwt7MrOMxPA?=
+ =?us-ascii?Q?PmRxhRWLTY9zhbtRW/pDjyAq349+AKLyYSQ9WKyCdZ1g/TeW/HE+mP+ss6PF?=
+ =?us-ascii?Q?6fPleslgV26Ug9ddMN7tg4J2GbHjcyfXIetTmAMUjj4yrKHkGiezC8Acvjvk?=
+ =?us-ascii?Q?eMq48aSjz17tgkSee/TdQ1J4U4uT75JTTJOuaB7HDkg58Wu3rj28ahPtVciI?=
+ =?us-ascii?Q?vbg54WTUzCrqvJJvzIFmArQD2JKrt0dZm2aUNWalNFMUFutoASkgkcpLsaq6?=
+ =?us-ascii?Q?BZDxvC/mrJiiFzyFNbvPHsZkMFQsSW9teHTqAlCEuR1xcn5pIrn6VyAdjJMq?=
+ =?us-ascii?Q?oAO5PBBr09n8Mua/znUKVmaSt7ud9yzoJiqtJgAXXwn4NlrHjt+UEn8dkaqj?=
+ =?us-ascii?Q?kBo0TgQ7PSGjRmrgcEygIiQZNA4G77Tl8TWTFxDD1iyk4Pu9ToKWe89w6iY6?=
+ =?us-ascii?Q?4+nX+MqhnLJqmsuIELBFvntZzQhbtOyIrffxf0qr97p1O3c7ksAvyCS/qnTt?=
+ =?us-ascii?Q?6U1FqM9HGQYZO/7RmKyzJ3aDuy8Ja0Kgtwj1x9HBNTZ/4EfzWLT7o2ZkmVxW?=
+ =?us-ascii?Q?wi41Dh27jJP9sYy3XWm+YeKG/iOjWKB7efYk/K9T05LVr++pbIuOR1QmJZW6?=
+ =?us-ascii?Q?dQu9ctJfqzXEJAb/OTelbsZxoBJU9NYSJ/UT88d6DFDSJ2+Fp62dxaYo6hdv?=
+ =?us-ascii?Q?pLNGy96c7m2Jha/SYAD/YWeVirv1L9O9yGJPhGREKxke4+0VaddJQjedRuMi?=
+ =?us-ascii?Q?d5w55coKuTpXD36aivYk5GnzTvUPfkWvPxlaPR/CJoxhYM6+ivxNCNOEr1M5?=
+ =?us-ascii?Q?m30F9gdR7DdrZ2y/iG7H0BwXWHX4zD8bF9/uJvvVhTM525UaKSLj0MI68G0o?=
+ =?us-ascii?Q?4Orp0ky7zk6+UHLfozvrePqrs/gz6o0aMSelX0aBWkq8Bacy3oHNS5yDZ36e?=
+ =?us-ascii?Q?W3F0RZre1opgOXNDr4yug6yAf0eRjVmbXZX8kNdrQsC1P0pHfByi8I5cfDoA?=
+ =?us-ascii?Q?NjfC5bHQrg=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8628f1e1-9905-44d8-24d1-08da4d3fb0f2
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jun 2022 13:21:57.4689
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uB+XOqLGu+wkvyCqgMihYSG2EloQRUVLWAxjEf8vwtKQGQoUdcQaXVePzTKkjMDF1oC+gZElJAZFu0hb2zHVgQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5361
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,490 +116,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that mv88e6xxx is completely converted to using phylink_pcs
-support, we have no need for the serdes methods. Remove all this
-infrastructure. Also remove the __maybe_unused from
-mv88e6xxx_pcs_select()
+The XM was supposed to be an external device connected to the
+Spectrum-{2,3} ASICs using dedicated Ethernet ports. Its purpose was to
+increase the number of routes that can be offloaded to hardware. This was
+achieved by having the ASIC act as a cache that refers cache misses to the
+XM where the FIB is stored and LPM lookup is performed.
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/dsa/mv88e6xxx/chip.c   | 236 +----------------------------
- drivers/net/dsa/mv88e6xxx/chip.h   |  21 ---
- drivers/net/dsa/mv88e6xxx/port.c   |  30 ----
- drivers/net/dsa/mv88e6xxx/serdes.h |  45 ------
- 4 files changed, 5 insertions(+), 327 deletions(-)
+Testing was done over an emulator and dedicated setups in the lab, but
+the product was discontinued before shipping to customers.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index a3cd3dadeb1f..39542b52f24a 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -495,81 +495,6 @@ static int mv88e6xxx_port_ppu_updates(struct mv88e6xxx_chip *chip, int port)
- 	return !!(reg & MV88E6XXX_PORT_STS_PHY_DETECT);
- }
- 
--static int mv88e6xxx_serdes_pcs_get_state(struct dsa_switch *ds, int port,
--					  struct phylink_link_state *state)
--{
--	struct mv88e6xxx_chip *chip = ds->priv;
--	int lane;
--	int err;
--
--	mv88e6xxx_reg_lock(chip);
--	lane = mv88e6xxx_serdes_get_lane(chip, port);
--	if (lane >= 0 && chip->info->ops->serdes_pcs_get_state)
--		err = chip->info->ops->serdes_pcs_get_state(chip, port, lane,
--							    state);
--	else
--		err = -EOPNOTSUPP;
--	mv88e6xxx_reg_unlock(chip);
--
--	return err;
--}
--
--static int mv88e6xxx_serdes_pcs_config(struct mv88e6xxx_chip *chip, int port,
--				       unsigned int mode,
--				       phy_interface_t interface,
--				       const unsigned long *advertise)
--{
--	const struct mv88e6xxx_ops *ops = chip->info->ops;
--	int lane;
--
--	if (ops->serdes_pcs_config) {
--		lane = mv88e6xxx_serdes_get_lane(chip, port);
--		if (lane >= 0)
--			return ops->serdes_pcs_config(chip, port, lane, mode,
--						      interface, advertise);
--	}
--
--	return 0;
--}
--
--static void mv88e6xxx_serdes_pcs_an_restart(struct dsa_switch *ds, int port)
--{
--	struct mv88e6xxx_chip *chip = ds->priv;
--	const struct mv88e6xxx_ops *ops;
--	int err = 0;
--	int lane;
--
--	ops = chip->info->ops;
--
--	if (ops->serdes_pcs_an_restart) {
--		mv88e6xxx_reg_lock(chip);
--		lane = mv88e6xxx_serdes_get_lane(chip, port);
--		if (lane >= 0)
--			err = ops->serdes_pcs_an_restart(chip, port, lane);
--		mv88e6xxx_reg_unlock(chip);
--
--		if (err)
--			dev_err(ds->dev, "p%d: failed to restart AN\n", port);
--	}
--}
--
--static int mv88e6xxx_serdes_pcs_link_up(struct mv88e6xxx_chip *chip, int port,
--					unsigned int mode,
--					int speed, int duplex)
--{
--	const struct mv88e6xxx_ops *ops = chip->info->ops;
--	int lane;
--
--	if (!phylink_autoneg_inband(mode) && ops->serdes_pcs_link_up) {
--		lane = mv88e6xxx_serdes_get_lane(chip, port);
--		if (lane >= 0)
--			return ops->serdes_pcs_link_up(chip, port, lane,
--						       speed, duplex);
--	}
--
--	return 0;
--}
--
- static const u8 mv88e6185_phy_interface_modes[] = {
- 	[MV88E6185_PORT_STS_CMODE_GMII_FD]	 = PHY_INTERFACE_MODE_GMII,
- 	[MV88E6185_PORT_STS_CMODE_MII_100_FD_PS] = PHY_INTERFACE_MODE_MII,
-@@ -833,15 +758,8 @@ static void mv88e6xxx_get_caps(struct dsa_switch *ds, int port,
- 		__set_bit(PHY_INTERFACE_MODE_GMII,
- 			  config->supported_interfaces);
- 
--	/* If we have a .pcs_init, or don't have a .serdes_pcs_get_state,
--	 * serdes_pcs_config, serdes_pcs_an_restart, or serdes_pcs_link_up,
--	 * we are not legacy.
--	 */
--	if (chip->info->ops->pcs_init ||
--	    (!chip->info->ops->serdes_pcs_get_state &&
--	     !chip->info->ops->serdes_pcs_config &&
--	     !chip->info->ops->serdes_pcs_an_restart &&
--	     !chip->info->ops->serdes_pcs_link_up))
-+	/* If we have a .pcs_init, we are not legacy. */
-+	if (chip->info->ops->pcs_init)
- 		config->legacy_pre_march2020 = false;
- }
- 
-@@ -852,9 +770,9 @@ static struct phylink_pcs *mv88e6xxx_pcs_select(struct mv88e6xxx_chip *chip,
- 	return chip->ports[port].pcs_private;
- }
- 
--static struct phylink_pcs *__maybe_unused
--mv88e6xxx_mac_select_pcs(struct dsa_switch *ds, int port,
--			 phy_interface_t interface)
-+static struct phylink_pcs *mv88e6xxx_mac_select_pcs(struct dsa_switch *ds,
-+						    int port,
-+						    phy_interface_t interface)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	struct phylink_pcs *pcs = NULL;
-@@ -901,16 +819,6 @@ static void mv88e6xxx_mac_config(struct dsa_switch *ds, int port,
- 						      state->interface);
- 		if (err && err != -EOPNOTSUPP)
- 			goto err_unlock;
--
--		err = mv88e6xxx_serdes_pcs_config(chip, port, mode,
--						  state->interface,
--						  state->advertising);
--		/* FIXME: we should restart negotiation if something changed -
--		 * which is something we get if we convert to using phylinks
--		 * PCS operations.
--		 */
--		if (err > 0)
--			err = 0;
- 	}
- 
- err_unlock:
-@@ -994,17 +902,6 @@ static void mv88e6xxx_mac_link_up(struct dsa_switch *ds, int port,
- 	 */
- 	if (!mv88e6xxx_port_ppu_updates(chip, port) ||
- 	    mode == MLO_AN_FIXED) {
--		/* FIXME: for an automedia port, should we force the link
--		 * down here - what if the link comes up due to "other" media
--		 * while we're bringing the port up, how is the exclusivity
--		 * handled in the Marvell hardware? E.g. port 2 on 88E6390
--		 * shared between internal PHY and Serdes.
--		 */
--		err = mv88e6xxx_serdes_pcs_link_up(chip, port, mode, speed,
--						   duplex);
--		if (err)
--			goto error;
--
- 		if (ops->port_set_speed_duplex) {
- 			err = ops->port_set_speed_duplex(chip, port,
- 							 speed, duplex);
-@@ -3175,102 +3072,6 @@ static int mv88e6xxx_setup_egress_floods(struct mv88e6xxx_chip *chip, int port)
- 	return 0;
- }
- 
--static irqreturn_t mv88e6xxx_serdes_irq_thread_fn(int irq, void *dev_id)
--{
--	struct mv88e6xxx_port *mvp = dev_id;
--	struct mv88e6xxx_chip *chip = mvp->chip;
--	irqreturn_t ret = IRQ_NONE;
--	int port = mvp->port;
--	int lane;
--
--	mv88e6xxx_reg_lock(chip);
--	lane = mv88e6xxx_serdes_get_lane(chip, port);
--	if (lane >= 0)
--		ret = mv88e6xxx_serdes_irq_status(chip, port, lane);
--	mv88e6xxx_reg_unlock(chip);
--
--	return ret;
--}
--
--static int mv88e6xxx_serdes_irq_request(struct mv88e6xxx_chip *chip, int port,
--					int lane)
--{
--	struct mv88e6xxx_port *dev_id = &chip->ports[port];
--	unsigned int irq;
--	int err;
--
--	/* Nothing to request if this SERDES port has no IRQ */
--	irq = mv88e6xxx_serdes_irq_mapping(chip, port);
--	if (!irq)
--		return 0;
--
--	snprintf(dev_id->serdes_irq_name, sizeof(dev_id->serdes_irq_name),
--		 "mv88e6xxx-%s-serdes-%d", dev_name(chip->dev), port);
--
--	/* Requesting the IRQ will trigger IRQ callbacks, so release the lock */
--	mv88e6xxx_reg_unlock(chip);
--	err = request_threaded_irq(irq, NULL, mv88e6xxx_serdes_irq_thread_fn,
--				   IRQF_ONESHOT, dev_id->serdes_irq_name,
--				   dev_id);
--	mv88e6xxx_reg_lock(chip);
--	if (err)
--		return err;
--
--	dev_id->serdes_irq = irq;
--
--	return mv88e6xxx_serdes_irq_enable(chip, port, lane);
--}
--
--static int mv88e6xxx_serdes_irq_free(struct mv88e6xxx_chip *chip, int port,
--				     int lane)
--{
--	struct mv88e6xxx_port *dev_id = &chip->ports[port];
--	unsigned int irq = dev_id->serdes_irq;
--	int err;
--
--	/* Nothing to free if no IRQ has been requested */
--	if (!irq)
--		return 0;
--
--	err = mv88e6xxx_serdes_irq_disable(chip, port, lane);
--
--	/* Freeing the IRQ will trigger IRQ callbacks, so release the lock */
--	mv88e6xxx_reg_unlock(chip);
--	free_irq(irq, dev_id);
--	mv88e6xxx_reg_lock(chip);
--
--	dev_id->serdes_irq = 0;
--
--	return err;
--}
--
--static int mv88e6xxx_serdes_power(struct mv88e6xxx_chip *chip, int port,
--				  bool on)
--{
--	int lane;
--	int err;
--
--	lane = mv88e6xxx_serdes_get_lane(chip, port);
--	if (lane < 0)
--		return 0;
--
--	if (on) {
--		err = mv88e6xxx_serdes_power_up(chip, port, lane);
--		if (err)
--			return err;
--
--		err = mv88e6xxx_serdes_irq_request(chip, port, lane);
--	} else {
--		err = mv88e6xxx_serdes_irq_free(chip, port, lane);
--		if (err)
--			return err;
--
--		err = mv88e6xxx_serdes_power_down(chip, port, lane);
--	}
--
--	return err;
--}
--
- static int mv88e6xxx_set_egress_port(struct mv88e6xxx_chip *chip,
- 				     enum mv88e6xxx_egress_direction direction,
- 				     int port)
-@@ -3593,29 +3394,6 @@ static int mv88e6xxx_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
- 	return ret;
- }
- 
--static int mv88e6xxx_port_enable(struct dsa_switch *ds, int port,
--				 struct phy_device *phydev)
--{
--	struct mv88e6xxx_chip *chip = ds->priv;
--	int err;
--
--	mv88e6xxx_reg_lock(chip);
--	err = mv88e6xxx_serdes_power(chip, port, true);
--	mv88e6xxx_reg_unlock(chip);
--
--	return err;
--}
--
--static void mv88e6xxx_port_disable(struct dsa_switch *ds, int port)
--{
--	struct mv88e6xxx_chip *chip = ds->priv;
--
--	mv88e6xxx_reg_lock(chip);
--	if (mv88e6xxx_serdes_power(chip, port, false))
--		dev_err(chip->dev, "failed to power off SERDES\n");
--	mv88e6xxx_reg_unlock(chip);
--}
--
- static int mv88e6xxx_set_ageing_time(struct dsa_switch *ds,
- 				     unsigned int ageing_time)
- {
-@@ -6839,18 +6617,14 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
- 	.port_teardown		= mv88e6xxx_port_teardown,
- 	.phylink_get_caps	= mv88e6xxx_get_caps,
- 	.phylink_mac_select_pcs	= mv88e6xxx_mac_select_pcs,
--	.phylink_mac_link_state	= mv88e6xxx_serdes_pcs_get_state,
- 	.phylink_mac_prepare	= mv88e6xxx_mac_prepare,
- 	.phylink_mac_config	= mv88e6xxx_mac_config,
- 	.phylink_mac_finish	= mv88e6xxx_mac_finish,
--	.phylink_mac_an_restart	= mv88e6xxx_serdes_pcs_an_restart,
- 	.phylink_mac_link_down	= mv88e6xxx_mac_link_down,
- 	.phylink_mac_link_up	= mv88e6xxx_mac_link_up,
- 	.get_strings		= mv88e6xxx_get_strings,
- 	.get_ethtool_stats	= mv88e6xxx_get_ethtool_stats,
- 	.get_sset_count		= mv88e6xxx_get_sset_count,
--	.port_enable		= mv88e6xxx_port_enable,
--	.port_disable		= mv88e6xxx_port_disable,
- 	.port_max_mtu		= mv88e6xxx_get_max_mtu,
- 	.port_change_mtu	= mv88e6xxx_change_mtu,
- 	.get_mac_eee		= mv88e6xxx_get_mac_eee,
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index 55e1baa614af..88814583f4c6 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -277,8 +277,6 @@ struct mv88e6xxx_port {
- 	u8 cmode;
- 	bool mirror_ingress;
- 	bool mirror_egress;
--	unsigned int serdes_irq;
--	char serdes_irq_name[64];
- 	struct devlink_region *region;
- 	void *pcs_private;
- };
-@@ -573,10 +571,6 @@ struct mv88e6xxx_ops {
- 
- 	int (*mgmt_rsvd2cpu)(struct mv88e6xxx_chip *chip);
- 
--	/* Power on/off a SERDES interface */
--	int (*serdes_power)(struct mv88e6xxx_chip *chip, int port, int lane,
--			    bool up);
--
- 	/* SERDES lane mapping */
- 	int (*serdes_get_lane)(struct mv88e6xxx_chip *chip, int port);
- 
-@@ -585,24 +579,9 @@ struct mv88e6xxx_ops {
- 	struct phylink_pcs *(*pcs_select)(struct mv88e6xxx_chip *chip, int port,
- 					  phy_interface_t mode);
- 
--	int (*serdes_pcs_get_state)(struct mv88e6xxx_chip *chip, int port,
--				    int lane, struct phylink_link_state *state);
--	int (*serdes_pcs_config)(struct mv88e6xxx_chip *chip, int port,
--				 int lane, unsigned int mode,
--				 phy_interface_t interface,
--				 const unsigned long *advertise);
--	int (*serdes_pcs_an_restart)(struct mv88e6xxx_chip *chip, int port,
--				     int lane);
--	int (*serdes_pcs_link_up)(struct mv88e6xxx_chip *chip, int port,
--				  int lane, int speed, int duplex);
--
- 	/* SERDES interrupt handling */
- 	unsigned int (*serdes_irq_mapping)(struct mv88e6xxx_chip *chip,
- 					   int port);
--	int (*serdes_irq_enable)(struct mv88e6xxx_chip *chip, int port, int lane,
--				 bool enable);
--	irqreturn_t (*serdes_irq_status)(struct mv88e6xxx_chip *chip, int port,
--					 int lane);
- 
- 	/* Statistics from the SERDES interface */
- 	int (*serdes_get_sset_count)(struct mv88e6xxx_chip *chip, int port);
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index 795b3128768f..4209008b51e9 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -539,7 +539,6 @@ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 				    phy_interface_t mode, bool force)
- {
- 	u16 cmode;
--	int lane;
- 	u16 reg;
- 	int err;
- 
-@@ -583,19 +582,6 @@ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 	if (cmode == chip->ports[port].cmode && !force)
- 		return 0;
- 
--	lane = mv88e6xxx_serdes_get_lane(chip, port);
--	if (lane >= 0) {
--		if (chip->ports[port].serdes_irq) {
--			err = mv88e6xxx_serdes_irq_disable(chip, port, lane);
--			if (err)
--				return err;
--		}
--
--		err = mv88e6xxx_serdes_power_down(chip, port, lane);
--		if (err)
--			return err;
--	}
--
- 	chip->ports[port].cmode = 0;
- 
- 	if (cmode) {
-@@ -611,22 +597,6 @@ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 			return err;
- 
- 		chip->ports[port].cmode = cmode;
--
--		lane = mv88e6xxx_serdes_get_lane(chip, port);
--		if (lane == -ENODEV)
--			return 0;
--		if (lane < 0)
--			return lane;
--
--		err = mv88e6xxx_serdes_power_up(chip, port, lane);
--		if (err)
--			return err;
--
--		if (chip->ports[port].serdes_irq) {
--			err = mv88e6xxx_serdes_irq_enable(chip, port, lane);
--			if (err)
--				return err;
--		}
- 	}
- 
- 	return 0;
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.h b/drivers/net/dsa/mv88e6xxx/serdes.h
-index d29d4d10a16d..a354a48d057b 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.h
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.h
-@@ -150,24 +150,6 @@ static inline int mv88e6xxx_serdes_get_lane(struct mv88e6xxx_chip *chip,
- 	return chip->info->ops->serdes_get_lane(chip, port);
- }
- 
--static inline int mv88e6xxx_serdes_power_up(struct mv88e6xxx_chip *chip,
--					    int port, int lane)
--{
--	if (!chip->info->ops->serdes_power)
--		return -EOPNOTSUPP;
--
--	return chip->info->ops->serdes_power(chip, port, lane, true);
--}
--
--static inline int mv88e6xxx_serdes_power_down(struct mv88e6xxx_chip *chip,
--					      int port, int lane)
--{
--	if (!chip->info->ops->serdes_power)
--		return -EOPNOTSUPP;
--
--	return chip->info->ops->serdes_power(chip, port, lane, false);
--}
--
- static inline unsigned int
- mv88e6xxx_serdes_irq_mapping(struct mv88e6xxx_chip *chip, int port)
- {
-@@ -177,33 +159,6 @@ mv88e6xxx_serdes_irq_mapping(struct mv88e6xxx_chip *chip, int port)
- 	return chip->info->ops->serdes_irq_mapping(chip, port);
- }
- 
--static inline int mv88e6xxx_serdes_irq_enable(struct mv88e6xxx_chip *chip,
--					      int port, int lane)
--{
--	if (!chip->info->ops->serdes_irq_enable)
--		return -EOPNOTSUPP;
--
--	return chip->info->ops->serdes_irq_enable(chip, port, lane, true);
--}
--
--static inline int mv88e6xxx_serdes_irq_disable(struct mv88e6xxx_chip *chip,
--					       int port, int lane)
--{
--	if (!chip->info->ops->serdes_irq_enable)
--		return -EOPNOTSUPP;
--
--	return chip->info->ops->serdes_irq_enable(chip, port, lane, false);
--}
--
--static inline irqreturn_t
--mv88e6xxx_serdes_irq_status(struct mv88e6xxx_chip *chip, int port, int lane)
--{
--	if (!chip->info->ops->serdes_irq_status)
--		return IRQ_NONE;
--
--	return chip->info->ops->serdes_irq_status(chip, port, lane);
--}
--
- int mv88e6185_pcs_init(struct mv88e6xxx_chip *chip, int port);
- 
- int mv88e6352_pcs_init(struct mv88e6xxx_chip *chip, int port);
+Therefore, in order to remove dead code and reduce complexity of the
+code base, revert the three patchsets that added XM support.
+
+Petr Machata (3):
+  mlxsw: Revert "Introduce initial XM router support"
+  mlxsw: Revert "Prepare for XM implementation - prefix insertion and
+    removal"
+  mlxsw: Revert "Prepare for XM implementation - LPM trees"
+
+ drivers/net/ethernet/mellanox/mlxsw/Makefile  |   1 -
+ drivers/net/ethernet/mellanox/mlxsw/cmd.h     |  30 -
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  12 -
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  12 +-
+ drivers/net/ethernet/mellanox/mlxsw/minimal.c |   3 +-
+ drivers/net/ethernet/mellanox/mlxsw/pci.c     |  33 +-
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     | 670 +-------------
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |   5 -
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 857 +++++-------------
+ .../ethernet/mellanox/mlxsw/spectrum_router.h |  75 --
+ .../mellanox/mlxsw/spectrum_router_xm.c       | 812 -----------------
+ 11 files changed, 244 insertions(+), 2266 deletions(-)
+ delete mode 100644 drivers/net/ethernet/mellanox/mlxsw/spectrum_router_xm.c
+
 -- 
-2.30.2
+2.36.1
 
