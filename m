@@ -2,292 +2,256 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBF1D54B2DA
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 16:14:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41D0854B2F3
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 16:17:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242098AbiFNONB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 10:13:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56338 "EHLO
+        id S244945AbiFNOR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 10:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239463AbiFNONA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 10:13:00 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 401EA201B6
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 07:12:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655215978;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NVA+0zOn3k1i+mUsNlM5vgs0tjCwTF8wmn3X2biGO4w=;
-        b=CwrcrbeMiIevh4oq99lrTAzDmOsN8eliMdwdBqELXRu6XkeTuxUHkYhludU1DB74EPo6tY
-        ouy+eAgpbIQv0Yw5qP+eoOAf4LUnueGUSSW9tU2LSLcArDfJffDXXUw8zIbdlYAEX+QYOv
-        t58qZrwjWlNN5GLHk5A59K4X6jZU4fw=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-596-kcG3i4qNPeSgS1WsZjG3xw-1; Tue, 14 Jun 2022 10:12:57 -0400
-X-MC-Unique: kcG3i4qNPeSgS1WsZjG3xw-1
-Received: by mail-wm1-f70.google.com with SMTP id i131-20020a1c3b89000000b0039c9a08c52bso1369647wma.4
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 07:12:56 -0700 (PDT)
+        with ESMTP id S244564AbiFNOR0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 10:17:26 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921E239813
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 07:17:18 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id u99so15364911ybi.11
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 07:17:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ykJCkSDmaQwuRjSNMU1SJFHZmPWM0AX/lpikFCQOxUM=;
+        b=gxxmtVPdfld7TYT/I1hV+Lvzk5/ov3SJdzPCt5lLKl/8Ky9y93Vwv61PLScLaZ2qPj
+         F1LTPxOhnu9ufJ5MC2A1Vnzrje1RRYDcFo7VIbhIfbUJy4S4n1iLwKJMWYfBY0dCD0za
+         A2MFcEglmZ837Ge9Ofbp9npK75tDWDk44O8Pe5eCnkA8jvGTYQ5qS6Fs9LbSNLbCRFMU
+         iBffFODrbAKYHUR9see0yLm10CfSpiMI4OoYna0VVWCt/+yWzWKHRkXdiMTS5895VCfw
+         eW62mECaVI0HHZcu96+ekHtvWdM1d3iftQ9M9Ki8ghZ1zXJwTGSFmhmQy8ebuNQ0FIRt
+         GBfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=NVA+0zOn3k1i+mUsNlM5vgs0tjCwTF8wmn3X2biGO4w=;
-        b=N6MsBK6f5GidhyLNSF/mO1W0hed6feyMCCjQQyiAFENJlAE8cdbDISlBA9tzQVcyAY
-         GvTWmO8fXXZZnfFqIQhn+9GIhQmJilcodCKhx3DpnTYwbHkBmNDGuHBHIG7NsUymQRbT
-         RKTPgs5Gscvmld7nd5SVRzwNN11C8fFy0uR6yWxbwRPx1RCXCrc7NtqWGCRBzS9+NTGT
-         u1wx6ZiO9NRbmNk392EBo6pmI5iL4UJEWK82Y4abtobCBl6wOQ9O4KV1isCbJ1koaMMq
-         k51QixE90Ls4s7vOYh/vAPBbctz6pOJlJK25X2OwRET/yh+0osh3GbMMPfv0j5SGEp3i
-         ryNA==
-X-Gm-Message-State: AJIora8KwfDFmpwlTWZsd6Uup75cnBA71IBoz8O3ae3NgdJG6Pqxwkus
-        SyNTO5/Eo1gio2/FVK8yIEj1C/lmG3Z2Nl9twhgSoW4NRy1ualtnlajbT6WMF7a4LjHxyNYFJhk
-        hNhUqY9PEFyNlVoPD
-X-Received: by 2002:adf:d1ef:0:b0:215:89b0:9add with SMTP id g15-20020adfd1ef000000b0021589b09addmr5045686wrd.279.1655215975682;
-        Tue, 14 Jun 2022 07:12:55 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1t4kiwYw7t+K0p7l2wCDaEF1auUQ/A+sVrJTwSFnUJkXmIbgldT2Pwvu3vkEIqE49PWDxcXuQ==
-X-Received: by 2002:adf:d1ef:0:b0:215:89b0:9add with SMTP id g15-20020adfd1ef000000b0021589b09addmr5045663wrd.279.1655215975374;
-        Tue, 14 Jun 2022 07:12:55 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-113-202.dyn.eolo.it. [146.241.113.202])
-        by smtp.gmail.com with ESMTPSA id c6-20020a5d4146000000b00213ba3384aesm12680182wrq.35.2022.06.14.07.12.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 07:12:55 -0700 (PDT)
-Message-ID: <0789de291023a1664d2b198075af6ce6a9245c6e.camel@redhat.com>
-Subject: Re: [PATCH net-next v3 2/3] net: Add bhash2 hashbucket locks
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Joanne Koong <joannelkoong@gmail.com>
-Cc:     netdev@vger.kernel.org, edumazet@google.com, kafai@fb.com,
-        kuba@kernel.org, davem@davemloft.net
-Date:   Tue, 14 Jun 2022 16:12:53 +0200
-In-Reply-To: <5b6a4415-c4f-254c-3c54-7fa0dfde32e9@linux.intel.com>
-References: <20220611021646.1578080-1-joannelkoong@gmail.com>
-         <20220611021646.1578080-3-joannelkoong@gmail.com>
-         <5b6a4415-c4f-254c-3c54-7fa0dfde32e9@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ykJCkSDmaQwuRjSNMU1SJFHZmPWM0AX/lpikFCQOxUM=;
+        b=zjVlUKaH8m3APPzkqpJHe1gmQXo7jvyUw9VMVUKmRrRMMBClGYYwp0HSvMm6hOHSMH
+         DoYlytbAsKWlIumXAfY+l5DQ+gwpWf2iciF284COHC4q8b/om3MItpQdPp3eKYmwAshP
+         5xN/gZ7sP96x9VcaLOV1Gu1NLhgx7Wnkw2dTDRldsU9a6hI5nCGLyyc+4x7Q6mk3S1nh
+         Zhy8uxIuKAJzTX2FeTNw9X0FColebopJQVDGO9IDPGTTMRjGDAvbUhnYPKoSDVpbGi0u
+         ivj/Jnr6l7/oLryYosIa3Nj9s88H3Y3pHgaixAOS6Bcpgy5J1mWQeiWVw9FrxS7E4fTJ
+         CWvQ==
+X-Gm-Message-State: AJIora9zp2KS8djMJ9lxsyy8m9hADigELOR0VulMTGamr0ysaLqM8eNw
+        3rm8Lxeqa1vw1t4rVlHvYaRmjwx5WNReJmZPJ4xExA==
+X-Google-Smtp-Source: AGRyM1sogp6JVr/ZLwK87UUL3L+3R8chDM1EO7iihKy13d9R3ODozlWUlHJF2RZKIkwqLekrFa8dq607j1nywrWJlbU=
+X-Received: by 2002:a05:6902:a:b0:65c:b38e:6d9f with SMTP id
+ l10-20020a056902000a00b0065cb38e6d9fmr5472805ybh.36.1655216237200; Tue, 14
+ Jun 2022 07:17:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220610110749.110881-1-soenke.huster@eknoes.de>
+ <CANn89i+YHqMddY68Qk1rZexqhYYX9gah-==WGttFbp4urLS7Qg@mail.gmail.com>
+ <9f214837-dc68-ef1a-0199-27d6af582115@eknoes.de> <CANn89iKS7npfHvBJNP2PBtR9RAQGsVdykELX8mK8DQbFbLeybA@mail.gmail.com>
+ <22131ee2-914c-3aad-d2c3-f340ad0c8ad0@eknoes.de>
+In-Reply-To: <22131ee2-914c-3aad-d2c3-f340ad0c8ad0@eknoes.de>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 14 Jun 2022 07:17:06 -0700
+Message-ID: <CANn89i+FeNoxYVTG8xu6yU_iOf94cQkrAiP=3JeUwJSvuBW5QA@mail.gmail.com>
+Subject: Re: [PATCH v2] Bluetooth: RFCOMM: Use skb_trim to trim checksum
+To:     =?UTF-8?Q?S=C3=B6nke_Huster?= <soenke.huster@eknoes.de>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-06-13 at 15:12 -0700, Mat Martineau wrote:
-> On Fri, 10 Jun 2022, Joanne Koong wrote:
-> 
-> > Currently, the bhash2 hashbucket uses its corresponding bhash
-> > hashbucket's lock for serializing concurrent accesses. There,
-> > however, can be the case where the bhash2 hashbucket is accessed
-> > concurrently by multiple processes that hash to different bhash
-> > hashbuckets but to the same bhash2 hashbucket.
-> > 
-> > As such, each bhash2 hashbucket will need to have its own lock
-> > instead of using its corresponding bhash hashbucket's lock.
-> > 
-> > Fixes: d5a42de8bdbe ("net: Add a second bind table hashed by port and address")
-> > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
-> > ---
-> > include/net/inet_hashtables.h   |  25 +++----
-> > net/dccp/proto.c                |   3 +-
-> > net/ipv4/inet_connection_sock.c |  60 +++++++++-------
-> > net/ipv4/inet_hashtables.c      | 119 +++++++++++++++-----------------
-> > net/ipv4/tcp.c                  |   7 +-
-> > 5 files changed, 107 insertions(+), 107 deletions(-)
-> > 
-> > diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-> > index 2c331ce6ca73..c5b112f0938b 100644
-> > --- a/include/net/inet_hashtables.h
-> > +++ b/include/net/inet_hashtables.h
-> > @@ -124,15 +124,6 @@ struct inet_bind_hashbucket {
-> > 	struct hlist_head	chain;
-> > };
-> > 
-> > -/* This is synchronized using the inet_bind_hashbucket's spinlock.
-> > - * Instead of having separate spinlocks, the inet_bind2_hashbucket can share
-> > - * the inet_bind_hashbucket's given that in every case where the bhash2 table
-> > - * is useful, a lookup in the bhash table also occurs.
-> > - */
-> > -struct inet_bind2_hashbucket {
-> > -	struct hlist_head	chain;
-> > -};
-> > -
-> > /* Sockets can be hashed in established or listening table.
-> >  * We must use different 'nulls' end-of-chain value for all hash buckets :
-> >  * A socket might transition from ESTABLISH to LISTEN state without
-> > @@ -169,7 +160,7 @@ struct inet_hashinfo {
-> > 	 * conflicts.
-> > 	 */
-> > 	struct kmem_cache		*bind2_bucket_cachep;
-> > -	struct inet_bind2_hashbucket	*bhash2;
-> > +	struct inet_bind_hashbucket	*bhash2;
-> > 	unsigned int			bhash_size;
-> > 
-> > 	/* The 2nd listener table hashed by local port and address */
-> > @@ -240,7 +231,7 @@ static inline bool check_bind_bucket_match(struct inet_bind_bucket *tb,
-> > 
-> > struct inet_bind2_bucket *
-> > inet_bind2_bucket_create(struct kmem_cache *cachep, struct net *net,
-> > -			 struct inet_bind2_hashbucket *head,
-> > +			 struct inet_bind_hashbucket *head,
-> > 			 const unsigned short port, int l3mdev,
-> > 			 const struct sock *sk);
-> > 
-> > @@ -248,12 +239,12 @@ void inet_bind2_bucket_destroy(struct kmem_cache *cachep,
-> > 			       struct inet_bind2_bucket *tb);
-> > 
-> > struct inet_bind2_bucket *
-> > -inet_bind2_bucket_find(struct inet_hashinfo *hinfo, struct net *net,
-> > +inet_bind2_bucket_find(struct inet_bind_hashbucket *head,
-> > +		       struct inet_hashinfo *hinfo, struct net *net,
-> > 		       const unsigned short port, int l3mdev,
-> > -		       struct sock *sk,
-> > -		       struct inet_bind2_hashbucket **head);
-> > +		       struct sock *sk);
-> > 
-> > -bool check_bind2_bucket_match_nulladdr(struct inet_bind2_bucket *tb,
-> > +bool check_bind2_bucket_match_addr_any(struct inet_bind2_bucket *tb,
-> > 				       struct net *net,
-> > 				       const unsigned short port,
-> > 				       int l3mdev,
-> > @@ -265,6 +256,10 @@ static inline u32 inet_bhashfn(const struct net *net, const __u16 lport,
-> > 	return (lport + net_hash_mix(net)) & (bhash_size - 1);
-> > }
-> > 
-> > +struct inet_bind_hashbucket *
-> > +inet_bhashfn_portaddr(struct inet_hashinfo *hinfo, const struct sock *sk,
-> > +		      const struct net *net, unsigned short port);
+On Tue, Jun 14, 2022 at 6:42 AM S=C3=B6nke Huster <soenke.huster@eknoes.de>=
+ wrote:
+>
+> Hi Eric,
+>
+> On 10.06.22 18:55, Eric Dumazet wrote:
+> > On Fri, Jun 10, 2022 at 8:35 AM S=C3=B6nke Huster <soenke.huster@eknoes=
+.de> wrote:
+> >>
+> >> Hi Eric,
+> >>
+> >> On 10.06.22 15:59, Eric Dumazet wrote:
+> >>> On Fri, Jun 10, 2022 at 4:08 AM Soenke Huster <soenke.huster@eknoes.d=
+e> wrote:
+> >>>>
+> >>>> As skb->tail might be zero, it can underflow. This leads to a page
+> >>>> fault: skb_tail_pointer simply adds skb->tail (which is now MAX_UINT=
+)
+> >>>> to skb->head.
+> >>>>
+> >>>>     BUG: unable to handle page fault for address: ffffed1021de29ff
+> >>>>     #PF: supervisor read access in kernel mode
+> >>>>     #PF: error_code(0x0000) - not-present page
+> >>>>     RIP: 0010:rfcomm_run+0x831/0x4040 (net/bluetooth/rfcomm/core.c:1=
+751)
+> >>>>
+> >>>> By using skb_trim instead of the direct manipulation, skb->tail
+> >>>> is reset. Thus, the correct pointer to the checksum is used.
+> >>>>
+> >>>> Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
+> >>>> ---
+> >>>> v2: Clarified how the bug triggers, minimize code change
+> >>>>
+> >>>>  net/bluetooth/rfcomm/core.c | 2 +-
+> >>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >>>>
+> >>>> diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core=
+.c
+> >>>> index 7324764384b6..443b55edb3ab 100644
+> >>>> --- a/net/bluetooth/rfcomm/core.c
+> >>>> +++ b/net/bluetooth/rfcomm/core.c
+> >>>> @@ -1747,7 +1747,7 @@ static struct rfcomm_session *rfcomm_recv_fram=
+e(struct rfcomm_session *s,
+> >>>>         type =3D __get_type(hdr->ctrl);
+> >>>>
+> >>>>         /* Trim FCS */
+> >>>> -       skb->len--; skb->tail--;
+> >>>> +       skb_trim(skb, skb->len - 1);
+> >>>>         fcs =3D *(u8 *)skb_tail_pointer(skb);
+> >>>>
+> >>>>         if (__check_fcs(skb->data, type, fcs)) {
+> >>>> --
+> >>>> 2.36.1
+> >>>>
+> >>>
+> >>> Again, I do not see how skb->tail could possibly zero at this point.
+> >>>
+> >>> If it was, skb with illegal layout has been queued in the first place=
+,
+> >>> we need to fix the producer, not the consumer.
+> >>>
+> >>
+> >> Sorry, I thought that might be a right place as there is not much code=
+ in the kernel
+> >> that manipulates ->tail directly.
+> >>
+> >>> A driver missed an skb_put() perhaps.
+> >>>
+> >>
+> >> I am using the (I guess quite unused) virtio_bt driver, and figured ou=
+t that the following
+> >> fixes the bug:
+> >>
+> >> --- a/drivers/bluetooth/virtio_bt.c
+> >> +++ b/drivers/bluetooth/virtio_bt.c
+> >> @@ -219,7 +219,7 @@ static void virtbt_rx_work(struct work_struct *wor=
+k)
+> >>         if (!skb)
+> >>                 return;
+> >>
+> >> -       skb->len =3D len;
+> >> +       skb_put(skb, len);
+> >
+> > Removing skb->len=3Dlen seems about right.
+> > But skb_put() should be done earlier.
+> >
+> > We are approaching the skb producer :)
+> >
+> > Now you have to find/check who added this illegal skb in the virt queue=
+.
+> >
+> > Maybe virtbt_add_inbuf() ?
+>
+> I think here, the length of the skb can't really be known - an empty SKB =
+is put into
+> the virtqueue, and then filled with data in the device, which is implemen=
+ted in a Hypervisor.
+> Maybe my implementation of that device might then be wrong, on the other =
+hand I am pretty
+> sure the driver should be the one that sets the length of the skb. But th=
+e driver only
+> knows it in virtbt_rx_work, as it learns the size of the added buffer the=
+re for the first time.
+>
+> >
+> > Also there is kernel info leak I think.
+> >
+>
+> I think your are right!
+
+If this patch in drivers/bluetooth/virtio_bt.c fixes the issue, please
+submit a formal patch.
+You can take ownership of it, of course.
+
+If not, more investigation is needed on your side ;)
+
+Thanks !
+
+>
+> > diff --git a/drivers/bluetooth/virtio_bt.c b/drivers/bluetooth/virtio_b=
+t.c
+> > index 67c21263f9e0f250f0719b8e7f1fe15b0eba5ee0..c9b832c447ee451f027430b=
+284d7bb246f6ecb24
+> > 100644
+> > --- a/drivers/bluetooth/virtio_bt.c
+> > +++ b/drivers/bluetooth/virtio_bt.c
+> > @@ -37,6 +37,9 @@ static int virtbt_add_inbuf(struct virtio_bluetooth *=
+vbt)
+> >         if (!skb)
+> >                 return -ENOMEM;
+> >
+> > +       skb_put(skb, 1000);
+> > +       memset(skb->data, 0, 1000);
 > > +
-> > void inet_bind_hash(struct sock *sk, struct inet_bind_bucket *tb,
-> > 		    struct inet_bind2_bucket *tb2, const unsigned short snum);
-> > 
-> > diff --git a/net/dccp/proto.c b/net/dccp/proto.c
-> > index 2e78458900f2..f4f2ad5f9c08 100644
-> > --- a/net/dccp/proto.c
-> > +++ b/net/dccp/proto.c
-> > @@ -1182,7 +1182,7 @@ static int __init dccp_init(void)
-> > 		goto out_free_dccp_locks;
-> > 	}
-> > 
-> > -	dccp_hashinfo.bhash2 = (struct inet_bind2_hashbucket *)
-> > +	dccp_hashinfo.bhash2 = (struct inet_bind_hashbucket *)
-> > 		__get_free_pages(GFP_ATOMIC | __GFP_NOWARN, bhash_order);
-> > 
-> > 	if (!dccp_hashinfo.bhash2) {
-> > @@ -1193,6 +1193,7 @@ static int __init dccp_init(void)
-> > 	for (i = 0; i < dccp_hashinfo.bhash_size; i++) {
-> > 		spin_lock_init(&dccp_hashinfo.bhash[i].lock);
-> > 		INIT_HLIST_HEAD(&dccp_hashinfo.bhash[i].chain);
-> > +		spin_lock_init(&dccp_hashinfo.bhash2[i].lock);
-> > 		INIT_HLIST_HEAD(&dccp_hashinfo.bhash2[i].chain);
-> > 	}
-> > 
-> > diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> > index c0b7e6c21360..24a42e4d8234 100644
-> > --- a/net/ipv4/inet_connection_sock.c
-> > +++ b/net/ipv4/inet_connection_sock.c
-> > @@ -131,14 +131,14 @@ static bool use_bhash2_on_bind(const struct sock *sk)
-> > 	return sk->sk_rcv_saddr != htonl(INADDR_ANY);
-> > }
-> > 
-> > -static u32 get_bhash2_nulladdr_hash(const struct sock *sk, struct net *net,
-> > +static u32 get_bhash2_addr_any_hash(const struct sock *sk, struct net *net,
-> > 				    int port)
-> > {
-> > #if IS_ENABLED(CONFIG_IPV6)
-> > -	struct in6_addr nulladdr = {};
-> > +	struct in6_addr addr_any = {};
-> > 
-> > 	if (sk->sk_family == AF_INET6)
-> > -		return ipv6_portaddr_hash(net, &nulladdr, port);
-> > +		return ipv6_portaddr_hash(net, &addr_any, port);
-> > #endif
-> > 	return ipv4_portaddr_hash(net, 0, port);
-> > }
-> > @@ -204,18 +204,18 @@ static bool check_bhash2_conflict(const struct sock *sk,
-> > 	return false;
-> > }
-> > 
-> > -/* This should be called only when the corresponding inet_bind_bucket spinlock
-> > - * is held
-> > - */
-> > +/* This should be called only when the tb and tb2 hashbuckets' locks are held */
-> > static int inet_csk_bind_conflict(const struct sock *sk, int port,
-> > 				  struct inet_bind_bucket *tb,
-> > 				  struct inet_bind2_bucket *tb2, /* may be null */
-> > +				  struct inet_bind_hashbucket *head_tb2,
-> > 				  bool relax, bool reuseport_ok)
-> > {
-> > 	struct inet_hashinfo *hinfo = sk->sk_prot->h.hashinfo;
-> > 	kuid_t uid = sock_i_uid((struct sock *)sk);
-> > 	struct sock_reuseport *reuseport_cb;
-> > -	struct inet_bind2_hashbucket *head2;
-> > +	struct inet_bind_hashbucket *head_addr_any;
-> > +	bool addr_any_conflict = false;
-> > 	bool reuseport_cb_ok;
-> > 	struct sock *sk2;
-> > 	struct net *net;
-> > @@ -254,33 +254,39 @@ static int inet_csk_bind_conflict(const struct sock *sk, int port,
-> > 	/* check there's no conflict with an existing IPV6_ADDR_ANY (if ipv6) or
-> > 	 * INADDR_ANY (if ipv4) socket.
-> > 	 */
-> > -	hash = get_bhash2_nulladdr_hash(sk, net, port);
-> > -	head2 = &hinfo->bhash2[hash & (hinfo->bhash_size - 1)];
-> > +	hash = get_bhash2_addr_any_hash(sk, net, port);
-> > +	head_addr_any = &hinfo->bhash2[hash & (hinfo->bhash_size - 1)];
-> > 
-> > 	l3mdev = inet_sk_bound_l3mdev(sk);
-> > -	inet_bind_bucket_for_each(tb2, &head2->chain)
-> > -		if (check_bind2_bucket_match_nulladdr(tb2, net, port, l3mdev, sk))
-> > +
-> > +	if (head_addr_any != head_tb2)
-> > +		spin_lock_bh(&head_addr_any->lock);
-> 
-> Hi Joanne -
-> 
-> syzkaller is consistently hitting a warning here (about 10x per minute):
-> 
-> ============================================
-> WARNING: possible recursive locking detected
-> 5.19.0-rc1-00382-g78347e8e15bf #1 Not tainted
-> --------------------------------------------
-> sshd/352 is trying to acquire lock:
-> ffffc90000968640 (&tcp_hashinfo.bhash2[i].lock){+.-.}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:354 [inline]
-> ffffc90000968640 (&tcp_hashinfo.bhash2[i].lock){+.-.}-{2:2}, at: inet_csk_bind_conflict+0x4c4/0x8e0 net/ipv4/inet_connection_sock.c:263
-> 
-> but task is already holding lock:
-> ffffc90000883d28 (&tcp_hashinfo.bhash2[i].lock){+.-.}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:354 [inline]
-> ffffc90000883d28 (&tcp_hashinfo.bhash2[i].lock){+.-.}-{2:2}, at: inet_csk_get_port+0x528/0xea0 net/ipv4/inet_connection_sock.c:497
-> 
-> other info that might help us debug this:
->   Possible unsafe locking scenario:
-> 
->         CPU0
->         ----
->    lock(&tcp_hashinfo.bhash2[i].lock);
->    lock(&tcp_hashinfo.bhash2[i].lock);
-> 
->   *** DEADLOCK ***
-> 
->   May be due to missing lock nesting notation
-
-This looks like a real deadlock scenario.
-
-One dumb way of solving it would be always acquiring the bhash2 lock
-for head_addr_any and for port/addr, in a fixed order - e.g. lower hash
-first.
-
-Anyway this fix looks not trivial. I'm wondering if we should consider
-a revert of the feature until a better/more robust design is ready?
-
-Thanks
-
-Paolo
-
+> >         sg_init_one(sg, skb->data, 1000);
+> >
+> >         err =3D virtqueue_add_inbuf(vq, sg, 1, skb, GFP_KERNEL);
+> >
+> >
+> >>         virtbt_rx_handle(vbt, skb);
+> >>
+> >>         if (virtbt_add_inbuf(vbt) < 0)
+> >>
+> >> I guess this is the root cause? I just used Bluetooth for a while in t=
+he VM
+> >> and no error occurred, everything worked fine.
+> >>
+> >>> Can you please dump the skb here  ?
+> >>>
+> >>> diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.=
+c
+> >>> index 7324764384b6773074032ad671777bf86bd3360e..358ccb4fe7214aea0bb40=
+84188c7658316fe0ff7
+> >>> 100644
+> >>> --- a/net/bluetooth/rfcomm/core.c
+> >>> +++ b/net/bluetooth/rfcomm/core.c
+> >>> @@ -1746,6 +1746,11 @@ static struct rfcomm_session
+> >>> *rfcomm_recv_frame(struct rfcomm_session *s,
+> >>>         dlci =3D __get_dlci(hdr->addr);
+> >>>         type =3D __get_type(hdr->ctrl);
+> >>>
+> >>> +       if (!skb->tail) {
+> >>> +               DO_ONCE_LITE(skb_dump(KERN_ERR, skb, false));
+> >>> +               kfree_skb(skb);
+> >>> +               return s;
+> >>> +       }
+> >>>         /* Trim FCS */
+> >>>         skb->len--; skb->tail--;
+> >>>         fcs =3D *(u8 *)skb_tail_pointer(skb);
+> >>
+> >> If it might still help:
+> >>
+> >> skb len=3D4 headroom=3D9 headlen=3D4 tailroom=3D1728
+> >> mac=3D(-1,-1) net=3D(0,-1) trans=3D-1
+> >> shinfo(txflags=3D0 nr_frags=3D0 gso(size=3D0 type=3D0 segs=3D0))
+> >> csum(0x0 ip_summed=3D0 complete_sw=3D0 valid=3D0 level=3D0)
+> >> hash(0x0 sw=3D0 l4=3D0) proto=3D0x0000 pkttype=3D0 iif=3D0
+> >> skb linear:   00000000: 03 3f 01 1c
+> >>
