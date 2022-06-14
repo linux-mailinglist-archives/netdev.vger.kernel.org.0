@@ -2,82 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDD5F54B5CD
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 18:19:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B2C954B5E2
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 18:22:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233153AbiFNQSc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 12:18:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34216 "EHLO
+        id S237133AbiFNQUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 12:20:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239104AbiFNQS2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 12:18:28 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551051BEA3
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 09:18:23 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id o6so8166813plg.2
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 09:18:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Hxn5WlI4UqTuRgC6sLunwEvnYgHvVkEBNB8Y/V7uKlQ=;
-        b=GVLB4NdosSS9+VUeTZEud3zfDtuqsPPX/ullVwnkFIKmtzc46asl6gCr2S9S41GqIC
-         K5G5IUEAjyICJN2lBf0tLx5MVsP3n7CGD9BYSh/rmly3HPjmNPElbIXFhl+Gz2y5YlKX
-         /byyBjXAKNqi0WpSQkD/4J3xL8UzkAiox7av5OdeLVnP6QOUoj/6WQ2trsV2ev6wUP5L
-         KbhYXGu+wqdr02sYvjq/7iimdV7SD9YpVO9QK9iCpMG1WTSiSlyotzzTiSWaZuuLMCO6
-         lyvmvjl4d+/6UQtv/TvGWV+mVrpCzuvmiFyRqtbdTM9rhVWnevJuJAGXA+glXdjlopK/
-         mX8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Hxn5WlI4UqTuRgC6sLunwEvnYgHvVkEBNB8Y/V7uKlQ=;
-        b=4GKJuQeNYGY0+IOe9y0X2WFUKqMADVwwAQkEPIZR/pmTCMHKWyNGPk9GcHazpJF828
-         uoSdad3bc7dPozeUwbxGkgzwLo9bW1yMbXrXbjpyEiLctTKQICDi8Uk/e2mqoZwxGYC4
-         FEZPh7Pom3s7/8PABS0ZtsFf0fF1L86TrkC86ikI8o59FovpmSY6cgnAxgAWIHdefjfi
-         Ic/bNWgkB1BWOnll8U0c19Z/kIFTJ5r/L7SsdGwIifOyOZzJ+AOQhjvEIDaaZ2OsOlIT
-         p2PfhwRnbI2TibaGLbL5cGaM11JqsX/Fo9MV3EDPtmuSzY4zeADDyMjBMQWZlj35uESI
-         NbKw==
-X-Gm-Message-State: AJIora8uq4CkpYLWNW2JQkDb4xQszOWDo11p031gKe5ZtBhhK71CczDb
-        6swsqwvQuJMfc9hJXzskrPE=
-X-Google-Smtp-Source: AGRyM1ur3WBN/zucRiMrWVafUwd559gNdxmjGAhAcGnFqeLIhPtgRrmUeRGjiTXoQePDle33eVnewA==
-X-Received: by 2002:a17:902:f314:b0:165:ddfc:5d84 with SMTP id c20-20020a170902f31400b00165ddfc5d84mr5296746ple.171.1655223502816;
-        Tue, 14 Jun 2022 09:18:22 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id v10-20020a170902b7ca00b0016363b15acasm7428898plz.112.2022.06.14.09.18.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 09:18:22 -0700 (PDT)
-Message-ID: <93346bd8-1e34-0b61-b158-e2e4a4266d18@gmail.com>
-Date:   Tue, 14 Jun 2022 09:18:19 -0700
+        with ESMTP id S230121AbiFNQUr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 12:20:47 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 396BE22295;
+        Tue, 14 Jun 2022 09:20:45 -0700 (PDT)
+Received: from mail-yb1-f179.google.com ([209.85.219.179]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MadC8-1nQAtt3KHq-00c8na; Tue, 14 Jun 2022 18:20:44 +0200
+Received: by mail-yb1-f179.google.com with SMTP id u99so15976759ybi.11;
+        Tue, 14 Jun 2022 09:20:43 -0700 (PDT)
+X-Gm-Message-State: AJIora/6g6EPvxslekopfsnoX6xFhapU42p83CqpLpLD8QH4wuuPffIP
+        Lgn2GBkENdzz5jtxrW9kYGPFxIhi3qedfXVupN0=
+X-Google-Smtp-Source: AGRyM1vL8YmZq2CJCAYY9lO5nRWLWOkqiKpTfzNi8RRXvdFTlfQo46XRqaiOQVYpttr+UTW5s4kkZ2oWrKpG9iJxDw0=
+X-Received: by 2002:a25:7645:0:b0:664:70b9:b093 with SMTP id
+ r66-20020a257645000000b0066470b9b093mr5733329ybc.480.1655223642290; Tue, 14
+ Jun 2022 09:20:42 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH net-next v7 2/3] net: phy: broadcom: Add PTP support for
- some Broadcom PHYs.
-Content-Language: en-US
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>, netdev@vger.kernel.org
-Cc:     kernel-team@fb.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Lasse Johnsen <l@ssejohnsen.me>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>
-References: <20220614050810.54425-1-jonathan.lemon@gmail.com>
- <20220614050810.54425-3-jonathan.lemon@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220614050810.54425-3-jonathan.lemon@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <202206120438.Un6Wq4N0-lkp@intel.com>
+In-Reply-To: <202206120438.Un6Wq4N0-lkp@intel.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 14 Jun 2022 18:20:25 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3dvzLhAGV8rdCpX__54vkL0=e5pACUY-es3xiJau=uwg@mail.gmail.com>
+Message-ID: <CAK8P3a3dvzLhAGV8rdCpX__54vkL0=e5pACUY-es3xiJau=uwg@mail.gmail.com>
+Subject: Re: arm-linux-gnueabi-ld: error: .btf.vmlinux.bin.o is already in
+ final BE8 format
+To:     kernel test robot <lkp@intel.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, kbuild-all@lists.01.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:igAUm1LzDSLl29TXXz/+lQAUwgRNCk6eMol8eFWliL6moUdfvqg
+ ZedgsqHBkdqYthWVHsqcekZlVk8i2lJX1jvFOG8tM/QGWI+VDaDrDfpO9+4I+OEYPcxGakO
+ 0kyCxNVykYiYSgvE0Wv1vwBFdLt5TX9IRWTULRGBkYWtEic2CbZCicWmawl+zvcqv1w6hF/
+ eiyvc6n4BzZeDiwtNtvvQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:yHDEjxbyy+8=:Rw4wAtq/uqU2yJrfg/zEde
+ Fns53zpACA3tdkPDsH0IMz4lOVcCd6sziz3TuYGmOFLHUZJx2BKOyhMGD0Ka6bJoNqgSuYdMA
+ c+cG8c9XFXg7gyLfWhcKsWTmio7aFOFQd9PxJoK6t/kgo/K2C6AqCsT7FBcX46WS3BF7QlEsE
+ 0Dw9uoYEJZJ15jS4k6tV0SLC6IcSzC5DXDNra8BMSMKhKwIaaKh5IX6jPTS5TOPClWejFjV5W
+ AFGWo5YG9fGbMO0191pSSp2W5w2M0gdrVPKFpRO+0+GsjrLYbYlEGpwb8iFLVedfPlenVmREw
+ yBQrS/Jy2dJBmd4D3GsGXDuLzZkud6h4EiYH422yY8QRuscFp+CK9KRKNWX2983fInRcXTNtx
+ 4kb7b9nLi0EBmAo5nJSh5ZZeZEu0QHMouzhzAoftsJgeBzKaLwZ4smeldIPuC5j3aw1y/8GzS
+ trCnKSbtefw1u0wsp4H4zuEXtIOZ2GBxZXBTDqoNfz2wvAfMr6uX6iMyLsnQDMtgSuHoGY6il
+ pKhuZC4fZeSTqCNQoU5HWzWcTazsOU0bvr20JDzdfERQuajdX5sq0qVeX7C8GKnWlkQGL2oPH
+ G8A/MFuUeYcAzhVIPOipBrLv2BST9jqGA58BhB9BO3Yniu37xjQts85oITlGRCU0WWg/zBux0
+ 0yhQtCm+tTItSiFkbZ9RrR0EAoEJFYEogd8cKCGBGnZs4sG2cMrqtskdm92HDgVAOYtBbvYmd
+ dgNdJFkduWyOdKoO8RSOUmjGIO1lN+XXIanb+LGLvK7JgRZbNel5+9OjPMZfC6/wHWxX8dhS4
+ j9J5MM0iaRZZ/KlQvA8qVhQfKvgtivSLu+O0vU4bNf8m9pNa/I6G4f45BJ6d+ThU29u5ukGBE
+ CykbGr8y1Ok76xGKneNQ==
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,14 +75,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/13/22 22:08, Jonathan Lemon wrote:
-> This adds PTP support for BCM54210E Broadcom PHYs, in particular,
-> the BCM54213PE, as used in the Rasperry PI CM4.  It has only been
-> tested on that hardware.
-> 
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> Acked-by: Richard Cochran <richardcochran@gmail.com>
+On Sat, Jun 11, 2022 at 11:00 PM kernel test robot <lkp@intel.com> wrote:
+>
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   0678afa6055d14799c1dc1eee47c8025eba56cab
+> commit: 5d6f52671e76ca2d55d74e676ac4c38ceb14a2d3 ARM: rework endianess selection
+> date:   9 weeks ago
+> configrong.a.chen@intel.com: arm-randconfig-r012-20220612 (https://download.01.org/0day-ci/archive/20220612/202206120438.Un6Wq4N0-lkp@intel.com/config)
+> compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=5d6f52671e76ca2d55d74e676ac4c38ceb14a2d3
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout 5d6f52671e76ca2d55d74e676ac4c38ceb14a2d3
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+>
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+> >> arm-linux-gnueabi-ld: error: .btf.vmlinux.bin.o is already in final BE8 format
+>    arm-linux-gnueabi-ld: failed to merge target specific data of file .btf.vmlinux.bin.o
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+I had a look at this bug, and found that this is not caused by my commit, but
+rather is the result of CONFIG_CPU_BIG_ENDIAN with BE8 format being
+incompatible with CONFIG_DEBUG_INFO_BTF.
+
+I'm sure there is an easy fix but I have not found it. Should we just
+add a Kconfig
+dependency to prevent this, or does anyone have an idea for a proper fix?
+
+          Arnd
