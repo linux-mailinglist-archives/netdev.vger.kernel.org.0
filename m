@@ -2,256 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41D0854B2F3
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 16:17:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4DAA54B302
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 16:21:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244945AbiFNOR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 10:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
+        id S238349AbiFNOUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 10:20:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244564AbiFNOR0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 10:17:26 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921E239813
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 07:17:18 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id u99so15364911ybi.11
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 07:17:18 -0700 (PDT)
+        with ESMTP id S241226AbiFNOUI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 10:20:08 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DF896169
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 07:20:06 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id s1so11488093wra.9
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 07:20:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ykJCkSDmaQwuRjSNMU1SJFHZmPWM0AX/lpikFCQOxUM=;
-        b=gxxmtVPdfld7TYT/I1hV+Lvzk5/ov3SJdzPCt5lLKl/8Ky9y93Vwv61PLScLaZ2qPj
-         F1LTPxOhnu9ufJ5MC2A1Vnzrje1RRYDcFo7VIbhIfbUJy4S4n1iLwKJMWYfBY0dCD0za
-         A2MFcEglmZ837Ge9Ofbp9npK75tDWDk44O8Pe5eCnkA8jvGTYQ5qS6Fs9LbSNLbCRFMU
-         iBffFODrbAKYHUR9see0yLm10CfSpiMI4OoYna0VVWCt/+yWzWKHRkXdiMTS5895VCfw
-         eW62mECaVI0HHZcu96+ekHtvWdM1d3iftQ9M9Ki8ghZ1zXJwTGSFmhmQy8ebuNQ0FIRt
-         GBfQ==
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=o77vbatCmhPPNlyvA+Ko08zPT9U0e63KL3NIYZuwUQA=;
+        b=t4fzlfeLcPVqWsuE7VVn6wwD1bqOc8leNTjQFFCqHkLT11hJvueQvhYN+dtV1pk0v4
+         L88GU+hf/nUcihl+AKHJgV6sR0fZuDOE+9Aff3lHQL++86e8uUXfdMU2s0C4iF1F70IB
+         eECb/zbWf+Q8HjBp4l1e5Ks8QqVBFLuLsecVOlcsS+IP6qFnhqF+0VfDrLUhgzGz3OBo
+         3XzkNk5DhTUiaV9od/RK2zZNp4yWoEFFm8cSEA9OYArYCMGQIfcQgEpUulm7M+lVFmJq
+         Nxgat2hZI7sGfDhZkmSA2t5OnRnX3QoLZpLBQga/WzT47a8Bv3PijCNLFph8U3qSC0RX
+         xXQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ykJCkSDmaQwuRjSNMU1SJFHZmPWM0AX/lpikFCQOxUM=;
-        b=zjVlUKaH8m3APPzkqpJHe1gmQXo7jvyUw9VMVUKmRrRMMBClGYYwp0HSvMm6hOHSMH
-         DoYlytbAsKWlIumXAfY+l5DQ+gwpWf2iciF284COHC4q8b/om3MItpQdPp3eKYmwAshP
-         5xN/gZ7sP96x9VcaLOV1Gu1NLhgx7Wnkw2dTDRldsU9a6hI5nCGLyyc+4x7Q6mk3S1nh
-         Zhy8uxIuKAJzTX2FeTNw9X0FColebopJQVDGO9IDPGTTMRjGDAvbUhnYPKoSDVpbGi0u
-         ivj/Jnr6l7/oLryYosIa3Nj9s88H3Y3pHgaixAOS6Bcpgy5J1mWQeiWVw9FrxS7E4fTJ
-         CWvQ==
-X-Gm-Message-State: AJIora9zp2KS8djMJ9lxsyy8m9hADigELOR0VulMTGamr0ysaLqM8eNw
-        3rm8Lxeqa1vw1t4rVlHvYaRmjwx5WNReJmZPJ4xExA==
-X-Google-Smtp-Source: AGRyM1sogp6JVr/ZLwK87UUL3L+3R8chDM1EO7iihKy13d9R3ODozlWUlHJF2RZKIkwqLekrFa8dq607j1nywrWJlbU=
-X-Received: by 2002:a05:6902:a:b0:65c:b38e:6d9f with SMTP id
- l10-20020a056902000a00b0065cb38e6d9fmr5472805ybh.36.1655216237200; Tue, 14
- Jun 2022 07:17:17 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=o77vbatCmhPPNlyvA+Ko08zPT9U0e63KL3NIYZuwUQA=;
+        b=j00kUhAaeIlNi7LuKWcCO2XbLknro7vfHZn0AqX4LCDRAuW7b9XYjF1o38HWTan1lY
+         0N+jTP4YgwL+lxLsAPihlymAmU5eQlVwS+mySl2DXi4lZzYHVOUoy7tgqSMg5VIk5hZ9
+         RU3NHcHcND3j+vxC6zsLVv81sG6m6eL75Ag3res5LRoCyShZpye73dkXRRHD9+JaVCQd
+         rx/v34KhTc2F/qZ9Qy5g/AD3CfYXwqCstd2N4NyxQuetCSCPOAqUt1+in1abWrk96ASN
+         TtdRuxYwm99iSP7YhjzgPsLcc9KIpiFssny7GScSirmX/jZbb8NXnCjXSlGqg9qZerbK
+         E5AQ==
+X-Gm-Message-State: AJIora+xJQO7/jNc5JELuw/Fj8Utf5um+NvTM8Yf81BUWWwX8oZOWZwo
+        ONT2R1rvVHeQDFbiDbO/gE9wQA==
+X-Google-Smtp-Source: AGRyM1t/fl90qSuFMJt1VzQGL5dbkAJETj6Wk9tRj1XJhJsaO/BmzkYvAQgzX+g8edjIWnzmVIIN6Q==
+X-Received: by 2002:a5d:648e:0:b0:217:d2cb:d6b2 with SMTP id o14-20020a5d648e000000b00217d2cbd6b2mr5088319wri.433.1655216404665;
+        Tue, 14 Jun 2022 07:20:04 -0700 (PDT)
+Received: from [192.168.178.21] ([51.155.200.13])
+        by smtp.gmail.com with ESMTPSA id u18-20020a5d4352000000b002102af52a2csm14171808wrr.9.2022.06.14.07.20.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 07:20:04 -0700 (PDT)
+Message-ID: <e9aa57d2-4ce7-23f2-0ba1-ea58f3254353@isovalent.com>
+Date:   Tue, 14 Jun 2022 15:20:03 +0100
 MIME-Version: 1.0
-References: <20220610110749.110881-1-soenke.huster@eknoes.de>
- <CANn89i+YHqMddY68Qk1rZexqhYYX9gah-==WGttFbp4urLS7Qg@mail.gmail.com>
- <9f214837-dc68-ef1a-0199-27d6af582115@eknoes.de> <CANn89iKS7npfHvBJNP2PBtR9RAQGsVdykELX8mK8DQbFbLeybA@mail.gmail.com>
- <22131ee2-914c-3aad-d2c3-f340ad0c8ad0@eknoes.de>
-In-Reply-To: <22131ee2-914c-3aad-d2c3-f340ad0c8ad0@eknoes.de>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 14 Jun 2022 07:17:06 -0700
-Message-ID: <CANn89i+FeNoxYVTG8xu6yU_iOf94cQkrAiP=3JeUwJSvuBW5QA@mail.gmail.com>
-Subject: Re: [PATCH v2] Bluetooth: RFCOMM: Use skb_trim to trim checksum
-To:     =?UTF-8?Q?S=C3=B6nke_Huster?= <soenke.huster@eknoes.de>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH bpf-next 1/2] Revert "bpftool: Use libbpf 1.0 API mode
+ instead of RLIMIT_MEMLOCK"
+Content-Language: en-GB
+To:     Yafang Shao <laoar.shao@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Harsh Modi <harshmodi@google.com>,
+        Paul Chaignon <paul@cilium.io>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <20220610112648.29695-1-quentin@isovalent.com>
+ <20220610112648.29695-2-quentin@isovalent.com> <YqNsWAH24bAIPjqy@google.com>
+ <cb05a59e-07d5-ddd1-b028-82133faaf67e@isovalent.com>
+ <CAKH8qBvvq0f+D8BXChw_8krH896J_cYg0yhRfnDOSO_U1n394w@mail.gmail.com>
+ <71b56050-11ad-bd06-09c9-1a8c61b4c1b4@isovalent.com>
+ <CAKH8qBsFyakQRd1q6XWggdv4F5+HrHoC4njg9jQFDOfq+kRBCQ@mail.gmail.com>
+ <CALOAHbCvWzOJ169fPTCp1KsFpkEVukKgGnH4mDeYGOEv6hsEpQ@mail.gmail.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+In-Reply-To: <CALOAHbCvWzOJ169fPTCp1KsFpkEVukKgGnH4mDeYGOEv6hsEpQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 6:42 AM S=C3=B6nke Huster <soenke.huster@eknoes.de>=
- wrote:
->
-> Hi Eric,
->
-> On 10.06.22 18:55, Eric Dumazet wrote:
-> > On Fri, Jun 10, 2022 at 8:35 AM S=C3=B6nke Huster <soenke.huster@eknoes=
-.de> wrote:
-> >>
-> >> Hi Eric,
-> >>
-> >> On 10.06.22 15:59, Eric Dumazet wrote:
-> >>> On Fri, Jun 10, 2022 at 4:08 AM Soenke Huster <soenke.huster@eknoes.d=
-e> wrote:
-> >>>>
-> >>>> As skb->tail might be zero, it can underflow. This leads to a page
-> >>>> fault: skb_tail_pointer simply adds skb->tail (which is now MAX_UINT=
-)
-> >>>> to skb->head.
-> >>>>
-> >>>>     BUG: unable to handle page fault for address: ffffed1021de29ff
-> >>>>     #PF: supervisor read access in kernel mode
-> >>>>     #PF: error_code(0x0000) - not-present page
-> >>>>     RIP: 0010:rfcomm_run+0x831/0x4040 (net/bluetooth/rfcomm/core.c:1=
-751)
-> >>>>
-> >>>> By using skb_trim instead of the direct manipulation, skb->tail
-> >>>> is reset. Thus, the correct pointer to the checksum is used.
-> >>>>
-> >>>> Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
-> >>>> ---
-> >>>> v2: Clarified how the bug triggers, minimize code change
-> >>>>
-> >>>>  net/bluetooth/rfcomm/core.c | 2 +-
-> >>>>  1 file changed, 1 insertion(+), 1 deletion(-)
-> >>>>
-> >>>> diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core=
-.c
-> >>>> index 7324764384b6..443b55edb3ab 100644
-> >>>> --- a/net/bluetooth/rfcomm/core.c
-> >>>> +++ b/net/bluetooth/rfcomm/core.c
-> >>>> @@ -1747,7 +1747,7 @@ static struct rfcomm_session *rfcomm_recv_fram=
-e(struct rfcomm_session *s,
-> >>>>         type =3D __get_type(hdr->ctrl);
-> >>>>
-> >>>>         /* Trim FCS */
-> >>>> -       skb->len--; skb->tail--;
-> >>>> +       skb_trim(skb, skb->len - 1);
-> >>>>         fcs =3D *(u8 *)skb_tail_pointer(skb);
-> >>>>
-> >>>>         if (__check_fcs(skb->data, type, fcs)) {
-> >>>> --
-> >>>> 2.36.1
-> >>>>
-> >>>
-> >>> Again, I do not see how skb->tail could possibly zero at this point.
-> >>>
-> >>> If it was, skb with illegal layout has been queued in the first place=
-,
-> >>> we need to fix the producer, not the consumer.
-> >>>
-> >>
-> >> Sorry, I thought that might be a right place as there is not much code=
- in the kernel
-> >> that manipulates ->tail directly.
-> >>
-> >>> A driver missed an skb_put() perhaps.
-> >>>
-> >>
-> >> I am using the (I guess quite unused) virtio_bt driver, and figured ou=
-t that the following
-> >> fixes the bug:
-> >>
-> >> --- a/drivers/bluetooth/virtio_bt.c
-> >> +++ b/drivers/bluetooth/virtio_bt.c
-> >> @@ -219,7 +219,7 @@ static void virtbt_rx_work(struct work_struct *wor=
-k)
-> >>         if (!skb)
-> >>                 return;
-> >>
-> >> -       skb->len =3D len;
-> >> +       skb_put(skb, len);
-> >
-> > Removing skb->len=3Dlen seems about right.
-> > But skb_put() should be done earlier.
-> >
-> > We are approaching the skb producer :)
-> >
-> > Now you have to find/check who added this illegal skb in the virt queue=
-.
-> >
-> > Maybe virtbt_add_inbuf() ?
->
-> I think here, the length of the skb can't really be known - an empty SKB =
-is put into
-> the virtqueue, and then filled with data in the device, which is implemen=
-ted in a Hypervisor.
-> Maybe my implementation of that device might then be wrong, on the other =
-hand I am pretty
-> sure the driver should be the one that sets the length of the skb. But th=
-e driver only
-> knows it in virtbt_rx_work, as it learns the size of the added buffer the=
-re for the first time.
->
-> >
-> > Also there is kernel info leak I think.
-> >
->
-> I think your are right!
+2022-06-14 20:37 UTC+0800 ~ Yafang Shao <laoar.shao@gmail.com>
+> On Sat, Jun 11, 2022 at 1:17 AM Stanislav Fomichev <sdf@google.com> wrote:
+>>
+>> On Fri, Jun 10, 2022 at 10:00 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>>>
+>>> 2022-06-10 09:46 UTC-0700 ~ Stanislav Fomichev <sdf@google.com>
+>>>> On Fri, Jun 10, 2022 at 9:34 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>>>>>
+>>>>> 2022-06-10 09:07 UTC-0700 ~ sdf@google.com
+>>>>>> On 06/10, Quentin Monnet wrote:
+>>>>>>> This reverts commit a777e18f1bcd32528ff5dfd10a6629b655b05eb8.
+>>>>>>
+>>>>>>> In commit a777e18f1bcd ("bpftool: Use libbpf 1.0 API mode instead of
+>>>>>>> RLIMIT_MEMLOCK"), we removed the rlimit bump in bpftool, because the
+>>>>>>> kernel has switched to memcg-based memory accounting. Thanks to the
+>>>>>>> LIBBPF_STRICT_AUTO_RLIMIT_MEMLOCK, we attempted to keep compatibility
+>>>>>>> with other systems and ask libbpf to raise the limit for us if
+>>>>>>> necessary.
+>>>>>>
+>>>>>>> How do we know if memcg-based accounting is supported? There is a probe
+>>>>>>> in libbpf to check this. But this probe currently relies on the
+>>>>>>> availability of a given BPF helper, bpf_ktime_get_coarse_ns(), which
+>>>>>>> landed in the same kernel version as the memory accounting change. This
+>>>>>>> works in the generic case, but it may fail, for example, if the helper
+>>>>>>> function has been backported to an older kernel. This has been observed
+>>>>>>> for Google Cloud's Container-Optimized OS (COS), where the helper is
+>>>>>>> available but rlimit is still in use. The probe succeeds, the rlimit is
+>>>>>>> not raised, and probing features with bpftool, for example, fails.
+>>>>>>
+>>>>>>> A patch was submitted [0] to update this probe in libbpf, based on what
+>>>>>>> the cilium/ebpf Go library does [1]. It would lower the soft rlimit to
+>>>>>>> 0, attempt to load a BPF object, and reset the rlimit. But it may induce
+>>>>>>> some hard-to-debug flakiness if another process starts, or the current
+>>>>>>> application is killed, while the rlimit is reduced, and the approach was
+>>>>>>> discarded.
+>>>>>>
+>>>>>>> As a workaround to ensure that the rlimit bump does not depend on the
+>>>>>>> availability of a given helper, we restore the unconditional rlimit bump
+>>>>>>> in bpftool for now.
+>>>>>>
+>>>>>>> [0]
+>>>>>>> https://lore.kernel.org/bpf/20220609143614.97837-1-quentin@isovalent.com/
+>>>>>>> [1] https://github.com/cilium/ebpf/blob/v0.9.0/rlimit/rlimit.go#L39
+>>>>>>
+>>>>>>> Cc: Yafang Shao <laoar.shao@gmail.com>
+>>>>>>> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+>>>>>>> ---
+>>>>>>>   tools/bpf/bpftool/common.c     | 8 ++++++++
+>>>>>>>   tools/bpf/bpftool/feature.c    | 2 ++
+>>>>>>>   tools/bpf/bpftool/main.c       | 6 +++---
+>>>>>>>   tools/bpf/bpftool/main.h       | 2 ++
+>>>>>>>   tools/bpf/bpftool/map.c        | 2 ++
+>>>>>>>   tools/bpf/bpftool/pids.c       | 1 +
+>>>>>>>   tools/bpf/bpftool/prog.c       | 3 +++
+>>>>>>>   tools/bpf/bpftool/struct_ops.c | 2 ++
+>>>>>>>   8 files changed, 23 insertions(+), 3 deletions(-)
+>>>>>>
+>>>>>>> diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
+>>>>>>> index a45b42ee8ab0..a0d4acd7c54a 100644
+>>>>>>> --- a/tools/bpf/bpftool/common.c
+>>>>>>> +++ b/tools/bpf/bpftool/common.c
+>>>>>>> @@ -17,6 +17,7 @@
+>>>>>>>   #include <linux/magic.h>
+>>>>>>>   #include <net/if.h>
+>>>>>>>   #include <sys/mount.h>
+>>>>>>> +#include <sys/resource.h>
+>>>>>>>   #include <sys/stat.h>
+>>>>>>>   #include <sys/vfs.h>
+>>>>>>
+>>>>>>> @@ -72,6 +73,13 @@ static bool is_bpffs(char *path)
+>>>>>>>       return (unsigned long)st_fs.f_type == BPF_FS_MAGIC;
+>>>>>>>   }
+>>>>>>
+>>>>>>> +void set_max_rlimit(void)
+>>>>>>> +{
+>>>>>>> +    struct rlimit rinf = { RLIM_INFINITY, RLIM_INFINITY };
+>>>>>>> +
+>>>>>>> +    setrlimit(RLIMIT_MEMLOCK, &rinf);
+>>>>>>
+>>>>>> Do you think it might make sense to print to stderr some warning if
+>>>>>> we actually happen to adjust this limit?
+>>>>>>
+>>>>>> if (getrlimit(MEMLOCK) != RLIM_INFINITY) {
+>>>>>>     fprintf(stderr, "Warning: resetting MEMLOCK rlimit to
+>>>>>>     infinity!\n");
+>>>>>>     setrlimit(RLIMIT_MEMLOCK, &rinf);
+>>>>>> }
+>>>>>>
+>>>>>> ?
+>>>>>>
+>>>>>> Because while it's nice that we automatically do this, this might still
+>>>>>> lead to surprises for some users. OTOH, not sure whether people
+>>>>>> actually read those warnings? :-/
+>>>>>
+>>>>> I'm not strictly opposed to a warning, but I'm not completely sure this
+>>>>> is desirable.
+>>>>>
+>>>>> Bpftool has raised the rlimit for a long time, it changed only in April,
+>>>>> so I don't think it would come up as a surprise for people who have used
+>>>>> it for a while. I think this is also something that several other
+>>>>> BPF-related applications (BCC I think?, bpftrace, Cilium come to mind)
+>>>>> have been doing too.
+>>>>
+>>>> In this case ignore me and let's continue doing that :-)
+>>>>
+>>>> Btw, eventually we'd still like to stop doing that I'd presume?
+>>>
+>>> Agreed. I was thinking either finding a way to improve the probe in
+>>> libbpf, or waiting for some more time until 5.11 gets old, but this may
+>>> take years :/
+>>>
+>>>> Should
+>>>> we at some point follow up with something like:
+>>>>
+>>>> if (kernel_version >= 5.11) { don't touch memlock; }
+>>>>
+>>>> ?
+>>>>
+>>>> I guess we care only about <5.11 because of the backports, but 5.11+
+>>>> kernels are guaranteed to have memcg.
+>>>
+>>> You mean from uname() and parsing the release? Yes I suppose we could do
+>>> that, can do as a follow-up.
+>>
+>> Yeah, uname-based, I don't think we can do better? Given that probing
+>> is problematic as well :-(
+>> But idk, up to you.
+>>
+> 
+> Agreed with the uname-based solution. Another possible solution is to
+> probe the member 'memcg' in struct bpf_map, in case someone may
+> backport memcg-based  memory accounting, but that will be a little
+> over-engineering. The uname-based solution is simple and can work.
+> 
 
-If this patch in drivers/bluetooth/virtio_bt.c fixes the issue, please
-submit a formal patch.
-You can take ownership of it, of course.
+Thanks! Yes, memcg would be more complex: the struct is not exposed to
+user space, and BTF is not a hard dependency for bpftool. I'll work on
+the uname-based test as a follow-up to this set.
 
-If not, more investigation is needed on your side ;)
-
-Thanks !
-
->
-> > diff --git a/drivers/bluetooth/virtio_bt.c b/drivers/bluetooth/virtio_b=
-t.c
-> > index 67c21263f9e0f250f0719b8e7f1fe15b0eba5ee0..c9b832c447ee451f027430b=
-284d7bb246f6ecb24
-> > 100644
-> > --- a/drivers/bluetooth/virtio_bt.c
-> > +++ b/drivers/bluetooth/virtio_bt.c
-> > @@ -37,6 +37,9 @@ static int virtbt_add_inbuf(struct virtio_bluetooth *=
-vbt)
-> >         if (!skb)
-> >                 return -ENOMEM;
-> >
-> > +       skb_put(skb, 1000);
-> > +       memset(skb->data, 0, 1000);
-> > +
-> >         sg_init_one(sg, skb->data, 1000);
-> >
-> >         err =3D virtqueue_add_inbuf(vq, sg, 1, skb, GFP_KERNEL);
-> >
-> >
-> >>         virtbt_rx_handle(vbt, skb);
-> >>
-> >>         if (virtbt_add_inbuf(vbt) < 0)
-> >>
-> >> I guess this is the root cause? I just used Bluetooth for a while in t=
-he VM
-> >> and no error occurred, everything worked fine.
-> >>
-> >>> Can you please dump the skb here  ?
-> >>>
-> >>> diff --git a/net/bluetooth/rfcomm/core.c b/net/bluetooth/rfcomm/core.=
-c
-> >>> index 7324764384b6773074032ad671777bf86bd3360e..358ccb4fe7214aea0bb40=
-84188c7658316fe0ff7
-> >>> 100644
-> >>> --- a/net/bluetooth/rfcomm/core.c
-> >>> +++ b/net/bluetooth/rfcomm/core.c
-> >>> @@ -1746,6 +1746,11 @@ static struct rfcomm_session
-> >>> *rfcomm_recv_frame(struct rfcomm_session *s,
-> >>>         dlci =3D __get_dlci(hdr->addr);
-> >>>         type =3D __get_type(hdr->ctrl);
-> >>>
-> >>> +       if (!skb->tail) {
-> >>> +               DO_ONCE_LITE(skb_dump(KERN_ERR, skb, false));
-> >>> +               kfree_skb(skb);
-> >>> +               return s;
-> >>> +       }
-> >>>         /* Trim FCS */
-> >>>         skb->len--; skb->tail--;
-> >>>         fcs =3D *(u8 *)skb_tail_pointer(skb);
-> >>
-> >> If it might still help:
-> >>
-> >> skb len=3D4 headroom=3D9 headlen=3D4 tailroom=3D1728
-> >> mac=3D(-1,-1) net=3D(0,-1) trans=3D-1
-> >> shinfo(txflags=3D0 nr_frags=3D0 gso(size=3D0 type=3D0 segs=3D0))
-> >> csum(0x0 ip_summed=3D0 complete_sw=3D0 valid=3D0 level=3D0)
-> >> hash(0x0 sw=3D0 l4=3D0) proto=3D0x0000 pkttype=3D0 iif=3D0
-> >> skb linear:   00000000: 03 3f 01 1c
-> >>
+Quentin
