@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B23ED54B154
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 14:39:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DADA54B0F4
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 14:37:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237862AbiFNMhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 08:37:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42056 "EHLO
+        id S243391AbiFNMhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 08:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355067AbiFNMfq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 08:35:46 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46594E39A
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 05:33:33 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id n28so11412874edb.9
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 05:33:33 -0700 (PDT)
+        with ESMTP id S232730AbiFNMfr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 08:35:47 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B1D4AE03
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 05:33:34 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id n10so16876096ejk.5
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 05:33:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0AmakWZbTt3nB/c2JUTedko0ApXUplS/tp6O1froRbU=;
-        b=kAbeV/gHG00msae3ZICHrofYF+kasw9U42zUWregdA0rjaW+Zh3WFegCB6C2Jg6C/p
-         lWLO1Icj+3J3q9yQpK3gfIBIRr5Tb2Otvff4t5EXHH6l1tB/xyPAua1mlPjW0+LsG/dT
-         Q69M8ZKH6vLD1H/SojfQp3/uka22bzwSTqpANGXR3UW2lazcNpcFIWrcaaKNtXvpOPek
-         VY44X4RXMmu2QD+zD3suA6lAvFsBOe0uGcI9B25SE4ccXW5GkxxpzF2f80y0BQSskBuy
-         mvNkG5kZg4ew+VAtFKRxfL73tJlsiDuIfgfBYr4LXbrksdjvuyjha1xvCBy62VloLX97
-         isAQ==
+        bh=hiZiTgbZsVTwSQPSdiwn3XkqgCWRIt4d80/GBgSQ58I=;
+        b=PZ+g75MR8gG1WBhpV2TPcKYD9Ah2TnuY6AH5z1BzOLjA04LklDie9dlTH9DQgYnoqD
+         uxKYSsXOYQPo31Sut6fHvB8SofsNauqAguJFxgM9xITb0wCWnNgf03uh5TIz5UIvyAXR
+         SDUqWKuLl5ABX7Km22flWY0CyfR4bQtQvD8bSexAfKiVjVRnjWy4xFIoDY536LGAcjVd
+         PveODJJrmoWjkS/Ev1ALCXQ7jlZS1rLD7vrokUenaloaGe9ZPXoaCwayI8tKczEHH5pP
+         cRFpCwdJvlDan2D8TKlfOcrYdnOf8JHeb+4WrMhvmdnbeKUo4CNRmoxMWWRhEijJH9tr
+         /8Rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0AmakWZbTt3nB/c2JUTedko0ApXUplS/tp6O1froRbU=;
-        b=twuiElibmVzz8wfI65h2/j43FnqezGbv2I72fwer8dJ5WCgrOFTy6R7loEYpxnSSYV
-         qTBGJdGgMpiw/7ygTW9dht/XtBJapvlRbVpf85kPhN0+DvWiUBG0Ana7tqhO2PTIMNLt
-         5bQ4M3wz14ltIjwdj5V0kY/XkEtFR5OjNnLliuNpV61vvU887VKYSdKf2PcTxq/+yoDC
-         yRHX8w6rLPTRuiRJxCLMeusz2zdqZUbXOHbzKhXm5iiwJsw4runImBI64IptY2vVBOvM
-         qDxfugFesHHexRjINzTuQLS7l6na9/wHK6Lk5f+wlMqphkPBlD7ms/kOuXkbsJm+qc7V
-         Do9Q==
-X-Gm-Message-State: AJIora8b7sEAnhTU/01QYE5VGl+TXTEC0EaHQ5xGQQZl0w+wjTxHUM/g
-        LtlcDs+wdeDf4BFCS/LYK3ls3qpdvRGG2OVBCRg=
-X-Google-Smtp-Source: ABdhPJym/vzD7vXC0586/8mVS2A5YpJ9K0umq9n3a1L//Vd03QgvM5U2QtXffp8TczSvz9tNI/+wdg==
-X-Received: by 2002:a05:6402:56:b0:431:6f7b:533 with SMTP id f22-20020a056402005600b004316f7b0533mr5786864edu.333.1655210012326;
-        Tue, 14 Jun 2022 05:33:32 -0700 (PDT)
+        bh=hiZiTgbZsVTwSQPSdiwn3XkqgCWRIt4d80/GBgSQ58I=;
+        b=vJOuGYjHsr4xpcXdFKi0MASn0Lhk67/9JnoZ+JMf+nTAAG77NP/OavPswdGRNAGw0f
+         iMorVHDZ/uh67uLyrJDm7ZT39JgwpfpMci4TXYmDmSCp7OXGlW0Nee8lxCXfs1v8uqiR
+         BAuEVrWWbfnyY+nphT3kXNZB8bou6KHc5t+OWEXaMZRiR/B/JbQrDZjDjI2I7NrewVcp
+         55tS8Tla8h2h4up+265pOXuFdea83JDyqZ118Ig/lhr+5U4Atzy4GsGqiusnGctd8/vO
+         9HyqfOLr/l6aefolk4ahelplRDVP759a0qvwE6MWLCA7PLTEoF4/l9BWVbi3ucU1+NKG
+         ZtEg==
+X-Gm-Message-State: AOAM532w74STi2w1+kYQEKVYal8XwIpO2NFW3Bb9GttUDNAcidDDOX9h
+        mR6sUqpv0GhoUUUDJx/vWbexNeAK89wJcCQnIPE=
+X-Google-Smtp-Source: ABdhPJxyRw/1Oor6rgATtLrqG99rJbejn7LqZ4EOhWp1y4AGNqanShOplb/MOO5Lb4dHnLje8VeKGA==
+X-Received: by 2002:a17:907:94c8:b0:711:d864:fd84 with SMTP id dn8-20020a17090794c800b00711d864fd84mr4053613ejc.18.1655210013476;
+        Tue, 14 Jun 2022 05:33:33 -0700 (PDT)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id p23-20020a170907911700b007121295f08csm4899953ejq.219.2022.06.14.05.33.31
+        by smtp.gmail.com with ESMTPSA id m23-20020a170906161700b0071216de7710sm4974627ejd.153.2022.06.14.05.33.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 05:33:31 -0700 (PDT)
+        Tue, 14 Jun 2022 05:33:33 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, idosch@nvidia.com,
         petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
         mlxsw@nvidia.com
-Subject: [patch net-next 03/11] mlxsw: core_linecard_dev: Set nested devlink relationship for a line card
-Date:   Tue, 14 Jun 2022 14:33:18 +0200
-Message-Id: <20220614123326.69745-4-jiri@resnulli.us>
+Subject: [patch net-next 04/11] mlxsw: core_linecards: Expose HW revision and INI version
+Date:   Tue, 14 Jun 2022 14:33:19 +0200
+Message-Id: <20220614123326.69745-5-jiri@resnulli.us>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220614123326.69745-1-jiri@resnulli.us>
 References: <20220614123326.69745-1-jiri@resnulli.us>
@@ -71,44 +71,133 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-For newly created line card device devlink instance, set the
-relationship with the parent line card object.
+Implement info_get() to expose HW revision of a linecard and loaded INI
+version.
+
+Example:
+
+$ devlink dev info auxiliary/mlxsw_core.lc.0
+auxiliary/mlxsw_core.lc.0:
+  versions:
+      fixed:
+        hw.revision 0
+      running:
+        ini.version 4
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ Documentation/networking/devlink/mlxsw.rst    | 18 ++++++++++++
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  4 +++
+ .../mellanox/mlxsw/core_linecard_dev.c        | 11 ++++++++
+ .../ethernet/mellanox/mlxsw/core_linecards.c  | 28 +++++++++++++++++++
+ 4 files changed, 61 insertions(+)
 
+diff --git a/Documentation/networking/devlink/mlxsw.rst b/Documentation/networking/devlink/mlxsw.rst
+index cf857cb4ba8f..aededcf68df4 100644
+--- a/Documentation/networking/devlink/mlxsw.rst
++++ b/Documentation/networking/devlink/mlxsw.rst
+@@ -58,6 +58,24 @@ The ``mlxsw`` driver reports the following versions
+      - running
+      - Three digit firmware version
+ 
++Line card auxiliary device info versions
++========================================
++
++The ``mlxsw`` driver reports the following versions for line card auxiliary device
++
++.. list-table:: devlink info versions implemented
++   :widths: 5 5 90
++
++   * - Name
++     - Type
++     - Description
++   * - ``hw.revision``
++     - fixed
++     - The hardware revision for this line card
++   * - ``ini.version``
++     - running
++     - Version of line card INI loaded
++
+ Driver-specific Traps
+ =====================
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
+index cda20a4fcbdb..ea56bcc0a399 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
+@@ -605,6 +605,10 @@ mlxsw_linecard_get(struct mlxsw_linecards *linecards, u8 slot_index)
+ 	return &linecards->linecards[slot_index - 1];
+ }
+ 
++int mlxsw_linecard_devlink_info_get(struct mlxsw_linecard *linecard,
++				    struct devlink_info_req *req,
++				    struct netlink_ext_ack *extack);
++
+ int mlxsw_linecards_init(struct mlxsw_core *mlxsw_core,
+ 			 const struct mlxsw_bus_info *bus_info);
+ void mlxsw_linecards_fini(struct mlxsw_core *mlxsw_core);
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c b/drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c
-index af70d3f7a177..d12abd935ded 100644
+index d12abd935ded..30659f8be41c 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/core_linecard_dev.c
-@@ -102,6 +102,7 @@ static int mlxsw_linecard_bdev_probe(struct auxiliary_device *adev,
- {
- 	struct mlxsw_linecard_bdev *linecard_bdev =
- 			container_of(adev, struct mlxsw_linecard_bdev, adev);
-+	struct mlxsw_linecard *linecard = linecard_bdev->linecard;
- 	struct mlxsw_linecard_dev *linecard_dev;
- 	struct devlink *devlink;
- 
-@@ -114,6 +115,7 @@ static int mlxsw_linecard_bdev_probe(struct auxiliary_device *adev,
- 	linecard_bdev->linecard_dev = linecard_dev;
- 
- 	devlink_register(devlink);
-+	devlink_linecard_nested_dl_set(linecard->devlink_linecard, devlink);
- 	return 0;
+@@ -94,7 +94,18 @@ void mlxsw_linecard_bdev_del(struct mlxsw_linecard *linecard)
+ 	auxiliary_device_uninit(&linecard_bdev->adev);
  }
  
-@@ -122,7 +124,9 @@ static void mlxsw_linecard_bdev_remove(struct auxiliary_device *adev)
- 	struct mlxsw_linecard_bdev *linecard_bdev =
- 			container_of(adev, struct mlxsw_linecard_bdev, adev);
- 	struct devlink *devlink = priv_to_devlink(linecard_bdev->linecard_dev);
-+	struct mlxsw_linecard *linecard = linecard_bdev->linecard;
++static int mlxsw_linecard_dev_devlink_info_get(struct devlink *devlink,
++					       struct devlink_info_req *req,
++					       struct netlink_ext_ack *extack)
++{
++	struct mlxsw_linecard_dev *linecard_dev = devlink_priv(devlink);
++	struct mlxsw_linecard *linecard = linecard_dev->linecard;
++
++	return mlxsw_linecard_devlink_info_get(linecard, req, extack);
++}
++
+ static const struct devlink_ops mlxsw_linecard_dev_devlink_ops = {
++	.info_get			= mlxsw_linecard_dev_devlink_info_get,
+ };
  
-+	devlink_linecard_nested_dl_set(linecard->devlink_linecard, NULL);
- 	devlink_unregister(devlink);
- 	devlink_free(devlink);
+ static int mlxsw_linecard_bdev_probe(struct auxiliary_device *adev,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c b/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
+index ae51944cde0c..c11d22708bba 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
+@@ -226,6 +226,34 @@ void mlxsw_linecards_event_ops_unregister(struct mlxsw_core *mlxsw_core,
  }
+ EXPORT_SYMBOL(mlxsw_linecards_event_ops_unregister);
+ 
++int mlxsw_linecard_devlink_info_get(struct mlxsw_linecard *linecard,
++				    struct devlink_info_req *req,
++				    struct netlink_ext_ack *extack)
++{
++	char buf[32];
++	int err;
++
++	mutex_lock(&linecard->lock);
++	if (WARN_ON(!linecard->provisioned)) {
++		err = 0;
++		goto unlock;
++	}
++
++	sprintf(buf, "%d", linecard->hw_revision);
++	err = devlink_info_version_fixed_put(req, "hw.revision", buf);
++	if (err)
++		goto unlock;
++
++	sprintf(buf, "%d", linecard->ini_version);
++	err = devlink_info_version_running_put(req, "ini.version", buf);
++	if (err)
++		goto unlock;
++
++unlock:
++	mutex_unlock(&linecard->lock);
++	return err;
++}
++
+ static int
+ mlxsw_linecard_provision_set(struct mlxsw_linecard *linecard, u8 card_type,
+ 			     u16 hw_revision, u16 ini_version)
 -- 
 2.35.3
 
