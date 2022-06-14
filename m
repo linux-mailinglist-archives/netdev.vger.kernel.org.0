@@ -2,72 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B2C954B5E2
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 18:22:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FE7754B5FB
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 18:31:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237133AbiFNQUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 12:20:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
+        id S243376AbiFNQZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 12:25:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbiFNQUr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 12:20:47 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 396BE22295;
-        Tue, 14 Jun 2022 09:20:45 -0700 (PDT)
-Received: from mail-yb1-f179.google.com ([209.85.219.179]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MadC8-1nQAtt3KHq-00c8na; Tue, 14 Jun 2022 18:20:44 +0200
-Received: by mail-yb1-f179.google.com with SMTP id u99so15976759ybi.11;
-        Tue, 14 Jun 2022 09:20:43 -0700 (PDT)
-X-Gm-Message-State: AJIora/6g6EPvxslekopfsnoX6xFhapU42p83CqpLpLD8QH4wuuPffIP
-        Lgn2GBkENdzz5jtxrW9kYGPFxIhi3qedfXVupN0=
-X-Google-Smtp-Source: AGRyM1vL8YmZq2CJCAYY9lO5nRWLWOkqiKpTfzNi8RRXvdFTlfQo46XRqaiOQVYpttr+UTW5s4kkZ2oWrKpG9iJxDw0=
-X-Received: by 2002:a25:7645:0:b0:664:70b9:b093 with SMTP id
- r66-20020a257645000000b0066470b9b093mr5733329ybc.480.1655223642290; Tue, 14
- Jun 2022 09:20:42 -0700 (PDT)
+        with ESMTP id S240192AbiFNQZl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 12:25:41 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6F82980F
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 09:25:41 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id u37so592758pfg.3
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 09:25:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=JdvVTYP0ACaM6uOt685kAxxm8vkE7q+IZ8GZAXhWSoc=;
+        b=mEHDpKEdZxJ+nmAGU+0V8BH+Y+MxGyZNrEiaqrJLn4iD3Ql5mhxGqN5lwFCHq/Ss9h
+         K52vybpH9aIlOc/LFbGnby1O0XP5ZXJOqyJHnbD83UDLBgcVpNqJTFpW1F1kG/X+usaO
+         NOaBZ/LmGw8otMk3UJCuZRSl9BOhaAZR6AZs/W1C+Copl+yT3uk6srL6N4bDbugx9lQu
+         2x87zgY4i9d6zPE4Buclt5GfXMT3PdL01441oxSfgsIJoctf7IHlppR5O8kZIrVsUmo8
+         MIgaGo9B6h3BDiriOS+JWP2IQwD8bSFYSesRsp4qAnZoJqXzFW4yP5rgdJOw6qbWZ/NN
+         I4gQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JdvVTYP0ACaM6uOt685kAxxm8vkE7q+IZ8GZAXhWSoc=;
+        b=d3Dse9CaU9fWJ0+EnzQMCZinCQk3eUMt06RniWIgsB44WXuX737aDaM3Z/RZN3AY90
+         /9qJt6noocRFp3zA3aFb4Gf/mEAIFkURChWf+KmNqdiqgCY4MMQEj65IK5v+/5Mjs2tq
+         3zvq3/M7S8A3uO36w8lvFF9ZRsIVb7Ipv4Hkgl+uhW6WDxi+g3CYF+SsHgMnWTPP1tgG
+         cNROTVoIeG98QoP9mHxbIH5H4+PkVX0NuGzZQj00xJPTi8FdiN1uDvGv28EeJIhXDdSh
+         HhvHgZB+Swp0DMsfGW5bws1P1dcKyBDjlMgX5C1S6rq5rEPZtfs+x+nUxy2EBUAtJbVV
+         psJQ==
+X-Gm-Message-State: AOAM532YD1eGXCOPlxW4Fa340WdQjKuWWiiGFcvznqaLCO1GxQuaDa6w
+        xePmF38t7cqpg5UjUCE9ZCU=
+X-Google-Smtp-Source: ABdhPJzGthOYJxezu152S2P/BloHfPku75xIG9eGL1hSLgDJT4lNPvZ7K9Cy1hPPam6a5FwBnx11cA==
+X-Received: by 2002:a63:7c4e:0:b0:380:8ae9:c975 with SMTP id l14-20020a637c4e000000b003808ae9c975mr5306668pgn.25.1655223940551;
+        Tue, 14 Jun 2022 09:25:40 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id ep11-20020a17090ae64b00b001eab4d6de9esm3190982pjb.3.2022.06.14.09.25.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 14 Jun 2022 09:25:40 -0700 (PDT)
+Message-ID: <81e43c3f-a10e-3167-a868-61794bd66466@gmail.com>
+Date:   Tue, 14 Jun 2022 09:25:38 -0700
 MIME-Version: 1.0
-References: <202206120438.Un6Wq4N0-lkp@intel.com>
-In-Reply-To: <202206120438.Un6Wq4N0-lkp@intel.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 14 Jun 2022 18:20:25 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3dvzLhAGV8rdCpX__54vkL0=e5pACUY-es3xiJau=uwg@mail.gmail.com>
-Message-ID: <CAK8P3a3dvzLhAGV8rdCpX__54vkL0=e5pACUY-es3xiJau=uwg@mail.gmail.com>
-Subject: Re: arm-linux-gnueabi-ld: error: .btf.vmlinux.bin.o is already in
- final BE8 format
-To:     kernel test robot <lkp@intel.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, kbuild-all@lists.01.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:igAUm1LzDSLl29TXXz/+lQAUwgRNCk6eMol8eFWliL6moUdfvqg
- ZedgsqHBkdqYthWVHsqcekZlVk8i2lJX1jvFOG8tM/QGWI+VDaDrDfpO9+4I+OEYPcxGakO
- 0kyCxNVykYiYSgvE0Wv1vwBFdLt5TX9IRWTULRGBkYWtEic2CbZCicWmawl+zvcqv1w6hF/
- eiyvc6n4BzZeDiwtNtvvQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:yHDEjxbyy+8=:Rw4wAtq/uqU2yJrfg/zEde
- Fns53zpACA3tdkPDsH0IMz4lOVcCd6sziz3TuYGmOFLHUZJx2BKOyhMGD0Ka6bJoNqgSuYdMA
- c+cG8c9XFXg7gyLfWhcKsWTmio7aFOFQd9PxJoK6t/kgo/K2C6AqCsT7FBcX46WS3BF7QlEsE
- 0Dw9uoYEJZJ15jS4k6tV0SLC6IcSzC5DXDNra8BMSMKhKwIaaKh5IX6jPTS5TOPClWejFjV5W
- AFGWo5YG9fGbMO0191pSSp2W5w2M0gdrVPKFpRO+0+GsjrLYbYlEGpwb8iFLVedfPlenVmREw
- yBQrS/Jy2dJBmd4D3GsGXDuLzZkud6h4EiYH422yY8QRuscFp+CK9KRKNWX2983fInRcXTNtx
- 4kb7b9nLi0EBmAo5nJSh5ZZeZEu0QHMouzhzAoftsJgeBzKaLwZ4smeldIPuC5j3aw1y/8GzS
- trCnKSbtefw1u0wsp4H4zuEXtIOZ2GBxZXBTDqoNfz2wvAfMr6uX6iMyLsnQDMtgSuHoGY6il
- pKhuZC4fZeSTqCNQoU5HWzWcTazsOU0bvr20JDzdfERQuajdX5sq0qVeX7C8GKnWlkQGL2oPH
- G8A/MFuUeYcAzhVIPOipBrLv2BST9jqGA58BhB9BO3Yniu37xjQts85oITlGRCU0WWg/zBux0
- 0yhQtCm+tTItSiFkbZ9RrR0EAoEJFYEogd8cKCGBGnZs4sG2cMrqtskdm92HDgVAOYtBbvYmd
- dgNdJFkduWyOdKoO8RSOUmjGIO1lN+XXIanb+LGLvK7JgRZbNel5+9OjPMZfC6/wHWxX8dhS4
- j9J5MM0iaRZZ/KlQvA8qVhQfKvgtivSLu+O0vU4bNf8m9pNa/I6G4f45BJ6d+ThU29u5ukGBE
- CykbGr8y1Ok76xGKneNQ==
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH net-next v7 3/3] net: phy: Add support for 1PPS out and
+ external timestamps
+Content-Language: en-US
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>, netdev@vger.kernel.org
+Cc:     kernel-team@fb.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Lasse Johnsen <l@ssejohnsen.me>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>
+References: <20220614050810.54425-1-jonathan.lemon@gmail.com>
+ <20220614050810.54425-4-jonathan.lemon@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220614050810.54425-4-jonathan.lemon@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,39 +85,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 11, 2022 at 11:00 PM kernel test robot <lkp@intel.com> wrote:
->
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> head:   0678afa6055d14799c1dc1eee47c8025eba56cab
-> commit: 5d6f52671e76ca2d55d74e676ac4c38ceb14a2d3 ARM: rework endianess selection
-> date:   9 weeks ago
-> configrong.a.chen@intel.com: arm-randconfig-r012-20220612 (https://download.01.org/0day-ci/archive/20220612/202206120438.Un6Wq4N0-lkp@intel.com/config)
-> compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=5d6f52671e76ca2d55d74e676ac4c38ceb14a2d3
->         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->         git fetch --no-tags linus master
->         git checkout 5d6f52671e76ca2d55d74e676ac4c38ceb14a2d3
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
->
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
-> >> arm-linux-gnueabi-ld: error: .btf.vmlinux.bin.o is already in final BE8 format
->    arm-linux-gnueabi-ld: failed to merge target specific data of file .btf.vmlinux.bin.o
+On 6/13/22 22:08, Jonathan Lemon wrote:
+> The perout function is used to generate a 1PPS signal, synchronized
+> to the PHC.  This is accomplished by a using the hardware oneshot
+> functionality, which is reset by a timer.
+> 
+> The external timestamp function is set up for a 1PPS input pulse,
+> and uses a timer to poll for temestamps.
+> 
+> Both functions use the SYNC_OUT/SYNC_IN1 pin, so cannot run
+> simultaneously.
+> 
+> Co-developed-by: Lasse Johnsen <l@ssejohnsen.me>
+> Signed-off-by: Lasse Johnsen <l@ssejohnsen.me>
+> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> Acked-by: Richard Cochran <richardcochran@gmail.com>
 
-I had a look at this bug, and found that this is not caused by my commit, but
-rather is the result of CONFIG_CPU_BIG_ENDIAN with BE8 format being
-incompatible with CONFIG_DEBUG_INFO_BTF.
+Not sure whether we could apply just patch 1 and 2 and leave this one 
+aside as I do see a few things that IMHO would be worth updating before 
+merging this one, more on the stylistic aspect though, so you be the judge.
 
-I'm sure there is an easy fix but I have not found it. Should we just
-add a Kconfig
-dependency to prevent this, or does anyone have an idea for a proper fix?
+> ---
 
-          Arnd
+[snip]
+
+
+> +static int bcm_ptp_cancel_func(struct bcm_ptp_private *priv)
+> +{
+> +	if (priv->pin_active) {
+> +		priv->pin_active = false;
+> +		priv->nse_ctrl &= ~(NSE_SYNC_OUT_MASK | NSE_SYNC1_FRAMESYNC |
+> +				    NSE_CAPTURE_EN);
+> +		bcm_phy_write_exp(priv->phydev, NSE_CTRL, priv->nse_ctrl);
+> +		cancel_delayed_work_sync(&priv->pin_work);
+> +	}
+
+Missing newline and you should consider reducing the indentation.
+
+> +	return 0;
+> +}
+> +
+> +static void bcm_ptp_perout_work(struct work_struct *pin_work)
+> +{
+> +	struct bcm_ptp_private *priv =
+> +		container_of(pin_work, struct bcm_ptp_private, pin_work.work);
+> +	struct phy_device *phydev = priv->phydev;
+> +	struct timespec64 ts;
+> +	u64 ns, next;
+> +	u16 ctrl;
+> +
+> +	mutex_lock(&priv->mutex);
+> +
+> +	/* no longer running */
+> +	if (!priv->pin_active) {
+> +		mutex_unlock(&priv->mutex);
+> +		return;
+> +	}
+
+[snip]
+
+> +	if (!pulse)
+> +		return -EINVAL;
+> +
+> +	if (pulse > period)
+> +		return -EINVAL;
+> +
+> +	if (pulse > BCM_MAX_PULSE_8NS)
+> +		return -EINVAL;
+
+Consider combining all of these into a single line?
+-- 
+Florian
