@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AB2A54B62F
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 18:31:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3DB854B627
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 18:31:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344182AbiFNQao (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 12:30:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45206 "EHLO
+        id S1344164AbiFNQaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 12:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344163AbiFNQal (ORCPT
+        with ESMTP id S1344232AbiFNQal (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 12:30:41 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C82844752
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 09:30:30 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id o33-20020a17090a0a2400b001ea806e48c6so9552624pjo.1
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 09:30:30 -0700 (PDT)
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1F044A02
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 09:30:31 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id d13so8149339plh.13
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 09:30:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PX4xpZVSDZWWYzf0Mgpk64vZeG3iQ4tbiusifSgBIMg=;
-        b=PDl5/BL6L01bwaLnV4AllRkkdPjStJ9OqT1xjjinfwKPIP6eneHg9rhG3s2ZOCV87f
-         5mst/Y1F0zJQaNwDWs7plYwV5KDlUOv88cm4k7hT5xLDIT1B8qg+GctTSBIgO8zfp/DF
-         xErqCudJeCdu5waZnUDLpHlMZ0+LVk2K84ehK784NHXeMqreU1lSssXX9QbdSrsLbd3Q
-         aiDa9IeXgZSkv3w+yGLbgzfU1CT5rLoP5WThx1XUdLqQ+d+uUPUfdecj4AkpBuf8/6+/
-         7HuMH1FJuosVKV7Ns+HCMw7kDxXR9LSDlnyly/0KXLLzzCRlwlNWTx+eu+YUXKpjgnYx
-         kNxg==
+        bh=6bECSe3JFxq6eJt90PO1NvfTGgvzif21tVQUALk/0nQ=;
+        b=cR40t1LcQdWRDoGUt4sKNpJuBDRfk1j0DVGPE8yYLt6SH5cSqzI2p9beTHOVuYZbVG
+         /qq4uqqevmd4DpkO2pDlX29/Vwi236t24/YRZBygcl+cqAn65iU1gApFs6F1NaNThOfl
+         U9uJ01sZJWRM7stt+HjucNeQGfCa1M1BgqOv9CODa8kLmkYcv92kWglgARlY0pa8k4ap
+         iJLM5Fn+8Ph5lvOY/HZ4nVeDSQNcTY0TRsHCHAQ/xShuWR8zWm8RsXTn5E5bfGRnlZoc
+         tUj/pJQFaMbkgyanlKudoxJq4wXRSeLnez3mWwHFE9WFaCEOYq5nnGCFFdLJEPOTWd7E
+         6upQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PX4xpZVSDZWWYzf0Mgpk64vZeG3iQ4tbiusifSgBIMg=;
-        b=EehHdp4iVo9gA2jn0B3xNCrMORuRb4Z9PVOX1JV9t8Pl+Q7/6zCZ896cPUmJesOMPr
-         g85sSCDrSV7QE3sc1Dye1o1iBwS8njQe1puKTdjjA7PfE4hwJk7297DgTOSXj0OtuCFM
-         r+rQOnAL92wjBo5lg1u/tweuQLNAcZLDx2ylJrIS4KT0xAH64D+iWdA3diQA39YiQvEg
-         fWJYg1pIsq2KIhv4S3zTRSYlf6yoHT2E5WeZZn4Joir8sgr0fvk8N/eDLVOQoIJ58MJ/
-         P37TU2oiZ5GF019fOrjmMUJNimdokLvBLV5vHck5m4V5e6RdZkraJFlLh164DpCDLkGh
-         pytw==
-X-Gm-Message-State: AJIora/5QKoUoVfzkdL7flH2478rhf9o9caCBlYbp77xrM3VJpwC4w7j
-        MAp5rips1eO3nbffdmjSHp0=
-X-Google-Smtp-Source: AGRyM1vM/U2ZJUy1ykQ8+9V/gGlXNQkxxey+W3AFHnowrqTyYEzQ/+5yL2Pm0x3uPHjni7Xld67OKA==
-X-Received: by 2002:a17:90a:738d:b0:1ea:c598:20b3 with SMTP id j13-20020a17090a738d00b001eac59820b3mr4391979pjg.88.1655224229493;
-        Tue, 14 Jun 2022 09:30:29 -0700 (PDT)
+        bh=6bECSe3JFxq6eJt90PO1NvfTGgvzif21tVQUALk/0nQ=;
+        b=C3WTDokfvIaD6v9B41IaCvvEx9cojZZw9krBft2sQIQQqkENS7rOmfB5IK7jj3P7S/
+         N3NYUyusvLFkZTOXvqhoLA4M0+5bHSSXalv2vKeOG2aUP4v9At0Q9Mb86vQMAAay3hES
+         4RHqj0BdZuAb0NenKJIS9pMyfAEI7vAK3Xy1so88FqQW1w5DTWbMFCwAPpNQV107AkgY
+         pAcClEYpQvMlrmwBGp6xa1D/mCtVk87mMa/WBulXfRGh7GlHkY4EjIgCF9AQ+44hlrWo
+         sIU5Qb5vZbip7xZ+Dzx3bRA5TtwRZr+uw1Isnt+yUEgbeOLh5ox0X0dS3xnkAF2SXz6F
+         5yzg==
+X-Gm-Message-State: AJIora9ND9JSW6xsvO6dyu/hjQN4ngRMqoF8Fk7RpIJu1MIoBZ4Pz+Km
+        QEUaOgW311je084/v9PDv68=
+X-Google-Smtp-Source: AGRyM1tTQ2QdaNJJgD/6ROVtmIkhMLW/6lx+UvoOEMvfZSLuUL94ElFzkOdzJg8nh7ds1uyHY4bJzA==
+X-Received: by 2002:a17:902:7783:b0:167:8245:ea04 with SMTP id o3-20020a170902778300b001678245ea04mr5008419pll.95.1655224231122;
+        Tue, 14 Jun 2022 09:30:31 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:2dbb:8c54:2434:5ada])
-        by smtp.gmail.com with ESMTPSA id p1-20020a170903248100b0016796cdd802sm7506484plw.19.2022.06.14.09.30.28
+        by smtp.gmail.com with ESMTPSA id p1-20020a170903248100b0016796cdd802sm7506484plw.19.2022.06.14.09.30.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 09:30:29 -0700 (PDT)
+        Tue, 14 Jun 2022 09:30:30 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -58,9 +58,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Neal Cardwell <ncardwell@google.com>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 1/2] tcp: fix over estimation in sk_forced_mem_schedule()
-Date:   Tue, 14 Jun 2022 09:30:23 -0700
-Message-Id: <20220614163024.1061106-2-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 2/2] tcp: fix possible freeze in tx path under memory pressure
+Date:   Tue, 14 Jun 2022 09:30:24 -0700
+Message-Id: <20220614163024.1061106-3-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
 In-Reply-To: <20220614163024.1061106-1-eric.dumazet@gmail.com>
 References: <20220614163024.1061106-1-eric.dumazet@gmail.com>
@@ -78,39 +78,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-sk_forced_mem_schedule() has a bug similar to ones fixed
-in commit 7c80b038d23e ("net: fix sk_wmem_schedule() and
-sk_rmem_schedule() errors")
+Blamed commit only dealt with applications issuing small writes.
 
-While this bug has little chance to trigger in old kernels,
-we need to fix it before the following patch.
+Issue here is that we allow to force memory schedule for the sk_buff
+allocation, but we have no guarantee that sendmsg() is able to
+copy some payload in it.
 
-Fixes: d83769a580f1 ("tcp: fix possible deadlock in tcp_send_fin()")
+In this patch, I make sure the socket can use up to tcp_wmem[0] bytes.
+
+For example, if we consider tcp_wmem[0] = 4096 (default on x86),
+and initial skb->truesize being 1280, tcp_sendmsg() is able to
+copy up to 2816 bytes under memory pressure.
+
+Before this patch a sendmsg() sending more than 2816 bytes
+would either block forever (if persistent memory pressure),
+or return -EAGAIN.
+
+For bigger MTU networks, it is advised to increase tcp_wmem[0]
+to avoid sending too small packets.
+
+Fixes: 8e4d980ac215 ("tcp: fix behavior for epoll edge trigger")
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv4/tcp_output.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ net/ipv4/tcp.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 8ab98e1aca6797a51eaaf8886680d2001a616948..18c913a2347a984ae8cf2793bb8991e59e5e94ab 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -3362,11 +3362,12 @@ void tcp_xmit_retransmit_queue(struct sock *sk)
-  */
- void sk_forced_mem_schedule(struct sock *sk, int size)
- {
--	int amt;
-+	int delta, amt;
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 14ebb4ec4a51f3c55501aa53423ce897599e8637..78698a7693e4a475155e1a4237b8708b53166c1e 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1334,10 +1334,24 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
  
--	if (size <= sk->sk_forward_alloc)
-+	delta = size - sk->sk_forward_alloc;
-+	if (delta <= 0)
- 		return;
--	amt = sk_mem_pages(size);
-+	amt = sk_mem_pages(delta);
- 	sk->sk_forward_alloc += amt << PAGE_SHIFT;
- 	sk_memory_allocated_add(sk, amt);
+ 			copy = min_t(int, copy, pfrag->size - pfrag->offset);
  
+-			if (tcp_downgrade_zcopy_pure(sk, skb) ||
+-			    !sk_wmem_schedule(sk, copy))
++			if (tcp_downgrade_zcopy_pure(sk, skb))
+ 				goto wait_for_space;
++			if (unlikely(!sk_wmem_schedule(sk, copy))) {
++				int left;
+ 
++				/* We are in trouble if we have nothing queued.
++				 * Use whatever is left in sk->sk_forward_alloc
++				 * and tcp_wmem[0] to guarantee some progress.
++				 */
++				left = sock_net(sk)->ipv4.sysctl_tcp_wmem[0] -
++				       sk->sk_wmem_queued;
++				if (left > 0)
++					sk_forced_mem_schedule(sk, min(left, copy));
++
++				copy = min(copy, sk->sk_forward_alloc);
++				if (!copy)
++					goto wait_for_space;
++			}
+ 			err = skb_copy_to_page_nocache(sk, &msg->msg_iter, skb,
+ 						       pfrag->page,
+ 						       pfrag->offset,
 -- 
 2.36.1.476.g0c4daa206d-goog
 
