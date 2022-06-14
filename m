@@ -2,70 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 299C554BBBB
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 22:32:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA16054BBDC
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 22:36:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232263AbiFNUcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 16:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51746 "EHLO
+        id S234073AbiFNUeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 16:34:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230024AbiFNUcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 16:32:08 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428E24DF51
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 13:32:08 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id k5-20020a17090a404500b001e8875e6242so74659pjg.5
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 13:32:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9BBmDP9S6Mf7Eg21p8WdZh8OhJDv1z+wOs2Kwkk8b7w=;
-        b=cjqpAOBX4bIHtdnfrG81pnQJH3dKBMF5OCy5l5p1/m25zDBWCKTGZKgAMFzxvqIJ7x
-         JgkH+p8WICKGsDf/Oi27hQMZZYkHQ0AxCYwGCv37uhQCBbb5w2WRC5jlCBrhzp50ll6G
-         ynrvl2sTcLDheYNlQsa0bzfJpD81OhdVfcnc2Xpf5XslWw66g6UVtvJaxh28OwH5J4/P
-         31okcYFss3svUDucTi6xRfvpddBbgWoh2FBDVocGfHeuOu1s383CgQXklm717ALgBejQ
-         40Xja8pW02QTe0ZoNuDd/lVXjgtomDV9sUhiT4Hw8Yuo9mwQZW3A1Mhqzstu8lBmuEh4
-         NqdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9BBmDP9S6Mf7Eg21p8WdZh8OhJDv1z+wOs2Kwkk8b7w=;
-        b=AdhTVxsIS5a+41iRD/J0JsLKuVTu9Y2y0ods/ASEuZMjK3DIY82MYvlOLGPWwLh06/
-         eN91w2ldqCyXBEjuvRlC56m9bL+BwwUclKQbR+Kha0VbWLyr+xJQpqD3bPBOv0fXIV46
-         juJP03nQiL9TpbCO3uXzL4JL2YEoffjdYp1dgCewrv+89uMw+z4x/7v3uYsSVThCOrK9
-         7qX5iid6TEzThRpdmV8zHXvs/kCKdL0fCvsUnvbRBADUEtdzV/fPY+HXo9OirIDxKSFn
-         WjTjg4wB9GvLvoHsnfuZ4RJ56x2Hx1m+cgTp7tymNWJwtN08wfqPQGcW9hZEbh6muhy6
-         MAsQ==
-X-Gm-Message-State: AJIora/gMcyyYMwPqwpv7Pj0i4ZC2/UbkGrzIa8kS8twlDKhM6jvlg4N
-        uQHoxBJU5g24uY63uSXFpyIZW4nCrTamdUOe21LISA==
-X-Google-Smtp-Source: AGRyM1veTaRHKU62t+ngOj30xq8y+RYfi7xcu/30WG64A+EIOi17mXXXq0pYFH4CtC5rEoKyMmpt4GdBPDRQsjekerU=
-X-Received: by 2002:a17:90b:4a4e:b0:1e6:6757:d085 with SMTP id
- lb14-20020a17090b4a4e00b001e66757d085mr6333594pjb.207.1655238727548; Tue, 14
- Jun 2022 13:32:07 -0700 (PDT)
+        with ESMTP id S230024AbiFNUeO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 16:34:14 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126F724942;
+        Tue, 14 Jun 2022 13:34:11 -0700 (PDT)
+Received: from sslproxy04.your-server.de ([78.46.152.42])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o1DEl-000Dyp-5G; Tue, 14 Jun 2022 22:34:07 +0200
+Received: from [85.1.206.226] (helo=linux-3.home)
+        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o1DEk-000FcU-Sh; Tue, 14 Jun 2022 22:34:06 +0200
+Subject: Re: [PATCH bpf-next 1/2] Revert "bpftool: Use libbpf 1.0 API mode
+ instead of RLIMIT_MEMLOCK"
+To:     Quentin Monnet <quentin@isovalent.com>,
+        Yafang Shao <laoar.shao@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Harsh Modi <harshmodi@google.com>,
+        Paul Chaignon <paul@cilium.io>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <20220610112648.29695-1-quentin@isovalent.com>
+ <20220610112648.29695-2-quentin@isovalent.com> <YqNsWAH24bAIPjqy@google.com>
+ <cb05a59e-07d5-ddd1-b028-82133faaf67e@isovalent.com>
+ <CAKH8qBvvq0f+D8BXChw_8krH896J_cYg0yhRfnDOSO_U1n394w@mail.gmail.com>
+ <71b56050-11ad-bd06-09c9-1a8c61b4c1b4@isovalent.com>
+ <CAKH8qBsFyakQRd1q6XWggdv4F5+HrHoC4njg9jQFDOfq+kRBCQ@mail.gmail.com>
+ <CALOAHbCvWzOJ169fPTCp1KsFpkEVukKgGnH4mDeYGOEv6hsEpQ@mail.gmail.com>
+ <e9aa57d2-4ce7-23f2-0ba1-ea58f3254353@isovalent.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5cd8428d-5d09-3676-cd18-93746d8961e2@iogearbox.net>
+Date:   Tue, 14 Jun 2022 22:34:06 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20220614171734.1103875-1-eric.dumazet@gmail.com> <20220614171734.1103875-3-eric.dumazet@gmail.com>
-In-Reply-To: <20220614171734.1103875-3-eric.dumazet@gmail.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Tue, 14 Jun 2022 13:31:55 -0700
-Message-ID: <CALvZod5N-teApG8s0-DDRzoE0YOTfZe4P0r2R4boe_f_PJ60GA@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 2/2] tcp: fix possible freeze in tx path under
- memory pressure
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+In-Reply-To: <e9aa57d2-4ce7-23f2-0ba1-ea58f3254353@isovalent.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26572/Tue Jun 14 10:17:51 2022)
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,32 +63,146 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 10:17 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
->
-> Blamed commit only dealt with applications issuing small writes.
->
-> Issue here is that we allow to force memory schedule for the sk_buff
-> allocation, but we have no guarantee that sendmsg() is able to
-> copy some payload in it.
->
-> In this patch, I make sure the socket can use up to tcp_wmem[0] bytes.
->
-> For example, if we consider tcp_wmem[0] = 4096 (default on x86),
-> and initial skb->truesize being 1280, tcp_sendmsg() is able to
-> copy up to 2816 bytes under memory pressure.
->
-> Before this patch a sendmsg() sending more than 2816 bytes
-> would either block forever (if persistent memory pressure),
-> or return -EAGAIN.
->
-> For bigger MTU networks, it is advised to increase tcp_wmem[0]
-> to avoid sending too small packets.
->
-> v2: deal with zero copy paths.
->
-> Fixes: 8e4d980ac215 ("tcp: fix behavior for epoll edge trigger")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+On 6/14/22 4:20 PM, Quentin Monnet wrote:
+> 2022-06-14 20:37 UTC+0800 ~ Yafang Shao <laoar.shao@gmail.com>
+>> On Sat, Jun 11, 2022 at 1:17 AM Stanislav Fomichev <sdf@google.com> wrote:
+>>> On Fri, Jun 10, 2022 at 10:00 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>>>> 2022-06-10 09:46 UTC-0700 ~ Stanislav Fomichev <sdf@google.com>
+>>>>> On Fri, Jun 10, 2022 at 9:34 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>>>>>> 2022-06-10 09:07 UTC-0700 ~ sdf@google.com
+>>>>>>> On 06/10, Quentin Monnet wrote:
+>>>>>>>> This reverts commit a777e18f1bcd32528ff5dfd10a6629b655b05eb8.
+>>>>>>>
+>>>>>>>> In commit a777e18f1bcd ("bpftool: Use libbpf 1.0 API mode instead of
+>>>>>>>> RLIMIT_MEMLOCK"), we removed the rlimit bump in bpftool, because the
+>>>>>>>> kernel has switched to memcg-based memory accounting. Thanks to the
+>>>>>>>> LIBBPF_STRICT_AUTO_RLIMIT_MEMLOCK, we attempted to keep compatibility
+>>>>>>>> with other systems and ask libbpf to raise the limit for us if
+>>>>>>>> necessary.
+>>>>>>>
+>>>>>>>> How do we know if memcg-based accounting is supported? There is a probe
+>>>>>>>> in libbpf to check this. But this probe currently relies on the
+>>>>>>>> availability of a given BPF helper, bpf_ktime_get_coarse_ns(), which
+>>>>>>>> landed in the same kernel version as the memory accounting change. This
+>>>>>>>> works in the generic case, but it may fail, for example, if the helper
+>>>>>>>> function has been backported to an older kernel. This has been observed
+>>>>>>>> for Google Cloud's Container-Optimized OS (COS), where the helper is
+>>>>>>>> available but rlimit is still in use. The probe succeeds, the rlimit is
+>>>>>>>> not raised, and probing features with bpftool, for example, fails.
+>>>>>>>
+>>>>>>>> A patch was submitted [0] to update this probe in libbpf, based on what
+>>>>>>>> the cilium/ebpf Go library does [1]. It would lower the soft rlimit to
+>>>>>>>> 0, attempt to load a BPF object, and reset the rlimit. But it may induce
+>>>>>>>> some hard-to-debug flakiness if another process starts, or the current
+>>>>>>>> application is killed, while the rlimit is reduced, and the approach was
+>>>>>>>> discarded.
+>>>>>>>
+>>>>>>>> As a workaround to ensure that the rlimit bump does not depend on the
+>>>>>>>> availability of a given helper, we restore the unconditional rlimit bump
+>>>>>>>> in bpftool for now.
+>>>>>>>
+>>>>>>>> [0]
+>>>>>>>> https://lore.kernel.org/bpf/20220609143614.97837-1-quentin@isovalent.com/
+>>>>>>>> [1] https://github.com/cilium/ebpf/blob/v0.9.0/rlimit/rlimit.go#L39
+>>>>>>>
+>>>>>>>> Cc: Yafang Shao <laoar.shao@gmail.com>
+>>>>>>>> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+>>>>>>>> ---
+>>>>>>>>    tools/bpf/bpftool/common.c     | 8 ++++++++
+>>>>>>>>    tools/bpf/bpftool/feature.c    | 2 ++
+>>>>>>>>    tools/bpf/bpftool/main.c       | 6 +++---
+>>>>>>>>    tools/bpf/bpftool/main.h       | 2 ++
+>>>>>>>>    tools/bpf/bpftool/map.c        | 2 ++
+>>>>>>>>    tools/bpf/bpftool/pids.c       | 1 +
+>>>>>>>>    tools/bpf/bpftool/prog.c       | 3 +++
+>>>>>>>>    tools/bpf/bpftool/struct_ops.c | 2 ++
+>>>>>>>>    8 files changed, 23 insertions(+), 3 deletions(-)
+>>>>>>>
+>>>>>>>> diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
+>>>>>>>> index a45b42ee8ab0..a0d4acd7c54a 100644
+>>>>>>>> --- a/tools/bpf/bpftool/common.c
+>>>>>>>> +++ b/tools/bpf/bpftool/common.c
+>>>>>>>> @@ -17,6 +17,7 @@
+>>>>>>>>    #include <linux/magic.h>
+>>>>>>>>    #include <net/if.h>
+>>>>>>>>    #include <sys/mount.h>
+>>>>>>>> +#include <sys/resource.h>
+>>>>>>>>    #include <sys/stat.h>
+>>>>>>>>    #include <sys/vfs.h>
+>>>>>>>
+>>>>>>>> @@ -72,6 +73,13 @@ static bool is_bpffs(char *path)
+>>>>>>>>        return (unsigned long)st_fs.f_type == BPF_FS_MAGIC;
+>>>>>>>>    }
+>>>>>>>
+>>>>>>>> +void set_max_rlimit(void)
+>>>>>>>> +{
+>>>>>>>> +    struct rlimit rinf = { RLIM_INFINITY, RLIM_INFINITY };
+>>>>>>>> +
+>>>>>>>> +    setrlimit(RLIMIT_MEMLOCK, &rinf);
+>>>>>>>
+>>>>>>> Do you think it might make sense to print to stderr some warning if
+>>>>>>> we actually happen to adjust this limit?
+>>>>>>>
+>>>>>>> if (getrlimit(MEMLOCK) != RLIM_INFINITY) {
+>>>>>>>      fprintf(stderr, "Warning: resetting MEMLOCK rlimit to
+>>>>>>>      infinity!\n");
+>>>>>>>      setrlimit(RLIMIT_MEMLOCK, &rinf);
+>>>>>>> }
+>>>>>>>
+>>>>>>> ?
+>>>>>>>
+>>>>>>> Because while it's nice that we automatically do this, this might still
+>>>>>>> lead to surprises for some users. OTOH, not sure whether people
+>>>>>>> actually read those warnings? :-/
+>>>>>>
+>>>>>> I'm not strictly opposed to a warning, but I'm not completely sure this
+>>>>>> is desirable.
+>>>>>>
+>>>>>> Bpftool has raised the rlimit for a long time, it changed only in April,
+>>>>>> so I don't think it would come up as a surprise for people who have used
+>>>>>> it for a while. I think this is also something that several other
+>>>>>> BPF-related applications (BCC I think?, bpftrace, Cilium come to mind)
+>>>>>> have been doing too.
+>>>>>
+>>>>> In this case ignore me and let's continue doing that :-)
+>>>>>
+>>>>> Btw, eventually we'd still like to stop doing that I'd presume?
+>>>>
+>>>> Agreed. I was thinking either finding a way to improve the probe in
+>>>> libbpf, or waiting for some more time until 5.11 gets old, but this may
+>>>> take years :/
+>>>>
+>>>>> Should
+>>>>> we at some point follow up with something like:
+>>>>>
+>>>>> if (kernel_version >= 5.11) { don't touch memlock; }
+>>>>>
+>>>>> ?
+>>>>>
+>>>>> I guess we care only about <5.11 because of the backports, but 5.11+
+>>>>> kernels are guaranteed to have memcg.
+>>>>
+>>>> You mean from uname() and parsing the release? Yes I suppose we could do
+>>>> that, can do as a follow-up.
+>>>
+>>> Yeah, uname-based, I don't think we can do better? Given that probing
+>>> is problematic as well :-(
+>>> But idk, up to you.
+>>
+>> Agreed with the uname-based solution. Another possible solution is to
+>> probe the member 'memcg' in struct bpf_map, in case someone may
+>> backport memcg-based  memory accounting, but that will be a little
+>> over-engineering. The uname-based solution is simple and can work.
+> 
+> Thanks! Yes, memcg would be more complex: the struct is not exposed to
+> user space, and BTF is not a hard dependency for bpftool. I'll work on
+> the uname-based test as a follow-up to this set.
 
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
+How would this work for things like RHEL? Maybe two potential workarounds ...
+1) We could use a different helper for the probing and see how far we get with
+it.. though not great, probably still rare enough that we would run into it
+again. 2) Maybe we could create a temp memcg and check whether we get accounted
+against it on prog load (e.g. despite high rlimit)?
+
+Thanks,
+Daniel
