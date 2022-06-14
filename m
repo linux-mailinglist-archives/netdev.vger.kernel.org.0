@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A7B354BDBB
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 00:36:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3168D54BDC3
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 00:36:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349827AbiFNWfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 18:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
+        id S1344100AbiFNWgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 18:36:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345124AbiFNWf2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 18:35:28 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6CC4EDCA;
-        Tue, 14 Jun 2022 15:35:27 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id a10so9661622pju.3;
-        Tue, 14 Jun 2022 15:35:27 -0700 (PDT)
+        with ESMTP id S230343AbiFNWgU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 18:36:20 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBE84F446;
+        Tue, 14 Jun 2022 15:36:20 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id y13-20020a17090a154d00b001eaaa3b9b8dso352654pja.2;
+        Tue, 14 Jun 2022 15:36:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=NwwLE3/14phzBfjRizqiAq2vengibXcV3OpeGRTTx4A=;
-        b=aYWZw5Ji6QQA51FQsaM4Vc7ZZN6xsfrRwRNaU3Q35YA4tq6kS9doapSK2QIL0jQ5wf
-         mDr0cwFET3f8gJ87YfxKe0kZPrWyVNutkqn77emxOHtmXQV9rBacfo/Sdc2rb54Kp2FQ
-         K24gD0poQ6LgJhkqKJdZ6v2K5veqhS+ovFjX6g7HiGh2ejhBTJAl8j7wQMWZz8C6iuhy
-         TxLGMJTR5qRWcBZ2wNEmeis7UaLEhGK3MtfO6Zc+CDreNt1bAK2OSWjfTgjQxbsLRdqs
-         ryvGXdW9vbORyB+QBKMEZLlw5nGWqvHLU5ufCn1pW7CLCoJ5wcfciQ/k8jF0AalI/aBj
-         c3xw==
+        bh=iCRqf9cUXGD/wTCU/6Imd8qKcHz2+4H04fjUrasRl3Q=;
+        b=dXr0HBARH/IhMAQCJKv5GP/8b08Y0SB7y9aFtTCe0fb0G4y30PWyglmseb299ngDiM
+         cnPWKX3tO0YN+LEizKNUAb6YLg9u+Q8jugjiTinGo/NJLmDrHvK8GCygJq7qXH5iOh6/
+         ALPNLJHtx9F7bAhO7wEAFYtfZPsJueJFS6cSyORBByLqe6oRMZCEl2xi0gqN3MpzjIN8
+         SnKU+eLAEj+x4Q1otFcVNWBcN9/71rA6cWzQp4uDerRoYDbPjyblGJ18SCZvoT/HoXHQ
+         Gdq+atH6IeNhy9ngEyOpbc1Q4CEfYaYIbXc/yx/ZBhJBHF7uyIO7zHSOb39Xt6/cLL4C
+         ezIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=NwwLE3/14phzBfjRizqiAq2vengibXcV3OpeGRTTx4A=;
-        b=M2ljtRwMpgCMYBIYk8i/Md8Jg3Lesh0XGo8KenccTzoXbI9vM0OUIa2VFhwECMoeN0
-         teaNe62Lqy2wxp6PA3DMM+TU3aCsPeJhjGJOXALuqfmiSQntWfZ0ErHtP2+Av57oupHi
-         UWKUrjsUQztPRrMF5tZY9bA7RwHKa9FPU4BMai+W28NCF3ZnjaTuH5B4vom6mLquTCo2
-         5t19FbttUbNSDAc0DWICxnc+w2z4sQrqQ+XdzWu5i0T0RAEoAOW7so7bq1Ec3UMF2EsL
-         kBTgueBO5UF+X3UNwm4CnrU0iP987BnMzuO9J6Z8mdxV5Fue44xbezy+am+/le3GoasN
-         vKDw==
-X-Gm-Message-State: AJIora+liQ1l6Rxh5i71+kF0Zn5eBJ4aVfpcVeHRhm88DWUiuiTfj75m
-        yX7XushyITr/R1rxzjOTcw8=
-X-Google-Smtp-Source: ABdhPJx/RHkeFCVkRg7nBFbWmI2VL038XtCgy8qmzH1Fp7OdkNHaYk9vLplec+dk5bINIVeK6WuE3g==
-X-Received: by 2002:a17:902:d312:b0:168:9573:8043 with SMTP id b18-20020a170902d31200b0016895738043mr6656295plc.44.1655246127468;
-        Tue, 14 Jun 2022 15:35:27 -0700 (PDT)
+        bh=iCRqf9cUXGD/wTCU/6Imd8qKcHz2+4H04fjUrasRl3Q=;
+        b=WwMqkybpTokewLKqSnf2xyiiAsBSkhj+ftLqL/7MqwmdgZZC6Pcc2IVtOGKKgiYRht
+         /j/4OF1CGw6AQOQj9HFMCWysAz7Zm8UZwTZHNRsTmv7MgFSB8L0eV5k3WwyQj+zeIGM+
+         6uFwJaDDqhecfcF+45GakYOY7WNQDUsKvNWyoqkxV6Jm/FmxNG0y5GZhO32t5kcmZiua
+         V6ql+XBya2VUmiPS/Lo1nkEYzJT6rSTE3vVZeNu75fJONEQ8p/KaGMkJ5MAqRQPsQsi0
+         B70H/Kj0LJ0+RKb7p5k/Tm5/pi3OVqwWiGyZ/j59dgxsaNJHHMgo+yZ1AmoLntHer2uw
+         L8fw==
+X-Gm-Message-State: AJIora8HSpvZLOOaiJiX8a5H2sRRsvOxae6UdPRNzSvPKxcUybNcG8JH
+        lFyd1Hl/w8PiSjhylt5AYmw=
+X-Google-Smtp-Source: AGRyM1veauvE5xHkBIG4jYd5/lRRAunReUDsP8s8Jdo6vfU1q8m9/D0HJO7/fGHR1qQFm6XVLzYNJg==
+X-Received: by 2002:a17:902:d143:b0:168:d336:9de6 with SMTP id t3-20020a170902d14300b00168d3369de6mr6292271plt.124.1655246179952;
+        Tue, 14 Jun 2022 15:36:19 -0700 (PDT)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id g12-20020a056a00078c00b005190eea6c37sm8067747pfu.157.2022.06.14.15.35.24
+        by smtp.googlemail.com with ESMTPSA id t20-20020a17090a951400b001d903861194sm105946pjo.30.2022.06.14.15.36.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 15:35:26 -0700 (PDT)
-Message-ID: <3d7d69c1-c0f9-45e8-7e0a-2b57c96dd14a@gmail.com>
-Date:   Tue, 14 Jun 2022 15:35:21 -0700
+        Tue, 14 Jun 2022 15:36:19 -0700 (PDT)
+Message-ID: <21d78f56-77de-ba37-9e07-fabcc2f22e6d@gmail.com>
+Date:   Tue, 14 Jun 2022 15:36:10 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH v4 3/6] net: dsa: mt7530: rework mt753[01]_setup
+Subject: Re: [PATCH v4 4/6] net: dsa: mt7530: get cpu-port via dp->cpu_dp
+ instead of constant
 Content-Language: en-US
 To:     Frank Wunderlich <linux@fw-web.de>,
         linux-rockchip@lists.infradead.org,
@@ -79,9 +80,9 @@ Cc:     Frank Wunderlich <frank-w@public-files.de>,
         =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
         Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
 References: <20220610170541.8643-1-linux@fw-web.de>
- <20220610170541.8643-4-linux@fw-web.de>
+ <20220610170541.8643-5-linux@fw-web.de>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220610170541.8643-4-linux@fw-web.de>
+In-Reply-To: <20220610170541.8643-5-linux@fw-web.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -97,7 +98,10 @@ X-Mailing-List: netdev@vger.kernel.org
 On 6/10/22 10:05, Frank Wunderlich wrote:
 > From: Frank Wunderlich <frank-w@public-files.de>
 > 
-> Enumerate available cpu-ports instead of using hardcoded constant.
+> Replace last occurences of hardcoded cpu-port by cpu_dp member of
+> dsa_port struct.
+> 
+> Now the constant can be dropped.
 > 
 > Suggested-by: Vladimir Oltean <olteanv@gmail.com>
 > Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
