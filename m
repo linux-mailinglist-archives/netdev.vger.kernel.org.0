@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E98F754AE70
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 12:34:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F223454AE8B
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 12:39:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240408AbiFNKet (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 06:34:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49942 "EHLO
+        id S1355822AbiFNKfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 06:35:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355614AbiFNKeq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 06:34:46 -0400
+        with ESMTP id S1352455AbiFNKet (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 06:34:49 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD78C483BB;
-        Tue, 14 Jun 2022 03:34:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F1584839C;
+        Tue, 14 Jun 2022 03:34:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655202886; x=1686738886;
+  t=1655202889; x=1686738889;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=J9DeYhZURL0XPNVOnZ3xAtOM5s5xIcvg0tgB2cZ08bE=;
-  b=yxOqlF5wRJPI1GqZiojHJAPMQIO4eR5N2byXaMjOyuTDCunM07JdAse/
-   Te0xCiytBnOhbahKrJrE/AA4jUi72B1y2QOD89B1USeCWyg1QhjewluWf
-   US1g+75Stzsn5GjGSOsjFMi/wt+JGUPv7lsjsEDLzsCZOgqPm1Tw8DMaN
-   YuK9JVOVziIfJzcZtsBWhWQRZAJUfVymgpo600WFKML7HF/Cv0+/qAbXS
-   DBU/dA2uEnoM4E888FBOPr5dIBg+2LAsJ0nlo3D/9oHuStlV4wHBCXhx7
-   LqGvlg30Vqnv7uAYHpv10ucqS1cgif7F8iVXq8kPJVSj6tw4gT2tZ3zNj
-   g==;
+  bh=J5gIj9lwPtTsfI2FmF3Of9EpSZvPoLczu0NNsEIyFnw=;
+  b=Uqe3O5onhT2XpJ/HArZjCHLVOBkXna853g6aKiQ9OhO6dh3zAz19Krug
+   9TTNBDimjPaYKuDSglxWLxFlrDP39b4HCgMTMR6awqXNPvphFG/iAM+XJ
+   iqgTv4uMByXo75G0/zPiTRCGa74iLQaDCYmpl66bQld8HSP1A+OPnZImD
+   cxyaA2avARbO/PQmnv442HaHrxWD/VeH4ifivoQ0ijY7GgoBtjISNR9+L
+   Nv8Ga5pdxVtwvxIa1D5nQLEmKvYF32PG5xB3NfMdPgEnznm8oOebOil9l
+   GUsbOfU1npRFCDBSz5vM8Kj0PwVcxM5aCpW9FtE4CMnGryLT8GTf0WDG5
+   A==;
 X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="160222551"
+   d="scan'208";a="160222577"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jun 2022 03:34:45 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jun 2022 03:34:49 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 14 Jun 2022 03:34:41 -0700
+ 15.1.2375.17; Tue, 14 Jun 2022 03:34:45 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 14 Jun 2022 03:34:38 -0700
+ 15.1.2375.17 via Frontend Transport; Tue, 14 Jun 2022 03:34:42 -0700
 From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>,
         <linux-kernel@vger.kernel.org>, <bryan.whitehead@microchip.com>,
         <lxu@maxlinear.com>, <richardcochran@gmail.com>,
         <UNGLinuxDriver@microchip.com>, <Ian.Saturley@microchip.com>
-Subject: [PATCH net-next 2/5] net: lan743x: Add support to Secure-ON WOL
-Date:   Tue, 14 Jun 2022 16:04:21 +0530
-Message-ID: <20220614103424.58971-3-Raju.Lakkaraju@microchip.com>
+Subject: [PATCH net-next 3/5] net: lan743x: Add support to SGMII block access functions
+Date:   Tue, 14 Jun 2022 16:04:22 +0530
+Message-ID: <20220614103424.58971-4-Raju.Lakkaraju@microchip.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220614103424.58971-1-Raju.Lakkaraju@microchip.com>
 References: <20220614103424.58971-1-Raju.Lakkaraju@microchip.com>
@@ -63,172 +63,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support to Magic Packet Detection with Secure-ON for PCI11010/PCI11414 chips
+Add SGMII access read and write functions
 
 Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
 ---
- .../net/ethernet/microchip/lan743x_ethtool.c  | 14 +++++++++
- drivers/net/ethernet/microchip/lan743x_main.c | 29 +++++++++++++++++++
- drivers/net/ethernet/microchip/lan743x_main.h | 10 +++++++
- 3 files changed, 53 insertions(+)
+ drivers/net/ethernet/microchip/lan743x_main.c | 69 +++++++++++++++++++
+ drivers/net/ethernet/microchip/lan743x_main.h | 12 ++++
+ 2 files changed, 81 insertions(+)
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_ethtool.c b/drivers/net/ethernet/microchip/lan743x_ethtool.c
-index 48b19dcd4351..b591a7aea937 100644
---- a/drivers/net/ethernet/microchip/lan743x_ethtool.c
-+++ b/drivers/net/ethernet/microchip/lan743x_ethtool.c
-@@ -1149,7 +1149,13 @@ static void lan743x_ethtool_get_wol(struct net_device *netdev,
- 	wol->supported |= WAKE_BCAST | WAKE_UCAST | WAKE_MCAST |
- 		WAKE_MAGIC | WAKE_PHY | WAKE_ARP;
- 
-+	if (adapter->is_pci11x1x)
-+		wol->supported |= WAKE_MAGICSECURE;
-+
- 	wol->wolopts |= adapter->wolopts;
-+	if (adapter->wolopts & WAKE_MAGICSECURE)
-+		memcpy(wol->sopass, adapter->sopass,
-+		       SOPASS_MAX * sizeof(wol->sopass[0]));
- }
- 
- static int lan743x_ethtool_set_wol(struct net_device *netdev,
-@@ -1170,6 +1176,14 @@ static int lan743x_ethtool_set_wol(struct net_device *netdev,
- 		adapter->wolopts |= WAKE_PHY;
- 	if (wol->wolopts & WAKE_ARP)
- 		adapter->wolopts |= WAKE_ARP;
-+	if (wol->wolopts & WAKE_MAGICSECURE &&
-+	    wol->wolopts & WAKE_MAGIC) {
-+		memcpy(adapter->sopass, wol->sopass,
-+		       SOPASS_MAX * sizeof(wol->sopass[0]));
-+		adapter->wolopts |= WAKE_MAGICSECURE;
-+	} else {
-+		memset(adapter->sopass, 0, sizeof(u8) * SOPASS_MAX);
-+	}
- 
- 	device_set_wakeup_enable(&adapter->pdev->dev, (bool)wol->wolopts);
- 
 diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index af81236b4b4e..6352cba19691 100644
+index 6352cba19691..e496769efb54 100644
 --- a/drivers/net/ethernet/microchip/lan743x_main.c
 +++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -3124,6 +3124,7 @@ static void lan743x_pm_set_wol(struct lan743x_adapter *adapter)
- 	const u8 ipv6_multicast[3] = { 0x33, 0x33 };
- 	const u8 arp_type[2] = { 0x08, 0x06 };
- 	int mask_index;
-+	u32 sopass;
- 	u32 pmtctl;
- 	u32 wucsr;
- 	u32 macrx;
-@@ -3218,6 +3219,14 @@ static void lan743x_pm_set_wol(struct lan743x_adapter *adapter)
- 		pmtctl |= PMT_CTL_RX_FCT_RFE_D3_CLK_OVR_;
- 	}
+@@ -909,6 +909,74 @@ static int lan743x_mdiobus_c45_write(struct mii_bus *bus,
+ 	return ret;
+ }
  
-+	if (adapter->wolopts & WAKE_MAGICSECURE) {
-+		sopass = *(u32 *)adapter->sopass;
-+		lan743x_csr_write(adapter, MAC_MP_SO_LO, sopass);
-+		sopass = *(u16 *)&adapter->sopass[4];
-+		lan743x_csr_write(adapter, MAC_MP_SO_HI, sopass);
-+		wucsr |= MAC_MP_SO_EN_;
-+	}
-+
- 	lan743x_csr_write(adapter, MAC_WUCSR, wucsr);
- 	lan743x_csr_write(adapter, PMT_CTL, pmtctl);
- 	lan743x_csr_write(adapter, MAC_RX, macrx);
-@@ -3228,6 +3237,7 @@ static int lan743x_pm_suspend(struct device *dev)
- 	struct pci_dev *pdev = to_pci_dev(dev);
- 	struct net_device *netdev = pci_get_drvdata(pdev);
- 	struct lan743x_adapter *adapter = netdev_priv(netdev);
++static int lan743x_sgmii_wait_till_not_busy(struct lan743x_adapter *adapter)
++{
 +	u32 data;
- 
- 	lan743x_pcidev_shutdown(pdev);
- 
-@@ -3239,6 +3249,18 @@ static int lan743x_pm_suspend(struct device *dev)
- 	if (adapter->wolopts)
- 		lan743x_pm_set_wol(adapter);
- 
-+	if (adapter->is_pci11x1x) {
-+		/* Save HW_CFG to config again in PM resume */
-+		data = lan743x_csr_read(adapter, HW_CFG);
-+		adapter->hw_cfg = data;
-+		data |= (HW_CFG_RST_PROTECT_PCIE_ |
-+			 HW_CFG_D3_RESET_DIS_ |
-+			 HW_CFG_D3_VAUX_OVR_ |
-+			 HW_CFG_HOT_RESET_DIS_ |
-+			 HW_CFG_RST_PROTECT_);
-+		lan743x_csr_write(adapter, HW_CFG, data);
++	int ret;
++
++	ret = readx_poll_timeout(LAN743X_CSR_READ_OP, SGMII_ACC, data,
++				 !(data & SGMII_ACC_SGMII_BZY_), 100, 1000000);
++	if (unlikely(ret < 0))
++		netif_err(adapter, drv, adapter->netdev,
++			  "%s: error %d sgmii wait timeout\n", __func__, ret);
++
++	return ret;
++}
++
++static int lan743x_sgmii_read(struct lan743x_adapter *adapter, u8 mmd, u16 addr)
++{
++	u32 mmd_access;
++	int ret;
++	u32 val;
++
++	if (mmd > 31) {
++		netif_err(adapter, probe, adapter->netdev,
++			  "%s mmd should <= 31\n", __func__);
++		return -EINVAL;
 +	}
 +
- 	/* Host sets PME_En, put D3hot */
- 	return pci_prepare_to_sleep(pdev);
- }
-@@ -3254,6 +3276,10 @@ static int lan743x_pm_resume(struct device *dev)
- 	pci_restore_state(pdev);
- 	pci_save_state(pdev);
- 
-+	/* Restore HW_CFG that was saved during pm suspend */
-+	if (adapter->is_pci11x1x)
-+		lan743x_csr_write(adapter, HW_CFG, adapter->hw_cfg);
++	mutex_lock(&adapter->sgmii_rw_lock);
++	/* Load Register Address */
++	mmd_access = mmd << SGMII_ACC_SGMII_MMD_SHIFT_;
++	mmd_access |= (addr | SGMII_ACC_SGMII_BZY_);
++	lan743x_csr_write(adapter, SGMII_ACC, mmd_access);
++	ret = lan743x_sgmii_wait_till_not_busy(adapter);
++	if (ret < 0)
++		goto sgmii_unlock;
 +
- 	ret = lan743x_hardware_init(adapter, pdev);
- 	if (ret) {
- 		netif_err(adapter, probe, adapter->netdev,
-@@ -3270,6 +3296,9 @@ static int lan743x_pm_resume(struct device *dev)
- 		lan743x_netdev_open(netdev);
- 
- 	netif_device_attach(netdev);
-+	ret = lan743x_csr_read(adapter, MAC_WK_SRC);
-+	netif_info(adapter, drv, adapter->netdev,
-+		   "Wakeup source : 0x%08X\n", ret);
- 
- 	return 0;
- }
++	val = lan743x_csr_read(adapter, SGMII_DATA);
++	ret = (int)(val & SGMII_DATA_MASK_);
++
++sgmii_unlock:
++	mutex_unlock(&adapter->sgmii_rw_lock);
++
++	return ret;
++}
++
++static int lan743x_sgmii_write(struct lan743x_adapter *adapter,
++			       u8 mmd, u16 addr, u16 val)
++{
++	u32 mmd_access;
++	int ret;
++
++	if (mmd > 31) {
++		netif_err(adapter, probe, adapter->netdev,
++			  "%s mmd should <= 31\n", __func__);
++		return -EINVAL;
++	}
++	mutex_lock(&adapter->sgmii_rw_lock);
++	/* Load Register Data */
++	lan743x_csr_write(adapter, SGMII_DATA, (u32)(val & SGMII_DATA_MASK_));
++	/* Load Register Address */
++	mmd_access = mmd << SGMII_ACC_SGMII_MMD_SHIFT_;
++	mmd_access |= (addr | SGMII_ACC_SGMII_BZY_ | SGMII_ACC_SGMII_WR_);
++	lan743x_csr_write(adapter, SGMII_ACC, mmd_access);
++	ret = lan743x_sgmii_wait_till_not_busy(adapter);
++	mutex_unlock(&adapter->sgmii_rw_lock);
++
++	return ret;
++}
++
+ static void lan743x_mac_set_address(struct lan743x_adapter *adapter,
+ 				    u8 *addr)
+ {
+@@ -2875,6 +2943,7 @@ static int lan743x_hardware_init(struct lan743x_adapter *adapter,
+ 		adapter->max_vector_count = PCI11X1X_MAX_VECTOR_COUNT;
+ 		pci11x1x_strap_get_status(adapter);
+ 		spin_lock_init(&adapter->eth_syslock_spinlock);
++		mutex_init(&adapter->sgmii_rw_lock);
+ 	} else {
+ 		adapter->max_tx_channels = LAN743X_MAX_TX_CHANNELS;
+ 		adapter->used_tx_channels = LAN743X_USED_TX_CHANNELS;
 diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
-index 1ca5f3216403..5d37263b25c8 100644
+index 5d37263b25c8..4268b1d56090 100644
 --- a/drivers/net/ethernet/microchip/lan743x_main.h
 +++ b/drivers/net/ethernet/microchip/lan743x_main.h
-@@ -43,6 +43,11 @@
- #define STRAP_READ_ADV_PM_DISABLE_	BIT(0)
+@@ -288,6 +288,17 @@
  
- #define HW_CFG					(0x010)
-+#define HW_CFG_RST_PROTECT_PCIE_		BIT(19)
-+#define HW_CFG_HOT_RESET_DIS_			BIT(15)
-+#define HW_CFG_D3_VAUX_OVR_			BIT(14)
-+#define HW_CFG_D3_RESET_DIS_			BIT(13)
-+#define HW_CFG_RST_PROTECT_			BIT(12)
- #define HW_CFG_RELOAD_TYPE_ALL_			(0x00000FC0)
- #define HW_CFG_EE_OTP_RELOAD_			BIT(4)
- #define HW_CFG_LRST_				BIT(1)
-@@ -214,6 +219,7 @@
- #define MAC_EEE_TX_LPI_REQ_DLY_CNT		(0x130)
+ #define MAC_WUCSR2			(0x600)
  
- #define MAC_WUCSR				(0x140)
-+#define MAC_MP_SO_EN_				BIT(21)
- #define MAC_WUCSR_RFE_WAKE_EN_			BIT(14)
- #define MAC_WUCSR_PFDA_EN_			BIT(3)
- #define MAC_WUCSR_WAKE_EN_			BIT(2)
-@@ -221,6 +227,8 @@
- #define MAC_WUCSR_BCST_EN_			BIT(0)
- 
- #define MAC_WK_SRC				(0x144)
-+#define MAC_MP_SO_HI				(0x148)
-+#define MAC_MP_SO_LO				(0x14C)
- 
- #define MAC_WUF_CFG0			(0x150)
- #define MAC_NUM_OF_WUF_CFG		(32)
-@@ -912,6 +920,7 @@ struct lan743x_adapter {
- 	int                     msg_enable;
- #ifdef CONFIG_PM
- 	u32			wolopts;
-+	u8			sopass[SOPASS_MAX];
- #endif
- 	struct pci_dev		*pdev;
- 	struct lan743x_csr      csr;
-@@ -937,6 +946,7 @@ struct lan743x_adapter {
- 
- #define LAN743X_ADAPTER_FLAG_OTP		BIT(0)
- 	u32			flags;
-+	u32			hw_cfg;
- };
- 
- #define LAN743X_COMPONENT_FLAG_RX(channel)  BIT(20 + (channel))
++#define SGMII_ACC			(0x720)
++#define SGMII_ACC_SGMII_BZY_		BIT(31)
++#define SGMII_ACC_SGMII_WR_		BIT(30)
++#define SGMII_ACC_SGMII_MMD_SHIFT_	(16)
++#define SGMII_ACC_SGMII_MMD_MASK_	GENMASK(20, 16)
++#define SGMII_ACC_SGMII_MMD_VSR_	BIT(15)
++#define SGMII_ACC_SGMII_ADDR_SHIFT_	(0)
++#define SGMII_ACC_SGMII_ADDR_MASK_	GENMASK(15, 0)
++#define SGMII_DATA			(0x724)
++#define SGMII_DATA_SHIFT_		(0)
++#define SGMII_DATA_MASK_		GENMASK(15, 0)
+ #define SGMII_CTL			(0x728)
+ #define SGMII_CTL_SGMII_ENABLE_		BIT(31)
+ #define SGMII_CTL_LINK_STATUS_SOURCE_	BIT(8)
+@@ -940,6 +951,7 @@ struct lan743x_adapter {
+ 	spinlock_t		eth_syslock_spinlock;
+ 	bool			eth_syslock_en;
+ 	u32			eth_syslock_acquire_cnt;
++	struct mutex		sgmii_rw_lock;
+ 	u8			max_tx_channels;
+ 	u8			used_tx_channels;
+ 	u8			max_vector_count;
 -- 
 2.25.1
 
