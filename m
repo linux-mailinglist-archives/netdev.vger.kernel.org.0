@@ -2,53 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9CD254A8E6
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 07:49:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85BD854A8FD
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 07:58:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241112AbiFNFtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 01:49:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52846 "EHLO
+        id S237719AbiFNF6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 01:58:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240810AbiFNFtV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 01:49:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400743A70A;
-        Mon, 13 Jun 2022 22:49:21 -0700 (PDT)
+        with ESMTP id S236019AbiFNF6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 01:58:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53AA331220
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 22:58:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8E52B80D47;
-        Tue, 14 Jun 2022 05:49:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24DAFC3411B;
-        Tue, 14 Jun 2022 05:49:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8BBE615A5
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 05:58:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEC0FC3411D;
+        Tue, 14 Jun 2022 05:58:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655185758;
-        bh=R+0qAAX6efv+AygD/S2OgXLLIy/Y/Bbh3wzi0ZGiAWQ=;
+        s=k20201202; t=1655186290;
+        bh=UZvhoHgz3XkmE+dx++3vpfcGTfD9aiiC4SLluyAGPCM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PYNoPUtL9o4blp5GFVcqKknV93aauo63yGEnKIVW30K7HR/1jkDXld2d/XUhxx6/2
-         239sw6OgsseZPYwoxf+GT3DKTYlqIcPibec6wchik4vBaRsXllag2VIz0DPZjEpah2
-         yRvOqdBds2oqlZC4fmDYQv/WSMEAWOG3HBLObpjFRlykmKy95Gku+w77MOGKLYDxTy
-         qZ8WhEnd9eavxACzB+XBITuOTmBK4sS87kRdCSuEoB+pWIEvoqHQT2R3DAg3E0v5uO
-         sIsdRkmRM/VGX8V8mnxPb+1d6DE4PG1YkZOjC4vztpSEbOY5iu5v9DTcNLTISR1vYg
-         t5QOZCjsc0QPg==
-Date:   Mon, 13 Jun 2022 22:49:17 -0700
+        b=Li62WaNKfvp8J/QK8ewtVoh8hhHeDoiDVOG3bcCQ3wkwj+WW6yeroYeSFkdWyFhUA
+         tyf0bzgRer8cfQxZRYhSJjR7tXYBFDnGURLeo8PULzGCi79+G8SS4BgCMJV93ht0RC
+         6ovd169XJTFL8R2TUrm8a4C9XGjUQKkl4HoYzaKNvk2rlB8dAEijyoQEZETdR4oqWV
+         8Tpa4EZChpR/8Kb2HwZRu7JfgYW4H8Szm7i0UARUadoJwA+/qHjyL49l7gzsEvhLUz
+         bT9cV87h5BBS7j+lzJiCsO2mT9nVvNC2g7K4QmmSp+EwCLv5Q9cp+YxBctGOyPovxt
+         9UCSiMfTErk7Q==
+Date:   Mon, 13 Jun 2022 22:58:08 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Christian 'Ansuel' Marangi <ansuelsmth@gmail.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Mark Mentovai <mark@moxienet.com>
-Subject: Re: [net-next PATCH 2/2] net: ethernet: stmmac: reset force speed
- bit for ipq806x
-Message-ID: <20220613224917.325aca0a@kernel.org>
-In-Reply-To: <20220609002831.24236-2-ansuelsmth@gmail.com>
-References: <20220609002831.24236-1-ansuelsmth@gmail.com>
-        <20220609002831.24236-2-ansuelsmth@gmail.com>
+To:     Yuwei Wang <wangyuweihx@gmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        daniel@iogearbox.net, roopa@nvidia.com, dsahern@kernel.org,
+        qindi@staff.weibo.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v3 1/2] sysctl: add
+ proc_dointvec_jiffies_minmax
+Message-ID: <20220613225808.7f1aa2d2@kernel.org>
+In-Reply-To: <20220609105725.2367426-2-wangyuweihx@gmail.com>
+References: <20220609105725.2367426-1-wangyuweihx@gmail.com>
+        <20220609105725.2367426-2-wangyuweihx@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,16 +56,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  9 Jun 2022 02:28:31 +0200 Christian 'Ansuel' Marangi wrote:
-> +	dn = of_get_child_by_name(pdev->dev.of_node, "fixed-link");
-> +	ret = of_property_read_u32(dn, "speed", &link_speed);
-> +	if (ret) {
-> +		dev_err(dev, "found fixed-link node with no speed");
-> +		return ret;
-
-Doesn't this return potentially leak the reference on dn?
-You move the of_node_put() right before the if (ret) {
-
-> +	}
+On Thu,  9 Jun 2022 10:57:24 +0000 Yuwei Wang wrote:
+> +		*valp = tmp;
+> +}
 > +
-> +	of_node_put(dn);
+> +return 0;
+> +}
+> +
+
+Looks whitespace damaged
