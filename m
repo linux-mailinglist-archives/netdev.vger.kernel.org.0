@@ -2,75 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A3A954BAFD
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 21:56:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCCF554BB01
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 21:58:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245256AbiFNTz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 15:55:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33504 "EHLO
+        id S237013AbiFNT6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 15:58:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237013AbiFNTz4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 15:55:56 -0400
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419F13614F;
-        Tue, 14 Jun 2022 12:55:55 -0700 (PDT)
-Received: by mail-il1-x12c.google.com with SMTP id y17so7348598ilj.11;
-        Tue, 14 Jun 2022 12:55:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=GswxPjj5LlRJS8/1xA3S8U0VTLxjsWU69fZdjcSjxNc=;
-        b=qPvCwe+42tFJZm9piIdnp95hZr1vFiUekb//DXTUvWx5+kGlEZBNUnEdHgErDlM5lx
-         jor9EB6Rc9OfbpCJqHjJ/B77PUA9fOsZ3fHZPiA8/JZaGS1PAur9aXBARedIz4iDcKcw
-         mlHd5wYVxJjPhOgyURLw5M/caSdp5DzInIZTEqXAWrwMUrCjpNeoZYoBh3tzll8Emskf
-         QSsBNiabfh9e33xArMY93b6Ub4V30WgTCL61Se2moNFWtRFGFs4ulkG8WciYggms4hoD
-         bzjgmadk/kv80olhyiRjCeCTApEAFL2xcMv7mZIhTFKNZAaMme6pU0BSZg2uk2AFD6v5
-         hJ9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=GswxPjj5LlRJS8/1xA3S8U0VTLxjsWU69fZdjcSjxNc=;
-        b=PdrPNUkCl8rhBwAY9MItro29mRWm3i6MRzhOkYrFc2gjTLp3SohqcdEp2pBn2Oo8Xw
-         tZCemsp+Z+0bY5iv033vwNpGL/7gLHGZrg8qKlhvfV3FXWNbqLZF4gwsKoHBL9DUq5Qf
-         O/ylrH0vJsptxoC7gfqVhxNMItLabNZ73wTSZYM01gopIbS1lj9Q6R7tJnAXMNDh93CC
-         BY0dPUjYRrkzGRVloLXvdZBNUYJYObZZ0Z52+M9XmMjgSvilGeHm+1ZYivsxUj1VTL/h
-         xlVaVkW+l54GNevR9OwApeJ/tmOJcI67achfrVR2+//64nvkZpoQ17XZvc+AvyBn7Q3a
-         gbFg==
-X-Gm-Message-State: AJIora83qZu7OcV/buhSurAhqRB9h59eT9qiWfO3Mt23V2NOCOG8Yg2j
-        euvwkGa6Pzw/+hpYatqBtHc=
-X-Google-Smtp-Source: AGRyM1suQcVJvpIHswCqg4IOJM3LnlzOerWQcV9DeQ4FCBhvromABH0V+RuImflBp3AO1HdF79dtiA==
-X-Received: by 2002:a92:c94e:0:b0:2d3:be50:3e2f with SMTP id i14-20020a92c94e000000b002d3be503e2fmr4072343ilq.143.1655236554292;
-        Tue, 14 Jun 2022 12:55:54 -0700 (PDT)
-Received: from localhost ([172.243.153.43])
-        by smtp.gmail.com with ESMTPSA id h5-20020a056602130500b00668d3772a81sm5741342iov.30.2022.06.14.12.55.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 12:55:53 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 12:55:47 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cong Wang <cong.wang@bytedance.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Message-ID: <62a8e7c340baf_2f2a0208a2@john.notmuch>
-In-Reply-To: <CAM_iQpVRhBEGGtO+NDppqxDR0jf6W4+OJyvELx+Sxx66LxH13g@mail.gmail.com>
-References: <20220602012105.58853-1-xiyou.wangcong@gmail.com>
- <20220602012105.58853-2-xiyou.wangcong@gmail.com>
- <62a20ceaba3d4_b28ac2082c@john.notmuch>
- <CAM_iQpWN-PidFerX+2jdKNaNpx4wTVRbp+gGDow=1qKx12i4qA@mail.gmail.com>
- <62a2461c2688b_bb7f820876@john.notmuch>
- <CAM_iQpVRhBEGGtO+NDppqxDR0jf6W4+OJyvELx+Sxx66LxH13g@mail.gmail.com>
-Subject: Re: [Patch bpf-next v3 1/4] tcp: introduce tcp_read_skb()
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        with ESMTP id S231928AbiFNT6w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 15:58:52 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B4F4AE0D;
+        Tue, 14 Jun 2022 12:58:50 -0700 (PDT)
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o1CgU-0009CI-6z; Tue, 14 Jun 2022 21:58:42 +0200
+Received: from [85.1.206.226] (helo=linux-3.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o1CgT-000JO7-On; Tue, 14 Jun 2022 21:58:41 +0200
+Subject: Re: [syzbot] BUG: sleeping function called from invalid context in
+ sk_psock_stop
+To:     wangyufen <wangyufen@huawei.com>,
+        syzbot <syzbot+140186ceba0c496183bc@syzkaller.appspotmail.com>,
+        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, jakub@cloudflare.com,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+References: <0000000000002d6bc305e118ae24@google.com>
+ <c9adfe67-9424-2d58-7b3e-c457ac604ef0@iogearbox.net>
+ <05a652f3-35a5-9bc6-e04d-bd03fc67a9af@huawei.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <84bbbd44-9b91-c41e-9394-e6758e684406@iogearbox.net>
+Date:   Tue, 14 Jun 2022 21:58:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <05a652f3-35a5-9bc6-e04d-bd03fc67a9af@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26572/Tue Jun 14 10:17:51 2022)
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -79,31 +58,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> On Thu, Jun 9, 2022 at 12:12 PM John Fastabend <john.fastabend@gmail.com> wrote:
-> > Considering, the other case where we do kfree_skb when consume_skb()
-> > is correct. We have logic in the Cilium tracing tools (tetragon) to
-> > trace kfree_skb's and count them. So in the good case here
-> > we end up tripping that logic even though its expected.
-> >
-> > The question is which is better noisy kfree_skb even when
-> > expected or missing kfree_skb on the drops. I'm leaning
-> > to consume_skb() is safer instead of noisy kfree_skb().
+On 6/13/22 12:52 PM, wangyufen wrote:
+> 在 2022/6/10 22:35, Daniel Borkmann 写道:
+>> On 6/10/22 4:23 PM, syzbot wrote:
+>>> Hello,
+>>>
+>>> syzbot found the following issue on:
+>>>
+>>> HEAD commit:    ff539ac73ea5 Add linux-next specific files for 20220609
+>>> git tree:       linux-next
+>>> console+strace: https://syzkaller.appspot.com/x/log.txt?x=176c121bf00000
+>>> kernel config: https://syzkaller.appspot.com/x/.config?x=a5002042f00a8bce
+>>> dashboard link: https://syzkaller.appspot.com/bug?extid=140186ceba0c496183bc
+>>> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+>>> syz repro: https://syzkaller.appspot.com/x/repro.syz?x=13083353f00000
+>>> C reproducer: https://syzkaller.appspot.com/x/repro.c?x=173e67f0080000
+>>>
+>>> The issue was bisected to:
+>>>
+>>> commit d8616ee2affcff37c5d315310da557a694a3303d
+>>> Author: Wang Yufen <wangyufen@huawei.com>
+>>> Date:   Tue May 24 07:53:11 2022 +0000
+>>>
+>>>      bpf, sockmap: Fix sk->sk_forward_alloc warn_on in sk_stream_kill_queues
+>>
+>> Same ping to Wang: Please take a look, otherwise we might need to revert if it stays unfixed.
 > 
-> Oh, sure. As long as we all know neither of them is accurate,
-> I am 100% fine with changing it to consume_skb() to reduce the noise
-> for you.
-
-Thanks that would be great.
-
+> Thanks for Hillf's fix : https://groups.google.com/g/syzkaller-bugs/c/zunoClAqFQo/m/6SP7LIQoCQAJ
 > 
-> Meanwhile, let me think about how to make it accurate, if possible at
-> all. But clearly this deserves a separate patch.
+> and sorry for the delay.
 
-Yep should be ok. We set the error code in desc->error in the verdict
-recv handler maybe tracking through this.
+Please send this as a proper fix then, so it lands in patchwork and can be applied.
 
-> 
-> Thanks.
-
-
+Thanks,
+Daniel
