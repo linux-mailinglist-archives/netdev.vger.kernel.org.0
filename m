@@ -2,127 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FE5154A6B6
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 04:38:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C78554A702
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 04:46:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355661AbiFNCcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 22:32:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56146 "EHLO
+        id S1354522AbiFNCq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 22:46:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355302AbiFNC1C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 22:27:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A87842A05;
-        Mon, 13 Jun 2022 19:11:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D36A60F1C;
-        Tue, 14 Jun 2022 02:11:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8027C34114;
-        Tue, 14 Jun 2022 02:10:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655172661;
-        bh=dZghSl5/idTjRWUvDNqiufb5S8k9qcJhsO74wWIePIs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T26vMX0SKiTyMsxV0ZR3FnFLzFPT3R0yMB331Z0moHRhIjkb9d/zrpniHeMQuDagL
-         UCaF6pz1zIDUXI2SI40Lg3K5zZQRRUo6xoCjcDoRooXLU1fa6sScvauQ7tfnlpw/ZP
-         ZMMNsZ9sFuxCKt5uHOx0wfA32L+G+eLl+hySm8bpoWsl/Vp/Fy/c6IbKRz7Y695NJC
-         1ZP9HU4shiG+bf5RcoHOxJr5Oy7MTK3K9j5qeLp4vnCprlBDKGKVRcta/UJeTvwuw0
-         FD5cfo2E1WQm5DqboUNmRUw0aIz98MGvl0CEJ1+Qv5VzNYAYp3+Ltk++3towlVlUvf
-         DdCJuGa41Dh5A==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chen Lin <chen45464546@163.com>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, nbd@openwrt.org,
-        blogic@openwrt.org, matthias.bgg@gmail.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.9 12/12] net: ethernet: mtk_eth_soc: fix misuse of mem alloc interface netdev[napi]_alloc_frag
-Date:   Mon, 13 Jun 2022 22:10:40 -0400
-Message-Id: <20220614021040.1101131-12-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220614021040.1101131-1-sashal@kernel.org>
-References: <20220614021040.1101131-1-sashal@kernel.org>
+        with ESMTP id S1354700AbiFNCqF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 22:46:05 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A58403E8;
+        Mon, 13 Jun 2022 19:23:41 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id 3-20020a17090a174300b001e426a02ac5so10520451pjm.2;
+        Mon, 13 Jun 2022 19:23:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XjnTSu5YVo6p0PNi2ROa3mEbh6BHijt95wNCKK1ch38=;
+        b=JxPO0xmFQUBFVMEOD8M2u7b5JvA5Vcaba39CkGs/eT+7Jdd/efLfRLmVISSbpBy8GY
+         ALhMObYEZ78Jsr7apCiCYPM/o+xsmBmXvR3rbjQCuBBN/wmNZMdXF5a1bpYExOEQdyHC
+         7ROZK3L06w33ZA9x8fqx/hRt8vVP9NeT9NoQM6JBVMKQiYzMA9Cun4Yo9V9s6C/lkA4X
+         QuDMwiiMBouPt1fjTr4UD9Gx2EgUbXkLAPTlqBO+Dd4Hk6p2YYTh2vOxdAml1KKwGfOv
+         jdryXlaEO4iaYtuLvwiu+Q6N6+d5k3kwI97b49OWafvEEforCGB5xwNhzXV/v7C5Ltzk
+         K5TA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XjnTSu5YVo6p0PNi2ROa3mEbh6BHijt95wNCKK1ch38=;
+        b=JC8CTXkdRqYy6n7t2kIH9XULmjG1nPSHTTnV0i51wFMMZLlmf39NWw67mlXzn1pvOO
+         Hgc2V331Nw9QQLpQuHduvpybzz7hhrZQEGxStoSsKSZ2m1y/+wXRLyTQVzwZ2nB6YTfp
+         RyxEA02Lpzl7oo15ueppTYyMzbvrSiA7bWl2y3UEgV/WEI2RIYGsoQot+eT0xCw9paLP
+         bhW+zIxZiLkftGywMVqCIdpNtRQAbyPD3q3Dg6UCrDA84tD6vtGNMcgQX2xM6Rso5krh
+         d8uBtJ6QhNTN2A+KXGGcPK+Ao413csMXbnN2Yxxe7L5rq0fCcO3nZvwDbGXeJI5vSw6U
+         x8AA==
+X-Gm-Message-State: AJIora89U8013fH4YAwEnWdNp52Q8bgtpQ0gckAy9RCLJh6Y8j76W5Fe
+        9VfFXLkcnVcsnTNo/c0vpi8=
+X-Google-Smtp-Source: AGRyM1twt6SFH6QriRuk9U2RD2USL+sKauy4VuoM2bSf5bBhA4mUgOx4m14GvF45Lqh8bLrlRVN8fA==
+X-Received: by 2002:a17:902:e353:b0:168:9a78:25cb with SMTP id p19-20020a170902e35300b001689a7825cbmr1989491plc.13.1655173420580;
+        Mon, 13 Jun 2022 19:23:40 -0700 (PDT)
+Received: from localhost ([2405:201:6014:d0c0:79de:f3f4:353c:8616])
+        by smtp.gmail.com with ESMTPSA id h65-20020a62de44000000b0050dc762813csm6155656pfg.22.2022.06.13.19.23.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jun 2022 19:23:40 -0700 (PDT)
+Date:   Tue, 14 Jun 2022 07:53:37 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH v4 bpf-next 00/14] net: netfilter: add kfunc helper to
+ update ct timeout
+Message-ID: <20220614022337.cdtulpzjyamjos5s@apollo.legion>
+References: <cover.1653600577.git.lorenzo@kernel.org>
+ <20220611201117.euqca7rgn5wydlwk@macbook-pro-3.dhcp.thefacebook.com>
+ <20220613161413.sowe7bv3da2nuqsg@apollo.legion>
+ <CAADnVQKk9LPm=4OeosxLZCmv+_PnowPZdz9QP4f-H8Vd4HSLVw@mail.gmail.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQKk9LPm=4OeosxLZCmv+_PnowPZdz9QP4f-H8Vd4HSLVw@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chen Lin <chen45464546@163.com>
+On Tue, Jun 14, 2022 at 03:45:00AM IST, Alexei Starovoitov wrote:
+> On Mon, Jun 13, 2022 at 9:14 AM Kumar Kartikeya Dwivedi
+> <memxor@gmail.com> wrote:
+> >
+> > On Sun, Jun 12, 2022 at 01:41:17AM IST, Alexei Starovoitov wrote:
+> > > On Thu, May 26, 2022 at 11:34:48PM +0200, Lorenzo Bianconi wrote:
+> > > > Changes since v3:
+> > > > - split bpf_xdp_ct_add in bpf_xdp_ct_alloc/bpf_skb_ct_alloc and
+> > > >   bpf_ct_insert_entry
+> > > > - add verifier code to properly populate/configure ct entry
+> > > > - improve selftests
+> > >
+> > > Kumar, Lorenzo,
+> > >
+> > > are you planning on sending v5 ?
+> > > The patches 1-5 look good.
+> > > Patch 6 is questionable as Florian pointed out.
+> >
+> > Yes, it is almost there.
+> >
+> > > What is the motivation to allow writes into ct->status?
+> >
+> > It will only be allowed for ct from alloc function, after that ct = insert(ct)
+> > releases old one with new read only ct. I need to recheck once again with the
+> > code what other bits would cause problems on insert before I rework and reply.
+>
+> I still don't understand why you want to allow writing after alloc.
+>
 
-[ Upstream commit 2f2c0d2919a14002760f89f4e02960c735a316d2 ]
+It is just a way to set the status, instead of a helper to set it. Eventually
+before nf_conntrack_hash_check_insert it will still be checked and error
+returned for disallowed bits (e.g. anything in IPS_UNCHANGEABLE_MASK, etc.).
+The current series missed that check.
 
-When rx_flag == MTK_RX_FLAGS_HWLRO,
-rx_data_len = MTK_MAX_LRO_RX_LENGTH(4096 * 3) > PAGE_SIZE.
-netdev_alloc_frag is for alloction of page fragment only.
-Reference to other drivers and Documentation/vm/page_frags.rst
+Florian is right in that it is a can of worms, but I think we can atleast permit
+things like confirmed, assured, etc. which can also be set when crafting a ct
+using netlink. Both of them can share the same check so it is consistent when
+done from kfunc or netlink side, and any changes internally wrt status bits are
+in sync.
 
-Branch to use __get_free_pages when ring->frag_size > PAGE_SIZE.
+Anyway, if you don't like the direct write into ct, I can drop it, for now just
+insert a confirmed entry (since this was just for testing). That also means
+patch 3-6 are not strictly needed anymore, so they can be dropped, but I can
+keep them if you want, since they might be useful.
 
-Signed-off-by: Chen Lin <chen45464546@163.com>
-Link: https://lore.kernel.org/r/1654692413-2598-1-git-send-email-chen45464546@163.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+Florian asked for the pipeline, it is like this:
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 5b072bf80783..4d3ce600e7c7 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -527,6 +527,17 @@ static inline void mtk_rx_get_desc(struct mtk_rx_dma *rxd,
- 	rxd->rxd4 = READ_ONCE(dma_rxd->rxd4);
- }
- 
-+static void *mtk_max_lro_buf_alloc(gfp_t gfp_mask)
-+{
-+	unsigned int size = mtk_max_frag_size(MTK_MAX_LRO_RX_LENGTH);
-+	unsigned long data;
-+
-+	data = __get_free_pages(gfp_mask | __GFP_COMP | __GFP_NOWARN,
-+				get_order(size));
-+
-+	return (void *)data;
-+}
-+
- /* the qdma core needs scratch memory to be setup */
- static int mtk_init_fq_dma(struct mtk_eth *eth)
- {
-@@ -928,7 +939,10 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			goto release_desc;
- 
- 		/* alloc new buffer */
--		new_data = napi_alloc_frag(ring->frag_size);
-+		if (ring->frag_size <= PAGE_SIZE)
-+			new_data = napi_alloc_frag(ring->frag_size);
-+		else
-+			new_data = mtk_max_lro_buf_alloc(GFP_ATOMIC);
- 		if (unlikely(!new_data)) {
- 			netdev->stats.rx_dropped++;
- 			goto release_desc;
-@@ -1231,7 +1245,10 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
- 		return -ENOMEM;
- 
- 	for (i = 0; i < rx_dma_size; i++) {
--		ring->data[i] = netdev_alloc_frag(ring->frag_size);
-+		if (ring->frag_size <= PAGE_SIZE)
-+			ring->data[i] = netdev_alloc_frag(ring->frag_size);
-+		else
-+			ring->data[i] = mtk_max_lro_buf_alloc(GFP_KERNEL);
- 		if (!ring->data[i])
- 			return -ENOMEM;
- 	}
--- 
-2.35.1
+ct = bpf_xdp_ct_alloc();
+ct->a = ...; // private ct, not yet visible to anyone but us
+ct->b = ...;
+   or we would now set using helpers
+alloc_ct_set_status(ct, IPS_CONFIRMED);
+alloc_ct_set_timeout(ct, timeout);
+...
+ct = bpf_ct_insert_entry(ct); // old alloc_ct release, new inserted nf_conn returned
+if (!ct)
+	return -1;
+/* Inserted successfully */
+In the earlier approach this ct->a could now not be written to, as it was
+inserted, instead of allocated ct, which insert function took as arg and
+invalidated, so BPF program held a read only pointer now. If we drop that
+approach all pointers are read only anyway, so writing won't be allowed either.
 
+> > > The selftest doesn't do that anyway.
+> >
+> > Yes, it wasn't updated, we will do that in v5.
+> >
+> > > Patch 7 (acquire-release pairs) is too narrow.
+> > > The concept of a pair will not work well. There could be two acq funcs and one release.
+> >
+> > That is already handled (you define two pairs: acq1, rel and acq2, rel).
+> > There is also an example: bpf_ct_insert_entry -> bpf_ct_release,
+> > bpf_xdp_ct_lookup -> ct_release.
+>
+> If we can represent that without all these additional btf_id sets
+> it would be much better.
+>
+> > > Please think of some other mechanism. Maybe type based? BTF?
+> > > Or encode that info into type name? or some other way.
+> >
+> > Hmm, ok. I kinda dislike this solution too. The other idea that comes to mind is
+> > encapsulating nf_conn into another struct and returning pointer to that:
+> >
+> >         struct nf_conn_alloc {
+> >                 struct nf_conn ct;
+> >         };
+> >
+> >         struct nf_conn_alloc *bpf_xdp_ct_alloc(...);
+> >         struct nf_conn *bpf_ct_insert_entry(struct nf_conn_alloc *act, ...);
+> >
+> > Then nf_conn_alloc gets a different BTF ID, and hence the type can be matched in
+> > the prototype. Any opinions?
+>
+> Yes. Or maybe typedef ?
+> typedef struct nf_conn nf_conn__alloc;
+> typedef struct nf_conn nf_conn__ro;
+>
+> C will accept silent type casts from one type to another,
+> but BTF type checking can be strict?
+> Not sure. wrapping a struct works too, but extra '.ct' accessor
+> might be annoying? Unless you only use it with container_of().
+> I would prefer double or triple underscore to highlight a flavor.
+> struct nf_conn___init {...}
+> The main benefit, of course, is no need for extra btf_id sets.
+> Different types take care of correct arg passing.
+> In that sense typedef idea doesn't quite work,
+> since BTF checks with typedef would be unnecessarily strict
+> compared to regular C type checking rules. That difference
+> in behavior might bite us later.
+> So let's go with struct wrapping.
+
+Makes sense, I will go with this. But now if we are not even allowing write to
+such allocated ct (probably only helpers that set some field and check value),
+it can just be an empty opaque struct for the BPF program, while it is still
+a nf_conn in the kernel. There doesn't seem to be much point in wrapping around
+nf_conn when reading from allocated nf_conn isn't going to be of any use.
+
+--
+Kartikeya
