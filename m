@@ -2,60 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B16C654A947
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 08:15:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0425554A955
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 08:21:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238797AbiFNGPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 02:15:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48522 "EHLO
+        id S1350741AbiFNGUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 02:20:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229937AbiFNGPj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 02:15:39 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 436D3377CF;
-        Mon, 13 Jun 2022 23:15:38 -0700 (PDT)
+        with ESMTP id S1350462AbiFNGUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 02:20:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9787D37A84;
+        Mon, 13 Jun 2022 23:20:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A6661CE182F;
-        Tue, 14 Jun 2022 06:15:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4AB6C3411B;
-        Tue, 14 Jun 2022 06:15:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35D5C60B6A;
+        Tue, 14 Jun 2022 06:20:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8C884C36B09;
+        Tue, 14 Jun 2022 06:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655187335;
-        bh=vo5JOYkEPeFEWpKNIvUVh541SRQIp5YhW0KwaowC1TE=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=EN9q83UhlB8dhqZIow1gnV9jnq1wtW6JSaaGpbPQFx1jpcnu9pWLvl/Ot00hUA5wz
-         RJUDzPVu8bhWqMOjbaytQW1tBJYkzaiO2R4EMYyE9ckYuS3TJxtiUfT5mbDe9FE1c6
-         uCnE7cS3inwzREhYL1LOR1A45ULHJJOdk+G0r9iPi34UU7PHEBL0RlVOorQObAydno
-         llQcgPxq3WUbPPzbiT6WQRGBehDIqXuO+7PSQVzpv9kJX4XnRLc6Femx/AAZXTsmEQ
-         3M8pTbe1A94HsYPT5DMqRPpd0HLaZGpYlahy8IhzIBtdHB6LQx+SLGJWz0tXJ+d2rM
-         vhZulZ2tLmKFA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Christian Lamparter <chunkeey@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        Christian Lamparter <chunkeey@web.de>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2] p54: Fix an error handling path in p54spi_probe()
-References: <297d2547ff2ee627731662abceeab9dbdaf23231.1655068321.git.christophe.jaillet@wanadoo.fr>
-        <CAAd0S9DgctqyRx+ppfT6dNntUR-cpySnsYaL=unboQ+qTK2wGQ@mail.gmail.com>
-        <f13c3976-2ba0-e16d-0853-5b5b1be16d11@wanadoo.fr>
-Date:   Tue, 14 Jun 2022 09:15:28 +0300
-In-Reply-To: <f13c3976-2ba0-e16d-0853-5b5b1be16d11@wanadoo.fr> (Christophe
-        JAILLET's message of "Mon, 13 Jun 2022 22:57:25 +0200")
-Message-ID: <871qvrrcsf.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        s=k20201202; t=1655187613;
+        bh=OH604z9q8hs1FJx9AZ0a8xeYy+Ho3/Eyv1sdOh/pIgs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=USVibk77FxLf57AJ44EBVYk09eG3MnCS4JlzpptKKzAnX5alS8abFHrI89Mx56TfS
+         5OtppB6MFmoqu61R05mdhr4ffr7ZjBsqAFa3eGtHC2K1YhYkPYBq1zsNdkSdiMW0s/
+         7bwYTst3jkyI4vP1Mo0XPMXdrHblRbaQLRze6XLtDCKdxxHs/xJDzs8R5PCFow4a6S
+         iZCLMaLaP5rCUxqFPqygLZJ2Z6LgKDysV0outGVHz1OHo52ao5T4wSqxm2tFQX6Q+P
+         hmAvurKHKwVC0rpyHp1Zpzg3cdDDNYzF0t5SqHmAMzsDnxhaJSY9d56IgC2E+AC74+
+         BuM8AueNrd9pw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6F9F3E6D482;
+        Tue, 14 Jun 2022 06:20:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] docs: networking: phy: Fix a typo
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165518761345.22663.1630253826572230261.git-patchwork-notify@kernel.org>
+Date:   Tue, 14 Jun 2022 06:20:13 +0000
+References: <20220610072809.352962-1-j.neuschaefer@gmx.net>
+In-Reply-To: <20220610072809.352962-1-j.neuschaefer@gmx.net>
+To:     =?utf-8?q?Jonathan_Neusch=C3=A4fer_=3Cj=2Eneuschaefer=40gmx=2Enet=3E?=@ci.codeaurora.org
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, corbet@lwn.net,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -66,33 +58,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christophe JAILLET <christophe.jaillet@wanadoo.fr> writes:
+Hello:
 
-> Le 13/06/2022 =C3=A0 22:02, Christian Lamparter a =C3=A9crit=C2=A0:
->> On Sun, Jun 12, 2022 at 11:12 PM Christophe JAILLET
->> <christophe.jaillet@wanadoo.fr> wrote:
->>>
->>> If an error occurs after a successful call to p54spi_request_firmware()=
-, it
->>> must be undone by a corresponding release_firmware() as already done in
->>> the error handling path of p54spi_request_firmware() and in the .remove=
-()
->>> function.
->>>
->>> Add the missing call in the error handling path and remove it from
->>> p54spi_request_firmware() now that it is the responsibility of the call=
-er
->>> to release the firmawre
->>
->> that last word hast a typo:  firmware. (maybe Kalle can fix this in post=
-).
->
-> More or less the same typo twice in a row... _Embarrassed_
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-No worries, I can fix the typo.
+On Fri, 10 Jun 2022 09:28:08 +0200 you wrote:
+> Write "to be operated" instead of "to be operate".
+> 
+> Signed-off-by: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+> ---
+>  Documentation/networking/phy.rst | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> [...]
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
+Here is the summary with links:
+  - docs: networking: phy: Fix a typo
+    https://git.kernel.org/netdev/net/c/9cc8ea99bf7a
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
