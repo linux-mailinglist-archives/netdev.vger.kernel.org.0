@@ -2,47 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DF7C54A891
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 07:08:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECD9F54A898
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 07:12:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234577AbiFNFIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 01:08:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52642 "EHLO
+        id S234653AbiFNFMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 01:12:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235269AbiFNFIS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 01:08:18 -0400
-Received: from smtp6.emailarray.com (smtp6.emailarray.com [65.39.216.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 544443A5CF
-        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 22:08:17 -0700 (PDT)
-Received: (qmail 28109 invoked by uid 89); 14 Jun 2022 05:08:16 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjg0LjIwNQ==) (POLARISLOCAL)  
-  by smtp6.emailarray.com with SMTP; 14 Jun 2022 05:08:16 -0000
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     kernel-team@fb.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Lasse Johnsen <l@ssejohnsen.me>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S232385AbiFNFMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 01:12:33 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96DA67658
+        for <netdev@vger.kernel.org>; Mon, 13 Jun 2022 22:12:31 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o0yqh-0003ck-Kn; Tue, 14 Jun 2022 07:12:19 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o0yqf-0001gw-Gs; Tue, 14 Jun 2022 07:12:17 +0200
+Date:   Tue, 14 Jun 2022 07:12:17 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>
-Subject: [PATCH net-next v7 3/3] net: phy: Add support for 1PPS out and external timestamps
-Date:   Mon, 13 Jun 2022 22:08:10 -0700
-Message-Id: <20220614050810.54425-4-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.34.3
-In-Reply-To: <20220614050810.54425-1-jonathan.lemon@gmail.com>
-References: <20220614050810.54425-1-jonathan.lemon@gmail.com>
+        Jonathan Corbet <corbet@lwn.net>,
+        Michal Kubecek <mkubecek@suse.cz>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/1] net: phy: add remote fault support
+Message-ID: <20220614051217.GC4536@pengutronix.de>
+References: <20220608093403.3999446-1-o.rempel@pengutronix.de>
+ <YqS+zYHf6eHMWJlD@lunn.ch>
+ <20220613125552.GA4536@pengutronix.de>
+ <YqdQJepq3Klvr5n5@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=no
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YqdQJepq3Klvr5n5@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -50,317 +61,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The perout function is used to generate a 1PPS signal, synchronized
-to the PHC.  This is accomplished by a using the hardware oneshot
-functionality, which is reset by a timer.
+On Mon, Jun 13, 2022 at 04:56:37PM +0200, Andrew Lunn wrote:
+> > If I see it correctly, there is no way to notify about remote fault when
+> > the link is up. The remote fault bit is transferred withing Link Code
+> > Word as part of FLP burst. At least in this part of specification.
+> 
+> Thanks for looking at the specification. So ksetting does seem like
+> the right API.
+> 
+> Sorry, i won't have time to look at the specification until tomorrow.
+> The next question is, is it a separate value, or as more link mode
+> bits? Or a mixture of both? 
 
-The external timestamp function is set up for a 1PPS input pulse,
-and uses a timer to poll for temestamps.
+It is the bit D13 within Base Link Codeword as described in "28.2.1.2
+Link codeword encoding". Every PHY will send or receive it, but may be
+not every PHY will allow to set this bit.
 
-Both functions use the SYNC_OUT/SYNC_IN1 pin, so cannot run
-simultaneously.
+The actual error value can be optionally transmitted separately withing the
+"Next Page".
 
-Co-developed-by: Lasse Johnsen <l@ssejohnsen.me>
-Signed-off-by: Lasse Johnsen <l@ssejohnsen.me>
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
----
- drivers/net/phy/bcm-phy-ptp.c | 227 ++++++++++++++++++++++++++++++++++
- 1 file changed, 227 insertions(+)
+> Is there a capability bit somewhere to indicate this PHY can advertise a
+> remote fault?
 
-diff --git a/drivers/net/phy/bcm-phy-ptp.c b/drivers/net/phy/bcm-phy-ptp.c
-index 6f462c232e9e..cd8dab4d4e10 100644
---- a/drivers/net/phy/bcm-phy-ptp.c
-+++ b/drivers/net/phy/bcm-phy-ptp.c
-@@ -80,6 +80,8 @@
- #define SYNC_OUT_1		0x0879
- #define SYNC_OUT_2		0x087a
- 
-+#define SYNC_IN_DIVIDER		0x087b
-+
- #define SYNOUT_TS_0		0x087c
- #define SYNOUT_TS_1		0x087d
- #define SYNOUT_TS_2		0x087e
-@@ -89,6 +91,7 @@
- #define  NSE_CAPTURE_EN			BIT(13)
- #define  NSE_INIT			BIT(12)
- #define  NSE_CPU_FRAMESYNC		BIT(5)
-+#define  NSE_SYNC1_FRAMESYNC		BIT(3)
- #define  NSE_FRAMESYNC_MASK		GENMASK(5, 2)
- #define  NSE_PEROUT_EN			BIT(1)
- #define  NSE_ONESHOT_EN			BIT(0)
-@@ -128,11 +131,14 @@ struct bcm_ptp_private {
- 	struct mii_timestamper mii_ts;
- 	struct ptp_clock *ptp_clock;
- 	struct ptp_clock_info ptp_info;
-+	struct ptp_pin_desc pin;
- 	struct mutex mutex;
- 	struct sk_buff_head tx_queue;
- 	int tx_type;
- 	bool hwts_rx;
- 	u16 nse_ctrl;
-+	bool pin_active;
-+	struct delayed_work pin_work;
- };
- 
- struct bcm_ptp_skb_cb {
-@@ -511,6 +517,216 @@ static long bcm_ptp_do_aux_work(struct ptp_clock_info *info)
- 	return reschedule ? 1 : -1;
- }
- 
-+static int bcm_ptp_cancel_func(struct bcm_ptp_private *priv)
-+{
-+	if (priv->pin_active) {
-+		priv->pin_active = false;
-+		priv->nse_ctrl &= ~(NSE_SYNC_OUT_MASK | NSE_SYNC1_FRAMESYNC |
-+				    NSE_CAPTURE_EN);
-+		bcm_phy_write_exp(priv->phydev, NSE_CTRL, priv->nse_ctrl);
-+		cancel_delayed_work_sync(&priv->pin_work);
-+	}
-+	return 0;
-+}
-+
-+static void bcm_ptp_perout_work(struct work_struct *pin_work)
-+{
-+	struct bcm_ptp_private *priv =
-+		container_of(pin_work, struct bcm_ptp_private, pin_work.work);
-+	struct phy_device *phydev = priv->phydev;
-+	struct timespec64 ts;
-+	u64 ns, next;
-+	u16 ctrl;
-+
-+	mutex_lock(&priv->mutex);
-+
-+	/* no longer running */
-+	if (!priv->pin_active) {
-+		mutex_unlock(&priv->mutex);
-+		return;
-+	}
-+
-+	bcm_ptp_framesync_ts(phydev, NULL, &ts, priv->nse_ctrl);
-+
-+	/* this is 1PPS only */
-+	next = NSEC_PER_SEC - ts.tv_nsec;
-+	ts.tv_sec += next < NSEC_PER_MSEC ? 2 : 1;
-+	ts.tv_nsec = 0;
-+
-+	ns = timespec64_to_ns(&ts);
-+
-+	/* force 0->1 transition for ONESHOT */
-+	ctrl = bcm_ptp_framesync_disable(phydev,
-+					 priv->nse_ctrl & ~NSE_ONESHOT_EN);
-+
-+	bcm_phy_write_exp(phydev, SYNOUT_TS_0, ns & 0xfff0);
-+	bcm_phy_write_exp(phydev, SYNOUT_TS_1, ns >> 16);
-+	bcm_phy_write_exp(phydev, SYNOUT_TS_2, ns >> 32);
-+
-+	/* load values on next framesync */
-+	bcm_phy_write_exp(phydev, SHADOW_LOAD, SYNC_OUT_LOAD);
-+
-+	bcm_ptp_framesync(phydev, ctrl | NSE_ONESHOT_EN | NSE_INIT);
-+
-+	priv->nse_ctrl |= NSE_ONESHOT_EN;
-+	bcm_ptp_framesync_restore(phydev, priv->nse_ctrl);
-+
-+	mutex_unlock(&priv->mutex);
-+
-+	next = next + NSEC_PER_MSEC;
-+	schedule_delayed_work(&priv->pin_work, nsecs_to_jiffies(next));
-+}
-+
-+static int bcm_ptp_perout_locked(struct bcm_ptp_private *priv,
-+				 struct ptp_perout_request *req, int on)
-+{
-+	struct phy_device *phydev = priv->phydev;
-+	u64 period, pulse;
-+	u16 val;
-+
-+	if (!on)
-+		return bcm_ptp_cancel_func(priv);
-+
-+	/* 1PPS */
-+	if (req->period.sec != 1 || req->period.nsec != 0)
-+		return -EINVAL;
-+	period = BCM_MAX_PERIOD_8NS;	/* write nonzero value */
-+
-+	if (req->flags & PTP_PEROUT_PHASE)
-+		return -EOPNOTSUPP;
-+
-+	if (req->flags & PTP_PEROUT_DUTY_CYCLE)
-+		pulse = ktime_to_ns(ktime_set(req->on.sec, req->on.nsec));
-+	else
-+		pulse = (u64)BCM_MAX_PULSE_8NS << 3;
-+
-+	/* convert to 8ns units */
-+	pulse >>= 3;
-+
-+	if (!pulse)
-+		return -EINVAL;
-+
-+	if (pulse > period)
-+		return -EINVAL;
-+
-+	if (pulse > BCM_MAX_PULSE_8NS)
-+		return -EINVAL;
-+
-+	bcm_phy_write_exp(phydev, SYNC_OUT_0, period);
-+
-+	val = ((pulse & 0x3) << 14) | ((period >> 16) & 0x3fff);
-+	bcm_phy_write_exp(phydev, SYNC_OUT_1, val);
-+
-+	val = ((pulse >> 2) & 0x7f) | (pulse << 7);
-+	bcm_phy_write_exp(phydev, SYNC_OUT_2, val);
-+
-+	if (priv->pin_active)
-+		cancel_delayed_work_sync(&priv->pin_work);
-+
-+	priv->pin_active = true;
-+	INIT_DELAYED_WORK(&priv->pin_work, bcm_ptp_perout_work);
-+	schedule_delayed_work(&priv->pin_work, 0);
-+
-+	return 0;
-+}
-+
-+static void bcm_ptp_extts_work(struct work_struct *pin_work)
-+{
-+	struct bcm_ptp_private *priv =
-+		container_of(pin_work, struct bcm_ptp_private, pin_work.work);
-+	struct phy_device *phydev = priv->phydev;
-+	struct ptp_clock_event event;
-+	struct timespec64 ts;
-+	u16 reg;
-+
-+	mutex_lock(&priv->mutex);
-+
-+	/* no longer running */
-+	if (!priv->pin_active) {
-+		mutex_unlock(&priv->mutex);
-+		return;
-+	}
-+
-+	reg = bcm_phy_read_exp(phydev, INTR_STATUS);
-+	if ((reg & INTC_FSYNC) == 0)
-+		goto out;
-+
-+	bcm_ptp_get_framesync_ts(phydev, &ts);
-+
-+	event.index = 0;
-+	event.type = PTP_CLOCK_EXTTS;
-+	event.timestamp = timespec64_to_ns(&ts);
-+	ptp_clock_event(priv->ptp_clock, &event);
-+
-+out:
-+	mutex_unlock(&priv->mutex);
-+	schedule_delayed_work(&priv->pin_work, HZ / 4);
-+}
-+
-+static int bcm_ptp_extts_locked(struct bcm_ptp_private *priv, int on)
-+{
-+	struct phy_device *phydev = priv->phydev;
-+
-+	if (!on)
-+		return bcm_ptp_cancel_func(priv);
-+
-+	if (priv->pin_active)
-+		cancel_delayed_work_sync(&priv->pin_work);
-+
-+	bcm_ptp_framesync_disable(phydev, priv->nse_ctrl);
-+
-+	priv->nse_ctrl |= NSE_SYNC1_FRAMESYNC | NSE_CAPTURE_EN;
-+
-+	bcm_ptp_framesync_restore(phydev, priv->nse_ctrl);
-+
-+	priv->pin_active = true;
-+	INIT_DELAYED_WORK(&priv->pin_work, bcm_ptp_extts_work);
-+	schedule_delayed_work(&priv->pin_work, 0);
-+
-+	return 0;
-+}
-+
-+static int bcm_ptp_enable(struct ptp_clock_info *info,
-+			  struct ptp_clock_request *rq, int on)
-+{
-+	struct bcm_ptp_private *priv = ptp2priv(info);
-+	int err = -EBUSY;
-+
-+	mutex_lock(&priv->mutex);
-+
-+	switch (rq->type) {
-+	case PTP_CLK_REQ_PEROUT:
-+		if (priv->pin.func == PTP_PF_PEROUT)
-+			err = bcm_ptp_perout_locked(priv, &rq->perout, on);
-+		break;
-+	case PTP_CLK_REQ_EXTTS:
-+		if (priv->pin.func == PTP_PF_EXTTS)
-+			err = bcm_ptp_extts_locked(priv, on);
-+		break;
-+	default:
-+		err = -EOPNOTSUPP;
-+		break;
-+	}
-+
-+	mutex_unlock(&priv->mutex);
-+
-+	return err;
-+}
-+
-+static int bcm_ptp_verify(struct ptp_clock_info *info, unsigned int pin,
-+			  enum ptp_pin_function func, unsigned int chan)
-+{
-+	switch (func) {
-+	case PTP_PF_NONE:
-+	case PTP_PF_EXTTS:
-+	case PTP_PF_PEROUT:
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+	return 0;
-+}
-+
- static const struct ptp_clock_info bcm_ptp_clock_info = {
- 	.owner		= THIS_MODULE,
- 	.name		= KBUILD_MODNAME,
-@@ -519,7 +735,12 @@ static const struct ptp_clock_info bcm_ptp_clock_info = {
- 	.settime64	= bcm_ptp_settime,
- 	.adjtime	= bcm_ptp_adjtime,
- 	.adjfine	= bcm_ptp_adjfine,
-+	.enable		= bcm_ptp_enable,
-+	.verify		= bcm_ptp_verify,
- 	.do_aux_work	= bcm_ptp_do_aux_work,
-+	.n_pins		= 1,
-+	.n_per_out	= 1,
-+	.n_ext_ts	= 1,
- };
- 
- static void bcm_ptp_txtstamp(struct mii_timestamper *mii_ts,
-@@ -648,6 +869,7 @@ static int bcm_ptp_ts_info(struct mii_timestamper *mii_ts,
- void bcm_ptp_stop(struct bcm_ptp_private *priv)
- {
- 	ptp_cancel_worker_sync(priv->ptp_clock);
-+	bcm_ptp_cancel_func(priv);
- }
- EXPORT_SYMBOL_GPL(bcm_ptp_stop);
- 
-@@ -667,6 +889,8 @@ void bcm_ptp_config_init(struct phy_device *phydev)
- 
- 	/* always allow FREQ_LOAD on framesync */
- 	bcm_phy_write_exp(phydev, SHADOW_CTRL, FREQ_LOAD);
-+
-+	bcm_phy_write_exp(phydev, SYNC_IN_DIVIDER, 1);
- }
- EXPORT_SYMBOL_GPL(bcm_ptp_config_init);
- 
-@@ -703,6 +927,9 @@ struct bcm_ptp_private *bcm_ptp_probe(struct phy_device *phydev)
- 
- 	priv->ptp_info = bcm_ptp_clock_info;
- 
-+	snprintf(priv->pin.name, sizeof(priv->pin.name), "SYNC_OUT");
-+	priv->ptp_info.pin_config = &priv->pin;
-+
- 	clock = ptp_clock_register(&priv->ptp_info, &phydev->mdio.dev);
- 	if (IS_ERR(clock))
- 		return ERR_CAST(clock);
+No, it is not part of the "Technology Ability Filed". It is more like a state
+bit.
+
+Potentially some PHY may set it witout some PHY may do it without
+software:
+28.2.2 Receive function requirements
+...
+If any other technology-dependent PMA indicates link_status=READY when
+the autoneg_wait_timer expires, Auto-Negotiation will not allow any data
+service to be enabled and may signal this as a remote fault to the Link
+Partner using the Base Page and will flag this in the Local Device by
+setting the Parallel Detection Fault bit (6.4) in the Auto-Negotiation
+expansion register.
+
+> That would suggest we  want a ETHTOOL_LINK_MODE_REMOTE_FAULT_BIT, which we
+> can set in supported and maybe see in lpa?
+
+No. We can see if it is supported only if it is already in fault state.
+
+> Set it in advertising when indicating  a fault. The actual fault value could
+> then be in a separate value which gets written to the extended page?
+
+correct.
+
+> Does 802.3 allow a remote fault to be indicated but without the reason?
+
+yes.
+
+> > So receiving remote fault information via linkstate and send remote fault via
+> > ksetting?
+> 
+> We could also just broadcast the results of a ksetting get to
+> userspace?
+
+by using ethnl_multicast()? I it something what should be implemented?
+
+> I don't have easy access to a machine at the moment. What does
+> 
+> ip monitor all
+> 
+> show when a link is configured up, but autoneg fails? And when autoneg
+> is successful but indicates a remote fault? Are there any existing
+> messages sent to userspace?
+
+Hm, currently i get only link state changes:
+
+[LINK]4: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default 
+    link/ether 18:74:e2:a0:00:a3 brd ff:ff:ff:ff:ff:ff
+[NEIGH]Deleted ff02::16 dev eth1 lladdr 33:33:00:00:00:16 NOARP
+[NEIGH]Deleted ff02::1:3 dev eth1 lladdr 33:33:00:01:00:03 NOARP
+[LINK]4: eth1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc fq_codel state DOWN group default 
+    link/ether 18:74:e2:a0:00:a3 brd ff:ff:ff:ff:ff:ff
+[LINK]4: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default 
+    link/ether 18:74:e2:a0:00:a3 brd ff:ff:ff:ff:ff:ff
+[LINK]5: eth2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default 
+    link/ether 18:74:e2:a0:00:a8 brd ff:ff:ff:ff:ff:ff
+
+> > The next logical question is, if a remote fault is RX'ed (potentially with a
+> > reason) who will react on this. There might be different policies on how to
+> > react on same reason.
+> 
+> Policy goes in userspace, is the general rule.
+
+ack
+
+> The only exception might be, if we decide to make use of one of these
+> to silence the link to allow cabling testing. We probably want the
+> kernel to try to do that.
+
+ack :)
+
+Regards
+Oleksij
 -- 
-2.34.3
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
