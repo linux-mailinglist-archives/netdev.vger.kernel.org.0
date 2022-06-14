@@ -2,685 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A382354BB2C
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 22:21:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4A5D54BBB4
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 22:32:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351417AbiFNUTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 16:19:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37890 "EHLO
+        id S1358158AbiFNU3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 16:29:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358498AbiFNUTC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 16:19:02 -0400
-Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68A7296;
-        Tue, 14 Jun 2022 13:18:58 -0700 (PDT)
-Received: from smtpauth-2019-1.uniroma2.it (smtpauth.uniroma2.it [160.80.5.46])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 25EKIIaK025319;
-        Tue, 14 Jun 2022 22:18:23 +0200
-Received: from lubuntu-18.04 (unknown [160.80.103.126])
-        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id 70E30121689;
-        Tue, 14 Jun 2022 22:18:13 +0200 (CEST)
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
-        s=ed201904; t=1655237893; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PkEPP3X+XSpLKTRSrvKowQoJhyCHkhoEx08xpXl7uwo=;
-        b=S7JejUWzsTFn0NvfTHDkAAfSEn2Y4FEKkYR+LL/pFsMn7o48qQEvv0Tsb6qdcst6MQ+7OR
-        2ARYvt2v/0+KW3Bw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
-        t=1655237893; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PkEPP3X+XSpLKTRSrvKowQoJhyCHkhoEx08xpXl7uwo=;
-        b=wdG1U8mJ0vQiiITstRHrPhv/89mbNAIBXSUVEKGWfKxxSJ0cZ5OjSMQIJD75EDqwKsAS7+
-        cu0Zio00QMENU6CYYr69GLjF82o3sSQjIC0ZzfR+T76mndBwIJPhuHF8wb76DAVhGkcMl3
-        +QpTNJy+S/g+uRdqLtlwDUeP8ir/PA4Mt2A1jXsAdEtCo+iXOTAVwn0Osq1dOWKEQ+rjfJ
-        r+R7vMROq8hw3s3AGqCCpBIBUmg9PFSBrJiDdgvzn7geMKz/818HrBEwGd+Wcfu0piUU/X
-        A/ylYQEs/zBEP/yeuDS/ImZZpIM6XoHrYBRtSXEkTNBmutxghhfDy1+8crGfBQ==
-Date:   Tue, 14 Jun 2022 22:18:13 +0200
-From:   Andrea Mayer <andrea.mayer@uniroma2.it>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: Re: [net-next v1 2/2] seg6: add NEXT-C-SID support for SRv6 End
- behavior
-Message-Id: <20220614221813.bd92cc93e4b7eb9d1f2590e8@uniroma2.it>
-In-Reply-To: <3c8d69d321e1465be9482285581622fe9947f112.camel@redhat.com>
-References: <20220611104750.2724-1-andrea.mayer@uniroma2.it>
-        <20220611104750.2724-3-andrea.mayer@uniroma2.it>
-        <3c8d69d321e1465be9482285581622fe9947f112.camel@redhat.com>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S1358147AbiFNU3a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 16:29:30 -0400
+Received: from na01-obe.outbound.protection.outlook.com (mail-centralusazon11021015.outbound.protection.outlook.com [52.101.62.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA4954E39D;
+        Tue, 14 Jun 2022 13:29:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Won06YF0yfBfUsmncsubGjDoIIBpNSxEIrGHXtW4NGs0AWJnO3Xrbwnv56OKUosfO+iXViJkg4imv93a/myFzbrdqVJxMAu+tH8yIRcpqPXDrRecHm7tsv8NptUrP4PFzjEDkXXxkuuD1ejpeD55QlohB6+o2VFo1QvBP1TVmhWeIgYIKt6yXnlT4/4003r8jmdMWeQOPppocpF1ONM1BfjjdNeG3nc9qZHOUtqox/698qRuZdJKlOz5cPUORFgtM3vDR4ZBN002Kh2WnQztldmf9EEKAbQORrxFWUBdnAc0tuo/lmo/nh/24UWjq5OeAKd6ZEpvzTXpMZp37/3oYw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=p6QMxEqA2iGGLukTTl0VpGpIOMNiCbSxVnHUTRKm4n4=;
+ b=cMo6IB9nAdclJk+cllMtf4wQGZRWUR6Oa2cG6d3EuSbWXqaDZ0RjEcfkF3/07d2T7vbfhY6oqy2FhsNALhpS+78B98wQ8yU9CFqdfNMQC3Y7qBsCpxIfqUpxeuGPkhCyyUY/QIky/3XsIGwimwPA8Ea/oUlPjUiUIi66lDKcFbx45/pa8345dRdAQTqWy5xiFbKA1Y3GH/m8PEOBq+UxM9e+XC6WbPy1G4niBUjEBONQbBrbA7m6zl4AQ6YwVAos+5aguqSAuDrbvErgRNgNQf2x++EEksSL+tAyyXjfy0vgfTyNvucac0XS4AgbfTIJ2429ROuhOehu/5zaTB5oBQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p6QMxEqA2iGGLukTTl0VpGpIOMNiCbSxVnHUTRKm4n4=;
+ b=RCTcG1yilVZXuS6YmLF2JuNJK15wyn8+J7tjsjBeRAimTrkRyqcTSDAtYxsqcq3/A3DNVRC84tZVVgdFWRliLn256J1smlspwQ+1f8ie0tOD9LCuzj69FIuU3FRh85MJlcoVoBkNv7tHFAn3oWUmj+M8eRzYQ9RwvfZdPfJ70Z4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+Received: from BYAPR21MB1223.namprd21.prod.outlook.com (2603:10b6:a03:103::11)
+ by MN0PR21MB3314.namprd21.prod.outlook.com (2603:10b6:208:37f::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.8; Tue, 14 Jun
+ 2022 20:29:26 +0000
+Received: from BYAPR21MB1223.namprd21.prod.outlook.com
+ ([fe80::7ceb:34aa:b695:d8ac]) by BYAPR21MB1223.namprd21.prod.outlook.com
+ ([fe80::7ceb:34aa:b695:d8ac%5]) with mapi id 15.20.5353.001; Tue, 14 Jun 2022
+ 20:29:26 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org
+Cc:     haiyangz@microsoft.com, decui@microsoft.com, kys@microsoft.com,
+        sthemmin@microsoft.com, paulros@microsoft.com,
+        shacharr@microsoft.com, olaf@aepfle.de, vkuznets@redhat.com,
+        davem@davemloft.net, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next,v2,0/2] net: mana: Add PF and XDP_REDIRECT support
+Date:   Tue, 14 Jun 2022 13:28:53 -0700
+Message-Id: <1655238535-19257-1-git-send-email-haiyangz@microsoft.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: MW4PR04CA0313.namprd04.prod.outlook.com
+ (2603:10b6:303:82::18) To BYAPR21MB1223.namprd21.prod.outlook.com
+ (2603:10b6:a03:103::11)
+MIME-Version: 1.0
+Sender: LKML haiyangz <lkmlhyz@microsoft.com>
+X-MS-Exchange-MessageSentRepresentingType: 2
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b2353201-be1f-4826-b9f6-08da4e44934d
+X-MS-TrafficTypeDiagnostic: MN0PR21MB3314:EE_
+X-LD-Processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+X-Microsoft-Antispam-PRVS: <MN0PR21MB331425AE4DDAF22FC685030CACAA9@MN0PR21MB3314.namprd21.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 4mXgmYhpqp3huUh2AbnLiWnGiQielPzxyosPU9pKx0zcnNOL88KzUzouw9WWC2C3VI4RVcEbkQ6t0Wo3C+wKOSYjxP9DCjZCAi8x7QgiaYqGHRP7a2DpqEcXCUx9CUgYMyvlqGidkc7kWGwaACbWmRDavWsCU+nlCwR/+nwgpDVLMJzrb4HFITjGNuDtfnadLNwJvOu04TMtjaEv6TW+6dKUt13in4+u1KQ+qwpr/60MMa8lw5oX9rlp0Vo4w7smhGhsRzxFUu3FJ+6IIbVLmRQuvc3/ldcrzwmtvHUVW/eLrJ6NpcyAPVKiDOy1SPbGTeJrXFlAL2Mfi7KUD6tyUoBX2qHbIC4InIeB6YKoE90n5MWJWE9iChO0Qugrjs+GoYh6Fse3+sPFgorBL/aWMIMdUrseWLxkthYYb/mca8GNv7Jz3ohSSs0Wk7XQXguXBjXzE+omjyk8uQmOYBsUJ8vmii5IhvKkTOPZ5k/9XLpCq/2kLNFvxSoirok2fJigrsC7MuDmmU+tK4Yi4znA1xcLNCweebw28YQyTlFiOFJoNEznMItsd5BHAJN6mTuClz5axxIYxTg+zP/rqRewbO/zT5PyeEal+BQi69mao1kWw2Jvij45GHLRrV1BHsDlmLcZVr77O+AIhREbJlroqEhnMnKKWHI5ZjVX+TUWMkzZMxN+FdxFinTjfqLXoh4CVrvIQt2sQKach1v8siUnqmqIn2dhIcZV3C8WX9fSMlWf0Dig0NXGK6GdE39UYvuw
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR21MB1223.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(451199009)(6666004)(6506007)(186003)(52116002)(2616005)(6512007)(26005)(38100700002)(82960400001)(38350700002)(82950400001)(83380400001)(5660300002)(66946007)(4744005)(36756003)(8676002)(4326008)(8936002)(6486002)(316002)(2906002)(66556008)(66476007)(10290500003)(7846003)(508600001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ZHoxwIafPovFVcks+A+TdG/ecZgEXsK3MmH4ofw/Tz607g4bKvZNPEcC6fIs?=
+ =?us-ascii?Q?T5oE99NIjRVp1dPBVOqSk7NlTAerKyeub92+/ERo3Yg9sGY9W/gsznopnZKs?=
+ =?us-ascii?Q?HFxfVVrvfHrzrNaNrh0+zOsYhwX1hZXhBF9OzqGKdjwmIpAAfjVwgicU79XP?=
+ =?us-ascii?Q?nl+3eomzmJRfqwmb51zikhMWl/I5kUCOkvUKaIWBQ5/3GIkOoc+NODKE6oDf?=
+ =?us-ascii?Q?ZbPfWYi42wDxcGo/K3rSi+DkDdMcxstlu5n/QgO0FHFdeFEpWxz2OvmPDnor?=
+ =?us-ascii?Q?SaTVn/LwNwnxsDtKj+dYze3hXm+g49vMcjFVY/hEE+TFeKE4cxVN5QtpljqR?=
+ =?us-ascii?Q?zb679qzc4U67x3613tWNTkfa/0hnp51Gk5//Tq5yg+Y0lOfGe/u4zB3I4QbY?=
+ =?us-ascii?Q?sCmJ60kqL+cFVmySuSpW5KBfldGZc3F6upGXm84hjeVqk+bZIPNuqHaZ6NiW?=
+ =?us-ascii?Q?CzSnjgwCNolZWPZaA/YvYI+RoYN0UzjlqyUd8GCFDxlHI/8ZRjlOXFBHufFQ?=
+ =?us-ascii?Q?c+SGPAeZwxrK4F+73M4ciuJ/MNngCRGU0SwocSbyA+8oOylFil0VlSM6tvKG?=
+ =?us-ascii?Q?VXDLM3TJp53dnd12toMbypse57LmjcqsyRuD9cobsIcBNYifAOD9qBplCTIw?=
+ =?us-ascii?Q?7J88EzAAmCFcYHwXDNsB+OCNOOlYLvTpoRy77tsCft4sPxrn/RmXAkl2AgAM?=
+ =?us-ascii?Q?M5RtaG/cnxXCYgEmejp0M9Mv4jQHjOl69rxKI9CMnrKw1SI1iZzjYaGyhm7v?=
+ =?us-ascii?Q?bj95y/tXt2JC0H7PuNHxLCEbe1VEGx/yv2urrW+9b4VMJwB3oyDLRgulKHY0?=
+ =?us-ascii?Q?igJyEfulQSgkP7XAKcVlY0QDidBthr3Sd3zOK/sPaTaUZ/TwXNpgyAJP40Pf?=
+ =?us-ascii?Q?yuTHqYVygZGzFuIa31fQOCbksm23tufW+ou9OUoKLLTzGDjozISpkTrW4NbL?=
+ =?us-ascii?Q?lGAiKJzugdcLDu9sbm4lELq80fm8efytWvK5OANptfuU6gD95TZDGXaU6Fjm?=
+ =?us-ascii?Q?ikDfyZJAgAOyB3KnLxmxIC/ZBtmA7NKgeJ5vhQOeaoTwXRTHQwLne2o7g2lr?=
+ =?us-ascii?Q?wqakxWAvLzVq7zf7A8yLU8z6GBeaOEh27DLtvfCxIwEHq1FRh/19tkyKMfbu?=
+ =?us-ascii?Q?9tuAg0M0q6nyZpbYEQXovx2Ic5tawyQCOM6uJ+j2LzWGKcGtjQm8Ito4xtTF?=
+ =?us-ascii?Q?asgk3IblaQOsLVy6YsTNhhJAq7nOJhUe1AsSIemRMN/Q7HgqdQVbHMVJ4Z5M?=
+ =?us-ascii?Q?1DWipNUJ389h02qM/tzHyBYZwAzOBMWmnf5FuXBWhbm53NurhdgyECKY0YpL?=
+ =?us-ascii?Q?+kYbjwS8pFrUSMy4EQ+TpYkcuyBiTfvcb/yTL1I9UwcyRBpBr/oUeXS+LmoU?=
+ =?us-ascii?Q?0EnmOveXAP4pip5v7W4Kd0y/LlB3ZtBh9z++T0f8nhkkoZDshPk4rsIwFyVX?=
+ =?us-ascii?Q?Rs4WU4EJZ0ehwvitE7prP4NsdPVM7bWJ52C3XcYfacTDf8kFwiRe7R5q09Hp?=
+ =?us-ascii?Q?X++YbGkVT2KTP0+v16pu1BVSenyuvXVaH8QhTLFxJ2qoIFZj6SPgN0OGaAvk?=
+ =?us-ascii?Q?psfKAUG/o2wtS48IFji+fZxxjo/3vwRCF0Zt/sQfYpIfBsN79ESJ5InnpqkH?=
+ =?us-ascii?Q?jOMVBujki3/v3ee2cl6KHqWWP5j5fD92aqsMiwwL/NyNAdydqU1xdv6QSX1B?=
+ =?us-ascii?Q?8k2lxe9W7+ShFKS4rqeDfKpkd5lyeKTC+/c89X+9s41ByKt6dFDzCk9CoZk0?=
+ =?us-ascii?Q?UqbIcyUBHg=3D=3D?=
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b2353201-be1f-4826-b9f6-08da4e44934d
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR21MB1223.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2022 20:29:26.7589
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5fofsw3ipmluQeJrjmgeyWvJhaWZzfU2hC1S2z0AYJgHSoWmSt/A4U2e+/G/CTN4l+pn8960piA/qURY5I2h3A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR21MB3314
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paolo,
-Thanks for your time. Please see my answers inline.
+The patch set adds PF and XDP_REDIRECT support.
 
-On Tue, 14 Jun 2022 12:52:42 +0200
-Paolo Abeni <pabeni@redhat.com> wrote:
+Dexuan Cui (1):
+  net: mana: Add the Linux MANA PF driver
 
-> On Sat, 2022-06-11 at 12:47 +0200, Andrea Mayer wrote:
-> > The NEXT-C-SID mechanism described in [1] offers the possibility of
-> > encoding several SRv6 segments within a single 128 bit SID address. Such
-> > a SID address is called a Compressed SID (C-SID) container. In this way,
-> > the length of the SID List can be drastically reduced.
-> > 
-> > A SID instantiated with the NEXT-C-SID flavor considers an IPv6 address
-> > logically structured in three main blocks: i) Locator-Block; ii)
-> > Locator-Node Function; iii) Argument.
-> > 
-> >                         C-SID container
-> > +------------------------------------------------------------------+
-> > >     Locator-Block      |Loc-Node|            Argument            |
-> > >                        |Function|                                |
-> > +------------------------------------------------------------------+
-> > <--------- B -----------> <- NF -> <------------- A --------------->
-> > 
-> >    (i) The Locator-Block can be any IPv6 prefix available to the provider;
-> > 
-> >   (ii) The Locator-Node Function represents the node and the function to
-> >        be triggered when a packet is received on the node;
-> > 
-> >  (iii) The Argument carries the remaining C-SIDs in the current C-SID
-> >        container.
-> > 
-> > The NEXT-C-SID mechanism relies on the "flavors" framework defined in
-> > [2]. The flavors represent additional operations that can modify or
-> > extend a subset of the existing behaviors.
-> > 
-> > This patch introduces the support for flavors in SRv6 End behavior
-> > implementing the NEXT-C-SID one. An SRv6 End behavior with NEXT-C-SID
-> > flavor works as an End behavior but it is capable of processing the
-> > compressed SID List encoded in C-SID containers.
-> > 
-> > An SRv6 End behavior with NEXT-C-SID flavor can be configured to support
-> > user-provided Locator-Block and Locator-Node Function lengths. In this
-> > implementation, such lengths must be evenly divisible by 8 (i.e. must be
-> > byte-aligned), otherwise the kernel informs the user about invalid
-> > values with a meaningful error code and message through netlink_ext_ack.
-> > 
-> > If Locator-Block and/or Locator-Node Function lengths are not provided
-> > by the user during configuration of an SRv6 End behavior instance with
-> > NEXT-C-SID flavor, the kernel will choose their default values i.e.,
-> > 32-bit Locator-Block and 16-bit Locator-Node Function.
-> > 
-> > [1] - https://datatracker.ietf.org/doc/html/draft-ietf-spring-srv6-srh-compression
-> > [2] - https://datatracker.ietf.org/doc/html/rfc8986
-> > 
-> > Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
-> > ---
-> >  include/uapi/linux/seg6_local.h |  24 +++
-> >  net/ipv6/seg6_local.c           | 311 +++++++++++++++++++++++++++++++-
-> >  2 files changed, 332 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/include/uapi/linux/seg6_local.h b/include/uapi/linux/seg6_local.h
-> > index 332b18f318f8..7919940c84d0 100644
-> > --- a/include/uapi/linux/seg6_local.h
-> > +++ b/include/uapi/linux/seg6_local.h
-> > @@ -28,6 +28,7 @@ enum {
-> >  	SEG6_LOCAL_BPF,
-> >  	SEG6_LOCAL_VRFTABLE,
-> >  	SEG6_LOCAL_COUNTERS,
-> > +	SEG6_LOCAL_FLAVORS,
-> >  	__SEG6_LOCAL_MAX,
-> >  };
-> >  #define SEG6_LOCAL_MAX (__SEG6_LOCAL_MAX - 1)
-> > @@ -110,4 +111,27 @@ enum {
-> >  
-> >  #define SEG6_LOCAL_CNT_MAX (__SEG6_LOCAL_CNT_MAX - 1)
-> >  
-> > +/* SRv6 End* Flavor attributes */
-> > +enum {
-> > +	SEG6_LOCAL_FLV_UNSPEC,
-> > +	SEG6_LOCAL_FLV_OPERATION,
-> > +	SEG6_LOCAL_FLV_LCBLOCK_LEN,
-> > +	SEG6_LOCAL_FLV_LCNODE_FN_LEN,
-> > +	__SEG6_LOCAL_FLV_MAX,
-> > +};
-> > +
-> > +#define SEG6_LOCAL_FLV_MAX (__SEG6_LOCAL_FLV_MAX - 1)
-> > +
-> > +/* Designed flavor operations for SRv6 End* Behavior */
-> > +enum {
-> > +	SEG6_LOCAL_FLV_OP_UNSPEC,
-> > +	SEG6_LOCAL_FLV_OP_PSP,
-> > +	SEG6_LOCAL_FLV_OP_USP,
-> > +	SEG6_LOCAL_FLV_OP_USD,
-> > +	SEG6_LOCAL_FLV_OP_NEXT_CSID,
-> > +	__SEG6_LOCAL_FLV_OP_MAX
-> > +};
-> > +
-> > +#define SEG6_LOCAL_FLV_OP_MAX (__SEG6_LOCAL_FLV_OP_MAX - 1)
-> > +
-> >  #endif
-> > diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
-> > index 5ea51ee2ef71..eb31c6c838e3 100644
-> > --- a/net/ipv6/seg6_local.c
-> > +++ b/net/ipv6/seg6_local.c
-> > @@ -73,6 +73,39 @@ struct bpf_lwt_prog {
-> >  	char *name;
-> >  };
-> >  
-> > +/* default length values (expressed in bits) for both Locator-Block and
-> > + * Locator-Node Function.
-> > + *
-> > + * Both SEG6_LOCAL_LCBLOCK_DLEN and SEG6_LOCAL_LCNODE_FN_DLEN *must* be:
-> > + *    i) greater than 0;
-> > + *   ii) evenly divisible by 8. In other terms, the lengths of the
-> > + *	 Locator-Block and Locator-Node Function must be byte-aligned (we can
-> > + *	 relax this constraint in the future if really needed).
-> > + *
-> > + * Moreover, a third condition must hold:
-> > + *  iii) SEG6_LOCAL_LCBLOCK_DLEN + SEG6_LOCAL_LCNODE_FN_DLEN <= 128.
-> > + *
-> > + * The correctness of SEG6_LOCAL_LCBLOCK_DLEN and SEG6_LOCAL_LCNODE_FN_DLEN
-> > + * values are checked during the kernel compilation. If the compilation stops,
-> > + * check the value of these parameters to see if they meet conditions (i), (ii)
-> > + * and (iii).
-> > + */
-> > +#define SEG6_LOCAL_LCBLOCK_DLEN		32
-> > +#define SEG6_LOCAL_LCNODE_FN_DLEN	16
-> > +
-> > +/* Supported Flavor operations are reported in this bitmask */
-> > +#define SEG6_LOCAL_FLV_SUPP_OPS	(BIT(SEG6_LOCAL_FLV_OP_NEXT_CSID))
-> > +
-> > +struct seg6_flavors_info {
-> > +	/* Flavor operations */
-> > +	__u32 flv_ops;
-> > +
-> > +	/* Locator-Block length, expressed in bits */
-> > +	__u8 lcblock_len;
-> > +	/* Locator-Node Function length, expressed in bits*/
-> > +	__u8 lcnode_func_len;
-> 
-> IMHO the above names are misleading. I suggest to use a '_bits' suffix
-> instead.
-> 
+Haiyang Zhang (1):
+  net: mana: Add support of XDP_REDIRECT action
 
-Ok, that looks nice to me, e.g,: lcblock_len -> lcblock_bits.
-I keep the other vars/macros consistent, so for instance:
-SEG6_LOCAL_LCBLOCK_DLEN -> SEG6_LOCAL_LCBLOCK_DBITS.
+ drivers/net/ethernet/microsoft/mana/gdma.h    |  10 ++
+ .../net/ethernet/microsoft/mana/gdma_main.c   |  39 ++++-
+ .../net/ethernet/microsoft/mana/hw_channel.c  |  18 ++-
+ .../net/ethernet/microsoft/mana/hw_channel.h  |   5 +
+ drivers/net/ethernet/microsoft/mana/mana.h    |  70 +++++++++
+ .../net/ethernet/microsoft/mana/mana_bpf.c    |  64 ++++++++
+ drivers/net/ethernet/microsoft/mana/mana_en.c | 148 +++++++++++++++++-
+ .../ethernet/microsoft/mana/mana_ethtool.c    |  12 +-
+ 8 files changed, 360 insertions(+), 6 deletions(-)
 
-We should also update labels such as SEG6_LOCAL_FLV_LCBLOCK_LEN and
-SEG6_LOCAL_FLV_LCNODE_FN_LEN used in netlink messages.
+-- 
+2.25.1
 
-> > +};
-> > +
-> >  enum seg6_end_dt_mode {
-> >  	DT_INVALID_MODE	= -EINVAL,
-> >  	DT_LEGACY_MODE	= 0,
-> > @@ -136,6 +169,8 @@ struct seg6_local_lwt {
-> >  #ifdef CONFIG_NET_L3_MASTER_DEV
-> >  	struct seg6_end_dt_info dt_info;
-> >  #endif
-> > +	struct seg6_flavors_info flv_info;
-> > +
-> >  	struct pcpu_seg6_local_counters __percpu *pcpu_counters;
-> >  
-> >  	int headroom;
-> > @@ -270,8 +305,50 @@ int seg6_lookup_nexthop(struct sk_buff *skb,
-> >  	return seg6_lookup_any_nexthop(skb, nhaddr, tbl_id, false);
-> >  }
-> >  
-> > -/* regular endpoint function */
-> > -static int input_action_end(struct sk_buff *skb, struct seg6_local_lwt *slwt)
-> > +static __u8 seg6_flv_lcblock_octects(const struct seg6_flavors_info *finfo)
-> > +{
-> > +	return finfo->lcblock_len >> 3;
-> > +}
-> > +
-> > +static __u8 seg6_flv_lcnode_func_octects(const struct seg6_flavors_info *finfo)
-> > +{
-> > +	return finfo->lcnode_func_len >> 3;
-> > +}
-> > +
-> > +static bool seg6_next_csid_is_arg_zero(const struct in6_addr *addr,
-> > +				       const struct seg6_flavors_info *finfo)
-> > +{
-> > +	__u8 fnc_octects = seg6_flv_lcnode_func_octects(finfo);
-> > +	__u8 blk_octects = seg6_flv_lcblock_octects(finfo);
-> > +	__u8 arg_octects;
-> > +	int i;
-> > +
-> > +	arg_octects = 16 - blk_octects - fnc_octects;
-> > +	for (i = 0; i < arg_octects; ++i) {
-> > +		if (addr->s6_addr[blk_octects + fnc_octects + i] != 0x00)
-> > +			return false;
-> > +	}
-> > +
-> > +	return true;
-> > +}
-> > +
-> > +/* assume that DA.Argument length > 0 */
-> > +static void seg6_next_csid_advance_arg(struct in6_addr *addr,
-> > +				       const struct seg6_flavors_info *finfo)
-> > +{
-> > +	__u8 fnc_octects = seg6_flv_lcnode_func_octects(finfo);
-> > +	__u8 blk_octects = seg6_flv_lcblock_octects(finfo);
-> > +
-> > +	/* advance DA.Argument */
-> > +	memmove((void *)&addr->s6_addr[blk_octects],
-> > +		(const void *)&addr->s6_addr[blk_octects + fnc_octects],
-> > +		16 - blk_octects - fnc_octects);
-> 
-> The void cast should not be needed
-
-yes.
-
-> 
-> > +
-> > +	memset((void *)&addr->s6_addr[16 - fnc_octects], 0x00, fnc_octects);
-> 
-> Same here.
-> 
-
-yes.
-
-> > +}
-> > +
-> > +static int input_action_end_core(struct sk_buff *skb,
-> > +				 struct seg6_local_lwt *slwt)
-> >  {
-> >  	struct ipv6_sr_hdr *srh;
-> >  
-> > @@ -290,6 +367,38 @@ static int input_action_end(struct sk_buff *skb, struct seg6_local_lwt *slwt)
-> >  	return -EINVAL;
-> >  }
-> >  
-> > +static int end_next_csid_core(struct sk_buff *skb, struct seg6_local_lwt *slwt)
-> > +{
-> > +	const struct seg6_flavors_info *finfo = &slwt->flv_info;
-> > +	struct in6_addr *daddr = &ipv6_hdr(skb)->daddr;
-> > +
-> > +	if (seg6_next_csid_is_arg_zero(daddr, finfo))
-> > +		return input_action_end_core(skb, slwt);
-> > +
-> > +	/* update DA */
-> > +	seg6_next_csid_advance_arg(daddr, finfo);
-> > +
-> > +	seg6_lookup_nexthop(skb, NULL, 0);
-> > +
-> > +	return dst_input(skb);
-> > +}
-> > +
-> > +static bool seg6_next_csid_enabled(__u32 fops)
-> > +{
-> > +	return fops & BIT(SEG6_LOCAL_FLV_OP_NEXT_CSID);
-> > +}
-> > +
-> > +/* regular endpoint function */
-> > +static int input_action_end(struct sk_buff *skb, struct seg6_local_lwt *slwt)
-> > +{
-> > +	const struct seg6_flavors_info *finfo = &slwt->flv_info;
-> > +
-> > +	if (seg6_next_csid_enabled(finfo->flv_ops))
-> > +		return end_next_csid_core(skb, slwt);
-> > +
-> > +	return input_action_end_core(skb, slwt);
-> > +}
-> > +
-> >  /* regular endpoint, and forward to specified nexthop */
-> >  static int input_action_end_x(struct sk_buff *skb, struct seg6_local_lwt *slwt)
-> >  {
-> > @@ -952,7 +1061,8 @@ static struct seg6_action_desc seg6_action_table[] = {
-> >  	{
-> >  		.action		= SEG6_LOCAL_ACTION_END,
-> >  		.attrs		= 0,
-> > -		.optattrs	= SEG6_F_LOCAL_COUNTERS,
-> > +		.optattrs	= SEG6_F_LOCAL_COUNTERS |
-> > +				  SEG6_F_ATTR(SEG6_LOCAL_FLAVORS),
-> >  		.input		= input_action_end,
-> >  	},
-> >  	{
-> > @@ -1133,6 +1243,7 @@ static const struct nla_policy seg6_local_policy[SEG6_LOCAL_MAX + 1] = {
-> >  	[SEG6_LOCAL_OIF]	= { .type = NLA_U32 },
-> >  	[SEG6_LOCAL_BPF]	= { .type = NLA_NESTED },
-> >  	[SEG6_LOCAL_COUNTERS]	= { .type = NLA_NESTED },
-> > +	[SEG6_LOCAL_FLAVORS]	= { .type = NLA_NESTED },
-> >  };
-> >  
-> >  static int parse_nla_srh(struct nlattr **attrs, struct seg6_local_lwt *slwt,
-> > @@ -1552,6 +1663,190 @@ static void destroy_attr_counters(struct seg6_local_lwt *slwt)
-> >  	free_percpu(slwt->pcpu_counters);
-> >  }
-> >  
-> > +static const
-> > +struct nla_policy seg6_local_flavors_policy[SEG6_LOCAL_FLV_MAX + 1] = {
-> > +	[SEG6_LOCAL_FLV_OPERATION]	= { .type = NLA_U32 },
-> > +	[SEG6_LOCAL_FLV_LCBLOCK_LEN]	= { .type = NLA_U8 },
-> > +	[SEG6_LOCAL_FLV_LCNODE_FN_LEN]	= { .type = NLA_U8 },
-> > +};
-> > +
-> > +/* check whether the lengths of the Locator-Block and Locator-Node Function
-> > + * are compatible with the dimension of a C-SID container.
-> > + */
-> > +static int seg6_chk_next_csid_cfg(__u8 block_len, __u8 func_len)
-> > +{
-> > +	/* Locator-Block and Locator-Node Function cannot exceed 128 bits */
-> > +	if (block_len + func_len > 128)
-> > +		return -EINVAL;
-> > +
-> > +	/* Locator-Block length must be greater than zero and evenly divisible
-> > +	 * by 8. There must be room for a Locator-Node Function, at least.
-> > +	 */
-> > +	if (block_len < 8 || block_len > 120 || (block_len & 0x07))
-> 
-> The 'block_len < 8' part is not needed, since you later check the 3
-> less significant bits can't be set and this is an unsigned number.
-> 
-
-Ok, but I need to be sure that block_len must be different from zero. For this
-reason, I will replace 'block_len < 8' with 'block_len == 0'.
-
-> > +		return -EINVAL;
-> > +
-> > +	/* Locator-Node Function length must be greater than zero and evenly
-> > +	 * divisible by 8. There must be room for the Locator-Block.
-> > +	 */
-> > +	if (func_len < 8 || func_len > 120 || (func_len & 0x07))
-> > +		return -EINVAL;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int seg6_parse_nla_next_csid_cfg(struct nlattr **tb,
-> > +					struct seg6_flavors_info *finfo,
-> > +					struct netlink_ext_ack *extack)
-> > +{
-> > +	__u8 func_len = SEG6_LOCAL_LCNODE_FN_DLEN;
-> > +	__u8 block_len = SEG6_LOCAL_LCBLOCK_DLEN;
-> > +	int rc;
-> > +
-> > +	if (tb[SEG6_LOCAL_FLV_LCBLOCK_LEN])
-> > +		block_len = nla_get_u8(tb[SEG6_LOCAL_FLV_LCBLOCK_LEN]);
-> > +
-> > +	if (tb[SEG6_LOCAL_FLV_LCNODE_FN_LEN])
-> > +		func_len = nla_get_u8(tb[SEG6_LOCAL_FLV_LCNODE_FN_LEN]);
-> > +
-> > +	rc = seg6_chk_next_csid_cfg(block_len, func_len);
-> > +	if (rc < 0) {
-> > +		NL_SET_ERR_MSG(extack,
-> > +			       "Invalid Locator Block/Node Function lengths");
-> > +		return rc;
-> > +	}
-> > +
-> > +	finfo->lcblock_len = block_len;
-> > +	finfo->lcnode_func_len = func_len;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int parse_nla_flavors(struct nlattr **attrs, struct seg6_local_lwt *slwt,
-> > +			     struct netlink_ext_ack *extack)
-> > +{
-> > +	struct seg6_flavors_info *finfo = &slwt->flv_info;
-> > +	struct nlattr *tb[SEG6_LOCAL_FLV_MAX + 1];
-> > +	unsigned long fops;
-> > +	int rc;
-> > +
-> > +	rc = nla_parse_nested_deprecated(tb, SEG6_LOCAL_FLV_MAX,
-> > +					 attrs[SEG6_LOCAL_FLAVORS],
-> > +					 seg6_local_flavors_policy, NULL);
-> > +	if (rc < 0)
-> > +		return rc;
-> > +
-> > +	/* this attribute MUST always be present since it represents the Flavor
-> > +	 * operation(s) to carry out.
-> > +	 */
-> > +	if (!tb[SEG6_LOCAL_FLV_OPERATION])
-> > +		return -EINVAL;
-> > +
-> > +	fops = nla_get_u32(tb[SEG6_LOCAL_FLV_OPERATION]);
-> > +	if (~SEG6_LOCAL_FLV_SUPP_OPS & fops) {
-> 
-> Please avoid 'yoda-style' syntax. The compilar warnings will catch the
-> eventual mistakes this is supposed to avoid, and the conventional
-> syntax is more readable.
-> 
-
-Ok, fine!
-
-> > +		NL_SET_ERR_MSG(extack, "Unsupported Flavor operation(s)");
-> > +		return -EOPNOTSUPP;
-> > +	}
-> > +
-> > +	finfo->flv_ops = fops;
-> > +
-> > +	if (seg6_next_csid_enabled(fops)) {
-> > +		/* Locator-Block and Locator-Node Function lengths can be
-> > +		 * provided by the user space. If not, default values are going
-> > +		 * to be applied.
-> > +		 */
-> > +		rc = seg6_parse_nla_next_csid_cfg(tb, finfo, extack);
-> > +		if (rc < 0)
-> > +			return rc;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int seg6_fill_nla_next_csid_cfg(struct sk_buff *skb,
-> > +				       struct seg6_flavors_info *finfo)
-> > +{
-> > +	if (nla_put_u8(skb, SEG6_LOCAL_FLV_LCBLOCK_LEN, finfo->lcblock_len))
-> > +		return -EMSGSIZE;
-> > +
-> > +	if (nla_put_u8(skb, SEG6_LOCAL_FLV_LCNODE_FN_LEN,
-> > +		       finfo->lcnode_func_len))
-> > +		return -EMSGSIZE;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int put_nla_flavors(struct sk_buff *skb, struct seg6_local_lwt *slwt)
-> > +{
-> > +	struct seg6_flavors_info *finfo = &slwt->flv_info;
-> > +	__u32 fops = finfo->flv_ops;
-> > +	struct nlattr *nest;
-> > +	int rc;
-> > +
-> > +	nest = nla_nest_start(skb, SEG6_LOCAL_FLAVORS);
-> > +	if (!nest)
-> > +		return -EMSGSIZE;
-> > +
-> > +	if (nla_put_u32(skb, SEG6_LOCAL_FLV_OPERATION, fops)) {
-> > +		rc = -EMSGSIZE;
-> > +		goto err;
-> > +	}
-> > +
-> > +	if (seg6_next_csid_enabled(fops)) {
-> > +		rc = seg6_fill_nla_next_csid_cfg(skb, finfo);
-> > +		if (rc < 0)
-> > +			goto err;
-> > +	}
-> > +
-> > +	return nla_nest_end(skb, nest);
-> > +
-> > +err:
-> > +	nla_nest_cancel(skb, nest);
-> > +	return rc;
-> > +}
-> > +
-> > +static int seg6_cmp_nla_next_csid_cfg(struct seg6_flavors_info *finfo_a,
-> > +				      struct seg6_flavors_info *finfo_b)
-> > +{
-> > +	if (finfo_a->lcblock_len != finfo_b->lcblock_len)
-> > +		return 1;
-> > +
-> > +	if (finfo_a->lcnode_func_len != finfo_b->lcnode_func_len)
-> > +		return 1;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int cmp_nla_flavors(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
-> > +{
-> > +	struct seg6_flavors_info *finfo_a = &a->flv_info;
-> > +	struct seg6_flavors_info *finfo_b = &b->flv_info;
-> > +
-> > +	if (finfo_a->flv_ops != finfo_b->flv_ops)
-> > +		return 1;
-> > +
-> > +	if (seg6_next_csid_enabled(finfo_a->flv_ops)) {
-> > +		if (seg6_cmp_nla_next_csid_cfg(finfo_a, finfo_b))
-> > +			return 1;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int encap_size_flavors(struct seg6_local_lwt *slwt)
-> > +{
-> > +	struct seg6_flavors_info *finfo = &slwt->flv_info;
-> > +	int nlsize;
-> > +
-> > +	nlsize = nla_total_size(0) +	/* nest SEG6_LOCAL_FLAVORS */
-> > +		 nla_total_size(4);	/* SEG6_LOCAL_FLV_OPERATION */
-> > +
-> > +	if (seg6_next_csid_enabled(finfo->flv_ops))
-> > +		nlsize += nla_total_size(1) + /* SEG6_LOCAL_FLV_LCBLOCK_LEN */
-> > +			  nla_total_size(1);  /* SEG6_LOCAL_FLV_LCNODE_FN_LEN */
-> > +
-> > +	return nlsize;
-> > +}
-> > +
-> >  struct seg6_action_param {
-> >  	int (*parse)(struct nlattr **attrs, struct seg6_local_lwt *slwt,
-> >  		     struct netlink_ext_ack *extack);
-> > @@ -1604,6 +1899,10 @@ static struct seg6_action_param seg6_action_params[SEG6_LOCAL_MAX + 1] = {
-> >  				    .put = put_nla_counters,
-> >  				    .cmp = cmp_nla_counters,
-> >  				    .destroy = destroy_attr_counters },
-> > +
-> > +	[SEG6_LOCAL_FLAVORS]	= { .parse = parse_nla_flavors,
-> > +				    .put = put_nla_flavors,
-> > +				    .cmp = cmp_nla_flavors },
-> >  };
-> >  
-> >  /* call the destroy() callback (if available) for each set attribute in
-> > @@ -1917,6 +2216,9 @@ static int seg6_local_get_encap_size(struct lwtunnel_state *lwt)
-> >  			  /* SEG6_LOCAL_CNT_ERRORS */
-> >  			  nla_total_size_64bit(sizeof(__u64));
-> >  
-> > +	if (attrs & SEG6_F_ATTR(SEG6_LOCAL_FLAVORS))
-> > +		nlsize += encap_size_flavors(slwt);
-> > +
-> >  	return nlsize;
-> >  }
-> >  
-> > @@ -1972,6 +2274,9 @@ int __init seg6_local_init(void)
-> >  	 */
-> >  	BUILD_BUG_ON(SEG6_LOCAL_MAX + 1 > BITS_PER_TYPE(unsigned long));
-> >  
-> > +	BUILD_BUG_ON(seg6_chk_next_csid_cfg(SEG6_LOCAL_LCBLOCK_DLEN,
-> > +					    SEG6_LOCAL_LCNODE_FN_DLEN) != 0);
-> > +
-> 
-> It looks like you are asking too much to the compiler with the above.
-
-Yes, indeed. Definitely, too much :-)
-
-> You can possibly resort open code the relevant test here.
-> 
-
-Do you mean something like that?
-
-int __init_seg6_local(void)
-{
-    [...]
-    rc = seg6_chk_next_csid_cfg(SEG6_LOCAL_LCBLOCK_DLEN,
-                                SEG6_LOCAL_LCNODE_FN_DLEN);
-    if (rc < 0) {
-        WARN(1, "seg6: wrong default Locator-Block/Node Function lengths!");
-        return rc;
-    }
-
-    [...]
-}
-
-In this way, the developer who mangles these macros and recompiles the kernel
-will not receive any warning at compilation time. Later on, when the kernel is
-loaded, the initialization of the inet6 will fail with a log message in the
-dmesg. I am not sure if this is a good failure mode.
-
-A variant of this approach is to issue the warning in the dmesg but continue to
-load the inet6. In this case if the developer changes the values in a wrong
-way, the segment routing next csid will behave in a wrong way (not predictable).
-
----
-
-Another possibility is to skip any check, since these two macro values are not
-supposed to be changed; and if they are changed it is at the risk of the
-developer. 
-
----
-
-There is another possibility that I am trying to implement, which is to create
-three small macros to use in seg6_chk_next_csid_cfg(...) and also with
-BUILD_BUG_ON(...).
-
-Something like that:
-
-#define __ncsid_chk_bits(blen, flen)	      \
-        ((blen) + (flen) > 128)
-
-#define __ncsid_chk_lcblock_bits(blen)        \
-        (!(blen) || (blen) > 120 || ((blen) & 0x07))
-
-#define __ncsid_chk_lcnode_fn_bits(flen)      \
-        __ncsid_chk_lcblock_bits(flen)
-
-int __init_seg6_local(void)
-{
-    [...]
-
-    BUILD_BUG_ON(__ncsid_chk_bits(SEG6_LOCAL_LCBLOCK_DLEN,
-                                  SEG6_LOCAL_LCNODE_FN_DLEN));
-    BUILD_BUG_ON(__ncsid_chk_lcblock_bits(SEG6_LOCAL_LCBLOCK_DLEN));
-    BUILD_BUG_ON(__ncsid_chk_lcnode_fn_bits(SEG6_LOCAL_LCNODE_FN_DLEN));
-
-    [...]
-}
-
-Since these are only and exclusively macros (and by the way they are very
-simple), there should be no problems at compile time.
-This approach looks promising to me.
-
-What do you think is the best approach to take in a case like that?
-
-> It would be great if you could add some self-tests on top of the
-> iproute2 support.
-> 
-
-yes for sure ;-) I will add them to v2.
-
-> Thanks!
-> 
-
-you're welcome! and thanks again for your help.
-
-Andrea
