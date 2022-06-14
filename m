@@ -2,138 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3DB854B627
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 18:31:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42E1A54B63A
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 18:35:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344164AbiFNQaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 12:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45214 "EHLO
+        id S1344163AbiFNQbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 12:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344232AbiFNQal (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 12:30:41 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1F044A02
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 09:30:31 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id d13so8149339plh.13
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 09:30:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6bECSe3JFxq6eJt90PO1NvfTGgvzif21tVQUALk/0nQ=;
-        b=cR40t1LcQdWRDoGUt4sKNpJuBDRfk1j0DVGPE8yYLt6SH5cSqzI2p9beTHOVuYZbVG
-         /qq4uqqevmd4DpkO2pDlX29/Vwi236t24/YRZBygcl+cqAn65iU1gApFs6F1NaNThOfl
-         U9uJ01sZJWRM7stt+HjucNeQGfCa1M1BgqOv9CODa8kLmkYcv92kWglgARlY0pa8k4ap
-         iJLM5Fn+8Ph5lvOY/HZ4nVeDSQNcTY0TRsHCHAQ/xShuWR8zWm8RsXTn5E5bfGRnlZoc
-         tUj/pJQFaMbkgyanlKudoxJq4wXRSeLnez3mWwHFE9WFaCEOYq5nnGCFFdLJEPOTWd7E
-         6upQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6bECSe3JFxq6eJt90PO1NvfTGgvzif21tVQUALk/0nQ=;
-        b=C3WTDokfvIaD6v9B41IaCvvEx9cojZZw9krBft2sQIQQqkENS7rOmfB5IK7jj3P7S/
-         N3NYUyusvLFkZTOXvqhoLA4M0+5bHSSXalv2vKeOG2aUP4v9At0Q9Mb86vQMAAay3hES
-         4RHqj0BdZuAb0NenKJIS9pMyfAEI7vAK3Xy1so88FqQW1w5DTWbMFCwAPpNQV107AkgY
-         pAcClEYpQvMlrmwBGp6xa1D/mCtVk87mMa/WBulXfRGh7GlHkY4EjIgCF9AQ+44hlrWo
-         sIU5Qb5vZbip7xZ+Dzx3bRA5TtwRZr+uw1Isnt+yUEgbeOLh5ox0X0dS3xnkAF2SXz6F
-         5yzg==
-X-Gm-Message-State: AJIora9ND9JSW6xsvO6dyu/hjQN4ngRMqoF8Fk7RpIJu1MIoBZ4Pz+Km
-        QEUaOgW311je084/v9PDv68=
-X-Google-Smtp-Source: AGRyM1tTQ2QdaNJJgD/6ROVtmIkhMLW/6lx+UvoOEMvfZSLuUL94ElFzkOdzJg8nh7ds1uyHY4bJzA==
-X-Received: by 2002:a17:902:7783:b0:167:8245:ea04 with SMTP id o3-20020a170902778300b001678245ea04mr5008419pll.95.1655224231122;
-        Tue, 14 Jun 2022 09:30:31 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:2dbb:8c54:2434:5ada])
-        by smtp.gmail.com with ESMTPSA id p1-20020a170903248100b0016796cdd802sm7506484plw.19.2022.06.14.09.30.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 09:30:30 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 2/2] tcp: fix possible freeze in tx path under memory pressure
-Date:   Tue, 14 Jun 2022 09:30:24 -0700
-Message-Id: <20220614163024.1061106-3-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.36.1.476.g0c4daa206d-goog
-In-Reply-To: <20220614163024.1061106-1-eric.dumazet@gmail.com>
-References: <20220614163024.1061106-1-eric.dumazet@gmail.com>
+        with ESMTP id S243064AbiFNQbg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 12:31:36 -0400
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D82443C9;
+        Tue, 14 Jun 2022 09:31:35 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:56828)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1o19S2-00AmWn-9i; Tue, 14 Jun 2022 10:31:34 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:40454 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1o19S0-009rSu-TN; Tue, 14 Jun 2022 10:31:33 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Frederick Lawler <fred@cloudflare.com>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-cachefs@redhat.com, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, linux-mm@kvack.org,
+        linux-nfs@vger.kernel.org, linux-unionfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        keyrings@vger.kernel.org, selinux@vger.kernel.org,
+        serge@hallyn.com, amir73il@gmail.com, kernel-team@cloudflare.com,
+        Jeff Moyer <jmoyer@redhat.com>,
+        Paul Moore <paul@paul-moore.com>
+References: <20220608150942.776446-1-fred@cloudflare.com>
+        <87tu8oze94.fsf@email.froward.int.ebiederm.org>
+        <e1b62234-9b8a-e7c2-2946-5ef9f6f23a08@cloudflare.com>
+        <87y1xzyhub.fsf@email.froward.int.ebiederm.org>
+        <859cb593-9e96-5846-2191-6613677b07c5@cloudflare.com>
+Date:   Tue, 14 Jun 2022 11:30:54 -0500
+In-Reply-To: <859cb593-9e96-5846-2191-6613677b07c5@cloudflare.com> (Frederick
+        Lawler's message of "Tue, 14 Jun 2022 11:06:24 -0500")
+Message-ID: <87o7yvxl4x.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-XM-SPF: eid=1o19S0-009rSu-TN;;;mid=<87o7yvxl4x.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX19OwrPXsW8XkXxckntCYt4oo3aNKl7qziA=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
+X-Spam-DCC: XMission; sa04 1397; Body=1 Fuz1=1 Fuz2=1 
+X-Spam-Combo: *****;Frederick Lawler <fred@cloudflare.com>
+X-Spam-Relay-Country: 
+X-Spam-Timing: total 748 ms - load_scoreonly_sql: 0.04 (0.0%),
+        signal_user_changed: 10 (1.3%), b_tie_ro: 9 (1.2%), parse: 0.81 (0.1%),
+         extract_message_metadata: 10 (1.4%), get_uri_detail_list: 2.1 (0.3%),
+        tests_pri_-1000: 18 (2.4%), tests_pri_-950: 1.02 (0.1%),
+        tests_pri_-900: 0.85 (0.1%), tests_pri_-90: 303 (40.5%), check_bayes:
+        299 (39.9%), b_tokenize: 8 (1.1%), b_tok_get_all: 11 (1.5%),
+        b_comp_prob: 2.8 (0.4%), b_tok_touch_all: 271 (36.3%), b_finish: 1.36
+        (0.2%), tests_pri_0: 387 (51.7%), check_dkim_signature: 0.80 (0.1%),
+        check_dkim_adsp: 2.9 (0.4%), poll_dns_idle: 0.91 (0.1%), tests_pri_10:
+        3.9 (0.5%), tests_pri_500: 11 (1.5%), rewrite_mail: 0.00 (0.0%)
+Subject: Re: [PATCH v3] cred: Propagate security_prepare_creds() error code
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+Frederick Lawler <fred@cloudflare.com> writes:
 
-Blamed commit only dealt with applications issuing small writes.
+> On 6/13/22 11:44 PM, Eric W. Biederman wrote:
+>> Frederick Lawler <fred@cloudflare.com> writes:
+>> 
+>>> Hi Eric,
+>>>
+>>> On 6/13/22 12:04 PM, Eric W. Biederman wrote:
+>>>> Frederick Lawler <fred@cloudflare.com> writes:
+>>>>
+>>>>> While experimenting with the security_prepare_creds() LSM hook, we
+>>>>> noticed that our EPERM error code was not propagated up the callstack.
+>>>>> Instead ENOMEM is always returned.  As a result, some tools may send a
+>>>>> confusing error message to the user:
+>>>>>
+>>>>> $ unshare -rU
+>>>>> unshare: unshare failed: Cannot allocate memory
+>>>>>
+>>>>> A user would think that the system didn't have enough memory, when
+>>>>> instead the action was denied.
+>>>>>
+>>>>> This problem occurs because prepare_creds() and prepare_kernel_cred()
+>>>>> return NULL when security_prepare_creds() returns an error code. Later,
+>>>>> functions calling prepare_creds() and prepare_kernel_cred() return
+>>>>> ENOMEM because they assume that a NULL meant there was no memory
+>>>>> allocated.
+>>>>>
+>>>>> Fix this by propagating an error code from security_prepare_creds() up
+>>>>> the callstack.
+>>>> Why would it make sense for security_prepare_creds to return an error
+>>>> code other than ENOMEM?
+>>>>   > That seems a bit of a violation of what that function is supposed to do
+>>>>
+>>>
+>>> The API allows LSM authors to decide what error code is returned from the
+>>> cred_prepare hook. security_task_alloc() is a similar hook, and has its return
+>>> code propagated.
+>> It is not an api.  It is an implementation detail of the linux kernel.
+>> It is a set of convenient functions that do a job.
+>> The general rule is we don't support cases without an in-tree user.  I
+>> don't see an in-tree user.
+>> 
+>>> I'm proposing we follow security_task_allocs() pattern, and add visibility for
+>>> failure cases in prepare_creds().
+>> I am asking why we would want to.  Especially as it is not an API, and I
+>> don't see any good reason for anything but an -ENOMEM failure to be
+>> supported.
+>>
+> We're writing a LSM BPF policy, and not a new LSM. Our policy aims to solve
+> unprivileged unshare, similar to Debian's patch [1]. We're in a position such
+> that we can't use that patch because we can't block _all_ of our applications
+> from performing an unshare. We prefer a granular approach. LSM BPF seems like a
+> good choice.
 
-Issue here is that we allow to force memory schedule for the sk_buff
-allocation, but we have no guarantee that sendmsg() is able to
-copy some payload in it.
+I am quite puzzled why doesn't /proc/sys/user/max_user_namespaces work
+for you?
 
-In this patch, I make sure the socket can use up to tcp_wmem[0] bytes.
+> Because LSM BPF exposes these hooks, we should probably treat them as an
+> API. From that perspective, userspace expects unshare to return a EPERM 
+> when the call is denied permissions.
 
-For example, if we consider tcp_wmem[0] = 4096 (default on x86),
-and initial skb->truesize being 1280, tcp_sendmsg() is able to
-copy up to 2816 bytes under memory pressure.
+The BPF code gets to be treated as a out of tree kernel module.
 
-Before this patch a sendmsg() sending more than 2816 bytes
-would either block forever (if persistent memory pressure),
-or return -EAGAIN.
+>> Without an in-tree user that cares it is probably better to go the
+>> opposite direction and remove the possibility of return anything but
+>> memory allocation failure.  That will make it clearer to implementors
+>> that a general error code is not supported and this is not a location
+>> to implement policy, this is only a hook to allocate state for the LSM.
+>> 
+>
+> That's a good point, and it's possible we're using the wrong hook for the
+> policy. Do you know of other hooks we can look into?
 
-For bigger MTU networks, it is advised to increase tcp_wmem[0]
-to avoid sending too small packets.
+Not off the top of my head.
 
-Fixes: 8e4d980ac215 ("tcp: fix behavior for epoll edge trigger")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/tcp.c | 18 ++++++++++++++++--
- 1 file changed, 16 insertions(+), 2 deletions(-)
+>>>> I have probably missed a very interesting discussion where that was
+>>>> mentioned but I don't see link to the discussion or anything explaining
+>>>> why we want to do that in this change.
+>>>>
+>>>
+>>> AFAIK, this is the start of the discussion.
+>> You were on v3 and had an out of tree piece of code so I assumed someone
+>> had at least thought about why you want to implement policy in a piece
+>> of code whose only purpose is to allocate memory to store state.
+>> 
+>
+> No worries.
+>
+>> Eric
+>> 
+>> 
+>
+> Links:
+> 1:
+> https://sources.debian.org/patches/linux/3.16.56-1+deb8u1/debian/add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch/
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 14ebb4ec4a51f3c55501aa53423ce897599e8637..78698a7693e4a475155e1a4237b8708b53166c1e 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1334,10 +1334,24 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 
- 			copy = min_t(int, copy, pfrag->size - pfrag->offset);
- 
--			if (tcp_downgrade_zcopy_pure(sk, skb) ||
--			    !sk_wmem_schedule(sk, copy))
-+			if (tcp_downgrade_zcopy_pure(sk, skb))
- 				goto wait_for_space;
-+			if (unlikely(!sk_wmem_schedule(sk, copy))) {
-+				int left;
- 
-+				/* We are in trouble if we have nothing queued.
-+				 * Use whatever is left in sk->sk_forward_alloc
-+				 * and tcp_wmem[0] to guarantee some progress.
-+				 */
-+				left = sock_net(sk)->ipv4.sysctl_tcp_wmem[0] -
-+				       sk->sk_wmem_queued;
-+				if (left > 0)
-+					sk_forced_mem_schedule(sk, min(left, copy));
-+
-+				copy = min(copy, sk->sk_forward_alloc);
-+				if (!copy)
-+					goto wait_for_space;
-+			}
- 			err = skb_copy_to_page_nocache(sk, &msg->msg_iter, skb,
- 						       pfrag->page,
- 						       pfrag->offset,
--- 
-2.36.1.476.g0c4daa206d-goog
-
+Eric
