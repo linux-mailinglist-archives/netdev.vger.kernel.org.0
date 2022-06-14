@@ -2,176 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76E4754A9FE
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 09:06:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4C1F54AA0A
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 09:08:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352875AbiFNHGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 03:06:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
+        id S1351797AbiFNHHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 03:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352880AbiFNHGK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 03:06:10 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2049.outbound.protection.outlook.com [40.107.100.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8360439152;
-        Tue, 14 Jun 2022 00:06:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZIE+8K7w2a8sQl/68P26ky1T/0EiZ2q8lhGp0c4AS8YraJzSFwxEJB69WTtCNe3FpN878CbWIh89brejyruWK2uL8317zlG//ayfRmBDml/8ZYxySey72AC6xTJYz6OkGIYyLxefoEQhquhFtKMxaaCUGYcgbF4Z7l7/gsoK9lua1MOgGD0CZ1mXZPF8Fcez93HGv9/h6wbRp6ylxSg0OvuO+fqjJ1ep6kaGoBpRq1K/rOdFtCuKIOShWvRbstTQUN+hrGQP6eF84Lm07NnW4XoosfNdNte4qoNU7IAuTsPcIS2flnPEh8LNA8qPWf/FiL62tZ8eiT1FuQ9yvhmULw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PHlovPQM623JKq+skc9ev2nlKcbWd4ia+Ipb3nj6ZXg=;
- b=gSQGMiPI5+DDsEjsX4CdLxIMT9dsp7SS6TGU2MttPXZ2nJuHoBX0ut+a2RMbKCQohcLIq88Z3JrSZOsGm1PTtMAREwet20Uns9cOlnBBK9I9WrwPkzIw5nBzBzWEGbuF7nispmmgeM4+zNRMfPflr/svA5y7C/pQXzVqY+H/ibnv6REnoCRQ6Rjh1qh2y/17Rft+oJivSYI4wSANlKDKH9d+4eiONq+1vE66Cvh4P1G2FQpb5AeRKZjt6vQxv1IKJIB4qW62nQCYLDzPnaGsvrvbcbiKQKmsXjJj5sHrT7P0kclAiWjSDfzhvBxzN1rgF6hPh6n4/UKswFIGEjNRfg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PHlovPQM623JKq+skc9ev2nlKcbWd4ia+Ipb3nj6ZXg=;
- b=RH7fkMskxZicv/s7Hy2zPDGnizn2O1HgjfUenZ1Zpl1RRdy2Un0FJ9tUTOi2I9WwlMMd0r2Wonc2oGkbYH+RIpXy9cVNKJemHpfgQTbJeJtxytRF3Z9+uig/BJsU60mvBTkWBmsaNk4Uo+wttogosXiB2e57XY4qJ9ohlCylWOI=
-Received: from MN0PR12MB5953.namprd12.prod.outlook.com (2603:10b6:208:37c::15)
- by DM5PR12MB1835.namprd12.prod.outlook.com (2603:10b6:3:10c::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.17; Tue, 14 Jun
- 2022 07:06:06 +0000
-Received: from MN0PR12MB5953.namprd12.prod.outlook.com
- ([fe80::cd5c:e903:573f:bda5]) by MN0PR12MB5953.namprd12.prod.outlook.com
- ([fe80::cd5c:e903:573f:bda5%8]) with mapi id 15.20.5332.020; Tue, 14 Jun 2022
- 07:06:06 +0000
-From:   "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>
-To:     Colin Ian King <colin.i.king@gmail.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michal Simek <michal.simek@xilinx.com>,
+        with ESMTP id S234595AbiFNHHA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 03:07:00 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316063A180
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 00:06:59 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1o10dV-0008My-OX; Tue, 14 Jun 2022 09:06:49 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1o10dT-0007Uk-Kn; Tue, 14 Jun 2022 09:06:47 +0200
+Date:   Tue, 14 Jun 2022 09:06:47 +0200
+From:   "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
+To:     Ping-Ke Shih <pkshih@realtek.com>
+Cc:     "linux@ulli-kroll.de" <linux@ulli-kroll.de>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH][next] net: axienet: Fix spelling mistake "archecture" ->
- "architecture"
-Thread-Topic: [PATCH][next] net: axienet: Fix spelling mistake "archecture" ->
- "architecture"
-Thread-Index: AQHYf7qLrK3I0ppY9kGitv3iJjsf9q1OesCA
-Date:   Tue, 14 Jun 2022 07:06:05 +0000
-Message-ID: <MN0PR12MB5953B90BD59411B6A95A72EAB7AA9@MN0PR12MB5953.namprd12.prod.outlook.com>
-References: <20220614064647.47598-1-colin.i.king@gmail.com>
-In-Reply-To: <20220614064647.47598-1-colin.i.king@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ActionId=61f19263-e0d9-44ad-9632-000001f6e3c1;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_ContentBits=0;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Enabled=true;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Method=Standard;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_Name=General;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SetDate=2022-06-14T07:05:18Z;MSIP_Label_4342314e-0df4-4b58-84bf-38bed6170a0f_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 586e34b8-3100-4620-4234-08da4dd459c1
-x-ms-traffictypediagnostic: DM5PR12MB1835:EE_
-x-microsoft-antispam-prvs: <DM5PR12MB1835ECE780B18506A0A9A33CB7AA9@DM5PR12MB1835.namprd12.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: mmaxcOEkloei3keqAWYPmsLR6QQugpne7f6YE7Lc3WgIOBSkaeLCEGiPuhfr2w7Ckm7yDoaNRRb+w98bo2WJVATtOeO4IT72FIQT7CXRzq/4nSx5iXeF6oGBFVNdty5Ozp4zLBPDMgBnbnHkL7Llc5YSsq9TrwRrP5TKkV8ALFhRiZDZs42Gzg26piPVdC6alTheOhfv/0oGAXmfuo/V4ZukLZXWmzFqq7qN8BIXWyKI8UBdRGzhU4TAN6cjoM14r/klb1dHa2HOWiUjOpXMFMwUieKNZ8vIyKOmsrCo4BcITy5wn4ErYhfeJ92VzKIjlKQYofrNMj1Bbo+Mo/xPCEvL63vTIF8yEdtzoRyHzBuzZCX0ZsPNp3gZ+Cvlh+0LAOfLPddl4F3mKJsSdmrDTmovddoIzxZEcej7/p0TD39pPlpNzlXrDXPKkH0B1IB/1t0UMztqnkGiob+JN7fV8UvBU9mbLU+HvOnxGFVdKcHR692yi+pKDM/BThCbjDm0ORbuq5gwTlpJZxv9/4sRo8dqsQMML/5xLMuxDDiFu1eP7ioKBUQhpN8jiGCo2CAftEMlL0KxuB7v5yGLJgMrh4HTndmaDrjDUtGkfoxefcJbpGSyxL0vyCtzJAOoCroHgg1JKK6sJED2WWMzJGsmGRtfxCR/JuLFlfdHjBlEl+WzQVlLdAWsEadjnrdh5+U2epNmjxdHKDFPnnKywT09Pw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR12MB5953.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(86362001)(8676002)(55016003)(4326008)(66446008)(64756008)(5660300002)(38070700005)(66476007)(76116006)(8936002)(66946007)(66556008)(52536014)(508600001)(2906002)(110136005)(33656002)(316002)(38100700002)(54906003)(71200400001)(9686003)(186003)(53546011)(6506007)(7696005)(83380400001)(122000001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 2
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZDhzMUw3bTFGQXhEQVR6YzRwWFhsaHJ4aitiQ3VDL05KSDZucGYwV254OEdy?=
- =?utf-8?B?MUtxbEVYenJEVFExa2ZiV3I4V0xlclIzVmNlKzAzZ01rUnh5UVNlckgyTGRi?=
- =?utf-8?B?ZFpNNDBWVFNreHYrRUdFVkt2bHY4eTJ5cHR2V0s5c2RjRjhiUXNucjRkUWlv?=
- =?utf-8?B?ekJKRDdDWkFSWmNoTjdVNEc3czFUT0oyb3lENTFBYWJid3ZQWDg0YWRmRnNk?=
- =?utf-8?B?ZmFmUG8wcFJHa01sMGh2NzdSL2pmbER5UnYzVEhEeTA3cnVhM0hEd01VaUJV?=
- =?utf-8?B?dW11RFJWaFdROXpPOVg3NHRIa2FaNkVyek5PM1ZaSFl3bFVVVXdxQ3Q5UnY5?=
- =?utf-8?B?a01ZV0gyL2dEZGFLbUwrYjRYRzVGYmp4dC9Fc0c5U3p2a0lyNkdVU3Bvc0pO?=
- =?utf-8?B?blVvV0R6Umw3SnlvTFBhS3NFOTl1K2dxVmx2ZUdiN2VEbzZIS2MwQURQMUc5?=
- =?utf-8?B?by9hM1FrWnJQWlcxNHpUcmRZWmhidzc4VnZCbjZOazlybmNMTWJZa1cxRUMv?=
- =?utf-8?B?Zng3K09nQ1pqblNJN3BwcDZ3elFVZlcwQmFSWGEzYmljd3ZZc2YrYWF4TzJF?=
- =?utf-8?B?U1g3Y3BiRmlaZWszVE5BRUxWNGVjOTR5d1BUV2NJR093d0Mrc2h2eUlNTkFN?=
- =?utf-8?B?ZGRkMEtjRk9DTmtZeWMzWXdjdWNMMzdTVDlxN1RBM1B2THZqZ05TbFFXbjEr?=
- =?utf-8?B?S0pSUkZZSFVZbTBNNHMvTGcwdGszdUNVTXhzRis3NVBUd25kYXh1b2hlbkM5?=
- =?utf-8?B?Mkh0dmdCTEV5V09nU0J6R2pmemJsemtScVJrekhNb3h6YlIyYi9vVDJCZTlV?=
- =?utf-8?B?VVVwSmg4dnhoWlUzL2c1eFNobnVldE5ScVJvU0tIamx4NVdxQVQvQnIvS3hw?=
- =?utf-8?B?MC9kdGxBR1lpRExlRnhVWWNGUy9tNzAvWU5CSXFJR0FvSTUreTlHUmRrRm9G?=
- =?utf-8?B?emsrZkMzdmdSN3AzU2t2a0hrRFFSQXVGaVZic0E4V2lldDlNUlI3bFhzWi85?=
- =?utf-8?B?WFgxQzJoZFg2REd4NGYvQnU4TmcxWGwwRzRCdk8rVGxyVFZrUkNyNWZwd1A1?=
- =?utf-8?B?NFlTZDlpRTdBWG5GQkZ1c1psU0NMdksyR3BkVmk4VlVpbUd6dkdaMmV4c09r?=
- =?utf-8?B?WE81MEZ4aS9lMG5lSmxrNTJxUWQ2a1VTRDd6aURVRFRnNnA4NEU3Nlg2eUhG?=
- =?utf-8?B?VDdjcS9IOHhqQVREVm94bjJjYk4xbFJEdzJOSEZLM1ZQTDJIWmJseGJvYlRh?=
- =?utf-8?B?Mjk4N2xqZzA4akRCTHFwUU0rTnJGaFMyYkc2dDNRVEN5V05TY1JyOGpndEU1?=
- =?utf-8?B?QTAxT0lvTkNOQ0prM1Q0TENPMWhlR2MrRWhBTWlkQUJleCs1OXo2SkpSWHk1?=
- =?utf-8?B?RytKYkRTWVdYWmVURElOOEgwUjJXemkrUHdDL0lkV3FBbUJ3ZlRBdjY0SVhD?=
- =?utf-8?B?QUxnZlRDRkdxWUNYYStTUUhJMWpjTFFvNUtoUzVzanN3QXFWYnRJYlhVTytE?=
- =?utf-8?B?c0RtSXkrdGZzOXRnS2ZQUENld3JpUU9XV3o5aWdNMVNTd3hJRW9MSnJKWEJZ?=
- =?utf-8?B?aE1TcnFzdmhQbGk2Z1dWTG1PNFM1aXY0KzBRZ3pNRWd2WmZzM0k3WGJrK3dZ?=
- =?utf-8?B?U3pYUU5PWStvRGZvTS85eUdXbWt2VEFDdlhaRjZjN2NFVGw1RUIvaldGV3F5?=
- =?utf-8?B?MjlrM3RrTDJCdFZYQjZvc0xXbVJITlB6Z2kyNUFSY0VFeVo3VGtrVnNwT1Jl?=
- =?utf-8?B?Q0ZtN0dZUlpyZ0x6Wlh3SnZ0U2FuRjNqMWc2aHc0OTdZbUFzaTE3SERLZGpo?=
- =?utf-8?B?STV1ZmtTbzZCSUxtYUZHd1UySEg4QUh1Y0dwQTIxTXBDMGl3R2dIRkFBejhy?=
- =?utf-8?B?QVpmZEVwMEpzZWsxT0lEQ3VZcGZMblRuY2VlUER6eTRORDhwUE8zU01wcGtC?=
- =?utf-8?B?bjcvNG94bmdibmhlSGVQcWVzSEx1S2ZVRk5XOXVPMXR1cksrUlh2Z3c4SmRz?=
- =?utf-8?B?WTg2VitOY2JDV0dITys4VC9uTlBPS0xVQnhCRmFrNGd1MW1BSDJ2ajcvVEdW?=
- =?utf-8?B?Q2N4YkR6NE00bTh4KzJ5dDQyaHNTMVRPZVMvQ3RoUVR4NzFub2JYRzhOVUp4?=
- =?utf-8?B?VWNweW8wVXEvRUxodEgybTBrK3lkbFZTeHNUK2E2dEhuSkNmOXFyUG5SWmNy?=
- =?utf-8?B?WmJ4YlNCb0hrQmlvZ1lrUkpORTd1TkRBRjBvZ1MzTDJTVEZ6eGdyTW1tN0hT?=
- =?utf-8?B?a0Y2OUxYUkFuUE0vV1BVZjBuNk5QM1JFMTBpdHkrWmtmdG5ySHk2U3VtK2NY?=
- =?utf-8?B?Z052TnlFVUFjL2tyQWdPaW5Vc1AzcjEzY09hbnZUbWc1MC9lL2psVkEzZUt6?=
- =?utf-8?Q?XOsiOkRmIxNfVOGC+pfBBhh8LmhPTb47t+EmiC+Mdv85i?=
-x-ms-exchange-antispam-messagedata-1: ekPKdWzKsYqTzA==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "neojou@gmail.com" <neojou@gmail.com>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>
+Subject: Re: [PATCH v2 10/10] rtw88: disable powersave modes for USB devices
+Message-ID: <20220614070647.GP1615@pengutronix.de>
+References: <20220530135457.1104091-1-s.hauer@pengutronix.de>
+ <20220530135457.1104091-11-s.hauer@pengutronix.de>
+ <1493412d473614dfafd4c03832e71f86831fa43b.camel@realtek.com>
+ <20220531074244.GN1615@pengutronix.de>
+ <8443f8e51774a4f80fed494321fcc410e7174bf1.camel@realtek.com>
+ <20220610132627.GO1615@pengutronix.de>
+ <5ee547c352caee7c2ba8c0f541a305abeef0af9c.camel@realtek.com>
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN0PR12MB5953.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 586e34b8-3100-4620-4234-08da4dd459c1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jun 2022 07:06:06.0121
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vtwyidvyrbXfxgaVbVNXO2z7hW4N/ClEA6421rkNI26/UQI8BZ+sND0WeJqq6NSa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1835
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5ee547c352caee7c2ba8c0f541a305abeef0af9c.camel@realtek.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-W0FNRCBPZmZpY2lhbCBVc2UgT25seSAtIEdlbmVyYWxdDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNz
-YWdlLS0tLS0NCj4gRnJvbTogQ29saW4gSWFuIEtpbmcgPGNvbGluLmkua2luZ0BnbWFpbC5jb20+
-DQo+IFNlbnQ6IFR1ZXNkYXksIEp1bmUgMTQsIDIwMjIgMTI6MTcgUE0NCj4gVG86IFJhZGhleSBT
-aHlhbSBQYW5kZXkgPHJhZGhleS5zaHlhbS5wYW5kZXlAeGlsaW54LmNvbT47IERhdmlkIFMgLg0K
-PiBNaWxsZXIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+OyBFcmljIER1bWF6ZXQgPGVkdW1hemV0QGdv
-b2dsZS5jb20+Ow0KPiBKYWt1YiBLaWNpbnNraSA8a3ViYUBrZXJuZWwub3JnPjsgUGFvbG8gQWJl
-bmkgPHBhYmVuaUByZWRoYXQuY29tPjsNCj4gTWljaGFsIFNpbWVrIDxtaWNoYWwuc2ltZWtAeGls
-aW54LmNvbT47IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWFybS0NCj4ga2VybmVsQGxp
-c3RzLmluZnJhZGVhZC5vcmcNCj4gQ2M6IGtlcm5lbC1qYW5pdG9yc0B2Z2VyLmtlcm5lbC5vcmc7
-IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogW1BBVENIXVtuZXh0XSBu
-ZXQ6IGF4aWVuZXQ6IEZpeCBzcGVsbGluZyBtaXN0YWtlICJhcmNoZWN0dXJlIiAtPg0KPiAiYXJj
-aGl0ZWN0dXJlIg0KPg0KPiBDQVVUSU9OOiBUaGlzIG1lc3NhZ2UgaGFzIG9yaWdpbmF0ZWQgZnJv
-bSBhbiBFeHRlcm5hbCBTb3VyY2UuIFBsZWFzZSB1c2UNCj4gcHJvcGVyIGp1ZGdtZW50IGFuZCBj
-YXV0aW9uIHdoZW4gb3BlbmluZyBhdHRhY2htZW50cywgY2xpY2tpbmcgbGlua3MsIG9yDQo+IHJl
-c3BvbmRpbmcgdG8gdGhpcyBlbWFpbC4NCj4NCj4NCj4gVGhlcmUgaXMgYSBzcGVsbGluZyBtaXN0
-YWtlIGluIGEgZGV2X2VyciBtZXNzYWdlLiBGaXggaXQuDQo+DQo+IFNpZ25lZC1vZmYtYnk6IENv
-bGluIElhbiBLaW5nIDxjb2xpbi5pLmtpbmdAZ21haWwuY29tPg0KDQpSZXZpZXdlZC1ieTogUmFk
-aGV5IFNoeWFtIFBhbmRleSA8cmFkaGV5LnNoeWFtLnBhbmRleUBhbWQuY29tPg0KDQo+IC0tLQ0K
-PiAgZHJpdmVycy9uZXQvZXRoZXJuZXQveGlsaW54L3hpbGlueF9heGllbmV0X21haW4uYyB8IDIg
-Ky0NCj4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQ0KPg0K
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQveGlsaW54L3hpbGlueF9heGllbmV0
-X21haW4uYw0KPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3hpbGlueC94aWxpbnhfYXhpZW5ldF9t
-YWluLmMNCj4gaW5kZXggZmE3YmNkMmMxODkyLi44N2E2MjAwNzMwMzEgMTAwNjQ0DQo+IC0tLSBh
-L2RyaXZlcnMvbmV0L2V0aGVybmV0L3hpbGlueC94aWxpbnhfYXhpZW5ldF9tYWluLmMNCj4gKysr
-IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQveGlsaW54L3hpbGlueF9heGllbmV0X21haW4uYw0KPiBA
-QCAtMjAzOCw3ICsyMDM4LDcgQEAgc3RhdGljIGludCBheGllbmV0X3Byb2JlKHN0cnVjdCBwbGF0
-Zm9ybV9kZXZpY2UNCj4gKnBkZXYpDQo+ICAgICAgICAgICAgICAgICB9DQo+ICAgICAgICAgfQ0K
-PiAgICAgICAgIGlmICghSVNfRU5BQkxFRChDT05GSUdfNjRCSVQpICYmIGxwLT5mZWF0dXJlcyAm
-DQo+IFhBRV9GRUFUVVJFX0RNQV82NEJJVCkgew0KPiAtICAgICAgICAgICAgICAgZGV2X2Vycigm
-cGRldi0+ZGV2LCAiNjQtYml0IGFkZHJlc3NhYmxlIERNQSBpcyBub3QgY29tcGF0aWJsZSB3aXRo
-DQo+IDMyLWJpdCBhcmNoZWN0dXJlXG4iKTsNCj4gKyAgICAgICAgICAgICAgIGRldl9lcnIoJnBk
-ZXYtPmRldiwgIjY0LWJpdCBhZGRyZXNzYWJsZSBETUEgaXMgbm90IGNvbXBhdGlibGUgd2l0aA0K
-PiAzMi1iaXQgYXJjaGl0ZWN0dXJlXG4iKTsNCj4gICAgICAgICAgICAgICAgIGdvdG8gY2xlYW51
-cF9jbGs7DQo+ICAgICAgICAgfQ0KPg0KPiAtLQ0KPiAyLjM1LjMNCg0K
+On Mon, Jun 13, 2022 at 12:02:23AM +0000, Ping-Ke Shih wrote:
+> On Fri, 2022-06-10 at 15:26 +0200, s.hauer@pengutronix.de wrote:
+> > On Thu, Jun 09, 2022 at 12:51:49PM +0000, Ping-Ke Shih wrote:
+> > > 
+> > > Today, I borrow a 8822cu, and use your patchset but revert
+> > > patch 10/10 to reproduce this issue. With firmware 7.3.0,
+> > > it looks bad. After checking something about firmware, I
+> > > found the firmware is old, so upgrade to 9.9.11, and then
+> > > it works well for 10 minutes, no abnormal messages.
+> > 
+> > I originally used firmware 5.0.0. Then I have tried 9.9.6 I have lying
+> > around here from my distro. That version behaves like the old 5.0.0
+> > version. Finally I switched to 9.9.11 from current linux-firmware
+> > repository. That doesn't work at all for me unfortunately:
+> > 
+> > [  221.076279] rtw_8822cu 2-1:1.2: Firmware version 9.9.11, H2C version 15
+> > [  221.078405] rtw_8822cu 2-1:1.2: Firmware version 9.9.4, H2C version 15
+> > [  239.783261] wlan0: authenticate with 76:83:c2:ce:83:0b
+> > [  242.398435] wlan0: send auth to 76:83:c2:ce:83:0b (try 1/3)
+> > [  242.402992] wlan0: authenticated
+> > [  242.420735] wlan0: associate with 76:83:c2:ce:83:0b (try 1/3)
+> > [  242.437094] wlan0: RX AssocResp from 76:83:c2:ce:83:0b (capab=0x1411 status=0 aid=4)
+> > [  242.485521] wlan0: associated
+> > [  242.564847] wlan0: Connection to AP 76:83:c2:ce:83:0b lost
+> > [  244.577617] wlan0: authenticate with 76:83:c2:cd:83:0b
+> > [  244.578257] wlan0: bad VHT capabilities, disabling VHT
+> > 
+> > This goes on forever. I finally tried 9.9.10 and 9.9.9, they also behave
+> > like 9.9.11.
+> > 
+> 
+> Please help do more experiements on your 8822cu with the
+> latest firmware 9.9.11.
+> 
+> 1. which module RFE type you are using?
+>    My 8822cu is RFE type 4.
+>    Get this information from 
+> 
+>    cat /sys/kernel/debug/ieee80211/phyXXX/rtw88/coex_info
+> 
+>    The 4th line:
+>    Mech/ RFE                                = Non-Shared/ 4  
+
+I have:
+
+Mech/ RFE                                = Shared/ 3
+
+As you mention this I remember that I added this hunk to rtw8822c.c:
+
+@@ -4895,6 +4916,8 @@ static const struct rtw_rfe_def rtw8822c_rfe_defs[] = {
+        [0] = RTW_DEF_RFE(8822c, 0, 0),
+        [1] = RTW_DEF_RFE(8822c, 0, 0),
+        [2] = RTW_DEF_RFE(8822c, 0, 0),
++       [3] = RTW_DEF_RFE(8822c, 0, 0),
++       [4] = RTW_DEF_RFE(8822c, 0, 0),
+        [5] = RTW_DEF_RFE(8822c, 0, 5),
+        [6] = RTW_DEF_RFE(8822c, 0, 0),
+ };
+
+I copied [4] from Hans Ulli Krolls repository, but the [3] entry needed
+for my hardware I made up myself. I don't know if that's correct and
+what difference it makes, but I stopped thinking about it when I
+realized that it works.
+
+> 
+> 4. Disable power save to see if it still disconnect from AP
+> 
+>    iw wlan0 set power_save off
+> 
+>    If this can work well, still power save mode works abnormal.
+
+With powersave disabled it still doesn't work.
+
+> 
+> 3. Disable keep-alive. (with power_save on)
+> 
+> --- a/main.c
+> +++ b/main.c
+> @@ -2199,6 +2199,7 @@ int rtw_register_hw(struct rtw_dev *rtwdev, struct ieee80211_hw *hw)
+>         ieee80211_hw_set(hw, HAS_RATE_CONTROL);
+>         ieee80211_hw_set(hw, TX_AMSDU);
+>         ieee80211_hw_set(hw, SINGLE_SCAN_ON_ALL_BANDS);
+> +       ieee80211_hw_set(hw, CONNECTION_MONITOR);
+> 
+>    This can make it still connected even it doesn't receive anything.
+>    Check if it can leave power save without abnormal messages.
+> 
+> 4. USB interference
+> 
+>    Very low possibility, but simply try USB 2.0 and 3.0 ports.
+
+Surprisingly this really makes a difference. I have a EHCI port which I
+used up to now. One other port is behind a XHCI controller and on that
+port the device behaves much better, but still far from perfect.
+
+> 
+> 5. Try another AP working on different band (2.4GHz or 5Ghz)
+
+I have tried two access points in both 2.4GHt and 5GHz bands. That
+doesn't make any significant difference.
+
+Some other things I saw yesterday during testing:
+
+I've seen this more than once:
+
+[  249.914750] rtw_8822cu 4-1:1.2: error beacon valid
+[  249.914890] rtw_8822cu 4-1:1.2: Download probe request to firmware failed
+[  249.914903] rtw_8822cu 4-1:1.2: Update probe request failed
+[  249.925005] rtw_8822cu 4-1:1.2: HW scan failed with status: -16
+[  251.246244] rtw_8822cu 4-1:1.2: error beacon valid
+[  251.246387] rtw_8822cu 4-1:1.2: Download probe request to firmware failed
+[  251.246400] rtw_8822cu 4-1:1.2: Update probe request failed
+[  251.255539] rtw_8822cu 4-1:1.2: HW scan failed with status: -16
+[  262.611263] rtw_8822cu 4-1:1.2: error beacon valid
+
+With powersave enabled I saw this while pinging the device from a remote
+host:
+
+64 bytes from 192.168.0.196: icmp_seq=304 ttl=64 time=169 ms
+64 bytes from 192.168.0.196: icmp_seq=305 ttl=64 time=15405 ms
+64 bytes from 192.168.0.196: icmp_seq=306 ttl=64 time=14395 ms
+64 bytes from 192.168.0.196: icmp_seq=307 ttl=64 time=13371 ms
+64 bytes from 192.168.0.196: icmp_seq=310 ttl=64 time=10300 ms
+64 bytes from 192.168.0.196: icmp_seq=311 ttl=64 time=9276 ms
+64 bytes from 192.168.0.196: icmp_seq=312 ttl=64 time=8252 ms
+64 bytes from 192.168.0.196: icmp_seq=313 ttl=64 time=7229 ms
+64 bytes from 192.168.0.196: icmp_seq=314 ttl=64 time=6205 ms
+64 bytes from 192.168.0.196: icmp_seq=315 ttl=64 time=5181 ms
+64 bytes from 192.168.0.196: icmp_seq=316 ttl=64 time=4154 ms
+64 bytes from 192.168.0.196: icmp_seq=317 ttl=64 time=3130 ms
+64 bytes from 192.168.0.196: icmp_seq=318 ttl=64 time=2110 ms
+64 bytes from 192.168.0.196: icmp_seq=319 ttl=64 time=1087 ms
+64 bytes from 192.168.0.196: icmp_seq=320 ttl=64 time=63.8 ms
+
+You see that we have a 16s lag and then all of a sudden the answer to 16
+ping packets come in at once.
+
+This all looks very erratic now. I would be grateful for hints where I
+could look at. In the meantime I see if I get get another rtl8822cu wifi
+dongle to see if my hardware is bad.
+
+Sascha
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
