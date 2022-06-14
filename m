@@ -2,185 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA43A54AD4E
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 11:25:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20AEA54AD61
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 11:29:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231867AbiFNJZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 05:25:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37832 "EHLO
+        id S240380AbiFNJ0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 05:26:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230352AbiFNJZg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 05:25:36 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86E3BB
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 02:25:35 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id l18so9006615lje.13
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 02:25:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=NUnNqs5BWBRw5HkDi4UFw7CWZZjMxEc5U/JahmS/1Yk=;
-        b=idOdSvvdb9OD8raYxuUWxg/rCkCTKPMeJA9MK6YWw8WIO0vDA+MzZ3/R58UiWt7iTn
-         tst7nOw0oOZcrWll2QRu7k8Yh0Kqo9Hno4PWfDIiwAsx92vDLtqfJrnTNFX7hco5w0m6
-         43KCaW/CWCg81gqlZsbUBTDve4hk7ikm80BYZVwxtoevqg3vE61G+OUnk5svxr/TFkQs
-         jDyczD4s35xDv/2Y1ZUgzMvtJDSZlApBj5Ent7eCYYyp+aoGo2NYXbTb4oxOJRKoplVW
-         qouaLojlfLzfSX1l4c3ynLVhPFupikTT0Cazej8FKisDIyWgvi3jNnFSXr/Szp+4xpDQ
-         De4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=NUnNqs5BWBRw5HkDi4UFw7CWZZjMxEc5U/JahmS/1Yk=;
-        b=Eca3W40LiJ9Bwf/ZxC+xWIHGCeJCyBFKwluqLJGNtY0KU1svHsKnYHL/VEdLWCilMc
-         0UcZXYLZP7LwM0q2E8Hth4IOcNP/MeO/BpRIEezO9z+kSDnGFJDV6q2Nxk0yJp1gG608
-         DffgAymOCaSseyzqZXWMjkxFvOxJknwm6hUKkdLKZRRng7+Zq6vviuJgDEt8gX9n5Jt2
-         4TiziTj4Zfk1TZBlXM/qy/nnD5s2asKRvrWSw4DlGtXcEHeQKQJb+8Z+3WN4acaoOwvt
-         l+dHbME1ohbTzT46Q98kyjVJ5m3+eh+3TUgZ4GnEc5CuwKyCIMkkDftTLvIRPWQMmFPh
-         PBgA==
-X-Gm-Message-State: AJIora8CmzqcfIhAZCkzygUP5h9EjDv8n5pJImoVx9g2/eImNxBKOJw5
-        4ZWA8CnrG690pAm86TgWfhU=
-X-Google-Smtp-Source: AGRyM1slWfexxGNwu/aKFSOS2SSHrca1Ma8N98bR28HlHPzVmZVyt8VCOEWP/WFsEGVjFCVQvuQFCg==
-X-Received: by 2002:a2e:a552:0:b0:255:a378:72db with SMTP id e18-20020a2ea552000000b00255a37872dbmr1963997ljn.504.1655198734036;
-        Tue, 14 Jun 2022 02:25:34 -0700 (PDT)
-Received: from wse-c0155.labs.westermo.se (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id a25-20020a05651c031900b002554dde32bfsm1298799ljp.47.2022.06.14.02.25.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 02:25:33 -0700 (PDT)
-From:   Casper Andersson <casper.casan@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org
-Subject: [PATCH net-next] net: sparx5: Allow mdb entries to both CPU and ports
-Date:   Tue, 14 Jun 2022 11:25:32 +0200
-Message-Id: <20220614092532.3273791-1-casper.casan@gmail.com>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230352AbiFNJ0g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 05:26:36 -0400
+Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id F3DB4E028;
+        Tue, 14 Jun 2022 02:26:31 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [106.117.76.43])
+        by mail-app4 (Coremail) with SMTP id cS_KCgD3XyMlVKhiihHXAQ--.18766S2;
+        Tue, 14 Jun 2022 17:26:06 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-hams@vger.kernel.org, pabeni@redhat.com
+Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thomas@osterried.de,
+        Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net v5] net: ax25: Fix deadlock caused by skb_recv_datagram in ax25_recvmsg
+Date:   Tue, 14 Jun 2022 17:25:57 +0800
+Message-Id: <20220614092557.6713-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cS_KCgD3XyMlVKhiihHXAQ--.18766S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxZw43ZFyfAF1kWFy3KFW3Jrb_yoWrWrW3pF
+        yUKF18Wr4kJrW29r43tFWDXr4fZ3ZakFy7XrWxX34xAF9rW3WrXryrtr4jy3yjgrZ8A347
+        tF1qga18Kr13WaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4U
+        JVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
+        n2kIc2xKxwCY02Avz4vE14v_GFWl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr
+        0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY
+        17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcV
+        C0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY
+        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa
+        73UjIFyTuYvjfUeLvtDUUUU
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgsBAVZdtaNBvQAEss
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,
+        RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Allow mdb entries to be forwarded to CPU and be switched at the same
-time. Only remove entry when no port and the CPU isn't part of the group
-anymore.
+The skb_recv_datagram() in ax25_recvmsg() will hold lock_sock
+and block until it receives a packet from the remote. If the client
+doesn`t connect to server and calls read() directly, it will not
+receive any packets forever. As a result, the deadlock will happen.
 
-Signed-off-by: Casper Andersson <casper.casan@gmail.com>
+The fail log caused by deadlock is shown below:
+
+[  369.606973] INFO: task ax25_deadlock:157 blocked for more than 245 seconds.
+[  369.608919] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+[  369.613058] Call Trace:
+[  369.613315]  <TASK>
+[  369.614072]  __schedule+0x2f9/0xb20
+[  369.615029]  schedule+0x49/0xb0
+[  369.615734]  __lock_sock+0x92/0x100
+[  369.616763]  ? destroy_sched_domains_rcu+0x20/0x20
+[  369.617941]  lock_sock_nested+0x6e/0x70
+[  369.618809]  ax25_bind+0xaa/0x210
+[  369.619736]  __sys_bind+0xca/0xf0
+[  369.620039]  ? do_futex+0xae/0x1b0
+[  369.620387]  ? __x64_sys_futex+0x7c/0x1c0
+[  369.620601]  ? fpregs_assert_state_consistent+0x19/0x40
+[  369.620613]  __x64_sys_bind+0x11/0x20
+[  369.621791]  do_syscall_64+0x3b/0x90
+[  369.622423]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+[  369.623319] RIP: 0033:0x7f43c8aa8af7
+[  369.624301] RSP: 002b:00007f43c8197ef8 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
+[  369.625756] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f43c8aa8af7
+[  369.626724] RDX: 0000000000000010 RSI: 000055768e2021d0 RDI: 0000000000000005
+[  369.628569] RBP: 00007f43c8197f00 R08: 0000000000000011 R09: 00007f43c8198700
+[  369.630208] R10: 0000000000000000 R11: 0000000000000246 R12: 00007fff845e6afe
+[  369.632240] R13: 00007fff845e6aff R14: 00007f43c8197fc0 R15: 00007f43c8198700
+
+This patch replaces skb_recv_datagram() with an open-coded variant of it
+releasing the socket lock before the __skb_wait_for_more_packets() call
+and re-acquiring it after such call in order that other functions that
+need socket lock could be executed.
+
+what's more, the socket lock will be released only when recvmsg() will
+block and that should produce nicer overall behavior.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Suggested-by: Thomas Osterried <thomas@osterried.de>
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Reported-by: Thomas Habets <thomas@@habets.se>
+Acked-by: Paolo Abeni <pabeni@redhat.com>
 ---
- .../microchip/sparx5/sparx5_switchdev.c       | 55 ++++++++++++-------
- 1 file changed, 35 insertions(+), 20 deletions(-)
+Changes in v5:
+  - Correct Fixes tag.
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
-index 3429660cd2e5..40ef9fad3a77 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
-@@ -394,12 +394,10 @@ static int sparx5_handle_port_mdb_add(struct net_device *dev,
- 	struct sparx5 *spx5 = port->sparx5;
- 	u16 pgid_idx, vid;
- 	u32 mact_entry;
-+	bool is_host;
- 	int res, err;
+ net/ax25/af_ax25.c | 33 ++++++++++++++++++++++++++++-----
+ 1 file changed, 28 insertions(+), 5 deletions(-)
+
+diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+index 95393bb2760..4c7030ed8d3 100644
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -1661,9 +1661,12 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 			int flags)
+ {
+ 	struct sock *sk = sock->sk;
+-	struct sk_buff *skb;
++	struct sk_buff *skb, *last;
++	struct sk_buff_head *sk_queue;
+ 	int copied;
+ 	int err = 0;
++	int off = 0;
++	long timeo;
  
--	if (netif_is_bridge_master(v->obj.orig_dev)) {
--		sparx5_mact_learn(spx5, PGID_CPU, v->addr, v->vid);
--		return 0;
--	}
-+	is_host = netif_is_bridge_master(v->obj.orig_dev);
- 
- 	/* When VLAN unaware the vlan value is not parsed and we receive vid 0.
- 	 * Fall back to bridge vid 1.
-@@ -416,17 +414,33 @@ static int sparx5_handle_port_mdb_add(struct net_device *dev,
- 
- 		/* MC_IDX starts after the port masks in the PGID table */
- 		pgid_idx += SPX5_PORTS;
--		sparx5_pgid_update_mask(port, pgid_idx, true);
-+
-+		if (is_host)
-+			spx5_rmw(ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA_SET(1),
-+				 ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA, spx5,
-+				 ANA_AC_PGID_MISC_CFG(pgid_idx));
-+		else
-+			sparx5_pgid_update_mask(port, pgid_idx, true);
-+
- 	} else {
- 		err = sparx5_pgid_alloc_mcast(spx5, &pgid_idx);
- 		if (err) {
- 			netdev_warn(dev, "multicast pgid table full\n");
- 			return err;
- 		}
--		sparx5_pgid_update_mask(port, pgid_idx, true);
-+
-+		if (is_host)
-+			spx5_rmw(ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA_SET(1),
-+				 ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA, spx5,
-+				 ANA_AC_PGID_MISC_CFG(pgid_idx));
-+		else
-+			sparx5_pgid_update_mask(port, pgid_idx, true);
-+
- 		err = sparx5_mact_learn(spx5, pgid_idx, v->addr, vid);
-+
- 		if (err) {
- 			netdev_warn(dev, "could not learn mac address %pM\n", v->addr);
-+			sparx5_pgid_free(spx5, pgid_idx);
- 			sparx5_pgid_update_mask(port, pgid_idx, false);
- 			return err;
- 		}
-@@ -463,13 +477,8 @@ static int sparx5_handle_port_mdb_del(struct net_device *dev,
- 	struct sparx5_port *port = netdev_priv(dev);
- 	struct sparx5 *spx5 = port->sparx5;
- 	u16 pgid_idx, vid;
--	u32 mact_entry, res, pgid_entry[3];
--	int err;
--
--	if (netif_is_bridge_master(v->obj.orig_dev)) {
--		sparx5_mact_forget(spx5, v->addr, v->vid);
--		return 0;
--	}
-+	u32 mact_entry, res, pgid_entry[3], misc_cfg;
-+	bool host_ena;
- 
- 	if (!br_vlan_enabled(spx5->hw_bridge_dev))
- 		vid = 1;
-@@ -483,15 +492,21 @@ static int sparx5_handle_port_mdb_del(struct net_device *dev,
- 
- 		/* MC_IDX starts after the port masks in the PGID table */
- 		pgid_idx += SPX5_PORTS;
--		sparx5_pgid_update_mask(port, pgid_idx, false);
-+
-+		if (netif_is_bridge_master(v->obj.orig_dev))
-+			spx5_rmw(ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA_SET(0),
-+				 ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA, spx5,
-+				 ANA_AC_PGID_MISC_CFG(pgid_idx));
-+		else
-+			sparx5_pgid_update_mask(port, pgid_idx, false);
-+
-+		misc_cfg = spx5_rd(spx5, ANA_AC_PGID_MISC_CFG(pgid_idx));
-+		host_ena = ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA_GET(misc_cfg);
- 
- 		sparx5_pgid_read_mask(spx5, pgid_idx, pgid_entry);
--		if (bitmap_empty((unsigned long *)pgid_entry, SPX5_PORTS)) {
--			/* No ports are in MC group. Remove entry */
--			err = sparx5_mdb_del_entry(dev, spx5, v->addr, vid, pgid_idx);
--			if (err)
--				return err;
--		}
-+		if (bitmap_empty((unsigned long *)pgid_entry, SPX5_PORTS) && !host_ena)
-+			/* No ports or CPU are in MC group. Remove entry */
-+			return sparx5_mdb_del_entry(dev, spx5, v->addr, vid, pgid_idx);
+ 	lock_sock(sk);
+ 	/*
+@@ -1675,10 +1678,29 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 		goto out;
  	}
  
- 	return 0;
+-	/* Now we can treat all alike */
+-	skb = skb_recv_datagram(sk, flags, &err);
+-	if (skb == NULL)
+-		goto out;
++	/*  We need support for non-blocking reads. */
++	sk_queue = &sk->sk_receive_queue;
++	skb = __skb_try_recv_datagram(sk, sk_queue, flags, &off, &err, &last);
++	/* If no packet is available, release_sock(sk) and try again. */
++	if (!skb) {
++		if (err != -EAGAIN)
++			goto out;
++		release_sock(sk);
++		timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
++		while (timeo && !__skb_wait_for_more_packets(sk, sk_queue, &err,
++							     &timeo, last)) {
++			skb = __skb_try_recv_datagram(sk, sk_queue, flags, &off,
++						      &err, &last);
++			if (skb)
++				break;
++
++			if (err != -EAGAIN)
++				goto done;
++		}
++		if (!skb)
++			goto done;
++		lock_sock(sk);
++	}
+ 
+ 	if (!sk_to_ax25(sk)->pidincl)
+ 		skb_pull(skb, 1);		/* Remove PID */
+@@ -1725,6 +1747,7 @@ static int ax25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ out:
+ 	release_sock(sk);
+ 
++done:
+ 	return err;
+ }
+ 
 -- 
-2.30.2
+2.17.1
 
