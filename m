@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BD5154B8B2
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 20:34:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B95C54B8B5
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 20:35:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232990AbiFNSer (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 14:34:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53128 "EHLO
+        id S233932AbiFNSfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 14:35:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232024AbiFNSeq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 14:34:46 -0400
+        with ESMTP id S232024AbiFNSf3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 14:35:29 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4292D48E78
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 11:34:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E3E49247
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 11:35:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ZAf46MHIlpiYiISuQ+pc0VZ/hLiIAOmVXaMY8kchKE8=; b=vQAmlb1Fn+yqxI+wsdoCtl2WN8
-        +chzMbRzKEbrLWEqEUe2QfxfyyYzRtdi7FmjBY24OFTxp4RgC5F4V7c9I6+IaKNKprOPOKAC2HGFM
-        akWY+wbTRYjkE8YrZQzk0XXm9b4Lf0lxY96T/VIxlJe5Zu8WI3vu0ZQdrjd/sInySJKc=;
+        bh=dBkEEd248AvhEprohYpKJwaI27mGM0U77VL/j4YEOFc=; b=oYp91S+cyjmHHxHJnTOD3JBaE6
+        QebcK8TjtxDEvjtNGYe5D/N8KNPTRmGYmSt/PP8CXY/+1KwVg3bzge0EBAGZIhjt4p/B9O2SBmL2X
+        L7pUI4uTwYXcbaAg4vgzVDQz+r6XSEmESUUPqUVn9Yr7kPzdtsB7Z6O3j7AbA2A5E2xU=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1o1BMz-006v2z-Bh; Tue, 14 Jun 2022 20:34:29 +0200
-Date:   Tue, 14 Jun 2022 20:34:29 +0200
+        id 1o1BNq-006v3x-9o; Tue, 14 Jun 2022 20:35:22 +0200
+Date:   Tue, 14 Jun 2022 20:35:22 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
@@ -38,15 +38,14 @@ Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
         Robert Hancock <robert.hancock@calian.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next 01/15] net: phylink: fix SGMII inband autoneg
- enable
-Message-ID: <YqjUtYrHW5qQlVft@lunn.ch>
+Subject: Re: [PATCH net-next 02/15] net: phylink: add phylink_pcs_inband()
+Message-ID: <YqjU6mjXBQNJOvyB@lunn.ch>
 References: <Yqc0lxn3ngWSuvdS@shell.armlinux.org.uk>
- <E1o0jg9-000JY6-Vx@rmk-PC.armlinux.org.uk>
+ <E1o0jgF-000JYC-49@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <E1o0jg9-000JY6-Vx@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1o0jgF-000JYC-49@rmk-PC.armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -56,15 +55,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 02:00:25PM +0100, Russell King (Oracle) wrote:
-> When we are operating in SGMII inband mode, it implies that there is a
-> PHY connected, and the ethtool advertisement for autoneg applies to
-> the PHY, not the SGMII link. When in 1000base-X mode, then this applies
-> to the 802.3z link and needs to be applied to the PCS.
+On Mon, Jun 13, 2022 at 02:00:31PM +0100, Russell King (Oracle) wrote:
+> Add phylink_pcs_inband() to indicate whether the PCS should be using
+> inband signalling.
 > 
-> Fix this.
-> 
-> Fixes: 92817dad7dcb ("net: phylink: Support disabling autonegotiation for PCS")
 > Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
