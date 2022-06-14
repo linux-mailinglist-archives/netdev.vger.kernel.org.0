@@ -2,293 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 181BE54B847
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 20:09:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7F5754B867
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 20:17:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345055AbiFNSI4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 14:08:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60000 "EHLO
+        id S245051AbiFNSRk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 14:17:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344504AbiFNSIy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 14:08:54 -0400
-Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE3F3C714
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 11:08:53 -0700 (PDT)
-Received: by mail-vs1-xe2c.google.com with SMTP id i186so9725772vsc.9
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 11:08:53 -0700 (PDT)
+        with ESMTP id S232321AbiFNSRj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 14:17:39 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B354C10578;
+        Tue, 14 Jun 2022 11:17:38 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id fu3so18748884ejc.7;
+        Tue, 14 Jun 2022 11:17:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pRdR+xRMmt1QXy1pe9HshArx6EwPgO8pBECswj5Lg1A=;
-        b=FqfaJ3JVB0qbOGTbSLyVcc0kKVvkncKzd3idsnJS7nlf3rjQB/l2upEVs1yySEZuLv
-         xiM6H4X6UVoEyLjR8LAsuJdaaWGntPX9ONj9p/SqvlVKFeKFNIa3+Z9YueJ3zriUancb
-         eoUvOlp8nKs7YLXgW3XeQ9yBpi2SpBML4UUFWYHEReFNL4JWtUDojaBc8DSGQzk4zfjJ
-         FbiiMOZpzUktdNhRZGYjQQckyW7C0KP/vI2u3qo6MbJJw1MTpZaF+wHLqYxGk0xvqPrt
-         wLWhea/Z7JYLCr7UVyzWEx5Sx4xteejrXwvKjLB2wuZ3lMoYUBVQNS8aNeOEzjhsw1ed
-         DZYw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zlxLQghINcwpBBsM0/p3CcCOZ7i22A2lnQ7cKrK2rr8=;
+        b=CAjCuZSPmDBEdogayl9o3yMowg7yRBFTWik3utSQS1qfrquhV5xZzaYg8pfFCQQL9b
+         D8C0Sb++YzZHG8FnX32WlMJUgKWGTpKYouCxXCP+mEuRrkaBMzKW7wS91pYk6vtAaV0P
+         m/JPsbKZ93uaiDfcVFphsRUL35/w0+D2KXwkM7dezeHJOQLETlVibqmjAiAseaCP0yWS
+         awiTfy0BflEIHu+TuKNcJh8gCd6RH85XDcQGlBdMEl8D+XoWvUyQJW1xmP1Hn++rM4S+
+         kH61pQBLGsLwstv+W3FG0vuWerIY02BGqT8zV/W7OdfV95UPpzWwfa8L6NgTn7gDEfgN
+         UPxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pRdR+xRMmt1QXy1pe9HshArx6EwPgO8pBECswj5Lg1A=;
-        b=lFzhxG3UozxlSv6N8jlr4p1GH9+p21cKg18APBrKe8bLhWmQvO1vHNPTDVvLkS7KFH
-         h5/92BoJ4NpMRxikQrMmjSMt9s83SQwASz3dy19NkSGm4M4iTClZ9mzyjc0oV1Ua/5yT
-         JxlfkuxrHtUT4MPVPjFEAgOwM5Fw1Ry9UcNJN+gglTSFIyy1sGfWf+zzZVMwSTI3vQFf
-         0NlXC0hq/m2qvtCwd+DwQZQjSlFVd6xBgphahyNljdmVR0Oonpf/qQrO9J2XhSxDrCWR
-         vOz74OU1XHLI7mISou412wEb0H9ByPdogpmRFr9xzBucG6YYUEadR6O2w2YbH5TRvuD9
-         r4Qw==
-X-Gm-Message-State: AJIora8+Z7OfOpm7xa3VVImn8SWAgbeaF32hlXqkcDrVRipSs6BJkTHr
-        s0fSn659S7wDFpqCAqLKRd3dt/WS3aAhFNnkf+YUYR2NkwY=
-X-Google-Smtp-Source: AGRyM1t9ZUKhAKJ2UJ3HgNUFwUEy4I+3w2JLZnvfcNC+uxqfpCwNQZhBWLqdeYOt7uPi3F12TfZnRbQPo/u1WDCMf6Y=
-X-Received: by 2002:a05:6102:31bc:b0:34c:6b01:60e4 with SMTP id
- d28-20020a05610231bc00b0034c6b0160e4mr2897163vsh.50.1655230132472; Tue, 14
- Jun 2022 11:08:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220611021646.1578080-1-joannelkoong@gmail.com>
- <20220611021646.1578080-3-joannelkoong@gmail.com> <5b6a4415-c4f-254c-3c54-7fa0dfde32e9@linux.intel.com>
- <0789de291023a1664d2b198075af6ce6a9245c6e.camel@redhat.com>
-In-Reply-To: <0789de291023a1664d2b198075af6ce6a9245c6e.camel@redhat.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Tue, 14 Jun 2022 11:08:41 -0700
-Message-ID: <CAJnrk1b7F6LMwA9wK-xyimVcGB8mNSn94fL8_Z0SwWnd0uqcmg@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 2/3] net: Add bhash2 hashbucket locks
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        netdev <netdev@vger.kernel.org>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zlxLQghINcwpBBsM0/p3CcCOZ7i22A2lnQ7cKrK2rr8=;
+        b=fejBygwv5qUcBBSvadJbI/u5egUDhpWT4CQxHSLdTx54RbZcyU1INnuMN3VWFbAk9B
+         a+ayJjfAY55Da3cWCt0ZZyN9XHQfpvPwcIHBbOF8fVt6cnsm8BBOemduttVrY0DBrzoe
+         y4o+0ka2WHJFNkNTGnoc589H0ZPgrpdVmldCQ+dA58ELjdKUyPuijtrBTp2U/ivrf/SX
+         opaRa2PAWyKmapxVsjY49qKdkkaifV/XMDw8oA8aGvnE1yxeD03qWfXqe+NpDnn2L5N+
+         +Idfzc7/RCCOLYKcPWjAmFh6F6zmrIGFTPYimzipyhZivFrXdjq6VEBhyTy9P2+qGZ8k
+         KLIw==
+X-Gm-Message-State: AOAM5317F9EoFaf8IkBiBOYL9trgSIhbgi9WzG/RC0IntGzPaf9R3AFl
+        /VMWoHYhVyxFuASC3Z1bwtU=
+X-Google-Smtp-Source: AGRyM1tCfHvLfmDn+3dB7UiGXXttKkmfLmtQmjvy2DFT6tieK/C/0AxeAt4s2uzn+aQ2pKNPx3GHJA==
+X-Received: by 2002:a17:906:52c7:b0:6ce:a880:50a3 with SMTP id w7-20020a17090652c700b006cea88050a3mr5431791ejn.437.1655230657145;
+        Tue, 14 Jun 2022 11:17:37 -0700 (PDT)
+Received: from linuxdev2.toradex.int (31-10-206-125.static.upc.ch. [31.10.206.125])
+        by smtp.gmail.com with ESMTPSA id q4-20020a50aa84000000b0042617ba638esm7558884edc.24.2022.06.14.11.17.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 11:17:36 -0700 (PDT)
+From:   Max Krummenacher <max.oss.09@gmail.com>
+To:     max.krummenacher@toradex.com,
+        Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v1] Revert "Bluetooth: core: Fix missing power_on work cancel on HCI close"
+Date:   Tue, 14 Jun 2022 20:17:06 +0200
+Message-Id: <20220614181706.26513-1-max.oss.09@gmail.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 7:12 AM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> On Mon, 2022-06-13 at 15:12 -0700, Mat Martineau wrote:
-> > On Fri, 10 Jun 2022, Joanne Koong wrote:
-> >
-> > > Currently, the bhash2 hashbucket uses its corresponding bhash
-> > > hashbucket's lock for serializing concurrent accesses. There,
-> > > however, can be the case where the bhash2 hashbucket is accessed
-> > > concurrently by multiple processes that hash to different bhash
-> > > hashbuckets but to the same bhash2 hashbucket.
-> > >
-> > > As such, each bhash2 hashbucket will need to have its own lock
-> > > instead of using its corresponding bhash hashbucket's lock.
-> > >
-> > > Fixes: d5a42de8bdbe ("net: Add a second bind table hashed by port and address")
-> > > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
-> > > ---
-> > > include/net/inet_hashtables.h   |  25 +++----
-> > > net/dccp/proto.c                |   3 +-
-> > > net/ipv4/inet_connection_sock.c |  60 +++++++++-------
-> > > net/ipv4/inet_hashtables.c      | 119 +++++++++++++++-----------------
-> > > net/ipv4/tcp.c                  |   7 +-
-> > > 5 files changed, 107 insertions(+), 107 deletions(-)
-> > >
-> > > diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-> > > index 2c331ce6ca73..c5b112f0938b 100644
-> > > --- a/include/net/inet_hashtables.h
-> > > +++ b/include/net/inet_hashtables.h
-> > > @@ -124,15 +124,6 @@ struct inet_bind_hashbucket {
-> > >     struct hlist_head       chain;
-> > > };
-> > >
-> > > -/* This is synchronized using the inet_bind_hashbucket's spinlock.
-> > > - * Instead of having separate spinlocks, the inet_bind2_hashbucket can share
-> > > - * the inet_bind_hashbucket's given that in every case where the bhash2 table
-> > > - * is useful, a lookup in the bhash table also occurs.
-> > > - */
-> > > -struct inet_bind2_hashbucket {
-> > > -   struct hlist_head       chain;
-> > > -};
-> > > -
-> > > /* Sockets can be hashed in established or listening table.
-> > >  * We must use different 'nulls' end-of-chain value for all hash buckets :
-> > >  * A socket might transition from ESTABLISH to LISTEN state without
-> > > @@ -169,7 +160,7 @@ struct inet_hashinfo {
-> > >      * conflicts.
-> > >      */
-> > >     struct kmem_cache               *bind2_bucket_cachep;
-> > > -   struct inet_bind2_hashbucket    *bhash2;
-> > > +   struct inet_bind_hashbucket     *bhash2;
-> > >     unsigned int                    bhash_size;
-> > >
-> > >     /* The 2nd listener table hashed by local port and address */
-> > > @@ -240,7 +231,7 @@ static inline bool check_bind_bucket_match(struct inet_bind_bucket *tb,
-> > >
-> > > struct inet_bind2_bucket *
-> > > inet_bind2_bucket_create(struct kmem_cache *cachep, struct net *net,
-> > > -                    struct inet_bind2_hashbucket *head,
-> > > +                    struct inet_bind_hashbucket *head,
-> > >                      const unsigned short port, int l3mdev,
-> > >                      const struct sock *sk);
-> > >
-> > > @@ -248,12 +239,12 @@ void inet_bind2_bucket_destroy(struct kmem_cache *cachep,
-> > >                            struct inet_bind2_bucket *tb);
-> > >
-> > > struct inet_bind2_bucket *
-> > > -inet_bind2_bucket_find(struct inet_hashinfo *hinfo, struct net *net,
-> > > +inet_bind2_bucket_find(struct inet_bind_hashbucket *head,
-> > > +                  struct inet_hashinfo *hinfo, struct net *net,
-> > >                    const unsigned short port, int l3mdev,
-> > > -                  struct sock *sk,
-> > > -                  struct inet_bind2_hashbucket **head);
-> > > +                  struct sock *sk);
-> > >
-> > > -bool check_bind2_bucket_match_nulladdr(struct inet_bind2_bucket *tb,
-> > > +bool check_bind2_bucket_match_addr_any(struct inet_bind2_bucket *tb,
-> > >                                    struct net *net,
-> > >                                    const unsigned short port,
-> > >                                    int l3mdev,
-> > > @@ -265,6 +256,10 @@ static inline u32 inet_bhashfn(const struct net *net, const __u16 lport,
-> > >     return (lport + net_hash_mix(net)) & (bhash_size - 1);
-> > > }
-> > >
-> > > +struct inet_bind_hashbucket *
-> > > +inet_bhashfn_portaddr(struct inet_hashinfo *hinfo, const struct sock *sk,
-> > > +                 const struct net *net, unsigned short port);
-> > > +
-> > > void inet_bind_hash(struct sock *sk, struct inet_bind_bucket *tb,
-> > >                 struct inet_bind2_bucket *tb2, const unsigned short snum);
-> > >
-> > > diff --git a/net/dccp/proto.c b/net/dccp/proto.c
-> > > index 2e78458900f2..f4f2ad5f9c08 100644
-> > > --- a/net/dccp/proto.c
-> > > +++ b/net/dccp/proto.c
-> > > @@ -1182,7 +1182,7 @@ static int __init dccp_init(void)
-> > >             goto out_free_dccp_locks;
-> > >     }
-> > >
-> > > -   dccp_hashinfo.bhash2 = (struct inet_bind2_hashbucket *)
-> > > +   dccp_hashinfo.bhash2 = (struct inet_bind_hashbucket *)
-> > >             __get_free_pages(GFP_ATOMIC | __GFP_NOWARN, bhash_order);
-> > >
-> > >     if (!dccp_hashinfo.bhash2) {
-> > > @@ -1193,6 +1193,7 @@ static int __init dccp_init(void)
-> > >     for (i = 0; i < dccp_hashinfo.bhash_size; i++) {
-> > >             spin_lock_init(&dccp_hashinfo.bhash[i].lock);
-> > >             INIT_HLIST_HEAD(&dccp_hashinfo.bhash[i].chain);
-> > > +           spin_lock_init(&dccp_hashinfo.bhash2[i].lock);
-> > >             INIT_HLIST_HEAD(&dccp_hashinfo.bhash2[i].chain);
-> > >     }
-> > >
-> > > diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-> > > index c0b7e6c21360..24a42e4d8234 100644
-> > > --- a/net/ipv4/inet_connection_sock.c
-> > > +++ b/net/ipv4/inet_connection_sock.c
-> > > @@ -131,14 +131,14 @@ static bool use_bhash2_on_bind(const struct sock *sk)
-> > >     return sk->sk_rcv_saddr != htonl(INADDR_ANY);
-> > > }
-> > >
-> > > -static u32 get_bhash2_nulladdr_hash(const struct sock *sk, struct net *net,
-> > > +static u32 get_bhash2_addr_any_hash(const struct sock *sk, struct net *net,
-> > >                                 int port)
-> > > {
-> > > #if IS_ENABLED(CONFIG_IPV6)
-> > > -   struct in6_addr nulladdr = {};
-> > > +   struct in6_addr addr_any = {};
-> > >
-> > >     if (sk->sk_family == AF_INET6)
-> > > -           return ipv6_portaddr_hash(net, &nulladdr, port);
-> > > +           return ipv6_portaddr_hash(net, &addr_any, port);
-> > > #endif
-> > >     return ipv4_portaddr_hash(net, 0, port);
-> > > }
-> > > @@ -204,18 +204,18 @@ static bool check_bhash2_conflict(const struct sock *sk,
-> > >     return false;
-> > > }
-> > >
-> > > -/* This should be called only when the corresponding inet_bind_bucket spinlock
-> > > - * is held
-> > > - */
-> > > +/* This should be called only when the tb and tb2 hashbuckets' locks are held */
-> > > static int inet_csk_bind_conflict(const struct sock *sk, int port,
-> > >                               struct inet_bind_bucket *tb,
-> > >                               struct inet_bind2_bucket *tb2, /* may be null */
-> > > +                             struct inet_bind_hashbucket *head_tb2,
-> > >                               bool relax, bool reuseport_ok)
-> > > {
-> > >     struct inet_hashinfo *hinfo = sk->sk_prot->h.hashinfo;
-> > >     kuid_t uid = sock_i_uid((struct sock *)sk);
-> > >     struct sock_reuseport *reuseport_cb;
-> > > -   struct inet_bind2_hashbucket *head2;
-> > > +   struct inet_bind_hashbucket *head_addr_any;
-> > > +   bool addr_any_conflict = false;
-> > >     bool reuseport_cb_ok;
-> > >     struct sock *sk2;
-> > >     struct net *net;
-> > > @@ -254,33 +254,39 @@ static int inet_csk_bind_conflict(const struct sock *sk, int port,
-> > >     /* check there's no conflict with an existing IPV6_ADDR_ANY (if ipv6) or
-> > >      * INADDR_ANY (if ipv4) socket.
-> > >      */
-> > > -   hash = get_bhash2_nulladdr_hash(sk, net, port);
-> > > -   head2 = &hinfo->bhash2[hash & (hinfo->bhash_size - 1)];
-> > > +   hash = get_bhash2_addr_any_hash(sk, net, port);
-> > > +   head_addr_any = &hinfo->bhash2[hash & (hinfo->bhash_size - 1)];
-> > >
-> > >     l3mdev = inet_sk_bound_l3mdev(sk);
-> > > -   inet_bind_bucket_for_each(tb2, &head2->chain)
-> > > -           if (check_bind2_bucket_match_nulladdr(tb2, net, port, l3mdev, sk))
-> > > +
-> > > +   if (head_addr_any != head_tb2)
-> > > +           spin_lock_bh(&head_addr_any->lock);
-> >
-> > Hi Joanne -
-> >
-> > syzkaller is consistently hitting a warning here (about 10x per minute):
-> >
-> > ============================================
-> > WARNING: possible recursive locking detected
-> > 5.19.0-rc1-00382-g78347e8e15bf #1 Not tainted
-> > --------------------------------------------
-> > sshd/352 is trying to acquire lock:
-> > ffffc90000968640 (&tcp_hashinfo.bhash2[i].lock){+.-.}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:354 [inline]
-> > ffffc90000968640 (&tcp_hashinfo.bhash2[i].lock){+.-.}-{2:2}, at: inet_csk_bind_conflict+0x4c4/0x8e0 net/ipv4/inet_connection_sock.c:263
-> >
-> > but task is already holding lock:
-> > ffffc90000883d28 (&tcp_hashinfo.bhash2[i].lock){+.-.}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:354 [inline]
-> > ffffc90000883d28 (&tcp_hashinfo.bhash2[i].lock){+.-.}-{2:2}, at: inet_csk_get_port+0x528/0xea0 net/ipv4/inet_connection_sock.c:497
-> >
-> > other info that might help us debug this:
-> >   Possible unsafe locking scenario:
-> >
-> >         CPU0
-> >         ----
-> >    lock(&tcp_hashinfo.bhash2[i].lock);
-> >    lock(&tcp_hashinfo.bhash2[i].lock);
-> >
-> >   *** DEADLOCK ***
-> >
-> >   May be due to missing lock nesting notation
->
-> This looks like a real deadlock scenario.
->
-> One dumb way of solving it would be always acquiring the bhash2 lock
-> for head_addr_any and for port/addr, in a fixed order - e.g. lower hash
-> first.
->
-> Anyway this fix looks not trivial. I'm wondering if we should consider
-> a revert of the feature until a better/more robust design is ready?
->
-Thanks for your feedback, Eric, Kuniyuki, Mat, and Paolo.
+From: Max Krummenacher <max.krummenacher@toradex.com>
 
-I think it's a good idea to revert bhash2 and then I will resubmit
-once all the fixes are in place. Please let me know if there's
-anything I need to do on my side to revert this.
+This reverts commit ff7f2926114d3a50f5ffe461a9bce8d761748da5.
 
-Sorry for the inconveniences.
+The commit ff7f2926114d ("Bluetooth: core: Fix missing power_on work
+cancel on HCI close") introduced between v5.18 and v5.19-rc1 makes
+going to suspend freeze. v5.19-rc2 is equally affected.
 
-> Thanks
->
-> Paolo
->
+This has been seen on a Colibri iMX6ULL WB which has a Marvell 8997
+based WiFi / Bluetooth module connected over SDIO.
+
+With 'v5.18' or 'v5.19-rc1 with said commit reverted' a suspend/resume
+cycle looks as follows and the device is functional after the resume:
+
+root@imx6ull:~# rfkill
+ID TYPE      DEVICE    SOFT      HARD
+ 0 bluetooth hci0   blocked unblocked
+ 1 wlan      phy0   blocked unblocked
+root@imx6ull:~# echo enabled > /sys/class/tty/ttymxc0/power/wakeup
+root@imx6ull:~# date;echo mem > /sys/power/state;date
+Tue Jun 14 14:43:03 UTC 2022
+[ 6393.464497] PM: suspend entry (deep)
+[ 6393.529398] Filesystems sync: 0.064 seconds
+[ 6393.594006] Freezing user space processes ... (elapsed 0.015 seconds) done.
+[ 6393.610266] OOM killer disabled.
+[ 6393.610285] Freezing remaining freezable tasks ... (elapsed 0.013 seconds) done.
+[ 6393.623727] printk: Suspending console(s) (use no_console_suspend to debug)
+
+~~ suspended until console initiates the resume
+
+[ 6394.023552] fec 20b4000.ethernet eth0: Link is Down
+[ 6394.049902] PM: suspend devices took 0.300 seconds
+[ 6394.091654] Disabling non-boot CPUs ...
+[ 6394.565896] PM: resume devices took 0.440 seconds
+[ 6394.681350] OOM killer enabled.
+[ 6394.681369] Restarting tasks ... done.
+[ 6394.741157] random: crng reseeded on system resumption
+[ 6394.813135] PM: suspend exit
+Tue Jun 14 14:43:11 UTC 2022
+[ 6396.403873] fec 20b4000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
+[ 6396.404347] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+root@imx6ull:~#
+
+With 'v5.19-rc1' suspend freezes in the suspend phase, i.e. power
+consumption is not lowered and no wakeup source initiates a wakup.
+
+root@imx6ull:~# rfkill
+ID TYPE      DEVICE    SOFT      HARD
+ 0 bluetooth hci0   blocked unblocked
+ 1 wlan      phy0   blocked unblocked
+root@imx6ull:~# echo enabled > /sys/class/tty/ttymxc0/power/wakeup
+root@imx6ull:~# date;echo mem > /sys/power/state;date
+Tue Jun 14 12:40:38 UTC 2022
+[  122.476333] PM: suspend entry (deep)
+[  122.556012] Filesystems sync: 0.079 seconds
+
+~~ no further kernel output
+
+If one first unbinds the bluetooth device driver, suspend / resume works
+as expected also with 'v5.19-rc1':
+
+root@imx6ull:~# echo mmc1:0001:2 > /sys/bus/sdio/drivers/btmrvl_sdio/unbind
+root@imx6ull:~# rfkill
+ID TYPE DEVICE    SOFT      HARD
+ 1 wlan phy0   blocked unblocked
+root@imx6ull:~# echo enabled > /sys/class/tty/ttymxc0/power/wakeup
+root@imx6ull:~# date;echo mem > /sys/power/state;date
+Tue Jun 14 14:59:26 UTC 2022
+[  123.530310] PM: suspend entry (deep)
+[  123.595432] Filesystems sync: 0.064 seconds
+[  123.672478] Freezing user space processes ... (elapsed 0.028 seconds) done.
+[  123.701848] OOM killer disabled.
+[  123.701869] Freezing remaining freezable tasks ... (elapsed 0.007 seconds) done.
+[  123.709993] printk: Suspending console(s) (use no_console_suspend to debug)
+[  124.097772] fec 20b4000.ethernet eth0: Link is Down
+[  124.124795] PM: suspend devices took 0.280 seconds
+[  124.165893] Disabling non-boot CPUs ...
+[  124.632959] PM: resume devices took 0.430 seconds
+[  124.750164] OOM killer enabled.
+[  124.750187] Restarting tasks ... done.
+[  124.827899] random: crng reseeded on system resumption
+[  124.923183] PM: suspend exit
+Tue Jun 14 14:59:31 UTC 2022
+[  127.520321] fec 20b4000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
+[  127.520514] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+root@imx6ull:~#
+
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+
+---
+
+ net/bluetooth/hci_core.c | 2 ++
+ net/bluetooth/hci_sync.c | 1 -
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 59a5c1341c26..19df3905c5f8 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -2675,6 +2675,8 @@ void hci_unregister_dev(struct hci_dev *hdev)
+ 	list_del(&hdev->list);
+ 	write_unlock(&hci_dev_list_lock);
+ 
++	cancel_work_sync(&hdev->power_on);
++
+ 	hci_cmd_sync_clear(hdev);
+ 
+ 	if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks))
+diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+index 286d6767f017..1739e8cb3291 100644
+--- a/net/bluetooth/hci_sync.c
++++ b/net/bluetooth/hci_sync.c
+@@ -4088,7 +4088,6 @@ int hci_dev_close_sync(struct hci_dev *hdev)
+ 
+ 	bt_dev_dbg(hdev, "");
+ 
+-	cancel_work_sync(&hdev->power_on);
+ 	cancel_delayed_work(&hdev->power_off);
+ 	cancel_delayed_work(&hdev->ncmd_timer);
+ 
+-- 
+2.20.1
+
