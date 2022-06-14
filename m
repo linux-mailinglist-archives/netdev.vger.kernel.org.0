@@ -2,207 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C78554A702
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 04:46:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A235A54A713
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 04:55:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354522AbiFNCq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 13 Jun 2022 22:46:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42750 "EHLO
+        id S1354266AbiFNCxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 13 Jun 2022 22:53:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354700AbiFNCqF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 22:46:05 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A58403E8;
-        Mon, 13 Jun 2022 19:23:41 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id 3-20020a17090a174300b001e426a02ac5so10520451pjm.2;
-        Mon, 13 Jun 2022 19:23:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XjnTSu5YVo6p0PNi2ROa3mEbh6BHijt95wNCKK1ch38=;
-        b=JxPO0xmFQUBFVMEOD8M2u7b5JvA5Vcaba39CkGs/eT+7Jdd/efLfRLmVISSbpBy8GY
-         ALhMObYEZ78Jsr7apCiCYPM/o+xsmBmXvR3rbjQCuBBN/wmNZMdXF5a1bpYExOEQdyHC
-         7ROZK3L06w33ZA9x8fqx/hRt8vVP9NeT9NoQM6JBVMKQiYzMA9Cun4Yo9V9s6C/lkA4X
-         QuDMwiiMBouPt1fjTr4UD9Gx2EgUbXkLAPTlqBO+Dd4Hk6p2YYTh2vOxdAml1KKwGfOv
-         jdryXlaEO4iaYtuLvwiu+Q6N6+d5k3kwI97b49OWafvEEforCGB5xwNhzXV/v7C5Ltzk
-         K5TA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XjnTSu5YVo6p0PNi2ROa3mEbh6BHijt95wNCKK1ch38=;
-        b=JC8CTXkdRqYy6n7t2kIH9XULmjG1nPSHTTnV0i51wFMMZLlmf39NWw67mlXzn1pvOO
-         Hgc2V331Nw9QQLpQuHduvpybzz7hhrZQEGxStoSsKSZ2m1y/+wXRLyTQVzwZ2nB6YTfp
-         RyxEA02Lpzl7oo15ueppTYyMzbvrSiA7bWl2y3UEgV/WEI2RIYGsoQot+eT0xCw9paLP
-         bhW+zIxZiLkftGywMVqCIdpNtRQAbyPD3q3Dg6UCrDA84tD6vtGNMcgQX2xM6Rso5krh
-         d8uBtJ6QhNTN2A+KXGGcPK+Ao413csMXbnN2Yxxe7L5rq0fCcO3nZvwDbGXeJI5vSw6U
-         x8AA==
-X-Gm-Message-State: AJIora89U8013fH4YAwEnWdNp52Q8bgtpQ0gckAy9RCLJh6Y8j76W5Fe
-        9VfFXLkcnVcsnTNo/c0vpi8=
-X-Google-Smtp-Source: AGRyM1twt6SFH6QriRuk9U2RD2USL+sKauy4VuoM2bSf5bBhA4mUgOx4m14GvF45Lqh8bLrlRVN8fA==
-X-Received: by 2002:a17:902:e353:b0:168:9a78:25cb with SMTP id p19-20020a170902e35300b001689a7825cbmr1989491plc.13.1655173420580;
-        Mon, 13 Jun 2022 19:23:40 -0700 (PDT)
-Received: from localhost ([2405:201:6014:d0c0:79de:f3f4:353c:8616])
-        by smtp.gmail.com with ESMTPSA id h65-20020a62de44000000b0050dc762813csm6155656pfg.22.2022.06.13.19.23.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 19:23:40 -0700 (PDT)
-Date:   Tue, 14 Jun 2022 07:53:37 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH v4 bpf-next 00/14] net: netfilter: add kfunc helper to
- update ct timeout
-Message-ID: <20220614022337.cdtulpzjyamjos5s@apollo.legion>
-References: <cover.1653600577.git.lorenzo@kernel.org>
- <20220611201117.euqca7rgn5wydlwk@macbook-pro-3.dhcp.thefacebook.com>
- <20220613161413.sowe7bv3da2nuqsg@apollo.legion>
- <CAADnVQKk9LPm=4OeosxLZCmv+_PnowPZdz9QP4f-H8Vd4HSLVw@mail.gmail.com>
+        with ESMTP id S1354684AbiFNCxJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 13 Jun 2022 22:53:09 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EAD96004C;
+        Mon, 13 Jun 2022 19:34:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655174056; x=1686710056;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=47svbfWKkXZf9LfactisOBeorwmkIQeKErqvocVmXSE=;
+  b=X8cQ9/9l/tBYD/m4vcJnkUopw5yGZiLGp6PONiClPC7F07WvflplSJ1V
+   2+1pw9Nj9P7fscwgjKq1jTZe5zGE9KWBhW7ZPCBD+jDdHdp2H5zo39csV
+   sYb4repuMECE2EBgawRq12EYLsgxLV7SznmNtYON4XHGCNTPajZ578EUq
+   t8o3KcWy8kW/RRQ+1FkAdbgpPiiAvSzPPCYhK57y9++SWyf8a/303QdiW
+   zd2rFkyXk+7KwBKL1Aje9iyu+t6bZ9ZYkRX1sPhkn8IMh4b0lEE2boy88
+   63zMehR3gVuyQMG3jb+JC7Tai9KS4R1LMQN0W3XqzJCRw2jx3dzFNGnN7
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10377"; a="267169272"
+X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
+   d="scan'208";a="267169272"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 19:33:14 -0700
+X-IronPort-AV: E=Sophos;i="5.91,298,1647327600"; 
+   d="scan'208";a="588157874"
+Received: from jiaqingz-mobl.ccr.corp.intel.com (HELO [10.238.1.239]) ([10.238.1.239])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2022 19:33:12 -0700
+Message-ID: <aff542a3-ac98-c33d-9612-63ebca180e17@linux.intel.com>
+Date:   Tue, 14 Jun 2022 10:33:10 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAADnVQKk9LPm=4OeosxLZCmv+_PnowPZdz9QP4f-H8Vd4HSLVw@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 5/6] dt-bindings: net: Add NCSI bindings
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+Cc:     OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220610165940.2326777-1-jiaqing.zhao@linux.intel.com>
+ <20220610165940.2326777-6-jiaqing.zhao@linux.intel.com>
+ <1654903146.313095.2450355.nullmailer@robh.at.kernel.org>
+ <21c9ba6b-e84e-4545-44d2-5ffe5fea9581@linux.intel.com>
+ <CAL_Jsq+y3tkfLV8UpUe6jw7Fq7YDrzwoq3FKK4jeeZEBOxhM4g@mail.gmail.com>
+From:   Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+In-Reply-To: <CAL_Jsq+y3tkfLV8UpUe6jw7Fq7YDrzwoq3FKK4jeeZEBOxhM4g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 03:45:00AM IST, Alexei Starovoitov wrote:
-> On Mon, Jun 13, 2022 at 9:14 AM Kumar Kartikeya Dwivedi
-> <memxor@gmail.com> wrote:
-> >
-> > On Sun, Jun 12, 2022 at 01:41:17AM IST, Alexei Starovoitov wrote:
-> > > On Thu, May 26, 2022 at 11:34:48PM +0200, Lorenzo Bianconi wrote:
-> > > > Changes since v3:
-> > > > - split bpf_xdp_ct_add in bpf_xdp_ct_alloc/bpf_skb_ct_alloc and
-> > > >   bpf_ct_insert_entry
-> > > > - add verifier code to properly populate/configure ct entry
-> > > > - improve selftests
-> > >
-> > > Kumar, Lorenzo,
-> > >
-> > > are you planning on sending v5 ?
-> > > The patches 1-5 look good.
-> > > Patch 6 is questionable as Florian pointed out.
-> >
-> > Yes, it is almost there.
-> >
-> > > What is the motivation to allow writes into ct->status?
-> >
-> > It will only be allowed for ct from alloc function, after that ct = insert(ct)
-> > releases old one with new read only ct. I need to recheck once again with the
-> > code what other bits would cause problems on insert before I rework and reply.
->
-> I still don't understand why you want to allow writing after alloc.
->
+On 2022-06-13 23:28, Rob Herring wrote:
+> On Fri, Jun 10, 2022 at 9:09 PM Jiaqing Zhao
+> <jiaqing.zhao@linux.intel.com> wrote:
+>>
+>> On 2022-06-11 07:19, Rob Herring wrote:
+>>> On Sat, 11 Jun 2022 00:59:39 +0800, Jiaqing Zhao wrote:
+>>>> Add devicetree bindings for NCSI VLAN modes. This allows VLAN mode to
+>>>> be configured in devicetree.
+>>>>
+>>>> Signed-off-by: Jiaqing Zhao <jiaqing.zhao@linux.intel.com>
+>>>> ---
+>>>>  .../devicetree/bindings/net/ncsi.yaml         | 34 +++++++++++++++++++
+>>>>  MAINTAINERS                                   |  2 ++
+>>>>  include/dt-bindings/net/ncsi.h                | 15 ++++++++
+>>>>  3 files changed, 51 insertions(+)
+>>>>  create mode 100644 Documentation/devicetree/bindings/net/ncsi.yaml
+>>>>  create mode 100644 include/dt-bindings/net/ncsi.h
+>>>>
+>>>
+>>> My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+>>> on your patch (DT_CHECKER_FLAGS is new in v5.13):
+>>>
+>>> yamllint warnings/errors:
+>>>
+>>> dtschema/dtc warnings/errors:
+>>> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ncsi.yaml: 'oneOf' conditional failed, one must be fixed:
+>>>       'unevaluatedProperties' is a required property
+>>>       'additionalProperties' is a required property
+>>>       hint: Either unevaluatedProperties or additionalProperties must be present
+>>>       from schema $id: http://devicetree.org/meta-schemas/core.yaml#
+>>> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ncsi.yaml: ignoring, error in schema:
+>>> /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ncsi.example.dtb: ethernet@1e660000: 'ncsi,vlan-mode' does not match any of the regexes
+>>>       From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/vendor-prefixes.yaml
+>>
+>> I saw vendor-prefix.yaml says do not add non-vendor prefixes to the list. Since "ncsi" is not a vendor, may I ask what is the suggested replacement for 'ncsi,vlan-mode'? Will 'ncsi-vlan-mode' be fine?
+> 
+> I don't know. What is NCSI? Is it specific to certain MACs? Why do you
+> need to set this up in DT? Network configuration is typically done in
+> userspace, so putting VLAN config in DT doesn't seem right. All
+> questions your commit message should answer.
 
-It is just a way to set the status, instead of a helper to set it. Eventually
-before nf_conntrack_hash_check_insert it will still be checked and error
-returned for disallowed bits (e.g. anything in IPS_UNCHANGEABLE_MASK, etc.).
-The current series missed that check.
+NCSI is a protocol that uses an external MAC+PHY like a PHY, the
+topology looks like:
 
-Florian is right in that it is a can of worms, but I think we can atleast permit
-things like confirmed, assured, etc. which can also be set when crafting a ct
-using netlink. Both of them can share the same check so it is consistent when
-done from kfunc or netlink side, and any changes internally wrt status bits are
-in sync.
+         Packets + NCSI commands              Packets
+     MAC-------------------------External MAC---------PHY
 
-Anyway, if you don't like the direct write into ct, I can drop it, for now just
-insert a confirmed entry (since this was just for testing). That also means
-patch 3-6 are not strictly needed anymore, so they can be dropped, but I can
-keep them if you want, since they might be useful.
+Some MACs like ftgmac100 driver supports using NCSI instead of PHY,
+the operation mode is configured by a DT option "use-ncsi". The NCSI
+external MAC has its own configuration, like VLAN filter mode of it,
+and all NCSI devices uses a generic driver. So I these external mac
+configurations to DT as they are device properties to kernel. Userspace
+is only able to configure the "internal" MAC.
 
-Florian asked for the pipeline, it is like this:
+>>> Documentation/devicetree/bindings/net/ncsi.example.dtb:0:0: /example-0/ethernet@1e660000: failed to match any schema with compatible: ['aspeed,ast2600-mac', 'faraday,ftgmac100']
+>>> Documentation/devicetree/bindings/net/ncsi.example.dtb:0:0: /example-0/ethernet@1e660000: failed to match any schema with compatible: ['aspeed,ast2600-mac', 'faraday,ftgmac100']
+>>
+>> The ftgmac100 it depends on uses a txt document instead of an yaml schema. And I see there is other schemas having the same error, can this be ignored?
+> 
+> No. Don't add to the list. Once all the existing warnings (~40) are
+> fixed, then this will be turned on by default.
 
-ct = bpf_xdp_ct_alloc();
-ct->a = ...; // private ct, not yet visible to anyone but us
-ct->b = ...;
-   or we would now set using helpers
-alloc_ct_set_status(ct, IPS_CONFIRMED);
-alloc_ct_set_timeout(ct, timeout);
-...
-ct = bpf_ct_insert_entry(ct); // old alloc_ct release, new inserted nf_conn returned
-if (!ct)
-	return -1;
-/* Inserted successfully */
-In the earlier approach this ct->a could now not be written to, as it was
-inserted, instead of allocated ct, which insert function took as arg and
-invalidated, so BPF program held a read only pointer now. If we drop that
-approach all pointers are read only anyway, so writing won't be allowed either.
+Sure, I'll put this to ftgmac100.txt instead of separate yaml file.
 
-> > > The selftest doesn't do that anyway.
-> >
-> > Yes, it wasn't updated, we will do that in v5.
-> >
-> > > Patch 7 (acquire-release pairs) is too narrow.
-> > > The concept of a pair will not work well. There could be two acq funcs and one release.
-> >
-> > That is already handled (you define two pairs: acq1, rel and acq2, rel).
-> > There is also an example: bpf_ct_insert_entry -> bpf_ct_release,
-> > bpf_xdp_ct_lookup -> ct_release.
->
-> If we can represent that without all these additional btf_id sets
-> it would be much better.
->
-> > > Please think of some other mechanism. Maybe type based? BTF?
-> > > Or encode that info into type name? or some other way.
-> >
-> > Hmm, ok. I kinda dislike this solution too. The other idea that comes to mind is
-> > encapsulating nf_conn into another struct and returning pointer to that:
-> >
-> >         struct nf_conn_alloc {
-> >                 struct nf_conn ct;
-> >         };
-> >
-> >         struct nf_conn_alloc *bpf_xdp_ct_alloc(...);
-> >         struct nf_conn *bpf_ct_insert_entry(struct nf_conn_alloc *act, ...);
-> >
-> > Then nf_conn_alloc gets a different BTF ID, and hence the type can be matched in
-> > the prototype. Any opinions?
->
-> Yes. Or maybe typedef ?
-> typedef struct nf_conn nf_conn__alloc;
-> typedef struct nf_conn nf_conn__ro;
->
-> C will accept silent type casts from one type to another,
-> but BTF type checking can be strict?
-> Not sure. wrapping a struct works too, but extra '.ct' accessor
-> might be annoying? Unless you only use it with container_of().
-> I would prefer double or triple underscore to highlight a flavor.
-> struct nf_conn___init {...}
-> The main benefit, of course, is no need for extra btf_id sets.
-> Different types take care of correct arg passing.
-> In that sense typedef idea doesn't quite work,
-> since BTF checks with typedef would be unnecessarily strict
-> compared to regular C type checking rules. That difference
-> in behavior might bite us later.
-> So let's go with struct wrapping.
+>>
+>> And I've got one more question. The ncsi driver does not has its own compatible field, instead, it is enabled by setting the "use-ncsi" property of some specific mac drivers. Though currently only ftgmac100 supports ncsi in upstream kernel, it may be used by other mac drivers in the future. What do you think is a proper way for defining the ncsi schema? Having it in a separate yaml like this patch or add the properties to all the mac yamls that supports yaml? If the former way is preferred, how should the schema be defined without "compatible"?
+> 
+> If it is a function of driver support or not, then it doesn't belong in DT.
+> 
+> Rob
 
-Makes sense, I will go with this. But now if we are not even allowing write to
-such allocated ct (probably only helpers that set some field and check value),
-it can just be an empty opaque struct for the BPF program, while it is still
-a nf_conn in the kernel. There doesn't seem to be much point in wrapping around
-nf_conn when reading from allocated nf_conn isn't going to be of any use.
+It's a hardware operation mode of the external MAC, I think it's
+reasonable to put it in DT.
 
---
-Kartikeya
+There is also a previous patch adding NCSI MAC config "mlx,multi-host"
+in DT at https://lore.kernel.org/netdev/20200108234341.2590674-1-vijaykhemka@fb.com/T/
+I referred this for my implementation, though it is undocumented.
+
+Jiaqing
