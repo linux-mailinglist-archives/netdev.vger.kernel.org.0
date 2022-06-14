@@ -2,203 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B707854AD00
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 11:11:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA43A54AD4E
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 11:25:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353572AbiFNJKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 05:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50514 "EHLO
+        id S231867AbiFNJZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 05:25:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353412AbiFNJKi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 05:10:38 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52CA42A38
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 02:10:36 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id c2so10679466edf.5
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 02:10:36 -0700 (PDT)
+        with ESMTP id S230352AbiFNJZg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 05:25:36 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86E3BB
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 02:25:35 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id l18so9006615lje.13
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 02:25:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=vbE6VRJ6L2Qi7wHf9J/y7BjGn5acIfx2cDitHSWZN8U=;
-        b=AWbngWo4Lf9j8+7rwhn9DK43YZsPYbm2fMnv5NmSdw+pvHmAzGWBJKaZX22g8de88t
-         ppjc5RbJE79kcZct9aj1DYUQ4xVvmi2lX40qgADykUAMZCAJ3d94iUfDIAdx74CwuIA8
-         I+VrcGSbiyhF1gP8YDr3lh9qgyu31KwzBfIOMOU5igLTc0SyCQDULFfPtSTEW9lw0LMy
-         RkLJYn2rWkIeqXG/JPO50KmMnw66ua3CjDkAMFsDTW9ybKDwnmexyz/5+1k9NmSmGXQ/
-         PpBd9XzxHxdUTuzSkjRIP39Nb5vjWng//GfAjg5FxULE1YtAdLQPwM8UKHPxw/uDdA1Z
-         cfVA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=NUnNqs5BWBRw5HkDi4UFw7CWZZjMxEc5U/JahmS/1Yk=;
+        b=idOdSvvdb9OD8raYxuUWxg/rCkCTKPMeJA9MK6YWw8WIO0vDA+MzZ3/R58UiWt7iTn
+         tst7nOw0oOZcrWll2QRu7k8Yh0Kqo9Hno4PWfDIiwAsx92vDLtqfJrnTNFX7hco5w0m6
+         43KCaW/CWCg81gqlZsbUBTDve4hk7ikm80BYZVwxtoevqg3vE61G+OUnk5svxr/TFkQs
+         jDyczD4s35xDv/2Y1ZUgzMvtJDSZlApBj5Ent7eCYYyp+aoGo2NYXbTb4oxOJRKoplVW
+         qouaLojlfLzfSX1l4c3ynLVhPFupikTT0Cazej8FKisDIyWgvi3jNnFSXr/Szp+4xpDQ
+         De4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=vbE6VRJ6L2Qi7wHf9J/y7BjGn5acIfx2cDitHSWZN8U=;
-        b=fEKkURJX2hFXQkruTjSLCS75Ia7InNSv47IJ+lpA3K0ticXV8jDTNNEJLcpRAGtyQH
-         ZbwEa/mbFkTQK8dp2gNRYQAdwhscwbtjEA7yB6N+t8bo472aF+afyAEz5O2OXAz/OfQH
-         s8NSpNc3ju6N8FUb+rKaNIbUJzzT+Syz6MaPFzTG6quTYKQvxT1uShddskhVif3I/NHV
-         +snK1LOm0nOTC0Rt9rgjVgMdI2SYmQg3XdEfw3Hj7WJ00TdALRqAlkaznw+jzWXdI0/D
-         CfTzsLjI8p35CI0ayT7q82BG/BRBA04PkOX87iO1V6y9jkyJGZOhQ1vBHOAWo2r4dBIi
-         wAaA==
-X-Gm-Message-State: AJIora9vEYkDrhCXGZGSz2+hFArRdxl9myJhkaYm25FsGYHsvxIvpi1l
-        qcMy+/uLHLpIxqf4sXHEuLEk/A==
-X-Google-Smtp-Source: ABdhPJyLh3JBR4LBO2uISaXXF74hKbzCrMWKiKHkfD/0hz6aeTBNIlftywrU5AU+hhMj5adPyOLWCw==
-X-Received: by 2002:a05:6402:350f:b0:42f:68f9:ae5 with SMTP id b15-20020a056402350f00b0042f68f90ae5mr4804452edd.36.1655197834871;
-        Tue, 14 Jun 2022 02:10:34 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id x24-20020aa7dad8000000b0042dd482d0c4sm6657138eds.80.2022.06.14.02.10.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Jun 2022 02:10:34 -0700 (PDT)
-Message-ID: <101855d8-878b-2334-fd5a-85684fd78e12@blackwall.org>
-Date:   Tue, 14 Jun 2022 12:10:33 +0300
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=NUnNqs5BWBRw5HkDi4UFw7CWZZjMxEc5U/JahmS/1Yk=;
+        b=Eca3W40LiJ9Bwf/ZxC+xWIHGCeJCyBFKwluqLJGNtY0KU1svHsKnYHL/VEdLWCilMc
+         0UcZXYLZP7LwM0q2E8Hth4IOcNP/MeO/BpRIEezO9z+kSDnGFJDV6q2Nxk0yJp1gG608
+         DffgAymOCaSseyzqZXWMjkxFvOxJknwm6hUKkdLKZRRng7+Zq6vviuJgDEt8gX9n5Jt2
+         4TiziTj4Zfk1TZBlXM/qy/nnD5s2asKRvrWSw4DlGtXcEHeQKQJb+8Z+3WN4acaoOwvt
+         l+dHbME1ohbTzT46Q98kyjVJ5m3+eh+3TUgZ4GnEc5CuwKyCIMkkDftTLvIRPWQMmFPh
+         PBgA==
+X-Gm-Message-State: AJIora8CmzqcfIhAZCkzygUP5h9EjDv8n5pJImoVx9g2/eImNxBKOJw5
+        4ZWA8CnrG690pAm86TgWfhU=
+X-Google-Smtp-Source: AGRyM1slWfexxGNwu/aKFSOS2SSHrca1Ma8N98bR28HlHPzVmZVyt8VCOEWP/WFsEGVjFCVQvuQFCg==
+X-Received: by 2002:a2e:a552:0:b0:255:a378:72db with SMTP id e18-20020a2ea552000000b00255a37872dbmr1963997ljn.504.1655198734036;
+        Tue, 14 Jun 2022 02:25:34 -0700 (PDT)
+Received: from wse-c0155.labs.westermo.se (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id a25-20020a05651c031900b002554dde32bfsm1298799ljp.47.2022.06.14.02.25.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 02:25:33 -0700 (PDT)
+From:   Casper Andersson <casper.casan@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org
+Subject: [PATCH net-next] net: sparx5: Allow mdb entries to both CPU and ports
+Date:   Tue, 14 Jun 2022 11:25:32 +0200
+Message-Id: <20220614092532.3273791-1-casper.casan@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH net-next v3 2/2] net, neigh: introduce interval_probe_time
- for periodic probe
-Content-Language: en-US
-To:     Yuwei Wang <wangyuweihx@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com
-Cc:     daniel@iogearbox.net, roopa@nvidia.com, dsahern@kernel.org,
-        qindi@staff.weibo.com, netdev@vger.kernel.org
-References: <20220609105725.2367426-1-wangyuweihx@gmail.com>
- <20220609105725.2367426-3-wangyuweihx@gmail.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220609105725.2367426-3-wangyuweihx@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/06/2022 13:57, Yuwei Wang wrote:
-> commit ed6cd6a17896 ("net, neigh: Set lower cap for neigh_managed_work rearming")
-> fixed a case when DELAY_PROBE_TIME is configured to 0, the processing of the
-> system work queue hog CPU to 100%, and further more we should introduce
-> a new option used by periodic probe
-> 
-> Signed-off-by: Yuwei Wang <wangyuweihx@gmail.com>
-> ---
-> v3:
-> - add limitation to prevent `INTERVAL_PROBE_TIME` to 0
-> - remove `NETEVENT_INTERVAL_PROBE_TIME_UPDATE`
-> - add .min to NDTPA_INTERVAL_PROBE_TIME
-> 
->  include/net/neighbour.h        |  1 +
->  include/uapi/linux/neighbour.h |  1 +
->  include/uapi/linux/sysctl.h    | 37 +++++++++++++++++-----------------
->  net/core/neighbour.c           | 33 ++++++++++++++++++++++++++++--
->  net/decnet/dn_neigh.c          |  1 +
->  net/ipv4/arp.c                 |  1 +
->  net/ipv6/ndisc.c               |  1 +
->  7 files changed, 55 insertions(+), 20 deletions(-)
-> 
-[snip]
-> diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
-> index 39c565e460c7..8713c3ea81b2 100644
-> --- a/include/uapi/linux/neighbour.h
-> +++ b/include/uapi/linux/neighbour.h
-> @@ -154,6 +154,7 @@ enum {
->  	NDTPA_QUEUE_LENBYTES,		/* u32 */
->  	NDTPA_MCAST_REPROBES,		/* u32 */
->  	NDTPA_PAD,
-> +	NDTPA_INTERVAL_PROBE_TIME,	/* u64, msecs */
->  	__NDTPA_MAX
->  };
->  #define NDTPA_MAX (__NDTPA_MAX - 1)
-[snip]
->  /* /proc/sys/net/dccp */
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index 54625287ee5b..845fad952ce2 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -1579,7 +1579,7 @@ static void neigh_managed_work(struct work_struct *work)
->  	list_for_each_entry(neigh, &tbl->managed_list, managed_list)
->  		neigh_event_send_probe(neigh, NULL, false);
->  	queue_delayed_work(system_power_efficient_wq, &tbl->managed_work,
-> -			   max(NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME), HZ));
-> +			   NEIGH_VAR(&tbl->parms, INTERVAL_PROBE_TIME));
->  	write_unlock_bh(&tbl->lock);
->  }
->  
-> @@ -2100,7 +2100,9 @@ static int neightbl_fill_parms(struct sk_buff *skb, struct neigh_parms *parms)
->  	    nla_put_msecs(skb, NDTPA_PROXY_DELAY,
->  			  NEIGH_VAR(parms, PROXY_DELAY), NDTPA_PAD) ||
->  	    nla_put_msecs(skb, NDTPA_LOCKTIME,
-> -			  NEIGH_VAR(parms, LOCKTIME), NDTPA_PAD))
-> +			  NEIGH_VAR(parms, LOCKTIME), NDTPA_PAD) ||
-> +	    nla_put_msecs(skb, NDTPA_INTERVAL_PROBE_TIME,
-> +			  NEIGH_VAR(parms, INTERVAL_PROBE_TIME), NDTPA_PAD))
->  		goto nla_put_failure;
->  	return nla_nest_end(skb, nest);
->  
-> @@ -2255,6 +2257,7 @@ static const struct nla_policy nl_ntbl_parm_policy[NDTPA_MAX+1] = {
->  	[NDTPA_ANYCAST_DELAY]		= { .type = NLA_U64 },
->  	[NDTPA_PROXY_DELAY]		= { .type = NLA_U64 },
->  	[NDTPA_LOCKTIME]		= { .type = NLA_U64 },
-> +	[NDTPA_INTERVAL_PROBE_TIME]	= { .type = NLA_U64, .min = 1 },
+Allow mdb entries to be forwarded to CPU and be switched at the same
+time. Only remove entry when no port and the CPU isn't part of the group
+anymore.
 
-shouldn't the min be MSEC_PER_SEC (1 sec minimum) ?
+Signed-off-by: Casper Andersson <casper.casan@gmail.com>
+---
+ .../microchip/sparx5/sparx5_switchdev.c       | 55 ++++++++++++-------
+ 1 file changed, 35 insertions(+), 20 deletions(-)
 
->  };
->  
->  static int neightbl_set(struct sk_buff *skb, struct nlmsghdr *nlh,
-> @@ -2373,6 +2376,10 @@ static int neightbl_set(struct sk_buff *skb, struct nlmsghdr *nlh,
->  					      nla_get_msecs(tbp[i]));
->  				call_netevent_notifiers(NETEVENT_DELAY_PROBE_TIME_UPDATE, p);
->  				break;
-> +			case NDTPA_INTERVAL_PROBE_TIME:
-> +				NEIGH_VAR_SET(p, INTERVAL_PROBE_TIME,
-> +					      nla_get_msecs(tbp[i]));
-> +				break;
->  			case NDTPA_RETRANS_TIME:
->  				NEIGH_VAR_SET(p, RETRANS_TIME,
->  					      nla_get_msecs(tbp[i]));
-> @@ -3562,6 +3569,24 @@ static int neigh_proc_dointvec_zero_intmax(struct ctl_table *ctl, int write,
->  	return ret;
->  }
->  
-> +static int neigh_proc_dointvec_jiffies_positive(struct ctl_table *ctl, int write,
-> +						void *buffer, size_t *lenp,
-> +						loff_t *ppos)
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+index 3429660cd2e5..40ef9fad3a77 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+@@ -394,12 +394,10 @@ static int sparx5_handle_port_mdb_add(struct net_device *dev,
+ 	struct sparx5 *spx5 = port->sparx5;
+ 	u16 pgid_idx, vid;
+ 	u32 mact_entry;
++	bool is_host;
+ 	int res, err;
+ 
+-	if (netif_is_bridge_master(v->obj.orig_dev)) {
+-		sparx5_mact_learn(spx5, PGID_CPU, v->addr, v->vid);
+-		return 0;
+-	}
++	is_host = netif_is_bridge_master(v->obj.orig_dev);
+ 
+ 	/* When VLAN unaware the vlan value is not parsed and we receive vid 0.
+ 	 * Fall back to bridge vid 1.
+@@ -416,17 +414,33 @@ static int sparx5_handle_port_mdb_add(struct net_device *dev,
+ 
+ 		/* MC_IDX starts after the port masks in the PGID table */
+ 		pgid_idx += SPX5_PORTS;
+-		sparx5_pgid_update_mask(port, pgid_idx, true);
++
++		if (is_host)
++			spx5_rmw(ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA_SET(1),
++				 ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA, spx5,
++				 ANA_AC_PGID_MISC_CFG(pgid_idx));
++		else
++			sparx5_pgid_update_mask(port, pgid_idx, true);
++
+ 	} else {
+ 		err = sparx5_pgid_alloc_mcast(spx5, &pgid_idx);
+ 		if (err) {
+ 			netdev_warn(dev, "multicast pgid table full\n");
+ 			return err;
+ 		}
+-		sparx5_pgid_update_mask(port, pgid_idx, true);
++
++		if (is_host)
++			spx5_rmw(ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA_SET(1),
++				 ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA, spx5,
++				 ANA_AC_PGID_MISC_CFG(pgid_idx));
++		else
++			sparx5_pgid_update_mask(port, pgid_idx, true);
++
+ 		err = sparx5_mact_learn(spx5, pgid_idx, v->addr, vid);
++
+ 		if (err) {
+ 			netdev_warn(dev, "could not learn mac address %pM\n", v->addr);
++			sparx5_pgid_free(spx5, pgid_idx);
+ 			sparx5_pgid_update_mask(port, pgid_idx, false);
+ 			return err;
+ 		}
+@@ -463,13 +477,8 @@ static int sparx5_handle_port_mdb_del(struct net_device *dev,
+ 	struct sparx5_port *port = netdev_priv(dev);
+ 	struct sparx5 *spx5 = port->sparx5;
+ 	u16 pgid_idx, vid;
+-	u32 mact_entry, res, pgid_entry[3];
+-	int err;
+-
+-	if (netif_is_bridge_master(v->obj.orig_dev)) {
+-		sparx5_mact_forget(spx5, v->addr, v->vid);
+-		return 0;
+-	}
++	u32 mact_entry, res, pgid_entry[3], misc_cfg;
++	bool host_ena;
+ 
+ 	if (!br_vlan_enabled(spx5->hw_bridge_dev))
+ 		vid = 1;
+@@ -483,15 +492,21 @@ static int sparx5_handle_port_mdb_del(struct net_device *dev,
+ 
+ 		/* MC_IDX starts after the port masks in the PGID table */
+ 		pgid_idx += SPX5_PORTS;
+-		sparx5_pgid_update_mask(port, pgid_idx, false);
++
++		if (netif_is_bridge_master(v->obj.orig_dev))
++			spx5_rmw(ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA_SET(0),
++				 ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA, spx5,
++				 ANA_AC_PGID_MISC_CFG(pgid_idx));
++		else
++			sparx5_pgid_update_mask(port, pgid_idx, false);
++
++		misc_cfg = spx5_rd(spx5, ANA_AC_PGID_MISC_CFG(pgid_idx));
++		host_ena = ANA_AC_PGID_MISC_CFG_PGID_CPU_COPY_ENA_GET(misc_cfg);
+ 
+ 		sparx5_pgid_read_mask(spx5, pgid_idx, pgid_entry);
+-		if (bitmap_empty((unsigned long *)pgid_entry, SPX5_PORTS)) {
+-			/* No ports are in MC group. Remove entry */
+-			err = sparx5_mdb_del_entry(dev, spx5, v->addr, vid, pgid_idx);
+-			if (err)
+-				return err;
+-		}
++		if (bitmap_empty((unsigned long *)pgid_entry, SPX5_PORTS) && !host_ena)
++			/* No ports or CPU are in MC group. Remove entry */
++			return sparx5_mdb_del_entry(dev, spx5, v->addr, vid, pgid_idx);
+ 	}
+ 
+ 	return 0;
+-- 
+2.30.2
 
-Do we need the proc entry to be in jiffies when the netlink option is in ms?
-Why not make it directly in ms (with _ms similar to other neigh _ms time options) ?
-
-IMO, it would be better to be consistent with the netlink option which sets it in ms.
-
-It seems the _ms options were added later and usually people want a more understandable
-value, I haven't seen anyone wanting a jiffies version of a ms interval variable. :)
-
-> +{
-> +	struct ctl_table tmp = *ctl;
-> +	int ret;
-> +
-> +	int min = HZ;
-> +	int max = INT_MAX;
-> +
-> +	tmp.extra1 = &min;
-> +	tmp.extra2 = &max;
-
-hmm, I don't think these min/max match the netlink attribute's min/max.
-
-> +
-> +	ret = proc_dointvec_jiffies_minmax(&tmp, write, buffer, lenp, ppos);
-> +	neigh_proc_update(ctl, write);
-> +	return ret;
-> +}
-> +
->  int neigh_proc_dointvec(struct ctl_table *ctl, int write, void *buffer,
->  			size_t *lenp, loff_t *ppos)
->  {
-> @@ -3658,6 +3683,9 @@ static int neigh_proc_base_reachable_time(struct ctl_table *ctl, int write,
->  #define NEIGH_SYSCTL_USERHZ_JIFFIES_ENTRY(attr, name) \
->  	NEIGH_SYSCTL_ENTRY(attr, attr, name, 0644, neigh_proc_dointvec_userhz_jiffies)
->  
-[snip]
-Cheers,
- Nik
