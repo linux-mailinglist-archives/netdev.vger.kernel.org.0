@@ -2,181 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8606654AEC6
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 12:50:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC63C54AEF5
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 13:01:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356135AbiFNKs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 06:48:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38824 "EHLO
+        id S242549AbiFNLBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 07:01:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240905AbiFNKsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 06:48:30 -0400
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80049.outbound.protection.outlook.com [40.107.8.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 765B722BC4;
-        Tue, 14 Jun 2022 03:48:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HVOeOTfg3EesWkoxCxjIxXVfA9LeYE7DlvmnBcST5lmLuetp1q2b+1DLzrVrWd9A7cwaXzhFJ6w8pEddpHE6NMqGDpzsw0+sTjA3R08wpoaC8tg2viV1noCHdjl3HAy7vI0U8SqA7nkYT3FARxBZvevqYaGhn7BUZ+Oy8ay0L3TGrJjy62lnwtXKg7KRXwPybF91iYyqXdgJI1QNzjzU3gxQQObbF0nOeojV+dkopnOsBOoTB/RvQUC81xn3RKwT7xPcekt/dbZ1R9mvyMb8eW/7ov3TifAwMDV0HHrJbLa8A2LJpdLttJpKnwGX7CVwjXmDvVAyMtXb5Z82nTNd8Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eE2Pptoi1l+r71A/2Gr0vPGX9JZ9gme6zm84nLJ/J3w=;
- b=OT1yQ2L+5+u4HcXqjLpOYE6bpRbwX9I2AH9R3omPeU35wuMM1R+hhWUXf3xyWeoBSvrlbJqX7aYIb8ZfbQ/svklgeEXVwv+ykRkxABogS75L8WaZMeOWF1fs/gJ9GIRK1bLvhsACebBE+QrBwHWYriRpPpQO0vbNzp0lBdRvKXN8c+7Fxa9g9hQ/UIeT27nLnGqC2No6EyhXHwlvDiLc+UILo2BIcUCuDc8lIlW57RzJfRQJN0sPMUoAgNk+BKjNLx4bbFwJHkQRpVIcqzcSWpoLplw+ccDLGnO0XM/sWIJ7Wxyg2a9YLnsz5qNL4KJiJXp6FzG63lj3C7eN0Oc3bw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eE2Pptoi1l+r71A/2Gr0vPGX9JZ9gme6zm84nLJ/J3w=;
- b=fsUKJHX4snlis5Ah5vzgdCI2uidWZfs3Er4y6vsdi85eyA8tf8ZBhaFAm2JC9Bcs9gV4TzbpjI25WYpLGUzAYJRkzf1kRBDNZiVSTJZ3fNU+lWwx4lh6mfyskSH2FFwZ+BC6AYvQZpwy/pIW9tDQzJLPp24XWLyd49Xa3Gh0ZIm9RiJnSTK3AUnKBu1TQRderO5sbdnfPYf5svnZPykWEu8KFutRE1DPTygP0bF14VnRc72uNFyICHaEP3YPpugxuVxotaBoYFXcJSurYBpAT02ISIVCoUM6ms59s5oUAkRSjWOrNZ0mro7BHLJkwMIpzNmp0c9mjhCx7iOdGH9Kmg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from AM5PR0401MB2515.eurprd04.prod.outlook.com
- (2603:10a6:203:36::19) by VI1PR0401MB2366.eurprd04.prod.outlook.com
- (2603:10a6:800:2b::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.22; Tue, 14 Jun
- 2022 10:48:25 +0000
-Received: from AM5PR0401MB2515.eurprd04.prod.outlook.com
- ([fe80::1dcc:ddb9:5198:5891]) by AM5PR0401MB2515.eurprd04.prod.outlook.com
- ([fe80::1dcc:ddb9:5198:5891%6]) with mapi id 15.20.5332.022; Tue, 14 Jun 2022
- 10:48:25 +0000
-Message-ID: <60a08f2c-6475-4bb2-1cc8-1935a5ddeb79@suse.com>
-Date:   Tue, 14 Jun 2022 12:48:23 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH net] sierra_net: Fix use-after-free on unbind
-Content-Language: en-US
-To:     Lukas Wunner <lukas@wunner.de>, Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        Dan Williams <dan.j.williams@intel.com>
-References: <80e88f61ca68c36ebce5d17dfcaa8e956e19fb2f.1655196227.git.lukas@wunner.de>
-From:   Oliver Neukum <oneukum@suse.com>
-In-Reply-To: <80e88f61ca68c36ebce5d17dfcaa8e956e19fb2f.1655196227.git.lukas@wunner.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM6P191CA0015.EURP191.PROD.OUTLOOK.COM
- (2603:10a6:209:8b::28) To AM5PR0401MB2515.eurprd04.prod.outlook.com
- (2603:10a6:203:36::19)
+        with ESMTP id S1356178AbiFNLAg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 07:00:36 -0400
+Received: from mailrelay.tu-berlin.de (mailrelay.tu-berlin.de [130.149.7.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087B649902;
+        Tue, 14 Jun 2022 04:00:32 -0700 (PDT)
+Received: from SPMA-04.tubit.win.tu-berlin.de (localhost.localdomain [127.0.0.1])
+        by localhost (Email Security Appliance) with SMTP id 717EE974E00_2A86A4DB;
+        Tue, 14 Jun 2022 11:00:29 +0000 (GMT)
+Received: from mail.tu-berlin.de (bulkmail.tu-berlin.de [141.23.12.143])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "exchange.tu-berlin.de", Issuer "DFN-Verein Global Issuing CA" (not verified))
+        by SPMA-04.tubit.win.tu-berlin.de (Sophos Email Appliance) with ESMTPS id BCBD9974BCD_2A8682DF;
+        Tue, 14 Jun 2022 10:51:25 +0000 (GMT)
+Received: from [192.168.178.14] (89.12.240.121) by ex-06.svc.tu-berlin.de
+ (10.150.18.10) with Microsoft SMTP Server id 15.2.986.22; Tue, 14 Jun 2022
+ 12:51:25 +0200
+Message-ID: <d87b06a38f6a8fa61abc36b06f108568b82bfa21.camel@mailbox.tu-berlin.de>
+Subject: Re: [PATCH bpf-next 2/2] bpf: Require only one of cong_avoid() and
+ cong_control() from a TCP CC
+From:   =?ISO-8859-1?Q?J=F6rn-Thorben?= Hinz <jthinz@mailbox.tu-berlin.de>
+To:     Martin KaFai Lau <kafai@fb.com>
+CC:     <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>
+Date:   Tue, 14 Jun 2022 12:51:23 +0200
+In-Reply-To: <20220609185551.ptn2htxmk4fsr5p2@kafai-mbp>
+References: <20220608174843.1936060-1-jthinz@mailbox.tu-berlin.de>
+         <20220608174843.1936060-3-jthinz@mailbox.tu-berlin.de>
+         <20220608183356.6lzoxkrfskmvhod2@kafai-mbp>
+         <f7ea082a99224e12e085e879e7c067f23844874c.camel@mailbox.tu-berlin.de>
+         <20220609185551.ptn2htxmk4fsr5p2@kafai-mbp>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e63d50c8-be18-4e81-a6e7-08da4df3685c
-X-MS-TrafficTypeDiagnostic: VI1PR0401MB2366:EE_
-X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
-X-Microsoft-Antispam-PRVS: <VI1PR0401MB2366C0D2DD81EEFBAEBF6ACEC7AA9@VI1PR0401MB2366.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1plKnTAY0hTktjraX8i2FUQrFuRRklipObpGTDn38gkwV7zQ4T+T9LisjsH6k6lYopdNRKDjzV2pVUfTABBSWZ/BtMurah+JoYl/aORIxPFU/2VNHzU9nDM507PfwSG20/Ea4BDfRMwlT2pFWuK47tEFqkMGeShB6YMGTxXl0hQh30Otg3gOCZlCFtcF/frypyaD0uvYxD+goOvV9BykRLFYIcqNLS57kuQ5i8zcrO30wGWkUWYgK3kkmLDJFALOsb0OYUv58XZ1EZgr3F7IS0nU+wJQJ15qHTsEhedHsZPJS0XKZrp/sEHYUPUVIFiSYXs+/oo+fHe1onmVE6J+aS3aMu7ff5rZQd8hhFIM7jD4q2mP1Ef1XQKgEQmbCS+oelOtZYDCLSIS4mHLJAEa4RqBOW110uuOoCoe1eMOVPio2qoOnqhBnh8o17H7exhyQcJ4hu8lfW6owzXUCqgLpfmwFLamqeOoGHsP7Q6DpQYziUOblneOw02yKtzmxFKdVkJEaS0gKojlTbLmwzhAXzGxdoajAqnnhDO4k2j5lIBjf7YoBu65HQ/1Z8tAdGUfK41kUwiVkQb6u+U24+5JtIYM8VrsP8yNL/4xIHTqNP41SIvJcr9IvQsHuPd/gNrCemvE8qv9fuDkwd0NpJ9yRMTcNAy4z6/NAlPWJC2Y3llTN7h5oZwqSRGV+TP7AWhiIIDomrZuRFmpzS43lQ8Un+LF6QzWFTi6GkGL+uOgZpM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM5PR0401MB2515.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(66556008)(66946007)(31686004)(36756003)(4326008)(186003)(4744005)(6512007)(8936002)(5660300002)(66476007)(8676002)(31696002)(2616005)(86362001)(316002)(53546011)(6506007)(38100700002)(110136005)(508600001)(2906002)(6486002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?d3VVWmdEZ2FqY1J3Z001N09Qc1BzRFFGZWRnZG51RjVxSU9qUndXZzJXL1VL?=
- =?utf-8?B?MFM2Yit6b01yNXdaZGhvcnVuVkdHZDJyczhjcDAzNmhtQld0RUY4eXFkMnRN?=
- =?utf-8?B?T1IxdHN4dDZlRElRSHJ0QVF2UVhidTMxa3VWeGlzY1RESEJoNWNMdjl5djMv?=
- =?utf-8?B?TnNiZDdiZU9manUxb2p5Sk56KzBCTGRGK3NRMFBtak8vZU9kMzBYd0k3TFor?=
- =?utf-8?B?Y0ttd05qN1lSZDZiVTI3ellMMmlMV1F1WTdrRUdHZmJxRjR4OExtNDdQZTlh?=
- =?utf-8?B?bWVrcWNHSnh5dUVXWXhMZko4UVRzbzhuL1RXUU9OOHUydE9pbHZ1Qndubmp5?=
- =?utf-8?B?M09CUDhlYWMrNUVsY2FTR2ROL3dsWHdrVGZZK1hBVzdWc3NCS0RoUkE2RTBQ?=
- =?utf-8?B?b0F0dkFQUzdsbWU4Y2s0NmZpOVEzNU1LWmlkTU85Q0IzNkhzblBpdXVuMUN2?=
- =?utf-8?B?TnRrNnJ4ZHJYSTlKSkxqYlp3dFdudUMwM0p3S1VjUkhwWS9DNFFOL004ZzZl?=
- =?utf-8?B?VG5xU0t3dWtwT1JLTlB6b3ZPdkE4Sk9xWTFsQXgyQXVuVE1tQWtRVzA3QUtR?=
- =?utf-8?B?T2ZjaUJMNHpEYy80RUUwdVFzbzY0dGZpMTBNdjRyY3lQYUUvV01JMm1DVXJ0?=
- =?utf-8?B?eHFDOFBVVzBBd1Z6T3FBMzdabGRjR3NLQVhFQ2dBa3VBV1BOSnZGbkVtK2Ny?=
- =?utf-8?B?WmttRkRTQzIzSVBscXdDOEEwdEs0SzNNNTFVTnFXQ3lBM3MycS9CZkM3T1da?=
- =?utf-8?B?Y1I4Q3RHTnZqaUdWaGo0cklmSEw2ckhKWGFHNlhuYk9FZjdaaGNPTVN5dVNX?=
- =?utf-8?B?dXQ2WHhNa0lncTBRcEdaTEFjTENwY2tZb0Rwd051VkM2cVZDMXppQzNhSVFU?=
- =?utf-8?B?MndieDlydFhzcEVMbk9odVl5WkJ5ZFdBVnVsencxV2NFdE5hWEdxMXpXNytR?=
- =?utf-8?B?eG0rd1VoYnJ1WThUZTNaNUpzMHpIMGpxejkyZEx6M0VZL0VCOEtid05uKzlI?=
- =?utf-8?B?UGVlYlJ5Zi91L0pnRkpHOUF2QWl3OEs1UWJ1cGtiMUIrcGdlVDB2Qys3S3BW?=
- =?utf-8?B?Rk41cEhoMW56czd1TjNCS003UTlERVRhMGFlRFFXRm1maHlUallWTkd4eFBM?=
- =?utf-8?B?M04xeENMcTFZREhRSktjWGIwVmdkVWhObGJNa0t4cXpybTlBUEdsUTB1cHps?=
- =?utf-8?B?bDV6UWtTMUlLSkx4amRWTGg5WlpkdkNwdFZ1bzNEaVFxODhIdkJsUEVaRzNk?=
- =?utf-8?B?RHc1eFRPVlpUUkJudmpNUGFQbFVYY0dWa216MFEzZVVNaFJmaHJmYnZHRlBS?=
- =?utf-8?B?ZEhMQzcxa1F2L3E1YU52T2pmdmZ5T2t2MkZwUm5CV0xEQjFDaldjamxaWlBQ?=
- =?utf-8?B?ZTlaQTl6RmM1RXBidjZOUmMxWUFxUUNET3U5cUF3M1owNHRJaHJreTdSaG1q?=
- =?utf-8?B?YXBLYnBJcEwzMXBvcENOZHZZTWVtclZnQmJ3NGVQT3VtSkwvM25QSktsRzVz?=
- =?utf-8?B?UmQ1VXZMWGxtbndPK2FjYUlzK1VOQkpwSWFzd01MSjBhU1NiZ0g1aUo0MEpw?=
- =?utf-8?B?ekM2WUtrK00wN0kvOWdhMUlqa3pjTTVkTzdlZnpHR1lGNEpkd1YzNmJydEN0?=
- =?utf-8?B?LzF5aHFDd0VGRTlqOVBJTGFLMFQ4MXh0cThmWFlYY25YejlwUk91T0d6WVFY?=
- =?utf-8?B?SVBWUitCMUszNm9lS1NEaUp4QzNBbXRGbG1LeGlPWWczWmVlZnRyS255NGll?=
- =?utf-8?B?V0h1UU45eHJZcC9Oeisvdk1EVjNGeHVSZW9ZMjNDQmdhcmFscGY2K1c1ejBw?=
- =?utf-8?B?Y2xNMEFvOUxjZ1p5MFZaRHMrOVZ3YjJOczdtQmc3RUJ4MzY4ZGlvSmtMWVV2?=
- =?utf-8?B?K2UwUHd6c3IrNDg1YXVqcXlIOXpkem5zN2hVeGkrOE45czFCRTlCeHFIQnVq?=
- =?utf-8?B?SlBhRWhINjNxRkIwSTB5S2x6ZE9OWVhpNVlESUhBN1h5MzNIcnFlQ216VGNE?=
- =?utf-8?B?NUttOGRSZjVOZGgyOVVqbGlaVjJKbUNOeUtvNVZqRWlGYVZoSDJLN0swV3U2?=
- =?utf-8?B?Z2NPU1hPanYyenpqckJVVTRqdU9kNXZneUd4RFFtY21hOTY5NkYxSFRINlJO?=
- =?utf-8?B?anJ6TDZkQnBDczJtMmk5MXJjdzQ5RHNYdVYzN0RmM1Q1TUJuaWptRHlJSTBn?=
- =?utf-8?B?aU9PKy9NcHNIaWp5T2tUN0JVS0tDZU1SVVlkQzJLdlo3S2FTRXB1RUkrTXFK?=
- =?utf-8?B?RWI2SDhnckcyWHFjcHpsbjdUSHlHaFN0UWp6eWVWNTdCWDZiR0EvYURLcGt4?=
- =?utf-8?B?dGgxRzZKcGZQYTluUkpvbkxGbGFtdGM4UnAyNXA3VFpBckJISVNWVjdKVDRM?=
- =?utf-8?Q?0FMMCYKgAUn9YI6RTg8c9acFe15lh1hHo05PeIS1E5t2P?=
-X-MS-Exchange-AntiSpam-MessageData-1: v8xsXJ5Y9G4mrQ==
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e63d50c8-be18-4e81-a6e7-08da4df3685c
-X-MS-Exchange-CrossTenant-AuthSource: AM5PR0401MB2515.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2022 10:48:25.1359
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3V1h9B8Mox3YoVdVbKoyFFsNUCYEM+2aOgOSWZRt/Cn/ApZySRzd+6cpA3jTVK2WZPADrYyboLsPLmLPsSYE+Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2366
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SASI-RCODE: 200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=campus.tu-berlin.de; h=message-id:subject:from:to:cc:date:in-reply-to:references:content-type:mime-version:content-transfer-encoding; s=dkim-tub; bh=Vdvn/GQzfzsnKBXyTbKXUkkfoZYXh8Z9H9V+qMrFqDM=; b=RkSgdUofUwsNUJ5FBnlSgFmGLfraGOqedyJhWTu17VVLC2OVeBmu6Q46Ig4OT7wEQOLGPQtcwc6BPzbNlmJNvNa/xyDrmWDy6aCqqvYGczaodj0/CCXszri4hCywqAAa2XNC5FkyjCUVM6I2+/GwAP0h3+iQAKZBNqvhjghrK5Y=
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 2022-06-09 at 11:55 -0700, Martin KaFai Lau wrote:
+> On Thu, Jun 09, 2022 at 10:55:25AM +0200, Jörn-Thorben Hinz wrote:
+> > Thanks for the feedback, Martin.
+> > 
+> > On Wed, 2022-06-08 at 11:33 -0700, Martin KaFai Lau wrote:
+> > > On Wed, Jun 08, 2022 at 07:48:43PM +0200, Jörn-Thorben Hinz
+> > > wrote:
+> > > > When a CC implements tcp_congestion_ops.cong_control(), the
+> > > > alternate
+> > > > cong_avoid() is not in use in the TCP stack. Do not force a BPF
+> > > > CC
+> > > > to
+> > > > implement cong_avoid() as a no-op by always requiring it.
+> > > > 
+> > > > An incomplete BPF CC implementing neither cong_avoid() nor
+> > > > cong_control() will still get rejected by
+> > > > tcp_register_congestion_control().
+> > > > 
+> > > > Signed-off-by: Jörn-Thorben Hinz <jthinz@mailbox.tu-berlin.de>
+> > > > ---
+> > > >  net/ipv4/bpf_tcp_ca.c | 1 +
+> > > >  1 file changed, 1 insertion(+)
+> > > > 
+> > > > diff --git a/net/ipv4/bpf_tcp_ca.c b/net/ipv4/bpf_tcp_ca.c
+> > > > index 1f5c53ede4e5..37290d0bf134 100644
+> > > > --- a/net/ipv4/bpf_tcp_ca.c
+> > > > +++ b/net/ipv4/bpf_tcp_ca.c
+> > > > @@ -17,6 +17,7 @@ extern struct bpf_struct_ops
+> > > > bpf_tcp_congestion_ops;
+> > > >  static u32 optional_ops[] = {
+> > > >         offsetof(struct tcp_congestion_ops, init),
+> > > >         offsetof(struct tcp_congestion_ops, release),
+> > > > +       offsetof(struct tcp_congestion_ops, cong_avoid),
+> > > At least one of the cong_avoid() or cong_control() is needed.
+> > > It is better to remove is_optional(moff) check and its
+> > > optional_ops[]
+> > > here.  Only depends on the tcp_register_congestion_control()
+> > > which
+> > > does a similar check at the beginning.
+> > You mean completely remove this part of the validation from
+> > bpf_tcp_ca.c and just rely on tcp_register_congestion_control()?
+> > True,
+> Yes.
+> 
+> > that would be even easier to maintain at this point, make
+> > tcp_register_congestion_control() the one-and-only place that has
+> > to
+> > know about required and optional functions.
+> > 
+> > Will rework the second patch.
+> > 
+> > > 
+> > > Patch 1 looks good.  tcp_bbr.c also needs the sk_pacing fields.
+> > > 
+> > > A selftest is needed.  Can you share your bpf tcp-cc and
+> > > use it as a selftest to exercise the change in this patch
+> > > set ?
+> > I cannot do that just now, unfortunately. It’s still earlier work
+> > in
+> > progress. Also, it will have an additional, external dependency
+> > which
+> > might make it unfit to be included here/as a selftest. I will keep
+> > it
+> > in mind for later this year, though.
+> What is the external dependency ?  Could you share some high level
+> of the CC you are developing ?
+> The reason for this question is to see if there is something
+> missing from the kernel side to write the tcp-cc in bpf that you
+> are developing.
+The algorithm is PowerTCP[1], I’m currently implementing it with eBPF.
+It requires telemetry from the network.
 
+The mentioned dependency (not developed by us, not yet released) will
+provide such telemetry. Its end-host part is implemented with eBPF
+itself and does not require any additional kernel patches.
 
-On 14.06.22 10:50, Lukas Wunner wrote:
+At the moment I’m not aware of any other bits missing from the kernel
+side. Will propose another patch if that changes or at least report it.
 
-> @@ -758,6 +758,8 @@ static void sierra_net_unbind(struct usbnet *dev, struct usb_interface *intf)
->  
->  	dev_dbg(&dev->udev->dev, "%s", __func__);
->  
-> +	usbnet_status_stop(dev);
-> +
->  	/* kill the timer and work */
->  	del_timer_sync(&priv->sync_timer);
->  	cancel_work_sync(&priv->sierra_net_kevent);
+[1] https://www.usenix.org/system/files/nsdi22-paper-addanki_3.pdf
 
-Hi,
-
-as far as I can see the following race condition exists:
-
-
-CPU A:
-
-intr_complete() -> static void sierra_net_status() -> defer_kevent()
-
-									CPU B:
-
-usbnet_stop_status()  ---- kills the URB but only the URB, kevent scheduled
-
-CPU A:
-
-sierra_net_kevent -> sierra_net_dosync() ->
-
-CPU B:
--> del_timer_sync(&priv->sync_timer);  ---- NOP, too early
-
-CPU A:
-
-add_timer(&priv->sync_timer);
-
-CPU B:
-
-cancel_work_sync(&priv->sierra_net_kevent);  ---- NOP, too late
-
-	Regards
-		Oliver
-
+> 
+> > In the meantime, I could look into adding a more naive/trivial
+> > test,
+> > that implements cong_control() without cong_avoid() and relies on
+> > sk_pacing_* being writable, if you would prefer that? Would that be
+> > fine as a follow-up patch (might take me a moment) or better be
+> > included in this series?
+> Yeah, it will do and the test should be submitted together in
+> this series.
+Please see v3 of the series.
 
