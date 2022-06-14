@@ -2,49 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4992A54B7EF
-	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 19:48:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E25E54B80A
+	for <lists+netdev@lfdr.de>; Tue, 14 Jun 2022 19:52:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245705AbiFNRsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 13:48:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38554 "EHLO
+        id S244080AbiFNRsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 13:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236476AbiFNRsE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 13:48:04 -0400
+        with ESMTP id S245713AbiFNRsF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 13:48:05 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A55722873F;
-        Tue, 14 Jun 2022 10:48:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91F153055F;
+        Tue, 14 Jun 2022 10:48:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655228882; x=1686764882;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=gh6a4XXBv1nxa3Ro2RxR5Nzg55kDamBl4BEMb7Uz6Sw=;
-  b=Rn+PnjiFbuuJvQ5lCV5Z3OG1vfjJmYNa+Y3yL28Mg5pSi+bDCC0ZDyD3
-   ZHIKUENWcBhonGikeK/TuIbsad33jslvlLAF8tVj7C2/zcowYBo9gCKhB
-   DTv/08ZgGQ2oXQ3Oq9l2ktSgmiNfDsOJPFzkdEGH4HPmubLAtOlgxAq5k
-   OVC+6NLVFl1G39OzWvL/aQidUuMo79+joQv6+aS3ao/xqDKcSGMhDLlQ8
-   56pGgS02NqlDypX5GqzU7zDqK//Sp82E1W80Kr+QDMo0K8ckLzXLNTBdv
-   ay3fd/VVtX4I6WgVtoEMV/Y2KS82mhpGCBmvVe9rU6LaXVZIwfRsBKnqF
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="340356761"
+  t=1655228884; x=1686764884;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Vmf7x579QBwv8YXAGjON3KIIRMEr0QApqqdBHK9Q4b0=;
+  b=WjqaFfhPDLW0SfOZT/eZkJpYQTLAJNp3xoYK/CK6bQ6uRrAItHJCuxVD
+   trbTlYXEFV8aYYUjxzGuoDZUmmsghfDoHQAZ7XhPFHzTC2c5Z8DH97u2n
+   GoYXTDBMHjjAC3Iu8TcHB7h+1Wz8XWgvuokYQHaqqblEDIlLsTl+4/x/8
+   RT24QFesAnPBNjCgbmvfKWiGSfr4atr4/RtRgTPi8l4zVuijs9IkZu3vs
+   upZUZQcheUvZK+2mPaGjyaP+p+71ERh6B9XcjkN3f2eg9jY6r9z+pBfo8
+   0KYORZRNY10slt7Os14UVdIIcpKIn5+VI0q0zi1nIm6tpn+98WEOB9AS7
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="340356774"
 X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="340356761"
+   d="scan'208";a="340356774"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 10:47:53 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 10:47:56 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="570110050"
+   d="scan'208";a="570110063"
 Received: from boxer.igk.intel.com ([10.102.20.173])
-  by orsmga002.jf.intel.com with ESMTP; 14 Jun 2022 10:47:51 -0700
+  by orsmga002.jf.intel.com with ESMTP; 14 Jun 2022 10:47:54 -0700
 From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
-        bjorn@kernel.org, Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH v2 bpf-next 00/10] AF_XDP ZC selftests
-Date:   Tue, 14 Jun 2022 19:47:39 +0200
-Message-Id: <20220614174749.901044-1-maciej.fijalkowski@intel.com>
+        bjorn@kernel.org,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Alexandr Lobakin <alexandr.lobakin@intel.com>
+Subject: [PATCH v2 bpf-next 01/10] ice: allow toggling loopback mode via ndo_set_features callback
+Date:   Tue, 14 Jun 2022 19:47:40 +0200
+Message-Id: <20220614174749.901044-2-maciej.fijalkowski@intel.com>
 X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220614174749.901044-1-maciej.fijalkowski@intel.com>
+References: <20220614174749.901044-1-maciej.fijalkowski@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -57,71 +61,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-v1->v2:
-* collect acks from Magnus
-* drop redundant 'ret' variable in patch 4 (Magnus)
-* drop redundant assignments to ifobject->xdp_flags in patch 10 (Magnus)
-* use NETIF_F_LOOPBACK instead of introducing priv-flag (Alexandr)
+Add support for NETIF_F_LOOPBACK. Also, simplify checks throughout whole
+ice_set_features().
 
-Hi!
+CC: Alexandr Lobakin <alexandr.lobakin@intel.com>
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_main.c | 54 ++++++++++++++---------
+ 1 file changed, 34 insertions(+), 20 deletions(-)
 
-This set makes it possible to test ice driver with test suite that
-xdpxceiver provides. In order to do it, device needs to be turned on to
-loopback mode, so in first patch NETIF_F_LOOPBACK support is added to
-ice_set_features(). Furthermore, ethtool's loopback test is fixed for
-ice (patch 2 and 3). Besides turning device into loopback mode, I was
-limiting queue count to 1, so that none of the steering filters are
-needed.
-
-Rest of the work is related to xdpxceiver. Currently it is assumed that
-underlying device supports native XDP. It is true for veth, but might
-not be for other device that might be used with xdpxceiver once this
-patch set land. So, patch 4 adds a logic to find out if underlying
-device supports XDP so that TEST_MODE_DRV can be used for test suite.
-Patch 5 restores close() on netns fd that was removed by accident.
-
-In patch 6, default Rx pkt stream is added so physical device testing
-will be able to use shared UMEM in a way that Tx will utilize first half
-of buffer space and Rx second one. Then, patch 7 adds support for running
-xdpxceiver on physical devices.
-
-Patch 8 and 9 prepares xdpxceiver to address ZC drivers that clean
-lazily Tx descriptors (and therefore produce XSK descs to CQ) so that
-pacing algorithm works fine.
-
-Patch 10 finally adds new TEST_MODE_ZC for testing zero copy AF_XDP
-driver support.
-
-This work already allowed us to spot and fix two bugs in AF_XDP kernel
-side ([0], [1]).
-
-v1 is here [2].
-
-[0]: https://lore.kernel.org/bpf/20220425153745.481322-1-maciej.fijalkowski@intel.com/
-[1]: https://lore.kernel.org/bpf/20220607142200.576735-1-maciej.fijalkowski@intel.com/
-[2]: https://lore.kernel.org/bpf/20220610150923.583202-1-maciej.fijalkowski@intel.com/
-
-Thank you.
-
-Maciej Fijalkowski (10):
-  ice: allow toggling loopback mode via ndo_set_features callback
-  ice: check DD bit on Rx descriptor rather than (EOP | RS)
-  ice: do not setup vlan for loopback VSI
-  selftests: xsk: query for native XDP support
-  selftests: xsk: add missing close() on netns fd
-  selftests: xsk: introduce default Rx pkt stream
-  selftests: xsk: add support for executing tests on physical device
-  selftests: xsk: rely on pkts_in_flight in wait_for_tx_completion()
-  selftests: xsk: remove struct xsk_socket_info::outstanding_tx
-  selftests: xsk: add support for zero copy testing
-
- drivers/net/ethernet/intel/ice/ice_ethtool.c |   2 +-
- drivers/net/ethernet/intel/ice/ice_main.c    |  62 +--
- tools/testing/selftests/bpf/test_xsk.sh      |  52 ++-
- tools/testing/selftests/bpf/xdpxceiver.c     | 400 +++++++++++++------
- tools/testing/selftests/bpf/xdpxceiver.h     |  10 +-
- 5 files changed, 364 insertions(+), 162 deletions(-)
-
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index e1cae253412c..ab00b0361e87 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -3358,6 +3358,7 @@ static void ice_set_netdev_features(struct net_device *netdev)
+ 	netdev->features |= netdev->hw_features;
+ 
+ 	netdev->hw_features |= NETIF_F_HW_TC;
++	netdev->hw_features |= NETIF_F_LOOPBACK;
+ 
+ 	/* encap and VLAN devices inherit default, csumo and tso features */
+ 	netdev->hw_enc_features |= dflt_features | csumo_features |
+@@ -5902,6 +5903,18 @@ ice_set_vlan_features(struct net_device *netdev, netdev_features_t features)
+ 	return 0;
+ }
+ 
++static void ice_set_loopback(struct ice_pf *pf, struct net_device *netdev, bool ena)
++{
++	bool if_running = netif_running(netdev);
++
++	if (if_running)
++		ice_stop(netdev);
++	if (ice_aq_set_mac_loopback(&pf->hw, ena, NULL))
++		dev_err(ice_pf_to_dev(pf), "Failed to toggle loopback state\n");
++	if (if_running)
++		ice_open(netdev);
++}
++
+ /**
+  * ice_set_features - set the netdev feature flags
+  * @netdev: ptr to the netdev being adjusted
+@@ -5910,6 +5923,7 @@ ice_set_vlan_features(struct net_device *netdev, netdev_features_t features)
+ static int
+ ice_set_features(struct net_device *netdev, netdev_features_t features)
+ {
++	netdev_features_t changed = netdev->features ^ features;
+ 	struct ice_netdev_priv *np = netdev_priv(netdev);
+ 	struct ice_vsi *vsi = np->vsi;
+ 	struct ice_pf *pf = vsi->back;
+@@ -5917,37 +5931,33 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
+ 
+ 	/* Don't set any netdev advanced features with device in Safe Mode */
+ 	if (ice_is_safe_mode(vsi->back)) {
+-		dev_err(ice_pf_to_dev(vsi->back), "Device is in Safe Mode - not enabling advanced netdev features\n");
++		dev_err(ice_pf_to_dev(vsi->back),
++			"Device is in Safe Mode - not enabling advanced netdev features\n");
+ 		return ret;
+ 	}
+ 
+ 	/* Do not change setting during reset */
+ 	if (ice_is_reset_in_progress(pf->state)) {
+-		dev_err(ice_pf_to_dev(vsi->back), "Device is resetting, changing advanced netdev features temporarily unavailable.\n");
++		dev_err(ice_pf_to_dev(vsi->back),
++			"Device is resetting, changing advanced netdev features temporarily unavailable.\n");
+ 		return -EBUSY;
+ 	}
+ 
+ 	/* Multiple features can be changed in one call so keep features in
+ 	 * separate if/else statements to guarantee each feature is checked
+ 	 */
+-	if (features & NETIF_F_RXHASH && !(netdev->features & NETIF_F_RXHASH))
+-		ice_vsi_manage_rss_lut(vsi, true);
+-	else if (!(features & NETIF_F_RXHASH) &&
+-		 netdev->features & NETIF_F_RXHASH)
+-		ice_vsi_manage_rss_lut(vsi, false);
++	if (changed & NETIF_F_RXHASH)
++		ice_vsi_manage_rss_lut(vsi, !!(features & NETIF_F_RXHASH));
+ 
+ 	ret = ice_set_vlan_features(netdev, features);
+ 	if (ret)
+ 		return ret;
+ 
+-	if ((features & NETIF_F_NTUPLE) &&
+-	    !(netdev->features & NETIF_F_NTUPLE)) {
+-		ice_vsi_manage_fdir(vsi, true);
+-		ice_init_arfs(vsi);
+-	} else if (!(features & NETIF_F_NTUPLE) &&
+-		 (netdev->features & NETIF_F_NTUPLE)) {
+-		ice_vsi_manage_fdir(vsi, false);
+-		ice_clear_arfs(vsi);
++	if (changed & NETIF_F_NTUPLE) {
++		bool ena = !!(features & NETIF_F_NTUPLE);
++
++		ice_vsi_manage_fdir(vsi, ena);
++		ena ? ice_init_arfs(vsi) : ice_clear_arfs(vsi);
+ 	}
+ 
+ 	/* don't turn off hw_tc_offload when ADQ is already enabled */
+@@ -5956,11 +5966,15 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
+ 		return -EACCES;
+ 	}
+ 
+-	if ((features & NETIF_F_HW_TC) &&
+-	    !(netdev->features & NETIF_F_HW_TC))
+-		set_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
+-	else
+-		clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
++	if (changed & NETIF_F_HW_TC) {
++		bool ena = !!(features & NETIF_F_HW_TC);
++
++		ena ? set_bit(ICE_FLAG_CLS_FLOWER, pf->flags) :
++		      clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
++	}
++
++	if (changed & NETIF_F_LOOPBACK)
++		ice_set_loopback(pf, netdev, !!(features & NETIF_F_LOOPBACK));
+ 
+ 	return 0;
+ }
 -- 
 2.27.0
 
