@@ -2,228 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDC6954CD85
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 17:52:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45C1E54CD9C
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 17:55:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347469AbiFOPwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 11:52:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46924 "EHLO
+        id S1347627AbiFOPzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 11:55:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345428AbiFOPw3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 11:52:29 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2836B19
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:52:27 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so2508084pjl.5
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:52:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3tk/bIYK7oc7OMLaeaBx6rCMrnVaPnObioe6kcfzOqI=;
-        b=V7FRPFOfz5s/y5/gIEEpBTqy0upqskPXeFx9I2FPrefo8Rda4JT8tkvEWW+jdTGksG
-         adNYROrU/fPPphiHk3sgVn9uftyK0rEYjhbJ+NE4OoUAJFhhq4l8VqllwWPAwfOuSQZ5
-         jbBR6Te8SmSdrKFlLKro8poh1YIFdo97MA9hEXAvfZjP8v4iocfPuzvnv6HY/asr9MNt
-         Rspy/Z6k7zlVn5Np8U4cVShW5FkCF9dGca5mjHUZCyW4+JUuARk3yxnV4h4ujAX17cXc
-         Vb+DjaNbz0/q1GLazKVa7wu5cTqwCBQcToqtbf2RYGIsT/WmH5doeOV4T35hmlehnk/t
-         wX9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3tk/bIYK7oc7OMLaeaBx6rCMrnVaPnObioe6kcfzOqI=;
-        b=M84f2M1bcTfl4CXpbKwLcE72tMwWnPd84rh5/P6QAIizBMAt4iHXCwAUxLu5JzUgDT
-         GDvm8Q4lTImI8RIxoWTGRNbahNuLaNHEZXYHPHoMMrzKHiNqEfFm4iM16UOGELWwXsHN
-         ChYhAabDMldfyDcoxlaciz/Q0/KjELGAM68WITvmBZiw3d+7Okyo5/Dl+5L29X+ny11d
-         QW+bQfvhSW1dsZkrnHgm7ekEHgs46O0O1DD03EDXybBqvr5nj1W06+iihVrdsVtBs0/g
-         z9zfUJl0VunLYw0nCAj7ljcNgPxRMBUbuuEWS3TrgnHiMc3jIRLWRheS8uaBbJpH5fP0
-         Y2Zg==
-X-Gm-Message-State: AJIora/ZuCfL3zGV5Ty/9f29lkj6ZTLSWsnFOx/ngmJBdIMl668EBf/g
-        WBbkz76eNVrdzArpsGa2/duzYdSjjOwHV6HaZjMqkg==
-X-Google-Smtp-Source: AGRyM1vhauOYk8BwpdDxDJGCQINhQmVjncQdW3dHke4hqG01nEI8OZ15S2KS9GGIsKTbxBA4+eampNdFgxy/GBq7n5I=
-X-Received: by 2002:a17:902:cec2:b0:166:4e45:e1b2 with SMTP id
- d2-20020a170902cec200b001664e45e1b2mr428483plg.73.1655308346773; Wed, 15 Jun
- 2022 08:52:26 -0700 (PDT)
+        with ESMTP id S1346021AbiFOPzh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 11:55:37 -0400
+Received: from sonic316-26.consmr.mail.ne1.yahoo.com (sonic316-26.consmr.mail.ne1.yahoo.com [66.163.187.152])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC704340FE
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:55:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1655308534; bh=tKXZOSW+rCggK4tmMM0+06TKBO7wswzabCTCRNXsBhc=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=lZfFWkSjhQbMXIDwPR/vSXPS8txg/aIdCiH99K/WKEGkivC7KbjYctBYz7bmYlFMGyFAw+5/EO70Y2KcWNWNdNUiElp2bKdz+BtHxboa8NCCC8jxoSxpNTcRnVXuNzUMiKfNoNfGsnUmetngJ0K1cmbbxrl1tRq+SRxaGmD7/uW98dLGX+TaSmzfJufUHUUsebWMv21GHRPMdGlz2vvpG/Zs4q+qOdp4LTp/lM9pX3ra/zfIOMkVTE0+pbiBk9eSWihirtybbEXXmBk50G+i2arJj5NT5VIXLTGhokEL+SA+4Wh+MKzbm8QQO1Mtlv+TgsivDcic6IREvOuiW9r+ig==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1655308534; bh=DcasrK3Ao+uO7dv08ByHIA6gNyoX3cBO6RPIFwgZ0GF=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=P43cJCGEerBt9uDPLGhS6GCkC+nIVTHPXe+tIyjO6qKPnY5/WU7EGEGIXeUwU6JU+OHeJmY4TXkXC3uspiTga0itpEyHbiKd4ZFJ2Vfujw7i8yu29hKll7kjLzi+QVKkzawRd7/Wm3xhp7kdJQvfTwTsCJi+lC+ywSi48z0MuRmiw8GtVpeDgUDmQ0+jQPf6ePv1Oqf/ErM04mTnyrnEG5O0jPbhNwUQwrvMTOqwZR/9/lgxQ9iRkHx1pvCkzNJpOESpIc5nQ05jGwvQpxERCqn9z4Vhdn0y4ZldTxR6kxuGSGQVGOFeOB/HBiaL9JqlHT1zRhjcIiISATH+I2BP8Q==
+X-YMail-OSG: 3.kxmMUVM1kALftCQOBOMDo0pwNt7N.gDwuaeG9n5J_gI6pT9kPEZctmfUZnpQN
+ sj2P4HrPTnoRepKNiEiLv1xEV33fsgijjYcverCyhETE.8TeWydBXEmsKLdPjbs_x4u0ESMF7wio
+ hzpfoJJadZ49RcVNHXe3XesQwRh.9Jr38oywKbpq.46hIucoXsGQmfBNEIDjXOo9bfNd5LqavkQ6
+ ERdKJDJRqVfrfOO4_91Yobz3LnvShHzVtNCWTdeyyYtvpnWjjswG9zWLpLYoeU6ZOKTwtHFRLJfR
+ W560sfptAJE.w918ny4Wa308w8e0lkCkAa6N1vxZNOSlms95DzcIgswYZxT..eC4VVnc6NbWaq_L
+ Mr2bOHIryUCP.qo3oSGT7jrnNQ4Tv3OJDSlJZWcCz0LQEBGtGrkr5xegqgLtnoNXvCssr31GRozz
+ gN005oHtmPy5eH1EZkTtx1M7Gz5.IKKMPCXZ5LGeJML5tRVy9AWQxp5lX_5CMlzFhyibPgUGi9LR
+ BF8Vajr5yh97X6rzAOnIOckonNdkQyWRIuDSYixwQMP7XzdmrrYk79pIUgqB8H60B2FIvsjfKD5R
+ l_IYZ_dZLMJ5dNmSs8.NcS1mV4GX7BdaodJXYZq1K4MD7EVFFJ04ybNSSwsTWV9j6YZKB85mxJar
+ pXwRLvXQK8FzmSJ7Mb6Tq2z1.VtDYB1v2hOMducQQ12PP3mjWd2HYQvOgqBE7hCa5kqLSd8kQ7Bd
+ M7i_GVuIQH9WSE_R9mSI89zHGMH24l6hc3Ig.b7i3R9Aht8Nci0BTeML5nOprafi6Fkb6z3VHIys
+ sUAGHO55Y2h5Pe5mc4KOuN0G68IeGoGawKA.0d.UKiPMMdxe2ZuC0BWShlH5iZfWgQC1qNgVuJqe
+ FgJFPYXe7y8HCkqklwZyGwhpe86OkSa390EyEFyCOHqOMlSth7XiOCUIdxI_mYT5h9VaCqrIZeoS
+ t4w2NonhvVZI4tbV20Ytl5g.VVmjl1wjMqzj2xwGzrDYS5mAZ44M3H7tDBkZksnsoPdoz.x6x11G
+ rvfiZixYchKYZsFUxOr3WO2UiOTMlJYd8yS4NC9eJ5hVWetnPoCa5EcCwwmBOTFkdLrDmAS0VhuD
+ wqRPssrf4rJ7lJprdLziI5lZxEuV9AjEBx61CAzMhNvRVZJhI3wRENPpd6amAE3K53.HMjjwY5TA
+ rhNb_m3KSlOcLK3WSeS.JUpjOBCHPfAgXLBdcvH0.LfmGVnLGlzAN.6cvffkeBHL9SDx_JQ6MZMv
+ r32puXUCaqd2M6kAXstBWlsxNazPtWW0WyKEtD.A6epsaVeTXk6iNPLRxN5xCaXyZ1J.Yj71LPtS
+ EmyHs0X3T7MSTgEUI5H92AY_ONrlBWnbSmdOk9d0AN2Pkrj7GPNw3bi0wzFPchsCqkUxejO2KlGN
+ ReixQqwNpnhruPswKUHoxMojY75XYCJWrWz0Tphft_DsL529CGzKD7wnDgLktSfEVEzBCzJOq.2C
+ FktretqsYCkfrAYwRPI2AFE02VsUoBGHeRKfv1ATxxyIyyP4wpNC2tucBriI3_vDnXEGdE75v3eQ
+ z0DfJ1dF2t8Z8jhd1ApFFQaC4BsSPZIxWe9dC_lmeqUgGQGOMvcuFN7FlJ5lzasBpbP9yx8bhvXu
+ cc1G6KZF7Ew.iGNU6esZnuAFrgr66dtw9P9b14qxTBwrOyJBzsq.ipPPSosa_TIJ4YHdIhdMo8N3
+ Cw4j74AihIsCg150KpQ48QC4I0q_lY82cq3kDUKvA8B55OPjW5bKepKcxJWWpRiBXn9P.rgAzG7b
+ ZagNnBMsfNfg5EV3u4P0rqgBMEia6cQLbQEUbScDEjB4KEN_kx4KlhzrIVc5fBgF18dxgUGpI1aY
+ HFpQsYfPjGsLqVBvBc8LZl42At8Gt4m2YHVLBWCJPxC9TE0rfcwzPkWPevyy8kE7fNhP5lpQqANO
+ Fefz4FKrLD2OwR6hDnnIWyb92ru22Hokk77jelyiRuZhgQ6DlUvuOZnalYISpjg7zyq9w6KMbtpg
+ mg2EyBXe6vAPZgiolrQjFoXaCRvNLoPMLEhg2SzfePcMKcyiizbKKfnaZ5tk9ZRxWtf9M3UVt0Ds
+ ypnw2Iw9X2ecIrwEl6iPTPbq9VvBKDelLNGr_6ujN6mjpV8U4Elb6132EdclVmcc5u5AuWz1lLWh
+ WVGI.FR2LF4sAInFbD9lW9d4d4ZOhiGPbeNrNxuJNlui6AtUqMyGJfar3Ni2LZBvcnovcxzhj6Du
+ woOHuP3sWOm5T2kRagJI8RBdazpZ4KmxpzyJdoS2CP99LADeT9FH3LKX1U4hhBGiDRO0.bKPzbfv
+ RHnbGbCQ.eSw-
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic316.consmr.mail.ne1.yahoo.com with HTTP; Wed, 15 Jun 2022 15:55:34 +0000
+Received: by hermes--canary-production-ne1-799d7bd497-fg7z7 (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 75078b18cfc3ccad112c2b90a6626809;
+          Wed, 15 Jun 2022 15:55:31 +0000 (UTC)
+Message-ID: <1c4b1c0d-12f6-6e9e-a6a3-cdce7418110c@schaufler-ca.com>
+Date:   Wed, 15 Jun 2022 08:55:30 -0700
 MIME-Version: 1.0
-References: <20220610112648.29695-1-quentin@isovalent.com> <20220610112648.29695-2-quentin@isovalent.com>
- <YqNsWAH24bAIPjqy@google.com> <cb05a59e-07d5-ddd1-b028-82133faaf67e@isovalent.com>
- <CAKH8qBvvq0f+D8BXChw_8krH896J_cYg0yhRfnDOSO_U1n394w@mail.gmail.com>
- <71b56050-11ad-bd06-09c9-1a8c61b4c1b4@isovalent.com> <CAKH8qBsFyakQRd1q6XWggdv4F5+HrHoC4njg9jQFDOfq+kRBCQ@mail.gmail.com>
- <CALOAHbCvWzOJ169fPTCp1KsFpkEVukKgGnH4mDeYGOEv6hsEpQ@mail.gmail.com>
- <e9aa57d2-4ce7-23f2-0ba1-ea58f3254353@isovalent.com> <CALOAHbDDx_xDeUk8R+y-aREX9KMRbo+CqCV7m5dADdvijuHRQw@mail.gmail.com>
-In-Reply-To: <CALOAHbDDx_xDeUk8R+y-aREX9KMRbo+CqCV7m5dADdvijuHRQw@mail.gmail.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Wed, 15 Jun 2022 08:52:14 -0700
-Message-ID: <CAKH8qBuPh4aaEz_vv1s2gWYYPRm8e5gMaM-RcuCqg+AeaeZcPg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] Revert "bpftool: Use libbpf 1.0 API mode
- instead of RLIMIT_MEMLOCK"
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     Quentin Monnet <quentin@isovalent.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Harsh Modi <harshmodi@google.com>,
-        Paul Chaignon <paul@cilium.io>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3] cred: Propagate security_prepare_creds() error code
+Content-Language: en-US
+To:     Paul Moore <paul@paul-moore.com>,
+        Ignat Korchagin <ignat@cloudflare.com>
+Cc:     Christian Brauner <brauner@kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Frederick Lawler <fred@cloudflare.com>,
+        linux-doc@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-cachefs@redhat.com,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
+        linux-unionfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>, keyrings@vger.kernel.org,
+        selinux@vger.kernel.org, serge@hallyn.com, amir73il@gmail.com,
+        kernel-team <kernel-team@cloudflare.com>,
+        Jeff Moyer <jmoyer@redhat.com>,
+        Casey Schaufler <casey@schaufler-ca.com>
+References: <20220608150942.776446-1-fred@cloudflare.com>
+ <87tu8oze94.fsf@email.froward.int.ebiederm.org>
+ <e1b62234-9b8a-e7c2-2946-5ef9f6f23a08@cloudflare.com>
+ <87y1xzyhub.fsf@email.froward.int.ebiederm.org>
+ <859cb593-9e96-5846-2191-6613677b07c5@cloudflare.com>
+ <87o7yvxl4x.fsf@email.froward.int.ebiederm.org>
+ <9ed91f15-420c-3db6-8b3b-85438b02bf97@cloudflare.com>
+ <20220615103031.qkzae4xr34wysj4b@wittgenstein>
+ <CAHC9VhR8yPHZb2sCu4JGgXOSs7rudm=9opB+-LsG6_Lta9466A@mail.gmail.com>
+ <CALrw=nGZtrNYn+CV+Q_w-2=Va_9m3C8PDvvPtd01d0tS=2NMWQ@mail.gmail.com>
+ <CAHC9VhRSzXeAZmBdNSAFEh=6XR57ecO7Ov+6BV9b0xVN1YR_Qw@mail.gmail.com>
+From:   Casey Schaufler <casey@schaufler-ca.com>
+In-Reply-To: <CAHC9VhRSzXeAZmBdNSAFEh=6XR57ecO7Ov+6BV9b0xVN1YR_Qw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Mailer: WebService/1.1.20280 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 6:23 AM Yafang Shao <laoar.shao@gmail.com> wrote:
+On 6/15/2022 8:33 AM, Paul Moore wrote:
+> On Wed, Jun 15, 2022 at 11:06 AM Ignat Korchagin <ignat@cloudflare.com> wrote:
+>> On Wed, Jun 15, 2022 at 3:14 PM Paul Moore <paul@paul-moore.com> wrote:
+>>> On Wed, Jun 15, 2022 at 6:30 AM Christian Brauner <brauner@kernel.org> wrote:
+> ...
 >
-> On Tue, Jun 14, 2022 at 10:20 PM Quentin Monnet <quentin@isovalent.com> wrote:
-> >
-> > 2022-06-14 20:37 UTC+0800 ~ Yafang Shao <laoar.shao@gmail.com>
-> > > On Sat, Jun 11, 2022 at 1:17 AM Stanislav Fomichev <sdf@google.com> wrote:
-> > >>
-> > >> On Fri, Jun 10, 2022 at 10:00 AM Quentin Monnet <quentin@isovalent.com> wrote:
-> > >>>
-> > >>> 2022-06-10 09:46 UTC-0700 ~ Stanislav Fomichev <sdf@google.com>
-> > >>>> On Fri, Jun 10, 2022 at 9:34 AM Quentin Monnet <quentin@isovalent.com> wrote:
-> > >>>>>
-> > >>>>> 2022-06-10 09:07 UTC-0700 ~ sdf@google.com
-> > >>>>>> On 06/10, Quentin Monnet wrote:
-> > >>>>>>> This reverts commit a777e18f1bcd32528ff5dfd10a6629b655b05eb8.
-> > >>>>>>
-> > >>>>>>> In commit a777e18f1bcd ("bpftool: Use libbpf 1.0 API mode instead of
-> > >>>>>>> RLIMIT_MEMLOCK"), we removed the rlimit bump in bpftool, because the
-> > >>>>>>> kernel has switched to memcg-based memory accounting. Thanks to the
-> > >>>>>>> LIBBPF_STRICT_AUTO_RLIMIT_MEMLOCK, we attempted to keep compatibility
-> > >>>>>>> with other systems and ask libbpf to raise the limit for us if
-> > >>>>>>> necessary.
-> > >>>>>>
-> > >>>>>>> How do we know if memcg-based accounting is supported? There is a probe
-> > >>>>>>> in libbpf to check this. But this probe currently relies on the
-> > >>>>>>> availability of a given BPF helper, bpf_ktime_get_coarse_ns(), which
-> > >>>>>>> landed in the same kernel version as the memory accounting change. This
-> > >>>>>>> works in the generic case, but it may fail, for example, if the helper
-> > >>>>>>> function has been backported to an older kernel. This has been observed
-> > >>>>>>> for Google Cloud's Container-Optimized OS (COS), where the helper is
-> > >>>>>>> available but rlimit is still in use. The probe succeeds, the rlimit is
-> > >>>>>>> not raised, and probing features with bpftool, for example, fails.
-> > >>>>>>
-> > >>>>>>> A patch was submitted [0] to update this probe in libbpf, based on what
-> > >>>>>>> the cilium/ebpf Go library does [1]. It would lower the soft rlimit to
-> > >>>>>>> 0, attempt to load a BPF object, and reset the rlimit. But it may induce
-> > >>>>>>> some hard-to-debug flakiness if another process starts, or the current
-> > >>>>>>> application is killed, while the rlimit is reduced, and the approach was
-> > >>>>>>> discarded.
-> > >>>>>>
-> > >>>>>>> As a workaround to ensure that the rlimit bump does not depend on the
-> > >>>>>>> availability of a given helper, we restore the unconditional rlimit bump
-> > >>>>>>> in bpftool for now.
-> > >>>>>>
-> > >>>>>>> [0]
-> > >>>>>>> https://lore.kernel.org/bpf/20220609143614.97837-1-quentin@isovalent.com/
-> > >>>>>>> [1] https://github.com/cilium/ebpf/blob/v0.9.0/rlimit/rlimit.go#L39
-> > >>>>>>
-> > >>>>>>> Cc: Yafang Shao <laoar.shao@gmail.com>
-> > >>>>>>> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-> > >>>>>>> ---
-> > >>>>>>>   tools/bpf/bpftool/common.c     | 8 ++++++++
-> > >>>>>>>   tools/bpf/bpftool/feature.c    | 2 ++
-> > >>>>>>>   tools/bpf/bpftool/main.c       | 6 +++---
-> > >>>>>>>   tools/bpf/bpftool/main.h       | 2 ++
-> > >>>>>>>   tools/bpf/bpftool/map.c        | 2 ++
-> > >>>>>>>   tools/bpf/bpftool/pids.c       | 1 +
-> > >>>>>>>   tools/bpf/bpftool/prog.c       | 3 +++
-> > >>>>>>>   tools/bpf/bpftool/struct_ops.c | 2 ++
-> > >>>>>>>   8 files changed, 23 insertions(+), 3 deletions(-)
-> > >>>>>>
-> > >>>>>>> diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
-> > >>>>>>> index a45b42ee8ab0..a0d4acd7c54a 100644
-> > >>>>>>> --- a/tools/bpf/bpftool/common.c
-> > >>>>>>> +++ b/tools/bpf/bpftool/common.c
-> > >>>>>>> @@ -17,6 +17,7 @@
-> > >>>>>>>   #include <linux/magic.h>
-> > >>>>>>>   #include <net/if.h>
-> > >>>>>>>   #include <sys/mount.h>
-> > >>>>>>> +#include <sys/resource.h>
-> > >>>>>>>   #include <sys/stat.h>
-> > >>>>>>>   #include <sys/vfs.h>
-> > >>>>>>
-> > >>>>>>> @@ -72,6 +73,13 @@ static bool is_bpffs(char *path)
-> > >>>>>>>       return (unsigned long)st_fs.f_type == BPF_FS_MAGIC;
-> > >>>>>>>   }
-> > >>>>>>
-> > >>>>>>> +void set_max_rlimit(void)
-> > >>>>>>> +{
-> > >>>>>>> +    struct rlimit rinf = { RLIM_INFINITY, RLIM_INFINITY };
-> > >>>>>>> +
-> > >>>>>>> +    setrlimit(RLIMIT_MEMLOCK, &rinf);
-> > >>>>>>
-> > >>>>>> Do you think it might make sense to print to stderr some warning if
-> > >>>>>> we actually happen to adjust this limit?
-> > >>>>>>
-> > >>>>>> if (getrlimit(MEMLOCK) != RLIM_INFINITY) {
-> > >>>>>>     fprintf(stderr, "Warning: resetting MEMLOCK rlimit to
-> > >>>>>>     infinity!\n");
-> > >>>>>>     setrlimit(RLIMIT_MEMLOCK, &rinf);
-> > >>>>>> }
-> > >>>>>>
-> > >>>>>> ?
-> > >>>>>>
-> > >>>>>> Because while it's nice that we automatically do this, this might still
-> > >>>>>> lead to surprises for some users. OTOH, not sure whether people
-> > >>>>>> actually read those warnings? :-/
-> > >>>>>
-> > >>>>> I'm not strictly opposed to a warning, but I'm not completely sure this
-> > >>>>> is desirable.
-> > >>>>>
-> > >>>>> Bpftool has raised the rlimit for a long time, it changed only in April,
-> > >>>>> so I don't think it would come up as a surprise for people who have used
-> > >>>>> it for a while. I think this is also something that several other
-> > >>>>> BPF-related applications (BCC I think?, bpftrace, Cilium come to mind)
-> > >>>>> have been doing too.
-> > >>>>
-> > >>>> In this case ignore me and let's continue doing that :-)
-> > >>>>
-> > >>>> Btw, eventually we'd still like to stop doing that I'd presume?
-> > >>>
-> > >>> Agreed. I was thinking either finding a way to improve the probe in
-> > >>> libbpf, or waiting for some more time until 5.11 gets old, but this may
-> > >>> take years :/
-> > >>>
-> > >>>> Should
-> > >>>> we at some point follow up with something like:
-> > >>>>
-> > >>>> if (kernel_version >= 5.11) { don't touch memlock; }
-> > >>>>
-> > >>>> ?
-> > >>>>
-> > >>>> I guess we care only about <5.11 because of the backports, but 5.11+
-> > >>>> kernels are guaranteed to have memcg.
-> > >>>
-> > >>> You mean from uname() and parsing the release? Yes I suppose we could do
-> > >>> that, can do as a follow-up.
-> > >>
-> > >> Yeah, uname-based, I don't think we can do better? Given that probing
-> > >> is problematic as well :-(
-> > >> But idk, up to you.
-> > >>
-> > >
-> > > Agreed with the uname-based solution. Another possible solution is to
-> > > probe the member 'memcg' in struct bpf_map, in case someone may
-> > > backport memcg-based  memory accounting, but that will be a little
-> > > over-engineering. The uname-based solution is simple and can work.
-> > >
-> >
-> > Thanks! Yes, memcg would be more complex: the struct is not exposed to
-> > user space, and BTF is not a hard dependency for bpftool. I'll work on
-> > the uname-based test as a follow-up to this set.
-> >
->
-> After a second thought, the uname-based test may not work, because
-> CONFIG_MEMCG_KMEM can be disabled.
+>>>> Fwiw, from this commit it wasn't very clear what you wanted to achieve
+>>>> with this. It might be worth considering adding a new security hook for
+>>>> this. Within msft it recently came up SELinux might have an interest in
+>>>> something like this as well.
+>>> Just to clarify things a bit, I believe SELinux would have an interest
+>>> in a LSM hook capable of implementing an access control point for user
+>>> namespaces regardless of Microsoft's current needs.  I suspect due to
+>>> the security relevant nature of user namespaces most other LSMs would
+>>> be interested as well; it seems like a well crafted hook would be
+>>> welcome by most folks I think.
+>> Just to get the full picture: is there actually a good reason not to
+>> make this hook support this scenario? I understand it was not
+>> originally intended for this, but it is well positioned in the code,
+>> covers multiple subsystems (not only user namespaces), doesn't require
+>> changing the LSM interface and it already does the job - just the
+>> kernel internals need to respect the error code better. What bad
+>> things can happen if we extend its use case to not only allocate
+>> resources in LSMs?
+> My concern is that the security_prepare_creds() hook, while only
+> called from two different functions, ends up being called for a
+> variety of different uses (look at the prepare_creds() and
+> perpare_kernel_cred() callers) and I think it would be a challenge to
+> identify the proper calling context in the LSM hook implementation
+> given the current hook parameters.  One might be able to modify the
+> hook to pass the necessary information, but I don't think that would
+> be any cleaner than adding a userns specific hook.  I'm also guessing
+> that the modified security_prepare_creds() hook implementations would
+> also be more likely to encounter future maintenance issues as
+> overriding credentials in the kernel seems only to be increasing, and
+> each future caller would risk using the modified hook wrong by passing
+> the wrong context and triggering the wrong behavior in the LSM.
 
-Does it matter? Regardless of whether there is memcg or not, we
-shouldn't touch ulimit on 5.11+
-If there is no memcg, there is no bpf memory enforcement.
+We don't usually have hooks that do both attribute management and
+access control. Some people seem excessively concerned about "cluttering"
+calling code with security_something() instances, but for the most
+part I think we're past that. I agree that making security_prepare_creds()
+multi-purpose is a bad idea. Shared cred management isn't simple, and
+adding access checks there is only going to make it worse.
+
