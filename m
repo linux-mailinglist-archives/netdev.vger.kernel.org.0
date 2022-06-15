@@ -2,198 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88CE154CD59
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 17:46:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AB7954CD75
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 17:51:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233020AbiFOPqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 11:46:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40556 "EHLO
+        id S232716AbiFOPvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 11:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbiFOPqK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 11:46:10 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 049F3286CD;
-        Wed, 15 Jun 2022 08:46:05 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 1D77E5A9;
-        Wed, 15 Jun 2022 17:46:03 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1655307963;
-        bh=m3A5dqZop5odCJRCkgs9BvSWyBpz30/KNAeaIHJZ1q0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gz+qyRs9G+48QItleZ7QvFKhIzWdHGgYD3bsSj4cvZevz+vnv/bHuU11OCDz2zfvV
-         mVSOAOmfirc3j3SuYgvLYBpRzrMfP0UyUXAilgSvgVHGUDVUOChMlva/17o7wLGv0O
-         tPxdzNanUqOciJtQpE5RO6ZydGGmlUaux55rBxfs=
-Date:   Wed, 15 Jun 2022 18:45:52 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Christian =?utf-8?B?R8O2dHRzY2hl?= <cgzones@googlemail.com>
-Cc:     selinux@vger.kernel.org, Hans Verkuil <hverkuil@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Stefan Haberland <sth@linux.ibm.com>,
-        Jan Hoeppner <hoeppner@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Serge Hallyn <serge@hallyn.com>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Arnd Bergmann <arnd@arndb.de>, Ondrej Zary <linux@zary.sk>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        David Yang <davidcomponentone@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Yang Guang <yang.guang5@zte.com.cn>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH v3 4/8] drivers: use new capable_any functionality
-Message-ID: <Yqn+sCXTHeTH5v+R@pendragon.ideasonboard.com>
-References: <20220502160030.131168-8-cgzones@googlemail.com>
- <20220615152623.311223-1-cgzones@googlemail.com>
- <20220615152623.311223-3-cgzones@googlemail.com>
+        with ESMTP id S231737AbiFOPvX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 11:51:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E40192ED42
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:51:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655308280;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AIOIMROOiOvW54yRJHKcdZXL+9ppiA1fBxCdrioQXGQ=;
+        b=HyMTA10h0Ywn8FSi7jrVBGaPxqCdsMp2lqVKkLmx7y6kVjAtLLOXCZZEvbm/oDZWvb8NN0
+        984EEUACPIEnRV3YCdsQeMwNqwgpZCiZHfmS8XRUzKaw6mzZKah+HROfBtmkIkg3gUz5nb
+        VWSfSyCxUHVRGLiIUKDdgzCIqEVewx0=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-658-pR5bAuxTOreoFsY09DXmiA-1; Wed, 15 Jun 2022 11:51:19 -0400
+X-MC-Unique: pR5bAuxTOreoFsY09DXmiA-1
+Received: by mail-qv1-f71.google.com with SMTP id kl30-20020a056214519e00b0046d8f1cd655so8409636qvb.19
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:51:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=AIOIMROOiOvW54yRJHKcdZXL+9ppiA1fBxCdrioQXGQ=;
+        b=DO2JGwnJck8R2yMmkKrpu/dDrf8vwJfJOfu74bcKUSK7t+QAtM/XujXRG8YQ5HTp9d
+         EwQ03WIAsDjVk+0+hM1hv2Zz3/8ERg7K3cfATPqNzfxB178tWHcrm9c9tERbNfhpgSsL
+         e9AI2KTCb3DO2Rx5FGSEkILxjuDCCeZ3CvQ9QC6Wp2KMQjMz4xLjp9y7gh9cPOMKrIHJ
+         M65QjaoAK3o3XGzIO74AnIx4pLrWxfOHzF5IaFEZzNPzKq0NPeuN4AqYHot6mevw5Y3A
+         c4UoKbFXfSigEOc3vZoBL36bJSoiwYhxqc9Q6LLmdtocmDYmkaHqcMG0TMcPY6ntv9I9
+         erMQ==
+X-Gm-Message-State: AJIora9zUFXiFlW6unMjQUD1aMBupfYophxnlQi/RrYb/BpBdppBs9K3
+        gLwPJ3cNWcHSzK5H4RT9NzRTvoi9XS4FWYtA5w49lEXFgOzcb5mSdav6vcdDptR86m7dUXQwxTb
+        NsiV6Jcp8WN95F8+U
+X-Received: by 2002:ac8:7f0d:0:b0:304:fe93:8e77 with SMTP id f13-20020ac87f0d000000b00304fe938e77mr186081qtk.70.1655308278417;
+        Wed, 15 Jun 2022 08:51:18 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1t6B5q+eqXrmwd7GqHIKthR4shmNUMNmtfYYaeWOGNyVk1OgyQqNQR7Fb87sxDrjkPbwsYj4g==
+X-Received: by 2002:ac8:7f0d:0:b0:304:fe93:8e77 with SMTP id f13-20020ac87f0d000000b00304fe938e77mr186061qtk.70.1655308278149;
+        Wed, 15 Jun 2022 08:51:18 -0700 (PDT)
+Received: from [192.168.98.18] ([107.12.98.143])
+        by smtp.gmail.com with ESMTPSA id 3-20020ac84e83000000b002f940d5ab2csm10118267qtp.74.2022.06.15.08.51.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 15 Jun 2022 08:51:17 -0700 (PDT)
+Message-ID: <2db298d5-4e3d-0e99-6ce7-6a4a0df4bb48@redhat.com>
+Date:   Wed, 15 Jun 2022 11:51:16 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220615152623.311223-3-cgzones@googlemail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: Any reason why arp monitor keeps emitting netlink failover
+ events?
+Content-Language: en-US
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Hangbin Liu <liuhangbin@gmail.com>
+References: <b2fd4147-8f50-bebd-963a-1a3e8d1d9715@redhat.com>
+ <10584.1655220562@famine> <0ea8519c-4289-c409-2e31-44574cdefde3@redhat.com>
+ <8133.1655252763@famine>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+In-Reply-To: <8133.1655252763@famine>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Christian,
-
-Thank you for the patch.
-
-On Wed, Jun 15, 2022 at 05:26:18PM +0200, Christian Göttsche wrote:
-> Use the new added capable_any function in appropriate cases, where a
-> task is required to have any of two capabilities.
+On 6/14/22 20:26, Jay Vosburgh wrote:
+> Jonathan Toppins <jtoppins@redhat.com> wrote:
 > 
-> Reorder CAP_SYS_ADMIN last.
+>> On 6/14/22 11:29, Jay Vosburgh wrote:
+>>> Jonathan Toppins <jtoppins@redhat.com> wrote:
+>>>
+>>>> On net-next/master from today, I see netlink failover events being emitted
+>>> >from an active-backup bond. In the ip monitor dump you can see the bond is
+>>>> up (according to the link status) but keeps emitting failover events and I
+>>>> am not sure why. This appears to be an issue also on Fedora 35 and CentOS
+>>>> 8 kernels. The configuration appears to be correct, though I could be
+>>>> missing something. Thoughts?
+>>> 	Anything showing up in the dmesg?  There's only one place that
+>>> generates the FAILOVER notifier, and it ought to have a corresponding
+>>> message in the kernel log.
+>>> 	Also, I note that the link1_1 veth has a lot of failures:
+>>
+>> Yes all those failures are created by the setup, I waited about 5 minutes
+>> before dumping the link info. The failover occurs about every second. Note
+>> this is just a representation of a physical network so that others can run
+>> the setup. The script `bond-bz2094911.sh`, easily reproduces the issue
+>> which I dumped with cat below in the original email.
+>>
+>> Here is the kernel log, I have dynamic debug enabled for the entire
+>> bonding module:
 > 
-> Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
-
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-
+> 	I set up the test, and added some additional instrumentation to
+> bond_ab_arp_inspect, and what seems to be going on is that the
+> dev_trans_start for link1_1 is never updating.  The "down to up"
+> transition for the ARP monitor only checks last_rx, but the "up to down"
+> check for the active interface requires both TX and RX recently
+> ("recently" being within the past missed_max * arp_interval).
+> 
+> 	This looks to be due to HARD_TX_LOCK not actually locking for
+> NETIF_F_LLTX devices:
+> 
+> #define HARD_TX_LOCK(dev, txq, cpu) {                           if ((dev->features & NETIF_F_LLTX) == 0) {                      __netif_tx_lock(txq, cpu);                      } else {                                                        __netif_tx_acquire(txq);                        }                                               }
+> 
+> 	in combination with
+> 
+> static inline void txq_trans_update(struct netdev_queue *txq)
+> {
+>          if (txq->xmit_lock_owner != -1)
+>                  WRITE_ONCE(txq->trans_start, jiffies);
+> }
+> 
+> 	causes the trans_start update to be skipped on veth devices.
+> 
+> 	And, sure enough, if I apply the following, the test case
+> appears to work:
+> 
+> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> index 466da01ba2e3..2cb833b3006a 100644
+> --- a/drivers/net/veth.c
+> +++ b/drivers/net/veth.c
+> @@ -312,6 +312,7 @@ static bool veth_skb_is_eligible_for_gro(const struct net_device *dev,
+>   static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
+>   {
+>   	struct veth_priv *rcv_priv, *priv = netdev_priv(dev);
+> +	struct netdev_queue *queue = NULL;
+>   	struct veth_rq *rq = NULL;
+>   	struct net_device *rcv;
+>   	int length = skb->len;
+> @@ -329,6 +330,7 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
+>   	rxq = skb_get_queue_mapping(skb);
+>   	if (rxq < rcv->real_num_rx_queues) {
+>   		rq = &rcv_priv->rq[rxq];
+> +		queue = netdev_get_tx_queue(dev, rxq);
+>   
+>   		/* The napi pointer is available when an XDP program is
+>   		 * attached or when GRO is enabled
+> @@ -340,6 +342,8 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
+>   
+>   	skb_tx_timestamp(skb);
+>   	if (likely(veth_forward_skb(rcv, skb, rq, use_napi) == NET_RX_SUCCESS)) {
+> +		if (queue)
+> +			txq_trans_cond_update(queue);
+>   		if (!use_napi)
+>   			dev_lstats_add(dev, length);
+>   	} else {
+> 
+> 
+> 	I'm not entirely sure this is the best way to get the
+> trans_start updated in veth, but LLTX devices need to handle it
+> internally (and others do, e.g., tun).
+> 
+> 	Could you test the above and see if it resolves the problem in
+> your environment as well?
+> 
+> 	-J
+> 
 > ---
-> v3:
->    rename to capable_any()
-> ---
->  drivers/media/common/saa7146/saa7146_video.c     | 2 +-
->  drivers/media/pci/bt8xx/bttv-driver.c            | 3 +--
->  drivers/media/pci/saa7134/saa7134-video.c        | 3 +--
->  drivers/media/platform/nxp/fsl-viu.c             | 2 +-
->  drivers/media/test-drivers/vivid/vivid-vid-cap.c | 2 +-
->  drivers/net/caif/caif_serial.c                   | 2 +-
->  drivers/s390/block/dasd_eckd.c                   | 2 +-
->  7 files changed, 7 insertions(+), 9 deletions(-)
+> 	-Jay Vosburgh, jay.vosburgh@canonical.com
 > 
-> diff --git a/drivers/media/common/saa7146/saa7146_video.c b/drivers/media/common/saa7146/saa7146_video.c
-> index 2296765079a4..f0d08935b096 100644
-> --- a/drivers/media/common/saa7146/saa7146_video.c
-> +++ b/drivers/media/common/saa7146/saa7146_video.c
-> @@ -469,7 +469,7 @@ static int vidioc_s_fbuf(struct file *file, void *fh, const struct v4l2_framebuf
->  
->  	DEB_EE("VIDIOC_S_FBUF\n");
->  
-> -	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_RAWIO))
-> +	if (!capable_any(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
->  		return -EPERM;
->  
->  	/* check args */
-> diff --git a/drivers/media/pci/bt8xx/bttv-driver.c b/drivers/media/pci/bt8xx/bttv-driver.c
-> index d40b537f4e98..7098cff2ea51 100644
-> --- a/drivers/media/pci/bt8xx/bttv-driver.c
-> +++ b/drivers/media/pci/bt8xx/bttv-driver.c
-> @@ -2567,8 +2567,7 @@ static int bttv_s_fbuf(struct file *file, void *f,
->  	const struct bttv_format *fmt;
->  	int retval;
->  
-> -	if (!capable(CAP_SYS_ADMIN) &&
-> -		!capable(CAP_SYS_RAWIO))
-> +	if (!capable_any(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
->  		return -EPERM;
->  
->  	/* check args */
-> diff --git a/drivers/media/pci/saa7134/saa7134-video.c b/drivers/media/pci/saa7134/saa7134-video.c
-> index 4d8974c9fcc9..23104c04a9aa 100644
-> --- a/drivers/media/pci/saa7134/saa7134-video.c
-> +++ b/drivers/media/pci/saa7134/saa7134-video.c
-> @@ -1797,8 +1797,7 @@ static int saa7134_s_fbuf(struct file *file, void *f,
->  	struct saa7134_dev *dev = video_drvdata(file);
->  	struct saa7134_format *fmt;
->  
-> -	if (!capable(CAP_SYS_ADMIN) &&
-> -	   !capable(CAP_SYS_RAWIO))
-> +	if (!capable_any(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
->  		return -EPERM;
->  
->  	/* check args */
-> diff --git a/drivers/media/platform/nxp/fsl-viu.c b/drivers/media/platform/nxp/fsl-viu.c
-> index afc96f6db2a1..81a90c113dc6 100644
-> --- a/drivers/media/platform/nxp/fsl-viu.c
-> +++ b/drivers/media/platform/nxp/fsl-viu.c
-> @@ -803,7 +803,7 @@ static int vidioc_s_fbuf(struct file *file, void *priv, const struct v4l2_frameb
->  	const struct v4l2_framebuffer *fb = arg;
->  	struct viu_fmt *fmt;
->  
-> -	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_RAWIO))
-> +	if (!capable_any(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
->  		return -EPERM;
->  
->  	/* check args */
-> diff --git a/drivers/media/test-drivers/vivid/vivid-vid-cap.c b/drivers/media/test-drivers/vivid/vivid-vid-cap.c
-> index b9caa4b26209..918913e47069 100644
-> --- a/drivers/media/test-drivers/vivid/vivid-vid-cap.c
-> +++ b/drivers/media/test-drivers/vivid/vivid-vid-cap.c
-> @@ -1253,7 +1253,7 @@ int vivid_vid_cap_s_fbuf(struct file *file, void *fh,
->  	if (dev->multiplanar)
->  		return -ENOTTY;
->  
-> -	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_RAWIO))
-> +	if (!capable_any(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
->  		return -EPERM;
->  
->  	if (dev->overlay_cap_owner)
-> diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
-> index 688075859ae4..ca3f82a0e3a6 100644
-> --- a/drivers/net/caif/caif_serial.c
-> +++ b/drivers/net/caif/caif_serial.c
-> @@ -326,7 +326,7 @@ static int ldisc_open(struct tty_struct *tty)
->  	/* No write no play */
->  	if (tty->ops->write == NULL)
->  		return -EOPNOTSUPP;
-> -	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_TTY_CONFIG))
-> +	if (!capable_any(CAP_SYS_TTY_CONFIG, CAP_SYS_ADMIN))
->  		return -EPERM;
->  
->  	/* release devices to avoid name collision */
-> diff --git a/drivers/s390/block/dasd_eckd.c b/drivers/s390/block/dasd_eckd.c
-> index 836838f7d686..66f6db7a11fc 100644
-> --- a/drivers/s390/block/dasd_eckd.c
-> +++ b/drivers/s390/block/dasd_eckd.c
-> @@ -5330,7 +5330,7 @@ static int dasd_symm_io(struct dasd_device *device, void __user *argp)
->  	char psf0, psf1;
->  	int rc;
->  
-> -	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_RAWIO))
-> +	if (!capable_any(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
->  		return -EACCES;
->  	psf0 = psf1 = 0;
->  
 
--- 
-Regards,
+Hi Jay,
 
-Laurent Pinchart
+This patch appears to work, you can apply my tested-by.
+
+Tested-by: Jonathan Toppins <jtoppins@redhat.com>
+
+Now this exposes an easily reproducible bonding issue with 
+bond_should_notify_peers() which is every second the bond issues a 
+NOTIFY_PEERS event. This notify peers event issue has been observed on 
+physical hardware (tg3, i40e, igb) drivers. I have not traced the code 
+yet, wanted to point this out. Run the same reproducer script and start 
+monitoring the bond;
+
+[root@fedora ~]# ip -ts -o monitor link dev bond0
+[2022-06-15T11:30:44.337568] 9: bond0: 
+<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
+group default event NOTIFY PEERS \    link/ether ce:d3:22:ef:13:d0 brd 
+ff:ff:ff:ff:ff:ff
+[2022-06-15T11:30:45.361381] 9: bond0: 
+<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
+group default event NOTIFY PEERS \    link/ether ce:d3:22:ef:13:d0 brd 
+ff:ff:ff:ff:ff:ff
+[.. trimmed ..]
+[2022-06-15T11:30:56.618621] [2022-06-15T11:30:56.622657] 9: bond0: 
+<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
+group default event NOTIFY PEERS \    link/ether ce:d3:22:ef:13:d0 brd 
+ff:ff:ff:ff:ff:ff
+[2022-06-15T11:30:57.647644] 9: bond0: 
+<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
+group default event NOTIFY PEERS \    link/ether ce:d3:22:ef:13:d0 brd 
+ff:ff:ff:ff:ff:ff
+
+In another shell take down the active interface:
+# ip link set link1_1 down
+
+we get the failover below, as expected.
+
+[2022-06-15T11:30:58.671501] [2022-06-15T11:30:58.671576] 
+[2022-06-15T11:30:58.671611] [2022-06-15T11:30:58.671643] 
+[2022-06-15T11:30:58.671676] [2022-06-15T11:30:58.671709] 9: bond0: 
+<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
+group default event BONDING FAILOVER \    link/ether ce:d3:22:ef:13:d0 
+brd ff:ff:ff:ff:ff:ff
+[2022-06-15T11:30:58.671782] 9: bond0: 
+<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
+group default event NOTIFY PEERS \    link/ether ce:d3:22:ef:13:d0 brd 
+ff:ff:ff:ff:ff:ff
+[2022-06-15T11:30:58.676862] 9: bond0: 
+<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
+group default event NOTIFY PEERS \    link/ether ce:d3:22:ef:13:d0 brd 
+ff:ff:ff:ff:ff:ff
+[2022-06-15T11:30:58.676948] 9: bond0: 
+<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
+group default event RESEND IGMP \    link/ether ce:d3:22:ef:13:d0 brd 
+ff:ff:ff:ff:ff:ff
+
+Now bring back up link1_1 and notice no more NOTIFY_PEERS event every 
+second. The issue stops with the first failover just brought back up the 
+primary for completeness.
+
+# ip link set link1_1 up
+
+[2022-06-15T11:31:01.629256] [2022-06-15T11:31:01.630275] 
+[2022-06-15T11:31:01.742927] [2022-06-15T11:31:01.742991] 
+[2022-06-15T11:31:01.743021] [2022-06-15T11:31:01.743045] 
+[2022-06-15T11:31:01.743070] [2022-06-15T11:31:01.743094] 9: bond0: 
+<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
+group default event BONDING FAILOVER \    link/ether ce:d3:22:ef:13:d0 
+brd ff:ff:ff:ff:ff:ff
+[2022-06-15T11:31:01.743151] 9: bond0: 
+<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
+group default event NOTIFY PEERS \    link/ether ce:d3:22:ef:13:d0 brd 
+ff:ff:ff:ff:ff:ff
+[2022-06-15T11:31:01.746412] 9: bond0: 
+<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
+group default event RESEND IGMP \    link/ether ce:d3:22:ef:13:d0 brd 
+ff:ff:ff:ff:ff:ff
+
+-Jon
+
