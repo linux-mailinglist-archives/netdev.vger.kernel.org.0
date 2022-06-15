@@ -2,536 +2,786 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC4E154BFD9
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 04:56:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01E9454C00C
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 05:17:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345561AbiFOC4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 22:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42062 "EHLO
+        id S241640AbiFODRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 23:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237203AbiFOC4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 22:56:17 -0400
-Received: from smtpbguseast3.qq.com. (smtpbguseast3.qq.com [54.243.244.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28C42FFEE
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 19:56:14 -0700 (PDT)
-X-QQ-mid: bizesmtp89t1655261760tmy7zigs
-Received: from wxdbg.localdomain.com ( [183.129.236.74])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 15 Jun 2022 10:55:51 +0800 (CST)
-X-QQ-SSF: 01400000000000F0P000000A0000000
-X-QQ-FEAT: NTY7odTD9S+6ydMYt3N8Jwv/PsW/pM2Pvv3bxCtkhbaKEihK5GEND/QWJnKIy
-        rZBRDRLrnDxPrIgG1OHJOUEUKPY/+3P3MCNqhK/C2+9XKtduNtkdxnfAhxH17PUrAYJCCtK
-        t2YGKTZcj33Uu3sgNm6zHazHPfT+QD+ilv34fpaQNMmLQ4ua7J7Ybt4p+o9EOCrwXmooWIM
-        42lAAsaIuJKhoIRDoXaSdcruQm+sjOuNe+/OESnyMHYsVxI52AMFAs5wrFYr1EQtDtxWINI
-        J976UNMFMIjIMbRgl7N4Is549ym9UOfKsje9tKluWgSLdTMRa9y6pP31Hb0OIcOq6wmxhuM
-        9sc3xPQXQHYH0Eguvjo2brFXoYnCA==
-X-QQ-GoodBg: 2
-From:   Jiawen Wu <jiawenwu@trustnetic.com>
-To:     netdev@vger.kernel.org
-Cc:     Jiawen Wu <jiawenwu@trustnetic.com>
-Subject: [PATCH net-next v5] net: txgbe: Add build support for txgbe
-Date:   Wed, 15 Jun 2022 11:04:30 +0800
-Message-Id: <20220615030430.390304-1-jiawenwu@trustnetic.com>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:trustnetic.com:qybgforeign:qybgforeign4
-X-QQ-Bgrelay: 1
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S234459AbiFODRr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 23:17:47 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C790B193D7;
+        Tue, 14 Jun 2022 20:17:44 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 6EFD4C01B; Wed, 15 Jun 2022 05:17:43 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1655263063; bh=vCvSatGrqp91gpWHQjJAfPklS4rTSG9I68ygmzjeSUY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IVQlJQbumhVucupcVXBc8/yFwPj8GUgrt9bO8Hiq7hpEXXdMT2T65Ob8m56cA0f+U
+         /mw0WaKviU7+KU9C5fOrhSv2FX3gCVPQYWWMPYU6quGiZJMt23R1wpYumJ6HQIHWYA
+         M4rmiMifggoCqhUCI0htvSa04rJLArAX6BB8IJAT+qKL28wl5NYFT02uly/plfRMUg
+         V9jO0ivQ5GED/HkgAQvOAZhVkvkJWI6r3nIG5hYcmuH0wBxD/Kwm+qd9QDIe2kZHmw
+         LDJBxyflBHPP/8khCShgfFxrBrdw+7erKQ+SReg8fZl5DHZDR1Hm2o9wrOHjEuYP3L
+         htLwAbYV5RK6Q==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 72A47C009;
+        Wed, 15 Jun 2022 05:17:35 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1655263058; bh=vCvSatGrqp91gpWHQjJAfPklS4rTSG9I68ygmzjeSUY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xYgtUI9kvD4IhTF5rOw9yVF+N3rDUfZpDEwt++AVwLD4Eppwkas3sfajZKeHwux5h
+         21ISqLMzQosrNWq046g2a9IKl3pPKp/xUYCgUrqRH4Awak8MLZlxvBscUiS77hvACC
+         vEURiQ1j8OgDpwULnWOfStXy8O9uGknembdcidhwKxQMrU4+2DpbfSieTJZGMDWfzy
+         zSop8/gUBHWQ6g+aEt28RIOMAmnv2lNpvS4Sa+jlGcN5TnqRO6ywseuyBMq9EKMrO3
+         9pIFaFiMMmAFAylgkhVOvx8SfE46Ho5eCYZdpxN/Kn2R8N9C5O0EeBvkiGptKYLYFo
+         gZCAjXAWXWa5g==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 7f826ea9;
+        Wed, 15 Jun 2022 03:17:33 +0000 (UTC)
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Tyler Hicks <tyhicks@linux.microsoft.com>,
+        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v3 04/06] 9p fid refcount: add p9_fid_get/put wrappers
+Date:   Wed, 15 Jun 2022 12:16:45 +0900
+Message-Id: <20220615031647.1764797-1-asmadeus@codewreck.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <7044959.MN0D2SvuAq@silver>
+References: <7044959.MN0D2SvuAq@silver>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add doc build infrastructure for txgbe driver.
-Initialize PCI memory space for WangXun 10 Gigabit Ethernet devices.
+I was recently reminded that it is not clear that p9_client_clunk()
+was actually just decrementing refcount and clunking only when that
+reaches zero: make it clear through a set of helpers.
 
-Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
+This will also allow instrumenting refcounting better for debugging
+next patch
+
+Link: https://lkml.kernel.org/r/20220612085330.1451496-5-asmadeus@codewreck.org
+Reviewed-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 ---
- .../device_drivers/ethernet/index.rst         |   1 +
- .../device_drivers/ethernet/wangxun/txgbe.rst |  20 ++
- MAINTAINERS                                   |   7 +
- drivers/net/ethernet/Kconfig                  |   1 +
- drivers/net/ethernet/Makefile                 |   1 +
- drivers/net/ethernet/wangxun/Kconfig          |  32 ++++
- drivers/net/ethernet/wangxun/Makefile         |   6 +
- drivers/net/ethernet/wangxun/txgbe/Makefile   |   9 +
- drivers/net/ethernet/wangxun/txgbe/txgbe.h    |  24 +++
- .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 178 ++++++++++++++++++
- .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  57 ++++++
- drivers/pci/quirks.c                          |  15 ++
- include/linux/pci_ids.h                       |   2 +
- 13 files changed, 353 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
- create mode 100644 drivers/net/ethernet/wangxun/Kconfig
- create mode 100644 drivers/net/ethernet/wangxun/Makefile
- create mode 100644 drivers/net/ethernet/wangxun/txgbe/Makefile
- create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe.h
- create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
- create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
+v1 -> v2: p9_fid_get/put are now static inline in .h
+v2 -> v3: fix commit message and add comment to helpers
 
-diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/Documentation/networking/device_drivers/ethernet/index.rst
-index 4e06684d079b..2249ba010d8a 100644
---- a/Documentation/networking/device_drivers/ethernet/index.rst
-+++ b/Documentation/networking/device_drivers/ethernet/index.rst
-@@ -52,6 +52,7 @@ Contents:
-    ti/am65_nuss_cpsw_switchdev
-    ti/tlan
-    toshiba/spider_net
-+   wangxun/txgbe
+ fs/9p/fid.c             | 18 ++++++++--------
+ fs/9p/fid.h             |  2 +-
+ fs/9p/vfs_addr.c        |  4 ++--
+ fs/9p/vfs_dentry.c      |  4 ++--
+ fs/9p/vfs_dir.c         |  2 +-
+ fs/9p/vfs_file.c        |  4 ++--
+ fs/9p/vfs_inode.c       | 48 ++++++++++++++++++++---------------------
+ fs/9p/vfs_inode_dotl.c  | 42 ++++++++++++++++++------------------
+ fs/9p/vfs_super.c       |  6 +++---
+ fs/9p/xattr.c           |  8 +++----
+ include/net/9p/client.h | 28 ++++++++++++++++++++++++
+ net/9p/client.c         | 15 +++----------
+ 12 files changed, 100 insertions(+), 81 deletions(-)
+
+diff --git a/fs/9p/fid.c b/fs/9p/fid.c
+index e8fad28fc5bd..d792499349c4 100644
+--- a/fs/9p/fid.c
++++ b/fs/9p/fid.c
+@@ -56,7 +56,7 @@ static struct p9_fid *v9fs_fid_find_inode(struct inode *inode, kuid_t uid)
+ 	h = (struct hlist_head *)&inode->i_private;
+ 	hlist_for_each_entry(fid, h, ilist) {
+ 		if (uid_eq(fid->uid, uid)) {
+-			refcount_inc(&fid->count);
++			p9_fid_get(fid);
+ 			ret = fid;
+ 			break;
+ 		}
+@@ -104,7 +104,7 @@ static struct p9_fid *v9fs_fid_find(struct dentry *dentry, kuid_t uid, int any)
+ 		hlist_for_each_entry(fid, h, dlist) {
+ 			if (any || uid_eq(fid->uid, uid)) {
+ 				ret = fid;
+-				refcount_inc(&ret->count);
++				p9_fid_get(ret);
+ 				break;
+ 			}
+ 		}
+@@ -172,7 +172,7 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
+ 		old_fid = fid;
  
- .. only::  subproject and html
+ 		fid = p9_client_walk(old_fid, 1, &dentry->d_name.name, 1);
+-		p9_client_clunk(old_fid);
++		p9_fid_put(old_fid);
+ 		goto fid_out;
+ 	}
+ 	up_read(&v9ses->rename_sem);
+@@ -194,7 +194,7 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
+ 		if (IS_ERR(root_fid))
+ 			return root_fid;
  
-diff --git a/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst b/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
-new file mode 100644
-index 000000000000..eaa87dbe8848
---- /dev/null
-+++ b/Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
-@@ -0,0 +1,20 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+================================================================
-+Linux Base Driver for WangXun(R) 10 Gigabit PCI Express Adapters
-+================================================================
-+
-+WangXun 10 Gigabit Linux driver.
-+Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd.
-+
-+
-+Contents
-+========
-+
-+- Support
-+
-+
-+Support
-+=======
-+If you got any problem, contact Wangxun support team via support@trustnetic.com
-+and Cc: netdev.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 96158b337b40..3a2424e2b19c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -21432,6 +21432,13 @@ L:	linux-input@vger.kernel.org
- S:	Maintained
- F:	drivers/input/tablet/wacom_serial4.c
+-		refcount_inc(&root_fid->count);
++		p9_fid_get(root_fid);
+ 		v9fs_fid_add(dentry->d_sb->s_root, root_fid);
+ 	}
+ 	/* If we are root ourself just return that */
+@@ -225,7 +225,7 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
+ 				     old_fid == root_fid /* clone */);
+ 		/* non-cloning walk will return the same fid */
+ 		if (fid != old_fid) {
+-			p9_client_clunk(old_fid);
++			p9_fid_put(old_fid);
+ 			old_fid = fid;
+ 		}
+ 		if (IS_ERR(fid)) {
+@@ -240,11 +240,11 @@ static struct p9_fid *v9fs_fid_lookup_with_uid(struct dentry *dentry,
+ 		spin_lock(&dentry->d_lock);
+ 		if (d_unhashed(dentry)) {
+ 			spin_unlock(&dentry->d_lock);
+-			p9_client_clunk(fid);
++			p9_fid_put(fid);
+ 			fid = ERR_PTR(-ENOENT);
+ 		} else {
+ 			__add_fid(dentry, fid);
+-			refcount_inc(&fid->count);
++			p9_fid_get(fid);
+ 			spin_unlock(&dentry->d_lock);
+ 		}
+ 	}
+@@ -301,7 +301,7 @@ struct p9_fid *v9fs_writeback_fid(struct dentry *dentry)
+ 	fid = clone_fid(ofid);
+ 	if (IS_ERR(fid))
+ 		goto error_out;
+-	p9_client_clunk(ofid);
++	p9_fid_put(ofid);
+ 	/*
+ 	 * writeback fid will only be used to write back the
+ 	 * dirty pages. We always request for the open fid in read-write
+@@ -310,7 +310,7 @@ struct p9_fid *v9fs_writeback_fid(struct dentry *dentry)
+ 	 */
+ 	err = p9_client_open(fid, O_RDWR);
+ 	if (err < 0) {
+-		p9_client_clunk(fid);
++		p9_fid_put(fid);
+ 		fid = ERR_PTR(err);
+ 		goto error_out;
+ 	}
+diff --git a/fs/9p/fid.h b/fs/9p/fid.h
+index f7f33509e169..3168dfad510e 100644
+--- a/fs/9p/fid.h
++++ b/fs/9p/fid.h
+@@ -29,7 +29,7 @@ static inline struct p9_fid *v9fs_fid_clone(struct dentry *dentry)
+ 		return fid;
  
-+WANGXUN ETHERNET DRIVER
-+M:	Jiawen Wu <jiawenwu@trustnetic.com>
-+L:	netdev@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
-+F:	drivers/net/ethernet/wangxun/
-+
- WATCHDOG DEVICE DRIVERS
- M:	Wim Van Sebroeck <wim@linux-watchdog.org>
- M:	Guenter Roeck <linux@roeck-us.net>
-diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
-index 955abbc5490e..9a55c1d5a0a1 100644
---- a/drivers/net/ethernet/Kconfig
-+++ b/drivers/net/ethernet/Kconfig
-@@ -84,6 +84,7 @@ source "drivers/net/ethernet/huawei/Kconfig"
- source "drivers/net/ethernet/i825xx/Kconfig"
- source "drivers/net/ethernet/ibm/Kconfig"
- source "drivers/net/ethernet/intel/Kconfig"
-+source "drivers/net/ethernet/wangxun/Kconfig"
- source "drivers/net/ethernet/xscale/Kconfig"
- 
- config JME
-diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
-index 9eb01169957f..c06e75ed4231 100644
---- a/drivers/net/ethernet/Makefile
-+++ b/drivers/net/ethernet/Makefile
-@@ -97,6 +97,7 @@ obj-$(CONFIG_NET_VENDOR_TOSHIBA) += toshiba/
- obj-$(CONFIG_NET_VENDOR_TUNDRA) += tundra/
- obj-$(CONFIG_NET_VENDOR_VERTEXCOM) += vertexcom/
- obj-$(CONFIG_NET_VENDOR_VIA) += via/
-+obj-$(CONFIG_NET_VENDOR_WANGXUN) += wangxun/
- obj-$(CONFIG_NET_VENDOR_WIZNET) += wiznet/
- obj-$(CONFIG_NET_VENDOR_XILINX) += xilinx/
- obj-$(CONFIG_NET_VENDOR_XIRCOM) += xircom/
-diff --git a/drivers/net/ethernet/wangxun/Kconfig b/drivers/net/ethernet/wangxun/Kconfig
-new file mode 100644
-index 000000000000..baa1f0a5cc37
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/Kconfig
-@@ -0,0 +1,32 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# Wangxun network device configuration
-+#
-+
-+config NET_VENDOR_WANGXUN
-+	bool "Wangxun devices"
-+	default y
-+	help
-+	  If you have a network (Ethernet) card belonging to this class, say Y.
-+
-+	  Note that the answer to this question doesn't directly affect the
-+	  kernel: saying N will just cause the configurator to skip all
-+	  the questions about Intel cards. If you say Y, you will be asked for
-+	  your specific card in the following questions.
-+
-+if NET_VENDOR_WANGXUN
-+
-+config TXGBE
-+	tristate "Wangxun(R) 10GbE PCI Express adapters support"
-+	depends on PCI
-+	help
-+	  This driver supports Wangxun(R) 10GbE PCI Express family of
-+	  adapters.
-+
-+	  More specific information on configuring the driver is in
-+	  <file:Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst>.
-+
-+	  To compile this driver as a module, choose M here. The module
-+	  will be called txgbe.
-+
-+endif # NET_VENDOR_WANGXUN
-diff --git a/drivers/net/ethernet/wangxun/Makefile b/drivers/net/ethernet/wangxun/Makefile
-new file mode 100644
-index 000000000000..c34db1bead25
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for the Wangxun network device drivers.
-+#
-+
-+obj-$(CONFIG_TXGBE) += txgbe/
-diff --git a/drivers/net/ethernet/wangxun/txgbe/Makefile b/drivers/net/ethernet/wangxun/txgbe/Makefile
-new file mode 100644
-index 000000000000..431303ca75b4
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/txgbe/Makefile
-@@ -0,0 +1,9 @@
-+# SPDX-License-Identifier: GPL-2.0
-+# Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd.
-+#
-+# Makefile for the Wangxun(R) 10GbE PCI Express ethernet driver
-+#
-+
-+obj-$(CONFIG_TXGBE) += txgbe.o
-+
-+txgbe-objs := txgbe_main.o
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe.h b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
-new file mode 100644
-index 000000000000..4e2c637f7c73
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
-@@ -0,0 +1,24 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
-+
-+#ifndef _TXGBE_H_
-+#define _TXGBE_H_
-+
-+#include "txgbe_type.h"
-+
-+#define TXGBE_MAX_FDIR_INDICES          63
-+
-+#define TXGBE_MAX_RX_QUEUES   (TXGBE_MAX_FDIR_INDICES + 1)
-+#define TXGBE_MAX_TX_QUEUES   (TXGBE_MAX_FDIR_INDICES + 1)
-+
-+/* board specific private data structure */
-+struct txgbe_adapter {
-+	u8 __iomem *io_addr;    /* Mainly for iounmap use */
-+	/* OS defined structs */
-+	struct net_device *netdev;
-+	struct pci_dev *pdev;
-+};
-+
-+#define TXGBE_NAME "txgbe"
-+
-+#endif /* _TXGBE_H_ */
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-new file mode 100644
-index 000000000000..f465ea5ba09c
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-@@ -0,0 +1,178 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
-+
-+#include <linux/types.h>
-+#include <linux/module.h>
-+#include <linux/pci.h>
-+#include <linux/netdevice.h>
-+#include <linux/string.h>
-+#include <linux/aer.h>
-+#include <linux/etherdevice.h>
-+
-+#include "txgbe.h"
-+
-+char txgbe_driver_name[32] = TXGBE_NAME;
-+
-+/* txgbe_pci_tbl - PCI Device ID Table
-+ *
-+ * Wildcard entries (PCI_ANY_ID) should come last
-+ * Last entry must be all 0s
-+ *
-+ * { Vendor ID, Device ID, SubVendor ID, SubDevice ID,
-+ *   Class, Class Mask, private data (not used) }
-+ */
-+static const struct pci_device_id txgbe_pci_tbl[] = {
-+	{ PCI_VDEVICE(WANGXUN, TXGBE_DEV_ID_SP1000), 0},
-+	{ PCI_VDEVICE(WANGXUN, TXGBE_DEV_ID_WX1820), 0},
-+	/* required last entry */
-+	{ .device = 0 }
-+};
-+
-+#define DEFAULT_DEBUG_LEVEL_SHIFT 3
-+
-+static void txgbe_dev_shutdown(struct pci_dev *pdev, bool *enable_wake)
-+{
-+	struct txgbe_adapter *adapter = pci_get_drvdata(pdev);
-+	struct net_device *netdev = adapter->netdev;
-+
-+	netif_device_detach(netdev);
-+
-+	pci_disable_device(pdev);
-+}
-+
-+static void txgbe_shutdown(struct pci_dev *pdev)
-+{
-+	bool wake;
-+
-+	txgbe_dev_shutdown(pdev, &wake);
-+
-+	if (system_state == SYSTEM_POWER_OFF) {
-+		pci_wake_from_d3(pdev, wake);
-+		pci_set_power_state(pdev, PCI_D3hot);
-+	}
-+}
-+
-+/**
-+ * txgbe_probe - Device Initialization Routine
-+ * @pdev: PCI device information struct
-+ * @ent: entry in txgbe_pci_tbl
-+ *
-+ * Returns 0 on success, negative on failure
-+ *
-+ * txgbe_probe initializes an adapter identified by a pci_dev structure.
-+ * The OS initialization, configuring of the adapter private structure,
-+ * and a hardware reset occur.
-+ **/
-+static int txgbe_probe(struct pci_dev *pdev,
-+		       const struct pci_device_id __always_unused *ent)
-+{
-+	struct txgbe_adapter *adapter = NULL;
-+	struct net_device *netdev;
-+	int err, pci_using_dac;
-+
-+	err = pci_enable_device_mem(pdev);
-+	if (err)
-+		return err;
-+
-+	if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(64)) &&
-+	    !dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64))) {
-+		pci_using_dac = 1;
-+	} else {
-+		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
-+		if (err) {
-+			err = dma_set_coherent_mask(&pdev->dev,
-+						    DMA_BIT_MASK(32));
-+			if (err) {
-+				dev_err(&pdev->dev,
-+					"No usable DMA configuration, aborting\n");
-+				goto err_dma;
-+			}
-+		}
-+		pci_using_dac = 0;
-+	}
-+
-+	err = pci_request_selected_regions(pdev,
-+					   pci_select_bars(pdev, IORESOURCE_MEM),
-+					   txgbe_driver_name);
-+	if (err) {
-+		dev_err(&pdev->dev,
-+			"pci_request_selected_regions failed 0x%x\n", err);
-+		goto err_pci_reg;
-+	}
-+
-+	pci_enable_pcie_error_reporting(pdev);
-+	pci_set_master(pdev);
-+
-+	netdev = devm_alloc_etherdev_mqs(&pdev->dev,
-+					 sizeof(struct txgbe_adapter),
-+					 TXGBE_MAX_TX_QUEUES,
-+					 TXGBE_MAX_RX_QUEUES);
-+	if (!netdev) {
-+		err = -ENOMEM;
-+		goto err_alloc_etherdev;
-+	}
-+
-+	SET_NETDEV_DEV(netdev, &pdev->dev);
-+
-+	adapter = netdev_priv(netdev);
-+	adapter->netdev = netdev;
-+	adapter->pdev = pdev;
-+
-+	adapter->io_addr = devm_ioremap(&pdev->dev,
-+					pci_resource_start(pdev, 0),
-+					pci_resource_len(pdev, 0));
-+	if (!adapter->io_addr) {
-+		err = -EIO;
-+		goto err_ioremap;
-+	}
-+
-+	if (pci_using_dac)
-+		netdev->features |= NETIF_F_HIGHDMA;
-+
-+	pci_set_drvdata(pdev, adapter);
-+
-+	return 0;
-+
-+err_ioremap:
-+err_alloc_etherdev:
-+	pci_release_selected_regions(pdev,
-+				     pci_select_bars(pdev, IORESOURCE_MEM));
-+err_pci_reg:
-+err_dma:
-+	pci_disable_device(pdev);
-+	return err;
-+}
-+
-+/**
-+ * txgbe_remove - Device Removal Routine
-+ * @pdev: PCI device information struct
-+ *
-+ * txgbe_remove is called by the PCI subsystem to alert the driver
-+ * that it should release a PCI device.  The could be caused by a
-+ * Hot-Plug event, or because the driver is going to be removed from
-+ * memory.
-+ **/
-+static void txgbe_remove(struct pci_dev *pdev)
-+{
-+	pci_release_selected_regions(pdev,
-+				     pci_select_bars(pdev, IORESOURCE_MEM));
-+
-+	pci_disable_pcie_error_reporting(pdev);
-+
-+	pci_disable_device(pdev);
-+}
-+
-+static struct pci_driver txgbe_driver = {
-+	.name     = txgbe_driver_name,
-+	.id_table = txgbe_pci_tbl,
-+	.probe    = txgbe_probe,
-+	.remove   = txgbe_remove,
-+	.shutdown = txgbe_shutdown,
-+};
-+
-+module_pci_driver(txgbe_driver);
-+
-+MODULE_DEVICE_TABLE(pci, txgbe_pci_tbl);
-+MODULE_AUTHOR("Beijing WangXun Technology Co., Ltd, <software@trustnetic.com>");
-+MODULE_DESCRIPTION("WangXun(R) 10 Gigabit PCI Express Network Driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-new file mode 100644
-index 000000000000..b2e329f50bae
---- /dev/null
-+++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-@@ -0,0 +1,57 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd. */
-+
-+#ifndef _TXGBE_TYPE_H_
-+#define _TXGBE_TYPE_H_
-+
-+#include <linux/types.h>
-+#include <linux/netdevice.h>
-+
-+/************ txgbe_register.h ************/
-+/* Vendor ID */
-+#ifndef PCI_VENDOR_ID_WANGXUN
-+#define PCI_VENDOR_ID_WANGXUN                   0x8088
-+#endif
-+
-+/* Device IDs */
-+#define TXGBE_DEV_ID_SP1000                     0x1001
-+#define TXGBE_DEV_ID_WX1820                     0x2001
-+
-+/* Subsystem IDs */
-+/* SFP */
-+#define TXGBE_ID_SP1000_SFP                     0x0000
-+#define TXGBE_ID_WX1820_SFP                     0x2000
-+#define TXGBE_ID_SFP                            0x00
-+
-+/* copper */
-+#define TXGBE_ID_SP1000_XAUI                    0x1010
-+#define TXGBE_ID_WX1820_XAUI                    0x2010
-+#define TXGBE_ID_XAUI                           0x10
-+#define TXGBE_ID_SP1000_SGMII                   0x1020
-+#define TXGBE_ID_WX1820_SGMII                   0x2020
-+#define TXGBE_ID_SGMII                          0x20
-+/* backplane */
-+#define TXGBE_ID_SP1000_KR_KX_KX4               0x1030
-+#define TXGBE_ID_WX1820_KR_KX_KX4               0x2030
-+#define TXGBE_ID_KR_KX_KX4                      0x30
-+/* MAC Interface */
-+#define TXGBE_ID_SP1000_MAC_XAUI                0x1040
-+#define TXGBE_ID_WX1820_MAC_XAUI                0x2040
-+#define TXGBE_ID_MAC_XAUI                       0x40
-+#define TXGBE_ID_SP1000_MAC_SGMII               0x1060
-+#define TXGBE_ID_WX1820_MAC_SGMII               0x2060
-+#define TXGBE_ID_MAC_SGMII                      0x60
-+
-+#define TXGBE_NCSI_SUP                          0x8000
-+#define TXGBE_NCSI_MASK                         0x8000
-+#define TXGBE_WOL_SUP                           0x4000
-+#define TXGBE_WOL_MASK                          0x4000
-+#define TXGBE_DEV_MASK                          0xf0
-+
-+/* Combined interface*/
-+#define TXGBE_ID_SFI_XAUI			0x50
-+
-+/* Revision ID */
-+#define TXGBE_SP_MPW  1
-+
-+#endif /* _TXGBE_TYPE_H_ */
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 41aeaa235132..fd1178bde3c2 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -5942,3 +5942,18 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x56b1, aspm_l1_acceptable_latency
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x56c0, aspm_l1_acceptable_latency);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x56c1, aspm_l1_acceptable_latency);
+ 	nfid = clone_fid(fid);
+-	p9_client_clunk(fid);
++	p9_fid_put(fid);
+ 	return nfid;
+ }
  #endif
-+
-+static void quirk_wangxun_set_read_req_size(struct pci_dev *pdev)
+diff --git a/fs/9p/vfs_addr.c b/fs/9p/vfs_addr.c
+index 7f924e671e3e..c5f71eeb28b6 100644
+--- a/fs/9p/vfs_addr.c
++++ b/fs/9p/vfs_addr.c
+@@ -70,7 +70,7 @@ static int v9fs_init_request(struct netfs_io_request *rreq, struct file *file)
+ 
+ 	BUG_ON(!fid);
+ 
+-	refcount_inc(&fid->count);
++	p9_fid_get(fid);
+ 	rreq->netfs_priv = fid;
+ 	return 0;
+ }
+@@ -83,7 +83,7 @@ static void v9fs_free_request(struct netfs_io_request *rreq)
+ {
+ 	struct p9_fid *fid = rreq->netfs_priv;
+ 
+-	p9_client_clunk(fid);
++	p9_fid_put(fid);
+ }
+ 
+ /**
+diff --git a/fs/9p/vfs_dentry.c b/fs/9p/vfs_dentry.c
+index 1c609e99d280..f89f01734587 100644
+--- a/fs/9p/vfs_dentry.c
++++ b/fs/9p/vfs_dentry.c
+@@ -54,7 +54,7 @@ static void v9fs_dentry_release(struct dentry *dentry)
+ 	p9_debug(P9_DEBUG_VFS, " dentry: %pd (%p)\n",
+ 		 dentry, dentry);
+ 	hlist_for_each_safe(p, n, (struct hlist_head *)&dentry->d_fsdata)
+-		p9_client_clunk(hlist_entry(p, struct p9_fid, dlist));
++		p9_fid_put(hlist_entry(p, struct p9_fid, dlist));
+ 	dentry->d_fsdata = NULL;
+ }
+ 
+@@ -85,7 +85,7 @@ static int v9fs_lookup_revalidate(struct dentry *dentry, unsigned int flags)
+ 			retval = v9fs_refresh_inode_dotl(fid, inode);
+ 		else
+ 			retval = v9fs_refresh_inode(fid, inode);
+-		p9_client_clunk(fid);
++		p9_fid_put(fid);
+ 
+ 		if (retval == -ENOENT)
+ 			return 0;
+diff --git a/fs/9p/vfs_dir.c b/fs/9p/vfs_dir.c
+index 958680f7f23e..000fbaae9b18 100644
+--- a/fs/9p/vfs_dir.c
++++ b/fs/9p/vfs_dir.c
+@@ -218,7 +218,7 @@ int v9fs_dir_release(struct inode *inode, struct file *filp)
+ 		spin_lock(&inode->i_lock);
+ 		hlist_del(&fid->ilist);
+ 		spin_unlock(&inode->i_lock);
+-		p9_client_clunk(fid);
++		p9_fid_put(fid);
+ 	}
+ 
+ 	if ((filp->f_mode & FMODE_WRITE)) {
+diff --git a/fs/9p/vfs_file.c b/fs/9p/vfs_file.c
+index 2573c08f335c..8276f3af35d7 100644
+--- a/fs/9p/vfs_file.c
++++ b/fs/9p/vfs_file.c
+@@ -63,7 +63,7 @@ int v9fs_file_open(struct inode *inode, struct file *file)
+ 
+ 		err = p9_client_open(fid, omode);
+ 		if (err < 0) {
+-			p9_client_clunk(fid);
++			p9_fid_put(fid);
+ 			return err;
+ 		}
+ 		if ((file->f_flags & O_APPEND) &&
+@@ -98,7 +98,7 @@ int v9fs_file_open(struct inode *inode, struct file *file)
+ 	v9fs_open_fid_add(inode, fid);
+ 	return 0;
+ out_error:
+-	p9_client_clunk(file->private_data);
++	p9_fid_put(file->private_data);
+ 	file->private_data = NULL;
+ 	return err;
+ }
+diff --git a/fs/9p/vfs_inode.c b/fs/9p/vfs_inode.c
+index 3d8297714772..bde18776f0c7 100644
+--- a/fs/9p/vfs_inode.c
++++ b/fs/9p/vfs_inode.c
+@@ -400,7 +400,7 @@ void v9fs_evict_inode(struct inode *inode)
+ 	fscache_relinquish_cookie(v9fs_inode_cookie(v9inode), false);
+ 	/* clunk the fid stashed in writeback_fid */
+ 	if (v9inode->writeback_fid) {
+-		p9_client_clunk(v9inode->writeback_fid);
++		p9_fid_put(v9inode->writeback_fid);
+ 		v9inode->writeback_fid = NULL;
+ 	}
+ }
+@@ -569,7 +569,7 @@ static int v9fs_remove(struct inode *dir, struct dentry *dentry, int flags)
+ 	if (v9fs_proto_dotl(v9ses))
+ 		retval = p9_client_unlinkat(dfid, dentry->d_name.name,
+ 					    v9fs_at_to_dotl_flags(flags));
+-	p9_client_clunk(dfid);
++	p9_fid_put(dfid);
+ 	if (retval == -EOPNOTSUPP) {
+ 		/* Try the one based on path */
+ 		v9fid = v9fs_fid_clone(dentry);
+@@ -633,14 +633,14 @@ v9fs_create(struct v9fs_session_info *v9ses, struct inode *dir,
+ 	if (IS_ERR(ofid)) {
+ 		err = PTR_ERR(ofid);
+ 		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n", err);
+-		p9_client_clunk(dfid);
++		p9_fid_put(dfid);
+ 		return ERR_PTR(err);
+ 	}
+ 
+ 	err = p9_client_fcreate(ofid, name, perm, mode, extension);
+ 	if (err < 0) {
+ 		p9_debug(P9_DEBUG_VFS, "p9_client_fcreate failed %d\n", err);
+-		p9_client_clunk(dfid);
++		p9_fid_put(dfid);
+ 		goto error;
+ 	}
+ 
+@@ -652,7 +652,7 @@ v9fs_create(struct v9fs_session_info *v9ses, struct inode *dir,
+ 			p9_debug(P9_DEBUG_VFS,
+ 				   "p9_client_walk failed %d\n", err);
+ 			fid = NULL;
+-			p9_client_clunk(dfid);
++			p9_fid_put(dfid);
+ 			goto error;
+ 		}
+ 		/*
+@@ -663,20 +663,20 @@ v9fs_create(struct v9fs_session_info *v9ses, struct inode *dir,
+ 			err = PTR_ERR(inode);
+ 			p9_debug(P9_DEBUG_VFS,
+ 				   "inode creation failed %d\n", err);
+-			p9_client_clunk(dfid);
++			p9_fid_put(dfid);
+ 			goto error;
+ 		}
+ 		v9fs_fid_add(dentry, fid);
+ 		d_instantiate(dentry, inode);
+ 	}
+-	p9_client_clunk(dfid);
++	p9_fid_put(dfid);
+ 	return ofid;
+ error:
+ 	if (ofid)
+-		p9_client_clunk(ofid);
++		p9_fid_put(ofid);
+ 
+ 	if (fid)
+-		p9_client_clunk(fid);
++		p9_fid_put(fid);
+ 
+ 	return ERR_PTR(err);
+ }
+@@ -708,7 +708,7 @@ v9fs_vfs_create(struct user_namespace *mnt_userns, struct inode *dir,
+ 		return PTR_ERR(fid);
+ 
+ 	v9fs_invalidate_inode_attr(dir);
+-	p9_client_clunk(fid);
++	p9_fid_put(fid);
+ 
+ 	return 0;
+ }
+@@ -744,7 +744,7 @@ static int v9fs_vfs_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
+ 	}
+ 
+ 	if (fid)
+-		p9_client_clunk(fid);
++		p9_fid_put(fid);
+ 
+ 	return err;
+ }
+@@ -785,7 +785,7 @@ struct dentry *v9fs_vfs_lookup(struct inode *dir, struct dentry *dentry,
+ 	 */
+ 	name = dentry->d_name.name;
+ 	fid = p9_client_walk(dfid, 1, &name, 1);
+-	p9_client_clunk(dfid);
++	p9_fid_put(dfid);
+ 	if (fid == ERR_PTR(-ENOENT))
+ 		inode = NULL;
+ 	else if (IS_ERR(fid))
+@@ -808,7 +808,7 @@ struct dentry *v9fs_vfs_lookup(struct inode *dir, struct dentry *dentry,
+ 		else if (!IS_ERR(res))
+ 			v9fs_fid_add(res, fid);
+ 		else
+-			p9_client_clunk(fid);
++			p9_fid_put(fid);
+ 	}
+ 	return res;
+ }
+@@ -891,7 +891,7 @@ v9fs_vfs_atomic_open(struct inode *dir, struct dentry *dentry,
+ 
+ error:
+ 	if (fid)
+-		p9_client_clunk(fid);
++		p9_fid_put(fid);
+ 	goto out;
+ }
+ 
+@@ -959,7 +959,7 @@ v9fs_vfs_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+ 	dfid = v9fs_parent_fid(old_dentry);
+ 	olddirfid = clone_fid(dfid);
+ 	if (dfid && !IS_ERR(dfid))
+-		p9_client_clunk(dfid);
++		p9_fid_put(dfid);
+ 
+ 	if (IS_ERR(olddirfid)) {
+ 		retval = PTR_ERR(olddirfid);
+@@ -968,7 +968,7 @@ v9fs_vfs_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+ 
+ 	dfid = v9fs_parent_fid(new_dentry);
+ 	newdirfid = clone_fid(dfid);
+-	p9_client_clunk(dfid);
++	p9_fid_put(dfid);
+ 
+ 	if (IS_ERR(newdirfid)) {
+ 		retval = PTR_ERR(newdirfid);
+@@ -1020,13 +1020,13 @@ v9fs_vfs_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+ 		d_move(old_dentry, new_dentry);
+ 	}
+ 	up_write(&v9ses->rename_sem);
+-	p9_client_clunk(newdirfid);
++	p9_fid_put(newdirfid);
+ 
+ clunk_olddir:
+-	p9_client_clunk(olddirfid);
++	p9_fid_put(olddirfid);
+ 
+ done:
+-	p9_client_clunk(oldfid);
++	p9_fid_put(oldfid);
+ 	return retval;
+ }
+ 
+@@ -1060,7 +1060,7 @@ v9fs_vfs_getattr(struct user_namespace *mnt_userns, const struct path *path,
+ 		return PTR_ERR(fid);
+ 
+ 	st = p9_client_stat(fid);
+-	p9_client_clunk(fid);
++	p9_fid_put(fid);
+ 	if (IS_ERR(st))
+ 		return PTR_ERR(st);
+ 
+@@ -1136,7 +1136,7 @@ static int v9fs_vfs_setattr(struct user_namespace *mnt_userns,
+ 	retval = p9_client_wstat(fid, &wstat);
+ 
+ 	if (use_dentry)
+-		p9_client_clunk(fid);
++		p9_fid_put(fid);
+ 
+ 	if (retval < 0)
+ 		return retval;
+@@ -1261,7 +1261,7 @@ static const char *v9fs_vfs_get_link(struct dentry *dentry,
+ 		return ERR_CAST(fid);
+ 
+ 	st = p9_client_stat(fid);
+-	p9_client_clunk(fid);
++	p9_fid_put(fid);
+ 	if (IS_ERR(st))
+ 		return ERR_CAST(st);
+ 
+@@ -1308,7 +1308,7 @@ static int v9fs_vfs_mkspecial(struct inode *dir, struct dentry *dentry,
+ 		return PTR_ERR(fid);
+ 
+ 	v9fs_invalidate_inode_attr(dir);
+-	p9_client_clunk(fid);
++	p9_fid_put(fid);
+ 	return 0;
+ }
+ 
+@@ -1364,7 +1364,7 @@ v9fs_vfs_link(struct dentry *old_dentry, struct inode *dir,
+ 		v9fs_refresh_inode(oldfid, d_inode(old_dentry));
+ 		v9fs_invalidate_inode_attr(dir);
+ 	}
+-	p9_client_clunk(oldfid);
++	p9_fid_put(oldfid);
+ 	return retval;
+ }
+ 
+diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
+index b6eb1160296c..09b124fe349c 100644
+--- a/fs/9p/vfs_inode_dotl.c
++++ b/fs/9p/vfs_inode_dotl.c
+@@ -274,7 +274,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct dentry *dentry,
+ 	if (IS_ERR(ofid)) {
+ 		err = PTR_ERR(ofid);
+ 		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n", err);
+-		p9_client_clunk(dfid);
++		p9_fid_put(dfid);
+ 		goto out;
+ 	}
+ 
+@@ -286,7 +286,7 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct dentry *dentry,
+ 	if (err) {
+ 		p9_debug(P9_DEBUG_VFS, "Failed to get acl values in creat %d\n",
+ 			 err);
+-		p9_client_clunk(dfid);
++		p9_fid_put(dfid);
+ 		goto error;
+ 	}
+ 	err = p9_client_create_dotl(ofid, name, v9fs_open_to_dotl_flags(flags),
+@@ -294,14 +294,14 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct dentry *dentry,
+ 	if (err < 0) {
+ 		p9_debug(P9_DEBUG_VFS, "p9_client_open_dotl failed in creat %d\n",
+ 			 err);
+-		p9_client_clunk(dfid);
++		p9_fid_put(dfid);
+ 		goto error;
+ 	}
+ 	v9fs_invalidate_inode_attr(dir);
+ 
+ 	/* instantiate inode and assign the unopened fid to the dentry */
+ 	fid = p9_client_walk(dfid, 1, &name, 1);
+-	p9_client_clunk(dfid);
++	p9_fid_put(dfid);
+ 	if (IS_ERR(fid)) {
+ 		err = PTR_ERR(fid);
+ 		p9_debug(P9_DEBUG_VFS, "p9_client_walk failed %d\n", err);
+@@ -358,10 +358,10 @@ v9fs_vfs_atomic_open_dotl(struct inode *dir, struct dentry *dentry,
+ 
+ error:
+ 	if (fid)
+-		p9_client_clunk(fid);
++		p9_fid_put(fid);
+ err_clunk_old_fid:
+ 	if (ofid)
+-		p9_client_clunk(ofid);
++		p9_fid_put(ofid);
+ 	goto out;
+ }
+ 
+@@ -458,9 +458,9 @@ static int v9fs_vfs_mkdir_dotl(struct user_namespace *mnt_userns,
+ 	v9fs_invalidate_inode_attr(dir);
+ error:
+ 	if (fid)
+-		p9_client_clunk(fid);
++		p9_fid_put(fid);
+ 	v9fs_put_acl(dacl, pacl);
+-	p9_client_clunk(dfid);
++	p9_fid_put(dfid);
+ 	return err;
+ }
+ 
+@@ -489,7 +489,7 @@ v9fs_vfs_getattr_dotl(struct user_namespace *mnt_userns,
+ 	 */
+ 
+ 	st = p9_client_getattr_dotl(fid, P9_STATS_ALL);
+-	p9_client_clunk(fid);
++	p9_fid_put(fid);
+ 	if (IS_ERR(st))
+ 		return PTR_ERR(st);
+ 
+@@ -603,7 +603,7 @@ int v9fs_vfs_setattr_dotl(struct user_namespace *mnt_userns,
+ 	retval = p9_client_setattr(fid, &p9attr);
+ 	if (retval < 0) {
+ 		if (use_dentry)
+-			p9_client_clunk(fid);
++			p9_fid_put(fid);
+ 		return retval;
+ 	}
+ 
+@@ -619,12 +619,12 @@ int v9fs_vfs_setattr_dotl(struct user_namespace *mnt_userns,
+ 		retval = v9fs_acl_chmod(inode, fid);
+ 		if (retval < 0) {
+ 			if (use_dentry)
+-				p9_client_clunk(fid);
++				p9_fid_put(fid);
+ 			return retval;
+ 		}
+ 	}
+ 	if (use_dentry)
+-		p9_client_clunk(fid);
++		p9_fid_put(fid);
+ 
+ 	return 0;
+ }
+@@ -771,9 +771,9 @@ v9fs_vfs_symlink_dotl(struct user_namespace *mnt_userns, struct inode *dir,
+ 
+ error:
+ 	if (fid)
+-		p9_client_clunk(fid);
++		p9_fid_put(fid);
+ 
+-	p9_client_clunk(dfid);
++	p9_fid_put(dfid);
+ 	return err;
+ }
+ 
+@@ -803,14 +803,14 @@ v9fs_vfs_link_dotl(struct dentry *old_dentry, struct inode *dir,
+ 
+ 	oldfid = v9fs_fid_lookup(old_dentry);
+ 	if (IS_ERR(oldfid)) {
+-		p9_client_clunk(dfid);
++		p9_fid_put(dfid);
+ 		return PTR_ERR(oldfid);
+ 	}
+ 
+ 	err = p9_client_link(dfid, oldfid, dentry->d_name.name);
+ 
+-	p9_client_clunk(dfid);
+-	p9_client_clunk(oldfid);
++	p9_fid_put(dfid);
++	p9_fid_put(oldfid);
+ 	if (err < 0) {
+ 		p9_debug(P9_DEBUG_VFS, "p9_client_link failed %d\n", err);
+ 		return err;
+@@ -826,7 +826,7 @@ v9fs_vfs_link_dotl(struct dentry *old_dentry, struct inode *dir,
+ 			return PTR_ERR(fid);
+ 
+ 		v9fs_refresh_inode_dotl(fid, d_inode(old_dentry));
+-		p9_client_clunk(fid);
++		p9_fid_put(fid);
+ 	}
+ 	ihold(d_inode(old_dentry));
+ 	d_instantiate(dentry, d_inode(old_dentry));
+@@ -924,9 +924,9 @@ v9fs_vfs_mknod_dotl(struct user_namespace *mnt_userns, struct inode *dir,
+ 	}
+ error:
+ 	if (fid)
+-		p9_client_clunk(fid);
++		p9_fid_put(fid);
+ 	v9fs_put_acl(dacl, pacl);
+-	p9_client_clunk(dfid);
++	p9_fid_put(dfid);
+ 
+ 	return err;
+ }
+@@ -956,7 +956,7 @@ v9fs_vfs_get_link_dotl(struct dentry *dentry,
+ 	if (IS_ERR(fid))
+ 		return ERR_CAST(fid);
+ 	retval = p9_client_readlink(fid, &target);
+-	p9_client_clunk(fid);
++	p9_fid_put(fid);
+ 	if (retval)
+ 		return ERR_PTR(retval);
+ 	set_delayed_call(done, kfree_link, target);
+diff --git a/fs/9p/vfs_super.c b/fs/9p/vfs_super.c
+index 97e23b4e6982..bf350fad9500 100644
+--- a/fs/9p/vfs_super.c
++++ b/fs/9p/vfs_super.c
+@@ -190,7 +190,7 @@ static struct dentry *v9fs_mount(struct file_system_type *fs_type, int flags,
+ 	return dget(sb->s_root);
+ 
+ clunk_fid:
+-	p9_client_clunk(fid);
++	p9_fid_put(fid);
+ 	v9fs_session_close(v9ses);
+ free_session:
+ 	kfree(v9ses);
+@@ -203,7 +203,7 @@ static struct dentry *v9fs_mount(struct file_system_type *fs_type, int flags,
+ 	 * attached the fid to dentry so it won't get clunked
+ 	 * automatically.
+ 	 */
+-	p9_client_clunk(fid);
++	p9_fid_put(fid);
+ 	deactivate_locked_super(sb);
+ 	return ERR_PTR(retval);
+ }
+@@ -270,7 +270,7 @@ static int v9fs_statfs(struct dentry *dentry, struct kstatfs *buf)
+ 	}
+ 	res = simple_statfs(dentry, buf);
+ done:
+-	p9_client_clunk(fid);
++	p9_fid_put(fid);
+ 	return res;
+ }
+ 
+diff --git a/fs/9p/xattr.c b/fs/9p/xattr.c
+index a824441b95a2..1f9298a4bd42 100644
+--- a/fs/9p/xattr.c
++++ b/fs/9p/xattr.c
+@@ -44,7 +44,7 @@ ssize_t v9fs_fid_xattr_get(struct p9_fid *fid, const char *name,
+ 		if (err)
+ 			retval = err;
+ 	}
+-	p9_client_clunk(attr_fid);
++	p9_fid_put(attr_fid);
+ 	return retval;
+ }
+ 
+@@ -71,7 +71,7 @@ ssize_t v9fs_xattr_get(struct dentry *dentry, const char *name,
+ 	if (IS_ERR(fid))
+ 		return PTR_ERR(fid);
+ 	ret = v9fs_fid_xattr_get(fid, name, buffer, buffer_size);
+-	p9_client_clunk(fid);
++	p9_fid_put(fid);
+ 
+ 	return ret;
+ }
+@@ -98,7 +98,7 @@ int v9fs_xattr_set(struct dentry *dentry, const char *name,
+ 	if (IS_ERR(fid))
+ 		return PTR_ERR(fid);
+ 	ret = v9fs_fid_xattr_set(fid, name, value, value_len, flags);
+-	p9_client_clunk(fid);
++	p9_fid_put(fid);
+ 	return ret;
+ }
+ 
+@@ -128,7 +128,7 @@ int v9fs_fid_xattr_set(struct p9_fid *fid, const char *name,
+ 			 retval);
+ 	else
+ 		p9_client_write(fid, 0, &from, &retval);
+-	err = p9_client_clunk(fid);
++	err = p9_fid_put(fid);
+ 	if (!retval && err)
+ 		retval = err;
+ 	return retval;
+diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+index ec1d1706f43c..eabb53992350 100644
+--- a/include/net/9p/client.h
++++ b/include/net/9p/client.h
+@@ -237,6 +237,34 @@ static inline int p9_req_try_get(struct p9_req_t *r)
+ 
+ int p9_req_put(struct p9_req_t *r);
+ 
++/* fid reference counting helpers:
++ *  - fids used for any length of time should always be referenced through
++ *    p9_fid_get(), and released with p9_fid_put()
++ *  - v9fs_fid_lookup() or similar will automatically call get for you
++ *    and also require a put
++ *  - the *_fid_add() helpers will stash the fid in the inode,
++ *    at which point it is the responsibility of evict_inode()
++ *    to call the put
++ *  - the last put will automatically send a clunk to the server
++ */
++static inline struct p9_fid *p9_fid_get(struct p9_fid *fid)
 +{
-+	u16 ctl;
++	refcount_inc(&fid->count);
 +
-+	pcie_capability_read_word(pdev, PCI_EXP_DEVCTL, &ctl);
-+
-+	if (((ctl & PCI_EXP_DEVCTL_READRQ) != PCI_EXP_DEVCTL_READRQ_128B) &&
-+	    ((ctl & PCI_EXP_DEVCTL_READRQ) != PCI_EXP_DEVCTL_READRQ_256B))
-+		pcie_capability_clear_and_set_word(pdev, PCI_EXP_DEVCTL,
-+						   PCI_EXP_DEVCTL_READRQ,
-+						   PCI_EXP_DEVCTL_READRQ_256B);
++	return fid;
 +}
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_WANGXUN, PCI_ANY_ID,
-+			 quirk_wangxun_set_read_req_size);
-diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
-index 0178823ce8c2..c86f61480c7e 100644
---- a/include/linux/pci_ids.h
-+++ b/include/linux/pci_ids.h
-@@ -3105,4 +3105,6 @@
- 
- #define PCI_VENDOR_ID_NCUBE		0x10ff
- 
-+#define PCI_VENDOR_ID_WANGXUN           0x8088
 +
- #endif /* _LINUX_PCI_IDS_H */
++static inline int p9_fid_put(struct p9_fid *fid)
++{
++	if (!fid || IS_ERR(fid))
++		return 0;
++
++	if (!refcount_dec_and_test(&fid->count))
++		return 0;
++
++	return p9_client_clunk(fid);
++}
++
+ void p9_client_cb(struct p9_client *c, struct p9_req_t *req, int status);
+ 
+ int p9_parse_header(struct p9_fcall *pdu, int32_t *size, int8_t *type,
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 8bba0d9cf975..f3eb280c7d9d 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -1228,7 +1228,7 @@ struct p9_fid *p9_client_walk(struct p9_fid *oldfid, uint16_t nwname,
+ 
+ clunk_fid:
+ 	kfree(wqids);
+-	p9_client_clunk(fid);
++	p9_fid_put(fid);
+ 	fid = NULL;
+ 
+ error:
+@@ -1459,15 +1459,6 @@ int p9_client_clunk(struct p9_fid *fid)
+ 	struct p9_req_t *req;
+ 	int retries = 0;
+ 
+-	if (!fid || IS_ERR(fid)) {
+-		pr_warn("%s (%d): Trying to clunk with invalid fid\n",
+-			__func__, task_pid_nr(current));
+-		dump_stack();
+-		return 0;
+-	}
+-	if (!refcount_dec_and_test(&fid->count))
+-		return 0;
+-
+ again:
+ 	p9_debug(P9_DEBUG_9P, ">>> TCLUNK fid %d (try %d)\n",
+ 		 fid->fid, retries);
+@@ -1519,7 +1510,7 @@ int p9_client_remove(struct p9_fid *fid)
+ 	p9_tag_remove(clnt, req);
+ error:
+ 	if (err == -ERESTARTSYS)
+-		p9_client_clunk(fid);
++		p9_fid_put(fid);
+ 	else
+ 		p9_fid_destroy(fid);
+ 	return err;
+@@ -2042,7 +2033,7 @@ struct p9_fid *p9_client_xattrwalk(struct p9_fid *file_fid,
+ 		 attr_fid->fid, *attr_size);
+ 	return attr_fid;
+ clunk_fid:
+-	p9_client_clunk(attr_fid);
++	p9_fid_put(attr_fid);
+ 	attr_fid = NULL;
+ error:
+ 	if (attr_fid && attr_fid != file_fid)
 -- 
-2.27.0
-
-
+2.35.1
 
