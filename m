@@ -2,71 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3DE954CD31
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 17:40:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88CE154CD59
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 17:46:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243363AbiFOPkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 11:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35398 "EHLO
+        id S233020AbiFOPqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 11:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236389AbiFOPkB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 11:40:01 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A5813DC6
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:40:00 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id d14so16711472eda.12
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:39:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:user-agent:in-reply-to:references
-         :message-id:mime-version:content-transfer-encoding;
-        bh=r8ZZlR71S22xAPSG/Tdt3h+VTXyn3BEcJUXzT3hoACY=;
-        b=H32ve6xdIByhIeHHhcUG6fPM1qPH7t3NDL6dISDMEtK+L3YWYoLu2N8mlyGS8xRgJk
-         Di9qOlH0703He8NG5Z7Uk1tNIrqkKBtLvnQvdBHyPDbh6lYbPHdrwWN7vOYmC+PC8LVv
-         Yvr88YsHYN6Ixqrzdc89Ci3TJuoumssuEG5rp6MkSWGyZqgqhHvLY2gR85Nz7xA8jpU8
-         O+d63kMwhU9MAMqMNjE/TH0g+R39eYfNSxcgATIECI7q2KPnXtr3PcGkM2PJr5cc9C9T
-         snTY9jOjBvF8iHPianCMLxV5Zd4joAsj7kRTzwllrRk7/pver8mHdE2tQNtEjhjvYSJi
-         /OUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:user-agent:in-reply-to
-         :references:message-id:mime-version:content-transfer-encoding;
-        bh=r8ZZlR71S22xAPSG/Tdt3h+VTXyn3BEcJUXzT3hoACY=;
-        b=Q5RuLjwDhhazPTKQF4yENmVJGyWzcEemfKhjjHKyTlbgUevN/fmmslowd8sVaHUY3u
-         Vigo6NI3n0MNQ4wWjSHxzZkrWnp8GL5p44Zx3YHnOEjImt+UdObbBvPuKXFDbOa1atfM
-         M9A5ljU3fHampxb5J9b+mMr6l8K/ORYQ2IiUGE7azIUUIA6eIOLBIf23O/XJYkIpL0sh
-         GHs1NZ8LV5mv21ZdrU2RyzZg9CyewjtMeH5I+bS5saeN3yejHysjuDmpDJdKnE+mXfmU
-         WocvxV1x5ls03kYnFBbBT8J0NDItUTRTfAPThWuNd/LR47/E06sXTKakJX6RlampJZbK
-         tMDw==
-X-Gm-Message-State: AJIora83e6EH7XrWRT91HywrBvCjaPLzttzSThFiy9mhBJ+pezlnuMtB
-        gKD16rEVnWU/Bs9mWNtEp2xOUA==
-X-Google-Smtp-Source: AGRyM1u0nIUcgFQw11EycHqn6oM159UocXhB+a0aTREjTrnMCKIrTym1g9rt58cmtPjLBMZdvUI2OQ==
-X-Received: by 2002:aa7:cb13:0:b0:433:4985:1b54 with SMTP id s19-20020aa7cb13000000b0043349851b54mr428233edt.182.1655307598401;
-        Wed, 15 Jun 2022 08:39:58 -0700 (PDT)
-Received: from [127.0.0.1] ([93.123.70.11])
-        by smtp.gmail.com with ESMTPSA id l21-20020a056402125500b0042dddaa8af3sm9586514edw.37.2022.06.15.08.39.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 08:39:58 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 18:39:53 +0300
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     Yuwei Wang <wangyuweihx@gmail.com>
-CC:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S229752AbiFOPqK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 11:46:10 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 049F3286CD;
+        Wed, 15 Jun 2022 08:46:05 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 1D77E5A9;
+        Wed, 15 Jun 2022 17:46:03 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1655307963;
+        bh=m3A5dqZop5odCJRCkgs9BvSWyBpz30/KNAeaIHJZ1q0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gz+qyRs9G+48QItleZ7QvFKhIzWdHGgYD3bsSj4cvZevz+vnv/bHuU11OCDz2zfvV
+         mVSOAOmfirc3j3SuYgvLYBpRzrMfP0UyUXAilgSvgVHGUDVUOChMlva/17o7wLGv0O
+         tPxdzNanUqOciJtQpE5RO6ZydGGmlUaux55rBxfs=
+Date:   Wed, 15 Jun 2022 18:45:52 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Christian =?utf-8?B?R8O2dHRzY2hl?= <cgzones@googlemail.com>
+Cc:     selinux@vger.kernel.org, Hans Verkuil <hverkuil@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, roopa@nvidia.com,
-        dsahern@kernel.org, =?UTF-8?B?56em6L+q?= <qindi@staff.weibo.com>,
-        netdev@vger.kernel.org, wangyuweihx <wangyuweihx@gmail.com>
-Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_net-next_v3_2/2=5D_net=2C_neigh=3A_intr?= =?US-ASCII?Q?oduce_interval=5Fprobe=5Ftime_for_periodic_probe?=
-User-Agent: K-9 Mail for Android
-In-Reply-To: <CANmJ_FNXSxPtBbESV4Y4Zme6vabgTJFSw0hjZNndfstSvxAeLw@mail.gmail.com>
-References: <20220609105725.2367426-1-wangyuweihx@gmail.com> <20220609105725.2367426-3-wangyuweihx@gmail.com> <101855d8-878b-2334-fd5a-85684fd78e12@blackwall.org> <CANmJ_FNXSxPtBbESV4Y4Zme6vabgTJFSw0hjZNndfstSvxAeLw@mail.gmail.com>
-Message-ID: <57228F24-81CD-49E9-BE4D-73FC6697872B@blackwall.org>
+        Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Serge Hallyn <serge@hallyn.com>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Arnd Bergmann <arnd@arndb.de>, Ondrej Zary <linux@zary.sk>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        David Yang <davidcomponentone@gmail.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Yang Guang <yang.guang5@zte.com.cn>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: Re: [PATCH v3 4/8] drivers: use new capable_any functionality
+Message-ID: <Yqn+sCXTHeTH5v+R@pendragon.ideasonboard.com>
+References: <20220502160030.131168-8-cgzones@googlemail.com>
+ <20220615152623.311223-1-cgzones@googlemail.com>
+ <20220615152623.311223-3-cgzones@googlemail.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220615152623.311223-3-cgzones@googlemail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,92 +72,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15 June 2022 18:28:27 EEST, Yuwei Wang <wangyuweihx@gmail=2Ecom> wrote:
->On Tue, 14 Jun 2022 at 17:10, Nikolay Aleksandrov <razor@blackwall=2Eorg>=
- wrote:
->> > @@ -2255,6 +2257,7 @@ static const struct nla_policy nl_ntbl_parm_pol=
-icy[NDTPA_MAX+1] =3D {
->> >       [NDTPA_ANYCAST_DELAY]           =3D { =2Etype =3D NLA_U64 },
->> >       [NDTPA_PROXY_DELAY]             =3D { =2Etype =3D NLA_U64 },
->> >       [NDTPA_LOCKTIME]                =3D { =2Etype =3D NLA_U64 },
->> > +     [NDTPA_INTERVAL_PROBE_TIME]     =3D { =2Etype =3D NLA_U64, =2Em=
-in =3D 1 },
->>
->> shouldn't the min be MSEC_PER_SEC (1 sec minimum) ?
->
->thanks, I will make it match the option ;)
->
->> >
->> > +static int neigh_proc_dointvec_jiffies_positive(struct ctl_table *ct=
-l, int write,
->> > +                                             void *buffer, size_t *l=
-enp,
->> > +                                             loff_t *ppos)
->>
->> Do we need the proc entry to be in jiffies when the netlink option is i=
-n ms?
->> Why not make it directly in ms (with _ms similar to other neigh _ms tim=
-e options) ?
->>
->> IMO, it would be better to be consistent with the netlink option which =
-sets it in ms=2E
->>
->> It seems the _ms options were added later and usually people want a mor=
-e understandable
->> value, I haven't seen anyone wanting a jiffies version of a ms interval=
- variable=2E :)
->>
->
->It was in jiffies because this entry was separated from `DELAY_PROBE_TIME=
-`,
->it keeps nearly all the things the same as `DELAY_PROBE_TIME`,
->they are both configured by seconds and read to jiffies, was `ms` in
->netlink attribute,
->I think it's ok to keep this consistency, and is there a demand
->required to configure it by ms?
->If there is that demand, we can make it configured as ms=2E
->
+Hi Christian,
 
-no, no demand, just out of user-friendliness :) but=20
-I get it keeping it as jiffies is also fine=20
+Thank you for the patch.
 
->> > +{
->> > +     struct ctl_table tmp =3D *ctl;
->> > +     int ret;
->> > +
->> > +     int min =3D HZ;
->> > +     int max =3D INT_MAX;
->> > +
->> > +     tmp=2Eextra1 =3D &min;
->> > +     tmp=2Eextra2 =3D &max;
->>
->> hmm, I don't think these min/max match the netlink attribute's min/max=
-=2E
->
->thanks, I will make it match the attribute ;)
->
->>
->> > +
->> > +     ret =3D proc_dointvec_jiffies_minmax(&tmp, write, buffer, lenp,=
- ppos);
->> > +     neigh_proc_update(ctl, write);
->> > +     return ret;
->> > +}
->> > +
->> >  int neigh_proc_dointvec(struct ctl_table *ctl, int write, void *buff=
-er,
->> >                       size_t *lenp, loff_t *ppos)
->> >  {
->> > @@ -3658,6 +3683,9 @@ static int neigh_proc_base_reachable_time(struc=
-t ctl_table *ctl, int write,
->> >  #define NEIGH_SYSCTL_USERHZ_JIFFIES_ENTRY(attr, name) \
->> >       NEIGH_SYSCTL_ENTRY(attr, attr, name, 0644, neigh_proc_dointvec_=
-userhz_jiffies)
->> >
->> [snip]
->> Cheers,
->>  Nik
->
->Thanks,
->Yuwei Wang
+On Wed, Jun 15, 2022 at 05:26:18PM +0200, Christian Göttsche wrote:
+> Use the new added capable_any function in appropriate cases, where a
+> task is required to have any of two capabilities.
+> 
+> Reorder CAP_SYS_ADMIN last.
+> 
+> Signed-off-by: Christian Göttsche <cgzones@googlemail.com>
 
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+
+> ---
+> v3:
+>    rename to capable_any()
+> ---
+>  drivers/media/common/saa7146/saa7146_video.c     | 2 +-
+>  drivers/media/pci/bt8xx/bttv-driver.c            | 3 +--
+>  drivers/media/pci/saa7134/saa7134-video.c        | 3 +--
+>  drivers/media/platform/nxp/fsl-viu.c             | 2 +-
+>  drivers/media/test-drivers/vivid/vivid-vid-cap.c | 2 +-
+>  drivers/net/caif/caif_serial.c                   | 2 +-
+>  drivers/s390/block/dasd_eckd.c                   | 2 +-
+>  7 files changed, 7 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/media/common/saa7146/saa7146_video.c b/drivers/media/common/saa7146/saa7146_video.c
+> index 2296765079a4..f0d08935b096 100644
+> --- a/drivers/media/common/saa7146/saa7146_video.c
+> +++ b/drivers/media/common/saa7146/saa7146_video.c
+> @@ -469,7 +469,7 @@ static int vidioc_s_fbuf(struct file *file, void *fh, const struct v4l2_framebuf
+>  
+>  	DEB_EE("VIDIOC_S_FBUF\n");
+>  
+> -	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_RAWIO))
+> +	if (!capable_any(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
+>  		return -EPERM;
+>  
+>  	/* check args */
+> diff --git a/drivers/media/pci/bt8xx/bttv-driver.c b/drivers/media/pci/bt8xx/bttv-driver.c
+> index d40b537f4e98..7098cff2ea51 100644
+> --- a/drivers/media/pci/bt8xx/bttv-driver.c
+> +++ b/drivers/media/pci/bt8xx/bttv-driver.c
+> @@ -2567,8 +2567,7 @@ static int bttv_s_fbuf(struct file *file, void *f,
+>  	const struct bttv_format *fmt;
+>  	int retval;
+>  
+> -	if (!capable(CAP_SYS_ADMIN) &&
+> -		!capable(CAP_SYS_RAWIO))
+> +	if (!capable_any(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
+>  		return -EPERM;
+>  
+>  	/* check args */
+> diff --git a/drivers/media/pci/saa7134/saa7134-video.c b/drivers/media/pci/saa7134/saa7134-video.c
+> index 4d8974c9fcc9..23104c04a9aa 100644
+> --- a/drivers/media/pci/saa7134/saa7134-video.c
+> +++ b/drivers/media/pci/saa7134/saa7134-video.c
+> @@ -1797,8 +1797,7 @@ static int saa7134_s_fbuf(struct file *file, void *f,
+>  	struct saa7134_dev *dev = video_drvdata(file);
+>  	struct saa7134_format *fmt;
+>  
+> -	if (!capable(CAP_SYS_ADMIN) &&
+> -	   !capable(CAP_SYS_RAWIO))
+> +	if (!capable_any(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
+>  		return -EPERM;
+>  
+>  	/* check args */
+> diff --git a/drivers/media/platform/nxp/fsl-viu.c b/drivers/media/platform/nxp/fsl-viu.c
+> index afc96f6db2a1..81a90c113dc6 100644
+> --- a/drivers/media/platform/nxp/fsl-viu.c
+> +++ b/drivers/media/platform/nxp/fsl-viu.c
+> @@ -803,7 +803,7 @@ static int vidioc_s_fbuf(struct file *file, void *priv, const struct v4l2_frameb
+>  	const struct v4l2_framebuffer *fb = arg;
+>  	struct viu_fmt *fmt;
+>  
+> -	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_RAWIO))
+> +	if (!capable_any(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
+>  		return -EPERM;
+>  
+>  	/* check args */
+> diff --git a/drivers/media/test-drivers/vivid/vivid-vid-cap.c b/drivers/media/test-drivers/vivid/vivid-vid-cap.c
+> index b9caa4b26209..918913e47069 100644
+> --- a/drivers/media/test-drivers/vivid/vivid-vid-cap.c
+> +++ b/drivers/media/test-drivers/vivid/vivid-vid-cap.c
+> @@ -1253,7 +1253,7 @@ int vivid_vid_cap_s_fbuf(struct file *file, void *fh,
+>  	if (dev->multiplanar)
+>  		return -ENOTTY;
+>  
+> -	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_RAWIO))
+> +	if (!capable_any(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
+>  		return -EPERM;
+>  
+>  	if (dev->overlay_cap_owner)
+> diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
+> index 688075859ae4..ca3f82a0e3a6 100644
+> --- a/drivers/net/caif/caif_serial.c
+> +++ b/drivers/net/caif/caif_serial.c
+> @@ -326,7 +326,7 @@ static int ldisc_open(struct tty_struct *tty)
+>  	/* No write no play */
+>  	if (tty->ops->write == NULL)
+>  		return -EOPNOTSUPP;
+> -	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_TTY_CONFIG))
+> +	if (!capable_any(CAP_SYS_TTY_CONFIG, CAP_SYS_ADMIN))
+>  		return -EPERM;
+>  
+>  	/* release devices to avoid name collision */
+> diff --git a/drivers/s390/block/dasd_eckd.c b/drivers/s390/block/dasd_eckd.c
+> index 836838f7d686..66f6db7a11fc 100644
+> --- a/drivers/s390/block/dasd_eckd.c
+> +++ b/drivers/s390/block/dasd_eckd.c
+> @@ -5330,7 +5330,7 @@ static int dasd_symm_io(struct dasd_device *device, void __user *argp)
+>  	char psf0, psf1;
+>  	int rc;
+>  
+> -	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_RAWIO))
+> +	if (!capable_any(CAP_SYS_RAWIO, CAP_SYS_ADMIN))
+>  		return -EACCES;
+>  	psf0 = psf1 = 0;
+>  
+
+-- 
+Regards,
+
+Laurent Pinchart
