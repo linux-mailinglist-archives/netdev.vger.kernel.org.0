@@ -2,71 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BC3554C3E2
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 10:46:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A688054C3B2
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 10:40:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346282AbiFOIpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 04:45:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47808 "EHLO
+        id S1346102AbiFOIkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 04:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244794AbiFOIoT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 04:44:19 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88877443E6;
-        Wed, 15 Jun 2022 01:44:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655282658; x=1686818658;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1ppb5FxYShlXnSIAV6m7rwzN8W1OiV0FA7dnw79u850=;
-  b=VOY48dJ9MhrgSgexS8JPulAJhW17xnnYRISY3I4yul7gjWcEPq/DVtFq
-   R6JhVCb8bWaW4g33mdYN4H907NLbTrRPPPFr+Qoda7nH6HIauis9XRudG
-   pdDlg/wHURXeJqobNgyrHAgpwsgCqMKHJiSqODLH/Yw1Lk9Ka5ndAwX/6
-   4UhkynJlhvQf3/2Mpy0NM0ctCsONZhgTx+Br0suFwd1ceuUplwe/Gqxnq
-   zEfwhqJXtDPF35eqIg7XeC6kGiDZN+gVZZD2/XUykVoRGQDo398nANUAX
-   DxF/pnMLwyspadV+nCpp1/N8w05kqR1sppBSsKNnLh8uxeV6gPBanvY4l
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="258737038"
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="258737038"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 01:44:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="712849505"
-Received: from p12hl98bong5.png.intel.com ([10.158.65.178])
-  by orsmga004.jf.intel.com with ESMTP; 15 Jun 2022 01:44:13 -0700
-From:   Ong Boon Leong <boon.leong.ong@intel.com>
-To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Emilio Riva <emilio.riva@ericsson.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: [PATCH net-next v5 5/5] net: stmmac: make mdio register skips PHY scanning for fixed-link
-Date:   Wed, 15 Jun 2022 16:39:08 +0800
-Message-Id: <20220615083908.1651975-6-boon.leong.ong@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220615083908.1651975-1-boon.leong.ong@intel.com>
-References: <20220615083908.1651975-1-boon.leong.ong@intel.com>
+        with ESMTP id S239494AbiFOIkP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 04:40:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4FD549F3D
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 01:40:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5096F619A2
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AC75BC3411C;
+        Wed, 15 Jun 2022 08:40:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655282413;
+        bh=CZlcBK8KfGBynmOjEj6L8S+xVjvzgvny2E8tb3hfOrs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=QiKoa1WohUrnbvF3gjTjUoGBe2wSu3fnRO0g4JNqGm9O3XNxcqxYBqgVCjvw0oZwC
+         lYGPoctmqQaJ7eTzKaPmi+/oFpqRe1cDCVuMx1eYUQ5/faTn1Gu2rs8abzg8Ln3Qf0
+         PFqCbkLKubUFnboPRs8Rnc1KzrFxypcjHl/KjXZIaR0YNa0k4xs4EfLxCQFuWA1KPf
+         Yr4yWkYQ9iZiU67sOz2Fb82AbWdiN/vAwhEB2LR0Oxaa0F2mI9ktZVev+dxbXXHs+e
+         VneWfC0kvOe0Z7EWz+YRY73tnEwzryWessP77f1KRBr7wnsaPA8+7Jz0yZ+/CQYtQ7
+         vytyhwX8ofr3w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 94F7BE73856;
+        Wed, 15 Jun 2022 08:40:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Subject: Re: [PATCH net 0/4][pull request] Intel Wired LAN Driver Updates
+ 2022-06-14
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165528241359.21469.3816000067648987933.git-patchwork-notify@kernel.org>
+Date:   Wed, 15 Jun 2022 08:40:13 +0000
+References: <20220614164806.1184030-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20220614164806.1184030-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,85 +57,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-stmmac_mdio_register() lacks fixed-link consideration and only skip PHY
-scanning if it has done DT style PHY discovery. So, for DT or ACPI _DSD
-setting of fixed-link, the PHY scanning should not happen.
+Hello:
 
-v2: fix incorrect order related to fwnode that is not caught in non-DT
-    platform.
+This series was applied to netdev/net.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-Tested-by: Emilio Riva <emilio.riva@ericsson.com>
-Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 12 +++++++-----
- drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 14 ++++++++++++++
- 2 files changed, 21 insertions(+), 5 deletions(-)
+On Tue, 14 Jun 2022 09:48:02 -0700 you wrote:
+> This series contains updates to ice driver only.
+> 
+> Michal fixes incorrect Tx timestamp offset calculation for E822 devices.
+> 
+> Roman enforces required VLAN filtering settings for double VLAN mode.
+> 
+> Przemyslaw fixes memory corruption issues with VFs by ensuring
+> queues are disabled in the error path of VF queue configuration and to
+> disabled VFs during reset.
+> 
+> [...]
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 73cae2938f6..50867e5d0d9 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1142,18 +1142,20 @@ static void stmmac_check_pcs_mode(struct stmmac_priv *priv)
- static int stmmac_init_phy(struct net_device *dev)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
--	struct device_node *node;
-+	struct fwnode_handle *fwnode;
- 	int ret;
- 
--	node = priv->plat->phylink_node;
-+	fwnode = of_fwnode_handle(priv->plat->phylink_node);
-+	if (!fwnode)
-+		fwnode = dev_fwnode(priv->device);
- 
--	if (node)
--		ret = phylink_of_phy_connect(priv->phylink, node, 0);
-+	if (fwnode)
-+		ret = phylink_fwnode_phy_connect(priv->phylink, fwnode, 0);
- 
- 	/* Some DT bindings do not set-up the PHY handle. Let's try to
- 	 * manually parse it
- 	 */
--	if (!node || ret) {
-+	if (!fwnode || ret) {
- 		int addr = priv->plat->phy_addr;
- 		struct phy_device *phydev;
- 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-index 03d3d1f7aa4..5f177ea8072 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
-@@ -434,9 +434,11 @@ int stmmac_mdio_register(struct net_device *ndev)
- 	int err = 0;
- 	struct mii_bus *new_bus;
- 	struct stmmac_priv *priv = netdev_priv(ndev);
-+	struct fwnode_handle *fwnode = of_fwnode_handle(priv->plat->phylink_node);
- 	struct stmmac_mdio_bus_data *mdio_bus_data = priv->plat->mdio_bus_data;
- 	struct device_node *mdio_node = priv->plat->mdio_node;
- 	struct device *dev = ndev->dev.parent;
-+	struct fwnode_handle *fixed_node;
- 	int addr, found, max_addr;
- 
- 	if (!mdio_bus_data)
-@@ -490,6 +492,18 @@ int stmmac_mdio_register(struct net_device *ndev)
- 	if (priv->plat->has_xgmac)
- 		stmmac_xgmac2_mdio_read(new_bus, 0, MII_ADDR_C45);
- 
-+	/* If fixed-link is set, skip PHY scanning */
-+	if (!fwnode)
-+		fwnode = dev_fwnode(priv->device);
-+
-+	if (fwnode) {
-+		fixed_node = fwnode_get_named_child_node(fwnode, "fixed-link");
-+		if (fixed_node) {
-+			fwnode_handle_put(fixed_node);
-+			goto bus_register_done;
-+		}
-+	}
-+
- 	if (priv->plat->phy_node || mdio_node)
- 		goto bus_register_done;
- 
+Here is the summary with links:
+  - [net,1/4] ice: Fix PTP TX timestamp offset calculation
+    https://git.kernel.org/netdev/net/c/71a579f0d377
+  - [net,2/4] ice: Sync VLAN filtering features for DVM
+    https://git.kernel.org/netdev/net/c/9542ef4fba8c
+  - [net,3/4] ice: Fix queue config fail handling
+    https://git.kernel.org/netdev/net/c/be2af71496a5
+  - [net,4/4] ice: Fix memory corruption in VF driver
+    https://git.kernel.org/netdev/net/c/efe41860008e
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
