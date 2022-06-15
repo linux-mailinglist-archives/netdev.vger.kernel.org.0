@@ -2,56 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B9AC54C15A
+	by mail.lfdr.de (Postfix) with ESMTP id C6F4D54C15B
 	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 07:55:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242000AbiFOFq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 01:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38018 "EHLO
+        id S242719AbiFOFuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 01:50:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238751AbiFOFq6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 01:46:58 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 634D149F83
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 22:46:57 -0700 (PDT)
+        with ESMTP id S231417AbiFOFuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 01:50:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDCE01F2F5;
+        Tue, 14 Jun 2022 22:50:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B984FCE1CB3
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 05:46:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71E93C34115;
-        Wed, 15 Jun 2022 05:46:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40E7A6177D;
+        Wed, 15 Jun 2022 05:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8C129C3411B;
+        Wed, 15 Jun 2022 05:50:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655272014;
-        bh=aeu4oCaySMh8kK/4nX6TjFwRUUqACCE4H42Q9juPll4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=krt9p2goMD2muqVT6sOCYsSuUR6qH2gXRU+Q8+YAx1fi70oEIYlOt2U3aHBv3e/Vn
-         L+M9OkYhxq0T5AgOKnL1RoxQH1ItWcJFHY2zsFdZinv+VZKes2fVl6p3ii+k+9EiLB
-         M6W5spZmFyu/UochZ+Wd8LryMByUaBVAjuPc2BGdOLpiYGk2nL7WpnG7W2fDwYSSPn
-         EjO5RszmH0qsHXCzjgHKQzA277bnZPrhsJFyrNj479JAR4AyIwtg3Ccyo/o+JlBKgI
-         nwrElRYukfEHy7Bmge9GfTrH/RaXHFLQt2entaYqTgkvxzTw6bVpsZ/xMxjAn2wwq7
-         hoC4DxIPIDang==
-Date:   Tue, 14 Jun 2022 22:46:52 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Robert Hancock <robert.hancock@calian.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next 02/15] net: phylink: add phylink_pcs_inband()
-Message-ID: <20220614224652.09d4c287@kernel.org>
-In-Reply-To: <E1o0jgF-000JYC-49@rmk-PC.armlinux.org.uk>
-References: <Yqc0lxn3ngWSuvdS@shell.armlinux.org.uk>
-        <E1o0jgF-000JYC-49@rmk-PC.armlinux.org.uk>
+        s=k20201202; t=1655272214;
+        bh=uOJq8k0K/tF8dz3zOSCS8OJ30XH24V4q7h1yz7qmYrY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YxlEJkVjxxO1vcO+UDoS/GMfo30Aez0eDAgfLxRFHrWrnfIKGHxOjuTC+ts0JSuv/
+         JC6xz8GULaJ8HF3wmvuwH6a5UNvooOu5fdoqZo7WN8e/yNlb2oM6Z3JEbNWDiADHNo
+         jTFaRNyVSF3GkuUiz0zvg+yOFfV3SLFheOIjo3Sv34/tb7QcmTVgifE3YLcoerFKGd
+         d3MU7DJV76AtmnIVr+0nGNxo8eOHbL8I25D7/r4zoweST3J0ElVZedruKwfHHapVQt
+         rRLqzDEY/Nxiu6yirzMGkdQeOI4BoIiOrapcHhCE8TdJ1EaHntbmo1zOzBEe0BlTp8
+         SvJ8MighoX47A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6F678E56ADF;
+        Wed, 15 Jun 2022 05:50:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4 0/6] Support mt7531 on BPI-R2 Pro
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165527221445.3487.2646030857898317567.git-patchwork-notify@kernel.org>
+Date:   Wed, 15 Jun 2022 05:50:14 +0000
+References: <20220610170541.8643-1-linux@fw-web.de>
+In-Reply-To: <20220610170541.8643-1-linux@fw-web.de>
+To:     Frank Wunderlich <linux@fw-web.de>
+Cc:     linux-rockchip@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, frank-w@public-files.de,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        heiko@sntech.de, sean.wang@mediatek.com, Landen.Chao@mediatek.com,
+        dqfext@gmail.com, pgwipeout@gmail.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, gerg@kernel.org,
+        opensource@vdorst.com, mchehab+samsung@kernel.org
 X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,27 +65,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 13 Jun 2022 14:00:31 +0100 Russell King (Oracle) wrote:
-> +	if (phylink_autoneg_inband(mode) &&
-> +	    (interface == PHY_INTERFACE_MODE_SGMII ||
-> +	     interface == PHY_INTERFACE_MODE_QSGMII ||
-> +	     linkmode_test_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, advertising)))
-> +		return true;
-> +	else
-> +		return false;
+Hello:
 
-Okay, let me be a little annoying...
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Could you run thru checkpatch --strict and fix the few whitespace
-issues it points out? There's a handful of spaces instead of tabs,
-unaligned continuation lines and an unnecessary bracket.
+On Fri, 10 Jun 2022 19:05:35 +0200 you wrote:
+> From: Frank Wunderlich <frank-w@public-files.de>
+> 
+> This Series add Support for the mt7531 switch on Bananapi R2 Pro board.
+> 
+> This board uses port5 of the switch to conect to the gmac0 of the
+> rk3568 SoC.
+> 
+> [...]
 
-Patch 1 does not need to be backported so I presume it can lose the
-fixes tag?
+Here is the summary with links:
+  - [v4,1/6] dt-bindings: net: dsa: convert binding for mediatek switches
+    https://git.kernel.org/netdev/net-next/c/e0dda3119741
+  - [v4,2/6] net: dsa: mt7530: rework mt7530_hw_vlan_{add,del}
+    https://git.kernel.org/netdev/net-next/c/a9c317417c27
+  - [v4,3/6] net: dsa: mt7530: rework mt753[01]_setup
+    https://git.kernel.org/netdev/net-next/c/6e19bc26cccd
+  - [v4,4/6] net: dsa: mt7530: get cpu-port via dp->cpu_dp instead of constant
+    https://git.kernel.org/netdev/net-next/c/1f9a6abecf53
+  - [v4,5/6] dt-bindings: net: dsa: make reset optional and add rgmii-mode to mt7531
+    https://git.kernel.org/netdev/net-next/c/ae07485d7a1d
+  - [v4,6/6] arm64: dts: rockchip: Add mt7531 dsa node to BPI-R2-Pro board
+    https://git.kernel.org/netdev/net-next/c/c1804463e5c6
 
-The quoted code can be converted into a direct return of the condition,
-I don't really care but I think there are bots out there which will
-send a "fix" soon if we commit this.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-And patch 10 generates a transient "function should be static" warning.
-I think you need a __maybe_unused on mv88e6xxx_pcs_select() as well.
+
