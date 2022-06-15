@@ -2,261 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AB7954CD75
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 17:51:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDC6954CD85
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 17:52:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232716AbiFOPvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 11:51:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45942 "EHLO
+        id S1347469AbiFOPwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 11:52:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231737AbiFOPvX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 11:51:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E40192ED42
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:51:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655308280;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AIOIMROOiOvW54yRJHKcdZXL+9ppiA1fBxCdrioQXGQ=;
-        b=HyMTA10h0Ywn8FSi7jrVBGaPxqCdsMp2lqVKkLmx7y6kVjAtLLOXCZZEvbm/oDZWvb8NN0
-        984EEUACPIEnRV3YCdsQeMwNqwgpZCiZHfmS8XRUzKaw6mzZKah+HROfBtmkIkg3gUz5nb
-        VWSfSyCxUHVRGLiIUKDdgzCIqEVewx0=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-658-pR5bAuxTOreoFsY09DXmiA-1; Wed, 15 Jun 2022 11:51:19 -0400
-X-MC-Unique: pR5bAuxTOreoFsY09DXmiA-1
-Received: by mail-qv1-f71.google.com with SMTP id kl30-20020a056214519e00b0046d8f1cd655so8409636qvb.19
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:51:18 -0700 (PDT)
+        with ESMTP id S1345428AbiFOPw3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 11:52:29 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2836B19
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:52:27 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so2508084pjl.5
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:52:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3tk/bIYK7oc7OMLaeaBx6rCMrnVaPnObioe6kcfzOqI=;
+        b=V7FRPFOfz5s/y5/gIEEpBTqy0upqskPXeFx9I2FPrefo8Rda4JT8tkvEWW+jdTGksG
+         adNYROrU/fPPphiHk3sgVn9uftyK0rEYjhbJ+NE4OoUAJFhhq4l8VqllwWPAwfOuSQZ5
+         jbBR6Te8SmSdrKFlLKro8poh1YIFdo97MA9hEXAvfZjP8v4iocfPuzvnv6HY/asr9MNt
+         Rspy/Z6k7zlVn5Np8U4cVShW5FkCF9dGca5mjHUZCyW4+JUuARk3yxnV4h4ujAX17cXc
+         Vb+DjaNbz0/q1GLazKVa7wu5cTqwCBQcToqtbf2RYGIsT/WmH5doeOV4T35hmlehnk/t
+         wX9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=AIOIMROOiOvW54yRJHKcdZXL+9ppiA1fBxCdrioQXGQ=;
-        b=DO2JGwnJck8R2yMmkKrpu/dDrf8vwJfJOfu74bcKUSK7t+QAtM/XujXRG8YQ5HTp9d
-         EwQ03WIAsDjVk+0+hM1hv2Zz3/8ERg7K3cfATPqNzfxB178tWHcrm9c9tERbNfhpgSsL
-         e9AI2KTCb3DO2Rx5FGSEkILxjuDCCeZ3CvQ9QC6Wp2KMQjMz4xLjp9y7gh9cPOMKrIHJ
-         M65QjaoAK3o3XGzIO74AnIx4pLrWxfOHzF5IaFEZzNPzKq0NPeuN4AqYHot6mevw5Y3A
-         c4UoKbFXfSigEOc3vZoBL36bJSoiwYhxqc9Q6LLmdtocmDYmkaHqcMG0TMcPY6ntv9I9
-         erMQ==
-X-Gm-Message-State: AJIora9zUFXiFlW6unMjQUD1aMBupfYophxnlQi/RrYb/BpBdppBs9K3
-        gLwPJ3cNWcHSzK5H4RT9NzRTvoi9XS4FWYtA5w49lEXFgOzcb5mSdav6vcdDptR86m7dUXQwxTb
-        NsiV6Jcp8WN95F8+U
-X-Received: by 2002:ac8:7f0d:0:b0:304:fe93:8e77 with SMTP id f13-20020ac87f0d000000b00304fe938e77mr186081qtk.70.1655308278417;
-        Wed, 15 Jun 2022 08:51:18 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1t6B5q+eqXrmwd7GqHIKthR4shmNUMNmtfYYaeWOGNyVk1OgyQqNQR7Fb87sxDrjkPbwsYj4g==
-X-Received: by 2002:ac8:7f0d:0:b0:304:fe93:8e77 with SMTP id f13-20020ac87f0d000000b00304fe938e77mr186061qtk.70.1655308278149;
-        Wed, 15 Jun 2022 08:51:18 -0700 (PDT)
-Received: from [192.168.98.18] ([107.12.98.143])
-        by smtp.gmail.com with ESMTPSA id 3-20020ac84e83000000b002f940d5ab2csm10118267qtp.74.2022.06.15.08.51.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 15 Jun 2022 08:51:17 -0700 (PDT)
-Message-ID: <2db298d5-4e3d-0e99-6ce7-6a4a0df4bb48@redhat.com>
-Date:   Wed, 15 Jun 2022 11:51:16 -0400
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3tk/bIYK7oc7OMLaeaBx6rCMrnVaPnObioe6kcfzOqI=;
+        b=M84f2M1bcTfl4CXpbKwLcE72tMwWnPd84rh5/P6QAIizBMAt4iHXCwAUxLu5JzUgDT
+         GDvm8Q4lTImI8RIxoWTGRNbahNuLaNHEZXYHPHoMMrzKHiNqEfFm4iM16UOGELWwXsHN
+         ChYhAabDMldfyDcoxlaciz/Q0/KjELGAM68WITvmBZiw3d+7Okyo5/Dl+5L29X+ny11d
+         QW+bQfvhSW1dsZkrnHgm7ekEHgs46O0O1DD03EDXybBqvr5nj1W06+iihVrdsVtBs0/g
+         z9zfUJl0VunLYw0nCAj7ljcNgPxRMBUbuuEWS3TrgnHiMc3jIRLWRheS8uaBbJpH5fP0
+         Y2Zg==
+X-Gm-Message-State: AJIora/ZuCfL3zGV5Ty/9f29lkj6ZTLSWsnFOx/ngmJBdIMl668EBf/g
+        WBbkz76eNVrdzArpsGa2/duzYdSjjOwHV6HaZjMqkg==
+X-Google-Smtp-Source: AGRyM1vhauOYk8BwpdDxDJGCQINhQmVjncQdW3dHke4hqG01nEI8OZ15S2KS9GGIsKTbxBA4+eampNdFgxy/GBq7n5I=
+X-Received: by 2002:a17:902:cec2:b0:166:4e45:e1b2 with SMTP id
+ d2-20020a170902cec200b001664e45e1b2mr428483plg.73.1655308346773; Wed, 15 Jun
+ 2022 08:52:26 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: Any reason why arp monitor keeps emitting netlink failover
- events?
-Content-Language: en-US
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Hangbin Liu <liuhangbin@gmail.com>
-References: <b2fd4147-8f50-bebd-963a-1a3e8d1d9715@redhat.com>
- <10584.1655220562@famine> <0ea8519c-4289-c409-2e31-44574cdefde3@redhat.com>
- <8133.1655252763@famine>
-From:   Jonathan Toppins <jtoppins@redhat.com>
-In-Reply-To: <8133.1655252763@famine>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220610112648.29695-1-quentin@isovalent.com> <20220610112648.29695-2-quentin@isovalent.com>
+ <YqNsWAH24bAIPjqy@google.com> <cb05a59e-07d5-ddd1-b028-82133faaf67e@isovalent.com>
+ <CAKH8qBvvq0f+D8BXChw_8krH896J_cYg0yhRfnDOSO_U1n394w@mail.gmail.com>
+ <71b56050-11ad-bd06-09c9-1a8c61b4c1b4@isovalent.com> <CAKH8qBsFyakQRd1q6XWggdv4F5+HrHoC4njg9jQFDOfq+kRBCQ@mail.gmail.com>
+ <CALOAHbCvWzOJ169fPTCp1KsFpkEVukKgGnH4mDeYGOEv6hsEpQ@mail.gmail.com>
+ <e9aa57d2-4ce7-23f2-0ba1-ea58f3254353@isovalent.com> <CALOAHbDDx_xDeUk8R+y-aREX9KMRbo+CqCV7m5dADdvijuHRQw@mail.gmail.com>
+In-Reply-To: <CALOAHbDDx_xDeUk8R+y-aREX9KMRbo+CqCV7m5dADdvijuHRQw@mail.gmail.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Wed, 15 Jun 2022 08:52:14 -0700
+Message-ID: <CAKH8qBuPh4aaEz_vv1s2gWYYPRm8e5gMaM-RcuCqg+AeaeZcPg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] Revert "bpftool: Use libbpf 1.0 API mode
+ instead of RLIMIT_MEMLOCK"
+To:     Yafang Shao <laoar.shao@gmail.com>
+Cc:     Quentin Monnet <quentin@isovalent.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Harsh Modi <harshmodi@google.com>,
+        Paul Chaignon <paul@cilium.io>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/14/22 20:26, Jay Vosburgh wrote:
-> Jonathan Toppins <jtoppins@redhat.com> wrote:
-> 
->> On 6/14/22 11:29, Jay Vosburgh wrote:
->>> Jonathan Toppins <jtoppins@redhat.com> wrote:
->>>
->>>> On net-next/master from today, I see netlink failover events being emitted
->>> >from an active-backup bond. In the ip monitor dump you can see the bond is
->>>> up (according to the link status) but keeps emitting failover events and I
->>>> am not sure why. This appears to be an issue also on Fedora 35 and CentOS
->>>> 8 kernels. The configuration appears to be correct, though I could be
->>>> missing something. Thoughts?
->>> 	Anything showing up in the dmesg?  There's only one place that
->>> generates the FAILOVER notifier, and it ought to have a corresponding
->>> message in the kernel log.
->>> 	Also, I note that the link1_1 veth has a lot of failures:
->>
->> Yes all those failures are created by the setup, I waited about 5 minutes
->> before dumping the link info. The failover occurs about every second. Note
->> this is just a representation of a physical network so that others can run
->> the setup. The script `bond-bz2094911.sh`, easily reproduces the issue
->> which I dumped with cat below in the original email.
->>
->> Here is the kernel log, I have dynamic debug enabled for the entire
->> bonding module:
-> 
-> 	I set up the test, and added some additional instrumentation to
-> bond_ab_arp_inspect, and what seems to be going on is that the
-> dev_trans_start for link1_1 is never updating.  The "down to up"
-> transition for the ARP monitor only checks last_rx, but the "up to down"
-> check for the active interface requires both TX and RX recently
-> ("recently" being within the past missed_max * arp_interval).
-> 
-> 	This looks to be due to HARD_TX_LOCK not actually locking for
-> NETIF_F_LLTX devices:
-> 
-> #define HARD_TX_LOCK(dev, txq, cpu) {                           if ((dev->features & NETIF_F_LLTX) == 0) {                      __netif_tx_lock(txq, cpu);                      } else {                                                        __netif_tx_acquire(txq);                        }                                               }
-> 
-> 	in combination with
-> 
-> static inline void txq_trans_update(struct netdev_queue *txq)
-> {
->          if (txq->xmit_lock_owner != -1)
->                  WRITE_ONCE(txq->trans_start, jiffies);
-> }
-> 
-> 	causes the trans_start update to be skipped on veth devices.
-> 
-> 	And, sure enough, if I apply the following, the test case
-> appears to work:
-> 
-> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> index 466da01ba2e3..2cb833b3006a 100644
-> --- a/drivers/net/veth.c
-> +++ b/drivers/net/veth.c
-> @@ -312,6 +312,7 @@ static bool veth_skb_is_eligible_for_gro(const struct net_device *dev,
->   static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
->   {
->   	struct veth_priv *rcv_priv, *priv = netdev_priv(dev);
-> +	struct netdev_queue *queue = NULL;
->   	struct veth_rq *rq = NULL;
->   	struct net_device *rcv;
->   	int length = skb->len;
-> @@ -329,6 +330,7 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
->   	rxq = skb_get_queue_mapping(skb);
->   	if (rxq < rcv->real_num_rx_queues) {
->   		rq = &rcv_priv->rq[rxq];
-> +		queue = netdev_get_tx_queue(dev, rxq);
->   
->   		/* The napi pointer is available when an XDP program is
->   		 * attached or when GRO is enabled
-> @@ -340,6 +342,8 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
->   
->   	skb_tx_timestamp(skb);
->   	if (likely(veth_forward_skb(rcv, skb, rq, use_napi) == NET_RX_SUCCESS)) {
-> +		if (queue)
-> +			txq_trans_cond_update(queue);
->   		if (!use_napi)
->   			dev_lstats_add(dev, length);
->   	} else {
-> 
-> 
-> 	I'm not entirely sure this is the best way to get the
-> trans_start updated in veth, but LLTX devices need to handle it
-> internally (and others do, e.g., tun).
-> 
-> 	Could you test the above and see if it resolves the problem in
-> your environment as well?
-> 
-> 	-J
-> 
-> ---
-> 	-Jay Vosburgh, jay.vosburgh@canonical.com
-> 
+On Wed, Jun 15, 2022 at 6:23 AM Yafang Shao <laoar.shao@gmail.com> wrote:
+>
+> On Tue, Jun 14, 2022 at 10:20 PM Quentin Monnet <quentin@isovalent.com> wrote:
+> >
+> > 2022-06-14 20:37 UTC+0800 ~ Yafang Shao <laoar.shao@gmail.com>
+> > > On Sat, Jun 11, 2022 at 1:17 AM Stanislav Fomichev <sdf@google.com> wrote:
+> > >>
+> > >> On Fri, Jun 10, 2022 at 10:00 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> > >>>
+> > >>> 2022-06-10 09:46 UTC-0700 ~ Stanislav Fomichev <sdf@google.com>
+> > >>>> On Fri, Jun 10, 2022 at 9:34 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> > >>>>>
+> > >>>>> 2022-06-10 09:07 UTC-0700 ~ sdf@google.com
+> > >>>>>> On 06/10, Quentin Monnet wrote:
+> > >>>>>>> This reverts commit a777e18f1bcd32528ff5dfd10a6629b655b05eb8.
+> > >>>>>>
+> > >>>>>>> In commit a777e18f1bcd ("bpftool: Use libbpf 1.0 API mode instead of
+> > >>>>>>> RLIMIT_MEMLOCK"), we removed the rlimit bump in bpftool, because the
+> > >>>>>>> kernel has switched to memcg-based memory accounting. Thanks to the
+> > >>>>>>> LIBBPF_STRICT_AUTO_RLIMIT_MEMLOCK, we attempted to keep compatibility
+> > >>>>>>> with other systems and ask libbpf to raise the limit for us if
+> > >>>>>>> necessary.
+> > >>>>>>
+> > >>>>>>> How do we know if memcg-based accounting is supported? There is a probe
+> > >>>>>>> in libbpf to check this. But this probe currently relies on the
+> > >>>>>>> availability of a given BPF helper, bpf_ktime_get_coarse_ns(), which
+> > >>>>>>> landed in the same kernel version as the memory accounting change. This
+> > >>>>>>> works in the generic case, but it may fail, for example, if the helper
+> > >>>>>>> function has been backported to an older kernel. This has been observed
+> > >>>>>>> for Google Cloud's Container-Optimized OS (COS), where the helper is
+> > >>>>>>> available but rlimit is still in use. The probe succeeds, the rlimit is
+> > >>>>>>> not raised, and probing features with bpftool, for example, fails.
+> > >>>>>>
+> > >>>>>>> A patch was submitted [0] to update this probe in libbpf, based on what
+> > >>>>>>> the cilium/ebpf Go library does [1]. It would lower the soft rlimit to
+> > >>>>>>> 0, attempt to load a BPF object, and reset the rlimit. But it may induce
+> > >>>>>>> some hard-to-debug flakiness if another process starts, or the current
+> > >>>>>>> application is killed, while the rlimit is reduced, and the approach was
+> > >>>>>>> discarded.
+> > >>>>>>
+> > >>>>>>> As a workaround to ensure that the rlimit bump does not depend on the
+> > >>>>>>> availability of a given helper, we restore the unconditional rlimit bump
+> > >>>>>>> in bpftool for now.
+> > >>>>>>
+> > >>>>>>> [0]
+> > >>>>>>> https://lore.kernel.org/bpf/20220609143614.97837-1-quentin@isovalent.com/
+> > >>>>>>> [1] https://github.com/cilium/ebpf/blob/v0.9.0/rlimit/rlimit.go#L39
+> > >>>>>>
+> > >>>>>>> Cc: Yafang Shao <laoar.shao@gmail.com>
+> > >>>>>>> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+> > >>>>>>> ---
+> > >>>>>>>   tools/bpf/bpftool/common.c     | 8 ++++++++
+> > >>>>>>>   tools/bpf/bpftool/feature.c    | 2 ++
+> > >>>>>>>   tools/bpf/bpftool/main.c       | 6 +++---
+> > >>>>>>>   tools/bpf/bpftool/main.h       | 2 ++
+> > >>>>>>>   tools/bpf/bpftool/map.c        | 2 ++
+> > >>>>>>>   tools/bpf/bpftool/pids.c       | 1 +
+> > >>>>>>>   tools/bpf/bpftool/prog.c       | 3 +++
+> > >>>>>>>   tools/bpf/bpftool/struct_ops.c | 2 ++
+> > >>>>>>>   8 files changed, 23 insertions(+), 3 deletions(-)
+> > >>>>>>
+> > >>>>>>> diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
+> > >>>>>>> index a45b42ee8ab0..a0d4acd7c54a 100644
+> > >>>>>>> --- a/tools/bpf/bpftool/common.c
+> > >>>>>>> +++ b/tools/bpf/bpftool/common.c
+> > >>>>>>> @@ -17,6 +17,7 @@
+> > >>>>>>>   #include <linux/magic.h>
+> > >>>>>>>   #include <net/if.h>
+> > >>>>>>>   #include <sys/mount.h>
+> > >>>>>>> +#include <sys/resource.h>
+> > >>>>>>>   #include <sys/stat.h>
+> > >>>>>>>   #include <sys/vfs.h>
+> > >>>>>>
+> > >>>>>>> @@ -72,6 +73,13 @@ static bool is_bpffs(char *path)
+> > >>>>>>>       return (unsigned long)st_fs.f_type == BPF_FS_MAGIC;
+> > >>>>>>>   }
+> > >>>>>>
+> > >>>>>>> +void set_max_rlimit(void)
+> > >>>>>>> +{
+> > >>>>>>> +    struct rlimit rinf = { RLIM_INFINITY, RLIM_INFINITY };
+> > >>>>>>> +
+> > >>>>>>> +    setrlimit(RLIMIT_MEMLOCK, &rinf);
+> > >>>>>>
+> > >>>>>> Do you think it might make sense to print to stderr some warning if
+> > >>>>>> we actually happen to adjust this limit?
+> > >>>>>>
+> > >>>>>> if (getrlimit(MEMLOCK) != RLIM_INFINITY) {
+> > >>>>>>     fprintf(stderr, "Warning: resetting MEMLOCK rlimit to
+> > >>>>>>     infinity!\n");
+> > >>>>>>     setrlimit(RLIMIT_MEMLOCK, &rinf);
+> > >>>>>> }
+> > >>>>>>
+> > >>>>>> ?
+> > >>>>>>
+> > >>>>>> Because while it's nice that we automatically do this, this might still
+> > >>>>>> lead to surprises for some users. OTOH, not sure whether people
+> > >>>>>> actually read those warnings? :-/
+> > >>>>>
+> > >>>>> I'm not strictly opposed to a warning, but I'm not completely sure this
+> > >>>>> is desirable.
+> > >>>>>
+> > >>>>> Bpftool has raised the rlimit for a long time, it changed only in April,
+> > >>>>> so I don't think it would come up as a surprise for people who have used
+> > >>>>> it for a while. I think this is also something that several other
+> > >>>>> BPF-related applications (BCC I think?, bpftrace, Cilium come to mind)
+> > >>>>> have been doing too.
+> > >>>>
+> > >>>> In this case ignore me and let's continue doing that :-)
+> > >>>>
+> > >>>> Btw, eventually we'd still like to stop doing that I'd presume?
+> > >>>
+> > >>> Agreed. I was thinking either finding a way to improve the probe in
+> > >>> libbpf, or waiting for some more time until 5.11 gets old, but this may
+> > >>> take years :/
+> > >>>
+> > >>>> Should
+> > >>>> we at some point follow up with something like:
+> > >>>>
+> > >>>> if (kernel_version >= 5.11) { don't touch memlock; }
+> > >>>>
+> > >>>> ?
+> > >>>>
+> > >>>> I guess we care only about <5.11 because of the backports, but 5.11+
+> > >>>> kernels are guaranteed to have memcg.
+> > >>>
+> > >>> You mean from uname() and parsing the release? Yes I suppose we could do
+> > >>> that, can do as a follow-up.
+> > >>
+> > >> Yeah, uname-based, I don't think we can do better? Given that probing
+> > >> is problematic as well :-(
+> > >> But idk, up to you.
+> > >>
+> > >
+> > > Agreed with the uname-based solution. Another possible solution is to
+> > > probe the member 'memcg' in struct bpf_map, in case someone may
+> > > backport memcg-based  memory accounting, but that will be a little
+> > > over-engineering. The uname-based solution is simple and can work.
+> > >
+> >
+> > Thanks! Yes, memcg would be more complex: the struct is not exposed to
+> > user space, and BTF is not a hard dependency for bpftool. I'll work on
+> > the uname-based test as a follow-up to this set.
+> >
+>
+> After a second thought, the uname-based test may not work, because
+> CONFIG_MEMCG_KMEM can be disabled.
 
-Hi Jay,
-
-This patch appears to work, you can apply my tested-by.
-
-Tested-by: Jonathan Toppins <jtoppins@redhat.com>
-
-Now this exposes an easily reproducible bonding issue with 
-bond_should_notify_peers() which is every second the bond issues a 
-NOTIFY_PEERS event. This notify peers event issue has been observed on 
-physical hardware (tg3, i40e, igb) drivers. I have not traced the code 
-yet, wanted to point this out. Run the same reproducer script and start 
-monitoring the bond;
-
-[root@fedora ~]# ip -ts -o monitor link dev bond0
-[2022-06-15T11:30:44.337568] 9: bond0: 
-<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
-group default event NOTIFY PEERS \    link/ether ce:d3:22:ef:13:d0 brd 
-ff:ff:ff:ff:ff:ff
-[2022-06-15T11:30:45.361381] 9: bond0: 
-<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
-group default event NOTIFY PEERS \    link/ether ce:d3:22:ef:13:d0 brd 
-ff:ff:ff:ff:ff:ff
-[.. trimmed ..]
-[2022-06-15T11:30:56.618621] [2022-06-15T11:30:56.622657] 9: bond0: 
-<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
-group default event NOTIFY PEERS \    link/ether ce:d3:22:ef:13:d0 brd 
-ff:ff:ff:ff:ff:ff
-[2022-06-15T11:30:57.647644] 9: bond0: 
-<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
-group default event NOTIFY PEERS \    link/ether ce:d3:22:ef:13:d0 brd 
-ff:ff:ff:ff:ff:ff
-
-In another shell take down the active interface:
-# ip link set link1_1 down
-
-we get the failover below, as expected.
-
-[2022-06-15T11:30:58.671501] [2022-06-15T11:30:58.671576] 
-[2022-06-15T11:30:58.671611] [2022-06-15T11:30:58.671643] 
-[2022-06-15T11:30:58.671676] [2022-06-15T11:30:58.671709] 9: bond0: 
-<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
-group default event BONDING FAILOVER \    link/ether ce:d3:22:ef:13:d0 
-brd ff:ff:ff:ff:ff:ff
-[2022-06-15T11:30:58.671782] 9: bond0: 
-<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
-group default event NOTIFY PEERS \    link/ether ce:d3:22:ef:13:d0 brd 
-ff:ff:ff:ff:ff:ff
-[2022-06-15T11:30:58.676862] 9: bond0: 
-<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
-group default event NOTIFY PEERS \    link/ether ce:d3:22:ef:13:d0 brd 
-ff:ff:ff:ff:ff:ff
-[2022-06-15T11:30:58.676948] 9: bond0: 
-<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
-group default event RESEND IGMP \    link/ether ce:d3:22:ef:13:d0 brd 
-ff:ff:ff:ff:ff:ff
-
-Now bring back up link1_1 and notice no more NOTIFY_PEERS event every 
-second. The issue stops with the first failover just brought back up the 
-primary for completeness.
-
-# ip link set link1_1 up
-
-[2022-06-15T11:31:01.629256] [2022-06-15T11:31:01.630275] 
-[2022-06-15T11:31:01.742927] [2022-06-15T11:31:01.742991] 
-[2022-06-15T11:31:01.743021] [2022-06-15T11:31:01.743045] 
-[2022-06-15T11:31:01.743070] [2022-06-15T11:31:01.743094] 9: bond0: 
-<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
-group default event BONDING FAILOVER \    link/ether ce:d3:22:ef:13:d0 
-brd ff:ff:ff:ff:ff:ff
-[2022-06-15T11:31:01.743151] 9: bond0: 
-<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
-group default event NOTIFY PEERS \    link/ether ce:d3:22:ef:13:d0 brd 
-ff:ff:ff:ff:ff:ff
-[2022-06-15T11:31:01.746412] 9: bond0: 
-<BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP 
-group default event RESEND IGMP \    link/ether ce:d3:22:ef:13:d0 brd 
-ff:ff:ff:ff:ff:ff
-
--Jon
-
+Does it matter? Regardless of whether there is memcg or not, we
+shouldn't touch ulimit on 5.11+
+If there is no memcg, there is no bpf memory enforcement.
