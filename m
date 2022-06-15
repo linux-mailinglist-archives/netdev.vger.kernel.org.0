@@ -2,97 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E8E5154C7FF
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 13:57:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE18E54C80A
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 14:00:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345790AbiFOL5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 07:57:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58802 "EHLO
+        id S244617AbiFOMAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 08:00:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344258AbiFOL5r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 07:57:47 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A65601C12B;
-        Wed, 15 Jun 2022 04:57:45 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LNP1T1w1WzDrFn;
-        Wed, 15 Jun 2022 19:57:17 +0800 (CST)
-Received: from dggpemm500011.china.huawei.com (7.185.36.110) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 15 Jun 2022 19:57:43 +0800
-Received: from [10.136.114.193] (10.136.114.193) by
- dggpemm500011.china.huawei.com (7.185.36.110) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 15 Jun 2022 19:57:42 +0800
-Message-ID: <786e43b7-fe00-ffde-ed9a-f47a695c4123@huawei.com>
-Date:   Wed, 15 Jun 2022 19:57:42 +0800
+        with ESMTP id S237953AbiFOMAR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 08:00:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E3F45400E;
+        Wed, 15 Jun 2022 05:00:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E9E11B81D6D;
+        Wed, 15 Jun 2022 12:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7A162C341C0;
+        Wed, 15 Jun 2022 12:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655294413;
+        bh=3gCDG7Gl/RH/Ua80/Mre5ueekp+PMkzJsmoVDTmq3tw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ijCFy8Qbpetd2i9X7VMeJwxUwQuPZxW1+vP2HbLXHyvuEnqt7HEvQsNDAHJNQempt
+         HygmeAvP3NTgmLuC3El/dBNVMTCYPDBLjjxZpxowW7BGGw/A2B74ZWCbPZGU43yBrl
+         hIYtrI4kj9NawWVGnECq4lkMyp1UEzlyjHAx0HdZrn/65ikCB+GHgbMGZS7mKs07m7
+         /cS8dbQU0sloypU1d7nHqky9kg/uQUB9fGdvrFy3hCCXaCac+t3h0T7xf1KhfIOsMB
+         gjWtJgCKq2T2JbjnFMjSdBOdUyDeNBInchBu4jZlOoFGVETB3F2P4NDkX4pvYazi0y
+         T9dP6CfHOqRRw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 599EAE6D466;
+        Wed, 15 Jun 2022 12:00:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [syzbot] WARNING: ODEBUG bug in route4_destroy
-Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-CC:     syzbot <syzbot+2e3efb5eb71cb5075ba7@syzkaller.appspotmail.com>,
-        <davem@davemloft.net>, <jhs@mojatatu.com>, <jiri@resnulli.us>,
-        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <syzkaller-bugs@googlegroups.com>,
-        <xiyou.wangcong@gmail.com>, <rose.chen@huawei.com>
-References: <000000000000a81af205cb2e2878@google.com>
- <0c0468ae-5fe3-a71f-c987-18475756caca@huawei.com>
- <20220614144602.GJ2146@kadam>
-From:   Zhen Chen <chenzhen126@huawei.com>
-In-Reply-To: <20220614144602.GJ2146@kadam>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.136.114.193]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500011.china.huawei.com (7.185.36.110)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: don't check skb_count twice
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165529441336.9723.13573073281613758442.git-patchwork-notify@kernel.org>
+Date:   Wed, 15 Jun 2022 12:00:13 +0000
+References: <20220615032426.17214-1-liew.s.piaw@gmail.com>
+In-Reply-To: <20220615032426.17214-1-liew.s.piaw@gmail.com>
+To:     Sieng Piaw Liew <liew.s.piaw@gmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-On 22/6/14 22:46, Dan Carpenter wrote:
-> On Tue, Jun 14, 2022 at 10:35:44PM +0800, 'Zhen Chen' via syzkaller-bugs wrote:
->>
->> This looks like  route4_destroy is deleting the 'fold' which has been
->> freed by tcf_queue_work in route4_change. It means 'fold' is still in
->> the table.
->> I have tested this patch on syzbot and it works well, but I am not
->> sure whether it will introduce other issues...
->>
->> diff --git a/net/sched/cls_route.c b/net/sched/cls_route.c
->> index a35ab8c27866..758c21f9d628 100644
->> --- a/net/sched/cls_route.c
->> +++ b/net/sched/cls_route.c
->> @@ -526,7 +526,7 @@ static int route4_change(struct net *net, struct sk_buff *in_skb,
->>  	rcu_assign_pointer(f->next, f1);
->>  	rcu_assign_pointer(*fp, f);
->>  
->> -	if (fold && fold->handle && f->handle != fold->handle) {
->> +	if (fold && f->handle != fold->handle) {
->                                  ^^^^^^^^^^^^
-> There is still a dereference here so your patch doesn't make sense. :/
+On Wed, 15 Jun 2022 11:24:26 +0800 you wrote:
+> NAPI cache skb_count is being checked twice without condition. Change to
+> checking the second time only if the first check is run.
 > 
-> regards,
-> dan carpenter
+> Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
+> ---
+>  net/core/skbuff.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
 
-Thanks for your reply but I think the dereference may not be the point.
-If fold->handle equals 0, it will not be removed from the hash table, but afterwards the old filter will be freed because it only checks the pointer 'fold' is null or not.
+Here is the summary with links:
+  - net: don't check skb_count twice
+    https://git.kernel.org/netdev/net-next/c/49ae83fc4fd0
 
-if (fold) {
-	tcf_unbind_filter(tp, &fold->res);
-	tcf_exts_get_net(&fold->exts);
-	tcf_queue_work(&fold->rwork, route4_delete_filter_work);
-}
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-So my patch simply eliminates the handle judgement and it seems to work fine on syzbot.
-If I misunderstood anything, pleaese let me know :)   Thanks!
+
