@@ -2,53 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB9B054D55E
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 01:33:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54C3354D568
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 01:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244828AbiFOXdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 19:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48586 "EHLO
+        id S1346801AbiFOXiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 19:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241672AbiFOXdG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 19:33:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F014519028
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 16:33:05 -0700 (PDT)
+        with ESMTP id S241580AbiFOXh6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 19:37:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B68CD186C9
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 16:37:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C023619FE
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 23:33:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8006DC3411A;
-        Wed, 15 Jun 2022 23:33:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B231B821FA
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 23:37:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5D26C3411A;
+        Wed, 15 Jun 2022 23:37:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655335984;
-        bh=dBBPcMjta8eLVg4C7tcokqqlbkjwbWO3mVjyG75QNKQ=;
+        s=k20201202; t=1655336275;
+        bh=nRU/sJQxNmyrVVA3TXnQhxFaIH2aMAbsgA8XkGTVyIk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eC4wKqpn/WcLuWE2S+vQDkJDn7HfdWkrWUZ7qxnx1PAorsOLmUxUCK2aMoSHnsoe2
-         ZHQDO0yC0WqbPQm5C55JJAJJxOqgFiVclnSNaXNeViDyChlvaM9a/ToAXj02ryyc7J
-         onNBhnorr5WIc8X4ENTsgpfGBwHsLItKsY6NwIJZ+Wkn9tiKtMQKKRNTqDoz1yps7O
-         SPCT2kbOg1BvMZqJIb5AHJdkQ2x36OIejVQAnopFVXibFHZyaA3TIc4kq0pORY1onY
-         eT69HLpttOy952uUGTvLhAr67KegtFqn3ZiiImy9vl8FGNoVP7Ka3qUeqVXcfZt5Z0
-         4HkBbz7eZOU4A==
-Date:   Wed, 15 Jun 2022 16:33:03 -0700
+        b=fjNDVv5NE8ATHgVuacooQs0plfRlAiCKPlhYwNboBM/9JISJKG0dBZD5ooVLSaU3g
+         GbJ1JlLgyvqO56MYJGiqcW0jmp2PswYBJzqEoEDwLmIb7DBoqJI+MOrPzKwUGERXh4
+         AE/AIDLK2TFrepNInw1zeXwoZc2V79duRbQafWkih4s7/umVuCivY5QNaKIGhKdSFz
+         Tew0t9dVH8dKIWd/fjxXTGEnmbjF1/VLH24Wh2F2Ye1hco5Pi/leD28O/s/iz8vY7C
+         SnxAJIXdH+S5ZV2LbmQGdn8iKCL0IfxGLRGs8YTjid6WweZCRlzPBm0WIhMwxNRAPo
+         b7Eys9LKqMwdg==
+Date:   Wed, 15 Jun 2022 16:37:53 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     Yuwei Wang <wangyuweihx@gmail.com>, davem@davemloft.net,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, roopa@nvidia.com,
-        dsahern@kernel.org, =?UTF-8?B?56em6L+q?= <qindi@staff.weibo.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v3 2/2] net, neigh: introduce
- interval_probe_time for periodic probe
-Message-ID: <20220615163303.11c4e7ef@kernel.org>
-In-Reply-To: <57228F24-81CD-49E9-BE4D-73FC6697872B@blackwall.org>
-References: <20220609105725.2367426-1-wangyuweihx@gmail.com>
-        <20220609105725.2367426-3-wangyuweihx@gmail.com>
-        <101855d8-878b-2334-fd5a-85684fd78e12@blackwall.org>
-        <CANmJ_FNXSxPtBbESV4Y4Zme6vabgTJFSw0hjZNndfstSvxAeLw@mail.gmail.com>
-        <57228F24-81CD-49E9-BE4D-73FC6697872B@blackwall.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@nvidia.com,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com
+Subject: Re: [patch net-next 01/11] devlink: introduce nested devlink entity
+ for line card
+Message-ID: <20220615163753.56e65d39@kernel.org>
+In-Reply-To: <20220614123326.69745-2-jiri@resnulli.us>
+References: <20220614123326.69745-1-jiri@resnulli.us>
+        <20220614123326.69745-2-jiri@resnulli.us>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,25 +56,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Jun 2022 18:39:53 +0300 Nikolay Aleksandrov wrote:
-> >> Do we need the proc entry to be in jiffies when the netlink option is in ms?
-> >> Why not make it directly in ms (with _ms similar to other neigh _ms time options) ?
-> >>
-> >> IMO, it would be better to be consistent with the netlink option which sets it in ms.
-> >>
-> >> It seems the _ms options were added later and usually people want a more understandable
-> >> value, I haven't seen anyone wanting a jiffies version of a ms interval variable. :)
-> >>  
-> >
-> >It was in jiffies because this entry was separated from `DELAY_PROBE_TIME`,
-> >it keeps nearly all the things the same as `DELAY_PROBE_TIME`,
-> >they are both configured by seconds and read to jiffies, was `ms` in
-> >netlink attribute,
-> >I think it's ok to keep this consistency, and is there a demand
-> >required to configure it by ms?
-> >If there is that demand, we can make it configured as ms.
+On Tue, 14 Jun 2022 14:33:16 +0200 Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@nvidia.com>
 > 
-> no, no demand, just out of user-friendliness :) but 
-> I get it keeping it as jiffies is also fine 
+> For the purpose of exposing device info and allow flash updated which is
+> going to be implemented in follow-up patches, introduce a possibility
+> for a line card to expose relation to nested devlink entity. The nested
+> devlink entity represents the line card.
+> 
+> Example:
+> 
+> $ devlink lc show pci/0000:01:00.0 lc 1
+> pci/0000:01:00.0:
+>   lc 1 state active type 16x100G nested_devlink auxiliary/mlxsw_core.lc.0
+>     supported_types:
+>        16x100G
+> $ devlink dev show auxiliary/mlxsw_core.lc.0
+> auxiliary/mlxsw_core.lc.0
+> 
+> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 
-+1 to using ms
+Acked-by: Jakub Kicinski <kuba@kernel.org>
+
+Thanks!
