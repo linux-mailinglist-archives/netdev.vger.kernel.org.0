@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 247A254D0D9
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 20:24:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25BC754D139
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 20:54:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356371AbiFOSYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 14:24:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36526 "EHLO
+        id S1358506AbiFOSyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 14:54:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245078AbiFOSYX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 14:24:23 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3CF5A252AC;
-        Wed, 15 Jun 2022 11:24:22 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B2EF0153B;
-        Wed, 15 Jun 2022 11:24:21 -0700 (PDT)
-Received: from e120937-lin (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B39013F73B;
-        Wed, 15 Jun 2022 11:24:18 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 19:24:08 +0100
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        eperezma <eperezma@redhat.com>, Cindy Lu <lulu@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        linux-s390@vger.kernel.org, conghui.chen@intel.com,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        netdev <netdev@vger.kernel.org>, pankaj.gupta.linux@gmail.com,
-        sudeep.holla@arm.com, Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-Subject: Re: [PATCH V6 8/9] virtio: harden vring IRQ
-Message-ID: <YqojyHuocSoZ0v/Y@e120937-lin>
-References: <CACGkMEs05ZisiPW+7H6Omp80MzmZWZCpc1mf5Vd99C3H-KUtgA@mail.gmail.com>
- <20220613041416-mutt-send-email-mst@kernel.org>
- <CACGkMEsT_fWdPxN1cTWOX=vu-ntp3Xo4j46-ZKALeSXr7DmJFQ@mail.gmail.com>
- <20220613045606-mutt-send-email-mst@kernel.org>
- <CACGkMEtAQck7Nr6SP_pD0MGT3njnwZSyT=xPyYzUU3c5GNNM_w@mail.gmail.com>
- <CACGkMEvUFJkC=mnvL2PSH6-3RMcJUk84f-9X46JVcj2vTAr4SQ@mail.gmail.com>
- <20220613052644-mutt-send-email-mst@kernel.org>
- <CACGkMEstGvhETXThuwO+tLVBuRgQb8uC_6DdAM8ZxOi5UKBRbg@mail.gmail.com>
- <Yqi7UhasBDPKCpuV@e120937-lin>
- <CACGkMEv2A7ZHQTrdg9H=xZScAf2DE=Dguaz60ykd4KQGNLrn2Q@mail.gmail.com>
+        with ESMTP id S244398AbiFOSyO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 14:54:14 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7B23587F
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 11:54:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655319253; x=1686855253;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=kfQVWOVhcIs8Q1P6d+Vs+AZzPVyRPMluazQQ9DRSKm8=;
+  b=CLLXHEdt7JN3GhbPOmVu2ZU4pPmPB3XE9jTaaG9uYYtJwF3ewGWbvNeW
+   Fl2puIId6rCCGlc4gZAreGngayOqL+LWoXpdStUIF5BTsa5Is4rn+4TN0
+   cQUa142OvStOVlZbhftQUzCft7lJv2mwgjrRd64CvsrvLkRz+f7/1RE5a
+   fjdEE/oSCAj85rcisZx9IlEEn5fUqcWQJQjMyHA6ECNP6i4yLIXIalL5X
+   fuUBdttTCYMYIrcjY9UNxESvzkzUrVOIx0M5AJXRe6x+CGQZGMNWeN9Ta
+   G7nQCEUEPB2qKuwpOV84+hd6GSjmbLTohUqI0gTjufBNhX/2hms9KsPuS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="365427621"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="365427621"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 11:49:50 -0700
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="583341602"
+Received: from clmark-mobl2.amr.corp.intel.com (HELO [10.209.46.90]) ([10.209.46.90])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 11:49:49 -0700
+Message-ID: <321ecbc9-7033-1caa-356c-8bac1338ecb3@linux.intel.com>
+Date:   Wed, 15 Jun 2022 11:49:41 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACGkMEv2A7ZHQTrdg9H=xZScAf2DE=Dguaz60ykd4KQGNLrn2Q@mail.gmail.com>
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH net-next 1/1] net: wwan: t7xx: Add AP CLDMA and GNSS port
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
+        loic.poulain@linaro.org, m.chetan.kumar@intel.com,
+        chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
+        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
+        ricardo.martinez@linux.intel.com, dinesh.sharma@intel.com,
+        ilpo.jarvinen@linux.intel.com, moises.veleta@intel.com,
+        Madhusmita Sahu <madhusmita.sahu@intel.com>
+References: <20220614205756.6792-1-moises.veleta@linux.intel.com>
+ <YqmgFcwVSucDGgZ6@smile.fi.intel.com>
+From:   "moises.veleta" <moises.veleta@linux.intel.com>
+In-Reply-To: <YqmgFcwVSucDGgZ6@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -67,80 +68,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 09:41:18AM +0800, Jason Wang wrote:
-> On Wed, Jun 15, 2022 at 12:46 AM Cristian Marussi
-> <cristian.marussi@arm.com> wrote:
 
-Hi Jason,
-
-> >
-> > On Tue, Jun 14, 2022 at 03:40:21PM +0800, Jason Wang wrote:
-> > > On Mon, Jun 13, 2022 at 5:28 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > >
-> >
-
-[snip]
-
-> > >
-> > > >  arm_scmi
-> > >
-> > > It looks to me the singleton device could be used by SCMI immediately after
-> > >
-> > >         /* Ensure initialized scmi_vdev is visible */
-> > >         smp_store_mb(scmi_vdev, vdev);
-> > >
-> > > So we probably need to do virtio_device_ready() before that. It has an
-> > > optional rx queue but the filling is done after the above assignment,
-> > > so it's safe. And the callback looks safe is a callback is triggered
-> > > after virtio_device_ready() buy before the above assignment.
-> > >
-> >
-> > I wanted to give it a go at this series testing it on the context of
-> > SCMI but it does not apply
-> >
-> > - not on a v5.18:
-> >
-> > 17:33 $ git rebase -i v5.18
-> > 17:33 $ git am ./v6_20220527_jasowang_rework_on_the_irq_hardening_of_virtio.mbx
-> > Applying: virtio: use virtio_device_ready() in virtio_device_restore()
-> > Applying: virtio: use virtio_reset_device() when possible
-> > Applying: virtio: introduce config op to synchronize vring callbacks
-> > Applying: virtio-pci: implement synchronize_cbs()
-> > Applying: virtio-mmio: implement synchronize_cbs()
-> > error: patch failed: drivers/virtio/virtio_mmio.c:345
-> > error: drivers/virtio/virtio_mmio.c: patch does not apply
-> > Patch failed at 0005 virtio-mmio: implement synchronize_cbs()
-> >
-> > - neither on a v5.19-rc2:
-> >
-> > 17:33 $ git rebase -i v5.19-rc2
-> > 17:35 $ git am ./v6_20220527_jasowang_rework_on_the_irq_hardening_of_virtio.mbx
-> > Applying: virtio: use virtio_device_ready() in virtio_device_restore()
-> > error: patch failed: drivers/virtio/virtio.c:526
-> > error: drivers/virtio/virtio.c: patch does not apply
-> > Patch failed at 0001 virtio: use virtio_device_ready() in
-> > virtio_device_restore()
-> > hint: Use 'git am --show-current-patch=diff' to see the failed patch
-> > When you have resolved this problem, run "git am --continue".
-> >
-> > ... what I should take as base ?
-> 
-> It should have already been included in rc2, so there's no need to
-> apply patch manually.
-> 
-
-I tested this series as included in v5.19-rc2 (WITHOUT adding a virtio_device_ready
-in SCMI virtio as you mentioned above ... if I got it right) and I have NOT seen any
-issue around SCMI virtio using my usual test setup (using both SCMI vqueues).
-
-No anomalies even when using SCMI virtio in atomic/polling mode.
-
-Adding a virtio_device_ready() at the end of the SCMI virtio probe()
-works fine either, it does not make any difference in my setup.
-(both using QEMU and kvmtool with this latter NOT supporting
- virtio_V1...not sure if it makes a difference but I thought was worth
- mentioning)
-
-Thanks,
-Cristian
-
+On 6/15/22 02:02, Andy Shevchenko wrote:
+> On Tue, Jun 14, 2022 at 01:57:56PM -0700, Moises Veleta wrote:
+>> From: Haijun Liu <haijun.liu@mediatek.com>
+>>
+>> The t7xx device contains two Cross Layer DMA (CLDMA) interfaces to
+>> communicate with AP and Modem processors respectively. So far only
+>> MD-CLDMA was being used, this patch enables AP-CLDMA and the GNSS
+>> port which requires such channel.
+> This doesn't explain the sAP -> AP renaming in a several cases.
+> If that renaming is needed, it perhaps requires a separate patch or
+> at least a good paragraph to explain why.
+>
+The renaming was done since sAP (small Application Processor) represents 
+Application Processor succinctly. The word "small" only adds unnecessary 
+word that would confuse readers if we kept both "sAP" and "AP". I will 
+add that information as an additional paragraph.
