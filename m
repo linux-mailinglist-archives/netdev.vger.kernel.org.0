@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 688BD54D4D0
+	by mail.lfdr.de (Postfix) with ESMTP id 1FAA154D4CF
 	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 00:51:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350627AbiFOWvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 18:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36690 "EHLO
+        id S1350576AbiFOWvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 18:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350520AbiFOWve (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 18:51:34 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F82E5640D
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 15:51:33 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id bg6so26128904ejb.0
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 15:51:33 -0700 (PDT)
+        with ESMTP id S1350570AbiFOWvi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 18:51:38 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A805641C
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 15:51:35 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id z7so18188729edm.13
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 15:51:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pqrs.dk; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TXmIOiKtTji5uvqDZkSqwPGXddUogZT+Gvmhu7MqhdQ=;
-        b=TVX+jPHr+YurZEbSw2Ju/dlh1M5+C97k4A0sYp5OVJWanDOEuDVOa2EkHzN0A691PZ
-         zjKbKTLHR7zaQMlMlZjakkTU14oQrFsnCdc5FAgUSIFyIObWrSoZlMkZ/eSHxta2gMqv
-         Swc43qGqkkf5kbOiQRF5nZe772+0zdPb7I46w=
+        bh=AareH3Xp+hp4A5FOtY4uNivgTY9OEK29GzGPxmxFOws=;
+        b=kJzpPcYmcX7GoYd5tKK+ollj2PRhF8lAkiyS3JW/xsbBypPJ1S6pWA7AwYOH4o1NNk
+         TxuMrtWli9kiluVbcbl0Si+CK0BVPyD7C/b4zxvVTjOe1bm7iLzSbYQ+c/ZealIYX91u
+         2BfBxNLumPg8ZjKobTSfjtIDMh1WL/1QFD7hM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TXmIOiKtTji5uvqDZkSqwPGXddUogZT+Gvmhu7MqhdQ=;
-        b=Yrdz+13mrIFJGyuh0bxbHdoN37BaqEJWZga9gyvEuf59A4vT1JlKOcTmYeVp6v5OS0
-         KR+eJyjQEsNzVCA3KKNxuKXpda5T1r8EgizEy1tUnufEiT6qRbx4gTn5iltKZpexokLl
-         DMnITzIVwN+mpc07Dv1Q5NPb663czoH5z9KjzvM/ejnPbgPRsr0lSP8dP/rcdv7QW0j6
-         UdAC/fZplyUq68GHqwM7tSBTF6ScR7A52VzE8EcmCPMRf7RX2irmlFQ5s/YL9a/6pDJA
-         GjLv4APExgE++XrCdT6/Bzse/CukD8sZ1DkHj6NpH0ys2oD7xdXamHynSn3rLLI8KXjR
-         jItw==
-X-Gm-Message-State: AJIora8krKRSAfTPLCOdDKw4Kmev6DfRsbuOpLPYgTf8zvYm18bULO04
-        3xxKsM6FaJA+OyJSJwSsvTm+gw==
-X-Google-Smtp-Source: AGRyM1vHmr4I+TxgXhv9ooyE28pTt2qO4gU18bLAATZW0N6FanBovvFpzj2orl0lAgxZ2YZxhMHg7g==
-X-Received: by 2002:a17:907:86ac:b0:708:9c4a:c6e9 with SMTP id qa44-20020a17090786ac00b007089c4ac6e9mr1881699ejc.297.1655333491875;
-        Wed, 15 Jun 2022 15:51:31 -0700 (PDT)
+        bh=AareH3Xp+hp4A5FOtY4uNivgTY9OEK29GzGPxmxFOws=;
+        b=O7QUz6nNQjTrPFE8yQqdSby+gj+qU6Ev6LjVcqHIoYBLNNUshtA5ieFcrD7PkAdW3J
+         /OmCOSMiC948RT2r52ejK0bpe6cRn3jpdqv6tDLGp9OaCr9m0tDae7VjExw8Tce2hQl6
+         nyuruOxPrTYDwkzSJP2qZh3FXueiHEtrdxPZ073eeLdGebW5BWSuD/jDBjSQ0QHKpvZE
+         t8D+zoWnh/0Vxu9PqaA80LDcx9QHQi++YrhNeztKC9+VUg/xNf++UhNxrqmgOtEeuoy0
+         Ky+mKADAv6f0lXjlz3WTc3Osp2/qc+1foioDJAUQ0r16DoYnvTYNyd8aHH+NBxry0lSh
+         Xy6w==
+X-Gm-Message-State: AJIora8qLR5eea1xnjpnFAmHwaKvM7hRNL8AwodnGyy+q7/vZ4dsgolF
+        Rmg7+i4EV2k54Xo28W5uZnt4cw==
+X-Google-Smtp-Source: AGRyM1s8HNefBTr6EzDUrhiYqbINKuXkV+4Hc+kGEYoKgOE1r08kg/gFh3kyeRMAURVZ7aQz2TD0vA==
+X-Received: by 2002:a05:6402:329b:b0:431:3143:5ced with SMTP id f27-20020a056402329b00b0043131435cedmr2648926eda.257.1655333493599;
+        Wed, 15 Jun 2022 15:51:33 -0700 (PDT)
 Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id h23-20020aa7c617000000b0042e21f8c412sm371506edq.42.2022.06.15.15.51.30
+        by smtp.gmail.com with ESMTPSA id h23-20020aa7c617000000b0042e21f8c412sm371506edq.42.2022.06.15.15.51.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 15:51:31 -0700 (PDT)
+        Wed, 15 Jun 2022 15:51:33 -0700 (PDT)
 From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
 To:     hauke@hauke-m.de, Linus Walleij <linus.walleij@linaro.org>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
@@ -56,11 +56,10 @@ To:     hauke@hauke-m.de, Linus Walleij <linus.walleij@linaro.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Russell King <linux@armlinux.org.uk>
-Cc:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3 3/5] net: dsa: realtek: rtl8365mb: correct the max number of ports
-Date:   Thu, 16 Jun 2022 00:51:13 +0200
-Message-Id: <20220615225116.432283-4-alvin@pqrs.dk>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v3 4/5] net: dsa: realtek: rtl8365mb: remove learn_limit_max private data member
+Date:   Thu, 16 Jun 2022 00:51:14 +0200
+Message-Id: <20220615225116.432283-5-alvin@pqrs.dk>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220615225116.432283-1-alvin@pqrs.dk>
 References: <20220615225116.432283-1-alvin@pqrs.dk>
@@ -78,38 +77,59 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-The maximum number of ports is actually 11, according to two
-observations:
-
-1. The highest port ID used in the vendor driver is 10. Since port IDs
-   are indexed from 0, and since DSA follows the same numbering system,
-   this means up to 11 ports are to be presumed.
-
-2. The registers with port mask fields always amount to a maximum port
-   mask of 0x7FF, corresponding to a maximum 11 ports.
-
-In view of this, I also deleted the comment.
+The variable is just assigned the value of a macro, so it can be
+removed.
 
 Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-Reviewed-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 ---
- drivers/net/dsa/realtek/rtl8365mb.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/dsa/realtek/rtl8365mb.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
 diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-index 42afba122bb4..3599fa5d9f14 100644
+index 3599fa5d9f14..676b88798976 100644
 --- a/drivers/net/dsa/realtek/rtl8365mb.c
 +++ b/drivers/net/dsa/realtek/rtl8365mb.c
-@@ -115,8 +115,7 @@
- #define RTL8365MB_PHYADDRMAX		7
- #define RTL8365MB_NUM_PHYREGS		32
- #define RTL8365MB_PHYREGMAX		(RTL8365MB_NUM_PHYREGS - 1)
--/* RTL8370MB and RTL8310SR, possibly suportable by this driver, have 10 ports */
--#define RTL8365MB_MAX_NUM_PORTS		10
-+#define RTL8365MB_MAX_NUM_PORTS		11
- #define RTL8365MB_LEARN_LIMIT_MAX	2112
+@@ -563,7 +563,6 @@ struct rtl8365mb_port {
+  * @irq: registered IRQ or zero
+  * @chip_id: chip identifier
+  * @chip_ver: chip silicon revision
+- * @learn_limit_max: maximum number of L2 addresses the chip can learn
+  * @cpu: CPU tagging and CPU port configuration for this chip
+  * @mib_lock: prevent concurrent reads of MIB counters
+  * @ports: per-port data
+@@ -577,7 +576,6 @@ struct rtl8365mb {
+ 	int irq;
+ 	u32 chip_id;
+ 	u32 chip_ver;
+-	u32 learn_limit_max;
+ 	struct rtl8365mb_cpu cpu;
+ 	struct mutex mib_lock;
+ 	struct rtl8365mb_port ports[RTL8365MB_MAX_NUM_PORTS];
+@@ -1088,15 +1086,13 @@ static void rtl8365mb_port_stp_state_set(struct dsa_switch *ds, int port,
+ static int rtl8365mb_port_set_learning(struct realtek_priv *priv, int port,
+ 				       bool enable)
+ {
+-	struct rtl8365mb *mb = priv->chip_data;
+-
+ 	/* Enable/disable learning by limiting the number of L2 addresses the
+ 	 * port can learn. Realtek documentation states that a limit of zero
+ 	 * disables learning. When enabling learning, set it to the chip's
+ 	 * maximum.
+ 	 */
+ 	return regmap_write(priv->map, RTL8365MB_LUT_PORT_LEARN_LIMIT_REG(port),
+-			    enable ? mb->learn_limit_max : 0);
++			    enable ? RTL8365MB_LEARN_LIMIT_MAX : 0);
+ }
  
- /* valid for all 6-port or less variants */
+ static int rtl8365mb_port_set_isolation(struct realtek_priv *priv, int port,
+@@ -2003,7 +1999,6 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
+ 		mb->priv = priv;
+ 		mb->chip_id = chip_id;
+ 		mb->chip_ver = chip_ver;
+-		mb->learn_limit_max = RTL8365MB_LEARN_LIMIT_MAX;
+ 		mb->jam_table = rtl8365mb_init_jam_8365mb_vc;
+ 		mb->jam_size = ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc);
+ 
 -- 
 2.36.1
 
