@@ -2,80 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9696D54CB7F
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 16:38:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04EC054CAC3
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 16:02:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345662AbiFOOh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 10:37:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52594 "EHLO
+        id S1356043AbiFOOCr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 10:02:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbiFOOhz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 10:37:55 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4708D13CE1;
-        Wed, 15 Jun 2022 07:37:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=75kgVCcqOPOLeu4JBiLLFab/dM4uNZ1dcLuvpDx9ZCg=; b=kAIWl67VuUe8cBDkmFOZTh4b+J
-        Uy6PgE2+CwIEzhFEfsXCTAadcMkk5TefuTIBHvgzxNrjmUz+/r/f3fMBR5i8mMC7UweLMh9MkeJoD
-        97gkOJRUGibA77qDy9s4vL7NkQkS1Sv+TX4WpruLFHmbGvImVgE9LeYadgdIraA8AGxMlB+PxaWy/
-        1adKvJuvvpCbTsZosCqi5SMDlMupfKEgEY7JpKMS8HhvbF7gyowCTheRqW0YX0S9D05qpW9G1fKLt
-        DJUWQ6k8Tz/HxaHb6kuJRSWnDBXrsJA/DQco3hh/lFSm8XLWvSeNFNfH2bKr+ugXM0hH/Gw2zl2s+
-        laFslj7w==;
-Received: from 179.red-81-39-194.dynamicip.rima-tde.net ([81.39.194.179] helo=[192.168.15.167])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1o1U8m-002LYs-SW; Wed, 15 Jun 2022 16:37:04 +0200
-Message-ID: <362f6520-8209-1721-823c-11928338f57d@igalia.com>
-Date:   Wed, 15 Jun 2022 11:36:39 +0200
+        with ESMTP id S1356068AbiFOOCi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 10:02:38 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E5F44767;
+        Wed, 15 Jun 2022 07:02:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655301744; x=1686837744;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gUzSbxPGKlv3orYjrbcR9owy96sB5gAjpsZZ/65MvcQ=;
+  b=Gv0NakvzmnEtYxxrHJeIRlRwJyxScGKKqzQXdHfkyWPXcU0/ApEUD/++
+   L7HLuGnN9gMa++Rh0TP6Z2971iGZRAyX8JhMGc0XreUZkLPSYSOoITf9E
+   txhOv7zSPF1I8oCT4z2KQQEUztaqq1I9U0ZE4uHTRGNVjUhBMuJPdGIEN
+   bVie0yUjvokZYjfHFzBSIfT41cL/JFI9F0PekJBxsGyBouoNjKMmDUsZv
+   M+OUjdEJO4ICEkq8w1+sL+T2dQgIrN7VLAakbKhWiyAepu7VvwFpkGDdL
+   AVlg3fGZ0BLxogJzVasE6JiA2nmQ1W4lIE96r2vaqjeMyon2zXwB5ObAN
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="280004469"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="280004469"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 07:01:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="612751608"
+Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
+  by orsmga008.jf.intel.com with ESMTP; 15 Jun 2022 07:01:49 -0700
+Date:   Wed, 15 Jun 2022 16:01:49 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org, magnus.karlsson@intel.com, bjorn@kernel.org
+Subject: Re: [PATCH v2 bpf-next 01/10] ice: allow toggling loopback mode via
+ ndo_set_features callback
+Message-ID: <YqnmTUpTgquVOsP5@boxer>
+References: <20220614174749.901044-1-maciej.fijalkowski@intel.com>
+ <20220614174749.901044-2-maciej.fijalkowski@intel.com>
+ <20220615103804.1260221-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 24/30] panic: Refactor the panic path
-Content-Language: en-US
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     bhe@redhat.com, d.hatayama@jp.fujitsu.com,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Mark Rutland <mark.rutland@arm.com>, mikelley@microsoft.com,
-        vkuznets@redhat.com, akpm@linux-foundation.org,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
-        corbet@lwn.net, dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        hidehiro.kawai.ez@hitachi.com, jgross@suse.com,
-        john.ogness@linutronix.de, keescook@chromium.org, luto@kernel.org,
-        mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org,
-        peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, will@kernel.org
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-25-gpiccoli@igalia.com>
- <87fskzuh11.fsf@email.froward.int.ebiederm.org>
- <0d084eed-4781-c815-29c7-ac62c498e216@igalia.com> <Yqic0R8/UFqTbbMD@alley>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <Yqic0R8/UFqTbbMD@alley>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DATE_IN_PAST_03_06,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220615103804.1260221-1-alexandr.lobakin@intel.com>
+X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,20 +62,162 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Perfect Petr, thanks for your feedback!
+On Wed, Jun 15, 2022 at 12:38:04PM +0200, Alexander Lobakin wrote:
+> From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> Date: Tue, 14 Jun 2022 19:47:40 +0200
+> 
+> > Add support for NETIF_F_LOOPBACK. Also, simplify checks throughout whole
+> > ice_set_features().
+> > 
+> > CC: Alexandr Lobakin <alexandr.lobakin@intel.com>
+> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > ---
+> >  drivers/net/ethernet/intel/ice/ice_main.c | 54 ++++++++++++++---------
+> >  1 file changed, 34 insertions(+), 20 deletions(-)
+> > 
+> > diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+> > index e1cae253412c..ab00b0361e87 100644
+> > --- a/drivers/net/ethernet/intel/ice/ice_main.c
+> > +++ b/drivers/net/ethernet/intel/ice/ice_main.c
+> > @@ -3358,6 +3358,7 @@ static void ice_set_netdev_features(struct net_device *netdev)
+> >  	netdev->features |= netdev->hw_features;
+> >  
+> >  	netdev->hw_features |= NETIF_F_HW_TC;
+> > +	netdev->hw_features |= NETIF_F_LOOPBACK;
+> >  
+> >  	/* encap and VLAN devices inherit default, csumo and tso features */
+> >  	netdev->hw_enc_features |= dflt_features | csumo_features |
+> > @@ -5902,6 +5903,18 @@ ice_set_vlan_features(struct net_device *netdev, netdev_features_t features)
+> >  	return 0;
+> >  }
+> >  
+> > +static void ice_set_loopback(struct ice_pf *pf, struct net_device *netdev, bool ena)
+> 
+> I feel like the first argument is redundant in here since we can do
+> 
+> 	const struct ice_netdev_priv *np = netdev_priv(netdev);
+> 	struct ice_pf *pf = np->vsi->back;
+> 
+> But at the same time one function argument can be cheaper than two
+> jumps, so up to you.
+> 
+> > +{
+> > +	bool if_running = netif_running(netdev);
+> > +
+> > +	if (if_running)
+> > +		ice_stop(netdev);
+> > +	if (ice_aq_set_mac_loopback(&pf->hw, ena, NULL))
+> > +		dev_err(ice_pf_to_dev(pf), "Failed to toggle loopback state\n");
+> 
+> netdev_err() instead probably? I guess dev_err() is used for
+> consistency with the rest of ice_set_features(), but I'd recommend
+> using the former anyways.
 
-I'll be out for some weeks, but after that what I'm doing is to split
-the series in 2 parts:
+So let's use netdev_err and drop the pf from arguments that are passed
 
-(a) The general fixes, which should be reviewed by subsystem maintainers
-and even merged individually by them.
+> 
+> > +	if (if_running)
+> > +		ice_open(netdev);
+> > +}
+> > +
+> >  /**
+> >   * ice_set_features - set the netdev feature flags
+> >   * @netdev: ptr to the netdev being adjusted
+> > @@ -5910,6 +5923,7 @@ ice_set_vlan_features(struct net_device *netdev, netdev_features_t features)
+> >  static int
+> >  ice_set_features(struct net_device *netdev, netdev_features_t features)
+> >  {
+> > +	netdev_features_t changed = netdev->features ^ features;
+> >  	struct ice_netdev_priv *np = netdev_priv(netdev);
+> >  	struct ice_vsi *vsi = np->vsi;
+> >  	struct ice_pf *pf = vsi->back;
+> > @@ -5917,37 +5931,33 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
+> >  
+> >  	/* Don't set any netdev advanced features with device in Safe Mode */
+> >  	if (ice_is_safe_mode(vsi->back)) {
+> > -		dev_err(ice_pf_to_dev(vsi->back), "Device is in Safe Mode - not enabling advanced netdev features\n");
+> > +		dev_err(ice_pf_to_dev(vsi->back),
+> > +			"Device is in Safe Mode - not enabling advanced netdev features\n");
+> 
+> This (I mean the whole ice_set_features() cleanup) deserves to be in
+> a separate patch to me. In can be a past of this series for sure.
 
-(b) The proper panic refactor, which includes the notifiers list split,
-etc. I'll think about what I consider the best solution for the
-crash_dump required ones, and will try to split in very simple patches
-to make it easier to review.
+ack, will pull out this to a standalone patch followed by loopback
+enablement
 
-Cheers,
+> 
+> >  		return ret;
+> >  	}
+> >  
+> >  	/* Do not change setting during reset */
+> >  	if (ice_is_reset_in_progress(pf->state)) {
+> > -		dev_err(ice_pf_to_dev(vsi->back), "Device is resetting, changing advanced netdev features temporarily unavailable.\n");
+> > +		dev_err(ice_pf_to_dev(vsi->back),
+> > +			"Device is resetting, changing advanced netdev features temporarily unavailable.\n");
+> >  		return -EBUSY;
+> >  	}
+> >  
+> >  	/* Multiple features can be changed in one call so keep features in
+> >  	 * separate if/else statements to guarantee each feature is checked
+> >  	 */
+> > -	if (features & NETIF_F_RXHASH && !(netdev->features & NETIF_F_RXHASH))
+> > -		ice_vsi_manage_rss_lut(vsi, true);
+> > -	else if (!(features & NETIF_F_RXHASH) &&
+> > -		 netdev->features & NETIF_F_RXHASH)
+> > -		ice_vsi_manage_rss_lut(vsi, false);
+> > +	if (changed & NETIF_F_RXHASH)
+> > +		ice_vsi_manage_rss_lut(vsi, !!(features & NETIF_F_RXHASH));
+> >  
+> >  	ret = ice_set_vlan_features(netdev, features);
+> >  	if (ret)
+> >  		return ret;
+> >  
+> > -	if ((features & NETIF_F_NTUPLE) &&
+> > -	    !(netdev->features & NETIF_F_NTUPLE)) {
+> > -		ice_vsi_manage_fdir(vsi, true);
+> > -		ice_init_arfs(vsi);
+> > -	} else if (!(features & NETIF_F_NTUPLE) &&
+> > -		 (netdev->features & NETIF_F_NTUPLE)) {
+> > -		ice_vsi_manage_fdir(vsi, false);
+> > -		ice_clear_arfs(vsi);
+> > +	if (changed & NETIF_F_NTUPLE) {
+> > +		bool ena = !!(features & NETIF_F_NTUPLE);
+> > +
+> > +		ice_vsi_manage_fdir(vsi, ena);
+> > +		ena ? ice_init_arfs(vsi) : ice_clear_arfs(vsi);
+> >  	}
+> >  
+> >  	/* don't turn off hw_tc_offload when ADQ is already enabled */
+> > @@ -5956,11 +5966,15 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
+> >  		return -EACCES;
+> >  	}
+> >  
+> > -	if ((features & NETIF_F_HW_TC) &&
+> > -	    !(netdev->features & NETIF_F_HW_TC))
+> > -		set_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
+> > -	else
+> > -		clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
+> > +	if (changed & NETIF_F_HW_TC) {
+> > +		bool ena = !!(features & NETIF_F_HW_TC);
+> > +
+> > +		ena ? set_bit(ICE_FLAG_CLS_FLOWER, pf->flags) :
+> > +		      clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
+> > +	}
+> > +
+> > +	if (changed & NETIF_F_LOOPBACK)
+> > +		ice_set_loopback(pf, netdev, !!(features & NETIF_F_LOOPBACK));
+> >  
+> >  	return 0;
+> >  }
+> > -- 
+> > 2.27.0
+> 
+> The rest is good, I like wiring up standard interfaces with the
+> existing hardware functionality :) Loopback mode is useful for
+> testing stuff.
 
+thanks for review!
 
-Guilherme
+> 
+> Thanks!
+> Olek
