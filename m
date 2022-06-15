@@ -2,71 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EE3154C183
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 08:06:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33D1554C1B1
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 08:22:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345915AbiFOGEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 02:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51654 "EHLO
+        id S1351284AbiFOGLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 02:11:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345994AbiFOGEW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 02:04:22 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F4ED1A831
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 23:04:20 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id z14so6335545pgh.0
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 23:04:20 -0700 (PDT)
+        with ESMTP id S1346051AbiFOGLJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 02:11:09 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B1627CE5;
+        Tue, 14 Jun 2022 23:11:08 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id k5-20020a17090a404500b001e8875e6242so1069789pjg.5;
+        Tue, 14 Jun 2022 23:11:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/emfbk6xXeKgXC7BUbqwIopU/GwAfQPHMEJKU1j6FgY=;
-        b=SbP/pVku71QCpxPRWTr0Ulw9sAQ0vVJULxgh/ODxAgqNuZxRJtS+lpXW0gFhsWhvth
-         KAc1dnMdIerCeroxA9A4PfonWdxqW38tdAzw6wyW5an9T2uNownvFOG4JkZ7Oo4R/Xn3
-         R/nAXH6q88GgV60ksq9n1NBTcO/l8ayPan8x/VgPSbVXF6m0yjQXWt4gsyLVuxIt+9os
-         Fjt19GsyddcIgKzMurr+WZQyk042utwpWH+Am4R6PYT9QSURvDcFOz/ILsWEZ4U0baGD
-         j/3QAQqBgmiaEt9g25uhrJjOtuFmWn5nEBnjGDgmZqtnwFIkClOsc5v3g5wCFfoQ0NFt
-         LThA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=A0WUe+ant8QpycVpCnxMIq6JosP90ibIEJ2d6QtyqYw=;
+        b=T+038nmKBBf4KuTEJj/v5IT7sB1IPYgA/s9u8T4/+81XodtSAmt46Q5BL3tGHmNG9S
+         mDPZXFcSihOzfHGqRyjvogPkrA5VFTg6QJvY6z1CXw7Wfj0eL2IHH1pS2jXBxb0taQLI
+         fkgSTsswNiRQpD+LnKRlXhsDpbe5lc7Q22rvFQY0TNgZGiLAXetZcoKKIDJV3UCYfOs+
+         eCehZq6NjrI6KN0mRGQXACkv467JTG1a1V/qf4KX96AX9vlzH7iRFT6Q/7FAxgRA+4KG
+         3GDqW8tNtvcoII/A4UTlNIm/YicAkD74GSuucJkoObPpZcSAR7AQNWdTj6ylPuOiAaZw
+         tZ4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/emfbk6xXeKgXC7BUbqwIopU/GwAfQPHMEJKU1j6FgY=;
-        b=YIUZnwo6/yC1ekOlhsXLoX5pR7BRbr4RtY9aUuyUUcZahbIgpLXp3VQDTcsKBiAiBc
-         EAws7xucheuLyEIVVPLPViKjwOQjOb32K2zTR/0YhKSMEbNmWfah5ZHOsVbMWvmzAKi9
-         G1IUzC8OFdzJPRz6QuLGQtI95XIivDS1MTDsXrb6jn39y00FpCpKrDnRnVRK1Qt63hfP
-         8KcUCCxXhCr5GNRsvGJSqmVR5BUynBulhcrxV2PZM2lCKbWwCZgYwkct6FkTNNtXfDil
-         XtKvjD6rQAqfF3kc9GbaYiJuKFdVxUaZ+45kF2L0qDOFxBzZS2nTopn/CYB5Q5b4MQTz
-         Grnw==
-X-Gm-Message-State: AOAM532m90eXF+PSuGyg6NcVGAdWu/1B8Wqa2trCYq0GuvF7d9u4Y1J3
-        lEgry6m82SlCT682Jm963O+ah0rQLHw=
-X-Google-Smtp-Source: ABdhPJy+p430w3qZ4dxogWkb5FEiW29pY3cVVlthrQvqDNpwTHpJIK5rCtcnTzv9PfU5ggI/GZ4+TQ==
-X-Received: by 2002:a05:6a00:170b:b0:51b:d1fd:5335 with SMTP id h11-20020a056a00170b00b0051bd1fd5335mr8139267pfc.28.1655273060055;
-        Tue, 14 Jun 2022 23:04:20 -0700 (PDT)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id x8-20020a637c08000000b003fe2062e49esm9017310pgc.73.2022.06.14.23.04.16
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=A0WUe+ant8QpycVpCnxMIq6JosP90ibIEJ2d6QtyqYw=;
+        b=tmk5GuZaICV+epyI7dhqcSFdgINE8kd8iVAuRHzg1eB+k8xWkFN0TgsAEq9RkElGUC
+         7pd1zZFsQvccTy3rLwTClJe//tF+KJjWHs2LoEQ28RDZW2BVzitSwjsHQmTxkV8HMIPZ
+         LGJK4y8/pRvdvb8BAtf1OnChBDrx3yG1+LTLTISdMLqircmbzsB8U20GhMBHplMD7WZZ
+         g1aQe7cCPnWG3NBnpFpbRFW0mN3sbn+OnP3+tU4IwFDy/i14pgt2uFATp74CkXfHI/yU
+         +NJ7hJQAWH2gOxyWfr5BpCIRQj3quNw/ptEpyAMu/Ly0DFgvbcHvNxhc3CtZmhuHWtQM
+         vocg==
+X-Gm-Message-State: AJIora/hkYG4fIRXtRz2pPCjoac265OuCy+05S89xnR/qBxJzBI3qAtb
+        8ZNJuDeu/T6EUdLUXBiafTHcdzKpSsM=
+X-Google-Smtp-Source: AGRyM1tA+bL6FJK7kE8UZTprkXFTpmn4zCf/iuCUvS3zyiSH2HIqFUwRoJfp3VVRwXP0QcrJ5T5wRw==
+X-Received: by 2002:a17:90b:3ec6:b0:1e8:a001:5c95 with SMTP id rm6-20020a17090b3ec600b001e8a0015c95mr8554338pjb.96.1655273468035;
+        Tue, 14 Jun 2022 23:11:08 -0700 (PDT)
+Received: from DESKTOP-8REGVGF.localdomain ([211.25.125.254])
+        by smtp.gmail.com with ESMTPSA id z10-20020aa785ca000000b0051b95c76752sm8725907pfn.153.2022.06.14.23.11.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 23:04:19 -0700 (PDT)
-Date:   Wed, 15 Jun 2022 14:04:13 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCHv2 net-next] Bonding: add per-port priority for failover
- re-selection
-Message-ID: <Yql2XVNxJ0VyLoCK@Laptop-X1>
-References: <20220615032934.2057120-1-liuhangbin@gmail.com>
- <20220614205258.500bade8@hermes.local>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220614205258.500bade8@hermes.local>
+        Tue, 14 Jun 2022 23:11:07 -0700 (PDT)
+From:   Sieng Piaw Liew <liew.s.piaw@gmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Sieng Piaw Liew <liew.s.piaw@gmail.com>
+Subject: [PATCH V2] bcm63xx_enet: switch to napi_build_skb() to reuse skbuff_heads
+Date:   Wed, 15 Jun 2022 14:09:22 +0800
+Message-Id: <20220615060922.3402-1-liew.s.piaw@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220614021009.696-1-liew.s.piaw@gmail.com>
+References: <20220614021009.696-1-liew.s.piaw@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -77,34 +67,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 08:52:58PM -0700, Stephen Hemminger wrote:
-> On Wed, 15 Jun 2022 11:29:34 +0800
-> Hangbin Liu <liuhangbin@gmail.com> wrote:
-> 
-> > diff --git a/drivers/net/bonding/bond_netlink.c b/drivers/net/bonding/bond_netlink.c
-> > index 5a6f44455b95..41b3244747fa 100644
-> > --- a/drivers/net/bonding/bond_netlink.c
-> > +++ b/drivers/net/bonding/bond_netlink.c
-> > @@ -27,6 +27,7 @@ static size_t bond_get_slave_size(const struct net_device *bond_dev,
-> >  		nla_total_size(sizeof(u16)) +	/* IFLA_BOND_SLAVE_AD_AGGREGATOR_ID */
-> >  		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_SLAVE_AD_ACTOR_OPER_PORT_STATE */
-> >  		nla_total_size(sizeof(u16)) +	/* IFLA_BOND_SLAVE_AD_PARTNER_OPER_PORT_STATE */
-> > +		nla_total_size(sizeof(s32)) +	/* IFLA_BOND_SLAVE_PRIO */
-> >  		0;
-> >  }
-> 
-> Why the choice to make it signed? It would be clearer as unsigned value.
+napi_build_skb() reuses NAPI skbuff_head cache in order to save some
+cycles on freeing/allocating skbuff_heads on every new Rx or completed
+Tx.
+Use napi_consume_skb() to feed the cache with skbuff_heads of completed
+Tx so it's never empty.
 
-Let's say you have a bond with 10 slaves. You want to make 1 slave with
-lowest priority. With singed value, you can just set it to -10 while other
-slaves keep using the default value 0.
+Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/ethernet/broadcom/bcm63xx_enet.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> Also, using full 32 bits seems like overkill.
+diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+index 698438a2ee0f..514d61dd91c7 100644
+--- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
++++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
+@@ -388,7 +388,7 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
+ 					 priv->rx_buf_size, DMA_FROM_DEVICE);
+ 			priv->rx_buf[desc_idx] = NULL;
+ 
+-			skb = build_skb(buf, priv->rx_frag_size);
++			skb = napi_build_skb(buf, priv->rx_frag_size);
+ 			if (unlikely(!skb)) {
+ 				skb_free_frag(buf);
+ 				dev->stats.rx_dropped++;
+@@ -468,7 +468,7 @@ static int bcm_enet_tx_reclaim(struct net_device *dev, int force)
+ 			dev->stats.tx_errors++;
+ 
+ 		bytes += skb->len;
+-		dev_kfree_skb(skb);
++		napi_consume_skb(skb, !force);
+ 		released++;
+ 	}
+ 
+-- 
+2.17.1
 
-Yes, it seems too much for just priority. This is to compatible with team
-prio option[1].
-
-[1] https://github.com/jpirko/libteam/blob/master/man/teamd.conf.5#L138
-
-Thanks
-Hangbin
