@@ -2,212 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC4CA54C658
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 12:40:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5D0154C737
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 13:14:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346438AbiFOKj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 06:39:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33526 "EHLO
+        id S1344435AbiFOLOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 07:14:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345940AbiFOKj5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 06:39:57 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B0250031;
-        Wed, 15 Jun 2022 03:39:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655289596; x=1686825596;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=pPDECs7UocnTpIM34N3OqawrSWQVQoJ4powjvN0e6Uk=;
-  b=N9za8NCrSeBsGksXJ7oXxuoUG3+yfpNtlA4xR2Sj8/U5OFjJM5Y1JXBL
-   fpSGui2gLDNVu4HG7ra/INnYDJhIT+061VsnmSed0WR23Ipnifb7uTsyM
-   1vRm9ArAhMkeZsKhx8WKfGEVtWJL9v9slqR942gmKS5tsz9thiDjNTgb0
-   /gNtxsdjqRvz+engxcEQ6K0Yv/DMoEbSzD1Lu3YR5C2b4bagFRZWe821R
-   I6NvtytGLSeUgdOcIveF7q5gP9cmnwpkFkK2WOmmPgTSb6KvT1xXkONz7
-   JOtkja9VahpfnNMMkIWYlz4MMSduF2vdu6r4HrdWuZtah5FAOpDQCfaIj
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="261940823"
-X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
-   d="scan'208";a="261940823"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 03:39:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="687234141"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga002.fm.intel.com with ESMTP; 15 Jun 2022 03:39:54 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25FAdqvO004541;
-        Wed, 15 Jun 2022 11:39:52 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, magnus.karlsson@intel.com, bjorn@kernel.org
-Subject: [PATCH v2 bpf-next 01/10] ice: allow toggling loopback mode via ndo_set_features callback
-Date:   Wed, 15 Jun 2022 12:38:04 +0200
-Message-Id: <20220615103804.1260221-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220614174749.901044-2-maciej.fijalkowski@intel.com>
-References: <20220614174749.901044-1-maciej.fijalkowski@intel.com> <20220614174749.901044-2-maciej.fijalkowski@intel.com>
+        with ESMTP id S241474AbiFOLOl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 07:14:41 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC9F3B3DC;
+        Wed, 15 Jun 2022 04:14:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=qdb9YPnb/twwg1FQqyaKfeEHs8AHeqgZRmcpcNyXcvI=; b=O6Yk/Sogop8DV+PPXVWJGeKnhC
+        r2AJrrmFOr9iFHFenDjxnrGO/Nb6bzU9WS5enQkHTtWunkAeeZ1/ecEDK6ZIk1rWPWhWaaS/rGCoc
+        F+vd0vuiSxblAzYH1nzz7TlgBUIxg0cIx305LrCPCDsuGc1OVkvDIcvu/F2Q10KQoWBV99gZkLfnA
+        62Pd1NvbB7H9n8XR/YFEEtU7R4EwFivFRoj7VOOn0X3ary/iAq1fyAxpqODLO/ZRui8IWyevZW0FM
+        t0FzuVbKw59/wOqD4trUOXqvMfiuSCM0mdBtKq5w1YhGFHe1EMS+4w2fgYvUDQ2CNSCoDm6+1yHmO
+        LTh/1r0w==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32874)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1o1Qyp-0004Pe-Vx; Wed, 15 Jun 2022 12:14:36 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1o1Qyn-0008NC-Ca; Wed, 15 Jun 2022 12:14:33 +0100
+Date:   Wed, 15 Jun 2022 12:14:33 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Arun.Ramadoss@microchip.com
+Cc:     olteanv@gmail.com, andrew@lunn.ch, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        Woojung.Huh@microchip.com, davem@davemloft.net
+Subject: Re: [RFC Patch net-next v2 12/15] net: dsa: microchip: ksz9477:
+ separate phylink mode from switch register
+Message-ID: <Yqm/Gb6icBxgBjcE@shell.armlinux.org.uk>
+References: <20220530104257.21485-1-arun.ramadoss@microchip.com>
+ <20220530104257.21485-13-arun.ramadoss@microchip.com>
+ <20220614082429.x2ger7aysr4j4zbo@skbuf>
+ <187a694e61bfda132e512ac1c046d584249e85f1.camel@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <187a694e61bfda132e512ac1c046d584249e85f1.camel@microchip.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Date: Tue, 14 Jun 2022 19:47:40 +0200
-
-> Add support for NETIF_F_LOOPBACK. Also, simplify checks throughout whole
-> ice_set_features().
+On Wed, Jun 15, 2022 at 08:49:46AM +0000, Arun.Ramadoss@microchip.com wrote:
+> On Tue, 2022-06-14 at 11:24 +0300, Vladimir Oltean wrote:
+> > I wonder why the driver did not just remove these from the supported
+> > mask in the phylink validation procedure in the first place?
+> > Adding these link mode fixups to a dev_ops callback named "dsa_init"
+> > does not sound quite right.
 > 
-> CC: Alexandr Lobakin <alexandr.lobakin@intel.com>
-> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice_main.c | 54 ++++++++++++++---------
->  1 file changed, 34 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-> index e1cae253412c..ab00b0361e87 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_main.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-> @@ -3358,6 +3358,7 @@ static void ice_set_netdev_features(struct net_device *netdev)
->  	netdev->features |= netdev->hw_features;
->  
->  	netdev->hw_features |= NETIF_F_HW_TC;
-> +	netdev->hw_features |= NETIF_F_LOOPBACK;
->  
->  	/* encap and VLAN devices inherit default, csumo and tso features */
->  	netdev->hw_enc_features |= dflt_features | csumo_features |
-> @@ -5902,6 +5903,18 @@ ice_set_vlan_features(struct net_device *netdev, netdev_features_t features)
->  	return 0;
->  }
->  
-> +static void ice_set_loopback(struct ice_pf *pf, struct net_device *netdev, bool ena)
+> So, it means if the link modes are updated correctly in the
+> phylink_get_caps then we don't need these link mode removal. Is my
+> understanding correct?
 
-I feel like the first argument is redundant in here since we can do
+Yes.
 
-	const struct ice_netdev_priv *np = netdev_priv(netdev);
-	struct ice_pf *pf = np->vsi->back;
+If you tell phylink what you support, then phylink will use that to
+restrict what is supported by e.g. the PHY.
 
-But at the same time one function argument can be cheaper than two
-jumps, so up to you.
+If you find that isn't the case, then I definitely want to know,
+because that's probably a bug that needs to be fixed!
 
-> +{
-> +	bool if_running = netif_running(netdev);
-> +
-> +	if (if_running)
-> +		ice_stop(netdev);
-> +	if (ice_aq_set_mac_loopback(&pf->hw, ena, NULL))
-> +		dev_err(ice_pf_to_dev(pf), "Failed to toggle loopback state\n");
+Thanks.
 
-netdev_err() instead probably? I guess dev_err() is used for
-consistency with the rest of ice_set_features(), but I'd recommend
-using the former anyways.
-
-> +	if (if_running)
-> +		ice_open(netdev);
-> +}
-> +
->  /**
->   * ice_set_features - set the netdev feature flags
->   * @netdev: ptr to the netdev being adjusted
-> @@ -5910,6 +5923,7 @@ ice_set_vlan_features(struct net_device *netdev, netdev_features_t features)
->  static int
->  ice_set_features(struct net_device *netdev, netdev_features_t features)
->  {
-> +	netdev_features_t changed = netdev->features ^ features;
->  	struct ice_netdev_priv *np = netdev_priv(netdev);
->  	struct ice_vsi *vsi = np->vsi;
->  	struct ice_pf *pf = vsi->back;
-> @@ -5917,37 +5931,33 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
->  
->  	/* Don't set any netdev advanced features with device in Safe Mode */
->  	if (ice_is_safe_mode(vsi->back)) {
-> -		dev_err(ice_pf_to_dev(vsi->back), "Device is in Safe Mode - not enabling advanced netdev features\n");
-> +		dev_err(ice_pf_to_dev(vsi->back),
-> +			"Device is in Safe Mode - not enabling advanced netdev features\n");
-
-This (I mean the whole ice_set_features() cleanup) deserves to be in
-a separate patch to me. In can be a past of this series for sure.
-
->  		return ret;
->  	}
->  
->  	/* Do not change setting during reset */
->  	if (ice_is_reset_in_progress(pf->state)) {
-> -		dev_err(ice_pf_to_dev(vsi->back), "Device is resetting, changing advanced netdev features temporarily unavailable.\n");
-> +		dev_err(ice_pf_to_dev(vsi->back),
-> +			"Device is resetting, changing advanced netdev features temporarily unavailable.\n");
->  		return -EBUSY;
->  	}
->  
->  	/* Multiple features can be changed in one call so keep features in
->  	 * separate if/else statements to guarantee each feature is checked
->  	 */
-> -	if (features & NETIF_F_RXHASH && !(netdev->features & NETIF_F_RXHASH))
-> -		ice_vsi_manage_rss_lut(vsi, true);
-> -	else if (!(features & NETIF_F_RXHASH) &&
-> -		 netdev->features & NETIF_F_RXHASH)
-> -		ice_vsi_manage_rss_lut(vsi, false);
-> +	if (changed & NETIF_F_RXHASH)
-> +		ice_vsi_manage_rss_lut(vsi, !!(features & NETIF_F_RXHASH));
->  
->  	ret = ice_set_vlan_features(netdev, features);
->  	if (ret)
->  		return ret;
->  
-> -	if ((features & NETIF_F_NTUPLE) &&
-> -	    !(netdev->features & NETIF_F_NTUPLE)) {
-> -		ice_vsi_manage_fdir(vsi, true);
-> -		ice_init_arfs(vsi);
-> -	} else if (!(features & NETIF_F_NTUPLE) &&
-> -		 (netdev->features & NETIF_F_NTUPLE)) {
-> -		ice_vsi_manage_fdir(vsi, false);
-> -		ice_clear_arfs(vsi);
-> +	if (changed & NETIF_F_NTUPLE) {
-> +		bool ena = !!(features & NETIF_F_NTUPLE);
-> +
-> +		ice_vsi_manage_fdir(vsi, ena);
-> +		ena ? ice_init_arfs(vsi) : ice_clear_arfs(vsi);
->  	}
->  
->  	/* don't turn off hw_tc_offload when ADQ is already enabled */
-> @@ -5956,11 +5966,15 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
->  		return -EACCES;
->  	}
->  
-> -	if ((features & NETIF_F_HW_TC) &&
-> -	    !(netdev->features & NETIF_F_HW_TC))
-> -		set_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
-> -	else
-> -		clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
-> +	if (changed & NETIF_F_HW_TC) {
-> +		bool ena = !!(features & NETIF_F_HW_TC);
-> +
-> +		ena ? set_bit(ICE_FLAG_CLS_FLOWER, pf->flags) :
-> +		      clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
-> +	}
-> +
-> +	if (changed & NETIF_F_LOOPBACK)
-> +		ice_set_loopback(pf, netdev, !!(features & NETIF_F_LOOPBACK));
->  
->  	return 0;
->  }
-> -- 
-> 2.27.0
-
-The rest is good, I like wiring up standard interfaces with the
-existing hardware functionality :) Loopback mode is useful for
-testing stuff.
-
-Thanks!
-Olek
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
