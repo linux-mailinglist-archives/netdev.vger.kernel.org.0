@@ -2,52 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DD7654BF86
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 03:59:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7308254BF8D
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 04:03:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241311AbiFOB7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 21:59:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57188 "EHLO
+        id S231710AbiFOCDk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 22:03:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235030AbiFOB7A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 21:59:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE2C4C423
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 18:58:59 -0700 (PDT)
+        with ESMTP id S1345651AbiFOCDV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 22:03:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE51C42A25;
+        Tue, 14 Jun 2022 19:03:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4478A619CF
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 01:58:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F293C3411D;
-        Wed, 15 Jun 2022 01:58:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E21E619DD;
+        Wed, 15 Jun 2022 02:03:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42144C3411B;
+        Wed, 15 Jun 2022 02:03:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655258338;
-        bh=WNBTkyhh15tCOJZwZTQpJNvgCWbAH7wXx1+D73kFpHo=;
+        s=k20201202; t=1655258598;
+        bh=ooQ+boKyWBcdibdOBlQX3Vvw/fy9lQQdF+1pOlITJdE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mefC8Ha01VUmXHIdGOCsEkif4nMeIqG5PiUj6QpM/rd5bxScJbeTc26R664M5Y2bW
-         tUXYj85Ez7wi1Jwkw3AFFtvu3E77r7OWAFKjYgarvthtcK8wuwyKiSzpHKwTBMyKSz
-         l4pGqF+3OLnhdtcmZ8TXcSAXQTBCT+e+74FbJW2ZNkakx5eZLywy5qBJF2epEP430V
-         NAhVLq91kCPt+ESKiwWSyaVhB/ls+UoxooPGKOvG93AV3AulaDJJJaMPmxWQm7Pth6
-         t5Q6vdkJGgeUfIKeegX3Lvnxr1JK3JEGLLadFF28GZ/bWxTK/wlry68PwBDoh7801t
-         xlvBUnNTVYeYg==
-Date:   Tue, 14 Jun 2022 18:58:57 -0700
+        b=SfPGWYe/7kSQuIE28xE5KKktHR2JF+mggTTSQmQkNqlbmEN3yUWUdqe1Hn/iJa6kF
+         z/regpz64z8ar5hqFMnRDDpT+gSBr1+i9IDkvXN1trDmsGoliRU5MbQJl4RtWkTOeJ
+         kixxNwRfxQccJf/ZgKYq5KPLtbqU4sNtPkqJM1IeHYUKEu4Cr2InWGPz2IWvKz3I+w
+         WEnvJ4ooeYrIjItguxUPSUA67wPnRRKcWcC1R7sQASG1jBWiC2YCsXWyGwOXaidiDl
+         ZZxPpDdDD76OBuZhJU2B6Z4sK+Zqnk1lLdULpdqFvWLKq+Jtoik3b7CT/52879vF+O
+         PdSdSLaxHYeMw==
+Date:   Tue, 14 Jun 2022 19:03:17 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Joanne Koong <joannelkoong@gmail.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        netdev <netdev@vger.kernel.org>,
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH net-next v3 2/3] net: Add bhash2 hashbucket locks
-Message-ID: <20220614185857.771aa2c8@kernel.org>
-In-Reply-To: <CAJnrk1b7F6LMwA9wK-xyimVcGB8mNSn94fL8_Z0SwWnd0uqcmg@mail.gmail.com>
-References: <20220611021646.1578080-1-joannelkoong@gmail.com>
-        <20220611021646.1578080-3-joannelkoong@gmail.com>
-        <5b6a4415-c4f-254c-3c54-7fa0dfde32e9@linux.intel.com>
-        <0789de291023a1664d2b198075af6ce6a9245c6e.camel@redhat.com>
-        <CAJnrk1b7F6LMwA9wK-xyimVcGB8mNSn94fL8_Z0SwWnd0uqcmg@mail.gmail.com>
+        Leon Romanovsky <leonro@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [GIT PULL][next-next][rdma-next] mlx5-next: updates 2022-06-14
+Message-ID: <20220614190317.7c87d0d5@kernel.org>
+In-Reply-To: <20220614184339.ywrfx6zgxs6bo4mg@sx1>
+References: <20220614184028.51548-1-saeed@kernel.org>
+        <20220614184339.ywrfx6zgxs6bo4mg@sx1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -61,11 +59,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 14 Jun 2022 11:08:41 -0700 Joanne Koong wrote:
-> I think it's a good idea to revert bhash2 and then I will resubmit
-> once all the fixes are in place. Please let me know if there's
-> anything I need to do on my side to revert this.
+On Tue, 14 Jun 2022 11:43:39 -0700 Saeed Mahameed wrote:
+> s/next-next/net-next
+> 
+> net-next patchwork bots won't see this one :/ .. should I re-post ? 
 
-We'd appreciate if you could post a revert patch and gather some of 
-the history into the commit message (with some Links: to reports and
-postings of the fixes if possible).
+Looks like it's in, I'll pull shortly.
