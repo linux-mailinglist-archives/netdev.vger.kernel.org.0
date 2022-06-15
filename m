@@ -2,54 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED98854C10B
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 07:21:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B214F54C112
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 07:21:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343837AbiFOFNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 01:13:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
+        id S240005AbiFOFUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 01:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233958AbiFOFNH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 01:13:07 -0400
+        with ESMTP id S232204AbiFOFUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 01:20:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4C225EA9;
-        Tue, 14 Jun 2022 22:13:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96436403F1
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 22:20:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B5DD61690;
-        Wed, 15 Jun 2022 05:13:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35617C341C4;
-        Wed, 15 Jun 2022 05:13:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DADD61721
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 05:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 76AD6C3411B;
+        Wed, 15 Jun 2022 05:20:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655269984;
-        bh=tOUHCnRD2qpFsF/6tTi/ZdtHNkm1pbLqUvuCuMU2AxM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Y8yxhcDfSUPamWsXkqOweap8OdyfaPcJqsiUwE33JM4ttlcD2I2Arv4cmbnghs3f9
-         8k006K7xi0K03LE5Z3XCN39sNA4z6OjPy6p0pktpvJWgo05h6BiLs9UEg/SE6rA2vh
-         iVRIupriW3Cv24H+K+gJ1RSD+cTUC0OPomVLzC6VP2qtlZEvIaJaU6N4Eu1HDuWgq+
-         iTK0V2S5F1vF3sfLaFOZgUtkoppODAqsrhP4WLel/9l1fQNgb1AGxUgdxa18oCwsoI
-         nVBNtb73zlZcfu2FV1Ll5h/x57E+fRTmy/7lrnOu2tm9qoYeYhCOdOsN//i2IEfbfW
-         4NnHNPs/iVdVA==
-Date:   Tue, 14 Jun 2022 22:13:03 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v1] ARM: dts: at91: ksz9477_evb: fix port/phy validation
-Message-ID: <20220614221303.37b0700b@kernel.org>
-In-Reply-To: <20220610081621.584393-1-o.rempel@pengutronix.de>
-References: <20220610081621.584393-1-o.rempel@pengutronix.de>
+        s=k20201202; t=1655270414;
+        bh=/NiSZYa/KcmztUA0Ru2YJ/XLGaJnMrrsgfgrlT7QCdI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=YnxRxnkTooi8r4woR7JjxEXzCmKx9dZhCnkQPwAqkCZZYnoVdN7lmaBAB3TUyTEwo
+         Y5snAi8JkAVPypzOfY/wh2pQANq0iE0/l9D0F3dkwHxdXNZ03mUcpF7RFhLJqyrXKX
+         iZjOobY/LlQNuy9e4UYOudi16G3ncd3a1iXG2SxyhSSyxsqgxwhm7yVxTXNZDbGwxh
+         HTU+2yj9E6q0D1eH6MLrHLGNsUsPHAKSNJwOxr+asMpa3zql7yI1UhQjubr+xTiUFb
+         I+/TbEvdy9G3JiS+5SZwlBbsufnj/J7JZV6SB1wovNJAM+aToklS1wR/64pEjjp6tn
+         FhXDXxcqrcZww==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 590CDE73856;
+        Wed, 15 Jun 2022 05:20:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/3] mlxsw: Remove XM support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165527041436.22200.17526746006467463659.git-patchwork-notify@kernel.org>
+Date:   Wed, 15 Jun 2022 05:20:14 +0000
+References: <20220613132116.2021055-1-idosch@nvidia.com>
+In-Reply-To: <20220613132116.2021055-1-idosch@nvidia.com>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, petrm@nvidia.com,
+        mlxsw@nvidia.com
 X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,14 +57,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 10 Jun 2022 10:16:21 +0200 Oleksij Rempel wrote:
-> Latest drivers version requires phy-mode to be set. Otherwise we will
-> use "NA" mode and the switch driver will invalidate this port mode.
->=20
-> Fixes: 65ac79e18120 ("net: dsa: microchip: add the phylink get_caps")
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Hello:
 
-This got an Awaiting Upstream in patchwork along the way, but based on
-Krzysztof's comment I think net is right here. So it's commit
-56315b6bf7fc ("ARM: dts: at91: ksz9477_evb: fix port/phy validation")
-in net now =F0=9F=A4=B7
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon, 13 Jun 2022 16:21:13 +0300 you wrote:
+> The XM was supposed to be an external device connected to the
+> Spectrum-{2,3} ASICs using dedicated Ethernet ports. Its purpose was to
+> increase the number of routes that can be offloaded to hardware. This was
+> achieved by having the ASIC act as a cache that refers cache misses to the
+> XM where the FIB is stored and LPM lookup is performed.
+> 
+> Testing was done over an emulator and dedicated setups in the lab, but
+> the product was discontinued before shipping to customers.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/3] mlxsw: Revert "Introduce initial XM router support"
+    https://git.kernel.org/netdev/net-next/c/6a4b02b8fa40
+  - [net-next,2/3] mlxsw: Revert "Prepare for XM implementation - prefix insertion and removal"
+    https://git.kernel.org/netdev/net-next/c/725ff5320443
+  - [net-next,3/3] mlxsw: Revert "Prepare for XM implementation - LPM trees"
+    https://git.kernel.org/netdev/net-next/c/87c0a3c6766e
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
