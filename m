@@ -2,101 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6F4D54C15B
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 07:55:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EE3154C183
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 08:06:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242719AbiFOFuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 01:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41082 "EHLO
+        id S1345915AbiFOGEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 02:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231417AbiFOFuR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 01:50:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDCE01F2F5;
-        Tue, 14 Jun 2022 22:50:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 40E7A6177D;
-        Wed, 15 Jun 2022 05:50:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8C129C3411B;
-        Wed, 15 Jun 2022 05:50:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655272214;
-        bh=uOJq8k0K/tF8dz3zOSCS8OJ30XH24V4q7h1yz7qmYrY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=YxlEJkVjxxO1vcO+UDoS/GMfo30Aez0eDAgfLxRFHrWrnfIKGHxOjuTC+ts0JSuv/
-         JC6xz8GULaJ8HF3wmvuwH6a5UNvooOu5fdoqZo7WN8e/yNlb2oM6Z3JEbNWDiADHNo
-         jTFaRNyVSF3GkuUiz0zvg+yOFfV3SLFheOIjo3Sv34/tb7QcmTVgifE3YLcoerFKGd
-         d3MU7DJV76AtmnIVr+0nGNxo8eOHbL8I25D7/r4zoweST3J0ElVZedruKwfHHapVQt
-         rRLqzDEY/Nxiu6yirzMGkdQeOI4BoIiOrapcHhCE8TdJ1EaHntbmo1zOzBEe0BlTp8
-         SvJ8MighoX47A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6F678E56ADF;
-        Wed, 15 Jun 2022 05:50:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1345994AbiFOGEW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 02:04:22 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F4ED1A831
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 23:04:20 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id z14so6335545pgh.0
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 23:04:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/emfbk6xXeKgXC7BUbqwIopU/GwAfQPHMEJKU1j6FgY=;
+        b=SbP/pVku71QCpxPRWTr0Ulw9sAQ0vVJULxgh/ODxAgqNuZxRJtS+lpXW0gFhsWhvth
+         KAc1dnMdIerCeroxA9A4PfonWdxqW38tdAzw6wyW5an9T2uNownvFOG4JkZ7Oo4R/Xn3
+         R/nAXH6q88GgV60ksq9n1NBTcO/l8ayPan8x/VgPSbVXF6m0yjQXWt4gsyLVuxIt+9os
+         Fjt19GsyddcIgKzMurr+WZQyk042utwpWH+Am4R6PYT9QSURvDcFOz/ILsWEZ4U0baGD
+         j/3QAQqBgmiaEt9g25uhrJjOtuFmWn5nEBnjGDgmZqtnwFIkClOsc5v3g5wCFfoQ0NFt
+         LThA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/emfbk6xXeKgXC7BUbqwIopU/GwAfQPHMEJKU1j6FgY=;
+        b=YIUZnwo6/yC1ekOlhsXLoX5pR7BRbr4RtY9aUuyUUcZahbIgpLXp3VQDTcsKBiAiBc
+         EAws7xucheuLyEIVVPLPViKjwOQjOb32K2zTR/0YhKSMEbNmWfah5ZHOsVbMWvmzAKi9
+         G1IUzC8OFdzJPRz6QuLGQtI95XIivDS1MTDsXrb6jn39y00FpCpKrDnRnVRK1Qt63hfP
+         8KcUCCxXhCr5GNRsvGJSqmVR5BUynBulhcrxV2PZM2lCKbWwCZgYwkct6FkTNNtXfDil
+         XtKvjD6rQAqfF3kc9GbaYiJuKFdVxUaZ+45kF2L0qDOFxBzZS2nTopn/CYB5Q5b4MQTz
+         Grnw==
+X-Gm-Message-State: AOAM532m90eXF+PSuGyg6NcVGAdWu/1B8Wqa2trCYq0GuvF7d9u4Y1J3
+        lEgry6m82SlCT682Jm963O+ah0rQLHw=
+X-Google-Smtp-Source: ABdhPJy+p430w3qZ4dxogWkb5FEiW29pY3cVVlthrQvqDNpwTHpJIK5rCtcnTzv9PfU5ggI/GZ4+TQ==
+X-Received: by 2002:a05:6a00:170b:b0:51b:d1fd:5335 with SMTP id h11-20020a056a00170b00b0051bd1fd5335mr8139267pfc.28.1655273060055;
+        Tue, 14 Jun 2022 23:04:20 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id x8-20020a637c08000000b003fe2062e49esm9017310pgc.73.2022.06.14.23.04.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 23:04:19 -0700 (PDT)
+Date:   Wed, 15 Jun 2022 14:04:13 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCHv2 net-next] Bonding: add per-port priority for failover
+ re-selection
+Message-ID: <Yql2XVNxJ0VyLoCK@Laptop-X1>
+References: <20220615032934.2057120-1-liuhangbin@gmail.com>
+ <20220614205258.500bade8@hermes.local>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4 0/6] Support mt7531 on BPI-R2 Pro
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165527221445.3487.2646030857898317567.git-patchwork-notify@kernel.org>
-Date:   Wed, 15 Jun 2022 05:50:14 +0000
-References: <20220610170541.8643-1-linux@fw-web.de>
-In-Reply-To: <20220610170541.8643-1-linux@fw-web.de>
-To:     Frank Wunderlich <linux@fw-web.de>
-Cc:     linux-rockchip@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, frank-w@public-files.de,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        heiko@sntech.de, sean.wang@mediatek.com, Landen.Chao@mediatek.com,
-        dqfext@gmail.com, pgwipeout@gmail.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, gerg@kernel.org,
-        opensource@vdorst.com, mchehab+samsung@kernel.org
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220614205258.500bade8@hermes.local>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Fri, 10 Jun 2022 19:05:35 +0200 you wrote:
-> From: Frank Wunderlich <frank-w@public-files.de>
+On Tue, Jun 14, 2022 at 08:52:58PM -0700, Stephen Hemminger wrote:
+> On Wed, 15 Jun 2022 11:29:34 +0800
+> Hangbin Liu <liuhangbin@gmail.com> wrote:
 > 
-> This Series add Support for the mt7531 switch on Bananapi R2 Pro board.
+> > diff --git a/drivers/net/bonding/bond_netlink.c b/drivers/net/bonding/bond_netlink.c
+> > index 5a6f44455b95..41b3244747fa 100644
+> > --- a/drivers/net/bonding/bond_netlink.c
+> > +++ b/drivers/net/bonding/bond_netlink.c
+> > @@ -27,6 +27,7 @@ static size_t bond_get_slave_size(const struct net_device *bond_dev,
+> >  		nla_total_size(sizeof(u16)) +	/* IFLA_BOND_SLAVE_AD_AGGREGATOR_ID */
+> >  		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_SLAVE_AD_ACTOR_OPER_PORT_STATE */
+> >  		nla_total_size(sizeof(u16)) +	/* IFLA_BOND_SLAVE_AD_PARTNER_OPER_PORT_STATE */
+> > +		nla_total_size(sizeof(s32)) +	/* IFLA_BOND_SLAVE_PRIO */
+> >  		0;
+> >  }
 > 
-> This board uses port5 of the switch to conect to the gmac0 of the
-> rk3568 SoC.
-> 
-> [...]
+> Why the choice to make it signed? It would be clearer as unsigned value.
 
-Here is the summary with links:
-  - [v4,1/6] dt-bindings: net: dsa: convert binding for mediatek switches
-    https://git.kernel.org/netdev/net-next/c/e0dda3119741
-  - [v4,2/6] net: dsa: mt7530: rework mt7530_hw_vlan_{add,del}
-    https://git.kernel.org/netdev/net-next/c/a9c317417c27
-  - [v4,3/6] net: dsa: mt7530: rework mt753[01]_setup
-    https://git.kernel.org/netdev/net-next/c/6e19bc26cccd
-  - [v4,4/6] net: dsa: mt7530: get cpu-port via dp->cpu_dp instead of constant
-    https://git.kernel.org/netdev/net-next/c/1f9a6abecf53
-  - [v4,5/6] dt-bindings: net: dsa: make reset optional and add rgmii-mode to mt7531
-    https://git.kernel.org/netdev/net-next/c/ae07485d7a1d
-  - [v4,6/6] arm64: dts: rockchip: Add mt7531 dsa node to BPI-R2-Pro board
-    https://git.kernel.org/netdev/net-next/c/c1804463e5c6
+Let's say you have a bond with 10 slaves. You want to make 1 slave with
+lowest priority. With singed value, you can just set it to -10 while other
+slaves keep using the default value 0.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Also, using full 32 bits seems like overkill.
 
+Yes, it seems too much for just priority. This is to compatible with team
+prio option[1].
 
+[1] https://github.com/jpirko/libteam/blob/master/man/teamd.conf.5#L138
+
+Thanks
+Hangbin
