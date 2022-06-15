@@ -2,75 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B72254BFFD
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 05:08:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1BD354C02D
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 05:28:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241428AbiFODHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 23:07:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53264 "EHLO
+        id S1352000AbiFOD1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 23:27:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231722AbiFODHx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 23:07:53 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9302459B;
-        Tue, 14 Jun 2022 20:07:50 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LN9DH32hzz1KB1D;
-        Wed, 15 Jun 2022 11:05:51 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 15 Jun 2022 11:07:48 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 15 Jun
- 2022 11:07:48 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <radhey.shyam.pandey@xilinx.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <andy.chiu@sifive.com>,
-        <max.hsu@sifive.com>, <greentime.hu@sifive.com>
-Subject: [PATCH -next] net: axienet: add missing error return code in axienet_probe()
-Date:   Wed, 15 Jun 2022 11:18:10 +0800
-Message-ID: <20220615031810.1876309-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S1351586AbiFOD13 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 23:27:29 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFA94B1F0;
+        Tue, 14 Jun 2022 20:27:21 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id h192so10236258pgc.4;
+        Tue, 14 Jun 2022 20:27:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=+vZnS8Jw84zF/TVL4AsTQVpMK63h4KtHF4A6QNX+nwo=;
+        b=MmisO9JwawCFfanLdvjRHkmOchm/G7BSBUyHcpZ/IRasg5PygTAY031pKfKyWixEHT
+         uBA8MhUFcPJT/gSPIc8ZHfhYep3ceccGNxwcmUtiVsny/64m6+SDxlp4YX0yWGyC50hX
+         0a05L8t9zBGHjmA06sRXhAFYpmNDNSYURz/xyYS98NZWxOI1JKgVWSWlBJKqWQyDPMQx
+         c99PiQ4BkL3B/YiHQR44uLXeho+lfxsYKYgUswZvz17/GCyW3jz6bGjCt3AoOS9Hd7xH
+         AL+Q2YGpQFbpurH2n77JV5ASvZZRinu/k9rwtrfCuoHZ1+7qI3fnFGJCI7PhRQvKuqkL
+         +m6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=+vZnS8Jw84zF/TVL4AsTQVpMK63h4KtHF4A6QNX+nwo=;
+        b=rossS+OF3VVahX4MIjBis7qJ3JN/3yfCqJU/DryvaxwraV/L/DaLtOxOfvpZg25AOR
+         YMn115wepk4ZZDj6w6xWa+DgEWZ4EJ3anV4Tr4MzAXlllCpfEbMD1AR4MZOxyCxjpd/r
+         4RE6GI42psbP9NI8Kz6gwBNYz8FbRpmoknL6YIFNlz57eJ6P0roJz1ipxnvF87RMuvl3
+         H+VkwSwAZh5n1YcglT2ykUewyjHTgBlHKWvqBOuf5Au7dJWb+73Yii2nsfJ6nMwH06T1
+         ZGl0MCMIKnDnzZtbBsJLtCiSUWtMbLDeR3VeYFxe3/28mqKAJxBjHmPbm1uuva4Oz+go
+         +4Vg==
+X-Gm-Message-State: AOAM530hLdKOtCjOkSMn4WIHXXtFGC0nIW2GQWjt6hcZVxZBVxoOWqNo
+        BO87AVMfgWN1/boFNaoyso0=
+X-Google-Smtp-Source: ABdhPJxA7ono5ovOa3M/nqLYt0HqcvcKG1CEcZ0naf4MTyFvwH8OMJ3Q8Nw0azb8vhqJRleTVofuxQ==
+X-Received: by 2002:a62:e116:0:b0:51b:c452:47e6 with SMTP id q22-20020a62e116000000b0051bc45247e6mr7800417pfh.25.1655263640660;
+        Tue, 14 Jun 2022 20:27:20 -0700 (PDT)
+Received: from DESKTOP-8REGVGF.localdomain ([211.25.125.254])
+        by smtp.gmail.com with ESMTPSA id z19-20020aa79593000000b0050dc76281ddsm8371447pfj.183.2022.06.14.20.27.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 20:27:20 -0700 (PDT)
+From:   Sieng Piaw Liew <liew.s.piaw@gmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Sieng Piaw Liew <liew.s.piaw@gmail.com>
+Subject: [PATCH] net: don't check skb_count twice
+Date:   Wed, 15 Jun 2022 11:24:26 +0800
+Message-Id: <20220615032426.17214-1-liew.s.piaw@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It should return error code in error path in axienet_probe().
+NAPI cache skb_count is being checked twice without condition. Change to
+checking the second time only if the first check is run.
 
-Fixes: 00be43a74ca2 ("net: axienet: make the 64b addresable DMA depends on 64b archectures")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/core/skbuff.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index fa7bcd2c1892..1760930ec0c4 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -2039,6 +2039,7 @@ static int axienet_probe(struct platform_device *pdev)
- 	}
- 	if (!IS_ENABLED(CONFIG_64BIT) && lp->features & XAE_FEATURE_DMA_64BIT) {
- 		dev_err(&pdev->dev, "64-bit addressable DMA is not compatible with 32-bit archecture\n");
-+		ret = -EINVAL;
- 		goto cleanup_clk;
- 	}
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 5b3559cb1d82..c426adff6d96 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -172,13 +172,14 @@ static struct sk_buff *napi_skb_cache_get(void)
+ 	struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
+ 	struct sk_buff *skb;
  
+-	if (unlikely(!nc->skb_count))
++	if (unlikely(!nc->skb_count)) {
+ 		nc->skb_count = kmem_cache_alloc_bulk(skbuff_head_cache,
+ 						      GFP_ATOMIC,
+ 						      NAPI_SKB_CACHE_BULK,
+ 						      nc->skb_cache);
+-	if (unlikely(!nc->skb_count))
+-		return NULL;
++		if (unlikely(!nc->skb_count))
++			return NULL;
++	}
+ 
+ 	skb = nc->skb_cache[--nc->skb_count];
+ 	kasan_unpoison_object_data(skbuff_head_cache, skb);
 -- 
-2.25.1
+2.17.1
 
