@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4EDE54D4CB
+	by mail.lfdr.de (Postfix) with ESMTP id 08BD754D4C8
 	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 00:51:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350508AbiFOWvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 18:51:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36634 "EHLO
+        id S1350525AbiFOWve (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 18:51:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350415AbiFOWvb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 18:51:31 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E3956412
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 15:51:29 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id y19so25995488ejq.6
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 15:51:29 -0700 (PDT)
+        with ESMTP id S1350496AbiFOWvc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 18:51:32 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674B15640D
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 15:51:31 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id kq6so25978603ejb.11
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 15:51:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pqrs.dk; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zSzdOiSgxbYWZxXEulfQBrTFa8jqymfNEasGrW3oI+Y=;
-        b=nDXpbxcKOzdVuZicNv5F2+PRhUSKEiINNs+eqhsd5039Cf3uczSQdHcn4hMpLr4htN
-         SPlUe96Ie4d9UdpdL2WOFshK1RHGhks1LECgZ7ivssvVm4ToWloOeGjfchBmf54yC7ru
-         Ic6ZF59aeggWbCSv2XJB1bDtiToDd72Z+x1Vw=
+        bh=XE/B3EfYYQf1mtimqgsF3ZVDA9bOVjSyLpITpl2gz98=;
+        b=CAAN8l3+EJB/bqURL9Y6xhpSqAw97LvZavrZ6FBByM//joPRSbkhGQni6zU6ykVcWk
+         4ciGFpFoSsXg5m0xStFX/r9KVDJNckeOxtYXIxLFcx293locPU+LaIOSlYfBiYFdsEwm
+         JqXoAAKaq2ZL7MYjGEDKtEfn5K9G9HV7PDONM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zSzdOiSgxbYWZxXEulfQBrTFa8jqymfNEasGrW3oI+Y=;
-        b=YbjrBH91ikw87OCPxbOcUuXMT+t4nfrx6/J0XYgw1xV7nGeYC+VYkgB/v5DomRxrdw
-         2GEHMOnWS23A5QCBdXuWu6MzJbw3eAPezd96AqTkWfGshfsziezq/6R8lAVeXUIbsJzU
-         k9JtgHg13eEVpfDlvXXq5w1YDqZqs3tzSq88azqIrPQ8elvATD9dZoArHPCupgzlcrwd
-         ZOfR+7SFE5gAYmOQamMdtCS2Qn+le0dWgZ3hY/Dw3aPKAFi7aNF3y0uS3WQeeuWbB3CY
-         kOb+Nl+q579YdxRDml8j/S0Pq74v6HlsYgtIufb39+CyzDIri6te+QXWcc/58zQcrtDd
-         kFcA==
-X-Gm-Message-State: AJIora9t8JCDPBuRMNvWBWR7/pT2v3bJGlCokq1/enbk1oAWP7a25lhs
-        6o30JaDIGZF8z98ylMk+HHwjEg==
-X-Google-Smtp-Source: AGRyM1sBIJM4d9dE6NYu3F+YuovSCF3q2IZg6I4e2Aisjkqd1z3WeHXXoOP6pexfDH644qGlWTEhjA==
-X-Received: by 2002:a17:906:9b86:b0:6f8:24e7:af7d with SMTP id dd6-20020a1709069b8600b006f824e7af7dmr1966601ejc.295.1655333488459;
-        Wed, 15 Jun 2022 15:51:28 -0700 (PDT)
+        bh=XE/B3EfYYQf1mtimqgsF3ZVDA9bOVjSyLpITpl2gz98=;
+        b=ToCtmksEJmtXeEdFnCVnmDp+7Ja/dUg3fM6fEJvkQi1HmC6jzVQpmDn2mXsKqSk//3
+         ppbgDqXtTZAKM4fbf7X+IIOO57/fq6/tHHHmzwiSG4EfRmWWf1dSuqVVcwAgqtTJbv4I
+         sjLCn9j6J0fT9RG8UlYWs/YMrSIT0g5o+/PdxxtKNsqPxB63xUnZLK1iOrUtxUvp2SW3
+         fdALCs+0MbT5Flaql7jXn/iwrDOQfInWdp4dJz1nVdNQ5BVsysGe+sw5kvIrVNwWyckI
+         2TdukaLeVEsWtS7rf/sUAznSgVdrNw603i8zAC/CLOSaNG6Q3uq+3GnBM4oIvnn2RAFh
+         NfAQ==
+X-Gm-Message-State: AJIora9pdQSXwAihKmlsqMatannrvq8FSHHIBkiDwce7lD8/dagCpCIu
+        BpfrcGg1CiVCddVYLW+C5BV4Yg==
+X-Google-Smtp-Source: AGRyM1u/n8oPQZ/PAaY1yIz7bNcJISipoi7XTrNBfYUp8Pz+3ypt2FpQLPAsoP+rXtgzLQ2+TCYh7w==
+X-Received: by 2002:a17:906:a858:b0:70e:a4d8:1c45 with SMTP id dx24-20020a170906a85800b0070ea4d81c45mr1821800ejb.213.1655333489994;
+        Wed, 15 Jun 2022 15:51:29 -0700 (PDT)
 Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id h23-20020aa7c617000000b0042e21f8c412sm371506edq.42.2022.06.15.15.51.27
+        by smtp.gmail.com with ESMTPSA id h23-20020aa7c617000000b0042e21f8c412sm371506edq.42.2022.06.15.15.51.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jun 2022 15:51:28 -0700 (PDT)
+        Wed, 15 Jun 2022 15:51:29 -0700 (PDT)
 From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
 To:     hauke@hauke-m.de, Linus Walleij <linus.walleij@linaro.org>,
         =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
@@ -56,11 +56,10 @@ To:     hauke@hauke-m.de, Linus Walleij <linus.walleij@linaro.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Russell King <linux@armlinux.org.uk>
-Cc:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3 1/5] net: dsa: realtek: rtl8365mb: rename macro RTL8367RB -> RTL8367RB_VB
-Date:   Thu, 16 Jun 2022 00:51:11 +0200
-Message-Id: <20220615225116.432283-2-alvin@pqrs.dk>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v3 2/5] net: dsa: realtek: rtl8365mb: remove port_mask private data member
+Date:   Thu, 16 Jun 2022 00:51:12 +0200
+Message-Id: <20220615225116.432283-3-alvin@pqrs.dk>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220615225116.432283-1-alvin@pqrs.dk>
 References: <20220615225116.432283-1-alvin@pqrs.dk>
@@ -78,40 +77,66 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-The official name of this switch is RTL8367RB-VB, not RTL8367RB. There
-is also an RTL8367RB-VC which is rather different. Change the name of
-the CHIP_ID/_VER macros for reasons of consistency.
+There is no real need for this variable: the line change interrupt mask
+is sufficiently masked out when getting linkup_ind and linkdown_ind in
+the interrupt handler.
 
 Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-Reviewed-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 ---
- drivers/net/dsa/realtek/rtl8365mb.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/dsa/realtek/rtl8365mb.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
 diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
-index 769f672e9128..905056250b88 100644
+index 905056250b88..42afba122bb4 100644
 --- a/drivers/net/dsa/realtek/rtl8365mb.c
 +++ b/drivers/net/dsa/realtek/rtl8365mb.c
-@@ -108,8 +108,8 @@
- #define RTL8365MB_CHIP_ID_8367S		0x6367
- #define RTL8365MB_CHIP_VER_8367S	0x00A0
+@@ -564,7 +564,6 @@ struct rtl8365mb_port {
+  * @irq: registered IRQ or zero
+  * @chip_id: chip identifier
+  * @chip_ver: chip silicon revision
+- * @port_mask: mask of all ports
+  * @learn_limit_max: maximum number of L2 addresses the chip can learn
+  * @cpu: CPU tagging and CPU port configuration for this chip
+  * @mib_lock: prevent concurrent reads of MIB counters
+@@ -579,7 +578,6 @@ struct rtl8365mb {
+ 	int irq;
+ 	u32 chip_id;
+ 	u32 chip_ver;
+-	u32 port_mask;
+ 	u32 learn_limit_max;
+ 	struct rtl8365mb_cpu cpu;
+ 	struct mutex mib_lock;
+@@ -1489,13 +1487,10 @@ static irqreturn_t rtl8365mb_irq(int irq, void *data)
+ {
+ 	struct realtek_priv *priv = data;
+ 	unsigned long line_changes = 0;
+-	struct rtl8365mb *mb;
+ 	u32 stat;
+ 	int line;
+ 	int ret;
  
--#define RTL8365MB_CHIP_ID_8367RB	0x6367
--#define RTL8365MB_CHIP_VER_8367RB	0x0020
-+#define RTL8365MB_CHIP_ID_8367RB_VB	0x6367
-+#define RTL8365MB_CHIP_VER_8367RB_VB	0x0020
+-	mb = priv->chip_data;
+-
+ 	ret = rtl8365mb_get_and_clear_status_reg(priv, RTL8365MB_INTR_STATUS_REG,
+ 						 &stat);
+ 	if (ret)
+@@ -1520,7 +1515,7 @@ static irqreturn_t rtl8365mb_irq(int irq, void *data)
  
- /* Family-specific data and limits */
- #define RTL8365MB_PHYADDRMAX		7
-@@ -1988,7 +1988,7 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
- 				 "found an RTL8365MB-VC switch (ver=0x%04x)\n",
- 				 chip_ver);
- 			break;
--		case RTL8365MB_CHIP_VER_8367RB:
-+		case RTL8365MB_CHIP_VER_8367RB_VB:
- 			dev_info(priv->dev,
- 				 "found an RTL8367RB-VB switch (ver=0x%04x)\n",
- 				 chip_ver);
+ 		linkdown_ind = FIELD_GET(RTL8365MB_PORT_LINKDOWN_IND_MASK, val);
+ 
+-		line_changes = (linkup_ind | linkdown_ind) & mb->port_mask;
++		line_changes = linkup_ind | linkdown_ind;
+ 	}
+ 
+ 	if (!line_changes)
+@@ -2009,7 +2004,6 @@ static int rtl8365mb_detect(struct realtek_priv *priv)
+ 		mb->priv = priv;
+ 		mb->chip_id = chip_id;
+ 		mb->chip_ver = chip_ver;
+-		mb->port_mask = GENMASK(priv->num_ports - 1, 0);
+ 		mb->learn_limit_max = RTL8365MB_LEARN_LIMIT_MAX;
+ 		mb->jam_table = rtl8365mb_init_jam_8365mb_vc;
+ 		mb->jam_size = ARRAY_SIZE(rtl8365mb_init_jam_8365mb_vc);
 -- 
 2.36.1
 
