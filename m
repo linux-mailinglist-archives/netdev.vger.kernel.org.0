@@ -2,208 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E93E54CBC4
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 16:52:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F5F754CC2A
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 17:06:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239847AbiFOOw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 10:52:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38228 "EHLO
+        id S1346059AbiFOPGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 11:06:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239067AbiFOOwX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 10:52:23 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2086.outbound.protection.outlook.com [40.107.220.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4BF49B7A
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 07:52:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aqGhvK7139N6+6qGEFLCh24lT/rr6mpkzlByFCoGBBHPhJgp1/UfMnnspkt3eq9/aw3mI9aHaoFGtpt8F/Q4V/zOoycO40Wubtc/M+ZXTSXKuU7PY4QtI8deetb4Q6rhMZA79+RfeJGw2jr+29vQ8MbYdIgoqW5wWjkqEhqIKIkuJjote4mtV4gQcCz6iDI2gEYB0F6crc7zK27RiXZQgh45SHROICgugwReJylrIlz9UFdRtI8kqi+Jgt8o4aGIfvSroSh1IZtowLpBV+Kyv2y6CBujsNnmFmIV1ZDdLzJ3gvDhnBVEfwyD7FV0x1L9kY0u+v2RCkdRWEYN6JL/zw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pXoSUygeci/Yk9QSMT1kUsLZJVMvcIz5rrE+GkBsBYc=;
- b=AuBTJ+UCflJ4YqKcozOISMebETMzNaG5KaYwp5Y51JT4bpS6HEBZYmS9WX71Dh9YLnua33Q8tMUPJhckAKXqmZB/TNeyk7qkthZXuCCbh65hE1ioloNbb+VQjphwVxYxo9StA8kWxlTTiLPLLoi4zB6EacnI+8ntFNicbfxiLVUr8BqUzHjSJFRx/LNX7sSK6fkvtma3NE7ffm2Kwg24IWCdfl5c0QG2076dxYdOOxVLNmQaW9MYk4Y858c9xyntMB2M8lduxmGWnbR2cJ1Hu4Qyx4Rw2gdLazLRF6qzuByhOlam59zyo3GCN8ctDdk0E3Xo+SMtJf0Yq21G/j9FBA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pXoSUygeci/Yk9QSMT1kUsLZJVMvcIz5rrE+GkBsBYc=;
- b=Or6OHz1SirA2Q+7R1UaFNMYZjGYKyv5z0tBsR3ig7vm17xz+Qb3T2IEybTjTP/VbXhXQZekXsyjsLcZkFMeffUX0qFuDxoiWJT+ZsPOkwEGNtuVAy+A6vIt89a/n2du87+D9Qb0KOZy8FxaqgzHJvLrHOtou+BfvcLPsbKxdBXC19WySF7pTVz0WZTiZUl9SnMpVPvUsUtQud65u3ShaOAUKjgsVknZRpKl/yyvGIYVtvDHteu266//4syVGZncYLs3YjXaDDp3Df0NVEWndTHY807SAiduz7Ye4kMZ+N9TfVkH3VP2CRe2eKm9hKkJtAZ4rfLcwCMWf73vC1k4Ydg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by BN6PR12MB1780.namprd12.prod.outlook.com (2603:10b6:404:107::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.13; Wed, 15 Jun
- 2022 14:52:19 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::9157:69c9:ea8f:8190]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::9157:69c9:ea8f:8190%9]) with mapi id 15.20.5353.014; Wed, 15 Jun 2022
- 14:52:19 +0000
-Date:   Wed, 15 Jun 2022 17:52:13 +0300
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
-        mlxsw@nvidia.com
-Subject: Re: [patch net-next 02/11] mlxsw: core_linecards: Introduce per line
- card auxiliary device
-Message-ID: <YqnyHcsi+GPVT9ix@shredder>
-References: <20220614123326.69745-1-jiri@resnulli.us>
- <20220614123326.69745-3-jiri@resnulli.us>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220614123326.69745-3-jiri@resnulli.us>
-X-ClientProxiedBy: VI1PR08CA0206.eurprd08.prod.outlook.com
- (2603:10a6:802:15::15) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+        with ESMTP id S242181AbiFOPGT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 11:06:19 -0400
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D9593A197
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:06:18 -0700 (PDT)
+Received: by mail-il1-x12f.google.com with SMTP id s1so9007265ilj.0
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:06:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=j6yW8cSNxyHcKGLBH/RzzZpKDGH+HEQvUp5OHLJ1vSg=;
+        b=nHFIWSpabtnN+Um1pljyrhwwDAfJjxUkuJ6rvWuwYZgQx3aHiUVOzZBoQ315+IY0IK
+         y9sYTVz0n6GHUXTI1hng+qIVv9i00u8NOVnfVbThgFFOBxMJPVRnOoLGZMJaolcOFg0W
+         l4S0cC3C+ob82bPzHmurYZcuzY3FwqJYYvn3E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=j6yW8cSNxyHcKGLBH/RzzZpKDGH+HEQvUp5OHLJ1vSg=;
+        b=pHuRwhtSIJ9kUz+FX+gEm8FIf3PM0S6Yo+Rs1jYlUl22xieEbIKHE0ncz8Cc6GagFe
+         yQKGZYibI49W3ecAfFyQ6Q/hVYvBtCVFYnhNA2ltQ5RIikkP6fO0A6ilDkPp8E9bVL/A
+         ox1uI4IVaPcEavsKJUeYT1lhoQC40NeZNZXQZomtxCZsttperEQGUxzmrS7zncTbDRZn
+         e3RRMnjpanuftqDBrY/Q0Xq7hxGpy0t3oFUzg1lnpWvznO1gF9OOm7JacfTvSjFPDruz
+         zJS6M0QgsP5GqGS538ljndNArBW9zZUZwCp4BOXQCRQlPMapUaeiEKgTDL/w/f+cpXod
+         G9vg==
+X-Gm-Message-State: AJIora9Fv8yh9NyZObGJlN2V09bisx1LCOrEE6c3rHILk4/H2+qU9nQC
+        V0fvyoA31CUB36pr5q+S0Uh/2HmZAPUAFOuF2FJZRg==
+X-Google-Smtp-Source: AGRyM1vl6hb3B14OhbZ5pyrW5E0uvZJEWyTkyieVnvYbDV9l4KSiSfWp3W3NzE6bbMlKOpxyW1c3ccvo1VZk+jYZkps=
+X-Received: by 2002:a05:6e02:1747:b0:2d3:e571:5058 with SMTP id
+ y7-20020a056e02174700b002d3e5715058mr142461ill.309.1655305577283; Wed, 15 Jun
+ 2022 08:06:17 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7ec4d8d4-853b-48e2-965a-08da4edea5bc
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1780:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR12MB178040A62FF18CC2E6343B0BB2AD9@BN6PR12MB1780.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +yDv+g9PzISPKHlpUm+x182zhiPwlkQ30vvrlc9Cbyr0OewdyGzKXuNVBGTVANubVOfnu7pP9WlGpJ9LPu7VWArk950lK9O3N/fUIobhD4tBOCzXOPzZt6wi9BLjP/s2D/y/pKaQF/OOlGwBI9ZQv0Q4gUsBAmLskglP1v/Im1WpaYvmONihknd9gsC5vcEgMV4kYfYAnmG52SxCX1uK6FgBfkp6cgcKU6UvGvh/buT1xClqyVVO+414wjsNE05MzXgQVVBH4stGPrQZHLyj2GRCjeEdCIf+dAF778hGJm9AdbNt7U+F+rwDj7pw1fLu4BKK8NOXDd2lwlint+HMF168yjBG3+Y1CoRzT97sZnRt1qBBPWprha6BO/y/ssXskqKmJ4tRsyhOE6zzX5rnFyQ6Ww89ugd1cDt2OXUyDmamviMWdKok/z+EfXLh+FbSGNboYnsZhoQOu/u2+87vawF6CKi7cAS7ZFlZxh+z/a5HFaNfyeKHauvMCApdFTphdNiqCab0kj4rc0CB+UMcU31U0vnKCIfVauRT5hcDdabYm1OQ0Ig/arafG4yUfpywTIhNPqBTSfQOmTh0kEAi3ijOJFNKrgIEVyZ+d4ptDbOxF/OPAAH8acMowx5suzbUOHfIA8GjjGeWxXjp9oMOhZOaMbKiQSCe9kFSdAhL8o4FElbYhpZxuesq5aIcg4IaYVh84Mzs3Wx/+f8UK2DALw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(366004)(83380400001)(33716001)(186003)(2906002)(107886003)(66476007)(38100700002)(8676002)(86362001)(66946007)(66556008)(6916009)(26005)(5660300002)(316002)(6512007)(9686003)(6486002)(508600001)(6666004)(4326008)(6506007)(8936002)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?u2Uib9s9UOZEwP4ecFSU1DctVEfNQdkMXx4fTNSr9Vs8R2gVS0HW3iL0cgNX?=
- =?us-ascii?Q?5p4KoQqAh0F+BbMKS9u4RYSfmwNHEZJThEKnBhDE3Z27aST1e8o4EeSX2jyk?=
- =?us-ascii?Q?u9x87r0VZZjkTqhwGHtBngAWVen21xH0CR+wBY88TZimL8LuyRkyPx+SCvvO?=
- =?us-ascii?Q?MoFXq9uao0kjHlZJqD4UxLYXSFXnBZZDXoKLq/LYUdp3xhk++CiESQwaJ5By?=
- =?us-ascii?Q?4GWTtDZshc3UPQELzNhC3J1YUO8w41gIbBPElPViWCh2GxQz3wDYVqkkNvEX?=
- =?us-ascii?Q?a0DT74J+bo1En/pVvRGEm/QhkzX+MZkKL5LvlNEc3OvpkS2LLQ3G6WELM9D7?=
- =?us-ascii?Q?gotIGyVrfiee6QFsA+rbLHHJ6iAiTI9fv2DYkKOkqg8wmxs7zQFZE3K+A/GA?=
- =?us-ascii?Q?An+ye5M1uqhXSlRFVwRLMDzGYU0mqE1nQOPfF7FOyYbaqTfgDzWpFoSNYUaL?=
- =?us-ascii?Q?eQKG9u17Yu8mkb5cTEtCvVTOV3/1ZyCVXCWpluKWdqf2idcuiVJIhsoxcac0?=
- =?us-ascii?Q?kk/vOqg83gn/PIWgxcc42J5iAraYmnYglUcfKuxtZBjsBaqXBnBMYZ1rV1fn?=
- =?us-ascii?Q?UxEogm07zahXz8Je3cx1hADs6+Ccmek/mU/WqOZZcxp56EwQF6SI2UtdnXW0?=
- =?us-ascii?Q?4IxDQWi5ZCcPrnfa5gdUD21yy94pBFei39FZsKcpRQmGALmYFk9SsweZ3mLC?=
- =?us-ascii?Q?qZ28GQq7zB+Cm4BRKd4NnqEdWCLliTSI1voo78cxxB1ShRzFm7jz0MMbpfr5?=
- =?us-ascii?Q?7pO07GKFrm4jHJWBi0UULgU+vVOjM5jPxIcFR0xI4hjmLYmPDUGOnf3FRbMl?=
- =?us-ascii?Q?1yytHR41Utp0uMvPK6cUnig9fXg8DeHwYAFeS5XNCZcG6k7urKAAVOI6/6EK?=
- =?us-ascii?Q?l3DdoORSk+7wDlDF4f6kY/cxXoIZN3Oe6O1I1DS88EdMMaNXTlT7/CsRsNFb?=
- =?us-ascii?Q?RLNzg7FcIRPM7Hwk8x4LIFeWP5lmdPGXzaHL3trBHomWzm640toLCqbYpHgH?=
- =?us-ascii?Q?6E2I7NvhwSill90MBx5B23XyJW/Na5frwY9r5H7dhSqtn2osDHYx3QIfQrx5?=
- =?us-ascii?Q?4sc7QfvxNoQxlgO3mi7utHZf1vcfx3Vo2yI5vKhwT9i+m6xnhfkQoT5kmZxb?=
- =?us-ascii?Q?8cFQ+yZstz2s8jPlHYd8JZNdzw1s/WwXNUnNT6S5ivcY/h1EmOTttQTex/jt?=
- =?us-ascii?Q?I0VVCf4cSjguwBbIhHLcXi570AftgWua9bHEXzBMiF4m/1fnTFrrSV63oqIq?=
- =?us-ascii?Q?hKk5tgEfeGMJSaL4Xc0E724+t6Rb7jha84UXZbxFSb1T7b5F5W/U/RopLV3F?=
- =?us-ascii?Q?b1QCAUsli+gximAX0occCVks1JqtzGYtDvO/NzxJtHZGLhUvUOAAz30+bvSJ?=
- =?us-ascii?Q?4LyBKtZGHQWO6lGezQSUeMiSQt2vYveEeuUkTxxxX8VLFp4LGgVEmTARUmrb?=
- =?us-ascii?Q?RY27xfZTWnzVvPc8aPxGbRRfljxV0c3Ei8zQ38J+r95sGN83DIE3bO541g3s?=
- =?us-ascii?Q?3cQjhSBB7AXSxrdmF8DipvYIG8ZtyN4LO3jh2cOhBUUPFGWa0iMH2RiY9+KZ?=
- =?us-ascii?Q?elkTP0riI3LtwjzNL/hJVVOt+yKvOTLoTcygYqEQSoxkxMZv5moCcqerljvl?=
- =?us-ascii?Q?n+NKFXmsnwiYFMFuiv3u/vuW35EzSVa/l85tlZrIxwR+MzKaHAUV/Jqju3o0?=
- =?us-ascii?Q?tn5dPYqYosgyKG+4fNGgzzc1ThOKy4CNn+rR9VEnwb/QePseafsbnlmkLvSA?=
- =?us-ascii?Q?JyRw0qjuPA=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7ec4d8d4-853b-48e2-965a-08da4edea5bc
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2022 14:52:19.7902
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3eYz8znus7nqdK+0/KWepZEZBGqZoux9JC/m3pOJDg0P6wfPoJl3HHsAmjlj+r/MaSNeAoVonkmQI9+ros6pUw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1780
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220608150942.776446-1-fred@cloudflare.com> <87tu8oze94.fsf@email.froward.int.ebiederm.org>
+ <e1b62234-9b8a-e7c2-2946-5ef9f6f23a08@cloudflare.com> <87y1xzyhub.fsf@email.froward.int.ebiederm.org>
+ <859cb593-9e96-5846-2191-6613677b07c5@cloudflare.com> <87o7yvxl4x.fsf@email.froward.int.ebiederm.org>
+ <9ed91f15-420c-3db6-8b3b-85438b02bf97@cloudflare.com> <20220615103031.qkzae4xr34wysj4b@wittgenstein>
+ <CAHC9VhR8yPHZb2sCu4JGgXOSs7rudm=9opB+-LsG6_Lta9466A@mail.gmail.com>
+In-Reply-To: <CAHC9VhR8yPHZb2sCu4JGgXOSs7rudm=9opB+-LsG6_Lta9466A@mail.gmail.com>
+From:   Ignat Korchagin <ignat@cloudflare.com>
+Date:   Wed, 15 Jun 2022 16:06:06 +0100
+Message-ID: <CALrw=nGZtrNYn+CV+Q_w-2=Va_9m3C8PDvvPtd01d0tS=2NMWQ@mail.gmail.com>
+Subject: Re: [PATCH v3] cred: Propagate security_prepare_creds() error code
+To:     Paul Moore <paul@paul-moore.com>,
+        Christian Brauner <brauner@kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Frederick Lawler <fred@cloudflare.com>, linux-doc@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-cachefs@redhat.com,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
+        linux-unionfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>, keyrings@vger.kernel.org,
+        selinux@vger.kernel.org, serge@hallyn.com, amir73il@gmail.com,
+        kernel-team <kernel-team@cloudflare.com>,
+        Jeff Moyer <jmoyer@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +int mlxsw_linecard_bdev_add(struct mlxsw_linecard *linecard)
-> +{
-> +	struct mlxsw_linecard_bdev *linecard_bdev;
-> +	int err;
-> +	int id;
-> +
-> +	id = mlxsw_linecard_bdev_id_alloc();
-> +	if (id < 0)
-> +		return id;
-> +
-> +	linecard_bdev = kzalloc(sizeof(*linecard_bdev), GFP_KERNEL);
-> +	if (!linecard_bdev) {
-> +		mlxsw_linecard_bdev_id_free(id);
-> +		return -ENOMEM;
-> +	}
-> +	linecard_bdev->adev.id = id;
-> +	linecard_bdev->adev.name = MLXSW_LINECARD_DEV_ID_NAME;
-> +	linecard_bdev->adev.dev.release = mlxsw_linecard_bdev_release;
-> +	linecard_bdev->adev.dev.parent = linecard->linecards->bus_info->dev;
-> +	linecard_bdev->linecard = linecard;
-> +
-> +	err = auxiliary_device_init(&linecard_bdev->adev);
-> +	if (err) {
-> +		mlxsw_linecard_bdev_id_free(id);
-> +		kfree(linecard_bdev);
-> +		return err;
-> +	}
-> +
-> +	err = auxiliary_device_add(&linecard_bdev->adev);
-> +	if (err) {
-> +		auxiliary_device_uninit(&linecard_bdev->adev);
-> +		return err;
-> +	}
-> +
-> +	linecard->bdev = linecard_bdev;
-> +	return 0;
-> +}
+On Wed, Jun 15, 2022 at 3:14 PM Paul Moore <paul@paul-moore.com> wrote:
+>
+> On Wed, Jun 15, 2022 at 6:30 AM Christian Brauner <brauner@kernel.org> wrote:
+> >
+> > On Tue, Jun 14, 2022 at 01:59:08PM -0500, Frederick Lawler wrote:
+> > > On 6/14/22 11:30 AM, Eric W. Biederman wrote:
+> > > > Frederick Lawler <fred@cloudflare.com> writes:
+> > > >
+> > > > > On 6/13/22 11:44 PM, Eric W. Biederman wrote:
+> > > > > > Frederick Lawler <fred@cloudflare.com> writes:
+> > > > > >
+> > > > > > > Hi Eric,
+> > > > > > >
+> > > > > > > On 6/13/22 12:04 PM, Eric W. Biederman wrote:
+> > > > > > > > Frederick Lawler <fred@cloudflare.com> writes:
+> > > > > > > >
+> > > > > > > > > While experimenting with the security_prepare_creds() LSM hook, we
+> > > > > > > > > noticed that our EPERM error code was not propagated up the callstack.
+> > > > > > > > > Instead ENOMEM is always returned.  As a result, some tools may send a
+> > > > > > > > > confusing error message to the user:
+> > > > > > > > >
+> > > > > > > > > $ unshare -rU
+> > > > > > > > > unshare: unshare failed: Cannot allocate memory
+> > > > > > > > >
+> > > > > > > > > A user would think that the system didn't have enough memory, when
+> > > > > > > > > instead the action was denied.
+> > > > > > > > >
+> > > > > > > > > This problem occurs because prepare_creds() and prepare_kernel_cred()
+> > > > > > > > > return NULL when security_prepare_creds() returns an error code. Later,
+> > > > > > > > > functions calling prepare_creds() and prepare_kernel_cred() return
+> > > > > > > > > ENOMEM because they assume that a NULL meant there was no memory
+> > > > > > > > > allocated.
+> > > > > > > > >
+> > > > > > > > > Fix this by propagating an error code from security_prepare_creds() up
+> > > > > > > > > the callstack.
+> > > > > > > > Why would it make sense for security_prepare_creds to return an error
+> > > > > > > > code other than ENOMEM?
+> > > > > > > >    > That seems a bit of a violation of what that function is supposed to do
+> > > > > > > >
+> > > > > > >
+> > > > > > > The API allows LSM authors to decide what error code is returned from the
+> > > > > > > cred_prepare hook. security_task_alloc() is a similar hook, and has its return
+> > > > > > > code propagated.
+> > > > > > It is not an api.  It is an implementation detail of the linux kernel.
+> > > > > > It is a set of convenient functions that do a job.
+> > > > > > The general rule is we don't support cases without an in-tree user.  I
+> > > > > > don't see an in-tree user.
+> > > > > >
+> > > > > > > I'm proposing we follow security_task_allocs() pattern, and add visibility for
+> > > > > > > failure cases in prepare_creds().
+> > > > > > I am asking why we would want to.  Especially as it is not an API, and I
+> > > > > > don't see any good reason for anything but an -ENOMEM failure to be
+> > > > > > supported.
+> > > > > >
+> > > > > We're writing a LSM BPF policy, and not a new LSM. Our policy aims to solve
+> > > > > unprivileged unshare, similar to Debian's patch [1]. We're in a position such
+> > > > > that we can't use that patch because we can't block _all_ of our applications
+> > > > > from performing an unshare. We prefer a granular approach. LSM BPF seems like a
+> > > > > good choice.
+> > > >
+> > > > I am quite puzzled why doesn't /proc/sys/user/max_user_namespaces work
+> > > > for you?
+> > > >
+> > >
+> > > We have the following requirements:
+> > >
+> > > 1. Allow list criteria
+> > > 2. root user must be able to create namespaces whenever
+> > > 3. Everything else not in 1 & 2 must be denied
+> > >
+> > > We use per task attributes to determine whether or not we allow/deny the
+> > > current call to unshare().
+> > >
+> > > /proc/sys/user/max_user_namespaces limits are a bit broad for this level of
+> > > detail.
+> > >
+> > > > > Because LSM BPF exposes these hooks, we should probably treat them as an
+> > > > > API. From that perspective, userspace expects unshare to return a EPERM
+> > > > > when the call is denied permissions.
+> > > >
+> > > > The BPF code gets to be treated as a out of tree kernel module.
+> > > >
+> > > > > > Without an in-tree user that cares it is probably better to go the
+> > > > > > opposite direction and remove the possibility of return anything but
+> > > > > > memory allocation failure.  That will make it clearer to implementors
+> > > > > > that a general error code is not supported and this is not a location
+> > > > > > to implement policy, this is only a hook to allocate state for the LSM.
+> > > > > >
+> > > > >
+> > > > > That's a good point, and it's possible we're using the wrong hook for the
+> > > > > policy. Do you know of other hooks we can look into?
+> >
+> > Fwiw, from this commit it wasn't very clear what you wanted to achieve
+> > with this. It might be worth considering adding a new security hook for
+> > this. Within msft it recently came up SELinux might have an interest in
+> > something like this as well.
+>
+> Just to clarify things a bit, I believe SELinux would have an interest
+> in a LSM hook capable of implementing an access control point for user
+> namespaces regardless of Microsoft's current needs.  I suspect due to
+> the security relevant nature of user namespaces most other LSMs would
+> be interested as well; it seems like a well crafted hook would be
+> welcome by most folks I think.
+>
+> --
+> paul-moore.com
 
-[...]
+Just to get the full picture: is there actually a good reason not to
+make this hook support this scenario? I understand it was not
+originally intended for this, but it is well positioned in the code,
+covers multiple subsystems (not only user namespaces), doesn't require
+changing the LSM interface and it already does the job - just the
+kernel internals need to respect the error code better. What bad
+things can happen if we extend its use case to not only allocate
+resources in LSMs?
 
-> +static int mlxsw_linecard_bdev_probe(struct auxiliary_device *adev,
-> +				     const struct auxiliary_device_id *id)
-> +{
-> +	struct mlxsw_linecard_bdev *linecard_bdev =
-> +			container_of(adev, struct mlxsw_linecard_bdev, adev);
-> +	struct mlxsw_linecard_dev *linecard_dev;
-> +	struct devlink *devlink;
-> +
-> +	devlink = devlink_alloc(&mlxsw_linecard_dev_devlink_ops,
-> +				sizeof(*linecard_dev), &adev->dev);
-> +	if (!devlink)
-> +		return -ENOMEM;
-> +	linecard_dev = devlink_priv(devlink);
-> +	linecard_dev->linecard = linecard_bdev->linecard;
-> +	linecard_bdev->linecard_dev = linecard_dev;
-> +
-> +	devlink_register(devlink);
-> +	return 0;
-> +}
+After all, the original Linus email introducing Linux stated that
+Linux was not intended to be a great OS, but here we are :)
 
-[...]
-
-> @@ -252,6 +253,14 @@ mlxsw_linecard_provision_set(struct mlxsw_linecard *linecard, u8 card_type,
->  	linecard->provisioned = true;
->  	linecard->hw_revision = hw_revision;
->  	linecard->ini_version = ini_version;
-> +
-> +	err = mlxsw_linecard_bdev_add(linecard);
-
-If a line card is already provisioned and we are reloading the primary
-devlink instance, isn't this going to deadlock on the global (not
-per-instance) devlink mutex? It is held throughout the reload operation
-and also taken in devlink_register()
-
-My understanding of the auxiliary bus model is that after adding a
-device to the bus via auxiliary_device_add(), the probe() function of
-the auxiliary driver will be called. In our case, this function acquires
-the global devlink mutex in devlink_register().
-
-> +	if (err) {
-> +		linecard->provisioned = false;
-> +		mlxsw_linecard_provision_fail(linecard);
-> +		return err;
-> +	}
-> +
->  	devlink_linecard_provision_set(linecard->devlink_linecard, type);
->  	return 0;
->  }
+Ignat
