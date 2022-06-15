@@ -2,124 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3CA354CD1A
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 17:34:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1F1054CD14
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 17:34:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344140AbiFOPdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 11:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58580 "EHLO
+        id S1345953AbiFOPeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 11:34:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245083AbiFOPdw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 11:33:52 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D0F20BC3
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:33:50 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id p6-20020a05600c1d8600b0039c630b8d96so2237002wms.1
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:33:50 -0700 (PDT)
+        with ESMTP id S1346300AbiFOPeK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 11:34:10 -0400
+Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE2822BCD
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:34:09 -0700 (PDT)
+Received: by mail-vs1-xe35.google.com with SMTP id f1so12150882vsv.5
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 08:34:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=J5eKPAN5lqKWqHRVMFEt8bECLi2YfU3n/Xvj8y2gEBE=;
-        b=Zv2JhKlV+WgmpireahD92+ZSg2KnCdRZZvKLhjp5oxI5lNh/Plc3RXY+mQgK5+7Vg0
-         YcEbwmKcYO+eUdZVm8cnx1XTn3jFZkr+/y958BJAt6RHw6tO4gb/qGpriKZF4237xYW8
-         XdcUnlcVAybauV76RUaKKOU+9Jk1HAP8Ybq8jFsO4UP/QfChfQnRT6ZMjB1JSUkSG5A+
-         eeKIxvMjnfgD/uvv36ColBnfjqbtL+d7YJ45Q6RgQZkCXiULCPAF4BJO7j+EvyygfMPL
-         eLCZ6VWgFpV+KubW52X0faomk4hEuBQnOj14ASkrNV4X772O83FKpX8IgKteHTah4Jpx
-         0t5Q==
+         :cc:content-transfer-encoding;
+        bh=JEk7BOZC8E1uVHkprfR97u1idKI8ThLFJkwwMW7vcpc=;
+        b=o3D58cZRVUa7qt9h+A8DD2OzwqgVtjl5b0vmbzeFIV03z/b5BpmEr5aFHp0DJWXePb
+         MdojiVN/HcjgiBNy/hdtuIlbctcvYwEbkaxGESygRuNhVBgRZ4NAany8biromKR6BIIu
+         j2w7z3LCXgKhLFg7W0PLM+IwN9yGOwMjtOx/xW6wgp2D+VbQk1fxi0xEVg8JwXnI8/3B
+         pO4SzlzeuNFnIFFR8Qz/3nh4POXYlRQhkHLIdB1PxC1fUk8PhzlyoWT8XNasezE3ft9B
+         7TZjetwAYHpQwY+V89npCIm+QDkB86FITmLQIIGy5mUydIJFVTDj96vhhWL6JZYF0gSO
+         IB8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J5eKPAN5lqKWqHRVMFEt8bECLi2YfU3n/Xvj8y2gEBE=;
-        b=5uduA64v+QgnsLe5uwF3nTLDsgedBkqeci97Q6/xYmAqzKhxSvkWhL3d+5/msHdnep
-         Fd+wdmsg/gIoltmLXjAd7eXOFqd65yBr8ppd/BLgMuxo44CmWVUmfgdiNKkblF0yJFl0
-         qxlrauum8UgvDdPWpv/clo+H9qDmeNb1S3Ea4z4zc9Kil1SDoXyDsq5neTDd8fnqdLvQ
-         BEesx29upDLRVvM+uEMWePmT9n9V4/BJayZ9+AeVwfSb+ab3k7hs0pEawGGCI00cZhX1
-         ng/0bEuNfq5QLA4K3hNPuVOGPz5Y59ag3+eYJVp+8dOAc6T+dn5hivdfNqAlu2Ird7z+
-         GS7A==
-X-Gm-Message-State: AJIora8RTlfgsG/0/w+j7JQvuydmVo3G6y6ExFCGXQJ1QRRX6Cqkj773
-        l0m0MxdU1eLrWVmqwx28zk4znE31l4OnhMxR56CX
-X-Google-Smtp-Source: AGRyM1tbSXhyojX0sdqJuy36Y8CiIJerDEBwNNO0en1/SGp4CFCRbzqu86TVD3k4/Lh2/5SBr3CWSXHz2TZ3Gh292cQ=
-X-Received: by 2002:a05:600c:1d91:b0:39c:544b:abdd with SMTP id
- p17-20020a05600c1d9100b0039c544babddmr20003wms.70.1655307229181; Wed, 15 Jun
- 2022 08:33:49 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=JEk7BOZC8E1uVHkprfR97u1idKI8ThLFJkwwMW7vcpc=;
+        b=XodY4smtmWrBiP7hz0wSimBvktTH6DaLxoj6OF06ftyoTbH6XdoEEboAhEBH3VXbrn
+         fqUj06dm/HwMO7EjU8nzGnrwNM+n2D1AiYdru2gS8Vn4F+vhgndYDHj4IIc/a4+0l1h/
+         qVw7nWCCHDnDDYOBgCeCjDSGz0shh1OBEIHTqzsjgtsVc3KmX05bHsHlYeakRLIaHi5I
+         ORDMuMEuKBDx1ffXYeXlv7LPwXcLbG2l+6UR2Y8Lv2+zGjQ/cFEtkVDP8vYBAczzgNQV
+         8UFrbNXIH8NY7oZ2D2cHcfunXKllUELY9n6jHgTD9LAf6M7HkgUf0o8gloURzQb73exg
+         Cv8A==
+X-Gm-Message-State: AJIora9gv0k5YT1eicYDAt85qDGC4RJPhbINE22on+xSDMfTt4wsTP9n
+        q4vWwJqaYQXDTAtc5VunTFmwtpdZ8UhUGoqONI4=
+X-Google-Smtp-Source: AGRyM1v95NkzFyNnOn6Ju7NCBwXsUM96F+7vtkBvdAPabif0piRUaWg9M97875HMfk1qR8fbrdWTgMfiAu1LUglVSNw=
+X-Received: by 2002:a67:f28d:0:b0:34b:a293:a6fe with SMTP id
+ m13-20020a67f28d000000b0034ba293a6femr12587vsk.26.1655307248604; Wed, 15 Jun
+ 2022 08:34:08 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220608150942.776446-1-fred@cloudflare.com> <87tu8oze94.fsf@email.froward.int.ebiederm.org>
- <e1b62234-9b8a-e7c2-2946-5ef9f6f23a08@cloudflare.com> <87y1xzyhub.fsf@email.froward.int.ebiederm.org>
- <859cb593-9e96-5846-2191-6613677b07c5@cloudflare.com> <87o7yvxl4x.fsf@email.froward.int.ebiederm.org>
- <9ed91f15-420c-3db6-8b3b-85438b02bf97@cloudflare.com> <20220615103031.qkzae4xr34wysj4b@wittgenstein>
- <CAHC9VhR8yPHZb2sCu4JGgXOSs7rudm=9opB+-LsG6_Lta9466A@mail.gmail.com> <CALrw=nGZtrNYn+CV+Q_w-2=Va_9m3C8PDvvPtd01d0tS=2NMWQ@mail.gmail.com>
-In-Reply-To: <CALrw=nGZtrNYn+CV+Q_w-2=Va_9m3C8PDvvPtd01d0tS=2NMWQ@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 15 Jun 2022 11:33:38 -0400
-Message-ID: <CAHC9VhRSzXeAZmBdNSAFEh=6XR57ecO7Ov+6BV9b0xVN1YR_Qw@mail.gmail.com>
-Subject: Re: [PATCH v3] cred: Propagate security_prepare_creds() error code
-To:     Ignat Korchagin <ignat@cloudflare.com>
-Cc:     Christian Brauner <brauner@kernel.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Frederick Lawler <fred@cloudflare.com>,
-        linux-doc@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-cachefs@redhat.com,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
-        linux-unionfs@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>, keyrings@vger.kernel.org,
-        selinux@vger.kernel.org, serge@hallyn.com, amir73il@gmail.com,
-        kernel-team <kernel-team@cloudflare.com>,
-        Jeff Moyer <jmoyer@redhat.com>
+References: <20220609105725.2367426-1-wangyuweihx@gmail.com>
+ <20220609105725.2367426-3-wangyuweihx@gmail.com> <20220613230219.40372863@kernel.org>
+In-Reply-To: <20220613230219.40372863@kernel.org>
+From:   Yuwei Wang <wangyuweihx@gmail.com>
+Date:   Wed, 15 Jun 2022 23:33:57 +0800
+Message-ID: <CANmJ_FN2nPFmjdThSHvzMhCvhrujd_ZK0DyU-fGUFx2foQAGug@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 2/2] net, neigh: introduce interval_probe_time
+ for periodic probe
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, roopa@nvidia.com,
+        dsahern@kernel.org, =?UTF-8?B?56em6L+q?= <qindi@staff.weibo.com>,
+        netdev@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 11:06 AM Ignat Korchagin <ignat@cloudflare.com> wrote:
-> On Wed, Jun 15, 2022 at 3:14 PM Paul Moore <paul@paul-moore.com> wrote:
-> > On Wed, Jun 15, 2022 at 6:30 AM Christian Brauner <brauner@kernel.org> wrote:
-
-...
-
-> > > Fwiw, from this commit it wasn't very clear what you wanted to achieve
-> > > with this. It might be worth considering adding a new security hook for
-> > > this. Within msft it recently came up SELinux might have an interest in
-> > > something like this as well.
-> >
-> > Just to clarify things a bit, I believe SELinux would have an interest
-> > in a LSM hook capable of implementing an access control point for user
-> > namespaces regardless of Microsoft's current needs.  I suspect due to
-> > the security relevant nature of user namespaces most other LSMs would
-> > be interested as well; it seems like a well crafted hook would be
-> > welcome by most folks I think.
+On Tue, 14 Jun 2022 at 14:02, Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> Just to get the full picture: is there actually a good reason not to
-> make this hook support this scenario? I understand it was not
-> originally intended for this, but it is well positioned in the code,
-> covers multiple subsystems (not only user namespaces), doesn't require
-> changing the LSM interface and it already does the job - just the
-> kernel internals need to respect the error code better. What bad
-> things can happen if we extend its use case to not only allocate
-> resources in LSMs?
+> On Thu,  9 Jun 2022 10:57:25 +0000 Yuwei Wang wrote:
+> > commit ed6cd6a17896 ("net, neigh: Set lower cap for neigh_managed_work =
+rearming")
+> > fixed a case when DELAY_PROBE_TIME is configured to 0, the processing o=
+f the
+> > system work queue hog CPU to 100%, and further more we should introduce
+> > a new option used by periodic probe
+> >
+> > Signed-off-by: Yuwei Wang <wangyuweihx@gmail.com>
+>
+> The new sysctl needs to be documented in
+> Documentation/networking/ip-sysctl
 
-My concern is that the security_prepare_creds() hook, while only
-called from two different functions, ends up being called for a
-variety of different uses (look at the prepare_creds() and
-perpare_kernel_cred() callers) and I think it would be a challenge to
-identify the proper calling context in the LSM hook implementation
-given the current hook parameters.  One might be able to modify the
-hook to pass the necessary information, but I don't think that would
-be any cleaner than adding a userns specific hook.  I'm also guessing
-that the modified security_prepare_creds() hook implementations would
-also be more likely to encounter future maintenance issues as
-overriding credentials in the kernel seems only to be increasing, and
-each future caller would risk using the modified hook wrong by passing
-the wrong context and triggering the wrong behavior in the LSM.
-
--- 
-paul-moore.com
+Oops=E2=80=A6=E2=80=A6I will fix the whitespace and add the doc in the next=
+ version
