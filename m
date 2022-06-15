@@ -2,90 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 785E254BEE7
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 02:52:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F75254BEEA
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 02:53:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240397AbiFOAwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 20:52:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57430 "EHLO
+        id S241268AbiFOAxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 20:53:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240494AbiFOAwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 20:52:21 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D106E4D25C
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 17:52:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=N1WOFAao0/oc/ECMpt7Tc3wAP002c/nMS/Y+vpo5VuY=; b=lW4wsl62Oj91uV3KUC5l/Nlpyy
-        DYd7L3yc+YJva90Plc58zLTcMYa8xJ9enY3+5RwuZPtysXjf1KpIGuAlulhD9kI/dkFOZfAIC4rAQ
-        eeHvrMp3Ofeu/8t15/vUovExpTJUVGYXMt5duYmXG5zcI9jh6Xr0m3ZOc8aegLSsKU+g=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o1HGX-006wu0-W2; Wed, 15 Jun 2022 02:52:13 +0200
-Date:   Wed, 15 Jun 2022 02:52:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jiawen Wu <jiawenwu@trustnetic.com>
-Cc:     netdev@vger.kernel.org, 'Leon Romanovsky' <leon@kernel.org>
-Subject: Re: [PATCH net-next v4] net: txgbe: Add build support for txgbe
-Message-ID: <YqktPcFrEstedV3E@lunn.ch>
-References: <20220531032640.27678-1-jiawenwu@trustnetic.com>
- <00b701d87a11$7b9ba420$72d2ec60$@trustnetic.com>
+        with ESMTP id S240947AbiFOAxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 20:53:23 -0400
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD4844757;
+        Tue, 14 Jun 2022 17:53:21 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0VGQ6.5y_1655254397;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VGQ6.5y_1655254397)
+          by smtp.aliyun-inc.com;
+          Wed, 15 Jun 2022 08:53:18 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     amitkarwar@gmail.com
+Cc:     ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
+        huxinming820@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] wireless: clean up one inconsistent indenting
+Date:   Wed, 15 Jun 2022 08:53:16 +0800
+Message-Id: <20220615005316.9596-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <00b701d87a11$7b9ba420$72d2ec60$@trustnetic.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 09:54:10AM +0800, Jiawen Wu wrote:
-> Hi,
-> 
-> On Tuesday, May 31, 2022 11:27 AM, Jiawen Wu wrote:
-> > Add doc build infrastructure for txgbe driver.
-> > Initialize PCI memory space for WangXun 10 Gigabit Ethernet devices.
-> > 
-> > Signed-off-by: Jiawen Wu <jiawenwu@trustnetic.com>
-> > ---
-> >  .../device_drivers/ethernet/index.rst         |   1 +
-> >  .../device_drivers/ethernet/wangxun/txgbe.rst |  20 ++
-> >  MAINTAINERS                                   |   7 +
-> >  drivers/net/ethernet/Kconfig                  |   1 +
-> >  drivers/net/ethernet/Makefile                 |   1 +
-> >  drivers/net/ethernet/wangxun/Kconfig          |  32 ++++
-> >  drivers/net/ethernet/wangxun/Makefile         |   6 +
-> >  drivers/net/ethernet/wangxun/txgbe/Makefile   |   9 +
-> >  drivers/net/ethernet/wangxun/txgbe/txgbe.h    |  24 +++
-> >  .../net/ethernet/wangxun/txgbe/txgbe_main.c   | 178
-> > ++++++++++++++++++
-> >  .../net/ethernet/wangxun/txgbe/txgbe_type.h   |  57 ++++++
-> >  drivers/pci/quirks.c                          |  15 ++
-> >  include/linux/pci_ids.h                       |   2 +
-> >  13 files changed, 353 insertions(+)
-> >  create mode 100644
-> > Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
-> >  create mode 100644 drivers/net/ethernet/wangxun/Kconfig
-> >  create mode 100644 drivers/net/ethernet/wangxun/Makefile
-> >  create mode 100644 drivers/net/ethernet/wangxun/txgbe/Makefile
-> >  create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe.h
-> >  create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-> >  create mode 100644 drivers/net/ethernet/wangxun/txgbe/txgbe_type.h
-> > 
-> 
-> Can I get some suggestions on this patch?
+Eliminate the follow smatch warning:
+drivers/net/wireless/marvell/mwifiex/pcie.c:3364 mwifiex_unregister_dev() warn: inconsistent indenting
 
-I suggest you repost. In general, don't post more than once per 24
-hours, but if you don't receiver any comments, or it is not merged
-within 3 days, you probably need to repost. Also, if you post during
-the merge window, you won't get too many comments, so you need to
-repost once the merge window opens.
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ drivers/net/wireless/marvell/mwifiex/pcie.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-       Andrew
+diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
+index 20352039a5c3..f7f9277602a5 100644
+--- a/drivers/net/wireless/marvell/mwifiex/pcie.c
++++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
+@@ -3361,7 +3361,7 @@ static void mwifiex_unregister_dev(struct mwifiex_adapter *adapter)
+ 	} else {
+ 		mwifiex_dbg(adapter, INFO,
+ 			    "%s(): calling free_irq()\n", __func__);
+-	       free_irq(card->dev->irq, &card->share_irq_ctx);
++		free_irq(card->dev->irq, &card->share_irq_ctx);
+ 
+ 		if (card->msi_enable)
+ 			pci_disable_msi(pdev);
+-- 
+2.20.1.7.g153144c
+
