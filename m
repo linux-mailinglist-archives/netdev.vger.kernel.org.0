@@ -2,105 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33D1554C1B1
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 08:22:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C9A454C1F5
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 08:34:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351284AbiFOGLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 02:11:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58478 "EHLO
+        id S1353495AbiFOGeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 02:34:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346051AbiFOGLJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 02:11:09 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B1627CE5;
-        Tue, 14 Jun 2022 23:11:08 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id k5-20020a17090a404500b001e8875e6242so1069789pjg.5;
-        Tue, 14 Jun 2022 23:11:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=A0WUe+ant8QpycVpCnxMIq6JosP90ibIEJ2d6QtyqYw=;
-        b=T+038nmKBBf4KuTEJj/v5IT7sB1IPYgA/s9u8T4/+81XodtSAmt46Q5BL3tGHmNG9S
-         mDPZXFcSihOzfHGqRyjvogPkrA5VFTg6QJvY6z1CXw7Wfj0eL2IHH1pS2jXBxb0taQLI
-         fkgSTsswNiRQpD+LnKRlXhsDpbe5lc7Q22rvFQY0TNgZGiLAXetZcoKKIDJV3UCYfOs+
-         eCehZq6NjrI6KN0mRGQXACkv467JTG1a1V/qf4KX96AX9vlzH7iRFT6Q/7FAxgRA+4KG
-         3GDqW8tNtvcoII/A4UTlNIm/YicAkD74GSuucJkoObPpZcSAR7AQNWdTj6ylPuOiAaZw
-         tZ4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=A0WUe+ant8QpycVpCnxMIq6JosP90ibIEJ2d6QtyqYw=;
-        b=tmk5GuZaICV+epyI7dhqcSFdgINE8kd8iVAuRHzg1eB+k8xWkFN0TgsAEq9RkElGUC
-         7pd1zZFsQvccTy3rLwTClJe//tF+KJjWHs2LoEQ28RDZW2BVzitSwjsHQmTxkV8HMIPZ
-         LGJK4y8/pRvdvb8BAtf1OnChBDrx3yG1+LTLTISdMLqircmbzsB8U20GhMBHplMD7WZZ
-         g1aQe7cCPnWG3NBnpFpbRFW0mN3sbn+OnP3+tU4IwFDy/i14pgt2uFATp74CkXfHI/yU
-         +NJ7hJQAWH2gOxyWfr5BpCIRQj3quNw/ptEpyAMu/Ly0DFgvbcHvNxhc3CtZmhuHWtQM
-         vocg==
-X-Gm-Message-State: AJIora/hkYG4fIRXtRz2pPCjoac265OuCy+05S89xnR/qBxJzBI3qAtb
-        8ZNJuDeu/T6EUdLUXBiafTHcdzKpSsM=
-X-Google-Smtp-Source: AGRyM1tA+bL6FJK7kE8UZTprkXFTpmn4zCf/iuCUvS3zyiSH2HIqFUwRoJfp3VVRwXP0QcrJ5T5wRw==
-X-Received: by 2002:a17:90b:3ec6:b0:1e8:a001:5c95 with SMTP id rm6-20020a17090b3ec600b001e8a0015c95mr8554338pjb.96.1655273468035;
-        Tue, 14 Jun 2022 23:11:08 -0700 (PDT)
-Received: from DESKTOP-8REGVGF.localdomain ([211.25.125.254])
-        by smtp.gmail.com with ESMTPSA id z10-20020aa785ca000000b0051b95c76752sm8725907pfn.153.2022.06.14.23.11.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 23:11:07 -0700 (PDT)
-From:   Sieng Piaw Liew <liew.s.piaw@gmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Sieng Piaw Liew <liew.s.piaw@gmail.com>
-Subject: [PATCH V2] bcm63xx_enet: switch to napi_build_skb() to reuse skbuff_heads
-Date:   Wed, 15 Jun 2022 14:09:22 +0800
-Message-Id: <20220615060922.3402-1-liew.s.piaw@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220614021009.696-1-liew.s.piaw@gmail.com>
-References: <20220614021009.696-1-liew.s.piaw@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S1354171AbiFOGeG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 02:34:06 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E96B94249F
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 23:34:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655274845; x=1686810845;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=oQOVxfmwRoDsf8yHBy/zvML45O1b+2Lsf6BqQetBGCU=;
+  b=SDSxaWhf3k4qpRYoMaI+qZ3egfmwzDRVd802kg+JoX4PZX34FrQvGJoG
+   Pg09LxKL1BbCHahszuE327t6waKzv/ewQEety6EFEjPLlyXvONznOYOMX
+   YMhV7c0dH9c/hK+jCa3bjCEdJOCOx/HNOi//QoTcMxy8Zypk68XClSxNj
+   9f6fIMW0qmW6D569EUztz9ZF3SQy2Fj5jIh22zFRsQJtXUZe8JGI33KZw
+   m5hMb9SkWpyXIYvK4rwcBwWEcsaNL0TYZjg7dF8xRKwNhNiyRkkObeLAT
+   WvQoaPST/YXAOYN0x23AJcvHEK+FtKO5z2vm0BJ19gvT/rfM5/8OeE+8I
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="261883108"
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="261883108"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 23:34:05 -0700
+X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
+   d="scan'208";a="911455952"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.254.212.27]) ([10.254.212.27])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2022 23:34:03 -0700
+Message-ID: <a2654716-4457-cd7a-251f-2ac662e47a8f@intel.com>
+Date:   Wed, 15 Jun 2022 14:34:01 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH V2 5/6] vDPA: answer num of queue pairs = 1 to userspace
+ when VIRTIO_NET_F_MQ == 0
+Content-Language: en-US
+To:     Parav Pandit <parav@nvidia.com>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "mst@redhat.com" <mst@redhat.com>
+Cc:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
+References: <20220613101652.195216-1-lingshan.zhu@intel.com>
+ <20220613101652.195216-6-lingshan.zhu@intel.com>
+ <PH0PR12MB5481D2A01569549281D01411DCAB9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <05c09bdd-278c-af18-e087-d74a511a4305@intel.com>
+ <PH0PR12MB548194393655B8638A2FA4B2DCAA9@PH0PR12MB5481.namprd12.prod.outlook.com>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <PH0PR12MB548194393655B8638A2FA4B2DCAA9@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-napi_build_skb() reuses NAPI skbuff_head cache in order to save some
-cycles on freeing/allocating skbuff_heads on every new Rx or completed
-Tx.
-Use napi_consume_skb() to feed the cache with skbuff_heads of completed
-Tx so it's never empty.
 
-Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/ethernet/broadcom/bcm63xx_enet.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-index 698438a2ee0f..514d61dd91c7 100644
---- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-+++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-@@ -388,7 +388,7 @@ static int bcm_enet_receive_queue(struct net_device *dev, int budget)
- 					 priv->rx_buf_size, DMA_FROM_DEVICE);
- 			priv->rx_buf[desc_idx] = NULL;
- 
--			skb = build_skb(buf, priv->rx_frag_size);
-+			skb = napi_build_skb(buf, priv->rx_frag_size);
- 			if (unlikely(!skb)) {
- 				skb_free_frag(buf);
- 				dev->stats.rx_dropped++;
-@@ -468,7 +468,7 @@ static int bcm_enet_tx_reclaim(struct net_device *dev, int force)
- 			dev->stats.tx_errors++;
- 
- 		bytes += skb->len;
--		dev_kfree_skb(skb);
-+		napi_consume_skb(skb, !force);
- 		released++;
- 	}
- 
--- 
-2.17.1
+On 6/15/2022 3:26 AM, Parav Pandit wrote:
+>
+>> From: Zhu, Lingshan <lingshan.zhu@intel.com>
+>> Sent: Monday, June 13, 2022 10:33 PM
+>>
+>>
+>> On 6/14/2022 4:36 AM, Parav Pandit wrote:
+>>>> From: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>> Sent: Monday, June 13, 2022 6:17 AM
+>>>> To: jasowang@redhat.com; mst@redhat.com
+>>>> Cc: virtualization@lists.linux-foundation.org;
+>>>> netdev@vger.kernel.org; Parav Pandit <parav@nvidia.com>;
+>>>> xieyongji@bytedance.com; gautam.dawar@amd.com; Zhu Lingshan
+>>>> <lingshan.zhu@intel.com>
+>>>> Subject: [PATCH V2 5/6] vDPA: answer num of queue pairs = 1 to
+>>>> userspace when VIRTIO_NET_F_MQ == 0
+>>>>
+>>>> If VIRTIO_NET_F_MQ == 0, the virtio device should have one queue
+>>>> pair, so when userspace querying queue pair numbers, it should return
+>>>> mq=1 than zero.
+>>>>
+>>>> Function vdpa_dev_net_config_fill() fills the attributions of the
+>>>> vDPA devices, so that it should call vdpa_dev_net_mq_config_fill() so
+>>>> the parameter in vdpa_dev_net_mq_config_fill() should be
+>>>> feature_device than feature_driver for the vDPA devices themselves
+>>>>
+>>>> Before this change, when MQ = 0, iproute2 output:
+>>>> $vdpa dev config show vdpa0
+>>>> vdpa0: mac 00:e8:ca:11:be:05 link up link_announce false max_vq_pairs
+>>>> 0 mtu 1500
+>>>>
+>>> Max_vq_pairs should not be printed when _MQ feature is not negotiated.
+>>> Existing code that returns 0 is correct following this line of the spec.
+>>>
+>>> " The following driver-read-only field, max_virtqueue_pairs only
+>>> exists if VIRTIO_NET_F_MQ or VIRTIO_- NET_F_RSS is set."
+>>> The field doesn't exist when _MQ is not there. Hence, it should not be
+>> printed.
+>>> Is _RSS offered and is that why you see it?
+>>>
+>>> If not a fix in the iproute2/vdpa should be done.
+>> IMHO, The spec says:
+>> The following driver-read-only field, max_virtqueue_pairs only exists if
+>> VIRTIO_NET_F_MQ is *set*
+>>
+>> The spec doesn't say:
+>> The following driver-read-only field, max_virtqueue_pairs only exists if
+>> VIRTIO_NET_F_MQ is *negotiated*
+>>
+>> If a device is capable of of multi-queues, this capability does not depend on
+>> the driver. We are querying the device, not the driver.
+>>
+>> If there is MQ, we print the onboard implemented total number of the
+>> queue pairs.
+>> If MQ is not set, we will not read the onboard mq number, because it is not
+>> there as the spec says.
+>> But there should be at least one queue pair to be a functional virtio-net, so 1
+>> is printed.
+> The commit [1] is supposed to show the device configuration layout as what device _offers_ as mentioned in the subject line of the commit [1] very clearly.
+>
+> The commit [2] changed the original intent of commit [1] even though commit [2] mentioned "fixes" in the patch without any fixes tag. :(
+> commit [2] was bug.
+>
+> The right fix to restore [1] is to report the device features offered using get_device_features() callback instead of get_drivers_features().
+already done in 3/6 patch in this series, see:
+  static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct 
+sk_buff *msg)
+  {
+         struct virtio_net_config config = {};
+-       u64 features;
++       u64 features_device, features_driver;
+         u16 val_u16;
+
+and
+-       features = vdev->config->get_driver_features(vdev);
+-       if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, 
+features,
++       features_driver = vdev->config->get_driver_features(vdev);
++       if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, 
+features_driver,
++                             VDPA_ATTR_PAD))
++               return -EMSGSIZE;
++
++       features_device = vdev->config->get_device_features(vdev);
++       if (nla_put_u64_64bit(msg, 
+VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES, features_device,
+                               VDPA_ATTR_PAD))
+                 return -EMSGSIZE;
+
+Features of the device and the driver are reported separately.
+
+>
+> Once above fix is applied,
+> when _MQ is not offered, max_queue_pairs should be treated as 1 by the driver.
+Yes, it is done by this patch.
+> We do not have a concept of management driver yet in the specification.
+> So when _MQ is not offered by the device, either kernel driver can return max_queue_pairs = 1, or the user space caller can see that _MQ is not offered by the device hence treat max_vq_pairs = 1.
+> (Like how it is described in the spec as - " Identify and initialize the receive and transmission virtqueues, up to N of each kind. If VIRTIO_NET_F_MQ feature bit is negotiated, N=max_virtqueue_pairs, otherwise identify N=1."
+Yes, that's why I set max_queue_pairs = 1 if MQ = 0 in this patch.
+>
+> So let orchestration layer can certainly derive this N when _MQ feature is not offered, instead of coming from the vdpa management layer.
+> I agree that this extra if() condition in the user space can be avoided if kernel always provides it.
+> But better to avoid such assumption because we have more such config space attributes. i.e., they exist only when features are offered.
+> So to keep it uniform, I prefer we avoid the exception for max_virtqueue_pairs.
+>
+> Please submit the fix for [2] to call get_device_features() for purpose of returning config space.
+> Continue to use get_driver_features() to show VDPA_ATTR_DEV_NEGOTIATED_FEATURES.
+This is already there in 3/6 patch, we have these code to report driver 
+features:
+         features_driver = vdev->config->get_driver_features(vdev);
+         if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, 
+features_driver,
+                               VDPA_ATTR_PAD))
+                 return -EMSGSIZE;
+
+And these code to report device features:
+         features_device = vdev->config->get_device_features(vdev);
+         if (nla_put_u64_64bit(msg, 
+VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES, features_device,
+                               VDPA_ATTR_PAD))
+                 return -EMSGSIZE;
+
+
+
+>
+> I didn’t review these patches and it slipped through the cracks. :(
+>
+> [1] a64917bc2e9b ("vdpa: Introduce query of device config layout")
+> [2] a64917bc2e9 ("vdpa: Provide interface to read driver features")
 
