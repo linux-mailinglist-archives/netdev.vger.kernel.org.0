@@ -2,164 +2,300 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D679454C033
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 05:30:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C96454C030
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 05:29:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242205AbiFODad (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 23:30:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46810 "EHLO
+        id S238357AbiFOD3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 23:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242080AbiFODab (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 23:30:31 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F176F4D26B
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 20:30:26 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id y13-20020a17090a154d00b001eaaa3b9b8dso814320pja.2
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 20:30:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=doTnAF4XQIaQ0b+nXJ4X8Rr+Aa3su899V8VQarkvoZ0=;
-        b=WbMTJnn0QXbgDh8N6WitFhXsUIfrb4fMexM5glOTUQp4qEVXL44fe6rTpvkw6UM5Lq
-         yUz+uElPycOBY2q55n8UwEHe5vBLr2xro4ifdt7unFKat81DbaEycJMx8rdbUweEZscb
-         z745dPtxU/kxPy0nAtqFLQDcMgSSA7fbmN4viYTkwH41sK8hLR0Z6r3MYFanVpu8djkV
-         YBYYAgXe18qB4SyxlS/kx36KDqdxrqL0FJskfoX3IWosHh9Iu6rISzb7lXiyYz7IkVvj
-         NOQnIvSwWD3fZjUQn9BA+CNQzzgVHZZuSMWo9u/Gx3tgNp+XzUs3UhsQuXOqOrMX7Pix
-         um6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=doTnAF4XQIaQ0b+nXJ4X8Rr+Aa3su899V8VQarkvoZ0=;
-        b=hIqvJUvYT6+crIISC1sMQMQyrJ+ublNpwOS1MDVijIVHrlkf6V0N8o6G19ffxQfCBt
-         UQpV1spL/eKYJ21xWRVbDeDkEJBN4LQIAMVqXAr29qCjFVu2S8HHfPF/88IJMD6T8zeQ
-         Hc27sJL3t4/FoeaCaoxL8BiXQ8fnBXsjJ6eMwa7HcJ9MBvWKBYJr/xmo6+/Q3MSUhOQc
-         mXAtpExUDPeh9TnNfl6bpK+fGQeOpWs2+Gbz09n4tLlZFHy7mpOQwsV3hWnZdmBjIMDp
-         Ex3SyD5OCC6MF58CBey1BPKGcEKVGtl/mtwQALnciL+9gQ3r3LGhS+We9AtZFaSycQtT
-         i6cA==
-X-Gm-Message-State: AJIora/lDJSb3dXOJZFUnLcawBKCBFMdwjLWwrD+1tt/SSWLMcVdcbSb
-        98ldIZ/l7I8eh+2BZWbSUVkP/C9ILkw=
-X-Google-Smtp-Source: AGRyM1uF/6nHjmiO4cdI0n79ZD1eI7XhcdEKATNxQi5wE3HC+nzS8rJ8cqU9oQsQ0DWktyea2JL8lg==
-X-Received: by 2002:a17:90b:1b0d:b0:1e6:847e:6448 with SMTP id nu13-20020a17090b1b0d00b001e6847e6448mr7766689pjb.125.1655263826279;
-        Tue, 14 Jun 2022 20:30:26 -0700 (PDT)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id a21-20020a62d415000000b0051bd72bb2e6sm8358881pfh.197.2022.06.14.20.30.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 20:30:25 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv2 iproute2-next] iplink: bond_slave: add per port prio support
-Date:   Wed, 15 Jun 2022 11:30:15 +0800
-Message-Id: <20220615033015.2057178-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220615032934.2057120-1-liuhangbin@gmail.com>
-References: <20220615032934.2057120-1-liuhangbin@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S233392AbiFOD3i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 23:29:38 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05FFE42EDF;
+        Tue, 14 Jun 2022 20:29:36 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 9D8BE1A087E;
+        Wed, 15 Jun 2022 05:29:35 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 35A131A0876;
+        Wed, 15 Jun 2022 05:29:35 +0200 (CEST)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 3B740181D0CA;
+        Wed, 15 Jun 2022 11:29:33 +0800 (+08)
+From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
+        horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
+        alexandre.belloni@bootlin.com, fido_max@inbox.ru,
+        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
+        vladimir.oltean@nxp.com, leoyang.li@nxp.com,
+        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com
+Subject: [net] net: dsa: felix: update base time of time-aware shaper when adjusting PTP time
+Date:   Wed, 15 Jun 2022 11:36:10 +0800
+Message-Id: <20220615033610.35983-1-xiaoliang.yang_1@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add per port priority support for active slave re-selection during
-bonding failover. A higher number means higher priority.
+When adjusting the PTP clock, the base time of the TAS configuration
+will become unreliable. We need reset the TAS configuration by using a
+new base time.
 
-This option is only valid for active-backup(1), balance-tlb (5) and
-balance-alb (6) mode.
+For example, if the driver gets a base time 0 of Qbv configuration from
+user, and current time is 20000. The driver will set the TAS base time
+to be 20000. After the PTP clock adjustment, the current time becomes
+10000. If the TAS base time is still 20000, it will be a future time,
+and TAS entry list will stop running. Another example, if the current
+time becomes to be 10000000 after PTP clock adjust, a large time offset
+can cause the hardware to hang.
 
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+This patch introduces a tas_clock_adjust() function to reset the TAS
+module by using a new base time after the PTP clock adjustment. This can
+avoid issues above.
+
+Due to PTP clock adjustment can occur at any time, it may conflict with
+the TAS configuration. We introduce a new TAS lock to serialize the
+access to the TAS registers.
+
+Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 ---
-v2: update man page
----
- ip/iplink_bond_slave.c | 12 +++++++++++-
- man/man8/ip-link.8.in  |  8 ++++++++
- 2 files changed, 19 insertions(+), 1 deletion(-)
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 83 ++++++++++++++++++++++++--
+ drivers/net/ethernet/mscc/ocelot.c     |  1 +
+ drivers/net/ethernet/mscc/ocelot_ptp.c | 12 +++-
+ include/soc/mscc/ocelot.h              |  7 +++
+ 4 files changed, 95 insertions(+), 8 deletions(-)
 
-diff --git a/ip/iplink_bond_slave.c b/ip/iplink_bond_slave.c
-index d488aaab..8103704b 100644
---- a/ip/iplink_bond_slave.c
-+++ b/ip/iplink_bond_slave.c
-@@ -19,7 +19,7 @@
- 
- static void print_explain(FILE *f)
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 570d0204b7be..dd9085ae0922 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -1196,10 +1196,13 @@ static void vsc9959_tas_gcl_set(struct ocelot *ocelot, const u32 gcl_ix,
+ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 				    struct tc_taprio_qopt_offload *taprio)
  {
--	fprintf(f, "Usage: ... bond_slave [ queue_id ID ]\n");
-+	fprintf(f, "Usage: ... bond_slave [ queue_id ID ] [ prio PRIORITY ]\n");
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 	struct timespec64 base_ts;
+ 	int ret, i;
+ 	u32 val;
+ 
++	mutex_lock(&ocelot->tas_lock);
++
+ 	if (!taprio->enable) {
+ 		ocelot_rmw_rix(ocelot,
+ 			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF),
+@@ -1207,15 +1210,20 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
+ 			       QSYS_TAG_CONFIG, port);
+ 
++		mutex_unlock(&ocelot->tas_lock);
+ 		return 0;
+ 	}
+ 
+ 	if (taprio->cycle_time > NSEC_PER_SEC ||
+-	    taprio->cycle_time_extension >= NSEC_PER_SEC)
+-		return -EINVAL;
++	    taprio->cycle_time_extension >= NSEC_PER_SEC) {
++		ret = -EINVAL;
++		goto err;
++	}
+ 
+-	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX)
+-		return -ERANGE;
++	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX) {
++		ret = -ERANGE;
++		goto err;
++	}
+ 
+ 	/* Enable guard band. The switch will schedule frames without taking
+ 	 * their length into account. Thus we'll always need to enable the
+@@ -1236,8 +1244,10 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 	 * config is pending, need reset the TAS module
+ 	 */
+ 	val = ocelot_read(ocelot, QSYS_PARAM_STATUS_REG_8);
+-	if (val & QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING)
+-		return  -EBUSY;
++	if (val & QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING) {
++		ret = -EBUSY;
++		goto err;
++	}
+ 
+ 	ocelot_rmw_rix(ocelot,
+ 		       QSYS_TAG_CONFIG_ENABLE |
+@@ -1248,6 +1258,8 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 		       QSYS_TAG_CONFIG_SCH_TRAFFIC_QUEUES_M,
+ 		       QSYS_TAG_CONFIG, port);
+ 
++	ocelot_port->base_time = taprio->base_time;
++
+ 	vsc9959_new_base_time(ocelot, taprio->base_time,
+ 			      taprio->cycle_time, &base_ts);
+ 	ocelot_write(ocelot, base_ts.tv_nsec, QSYS_PARAM_CFG_REG_1);
+@@ -1271,9 +1283,67 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 				 !(val & QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE),
+ 				 10, 100000);
+ 
++err:
++	mutex_unlock(&ocelot->tas_lock);
++
+ 	return ret;
  }
  
- static void explain(void)
-@@ -120,6 +120,10 @@ static void bond_slave_print_opt(struct link_util *lu, FILE *f, struct rtattr *t
- 			  "queue_id %d ",
- 			  rta_getattr_u16(tb[IFLA_BOND_SLAVE_QUEUE_ID]));
- 
-+	if (tb[IFLA_BOND_SLAVE_PRIO])
-+		print_int(PRINT_ANY, "prio", "prio %d ",
-+			  rta_getattr_s32(tb[IFLA_BOND_SLAVE_PRIO]));
++static void vsc9959_tas_clock_adjust(struct ocelot *ocelot)
++{
++	struct ocelot_port *ocelot_port;
++	struct timespec64 base_ts;
++	u64 cycletime;
++	int port;
++	u32 val;
 +
- 	if (tb[IFLA_BOND_SLAVE_AD_AGGREGATOR_ID])
- 		print_int(PRINT_ANY,
- 			  "ad_aggregator_id",
-@@ -151,6 +155,7 @@ static int bond_slave_parse_opt(struct link_util *lu, int argc, char **argv,
- 				struct nlmsghdr *n)
++	mutex_lock(&ocelot->tas_lock);
++
++	for (port = 0; port < ocelot->num_phys_ports; port++) {
++		val = ocelot_read_rix(ocelot, QSYS_TAG_CONFIG, port);
++		if (!(val & QSYS_TAG_CONFIG_ENABLE))
++			continue;
++
++		ocelot_rmw(ocelot,
++			   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(port),
++			   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM_M,
++			   QSYS_TAS_PARAM_CFG_CTRL);
++
++		ocelot_rmw_rix(ocelot,
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF),
++			       QSYS_TAG_CONFIG_ENABLE |
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
++			       QSYS_TAG_CONFIG, port);
++
++		cycletime = ocelot_read(ocelot, QSYS_PARAM_CFG_REG_4);
++		ocelot_port = ocelot->ports[port];
++
++		vsc9959_new_base_time(ocelot, ocelot_port->base_time,
++				      cycletime, &base_ts);
++
++		ocelot_write(ocelot, base_ts.tv_nsec, QSYS_PARAM_CFG_REG_1);
++		ocelot_write(ocelot, lower_32_bits(base_ts.tv_sec),
++			     QSYS_PARAM_CFG_REG_2);
++		val = upper_32_bits(base_ts.tv_sec);
++		ocelot_rmw(ocelot,
++			   QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB(val),
++			   QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB_M,
++			   QSYS_PARAM_CFG_REG_3);
++
++		ocelot_rmw(ocelot, QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE,
++			   QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE,
++			   QSYS_TAS_PARAM_CFG_CTRL);
++
++		ocelot_rmw_rix(ocelot,
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF) |
++			       QSYS_TAG_CONFIG_ENABLE,
++			       QSYS_TAG_CONFIG_ENABLE |
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
++			       QSYS_TAG_CONFIG, port);
++	}
++	mutex_unlock(&ocelot->tas_lock);
++}
++
+ static int vsc9959_qos_port_cbs_set(struct dsa_switch *ds, int port,
+ 				    struct tc_cbs_qopt_offload *cbs_qopt)
  {
- 	__u16 queue_id;
-+	int prio;
+@@ -2210,6 +2280,7 @@ static const struct ocelot_ops vsc9959_ops = {
+ 	.psfp_filter_del	= vsc9959_psfp_filter_del,
+ 	.psfp_stats_get		= vsc9959_psfp_stats_get,
+ 	.cut_through_fwd	= vsc9959_cut_through_fwd,
++	.tas_clock_adjust	= vsc9959_tas_clock_adjust,
+ };
  
- 	while (argc > 0) {
- 		if (matches(*argv, "queue_id") == 0) {
-@@ -158,6 +163,11 @@ static int bond_slave_parse_opt(struct link_util *lu, int argc, char **argv,
- 			if (get_u16(&queue_id, *argv, 0))
- 				invarg("queue_id is invalid", *argv);
- 			addattr16(n, 1024, IFLA_BOND_SLAVE_QUEUE_ID, queue_id);
-+		} else if (strcmp(*argv, "prio") == 0) {
-+			NEXT_ARG();
-+			if (get_s32(&prio, *argv, 0))
-+				invarg("prio is invalid", *argv);
-+			addattr32(n, 1024, IFLA_BOND_SLAVE_PRIO, prio);
- 		} else {
- 			if (matches(*argv, "help") != 0)
- 				fprintf(stderr,
-diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
-index 6f332645..3dbcdbb6 100644
---- a/man/man8/ip-link.8.in
-+++ b/man/man8/ip-link.8.in
-@@ -2567,6 +2567,8 @@ the following additional arguments are supported:
- .B "ip link set type bond_slave"
- [
- .BI queue_id " ID"
-+] [
-+.BI prio " PRIORITY"
- ]
+ static const struct felix_info felix_info_vsc9959 = {
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 8da7e25a47c9..d4649e4ee0e7 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -3367,6 +3367,7 @@ int ocelot_init(struct ocelot *ocelot)
+ 	mutex_init(&ocelot->ptp_lock);
+ 	mutex_init(&ocelot->mact_lock);
+ 	mutex_init(&ocelot->fwd_domain_lock);
++	mutex_init(&ocelot->tas_lock);
+ 	spin_lock_init(&ocelot->ptp_clock_lock);
+ 	spin_lock_init(&ocelot->ts_id_lock);
+ 	snprintf(queue_name, sizeof(queue_name), "%s-stats",
+diff --git a/drivers/net/ethernet/mscc/ocelot_ptp.c b/drivers/net/ethernet/mscc/ocelot_ptp.c
+index 87ad2137ba06..522fdc38d4d0 100644
+--- a/drivers/net/ethernet/mscc/ocelot_ptp.c
++++ b/drivers/net/ethernet/mscc/ocelot_ptp.c
+@@ -72,15 +72,19 @@ int ocelot_ptp_settime64(struct ptp_clock_info *ptp,
+ 	ocelot_write_rix(ocelot, val, PTP_PIN_CFG, TOD_ACC_PIN);
  
- .in +8
-@@ -2574,6 +2576,12 @@ the following additional arguments are supported:
- .BI queue_id " ID"
- - set the slave's queue ID (a 16bit unsigned value).
- 
-+.sp
-+.BI prio " PRIORITY"
-+- set the slave's priority for active slave re-selection during failover
-+(a 32bit signed value). This option only valid for active-backup(1),
-+balance-tlb (5) and balance-alb (6) mode.
+ 	spin_unlock_irqrestore(&ocelot->ptp_clock_lock, flags);
 +
- .in -8
++	if (ocelot->ops->tas_clock_adjust)
++		ocelot->ops->tas_clock_adjust(ocelot);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(ocelot_ptp_settime64);
  
- .TP
+ int ocelot_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ {
++	struct ocelot *ocelot = container_of(ptp, struct ocelot, ptp_info);
++
+ 	if (delta > -(NSEC_PER_SEC / 2) && delta < (NSEC_PER_SEC / 2)) {
+-		struct ocelot *ocelot = container_of(ptp, struct ocelot,
+-						     ptp_info);
+ 		unsigned long flags;
+ 		u32 val;
+ 
+@@ -117,6 +121,10 @@ int ocelot_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 
+ 		ocelot_ptp_settime64(ptp, &ts);
+ 	}
++
++	if (ocelot->ops->tas_clock_adjust)
++		ocelot->ops->tas_clock_adjust(ocelot);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(ocelot_ptp_adjtime);
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 5f88385a7748..3737570116c3 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -575,6 +575,7 @@ struct ocelot_ops {
+ 	int (*psfp_stats_get)(struct ocelot *ocelot, struct flow_cls_offload *f,
+ 			      struct flow_stats *stats);
+ 	void (*cut_through_fwd)(struct ocelot *ocelot);
++	void (*tas_clock_adjust)(struct ocelot *ocelot);
+ };
+ 
+ struct ocelot_vcap_policer {
+@@ -691,6 +692,9 @@ struct ocelot_port {
+ 	int				bridge_num;
+ 
+ 	int				speed;
++
++	/* Store the AdminBaseTime of EST fetched from userspace. */
++	s64				base_time;
+ };
+ 
+ struct ocelot {
+@@ -757,6 +761,9 @@ struct ocelot {
+ 	/* Lock for serializing forwarding domain changes */
+ 	struct mutex			fwd_domain_lock;
+ 
++	/* Lock for serializing Time-Aware Shaper changes */
++	struct mutex			tas_lock;
++
+ 	struct workqueue_struct		*owq;
+ 
+ 	u8				ptp:1;
 -- 
-2.35.1
+2.17.1
 
