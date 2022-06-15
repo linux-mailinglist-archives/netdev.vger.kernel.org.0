@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F67854BF46
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 03:33:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07AD254BF4F
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 03:38:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234319AbiFOBc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 14 Jun 2022 21:32:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
+        id S233834AbiFOBii (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 14 Jun 2022 21:38:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231516AbiFOBc4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 21:32:56 -0400
+        with ESMTP id S232903AbiFOBig (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 14 Jun 2022 21:38:36 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9541319FA7
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 18:32:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2413B2E9CD
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 18:38:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655256772;
+        s=mimecast20190719; t=1655257113;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=ZcDP8s6xBnMoZnXRP58Aj3LatGWJup4YNVIRqqEjjLo=;
-        b=H6tkO2/N4CImBBZFL3OBHV0Kek3sh2pcyOeuGkimKiefBZKzy7/pq0GAL7nvPdrI+flSVR
-        F3nsZf++/jIzVRLf5CXDQrFsnOgY8Ap5JL3v7bL58PJfKN3eawMze6YkURXJU0njHJBiF9
-        9X67tSah48PBKbX5qrQx3wk5Qzq6aFQ=
+        bh=rURo3kVZKHi2ZU5DspRIcPyr1kcTzuXSnx2MKQKNzvc=;
+        b=Uj1o3Fh5UX5qeZucBFVKFMVibQ1O0mhQv1byHPK8eomHpptLPYHLkVHkB7y7xjE2IN0N6G
+        qkesbZULzQ2bCutMEzLzv7R+WHNgoKYuMnExA5WIwIB9yN6SyZxuZItQAp9Ai3E+yoS086
+        Os2kkSi0s5WGVuUZ329WiJieUcx54ng=
 Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
  [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-152-YMd-DKsWPACdgLhPHReHww-1; Tue, 14 Jun 2022 21:32:51 -0400
-X-MC-Unique: YMd-DKsWPACdgLhPHReHww-1
-Received: by mail-lf1-f69.google.com with SMTP id f32-20020a0565123b2000b004791bf1af10so5300719lfv.1
-        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 18:32:51 -0700 (PDT)
+ us-mta-120-UE_F2wa5PzunqSidV5fBGw-1; Tue, 14 Jun 2022 21:38:31 -0400
+X-MC-Unique: UE_F2wa5PzunqSidV5fBGw-1
+Received: by mail-lf1-f69.google.com with SMTP id i19-20020a056512225300b0047db7f89e9eso5308718lfu.14
+        for <netdev@vger.kernel.org>; Tue, 14 Jun 2022 18:38:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ZcDP8s6xBnMoZnXRP58Aj3LatGWJup4YNVIRqqEjjLo=;
-        b=FiHzSueXh1ffLFar4Xn6O99tF2viZ2WeVpDB3l0LYBDV6Dw/MfZ6PAsLEsx9D68xNt
-         5ke3iAqhS4Rl8WGWSpyhJIKH2EybIzDHwjoTNUnBOol+LqArVpbQFcyRybnO4sC5rrxx
-         Kk1/rfLO742z5mV7odk9jT3L/TuI4d+JzfsIXawlAcKPC0iLeQmTUJE3fizY53TlLYJ5
-         LTddxuOAoHokRfAYwDDRNp2S8xM1JD5ASHiRn70qvlRQzPkxU41D2+23M4Gp5tMVqJ6I
-         SU2fCodnbfnEH+LZFTnSWXe7Agns46gGoS4w92MlWcmRomIFXYvmzZuQEeD07k0FKWDF
-         sfyQ==
-X-Gm-Message-State: AJIora9Fq6ftOPRvXyQG4bycSGySFKTO/ZJEuTeZutD23Qx7xDNPUZQu
-        mYEmtUBv0J6CClQOtz+6WvUUXCDKsCWGqiEjj2CsH58bec4buByEZxqk2KynZYI62S20PTeHs9i
-        IxrVb8wHjKGWSIeWrRJPJMK4vF6vYY0On
-X-Received: by 2002:a2e:3a16:0:b0:255:7811:2827 with SMTP id h22-20020a2e3a16000000b0025578112827mr4027621lja.130.1655256769612;
-        Tue, 14 Jun 2022 18:32:49 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uMwd0c2Sr2LPJ9/U4Ryzx4YOyqLwF3zPfXTxPbkb91T862PbQExiJRt2ktRwaj6Qfthz+EXyD0oPSKiF0NB1w=
-X-Received: by 2002:a2e:3a16:0:b0:255:7811:2827 with SMTP id
- h22-20020a2e3a16000000b0025578112827mr4027594lja.130.1655256769269; Tue, 14
- Jun 2022 18:32:49 -0700 (PDT)
+        bh=rURo3kVZKHi2ZU5DspRIcPyr1kcTzuXSnx2MKQKNzvc=;
+        b=mau6CHgStiuSncNv/waWroUd9YVAqjO2qdwvIHi39tVYr4phmV2wbYJIUzT4oWrui3
+         1UqWm6epwNu2nROaiiPfSgqpOO39BZ3mGKIvuM7Cvhxa54R0tWBRoe8xZVJteTr1AMPB
+         W4KNQW4mBLfXHdt6tanWiwv2H2VCb5/4HtyPlW9FFIdq7HViHuBvpx9mtG+kJ8WzecU9
+         Wc16iPAFaObFn/UzHZYUjlFBYrysGU+AfhWNeHoM4R6Hn6sNDgjUw2w+GwbVJEN4hCYb
+         TOdpUXH4rQ5XPKCbhX14l8LOqqYoBi+BVLEN3sQrpXFgiL6pHmtMSGA3aGEAdefoHtZK
+         MyVA==
+X-Gm-Message-State: AJIora8rxPEXWiA96+z0Q2cMgTnFV7i64V4z3Sxgr79RXex5HOrO0++N
+        na0URGxXBYXFrpge8dP6zCZFypuuga+6PRyfLepRSpvE1iYPPBT8aBWQTr37/yKcfGo8K27etGD
+        IfJtn5fhZ/EqsSNBRqKnTie6TrzPQJXTT
+X-Received: by 2002:a05:651c:306:b0:258:f7fa:e549 with SMTP id a6-20020a05651c030600b00258f7fae549mr3804031ljp.243.1655257109835;
+        Tue, 14 Jun 2022 18:38:29 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tF4/qGYFV4FHPqwC9Y7l6dBiWT88H+APD7VAAhW4KXIedUPk96pJR+OsOs9qykk3NSxw5rvZc5aZna9dYIZ5c=
+X-Received: by 2002:a05:651c:306:b0:258:f7fa:e549 with SMTP id
+ a6-20020a05651c030600b00258f7fae549mr3804015ljp.243.1655257109556; Tue, 14
+ Jun 2022 18:38:29 -0700 (PDT)
 MIME-Version: 1.0
 References: <CACGkMEtRP+0Xy63g0SF_y1avv=3rFv6P9+Z7kp9XBS5d+_py8w@mail.gmail.com>
  <20220613023337-mutt-send-email-mst@kernel.org> <CACGkMEs05ZisiPW+7H6Omp80MzmZWZCpc1mf5Vd99C3H-KUtgA@mail.gmail.com>
@@ -57,11 +57,11 @@ References: <CACGkMEtRP+0Xy63g0SF_y1avv=3rFv6P9+Z7kp9XBS5d+_py8w@mail.gmail.com>
  <20220613045606-mutt-send-email-mst@kernel.org> <CACGkMEtAQck7Nr6SP_pD0MGT3njnwZSyT=xPyYzUU3c5GNNM_w@mail.gmail.com>
  <CACGkMEvUFJkC=mnvL2PSH6-3RMcJUk84f-9X46JVcj2vTAr4SQ@mail.gmail.com>
  <20220613052644-mutt-send-email-mst@kernel.org> <CACGkMEstGvhETXThuwO+tLVBuRgQb8uC_6DdAM8ZxOi5UKBRbg@mail.gmail.com>
- <20220614094821-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220614094821-mutt-send-email-mst@kernel.org>
+ <20220614114839-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220614114839-mutt-send-email-mst@kernel.org>
 From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 15 Jun 2022 09:32:37 +0800
-Message-ID: <CACGkMEsJELwjnLm4VA7gKiNu2EcRCyM=exEo9xyf0jpPphVRcA@mail.gmail.com>
+Date:   Wed, 15 Jun 2022 09:38:18 +0800
+Message-ID: <CACGkMEthExrqFNkOzLGwaffvHw=Tc3MXPtTTiRsnpFDGKPRP=A@mail.gmail.com>
 Subject: Re: [PATCH V6 8/9] virtio: harden vring IRQ
 To:     "Michael S. Tsirkin" <mst@redhat.com>
 Cc:     virtualization <virtualization@lists.linux-foundation.org>,
@@ -94,7 +94,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 9:50 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+On Tue, Jun 14, 2022 at 11:49 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 >
 > On Tue, Jun 14, 2022 at 03:40:21PM +0800, Jason Wang wrote:
 > > On Mon, Jun 13, 2022 at 5:28 PM Michael S. Tsirkin <mst@redhat.com> wrote:
@@ -229,16 +229,7 @@ On Tue, Jun 14, 2022 at 9:50 PM Michael S. Tsirkin <mst@redhat.com> wrote:
 > > A networking device, RX is backed by vringh so we don't need to
 > > refill. TX is backed by virtio and is available until ndo_open. So
 > > it's fine to let the core to set DRIVER_OK after probe().
->
-> How about we just add an explicit ready in the driver anyway?
-> I think the implicit ready is just creating a mess as people
-> tend to forget to think about it.
-
-This is possible, and we could fail the probe if ready is not set by a driver.
-
-Thanks
-
->
+> >
 > > >  drivers/nvdimm/virtio_pmem.c
 > >
 > > It doesn't use interrupt so far, so it has nothing to do with the IRQ hardening.
@@ -283,7 +274,40 @@ Thanks
 > > It requires more thoughts.
 > >
 > > Thanks
-> >
+>
+> I think at this point let's do it before so we at least do not
+> get a regression with your patches, add a big comment and work
+> on fixing properly in the next Linux version. Do you think you can
+> commit to a full fix in the next linux version?
+
+I think it should be ok.
+
+If I understand you correctly, you meant to disable the hardening in
+this release?
+
+(Actually, my understanding is that since we are developing mainline
+instead of a downstream version with a hardening features, bug reports
+are somehow expected, especially consider most of the bugs are not
+related to hardening itself)
+
+Thanks
+
+diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+index 13a7348cedff..7ef3115efbad 100644
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -1688,7 +1688,7 @@ static struct virtqueue *vring_create_virtqueue_packed(
+        vq->we_own_ring = true;
+        vq->notify = notify;
+        vq->weak_barriers = weak_barriers;
+-       vq->broken = true;
++       vq->broken = false;
+        vq->last_used_idx = 0;
+        vq->event_triggered = false;
+        vq->num_added = 0;
+
+>
+>
 > > >
 > > >
 > > > > >
