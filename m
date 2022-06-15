@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E25AA54C4D1
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 11:38:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98CB654C4DE
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 11:40:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243041AbiFOJio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 05:38:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49144 "EHLO
+        id S1346460AbiFOJkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 05:40:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239292AbiFOJi0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 05:38:26 -0400
+        with ESMTP id S1346513AbiFOJj5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 05:39:57 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB51A2DA8C
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 02:38:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FB736B76;
+        Wed, 15 Jun 2022 02:39:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655285903; x=1686821903;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=XFXSI/1xAt/mULLyU5FPaKsgpjpps7xtu9vj53TBM1c=;
-  b=fX96ns4gW4SEPlbn77k/66bgSA/ZCsCYP1HkZrNFneTcq/H0X1IwWmNa
-   Z41C1c3jeWDSeCnRjHXMyFmTWSqmrV5xh9InO6oy8+hdNeF2OnKw93Gl5
-   ed/sC6jbcHjEuQqnaZWbcgEVTufKctbY47qcEiX9I/w37zt8llNz4lTFY
-   CCXp1HvVAZo4txBQ1YBQuycnxr5Ei+NhsC0WEgkYTCP8i/t1d4Co84I+D
-   YIJcuBc52acbmJvsS11wAy3cXJY6BO1c5l5PoL5OFoWgk/tV1C2LBdbdm
-   1mysyqEK3KtvGPlrWexOXJjkS4EIZSm8WCmod8dWeBk5LQzz9WNBxYyzF
-   g==;
+  t=1655285996; x=1686821996;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WzYLHyjSwhugUXtVRNrbyU96QfQSkrdPL05c3jK9Q9A=;
+  b=Zy96EmO4L9wy+vB1oKGOql8k2fWmh0LSkZWU6d8dBC2SHbn6gVHbSmUd
+   R5qBnBEXTwryMhhL0VTsmBNAZMp7x0MYUF95E/QW76ivNk/ii6ZJaTSDV
+   vd0J7vUpmLhTcC6U0bakk83mduv3C1Q2u2V3OsKbk1/VJR76JUjQOCDDn
+   9rkO0NTFjHJ247GF+9REd5zfM3GSIAKuiNsh70bjdoz2rQJQS10B1rzgZ
+   zn5Yao73eHNwRBw33Sat5MknYdYB9v7zH4Ld/CxegI2WTlgT6KxHSTqok
+   36mqOxNjHDKoEhJC2nV0w2Yn2a3Jj1TBcCC2ExZUTtVCFjKwGlJmPxrQJ
+   w==;
 X-IronPort-AV: E=Sophos;i="5.91,300,1647327600"; 
-   d="scan'208";a="178034445"
+   d="scan'208";a="168194071"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Jun 2022 02:38:07 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Jun 2022 02:39:46 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 15 Jun 2022 02:38:07 -0700
-Received: from den-dk-m31857.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 15 Jun 2022 02:38:05 -0700
-Message-ID: <a701c1ffc0895cde36d4090127d725f6a21d1518.camel@microchip.com>
-Subject: Re: [PATCH net-next] net: sparx5: Allow mdb entries to both CPU and
- ports
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Casper Andersson <casper.casan@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Eric Dumazet <edumazet@google.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>
-Date:   Wed, 15 Jun 2022 11:38:04 +0200
-In-Reply-To: <20220614092532.3273791-1-casper.casan@gmail.com>
-References: <20220614092532.3273791-1-casper.casan@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-User-Agent: Evolution 3.44.2 
+ 15.1.2375.17; Wed, 15 Jun 2022 02:39:44 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Wed, 15 Jun 2022 02:39:44 -0700
+Date:   Wed, 15 Jun 2022 15:09:43 +0530
+From:   Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bryan.whitehead@microchip.com>,
+        <lxu@maxlinear.com>, <richardcochran@gmail.com>,
+        <UNGLinuxDriver@microchip.com>, <Ian.Saturley@microchip.com>
+Subject: Re: [PATCH net-next 4/5] net: lan743x: Add support to SGMII 1G and
+ 2.5G
+Message-ID: <20220615093943.jkq7mme5u36pzytl@microsemi.com>
+References: <20220614103424.58971-1-Raju.Lakkaraju@microchip.com>
+ <20220614103424.58971-5-Raju.Lakkaraju@microchip.com>
+ <Yqj575Z/tYXsRHHK@lunn.ch>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <Yqj575Z/tYXsRHHK@lunn.ch>
+User-Agent: NeoMutt/20180716-255-141487
 X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -66,121 +66,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgQ2FzcGVyLAoKTG9va3MgZmluZSB0byBtZS4KCkFja2VkLWJ5OiBTdGVlbiBIZWdlbHVuZCA8
-U3RlZW4uSGVnZWx1bmRAbWljcm9jaGlwLmNvbT4KCk9uIFR1ZSwgMjAyMi0wNi0xNCBhdCAxMToy
-NSArMDIwMCwgQ2FzcGVyIEFuZGVyc3NvbiB3cm90ZToKPiBFWFRFUk5BTCBFTUFJTDogRG8gbm90
-IGNsaWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlvdSBrbm93IHRoZSBjb250
-ZW50IGlzIHNhZmUKPiAKPiBBbGxvdyBtZGIgZW50cmllcyB0byBiZSBmb3J3YXJkZWQgdG8gQ1BV
-IGFuZCBiZSBzd2l0Y2hlZCBhdCB0aGUgc2FtZQo+IHRpbWUuIE9ubHkgcmVtb3ZlIGVudHJ5IHdo
-ZW4gbm8gcG9ydCBhbmQgdGhlIENQVSBpc24ndCBwYXJ0IG9mIHRoZSBncm91cAo+IGFueW1vcmUu
-Cj4gCj4gU2lnbmVkLW9mZi1ieTogQ2FzcGVyIEFuZGVyc3NvbiA8Y2FzcGVyLmNhc2FuQGdtYWls
-LmNvbT4KPiAtLS0KPiDCoC4uLi9taWNyb2NoaXAvc3Bhcng1L3NwYXJ4NV9zd2l0Y2hkZXYuY8Kg
-wqDCoMKgwqDCoCB8IDU1ICsrKysrKysrKysrKy0tLS0tLS0KPiDCoDEgZmlsZSBjaGFuZ2VkLCAz
-NSBpbnNlcnRpb25zKCspLCAyMCBkZWxldGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
-cy9uZXQvZXRoZXJuZXQvbWljcm9jaGlwL3NwYXJ4NS9zcGFyeDVfc3dpdGNoZGV2LmMKPiBiL2Ry
-aXZlcnMvbmV0L2V0aGVybmV0L21pY3JvY2hpcC9zcGFyeDUvc3Bhcng1X3N3aXRjaGRldi5jCj4g
-aW5kZXggMzQyOTY2MGNkMmU1Li40MGVmOWZhZDNhNzcgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9u
-ZXQvZXRoZXJuZXQvbWljcm9jaGlwL3NwYXJ4NS9zcGFyeDVfc3dpdGNoZGV2LmMKPiArKysgYi9k
-cml2ZXJzL25ldC9ldGhlcm5ldC9taWNyb2NoaXAvc3Bhcng1L3NwYXJ4NV9zd2l0Y2hkZXYuYwo+
-IEBAIC0zOTQsMTIgKzM5NCwxMCBAQCBzdGF0aWMgaW50IHNwYXJ4NV9oYW5kbGVfcG9ydF9tZGJf
-YWRkKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYsCj4gwqDCoMKgwqDCoMKgwqAgc3RydWN0IHNwYXJ4
-NSAqc3B4NSA9IHBvcnQtPnNwYXJ4NTsKPiDCoMKgwqDCoMKgwqDCoCB1MTYgcGdpZF9pZHgsIHZp
-ZDsKPiDCoMKgwqDCoMKgwqDCoCB1MzIgbWFjdF9lbnRyeTsKPiArwqDCoMKgwqDCoMKgIGJvb2wg
-aXNfaG9zdDsKPiDCoMKgwqDCoMKgwqDCoCBpbnQgcmVzLCBlcnI7Cj4gCj4gLcKgwqDCoMKgwqDC
-oCBpZiAobmV0aWZfaXNfYnJpZGdlX21hc3Rlcih2LT5vYmoub3JpZ19kZXYpKSB7Cj4gLcKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3Bhcng1X21hY3RfbGVhcm4oc3B4NSwgUEdJRF9DUFUs
-IHYtPmFkZHIsIHYtPnZpZCk7Cj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0dXJu
-IDA7Cj4gLcKgwqDCoMKgwqDCoCB9Cj4gK8KgwqDCoMKgwqDCoCBpc19ob3N0ID0gbmV0aWZfaXNf
-YnJpZGdlX21hc3Rlcih2LT5vYmoub3JpZ19kZXYpOwo+IAo+IMKgwqDCoMKgwqDCoMKgIC8qIFdo
-ZW4gVkxBTiB1bmF3YXJlIHRoZSB2bGFuIHZhbHVlIGlzIG5vdCBwYXJzZWQgYW5kIHdlIHJlY2Vp
-dmUgdmlkIDAuCj4gwqDCoMKgwqDCoMKgwqDCoCAqIEZhbGwgYmFjayB0byBicmlkZ2UgdmlkIDEu
-Cj4gQEAgLTQxNiwxNyArNDE0LDMzIEBAIHN0YXRpYyBpbnQgc3Bhcng1X2hhbmRsZV9wb3J0X21k
-Yl9hZGQoc3RydWN0IG5ldF9kZXZpY2UgKmRldiwKPiAKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgLyogTUNfSURYIHN0YXJ0cyBhZnRlciB0aGUgcG9ydCBtYXNrcyBpbiB0aGUgUEdJ
-RCB0YWJsZSAqLwo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBwZ2lkX2lkeCArPSBT
-UFg1X1BPUlRTOwo+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHNwYXJ4NV9wZ2lkX3Vw
-ZGF0ZV9tYXNrKHBvcnQsIHBnaWRfaWR4LCB0cnVlKTsKPiArCj4gK8KgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgaWYgKGlzX2hvc3QpCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgIHNweDVfcm13KEFOQV9BQ19QR0lEX01JU0NfQ0ZHX1BHSURfQ1BVX0NP
-UFlfRU5BX1NFVCgxKSwKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgQU5BX0FDX1BHSURfTUlTQ19DRkdfUEdJRF9DUFVfQ09Q
-WV9FTkEsIHNweDUsCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgIEFOQV9BQ19QR0lEX01JU0NfQ0ZHKHBnaWRfaWR4KSk7Cj4g
-K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZWxzZQo+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzcGFyeDVfcGdpZF91cGRhdGVfbWFzayhwb3J0LCBw
-Z2lkX2lkeCwgdHJ1ZSk7Cj4gKwo+IMKgwqDCoMKgwqDCoMKgIH0gZWxzZSB7Cj4gwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgIGVyciA9IHNwYXJ4NV9wZ2lkX2FsbG9jX21jYXN0KHNweDUs
-ICZwZ2lkX2lkeCk7Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlmIChlcnIpIHsK
-PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG5ldGRldl93
-YXJuKGRldiwgIm11bHRpY2FzdCBwZ2lkIHRhYmxlIGZ1bGxcbiIpOwo+IMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0dXJuIGVycjsKPiDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqAgfQo+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHNw
-YXJ4NV9wZ2lkX3VwZGF0ZV9tYXNrKHBvcnQsIHBnaWRfaWR4LCB0cnVlKTsKPiArCj4gK8KgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaWYgKGlzX2hvc3QpCj4gK8KgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHNweDVfcm13KEFOQV9BQ19QR0lEX01JU0NfQ0ZH
-X1BHSURfQ1BVX0NPUFlfRU5BX1NFVCgxKSwKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgQU5BX0FDX1BHSURfTUlTQ19DRkdf
-UEdJRF9DUFVfQ09QWV9FTkEsIHNweDUsCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIEFOQV9BQ19QR0lEX01JU0NfQ0ZHKHBn
-aWRfaWR4KSk7Cj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZWxzZQo+ICvCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzcGFyeDVfcGdpZF91cGRhdGVf
-bWFzayhwb3J0LCBwZ2lkX2lkeCwgdHJ1ZSk7Cj4gKwo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCBlcnIgPSBzcGFyeDVfbWFjdF9sZWFybihzcHg1LCBwZ2lkX2lkeCwgdi0+YWRkciwg
-dmlkKTsKPiArCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlmIChlcnIpIHsKPiDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG5ldGRldl93YXJu
-KGRldiwgImNvdWxkIG5vdCBsZWFybiBtYWMgYWRkcmVzcyAlcE1cbiIsIHYtPmFkZHIpOwo+ICvC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzcGFyeDVfcGdpZF9m
-cmVlKHNweDUsIHBnaWRfaWR4KTsKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIHNwYXJ4NV9wZ2lkX3VwZGF0ZV9tYXNrKHBvcnQsIHBnaWRfaWR4LCBmYWxz
-ZSk7Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1
-cm4gZXJyOwo+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB9Cj4gQEAgLTQ2MywxMyAr
-NDc3LDggQEAgc3RhdGljIGludCBzcGFyeDVfaGFuZGxlX3BvcnRfbWRiX2RlbChzdHJ1Y3QgbmV0
-X2RldmljZSAqZGV2LAo+IMKgwqDCoMKgwqDCoMKgIHN0cnVjdCBzcGFyeDVfcG9ydCAqcG9ydCA9
-IG5ldGRldl9wcml2KGRldik7Cj4gwqDCoMKgwqDCoMKgwqAgc3RydWN0IHNwYXJ4NSAqc3B4NSA9
-IHBvcnQtPnNwYXJ4NTsKPiDCoMKgwqDCoMKgwqDCoCB1MTYgcGdpZF9pZHgsIHZpZDsKPiAtwqDC
-oMKgwqDCoMKgIHUzMiBtYWN0X2VudHJ5LCByZXMsIHBnaWRfZW50cnlbM107Cj4gLcKgwqDCoMKg
-wqDCoCBpbnQgZXJyOwo+IC0KPiAtwqDCoMKgwqDCoMKgIGlmIChuZXRpZl9pc19icmlkZ2VfbWFz
-dGVyKHYtPm9iai5vcmlnX2RldikpIHsKPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBz
-cGFyeDVfbWFjdF9mb3JnZXQoc3B4NSwgdi0+YWRkciwgdi0+dmlkKTsKPiAtwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gMDsKPiAtwqDCoMKgwqDCoMKgIH0KPiArwqDCoMKgwqDC
-oMKgIHUzMiBtYWN0X2VudHJ5LCByZXMsIHBnaWRfZW50cnlbM10sIG1pc2NfY2ZnOwo+ICvCoMKg
-wqDCoMKgwqAgYm9vbCBob3N0X2VuYTsKPiAKPiDCoMKgwqDCoMKgwqDCoCBpZiAoIWJyX3ZsYW5f
-ZW5hYmxlZChzcHg1LT5od19icmlkZ2VfZGV2KSkKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgdmlkID0gMTsKPiBAQCAtNDgzLDE1ICs0OTIsMjEgQEAgc3RhdGljIGludCBzcGFyeDVf
-aGFuZGxlX3BvcnRfbWRiX2RlbChzdHJ1Y3QgbmV0X2RldmljZSAqZGV2LAo+IAo+IMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAvKiBNQ19JRFggc3RhcnRzIGFmdGVyIHRoZSBwb3J0IG1h
-c2tzIGluIHRoZSBQR0lEIHRhYmxlICovCj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-IHBnaWRfaWR4ICs9IFNQWDVfUE9SVFM7Cj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-c3Bhcng1X3BnaWRfdXBkYXRlX21hc2socG9ydCwgcGdpZF9pZHgsIGZhbHNlKTsKPiArCj4gK8Kg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaWYgKG5ldGlmX2lzX2JyaWRnZV9tYXN0ZXIodi0+
-b2JqLm9yaWdfZGV2KSkKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgc3B4NV9ybXcoQU5BX0FDX1BHSURfTUlTQ19DRkdfUEdJRF9DUFVfQ09QWV9FTkFfU0VU
-KDApLAo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCBBTkFfQUNfUEdJRF9NSVNDX0NGR19QR0lEX0NQVV9DT1BZX0VOQSwgc3B4
-NSwKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgQU5BX0FDX1BHSURfTUlTQ19DRkcocGdpZF9pZHgpKTsKPiArwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoCBlbHNlCj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgIHNwYXJ4NV9wZ2lkX3VwZGF0ZV9tYXNrKHBvcnQsIHBnaWRfaWR4LCBm
-YWxzZSk7Cj4gKwo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG1pc2NfY2ZnID0gc3B4
-NV9yZChzcHg1LCBBTkFfQUNfUEdJRF9NSVNDX0NGRyhwZ2lkX2lkeCkpOwo+ICvCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgIGhvc3RfZW5hID0gQU5BX0FDX1BHSURfTUlTQ19DRkdfUEdJRF9D
-UFVfQ09QWV9FTkFfR0VUKG1pc2NfY2ZnKTsKPiAKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgc3Bhcng1X3BnaWRfcmVhZF9tYXNrKHNweDUsIHBnaWRfaWR4LCBwZ2lkX2VudHJ5KTsK
-PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpZiAoYml0bWFwX2VtcHR5KCh1bnNpZ25l
-ZCBsb25nICopcGdpZF9lbnRyeSwgU1BYNV9QT1JUUykpIHsKPiAtwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLyogTm8gcG9ydHMgYXJlIGluIE1DIGdyb3VwLiBS
-ZW1vdmUgZW50cnkgKi8KPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgZXJyID0gc3Bhcng1X21kYl9kZWxfZW50cnkoZGV2LCBzcHg1LCB2LT5hZGRyLCB2aWQs
-IHBnaWRfaWR4KTsKPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgaWYgKGVycikKPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgIHJldHVybiBlcnI7Cj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgfQo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlmIChiaXRtYXBfZW1wdHko
-KHVuc2lnbmVkIGxvbmcgKilwZ2lkX2VudHJ5LCBTUFg1X1BPUlRTKSAmJiAhaG9zdF9lbmEpCj4g
-K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC8qIE5vIHBvcnRz
-IG9yIENQVSBhcmUgaW4gTUMgZ3JvdXAuIFJlbW92ZSBlbnRyeSAqLwo+ICvCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gc3Bhcng1X21kYl9kZWxfZW50
-cnkoZGV2LCBzcHg1LCB2LT5hZGRyLCB2aWQsIHBnaWRfaWR4KTsKPiDCoMKgwqDCoMKgwqDCoCB9
-Cj4gCj4gwqDCoMKgwqDCoMKgwqAgcmV0dXJuIDA7Cj4gLS0KPiAyLjMwLjIKPiAKCi0tIApCZXN0
-IFJlZ2FyZHMKU3RlZW4KCi09LT0tPS09LT0tPS09LT0tPS09LT0tPS09LT0Kc3RlZW4uaGVnZWx1
-bmRAbWljcm9jaGlwLmNvbQoK
+Hi Andrew,
+
+Thank you for review comments.
+
+The 06/14/2022 23:13, Andrew Lunn wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> > +/* MMD Device IDs */
+> > +#define STD_DEVID                    (0x0)
+> > +#define MMD_PMAPMD                   (0x1)
+> > +#define MMD_PCS                              (0x3)
+> > +#define MMD_ANEG                     (0x7)
+> > +#define MMD_VSPEC1                   (0x1E)
+> > +#define MMD_VSPEC2                   (0x1F)
+> 
+> Please use the values from include/uapi/mdio.h
+> 
+
+Accepted. Will fix this.
+
+> > +
+> > +/* Vendor Specific SGMII MMD details */
+> > +#define SR_MII_DEV_ID1                       0x0002
+> > +#define SR_MII_DEV_ID2                       0x0003
+> 
+> MDIO_DEVID1 & MDIO_DEVID2
+
+Not used these definitions. I will remote.
+
+> 
+> > +#define SR_VSMMD_PCS_ID1             0x0004
+> > +#define SR_VSMMD_PCS_ID2             0x0005
+> > +#define SR_VSMMD_STS                 0x0008
+> > +#define SR_VSMMD_CTRL                        0x0009
+> > +
+> > +#define SR_MII_CTRL                  0x0000
+> > +#define SR_MII_CTRL_RST_             BIT(15)
+> > +#define SR_MII_CTRL_LBE_             BIT(14)
+> > +#define SR_MII_CTRL_SS13_            BIT(13)
+> > +#define SR_MII_CTRL_AN_ENABLE_               BIT(12)
+> > +#define SR_MII_CTRL_LPM_             BIT(11)
+> > +#define SR_MII_CTRL_RESTART_AN_              BIT(9)
+> > +#define SR_MII_CTRL_DUPLEX_MODE_     BIT(8)
+> > +#define SR_MII_CTRL_SS6_             BIT(6)
+> 
+> These look like standard BMCR registers. Please use the values from
+> mii.h
+> 
+
+Accepted. Will fix this.
+
+> > +#define SR_MII_STS                   0x0001
+> > +#define SR_MII_STS_ABL100T4_         BIT(15)
+> > +#define SR_MII_STS_FD100ABL_         BIT(14)
+> > +#define SR_MII_STS_HD100ABL_         BIT(13)
+> > +#define SR_MII_STS_FD10ABL_          BIT(12)
+> > +#define SR_MII_STS_HD10ABL_          BIT(11)
+> > +#define SR_MII_STS_FD100T_           BIT(10)
+> > +#define SR_MII_STS_HD100T_           BIT(9)
+> > +#define SR_MII_STS_EXT_STS_ABL_              BIT(8)
+> > +#define SR_MII_STS_UN_DIR_ABL_               BIT(7)
+> > +#define SR_MII_STS_MF_PRE_SUP_               BIT(6)
+> > +#define SR_MII_STS_AN_CMPL_          BIT(5)
+> > +#define SR_MII_STS_RF_                       BIT(4)
+> > +#define SR_MII_STS_AN_ABL_           BIT(3)
+> > +#define SR_MII_STS_LINK_STS_         BIT(2)
+> > +#define SR_MII_STS_EXT_REG_CAP_              BIT(0)
+> 
+> These look like BMSR.
+> 
+
+Accepted. Will fix this.
+
+> It could even be, you can just use generic code for these.
+> 
+>    Andrew
+
+-- 
+
+Thanks,
+Raju
 
