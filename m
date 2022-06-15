@@ -2,271 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 484E954CAD7
-	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 16:05:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8880C54CAFE
+	for <lists+netdev@lfdr.de>; Wed, 15 Jun 2022 16:15:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356015AbiFOOF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 10:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51864 "EHLO
+        id S1349123AbiFOOO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 10:14:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355950AbiFOOFW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 10:05:22 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2064.outbound.protection.outlook.com [40.107.244.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 250E6DF62
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 07:05:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I6ROUUcCFJ84hHe8+zoI+cwErNhvhWw0nDkRLkTPJYtE6ttmBcxhjWM+lmnZ0vmAOfVxffjuU/0qClS5PBK/l9d4ImQJXaMd4ynh99uMo/ExnQXuRSeIpim/I1GQjk07GTq4gcSlEK0r4sZM4FVwPaoEALAORBst5hwja1HBGdzopbtmDiZjOR/ZxUtXF265/xlsyk/qCGvd7Y5v/KWn41kYnbUmyem2FHm6fowU5oN/FoOzAl62agk8VGOauJ2jSOVlPvs2e/8hHD5MhlLK/88MmR7lImUAOlNArSb4NzKSUPboAl30r5SUEtaIxS721i3jZuSrh+zFnESfUX82Yw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Xg5vnwENVDyVjotVW0ZnRrFmTTs2j5Xa2QyAhzFCeA4=;
- b=WwXtKtAcyjx+gvmZWkqYUNblP5zvdMSzv4sMmBMPqfTU0DMpSpNdKYE0ePPyH5vfJpGKrJAQOgufsDTQdMN8KI9h2Ak6lWtoosWkoAn6r0ynu/G5AwqYuSKOSnf5UkNdfpg5JlYrCOca4J9IMrvcm+R00ehQYYLCfhzQFFpiWVtvmFjyTOXadsOkNFQVpFfAnSPOqcT6fnCo+iGmXQVsYvp3uWTJC+dTtr1OhK+HDYB3CTMYLH4JuYSjffimwN44cprpx9MQ4miSKdapN1d1rMjhdjjomc0KaQUhBfBETMcWWTJRtVV9VnZhjiNiOhgqx3jd8FeoP4gj9Nvf0IqMVw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Xg5vnwENVDyVjotVW0ZnRrFmTTs2j5Xa2QyAhzFCeA4=;
- b=GjawBO5mElBX61WockvbZTi+4rCJ6U1MGgw3n2w7JOGV3A5eyAcv9IdDvgttPym3PHVa1/7qtRlF63xnHjtWmk93Qead5IERhAoyt8dY2pZdbnYJrlOnJOOeRjVnxHvZ9Kn1NUnmkqca+IvBF+XjeaEuBjJdKD9q9ArlNGF+/a/hWKm4tFXnpqk2ibfA2jA6kPX9+BmHDeZgTc7WHYFTSMlmcbCF1zXzItJz01pP+zHRxfz9STKBAzSe7e6xRm1Zn/M/Uiffj+fxggRT0vv2u72b+g4SWGY0eYOfOXBz+huzHu7tKdcaqgxnu+OoTQkkUodGg2nS0aCCRlg32TNLcw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
- by MWHPR12MB1342.namprd12.prod.outlook.com (2603:10b6:300:e::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.17; Wed, 15 Jun
- 2022 14:05:19 +0000
-Received: from CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::9157:69c9:ea8f:8190]) by CY5PR12MB6179.namprd12.prod.outlook.com
- ([fe80::9157:69c9:ea8f:8190%9]) with mapi id 15.20.5353.014; Wed, 15 Jun 2022
- 14:05:19 +0000
-Date:   Wed, 15 Jun 2022 17:05:13 +0300
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
-        mlxsw@nvidia.com
-Subject: Re: [patch net-next 01/11] devlink: introduce nested devlink entity
- for line card
-Message-ID: <YqnnGR7mbB8RCDnH@shredder>
-References: <20220614123326.69745-1-jiri@resnulli.us>
- <20220614123326.69745-2-jiri@resnulli.us>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220614123326.69745-2-jiri@resnulli.us>
-X-ClientProxiedBy: VI1P195CA0019.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:800:d0::29) To CY5PR12MB6179.namprd12.prod.outlook.com
- (2603:10b6:930:24::22)
+        with ESMTP id S242364AbiFOOOx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 10:14:53 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E1D036312
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 07:14:51 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id o8so15587611wro.3
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 07:14:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TmFspR35i19OaG7kIq4BfP3Z5+5KHooJY8o+wf2Eu7g=;
+        b=hnjS0y0DJB+Pgxck/o6M0KR1CyJPsNohu8wEV1ngzYEvfR3BNgdCgc8bBCjYcSn/q2
+         LGrABHBIuN5wiJVr3vFBZSQoyuo+ow5O4zy8y+xuerraxDm52W00Ql6GN8mxJBK7Aged
+         DMepzdaFMPS1SBM8wU0DjvHn5zjVaCWGHNtmseACjEovZd9TfrOheGRLWXnnpvnFbk3L
+         Oh5JBbb6A+TcxaBr62FlW4W2kMYFlFl4qBPFa5Vljf/kfuiWpPulvsvFhKfMVnlp7H1I
+         /Ewf9GWseGoqqzdlh7+S2YPdnfxgjB6XJIAkXpRzobHf9nGOIaKrkjPQFKm48HdjqWaG
+         xCzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TmFspR35i19OaG7kIq4BfP3Z5+5KHooJY8o+wf2Eu7g=;
+        b=tWZvOJnZC1DR+E1CHxpbRtowWE0KMk/F1LMQJpBKSRZ9vVt7pRJJpqkyuC9VyTiwK1
+         ka6wUUbogW6yRCeEx4mTOi4EgXfnnnu9nSCOFhmDsEfSKTN0OcGUX4aYLJ/qeF28tRMC
+         D6AY9tZdz36ToXElj2q3soOoQKFxUZ7sUyiERYPBlSZQedIxTELmSIMRYui1EunsSdYn
+         ENtldME2rUVl9kEdS4ktOq62vOAUTml3f9VkDiCxQHYWnhmxXb7OaNC/9TkWVIi15M+2
+         7ibAWQ1Ju+MgDYsvwHhKhEpNFMcDINxxzo6qIa5YIKmRgtYV1wvzPe4JzJNonQ7BHmAs
+         vdMQ==
+X-Gm-Message-State: AJIora/TV8yyVrt3HswyLvIScH0hym6Tb1PV7FHU0zKwQJi2FYAmM9+D
+        wbHZ4mYT4nB3WgssdI+90Vb3DuXIqSeCNeJ4hMTD
+X-Google-Smtp-Source: AGRyM1shZLCqZkkSojukqCXaW+5XT6IN8fQuWUaigb52d2YijY5GHtpeOYg1i3lr6LTItEcWJJFmcKwvqWFcwysL51U=
+X-Received: by 2002:a05:6000:1447:b0:21a:278a:181c with SMTP id
+ v7-20020a056000144700b0021a278a181cmr27393wrx.161.1655302489487; Wed, 15 Jun
+ 2022 07:14:49 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b988997c-6a0d-4bdb-9080-08da4ed814a7
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1342:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR12MB1342C4336401A36275E174D8B2AD9@MWHPR12MB1342.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mEtXpi+BtoRFiEI4zCO6PgsVcRNeRbUAcKJuxL3L/g0JosQud87pECh/tGCKfRqp2PUgvlizTGc1KtQDaKIsXGa/Q+6gBBbbCEZADURbIZujJUOgnwoeKIdBQwwFhtVvAhTDwDV2XXZ+efhVnX/hMOBHOni4M9qPrwP26CQnI3G0ervPeFf6B/MnrRdYRw7BvTagrIvduXbubJehUONoLtiNB9iVvVZxYjquPs5K1dKTLHhB9dqbps9poeGzejZTjR45kDVeYcpuC3Nfm8InaKr3mtnauJrEjRnzl3aBEFK13quxjUso7qI242bmFlFXiZ6PmK6JtLGPiV962ms93IE7eHEBhtc9Gtw7QPahkuUXKwNyZA5hzkZhBX0Skh7QMS35uLYWXoexpTWikHzxk/Xp+RjuBP4tGOK9Kjw4BXLEkldEPPVm4n4+iLdTFcCG0DiyfjL6MjNTnbQBR43p3bJwUAlg5588Ln+Y8Ug4tgAy6+DQooy37H+u+MAEWJd5mzxHlfpsaEARsIChA6ArtBWpV0de3VUYknbIHe7UKom9+ErpV83Cw1flAGKUtae13q5slB9SMtE1fxUjRWNQHaiG+9iqlOaxuaGcaq2fYxgUFp0aH4Z1aLoB9D6dFH+JsC3hbThOnqOLrl3mudpGhg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(366004)(107886003)(186003)(66556008)(38100700002)(66476007)(8936002)(66946007)(5660300002)(33716001)(83380400001)(8676002)(4326008)(2906002)(316002)(26005)(9686003)(508600001)(6512007)(6916009)(6486002)(6666004)(6506007)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MRZEFsbbJxfbUGZ1PQU8UJBlREDoTGheSmLYU5x65YINBFpkhMTXt0E8xHNH?=
- =?us-ascii?Q?Z2gcmd2O8Y2jxOHutQp0mvpG58NXfav+apdp8dhEf56zs7X6Eo3ZwnJddrjr?=
- =?us-ascii?Q?UVxSM6Sv0theUUcX2QidQJ+feL0jegr1t+M8V9Q+Yh4fq8RmHna4fVIOmN+i?=
- =?us-ascii?Q?dujv0UbXBcUfBn1LK4zt5f4MS9b8yvzNv2mRTQ/MOyCy0QusFNN0NRAxgs7X?=
- =?us-ascii?Q?TGZ4RLoRp8mCZNeW22xgtSo5r5vmMC45duDMCq/SRuZTD6BX1mf8n1z/vqmm?=
- =?us-ascii?Q?Jw7IbIXhqWCaCX/Rm0+qh5IxKM9K9HnQ/cJ8WL0uCm6wV8MU5/KeVshVLh6b?=
- =?us-ascii?Q?qSGo1moAiQBgNSlvw/w+LZBHfNFfhX5AH3Vvimiqnyf3miqUNpOFIOXY/qN4?=
- =?us-ascii?Q?BmRp3qz07KUltk524pUDaU2R+qBxtjPZf1/n9jFVjsAF8Pad5b/GF5/WCurh?=
- =?us-ascii?Q?wldm3/AD1eAP0BCtZlpSXRePbZGs3hl/oGX3g4u2BFdcSlt4aDisfdAFB0Or?=
- =?us-ascii?Q?N5xR5w6DjXMs4Jjd3C7CF95u+9EqlLnaJISWXw/EMmuBp0PbZ65jdsdIOLo9?=
- =?us-ascii?Q?NT/7C7tYghBNe1w5Wqu1YvOVVQVafpGyZvHxHgRfLrSApgxTiJjML6StMCOZ?=
- =?us-ascii?Q?NzG7PsbrBDTrxSTRtqqF9MDvMGFPYNEfGKdyBxYRYPteiaaVKBjWFnxQ+W/H?=
- =?us-ascii?Q?+RfV9H932rQY7MrPIzygGFCpmjSWCU3mrAEDF4KRleS6lvdAU9Bj2wErr/nb?=
- =?us-ascii?Q?zx6UrDzY6TJybvdA704KOqeDrtFmMVWzIaztbwoX9ycTsgd38+Up3TBNhOMR?=
- =?us-ascii?Q?CY7sE5Hk0eCyL8VEyma/gjnDEopFXQ/QgFqIdxa0pYVRdQbGCG2cAWeYZI/X?=
- =?us-ascii?Q?Y9s0sBaJKQ5c6KEPpPZAg7rej/RrcYb4w98C78DEMn7UDe4NqVlkTskHUx2m?=
- =?us-ascii?Q?JpFgAohoz0uDIgtmpaZMBJFTdiQgUZGVTZ5MaypEYQeSEsGAbp0wEo3FpgTE?=
- =?us-ascii?Q?bemCsYUaW2goO31x+LWS2lO6hk6UmKXUhKIjI4C5c2ZPUEAiXXtVF1soCLv3?=
- =?us-ascii?Q?b1rD4RopuNJl09jEbr2EGnQxarVf/nk/GtzclLEdiaF5T+9zL10Cr/oMIZMy?=
- =?us-ascii?Q?AxTziY2aeT/8pEm/YsezhPlF9uO0JQgNzu/OKsPRTwf4TM2jWKEj8q8QXppy?=
- =?us-ascii?Q?HIAnRNtwIkLrUWOOBozQdQx1rRYwBP5lVsLKgBRdfJlh0W52X0mto/vo0RYS?=
- =?us-ascii?Q?b2pDeLcdXOB54tvqQSGYCiTU8Iz80G0Iug9HEvMeoqAB/qx1eTW06JSsLvFV?=
- =?us-ascii?Q?eY6om9kHKPx3R/53N/9XLnhTZf88RLhk/2XBmi6AXc97BUs0vk39PTMTt8PA?=
- =?us-ascii?Q?5DB9jBrg2oX9nFNqDn8CRzDg1/yCDrrtWhavCTmXepOADFKlTFGAWCoOjFYt?=
- =?us-ascii?Q?Z4MXLqr0swopDYLbfUy1MnirjLICGaMjNT+T8csQCHQg3dxROsCnXWtQvv8X?=
- =?us-ascii?Q?SistcPfBui2CHZFmfzXfzdzKJL7hBC8neD+7o9Z6CrnovgCX3gwape8zcCEX?=
- =?us-ascii?Q?LrUKG9IZiMisriAjNbDwxnfMlhuos9O7V/VT3AU7bGs1O5E81Ylg3jMplCN4?=
- =?us-ascii?Q?r2k3pTmUNinsA2pW9NtaJxGlG2IyqKTfwlvBGAP/FKTOLXNaAJOQJGNt6Vyx?=
- =?us-ascii?Q?kRTV9pTh7tzOVvgpSubj5uttHPzdF1xlTcuiKSyRIHaDRvDfqVVBVBvFTcIr?=
- =?us-ascii?Q?w8XzjWUb6w=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b988997c-6a0d-4bdb-9080-08da4ed814a7
-X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2022 14:05:19.4180
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: z0MlKH/VlnhMa3ZgLeg99KtszhiaAmrEVhFh2EkM6oeCQyW76YLBkl/AOPAkHVPnBKWW3CUx6Cn17MS58PhSEw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1342
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220608150942.776446-1-fred@cloudflare.com> <87tu8oze94.fsf@email.froward.int.ebiederm.org>
+ <e1b62234-9b8a-e7c2-2946-5ef9f6f23a08@cloudflare.com> <87y1xzyhub.fsf@email.froward.int.ebiederm.org>
+ <859cb593-9e96-5846-2191-6613677b07c5@cloudflare.com> <87o7yvxl4x.fsf@email.froward.int.ebiederm.org>
+ <9ed91f15-420c-3db6-8b3b-85438b02bf97@cloudflare.com> <20220615103031.qkzae4xr34wysj4b@wittgenstein>
+In-Reply-To: <20220615103031.qkzae4xr34wysj4b@wittgenstein>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Wed, 15 Jun 2022 10:14:38 -0400
+Message-ID: <CAHC9VhR8yPHZb2sCu4JGgXOSs7rudm=9opB+-LsG6_Lta9466A@mail.gmail.com>
+Subject: Re: [PATCH v3] cred: Propagate security_prepare_creds() error code
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     Frederick Lawler <fred@cloudflare.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-cachefs@redhat.com, linux-cifs@vger.kernel.org,
+        samba-technical@lists.samba.org, linux-mm@kvack.org,
+        linux-nfs@vger.kernel.org, linux-unionfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        keyrings@vger.kernel.org, selinux@vger.kernel.org,
+        serge@hallyn.com, amir73il@gmail.com, kernel-team@cloudflare.com,
+        Jeff Moyer <jmoyer@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 02:33:16PM +0200, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
-> 
-> For the purpose of exposing device info and allow flash updated which is
+On Wed, Jun 15, 2022 at 6:30 AM Christian Brauner <brauner@kernel.org> wrote:
+>
+> On Tue, Jun 14, 2022 at 01:59:08PM -0500, Frederick Lawler wrote:
+> > On 6/14/22 11:30 AM, Eric W. Biederman wrote:
+> > > Frederick Lawler <fred@cloudflare.com> writes:
+> > >
+> > > > On 6/13/22 11:44 PM, Eric W. Biederman wrote:
+> > > > > Frederick Lawler <fred@cloudflare.com> writes:
+> > > > >
+> > > > > > Hi Eric,
+> > > > > >
+> > > > > > On 6/13/22 12:04 PM, Eric W. Biederman wrote:
+> > > > > > > Frederick Lawler <fred@cloudflare.com> writes:
+> > > > > > >
+> > > > > > > > While experimenting with the security_prepare_creds() LSM hook, we
+> > > > > > > > noticed that our EPERM error code was not propagated up the callstack.
+> > > > > > > > Instead ENOMEM is always returned.  As a result, some tools may send a
+> > > > > > > > confusing error message to the user:
+> > > > > > > >
+> > > > > > > > $ unshare -rU
+> > > > > > > > unshare: unshare failed: Cannot allocate memory
+> > > > > > > >
+> > > > > > > > A user would think that the system didn't have enough memory, when
+> > > > > > > > instead the action was denied.
+> > > > > > > >
+> > > > > > > > This problem occurs because prepare_creds() and prepare_kernel_cred()
+> > > > > > > > return NULL when security_prepare_creds() returns an error code. Later,
+> > > > > > > > functions calling prepare_creds() and prepare_kernel_cred() return
+> > > > > > > > ENOMEM because they assume that a NULL meant there was no memory
+> > > > > > > > allocated.
+> > > > > > > >
+> > > > > > > > Fix this by propagating an error code from security_prepare_creds() up
+> > > > > > > > the callstack.
+> > > > > > > Why would it make sense for security_prepare_creds to return an error
+> > > > > > > code other than ENOMEM?
+> > > > > > >    > That seems a bit of a violation of what that function is supposed to do
+> > > > > > >
+> > > > > >
+> > > > > > The API allows LSM authors to decide what error code is returned from the
+> > > > > > cred_prepare hook. security_task_alloc() is a similar hook, and has its return
+> > > > > > code propagated.
+> > > > > It is not an api.  It is an implementation detail of the linux kernel.
+> > > > > It is a set of convenient functions that do a job.
+> > > > > The general rule is we don't support cases without an in-tree user.  I
+> > > > > don't see an in-tree user.
+> > > > >
+> > > > > > I'm proposing we follow security_task_allocs() pattern, and add visibility for
+> > > > > > failure cases in prepare_creds().
+> > > > > I am asking why we would want to.  Especially as it is not an API, and I
+> > > > > don't see any good reason for anything but an -ENOMEM failure to be
+> > > > > supported.
+> > > > >
+> > > > We're writing a LSM BPF policy, and not a new LSM. Our policy aims to solve
+> > > > unprivileged unshare, similar to Debian's patch [1]. We're in a position such
+> > > > that we can't use that patch because we can't block _all_ of our applications
+> > > > from performing an unshare. We prefer a granular approach. LSM BPF seems like a
+> > > > good choice.
+> > >
+> > > I am quite puzzled why doesn't /proc/sys/user/max_user_namespaces work
+> > > for you?
+> > >
+> >
+> > We have the following requirements:
+> >
+> > 1. Allow list criteria
+> > 2. root user must be able to create namespaces whenever
+> > 3. Everything else not in 1 & 2 must be denied
+> >
+> > We use per task attributes to determine whether or not we allow/deny the
+> > current call to unshare().
+> >
+> > /proc/sys/user/max_user_namespaces limits are a bit broad for this level of
+> > detail.
+> >
+> > > > Because LSM BPF exposes these hooks, we should probably treat them as an
+> > > > API. From that perspective, userspace expects unshare to return a EPERM
+> > > > when the call is denied permissions.
+> > >
+> > > The BPF code gets to be treated as a out of tree kernel module.
+> > >
+> > > > > Without an in-tree user that cares it is probably better to go the
+> > > > > opposite direction and remove the possibility of return anything but
+> > > > > memory allocation failure.  That will make it clearer to implementors
+> > > > > that a general error code is not supported and this is not a location
+> > > > > to implement policy, this is only a hook to allocate state for the LSM.
+> > > > >
+> > > >
+> > > > That's a good point, and it's possible we're using the wrong hook for the
+> > > > policy. Do you know of other hooks we can look into?
+>
+> Fwiw, from this commit it wasn't very clear what you wanted to achieve
+> with this. It might be worth considering adding a new security hook for
+> this. Within msft it recently came up SELinux might have an interest in
+> something like this as well.
 
-s/updated/update/
+Just to clarify things a bit, I believe SELinux would have an interest
+in a LSM hook capable of implementing an access control point for user
+namespaces regardless of Microsoft's current needs.  I suspect due to
+the security relevant nature of user namespaces most other LSMs would
+be interested as well; it seems like a well crafted hook would be
+welcome by most folks I think.
 
-> going to be implemented in follow-up patches, introduce a possibility
-> for a line card to expose relation to nested devlink entity. The nested
-> devlink entity represents the line card.
-> 
-> Example:
-> 
-> $ devlink lc show pci/0000:01:00.0 lc 1
-> pci/0000:01:00.0:
->   lc 1 state active type 16x100G nested_devlink auxiliary/mlxsw_core.lc.0
->     supported_types:
->        16x100G
-> $ devlink dev show auxiliary/mlxsw_core.lc.0
-> auxiliary/mlxsw_core.lc.0
-> 
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-> ---
->  include/net/devlink.h        |  2 ++
->  include/uapi/linux/devlink.h |  2 ++
->  net/core/devlink.c           | 42 ++++++++++++++++++++++++++++++++++++
->  3 files changed, 46 insertions(+)
-> 
-> diff --git a/include/net/devlink.h b/include/net/devlink.h
-> index 2a2a2a0c93f7..83e62943e1d4 100644
-> --- a/include/net/devlink.h
-> +++ b/include/net/devlink.h
-> @@ -1584,6 +1584,8 @@ void devlink_linecard_provision_clear(struct devlink_linecard *linecard);
->  void devlink_linecard_provision_fail(struct devlink_linecard *linecard);
->  void devlink_linecard_activate(struct devlink_linecard *linecard);
->  void devlink_linecard_deactivate(struct devlink_linecard *linecard);
-> +void devlink_linecard_nested_dl_set(struct devlink_linecard *linecard,
-> +				    struct devlink *nested_devlink);
->  int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
->  			u32 size, u16 ingress_pools_count,
->  			u16 egress_pools_count, u16 ingress_tc_count,
-> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-> index b3d40a5d72ff..541321695f52 100644
-> --- a/include/uapi/linux/devlink.h
-> +++ b/include/uapi/linux/devlink.h
-> @@ -576,6 +576,8 @@ enum devlink_attr {
->  	DEVLINK_ATTR_LINECARD_TYPE,		/* string */
->  	DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,	/* nested */
->  
-> +	DEVLINK_ATTR_NESTED_DEVLINK,		/* nested */
-> +
->  	/* add new attributes above here, update the policy in devlink.c */
->  
->  	__DEVLINK_ATTR_MAX,
-> diff --git a/net/core/devlink.c b/net/core/devlink.c
-> index db61f3a341cb..a5953cfe1baa 100644
-> --- a/net/core/devlink.c
-> +++ b/net/core/devlink.c
-> @@ -87,6 +87,7 @@ struct devlink_linecard {
->  	const char *type;
->  	struct devlink_linecard_type *types;
->  	unsigned int types_count;
-> +	struct devlink *nested_devlink;
->  };
->  
->  /**
-> @@ -796,6 +797,24 @@ static int devlink_nl_put_handle(struct sk_buff *msg, struct devlink *devlink)
->  	return 0;
->  }
->  
-> +static int devlink_nl_put_nested_handle(struct sk_buff *msg, struct devlink *devlink)
-> +{
-> +	struct nlattr *nested_attr;
-> +
-> +	nested_attr = nla_nest_start(msg, DEVLINK_ATTR_NESTED_DEVLINK);
-> +	if (!nested_attr)
-> +		return -EMSGSIZE;
-> +	if (devlink_nl_put_handle(msg, devlink))
-> +		goto nla_put_failure;
-> +
-> +	nla_nest_end(msg, nested_attr);
-> +	return 0;
-> +
-> +nla_put_failure:
-> +	nla_nest_cancel(msg, nested_attr);
-> +	return -EMSGSIZE;
-> +}
-> +
->  struct devlink_reload_combination {
->  	enum devlink_reload_action action;
->  	enum devlink_reload_limit limit;
-> @@ -2100,6 +2119,10 @@ static int devlink_nl_linecard_fill(struct sk_buff *msg,
->  		nla_nest_end(msg, attr);
->  	}
->  
-> +	if (linecard->nested_devlink &&
-> +	    devlink_nl_put_nested_handle(msg, linecard->nested_devlink))
-> +		goto nla_put_failure;
-> +
->  	genlmsg_end(msg, hdr);
->  	return 0;
->  
-> @@ -10335,6 +10358,7 @@ EXPORT_SYMBOL_GPL(devlink_linecard_provision_set);
->  void devlink_linecard_provision_clear(struct devlink_linecard *linecard)
->  {
->  	mutex_lock(&linecard->state_lock);
-> +	WARN_ON(linecard->nested_devlink);
->  	linecard->state = DEVLINK_LINECARD_STATE_UNPROVISIONED;
->  	linecard->type = NULL;
->  	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
-> @@ -10353,6 +10377,7 @@ EXPORT_SYMBOL_GPL(devlink_linecard_provision_clear);
->  void devlink_linecard_provision_fail(struct devlink_linecard *linecard)
->  {
->  	mutex_lock(&linecard->state_lock);
-> +	WARN_ON(linecard->nested_devlink);
->  	linecard->state = DEVLINK_LINECARD_STATE_PROVISIONING_FAILED;
->  	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
->  	mutex_unlock(&linecard->state_lock);
-> @@ -10400,6 +10425,23 @@ void devlink_linecard_deactivate(struct devlink_linecard *linecard)
->  }
->  EXPORT_SYMBOL_GPL(devlink_linecard_deactivate);
->  
-> +/**
-> + *	devlink_linecard_nested_dl_set - Attach/detach nested delink
-
-s/delink/devlink/
-
-> + *					 instance to linecard.
-> + *
-> + *	@linecard: devlink linecard
-> + *      @nested_devlink: devlink instance to attach or NULL to detach
-
-The alignment looks off
-
-> + */
-> +void devlink_linecard_nested_dl_set(struct devlink_linecard *linecard,
-> +				    struct devlink *nested_devlink)
-> +{
-> +	mutex_lock(&linecard->state_lock);
-> +	linecard->nested_devlink = nested_devlink;
-> +	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
-> +	mutex_unlock(&linecard->state_lock);
-> +}
-> +EXPORT_SYMBOL_GPL(devlink_linecard_nested_dl_set);
-> +
->  int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
->  			u32 size, u16 ingress_pools_count,
->  			u16 egress_pools_count, u16 ingress_tc_count,
-> -- 
-> 2.35.3
-> 
+-- 
+paul-moore.com
