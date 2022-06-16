@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04DFC54D7F2
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 04:07:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EE0254D80A
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 04:14:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356979AbiFPCH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 22:07:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42388 "EHLO
+        id S1358417AbiFPCIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 22:08:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355026AbiFPCHj (ORCPT
+        with ESMTP id S1354878AbiFPCHj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 22:07:39 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9FDB82BF0;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A02C2643E;
         Wed, 15 Jun 2022 19:07:37 -0700 (PDT)
 Received: by linux.microsoft.com (Postfix, from userid 1004)
-        id 90A1A20C32AD; Wed, 15 Jun 2022 19:07:33 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 90A1A20C32AD
+        id 1B37920C32B2; Wed, 15 Jun 2022 19:07:34 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1B37920C32B2
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
-        s=default; t=1655345253;
-        bh=opRK6eCo+EDutNd2wvdKv9Y7E6c/XAhQ8tJTZa6qrpE=;
+        s=default; t=1655345254;
+        bh=WnAUrlvUwfhIO5pMVyiEMyAYxQk5L9UhW0Z7vT9tZiE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:Reply-To:From;
-        b=queG2JCRbd6DSyPMBdZvkN/nRAkub5+H19ZxlmfO+99k0z403OIDdq97Wn/mFIECx
-         +WYTFZaFD2AopPa/WEZhk8hseGf/fr8/vZ6BFVV7m/cmsR7XpWyscK9Pcdpti9LBWK
-         eQ4m1/7Ki+YtE/LHAtiYKMirmNizB1FtVBrRJzs4=
+        b=LT4gDRw0YaSfXIOArUaYXexT3nfEwV5lmAWS7fEvHc2crT4cDevN0TYqLYn71N3iY
+         7bdX9cKFr5NsDZd7TInECCxLkyii1CZmufHOmSGB/6fdDz/NGI0t8QeaavVc89ljK+
+         UytkW5EjKHTjjgQ8flGcYxhLICO5lA0EBKQG9SZE=
 From:   longli@linuxonhyperv.com
 To:     "K. Y. Srinivasan" <kys@microsoft.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
@@ -38,9 +38,9 @@ To:     "K. Y. Srinivasan" <kys@microsoft.com>,
 Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
         Long Li <longli@microsoft.com>
-Subject: [Patch v4 09/12] net: mana: Move header files to a common location
-Date:   Wed, 15 Jun 2022 19:07:17 -0700
-Message-Id: <1655345240-26411-10-git-send-email-longli@linuxonhyperv.com>
+Subject: [Patch v4 10/12] net: mana: Define max values for SGL entries
+Date:   Wed, 15 Jun 2022 19:07:18 -0700
+Message-Id: <1655345240-26411-11-git-send-email-longli@linuxonhyperv.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
 References: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
@@ -57,139 +57,71 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Long Li <longli@microsoft.com>
 
-In preparation to add MANA RDMA driver, move all the required header files
-to a common location for use by both Ethernet and RDMA drivers.
+The number of maximum SGl entries should be computed from the maximum
+WQE size for the intended queue type and the corresponding OOB data
+size. This guarantees the hardware queue can successfully queue requests
+up to the queue depth exposed to the upper layer.
 
 Signed-off-by: Long Li <longli@microsoft.com>
 ---
-Change log:
-v2: Move headers to include/net/mana, instead of include/linux/mana
+ drivers/net/ethernet/microsoft/mana/mana_en.c | 2 +-
+ include/net/mana/gdma.h                       | 7 +++++++
+ include/net/mana/mana.h                       | 4 +---
+ 3 files changed, 9 insertions(+), 4 deletions(-)
 
- MAINTAINERS                                                   | 1 +
- drivers/net/ethernet/microsoft/mana/gdma_main.c               | 2 +-
- drivers/net/ethernet/microsoft/mana/hw_channel.c              | 4 ++--
- drivers/net/ethernet/microsoft/mana/mana_bpf.c                | 2 +-
- drivers/net/ethernet/microsoft/mana/mana_en.c                 | 2 +-
- drivers/net/ethernet/microsoft/mana/mana_ethtool.c            | 2 +-
- drivers/net/ethernet/microsoft/mana/shm_channel.c             | 2 +-
- {drivers/net/ethernet/microsoft => include/net}/mana/gdma.h   | 0
- .../net/ethernet/microsoft => include/net}/mana/hw_channel.h  | 0
- {drivers/net/ethernet/microsoft => include/net}/mana/mana.h   | 0
- .../net/ethernet/microsoft => include/net}/mana/shm_channel.h | 0
- 11 files changed, 8 insertions(+), 7 deletions(-)
- rename {drivers/net/ethernet/microsoft => include/net}/mana/gdma.h (100%)
- rename {drivers/net/ethernet/microsoft => include/net}/mana/hw_channel.h (100%)
- rename {drivers/net/ethernet/microsoft => include/net}/mana/mana.h (100%)
- rename {drivers/net/ethernet/microsoft => include/net}/mana/shm_channel.h (100%)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 40fa1955ca3f..51bec6d5076d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -9108,6 +9108,7 @@ F:	include/asm-generic/hyperv-tlfs.h
- F:	include/asm-generic/mshyperv.h
- F:	include/clocksource/hyperv_timer.h
- F:	include/linux/hyperv.h
-+F:	include/net/mana
- F:	include/uapi/linux/hyperv.h
- F:	net/vmw_vsock/hyperv_transport.c
- F:	tools/hv/
-diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-index 272facd272a4..ab3d8e75fb69 100644
---- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
-+++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-@@ -6,7 +6,7 @@
- #include <linux/utsname.h>
- #include <linux/version.h>
- 
--#include "mana.h"
-+#include <net/mana/mana.h>
- 
- static u32 mana_gd_r32(struct gdma_context *g, u64 offset)
- {
-diff --git a/drivers/net/ethernet/microsoft/mana/hw_channel.c b/drivers/net/ethernet/microsoft/mana/hw_channel.c
-index 078d6a5a0768..e61cb3f6fbe1 100644
---- a/drivers/net/ethernet/microsoft/mana/hw_channel.c
-+++ b/drivers/net/ethernet/microsoft/mana/hw_channel.c
-@@ -1,8 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- /* Copyright (c) 2021, Microsoft Corporation. */
- 
--#include "gdma.h"
--#include "hw_channel.h"
-+#include <net/mana/gdma.h>
-+#include <net/mana/hw_channel.h>
- 
- static int mana_hwc_get_msg_index(struct hw_channel_context *hwc, u16 *msg_id)
- {
-diff --git a/drivers/net/ethernet/microsoft/mana/mana_bpf.c b/drivers/net/ethernet/microsoft/mana/mana_bpf.c
-index 1d2f948b5c00..97a79659af45 100644
---- a/drivers/net/ethernet/microsoft/mana/mana_bpf.c
-+++ b/drivers/net/ethernet/microsoft/mana/mana_bpf.c
-@@ -8,7 +8,7 @@
- #include <linux/bpf_trace.h>
- #include <net/xdp.h>
- 
--#include "mana.h"
-+#include <net/mana/mana.h>
- 
- void mana_xdp_tx(struct sk_buff *skb, struct net_device *ndev)
- {
 diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-index 963a4dbb46ea..5aab7afc9143 100644
+index 5aab7afc9143..9a976d9b6b6f 100644
 --- a/drivers/net/ethernet/microsoft/mana/mana_en.c
 +++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-@@ -11,7 +11,7 @@
- #include <net/checksum.h>
- #include <net/ip6_checksum.h>
+@@ -187,7 +187,7 @@ int mana_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 	pkg.wqe_req.client_data_unit = 0;
  
--#include "mana.h"
-+#include <net/mana/mana.h>
+ 	pkg.wqe_req.num_sge = 1 + skb_shinfo(skb)->nr_frags;
+-	WARN_ON_ONCE(pkg.wqe_req.num_sge > 30);
++	WARN_ON_ONCE(pkg.wqe_req.num_sge > MAX_TX_WQE_SGL_ENTRIES);
  
- static DEFINE_IDA(mana_adev_ida);
+ 	if (pkg.wqe_req.num_sge <= ARRAY_SIZE(pkg.sgl_array)) {
+ 		pkg.wqe_req.sgl = pkg.sgl_array;
+diff --git a/include/net/mana/gdma.h b/include/net/mana/gdma.h
+index b1bec8ab5695..ef5de92dd98d 100644
+--- a/include/net/mana/gdma.h
++++ b/include/net/mana/gdma.h
+@@ -436,6 +436,13 @@ struct gdma_wqe {
+ #define MAX_TX_WQE_SIZE 512
+ #define MAX_RX_WQE_SIZE 256
  
-diff --git a/drivers/net/ethernet/microsoft/mana/mana_ethtool.c b/drivers/net/ethernet/microsoft/mana/mana_ethtool.c
-index e13f2453eabb..ebc6595d02fe 100644
---- a/drivers/net/ethernet/microsoft/mana/mana_ethtool.c
-+++ b/drivers/net/ethernet/microsoft/mana/mana_ethtool.c
-@@ -5,7 +5,7 @@
- #include <linux/etherdevice.h>
- #include <linux/ethtool.h>
++#define MAX_TX_WQE_SGL_ENTRIES	((GDMA_MAX_SQE_SIZE - \
++			sizeof(struct gdma_sge) - INLINE_OOB_SMALL_SIZE) / \
++			sizeof(struct gdma_sge))
++
++#define MAX_RX_WQE_SGL_ENTRIES	((GDMA_MAX_RQE_SIZE - \
++			sizeof(struct gdma_sge)) / sizeof(struct gdma_sge))
++
+ struct gdma_cqe {
+ 	u32 cqe_data[GDMA_COMP_DATA_SIZE / 4];
  
--#include "mana.h"
-+#include <net/mana/mana.h>
+diff --git a/include/net/mana/mana.h b/include/net/mana/mana.h
+index aca95c6ba8b3..3a0bc6e0b730 100644
+--- a/include/net/mana/mana.h
++++ b/include/net/mana/mana.h
+@@ -264,8 +264,6 @@ struct mana_cq {
+ 	int budget;
+ };
  
- static const struct {
- 	char name[ETH_GSTRING_LEN];
-diff --git a/drivers/net/ethernet/microsoft/mana/shm_channel.c b/drivers/net/ethernet/microsoft/mana/shm_channel.c
-index da255da62176..5553af9c8085 100644
---- a/drivers/net/ethernet/microsoft/mana/shm_channel.c
-+++ b/drivers/net/ethernet/microsoft/mana/shm_channel.c
-@@ -6,7 +6,7 @@
- #include <linux/io.h>
- #include <linux/mm.h>
+-#define GDMA_MAX_RQE_SGES 15
+-
+ struct mana_recv_buf_oob {
+ 	/* A valid GDMA work request representing the data buffer. */
+ 	struct gdma_wqe_request wqe_req;
+@@ -275,7 +273,7 @@ struct mana_recv_buf_oob {
  
--#include "shm_channel.h"
-+#include <net/mana/shm_channel.h>
+ 	/* SGL of the buffer going to be sent has part of the work request. */
+ 	u32 num_sge;
+-	struct gdma_sge sgl[GDMA_MAX_RQE_SGES];
++	struct gdma_sge sgl[MAX_RX_WQE_SGL_ENTRIES];
  
- #define PAGE_FRAME_L48_WIDTH_BYTES 6
- #define PAGE_FRAME_L48_WIDTH_BITS (PAGE_FRAME_L48_WIDTH_BYTES * 8)
-diff --git a/drivers/net/ethernet/microsoft/mana/gdma.h b/include/net/mana/gdma.h
-similarity index 100%
-rename from drivers/net/ethernet/microsoft/mana/gdma.h
-rename to include/net/mana/gdma.h
-diff --git a/drivers/net/ethernet/microsoft/mana/hw_channel.h b/include/net/mana/hw_channel.h
-similarity index 100%
-rename from drivers/net/ethernet/microsoft/mana/hw_channel.h
-rename to include/net/mana/hw_channel.h
-diff --git a/drivers/net/ethernet/microsoft/mana/mana.h b/include/net/mana/mana.h
-similarity index 100%
-rename from drivers/net/ethernet/microsoft/mana/mana.h
-rename to include/net/mana/mana.h
-diff --git a/drivers/net/ethernet/microsoft/mana/shm_channel.h b/include/net/mana/shm_channel.h
-similarity index 100%
-rename from drivers/net/ethernet/microsoft/mana/shm_channel.h
-rename to include/net/mana/shm_channel.h
+ 	/* Required to store the result of mana_gd_post_work_request.
+ 	 * gdma_posted_wqe_info.wqe_size_in_bu is required for progressing the
 -- 
 2.17.1
 
