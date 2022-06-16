@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12BE054E6E3
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 18:20:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE18554E6E2
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 18:20:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377698AbiFPQUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 12:20:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56338 "EHLO
+        id S1377736AbiFPQUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 12:20:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377204AbiFPQUm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 12:20:42 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46538433B0
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 09:20:41 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id h23so3696543ejj.12
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 09:20:41 -0700 (PDT)
+        with ESMTP id S1377556AbiFPQUn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 12:20:43 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1513B3E0
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 09:20:42 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id fu3so3730485ejc.7
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 09:20:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Uw4PLtWEGLGfOE/kAMpGlLOZBa3VwDABOgWaEtWdyws=;
-        b=k9Vb9ToXK168Qp5ZJmTfuDDTg2Al5zx7Kqot0OjrjmomMqCgs0+yEB9dXtvR1Rg+VP
-         9DjJcrHQhIOpx71PbWdILNdI6mKP4pdG8XDxSX3waeIXlDZ05AlqTRqkehtJadzKVxtG
-         xQg3iZr2onSlHvmDr4C0zw4LGRsS6f8ufER/g=
+        bh=94i7gvXiMSDgTQuQdzpNYwdXGZQaEeCGYxGl+yxQ7o4=;
+        b=MIcx56+NC/9QpnpK/klLHaEYMH5UGJ03GODNpN6R+BxslS8lSUF6ekfgPmIuWHppdN
+         ODXZAjy3+03VB8Kd1Z3cleTG2z0k5fRFHnsQqsGnjL0QNYA4R/3XlCtQ+et0K2NAR64/
+         CqVk4pkhqN+oGCMa0KmQRtQqMDQJMpHyq2kM0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Uw4PLtWEGLGfOE/kAMpGlLOZBa3VwDABOgWaEtWdyws=;
-        b=qMCrb6YB+uIbw8ezNkZceeIVOwearFObLGYjCHPpwFO1cVhKu96Qo7xVbRVjR/3vXT
-         ELw4y/l8kTphvbXWBQiczQGdyeueWvUnQZ0dMLeGf88WpC4ENKYAWEscQDZL7YP0DukM
-         aJdykoaT/pt3E9CzG97DN0MC2oGm/UNyQJbyRTz0kj9pMpcX6usIuSsf5Fx/jCOxTeso
-         xt5uu2BvAG3TM2xaAzJt7xCaYqK2iRXhvitl8AGsohSfEzrBAhoUQr55JP/xeBm+K8K8
-         +fqTofQ1x7Qi3E/v9htkTqHEjy8+Nwzyi4gBKPw1Ldw8UykVClAVgBHxANuays4bDE9L
-         2E3A==
-X-Gm-Message-State: AJIora9p88ggbEeLMAsVt+DKrVMOeZwjEQdZmxCw829VGlpFJ7j7/Drq
-        Hxkl1lnKKiN1p8NfCmWUNXkx4Q==
-X-Google-Smtp-Source: AGRyM1tPWLR8rppdBEPKe/z3lmUEKWr6PcmnyVnoRvzjx5xDxsj+28U1hHe5FknvKAuXqmZNVwEc7A==
-X-Received: by 2002:a17:907:6e0f:b0:706:9a4f:2f3d with SMTP id sd15-20020a1709076e0f00b007069a4f2f3dmr5202919ejc.413.1655396439534;
-        Thu, 16 Jun 2022 09:20:39 -0700 (PDT)
+        bh=94i7gvXiMSDgTQuQdzpNYwdXGZQaEeCGYxGl+yxQ7o4=;
+        b=8LAPGoUQnzAAXZ6aBSNYszwsH4adf2VtVNTB1a4Jjjvg5I5s8U1hQ+XlBr7zMsAd64
+         QLLJU1g5CkM5NkUjCfTbI7F1eOndksIv09OcSxiiKlrW9u84KWMU2+SI/RdMvmCQU+en
+         xas7CR5FwQPBNIFKVPwrn92cHGNjU25HIXLYUotKL6w40504dZjZhqb+XeemlQMJiZ4q
+         GIElC0X+xIqfm8vPwB+33bnfcsS17aJJ0ft5vMFc066R7HeuoQel0R8kPotcddk9j4p1
+         R4ikxhX8U+V5CzYmm24S7JELTYZxFLaw/Yqm7GiaUDFxSHYPA3/VR0O25/MORY2Hzf8J
+         lpMQ==
+X-Gm-Message-State: AJIora+OQqPK86RhmB5Qg4YAKyW/PJuGCW2/eYoUXKq721PTEVW76jIz
+        QiZGIeyL1enq7BXFaSlPZP9Urw==
+X-Google-Smtp-Source: AGRyM1uyT88ThyLGIktmGLKL13mTQa08vRDm4eg8CMt7IOuLiTU71Z1V5inupf4QamscUjXlUM3i8A==
+X-Received: by 2002:a17:906:7308:b0:710:dabe:d651 with SMTP id di8-20020a170906730800b00710dabed651mr5276250ejc.75.1655396440871;
+        Thu, 16 Jun 2022 09:20:40 -0700 (PDT)
 Received: from cloudflare.com (79.184.138.130.ipv4.supernova.orange.pl. [79.184.138.130])
-        by smtp.gmail.com with ESMTPSA id w9-20020a170906b18900b006fec27575f1sm956935ejy.123.2022.06.16.09.20.38
+        by smtp.gmail.com with ESMTPSA id y4-20020aa7ccc4000000b004316f94ec4esm2022647edt.66.2022.06.16.09.20.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 09:20:39 -0700 (PDT)
+        Thu, 16 Jun 2022 09:20:40 -0700 (PDT)
 From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
@@ -51,9 +51,9 @@ Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         kernel-team@cloudflare.com
-Subject: [PATCH bpf-next v2 1/2] bpf, x86: Fix tail call count offset calculation on bpf2bpf call
-Date:   Thu, 16 Jun 2022 18:20:36 +0200
-Message-Id: <20220616162037.535469-2-jakub@cloudflare.com>
+Subject: [PATCH bpf-next v2 2/2] selftests/bpf: Test tail call counting with bpf2bpf and data on stack
+Date:   Thu, 16 Jun 2022 18:20:37 +0200
+Message-Id: <20220616162037.535469-3-jakub@cloudflare.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220616162037.535469-1-jakub@cloudflare.com>
 References: <20220616162037.535469-1-jakub@cloudflare.com>
@@ -69,76 +69,136 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On x86-64 the tail call count is passed from one BPF function to another
-through %rax. Additionally, on function entry, the tail call count value is
-stored on stack right after the BPF program stack, due to register
-shortage.
+Cover the case when tail call count needs to be passed from BPF function to
+BPF function, and the caller has data on stack. Specifically when the size
+of data allocated on BPF stack is not a multiple on 8.
 
-The stored count is later loaded from stack either when performing a tail
-call - to check if we have not reached the tail call limit - or before
-calling another BPF function call in order to pass it via %rax.
-
-In the latter case, we miscalculate the offset at which the tail call count
-was stored on function entry. The JIT does not take into account that the
-allocated BPF program stack is always a multiple of 8 on x86, while the
-actual stack depth does not have to be.
-
-This leads to a load from an offset that belongs to the BPF stack, as shown
-in the example below:
-
-SEC("tc")
-int entry(struct __sk_buff *skb)
-{
-	/* Have data on stack which size is not a multiple of 8 */
-	volatile char arr[1] = {};
-	return subprog_tail(skb);
-}
-
-int entry(struct __sk_buff * skb):
-   0: (b4) w2 = 0
-   1: (73) *(u8 *)(r10 -1) = r2
-   2: (85) call pc+1#bpf_prog_ce2f79bb5f3e06dd_F
-   3: (95) exit
-
-int entry(struct __sk_buff * skb):
-   0xffffffffa0201788:  nop    DWORD PTR [rax+rax*1+0x0]
-   0xffffffffa020178d:  xor    eax,eax
-   0xffffffffa020178f:  push   rbp
-   0xffffffffa0201790:  mov    rbp,rsp
-   0xffffffffa0201793:  sub    rsp,0x8
-   0xffffffffa020179a:  push   rax
-   0xffffffffa020179b:  xor    esi,esi
-   0xffffffffa020179d:  mov    BYTE PTR [rbp-0x1],sil
-   0xffffffffa02017a1:  mov    rax,QWORD PTR [rbp-0x9]	!!! tail call count
-   0xffffffffa02017a8:  call   0xffffffffa02017d8       !!! is at rbp-0x10
-   0xffffffffa02017ad:  leave
-   0xffffffffa02017ae:  ret
-
-Fix it by rounding up the BPF stack depth to a multiple of 8, when
-calculating the tail call count offset on stack.
-
-Fixes: ebf7d1f508a7 ("bpf, x64: rework pro/epilogue and tailcall handling in JIT")
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 ---
- arch/x86/net/bpf_jit_comp.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../selftests/bpf/prog_tests/tailcalls.c      | 55 +++++++++++++++++++
+ .../selftests/bpf/progs/tailcall_bpf2bpf6.c   | 42 ++++++++++++++
+ 2 files changed, 97 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/tailcall_bpf2bpf6.c
 
-diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-index f298b18a9a3d..c98b8c0ed3b8 100644
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -1420,8 +1420,9 @@ st:			if (is_imm8(insn->off))
- 		case BPF_JMP | BPF_CALL:
- 			func = (u8 *) __bpf_call_base + imm32;
- 			if (tail_call_reachable) {
-+				/* mov rax, qword ptr [rbp - rounded_stack_depth - 8] */
- 				EMIT3_off32(0x48, 0x8B, 0x85,
--					    -(bpf_prog->aux->stack_depth + 8));
-+					    -round_up(bpf_prog->aux->stack_depth, 8) - 8);
- 				if (!imm32 || emit_call(&prog, func, image + addrs[i - 1] + 7))
- 					return -EINVAL;
- 			} else {
+diff --git a/tools/testing/selftests/bpf/prog_tests/tailcalls.c b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
+index c4da87ec3ba4..19c70880cfb3 100644
+--- a/tools/testing/selftests/bpf/prog_tests/tailcalls.c
++++ b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
+@@ -831,6 +831,59 @@ static void test_tailcall_bpf2bpf_4(bool noise)
+ 	bpf_object__close(obj);
+ }
+ 
++#include "tailcall_bpf2bpf6.skel.h"
++
++/* Tail call counting works even when there is data on stack which is
++ * not aligned to 8 bytes.
++ */
++static void test_tailcall_bpf2bpf_6(void)
++{
++	struct tailcall_bpf2bpf6 *obj;
++	int err, map_fd, prog_fd, main_fd, data_fd, i, val;
++	LIBBPF_OPTS(bpf_test_run_opts, topts,
++		.data_in = &pkt_v4,
++		.data_size_in = sizeof(pkt_v4),
++		.repeat = 1,
++	);
++
++	obj = tailcall_bpf2bpf6__open_and_load();
++	if (!ASSERT_OK_PTR(obj, "open and load"))
++		return;
++
++	main_fd = bpf_program__fd(obj->progs.entry);
++	if (!ASSERT_GE(main_fd, 0, "entry prog fd"))
++		goto out;
++
++	map_fd = bpf_map__fd(obj->maps.jmp_table);
++	if (!ASSERT_GE(map_fd, 0, "jmp_table map fd"))
++		goto out;
++
++	prog_fd = bpf_program__fd(obj->progs.classifier_0);
++	if (!ASSERT_GE(prog_fd, 0, "classifier_0 prog fd"))
++		goto out;
++
++	i = 0;
++	err = bpf_map_update_elem(map_fd, &i, &prog_fd, BPF_ANY);
++	if (!ASSERT_OK(err, "jmp_table map update"))
++		goto out;
++
++	err = bpf_prog_test_run_opts(main_fd, &topts);
++	ASSERT_OK(err, "entry prog test run");
++	ASSERT_EQ(topts.retval, 0, "tailcall retval");
++
++	data_fd = bpf_map__fd(obj->maps.bss);
++	if (!ASSERT_GE(map_fd, 0, "bss map fd"))
++		goto out;
++
++	i = 0;
++	err = bpf_map_lookup_elem(data_fd, &i, &val);
++	ASSERT_OK(err, "bss map lookup");
++	ASSERT_EQ(val, 1, "done flag is set");
++
++out:
++	tailcall_bpf2bpf6__destroy(obj);
++}
++
+ void test_tailcalls(void)
+ {
+ 	if (test__start_subtest("tailcall_1"))
+@@ -855,4 +908,6 @@ void test_tailcalls(void)
+ 		test_tailcall_bpf2bpf_4(false);
+ 	if (test__start_subtest("tailcall_bpf2bpf_5"))
+ 		test_tailcall_bpf2bpf_4(true);
++	if (test__start_subtest("tailcall_bpf2bpf_6"))
++		test_tailcall_bpf2bpf_6();
+ }
+diff --git a/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf6.c b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf6.c
+new file mode 100644
+index 000000000000..41ce83da78e8
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf6.c
+@@ -0,0 +1,42 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++
++#define __unused __attribute__((unused))
++
++struct {
++	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
++	__uint(max_entries, 1);
++	__uint(key_size, sizeof(__u32));
++	__uint(value_size, sizeof(__u32));
++} jmp_table SEC(".maps");
++
++int done = 0;
++
++SEC("tc")
++int classifier_0(struct __sk_buff *skb __unused)
++{
++	done = 1;
++	return 0;
++}
++
++static __noinline
++int subprog_tail(struct __sk_buff *skb)
++{
++	/* Don't propagate the constant to the caller */
++	volatile int ret = 1;
++
++	bpf_tail_call_static(skb, &jmp_table, 0);
++	return ret;
++}
++
++SEC("tc")
++int entry(struct __sk_buff *skb)
++{
++	/* Have data on stack which size is not a multiple of 8 */
++	volatile char arr[1] = {};
++
++	return subprog_tail(skb);
++}
++
++char __license[] SEC("license") = "GPL";
 -- 
 2.35.3
 
