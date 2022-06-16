@@ -2,49 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40E7954E807
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 18:48:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5CE154E828
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 18:55:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236038AbiFPQsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 12:48:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47566 "EHLO
+        id S236078AbiFPQzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 12:55:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378330AbiFPQs0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 12:48:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B1E248DE;
-        Thu, 16 Jun 2022 09:47:44 -0700 (PDT)
+        with ESMTP id S233525AbiFPQzA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 12:55:00 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8585369F4
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 09:54:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23537B824F7;
-        Thu, 16 Jun 2022 16:47:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60B62C34114;
-        Thu, 16 Jun 2022 16:47:41 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 53749CE25CB
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 16:54:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33A5BC3411A;
+        Thu, 16 Jun 2022 16:54:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655398061;
-        bh=7nRK9NwCsao8DUBalG+dGxe3jZ+j/0GGXop/G1tz56A=;
+        s=k20201202; t=1655398496;
+        bh=CH7RnYu3pzJtcRBY6+l3MjsGpg6xtLriVO1e9fMlbfE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ahdsv3GLzNciC67IgzQVGykjxise7wGwOuI3SlXRle+7JrkvhEqi2ieNZLvAi/fpZ
-         aGfC/gfD3uD5AKfF1/LvmKqFx3KDzhiYmNzXtUeRq5mvTIaarUReA8NFunm9+LKopV
-         a2aM4vk/S2suVWsFOsyARoD4aK2e14gY5HgtWiLgKkl+5gA23CAv6LTJo6TrWmcGP+
-         SyUDMCrlMglBfPQnIPHzv5kdNJ3FS+FDehFY9aXxLODVbbjFOQpAmIJw7p4jOE/E6d
-         XIN8bO81m8r2fHitSK31PxUZYCKU34CGi4TIeaNCLmQuIBpPcCr4BFDxUHJl0U5xfe
-         YxGO9WWDvwXrg==
-Date:   Thu, 16 Jun 2022 09:47:40 -0700
+        b=E91c4Xz7ODmmTUKeTsGbR9/ibpasgtRCAUBR0FqiX4enctP8ZiNKGy5Fzie9bMYlI
+         saWrOZ3v4kNPEbG4llsfPKpYzkhOJB4kRqNmlAWmPmNI0xM3g2SFzGuWpzu0V3wT03
+         MMoN2YA+NxdonMk8umBgrMZ5QLfS9x5St9QJ3mJS7P12yr69opbxC+03Hpy2+15BXO
+         ikdIViugeEdT9SeyBTVt/l/dlthuJZ5c6RVn/cS1krJ1WxWauOBmowp9O+23PDqTi4
+         sQjqEdSqMhpGeGUVK6O/2znq9nvANzh4PyGDj4B3qviSHFdPbTnpIHCXxHjxJe/LwJ
+         gtI/Qg+HJvmuA==
+Date:   Thu, 16 Jun 2022 09:54:55 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, magnus.karlsson@intel.com,
-        bjorn@kernel.org, Alexandr Lobakin <alexandr.lobakin@intel.com>
-Subject: Re: [PATCH v2 bpf-next 01/10] ice: allow toggling loopback mode via
- ndo_set_features callback
-Message-ID: <20220616094740.276b8312@kernel.org>
-In-Reply-To: <YqtTqP+S0jvDNRJF@boxer>
-References: <20220614174749.901044-1-maciej.fijalkowski@intel.com>
-        <20220614174749.901044-2-maciej.fijalkowski@intel.com>
-        <20220615164740.5e1f8915@kernel.org>
-        <YqtTqP+S0jvDNRJF@boxer>
+To:     Richard Gobert <richardbgobert@gmail.com>
+Cc:     davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+        brouer@redhat.com, imagedong@tencent.com, vasily.averin@linux.dev,
+        talalahmad@google.com, luiz.von.dentz@intel.com,
+        jk@codeconstruct.com.au, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: helper function for skb_shift
+Message-ID: <20220616095455.012db786@kernel.org>
+In-Reply-To: <20220616122617.GA2237@debian>
+References: <20220616122617.GA2237@debian>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,23 +55,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Jun 2022 18:00:40 +0200 Maciej Fijalkowski wrote:
-> > Loopback or not, I don't think we should be accepting the shutdown ->
-> > set config -> pray approach in modern drivers. ice_open() seems to be
-> > allocating all the Rx memory, and can fail.  
+On Thu, 16 Jun 2022 14:26:29 +0200 Richard Gobert wrote:
+> Move the len fields manipulation in the skbs to a helper function.
+> There is a comment specifically requesting this. This improves the
+> readability of skb_shift.
 > 
-> They say that those who sing pray twice, so why don't we sing? :)
+> Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
+> ---
+>  net/core/skbuff.c | 22 ++++++++++++++--------
+>  1 file changed, 14 insertions(+), 8 deletions(-)
 > 
-> But seriously, I'll degrade this to ice_down/up and check retvals. I think
-> I just mimicked flow from ice_self_test(), which should be fixed as
-> well...
-> 
-> I'll send v4.
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 30b523fa4ad2..8a0a941915e8 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -3508,6 +3508,19 @@ static int skb_prepare_for_shift(struct sk_buff *skb)
+>  }
+>  
+>  /**
+> + * skb_shift_len - Update length fields of skbs when shifting.
+> + */
 
-checking retval is not enough, does ice not have the ability to
-allocate resources upfront? I think iavf was already restructured
-to follow the "resilient" paradigm, time for ice to follow suit?
+1) this is not a valid kdoc
+2) I don't see the point unless we have another user of this helper
 
-This is something DaveM complained about in the first Ethernet driver 
-I upstreamed, which must have been a decade ago by now. It's time we
-all get on board :)
+> +static inline void skb_shift_len(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen)
+> +{
+> +	skb->len -= shiftlen;
+> +	skb->data_len -= shiftlen;
+> +	skb->truesize -= shiftlen;
+> +	tgt->len += shiftlen;
+> +	tgt->data_len += shiftlen;
+> +	tgt->truesize += shiftlen;
+> +}
+> +
+> +/**
+>   * skb_shift - Shifts paged data partially from skb to another
+>   * @tgt: buffer into which tail data gets added
+>   * @skb: buffer from which the paged data comes from
+> @@ -3634,14 +3647,7 @@ int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen)
+>  	tgt->ip_summed = CHECKSUM_PARTIAL;
+>  	skb->ip_summed = CHECKSUM_PARTIAL;
+>  
+> -	/* Yak, is it really working this way? Some helper please? */
+> -	skb->len -= shiftlen;
+> -	skb->data_len -= shiftlen;
+> -	skb->truesize -= shiftlen;
+> -	tgt->len += shiftlen;
+> -	tgt->data_len += shiftlen;
+> -	tgt->truesize += shiftlen;
+> -
+> +	skb_shift_len(tgt, skb, shiftlen);
+>  	return shiftlen;
+>  }
+>  
+
