@@ -2,129 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1F2E54EA29
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 21:32:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 916E054EA33
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 21:35:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230512AbiFPTcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 15:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53248 "EHLO
+        id S1378314AbiFPTfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 15:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229672AbiFPTcr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 15:32:47 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBA321AD8D
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 12:32:46 -0700 (PDT)
-Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com [209.85.215.197])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 7934D4100C
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 19:32:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1655407965;
-        bh=MfBd/Ga0o25q1MT4i+2Pu9qCNQqFVHIBJnEzyzd+yxE=;
-        h=From:To:Cc:Subject:MIME-Version:Content-Type:Date:Message-ID;
-        b=N6JpcjbeLm/VtVzdhCRPq4kcW7VLempPTmtOdresuiFs/JktfzkCL8xYHXkwImWBG
-         qNAfEPTVw1OeJaolBjKjXYtZ11JfLIQo9ng+Udrb/fAlXrC+9vrh97rH+lui0dd/x4
-         v24OYNMnLyHrRr1h0ATmsRyNvlcyBNYqNRQqQwZI+0rlBnzdJguPUElWdk/k/7Kbhn
-         MzV0zB9/Hj22eMxVZJqCnyBmhbw6CoMyh+LCF3S0+3jOSoDQlWNijihMCxDQDveOyr
-         SJVgY3Jsk7mHNxPVchP7LP931enOKyPTx6Pf7a+746YWUd4zPZ3c+wFHmhfHZtqC2Z
-         +OdpmCOcr0bJw==
-Received: by mail-pg1-f197.google.com with SMTP id e18-20020a656492000000b003fa4033f9a7so1121568pgv.17
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 12:32:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:mime-version:content-id
-         :content-transfer-encoding:date:message-id;
-        bh=MfBd/Ga0o25q1MT4i+2Pu9qCNQqFVHIBJnEzyzd+yxE=;
-        b=jKwk4sW8Mb7e2w1CUXjtwwEnK6SxIwB8TTfjLjPYSLwYIlvRU1o2OxHfguZ0m/N4up
-         vawxdaDNfVF/0kjXUQnV/LLhlZqVQ2Oad+weFDo85FxuzBWzIKOem9xCOVpBc+i88YdD
-         Rjc4dCoUhyr9InWQTfNzXn6T7Yt6k0ME9Us5t4Wca6+PNQmqLqCq+mf/jCL7C8mg3bn+
-         sx8xrLgvtkPdHYlOV4QZBQFmS0ZmR/3Ft7Di/tO5GB2T9vDlUkpWYYkyIAZwxe9Z7Z8J
-         6MzOxY/h8EtFxFRijO7cNdH1PW1fr0ifTUWg7tlVOMJPu5F5kYzN+DfAthGNuDdtwqj5
-         eXSA==
-X-Gm-Message-State: AJIora9vsxVsUmEFN4sFxXx93N74/PfP6g0eZkM503XNNdrEkigas52Z
-        BEkmxw6FZY6FesMKSy3J3oOo3vp6KvIb5YjzYhUj8LffyxlFv0aW6xockpUyQtw4PivlSPTSd0Y
-        RUN69qZFnu1FA/MuoGbXSGmt6vk7KRelA4w==
-X-Received: by 2002:a62:7cd2:0:b0:51b:9ba6:a028 with SMTP id x201-20020a627cd2000000b0051b9ba6a028mr6371242pfc.24.1655407961529;
-        Thu, 16 Jun 2022 12:32:41 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1u5CTZM5NqbZO88e9dZCt3a1JD9A/rLHFiLv816rVBzmiEXRqDoYA4uafs+LmwI0+64adCJ3A==
-X-Received: by 2002:a62:7cd2:0:b0:51b:9ba6:a028 with SMTP id x201-20020a627cd2000000b0051b9ba6a028mr6371222pfc.24.1655407961209;
-        Thu, 16 Jun 2022 12:32:41 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.157])
-        by smtp.gmail.com with ESMTPSA id i186-20020a62c1c3000000b00524c5c236a6sm1867697pfg.33.2022.06.16.12.32.40
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 16 Jun 2022 12:32:40 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 81AF46093D; Thu, 16 Jun 2022 12:32:40 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 7A879A0B36;
-        Thu, 16 Jun 2022 12:32:40 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1349272AbiFPTfJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 15:35:09 -0400
+Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F401579AB
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 12:35:08 -0700 (PDT)
+Received: from [192.168.1.18] ([90.11.190.129])
+        by smtp.orange.fr with ESMTPA
+        id 1vGioIvR7NUm11vGionD4h; Thu, 16 Jun 2022 21:35:06 +0200
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Thu, 16 Jun 2022 21:35:06 +0200
+X-ME-IP: 90.11.190.129
+Message-ID: <70ea2718-4979-5587-7f31-2361ae3ff8ad@wanadoo.fr>
+Date:   Thu, 16 Jun 2022 21:35:04 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2] p54: Fix an error handling path in p54spi_probe()
+Content-Language: en-US
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Christian Lamparter <chunkeey@gmail.com>
+Cc:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        dingtianhong <dingtianhong@huawei.com>
-Cc:     Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: [PATCH net] bonding: ARP monitor spams NETDEV_NOTIFY_PEERS notifiers
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <9399.1655407960.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date:   Thu, 16 Jun 2022 12:32:40 -0700
-Message-ID: <9400.1655407960@famine>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>
+References: <297d2547ff2ee627731662abceeab9dbdaf23231.1655068321.git.christophe.jaillet@wanadoo.fr>
+ <CAAd0S9DgctqyRx+ppfT6dNntUR-cpySnsYaL=unboQ+qTK2wGQ@mail.gmail.com>
+ <f13c3976-2ba0-e16d-0853-5b5b1be16d11@wanadoo.fr>
+ <df6b487b-b8b7-44fc-7c2d-e6fd15072c14@gmail.com>
+ <20220616103640.GB16517@kadam>
+ <9fa854e1-ad88-9c18-ca68-5709dc1c7906@gmail.com>
+ <20220616151948.GD16517@kadam>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220616151948.GD16517@kadam>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-	 The bonding ARP monitor fails to decrement send_peer_notif, the
-number of peer notifications (gratuitous ARP or ND) to be sent. This
-results in a continuous series of notifications.
+Le 16/06/2022 à 17:19, Dan Carpenter a écrit :
+> On Thu, Jun 16, 2022 at 03:13:26PM +0200, Christian Lamparter wrote:
+>> On 16/06/2022 12:36, Dan Carpenter wrote:
+>>>>> If it deserves a v3 to axe some lines of code, I can do it but, as said
+>>>>> previously,
+>>>>> v1 is for me the cleaner and more future proof.
+>>>>
+>>>> Gee, that last sentence about "future proof" is daring.
+>>>
+>>> The future is vast and unknowable but one thing which is pretty likely
+>>> is that Christophe's patch will introduce a static checker warning.  We
+>>> really would have expected a to find a release_firmware() in the place
+>>> where it was in the original code.  There is a comment there now so no
+>>> one is going to re-add the release_firmware() but that's been an issue
+>>> in the past.
+>>>
+>>> I'm sort of surprised that it wasn't a static checker warning already.
+>>> Anyway, I'll add this to Smatch check_unwind.c
+>>>
+>>> +         { "request_firmware", ALLOC, 0, "*$", &int_zero, &int_zero},
+>>> +         { "release_firmware", RELEASE, 0, "$"},
+>>
+>> hmm? I don't follow you there. Why should there be a warning "now"?
+>> (I assume you mean with v2 but not with v1?).
+> 
+> Yep.  Generally, static checkers assume that functions clean up after
+> themselves on error paths so there would be a warning in
+> p54spi_request_firmware().  This is the easiest kind of static analysis
+> to implement and it's the way most kernel error handling is written.
+> 
+>> If it's because the static
+>> checker can't look beyond the function scope then this would be bad news
+>> since on the "success" path the firmware will stick around until
+>> p54spi_remove().
+> 
+> Presumably Christophe found this bug with static analysis already but
 
-	Correct this by decrementing the counter for each notification.
+True, I use a coccinelle script that looks at functions called in 
+.remove() functions that are not called in what looks like an error 
+handling path in the corresponding probe.
 
-Reported-by: Jonathan Toppins <jtoppins@redhat.com>
-Signed-off-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Fixes: b0929915e035 ("bonding: Fix RTNL: assertion failed at net/core/rtne=
-tlink.c for ab arp monitor")
-Link: https://lore.kernel.org/netdev/b2fd4147-8f50-bebd-963a-1a3e8d1d9715@=
-redhat.com/
+> my guess is that it has a lot of false positives?
 
----
- drivers/net/bonding/bond_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+This is SOOOO true !
+The output is 23k LoC, mostly false positive!
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_ma=
-in.c
-index f85372adf042..6ba4c83fe5fc 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3684,9 +3684,11 @@ static void bond_activebackup_arp_mon(struct bondin=
-g *bond)
- 		if (!rtnl_trylock())
- 			return;
- =
+In fact I only checks the diff between the outputs of my coccinelle 
+script from time to time.
 
--		if (should_notify_peers)
-+		if (should_notify_peers) {
-+			bond->send_peer_notif--;
- 			call_netdevice_notifiers(NETDEV_NOTIFY_PEERS,
- 						 bond->dev);
-+		}
- 		if (should_notify_rtnl) {
- 			bond_slave_state_notify(bond);
- 			bond_slave_link_notify(bond);
--- =
+Looking at only the diff, most of the false positives get ignored and I 
+manage to spot ~5-10 issues of this kind in each dev cycle in new code.
 
-2.29.GIT
+CJ
+
+> 
+> Eventually the leak in the probe function would be found with static
+> analysis as well.  The truth is that there are a lot of leaks so I'm
+> already a bit overwhelmed fixing the ones that I know about.
+> 
+> It would be fairly simple to make a high quality resource leak checker
+> which is specific to probe functions.  But the thing is that leaks in
+> probe functions are not really exploitable.  Also some devices are
+> needed for the system to boot so often the devs don't care about about
+> cleaning up...  My motivation is low.
+> 
+> regards,
+> dan carpenter
+> 
+> 
 
