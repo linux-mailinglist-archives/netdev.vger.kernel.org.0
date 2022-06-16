@@ -2,111 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21DC154DF5F
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 12:44:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0EE454DF62
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 12:45:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376343AbiFPKoq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 06:44:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59716 "EHLO
+        id S1376536AbiFPKo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 06:44:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376562AbiFPKoT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 06:44:19 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2078.outbound.protection.outlook.com [40.107.92.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71C45DD27
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 03:44:17 -0700 (PDT)
+        with ESMTP id S1376612AbiFPKog (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 06:44:36 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2063.outbound.protection.outlook.com [40.107.92.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0985E142
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 03:44:24 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=X7kYfQsqYxujYayFeRivRbzrY1cpbX2ugsVzokeopuWCU77WtQlJIf+zVAp248JbNvsYb5DwU6FyVmkEovXSOKxkbGjesvDiqBZ4iV9wbuWjgXNijwsXY0ENWq866KV970IlPNAtlLyMMLYPxAtKPThYQcN/6kYLYw5Am6m8jWig9bdNftzj4Xooo+aIzeJS6N8RAjlB7R7fl0hW8+yHwiGOf5/R/KHg6T54ZQIGwHHCR8ZFsOSFGbIdvrtNcHYwedAyiik21jUGWmdKB0OWd5KgH3kG8r5DsNoQMCVNZpsMtZYvcb6dsnOCbmnw3HHDTsRVu1ViUQKEVp2TUCN/Xw==
+ b=JWkhUCGzHAnmgi5lmk76s5wawwkvMaeKfO3ARzt2a8X12xAgILNZrufKNfq3oAAefo5Ry2vhQE4YIjRmjKjyUmhWFh5/pqeZNCIBk+HBCCirzcz5BHCHKoTHTMCti/JESHhe1bg5GSK8xZEbrdrIvDraMX51gp1W2JA4bHSXVJr7JDccWBz7yrVRkxCYuQYF7NNjqrtTATQu/I1ZOhdHB11HBza2wTGXJhE5Gl2Aoawuy1TT91nSaRc1uykcwGuVbXS2gwN0HooeX7TaWxY2uSwV9C1UaU0/gL/0H7GudZOZ67f5TI0I7TcFQrdHAWl/M3NzcAo+/nObM2a8PsuUig==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DSNBMQaEil1n3xahRudgQHw0afkL2VRZ/6KMoHt+xTI=;
- b=HN7z5dbt1f21C6VMsZPKRTimuv/7NHjoiWe0sGklvzguUS8LuCCWkeilU+oHKsZqbBFBydrgdOaQwjN0hjIpAFL0+r2ZdJa1lw7fY3cR7h9Pcrxb6csKzcAY8cnB+epad9sW4AK/O6xoCQtqe3TtuL6/lvdbfPDuv5ntWM8QHHxK7bSiNMLxR8cCRisqD6a6IHU/TgStyu+K3iMDb1gZufuiMqiAelhbcV5MXYNDq+3bH/r/p5TWYk6zKKQdGzgxAjIHfivrcqfwoyd8Wcdg3dmQ7enCZDsWSHC3YOVPU9SBZE4Wmf7U84Psk9gzPLk3/1Ik+dAt6TyiVHxqj1xVJQ==
+ bh=Zy7EhjVpdScPtZOacq/VmM6eGy+IrFcK8sDjAFlN6BU=;
+ b=LIaJTbO1qoC0ZxjLYGcp1/Bd3mFhibkXrK/GAhqznQbsKrbegA6RGBgWZLu7hatXME2/Z14JFcYvNE87OBX+sOPfwDjU7UzkkBlzDXAcOpFt5DL4RmBNFEJhJBNbOVPapzPqbCLjvakTCra3sy6tnQGc5A7S0F8rZH0vHD4dtn+qeqpjPsEngoOutWFepC/gzxCq4WJe1POAp5SKgOt0Qi9Xa5E/fLmoV9MRlPu2eiLg6ctYbHPWDRVwdwXQUBknPmMIXT6JeptFcH14mOhxmaq1w2KrS5LGxvWwERPj23Xh0RounYY8bKuQJ90UMVC3q4NBSLOmqCU4ZeHLvTQ/CQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DSNBMQaEil1n3xahRudgQHw0afkL2VRZ/6KMoHt+xTI=;
- b=QZKgtJEhvxm43w6fr13pXHoQi5/+FIjAgzYSTkz4K/lZws830N8vgJCNvEEINxVHi7w9UgBo2hIQtRwXDPvQ52LQMtxR66U1RUO92+w7ZGk79E9v1JaDHrgvztZlAh8TZj5tyL6ky8G8W5B6sPB/ys3mx/PCmKh3fkNqZQeO5cuZ1GLg5Mg8flvun8RE1AmZXWZYQp4HnED61oo5XNaSXRMXfbGAyzQ4TDOhKRWUwD28znIeWVaX1HHXZPB39GKYZnaImDcedUQexq4Dk18rU7Yx3CzjZIwu0OU9z1s2pNpYlB6GqXo3X9haqtytwFQqMqDjppGEzNJlq82yZDugag==
+ bh=Zy7EhjVpdScPtZOacq/VmM6eGy+IrFcK8sDjAFlN6BU=;
+ b=n5VgCxa/tMXmFGI0+e4IiMJhFbPdgZqLABta8ZXzAzyk24qzdXT/mOn0VbgkO6GbULopzvhTgIURjbHUEBirfJLgPxH4DpvQ5fAkBtyiBoY3lQP29NIqHfuHL/s8AwEyI6cBzYvy8qjIhP9d/aq5lwOI5IX9t9S1ROD3lWdyLVBm+VzW9TpkQVucIpO/COKVrhQ72prHuCMcAfpTPPweet9CxSACN41gJSHQ+VFam0fgzGIk2VCotXX/EOSRlSj4+iNy3vFkcbkFXV7AwFHdeNmF6R9Z2mSJvS2m6uYL43z1MJWVjY3FBci4mEUnvNaeTAjTAFyuvCDTj8BnRvwSqg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
  by DM5PR1201MB2504.namprd12.prod.outlook.com (2603:10b6:3:e3::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.16; Thu, 16 Jun
- 2022 10:44:16 +0000
+ 2022 10:44:22 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::9157:69c9:ea8f:8190]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::9157:69c9:ea8f:8190%9]) with mapi id 15.20.5353.014; Thu, 16 Jun 2022
- 10:44:16 +0000
+ 10:44:22 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, petrm@nvidia.com, amcohen@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 08/11] selftests: mlxsw: resource_scale: Pass target count to cleanup
-Date:   Thu, 16 Jun 2022 13:42:42 +0300
-Message-Id: <20220616104245.2254936-9-idosch@nvidia.com>
+Subject: [PATCH net-next 09/11] selftests: mlxsw: tc_flower_scale: Add a traffic test
+Date:   Thu, 16 Jun 2022 13:42:43 +0300
+Message-Id: <20220616104245.2254936-10-idosch@nvidia.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220616104245.2254936-1-idosch@nvidia.com>
 References: <20220616104245.2254936-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VE1PR08CA0030.eurprd08.prod.outlook.com
- (2603:10a6:803:104::43) To CY5PR12MB6179.namprd12.prod.outlook.com
+X-ClientProxiedBy: VE1PR08CA0029.eurprd08.prod.outlook.com
+ (2603:10a6:803:104::42) To CY5PR12MB6179.namprd12.prod.outlook.com
  (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4c12a5bd-3832-42cd-3fb2-08da4f8528cd
+X-MS-Office365-Filtering-Correlation-Id: 1506788c-e1b9-402e-565d-08da4f852cad
 X-MS-TrafficTypeDiagnostic: DM5PR1201MB2504:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR1201MB2504176E436C9F02C713C200B2AC9@DM5PR1201MB2504.namprd12.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DM5PR1201MB250432F9A03A8D407D39A7B1B2AC9@DM5PR1201MB2504.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PNpEs8D5ll25qccKJ5pLZ8Dp8lLMN+iRASo8Ea7gFPrZhVRqJZdjto3I85Db4rmjDf0LoyzOGWH1V/u8DoJSLQroDN5DkeTVCbVg4WG7GJBEVOnCTDa7+Vccx0+sYPWknzw+w030445r8fgYBSWfvX1u9EfxdKaz5qlhkt5zs6AzgOk9HJiuMphqPl//54z5axuf94R0D3du1r4o9cnNTS/2VrMvVCQof1PaTr3SGgomzLumdb1eBhIMfoMJ7nasBxNUzcaCvqjkq6T1u4iuVtNUh4ikuGFZ84IHl5ipYvVbHcqOHphrfQCoa6+MjDsohpLWdSVQt0rZi8HKBX722OXSZMvNa9ApgXE3O4pjoF/tC4liEsaBWmhHZyDmf6iX7CCqApfWjal+RAWaTVNAD/HW0G5/QG2ekwKU7A1G67VPNdWmVnEmhxjqkbLcKPjldOg3llXXn76FEkGjBxDrgO+TmH0ZyuP78FCZjMEp4/e5Wagt9OOABEcsbMZRn23qZemzg7MiUEBAL2pI9HpxMOjfhOvo8oMoXQKsUh3GP82Cp+qc9iEFbHvujMtLffQVzBg4XWJ6zDDUVJ5cqjw0NsKddXnNUbUgRDuSvC28QpyZskS47wVULMsn32fgPa0VWr3ovFYd5JLtgAvZIyHWEA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(107886003)(66476007)(6666004)(83380400001)(1076003)(6506007)(66946007)(6512007)(2906002)(186003)(36756003)(8936002)(5660300002)(86362001)(66556008)(8676002)(26005)(6916009)(4326008)(6486002)(508600001)(38100700002)(2616005)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: o7HWHgEb3KKxMSfIaLY/dbWuVmDkIT2adEQ14HN9J0Q7E5BtdP4RJXuMkuo9PPh+k3VVovmxCjBpY4Jnyua6DmEUccWno7wEQ45X7qUa2Tty6nPBSrtA0+rWTGpWwgMY9Gz+ecM5gaWVxx/c4/nXZzwYC+MnQNWjQvHZH+cehJNc2K0Yxfyty5KkJIp4tlvza/JdeobhtG94fRt0OZ6ToowuqXCWd9baDtXr5FPAxKtxu4mieI8FJZhpce+4TCyFkZ/U3+s6rbc31u5h/luvu5+ETrGOJjo36Vwc3/MfInvsgs6nTuTJZxXXrndm6hEkXBigZvvGypHP26OY8a/XlTcBOcLCqVYpju9aFuIyLmGLHhQL1539f7HRjt/938MVz+cGP1ptqGlKoUv8r9nh6El4u1bc0OmoJZ+uV7S6BiqtIq0WsWFH76LuLon1aRgWj1AWiSKvZ0nv9LMltVCPn46/G0USRjkka34wKcBy5Wi53rBt7iTvtTk8sWSkepiveQEYoqDAkZxr5zQXaOu4D8JsZZ0+P9e9wroZBo1+ELjKsGgkq35zrMhAnUu0fYCSNrdBHhdBDjX51/Xx4Q2v9eaF6c3aBJwz9xBDsXluchTMzB3MLeQtuXnJ97zD7CTaWl3zMcSp40ssUJj81BXd+w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(107886003)(66476007)(6666004)(1076003)(6506007)(66946007)(6512007)(2906002)(186003)(36756003)(8936002)(5660300002)(86362001)(66556008)(8676002)(26005)(6916009)(4326008)(6486002)(508600001)(38100700002)(2616005)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cwjRctSWxHQs41FNqxZFDJfa4ra0e4ZdB11BqG3FnWtUvnamI7kesThE8rGN?=
- =?us-ascii?Q?TiVHWGrsMgv3YjABoGIzy61tDIDtt40Ey0MwHs/Iq+MsQtt/nbp5MLxXsDmC?=
- =?us-ascii?Q?rpyt62Ad6AX2wozR/nDzBzNUB7DR7zdShQ1JtwA1HbalPKw1H4g4sl+y42+c?=
- =?us-ascii?Q?GRDRz6Tg/J52AYE43BEHSwK7Fjz6G54p5tR5wIGQzhte0/4+lOiOrVlbfz6f?=
- =?us-ascii?Q?SzC4XQJT8H3vK6O0g/KxRshl+q9hNv5j96K0iLaOttk6QmsxSyFbgMddUIME?=
- =?us-ascii?Q?kctptdYua+6jErOxjmRvSVifIw6ulDuG73oJHoUmarAWWoe4xTvbh4cwYJP3?=
- =?us-ascii?Q?UIPMPrCpYCm9xJvRkpm+zL6iHx4CCwHFSxgRF50VwmGMhj2C3TkNOEYvXEv2?=
- =?us-ascii?Q?ikpVpA/440cYVTVKAhqO+nz0lCqXEhRKPNA+WBEy4azni4iaBdNI1LS3Z979?=
- =?us-ascii?Q?62jXZ7kAp7GvR6QoU0uXYfYAWww7IYfn2WEuFGhfmiU58my8JJDhG/62C76k?=
- =?us-ascii?Q?6GloDufMyi8F7+TNmEwHVjQD8NQ21wg9XCsekpEpPqUznX1yBGXxNLlYHwHT?=
- =?us-ascii?Q?JvWUM7R+Xy5JYxFFSq7Wxo+ZZNOJIzPkfYOUK1CZtg9Qz6f9zAaW5+9h4twj?=
- =?us-ascii?Q?unhJzUM5AxoFM7JS/Udm5WjtHhbhWjMHBld3+SuSN85KgbpDMuFygBUmGXIx?=
- =?us-ascii?Q?+1mOEGw3WkACDtDWKUhPcC6CcPIZ6jWBZ4pDKUJl2ohxPRkaBRLc9BOoAfov?=
- =?us-ascii?Q?c4WQcRJ90Sw9Av3ZHYhfp2+nDPtDkzX4BSbjyAiqngmxO3k0sEg8M04hR0/l?=
- =?us-ascii?Q?8bMBiUgkVw+Y83SpP1T3eJ6sa0xJDr7fLU2B3GL5ID5rEsWA8jLPexC7JC8y?=
- =?us-ascii?Q?pCDtSuyFly7671Az3/Hu0pug98Ce+7++5kEvKwyd81KD+GPrDKyVCKioYKnm?=
- =?us-ascii?Q?eIHfDSjkruasUvUsH3FLPag4wiju74yydMTROu9TeUUwObNWUFVDFnJqm4y4?=
- =?us-ascii?Q?sGDbC9lnaFz+XgGH1QdII6KXCNuLK+UXbwx2xasixPDTIqx5mg69gG40s/+l?=
- =?us-ascii?Q?ICzREZsXD3hBMg85ng2ug6UZgu1Haq/3zjCK/xx4OyNtp4JT8DF7zYqRdSgr?=
- =?us-ascii?Q?GyarakTi+xbMX9ElKcj+Rj+4SX78NTvFg0S9/tjruQB6QcDjoYDlh8csFdBD?=
- =?us-ascii?Q?YrpK65OHibc8tYruLLXHbKRUp+Dp3cSz3IxFP08/w+dM8cW5iSLclC2MXPgv?=
- =?us-ascii?Q?KUWdRHP7xzhAvrQTO9NMGEyKhvh6PairGvnUY38TaVWTu2wEeM/DWFbCq810?=
- =?us-ascii?Q?3/2WqANqC/yAA0KVDw2b5/yYyJ7WEkhuiA7/gzQvy1nCWKgU4G264uRoBX9G?=
- =?us-ascii?Q?VUEy+nEmen+ZamTfnu/aQ3Rj1mnjmZ1tAFqmdovVI5WWQ5RaaP4CUMJKIHfO?=
- =?us-ascii?Q?cGIPZlUDTYQMqGo7rDbp8gfcmNvUwjj/8grol9Ciwl7WDSyh5s+Twong30Nc?=
- =?us-ascii?Q?+2KtUeWaKtXH/OixXwtd5Oxnn5+8VIaTcnfk7kgdq+XTLwUaehOcw/0Y2Vi3?=
- =?us-ascii?Q?9qx7LBNKT4FpTePmQpoPCC8TwHqkwcQGZ1dI5QKbCMv6RgBKjx0c6m0sguEb?=
- =?us-ascii?Q?5iaOLF6/zibWYkhL9TG2ejzZqleiDaljOFDw2z1QsPDEVZ1Qft0sN/rkd8lV?=
- =?us-ascii?Q?cGCMhO0vqHGYoiKE5PI58eOj+VcSEHk6rrQ6QWlZnbVaP/UbEhLpIs2k0mCb?=
- =?us-ascii?Q?nDBtFsWUzA=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4Q3XuXCw3jTlzUDXBsHOss9mD76wJIbA6Ls2HiWyIUSzez7EFuPE7Q/n0B7n?=
+ =?us-ascii?Q?cnAihUWgor3gY8Eub8C43eyAanwY2T4h69u18JymxEbYz7GnUUKbI8drUbD2?=
+ =?us-ascii?Q?KjIC+7fXlkNhMwHi1lWDaa1J6ys0vuomE27EWPEkBWz3E/s3xwkih5I+iGR5?=
+ =?us-ascii?Q?fb1ZYJdF7PYWj5YRAGkweICVRIrmZoqRbeBOx3eD9Wlcgy7H3BjU7B/FeXYq?=
+ =?us-ascii?Q?rOvnGvA44fOHAGZPv9Pm6wpHfraZ3Ff0/mLptR0Q5/i4pR2RT5r4I0n/EQ/l?=
+ =?us-ascii?Q?VkY6jh2bxHw5DaSy+WSO6MyyxdeDHTY+WkpGNpUmvZEgsaSwM3kDE7wEGq8Q?=
+ =?us-ascii?Q?Mr4OuTgZSn+jJQtBrfalIir45GXXUDZxDlaNpOKa9HfBPEeprVt2OmyeUfyP?=
+ =?us-ascii?Q?GeVn/kr6ijQMXfuUvvZHFgMe69UN+qqx1hB5dF7bn+8uTAfHCfqxb5PybMoK?=
+ =?us-ascii?Q?Uu0WJAGyw7tC+muLVceEWlMaoXX/sU4nJGhURr9+WK+LSZoPZNUcAz0msWlU?=
+ =?us-ascii?Q?FuuXv7WhS5UM1z5y9vzEo7CHFZwyDHPcxc7+aEgPsahapKM/S/Zy75aOsUeN?=
+ =?us-ascii?Q?5mD6cOw6+SiSDxdZbe2VKRbDLZ7MYjlL21PuzSSx5UrmLDhGh8XJvFKnpVIX?=
+ =?us-ascii?Q?/SRTXQEC/c+drwkyAwIUCTfpknJpLyVRivUAXXqcFQs+6d92IeTnO6Dcehrt?=
+ =?us-ascii?Q?OWgQyeoKOT/Zn+WL0jRimbnlIcDQ9wYOu/uW9CJa9NymKWKAWQdFFz0Ivwo9?=
+ =?us-ascii?Q?1dLR08CK6fPyVLX3AwYhwjzCoa2/OIl+hUZtzMaa1Z5NusBvk2jDW8izeSjm?=
+ =?us-ascii?Q?BdSf5p5REyRxD2AZZPYU09an5129Gqly1aK9F7UsgVt9aD6FAEiIqKNXS5nu?=
+ =?us-ascii?Q?s0ds+E5/B69806krRt9TkoggXXL6gyh/lVS2UAn92stCFrlEvea7fzjYy5cT?=
+ =?us-ascii?Q?iAA77TM5JVoxp7O2C/o5ZO1oARmetOCMyvr31L3/rcKadLsWlFchZLufrDfN?=
+ =?us-ascii?Q?tpSNd/m5bPL76R3W7XH8rWzcAfR2Toz5smZLtnsz66qRoIm6xj749rSS3k7y?=
+ =?us-ascii?Q?TQudrEaRRc12sUmn6nl+CBSXsd3qv1zN8X/ZgY8VzrqLl9LK/PJTgncuDb5Z?=
+ =?us-ascii?Q?d0YXmKAz8QzB+DwgAdL/7TuCwAAlJ4uLGoYX/mBVgvZn51JlCMu46+ign3d3?=
+ =?us-ascii?Q?o5LkUgn2R5YUVNoCVkiqkz4ViQEjd+POlJwqBJZfu6lmXyNfP2FPmuB74c66?=
+ =?us-ascii?Q?26I/372VBijtac9C72b2ZRnzIGHprxOFA4rkOrQvq0LmD6uTi18ijpp+fvZg?=
+ =?us-ascii?Q?/2S+tIy784z49Ij3vTyH4aXA175YlWp4QTE0Y+snO3NJ04mbS2poTBj4vkb7?=
+ =?us-ascii?Q?Q56W+5GErUQhhnaxupMSsVSN0IsGH58UoamutoRWEsRpE/w1gEdktnIydfSq?=
+ =?us-ascii?Q?f13BMEjOyiLHfv0wXrwRCrZzDIIrahRrSb+d1tPw+xw9AeiGh8qMvh2Ce/IF?=
+ =?us-ascii?Q?qNEMA4LQiiuIBzs3h9jfO62/tysefI8y4Ks4rb1zPnIPXiW3ZFxBEAcAgpMw?=
+ =?us-ascii?Q?w2QQCXhFHEL7mc7u1YbO6X25rkJlF3gv5r+ajSK01MbV7EQG/O6/FGtYMxVs?=
+ =?us-ascii?Q?73Dcpj5aHhaX52ftF5kAtalYVysh+H0uDJuKhe1ktHojUJD5Vzt3mTdFZwjv?=
+ =?us-ascii?Q?JaDBb/EbXX4KdFkQQK2hx49njP6ljkZHsDhn+zRmGLpyrN/p8k1Y2wCM1cUC?=
+ =?us-ascii?Q?pUVsoufjFQ=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4c12a5bd-3832-42cd-3fb2-08da4f8528cd
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1506788c-e1b9-402e-565d-08da4f852cad
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2022 10:44:16.1224
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2022 10:44:22.6085
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +WzI+rQz1N+jmcPJ7b+tlxLmwdU4Q/EuQsp4Pf3ywse1Kqm62OlAQxcfQXrPbtt2D229C5cHQ5lCmtjmg32rnA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: pYv5BUIM+QbPfCIJ6GTAT5Tqcrpmd8KTQtgRXapr6zv+FXEETu1u8YMXZHcEVWGSijlo2r1k9ldwaF0hSYEOmQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB2504
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -120,54 +120,54 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petr Machata <petrm@nvidia.com>
 
-The scale tests are verifying behavior of mlxsw when number of instances of
-some resource reaches the ASIC capacity. The number of instances is
-referred to as "target" number.
+Add a test that checks that the created filters do actually trigger on
+matching traffic.
 
-No scale tests so far needed to know this target number to clean up. E.g.
-the tc_flower simply removes the clsact qdisc that all the tested filters
-are hooked onto, and that takes care of collecting all the filters.
-
-However, for the RIF counter test, which is being added in a future patch,
-VLAN netdevices are created. These are created as part of the test, but of
-course the cleanup needs to undo them again. For that it needs to know how
-many there were. To support this usage, pass the target number to the
-cleanup callback.
+Exercising all the rules would be a very lengthy process. Instead, take a
+log2 subset of rules. The logic behind picking log2 rules is that then
+every bit of the instantiated item's number is exercised. This should catch
+issues whether they happen at the high end, low end, or somewhere in
+between.
 
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 Reviewed-by: Amit Cohen <amcohen@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh    | 2 +-
- .../selftests/drivers/net/mlxsw/spectrum/resource_scale.sh      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ .../drivers/net/mlxsw/tc_flower_scale.sh        | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
-index afe17b108b46..1a7a472edfd0 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
-@@ -60,7 +60,7 @@ for current_test in ${TESTS:-$ALL_TESTS}; do
- 		else
- 			log_test "'$current_test' overflow $target"
- 		fi
--		${current_test}_cleanup
-+		${current_test}_cleanup $target
- 		devlink_reload
- 		RET_FIN=$(( RET_FIN || RET ))
- 	done
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh
-index c0da22cd7d20..70c9da8fe303 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh
-@@ -65,7 +65,7 @@ for current_test in ${TESTS:-$ALL_TESTS}; do
- 			else
- 				log_test "'$current_test' [$profile] overflow $target"
- 			fi
--			${current_test}_cleanup
-+			${current_test}_cleanup $target
- 			RET_FIN=$(( RET_FIN || RET ))
- 		done
- 	done
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/tc_flower_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/tc_flower_scale.sh
+index aa74be9f47c8..d3d9e60d6ddf 100644
+--- a/tools/testing/selftests/drivers/net/mlxsw/tc_flower_scale.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/tc_flower_scale.sh
+@@ -77,6 +77,7 @@ tc_flower_rules_create()
+ 			filter add dev $h2 ingress \
+ 				prot ipv6 \
+ 				pref 1000 \
++				handle 42$i \
+ 				flower $tcflags dst_ip $(tc_flower_addr $i) \
+ 				action drop
+ 		EOF
+@@ -121,3 +122,19 @@ tc_flower_test()
+ 	tcflags="skip_sw"
+ 	__tc_flower_test $count $should_fail
+ }
++
++tc_flower_traffic_test()
++{
++	local count=$1; shift
++	local i;
++
++	for ((i = count - 1; i > 0; i /= 2)); do
++		$MZ -6 $h1 -c 1 -d 20msec -p 100 -a own -b $(mac_get $h2) \
++		    -A $(tc_flower_addr 0) -B $(tc_flower_addr $i) \
++		    -q -t udp sp=54321,dp=12345
++	done
++	for ((i = count - 1; i > 0; i /= 2)); do
++		tc_check_packets "dev $h2 ingress" 42$i 1
++		check_err $? "Traffic not seen at rule #$i"
++	done
++}
 -- 
 2.36.1
 
