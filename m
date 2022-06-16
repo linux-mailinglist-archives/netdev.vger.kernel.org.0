@@ -2,90 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C25C54DA80
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 08:25:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1440B54DA69
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 08:19:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359102AbiFPGZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 02:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44726 "EHLO
+        id S1359092AbiFPGTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 02:19:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233903AbiFPGZR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 02:25:17 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D28472C129
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 23:25:15 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id 23so551091ybe.8
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 23:25:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0QhpRsnpqN2gDwCjPZET5E+75fQS7DQEBgjpXAx4Kmk=;
-        b=npsR0pb0hYDQy/2YFqxITKWKTPhOUq+ZEcflVvrSPzv2bVu2Z4b269qCW4/jzmRG2E
-         Tzb7lZ5TeO06lSe2zl9dzLdR4ANrzYR47XT3+wcXTw2pnPXWy4pwpyoKvDIte6qP2gxW
-         oOkuMH+hPCwa2pY9+LPWAfmTVwYinXiYx5PL/CCVIZ+ykEh007tXAvnBsyk33Mc/PCBS
-         P9rpqZwpQaGpxqwrjKjmsWrsQVckQu87C8fyIeFLKF8WemK/aOuKPp8dVWwFWONTn+L6
-         7OanJQotSZIqCu2xAXF/1BKkOMY6MF5QUbWMkDP1FchJaaCHC1hBhxNxofIYMPzYZV8b
-         cuFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0QhpRsnpqN2gDwCjPZET5E+75fQS7DQEBgjpXAx4Kmk=;
-        b=XD0DxRvvW6XQc8gZMaPphMxtDqT4AaJvBFp0LY/CqzQZ82RRKe68PBgMBAaxZkW0wr
-         WUBP/bqiWY+Q8YwfLqUjR7eHBpybbjXAM879/11Iv5UraCOAn0EyB12+JCp6at2d/3Qo
-         sO7eYG4RPExrYeVL1DBFnS32QNb7R0iI9A/CzTLPR6RSdMNIWHoUNt3ydwayER+C38TN
-         VYcGAghsJUYB6yN1cew3k8JKjQl8Hv/fb0BtkaZhOjQotA0nsyfz59DhTkY42dyYxZ6P
-         ncgRkIauLKi50Ovg3nItO4x/nRWr3r9OdX2jlU3rsNWi/7UZihp+3fdMhk/c9YNexsoD
-         sfQA==
-X-Gm-Message-State: AJIora9XhPDbBC4TeNckEfv6jeB37n0MZIT45Q6J1UhCigJK5O6vS/2k
-        DBpL8D1472A9Fo5fUSDPDHCQ8FO2JncBSn2CU1IPww==
-X-Google-Smtp-Source: AGRyM1tLwkKIpZSHFrZnDBLK2MWSKsEfoLz77zmc1heDP5n1J31F07UOmLPleXo9xMjAHkEYSYWaMJ7Q57+5jY1N8B8=
-X-Received: by 2002:a25:d649:0:b0:65c:9e37:8bb3 with SMTP id
- n70-20020a25d649000000b0065c9e378bb3mr3732105ybg.387.1655360714776; Wed, 15
- Jun 2022 23:25:14 -0700 (PDT)
+        with ESMTP id S1358690AbiFPGTA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 02:19:00 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9BA522E0;
+        Wed, 15 Jun 2022 23:18:59 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LNsQL560Gz1K9vn;
+        Thu, 16 Jun 2022 14:16:58 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 16 Jun 2022 14:18:57 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 16 Jun
+ 2022 14:18:57 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <radhey.shyam.pandey@xilinx.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <andy.chiu@sifive.com>,
+        <max.hsu@sifive.com>, <greentime.hu@sifive.com>
+Subject: [PATCH net] net: axienet: add missing error return code in axienet_probe()
+Date:   Thu, 16 Jun 2022 14:29:17 +0800
+Message-ID: <20220616062917.3601-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220615162014.89193-1-xiyou.wangcong@gmail.com> <20220615162014.89193-2-xiyou.wangcong@gmail.com>
-In-Reply-To: <20220615162014.89193-2-xiyou.wangcong@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 15 Jun 2022 23:25:03 -0700
-Message-ID: <CANn89iJY2fY_fa+ECJaOgzcR12VOTpqmET8h4ZhgSo_uA=d27g@mail.gmail.com>
-Subject: Re: [Patch bpf-next v4 1/4] tcp: introduce tcp_read_skb()
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 9:20 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> From: Cong Wang <cong.wang@bytedance.com>
->
-> This patch inroduces tcp_read_skb() based on tcp_read_sock(),
-> a preparation for the next patch which actually introduces
-> a new sock ops.
->
-> TCP is special here, because it has tcp_read_sock() which is
-> mainly used by splice(). tcp_read_sock() supports partial read
-> and arbitrary offset, neither of them is needed for sockmap.
->
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jakub Sitnicki <jakub@cloudflare.com>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> ---
+It should return error code in error path in axienet_probe().
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Fixes: 00be43a74ca2 ("net: axienet: make the 64b addresable DMA depends on 64b archectures")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index fa7bcd2c1892..1760930ec0c4 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -2039,6 +2039,7 @@ static int axienet_probe(struct platform_device *pdev)
+ 	}
+ 	if (!IS_ENABLED(CONFIG_64BIT) && lp->features & XAE_FEATURE_DMA_64BIT) {
+ 		dev_err(&pdev->dev, "64-bit addressable DMA is not compatible with 32-bit archecture\n");
++		ret = -EINVAL;
+ 		goto cleanup_clk;
+ 	}
+ 
+-- 
+2.25.1
+
