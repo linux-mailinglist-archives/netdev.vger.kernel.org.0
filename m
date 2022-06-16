@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52BFB54D7ED
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 04:07:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4425754D7E6
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 04:07:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358219AbiFPCHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 22:07:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42386 "EHLO
+        id S1358324AbiFPCHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 22:07:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351052AbiFPCHj (ORCPT
+        with ESMTP id S1350941AbiFPCHj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 22:07:39 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A00D655B1;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A015F5F4B;
         Wed, 15 Jun 2022 19:07:37 -0700 (PDT)
 Received: by linux.microsoft.com (Postfix, from userid 1004)
-        id 7C18A20C32A8; Wed, 15 Jun 2022 19:07:32 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7C18A20C32A8
+        id 09F8320C32AA; Wed, 15 Jun 2022 19:07:33 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 09F8320C32AA
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
-        s=default; t=1655345252;
-        bh=1aqAq+XFkynCEX1IOJMJtc5KNnVFho/fnRwjJW59dps=;
+        s=default; t=1655345253;
+        bh=mdJ7NrqDICYWm9sKPzBwo5lU7lgJE/b9OGT82GG26KY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:Reply-To:From;
-        b=lZ71K/uX07Ly/z8qKNTtkgDoI0XA8SrMM6DDkARCjZfJmWPCtA64LcOcICcPFCMGf
-         vof8gNik7O3pq8KGCrB/H5G/obbbrxRGh8L4R56I1BxQfYtBgzq1u3nmJT3UWphrL9
-         Wze1j9SUaTs12+l8ySIPr+AmnM8tKmdkVHXTR8+A=
+        b=jLKDB8MAWbTMi7pSiKUASz01VRoPV6DsXaVkZfduYjVKoUMY7Lo2rBXZeYRckL3A3
+         ob61hqA5Kjq1fWlGteB/VmrSSzlLmNfcVtEV/VUBuloHUF9sFejMvkzSRnDe+o8knb
+         4Gz/iDPNvM+mvjudi1rM7Whuckas7KePro01CKCs=
 From:   longli@linuxonhyperv.com
 To:     "K. Y. Srinivasan" <kys@microsoft.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
@@ -38,9 +38,9 @@ To:     "K. Y. Srinivasan" <kys@microsoft.com>,
 Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
         Long Li <longli@microsoft.com>
-Subject: [Patch v4 07/12] net: mana: Export Work Queue functions for use by RDMA driver
-Date:   Wed, 15 Jun 2022 19:07:15 -0700
-Message-Id: <1655345240-26411-8-git-send-email-longli@linuxonhyperv.com>
+Subject: [Patch v4 08/12] net: mana: Record port number in netdev
+Date:   Wed, 15 Jun 2022 19:07:16 -0700
+Message-Id: <1655345240-26411-9-git-send-email-longli@linuxonhyperv.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
 References: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
@@ -57,91 +57,26 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Long Li <longli@microsoft.com>
 
-RDMA device may need to create Ethernet device queues for use by Queue
-Pair type RAW. This allows a user-mode context accesses Ethernet hardware
-queues. Export the supporting functions for use by the RDMA driver.
+The port number is useful for user-mode application to identify this
+net device based on port index. Set to the correct value in ndev.
 
 Signed-off-by: Long Li <longli@microsoft.com>
 ---
- drivers/net/ethernet/microsoft/mana/gdma_main.c |  1 +
- drivers/net/ethernet/microsoft/mana/mana.h      |  9 +++++++++
- drivers/net/ethernet/microsoft/mana/mana_en.c   | 16 +++++++++-------
- 3 files changed, 19 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/microsoft/mana/mana_en.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-index 60cc1270b7d5..272facd272a4 100644
---- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
-+++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-@@ -125,6 +125,7 @@ int mana_gd_send_request(struct gdma_context *gc, u32 req_len, const void *req,
- 
- 	return mana_hwc_send_request(hwc, req_len, req, resp_len, resp);
- }
-+EXPORT_SYMBOL(mana_gd_send_request);
- 
- int mana_gd_alloc_memory(struct gdma_context *gc, unsigned int length,
- 			 struct gdma_mem_info *gmi)
-diff --git a/drivers/net/ethernet/microsoft/mana/mana.h b/drivers/net/ethernet/microsoft/mana/mana.h
-index 8e58abdce906..aca95c6ba8b3 100644
---- a/drivers/net/ethernet/microsoft/mana/mana.h
-+++ b/drivers/net/ethernet/microsoft/mana/mana.h
-@@ -571,6 +571,15 @@ struct mana_adev {
- 	struct gdma_dev *mdev;
- };
- 
-+int mana_create_wq_obj(struct mana_port_context *apc,
-+		       mana_handle_t vport,
-+		       u32 wq_type, struct mana_obj_spec *wq_spec,
-+		       struct mana_obj_spec *cq_spec,
-+		       mana_handle_t *wq_obj);
-+
-+void mana_destroy_wq_obj(struct mana_port_context *apc, u32 wq_type,
-+			 mana_handle_t wq_obj);
-+
- int mana_cfg_vport(struct mana_port_context *apc, u32 protection_dom_id,
- 		   u32 doorbell_pg_id);
- void mana_uncfg_vport(struct mana_port_context *apc);
 diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-index c18c358607a7..b769fccc076d 100644
+index b769fccc076d..963a4dbb46ea 100644
 --- a/drivers/net/ethernet/microsoft/mana/mana_en.c
 +++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-@@ -662,11 +662,11 @@ static int mana_cfg_vport_steering(struct mana_port_context *apc,
- 	return err;
- }
+@@ -1975,6 +1975,7 @@ static int mana_probe_port(struct mana_context *ac, int port_idx,
+ 	ndev->max_mtu = ndev->mtu;
+ 	ndev->min_mtu = ndev->mtu;
+ 	ndev->needed_headroom = MANA_HEADROOM;
++	ndev->dev_port = port_idx;
+ 	SET_NETDEV_DEV(ndev, gc->dev);
  
--static int mana_create_wq_obj(struct mana_port_context *apc,
--			      mana_handle_t vport,
--			      u32 wq_type, struct mana_obj_spec *wq_spec,
--			      struct mana_obj_spec *cq_spec,
--			      mana_handle_t *wq_obj)
-+int mana_create_wq_obj(struct mana_port_context *apc,
-+		       mana_handle_t vport,
-+		       u32 wq_type, struct mana_obj_spec *wq_spec,
-+		       struct mana_obj_spec *cq_spec,
-+		       mana_handle_t *wq_obj)
- {
- 	struct mana_create_wqobj_resp resp = {};
- 	struct mana_create_wqobj_req req = {};
-@@ -715,9 +715,10 @@ static int mana_create_wq_obj(struct mana_port_context *apc,
- out:
- 	return err;
- }
-+EXPORT_SYMBOL_GPL(mana_create_wq_obj);
- 
--static void mana_destroy_wq_obj(struct mana_port_context *apc, u32 wq_type,
--				mana_handle_t wq_obj)
-+void mana_destroy_wq_obj(struct mana_port_context *apc, u32 wq_type,
-+			 mana_handle_t wq_obj)
- {
- 	struct mana_destroy_wqobj_resp resp = {};
- 	struct mana_destroy_wqobj_req req = {};
-@@ -742,6 +743,7 @@ static void mana_destroy_wq_obj(struct mana_port_context *apc, u32 wq_type,
- 		netdev_err(ndev, "Failed to destroy WQ object: %d, 0x%x\n", err,
- 			   resp.hdr.status);
- }
-+EXPORT_SYMBOL_GPL(mana_destroy_wq_obj);
- 
- static void mana_destroy_eq(struct mana_context *ac)
- {
+ 	netif_carrier_off(ndev);
 -- 
 2.17.1
 
