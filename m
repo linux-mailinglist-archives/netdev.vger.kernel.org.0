@@ -2,82 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9BA854E9B5
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 21:00:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B129C54E9CE
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 21:11:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230288AbiFPTAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 15:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53824 "EHLO
+        id S238009AbiFPTLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 15:11:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229672AbiFPTAQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 15:00:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38AFD22B0C
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 12:00:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD24C61D03
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 19:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0C1E5C341C0;
-        Thu, 16 Jun 2022 19:00:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655406014;
-        bh=C9E7LjDRD0a0IySj14VmXw6eeNFIO9TJVVPKqpDEE24=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=S/huzHhz7iq6o+IvcrzB04yTDuBLcF81OxoRVyYnTAoYIOu5ImD1yr6UQ/KJ/XWoQ
-         HqvJVQFKM6t9DZQTzxogU1fzZk8jwypPqLmbcSAydUbqmMq18jWkzrvHFv78AXAt7a
-         voXPXYTT+hOX1OuZRqJm5a/u/fnmagLVEeNahLnmFqqtP7tkh61Bz7wFsHjPF3OOaB
-         kuUXMAtzrMYQSusQq/1X9GHREzlBfsE/RTY07Tnt8UcZDUffFdUoTXqiRzl4rW2iQ6
-         he792hbZ5kx3bbz7KzRMvX/kFwMF64iVmAzs86L64RVg8FRm2DOiuQuL4K70yGiVyn
-         s6F9dFGhyNVaQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DF99CFD99FF;
-        Thu, 16 Jun 2022 19:00:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230230AbiFPTLk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 15:11:40 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B66B337AA2;
+        Thu, 16 Jun 2022 12:11:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=co28jhl7e2oX2eriA4KZwcAFjSaTF3hFTt8kuzGQ+5A=; b=5iDiYlmBfHd4W4dgJBQjbDpkVm
+        lebmyi2WhxsVnBphpBbUq7ZFrGw3Cr60gawRFb4+EkAA02I3XHeHyNHAyvt47u28aI2Wg5sC5G8J8
+        uFZuNYJ8jqWVNlSXxmUZ0yy79zcTSs35j5EOutlqGDikdT8Una1rhWc7qnxhzYg3oGW0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o1utt-007E9H-IA; Thu, 16 Jun 2022 21:11:29 +0200
+Date:   Thu, 16 Jun 2022 21:11:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, lxu@maxlinear.com,
+        davem@davemloft.net, linux-kernel@vger.kernel.org,
+        bryan.whitehead@microchip.com, richardcochran@gmail.com,
+        UNGLinuxDriver@microchip.com, Ian.Saturley@microchip.com
+Subject: Re: [PATCH net-next V2 1/4] net: lan743x: Add support to LAN743x
+ register dump
+Message-ID: <YquAYSl9e98NxW2u@lunn.ch>
+References: <20220616041226.26996-1-Raju.Lakkaraju@microchip.com>
+ <20220616041226.26996-2-Raju.Lakkaraju@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH iproute2] man: tc-fw: Document masked handle usage
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165540601391.13716.8851514585739351065.git-patchwork-notify@kernel.org>
-Date:   Thu, 16 Jun 2022 19:00:13 +0000
-References: <20220614142657.2112576-1-idosch@nvidia.com>
-In-Reply-To: <20220614142657.2112576-1-idosch@nvidia.com>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        dsahern@gmail.com, taspelund@nvidia.com, mlxsw@nvidia.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220616041226.26996-2-Raju.Lakkaraju@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to iproute2/iproute2-next.git (main)
-by David Ahern <dsahern@kernel.org>:
-
-On Tue, 14 Jun 2022 17:26:57 +0300 you wrote:
-> The tc-fw filter can be used to match on the packet's fwmark by adding a
-> filter with a matching handle. It also supports matching on specific
-> bits of the fwmark by specifying the handle together with a mask. This
-> is documented in the usage message below, but not in the man page.
+On Thu, Jun 16, 2022 at 09:42:23AM +0530, Raju Lakkaraju wrote:
+> Add support to LAN743x common register dump
 > 
-> Document it in the man page together with an example.
-> 
-> [...]
+> Signed-off-by: Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
 
-Here is the summary with links:
-  - [iproute2] man: tc-fw: Document masked handle usage
-    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=bfffaf136091
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+    Andrew
