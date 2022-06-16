@@ -2,265 +2,299 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6854354E56F
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 16:55:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C23D654E587
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 17:00:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377398AbiFPOyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 10:54:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34148 "EHLO
+        id S1377533AbiFPPA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 11:00:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232862AbiFPOyv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 10:54:51 -0400
-Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC0E2F388;
-        Thu, 16 Jun 2022 07:54:49 -0700 (PDT)
-Received: by mail-vs1-xe35.google.com with SMTP id j39so1457551vsv.11;
-        Thu, 16 Jun 2022 07:54:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=F3VW+/W/5fPBHidmHRsr8F6zsEIxiTFqccVX0+UVHys=;
-        b=SoL4b0aFJ6RaWabI0ROc5AEpF3DAfY6x5WriyolZswRBeu0Tec4ib1wsSrrNWBmg+T
-         8GDYj+RtpeJZcSqToZWAiMIDGSNLSwtiZPgzwtYLlwLn4D76vmnNr/czMccvbzFfn+SM
-         EmCkT7xECdiEyEbbGhJCmndG81+q5/rs3E3NTg+pkdpYxclDvlanX7JmttWj0AaW/KDG
-         JOhUTl0UMNfC0vmFYTaxlK9gBGgaWAq0V9FA4Suyvnm5FQ5ClyRUiXIY9VdOGBsimYpl
-         AOr3X4UWBgmXQWaY+uXQFocVrQ6SEdJDr/uLo0Ai9C0vMBOSJCnGwkgpG9RA4EQvjmQN
-         Vclw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=F3VW+/W/5fPBHidmHRsr8F6zsEIxiTFqccVX0+UVHys=;
-        b=FRcm1pL3YmGPjxZYHcTfaJVwX1k0gNa/5drUVwyH3qLIrOs3yKbjn8VGQYxxrl6xox
-         5JW8tCko2o46pdMrkA8v2fOxYWU5WXyJE6LzQ7KEs1etlnSahHXU6HI0OtsAcf4J4NX0
-         kfSNGgFD0ZkrFevN92867zfbBdwnj34IMowrefJhWIGV//1+m4QyymxadvOAyDuAuaCV
-         1iHDS6xPUPQZVbnofO9mN6MUa/9MI9DSkWxKHw+ts/2BvPuxEovIwP+HqH5spycUxxzG
-         i14TfwxFbbMfThr9uasptOXB4HSuqhqLgedrdd5vPVz7D7WDhr8asFS1TTwyORBm5xvH
-         f8Kw==
-X-Gm-Message-State: AJIora/mR8T0Bd0Q/pjOlBL45YePwjbOWjlJ3XYJbA0ddUcKs8Wfea04
-        eOADjlAvGlNDuqaoe05Bsuh7TqmeEEL6LichLu0=
-X-Google-Smtp-Source: AGRyM1t6lVQzRVM2JLDv2+JY+ep7LsMVB9PVwvAW/qs3mUyvxIyOQEV1H+EPctKh9CfSyXzIW0NmH9buKvLaCF8ZC3I=
-X-Received: by 2002:a67:6245:0:b0:34b:977b:7d31 with SMTP id
- w66-20020a676245000000b0034b977b7d31mr2475239vsb.22.1655391289048; Thu, 16
- Jun 2022 07:54:49 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220610112648.29695-1-quentin@isovalent.com> <20220610112648.29695-2-quentin@isovalent.com>
- <YqNsWAH24bAIPjqy@google.com> <cb05a59e-07d5-ddd1-b028-82133faaf67e@isovalent.com>
- <CAKH8qBvvq0f+D8BXChw_8krH896J_cYg0yhRfnDOSO_U1n394w@mail.gmail.com>
- <71b56050-11ad-bd06-09c9-1a8c61b4c1b4@isovalent.com> <CAKH8qBsFyakQRd1q6XWggdv4F5+HrHoC4njg9jQFDOfq+kRBCQ@mail.gmail.com>
- <CALOAHbCvWzOJ169fPTCp1KsFpkEVukKgGnH4mDeYGOEv6hsEpQ@mail.gmail.com>
- <e9aa57d2-4ce7-23f2-0ba1-ea58f3254353@isovalent.com> <CALOAHbDDx_xDeUk8R+y-aREX9KMRbo+CqCV7m5dADdvijuHRQw@mail.gmail.com>
- <CAKH8qBuPh4aaEz_vv1s2gWYYPRm8e5gMaM-RcuCqg+AeaeZcPg@mail.gmail.com>
- <CALOAHbAfjegzchFOb9b1+4d0OLsVWOpnr7ARMXqcKbnbG=u2BA@mail.gmail.com> <68e789f7-aa68-cc6a-fb33-b686d14f80a5@isovalent.com>
-In-Reply-To: <68e789f7-aa68-cc6a-fb33-b686d14f80a5@isovalent.com>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Thu, 16 Jun 2022 22:54:12 +0800
-Message-ID: <CALOAHbCTJOm8wLAeuhnjnN96_9c+hB5YjLGO_4NsgiB=8_QQOA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/2] Revert "bpftool: Use libbpf 1.0 API mode
- instead of RLIMIT_MEMLOCK"
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
+        with ESMTP id S1377585AbiFPPAY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 11:00:24 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C456E3EB81;
+        Thu, 16 Jun 2022 08:00:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655391622; x=1686927622;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kV1H+VrXmd8vgp7hvdNx73Lpzuc5h2gYs0xrQ2ZUrY0=;
+  b=ar8Sfe1EfLea0F1TCv/bsoVcu5ZTM8RXthjxgFOveTjgQNREwn3aqEkh
+   9ZuxsqfTi0UTlovFitdm2/q0aRPfg5H7ILFvPFW26qTme15omDI/bdAgs
+   my+HS2tY9FBu5chLPZWrp12lNS8DtVgrdR5rTBbpTRHXJjiijYB8AffLL
+   mKqzLXBP5bCsbEA+SmMm4QYqy/uSApifXnasxe/5cqkGF+2V9ScAuNxit
+   /sJKAcqMEsVPTqWOoNpD+UnFs0/RDYR7CShBrju3c12KNHhc3S7JyLPEX
+   JnL1AmMbFShAaOM+eRITwhzGr33A9seOepYKlWaQeF9ayUa9OJG+xCYGf
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="267954448"
+X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
+   d="scan'208";a="267954448"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 08:00:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
+   d="scan'208";a="912191890"
+Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
+  by fmsmga005.fm.intel.com with ESMTP; 16 Jun 2022 08:00:18 -0700
+Date:   Thu, 16 Jun 2022 17:00:17 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Harsh Modi <harshmodi@google.com>,
-        Paul Chaignon <paul@cilium.io>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Andrii Nakryiko <andrii@kernel.org>, kernel-team@cloudflare.com
+Subject: Re: [RFC bpf] selftests/bpf: Curious case of a successful tailcall
+ that returns to caller
+Message-ID: <YqtFgYkUsM8VMWRy@boxer>
+References: <20220616110252.418333-1-jakub@cloudflare.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220616110252.418333-1-jakub@cloudflare.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 9:59 PM Quentin Monnet <quentin@isovalent.com> wrote:
->
-> 2022-06-16 00:05 UTC+0800 ~ Yafang Shao <laoar.shao@gmail.com>
-> > On Wed, Jun 15, 2022 at 11:52 PM Stanislav Fomichev <sdf@google.com> wrote:
-> >>
-> >> On Wed, Jun 15, 2022 at 6:23 AM Yafang Shao <laoar.shao@gmail.com> wrote:
-> >>>
-> >>> On Tue, Jun 14, 2022 at 10:20 PM Quentin Monnet <quentin@isovalent.com> wrote:
-> >>>>
-> >>>> 2022-06-14 20:37 UTC+0800 ~ Yafang Shao <laoar.shao@gmail.com>
-> >>>>> On Sat, Jun 11, 2022 at 1:17 AM Stanislav Fomichev <sdf@google.com> wrote:
-> >>>>>>
-> >>>>>> On Fri, Jun 10, 2022 at 10:00 AM Quentin Monnet <quentin@isovalent.com> wrote:
-> >>>>>>>
-> >>>>>>> 2022-06-10 09:46 UTC-0700 ~ Stanislav Fomichev <sdf@google.com>
-> >>>>>>>> On Fri, Jun 10, 2022 at 9:34 AM Quentin Monnet <quentin@isovalent.com> wrote:
-> >>>>>>>>>
-> >>>>>>>>> 2022-06-10 09:07 UTC-0700 ~ sdf@google.com
-> >>>>>>>>>> On 06/10, Quentin Monnet wrote:
-> >>>>>>>>>>> This reverts commit a777e18f1bcd32528ff5dfd10a6629b655b05eb8.
-> >>>>>>>>>>
-> >>>>>>>>>>> In commit a777e18f1bcd ("bpftool: Use libbpf 1.0 API mode instead of
-> >>>>>>>>>>> RLIMIT_MEMLOCK"), we removed the rlimit bump in bpftool, because the
-> >>>>>>>>>>> kernel has switched to memcg-based memory accounting. Thanks to the
-> >>>>>>>>>>> LIBBPF_STRICT_AUTO_RLIMIT_MEMLOCK, we attempted to keep compatibility
-> >>>>>>>>>>> with other systems and ask libbpf to raise the limit for us if
-> >>>>>>>>>>> necessary.
-> >>>>>>>>>>
-> >>>>>>>>>>> How do we know if memcg-based accounting is supported? There is a probe
-> >>>>>>>>>>> in libbpf to check this. But this probe currently relies on the
-> >>>>>>>>>>> availability of a given BPF helper, bpf_ktime_get_coarse_ns(), which
-> >>>>>>>>>>> landed in the same kernel version as the memory accounting change. This
-> >>>>>>>>>>> works in the generic case, but it may fail, for example, if the helper
-> >>>>>>>>>>> function has been backported to an older kernel. This has been observed
-> >>>>>>>>>>> for Google Cloud's Container-Optimized OS (COS), where the helper is
-> >>>>>>>>>>> available but rlimit is still in use. The probe succeeds, the rlimit is
-> >>>>>>>>>>> not raised, and probing features with bpftool, for example, fails.
-> >>>>>>>>>>
-> >>>>>>>>>>> A patch was submitted [0] to update this probe in libbpf, based on what
-> >>>>>>>>>>> the cilium/ebpf Go library does [1]. It would lower the soft rlimit to
-> >>>>>>>>>>> 0, attempt to load a BPF object, and reset the rlimit. But it may induce
-> >>>>>>>>>>> some hard-to-debug flakiness if another process starts, or the current
-> >>>>>>>>>>> application is killed, while the rlimit is reduced, and the approach was
-> >>>>>>>>>>> discarded.
-> >>>>>>>>>>
-> >>>>>>>>>>> As a workaround to ensure that the rlimit bump does not depend on the
-> >>>>>>>>>>> availability of a given helper, we restore the unconditional rlimit bump
-> >>>>>>>>>>> in bpftool for now.
-> >>>>>>>>>>
-> >>>>>>>>>>> [0]
-> >>>>>>>>>>> https://lore.kernel.org/bpf/20220609143614.97837-1-quentin@isovalent.com/
-> >>>>>>>>>>> [1] https://github.com/cilium/ebpf/blob/v0.9.0/rlimit/rlimit.go#L39
-> >>>>>>>>>>
-> >>>>>>>>>>> Cc: Yafang Shao <laoar.shao@gmail.com>
-> >>>>>>>>>>> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-> >>>>>>>>>>> ---
-> >>>>>>>>>>>   tools/bpf/bpftool/common.c     | 8 ++++++++
-> >>>>>>>>>>>   tools/bpf/bpftool/feature.c    | 2 ++
-> >>>>>>>>>>>   tools/bpf/bpftool/main.c       | 6 +++---
-> >>>>>>>>>>>   tools/bpf/bpftool/main.h       | 2 ++
-> >>>>>>>>>>>   tools/bpf/bpftool/map.c        | 2 ++
-> >>>>>>>>>>>   tools/bpf/bpftool/pids.c       | 1 +
-> >>>>>>>>>>>   tools/bpf/bpftool/prog.c       | 3 +++
-> >>>>>>>>>>>   tools/bpf/bpftool/struct_ops.c | 2 ++
-> >>>>>>>>>>>   8 files changed, 23 insertions(+), 3 deletions(-)
-> >>>>>>>>>>
-> >>>>>>>>>>> diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
-> >>>>>>>>>>> index a45b42ee8ab0..a0d4acd7c54a 100644
-> >>>>>>>>>>> --- a/tools/bpf/bpftool/common.c
-> >>>>>>>>>>> +++ b/tools/bpf/bpftool/common.c
-> >>>>>>>>>>> @@ -17,6 +17,7 @@
-> >>>>>>>>>>>   #include <linux/magic.h>
-> >>>>>>>>>>>   #include <net/if.h>
-> >>>>>>>>>>>   #include <sys/mount.h>
-> >>>>>>>>>>> +#include <sys/resource.h>
-> >>>>>>>>>>>   #include <sys/stat.h>
-> >>>>>>>>>>>   #include <sys/vfs.h>
-> >>>>>>>>>>
-> >>>>>>>>>>> @@ -72,6 +73,13 @@ static bool is_bpffs(char *path)
-> >>>>>>>>>>>       return (unsigned long)st_fs.f_type == BPF_FS_MAGIC;
-> >>>>>>>>>>>   }
-> >>>>>>>>>>
-> >>>>>>>>>>> +void set_max_rlimit(void)
-> >>>>>>>>>>> +{
-> >>>>>>>>>>> +    struct rlimit rinf = { RLIM_INFINITY, RLIM_INFINITY };
-> >>>>>>>>>>> +
-> >>>>>>>>>>> +    setrlimit(RLIMIT_MEMLOCK, &rinf);
-> >>>>>>>>>>
-> >>>>>>>>>> Do you think it might make sense to print to stderr some warning if
-> >>>>>>>>>> we actually happen to adjust this limit?
-> >>>>>>>>>>
-> >>>>>>>>>> if (getrlimit(MEMLOCK) != RLIM_INFINITY) {
-> >>>>>>>>>>     fprintf(stderr, "Warning: resetting MEMLOCK rlimit to
-> >>>>>>>>>>     infinity!\n");
-> >>>>>>>>>>     setrlimit(RLIMIT_MEMLOCK, &rinf);
-> >>>>>>>>>> }
-> >>>>>>>>>>
-> >>>>>>>>>> ?
-> >>>>>>>>>>
-> >>>>>>>>>> Because while it's nice that we automatically do this, this might still
-> >>>>>>>>>> lead to surprises for some users. OTOH, not sure whether people
-> >>>>>>>>>> actually read those warnings? :-/
-> >>>>>>>>>
-> >>>>>>>>> I'm not strictly opposed to a warning, but I'm not completely sure this
-> >>>>>>>>> is desirable.
-> >>>>>>>>>
-> >>>>>>>>> Bpftool has raised the rlimit for a long time, it changed only in April,
-> >>>>>>>>> so I don't think it would come up as a surprise for people who have used
-> >>>>>>>>> it for a while. I think this is also something that several other
-> >>>>>>>>> BPF-related applications (BCC I think?, bpftrace, Cilium come to mind)
-> >>>>>>>>> have been doing too.
-> >>>>>>>>
-> >>>>>>>> In this case ignore me and let's continue doing that :-)
-> >>>>>>>>
-> >>>>>>>> Btw, eventually we'd still like to stop doing that I'd presume?
-> >>>>>>>
-> >>>>>>> Agreed. I was thinking either finding a way to improve the probe in
-> >>>>>>> libbpf, or waiting for some more time until 5.11 gets old, but this may
-> >>>>>>> take years :/
-> >>>>>>>
-> >>>>>>>> Should
-> >>>>>>>> we at some point follow up with something like:
-> >>>>>>>>
-> >>>>>>>> if (kernel_version >= 5.11) { don't touch memlock; }
-> >>>>>>>>
-> >>>>>>>> ?
-> >>>>>>>>
-> >>>>>>>> I guess we care only about <5.11 because of the backports, but 5.11+
-> >>>>>>>> kernels are guaranteed to have memcg.
-> >>>>>>>
-> >>>>>>> You mean from uname() and parsing the release? Yes I suppose we could do
-> >>>>>>> that, can do as a follow-up.
-> >>>>>>
-> >>>>>> Yeah, uname-based, I don't think we can do better? Given that probing
-> >>>>>> is problematic as well :-(
-> >>>>>> But idk, up to you.
-> >>>>>>
-> >>>>>
-> >>>>> Agreed with the uname-based solution. Another possible solution is to
-> >>>>> probe the member 'memcg' in struct bpf_map, in case someone may
-> >>>>> backport memcg-based  memory accounting, but that will be a little
-> >>>>> over-engineering. The uname-based solution is simple and can work.
-> >>>>>
-> >>>>
-> >>>> Thanks! Yes, memcg would be more complex: the struct is not exposed to
-> >>>> user space, and BTF is not a hard dependency for bpftool. I'll work on
-> >>>> the uname-based test as a follow-up to this set.
-> >>>>
-> >>>
-> >>> After a second thought, the uname-based test may not work, because
-> >>> CONFIG_MEMCG_KMEM can be disabled.
-> >>
-> >> Does it matter? Regardless of whether there is memcg or not, we
-> >> shouldn't touch ulimit on 5.11+
-> >> If there is no memcg, there is no bpf memory enforcement.
-> >
-> > Right, rlimit-based accounting is totally removed, that is not the
-> > same with what I thought before, while I thought it will fallback to
-> > rlimit-based if kmemcg is disabled.
->
-> Agreed, and so I've got a patch ready for the uname-based probe.
->
-> But talking about this with Daniel, we were wondering if it would make
-> sense instead to have the probe I had initially submitted (lower the
-> rlimit to 0, attempt to load a program, reset rlimit - see [0]), but
-> only for bpftool instead of libbpf? My understanding is that the memlock
-> rlimit is per-process, right? So this shouldn't affect any other
-> process, and because bpftool is not multithreaded, nothing other than
-> probing would happen while the rlimit is at zero?
+On Thu, Jun 16, 2022 at 01:02:52PM +0200, Jakub Sitnicki wrote:
+> While working aarch64 JIT to allow mixing bpf2bpf calls with tailcalls, I
+> noticed unexpected tailcall behavior in x86 JIT.
+> 
+> I don't know if it is by design or a bug. The bpf_tail_call helper
+> documentation says that the user should not expect the control flow to
+> return to the previous program, if the tail call was successful:
+> 
+> > If the call succeeds, the kernel immediately runs the first
+> > instruction of the new program. This is not a function call,
+> > and it never returns to the previous program.
+> 
+> However, when a tailcall happens from a subprogram, that is after a bpf2bpf
+> call, that is not the case. We return to the caller program because the
+> stack destruction is too shallow. BPF stack of just the top-most BPF
+> function gets destroyed.
+> 
+> This in turn allows the return value of the tailcall'ed program to get
+> overwritten, as the test below test demonstrates. It currently fails on
+> x86:
 
-Makes sense.
-It is safe to do the probe within bpftool.
+Disclaimer: some time has passed by since I looked into this :P
 
-> Or is it just simpler,
-> if less accurate, to stick to the uname probe?
->
-> Quentin
->
-> [0]
-> https://lore.kernel.org/bpf/20220609143614.97837-1-quentin@isovalent.com/
+To me the bug would be if test would have returned 1 in your case. If I
+recall correctly that was the design choice, so tailcalls when mixed with
+bpf2bpf will consume current stack frame. When tailcall happens from
+subprogram then we would return to the caller of this subprog. We added
+logic to verifier that checks if this (tc + bpf2bpf) mix wouldn't cause
+stack overflow. We even limit the stack frame size to 256 in such case.
 
+Cilium docs explain this:
+https://docs.cilium.io/en/latest/bpf/#bpf-to-bpf-calls
 
-
--- 
-Regards
-Yafang
+> 
+> test_tailcall_bpf2bpf_7:PASS:open and load 0 nsec
+> test_tailcall_bpf2bpf_7:PASS:entry prog fd 0 nsec
+> test_tailcall_bpf2bpf_7:PASS:jmp_table map fd 0 nsec
+> test_tailcall_bpf2bpf_7:PASS:classifier_0 prog fd 0 nsec
+> test_tailcall_bpf2bpf_7:PASS:jmp_table map update 0 nsec
+> test_tailcall_bpf2bpf_7:PASS:entry prog test run 0 nsec
+> test_tailcall_bpf2bpf_7:FAIL:tailcall retval unexpected tailcall retval: actual 2 != expected 0
+> test_tailcall_bpf2bpf_7:PASS:bss map fd 0 nsec
+> test_tailcall_bpf2bpf_7:PASS:bss map lookup 0 nsec
+> test_tailcall_bpf2bpf_7:PASS:done flag is set 0 nsec
+> 
+> If we step through the program, we can observe the flow as so:
+> 
+> int entry(struct __sk_buff * skb):
+> bpf_prog_3bb007ac57240471_entry:
+> ; subprog_tail(skb);
+>    0:   nopl   0x0(%rax,%rax,1)
+>    5:   xor    %eax,%eax
+>    7:   push   %rbp
+>    8:   mov    %rsp,%rbp
+>    b:   push   %rax
+>    c:   mov    -0x8(%rbp),%rax
+>   13:   call   0x0000000000000048 ---------.
+> ; return 2;                                |
+>   18:   mov    $0x2,%eax <--------------------------------------.
+>   1d:   leave                              |                    |
+>   1e:   ret                                |                    |
+>                                            |                    |
+> int subprog_tail(struct __sk_buff * skb):  |                    |
+> bpf_prog_3a140cef239a4b4f_F:               |                    |
+> ; int subprog_tail(struct __sk_buff *skb)  |                    |
+>    0:   nopl   0x0(%rax,%rax,1) <----------'                    |
+>    5:   xchg   %ax,%ax                                          |
+>    7:   push   %rbp                                             |
+>    8:   mov    %rsp,%rbp                                        |
+>    b:   push   %rax                                             |
+>    c:   push   %rbx                                             |
+>    d:   push   %r13                                             |
+>    f:   mov    %rdi,%rbx                                        |
+> ; asm volatile("r1 = %[ctx]\n\t"                                |
+>   12:   movabs $0xffff888104119000,%r13                         |
+>   1c:   mov    %rbx,%rdi                                        |
+>   1f:   mov    %r13,%rsi                                        |
+>   22:   xor    %edx,%edx                                        |
+>   24:   mov    -0x4(%rbp),%eax                                  |
+>   2a:   cmp    $0x21,%eax                                       |
+>   2d:   jae    0x0000000000000046                               |
+>   2f:   add    $0x1,%eax                                        |
+>   32:   mov    %eax,-0x4(%rbp)                                  |
+>   38:   jmp    0x0000000000000046 ---------------------------.  |
+>   3d:   pop    %r13                                          |  |
+>   3f:   pop    %rbx                                          |  |
+>   40:   pop    %rax                                          |  |
+>   41:   nopl   0x0(%rax,%rax,1)                              |  |
+> ; return 1;                                                  |  |
+>   46:   pop    %r13                                          |  |
+>   48:   pop    %rbx                                          |  |
+>   49:   leave                                                |  |
+>   4a:   ret                                                  |  |
+>                                                              |  |
+> int classifier_0(struct __sk_buff * skb):                    |  |
+> bpf_prog_6e664b22811ace0d_classifier_0:                      |  |
+> ; done = 1;                                                  |  |
+>    0:   nopl   0x0(%rax,%rax,1)                              |  |
+>    5:   xchg   %ax,%ax                                       |  |
+>    7:   push   %rbp                                          |  |
+>    8:   mov    %rsp,%rbp                                     |  |
+>    b:   movabs $0xffffc900000b6000,%rdi <--------------------'  |
+>   15:   mov    $0x1,%esi                                        |
+>   1a:   mov    %esi,0x0(%rdi)                                   |
+> ; return 0;                                                     |
+>   1d:   xor    %eax,%eax                                        |
+>   1f:   leave                                                   |
+>   20:   ret ----------------------------------------------------'
+> 
+> My question is - is it a bug or intended behavior that other JITs should
+> replicate?
+> 
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
+>  .../selftests/bpf/prog_tests/tailcalls.c      | 55 +++++++++++++++++++
+>  .../selftests/bpf/progs/tailcall_bpf2bpf7.c   | 37 +++++++++++++
+>  2 files changed, 92 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/progs/tailcall_bpf2bpf7.c
+> 
+> diff --git a/tools/testing/selftests/bpf/prog_tests/tailcalls.c b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
+> index c4da87ec3ba4..696c307a1bee 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/tailcalls.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
+> @@ -831,6 +831,59 @@ static void test_tailcall_bpf2bpf_4(bool noise)
+>  	bpf_object__close(obj);
+>  }
+>  
+> +#include "tailcall_bpf2bpf7.skel.h"
+> +
+> +/* The tail call should never return to the previous program, if the
+> + * jump was successful.
+> + */
+> +static void test_tailcall_bpf2bpf_7(void)
+> +{
+> +	struct tailcall_bpf2bpf7 *obj;
+> +	int err, map_fd, prog_fd, main_fd, data_fd, i, val;
+> +	LIBBPF_OPTS(bpf_test_run_opts, topts,
+> +		.data_in = &pkt_v4,
+> +		.data_size_in = sizeof(pkt_v4),
+> +		.repeat = 1,
+> +	);
+> +
+> +	obj = tailcall_bpf2bpf7__open_and_load();
+> +	if (!ASSERT_OK_PTR(obj, "open and load"))
+> +		return;
+> +
+> +	main_fd = bpf_program__fd(obj->progs.entry);
+> +	if (!ASSERT_GE(main_fd, 0, "entry prog fd"))
+> +		goto out;
+> +
+> +	map_fd = bpf_map__fd(obj->maps.jmp_table);
+> +	if (!ASSERT_GE(map_fd, 0, "jmp_table map fd"))
+> +		goto out;
+> +
+> +	prog_fd = bpf_program__fd(obj->progs.classifier_0);
+> +	if (!ASSERT_GE(prog_fd, 0, "classifier_0 prog fd"))
+> +		goto out;
+> +
+> +	i = 0;
+> +	err = bpf_map_update_elem(map_fd, &i, &prog_fd, BPF_ANY);
+> +	if (!ASSERT_OK(err, "jmp_table map update"))
+> +		goto out;
+> +
+> +	err = bpf_prog_test_run_opts(main_fd, &topts);
+> +	ASSERT_OK(err, "entry prog test run");
+> +	ASSERT_EQ(topts.retval, 0, "tailcall retval");
+> +
+> +	data_fd = bpf_map__fd(obj->maps.bss);
+> +	if (!ASSERT_GE(map_fd, 0, "bss map fd"))
+> +		goto out;
+> +
+> +	i = 0;
+> +	err = bpf_map_lookup_elem(data_fd, &i, &val);
+> +	ASSERT_OK(err, "bss map lookup");
+> +	ASSERT_EQ(val, 1, "done flag is set");
+> +
+> +out:
+> +	tailcall_bpf2bpf7__destroy(obj);
+> +}
+> +
+>  void test_tailcalls(void)
+>  {
+>  	if (test__start_subtest("tailcall_1"))
+> @@ -855,4 +908,6 @@ void test_tailcalls(void)
+>  		test_tailcall_bpf2bpf_4(false);
+>  	if (test__start_subtest("tailcall_bpf2bpf_5"))
+>  		test_tailcall_bpf2bpf_4(true);
+> +	if (test__start_subtest("tailcall_bpf2bpf_7"))
+> +		test_tailcall_bpf2bpf_7();
+>  }
+> diff --git a/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf7.c b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf7.c
+> new file mode 100644
+> index 000000000000..1be27cfa1702
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf7.c
+> @@ -0,0 +1,37 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +#define __unused __attribute__((always_unused))
+> +
+> +struct {
+> +	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
+> +	__uint(max_entries, 1);
+> +	__uint(key_size, sizeof(__u32));
+> +	__uint(value_size, sizeof(__u32));
+> +} jmp_table SEC(".maps");
+> +
+> +int done = 0;
+> +
+> +SEC("tc")
+> +int classifier_0(struct __sk_buff *skb __unused)
+> +{
+> +	done = 1;
+> +	return 0;
+> +}
+> +
+> +static __noinline
+> +int subprog_tail(struct __sk_buff *skb)
+> +{
+> +	bpf_tail_call_static(skb, &jmp_table, 0);
+> +	return 1;
+> +}
+> +
+> +SEC("tc")
+> +int entry(struct __sk_buff *skb)
+> +{
+> +	subprog_tail(skb);
+> +	return 2;
+> +}
+> +
+> +char __license[] SEC("license") = "GPL";
+> -- 
+> 2.35.3
+> 
