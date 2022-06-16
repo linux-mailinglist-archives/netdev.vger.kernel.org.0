@@ -2,47 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A75B54D871
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 04:36:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E9DD54D8A0
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 04:50:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348018AbiFPCgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 22:36:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41014 "EHLO
+        id S240894AbiFPCuy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 22:50:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233633AbiFPCgi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 22:36:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C94369C6;
-        Wed, 15 Jun 2022 19:36:38 -0700 (PDT)
+        with ESMTP id S229693AbiFPCuy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 22:50:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B6157B21;
+        Wed, 15 Jun 2022 19:50:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8AC761012;
-        Thu, 16 Jun 2022 02:36:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BACAAC3411A;
-        Thu, 16 Jun 2022 02:36:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93257612A0;
+        Thu, 16 Jun 2022 02:50:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3AF6C3411A;
+        Thu, 16 Jun 2022 02:50:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655346997;
-        bh=MDZiaO2P1rcQkw19Fejs7IDBb8CZD93si4u3k3WSwrc=;
+        s=k20201202; t=1655347852;
+        bh=Wr/3th+k8NUJhza5MLu2fT8FjL/q3kYO2ECCExYM1ts=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hsGh1aQoYE1DbbhHVWuQbGq5IYfUB+DQCg4rYicr0PGHhevVldSkKJz15o1ZaLtI1
-         mgBPzbLKnzLeIuABkJW+XqP/hbwWWMP9ZCuwOpVyOH/d+1+3CFefEzdiTCsCuqM7Xp
-         y3XKmgdAx7mVf1OiBDC9ZbVY/1mEQxrpzflwPIoB0ocjP2D/P5mXNzTjmy4GBdFkb/
-         UedcSvG7OH3WLIzk9Pk747RMGIES0LVpmSE2i9RyR3eUAcioQrZIaqUwnTcOFCOVpW
-         GpnJJ3+gI7iySRd9x1emYJKUfgy94HPS1KuR9jQ/qNlpzOsRKHclT8ZoqA0VSww/jT
-         7nW2SvjAUiJaA==
-Date:   Wed, 15 Jun 2022 19:36:35 -0700
+        b=OsbNIRhynU56uid/iiYCHDdgucR2CA8sYFj7fErVGfAG/IhL30cKlpfCR1T4V7Hgv
+         caKKrZ6QU/ML01n5Thz25Qbv2olH7htW41OOXxeX9vWtmiAEiWppNoxBLcvMGNazsH
+         RfjHDbSUWI7Sjbw5grC5CwqPVgFtQkrLRYNK+VHFl6t25IidHGRD4bbrk3Mm5++t7X
+         HfHmLyb5CPiuPtatGFLvAQcduY2MBapUq0X7jtTg98Z6drYw54DEVZs9LglRcYccwq
+         awweRc7CialJmZTJx2nWv9YoRtlzc21rnG25xwx1jAK8DhExIWdfjSIWEmpV+kdFyc
+         MgWDpQoM6n5Mg==
+Date:   Wed, 15 Jun 2022 19:50:50 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <radhey.shyam.pandey@xilinx.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <andy.chiu@sifive.com>,
-        <max.hsu@sifive.com>, <greentime.hu@sifive.com>
-Subject: Re: [PATCH -next] net: axienet: add missing error return code in
- axienet_probe()
-Message-ID: <20220615193635.1b927f12@kernel.org>
-In-Reply-To: <20220615031810.1876309-1-yangyingliang@huawei.com>
-References: <20220615031810.1876309-1-yangyingliang@huawei.com>
+To:     Wentao_Liang <Wentao_Liang_g@163.com>, jdmason@kudzu.us
+Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] [PATCH net v2]vexy: Fix a use-after-free bug in
+ vxge-main.c
+Message-ID: <20220615195050.6e4785ef@kernel.org>
+In-Reply-To: <20220615013816.6593-1-Wentao_Liang_g@163.com>
+References: <20220615013816.6593-1-Wentao_Liang_g@163.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,13 +54,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Jun 2022 11:18:10 +0800 Yang Yingliang wrote:
-> It should return error code in error path in axienet_probe().
-> 
-> Fixes: 00be43a74ca2 ("net: axienet: make the 64b addresable DMA depends on 64b archectures")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Jon, if you're there, do you have any sense on whether this HW is still
+in production somewhere? I scrolled thru last 5 years of the git history
+and there doesn't seem to be any meaningful change here while there's a
+significant volume of refactoring going in. 
 
-Please rebase on top of net/master and repost with [PATCH net] in the
-subject. This is a fix for an issue in net/master, don't mindlessly 
-put -next in the subject, it's hurting the automation not helping.
+
+On the patch itself:
+
+On Wed, 15 Jun 2022 09:38:16 +0800 Wentao_Liang wrote:
+> Subject: [PATCH] [PATCH net v2]vexy: Fix a use-after-free bug in vxge-main.c
+
+No need to repeat "[PATCH]"
+The driver is not called "vexy" as far as I can tell.
+
+> The pointer vdev points to a memory region adjacent to a net_device
+> structure ndev, which is a field of hldev. At line 4740, the invocation
+> to vxge_device_unregister unregisters device hldev, and it also releases
+> the memory region pointed by vdev->bar0. At line 4743, the freed memory
+> region is referenced (i.e., iounmap(vdev->bar0)), resulting in a
+> use-after-free vulnerability. We can fix the bug by calling iounmap
+> before vxge_device_unregister.
+
+Are you sure the bar0 is not needed by the netdev? You're freeing
+memory that the netdev may need until it's unregistered.
