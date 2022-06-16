@@ -2,46 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74BED54E35C
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 16:28:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDBB054E521
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 16:41:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377656AbiFPO2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 10:28:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36770 "EHLO
+        id S230393AbiFPOlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 10:41:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376939AbiFPO2E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 10:28:04 -0400
-Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252E61116A;
-        Thu, 16 Jun 2022 07:27:54 -0700 (PDT)
-X-QQ-mid: bizesmtp74t1655389596t1j0bi5p
-Received: from localhost.localdomain ( [153.0.97.30])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 16 Jun 2022 22:26:31 +0800 (CST)
-X-QQ-SSF: 01000000003000D0I000B00A0000000
-X-QQ-FEAT: FXvDfBZI5O56AgfY+y0EGHBY3j6zgMvT0PfShBaBl2GAqPoKvhB/MZWbB44z3
-        /nX30qdY08GnpBykwBv9D2LafbusBvrPO8OSNp+kZARzhX7kLFLlJ7m+78dOKt/WerR8qTN
-        WsNBulpyEAHvZbxFXnvT1onP040gUY5IsaGfDU1OG9fE+ZIk9Rm5+ckO0gbB0L8g2pWB2wu
-        NM1H+xkuBpbRgvax1Bhqir/lzHUCFpaR2UWFneIkoD9Ig9JI0UgqEDhjZ7KQL2kM17v7GtB
-        Qchb+WstPQ+UuNd+M7l6e4YOrKxKvGX/oU4rD5Q3+v5e14wAdUr1Pa8XxAm/UwwJ2euEKGl
-        O5YG8Sw3kmtUDfyDlw=
-X-QQ-GoodBg: 0
-From:   Xiang wangx <wangxiang@cdjrlc.com>
-To:     paulus@samba.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-ppp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiang wangx <wangxiang@cdjrlc.com>
-Subject: [PATCH] ppp: Fix typo in comment
-Date:   Thu, 16 Jun 2022 22:26:24 +0800
-Message-Id: <20220616142624.3397-1-wangxiang@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S1376985AbiFPOle (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 10:41:34 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A98846B1B;
+        Thu, 16 Jun 2022 07:41:33 -0700 (PDT)
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o1qgd-0008lW-5M; Thu, 16 Jun 2022 16:41:31 +0200
+Received: from [85.1.206.226] (helo=linux-3.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o1qgc-000QsI-Uv; Thu, 16 Jun 2022 16:41:30 +0200
+Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: Test tail call counting with
+ bpf2bpf and data on stack
+To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        kernel-team@cloudflare.com
+References: <20220615151721.404596-1-jakub@cloudflare.com>
+ <20220615151721.404596-3-jakub@cloudflare.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <e88f66e7-3bfd-1563-8a74-26f0ac19bfe0@iogearbox.net>
+Date:   Thu, 16 Jun 2022 16:41:30 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR
+In-Reply-To: <20220615151721.404596-3-jakub@cloudflare.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26574/Thu Jun 16 10:06:40 2022)
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -49,26 +54,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Delete the redundant word 'the'.
+On 6/15/22 5:17 PM, Jakub Sitnicki wrote:
+> Cover the case when tail call count needs to be passed from BPF function to
+> BPF function, and the caller has data on stack. Specifically when the size
+> of data allocated on BPF stack is not a multiple on 8.
+> 
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
+>   .../selftests/bpf/prog_tests/tailcalls.c      | 55 +++++++++++++++++++
+>   .../selftests/bpf/progs/tailcall_bpf2bpf6.c   | 42 ++++++++++++++
+>   2 files changed, 97 insertions(+)
+>   create mode 100644 tools/testing/selftests/bpf/progs/tailcall_bpf2bpf6.c
+> 
+> diff --git a/tools/testing/selftests/bpf/prog_tests/tailcalls.c b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
+> index c4da87ec3ba4..19c70880cfb3 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/tailcalls.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
+> @@ -831,6 +831,59 @@ static void test_tailcall_bpf2bpf_4(bool noise)
+>   	bpf_object__close(obj);
+>   }
+>   
+> +#include "tailcall_bpf2bpf6.skel.h"
+> +
+> +/* Tail call counting works even when there is data on stack which is
+> + * not aligned to 8 bytes.
+> + */
+> +static void test_tailcall_bpf2bpf_6(void)
+> +{
+> +	struct tailcall_bpf2bpf6 *obj;
+> +	int err, map_fd, prog_fd, main_fd, data_fd, i, val;
+> +	LIBBPF_OPTS(bpf_test_run_opts, topts,
+> +		.data_in = &pkt_v4,
+> +		.data_size_in = sizeof(pkt_v4),
+> +		.repeat = 1,
+> +	);
+> +
+> +	obj = tailcall_bpf2bpf6__open_and_load();
+> +	if (!ASSERT_OK_PTR(obj, "open and load"))
+> +		return;
+> +
+> +	main_fd = bpf_program__fd(obj->progs.entry);
+> +	if (!ASSERT_GE(main_fd, 0, "entry prog fd"))
+> +		goto out;
+> +
+> +	map_fd = bpf_map__fd(obj->maps.jmp_table);
+> +	if (!ASSERT_GE(map_fd, 0, "jmp_table map fd"))
+> +		goto out;
+> +
+> +	prog_fd = bpf_program__fd(obj->progs.classifier_0);
+> +	if (!ASSERT_GE(prog_fd, 0, "classifier_0 prog fd"))
+> +		goto out;
+> +
+> +	i = 0;
+> +	err = bpf_map_update_elem(map_fd, &i, &prog_fd, BPF_ANY);
+> +	if (!ASSERT_OK(err, "jmp_table map update"))
+> +		goto out;
+> +
+> +	err = bpf_prog_test_run_opts(main_fd, &topts);
+> +	ASSERT_OK(err, "entry prog test run");
+> +	ASSERT_EQ(topts.retval, 0, "tailcall retval");
+> +
+> +	data_fd = bpf_map__fd(obj->maps.bss);
+> +	if (!ASSERT_GE(map_fd, 0, "bss map fd"))
+> +		goto out;
+> +
+> +	i = 0;
+> +	err = bpf_map_lookup_elem(data_fd, &i, &val);
+> +	ASSERT_OK(err, "bss map lookup");
+> +	ASSERT_EQ(val, 1, "done flag is set");
+> +
+> +out:
+> +	tailcall_bpf2bpf6__destroy(obj);
+> +}
+> +
+>   void test_tailcalls(void)
+>   {
+>   	if (test__start_subtest("tailcall_1"))
+> @@ -855,4 +908,6 @@ void test_tailcalls(void)
+>   		test_tailcall_bpf2bpf_4(false);
+>   	if (test__start_subtest("tailcall_bpf2bpf_5"))
+>   		test_tailcall_bpf2bpf_4(true);
+> +	if (test__start_subtest("tailcall_bpf2bpf_6"))
+> +		test_tailcall_bpf2bpf_6();
+>   }
+> diff --git a/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf6.c b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf6.c
+> new file mode 100644
+> index 000000000000..256de9bcc621
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf6.c
+> @@ -0,0 +1,42 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#include <linux/bpf.h>
+> +#include <bpf/bpf_helpers.h>
+> +
+> +#define __unused __attribute__((always_unused))
+> +
+> +struct {
+> +	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
+> +	__uint(max_entries, 1);
+> +	__uint(key_size, sizeof(__u32));
+> +	__uint(value_size, sizeof(__u32));
+> +} jmp_table SEC(".maps");
+> +
+> +int done = 0;
+> +
+> +SEC("tc")
+> +int classifier_0(struct __sk_buff *skb __unused)
+> +{
+> +	done = 1;
+> +	return 0;
+> +}
 
-Signed-off-by: Xiang wangx <wangxiang@cdjrlc.com>
----
- drivers/net/ppp/ppp_generic.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Looks like this fails CI with:
 
-diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
-index 4a365f15533e..9206c660a72e 100644
---- a/drivers/net/ppp/ppp_generic.c
-+++ b/drivers/net/ppp/ppp_generic.c
-@@ -2968,7 +2968,7 @@ ppp_unregister_channel(struct ppp_channel *chan)
- 	chan->ppp = NULL;
- 
- 	/*
--	 * This ensures that we have returned from any calls into the
-+	 * This ensures that we have returned from any calls into
- 	 * the channel's start_xmit or ioctl routine before we proceed.
- 	 */
- 	down_write(&pch->chan_sem);
--- 
-2.36.1
-
+   progs/tailcall_bpf2bpf6.c:17:40: error: unknown attribute 'always_unused' ignored [-Werror,-Wunknown-attributes]
+   int classifier_0(struct __sk_buff *skb __unused)
+                                          ^~~~~~~~
+   progs/tailcall_bpf2bpf6.c:5:33: note: expanded from macro '__unused'
+   #define __unused __attribute__((always_unused))
+                                   ^~~~~~~~~~~~~
+   1 error generated.
+   make: *** [Makefile:509: /tmp/runner/work/bpf/bpf/tools/testing/selftests/bpf/tailcall_bpf2bpf6.o] Error 1
+   make: *** Waiting for unfinished jobs....
+   Error: Process completed with exit code 2.
