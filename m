@@ -2,302 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83FF254DAD5
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 08:40:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB55454DB31
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 09:04:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359116AbiFPGkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 02:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57880 "EHLO
+        id S229648AbiFPHED (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 03:04:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358699AbiFPGkM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 02:40:12 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1596456FA5;
-        Wed, 15 Jun 2022 23:40:11 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id AB9B91A5E31;
-        Thu, 16 Jun 2022 08:40:09 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 48EF51A3031;
-        Thu, 16 Jun 2022 08:40:09 +0200 (CEST)
-Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 06DDB181D0CB;
-        Thu, 16 Jun 2022 14:40:05 +0800 (+08)
-From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
-        horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
-        alexandre.belloni@bootlin.com, fido_max@inbox.ru,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com, pabeni@redhat.com,
-        kuba@kernel.org, edumazet@google.com, andrew@lunn.ch,
-        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        vladimir.oltean@nxp.com, leoyang.li@nxp.com,
-        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com
-Subject: [PATCH v1 net-next] net: dsa: felix: update base time of time-aware shaper when adjusting PTP time
-Date:   Thu, 16 Jun 2022 14:46:41 +0800
-Message-Id: <20220616064641.11905-1-xiaoliang.yang_1@nxp.com>
-X-Mailer: git-send-email 2.17.1
-X-Virus-Scanned: ClamAV using ClamSMTP
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229462AbiFPHEC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 03:04:02 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2083.outbound.protection.outlook.com [40.107.244.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 357A75BD13
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 00:04:01 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gQNr/c89FijXKilLpzs0+sQlSKoQiJrRSIfIHb8lkrX2AE6N6tqIsY1tln/IAprisBGoZGmiCsZ3Sh+lioK2g8R1fErZQy7lHSZ7yMU80wfPpUeZcs7sdfHE70aYzi8xTxId7QQJOF9DqZpSKXc31W6eLCygT7VCp2K6gJddiUvsX7BxS3qW7glHUlwqRRu4jvjkUEEwc6wLYT6Kw71HrTFByonOh5ZGdVOZRs2WPehPEUj95DxMLw1Xh3dre3PoHnM23HgJgFnCtlvsZYoMs6G+HFbbdO5i0wysq1TIrNKCrSYa/YWCSQgCGRAJimUc6lQQYyRGWRPzmTNCbI+Ncw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Vpi5An0Wi7WjmNGFvCltAqRoOsVydmj4U+NKrmzMBrc=;
+ b=XDGh3MJ+kXSmwFPfUM2MSPW2Wwky3D8WABNL5EDGHrXccSpp7sgd/iDptt/TI/WOuq9Pe09Wl9sI3O9YXVm+0BSbJ9ukX9yAvZx1+atB4QsAVtegmyI8olf4O45OrN9nqmKOxzcPDIuqclyflpqOrMxgThcgORIgq61iPp2SDFMaP7bNJrsFfJCPcs6dlGEws754J+1tKz1NEpif8WBfB9eIVne2RReL3VSVjY7o/mqIsbA61Qo9G8LcjAK+JobmiQYveKhF4F6v3i+dd0D+xmAI3pQESV2bH785/nlatUhlJj85xnUezFfjV9+n3n402yyIJlKvslytTaURbl2qfg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Vpi5An0Wi7WjmNGFvCltAqRoOsVydmj4U+NKrmzMBrc=;
+ b=S4tS8W3H2q1nW1LdHlrPKFUxAyowPt0n1ZY8izGvMhfJjMb1sgt9YwqipTL80e570ccfQaGvupxptd0biFacnJmfa5vtXxnFkqPGdnUn3dHpjamAQAQu1jIXSHj7NNooFN7TFPgVnum/zs+ttIf0sR0kVM795cbnfW5auckG93112T0lTJ0nm34FzrFkrIL/JuXC7kiad1joVFI6xtUwZU4hywsLLKfCUC/RazmrdmdrjVE7Hj3kxzCN/yc54z3hNZYSQgkIPN7QeYRq7aKSPQxYwYPknv1luOrMoGgaa7PRKWUNsvoOCJTUa2p3H9zOb+D/c9HFeoMtn/NjnfzBOw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
+ by MW5PR12MB5624.namprd12.prod.outlook.com (2603:10b6:303:19d::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Thu, 16 Jun
+ 2022 07:03:59 +0000
+Received: from CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::9157:69c9:ea8f:8190]) by CY5PR12MB6179.namprd12.prod.outlook.com
+ ([fe80::9157:69c9:ea8f:8190%9]) with mapi id 15.20.5353.014; Thu, 16 Jun 2022
+ 07:03:59 +0000
+Date:   Thu, 16 Jun 2022 10:03:52 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com
+Subject: Re: [patch net-next 00/11] mlxsw: Implement dev info and dev flash
+ for line cards
+Message-ID: <YqrV2LB244XukMAw@shredder>
+References: <20220614123326.69745-1-jiri@resnulli.us>
+ <Yqmiv2+C1AXa6BY3@shredder>
+ <YqoZkqwBPoX5lGrR@nanopsycho>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqoZkqwBPoX5lGrR@nanopsycho>
+X-ClientProxiedBy: VI1PR0501CA0027.eurprd05.prod.outlook.com
+ (2603:10a6:800:60::13) To CY5PR12MB6179.namprd12.prod.outlook.com
+ (2603:10b6:930:24::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9a449003-fdaa-4858-591c-08da4f666304
+X-MS-TrafficTypeDiagnostic: MW5PR12MB5624:EE_
+X-Microsoft-Antispam-PRVS: <MW5PR12MB56241050D9BB37A287BA8788B2AC9@MW5PR12MB5624.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: RHneAQcuhsavIZGs9KqHyg506lYFrZpoc9brbDYxvdzCA+IjItBuhbBjFhI0Lp4b9V1IPWDnNC5wjhJ+xSTArAGwd0aabSTogj8Yk9epp3RruPIRXslfXT0+R7zqO4B1FO3GcpOpAuyzorMr+CaAWR85g3Zqc6WtT8spPkDOJGwGlyqZMX45QOQaBR53B/GnTfbOGq5jcRAycZylHu8CPFaJuWNCirQUAoZo/tOMWRr98/Qaq5Kqlc8n3eFJAVHKo8ZHLYesjMc75N3SvXXtJj8sWZfnzrY5Vj9MkvHxMqOBkpI1ilhrH5pVidLlqdGrefwLFJg8CsLF38c0YcRLE5hxfqTu8wbJ6Zb8Lk9JALHHR1dgm3TweNOUq8nQqxTEc/UxKQxXK+tiEnEOkkt914c4henEpVKaUX15R4aT7pzqHXkRYKGMCBXxX9IoAbS+xsPlfPxmfGWw1RsFxyXn/sLCmlaHdtT5uiCGe9dGjOdSmOv6nXEkrMuOlZI8Aum/7NT54X6K2fh9t/9Fd00AI2h+yuDGRsyb8+PXsLQtPv8Pmy8zYEvDwbJgTYLeJv+Cz+wY+h6jciKwzMuKkyFlgYtTL4yWO3Fbuofa1QiT9Cjb+NDUkEKY0cWWWXqlSvQ24/ISXbLsouBdanuDjN4zaA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(366004)(33716001)(19627235002)(316002)(186003)(4326008)(6506007)(6666004)(8676002)(66476007)(66556008)(66946007)(38100700002)(6916009)(6486002)(4744005)(83380400001)(8936002)(508600001)(5660300002)(2906002)(107886003)(6512007)(86362001)(26005)(9686003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?A+PlZZ0G2fDMO8anIJFrIwHeXAhTYdhnOziUG6mCrwLQRGT+GNogey3vjDrP?=
+ =?us-ascii?Q?I+wKBqP/pRL4K03hVHr3tNNwzxo5ZS4cqXj5bma1RqardarOfCmoTdFFask8?=
+ =?us-ascii?Q?0KT5e+eApSWhhPxjvEsF8MSw4QhkFFEcwsLOyO2XPCmZr6uR0anzV/iE8FsN?=
+ =?us-ascii?Q?HS5v2A3lyt520lSxwVyiEZG4MGWVggdU1XROWyq7fFmx6c3gwoolLvhobYUU?=
+ =?us-ascii?Q?FqyVBIJVakMTHRqz+zmlJWR/5qaxYWf9hQPwWPTTP+LdgMTAR+6veoTvUCkS?=
+ =?us-ascii?Q?MGLKrGSb3coCzsAp71lr+upYMbyOG2cMTY2ngJKt+SALnUT1wR3ASpEBmjgm?=
+ =?us-ascii?Q?57Gd5WT9kKkbgousRwXEHVScjKOVCo2Op+qqYo57RRQ0Nq8jnR/Car2r+ItS?=
+ =?us-ascii?Q?BcievKekThTJaogXMFpKV2WFDLU4TTMCReRTd/SstngKwdenheFIzPi86wdH?=
+ =?us-ascii?Q?XGP3Sz5hlnH8UYgnf/BCoYLpsTXn1ixIYOiRoivIUEVDyiBG6alcYZUyp7Zi?=
+ =?us-ascii?Q?Vfizh/viX3wY69QPlMYp//F/ZfUZn6EeteNWBMEbg+/QMtR9k1nAbdPNFPAS?=
+ =?us-ascii?Q?gsFEUHBty4x7dda2Cg40znekC8t6yApxAswCBAfW60pVv8zWefkri0n1jf4L?=
+ =?us-ascii?Q?odoAPfMswFYmPRHEme4BEqehav7SXZKp9MrpjJXmgQaSNCbgG1GfwUoPZA6C?=
+ =?us-ascii?Q?Ux6+0/fe9+SYoBcj1IDpNyeuLpx2IKXARdmYdZZoMklxYLks6mF9I+tCZp4X?=
+ =?us-ascii?Q?A8czAv7ubJ8q+U20DUhJyjnxv1W8UmouzWTH0+cZIux692k/pcDghQbUSDpf?=
+ =?us-ascii?Q?9ZZDRoAanvOvnIH501XALpJ+D+SMMsCRBeQEhPlyXVB0vqsKxjoyGsxmGkgw?=
+ =?us-ascii?Q?3fpoHqjNXhHSAVRQ7pdUc6dyY/hGH2KK7Yi3yLezp1XYNPk3vGbPBOIlnFap?=
+ =?us-ascii?Q?ihP4VLBq2eKVII4M+nRLn84gK93DZc83yTz4y6FXYC4XFeLZi36DZcHFBZXI?=
+ =?us-ascii?Q?i07WacRw+zwM1H0RTA1NtKkZ5ZOqgddcp2VE4bu8E8bjAtC8YLECXE7WBfIp?=
+ =?us-ascii?Q?7Dv1sACZ9Kov8ddHoAvYMBF+EmS5/1cdHmQLCTSPfQpypsP/89aHXY+IsvQb?=
+ =?us-ascii?Q?TD79fXfLzCdV09jgk+CmEx0TBHJtcmYkOyhKaWdBae6h1vY2nvZLRRq0cEaP?=
+ =?us-ascii?Q?IBW9lOi1/U+tJmnpPg6ewmWQJ6zo7f2UDA3tWYV8QLI7dRS4IDFa4QRVXWWd?=
+ =?us-ascii?Q?QwD99ipIN4ZkppI63iZBUzKsGetGMUH+DTXsX89W0Gk1ebgsPjO6A6wFs8fb?=
+ =?us-ascii?Q?ep3EEHmtocEabgfjtoGiUDfU4wrgjmXaondbk1oRe7xyT1Jbi7DkFUETiyw4?=
+ =?us-ascii?Q?auuzDZhLzBSwH53PfCyC/6cccUCdRvUFzZPrl/S4Wgo2TtVquEVsmlFZRru0?=
+ =?us-ascii?Q?AgK272cN/zetaA8U3D6o2AFTI0z6ttq0J9q+se0QbMPHC/PqAPN6l0Rn9aDQ?=
+ =?us-ascii?Q?0YxMwmqSZPhThdhkrxQUFyMGn9rId0FLCjT8CHDeVopdC3iqxiDyazVk0nns?=
+ =?us-ascii?Q?kmkswh+fZh42u3LWff9SAbeN3K9j1XCZ7ScwA/wb8/5EvdnL9x9HriMXm2pm?=
+ =?us-ascii?Q?epNsxigM2onn2WPULzGps7WDMfW2ghtacNTLPChrNH+ElDYtZ79s9g2f3Qvu?=
+ =?us-ascii?Q?U650iajMWPFMnelvZ0c6p5ZKAEBmEYMJDLNiqqJUONDzHptvv2Yk5dalvLVy?=
+ =?us-ascii?Q?NtzU4BMpYw=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9a449003-fdaa-4858-591c-08da4f666304
+X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2022 07:03:59.4396
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 66Rj6wmFGxJnxOZ5t2F1lmb3lRKBr++9AWibIzhRwoXyBc+qeZujz2TkmWXGvESGa+4PZ54sKpTZ16r3U7fPqg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR12MB5624
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When adjusting the PTP clock, the base time of the TAS configuration
-will become unreliable. We need reset the TAS configuration by using a
-new base time.
+On Wed, Jun 15, 2022 at 07:40:34PM +0200, Jiri Pirko wrote:
+> Wed, Jun 15, 2022 at 11:13:35AM CEST, idosch@nvidia.com wrote:
+> >On Tue, Jun 14, 2022 at 02:33:15PM +0200, Jiri Pirko wrote:
+> >> $ devlink dev flash auxiliary/mlxsw_core.lc.0 file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
+> >
+> >How is this firmware activated? It is usually done after reload, but I
+> >don't see reload implementation for the line card devlink instance.
+> 
+> Currently, only devlink dev reload of the whole mlxsw instance or
+> unprovision/provision of a line card.
 
-For example, if the driver gets a base time 0 of Qbv configuration from
-user, and current time is 20000. The driver will set the TAS base time
-to be 20000. After the PTP clock adjustment, the current time becomes
-10000. If the TAS base time is still 20000, it will be a future time,
-and TAS entry list will stop running. Another example, if the current
-time becomes to be 10000000 after PTP clock adjust, a large time offset
-can cause the hardware to hang.
+OK, please at least mention it in the commit message that adds flashing
+support.
 
-This patch introduces a tas_clock_adjust() function to reset the TAS
-module by using a new base time after the PTP clock adjustment. This can
-avoid issues above.
-
-Due to PTP clock adjustment can occur at any time, it may conflict with
-the TAS configuration. We introduce a new TAS lock to serialize the
-access to the TAS registers.
-
-Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
----
- drivers/net/dsa/ocelot/felix_vsc9959.c | 83 ++++++++++++++++++++++++--
- drivers/net/ethernet/mscc/ocelot.c     |  1 +
- drivers/net/ethernet/mscc/ocelot_ptp.c | 12 +++-
- include/soc/mscc/ocelot.h              |  7 +++
- 4 files changed, 95 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 570d0204b7be..dd9085ae0922 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1196,10 +1196,13 @@ static void vsc9959_tas_gcl_set(struct ocelot *ocelot, const u32 gcl_ix,
- static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
- 				    struct tc_taprio_qopt_offload *taprio)
- {
-+	struct ocelot_port *ocelot_port = ocelot->ports[port];
- 	struct timespec64 base_ts;
- 	int ret, i;
- 	u32 val;
- 
-+	mutex_lock(&ocelot->tas_lock);
-+
- 	if (!taprio->enable) {
- 		ocelot_rmw_rix(ocelot,
- 			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF),
-@@ -1207,15 +1210,20 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
- 			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
- 			       QSYS_TAG_CONFIG, port);
- 
-+		mutex_unlock(&ocelot->tas_lock);
- 		return 0;
- 	}
- 
- 	if (taprio->cycle_time > NSEC_PER_SEC ||
--	    taprio->cycle_time_extension >= NSEC_PER_SEC)
--		return -EINVAL;
-+	    taprio->cycle_time_extension >= NSEC_PER_SEC) {
-+		ret = -EINVAL;
-+		goto err;
-+	}
- 
--	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX)
--		return -ERANGE;
-+	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX) {
-+		ret = -ERANGE;
-+		goto err;
-+	}
- 
- 	/* Enable guard band. The switch will schedule frames without taking
- 	 * their length into account. Thus we'll always need to enable the
-@@ -1236,8 +1244,10 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
- 	 * config is pending, need reset the TAS module
- 	 */
- 	val = ocelot_read(ocelot, QSYS_PARAM_STATUS_REG_8);
--	if (val & QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING)
--		return  -EBUSY;
-+	if (val & QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING) {
-+		ret = -EBUSY;
-+		goto err;
-+	}
- 
- 	ocelot_rmw_rix(ocelot,
- 		       QSYS_TAG_CONFIG_ENABLE |
-@@ -1248,6 +1258,8 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
- 		       QSYS_TAG_CONFIG_SCH_TRAFFIC_QUEUES_M,
- 		       QSYS_TAG_CONFIG, port);
- 
-+	ocelot_port->base_time = taprio->base_time;
-+
- 	vsc9959_new_base_time(ocelot, taprio->base_time,
- 			      taprio->cycle_time, &base_ts);
- 	ocelot_write(ocelot, base_ts.tv_nsec, QSYS_PARAM_CFG_REG_1);
-@@ -1271,9 +1283,67 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
- 				 !(val & QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE),
- 				 10, 100000);
- 
-+err:
-+	mutex_unlock(&ocelot->tas_lock);
-+
- 	return ret;
- }
- 
-+static void vsc9959_tas_clock_adjust(struct ocelot *ocelot)
-+{
-+	struct ocelot_port *ocelot_port;
-+	struct timespec64 base_ts;
-+	u64 cycletime;
-+	int port;
-+	u32 val;
-+
-+	mutex_lock(&ocelot->tas_lock);
-+
-+	for (port = 0; port < ocelot->num_phys_ports; port++) {
-+		val = ocelot_read_rix(ocelot, QSYS_TAG_CONFIG, port);
-+		if (!(val & QSYS_TAG_CONFIG_ENABLE))
-+			continue;
-+
-+		ocelot_rmw(ocelot,
-+			   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(port),
-+			   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM_M,
-+			   QSYS_TAS_PARAM_CFG_CTRL);
-+
-+		ocelot_rmw_rix(ocelot,
-+			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF),
-+			       QSYS_TAG_CONFIG_ENABLE |
-+			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
-+			       QSYS_TAG_CONFIG, port);
-+
-+		cycletime = ocelot_read(ocelot, QSYS_PARAM_CFG_REG_4);
-+		ocelot_port = ocelot->ports[port];
-+
-+		vsc9959_new_base_time(ocelot, ocelot_port->base_time,
-+				      cycletime, &base_ts);
-+
-+		ocelot_write(ocelot, base_ts.tv_nsec, QSYS_PARAM_CFG_REG_1);
-+		ocelot_write(ocelot, lower_32_bits(base_ts.tv_sec),
-+			     QSYS_PARAM_CFG_REG_2);
-+		val = upper_32_bits(base_ts.tv_sec);
-+		ocelot_rmw(ocelot,
-+			   QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB(val),
-+			   QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB_M,
-+			   QSYS_PARAM_CFG_REG_3);
-+
-+		ocelot_rmw(ocelot, QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE,
-+			   QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE,
-+			   QSYS_TAS_PARAM_CFG_CTRL);
-+
-+		ocelot_rmw_rix(ocelot,
-+			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF) |
-+			       QSYS_TAG_CONFIG_ENABLE,
-+			       QSYS_TAG_CONFIG_ENABLE |
-+			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
-+			       QSYS_TAG_CONFIG, port);
-+	}
-+	mutex_unlock(&ocelot->tas_lock);
-+}
-+
- static int vsc9959_qos_port_cbs_set(struct dsa_switch *ds, int port,
- 				    struct tc_cbs_qopt_offload *cbs_qopt)
- {
-@@ -2210,6 +2280,7 @@ static const struct ocelot_ops vsc9959_ops = {
- 	.psfp_filter_del	= vsc9959_psfp_filter_del,
- 	.psfp_stats_get		= vsc9959_psfp_stats_get,
- 	.cut_through_fwd	= vsc9959_cut_through_fwd,
-+	.tas_clock_adjust	= vsc9959_tas_clock_adjust,
- };
- 
- static const struct felix_info felix_info_vsc9959 = {
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 8da7e25a47c9..d4649e4ee0e7 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -3367,6 +3367,7 @@ int ocelot_init(struct ocelot *ocelot)
- 	mutex_init(&ocelot->ptp_lock);
- 	mutex_init(&ocelot->mact_lock);
- 	mutex_init(&ocelot->fwd_domain_lock);
-+	mutex_init(&ocelot->tas_lock);
- 	spin_lock_init(&ocelot->ptp_clock_lock);
- 	spin_lock_init(&ocelot->ts_id_lock);
- 	snprintf(queue_name, sizeof(queue_name), "%s-stats",
-diff --git a/drivers/net/ethernet/mscc/ocelot_ptp.c b/drivers/net/ethernet/mscc/ocelot_ptp.c
-index 87ad2137ba06..522fdc38d4d0 100644
---- a/drivers/net/ethernet/mscc/ocelot_ptp.c
-+++ b/drivers/net/ethernet/mscc/ocelot_ptp.c
-@@ -72,15 +72,19 @@ int ocelot_ptp_settime64(struct ptp_clock_info *ptp,
- 	ocelot_write_rix(ocelot, val, PTP_PIN_CFG, TOD_ACC_PIN);
- 
- 	spin_unlock_irqrestore(&ocelot->ptp_clock_lock, flags);
-+
-+	if (ocelot->ops->tas_clock_adjust)
-+		ocelot->ops->tas_clock_adjust(ocelot);
-+
- 	return 0;
- }
- EXPORT_SYMBOL(ocelot_ptp_settime64);
- 
- int ocelot_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
- {
-+	struct ocelot *ocelot = container_of(ptp, struct ocelot, ptp_info);
-+
- 	if (delta > -(NSEC_PER_SEC / 2) && delta < (NSEC_PER_SEC / 2)) {
--		struct ocelot *ocelot = container_of(ptp, struct ocelot,
--						     ptp_info);
- 		unsigned long flags;
- 		u32 val;
- 
-@@ -117,6 +121,10 @@ int ocelot_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
- 
- 		ocelot_ptp_settime64(ptp, &ts);
- 	}
-+
-+	if (ocelot->ops->tas_clock_adjust)
-+		ocelot->ops->tas_clock_adjust(ocelot);
-+
- 	return 0;
- }
- EXPORT_SYMBOL(ocelot_ptp_adjtime);
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 5f88385a7748..3737570116c3 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -575,6 +575,7 @@ struct ocelot_ops {
- 	int (*psfp_stats_get)(struct ocelot *ocelot, struct flow_cls_offload *f,
- 			      struct flow_stats *stats);
- 	void (*cut_through_fwd)(struct ocelot *ocelot);
-+	void (*tas_clock_adjust)(struct ocelot *ocelot);
- };
- 
- struct ocelot_vcap_policer {
-@@ -691,6 +692,9 @@ struct ocelot_port {
- 	int				bridge_num;
- 
- 	int				speed;
-+
-+	/* Store the AdminBaseTime of EST fetched from userspace. */
-+	s64				base_time;
- };
- 
- struct ocelot {
-@@ -757,6 +761,9 @@ struct ocelot {
- 	/* Lock for serializing forwarding domain changes */
- 	struct mutex			fwd_domain_lock;
- 
-+	/* Lock for serializing Time-Aware Shaper changes */
-+	struct mutex			tas_lock;
-+
- 	struct workqueue_struct		*owq;
- 
- 	u8				ptp:1;
--- 
-2.17.1
-
+What about implementing reload support as unprovision/provision?
