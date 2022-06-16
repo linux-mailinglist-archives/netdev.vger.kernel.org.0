@@ -2,50 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF43A54D8B1
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 04:58:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DFD454D8C2
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 05:05:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348893AbiFPC6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 22:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58850 "EHLO
+        id S1355476AbiFPDFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 23:05:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354969AbiFPC60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 22:58:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9268745067;
-        Wed, 15 Jun 2022 19:58:25 -0700 (PDT)
+        with ESMTP id S1357429AbiFPDFr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 23:05:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F25D65A145;
+        Wed, 15 Jun 2022 20:05:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E81AB8216B;
-        Thu, 16 Jun 2022 02:58:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36849C3411A;
-        Thu, 16 Jun 2022 02:58:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D3B561408;
+        Thu, 16 Jun 2022 03:05:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94177C3411A;
+        Thu, 16 Jun 2022 03:05:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655348302;
-        bh=MYARrI0icKzl8Vl3RaBlTKSY/Yl0mbW1jC39SgVEBe4=;
+        s=k20201202; t=1655348746;
+        bh=eKMfwTswQ0hHiZwig2FzE3cqMfqaHWQ47VvrfOtn69Q=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OrFPbkGkm/zaRGKMQToihB2mlz2IPh6CBHfXFie+Q6idaKU4NP+maR9uQbxCqoRwA
-         pMslRWioJ9DsHGUE2D+a11D1GIBhNMNGE7G6QOR6j3Pni2znLz7A6BQ/sHzjTSHccB
-         NCpFYEjgeGjnnxzQW8rDPegHBS+i9CwAwqwtkNIrIRJDUsYB2FK16XsoZe4V3EQ1fq
-         Qm+KWHeyRU5VoL0gBdTUp9OlN/ddGatkfixDybUlpMKImZru95o7HQvrrgeU2EhMyo
-         6suvLs0y6wnwtq/10DxJZ54Jg5zltfIK37I2zXLRaJ2bmArJhez2sden4UInEpxcfe
-         zKuPpzb1uRN2A==
-Date:   Wed, 15 Jun 2022 19:58:20 -0700
+        b=VBis4LHJiUdLqv8ckZc82+pkTeCKeOfmmfcpWrguIjrUIs7IavQEIn8zUT/+RYDFt
+         MvnJAEA4tTU1uArvetRT4CcbI88SmB0hR0Ko/yMJUhVea3l6qKIqklFDROgaGQrp0V
+         1JC1cbIIa2xckcS4TFVZAOpDc6JruTDghZ95cnSVlEjMi7+ID/YBku3Jpf9+LYLwXO
+         VuA9dPXkwrqEqx79nImTYlwRf0dkic2GlewTvC+h/AWo8c+yhmkuN0dxogl2IQvtCN
+         7dLrWdadDa3PwEfdaKt7dHpM1BTFjvkW227RZSsSwKsrth7lL1J0tt10aSkaqJAfis
+         GrQ9/VScI3s9A==
+Date:   Wed, 15 Jun 2022 20:05:44 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, allan.nielsen@microchip.com,
-        joergen.andreasen@microchip.com, horatiu.vultur@microchip.com,
-        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
-        fido_max@inbox.ru, alexandru.marginean@nxp.com,
-        claudiu.manoil@nxp.com, vladimir.oltean@nxp.com,
-        leoyang.li@nxp.com, yangbo.lu@nxp.com
-Subject: Re: [net] net: dsa: felix: update base time of time-aware shaper
- when adjusting PTP time
-Message-ID: <20220615195820.53bae850@kernel.org>
-In-Reply-To: <20220615033610.35983-1-xiaoliang.yang_1@nxp.com>
-References: <20220615033610.35983-1-xiaoliang.yang_1@nxp.com>
+To:     Raju Lakkaraju <Raju.Lakkaraju@microchip.com>
+Cc:     <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        <linux-kernel@vger.kernel.org>, <bryan.whitehead@microchip.com>,
+        <lxu@maxlinear.com>, <richardcochran@gmail.com>,
+        <UNGLinuxDriver@microchip.com>, <Ian.Saturley@microchip.com>
+Subject: Re: [PATCH net-next V1 3/5] net: lan743x: Add support to SGMII
+ block access functions
+Message-ID: <20220615200544.10399227@kernel.org>
+In-Reply-To: <20220615103237.3331-4-Raju.Lakkaraju@microchip.com>
+References: <20220615103237.3331-1-Raju.Lakkaraju@microchip.com>
+        <20220615103237.3331-4-Raju.Lakkaraju@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -59,28 +57,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Jun 2022 11:36:10 +0800 Xiaoliang Yang wrote:
-> When adjusting the PTP clock, the base time of the TAS configuration
-> will become unreliable. We need reset the TAS configuration by using a
-> new base time.
+On Wed, 15 Jun 2022 16:02:35 +0530 Raju Lakkaraju wrote:
+> Subject: [PATCH net-next V1 3/5] net: lan743x: Add support to SGMII block access functions
 > 
-> For example, if the driver gets a base time 0 of Qbv configuration from
-> user, and current time is 20000. The driver will set the TAS base time
-> to be 20000. After the PTP clock adjustment, the current time becomes
-> 10000. If the TAS base time is still 20000, it will be a future time,
-> and TAS entry list will stop running. Another example, if the current
-> time becomes to be 10000000 after PTP clock adjust, a large time offset
-> can cause the hardware to hang.
-> 
-> This patch introduces a tas_clock_adjust() function to reset the TAS
-> module by using a new base time after the PTP clock adjustment. This can
-> avoid issues above.
-> 
-> Due to PTP clock adjustment can occur at any time, it may conflict with
-> the TAS configuration. We introduce a new TAS lock to serialize the
-> access to the TAS registers.
-> 
-> Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+> Add SGMII access read and write functions
 
-You missed some CCs (./scripts/get_maintainer.pl) and there needs to 
-be a Fixes tag if you're targeting net.
+Unfortunately you can't define functions and use them in later patches.
+It will break build during bisection because of -Wunused-function
+now that the kernel defaults to -Werror. I say just squash this into
+the next patch, it's not that big.
