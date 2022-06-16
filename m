@@ -2,364 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94F2A54EA59
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 21:52:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 990B954EA65
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 21:54:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378386AbiFPTw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 15:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39574 "EHLO
+        id S229898AbiFPTxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 15:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbiFPTw0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 15:52:26 -0400
-Received: from smtp1.emailarray.com (smtp1.emailarray.com [65.39.216.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A975A146
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 12:52:25 -0700 (PDT)
-Received: (qmail 27994 invoked by uid 89); 16 Jun 2022 19:52:24 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjg0LjIwNQ==) (POLARISLOCAL)  
-  by smtp1.emailarray.com with SMTP; 16 Jun 2022 19:52:24 -0000
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     kernel-team@fb.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Lasse Johnsen <l@ssejohnsen.me>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>
-Subject: [PATCH net-next v8 3/3] net: phy: Add support for 1PPS out and external timestamps
-Date:   Thu, 16 Jun 2022 12:52:18 -0700
-Message-Id: <20220616195218.217408-4-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.34.3
-In-Reply-To: <20220616195218.217408-1-jonathan.lemon@gmail.com>
-References: <20220616195218.217408-1-jonathan.lemon@gmail.com>
+        with ESMTP id S1378299AbiFPTxx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 15:53:53 -0400
+Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62FAE546B0;
+        Thu, 16 Jun 2022 12:53:44 -0700 (PDT)
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25GIemq2031683;
+        Thu, 16 Jun 2022 12:53:27 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=Bca4tw3u/RDW7qa6RxN1S8T82AHBip+/tZvFAqs+JTw=;
+ b=bvjE128sr05gFTx+gcnljK0h07OzkOPVmhUm3eRjyrkI5IXjieYOtx1x3BIX1PwmdaoN
+ tgQVe5gnzICSg9ZsCBeghlYsexcYtAB3wLhMJK5CapCOGVaA5Ry5/O8GHZwAvIOUIYRe
+ JeQV3HJttOYdcLWoKz5UrbqvtP0OjOi/p9I= 
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2174.outbound.protection.outlook.com [104.47.59.174])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3gr4xmjw5y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 16 Jun 2022 12:53:27 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BTppAFSEYvjtnAK0WCyfTA9Izs+szA4/Nz2afo0hvuADklvc6W2OnuyrHrY9Y1EqR21QWWa0OWM6ct+0Aue4isQuPsyO/EANiW20bf+iANSgge0Epm1O5oeKqV0sLUuhsuylwFL19/YAvtk2zKV1OmYVSp2v5bAprYj3eS0hGoya03EoFybuUnNeU1bLNA66INznrF5fpmOMwbhPKX+a1mBQu90UVc4V1zmFA0olnz3jOOhyuGOSD53jOaAF6IrXubaxT3FVa5H4s/BH+fRQgDtBMJU6p+j42nc83f+jPd4af9C4U7eKllUdZfTWVq06Ec+oOMt3epJ4mChO/GsPLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Bca4tw3u/RDW7qa6RxN1S8T82AHBip+/tZvFAqs+JTw=;
+ b=cWXvDA10V8lfwpqPCML0c8nKHLR8eYSNUICs8Gh1Oa6PUuOhiIE46HJxM+k95XKTfgmA5PDXReCP428ZKfX1WFndAA2YOe2NiioAO006jTeNlxcUIOQnTz16Tp238XCjXXHIq2zS7EhFpJUsKjRFkb888V1M1fI21Q+9RRDBgR8FuOPgofX/bFcZeYH+ZTp8myVpGdtZEn7IPxElzUbMu26mS4ilIprc3kSdTA/dOB55FRnjPPQXXdZzS2DsXMUVLXaIeEuTmRbhtFrVEFQC3+lFD0+wsmOY+zu+pJJSGTjrpw/FxHmh2fgeJ0fyjehJ8rfTWRUwokZoVbRoFq6OQQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from MW4PR15MB4475.namprd15.prod.outlook.com (2603:10b6:303:104::16)
+ by DM5PR15MB1721.namprd15.prod.outlook.com (2603:10b6:4:59::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Thu, 16 Jun
+ 2022 19:53:26 +0000
+Received: from MW4PR15MB4475.namprd15.prod.outlook.com
+ ([fe80::3941:25c6:c1cd:5762]) by MW4PR15MB4475.namprd15.prod.outlook.com
+ ([fe80::3941:25c6:c1cd:5762%7]) with mapi id 15.20.5353.015; Thu, 16 Jun 2022
+ 19:53:26 +0000
+Date:   Thu, 16 Jun 2022 12:53:24 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org
+Subject: Re: [PATCH bpf-next v9 01/10] bpf: add bpf_func_t and trampoline
+ helpers
+Message-ID: <20220616195324.idodbt43ubqkzeww@kafai-mbp>
+References: <20220610165803.2860154-1-sdf@google.com>
+ <20220610165803.2860154-2-sdf@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220610165803.2860154-2-sdf@google.com>
+X-ClientProxiedBy: BYAPR07CA0055.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::32) To MW4PR15MB4475.namprd15.prod.outlook.com
+ (2603:10b6:303:104::16)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,NML_ADSP_CUSTOM_MED,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4cfc18eb-d795-4325-7943-08da4fd1e06b
+X-MS-TrafficTypeDiagnostic: DM5PR15MB1721:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR15MB1721058A18ED97724EDF4CACD5AC9@DM5PR15MB1721.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JURZ3sZAZmVTeIlB/8Pitblwi2S3PWDinoJ1Id2KEna3O4404kGmHH7Gj+Jq/B8SEUYwU1be71UjmtCdZv3DeqmzBMbNIFQ97xMeZ7lqY1bjkiek6/V7axsezcg36FV0I6OtQshPdhUuiAFe1NkXKOv2mo752xeHWoAkOME4mdelHL16a8ClmsRk25vYLuyCUxbxemSnZ3oPfYWESkAVK+zVRZOuRR/DuKp3qwzw2xyh3hdnwZPIAJp3+BJGK6Tp3Cd3tgA8024NNOfT9vNNbHmNCdoDLJEIYI+TyH7AiZln14gHW2XUZsTIK/RoDaClWwacFuf0uNNRyTMs+UJA23dLSNFObLbZ64rfZn3h66mSfumZtABZ/VXCWZbt02T8uT7mQ9lCGEeq5C45sRec8WPoxeSVAKq9iYJjFblW/Z+YQViCNQ3hOSBDNuRhShQUoQF9mKKXp/dr05lhMZtd+zvOwOP9V8tdHRu1dVdmwc5reGdv2joiG45hfwfsppg3i/2jHIrR6DahmiCNUStz7P47slEKiBwb+kNrtqfw4ZPfq80cCvOGFBoYkZWdh/COP8h8D6qKGSGptCbl2F5A3mbnRiNcANkPDFibBIY7shAxXZdRIrsOmeZDRlSV38eIvyU81/Vm513uKHuOUPdy6Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR15MB4475.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(366004)(8936002)(38100700002)(33716001)(6486002)(498600001)(5660300002)(4326008)(8676002)(66946007)(66556008)(66476007)(9686003)(6506007)(6916009)(86362001)(52116002)(316002)(6512007)(186003)(1076003)(2906002)(558084003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Xx/vjsHAYX1BXmp5r2rTZBEXL6sHE7ihpkALHqPM4Kp8GK6IHVNVeBVOTbLS?=
+ =?us-ascii?Q?15zMUnb95Dq554pWXGk1IKPBdUG87IVYRoWw8GvglZ40BH7BB3gCoEy9csrv?=
+ =?us-ascii?Q?yI6h8poMfGNYf2ibYmMX5e6mkIkTkne8J3cqp7mb3cJOBKB6TL/s1csy/bg2?=
+ =?us-ascii?Q?pwYn+Nb49g0qKZPoqK4BBnAxAswS+ShG2YYrGh2QsTudkm49y+l3fumAHHT2?=
+ =?us-ascii?Q?Pf73gvvqkzOWjUPMHDd3NeIeptemHIrfKXVDv1JQvx0uEw6m3llH6DSCIshn?=
+ =?us-ascii?Q?VYbBMdDbMfZtHnpcjxS1vxJvlfqqmL2fY+lnErmukg5Z0tmvwsoJMx21iUsn?=
+ =?us-ascii?Q?p4VWGNqSuPvIkgbneDYgXEVqg6woC8LFcvAA1N/ad4wmQxgeNuby1QsN7GVF?=
+ =?us-ascii?Q?s17FKsd86atIBnY1x4IU4/Sbx+22CPW+HIX1WCqTkGDE6BGtofpXfuN4WIh0?=
+ =?us-ascii?Q?R8Ai+KzBHSImvzYVkwucx6+f0LQ/cTg477/oLd+5jD48oe3TLU8tIrnhTvdy?=
+ =?us-ascii?Q?fvCpgXrPoOrsaNxNvqRQR1CBF7WBgFoloI3rwo1rTK2dY4naSe2kiso34nmP?=
+ =?us-ascii?Q?Q98//5vuVkXWcDUoOye6LYU8L5kn1IE8dH16FKDTBpANUaagfGzrI7H8TgQY?=
+ =?us-ascii?Q?HVDKxCamMEeu62YRMPkXdNuhDPLtQrMfcYriwLlPAOZ7+nhWYubksJPLnQkb?=
+ =?us-ascii?Q?WeGbaixoscZTNe4w52ks66QuO59TtcnZwXEiLYxcxdGWmt0S04jJXiWxVTx8?=
+ =?us-ascii?Q?cg6Ev6uCZtCP5VzO+CfKI0ikzU28gVCWTKfeZ0NukkT9TW4eeBBiuAjT+7zc?=
+ =?us-ascii?Q?aRlsZ+pN1He90+EfjeiUAcOpOm+PPX8fgfRAKrED5KaBtnsyhFH3ef44VmVn?=
+ =?us-ascii?Q?iRxEmuzOsjYcjKPX7mrsws4eC+JRp0BQ4hG5hyR3Zw5KM3aRAGOE5BfmM8ra?=
+ =?us-ascii?Q?X/GD88r8iGq3x9+hFK8wt7Muh1z6msTw0o0fgIDcMAlfdlhLOre+OqPV7MCV?=
+ =?us-ascii?Q?Uy/SDagdbPMrYaabbkIY3knBFjjjdSe3NXU9UdjPw3dpUwYhX5tV99txJo3z?=
+ =?us-ascii?Q?vqo7NjWGrjaesdevMDSMJuXWDToq1XN9hcPns5EXATYftgnyQKmaOzowCyBY?=
+ =?us-ascii?Q?3060VF5WiurbXB1tuJVTfkVbyy8MViy++00UWYyeOwEMf8pYT+pGLeoA5f5b?=
+ =?us-ascii?Q?1VfR5kGsMvT8i7ERWGq+xC58GtlJ1qF95g9G2HwRzSsvTFQQNMX3c1+Unie5?=
+ =?us-ascii?Q?iBP3tWvaZGLkSru9wQt7CCLygof7KLcT/Urzhuv0xj9n3FBBD1Wn8SFn8LiT?=
+ =?us-ascii?Q?th3RuXMuhzek2Y7boFmfx5xfSaHgvpjq6GtyvQes3WnuvJGj7VPXWSiq05A8?=
+ =?us-ascii?Q?pIe+XIoxBr7Dn3v36bn0E7Lp4G4irmawMfAXwLTdYzZMvChD+m0zXLWQWTI+?=
+ =?us-ascii?Q?M2+L8frCqPGJOPu20hJO7VWgrM2lGqEaUNkRcxNjPJ/ljkoVgBLbZklTK3Dy?=
+ =?us-ascii?Q?I43zVI5bmA2yw41yXluhnR0uZlJdc6/LThTiKfIeMYPh7r7FxK2gb13J1TwV?=
+ =?us-ascii?Q?rdAzcKrCvKVkcjL5LzzXVB7Xb9BgauJRMunBx9MvrN18Ye2EvsY745+O1Krj?=
+ =?us-ascii?Q?5BwMGaoXY61UEcUyEc2kSrNNvlf/gz4JWwPCXWoJUpHNk2Q9l9VA+xEaJ6Bj?=
+ =?us-ascii?Q?D0JveOfub78A4JgshPtg74zbkC8fPQznPdfyb6hwzn0DFlsWqcngg4iKPlM9?=
+ =?us-ascii?Q?CMT9JVDUjzmTodQ40Rj6aZP5DQF+C2Y=3D?=
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4cfc18eb-d795-4325-7943-08da4fd1e06b
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR15MB4475.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2022 19:53:25.9807
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4G8xEJY4r/WD/aEWS1GJzDDs2Gxw9ap3niyxXwq8cHSAhtxXR/K39GKe2N3KH7U+
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1721
+X-Proofpoint-GUID: 7XwO8z0dGMUAUpvuLoEcSJ-i6XsZXKzb
+X-Proofpoint-ORIG-GUID: 7XwO8z0dGMUAUpvuLoEcSJ-i6XsZXKzb
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-16_18,2022-06-16_01,2022-02-23_01
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The perout function is used to generate a 1PPS signal, synchronized
-to the PHC.  This is accomplished by a using the hardware oneshot
-functionality, which is reset by a timer.
-
-The external timestamp function is set up for a 1PPS input pulse,
-and uses a timer to poll for temestamps.
-
-Both functions use the SYNC_OUT/SYNC_IN1 pin, so cannot run
-simultaneously.
-
-Co-developed-by: Lasse Johnsen <l@ssejohnsen.me>
-Signed-off-by: Lasse Johnsen <l@ssejohnsen.me>
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
----
- drivers/net/phy/bcm-phy-ptp.c | 226 ++++++++++++++++++++++++++++++++++
- 1 file changed, 226 insertions(+)
-
-diff --git a/drivers/net/phy/bcm-phy-ptp.c b/drivers/net/phy/bcm-phy-ptp.c
-index 6f462c232e9e..ef00d6163061 100644
---- a/drivers/net/phy/bcm-phy-ptp.c
-+++ b/drivers/net/phy/bcm-phy-ptp.c
-@@ -80,6 +80,8 @@
- #define SYNC_OUT_1		0x0879
- #define SYNC_OUT_2		0x087a
- 
-+#define SYNC_IN_DIVIDER		0x087b
-+
- #define SYNOUT_TS_0		0x087c
- #define SYNOUT_TS_1		0x087d
- #define SYNOUT_TS_2		0x087e
-@@ -89,6 +91,7 @@
- #define  NSE_CAPTURE_EN			BIT(13)
- #define  NSE_INIT			BIT(12)
- #define  NSE_CPU_FRAMESYNC		BIT(5)
-+#define  NSE_SYNC1_FRAMESYNC		BIT(3)
- #define  NSE_FRAMESYNC_MASK		GENMASK(5, 2)
- #define  NSE_PEROUT_EN			BIT(1)
- #define  NSE_ONESHOT_EN			BIT(0)
-@@ -128,11 +131,14 @@ struct bcm_ptp_private {
- 	struct mii_timestamper mii_ts;
- 	struct ptp_clock *ptp_clock;
- 	struct ptp_clock_info ptp_info;
-+	struct ptp_pin_desc pin;
- 	struct mutex mutex;
- 	struct sk_buff_head tx_queue;
- 	int tx_type;
- 	bool hwts_rx;
- 	u16 nse_ctrl;
-+	bool pin_active;
-+	struct delayed_work pin_work;
- };
- 
- struct bcm_ptp_skb_cb {
-@@ -511,6 +517,215 @@ static long bcm_ptp_do_aux_work(struct ptp_clock_info *info)
- 	return reschedule ? 1 : -1;
- }
- 
-+static int bcm_ptp_cancel_func(struct bcm_ptp_private *priv)
-+{
-+	if (!priv->pin_active)
-+		return 0;
-+
-+	priv->pin_active = false;
-+
-+	priv->nse_ctrl &= ~(NSE_SYNC_OUT_MASK | NSE_SYNC1_FRAMESYNC |
-+			    NSE_CAPTURE_EN);
-+	bcm_phy_write_exp(priv->phydev, NSE_CTRL, priv->nse_ctrl);
-+
-+	cancel_delayed_work_sync(&priv->pin_work);
-+
-+	return 0;
-+}
-+
-+static void bcm_ptp_perout_work(struct work_struct *pin_work)
-+{
-+	struct bcm_ptp_private *priv =
-+		container_of(pin_work, struct bcm_ptp_private, pin_work.work);
-+	struct phy_device *phydev = priv->phydev;
-+	struct timespec64 ts;
-+	u64 ns, next;
-+	u16 ctrl;
-+
-+	mutex_lock(&priv->mutex);
-+
-+	/* no longer running */
-+	if (!priv->pin_active) {
-+		mutex_unlock(&priv->mutex);
-+		return;
-+	}
-+
-+	bcm_ptp_framesync_ts(phydev, NULL, &ts, priv->nse_ctrl);
-+
-+	/* this is 1PPS only */
-+	next = NSEC_PER_SEC - ts.tv_nsec;
-+	ts.tv_sec += next < NSEC_PER_MSEC ? 2 : 1;
-+	ts.tv_nsec = 0;
-+
-+	ns = timespec64_to_ns(&ts);
-+
-+	/* force 0->1 transition for ONESHOT */
-+	ctrl = bcm_ptp_framesync_disable(phydev,
-+					 priv->nse_ctrl & ~NSE_ONESHOT_EN);
-+
-+	bcm_phy_write_exp(phydev, SYNOUT_TS_0, ns & 0xfff0);
-+	bcm_phy_write_exp(phydev, SYNOUT_TS_1, ns >> 16);
-+	bcm_phy_write_exp(phydev, SYNOUT_TS_2, ns >> 32);
-+
-+	/* load values on next framesync */
-+	bcm_phy_write_exp(phydev, SHADOW_LOAD, SYNC_OUT_LOAD);
-+
-+	bcm_ptp_framesync(phydev, ctrl | NSE_ONESHOT_EN | NSE_INIT);
-+
-+	priv->nse_ctrl |= NSE_ONESHOT_EN;
-+	bcm_ptp_framesync_restore(phydev, priv->nse_ctrl);
-+
-+	mutex_unlock(&priv->mutex);
-+
-+	next = next + NSEC_PER_MSEC;
-+	schedule_delayed_work(&priv->pin_work, nsecs_to_jiffies(next));
-+}
-+
-+static int bcm_ptp_perout_locked(struct bcm_ptp_private *priv,
-+				 struct ptp_perout_request *req, int on)
-+{
-+	struct phy_device *phydev = priv->phydev;
-+	u64 period, pulse;
-+	u16 val;
-+
-+	if (!on)
-+		return bcm_ptp_cancel_func(priv);
-+
-+	/* 1PPS */
-+	if (req->period.sec != 1 || req->period.nsec != 0)
-+		return -EINVAL;
-+
-+	period = BCM_MAX_PERIOD_8NS;	/* write nonzero value */
-+
-+	if (req->flags & PTP_PEROUT_PHASE)
-+		return -EOPNOTSUPP;
-+
-+	if (req->flags & PTP_PEROUT_DUTY_CYCLE)
-+		pulse = ktime_to_ns(ktime_set(req->on.sec, req->on.nsec));
-+	else
-+		pulse = (u64)BCM_MAX_PULSE_8NS << 3;
-+
-+	/* convert to 8ns units */
-+	pulse >>= 3;
-+
-+	if (!pulse || pulse > period || pulse > BCM_MAX_PULSE_8NS)
-+		return -EINVAL;
-+
-+	bcm_phy_write_exp(phydev, SYNC_OUT_0, period);
-+
-+	val = ((pulse & 0x3) << 14) | ((period >> 16) & 0x3fff);
-+	bcm_phy_write_exp(phydev, SYNC_OUT_1, val);
-+
-+	val = ((pulse >> 2) & 0x7f) | (pulse << 7);
-+	bcm_phy_write_exp(phydev, SYNC_OUT_2, val);
-+
-+	if (priv->pin_active)
-+		cancel_delayed_work_sync(&priv->pin_work);
-+
-+	priv->pin_active = true;
-+	INIT_DELAYED_WORK(&priv->pin_work, bcm_ptp_perout_work);
-+	schedule_delayed_work(&priv->pin_work, 0);
-+
-+	return 0;
-+}
-+
-+static void bcm_ptp_extts_work(struct work_struct *pin_work)
-+{
-+	struct bcm_ptp_private *priv =
-+		container_of(pin_work, struct bcm_ptp_private, pin_work.work);
-+	struct phy_device *phydev = priv->phydev;
-+	struct ptp_clock_event event;
-+	struct timespec64 ts;
-+	u16 reg;
-+
-+	mutex_lock(&priv->mutex);
-+
-+	/* no longer running */
-+	if (!priv->pin_active) {
-+		mutex_unlock(&priv->mutex);
-+		return;
-+	}
-+
-+	reg = bcm_phy_read_exp(phydev, INTR_STATUS);
-+	if ((reg & INTC_FSYNC) == 0)
-+		goto out;
-+
-+	bcm_ptp_get_framesync_ts(phydev, &ts);
-+
-+	event.index = 0;
-+	event.type = PTP_CLOCK_EXTTS;
-+	event.timestamp = timespec64_to_ns(&ts);
-+	ptp_clock_event(priv->ptp_clock, &event);
-+
-+out:
-+	mutex_unlock(&priv->mutex);
-+	schedule_delayed_work(&priv->pin_work, HZ / 4);
-+}
-+
-+static int bcm_ptp_extts_locked(struct bcm_ptp_private *priv, int on)
-+{
-+	struct phy_device *phydev = priv->phydev;
-+
-+	if (!on)
-+		return bcm_ptp_cancel_func(priv);
-+
-+	if (priv->pin_active)
-+		cancel_delayed_work_sync(&priv->pin_work);
-+
-+	bcm_ptp_framesync_disable(phydev, priv->nse_ctrl);
-+
-+	priv->nse_ctrl |= NSE_SYNC1_FRAMESYNC | NSE_CAPTURE_EN;
-+
-+	bcm_ptp_framesync_restore(phydev, priv->nse_ctrl);
-+
-+	priv->pin_active = true;
-+	INIT_DELAYED_WORK(&priv->pin_work, bcm_ptp_extts_work);
-+	schedule_delayed_work(&priv->pin_work, 0);
-+
-+	return 0;
-+}
-+
-+static int bcm_ptp_enable(struct ptp_clock_info *info,
-+			  struct ptp_clock_request *rq, int on)
-+{
-+	struct bcm_ptp_private *priv = ptp2priv(info);
-+	int err = -EBUSY;
-+
-+	mutex_lock(&priv->mutex);
-+
-+	switch (rq->type) {
-+	case PTP_CLK_REQ_PEROUT:
-+		if (priv->pin.func == PTP_PF_PEROUT)
-+			err = bcm_ptp_perout_locked(priv, &rq->perout, on);
-+		break;
-+	case PTP_CLK_REQ_EXTTS:
-+		if (priv->pin.func == PTP_PF_EXTTS)
-+			err = bcm_ptp_extts_locked(priv, on);
-+		break;
-+	default:
-+		err = -EOPNOTSUPP;
-+		break;
-+	}
-+
-+	mutex_unlock(&priv->mutex);
-+
-+	return err;
-+}
-+
-+static int bcm_ptp_verify(struct ptp_clock_info *info, unsigned int pin,
-+			  enum ptp_pin_function func, unsigned int chan)
-+{
-+	switch (func) {
-+	case PTP_PF_NONE:
-+	case PTP_PF_EXTTS:
-+	case PTP_PF_PEROUT:
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+	return 0;
-+}
-+
- static const struct ptp_clock_info bcm_ptp_clock_info = {
- 	.owner		= THIS_MODULE,
- 	.name		= KBUILD_MODNAME,
-@@ -519,7 +734,12 @@ static const struct ptp_clock_info bcm_ptp_clock_info = {
- 	.settime64	= bcm_ptp_settime,
- 	.adjtime	= bcm_ptp_adjtime,
- 	.adjfine	= bcm_ptp_adjfine,
-+	.enable		= bcm_ptp_enable,
-+	.verify		= bcm_ptp_verify,
- 	.do_aux_work	= bcm_ptp_do_aux_work,
-+	.n_pins		= 1,
-+	.n_per_out	= 1,
-+	.n_ext_ts	= 1,
- };
- 
- static void bcm_ptp_txtstamp(struct mii_timestamper *mii_ts,
-@@ -648,6 +868,7 @@ static int bcm_ptp_ts_info(struct mii_timestamper *mii_ts,
- void bcm_ptp_stop(struct bcm_ptp_private *priv)
- {
- 	ptp_cancel_worker_sync(priv->ptp_clock);
-+	bcm_ptp_cancel_func(priv);
- }
- EXPORT_SYMBOL_GPL(bcm_ptp_stop);
- 
-@@ -667,6 +888,8 @@ void bcm_ptp_config_init(struct phy_device *phydev)
- 
- 	/* always allow FREQ_LOAD on framesync */
- 	bcm_phy_write_exp(phydev, SHADOW_CTRL, FREQ_LOAD);
-+
-+	bcm_phy_write_exp(phydev, SYNC_IN_DIVIDER, 1);
- }
- EXPORT_SYMBOL_GPL(bcm_ptp_config_init);
- 
-@@ -703,6 +926,9 @@ struct bcm_ptp_private *bcm_ptp_probe(struct phy_device *phydev)
- 
- 	priv->ptp_info = bcm_ptp_clock_info;
- 
-+	snprintf(priv->pin.name, sizeof(priv->pin.name), "SYNC_OUT");
-+	priv->ptp_info.pin_config = &priv->pin;
-+
- 	clock = ptp_clock_register(&priv->ptp_info, &phydev->mdio.dev);
- 	if (IS_ERR(clock))
- 		return ERR_CAST(clock);
--- 
-2.34.3
-
+On Fri, Jun 10, 2022 at 09:57:54AM -0700, Stanislav Fomichev wrote:
+> I'll be adding lsm cgroup specific helpers that grab
+> trampoline mutex.
+> 
+> No functional changes.
+> 
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+Reviewed-by: Martin KaFai Lau <kafai@fb.com>
