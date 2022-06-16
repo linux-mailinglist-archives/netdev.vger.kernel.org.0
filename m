@@ -2,69 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 642A654E5F3
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 17:24:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5312254E600
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 17:26:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377267AbiFPPYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 11:24:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33144 "EHLO
+        id S1377142AbiFPP0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 11:26:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233993AbiFPPYc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 11:24:32 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8CB22E09A
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 08:24:30 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id b8so2657162edj.11
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 08:24:30 -0700 (PDT)
+        with ESMTP id S233352AbiFPP0W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 11:26:22 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA493DDCF
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 08:26:20 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id n10so3453158ejk.5
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 08:26:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=references:user-agent:from:to:cc:subject:date:in-reply-to
          :message-id:mime-version;
-        bh=mwJ8Wif5giUGYYc0iQvQdlGVGAgX9MBCDm879J1dkNc=;
-        b=nJ4wrp4d4giRvsrz2tGN8jwNlWhC5HjRRxJEO/nwdUun42CgqUM6hf2Ud8uDsGHUnk
-         GLFzkD8VJS2sCII3YtD+ojKZNGfCaQitOycarXUiKWk3ptdV+bEkNOAQE1e+C9m7JNFI
-         itDefWllMyMiKUviPAMfYkdLOkGAeg3s5SbcI=
+        bh=CLrlk3rLwPIryjUKw4pEpgsAc/X+NzTC47fU7Y+cvVo=;
+        b=D3HXnOMFA3IEeldjHrP1cGsLX3up9iZ0C4kaV65Y2Oh1nWPAjUdvqOIizaCW/PNkrU
+         I/DOc+srhouEaxBWZXxJ8rH55vMhz17+CcyONt7beQ+ObrtGUs8Sg1q1/mpiBspVQ49c
+         atWdCYV6uL0wYftcVe0E/Emgk4MpPX70dXLhE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
          :in-reply-to:message-id:mime-version;
-        bh=mwJ8Wif5giUGYYc0iQvQdlGVGAgX9MBCDm879J1dkNc=;
-        b=y6Vqu5VoPNy0diUI+kgT80PKd/2TRMGTjaMDxtUhzp34KdYmSTs5kuexc+eSQ2ti9e
-         LwG3609xcgb6cK5Q/J0wz616X1ahac/ABYO4l4MXwGYUDnpG8GjFqSrl4HzbTVFuXyYk
-         GjVeUpipMG4nDIWpbkxkqvi3OpNahWuhaLHuggpcaGz9ODK9h6FujoTsgG9n1sppfsw4
-         11/MMqWA0mYwVvz+CAec2RcvtcMxqaOT/eHxnC3Z3fF4Mw3oaLdS5g44nnD5hVXJgx+p
-         0c7XwQnnuOKvFOwsV6MfpNTeVx+Pl7HFORPwEfN2QjXbQygc9YPysrvlLGB8lojWDMKL
-         HrIQ==
-X-Gm-Message-State: AJIora8Zwm69JAS8J9Uqsaz84ssrgFgO7Vm2rSCCLi7po27oTiTwEZGF
-        i8lj/ZltKUMr7edn4auMLfibpBluzaYEDw==
-X-Google-Smtp-Source: AGRyM1svNK7krKHYzVECv6ofebO2N8FKcYsnD5iwmDlXTHiG1tYjn/etfFY3EqYSLABQJjMMNBQdTg==
-X-Received: by 2002:a05:6402:d05:b0:425:b5c8:faeb with SMTP id eb5-20020a0564020d0500b00425b5c8faebmr7090713edb.273.1655393069330;
-        Thu, 16 Jun 2022 08:24:29 -0700 (PDT)
+        bh=CLrlk3rLwPIryjUKw4pEpgsAc/X+NzTC47fU7Y+cvVo=;
+        b=5rEWrYDP822Zg5LQ64+Jh5U11C2/xqDjVFw8gOy4Ll36k+1HV4pf+GM+HDmNam0Zd7
+         Mbtb3b/V2RzGU9FDd7sJ4qTsQMpXwqcZpgFWqbWJ40tvA5uiCsyNZT6SY+f8h1uWpsBV
+         o+j/7fghn3IekwAdIfk++Ma6URmzurqvYWEoNdTAwa2zHhHn/FmVFCEK5BuFY4tmytyo
+         13y/33FOcxTlTSObEbAwA2z00Dk/cdoV60fMiCLkpQ4mNiJMTZHFFNys2s/Qn9utucaQ
+         pVx8AZMsFOIgeZ5QeY8yTRgMAdY+MI7JkFy6/PYcBiiObwHboTxQUqkt9NqhYyHyW/mf
+         pQrA==
+X-Gm-Message-State: AJIora9OuRBlhG5VwYtOKj0V9BfSDhOFQEJGiKkSdN88HQHiboBRsrQU
+        clRjbOTcJuyRKF5HFHT5XaLCvA==
+X-Google-Smtp-Source: AGRyM1tCW3Vz02Pr0YUsLollC51dQF/h54D1MNirGWD+KFcnPEx8ydBAN+bpj1MuPKuSiAcmJFVR3A==
+X-Received: by 2002:a17:906:9c82:b0:6df:c5f0:d456 with SMTP id fj2-20020a1709069c8200b006dfc5f0d456mr5062452ejc.287.1655393179302;
+        Thu, 16 Jun 2022 08:26:19 -0700 (PDT)
 Received: from cloudflare.com (79.184.138.130.ipv4.supernova.orange.pl. [79.184.138.130])
-        by smtp.gmail.com with ESMTPSA id m7-20020aa7c487000000b0042bcf1e0060sm1928928edq.65.2022.06.16.08.24.28
+        by smtp.gmail.com with ESMTPSA id 4-20020a170906310400b0071cbc7487e0sm173408ejx.71.2022.06.16.08.26.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 08:24:29 -0700 (PDT)
-References: <20220615151721.404596-1-jakub@cloudflare.com>
- <20220615151721.404596-3-jakub@cloudflare.com>
- <e88f66e7-3bfd-1563-8a74-26f0ac19bfe0@iogearbox.net>
+        Thu, 16 Jun 2022 08:26:18 -0700 (PDT)
+References: <20220616110252.418333-1-jakub@cloudflare.com>
+ <YqtFgYkUsM8VMWRy@boxer>
 User-agent: mu4e 1.6.10; emacs 27.2
 From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
         Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        kernel-team@cloudflare.com
-Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: Test tail call counting
- with bpf2bpf and data on stack
-Date:   Thu, 16 Jun 2022 17:23:39 +0200
-In-reply-to: <e88f66e7-3bfd-1563-8a74-26f0ac19bfe0@iogearbox.net>
-Message-ID: <87bkusws0j.fsf@cloudflare.com>
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, kernel-team@cloudflare.com
+Subject: Re: [RFC bpf] selftests/bpf: Curious case of a successful tailcall
+ that returns to caller
+Date:   Thu, 16 Jun 2022 17:24:50 +0200
+In-reply-to: <YqtFgYkUsM8VMWRy@boxer>
+Message-ID: <877d5gwrxh.fsf@cloudflare.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,22 +70,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 04:41 PM +02, Daniel Borkmann wrote:
+On Thu, Jun 16, 2022 at 05:00 PM +02, Maciej Fijalkowski wrote:
+> On Thu, Jun 16, 2022 at 01:02:52PM +0200, Jakub Sitnicki wrote:
+>> While working aarch64 JIT to allow mixing bpf2bpf calls with tailcalls, I
+>> noticed unexpected tailcall behavior in x86 JIT.
+>> 
+>> I don't know if it is by design or a bug. The bpf_tail_call helper
+>> documentation says that the user should not expect the control flow to
+>> return to the previous program, if the tail call was successful:
+>> 
+>> > If the call succeeds, the kernel immediately runs the first
+>> > instruction of the new program. This is not a function call,
+>> > and it never returns to the previous program.
+>> 
+>> However, when a tailcall happens from a subprogram, that is after a bpf2bpf
+>> call, that is not the case. We return to the caller program because the
+>> stack destruction is too shallow. BPF stack of just the top-most BPF
+>> function gets destroyed.
+>> 
+>> This in turn allows the return value of the tailcall'ed program to get
+>> overwritten, as the test below test demonstrates. It currently fails on
+>> x86:
+>
+> Disclaimer: some time has passed by since I looked into this :P
+>
+> To me the bug would be if test would have returned 1 in your case. If I
+> recall correctly that was the design choice, so tailcalls when mixed with
+> bpf2bpf will consume current stack frame. When tailcall happens from
+> subprogram then we would return to the caller of this subprog. We added
+> logic to verifier that checks if this (tc + bpf2bpf) mix wouldn't cause
+> stack overflow. We even limit the stack frame size to 256 in such case.
+>
+> Cilium docs explain this:
+> https://docs.cilium.io/en/latest/bpf/#bpf-to-bpf-calls
+
+Thanks for such a quick response.
+
+This answers my question. I should have looked in Cilium docs.
+
+I will see how to work this bit of info into the helper docs.
 
 [...]
-
-> Looks like this fails CI with:
->
->   progs/tailcall_bpf2bpf6.c:17:40: error: unknown attribute 'always_unused' ignored [-Werror,-Wunknown-attributes]
->   int classifier_0(struct __sk_buff *skb __unused)
->                                          ^~~~~~~~
->   progs/tailcall_bpf2bpf6.c:5:33: note: expanded from macro '__unused'
->   #define __unused __attribute__((always_unused))
->                                   ^~~~~~~~~~~~~
->   1 error generated.
->   make: *** [Makefile:509: /tmp/runner/work/bpf/bpf/tools/testing/selftests/bpf/tailcall_bpf2bpf6.o] Error 1
->   make: *** Waiting for unfinished jobs....
->   Error: Process completed with exit code 2.
-
-I will switch to __attribute__((unused)) and ignore what checkpatch
-says. Will respin. Thanks!
