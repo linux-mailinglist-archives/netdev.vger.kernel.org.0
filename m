@@ -2,351 +2,364 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 248ED54EA61
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 21:53:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94F2A54EA59
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 21:52:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378429AbiFPTxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 15:53:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41106 "EHLO
+        id S1378386AbiFPTw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 15:52:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbiFPTxT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 15:53:19 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 218796276;
-        Thu, 16 Jun 2022 12:53:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655409198; x=1686945198;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=jlT4m+WFkmmazCzTLedwDoWN/1Muhtuim1CMzuJuNFg=;
-  b=WFlFZ4hroIy5syARNZ1/GDz/ma+Utd5Uu3wb4bB2Ddt/KDpckVWRuOJB
-   Ao88s4TGb/aBUbq2fBsAOwyjT6HzRaovl5cpAaQG1QdNGwk7UkAlmE46p
-   xnBrNePScgn+DnF4tRrnt3h4OB93HuEWpMPlsEFBQ9YMtMKkTdgUKsW4Y
-   83LAH4seuLQALqWKm23OcRShRDSxyGwzYbUCTWePza//ysSTbt2zBUeZx
-   Z3J9zM2G7l3pswUJ88aDa3krO1roo3USPlSiRzvA9GXyHUSPu/h9DAgYG
-   OZ+fObUIqFEHMM2307j7Y90GAU7UBvbyvRI+EcGIyITqHuQJYbDQVCgpF
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="365690497"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="365690497"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 12:53:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="613284579"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 16 Jun 2022 12:53:13 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1vYG-000OiX-OA;
-        Thu, 16 Jun 2022 19:53:12 +0000
-Date:   Fri, 17 Jun 2022 03:52:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     netdev@vger.kernel.org, linux-xfs@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-perf-users@vger.kernel.org,
-        linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-        bpf@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [linux-next:master] BUILD REGRESSION
- c6d7e3b385f19869ab96e9404c92ff1abc34f2c8
-Message-ID: <62ab89f2.Pko7sI08RAKdF8R6%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        with ESMTP id S229793AbiFPTw0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 15:52:26 -0400
+Received: from smtp1.emailarray.com (smtp1.emailarray.com [65.39.216.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A975A146
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 12:52:25 -0700 (PDT)
+Received: (qmail 27994 invoked by uid 89); 16 Jun 2022 19:52:24 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjg0LjIwNQ==) (POLARISLOCAL)  
+  by smtp1.emailarray.com with SMTP; 16 Jun 2022 19:52:24 -0000
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     kernel-team@fb.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Lasse Johnsen <l@ssejohnsen.me>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>
+Subject: [PATCH net-next v8 3/3] net: phy: Add support for 1PPS out and external timestamps
+Date:   Thu, 16 Jun 2022 12:52:18 -0700
+Message-Id: <20220616195218.217408-4-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.34.3
+In-Reply-To: <20220616195218.217408-1-jonathan.lemon@gmail.com>
+References: <20220616195218.217408-1-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,NML_ADSP_CUSTOM_MED,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-branch HEAD: c6d7e3b385f19869ab96e9404c92ff1abc34f2c8  Add linux-next specific files for 20220616
+The perout function is used to generate a 1PPS signal, synchronized
+to the PHC.  This is accomplished by a using the hardware oneshot
+functionality, which is reset by a timer.
 
-Error/Warning reports:
+The external timestamp function is set up for a 1PPS input pulse,
+and uses a timer to poll for temestamps.
 
-https://lore.kernel.org/lkml/202206071511.FI7WLdZo-lkp@intel.com
+Both functions use the SYNC_OUT/SYNC_IN1 pin, so cannot run
+simultaneously.
 
-Error/Warning: (recently discovered and may have been fixed)
+Co-developed-by: Lasse Johnsen <l@ssejohnsen.me>
+Signed-off-by: Lasse Johnsen <l@ssejohnsen.me>
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+---
+ drivers/net/phy/bcm-phy-ptp.c | 226 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 226 insertions(+)
 
-include/linux/highmem-internal.h:203:31: error: passing argument 1 of 'kunmap_flush_on_unmap' discards 'const' qualifier from pointer target type [-Werror=discarded-qualifiers]
-include/linux/highmem-internal.h:203:31: warning: passing argument 1 of 'kunmap_flush_on_unmap' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-kernel/bpf/helpers.c:1490:29: sparse: sparse: symbol 'bpf_dynptr_from_mem_proto' was not declared. Should it be static?
-kernel/bpf/helpers.c:1516:29: sparse: sparse: symbol 'bpf_dynptr_read_proto' was not declared. Should it be static?
-kernel/bpf/helpers.c:1542:29: sparse: sparse: symbol 'bpf_dynptr_write_proto' was not declared. Should it be static?
-kernel/bpf/helpers.c:1569:29: sparse: sparse: symbol 'bpf_dynptr_data_proto' was not declared. Should it be static?
-ld.lld: error: kernel/built-in.a(kallsyms.o):(function get_symbol_offset: .text+0x532): relocation R_RISCV_PCREL_HI20 out of range: -524434 is not in [-524288, 524287]; references kallsyms_markers
-ld.lld: error: kernel/built-in.a(kallsyms.o):(function get_symbol_offset: .text+0x540): relocation R_RISCV_PCREL_HI20 out of range: -524434 is not in [-524288, 524287]; references kallsyms_names
-ld.lld: error: kernel/built-in.a(kallsyms.o):(function update_iter: .text+0x95c): relocation R_RISCV_PCREL_HI20 out of range: -524434 is not in [-524288, 524287]; references kallsyms_num_syms
-ld.lld: error: kernel/built-in.a(kallsyms.o):(function update_iter: .text+0xab2): relocation R_RISCV_PCREL_HI20 out of range: -524435 is not in [-524288, 524287]; references kallsyms_names
-ld.lld: error: kernel/built-in.a(kallsyms.o):(function update_iter: .text+0xaca): relocation R_RISCV_PCREL_HI20 out of range: -524435 is not in [-524288, 524287]; references kallsyms_token_index
-ld.lld: error: kernel/built-in.a(kallsyms.o):(function update_iter: .text+0xad4): relocation R_RISCV_PCREL_HI20 out of range: -524435 is not in [-524288, 524287]; references kallsyms_offsets
-
-Unverified Error/Warning (likely false positive, please contact us if interested):
-
-drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm.c:9143:27: warning: variable 'abo' set but not used [-Wunused-but-set-variable]
-drivers/usb/gadget/udc/aspeed_udc.c:1009:28: sparse: sparse: restricted __le16 degrades to integer
-
-Error/Warning ids grouped by kconfigs:
-
-gcc_recent_errors
-|-- alpha-allmodconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- alpha-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- alpha-randconfig-m031-20220616
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|-- alpha-randconfig-r011-20220616
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|-- arc-allmodconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- arc-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- arm-allmodconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- arm-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- arm-randconfig-s031-20220616
-|   `-- drivers-usb-gadget-udc-aspeed_udc.c:sparse:sparse:restricted-__le16-degrades-to-integer
-|-- arm-randconfig-s032-20220616
-|   |-- fs-xfs-xfs_file.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-vm_fault_t-usertype-ret-got-int
-|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_data_proto-was-not-declared.-Should-it-be-static
-|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_from_mem_proto-was-not-declared.-Should-it-be-static
-|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_read_proto-was-not-declared.-Should-it-be-static
-|   `-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_write_proto-was-not-declared.-Should-it-be-static
-|-- arm64-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- i386-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- i386-randconfig-a005
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- i386-randconfig-m021
-|   `-- arch-x86-events-core.c-init_hw_perf_events()-warn:missing-error-code-err
-|-- i386-randconfig-s001
-|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
-|   |-- drivers-vfio-pci-vfio_pci_config.c:sparse:sparse:restricted-pci_power_t-degrades-to-integer
-|   `-- kernel-signal.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-struct-lockdep_map-const-lock-got-struct-lockdep_map-noderef-__rcu
-|-- i386-randconfig-s002
-|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
-|   |-- fs-xfs-xfs_file.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-vm_fault_t-usertype-ret-got-int
-|   `-- kernel-signal.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-struct-lockdep_map-const-lock-got-struct-lockdep_map-noderef-__rcu
-|-- ia64-allmodconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- ia64-allyesconfig
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- m68k-allmodconfig
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- m68k-allyesconfig
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- mips-allmodconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- mips-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- nios2-allmodconfig
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- nios2-allyesconfig
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- parisc-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   |-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|   |-- include-linux-highmem-internal.h:error:passing-argument-of-kunmap_flush_on_unmap-discards-const-qualifier-from-pointer-target-type
-|   `-- include-linux-highmem-internal.h:warning:passing-argument-of-kunmap_flush_on_unmap-discards-const-qualifier-from-pointer-target-type
-|-- parisc-defconfig
-|   `-- include-linux-highmem-internal.h:warning:passing-argument-of-kunmap_flush_on_unmap-discards-const-qualifier-from-pointer-target-type
-|-- parisc-randconfig-r012-20220616
-|   |-- include-linux-highmem-internal.h:error:passing-argument-of-kunmap_flush_on_unmap-discards-const-qualifier-from-pointer-target-type
-|   `-- include-linux-highmem-internal.h:warning:passing-argument-of-kunmap_flush_on_unmap-discards-const-qualifier-from-pointer-target-type
-|-- parisc64-defconfig
-|   `-- include-linux-highmem-internal.h:warning:passing-argument-of-kunmap_flush_on_unmap-discards-const-qualifier-from-pointer-target-type
-|-- powerpc-allmodconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- powerpc-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- riscv-allmodconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- riscv-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- s390-allyesconfig
-|   `-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|-- sh-allmodconfig
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- sparc-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- um-i386_defconfig
-|   `-- arch-um-kernel-skas-uaccess.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-addr-got-unsigned-int-noderef-usertype-__user-uaddr
-|-- x86_64-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-|   `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-|-- x86_64-randconfig-m001
-|   |-- arch-x86-events-core.c-init_hw_perf_events()-warn:missing-error-code-err
-|   `-- lib-maple_tree.c-mas_wr_spanning_store()-warn:inconsistent-indenting
-|-- x86_64-randconfig-s021
-|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
-|   |-- fs-xfs-xfs_file.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-vm_fault_t-usertype-ret-got-int
-|   `-- kernel-signal.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-struct-lockdep_map-const-lock-got-struct-lockdep_map-noderef-__rcu
-|-- x86_64-randconfig-s022
-|   |-- drivers-pci-pci.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-restricted-pci_power_t-assigned-usertype-state-got-int
-|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_data_proto-was-not-declared.-Should-it-be-static
-|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_from_mem_proto-was-not-declared.-Should-it-be-static
-|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_read_proto-was-not-declared.-Should-it-be-static
-|   |-- kernel-bpf-helpers.c:sparse:sparse:symbol-bpf_dynptr_write_proto-was-not-declared.-Should-it-be-static
-|   `-- kernel-signal.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-struct-lockdep_map-const-lock-got-struct-lockdep_map-noderef-__rcu
-`-- xtensa-allyesconfig
-    |-- drivers-gpu-drm-amd-amdgpu-..-display-amdgpu_dm-amdgpu_dm.c:warning:variable-abo-set-but-not-used
-    `-- drivers-staging-rtl8723bs-hal-hal_btcoex.c:warning:variable-pHalData-set-but-not-used
-
-clang_recent_errors
-|-- riscv-buildonly-randconfig-r002-20220616
-|   `-- arch-riscv-kernel-cpufeature.c:warning:variable-cpu_apply_feature-set-but-not-used
-|-- riscv-buildonly-randconfig-r003-20220616
-|   |-- ld.lld:error:kernel-built-in.a(kallsyms.o):(function-get_symbol_offset:.text):relocation-R_RISCV_PCREL_HI20-out-of-range:is-not-in-references-kallsyms_markers
-|   |-- ld.lld:error:kernel-built-in.a(kallsyms.o):(function-get_symbol_offset:.text):relocation-R_RISCV_PCREL_HI20-out-of-range:is-not-in-references-kallsyms_names
-|   |-- ld.lld:error:kernel-built-in.a(kallsyms.o):(function-update_iter:.text):relocation-R_RISCV_PCREL_HI20-out-of-range:is-not-in-references-kallsyms_names
-|   |-- ld.lld:error:kernel-built-in.a(kallsyms.o):(function-update_iter:.text):relocation-R_RISCV_PCREL_HI20-out-of-range:is-not-in-references-kallsyms_num_syms
-|   |-- ld.lld:error:kernel-built-in.a(kallsyms.o):(function-update_iter:.text):relocation-R_RISCV_PCREL_HI20-out-of-range:is-not-in-references-kallsyms_offsets
-|   `-- ld.lld:error:kernel-built-in.a(kallsyms.o):(function-update_iter:.text):relocation-R_RISCV_PCREL_HI20-out-of-range:is-not-in-references-kallsyms_token_index
-`-- riscv-randconfig-r042-20220616
-    `-- arch-riscv-kernel-cpufeature.c:warning:variable-cpu_apply_feature-set-but-not-used
-
-elapsed time: 720m
-
-configs tested: 107
-configs skipped: 3
-
-gcc tested configs:
-arm                              allmodconfig
-arm                              allyesconfig
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-um                             i386_defconfig
-i386                          randconfig-c001
-alpha                            allyesconfig
-arc                              allyesconfig
-nios2                            allyesconfig
-mips                         bigsur_defconfig
-m68k                        mvme147_defconfig
-sh                         ap325rxa_defconfig
-sh                      rts7751r2d1_defconfig
-microblaze                      mmu_defconfig
-sh                           se7780_defconfig
-powerpc                 mpc834x_mds_defconfig
-xtensa                  audio_kc705_defconfig
-arc                              alldefconfig
-nios2                         3c120_defconfig
-arc                    vdk_hs38_smp_defconfig
-arm                        clps711x_defconfig
-nios2                         10m50_defconfig
-mips                       capcella_defconfig
-arm                           sunxi_defconfig
-xtensa                         virt_defconfig
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                                defconfig
-m68k                             allmodconfig
-m68k                             allyesconfig
-alpha                               defconfig
-csky                                defconfig
-nios2                               defconfig
-arc                                 defconfig
-sh                               allmodconfig
-xtensa                           allyesconfig
-parisc                              defconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-s390                             allyesconfig
-parisc64                            defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-i386                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-mips                             allmodconfig
-mips                             allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-powerpc                          allyesconfig
-x86_64                        randconfig-a002
-x86_64                        randconfig-a004
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                          randconfig-a005
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-x86_64                        randconfig-a015
-i386                          randconfig-a014
-i386                          randconfig-a012
-i386                          randconfig-a016
-arc                  randconfig-r043-20220616
-riscv                             allnoconfig
-riscv                            allyesconfig
-riscv                            allmodconfig
-riscv                    nommu_k210_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_virt_defconfig
-riscv                               defconfig
-um                           x86_64_defconfig
-x86_64                              defconfig
-x86_64                                  kexec
-x86_64                               rhel-8.3
-x86_64                           allyesconfig
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-x86_64                    rhel-8.3-kselftests
-x86_64                           rhel-8.3-syz
-
-clang tested configs:
-mips                        bcm63xx_defconfig
-powerpc                     tqm8540_defconfig
-mips                          ath79_defconfig
-mips                       lemote2f_defconfig
-mips                     loongson1c_defconfig
-powerpc                       ebony_defconfig
-powerpc                  mpc885_ads_defconfig
-x86_64                        randconfig-k001
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-x86_64                        randconfig-a005
-i386                          randconfig-a002
-i386                          randconfig-a004
-i386                          randconfig-a006
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-x86_64                        randconfig-a012
-i386                          randconfig-a013
-i386                          randconfig-a015
-i386                          randconfig-a011
-hexagon              randconfig-r041-20220616
-hexagon              randconfig-r045-20220616
-s390                 randconfig-r044-20220616
-riscv                randconfig-r042-20220616
-
+diff --git a/drivers/net/phy/bcm-phy-ptp.c b/drivers/net/phy/bcm-phy-ptp.c
+index 6f462c232e9e..ef00d6163061 100644
+--- a/drivers/net/phy/bcm-phy-ptp.c
++++ b/drivers/net/phy/bcm-phy-ptp.c
+@@ -80,6 +80,8 @@
+ #define SYNC_OUT_1		0x0879
+ #define SYNC_OUT_2		0x087a
+ 
++#define SYNC_IN_DIVIDER		0x087b
++
+ #define SYNOUT_TS_0		0x087c
+ #define SYNOUT_TS_1		0x087d
+ #define SYNOUT_TS_2		0x087e
+@@ -89,6 +91,7 @@
+ #define  NSE_CAPTURE_EN			BIT(13)
+ #define  NSE_INIT			BIT(12)
+ #define  NSE_CPU_FRAMESYNC		BIT(5)
++#define  NSE_SYNC1_FRAMESYNC		BIT(3)
+ #define  NSE_FRAMESYNC_MASK		GENMASK(5, 2)
+ #define  NSE_PEROUT_EN			BIT(1)
+ #define  NSE_ONESHOT_EN			BIT(0)
+@@ -128,11 +131,14 @@ struct bcm_ptp_private {
+ 	struct mii_timestamper mii_ts;
+ 	struct ptp_clock *ptp_clock;
+ 	struct ptp_clock_info ptp_info;
++	struct ptp_pin_desc pin;
+ 	struct mutex mutex;
+ 	struct sk_buff_head tx_queue;
+ 	int tx_type;
+ 	bool hwts_rx;
+ 	u16 nse_ctrl;
++	bool pin_active;
++	struct delayed_work pin_work;
+ };
+ 
+ struct bcm_ptp_skb_cb {
+@@ -511,6 +517,215 @@ static long bcm_ptp_do_aux_work(struct ptp_clock_info *info)
+ 	return reschedule ? 1 : -1;
+ }
+ 
++static int bcm_ptp_cancel_func(struct bcm_ptp_private *priv)
++{
++	if (!priv->pin_active)
++		return 0;
++
++	priv->pin_active = false;
++
++	priv->nse_ctrl &= ~(NSE_SYNC_OUT_MASK | NSE_SYNC1_FRAMESYNC |
++			    NSE_CAPTURE_EN);
++	bcm_phy_write_exp(priv->phydev, NSE_CTRL, priv->nse_ctrl);
++
++	cancel_delayed_work_sync(&priv->pin_work);
++
++	return 0;
++}
++
++static void bcm_ptp_perout_work(struct work_struct *pin_work)
++{
++	struct bcm_ptp_private *priv =
++		container_of(pin_work, struct bcm_ptp_private, pin_work.work);
++	struct phy_device *phydev = priv->phydev;
++	struct timespec64 ts;
++	u64 ns, next;
++	u16 ctrl;
++
++	mutex_lock(&priv->mutex);
++
++	/* no longer running */
++	if (!priv->pin_active) {
++		mutex_unlock(&priv->mutex);
++		return;
++	}
++
++	bcm_ptp_framesync_ts(phydev, NULL, &ts, priv->nse_ctrl);
++
++	/* this is 1PPS only */
++	next = NSEC_PER_SEC - ts.tv_nsec;
++	ts.tv_sec += next < NSEC_PER_MSEC ? 2 : 1;
++	ts.tv_nsec = 0;
++
++	ns = timespec64_to_ns(&ts);
++
++	/* force 0->1 transition for ONESHOT */
++	ctrl = bcm_ptp_framesync_disable(phydev,
++					 priv->nse_ctrl & ~NSE_ONESHOT_EN);
++
++	bcm_phy_write_exp(phydev, SYNOUT_TS_0, ns & 0xfff0);
++	bcm_phy_write_exp(phydev, SYNOUT_TS_1, ns >> 16);
++	bcm_phy_write_exp(phydev, SYNOUT_TS_2, ns >> 32);
++
++	/* load values on next framesync */
++	bcm_phy_write_exp(phydev, SHADOW_LOAD, SYNC_OUT_LOAD);
++
++	bcm_ptp_framesync(phydev, ctrl | NSE_ONESHOT_EN | NSE_INIT);
++
++	priv->nse_ctrl |= NSE_ONESHOT_EN;
++	bcm_ptp_framesync_restore(phydev, priv->nse_ctrl);
++
++	mutex_unlock(&priv->mutex);
++
++	next = next + NSEC_PER_MSEC;
++	schedule_delayed_work(&priv->pin_work, nsecs_to_jiffies(next));
++}
++
++static int bcm_ptp_perout_locked(struct bcm_ptp_private *priv,
++				 struct ptp_perout_request *req, int on)
++{
++	struct phy_device *phydev = priv->phydev;
++	u64 period, pulse;
++	u16 val;
++
++	if (!on)
++		return bcm_ptp_cancel_func(priv);
++
++	/* 1PPS */
++	if (req->period.sec != 1 || req->period.nsec != 0)
++		return -EINVAL;
++
++	period = BCM_MAX_PERIOD_8NS;	/* write nonzero value */
++
++	if (req->flags & PTP_PEROUT_PHASE)
++		return -EOPNOTSUPP;
++
++	if (req->flags & PTP_PEROUT_DUTY_CYCLE)
++		pulse = ktime_to_ns(ktime_set(req->on.sec, req->on.nsec));
++	else
++		pulse = (u64)BCM_MAX_PULSE_8NS << 3;
++
++	/* convert to 8ns units */
++	pulse >>= 3;
++
++	if (!pulse || pulse > period || pulse > BCM_MAX_PULSE_8NS)
++		return -EINVAL;
++
++	bcm_phy_write_exp(phydev, SYNC_OUT_0, period);
++
++	val = ((pulse & 0x3) << 14) | ((period >> 16) & 0x3fff);
++	bcm_phy_write_exp(phydev, SYNC_OUT_1, val);
++
++	val = ((pulse >> 2) & 0x7f) | (pulse << 7);
++	bcm_phy_write_exp(phydev, SYNC_OUT_2, val);
++
++	if (priv->pin_active)
++		cancel_delayed_work_sync(&priv->pin_work);
++
++	priv->pin_active = true;
++	INIT_DELAYED_WORK(&priv->pin_work, bcm_ptp_perout_work);
++	schedule_delayed_work(&priv->pin_work, 0);
++
++	return 0;
++}
++
++static void bcm_ptp_extts_work(struct work_struct *pin_work)
++{
++	struct bcm_ptp_private *priv =
++		container_of(pin_work, struct bcm_ptp_private, pin_work.work);
++	struct phy_device *phydev = priv->phydev;
++	struct ptp_clock_event event;
++	struct timespec64 ts;
++	u16 reg;
++
++	mutex_lock(&priv->mutex);
++
++	/* no longer running */
++	if (!priv->pin_active) {
++		mutex_unlock(&priv->mutex);
++		return;
++	}
++
++	reg = bcm_phy_read_exp(phydev, INTR_STATUS);
++	if ((reg & INTC_FSYNC) == 0)
++		goto out;
++
++	bcm_ptp_get_framesync_ts(phydev, &ts);
++
++	event.index = 0;
++	event.type = PTP_CLOCK_EXTTS;
++	event.timestamp = timespec64_to_ns(&ts);
++	ptp_clock_event(priv->ptp_clock, &event);
++
++out:
++	mutex_unlock(&priv->mutex);
++	schedule_delayed_work(&priv->pin_work, HZ / 4);
++}
++
++static int bcm_ptp_extts_locked(struct bcm_ptp_private *priv, int on)
++{
++	struct phy_device *phydev = priv->phydev;
++
++	if (!on)
++		return bcm_ptp_cancel_func(priv);
++
++	if (priv->pin_active)
++		cancel_delayed_work_sync(&priv->pin_work);
++
++	bcm_ptp_framesync_disable(phydev, priv->nse_ctrl);
++
++	priv->nse_ctrl |= NSE_SYNC1_FRAMESYNC | NSE_CAPTURE_EN;
++
++	bcm_ptp_framesync_restore(phydev, priv->nse_ctrl);
++
++	priv->pin_active = true;
++	INIT_DELAYED_WORK(&priv->pin_work, bcm_ptp_extts_work);
++	schedule_delayed_work(&priv->pin_work, 0);
++
++	return 0;
++}
++
++static int bcm_ptp_enable(struct ptp_clock_info *info,
++			  struct ptp_clock_request *rq, int on)
++{
++	struct bcm_ptp_private *priv = ptp2priv(info);
++	int err = -EBUSY;
++
++	mutex_lock(&priv->mutex);
++
++	switch (rq->type) {
++	case PTP_CLK_REQ_PEROUT:
++		if (priv->pin.func == PTP_PF_PEROUT)
++			err = bcm_ptp_perout_locked(priv, &rq->perout, on);
++		break;
++	case PTP_CLK_REQ_EXTTS:
++		if (priv->pin.func == PTP_PF_EXTTS)
++			err = bcm_ptp_extts_locked(priv, on);
++		break;
++	default:
++		err = -EOPNOTSUPP;
++		break;
++	}
++
++	mutex_unlock(&priv->mutex);
++
++	return err;
++}
++
++static int bcm_ptp_verify(struct ptp_clock_info *info, unsigned int pin,
++			  enum ptp_pin_function func, unsigned int chan)
++{
++	switch (func) {
++	case PTP_PF_NONE:
++	case PTP_PF_EXTTS:
++	case PTP_PF_PEROUT:
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++	return 0;
++}
++
+ static const struct ptp_clock_info bcm_ptp_clock_info = {
+ 	.owner		= THIS_MODULE,
+ 	.name		= KBUILD_MODNAME,
+@@ -519,7 +734,12 @@ static const struct ptp_clock_info bcm_ptp_clock_info = {
+ 	.settime64	= bcm_ptp_settime,
+ 	.adjtime	= bcm_ptp_adjtime,
+ 	.adjfine	= bcm_ptp_adjfine,
++	.enable		= bcm_ptp_enable,
++	.verify		= bcm_ptp_verify,
+ 	.do_aux_work	= bcm_ptp_do_aux_work,
++	.n_pins		= 1,
++	.n_per_out	= 1,
++	.n_ext_ts	= 1,
+ };
+ 
+ static void bcm_ptp_txtstamp(struct mii_timestamper *mii_ts,
+@@ -648,6 +868,7 @@ static int bcm_ptp_ts_info(struct mii_timestamper *mii_ts,
+ void bcm_ptp_stop(struct bcm_ptp_private *priv)
+ {
+ 	ptp_cancel_worker_sync(priv->ptp_clock);
++	bcm_ptp_cancel_func(priv);
+ }
+ EXPORT_SYMBOL_GPL(bcm_ptp_stop);
+ 
+@@ -667,6 +888,8 @@ void bcm_ptp_config_init(struct phy_device *phydev)
+ 
+ 	/* always allow FREQ_LOAD on framesync */
+ 	bcm_phy_write_exp(phydev, SHADOW_CTRL, FREQ_LOAD);
++
++	bcm_phy_write_exp(phydev, SYNC_IN_DIVIDER, 1);
+ }
+ EXPORT_SYMBOL_GPL(bcm_ptp_config_init);
+ 
+@@ -703,6 +926,9 @@ struct bcm_ptp_private *bcm_ptp_probe(struct phy_device *phydev)
+ 
+ 	priv->ptp_info = bcm_ptp_clock_info;
+ 
++	snprintf(priv->pin.name, sizeof(priv->pin.name), "SYNC_OUT");
++	priv->ptp_info.pin_config = &priv->pin;
++
+ 	clock = ptp_clock_register(&priv->ptp_info, &phydev->mdio.dev);
+ 	if (IS_ERR(clock))
+ 		return ERR_CAST(clock);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.3
+
