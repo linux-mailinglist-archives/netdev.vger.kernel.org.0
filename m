@@ -2,185 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F68F54DB4F
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 09:14:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 078C554DBD8
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 09:34:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358535AbiFPHNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 03:13:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59844 "EHLO
+        id S1358576AbiFPHeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 03:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359041AbiFPHNY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 03:13:24 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335B123143;
-        Thu, 16 Jun 2022 00:13:21 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id BD72E240004;
-        Thu, 16 Jun 2022 07:13:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1655363600;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/ylwRydwSJ1vl505rIcsqlZRV8qHAjzTkuzOn3IJaxY=;
-        b=LJPb2Nd1CvgSZLX2nP41tGlPv6KZN9tbzWLxHLWLbPbK9vWbVOfa2G9oJIScPODdB0HHDT
-        puwfaAEjZa/qWjni4mrATRg9Hz7OeZLFCOsfBJ5FR2sDgQ0iYz2EWLU+zzqnlR3ISNN+UK
-        kCJLFH1N7RiaMBpRqW0k5sHPRqdAanVW2V35vB4PwRIGqsSXtZhvyvpr08lMa/PYhf0rzh
-        j0L0DdnBx+4gdnxlLgaDcPB7nEqxhKeGBT5RpzJg64e9nAoYbPNGq1GX+GoOneNGxY4BsT
-        QDhKQKrPWQl1OIiQlFTNoZgWS+brgsq7PcScRJNlKSfPZw2mD7Kk/onqljfLqA==
-Date:   Thu, 16 Jun 2022 09:12:22 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH RESEND net-next v7 05/16] net: pcs: add Renesas MII
- converter driver
-Message-ID: <20220616091222.4dbf9de3@fixe.home>
-In-Reply-To: <20220614223109.603935fb@kernel.org>
-References: <20220610103712.550644-1-clement.leger@bootlin.com>
-        <20220610103712.550644-6-clement.leger@bootlin.com>
-        <20220614223109.603935fb@kernel.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        with ESMTP id S1359400AbiFPHeS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 03:34:18 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F330B2604
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 00:34:17 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id h18so379929ilj.7
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 00:34:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NvHuwwL/F6pMsG0Nc9FpP+u076JoaJtZoFmfOQuVsgo=;
+        b=G5Swza7nAvxYIxG91GHxCoqN9VYTTk3sCQY6CEWUt8hBkhA58e2oKTFYY+90XN2m0g
+         XwDh2Q8eQZhBDzqbOzSSta1XOg2+QcpPBU0aZJGqkG1T3cr+QdYXNLGTCQ5qEvvMB+dX
+         Ptt6PTIrh41v1HQe7YqChFY1tS3aGyK7fRmqhaN0ugp6hM2lciIeovlbbNrAflKeZ1bS
+         ZMSKWD5ayOBeDePaQSTknATZyeEjhm6kLsnvn24qdjb6SiOb9716E3ynuLHbmAKkNS9h
+         wHjXKffq80JR+r0R4mccRhMLXF4vFwSFiktZ1UWQxvqEjPqlvBOmDTjKujRFsf5XIMQr
+         Zsug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NvHuwwL/F6pMsG0Nc9FpP+u076JoaJtZoFmfOQuVsgo=;
+        b=yn0H5Je4xGyj67HTsH1ZRaqG9uikhK+YxZWGRfpe36Rs3O+dKsSVxuCsTU1pRn4NOR
+         quT6T0onWlMAK6mZuu9RC+2GpPhKywvKnlf8MnAoOUqmTvqVK6EgIuNMYlVvIhqGeIvh
+         glKZJDjd6rjrIi7dTBpPxvzzH9bJCVyIpulmw6UUSfSpc/dlMJcRrdVN6WsF5MLpEH+g
+         qwMxQc8jjRMcnInYKeJji3FfYNltnKClFXDQD8I5Y6gCBsvJ7ZfTL4i6/Rpolgev86DX
+         9k70z/XIJK3LFDcycTkHqKTwHYqIHg8TRqAvS6wpMUsNslXJo81GFOa23zl936sE+VGZ
+         6h2Q==
+X-Gm-Message-State: AJIora9jH4wMCRgztvU7zwOX9yfVuPmf6+bDA1EKtN99E89NXDnKDCQ+
+        VjaiFNvmyswwwbiNSM/zAAi0V9Y4bP3I8XIMRjTcFA==
+X-Google-Smtp-Source: AGRyM1sVFw5s0O+ztvDdV/nEl+ruJskz6+CHPw575NteMZD8Lgqzw3Itmu0TIxj49OlTOivjYNeLaCin7L2L90E7fSY=
+X-Received: by 2002:a05:6e02:1e08:b0:2d3:a866:2f0d with SMTP id
+ g8-20020a056e021e0800b002d3a8662f0dmr1964465ila.277.1655364857096; Thu, 16
+ Jun 2022 00:34:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <1655182915-12897-1-git-send-email-quic_subashab@quicinc.com>
+ <1655182915-12897-2-git-send-email-quic_subashab@quicinc.com>
+ <20220615173516.29c80c96@kernel.org> <CANP3RGfGcr25cjnrUOdaH1rG9S9uY8uS80USXeycDBhbsX9CZw@mail.gmail.com>
+ <132e514e-bad8-9f73-8f08-1bd5ac8aecd4@quicinc.com>
+In-Reply-To: <132e514e-bad8-9f73-8f08-1bd5ac8aecd4@quicinc.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Thu, 16 Jun 2022 00:33:02 -0700
+Message-ID: <CANP3RGdRD=U7OAwrcdp1XUXFcb5b1zTfoy1fxa8JZUcnxBdsKg@mail.gmail.com>
+Subject: Re: [PATCH net v2 1/2] ipv6: Honor route mtu if it is within limit of
+ dev mtu
+To:     "Subash Abhinov Kasiviswanathan (KS)" <quic_subashab@quicinc.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Stefano Brivio <sbrivio@redhat.com>,
+        Kaustubh Pandey <quic_kapandey@quicinc.com>,
+        Sean Tranchetti <quic_stranche@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Tue, 14 Jun 2022 22:31:09 -0700,
-Jakub Kicinski <kuba@kernel.org> a =C3=A9crit :
+On Wed, Jun 15, 2022 at 10:36 PM Subash Abhinov Kasiviswanathan (KS)
+<quic_subashab@quicinc.com> wrote:
+>
+> >> CC maze, please add him if there is v3
+> >>
+> >> I feel like the problem is with the fact that link mtu resets protocol
+> >> MTUs. Nothing we can do about that, so why not set link MTU to 9k (or
+> >> whatever other quantification of infinity there is) so you don't have
+> >> to touch it as you discover the MTU for v4 and v6?
+>
+> That's a good point.
 
-> On Fri, 10 Jun 2022 12:37:01 +0200 Cl=C3=A9ment L=C3=A9ger wrote:
-> > Subject: [PATCH RESEND net-next v7 05/16] net: pcs: add Renesas MII con=
-verter driver
-> >=20
-> > Add a PCS driver for the MII converter that is present on the Renesas
-> > RZ/N1 SoC. This MII converter is reponsible for converting MII to
-> > RMII/RGMII or act as a MII pass-trough. Exposing it as a PCS allows to
-> > reuse it in both the switch driver and the stmmac driver. Currently,
-> > this driver only allows the PCS to be used by the dual Cortex-A7
-> > subsystem since the register locking system is not used. =20
->=20
-> Could someone with MII &| PCS knowledge cast an eye over this code?
-> All I can do is point out error path issues...
->=20
-> > +struct phylink_pcs *miic_create(struct device *dev, struct device_node=
- *np)
-> > +{
-> > +	struct platform_device *pdev;
-> > +	struct miic_port *miic_port;
-> > +	struct device_node *pcs_np;
-> > +	struct miic *miic;
-> > +	u32 port;
-> > +
-> > +	if (!of_device_is_available(np))
-> > +		return ERR_PTR(-ENODEV);
-> > +
-> > +	if (of_property_read_u32(np, "reg", &port))
-> > +		return ERR_PTR(-EINVAL);
-> > +
-> > +	if (port > MIIC_MAX_NR_PORTS || port < 1)
-> > +		return ERR_PTR(-EINVAL);
-> > +
-> > +	/* The PCS pdev is attached to the parent node */
-> > +	pcs_np =3D of_get_parent(np); =20
->=20
-> of_get_parent()? ..
->=20
-> > +	if (!pcs_np)
-> > +		return ERR_PTR(-ENODEV);
-> > +
-> > +	if (!of_device_is_available(pcs_np))
-> > +		return ERR_PTR(-ENODEV); =20
->=20
-> .. more like of_leak_parent()
+Because link mtu affects rx mtu which affects nic buffer allocations.
+Somewhere in the vicinity of mtu 1500..2048 your packets stop fitting
+in 2kB of memory and need 4kB (or more)
 
-Indeed, I'll fix that.
+> >> My worry is that the tweaking of the route MTU update heuristic will
+> >> have no end.
+> >>
+> >> Stefano, does that makes sense or you think the change is good?
+>
+> The only concern is that current behavior causes the initial packets
+> after interface MTU increase to get dropped as part of PMTUD if the IPv6
+> PMTU itself didn't increase. I am not sure if that was the intended
+> behavior as part of the original change. Stefano, could you please confirm?
+>
+> > I vaguely recall that if you don't want device mtu changes to affect
+> > ipv6 route mtu, then you should set 'mtu lock' on the routes.
+> > (this meaning of 'lock' for v6 is different than for ipv4, where
+> > 'lock' means transmit IPv4/TCP with Don't Frag bit unset)
+>
+> I assume 'mtu lock' here refers to setting the PMTU on the IPv6 routes
+> statically. The issue with that approach is that router advertisements
+> can no longer update PMTU once a static route is configured.
 
->=20
-> > +	pdev =3D of_find_device_by_node(pcs_np);
-> > +	if (!pdev || !platform_get_drvdata(pdev))
-> > +		return ERR_PTR(-EPROBE_DEFER);
-> > +
-> > +	miic_port =3D kzalloc(sizeof(*miic_port), GFP_KERNEL);
-> > +	if (!miic_port)
-> > +		return ERR_PTR(-ENOMEM);
-> > +
-> > +	miic =3D platform_get_drvdata(pdev);
-> > +	device_link_add(dev, miic->dev, DL_FLAG_AUTOREMOVE_CONSUMER);
-> > +
-> > +	miic_port->miic =3D miic;
-> > +	miic_port->port =3D port - 1;
-> > +	miic_port->pcs.ops =3D &miic_phylink_ops;
-> > +
-> > +	return &miic_port->pcs;
-> > +}
-> > +EXPORT_SYMBOL(miic_create); =20
->=20
-> > +static int miic_parse_dt(struct device *dev, u32 *mode_cfg)
-> > +{
-> > +	s8 dt_val[MIIC_MODCTRL_CONF_CONV_NUM];
-> > +	struct device_node *np =3D dev->of_node;
-> > +	struct device_node *conv;
-> > +	u32 conf;
-> > +	int port;
-> > +
-> > +	memset(dt_val, MIIC_MODCTRL_CONF_NONE, sizeof(dt_val));
-> > +
-> > +	of_property_read_u32(np, "renesas,miic-switch-portin", &conf);
-> > +	dt_val[0] =3D conf;
-> > +
-> > +	for_each_child_of_node(np, conv) {
-> > +		if (of_property_read_u32(conv, "reg", &port))
-> > +			continue;
-> > +
-> > +		if (!of_device_is_available(conv))
-> > +			continue;
-> > +
-> > +		if (of_property_read_u32(conv, "renesas,miic-input", &conf) =3D=3D 0)
-> > +			dt_val[port] =3D conf;
-> > +
-> > +		of_node_put(conv); =20
->=20
-> Don't these iteration functions put() the current before taking the
-> next one all by themselves? Or is there supposed to be a "break" here?
-
-Yes, of_node_put() should actually only be called in case of early exit.
-I'll fix that.
-
-
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+yeah.   Hmm should RA generated routes use locked mtu too?
+I think the only reason an RA generated route would have mtu information
+is for it to stick...
