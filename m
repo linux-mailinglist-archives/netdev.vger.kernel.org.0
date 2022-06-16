@@ -2,47 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79B5C54D580
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 01:50:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFA0E54D629
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 02:35:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348918AbiFOXuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 19:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60074 "EHLO
+        id S1346954AbiFPAfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 20:35:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233984AbiFOXuD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 19:50:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C733F3BBCB;
-        Wed, 15 Jun 2022 16:50:02 -0700 (PDT)
+        with ESMTP id S235816AbiFPAfV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 20:35:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9CBE57115
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 17:35:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32EE7619CF;
-        Wed, 15 Jun 2022 23:50:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24CDCC3411A;
-        Wed, 15 Jun 2022 23:50:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 949C0B82262
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 00:35:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C94DAC3411A;
+        Thu, 16 Jun 2022 00:35:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655337001;
-        bh=3AOJEIyxqxqOlqac7LnYUq97OTzWiMWaLdBgnllSIzU=;
+        s=k20201202; t=1655339718;
+        bh=tJNYIifvGyw4MZgi/wp/If/B95O3PBuux+2+v2j9NG8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gYDL3mkhi3H0BRpsldwTDRbpCzmVLM+wLTuEOF04RhggG8DcrD6yjZYXyyBzsbwuY
-         IMHvG3SpzvX6Cz2Y2kLB9cmL54hFNYlMKL7PFjXPPg6k/p93OM2EwbrXlTLaigUs+x
-         tMFOGhCVz/ndy1qS4ojXTBp0/cIfctQooIAQBED8VAQMXYypaCMtdNoI5+3onoK2yl
-         O5alfntx1WUxKcSg7HbakTD+Ihenm0myAopG+2xxzU1nkHS359TXMrx54Rud6syDfN
-         C8pkXWc2WTQJsVs8b33PL3xOENWKPR6GLtglQeS11SwJFXeCyki9yURwNP3gVhOMum
-         RS41G9RIWoYzA==
-Date:   Wed, 15 Jun 2022 16:50:00 -0700
+        b=s+tFhcswaMBBoAfj6GZ1f/botaiB5TgCHP5jX5mAoDK4Vuvyon8Oy5lyocyrFVB83
+         gLjcUheauuOh3Ic9nUxkXMc4V5i7eon3Rmxg2VaJ36GBwtOeaCxjP0NHMxBBceEvLc
+         +3VBSwRhPD2xXDePG4uBWkO+b95yP+QbOJuTTZsfrHQYeEGN5m2H3tZeE7C0g5/jhG
+         uo0dVfbtsbz3DsbQn7h2Gl5oY9S2SVkKYKNNosFuMlFMIBlVFW3rbjnbQDwLOx199J
+         HDANm4UmXeIlmKN5vNsqJ542Daw9OGjEIVs+jdPXf85E9WFkRv4ROhMRm33XYmHQLJ
+         J6K1oxtbO2T4g==
+Date:   Wed, 15 Jun 2022 17:35:16 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, magnus.karlsson@intel.com,
-        bjorn@kernel.org, Alexandr Lobakin <alexandr.lobakin@intel.com>
-Subject: Re: [PATCH v3 bpf-next 02/11] ice: allow toggling loopback mode via
- ndo_set_features callback
-Message-ID: <20220615165000.4147cf57@kernel.org>
-In-Reply-To: <20220615161041.902916-3-maciej.fijalkowski@intel.com>
-References: <20220615161041.902916-1-maciej.fijalkowski@intel.com>
-        <20220615161041.902916-3-maciej.fijalkowski@intel.com>
+To:     Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>
+Cc:     <davem@davemloft.net>, <dsahern@kernel.org>,
+        <yoshfuji@linux-ipv6.org>, <netdev@vger.kernel.org>,
+        <sbrivio@redhat.com>, Kaustubh Pandey <quic_kapandey@quicinc.com>,
+        Sean Tranchetti <quic_stranche@quicinc.com>, maze@google.com
+Subject: Re: [PATCH net v2 1/2] ipv6: Honor route mtu if it is within limit
+ of dev mtu
+Message-ID: <20220615173516.29c80c96@kernel.org>
+In-Reply-To: <1655182915-12897-2-git-send-email-quic_subashab@quicinc.com>
+References: <1655182915-12897-1-git-send-email-quic_subashab@quicinc.com>
+        <1655182915-12897-2-git-send-email-quic_subashab@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -56,12 +57,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 15 Jun 2022 18:10:32 +0200 Maciej Fijalkowski wrote:
-> +	if (if_running)
-> +		ice_stop(netdev);
-> +	if (ice_aq_set_mac_loopback(hw, ena, NULL))
-> +		netdev_err(netdev, "Failed to toggle loopback state\n");
-> +	if (if_running)
-> +		ice_open(netdev);
+On Mon, 13 Jun 2022 23:01:54 -0600 Subash Abhinov Kasiviswanathan wrote:
+> When netdevice MTU is increased via sysfs, NETDEV_CHANGEMTU is raised.
+> 
+> addrconf_notify -> rt6_mtu_change -> rt6_mtu_change_route ->
+> fib6_nh_mtu_change
+> 
+> As part of handling NETDEV_CHANGEMTU notification we land up on a
+> condition where if route mtu is less than dev mtu and route mtu equals
+> ipv6_devconf mtu, route mtu gets updated.
+> 
+> Due to this v6 traffic end up using wrong MTU then configured earlier.
+> This commit fixes this by removing comparison with ipv6_devconf
+> and updating route mtu only when it is greater than incoming dev mtu.
+> 
+> This can be easily reproduced with below script:
+> pre-condition:
+> device up(mtu = 1500) and route mtu for both v4 and v6 is 1500
+> 
+> test-script:
+> ip route change 192.168.0.0/24 dev eth0 src 192.168.0.1 mtu 1400
+> ip -6 route change 2001::/64 dev eth0 metric 256 mtu 1400
+> echo 1400 > /sys/class/net/eth0/mtu
+> ip route change 192.168.0.0/24 dev eth0 src 192.168.0.1 mtu 1500
+> echo 1500 > /sys/class/net/eth0/mtu
 
-Ay. Looks like I commented on previous version, same complaint.
+CC maze, please add him if there is v3
+
+I feel like the problem is with the fact that link mtu resets protocol
+MTUs. Nothing we can do about that, so why not set link MTU to 9k (or
+whatever other quantification of infinity there is) so you don't have 
+to touch it as you discover the MTU for v4 and v6? 
+
+My worry is that the tweaking of the route MTU update heuristic will
+have no end. 
+
+Stefano, does that makes sense or you think the change is good?
