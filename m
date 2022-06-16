@@ -2,100 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82F0154E14D
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 15:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B62E954E18B
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 15:12:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232131AbiFPNAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 09:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36368 "EHLO
+        id S1376837AbiFPNMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 09:12:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229927AbiFPNAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 09:00:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 853C5B4C
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 06:00:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655384421;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=e8ZVUkV5slpBiU5gnP3i9vX4TyyFnQAAf/ZHvzAvayg=;
-        b=Yz1x+5b4Jgb7Mjpp/78q+9viqZ/D99oQ/ek9b0LbU4/BV/4V0Hqy3PeEhpqBuaTuSDqqRw
-        YenopNz5AoYH8zQOKQZ/hL01cNgZYWDi5JdRmWSz2KqM+YqOHUPE12peoyUMaT17Ovny8U
-        8WuGaiNp9nRDEOKRufJogLMgaKg+Zds=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-142-wQWllq1YPiiKzKJNFXCCNQ-1; Thu, 16 Jun 2022 09:00:20 -0400
-X-MC-Unique: wQWllq1YPiiKzKJNFXCCNQ-1
-Received: by mail-qk1-f200.google.com with SMTP id k188-20020a37a1c5000000b006a6c4ce2623so1653038qke.6
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 06:00:20 -0700 (PDT)
+        with ESMTP id S231831AbiFPNMC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 09:12:02 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2125E2654D
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 06:12:00 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id z7so2109437edm.13
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 06:12:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2Wk+LjndJzS2qMOB7T0o89BUJo7NsGn6GUWS01TejcM=;
+        b=nwwIq1NrnraBH1f4gLAb+xtcJvUVELlQOqbI8ebinIeurjQ81UX2wqjvpT2agHrpUl
+         d6I2xmJ0mRQltX3K+WhV7FGd3LJ4fsj0q/LCs9EvjH3QYGEHK0s9webYB+eXB8btqnKb
+         GeSXa6KDATZrGyeHxOv4k6Ts5AfLCn2zrVvGDlZjCquAOvYcYp1XULbGdnkuD+OAA303
+         O4KgU26De7nJFlUMRDZTGN0soDB1+s/U/FZXZJB8qqsJ4JBd5MFmnRI5iexxStRvAEMg
+         oRjQMGsSheiqM/ZA9IioJi6U8hnEVd098LcUYadUknnlnAm7xEC2FUSE/pH2DWtZGPQF
+         aaWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e8ZVUkV5slpBiU5gnP3i9vX4TyyFnQAAf/ZHvzAvayg=;
-        b=KraaBy6QAGCTdnlfumGZTCk7BTsVU2P09hB9MroejTHszXw65VWE5GCpcY7l1l9MSB
-         fmf460KGrAcliuJCcB5SkvXsgyc1b1eoxDA7T2M/wqShw15FT0rxysHGTg5R2eGlUmLR
-         rE0PKkvrfCJQ/OW5Tp0sBGWV9HttAMFU2eF67jgpsCxpDG7qmlSMVY5euiMtCpIu7LBv
-         JwbkDBf++FHgyHtR+XOZkBwAkz3NxdX2qPxrXE7yVvPc3stCDGJCYUNStuhcihprYpHO
-         7mMmZsmgp0OyFleJuqNtT/Xxa+n6plMkcmQsUAgsvWGbFnpqpwQ4doMk2K4rXW7DAK9g
-         LKDQ==
-X-Gm-Message-State: AJIora/x9hkVuIwpBooIyG2i1DekgTzKApKICPwTOgVuV7BjxGmB3Y3B
-        PMaCJ2oz+V8EQ1GsSj/tIXgGjGyA+WHNM+YTTH3uyIXc+M2yWD2yrfPTiQimMeLVemhsbK0O8mk
-        bvc1JahP/UaGGDaz4yTwu3dJsUls8ycLu
-X-Received: by 2002:ac8:5dd2:0:b0:304:ea09:4688 with SMTP id e18-20020ac85dd2000000b00304ea094688mr3843309qtx.526.1655384419698;
-        Thu, 16 Jun 2022 06:00:19 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1s8NkXax/fhJn4p4KB+vrjzTc8SwiO52rQs1d5sXZGTBSfZ9nwuhdYltnFR7y17gdFUY49O0yt9bUAY4fI7De8=
-X-Received: by 2002:ac8:5dd2:0:b0:304:ea09:4688 with SMTP id
- e18-20020ac85dd2000000b00304ea094688mr3843279qtx.526.1655384419441; Thu, 16
- Jun 2022 06:00:19 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2Wk+LjndJzS2qMOB7T0o89BUJo7NsGn6GUWS01TejcM=;
+        b=T3fUcvqREeuZmGNODmxN9XUTO67GodWVqd/IJOoOZgfNrItf5NnhD5s/DEgXExy3go
+         CQ8NnpwgxaLr5FenIuu49MU1UHlSdz21x6FqsR4I+HpZ+I4iu2s6nvEY9CrT9XWJeYTK
+         mc9UaSqXkNBA/EkFMkRZZo4m3s5PGPH79nI+zG9aosCqIGROekTM3nwi8ArK9fTyQnmc
+         Bp6Ahb1H/H6JiKmmRAR5KO0SGKpdnnklpIPA5VC6g+02jFWr3s7UCw0PfOv+Omj0WrrN
+         66VbsL6viJAyQjbBRPjhQ6Ct+oQ6wgPKl8eeF4TpVQR41AMb89KEMyW3jWG53H05g/zF
+         7tFg==
+X-Gm-Message-State: AJIora8DCVyYnaqAbTd14PcebeeTF06TsuxcbhlJPP08LsSuwy7oCxLo
+        EzZtV/GIpU9DXN7eUquaDl1xGw==
+X-Google-Smtp-Source: AGRyM1tCnmPqIbqVUJLPPGZwvdw8zDTp1vVY2D/vrFwZdMORkCCARJgek73wB5E2iE8nqIYdsvTo/A==
+X-Received: by 2002:aa7:db02:0:b0:42d:c3ba:9c86 with SMTP id t2-20020aa7db02000000b0042dc3ba9c86mr6367887eds.337.1655385118592;
+        Thu, 16 Jun 2022 06:11:58 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id w20-20020aa7da54000000b0042617ba6389sm1781773eds.19.2022.06.16.06.11.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jun 2022 06:11:58 -0700 (PDT)
+Date:   Thu, 16 Jun 2022 15:11:57 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Ido Schimmel <idosch@nvidia.com>, f@nanopsycho
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
+        mlxsw@nvidia.com
+Subject: Re: [patch net-next 00/11] mlxsw: Implement dev info and dev flash
+ for line cards
+Message-ID: <YqssHTDDLsiE8UfH@nanopsycho>
+References: <20220614123326.69745-1-jiri@resnulli.us>
+ <Yqmiv2+C1AXa6BY3@shredder>
+ <YqoZkqwBPoX5lGrR@nanopsycho>
+ <YqrV2LB244XukMAw@shredder>
 MIME-Version: 1.0
-References: <CAK-6q+g1jy-Q911SWTGVV1nw8GAbEAVYSAKqss54+8ehPw9RDA@mail.gmail.com>
- <e3efe652-eb22-4a3f-a121-be858fe2696b@datenfreihafen.org>
-In-Reply-To: <e3efe652-eb22-4a3f-a121-be858fe2696b@datenfreihafen.org>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Thu, 16 Jun 2022 09:00:08 -0400
-Message-ID: <CAK-6q+h7497czku9rf9E4E=up5k5gm_NT0agPU2bUZr4ADKioQ@mail.gmail.com>
-Subject: Re: 6lowpan netlink
-To:     Stefan Schmidt <stefan@datenfreihafen.org>
-Cc:     linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        linux-bluetooth@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YqrV2LB244XukMAw@shredder>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Thu, Jun 16, 2022 at 3:57 AM Stefan Schmidt
-<stefan@datenfreihafen.org> wrote:
+Thu, Jun 16, 2022 at 09:03:52AM CEST, idosch@nvidia.com wrote:
+>On Wed, Jun 15, 2022 at 07:40:34PM +0200, Jiri Pirko wrote:
+>> Wed, Jun 15, 2022 at 11:13:35AM CEST, idosch@nvidia.com wrote:
+>> >On Tue, Jun 14, 2022 at 02:33:15PM +0200, Jiri Pirko wrote:
+>> >> $ devlink dev flash auxiliary/mlxsw_core.lc.0 file mellanox/fw-AGB-rel-19_2010_1312-022-EVB.mfa2
+>> >
+>> >How is this firmware activated? It is usually done after reload, but I
+>> >don't see reload implementation for the line card devlink instance.
+>> 
+>> Currently, only devlink dev reload of the whole mlxsw instance or
+>> unprovision/provision of a line card.
 >
-> Hello Alex.
+>OK, please at least mention it in the commit message that adds flashing
+>support.
 >
-> On 13.06.22 05:44, Alexander Aring wrote:
-> > Hi all,
-> >
-> > I want to spread around that I started to work on some overdue
-> > implementation, a netlink 6lowpan configuration interface, because
-> > rtnetlink is not enough... it's for configuring very specific 6lowpan
-> > device settings.
->
-> Great, looking forward to it!
+>What about implementing reload support as unprovision/provision?
 
-I would like to trigger a discussion about rtnetlink or generic. I can
-put a nested rtnetlink for some device specific settings but then the
-whole iproute2 (as it's currently is) would maintain a specific
-6lowpan setting which maybe the user never wants...
-I think we should follow this way when there is a strict ipv6 device
-specific setting e.g. l2 neighbor information in ipv6 ndisc.
-
-- Alex
-
+Yes, that can be done eventually. I was thinking about that as well.
