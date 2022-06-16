@@ -2,54 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DA7054DA1B
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 08:01:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 973FB54DA38
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 08:07:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229449AbiFPGAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 02:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48642 "EHLO
+        id S1358948AbiFPGHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 02:07:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358838AbiFPGAk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 02:00:40 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 048291CB12
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 23:00:40 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-31772f8495fso3206467b3.4
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 23:00:39 -0700 (PDT)
+        with ESMTP id S1358961AbiFPGHg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 02:07:36 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D13DC273D
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 23:07:29 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id x38so495587ybd.9
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 23:07:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ZInT1u+pWZLnQddThGJUbbB0YhAsKMsGQ/rfD7WrGMY=;
-        b=Jku9w/WocrOOa9eZoTIFWlKZJwuABEeKeNU8qQVpVyUMuYLBn8Nr5KfBa4u/8Izkh/
-         /1phGBI7hjk+dQsFmpoKFGeVmhqk5annNg4d4th3bwrhAo+GnWCTZHjbwWJ39v3AdyIH
-         CR6TKdDU6Zx6WZ0KSd5kWMqxl/RKMUxbWMA+EGgvGfZEqn+vi3oZtu62e8e4dhBDFpyJ
-         lvPOYrlIjXG7m22COwbbLvE5DA9ebZ9NCkEA2I9EKkEiRX7ksjcBkYD77tQJPIdeMZ/B
-         HWchTkqIX285Nh3kjy93s4mBcY/eS2S4N0ug+VUesWwRm7av+EhOm+u4Cjw0eOfc6f3b
-         FSxw==
+        bh=mL86IaHA+S4vAf9EpUoLnEYqyO2ENLMymhT80zVPCu4=;
+        b=I1+CFQ0BuCdS9DRIbdHylJvfOT7poqjhmDgcbJNcsLCCNLFOtr8DsgrKT12U4tpDMg
+         W0Mm7XbJgAzo8NUsKIZd8arUtQk+BvVOxdvWGRw4ytjcSNjaJoEg1t8bvrJHRelOi7+u
+         315thjTcg62ibZnpopMAxDEQ6L2DsTjWff7x5HyfUjFmVOO8LOlnIuBNOM2Z8QqIeJNt
+         USgE85Qhr4wBidPzed3yaZiB8fs64UJlDQe1Cb7QZ0dSxW/kaDrp6L7ujHhmZUR3blPi
+         f/B+PACP7N6LwcpzfWS6L+HG1Rwcf7Sh3LCXUTJsbulaQMAd77kOaE9agQxROfj5GZXf
+         vtrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ZInT1u+pWZLnQddThGJUbbB0YhAsKMsGQ/rfD7WrGMY=;
-        b=5d6q551B813dAM2tXQjohHne3sS7kJWhcSI/yNRypdcXjqfJ5pJ4d1Q2EwEAsbW0+3
-         gY3AuptfMWO2PiFvCi2xLg2kRSZZbbdPoFqgpuH2uZ98ykW5AKrqG+1tFNrS7xgHwfPQ
-         QOuQdmpENLjYlHPwrbOQkzbCJ87qPBIW8ni9yf8L1rB4XcIDNbxrHMqYsZ/Fn65IF8cR
-         yiCEskzbWzz3jrfDV04dEG6jTexly7EnOqMEtZsqUHXaruWVIQJQLUzfMkO1ikJ48Ekq
-         z2w0vITh/uR7qKFpJEkOwlDDAqB1xoDCQ7gM7x+KQmBaPGyTQ5nvpFaNb6YTRVWntWO4
-         NOxg==
-X-Gm-Message-State: AJIora+hJMq6b6XWJnZwBOgWGqV7wROyJhMir/7JVAl/zAgiJ+xs2E/J
-        JPkv+Ab7qpnVCGhjaErN+/QSrTG21TqUEnNzFJ14ng==
-X-Google-Smtp-Source: AGRyM1vKmG3v0clCzuZwz1hgo6ZUTpRu26miyCyfAGVe3IVCe7Mdte5cSU1Wh/HfWKPbX3vYVanDfQH+nkW3EfeLGak=
-X-Received: by 2002:a81:1711:0:b0:317:4d4b:a487 with SMTP id
- 17-20020a811711000000b003174d4ba487mr3678401ywx.55.1655359238924; Wed, 15 Jun
- 2022 23:00:38 -0700 (PDT)
+        bh=mL86IaHA+S4vAf9EpUoLnEYqyO2ENLMymhT80zVPCu4=;
+        b=akGMY0Qf4MC/n3LhIKwKXUYTAcmwr7m9UutFn+9ixEQplTk6lE8GebuENVaAuT6YVV
+         LKf8bUFpJGSsAomERJc6r5cCFAm5uHZ+p7vI5TJ4Yjgp8gCbdV00t9QL3oRbO/utCgmq
+         RcH09aImlGkast3My5O9Clnu4+dzyrjgti+e14dutboDmFfnojxpr095rHHvu5cSPVtL
+         tWlS7W0ItN2gHsrG5V/aFIyq+ZXGnT/hjmf4Dm5E1xUbRDSM72arU/r+paP42a1FMxUs
+         hMdBu6PwMtIT9RJI4CP6KWi159HaOfWpGBu/MjZMMDoyI47fd7fA84QNC79vPKVH20R7
+         G2+w==
+X-Gm-Message-State: AJIora+1LkmKdg/otaktwL9FfNL/76PQ9OKNKPyXHXS4EHDbGof0vvoV
+        Exclrzld1h91S7gnCnepZM/Zaq6cdJ4kW2s212mwog==
+X-Google-Smtp-Source: AGRyM1vhkjErgOMQ9i7p/mPq61AeLEord5cK4Tds6LBxb+VlngLldaQW6zFUZOg6sLW4Ra/aOu23fVsF18i7LwKFzlQ=
+X-Received: by 2002:a25:aa32:0:b0:65c:af6a:3502 with SMTP id
+ s47-20020a25aa32000000b0065caf6a3502mr3795772ybi.598.1655359648753; Wed, 15
+ Jun 2022 23:07:28 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220614171734.1103875-1-eric.dumazet@gmail.com> <20220615.125642.858758583076702866.davem@davemloft.net>
-In-Reply-To: <20220615.125642.858758583076702866.davem@davemloft.net>
+References: <20220614171734.1103875-1-eric.dumazet@gmail.com>
+ <20220615.125642.858758583076702866.davem@davemloft.net> <CANn89iKie9pgj8mjXGrgpH0XL3Ehfad61kCJ8rGdOk4GoR=o+g@mail.gmail.com>
+In-Reply-To: <CANn89iKie9pgj8mjXGrgpH0XL3Ehfad61kCJ8rGdOk4GoR=o+g@mail.gmail.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 15 Jun 2022 23:00:27 -0700
-Message-ID: <CANn89iKie9pgj8mjXGrgpH0XL3Ehfad61kCJ8rGdOk4GoR=o+g@mail.gmail.com>
+Date:   Wed, 15 Jun 2022 23:07:17 -0700
+Message-ID: <CANn89i+ReVNn93+EvQ1PvctEAy9uEQUDQgTpRUNhCiAuqNLxaw@mail.gmail.com>
 Subject: Re: [PATCH v2 net-next 0/2] tcp: final (?) round of mem pressure fixes
 To:     David Miller <davem@davemloft.net>
 Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
@@ -72,29 +73,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 4:56 AM David Miller <davem@davemloft.net> wrote:
+On Wed, Jun 15, 2022 at 11:00 PM Eric Dumazet <edumazet@google.com> wrote:
 >
-> From: Eric Dumazet <eric.dumazet@gmail.com>
-> Date: Tue, 14 Jun 2022 10:17:32 -0700
->
-> > From: Eric Dumazet <edumazet@google.com>
+> On Wed, Jun 15, 2022 at 4:56 AM David Miller <davem@davemloft.net> wrote:
 > >
-> > While working on prior patch series (e10b02ee5b6c "Merge branch
-> > 'net-reduce-tcp_memory_allocated-inflation'"), I found that we
-> > could still have frozen TCP flows under memory pressure.
+> > From: Eric Dumazet <eric.dumazet@gmail.com>
+> > Date: Tue, 14 Jun 2022 10:17:32 -0700
 > >
-> > I thought we had solved this in 2015, but the fix was not complete.
+> > > From: Eric Dumazet <edumazet@google.com>
+> > >
+> > > While working on prior patch series (e10b02ee5b6c "Merge branch
+> > > 'net-reduce-tcp_memory_allocated-inflation'"), I found that we
+> > > could still have frozen TCP flows under memory pressure.
+> > >
+> > > I thought we had solved this in 2015, but the fix was not complete.
+> > >
+> > > v2: deal with zerocopy tx paths.
 > >
-> > v2: deal with zerocopy tx paths.
+> > Does not apply cleanly to net, please respin.
+> >
+> > Thank you.
 >
-> Does not apply cleanly to net, please respin.
+> I was targeting net-next tree for this old bug, and planning to
+> prepare stable backports.
+
+This was because in net-next we got rid of SK_MEM_QUANTUM, and to
+limit merge conflicts.
+
 >
-> Thank you.
-
-I was targeting net-next tree for this old bug, and planning to
-prepare stable backports.
-
-Tell me if you prefer to respin to net tree, probably later today
-because I am traveling.
-
-Thanks.
+> Tell me if you prefer to respin to net tree, probably later today
+> because I am traveling.
+>
+> Thanks.
