@@ -2,111 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFE0054E592
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 17:02:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 491B154E5A8
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 17:04:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377747AbiFPPCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 11:02:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41112 "EHLO
+        id S1377784AbiFPPER (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 11:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377502AbiFPPCZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 11:02:25 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52EC83FDBA;
-        Thu, 16 Jun 2022 08:02:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655391743; x=1686927743;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cPIvtGkzUaCtMm3FU+yIhMsE21kpvjfDBJRq5gORsFE=;
-  b=EYwuygfNWQ+BE3jz+nte2gYiUNYTiVJB8db7hF9V0MnKU6bzeU8oOeSl
-   OQe+rcl4YFzGWTipJ0WH+esfuKO3AelN+Mxg2aMDogA52D5KBZxhnYPAk
-   OZ2jlFT4owFE+oOAhP3Um15OL/mTDXawxHs+lKncpKGbQfC25sh3HmCEv
-   f/W0L4awfoXXEKzFzBeNYGSeOSeDKk6fY2UDxGitd9JKi8+Mw9nhwQiV5
-   jhZow2o7SKwPtapZ4sSUJtYRO3T9NYYKwfeAfqZ7MMlzME2Sh2OuXV+jw
-   TE5hIL6r7KCRhkoOqOoSaigyuMCx+9Ck5usv0ABYaipzpepID5kNXObbB
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="279981317"
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="279981317"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 08:01:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="912192935"
-Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
-  by fmsmga005.fm.intel.com with ESMTP; 16 Jun 2022 08:01:55 -0700
-Date:   Thu, 16 Jun 2022 17:01:55 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, kernel-team@cloudflare.com
-Subject: Re: [PATCH bpf-next 1/2] bpf, x86: Fix tail call count offset
- calculation on bpf2bpf call
-Message-ID: <YqtF4/1nNLfO/6Pn@boxer>
-References: <20220615151721.404596-1-jakub@cloudflare.com>
- <20220615151721.404596-2-jakub@cloudflare.com>
- <c19ed052-90ea-3bf5-c57c-7879844579ea@iogearbox.net>
+        with ESMTP id S1377776AbiFPPEP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 11:04:15 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE913DA5A
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 08:04:11 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-1016409cf0bso2174095fac.12
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 08:04:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zoPzQU7tFCHKbazE96n62nKhOYL6lpl30iCKAfHWF3k=;
+        b=hzB+iWkLegyX/YVU4Z4Uk20/fD5mQ12Bb87V6Eh8E5BihrifNpR/2Kid3c5IL3kULj
+         /Kav66ARa+qN/N67YFml7VO4vjU3H+d51tIoMenFO1qIG1cNa0TEMy6orpmxvFp0gMGw
+         /kiER4gc6alC0Jl/FnyoXaEN+XA94MiTxlaik=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zoPzQU7tFCHKbazE96n62nKhOYL6lpl30iCKAfHWF3k=;
+        b=hkWyu8zrll00bed1yLWFv5wAfhbY2ZqY0j+3uc5BMSCj3Zmx2CC8sB1R+BSoajtJ/1
+         RorJJEk5VliWkSpUmb7jgcFlIxHgchbC24y6Q3Dv/y2g9tAF+aVJQdN88sziQK+Ipw/O
+         7evSVOtlytPfgXxbWii2y6tk3I/D5NQw38FBFUUQFeYC3i4nqCF8PhNOQuAXiu03TaFU
+         XFfPmNurtgfrAWQYkT9qyJjG498JGChocuXYT7WNod8KYEdJrqOqyPOalukkdMxuKqps
+         muh4QcF+pMJHTZvW1AgRYgpvy9X2cF6Nd/INraQvsHMz0NgeyFV+hp40ZHkItT6chyLV
+         aKlQ==
+X-Gm-Message-State: AJIora8+DmA3TUNtxvr3S3obz2/qXeT4fdCXyKE5mjXcfPzhccIigxo8
+        zOi5eCsqw59BErIlE0wqaGU2cA==
+X-Google-Smtp-Source: AGRyM1t/ql2JMv1ewpAojMoM3/cs4LVSN9IuvwaxwKyqaHE21iNNhZqbPJBxqQN/Cljh9oFWXsyihg==
+X-Received: by 2002:a05:6870:c181:b0:f1:ea2f:f7f7 with SMTP id h1-20020a056870c18100b000f1ea2ff7f7mr8618905oad.18.1655391849854;
+        Thu, 16 Jun 2022 08:04:09 -0700 (PDT)
+Received: from [192.168.0.41] ([184.4.90.121])
+        by smtp.gmail.com with ESMTPSA id n5-20020a4ab345000000b0035eb4e5a6d6sm1098587ooo.44.2022.06.16.08.04.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 16 Jun 2022 08:04:08 -0700 (PDT)
+Message-ID: <9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com>
+Date:   Thu, 16 Jun 2022 10:04:07 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c19ed052-90ea-3bf5-c57c-7879844579ea@iogearbox.net>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v3] cred: Propagate security_prepare_creds() error code
+Content-Language: en-US
+To:     Casey Schaufler <casey@schaufler-ca.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Ignat Korchagin <ignat@cloudflare.com>
+Cc:     Christian Brauner <brauner@kernel.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        linux-doc@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-cachefs@redhat.com,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
+        linux-unionfs@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>, keyrings@vger.kernel.org,
+        selinux@vger.kernel.org, serge@hallyn.com, amir73il@gmail.com,
+        kernel-team <kernel-team@cloudflare.com>,
+        Jeff Moyer <jmoyer@redhat.com>
+References: <20220608150942.776446-1-fred@cloudflare.com>
+ <87tu8oze94.fsf@email.froward.int.ebiederm.org>
+ <e1b62234-9b8a-e7c2-2946-5ef9f6f23a08@cloudflare.com>
+ <87y1xzyhub.fsf@email.froward.int.ebiederm.org>
+ <859cb593-9e96-5846-2191-6613677b07c5@cloudflare.com>
+ <87o7yvxl4x.fsf@email.froward.int.ebiederm.org>
+ <9ed91f15-420c-3db6-8b3b-85438b02bf97@cloudflare.com>
+ <20220615103031.qkzae4xr34wysj4b@wittgenstein>
+ <CAHC9VhR8yPHZb2sCu4JGgXOSs7rudm=9opB+-LsG6_Lta9466A@mail.gmail.com>
+ <CALrw=nGZtrNYn+CV+Q_w-2=Va_9m3C8PDvvPtd01d0tS=2NMWQ@mail.gmail.com>
+ <CAHC9VhRSzXeAZmBdNSAFEh=6XR57ecO7Ov+6BV9b0xVN1YR_Qw@mail.gmail.com>
+ <1c4b1c0d-12f6-6e9e-a6a3-cdce7418110c@schaufler-ca.com>
+From:   Frederick Lawler <fred@cloudflare.com>
+In-Reply-To: <1c4b1c0d-12f6-6e9e-a6a3-cdce7418110c@schaufler-ca.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 04:45:09PM +0200, Daniel Borkmann wrote:
-> On 6/15/22 5:17 PM, Jakub Sitnicki wrote:
-> [...]
-> > int entry(struct __sk_buff * skb):
-> >     0xffffffffa0201788:  nop    DWORD PTR [rax+rax*1+0x0]
-> >     0xffffffffa020178d:  xor    eax,eax
-> >     0xffffffffa020178f:  push   rbp
-> >     0xffffffffa0201790:  mov    rbp,rsp
-> >     0xffffffffa0201793:  sub    rsp,0x8
-> >     0xffffffffa020179a:  push   rax
-> >     0xffffffffa020179b:  xor    esi,esi
-> >     0xffffffffa020179d:  mov    BYTE PTR [rbp-0x1],sil
-> >     0xffffffffa02017a1:  mov    rax,QWORD PTR [rbp-0x9]	!!! tail call count
-> >     0xffffffffa02017a8:  call   0xffffffffa02017d8       !!! is at rbp-0x10
-> >     0xffffffffa02017ad:  leave
-> >     0xffffffffa02017ae:  ret
-> > 
-> > Fix it by rounding up the BPF stack depth to a multiple of 8, when
-> > calculating the tail call count offset on stack.
-> > 
-> > Fixes: ebf7d1f508a7 ("bpf, x64: rework pro/epilogue and tailcall handling in JIT")
-> > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> > ---
-> >   arch/x86/net/bpf_jit_comp.c | 3 ++-
-> >   1 file changed, 2 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-> > index f298b18a9a3d..c98b8c0ed3b8 100644
-> > --- a/arch/x86/net/bpf_jit_comp.c
-> > +++ b/arch/x86/net/bpf_jit_comp.c
-> > @@ -1420,8 +1420,9 @@ st:			if (is_imm8(insn->off))
-> >   		case BPF_JMP | BPF_CALL:
-> >   			func = (u8 *) __bpf_call_base + imm32;
-> >   			if (tail_call_reachable) {
-> > +				/* mov rax, qword ptr [rbp - rounded_stack_depth - 8] */
-> >   				EMIT3_off32(0x48, 0x8B, 0x85,
-> > -					    -(bpf_prog->aux->stack_depth + 8));
-> > +					    -round_up(bpf_prog->aux->stack_depth, 8) - 8);
+On 6/15/22 10:55 AM, Casey Schaufler wrote:
+> On 6/15/2022 8:33 AM, Paul Moore wrote:
+>> On Wed, Jun 15, 2022 at 11:06 AM Ignat Korchagin 
+>> <ignat@cloudflare.com> wrote:
+>>> On Wed, Jun 15, 2022 at 3:14 PM Paul Moore <paul@paul-moore.com> wrote:
+>>>> On Wed, Jun 15, 2022 at 6:30 AM Christian Brauner 
+>>>> <brauner@kernel.org> wrote:
+>> ...
+>>
+>>>>> Fwiw, from this commit it wasn't very clear what you wanted to achieve
+>>>>> with this. It might be worth considering adding a new security hook 
+>>>>> for
+>>>>> this. Within msft it recently came up SELinux might have an 
+>>>>> interest in
+>>>>> something like this as well.
+>>>> Just to clarify things a bit, I believe SELinux would have an interest
+>>>> in a LSM hook capable of implementing an access control point for user
+>>>> namespaces regardless of Microsoft's current needs.  I suspect due to
+>>>> the security relevant nature of user namespaces most other LSMs would
+>>>> be interested as well; it seems like a well crafted hook would be
+>>>> welcome by most folks I think.
+>>> Just to get the full picture: is there actually a good reason not to
+>>> make this hook support this scenario? I understand it was not
+>>> originally intended for this, but it is well positioned in the code,
+>>> covers multiple subsystems (not only user namespaces), doesn't require
+>>> changing the LSM interface and it already does the job - just the
+>>> kernel internals need to respect the error code better. What bad
+>>> things can happen if we extend its use case to not only allocate
+>>> resources in LSMs?
+>> My concern is that the security_prepare_creds() hook, while only
+>> called from two different functions, ends up being called for a
+>> variety of different uses (look at the prepare_creds() and
+>> perpare_kernel_cred() callers) and I think it would be a challenge to
+>> identify the proper calling context in the LSM hook implementation
+>> given the current hook parameters.  One might be able to modify the
+>> hook to pass the necessary information, but I don't think that would
+>> be any cleaner than adding a userns specific hook.  I'm also guessing
+>> that the modified security_prepare_creds() hook implementations would
+>> also be more likely to encounter future maintenance issues as
+>> overriding credentials in the kernel seems only to be increasing, and
+>> each future caller would risk using the modified hook wrong by passing
+>> the wrong context and triggering the wrong behavior in the LSM.
 > 
-> Lgtm, great catch by the way!
+> We don't usually have hooks that do both attribute management and
+> access control. Some people seem excessively concerned about "cluttering"
+> calling code with security_something() instances, but for the most
+> part I think we're past that. I agree that making security_prepare_creds()
+> multi-purpose is a bad idea. Shared cred management isn't simple, and
+> adding access checks there is only going to make it worse.
+> 
 
-Indeed!
+Sounds like we've reached the conclusion not to proceed with a v4 of 
+this patch. I'll pivot to propose a new hook instead.
 
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Thanks for the feedback everyone :)
 
-I was wondering if it would be possible to work only on rounded up to 8
-stack depth from JIT POV since it's what we do everywhere we use it...
+Fred
