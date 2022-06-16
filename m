@@ -2,62 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4747E54DFA2
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 13:03:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7038754DFE5
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 13:20:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232550AbiFPLC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 07:02:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
+        id S1376725AbiFPLTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 07:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbiFPLC5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 07:02:57 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5007645
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 04:02:55 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id g7so1679492eda.3
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 04:02:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jHmItW+ZxwsMa6slplXFNuLqcY8BV5v91LocLylbQD4=;
-        b=AZTIgM6InXYmFsMIHmRPf4ZMAVOranMWT/E7XjxyA4oDUgAmVc2x15qcVzeGFeDdQz
-         07e2JHXyg0Kkf6cKsq3n17aYRjtwby+GHMxVlQUFaIEc7GEHQ6VmQGPZaaFqWf0t7cQk
-         tJ1ad6zYPbsba7S09kXZb/vBd6s4CLXU+CGE0=
+        with ESMTP id S1376720AbiFPLTt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 07:19:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E2955C87F
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 04:19:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655378387;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GJSHiXGnbIKwEFbP5SDVLebTcXv1rK1oD5ajGiN6VGI=;
+        b=P/k3uAZuOzBL2oTx9r2BPPS+pRg8aSU74YeYnfaJTQ05kOPd1SvgjVLXCVVXhfS5z9wcuZ
+        0TWANTk5x2L9u415DJnfmpg91+Sq4WV5txG26p+Q7XSQsyShPYg/LucX7mLvx5acL/8VQy
+        PYXobtEUCHWESkulqzcd/SrfqOj29SA=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-249-JuP08_R9PV6QdLeDamdLtw-1; Thu, 16 Jun 2022 07:19:46 -0400
+X-MC-Unique: JuP08_R9PV6QdLeDamdLtw-1
+Received: by mail-qk1-f199.google.com with SMTP id bk10-20020a05620a1a0a00b006a6b1d676ebso1466523qkb.0
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 04:19:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jHmItW+ZxwsMa6slplXFNuLqcY8BV5v91LocLylbQD4=;
-        b=6VZnDTiaTzz8R/Bub00Io7EdTtHdUUitBmqwyAyO3L0hRKltP8EXipBCzUYcUEQFv1
-         xmbpQ4t+oOvpb/3qhGzow45Ky2IqXPxPw3Y7lUnyH/itJWMRSZv20j85f5YPE+CryjYA
-         31yzBLDiddp7RZ66yXaWb+JkLfD0eR4lqxoAyXk9Yi1KTWu0zSsRzpDncTgjgcsLwT4f
-         etxXeU5Ge6+0VueXqmbLiV1FQerfhtnKcTrUNF2UOEVXNT74esVzRQw3hHDMc3SW4ZpO
-         gmrIjZaXulX2J0ZN8lT1ckqJNiihq9tT1Hp/mefjc9cEyygCS7Kufdy9XfLG9V2kGdZf
-         ucvw==
-X-Gm-Message-State: AJIora9vOLEoULLRjRkn0y5E1RjEJaeUPQgLYHgQkrPayhrIye50/g9v
-        EYo1+0rweWQemmczAVpQDTgdxw==
-X-Google-Smtp-Source: AGRyM1uDJ3gJ1a5ZwmwT/V5YUbz1BmXc/d52BMOip9jfBRdom3zr2FZS0NekZPdLZI1e0KAspahCfA==
-X-Received: by 2002:a05:6402:28b6:b0:433:2b53:157a with SMTP id eg54-20020a05640228b600b004332b53157amr5779307edb.395.1655377374326;
-        Thu, 16 Jun 2022 04:02:54 -0700 (PDT)
-Received: from cloudflare.com (79.184.138.130.ipv4.supernova.orange.pl. [79.184.138.130])
-        by smtp.gmail.com with ESMTPSA id m24-20020a170906849800b006fed8dfcf78sm616313ejx.225.2022.06.16.04.02.53
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=GJSHiXGnbIKwEFbP5SDVLebTcXv1rK1oD5ajGiN6VGI=;
+        b=tLalLQiHAV96How3p6q5wJ/1lj1ImxBmaeI0lRhx6McetoqJEimM0n/GHKj0f8Oays
+         BlwNciy1p/sX0WvHgNJO7ohT0St98Em86SW3Cs6QCPE2fBnXCJXCw6/ECT5ZdfVtK3Aw
+         fPpRnsk22cGhnzz2ONxGCxhjEiUvhIbRaHLJQV5mIovTi+5a1U/ip1HKYCR+cwqzqs9D
+         g/eZtDCPaiboLkxfkVXL4vTxh7iluoivpYYoSPe/ApAN+scJxSOZSr6bEZYJhu4I3yd7
+         mq7zwkpdIpKr6/Mwc24X95JvoS5TnFkyu5qZ7JIHeCGcHc7TnxtJutXewpIF8BCPugEM
+         16uw==
+X-Gm-Message-State: AJIora9tVOl2vBt/ihoxjLJrc6sMoNAEdv6KYzRmX1tfM2pERtmRFyCX
+        nQHkS5kC/LJLnWfRXF52cYpXYwErdb65mAN2sLIt4j0XvtNNIX4wiFtaIvPTmQPCxk86A5bi6Ye
+        7t+mOOApxmU4anlWK
+X-Received: by 2002:a05:6214:23c8:b0:45f:b582:346e with SMTP id hr8-20020a05621423c800b0045fb582346emr3505539qvb.109.1655378385560;
+        Thu, 16 Jun 2022 04:19:45 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vPN3NH8XTlj3THOQd1RTUVZn+AfZCg1MWBWUAl6ty7RvnBmiNf2CcC5MJboEh3hTayNo/tiw==
+X-Received: by 2002:a05:6214:23c8:b0:45f:b582:346e with SMTP id hr8-20020a05621423c800b0045fb582346emr3505524qvb.109.1655378385294;
+        Thu, 16 Jun 2022 04:19:45 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-113-202.dyn.eolo.it. [146.241.113.202])
+        by smtp.gmail.com with ESMTPSA id c4-20020a05620a268400b006a691904891sm1588334qkp.16.2022.06.16.04.19.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 04:02:53 -0700 (PDT)
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        kernel-team@cloudflare.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [RFC bpf] selftests/bpf: Curious case of a successful tailcall that returns to caller
-Date:   Thu, 16 Jun 2022 13:02:52 +0200
-Message-Id: <20220616110252.418333-1-jakub@cloudflare.com>
-X-Mailer: git-send-email 2.35.3
+        Thu, 16 Jun 2022 04:19:44 -0700 (PDT)
+Message-ID: <648a6e70fdfaa94ee678abda210860287ad09bc3.camel@redhat.com>
+Subject: Re: [PATCH v3] ax25: use GFP_KERNEL in ax25_dev_device_up()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Peter Lafreniere <pjlafren@mtu.edu>, linux-hams@vger.kernel.org
+Cc:     netdev@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Date:   Thu, 16 Jun 2022 13:19:42 +0200
+In-Reply-To: <20220615220947.3767-1-pjlafren@mtu.edu>
+References: <20220615220947.3767-1-pjlafren@mtu.edu>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
@@ -67,225 +77,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While working aarch64 JIT to allow mixing bpf2bpf calls with tailcalls, I
-noticed unexpected tailcall behavior in x86 JIT.
+Hello,
 
-I don't know if it is by design or a bug. The bpf_tail_call helper
-documentation says that the user should not expect the control flow to
-return to the previous program, if the tail call was successful:
+On Wed, 2022-06-15 at 18:09 -0400, Peter Lafreniere wrote:
+> ax25_dev_device_up() is only called during device setup, which is
+> done in user context. In addition, ax25_dev_device_up()
+> unconditionally calls ax25_register_dev_sysctl(), which already
+> allocates with GFP_KERNEL.
+> 
+> Since it is allowed to sleep in this function, here we change
+> ax25_dev_device_up() to use GFP_KERNEL to reduce unnecessary
+> out-of-memory errors.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Peter Lafreniere <pjlafren@mtu.edu>
+> ---
+> v2 -> v3:
+>  - Rebased for clean application to net-next
+> 
+> v1 -> v2:
+>  - Renamed patch from "ax25: use GFP_KERNEL over GFP_ATOMIC where possible"
+>    (Is that okay?)
+>  - Removed invalid changes to ax25_rt_add()
+> 
+>  net/ax25/ax25_dev.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
+> index ab88b6ac5401..2093f94f6852 100644
+> --- a/net/ax25/ax25_dev.c
+> +++ b/net/ax25/ax25_dev.c
+> @@ -52,7 +52,7 @@ void ax25_dev_device_up(struct net_device *dev)
+>  {
+>  	ax25_dev *ax25_dev;
+>  
+> -	if ((ax25_dev = kzalloc(sizeof(*ax25_dev), GFP_ATOMIC)) == NULL) {
+> +	if ((ax25_dev = kzalloc(sizeof(*ax25_dev), GFP_KERNEL)) == NULL) {
+>  		printk(KERN_ERR "AX.25: ax25_dev_device_up - out of memory\n");
+>  		return;
+>  	}
 
-> If the call succeeds, the kernel immediately runs the first
-> instruction of the new program. This is not a function call,
-> and it never returns to the previous program.
+Since you are touching this line, please move the assignment in a
+separate statement:
 
-However, when a tailcall happens from a subprogram, that is after a bpf2bpf
-call, that is not the case. We return to the caller program because the
-stack destruction is too shallow. BPF stack of just the top-most BPF
-function gets destroyed.
+	ax25_dev = kzalloc(sizeof(*ax25_dev), GFP_KERNEL);
+	if (!ax25_dev) {
 
-This in turn allows the return value of the tailcall'ed program to get
-overwritten, as the test below test demonstrates. It currently fails on
-x86:
+so that we get rid of this obsolete codying style.
 
-test_tailcall_bpf2bpf_7:PASS:open and load 0 nsec
-test_tailcall_bpf2bpf_7:PASS:entry prog fd 0 nsec
-test_tailcall_bpf2bpf_7:PASS:jmp_table map fd 0 nsec
-test_tailcall_bpf2bpf_7:PASS:classifier_0 prog fd 0 nsec
-test_tailcall_bpf2bpf_7:PASS:jmp_table map update 0 nsec
-test_tailcall_bpf2bpf_7:PASS:entry prog test run 0 nsec
-test_tailcall_bpf2bpf_7:FAIL:tailcall retval unexpected tailcall retval: actual 2 != expected 0
-test_tailcall_bpf2bpf_7:PASS:bss map fd 0 nsec
-test_tailcall_bpf2bpf_7:PASS:bss map lookup 0 nsec
-test_tailcall_bpf2bpf_7:PASS:done flag is set 0 nsec
+Thanks!
 
-If we step through the program, we can observe the flow as so:
-
-int entry(struct __sk_buff * skb):
-bpf_prog_3bb007ac57240471_entry:
-; subprog_tail(skb);
-   0:   nopl   0x0(%rax,%rax,1)
-   5:   xor    %eax,%eax
-   7:   push   %rbp
-   8:   mov    %rsp,%rbp
-   b:   push   %rax
-   c:   mov    -0x8(%rbp),%rax
-  13:   call   0x0000000000000048 ---------.
-; return 2;                                |
-  18:   mov    $0x2,%eax <--------------------------------------.
-  1d:   leave                              |                    |
-  1e:   ret                                |                    |
-                                           |                    |
-int subprog_tail(struct __sk_buff * skb):  |                    |
-bpf_prog_3a140cef239a4b4f_F:               |                    |
-; int subprog_tail(struct __sk_buff *skb)  |                    |
-   0:   nopl   0x0(%rax,%rax,1) <----------'                    |
-   5:   xchg   %ax,%ax                                          |
-   7:   push   %rbp                                             |
-   8:   mov    %rsp,%rbp                                        |
-   b:   push   %rax                                             |
-   c:   push   %rbx                                             |
-   d:   push   %r13                                             |
-   f:   mov    %rdi,%rbx                                        |
-; asm volatile("r1 = %[ctx]\n\t"                                |
-  12:   movabs $0xffff888104119000,%r13                         |
-  1c:   mov    %rbx,%rdi                                        |
-  1f:   mov    %r13,%rsi                                        |
-  22:   xor    %edx,%edx                                        |
-  24:   mov    -0x4(%rbp),%eax                                  |
-  2a:   cmp    $0x21,%eax                                       |
-  2d:   jae    0x0000000000000046                               |
-  2f:   add    $0x1,%eax                                        |
-  32:   mov    %eax,-0x4(%rbp)                                  |
-  38:   jmp    0x0000000000000046 ---------------------------.  |
-  3d:   pop    %r13                                          |  |
-  3f:   pop    %rbx                                          |  |
-  40:   pop    %rax                                          |  |
-  41:   nopl   0x0(%rax,%rax,1)                              |  |
-; return 1;                                                  |  |
-  46:   pop    %r13                                          |  |
-  48:   pop    %rbx                                          |  |
-  49:   leave                                                |  |
-  4a:   ret                                                  |  |
-                                                             |  |
-int classifier_0(struct __sk_buff * skb):                    |  |
-bpf_prog_6e664b22811ace0d_classifier_0:                      |  |
-; done = 1;                                                  |  |
-   0:   nopl   0x0(%rax,%rax,1)                              |  |
-   5:   xchg   %ax,%ax                                       |  |
-   7:   push   %rbp                                          |  |
-   8:   mov    %rsp,%rbp                                     |  |
-   b:   movabs $0xffffc900000b6000,%rdi <--------------------'  |
-  15:   mov    $0x1,%esi                                        |
-  1a:   mov    %esi,0x0(%rdi)                                   |
-; return 0;                                                     |
-  1d:   xor    %eax,%eax                                        |
-  1f:   leave                                                   |
-  20:   ret ----------------------------------------------------'
-
-My question is - is it a bug or intended behavior that other JITs should
-replicate?
-
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
----
- .../selftests/bpf/prog_tests/tailcalls.c      | 55 +++++++++++++++++++
- .../selftests/bpf/progs/tailcall_bpf2bpf7.c   | 37 +++++++++++++
- 2 files changed, 92 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/tailcall_bpf2bpf7.c
-
-diff --git a/tools/testing/selftests/bpf/prog_tests/tailcalls.c b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-index c4da87ec3ba4..696c307a1bee 100644
---- a/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-@@ -831,6 +831,59 @@ static void test_tailcall_bpf2bpf_4(bool noise)
- 	bpf_object__close(obj);
- }
- 
-+#include "tailcall_bpf2bpf7.skel.h"
-+
-+/* The tail call should never return to the previous program, if the
-+ * jump was successful.
-+ */
-+static void test_tailcall_bpf2bpf_7(void)
-+{
-+	struct tailcall_bpf2bpf7 *obj;
-+	int err, map_fd, prog_fd, main_fd, data_fd, i, val;
-+	LIBBPF_OPTS(bpf_test_run_opts, topts,
-+		.data_in = &pkt_v4,
-+		.data_size_in = sizeof(pkt_v4),
-+		.repeat = 1,
-+	);
-+
-+	obj = tailcall_bpf2bpf7__open_and_load();
-+	if (!ASSERT_OK_PTR(obj, "open and load"))
-+		return;
-+
-+	main_fd = bpf_program__fd(obj->progs.entry);
-+	if (!ASSERT_GE(main_fd, 0, "entry prog fd"))
-+		goto out;
-+
-+	map_fd = bpf_map__fd(obj->maps.jmp_table);
-+	if (!ASSERT_GE(map_fd, 0, "jmp_table map fd"))
-+		goto out;
-+
-+	prog_fd = bpf_program__fd(obj->progs.classifier_0);
-+	if (!ASSERT_GE(prog_fd, 0, "classifier_0 prog fd"))
-+		goto out;
-+
-+	i = 0;
-+	err = bpf_map_update_elem(map_fd, &i, &prog_fd, BPF_ANY);
-+	if (!ASSERT_OK(err, "jmp_table map update"))
-+		goto out;
-+
-+	err = bpf_prog_test_run_opts(main_fd, &topts);
-+	ASSERT_OK(err, "entry prog test run");
-+	ASSERT_EQ(topts.retval, 0, "tailcall retval");
-+
-+	data_fd = bpf_map__fd(obj->maps.bss);
-+	if (!ASSERT_GE(map_fd, 0, "bss map fd"))
-+		goto out;
-+
-+	i = 0;
-+	err = bpf_map_lookup_elem(data_fd, &i, &val);
-+	ASSERT_OK(err, "bss map lookup");
-+	ASSERT_EQ(val, 1, "done flag is set");
-+
-+out:
-+	tailcall_bpf2bpf7__destroy(obj);
-+}
-+
- void test_tailcalls(void)
- {
- 	if (test__start_subtest("tailcall_1"))
-@@ -855,4 +908,6 @@ void test_tailcalls(void)
- 		test_tailcall_bpf2bpf_4(false);
- 	if (test__start_subtest("tailcall_bpf2bpf_5"))
- 		test_tailcall_bpf2bpf_4(true);
-+	if (test__start_subtest("tailcall_bpf2bpf_7"))
-+		test_tailcall_bpf2bpf_7();
- }
-diff --git a/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf7.c b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf7.c
-new file mode 100644
-index 000000000000..1be27cfa1702
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf7.c
-@@ -0,0 +1,37 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+
-+#define __unused __attribute__((always_unused))
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
-+	__uint(max_entries, 1);
-+	__uint(key_size, sizeof(__u32));
-+	__uint(value_size, sizeof(__u32));
-+} jmp_table SEC(".maps");
-+
-+int done = 0;
-+
-+SEC("tc")
-+int classifier_0(struct __sk_buff *skb __unused)
-+{
-+	done = 1;
-+	return 0;
-+}
-+
-+static __noinline
-+int subprog_tail(struct __sk_buff *skb)
-+{
-+	bpf_tail_call_static(skb, &jmp_table, 0);
-+	return 1;
-+}
-+
-+SEC("tc")
-+int entry(struct __sk_buff *skb)
-+{
-+	subprog_tail(skb);
-+	return 2;
-+}
-+
-+char __license[] SEC("license") = "GPL";
--- 
-2.35.3
+Paolo
 
