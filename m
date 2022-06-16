@@ -2,77 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65BC454E8B7
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 19:40:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE30254E8BA
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 19:41:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235203AbiFPRkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 13:40:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
+        id S232320AbiFPRlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 13:41:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbiFPRkB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 13:40:01 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FB33ED1C
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 10:40:00 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id u37so2104250pfg.3
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 10:40:00 -0700 (PDT)
+        with ESMTP id S229512AbiFPRlT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 13:41:19 -0400
+Received: from mail-ua1-x92e.google.com (mail-ua1-x92e.google.com [IPv6:2607:f8b0:4864:20::92e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD0E43EEF
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 10:41:17 -0700 (PDT)
+Received: by mail-ua1-x92e.google.com with SMTP id l9so716667uac.4
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 10:41:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=onP0sXsK4JvSncBfDCXl6EmwmLA/F+tO3xFCBOUoBPU=;
-        b=hHRoHv1h0MnLBF4CoiKvHxvxx3aesx1lb/k9ECeCD41+KZVZLJkX0m2oPPFhptp4Qx
-         Uup7Rdh0oMfP2/vTnr/YHB93/Fxe9Dshy6YNqffwewsWHuc/3aPbOwsGmsNv4G8Y1D4d
-         y87ieqMEgxR+STb1frkZ7KK9yEQTt5+CZWL/ZlNWS9wCeyT32xI9f+Wl8L615ZUdBLmA
-         Kw4WKioUlNBrfPMQFaTAGExxesg8m/MQZuE7l8Xdlx7lThBSendoXAOcLUhjNy+fStdI
-         0i1NzbZwIQZFStpXG+WC4JbcX7sIgj9iGbLUNLU8fwpLngok+RN0s7TtRzWITj+tqYS6
-         C1Vg==
+         :cc;
+        bh=MhCxJsomFPv0etA9OwBx657A5+EQNQvXhWR2PLRDPYM=;
+        b=hz2ZXDvh912fkpzzIT23pQAIhdt70f6VDtI8R6/O9TdK0+bQIbAAXY/TouLEkPOHUB
+         atWfJhZmrH+5HchG6oXOt+FEcZqEqoRAxr5qv72CXXM7IQKc11XR4hVbxT+d5CsG0J7T
+         4EN5wpS7QEp2iv+dl+DmSmgZjoZKNO9VaUIJR7ShFE8b4XNFER6/JlMA6IVhe3vFFn2r
+         nEstytfosowB3lvCR8QAtIbvwszxqMmdI1Cih8LahUmtovxGOWSWcZ2zHZFJqdQKfo9P
+         SmrSvfeiaX5n8N9WfhBzAkcpDdA2yKdr6K1kU84i7PYgVUjmmiaEHo+sxz9bygVZWadx
+         RrwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=onP0sXsK4JvSncBfDCXl6EmwmLA/F+tO3xFCBOUoBPU=;
-        b=7M09HqD2f/6JZQKJITeuvla0k+yZ1ixVFiH3vD5TGDriLI5q4QfyqGY2GOfapvGufO
-         zDJWO3lo26qx6hk70q3g5wvUfmPmnG9boOgiClojiCzzu+G1rTGQjelI14zyb+z92xVB
-         Kfts3PtVutX03QATSEU+i2ezJBv0CfUPQxSBP9VPXJTWxcv0xz/fkzYQs6minLOjy/c2
-         0RvuG/c2JhL5IX3Kk8DnpwUFscwTrjiKCOdjvvGS/M1Zw+qJmyOTE6uzvOHS1DdAmrO4
-         oxFkIQ/N21dqsR8P6dCls0yRKQ0KPl0PvDZwNpjtANZ/F0SO8Qb8RejsnoiBEFltHzCE
-         LWHA==
-X-Gm-Message-State: AJIora9eT1qkcy5EiFRQwVX0IcQlykvDD6lKblt1Csi5T/GmqU53fbN7
-        xTuCY72OUPIa6ahDgve9FrpfUOT5wC1PGKeKEDWApQ==
-X-Google-Smtp-Source: AGRyM1vAQ3usZcQ7CXRyrWvjwIwFjZl+3XZFOs6Pva4izs1aLGwZZ0EIlXJwfp+u6lnNhCGjeZ5hAuejA2Q8598CSbQ=
-X-Received: by 2002:a05:6a00:338e:b0:51b:c452:4210 with SMTP id
- cm14-20020a056a00338e00b0051bc4524210mr5679505pfb.69.1655401199992; Thu, 16
- Jun 2022 10:39:59 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=MhCxJsomFPv0etA9OwBx657A5+EQNQvXhWR2PLRDPYM=;
+        b=YBaoUowb8KD1Sgpyck8E6BqlZjLeaocXzGClpnVT5S7GT/YV1FpqmVj21cpdqpA1ux
+         dv1bveeP5ev/5u5pFBPIK2xV0txExfCmGovhf4jWJSrEst2fNuFTv7o+yrLom/aKNcEv
+         /Ptxr67cDlLXfjxZRsB5KXxPYL+8HRNOVPNFTQFruvIafo6DSQ7CTQ1udytTsxCoHlxw
+         Q4XNH0BXWTiafCY1mVAvTYLINBQd5IBgr7080b47/12UtJH3ZFvMXem0ZWzUvVWsvmbu
+         C654BtdU7tta7y5akkxMTIq07L6vOuHPovAPBjJnnHt6nYYK51n8pLzi8FhSlVjJ0fQw
+         md6A==
+X-Gm-Message-State: AJIora+P/Lhzh0TtnDE5yyJ4lYxCMRSHVgmKFhrI6Z3hK3swcMgxp6N+
+        K5IAUA5O6Y9Iu6cX0acqruha3Z7fa4CJt3W2MOc=
+X-Google-Smtp-Source: AGRyM1sdfV/Nmk9QwVIzqvcVnkDD64IyAu7MTwL+4+l44JCDZtN8wqmEMf/Mea4wIpAQrG38OKGMdlC+a9xlUJq5nHM=
+X-Received: by 2002:ab0:1343:0:b0:362:9e6c:74f5 with SMTP id
+ h3-20020ab01343000000b003629e6c74f5mr2667645uae.15.1655401276735; Thu, 16 Jun
+ 2022 10:41:16 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAHo-Ooy+8O16k0oyMGHaAcmLm_Pfo=Ju4moTc95kRp2Z6itBcg@mail.gmail.com>
- <CANP3RGed9Vbu=8HfLyNs9zwA=biqgyew=+2tVxC6BAx2ktzNxA@mail.gmail.com>
- <CAADnVQKBqjowbGsSuc2g8yP9MBANhsroB+dhJep93cnx_EmNow@mail.gmail.com>
- <CANP3RGcZ4NULOwe+nwxfxsDPSXAUo50hWyN9Sb5b_d=kfDg=qg@mail.gmail.com>
- <YqodE5lxUCt6ojIw@google.com> <YqpAYcvM9DakTjWL@google.com>
- <YqpB+7pDwyOk20Cp@google.com> <YqpDcD6vkZZfWH4L@google.com>
- <CANP3RGcBCeMeCfpY3__4X_OHx6PB6bXtRjwLdYi-LRiegicVXQ@mail.gmail.com>
- <CAKH8qBv=+QVBqHd=9rAWe3d5d47dSkppYc1JbS+WgQs8XgB+Yg@mail.gmail.com> <CANP3RGc-9VkZkBK-N3y39F0Y+cLsPSLsQGvuR2QKAeQsWEoq9w@mail.gmail.com>
-In-Reply-To: <CANP3RGc-9VkZkBK-N3y39F0Y+cLsPSLsQGvuR2QKAeQsWEoq9w@mail.gmail.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Thu, 16 Jun 2022 10:39:49 -0700
-Message-ID: <CAKH8qBsB+DGMUBRCa4j+cWuGVg2_GLTZU4G_iun7wJ1GddaNHw@mail.gmail.com>
-Subject: Re: Curious bpf regression in 5.18 already fixed in stable 5.18.3
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Carlos Llamas <cmllamas@google.com>,
-        YiFei Zhu <zhuyifei@google.com>
+References: <20220615193213.2419568-1-joannelkoong@gmail.com>
+ <CANn89i+Gf_xbz_df21QSM8ddjKkFfk1h4Y=p4vHroPRAz0ZYrw@mail.gmail.com>
+ <2271ed3c6cbc3cd65680734107d773ee22ccfb3d.camel@redhat.com>
+ <20220616101823.1a12e5d1@kernel.org> <CANn89iJeXRnb5VPMgFatfn8v8OPRh7riwkhg33XWCGg6tusenw@mail.gmail.com>
+In-Reply-To: <CANn89iJeXRnb5VPMgFatfn8v8OPRh7riwkhg33XWCGg6tusenw@mail.gmail.com>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Thu, 16 Jun 2022 10:41:05 -0700
+Message-ID: <CAJnrk1YnGssapE0HCiwLd9DqDULVytYGT_TTqPJyXz1pRO5HtA@mail.gmail.com>
+Subject: Re: [PATCH net] Revert "net: Add a second bind table hashed by port
+ and address"
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,60 +71,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 9:41 AM Maciej =C5=BBenczykowski <maze@google.com> =
-wrote:
+On Thu, Jun 16, 2022 at 10:29 AM Eric Dumazet <edumazet@google.com> wrote:
 >
-> On Thu, Jun 16, 2022 at 8:57 AM Stanislav Fomichev <sdf@google.com> wrote=
-:
-> > On Wed, Jun 15, 2022 at 6:36 PM Maciej =C5=BBenczykowski <maze@google.c=
-om> wrote:
-> > > I'm guessing this means the regression only affects 64-bit archs,
-> > > where long =3D void* is 8 bytes > u32 of 4 bytes, but not 32-bit ones=
-,
-> > > where long =3D u32 =3D 4 bytes
-> > >
-> > > Unfortunately my dev machine's 32-bit build capability has somehow
-> > > regressed again and I can't check this.
+> On Thu, Jun 16, 2022 at 7:18 PM Jakub Kicinski <kuba@kernel.org> wrote:
 > >
-> > Seems so, yes. But I'm actually not sure whether we should at all
-> > treat it as a regression. There is a question of whether that EPERM is
-> > UAPI or not. That's why we most likely haven't caught it in the
-> > selftests; most of the time we only check that syscall has returned -1
-> > and don't pay attention to the particular errno.
+> > On Thu, 16 Jun 2022 12:01:36 +0200 Paolo Abeni wrote:
+> > > > Do we really need to remove the test ? It is a benchmark, and should
+> > > > not 'fail' on old kernels.
+> > >
+> > > I agree it's nice to keep the self-test alive.
+> > >
+> > > Side notes, not strictly related to the revert: the self test is not
+> > > currently executed by `make run_tests` and requires some additional
+> > > setup: ulimit -n <high number>, 2001:db8:0:f101::1 being a locally
+> > > available address, and a mandatory command line argument.
+> > >
+> > > @Joanne: you should additionally provide a wrapper script to handle the
+> > > above and update TEST_PROGS accordingly. As for this revert, could you
+> > > please re-post it touching the kernel code only?
+> >
+> > Let me take the revert in for today's PR. Hope that's okay. We can
+> > revive the test in -next with the wrapper/setup issue addressed.
+> > I don't want more people to waste time bisecting the warnings this
+> > generates.
+I'll make sure to include a wrapper script when I resubmit it.
 >
-> EFAULT seems like a terrible error to return no matter what, it has a ver=
-y clear
-> 'memory read/write access violation' semantic (ie. if you'd done from
-> userspace you'd get a SIGSEGV)
->
-> I'm actually surprised to learn you return EFAULT on positive number...
-> It should rather be some unique error code or EINVAL or something.
->
-> I know someone will argue that (most/all) system calls can return EFAULT.=
-..
-> But that's not actually true.  From a userspace developer the expectation=
- is
-> they will not return EFAULT if you pass in memory you know is good.
->
-> #include <sys/utsname.h>
-> int main() {
->   struct utsname uts;
->   uname(&uts);
-> }
->
-> The above cannot EFAULT in spite of it being documented as the only
-> error uname can report,
-> because obviously the uts structure on the stack is valid memory.
->
-> Maybe ENOSYS would at least make it obvious something is very weird.
-
-I'd like to see less of the applications poking into errno and making
-some decisions based on that. IMO, the only time where it makes sense
-is EINTR/EAGAIN vs the rest; the rest should be logged. Having errnos
-hard-coded in the tests is fine to make sure that the condition you're
-testing against has been triggered; but still treating them as UAPI
-might be too much, idk.
-
-We had to add bpf_set_retval() because some of our and third party
-libraries would upgrade to v6/v4 sockets only when they receive some
-specific errno, which doesn't make a lot of sense to me.
+> Note we have missing Reported-... tags to please syzbot.
+Jakub, please let me know if you want me to resubmit v2 of this with
+the Reported- tag added, or if you'll add that part in.
