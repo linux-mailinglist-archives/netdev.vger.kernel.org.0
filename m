@@ -2,60 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA3BC54E22F
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 15:40:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 344CE54E22E
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 15:39:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377132AbiFPNkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 09:40:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44656 "EHLO
+        id S1377120AbiFPNj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 09:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377129AbiFPNkV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 09:40:21 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 241FD2CCBA
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 06:40:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655386820; x=1686922820;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+gcrk5ojC4k34KO0aCaiFUfe+GetFi9kurrs8AjQJbs=;
-  b=KiB2ZgobRhUip69pnQjxnJ2OfC/ExbyxYRqeYk+uOIWhp8lSH/1azVOa
-   AlqmBoVVS1q70otMChAiRf+H3y8200v+Geki6p5b1C5iZ5SzI6agd25hC
-   X0eUnCsT65z5gQPAsR5H2n2ylWqSHyrKd7/Qk6B0tZNPxWbV6W/vsYfso
-   ouRf85fIFa/532lgqnrAwpijNAazgU4b45+WSY7Wh5nmDrjSKDKlPkkw+
-   FN+XDUWxMpcgxNyE6G4Pe1LgOcR7nxHnotc778EOW+N/m0ZMb0IhkQqjC
-   Caz8rhjXHrI7cDc3mZDJvrYC60/nsVWcfFLKYn8vhV4StkQBziVpB5B3v
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="343208180"
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="343208180"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 06:40:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="675027164"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by FMSMGA003.fm.intel.com with ESMTP; 16 Jun 2022 06:40:17 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 25GDeGYP031608;
-        Thu, 16 Jun 2022 14:40:16 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Sieng Piaw Liew <liew.s.piaw@gmail.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] net: don't check skb_count twice
-Date:   Thu, 16 Jun 2022 15:38:23 +0200
-Message-Id: <20220616133823.1293740-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220616020453.GA39@DESKTOP-8REGVGF.localdomain>
-References: <20220615032426.17214-1-liew.s.piaw@gmail.com> <20220615153525.1270806-1-alexandr.lobakin@intel.com> <20220616020453.GA39@DESKTOP-8REGVGF.localdomain>
+        with ESMTP id S1377130AbiFPNj2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 09:39:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 948582C10A
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 06:39:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655386766;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yTdQlPuObsWaQT9I/9ftCAj4jBjbSSJ/czOcRGxPEo0=;
+        b=Vb11MPXWhaMnXTF2cvi54pcg0783uY7icNJ/dtgnz9fVSmYZMeJXXVbuoc4Ak5ft3ANdd4
+        y4y9Dil6EDbHJ1UzS5RXT8QqZf2kNO9N/coVC723QpMf4eeRghdyzf+avyq8LkjE++wczO
+        KCR2ekh3Vyz5FEApygEBV7CjVqdkTJE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-625-1qNGqohkNymUkcMO5T9mMg-1; Thu, 16 Jun 2022 09:39:22 -0400
+X-MC-Unique: 1qNGqohkNymUkcMO5T9mMg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id ABF131C004E9;
+        Thu, 16 Jun 2022 13:39:21 +0000 (UTC)
+Received: from maya.cloud.tilaa.com (unknown [10.40.208.10])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5EB1F1121319;
+        Thu, 16 Jun 2022 13:39:20 +0000 (UTC)
+Date:   Thu, 16 Jun 2022 15:39:16 +0200
+From:   Stefano Brivio <sbrivio@redhat.com>
+To:     "Subash Abhinov Kasiviswanathan (KS)" <quic_subashab@quicinc.com>,
+        Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <maze@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        "Kaustubh Pandey" <quic_kapandey@quicinc.com>,
+        Sean Tranchetti <quic_stranche@quicinc.com>
+Subject: Re: [PATCH net v2 1/2] ipv6: Honor route mtu if it is within limit
+ of dev mtu
+Message-ID: <20220616153916.26bc2876@elisabeth>
+In-Reply-To: <132e514e-bad8-9f73-8f08-1bd5ac8aecd4@quicinc.com>
+References: <1655182915-12897-1-git-send-email-quic_subashab@quicinc.com>
+        <1655182915-12897-2-git-send-email-quic_subashab@quicinc.com>
+        <20220615173516.29c80c96@kernel.org>
+        <CANP3RGfGcr25cjnrUOdaH1rG9S9uY8uS80USXeycDBhbsX9CZw@mail.gmail.com>
+        <132e514e-bad8-9f73-8f08-1bd5ac8aecd4@quicinc.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -64,128 +72,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sieng Piaw Liew <liew.s.piaw@gmail.com>
-Date: Thu, 16 Jun 2022 10:04:53 +0800
+[Subash, please fix quoting of replies in your client, it's stripping
+email authors. I rebuilt the chain here but it's kind of painful]
 
-> On Wed, Jun 15, 2022 at 05:35:25PM +0200, Alexander Lobakin wrote:
-> > From: Sieng Piaw Liew <liew.s.piaw@gmail.com>
-> > Date: Wed, 15 Jun 2022 11:24:26 +0800
-> > 
-> > > NAPI cache skb_count is being checked twice without condition. Change to
-> > > checking the second time only if the first check is run.
-> > > 
-> > > Signed-off-by: Sieng Piaw Liew <liew.s.piaw@gmail.com>
-> > > ---
-> > >  net/core/skbuff.c | 7 ++++---
-> > >  1 file changed, 4 insertions(+), 3 deletions(-)
-> > > 
-> > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> > > index 5b3559cb1d82..c426adff6d96 100644
-> > > --- a/net/core/skbuff.c
-> > > +++ b/net/core/skbuff.c
-> > > @@ -172,13 +172,14 @@ static struct sk_buff *napi_skb_cache_get(void)
-> > >  	struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
-> > >  	struct sk_buff *skb;
-> > >  
-> > > -	if (unlikely(!nc->skb_count))
-> > > +	if (unlikely(!nc->skb_count)) {
-> > >  		nc->skb_count = kmem_cache_alloc_bulk(skbuff_head_cache,
-> > >  						      GFP_ATOMIC,
-> > >  						      NAPI_SKB_CACHE_BULK,
-> > >  						      nc->skb_cache);
-> > > -	if (unlikely(!nc->skb_count))
-> > > -		return NULL;
-> > > +		if (unlikely(!nc->skb_count))
-> > > +			return NULL;
-> > > +	}
-> > 
-> > I was sure the compilers are able to see that if the condition is
-> > false first time, it will be the second as well. Just curious, have
-> > you consulted objdump/objdiff to look whether anything changed?
-> 
-> I'm a total noob at this. Thanks for the guidance.
-> Here is the diff I just generated:
-> 
-> < before patch
-> > after patch
-> 
-> 619,620c619,620
-> <   14: 24630000        addiu   v1,v1,0
-> <   18: 00021080        sll     v0,v0,0x2
-> ---
-> >   14: 00021080        sll     v0,v0,0x2
-> >   18: 24630000        addiu   v1,v1,0
-> 626,635c626,635
-> <   30: 8e030010        lw      v1,16(s0)
-> <   34: 1060000b        beqz    v1,64 <napi_skb_cache_get+0x64>
-> <   38: 3c020000        lui     v0,0x0
-> <   3c: 24620003        addiu   v0,v1,3
-> <   40: 2463ffff        addiu   v1,v1,-1
-> <   44: ae030010        sw      v1,16(s0)
-> <   48: 8fbf0014        lw      ra,20(sp)
-> <   4c: 00021080        sll     v0,v0,0x2
-> <   50: 02028021        addu    s0,s0,v0
-> <   54: 8e020004        lw      v0,4(s0)
-> ---
-> >   30: 8e020010        lw      v0,16(s0)
-> >   34: 1040000b        beqz    v0,64 <napi_skb_cache_get+0x64>
-> >   38: 26070014        addiu   a3,s0,20
-> >   3c: 24430003        addiu   v1,v0,3
-> >   40: 00031880        sll     v1,v1,0x2
-> >   44: 2442ffff        addiu   v0,v0,-1
-> >   48: ae020010        sw      v0,16(s0)
-> >   4c: 02038021        addu    s0,s0,v1
-> >   50: 8e020004        lw      v0,4(s0)
-> >   54: 8fbf0014        lw      ra,20(sp)
-> 639,640c639,640
-> <   64: 8c440000        lw      a0,0(v0)
-> <   68: 26070014        addiu   a3,s0,20
-> ---
-> >   64: 3c020000        lui     v0,0x0
-> >   68: 8c440000        lw      a0,0(v0)
-> 644c644
-> <   78: 00401825        move    v1,v0
-> ---
-> >   78: 1440fff0        bnez    v0,3c <napi_skb_cache_get+0x3c>
-> 646c646
-> <   80: 1460ffee        bnez    v1,3c <napi_skb_cache_get+0x3c>
-> ---
-> >   80: 1000fff4        b       54 <napi_skb_cache_get+0x54>
-> 648,651d647
-> <   88: 8fbf0014        lw      ra,20(sp)
-> <   8c: 8fb00010        lw      s0,16(sp)
-> <   90: 03e00008        jr      ra
-> <   94: 27bd0018        addiu   sp,sp,24
-> 1736c1732
-> <  244: 24050ae8        li      a1,2792
-> ---
-> >  244: 24050ae9        li      a1,2793
-> 
-> ...(More similar li instruction diffs)
-> I think there are slightly more instructions before patch.
+On Wed, 15 Jun 2022 23:36:10 -0600
+"Subash Abhinov Kasiviswanathan (KS)" <quic_subashab@quicinc.com> wrote:
 
-Ok, thank you! Then it makes sense. I'll recheck my recent code
-whether I did it that way again somewhere :D
+> On Wed, 15 Jun 2022 18:21:07 -0700
+> Maciej =C5=BBenczykowski <maze@google.com> wrote:
+> >
+> > On Wed, Jun 15, 2022 at 5:35 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > >
+> > > CC maze, please add him if there is v3
+> > >
+> > > I feel like the problem is with the fact that link mtu resets protocol
+> > > MTUs. Nothing we can do about that, so why not set link MTU to 9k (or
+> > > whatever other quantification of infinity there is)
 
-> 
-> > 
-> > Also, please use scripts/get_maintainers.pl or at least git blame
-> > and add the original authors to Ccs next time, so that they won't
-> > miss your changes and will be able to review them in time. E.g. I
-> > noticed this patch only when it did hit the net-next tree already,
-> > as I don't monitor LKML 24/7 (but I do that with my mailbox).
-> > 
-> 
-> Thanks for the tip.
-> 
-> > >  
-> > >  	skb = nc->skb_cache[--nc->skb_count];
-> > >  	kasan_unpoison_object_data(skbuff_head_cache, skb);
-> > > -- 
-> > > 2.17.1
-> > 
-> > Thanks,
-> > Olek
+2^16 - 1, works for both IPv4 and IPv6.
 
-Thanks,
-Olek
+> > > so you don't have
+> > > to touch it as you discover the MTU for v4 and v6? =20
+>=20
+> That's a good point.
+>=20
+> > > My worry is that the tweaking of the route MTU update heuristic will
+> > > have no end.
+> > >
+> > > Stefano, does that makes sense or you think the change is good? =20
+
+It makes sense -- I'm also worried that we're introducing another small
+issue to fix what, I think, is the smallest possible inconvenience.
+
+> The only concern is that current behavior causes the initial packets=20
+> after interface MTU increase to get dropped as part of PMTUD if the IPv6=
+=20
+> PMTU itself didn't increase. I am not sure if that was the intended=20
+> behavior as part of the original change. Stefano, could you please confir=
+m?
+
+Correct, that was the intended behaviour, because I think one dropped
+packet is the smallest possible price we can pay for, knowingly, not
+having anymore a PMTU estimate that's accurate in terms of RFC 1191.
+
+> > I vaguely recall that if you don't want device mtu changes to affect
+> > ipv6 route mtu, then you should set 'mtu lock' on the routes.
+> > (this meaning of 'lock' for v6 is different than for ipv4, where
+> > 'lock' means transmit IPv4/TCP with Don't Frag bit unset) =20
+
+"Locked" exceptions are rather what's created as a result of ICMP and
+ICMPv6 messages -- I guess you can have a look or run the basic
+pmtu_ipv4() and pmtu_ipv6() to get a sense of it.
+
+With the existing implementation, if you increase the link MTU to a
+value that's bigger than the locked value from PMTU discovery, it will
+not increase in general: the exception is locking it. That's what's
+described in the comment that this patch is removing.
+
+It will increase only under that specific condition, namely, if the
+current PMTU estimate is the same as the old link MTU, because then we
+can take the reasonable assumption that our link was the limiting
+factor, and not some other link on the path. It might be wrong, but I
+still maintain it's a reasonable assumption, and, most importantly, we
+have no way to prove it wrong without PMTU discovery.
+
+--=20
+Stefano
+
