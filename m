@@ -2,145 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4271954E665
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 17:51:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00CC154E673
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 17:57:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377471AbiFPPvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 11:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56842 "EHLO
+        id S1377225AbiFPP52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 11:57:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233010AbiFPPvD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 11:51:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E0C427DE;
-        Thu, 16 Jun 2022 08:51:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 950D260BAD;
-        Thu, 16 Jun 2022 15:51:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC4FFC34114;
-        Thu, 16 Jun 2022 15:51:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655394661;
-        bh=PaJOcCCOZMISwlBFFb5mPfz00LQCHmckbNW4/JT3HXk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AJwMwl3EcuRXCCpQxreHZ6QaquYE/XW383MEso/dl9qitr2DVDmVF6thuxBSgQ/pG
-         kSOWLWpUDJCutV6kF3GPsZAp56WVvvze0QpwMVBfO3uOQtoAmzikVSDv4l8QK6AUlz
-         89MAdBBNXGy3ib+sAKGjK5Ozjj6stT+yVu8a7qB5Ov4G0GXSd5Po0XO0YQmc6Vpq2v
-         3oE6ItDnKNuTH0O5fpnhi/77bCHAmZ7TQrOVoB+P2PJFABV9XcbRAkKfPudPBb4APH
-         jPIAtTE+8di9C+A0CkXE48GvMs+Cw8+G2EHH1oA9AYUtC9bRiQlj7I1MgPhvPL/iQE
-         eoJFHesoxzsSw==
-Date:   Thu, 16 Jun 2022 08:50:59 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     =?UTF-8?B?5qKB5paH6Z+s?= <wentao_liang_g@163.com>
-Cc:     jdmason@kudzu.us, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] [PATCH net v2]vexy: Fix a use-after-free bug in
- vxge-main.c
-Message-ID: <20220616085059.680dc215@kernel.org>
-In-Reply-To: <1f10f9f8.6c02.1816cb0dc51.Coremail.wentao_liang_g@163.com>
-References: <20220615013816.6593-1-Wentao_Liang_g@163.com>
-        <20220615195050.6e4785ef@kernel.org>
-        <1f10f9f8.6c02.1816cb0dc51.Coremail.wentao_liang_g@163.com>
+        with ESMTP id S1377859AbiFPP51 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 11:57:27 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D384130567
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 08:57:26 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id u37so1878859pfg.3
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 08:57:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=y4hIoccrpEBvbRmekAk7uJ6aJ9uBx6pEBsR/N5eo7qo=;
+        b=b3UcH0OXINDS1EuYLbs/VNoRuYYlEAIvvV3oGEZJkXqzIXpNDpRWLlYHCjcftLL9yK
+         Ead9OZ85TawNLeKn0616r3m7uM4LhsGFEb8uohi1mTi/F5y1/KsbN1cIRjLwD3Uerp79
+         SoUQ2B5LhCNvbu1bqnLCpIIuZymnTtd7nUKkv8OYKz6WlkNhB8xKE/INTyFuQP6lAVM4
+         qwFEPBEw69YhZOu38XuD3LopokYuzA62VQ77znCCDS9SXYF2g6FQV+UBlGHrggyYyYXW
+         Q/wQodKpWApb7VL6sEThHONtrES2AaZmtQvYQSKdn33PyEsA0L2QhVBckRzbTj4GUUGP
+         oyHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=y4hIoccrpEBvbRmekAk7uJ6aJ9uBx6pEBsR/N5eo7qo=;
+        b=HRQ9LX5zl2CLzjw9cBhx2m6GsGct14YvAO2JqeQfYSEeGJBla1mq9mgDKlE/q/uUPV
+         OyX7W4njlb+uykmIAbCpAHweLMCjc2lyJrgUaqgKNZ+z7h9usMwlKi9SShIYYKENh+pd
+         ZsBsz20VRz3AaaRTdXR9NVISZShj3shJTzYXl8+WF0iD6PjgutrZZkAAOX0Uan9g4gg7
+         A89HSwsSAjFZCTs62zx6blaM/0GavreaMn3YMx/K5/TBmqlOwodKg9K9r9atuzghTxBw
+         qGe6/NYp6rMv6l5WqLw/eyMeJfejQBWa+iLCOFVZWa6IJ94xb2ULhcEF2hOvi9LdQRyV
+         6uuw==
+X-Gm-Message-State: AJIora/jpeedRMSwDdzLfCb3ikp1KbiVUEIFtMC0/PNP8aA8TYueq9On
+        cjW1E7+0HN3kYZKuXXEJKREtyOhEhQRo9ZSkXJIbig==
+X-Google-Smtp-Source: AGRyM1tgdihzLruKB0/p4TES0q+uCOr/NKoSqikU431QPVJ2IRxlAKRL8A1X734iOfj79eFGf6t2YuU4ZmYe0XL/Epg=
+X-Received: by 2002:aa7:8691:0:b0:51c:db9:4073 with SMTP id
+ d17-20020aa78691000000b0051c0db94073mr5589886pfo.72.1655395046062; Thu, 16
+ Jun 2022 08:57:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <CAHo-Ooy+8O16k0oyMGHaAcmLm_Pfo=Ju4moTc95kRp2Z6itBcg@mail.gmail.com>
+ <CANP3RGed9Vbu=8HfLyNs9zwA=biqgyew=+2tVxC6BAx2ktzNxA@mail.gmail.com>
+ <CAADnVQKBqjowbGsSuc2g8yP9MBANhsroB+dhJep93cnx_EmNow@mail.gmail.com>
+ <CANP3RGcZ4NULOwe+nwxfxsDPSXAUo50hWyN9Sb5b_d=kfDg=qg@mail.gmail.com>
+ <YqodE5lxUCt6ojIw@google.com> <YqpAYcvM9DakTjWL@google.com>
+ <YqpB+7pDwyOk20Cp@google.com> <YqpDcD6vkZZfWH4L@google.com> <CANP3RGcBCeMeCfpY3__4X_OHx6PB6bXtRjwLdYi-LRiegicVXQ@mail.gmail.com>
+In-Reply-To: <CANP3RGcBCeMeCfpY3__4X_OHx6PB6bXtRjwLdYi-LRiegicVXQ@mail.gmail.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Thu, 16 Jun 2022 08:57:14 -0700
+Message-ID: <CAKH8qBv=+QVBqHd=9rAWe3d5d47dSkppYc1JbS+WgQs8XgB+Yg@mail.gmail.com>
+Subject: Re: Curious bpf regression in 5.18 already fixed in stable 5.18.3
+To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Carlos Llamas <cmllamas@google.com>,
+        YiFei Zhu <zhuyifei@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Jun 2022 21:25:39 +0800 (CST) =E6=A2=81=E6=96=87=E9=9F=AC wrote:
-> >The driver is not called "vexy" as far as I can tell.
-> > =20
-> >> The pointer vdev points to a memory region adjacent to a net_device
-> >> structure ndev, which is a field of hldev. At line 4740, the invocation
-> >> to vxge_device_unregister unregisters device hldev, and it also releas=
-es
-> >> the memory region pointed by vdev->bar0. At line 4743, the freed memory
-> >> region is referenced (i.e., iounmap(vdev->bar0)), resulting in a
-> >> use-after-free vulnerability. We can fix the bug by calling iounmap
-> >> before vxge_device_unregister. =20
+On Wed, Jun 15, 2022 at 6:36 PM Maciej =C5=BBenczykowski <maze@google.com> =
+wrote:
+>
+> > > > I've bisected the original issue to:
+> > > >
+> > > > b44123b4a3dc ("bpf: Add cgroup helpers bpf_{get,set}_retval to get/=
+set
+> > > > syscall return value")
+> > > >
+> > > > And I believe it's these two lines from the original patch:
+> > > >
+> > > >  #define BPF_PROG_CGROUP_INET_EGRESS_RUN_ARRAY(array, ctx, func)   =
+         \
+> > > >     ({                                              \
+> > > > @@ -1398,10 +1398,12 @@ out:
+> > > >             u32 _ret;                               \
+> > > >             _ret =3D BPF_PROG_RUN_ARRAY_CG_FLAGS(array, ctx, func, =
+0, &_flags); \
+> > > >             _cn =3D _flags & BPF_RET_SET_CN;          \
+> > > > +           if (_ret && !IS_ERR_VALUE((long)_ret))  \
+> > > > +                   _ret =3D -EFAULT;
+> > > >
+> > > > _ret is u32 and ret gets -1 (ffffffff). IS_ERR_VALUE((long)ffffffff=
+)
+> > > returns
+> > > > false in this case because it doesn't sign-expand the argument and
+> > > internally
+> > > > does ffff_ffff >=3D ffff_ffff_ffff_f001 comparison.
+> > > >
+> > > > I'll try to see what I've changed in my unrelated patch to fix it. =
+But
+> > > I think
+> > > > we should audit all these IS_ERR_VALUE((long)_ret) regardless; they
+> > > don't
+> > > > seem to work the way we want them to...
 > >
-> >Are you sure the bar0 is not needed by the netdev? You're freeing =20
-> >memory that the netdev may need until it's unregistered. =20
+> > > Ok, and my patch fixes it because I'm replacing 'u32 _ret' with 'int =
+ret'.
+> >
+> > > So, basically, with u32 _ret we have to do IS_ERR_VALUE((long)(int)_r=
+et).
+> >
+> > > Sigh..
+> >
+> > And to follow up on that, the other two places we have are fine:
+> >
+> > IS_ERR_VALUE((long)run_ctx.retval))
+> >
+> > run_ctx.retval is an int.
+>
+> I'm guessing this means the regression only affects 64-bit archs,
+> where long =3D void* is 8 bytes > u32 of 4 bytes, but not 32-bit ones,
+> where long =3D u32 =3D 4 bytes
+>
+> Unfortunately my dev machine's 32-bit build capability has somehow
+> regressed again and I can't check this.
 
-> We try unregister the device in a patched kernel. The device is successfu=
-lly
->  removed and there is not any warning or exception. See the following=20
-> snapshot. I use lspci to list pci devices, we can see that the device=20
-> (00:03.0 Unclassified ...Gigabit ethernet PCIe (rev 10)) is removed safel=
-y.=20
-> Thus, I believe that the bar0 is not needed when freeing the device.
-
-You need to reply in plain text, no HTML, the mailing lit rejects
-emails with HTML in them.
-
-No errors happening during a test is not a sufficient proof of
-correctness. You need to analyze the driver and figure out what bar0=20
-is used for.
-
-Alternatively just save the address of bar0 to a local variable, let
-the netdev unregister happen, and then call *unmap() on the local
-variable. That won't move the unmap and avoid the UAF.
-
-But please LMK how you use these cards first.
-
-> /************************************************************************=
-********/
-> root@kernel:~# lspci
-> 00:00.0 Host bridge: Intel Corporation 82G33/G31/P35/P31 Express DRAM=20
-> Controller
-> 00:01.0 VGA compatible controller: Device 1234:1111 (rev 02)
-> 00:02.0 Ethernet controller: Intel Corporation 82574L Gigabit Network=20
-> Connection
-> 00:03.0 Unclassified device [00ff]: Exar Corp. X3100 Series 10 Gigabit=20
-> Ethernet PCIe (rev 10)
-
-Is this a real NIC card, or just a emulated / virtualized one?=20
-Do you use it day to day?=20
-
-> 00:1d.0 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI=20
-> Controller #1 (rev 03)
-> 00:1d.1 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI=20
-> Controller #2 (rev 03)
-> 00:1d.2 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI=20
-> Controller #3 (rev 03)
-> 00:1d.7 USB controller: Intel Corporation 82801I (ICH9 Family) USB2 EHCI=
-=20
-> Controller #1 (rev 03)
-> 00:1f.0 ISA bridge: Intel Corporation 82801IB (ICH9) LPC Interface=20
-> Controller (rev 02)
-> 00:1f.2 SATA controller: Intel Corporation 82801IR/IO/IH (ICH9R/DO/DH) 6
->  port SATA Controller [AHCI mode] (rev 02)
-> 00:1f.3 SMBus: Intel Corporation 82801I (ICH9 Family) SMBus Controller=20
-> (rev 02)
-> root@kernel:~# echo 1 > /sys/bus/pci/devices/0000:00:03.0/remove
-> root@kernel:~# lspci
-> 00:00.0 Host bridge: Intel Corporation 82G33/G31/P35/P31 Express DRAM
->  Controller
-> 00:01.0 VGA compatible controller: Device 1234:1111 (rev 02)
-> 00:02.0 Ethernet controller: Intel Corporation 82574L Gigabit Network
->  Connection
-> 00:1d.0 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI
->  Controller #1 (rev 03)
-> 00:1d.1 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI
->  Controller #2 (rev 03)
-> 00:1d.2 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI
->  Controller #3 (rev 03)
-> 00:1d.7 USB controller: Intel Corporation 82801I (ICH9 Family) USB2 EHCI
->  Controller #1 (rev 03)
-> 00:1f.0 ISA bridge: Intel Corporation 82801IB (ICH9) LPC Interface=20
-> Controller (rev 02)
-> 00:1f.2 SATA controller: Intel Corporation 82801IR/IO/IH (ICH9R/DO/DH) 6=
-=20
-> port SATA Controller [AHCI mode] (rev 02)
-> 00:1f.3 SMBus: Intel Corporation 82801I (ICH9 Family) SMBus=20
-> Controller (rev 02)
+Seems so, yes. But I'm actually not sure whether we should at all
+treat it as a regression. There is a question of whether that EPERM is
+UAPI or not. That's why we most likely haven't caught it in the
+selftests; most of the time we only check that syscall has returned -1
+and don't pay attention to the particular errno.
