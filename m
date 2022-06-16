@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BE3354E90F
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 20:05:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3235B54E910
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 20:06:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238582AbiFPSFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 14:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40446 "EHLO
+        id S1357679AbiFPSGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 14:06:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236071AbiFPSFe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 14:05:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 556F04EA32
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 11:05:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655402732;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=wHZxKBmswCOr13iMBhbEU6ZriEvyMFvs7E1H/uMn6Ec=;
-        b=KsGgGmHkJpuJZ9cCdCtZSN7KM4kqqvw5HdDQlLlYwXOkatl3uJNRbIbTn30RpAkD+iVfDb
-        8/F0gZZlmtvoeWUwJ7yJU8KgS1Bss7JCW1iTDf++elNxHCEBO90wLMsJcl1t2Pv1bjWhNS
-        BdXzXox22Utj5H3bcJzBO6gkN82FCYg=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-543-xt9By-b3PLK0GAC-zuitMw-1; Thu, 16 Jun 2022 14:05:29 -0400
-X-MC-Unique: xt9By-b3PLK0GAC-zuitMw-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8C68A8525AD;
-        Thu, 16 Jun 2022 18:05:28 +0000 (UTC)
-Received: from p1.luc.cera.cz.com (unknown [10.40.193.216])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9C0C740334E;
-        Thu, 16 Jun 2022 18:05:27 +0000 (UTC)
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Michal Kubecek <mkubecek@suse.cz>,
-        Daniel Juarez <djuarezg@cern.ch>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH ethtool v3] sff-8079/8472: Fix missing sff-8472 output in netlink path
-Date:   Thu, 16 Jun 2022 20:05:26 +0200
-Message-Id: <20220616180526.3892055-1-ivecera@redhat.com>
+        with ESMTP id S1355597AbiFPSGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 14:06:33 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C10704EA32;
+        Thu, 16 Jun 2022 11:06:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655402792; x=1686938792;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/doCgaA4+XHWFiF5aY5ptTbuf7V2rYnBuqnLKbBy2g8=;
+  b=Mdb02Zd0tEqj2PqMkDsZq3O1rVHvSEiyMzgjXel+D4mtShLP4o8zimoP
+   u8IkHDm6nL4IEIrbfvuaukmLZQiTeItgO5zjA4oShiRZE+5X6TMeck4oZ
+   cQxNaIqaGIhfnLVV8qHGccj/JzSBRhnO5HyYilpFiPldyoK+PP9s0fwGi
+   58at0JeOeIPAHfvtGMw3cfKP4HWLDJdm8+WCqJ4x3yy8ima5xlKSIMw1U
+   2s9KvNW47ZZzNW555y1CuLgQ8BPY1buVjMYqjcRoCnWuk6roHR74V0u9w
+   YUfEpD4GXClN2aU0pjRkbzZJpICrX+rzV8DtRcQFnZeI+fuPqipP0SMom
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="343275897"
+X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
+   d="scan'208";a="343275897"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 11:06:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
+   d="scan'208";a="641664258"
+Received: from boxer.igk.intel.com ([10.102.20.173])
+  by fmsmga008.fm.intel.com with ESMTP; 16 Jun 2022 11:06:16 -0700
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
+        bjorn@kernel.org, kuba@kernel.org,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH v4 bpf-next 00/10] AF_XDP ZC selftests
+Date:   Thu, 16 Jun 2022 20:05:59 +0200
+Message-Id: <20220616180609.905015-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -57,104 +58,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 25b64c66f58d ("ethtool: Add netlink handler for
-getmodule (-m)") provided a netlink variant for getmodule
-but also introduced a regression as netlink output is different
-from ioctl output that provides information from A2h page
-via sff8472_show_all().
+v3->v4:
+* use ice_{down,up} rather than ice_{stop,open} and check retvals
+  when toggling loopback mode (Jakub)
+* Remove patch that was throwing away xsk->outstanding_tx (Magnus)
 
-To fix this the netlink path should check a presence of A2h page
-by value of bit 6 in byte 92 of page A0h and if it is set then
-get A2h page and call sff8472_show_all().
+v2->v3:
+* split loopback patch to ice_set_features() refactor part and other
+  part with actual loopback toggling support (Alexandr)
+* collect more acks from Magnus
 
-Fixes: 25b64c66f58d ("ethtool: Add netlink handler for getmodule (-m)")
-Tested-by: Daniel Juarez <djuarezg@cern.ch>
-Tested-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
-Co-authored-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
----
- sfpid.c | 54 ++++++++++++++++++++++++++++++++++++++++++++++--------
- 1 file changed, 46 insertions(+), 8 deletions(-)
+v1->v2:
+* collect acks from Magnus
+* drop redundant 'ret' variable in patch 4 (Magnus)
+* drop redundant assignments to ifobject->xdp_flags in patch 10 (Magnus)
+* use NETIF_F_LOOPBACK instead of introducing priv-flag (Alexandr)
 
-diff --git a/sfpid.c b/sfpid.c
-index 621d1e86c278..1bc45c183770 100644
---- a/sfpid.c
-+++ b/sfpid.c
-@@ -13,8 +13,9 @@
- #include "sff-common.h"
- #include "netlink/extapi.h"
- 
--#define SFF8079_PAGE_SIZE	0x80
--#define SFF8079_I2C_ADDRESS_LOW	0x50
-+#define SFF8079_PAGE_SIZE		0x80
-+#define SFF8079_I2C_ADDRESS_LOW		0x50
-+#define SFF8079_I2C_ADDRESS_HIGH	0x51
- 
- static void sff8079_show_identifier(const __u8 *id)
- {
-@@ -450,18 +451,55 @@ void sff8079_show_all_ioctl(const __u8 *id)
- 	sff8079_show_all_common(id);
- }
- 
--int sff8079_show_all_nl(struct cmd_context *ctx)
-+static int sff8079_get_eeprom_page(struct cmd_context *ctx, u8 i2c_address,
-+				   __u8 *buf)
- {
- 	struct ethtool_module_eeprom request = {
- 		.length = SFF8079_PAGE_SIZE,
--		.i2c_address = SFF8079_I2C_ADDRESS_LOW,
-+		.i2c_address = i2c_address,
- 	};
- 	int ret;
- 
- 	ret = nl_get_eeprom_page(ctx, &request);
--	if (ret < 0)
--		return ret;
--	sff8079_show_all_common(request.data);
-+	if (!ret)
-+		memcpy(buf, request.data, SFF8079_PAGE_SIZE);
-+
-+	return ret;
-+}
-+
-+int sff8079_show_all_nl(struct cmd_context *ctx)
-+{
-+	u8 *buf;
-+	int ret;
-+
-+	/* The SFF-8472 parser expects a single buffer that contains the
-+	 * concatenation of the first 256 bytes from addresses A0h and A2h,
-+	 * respectively.
-+	 */
-+	buf = calloc(1, ETH_MODULE_SFF_8472_LEN);
-+	if (!buf)
-+		return -ENOMEM;
-+
-+	/* Read A0h page */
-+	ret = sff8079_get_eeprom_page(ctx, SFF8079_I2C_ADDRESS_LOW, buf);
-+	if (ret)
-+		goto out;
-+
-+	sff8079_show_all_common(buf);
-+
-+	/* Finish if A2h page is not present */
-+	if (!(buf[92] & (1 << 6)))
-+		goto out;
-+
-+	/* Read A2h page */
-+	ret = sff8079_get_eeprom_page(ctx, SFF8079_I2C_ADDRESS_HIGH,
-+				      buf + ETH_MODULE_SFF_8079_LEN);
-+	if (ret)
-+		goto out;
-+
-+	sff8472_show_all(buf);
-+out:
-+	free(buf);
- 
--	return 0;
-+	return ret;
- }
+Hi!
+
+This set makes it possible to test ice driver with test suite that
+xdpxceiver provides. In order to do it, device needs to be turned on to
+loopback mode, so in first patch ice_set_features() is refactored and
+then in second patch NETIF_F_LOOPBACK support is added to it.
+Furthermore, ethtool's loopback test is fixed for ice (patch 3 and 4).
+Besides turning device into loopback mode, I was limiting queue count to
+1, so that none of the steering filters are needed.
+
+Rest of the work is related to xdpxceiver. Currently it is assumed that
+underlying device supports native XDP. It is true for veth, but might
+not be for other device that might be used with xdpxceiver once this
+patch set land. So, patch 4 adds a logic to find out if underlying
+device supports XDP so that TEST_MODE_DRV can be used for test suite.
+Patch 6 restores close() on netns fd that was removed by accident.
+
+In patch 7, default Rx pkt stream is added so physical device testing
+will be able to use shared UMEM in a way that Tx will utilize first half
+of buffer space and Rx second one. Then, patch 8 adds support for running
+xdpxceiver on physical devices.
+
+Patch 9 prepares xdpxceiver to address ZC drivers that clean lazily Tx
+descriptors (and therefore produce XSK descs to CQ) so that pacing
+algorithm works fine.
+
+Patch 10 finally adds new TEST_MODE_ZC for testing zero copy AF_XDP
+driver support.
+
+This work already allowed us to spot and fix two bugs in AF_XDP kernel
+side ([0], [1]).
+
+v1 is here [2].
+v2 is here [3].
+v3 is here [4].
+
+[0]: https://lore.kernel.org/bpf/20220425153745.481322-1-maciej.fijalkowski@intel.com/
+[1]: https://lore.kernel.org/bpf/20220607142200.576735-1-maciej.fijalkowski@intel.com/
+[2]: https://lore.kernel.org/bpf/20220610150923.583202-1-maciej.fijalkowski@intel.com/
+[3]: https://lore.kernel.org/bpf/20220614174749.901044-1-maciej.fijalkowski@intel.com/
+[4]: https://lore.kernel.org/bpf/20220615161041.902916-1-maciej.fijalkowski@intel.com/
+
+Thank you.
+
+
+Maciej Fijalkowski (10):
+  ice: compress branches in ice_set_features()
+  ice: allow toggling loopback mode via ndo_set_features callback
+  ice: check DD bit on Rx descriptor rather than (EOP | RS)
+  ice: do not setup vlan for loopback VSI
+  selftests: xsk: query for native XDP support
+  selftests: xsk: add missing close() on netns fd
+  selftests: xsk: introduce default Rx pkt stream
+  selftests: xsk: add support for executing tests on physical device
+  selftests: xsk: rely on pkts_in_flight in wait_for_tx_completion()
+  selftests: xsk: add support for zero copy testing
+
+ drivers/net/ethernet/intel/ice/ice_ethtool.c |   2 +-
+ drivers/net/ethernet/intel/ice/ice_main.c    |  81 ++--
+ tools/testing/selftests/bpf/test_xsk.sh      |  52 ++-
+ tools/testing/selftests/bpf/xdpxceiver.c     | 380 ++++++++++++++-----
+ tools/testing/selftests/bpf/xdpxceiver.h     |   9 +-
+ 5 files changed, 378 insertions(+), 146 deletions(-)
+
 -- 
-2.35.1
+2.27.0
 
