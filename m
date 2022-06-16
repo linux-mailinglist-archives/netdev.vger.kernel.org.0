@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A166A54E663
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 17:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4271954E665
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 17:51:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377029AbiFPPuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 11:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56482 "EHLO
+        id S1377471AbiFPPvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 11:51:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233010AbiFPPuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 11:50:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D77DC4198D
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 08:50:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655394615;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=oR7FOdSV73SVoRM/IWrD/GkndnxYt8yDT3D88SGhE+o=;
-        b=KniY/roz9LTxN8zv9keAz/4oUqCCy9xQb2q+NQNKcOXjAQRO2B0mbuWKnQduILOV/wjr5V
-        KnurLL75iqgsJfBJkzEnXKtm7DG9ShlWNtB9tJV2ppzJnGX/qOrX2jW1fTp/oOyt/W+CcN
-        DMHGwfNd1ACy6ofbqsF2V18zdjlZxco=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-427-OUqm75LlNwq79eUNlPNt-w-1; Thu, 16 Jun 2022 11:50:13 -0400
-X-MC-Unique: OUqm75LlNwq79eUNlPNt-w-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S233010AbiFPPvD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 11:51:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E0C427DE;
+        Thu, 16 Jun 2022 08:51:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0B5FE296A609;
-        Thu, 16 Jun 2022 15:50:13 +0000 (UTC)
-Received: from p1.luc.cera.cz.com (unknown [10.40.193.216])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E3AB710725;
-        Thu, 16 Jun 2022 15:50:11 +0000 (UTC)
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Michal Kubecek <mkubecek@suse.cz>,
-        Daniel Juarez <djuarezg@cern.ch>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH ethtool] sff-8079/8472: Fix missing sff-8472 output in netlink path
-Date:   Thu, 16 Jun 2022 17:50:09 +0200
-Message-Id: <20220616155009.3609572-1-ivecera@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 950D260BAD;
+        Thu, 16 Jun 2022 15:51:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC4FFC34114;
+        Thu, 16 Jun 2022 15:51:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655394661;
+        bh=PaJOcCCOZMISwlBFFb5mPfz00LQCHmckbNW4/JT3HXk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=AJwMwl3EcuRXCCpQxreHZ6QaquYE/XW383MEso/dl9qitr2DVDmVF6thuxBSgQ/pG
+         kSOWLWpUDJCutV6kF3GPsZAp56WVvvze0QpwMVBfO3uOQtoAmzikVSDv4l8QK6AUlz
+         89MAdBBNXGy3ib+sAKGjK5Ozjj6stT+yVu8a7qB5Ov4G0GXSd5Po0XO0YQmc6Vpq2v
+         3oE6ItDnKNuTH0O5fpnhi/77bCHAmZ7TQrOVoB+P2PJFABV9XcbRAkKfPudPBb4APH
+         jPIAtTE+8di9C+A0CkXE48GvMs+Cw8+G2EHH1oA9AYUtC9bRiQlj7I1MgPhvPL/iQE
+         eoJFHesoxzsSw==
+Date:   Thu, 16 Jun 2022 08:50:59 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     =?UTF-8?B?5qKB5paH6Z+s?= <wentao_liang_g@163.com>
+Cc:     jdmason@kudzu.us, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] [PATCH net v2]vexy: Fix a use-after-free bug in
+ vxge-main.c
+Message-ID: <20220616085059.680dc215@kernel.org>
+In-Reply-To: <1f10f9f8.6c02.1816cb0dc51.Coremail.wentao_liang_g@163.com>
+References: <20220615013816.6593-1-Wentao_Liang_g@163.com>
+        <20220615195050.6e4785ef@kernel.org>
+        <1f10f9f8.6c02.1816cb0dc51.Coremail.wentao_liang_g@163.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,102 +57,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 5b64c66f58d ("ethtool: Add netlink handler for
-getmodule=0D (-m)") provided a netlink variant for getmodule
-but also introduced a regression as netlink output is different
-from ioctl output that provides information from A2h page
-via sff8472_show_all().
+On Thu, 16 Jun 2022 21:25:39 +0800 (CST) =E6=A2=81=E6=96=87=E9=9F=AC wrote:
+> >The driver is not called "vexy" as far as I can tell.
+> > =20
+> >> The pointer vdev points to a memory region adjacent to a net_device
+> >> structure ndev, which is a field of hldev. At line 4740, the invocation
+> >> to vxge_device_unregister unregisters device hldev, and it also releas=
+es
+> >> the memory region pointed by vdev->bar0. At line 4743, the freed memory
+> >> region is referenced (i.e., iounmap(vdev->bar0)), resulting in a
+> >> use-after-free vulnerability. We can fix the bug by calling iounmap
+> >> before vxge_device_unregister. =20
+> >
+> >Are you sure the bar0 is not needed by the netdev? You're freeing =20
+> >memory that the netdev may need until it's unregistered. =20
 
-To fix this the netlink path should check a presence of A2h page
-by value of bit 6 in byte 92 of page A0h and if it is set then
-get A2h page and call sff8472_show_all().
+> We try unregister the device in a patched kernel. The device is successfu=
+lly
+>  removed and there is not any warning or exception. See the following=20
+> snapshot. I use lspci to list pci devices, we can see that the device=20
+> (00:03.0 Unclassified ...Gigabit ethernet PCIe (rev 10)) is removed safel=
+y.=20
+> Thus, I believe that the bar0 is not needed when freeing the device.
 
-Fixes: 5b64c66f58d ("ethtool: Add netlink handler for getmodule=0D (-m)")
-Tested-by: Daniel Juarez <djuarezg@cern.ch>
-Co-authored-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
----
- sfpid.c | 54 ++++++++++++++++++++++++++++++++++++++++++++++--------
- 1 file changed, 46 insertions(+), 8 deletions(-)
+You need to reply in plain text, no HTML, the mailing lit rejects
+emails with HTML in them.
 
-diff --git a/sfpid.c b/sfpid.c
-index 621d1e86c278..1bc45c183770 100644
---- a/sfpid.c
-+++ b/sfpid.c
-@@ -13,8 +13,9 @@
- #include "sff-common.h"
- #include "netlink/extapi.h"
-=20
--#define SFF8079_PAGE_SIZE	0x80
--#define SFF8079_I2C_ADDRESS_LOW	0x50
-+#define SFF8079_PAGE_SIZE		0x80
-+#define SFF8079_I2C_ADDRESS_LOW		0x50
-+#define SFF8079_I2C_ADDRESS_HIGH	0x51
-=20
- static void sff8079_show_identifier(const __u8 *id)
- {
-@@ -450,18 +451,55 @@ void sff8079_show_all_ioctl(const __u8 *id)
- 	sff8079_show_all_common(id);
- }
-=20
--int sff8079_show_all_nl(struct cmd_context *ctx)
-+static int sff8079_get_eeprom_page(struct cmd_context *ctx, u8 i2c_address,
-+				   __u8 *buf)
- {
- 	struct ethtool_module_eeprom request =3D {
- 		.length =3D SFF8079_PAGE_SIZE,
--		.i2c_address =3D SFF8079_I2C_ADDRESS_LOW,
-+		.i2c_address =3D i2c_address,
- 	};
- 	int ret;
-=20
- 	ret =3D nl_get_eeprom_page(ctx, &request);
--	if (ret < 0)
--		return ret;
--	sff8079_show_all_common(request.data);
-+	if (!ret)
-+		memcpy(buf, request.data, SFF8079_PAGE_SIZE);
-+
-+	return ret;
-+}
-+
-+int sff8079_show_all_nl(struct cmd_context *ctx)
-+{
-+	u8 *buf;
-+	int ret;
-+
-+	/* The SFF-8472 parser expects a single buffer that contains the
-+	 * concatenation of the first 256 bytes from addresses A0h and A2h,
-+	 * respectively.
-+	 */
-+	buf =3D calloc(1, ETH_MODULE_SFF_8472_LEN);
-+	if (!buf)
-+		return -ENOMEM;
-+
-+	/* Read A0h page */
-+	ret =3D sff8079_get_eeprom_page(ctx, SFF8079_I2C_ADDRESS_LOW, buf);
-+	if (ret)
-+		goto out;
-+
-+	sff8079_show_all_common(buf);
-+
-+	/* Finish if A2h page is not present */
-+	if (!(buf[92] & (1 << 6)))
-+		goto out;
-+
-+	/* Read A2h page */
-+	ret =3D sff8079_get_eeprom_page(ctx, SFF8079_I2C_ADDRESS_HIGH,
-+				      buf + ETH_MODULE_SFF_8079_LEN);
-+	if (ret)
-+		goto out;
-+
-+	sff8472_show_all(buf);
-+out:
-+	free(buf);
-=20
--	return 0;
-+	return ret;
- }
---=20
-2.35.1
+No errors happening during a test is not a sufficient proof of
+correctness. You need to analyze the driver and figure out what bar0=20
+is used for.
 
+Alternatively just save the address of bar0 to a local variable, let
+the netdev unregister happen, and then call *unmap() on the local
+variable. That won't move the unmap and avoid the UAF.
+
+But please LMK how you use these cards first.
+
+> /************************************************************************=
+********/
+> root@kernel:~# lspci
+> 00:00.0 Host bridge: Intel Corporation 82G33/G31/P35/P31 Express DRAM=20
+> Controller
+> 00:01.0 VGA compatible controller: Device 1234:1111 (rev 02)
+> 00:02.0 Ethernet controller: Intel Corporation 82574L Gigabit Network=20
+> Connection
+> 00:03.0 Unclassified device [00ff]: Exar Corp. X3100 Series 10 Gigabit=20
+> Ethernet PCIe (rev 10)
+
+Is this a real NIC card, or just a emulated / virtualized one?=20
+Do you use it day to day?=20
+
+> 00:1d.0 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI=20
+> Controller #1 (rev 03)
+> 00:1d.1 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI=20
+> Controller #2 (rev 03)
+> 00:1d.2 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI=20
+> Controller #3 (rev 03)
+> 00:1d.7 USB controller: Intel Corporation 82801I (ICH9 Family) USB2 EHCI=
+=20
+> Controller #1 (rev 03)
+> 00:1f.0 ISA bridge: Intel Corporation 82801IB (ICH9) LPC Interface=20
+> Controller (rev 02)
+> 00:1f.2 SATA controller: Intel Corporation 82801IR/IO/IH (ICH9R/DO/DH) 6
+>  port SATA Controller [AHCI mode] (rev 02)
+> 00:1f.3 SMBus: Intel Corporation 82801I (ICH9 Family) SMBus Controller=20
+> (rev 02)
+> root@kernel:~# echo 1 > /sys/bus/pci/devices/0000:00:03.0/remove
+> root@kernel:~# lspci
+> 00:00.0 Host bridge: Intel Corporation 82G33/G31/P35/P31 Express DRAM
+>  Controller
+> 00:01.0 VGA compatible controller: Device 1234:1111 (rev 02)
+> 00:02.0 Ethernet controller: Intel Corporation 82574L Gigabit Network
+>  Connection
+> 00:1d.0 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI
+>  Controller #1 (rev 03)
+> 00:1d.1 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI
+>  Controller #2 (rev 03)
+> 00:1d.2 USB controller: Intel Corporation 82801I (ICH9 Family) USB UHCI
+>  Controller #3 (rev 03)
+> 00:1d.7 USB controller: Intel Corporation 82801I (ICH9 Family) USB2 EHCI
+>  Controller #1 (rev 03)
+> 00:1f.0 ISA bridge: Intel Corporation 82801IB (ICH9) LPC Interface=20
+> Controller (rev 02)
+> 00:1f.2 SATA controller: Intel Corporation 82801IR/IO/IH (ICH9R/DO/DH) 6=
+=20
+> port SATA Controller [AHCI mode] (rev 02)
+> 00:1f.3 SMBus: Intel Corporation 82801I (ICH9 Family) SMBus=20
+> Controller (rev 02)
