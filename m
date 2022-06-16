@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1D7954E136
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 14:57:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82F0154E14D
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 15:00:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376420AbiFPM5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 08:57:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33158 "EHLO
+        id S232131AbiFPNAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 09:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376380AbiFPM5a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 08:57:30 -0400
+        with ESMTP id S229927AbiFPNAX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 09:00:23 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AABD93B7
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 05:57:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 853C5B4C
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 06:00:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655384247;
+        s=mimecast20190719; t=1655384421;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=PJVjgB1WV8axjnD/ZQGZ1cJuRqJKIs9CwL3dt0JUN1o=;
-        b=I3axTmT6dSF82THq4vTnl3OmT/UIVPFj7bq5iCW3wbU3hZyfcnMisSmOGc81JOn/sSEMWZ
-        6fJbuT7UM48sBOvbnAV2asRJ+AUz4qhhRNnV+es4Yk8kSQc5QBU2EhyPnMtPCrEMXCDjVZ
-        x83K7OSaYPRg4utBSVBxrMEiGAgswt8=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=e8ZVUkV5slpBiU5gnP3i9vX4TyyFnQAAf/ZHvzAvayg=;
+        b=Yz1x+5b4Jgb7Mjpp/78q+9viqZ/D99oQ/ek9b0LbU4/BV/4V0Hqy3PeEhpqBuaTuSDqqRw
+        YenopNz5AoYH8zQOKQZ/hL01cNgZYWDi5JdRmWSz2KqM+YqOHUPE12peoyUMaT17Ovny8U
+        8WuGaiNp9nRDEOKRufJogLMgaKg+Zds=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-562-WKgnV3HyPn2DB68XEALYlw-1; Thu, 16 Jun 2022 08:57:26 -0400
-X-MC-Unique: WKgnV3HyPn2DB68XEALYlw-1
-Received: by mail-qk1-f197.google.com with SMTP id u16-20020a05620a431000b006a98f2a9ff0so1606054qko.17
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 05:57:26 -0700 (PDT)
+ us-mta-142-wQWllq1YPiiKzKJNFXCCNQ-1; Thu, 16 Jun 2022 09:00:20 -0400
+X-MC-Unique: wQWllq1YPiiKzKJNFXCCNQ-1
+Received: by mail-qk1-f200.google.com with SMTP id k188-20020a37a1c5000000b006a6c4ce2623so1653038qke.6
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 06:00:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=PJVjgB1WV8axjnD/ZQGZ1cJuRqJKIs9CwL3dt0JUN1o=;
-        b=7x8fEGjDkq3B5rsGFenl/AkXgXLtqavyE+EjRgKzez8DLw3YzMA8uPK0LzUie4e/Iy
-         ZeQmoXRhRKAwCtNhxwBkvjbib4YXDV5t7zz/1KWj54BxW/F9gHywWnb2Yi//TaalZdYF
-         PNQfZSKLhaoPSEvAAZg7E8A5qpMnW+EHJFyuMGDUpcT1rrtPAK+0qYkrP/dcKxXDMqwG
-         ZnkjNj/HXIuEkUvk8hrHdLGlsQuxtKUlyCJQHhvL/BnmMS0fJR5jWghqsV7klVldN6sy
-         eyxjNfxP6GNl/yGHD9w01yKowxyJpVp008E+4aWP+5iS9y1NHrKQIXhhxi5xsC4EKBx+
-         E2VA==
-X-Gm-Message-State: AJIora+OuYJ0huXViDRTKF55Sfuu9oBn+TpZXUC/XAVvRhlTmlJ2J/AQ
-        VRLYBOjGEns5vxBN4bRw+vCkdEtN4u5n/uzrlHN6ZS1bpr4ClgflobDAKSVMHQWeK3D6G2D1Uze
-        ieAEHHuG+9f8KoNTH9apem/WTt2Cn+xrd
-X-Received: by 2002:ad4:594d:0:b0:46b:9c03:4fd1 with SMTP id eo13-20020ad4594d000000b0046b9c034fd1mr3802383qvb.92.1655384245579;
-        Thu, 16 Jun 2022 05:57:25 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1ukGxTO+VKqdTBk2Vgne3ZioipDrRA+O1zB9SXLtMaJG21eu2euN8ScJErYqjnPyjwRthzssZduk3HqZTRQ89U=
-X-Received: by 2002:ad4:594d:0:b0:46b:9c03:4fd1 with SMTP id
- eo13-20020ad4594d000000b0046b9c034fd1mr3802374qvb.92.1655384245372; Thu, 16
- Jun 2022 05:57:25 -0700 (PDT)
+        bh=e8ZVUkV5slpBiU5gnP3i9vX4TyyFnQAAf/ZHvzAvayg=;
+        b=KraaBy6QAGCTdnlfumGZTCk7BTsVU2P09hB9MroejTHszXw65VWE5GCpcY7l1l9MSB
+         fmf460KGrAcliuJCcB5SkvXsgyc1b1eoxDA7T2M/wqShw15FT0rxysHGTg5R2eGlUmLR
+         rE0PKkvrfCJQ/OW5Tp0sBGWV9HttAMFU2eF67jgpsCxpDG7qmlSMVY5euiMtCpIu7LBv
+         JwbkDBf++FHgyHtR+XOZkBwAkz3NxdX2qPxrXE7yVvPc3stCDGJCYUNStuhcihprYpHO
+         7mMmZsmgp0OyFleJuqNtT/Xxa+n6plMkcmQsUAgsvWGbFnpqpwQ4doMk2K4rXW7DAK9g
+         LKDQ==
+X-Gm-Message-State: AJIora/x9hkVuIwpBooIyG2i1DekgTzKApKICPwTOgVuV7BjxGmB3Y3B
+        PMaCJ2oz+V8EQ1GsSj/tIXgGjGyA+WHNM+YTTH3uyIXc+M2yWD2yrfPTiQimMeLVemhsbK0O8mk
+        bvc1JahP/UaGGDaz4yTwu3dJsUls8ycLu
+X-Received: by 2002:ac8:5dd2:0:b0:304:ea09:4688 with SMTP id e18-20020ac85dd2000000b00304ea094688mr3843309qtx.526.1655384419698;
+        Thu, 16 Jun 2022 06:00:19 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1s8NkXax/fhJn4p4KB+vrjzTc8SwiO52rQs1d5sXZGTBSfZ9nwuhdYltnFR7y17gdFUY49O0yt9bUAY4fI7De8=
+X-Received: by 2002:ac8:5dd2:0:b0:304:ea09:4688 with SMTP id
+ e18-20020ac85dd2000000b00304ea094688mr3843279qtx.526.1655384419441; Thu, 16
+ Jun 2022 06:00:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220613032922.1030739-1-aahringo@redhat.com> <20220613032922.1030739-2-aahringo@redhat.com>
- <3b7a9363-1fea-d4a3-360d-a2e60b1038c7@datenfreihafen.org>
-In-Reply-To: <3b7a9363-1fea-d4a3-360d-a2e60b1038c7@datenfreihafen.org>
+References: <CAK-6q+g1jy-Q911SWTGVV1nw8GAbEAVYSAKqss54+8ehPw9RDA@mail.gmail.com>
+ <e3efe652-eb22-4a3f-a121-be858fe2696b@datenfreihafen.org>
+In-Reply-To: <e3efe652-eb22-4a3f-a121-be858fe2696b@datenfreihafen.org>
 From:   Alexander Aring <aahringo@redhat.com>
-Date:   Thu, 16 Jun 2022 08:57:14 -0400
-Message-ID: <CAK-6q+hT4-w4Hw5wq_7orUffkDPWYxJ50kurqy+hPxyH91WC5Q@mail.gmail.com>
-Subject: Re: [PATCH wpan-next 2/2] 6lowpan: nhc: drop EEXIST limitation
+Date:   Thu, 16 Jun 2022 09:00:08 -0400
+Message-ID: <CAK-6q+h7497czku9rf9E4E=up5k5gm_NT0agPU2bUZr4ADKioQ@mail.gmail.com>
+Subject: Re: 6lowpan netlink
 To:     Stefan Schmidt <stefan@datenfreihafen.org>
 Cc:     linux-wpan - ML <linux-wpan@vger.kernel.org>,
         linux-bluetooth@vger.kernel.org,
@@ -78,71 +78,24 @@ Hi,
 On Thu, Jun 16, 2022 at 3:57 AM Stefan Schmidt
 <stefan@datenfreihafen.org> wrote:
 >
->
 > Hello Alex.
 >
-> On 13.06.22 05:29, Alexander Aring wrote:
-> > In nhc we have compression() and uncompression(). Currently we have a
-> > limitation that we return -EEXIST when it's the nhc is already
-> > registered according the nexthdr. But on receiving handling and the
-> > nhcid we can indeed support both at the same time.
+> On 13.06.22 05:44, Alexander Aring wrote:
+> > Hi all,
+> >
+> > I want to spread around that I started to work on some overdue
+> > implementation, a netlink 6lowpan configuration interface, because
+> > rtnetlink is not enough... it's for configuring very specific 6lowpan
+> > device settings.
 >
-> The sentence above is not really clear to me. Do you want to say that on
-> rx we can support more than one nhcid? I am a bit confused why you write
-> both here. Where does the limit to two come from?
->
+> Great, looking forward to it!
 
-It's simple when you look at how it's working. On rx we have nhcid
-lookup and on tx we have nexthdr lookup. These are two different
-registration numbers and there can be multiple compression for one
-nexthdr:
-
-N:1
-
-The limit was always there because we did not support multiple nexthdr
-registrations.
-
-> We remove the current
-> > static array implementation and replace it by a dynamic list handling to
-> > get rid of this limitation.
-> >
-> > Signed-off-by: Alexander Aring <aahringo@redhat.com>
-> > ---
-> >   net/6lowpan/nhc.c | 69 ++++++++++++++++++++++++++++++-----------------
-> >   1 file changed, 44 insertions(+), 25 deletions(-)
-> >
-> > diff --git a/net/6lowpan/nhc.c b/net/6lowpan/nhc.c
-> > index 7b374595328d..3d7c50139142 100644
-> > --- a/net/6lowpan/nhc.c
-> > +++ b/net/6lowpan/nhc.c
-> > @@ -12,13 +12,30 @@
-> >
-> >   #include "nhc.h"
-> >
-> > -static const struct lowpan_nhc *lowpan_nexthdr_nhcs[NEXTHDR_MAX + 1];
-> > +struct lowpan_nhc_entry {
-> > +     const struct lowpan_nhc *nhc;
-> > +     struct list_head list;
-> > +};
-> > +
-> >   static DEFINE_SPINLOCK(lowpan_nhc_lock);
-> > +static LIST_HEAD(lowpan_nexthdr_nhcs);
-> > +
-> > +const struct lowpan_nhc *lowpan_nhc_by_nexthdr(u8 nexthdr)
-> > +{
-> > +     const struct lowpan_nhc_entry *e;
-> > +
-> > +     list_for_each_entry(e, &lowpan_nexthdr_nhcs, list) {
-> > +             if (e->nhc->nexthdr == nexthdr &&
-> > +                 e->nhc->compress)
-> > +                     return e->nhc;
->
-> We will always go with the first one we find? Do I miss something or
-> does that mean the one registered as seond and above will never be taken
-> into acount?
-
-That is currently true for the tx side. This just allows more than we
-currently support without breaking the past.
+I would like to trigger a discussion about rtnetlink or generic. I can
+put a nested rtnetlink for some device specific settings but then the
+whole iproute2 (as it's currently is) would maintain a specific
+6lowpan setting which maybe the user never wants...
+I think we should follow this way when there is a strict ipv6 device
+specific setting e.g. l2 neighbor information in ipv6 ndisc.
 
 - Alex
 
