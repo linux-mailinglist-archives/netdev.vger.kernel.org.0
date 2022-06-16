@@ -2,157 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B382B54E554
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 16:49:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6854354E56F
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 16:55:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377103AbiFPOtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 10:49:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57082 "EHLO
+        id S1377398AbiFPOyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 10:54:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376284AbiFPOtH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 10:49:07 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8212F29365
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 07:49:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655390946; x=1686926946;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=4Y6huoQfUV0IGxRND8vZxr2VsTQzaCwzZmM0BbPl+Wg=;
-  b=CSnEjSUdsZNgM2sqN/GOIG28YaxtBOJ4fXOMl841fWdN9L4KwqVaFgUt
-   UqXYFLr5abX9tDKgGsiQT32qL5Y9SlNwWOhCpMNoqAnVBHkSG63Uv6/eX
-   yWUCpxCu9/TJOmtijXoO5GLz+Oo7rZBJS0biL3r2Oa7T2szne/Kc9Z96y
-   djOILHoCSZfXso/SoSf0+KwLaqwEJYe7MKKND/4kEu261IpnlzPNU+HWC
-   OTxfC9nJzXw+uSgTh8REP5OL8UIUFbH6s5vNT2wYw/CNKzUF+rBqzYGIq
-   4hNWHOX/yYsjNZONi3uj6CyI9x34DiI+A0RjIW8sxw7MCE6nEWjf+G16m
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10379"; a="276839334"
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="276839334"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 07:49:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="613185472"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 16 Jun 2022 07:49:03 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o1qnu-000OT7-Kg;
-        Thu, 16 Jun 2022 14:49:02 +0000
-Date:   Thu, 16 Jun 2022 22:48:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: Re: [PATCHv2 net-next] Bonding: add per-port priority for failover
- re-selection
-Message-ID: <202206162221.Oqz0N9WH-lkp@intel.com>
-References: <20220615032934.2057120-1-liuhangbin@gmail.com>
+        with ESMTP id S232862AbiFPOyv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 10:54:51 -0400
+Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC0E2F388;
+        Thu, 16 Jun 2022 07:54:49 -0700 (PDT)
+Received: by mail-vs1-xe35.google.com with SMTP id j39so1457551vsv.11;
+        Thu, 16 Jun 2022 07:54:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=F3VW+/W/5fPBHidmHRsr8F6zsEIxiTFqccVX0+UVHys=;
+        b=SoL4b0aFJ6RaWabI0ROc5AEpF3DAfY6x5WriyolZswRBeu0Tec4ib1wsSrrNWBmg+T
+         8GDYj+RtpeJZcSqToZWAiMIDGSNLSwtiZPgzwtYLlwLn4D76vmnNr/czMccvbzFfn+SM
+         EmCkT7xECdiEyEbbGhJCmndG81+q5/rs3E3NTg+pkdpYxclDvlanX7JmttWj0AaW/KDG
+         JOhUTl0UMNfC0vmFYTaxlK9gBGgaWAq0V9FA4Suyvnm5FQ5ClyRUiXIY9VdOGBsimYpl
+         AOr3X4UWBgmXQWaY+uXQFocVrQ6SEdJDr/uLo0Ai9C0vMBOSJCnGwkgpG9RA4EQvjmQN
+         Vclw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=F3VW+/W/5fPBHidmHRsr8F6zsEIxiTFqccVX0+UVHys=;
+        b=FRcm1pL3YmGPjxZYHcTfaJVwX1k0gNa/5drUVwyH3qLIrOs3yKbjn8VGQYxxrl6xox
+         5JW8tCko2o46pdMrkA8v2fOxYWU5WXyJE6LzQ7KEs1etlnSahHXU6HI0OtsAcf4J4NX0
+         kfSNGgFD0ZkrFevN92867zfbBdwnj34IMowrefJhWIGV//1+m4QyymxadvOAyDuAuaCV
+         1iHDS6xPUPQZVbnofO9mN6MUa/9MI9DSkWxKHw+ts/2BvPuxEovIwP+HqH5spycUxxzG
+         i14TfwxFbbMfThr9uasptOXB4HSuqhqLgedrdd5vPVz7D7WDhr8asFS1TTwyORBm5xvH
+         f8Kw==
+X-Gm-Message-State: AJIora/mR8T0Bd0Q/pjOlBL45YePwjbOWjlJ3XYJbA0ddUcKs8Wfea04
+        eOADjlAvGlNDuqaoe05Bsuh7TqmeEEL6LichLu0=
+X-Google-Smtp-Source: AGRyM1t6lVQzRVM2JLDv2+JY+ep7LsMVB9PVwvAW/qs3mUyvxIyOQEV1H+EPctKh9CfSyXzIW0NmH9buKvLaCF8ZC3I=
+X-Received: by 2002:a67:6245:0:b0:34b:977b:7d31 with SMTP id
+ w66-20020a676245000000b0034b977b7d31mr2475239vsb.22.1655391289048; Thu, 16
+ Jun 2022 07:54:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220615032934.2057120-1-liuhangbin@gmail.com>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220610112648.29695-1-quentin@isovalent.com> <20220610112648.29695-2-quentin@isovalent.com>
+ <YqNsWAH24bAIPjqy@google.com> <cb05a59e-07d5-ddd1-b028-82133faaf67e@isovalent.com>
+ <CAKH8qBvvq0f+D8BXChw_8krH896J_cYg0yhRfnDOSO_U1n394w@mail.gmail.com>
+ <71b56050-11ad-bd06-09c9-1a8c61b4c1b4@isovalent.com> <CAKH8qBsFyakQRd1q6XWggdv4F5+HrHoC4njg9jQFDOfq+kRBCQ@mail.gmail.com>
+ <CALOAHbCvWzOJ169fPTCp1KsFpkEVukKgGnH4mDeYGOEv6hsEpQ@mail.gmail.com>
+ <e9aa57d2-4ce7-23f2-0ba1-ea58f3254353@isovalent.com> <CALOAHbDDx_xDeUk8R+y-aREX9KMRbo+CqCV7m5dADdvijuHRQw@mail.gmail.com>
+ <CAKH8qBuPh4aaEz_vv1s2gWYYPRm8e5gMaM-RcuCqg+AeaeZcPg@mail.gmail.com>
+ <CALOAHbAfjegzchFOb9b1+4d0OLsVWOpnr7ARMXqcKbnbG=u2BA@mail.gmail.com> <68e789f7-aa68-cc6a-fb33-b686d14f80a5@isovalent.com>
+In-Reply-To: <68e789f7-aa68-cc6a-fb33-b686d14f80a5@isovalent.com>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Thu, 16 Jun 2022 22:54:12 +0800
+Message-ID: <CALOAHbCTJOm8wLAeuhnjnN96_9c+hB5YjLGO_4NsgiB=8_QQOA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] Revert "bpftool: Use libbpf 1.0 API mode
+ instead of RLIMIT_MEMLOCK"
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Harsh Modi <harshmodi@google.com>,
+        Paul Chaignon <paul@cilium.io>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hangbin,
+On Thu, Jun 16, 2022 at 9:59 PM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> 2022-06-16 00:05 UTC+0800 ~ Yafang Shao <laoar.shao@gmail.com>
+> > On Wed, Jun 15, 2022 at 11:52 PM Stanislav Fomichev <sdf@google.com> wrote:
+> >>
+> >> On Wed, Jun 15, 2022 at 6:23 AM Yafang Shao <laoar.shao@gmail.com> wrote:
+> >>>
+> >>> On Tue, Jun 14, 2022 at 10:20 PM Quentin Monnet <quentin@isovalent.com> wrote:
+> >>>>
+> >>>> 2022-06-14 20:37 UTC+0800 ~ Yafang Shao <laoar.shao@gmail.com>
+> >>>>> On Sat, Jun 11, 2022 at 1:17 AM Stanislav Fomichev <sdf@google.com> wrote:
+> >>>>>>
+> >>>>>> On Fri, Jun 10, 2022 at 10:00 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> >>>>>>>
+> >>>>>>> 2022-06-10 09:46 UTC-0700 ~ Stanislav Fomichev <sdf@google.com>
+> >>>>>>>> On Fri, Jun 10, 2022 at 9:34 AM Quentin Monnet <quentin@isovalent.com> wrote:
+> >>>>>>>>>
+> >>>>>>>>> 2022-06-10 09:07 UTC-0700 ~ sdf@google.com
+> >>>>>>>>>> On 06/10, Quentin Monnet wrote:
+> >>>>>>>>>>> This reverts commit a777e18f1bcd32528ff5dfd10a6629b655b05eb8.
+> >>>>>>>>>>
+> >>>>>>>>>>> In commit a777e18f1bcd ("bpftool: Use libbpf 1.0 API mode instead of
+> >>>>>>>>>>> RLIMIT_MEMLOCK"), we removed the rlimit bump in bpftool, because the
+> >>>>>>>>>>> kernel has switched to memcg-based memory accounting. Thanks to the
+> >>>>>>>>>>> LIBBPF_STRICT_AUTO_RLIMIT_MEMLOCK, we attempted to keep compatibility
+> >>>>>>>>>>> with other systems and ask libbpf to raise the limit for us if
+> >>>>>>>>>>> necessary.
+> >>>>>>>>>>
+> >>>>>>>>>>> How do we know if memcg-based accounting is supported? There is a probe
+> >>>>>>>>>>> in libbpf to check this. But this probe currently relies on the
+> >>>>>>>>>>> availability of a given BPF helper, bpf_ktime_get_coarse_ns(), which
+> >>>>>>>>>>> landed in the same kernel version as the memory accounting change. This
+> >>>>>>>>>>> works in the generic case, but it may fail, for example, if the helper
+> >>>>>>>>>>> function has been backported to an older kernel. This has been observed
+> >>>>>>>>>>> for Google Cloud's Container-Optimized OS (COS), where the helper is
+> >>>>>>>>>>> available but rlimit is still in use. The probe succeeds, the rlimit is
+> >>>>>>>>>>> not raised, and probing features with bpftool, for example, fails.
+> >>>>>>>>>>
+> >>>>>>>>>>> A patch was submitted [0] to update this probe in libbpf, based on what
+> >>>>>>>>>>> the cilium/ebpf Go library does [1]. It would lower the soft rlimit to
+> >>>>>>>>>>> 0, attempt to load a BPF object, and reset the rlimit. But it may induce
+> >>>>>>>>>>> some hard-to-debug flakiness if another process starts, or the current
+> >>>>>>>>>>> application is killed, while the rlimit is reduced, and the approach was
+> >>>>>>>>>>> discarded.
+> >>>>>>>>>>
+> >>>>>>>>>>> As a workaround to ensure that the rlimit bump does not depend on the
+> >>>>>>>>>>> availability of a given helper, we restore the unconditional rlimit bump
+> >>>>>>>>>>> in bpftool for now.
+> >>>>>>>>>>
+> >>>>>>>>>>> [0]
+> >>>>>>>>>>> https://lore.kernel.org/bpf/20220609143614.97837-1-quentin@isovalent.com/
+> >>>>>>>>>>> [1] https://github.com/cilium/ebpf/blob/v0.9.0/rlimit/rlimit.go#L39
+> >>>>>>>>>>
+> >>>>>>>>>>> Cc: Yafang Shao <laoar.shao@gmail.com>
+> >>>>>>>>>>> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+> >>>>>>>>>>> ---
+> >>>>>>>>>>>   tools/bpf/bpftool/common.c     | 8 ++++++++
+> >>>>>>>>>>>   tools/bpf/bpftool/feature.c    | 2 ++
+> >>>>>>>>>>>   tools/bpf/bpftool/main.c       | 6 +++---
+> >>>>>>>>>>>   tools/bpf/bpftool/main.h       | 2 ++
+> >>>>>>>>>>>   tools/bpf/bpftool/map.c        | 2 ++
+> >>>>>>>>>>>   tools/bpf/bpftool/pids.c       | 1 +
+> >>>>>>>>>>>   tools/bpf/bpftool/prog.c       | 3 +++
+> >>>>>>>>>>>   tools/bpf/bpftool/struct_ops.c | 2 ++
+> >>>>>>>>>>>   8 files changed, 23 insertions(+), 3 deletions(-)
+> >>>>>>>>>>
+> >>>>>>>>>>> diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
+> >>>>>>>>>>> index a45b42ee8ab0..a0d4acd7c54a 100644
+> >>>>>>>>>>> --- a/tools/bpf/bpftool/common.c
+> >>>>>>>>>>> +++ b/tools/bpf/bpftool/common.c
+> >>>>>>>>>>> @@ -17,6 +17,7 @@
+> >>>>>>>>>>>   #include <linux/magic.h>
+> >>>>>>>>>>>   #include <net/if.h>
+> >>>>>>>>>>>   #include <sys/mount.h>
+> >>>>>>>>>>> +#include <sys/resource.h>
+> >>>>>>>>>>>   #include <sys/stat.h>
+> >>>>>>>>>>>   #include <sys/vfs.h>
+> >>>>>>>>>>
+> >>>>>>>>>>> @@ -72,6 +73,13 @@ static bool is_bpffs(char *path)
+> >>>>>>>>>>>       return (unsigned long)st_fs.f_type == BPF_FS_MAGIC;
+> >>>>>>>>>>>   }
+> >>>>>>>>>>
+> >>>>>>>>>>> +void set_max_rlimit(void)
+> >>>>>>>>>>> +{
+> >>>>>>>>>>> +    struct rlimit rinf = { RLIM_INFINITY, RLIM_INFINITY };
+> >>>>>>>>>>> +
+> >>>>>>>>>>> +    setrlimit(RLIMIT_MEMLOCK, &rinf);
+> >>>>>>>>>>
+> >>>>>>>>>> Do you think it might make sense to print to stderr some warning if
+> >>>>>>>>>> we actually happen to adjust this limit?
+> >>>>>>>>>>
+> >>>>>>>>>> if (getrlimit(MEMLOCK) != RLIM_INFINITY) {
+> >>>>>>>>>>     fprintf(stderr, "Warning: resetting MEMLOCK rlimit to
+> >>>>>>>>>>     infinity!\n");
+> >>>>>>>>>>     setrlimit(RLIMIT_MEMLOCK, &rinf);
+> >>>>>>>>>> }
+> >>>>>>>>>>
+> >>>>>>>>>> ?
+> >>>>>>>>>>
+> >>>>>>>>>> Because while it's nice that we automatically do this, this might still
+> >>>>>>>>>> lead to surprises for some users. OTOH, not sure whether people
+> >>>>>>>>>> actually read those warnings? :-/
+> >>>>>>>>>
+> >>>>>>>>> I'm not strictly opposed to a warning, but I'm not completely sure this
+> >>>>>>>>> is desirable.
+> >>>>>>>>>
+> >>>>>>>>> Bpftool has raised the rlimit for a long time, it changed only in April,
+> >>>>>>>>> so I don't think it would come up as a surprise for people who have used
+> >>>>>>>>> it for a while. I think this is also something that several other
+> >>>>>>>>> BPF-related applications (BCC I think?, bpftrace, Cilium come to mind)
+> >>>>>>>>> have been doing too.
+> >>>>>>>>
+> >>>>>>>> In this case ignore me and let's continue doing that :-)
+> >>>>>>>>
+> >>>>>>>> Btw, eventually we'd still like to stop doing that I'd presume?
+> >>>>>>>
+> >>>>>>> Agreed. I was thinking either finding a way to improve the probe in
+> >>>>>>> libbpf, or waiting for some more time until 5.11 gets old, but this may
+> >>>>>>> take years :/
+> >>>>>>>
+> >>>>>>>> Should
+> >>>>>>>> we at some point follow up with something like:
+> >>>>>>>>
+> >>>>>>>> if (kernel_version >= 5.11) { don't touch memlock; }
+> >>>>>>>>
+> >>>>>>>> ?
+> >>>>>>>>
+> >>>>>>>> I guess we care only about <5.11 because of the backports, but 5.11+
+> >>>>>>>> kernels are guaranteed to have memcg.
+> >>>>>>>
+> >>>>>>> You mean from uname() and parsing the release? Yes I suppose we could do
+> >>>>>>> that, can do as a follow-up.
+> >>>>>>
+> >>>>>> Yeah, uname-based, I don't think we can do better? Given that probing
+> >>>>>> is problematic as well :-(
+> >>>>>> But idk, up to you.
+> >>>>>>
+> >>>>>
+> >>>>> Agreed with the uname-based solution. Another possible solution is to
+> >>>>> probe the member 'memcg' in struct bpf_map, in case someone may
+> >>>>> backport memcg-based  memory accounting, but that will be a little
+> >>>>> over-engineering. The uname-based solution is simple and can work.
+> >>>>>
+> >>>>
+> >>>> Thanks! Yes, memcg would be more complex: the struct is not exposed to
+> >>>> user space, and BTF is not a hard dependency for bpftool. I'll work on
+> >>>> the uname-based test as a follow-up to this set.
+> >>>>
+> >>>
+> >>> After a second thought, the uname-based test may not work, because
+> >>> CONFIG_MEMCG_KMEM can be disabled.
+> >>
+> >> Does it matter? Regardless of whether there is memcg or not, we
+> >> shouldn't touch ulimit on 5.11+
+> >> If there is no memcg, there is no bpf memory enforcement.
+> >
+> > Right, rlimit-based accounting is totally removed, that is not the
+> > same with what I thought before, while I thought it will fallback to
+> > rlimit-based if kmemcg is disabled.
+>
+> Agreed, and so I've got a patch ready for the uname-based probe.
+>
+> But talking about this with Daniel, we were wondering if it would make
+> sense instead to have the probe I had initially submitted (lower the
+> rlimit to 0, attempt to load a program, reset rlimit - see [0]), but
+> only for bpftool instead of libbpf? My understanding is that the memlock
+> rlimit is per-process, right? So this shouldn't affect any other
+> process, and because bpftool is not multithreaded, nothing other than
+> probing would happen while the rlimit is at zero?
 
-Thank you for the patch! Yet something to improve:
+Makes sense.
+It is safe to do the probe within bpftool.
 
-[auto build test ERROR on net-next/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Hangbin-Liu/Bonding-add-per-port-priority-for-failover-re-selection/20220615-113309
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 6ac6dc746d70ef9b4ac835d98ac1baf63a810c57
-config: i386-randconfig-a005 (https://download.01.org/0day-ci/archive/20220616/202206162221.Oqz0N9WH-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/2ab299e7237ababa2ce05baa6035154fa04b272d
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Hangbin-Liu/Bonding-add-per-port-priority-for-failover-re-selection/20220615-113309
-        git checkout 2ab299e7237ababa2ce05baa6035154fa04b272d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/bonding/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/net/bonding/bond_netlink.c: In function 'bond_slave_changelink':
->> drivers/net/bonding/bond_netlink.c:174:23: error: too few arguments to function '__bond_opt_set'
-     174 |                 err = __bond_opt_set(bond, BOND_OPT_PRIO, &newval);
-         |                       ^~~~~~~~~~~~~~
-   In file included from include/net/bonding.h:31,
-                    from drivers/net/bonding/bond_netlink.c:16:
-   include/net/bond_options.h:110:5: note: declared here
-     110 | int __bond_opt_set(struct bonding *bond, unsigned int option,
-         |     ^~~~~~~~~~~~~~
+> Or is it just simpler,
+> if less accurate, to stick to the uname probe?
+>
+> Quentin
+>
+> [0]
+> https://lore.kernel.org/bpf/20220609143614.97837-1-quentin@isovalent.com/
 
 
-vim +/__bond_opt_set +174 drivers/net/bonding/bond_netlink.c
-
-   138	
-   139	static int bond_slave_changelink(struct net_device *bond_dev,
-   140					 struct net_device *slave_dev,
-   141					 struct nlattr *tb[], struct nlattr *data[],
-   142					 struct netlink_ext_ack *extack)
-   143	{
-   144		struct bonding *bond = netdev_priv(bond_dev);
-   145		struct bond_opt_value newval;
-   146		int err;
-   147	
-   148		if (!data)
-   149			return 0;
-   150	
-   151		if (data[IFLA_BOND_SLAVE_QUEUE_ID]) {
-   152			u16 queue_id = nla_get_u16(data[IFLA_BOND_SLAVE_QUEUE_ID]);
-   153			char queue_id_str[IFNAMSIZ + 7];
-   154	
-   155			/* queue_id option setting expects slave_name:queue_id */
-   156			snprintf(queue_id_str, sizeof(queue_id_str), "%s:%u\n",
-   157				 slave_dev->name, queue_id);
-   158			bond_opt_initstr(&newval, queue_id_str);
-   159			err = __bond_opt_set(bond, BOND_OPT_QUEUE_ID, &newval,
-   160					     data[IFLA_BOND_SLAVE_QUEUE_ID], extack);
-   161			if (err)
-   162				return err;
-   163		}
-   164	
-   165		if (data[IFLA_BOND_SLAVE_PRIO]) {
-   166			int prio = nla_get_s32(data[IFLA_BOND_SLAVE_PRIO]);
-   167			char prio_str[IFNAMSIZ + 7];
-   168	
-   169			/* prio option setting expects slave_name:prio */
-   170			snprintf(prio_str, sizeof(prio_str), "%s:%d\n",
-   171				 slave_dev->name, prio);
-   172	
-   173			bond_opt_initstr(&newval, prio_str);
- > 174			err = __bond_opt_set(bond, BOND_OPT_PRIO, &newval);
-   175			if (err)
-   176				return err;
-   177		}
-   178	
-   179		return 0;
-   180	}
-   181	
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards
+Yafang
