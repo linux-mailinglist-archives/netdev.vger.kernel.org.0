@@ -2,114 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 684E754E75A
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 18:32:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3450654E763
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 18:34:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233496AbiFPQcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 12:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35652 "EHLO
+        id S233711AbiFPQeb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 12:34:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230319AbiFPQcb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 12:32:31 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E97F22E1
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 09:32:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655397150; x=1686933150;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=QIJQT0Xxnv4GCzZYz2NIvdhgvbdbjtUvf5067orZsSU=;
-  b=AVBxzlurC8VwAsHAClxAoWZOMRQodWfSd1VUoErya2N5iEf7gAzkqtDW
-   /hWa8vm90Q/tp86J+YC/+N4npsJBPrpv9rK3GwKQTcoXiERwdMufjBTmR
-   1I8JE3uIvqArFFz820zSnhvYbwJvSw1fIs/7yiri/q/blze7M+418C8yf
-   8bD13UzCYnV3a2KhhXC4R48UgteDYEjqgPWCniIG6BQyR4H2zfQCLshYC
-   XMwFkdypfxRAUI7PTudFnUtuthdP20FChvfEracVXP1c2HUrfP2CE9fir
-   NenJKHdNJQBc7hiyGrF1rzmwNVrS141pwRFnoVjZFnpGkLKv3hBRaogfG
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="262309460"
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="262309460"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 09:32:17 -0700
-X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="589714394"
-Received: from msheikh-mobl1.amr.corp.intel.com (HELO [10.209.44.76]) ([10.209.44.76])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 09:32:16 -0700
-Message-ID: <83ce5da4-65c1-1f66-b5a9-a88273749c1b@linux.intel.com>
-Date:   Thu, 16 Jun 2022 09:32:15 -0700
+        with ESMTP id S233842AbiFPQe3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 12:34:29 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E1C42F018;
+        Thu, 16 Jun 2022 09:34:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EFD78CE263E;
+        Thu, 16 Jun 2022 16:34:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB7F4C34114;
+        Thu, 16 Jun 2022 16:34:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655397264;
+        bh=29T+OZ2dJ8xYgp5r7/nDFbsxSnK+qN8k/QH2sDJqclU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nkaBP3DydJciNyiYD+He/cemq7jOl1vFjzycfaq7HUEXNmaAiTvhL3KFqt3U4pdmx
+         OkwvanYXO5S9uINrPZ6QSpIzF1KAc16/FflMYMVBxWSeZOxLiTVb0/cEMfzsSsyyRe
+         wrMkldTF5Khbat6folXjrqr9MSQONZokoOYqvHV3DvksPSDteRuNhIjP0Bgp1s7BFp
+         G4DzVGbeLBy1QKQJ1QaI9Smr/GPCEzMmoi4lST1ncKbeksUoDTNP+Nmp/Ambtg1ovM
+         8exV2SmcP+4c8ooLPW42RRn+BzPvbXqis4Lr2yvKhlbYKCmVVH24CGspp0ayB1FD1S
+         qWGEzDk8NYLSA==
+Date:   Thu, 16 Jun 2022 09:34:22 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        linux-bluetooth@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: 6lowpan netlink
+Message-ID: <20220616093422.2e9ec948@kernel.org>
+In-Reply-To: <CAK-6q+h7497czku9rf9E4E=up5k5gm_NT0agPU2bUZr4ADKioQ@mail.gmail.com>
+References: <CAK-6q+g1jy-Q911SWTGVV1nw8GAbEAVYSAKqss54+8ehPw9RDA@mail.gmail.com>
+        <e3efe652-eb22-4a3f-a121-be858fe2696b@datenfreihafen.org>
+        <CAK-6q+h7497czku9rf9E4E=up5k5gm_NT0agPU2bUZr4ADKioQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH net-next 1/1] net: wwan: t7xx: Add AP CLDMA and GNSS port
-Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Netdev <netdev@vger.kernel.org>, kuba@kernel.org,
-        davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
-        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
-        haijun.liu@mediatek.com, ricardo.martinez@linux.intel.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        dinesh.sharma@intel.com, moises.veleta@intel.com,
-        Madhusmita Sahu <madhusmita.sahu@intel.com>
-References: <20220614205756.6792-1-moises.veleta@linux.intel.com>
- <bb56f67-7353-39c7-a3fa-a237e15f3b95@linux.intel.com>
-From:   "moises.veleta" <moises.veleta@linux.intel.com>
-In-Reply-To: <bb56f67-7353-39c7-a3fa-a237e15f3b95@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 16 Jun 2022 09:00:08 -0400 Alexander Aring wrote:
+> > > I want to spread around that I started to work on some overdue
+> > > implementation, a netlink 6lowpan configuration interface, because
+> > > rtnetlink is not enough... it's for configuring very specific 6lowpan
+> > > device settings.  
+> >
+> > Great, looking forward to it!  
+> 
+> I would like to trigger a discussion about rtnetlink or generic. I can
+> put a nested rtnetlink for some device specific settings but then the
+> whole iproute2 (as it's currently is) would maintain a specific
+> 6lowpan setting which maybe the user never wants...
+> I think we should follow this way when there is a strict ipv6 device
+> specific setting e.g. l2 neighbor information in ipv6 ndisc.
 
-On 6/16/22 02:37, Ilpo Järvinen wrote:
-> On Tue, 14 Jun 2022, Moises Veleta wrote:
->
->> From: Haijun Liu <haijun.liu@mediatek.com>
->>
->> The t7xx device contains two Cross Layer DMA (CLDMA) interfaces to
->> communicate with AP and Modem processors respectively. So far only
->> MD-CLDMA was being used, this patch enables AP-CLDMA and the GNSS
->> port which requires such channel.
->>
->> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
->> Co-developed-by: Madhusmita Sahu <madhusmita.sahu@intel.com>
->> Signed-off-by: Madhusmita Sahu <madhusmita.sahu@intel.com>
->> Signed-off-by: Moises Veleta <moises.veleta@linux.intel.com>
->> ---
-> Look fine to me. One nit below.
->
-> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
->
->> diff --git a/drivers/net/wwan/t7xx/t7xx_port.h b/drivers/net/wwan/t7xx/t7xx_port.h
->> index dc4133eb433a..3d27f04e2a1f 100644
->> --- a/drivers/net/wwan/t7xx/t7xx_port.h
->> +++ b/drivers/net/wwan/t7xx/t7xx_port.h
->> @@ -36,9 +36,17 @@
->>   /* Channel ID and Message ID definitions.
->>    * The channel number consists of peer_id(15:12) , channel_id(11:0)
->>    * peer_id:
->> - * 0:reserved, 1: to sAP, 2: to MD
->> + * 0:reserved, 1: to AP, 2: to MD
->>    */
->>   enum port_ch {
->> +	/* to AP */
->> +	PORT_CH_AP_CONTROL_RX = 0X1000,
->> +	PORT_CH_AP_CONTROL_TX = 0X1001,
-> Please use lowercase x.
->
->
-Will make these changes. Thanks
-
-
-Regards,
-Moises
-
+Unless you'll have to repeat attributes which are already present 
+in rtnetlink in an obvious way genetlink > rtnetlink.
