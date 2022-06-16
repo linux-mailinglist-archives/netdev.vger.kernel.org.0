@@ -2,596 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D951154E277
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 15:49:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 247A254E2C2
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 16:00:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377268AbiFPNt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 09:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
+        id S1377352AbiFPN7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 09:59:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377113AbiFPNtv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 09:49:51 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1A72CDFA;
-        Thu, 16 Jun 2022 06:49:47 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R711e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VGaYQbt_1655387367;
-Received: from 30.225.28.136(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VGaYQbt_1655387367)
-          by smtp.aliyun-inc.com;
-          Thu, 16 Jun 2022 21:49:44 +0800
-Message-ID: <61fbee55-245f-b912-95df-d9557849d08f@linux.alibaba.com>
-Date:   Thu, 16 Jun 2022 21:49:26 +0800
+        with ESMTP id S233681AbiFPN5m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 09:57:42 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA02810BC
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 06:57:33 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id 199-20020a6b01d0000000b00669bf42cd4cso940203iob.4
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 06:57:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=TyPOt0yJwwiVzwhZL6932xCsniSIc1nJmBUoZIQlk3U=;
+        b=58rv6XNdgkrC/434aE6dbPGsFOdyJX7r4Z5MAsVc0DCiVWbcJQpeobpYA7sHslP9//
+         k4xE0mWR0yQqBXqqbOyDlPh9cBX/KF34I/G3mU4QH1iNqdX6886poJjK1+SobQdYghF7
+         qC5yoCrbME1LKYuLbev2UOY3PhBVJdMYqbyAxnYsjUkF0YKFPr6taSNE4+V5fAF51onF
+         PAGYHlEIuIYml91nQT7dXZyDSxuWZ7I/d9obPgVpjF6O5hmlIv04wIByNe1RYFTVlOc4
+         5rIHFD7RHkiZDgEzJCXhcRYI1/0avWfW5rwo3OFgY0zynijF4mQ+vXesIFePF73aFOcE
+         uKQw==
+X-Gm-Message-State: AJIora/BmlU/aYty4qJ5RKi6nvkeoId5JfUmJ2v2fPxoHc2yKz+Oebom
+        rjFiBpcQfaIYReX0HtCDoXCLHxfDtdEZL49pKNdKunv/R2fl
+X-Google-Smtp-Source: AGRyM1sg3smBqvQULwfGQDJAxwblcUgJun7P/SxhjIWWg9NygJSkcHJwZbL2XOyt74isJ16ZElXQBUhJuDJVwnXuu5tXrRAmLPm7
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.10.0
-Subject: Re: [RFC net-next] net/smc:introduce 1RTT to SMC
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-To:     Alexandra Winter <wintera@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        Tony Lu <tonylu@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <1653375127-130233-1-git-send-email-alibuda@linux.alibaba.com>
- <YoyOGlG2kVe4VA4m@TonyMac-Alibaba>
- <64439f1c-9817-befd-c11b-fa64d22620a9@linux.ibm.com>
- <7d57f299-115f-3d34-a45e-1c125a9a580a@linux.alibaba.com>
-Content-Language: en-US
-In-Reply-To: <7d57f299-115f-3d34-a45e-1c125a9a580a@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-12.5 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6e02:12ce:b0:2d3:de67:9f96 with SMTP id
+ i14-20020a056e0212ce00b002d3de679f96mr3018159ilm.261.1655387852665; Thu, 16
+ Jun 2022 06:57:32 -0700 (PDT)
+Date:   Thu, 16 Jun 2022 06:57:32 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ec7b7d05e1910402@google.com>
+Subject: [syzbot] memory leak in __register_sysctl_table
+From:   syzbot <syzbot+9f160a43b2cf201cbe65@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
+        keescook@chromium.org, kpsingh@kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mcgrof@kernel.org, netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com, yzaikin@google.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2022/6/1 下午2:33, D. Wythe wrote:
-> 
-> 在 2022/5/25 下午9:42, Alexandra Winter 写道:
-> 
->> We need to carefully evaluate them and make sure everything is compatible
->> with the existing implementations of SMC-D and SMC-R v1 and v2. In the
->> typical s390 environment ROCE LAG is propably not good enough, as the card
->> is still a single point of failure. So your ideas need to be compatible
->> with link redundancy. We also need to consider that the extension of the
->> protocol does not block other desirable extensions.
->>
->> Your prototype is very helpful for the understanding. Before submitting any
->> code patches to net-next, we should agree on the details of the protocol
->> extension. Maybe you could formulate your proposal in plain text, so we can
->> discuss it here?
->>
->> We also need to inform you that several public holidays are upcoming in the
->> next weeks and several of our team will be out for summer vacation, so please
->> allow for longer response times.
->>
->> Kind regards
->> Alexandra Winter
->>
-> 
-> Hi alls,
-> 
-> In order to achieve signle-link compatibility, we must
-> complete at least once negotiation. We wish to provide
-> higher scalability while meeting this feature. There are
-> few ways to reach this.
-> 
-> 1. Use the available reserved bits. According to
-> the SMC v2 protocol, there are at least 28 reserved octets
-> in PROPOSAL MESSAGE and at least 10 reserved octets in
-> ACCEPT MESSAGE are available. We can define an area in which
-> as a feature area, works like bitmap. Considering the subsequent scalability, we MAY use at least 2 reserved ctets, which can support negotiation of at least 16 features.
-> 
-> 2. Unify all the areas named extension in current
-> SMC v2 protocol spec without reinterpreting any existing field
-> and field offset changes, including 'PROPOSAL V1 IP Subnet Extension',
-> 'PROPOSAL V2 Extension', 'PROPOSAL SMC-DV2 EXTENSION' .etc. And provides
-> the ability to grow dynamically as needs expand. This scheme will use
-> at least 10 reserved octets in the PROPOSAL MESSAGE and at least 4 reserved octets in ACCEPT MESSAGE and CONFIRM MESSAGE. Fortunately, we only need to use reserved fields, and the current reserved fields are sufficient. And then we can easily add a new extension named SIGNLE LINK. Limited by space, the details will be elaborated after the scheme is finalized.
-> 
-> But no matter what scheme is finalized, the workflow should be similar to:
-> 
-> Allow Single-link:
-> 
-> client                                server
->      proposal with Single-link feature bit or extension
->          -------->
-> 
->      accept with Single-link feature bit extension
->          <--------
-> 
->          confirm
->          -------->
-> 
-> 
-> Deny or not recognized:
-> 
-> client                                 server
->      proposal with Single-link feature bit or extension
->          -------->
-> 
->          rkey confirm
->          <------
->          ------>
-> 
->      accept without Single-link feature bit or extension
->          <------
-> 
->          rkey confirm
->          ------->
->          <------
-> 
->          confirm
->          ------->
-> 
-> 
-> Look forward to your advice and comments.
-> 
-> Thanks.
-
-Hi all,
-
-On the basis of previous，If we can put the application data over the PROPOSAL message,
-we can achieve SMC 0-RTT. Its process should be similar to the following:
-
-client									server
-	PROPOSAL MESSAGE
-		with first contact
-		with 0RTT query extension
-		-------->
-
-	ACCEPT MESSAGE
-			with(or without)
-			0RTT response extension
-		<--------
-
-	CONFIRM MESSAGE
-		-------->
-
-client									server
-	PROPOSAL MESSAGE
-		without	first contact
-		with ORTT Data
-		-------->
-
-	ACCEPT MESSAGE
-		<---------
-
-	CONFIRM MESSAGE
-		-------->
-
-If so, using reserved bit to exchange feature are not enough. We have a simple design
-to perform compatibility with legacy extensions and support future extensions.
-
-This draft try to unify all the areas named extension in current
-SMC v2 protocol spec, includes 'PROPOSAL V1 IP Subnet Extension',
-'PROPOSAL V2 Extension', 'PROPOSAL SMC-DV2 EXTENSION',
-and 'First Contact Extension'.
-
-This draft does lots of compromise designs in order to achieve compatibility.
-I believe there must have better ways. Let me get the ball rolling. And please let
-me know if you have any suggestions or better ideas. This draft of the design
-is as follows:
-
-SMC V2 CLC PROPOSAL MESSAGE:
-
-+------+-------+------------------------------------------------------------+
-|0	50     |NOT changed						    |
-+------+-------+------------------------------------------------------------+
-|50    |2      |SMC Version 2 Extension Offset(applicable when SMC V2)      |
-+------+-------+------------------------------------------------------------+
-|52    |19     |Reserved for growth                                         |
-+------+-------+------------------------------------------------------------+
-|71    |*      |Extension Area  (reserved before)                           |
-+------+-------+------------------------------------------------------------+
-|71    |2      |number of Extensions  (reserved before)                     |
-+------+-------+------------------------------------------------------------+
-|73    |7      |V1 IP Subnet Extension Header (when applicable)             |
-+------+-------+------------------------------------------------------------+
-|73    |7      |Padding Extension (when V1 IP Subnet Extension not present) |
-+------+-------+------------------------------------------------------------+
-|80    |*      |V1 IP Subnet Extension Payload (when applicable)            |
-+------+-------+------------------------------------------------------------+
-|      |       |V2 Extension (when applicable)                              |
-+------+-------+------------------------------------------------------------+
-|      |       |other available Extension (when applicable)                 |
-+------+-------+------------------------------------------------------------+
-|*     |4      |Eye catcher ‘SMCR’ (EBCDIC) message end                     |
-+------+-------+------------------------------------------------------------+
-
-Notes:
-
-     1. In the current implementation, server read the proposal message with
-fixed length, areas beyond the length will be silently ignored, and server will give
-up to check eye catcher. Therefore, It's safe to extend the message from the tail.
-
-     2. (reserved before) means that the areas used to be reserved.
-
-     3. none of the existing fields have their offsets changed
-within the PROPOSAL message.
-
-
-Extension Areas Format:
-
-+------+-------+-----------------------+
-|0     |*      |Extensions Area        |
-+------+-------+-----------------------+
-|0     |2      |Number of Extensions   |
-+------+-------+-----------------------+
-|2     |*      |Extensions             |
-+------+-------+-----------------------+
-|      |       |End of Extensions Area |
-+------+-------+-----------------------+
-
-notes:
-
-     1. All extensions within the extension areas should be contiguous.
-
-
-Extension Format:
-
-+------+-------+----------------------------------------+
-|0     |*      |Extension                               |
-+------+-------+----------------------------------------+
-|0     |6+     |Extension header                        |
-+------+-------+----------------------------------------+
-|0     |4      |reserved                                |
-+------+-------+----------------------------------------+
-|2     |*      |Extension Type (variable length)        |
-+------+-------+----------------------------------------+
-|*     |*      |Payload Length (variable length)        |
-+------+-------+----------------------------------------+
-|*     |*      |payload                                 |
-+------+-------+----------------------------------------+
-
-notes:
-
-     1. This scheme was specially designed to be compatible with
-'PROPOSAL V2 Extension', since it is the only extension with no
-reserved octets ahead of it.
-
-     2. Another special case is 'PROPOSAL SMC-DV2 EXTENSION', it's also
-has no reserved octets ahead of it, but it can be treats as an
-optional part of 'PROPOSAL V2 Extension'.
-
-     3. To be compatible with 'PROPOSAL V2 Extension', there are only
-2 reserved octets left to place type and length fields. If octet per
-each fileds, there can be only a maximum of 255 extension types and
-a maximum length of 255. For better scalability, the type and length
-fields are encoded as variable length integer.
-
-variable length integer encoding:
-
-+--------------+-------+---------------+--------+
-|first bit     |octet  |Usable Bits    |Range   |
-+--------------+-------+---------------+--------+
-|0             |1      |7              |0-127   |
-+--------------+-------+---------------+--------+
-|1             |2      |15             |0-32767 |
-+--------------+-------+---------------+--------+
-
-notes;
-
-     1. This design introduces some complexity and we can totally give it
-up if we do not need more than 255 extensions at all.
-
-V1 IP Subnet Extension Format:
-
-+------+-------+-------------------------------------------------+
-|0     |7      |Extension Header                                 |
-+------+-------+-------------------------------------------------+
-|0     |4      |Reserved                                         |
-+------+-------+-------------------------------------------------+
-|4     |1      |Extension type(0x2)                              |
-+------+-------+-------------------------------------------------+
-|5     |2      |payload length                                   |
-+------+-------+-------------------------------------------------+
-|7     |*      |V1 IP Subnet Extension Payload                   |
-+------+-------+-------------------------------------------------+
-|7     |5      |Client IPv4 Subnet Mask (IPv4 only)              |
-+------+-------+-------------------------------------------------+
-|7     |4      |Subnet Mask                                      |
-+------+-------+-------------------------------------------------+
-|9     |2      |Reserved                                         |
-+------+-------+-------------------------------------------------+
-|11    |*      |Client IPv6 Prefix Array (zero for IPv4)         |
-+------+-------+-------------------------------------------------+
-|11    |1      |Number of IPv6 Prefixes in Prefix array (1 - 8)  |
-+------+-------+-------------------------------------------------+
-|12    |*      |Prefix Array, variable length array              |
-+------+-------+-------------------------------------------------+
-
-notes:
-
-     1. newly V1 IP Subnet Extension borrows 7 octets from the
-reserved fields in the upper near part to form a completed extension.
-
-     2. none of the existing fields have their offsets changed
-within the PROPOSAL message.
-
-Padding Extension Format:
-
-+------+-------+-------------------------------+
-|0     |2      |Reserved                       |
-+------+-------+-------------------------------+
-|2     |1      |Extension type(0x0)            |
-+------+-------+-------------------------------+
-|3     |*      |Payload length                 |
-+------+-------+-------------------------------+
-|*     |*      |Padding (fill with 0x0)        |
-+------+-------+-------------------------------+
-
-notes:
-
-     1. Padding Extension is used to fill reserved areas that
-have not been used yet. It doesn't mean anything, and can be replaced
-in the future.
-
-SMCv2 EXTENSION Format:
-
-+------+-------+------------------------------------------------------------+
-|0     |8      |SMCv2 Extension - Client Options Area (SMCRv2 & SMCDv2)     |
-+------+-------+------------------------------------------------------------+
-|0     |8      |SMCv2 Extension - Client Options Area Header                |
-+------+-------+------------------------------------------------------------+
-|0     |1      |EID Number                                                  |
-+------+-------+------------------------------------------------------------+
-|1     |1      |ISMv2 GID Number                                            |
-+------+-------+------------------------------------------------------------+
-|2     |1      |Flag 1 (bit 8) - Reserved                                   |
-+------+-------+------------------------------------------------------------+
-|3     |1      |Flag 2 (bit 8)                                              |
-+------+-------+------------------------------------------------------------+
-|4     |2      |Extension Header (reserved before)                          |
-+------+-------+------------------------------------------------------------+
-|4     |1      |Extension type(0x3)                                         |
-+------+-------+------------------------------------------------------------+
-|5     |1      |payload length (range 0-127)                                |
-+------+-------+------------------------------------------------------------+
-|6     |2      |SMCDv2 Extension Offset (if present)                        |
-+------+-------+------------------------------------------------------------+
-|8     |16     |RoCEv2 GID (IPv4 or IPv6 address)                           |
-+------+-------+------------------------------------------------------------+
-|8     |16     |RoCEv2 GID IPv6 address (when IPv6)                         |
-+------+-------+------------------------------------------------------------+
-|8     |12     |RoCEv2 GID IPv4 reserved (when IPv4)                        |
-+------+-------+------------------------------------------------------------+
-|20    |4      |RoCEv2 GID IPv4 address (right aligned)                     |
-+------+-------+------------------------------------------------------------+
-|24    |9      |Reserved                                                    |
-+------+-------+------------------------------------------------------------+
-|33    |7      |Continuation extension (reserved before)                    |
-+------+-------+------------------------------------------------------------+
-|33    |4      |Reserved                                                    |
-+------+-------+------------------------------------------------------------+
-|37    |1      |Extension type(0x1) (reserved before)                       |
-+------+-------+------------------------------------------------------------+
-|38    |2      |Payload length (reserved before)                            |
-+------+-------+------------------------------------------------------------+
-|40    |*      |EID Array Area – variable length (32 bytes * EID Number)    |
-+------+-------+------------------------------------------------------------+
-|*     |*      |SMCDv2 optional area (used to called SMCDv2 extension)      |
-+------+-------+------------------------------------------------------------+
-
-notes:
-
-     1. newly V2 EXTENSION use several reserved octets to form a completed
-extension. Note that none of the existing fields have their offsets changed
-within the PROPOSAL message.
-
-     2. the size of SMCv2 EXTENSION plus maximum size of EID Array Area is
-much bigger than the highest number that one octet can represent. To be
-compatible with 'legacy V2 Extension', there are only 2 reserved octets left to
-place type and length fields. therefore, we use Continuation Extension to solve
-it.
-
-Continuation Extension Format:
-
-+------+-------+-------------------------------+
-|0     |4      |Reserved                       |
-+------+-------+-------------------------------+
-|4     |1      |Extension type(0x1)            |
-+------+-------+-------------------------------+
-|5     |*      |payload length                 |
-+------+-------+-------------------------------+
-|*     |*      |Continuation data              |
-+------+-------+-------------------------------+
-
-notes:
-
-     1. Indicate that the content of this extension is continuation of
-the content of its previous extension.
-
-     2. In order to be compatible with some existing extensions,
-when the reserved bytes that can be used are not enough to represent
-its maximum length.
-
-
-CLC ACCEPT MESSAGE (SMC-DV2 FORMAT) / CLC CONFIRM MESSAGE (SMC-Dv2 FORMAT)
-
-+------+-------+---------------------------------------------------+
-|34    |32     |EID (Negotiated Common EID selected by the server) |
-+------+-------+---------------------------------------------------+
-|66    |4      |Reserved                                           |
-+------+-------+---------------------------------------------------+
-|70    |*      |Extensions Area                                    |
-+------+-------+---------------------------------------------------+
-|70    |2      |number of Extensions  (reserved before)            |
-+------+-------+---------------------------------------------------+
-|72    |38     |First Contact Extension -                          |
-|      |       |only present when first contact flag is on         |
-+------+-------+---------------------------------------------------+
-|72    |6      |First Contact Extension Header                     |
-+------+-------+---------------------------------------------------+
-|72    |2      |Reserved                                           |
-+------+-------+---------------------------------------------------+
-|74    |4      |FCE Header                                         |
-+------+-------+---------------------------------------------------+
-|74    |1      |FCE Header - reserved                              |
-+------+-------+---------------------------------------------------+
-|75    |1      |FCE Header Flag 1 (bit 8)                          |
-+------+-------+---------------------------------------------------+
-|76    |1      |Extension type (0x4) (reserved before)             |
-+------+-------+---------------------------------------------------+
-|77    |1      |Payload length (0x20) (reserved before)		   |
-+------+-------+---------------------------------------------------+
-|78    |32     |FCE Peer Host Name                                 |
-+------+-------+---------------------------------------------------+
-|110   |*      |other available Extension (when applicable)        |
-+------+-------+---------------------------------------------------+
-|*     |4      |Eye catcher ‘SMCD’ (EBCDIC) message end            |
-+------+-------+---------------------------------------------------+
-
-CLC ACCEPT MESSAGE (SMC-RV2 FORMAT)
-
-+------+-------+---------------------------------------------------+
-|64    |32     |EID (Negotiated EID selected by server)            |
-+------+-------+---------------------------------------------------+
-|96    |4      |Reserved                                           +
-+------+-------+---------------------------------------------------+
-|100   |*      |Extension Area                                     |
-+------+-------+---------------------------------------------------+
-|100   |2      |number of Extension  (reserved before)             |
-+------+-------+---------------------------------------------------+
-|102   |38     |First Contact Extension -                          |
-|      |       |only present when first contact flag is on         |
-+------+-------+---------------------------------------------------+
-|102   |6      |First Contact Extension Header                     |
-+------+-------+---------------------------------------------------+
-|102   |2      |reserved                                           |
-+------+-------+---------------------------------------------------+
-|104   |4      |FCE Header                                         |
-+------+-------+---------------------------------------------------+
-|104   |1      |FCE Header - reserved                              |
-+------+-------+---------------------------------------------------+
-|105   |1      |FCE Header Flag 1 (bit 8)                          |
-+------+-------+---------------------------------------------------+
-|106   |1      |Extension type (0x4) (reserved before)             |
-+------+-------+---------------------------------------------------+
-|107   |1      |Payload length (0x20) (reserved before)            |
-+------+-------+---------------------------------------------------+
-|108   |32     |FCE Peer Host Name                                 |
-+------+-------+---------------------------------------------------+
-|140   |16     |Padding Extension	(reserved before)	   |
-+------+-------+---------------------------------------------------+
-|156   |*      |other available Extension (when applicable)        |
-+------+-------+---------------------------------------------------+
-|*     |4      |Eye catcher ‘SMCR’ (EBCDIC) message end            |
-+------+-------+---------------------------------------------------+
-
-notes:
-
-     1. none of the existing fields have their offsets changed
-within the message.
-
-
-First Contact Extension Format:
-
-+------+-------+----------------------------------------------------------------+
-|0     |6      |First Contact Extension Header                                  |
-+------+-------+----------------------------------------------------------------+
-|0     |2      |Reserved                                                        |
-+------+-------+----------------------------------------------------------------+
-|2     |1      |FCE Header Flag 0                                               |
-+------+-------+----------------------------------------------------------------+
-|3     |1      |FCE Header Flag 1                                               |
-+------+-------+----------------------------------------------------------------+
-|4     |1      |Extension type (0x4) (reserved before)                          |
-+------+-------+----------------------------------------------------------------+
-|5     |1      |Payload length (0x20) (reserved before)                         |
-+------+-------+----------------------------------------------------------------+
-|6     |32     |FCE Peer Host Name (ASCII character - padded with ASCII blanks) |
-+------+-------+----------------------------------------------------------------+
-
-notes:
-
-     1. newly First Contact Extension borrows 2 octets from the
-reserved fields in the upper near part to form a completed extension.
-
-
-CLC CONFIRM MESSAGE (SMC-RV2 FORMAT)
-
-+------+-------+---------------------------------------------------+
-|64    |32     |EID (Negotiated EID selected by server)            |
-+------+-------+---------------------------------------------------+
-|96    |4      |Reserved                                           |
-+------+-------+---------------------------------------------------+
-|100   |*      |Extension Area                                     |
-+------+-------+---------------------------------------------------+
-|100   |2      |number of Extension  (reserved before)             |
-+------+-------+---------------------------------------------------+
-|102   |38     |First Contact Extension -                          |
-|      |        only present when first contact flag is on         |
-+------+-------+---------------------------------------------------+
-|102   |6      |First Contact Extension Header                     |
-+------+-------+---------------------------------------------------+
-|102   |2      |reserved                                           |
-+------+-------+---------------------------------------------------+
-|104   |4      |FCE Header                                         |
-+------+-------+---------------------------------------------------+
-|104   |1      |FCE Header - reserved                              |
-+------+-------+---------------------------------------------------+
-|105   |1      |FCE Header Flag 1 (bit 8)                          |
-+------+-------+---------------------------------------------------+
-|106   |1      |Extension type (0x4)  (reserved before)            |
-+------+-------+---------------------------------------------------+
-|107   |1      |Payload length (0x20)                              |
-+------+-------+---------------------------------------------------+
-|108   |32     |FCE Peer Host Name                                 |
-+------+-------+---------------------------------------------------+
-|140   |9      |PADDING extension (reserved before)                |
-+------+-------+---------------------------------------------------+
-|149   |*      |Client RoCEv2 GID Extension                        |
-+------+-------+---------------------------------------------------+
-|149   |7      |Client RoCEv2 GID Extension Header(reserved before)|
-+------+-------+---------------------------------------------------+
-|156   |*      |FCE Client RoCEv2 GID List                         |
-+------+-------+---------------------------------------------------+
-|*     |*      |other available Extension (when applicable)        |
-+------+-------+---------------------------------------------------+
-|*     |4      |Eye catcher ‘SMCR’ (EBCDIC) message end            |
-+------+-------+---------------------------------------------------+
-
-notes:
-
-     1. Client RoCEv2 GID was once part of the First Contact Extension, and now it's
-standalone extension.
-
-Client RoCEv2 GID Extension Format:
-
-+-+----+-------+---------------------------------------------------+
-|0     |*      |Client RoCEv2 GID                                  |
-+------+-------+---------------------------------------------------+
-|0     |4      |Reserved                                           |
-+------+-------+---------------------------------------------------+
-|4     |1      |Extension type(0x5)                                |
-+------+-------+---------------------------------------------------+
-|5     |2      |Payload length                                     |
-+------+-------+---------------------------------------------------+
-|7     |*      |Client RoCEv2 GID List                             |
-+------+-------+---------------------------------------------------+
-|7     |4      |GID List Header                                    |
-+------+-------+---------------------------------------------------+
-|7     |1      |GID List No of Entries (1 - 8)                     |
-+------+-------+---------------------------------------------------+
-|8     |3      |Reserved                                           |
-+------+-------+---------------------------------------------------+
-|11    |*      |GID List Array Area                                |
-+------+-------+---------------------------------------------------+
-|11    |16     |GID List Entry - RoCEv2 IP address (IPv4 or IPv6)  |
-+------+-------+---------------------------------------------------+
-+*     |*      |End of Client GID List                             |
-+------+-------+---------------------------------------------------+
-
-notes:
-
-     1.  newly Client RoCEv2 GID Extension borrows 7 octets from the
-reserved fields in the upper near part to form a completed extension.
-
-     2. none of the existing fields have their offsets changed
-within the CONFIRM message.
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    7a68065eb9cd Merge tag 'gpio-fixes-for-v5.19-rc2' of git:/..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1432d953f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b8e07e4ed17ee546
+dashboard link: https://syzkaller.appspot.com/bug?extid=9f160a43b2cf201cbe65
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1297ba43f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14bf34a7f00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+9f160a43b2cf201cbe65@syzkaller.appspotmail.com
+
+BUG: memory leak
+unreferenced object 0xffff8881016dfa00 (size 256):
+  comm "syz-executor201", pid 3662, jiffies 4294969093 (age 12.970s)
+  hex dump (first 32 bytes):
+    00 90 da 0d 81 88 ff ff 00 00 00 00 01 00 00 00  ................
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff816fe96b>] kmalloc include/linux/slab.h:605 [inline]
+    [<ffffffff816fe96b>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff816fe96b>] __register_sysctl_table+0x7b/0x7f0 fs/proc/proc_sysctl.c:1344
+    [<ffffffff82219a5a>] setup_mq_sysctls+0x12a/0x1c0 ipc/mq_sysctl.c:112
+    [<ffffffff822196d2>] create_ipc_ns ipc/namespace.c:63 [inline]
+    [<ffffffff822196d2>] copy_ipcs+0x292/0x390 ipc/namespace.c:91
+    [<ffffffff8127de6c>] create_new_namespaces+0xdc/0x4f0 kernel/nsproxy.c:90
+    [<ffffffff8127e88b>] unshare_nsproxy_namespaces+0x9b/0x120 kernel/nsproxy.c:226
+    [<ffffffff8123f92e>] ksys_unshare+0x2fe/0x600 kernel/fork.c:3165
+    [<ffffffff8123fc42>] __do_sys_unshare kernel/fork.c:3236 [inline]
+    [<ffffffff8123fc42>] __se_sys_unshare kernel/fork.c:3234 [inline]
+    [<ffffffff8123fc42>] __x64_sys_unshare+0x12/0x20 kernel/fork.c:3234
+    [<ffffffff845abc55>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845abc55>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff8460006a>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+BUG: memory leak
+unreferenced object 0xffff88810edf7b00 (size 256):
+  comm "syz-executor201", pid 3662, jiffies 4294969093 (age 12.970s)
+  hex dump (first 32 bytes):
+    78 7b df 0e 81 88 ff ff 00 00 00 00 01 00 00 00  x{..............
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff816fee99>] kmalloc include/linux/slab.h:605 [inline]
+    [<ffffffff816fee99>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff816fee99>] new_dir fs/proc/proc_sysctl.c:978 [inline]
+    [<ffffffff816fee99>] get_subdir fs/proc/proc_sysctl.c:1022 [inline]
+    [<ffffffff816fee99>] __register_sysctl_table+0x5a9/0x7f0 fs/proc/proc_sysctl.c:1373
+    [<ffffffff82219a5a>] setup_mq_sysctls+0x12a/0x1c0 ipc/mq_sysctl.c:112
+    [<ffffffff822196d2>] create_ipc_ns ipc/namespace.c:63 [inline]
+    [<ffffffff822196d2>] copy_ipcs+0x292/0x390 ipc/namespace.c:91
+    [<ffffffff8127de6c>] create_new_namespaces+0xdc/0x4f0 kernel/nsproxy.c:90
+    [<ffffffff8127e88b>] unshare_nsproxy_namespaces+0x9b/0x120 kernel/nsproxy.c:226
+    [<ffffffff8123f92e>] ksys_unshare+0x2fe/0x600 kernel/fork.c:3165
+    [<ffffffff8123fc42>] __do_sys_unshare kernel/fork.c:3236 [inline]
+    [<ffffffff8123fc42>] __se_sys_unshare kernel/fork.c:3234 [inline]
+    [<ffffffff8123fc42>] __x64_sys_unshare+0x12/0x20 kernel/fork.c:3234
+    [<ffffffff845abc55>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845abc55>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff8460006a>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+BUG: memory leak
+unreferenced object 0xffff888101926f00 (size 256):
+  comm "syz-executor201", pid 3662, jiffies 4294969093 (age 12.970s)
+  hex dump (first 32 bytes):
+    78 6f 92 01 81 88 ff ff 00 00 00 00 01 00 00 00  xo..............
+    01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff816fee99>] kmalloc include/linux/slab.h:605 [inline]
+    [<ffffffff816fee99>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff816fee99>] new_dir fs/proc/proc_sysctl.c:978 [inline]
+    [<ffffffff816fee99>] get_subdir fs/proc/proc_sysctl.c:1022 [inline]
+    [<ffffffff816fee99>] __register_sysctl_table+0x5a9/0x7f0 fs/proc/proc_sysctl.c:1373
+    [<ffffffff82219a5a>] setup_mq_sysctls+0x12a/0x1c0 ipc/mq_sysctl.c:112
+    [<ffffffff822196d2>] create_ipc_ns ipc/namespace.c:63 [inline]
+    [<ffffffff822196d2>] copy_ipcs+0x292/0x390 ipc/namespace.c:91
+    [<ffffffff8127de6c>] create_new_namespaces+0xdc/0x4f0 kernel/nsproxy.c:90
+    [<ffffffff8127e88b>] unshare_nsproxy_namespaces+0x9b/0x120 kernel/nsproxy.c:226
+    [<ffffffff8123f92e>] ksys_unshare+0x2fe/0x600 kernel/fork.c:3165
+    [<ffffffff8123fc42>] __do_sys_unshare kernel/fork.c:3236 [inline]
+    [<ffffffff8123fc42>] __se_sys_unshare kernel/fork.c:3234 [inline]
+    [<ffffffff8123fc42>] __x64_sys_unshare+0x12/0x20 kernel/fork.c:3234
+    [<ffffffff845abc55>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845abc55>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff8460006a>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+write to /proc/sys/kernel/hung_task_check_interval_secs failed: No such file or directory
+write to /proc/sys/kernel/softlockup_all_cpu_backtrace failed: No such file or directory
+write to /proc/sys/kernel/hung_task_check_interval_secs failed: No such file or directory
+write to /proc/sys/kernel/softlockup_all_cpu_backtrace failed: No such file or directory
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
