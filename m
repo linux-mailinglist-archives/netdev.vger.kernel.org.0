@@ -2,185 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A660954E76D
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 18:40:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C080C54E777
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 18:41:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233965AbiFPQkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 12:40:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40982 "EHLO
+        id S235861AbiFPQlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 12:41:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230319AbiFPQkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 12:40:04 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF5C15F78
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 09:40:02 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id n28so2952469edb.9
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 09:40:02 -0700 (PDT)
+        with ESMTP id S236039AbiFPQl0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 12:41:26 -0400
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C23E30578
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 09:41:20 -0700 (PDT)
+Received: by mail-il1-x12b.google.com with SMTP id u2so1314214iln.2
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 09:41:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rYBvkspR6vlZOcNflMW0glZB27YnSX2BI6vJdiLBAH4=;
-        b=7qznNp/bdxxC5V6SyVqk4MFyM87PELJnLnqc1XWgNlC8qfNIPgG7x/4Knf/bDQ4fZe
-         pKB4BGn+2J7XTkY8qUvMxkCN2DTQ9jMsWPC0I5k44iCQ+kVofsroyGtfEeT4+KLBofJ+
-         IfhASYd/yhotgrITpIEIR2CqM0LCD4wQD2C4NlGoKfO5Fzf1rYoeRF8HF9I0uxXaZnZ9
-         Tu70l8aaeQG3HFRZDEGNBpYYG42FqBeLRA88/Jptx6eZE6TQ9rJWDOnKmdJ+VL0+iG8L
-         0y4GK+dVcg9OK/ivrvfq+o3cVeXLzdkrsApkNMkSM1+TMIR9T5j/uYcQJoiFppCOe/WP
-         FlrA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=dTPMQR0mHE9evkO00QhR9CR5/21SYg0vv8s/EM7WqgI=;
+        b=UtemJAUXqUPg5ShVWaXe4fvrufyjI7vlZozMITBSqGOGuCYZGv33E56lncaD7UaN+o
+         4uV6pfr3s4K7xUy498alTg7lOqgVTsDA5V+wu2i2WfZOJyN+lbEA4qzQnTNJJLUWGMCx
+         yublkKZFvcbOZE6MKnFdFP2jgFflMgw0ICxsIPhMnBf5wTOCIQLWNpztB7wnNeHa7ivH
+         JBIaDCYsNXOkYs8rL6Y46W+olMKfe3vIJoZFHD7rIJCo4EOogpP3kMHTk3LAo2HdkplO
+         TKsPudE2ogInV38V/WAyQiURS0sFavN42jkcGRO61tSZLyoZqKI6l2IrfQQoecCF6y++
+         GP2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rYBvkspR6vlZOcNflMW0glZB27YnSX2BI6vJdiLBAH4=;
-        b=ZogXsYH591+P7Z44sXCCFn5cMJdDWQF0nfeOuVf+Wcr7A2Bv4WucPxYznorrwqsqgm
-         YTlml/7dfubdSuOFBO3lZ+c4OFgNonbVqp0HeJt0KDkA3JmUw5//XOGFOmUvb+Ihn1+l
-         q5Jc+Bn1UFpQmz4Pugru6eYHkMoG6lT20vxMRwXSEI2/JHZ3yYTu5rNzgxM2KT7RW5sA
-         3+RDAKAbABHuAuzwH1QJqRe8cvwgwG6p8w4Hp50vCXgH/6d7qpeER4u/mcmiIpxrt0Ue
-         8aulzyRkPzpEM0o9gsxqN9etN3jVqYPNWfwJyQM38l/Z1kVa/OD8T359jOwZ9yblol4F
-         aYKg==
-X-Gm-Message-State: AJIora+PtAAHvj+08jqKl8Eq2DhuvJ86t1ubJDC2MCOgYCIRpkcBTvQ6
-        4aGlaHQ0ZmiAwo2Ps5wcntOhLg==
-X-Google-Smtp-Source: AGRyM1vQ2TJtmqP6O19SEEnzGRwtx7OE/+Zpi3TTBUml9Uhqguw2DfPU3HtRuXROoJf+GJPAfpbK8Q==
-X-Received: by 2002:a05:6402:485:b0:433:2dfc:e886 with SMTP id k5-20020a056402048500b004332dfce886mr7679371edv.241.1655397601435;
-        Thu, 16 Jun 2022 09:40:01 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id v3-20020aa7d643000000b0042bb229e81esm2121482edr.15.2022.06.16.09.40.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 09:40:00 -0700 (PDT)
-Date:   Thu, 16 Jun 2022 18:39:59 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        petrm@nvidia.com, pabeni@redhat.com, edumazet@google.com,
-        mlxsw@nvidia.com
-Subject: Re: [patch net-next 02/11] mlxsw: core_linecards: Introduce per line
- card auxiliary device
-Message-ID: <Yqtc346Kd2AXEd/l@nanopsycho>
-References: <20220614123326.69745-1-jiri@resnulli.us>
- <20220614123326.69745-3-jiri@resnulli.us>
- <YqnyHcsi+GPVT9ix@shredder>
- <YqoYy/RLWaDd/6uh@nanopsycho>
- <YqrXvLY0GGCFLs4U@shredder>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=dTPMQR0mHE9evkO00QhR9CR5/21SYg0vv8s/EM7WqgI=;
+        b=o6Nayv/BCXAPcbva4nvlHh3lp1sJPAomtFgu0ADdY+U/dq5kNUjTyYi9RRBr7poygQ
+         nCOow7L2Xeqv/eNARbNrrIVFX9Yboq7bogSNPBGeyNGobHsJLHssya8wUeZoOWB6qabl
+         e/nvIUboTu79Dq+aA6jCVeUniTkgwc8pLsp3AvFbl7fNbatKLet8oHrJyUsmSdQ6xRUm
+         h1KEt2ReU366aj9+lbITnV3B86lXXKNgE+V+5u2djIXqxZzaw7XMxHF/QjA1NqyUZcoJ
+         1mK57Qg5XKxy3Npc3RSZvBnJQtmhvicBMb8OXuWXri7K/oNP8P9uIPfZ0X3G1KHsBd9L
+         EMiw==
+X-Gm-Message-State: AJIora+Ol9Gx6YtRpfAPUXwxh6+Q8ntmorVuNiwm5ia2GM6D/eHeTWBW
+        DOM0gxtecN5f/7BOhZ5Y6e66oF5IZuh2870CsT5jeA==
+X-Google-Smtp-Source: AGRyM1uxMgdiqs53mA6i4TSrN1IdTKIZKiwTZZcSLyj7Cr5mPOGk7F3bj/rEO9KPnqK0z0Z3INMyDZW470qfIjkdHz4=
+X-Received: by 2002:a05:6e02:1607:b0:2d1:e622:3f0a with SMTP id
+ t7-20020a056e02160700b002d1e6223f0amr3268345ilu.287.1655397679683; Thu, 16
+ Jun 2022 09:41:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YqrXvLY0GGCFLs4U@shredder>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <CAHo-Ooy+8O16k0oyMGHaAcmLm_Pfo=Ju4moTc95kRp2Z6itBcg@mail.gmail.com>
+ <CANP3RGed9Vbu=8HfLyNs9zwA=biqgyew=+2tVxC6BAx2ktzNxA@mail.gmail.com>
+ <CAADnVQKBqjowbGsSuc2g8yP9MBANhsroB+dhJep93cnx_EmNow@mail.gmail.com>
+ <CANP3RGcZ4NULOwe+nwxfxsDPSXAUo50hWyN9Sb5b_d=kfDg=qg@mail.gmail.com>
+ <YqodE5lxUCt6ojIw@google.com> <YqpAYcvM9DakTjWL@google.com>
+ <YqpB+7pDwyOk20Cp@google.com> <YqpDcD6vkZZfWH4L@google.com>
+ <CANP3RGcBCeMeCfpY3__4X_OHx6PB6bXtRjwLdYi-LRiegicVXQ@mail.gmail.com> <CAKH8qBv=+QVBqHd=9rAWe3d5d47dSkppYc1JbS+WgQs8XgB+Yg@mail.gmail.com>
+In-Reply-To: <CAKH8qBv=+QVBqHd=9rAWe3d5d47dSkppYc1JbS+WgQs8XgB+Yg@mail.gmail.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Thu, 16 Jun 2022 09:41:04 -0700
+Message-ID: <CANP3RGc-9VkZkBK-N3y39F0Y+cLsPSLsQGvuR2QKAeQsWEoq9w@mail.gmail.com>
+Subject: Re: Curious bpf regression in 5.18 already fixed in stable 5.18.3
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        BPF Mailing List <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Carlos Llamas <cmllamas@google.com>,
+        YiFei Zhu <zhuyifei@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jun 16, 2022 at 09:11:56AM CEST, idosch@nvidia.com wrote:
->On Wed, Jun 15, 2022 at 07:37:15PM +0200, Jiri Pirko wrote:
->> Wed, Jun 15, 2022 at 04:52:13PM CEST, idosch@nvidia.com wrote:
->> >> +int mlxsw_linecard_bdev_add(struct mlxsw_linecard *linecard)
->> >> +{
->> >> +	struct mlxsw_linecard_bdev *linecard_bdev;
->> >> +	int err;
->> >> +	int id;
->> >> +
->> >> +	id = mlxsw_linecard_bdev_id_alloc();
->> >> +	if (id < 0)
->> >> +		return id;
->> >> +
->> >> +	linecard_bdev = kzalloc(sizeof(*linecard_bdev), GFP_KERNEL);
->> >> +	if (!linecard_bdev) {
->> >> +		mlxsw_linecard_bdev_id_free(id);
->> >> +		return -ENOMEM;
->> >> +	}
->> >> +	linecard_bdev->adev.id = id;
->> >> +	linecard_bdev->adev.name = MLXSW_LINECARD_DEV_ID_NAME;
->> >> +	linecard_bdev->adev.dev.release = mlxsw_linecard_bdev_release;
->> >> +	linecard_bdev->adev.dev.parent = linecard->linecards->bus_info->dev;
->> >> +	linecard_bdev->linecard = linecard;
->> >> +
->> >> +	err = auxiliary_device_init(&linecard_bdev->adev);
->> >> +	if (err) {
->> >> +		mlxsw_linecard_bdev_id_free(id);
->> >> +		kfree(linecard_bdev);
->> >> +		return err;
->> >> +	}
->> >> +
->> >> +	err = auxiliary_device_add(&linecard_bdev->adev);
->> >> +	if (err) {
->> >> +		auxiliary_device_uninit(&linecard_bdev->adev);
->> >> +		return err;
->> >> +	}
->> >> +
->> >> +	linecard->bdev = linecard_bdev;
->> >> +	return 0;
->> >> +}
->> >
->> >[...]
->> >
->> >> +static int mlxsw_linecard_bdev_probe(struct auxiliary_device *adev,
->> >> +				     const struct auxiliary_device_id *id)
->> >> +{
->> >> +	struct mlxsw_linecard_bdev *linecard_bdev =
->> >> +			container_of(adev, struct mlxsw_linecard_bdev, adev);
->> >> +	struct mlxsw_linecard_dev *linecard_dev;
->> >> +	struct devlink *devlink;
->> >> +
->> >> +	devlink = devlink_alloc(&mlxsw_linecard_dev_devlink_ops,
->> >> +				sizeof(*linecard_dev), &adev->dev);
->> >> +	if (!devlink)
->> >> +		return -ENOMEM;
->> >> +	linecard_dev = devlink_priv(devlink);
->> >> +	linecard_dev->linecard = linecard_bdev->linecard;
->> >> +	linecard_bdev->linecard_dev = linecard_dev;
->> >> +
->> >> +	devlink_register(devlink);
->> >> +	return 0;
->> >> +}
->> >
->> >[...]
->> >
->> >> @@ -252,6 +253,14 @@ mlxsw_linecard_provision_set(struct mlxsw_linecard *linecard, u8 card_type,
->> >>  	linecard->provisioned = true;
->> >>  	linecard->hw_revision = hw_revision;
->> >>  	linecard->ini_version = ini_version;
->> >> +
->> >> +	err = mlxsw_linecard_bdev_add(linecard);
->> >
->> >If a line card is already provisioned and we are reloading the primary
->> >devlink instance, isn't this going to deadlock on the global (not
->> >per-instance) devlink mutex? It is held throughout the reload operation
->> >and also taken in devlink_register()
->> >
->> >My understanding of the auxiliary bus model is that after adding a
->> >device to the bus via auxiliary_device_add(), the probe() function of
->> >the auxiliary driver will be called. In our case, this function acquires
->> >the global devlink mutex in devlink_register().
->> 
->> No, the line card auxdev is supposed to be removed during
->> linecard_fini(). This, I forgot to add, will do in v2.
+On Thu, Jun 16, 2022 at 8:57 AM Stanislav Fomichev <sdf@google.com> wrote:
+> On Wed, Jun 15, 2022 at 6:36 PM Maciej =C5=BBenczykowski <maze@google.com=
+> wrote:
+> > I'm guessing this means the regression only affects 64-bit archs,
+> > where long =3D void* is 8 bytes > u32 of 4 bytes, but not 32-bit ones,
+> > where long =3D u32 =3D 4 bytes
+> >
+> > Unfortunately my dev machine's 32-bit build capability has somehow
+> > regressed again and I can't check this.
 >
->mlxsw_linecard_fini() is called as part of reload with the global
->devlink mutex held. The removal of the auxdev should prompt the
->unregistration of its devlink instance which also takes this mutex. If
->this doesn't deadlock, then I'm probably missing something.
+> Seems so, yes. But I'm actually not sure whether we should at all
+> treat it as a regression. There is a question of whether that EPERM is
+> UAPI or not. That's why we most likely haven't caught it in the
+> selftests; most of the time we only check that syscall has returned -1
+> and don't pay attention to the particular errno.
 
-You don't miss anything, it really does. Need to remove devlink_mutex
-first.
+EFAULT seems like a terrible error to return no matter what, it has a very =
+clear
+'memory read/write access violation' semantic (ie. if you'd done from
+userspace you'd get a SIGSEGV)
 
+I'm actually surprised to learn you return EFAULT on positive number...
+It should rather be some unique error code or EINVAL or something.
 
->
->Can you test reload with lockdep when line cards are already
->provisioned/active?
->
->> 
->> 
->> >
->> >> +	if (err) {
->> >> +		linecard->provisioned = false;
->> >> +		mlxsw_linecard_provision_fail(linecard);
->> >> +		return err;
->> >> +	}
->> >> +
->> >>  	devlink_linecard_provision_set(linecard->devlink_linecard, type);
->> >>  	return 0;
->> >>  }
+I know someone will argue that (most/all) system calls can return EFAULT...
+But that's not actually true.  From a userspace developer the expectation i=
+s
+they will not return EFAULT if you pass in memory you know is good.
+
+#include <sys/utsname.h>
+int main() {
+  struct utsname uts;
+  uname(&uts);
+}
+
+The above cannot EFAULT in spite of it being documented as the only
+error uname can report,
+because obviously the uts structure on the stack is valid memory.
+
+Maybe ENOSYS would at least make it obvious something is very weird.
