@@ -2,141 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00CC154E673
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 17:57:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 579E354E677
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 17:57:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377225AbiFPP52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 11:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
+        id S1377984AbiFPP5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 11:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377859AbiFPP51 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 11:57:27 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D384130567
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 08:57:26 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id u37so1878859pfg.3
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 08:57:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=y4hIoccrpEBvbRmekAk7uJ6aJ9uBx6pEBsR/N5eo7qo=;
-        b=b3UcH0OXINDS1EuYLbs/VNoRuYYlEAIvvV3oGEZJkXqzIXpNDpRWLlYHCjcftLL9yK
-         Ead9OZ85TawNLeKn0616r3m7uM4LhsGFEb8uohi1mTi/F5y1/KsbN1cIRjLwD3Uerp79
-         SoUQ2B5LhCNvbu1bqnLCpIIuZymnTtd7nUKkv8OYKz6WlkNhB8xKE/INTyFuQP6lAVM4
-         qwFEPBEw69YhZOu38XuD3LopokYuzA62VQ77znCCDS9SXYF2g6FQV+UBlGHrggyYyYXW
-         Q/wQodKpWApb7VL6sEThHONtrES2AaZmtQvYQSKdn33PyEsA0L2QhVBckRzbTj4GUUGP
-         oyHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=y4hIoccrpEBvbRmekAk7uJ6aJ9uBx6pEBsR/N5eo7qo=;
-        b=HRQ9LX5zl2CLzjw9cBhx2m6GsGct14YvAO2JqeQfYSEeGJBla1mq9mgDKlE/q/uUPV
-         OyX7W4njlb+uykmIAbCpAHweLMCjc2lyJrgUaqgKNZ+z7h9usMwlKi9SShIYYKENh+pd
-         ZsBsz20VRz3AaaRTdXR9NVISZShj3shJTzYXl8+WF0iD6PjgutrZZkAAOX0Uan9g4gg7
-         A89HSwsSAjFZCTs62zx6blaM/0GavreaMn3YMx/K5/TBmqlOwodKg9K9r9atuzghTxBw
-         qGe6/NYp6rMv6l5WqLw/eyMeJfejQBWa+iLCOFVZWa6IJ94xb2ULhcEF2hOvi9LdQRyV
-         6uuw==
-X-Gm-Message-State: AJIora/jpeedRMSwDdzLfCb3ikp1KbiVUEIFtMC0/PNP8aA8TYueq9On
-        cjW1E7+0HN3kYZKuXXEJKREtyOhEhQRo9ZSkXJIbig==
-X-Google-Smtp-Source: AGRyM1tgdihzLruKB0/p4TES0q+uCOr/NKoSqikU431QPVJ2IRxlAKRL8A1X734iOfj79eFGf6t2YuU4ZmYe0XL/Epg=
-X-Received: by 2002:aa7:8691:0:b0:51c:db9:4073 with SMTP id
- d17-20020aa78691000000b0051c0db94073mr5589886pfo.72.1655395046062; Thu, 16
- Jun 2022 08:57:26 -0700 (PDT)
+        with ESMTP id S1378019AbiFPP5l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 11:57:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4984B0C;
+        Thu, 16 Jun 2022 08:57:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90BDCB82497;
+        Thu, 16 Jun 2022 15:57:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F75C34114;
+        Thu, 16 Jun 2022 15:57:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655395054;
+        bh=aqS2dz4O//iR1Vr0NtpXde5TYZF+050+yENkyO3WUu0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=m8tvtkJLsS/ugQn516qNZWTnQY8dHCyKOTGgP0oJi7Yk9+twCEFaIV663ybl30euo
+         ojM7S0QgTEqok47JvzzH0GBwoean8N8QwLkobrSQZqyv0QVOjyhIsZT4O15IUK3VQ8
+         MqliFW/8Hhuy3+kKfp1HKyBVYAJnpRfuXzrqlz18DZ0bBzaWBwM8ePty1LOP8ILrB7
+         GMHUrTZCyDkKNYBWy0iMW1X1eoItNv/DFjMiVYczaMxcHlNDZFl3pdouG2y6Dfc0qM
+         wnN1E0dsx+if2F1G6xxI/nnuDP1gqBRnvbysKZN/85jNmP6vH14ydM5B32ehxMXvxv
+         oX2KJM2RAARtQ==
+Date:   Thu, 16 Jun 2022 08:57:32 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Michal Kubecek <mkubecek@suse.cz>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        kernel@pengutronix.de, Paolo Abeni <pabeni@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net-next v1 1/1] net: phy: add remote fault support
+Message-ID: <20220616085732.7bc7ef30@kernel.org>
+In-Reply-To: <20220616093451.GA28995@pengutronix.de>
+References: <20220608093403.3999446-1-o.rempel@pengutronix.de>
+        <YqS+zYHf6eHMWJlD@lunn.ch>
+        <20220613125552.GA4536@pengutronix.de>
+        <YqdQJepq3Klvr5n5@lunn.ch>
+        <20220614185221.79983e9b@kernel.org>
+        <YqlUCtJhR1Iw3o3F@lunn.ch>
+        <20220614220948.5f0b4827@kernel.org>
+        <Yqo8BuxL+XKw8U+a@lunn.ch>
+        <20220616093451.GA28995@pengutronix.de>
 MIME-Version: 1.0
-References: <CAHo-Ooy+8O16k0oyMGHaAcmLm_Pfo=Ju4moTc95kRp2Z6itBcg@mail.gmail.com>
- <CANP3RGed9Vbu=8HfLyNs9zwA=biqgyew=+2tVxC6BAx2ktzNxA@mail.gmail.com>
- <CAADnVQKBqjowbGsSuc2g8yP9MBANhsroB+dhJep93cnx_EmNow@mail.gmail.com>
- <CANP3RGcZ4NULOwe+nwxfxsDPSXAUo50hWyN9Sb5b_d=kfDg=qg@mail.gmail.com>
- <YqodE5lxUCt6ojIw@google.com> <YqpAYcvM9DakTjWL@google.com>
- <YqpB+7pDwyOk20Cp@google.com> <YqpDcD6vkZZfWH4L@google.com> <CANP3RGcBCeMeCfpY3__4X_OHx6PB6bXtRjwLdYi-LRiegicVXQ@mail.gmail.com>
-In-Reply-To: <CANP3RGcBCeMeCfpY3__4X_OHx6PB6bXtRjwLdYi-LRiegicVXQ@mail.gmail.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Thu, 16 Jun 2022 08:57:14 -0700
-Message-ID: <CAKH8qBv=+QVBqHd=9rAWe3d5d47dSkppYc1JbS+WgQs8XgB+Yg@mail.gmail.com>
-Subject: Re: Curious bpf regression in 5.18 already fixed in stable 5.18.3
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Carlos Llamas <cmllamas@google.com>,
-        YiFei Zhu <zhuyifei@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 6:36 PM Maciej =C5=BBenczykowski <maze@google.com> =
-wrote:
->
-> > > > I've bisected the original issue to:
-> > > >
-> > > > b44123b4a3dc ("bpf: Add cgroup helpers bpf_{get,set}_retval to get/=
-set
-> > > > syscall return value")
-> > > >
-> > > > And I believe it's these two lines from the original patch:
-> > > >
-> > > >  #define BPF_PROG_CGROUP_INET_EGRESS_RUN_ARRAY(array, ctx, func)   =
-         \
-> > > >     ({                                              \
-> > > > @@ -1398,10 +1398,12 @@ out:
-> > > >             u32 _ret;                               \
-> > > >             _ret =3D BPF_PROG_RUN_ARRAY_CG_FLAGS(array, ctx, func, =
-0, &_flags); \
-> > > >             _cn =3D _flags & BPF_RET_SET_CN;          \
-> > > > +           if (_ret && !IS_ERR_VALUE((long)_ret))  \
-> > > > +                   _ret =3D -EFAULT;
-> > > >
-> > > > _ret is u32 and ret gets -1 (ffffffff). IS_ERR_VALUE((long)ffffffff=
-)
-> > > returns
-> > > > false in this case because it doesn't sign-expand the argument and
-> > > internally
-> > > > does ffff_ffff >=3D ffff_ffff_ffff_f001 comparison.
-> > > >
-> > > > I'll try to see what I've changed in my unrelated patch to fix it. =
-But
-> > > I think
-> > > > we should audit all these IS_ERR_VALUE((long)_ret) regardless; they
-> > > don't
-> > > > seem to work the way we want them to...
-> >
-> > > Ok, and my patch fixes it because I'm replacing 'u32 _ret' with 'int =
-ret'.
-> >
-> > > So, basically, with u32 _ret we have to do IS_ERR_VALUE((long)(int)_r=
-et).
-> >
-> > > Sigh..
-> >
-> > And to follow up on that, the other two places we have are fine:
-> >
-> > IS_ERR_VALUE((long)run_ctx.retval))
-> >
-> > run_ctx.retval is an int.
->
-> I'm guessing this means the regression only affects 64-bit archs,
-> where long =3D void* is 8 bytes > u32 of 4 bytes, but not 32-bit ones,
-> where long =3D u32 =3D 4 bytes
->
-> Unfortunately my dev machine's 32-bit build capability has somehow
-> regressed again and I can't check this.
+On Thu, 16 Jun 2022 11:34:51 +0200 Oleksij Rempel wrote:
+> > It is also a bit unclear, but at the moment, i think user
+> > space. However, i can see the kernel making use of maybe RF TEST to
+> > ask the link peer to go quiet in order to perform a cable test.
+> > 
+> > Oleksij, what are your use cases?  
+> 
+> Currently I was thinking only about diagnostic:
+> - request transmit pause for cable testing
+> - request remote loopback for selftest. In this case I will need to use
+>   vendor specific NextPage to request something like this.
 
-Seems so, yes. But I'm actually not sure whether we should at all
-treat it as a regression. There is a question of whether that EPERM is
-UAPI or not. That's why we most likely haven't caught it in the
-selftests; most of the time we only check that syscall has returned -1
-and don't pay attention to the particular errno.
+Both of those are performed by the kernel, so perhaps we should focus
+the interface on opting into the remote fault support but have the
+kernel trigger setting and clearing the bits?
