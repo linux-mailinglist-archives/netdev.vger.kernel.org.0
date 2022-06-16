@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDBB054E521
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 16:41:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FA9554E53F
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 16:45:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230393AbiFPOlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 10:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50698 "EHLO
+        id S1377012AbiFPOpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 10:45:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376985AbiFPOle (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 10:41:34 -0400
+        with ESMTP id S230491AbiFPOpM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 10:45:12 -0400
 Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A98846B1B;
-        Thu, 16 Jun 2022 07:41:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78583403C3;
+        Thu, 16 Jun 2022 07:45:11 -0700 (PDT)
 Received: from sslproxy05.your-server.de ([78.46.172.2])
         by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <daniel@iogearbox.net>)
-        id 1o1qgd-0008lW-5M; Thu, 16 Jun 2022 16:41:31 +0200
+        id 1o1qkA-0009Gv-05; Thu, 16 Jun 2022 16:45:10 +0200
 Received: from [85.1.206.226] (helo=linux-3.home)
         by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <daniel@iogearbox.net>)
-        id 1o1qgc-000QsI-Uv; Thu, 16 Jun 2022 16:41:30 +0200
-Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: Test tail call counting with
- bpf2bpf and data on stack
+        id 1o1qk9-000CPW-Ng; Thu, 16 Jun 2022 16:45:09 +0200
+Subject: Re: [PATCH bpf-next 1/2] bpf, x86: Fix tail call count offset
+ calculation on bpf2bpf call
 To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         kernel-team@cloudflare.com
 References: <20220615151721.404596-1-jakub@cloudflare.com>
- <20220615151721.404596-3-jakub@cloudflare.com>
+ <20220615151721.404596-2-jakub@cloudflare.com>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <e88f66e7-3bfd-1563-8a74-26f0ac19bfe0@iogearbox.net>
-Date:   Thu, 16 Jun 2022 16:41:30 +0200
+Message-ID: <c19ed052-90ea-3bf5-c57c-7879844579ea@iogearbox.net>
+Date:   Thu, 16 Jun 2022 16:45:09 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20220615151721.404596-3-jakub@cloudflare.com>
+In-Reply-To: <20220615151721.404596-2-jakub@cloudflare.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -55,125 +55,41 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 6/15/22 5:17 PM, Jakub Sitnicki wrote:
-> Cover the case when tail call count needs to be passed from BPF function to
-> BPF function, and the caller has data on stack. Specifically when the size
-> of data allocated on BPF stack is not a multiple on 8.
+[...]
+> int entry(struct __sk_buff * skb):
+>     0xffffffffa0201788:  nop    DWORD PTR [rax+rax*1+0x0]
+>     0xffffffffa020178d:  xor    eax,eax
+>     0xffffffffa020178f:  push   rbp
+>     0xffffffffa0201790:  mov    rbp,rsp
+>     0xffffffffa0201793:  sub    rsp,0x8
+>     0xffffffffa020179a:  push   rax
+>     0xffffffffa020179b:  xor    esi,esi
+>     0xffffffffa020179d:  mov    BYTE PTR [rbp-0x1],sil
+>     0xffffffffa02017a1:  mov    rax,QWORD PTR [rbp-0x9]	!!! tail call count
+>     0xffffffffa02017a8:  call   0xffffffffa02017d8       !!! is at rbp-0x10
+>     0xffffffffa02017ad:  leave
+>     0xffffffffa02017ae:  ret
 > 
+> Fix it by rounding up the BPF stack depth to a multiple of 8, when
+> calculating the tail call count offset on stack.
+> 
+> Fixes: ebf7d1f508a7 ("bpf, x64: rework pro/epilogue and tailcall handling in JIT")
 > Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
 > ---
->   .../selftests/bpf/prog_tests/tailcalls.c      | 55 +++++++++++++++++++
->   .../selftests/bpf/progs/tailcall_bpf2bpf6.c   | 42 ++++++++++++++
->   2 files changed, 97 insertions(+)
->   create mode 100644 tools/testing/selftests/bpf/progs/tailcall_bpf2bpf6.c
+>   arch/x86/net/bpf_jit_comp.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> diff --git a/tools/testing/selftests/bpf/prog_tests/tailcalls.c b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-> index c4da87ec3ba4..19c70880cfb3 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/tailcalls.c
-> @@ -831,6 +831,59 @@ static void test_tailcall_bpf2bpf_4(bool noise)
->   	bpf_object__close(obj);
->   }
->   
-> +#include "tailcall_bpf2bpf6.skel.h"
-> +
-> +/* Tail call counting works even when there is data on stack which is
-> + * not aligned to 8 bytes.
-> + */
-> +static void test_tailcall_bpf2bpf_6(void)
-> +{
-> +	struct tailcall_bpf2bpf6 *obj;
-> +	int err, map_fd, prog_fd, main_fd, data_fd, i, val;
-> +	LIBBPF_OPTS(bpf_test_run_opts, topts,
-> +		.data_in = &pkt_v4,
-> +		.data_size_in = sizeof(pkt_v4),
-> +		.repeat = 1,
-> +	);
-> +
-> +	obj = tailcall_bpf2bpf6__open_and_load();
-> +	if (!ASSERT_OK_PTR(obj, "open and load"))
-> +		return;
-> +
-> +	main_fd = bpf_program__fd(obj->progs.entry);
-> +	if (!ASSERT_GE(main_fd, 0, "entry prog fd"))
-> +		goto out;
-> +
-> +	map_fd = bpf_map__fd(obj->maps.jmp_table);
-> +	if (!ASSERT_GE(map_fd, 0, "jmp_table map fd"))
-> +		goto out;
-> +
-> +	prog_fd = bpf_program__fd(obj->progs.classifier_0);
-> +	if (!ASSERT_GE(prog_fd, 0, "classifier_0 prog fd"))
-> +		goto out;
-> +
-> +	i = 0;
-> +	err = bpf_map_update_elem(map_fd, &i, &prog_fd, BPF_ANY);
-> +	if (!ASSERT_OK(err, "jmp_table map update"))
-> +		goto out;
-> +
-> +	err = bpf_prog_test_run_opts(main_fd, &topts);
-> +	ASSERT_OK(err, "entry prog test run");
-> +	ASSERT_EQ(topts.retval, 0, "tailcall retval");
-> +
-> +	data_fd = bpf_map__fd(obj->maps.bss);
-> +	if (!ASSERT_GE(map_fd, 0, "bss map fd"))
-> +		goto out;
-> +
-> +	i = 0;
-> +	err = bpf_map_lookup_elem(data_fd, &i, &val);
-> +	ASSERT_OK(err, "bss map lookup");
-> +	ASSERT_EQ(val, 1, "done flag is set");
-> +
-> +out:
-> +	tailcall_bpf2bpf6__destroy(obj);
-> +}
-> +
->   void test_tailcalls(void)
->   {
->   	if (test__start_subtest("tailcall_1"))
-> @@ -855,4 +908,6 @@ void test_tailcalls(void)
->   		test_tailcall_bpf2bpf_4(false);
->   	if (test__start_subtest("tailcall_bpf2bpf_5"))
->   		test_tailcall_bpf2bpf_4(true);
-> +	if (test__start_subtest("tailcall_bpf2bpf_6"))
-> +		test_tailcall_bpf2bpf_6();
->   }
-> diff --git a/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf6.c b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf6.c
-> new file mode 100644
-> index 000000000000..256de9bcc621
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf6.c
-> @@ -0,0 +1,42 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#include <linux/bpf.h>
-> +#include <bpf/bpf_helpers.h>
-> +
-> +#define __unused __attribute__((always_unused))
-> +
-> +struct {
-> +	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
-> +	__uint(max_entries, 1);
-> +	__uint(key_size, sizeof(__u32));
-> +	__uint(value_size, sizeof(__u32));
-> +} jmp_table SEC(".maps");
-> +
-> +int done = 0;
-> +
-> +SEC("tc")
-> +int classifier_0(struct __sk_buff *skb __unused)
-> +{
-> +	done = 1;
-> +	return 0;
-> +}
+> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> index f298b18a9a3d..c98b8c0ed3b8 100644
+> --- a/arch/x86/net/bpf_jit_comp.c
+> +++ b/arch/x86/net/bpf_jit_comp.c
+> @@ -1420,8 +1420,9 @@ st:			if (is_imm8(insn->off))
+>   		case BPF_JMP | BPF_CALL:
+>   			func = (u8 *) __bpf_call_base + imm32;
+>   			if (tail_call_reachable) {
+> +				/* mov rax, qword ptr [rbp - rounded_stack_depth - 8] */
+>   				EMIT3_off32(0x48, 0x8B, 0x85,
+> -					    -(bpf_prog->aux->stack_depth + 8));
+> +					    -round_up(bpf_prog->aux->stack_depth, 8) - 8);
 
-Looks like this fails CI with:
-
-   progs/tailcall_bpf2bpf6.c:17:40: error: unknown attribute 'always_unused' ignored [-Werror,-Wunknown-attributes]
-   int classifier_0(struct __sk_buff *skb __unused)
-                                          ^~~~~~~~
-   progs/tailcall_bpf2bpf6.c:5:33: note: expanded from macro '__unused'
-   #define __unused __attribute__((always_unused))
-                                   ^~~~~~~~~~~~~
-   1 error generated.
-   make: *** [Makefile:509: /tmp/runner/work/bpf/bpf/tools/testing/selftests/bpf/tailcall_bpf2bpf6.o] Error 1
-   make: *** Waiting for unfinished jobs....
-   Error: Process completed with exit code 2.
+Lgtm, great catch by the way!
