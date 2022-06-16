@@ -2,118 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFFD554D6F5
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 03:21:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34CF354D721
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 03:36:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244771AbiFPBVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 15 Jun 2022 21:21:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55280 "EHLO
+        id S1356686AbiFPBg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 15 Jun 2022 21:36:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345137AbiFPBVU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 21:21:20 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C2057166
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 18:21:19 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id s1so6798ilj.0
-        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 18:21:19 -0700 (PDT)
+        with ESMTP id S1347985AbiFPBgz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 15 Jun 2022 21:36:55 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5284057984
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 18:36:54 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id n11so124732iod.4
+        for <netdev@vger.kernel.org>; Wed, 15 Jun 2022 18:36:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=K/IEp3+WcFKtUmIVxfawdKnimqQ8Um/PGbWV2acgES0=;
-        b=mBMruH0/B9EAxM7gpQr7gxQzvo3D9N7tqsfa4fhMvWA6yNqN7asaMeQ1YSz7Q1TZcq
-         s2d+jy+QefAiUhcBnnR4w5lO+a1GawEyPmWooAbQeVciahak2UIDPw7zhAWliwhHkY4p
-         iLk1dd+IJtNlCpPtTf+cK7TqiEvO1043HCh8zvCq9fqWlCv4zsRKOPIjJVYHj86gbm9Z
-         c/IXLYSYMF7LG912rGL2DAZU/6TkuCaYVC2ushIelvAsk+trM7qUv5bSmpU6s2CZqhuD
-         zxvejcRAwZ3pnwoRGYofsU509hKHe3weH8ESkVrKqt/MikixaOyo7OtEQRMuooUmgm73
-         1KzQ==
+        bh=KLUGXrqOHQOsir08lP6RK8a7Hv7qyvb4djg5zmUdCCs=;
+        b=LNaKhOwqACvpCUAog5NX8Ap/mrL/8Sq5E1ZfZ5G/IlQb0VfeFVkUYfpRNc+cqTkAqy
+         TCeHfIrtuA92pTN3n9m/FbfyDrsGjAid45yIVkVYqzGmH0to9ZHh1+OI9QBkNzL7qqBf
+         DZMu2ESsmlfKLQMO2+Jn7EfM7PlT51s7lyzp6KnWKJBMd3skxdcpAw000BlU7a6l0PqY
+         7RPxWweNrU1Q89z9jb64yjTDcoxbRlGEstk66pWCm3KyR6Xn1U4/r1vvApTVihiRcO+B
+         w5xevQDWlVVz3aQWGoKf1C8hQD25f14Y9IyFL2DnHW8prabihwzdC1p/Kb7uu2+uZk93
+         6bMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=K/IEp3+WcFKtUmIVxfawdKnimqQ8Um/PGbWV2acgES0=;
-        b=70odPLCEiBZn1v9pNFjLeZhR46LtbOX2GOk6i8lgW4I5YY+3aZTT14Y/qDiKxF5rq6
-         MEmD4Aof3MW840rxUysZ65IQZFBKmRcFhCQJY/YznHITo8o2x8aBqsuq1L+blhX4lBcA
-         8VjnL1kpPfpyDGqxK6VL8jk4Tdgl6t/nvC0h3BCLsJLO85YWzs/AYPyFeg8EWR96UEfq
-         +izRDZhfCKAMeHuVLq66qJVkSPDiQLr4+bntGRBfJJKUamPfotTaJ1Q+i7D1f1pJarh7
-         5o0fO80SzBvaTY3jkRTKbumWEqiUtJpuy+aM7tEjghnMYWBdKvV7BYANCV7FZ49m0dhk
-         PQnw==
-X-Gm-Message-State: AJIora+0Vg1REUbuyfLXid2WP17R5uCWeWIrpNk8PL3DMmy6skDnGPBT
-        EOtwhjNnCupSqeA+0PeRQDPKUd70qfnJIjMJ9K4XY4vPqyD76A==
-X-Google-Smtp-Source: AGRyM1vgs4+PLaXYaWdAUxHFgH3y5audNQF2gCUjxbryvHQkv4zDmt6xQgDgf0m04Awy6lgIIIH1MjiQkgPzaOiHqSU=
-X-Received: by 2002:a05:6e02:1607:b0:2d1:e622:3f0a with SMTP id
- t7-20020a056e02160700b002d1e6223f0amr1502128ilu.287.1655342478835; Wed, 15
- Jun 2022 18:21:18 -0700 (PDT)
+        bh=KLUGXrqOHQOsir08lP6RK8a7Hv7qyvb4djg5zmUdCCs=;
+        b=C27LjBhMLgg5aCAmNSW21r0gzxdNVb/oyvbWDiSHrMUgn9XHmHLse612VTu117yZDw
+         Djes2ZHaVgQjrHUdli+w67zlpzfrXMzImU+Pevq5/OdQNrMxKMgvS94G5E+Gw8Z+q/+x
+         RvFL2DR0lipIqpOUI14INsxcHJwOVme17j2fznNYvpnPMR76vbqxwPkUd+vYILnTx+zj
+         unY1rUJLsHnR7oKM6+N1R18cFDNYX2sHOEpWn0+/So2YpfpcxGZMzu4a19KN48J3GaUn
+         8iMpUekcxTU1xQi3meUsPUy0HC+rkMGzcE79m+rSBm4zWcCkAPrwb+lWD17vd1ZqBfyY
+         SeTA==
+X-Gm-Message-State: AJIora/SlnabPrMFRc2UfHLilUKxud9jZu8OsE9l3rTHlJXM1Iw9Pjay
+        LVWdIhVKlO3s6EE9wHBXo1kWr+hLx+LRMhK5sqljCw==
+X-Google-Smtp-Source: AGRyM1vWBZ7vS4WyQRP87GheRqZX8lPBh3G80o2TCvAEzi4Ve0Po42zYbOxyWJng4ye7URYp5aw4jbfTKrBTwcb7fnQ=
+X-Received: by 2002:a05:6638:d86:b0:331:fb54:c3e3 with SMTP id
+ l6-20020a0566380d8600b00331fb54c3e3mr1430903jaj.198.1655343413501; Wed, 15
+ Jun 2022 18:36:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <1655182915-12897-1-git-send-email-quic_subashab@quicinc.com>
- <1655182915-12897-2-git-send-email-quic_subashab@quicinc.com> <20220615173516.29c80c96@kernel.org>
-In-Reply-To: <20220615173516.29c80c96@kernel.org>
+References: <CAHo-Ooy+8O16k0oyMGHaAcmLm_Pfo=Ju4moTc95kRp2Z6itBcg@mail.gmail.com>
+ <CANP3RGed9Vbu=8HfLyNs9zwA=biqgyew=+2tVxC6BAx2ktzNxA@mail.gmail.com>
+ <CAADnVQKBqjowbGsSuc2g8yP9MBANhsroB+dhJep93cnx_EmNow@mail.gmail.com>
+ <CANP3RGcZ4NULOwe+nwxfxsDPSXAUo50hWyN9Sb5b_d=kfDg=qg@mail.gmail.com>
+ <YqodE5lxUCt6ojIw@google.com> <YqpAYcvM9DakTjWL@google.com>
+ <YqpB+7pDwyOk20Cp@google.com> <YqpDcD6vkZZfWH4L@google.com>
+In-Reply-To: <YqpDcD6vkZZfWH4L@google.com>
 From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Date:   Wed, 15 Jun 2022 18:21:07 -0700
-Message-ID: <CANP3RGfGcr25cjnrUOdaH1rG9S9uY8uS80USXeycDBhbsX9CZw@mail.gmail.com>
-Subject: Re: [PATCH net v2 1/2] ipv6: Honor route mtu if it is within limit of
- dev mtu
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Subash Abhinov Kasiviswanathan <quic_subashab@quicinc.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+Date:   Wed, 15 Jun 2022 18:36:42 -0700
+Message-ID: <CANP3RGcBCeMeCfpY3__4X_OHx6PB6bXtRjwLdYi-LRiegicVXQ@mail.gmail.com>
+Subject: Re: Curious bpf regression in 5.18 already fixed in stable 5.18.3
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         Linux NetDev <netdev@vger.kernel.org>,
-        Stefano Brivio <sbrivio@redhat.com>,
-        Kaustubh Pandey <quic_kapandey@quicinc.com>,
-        Sean Tranchetti <quic_stranche@quicinc.com>
+        BPF Mailing List <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Carlos Llamas <cmllamas@google.com>,
+        YiFei Zhu <zhuyifei@google.com>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 5:35 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > I've bisected the original issue to:
+> > >
+> > > b44123b4a3dc ("bpf: Add cgroup helpers bpf_{get,set}_retval to get/set
+> > > syscall return value")
+> > >
+> > > And I believe it's these two lines from the original patch:
+> > >
+> > >  #define BPF_PROG_CGROUP_INET_EGRESS_RUN_ARRAY(array, ctx, func)            \
+> > >     ({                                              \
+> > > @@ -1398,10 +1398,12 @@ out:
+> > >             u32 _ret;                               \
+> > >             _ret = BPF_PROG_RUN_ARRAY_CG_FLAGS(array, ctx, func, 0, &_flags); \
+> > >             _cn = _flags & BPF_RET_SET_CN;          \
+> > > +           if (_ret && !IS_ERR_VALUE((long)_ret))  \
+> > > +                   _ret = -EFAULT;
+> > >
+> > > _ret is u32 and ret gets -1 (ffffffff). IS_ERR_VALUE((long)ffffffff)
+> > returns
+> > > false in this case because it doesn't sign-expand the argument and
+> > internally
+> > > does ffff_ffff >= ffff_ffff_ffff_f001 comparison.
+> > >
+> > > I'll try to see what I've changed in my unrelated patch to fix it. But
+> > I think
+> > > we should audit all these IS_ERR_VALUE((long)_ret) regardless; they
+> > don't
+> > > seem to work the way we want them to...
 >
-> On Mon, 13 Jun 2022 23:01:54 -0600 Subash Abhinov Kasiviswanathan wrote:
-> > When netdevice MTU is increased via sysfs, NETDEV_CHANGEMTU is raised.
-> >
-> > addrconf_notify -> rt6_mtu_change -> rt6_mtu_change_route ->
-> > fib6_nh_mtu_change
-> >
-> > As part of handling NETDEV_CHANGEMTU notification we land up on a
-> > condition where if route mtu is less than dev mtu and route mtu equals
-> > ipv6_devconf mtu, route mtu gets updated.
-> >
-> > Due to this v6 traffic end up using wrong MTU then configured earlier.
-> > This commit fixes this by removing comparison with ipv6_devconf
-> > and updating route mtu only when it is greater than incoming dev mtu.
-> >
-> > This can be easily reproduced with below script:
-> > pre-condition:
-> > device up(mtu = 1500) and route mtu for both v4 and v6 is 1500
-> >
-> > test-script:
-> > ip route change 192.168.0.0/24 dev eth0 src 192.168.0.1 mtu 1400
-> > ip -6 route change 2001::/64 dev eth0 metric 256 mtu 1400
-> > echo 1400 > /sys/class/net/eth0/mtu
-> > ip route change 192.168.0.0/24 dev eth0 src 192.168.0.1 mtu 1500
-> > echo 1500 > /sys/class/net/eth0/mtu
+> > Ok, and my patch fixes it because I'm replacing 'u32 _ret' with 'int ret'.
 >
-> CC maze, please add him if there is v3
+> > So, basically, with u32 _ret we have to do IS_ERR_VALUE((long)(int)_ret).
 >
-> I feel like the problem is with the fact that link mtu resets protocol
-> MTUs. Nothing we can do about that, so why not set link MTU to 9k (or
-> whatever other quantification of infinity there is) so you don't have
-> to touch it as you discover the MTU for v4 and v6?
+> > Sigh..
 >
-> My worry is that the tweaking of the route MTU update heuristic will
-> have no end.
+> And to follow up on that, the other two places we have are fine:
 >
-> Stefano, does that makes sense or you think the change is good?
+> IS_ERR_VALUE((long)run_ctx.retval))
+>
+> run_ctx.retval is an int.
 
-I vaguely recall that if you don't want device mtu changes to affect
-ipv6 route mtu, then you should set 'mtu lock' on the routes.
-(this meaning of 'lock' for v6 is different than for ipv4, where
-'lock' means transmit IPv4/TCP with Don't Frag bit unset)
+I'm guessing this means the regression only affects 64-bit archs,
+where long = void* is 8 bytes > u32 of 4 bytes, but not 32-bit ones,
+where long = u32 = 4 bytes
+
+Unfortunately my dev machine's 32-bit build capability has somehow
+regressed again and I can't check this.
