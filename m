@@ -2,99 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A08B54E802
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 18:47:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40E7954E807
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 18:48:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378399AbiFPQrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 12:47:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48474 "EHLO
+        id S236038AbiFPQsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 12:48:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378332AbiFPQq4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 12:46:56 -0400
-Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8108354023
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 09:45:51 -0700 (PDT)
-Received: from webmail.uniroma2.it (webmail.uniroma2.it [160.80.1.162])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 25GGjAIr014523
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 16 Jun 2022 18:45:15 +0200
-Received: from host-95-238-25-28.retail.telecomitalia.it
- (host-95-238-25-28.retail.telecomitalia.it [95.238.25.28]) by
- webmail.uniroma2.it (Horde Framework) with HTTPS; Thu, 16 Jun 2022 18:45:06
- +0200
-Date:   Thu, 16 Jun 2022 18:45:06 +0200
-Message-ID: <20220616184506.Horde.7w03-P-A-1f4D_CFSrrRzEi@webmail.uniroma2.it>
-From:   Paolo Lungaroni <paolo.lungaroni@uniroma2.it>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stefano Salsano <stefano.salsano@uniroma2.it>,
-        Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
-        Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: Re: [iproute2-next v1] seg6: add support for flavors in SRv6 End*
- behaviors
-References: <20220611110645.29434-1-paolo.lungaroni@uniroma2.it>
- <20220612091019.6223bf9a@hermes.local>
-In-Reply-To: <20220612091019.6223bf9a@hermes.local>
-User-Agent: Horde Application Framework 5
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+        with ESMTP id S1378330AbiFPQs0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 12:48:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B1E248DE;
+        Thu, 16 Jun 2022 09:47:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23537B824F7;
+        Thu, 16 Jun 2022 16:47:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60B62C34114;
+        Thu, 16 Jun 2022 16:47:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655398061;
+        bh=7nRK9NwCsao8DUBalG+dGxe3jZ+j/0GGXop/G1tz56A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ahdsv3GLzNciC67IgzQVGykjxise7wGwOuI3SlXRle+7JrkvhEqi2ieNZLvAi/fpZ
+         aGfC/gfD3uD5AKfF1/LvmKqFx3KDzhiYmNzXtUeRq5mvTIaarUReA8NFunm9+LKopV
+         a2aM4vk/S2suVWsFOsyARoD4aK2e14gY5HgtWiLgKkl+5gA23CAv6LTJo6TrWmcGP+
+         SyUDMCrlMglBfPQnIPHzv5kdNJ3FS+FDehFY9aXxLODVbbjFOQpAmIJw7p4jOE/E6d
+         XIN8bO81m8r2fHitSK31PxUZYCKU34CGi4TIeaNCLmQuIBpPcCr4BFDxUHJl0U5xfe
+         YxGO9WWDvwXrg==
+Date:   Thu, 16 Jun 2022 09:47:40 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org, magnus.karlsson@intel.com,
+        bjorn@kernel.org, Alexandr Lobakin <alexandr.lobakin@intel.com>
+Subject: Re: [PATCH v2 bpf-next 01/10] ice: allow toggling loopback mode via
+ ndo_set_features callback
+Message-ID: <20220616094740.276b8312@kernel.org>
+In-Reply-To: <YqtTqP+S0jvDNRJF@boxer>
+References: <20220614174749.901044-1-maciej.fijalkowski@intel.com>
+        <20220614174749.901044-2-maciej.fijalkowski@intel.com>
+        <20220615164740.5e1f8915@kernel.org>
+        <YqtTqP+S0jvDNRJF@boxer>
 MIME-Version: 1.0
-Content-Disposition: inline
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stephen,
-Thanks for your review. Please see my answers inline.
+On Thu, 16 Jun 2022 18:00:40 +0200 Maciej Fijalkowski wrote:
+> > Loopback or not, I don't think we should be accepting the shutdown ->
+> > set config -> pray approach in modern drivers. ice_open() seems to be
+> > allocating all the Rx memory, and can fail.  
+> 
+> They say that those who sing pray twice, so why don't we sing? :)
+> 
+> But seriously, I'll degrade this to ice_down/up and check retvals. I think
+> I just mimicked flow from ice_self_test(), which should be fixed as
+> well...
+> 
+> I'll send v4.
 
-Stephen Hemminger <stephen@networkplumber.org> ha scritto:
+checking retval is not enough, does ice not have the ability to
+allocate resources upfront? I think iavf was already restructured
+to follow the "resilient" paradigm, time for ice to follow suit?
 
-> On Sat, 11 Jun 2022 13:06:45 +0200
-> Paolo Lungaroni <paolo.lungaroni@uniroma2.it> wrote:
->
->> +	strlcpy(wbuf, buf, SEG6_LOCAL_FLV_BUF_SIZE);
->> +	wbuf[SEG6_LOCAL_FLV_BUF_SIZE - 1] = 0;
->> +
->> +	if (strlen(wbuf) == 0)
->> +		return -1;
->
-> If you use strdupa() then you don't have to worry about buffer sizes.
-
-Yes sure, I will use it in the v2.
-
->
-> +			else {
-> +				if (fnumber++ == 0)
-> +					fprintf(fp, "%s", flv_name);
-> +				else
-> +					fprintf(fp, ",%s", flv_name);
-> +			}
->
-> Minor nits. I am trying to get rid of use of passing fp around
-> and just use print_string() everywhere. That way can do quick scan
-> for places still using 'fprintf(fp' as indicator of old code
-> that was never updated to use JSON.
-
-Ok, substituting 'fprintf(fp' with print_string() is not a problem.
-
->
-> Also, it looks the output of multiple flavors does not match
-> the input command line for multiple flavors.
-
-If you refer to the order, this is intentional as the user can add
-flavors in any order, but they will be printed in a "canonical" order.
-
-If it's not the order, can you clarify which is the problem?
-
-Thanks for your suggestions,
-
-Paolo.
-
-
+This is something DaveM complained about in the first Ethernet driver 
+I upstreamed, which must have been a decade ago by now. It's time we
+all get on board :)
