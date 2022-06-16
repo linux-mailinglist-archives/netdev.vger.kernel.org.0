@@ -2,70 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40F3454E5B4
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 17:08:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B8B954E5B8
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 17:09:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377834AbiFPPIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 11:08:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47952 "EHLO
+        id S1377852AbiFPPJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 11:09:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377791AbiFPPIs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 11:08:48 -0400
-Received: from mail-oo1-xc43.google.com (mail-oo1-xc43.google.com [IPv6:2607:f8b0:4864:20::c43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB103F32A
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 08:08:48 -0700 (PDT)
-Received: by mail-oo1-xc43.google.com with SMTP id f2-20020a4a8f42000000b0035e74942d42so301934ool.13
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 08:08:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=L5K1NUBULmGZ7/lAOd1A1xSFwQYe2qUxoRrdKo6SvOU=;
-        b=YlFNhaB/jdqWsVZ2cEDJKz3SjjDDHve3+EU0QtK6Aw1U6SZkiBzREZ5jz2VYUS0gl+
-         2dSTY9t6FF1MHml15b+rm7jSlALP2y/vaTlHoPR1C6xsAmQAKDYUEJvX1MdlhjAft+pW
-         MEHbNB1zJY+xAMfIXQkrKTrziMavyO8F4ldmARa+QC5Lnj2uZTOUlt6Z2wVizku7c1pP
-         G49JywXWCr6/lv3YyOoOWnnT/rb04EOv7xhACI9IRp4cx9q7XzE5W0CE9q0wEqFWlNFF
-         9TOcS0GvPbkxZiLMaYxDpFCbYSMDc2EKyTuIOLf8j6IkAtQEJcQMbrMI7PrQVOM8zAAf
-         I15w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=L5K1NUBULmGZ7/lAOd1A1xSFwQYe2qUxoRrdKo6SvOU=;
-        b=1QP5QE+5QaZ4F64uYgDkLD9UEdGUoHgaMtcN3tUK1jtLaZVF57TrxS7y+JzezZ5dxi
-         5VEjzCtTdXg6M1/GsirHtw86hS7ORl3CGm6DdP9qLOAuvR/mJlmQD1T0sZN2B+lH/jJ+
-         qyIrmOVWagGH9jPVfZtaEqRqbftFhFFn3SPkpTujwfoQwpEuU21gCDMAciM4bd+c7jOp
-         agT6c6QFIMizQiYix0qDuCifoBzgepV2ClrB8mWlM+l4wWl30FrCApMlSmAqJ3hlsuDZ
-         cmfxZMm4pvcXqSxbrnvH5lH7FucXjDU2O9gWcb9BvE0AK8T382+PYpZiNFC/5XV2eGYz
-         jP4w==
-X-Gm-Message-State: AJIora9+vBYPdW/fm5hML9pS7S9zHlR09tIgqiiNTo/GNiek6F1Vkb0x
-        YW6kOWuVH6LUB64wvdViajap0NuAAIRaj43fOs8=
-X-Google-Smtp-Source: AGRyM1uPvSxjxs/Bg6Qe+DLkOViXB8qO4Uh5kCypZnRqKGXQiSVK3nlGzKl9yyzl2gDIid1o0WOEMTW7d6qfpOPLX7k=
-X-Received: by 2002:a4a:9b84:0:b0:41b:e2a6:86ea with SMTP id
- x4-20020a4a9b84000000b0041be2a686eamr2151544ooj.87.1655392127256; Thu, 16 Jun
- 2022 08:08:47 -0700 (PDT)
+        with ESMTP id S1377857AbiFPPJX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 11:09:23 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C3640A0D
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 08:09:21 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 58B4C21D14;
+        Thu, 16 Jun 2022 15:09:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655392160; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PrKklGjZV+/+S6olpVpuw+i5kBkdW6bisGmsz3rQ96w=;
+        b=LKXKYfZ7uhY/UkeUPRXRe3dz5BtsTSOYLCbM0QydqFe1FM1cGeU59ucEJyK4eECHjBH7zU
+        g7ULcdqCZlvmtHAIsy3TESocFrGURFOHrG1VKLKPTH/GXECsF2ItiNmG/9+DNOzbrDCd1C
+        IdKM0azggyrOTj/CrYdX4Hky/gg9pb8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655392160;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PrKklGjZV+/+S6olpVpuw+i5kBkdW6bisGmsz3rQ96w=;
+        b=HEA2LazosVhG1i5SoMSBkaBklns443EPlKOp6hXl99d47njD20VLAs8Zwnxv9TsGBEClBT
+        5HpITb2vn1n98mBQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 00B2C1344E;
+        Thu, 16 Jun 2022 15:09:19 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id wYC7OJ9Hq2JBPQAAMHmgww
+        (envelope-from <iluceno@suse.de>); Thu, 16 Jun 2022 15:09:19 +0000
+Date:   Thu, 16 Jun 2022 17:10:16 +0200
+From:   Ismael Luceno <iluceno@suse.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Netlink NLM_F_DUMP_INTR flag lost
+Message-ID: <20220616171016.56d4ec9c@pirotess>
+In-Reply-To: <20220615090044.54229e73@kernel.org>
+References: <20220615171113.7d93af3e@pirotess>
+        <20220615090044.54229e73@kernel.org>
+Organization: SUSE
 MIME-Version: 1.0
-Reply-To: sgtkalamanthey@gmail.com
-Sender: kodjovirabby@gmail.com
-Received: by 2002:a05:6838:e511:0:0:0:0 with HTTP; Thu, 16 Jun 2022 08:08:46
- -0700 (PDT)
-From:   kala manthey <sgtkalamanthey@gmail.com>
-Date:   Thu, 16 Jun 2022 08:08:46 -0700
-X-Google-Sender-Auth: 5qRN265PN0IHnPqmH_ohQ9n8BQE
-Message-ID: <CAFkDyg4sh10a1foV=j3WPp6V07LSWs9iFim0=j1mA0BkX6y=jw@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=0.6 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-5Zeo77yM5Lqy54ix55qE77yM5L2g5pS25Yiw5oiR55qE6YKu5Lu25LqG5ZCX77yfIOivt+ajgOaf
-peW5tuWbnuWkjeaIkQ0K
+On Wed, 15 Jun 2022 09:00:44 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
+> On Wed, 15 Jun 2022 17:11:13 +0200 Ismael Luceno wrote:
+> > It seems a RTM_GETADDR request with AF_UNSPEC has a corner case
+> > where the NLM_F_DUMP_INTR flag is lost.
+> > 
+> > After a change in an address table, if a packet has been fully
+> > filled just previous, and if the end of the table is found at the
+> > same time, then the next packet should be flagged, which works fine
+> > when it's NLMSG_DONE, but gets clobbered when another table is to
+> > be dumped next.
+> 
+> Could you describe how it gets clobbered? You mean that prev_seq gets
+> updated somewhere without setting the flag or something overwrites
+> nlmsg_flags? Or we set _INTR on an empty skb which never ends up
+> getting sent? Or..
+
+It seems to me that in most functions, but specifically in the case of
+net/ipv4/devinet.c:in_dev_dump_addr or inet_netconf_dump_devconf,
+nl_dump_check_consistent is called after each address/attribute is
+dumped, meaning a hash table generation change happening just after it
+adds an entry, if it also causes it to find the end of the table,
+wouldn't be flagged.
+
+Adding an extra call at the end of all these functions should fix that,
+and spill the flag into the next packet, but would that be correct?
+
+It seems this condition is flagged correctly when NLM_DONE is produced,
+I couldn't see why, but I'm guessing another call to
+nl_dump_check_consistent...
+
+Also, I noticed that in net/core/rtnetlink.c:rtnl_dump_all: 
+
+	if (idx > s_idx) {
+		memset(&cb->args[0], 0, sizeof(cb->args));
+		cb->prev_seq = 0;
+		cb->seq = 0;
+	}
+	ret = dumpit(skb, cb);
+
+This also prevents it to be detect the condition when dumping the next
+table, but that seems desirable...
+
+Am I grasping it correctly?
+
+Some functions like net/core/rtnetlink.c:rtnl_dump_ifinfo do call
+nl_dump_check_consistent when finishing, but I'm seeing most others
+don't do that, instead doing it only when adding an entry to the packet
+(another example is: rtnl_stats_dump).
+
+Again, while adding the check at the end of each function would solve
+these inconsistencies, it isn't so clear to me that spilling this flag
+into the next packet when it's going to be from another table is a good
+idea.
+
+It might make more sense to emit a new packet type just for the flag,
+that way, in the sequence of packets, the client can reliably tell the
+dump of which tables was interrupted, and make some decision based on
+that, vs having to deem all tables affected...
+
+-- 
+Ismael Luceno
+SUSE L3 Support
