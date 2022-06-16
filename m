@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B62654E911
-	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 20:06:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D584554E919
+	for <lists+netdev@lfdr.de>; Thu, 16 Jun 2022 20:06:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359138AbiFPSGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 14:06:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41204 "EHLO
+        id S1376306AbiFPSGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 14:06:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358129AbiFPSGe (ORCPT
+        with ESMTP id S1346366AbiFPSGe (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 14:06:34 -0400
 Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6C64EDD7;
-        Thu, 16 Jun 2022 11:06:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 936994EDE2;
+        Thu, 16 Jun 2022 11:06:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1655402793; x=1686938793;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ErhvI6oD4q6tNA4Mvtx4UA3aP40DUiY5A2A/F9sPEi0=;
-  b=QZqeRUTkZE6STvbs963kTLNqqFrop3jnj4l78/wC3v7qEnF7iuih5qve
-   Pc8mG0KqU9eeTiUiLnLbIXEB0F33bU0+T88WTmNd0qbO27X1Muij3lojv
-   rrFnqeo8MiNxX7TYwo9U0zOF3r5YfOI9Hkv+LI5tqi9Xm3oXTLx6JtVpK
-   IwGhbf+5fI2Y1CmbQezcOBeINXnNIx6ivsuiO3AWX2elZv2KE+3yKw6Vk
-   z2Mk84oKtM0gnFfGrNiYfbwwAodBeqLyuAmA6ScxIEAub9wCt/In21yiT
-   Ftgyd9oAuQgEfYNb6bqtW8jmNke6YPRrtepDILUWzlYt8wvnKCAD/MYMF
+  bh=S45H44CBH1JniCbOsGg73BnKvoqIL3IdcN3OLKDb+VU=;
+  b=Khiu/qbwYngktzx0FlTmH7XLZPuU4YoHj8HQ0eO0Ism2KFYdCpds53++
+   vtOY0l8uzZBLfrkNif2xfLEBsZIJVpPldlw+y+V0IbplieoiOXdPjB1Gt
+   rz1HrTjvaWc7eybc9bdSdjH/AwfnMHDYZVpRais1OS0zbXnrumABmU2wa
+   60qdNujS8eDvvayLS1jWoTWker52jFHrYVHWB/x/n49CSI2iscGTyJ8e8
+   agYkoniF7o4jnfBeBFjbzqeZlPn5deMr6qwpCDzDPwAYeU4i4mpQGeVX3
+   t2DPiANHfmd2Ontp1xUXPIA1M6im39i06iRg/XmvyLCi3yIW46HNfMWf/
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="343275908"
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="343275913"
 X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="343275908"
+   d="scan'208";a="343275913"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 11:06:24 -0700
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2022 11:06:26 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,305,1650956400"; 
-   d="scan'208";a="641664285"
+   d="scan'208";a="641664301"
 Received: from boxer.igk.intel.com ([10.102.20.173])
-  by fmsmga008.fm.intel.com with ESMTP; 16 Jun 2022 11:06:19 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 16 Jun 2022 11:06:24 -0700
 From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
         bjorn@kernel.org, kuba@kernel.org,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         Alexandr Lobakin <alexandr.lobakin@intel.com>
-Subject: [PATCH v4 bpf-next 01/10] ice: compress branches in ice_set_features()
-Date:   Thu, 16 Jun 2022 20:06:00 +0200
-Message-Id: <20220616180609.905015-2-maciej.fijalkowski@intel.com>
+Subject: [PATCH v4 bpf-next 02/10] ice: allow toggling loopback mode via ndo_set_features callback
+Date:   Thu, 16 Jun 2022 20:06:01 +0200
+Message-Id: <20220616180609.905015-3-maciej.fijalkowski@intel.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220616180609.905015-1-maciej.fijalkowski@intel.com>
 References: <20220616180609.905015-1-maciej.fijalkowski@intel.com>
@@ -61,112 +61,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of rather verbose comparison of current netdev->features bits vs
-the incoming ones from user, let us compress them by a helper features
-set that will be the result of netdev->features XOR features. This way,
-current, extensive branches:
+Add support for NETIF_F_LOOPBACK. This feature can be set via:
+$ ethtool -K eth0 loopback <on|off>
 
-	if (features & NETIF_F_BIT && !(netdev->features & NETIF_F_BIT))
-		set_feature(true);
-	else if (!(features & NETIF_F_BIT) && netdev->features & NETIF_F_BIT)
-		set_feature(false);
-
-can become:
-
-	netdev_features_t changed = netdev->features ^ features;
-
-	if (changed & NETIF_F_BIT)
-		set_feature(!!(features & NETIF_F_BIT));
-
-This is nothing new as currently several other drivers use this
-approach, which I find much more convenient.
+Feature can be useful for local data path tests.
 
 CC: Alexandr Lobakin <alexandr.lobakin@intel.com>
 Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 40 +++++++++++------------
- 1 file changed, 19 insertions(+), 21 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 33 ++++++++++++++++++++++-
+ 1 file changed, 32 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index e1cae253412c..23d1b1fc39fb 100644
+index 23d1b1fc39fb..5bdd515142ec 100644
 --- a/drivers/net/ethernet/intel/ice/ice_main.c
 +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5910,44 +5910,41 @@ ice_set_vlan_features(struct net_device *netdev, netdev_features_t features)
- static int
- ice_set_features(struct net_device *netdev, netdev_features_t features)
- {
-+	netdev_features_t changed = netdev->features ^ features;
- 	struct ice_netdev_priv *np = netdev_priv(netdev);
- 	struct ice_vsi *vsi = np->vsi;
- 	struct ice_pf *pf = vsi->back;
- 	int ret = 0;
+@@ -3358,6 +3358,7 @@ static void ice_set_netdev_features(struct net_device *netdev)
+ 	netdev->features |= netdev->hw_features;
  
- 	/* Don't set any netdev advanced features with device in Safe Mode */
--	if (ice_is_safe_mode(vsi->back)) {
--		dev_err(ice_pf_to_dev(vsi->back), "Device is in Safe Mode - not enabling advanced netdev features\n");
-+	if (ice_is_safe_mode(pf)) {
-+		dev_err(ice_pf_to_dev(vsi->back),
-+			"Device is in Safe Mode - not enabling advanced netdev features\n");
- 		return ret;
- 	}
+ 	netdev->hw_features |= NETIF_F_HW_TC;
++	netdev->hw_features |= NETIF_F_LOOPBACK;
  
- 	/* Do not change setting during reset */
- 	if (ice_is_reset_in_progress(pf->state)) {
--		dev_err(ice_pf_to_dev(vsi->back), "Device is resetting, changing advanced netdev features temporarily unavailable.\n");
-+		dev_err(ice_pf_to_dev(pf),
-+			"Device is resetting, changing advanced netdev features temporarily unavailable.\n");
- 		return -EBUSY;
- 	}
- 
- 	/* Multiple features can be changed in one call so keep features in
- 	 * separate if/else statements to guarantee each feature is checked
- 	 */
--	if (features & NETIF_F_RXHASH && !(netdev->features & NETIF_F_RXHASH))
--		ice_vsi_manage_rss_lut(vsi, true);
--	else if (!(features & NETIF_F_RXHASH) &&
--		 netdev->features & NETIF_F_RXHASH)
--		ice_vsi_manage_rss_lut(vsi, false);
-+	if (changed & NETIF_F_RXHASH)
-+		ice_vsi_manage_rss_lut(vsi, !!(features & NETIF_F_RXHASH));
- 
- 	ret = ice_set_vlan_features(netdev, features);
- 	if (ret)
- 		return ret;
- 
--	if ((features & NETIF_F_NTUPLE) &&
--	    !(netdev->features & NETIF_F_NTUPLE)) {
--		ice_vsi_manage_fdir(vsi, true);
--		ice_init_arfs(vsi);
--	} else if (!(features & NETIF_F_NTUPLE) &&
--		 (netdev->features & NETIF_F_NTUPLE)) {
--		ice_vsi_manage_fdir(vsi, false);
--		ice_clear_arfs(vsi);
-+	if (changed & NETIF_F_NTUPLE) {
-+		bool ena = !!(features & NETIF_F_NTUPLE);
-+
-+		ice_vsi_manage_fdir(vsi, ena);
-+		ena ? ice_init_arfs(vsi) : ice_clear_arfs(vsi);
- 	}
- 
- 	/* don't turn off hw_tc_offload when ADQ is already enabled */
-@@ -5956,11 +5953,12 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
- 		return -EACCES;
- 	}
- 
--	if ((features & NETIF_F_HW_TC) &&
--	    !(netdev->features & NETIF_F_HW_TC))
--		set_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
--	else
--		clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
-+	if (changed & NETIF_F_HW_TC) {
-+		bool ena = !!(features & NETIF_F_HW_TC);
-+
-+		ena ? set_bit(ICE_FLAG_CLS_FLOWER, pf->flags) :
-+		      clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
-+	}
- 
+ 	/* encap and VLAN devices inherit default, csumo and tso features */
+ 	netdev->hw_enc_features |= dflt_features | csumo_features |
+@@ -5902,6 +5903,33 @@ ice_set_vlan_features(struct net_device *netdev, netdev_features_t features)
  	return 0;
  }
+ 
++/**
++ * ice_set_loopback - turn on/off loopback mode on underlying PF
++ * @vsi: ptr to VSI
++ * @ena: flag to indicate the on/off setting
++ */
++static int
++ice_set_loopback(struct ice_vsi *vsi, bool ena)
++{
++	bool if_running = netif_running(vsi->netdev);
++	int ret;
++
++	if (if_running && !test_and_set_bit(ICE_VSI_DOWN, vsi->state)) {
++		ret = ice_down(vsi);
++		if (ret) {
++			netdev_err(vsi->netdev, "Preparing device to toggle loopback failed\n");
++			return ret;
++		}
++	}
++	ret = ice_aq_set_mac_loopback(&vsi->back->hw, ena, NULL);
++	if (ret)
++		netdev_err(vsi->netdev, "Failed to toggle loopback state\n");
++	if (if_running)
++		ret = ice_up(vsi);
++
++	return ret;
++}
++
+ /**
+  * ice_set_features - set the netdev feature flags
+  * @netdev: ptr to the netdev being adjusted
+@@ -5960,7 +5988,10 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
+ 		      clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
+ 	}
+ 
+-	return 0;
++	if (changed & NETIF_F_LOOPBACK)
++		ret = ice_set_loopback(vsi, !!(features & NETIF_F_LOOPBACK));
++
++	return ret;
+ }
+ 
+ /**
 -- 
 2.27.0
 
