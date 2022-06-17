@@ -2,124 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7256254FB52
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 18:43:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0845654FC27
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 19:22:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383394AbiFQQnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 12:43:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52830 "EHLO
+        id S1383243AbiFQRVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 13:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383393AbiFQQnB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 12:43:01 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC7812AEC
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 09:42:59 -0700 (PDT)
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 62D1D3FC12
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 16:42:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1655484178;
-        bh=w2QkeXu0zMTbME5HaSJXMRmAa5SiQhl01ubZT4gunvE=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=Q197zgh+FnU6xGWSt5CtuATe4V+p2xpsy3tYLklO+IqKQNDxZdWvoqinoqPWjjgZE
-         ceYaZjFXxg4j19THZk2GRZCq4amKWZeZOxGXUD6LL4AiCmZsUpVai3Pp0UCmz8YVSR
-         +Tk8EsfUe7StNpDwuOSiWMHFNXm8Q12HDnt0adqUTdUmtdfWtxD9jVXRSpTzn+DugF
-         bt7EkTAq1EEI7UHGePzuGdulRelELtD1cwK/fnerFmWtIp6O9tsXZ5bMlJXz4EnP4J
-         4x1bj71dbnS7o4s6PfPWB4Jwk+1zNrLcXvNIMzkfZbCQQiHV7ZZ743ebXSBEz2T8Qo
-         MNxBVCH+4eKdg==
-Received: by mail-pj1-f71.google.com with SMTP id u9-20020a17090a2b8900b001ec79a1050eso1080104pjd.4
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 09:42:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
-         :comments:mime-version:content-id:date:message-id;
-        bh=w2QkeXu0zMTbME5HaSJXMRmAa5SiQhl01ubZT4gunvE=;
-        b=xsIgiG8c7LdB+flWmTu2DvvqM2SaEoObPi0LYdbpoDkt8HrMcKKHseQZ0DlsdW+Z7v
-         pLJeRDpLKTzEsV12sP4JpEg5ZCpfEY85Xl0qRcAzyPUXzEbDfh5Nd1ASnQOmK3e6yw0W
-         2ELvT9GiitrzBVXAc9BVWhKbqNW5erAwsX0Z68R8A58q2ln5560pnZA9M6bvjLUNAdtf
-         4Co9rSTeGzwTe4faX7HR9rurclKJOjMjQ/eUlQmxfloW92fYfszQkRbozPAdYSPrMH/k
-         BnK42JKFfHqlv54Qk1aQH4hfqHRMHdUAnwcnV8mo9j1jYDoBw3yTDByCjhoGLB7oXOho
-         pZHg==
-X-Gm-Message-State: AJIora/hVFQfxHSHyaxqMn9JjNA7aFdFAi8uDxBS6MG3tDITF58/yrX3
-        JL2qtUtJXS/yFgjP+AFOokvg5RDmvpmn5AiHVsUjyY2HdmW2NRVVyozFnJJn2pq9Lx0HqtU+eEO
-        Edi2r0o8YBygFfpjDzI8I+OFKJPkxPN/Vkw==
-X-Received: by 2002:a05:6a00:ad2:b0:4f1:2734:a3d9 with SMTP id c18-20020a056a000ad200b004f12734a3d9mr10966018pfl.61.1655484177017;
-        Fri, 17 Jun 2022 09:42:57 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vmDbgjjOfQxy2wwhMOfWvpGiIye1Npw7UNvXIfo68Txi12ei841SqUXWzTSo7nd78i2CSzTA==
-X-Received: by 2002:a05:6a00:ad2:b0:4f1:2734:a3d9 with SMTP id c18-20020a056a000ad200b004f12734a3d9mr10965989pfl.61.1655484176717;
-        Fri, 17 Jun 2022 09:42:56 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.157])
-        by smtp.gmail.com with ESMTPSA id g17-20020a639f11000000b004085adf1372sm3915323pge.77.2022.06.17.09.42.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 17 Jun 2022 09:42:56 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id A6E856093D; Fri, 17 Jun 2022 09:42:55 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id A0DB5A0B36;
-        Fri, 17 Jun 2022 09:42:55 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: Re: [PATCH net] veth: Add updating of trans_start
-In-reply-to: <20220617084535.6d687ed0@kernel.org>
-References: <9088.1655407590@famine> <20220617084535.6d687ed0@kernel.org>
-Comments: In-reply-to Jakub Kicinski <kuba@kernel.org>
-   message dated "Fri, 17 Jun 2022 08:45:35 -0700."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        with ESMTP id S1383242AbiFQRVn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 13:21:43 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF6734BAC
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 10:21:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655486502; x=1687022502;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=980dsgNiSwvDbuUCAihU3mK04rAdGEfJWYVURJDFlto=;
+  b=KDO0+fNI979dYjHX+DSVReDFjGd37WlVMDZ9HxfqLRFmVZEQbr/8YW54
+   1BEPGDmCNNwviLKzSLgVkvMvpSdxTfT7uNsgCqtvGg5kzOcsH2mky2T0U
+   GS8Yp9f07B0TVeqFH/8IeuxJ02p/6yRClRDluBFOJnnlw7wqz/ZiomYqL
+   uN0NW5lKKCqo759SHVehfJOvbwTTxC/AxXmHhR6qQeyFc8mLubrKa8WQQ
+   gH62VWjRVKGIPYwlXe0pDVqDDyX/LbV7VNVI+xIYdlqio8Os5Jtvi//L9
+   oApErEyZORzCapsW8PjStTgI2poZKCP4dOfeOcqujjuQziDFw1v+vaa9R
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="262575827"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="262575827"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 09:59:51 -0700
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="642092765"
+Received: from igoulart-mobl1.amr.corp.intel.com (HELO [10.209.93.112]) ([10.209.93.112])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 09:59:50 -0700
+Message-ID: <566dc410-458e-8aff-7839-d568e55f9ff3@linux.intel.com>
+Date:   Fri, 17 Jun 2022 09:59:50 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <5764.1655484175.1@famine>
-Date:   Fri, 17 Jun 2022 09:42:55 -0700
-Message-ID: <5765.1655484175@famine>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH net-next 1/1] net: wwan: t7xx: Add AP CLDMA and GNSS port
+Content-Language: en-US
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, chiranjeevi.rapolu@linux.intel.com,
+        haijun.liu@mediatek.com, ricardo.martinez@linux.intel.com,
+        andriy.shevchenko@linux.intel.com, dinesh.sharma@intel.com,
+        ilpo.jarvinen@linux.intel.com, moises.veleta@intel.com,
+        Madhusmita Sahu <madhusmita.sahu@intel.com>
+References: <20220614205756.6792-1-moises.veleta@linux.intel.com>
+ <CAMZdPi8cdgDUtDN=Oqz7Po+_XsKS=tRmx-Hg=_Mix9ftKQ5b3A@mail.gmail.com>
+From:   "moises.veleta" <moises.veleta@linux.intel.com>
+In-Reply-To: <CAMZdPi8cdgDUtDN=Oqz7Po+_XsKS=tRmx-Hg=_Mix9ftKQ5b3A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> wrote:
 
->On Thu, 16 Jun 2022 12:26:30 -0700 Jay Vosburgh wrote:
->> 	Since commit 21a75f0915dd ("bonding: Fix ARP monitor validation"),
->> the bonding ARP / ND link monitors depend on the trans_start time to
->> determine link availability.  NETIF_F_LLTX drivers must update trans_start
->> directly, which veth does not do.  This prevents use of the ARP or ND link
->> monitors with veth interfaces in a bond.
+On 6/16/22 10:29, Loic Poulain wrote:
+> Hi Moises,
 >
->Why is a SW device required to update its trans_start? trans_start is
->for the Tx hang watchdog, AFAIK, not a general use attribute. There's
->plenty of NETIF_F_LLTX devices, are they all broken? 
+> On Tue, 14 Jun 2022 at 22:58, Moises Veleta
+> <moises.veleta@linux.intel.com> wrote:
+>> From: Haijun Liu <haijun.liu@mediatek.com>
+>>
+>> The t7xx device contains two Cross Layer DMA (CLDMA) interfaces to
+>> communicate with AP and Modem processors respectively. So far only
+>> MD-CLDMA was being used, this patch enables AP-CLDMA and the GNSS
+>> port which requires such channel.
+>>
+>> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
+>> Co-developed-by: Madhusmita Sahu <madhusmita.sahu@intel.com>
+>> Signed-off-by: Madhusmita Sahu <madhusmita.sahu@intel.com>
+>> Signed-off-by: Moises Veleta <moises.veleta@linux.intel.com>
+>> ---
+> [...]
+>>   static const struct t7xx_port_conf t7xx_md_port_conf[] = {
+>>          {
+>> +               .tx_ch = PORT_CH_AP_GNSS_TX,
+>> +               .rx_ch = PORT_CH_AP_GNSS_RX,
+>> +               .txq_index = Q_IDX_CTRL,
+>> +               .rxq_index = Q_IDX_CTRL,
+>> +               .path_id = CLDMA_ID_AP,
+>> +               .ops = &wwan_sub_port_ops,
+>> +               .name = "t7xx_ap_gnss",
+>> +               .port_type = WWAN_PORT_AT,
+> Is it really AT protocol here? wouldn't it be possible to expose it
+> via the existing GNSS susbsystem?
+>
+> Regards,
+> Looic
 
-	In this case, it's to permit the bonding ARP / ND monitor to
-function if that software device (veth in this case) is added to a bond
-using the ARP / ND monitor (which relies on trans_start, and has done so
-since at least 2.6.0).  I'll agree it's a niche case; this was broken
-for veth for quite some time, but veth + netns is handy for software
-only test cases, so it seems worth doing.
+The protocol is AT.
+It is not possible to using the GNSS subsystem as it is meant for 
+stand-alone GNSS receivers without a control path. In this case, GNSS 
+can used for different use cases, such as Assisted GNSS, Cell ID 
+positioning, Geofence, etc. Hence, this requires the use of the AT 
+channel on the WWAN subsystem.
 
-	I didn't exhaustively check all LLTX drivers, but, e.g., tun
-does update trans_start:
+Regards,
+Moises
 
-drivers/net/tun.c:
-
-       /* NETIF_F_LLTX requires to do our own update of trans_start */
-        queue = netdev_get_tx_queue(dev, txq);
-        txq_trans_cond_update(queue);
-
-	-J
-
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
