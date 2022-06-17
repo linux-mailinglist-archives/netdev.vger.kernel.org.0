@@ -2,48 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5420654FC61
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 19:47:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81CCB54FC87
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 19:53:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383031AbiFQRmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 13:42:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50260 "EHLO
+        id S231373AbiFQRwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 13:52:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383023AbiFQRmh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 13:42:37 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B401262E;
-        Fri, 17 Jun 2022 10:42:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=A8Lpm+VKx6UyD3nSKQXXVM+v4T9BhuK7cZwcj8Hlvag=; b=5pCs/wlhFz4VnuJiT/ZV3X6Ic8
-        7LU9k/eme9ZquIsBOYJKfujtn/q1Z/ltq4gLEF+ZP6smKvgRGBdE0c5i9ZdpkqDPoirMZqaCnK57G
-        XoTu0MGcSdHjSnJ9gC96w+efkRWQJA+MwBZbO9bsA3LEWwLL7feY6DmFVQnjd2YAI040=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o2Fz6-007KpD-0Z; Fri, 17 Jun 2022 19:42:16 +0200
-Date:   Fri, 17 Jun 2022 19:42:15 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 1/1] net: phy: at803x: fix NULL pointer
- dereference on AR9331 PHY
-Message-ID: <Yqy896zbieUEAD0E@lunn.ch>
-References: <20220617045943.3618608-1-o.rempel@pengutronix.de>
+        with ESMTP id S229473AbiFQRwu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 13:52:50 -0400
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1FEDEE9
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 10:52:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1655488369; x=1687024369;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=wYRmgwkf5v/OnfQXkZpjWot0NZtzxVDI3xyS0mw1zhM=;
+  b=fDGCCvwaCEVBYIrg6RSPiEuN258II6xogx6ShSEBEX9TUcy3PIa5GH9e
+   GjdfhLVtfOmUZmOP/jSETlXm4ugac+bJJTf7ntbCeKEZ+8zuFa8vi96Og
+   BFut6+SBcNgRaNzMpVDZ3Ta12K7B/SNIygyG1Tbdq4HgQu2FHthXweRiu
+   o=;
+X-IronPort-AV: E=Sophos;i="5.92,306,1650931200"; 
+   d="scan'208";a="229294661"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP; 17 Jun 2022 17:52:34 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com (Postfix) with ESMTPS id A99A08284D;
+        Fri, 17 Jun 2022 17:52:31 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Fri, 17 Jun 2022 17:52:30 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.160.124) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Fri, 17 Jun 2022 17:52:28 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <edumazet@google.com>
+CC:     <aams@amazon.com>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <kuni1840@gmail.com>, <kuniyu@amazon.com>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>
+Subject: Re: [PATCH v1 net-next 3/6] af_unix: Define a per-netns hash table.
+Date:   Fri, 17 Jun 2022 10:52:15 -0700
+Message-ID: <20220617175215.1769-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CANn89iJGh452phb9Z9tsOTmesqCaX7LJdTWXbBPF1Ynz-AJMww@mail.gmail.com>
+References: <CANn89iJGh452phb9Z9tsOTmesqCaX7LJdTWXbBPF1Ynz-AJMww@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220617045943.3618608-1-o.rempel@pengutronix.de>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.124]
+X-ClientProxiedBy: EX13d09UWA003.ant.amazon.com (10.43.160.227) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
+X-Spam-Status: No, score=-7.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -51,42 +64,218 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 06:59:43AM +0200, Oleksij Rempel wrote:
-> Latest kernel will explode on the PHY interrupt config, since it depends
-> now on allocated priv. So, run probe to allocate priv to fix it.
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 17 Jun 2022 10:00:25 +0200
+> On Fri, Jun 17, 2022 at 8:57 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> >
+> > From:   Eric Dumazet <edumazet@google.com>
+> > Date:   Fri, 17 Jun 2022 08:08:32 +0200
+> > > On Fri, Jun 17, 2022 at 7:34 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> > > >
+> > > > From:   Eric Dumazet <edumazet@google.com>
+> > > > Date:   Fri, 17 Jun 2022 06:23:37 +0200
+> > > > > On Fri, Jun 17, 2022 at 1:48 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> > > > > >
+> > > > > > This commit adds a per netns hash table for AF_UNIX.
+> > > > > >
+> > > > > > Note that its size is fixed as UNIX_HASH_SIZE for now.
+> > > > > >
+> > > > >
+> > > > > Note: Please include memory costs for this table, including when LOCKDEP is on.
+> > > >
+> > > > I'm sorry but I'm not quite sure.
+> > > > Do you mean the table should have the size as member of its struct?
+> > > > Could you elaborate on memory costs and LOCKDEP?
+> > >
+> > > I am saying that instead of two separate arrays, you are now using one
+> > > array, with holes in the structure
+> > >
+> > > Without LOCKDEP, sizeof(spinlock_t) is 4.
+> > > With LOCKDEP, sizeof(spinlock_t) is bigger.
+> > >
+> > > So we are trading some costs of having two shared dense arrays, and
+> > > having per-netns hash tables.
+> > >
+> > > It would be nice to mention this trade off in the changelog, because
+> > > some hosts have thousands of netns and few af_unix sockets :/
+> >
+> > Thank you for explanation in detail!
+> > I'm on the same page.
+> > How about having separate arrays like this in per-netns struct?
+> >
+> > struct unix_table {
+> >        spinlock_t *locks;
+> >        list_head  *buckets;
+> > }
 > 
->  ar9331_switch ethernet.1:10 lan0 (uninitialized): PHY [!ahb!ethernet@1a000000!mdio!switch@10:00] driver [Qualcomm Atheros AR9331 built-in PHY] (irq=13)
->  CPU 0 Unable to handle kernel paging request at virtual address 0000000a, epc == 8050e8a8, ra == 80504b34
->          ...
->  Call Trace:
->  [<8050e8a8>] at803x_config_intr+0x5c/0xd0
->  [<80504b34>] phy_request_interrupt+0xa8/0xd0
->  [<8050289c>] phylink_bringup_phy+0x2d8/0x3ac
->  [<80502b68>] phylink_fwnode_phy_connect+0x118/0x130
->  [<8074d8ec>] dsa_slave_create+0x270/0x420
->  [<80743b04>] dsa_port_setup+0x12c/0x148
->  [<8074580c>] dsa_register_switch+0xaf0/0xcc0
->  [<80511344>] ar9331_sw_probe+0x370/0x388
->  [<8050cb78>] mdio_probe+0x44/0x70
->  [<804df300>] really_probe+0x200/0x424
->  [<804df7b4>] __driver_probe_device+0x290/0x298
->  [<804df810>] driver_probe_device+0x54/0xe4
->  [<804dfd50>] __device_attach_driver+0xe4/0x130
->  [<804dcb00>] bus_for_each_drv+0xb4/0xd8
->  [<804dfac4>] __device_attach+0x104/0x1a4
->  [<804ddd24>] bus_probe_device+0x48/0xc4
->  [<804deb44>] deferred_probe_work_func+0xf0/0x10c
->  [<800a0ffc>] process_one_work+0x314/0x4d4
->  [<800a17fc>] worker_thread+0x2a4/0x354
->  [<800a9a54>] kthread+0x134/0x13c
->  [<8006306c>] ret_from_kernel_thread+0x14/0x1c
+> Are we sure we need per-netns locks ?
 > 
-> Same Issue would affect some other PHYs (QCA8081, QCA9561), so fix it
-> too.
-> 
-> Fixes: 3265f4218878 ("net: phy: at803x: add fiber support")
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> I would think that sharing 256 spinlocks would be just fine, even on
+> hosts with more than 256 cpus.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+I ran the test written on the last patch with three kernels 10 times
+for each:
 
-    Andrew
+  1) global locks and hash table
+     1m 38s ~ 1m 43s
+
+  2) per-netns locks and hash tables (two dense arrays version)
+     11s
+
+  3) global locks and per-netns hash tables
+     15s
+
+As you thought, the length of list has larger impact than lock contention.
+But on a host with 10 cpus per-netns, per-netns locks are faster than
+shared one.
+
+What do you think about this trade-off?
+
+
+> > > > > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> > > > > > ---
+> > > > > >  include/net/af_unix.h    |  5 +++++
+> > > > > >  include/net/netns/unix.h |  2 ++
+> > > > > >  net/unix/af_unix.c       | 40 ++++++++++++++++++++++++++++++++++------
+> > > > > >  3 files changed, 41 insertions(+), 6 deletions(-)
+> > > > > >
+> > > > > > diff --git a/include/net/af_unix.h b/include/net/af_unix.h
+> > > > > > index acb56e463db1..0a17e49af0c9 100644
+> > > > > > --- a/include/net/af_unix.h
+> > > > > > +++ b/include/net/af_unix.h
+> > > > > > @@ -24,6 +24,11 @@ extern unsigned int unix_tot_inflight;
+> > > > > >  extern spinlock_t unix_table_locks[UNIX_HASH_SIZE];
+> > > > > >  extern struct hlist_head unix_socket_table[UNIX_HASH_SIZE];
+> > > > > >
+> > > > > > +struct unix_hashbucket {
+> > > > > > +       spinlock_t              lock;
+> > > > > > +       struct hlist_head       head;
+> > > > > > +};
+> > > > > > +
+> > > > > >  struct unix_address {
+> > > > > >         refcount_t      refcnt;
+> > > > > >         int             len;
+> > > > > > diff --git a/include/net/netns/unix.h b/include/net/netns/unix.h
+> > > > > > index 91a3d7e39198..975c4e3f8a5b 100644
+> > > > > > --- a/include/net/netns/unix.h
+> > > > > > +++ b/include/net/netns/unix.h
+> > > > > > @@ -5,8 +5,10 @@
+> > > > > >  #ifndef __NETNS_UNIX_H__
+> > > > > >  #define __NETNS_UNIX_H__
+> > > > > >
+> > > > > > +struct unix_hashbucket;
+> > > > > >  struct ctl_table_header;
+> > > > > >  struct netns_unix {
+> > > > > > +       struct unix_hashbucket  *hash;
+> > > > > >         int                     sysctl_max_dgram_qlen;
+> > > > > >         struct ctl_table_header *ctl;
+> > > > > >  };
+> > > > > > diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+> > > > > > index c0804ae9c96a..3c07702e2349 100644
+> > > > > > --- a/net/unix/af_unix.c
+> > > > > > +++ b/net/unix/af_unix.c
+> > > > > > @@ -3559,7 +3559,7 @@ static const struct net_proto_family unix_family_ops = {
+> > > > > >
+> > > > > >  static int __net_init unix_net_init(struct net *net)
+> > > > > >  {
+> > > > > > -       int error = -ENOMEM;
+> > > > > > +       int i;
+> > > > > >
+> > > > > >         net->unx.sysctl_max_dgram_qlen = 10;
+> > > > > >         if (unix_sysctl_register(net))
+> > > > > > @@ -3567,18 +3567,35 @@ static int __net_init unix_net_init(struct net *net)
+> > > > > >
+> > > > > >  #ifdef CONFIG_PROC_FS
+> > > > > >         if (!proc_create_net("unix", 0, net->proc_net, &unix_seq_ops,
+> > > > > > -                       sizeof(struct seq_net_private))) {
+> > > > > > -               unix_sysctl_unregister(net);
+> > > > > > -               goto out;
+> > > > > > +                            sizeof(struct seq_net_private)))
+> > > > > > +               goto err_sysctl;
+> > > > > > +#endif
+> > > > > > +
+> > > > > > +       net->unx.hash = kmalloc(sizeof(struct unix_hashbucket) * UNIX_HASH_SIZE,
+> > > > > > +                               GFP_KERNEL);
+> > > > >
+> > > > > This will fail under memory pressure.
+> > > > >
+> > > > > Prefer kvmalloc_array()
+> > > >
+> > > > Thank you for feedback!
+> > > > I will use it in v2.
+> > > >
+> > > >
+> > > > > > +       if (!net->unx.hash)
+> > > > > > +               goto err_proc;
+> > > > > > +
+> > > > > > +       for (i = 0; i < UNIX_HASH_SIZE; i++) {
+> > > > > > +               INIT_HLIST_HEAD(&net->unx.hash[i].head);
+> > > > > > +               spin_lock_init(&net->unx.hash[i].lock);
+> > > > > >         }
+> > > > > > +
+> > > > > > +       return 0;
+> > > > > > +
+> > > > > > +err_proc:
+> > > > > > +#ifdef CONFIG_PROC_FS
+> > > > > > +       remove_proc_entry("unix", net->proc_net);
+> > > > > >  #endif
+> > > > > > -       error = 0;
+> > > > > > +err_sysctl:
+> > > > > > +       unix_sysctl_unregister(net);
+> > > > > >  out:
+> > > > > > -       return error;
+> > > > > > +       return -ENOMEM;
+> > > > > >  }
+> > > > > >
+> > > > > >  static void __net_exit unix_net_exit(struct net *net)
+> > > > > >  {
+> > > > > > +       kfree(net->unx.hash);
+> > > > >
+> > > > > kvfree()
+> > > > >
+> > > > > >         unix_sysctl_unregister(net);
+> > > > > >         remove_proc_entry("unix", net->proc_net);
+> > > > > >  }
+> > > > > > @@ -3666,6 +3683,16 @@ static int __init af_unix_init(void)
+> > > > > >
+> > > > > >         BUILD_BUG_ON(sizeof(struct unix_skb_parms) > sizeof_field(struct sk_buff, cb));
+> > > > > >
+> > > > > > +       init_net.unx.hash = kmalloc(sizeof(struct unix_hashbucket) * UNIX_HASH_SIZE,
+> > > > > > +                                   GFP_KERNEL);
+> > > > >
+> > > > > Why are you allocating the hash table twice ? It should be done
+> > > > > already in  unix_net_init() ?
+> > > >
+> > > > Ah sorry, just my mistake.
+> > > > I'll remove this alloc/free part.
+> > > >
+> > > >
+> > > > > > +       if (!init_net.unx.hash)
+> > > > > > +               goto out;
+> > > > > > +
+> > > > > > +       for (i = 0; i < UNIX_HASH_SIZE; i++) {
+> > > > > > +               INIT_HLIST_HEAD(&init_net.unx.hash[i].head);
+> > > > > > +               spin_lock_init(&init_net.unx.hash[i].lock);
+> > > > > > +       }
+> > > > > > +
+> > > > > >         for (i = 0; i < UNIX_HASH_SIZE; i++)
+> > > > > >                 spin_lock_init(&unix_table_locks[i]);
+> > > > > >
+> > > > > > @@ -3699,6 +3726,7 @@ static void __exit af_unix_exit(void)
+> > > > > >         proto_unregister(&unix_dgram_proto);
+> > > > > >         proto_unregister(&unix_stream_proto);
+> > > > > >         unregister_pernet_subsys(&unix_net_ops);
+> > > > > > +       kfree(init_net.unx.hash);
+> > > > >
+> > > > >    Not needed.
+> > > > >
+> > > > > >  }
+> > > > > >
+> > > > > >  /* Earlier than device_initcall() so that other drivers invoking
+> > > > > > --
+> > > > > > 2.30.2
+> > > > > >
+> > > >
+> > > >
+> > > > Best regards,
+> > > > Kuniyuki
