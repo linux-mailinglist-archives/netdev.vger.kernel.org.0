@@ -2,267 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A20354EE98
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 02:58:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5B8154EEAC
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 03:15:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379381AbiFQA6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 20:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35858 "EHLO
+        id S1379447AbiFQBPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 21:15:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbiFQA6s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 20:58:48 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34DF853C5F;
-        Thu, 16 Jun 2022 17:58:48 -0700 (PDT)
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25GMYmZ6016917;
-        Thu, 16 Jun 2022 17:58:33 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=Gr3r9ThF4nBhWbJTr3wymjsdfvKgQSsZJ4Alcef0baA=;
- b=pM95KNIrrtj6Y+xX7B5rozpJ66u23FR3M8/o1I8L/puqOSj4SFO7YVkX6ITSLfy6N63K
- CHj2wFqzaySX9iE2C2NQg8h2U7zv9mIXnjLKhnIH+pibKJ+l+4AmLZgpy+OgfxSL69WS
- Ysb4F91xbUF/q3oUeWBSeM9RzS57VdMnLao= 
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2168.outbound.protection.outlook.com [104.47.59.168])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3gqt6fqce5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 16 Jun 2022 17:58:33 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DZgodbRpS0Mc5bSnx3cmUdVJnSTAj9q4F1pQt+yp31YbNO2SBPAMosG+NE2j/QDVCzijMosH0dm4BWj6HneKWnHmQ2P55LN9tW+BwCp+Y8+Of31qC2fwHEuZ5e20XdOLbS3cQg0g9f8rK5b9+wKsGvZBPbnAeQti1L52fhpu0EGkBNTO2jTl1TRxVHMyqgbUabUueIIEEjA7LEa0dgzc0nxMKf5sbeS5JdZLQ0SijjpHK+4qLQwehdvAI+zasdz8brCmF+gWA1aqRMp0okElpEsvY8p81UburBWYNJ2ETJoX2sD6oGA/SuLYCs2gYcS39B80TCO1xkh27hmSSlVPYw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Gr3r9ThF4nBhWbJTr3wymjsdfvKgQSsZJ4Alcef0baA=;
- b=TiWkDPEOMsFJPrQjfPSlaORsiCZPzFHHrRuHnjT7tVFKmhDmsBdsZzIkLCA7B4eBLXStdoJLF8MLckhWKsdvHRzOydJR3p5mqd2xV63uvZ25r4lCFuQ2Firw7K9eVBgqQVihAyJwu6GpWDpoYl9MkNRlh6eZsropEafDdNMVRn9QwLn/GRW0M+A3+aXYZNQKHkFlaW4q2UyWi1LYIKDn5yGKcUwsOlhGuGSNVBmaoQ0QxIJbQrghFTqwe56g4NzAtTJAA1DlMYU3kfXyBBka3hniG9+D5BFwDHzVq/zaZYz6cTu5irRwHeb7XZkoqqkWxYs9lv71iawfbkwb8efLuw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from MW4PR15MB4475.namprd15.prod.outlook.com (2603:10b6:303:104::16)
- by BYAPR15MB3318.namprd15.prod.outlook.com (2603:10b6:a03:106::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5332.22; Fri, 17 Jun
- 2022 00:58:30 +0000
-Received: from MW4PR15MB4475.namprd15.prod.outlook.com
- ([fe80::3941:25c6:c1cd:5762]) by MW4PR15MB4475.namprd15.prod.outlook.com
- ([fe80::3941:25c6:c1cd:5762%7]) with mapi id 15.20.5353.015; Fri, 17 Jun 2022
- 00:58:31 +0000
-Date:   Thu, 16 Jun 2022 17:58:29 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org
-Subject: Re: [PATCH bpf-next v9 05/10] bpf: implement BPF_PROG_QUERY for
- BPF_LSM_CGROUP
-Message-ID: <20220617005829.66pboow5uubbrdcu@kafai-mbp>
-References: <20220610165803.2860154-1-sdf@google.com>
- <20220610165803.2860154-6-sdf@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220610165803.2860154-6-sdf@google.com>
-X-ClientProxiedBy: BYAPR05CA0057.namprd05.prod.outlook.com
- (2603:10b6:a03:74::34) To MW4PR15MB4475.namprd15.prod.outlook.com
- (2603:10b6:303:104::16)
+        with ESMTP id S1379463AbiFQBPg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 21:15:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B99A61609
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 18:15:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655428533;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qj6jImPewXvPaBqVDCu6KZmly2mSua8Ga/tEmjDhDBg=;
+        b=JRMFv0gmxL4bV8S2tI/DJ8g1dJyhxZMlrzUhZnjZ7L5XL5qyauArYfsZSGI2WULnavf7HB
+        CF31+29lL9FZ+X/mOvwljCiSxn7RilS5dyW4wkBUD0Aao1akAZDDB+KwtGgKczxJtEPkrD
+        XgLK9njrUtQhSRsUWB8MZZ2q2CI3wvM=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-648-fAELLuLrPey17zZc_VR79A-1; Thu, 16 Jun 2022 21:15:32 -0400
+X-MC-Unique: fAELLuLrPey17zZc_VR79A-1
+Received: by mail-lf1-f69.google.com with SMTP id u5-20020a056512128500b00479784f526cso1555500lfs.13
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 18:15:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=qj6jImPewXvPaBqVDCu6KZmly2mSua8Ga/tEmjDhDBg=;
+        b=jUHSCYOzKbi7dnnOUysNmRf6fPw/rDGy7M2MQ56qpJm1VShTQ1pcaJXx7fbr8wiuTO
+         6qTvAZarHOnMP9gwx0sK8N6egY+HV6spocTJY8IkXGt2EjuRVgvo2Sbcx0hrPHg5Qf/v
+         97AwwUijbY0p1ZY0MdgGqYVUILIe/6oT3yZbh62XKDViFgSHdpljFy2aa3IV+7SFHPln
+         Usdvc1eJW1GkLDcScosdoJbX8R8P2SyE+cFbHZIyPI1JqseiUIJuNIUpEieFFvtF17f2
+         RxapDiNwYCRdjnjoE/4lLirEBKjnUPYqPG4m8ZWCy7vZtDXXiqA6RlLdghOiXJ4INAEA
+         AYUQ==
+X-Gm-Message-State: AJIora8mkbr4WekLlEYIBLedO9JCOSRwAZCzQUF1/9ZVTgH09FJANSdQ
+        NpSydP8mwT7Y+hEFdooIqBX7rfqiu7hiCNJhOteYZK5zOodL/etDTQ6Wn0ou1SP+u7V31hfJpu4
+        VAUzGvnpQXsChzIsnW2alSFZZ/Wn2IrLY
+X-Received: by 2002:a05:6512:a8f:b0:479:63e5:d59f with SMTP id m15-20020a0565120a8f00b0047963e5d59fmr4266503lfu.124.1655428531119;
+        Thu, 16 Jun 2022 18:15:31 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tVLEwZlQ5b3n2hD9EvzjMdrwv7jEBRqw/ihfRAuZxBUVL8mY4ADtDpm6/g+7FS+TtENdDl8nkcM5M830HVPM4=
+X-Received: by 2002:a05:6512:a8f:b0:479:63e5:d59f with SMTP id
+ m15-20020a0565120a8f00b0047963e5d59fmr4266484lfu.124.1655428530874; Thu, 16
+ Jun 2022 18:15:30 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1292bbf7-5daf-4c9d-5e80-08da4ffc7ef7
-X-MS-TrafficTypeDiagnostic: BYAPR15MB3318:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR15MB33186875BDD6C1D885EC76D8D5AF9@BYAPR15MB3318.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VYXiMyg5ekWBQjPQg4F5D4ZUVWu8D1QUV9MAy3fhS6pz3tP0oH1hIkDs4+KuHo331udI2nIMhgzBLNthlYlP6Kfq3wYd/NJ12oy0dhnEg5gXHN1EDCIv6LmZsjEev94Qr5m97pZ/voUV+CUnYF5tULSykGjsp4QUAYSs96MKP5mOhbZqeSXVC8TVEH6f4DV0x9xwPRn+2jeHGUt38REkC1Wu9KysTOHS89Wk4dYU7i9umV6Fi2GjPBwtzgrFKVIzXH0XS2HZ+DYtpBeJWvsVWIZlk2izMWl3zEodk75GN+wwL7kjukHy5jJVyRxwTkAdOyeQz+Heed0tiA8kHjWKztxgrtdzDuw8DezNppiVPJsMXoQIcPUgne+GQOT5PpO4hDzqxRMoi7reURfEhx/ysZMnjTloyA97VxR2n2cXXXi+S4f/OH2VmHm4aQx0//Cj8/SVbk/QLOLR/nXTm5IwfMQdkuEqTLOIBGHJRL41ArFUdMdfkntcDkDRVXCBtw+z+01A+bI25w2REp/o+9MFKjIqiqJS4moEP8AGbhozs8yBcxGlFSlzpvZDOkd3TB5/F0P/y57fUTePN4ILDOMeWj07iWwRdg5gK3RIb7wVmF1n61yLg4kwanH8yEpIlqfY5HmF3tnRjlpXng9QwMuZsA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR15MB4475.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(366004)(6506007)(86362001)(5660300002)(508600001)(66556008)(8676002)(83380400001)(66946007)(186003)(33716001)(52116002)(2906002)(4326008)(6486002)(8936002)(316002)(1076003)(6916009)(66476007)(6512007)(9686003)(38100700002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?A2MsyedCxIc/wzWcNr3U0sz/BFRp8t5C0ZIEi/CICtLNDCOWuqKar+b1+DfK?=
- =?us-ascii?Q?WC2s36q/AkS5xAQoldG3guwigH5c35ibbn3RxXG0n7MuU7F0tzjS9Bw8IPmh?=
- =?us-ascii?Q?sARj1RjUJodaiL/Eb4baGXAaiMjNkOFna8IhvIj2VNrA9KmgWV7XOp9soNc7?=
- =?us-ascii?Q?VguydRcwarRsIuIAKb7JhjBgP1iHOkPlgoZ3pspifrxx2csVUNn6PFGOonhR?=
- =?us-ascii?Q?CUst+WpWgM6ylphuoJhjsf8P0+9YNduSnyANLTQhy1jWBChTEOGDfjDMirjZ?=
- =?us-ascii?Q?rpofaLd85+DhzEWho/qKaH9c2x3tI5RLnI41BatkauCqqmYqzmecuntVyEV2?=
- =?us-ascii?Q?d0tY7RfA5jhAG5qK/s+CUCOiQJZZFiS+gqTVT1UouGe3RGEARChJWOPK4hmo?=
- =?us-ascii?Q?Jzwv6iRjQ5M/1idDK6nanWMMVqhal7ljBDpITKOOLo3tpyAnuz7JilzD/AQp?=
- =?us-ascii?Q?trVEEcJ2WlDJlkObzLX71jT+mlIu35LM3yfq+SkLcr1ZMo3g+obgJNHU1du0?=
- =?us-ascii?Q?Fm2zcQFr4XXygSKGhXHnjmbdtv4dP9fUBUdLT6Eb+jgSvobui1gtDCL5Dg41?=
- =?us-ascii?Q?i8jToqN+PjL0aAEP1x1UuxzrYn2EVBMtLLUMnmooUMnXCkMkvKlfFK1dZt+U?=
- =?us-ascii?Q?xhy5gwGegNnwk8nAlhEAEkYDXU9t4jGfh2WtgJ8XEHuwKvdNkw97zIW2RgCO?=
- =?us-ascii?Q?bFlqIfNlpJwIWsKIiTo4koOUwoOLSSToT9lSTUP5uEmqcooqLAkvQhaZur+G?=
- =?us-ascii?Q?3TZjOftpD6x9YvwSfcHmdM33hdsWbdh494M/fLEXsjxpviRup2ta9hRn7FEO?=
- =?us-ascii?Q?ziE9DClPPBTujdjzK7ueiqTBpO/BvpIpqU5UfPRfEHsaO3gl5ZyXIWjWw8L6?=
- =?us-ascii?Q?dXYXgNmBV/3ViM5QclLRQHDGpkkwsNa1eQVIXkISW5C2lVEtGvukOvLehpkO?=
- =?us-ascii?Q?jw3v88l43OgH5VAFLFeTYUeqP0SHlW5YypjLg+H2NfP5DX9UTzDDgArNk9Vc?=
- =?us-ascii?Q?2sqgngF40gkB8TjqWR0QLokeXCq82ZL3wzXI8ipBh9jLwsV6t66SV3icyY4a?=
- =?us-ascii?Q?FJca+0hEidCiJOwCQ3QeVf9fzZshP2cmIMOEfXYSIHDN1qFDisx+kVqOGvBj?=
- =?us-ascii?Q?BWtNgizo3+TTywXPRTwWIdSfuIzuktnkxnaW/qbkafdWAjF8WqvwUAnjI519?=
- =?us-ascii?Q?JRPZbTFHKj9J1/pqdSrk7pUJUVEQMcAlMJh+paC1gcGgXmNFRB4/7y07Ri0u?=
- =?us-ascii?Q?OjNT2Nw7qpg/paizZzME2eRLOBOw6D1xy8KAskHtTvQEXKfJGvGPIAA9qcOR?=
- =?us-ascii?Q?LcjfKhglqY78BMrdtszEnJ2yUfSIqZa112ECQwiQDCcLbsaJpAXhKyy/Peqz?=
- =?us-ascii?Q?JxVMHJwAEqXsjBVa6TpK/D4egLynRiEly0w5Rd3i4IFrGL2phejJ8d4suhJf?=
- =?us-ascii?Q?MWOXwAnpRvJuQrSXC/Ro9ipOwXLheIqs39GQTXVBOefoWlFSOqrLRabi+KBW?=
- =?us-ascii?Q?uEXvYswecmlZgQKHmYZxVDmUkkZRianhunL2+6r5FGrquKYe2u2+30Esbs0G?=
- =?us-ascii?Q?/mow43z9Z+dYuwJhhFdTaVVWwDBR88EWDFwJz2s/VpY9W07c9nzgFCHayEVk?=
- =?us-ascii?Q?MMN7BaeEIJRBdq2EF/uLxrtLLxrqxgj/itXJMMHPgToq+0qxNVoWbstlURpp?=
- =?us-ascii?Q?CkgbN6DK7SMxil+8t4+KFfwIxJcgsl7kAYXosnzR7CKaieFHzIQSNxujdico?=
- =?us-ascii?Q?k3mo0XQo/T7dGPQys5WoZbriD313SFA=3D?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1292bbf7-5daf-4c9d-5e80-08da4ffc7ef7
-X-MS-Exchange-CrossTenant-AuthSource: MW4PR15MB4475.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2022 00:58:30.9183
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QR6xPAumlttxmZeewMujxL566ijH870IdrmXGaPZLLzMkfH4YAYSXqKZk/mQIHED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3318
-X-Proofpoint-GUID: 9r93zgCQfQ5lTnjtgy4iPHsrf22WrG8x
-X-Proofpoint-ORIG-GUID: 9r93zgCQfQ5lTnjtgy4iPHsrf22WrG8x
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-16_20,2022-06-16_01,2022-02-23_01
+References: <20220526124338.36247-1-eperezma@redhat.com> <PH0PR12MB54819C6C6DAF6572AEADC1AEDCD99@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <20220527065442-mutt-send-email-mst@kernel.org> <CACGkMEubfv_OJOsJ_ROgei41Qx4mPO0Xz8rMVnO8aPFiEqr8rA@mail.gmail.com>
+ <PH0PR12MB5481695930E7548BAAF1B0D9DCDC9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEsSKF_MyLgFdzVROptS3PCcp1y865znLWgnzq9L7CpFVQ@mail.gmail.com>
+ <PH0PR12MB5481CAA3F57892FF7F05B004DCDF9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEsJJL34iUYQMxHguOV2cQ7rts+hRG5Gp3XKCGuqNdnNQg@mail.gmail.com>
+ <PH0PR12MB5481D099A324C91DAF01259BDCDE9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEueG76L8H+F70D=T5kjK_+J68ARNQmQQo51rq3CfcOdRA@mail.gmail.com>
+ <PH0PR12MB5481994AF05D3B4999EC1F0EDCAD9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <CACGkMEtRTyymit=Zmwwcq0jNan-_C9p70vcLP0g7XmwQiOjUbw@mail.gmail.com> <PH0PR12MB548104990A5544C738A5A95BDCAC9@PH0PR12MB5481.namprd12.prod.outlook.com>
+In-Reply-To: <PH0PR12MB548104990A5544C738A5A95BDCAC9@PH0PR12MB5481.namprd12.prod.outlook.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 17 Jun 2022 09:15:19 +0800
+Message-ID: <CACGkMEtytpnCdWdmSh-BuFGXt55DJ9dYxnbw7JQwMXi9bQ8fvQ@mail.gmail.com>
+Subject: Re: [PATCH v4 0/4] Implement vdpasim stop operation
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "martinh@xilinx.com" <martinh@xilinx.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "martinpo@xilinx.com" <martinpo@xilinx.com>,
+        "lvivier@redhat.com" <lvivier@redhat.com>,
+        "pabloc@xilinx.com" <pabloc@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        "lulu@redhat.com" <lulu@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        "Piotr.Uminski@intel.com" <Piotr.Uminski@intel.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "ecree.xilinx@gmail.com" <ecree.xilinx@gmail.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>,
+        "habetsm.xilinx@gmail.com" <habetsm.xilinx@gmail.com>,
+        "tanuj.kamde@amd.com" <tanuj.kamde@amd.com>,
+        "hanand@xilinx.com" <hanand@xilinx.com>,
+        "dinang@xilinx.com" <dinang@xilinx.com>,
+        Longpeng <longpeng2@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 09:57:58AM -0700, Stanislav Fomichev wrote:
-> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> index ba402d50e130..c869317479ec 100644
-> --- a/kernel/bpf/cgroup.c
-> +++ b/kernel/bpf/cgroup.c
-> @@ -1029,57 +1029,92 @@ static int cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
->  static int __cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
->  			      union bpf_attr __user *uattr)
->  {
-> +	__u32 __user *prog_attach_flags = u64_to_user_ptr(attr->query.prog_attach_flags);
->  	__u32 __user *prog_ids = u64_to_user_ptr(attr->query.prog_ids);
->  	enum bpf_attach_type type = attr->query.attach_type;
-> +	enum cgroup_bpf_attach_type from_atype, to_atype;
->  	enum cgroup_bpf_attach_type atype;
->  	struct bpf_prog_array *effective;
->  	struct hlist_head *progs;
->  	struct bpf_prog *prog;
->  	int cnt, ret = 0, i;
-> +	int total_cnt = 0;
->  	u32 flags;
->  
-> -	atype = to_cgroup_bpf_attach_type(type);
-> -	if (atype < 0)
-> -		return -EINVAL;
-> +	if (type == BPF_LSM_CGROUP) {
-> +		if (attr->query.prog_cnt && prog_ids && !prog_attach_flags)
-> +			return -EINVAL;
->  
-> -	progs = &cgrp->bpf.progs[atype];
-> -	flags = cgrp->bpf.flags[atype];
-> +		from_atype = CGROUP_LSM_START;
-> +		to_atype = CGROUP_LSM_END;
-> +		flags = 0;
-> +	} else {
-> +		from_atype = to_cgroup_bpf_attach_type(type);
-> +		if (from_atype < 0)
-> +			return -EINVAL;
-> +		to_atype = from_atype;
-> +		flags = cgrp->bpf.flags[from_atype];
-> +	}
->  
-> -	effective = rcu_dereference_protected(cgrp->bpf.effective[atype],
-> -					      lockdep_is_held(&cgroup_mutex));
-> +	for (atype = from_atype; atype <= to_atype; atype++) {
-> +		progs = &cgrp->bpf.progs[atype];
-nit. Move the 'progs = ...' into the 'else {}' case below.
+On Fri, Jun 17, 2022 at 3:36 AM Parav Pandit <parav@nvidia.com> wrote:
+>
+>
+> > From: Jason Wang <jasowang@redhat.com>
+> > Sent: Tuesday, June 14, 2022 9:29 PM
+> >
+> > Well, it's an example of how vDPA is implemented. I think we agree that=
+ for
+> > vDPA, vendors have the flexibility to implement their perferrable datap=
+ath.
+> >
+> Yes for the vdpa level and for the virtio level.
+>
+> > >
+> > > I remember few months back, you acked in the weekly meeting that TC h=
+as
+> > approved the AQ direction.
+> > > And we are still in this circle of debating the AQ.
+> >
+> > I think not. Just to make sure we are on the same page, the proposal he=
+re is
+> > for vDPA, and hope it can provide forward compatibility to virtio. So i=
+n the
+> > context of vDPA, admin virtqueue is not a must.
+> In context of vdpa over virtio, an efficient transport interface is neede=
+d.
+> If AQ is not much any other interface such as hundreds to thousands of re=
+gisters is not must either.
+>
+> AQ is one interface proposed with multiple benefits.
+> I haven=E2=80=99t seen any other alternatives that delivers all the benef=
+its.
+> Only one I have seen is synchronous config registers.
+>
+> If you let vendors progress, handful of sensible interfaces can exist, ea=
+ch with different characteristics.
+> How would we proceed from here?
 
->  
-> -	if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE)
-> -		cnt = bpf_prog_array_length(effective);
-> -	else
-> -		cnt = prog_list_length(progs);
-> +		if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE) {
-> +			effective = rcu_dereference_protected(cgrp->bpf.effective[atype],
-> +							      lockdep_is_held(&cgroup_mutex));
-> +			total_cnt += bpf_prog_array_length(effective);
-> +		} else {
-> +			total_cnt += prog_list_length(progs);
-> +		}
-> +	}
->  
->  	if (copy_to_user(&uattr->query.attach_flags, &flags, sizeof(flags)))
->  		return -EFAULT;
-> -	if (copy_to_user(&uattr->query.prog_cnt, &cnt, sizeof(cnt)))
-> +	if (copy_to_user(&uattr->query.prog_cnt, &total_cnt, sizeof(total_cnt)))
->  		return -EFAULT;
-> -	if (attr->query.prog_cnt == 0 || !prog_ids || !cnt)
-> +	if (attr->query.prog_cnt == 0 || !prog_ids || !total_cnt)
->  		/* return early if user requested only program count + flags */
->  		return 0;
-> -	if (attr->query.prog_cnt < cnt) {
-> -		cnt = attr->query.prog_cnt;
-> +
-> +	if (attr->query.prog_cnt < total_cnt) {
-> +		total_cnt = attr->query.prog_cnt;
->  		ret = -ENOSPC;
->  	}
->  
-> -	if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE) {
-> -		return bpf_prog_array_copy_to_user(effective, prog_ids, cnt);
-> -	} else {
-> -		struct bpf_prog_list *pl;
-> -		u32 id;
-> +	for (atype = from_atype; atype <= to_atype && total_cnt; atype++) {
-> +		progs = &cgrp->bpf.progs[atype];
-same here.
+I'm pretty fine with having admin virtqueue in the virtio spec. If you
+remember, I've even submitted a proposal to use admin virtqueue as a
+transport last year.
 
-> +		flags = cgrp->bpf.flags[atype];
-and the 'flags = ...' can be moved to 'if (prog_attach_flags) {}'
+Let's just proceed in the virtio-dev list.
 
-Others lgtm.
+Thanks
 
-Reviewed-by: Martin KaFai Lau <kafai@fb.com>
-
->  
-> -		i = 0;
-> -		hlist_for_each_entry(pl, progs, node) {
-> -			prog = prog_list_prog(pl);
-> -			id = prog->aux->id;
-> -			if (copy_to_user(prog_ids + i, &id, sizeof(id)))
-> -				return -EFAULT;
-> -			if (++i == cnt)
-> -				break;
-> +		if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE) {
-> +			effective = rcu_dereference_protected(cgrp->bpf.effective[atype],
-> +							      lockdep_is_held(&cgroup_mutex));
-> +			cnt = min_t(int, bpf_prog_array_length(effective), total_cnt);
-> +			ret = bpf_prog_array_copy_to_user(effective, prog_ids, cnt);
-> +		} else {
-> +			struct bpf_prog_list *pl;
-> +			u32 id;
-> +
-> +			cnt = min_t(int, prog_list_length(progs), total_cnt);
-> +			i = 0;
-> +			hlist_for_each_entry(pl, progs, node) {
-> +				prog = prog_list_prog(pl);
-> +				id = prog->aux->id;
-> +				if (copy_to_user(prog_ids + i, &id, sizeof(id)))
-> +					return -EFAULT;
-> +				if (++i == cnt)
-> +					break;
-> +			}
->  		}
-> +
-> +		if (prog_attach_flags) {
-> +			for (i = 0; i < cnt; i++)
-> +				if (copy_to_user(prog_attach_flags + i, &flags, sizeof(flags)))
-> +					return -EFAULT;
-> +			prog_attach_flags += cnt;
-> +		}
-> +
-> +		prog_ids += cnt;
-> +		total_cnt -= cnt;
->  	}
->  	return ret;
->  }
