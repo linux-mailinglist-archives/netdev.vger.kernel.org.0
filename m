@@ -2,71 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D12F54EF81
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 05:39:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B741F54EF96
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 05:39:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379994AbiFQDIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 23:08:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48132 "EHLO
+        id S1379975AbiFQDMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 23:12:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379936AbiFQDIS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 23:08:18 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C61DF5EBEE
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 20:08:17 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id h34-20020a17090a29a500b001eb01527d9eso2212538pjd.3
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 20:08:17 -0700 (PDT)
+        with ESMTP id S1379971AbiFQDMV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 23:12:21 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7E366235
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 20:12:20 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id l4so2918503pgh.13
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 20:12:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=05w5k2H6iAH0ZgNLPs0+l2PLAxsLXlw8R/ymoZjeiWA=;
-        b=L1ijCKGk+5t0GFYr6QoXTOuTW2lQ5YXPwcnoiMY7ETJ5r4InHxmUSox96iNVWIPCw7
-         geORc75Yp0A2REzbnK7CIdy4w5GE43FtCMMn1KwfKHunoyksryjt4mWmipSGDdYq0/n9
-         lIjFSVM6xulhkuDMwgJZR2poUmQXSO0NCrT6BipgsBFZI8EbiGVxoW5IvB41/vO8bGRw
-         1I+pOnNq0JSBJJuz0wWkvhx0xh9qMLS5zzji571ujkr6aO79+/rEATfwIp4eQf/8qK9p
-         YcV53uvub22JVngjEt0OaMC306j0pcf9eYPTI5R+PbBbCPBuIIzX3yFQy2g3Z8+gXsID
-         ngaw==
+        bh=+N+dvGmXc1f+RZmp00Ct2oTKXTDuTdwW097S9+qW+jg=;
+        b=mViWEs6FsG0fGRc4M6iX3VQFPlyyrYlKY3PNkApY5ZnDXujMbkLFGo1HmupknWGDxp
+         l4+izRZ88lnSqtRP6oZDCNFLVqPxFIj8wZsxQdX/c1BgME86MCbGnL4VPS/b+jfmI8yx
+         nqhLmFgdS6h26atYL/lYb2nIOQboSHQGmVmhjfKKXw8dmG3q4SYUjS6ETqoLoLMUSQ3+
+         4qYjVXCrOWTJ4vb2YWi7FPEyfrrSyEl3CHZPgOSg/Zl3gnkXkgkY9pbtqbH2GXHV/Yd4
+         mWPaGMC72rXdCeacVcrFmdBLKeKdZl+d4CeLi/kzcNuAaVA04orlDVhoOfzXJ9/MsLcE
+         GhXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=05w5k2H6iAH0ZgNLPs0+l2PLAxsLXlw8R/ymoZjeiWA=;
-        b=wxB8eI8QEYtpySEZfe+8j8rLy51mgHegGdAFhcS3OfnZLVJsoPhbTXK4I8CC7CoFMs
-         ikq8pqS7RuahAKqIw/p4JV8kXpuhivL/NGn5FgrloDQ2ECTpDNscZ9lJEuK5mTEk2XcF
-         qiQjV1Hd7egFxqTq8u8TZlo1YNAo67I3qIrjDNNnAbWpc56A1774SqOvTuFsf5cPeL2W
-         38rp+icNlncG83j0QP5RXAoBPekdrXsCMYk1cGfyMqkXVkGQ4gpPpgxFJiDxQrdnDv3/
-         oh+/1IAvtvWdNOXe/T8cg76TmkRGlg/EMEONRKvYKHx7KagiqLZhy8N5/vZM21xEK2F5
-         MUPA==
-X-Gm-Message-State: AJIora+vxLnbVJknpyL9jJeiTU7Sf4jtYgjnbrfN/wYWoYunL/4LxK7X
-        tmPsqfLu3/8etLeCGwoQs+aCFg==
-X-Google-Smtp-Source: AGRyM1v2X0TnjSzAadnit9H8W9ElwHqlbqJ1rgB3Cfo5mtc3wxQzXXIyyIBCXj/bQoPI/AWse5xmBA==
-X-Received: by 2002:a17:90b:4b47:b0:1e8:9529:27c6 with SMTP id mi7-20020a17090b4b4700b001e8952927c6mr18956391pjb.178.1655435297320;
-        Thu, 16 Jun 2022 20:08:17 -0700 (PDT)
+        bh=+N+dvGmXc1f+RZmp00Ct2oTKXTDuTdwW097S9+qW+jg=;
+        b=0Qd54q89rJypn/83zqm3d549w38z0Ohg8GrtQhcShiBxAPLNI84oB3pRHBqXWGF3OP
+         RFTiu0z3H5BL+14ofc1K7eOhXENxqv4MvyOSC0oV8O3pDaQaSrVbQu0ZqhGHK9xQKtxP
+         NHEnAw4lbLRMrdPaNcC5CgnicQALfh7EvA1oCPCdTAF5EM9QoianFDMxJslPXYqwfDfT
+         ZweO8jD3k24sflm2izm9NMxmjeoxszy2gSB6RYucFj3HhZiKrNl855kDdjwK1Zf8VG0Z
+         M6nZoomYeOu15QcgSMn9l2f1k3mPNIdHbgYlDlhu1AtMIKjLlYClnsltQ49rU/VxtTCa
+         ou6w==
+X-Gm-Message-State: AJIora9rTx+ZzdjEzS2TgPweUks2HHjDjp46Ovh1+Q5Kya/sYVJ+xjfY
+        crePihsq1+ZoPd0ru/s3yqEfqKX+2PZD6Y9a
+X-Google-Smtp-Source: AGRyM1sF1/pD31CmfPMt4mB/bkebJ7p06DJCpTDn52OoAa44mONcCNA1i+Zy94baEAAMlIBBYo6VTA==
+X-Received: by 2002:a05:6a00:179b:b0:51b:f51f:992e with SMTP id s27-20020a056a00179b00b0051bf51f992emr7841742pfg.60.1655435539964;
+        Thu, 16 Jun 2022 20:12:19 -0700 (PDT)
 Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id u15-20020a170902714f00b00168c1668a49sm2334325plm.85.2022.06.16.20.08.16
+        by smtp.gmail.com with ESMTPSA id b19-20020a62a113000000b0051b9ac5a377sm2488196pff.213.2022.06.16.20.12.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 20:08:16 -0700 (PDT)
-Date:   Thu, 16 Jun 2022 20:08:14 -0700
+        Thu, 16 Jun 2022 20:12:19 -0700 (PDT)
+Date:   Thu, 16 Jun 2022 20:12:16 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Peilin Ye <yepeilin.cs@gmail.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        Yuming Chen <chenyuming.junnan@bytedance.com>,
-        Ted Lin <ted@mostlyuseful.tech>,
-        Dave Taht <dave.taht@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
-Subject: Re: [PATCH net] net/sched: sch_netem: Fix arithmetic in
- netem_dump() for 32-bit platforms
-Message-ID: <20220616200814.15fff125@hermes.local>
-In-Reply-To: <20220616234336.2443-1-yepeilin.cs@gmail.com>
-References: <20220616234336.2443-1-yepeilin.cs@gmail.com>
+To:     HighW4y2H3ll <huzh@nyu.edu>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH] Fix Fortify String build warnings caused by the memcpy
+ check in hinic_devlink.c.
+Message-ID: <20220616201216.2eefad10@hermes.local>
+In-Reply-To: <20220616235727.36546-1-huzh@nyu.edu>
+References: <20220616235727.36546-1-huzh@nyu.edu>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -79,51 +68,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 16 Jun 2022 16:43:36 -0700
-Peilin Ye <yepeilin.cs@gmail.com> wrote:
+On Thu, 16 Jun 2022 19:57:27 -0400
+HighW4y2H3ll <huzh@nyu.edu> wrote:
 
-> From: Peilin Ye <peilin.ye@bytedance.com>
-> 
-> As reported by Yuming, currently tc always show a latency of UINT_MAX
-> for netem Qdisc's on 32-bit platforms:
-> 
->     $ tc qdisc add dev dummy0 root netem latency 100ms
->     $ tc qdisc show dev dummy0
->     qdisc netem 8001: root refcnt 2 limit 1000 delay 275s  275s
->                                                ^^^^^^^^^^^^^^^^
-> 
-> Let us take a closer look at netem_dump():
-> 
->         qopt.latency = min_t(psched_tdiff_t, PSCHED_NS2TICKS(q->latency,
->                              UINT_MAX);
-> 
-> qopt.latency is __u32, psched_tdiff_t is signed long,
-> (psched_tdiff_t)(UINT_MAX) is negative for 32-bit platforms, so
-> qopt.latency is always UINT_MAX.
-> 
-> Fix it by using psched_time_t (u64) instead.
-> 
-> Note: confusingly, users have two ways to specify 'latency':
-> 
->   1. normally, via '__u32 latency' in struct tc_netem_qopt;
->   2. via the TCA_NETEM_LATENCY64 attribute, which is s64.
-> 
-> For the second case, theoretically 'latency' could be negative.  This
-> patch ignores that corner case, since it is broken (i.e. assigning a
-> negative s64 to __u32) anyways, and should be handled separately.
-> 
-> Thanks Ted Lin for the analysis [1] .
-> 
-> [1] https://github.com/raspberrypi/linux/issues/3512
-> 
-> Reported-by: Yuming Chen <chenyuming.junnan@bytedance.com>
-> Fixes: 112f9cb65643 ("netem: convert to qdisc_watchdog_schedule_ns")
-> Reviewed-by: Cong Wang <cong.wang@bytedance.com>
-> Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
+> ...
+> 	memcpy(&host_image->image_section_info[i],
+> 	       	&fw_image->fw_section_info[i],
+> 	       	sizeof(struct fw_section_info_st));
+> ...
 > ---
->  net/sched/sch_netem.c | 4 ++--
+>  drivers/net/ethernet/huawei/hinic/hinic_devlink.h | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/huawei/hinic/hinic_devlink.h b/drivers/net/ethernet/huawei/hinic/hinic_devlink.h
+> index 46760d607b9b..d7b26830c9ee 100644
+> --- a/drivers/net/ethernet/huawei/hinic/hinic_devlink.h
+> +++ b/drivers/net/ethernet/huawei/hinic/hinic_devlink.h
+> @@ -92,14 +92,20 @@ struct fw_image_st {
+>  		u32 fw_section_cnt:16;
+>  		u32 resd:16;
+>  	} fw_info;
+> -	struct fw_section_info_st fw_section_info[MAX_FW_TYPE_NUM];
+> +	union {
+> +	struct_group(info, fw_section_info_st fw_section_info[0];);
+> +	struct fw_section_info_st __data[MAX_FW_TYPE_NUM];
+> +	};
+>  	u32 device_id;
+>  	u32 res[101];
+>  	void *bin_data;
+>  };
+>  
+>  struct host_image_st {
+> -	struct fw_section_info_st image_section_info[MAX_FW_TYPE_NUM];
+> +	union {
+> +	struct_group(info, fw_section_info_st image_section_info[0];);
+> +	struct fw_section_info_st __data[MAX_FW_TYPE_NUM];
+> +	};
+>  	struct {
+>  		u32 up_total_len;
+>  		u32 fw_version;
 
-Thanks for fixing. 
-Guess it is time to run netem on one of the Pi's.
+Patch is missing signed-of-by
 
-Acked-by: Stephen Hemminger <stephen@networkplumber.org>
+Using [0] inside union will cause warnings in future since you are referencing
+outside of bounds of array.
+
+Also indentation is wrong, you need to indent the union
