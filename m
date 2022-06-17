@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9706B54FE56
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 22:34:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E413054FE6D
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 22:34:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349872AbiFQUdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 16:33:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35134 "EHLO
+        id S1350056AbiFQUdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 16:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241902AbiFQUdj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 16:33:39 -0400
+        with ESMTP id S1347978AbiFQUdk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 16:33:40 -0400
 Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2075.outbound.protection.outlook.com [40.107.22.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5986D4B41A;
-        Fri, 17 Jun 2022 13:33:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A3F580DA;
+        Fri, 17 Jun 2022 13:33:39 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=I67kdhRCv4UdsnYKO1HZbqWcFAhkjpDFHBsuX/JCctRwjBR0LVtV2cqWl3nZuCQ0IT5Bjhh/1HvdhbFvG90J1X2rutzc5KPaosm4cJD43vj7x7aPxahMHAR8Poj5RsgriEr0Lx5nRjVEg6/Mva3BdUCQq5nm3hMaQONOwoUsE1631KT8uqnEZAYFRp6EInbmjB0Fu54ECFL36S2KSvibHpkQ0G/20C8QUENt1DjbIYuvVW1s44Knk0qAgQatsAZy+17xaizIiPyP75odcmtFowXaM8uF7P1U00A5wd5Ku8y1BvVGXTqsFpLQa4fv/4fgYu4NNoOXnhs39aMMBdEAmA==
+ b=aE6EUyUoIiz4ef7e47Wk6uKMQEDxLp+PwnyG8y7925grTx3MkAskygB9YloLxcIwk/6/OJ50KbPpT/aU6M1wQjXsIck6H3KGeAt/JtSDabUXx6MFCd3Vm+TEFARE2Z5Luin2EDl9ptu2YSvr0SPVgtchK/WgSI/y4XvC46eCBrQt3iAhF/SYAScS+AKKdy/X3sZyJOURYfq/AXP5/pEI+oPTlGultIV1bGXrdMjXxTK12VrNj+/QRwQiAdAxnXNtfE5wWnYbVgJm8E9j2YKrI0TsqqOAyFD0ggayIJmjlxD+9S1TPwYPl2eh10jmSzwanXAPoYa1WQHGSOZleJFyVg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=exxPIDij8pQnXWicTtvmtpGREwxmq154pOsXwralCyg=;
- b=RDykyiFHACh1ly4JLZ4BqFtSfzTvsBrNOPtulM2i0qxcXCn2Sigd8u2IqgfQR3R1HgXDuZRUoEdk4Xhmxq39FJSY8K09sz1T8YhDare35WZfWqk63BYkpFvsaZiYyZhMufAwm64NanCJ/w6wDtZ5xlAJh46v+Y/ETvwD47JTONSPeYg5Tc9lMd/YOpgOhZ2S3z4Zjvjf3ST92rBPEZATJinwlgbRHjV9wvp6ZE2l8/+3sksoJYmuIOTfKHM4No0iG2gBudDtG2aj/9eMYsyECFRHuMp6CF7cm3mRrdjkTltuDetyx8McIEPvltK6Ln6383mdKz0m0pk2AdpFx8R0kQ==
+ bh=I9glw3505ujB7LUV7Xvsdgo9XaznzsVSm8YHPcXI1rA=;
+ b=GJv/CMXYatwSob/4hGH+q5wZgKsRMt+Q4e4Nkt2WFHzzREkFOnUsv2rKbDYz3ZxbuzmOlqj1tF88WRhSD9nQf/x3+UHv3XV+MMlRDpPWnauajbTOcZJR9dkY77XOasrMFg1a3mLWY8ZkxFhl/WqCRPuXMXtRFng8XebqWn/osK1EkfMddRl418WkD6iLv6EkW/uAXBS/TECr81YPvuhFBoeE4q+BwHX36rz9CPgeAbKgk/JJZRsU4qlYMKTtk9cWc/MMIlTgvn5SW+VYk3gf/aA0++IhTCHjkkZ+LAjnfyRoJANacbG4x84gDGGRkA581dP6Wa6YDoMPKEFGfYSFfA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=exxPIDij8pQnXWicTtvmtpGREwxmq154pOsXwralCyg=;
- b=TfCfjenj3ootCgZrQ0ObhpXjz/gP5yQLO9c3jYf6SosUh+Uo5B3J3dHuMNsCq7LdODaKpjCuF/ZsEIl3yXSPQy/T9sKe1MZ4SR2JKwIOOMu4UC6umqfAB90vdrNgX1ltfmEsSvHGyeLPY++V9nyC1T9tgizR7xqd2G01QL8zRqLvYs5kytPFDSDG8BMu73tAe/7S8fJeLMgBw2d53FfOjKesFSkCvv/FNL1G2L3a6d+Oma9MyutloraLPheqptpDvaA7hpWAtKy3OoK8liHIkt98meVyBuZNNM+LNR9nuGuqE9xXq9s91daVFPV4Z44eBUDSeSBO4NDPaBEckgxDOA==
+ bh=I9glw3505ujB7LUV7Xvsdgo9XaznzsVSm8YHPcXI1rA=;
+ b=ohAfKwWTYxKU0rxVrkV5eAA3g09sw+LFpY4MSwW7/8RaLDsVbnLwjkT/nt+fjE8ZNvcXZ99H1UXPk5xgNwcPm7FFtHtLCpf7XyxRdZ4g2KYreOBsXA739Ku6bflsc4BOMbx+gVCC0+teazhdTKql9eA1MfcKnN0PTl2f2waJzDFDohyozCpIAumJxmUjehvQbw8HAO89MTxxglHPEW2TGIJOQjRvCPwXKBboqgVb9z3jdkb7739xaQNNr6LPixYDX4CdDfUJl+z4vxzN0jtCGXm/NTayuZCMRFZN4tFNTYKS6yd8nzGfldSzOsM/cJ4l1aCOPsE3tr8CZ+j7KGBEog==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from VI1PR03MB4973.eurprd03.prod.outlook.com (2603:10a6:803:c5::12)
  by DBAPR03MB6438.eurprd03.prod.outlook.com (2603:10a6:10:19f::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.16; Fri, 17 Jun
- 2022 20:33:33 +0000
+ 2022 20:33:36 +0000
 Received: from VI1PR03MB4973.eurprd03.prod.outlook.com
  ([fe80::d18f:e481:f1fa:3e8d]) by VI1PR03MB4973.eurprd03.prod.outlook.com
  ([fe80::d18f:e481:f1fa:3e8d%7]) with mapi id 15.20.5353.016; Fri, 17 Jun 2022
- 20:33:33 +0000
+ 20:33:36 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -48,17 +48,17 @@ Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         Russell King <linux@armlinux.org.uk>,
         Eric Dumazet <edumazet@google.com>,
         Sean Anderson <sean.anderson@seco.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Jonathan Corbet <corbet@lwn.net>,
         Kishon Vijay Abraham I <kishon@ti.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        devicetree@vger.kernel.org, linux-phy@lists.infradead.org
-Subject: [PATCH net-next 00/28] [RFC] net: dpaa: Convert to phylink
-Date:   Fri, 17 Jun 2022 16:32:44 -0400
-Message-Id: <20220617203312.3799646-1-sean.anderson@seco.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>, devicetree@vger.kernel.org,
+        linux-phy@lists.infradead.org
+Subject: [PATCH net-next 01/28] dt-bindings: phy: Add QorIQ SerDes binding
+Date:   Fri, 17 Jun 2022 16:32:45 -0400
+Message-Id: <20220617203312.3799646-2-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
+In-Reply-To: <20220617203312.3799646-1-sean.anderson@seco.com>
+References: <20220617203312.3799646-1-sean.anderson@seco.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: BL1PR13CA0384.namprd13.prod.outlook.com
@@ -66,55 +66,55 @@ X-ClientProxiedBy: BL1PR13CA0384.namprd13.prod.outlook.com
  (2603:10a6:803:c5::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cef61822-ab56-4d9f-84fa-08da50a0a5d3
+X-MS-Office365-Filtering-Correlation-Id: 4d3710a1-781e-4353-a8c8-08da50a0a761
 X-MS-TrafficTypeDiagnostic: DBAPR03MB6438:EE_
-X-Microsoft-Antispam-PRVS: <DBAPR03MB6438A13B71F108822CE1A18C96AF9@DBAPR03MB6438.eurprd03.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DBAPR03MB6438E7E8B2D0012CE6A2DDD196AF9@DBAPR03MB6438.eurprd03.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GALMvQso6jhkBZbALwDrUt0nHjeeXeIf6uuo4Ytdp91ANbLzIPAqurLHH0UqXdrZKq33URQN8VGwa1Zrw4R8P+gCtkU3ClURJYr8IZsWhxR9e1rhQiCTRNL1fJHV3MHHq4w/DHfsBgX5QJFAwqX2TBYbtlJlDR+aThwP4Ked1MTZ25eZEJ6uOaSYzOftskFxVuC+9pCOesP8iiQmLDnunNfXoQcwuPKTmfKYBbgkioSOV6Es6DzfJiYxFoU+YABHJWwdR0YMWnto8CPwfV9osxB4xw4kTf/FTNPX2RQrdFTVu9Dgzdwhw9VuGyFV0zpaZ4uXaF7Hz13izEU+ltmO4rDWaEb/M4SAlnUNj+63LlouZmUKNbWOF+Bxn9+Zeyru1axnJt1gEzkj4p7uimE0JMjDj6ZZ4zIXRPVTvKPyNNDET16y41VhgPDBK9ptnaPjj6BYifP+rbUrKfDPM8Si3wh45JWzKTV0zes6sIF4/5OhEoJJb+aloTO4tJzKSdOObU/lWkxd4q35vl4WYLIY3TdaRxoRE34QoevU7ZpVKHRzwDOa0i1faw/qgzTYQjjAUh//KoQsvcsqxVrYSAPueZY3pBj/yWmJPFFfQCON7B/oGCu2dBqfRE11LM/sw9sylR3YtarHoMTUVcnUTNfHqBrrOnnrWXxiR/lrISiQ0MKp6Dk5F4fzzZJwcJTyPkKn0FhiublXLBt3Yt+nZw9lXGZ1teyXIm4LddpixAL9Fo32uL79neP5lNc3by4GrUDHW18F6YdFbwQS4xbZ6s/aCB2FJYJ6GLT0781xDHJmhuc=
+X-Microsoft-Antispam-Message-Info: vIbNy8/kBJTo9a7giHXX0tvji/1Ysgr3qmHIBtohuAwASzKtXzf+0NZGagaJjC+YGn706FcEAN7rAo3nFtI49OZhzI+hsymNcAXpyPyadJ5AoC3ACTI1rGAy7ugsb+1Sw6Yj5GFOY9QV5YZNT1pwC/eF+2d9C/cVM713ZeH6IeHO99smWiIZ5mm1OXxsfMW/rHbF8h4oHCwsHof5JBV2bcw4yhElMmV64of9JZg9Gs3x7zRQ8BLSXL1gitN25YhDtHXsXgPlYcLdwXNMoc5mMeazXeyGW35YTxbOnRQgQ6sVziSexRy3hKtjntHM/A8AtgXe2hzu/WRrOn/DvPhu6nubxRtyrGG06yVXWyHPubZHhL+djbLiGTggBiZMFm/yDg95ayuMVDNBSn0aQ1PtcT7V5kB0GT8xahUDFyNsve8T5cZyPxYkboAAXn4sTP3wrR6qTRhAbOUreaer9Kmhug3uppHiLkLz9FCIlCoO4MJPXN0nxvA2A4MfACiW5aVjujjZGCRP3y//QcDauiZm2ZmQcdHQVYgri3ZSWH33bZeXjbsI2LgjsfoYFHvZhtpt6j76P7ZASqxLPgj7K8yTKSrqpu52HJeavEHJ2dHv4a8HasLyHv7xQ327DqYTWDKZeh8mP7uFDXMXpN1QcydISGWHbxJDQGJAMtWARLaXi0eWaGZUPaZToOC8RXk/4oI9ejkaUH79GmJfJhE0+sl9UXrk5YaBeC4Qh93nFCiTRsFyOyvhMhfQTAS9ZkZ71+anM8u+8bDBPzYtn9YpGmOnGVRPwM0FFCRYKw1gK58o4os=
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB4973.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(44832011)(38350700002)(86362001)(7416002)(38100700002)(186003)(2616005)(5660300002)(6512007)(966005)(6486002)(52116002)(2906002)(6506007)(110136005)(8936002)(54906003)(498600001)(316002)(1076003)(66946007)(6666004)(36756003)(8676002)(26005)(83380400001)(4326008)(66556008)(66476007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YgtOg/KlCT8MEbkhc09n61EbQ3EmluUbzb/fv4GP3SIxFWgiLn3LimE4YzKV?=
- =?us-ascii?Q?CcPfZoHA+IHjuwVthE3v2627I6JUZ6zdPGPZbHU4yjfS8UCBPVd4/qPpCnKN?=
- =?us-ascii?Q?HdPnjhqZGDbEia6y5FDarBIpOxTECRnhr9YODYmg6lpv0yeEit5262hNAQxP?=
- =?us-ascii?Q?QNfnd9QC6LJy0Y2zeOeYrLijHeYjBQ4V2RF7HQ+fCIFcGHbvriI/n7PCPtIC?=
- =?us-ascii?Q?g0198+C0GSJ1HdxWZNoWwMuihe4n6+sfbNtjuVlnU/jo1Ssw5K3Hfu8wwOF9?=
- =?us-ascii?Q?cbUOaKT4ctsN2iqdilz4eDr4yEVONM7OIhju6nX1MdoRwd6auUe89OwegYNg?=
- =?us-ascii?Q?KcaM+hORVduSej6S73WUSsx6tXWIWmwEoBWAOE+V6KbRx0NdyvgnerGl0GKn?=
- =?us-ascii?Q?BSwri1/1KjXI+xf6zo9Hzt3WPHwMb8PVCtIhRFBqOFYZ1cxfIPevNkguepZF?=
- =?us-ascii?Q?hdqCXMZktz2OdWv18pb760YzdwDrWqCqmTARmQmN/JREwsXYXMOop5+hHP4x?=
- =?us-ascii?Q?VfF5LVxEpeTV9H54hG5rW/UDy8/EoPTTZdojfwJa2w3SRsA5sht1vriR9rtq?=
- =?us-ascii?Q?RgMd8kIIt6n4y39u5mSoKgtEISIdi11Defpa49MqzAHC/0a+2s18NFbUgNvA?=
- =?us-ascii?Q?3xCA85/sSk4u18AAzbmYMNQcJh9Gz/XJlPOtoeoVtxZcF2NOt187nkiBoMeM?=
- =?us-ascii?Q?2w8vsqeH9Q6/4wa6lgUJlbMDesOQlfavSNCcicgXqY8QGwQxIZMtQ5YO35aH?=
- =?us-ascii?Q?hgx3zCWXlej0dTKmPl6pIma1ocW+bZ2OWMG2vZG7+XjYjElBpY4WeSE3Wkba?=
- =?us-ascii?Q?y669k4FJ7y/V01I5n9KIWw4E9pdiKUVNwgUT0XReGMsUAhK8OSWcQtvteXDv?=
- =?us-ascii?Q?8yjXsE6D74lKZOk6K836uwiQVDhex0LGh7pxWHIFVA+kelnoqOY2puoZQBiX?=
- =?us-ascii?Q?HaGodb5qZ8DOXeWCoU6i5dYzIPu5PaXgjNV/4lHhfiKVu6THwOxIRdORDTS9?=
- =?us-ascii?Q?j1Vd88ljXuE2d/G986h7tWnhXGjUNF3tTe9X845A1jFAPd2qiCo2WlpYz6ql?=
- =?us-ascii?Q?N32tKJbCvgYnSJop4KiMN7cpZ35iidbSFmXMkCpJ7bC9IhleB/0rIJ5UbNFQ?=
- =?us-ascii?Q?DxwLMi9fhPANpDvzzzgHeI5vy94cUiSAHxT4eZgjAB8Bef2xzUlj/hLdGuu7?=
- =?us-ascii?Q?iihec6ZjxeHJX3XMvsKJqZA7YX+Q0Rp4bFW5JG+rSDPHympeCJ19lfYHaWn9?=
- =?us-ascii?Q?m+7CjBMV6mwxgvil44VtTUsnusx6zA+d/0amERC2BXOXkdSmNVu8eIEr4smW?=
- =?us-ascii?Q?1oiTP1fLL1ooR4VZIPZGvKfWB1Mnwl21M8W7mDTSBGnNjPuj3NoBnHrCXXR/?=
- =?us-ascii?Q?SbK95+Nl3oN7hDuBKugOpIorjEYMRfGrpAx/x2y87zMOs8B9Cy6MFBQzkUQq?=
- =?us-ascii?Q?8kyVzgAOlOF7Yqz07kQaDRyeA3up6oAqwU65acK9osHqnnJYG5CatylCfWNH?=
- =?us-ascii?Q?m/eulvUcH8c4Y+mmsZpMEjYte1+HpMlrJ8jf4x0uDI/jg/RQnuhIBVX9ou1X?=
- =?us-ascii?Q?NlCSn2B7livxyRfHMd/Fo1SH9PKBeRtqbmVSqVYmgezZliMcByh82paw6/dS?=
- =?us-ascii?Q?aJgwx1V5YWfzfDr931+XHX8qKMy3GZMUfCei1sGCnNmjaEN0hp8MGSgtwB/P?=
- =?us-ascii?Q?kiK5CJjRTJkHZ3JrcS5it7capBkmDs8tKHFqssUac7ITfMOMPLuqxlP5dQeB?=
- =?us-ascii?Q?IgHUrUFvq7Lt1KlPkS8PuLEH0sFa9cY=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?J57FmXDSS69Z5aLJd+TlMO6Rur22TeZdB2qXYnyIpt8kQLuu6PZMxXx6YJ4O?=
+ =?us-ascii?Q?Kg2SvGHrt5NkTudWS2mYTACt8YOlUdVD5MdfbRoZmFDKHykxwHIpX5Fs+Xve?=
+ =?us-ascii?Q?gKWywvo5lDrC6Z83ykpPQWU5b60yynmpBwCNw4jHBdzOC5sVH+JCxx/smSNd?=
+ =?us-ascii?Q?Svtwc5SD/kDfBfPQhO5iIwp8l3O1AfPgSxBBm8YeUg21vGWbzE2Tw4dAIsSB?=
+ =?us-ascii?Q?1pYsWqiVSpZ0mENVX7mNJ+065q147z67oUe2EgU9mZaPrealy62kf2J1L73y?=
+ =?us-ascii?Q?pOLClfLu9LbHisiX0eCkHcN2UPvH6Rdgy7cQBhREda2ceKYmBJBiIXJH3ikr?=
+ =?us-ascii?Q?MWcw9+esq4I5kEBfquaGn6vb3lKE3CuXfPdb0+bZ0UkPL6wu6wtemIw3uqmK?=
+ =?us-ascii?Q?l3Ztd21bkVy62gm53HQ/InrJQsv3pZb0tpJl61yrqWYd2Ra37+u52dVlD06A?=
+ =?us-ascii?Q?CoKBlEDBRhWUyd//Lte5dNRggE3QFlta4UP4z4N1dXtSu5mrL/3Svot2Wzg4?=
+ =?us-ascii?Q?YN2h4u454QGyi4bLojh6rVoE0GVhPCDs5syMZ9WeD3ZQ++8m4d+DWCH7NlWy?=
+ =?us-ascii?Q?ki7n9CJ0LJEd56hAIrN+i2H5UjbNRKW32Os1dvDUxzBpmuiqHG+OWhvJdtl2?=
+ =?us-ascii?Q?nRYoMHHob5W1u9eLXia3XgXkuKV8LS2e9GBz5FVc6S0cAiFTqN5IfFCbdVVP?=
+ =?us-ascii?Q?Up0euKp2cbxre+QOvycPefY+M3JbCJ8feRd/eq3HtSY9yD/MEtsFac5aVnaR?=
+ =?us-ascii?Q?djf4udKdH3QzW6k6ItL8Y1l4qz9ntrvzrHPcaJ10G66kYQA3avQkRex7+J09?=
+ =?us-ascii?Q?tDQYcrAXR6ok1RrvZ18cERR1N0Go1pYVpFhVZLUejZogl8NLUNtxPpOsaXC8?=
+ =?us-ascii?Q?xmUcfNVM15vbXzu6Z5Ap2qK/OQsoOlxhV7+XZyzDNSddS6c6PteUWtwqMavf?=
+ =?us-ascii?Q?+RUq0PQIGxPpMmho5GKPSmo5ehdkYbsEfiDdi0udu6NPGMbnhyFDygHnvpRJ?=
+ =?us-ascii?Q?QjNKewR5Rf8eXMCbFyPTHlvpOFFKBw0OXSt7ecMw9ncu1aKrSzFsgYrYLakq?=
+ =?us-ascii?Q?m089OR50K8UOgRtEhN+/saBc2BHzAbMu1qQPJ8EAKJ5G1lZkvVzdNIAOHPrh?=
+ =?us-ascii?Q?Lm/1YpgFZDpIgig7iiq9Uk3dj/ya6SiMm3J00lLVtQcDrx1mwp+jtDJHswkC?=
+ =?us-ascii?Q?KcmKzl2m0emPANR0Lmh5GMHYQhTFse5WdmdM0102bq2ZyZxZIaHZlw/1tdnA?=
+ =?us-ascii?Q?sdzudJqszcythuJaVsM71xxeGxrxeD2q5smJuhajAqj0U7OcaDmI4zm+xsaa?=
+ =?us-ascii?Q?RpMl4IZs31L/U6VcoG2N3sCD1c+dgu2PdHywFEVF4hkp4OwrAOsOqte/y48m?=
+ =?us-ascii?Q?RRsSKRRGnPVuqY8KiPw+xjLPKSo9MTZxe1Qq37Lb7C+Al8Qm5cEEGqWdBDsD?=
+ =?us-ascii?Q?LnZ/y/Om8GTcSfc3Dv7ptwZuLdvwMkEc30nXbzaFOwdmEzoVMXeDbfl/AVaK?=
+ =?us-ascii?Q?vDWNsDCPRqs9MBaEv7hW5QD4cDSZh+yTltCclZC4nK1dnFRRRzAvBATrt+Fj?=
+ =?us-ascii?Q?+v/xErF7WD/hunqgbGDJEtliMXgXIiWQTQ0q1G6ZHVGY4CONt6t+EbN0hbR2?=
+ =?us-ascii?Q?8UQPRltIO/PzQPAQECkdxKpiryu6K2qSOHKoxyfwtAOLucsCLCuma26JJgWQ?=
+ =?us-ascii?Q?dXOdQIcTWa+ygGHTrmTdmhEtlXxjWL1jkZNQNzeu6KVTDc6QJzYY79k82L+G?=
+ =?us-ascii?Q?N6y2PE8DLKgjwP5ZFblRESRtXFN8V2Y=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cef61822-ab56-4d9f-84fa-08da50a0a5d3
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4d3710a1-781e-4353-a8c8-08da50a0a761
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR03MB4973.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2022 20:33:33.5469
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2022 20:33:36.1718
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wEXk2mQN8GLiXYeMHEzk94FviE7Uqv6wW6q2pdlB4sDtn/YCq35lzfFjsRb8EAMsUXFz43RBqaB0wD53asTGKg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: N3zJE5wkTr16go0/puSO+QpRsOP+IUlq+uDpPAVqR07b0JV50TQ4ai+kSMzzwM5nMzqGF8Bu7RrEMICh/0PxDA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR03MB6438
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -126,107 +126,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series converts the DPAA driver to phylink. Additionally,
-it also adds a serdes driver to allow for dynamic reconfiguration
-between 1g and 10g interfaces (such as in an SFP+ slot). These changes
-are submitted together for this RFC, but they will eventually be
-submitted separately to the appropriate subsystem maintainers.
+This adds a binding for the SerDes module found on QorIQ processors. The
+phy reference has two cells, one for the first lane and one for the
+last. This should allow for good support of multi-lane protocols when
+(if) they are added. There is no protocol option, because the driver is
+designed to be able to completely reconfigure lanes at runtime.
+Generally, the phy consumer can select the appropriate protocol using
+set_mode. For the most part there is only one protocol controller
+(consumer) per lane/protocol combination. The exception to this is the
+B4860 processor, which has some lanes which can be connected to
+multiple MACs. For that processor, I anticipate the easiest way to
+resolve this will be to add an additional cell with a "protocol
+controller instance" property.
 
-Only the mEMAC driver has gotten the phylink treatment for this RFC. I
-would appreciate any help towards converting/testing the 10GEC and dTSEC
-drivers. I don't have any boards with those MACs, so a large conversion
-like this has a high risk of breakage.
+Each serdes has a unique set of supported protocols (and lanes). The
+support matrix is stored in the driver and is selected based on the
+compatible string. It is anticipated that a new compatible string will
+need to be added for each serdes on each SoC that drivers support is
+added for.
 
-I have tried to maintain backwards compatibility with existing device
-trees whereever possible. However, one area where I was unable to
-achieve this was with QSGMII. Please refer to patch 2 for details.
+There are two PLLs, each of which can be used as the master clock for
+each lane. Each PLL has its own reference. For the moment they are
+required, because it simplifies the driver implementation. Absent
+reference clocks can be modeled by a fixed-clock with a rate of 0.
 
-The serdes driver is mostly functional (but not quite, see patch 25).
-However, I am not quite sure about the implementation details. I have made
-a fairly extensive commentary on the driver in patch 1, so hopefully that
-can provide some context. This series only adds support for the
-LS1046ARDB SerDes, but it should be fairly straightforward to add
-support for other SoCs and boards. Patches 26-27 should show the typical
-steps.
+Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+---
 
-Most of this series can be applied as-is. In particular, patches 4-21
-are essentially cleanups which stand on their own merits.
-
-Patches 4-8 were first submitted as [1].
-
-[1] https://lore.kernel.org/netdev/20220531195851.1592220-1-sean.anderson@seco.com/
-
-
-Sean Anderson (28):
-  dt-bindings: phy: Add QorIQ SerDes binding
-  dt-bindings: net: fman: Add additional interface properties
-  phy: fsl: Add QorIQ SerDes driver
-  net: fman: Convert to SPDX identifiers
-  net: fman: Don't pass comm_mode to enable/disable
-  net: fman: Store en/disable in mac_device instead of mac_priv_s
-  net: fman: dtsec: Always gracefully stop/start
-  net: fman: Get PCS node in per-mac init
-  net: fman: Store initialization function in match data
-  net: fman: Move struct dev to mac_device
-  net: fman: Configure fixed link in memac_initialization
-  net: fman: Export/rename some common functions
-  net: fman: memac: Use params instead of priv for max_speed
-  net: fman: Move initialization to mac-specific files
-  net: fman: Mark mac methods static
-  net: fman: Inline several functions into initialization
-  net: fman: Remove internal_phy_node from params
-  net: fman: Map the base address once
-  net: fman: Pass params directly to mac init
-  net: fman: Use mac_dev for some params
-  net: fman: Clean up error handling
-  net: fman: memac: Add serdes support
-  net: fman: memac: Use lynx pcs driver
-  net: dpaa: Use mac_dev variable in dpaa_netdev_init
-  [RFC] net: dpaa: Convert to phylink
-  arm64: dts: ls1046ardb: Add serdes bindings
-  arm64: dts: ls1046a: Add SerDes bindings
-  arm64: dts: ls1046a: Specify which MACs support RGMII
-
- .../devicetree/bindings/net/fsl-fman.txt      |   49 +-
- .../bindings/phy/fsl,qoriq-serdes.yaml        |   78 +
- Documentation/driver-api/phy/index.rst        |    1 +
- Documentation/driver-api/phy/qoriq.rst        |   91 ++
- MAINTAINERS                                   |    6 +
- .../boot/dts/freescale/fsl-ls1046-post.dtsi   |    8 +
- .../boot/dts/freescale/fsl-ls1046a-rdb.dts    |   32 +
- .../arm64/boot/dts/freescale/fsl-ls1046a.dtsi |   12 +
- drivers/net/ethernet/freescale/dpaa/Kconfig   |    4 +-
- .../net/ethernet/freescale/dpaa/dpaa_eth.c    |  100 +-
- .../ethernet/freescale/dpaa/dpaa_eth_sysfs.c  |    2 +-
- .../ethernet/freescale/dpaa/dpaa_ethtool.c    |   82 +-
- drivers/net/ethernet/freescale/fman/Makefile  |    3 +-
- drivers/net/ethernet/freescale/fman/fman.c    |   31 +-
- drivers/net/ethernet/freescale/fman/fman.h    |   31 +-
- .../net/ethernet/freescale/fman/fman_dtsec.c  |  319 ++--
- .../net/ethernet/freescale/fman/fman_dtsec.h  |   58 +-
- .../net/ethernet/freescale/fman/fman_keygen.c |   29 +-
- .../net/ethernet/freescale/fman/fman_keygen.h |   29 +-
- .../net/ethernet/freescale/fman/fman_mac.h    |   29 -
- .../net/ethernet/freescale/fman/fman_memac.c  |  864 +++++-----
- .../net/ethernet/freescale/fman/fman_memac.h  |   57 +-
- .../net/ethernet/freescale/fman/fman_muram.c  |   31 +-
- .../net/ethernet/freescale/fman/fman_muram.h  |   32 +-
- .../net/ethernet/freescale/fman/fman_port.c   |   29 +-
- .../net/ethernet/freescale/fman/fman_port.h   |   29 +-
- drivers/net/ethernet/freescale/fman/fman_sp.c |   29 +-
- drivers/net/ethernet/freescale/fman/fman_sp.h |   28 +-
- .../net/ethernet/freescale/fman/fman_tgec.c   |  155 +-
- .../net/ethernet/freescale/fman/fman_tgec.h   |   54 +-
- drivers/net/ethernet/freescale/fman/mac.c     |  645 +-------
- drivers/net/ethernet/freescale/fman/mac.h     |   62 +-
- drivers/phy/freescale/Kconfig                 |   19 +
- drivers/phy/freescale/Makefile                |    1 +
- drivers/phy/freescale/phy-qoriq.c             | 1441 +++++++++++++++++
- 35 files changed, 2562 insertions(+), 1908 deletions(-)
+ .../bindings/phy/fsl,qoriq-serdes.yaml        | 78 +++++++++++++++++++
+ 1 file changed, 78 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/phy/fsl,qoriq-serdes.yaml
- create mode 100644 Documentation/driver-api/phy/qoriq.rst
- create mode 100644 drivers/phy/freescale/phy-qoriq.c
 
+diff --git a/Documentation/devicetree/bindings/phy/fsl,qoriq-serdes.yaml b/Documentation/devicetree/bindings/phy/fsl,qoriq-serdes.yaml
+new file mode 100644
+index 000000000000..4b9c1fcdab10
+--- /dev/null
++++ b/Documentation/devicetree/bindings/phy/fsl,qoriq-serdes.yaml
+@@ -0,0 +1,78 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/phy/fsl,qoriq-serdes.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: NXP QorIQ SerDes Device Tree Bindings
++
++maintainers:
++  - Sean Anderson <sean.anderson@seco.com>
++
++description: |
++  This binding describes the SerDes devices found in NXP's QorIQ line of
++  processors. The SerDes provides up to eight lanes. Each lane may be
++  configured individually, or may be combined with adjacent lanes for a
++  multi-lane protocol. The SerDes supports a variety of protocols, including up
++  to 10G Ethernet, PCIe, SATA, and others. The specific protocols supported for
++  each lane depend on the particular SoC.
++
++properties:
++  "#phy-cells":
++    const: 2
++    description: |
++      The cells contain the following arguments.
++
++      - description: |
++          The first lane in the group. Lanes are numbered based on the register
++          offsets, not the I/O ports. This corresponds to the letter-based
++          ("Lane A") naming scheme, and not the number-based ("Lane 0") naming
++          scheme. On most SoCs, "Lane A" is "Lane 0", but not always.
++        minimum: 0
++        maximum: 7
++      - description: |
++          Last lane. For single-lane protocols, this should be the same as the
++          first lane.
++        minimum: 0
++        maximum: 7
++
++  compatible:
++    enum:
++      - fsl,ls1046a-serdes-1
++      - fsl,ls1046a-serdes-2
++
++  clocks:
++    minItems: 2
++    maxItems: 2
++    description: |
++      Clock for each PLL reference clock input.
++
++  clock-names:
++    minItems: 2
++    maxItems: 2
++    items:
++      pattern: "^ref[0-1]$"
++
++  reg:
++    maxItems: 1
++
++required:
++  - "#phy-cells"
++  - compatible
++  - clocks
++  - clock-names
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    serdes1: phy@1ea0000 {
++      #phy-cells = <2>;
++      compatible = "fsl,ls1046a-serdes-1";
++      reg = <0x0 0x1ea0000 0x0 0x2000>;
++      clocks = <&clk_100mhz>, <&clk_156mhz>;
++      clock-names = "ref0", "ref1";
++    };
++
++...
 -- 
 2.35.1.1320.gc452695387.dirty
 
