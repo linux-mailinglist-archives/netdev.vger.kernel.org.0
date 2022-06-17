@@ -2,110 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7680054EEDE
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 03:38:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A752D54EE59
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 02:16:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232692AbiFQBiv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 21:38:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34344 "EHLO
+        id S1379091AbiFQAQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 20:16:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbiFQBit (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 21:38:49 -0400
-Received: from mx0b-00256a01.pphosted.com (mx0b-00256a01.pphosted.com [67.231.153.242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9B763534
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 18:38:48 -0700 (PDT)
-Received: from pps.filterd (m0119692.ppops.net [127.0.0.1])
-        by mx0b-00256a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25GMitua037642
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 19:57:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nyu.edu; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding;
- s=20180315; bh=GFoMOOEAdqdWnbQOc5swfRziAmYkgmKiyui5M23c4/4=;
- b=bGtCconcTLfck7+tYD2kWk7e+4HORjlLfote+vIhJxGn0azpVcrQXYjy3q6rpfubPhHT
- d+mZjR78SjGemrDA7tthcBTuXchTzQ0OMlpryzBhgRtMz/Yam+31+aNPec21yYwj3msG
- cAPAiAv+nplb1ZhBEI7umFLFX1lluCOntf34VORgqS6Clyx06YWOsGUFV0m12+NsX0dN
- ZWDHno+t0CQsBDUz7UTiU3AoVrUQ+E2pxsllqR81p9Lki2aRy9rg72xlJlbRmQUBvyge
- fxt/QTrm5096zHUf5boeoziagLR012c/J3D64nvVzAD82s6Vk0WaDzNRHvoKcVyrN2VX Qg== 
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com [209.85.219.69])
-        by mx0b-00256a01.pphosted.com (PPS) with ESMTPS id 3grdk7gwqy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 19:57:48 -0400
-Received: by mail-qv1-f69.google.com with SMTP id x18-20020a0ce0d2000000b0046458e0e18bso3114924qvk.1
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 16:57:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GFoMOOEAdqdWnbQOc5swfRziAmYkgmKiyui5M23c4/4=;
-        b=c9Bxm7EPZzVlKONapxsNJ0gfkQtJzDjYnb93gHgCx/Ok63vgKozMZvVf3/xXUojfhz
-         wkyr+JgtSO9K3kyFEpHlJNJfZe7hf/RJIRIoRCnVHzQOpiPeqIphldZ5hCdV/Ljko0hY
-         cFUzTkVQQp6m2sR/Dg9Dz/wKBnzg7uBvTjTz00somktsBnDgh0gUg1gMq+MmCsoRmnNW
-         ZoI2tgWEcTnTexJfz+eslKioXQuoXTc5p4BZGx0m/MvgtbbuqMDylzVWwfUxNMMRTXNn
-         L7xqDYQwhuYvqy4ZUJN5G3JiEKpE5hb5V+UpkKKid2NPV4Fq26Zygyt54JdqzKk9Az1o
-         1H+A==
-X-Gm-Message-State: AJIora8mRv2014vzVpoDsBWEYvpFVVumRr0RW68ExyTs6H9l4fL9/i4k
-        e64aEgfOAxN1SeiMt9uGJUeT9lljBhgtUc6v7dAKkJ0HsWOeaolvVQ9dqMlbibOSJ1MspeemzYt
-        V8GBqMSa1DA0lnjQ=
-X-Received: by 2002:a05:620a:cda:b0:6a6:8e47:8901 with SMTP id b26-20020a05620a0cda00b006a68e478901mr5374002qkj.231.1655423867764;
-        Thu, 16 Jun 2022 16:57:47 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tKFBKAdCVLRozp6H6gGaFai1//QuOu9bZOZ755Dn1alHCnoSH5b7rSl+5NemYFBmiRk94NAw==
-X-Received: by 2002:a05:620a:cda:b0:6a6:8e47:8901 with SMTP id b26-20020a05620a0cda00b006a68e478901mr5373997qkj.231.1655423867562;
-        Thu, 16 Jun 2022 16:57:47 -0700 (PDT)
-Received: from localhost.localdomain (cpe-66-65-49-54.nyc.res.rr.com. [66.65.49.54])
-        by smtp.gmail.com with ESMTPSA id t9-20020ac85889000000b00304e29c9a6asm3108132qta.91.2022.06.16.16.57.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jun 2022 16:57:47 -0700 (PDT)
-From:   HighW4y2H3ll <huzh@nyu.edu>
-To:     netdev@vger.kernel.org
-Cc:     HighW4y2H3ll <huzh@nyu.edu>
-Subject: [PATCH] Fix buffer overflow in hinic_devlink.c:hinic_flash_fw
-Date:   Thu, 16 Jun 2022 19:57:43 -0400
-Message-Id: <20220616235743.36564-1-huzh@nyu.edu>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S229832AbiFQAQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 20:16:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D20D17A9D
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 17:16:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA3CA618CF
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 00:16:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECC61C34114;
+        Fri, 17 Jun 2022 00:16:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655424974;
+        bh=xT4O+qJMPr8aTmMsGWhlP651BE5VQl8C1eHSMvCHQqk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=n+9z7bSkEV9GR/ayOqZbHAtCKXeQ0Y3d/xxzDHylFWpERW53yZhc0higyf7Md6bpL
+         64DsOjzE9RNKTwR2zpzTbcd9hKZWs9AxUvzGlpl4hnr9ZpFUglj6oF+JIhEABtumYo
+         qCAeQ3O3TBoH2HVsyuooL1cadCVlRbvbBbqEbJfrZd4S8uoKdhfliX1LmH36RVRoDx
+         MPzPj4vdRDz605pBHnPzX3URh2FLumHFcoFcL56vJs6rOBRANxAKWt+SoSgY+jYy42
+         gtlfCCFBRnrKYAU0J+nr1gkgWuAEFmnYQtzLeoW5xDpjcCsg7UbTeKKoJiSeFHePw2
+         CBfbG5lqRnr/w==
+Date:   Thu, 16 Jun 2022 17:16:12 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ismael Luceno <iluceno@suse.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Netlink NLM_F_DUMP_INTR flag lost
+Message-ID: <20220616171612.66638e54@kernel.org>
+In-Reply-To: <20220616171016.56d4ec9c@pirotess>
+References: <20220615171113.7d93af3e@pirotess>
+        <20220615090044.54229e73@kernel.org>
+        <20220616171016.56d4ec9c@pirotess>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: W1XYC_fmNNSXHqGQUCt59_nFX_E1JFX1
-X-Proofpoint-GUID: W1XYC_fmNNSXHqGQUCt59_nFX_E1JFX1
-X-Orig-IP: 209.85.219.69
-X-Proofpoint-Spam-Details: rule=outbound_bp_notspam policy=outbound_bp score=0 spamscore=0
- phishscore=0 bulkscore=0 lowpriorityscore=0 adultscore=0
- priorityscore=1501 impostorscore=0 suspectscore=0 clxscore=1015 mlxscore=0
- mlxlogscore=802 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2204290000 definitions=main-2206160097
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
----
- drivers/net/ethernet/huawei/hinic/hinic_port.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On Thu, 16 Jun 2022 17:10:16 +0200 Ismael Luceno wrote:
+> On Wed, 15 Jun 2022 09:00:44 -0700
+> Jakub Kicinski <kuba@kernel.org> wrote:
+> > On Wed, 15 Jun 2022 17:11:13 +0200 Ismael Luceno wrote:  
+> > > It seems a RTM_GETADDR request with AF_UNSPEC has a corner case
+> > > where the NLM_F_DUMP_INTR flag is lost.
+> > > 
+> > > After a change in an address table, if a packet has been fully
+> > > filled just previous, and if the end of the table is found at the
+> > > same time, then the next packet should be flagged, which works fine
+> > > when it's NLMSG_DONE, but gets clobbered when another table is to
+> > > be dumped next.  
+> > 
+> > Could you describe how it gets clobbered? You mean that prev_seq gets
+> > updated somewhere without setting the flag or something overwrites
+> > nlmsg_flags? Or we set _INTR on an empty skb which never ends up
+> > getting sent? Or..  
+> 
+> It seems to me that in most functions, but specifically in the case of
+> net/ipv4/devinet.c:in_dev_dump_addr or inet_netconf_dump_devconf,
+> nl_dump_check_consistent is called after each address/attribute is
+> dumped, meaning a hash table generation change happening just after it
+> adds an entry, if it also causes it to find the end of the table,
+> wouldn't be flagged.
+> 
+> Adding an extra call at the end of all these functions should fix that,
+> and spill the flag into the next packet, but would that be correct?
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_port.h b/drivers/net/ethernet/huawei/hinic/hinic_port.h
-index c9ae3d4dc547..4a50e75a2424 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_port.h
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_port.h
-@@ -13,6 +13,7 @@
- #include <linux/bitops.h>
- 
- #include "hinic_dev.h"
-+#include "hinic_devlink.h"
- 
- #define HINIC_RSS_KEY_SIZE	40
- #define HINIC_RSS_INDIR_SIZE	256
-@@ -751,7 +752,7 @@ struct hinic_cmd_update_fw {
- 	u32 setion_total_len;
- 	u32 fw_section_version;
- 	u32 section_offset;
--	u32 data[384];
-+	u32 data[MAX_FW_FRAGMENT_LEN];
- };
- 
- int hinic_port_add_mac(struct hinic_dev *nic_dev, const u8 *addr,
--- 
-2.35.1
+The whole _DUMP_INTR scheme does indeed seem to lack robustness.
+The update side changes the atomic after the update, and the read
+side validates it before. So there's plenty time for a race to happen.
+But I'm not sure if that's what you mean or you see more issues.
+
+> It seems this condition is flagged correctly when NLM_DONE is produced,
+> I couldn't see why, but I'm guessing another call to
+> nl_dump_check_consistent...
+> 
+> Also, I noticed that in net/core/rtnetlink.c:rtnl_dump_all: 
+> 
+> 	if (idx > s_idx) {
+> 		memset(&cb->args[0], 0, sizeof(cb->args));
+> 		cb->prev_seq = 0;
+> 		cb->seq = 0;
+> 	}
+> 	ret = dumpit(skb, cb);
+> 
+> This also prevents it to be detect the condition when dumping the next
+> table, but that seems desirable...
+
+That's iterating over protocols, AFAICT, we don't guarantee consistency
+across protocols.
+
+> Am I grasping it correctly?
+> 
+> Some functions like net/core/rtnetlink.c:rtnl_dump_ifinfo do call
+> nl_dump_check_consistent when finishing, but I'm seeing most others
+> don't do that, instead doing it only when adding an entry to the packet
+> (another example is: rtnl_stats_dump).
+> 
+> Again, while adding the check at the end of each function would solve
+> these inconsistencies, it isn't so clear to me that spilling this flag
+> into the next packet when it's going to be from another table is a good
+> idea.
+> 
+> It might make more sense to emit a new packet type just for the flag,
+> that way, in the sequence of packets, the client can reliably tell the
+> dump of which tables was interrupted, and make some decision based on
+> that, vs having to deem all tables affected...
+> 
 
