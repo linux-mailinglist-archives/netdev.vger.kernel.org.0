@@ -2,149 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F23954F50E
+	by mail.lfdr.de (Postfix) with ESMTP id 163BA54F50D
 	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 12:13:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381677AbiFQKNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 06:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
+        id S1381743AbiFQKNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 06:13:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381689AbiFQKNN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 06:13:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A571213F16
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 03:13:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655460791;
+        with ESMTP id S1378259AbiFQKNd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 06:13:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC45D175A0
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 03:13:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5AEE7B8295F
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 10:13:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2410C3411D;
+        Fri, 17 Jun 2022 10:13:27 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="ESeEYU/P"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1655460806;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/Egh8+Gz6P7sJjajReRg4TwcxQZ6PNsT6qhTrjGb38E=;
-        b=aVYmR3D39lk3QGNcjm8sS9/hTpwBZgtOYMz3IVOWrSlLyNaiC96DQlkEIlCpaOvg9YdTli
-        l6qq88H3yeHvKIii5ykQYKmGCIdOmdwaWUIM6GKMNeVdL2NRB0kI324iczkIhTWTOfsi4F
-        DBt6Nm36FiUNytAMZmr1eir6Ofukzas=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-635-08VNSnPwMQiecQEgQz_kmw-1; Fri, 17 Jun 2022 06:13:03 -0400
-X-MC-Unique: 08VNSnPwMQiecQEgQz_kmw-1
-Received: by mail-wm1-f69.google.com with SMTP id k32-20020a05600c1ca000b0039c4cf75023so2505630wms.9
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 03:13:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/Egh8+Gz6P7sJjajReRg4TwcxQZ6PNsT6qhTrjGb38E=;
-        b=M2oMnHl1WdPNzb0bzar4vFvIFRLVb9dMX+OI9fmzbLzPD2XxWyCAXWlFeOP+2JugEH
-         IomZsgO4KGJBp+5x91V6Hk9zDLqO+QH0YmlLPFP7PorOJQ9CNDibpFAqkhl0Prro6VWA
-         6mg8qwzMvnA8Ap+MuQOKeKrTNm3RIlXQO5uO/+bX52b5WWlYxxISerNEbiOlEyURdJwf
-         FxZI77LClfE9ffV4QJvUYkzmw3qbsQYF/UnNr8VepEJ/aBPjenQIFReM2RJbHMNtogPW
-         fZPiIXPX96N7Nsj2M/PGMPYZfP54NnjffpJfLPFUGItZUGyYmLVjetKgQdYAv7JT0qQC
-         xopQ==
-X-Gm-Message-State: AJIora+JJi3koSWPgV5wCKmA7/iWKITasJtfdjOsEywMP9VdkUt/+7F/
-        hp2LH+cmEGjsly4K6TbBdg1Sa2VJHFG1PZ+GJaKoZ5unIV/uZ/QJxDEBaFOje2Rxr+k0EXWgEdY
-        PVAnC3SEgnrtElfrm
-X-Received: by 2002:a5d:6d8b:0:b0:218:4dc8:293e with SMTP id l11-20020a5d6d8b000000b002184dc8293emr8684806wrs.612.1655460781811;
-        Fri, 17 Jun 2022 03:13:01 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uCeVJ3V3dWfzRxiKB7fJuvCI0FPi1R5vsbVVS3gLAKJyU7vKwteL3gJz5FSVTdXRodiZ6DGg==
-X-Received: by 2002:a5d:6d8b:0:b0:218:4dc8:293e with SMTP id l11-20020a5d6d8b000000b002184dc8293emr8684788wrs.612.1655460781577;
-        Fri, 17 Jun 2022 03:13:01 -0700 (PDT)
-Received: from redhat.com ([2.54.189.19])
-        by smtp.gmail.com with ESMTPSA id i188-20020a1c3bc5000000b0039ee52c1345sm2137495wma.4.2022.06.17.03.12.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 03:13:01 -0700 (PDT)
-Date:   Fri, 17 Jun 2022 06:12:57 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] virtio-net: fix race between ndo_open() and
- virtio_device_ready()
-Message-ID: <20220617060632-mutt-send-email-mst@kernel.org>
-References: <20220617072949.30734-1-jasowang@redhat.com>
+        bh=TCX2f/sZalLfGBE757RjcONQI7w6V6W/gY401e912xA=;
+        b=ESeEYU/Pe4pSLkJu5vZ7fqH+wv4hJLt+rf7mttxxsO+gXj023nPP0gcowvCd5c5eufD/3Z
+        5DJJWgAPf15J31MCUJjAZgxeJ5pNgVnF/sHUJj5rdpbThDMrDACuVCgbagj74M1Kq1QsuL
+        POa+5PtqTbcYpv4mQjDs6XqsIMZU1lM=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 4c4073af (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 17 Jun 2022 10:13:26 +0000 (UTC)
+Date:   Fri, 17 Jun 2022 12:13:24 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Wei Wang <weiwan@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH v2 net-next 2/2] tcp: fix possible freeze in tx path
+ under memory pressure
+Message-ID: <YqxTxEJoCadJ1OyF@zx2c4.com>
+References: <20220614171734.1103875-1-eric.dumazet@gmail.com>
+ <20220614171734.1103875-3-eric.dumazet@gmail.com>
+ <YqxSa9Ir1TUZs4zd@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220617072949.30734-1-jasowang@redhat.com>
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YqxSa9Ir1TUZs4zd@zx2c4.com>
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 03:29:49PM +0800, Jason Wang wrote:
-> We used to call virtio_device_ready() after netdev registration. This
-> cause a race between ndo_open() and virtio_device_ready(): if
-> ndo_open() is called before virtio_device_ready(), the driver may
-> start to use the device before DRIVER_OK which violates the spec.
+On Fri, Jun 17, 2022 at 12:08:14PM +0200, Jason A. Donenfeld wrote:
+> Hi,
 > 
-> Fixing this by switching to use register_netdevice() and protect the
-> virtio_device_ready() with rtnl_lock() to make sure ndo_open() can
-> only be called after virtio_device_ready().
+> On Tue, Jun 14, 2022 at 10:17:34AM -0700, Eric Dumazet wrote:
+> > From: Eric Dumazet <edumazet@google.com>
+> > 
+> > Blamed commit only dealt with applications issuing small writes.
+> > 
+> > Issue here is that we allow to force memory schedule for the sk_buff
+> > allocation, but we have no guarantee that sendmsg() is able to
+> > copy some payload in it.
+> > 
+> > In this patch, I make sure the socket can use up to tcp_wmem[0] bytes.
+> > 
+> > For example, if we consider tcp_wmem[0] = 4096 (default on x86),
+> > and initial skb->truesize being 1280, tcp_sendmsg() is able to
+> > copy up to 2816 bytes under memory pressure.
+> > 
+> > Before this patch a sendmsg() sending more than 2816 bytes
+> > would either block forever (if persistent memory pressure),
+> > or return -EAGAIN.
+> > 
+> > For bigger MTU networks, it is advised to increase tcp_wmem[0]
+> > to avoid sending too small packets.
+> > 
+> > v2: deal with zero copy paths.
 > 
-> Fixes: 4baf1e33d0842 ("virtio_net: enable VQs early")
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  drivers/net/virtio_net.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
+> I think this might have gotten double applied:
 > 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index db05b5e930be..8a5810bcb839 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -3655,14 +3655,20 @@ static int virtnet_probe(struct virtio_device *vdev)
->  	if (vi->has_rss || vi->has_rss_hash_report)
->  		virtnet_init_default_rss(vi);
->  
-> -	err = register_netdev(dev);
-> +	/* serialize netdev register + virtio_device_ready() with ndo_open() */
-> +	rtnl_lock();
-> +
-> +	err = register_netdevice(dev);
->  	if (err) {
->  		pr_debug("virtio_net: registering device failed\n");
-> +		rtnl_unlock();
->  		goto free_failover;
->  	}
->  
->  	virtio_device_ready(vdev);
->  
-> +	rtnl_unlock();
-> +
->  	err = virtnet_cpu_notif_add(vi);
->  	if (err) {
->  		pr_debug("virtio_net: registering cpu notifier failed\n");
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=849b425cd091e1804af964b771761cfbefbafb43
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=f54755f6a11accb2db5ef17f8f75aad0875aefdc
+> 
+> and now net-next builds are broken:
+> 
+> ../../../../../../../../net/ipv4/tcp.c:971:12: error: redefinition of ‘tcp_wmem_schedule’
+>   971 | static int tcp_wmem_schedule(struct sock *sk, int copy)                                |            ^~~~~~~~~~~~~~~~~
+> ../../../../../../../../net/ipv4/tcp.c:954:12: note: previous definition of ‘tcp_wmem_schedule’ with type ‘int(struct sock *, int)’
+>   954 | static int tcp_wmem_schedule(struct sock *sk, int copy)                                |            ^~~~~~~~~~~~~~~~~
+> ../../../../../../../../net/ipv4/tcp.c:954:12: warning: ‘tcp_wmem_schedule’ defined but not used [-Wunused-function]                                                              make[5]: *** [/home/wgci/tmp/2813390.12234/tmp.0PMBO65tGf/scripts/Makefile.build:249: net
+> /ipv4/tcp.o] Error 1                                                                     make[4]: *** [/home/wgci/tmp/2813390.12234/tmp.0PMBO65tGf/scripts/Makefile.build:466: net/ipv4] Error 2
+> make[4]: *** Waiting for unfinished jobs....
 
+Ah, fixed already:
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=fd8b330ce1bb79ba00047435cc213b14f886bf1f
 
-Looks good but then don't we have the same issue when removing the
-device?
-
-Actually I looked at  virtnet_remove and I see
-        unregister_netdev(vi->dev);
-
-        net_failover_destroy(vi->failover);
-
-        remove_vq_common(vi); <- this will reset the device
-
-a window here?
-
-
-Really, I think what we had originally was a better idea -
-instead of dropping interrupts they were delayed and
-when driver is ready to accept them it just enables them.
-We just need to make sure driver does not wait for
-interrupts before enabling them.
-
-And I suspect we need to make this opt-in on a per driver
-basis.
-
-
-
-> -- 
-> 2.25.1
-
+> 
+> Jason
