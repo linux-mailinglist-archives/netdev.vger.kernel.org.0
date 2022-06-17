@@ -2,104 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BAA054F877
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 15:46:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EF4354F892
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 15:53:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382119AbiFQNqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 09:46:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54532 "EHLO
+        id S233691AbiFQNxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 09:53:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382020AbiFQNqG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 09:46:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D511C289AB
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 06:46:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655473564;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ipv1gDnkD2qGhdDDoLA1cRTVHnECGK9G8ieZk2cH7q8=;
-        b=QkIMoWawg/98dc0LYvGRPcZJyAXwp3g9nlPGWkCz6jD6qZ5likujhlBdYikj3p3rXngitB
-        mWW3I4j6g7nZBUeI2f8DHqIuqNzTXQ9qVwQ9OjQ0Iezv6WiFIjryhaYAw1XyQxv/4WKtn2
-        +ajqfHJZkUImnFxCVLrdScM1za+J8CU=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-582-sBzuM3JMMMWtKBgB-nOLTQ-1; Fri, 17 Jun 2022 09:46:03 -0400
-X-MC-Unique: sBzuM3JMMMWtKBgB-nOLTQ-1
-Received: by mail-qk1-f199.google.com with SMTP id r6-20020a05620a298600b006a98e988ba4so5042594qkp.3
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 06:46:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Ipv1gDnkD2qGhdDDoLA1cRTVHnECGK9G8ieZk2cH7q8=;
-        b=lyqFl/706cVZpBYUbYwO64JXD6Q5RBy6SmeqCa/v2zmfA1sVHCsgXU2hgNhhTqLSOM
-         v+KPj2m6/uJ7kk/5kktx/yj7Hj/6zvwDHl/mplEW0/Ki6JElp062Am8Xhqw6TGFJvwpb
-         nCRPWJC93Hh39JQ8KPb+edQR+BM3ARWqTSska2qpEwe/P+O80E35AIXO3zBO0hglnIPV
-         v78skVe+RhW2cU8Cck3yksSSTVKQB6l2E4kSRsPGwM8RItCnxJYWFubzDNjloE5sNns7
-         3+tmKJp+yMhMgGQwX4rUKUowngAFrEBeSjRDTguXzFfWOvSSUBlFURpo96fnOTx7C6tm
-         U7WA==
-X-Gm-Message-State: AJIora85+8sWUBR51GJqZzScN5dCJg7aLQPArXnFb3PeYMMzBmdqwFPm
-        FoDm4l7mS089SRphiq+wvqmMzvDGSVPW7sozzkN0421wk2yqUisLz9tCYYgm5LCJG25K3WvFj1L
-        gP4D5a9hGeUljwwff
-X-Received: by 2002:a05:620a:28c8:b0:6a7:7dd9:5e94 with SMTP id l8-20020a05620a28c800b006a77dd95e94mr7141927qkp.20.1655473563284;
-        Fri, 17 Jun 2022 06:46:03 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1smZrY4FETLwRqePP3E+eTESX1SYzStN05g9v1kDH6gDgWwV824uwP/Wy9OITU/Bmf+BvRSKQ==
-X-Received: by 2002:a05:620a:28c8:b0:6a7:7dd9:5e94 with SMTP id l8-20020a05620a28c800b006a77dd95e94mr7141904qkp.20.1655473563046;
-        Fri, 17 Jun 2022 06:46:03 -0700 (PDT)
-Received: from [192.168.98.18] ([107.12.98.143])
-        by smtp.gmail.com with ESMTPSA id l12-20020a05620a28cc00b006a098381abcsm4614365qkp.114.2022.06.17.06.46.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Jun 2022 06:46:02 -0700 (PDT)
-Message-ID: <44e727b8-12e8-10c8-1518-544eab36e673@redhat.com>
-Date:   Fri, 17 Jun 2022 09:46:01 -0400
+        with ESMTP id S1381052AbiFQNw7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 09:52:59 -0400
+X-Greylist: delayed 393 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 17 Jun 2022 06:52:54 PDT
+Received: from mail.savoirfairelinux.com (mail.savoirfairelinux.com [208.88.110.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABC62703;
+        Fri, 17 Jun 2022 06:52:52 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id A4BE79C035C;
+        Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
+Received: from mail.savoirfairelinux.com ([127.0.0.1])
+        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id RxSxonNRBtIm; Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id 1D95C9C035E;
+        Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.savoirfairelinux.com 1D95C9C035E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=savoirfairelinux.com; s=DFC430D2-D198-11EC-948E-34200CB392D2;
+        t=1655473579; bh=6FyXPE9HabKRcoxbNWsYdPeExADy1asgHfS0MpAMcCo=;
+        h=From:To:Date:Message-Id:MIME-Version;
+        b=dAW53u5txvU6CYNBr0Hue4BIbjb7YFmVNt0s+111UGLqXYZF192BtJC2bSDB4DI9F
+         zw/y0j5vAqmS9KhZV+GvaX+M5FuKNYoHbH7dcI02nK4Uo1coBIOhhsaMnDSrMe6uT2
+         V2xZ5Rh8AwFNoikmoKeae+9ANcFDDs+6K+Zej0NBCyMjWyNAOO4Tyo65fWluzwLeFU
+         CZgOru1q3+1YxjeQEKiy+YWHFDBVBU3Ztxsu/u1p/vYHrAVuxrbyx1BgYQkzaitQ8U
+         QPBD+JeyYElNVGqh6opkB2rDadHSFcl7VObwCn70e/v0Ly5QyBEeJkqLuFeOgEe124
+         vWvgPKFx4QREQ==
+X-Virus-Scanned: amavisd-new at mail.savoirfairelinux.com
+Received: from mail.savoirfairelinux.com ([127.0.0.1])
+        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id gBJqZQIRYTyR; Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
+Received: from sfl-deribaucourt.rennes.sfl (lfbn-ren-1-676-174.w81-53.abo.wanadoo.fr [81.53.245.174])
+        by mail.savoirfairelinux.com (Postfix) with ESMTPSA id 18E839C035C;
+        Fri, 17 Jun 2022 09:46:18 -0400 (EDT)
+From:   Enguerrand de Ribaucourt 
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>
+To:     andrew@lunn.ch, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux@armlinux.org.uk, hkallweit1@gmail.com,
+        Enguerrand de Ribaucourt 
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>
+Subject: [PATCH] net: dp83822: disable false carrier interrupt
+Date:   Fri, 17 Jun 2022 15:46:11 +0200
+Message-Id: <20220617134611.695690-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH net] bonding: ARP monitor spams NETDEV_NOTIFY_PEERS
- notifiers
-Content-Language: en-US
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        dingtianhong <dingtianhong@huawei.com>
-Cc:     Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-References: <9400.1655407960@famine>
-From:   Jonathan Toppins <jtoppins@redhat.com>
-In-Reply-To: <9400.1655407960@famine>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/16/22 15:32, Jay Vosburgh wrote:
-> 	 The bonding ARP monitor fails to decrement send_peer_notif, the
-> number of peer notifications (gratuitous ARP or ND) to be sent. This
-> results in a continuous series of notifications.
-> 
-> 	Correct this by decrementing the counter for each notification.
-> 
-> Reported-by: Jonathan Toppins <jtoppins@redhat.com>
-> Signed-off-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-> Fixes: b0929915e035 ("bonding: Fix RTNL: assertion failed at net/core/rtnetlink.c for ab arp monitor")
-> Link: https://lore.kernel.org/netdev/b2fd4147-8f50-bebd-963a-1a3e8d1d9715@redhat.com/
+When unplugging an Ethernet cable, false carrier events were produced by
+the PHY at a very high rate. Once the false carrier counter full, an
+interrupt was triggered every few clock cycles until the cable was
+replugged. This resulted in approximately 10k/s interrupts.
 
-Jay, this works great. Thanks.
+Since the false carrier counter (FCSCR) is never used, we can safely
+disable this interrupt.
 
-Tested-By: Jonathan Toppins <jtoppins@redhat.com>
-Reviewed-By: Jonathan Toppins <jtoppins@redhat.com>
+In addition to improving performance, this also solved MDIO read
+timeouts I was randomly encountering with an i.MX8 fec MAC because of
+the interrupt flood. The interrupt count and MDIO timeout fix were
+tested on a v5.4.110 kernel.
+
+Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirf=
+airelinux.com>
+---
+ drivers/net/phy/dp83822.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
+index e6ad3a494d32..95ef507053a6 100644
+--- a/drivers/net/phy/dp83822.c
++++ b/drivers/net/phy/dp83822.c
+@@ -230,7 +230,6 @@ static int dp83822_config_intr(struct phy_device *phy=
+dev)
+ 			return misr_status;
+=20
+ 		misr_status |=3D (DP83822_RX_ERR_HF_INT_EN |
+-				DP83822_FALSE_CARRIER_HF_INT_EN |
+ 				DP83822_LINK_STAT_INT_EN |
+ 				DP83822_ENERGY_DET_INT_EN |
+ 				DP83822_LINK_QUAL_INT_EN);
+--=20
+2.25.1
 
