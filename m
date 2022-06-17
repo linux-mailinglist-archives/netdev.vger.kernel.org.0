@@ -2,91 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BEC554EFC6
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 05:40:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 034F354EFB5
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 05:40:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233319AbiFQDPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 23:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52680 "EHLO
+        id S232706AbiFQDSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 23:18:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232865AbiFQDPH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 23:15:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1DBE538193
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 20:15:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655435706;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zyXdUs74Sn1gokvnhKFxRwfNZUQVkLFJThbXXT8GKOo=;
-        b=CamnlF7VILjo8xZfj0PIlmGeRHJP64iSDM/WuyLLWEbjUnVtxylSsllaLP+SKIxXUMaCX+
-        ZSf1tcZGiRCF2sXguktybvG4sngm/zXw4GLVdmfQpNClX6+KIJ3mzsOpGDotdwCqrAGkse
-        BwJajUaLfCHD8/Wx3U96Q0J8xhROjjw=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-416-DAZwSSGNM02BKbTTpLXWeQ-1; Thu, 16 Jun 2022 23:15:03 -0400
-X-MC-Unique: DAZwSSGNM02BKbTTpLXWeQ-1
-Received: by mail-lf1-f70.google.com with SMTP id h35-20020a0565123ca300b00479113319f9so1710578lfv.0
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 20:15:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zyXdUs74Sn1gokvnhKFxRwfNZUQVkLFJThbXXT8GKOo=;
-        b=qE29fNRO1+QR4qp6cD+6xjblGVKrx3mzy8+G8c1znu8TtTK+iDBV12ZvGonBXUpnpM
-         xwxS655P2yM+D9K8SONFzHQbEbPiW8J9/oqD8pUd1/UIP1dq1hgQxXgAuGCwACA9LNkM
-         TaE6MdJrsFok4rJsXbmM71y9laU/WQpm4FrkGaqJBkrgME0ViMe0NFmKUyaw7adegOV7
-         A2Ab1ZuByyVpA8/+WAZ01gIGuZV3NxYHtZBN5MzAb0XMpszQ0MxdtMg1BqejT1DpaE+h
-         +MsO7gpRqUNPHOHXROk/mHKG8QRSCYvVAYbShOEodMitvkF6t8nvM1nW/ItRAsx0f39N
-         lrMw==
-X-Gm-Message-State: AJIora9RSagW56f4IP3vsPzBazmqphGsvvmjIlyOZPLZfOrLD/+YjhGh
-        y9niU4GqTTch0LWmDNpmvKSol36iOug9AaJPg1Rssz8cGDGw1XF6VdXxckLbwpJVmgKKLatplQL
-        xXCBSiutlKcCYV1mzpp9T95KjqS2xY4ji
-X-Received: by 2002:a19:4352:0:b0:479:5d1:3fef with SMTP id m18-20020a194352000000b0047905d13fefmr4339504lfj.411.1655435701799;
-        Thu, 16 Jun 2022 20:15:01 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vrhZSavPJtlgCcYBizs4v7LLbX7WbLjH0ir+NVgTVj79Hn7OdCFvYsSXLKV5EDBsPKindEevKRIpCVFBpp9dE=
-X-Received: by 2002:a19:4352:0:b0:479:5d1:3fef with SMTP id
- m18-20020a194352000000b0047905d13fefmr4339489lfj.411.1655435701522; Thu, 16
- Jun 2022 20:15:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <CACGkMEs05ZisiPW+7H6Omp80MzmZWZCpc1mf5Vd99C3H-KUtgA@mail.gmail.com>
- <20220613041416-mutt-send-email-mst@kernel.org> <CACGkMEsT_fWdPxN1cTWOX=vu-ntp3Xo4j46-ZKALeSXr7DmJFQ@mail.gmail.com>
- <20220613045606-mutt-send-email-mst@kernel.org> <CACGkMEtAQck7Nr6SP_pD0MGT3njnwZSyT=xPyYzUU3c5GNNM_w@mail.gmail.com>
- <CACGkMEvUFJkC=mnvL2PSH6-3RMcJUk84f-9X46JVcj2vTAr4SQ@mail.gmail.com>
- <20220613052644-mutt-send-email-mst@kernel.org> <CACGkMEstGvhETXThuwO+tLVBuRgQb8uC_6DdAM8ZxOi5UKBRbg@mail.gmail.com>
- <Yqi7UhasBDPKCpuV@e120937-lin> <CACGkMEv2A7ZHQTrdg9H=xZScAf2DE=Dguaz60ykd4KQGNLrn2Q@mail.gmail.com>
- <YqojyHuocSoZ0v/Y@e120937-lin>
-In-Reply-To: <YqojyHuocSoZ0v/Y@e120937-lin>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Fri, 17 Jun 2022 11:14:50 +0800
-Message-ID: <CACGkMEsdhCx8mmGn+axjM-+Psep4jVN2zzbBQhjW3y6gvHXxXQ@mail.gmail.com>
-Subject: Re: [PATCH V6 8/9] virtio: harden vring IRQ
-To:     Cristian Marussi <cristian.marussi@arm.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        eperezma <eperezma@redhat.com>, Cindy Lu <lulu@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        linux-s390@vger.kernel.org, conghui.chen@intel.com,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        netdev <netdev@vger.kernel.org>, pankaj.gupta.linux@gmail.com,
-        sudeep.holla@arm.com, Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        with ESMTP id S230220AbiFQDRz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 23:17:55 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6597520F7C;
+        Thu, 16 Jun 2022 20:17:53 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1CC271A7D32;
+        Fri, 17 Jun 2022 05:17:52 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 8AA8F1A5000;
+        Fri, 17 Jun 2022 05:17:51 +0200 (CEST)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 00AD21820F56;
+        Fri, 17 Jun 2022 11:17:48 +0800 (+08)
+From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
+        horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
+        alexandre.belloni@bootlin.com, fido_max@inbox.ru,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com, pabeni@redhat.com,
+        kuba@kernel.org, edumazet@google.com, andrew@lunn.ch,
+        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
+        vladimir.oltean@nxp.com, leoyang.li@nxp.com,
+        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com
+Subject: [PATCH v2 net-next] net: dsa: felix: update base time of time-aware shaper when adjusting PTP time
+Date:   Fri, 17 Jun 2022 11:24:23 +0800
+Message-Id: <20220617032423.13852-1-xiaoliang.yang_1@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -94,113 +48,255 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 2:24 AM Cristian Marussi
-<cristian.marussi@arm.com> wrote:
->
-> On Wed, Jun 15, 2022 at 09:41:18AM +0800, Jason Wang wrote:
-> > On Wed, Jun 15, 2022 at 12:46 AM Cristian Marussi
-> > <cristian.marussi@arm.com> wrote:
->
-> Hi Jason,
->
-> > >
-> > > On Tue, Jun 14, 2022 at 03:40:21PM +0800, Jason Wang wrote:
-> > > > On Mon, Jun 13, 2022 at 5:28 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > >
-> > >
->
-> [snip]
->
-> > > >
-> > > > >  arm_scmi
-> > > >
-> > > > It looks to me the singleton device could be used by SCMI immediately after
-> > > >
-> > > >         /* Ensure initialized scmi_vdev is visible */
-> > > >         smp_store_mb(scmi_vdev, vdev);
-> > > >
-> > > > So we probably need to do virtio_device_ready() before that. It has an
-> > > > optional rx queue but the filling is done after the above assignment,
-> > > > so it's safe. And the callback looks safe is a callback is triggered
-> > > > after virtio_device_ready() buy before the above assignment.
-> > > >
-> > >
-> > > I wanted to give it a go at this series testing it on the context of
-> > > SCMI but it does not apply
-> > >
-> > > - not on a v5.18:
-> > >
-> > > 17:33 $ git rebase -i v5.18
-> > > 17:33 $ git am ./v6_20220527_jasowang_rework_on_the_irq_hardening_of_virtio.mbx
-> > > Applying: virtio: use virtio_device_ready() in virtio_device_restore()
-> > > Applying: virtio: use virtio_reset_device() when possible
-> > > Applying: virtio: introduce config op to synchronize vring callbacks
-> > > Applying: virtio-pci: implement synchronize_cbs()
-> > > Applying: virtio-mmio: implement synchronize_cbs()
-> > > error: patch failed: drivers/virtio/virtio_mmio.c:345
-> > > error: drivers/virtio/virtio_mmio.c: patch does not apply
-> > > Patch failed at 0005 virtio-mmio: implement synchronize_cbs()
-> > >
-> > > - neither on a v5.19-rc2:
-> > >
-> > > 17:33 $ git rebase -i v5.19-rc2
-> > > 17:35 $ git am ./v6_20220527_jasowang_rework_on_the_irq_hardening_of_virtio.mbx
-> > > Applying: virtio: use virtio_device_ready() in virtio_device_restore()
-> > > error: patch failed: drivers/virtio/virtio.c:526
-> > > error: drivers/virtio/virtio.c: patch does not apply
-> > > Patch failed at 0001 virtio: use virtio_device_ready() in
-> > > virtio_device_restore()
-> > > hint: Use 'git am --show-current-patch=diff' to see the failed patch
-> > > When you have resolved this problem, run "git am --continue".
-> > >
-> > > ... what I should take as base ?
-> >
-> > It should have already been included in rc2, so there's no need to
-> > apply patch manually.
-> >
->
-> I tested this series as included in v5.19-rc2 (WITHOUT adding a virtio_device_ready
-> in SCMI virtio as you mentioned above ... if I got it right) and I have NOT seen any
-> issue around SCMI virtio using my usual test setup (using both SCMI vqueues).
->
-> No anomalies even when using SCMI virtio in atomic/polling mode.
->
-> Adding a virtio_device_ready() at the end of the SCMI virtio probe()
-> works fine either, it does not make any difference in my setup.
-> (both using QEMU and kvmtool with this latter NOT supporting
->  virtio_V1...not sure if it makes a difference but I thought was worth
->  mentioning)
+When adjusting the PTP clock, the base time of the TAS configuration
+will become unreliable. We need reset the TAS configuration by using a
+new base time.
 
-Thanks a lot for the testing.
+For example, if the driver gets a base time 0 of Qbv configuration from
+user, and current time is 20000. The driver will set the TAS base time
+to be 20000. After the PTP clock adjustment, the current time becomes
+10000. If the TAS base time is still 20000, it will be a future time,
+and TAS entry list will stop running. Another example, if the current
+time becomes to be 10000000 after PTP clock adjust, a large time offset
+can cause the hardware to hang.
 
-We want to prevent malicious hypervisors from attacking us. So more questions:
+This patch introduces a tas_clock_adjust() function to reset the TAS
+module by using a new base time after the PTP clock adjustment. This can
+avoid issues above.
 
-Assuming we do:
+Due to PTP clock adjustment can occur at any time, it may conflict with
+the TAS configuration. We introduce a new TAS lock to serialize the
+access to the TAS registers.
 
-virtio_device_ready();
-/* Ensure initialized scmi_vdev is visible */
-smp_store_mb(scmi_vdev, vdev);
+Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+---
+v2: Update ocelot_ptp_adjtime() function to avoid tas_clock_adjust() be
+called twice.
+---
+ drivers/net/dsa/ocelot/felix_vsc9959.c | 83 ++++++++++++++++++++++++--
+ drivers/net/ethernet/mscc/ocelot.c     |  1 +
+ drivers/net/ethernet/mscc/ocelot_ptp.c |  8 +++
+ include/soc/mscc/ocelot.h              |  7 +++
+ 4 files changed, 93 insertions(+), 6 deletions(-)
 
-This means we allow the callbacks (scmi_vio_complete) to be called
-before smp_store_mb(). We need to make sure the callbacks are robust.
-And this looks fine since we have the check of
-scmi_vio_channel_acquire() and if the notification is called before
-smp_store_mb(), the acquire will fail.
-
-If we put virtio_device_ready() after smp_store_mb() like:
-
-/* Ensure initialized scmi_vdev is visible */
-smp_store_mb(scmi_vdev, vdev);
-virtio_device_ready();
-
-If I understand correctly, there will be a race since the SCMI may try
-to use the device before virtio_device_ready(), this violates the
-virtio spec somehow.
-
-Thanks
-
->
-> Thanks,
-> Cristian
->
+diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
+index 570d0204b7be..dd9085ae0922 100644
+--- a/drivers/net/dsa/ocelot/felix_vsc9959.c
++++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+@@ -1196,10 +1196,13 @@ static void vsc9959_tas_gcl_set(struct ocelot *ocelot, const u32 gcl_ix,
+ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 				    struct tc_taprio_qopt_offload *taprio)
+ {
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 	struct timespec64 base_ts;
+ 	int ret, i;
+ 	u32 val;
+ 
++	mutex_lock(&ocelot->tas_lock);
++
+ 	if (!taprio->enable) {
+ 		ocelot_rmw_rix(ocelot,
+ 			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF),
+@@ -1207,15 +1210,20 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
+ 			       QSYS_TAG_CONFIG, port);
+ 
++		mutex_unlock(&ocelot->tas_lock);
+ 		return 0;
+ 	}
+ 
+ 	if (taprio->cycle_time > NSEC_PER_SEC ||
+-	    taprio->cycle_time_extension >= NSEC_PER_SEC)
+-		return -EINVAL;
++	    taprio->cycle_time_extension >= NSEC_PER_SEC) {
++		ret = -EINVAL;
++		goto err;
++	}
+ 
+-	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX)
+-		return -ERANGE;
++	if (taprio->num_entries > VSC9959_TAS_GCL_ENTRY_MAX) {
++		ret = -ERANGE;
++		goto err;
++	}
+ 
+ 	/* Enable guard band. The switch will schedule frames without taking
+ 	 * their length into account. Thus we'll always need to enable the
+@@ -1236,8 +1244,10 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 	 * config is pending, need reset the TAS module
+ 	 */
+ 	val = ocelot_read(ocelot, QSYS_PARAM_STATUS_REG_8);
+-	if (val & QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING)
+-		return  -EBUSY;
++	if (val & QSYS_PARAM_STATUS_REG_8_CONFIG_PENDING) {
++		ret = -EBUSY;
++		goto err;
++	}
+ 
+ 	ocelot_rmw_rix(ocelot,
+ 		       QSYS_TAG_CONFIG_ENABLE |
+@@ -1248,6 +1258,8 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 		       QSYS_TAG_CONFIG_SCH_TRAFFIC_QUEUES_M,
+ 		       QSYS_TAG_CONFIG, port);
+ 
++	ocelot_port->base_time = taprio->base_time;
++
+ 	vsc9959_new_base_time(ocelot, taprio->base_time,
+ 			      taprio->cycle_time, &base_ts);
+ 	ocelot_write(ocelot, base_ts.tv_nsec, QSYS_PARAM_CFG_REG_1);
+@@ -1271,9 +1283,67 @@ static int vsc9959_qos_port_tas_set(struct ocelot *ocelot, int port,
+ 				 !(val & QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE),
+ 				 10, 100000);
+ 
++err:
++	mutex_unlock(&ocelot->tas_lock);
++
+ 	return ret;
+ }
+ 
++static void vsc9959_tas_clock_adjust(struct ocelot *ocelot)
++{
++	struct ocelot_port *ocelot_port;
++	struct timespec64 base_ts;
++	u64 cycletime;
++	int port;
++	u32 val;
++
++	mutex_lock(&ocelot->tas_lock);
++
++	for (port = 0; port < ocelot->num_phys_ports; port++) {
++		val = ocelot_read_rix(ocelot, QSYS_TAG_CONFIG, port);
++		if (!(val & QSYS_TAG_CONFIG_ENABLE))
++			continue;
++
++		ocelot_rmw(ocelot,
++			   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM(port),
++			   QSYS_TAS_PARAM_CFG_CTRL_PORT_NUM_M,
++			   QSYS_TAS_PARAM_CFG_CTRL);
++
++		ocelot_rmw_rix(ocelot,
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF),
++			       QSYS_TAG_CONFIG_ENABLE |
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
++			       QSYS_TAG_CONFIG, port);
++
++		cycletime = ocelot_read(ocelot, QSYS_PARAM_CFG_REG_4);
++		ocelot_port = ocelot->ports[port];
++
++		vsc9959_new_base_time(ocelot, ocelot_port->base_time,
++				      cycletime, &base_ts);
++
++		ocelot_write(ocelot, base_ts.tv_nsec, QSYS_PARAM_CFG_REG_1);
++		ocelot_write(ocelot, lower_32_bits(base_ts.tv_sec),
++			     QSYS_PARAM_CFG_REG_2);
++		val = upper_32_bits(base_ts.tv_sec);
++		ocelot_rmw(ocelot,
++			   QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB(val),
++			   QSYS_PARAM_CFG_REG_3_BASE_TIME_SEC_MSB_M,
++			   QSYS_PARAM_CFG_REG_3);
++
++		ocelot_rmw(ocelot, QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE,
++			   QSYS_TAS_PARAM_CFG_CTRL_CONFIG_CHANGE,
++			   QSYS_TAS_PARAM_CFG_CTRL);
++
++		ocelot_rmw_rix(ocelot,
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE(0xFF) |
++			       QSYS_TAG_CONFIG_ENABLE,
++			       QSYS_TAG_CONFIG_ENABLE |
++			       QSYS_TAG_CONFIG_INIT_GATE_STATE_M,
++			       QSYS_TAG_CONFIG, port);
++	}
++	mutex_unlock(&ocelot->tas_lock);
++}
++
+ static int vsc9959_qos_port_cbs_set(struct dsa_switch *ds, int port,
+ 				    struct tc_cbs_qopt_offload *cbs_qopt)
+ {
+@@ -2210,6 +2280,7 @@ static const struct ocelot_ops vsc9959_ops = {
+ 	.psfp_filter_del	= vsc9959_psfp_filter_del,
+ 	.psfp_stats_get		= vsc9959_psfp_stats_get,
+ 	.cut_through_fwd	= vsc9959_cut_through_fwd,
++	.tas_clock_adjust	= vsc9959_tas_clock_adjust,
+ };
+ 
+ static const struct felix_info felix_info_vsc9959 = {
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 8da7e25a47c9..d4649e4ee0e7 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -3367,6 +3367,7 @@ int ocelot_init(struct ocelot *ocelot)
+ 	mutex_init(&ocelot->ptp_lock);
+ 	mutex_init(&ocelot->mact_lock);
+ 	mutex_init(&ocelot->fwd_domain_lock);
++	mutex_init(&ocelot->tas_lock);
+ 	spin_lock_init(&ocelot->ptp_clock_lock);
+ 	spin_lock_init(&ocelot->ts_id_lock);
+ 	snprintf(queue_name, sizeof(queue_name), "%s-stats",
+diff --git a/drivers/net/ethernet/mscc/ocelot_ptp.c b/drivers/net/ethernet/mscc/ocelot_ptp.c
+index 87ad2137ba06..09c703efe946 100644
+--- a/drivers/net/ethernet/mscc/ocelot_ptp.c
++++ b/drivers/net/ethernet/mscc/ocelot_ptp.c
+@@ -72,6 +72,10 @@ int ocelot_ptp_settime64(struct ptp_clock_info *ptp,
+ 	ocelot_write_rix(ocelot, val, PTP_PIN_CFG, TOD_ACC_PIN);
+ 
+ 	spin_unlock_irqrestore(&ocelot->ptp_clock_lock, flags);
++
++	if (ocelot->ops->tas_clock_adjust)
++		ocelot->ops->tas_clock_adjust(ocelot);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(ocelot_ptp_settime64);
+@@ -105,6 +109,9 @@ int ocelot_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 		ocelot_write_rix(ocelot, val, PTP_PIN_CFG, TOD_ACC_PIN);
+ 
+ 		spin_unlock_irqrestore(&ocelot->ptp_clock_lock, flags);
++
++		if (ocelot->ops->tas_clock_adjust)
++			ocelot->ops->tas_clock_adjust(ocelot);
+ 	} else {
+ 		/* Fall back using ocelot_ptp_settime64 which is not exact. */
+ 		struct timespec64 ts;
+@@ -117,6 +124,7 @@ int ocelot_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 
+ 		ocelot_ptp_settime64(ptp, &ts);
+ 	}
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(ocelot_ptp_adjtime);
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 5f88385a7748..3737570116c3 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -575,6 +575,7 @@ struct ocelot_ops {
+ 	int (*psfp_stats_get)(struct ocelot *ocelot, struct flow_cls_offload *f,
+ 			      struct flow_stats *stats);
+ 	void (*cut_through_fwd)(struct ocelot *ocelot);
++	void (*tas_clock_adjust)(struct ocelot *ocelot);
+ };
+ 
+ struct ocelot_vcap_policer {
+@@ -691,6 +692,9 @@ struct ocelot_port {
+ 	int				bridge_num;
+ 
+ 	int				speed;
++
++	/* Store the AdminBaseTime of EST fetched from userspace. */
++	s64				base_time;
+ };
+ 
+ struct ocelot {
+@@ -757,6 +761,9 @@ struct ocelot {
+ 	/* Lock for serializing forwarding domain changes */
+ 	struct mutex			fwd_domain_lock;
+ 
++	/* Lock for serializing Time-Aware Shaper changes */
++	struct mutex			tas_lock;
++
+ 	struct workqueue_struct		*owq;
+ 
+ 	u8				ptp:1;
+-- 
+2.17.1
 
