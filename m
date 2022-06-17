@@ -2,174 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5B9E54EED2
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 03:31:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11DE054EEF2
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 03:46:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379560AbiFQBa4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 16 Jun 2022 21:30:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56688 "EHLO
+        id S1378727AbiFQBqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 16 Jun 2022 21:46:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379274AbiFQBaz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 21:30:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A904B6352B
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 18:30:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655429453;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=LdXVpK4M15aXqV7NHwfDKuztrburhsd2qHWyDgt1bpM=;
-        b=AsBkMmdljRHd8jk1uYTzcSBcZvCatBima8cunN8o+JPIlnQOp1CDuuQQ1XN/adzDxf71wK
-        8RfVcEzyri0/HVHZLVSuDQGFxuPI7a8tpRXUuVc+Ll+7nwDURnGM7NXA2DJllsyIQhmem7
-        bn7Lorkn+gE5yS6ZL4LdCqOWPC8ln1s=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-626-NS1wUvwuOwmmUxySpllwoA-1; Thu, 16 Jun 2022 21:30:51 -0400
-X-MC-Unique: NS1wUvwuOwmmUxySpllwoA-1
-Received: by mail-lf1-f71.google.com with SMTP id u5-20020a056512128500b00479784f526cso1570248lfs.13
-        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 18:30:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LdXVpK4M15aXqV7NHwfDKuztrburhsd2qHWyDgt1bpM=;
-        b=fT68jJ9Iqhuc8R8jIRFM06aKIVNXo49ZjGzD67DzOSmOVkr3ODrYeBfXQERG5VSy7/
-         CEgMgIXUGPvslZt/vwrjfJvs0+4NMuPENrvBRHOxmkXY6KkEVRACvAWkzEiN2QWRdImR
-         KekRCX9Y+hWuflzFBD4nDSMfCl8wR3EmgL+QHgNm0iEdeZPthY/3T+K6a725UHpjNnrv
-         u8hoXuXMossqxv6BZMeMgvELykcbkhkj7pwBErMaclJ8G9/RwVycAXY5E8o9/gfq74E4
-         FjoY7KASmp4lWFjwMScby30dEt/h5cMTlqMJ2ym/OxfamYWrdRptDhNVdbFnl4GrGMra
-         wxOQ==
-X-Gm-Message-State: AJIora/yAWsvPI6CsYusYfAd8rgPgAvXEqjOeqql8Y746Xn8pWyj3erZ
-        xgCckPoDgXK/jXSnfALwJoKYg8E/syDRlvLarttdy5slC+jo+p2BwdLjZnFsT9AZjMHYeb2TKzS
-        ruM/9+e3tCpm/pbrzFC45oyXgy6rkF+BF
-X-Received: by 2002:a05:6512:5cc:b0:47a:bf7:f1ab with SMTP id o12-20020a05651205cc00b0047a0bf7f1abmr4267451lfo.397.1655429450425;
-        Thu, 16 Jun 2022 18:30:50 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1u4Qjm7Ni+jE/Bp49gsRtZ1ZAQGwI2kW6yJTksXUAOA6+4gstzTdAjJrDnXXTTXD+choWDoMfhNR+jr8WymojY=
-X-Received: by 2002:a05:6512:5cc:b0:47a:bf7:f1ab with SMTP id
- o12-20020a05651205cc00b0047a0bf7f1abmr4267441lfo.397.1655429450215; Thu, 16
- Jun 2022 18:30:50 -0700 (PDT)
+        with ESMTP id S233507AbiFQBqI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 16 Jun 2022 21:46:08 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2093.outbound.protection.outlook.com [40.107.20.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB461CFCE
+        for <netdev@vger.kernel.org>; Thu, 16 Jun 2022 18:46:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OlYEiYzh4Gwiam/GGsSMBHgQ2QjDBhnbmV9b2vj9n/PfGtw7XiBnmpBmKtrvQRAe7IyapuNFkRjQqPX5iTKuP1C+xhYiDYtEYBCQnM8edRWeYlpyyT6BsY6E7A15N0nfFiZ8VGfO67hiY91/21UUahG3og0dHdSds4jNfueV3V8HXsNDcoeBD5epqAUdVpfKDXsrFQICSvwJyO/aleYL4b/8f5RABeQf0fMLorbz/9INAjHWzjR8Do7vTAVG+XzHuYqCk+uBhZdB9I6T7qMf5+8Z/5vM/nbVLlh6JDEHGXBdN9xesrHhr+68p2q84cL5ikTs+7cb/5djwNWI5o7VYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GiMteV4TX9fEmoVJRgcY9ER1CEnhk/7NMQRFtnCtfb8=;
+ b=O9FL9lwSfHVmHhssGUQxS21sKfFvhB9K1QuPOwJSMfJdeGqN1FTmA7ExnHwHdmukSVTWy5otjYnW8vgQgnkmsYMNupl0vVanU/eIH819cRF6sjRpVjhPVFXgH8U3HYdx+YJbyQTza4dHHayqFRYjEUzmiO/5y9UPKVT9GjT4+sin9s+aSG4biJBgtPQDcyBmnDWvl9y1QibX0tnBba/Vlr0kgkpmeKcYdhyeTF0xWPcJNsVptXogB2d1HYKMCKHCfGqxS3FiwAvvmc3miJdU1YdRWi7f6YKVaaQvAhFfRH9AgLWl/Ud44CIHSYocMbMqrycSSDN0T0gv46vfdvH90w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=dektech.com.au; dmarc=pass action=none
+ header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GiMteV4TX9fEmoVJRgcY9ER1CEnhk/7NMQRFtnCtfb8=;
+ b=jGjTVKkYeOQ4V+q3gyd7iMM4Y/h5i0Ibk+a8tGvpMN/0bT09ni5Amb5yxFLoKGxnvtIVUwBMJHCcGuZHVX9gdATdGx51LdG24476A/YVU8HUV5x8TA+7rFNtCcoqLdyE7wQ5OELwkSUjJquGBomEQe+ZSqeZ2+I9o93iCAtoBl8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=dektech.com.au;
+Received: from DB9PR05MB7641.eurprd05.prod.outlook.com (2603:10a6:10:21f::6)
+ by PR3PR05MB6985.eurprd05.prod.outlook.com (2603:10a6:102:2f::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.16; Fri, 17 Jun
+ 2022 01:46:04 +0000
+Received: from DB9PR05MB7641.eurprd05.prod.outlook.com
+ ([fe80::f429:2b60:9077:6ba8]) by DB9PR05MB7641.eurprd05.prod.outlook.com
+ ([fe80::f429:2b60:9077:6ba8%6]) with mapi id 15.20.5353.016; Fri, 17 Jun 2022
+ 01:46:04 +0000
+From:   Hoang Le <hoang.h.le@dektech.com.au>
+To:     jmaloy@redhat.com, maloy@donjonn.com, ying.xue@windriver.com,
+        tung.q.nguyen@dektech.com.au, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, tipc-discussion@lists.sourceforge.net,
+        netdev@vger.kernel.org
+Cc:     syzbot+47af19f3307fc9c5c82e@syzkaller.appspotmail.com
+Subject: [net] tipc: fix use-after-free Read in tipc_named_reinit
+Date:   Fri, 17 Jun 2022 08:45:51 +0700
+Message-Id: <20220617014551.3235-1-hoang.h.le@dektech.com.au>
+X-Mailer: git-send-email 2.30.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2P153CA0036.APCP153.PROD.OUTLOOK.COM
+ (2603:1096:4:190::11) To DB9PR05MB7641.eurprd05.prod.outlook.com
+ (2603:10a6:10:21f::6)
 MIME-Version: 1.0
-References: <20220512112347.18717-1-andrew@daynix.com> <CACGkMEvH1yE0CZYdstAK32DkEucejNO+V7PEAZD_641+rp2aKA@mail.gmail.com>
- <CABcq3pFJcsoj+dDf6tirT_hfTB6rj9+f6KNFafwg+usqYwTdDA@mail.gmail.com>
- <CACGkMEtaigzuwy25rE-7N40TQGvXVmJVQivavmuwrCuw0Z=LUQ@mail.gmail.com>
- <CABcq3pFzzSHA3pqbKFEsLaFg7FkFZkdxs+N_ET_n_XLBaWVnHA@mail.gmail.com> <CABcq3pHkqxunsaZ8qt=FicL1361D0EktxZhqib+MGDJ=DVB6FA@mail.gmail.com>
-In-Reply-To: <CABcq3pHkqxunsaZ8qt=FicL1361D0EktxZhqib+MGDJ=DVB6FA@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Fri, 17 Jun 2022 09:30:39 +0800
-Message-ID: <CACGkMEscbjvSD3prC9WMSPD=vembZ2ZtKiAcekqAeDnWgXND3Q@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 0/5] TUN/VirtioNet USO features support.
-To:     Andrew Melnichenko <andrew@daynix.com>
-Cc:     davem <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, mst <mst@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Yan Vugenfirer <yan@daynix.com>,
-        Yuri Benditovich <yuri.benditovich@daynix.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8ebaa5df-8734-45b1-891c-08da5003239a
+X-MS-TrafficTypeDiagnostic: PR3PR05MB6985:EE_
+X-Microsoft-Antispam-PRVS: <PR3PR05MB698586CBB88347C7459A93FFF1AF9@PR3PR05MB6985.eurprd05.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: lCXCm2JHcaRRBNu6qqZu3BCB3xMtWYkl/nGYos0rk1EPCKXVyoEwVTtFH28hV1xcTr873z++dXy8HLUIzqGD6iC+69ycXII8v1JkJrhC+z+YGLqCcpz32Sill5Txi0ANl5Hou1en4tIdf4uDf/ftx12DzdJSLksxgHl0r3PgrdeGV7jdbwGL2hfp8KPVkJ694D7GxWi+eYpniOmw854r17mpmnndF/sLd7ogfA0enbDZtMykmXZZhcUnf4Y6pM8E9gFMSeK5pHmj1P7h0H920/oWLvVlXuJbRYR53nv2Xbe4EWlR9mrrCvcAuV+QvJ8xMVZ56jFdyHqCenDFbz23bd0wNKA2kncqHiiFesQ6nM7jR+AHThbc9+xa49LMCo+/sGyYEhgrs73B7zbME/8JlKx+i/HqfPdgIEip8wN5APuerMyXAb8lJ54Yl809RvvD5KRGaD602dXd+Es19ccRzqb9VSKHFx9MRJBlNS5cjDJ9lqcgnN/aeDb3DWdIS56+voxO7xy3enWY1qXcgya8j8laVOqBO8hkvfiAgaaXD6tOkXuY03dpvfKY2M1F1mF5P+F749CPmDAzxXip03ZUK4QMP6cLGhlYADMJ31MFVbT7O5SWFcOKTjwGVoAoQOBVncNdzT68BWZDHG+VGrs/aQxsvetT0CqHk9D7fPSHsyqrh5mTxR6vJ+Fwwm0fmECr+ihV2+DAuscfWBJbD37gsg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR05MB7641.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39850400004)(136003)(346002)(366004)(396003)(508600001)(6486002)(8936002)(5660300002)(103116003)(6512007)(186003)(1076003)(83380400001)(2616005)(2906002)(6666004)(26005)(52116002)(86362001)(41300700001)(55236004)(6506007)(66946007)(66556008)(4326008)(66476007)(8676002)(316002)(36756003)(38100700002)(38350700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?u3ZnK6odf73h3RSoaB0yBJVYuz3uoFZis4779OJmmpTI8fDmxdDGPLjdFHeR?=
+ =?us-ascii?Q?1TIdh43XZMCMEyL/N1BttuO99XKHiASelqciRa5U3gpiFwVdgOoLzI8fl8BI?=
+ =?us-ascii?Q?2x4TuFKz4Zqn4Nex8E705gqYZ3RJfV0R73556eUxGsfrrADM0i2EYnoF8X/5?=
+ =?us-ascii?Q?98WhEWKFNJs+23/PIFWQyNp1ONhF/IUM87aDNdUjcyH3AVI+JjRSmEJvSU88?=
+ =?us-ascii?Q?wKyhrv+dXHNocvrSsM8bcashMdZKS8sYqK5OMVkb84BoyGXjCY4zWHYBFxr/?=
+ =?us-ascii?Q?DgMV7B2L0mEP2imCFtRzfb3BifEXog2NBibw2r5BrH7zURbfW4BoGyxSdbEE?=
+ =?us-ascii?Q?WwIDes0S8bHsg4G2bWzFTRyoMx49cVs5EsIG3OZnOzsAs0DLEhD2Ft36bOw0?=
+ =?us-ascii?Q?g1l/u6fsgUkqF1BmKL0VS8GIGq340B+KvK9JETU7nVcNt4xf473eoYeN6Ge8?=
+ =?us-ascii?Q?hY0jHj/z9zyopAfuReUEi/Ru550fzvmRu3+3Hs52fWniFZDh8AeJCWE1exOK?=
+ =?us-ascii?Q?IttSMzuo6dRbDLZsp+SGozlnMwM8uULFqOUjDP8pNMeLmQ6SYtfbDqPPCOdH?=
+ =?us-ascii?Q?4gQcQjjLvhEXiyjwISIWRYqvy0WSc5O9wcd2ANsJon0MZgmOmg0G/3lsRBi4?=
+ =?us-ascii?Q?BxfZUeEBU7IfPoGZihEW73LD3VB/zpNVN551hYQESgwpnPu7chhHSJpquOc7?=
+ =?us-ascii?Q?CUpoQsHhvynm2wEFJMBunkTx9RVjSZb+B9v5KCpDlZHCgD3N1Tit2/zIUPME?=
+ =?us-ascii?Q?ytlj/J04fk9sH2OSkedeidGtdFNUISst/2qsCLSIngtL/pY/bVUwHwHQDCoz?=
+ =?us-ascii?Q?0pTJ+IQkZACCeisXDKWm1hDZmN+LqShdnFlsfdo3C6ErY7VIAfmeUMWDqpI2?=
+ =?us-ascii?Q?/oyAmE/iTsaQ9Ff+hfQDjG83ShLl/orOTQWMLVqFLHph8UhcgPvPoBEaNxF2?=
+ =?us-ascii?Q?Rfcq8HWgwUpikUgCiuLxAuak37Wl9JttvHJT286eu0orLNTkM0oU6GN2lfMb?=
+ =?us-ascii?Q?SeKDxC8oqL5UFjbTxt8tns5T6VEAQrSW96Wgkn+pYkmDBH2EiwGB3QV6sGwj?=
+ =?us-ascii?Q?vRyYvx6aLVmv+fnTovEcKw6JqkNV/+95LSTb/bkhAMM713Zqd8iL2HtfnHb0?=
+ =?us-ascii?Q?dbciZuArWf+M4mPn0w0ZHluAqzo653Me1Y8YY7tfTUm8V+zRlasfvxsYfiVk?=
+ =?us-ascii?Q?xKjF26luVKcfYrXyCFYfJHw0eZcw2IELhZH+mRzUG12bNrW69mPnUD8DezNO?=
+ =?us-ascii?Q?V9Chbuucxl5gO9cZ+mTXP6kfU3AB1Q/nbuLWJLp9St9mk815+FTolKCUvog6?=
+ =?us-ascii?Q?Of3g3rsz6Q/pi9bT8duzad73yY8VG/fxaFtTkADea6F3ZFAqCLcdLEor2S6c?=
+ =?us-ascii?Q?ztDVOaRkUbNu05wKc+TKsgn/r0VQPcYfKeZT47x9cqtv3DmVl9tmKvX2SMDi?=
+ =?us-ascii?Q?U6qgIAhYZBQ5WeYAhb7d8lola2wgBm3p28l4CiKYyfJCY0R8z9zTROpvOHU+?=
+ =?us-ascii?Q?faJxPEVd06dR4/uePv/f0sD+l/VGCPBI5Rhda9HvRiELZUfuLtt+npHY1YQA?=
+ =?us-ascii?Q?zEjxIdtLG5j58fVqpXfyGHPfVl/UjW/wVMwkNW+iOBAHTzhMwVdXDdX9fBYP?=
+ =?us-ascii?Q?dRgBC5/5ODdo2ZDacuN7QW3DTJNvLSP/A9V/t72VQFLTpZ+WezTosFcUhFB6?=
+ =?us-ascii?Q?OXjEImL0wUqh3SC5p6hW0xFJFpwCtUIJeOVtawUXadiTBy1ydhFbbW/YCpLu?=
+ =?us-ascii?Q?nlYAXzytbVPuACscYnsdK6IoI+3fvKU=3D?=
+X-OriginatorOrg: dektech.com.au
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8ebaa5df-8734-45b1-891c-08da5003239a
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR05MB7641.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2022 01:46:04.2706
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3KhyXeouCO96e1CPvrI0BRI+DSmbLUScGX/70KsVfUh+KDC70FQniujLLr69pU7capxiWZW5UcI2b6MRnhSLjAYKPuHvIKedDehDhV6nIBI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR05MB6985
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 16, 2022 at 7:59 PM Andrew Melnichenko <andrew@daynix.com> wrote:
->
-> Hi, Jason
-> Apparently, your patch should work.
-> For now, I have an issue where segmentation between two guests on one
-> host still occurs.
-> Neither previous "hack" nor your patch helps.
-> Now I'm looking what the issue may be.
-> If you have some suggestions on where may I look, it would be helpful, thanks!
+syzbot found the following issue on:
+==================================================================
+BUG: KASAN: use-after-free in tipc_named_reinit+0x94f/0x9b0
+net/tipc/name_distr.c:413
+Read of size 8 at addr ffff88805299a000 by task kworker/1:9/23764
 
-I think maybe it's worth tracking which function did the segmentation.
+CPU: 1 PID: 23764 Comm: kworker/1:9 Not tainted
+5.18.0-rc4-syzkaller-00878-g17d49e6e8012 #0
+Hardware name: Google Compute Engine/Google Compute Engine,
+BIOS Google 01/01/2011
+Workqueue: events tipc_net_finalize_work
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xeb/0x495
+mm/kasan/report.c:313
+ print_report mm/kasan/report.c:429 [inline]
+ kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
+ tipc_named_reinit+0x94f/0x9b0 net/tipc/name_distr.c:413
+ tipc_net_finalize+0x234/0x3d0 net/tipc/net.c:138
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
+ </TASK>
+[...]
+==================================================================
 
-Thanks
+In the commit
+d966ddcc3821 ("tipc: fix a deadlock when flushing scheduled work"),
+the cancel_work_sync() function just to make sure ONLY the work
+tipc_net_finalize_work() is executing/pending on any CPU completed before
+tipc namespace is destroyed through tipc_exit_net(). But this function
+is not guaranteed the work is the last queued. So, the destroyed instance
+may be accessed in the work which will try to enqueue later.
 
->
-> On Thu, May 26, 2022 at 3:18 PM Andrew Melnichenko <andrew@daynix.com> wrote:
-> >
-> > I'll check it, thank you!
-> >
-> > On Thu, May 26, 2022 at 9:56 AM Jason Wang <jasowang@redhat.com> wrote:
-> > >
-> > > On Tue, May 24, 2022 at 7:07 PM Andrew Melnichenko <andrew@daynix.com> wrote:
-> > > >
-> > > > Hi all,
-> > > >
-> > > > The issue is that host segments packets between guests on the same host.
-> > > > Tests show that it happens because SKB_GSO_DODGY skb offload in
-> > > > virtio_net_hdr_from_skb().
-> > > > To do segmentation you need to remove SKB_GSO_DODGY or add SKB_GSO_PARTIAL
-> > > > The solution with DODGY/PARTIAL offload looks like a dirty hack, so
-> > > > for now, I've lived it as it is for further investigation.
-> > >
-> > > Ok, I managed to find the previous discussion. It looks to me the
-> > > reason is that __udp_gso_segment will segment dodgy packets
-> > > unconditionally.
-> > >
-> > > I wonder if the attached patch works? (compile test only).
-> > >
-> > > Thanks
-> > >
-> > > >
-> > > >
-> > > > On Tue, May 17, 2022 at 9:32 AM Jason Wang <jasowang@redhat.com> wrote:
-> > > > >
-> > > > > On Thu, May 12, 2022 at 7:33 PM Andrew Melnychenko <andrew@daynix.com> wrote:
-> > > > > >
-> > > > > > Added new offloads for TUN devices TUN_F_USO4 and TUN_F_USO6.
-> > > > > > Technically they enable NETIF_F_GSO_UDP_L4
-> > > > > > (and only if USO4 & USO6 are set simultaneously).
-> > > > > > It allows to transmission of large UDP packets.
-> > > > > >
-> > > > > > Different features USO4 and USO6 are required for qemu where Windows guests can
-> > > > > > enable disable USO receives for IPv4 and IPv6 separately.
-> > > > > > On the other side, Linux can't really differentiate USO4 and USO6, for now.
-> > > > > > For now, to enable USO for TUN it requires enabling USO4 and USO6 together.
-> > > > > > In the future, there would be a mechanism to control UDP_L4 GSO separately.
-> > > > > >
-> > > > > > Test it WIP Qemu https://github.com/daynix/qemu/tree/Dev_USOv2
-> > > > > >
-> > > > > > New types for VirtioNet already on mailing:
-> > > > > > https://lists.oasis-open.org/archives/virtio-comment/202110/msg00010.html
-> > > > > >
-> > > > > > Also, there is a known issue with transmitting packages between two guests.
-> > > > >
-> > > > > Could you explain this more? It looks like a bug. (Or any pointer to
-> > > > > the discussion)
-> > > > >
-> > > > > Thanks
-> > > > >
-> > > > > > Without hacks with skb's GSO - packages are still segmented on the host's postrouting.
-> > > > > >
-> > > > > > Andrew (5):
-> > > > > >   uapi/linux/if_tun.h: Added new offload types for USO4/6.
-> > > > > >   driver/net/tun: Added features for USO.
-> > > > > >   uapi/linux/virtio_net.h: Added USO types.
-> > > > > >   linux/virtio_net.h: Support USO offload in vnet header.
-> > > > > >   drivers/net/virtio_net.c: Added USO support.
-> > > > > >
-> > > > > >  drivers/net/tap.c               | 10 ++++++++--
-> > > > > >  drivers/net/tun.c               |  8 +++++++-
-> > > > > >  drivers/net/virtio_net.c        | 19 +++++++++++++++----
-> > > > > >  include/linux/virtio_net.h      |  9 +++++++++
-> > > > > >  include/uapi/linux/if_tun.h     |  2 ++
-> > > > > >  include/uapi/linux/virtio_net.h |  4 ++++
-> > > > > >  6 files changed, 45 insertions(+), 7 deletions(-)
-> > > > > >
-> > > > > > --
-> > > > > > 2.35.1
-> > > > > >
-> > > > >
-> > > >
->
+In order to completely fix, we re-order the calling of cancel_work_sync()
+to make sure the work tipc_net_finalize_work() was last queued and it
+must be completed by calling cancel_work_sync().
+
+Reported-by: syzbot+47af19f3307fc9c5c82e@syzkaller.appspotmail.com
+Fixes: d966ddcc3821 ("tipc: fix a deadlock when flushing scheduled work")
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Signed-off-by: Ying Xue <ying.xue@windriver.com>
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+---
+ net/tipc/core.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/net/tipc/core.c b/net/tipc/core.c
+index 3f4542e0f065..434e70eabe08 100644
+--- a/net/tipc/core.c
++++ b/net/tipc/core.c
+@@ -109,10 +109,9 @@ static void __net_exit tipc_exit_net(struct net *net)
+ 	struct tipc_net *tn = tipc_net(net);
+ 
+ 	tipc_detach_loopback(net);
++	tipc_net_stop(net);
+ 	/* Make sure the tipc_net_finalize_work() finished */
+ 	cancel_work_sync(&tn->work);
+-	tipc_net_stop(net);
+-
+ 	tipc_bcast_stop(net);
+ 	tipc_nametbl_stop(net);
+ 	tipc_sk_rht_destroy(net);
+-- 
+2.30.2
 
