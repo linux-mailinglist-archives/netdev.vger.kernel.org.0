@@ -2,125 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A33FC5500BE
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 01:27:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAF605500F3
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 01:46:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383691AbiFQX1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 19:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59568 "EHLO
+        id S1347032AbiFQXqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 19:46:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236606AbiFQX1Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 19:27:16 -0400
-Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F9566AFA;
-        Fri, 17 Jun 2022 16:27:15 -0700 (PDT)
-Received: by mail-io1-f52.google.com with SMTP id q11so5960892iod.8;
-        Fri, 17 Jun 2022 16:27:15 -0700 (PDT)
+        with ESMTP id S237061AbiFQXqJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 19:46:09 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9383B61627
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 16:46:04 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id a10so5996462ioe.9
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 16:46:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=v+CtxF5jqTCvHtrkh/Tp3q/wyDmiOTtwUhSwgsvpJ3w=;
+        b=YGI/OqaRkadQXXxsJnM8uGyOtjDZ6+A5GQjelvB1B3X6TwS5V3C66lWgNbx51CvUWU
+         XgSrKKU9DJpc5ofYqMNNzNijwDz7Cwd7HiQ1xSTNhmQieX3/tAsb7n8oQTpgU1kOP7hR
+         cHflRSYq3M56cSGCoG6//ypA+QjlZMq+AIONrdqck9QbHFG1+PBfZbEXvYZo5NeUnbSj
+         g2hATSAaX/qsS7h9BFS3x3XNSS5hMAAPigWi8nUMDnL21PHTh4043HEssgBvTKaaIpeT
+         QfdoAN1HGyHbpbC9hbw7N6fugvvOPBStQP9iMGtqvnOAdZsXHLT6VNM8VMy+RtkTDwGO
+         LikQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=mrnGJfuJSJ8KmPJjJNK/2HMET0pHuhxW1Qzfgjvk8ws=;
-        b=bTu3lpFGMOsAQarUg7u8XQZ2vbjRtsqI7VIJP4bewayRdH8DomGHyn5PDCc8S3DgxM
-         EoGGkvEEffbGCubozQ/AORc71vuMoD0Fu61lmsF2h5Y7NfI8HkUsEmMb3ho9SmeYy/QN
-         bGbMZsXt8xmgJwdE+7NCTEF6svZUms8zoqaCCSAKozRrnoIZyFdJxp30l8Q74sQHjGBO
-         E7XxsOBo/Bqtc+JycROB0iX0P7+MZ4eYiSgUJfFVu1gY+o/MFXw9FIOqcIndkpLJgAHJ
-         Sq1swLjEyj6K3pSq30n6imJJhbuJJge0d/5VVzRGPuhSquHdTLJvIyQdHi55Ux5yZIsE
-         FX4Q==
-X-Gm-Message-State: AJIora9uWbExxcB45AaxhYauMfv7C3Jzbdyb67K9X1N3vBse00ii3sHb
-        C0HgVSk2UGA+rBTHhLwJzg==
-X-Google-Smtp-Source: AGRyM1tifihKpTdp799WxK6Tc+JX6s/X9nrpMyulN4Y0ijrWTb5i6wkhgCyeLD424gLNC7G3gBG1Aw==
-X-Received: by 2002:a05:6638:138f:b0:332:1c0:1e81 with SMTP id w15-20020a056638138f00b0033201c01e81mr6550749jad.293.1655508434839;
-        Fri, 17 Jun 2022 16:27:14 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id h20-20020a02b614000000b0032e70c4e12fsm2771998jam.28.2022.06.17.16.27.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 16:27:14 -0700 (PDT)
-Received: (nullmailer pid 2635209 invoked by uid 1000);
-        Fri, 17 Jun 2022 23:27:12 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Eric Dumazet <edumazet@google.com>, Vinod Koul <vkoul@kernel.org>,
-        netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-kernel@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=v+CtxF5jqTCvHtrkh/Tp3q/wyDmiOTtwUhSwgsvpJ3w=;
+        b=oMgrMm9ToWsMr3unCAaT1KvW87A8ZK/Cay8Q706eP0Tg1yfdctc6CqVqoKGdqhCVPO
+         m0Mbb5YLPV5pN4YtW77/Yh2FRUs1uXk0W6HQ4iNLYhWyJtgG8ZgUJY8BPHym5JsSstNz
+         xkoF9TMUCVS0c0dwePDgnrrS8oy7/m8d7VDg34hHipFH3wG3jQGGC18kE0wO0jvwb7Zz
+         RhelDdWF60b9yXmeELlpnZgAgoQ3w6PnR4p6RStF6NCzTW2vdQJ1fvIluj/6GHZv+jlj
+         jSRCbWOB8m8o057jP/+jFrWE7rvAeJZXrNSs10lfmJaSAdCkgLLlC/Rgfb14KfzCQd/U
+         A/Qg==
+X-Gm-Message-State: AJIora8fJ47xlGSWH31NFPzaBi57xqVHYm6U/uunfvvwryVUdpWZpCJf
+        jCyhr6IBr/wfc6ws0pqP7faOMao6ueHGvzqudS9P3w==
+X-Google-Smtp-Source: AGRyM1voqSRNK9+66QbW2UwaqOdOzzUm4CcNFzFX9HbLBxFWAOlUpdCA0GV41UPO+AKUQpFtMdRJ0et8XJJ2K7EEugI=
+X-Received: by 2002:a02:90ce:0:b0:32e:e2ce:b17c with SMTP id
+ c14-20020a0290ce000000b0032ee2ceb17cmr6926427jag.268.1655509563773; Fri, 17
+ Jun 2022 16:46:03 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220617085435.193319-1-pbl@bestov.io> <165546541315.12170.9716012665055247467.git-patchwork-notify@kernel.org>
+In-Reply-To: <165546541315.12170.9716012665055247467.git-patchwork-notify@kernel.org>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Fri, 17 Jun 2022 16:45:52 -0700
+Message-ID: <CANP3RGcMqXH2+g1=40zwpzbpDORjDpyo4cVYZWS_tfVR8A_6CQ@mail.gmail.com>
+Subject: Re: [PATCH v2] ipv4: ping: fix bind address validity check
+To:     patchwork-bot+netdevbpf@kernel.org, stable@vger.kernel.org
+Cc:     Riccardo Paolo Bestetti <pbl@bestov.io>,
+        Carlos Llamas <cmllamas@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-phy@lists.infradead.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>
-In-Reply-To: <20220617203312.3799646-2-sean.anderson@seco.com>
-References: <20220617203312.3799646-1-sean.anderson@seco.com> <20220617203312.3799646-2-sean.anderson@seco.com>
-Subject: Re: [PATCH net-next 01/28] dt-bindings: phy: Add QorIQ SerDes binding
-Date:   Fri, 17 Jun 2022 17:27:12 -0600
-Message-Id: <1655508432.548094.2635208.nullmailer@robh.at.kernel.org>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, kernel-team@android.com,
+        Kernel hackers <linux-kernel@vger.kernel.org>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Miaohe Lin <linmiaohe@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 17 Jun 2022 16:32:45 -0400, Sean Anderson wrote:
-> This adds a binding for the SerDes module found on QorIQ processors. The
-> phy reference has two cells, one for the first lane and one for the
-> last. This should allow for good support of multi-lane protocols when
-> (if) they are added. There is no protocol option, because the driver is
-> designed to be able to completely reconfigure lanes at runtime.
-> Generally, the phy consumer can select the appropriate protocol using
-> set_mode. For the most part there is only one protocol controller
-> (consumer) per lane/protocol combination. The exception to this is the
-> B4860 processor, which has some lanes which can be connected to
-> multiple MACs. For that processor, I anticipate the easiest way to
-> resolve this will be to add an additional cell with a "protocol
-> controller instance" property.
-> 
-> Each serdes has a unique set of supported protocols (and lanes). The
-> support matrix is stored in the driver and is selected based on the
-> compatible string. It is anticipated that a new compatible string will
-> need to be added for each serdes on each SoC that drivers support is
-> added for.
-> 
-> There are two PLLs, each of which can be used as the master clock for
-> each lane. Each PLL has its own reference. For the moment they are
-> required, because it simplifies the driver implementation. Absent
-> reference clocks can be modeled by a fixed-clock with a rate of 0.
-> 
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-> ---
-> 
->  .../bindings/phy/fsl,qoriq-serdes.yaml        | 78 +++++++++++++++++++
->  1 file changed, 78 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/phy/fsl,qoriq-serdes.yaml
-> 
+On Fri, Jun 17, 2022 at 4:30 AM <patchwork-bot+netdevbpf@kernel.org> wrote:
+>
+> Hello:
+>
+> This patch was applied to netdev/net.git (master)
+> by David S. Miller <davem@davemloft.net>:
+>
+> On Fri, 17 Jun 2022 10:54:35 +0200 you wrote:
+> > Commit 8ff978b8b222 ("ipv4/raw: support binding to nonlocal addresses")
+> > introduced a helper function to fold duplicated validity checks of bind
+> > addresses into inet_addr_valid_or_nonlocal(). However, this caused an
+> > unintended regression in ping_check_bind_addr(), which previously would
+> > reject binding to multicast and broadcast addresses, but now these are
+> > both incorrectly allowed as reported in [1].
+> >
+> > [...]
+>
+> Here is the summary with links:
+>   - [v2] ipv4: ping: fix bind address validity check
+>     https://git.kernel.org/netdev/net/c/b4a028c4d031
+>
+> You are awesome, thank you!
+> --
+> Deet-doot-dot, I am a bot.
+> https://korg.docs.kernel.org/patchwork/pwbot.html
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/fsl,qoriq-serdes.example.dtb: phy@1ea0000: reg: [[0, 32112640], [0, 8192]] is too long
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/phy/fsl,qoriq-serdes.yaml
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+I believe this [
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=b4a028c4d031
+] needs to end up in 5.17+ LTS (though I guess 5.17 is eol, so
+probably just 5.18)
