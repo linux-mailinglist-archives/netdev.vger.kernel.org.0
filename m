@@ -2,121 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3C8A54FF09
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 23:03:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E70E954FEC6
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 23:02:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383521AbiFQUjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 16:39:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36278 "EHLO
+        id S1383565AbiFQUjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 16:39:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382924AbiFQUiR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 16:38:17 -0400
-Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-eopbgr150041.outbound.protection.outlook.com [40.107.15.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B234E64D20;
-        Fri, 17 Jun 2022 13:35:14 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HwxIJlWsc7+GPnLnk9NKePahwwjgcTFZ1umghXlznXMeg/iRw9XRk4SE5GpQ0AoDepip+GSzxDKBv3D1D0KkgjgMCfpOWjenbmYi8Cl1MxZSQx1nFLwbELvRlA1V5bhvEQuCpLUP3UqrA7nmNj87hW7grmgV1lYq7tLB6Q/LtbEdDso1mEY+sZlF8C1k5mznZZuQUXi7Y3H/6wH2exqadgg5rCUZaazpXtvuq+JM6wO0CsA598QqDXRAiqtZWYAp2EThPmQBKkD5FzCbwA3y5xXfKUoBUh8uSfQXL50JL5/I6CiBLq57e4juLlMp+bm4JF7GiHMrTH/M36Ya5MEu5Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=U4NrkRaqMwBvFMWtFmoLov7ytXI3OWJKrvNDhIqR2to=;
- b=PFEVUWBjswBfZ6Gcu45qpMnuahW/zGLliBSc9/SeWyxwQwbxQ6HXLhXnktgSyVvyqvzSPoF/4aiEdBrVa0tyTuuoH/sT5QxYc/Skb92rGG1dDncaSYGaISzmlK8d3ansUowKUMIsw7Z/zhVeKP5WKoHBcQm6VUe23k+gbiSmusprO3Ld0k4I1X9qk1BCStlzVm6jBDWWWy7d67USP3dbyMB3XUHa884/b8qmI8aJsSpN5+GCC6ALfY1GCPLU2HPH23XI/ncGFNPqT7lyeeVPMLLiDsbARNZA3Lax5XWgTEw3R8nFXaiShw7xJ0uUEK9OPySbsVJO5kHJIWuzpkkODQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U4NrkRaqMwBvFMWtFmoLov7ytXI3OWJKrvNDhIqR2to=;
- b=qdKf5e2y8thiS5LPXw84BVvY1zoLz3yRmy8oXgZlSf27D2MqFim4+jArPW44oDyudH0+Q8AmRRGJTag6KzJYYZfjoN5v3hq2Y2b1MALMZUxoAzpKdq9xVOEYy/R91gGBv07R31B9ELnXKthXwCxfu+URtLZdpGTRnMqYth6683HS+wHu7/xVLHTXHH0Hdwxbv9KrgyVtyQh4FMjnj9rRuMXiURarqGRzo5l+ZOgJnr80KARGZ/sIFPAnywcEJm4VfWTJq7b4OTu1M6upI5T+igtR0fS1IzTxnThLYWG/ubqJDcOIO38VCg6rBFuBBXkmumLfiZ5xtYBA6awhmq06lQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from VI1PR03MB4973.eurprd03.prod.outlook.com (2603:10a6:803:c5::12)
- by AS8PR03MB6838.eurprd03.prod.outlook.com (2603:10a6:20b:29b::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.16; Fri, 17 Jun
- 2022 20:34:31 +0000
-Received: from VI1PR03MB4973.eurprd03.prod.outlook.com
- ([fe80::d18f:e481:f1fa:3e8d]) by VI1PR03MB4973.eurprd03.prod.outlook.com
- ([fe80::d18f:e481:f1fa:3e8d%7]) with mapi id 15.20.5353.016; Fri, 17 Jun 2022
- 20:34:31 +0000
-From:   Sean Anderson <sean.anderson@seco.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Eric Dumazet <edumazet@google.com>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org
-Subject: [PATCH net-next 28/28] arm64: dts: ls1046a: Specify which MACs support RGMII
-Date:   Fri, 17 Jun 2022 16:33:12 -0400
-Message-Id: <20220617203312.3799646-29-sean.anderson@seco.com>
-X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
-In-Reply-To: <20220617203312.3799646-1-sean.anderson@seco.com>
-References: <20220617203312.3799646-1-sean.anderson@seco.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BL1PR13CA0384.namprd13.prod.outlook.com
- (2603:10b6:208:2c0::29) To VI1PR03MB4973.eurprd03.prod.outlook.com
- (2603:10a6:803:c5::12)
+        with ESMTP id S1383623AbiFQUjn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 16:39:43 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0569969CF3;
+        Fri, 17 Jun 2022 13:36:34 -0700 (PDT)
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o2IhL-0001TO-Tf; Fri, 17 Jun 2022 22:36:07 +0200
+Received: from [85.1.206.226] (helo=linux-3.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1o2IhL-000P9I-Hn; Fri, 17 Jun 2022 22:36:07 +0200
+Subject: Re: [PATCH bpf-next] selftests/bpf: add lwt ip encap tests to
+ test_progs
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Eyal Birger <eyal.birger@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, posk@google.com,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <20220607133135.271788-1-eyal.birger@gmail.com>
+ <f80edf4f-c795-1e1e-bac2-414189988156@iogearbox.net>
+ <CAHsH6GvWkyDg5mXnSNoyY0H2V2i4iMsucydB=RZB100czc-85A@mail.gmail.com>
+ <CAEf4BzYMqXZ6H-Mv=xSvRTJ0o8okrLQjVVYzgpG1D-8+3HNj1w@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <588753e1-0a05-8d74-23f2-24fd7e9888ad@iogearbox.net>
+Date:   Fri, 17 Jun 2022 22:36:06 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5442f662-44c2-41fb-5c3d-08da50a0c80f
-X-MS-TrafficTypeDiagnostic: AS8PR03MB6838:EE_
-X-Microsoft-Antispam-PRVS: <AS8PR03MB6838812D29C1DB5AA2197D2196AF9@AS8PR03MB6838.eurprd03.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: N2roVqVDVXe6OZz0JNX0zhZc1xXY0Iqu7ZlzwrusDkiQV7zQVvaCBoQUhIjb405UV43YE3QR7zoDC5MGeyws8g1M3b4bsUAuiCPbOYQkfoHelAIcfKNyKzpTLLvmzN27txrzzKt5vzG4E4NIiJrEEmq1prBBeHl5rPWvnNGb6iyQ9pfEoFJMwO0d41LOdY07kfiS3ixZ8l+iYqN8ky0OZepHvDWXGtRS0VIdPIpBVn4Jpm4PuoSH6GnaxxIpQU/lJZdlYq1qkjInsRD7mu9UtBDWGxt8ibqkuWSSc7LTvFA7wU78eTdDthuH0tDwv3GyZD9+BB8c75N6R5mabKH4HQXn/eIyIg7ZwMFB7yd0XxBVNkzX/MPKBhSuf4BH7DMGBz/EYxoKMzwslnxXk6LmmAutmpzHu8kX99LdGfyg2RX8U0JwiJ05RBGjmTZOzLU6z/7syNM0Rv1K+1OeBWaiIfYmeXAOfVZ9GnVYdBwVjSX3JVAsx+joxmwZUAQCaY4Ur2jEcHbL/hHVpRmxuNYI5DCn99Ve7x2n7WnCnAu3Tge1+PdrZTp6hwwUftHGTR44LgimQAOwQ+5wqJ//+SvQU5nVrYS/aFXfOBruhEEafpOKj+osLQMNuuoSJquxjaOFdeQ7nnhTW6F+uz9woV9lEM9Hct/PDXHyH8sDr1ztCTVEsnnTeP8MFKZmvJKfEB0+YpxbXMilrq/KEdGn2xQWuA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB4973.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(44832011)(2616005)(38100700002)(38350700002)(8936002)(52116002)(26005)(316002)(36756003)(7416002)(6512007)(2906002)(4326008)(66476007)(6486002)(66556008)(6506007)(5660300002)(83380400001)(8676002)(86362001)(186003)(66946007)(6666004)(1076003)(54906003)(110136005)(498600001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FyxehabTRoWE2p5BWLFAaXebmFDfO4sMHiy0SmLJHrdcDXFgyCaJZ17k5O6q?=
- =?us-ascii?Q?P0i0Ce+VKZ6uJrr5lrbTv9OTuAqNlqHS5tyXPN0iJOnj5dHfLHdIdFlHLfr3?=
- =?us-ascii?Q?Vftf9uIGEUdNmuifWBow5I1oKumTbwkZgHDxm35l863xO3w4oFp7+xrLTpTb?=
- =?us-ascii?Q?ztsYcDfxH2fxGphUJBejaRSoiNeSgC3jFVwupy8WM5vnxBj7QhSC1Jk5GZEe?=
- =?us-ascii?Q?jrf9Pfzz0DEdPUCf5MkElsyxLF/PNnIIz8D4t1GMk6UUrurZO1aRgxMB7+AL?=
- =?us-ascii?Q?dOKOqq7U9RiyQKo3tmRgqmJO7B3LlLyoZxw7nnp0QYWY0tffjwOC6DZ4nXCO?=
- =?us-ascii?Q?A+YOI3+hcvRyLSPOJ+UHpIn+IX/XpdFWVSK0GkqztjHFVoo5YsCXJbQRJXfD?=
- =?us-ascii?Q?8CJkBcMTrQJmELwffPPeAt2EfsN/hOg+y8vmsbBpUnTW6yqE1xBKrrHYbD7U?=
- =?us-ascii?Q?Zgqg5NOez88Ulr2gy9BNOmjpL9ljHuj/SvYRP9AOVoZd3NuiMy0HfPX5eyXo?=
- =?us-ascii?Q?RlUBQV3EZ5cKL4AXf27MEuoHK7XVriFAWWER8Cydgzxa4yMwlp42BJs30yJw?=
- =?us-ascii?Q?blVRlhVppc4OAqBmehVfPY4oVc/7qHCYfCRpeIp2N6MNt9JfxHTMH4mBRFQ5?=
- =?us-ascii?Q?lO911d5aZuCeZZv5/aQyuqmi/N3krgcgHx/ZEL+eooZAqtZRPbEZn5SOIldI?=
- =?us-ascii?Q?8mw76nHypwzf3yVEYOmAHkc19kHhsyfBm/ivncB4gwhFSrsSrq4cjSGWEzAi?=
- =?us-ascii?Q?bOojx3OzmY4ikVd1J2jmaXDVDol8HjWmYgd8l269kj23I6V11yxxMxsrIsE/?=
- =?us-ascii?Q?i+NhCSEfBlZDWk+1DyTZehBP0o8IedyyMLXcHwOM8rgHK1nojk7tp7qrnuvf?=
- =?us-ascii?Q?nYuoCiwsH9WB1O9H2qLljWB5kISFU+L14PcIIhFvcYoNt+SGld3BHYh85nLs?=
- =?us-ascii?Q?jH1NcCh3Qx0eKlDUKPfBUevxhZVJkVFg2tFU4m0X3+A9wt9LItcdGoa7cpkX?=
- =?us-ascii?Q?SRujeDR9/vSQDRbn+aV2e3xqYHi939aC71RIsFpStTNKSJZcl5WcBd8zLC+w?=
- =?us-ascii?Q?T2j2vHv4eLREq9q+ftLsQYPBN0h5FA3JTi4yjveaWcstri+9zLjjPYukMDrv?=
- =?us-ascii?Q?KCHS8hUFB3VkdTgUq1y9tkpeywafw6Vgz0qOt9gz6FyqLLBiwWJt9ffPIzDx?=
- =?us-ascii?Q?E0+ZeEQp3tm1ZPzj4GXckfcOn86N2TaNNTTNGKnal4PWZ3FN4feMi/NSPGVA?=
- =?us-ascii?Q?JXE8wlj1JdSuCB006e/qy9vF9G90XnfH8yRGU3nDf7oFHZvxZIhd+bs0xT7o?=
- =?us-ascii?Q?+ksM5O3KO8nv4xGhVomZl9957hRzTwDcoG/MYb9X9U7uAWePxd5ZSbkPd79L?=
- =?us-ascii?Q?t4MzOKmcgjgWwUjWYXOgS8jpOsJ4aDq3UQUo/5dBCyQ0vZ0dRjqNzHeKsRv5?=
- =?us-ascii?Q?kXY3jSSuSW8MpKTSXt3/t0BghB6xFkPCOajk95uW3VD7U4Dl0uxAxkmfHtsv?=
- =?us-ascii?Q?hHPmfuwzLZ9cU0v1dkfD/pg6HFcloMBvnYfSU1Df0Cf/QGi34QYYgX8EV1hr?=
- =?us-ascii?Q?RKOOGEBrbK02jlqPc+yTgFZIiAsjLGB34KK2IbxmykfmS8c6So5LRmrZWPXA?=
- =?us-ascii?Q?whFSNngy+gD4vDLZ2NmesiC/nacT8hcpB/tttFT9ZkuWxNCVC4MKktpueC70?=
- =?us-ascii?Q?/ecYf2UcGLO9gtyZCMsneHOAHfA5lEZAJ0yPg4X0Sq9d3wbHIupVGh9HC+QN?=
- =?us-ascii?Q?XvlevYJ0q23DufmwyD2G1w+PL4Yr8Qk=3D?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5442f662-44c2-41fb-5c3d-08da50a0c80f
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR03MB4973.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2022 20:34:31.0285
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5Y27vk367/RGTN0oEZICEdrJgHRb5Rnbsl883zY1tvohVypKALtV91NiFg+ljKhFF6z9A/kxmaIiDgqPTFMWmg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR03MB6838
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+In-Reply-To: <CAEf4BzYMqXZ6H-Mv=xSvRTJ0o8okrLQjVVYzgpG1D-8+3HNj1w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26575/Fri Jun 17 10:08:05 2022)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -124,56 +61,480 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For more precise link mode support, we can add a property specifying
-which MACs support RGMII. This silences the warning
+Hi Eyal,
 
-	missing 'rgmii' property; assuming supported
+On 6/16/22 1:31 AM, Andrii Nakryiko wrote:
+[...]
+>> What's the next step - should I submit a PR to libbpf on Github for adding
+>> CONFIG_NET_VRF?
+> 
+> Yes, please, for [0] and [1]:
+> 
+>   [0] https://github.com/libbpf/libbpf
+>   [1] https://github.com/kernel-patches/vmtest
 
-Signed-off-by: Sean Anderson <sean.anderson@seco.com>
----
+Thanks a lot for getting the needed configs in.
 
- arch/arm64/boot/dts/freescale/fsl-ls1046-post.dtsi | 8 ++++++++
- 1 file changed, 8 insertions(+)
+The CI looks better now, but there is one small failure on s390 (big endian):
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1046-post.dtsi b/arch/arm64/boot/dts/freescale/fsl-ls1046-post.dtsi
-index d6caaea57d90..4bb314388a72 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1046-post.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1046-post.dtsi
-@@ -23,26 +23,34 @@ &soc {
- &fman0 {
- 	/* these aliases provide the FMan ports mapping */
- 	enet0: ethernet@e0000 {
-+		rgmii = <0>;
- 	};
- 
- 	enet1: ethernet@e2000 {
-+		rgmii = <0>;
- 	};
- 
- 	enet2: ethernet@e4000 {
-+		rgmii = <1>;
- 	};
- 
- 	enet3: ethernet@e6000 {
-+		rgmii = <1>;
- 	};
- 
- 	enet4: ethernet@e8000 {
-+		rgmii = <0>;
- 	};
- 
- 	enet5: ethernet@ea000 {
-+		rgmii = <0>;
- 	};
- 
- 	enet6: ethernet@f0000 {
-+		rgmii = <0>;
- 	};
- 
- 	enet7: ethernet@f2000 {
-+		rgmii = <0>;
- 	};
- };
--- 
-2.35.1.1320.gc452695387.dirty
+   https://github.com/kernel-patches/bpf/runs/6932751303?check_suite_focus=true
 
+These:
+
+1) "Failed to cycle device vethX; route tables might be wrong!" is this expected?
+2) test_gso:FAIL:recv from server unexpected recv from server: actual 7140 != expected 9000
+
+Please take a look and fix in a v2 when you get a chance.
+
+I'm pasting the full log just in case:
+
+   [...]
+   #97      lookup_and_delete:OK
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth5: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth2: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth4: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth3: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth8: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth7: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth5: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth2: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth4: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth3: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth8: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth7: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth2: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth6: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth5: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth4: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth3: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth8: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth7: link becomes ready
+
+   veth3: Failed to cycle device veth3; route tables might be wrong!
+
+   veth7: Failed to cycle device veth7; route tables might be wrong!
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth6: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth5: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth4: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth3: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth8: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth7: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth2: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
+
+   veth3: Failed to cycle device veth3; route tables might be wrong!
+
+   veth7: Failed to cycle device veth7; route tables might be wrong!
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth2: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth6: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth5: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth4: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth3: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth8: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth7: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth5: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth2: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth4: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth3: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth8: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth7: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth6: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth5: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth4: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth3: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth8: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth7: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth2: link becomes ready
+
+   veth3: Failed to cycle device veth3; route tables might be wrong!
+
+   veth7: Failed to cycle device veth7; route tables might be wrong!
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth6: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth5: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth2: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth4: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth3: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth8: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth7: link becomes ready
+
+   veth3: Failed to cycle device veth3; route tables might be wrong!
+
+   veth7: Failed to cycle device veth7; route tables might be wrong!
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth6: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth5: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth4: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth3: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth8: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth7: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth2: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth5: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth2: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth4: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth3: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth8: link becomes ready
+
+   IPv6: ADDRCONF(NETDEV_CHANGE): veth7: link becomes ready
+
+   serial_test_lwt_ip_encap:PASS:pthread_create 0 nsec
+   setup_namespaces:PASS:ip netns add ns_lwt_1 0 nsec
+   setup_namespaces:PASS:ip netns add ns_lwt_2 0 nsec
+   setup_namespaces:PASS:ip netns add ns_lwt_3 0 nsec
+   lwt_ip_encap_test:PASS:setup namespaces 0 nsec
+   setup_links_and_routes:PASS:ip link add veth1 netns ns_lwt_1 type veth peer name veth2 netns ns_lwt_2 0 nsec
+   setup_links_and_routes:PASS:ip link add veth3 netns ns_lwt_2 type veth peer name veth4 netns ns_lwt_3 0 nsec
+   setup_links_and_routes:PASS:ip link add veth5 netns ns_lwt_1 type veth peer name veth6 netns ns_lwt_2 0 nsec
+   setup_links_and_routes:PASS:ip link add veth7 netns ns_lwt_2 type veth peer name veth8 netns ns_lwt_3 0 nsec
+   open_netns:PASS:malloc token 0 nsec
+   open_netns:PASS:open /proc/self/ns/net 0 nsec
+   open_netns:PASS:open netns fd 0 nsec
+   setns_by_fd:PASS:setns 0 nsec
+   setns_by_fd:PASS:unshare 0 nsec
+   setns_by_fd:PASS:remount private /sys 0 nsec
+   setns_by_fd:PASS:umount2 /sys 0 nsec
+   setns_by_fd:PASS:mount /sys 0 nsec
+   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
+   open_netns:PASS:setns_by_fd 0 nsec
+   setup_ns:PASS:setns 0 nsec
+   write_sysctl:PASS:open sysctl 0 nsec
+   write_sysctl:PASS:write sysctl 0 nsec
+   write_sysctl:PASS:open sysctl 0 nsec
+   write_sysctl:PASS:write sysctl 0 nsec
+   write_sysctl:PASS:open sysctl 0 nsec
+   write_sysctl:PASS:write sysctl 0 nsec
+   write_sysctl:PASS:open sysctl 0 nsec
+   write_sysctl:PASS:write sysctl 0 nsec
+   setup_ns1:PASS:ip link add gre_md type gre external 0 nsec
+   setup_ns1:PASS:ip link add gre6_md type ip6gre external 0 nsec
+   setup_device:PASS:ip addr add 172.16.1.100/24 dev veth1 0 nsec
+   setup_device:PASS:ip -6 addr add fb01::1/128 nodad dev veth1 0 nsec
+   setup_device:PASS:ip link set dev veth1 up 0 nsec
+   setup_device:PASS:ip addr add 172.16.5.100/24 dev veth5 0 nsec
+   setup_device:PASS:ip -6 addr add fb05::1/128 nodad dev veth5 0 nsec
+   setup_device:PASS:ip link set dev veth5 up 0 nsec
+   setup_device:PASS:ip addr add 172.16.1.100/24 dev gre_md 0 nsec
+   setup_device:PASS:ip -6 addr add fb01::1/128 nodad dev gre_md 0 nsec
+   setup_device:PASS:ip link set dev gre_md up 0 nsec
+   setup_device:PASS:ip addr add 172.16.1.100/24 dev gre6_md 0 nsec
+   setup_device:PASS:ip -6 addr add fb01::1/128 nodad dev gre6_md 0 nsec
+   setup_device:PASS:ip link set dev gre6_md up 0 nsec
+   setup_ns1:PASS:ip   route add  172.16.2.100/32 dev veth1 0 nsec
+   setup_ns1:PASS:ip  -6 route add  fb02::1/128 dev veth1 0 nsec
+   setup_ns1:PASS:ip   route add  default dev veth1 via 172.16.2.100 0 nsec
+   setup_ns1:PASS:ip  -6 route add  default dev veth1 via fb02::1 0 nsec
+   setup_ns1:PASS:ip   route add  172.16.6.100/32 dev veth5 0 nsec
+   setup_ns1:PASS:ip   route add  172.16.7.100/32 dev veth5 via 172.16.6.100 0 nsec
+   setup_ns1:PASS:ip   route add  172.16.8.100/32 dev veth5 via 172.16.6.100 0 nsec
+   setup_ns1:PASS:ip  -6 route add  fb06::1/128 dev veth5 0 nsec
+   setup_ns1:PASS:ip  -6 route add  fb07::1/128 dev veth5 via fb06::1 0 nsec
+   setup_ns1:PASS:ip  -6 route add  fb08::1/128 dev veth5 via fb06::1 0 nsec
+   setup_ns1:PASS:ip   route add  172.16.16.100/32 dev veth5 via 172.16.6.100 0 nsec
+   setup_ns1:PASS:ip  -6 route add  fb10::1/128 dev veth5 via fb06::1 0 nsec
+   setns_by_fd:PASS:setns 0 nsec
+   setns_by_fd:PASS:unshare 0 nsec
+   setns_by_fd:PASS:remount private /sys 0 nsec
+   setns_by_fd:PASS:umount2 /sys 0 nsec
+   setns_by_fd:PASS:mount /sys 0 nsec
+   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
+   close_netns:PASS:setns_by_fd 0 nsec
+   open_netns:PASS:malloc token 0 nsec
+   open_netns:PASS:open /proc/self/ns/net 0 nsec
+   open_netns:PASS:open netns fd 0 nsec
+   setns_by_fd:PASS:setns 0 nsec
+   setns_by_fd:PASS:unshare 0 nsec
+   setns_by_fd:PASS:remount private /sys 0 nsec
+   setns_by_fd:PASS:umount2 /sys 0 nsec
+   setns_by_fd:PASS:mount /sys 0 nsec
+   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
+   open_netns:PASS:setns_by_fd 0 nsec
+   setup_ns:PASS:setns 0 nsec
+   write_sysctl:PASS:open sysctl 0 nsec
+   write_sysctl:PASS:write sysctl 0 nsec
+   write_sysctl:PASS:open sysctl 0 nsec
+   write_sysctl:PASS:write sysctl 0 nsec
+   write_sysctl:PASS:open sysctl 0 nsec
+   write_sysctl:PASS:write sysctl 0 nsec
+   write_sysctl:PASS:open sysctl 0 nsec
+   write_sysctl:PASS:write sysctl 0 nsec
+   write_sysctl:PASS:open sysctl 0 nsec
+   write_sysctl:PASS:write sysctl 0 nsec
+   write_sysctl:PASS:open sysctl 0 nsec
+   write_sysctl:PASS:write sysctl 0 nsec
+   setup_device:PASS:ip addr add 172.16.2.100/24 dev veth2 0 nsec
+   setup_device:PASS:ip -6 addr add fb02::1/128 nodad dev veth2 0 nsec
+   setup_device:PASS:ip link set dev veth2 up 0 nsec
+   setup_device:PASS:ip addr add 172.16.3.100/24 dev veth3 0 nsec
+   setup_device:PASS:ip -6 addr add fb03::1/128 nodad dev veth3 0 nsec
+   setup_device:PASS:ip link set dev veth3 up 0 nsec
+   setup_device:PASS:ip addr add 172.16.6.100/24 dev veth6 0 nsec
+   setup_device:PASS:ip -6 addr add fb06::1/128 nodad dev veth6 0 nsec
+   setup_device:PASS:ip link set dev veth6 up 0 nsec
+   setup_device:PASS:ip addr add 172.16.7.100/24 dev veth7 0 nsec
+   setup_device:PASS:ip -6 addr add fb07::1/128 nodad dev veth7 0 nsec
+   setup_device:PASS:ip link set dev veth7 up 0 nsec
+   setup_ns2:PASS:ip   route add  172.16.1.100/32 dev veth2 0 nsec
+   setup_ns2:PASS:ip   route add  172.16.4.100/32 dev veth3 0 nsec
+   setup_ns2:PASS:ip  -6 route add  fb01::1/128 dev veth2 0 nsec
+   setup_ns2:PASS:ip  -6 route add  fb04::1/128 dev veth3 0 nsec
+   setup_ns2:PASS:ip   route add  172.16.5.100/32 dev veth6 0 nsec
+   setup_ns2:PASS:ip   route add  172.16.8.100/32 dev veth7 0 nsec
+   setup_ns2:PASS:ip  -6 route add  fb05::1/128 dev veth6 0 nsec
+   setup_ns2:PASS:ip  -6 route add  fb08::1/128 dev veth7 0 nsec
+   setup_ns2:PASS:ip   route add  172.16.16.100/32 dev veth7 via 172.16.8.100 0 nsec
+   setup_ns2:PASS:ip  -6 route add  fb10::1/128 dev veth7 via fb08::1 0 nsec
+   setns_by_fd:PASS:setns 0 nsec
+   setns_by_fd:PASS:unshare 0 nsec
+   setns_by_fd:PASS:remount private /sys 0 nsec
+   setns_by_fd:PASS:umount2 /sys 0 nsec
+   setns_by_fd:PASS:mount /sys 0 nsec
+   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
+   close_netns:PASS:setns_by_fd 0 nsec
+   open_netns:PASS:malloc token 0 nsec
+   open_netns:PASS:open /proc/self/ns/net 0 nsec
+   open_netns:PASS:open netns fd 0 nsec
+   setns_by_fd:PASS:setns 0 nsec
+   setns_by_fd:PASS:unshare 0 nsec
+   setns_by_fd:PASS:remount private /sys 0 nsec
+   setns_by_fd:PASS:umount2 /sys 0 nsec
+   setns_by_fd:PASS:mount /sys 0 nsec
+   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
+   open_netns:PASS:setns_by_fd 0 nsec
+   setup_ns:PASS:setns 0 nsec
+   write_sysctl:PASS:open sysctl 0 nsec
+   write_sysctl:PASS:write sysctl 0 nsec
+   write_sysctl:PASS:open sysctl 0 nsec
+   write_sysctl:PASS:write sysctl 0 nsec
+   write_sysctl:PASS:open sysctl 0 nsec
+   write_sysctl:PASS:write sysctl 0 nsec
+   write_sysctl:PASS:open sysctl 0 nsec
+   write_sysctl:PASS:write sysctl 0 nsec
+   setup_device:PASS:ip addr add 172.16.4.100/24 dev veth4 0 nsec
+   setup_device:PASS:ip -6 addr add fb04::1/128 nodad dev veth4 0 nsec
+   setup_device:PASS:ip link set dev veth4 up 0 nsec
+   setup_device:PASS:ip addr add 172.16.8.100/24 dev veth8 0 nsec
+   setup_device:PASS:ip -6 addr add fb08::1/128 nodad dev veth8 0 nsec
+   setup_device:PASS:ip link set dev veth8 up 0 nsec
+   setup_ns3:PASS:ip   route add  172.16.3.100/32 dev veth4 0 nsec
+   setup_ns3:PASS:ip   route add  172.16.1.100/32 dev veth4 via 172.16.3.100 0 nsec
+   setup_ns3:PASS:ip   route add  172.16.2.100/32 dev veth4 via 172.16.3.100 0 nsec
+   setup_ns3:PASS:ip  -6 route add  fb03::1/128 dev veth4 0 nsec
+   setup_ns3:PASS:ip  -6 route add  fb01::1/128 dev veth4 via fb03::1 0 nsec
+   setup_ns3:PASS:ip  -6 route add  fb02::1/128 dev veth4 via fb03::1 0 nsec
+   setup_ns3:PASS:ip   route add  172.16.7.100/32 dev veth8 0 nsec
+   setup_ns3:PASS:ip   route add  172.16.5.100/32 dev veth8 via 172.16.7.100 0 nsec
+   setup_ns3:PASS:ip   route add  172.16.6.100/32 dev veth8 via 172.16.7.100 0 nsec
+   setup_ns3:PASS:ip  -6 route add  fb07::1/128 dev veth8 0 nsec
+   setup_ns3:PASS:ip  -6 route add  fb05::1/128 dev veth8 via fb07::1 0 nsec
+   setup_ns3:PASS:ip  -6 route add  fb06::1/128 dev veth8 via fb07::1 0 nsec
+   setup_ns3:PASS:ip tunnel add gre_dev mode gre remote 172.16.5.100 local 172.16.16.100 ttl 255 key 0 0 nsec
+   setup_device:PASS:ip addr add 172.16.16.100/24 dev gre_dev 0 nsec
+   setup_device:PASS:ip link set dev gre_dev up 0 nsec
+   setup_ns3:PASS:ip tunnel add gre6_dev mode ip6gre remote fb05::1 local fb10::1 ttl 255 key 0 0 nsec
+   setup_device:PASS:ip -6 addr add fb10::1/128 nodad dev gre6_dev 0 nsec
+   setup_device:PASS:ip link set dev gre6_dev up 0 nsec
+   setns_by_fd:PASS:setns 0 nsec
+   setns_by_fd:PASS:unshare 0 nsec
+   setns_by_fd:PASS:remount private /sys 0 nsec
+   setns_by_fd:PASS:umount2 /sys 0 nsec
+   setns_by_fd:PASS:mount /sys 0 nsec
+   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
+   close_netns:PASS:setns_by_fd 0 nsec
+   lwt_ip_encap_test:PASS:setup links and routes 0 nsec
+   test_ping:PASS:ip netns exec ns_lwt_1 ping -c 1 -W 1 -I veth1 172.16.4.100 > /dev/null 0 nsec
+   test_ping:PASS:ip netns exec ns_lwt_1 ping6 -c 1 -W 1 -I veth1 fb04::1 > /dev/null 0 nsec
+   lwt_ip_encap_test:PASS:ip -netns ns_lwt_2  route del  172.16.4.100/32 dev veth3 0 nsec
+   lwt_ip_encap_test:PASS:ip -netns ns_lwt_2 -6 route del  fb04::1/128 dev veth3 0 nsec
+   test_ping:PASS:ip netns exec ns_lwt_1 ping -c 1 -W 1 -I veth1 172.16.4.100 > /dev/null 0 nsec
+   test_ping:PASS:ip netns exec ns_lwt_1 ping6 -c 1 -W 1 -I veth1 fb04::1 > /dev/null 0 nsec
+   lwt_ip_encap_test:PASS:ip -netns ns_lwt_1  route add  172.16.4.100/32 encap bpf xmit obj test_lwt_ip_encap.o sec encap_gre dev veth1 0 nsec
+   lwt_ip_encap_test:PASS:ip -netns ns_lwt_1 -6 route add  fb04::1/128 encap bpf xmit obj test_lwt_ip_encap.o sec encap_gre dev veth1 0 nsec
+   test_ping:PASS:ip netns exec ns_lwt_1 ping -c 1 -W 1 -I veth1 172.16.4.100 > /dev/null 0 nsec
+   test_ping:PASS:ip netns exec ns_lwt_1 ping6 -c 1 -W 1 -I veth1 fb04::1 > /dev/null 0 nsec
+   open_netns:PASS:malloc token 0 nsec
+   open_netns:PASS:open /proc/self/ns/net 0 nsec
+   open_netns:PASS:open netns fd 0 nsec
+   setns_by_fd:PASS:setns 0 nsec
+   setns_by_fd:PASS:unshare 0 nsec
+   setns_by_fd:PASS:remount private /sys 0 nsec
+   setns_by_fd:PASS:umount2 /sys 0 nsec
+   setns_by_fd:PASS:mount /sys 0 nsec
+   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
+   open_netns:PASS:setns_by_fd 0 nsec
+   test_gso:PASS:setns 0 nsec
+   test_gso:PASS:listen 0 nsec
+   setns_by_fd:PASS:setns 0 nsec
+   setns_by_fd:PASS:unshare 0 nsec
+   setns_by_fd:PASS:remount private /sys 0 nsec
+   setns_by_fd:PASS:umount2 /sys 0 nsec
+   setns_by_fd:PASS:mount /sys 0 nsec
+   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
+   close_netns:PASS:setns_by_fd 0 nsec
+   open_netns:PASS:malloc token 0 nsec
+   open_netns:PASS:open /proc/self/ns/net 0 nsec
+   open_netns:PASS:open netns fd 0 nsec
+   setns_by_fd:PASS:setns 0 nsec
+   setns_by_fd:PASS:unshare 0 nsec
+   setns_by_fd:PASS:remount private /sys 0 nsec
+   setns_by_fd:PASS:umount2 /sys 0 nsec
+   setns_by_fd:PASS:mount /sys 0 nsec
+   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
+   open_netns:PASS:setns_by_fd 0 nsec
+   test_gso:PASS:setns src 0 nsec
+   test_gso:PASS:connect_to_fd 0 nsec
+   test_gso:PASS:accept 0 nsec
+   test_gso:PASS:settimeo 0 nsec
+   test_gso:PASS:send to server 0 nsec
+   test_gso:PASS:recv from server 0 nsec
+   setns_by_fd:PASS:setns 0 nsec
+   setns_by_fd:PASS:unshare 0 nsec
+   setns_by_fd:PASS:remount private /sys 0 nsec
+   setns_by_fd:PASS:umount2 /sys 0 nsec
+   setns_by_fd:PASS:mount /sys 0 nsec
+   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
+   close_netns:PASS:setns_by_fd 0 nsec
+   open_netns:PASS:malloc token 0 nsec
+   open_netns:PASS:open /proc/self/ns/net 0 nsec
+   open_netns:PASS:open netns fd 0 nsec
+   setns_by_fd:PASS:setns 0 nsec
+   setns_by_fd:PASS:unshare 0 nsec
+   setns_by_fd:PASS:remount private /sys 0 nsec
+   setns_by_fd:PASS:umount2 /sys 0 nsec
+   setns_by_fd:PASS:mount /sys 0 nsec
+   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
+   open_netns:PASS:setns_by_fd 0 nsec
+   test_gso:PASS:setns 0 nsec
+   test_gso:PASS:listen 0 nsec
+   setns_by_fd:PASS:setns 0 nsec
+   setns_by_fd:PASS:unshare 0 nsec
+   setns_by_fd:PASS:remount private /sys 0 nsec
+   setns_by_fd:PASS:umount2 /sys 0 nsec
+   setns_by_fd:PASS:mount /sys 0 nsec
+   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
+   close_netns:PASS:setns_by_fd 0 nsec
+   open_netns:PASS:malloc token 0 nsec
+   open_netns:PASS:open /proc/self/ns/net 0 nsec
+   open_netns:PASS:open netns fd 0 nsec
+   setns_by_fd:PASS:setns 0 nsec
+   setns_by_fd:PASS:unshare 0 nsec
+   setns_by_fd:PASS:remount private /sys 0 nsec
+   setns_by_fd:PASS:umount2 /sys 0 nsec
+   setns_by_fd:PASS:mount /sys 0 nsec
+   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
+   open_netns:PASS:setns_by_fd 0 nsec
+   test_gso:PASS:setns src 0 nsec
+   test_gso:PASS:connect_to_fd 0 nsec
+   test_gso:PASS:accept 0 nsec
+   test_gso:PASS:settimeo 0 nsec
+   test_gso:PASS:send to server 0 nsec
+   test_gso:FAIL:recv from server unexpected recv from server: actual 7140 != expected 9000
+   setns_by_fd:PASS:setns 0 nsec
+   setns_by_fd:PASS:unshare 0 nsec
+   setns_by_fd:PASS:remount private /sys 0 nsec
+   setns_by_fd:PASS:umount2 /sys 0 nsec
+   setns_by_fd:PASS:mount /sys 0 nsec
+   setns_by_fd:PASS:mount /sys/fs/bpf 0 nsec
+   close_netns:PASS:setns_by_fd 0 nsec
+   remove_routes_to_gredev:PASS:ip -netns ns_lwt_1  route del  172.16.16.100/32 dev veth5 0 nsec
+   remove_routes_to_gredev:PASS:ip -netns ns_lwt_1 -6 route del  fb10::1/128 dev veth5 0 nsec
+   remove_routes_to_gredev:PASS:ip -netns ns_lwt_2  route del  172.16.16.100/32 dev veth7 0 nsec
+   remove_routes_to_gredev:PASS:ip -netns ns_lwt_2 -6 route del  fb10::1/128 dev veth7 0 nsec
+   setup_namespaces:PASS:ip netns delete ns_lwt_1 0 nsec
+   setup_namespaces:PASS:ip netns delete ns_lwt_2 0 nsec
+   setup_namespaces:PASS:ip netns delete ns_lwt_3 0 nsec
+   #98/1    lwt_ip_encap/lwt_ipv4_encap_egress:FAIL
+   #98/2    lwt_ip_encap/lwt_ipv6_encap_egress:OK
+   #98/3    lwt_ip_encap/lwt_ipv4_encap_egress_vrf:OK
+   #98/4    lwt_ip_encap/lwt_ipv6_encap_egress_vrf:OK
+   #98/5    lwt_ip_encap/lwt_ipv4_encap_ingress:OK
+   #98/6    lwt_ip_encap/lwt_ipv6_encap_ingress:OK
+   #98/7    lwt_ip_encap/lwt_ipv4_encap_ingress_vrf:OK
+   #98/8    lwt_ip_encap/lwt_ipv6_encap_ingress_vrf:OK
+   #98/9    lwt_ip_encap/lwt_ipv4_encap_egress_md:OK
+   #98/10   lwt_ip_encap/lwt_ipv6_encap_egress_md:OK
+   #98      lwt_ip_encap:FAIL
+   [...]
+
+Thanks,
+Daniel
