@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDFC654F545
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 12:22:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 183F254F5A9
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 12:40:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381814AbiFQKWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 06:22:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42200 "EHLO
+        id S1381901AbiFQKkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 06:40:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235077AbiFQKWK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 06:22:10 -0400
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A278D6A410
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 03:22:08 -0700 (PDT)
-Received: by mail-il1-f198.google.com with SMTP id r9-20020a92cd89000000b002d16798b3cfso2396693ilb.22
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 03:22:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=BHa9+hGQ/IHxpauWdzshJrHjnkYBEraCxfPd/dEUtAU=;
-        b=t2PlhZtme+bt6nyoR01slptXLIUEhYziTjv+dVDlVVdu2fKoh8ojDJaFXkzh/OX3k0
-         NEJ0vrdTy/cp/+JI8wtv14VePY1sQYf+N92fy4CkUI9dJY5KdeGa+bKhXjCQ79p8PyKE
-         fBBmhAULzNSqmBNO2+jCXY70w6ZVGM9D7JmCtxBQNaB8zk37GdEVoK8fuhkt6AGIKAiV
-         BXbfHvmEEj75baU+xrEtTSPdZcMQ7bNrLx2MKP1cSNH8QclRuYGch7jo5oMQVzawYgck
-         Fea0AkBdk6As7LMuCenlvTeYvu4ozMENIhuanOPQ/KUqxfA5lthEdZWJq9Ag1rqTi5bJ
-         J2Sg==
-X-Gm-Message-State: AJIora/zZm8jtAQWKsrKBAPG/y1Did9n8QHw//C3fj8hKMwPxpDb6Dep
-        LNYpnzbI7XdSdffuoXGjxWck7wks7HBN7DXq1qcmBtcY6GpZ
-X-Google-Smtp-Source: AGRyM1smu9GzM0y0cFoa15FxWOxLa+jhsxFr0WpG+sezBX1jAlHrD+nTa4zPVOTrTRzJ5B+qmpSlN4EFeuSvc4Z59pOMCUWl/qZw
+        with ESMTP id S1381741AbiFQKkS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 06:40:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96DCD6AA7D;
+        Fri, 17 Jun 2022 03:40:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CF25B8299D;
+        Fri, 17 Jun 2022 10:40:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A10B9C341CB;
+        Fri, 17 Jun 2022 10:40:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655462414;
+        bh=FfnaDyOU4tBYtXRnV8yExF0syv6ks0IlfB02Ng05kwI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=JDP5Lyz4LmVub2ntySZweDlwak7EoUJ5kzGJ8p5L4tKwEg2n+mMnWeiUdaXVexZ4L
+         lDpJcVvNJ+rgqdaavVaO8BkuRfDoxX6dFh09VJX8dTeNJHg++zv1ndyTWRm5ZOsAEs
+         7lAGH/5RTIkXpSN5V9pvinY4Rt2OK5eUDB/IxqAGoXjWJgZAkykCHaLkOivRPg4y4e
+         xC6SYexLldfnoppE8cffdchK+HIVqppA5C2iKozZAOLzsJ8VZbNiQu2dziLPNOnaUm
+         u+qmkXwHvAvtLGnr1R9ECndkBdez5XCEY1bvkvKAL5cw+bj2vYqnGfX61WasgD9a/n
+         5FXAAVyGXBo4Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8D432E6D466;
+        Fri, 17 Jun 2022 10:40:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:329e:b0:331:e8ae:7d9d with SMTP id
- f30-20020a056638329e00b00331e8ae7d9dmr5212322jav.274.1655461328084; Fri, 17
- Jun 2022 03:22:08 -0700 (PDT)
-Date:   Fri, 17 Jun 2022 03:22:08 -0700
-In-Reply-To: <00000000000006b92e05d6ee4fce@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000066643305e1a22061@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in ath9k_hif_usb_reg_in_cb (3)
-From:   syzbot <syzbot+b05dabaed0b1f0b0a5e4@syzkaller.appspotmail.com>
-To:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net,
-        edumazet@google.com, gregkh@linuxfoundation.org,
-        john.ogness@linutronix.de, kuba@kernel.org, kvalo@kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, pmladek@suse.com, rostedt@goodmis.org,
-        senozhatsky@chromium.org, syzkaller-bugs@googlegroups.com,
-        toke@toke.dk
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] hinic: Replace memcpy() with direct assignment
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165546241457.18293.10133826510983697335.git-patchwork-notify@kernel.org>
+Date:   Fri, 17 Jun 2022 10:40:14 +0000
+References: <20220616052312.292861-1-keescook@chromium.org>
+In-Reply-To: <20220616052312.292861-1-keescook@chromium.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, nathan@kernel.org, ndesaulniers@google.com,
+        trix@redhat.com, leon@kernel.org, jiri@nvidia.com,
+        olteanv@gmail.com, simon.horman@corigine.com,
+        netdev@vger.kernel.org, llvm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,24 +60,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+Hello:
 
-commit 09c5ba0aa2fcfdadb17d045c3ee6f86d69270df7
-Author: John Ogness <john.ogness@linutronix.de>
-Date:   Thu Apr 21 21:22:48 2022 +0000
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-    printk: add kthread console printers
+On Wed, 15 Jun 2022 22:23:12 -0700 you wrote:
+> Under CONFIG_FORTIFY_SOURCE=y and CONFIG_UBSAN_BOUNDS=y, Clang is bugged
+> here for calculating the size of the destination buffer (0x10 instead of
+> 0x14). This copy is a fixed size (sizeof(struct fw_section_info_st)), with
+> the source and dest being struct fw_section_info_st, so the memcpy should
+> be safe, assuming the index is within bounds, which is UBSAN_BOUNDS's
+> responsibility to figure out.
+> 
+> [...]
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10e88490080000
-start commit:   210e04ff7681 Merge tag 'pci-v5.18-fixes-1' of git://git.ke..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=902c5209311d387c
-dashboard link: https://syzkaller.appspot.com/bug?extid=b05dabaed0b1f0b0a5e4
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14f2c009f00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11b20b35f00000
+Here is the summary with links:
+  - hinic: Replace memcpy() with direct assignment
+    https://git.kernel.org/netdev/net-next/c/2c0ab32b73cf
 
-If the result looks correct, please mark the issue as fixed by replying with:
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-#syz fix: printk: add kthread console printers
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
