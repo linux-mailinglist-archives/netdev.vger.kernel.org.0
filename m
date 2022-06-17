@@ -2,148 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8192754FE49
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 22:29:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9706B54FE56
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 22:34:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237770AbiFQU0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 16:26:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57722 "EHLO
+        id S1349872AbiFQUdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 16:33:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231304AbiFQU0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 16:26:49 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BCAB5C64D;
-        Fri, 17 Jun 2022 13:26:49 -0700 (PDT)
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25HHOhi3013868;
-        Fri, 17 Jun 2022 13:26:28 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type :
- content-transfer-encoding : in-reply-to : mime-version; s=facebook;
- bh=tFMPWp46LaTH3zGpohtB/XmxaQX58RagdZm/c51Yl9Q=;
- b=ZmLEc2I7uNDEdOyDAhA7NwJOvJrbfHHtea+5Pg+yaaHMbsTEe2rtnO3GCWOq/3rumE8d
- 2RCcwWRsL/10V8AVra80X8jrHn/o2niMecs6CNWc0aSq8A3TFyNmCZk5kENQ/Kniaxkt
- 7ZMkT/s75ER/Qc4DjEU2+muS1JmbvQzWlxs= 
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2174.outbound.protection.outlook.com [104.47.57.174])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3grjetcvk4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 17 Jun 2022 13:26:28 -0700
+        with ESMTP id S241902AbiFQUdj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 16:33:39 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2075.outbound.protection.outlook.com [40.107.22.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5986D4B41A;
+        Fri, 17 Jun 2022 13:33:37 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l8ZK66UeZ4aCi1A66lZ7AM2jFtaMc7s+TCCb+QCKABF6sjI2i9sAU+Oz/gY5AWVCpMu5yTdw08do7eLW4LiH9Wiug9UelYjABsjkaUYvsl1E2Ml4Cacyzj9WFn3Pj053a8o3j8SATuYGkHNdFWBEvXXyJCBjnkzBDN6/FY23DqLzJzTzjlt3aKqFVcBmQLDU/N/0uzQ/NzBCBm3Oo6a70ANr+fn1aE2ZWQoV06yEXSaqEKaq5oVoUPrQPitCxYXvV/5YDkgD7ftTe3O35QdKbEF2vU/DNZI8D5qCwemrpRGa8ePfligfRaEAtKmxu3jkPxpTAwcKMofap9o4P/HRtw==
+ b=I67kdhRCv4UdsnYKO1HZbqWcFAhkjpDFHBsuX/JCctRwjBR0LVtV2cqWl3nZuCQ0IT5Bjhh/1HvdhbFvG90J1X2rutzc5KPaosm4cJD43vj7x7aPxahMHAR8Poj5RsgriEr0Lx5nRjVEg6/Mva3BdUCQq5nm3hMaQONOwoUsE1631KT8uqnEZAYFRp6EInbmjB0Fu54ECFL36S2KSvibHpkQ0G/20C8QUENt1DjbIYuvVW1s44Knk0qAgQatsAZy+17xaizIiPyP75odcmtFowXaM8uF7P1U00A5wd5Ku8y1BvVGXTqsFpLQa4fv/4fgYu4NNoOXnhs39aMMBdEAmA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Z6N6vjahP3VoX5CYI1VWJ1KTe8ZeuWuvBtr25f/i8cU=;
- b=n5uo7gb0b7KFBr6IYoV/mv+IERWU2tj5KCNVKrkeWaIzsy16ikYmBPHnJcetwaRCFL099TfPoK5E0bc3uOIHmEgTsMRULV/YHWW0qMAQ2hbHM6luYZT8vTP7MRquLYOc2yOkmc/o3czBidYGlBbRHzFjOMHqFrbeiALU72jkcFxA4Q3cLQG87+FhWS9ArNz6L58b7mA77hXl7OeMYpOx/zaWLh5HL+zbPeDVwuTax/LmAJ1Qcuf2fzpyPVijTLFOEh1j3apf0tLD4xSCBRSddmCCwgeXwNEv3g/+ltUK8fvLoE6JoqPNjWgq5zhniaZNs268bF/pKiL1HI2UDJzVkg==
+ bh=exxPIDij8pQnXWicTtvmtpGREwxmq154pOsXwralCyg=;
+ b=RDykyiFHACh1ly4JLZ4BqFtSfzTvsBrNOPtulM2i0qxcXCn2Sigd8u2IqgfQR3R1HgXDuZRUoEdk4Xhmxq39FJSY8K09sz1T8YhDare35WZfWqk63BYkpFvsaZiYyZhMufAwm64NanCJ/w6wDtZ5xlAJh46v+Y/ETvwD47JTONSPeYg5Tc9lMd/YOpgOhZ2S3z4Zjvjf3ST92rBPEZATJinwlgbRHjV9wvp6ZE2l8/+3sksoJYmuIOTfKHM4No0iG2gBudDtG2aj/9eMYsyECFRHuMp6CF7cm3mRrdjkTltuDetyx8McIEPvltK6Ln6383mdKz0m0pk2AdpFx8R0kQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from MW4PR15MB4475.namprd15.prod.outlook.com (2603:10b6:303:104::16)
- by MWHPR15MB1486.namprd15.prod.outlook.com (2603:10b6:300:b1::17) with
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=exxPIDij8pQnXWicTtvmtpGREwxmq154pOsXwralCyg=;
+ b=TfCfjenj3ootCgZrQ0ObhpXjz/gP5yQLO9c3jYf6SosUh+Uo5B3J3dHuMNsCq7LdODaKpjCuF/ZsEIl3yXSPQy/T9sKe1MZ4SR2JKwIOOMu4UC6umqfAB90vdrNgX1ltfmEsSvHGyeLPY++V9nyC1T9tgizR7xqd2G01QL8zRqLvYs5kytPFDSDG8BMu73tAe/7S8fJeLMgBw2d53FfOjKesFSkCvv/FNL1G2L3a6d+Oma9MyutloraLPheqptpDvaA7hpWAtKy3OoK8liHIkt98meVyBuZNNM+LNR9nuGuqE9xXq9s91daVFPV4Z44eBUDSeSBO4NDPaBEckgxDOA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from VI1PR03MB4973.eurprd03.prod.outlook.com (2603:10a6:803:c5::12)
+ by DBAPR03MB6438.eurprd03.prod.outlook.com (2603:10a6:10:19f::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Fri, 17 Jun
- 2022 20:26:26 +0000
-Received: from MW4PR15MB4475.namprd15.prod.outlook.com
- ([fe80::3941:25c6:c1cd:5762]) by MW4PR15MB4475.namprd15.prod.outlook.com
- ([fe80::3941:25c6:c1cd:5762%6]) with mapi id 15.20.5353.017; Fri, 17 Jun 2022
- 20:26:26 +0000
-Date:   Fri, 17 Jun 2022 13:26:24 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     =?utf-8?Q?J=C3=B6rn-Thorben?= Hinz <jthinz@mailbox.tu-berlin.de>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3 2/5] bpf: Require only one of cong_avoid()
- and cong_control() from a TCP CC
-Message-ID: <20220617202624.pt6rlzhgwlgl6nci@kafai-mbp>
-References: <20220614104452.3370148-1-jthinz@mailbox.tu-berlin.de>
- <20220614104452.3370148-3-jthinz@mailbox.tu-berlin.de>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.16; Fri, 17 Jun
+ 2022 20:33:33 +0000
+Received: from VI1PR03MB4973.eurprd03.prod.outlook.com
+ ([fe80::d18f:e481:f1fa:3e8d]) by VI1PR03MB4973.eurprd03.prod.outlook.com
+ ([fe80::d18f:e481:f1fa:3e8d%7]) with mapi id 15.20.5353.016; Fri, 17 Jun 2022
+ 20:33:33 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Eric Dumazet <edumazet@google.com>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        devicetree@vger.kernel.org, linux-phy@lists.infradead.org
+Subject: [PATCH net-next 00/28] [RFC] net: dpaa: Convert to phylink
+Date:   Fri, 17 Jun 2022 16:32:44 -0400
+Message-Id: <20220617203312.3799646-1-sean.anderson@seco.com>
+X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220614104452.3370148-3-jthinz@mailbox.tu-berlin.de>
-X-ClientProxiedBy: BY5PR17CA0007.namprd17.prod.outlook.com
- (2603:10b6:a03:1b8::20) To MW4PR15MB4475.namprd15.prod.outlook.com
- (2603:10b6:303:104::16)
+Content-Type: text/plain
+X-ClientProxiedBy: BL1PR13CA0384.namprd13.prod.outlook.com
+ (2603:10b6:208:2c0::29) To VI1PR03MB4973.eurprd03.prod.outlook.com
+ (2603:10a6:803:c5::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a607fad5-b3b4-4dac-85f3-08da509fa785
-X-MS-TrafficTypeDiagnostic: MWHPR15MB1486:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR15MB1486CD54871967ABCE64F42CD5AF9@MWHPR15MB1486.namprd15.prod.outlook.com>
-X-FB-Source: Internal
+X-MS-Office365-Filtering-Correlation-Id: cef61822-ab56-4d9f-84fa-08da50a0a5d3
+X-MS-TrafficTypeDiagnostic: DBAPR03MB6438:EE_
+X-Microsoft-Antispam-PRVS: <DBAPR03MB6438A13B71F108822CE1A18C96AF9@DBAPR03MB6438.eurprd03.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Mga7BM1nROE/sUhYRG9NrL+8LsCBRbsmNVLh3v1J+TkO1sbdLulerleBEOM4ECyBao7fOMmBf58cmsOG7RboQE0mcKq1NhTDb7OKWqylBERdCdrYHJgzh/h35tpzqptM1yPeioIyyTNowL82ej5UnGhY88iLnPo0SzlPd54W4PfSkaq8cyZImBfk5oHikVwbRmZ/jd4Bdo3MuaJ6HT2X/2n2OCK2DQtGAA+eJzH1bKazcoRPz29+2xRXRNRseS2sqWxlBWvc1ou2S+SLecTYL3O8dpB25VOBktHN4Ge6rPVs9eaI3AZ1AMZh3hMqOY7GNzKyRNWy/sSTzeNZNGe5E8hgjXtYf3S6ObN5+7+ENq2YLKOukjGy/rTQAU84W0lyePumB1eDIfDqqzdLvb8dlZHyskfrz+Q3kwKXAw6Ybsqxf1TKfAk5youModjTqbse6lmYBbSbS4zjZWyS7GS2zpHAnzFrl0mtzoZFzfaeNcEqxVbWldEIiUmNfSkb+d/sCrKL2luJncB3vcRrb1QZ26MVLbn/ZW8cZCtwQ6xBbaqXJl/mpNjaFbNozyCT/8SWpSghqdKYkSBzKaUMfkOAgAafGoiUNNIcaKgYE+C7/8pK3l3/vxhsxxF+AwJdvnveWC6PR320dOUC3Rlfy6MOFg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR15MB4475.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(366004)(66556008)(4326008)(1076003)(6916009)(8676002)(66946007)(8936002)(66476007)(498600001)(5660300002)(9686003)(52116002)(83380400001)(6512007)(186003)(54906003)(38100700002)(6506007)(33716001)(86362001)(2906002)(316002)(6486002)(4744005);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: GALMvQso6jhkBZbALwDrUt0nHjeeXeIf6uuo4Ytdp91ANbLzIPAqurLHH0UqXdrZKq33URQN8VGwa1Zrw4R8P+gCtkU3ClURJYr8IZsWhxR9e1rhQiCTRNL1fJHV3MHHq4w/DHfsBgX5QJFAwqX2TBYbtlJlDR+aThwP4Ked1MTZ25eZEJ6uOaSYzOftskFxVuC+9pCOesP8iiQmLDnunNfXoQcwuPKTmfKYBbgkioSOV6Es6DzfJiYxFoU+YABHJWwdR0YMWnto8CPwfV9osxB4xw4kTf/FTNPX2RQrdFTVu9Dgzdwhw9VuGyFV0zpaZ4uXaF7Hz13izEU+ltmO4rDWaEb/M4SAlnUNj+63LlouZmUKNbWOF+Bxn9+Zeyru1axnJt1gEzkj4p7uimE0JMjDj6ZZ4zIXRPVTvKPyNNDET16y41VhgPDBK9ptnaPjj6BYifP+rbUrKfDPM8Si3wh45JWzKTV0zes6sIF4/5OhEoJJb+aloTO4tJzKSdOObU/lWkxd4q35vl4WYLIY3TdaRxoRE34QoevU7ZpVKHRzwDOa0i1faw/qgzTYQjjAUh//KoQsvcsqxVrYSAPueZY3pBj/yWmJPFFfQCON7B/oGCu2dBqfRE11LM/sw9sylR3YtarHoMTUVcnUTNfHqBrrOnnrWXxiR/lrISiQ0MKp6Dk5F4fzzZJwcJTyPkKn0FhiublXLBt3Yt+nZw9lXGZ1teyXIm4LddpixAL9Fo32uL79neP5lNc3by4GrUDHW18F6YdFbwQS4xbZ6s/aCB2FJYJ6GLT0781xDHJmhuc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB4973.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(44832011)(38350700002)(86362001)(7416002)(38100700002)(186003)(2616005)(5660300002)(6512007)(966005)(6486002)(52116002)(2906002)(6506007)(110136005)(8936002)(54906003)(498600001)(316002)(1076003)(66946007)(6666004)(36756003)(8676002)(26005)(83380400001)(4326008)(66556008)(66476007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?vXv471cLo9EuoW6UWc9OSLPYGCFHPW/00vBqAhUY/foTVF+VcwYnsw/jNm?=
- =?iso-8859-1?Q?z7ZRJKqDiWs3KGaJHfNgt430O5MniSArxw9HbghGtrlYHFMZkB0CD16MEd?=
- =?iso-8859-1?Q?/v4/b6u7If4iIJ27VHhQ0GZrTtZIzQPTqXEA1D3nLvXxIdS15ONZJEQ7Hq?=
- =?iso-8859-1?Q?8a8IXfyk88egSDjlEtjiNigIwkDiwsGybfeR9l3s9viUWvpBZ2sP4VgAHF?=
- =?iso-8859-1?Q?hGsY7pFFSjEUI5VKgQav5UzvcFj02Kwvkv+GXg/igITq8/69gfDhFzlTM6?=
- =?iso-8859-1?Q?AzS38W9CenVkWDqkW8yuYoFsUA4VoV2g6FsZXT4/EhfHJuVw1SrKjFJgt6?=
- =?iso-8859-1?Q?ce7HXF59UMAtnZO0mblW2M63eMBbZdhZ15dfdRwsay4WonATSzgt/MAmS4?=
- =?iso-8859-1?Q?aglM2uZCr4SBGMNMAuuRi2AH2bHD2LjSHS12nFDbYNX+kqAN7HF97zaPnh?=
- =?iso-8859-1?Q?gj/jTWcOafiGBjNYVJCR+L0bPkd0nX6HBKSnKoZlQXtkF7IITLRrUrP99q?=
- =?iso-8859-1?Q?S39X+MQ08oUTpNolXalzyLLnJ1r9M+BgT3JBvPM7CKWdU9ObckrQcwspsp?=
- =?iso-8859-1?Q?+iKggTBDdKr+7DipieodRE2rYEdsk/nNh664rcK2ivhwXptuZmESNND93K?=
- =?iso-8859-1?Q?NW42eqhu/ac+a13vXo92MqEhKZtS/TsNkn8d19R30i+g+euUEvWb+agCg8?=
- =?iso-8859-1?Q?a/yprvZiEsxVWOOcLtGqDnj9LS1KeXHGu4y8Iai4au9LYwSia6qBYXvjrZ?=
- =?iso-8859-1?Q?QLEtWQCI8FQlvhoHx3o7vG4iVYx8ObJ0sPgdyg3BEBfWrFmt8eREskZHm1?=
- =?iso-8859-1?Q?bEabq0Nk7z1Egd5JzAkeFWISpmwHa53sbS3+ChDjWjR0zxMOGMybud2OcW?=
- =?iso-8859-1?Q?ddSqeypAVVDAQJMpHpLzLwutBWGVcqOCgNI0EnXnEujeXd+29IIOUmv/in?=
- =?iso-8859-1?Q?B5oR+rVf0DXEmUifk3Gw4cfm0uWcLM/Qppv9rIwSshMrP/TqrvJHQ8r3OM?=
- =?iso-8859-1?Q?g1+IhoSYSX1ttBXLidF8JGM/VdIm+5IbzV9dJqIyuJs2CiKX461UWxce71?=
- =?iso-8859-1?Q?cDfOwJklWA6xcwrQmdrHTB5vzu5BoLV4QmgxD6Q8ExGBZweiB0h9IuftXD?=
- =?iso-8859-1?Q?oNLNofeK3YGBSyokHx8/7qAHRNsanlkS4P1puakQQuWstKAXgkCx/DUfOi?=
- =?iso-8859-1?Q?uBuyDEANd8qfyk9u0poG1iSpDvPmzUEjij0GLMeUhY++Fs8MSIPnwkXmiq?=
- =?iso-8859-1?Q?D29vOjOJrrUVs3sHrSDqr0k8y/IJQQla0bocIE7TXlP9BJsl2vwlFOHQ3F?=
- =?iso-8859-1?Q?gMq8py2c0UVqu/ZIXN9e94O5VqiHS4RyFfrG0x8vpi0I/n/R6zgAsrkeIh?=
- =?iso-8859-1?Q?s95tmx0p2ur9gu9d9vVPuqAe8m4J1FeqDJUYG2RwvE3R02MMTB2AKqM619?=
- =?iso-8859-1?Q?35QmfTuQWox4Ukv8ukJ2qQ0QL4uviFcoz2idbwDv/DiQ/LBSZILHOPNIjB?=
- =?iso-8859-1?Q?i41bvuRNeG4BRr5Ercf3hbubL868yazla3wovPubiSqni4phhX0TuxB5CP?=
- =?iso-8859-1?Q?3WokQebn6Vf7KgEIlQbzOIBsYDSjNFmm5IbkmJcUKiqRXMa8sHDISBNymr?=
- =?iso-8859-1?Q?M4X4vVImNLl0VG6Z3u/QkUsw81WEKA+BwzxnZ05ShP21C/WtuyOzMtd9Br?=
- =?iso-8859-1?Q?GPw2Qwj9e89HsD7HvC6kWLRl6PXVoQPBWUV0jjfLRazRCooInji9NolOmw?=
- =?iso-8859-1?Q?TigF90kymvjldlWpPwPlF7arsynZn0qRKPSTEvRu41N7ki9SFVJPjGnKKq?=
- =?iso-8859-1?Q?GHnfTG1LZ9/VCAkFrygE+DoDI7Q2vVw=3D?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a607fad5-b3b4-4dac-85f3-08da509fa785
-X-MS-Exchange-CrossTenant-AuthSource: MW4PR15MB4475.namprd15.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YgtOg/KlCT8MEbkhc09n61EbQ3EmluUbzb/fv4GP3SIxFWgiLn3LimE4YzKV?=
+ =?us-ascii?Q?CcPfZoHA+IHjuwVthE3v2627I6JUZ6zdPGPZbHU4yjfS8UCBPVd4/qPpCnKN?=
+ =?us-ascii?Q?HdPnjhqZGDbEia6y5FDarBIpOxTECRnhr9YODYmg6lpv0yeEit5262hNAQxP?=
+ =?us-ascii?Q?QNfnd9QC6LJy0Y2zeOeYrLijHeYjBQ4V2RF7HQ+fCIFcGHbvriI/n7PCPtIC?=
+ =?us-ascii?Q?g0198+C0GSJ1HdxWZNoWwMuihe4n6+sfbNtjuVlnU/jo1Ssw5K3Hfu8wwOF9?=
+ =?us-ascii?Q?cbUOaKT4ctsN2iqdilz4eDr4yEVONM7OIhju6nX1MdoRwd6auUe89OwegYNg?=
+ =?us-ascii?Q?KcaM+hORVduSej6S73WUSsx6tXWIWmwEoBWAOE+V6KbRx0NdyvgnerGl0GKn?=
+ =?us-ascii?Q?BSwri1/1KjXI+xf6zo9Hzt3WPHwMb8PVCtIhRFBqOFYZ1cxfIPevNkguepZF?=
+ =?us-ascii?Q?hdqCXMZktz2OdWv18pb760YzdwDrWqCqmTARmQmN/JREwsXYXMOop5+hHP4x?=
+ =?us-ascii?Q?VfF5LVxEpeTV9H54hG5rW/UDy8/EoPTTZdojfwJa2w3SRsA5sht1vriR9rtq?=
+ =?us-ascii?Q?RgMd8kIIt6n4y39u5mSoKgtEISIdi11Defpa49MqzAHC/0a+2s18NFbUgNvA?=
+ =?us-ascii?Q?3xCA85/sSk4u18AAzbmYMNQcJh9Gz/XJlPOtoeoVtxZcF2NOt187nkiBoMeM?=
+ =?us-ascii?Q?2w8vsqeH9Q6/4wa6lgUJlbMDesOQlfavSNCcicgXqY8QGwQxIZMtQ5YO35aH?=
+ =?us-ascii?Q?hgx3zCWXlej0dTKmPl6pIma1ocW+bZ2OWMG2vZG7+XjYjElBpY4WeSE3Wkba?=
+ =?us-ascii?Q?y669k4FJ7y/V01I5n9KIWw4E9pdiKUVNwgUT0XReGMsUAhK8OSWcQtvteXDv?=
+ =?us-ascii?Q?8yjXsE6D74lKZOk6K836uwiQVDhex0LGh7pxWHIFVA+kelnoqOY2puoZQBiX?=
+ =?us-ascii?Q?HaGodb5qZ8DOXeWCoU6i5dYzIPu5PaXgjNV/4lHhfiKVu6THwOxIRdORDTS9?=
+ =?us-ascii?Q?j1Vd88ljXuE2d/G986h7tWnhXGjUNF3tTe9X845A1jFAPd2qiCo2WlpYz6ql?=
+ =?us-ascii?Q?N32tKJbCvgYnSJop4KiMN7cpZ35iidbSFmXMkCpJ7bC9IhleB/0rIJ5UbNFQ?=
+ =?us-ascii?Q?DxwLMi9fhPANpDvzzzgHeI5vy94cUiSAHxT4eZgjAB8Bef2xzUlj/hLdGuu7?=
+ =?us-ascii?Q?iihec6ZjxeHJX3XMvsKJqZA7YX+Q0Rp4bFW5JG+rSDPHympeCJ19lfYHaWn9?=
+ =?us-ascii?Q?m+7CjBMV6mwxgvil44VtTUsnusx6zA+d/0amERC2BXOXkdSmNVu8eIEr4smW?=
+ =?us-ascii?Q?1oiTP1fLL1ooR4VZIPZGvKfWB1Mnwl21M8W7mDTSBGnNjPuj3NoBnHrCXXR/?=
+ =?us-ascii?Q?SbK95+Nl3oN7hDuBKugOpIorjEYMRfGrpAx/x2y87zMOs8B9Cy6MFBQzkUQq?=
+ =?us-ascii?Q?8kyVzgAOlOF7Yqz07kQaDRyeA3up6oAqwU65acK9osHqnnJYG5CatylCfWNH?=
+ =?us-ascii?Q?m/eulvUcH8c4Y+mmsZpMEjYte1+HpMlrJ8jf4x0uDI/jg/RQnuhIBVX9ou1X?=
+ =?us-ascii?Q?NlCSn2B7livxyRfHMd/Fo1SH9PKBeRtqbmVSqVYmgezZliMcByh82paw6/dS?=
+ =?us-ascii?Q?aJgwx1V5YWfzfDr931+XHX8qKMy3GZMUfCei1sGCnNmjaEN0hp8MGSgtwB/P?=
+ =?us-ascii?Q?kiK5CJjRTJkHZ3JrcS5it7capBkmDs8tKHFqssUac7ITfMOMPLuqxlP5dQeB?=
+ =?us-ascii?Q?IgHUrUFvq7Lt1KlPkS8PuLEH0sFa9cY=3D?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cef61822-ab56-4d9f-84fa-08da50a0a5d3
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR03MB4973.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2022 20:26:26.8007
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2022 20:33:33.5469
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JnXAHt9/kmk1ZZ9MRCMFsXppryyUYXtXXyUtks1fshq4mYo5k7in9t9oHtRTay6W
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1486
-X-Proofpoint-GUID: zMnkNUlu3rEFpfbcx1xUKiyZQ4sQwXFP
-X-Proofpoint-ORIG-GUID: zMnkNUlu3rEFpfbcx1xUKiyZQ4sQwXFP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
- definitions=2022-06-17_14,2022-06-17_01,2022-02-23_01
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: wEXk2mQN8GLiXYeMHEzk94FviE7Uqv6wW6q2pdlB4sDtn/YCq35lzfFjsRb8EAMsUXFz43RBqaB0wD53asTGKg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR03MB6438
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 12:44:49PM +0200, Jörn-Thorben Hinz wrote:
-> Remove the check for required and optional functions in a struct
-> tcp_congestion_ops from bpf_tcp_ca.c. Rely on
-> tcp_register_congestion_control() to reject a BPF CC that does not
-> implement all required functions, as it will do for a non-BPF CC.
-> 
-> When a CC implements tcp_congestion_ops.cong_control(), the alternate
-> cong_avoid() is not in use in the TCP stack. Previously, a BPF CC was
-> still forced to implement cong_avoid() as a no-op since it was
-> non-optional in bpf_tcp_ca.c.
-> 
-> Signed-off-by: Jörn-Thorben Hinz <jthinz@mailbox.tu-berlin.de>
-Reviewed-by: Martin KaFai Lau <kafai@fb.com>
+This series converts the DPAA driver to phylink. Additionally,
+it also adds a serdes driver to allow for dynamic reconfiguration
+between 1g and 10g interfaces (such as in an SFP+ slot). These changes
+are submitted together for this RFC, but they will eventually be
+submitted separately to the appropriate subsystem maintainers.
+
+Only the mEMAC driver has gotten the phylink treatment for this RFC. I
+would appreciate any help towards converting/testing the 10GEC and dTSEC
+drivers. I don't have any boards with those MACs, so a large conversion
+like this has a high risk of breakage.
+
+I have tried to maintain backwards compatibility with existing device
+trees whereever possible. However, one area where I was unable to
+achieve this was with QSGMII. Please refer to patch 2 for details.
+
+The serdes driver is mostly functional (but not quite, see patch 25).
+However, I am not quite sure about the implementation details. I have made
+a fairly extensive commentary on the driver in patch 1, so hopefully that
+can provide some context. This series only adds support for the
+LS1046ARDB SerDes, but it should be fairly straightforward to add
+support for other SoCs and boards. Patches 26-27 should show the typical
+steps.
+
+Most of this series can be applied as-is. In particular, patches 4-21
+are essentially cleanups which stand on their own merits.
+
+Patches 4-8 were first submitted as [1].
+
+[1] https://lore.kernel.org/netdev/20220531195851.1592220-1-sean.anderson@seco.com/
+
+
+Sean Anderson (28):
+  dt-bindings: phy: Add QorIQ SerDes binding
+  dt-bindings: net: fman: Add additional interface properties
+  phy: fsl: Add QorIQ SerDes driver
+  net: fman: Convert to SPDX identifiers
+  net: fman: Don't pass comm_mode to enable/disable
+  net: fman: Store en/disable in mac_device instead of mac_priv_s
+  net: fman: dtsec: Always gracefully stop/start
+  net: fman: Get PCS node in per-mac init
+  net: fman: Store initialization function in match data
+  net: fman: Move struct dev to mac_device
+  net: fman: Configure fixed link in memac_initialization
+  net: fman: Export/rename some common functions
+  net: fman: memac: Use params instead of priv for max_speed
+  net: fman: Move initialization to mac-specific files
+  net: fman: Mark mac methods static
+  net: fman: Inline several functions into initialization
+  net: fman: Remove internal_phy_node from params
+  net: fman: Map the base address once
+  net: fman: Pass params directly to mac init
+  net: fman: Use mac_dev for some params
+  net: fman: Clean up error handling
+  net: fman: memac: Add serdes support
+  net: fman: memac: Use lynx pcs driver
+  net: dpaa: Use mac_dev variable in dpaa_netdev_init
+  [RFC] net: dpaa: Convert to phylink
+  arm64: dts: ls1046ardb: Add serdes bindings
+  arm64: dts: ls1046a: Add SerDes bindings
+  arm64: dts: ls1046a: Specify which MACs support RGMII
+
+ .../devicetree/bindings/net/fsl-fman.txt      |   49 +-
+ .../bindings/phy/fsl,qoriq-serdes.yaml        |   78 +
+ Documentation/driver-api/phy/index.rst        |    1 +
+ Documentation/driver-api/phy/qoriq.rst        |   91 ++
+ MAINTAINERS                                   |    6 +
+ .../boot/dts/freescale/fsl-ls1046-post.dtsi   |    8 +
+ .../boot/dts/freescale/fsl-ls1046a-rdb.dts    |   32 +
+ .../arm64/boot/dts/freescale/fsl-ls1046a.dtsi |   12 +
+ drivers/net/ethernet/freescale/dpaa/Kconfig   |    4 +-
+ .../net/ethernet/freescale/dpaa/dpaa_eth.c    |  100 +-
+ .../ethernet/freescale/dpaa/dpaa_eth_sysfs.c  |    2 +-
+ .../ethernet/freescale/dpaa/dpaa_ethtool.c    |   82 +-
+ drivers/net/ethernet/freescale/fman/Makefile  |    3 +-
+ drivers/net/ethernet/freescale/fman/fman.c    |   31 +-
+ drivers/net/ethernet/freescale/fman/fman.h    |   31 +-
+ .../net/ethernet/freescale/fman/fman_dtsec.c  |  319 ++--
+ .../net/ethernet/freescale/fman/fman_dtsec.h  |   58 +-
+ .../net/ethernet/freescale/fman/fman_keygen.c |   29 +-
+ .../net/ethernet/freescale/fman/fman_keygen.h |   29 +-
+ .../net/ethernet/freescale/fman/fman_mac.h    |   29 -
+ .../net/ethernet/freescale/fman/fman_memac.c  |  864 +++++-----
+ .../net/ethernet/freescale/fman/fman_memac.h  |   57 +-
+ .../net/ethernet/freescale/fman/fman_muram.c  |   31 +-
+ .../net/ethernet/freescale/fman/fman_muram.h  |   32 +-
+ .../net/ethernet/freescale/fman/fman_port.c   |   29 +-
+ .../net/ethernet/freescale/fman/fman_port.h   |   29 +-
+ drivers/net/ethernet/freescale/fman/fman_sp.c |   29 +-
+ drivers/net/ethernet/freescale/fman/fman_sp.h |   28 +-
+ .../net/ethernet/freescale/fman/fman_tgec.c   |  155 +-
+ .../net/ethernet/freescale/fman/fman_tgec.h   |   54 +-
+ drivers/net/ethernet/freescale/fman/mac.c     |  645 +-------
+ drivers/net/ethernet/freescale/fman/mac.h     |   62 +-
+ drivers/phy/freescale/Kconfig                 |   19 +
+ drivers/phy/freescale/Makefile                |    1 +
+ drivers/phy/freescale/phy-qoriq.c             | 1441 +++++++++++++++++
+ 35 files changed, 2562 insertions(+), 1908 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/phy/fsl,qoriq-serdes.yaml
+ create mode 100644 Documentation/driver-api/phy/qoriq.rst
+ create mode 100644 drivers/phy/freescale/phy-qoriq.c
+
+-- 
+2.35.1.1320.gc452695387.dirty
+
