@@ -2,106 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BAF605500F3
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 01:46:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D49D6550168
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 02:35:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347032AbiFQXqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 19:46:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45050 "EHLO
+        id S1382355AbiFRAf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 20:35:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237061AbiFQXqJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 19:46:09 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9383B61627
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 16:46:04 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id a10so5996462ioe.9
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 16:46:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=v+CtxF5jqTCvHtrkh/Tp3q/wyDmiOTtwUhSwgsvpJ3w=;
-        b=YGI/OqaRkadQXXxsJnM8uGyOtjDZ6+A5GQjelvB1B3X6TwS5V3C66lWgNbx51CvUWU
-         XgSrKKU9DJpc5ofYqMNNzNijwDz7Cwd7HiQ1xSTNhmQieX3/tAsb7n8oQTpgU1kOP7hR
-         cHflRSYq3M56cSGCoG6//ypA+QjlZMq+AIONrdqck9QbHFG1+PBfZbEXvYZo5NeUnbSj
-         g2hATSAaX/qsS7h9BFS3x3XNSS5hMAAPigWi8nUMDnL21PHTh4043HEssgBvTKaaIpeT
-         QfdoAN1HGyHbpbC9hbw7N6fugvvOPBStQP9iMGtqvnOAdZsXHLT6VNM8VMy+RtkTDwGO
-         LikQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=v+CtxF5jqTCvHtrkh/Tp3q/wyDmiOTtwUhSwgsvpJ3w=;
-        b=oMgrMm9ToWsMr3unCAaT1KvW87A8ZK/Cay8Q706eP0Tg1yfdctc6CqVqoKGdqhCVPO
-         m0Mbb5YLPV5pN4YtW77/Yh2FRUs1uXk0W6HQ4iNLYhWyJtgG8ZgUJY8BPHym5JsSstNz
-         xkoF9TMUCVS0c0dwePDgnrrS8oy7/m8d7VDg34hHipFH3wG3jQGGC18kE0wO0jvwb7Zz
-         RhelDdWF60b9yXmeELlpnZgAgoQ3w6PnR4p6RStF6NCzTW2vdQJ1fvIluj/6GHZv+jlj
-         jSRCbWOB8m8o057jP/+jFrWE7rvAeJZXrNSs10lfmJaSAdCkgLLlC/Rgfb14KfzCQd/U
-         A/Qg==
-X-Gm-Message-State: AJIora8fJ47xlGSWH31NFPzaBi57xqVHYm6U/uunfvvwryVUdpWZpCJf
-        jCyhr6IBr/wfc6ws0pqP7faOMao6ueHGvzqudS9P3w==
-X-Google-Smtp-Source: AGRyM1voqSRNK9+66QbW2UwaqOdOzzUm4CcNFzFX9HbLBxFWAOlUpdCA0GV41UPO+AKUQpFtMdRJ0et8XJJ2K7EEugI=
-X-Received: by 2002:a02:90ce:0:b0:32e:e2ce:b17c with SMTP id
- c14-20020a0290ce000000b0032ee2ceb17cmr6926427jag.268.1655509563773; Fri, 17
- Jun 2022 16:46:03 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220617085435.193319-1-pbl@bestov.io> <165546541315.12170.9716012665055247467.git-patchwork-notify@kernel.org>
-In-Reply-To: <165546541315.12170.9716012665055247467.git-patchwork-notify@kernel.org>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Date:   Fri, 17 Jun 2022 16:45:52 -0700
-Message-ID: <CANP3RGcMqXH2+g1=40zwpzbpDORjDpyo4cVYZWS_tfVR8A_6CQ@mail.gmail.com>
-Subject: Re: [PATCH v2] ipv4: ping: fix bind address validity check
-To:     patchwork-bot+netdevbpf@kernel.org, stable@vger.kernel.org
-Cc:     Riccardo Paolo Bestetti <pbl@bestov.io>,
-        Carlos Llamas <cmllamas@google.com>,
+        with ESMTP id S231921AbiFRAf2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 20:35:28 -0400
+Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [IPv6:2001:4b98:dc4:8::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207BD65D28;
+        Fri, 17 Jun 2022 17:35:26 -0700 (PDT)
+Received: (Authenticated sender: pbl@bestov.io)
+        by mail.gandi.net (Postfix) with ESMTPSA id C5E45200004;
+        Sat, 18 Jun 2022 00:35:20 +0000 (UTC)
+From:   Riccardo Paolo Bestetti <pbl@bestov.io>
+To:     patchwork-bot+netdevbpf@kernel.org,
         "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel-team@android.com,
-        Kernel hackers <linux-kernel@vger.kernel.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Miaohe Lin <linmiaohe@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>
+Cc:     cmllamas@google.com, dsahern@kernel.org, kernel-team@android.com,
+        linmiaohe@huawei.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pbl@bestov.io, yoshfuji@linux-ipv6.org,
+        linux-kselftest@vger.kernel.org
+Subject: [RFC PATCH net] ipv4: fix bind address validity regression tests
+Date:   Sat, 18 Jun 2022 01:46:49 +0200
+Message-Id: <20220617234647.24309-1-pbl@bestov.io>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: CKSU5Q2M1IE3.39AS0HDHTZPN@enhorning
+References: 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 4:30 AM <patchwork-bot+netdevbpf@kernel.org> wrote:
->
-> Hello:
->
-> This patch was applied to netdev/net.git (master)
-> by David S. Miller <davem@davemloft.net>:
->
-> On Fri, 17 Jun 2022 10:54:35 +0200 you wrote:
-> > Commit 8ff978b8b222 ("ipv4/raw: support binding to nonlocal addresses")
-> > introduced a helper function to fold duplicated validity checks of bind
-> > addresses into inet_addr_valid_or_nonlocal(). However, this caused an
-> > unintended regression in ping_check_bind_addr(), which previously would
-> > reject binding to multicast and broadcast addresses, but now these are
-> > both incorrectly allowed as reported in [1].
-> >
-> > [...]
->
-> Here is the summary with links:
->   - [v2] ipv4: ping: fix bind address validity check
->     https://git.kernel.org/netdev/net/c/b4a028c4d031
->
-> You are awesome, thank you!
-> --
-> Deet-doot-dot, I am a bot.
-> https://korg.docs.kernel.org/patchwork/pwbot.html
+Commit 8ff978b8b222 ("ipv4/raw: support binding to nonlocal addresses")
+introduced support for binding to nonlocal addresses, as well as some
+basic test coverage for some of the cases.
 
-I believe this [
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=b4a028c4d031
-] needs to end up in 5.17+ LTS (though I guess 5.17 is eol, so
-probably just 5.18)
+Commit b4a028c4d031 ("ipv4: ping: fix bind address validity check")
+fixes a regression which incorrectly removed some checks for bind
+address validation. In addition, it introduces regression tests for
+those specific checks. However, those regression tests are defective, in
+that they perform the tests using an incorrect combination of bind
+flags. As a result, those tests fail when they should succeed.
+
+This commit introduces additional regression tests for nonlocal binding
+and fixes the defective regression tests.
+
+PLEASE NOTE THAT THIS PATCH SHOULD NOT BE APPLIED AS-IS. The ICMP
+broadcast and multicast regression tests succeed, but they do so while
+returning the wrong error status. In particular, it isn't the bind that
+fails, but the socket creation. This is /not/ correct, and it must be
+investigated to have proper regression testing. Other instances where
+this happens are: 1) if the broadcast/multicast addresses are replace
+with an allowed (e.g. local) address (bind should work, but socket is
+never created in the first place); 2) the commented out tests (nonlocal
+bind should work but ditto.) Additionally, please note that when the
+test cases are manually (i.e. without the network namespace setup from
+fcnal-test.sh) ran, the expected/correct outcome is observed. The reason
+I'm submitting this patch for comments, is that I'm failing to
+understand where the issue lies. (Disclamer: might be something
+stupid/trivial that I'm plainly missing due to tunnel vision.)
+
+Signed-off-by: Riccardo Paolo Bestetti <pbl@bestov.io>
+---
+ tools/testing/selftests/net/fcnal-test.sh | 36 +++++++++++++++++------
+ 1 file changed, 27 insertions(+), 9 deletions(-)
+
+diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+index 75223b63e3c8..778288539879 100755
+--- a/tools/testing/selftests/net/fcnal-test.sh
++++ b/tools/testing/selftests/net/fcnal-test.sh
+@@ -1800,24 +1800,33 @@ ipv4_addr_bind_novrf()
+ 	done
+ 
+ 	#
+-	# raw socket with nonlocal bind
++	# tests for nonlocal bind
+ 	#
+ 	a=${NL_IP}
+ 	log_start
+-	run_cmd nettest -s -R -P icmp -f -l ${a} -I ${NSA_DEV} -b
+-	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address after device bind"
++	run_cmd nettest -s -R -f -l ${a} -b
++	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address"
++
++	log_start
++	run_cmd nettest -s -f -l ${a} -b
++	log_test_addr ${a} $? 0 "TCP socket bind to nonlocal address"
++
++	# currently fails with ACCES
++	#log_start
++	#run_cmd nettest -s -D -P icmp -f -l ${a} -b
++	#log_test_addr ${a} $? 0 "ICMP socket bind to nonlocal address"
+ 
+ 	#
+ 	# check that ICMP sockets cannot bind to broadcast and multicast addresses
+ 	#
+ 	a=${BCAST_IP}
+ 	log_start
+-	run_cmd nettest -s -R -P icmp -l ${a} -b
++	run_cmd nettest -s -D -P icmp -l ${a} -b
+ 	log_test_addr ${a} $? 1 "ICMP socket bind to broadcast address"
+ 
+ 	a=${MCAST_IP}
+ 	log_start
+-	run_cmd nettest -s -R -P icmp -f -l ${a} -b
++	run_cmd nettest -s -D -P icmp -l ${a} -b
+ 	log_test_addr ${a} $? 1 "ICMP socket bind to multicast address"
+ 
+ 	#
+@@ -1870,24 +1879,33 @@ ipv4_addr_bind_vrf()
+ 	log_test_addr ${a} $? 1 "Raw socket bind to out of scope address after VRF bind"
+ 
+ 	#
+-	# raw socket with nonlocal bind
++	# tests for nonlocal bind
+ 	#
+ 	a=${NL_IP}
+ 	log_start
+-	run_cmd nettest -s -R -P icmp -f -l ${a} -I ${VRF} -b
++	run_cmd nettest -s -R -f -l ${a} -I ${VRF} -b
+ 	log_test_addr ${a} $? 0 "Raw socket bind to nonlocal address after VRF bind"
+ 
++	log_start
++	run_cmd nettest -s -f -l ${a} -I ${VRF} -b
++	log_test_addr ${a} $? 0 "TCP socket bind to nonlocal address after VRF bind"
++
++	# currently fails with ACCES
++	#log_start
++	#run_cmd nettest -s -D -P icmp -f -l ${a} -I ${VRF} -b
++	#log_test_addr ${a} $? 0 "ICMP socket bind to nonlocal address after VRF bind"
++
+ 	#
+ 	# check that ICMP sockets cannot bind to broadcast and multicast addresses
+ 	#
+ 	a=${BCAST_IP}
+ 	log_start
+-	run_cmd nettest -s -R -P icmp -l ${a} -I ${VRF} -b
++	run_cmd nettest -s -D -P icmp -l ${a} -I ${VRF} -b
+ 	log_test_addr ${a} $? 1 "ICMP socket bind to broadcast address after VRF bind"
+ 
+ 	a=${MCAST_IP}
+ 	log_start
+-	run_cmd nettest -s -R -P icmp -f -l ${a} -I ${VRF} -b
++	run_cmd nettest -s -D -P icmp -l ${a} -I ${VRF} -b
+ 	log_test_addr ${a} $? 1 "ICMP socket bind to multicast address after VRF bind"
+ 
+ 	#
+-- 
+2.36.1
+
