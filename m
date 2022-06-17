@@ -2,176 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35FAD54F7A2
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 14:33:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B60A54F809
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 15:00:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382160AbiFQMdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 08:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55322 "EHLO
+        id S1382424AbiFQNAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 09:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381218AbiFQMdF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 08:33:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F67013E9F
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 05:33:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655469184;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        with ESMTP id S235059AbiFQNAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 09:00:04 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C45A5468A
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 06:00:03 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 34A0621DFC;
+        Fri, 17 Jun 2022 13:00:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1655470802; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=92UlDs3RgFNfmwdasYrOfS3jw16tdOBEhgL58+p+c74=;
-        b=TnrOm3AIu4Ex8hBQ4LzzBkgkTwlc/xlf4iBKBMJGIBR82SMVF2nKY35NejwryaTXnS4iLn
-        CuwM2iSYgVmOmQKeuokM4Xoso5kisdT4DeA4BNf7rj0tpUp4nWYlNHesX0ti9iRhjGKYLW
-        8Nv+zGbp4FwOpIR9yeAjy/A4I+la5hw=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-654-Sdh0fXuXN-O3BLjrGVsMOg-1; Fri, 17 Jun 2022 08:33:01 -0400
-X-MC-Unique: Sdh0fXuXN-O3BLjrGVsMOg-1
-Received: by mail-wm1-f71.google.com with SMTP id r83-20020a1c4456000000b0039c8f5804c4so2662755wma.3
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 05:33:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=92UlDs3RgFNfmwdasYrOfS3jw16tdOBEhgL58+p+c74=;
-        b=5XugSE7PkYdWl2Ag+NbORD46HMFiq9jW2m/lMaUcKB7BEuvzCUm6e9+kLXz/1x/MqX
-         BQOLiB1tx2/iTIeOnwZMDlxYaislLj2yx2Ynb2O0vNeDJRsenkwxgGLW/nD072mnNoy0
-         n+kZvxarORfMKjqrPAoIc+c9zY7JSq8Uwxq0kJknk1nLAEn4MqsPCAVx4sid/Wv0IU1G
-         r9KlzQQWLVEtnMSRFRdGFQ7nCr/BZcvEB5FIol+L6nkgaP5feg886+FJQ0fR+sKM5Xrt
-         RucHTLHffvf1siMYHZ7xZm8QCgKPTV12nCmrP3qFAz0ZSEqVdoqr+rv8GBeshsdtC/Jb
-         YNoA==
-X-Gm-Message-State: AJIora9KCg0gH7rY+RfBKHRS0Wh3IsadHDpHEWRh2iO97LoB4espsldh
-        x4nvoIe5LhMHybfoZrOcASK5cVIoDFJUykENWj72gQUngDkSF08NcZLu2iy+nCdouwDHtZnL9qw
-        GbEjdLT4avOz/tFad
-X-Received: by 2002:a5d:4dc9:0:b0:215:c611:db73 with SMTP id f9-20020a5d4dc9000000b00215c611db73mr9566018wru.551.1655469179983;
-        Fri, 17 Jun 2022 05:32:59 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vrMleQODBYjJTSi8fIIhoUhRue0NuBsJFkxO9IRFJgdZFWFEeDm8+sGhF94gyh54rHFnh3Dw==
-X-Received: by 2002:a5d:4dc9:0:b0:215:c611:db73 with SMTP id f9-20020a5d4dc9000000b00215c611db73mr9565992wru.551.1655469179714;
-        Fri, 17 Jun 2022 05:32:59 -0700 (PDT)
-Received: from redhat.com ([2.54.189.19])
-        by smtp.gmail.com with ESMTPSA id c5-20020a05600c0a4500b0039c4ba160absm18336881wmq.2.2022.06.17.05.32.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 05:32:59 -0700 (PDT)
-Date:   Fri, 17 Jun 2022 08:32:55 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] virtio-net: fix race between ndo_open() and
- virtio_device_ready()
-Message-ID: <20220617083141-mutt-send-email-mst@kernel.org>
-References: <20220617072949.30734-1-jasowang@redhat.com>
- <20220617060632-mutt-send-email-mst@kernel.org>
- <CACGkMEtTVs5W+qqt9Z6BcorJ6wcqcnSVuCBrHrLZbbKzG-7ULQ@mail.gmail.com>
+        bh=m27bqkhPWBkWqGci77bZ9vTpwsu6ToM/LTOx8XWw5NU=;
+        b=ZEhGcKaTA/R7Kur07365e8q3915Ou/VpCToPh5Hl9BCrz5Xu7OlgZL2AD0YeQUR+LRYa2U
+        klkuwI02sV/7qUyaErTqB+oPMv62VHkMOGu8hfHO8fZSegCcvn2VtNjSWe1CEA/aC1YrKX
+        Oa927wElFteoiMIeiGVA50jB2oA6KoM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1655470802;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=m27bqkhPWBkWqGci77bZ9vTpwsu6ToM/LTOx8XWw5NU=;
+        b=2R1K+KN9BM/G2X83RCV8D967eq+TzFiL0dNTxqebbdFrjzeDQj2uiNd2YaSukLe92OxJkz
+        K3SjUYyETOJRyMDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CC2F21348E;
+        Fri, 17 Jun 2022 13:00:01 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id px/eLdF6rGIPCQAAMHmgww
+        (envelope-from <iluceno@suse.de>); Fri, 17 Jun 2022 13:00:01 +0000
+Date:   Fri, 17 Jun 2022 15:01:10 +0200
+From:   Ismael Luceno <iluceno@suse.de>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Netlink NLM_F_DUMP_INTR flag lost
+Message-ID: <20220617150110.6366d5bf@pirotess>
+In-Reply-To: <20220616171612.66638e54@kernel.org>
+References: <20220615171113.7d93af3e@pirotess>
+        <20220615090044.54229e73@kernel.org>
+        <20220616171016.56d4ec9c@pirotess>
+        <20220616171612.66638e54@kernel.org>
+Organization: SUSE
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACGkMEtTVs5W+qqt9Z6BcorJ6wcqcnSVuCBrHrLZbbKzG-7ULQ@mail.gmail.com>
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 07:46:23PM +0800, Jason Wang wrote:
-> On Fri, Jun 17, 2022 at 6:13 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Fri, Jun 17, 2022 at 03:29:49PM +0800, Jason Wang wrote:
-> > > We used to call virtio_device_ready() after netdev registration. This
-> > > cause a race between ndo_open() and virtio_device_ready(): if
-> > > ndo_open() is called before virtio_device_ready(), the driver may
-> > > start to use the device before DRIVER_OK which violates the spec.
-> > >
-> > > Fixing this by switching to use register_netdevice() and protect the
-> > > virtio_device_ready() with rtnl_lock() to make sure ndo_open() can
-> > > only be called after virtio_device_ready().
-> > >
-> > > Fixes: 4baf1e33d0842 ("virtio_net: enable VQs early")
-> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > ---
-> > >  drivers/net/virtio_net.c | 8 +++++++-
-> > >  1 file changed, 7 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> > > index db05b5e930be..8a5810bcb839 100644
-> > > --- a/drivers/net/virtio_net.c
-> > > +++ b/drivers/net/virtio_net.c
-> > > @@ -3655,14 +3655,20 @@ static int virtnet_probe(struct virtio_device *vdev)
-> > >       if (vi->has_rss || vi->has_rss_hash_report)
-> > >               virtnet_init_default_rss(vi);
-> > >
-> > > -     err = register_netdev(dev);
-> > > +     /* serialize netdev register + virtio_device_ready() with ndo_open() */
-> > > +     rtnl_lock();
-> > > +
-> > > +     err = register_netdevice(dev);
-> > >       if (err) {
-> > >               pr_debug("virtio_net: registering device failed\n");
-> > > +             rtnl_unlock();
-> > >               goto free_failover;
-> > >       }
-> > >
-> > >       virtio_device_ready(vdev);
-> > >
-> > > +     rtnl_unlock();
-> > > +
-> > >       err = virtnet_cpu_notif_add(vi);
-> > >       if (err) {
-> > >               pr_debug("virtio_net: registering cpu notifier failed\n");
-> >
-> >
-> > Looks good but then don't we have the same issue when removing the
-> > device?
-> >
-> > Actually I looked at  virtnet_remove and I see
-> >         unregister_netdev(vi->dev);
-> >
-> >         net_failover_destroy(vi->failover);
-> >
-> >         remove_vq_common(vi); <- this will reset the device
-> >
-> > a window here?
+On Thu, 16 Jun 2022 17:16:12 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
+> On Thu, 16 Jun 2022 17:10:16 +0200 Ismael Luceno wrote:
+> > On Wed, 15 Jun 2022 09:00:44 -0700
+> > Jakub Kicinski <kuba@kernel.org> wrote:  
+> > > On Wed, 15 Jun 2022 17:11:13 +0200 Ismael Luceno wrote:    
+> > > > It seems a RTM_GETADDR request with AF_UNSPEC has a corner case
+> > > > where the NLM_F_DUMP_INTR flag is lost.
+> > > > 
+> > > > After a change in an address table, if a packet has been fully
+> > > > filled just previous, and if the end of the table is found at
+> > > > the same time, then the next packet should be flagged, which
+> > > > works fine when it's NLMSG_DONE, but gets clobbered when
+> > > > another table is to be dumped next.    
+> > > 
+> > > Could you describe how it gets clobbered? You mean that prev_seq
+> > > gets updated somewhere without setting the flag or something
+> > > overwrites nlmsg_flags? Or we set _INTR on an empty skb which
+> > > never ends up getting sent? Or..    
+> > 
+> > It seems to me that in most functions, but specifically in the case
+> > of net/ipv4/devinet.c:in_dev_dump_addr or inet_netconf_dump_devconf,
+> > nl_dump_check_consistent is called after each address/attribute is
+> > dumped, meaning a hash table generation change happening just after
+> > it adds an entry, if it also causes it to find the end of the table,
+> > wouldn't be flagged.
+> > 
+> > Adding an extra call at the end of all these functions should fix
+> > that, and spill the flag into the next packet, but would that be
+> > correct?  
 > 
-> Probably. For safety, we probably need to reset before unregistering.
+> The whole _DUMP_INTR scheme does indeed seem to lack robustness.
+> The update side changes the atomic after the update, and the read
+> side validates it before. So there's plenty time for a race to happen.
+> But I'm not sure if that's what you mean or you see more issues.
 
+No, I'm concerned that while in the dumping loop, the table might
+change between iterations, and if this results in the loop not finding
+more entries, because in most these functions there's no
+consistency check after the loop, this will go undetected.
 
-careful not to create new races, let's analyse this one to be
-sure first.
-
-> >
-> >
-> > Really, I think what we had originally was a better idea -
-> > instead of dropping interrupts they were delayed and
-> > when driver is ready to accept them it just enables them.
+> > It seems this condition is flagged correctly when NLM_DONE is
+> > produced, I couldn't see why, but I'm guessing another call to
+> > nl_dump_check_consistent...
+> > 
+> > Also, I noticed that in net/core/rtnetlink.c:rtnl_dump_all: 
+> > 
+> > 	if (idx > s_idx) {
+> > 		memset(&cb->args[0], 0, sizeof(cb->args));
+> > 		cb->prev_seq = 0;
+> > 		cb->seq = 0;
+> > 	}
+> > 	ret = dumpit(skb, cb);
+> > 
+> > This also prevents it to be detect the condition when dumping the
+> > next table, but that seems desirable...  
 > 
-> The problem is that it works only on some specific setup:
-> 
-> - doesn't work on shared IRQ
-> - doesn't work on some specific driver e.g virtio-blk
+> That's iterating over protocols, AFAICT, we don't guarantee
+> consistency across protocols.
 
-can some core irq work fix that?
+That's reasonable, I was just wondering about it because it does seem
+reasonable that the flags affect only the packets describing the table
+whose dump got interrupted...
 
-> > We just need to make sure driver does not wait for
-> > interrupts before enabling them.
-> >
-> > And I suspect we need to make this opt-in on a per driver
-> > basis.
-> 
-> Exactly.
-> 
-> Thanks
-> 
-> >
-> >
-> >
-> > > --
-> > > 2.25.1
-> >
-
+-- 
+Ismael Luceno
+SUSE L3 Support
