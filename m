@@ -2,134 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E367254FDB1
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 21:37:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71CC854FDDE
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 21:49:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237687AbiFQTdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 15:33:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45682 "EHLO
+        id S233017AbiFQTo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 15:44:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233207AbiFQTdM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 15:33:12 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5816913D51;
-        Fri, 17 Jun 2022 12:33:11 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id E794CC0002;
-        Fri, 17 Jun 2022 19:33:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1655494389;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fJo1iNlrC6pXt/HGXA00sqO583p/JVnVsx1bL3t4GcE=;
-        b=gm1JfRnJthxWQX2dsA4Uli3/48ReT8KWh6d2w9ZFckvWf/o/+XWWfsNcYmfNPAMyjH/i/J
-        Is68XF6S1uRpEywtS56mjMVwWzC6HsoQWqnCVq03Gfjf6rfUCmUXm4luzIlfiwTodhzfFB
-        f1Q5wuJW5z8EJZDdFP5RzzPqupCB5FyjZ54aI5radgr6InLJOg9XyUIQiYm9YDOwcEs3k0
-        dlF9jgCf4Eqi8L5aexZC8U1jq1WImhi4pDqwRmO5sfmVmn+uiXK1rn5TH3cl/P3p1QomM0
-        /PM7NEYb0TRIxAwu03etdqC1g3hq7YMvzI9ZalbI/z+NXrP9s7RUKVtSy0gMow==
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan@vger.kernel.org
+        with ESMTP id S234142AbiFQToY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 15:44:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DA4242EF9
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 12:44:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5EF461FF0
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 19:44:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2631C3411B;
+        Fri, 17 Jun 2022 19:44:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655495062;
+        bh=VOnmdE4elYHgDDgAV6ttQlmrwmNEZGGi/lbjWQ0CZuA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fQ/KNnjystqPhhFr/g16juKzUWmGTmBTBWiNFA8u+rJKpcnHQg/YG/4j96qSxEscK
+         x7YMSxNu/PerhrOzhzkJwzkJfh25Bd0kpfv6FxRIM6csLINwOOGVFyv3potOM7HGv9
+         FaQzilU+3OpPCTLl1uzvkbjh2gIA+SKEISVnRjI+5JX4oKI0Fzq6omdu7bhpUAD2sN
+         1fRC4OEGiuDCz2L56BzXccZMrtSFl57JQmDK2QXOoa0Q2W/1GraXj+xxF6O0uezNhv
+         hiR4XKRrP7BX9uBf6Ya8YI7yAJGKAllNkaqn8M0gXvAHnvKuId1Fi01VmuAbvc3YRT
+         H0rlpNwnA3LGA==
+Date:   Fri, 17 Jun 2022 12:44:13 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next v2 6/6] net: ieee802154: Trace the registration of new PANs
-Date:   Fri, 17 Jun 2022 21:32:54 +0200
-Message-Id: <20220617193254.1275912-7-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220617193254.1275912-1-miquel.raynal@bootlin.com>
-References: <20220617193254.1275912-1-miquel.raynal@bootlin.com>
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>
+Subject: Re: [PATCH net] veth: Add updating of trans_start
+Message-ID: <20220617124413.6848c826@kernel.org>
+In-Reply-To: <5765.1655484175@famine>
+References: <9088.1655407590@famine>
+        <20220617084535.6d687ed0@kernel.org>
+        <5765.1655484175@famine>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Girault <david.girault@qorvo.com>
+On Fri, 17 Jun 2022 09:42:55 -0700 Jay Vosburgh wrote:
+> 	In this case, it's to permit the bonding ARP / ND monitor to
+> function if that software device (veth in this case) is added to a bond
+> using the ARP / ND monitor (which relies on trans_start, and has done so
+> since at least 2.6.0).  I'll agree it's a niche case; this was broken
+> for veth for quite some time, but veth + netns is handy for software
+> only test cases, so it seems worth doing.
 
-Add an internal trace when new PANs get discovered.
+I presume it needs it to check if the device has transmitted anything
+in the last unit of time, can we look at the device stats for LLTX for
+example?
 
-Signed-off-by: David Girault <david.girault@qorvo.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
- net/ieee802154/pan.c   |  3 +++
- net/ieee802154/trace.h | 25 +++++++++++++++++++++++++
- 2 files changed, 28 insertions(+)
+> 	I didn't exhaustively check all LLTX drivers, but, e.g., tun
+> does update trans_start:
+> 
+> drivers/net/tun.c:
+> 
+>        /* NETIF_F_LLTX requires to do our own update of trans_start */
+>         queue = netdev_get_tx_queue(dev, txq);
+>         txq_trans_cond_update(queue);
 
-diff --git a/net/ieee802154/pan.c b/net/ieee802154/pan.c
-index b9f50f785960..0dd30c19c3a2 100644
---- a/net/ieee802154/pan.c
-+++ b/net/ieee802154/pan.c
-@@ -18,6 +18,7 @@
- 
- #include "ieee802154.h"
- #include "core.h"
-+#include "trace.h"
- 
- static struct cfg802154_internal_pan *
- cfg802154_alloc_pan(struct ieee802154_pan_desc *desc)
-@@ -205,6 +206,8 @@ static void cfg802154_pan_update(struct cfg802154_registered_device *rdev,
- 	found = cfg802154_find_matching_pan(rdev, new);
- 	if (found)
- 		cfg802154_unlink_pan(rdev, found);
-+	else
-+		trace_802154_new_pan(&new->desc);
- 
- 	if (unlikely(cfg802154_need_to_expire_pans(rdev)))
- 		cfg802154_expire_oldest_pan(rdev);
-diff --git a/net/ieee802154/trace.h b/net/ieee802154/trace.h
-index 19c2e5d60e76..fa989dac090d 100644
---- a/net/ieee802154/trace.h
-+++ b/net/ieee802154/trace.h
-@@ -295,6 +295,31 @@ TRACE_EVENT(802154_rdev_set_ackreq_default,
- 		WPAN_DEV_PR_ARG, BOOL_TO_STR(__entry->ackreq))
- );
- 
-+DECLARE_EVENT_CLASS(802154_pan_evt,
-+	TP_PROTO(struct ieee802154_pan_desc *desc),
-+	TP_ARGS(desc),
-+	TP_STRUCT__entry(
-+		__field(u16, pan_id)
-+		__field(__le64, coord_addr)
-+		__field(u8, channel)
-+		__field(u8, page)
-+	),
-+	TP_fast_assign(
-+		__entry->page = desc->page;
-+		__entry->channel = desc->channel;
-+		memcpy(&__entry->pan_id, &desc->coord->pan_id, 2);
-+		memcpy(&__entry->coord_addr, &desc->coord->extended_addr, 8);
-+	),
-+	TP_printk("panid: %u, coord_addr: 0x%llx, page: %u, channel: %u",
-+		  __entry->pan_id, __le64_to_cpu(__entry->coord_addr),
-+		  __entry->page, __entry->channel)
-+);
-+
-+DEFINE_EVENT(802154_pan_evt, 802154_new_pan,
-+	TP_PROTO(struct ieee802154_pan_desc *desc),
-+	TP_ARGS(desc)
-+);
-+
- TRACE_EVENT(802154_rdev_return_int,
- 	TP_PROTO(struct wpan_phy *wpan_phy, int ret),
- 	TP_ARGS(wpan_phy, ret),
--- 
-2.34.1
-
+Well, it is _an_ example, but the only one I can find. And the
+justification is the same as yours now -- make bonding work a31d27fb.
+Because of that I don't think we can use tun as a proof that trans 
+start should be updated on LLTX devices as a general, stack-wide rule.
+There's a lot more LLTX devices than veth and tun.
