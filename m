@@ -2,223 +2,288 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76A6854FEB0
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 23:02:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D76CB54FF19
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 23:04:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242248AbiFQUpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 16:45:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52016 "EHLO
+        id S1381052AbiFQVEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 17:04:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234032AbiFQUpU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 16:45:20 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57E39E0D4;
-        Fri, 17 Jun 2022 13:45:19 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id c196so5109820pfb.1;
-        Fri, 17 Jun 2022 13:45:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GJS8xGDoDp3R/vQRMKHZihZsDBrc43XyOD76C5kMQgg=;
-        b=NOrLooRyCG1f3Tyw07JbSTxhmId6Z8D/nO5tqj+aXTXSfpq9SQU66AEirMAUh+jS9N
-         Mh3qqqBVvaAoP4DBeCQYXe2jBQfw4wy4LkbB0ulsSnGM/9djxVJYy3WZwlbTYYxP2aRw
-         X60DyPapMQcH/J8Vj7dOEBaAgDgg44I401okcA9peI2n4NBGNUX2y0oQfr69I6b9n5m2
-         KsmhO0SfP227fAvoWqecn2y2kvIKS6XwAvPFB2NnCpfvcFauYjYo0ByDyUL18SveAukB
-         4fHVuvljsqILzxRzg8QzgGaCVUTdQmUf+jGGV8Tc6dlueOYzqHuPIpAcmnAZnJ/k+klh
-         bDCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GJS8xGDoDp3R/vQRMKHZihZsDBrc43XyOD76C5kMQgg=;
-        b=r4S1SdvT/YM24i38hdUIFlRdU5EiefDFKfWhVlIr98ANcB2ND+jfNKctiwsef/rrJW
-         rXNMThzm/THs2vTZwtcW87/VdNnW80ucSCABLVpkUC7bIlQPly5UNeFTxxVLCCTpz8t0
-         LJrhbOLx36KjfNqL0q7xA5IXh5nMQu4L3HT54PFLOU0R+Qedhuor/+k4HC3qA9WXQpZv
-         frYeKAQ9c3vTqnVa6tIOmiwoDI+74wRy27eFwbXPg5k9jX8UbvKatwNaM6m/lAhhidZj
-         fS6L4GGW3cyzNy78VwJ4p0XagCfPboawnIAyLVh/LYhIt5AHGQzhlLQ8VsPxX2xL6T5K
-         GwoQ==
-X-Gm-Message-State: AJIora+kInB8HYo/Za+zLMN60rnUhZHodEyh3MKQXNZuC/9C74xCoRXm
-        5NdZ1j5Z+5+ccITCnCx2080=
-X-Google-Smtp-Source: AGRyM1sx8tkfBNrOVWGnIiRoA81ClevBMCfaA6XRLqSGwI2G82dBly9eC19n+oRfaJZsnG2OXGWykg==
-X-Received: by 2002:a63:2482:0:b0:3fc:55e3:1410 with SMTP id k124-20020a632482000000b003fc55e31410mr10843062pgk.583.1655498718736;
-        Fri, 17 Jun 2022 13:45:18 -0700 (PDT)
-Received: from macbook-pro-3.dhcp.thefacebook.com ([2620:10d:c090:400::5:29cb])
-        by smtp.gmail.com with ESMTPSA id w188-20020a627bc5000000b00522c7cb943dsm4059858pfc.131.2022.06.17.13.45.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 13:45:18 -0700 (PDT)
-Date:   Fri, 17 Jun 2022 13:45:14 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        with ESMTP id S230357AbiFQVEy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 17:04:54 -0400
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40D865DE50;
+        Fri, 17 Jun 2022 14:04:53 -0700 (PDT)
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 25HIjR9T012762;
+        Fri, 17 Jun 2022 14:04:30 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type :
+ content-transfer-encoding : in-reply-to : mime-version; s=facebook;
+ bh=KxEcrJJdoKIq8TAKbzojh3M/sBeB1oMWjoyD2gn8E+8=;
+ b=NowNEOKJU0QPIIhFkXtsCit5Jeq2RB6q55Aqx/QLdn/0XBrT+is90pvnGj3RY6Lt+jau
+ nIsoOLIvC4nUbseFnIHbeKRBrnDJUg7UyiPC+3A2e46DG/iVGGFPUnYn3Za6zqLGapaO
+ sGM8oMOVM72FFxR4WpjHtrqVscgsQwNUppc= 
+Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2171.outbound.protection.outlook.com [104.47.56.171])
+        by m0001303.ppops.net (PPS) with ESMTPS id 3grkew4s8f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 17 Jun 2022 14:04:29 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YbMza5zr5DGz8PVxB9okCTm32tmDjbiSVSrTmoWo0P1INQzH/ingIc2opy1JrMhxkVPko/2thLcYnQ0Nfz9Zjh5LBbTUbV1drD16luyGfQKVh+SngS85opKP9yZJIhoJBBd/wjsYPZHuUxA+/aLB4xWTyvDpj2wRuklc6ZGolqm2JbhcxgKNWOfESOlFZQID8k1glM2pLDKBtearP7sruwsfeC3AJVBG1BT7YYLE0tuLfr0WPcJMEsJ/2eKWwkMsS5GxELbMW4T8muOqbd6Xf8Un1RZVUAqbrX/z5BrsmbETtlx0G/1O2vkc/LDonhNm+IQms3mHxHs+5HLQ+m+DRw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9CSWba2hBWRR8lQbLIDvaT45Ajs7p0Y4h0HR+834AhI=;
+ b=VOzMu0XFcSsqQY/yoNdx2zXzy6oUTMLXoCQ4YS4LQSOkp6wT8mrsmCH/ccJYwwT1biCPk7yYYZ9BS3/ZqNL4/fsFnIYeXkURhfqTBlTHJhph/ODqV+p09Du+i7+R0ko3lSmnICHCfws3ZEM6E+EMdVgXlAsQQUmtIyLe2YAMdt67SQty3frL1aC/QTwnooC5moafpKoKZSuJjnvO2VvHQ/3VSe5urWbsKBOyfts8EuitR5pspuTOOvud+196ggoIXWs1dNP0kUtE2pE46JruEmVG5PxqHHEjx7V0tbo54e6oRaVo6dTMV2V1m4FjI7C7icSvyWZ0zX98GLq2YaR/xw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from MW4PR15MB4475.namprd15.prod.outlook.com (2603:10b6:303:104::16)
+ by DM6PR15MB3323.namprd15.prod.outlook.com (2603:10b6:5:162::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.17; Fri, 17 Jun
+ 2022 21:04:27 +0000
+Received: from MW4PR15MB4475.namprd15.prod.outlook.com
+ ([fe80::3941:25c6:c1cd:5762]) by MW4PR15MB4475.namprd15.prod.outlook.com
+ ([fe80::3941:25c6:c1cd:5762%6]) with mapi id 15.20.5353.017; Fri, 17 Jun 2022
+ 21:04:27 +0000
+Date:   Fri, 17 Jun 2022 14:04:25 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     =?utf-8?Q?J=C3=B6rn-Thorben?= Hinz <jthinz@mailbox.tu-berlin.de>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH v4 bpf-next 00/14] net: netfilter: add kfunc helper to
- update ct timeout
-Message-ID: <20220617204514.3znslnrkquokvi5y@macbook-pro-3.dhcp.thefacebook.com>
-References: <cover.1653600577.git.lorenzo@kernel.org>
- <20220611201117.euqca7rgn5wydlwk@macbook-pro-3.dhcp.thefacebook.com>
- <20220613161413.sowe7bv3da2nuqsg@apollo.legion>
- <CAADnVQKk9LPm=4OeosxLZCmv+_PnowPZdz9QP4f-H8Vd4HSLVw@mail.gmail.com>
- <20220614022337.cdtulpzjyamjos5s@apollo.legion>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 3/5] selftests/bpf: Test a BPF CC writing
+ sk_pacing_*
+Message-ID: <20220617210425.xpeyxd4ahnudxnxb@kafai-mbp>
+References: <20220614104452.3370148-1-jthinz@mailbox.tu-berlin.de>
+ <20220614104452.3370148-4-jthinz@mailbox.tu-berlin.de>
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220614022337.cdtulpzjyamjos5s@apollo.legion>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220614104452.3370148-4-jthinz@mailbox.tu-berlin.de>
+X-ClientProxiedBy: BY5PR17CA0046.namprd17.prod.outlook.com
+ (2603:10b6:a03:167::23) To MW4PR15MB4475.namprd15.prod.outlook.com
+ (2603:10b6:303:104::16)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 24bb72f8-7008-40c7-21ea-08da50a4f6b5
+X-MS-TrafficTypeDiagnostic: DM6PR15MB3323:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR15MB33236105DEFC5B55D7DB7719D5AF9@DM6PR15MB3323.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Z8qb6VYqXfGj4/CnwYlL22DF8VLfMPRIe9t5RBxE8UVGwDVAfKe9UWhIFn1wH9bYzCBqHhrdscLGgT2WihNyFYp/tI+8XAn3lTkbwIMeqoeoCKCPub0bizm836u7aoZwJVs2OrLn+qKszaJNzr++wA4Ty4ypPy+AJSDsM28mKhehN9ZEbCCpFx1ljFRcsgrZetCtT64WGbPyxigK8RobMc9kSDLBhix4rtPm73C3+PkB+HMnaN7Vh1y4GR7P7bf6OaDlF6QtzSv2kZUoDL9gnozedjUi54iYfqTeax794IPKoegf0OmS+lZRzx8xcXDXP+NqERR4gOQElp2mTST5xgUdoLxEYyMp+OVPdhh11LEBCh14Y8AIDwzXWDl5hk57yIoBxWyQXyr/Y9ilI/eGvhAr8XwfpJ6pYzNp/kDboHV5aryYhF4MrKpgN66pGLCJL0Mecxf9Is5GX9dnw5YyNE3lhbM0IC+oa5CX1f0bUUbquepAUm+oOOgD4Rbz16oDCdhK3QPc3g885pQonhWYFr3YyScMN7YQkXAFsPQXdv2KAomKO6iGpLCsXtzbCIJhAEsPBXhBY5WCwo1ESXLbhz5pxkAn3nEmZ5r8hsgUd97iGq/vE+ZIeuN/ngl5OaexomoCtIygiyS9c9t39QE37Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR15MB4475.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(366004)(54906003)(66574015)(38100700002)(186003)(33716001)(5660300002)(498600001)(8936002)(316002)(83380400001)(6916009)(6486002)(6512007)(9686003)(66946007)(86362001)(2906002)(66556008)(66476007)(52116002)(4326008)(1076003)(8676002)(6506007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?BjtAn3hISUV3aCtTkm4DWoHNkcC3SvStq7X5dyRaL3tgQ7+nI3KpvY6kvt?=
+ =?iso-8859-1?Q?tz2gXag1zjWYjuS3viZcm1VhIaLYK9CTioWEql9rUmtRTFIf1yrgj+SIxe?=
+ =?iso-8859-1?Q?dA8TP9Va6jeeJ44VxxMbRH5rMzIkrGDWxEwEH5KIZ3BCDY8zQiq13NNzp/?=
+ =?iso-8859-1?Q?j9lplma/hDQbODQBalOgOTsELAYusF91GQ2/ThtL85Xv2yhv3wbk+Hw9AF?=
+ =?iso-8859-1?Q?m4lVKgQwomxNRnKA87Thzg28tXiMGbub3jrOIfvykBqagJzVserbJJ9fpw?=
+ =?iso-8859-1?Q?utNrgkMLp5TCSWATIxf1Dr+2Oemy+YfetcqdWSOHp/+7ArsmHbtqKr7/Dl?=
+ =?iso-8859-1?Q?6RAR0w9nOcWOMvqaXWVBjT6OE3QGfIGb5HFelS8Ez6qo4mbHSBORiyEVj4?=
+ =?iso-8859-1?Q?hDFQGlfLxyMuzf9K9p9cHIQ83KMd/bBaWlDqnJCqJd5SmnCIch4qIQc5GL?=
+ =?iso-8859-1?Q?qBxLpHXeJpO0hXTdNr2pEYeAdPQlp+gGl8n+HPQilS3g71fPH10iznXC4r?=
+ =?iso-8859-1?Q?qSy2rgRCw9p1kSKoBtZN6F+vSEaMybtJYlce5LSFA6J9Knqrm3KMwoWEdi?=
+ =?iso-8859-1?Q?jFVfbmS0PchyZmUP6hy3Ieu69/i3vkPmP1OmiygtETQxnRER1stooYuJfY?=
+ =?iso-8859-1?Q?9pLW7G5TlqtOVymTWsuUA2ykt9fv2QVTsGng/0qGzCgCvzZOdRrzI+/V25?=
+ =?iso-8859-1?Q?bfji29pIMEw1WNFwvWie/WQDQlArhD5IE1con7ZhphnRP7umfa/umhtcvf?=
+ =?iso-8859-1?Q?hsIH0g1IshZ0OY8h0e7hiCH8KCAp+iw0LqHONyuN+kI5LhrzWES59MDuYv?=
+ =?iso-8859-1?Q?Uq+WcIOrMb3zxTC7o0SgY3ylIHGjs0y6E91Vlu6JabUDb7aNiJwaTMkyi1?=
+ =?iso-8859-1?Q?fIAARV4Wo1kXfJU6UmcWOuPoX19hOlBxCMy9YvMkNO00AElXWUg2X5CJ0Z?=
+ =?iso-8859-1?Q?kOrTazlaToLGeVzKz/seKtcjO+3Pdo7S1tpoTsS6YwgXipxA8eOqYqBZD4?=
+ =?iso-8859-1?Q?QeKtsV6CyrChrN61jo5ENh8yDf98zJ3qtNVCIzHsikS6Q0TtvsKZZrCVSA?=
+ =?iso-8859-1?Q?zD72T/+CjgxabG2fNiokwA1xwvXNArDNl6DpHEy9Ro8SLKy9AGXV0FAFgk?=
+ =?iso-8859-1?Q?rK4cRP9OQD2koMK6X1d3EnqoYTjey/6jPdP43iF/yqlgTtjNgRvYJvxbMs?=
+ =?iso-8859-1?Q?6shrixerqws2i/tuoy2ETaOGqRufVqp7ZEB3ImpVUtWMkw0cwtgKuwoZWp?=
+ =?iso-8859-1?Q?YJTYz8pFQu1g4z61X0e7/xGFg/c/vWqAj4/bjUgSQB/tmQdBAjt+Wxj6mi?=
+ =?iso-8859-1?Q?0A2oFCzeQXH60HQQmJ+h5f1jouMmV+CQTNHYwcz9Wi393CuZ3+OEdvK4P2?=
+ =?iso-8859-1?Q?RWZ1tFIh6Y1KQInMri0j0Dd+1O4siSzsJKB41GMbRhbIsW0abqyughw2gU?=
+ =?iso-8859-1?Q?7pszhzc2Wsplp74yX+xDnrAofvRvtSWAr4CAgac8Sc++CsfRK0igvHeWFV?=
+ =?iso-8859-1?Q?Q12jdfJjXP9qJPyaPs8oJDxRulAsTuLbuD81fbZhAdldM0icQIi5kMG7p0?=
+ =?iso-8859-1?Q?Pj7JPIfP1myRtU1wscHRUjzTmhQc5qsj2SqUaaq28ov7UHVx/XxS2WzIQ2?=
+ =?iso-8859-1?Q?xUQfN/XKLBnTsv4C2VDnBPDA4L8u6vHWi4gU9f7Ov4puyU33vV0598EFoj?=
+ =?iso-8859-1?Q?gsNo3S1ruP4B+F3YWwTwi/qdNzYyQly6B2mPwz8q16E3vqOEev9l9ezUxb?=
+ =?iso-8859-1?Q?HKWpW3tUbaRMfzcBntWHzGDdrIO9e3Dkt00PtyyxYzewOHj75r12SKkx/W?=
+ =?iso-8859-1?Q?aY+Q1B4NqJe23+5roYKZRAjI0jDKtjk=3D?=
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24bb72f8-7008-40c7-21ea-08da50a4f6b5
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR15MB4475.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2022 21:04:27.1833
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hN8eS2b85EJTGq4PhZISCYn+/5OHu8Ba5sV8NTVqurourQHKGpYCrZ5glyBLGQRz
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3323
+X-Proofpoint-ORIG-GUID: lPCZ5nzBZcnnFUHSFblygFfMUtYCIaYF
+X-Proofpoint-GUID: lPCZ5nzBZcnnFUHSFblygFfMUtYCIaYF
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-17_14,2022-06-17_01,2022-02-23_01
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 07:53:37AM +0530, Kumar Kartikeya Dwivedi wrote:
-> On Tue, Jun 14, 2022 at 03:45:00AM IST, Alexei Starovoitov wrote:
-> > On Mon, Jun 13, 2022 at 9:14 AM Kumar Kartikeya Dwivedi
-> > <memxor@gmail.com> wrote:
-> > >
-> > > On Sun, Jun 12, 2022 at 01:41:17AM IST, Alexei Starovoitov wrote:
-> > > > On Thu, May 26, 2022 at 11:34:48PM +0200, Lorenzo Bianconi wrote:
-> > > > > Changes since v3:
-> > > > > - split bpf_xdp_ct_add in bpf_xdp_ct_alloc/bpf_skb_ct_alloc and
-> > > > >   bpf_ct_insert_entry
-> > > > > - add verifier code to properly populate/configure ct entry
-> > > > > - improve selftests
-> > > >
-> > > > Kumar, Lorenzo,
-> > > >
-> > > > are you planning on sending v5 ?
-> > > > The patches 1-5 look good.
-> > > > Patch 6 is questionable as Florian pointed out.
-> > >
-> > > Yes, it is almost there.
-> > >
-> > > > What is the motivation to allow writes into ct->status?
-> > >
-> > > It will only be allowed for ct from alloc function, after that ct = insert(ct)
-> > > releases old one with new read only ct. I need to recheck once again with the
-> > > code what other bits would cause problems on insert before I rework and reply.
-> >
-> > I still don't understand why you want to allow writing after alloc.
-> >
+On Tue, Jun 14, 2022 at 12:44:50PM +0200, Jörn-Thorben Hinz wrote:
+> Test whether a TCP CC implemented in BPF is allowed to write
+> sk_pacing_rate and sk_pacing_status in struct sock. This is needed when
+> cong_control() is implemented and used.
 > 
-> It is just a way to set the status, instead of a helper to set it. Eventually
-> before nf_conntrack_hash_check_insert it will still be checked and error
-> returned for disallowed bits (e.g. anything in IPS_UNCHANGEABLE_MASK, etc.).
-> The current series missed that check.
+> Signed-off-by: Jörn-Thorben Hinz <jthinz@mailbox.tu-berlin.de>
+> ---
+>  .../selftests/bpf/prog_tests/bpf_tcp_ca.c     | 21 +++++++
+>  .../bpf/progs/tcp_ca_write_sk_pacing.c        | 60 +++++++++++++++++++
+>  2 files changed, 81 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/progs/tcp_ca_write_sk_pacing.c
 > 
-> Florian is right in that it is a can of worms, but I think we can atleast permit
-> things like confirmed, assured, etc. which can also be set when crafting a ct
-> using netlink. Both of them can share the same check so it is consistent when
-> done from kfunc or netlink side, and any changes internally wrt status bits are
-> in sync.
-> 
-> Anyway, if you don't like the direct write into ct, I can drop it, for now just
-> insert a confirmed entry (since this was just for testing). That also means
-> patch 3-6 are not strictly needed anymore, so they can be dropped, but I can
-> keep them if you want, since they might be useful.
-> 
-> Florian asked for the pipeline, it is like this:
-> 
-> ct = bpf_xdp_ct_alloc();
-> ct->a = ...; // private ct, not yet visible to anyone but us
-> ct->b = ...;
->    or we would now set using helpers
-> alloc_ct_set_status(ct, IPS_CONFIRMED);
-> alloc_ct_set_timeout(ct, timeout);
+> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+> index e9a9a31b2ffe..a797497e2864 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+> @@ -9,6 +9,7 @@
+>  #include "bpf_cubic.skel.h"
+>  #include "bpf_tcp_nogpl.skel.h"
+>  #include "bpf_dctcp_release.skel.h"
+> +#include "tcp_ca_write_sk_pacing.skel.h"
+>  
+>  #ifndef ENOTSUPP
+>  #define ENOTSUPP 524
+> @@ -322,6 +323,24 @@ static void test_rel_setsockopt(void)
+>  	bpf_dctcp_release__destroy(rel_skel);
+>  }
+>  
+> +static void test_write_sk_pacing(void)
+> +{
+> +	struct tcp_ca_write_sk_pacing *skel;
+> +	struct bpf_link *link;
+> +
+> +	skel = tcp_ca_write_sk_pacing__open_and_load();
+> +	if (!ASSERT_OK_PTR(skel, "open_and_load")) {
+nit. Remove this single line '{'.
 
-In other cases it probably will be useful to write into allocated structs,
-but ct's timeout and status fields are a bit too special.
-It's probably cleaner to generalize ctnetlink_change_status/ctnetlink_change_timeout
-as kfuncs and let progs modify the fields through these two helpers.
-Especially since timeout and status&IPS_DYING_BIT are related.
+./scripts/checkpatch.pl has reported that also:
+WARNING: braces {} are not necessary for single statement blocks
+#43: FILE: tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c:332:
++	if (!ASSERT_OK_PTR(skel, "open_and_load")) {
++		return;
++	}
 
-Let's indeed drop 3-6 for now.
-Though recognizing 'const' modifier in BTF is useful it creates ambiguity.
-Unreferenced ptr_to_btf_id is readonly anyway.
-This 'const' would make it readable with normal load vs probe_load, but
-that difference is too subtle for users. It looks like normal dereference in C
-in both cases. Let's keep existing probe_load only for now.
 
-> ...
-> ct = bpf_ct_insert_entry(ct); // old alloc_ct release, new inserted nf_conn returned
-> if (!ct)
-> 	return -1;
-> /* Inserted successfully */
-> In the earlier approach this ct->a could now not be written to, as it was
-> inserted, instead of allocated ct, which insert function took as arg and
-> invalidated, so BPF program held a read only pointer now. If we drop that
-> approach all pointers are read only anyway, so writing won't be allowed either.
+> +		return;
+> +	}
+> +
+> +	link = bpf_map__attach_struct_ops(skel->maps.write_sk_pacing);
+> +	if (ASSERT_OK_PTR(link, "attach_struct_ops")) {
+Same here.
+
+and no need to check the link before bpf_link__destroy.
+bpf_link__destroy can handle error link.  Something like:
+
+	ASSERT_OK_PTR(link, "attach_struct_ops");
+	bpf_link__destroy(link);
+	tcp_ca_write_sk_pacing__destroy(skel);
+
+The earlier examples in test_cubic and test_dctcp were
+written before bpf_link__destroy can handle error link.
+
+> +		bpf_link__destroy(link);
+> +	}
+> +
+> +	tcp_ca_write_sk_pacing__destroy(skel);
+> +}
+> +
+>  void test_bpf_tcp_ca(void)
+>  {
+>  	if (test__start_subtest("dctcp"))
+> @@ -334,4 +353,6 @@ void test_bpf_tcp_ca(void)
+>  		test_dctcp_fallback();
+>  	if (test__start_subtest("rel_setsockopt"))
+>  		test_rel_setsockopt();
+> +	if (test__start_subtest("write_sk_pacing"))
+> +		test_write_sk_pacing();
+>  }
+> diff --git a/tools/testing/selftests/bpf/progs/tcp_ca_write_sk_pacing.c b/tools/testing/selftests/bpf/progs/tcp_ca_write_sk_pacing.c
+> new file mode 100644
+> index 000000000000..43447704cf0e
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/tcp_ca_write_sk_pacing.c
+> @@ -0,0 +1,60 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +#include "vmlinux.h"
+> +
+> +#include <bpf/bpf_helpers.h>
+> +#include <bpf/bpf_tracing.h>
+> +
+> +char _license[] SEC("license") = "GPL";
+> +
+> +#define USEC_PER_SEC 1000000UL
+> +
+> +#define min(a, b) ((a) < (b) ? (a) : (b))
+> +
+> +static inline struct tcp_sock *tcp_sk(const struct sock *sk)
+> +{
+This helper is already available in bpf_tcp_helpers.h.
+Is there a reason not to use that one and redefine
+it in both patch 3 and 4?  The mss_cache and srtt_us can be added
+to bpf_tcp_helpers.h.  It will need another effort to move
+all selftest's bpf-cc to vmlinux.h.
+
+> +	return (struct tcp_sock *)sk;
+> +}
+> +
+> +SEC("struct_ops/write_sk_pacing_init")
+> +void BPF_PROG(write_sk_pacing_init, struct sock *sk)
+> +{
+> +#ifdef ENABLE_ATOMICS_TESTS
+> +	__sync_bool_compare_and_swap(&sk->sk_pacing_status, SK_PACING_NONE,
+> +				     SK_PACING_NEEDED);
+> +#else
+> +	sk->sk_pacing_status = SK_PACING_NEEDED;
+> +#endif
+> +}
+> +
+> +SEC("struct_ops/write_sk_pacing_cong_control")
+> +void BPF_PROG(write_sk_pacing_cong_control, struct sock *sk,
+> +	      const struct rate_sample *rs)
+> +{
+> +	const struct tcp_sock *tp = tcp_sk(sk);
+> +	unsigned long rate =
+> +		((tp->snd_cwnd * tp->mss_cache * USEC_PER_SEC) << 3) /
+> +		(tp->srtt_us ?: 1U << 3);
+> +	sk->sk_pacing_rate = min(rate, sk->sk_max_pacing_rate);
+> +}
+> +
+> +SEC("struct_ops/write_sk_pacing_ssthresh")
+> +__u32 BPF_PROG(write_sk_pacing_ssthresh, struct sock *sk)
+> +{
+> +	return tcp_sk(sk)->snd_ssthresh;
+> +}
+> +
+> +SEC("struct_ops/write_sk_pacing_undo_cwnd")
+> +__u32 BPF_PROG(write_sk_pacing_undo_cwnd, struct sock *sk)
+> +{
+> +	return tcp_sk(sk)->snd_cwnd;
+> +}
+> +
+> +SEC(".struct_ops")
+> +struct tcp_congestion_ops write_sk_pacing = {
+> +	.init = (void *)write_sk_pacing_init,
+> +	.cong_control = (void *)write_sk_pacing_cong_control,
+> +	.ssthresh = (void *)write_sk_pacing_ssthresh,
+> +	.undo_cwnd = (void *)write_sk_pacing_undo_cwnd,
+> +	.name = "bpf_w_sk_pacing",
+> +};
+> -- 
+> 2.30.2
 > 
-> > > > The selftest doesn't do that anyway.
-> > >
-> > > Yes, it wasn't updated, we will do that in v5.
-> > >
-> > > > Patch 7 (acquire-release pairs) is too narrow.
-> > > > The concept of a pair will not work well. There could be two acq funcs and one release.
-> > >
-> > > That is already handled (you define two pairs: acq1, rel and acq2, rel).
-> > > There is also an example: bpf_ct_insert_entry -> bpf_ct_release,
-> > > bpf_xdp_ct_lookup -> ct_release.
-> >
-> > If we can represent that without all these additional btf_id sets
-> > it would be much better.
-> >
-> > > > Please think of some other mechanism. Maybe type based? BTF?
-> > > > Or encode that info into type name? or some other way.
-> > >
-> > > Hmm, ok. I kinda dislike this solution too. The other idea that comes to mind is
-> > > encapsulating nf_conn into another struct and returning pointer to that:
-> > >
-> > >         struct nf_conn_alloc {
-> > >                 struct nf_conn ct;
-> > >         };
-> > >
-> > >         struct nf_conn_alloc *bpf_xdp_ct_alloc(...);
-> > >         struct nf_conn *bpf_ct_insert_entry(struct nf_conn_alloc *act, ...);
-> > >
-> > > Then nf_conn_alloc gets a different BTF ID, and hence the type can be matched in
-> > > the prototype. Any opinions?
-> >
-> > Yes. Or maybe typedef ?
-> > typedef struct nf_conn nf_conn__alloc;
-> > typedef struct nf_conn nf_conn__ro;
-> >
-> > C will accept silent type casts from one type to another,
-> > but BTF type checking can be strict?
-> > Not sure. wrapping a struct works too, but extra '.ct' accessor
-> > might be annoying? Unless you only use it with container_of().
-> > I would prefer double or triple underscore to highlight a flavor.
-> > struct nf_conn___init {...}
-> > The main benefit, of course, is no need for extra btf_id sets.
-> > Different types take care of correct arg passing.
-> > In that sense typedef idea doesn't quite work,
-> > since BTF checks with typedef would be unnecessarily strict
-> > compared to regular C type checking rules. That difference
-> > in behavior might bite us later.
-> > So let's go with struct wrapping.
-> 
-> Makes sense, I will go with this. But now if we are not even allowing write to
-> such allocated ct (probably only helpers that set some field and check value),
-> it can just be an empty opaque struct for the BPF program, while it is still
-> a nf_conn in the kernel. There doesn't seem to be much point in wrapping around
-> nf_conn when reading from allocated nf_conn isn't going to be of any use.
-
-Let's not make it opaque. struct nf_conn is readonly with probe_load.
-No need to disable that access either for allocated nf_conn or inserted.
