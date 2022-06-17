@@ -2,353 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF30A54FFBB
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 00:08:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A248654FFDD
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 00:26:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350246AbiFQWIm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 18:08:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55462 "EHLO
+        id S243885AbiFQW0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 18:26:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346786AbiFQWIl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 18:08:41 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9CE53054E;
-        Fri, 17 Jun 2022 15:08:39 -0700 (PDT)
-Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1o2K8q-0001dq-QD; Sat, 18 Jun 2022 00:08:36 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        daniel@iogearbox.net, ast@kernel.org, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf-next 2022-06-17
-Date:   Sat, 18 Jun 2022 00:08:36 +0200
-Message-Id: <20220617220836.7373-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        with ESMTP id S230245AbiFQW0T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 18:26:19 -0400
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0C160DB7;
+        Fri, 17 Jun 2022 15:26:16 -0700 (PDT)
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 25HLhmbB007951;
+        Fri, 17 Jun 2022 15:26:02 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=Q6z8K7fqPdne4LyU9kOtPeODcUe1iQ33MkgGvt1gzHg=;
+ b=giIEbMkTz/qP7UxLFLcB7sC0yGhnNNiaMkG3DKFlip8g3jSlsnJJzK2Q6qIZXKjgD4Gd
+ tJGnmcddGpms/7k12qtdSFKyG/ThpaQI4/CE+LF1CK++h5HZRSVhw7c+wA1/0TlKQDNX
+ f6qHoyex6O4DWY8e0JFG+p/AsW5bch4tVWM= 
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2171.outbound.protection.outlook.com [104.47.58.171])
+        by m0089730.ppops.net (PPS) with ESMTPS id 3gr09vw03e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 17 Jun 2022 15:26:01 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=J0J2NWcexbAmFgZqTDCBOIvrX9+urC88N7SjPp559xaUwY1Q1e5106s0qCwDFJvb92JBgUP8xtiSVcTX6c0HnO1VsygKGU28sh0Md0N0UVi6zqo9TqcZPdwMrDclkpkKYpHDlkxu/6MIoOPnk/ZGNteFeONXKRNodLTzdLPQjsH4wcgDuNtytiZsWK6mA3uJ6Vh0oNZT5A/tpNgtS/LAJaB704Sz1ywQP+47bHB5+tvdxtMBhR0uniRrl7hGz7zW9MvCKFbgi7DsMl+2qhweqgMLf22ImZpusBjIwAFCpadJfUuOgJZAX8y8DGxNRQ/uoB2I890nPjgSnBSK/DoABQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Q6z8K7fqPdne4LyU9kOtPeODcUe1iQ33MkgGvt1gzHg=;
+ b=SgXfICRc2wwP08uRflMrdx/HbYOapEt2Lc3RH+m6x+E/pimyh6DSzlLx+nfEgv8dU5FOP0N7df2uPdq6wWws9VMWXbhPDondpGfVJEqPVnfajQ8gxa5zaq48uI1oOr5KIg+cD/ehsCJO03N4x7V6JnpQ1UP78RohmzxVpTu9mLLghVzv29FT8nDzL1k8dU9chkFd0o0hq602HpK/zKlFWKjwT++WKeJJcv1Q2y9G3vwYRB4A6qffMPZ7l3tbI9M8LAcAVtXszDp7HJr+xGUodglS7EPVW2qJHzcib6645Mjo8LLRXXh04SrV+t0b6WiMPGNjiCbInT9bdtR8cFp8iw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from MW4PR15MB4475.namprd15.prod.outlook.com (2603:10b6:303:104::16)
+ by MN2PR15MB2895.namprd15.prod.outlook.com (2603:10b6:208:ec::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Fri, 17 Jun
+ 2022 22:25:59 +0000
+Received: from MW4PR15MB4475.namprd15.prod.outlook.com
+ ([fe80::3941:25c6:c1cd:5762]) by MW4PR15MB4475.namprd15.prod.outlook.com
+ ([fe80::3941:25c6:c1cd:5762%6]) with mapi id 15.20.5353.017; Fri, 17 Jun 2022
+ 22:25:59 +0000
+Date:   Fri, 17 Jun 2022 15:25:58 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org
+Subject: Re: [PATCH bpf-next v9 03/10] bpf: per-cgroup lsm flavor
+Message-ID: <20220617222558.gipxxl4mc5yd6sx3@kafai-mbp>
+References: <20220610165803.2860154-1-sdf@google.com>
+ <20220610165803.2860154-4-sdf@google.com>
+ <20220616222522.5qsvsxlzxjkbfndu@kafai-mbp>
+ <CAKH8qBu_zUJ0v59Bm0on-Aa_EzfH2y9RJ2pi=VNy5atzP+Tz7g@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKH8qBu_zUJ0v59Bm0on-Aa_EzfH2y9RJ2pi=VNy5atzP+Tz7g@mail.gmail.com>
+X-ClientProxiedBy: BYAPR05CA0084.namprd05.prod.outlook.com
+ (2603:10b6:a03:e0::25) To MW4PR15MB4475.namprd15.prod.outlook.com
+ (2603:10b6:303:104::16)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26575/Fri Jun 17 10:08:05 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5f3b5c28-eb60-4bbc-b9bc-08da50b05ad7
+X-MS-TrafficTypeDiagnostic: MN2PR15MB2895:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR15MB2895FDB78F4CC299F25C90E3D5AF9@MN2PR15MB2895.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: cdy2NkhFMN3I1oWySnqdq87YN94ttT9DeuHtvZ38m05qshgLLQgf+KzdHH+IZM6I9pPfC0X0K8G7HJJuAEr72U5I9bkah5fqLHdbRy9ukRA8G3pGDkDIJ3VScYkm2nGAcBXaHsm7T9F6Fig12p8udVXpggn/sH77Fj2LJIrX7jXAyuveSrps+P6j8uKZUZAimTK+HovC08h1Bw+ML1GiHfA/z7cQDMd55gIuDPLDXa9+ptiqyMkPQPX5BAFku+nw0JcikPwMnnPUcWWxELibvzE+qO2TiyCqxRvrdbih6637GyZfwqh7kYDwirwfFyObCayhdGQGXBUkHSj6YRb7fskO41nzoHjZOwXLXJCZLhYuUcOJdLLVpW5Jz3h1ST4Ezf2bjE33V8KXeGowuHD+Bk91ayC3pTrlEo4b+R1dhtiIfPE/DT4B3a3V7L70hmnZd7oJB8Ll7HWvF4gLSnJWjyeHQpl3cNtTzYt4b4VXHipkWxOq9dmIHrJ71uXIGZ1JOEilC5hnNcEvfth0/C88b39EjLZ3M1ARFx5/fiXzuPcage6L81PS1yl7Rp5Qti+mqNTS/EQccwXfLxxIHp6+d1e29DxsSeSZNypbP7bB9o9BTpQmFrI6SFT00dz4q4QL4ZdksoRJ7IsJail00EIMRg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR15MB4475.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(366004)(86362001)(186003)(83380400001)(5660300002)(6916009)(33716001)(2906002)(8936002)(66556008)(6506007)(53546011)(8676002)(4326008)(66476007)(498600001)(1076003)(52116002)(6486002)(6512007)(316002)(38100700002)(9686003)(66946007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dTFurE8x2eAgW1bQ2NIcAT8XqNTjcOnxBgNVneVNKdUg25f/O9vzmhWnzXwY?=
+ =?us-ascii?Q?QpPxcvRnzlMw1MczhmnLNMmiT9Qo20wHf80mxAGW/nBlUc1oHhntCeYE46AZ?=
+ =?us-ascii?Q?A80prjprF+JERYUuhH5iSx2SxFtc5Z6pnS3Ze1gtkLsZwQRe783y8Z+hlVA4?=
+ =?us-ascii?Q?BnYcPNimmA5yz0fy0NLvxJ3+BWg9W+59vo8q2DBhWOFmDx8NGUoiDgP3QCXd?=
+ =?us-ascii?Q?FIQTXpfMaftUuvnGNwyrYqA+tK5UVYgyrjG+fyrw2OK8glDxPOIV021YeHcp?=
+ =?us-ascii?Q?FGjZ5jtgpQIWXCB3tV3CEJDzFfqpOGzLeritMhp0lgtJu9xbznj1lvj71dXC?=
+ =?us-ascii?Q?Q7ENrif2COS73AkT2oc0x5o0410UYD6PXPisVxOXv9fzoVJSclCtR7o3fBnM?=
+ =?us-ascii?Q?SYkUkDQRmBvbZHdsDBvto7dugkTg0ec9zOiSpB9/HOt4vB19UM1uCJ+jLENU?=
+ =?us-ascii?Q?LjNU0FEaKCWpICy502D0+kZyS4FgGqEikFidliKQ8+ew+Gq5+KAb70pUjviJ?=
+ =?us-ascii?Q?PnWyZGlgX4nSKqamF6KN1dIp7kXSpc5anGcwdC27y4DxdXktMLIY/Edc4tH4?=
+ =?us-ascii?Q?Cbf4WkSkBCaKFzzu1yvGUb78583GwYft7adzg2agGP7GLFsUJzeMkEca8yuT?=
+ =?us-ascii?Q?aJdIFSm01mqMkV1TmPFoDpcFMyAari3uRikmLLC7aXtg7TC6HcsRflRB0ko5?=
+ =?us-ascii?Q?BKhOhm0lMATMfl3UCYEMIPL2rSYvcv+GTt+G9Iq/15zzENhO2XDbWg04e749?=
+ =?us-ascii?Q?2IWRBWTcQ6TzszQx/Kk0nDjZMZqcHU+YFOxFo9Pn+B9oisN/u/LJCYzodZIT?=
+ =?us-ascii?Q?Kske6P0Q1QPe/7sToSmaDetokdVBrBcFg2ppE56H4dKnpU5MgdZi6oHu1JFX?=
+ =?us-ascii?Q?+gjy/HxqqH0LUCIXtkKnNAfM1bk75+uA39vEY1T266CTwLqTde1/euCRDHg9?=
+ =?us-ascii?Q?HdEeU8QNDO8pfWKtCTPPk1T56NexhwFMkxTh/4aVVopJ6APN1VugGCZ/9l0e?=
+ =?us-ascii?Q?tzYJHWpVqWy00eqy/xhVQlHkjA1hbfsqSSi21FMQabnEl2WFID1b4yONKg6i?=
+ =?us-ascii?Q?9YNmXpZbI0/JxvsjlxiKnsGGCcELnWWBUN+hUY8xh6EPrWBXV9gr0gsYpGS+?=
+ =?us-ascii?Q?/aIK8d3s6d0EKLGILzI/wHoK36JGuwUV3R6CobO+jmjk1nFmWzXD79d7aUfR?=
+ =?us-ascii?Q?xxZHih10RdinCvYg7TCwykzUZNeR13Ph/JlS2r23y339rXuOIIX//P5aC/Ql?=
+ =?us-ascii?Q?qVeZTnxbrcjekIqzsnPqzSCea63ZT9xgFHna7r2nrU5QKjxStjUUdegECz68?=
+ =?us-ascii?Q?xGQ0DDjpWEgGgycsaGOsW6BjsOsTk0Jt8QicOVzUO4XyXFCMwZ8zZ6kV52f+?=
+ =?us-ascii?Q?CffnZ/26NYZcx+B3MJE7dunaUOWBxLs22vddLPcwf774S/8ZBm8MxzzAKuw8?=
+ =?us-ascii?Q?Vu268AhIGznYDbO/HW3ZboWhnKFM9rJW/s5h9th/CXLHCR5vJhmayas7peg9?=
+ =?us-ascii?Q?ld56krD9oNSz1sIG1PC3Cnhb6UdXoGL4GQp9MTQowF3ZDYeKgmm7re5id0ne?=
+ =?us-ascii?Q?dSC71HFO6DajuduUdWk2GA68iDsli4TA3E0FeCqsTlH4BvMJPw0/U6dihH7D?=
+ =?us-ascii?Q?1030mGmWteJ1elDRqbjdcE5oIXwVtmtBEMbVWZuWhPPF6tErpTMG6PYnXnCN?=
+ =?us-ascii?Q?sEZ89fsMUx4uIS12A3TiInM/vgHsar7QAKwOMQ7CvAHaRIvHEd1x2T5EXLb7?=
+ =?us-ascii?Q?VfVNm2g4u83Wr/vsn1YM1HEpFZHe5lI=3D?=
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5f3b5c28-eb60-4bbc-b9bc-08da50b05ad7
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR15MB4475.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jun 2022 22:25:59.7243
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 36pJjIi2zq7u+NZIL8K5Sipw9m143efKCg+v+gAliRRK/OU8170pkRntWQ3yKrkt
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB2895
+X-Proofpoint-GUID: D6Sm1cEi6eO4PwQHqWgh91mh2RLzrrhy
+X-Proofpoint-ORIG-GUID: D6Sm1cEi6eO4PwQHqWgh91mh2RLzrrhy
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-17_14,2022-06-17_01,2022-02-23_01
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub, hi Paolo, hi Eric,
+On Fri, Jun 17, 2022 at 11:28:15AM -0700, Stanislav Fomichev wrote:
+> On Thu, Jun 16, 2022 at 3:25 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> >
+> > On Fri, Jun 10, 2022 at 09:57:56AM -0700, Stanislav Fomichev wrote:
+> > > Allow attaching to lsm hooks in the cgroup context.
+> > >
+> > > Attaching to per-cgroup LSM works exactly like attaching
+> > > to other per-cgroup hooks. New BPF_LSM_CGROUP is added
+> > > to trigger new mode; the actual lsm hook we attach to is
+> > > signaled via existing attach_btf_id.
+> > >
+> > > For the hooks that have 'struct socket' or 'struct sock' as its first
+> > > argument, we use the cgroup associated with that socket. For the rest,
+> > > we use 'current' cgroup (this is all on default hierarchy == v2 only).
+> > > Note that for some hooks that work on 'struct sock' we still
+> > > take the cgroup from 'current' because some of them work on the socket
+> > > that hasn't been properly initialized yet.
+> > >
+> > > Behind the scenes, we allocate a shim program that is attached
+> > > to the trampoline and runs cgroup effective BPF programs array.
+> > > This shim has some rudimentary ref counting and can be shared
+> > > between several programs attaching to the same per-cgroup lsm hook.
+> > nit. The 'per-cgroup' may be read as each cgroup has its own shim.
+> > It will be useful to rephrase it a little.
+> 
+> I'll put the following, LMK if still not clear.
+> 
+> This shim has some rudimentary ref counting and can be shared
+> between several programs attaching to the same lsm hook from
+> different cgroups.
+SG.
 
-The following pull-request contains BPF updates for your *net-next* tree.
+> > > @@ -839,8 +953,11 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+> > >       if (hlist_empty(progs))
+> > >               /* last program was detached, reset flags to zero */
+> > >               cgrp->bpf.flags[atype] = 0;
+> > > -     if (old_prog)
+> > > +     if (old_prog) {
+> > > +             if (type == BPF_LSM_CGROUP)
+> > > +                     bpf_trampoline_unlink_cgroup_shim(old_prog);
+> > I think the same bpf_trampoline_unlink_cgroup_shim() needs to be done
+> > in bpf_cgroup_link_release()?  It should be done just after
+> > WARN_ON(__cgroup_bpf_detach()).
+> 
+> Oooh, I missed that, I thought that old_prog would have the pointer to
+> the old program even if it's a link :-(
+> 
+> Do you mind if I handle it in __cgroup_bpf_detach as well? Or do you
+> think it's cleaner to do in bpf_cgroup_link_release?
+> 
+> if (old_prog) {
+>   ...
+> } else if (link) {
+>   if (type == BPF_LSM_CGROUP)
+>     bpf_trampoline_unlink_cgroup_shim(link->link.prog);
+> }
+I think this will be similar to the earlier revision.
 
-We've added 72 non-merge commits during the last 15 day(s) which contain
-a total of 92 files changed, 4582 insertions(+), 834 deletions(-).
+I was thinking doing it in bpf_cgroup_link_release() for link
+where I know the bpf_prog_put() will be handled by bpf_link_free()
+as other link's release/detach functions do.  Otherwise, the first
+reading impression is why there is no bpf_prog_put() in
+__cgroup_bpf_detach() for the link case.
 
-The main changes are:
+No strong opinion here.  Either way is fine.  Mostly personal impression
+when reading the code in the first pass.  Reading it closely should be
+able to figure out in either way.
 
-1) Add 64 bit enum value support to BTF, from Yonghong Song.
+> 
+> > [ ... ]
+> >
+> > > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > > index aeb31137b2ed..a237be4f8bb3 100644
+> > > --- a/kernel/bpf/syscall.c
+> > > +++ b/kernel/bpf/syscall.c
+> > > @@ -3416,6 +3416,8 @@ attach_type_to_prog_type(enum bpf_attach_type attach_type)
+> > >               return BPF_PROG_TYPE_SK_LOOKUP;
+> > >       case BPF_XDP:
+> > >               return BPF_PROG_TYPE_XDP;
+> > > +     case BPF_LSM_CGROUP:
+> > > +             return BPF_PROG_TYPE_LSM;
+> > >       default:
+> > >               return BPF_PROG_TYPE_UNSPEC;
+> > >       }
+> > > @@ -3469,6 +3471,11 @@ static int bpf_prog_attach(const union bpf_attr *attr)
+> > >       case BPF_PROG_TYPE_CGROUP_SOCKOPT:
+> > >       case BPF_PROG_TYPE_CGROUP_SYSCTL:
+> > >       case BPF_PROG_TYPE_SOCK_OPS:
+> > > +     case BPF_PROG_TYPE_LSM:
+> > > +             if (ptype == BPF_PROG_TYPE_LSM &&
+> > > +                 prog->expected_attach_type != BPF_LSM_CGROUP)
+> > Check this in bpf_prog_attach_check_attach_type() where
+> > other expected_attach_type are enforced.
+> 
+> It was there initially but I moved it here because
+> bpf_prog_attach_check_attach_type() is called from link_create() as
+> well where the range of acceptable expected_attach_type(s) is larger.
+Ah. ic.  Thanks for the explanation.
 
-2) Implement support for sleepable BPF uprobe programs, from Delyan Kratunov.
-
-3) Add new BPF helpers to issue and check TCP SYN cookies without binding to a
-   socket especially useful in synproxy scenarios, from Maxim Mikityanskiy.
-
-4) Fix libbpf's internal USDT address translation logic for shared libraries as
-   well as uprobe's symbol file offset calculation, from Andrii Nakryiko.
-
-5) Extend libbpf to provide an API for textual representation of the various
-   map/prog/attach/link types and use it in bpftool, from Daniel Müller.
-
-6) Provide BTF line info for RV64 and RV32 JITs, and fix a put_user bug in the
-   core seen in 32 bit when storing BPF function addresses, from Pu Lehui.
-
-7) Fix libbpf's BTF pointer size guessing by adding a list of various aliases
-   for 'long' types, from Douglas Raillard.
-
-8) Fix bpftool to readd setting rlimit since probing for memcg-based accounting
-   has been unreliable and caused a regression on COS, from Quentin Monnet.
-
-9) Fix UAF in BPF cgroup's effective program computation triggered upon BPF link
-   detachment, from Tadeusz Struk.
-
-10) Fix bpftool build bootstrapping during cross compilation which was pointing
-    to the wrong AR process, from Shahab Vahedi.
-
-11) Fix logic bug in libbpf's is_pow_of_2 implementation, from Yuze Chi.
-
-12) BPF hash map optimization to avoid grabbing spinlocks of all CPUs when there
-    is no free element. Also add a benchmark as reproducer, from Feng Zhou.
-
-13) Fix bpftool's codegen to bail out when there's no BTF, from Michael Mullin.
-
-14) Various minor cleanup and improvements all over the place.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Alexei Starovoitov, Andrii Nakryiko, Dave Marchevsky, Jakub Sitnicki, 
-Jesper Dangaard Brouer, John Fastabend, kernel test robot, Maciej 
-Fijalkowski, Quentin Monnet, Song Liu, Tariq Toukan, Toke 
-Høiland-Jørgensen, Yonghong Song, Yuze Chi
-
-----------------------------------------------------------------
-
-The following changes since commit 58f9d52ff689a262bec7f5713c07f5a79e115168:
-
-  Merge tag 'net-5.19-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-06-02 12:50:16 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
-
-for you to fetch changes up to f5be22c64bd6ee6c1cb0b34f4ff748d43879cd4c:
-
-  bpf: Fix bpf_skc_lookup comment wrt. return type (2022-06-17 18:36:45 +0200)
-
-----------------------------------------------------------------
-Alexei Starovoitov (4):
-      Merge branch 'bpf: Add 64bit enum value support'
-      Merge branch 'Optimize performance of update hash-map when free is zero'
-      Merge branch 'sleepable uprobe support'
-      Merge branch 'New BPF helpers to accelerate synproxy'
-
-Andrii Nakryiko (4):
-      Merge branch 'libbpf: Textual representation of enums'
-      libbpf: Fix uprobe symbol file offset calculation logic
-      libbpf: Fix internal USDT address translation logic for shared libraries
-      selftests/bpf: Don't force lld on non-x86 architectures
-
-Daniel Müller (13):
-      libbpf: Introduce libbpf_bpf_prog_type_str
-      selftests/bpf: Add test for libbpf_bpf_prog_type_str
-      bpftool: Use libbpf_bpf_prog_type_str
-      libbpf: Introduce libbpf_bpf_map_type_str
-      selftests/bpf: Add test for libbpf_bpf_map_type_str
-      bpftool: Use libbpf_bpf_map_type_str
-      libbpf: Introduce libbpf_bpf_attach_type_str
-      selftests/bpf: Add test for libbpf_bpf_attach_type_str
-      bpftool: Use libbpf_bpf_attach_type_str
-      libbpf: Introduce libbpf_bpf_link_type_str
-      selftests/bpf: Add test for libbpf_bpf_link_type_str
-      bpftool: Use libbpf_bpf_link_type_str
-      libbpf: Fix a couple of typos
-
-Daniel Xu (1):
-      bpf, test_run: Remove unnecessary prog type checks
-
-Delyan Kratunov (5):
-      bpf: move bpf_prog to bpf.h
-      bpf: implement sleepable uprobes by chaining gps
-      bpf: allow sleepable uprobe programs to attach
-      libbpf: add support for sleepable uprobe programs
-      selftests/bpf: add tests for sleepable (uk)probes
-
-Douglas Raillard (1):
-      libbpf: Fix determine_ptr_size() guessing
-
-Feng Zhou (2):
-      bpf: avoid grabbing spin_locks of all cpus when no free elems
-      selftest/bpf/benchs: Add bpf_map benchmark
-
-Hangbin Liu (1):
-      selftests/bpf: Add drv mode testing for xdping
-
-Hongyi Lu (1):
-      bpf: Fix spelling in bpf_verifier.h
-
-Joanne Koong (1):
-      bpf: Fix non-static bpf_func_proto struct definitions
-
-Ke Liu (1):
-      xdp: Directly use ida_alloc()/free() APIs
-
-Kosuke Fujimoto (1):
-      bpf, docs: Fix typo "BFP_ALU" to "BPF_ALU"
-
-Lorenzo Bianconi (1):
-      sample: bpf: xdp_router_ipv4: Allow the kernel to send arp requests
-
-Martin KaFai Lau (1):
-      selftests/bpf: Fix tc_redirect_dtime
-
-Maxim Mikityanskiy (6):
-      bpf: Fix documentation of th_len in bpf_tcp_{gen,check}_syncookie
-      bpf: Allow helpers to accept pointers with a fixed size
-      bpf: Add helpers to issue and check SYN cookies in XDP
-      selftests/bpf: Add selftests for raw syncookie helpers
-      bpf: Allow the new syncookie helpers to work with SKBs
-      selftests/bpf: Add selftests for raw syncookie helpers in TC mode
-
-Michael Mullin (1):
-      bpftool: Check for NULL ptr of btf in codegen_asserts
-
-Pu Lehui (3):
-      bpf: Unify data extension operation of jited_ksyms and jited_linfo
-      bpf, riscv: Support riscv jit to provide bpf_line_info
-      bpf: Correct the comment about insn_to_jit_off
-
-Quentin Monnet (2):
-      Revert "bpftool: Use libbpf 1.0 API mode instead of RLIMIT_MEMLOCK"
-      bpftool: Do not check return value from libbpf_set_strict_mode()
-
-Shahab Vahedi (1):
-      bpftool: Fix bootstrapping during a cross compilation
-
-Tadeusz Struk (1):
-      bpf: Fix KASAN use-after-free Read in compute_effective_progs
-
-Tobias Klauser (1):
-      bpf: Fix bpf_skc_lookup comment wrt. return type
-
-Wang Yufen (1):
-      bpf, sockmap: Fix sk->sk_forward_alloc warn_on in sk_stream_kill_queues
-
-Yonghong Song (20):
-      bpf: Add btf enum64 support
-      libbpf: Permit 64bit relocation value
-      libbpf: Fix an error in 64bit relocation value computation
-      libbpf: Refactor btf__add_enum() for future code sharing
-      libbpf: Add enum64 parsing and new enum64 public API
-      libbpf: Add enum64 deduplication support
-      libbpf: Add enum64 support for btf_dump
-      libbpf: Add enum64 sanitization
-      libbpf: Add enum64 support for bpf linking
-      libbpf: Add enum64 relocation support
-      bpftool: Add btf enum64 support
-      selftests/bpf: Fix selftests failure
-      selftests/bpf: Test new enum kflag and enum64 API functions
-      selftests/bpf: Add BTF_KIND_ENUM64 unit tests
-      selftests/bpf: Test BTF_KIND_ENUM64 for deduplication
-      selftests/bpf: Add a test for enum64 value relocations
-      docs/bpf: Update documentation for BTF_KIND_ENUM64 support
-      libbpf: Fix an unsigned < 0 bug
-      selftests/bpf: Fix test_varlen verification failure with latest llvm
-      selftests/bpf: Avoid skipping certain subtests
-
-YueHaibing (1):
-      bpf, arm: Remove unused function emit_a32_alu_r()
-
-Yuntao Wang (1):
-      selftests/bpf: Fix test_run logic in fexit_stress.c
-
-Yuze Chi (1):
-      libbpf: Fix is_pow_of_2
-
-Zhengchao Shao (1):
-      samples/bpf: Check detach prog exist or not in xdp_fwd
-
- Documentation/bpf/btf.rst                          |  43 +-
- Documentation/bpf/instruction-set.rst              |   2 +-
- arch/arm/net/bpf_jit_32.c                          |  16 -
- arch/riscv/net/bpf_jit.h                           |   1 +
- arch/riscv/net/bpf_jit_core.c                      |   8 +-
- include/linux/bpf.h                                | 105 ++-
- include/linux/bpf_verifier.h                       |   2 +-
- include/linux/btf.h                                |  28 +
- include/linux/filter.h                             |  34 -
- include/linux/skmsg.h                              |   1 +
- include/net/tcp.h                                  |   1 +
- include/uapi/linux/bpf.h                           |  88 ++-
- include/uapi/linux/btf.h                           |  17 +-
- kernel/bpf/btf.c                                   | 142 +++-
- kernel/bpf/cgroup.c                                |  70 +-
- kernel/bpf/core.c                                  |  17 +-
- kernel/bpf/helpers.c                               |  12 +-
- kernel/bpf/percpu_freelist.c                       |  20 +-
- kernel/bpf/syscall.c                               |   7 +-
- kernel/bpf/verifier.c                              |  49 +-
- kernel/events/core.c                               |  16 +-
- kernel/trace/bpf_trace.c                           |   4 +-
- kernel/trace/trace_uprobe.c                        |   5 +-
- net/bpf/test_run.c                                 |   6 -
- net/core/filter.c                                  | 130 +++-
- net/core/skmsg.c                                   |   1 +
- net/core/sock_map.c                                |  23 +
- net/ipv4/tcp_bpf.c                                 |   1 +
- net/ipv4/tcp_input.c                               |   3 +-
- net/xdp/xdp_umem.c                                 |   6 +-
- samples/bpf/xdp_fwd_user.c                         |  55 +-
- samples/bpf/xdp_router_ipv4.bpf.c                  |   9 +
- scripts/bpf_doc.py                                 |   4 +
- tools/bpf/bpftool/Documentation/bpftool-cgroup.rst |  16 +-
- tools/bpf/bpftool/Documentation/bpftool-prog.rst   |   5 +-
- tools/bpf/bpftool/Makefile                         |   2 +-
- tools/bpf/bpftool/bash-completion/bpftool          |  18 +-
- tools/bpf/bpftool/btf.c                            |  57 +-
- tools/bpf/bpftool/btf_dumper.c                     |  29 +
- tools/bpf/bpftool/cgroup.c                         |  53 +-
- tools/bpf/bpftool/common.c                         |  90 ++-
- tools/bpf/bpftool/feature.c                        |  89 ++-
- tools/bpf/bpftool/gen.c                            |   4 +
- tools/bpf/bpftool/link.c                           |  61 +-
- tools/bpf/bpftool/main.c                           |   2 -
- tools/bpf/bpftool/main.h                           |  22 +-
- tools/bpf/bpftool/map.c                            |  84 +--
- tools/bpf/bpftool/pids.c                           |   1 +
- tools/bpf/bpftool/prog.c                           |  79 +-
- tools/bpf/bpftool/struct_ops.c                     |   2 +
- tools/include/uapi/linux/bpf.h                     |  88 ++-
- tools/include/uapi/linux/btf.h                     |  17 +-
- tools/lib/bpf/btf.c                                | 229 +++++-
- tools/lib/bpf/btf.h                                |  32 +-
- tools/lib/bpf/btf_dump.c                           | 137 +++-
- tools/lib/bpf/libbpf.c                             | 296 ++++++--
- tools/lib/bpf/libbpf.h                             |  38 +-
- tools/lib/bpf/libbpf.map                           |   8 +
- tools/lib/bpf/libbpf_internal.h                    |   7 +
- tools/lib/bpf/linker.c                             |   7 +-
- tools/lib/bpf/relo_core.c                          | 113 +--
- tools/lib/bpf/relo_core.h                          |   4 +-
- tools/lib/bpf/usdt.c                               | 123 +--
- tools/testing/selftests/bpf/.gitignore             |   1 +
- tools/testing/selftests/bpf/Makefile               |  28 +-
- tools/testing/selftests/bpf/bench.c                |   2 +
- .../bpf/benchs/bench_bpf_hashmap_full_update.c     |  96 +++
- .../benchs/run_bench_bpf_hashmap_full_update.sh    |  11 +
- tools/testing/selftests/bpf/btf_helpers.c          |  25 +-
- .../selftests/bpf/prog_tests/attach_probe.c        |  49 +-
- tools/testing/selftests/bpf/prog_tests/btf.c       | 153 +++-
- tools/testing/selftests/bpf/prog_tests/btf_write.c | 126 +++-
- .../testing/selftests/bpf/prog_tests/core_reloc.c  |  65 +-
- .../selftests/bpf/prog_tests/fexit_stress.c        |  32 +-
- .../testing/selftests/bpf/prog_tests/libbpf_str.c  | 207 +++++
- .../testing/selftests/bpf/prog_tests/tc_redirect.c |   8 +-
- .../selftests/bpf/prog_tests/xdp_synproxy.c        | 183 +++++
- .../bpf/progs/bpf_hashmap_full_update_bench.c      |  40 +
- .../bpf/progs/btf__core_reloc_enum64val.c          |   3 +
- .../bpf/progs/btf__core_reloc_enum64val___diff.c   |   3 +
- .../btf__core_reloc_enum64val___err_missing.c      |   3 +
- .../btf__core_reloc_enum64val___val3_missing.c     |   3 +
- .../testing/selftests/bpf/progs/core_reloc_types.h |  78 ++
- .../selftests/bpf/progs/test_attach_probe.c        |  60 ++
- .../bpf/progs/test_core_reloc_enum64val.c          |  70 ++
- tools/testing/selftests/bpf/progs/test_tc_dtime.c  |  53 +-
- tools/testing/selftests/bpf/progs/test_varlen.c    |   8 +-
- .../selftests/bpf/progs/xdp_synproxy_kern.c        | 833 +++++++++++++++++++++
- .../selftests/bpf/test_bpftool_synctypes.py        | 166 ++--
- tools/testing/selftests/bpf/test_btf.h             |   1 +
- tools/testing/selftests/bpf/test_xdping.sh         |   4 +
- tools/testing/selftests/bpf/xdp_synproxy.c         | 466 ++++++++++++
- 92 files changed, 4582 insertions(+), 834 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/benchs/bench_bpf_hashmap_full_update.c
- create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_bpf_hashmap_full_update.sh
- create mode 100644 tools/testing/selftests/bpf/prog_tests/libbpf_str.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c
- create mode 100644 tools/testing/selftests/bpf/progs/bpf_hashmap_full_update_bench.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_enum64val.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_enum64val___diff.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_enum64val___err_missing.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_enum64val___val3_missing.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_enum64val.c
- create mode 100644 tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
- create mode 100644 tools/testing/selftests/bpf/xdp_synproxy.c
+> > > diff --git a/tools/include/linux/btf_ids.h b/tools/include/linux/btf_ids.h
+> > > index 57890b357f85..2345b502b439 100644
+> > > --- a/tools/include/linux/btf_ids.h
+> > > +++ b/tools/include/linux/btf_ids.h
+> > > @@ -172,7 +172,9 @@ extern struct btf_id_set name;
+> > >       BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP_TW, tcp_timewait_sock)          \
+> > >       BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP6, tcp6_sock)                    \
+> > >       BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP, udp_sock)                      \
+> > > -     BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP6, udp6_sock)
+> > > +     BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP6, udp6_sock)                    \
+> > > +     BTF_SOCK_TYPE(BTF_SOCK_TYPE_UNIX, unix_sock)                    \
+> > The existing tools's btf_ids.h looks more outdated from
+> > the kernel's btf_ids.h.  unix_sock is missing which is added back here.
+> > mptcp_sock is missing also but not added.  I assume the latter test
+> > needs unix_sock here ?
+> 
+> I haven't added mptcp_sock because I was added recently.
+> 
+> I don't think we really need to do the changes to tools/btf_ids.h, but
+> it still might be worth trying to keep them in sync?
+Yeah.  Other than this list, it seems other parts of this file is out of sync
+also.  May be just do an individual patch in this series to do a
+copy-and-paste update of the whole file.
