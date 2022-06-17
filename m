@@ -2,61 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB0D854F4FE
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 12:10:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F23954F50E
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 12:13:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381639AbiFQKK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 06:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56826 "EHLO
+        id S1381677AbiFQKNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 06:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381629AbiFQKKW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 06:10:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59B406A00A;
-        Fri, 17 Jun 2022 03:10:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BD2BB82962;
-        Fri, 17 Jun 2022 10:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AE9C3C341C6;
-        Fri, 17 Jun 2022 10:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655460614;
-        bh=52/+SN6B+LFLyhgNHFfrjORprDXjBmbr0acNX3B3atA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DPznx/ogu/fxQ9dBt1h2G0/NTLaABcU3+4J1HY7VsFpLRdTXyJfIXBh+SpvF8HEqh
-         zCRdei24qxitcSEgYhCJAtEVWRiJzvSU8L9AnocQ3WJssDhShiTjxjT9TaSB/ZXFfs
-         CrX9jw5fnmyrO6ltRKAYvlTWcmJuWtVc2mlWduCUbFu38YZuHekmC09KEiUwJEoQtB
-         fgAGoE1aYt2lADkraQAp1J5ZXb8JaRZ4tRVo1Y5iqfQ8f6qMclnu8qS7nPZKQl/7vJ
-         0GfwUL+Kt7PVeTZMMJSNxi/2xqHidEaroXZHHRTIzWFdPEg3uVTfIr8BXtKk/3jb2f
-         xygf9hBDER/fA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 925EEE56ADF;
-        Fri, 17 Jun 2022 10:10:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1381689AbiFQKNN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 06:13:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A571213F16
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 03:13:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655460791;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/Egh8+Gz6P7sJjajReRg4TwcxQZ6PNsT6qhTrjGb38E=;
+        b=aVYmR3D39lk3QGNcjm8sS9/hTpwBZgtOYMz3IVOWrSlLyNaiC96DQlkEIlCpaOvg9YdTli
+        l6qq88H3yeHvKIii5ykQYKmGCIdOmdwaWUIM6GKMNeVdL2NRB0kI324iczkIhTWTOfsi4F
+        DBt6Nm36FiUNytAMZmr1eir6Ofukzas=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-635-08VNSnPwMQiecQEgQz_kmw-1; Fri, 17 Jun 2022 06:13:03 -0400
+X-MC-Unique: 08VNSnPwMQiecQEgQz_kmw-1
+Received: by mail-wm1-f69.google.com with SMTP id k32-20020a05600c1ca000b0039c4cf75023so2505630wms.9
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 03:13:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/Egh8+Gz6P7sJjajReRg4TwcxQZ6PNsT6qhTrjGb38E=;
+        b=M2oMnHl1WdPNzb0bzar4vFvIFRLVb9dMX+OI9fmzbLzPD2XxWyCAXWlFeOP+2JugEH
+         IomZsgO4KGJBp+5x91V6Hk9zDLqO+QH0YmlLPFP7PorOJQ9CNDibpFAqkhl0Prro6VWA
+         6mg8qwzMvnA8Ap+MuQOKeKrTNm3RIlXQO5uO/+bX52b5WWlYxxISerNEbiOlEyURdJwf
+         FxZI77LClfE9ffV4QJvUYkzmw3qbsQYF/UnNr8VepEJ/aBPjenQIFReM2RJbHMNtogPW
+         fZPiIXPX96N7Nsj2M/PGMPYZfP54NnjffpJfLPFUGItZUGyYmLVjetKgQdYAv7JT0qQC
+         xopQ==
+X-Gm-Message-State: AJIora+JJi3koSWPgV5wCKmA7/iWKITasJtfdjOsEywMP9VdkUt/+7F/
+        hp2LH+cmEGjsly4K6TbBdg1Sa2VJHFG1PZ+GJaKoZ5unIV/uZ/QJxDEBaFOje2Rxr+k0EXWgEdY
+        PVAnC3SEgnrtElfrm
+X-Received: by 2002:a5d:6d8b:0:b0:218:4dc8:293e with SMTP id l11-20020a5d6d8b000000b002184dc8293emr8684806wrs.612.1655460781811;
+        Fri, 17 Jun 2022 03:13:01 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uCeVJ3V3dWfzRxiKB7fJuvCI0FPi1R5vsbVVS3gLAKJyU7vKwteL3gJz5FSVTdXRodiZ6DGg==
+X-Received: by 2002:a5d:6d8b:0:b0:218:4dc8:293e with SMTP id l11-20020a5d6d8b000000b002184dc8293emr8684788wrs.612.1655460781577;
+        Fri, 17 Jun 2022 03:13:01 -0700 (PDT)
+Received: from redhat.com ([2.54.189.19])
+        by smtp.gmail.com with ESMTPSA id i188-20020a1c3bc5000000b0039ee52c1345sm2137495wma.4.2022.06.17.03.12.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 03:13:01 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 06:12:57 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] virtio-net: fix race between ndo_open() and
+ virtio_device_ready()
+Message-ID: <20220617060632-mutt-send-email-mst@kernel.org>
+References: <20220617072949.30734-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v5 0/5] pcs-xpcs,
- stmmac: add 1000BASE-X AN for network switch
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165546061459.1839.10863742646357502516.git-patchwork-notify@kernel.org>
-Date:   Fri, 17 Jun 2022 10:10:14 +0000
-References: <20220615083908.1651975-1-boon.leong.ong@intel.com>
-In-Reply-To: <20220615083908.1651975-1-boon.leong.ong@intel.com>
-To:     Ong Boon Leong <boon.leong.ong@intel.com>
-Cc:     alexandre.torgue@foss.st.com, Jose.Abreu@synopsys.com,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        pabeni@redhat.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, olteanv@gmail.com, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, mcoquelin.stm32@gmail.com,
-        peppe.cavallaro@st.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        emilio.riva@ericsson.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220617072949.30734-1-jasowang@redhat.com>
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,42 +77,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Wed, 15 Jun 2022 16:39:03 +0800 you wrote:
-> Thanks for v4 review feedback in [1] and [2]. I have changed the v5
-> implementation as follow.
+On Fri, Jun 17, 2022 at 03:29:49PM +0800, Jason Wang wrote:
+> We used to call virtio_device_ready() after netdev registration. This
+> cause a race between ndo_open() and virtio_device_ready(): if
+> ndo_open() is called before virtio_device_ready(), the driver may
+> start to use the device before DRIVER_OK which violates the spec.
 > 
-> v5 changes:
-> 1/5 - No change from v4.
-> 2/5 - No change from v4.
-> 3/5 - [Fix] make xpcs_modify_changed() static and use
->       mdiodev_modify_changed() for cleaner code as suggested by
->       Russell King.
-> 4/5 - [Fix] Use fwnode_get_phy_mode() as recommended by Andrew Lunn.
-> 5/5 - [Fix] Make fwnode = of_fwnode_handle(priv->plat->phylink_node)
->       order after priv = netdev_priv(dev).
+> Fixing this by switching to use register_netdevice() and protect the
+> virtio_device_ready() with rtnl_lock() to make sure ndo_open() can
+> only be called after virtio_device_ready().
 > 
-> [...]
+> Fixes: 4baf1e33d0842 ("virtio_net: enable VQs early")
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  drivers/net/virtio_net.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index db05b5e930be..8a5810bcb839 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -3655,14 +3655,20 @@ static int virtnet_probe(struct virtio_device *vdev)
+>  	if (vi->has_rss || vi->has_rss_hash_report)
+>  		virtnet_init_default_rss(vi);
+>  
+> -	err = register_netdev(dev);
+> +	/* serialize netdev register + virtio_device_ready() with ndo_open() */
+> +	rtnl_lock();
+> +
+> +	err = register_netdevice(dev);
+>  	if (err) {
+>  		pr_debug("virtio_net: registering device failed\n");
+> +		rtnl_unlock();
+>  		goto free_failover;
+>  	}
+>  
+>  	virtio_device_ready(vdev);
+>  
+> +	rtnl_unlock();
+> +
+>  	err = virtnet_cpu_notif_add(vi);
+>  	if (err) {
+>  		pr_debug("virtio_net: registering cpu notifier failed\n");
 
-Here is the summary with links:
-  - [net-next,v5,1/5] net: make xpcs_do_config to accept advertising for pcs-xpcs and sja1105
-    https://git.kernel.org/netdev/net-next/c/fa9c562f9735
-  - [net-next,v5,2/5] stmmac: intel: prepare to support 1000BASE-X phy interface setting
-    https://git.kernel.org/netdev/net-next/c/c82386310d95
-  - [net-next,v5,3/5] net: pcs: xpcs: add CL37 1000BASE-X AN support
-    https://git.kernel.org/netdev/net-next/c/b47aec885bcd
-  - [net-next,v5,4/5] stmmac: intel: add phy-mode and fixed-link ACPI _DSD setting support
-    https://git.kernel.org/netdev/net-next/c/72edaf39fc65
-  - [net-next,v5,5/5] net: stmmac: make mdio register skips PHY scanning for fixed-link
-    https://git.kernel.org/netdev/net-next/c/ab21cf920928
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Looks good but then don't we have the same issue when removing the
+device?
 
+Actually I looked at  virtnet_remove and I see
+        unregister_netdev(vi->dev);
+
+        net_failover_destroy(vi->failover);
+
+        remove_vq_common(vi); <- this will reset the device
+
+a window here?
+
+
+Really, I think what we had originally was a better idea -
+instead of dropping interrupts they were delayed and
+when driver is ready to accept them it just enables them.
+We just need to make sure driver does not wait for
+interrupts before enabling them.
+
+And I suspect we need to make this opt-in on a per driver
+basis.
+
+
+
+> -- 
+> 2.25.1
 
