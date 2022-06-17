@@ -2,110 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D4DF54F4EA
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 12:10:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13C3854F4FC
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 12:10:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381550AbiFQKIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 06:08:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
+        id S1381624AbiFQKKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 06:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241506AbiFQKIW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 06:08:22 -0400
+        with ESMTP id S1381629AbiFQKKQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 06:10:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4136E7678
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 03:08:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25A639687;
+        Fri, 17 Jun 2022 03:10:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC80D61D41
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 10:08:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04759C3411B;
-        Fri, 17 Jun 2022 10:08:19 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="C9HPv/0+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1655460498;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+Y2Wd4fft12vfWGI3rTHWYLgSUwPJOPtjcV76VBfuEM=;
-        b=C9HPv/0+Fp0HWh8/NREjljoNnzbN3ADdO1ZU8GqMEI97Y775YvhBMqrs7+BQeWTYts1rog
-        swORyfuFYMJDkiF29wNKrKmbi71U/MgAc09yHwos38ji08ezZnPIbZAd/xT0z0N3gFCDQk
-        KnsbpUSkH+0JE8+N5jkYJdnYUPJqBOo=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id fc2c262a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 17 Jun 2022 10:08:17 +0000 (UTC)
-Date:   Fri, 17 Jun 2022 12:08:14 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Wei Wang <weiwan@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH v2 net-next 2/2] tcp: fix possible freeze in tx path
- under memory pressure
-Message-ID: <YqxSa9Ir1TUZs4zd@zx2c4.com>
-References: <20220614171734.1103875-1-eric.dumazet@gmail.com>
- <20220614171734.1103875-3-eric.dumazet@gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E8AF61D4E;
+        Fri, 17 Jun 2022 10:10:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BA987C3411B;
+        Fri, 17 Jun 2022 10:10:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655460614;
+        bh=giW/nh6R+3bCDQhbundWZhZv88bc+bqumrocrjBl1Ho=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=AEb6YlcFL4v07Q/q8NcG/OLkSxY8vqwP+id+J02WkyniDtSdO0IHtoBG+vTwmJoSN
+         3WzDTZ/7JQLN8YzXZDENQ0eISlfaVDVEjg7gSd+oa2U/y2rxnoO9TQ5xE/pRj0Z/A4
+         g0HRNl/tpiIbvTZwcgfuAamE/vve0HmzBQnejtf/hfALxvl7bnrZEO6sJyz7VgLy/l
+         cUL6PcqqXI2rT6kMqCYl2r/jBTAe3GIDEATrXp7YtpZfwfWybDFFKOUv+SeysU0ldU
+         XqUqwMeSZNitvSdkYtLPBVm1XHCHvxijL0ZcFT3X39D1M0Sx04WL94RroHxwDQtaUu
+         Qf2pXKU6XA5UA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9CAC4E7385E;
+        Fri, 17 Jun 2022 10:10:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220614171734.1103875-3-eric.dumazet@gmail.com>
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net-next v1 1/1] net: ag71xx: fix discards 'const' qualifier
+ warning
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165546061463.1839.2452113204278992956.git-patchwork-notify@kernel.org>
+Date:   Fri, 17 Jun 2022 10:10:14 +0000
+References: <20220616113724.890970-1-o.rempel@pengutronix.de>
+In-Reply-To: <20220616113724.890970-1-o.rempel@pengutronix.de>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     chris.snook@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello:
 
-On Tue, Jun 14, 2022 at 10:17:34AM -0700, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> Blamed commit only dealt with applications issuing small writes.
-> 
-> Issue here is that we allow to force memory schedule for the sk_buff
-> allocation, but we have no guarantee that sendmsg() is able to
-> copy some payload in it.
-> 
-> In this patch, I make sure the socket can use up to tcp_wmem[0] bytes.
-> 
-> For example, if we consider tcp_wmem[0] = 4096 (default on x86),
-> and initial skb->truesize being 1280, tcp_sendmsg() is able to
-> copy up to 2816 bytes under memory pressure.
-> 
-> Before this patch a sendmsg() sending more than 2816 bytes
-> would either block forever (if persistent memory pressure),
-> or return -EAGAIN.
-> 
-> For bigger MTU networks, it is advised to increase tcp_wmem[0]
-> to avoid sending too small packets.
-> 
-> v2: deal with zero copy paths.
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-I think this might have gotten double applied:
+On Thu, 16 Jun 2022 13:37:24 +0200 you wrote:
+> Current kernel will compile this driver with warnings. This patch will
+> fix it.
+> 
+> drivers/net/ethernet/atheros/ag71xx.c: In function 'ag71xx_fast_reset':
+> drivers/net/ethernet/atheros/ag71xx.c:996:31: warning: passing argument 2 of 'ag71xx_hw_set
+> _macaddr' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+>   996 |  ag71xx_hw_set_macaddr(ag, dev->dev_addr);
+>       |                            ~~~^~~~~~~~~~
+> drivers/net/ethernet/atheros/ag71xx.c:951:69: note: expected 'unsigned char *' but argument
+>  is of type 'const unsigned char *'
+>   951 | static void ag71xx_hw_set_macaddr(struct ag71xx *ag, unsigned char *mac)
+>       |                                                      ~~~~~~~~~~~~~~~^~~
+> drivers/net/ethernet/atheros/ag71xx.c: In function 'ag71xx_open':
+> drivers/net/ethernet/atheros/ag71xx.c:1441:32: warning: passing argument 2 of 'ag71xx_hw_se
+> t_macaddr' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+>  1441 |  ag71xx_hw_set_macaddr(ag, ndev->dev_addr);
+>       |                            ~~~~^~~~~~~~~~
+> drivers/net/ethernet/atheros/ag71xx.c:951:69: note: expected 'unsigned char *' but argument
+>  is of type 'const unsigned char *'
+>   951 | static void ag71xx_hw_set_macaddr(struct ag71xx *ag, unsigned char *mac)
+>       |                                                      ~~~~~~~~~~~~~~~^~~
+> 
+> [...]
 
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=849b425cd091e1804af964b771761cfbefbafb43
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=f54755f6a11accb2db5ef17f8f75aad0875aefdc
+Here is the summary with links:
+  - [net-next,v1,1/1] net: ag71xx: fix discards 'const' qualifier warning
+    https://git.kernel.org/netdev/net-next/c/225b0ed27e6a
 
-and now net-next builds are broken:
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-../../../../../../../../net/ipv4/tcp.c:971:12: error: redefinition of ‘tcp_wmem_schedule’
-  971 | static int tcp_wmem_schedule(struct sock *sk, int copy)                                |            ^~~~~~~~~~~~~~~~~
-../../../../../../../../net/ipv4/tcp.c:954:12: note: previous definition of ‘tcp_wmem_schedule’ with type ‘int(struct sock *, int)’
-  954 | static int tcp_wmem_schedule(struct sock *sk, int copy)                                |            ^~~~~~~~~~~~~~~~~
-../../../../../../../../net/ipv4/tcp.c:954:12: warning: ‘tcp_wmem_schedule’ defined but not used [-Wunused-function]                                                              make[5]: *** [/home/wgci/tmp/2813390.12234/tmp.0PMBO65tGf/scripts/Makefile.build:249: net
-/ipv4/tcp.o] Error 1                                                                     make[4]: *** [/home/wgci/tmp/2813390.12234/tmp.0PMBO65tGf/scripts/Makefile.build:466: net/ipv4] Error 2
-make[4]: *** Waiting for unfinished jobs....
 
-Jason
