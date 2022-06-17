@@ -2,120 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB78A54FB35
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 18:40:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8340454FB3B
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 18:40:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383427AbiFQQj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 12:39:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50280 "EHLO
+        id S1383350AbiFQQk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 12:40:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383422AbiFQQj0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 12:39:26 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE430427D5
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 09:39:25 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id cv13so2039176pjb.4
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 09:39:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=h6IrLdY6w4OsypWEzzKKv5b850fPgk5gwMN7Tf3l3vQ=;
-        b=cGB9S6qXHZUmmKqLb8Czce7aQQ31G8cciRGY3uS9OqZ2KLHawZOjaiA/UhIeiPKRoQ
-         RGuqtkjn3l21zbzDcWWuJPd0THw5jwa7NmutFVEycllAOF3tWpkr/85h2O2wCLkiuLFw
-         8N+27G96xzt/eUHx0kvvnLRlNMnhPTX+o7qiAHUN7skj0o/o0ZlnsCy7YjPfQp37Ly3L
-         3DHUV3EqAvFn4BVzjqNIkCCIOAJ3Mmd1LEB5SVxYqSMvp87RZlon0Wxd+CymmWt6tIn9
-         vNMFfo2Z+LtXNL6Yc6HoJcu2P+UwgmfKDfQlpdHrykmwYAPkaV+JwMzziTavYhEc7RlI
-         pz4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=h6IrLdY6w4OsypWEzzKKv5b850fPgk5gwMN7Tf3l3vQ=;
-        b=CGSF8/F/ubGcEeat41LOv02jh1HjYyJrUYyhP52k6EXzk1fygb84E0Sc/CQYuEy7rK
-         eTTOaI0F1OTaDNMkd8N0VlOekF+U/vFnRzEphUs1aoCHSZTr665mbzH4z2vuXBdA4Q6n
-         Vq6SAuaZ4moVyXgA4sW2IpYzFPznk/L9sl9m8gx9W6d9wjNUKG8oyHq8vUIqf8uLNInI
-         QrkP9q1uehRTe8MXEWDLXIF8WG1BCIIUbyyDqBHwLIq0yQ41UNu4qMzAnzdaT9VmH/UF
-         gtNrHFDOKhm95VuAJjL04ADVtfll92EGnds8JpIeaeRlPX/DGXyNWQ+v+5u0qd5qYCxT
-         bkTA==
-X-Gm-Message-State: AJIora/hNmUZ7HXz7H80zfJz3tVOGfW7vqtjuydds3cA1Sl+xq0fStuT
-        ZzoO5+bFxn6kwrY5HK5hwZpQ9A==
-X-Google-Smtp-Source: AGRyM1tSNcsBlD5rmWFBnXmaOQSTZiEb3QWszdo4GJLGK5UOx6thlgdZtHfv+x5h3/bswUKYS8BMdQ==
-X-Received: by 2002:a17:90b:1b07:b0:1e8:41d8:fa2 with SMTP id nu7-20020a17090b1b0700b001e841d80fa2mr11466844pjb.204.1655483965098;
-        Fri, 17 Jun 2022 09:39:25 -0700 (PDT)
-Received: from google.com (201.59.83.34.bc.googleusercontent.com. [34.83.59.201])
-        by smtp.gmail.com with ESMTPSA id o12-20020a62f90c000000b0051be16492basm3934309pfh.195.2022.06.17.09.39.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 09:39:24 -0700 (PDT)
-Date:   Fri, 17 Jun 2022 16:39:21 +0000
-From:   Carlos Llamas <cmllamas@google.com>
-To:     Riccardo Paolo Bestetti <pbl@bestov.io>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>
-Subject: Re: [PATCH v2] ipv4: ping: fix bind address validity check
-Message-ID: <YqyuOfvR4mesRTfe@google.com>
-References: <20220617085435.193319-1-pbl@bestov.io>
+        with ESMTP id S229489AbiFQQkT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 12:40:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C9043491;
+        Fri, 17 Jun 2022 09:40:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 916F9B82B1C;
+        Fri, 17 Jun 2022 16:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5145FC3411C;
+        Fri, 17 Jun 2022 16:40:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655484016;
+        bh=Qer7R+JRaL9ozPcr8fm1m4NZiITMwGqWJq6hQYI2NJk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=vDEKuiV1w8vjMNEnfC5oJFXeLMXMD7H/kVHq3NRXvUsiYFer1qjDGT5JKm0MHTzc+
+         VuJX0qKcsl77LN25afVJiMziFr8wSzSBaW5sb0kBvbBpKjJqFW1yhpF//7UV1qlnBC
+         ggiCtrzOl837NoGcRXrdzRKUNcBWnkCDmjFsMigAgT5fOUkkiHc5+qJIRWVgZDzQg8
+         vXgcokuT5vCE594KzSQ1SXHwiDvv4JZAgWoQ3lWIDK8f0I4FiwYYiI+ZRzf2vN5N3h
+         FDOYtJ5kS5BwIwr2Km/+DyaqTXmV1LLo3FePFl1SXAv2mN2693I27Vmi8+wBaKNIyA
+         iKCTImOrmAj7w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 395E8E7385C;
+        Fri, 17 Jun 2022 16:40:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220617085435.193319-1-pbl@bestov.io>
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Subject: Re: [PATCH] bpf: fix bpf_skc_lookup comment wrt. return type
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165548401623.32767.11672891137463822335.git-patchwork-notify@kernel.org>
+Date:   Fri, 17 Jun 2022 16:40:16 +0000
+References: <20220617152121.29617-1-tklauser@distanz.ch>
+In-Reply-To: <20220617152121.29617-1-tklauser@distanz.ch>
+To:     Tobias Klauser <tklauser@distanz.ch>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 10:54:35AM +0200, Riccardo Paolo Bestetti wrote:
-> Commit 8ff978b8b222 ("ipv4/raw: support binding to nonlocal addresses")
-> introduced a helper function to fold duplicated validity checks of bind
-> addresses into inet_addr_valid_or_nonlocal(). However, this caused an
-> unintended regression in ping_check_bind_addr(), which previously would
-> reject binding to multicast and broadcast addresses, but now these are
-> both incorrectly allowed as reported in [1].
+Hello:
+
+This patch was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
+
+On Fri, 17 Jun 2022 17:21:21 +0200 you wrote:
+> The function no longer returns 'unsigned long' as of commit edbf8c01de5a
+> ("bpf: add skc_lookup_tcp helper").
 > 
-> This patch restores the original check. A simple reordering is done to
-> improve readability and make it evident that multicast and broadcast
-> addresses should not be allowed. Also, add an early exit for INADDR_ANY
-> which replaces lost behavior added by commit 0ce779a9f501 ("net: Avoid
-> unnecessary inet_addr_type() call when addr is INADDR_ANY").
-> 
-> Furthermore, this patch introduces regression selftests to catch these
-> specific cases.
-> 
-> [1] https://lore.kernel.org/netdev/CANP3RGdkAcDyAZoT1h8Gtuu0saq+eOrrTiWbxnOs+5zn+cpyKg@mail.gmail.com/
-> 
-> Fixes: 8ff978b8b222 ("ipv4/raw: support binding to nonlocal addresses")
-> Cc: Miaohe Lin <linmiaohe@huawei.com>
-> Reported-by: Maciej Żenczykowski <maze@google.com>
-> Signed-off-by: Carlos Llamas <cmllamas@google.com>
-> Signed-off-by: Riccardo Paolo Bestetti <pbl@bestov.io>
+> Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
 > ---
-> This patch is sent as a follow-up to the discussion on the v1 by Carlos
-> Llamas.
-> 
-> Original thread:
-> https://lore.kernel.org/netdev/20220617020213.1881452-1-cmllamas@google.com/
-> 
+>  net/core/filter.c | 2 --
+>  1 file changed, 2 deletions(-)
 
-Reviewed-by: Carlos Llamas <cmllamas@google.com>
+Here is the summary with links:
+  - bpf: fix bpf_skc_lookup comment wrt. return type
+    https://git.kernel.org/bpf/bpf-next/c/f5be22c64bd6
 
-Thanks Riccardo for adding the test cases. I would appreciate it if next
-time you add a co-developed tag or maybe a separate commit as opposed to
-overriding the original author. This is fine though.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
---
-Carlos Llamas
+
