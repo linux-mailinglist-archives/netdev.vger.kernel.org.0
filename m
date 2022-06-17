@@ -2,100 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF4354F892
-	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 15:53:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8379F54F8D0
+	for <lists+netdev@lfdr.de>; Fri, 17 Jun 2022 16:02:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233691AbiFQNxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 09:53:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60956 "EHLO
+        id S236898AbiFQOBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 10:01:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381052AbiFQNw7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 09:52:59 -0400
-X-Greylist: delayed 393 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 17 Jun 2022 06:52:54 PDT
-Received: from mail.savoirfairelinux.com (mail.savoirfairelinux.com [208.88.110.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABC62703;
-        Fri, 17 Jun 2022 06:52:52 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.savoirfairelinux.com (Postfix) with ESMTP id A4BE79C035C;
-        Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
-Received: from mail.savoirfairelinux.com ([127.0.0.1])
-        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id RxSxonNRBtIm; Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.savoirfairelinux.com (Postfix) with ESMTP id 1D95C9C035E;
-        Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.savoirfairelinux.com 1D95C9C035E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=savoirfairelinux.com; s=DFC430D2-D198-11EC-948E-34200CB392D2;
-        t=1655473579; bh=6FyXPE9HabKRcoxbNWsYdPeExADy1asgHfS0MpAMcCo=;
-        h=From:To:Date:Message-Id:MIME-Version;
-        b=dAW53u5txvU6CYNBr0Hue4BIbjb7YFmVNt0s+111UGLqXYZF192BtJC2bSDB4DI9F
-         zw/y0j5vAqmS9KhZV+GvaX+M5FuKNYoHbH7dcI02nK4Uo1coBIOhhsaMnDSrMe6uT2
-         V2xZ5Rh8AwFNoikmoKeae+9ANcFDDs+6K+Zej0NBCyMjWyNAOO4Tyo65fWluzwLeFU
-         CZgOru1q3+1YxjeQEKiy+YWHFDBVBU3Ztxsu/u1p/vYHrAVuxrbyx1BgYQkzaitQ8U
-         QPBD+JeyYElNVGqh6opkB2rDadHSFcl7VObwCn70e/v0Ly5QyBEeJkqLuFeOgEe124
-         vWvgPKFx4QREQ==
-X-Virus-Scanned: amavisd-new at mail.savoirfairelinux.com
-Received: from mail.savoirfairelinux.com ([127.0.0.1])
-        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id gBJqZQIRYTyR; Fri, 17 Jun 2022 09:46:19 -0400 (EDT)
-Received: from sfl-deribaucourt.rennes.sfl (lfbn-ren-1-676-174.w81-53.abo.wanadoo.fr [81.53.245.174])
-        by mail.savoirfairelinux.com (Postfix) with ESMTPSA id 18E839C035C;
-        Fri, 17 Jun 2022 09:46:18 -0400 (EDT)
-From:   Enguerrand de Ribaucourt 
-        <enguerrand.de-ribaucourt@savoirfairelinux.com>
-To:     andrew@lunn.ch, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux@armlinux.org.uk, hkallweit1@gmail.com,
-        Enguerrand de Ribaucourt 
-        <enguerrand.de-ribaucourt@savoirfairelinux.com>
-Subject: [PATCH] net: dp83822: disable false carrier interrupt
-Date:   Fri, 17 Jun 2022 15:46:11 +0200
-Message-Id: <20220617134611.695690-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231490AbiFQOBs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 10:01:48 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E9149C95;
+        Fri, 17 Jun 2022 07:01:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655474507; x=1687010507;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=iVg+fkchqNy0NLwD7C0/R3ieqtSh8cMlhM0PEw8K7Bs=;
+  b=EnSS1Tcocn2SKfFXnKk9d8pvStGKzPC6MvGBoMvQBq0hhW/AB6A9nxCd
+   LH4oXPYToYrLtXDFCOjcLvPoXD/sMQN7NxkHkpDYKk4bu2FbRobSQrso8
+   4EsR4Q6fZ7s/AV8BBesXDG1SW6LER3DNzaB9jAGIEV8X89gqQ2OInFft9
+   UfGBO+nBk1/CeYPrjGB7qe1yEtPtt4fmSq9p0iWrtAQG86HYKXKYDrSLJ
+   JPl+CUaXBKltCHtEIwG8fnDrl9sZALOfSo5Sc/ab20yJx6Omlri42B5pw
+   PNss2O4bpuEyzzJaez+gKEq0BpvXqrV1qEhGuyyo7BO1zXyfz4wSituVg
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="341183723"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="341183723"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 07:01:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="578005427"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 17 Jun 2022 07:01:43 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o2CXe-000PUP-Rr;
+        Fri, 17 Jun 2022 14:01:42 +0000
+Date:   Fri, 17 Jun 2022 22:01:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        netdev@vger.kernel.org, Taras Chornyi <tchornyi@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>
+Subject: Re: [PATCH V2 net-next 4/4] net: marvell: prestera: implement
+ software MDB entries allocation
+Message-ID: <202206172146.gg9GL71Z-lkp@intel.com>
+References: <20220617101520.19794-5-oleksandr.mazur@plvision.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220617101520.19794-5-oleksandr.mazur@plvision.eu>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When unplugging an Ethernet cable, false carrier events were produced by
-the PHY at a very high rate. Once the false carrier counter full, an
-interrupt was triggered every few clock cycles until the cable was
-replugged. This resulted in approximately 10k/s interrupts.
+Hi Oleksandr,
 
-Since the false carrier counter (FCSCR) is never used, we can safely
-disable this interrupt.
+Thank you for the patch! Perhaps something to improve:
 
-In addition to improving performance, this also solved MDIO read
-timeouts I was randomly encountering with an i.MX8 fec MAC because of
-the interrupt flood. The interrupt count and MDIO timeout fix were
-tested on a v5.4.110 kernel.
+[auto build test WARNING on net-next/master]
 
-Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirf=
-airelinux.com>
----
- drivers/net/phy/dp83822.c | 1 -
- 1 file changed, 1 deletion(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/Oleksandr-Mazur/net-marvell-prestera-add-MDB-offloading-support/20220617-181737
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 982c3e2948d6a30d34f186e3b7d592a33147719b
+config: riscv-allyesconfig (https://download.01.org/0day-ci/archive/20220617/202206172146.gg9GL71Z-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/e58f821bf9b04f502947d46edce5e694afba26ca
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Oleksandr-Mazur/net-marvell-prestera-add-MDB-offloading-support/20220617-181737
+        git checkout e58f821bf9b04f502947d46edce5e694afba26ca
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/net/ethernet/marvell/prestera/
 
-diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-index e6ad3a494d32..95ef507053a6 100644
---- a/drivers/net/phy/dp83822.c
-+++ b/drivers/net/phy/dp83822.c
-@@ -230,7 +230,6 @@ static int dp83822_config_intr(struct phy_device *phy=
-dev)
- 			return misr_status;
-=20
- 		misr_status |=3D (DP83822_RX_ERR_HF_INT_EN |
--				DP83822_FALSE_CARRIER_HF_INT_EN |
- 				DP83822_LINK_STAT_INT_EN |
- 				DP83822_ENERGY_DET_INT_EN |
- 				DP83822_LINK_QUAL_INT_EN);
---=20
-2.25.1
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
+All warnings (new ones prefixed by >>):
+
+   drivers/net/ethernet/marvell/prestera/prestera_switchdev.c: In function 'prestera_mdb_flush_bridge_port':
+>> drivers/net/ethernet/marvell/prestera/prestera_switchdev.c:1776:36: warning: variable 'mdb' set but not used [-Wunused-but-set-variable]
+    1776 |         struct prestera_mdb_entry *mdb;
+         |                                    ^~~
+
+
+vim +/mdb +1776 drivers/net/ethernet/marvell/prestera/prestera_switchdev.c
+
+  1769	
+  1770	static void
+  1771	prestera_mdb_flush_bridge_port(struct prestera_bridge_port *br_port)
+  1772	{
+  1773		struct prestera_br_mdb_port *br_mdb_port, *tmp_port;
+  1774		struct prestera_br_mdb_entry *br_mdb, *br_mdb_tmp;
+  1775		struct prestera_bridge *br_dev = br_port->bridge;
+> 1776		struct prestera_mdb_entry *mdb;
+  1777	
+  1778		list_for_each_entry_safe(br_mdb, br_mdb_tmp, &br_dev->br_mdb_entry_list,
+  1779					 br_mdb_entry_node) {
+  1780			mdb = br_mdb->mdb;
+  1781	
+  1782			list_for_each_entry_safe(br_mdb_port, tmp_port,
+  1783						 &br_mdb->br_mdb_port_list,
+  1784						 br_mdb_port_node) {
+  1785				prestera_mdb_port_del(br_mdb->mdb,
+  1786						      br_mdb_port->br_port->dev);
+  1787				prestera_br_mdb_port_del(br_mdb,  br_mdb_port->br_port);
+  1788			}
+  1789			prestera_br_mdb_entry_put(br_mdb);
+  1790		}
+  1791	}
+  1792	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
