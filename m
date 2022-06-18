@@ -2,156 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67AFE5501A0
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 03:17:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D5985501AE
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 03:31:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382588AbiFRBRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 21:17:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52094 "EHLO
+        id S229459AbiFRBb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 21:31:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236705AbiFRBRC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 21:17:02 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555B16B01D
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 18:17:00 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id cv13so2871578pjb.4
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 18:17:00 -0700 (PDT)
+        with ESMTP id S234451AbiFRBb4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 21:31:56 -0400
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B1A6B0BA;
+        Fri, 17 Jun 2022 18:31:55 -0700 (PDT)
+Received: by mail-il1-x129.google.com with SMTP id d6so4036677ilm.4;
+        Fri, 17 Jun 2022 18:31:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=YyLn6g7vHfOuSa6wUd32m7NoZ5cRQIcWpzzoXnE6kB0=;
-        b=qGiwuLye1ynOBURtscgbzmupalCPu2LwEEyvj1yDzFsGJMKFyXiPndg0CGyWgnIHqy
-         S7cww702kckx6jCqb1fTNVsp1ECceJTfzLWEXrILFzZS54owJ9Oq1piAGUPK31KFSJ2y
-         TbcCAV56ifzsAbBfkRBAhzEwuJ+7Ds9Ttqr0vzz4DhWedF6aeizA8m3aGpg02Sz/RY3C
-         IAnzSCV2xN6NUsSZcgLuu5EyKAAMktNbUpudAAWbpRYHuvxe8GowdB23ae9rs7Uyk84y
-         fMPuhCtoCZcbqoy3zGZZ3j9wvsZ85CQb7pJlbjgfK8xKhsDIMPdpRk8KUfkh6rIOBEBh
-         yT/w==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=9X+CU1shIcH/tUnfM3RA+7PCrBSjdTTcceJqopaFXWw=;
+        b=T3TGHaxsOxhhisw52+UAVl7vsdYClKCfWykvxJQH7oyDLtRkxzpVPcSksDmfpWFP6u
+         b7YCvatS2JgH17Lkk4ghYj+8ihnm9WZO6IpW8YnZ08xH1OHkt+cHvZX71u5eywCOSVwa
+         N1qsn61QiURCn2t7OqOIAtGZbtmDhGVfu3ifMQxGytcVclk//I+gy/XRNV3hHc6gsxXc
+         qvjx5IKvzu+3m3+4BNuSv5wf0XpIoWBoX6+YgebQ+hSISx2x/Kv/JQxPabrOv4KfGe7I
+         YI5XL8iyrWPhxL2teZpi4J4BqE/fsLRrIBLIdQ5onKTfjIZrf8GxKLWUsngPj3RIWS8P
+         qOIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YyLn6g7vHfOuSa6wUd32m7NoZ5cRQIcWpzzoXnE6kB0=;
-        b=ocREw8s37Ju7lTnibBduMtV9kk3jouCtzWRRheBR0lRW4GwrfKglYE2dgHbPkC7GwA
-         lJ3mUxeG7UOtCjq2Ms04ADPONaWNC0PRmlR92rxAMwuTukHxnW3odqUI58fcza+Fg2OS
-         l2Jpj7wkSVZm/aR/I8OlQ7/uoCBU4c4OW90sHgKgkpaZt+akBpnbT8U5LH7LoB8GRNaH
-         I8B+N6VLroI55YRyolibOsREw5WmOxrfu1vGupE5FT7WZtHBQSFb5LYYbibYKt9RAvwb
-         rVL0ddAqZJsKIvRkVwSSucbER2ayZrAqA3FDqgtOFS02+DNy75H8kvas83jGYozStshg
-         Td4w==
-X-Gm-Message-State: AJIora/XCwzxadbM3PSyX1D/5s9DhkhnctvZIHoaP0mPyiXb45rHqW/6
-        3jKHAf1uBEzCX3oEySGUpxzBuw==
-X-Google-Smtp-Source: AGRyM1ugD6Hqyw87IEKWEacxbwyqYAnd4hfXfTEMLg8mP1rVupaS3+8mM3vl4bqVy9+M26ewy9HwMg==
-X-Received: by 2002:a17:902:cec5:b0:166:3418:5260 with SMTP id d5-20020a170902cec500b0016634185260mr12357629plg.129.1655515019768;
-        Fri, 17 Jun 2022 18:16:59 -0700 (PDT)
-Received: from [172.31.235.92] ([216.9.110.6])
-        by smtp.gmail.com with ESMTPSA id b9-20020a170902650900b00168ba5ac8adsm4155211plk.163.2022.06.17.18.16.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 17 Jun 2022 18:16:59 -0700 (PDT)
-Message-ID: <d483da73-c5a1-2474-4992-f7ce9947d5ba@linaro.org>
-Date:   Fri, 17 Jun 2022 18:16:56 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH net-next 02/28] dt-bindings: net: fman: Add additional
- interface properties
-Content-Language: en-US
-To:     Sean Anderson <sean.anderson@seco.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Eric Dumazet <edumazet@google.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-References: <20220617203312.3799646-1-sean.anderson@seco.com>
- <20220617203312.3799646-3-sean.anderson@seco.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220617203312.3799646-3-sean.anderson@seco.com>
-Content-Type: text/plain; charset=UTF-8
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=9X+CU1shIcH/tUnfM3RA+7PCrBSjdTTcceJqopaFXWw=;
+        b=ut7nEHmqzwYnsaRS9MDLpa7dJG7utMJFFmgHp7/uxueC4z340jtZkrMwIRrb1wOf59
+         JcGvYuEAnVsbq+jbXWG7ld+uYJpXWtEw1PJQYtr0/3nrfnmZ2jyE4JgkpJnzyoi7DfPx
+         TQwkavhVncJqpzbrM7GFKOFhU8irSnIxs441ytkm140JSKg5FPAdhsyEQENydySxgUTR
+         4qMepVappnTqpE1jIGNv2a4LnQGU0oOrN97B3ist9B5OF/MbGC8j8SLIme9I+VTFQQiw
+         d3BY6j0FR9bITuDGKR/ZS91EL45E3QcmTGBSFc9F6roxiGy9XLmNFVY51aCbV0RgQeom
+         NT2Q==
+X-Gm-Message-State: AJIora8sil4d8KF3uiYLaHWfXqAJe79YXNzCUgb/qD7Va3tUkEEY/sLM
+        tZOp0bc/KTr5OE/ZGynwKXWWnt6diETO/Q==
+X-Google-Smtp-Source: AGRyM1tK9DBH36i2OHa9mYazCLrgd8iitOgRPumsdVAJ/SJwaW7UcX7YXrK67AbXwjNL3SrRUcLnwA==
+X-Received: by 2002:a05:6e02:158a:b0:2d5:12f0:4dce with SMTP id m10-20020a056e02158a00b002d512f04dcemr7145582ilu.159.1655515914953;
+        Fri, 17 Jun 2022 18:31:54 -0700 (PDT)
+Received: from localhost ([172.243.153.43])
+        by smtp.gmail.com with ESMTPSA id 10-20020a02110a000000b003316f4b9b26sm2877173jaf.131.2022.06.17.18.31.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 18:31:54 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 18:31:46 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
+Message-ID: <62ad2b02627ce_24b342089f@john.notmuch>
+In-Reply-To: <20220615162014.89193-1-xiyou.wangcong@gmail.com>
+References: <20220615162014.89193-1-xiyou.wangcong@gmail.com>
+Subject: RE: [Patch bpf-next v4 0/4] sockmap: some performance optimizations
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/06/2022 13:32, Sean Anderson wrote:
-> At the moment, MEMACs are configured almost completely based on the
-> phy-connection-type. That is, if the phy interface is RGMII, it assumed
-> that RGMII is supported. For some interfaces, it is assumed that the
-> RCW/bootloader has set up the SerDes properly. The actual link state is
-> never reported.
+Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
 > 
-> To address these shortcomings, the driver will need additional
-> information. First, it needs to know how to access the PCS/PMAs (in
-> order to configure them and get the link status). The SGMII PCS/PMA is
-> the only currently-described PCS/PMA. Add the XFI and QSGMII PCS/PMAs as
-> well. The XFI (and 1GBase-KR) PCS/PMA is a c45 "phy" which sits on the
-> same MDIO bus as SGMII PCS/PMA. By default they will have conflicting
-> addresses, but they are also not enabled at the same time by default.
-> Therefore, we can let the default address for the XFI PCS/PMA be the
-> same as for SGMII. This will allow for backwards-compatibility.
+> This patchset contains two optimizations for sockmap. The first one
+> eliminates a skb_clone() and the second one eliminates a memset(). With
+> this patchset, the throughput of UDP transmission via sockmap gets
+> improved by 61%.
 > 
-> QSGMII, however, cannot work with the current binding. This is because
-> the QSGMII PCS/PMAs are only present on one MAC's MDIO bus. At the
-> moment this is worked around by having every MAC write to the PCS/PMA
-> addresses (without checking if they are present). This only works if
-> each MAC has the same configuration, and only if we don't need to know
-> the status. Because the QSGMII PCS/PMA will typically be located on a
-> different MDIO bus than the MAC's SGMII PCS/PMA, there is no fallback
-> for the QSGMII PCS/PMA.
+> v4: replace kfree_skb() with consume_skb()
 > 
-> MEMACs (across all SoCs) support the following protocols:
+> v3: avoid touching tcp_recv_skb()
 > 
-> - MII
-> - RGMII
-> - SGMII, 1000Base-X, and 1000Base-KX
-> - 2500Base-X (aka 2.5G SGMII)
-> - QSGMII
-> - 10GBase-R (aka XFI) and 10GBase-KR
-> - XAUI and HiGig
+> v2: clean up coding style for tcp_read_skb()
+>     get rid of some redundant variables
+>     add a comment for ->read_skb()
+> ---
+> Cong Wang (4):
+>   tcp: introduce tcp_read_skb()
+>   net: introduce a new proto_ops ->read_skb()
+>   skmsg: get rid of skb_clone()
+>   skmsg: get rid of unncessary memset()
 > 
-> Each line documents a set of orthogonal protocols (e.g. XAUI is
-> supported if and only if HiGig is supported). Additionally,
+>  include/linux/net.h |  4 ++++
+>  include/net/tcp.h   |  1 +
+>  include/net/udp.h   |  3 +--
+>  net/core/skmsg.c    | 48 +++++++++++++++++----------------------------
+>  net/ipv4/af_inet.c  |  3 ++-
+>  net/ipv4/tcp.c      | 44 +++++++++++++++++++++++++++++++++++++++++
+>  net/ipv4/udp.c      | 11 +++++------
+>  net/ipv6/af_inet6.c |  3 ++-
+>  net/unix/af_unix.c  | 23 +++++++++-------------
+>  9 files changed, 86 insertions(+), 54 deletions(-)
 > 
-> - XAUI implies support for 10GBase-R
-> - 10GBase-R is supported if and only if RGMII is not supported
-> - 2500Base-X implies support for 1000Base-X
-> - MII implies support for RGMII
+> -- 
+> 2.34.1
 > 
-> To switch between different protocols, we must reconfigure the SerDes.
-> This is done by using the standard phys property. We can also use it to
-> validate whether different protocols are supported (e.g. using
-> phy_validate). This will work for serial protocols, but not RGMII or
-> MII. Additionally, we still need to be compatible when there is no
-> SerDes.
-> 
-> While we can detect 10G support by examining the port speed (as set by
-> fsl,fman-10g-port), we cannot determine support for any of the other
-> protocols based on the existing binding. In fact, the binding works
-> against us in some respects, because pcsphy-handle is required even if
-> there is no possible PCS/PMA for that MAC. To allow for backwards-
-> compatibility, we use a boolean-style property for RGMII (instead of
-> presence/absence-style). When the property for RGMII is missing, we will
-> assume that it is supported. The exception is MII, since no existing
-> device trees use it (as far as I could tell).
-> 
-> Unfortunately, QSGMII support will be broken for old device trees. There
-> is nothing we can do about this because of the PCS/PMA situation (as
-> described above).
-> 
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 
-Thanks for the patch but you add too many new properties. The file
-should be converted to YAML/DT schema first.
+Thanks Cong, nice set of improvements.
 
-
-Best regards,
-Krzysztof
+Reviewed-by: John Fastabend <john.fastabend@gmail.com>
