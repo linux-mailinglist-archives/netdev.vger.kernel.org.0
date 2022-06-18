@@ -2,133 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9812F550456
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 13:56:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED97F550468
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 14:17:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233218AbiFRL4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jun 2022 07:56:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33368 "EHLO
+        id S232239AbiFRMRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jun 2022 08:17:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbiFRL4J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 07:56:09 -0400
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5400111147
-        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 04:56:08 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id p129so8345642oig.3
-        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 04:56:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=I0nc3b3/USythZUFIWXt1CvDQN2qkh8vERQLw9FUP0s=;
-        b=ZenWYjANA2sFCkeclGgoi6Vjm0stSc8Mztf7nkXrGK3b4J4hTZofxolFrXgTokmsXI
-         hJCIhJ110RshQ+sY+2hyPyfRJNukLEs9C3cVssuyynxGjDTMLqggoCf2FOZGCuobQUyB
-         xPr3cuIVxD+KjS+KfLX5UynJd24juaV87NU5ptDLRkk0s8sH492P1DR7Xgz0ianmI8kx
-         0ciEPwGAWGDTSkI39fDo0vES5IqlF2FPSxBSZ5/A6SOSZ2luFBK45gCWlrr/TC77RzEh
-         o0q5lpZoGdS0atyFrum/SFImjdh2sJpqIxBFPoicm+F0oN2LRh7YMEJ+rmFCLIpIhhxc
-         uRdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I0nc3b3/USythZUFIWXt1CvDQN2qkh8vERQLw9FUP0s=;
-        b=C/S1ui5AZro+IYLyK6P2ItFsVQt7l9Jw5pR8V96vR99PlYEDJtQb7Ym+P2oAWsH4k3
-         jrLV9yH+5LaMZQFclv9ANC7GdTrMgoeBE6vSm63eblKjU98EUnLJSGf8lhOD1aKrW5Cr
-         MHvvKiHQCWIawhZLkjrBVx4/PrC2FtQKIlvL7iY1lMc1rRHH+xgLRHb36aG9KsLhlfgI
-         rRcRwTbBIroJ2Iu0552j6GkIdWC6RABLTeEvrENFKUEbUptMlS7dAc3xrV3uFoeVLS68
-         OxzeTdlgS3Dp5AlfFXAecbHhYk3umN/a9hvFqAjI/QYl/BZ6TK5nui1KsroqUM5VQx/s
-         9J5A==
-X-Gm-Message-State: AJIora9Hnku+R8tCFHr6F2BPOVIUw1PQfoUVZbyCF2brGgVwJaAfl1xA
-        fOM7k95gvtDMhS6lFqiWXs+ZfyAH7pK8O/vuW+9rkw2sHDYARpBg
-X-Google-Smtp-Source: AGRyM1v3H2l4y0+t64VTu4bClAG/wE+dhwAhBzF9lSzapI+dortOkP70qhDWzMcY/p/vYX1q3v6X2uiPVpJk1+w4gzM=
-X-Received: by 2002:a05:6808:130c:b0:32f:4589:c8fd with SMTP id
- y12-20020a056808130c00b0032f4589c8fdmr7462132oiv.220.1655553367759; Sat, 18
- Jun 2022 04:56:07 -0700 (PDT)
+        with ESMTP id S230213AbiFRMRS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 08:17:18 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121B015732
+        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 05:17:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655554638; x=1687090638;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=qGHNGsPBlJdkjBFYTh1tlW7NpbCv66NtHyhW1QahJIo=;
+  b=EPaAYHvzC6FlvZYagFt5Dtuwoww30jpVRmqgLo6G9cSpWQLfgMCYU8Ns
+   0p79ksZAp89/KA1Vta26KuWGQRwRpiZxBT6nXrK8FK3vLNp3GfvfhWQCA
+   ndEmkCeDPL1xFfGLm54Cb8at5YfWnE8ZsM593L60ejE5XLjolPcH6q7p/
+   qDYaeNkrEt7tXcivDrjygpg/OGLvr1SHfo+xjl01DE3vFP6fjhk9DYClt
+   wFk5bghh/CzIf/tefxZBuBV0CMz/EoQfVuWAHDL/pioB+5DY6azL/Czf8
+   M439qMVq1IB+3wZUfBlKf+U9clZRNO2UNn4cSYNESeUMfDexWYTGhfanx
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="278424689"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="278424689"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2022 05:17:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="642399432"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 18 Jun 2022 05:17:16 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o2XO8-000QJ1-3X;
+        Sat, 18 Jun 2022 12:17:16 +0000
+Date:   Sat, 18 Jun 2022 20:16:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ong Boon Leong <boon.leong.ong@intel.com>
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+Subject: [net-next:master 19/27] ERROR: modpost:
+ "phylink_mii_c22_pcs_encode_advertisement" [drivers/net/pcs/pcs_xpcs.ko]
+ undefined!
+Message-ID: <202206182016.Go0zVi4t-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220614205756.6792-1-moises.veleta@linux.intel.com>
- <CAMZdPi8cdgDUtDN=Oqz7Po+_XsKS=tRmx-Hg=_Mix9ftKQ5b3A@mail.gmail.com> <566dc410-458e-8aff-7839-d568e55f9ff3@linux.intel.com>
-In-Reply-To: <566dc410-458e-8aff-7839-d568e55f9ff3@linux.intel.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Sat, 18 Jun 2022 14:55:56 +0300
-Message-ID: <CAHNKnsRaOS54c6K_s5JmmgDP2KEV38XpGWY5eAmQJ-EUnQt4Ww@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/1] net: wwan: t7xx: Add AP CLDMA and GNSS port
-To:     "moises.veleta" <moises.veleta@linux.intel.com>
-Cc:     Loic Poulain <loic.poulain@linaro.org>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        "Devegowda, Chandrashekar" <chandrashekar.devegowda@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        chiranjeevi.rapolu@linux.intel.com,
-        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
-        <haijun.liu@mediatek.com>,
-        Ricardo Martinez <ricardo.martinez@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Sharma, Dinesh" <dinesh.sharma@intel.com>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        "Veleta, Moises" <moises.veleta@intel.com>,
-        Madhusmita Sahu <madhusmita.sahu@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Moises,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
+head:   f0623340fd2cab724e3c54ac026d1414325f375d
+commit: b47aec885bcd672ebca2108a8b7e9ce3e3982775 [19/27] net: pcs: xpcs: add CL37 1000BASE-X AN support
+config: arm-randconfig-r005-20220617 (https://download.01.org/0day-ci/archive/20220618/202206182016.Go0zVi4t-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=b47aec885bcd672ebca2108a8b7e9ce3e3982775
+        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
+        git fetch --no-tags net-next master
+        git checkout b47aec885bcd672ebca2108a8b7e9ce3e3982775
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-On Fri, Jun 17, 2022 at 8:28 PM moises.veleta
-<moises.veleta@linux.intel.com> wrote:
-> On 6/16/22 10:29, Loic Poulain wrote:
->> Hi Moises,
->>
->> On Tue, 14 Jun 2022 at 22:58, Moises Veleta
->> <moises.veleta@linux.intel.com> wrote:
->>> From: Haijun Liu <haijun.liu@mediatek.com>
->>>
->>> The t7xx device contains two Cross Layer DMA (CLDMA) interfaces to
->>> communicate with AP and Modem processors respectively. So far only
->>> MD-CLDMA was being used, this patch enables AP-CLDMA and the GNSS
->>> port which requires such channel.
->>>
->>> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
->>> Co-developed-by: Madhusmita Sahu <madhusmita.sahu@intel.com>
->>> Signed-off-by: Madhusmita Sahu <madhusmita.sahu@intel.com>
->>> Signed-off-by: Moises Veleta <moises.veleta@linux.intel.com>
->>> ---
->> [...]
->>>   static const struct t7xx_port_conf t7xx_md_port_conf[] = {
->>>          {
->>> +               .tx_ch = PORT_CH_AP_GNSS_TX,
->>> +               .rx_ch = PORT_CH_AP_GNSS_RX,
->>> +               .txq_index = Q_IDX_CTRL,
->>> +               .rxq_index = Q_IDX_CTRL,
->>> +               .path_id = CLDMA_ID_AP,
->>> +               .ops = &wwan_sub_port_ops,
->>> +               .name = "t7xx_ap_gnss",
->>> +               .port_type = WWAN_PORT_AT,
->> Is it really AT protocol here? wouldn't it be possible to expose it
->> via the existing GNSS susbsystem?
->
-> The protocol is AT.
-> It is not possible to using the GNSS subsystem as it is meant for
-> stand-alone GNSS receivers without a control path. In this case, GNSS
-> can used for different use cases, such as Assisted GNSS, Cell ID
-> positioning, Geofence, etc. Hence, this requires the use of the AT
-> channel on the WWAN subsystem.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-To make it clear. When you talking about a control path, did you mean
-that this GNSS port is not a simple NMEA port? Or did you mean that
-this port is NMEA, but the user is required to activate GPS
-functionality using the separate AT-commands port?
+All errors (new ones prefixed by >>, old ones prefixed by <<):
 
-In other words, what is the format of the data that are transmitted
-over the GNSS port of the modem?
+>> ERROR: modpost: "phylink_mii_c22_pcs_encode_advertisement" [drivers/net/pcs/pcs_xpcs.ko] undefined!
+>> ERROR: modpost: "phylink_mii_c22_pcs_decode_state" [drivers/net/pcs/pcs_xpcs.ko] undefined!
 
 -- 
-Sergey
+0-DAY CI Kernel Test Service
+https://01.org/lkp
