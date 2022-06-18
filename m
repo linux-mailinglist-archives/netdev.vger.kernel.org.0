@@ -2,83 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BCE75503F1
+	by mail.lfdr.de (Postfix) with ESMTP id 050F95503F3
 	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 12:04:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230112AbiFRKAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jun 2022 06:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
+        id S231645AbiFRKAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jun 2022 06:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229594AbiFRKAP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 06:00:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B54527FE0
-        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 03:00:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A92D460B1F
-        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 10:00:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F2E99C3411D;
-        Sat, 18 Jun 2022 10:00:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655546413;
-        bh=N7/ZZI1pUW9MkPE9RhMpPEqzp2wG5k/aGq6M6gSa7ic=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mzZVFAcGRva8TU12Y75HB+7KpBtcfeqQfxXhZ8L+eEIPONXYXv9Qh21Y6/Iwx7Sdv
-         nYJIQPtxK0JCEWFAWj64rFZ0PDy/AoqHjNN7o+r6XBu/YI1u/hm/p9Pmpnk2KrbIA0
-         P3XfIACF2UILjECNoFa+1hcP1858MccIkoV5PceAn823atT0nvoxve6m/hLCF7KMQ6
-         nOKGrOQu6bj8xWwXhEMpWo7if/cW7um44xuikuQFcPb43ork+KE3/ha905bZWvrqEZ
-         oOIAe5at74hLWdn5B8QK7cVp7GvalmbHLXaQQhfDGSc2osxgfjpUwxZb8lbPvxA8G4
-         /dkpaR66RY0LA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D832BE73856;
-        Sat, 18 Jun 2022 10:00:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229594AbiFRKAg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 06:00:36 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB0D627FE0
+        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 03:00:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=hfoHfxTQIWw8pNiFK8kCu8T6N+p8DplH3n1Far9Ueqw=; b=cV+nnY+x1KjTQLg76MKE8zTTZI
+        0y77406LfU1FHooGVF9UOE4pX4DcgASBYuHXM0zwtl+ek2vNYnmZoK7wUc29inbujeZKcUrJwg0/u
+        DsIPH8xAsXjEwEFJopfOZMYBwzCSZn5afVNfl4md0fkapmMZ4StO7UgU3OcSo3KeWkeCWsgiCUa26
+        A/4qMUUzj6Z2pGY80E2LcIX+WYrqB2WjRMRcSBNLYzEyInyX58B7AuSyQvrgsIhl4IHKSu5mpH0aS
+        t8ia61DhpCtmfXcAQOp0if59O8Cn2DvOdSN479mekbWCJ5Kj8GsYPnRioZarRfunLjt/lVdh40PUG
+        oBTpUxhA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32914)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1o2VFg-0004A5-JP; Sat, 18 Jun 2022 11:00:24 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1o2VFa-0002pJ-IL; Sat, 18 Jun 2022 11:00:18 +0100
+Date:   Sat, 18 Jun 2022 11:00:18 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jose Abreu <Jose.Abreu@synopsys.com>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH net-next 0/4] introduce mii_bmcr_encode_fixed()
+Message-ID: <Yq2iMpbsux5wEM54@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] ping: convert to RCU lookups, get rid of rwlock
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165554641288.13053.1993828248844047948.git-patchwork-notify@kernel.org>
-Date:   Sat, 18 Jun 2022 10:00:12 +0000
-References: <20220618040415.2810867-1-eric.dumazet@gmail.com>
-In-Reply-To: <20220618040415.2810867-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, edumazet@google.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi,
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+While converting the mv88e6xxx driver to phylink pcs, it has been
+noticed that we've started to have repeated cases where we convert a
+speed and duplex to a BMCR value.
 
-On Fri, 17 Jun 2022 21:04:15 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> Using rwlock in networking code is extremely risky.
-> writers can starve if enough readers are constantly
-> grabing the rwlock.
-> 
-> I thought rwlock were at fault and sent this patch:
-> 
-> [...]
+Rather than open coding this in multiple locations, let's provide a
+helper for this - in linux/mii.h. This helper not only takes care of
+the standard 10, 100 and 1000Mbps encodings, but also includes
+2500Mbps (which is the same as 1000Mbps) for those users who require
+that encoding as well. Unknown speeds will be encoded to 10Mbps, and
+non-full duplexes will be encoded as half duplex.
 
-Here is the summary with links:
-  - [net-next] ping: convert to RCU lookups, get rid of rwlock
-    https://git.kernel.org/netdev/net-next/c/dbca1596bbb0
+This series converts the existing users to the new helper, and the
+mv88e6xxx conversion will add further users in the 6352 and 639x PCS
+code.
 
-You are awesome, thank you!
+ drivers/net/pcs/pcs-xpcs.c   | 18 +-----------------
+ drivers/net/phy/marvell.c    | 10 ++--------
+ drivers/net/phy/phy_device.c | 18 +++---------------
+ include/linux/mii.h          | 35 +++++++++++++++++++++++++++++++++++
+ 4 files changed, 41 insertions(+), 40 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
