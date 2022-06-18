@@ -2,58 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D27255017C
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 02:56:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8522D55017D
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 02:58:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237736AbiFRA4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 20:56:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40028 "EHLO
+        id S1383150AbiFRA6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 20:58:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231921AbiFRA4C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 20:56:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6AF76A425
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 17:56:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 521B2613F8
-        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 00:56:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EE68C3411B;
-        Sat, 18 Jun 2022 00:55:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655513759;
-        bh=vMLksrSsMpCNh22fPgyLkvGBwszROQ+3h6L08cN1lKo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sfupjHE+2qP6Czace3foAts/wjs/HFmVjML9SbOnFeY5htnzMaZa4OpmeE1iF7v8B
-         z0ODhuEJ+d3xD9kPmV0MDzTF9ImVpKmJKtIIpTHQGj97IoHf3YdUuBKw5/c7Tu8pJm
-         Hsw+/yG+Tceba150+MUroFrIg5bWz1o4P2WAytPJoYcS+u/0D01Cx1/hiSskYyd+D8
-         ASilJAUXsAtwL12oUXjCCMk5hT1LxfHCkvTc0XpbgKOExk0BiEAjhQqnjayf45mIkl
-         yNfmErkpFJkbebICnbCNho3yYo1rjrx62/J7xYpyUMrtL2XJeKngVx13vAPmPTJ0ur
-         SRBxtr2ZwQDOA==
-Date:   Fri, 17 Jun 2022 17:55:50 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: Re: [PATCH net] veth: Add updating of trans_start
-Message-ID: <20220617175550.6a3602ab@kernel.org>
-In-Reply-To: <28607.1655512063@famine>
-References: <9088.1655407590@famine>
-        <20220617084535.6d687ed0@kernel.org>
-        <5765.1655484175@famine>
-        <20220617124413.6848c826@kernel.org>
-        <28607.1655512063@famine>
+        with ESMTP id S231921AbiFRA6G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 20:58:06 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2EC19C03
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 17:58:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655513883; x=1687049883;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JsSrspB63ZUIldoXiOkeG5wericKM2TTB6WQm61wXrU=;
+  b=NAnXtyBT1ih1l4O34/JPzdo+XE13PnUXGu8YapJQo6jWR/ikcO7BrWR3
+   yUzJ/vCbb10lmgU5h//O2dmAp3PX5AlBkJFw3b6nzXOQK19AMCsGL8OVy
+   aZ2XNbpraigIuevOIKsGSnwgQPRPtAawnkgyAEG0p4VpKYWNNfmRVprN9
+   wnC0QQzncdJQXtMJ8fUHojbc14zcCJqEL4lQ8XAKR4IIJlNcXxom150ky
+   5va6jpD8yBYxHGb4D2Wyd/MHhPzuBrumvCIEsiKF43wlhbo7yRMmIySi5
+   mXTCO/vNUc5/bqjvmRaPWJzj4lQUry/jHcNMZo6FRvpFjHm3YTRBupOYA
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="341299699"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="341299699"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 17:58:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="728557437"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 17 Jun 2022 17:58:00 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o2Mmm-000Pu0-4d;
+        Sat, 18 Jun 2022 00:58:00 +0000
+Date:   Sat, 18 Jun 2022 08:57:07 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     kbuild-all@lists.01.org, netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next 1/2] raw: use more conventional iterators
+Message-ID: <202206180849.uRTBo4M2-lkp@intel.com>
+References: <20220617201045.2659460-2-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220617201045.2659460-2-eric.dumazet@gmail.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,58 +66,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 17 Jun 2022 17:27:43 -0700 Jay Vosburgh wrote:
-> Jakub Kicinski <kuba@kernel.org> wrote:
-> >On Fri, 17 Jun 2022 09:42:55 -0700 Jay Vosburgh wrote:  
-> >> 	In this case, it's to permit the bonding ARP / ND monitor to
-> >> function if that software device (veth in this case) is added to a bond
-> >> using the ARP / ND monitor (which relies on trans_start, and has done so
-> >> since at least 2.6.0).  I'll agree it's a niche case; this was broken
-> >> for veth for quite some time, but veth + netns is handy for software
-> >> only test cases, so it seems worth doing.  
-> >
-> >I presume it needs it to check if the device has transmitted anything
-> >in the last unit of time, can we look at the device stats for LLTX for
-> >example?  
-> 
-> 	Yes, that's the use case.  
-> 
-> 	Hmm.  Polling the device stats would likely work for software
-> devices, although the unit of time varies (some checks are fixed at one
-> unit, but others can be N units depending on the missed_max option
-> setting).
-> 
-> 	Polling hardware devices might not work; as I recall, some
-> devices only update the statistics on timespans on the order of seconds,
-> e.g., bnx2 and tg3 appear to update once per second.  But those do
-> update trans_start.
+Hi Eric,
 
-Right, unfortunately.
+I love your patch! Perhaps something to improve:
 
-> 	The question then becomes how to distinguish a software LLTX
-> device from a hardware LLTX device.
+[auto build test WARNING on net-next/master]
 
-If my way of thinking about trans_start is correct then we can test 
-for presence of ndo_tx_timeout. Anything that has the tx_timeout NDO
-must be maintaining trans_start.
+url:    https://github.com/intel-lab-lkp/linux/commits/Eric-Dumazet/raw-RCU-conversion/20220618-041145
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 4875d94c69d5a4836c4225b51429d277c297aae8
+config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220618/202206180849.uRTBo4M2-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/6862039427583c2b85bdda50f45ece5b79ed5fa5
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Eric-Dumazet/raw-RCU-conversion/20220618-041145
+        git checkout 6862039427583c2b85bdda50f45ece5b79ed5fa5
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash net/ipv4/
 
-> >> 	I didn't exhaustively check all LLTX drivers, but, e.g., tun
-> >> does update trans_start:
-> >> 
-> >> drivers/net/tun.c:
-> >> 
-> >>        /* NETIF_F_LLTX requires to do our own update of trans_start */
-> >>         queue = netdev_get_tx_queue(dev, txq);
-> >>         txq_trans_cond_update(queue);  
-> >
-> >Well, it is _an_ example, but the only one I can find. And the
-> >justification is the same as yours now -- make bonding work a31d27fb.
-> >Because of that I don't think we can use tun as a proof that trans 
-> >start should be updated on LLTX devices as a general, stack-wide rule.
-> >There's a lot more LLTX devices than veth and tun.  
-> 
-> 	I'm not suggesting that all (software) LLTX software devices be
-> updated.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-The ones which are not updated would remain broken then, no?
-Waiting for someone to try to bond them and discover it doesn't work.
+All warnings (new ones prefixed by >>):
+
+   net/ipv4/raw.c: In function 'raw_v4_input':
+>> net/ipv4/raw.c:167:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+     167 |         int sdif = inet_sdif(skb);
+         |         ^~~
+   net/ipv4/raw.c: In function 'raw_icmp_error':
+   net/ipv4/raw.c:268:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
+     268 |         int dif = skb->dev->ifindex;
+         |         ^~~
+
+
+vim +167 net/ipv4/raw.c
+
+^1da177e4c3f41 Linus Torvalds   2005-04-16  157  
+^1da177e4c3f41 Linus Torvalds   2005-04-16  158  /* IP input processing comes here for RAW socket delivery.
+^1da177e4c3f41 Linus Torvalds   2005-04-16  159   * Caller owns SKB, so we must make clones.
+^1da177e4c3f41 Linus Torvalds   2005-04-16  160   *
+^1da177e4c3f41 Linus Torvalds   2005-04-16  161   * RFC 1122: SHOULD pass TOS value up to the transport layer.
+^1da177e4c3f41 Linus Torvalds   2005-04-16  162   * -> It does. And not only TOS, but all IP header.
+^1da177e4c3f41 Linus Torvalds   2005-04-16  163   */
+b71d1d426d263b Eric Dumazet     2011-04-22  164  static int raw_v4_input(struct sk_buff *skb, const struct iphdr *iph, int hash)
+^1da177e4c3f41 Linus Torvalds   2005-04-16  165  {
+6862039427583c Eric Dumazet     2022-06-17  166  	struct net *net = dev_net(skb->dev);;
+67359930e185c4 David Ahern      2017-08-07 @167  	int sdif = inet_sdif(skb);
+19e4e768064a87 David Ahern      2019-05-07  168  	int dif = inet_iif(skb);
+^1da177e4c3f41 Linus Torvalds   2005-04-16  169  	struct hlist_head *head;
+d13964f4490157 Patrick McHardy  2005-08-09  170  	int delivered = 0;
+6862039427583c Eric Dumazet     2022-06-17  171  	struct sock *sk;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  172  
+b673e4dfc8f29e Pavel Emelyanov  2007-11-19  173  	head = &raw_v4_hashinfo.ht[hash];
+^1da177e4c3f41 Linus Torvalds   2005-04-16  174  	if (hlist_empty(head))
+6862039427583c Eric Dumazet     2022-06-17  175  		return 0;
+6862039427583c Eric Dumazet     2022-06-17  176  	read_lock(&raw_v4_hashinfo.lock);
+6862039427583c Eric Dumazet     2022-06-17  177  	sk_for_each(sk, head) {
+6862039427583c Eric Dumazet     2022-06-17  178  		if (!raw_v4_match(net, sk, iph->protocol,
+6862039427583c Eric Dumazet     2022-06-17  179  				  iph->saddr, iph->daddr, dif, sdif))
+6862039427583c Eric Dumazet     2022-06-17  180  			continue;
+d13964f4490157 Patrick McHardy  2005-08-09  181  		delivered = 1;
+f5220d63991f3f Quentin Armitage 2014-07-23  182  		if ((iph->protocol != IPPROTO_ICMP || !icmp_filter(sk, skb)) &&
+f5220d63991f3f Quentin Armitage 2014-07-23  183  		    ip_mc_sf_allow(sk, iph->daddr, iph->saddr,
+60d9b031412435 David Ahern      2017-08-07  184  				   skb->dev->ifindex, sdif)) {
+^1da177e4c3f41 Linus Torvalds   2005-04-16  185  			struct sk_buff *clone = skb_clone(skb, GFP_ATOMIC);
+^1da177e4c3f41 Linus Torvalds   2005-04-16  186  
+^1da177e4c3f41 Linus Torvalds   2005-04-16  187  			/* Not releasing hash table! */
+^1da177e4c3f41 Linus Torvalds   2005-04-16  188  			if (clone)
+^1da177e4c3f41 Linus Torvalds   2005-04-16  189  				raw_rcv(sk, clone);
+^1da177e4c3f41 Linus Torvalds   2005-04-16  190  		}
+^1da177e4c3f41 Linus Torvalds   2005-04-16  191  	}
+b673e4dfc8f29e Pavel Emelyanov  2007-11-19  192  	read_unlock(&raw_v4_hashinfo.lock);
+d13964f4490157 Patrick McHardy  2005-08-09  193  	return delivered;
+^1da177e4c3f41 Linus Torvalds   2005-04-16  194  }
+^1da177e4c3f41 Linus Torvalds   2005-04-16  195  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
