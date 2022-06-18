@@ -2,167 +2,258 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B48905505F3
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 17:58:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14E96550625
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 18:43:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235545AbiFRP6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jun 2022 11:58:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58606 "EHLO
+        id S236595AbiFRQnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jun 2022 12:43:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiFRP6t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 11:58:49 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2043.outbound.protection.outlook.com [40.107.20.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2CB213E1D;
-        Sat, 18 Jun 2022 08:58:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D1Q23TPQeYn4TGPnRMj4EQmAP3VcZx4h563JhUk7HvERcZLMCedbHdLQRLWNK4evfh92DU/sjg8LTiVjko3l6XeWhbyCLkmCT1qGbJ6DAJBwUuh1pH861PHHJIG3ZGwUS/e56bygxataQfe5xuyL3AiwAQ6kqTJwWNh5qCPOBznxT7CoDNj6GsFoOt4YNElozlw5BvnMhsOKSVU9yZjkibKKvftXgDnDndUUHdkP/UCxhh2leJxXfF8FlhQA3JGm1KyZLazL3pOsJH5800Sxcxyb5J7HWwvybnRBXDJxWAUzXxXUVNCxBcMvnomwY9d2K8tt29NpxwXgSGJrcfL6lA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NLcNp5Aycn5NRVoOAc0yHdJ6U9T2hBEGBNDaY6t9PiE=;
- b=ILhDz+nifU5dnMTsoZH+UaW0oWJuvzzmPFUubl4SNlXjJw6Z5uji/zXoFrYZdFG/gBEgnozYjREzoq14vBWQ1MGyA/3MxAhCDkW6hrsDpkVcA8k9Vy3MBiPpl4EPHDpC5lkiauhEp3jW3euxuIn/3KpiAFsqY5hIsACzwDpg055lqplW9QXSMspcQXfj2mLYA44VN0Hs0vJRHftnZeZUdWGcR5Km8QuFP5H7r81a7wEEtbmBRoYymcJrB1GaMdR0jBnNXkNCgv/BrRhQi9VFNk95XT4dAb9Otv9hc4c5JU+JqkC9FLznPpUZPGE9W+vzo11/hSvBN5Nu5fST8Aa3nQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NLcNp5Aycn5NRVoOAc0yHdJ6U9T2hBEGBNDaY6t9PiE=;
- b=znBlaHgZAB+jz3uJWl+G5xD5pgGzIdkxz6BpO5Ij700z1cns26aSOrYSyPivjncGRLekwaksE6fV5Tuzj8pZ/QcpZgWv1wGQfAnV9ozBHro+L0jT7eovyx0bOia5OwuUDtocvo/2n0YNtYr4+Tq6ZOqhWv7SyYet6Tg8Hz/QC26B6AEHNGqueWTs5vuSGq+pESNl9dPDQTBMduJVOF00W+A8FZ+H7x3sqIUIZQTLsr1EAs43Hm/Y8yDg2ii5E20JHFu1/nG7es1RwppwZx9ATTGSjV+D5sAtgPQSbSBnZXK7Ou/+KFEE97hxf/Y+t3ger4iQG0Bey8vtx0xKVuhDSA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
- by DB7PR03MB4601.eurprd03.prod.outlook.com (2603:10a6:10:16::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.18; Sat, 18 Jun
- 2022 15:58:46 +0000
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::757e:b75f:3449:45b1]) by DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::757e:b75f:3449:45b1%6]) with mapi id 15.20.5353.018; Sat, 18 Jun 2022
- 15:58:45 +0000
-Subject: Re: [PATCH net-next 25/28] [RFC] net: dpaa: Convert to phylink
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-References: <20220617203312.3799646-1-sean.anderson@seco.com>
- <20220617203312.3799646-26-sean.anderson@seco.com>
- <Yqz5wHy9zAQL1ddg@shell.armlinux.org.uk>
- <dde1fcc4-4ee8-6426-4f1f-43277e88d406@seco.com>
- <Yq2LLW5twHaHtRBY@shell.armlinux.org.uk>
-From:   Sean Anderson <sean.anderson@seco.com>
-Message-ID: <84c2aaaf-6efb-f170-e6d3-76774f3fa98a@seco.com>
-Date:   Sat, 18 Jun 2022 11:58:41 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-In-Reply-To: <Yq2LLW5twHaHtRBY@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BLAPR03CA0037.namprd03.prod.outlook.com
- (2603:10b6:208:32d::12) To DB7PR03MB4972.eurprd03.prod.outlook.com
- (2603:10a6:10:7d::22)
+        with ESMTP id S231359AbiFRQnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 12:43:14 -0400
+Received: from mailrelay.tu-berlin.de (mailrelay.tu-berlin.de [130.149.7.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18AA06454;
+        Sat, 18 Jun 2022 09:43:11 -0700 (PDT)
+Received: from SPMA-04.tubit.win.tu-berlin.de (localhost.localdomain [127.0.0.1])
+        by localhost (Email Security Appliance) with SMTP id C05EB974F53_2AE009CB;
+        Sat, 18 Jun 2022 16:43:08 +0000 (GMT)
+Received: from mail.tu-berlin.de (postcard.tu-berlin.de [141.23.12.142])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "exchange.tu-berlin.de", Issuer "DFN-Verein Global Issuing CA" (verified OK))
+        by SPMA-04.tubit.win.tu-berlin.de (Sophos Email Appliance) with ESMTPS id 019E69787B2_2AE009CF;
+        Sat, 18 Jun 2022 16:43:08 +0000 (GMT)
+Received: from [192.168.178.14] (77.191.21.30) by ex-02.svc.tu-berlin.de
+ (10.150.18.6) with Microsoft SMTP Server id 15.2.986.22; Sat, 18 Jun 2022
+ 18:43:07 +0200
+Message-ID: <629bc069dd807d7ac646f836e9dca28bbc1108e2.camel@mailbox.tu-berlin.de>
+Subject: Re: [PATCH bpf-next v3 3/5] selftests/bpf: Test a BPF CC writing
+ sk_pacing_*
+From:   =?ISO-8859-1?Q?J=F6rn-Thorben?= Hinz <jthinz@mailbox.tu-berlin.de>
+To:     Martin KaFai Lau <kafai@fb.com>
+CC:     <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>
+Date:   Sat, 18 Jun 2022 18:43:06 +0200
+In-Reply-To: <20220617210425.xpeyxd4ahnudxnxb@kafai-mbp>
+References: <20220614104452.3370148-1-jthinz@mailbox.tu-berlin.de>
+         <20220614104452.3370148-4-jthinz@mailbox.tu-berlin.de>
+         <20220617210425.xpeyxd4ahnudxnxb@kafai-mbp>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1801ace0-0271-44fe-802c-08da51436cdb
-X-MS-TrafficTypeDiagnostic: DB7PR03MB4601:EE_
-X-Microsoft-Antispam-PRVS: <DB7PR03MB4601821CE5D861A40B09248696AE9@DB7PR03MB4601.eurprd03.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BxXoguvDqh/tEFewxWKmas1n19dq54DlmJ3Wiux/04Nkd2DKLpxE9VgPSUI/bDIjEEw+aH+fKsPsIyu6u1rMd6j2igpVyBm1OvJRJIOffvwopTdO/0ZHeFKIcwEYlcYLpCtqGkwRYslhGw3HTDXwhOiA2VEtMhg1e4pfYGA8d+EJVVh9ApAdsOyF/351Sk5bOdlx51YCfp9Fu6dNyjb/8OpCqXC2Gg41IlWrXwMhSHdws1fbdExKD312BNiBMOhhfTcktmRY73vpBEOCaRuW5b0EsIfooc4nS0A9SHtf2UAC/hy6OtW2YW2a6hT6A6E4NRdWKdLoqr2vGmKhipu4Db91BafEyT4kgk8Bd97id1drMFGhK6LgN3Eu+i/OEp6dTAhz/hUt6HmDvaD88yIGcEG3vdT+nqFvzdOOTEmO5EfyZcOex/aJtt7mn4Fk2weqDZKFwHwORadOmUGfVs8thmHAPYkFPosJWeNyZ4blJLdwmY6oR6dw8b8OarAXdQgfM+7HrGv7KbNU9XLyKQN8uAMOaCH89GaA6F0Q2jrCBv2x0PdHyh6xaYCzbwZYH37wK0r+6KXb5R1NLywHyQ3NHJ77cRcTc5ULAP+Vp4CGPaMCr/JCsHVdI33acqj40ztWZEooWVGxV9o/ceI1WQQSxYGjsC/KkGk8uRVjS/NnGEYy5hTTkIpoTEyzUYZpmZMn6igret8Jc2N9xCIz1vq1AoDi9UuX5NE388AYnrFAFpc86Ka3vE2V3/F3XFx9ht9R
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(6512007)(26005)(66556008)(4326008)(316002)(31696002)(53546011)(66476007)(52116002)(86362001)(2906002)(6666004)(6506007)(6916009)(66946007)(54906003)(8676002)(8936002)(36756003)(31686004)(38350700002)(5660300002)(38100700002)(6486002)(44832011)(2616005)(83380400001)(186003)(498600001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SGRkQXJFamNZQ3dTeUZLdlJvUjB4NHFsRGwxdStuWjRLSlEyUkFtYzBrQWNv?=
- =?utf-8?B?YjlDNXlLRjhXSjRWUWdJL1NIM1pJVWpFVGN6Z2pFSi9LNGVUMlpTeUZRTzJz?=
- =?utf-8?B?TlB5NjNUOGM1OURTWElaQ2FQRHVSZlpTK3l1bm1TNTdMNnBnbEZUTEJrekV4?=
- =?utf-8?B?dU5mOEQ3SzJhNW5pWEVTYzArR1FlYnp0bS9McWJIU09EWUR1TXRPSzlOZU1O?=
- =?utf-8?B?YUNQK3dUaVNreXJaVnB5amhnWE1XRlIrak9JdElQS0RPUnBGTEFoSlV5UjZo?=
- =?utf-8?B?b3RoclhzWDNFUWhWdmZ4YVY1d1JGYzVrY1Zod0ZOQmtReExnL2JYNWlQQnZH?=
- =?utf-8?B?M1JscHpMNUY0Vy8yQnB4RklZUWV5b0ZSRzRGQmtQM2ZsVWZyQzM5SDJJb3hS?=
- =?utf-8?B?dFQ4dmMzTDh6THc1RHVMWGZrVjZzeWVuZ0pYU2ZPS1N5Yk8xTkJpVnBhUWVF?=
- =?utf-8?B?eS9BdXZhUGJESFBjZzhxY05uMXhMaFBpOTlvM0ttQytZZE4zSmYwMTM2QnNX?=
- =?utf-8?B?WU5aZDZRRjRvdmQrSnpkOXRROU5EdTREckZmS2l1cnNEMFlNbElYVXlLaEti?=
- =?utf-8?B?OTB3VWF6RmxsV1ovbG9tTnVmR1N4V1o5MmFtOHVEQ1pPZndBMzVwWXJINDVQ?=
- =?utf-8?B?Wm1nWG9kNHdJZXRFTG1PSnVSY244MlBNeVRKL1R1N1V0MHROSHR6ZGh5a0Ew?=
- =?utf-8?B?S2EweHphajRzd2k3WkU5N2w4UjJBUXlUNGlnNnJGa1Y3TjFjZmo1TVFybnBM?=
- =?utf-8?B?WTFZcmJkZ0c5RFRwN1lVeE9CK0FKME5zNHpWNnJpY0xxVmhDb3QwNTBpVytm?=
- =?utf-8?B?aDJsZlJEdHNxMk1kOWhJYndBUTVIYkxFMXZwQmNIVnBTMTFzelVwMFA3WHpH?=
- =?utf-8?B?Rktkc3lvcWNac2RKVE9Cc0xWYmlDQWhFcm8vT0R4eXhiRy84dFd2WGlaTUNt?=
- =?utf-8?B?M2ZESG9ETmt1dmRMOWk1OWtZckt2U1JHaUE5VXRkS0oweDVPcEZ3UW1vM1NW?=
- =?utf-8?B?MWFhNVdjWml1YmRaMDhvZElFcUM5WjQzb3VxalhkZ3AwcVE0WkxlVkk5c041?=
- =?utf-8?B?NHhIZUMyUWo2NUtlSCt0QWNmTWZleEJMU1FsdUJhRDdscmdQUlBEMEsxc0Ft?=
- =?utf-8?B?TGYvVHdqMzFueUdIYmhoTjlJMGMvSXNBeG5ySWd0YVFxWUtLc2JBcmJraElQ?=
- =?utf-8?B?VjQzVk5rQU1BY0s4QzVENlcySkg1dnFjbHE1MmlOU0dtWWkwcmlXK21PbUVa?=
- =?utf-8?B?VkZOOTZ5NFVJNDhacmpNbzhZL3hQbndxNFM0aXljQ2dib05YNkp1bDRkRWhW?=
- =?utf-8?B?b28zZFF2cHF5R1ZLajRsemVBTC9lVXBQNUdXNGx4VUlCVGVwRFRrS2MrL3k1?=
- =?utf-8?B?VkpVWS83TmF0eGVNS3dYRUxJd2EzNTV4eXorR1RCYW9EaVBOazYwZFVjS3hN?=
- =?utf-8?B?WlUvK2RQQ2dUa0diaFd5cGJnMUpaVVJnWlovWkpNUEdna1NMbGFHeW9pSjN2?=
- =?utf-8?B?TTM1dFQ0Ump1T3N6RDZaazFmbmd5NU8yV2RLRWhnNXJBVVdUVXJFSThrTlNS?=
- =?utf-8?B?TTNMWVVEYnZOSXRIS0tCVEFkYUJIMXNjbkVlOE1MWHpoWnd0Q3c3VGhBZFFx?=
- =?utf-8?B?NkRkUU4wd2w3T1RadVFBWGNlRTJVZTMyT0VXWlljWGVDcmNoS2tnV25DWHo1?=
- =?utf-8?B?NHZtWXNGR3BIRzRsOTBHQW92TE9zVUJZcDZIL09OREVEOHlRWGNyd0JQNWUy?=
- =?utf-8?B?S2NER3lHQ1FZTmxNVTcyU1Z1NHVXc0ttRFYrK241THBoSlhUYUxrQ2FNU1Mr?=
- =?utf-8?B?TVBzZW9KclpseFkreFpFUndWdDVXVUNoeExlQmc4ME1IdFpyVVEvNHA4VGlr?=
- =?utf-8?B?T242N0daNHQ5ZmdLbktvZUQvYS8rUXh1a1p0QUN2ejF2dndIcURIeUlyOGFu?=
- =?utf-8?B?S3EwVW5sbmNiSjB6UStIeXV4TFJKM1ZtTG1GbUpoa1NLREhGUlQ1czhCaWhQ?=
- =?utf-8?B?RjBLR1k2dnYvRWY2S0VFMGY0b3B4L0FLRkxQZzBBRkJDMUtsY1VGeHNVSXZX?=
- =?utf-8?B?Uzk1UnBFU252aHV4M0RCRFBnKzlGK2ZNSVFOTC9TZ1NsaHZpMGxjaGdBVTM3?=
- =?utf-8?B?TTd2N1dDSHNyVFhZMlpEMTFCZDRrTi8zaFVUb2tJWnU1Y3Z4RSt6ZkxFbXls?=
- =?utf-8?B?RExzc2JDRWE3U3IzOVFmV2ltM1VyaXJ6TnZrUnpNc1hTWGowc3lkb2pnbFZn?=
- =?utf-8?B?TmUzL2FaeEtpei9OTkdHVWVuVE9VZW1ZdDhsODhIV1VnY0NaSHgzOEJIU3BL?=
- =?utf-8?B?YVd2ek11aEE0U1B0Q3ovWUpXQU1qNWwwU3RLNU5XOVR2QThoNVlZWXhYRkxQ?=
- =?utf-8?Q?l3ryZy8oENUvOXaQ=3D?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1801ace0-0271-44fe-802c-08da51436cdb
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jun 2022 15:58:45.9048
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NSTwpd4GQrojdQrwLbByI9htVardmzKr63MEt+Rjo2/yoY82PFpQnpB8GplGRUqkiJQCGc3aURB9qI3Mt3wc9w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB4601
-X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-SASI-RCODE: 200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=campus.tu-berlin.de; h=message-id:subject:from:to:cc:date:in-reply-to:references:content-type:mime-version:content-transfer-encoding; s=dkim-tub; bh=6Rtoe1X8vqsaXMzSQejEJx5OSjXs4Fw7+IacNXVLR28=; b=ZjOTED6Nhz23r4NtHMldFmLuTZ2AnCeWrlpsWrLiYxbCd0mTL42IrEmW08i+59jhjyo+z9ls9R13Unn6O6exdS6j9Z/lFNq/mT20KP7KN2O/EaSgWDEZj1timBpRc1De6J3H+BULrg9xBzgszYp+klRnQeDvILrMd+LehSIu5S0=
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
-
-On 6/18/22 4:22 AM, Russell King (Oracle) wrote:
-> On Fri, Jun 17, 2022 at 08:45:38PM -0400, Sean Anderson wrote:
->> Hi Russell,
->>
->> Thanks for the quick response.
->> ...
->> Yes, I've been using the debug prints in phylink extensively as part of
->> debugging :)
->>
->> In this case, I added a debug statement to phylink_resolve printing out
->> cur_link_state, link_state.link, and pl->phy_state.link. I could see that
->> the phy link state was up and the mac (pcs) state was down. By inspecting
->> the PCS's registers, I determined that this was because AN had not completed
->> (in particular, the link was up in BMSR). I believe that forcing in-band-status
->> (by setting ovr_an_inband) shouldn't be necessary, but I was unable to get a link
->> up on any interface without it. In particular, the pre-phylink implementation
->> disabled PCS AN only for fixed links (which you can see in patch 23).
+On Fri, 2022-06-17 at 14:04 -0700, Martin KaFai Lau wrote:
+> On Tue, Jun 14, 2022 at 12:44:50PM +0200, Jörn-Thorben Hinz wrote:
+> > Test whether a TCP CC implemented in BPF is allowed to write
+> > sk_pacing_rate and sk_pacing_status in struct sock. This is needed
+> > when
+> > cong_control() is implemented and used.
+> > 
+> > Signed-off-by: Jörn-Thorben Hinz <jthinz@mailbox.tu-berlin.de>
+> > ---
+> >  .../selftests/bpf/prog_tests/bpf_tcp_ca.c     | 21 +++++++
+> >  .../bpf/progs/tcp_ca_write_sk_pacing.c        | 60
+> > +++++++++++++++++++
+> >  2 files changed, 81 insertions(+)
+> >  create mode 100644
+> > tools/testing/selftests/bpf/progs/tcp_ca_write_sk_pacing.c
+> > 
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+> > b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+> > index e9a9a31b2ffe..a797497e2864 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
+> > @@ -9,6 +9,7 @@
+> >  #include "bpf_cubic.skel.h"
+> >  #include "bpf_tcp_nogpl.skel.h"
+> >  #include "bpf_dctcp_release.skel.h"
+> > +#include "tcp_ca_write_sk_pacing.skel.h"
+> >  
+> >  #ifndef ENOTSUPP
+> >  #define ENOTSUPP 524
+> > @@ -322,6 +323,24 @@ static void test_rel_setsockopt(void)
+> >         bpf_dctcp_release__destroy(rel_skel);
+> >  }
+> >  
+> > +static void test_write_sk_pacing(void)
+> > +{
+> > +       struct tcp_ca_write_sk_pacing *skel;
+> > +       struct bpf_link *link;
+> > +
+> > +       skel = tcp_ca_write_sk_pacing__open_and_load();
+> > +       if (!ASSERT_OK_PTR(skel, "open_and_load")) {
+> nit. Remove this single line '{'.
 > 
-> I notice that prior to patch 23, the advertisment register was set to
-> 0x4001, but in phylink_mii_c22_pcs_encode_advertisement() we set it to
-> 0x0001 (bit 14 being the acknowledge bit from the PCS to the PHY, which
-> is normally managed by hardware.
+> ./scripts/checkpatch.pl has reported that also:
+> WARNING: braces {} are not necessary for single statement blocks
+> #43: FILE: tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c:332:
+> +       if (!ASSERT_OK_PTR(skel, "open_and_load")) {
+> +               return;
+> +       }
+Have to admit I knowingly disregarded that warning as more of a
+recommendation. Out of habit and since I personally don’t see any
+compelling reason to generally use single-line statements after ifs,
+only multiple disadvantages.
+
+But wrong place to argue here, of course. Will bow to the warning.
+
 > 
-> It may be worth testing whether setting bit 14 changes the behaviour.
+> 
+> > +               return;
+> > +       }
+> > +
+> > +       link = bpf_map__attach_struct_ops(skel-
+> > >maps.write_sk_pacing);
+> > +       if (ASSERT_OK_PTR(link, "attach_struct_ops")) {
+> Same here.
+> 
+> and no need to check the link before bpf_link__destroy.
+> bpf_link__destroy can handle error link.  Something like:
+> 
+>         ASSERT_OK_PTR(link, "attach_struct_ops");
+>         bpf_link__destroy(link);
+>         tcp_ca_write_sk_pacing__destroy(skel);
+> 
+> The earlier examples in test_cubic and test_dctcp were
+> written before bpf_link__destroy can handle error link.
+You are right, I followed the other two test_*() functions there. Good
+to know that it behaves similar to (k)free() and others. Will remove
+the ifs around bpf_link__destroy().
 
-Thanks for the tip. I'll try that out on Monday.
+> 
+> > +               bpf_link__destroy(link);
+> > +       }
+> > +
+> > +       tcp_ca_write_sk_pacing__destroy(skel);
+> > +}
+> > +
+> >  void test_bpf_tcp_ca(void)
+> >  {
+> >         if (test__start_subtest("dctcp"))
+> > @@ -334,4 +353,6 @@ void test_bpf_tcp_ca(void)
+> >                 test_dctcp_fallback();
+> >         if (test__start_subtest("rel_setsockopt"))
+> >                 test_rel_setsockopt();
+> > +       if (test__start_subtest("write_sk_pacing"))
+> > +               test_write_sk_pacing();
+> >  }
+> > diff --git
+> > a/tools/testing/selftests/bpf/progs/tcp_ca_write_sk_pacing.c
+> > b/tools/testing/selftests/bpf/progs/tcp_ca_write_sk_pacing.c
+> > new file mode 100644
+> > index 000000000000..43447704cf0e
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/progs/tcp_ca_write_sk_pacing.c
+> > @@ -0,0 +1,60 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +
+> > +#include "vmlinux.h"
+> > +
+> > +#include <bpf/bpf_helpers.h>
+> > +#include <bpf/bpf_tracing.h>
+> > +
+> > +char _license[] SEC("license") = "GPL";
+> > +
+> > +#define USEC_PER_SEC 1000000UL
+> > +
+> > +#define min(a, b) ((a) < (b) ? (a) : (b))
+> > +
+> > +static inline struct tcp_sock *tcp_sk(const struct sock *sk)
+> > +{
+> This helper is already available in bpf_tcp_helpers.h.
+> Is there a reason not to use that one and redefine
+> it in both patch 3 and 4?  The mss_cache and srtt_us can be added
+> to bpf_tcp_helpers.h.  It will need another effort to move
+> all selftest's bpf-cc to vmlinux.h.
+I fully agree it’s not elegant to redefine tcp_sk() twice more.
 
---Sean
+It was between either using bpf_tcp_helpers.h and adding and
+maintaining additional struct members there. Or using the (as I
+understood it) more “modern” approach with vmlinux.h and redefining the
+trivial tcp_sk(). I chose the later. Didn’t see a reason not to slowly
+introduce vmlinux.h into the CA tests.
+
+I had the same dilemma for the algorithm I’m implementing: Reuse
+bpf_tcp_helpers.h from the kernel tree and extend it. Or use vmlinux.h
+and copy only some of the (mostly trivial) helper functions. Also chose
+the later here.
+
+While doing the above, I also considered extracting the type
+declarations from bpf_tcp_helpers.h into an, e.g.,
+bpf_tcp_types_helper.h, keeping only the functions in
+bpf_tcp_helpers.h. bpf_tcp_helpers.h could have been a base helper for
+any BPF CA implementation then and used with either vmlinux.h or the
+“old-school” includes. Similar to the way bpf_helpers.h is used. But at
+that point, a bpf_tcp_types_helper.h could have probably just been
+dropped for good and in favor of vmlinux.h. So I didn’t continue with
+that.
+
+Do you insist to use bpf_tcp_helpers.h instead of vmlinux.h? Or could
+the described split into two headers make sense after all?
+
+(Will wait for your reply here before sending a v4.)
+
+> 
+> > +       return (struct tcp_sock *)sk;
+> > +}
+> > +
+> > +SEC("struct_ops/write_sk_pacing_init")
+> > +void BPF_PROG(write_sk_pacing_init, struct sock *sk)
+> > +{
+> > +#ifdef ENABLE_ATOMICS_TESTS
+> > +       __sync_bool_compare_and_swap(&sk->sk_pacing_status,
+> > SK_PACING_NONE,
+> > +                                    SK_PACING_NEEDED);
+> > +#else
+> > +       sk->sk_pacing_status = SK_PACING_NEEDED;
+> > +#endif
+> > +}
+> > +
+> > +SEC("struct_ops/write_sk_pacing_cong_control")
+> > +void BPF_PROG(write_sk_pacing_cong_control, struct sock *sk,
+> > +             const struct rate_sample *rs)
+> > +{
+> > +       const struct tcp_sock *tp = tcp_sk(sk);
+> > +       unsigned long rate =
+> > +               ((tp->snd_cwnd * tp->mss_cache * USEC_PER_SEC) <<
+> > 3) /
+> > +               (tp->srtt_us ?: 1U << 3);
+> > +       sk->sk_pacing_rate = min(rate, sk->sk_max_pacing_rate);
+> > +}
+> > +
+> > +SEC("struct_ops/write_sk_pacing_ssthresh")
+> > +__u32 BPF_PROG(write_sk_pacing_ssthresh, struct sock *sk)
+> > +{
+> > +       return tcp_sk(sk)->snd_ssthresh;
+> > +}
+> > +
+> > +SEC("struct_ops/write_sk_pacing_undo_cwnd")
+> > +__u32 BPF_PROG(write_sk_pacing_undo_cwnd, struct sock *sk)
+> > +{
+> > +       return tcp_sk(sk)->snd_cwnd;
+> > +}
+> > +
+> > +SEC(".struct_ops")
+> > +struct tcp_congestion_ops write_sk_pacing = {
+> > +       .init = (void *)write_sk_pacing_init,
+> > +       .cong_control = (void *)write_sk_pacing_cong_control,
+> > +       .ssthresh = (void *)write_sk_pacing_ssthresh,
+> > +       .undo_cwnd = (void *)write_sk_pacing_undo_cwnd,
+> > +       .name = "bpf_w_sk_pacing",
+> > +};
+> > -- 
+> > 2.30.2
+> > 
+
+
