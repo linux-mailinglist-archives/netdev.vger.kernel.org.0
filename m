@@ -2,59 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED97F550468
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 14:17:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4066755046B
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 14:24:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232239AbiFRMRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jun 2022 08:17:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45444 "EHLO
+        id S233981AbiFRMX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jun 2022 08:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbiFRMRS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 08:17:18 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121B015732
-        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 05:17:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655554638; x=1687090638;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=qGHNGsPBlJdkjBFYTh1tlW7NpbCv66NtHyhW1QahJIo=;
-  b=EPaAYHvzC6FlvZYagFt5Dtuwoww30jpVRmqgLo6G9cSpWQLfgMCYU8Ns
-   0p79ksZAp89/KA1Vta26KuWGQRwRpiZxBT6nXrK8FK3vLNp3GfvfhWQCA
-   ndEmkCeDPL1xFfGLm54Cb8at5YfWnE8ZsM593L60ejE5XLjolPcH6q7p/
-   qDYaeNkrEt7tXcivDrjygpg/OGLvr1SHfo+xjl01DE3vFP6fjhk9DYClt
-   wFk5bghh/CzIf/tefxZBuBV0CMz/EoQfVuWAHDL/pioB+5DY6azL/Czf8
-   M439qMVq1IB+3wZUfBlKf+U9clZRNO2UNn4cSYNESeUMfDexWYTGhfanx
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="278424689"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="278424689"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2022 05:17:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="642399432"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 18 Jun 2022 05:17:16 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o2XO8-000QJ1-3X;
-        Sat, 18 Jun 2022 12:17:16 +0000
-Date:   Sat, 18 Jun 2022 20:16:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ong Boon Leong <boon.leong.ong@intel.com>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-Subject: [net-next:master 19/27] ERROR: modpost:
- "phylink_mii_c22_pcs_encode_advertisement" [drivers/net/pcs/pcs_xpcs.ko]
- undefined!
-Message-ID: <202206182016.Go0zVi4t-lkp@intel.com>
+        with ESMTP id S230213AbiFRMX4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 08:23:56 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738E71D303
+        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 05:23:54 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o2XUH-00058c-Iz; Sat, 18 Jun 2022 14:23:37 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o2XUD-001FVk-PJ; Sat, 18 Jun 2022 14:23:35 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o2XUD-000zBx-Vp; Sat, 18 Jun 2022 14:23:33 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net v3 1/1] net: phy: at803x: fix NULL pointer dereference on AR9331 PHY
+Date:   Sat, 18 Jun 2022 14:23:33 +0200
+Message-Id: <20220618122333.235139-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,30 +54,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
-head:   f0623340fd2cab724e3c54ac026d1414325f375d
-commit: b47aec885bcd672ebca2108a8b7e9ce3e3982775 [19/27] net: pcs: xpcs: add CL37 1000BASE-X AN support
-config: arm-randconfig-r005-20220617 (https://download.01.org/0day-ci/archive/20220618/202206182016.Go0zVi4t-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=b47aec885bcd672ebca2108a8b7e9ce3e3982775
-        git remote add net-next https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git
-        git fetch --no-tags net-next master
-        git checkout b47aec885bcd672ebca2108a8b7e9ce3e3982775
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+Latest kernel will explode on the PHY interrupt config, since it depends
+now on allocated priv. So, run probe to allocate priv to fix it.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+ ar9331_switch ethernet.1:10 lan0 (uninitialized): PHY [!ahb!ethernet@1a000000!mdio!switch@10:00] driver [Qualcomm Atheros AR9331 built-in PHY] (irq=13)
+ CPU 0 Unable to handle kernel paging request at virtual address 0000000a, epc == 8050e8a8, ra == 80504b34
+         ...
+ Call Trace:
+ [<8050e8a8>] at803x_config_intr+0x5c/0xd0
+ [<80504b34>] phy_request_interrupt+0xa8/0xd0
+ [<8050289c>] phylink_bringup_phy+0x2d8/0x3ac
+ [<80502b68>] phylink_fwnode_phy_connect+0x118/0x130
+ [<8074d8ec>] dsa_slave_create+0x270/0x420
+ [<80743b04>] dsa_port_setup+0x12c/0x148
+ [<8074580c>] dsa_register_switch+0xaf0/0xcc0
+ [<80511344>] ar9331_sw_probe+0x370/0x388
+ [<8050cb78>] mdio_probe+0x44/0x70
+ [<804df300>] really_probe+0x200/0x424
+ [<804df7b4>] __driver_probe_device+0x290/0x298
+ [<804df810>] driver_probe_device+0x54/0xe4
+ [<804dfd50>] __device_attach_driver+0xe4/0x130
+ [<804dcb00>] bus_for_each_drv+0xb4/0xd8
+ [<804dfac4>] __device_attach+0x104/0x1a4
+ [<804ddd24>] bus_probe_device+0x48/0xc4
+ [<804deb44>] deferred_probe_work_func+0xf0/0x10c
+ [<800a0ffc>] process_one_work+0x314/0x4d4
+ [<800a17fc>] worker_thread+0x2a4/0x354
+ [<800a9a54>] kthread+0x134/0x13c
+ [<8006306c>] ret_from_kernel_thread+0x14/0x1c
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+Same Issue would affect some other PHYs (QCA8081, QCA9561), so fix it
+too.
 
->> ERROR: modpost: "phylink_mii_c22_pcs_encode_advertisement" [drivers/net/pcs/pcs_xpcs.ko] undefined!
->> ERROR: modpost: "phylink_mii_c22_pcs_decode_state" [drivers/net/pcs/pcs_xpcs.ko] undefined!
+Fixes: 3265f4218878 ("net: phy: at803x: add fiber support")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+---
+ drivers/net/phy/at803x.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index 6a467e7817a6..59fe356942b5 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -2072,6 +2072,8 @@ static struct phy_driver at803x_driver[] = {
+ 	/* ATHEROS AR9331 */
+ 	PHY_ID_MATCH_EXACT(ATH9331_PHY_ID),
+ 	.name			= "Qualcomm Atheros AR9331 built-in PHY",
++	.probe			= at803x_probe,
++	.remove			= at803x_remove,
+ 	.suspend		= at803x_suspend,
+ 	.resume			= at803x_resume,
+ 	.flags			= PHY_POLL_CABLE_TEST,
+@@ -2087,6 +2089,8 @@ static struct phy_driver at803x_driver[] = {
+ 	/* Qualcomm Atheros QCA9561 */
+ 	PHY_ID_MATCH_EXACT(QCA9561_PHY_ID),
+ 	.name			= "Qualcomm Atheros QCA9561 built-in PHY",
++	.probe			= at803x_probe,
++	.remove			= at803x_remove,
+ 	.suspend		= at803x_suspend,
+ 	.resume			= at803x_resume,
+ 	.flags			= PHY_POLL_CABLE_TEST,
+@@ -2151,6 +2155,8 @@ static struct phy_driver at803x_driver[] = {
+ 	PHY_ID_MATCH_EXACT(QCA8081_PHY_ID),
+ 	.name			= "Qualcomm QCA8081",
+ 	.flags			= PHY_POLL_CABLE_TEST,
++	.probe			= at803x_probe,
++	.remove			= at803x_remove,
+ 	.config_intr		= at803x_config_intr,
+ 	.handle_interrupt	= at803x_handle_interrupt,
+ 	.get_tunable		= at803x_get_tunable,
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.30.2
+
