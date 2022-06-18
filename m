@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2112D550214
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 04:41:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BF0D550231
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 04:56:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383872AbiFRCl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 22:41:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50086 "EHLO
+        id S231863AbiFRC42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 22:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231748AbiFRCl1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 22:41:27 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBD4579AB;
-        Fri, 17 Jun 2022 19:41:26 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id p128so6247573iof.1;
-        Fri, 17 Jun 2022 19:41:26 -0700 (PDT)
+        with ESMTP id S229767AbiFRC41 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 22:56:27 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47DBD6C0DE;
+        Fri, 17 Jun 2022 19:56:26 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id r5so6248046iod.5;
+        Fri, 17 Jun 2022 19:56:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=9dDTl+0ZieSz3VWQZ/8mBwCv0tA7WWjveLBUXmU1/z0=;
-        b=A44l/GWuMVb481G1+N2FIiWAzPmLWORwhmtB5olFB6p/SuErkkZbKor6LTDM8UYEZB
-         kH8msvDKvQjMJyIqmmlTIliqibkNwGc6BYG+igQutPbwoElEg7I6BbQy9YrSa3Xjvkan
-         jFxIGLfkVXjaBC93FpO/yP/3Gnw3qzHtH6L86lYkZ/CVZ3Mxu0uAj/D5VISP/dSYH/uL
-         ETXhYLXtGCifOBRH7n/bris0CQZh9URmySZOdoWkKn3RA+ojO/RZbtUGm5AlZOxnF7KK
-         T8B7MpYX9AnJ3YiAuX3QVYbxg+KA3K3URS1VHGb5P3cDhJCrqIU9TYufFbvUPwK+OKGe
-         U+sw==
+        bh=U3HYhcyZNnttgoB9WEg09gKNhxYsBxK1b2GJ8pko3jo=;
+        b=q3YXVZK1V+ZKf9XoYjL0CJenOHwGlaV2tLHyu0EM0PBKaa9PwQJupJ+b2nH3zTzZcM
+         r+8CDtQV7+QByJOkvpnFRtbRC1DHPhVxtZOhUlJiTz3hvK7M8hTwR58IvfYGg2l2rWv4
+         Uh9CiJ/ViRModq3K0Tkyu6mf360ynZwQgXWARY7lpZdFWxV0Fv/+IAO3fiZgr1llurqR
+         7sevZgpxNQ22l+L5E0Bdw/B2JA2uPm9vny5QuY9MIxsB8d8ayKrzidTfqSUQ5Emj+RHw
+         CsVGJB24QK2bqVtjAZPGmKILWclIjVMgELJNpOz1gS9mqPPAU3ZklOYe4VPyrgJ/pya5
+         fEWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=9dDTl+0ZieSz3VWQZ/8mBwCv0tA7WWjveLBUXmU1/z0=;
-        b=Iy+gI72IhGSzAcPrGeXQDc7hlnCH8e6rUZo/LcXhoRm7oEfyZu7312Xw2bGr7o7cI3
-         bvCB0RV4P8S4lvcOYdowG/rrUxJMJhLW+gqKE1FkzBp+v8qq78vbOVk7KYXukLzfrCrz
-         O4gEo43pYc+CknMqN+Lh1l5FjBK0FNH+5Ri5z23y0sYfa85yZ2M+7YOYFdfjQi+H4xSY
-         91DZVn82dEJvf0SUAC3v4/60OzHerDVJ0WwyxBe3UOYiqsW99aExNxK6F7DJeFVVUmBy
-         kcm1Ka5sLM+4t3/WXdWD+93BPSmfHxw6eBKkx/3VNDdLfF0P7y3C7Tb7Z86hbPHZ1EaM
-         AOMQ==
-X-Gm-Message-State: AJIora9QYriR3vWqDX1N4KjFK4ziv8LQ8SYr6R1TSqMPjCdG7ihB1nTc
-        XXUIUR/gN0/AY7BAte/bhpY=
-X-Google-Smtp-Source: AGRyM1uzjwCs05UtKm95SkAhogsr5WB3Zt1aHhj26fdN4a4V71P7YX5QJhxd2u8ey8qQ3X+aRt31Ew==
-X-Received: by 2002:a05:6638:3014:b0:317:9daf:c42c with SMTP id r20-20020a056638301400b003179dafc42cmr7234034jak.10.1655520085878;
-        Fri, 17 Jun 2022 19:41:25 -0700 (PDT)
+        bh=U3HYhcyZNnttgoB9WEg09gKNhxYsBxK1b2GJ8pko3jo=;
+        b=xdnznTvD8cb6Q7Q/wch1gvtZZy5aVGokTE9mVEf7u7tg0+ovG4V9EOHxk0VSjs37Eu
+         GDkUvhPjKI0g0B6QvtqpPrnZwlxKkdQi5s23wfJggAkJ0BREfFPHmiQPQ/83s8cNpuIr
+         aziixqX/Xh24mUXippYtHZW+9fGn+kh7acYWgIEewgTcgit9YzKs4YU6le+rxEXrlZCQ
+         8Lui/q40be1HSHc/cjuCes2mreRxkcrJZiOZYP7zhp706LQ7a8hBJoGsBYjUvlhx13BF
+         Wu72RQcqh5VjpnjzJMifG4XFn5SCKoHz+603AL5QaQ1YWavPcgZ+JsBcM91mH4SoOFeu
+         K6vQ==
+X-Gm-Message-State: AJIora/M2Eiut8Q0L1LAdqI+uGSqaOXF5tOPILqbsVVsJXmbmFat+6S4
+        WTgC7cbkwPkqFGaQPQdjuUc=
+X-Google-Smtp-Source: AGRyM1tdSUFbHu2XQbPnq8+CMVDe/ehv6Yq1BbOK0I9xHGfK5hSVXgFpALKgmkX1I19EJX9BM76sxg==
+X-Received: by 2002:a05:6602:2b0b:b0:64f:acc1:52c3 with SMTP id p11-20020a0566022b0b00b0064facc152c3mr6452194iov.38.1655520985707;
+        Fri, 17 Jun 2022 19:56:25 -0700 (PDT)
 Received: from localhost ([172.243.153.43])
-        by smtp.gmail.com with ESMTPSA id c18-20020a92cf12000000b002d8f398c845sm511816ilo.84.2022.06.17.19.41.23
+        by smtp.gmail.com with ESMTPSA id 10-20020a02110a000000b003316f4b9b26sm2945409jaf.131.2022.06.17.19.56.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 19:41:25 -0700 (PDT)
-Date:   Fri, 17 Jun 2022 19:41:19 -0700
+        Fri, 17 Jun 2022 19:56:25 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 19:56:17 -0700
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
         bjorn@kernel.org, kuba@kernel.org,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Message-ID: <62ad3b4f60ece_24b34208d@john.notmuch>
-In-Reply-To: <20220616180609.905015-8-maciej.fijalkowski@intel.com>
+Message-ID: <62ad3ed172224_24b342084d@john.notmuch>
+In-Reply-To: <20220616180609.905015-10-maciej.fijalkowski@intel.com>
 References: <20220616180609.905015-1-maciej.fijalkowski@intel.com>
- <20220616180609.905015-8-maciej.fijalkowski@intel.com>
-Subject: RE: [PATCH v4 bpf-next 07/10] selftests: xsk: introduce default Rx
- pkt stream
+ <20220616180609.905015-10-maciej.fijalkowski@intel.com>
+Subject: RE: [PATCH v4 bpf-next 09/10] selftests: xsk: rely on pkts_in_flight
+ in wait_for_tx_completion()
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -75,25 +75,68 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Maciej Fijalkowski wrote:
-> In order to prepare xdpxceiver for physical device testing, let us
-> introduce default Rx pkt stream. Reason for doing it is that physical
-> device testing will use a UMEM with a doubled size where half of it will
-> be used by Tx and other half by Rx. This means that pkt addresses will
-> differ for Tx and Rx streams. Rx thread will initialize the
-> xsk_umem_info::base_addr that is added here so that pkt_set(), when
-> working on Rx UMEM will add this offset and second half of UMEM space
-> will be used. Note that currently base_addr is 0 on both sides. Future
-> commit will do the mentioned initialization.
+> Some of the drivers that implement support for AF_XDP Zero Copy (like
+> ice) can have lazy approach for cleaning Tx descriptors. For ZC, when
+> descriptor is cleaned, it is placed onto AF_XDP completion queue. This
+> means that current implementation of wait_for_tx_completion() in
+> xdpxceiver can get onto infinite loop, as some of the descriptors can
+> never reach CQ.
 > 
-> Previously, veth based testing worked on separate UMEMs, so single
-> default stream was fine.
+> This function can be changed to rely on pkts_in_flight instead.
 > 
 > Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 > ---
 
-Just curious why can't we make veth use a single umem with double size?
-Would be nice to have a single test setup. Why choose two vs a single
-size.
+Sorry I'm going to need more details to follow whats going on here.
 
-Thanks.
+In send_pkts() we do the expected thing and send all the pkts and
+then call wait_for_tx_completion().
+
+Wait for completion is obvious,
+
+ static void wait_for_tx_completion(struct xsk_socket_info *xsk)               
+ {                                                   
+        while (xsk->outstanding_tx)                                                      
+                complete_pkts(xsk, BATCH_SIZE);
+ }  
+
+the 'outstanding_tx' counter appears to be decremented in complete_pkts().
+This is done by looking at xdk_ring_cons__peek() makes sense to me until
+it shows up here we don't know the pkt has been completely sent and
+can release the resources.
+
+Now if you just zero it on exit and call it good how do you know the
+resources are safe to clean up? Or that you don't have a real bug
+in the driver that isn't correctly releasing the resource.
+
+How are users expected to use a lazy approach to tx descriptor cleaning
+in this case e.g. on exit like in this case. It seems we need to
+fix the root cause of ice not putting things on the completion queue
+or I misunderstood the patch.
+
+
+>  tools/testing/selftests/bpf/xdpxceiver.c | 3 ++-
+>  tools/testing/selftests/bpf/xdpxceiver.h | 2 +-
+>  2 files changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
+> index de4cf0432243..13a3b2ac2399 100644
+> --- a/tools/testing/selftests/bpf/xdpxceiver.c
+> +++ b/tools/testing/selftests/bpf/xdpxceiver.c
+> @@ -965,7 +965,7 @@ static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb)
+>  
+>  static void wait_for_tx_completion(struct xsk_socket_info *xsk)
+>  {
+> -	while (xsk->outstanding_tx)
+> +	while (pkts_in_flight)
+>  		complete_pkts(xsk, BATCH_SIZE);
+>  }
+>  
+> @@ -1269,6 +1269,7 @@ static void *worker_testapp_validate_rx(void *arg)
+>  		pthread_mutex_unlock(&pacing_mutex);
+>  	}
+>  
+> +	pkts_in_flight = 0;
+>  	pthread_exit(NULL);
+>  }
