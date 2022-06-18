@@ -2,83 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AE02550211
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 04:40:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2112D550214
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 04:41:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383771AbiFRCkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 22:40:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49244 "EHLO
+        id S1383872AbiFRCl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 22:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231748AbiFRCkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 22:40:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55229579A0;
-        Fri, 17 Jun 2022 19:40:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1AD8B82C58;
-        Sat, 18 Jun 2022 02:40:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 82D0CC3411C;
-        Sat, 18 Jun 2022 02:40:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655520014;
-        bh=o7jBpmMOKLjw6FNsH7yz2iryN+gyCjJm0mtwEcJEIaw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=nTQosznrCVyvR+QvowEzCZbOVafPTFSqoANfL3Pcs1T3yk1RmfuOnp2YB4jXGhR7m
-         guXyyvidnlbZG8Rs+Rf6eN+Gbjlw4pIvO/9s/YmwVhL78O7/8x/E2q7RW2kK9RfkGl
-         4Ca4kxF4RaWQCngN9LZtkiXpC22fBFZxEQDKkyA+rMO4nisHDqTba+4oAIE5/N0izi
-         AsznoLJgYFVdaf2VVWjnHiyko7uI42/NQwZB54WZdCGuYRa3+8QlLv5kzIc3U435sY
-         HKiV4KRrCQnV+ez5GT3D/w4USPk8BNi7ZFWAJwaljfIT9dGZy3mxOzsoDA/6kaYLAr
-         neRBDCNzujQWg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6540EE7387A;
-        Sat, 18 Jun 2022 02:40:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: bpf-next 2022-06-17
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165552001441.16997.16713667865294840408.git-patchwork-notify@kernel.org>
-Date:   Sat, 18 Jun 2022 02:40:14 +0000
-References: <20220617220836.7373-1-daniel@iogearbox.net>
-In-Reply-To: <20220617220836.7373-1-daniel@iogearbox.net>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, ast@kernel.org, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231748AbiFRCl1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 22:41:27 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EBD4579AB;
+        Fri, 17 Jun 2022 19:41:26 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id p128so6247573iof.1;
+        Fri, 17 Jun 2022 19:41:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=9dDTl+0ZieSz3VWQZ/8mBwCv0tA7WWjveLBUXmU1/z0=;
+        b=A44l/GWuMVb481G1+N2FIiWAzPmLWORwhmtB5olFB6p/SuErkkZbKor6LTDM8UYEZB
+         kH8msvDKvQjMJyIqmmlTIliqibkNwGc6BYG+igQutPbwoElEg7I6BbQy9YrSa3Xjvkan
+         jFxIGLfkVXjaBC93FpO/yP/3Gnw3qzHtH6L86lYkZ/CVZ3Mxu0uAj/D5VISP/dSYH/uL
+         ETXhYLXtGCifOBRH7n/bris0CQZh9URmySZOdoWkKn3RA+ojO/RZbtUGm5AlZOxnF7KK
+         T8B7MpYX9AnJ3YiAuX3QVYbxg+KA3K3URS1VHGb5P3cDhJCrqIU9TYufFbvUPwK+OKGe
+         U+sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=9dDTl+0ZieSz3VWQZ/8mBwCv0tA7WWjveLBUXmU1/z0=;
+        b=Iy+gI72IhGSzAcPrGeXQDc7hlnCH8e6rUZo/LcXhoRm7oEfyZu7312Xw2bGr7o7cI3
+         bvCB0RV4P8S4lvcOYdowG/rrUxJMJhLW+gqKE1FkzBp+v8qq78vbOVk7KYXukLzfrCrz
+         O4gEo43pYc+CknMqN+Lh1l5FjBK0FNH+5Ri5z23y0sYfa85yZ2M+7YOYFdfjQi+H4xSY
+         91DZVn82dEJvf0SUAC3v4/60OzHerDVJ0WwyxBe3UOYiqsW99aExNxK6F7DJeFVVUmBy
+         kcm1Ka5sLM+4t3/WXdWD+93BPSmfHxw6eBKkx/3VNDdLfF0P7y3C7Tb7Z86hbPHZ1EaM
+         AOMQ==
+X-Gm-Message-State: AJIora9QYriR3vWqDX1N4KjFK4ziv8LQ8SYr6R1TSqMPjCdG7ihB1nTc
+        XXUIUR/gN0/AY7BAte/bhpY=
+X-Google-Smtp-Source: AGRyM1uzjwCs05UtKm95SkAhogsr5WB3Zt1aHhj26fdN4a4V71P7YX5QJhxd2u8ey8qQ3X+aRt31Ew==
+X-Received: by 2002:a05:6638:3014:b0:317:9daf:c42c with SMTP id r20-20020a056638301400b003179dafc42cmr7234034jak.10.1655520085878;
+        Fri, 17 Jun 2022 19:41:25 -0700 (PDT)
+Received: from localhost ([172.243.153.43])
+        by smtp.gmail.com with ESMTPSA id c18-20020a92cf12000000b002d8f398c845sm511816ilo.84.2022.06.17.19.41.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jun 2022 19:41:25 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 19:41:19 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
+        bjorn@kernel.org, kuba@kernel.org,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Message-ID: <62ad3b4f60ece_24b34208d@john.notmuch>
+In-Reply-To: <20220616180609.905015-8-maciej.fijalkowski@intel.com>
+References: <20220616180609.905015-1-maciej.fijalkowski@intel.com>
+ <20220616180609.905015-8-maciej.fijalkowski@intel.com>
+Subject: RE: [PATCH v4 bpf-next 07/10] selftests: xsk: introduce default Rx
+ pkt stream
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This pull request was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Sat, 18 Jun 2022 00:08:36 +0200 you wrote:
-> Hi David, hi Jakub, hi Paolo, hi Eric,
+Maciej Fijalkowski wrote:
+> In order to prepare xdpxceiver for physical device testing, let us
+> introduce default Rx pkt stream. Reason for doing it is that physical
+> device testing will use a UMEM with a doubled size where half of it will
+> be used by Tx and other half by Rx. This means that pkt addresses will
+> differ for Tx and Rx streams. Rx thread will initialize the
+> xsk_umem_info::base_addr that is added here so that pkt_set(), when
+> working on Rx UMEM will add this offset and second half of UMEM space
+> will be used. Note that currently base_addr is 0 on both sides. Future
+> commit will do the mentioned initialization.
 > 
-> The following pull-request contains BPF updates for your *net-next* tree.
+> Previously, veth based testing worked on separate UMEMs, so single
+> default stream was fine.
 > 
-> We've added 72 non-merge commits during the last 15 day(s) which contain
-> a total of 92 files changed, 4582 insertions(+), 834 deletions(-).
-> 
-> [...]
+> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> ---
 
-Here is the summary with links:
-  - pull-request: bpf-next 2022-06-17
-    https://git.kernel.org/netdev/net/c/582573f1b23d
+Just curious why can't we make veth use a single umem with double size?
+Would be nice to have a single test setup. Why choose two vs a single
+size.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks.
