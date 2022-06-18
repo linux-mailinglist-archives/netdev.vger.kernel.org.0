@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 572B95501BD
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 03:46:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 451845501C7
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 03:57:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234389AbiFRBqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 21:46:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42132 "EHLO
+        id S1383654AbiFRB5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 21:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231741AbiFRBqr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 21:46:47 -0400
+        with ESMTP id S233172AbiFRB5t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 21:57:49 -0400
 Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19FAB6B03A;
-        Fri, 17 Jun 2022 18:46:43 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id h8so6147189iof.11;
-        Fri, 17 Jun 2022 18:46:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB07613CC6;
+        Fri, 17 Jun 2022 18:57:48 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id i16so6170824ioa.6;
+        Fri, 17 Jun 2022 18:57:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=GvzE0MY7dGfJMgbKlLx/bwUiID6nHhevmap4odLEw0w=;
-        b=X6T6z1ZaHZdUxzj59PTAJiqiR1oAztfJq7dzjsVm67X9KHgHX/VClJGUxJ8xB7/uKX
-         Efr5Me6MpULj/YyY2yWo7tHzNR3siyFX6RDA/H6cqNZ++Ct0h/h2gov6JD/wZSyyuUXt
-         vFgPbEnyRLfob0+rS30X591kmljM+c5T/Z93O0PqMgIrUajEqmd4MSiNzlAzmRtWBLBM
-         YP7fiqyYm5dUQrwXASXGdQVD0jmOFz88oIzJcvGBql4knEr3qW72JMNHw9IjY16TuVfa
-         SxOgGaL5mKYXw3R4GbI8m6SrhxkKzo3JB8/NXqrHiD0wdhtJemF7Xw9kMM8ENU3F4EK7
-         h6PQ==
+        bh=nlqa2mUyUcAPbTEqCfHYZQStz06i6M5KWDDFUmI8TDU=;
+        b=OgZ5NOzQW0KReIX332vrXR7LT6BMvhSrLGWwdgFz0zXQSw01Q5iNjKfx+ZbwXHtRHz
+         XKt2yv3DAB4sQp/p1jZjqTsJW7ezXNohUNbqtFJaejLKP+eCKo8Y1zVfeOrHD5K7flGA
+         VzZVX9AQflddtNgUxqvv7zOlCuN6oVTG1KpL6E326hgx344d4UpnEwFlt/nCFZWYe79F
+         f+ZRBaYlodN2S53hytjTnKJR+URvSZroqqBSY5PDHP4mcnYMeCOurq7FFwLbnRB0pVlf
+         lE/y6J3LwD+l9/ZK37YInCPj65omjyVUNT5RLji8640M/UXI/VdJJkcfCIBM4PWd/ti9
+         L54A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=GvzE0MY7dGfJMgbKlLx/bwUiID6nHhevmap4odLEw0w=;
-        b=eUUxAYyJgNWqpfRy6surxorHDTNzTDvZidRcxDJfFsbMMiQ7QN8tO9r6Vh5HeKeKOB
-         q0Ij9aVre6Lu8g40UhqgZ7whDuVypd9a/vc7ZJU++eMsGIo52R5EaBAPgbd+y6d2Tq1v
-         hDlWCuxSGxU3Tg1QtKBHoh+vC6bzxDsh/Euq7YJQe4c75PC3r0xxxisSO4NUQd12u9E4
-         rzOlH7CKUbG/TXy+1i03D6dFxaFmuZyh/YpCSOczkKA+K9Ap9SG7UvKfJohL7pqZB21m
-         alM6m8p3oMkbBnvFylXAr5c3jr7id5zZ4s3ch1QVnjLUvVSAft5eG9N98n26pLDZZxa/
-         d4eQ==
-X-Gm-Message-State: AJIora93QOV/8CFZ+ZV8GzSM4sucsZRQn05gkHM/v39XpRoF7VEzdXqN
-        /eWa/XhP44pCcndE+anJYA0=
-X-Google-Smtp-Source: AGRyM1tCoeDIg42MjHnB1CNnjXxeIR3zdmznQaYjTB5ELvKLdh+Jtxg3rCNe+vVPIJ3FA9X8K9ebvg==
-X-Received: by 2002:a05:6602:2aca:b0:669:e6ec:9b6c with SMTP id m10-20020a0566022aca00b00669e6ec9b6cmr6363592iov.176.1655516802415;
-        Fri, 17 Jun 2022 18:46:42 -0700 (PDT)
+        bh=nlqa2mUyUcAPbTEqCfHYZQStz06i6M5KWDDFUmI8TDU=;
+        b=Aqdp/O1KX6gAU8fyPn8/JvDzIJY8PWXYX0Z4iblUpR1dcqir87L7OxL4yXnFk1IQ/s
+         d5tj5tY6qnIiEsTPjCv6qd8Tf0pWjYnLkSj6ynR+hry3rr8rHvLKe1S7VyHp7Xst3pRE
+         rena6MM9sqr1fgJjsk3Y3MitEkLT+5NENJaiRrHWzAQU5PQTJABKOoysbQcPgerrJ+xj
+         t0hmLTlL2tFfpABiNNOQqpGkwcRq3TU9svW6eJvZNDt1ccN6aCL70fK0G4u86FydzQE8
+         xjG/dGnpA/LWvthGHgd12eza+C4P9WsAPJ1AF4lS/VQDPy7rDrZTY4GO1XHUpt5k55vI
+         yR+w==
+X-Gm-Message-State: AJIora8FQNZg8uTvuZJgSCb5MabNBm3oNh0IBEKi2q0Jz2WbSjiq2xQO
+        pPBngCkOMBbf6gflWB8OPmA=
+X-Google-Smtp-Source: AGRyM1sAB01pFjFQOTRjz0lUbJkkT+bF6gCDtUNd+vjPSno46lAHOGA4+q84I+zuZDsyccK/uVZ9eA==
+X-Received: by 2002:a02:6619:0:b0:32e:25b7:d9ed with SMTP id k25-20020a026619000000b0032e25b7d9edmr6935194jac.30.1655517468166;
+        Fri, 17 Jun 2022 18:57:48 -0700 (PDT)
 Received: from localhost ([172.243.153.43])
-        by smtp.gmail.com with ESMTPSA id b11-20020a92dccb000000b002d3edd935e5sm3009932ilr.53.2022.06.17.18.46.40
+        by smtp.gmail.com with ESMTPSA id w9-20020a02cf89000000b003313005be01sm2901511jar.141.2022.06.17.18.57.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 18:46:41 -0700 (PDT)
-Date:   Fri, 17 Jun 2022 18:46:35 -0700
+        Fri, 17 Jun 2022 18:57:47 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 18:57:41 -0700
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
@@ -55,12 +55,12 @@ Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
         bjorn@kernel.org, kuba@kernel.org,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         Alexandr Lobakin <alexandr.lobakin@intel.com>
-Message-ID: <62ad2e7b9ff11_24b342081a@john.notmuch>
-In-Reply-To: <20220616180609.905015-2-maciej.fijalkowski@intel.com>
+Message-ID: <62ad3115619b0_24b342084c@john.notmuch>
+In-Reply-To: <20220616180609.905015-3-maciej.fijalkowski@intel.com>
 References: <20220616180609.905015-1-maciej.fijalkowski@intel.com>
- <20220616180609.905015-2-maciej.fijalkowski@intel.com>
-Subject: RE: [PATCH v4 bpf-next 01/10] ice: compress branches in
- ice_set_features()
+ <20220616180609.905015-3-maciej.fijalkowski@intel.com>
+Subject: RE: [PATCH v4 bpf-next 02/10] ice: allow toggling loopback mode via
+ ndo_set_features callback
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -76,101 +76,70 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Maciej Fijalkowski wrote:
-> Instead of rather verbose comparison of current netdev->features bits vs
-> the incoming ones from user, let us compress them by a helper features
-> set that will be the result of netdev->features XOR features. This way,
-> current, extensive branches:
+> Add support for NETIF_F_LOOPBACK. This feature can be set via:
+> $ ethtool -K eth0 loopback <on|off>
 > 
-> 	if (features & NETIF_F_BIT && !(netdev->features & NETIF_F_BIT))
-> 		set_feature(true);
-> 	else if (!(features & NETIF_F_BIT) && netdev->features & NETIF_F_BIT)
-> 		set_feature(false);
-> 
-> can become:
-> 
-> 	netdev_features_t changed = netdev->features ^ features;
-> 
-> 	if (changed & NETIF_F_BIT)
-> 		set_feature(!!(features & NETIF_F_BIT));
-> 
-> This is nothing new as currently several other drivers use this
-> approach, which I find much more convenient.
-
-Looks good couple nits below. Up to you if you want to follow through
-on them or not I don't have a strong opinion. For what its worth the
-other intel drivers also do the 'netdev->features ^ features'
-assignment.
-
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-
+> Feature can be useful for local data path tests.
 > 
 > CC: Alexandr Lobakin <alexandr.lobakin@intel.com>
 > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 > ---
->  drivers/net/ethernet/intel/ice/ice_main.c | 40 +++++++++++------------
->  1 file changed, 19 insertions(+), 21 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-> index e1cae253412c..23d1b1fc39fb 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_main.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-> @@ -5910,44 +5910,41 @@ ice_set_vlan_features(struct net_device *netdev, netdev_features_t features)
->  static int
->  ice_set_features(struct net_device *netdev, netdev_features_t features)
->  {
-> +	netdev_features_t changed = netdev->features ^ features;
->  	struct ice_netdev_priv *np = netdev_priv(netdev);
->  	struct ice_vsi *vsi = np->vsi;
->  	struct ice_pf *pf = vsi->back;
->  	int ret = 0;
->  
->  	/* Don't set any netdev advanced features with device in Safe Mode */
-> -	if (ice_is_safe_mode(vsi->back)) {
-> -		dev_err(ice_pf_to_dev(vsi->back), "Device is in Safe Mode - not enabling advanced netdev features\n");
-> +	if (ice_is_safe_mode(pf)) {
-> +		dev_err(ice_pf_to_dev(vsi->back),
 
-bit of nitpicking but if you use pf in the 'if' above why not use it here
-as well and save a few keys. Also matches below then.
+Patch looks fine one question about that ice_set_features() function
+though.
 
-> +			"Device is in Safe Mode - not enabling advanced netdev features\n");
->  		return ret;
->  	}
->  
->  	/* Do not change setting during reset */
->  	if (ice_is_reset_in_progress(pf->state)) {
-> -		dev_err(ice_pf_to_dev(vsi->back), "Device is resetting, changing advanced netdev features temporarily unavailable.\n");
-> +		dev_err(ice_pf_to_dev(pf),
-> +			"Device is resetting, changing advanced netdev features temporarily unavailable.\n");
->  		return -EBUSY;
->  	}
->  
+Acked-by: John Fastabend <john.fastabend@gmail.com>
 
 [...]
 
-> @@ -5956,11 +5953,12 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
->  		return -EACCES;
+> +/**
+> + * ice_set_loopback - turn on/off loopback mode on underlying PF
+> + * @vsi: ptr to VSI
+> + * @ena: flag to indicate the on/off setting
+> + */
+> +static int
+> +ice_set_loopback(struct ice_vsi *vsi, bool ena)
+> +{
+> +	bool if_running = netif_running(vsi->netdev);
+> +	int ret;
+> +
+> +	if (if_running && !test_and_set_bit(ICE_VSI_DOWN, vsi->state)) {
+> +		ret = ice_down(vsi);
+> +		if (ret) {
+> +			netdev_err(vsi->netdev, "Preparing device to toggle loopback failed\n");
+> +			return ret;
+> +		}
+> +	}
+> +	ret = ice_aq_set_mac_loopback(&vsi->back->hw, ena, NULL);
+> +	if (ret)
+> +		netdev_err(vsi->netdev, "Failed to toggle loopback state\n");
+> +	if (if_running)
+> +		ret = ice_up(vsi);
+> +
+> +	return ret;
+> +}
+> +
+>  /**
+>   * ice_set_features - set the netdev feature flags
+>   * @netdev: ptr to the netdev being adjusted
+> @@ -5960,7 +5988,10 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
+>  		      clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
 >  	}
 >  
-> -	if ((features & NETIF_F_HW_TC) &&
-> -	    !(netdev->features & NETIF_F_HW_TC))
-> -		set_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
-> -	else
-> -		clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
-> +	if (changed & NETIF_F_HW_TC) {
-> +		bool ena = !!(features & NETIF_F_HW_TC);
+> -	return 0;
+> +	if (changed & NETIF_F_LOOPBACK)
+> +		ret = ice_set_loopback(vsi, !!(features & NETIF_F_LOOPBACK));
 > +
-> +		ena ? set_bit(ICE_FLAG_CLS_FLOWER, pf->flags) :
-> +		      clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
-> +	}
+> +	return ret;
 
-Just a note you changed the logic slightly here. Above you always
-clear the bit. But, it looks like it doesn't matter caveat being
-I don't know what might happen in hardware.
+Unrelated to your patch, but because you are messing with 'ret' here a bit,
+how come you return 0 when ice_is_safe_mode() shouldn't you push that
+error up so the user who is doing the setting knows it didn't actually
+work?
 
->  
->  	return 0;
 >  }
+>  
+>  /**
 > -- 
 > 2.27.0
 > 
