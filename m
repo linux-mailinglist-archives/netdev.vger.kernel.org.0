@@ -2,138 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 061DA5506CB
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 23:21:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7AAD550740
+	for <lists+netdev@lfdr.de>; Sun, 19 Jun 2022 00:15:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232328AbiFRVR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jun 2022 17:17:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33492 "EHLO
+        id S233089AbiFRWP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jun 2022 18:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232078AbiFRVR0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 17:17:26 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D2626E1;
-        Sat, 18 Jun 2022 14:17:25 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id o8so9782467wro.3;
-        Sat, 18 Jun 2022 14:17:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=F9zHQ5BDlESv+EJld7HTiBi3G93zCJ7miFrzqyCk/Ys=;
-        b=dfQzXNEvZ6jMhwDtZrRIQghsVUkY4XdSbUtJaOIebJgfW4IgNmRiLfaEhzJU4kvSkO
-         sFGsrmX//kn1dE9Bjik5X0Gqj4kkRtbgb909R3uFbLgYislj8kqwg8zHPtQObYDMBaQh
-         tKgbJy+nnhZRmDNFnc4nrztEwpSVWA5XwGknqDulxOnmSGVtZUKIbC3VY4K9kfpGR4Oo
-         hr+44L1/lMe/zAjrL+0z9zQ2OwpHYZez1rtyejk+mvoKuGsr6ik8ly6rJfCv5gF1e085
-         RVJCUbn83HPcmECcolCEoB062RAMl1yHgJ7JReOx/pSx9C+5gn9kW6CyyjdhCsXI/giA
-         CAWw==
+        with ESMTP id S230223AbiFRWPX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 18:15:23 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EEAFDEF8
+        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 15:15:21 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id n12-20020a92260c000000b002d3c9fc68d6so4925734ile.19
+        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 15:15:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=F9zHQ5BDlESv+EJld7HTiBi3G93zCJ7miFrzqyCk/Ys=;
-        b=Px8v82h76Oau3FQiTQ3H9yRVcVtZv21iOTZB/dP5floUEVLHBHUpyRcqt+gQW5dIVN
-         r+J3KrKXY+gizGnjQEFxwDeO5cc6UtWLL7uClLwtocVByUmuSZmMQRvH/NKw3roJswGM
-         6oWS9MUU9IvET9xuhaUDaHMhmDFWafYAwV//D1x/ALJ0HLlJ3BztAUsLiM3tnpx7PLt/
-         /KEb5jqmaJ8QKf73HEvBeEQkH/LNEdF6EOAK9SlGSTS/HrkmJk0Fx0FlSy6yfoA7Ic0C
-         zvjV0oUa+WAbVG++xnT2N9wGOE/9RDJJQzDuuIRgbOTs5SzGfdso7odGVskLwihpALzh
-         qyEw==
-X-Gm-Message-State: AJIora9Oetw7gZlj40Xq1lCZrv/vA7hidmwrSOY5Eb3Nfv9P/hcOsYAK
-        vKKhqc0wYvF3gJO9JlDiOIvhxyyDH6fQOw==
-X-Google-Smtp-Source: AGRyM1t/JX5RywE/NQdTYsk48Ow61saXwVBAj7MztKbhguVyPqtnjprupf+48GYsrEubjrq1po0PwQ==
-X-Received: by 2002:adf:e648:0:b0:210:bac2:c6cf with SMTP id b8-20020adfe648000000b00210bac2c6cfmr15201246wrn.310.1655587043663;
-        Sat, 18 Jun 2022 14:17:23 -0700 (PDT)
-Received: from krava (94.113.247.30.static.b2b.upcbusiness.cz. [94.113.247.30])
-        by smtp.gmail.com with ESMTPSA id n5-20020a05600c4f8500b0039c18d3fe27sm9921639wmq.19.2022.06.18.14.17.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 18 Jun 2022 14:17:23 -0700 (PDT)
-From:   Jiri Olsa <olsajiri@gmail.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-Date:   Sat, 18 Jun 2022 23:17:20 +0200
-To:     chuang <nashuiliang@gmail.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Jingren Zhou <zhoujingren@didiglobal.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: Re: [PATCH] libbpf: Remove kprobe_event on failed kprobe_open_legacy
-Message-ID: <Yq5A4Cln4qeTaAeM@krava>
-References: <20220614084930.43276-1-nashuiliang@gmail.com>
- <62ad50fa9d42d_24b34208d6@john.notmuch>
- <CACueBy7NqRszA3tCOvLhfi1OraUrL_GD9YZ9XOPNHzbR1=+z7g@mail.gmail.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=cExQdbV21IqFMasbKvZDPSAnWQDgKTx+CTrkWms6YdA=;
+        b=o9TqOmcbnwuW/FUEAHqw4I+vMX3z+lYWpXn6MKS3v+7FBnRal9kqQP6lVecqCwgU3v
+         8UcWsnAs0MiBoxeWebJQ8+yUxwR8KmKUdraA9imvVLXQ54F6BcosqN1N2lkHQUL/ve/M
+         XqV4G9qooYsxPocPdiLFgrBoI39caZfk7LEISCCXHe2nNDVIUUQ/ILkme5h980wR9Qsm
+         QA2/IlzPQYWJl4d9x151mKOBIHUIHOwgtatJebcZqEMw4y1cv6jdWHxPsfAX8dnY77Xg
+         WelQJflHB+AYJdf6aeHPkf2o7GDF91SWsdUjA9QQfAHU8r8ucO15AqM6fs2guZj8MySl
+         A9pg==
+X-Gm-Message-State: AJIora8SIHYRn7BHGnEmZnNvooOUBE0sBRlsR0wk0LiaujHLOJv/IVvO
+        JyWGqqgPEb+0IevgYPQOUJ3pN1GVkWHSI9/WZ8QZEB5ZD6kv
+X-Google-Smtp-Source: AGRyM1sARy0g+5GkMm0W+suRvje6+JpWzSbPJ5cyjpiWIkQY8QW6Ni49id3SO+uMBASqQRfaDvMt/vImGE6pZaSeePhIv8+MtdPU
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACueBy7NqRszA3tCOvLhfi1OraUrL_GD9YZ9XOPNHzbR1=+z7g@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a6b:c985:0:b0:66c:ce19:a5b6 with SMTP id
+ z127-20020a6bc985000000b0066cce19a5b6mr6874900iof.94.1655590520975; Sat, 18
+ Jun 2022 15:15:20 -0700 (PDT)
+Date:   Sat, 18 Jun 2022 15:15:20 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e57c2b05e1c03426@google.com>
+Subject: [syzbot] BUG: sleeping function called from invalid context in __vmalloc_node_range
+From:   syzbot <syzbot+b577bc624afda52c78de@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
+        bigeasy@linutronix.de, bpf@vger.kernel.org, brauner@kernel.org,
+        daniel@iogearbox.net, david@redhat.com, ebiederm@xmission.com,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 18, 2022 at 01:31:01PM +0800, chuang wrote:
-> Hi John,
-> 
-> On Sat, Jun 18, 2022 at 12:13 PM John Fastabend
-> <john.fastabend@gmail.com> wrote:
-> >
-> > Chuang W wrote:
-> > > In a scenario where livepatch and aggrprobe coexist, the creating
-> > > kprobe_event using tracefs API will succeed, a trace event (e.g.
-> > > /debugfs/tracing/events/kprobe/XX) will exist, but perf_event_open()
-> > > will return an error.
-> >
-> > This seems a bit strange from API side. I'm not really familiar with
-> > livepatch, but I guess this is UAPI now so fixing add_kprobe_event_legacy
-> > to fail is not an option?
-> >
-> 
-> The legacy kprobe API (i.e. tracefs API) has two steps:
-> 
-> 1) register_kprobe
-> $ echo 'p:mykprobe XXX' > /sys/kernel/debug/tracing/kprobe_events
-> This will create a trace event of mykprobe and register a disable
-> kprobe that waits to be activated.
-> 
-> 2) enable_kprobe
-> 2.1) using syscall perf_event_open
-> as the following code, perf_event_kprobe_open_legacy (file:
-> tools/lib/bpf/libbpf.c):
-> ---
-> attr.type = PERF_TYPE_TRACEPOINT;
-> pfd = syscall(__NR_perf_event_open, &attr,
->               pid < 0 ? -1 : pid, /* pid */
->               pid == -1 ? 0 : -1, /* cpu */
->               -1 /* group_fd */,  PERF_FLAG_FD_CLOEXEC);
-> ---
-> In the implementation code of perf_event_open, enable_kprobe() will be executed.
-> 2.2) using shell
-> $ echo 1 > /sys/kernel/debug/tracing/events/kprobes/mykprobe/enable
-> As with perf_event_open, enable_kprobe() will also be executed.
-> 
-> When using the same function XXX, kprobe and livepatch cannot coexist,
-> that is, step 2) will return an error (ref: arm_kprobe_ftrace()),
+Hello,
 
-just curious.. is that because of ipmodify flag on ftrace_ops?
-AFAICS that be a poblem just for kretprobes, cc-ing Masami
+syzbot found the following issue on:
 
-thanks,
-jirka
+HEAD commit:    35d872b9ea5b Add linux-next specific files for 20220614
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=155b0d10080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d7bf2236c6bb2403
+dashboard link: https://syzkaller.appspot.com/bug?extid=b577bc624afda52c78de
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+b577bc624afda52c78de@syzkaller.appspotmail.com
+
+BUG: sleeping function called from invalid context at mm/vmalloc.c:2980
+in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 30561, name: syz-executor.0
+preempt_count: 1, expected: 0
+RCU nest depth: 0, expected: 0
+no locks held by syz-executor.0/30561.
+Preemption disabled at:
+[<ffffffff81bc76f5>] rmqueue_pcplist mm/page_alloc.c:3813 [inline]
+[<ffffffff81bc76f5>] rmqueue mm/page_alloc.c:3858 [inline]
+[<ffffffff81bc76f5>] get_page_from_freelist+0x455/0x3a20 mm/page_alloc.c:4293
+CPU: 1 PID: 30561 Comm: syz-executor.0 Not tainted 5.19.0-rc2-next-20220614-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ __might_resched.cold+0x222/0x26b kernel/sched/core.c:9823
+ vm_area_alloc_pages mm/vmalloc.c:2980 [inline]
+ __vmalloc_area_node mm/vmalloc.c:3025 [inline]
+ __vmalloc_node_range+0x6a1/0x13b0 mm/vmalloc.c:3195
+ alloc_thread_stack_node kernel/fork.c:311 [inline]
+ dup_task_struct kernel/fork.c:971 [inline]
+ copy_process+0x1568/0x7080 kernel/fork.c:2065
+ kernel_clone+0xe7/0xab0 kernel/fork.c:2649
+ __do_sys_clone+0xba/0x100 kernel/fork.c:2783
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7fe727a8a531
+Code: 48 85 ff 74 3d 48 85 f6 74 38 48 83 ee 10 48 89 4e 08 48 89 3e 48 89 d7 4c 89 c2 4d 89 c8 4c 8b 54 24 08 b8 38 00 00 00 0f 05 <48> 85 c0 7c 13 74 01 c3 31 ed 58 5f ff d0 48 89 c7 b8 3c 00 00 00
+RSP: 002b:00007ffee47acde8 EFLAGS: 00000206 ORIG_RAX: 0000000000000038
+RAX: ffffffffffffffda RBX: 00007fe728cb3700 RCX: 00007fe727a8a531
+RDX: 00007fe728cb39d0 RSI: 00007fe728cb32f0 RDI: 00000000003d0f00
+RBP: 00007ffee47ad030 R08: 00007fe728cb3700 R09: 00007fe728cb3700
+R10: 00007fe728cb39d0 R11: 0000000000000206 R12: 00007ffee47ace9e
+R13: 00007ffee47ace9f R14: 00007fe728cb3300 R15: 0000000000022000
+ </TASK>
+BUG: scheduling while atomic: syz-executor.0/30561/0x00000002
+no locks held by syz-executor.0/30561.
+Modules linked in:
+Preemption disabled at:
+[<ffffffff81bc76f5>] rmqueue_pcplist mm/page_alloc.c:3813 [inline]
+[<ffffffff81bc76f5>] rmqueue mm/page_alloc.c:3858 [inline]
+[<ffffffff81bc76f5>] get_page_from_freelist+0x455/0x3a20 mm/page_alloc.c:4293
 
 
-> however, step 1) is ok!
-> However, the new kprobe API (i.e. perf kprobe API) aggregates
-> register_kprobe and enable_kprobe, internally fixes the issue on
-> failed enable_kprobe.
-> But above all, for the legacy kprobe API, I think it should remove
-> kprobe_event on failed add_kprobe_event_legacy() in
-> perf_event_kprobe_open_legacy (file: tools/lib/bpf/libbpf.c).
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
