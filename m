@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B5018550268
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 05:20:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1F97550264
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 05:20:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384022AbiFRDUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 23:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50420 "EHLO
+        id S1383980AbiFRDUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 23:20:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383831AbiFRDUR (ORCPT
+        with ESMTP id S1383685AbiFRDUR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 23:20:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A1D49F88;
-        Fri, 17 Jun 2022 20:20:16 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FA649FA2
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 20:20:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91C4561F9D;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC1FF61FA1
+        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 03:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FAAFC341C4;
         Sat, 18 Jun 2022 03:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F4169C341C0;
-        Sat, 18 Jun 2022 03:20:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1655522415;
-        bh=kbU8y5C1hpk08uPoZ26rIYJ6+NBAK05VQG2DdHD8ePQ=;
+        bh=jbI9c0xJwlDQmLgjgOBsOp5Jgbox/Nx5dhYSkwX301Q=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=IkacHGSU2vo4W/nOWnp2kkLjIim0aoJxw/G48OGI49JB7192KL5GZT9/VuDA9YoVt
-         viwqU7bi3rAIKhM24NfIg0XvH0/zB4tIMEwdNr5hGJ6G9UXI/zSaKN7SQcxBaeIC3a
-         yedl+s9TRt04vO9fo3RzXP48Mwp/UUzpWyrZ+T3EDd9cEyc35nJgHPEau5LXiv33pM
-         it8lLxh42RZTHstHoqO0J2HkloxIdIThRPO3g/kyJUKR3ZQ18QzMLSSI1/KpO/tZa8
-         CMIkOkFAdy2jExjCPWmts8eBL98uIzLQ8emiSNpNS7MfS7vJxGKkaxiqQv7toz/43f
-         Cs0KmWYz9KLmA==
+        b=Igq/Wv3HH5FQhLrN039OQTzH71kZoZZTKszKezklKRXauHurEMwxyug2ZRTxVCoVP
+         ahQ0JfFWfVFTbJxjQ9Ks/hacqVQUy/Jd+G6tuqxzMviJsLBa40kb60SCjTlysm7G/s
+         RZEdeBKlm1R1qt/I32Brnzqk4bozNTOaofBwn03VuwGNaXAMvqJEHWW0fQczf55anO
+         l03aZFNBQhvY36nwgD5RAu5v79Tou/dX17Ax0QSPHWlgknAcs4pOv9kFGwJFRmiGbi
+         QnY4p8YZqoOrpLf2VvV3Uax1jxn6naEDmwWKWEtl2l+FmfC8sSBmlIBh0dg9TMJkx0
+         3B5lQYG405Alg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DDFB9E73856;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E6FE2E7B9A4;
         Sat, 18 Jun 2022 03:20:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v1 1/1] net: dsa: ar9331: fix potential dead lock on
- mdio access
+Subject: Re: [PATCH net-next] nfp: add support for .get_pauseparam()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165552241490.3144.11636115583195482482.git-patchwork-notify@kernel.org>
+Message-Id: <165552241494.3144.10026066773644668642.git-patchwork-notify@kernel.org>
 Date:   Sat, 18 Jun 2022 03:20:14 +0000
-References: <20220616112550.877118-1-o.rempel@pengutronix.de>
-In-Reply-To: <20220616112550.877118-1-o.rempel@pengutronix.de>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20220616133358.135305-1-simon.horman@corigine.com>
+In-Reply-To: <20220616133358.135305-1-simon.horman@corigine.com>
+To:     Simon Horman <simon.horman@corigine.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, oss-drivers@corigine.com,
+        yinjun.zhang@corigine.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -64,20 +62,24 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu, 16 Jun 2022 13:25:50 +0200 you wrote:
-> Rework MDIO locking to avoid potential  circular locking:
+On Thu, 16 Jun 2022 15:33:57 +0200 you wrote:
+> From: Yinjun Zhang <yinjun.zhang@corigine.com>
 > 
->  WARNING: possible circular locking dependency detected
->  5.19.0-rc1-ar9331-00017-g3ab364c7c48c #5 Not tainted
->  ------------------------------------------------------
->  kworker/u2:4/68 is trying to acquire lock:
->  81f3c83c (ar9331:1005:(&ar9331_mdio_regmap_config)->lock){+.+.}-{4:4}, at: regmap_write+0x50/0x8c
+> Show correct pause frame parameters for nfp. These parameters cannot
+> be configured, so .set_pauseparam() is not implemented. With this
+> change:
+> 
+>  #ethtool --show-pause enp1s0np0
+>  Pause parameters for enp1s0np0:
+>  Autonegotiate:  off
+>  RX:             on
+>  TX:             on
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v1,1/1] net: dsa: ar9331: fix potential dead lock on mdio access
-    https://git.kernel.org/netdev/net-next/c/7a49f2193063
+  - [net-next] nfp: add support for .get_pauseparam()
+    https://git.kernel.org/netdev/net-next/c/382f99c442b3
 
 You are awesome, thank you!
 -- 
