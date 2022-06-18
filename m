@@ -2,104 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3CF35503FB
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 12:16:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F8615503FD
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 12:25:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231565AbiFRKQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jun 2022 06:16:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33320 "EHLO
+        id S231441AbiFRKYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jun 2022 06:24:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbiFRKQO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 06:16:14 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF22F2870C;
-        Sat, 18 Jun 2022 03:16:12 -0700 (PDT)
-Received: from kwepemi500008.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LQBYY6nCCzBrjR;
-        Sat, 18 Jun 2022 18:12:49 +0800 (CST)
-Received: from dggpeml500011.china.huawei.com (7.185.36.84) by
- kwepemi500008.china.huawei.com (7.221.188.139) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 18 Jun 2022 18:16:10 +0800
-Received: from dggpeml500011.china.huawei.com ([7.185.36.84]) by
- dggpeml500011.china.huawei.com ([7.185.36.84]) with mapi id 15.01.2375.024;
- Sat, 18 Jun 2022 18:16:10 +0800
-From:   "zhudi (E)" <zhudi2@huawei.com>
-To:     Eric Dumazet <edumazet@google.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>, David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "Chenxiang (EulerOS)" <rose.chen@huawei.com>,
-        "syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com" 
-        <syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com>
-Subject: Re: [PATCH] bpf: Don't redirect packets with pkt_len 0
-Thread-Topic: [PATCH] bpf: Don't redirect packets with pkt_len 0
-Thread-Index: AdiCIxVtWh2F13e8R+GdQJ4vMdgHbA==
-Date:   Sat, 18 Jun 2022 10:16:10 +0000
-Message-ID: <a7c3605fa1ee4b899175fbdc36fe2799@huawei.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.136.114.155]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S229505AbiFRKYx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 06:24:53 -0400
+Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88011EC46
+        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 03:24:52 -0700 (PDT)
+Received: by mail-vs1-xe35.google.com with SMTP id n4so6197793vsm.6
+        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 03:24:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=k9YbzABl4hlZL3fcaWXFts77m7ITlSxM8r1dVX+fX3s=;
+        b=UvgIodnjxm+pflvssFqwGhXIxLE3AVjhBYqckfrdAGxMAdj3cSkflRqUMgsiTTMC+C
+         14OZXDjhevEruW4w/DNXXnhubnBQ3QUXxP4TKmzeAmdUVcCYS761IH9Kbf/eHo/KBEq3
+         1n+1NvDhBVoNjHR4jFkMRP496lhZaHdxG20+zH0YRK3kLrN4fzqP3daAiBFzIFU8DQFR
+         CDP4vf71hn20jh5618I+SmoqzSFTeXk6pi0AqYpDt7qvKV3Hdo8dtv4Nfip9GkNte3/6
+         tjAg0t1S4O+jfJeUMD0fC7pWgaHjmqYbIXDHMOWyWNixx/J0iBosDIO9/GG3aOedlhQv
+         COLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=k9YbzABl4hlZL3fcaWXFts77m7ITlSxM8r1dVX+fX3s=;
+        b=Z42Sm0lgvMxvTdEGlzl56oVcwT3JIRvT7Y3RKNPS7bKbRCHCYmhk3I+DsjDCMFcKl4
+         HqOUGnpGoJsIbmxvnsP9sJaJf0XLK6bkoY4zgNg3YRVA/wS0/zLYnlTu5CSSOeP0pX1b
+         /iz+lbAGu0uIMGg3N11113Sdi0zOZlO4+tkB0Imp9qTyWA0RfZmO1ziu1T2xrKJ2JVRJ
+         rmZePVvu4ecgWtRgIjcDCNJSlPvitmVx/hcQx+86945/Jp0Io5S29zBY82qgPRLtS45E
+         /tOtPmLGIb9e75MOZpM0Vazjl5rxxWFD+3y6OklcQuMRvuVD9oGW3kMSsUnQO5A83hh4
+         1jpA==
+X-Gm-Message-State: AJIora86/BFpvAa+D+4/9+IM6UfgsssW3DZW6HfsVAR3U/PrfY+wLaLl
+        mMB51vjVxYIheIUmTwG7t3jV25u0M38qv11d+Ao=
+X-Google-Smtp-Source: AGRyM1sMulgJ45+/skOSlICO+47W/gsiGNQMRPkrv2HZ8Gny5Zoq2aJGYJhBjKUPwdDa08HyXA4Mxk3UaW0bvv0FFZM=
+X-Received: by 2002:a67:a444:0:b0:34c:51fa:f442 with SMTP id
+ p4-20020a67a444000000b0034c51faf442mr6101058vsh.19.1655547891840; Sat, 18 Jun
+ 2022 03:24:51 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220609105725.2367426-1-wangyuweihx@gmail.com>
+ <20220609105725.2367426-3-wangyuweihx@gmail.com> <101855d8-878b-2334-fd5a-85684fd78e12@blackwall.org>
+ <CANmJ_FNXSxPtBbESV4Y4Zme6vabgTJFSw0hjZNndfstSvxAeLw@mail.gmail.com>
+ <57228F24-81CD-49E9-BE4D-73FC6697872B@blackwall.org> <20220615163303.11c4e7ef@kernel.org>
+In-Reply-To: <20220615163303.11c4e7ef@kernel.org>
+From:   Yuwei Wang <wangyuweihx@gmail.com>
+Date:   Sat, 18 Jun 2022 18:24:40 +0800
+Message-ID: <CANmJ_FN-U7HOn8+meVYVpUaN9diEwH6aDduCw5t9zk31AoO-mA@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 2/2] net, neigh: introduce interval_probe_time
+ for periodic probe
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Nikolay Aleksandrov <razor@blackwall.org>, davem@davemloft.net,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>, roopa@nvidia.com,
+        dsahern@kernel.org, =?UTF-8?B?56em6L+q?= <qindi@staff.weibo.com>,
+        netdev@vger.kernel.org, wangyuweihx <wangyuweihx@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBPbiBGcmksIEp1biAxNywgMjAyMiBhdCA5OjE5IEFNIERpIFpodSA8emh1ZGkyQGh1YXdlaS5j
-b20+IHdyb3RlOg0KPiA+DQo+ID4gU3l6Ym90IGZvdW5kIGFuIGlzc3VlIFsxXTogZnFfY29kZWxf
-ZHJvcCgpIHRyeSB0byBkcm9wIGEgZmxvdyB3aGl0b3V0IGFueQ0KPiA+IHNrYnMsIHRoYXQgaXMs
-IHRoZSBmbG93LT5oZWFkIGlzIG51bGwuDQo+ID4gVGhlIHJvb3QgY2F1c2UsIGFzIHRoZSBbMl0g
-c2F5cywgaXMgYmVjYXVzZSB0aGF0IGJwZl9wcm9nX3Rlc3RfcnVuX3NrYigpDQo+ID4gcnVuIGEg
-YnBmIHByb2cgd2hpY2ggcmVkaXJlY3RzIGVtcHR5IHNrYnMuDQo+ID4gU28gd2Ugc2hvdWxkIGRl
-dGVybWluZSB3aGV0aGVyIHRoZSBsZW5ndGggb2YgdGhlIHBhY2tldCBtb2RpZmllZCBieSBicGYN
-Cj4gPiBwcm9nIG9yIG90aGVycyBsaWtlIGJwZl9wcm9nX3Rlc3QgaXMgMCBiZWZvcmUgZm9yd2Fy
-ZGluZyBpdCBkaXJlY3RseS4NCj4gPg0KPiA+IExJTks6IFsxXQ0KPiBodHRwczovL3N5emthbGxl
-ci5hcHBzcG90LmNvbS9idWc/aWQ9MGI4NGRhODBjMjkxNzc1NzkxNWFmYTg5Zjc3MzhhOWQxNmUN
-Cj4gYzk2YzUNCj4gPiBMSU5LOiBbMl0gaHR0cHM6Ly93d3cuc3Bpbmljcy5uZXQvbGlzdHMvbmV0
-ZGV2L21zZzc3NzUwMy5odG1sDQo+ID4NCj4gPiBSZXBvcnRlZC1ieTogc3l6Ym90KzdhMTI5MDk0
-ODViOTQ0MjZhY2ViQHN5emthbGxlci5hcHBzcG90bWFpbC5jb20NCj4gPiBTaWduZWQtb2ZmLWJ5
-OiBEaSBaaHUgPHpodWRpMkBodWF3ZWkuY29tPg0KPiA+IC0tLQ0KPiA+ICBuZXQvY29yZS9maWx0
-ZXIuYyB8IDMgKysrDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKykNCj4gPg0K
-PiA+IGRpZmYgLS1naXQgYS9uZXQvY29yZS9maWx0ZXIuYyBiL25ldC9jb3JlL2ZpbHRlci5jDQo+
-ID4gaW5kZXggNWFmNThlYjQ4NTg3Li5jN2ZiZmE5MDg5OGEgMTAwNjQ0DQo+ID4gLS0tIGEvbmV0
-L2NvcmUvZmlsdGVyLmMNCj4gPiArKysgYi9uZXQvY29yZS9maWx0ZXIuYw0KPiA+IEBAIC0yMTU2
-LDYgKzIxNTYsOSBAQCBzdGF0aWMgaW50IF9fYnBmX3JlZGlyZWN0X2NvbW1vbihzdHJ1Y3Qgc2tf
-YnVmZg0KPiAqc2tiLCBzdHJ1Y3QgbmV0X2RldmljZSAqZGV2LA0KPiA+ICBzdGF0aWMgaW50IF9f
-YnBmX3JlZGlyZWN0KHN0cnVjdCBza19idWZmICpza2IsIHN0cnVjdCBuZXRfZGV2aWNlICpkZXYs
-DQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICB1MzIgZmxhZ3MpDQo+ID4gIHsNCj4gPiAr
-ICAgICAgIGlmICh1bmxpa2VseShza2ItPmxlbiA9PSAwKSkNCj4gPiArICAgICAgICAgICAgICAg
-cmV0dXJuIC1FSU5WQUw7DQo+ID4gKw0KPiANCj4gWW91IGZvY3VzIGFnYWluIG9uIGZxX2NvZGVs
-LCBidXQgd2UgaGF2ZSBhIG1vcmUgZ2VuZXJpYyBpc3N1ZSBhdCBoYW5kLg0KPiANCj4gSSBzYWlk
-IHRoYXQgbW9zdCBkcml2ZXJzIHdpbGwgYXNzdW1lIHBhY2tldHMgYXJlIEV0aGVybmV0IG9uZXMs
-IGhhdmluZw0KPiBhdCBsZWFzdCBhbiBFdGhlcm5ldCBoZWFkZXIgaW4gdGhlbS4NCg0KSSBvbmx5
-IGZvY3VzZWQgb24gdGhpcyBwYXJ0aWN1bGFyIHRlc3QgY2FzZS4uLg0KdGhlIHN1Ym1pc3Npb24g
-aW5mb3JtYXRpb24gc2hvdWxkIGJlIG1vZGlmaWVkIHRvIGRlc2NyaWJlIGEgZ2VuZXJhbCBwcm9i
-bGVtLg0KIA0KPiBBbHNvIHJldHVybmluZyAtRUlOVkFMIHdpbGwgbGVhayB0aGUgc2tiIDovDQoN
-Clllcy4uLiANCg0KPiANCj4gSSB0aGluayBhIGJldHRlciBmaXggd291bGQgYmUgdG8gbWFrZSBz
-dXJlIHRoZSBza2IgY2FycmllcyBhbiBleHBlY3RlZA0KPiBwYWNrZXQgbGVuZ3RoLA0KPiBhbmQg
-dGhpcyBwcm9iYWJseSBkaWZmZXJzIGluIF9fYnBmX3JlZGlyZWN0X2NvbW1vbigpIGFuZA0KPiBf
-X2JwZl9yZWRpcmVjdF9ub19tYWMoKSA/DQoNCkRvZXMgdGhlIG5vIG1hYyBkZXZpY2UgbmVlZCB0
-byBjaGVjayB0aGUgbGVuZ3RoIG9mIHRoZSBwYWNrYWdlPw0KDQo+IEN1cnJlbnQgdGVzdCBpbiBf
-X2JwZl9yZWRpcmVjdF9jb21tb24oKSBzZWVtcyBub3QgZ29vZCBlbm91Z2guDQo+IA0KPiArICAg
-ICAgIC8qIFZlcmlmeSB0aGF0IGEgbGluayBsYXllciBoZWFkZXIgaXMgY2FycmllZCAqLw0KPiAr
-ICAgICAgIGlmICh1bmxpa2VseShza2ItPm1hY19oZWFkZXIgPj0gc2tiLT5uZXR3b3JrX2hlYWRl
-cikpIHsNCj4gKyAgICAgICAgICAgICAgIGtmcmVlX3NrYihza2IpOw0KPiArICAgICAgICAgICAg
-ICAgcmV0dXJuIC1FUkFOR0U7DQo+ICsgICAgICAgfQ0KPiArDQo+IA0KPiBJdCBzaG91bGQgY2hl
-Y2sgdGhhdCB0aGUgbGluayBsYXllciBoZWFkZXIgc2l6ZSBpcyA+PSBkZXYtPm1pbl9oZWFkZXJf
-bGVuDQoNCkl0IGlzIG9ubHkgdmFsaWQgZm9yIGRldmljZSB3aXRoIG1hYyBoZWFkZXIuIHN1Y2gg
-YXMgaXAgdHVubmVsIGRldmljZSwgZGV2LT5taW5faGVhZGVyX2xlbg0KaGFzIG5vdCBzZXQuDQoN
-Cj4gDQo+IA0KPiA+ICAgICAgICAgaWYgKGRldl9pc19tYWNfaGVhZGVyX3htaXQoZGV2KSkNCj4g
-PiAgICAgICAgICAgICAgICAgcmV0dXJuIF9fYnBmX3JlZGlyZWN0X2NvbW1vbihza2IsIGRldiwg
-ZmxhZ3MpOw0KPiA+ICAgICAgICAgZWxzZQ0KPiA+IC0tDQo+ID4gMi4yNy4wDQo+ID4NCg==
+On Thu, 16 Jun 2022 at 07:33, Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 15 Jun 2022 18:39:53 +0300 Nikolay Aleksandrov wrote:
+> > >> Do we need the proc entry to be in jiffies when the netlink option is in ms?
+> > >> Why not make it directly in ms (with _ms similar to other neigh _ms time options) ?
+> > >>
+> > >> IMO, it would be better to be consistent with the netlink option which sets it in ms.
+> > >>
+> > >> It seems the _ms options were added later and usually people want a more understandable
+> > >> value, I haven't seen anyone wanting a jiffies version of a ms interval variable. :)
+> > >>
+> > >
+> > >It was in jiffies because this entry was separated from `DELAY_PROBE_TIME`,
+> > >it keeps nearly all the things the same as `DELAY_PROBE_TIME`,
+> > >they are both configured by seconds and read to jiffies, was `ms` in
+> > >netlink attribute,
+> > >I think it's ok to keep this consistency, and is there a demand
+> > >required to configure it by ms?
+> > >If there is that demand, we can make it configured as ms.
+> >
+> > no, no demand, just out of user-friendliness :) but
+> > I get it keeping it as jiffies is also fine
+>
+> +1 to using ms
+
+If no one is against this, we can make configured as ms?
+
+so, there will be updates as follow in the next version patch:
+- make this option configured as ms, and rename it to `interval_probe_time`
+- add documentation to Documentation/networking/ip-sysctl
+- fix damaged whitespace
+- fix missing `proc_*_jiffies_minmax` on `CONFIG_PROC_SYSCTL` is not defined
