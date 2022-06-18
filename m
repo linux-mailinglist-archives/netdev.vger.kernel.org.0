@@ -2,258 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14E96550625
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 18:43:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40A90550690
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 21:11:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236595AbiFRQnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jun 2022 12:43:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52686 "EHLO
+        id S233543AbiFRTLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jun 2022 15:11:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231359AbiFRQnO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 12:43:14 -0400
-Received: from mailrelay.tu-berlin.de (mailrelay.tu-berlin.de [130.149.7.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18AA06454;
-        Sat, 18 Jun 2022 09:43:11 -0700 (PDT)
-Received: from SPMA-04.tubit.win.tu-berlin.de (localhost.localdomain [127.0.0.1])
-        by localhost (Email Security Appliance) with SMTP id C05EB974F53_2AE009CB;
-        Sat, 18 Jun 2022 16:43:08 +0000 (GMT)
-Received: from mail.tu-berlin.de (postcard.tu-berlin.de [141.23.12.142])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "exchange.tu-berlin.de", Issuer "DFN-Verein Global Issuing CA" (verified OK))
-        by SPMA-04.tubit.win.tu-berlin.de (Sophos Email Appliance) with ESMTPS id 019E69787B2_2AE009CF;
-        Sat, 18 Jun 2022 16:43:08 +0000 (GMT)
-Received: from [192.168.178.14] (77.191.21.30) by ex-02.svc.tu-berlin.de
- (10.150.18.6) with Microsoft SMTP Server id 15.2.986.22; Sat, 18 Jun 2022
- 18:43:07 +0200
-Message-ID: <629bc069dd807d7ac646f836e9dca28bbc1108e2.camel@mailbox.tu-berlin.de>
-Subject: Re: [PATCH bpf-next v3 3/5] selftests/bpf: Test a BPF CC writing
- sk_pacing_*
-From:   =?ISO-8859-1?Q?J=F6rn-Thorben?= Hinz <jthinz@mailbox.tu-berlin.de>
-To:     Martin KaFai Lau <kafai@fb.com>
-CC:     <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>
-Date:   Sat, 18 Jun 2022 18:43:06 +0200
-In-Reply-To: <20220617210425.xpeyxd4ahnudxnxb@kafai-mbp>
-References: <20220614104452.3370148-1-jthinz@mailbox.tu-berlin.de>
-         <20220614104452.3370148-4-jthinz@mailbox.tu-berlin.de>
-         <20220617210425.xpeyxd4ahnudxnxb@kafai-mbp>
+        with ESMTP id S229451AbiFRTLk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 15:11:40 -0400
+Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 464E1BF76
+        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 12:11:39 -0700 (PDT)
+Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-1013ecaf7e0so9332647fac.13
+        for <netdev@vger.kernel.org>; Sat, 18 Jun 2022 12:11:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:date:content-transfer-encoding
+         :user-agent:mime-version;
+        bh=NoVat6/WLGnX53i/lHWfBT5VyI0YGbSiELYmR/8V4BU=;
+        b=QI5tjhR8fiQh1lT8EhM93F0+8deTHKuzTaRGT6BlY2qqv00sd1+erfQoY1xi18oelQ
+         E+NyUmXeEA1bAlR2rQrn2tqz9LYTEiKoWgT2BbL2d6MtFWz+aid0Xf0Pa/6MAiSzLU+n
+         /9+3dBgQwfzXxVwj1GXrbagwoh41Q7HytLp7ikGfCsUTSGBHDm4ijcAaH9VaNC94M/Vn
+         w7zqzLbMMJUBg8e8qDtKtViiEhOZYv5KgiUDVZ4kAbSAXM4X3D4djbI+L/Hs6FdOgJCf
+         bCSPrgZe5e9TiZzGX3/ES9GaxVGgTqkfe5UMGUOs/Tm09MhaXwdwN9HzZpqF/hQKBhon
+         cjJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:date
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=NoVat6/WLGnX53i/lHWfBT5VyI0YGbSiELYmR/8V4BU=;
+        b=x7AAIxBA8IC6hQJ35WXhD9r+O4P+d5vbsUIAYhFySSz+W3GZityM5TXM+vmZ2ugrU6
+         eOZARHySIkF/mPLhNDTqNYoaiTXRTfNxbWvy60W5s9XXwbZSvX4/FCBCARSG+AO6ePB/
+         1bJCC7nzHCzxPvSixOh+w/U+nfwpE8xSV7qIHkuJaNAcSUMfKfCL3bzMyp4LQgv6lPMy
+         vWYu3xV/rWG5UmhR7w7JnIQpvuI2H4PEFKX+hIdQ8HWN+lqYczV9cUrxn4G7c/zbFcwr
+         e4US36z8gaSPEzldbwr2mhF/cOhnePy6+s4QSfjBibUO/La9qDpbz4dF47DyAYOySPyt
+         kZkQ==
+X-Gm-Message-State: AJIora8dESBJ2iW6zG33/jXbbqg6Sc8lxy4xYWraitPfR4opxbo46HSE
+        JxqbR2ACcoeBBWx5YzwGMY8XtTzvTG9ovg==
+X-Google-Smtp-Source: AGRyM1uE0QxPHsj5BZ697uaIsy73q1qNF1Cn9pVxxkkaxXTTDKnA+CVF80U6sjCK2D7S+BFz35e21A==
+X-Received: by 2002:a05:6870:b381:b0:fe:2004:b3b5 with SMTP id w1-20020a056870b38100b000fe2004b3b5mr8659661oap.63.1655579498416;
+        Sat, 18 Jun 2022 12:11:38 -0700 (PDT)
+Received: from ?IPv6:2804:14c:71:8e3a:bbb4:4cf8:bf04:4125? ([2804:14c:71:8e3a:bbb4:4cf8:bf04:4125])
+        by smtp.gmail.com with ESMTPSA id m12-20020a0568080f0c00b00325643bce40sm4719161oiw.0.2022.06.18.12.11.37
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 Jun 2022 12:11:38 -0700 (PDT)
+Message-ID: <8069714f3301862dc8ed64a0cc0ab8c9f29b5f99.camel@gmail.com>
+Subject: [PATCH] net: usb: ax88179_178a: ax88179_rx_fixup corrections
+From:   Jose Alonso <joalonsof@gmail.com>
+To:     netdev@vger.kernel.org
+Date:   Sat, 18 Jun 2022 16:11:36 -0300
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SASI-RCODE: 200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=campus.tu-berlin.de; h=message-id:subject:from:to:cc:date:in-reply-to:references:content-type:mime-version:content-transfer-encoding; s=dkim-tub; bh=6Rtoe1X8vqsaXMzSQejEJx5OSjXs4Fw7+IacNXVLR28=; b=ZjOTED6Nhz23r4NtHMldFmLuTZ2AnCeWrlpsWrLiYxbCd0mTL42IrEmW08i+59jhjyo+z9ls9R13Unn6O6exdS6j9Z/lFNq/mT20KP7KN2O/EaSgWDEZj1timBpRc1De6J3H+BULrg9xBzgszYp+klRnQeDvILrMd+LehSIu5S0=
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2022-06-17 at 14:04 -0700, Martin KaFai Lau wrote:
-> On Tue, Jun 14, 2022 at 12:44:50PM +0200, Jörn-Thorben Hinz wrote:
-> > Test whether a TCP CC implemented in BPF is allowed to write
-> > sk_pacing_rate and sk_pacing_status in struct sock. This is needed
-> > when
-> > cong_control() is implemented and used.
-> > 
-> > Signed-off-by: Jörn-Thorben Hinz <jthinz@mailbox.tu-berlin.de>
-> > ---
-> >  .../selftests/bpf/prog_tests/bpf_tcp_ca.c     | 21 +++++++
-> >  .../bpf/progs/tcp_ca_write_sk_pacing.c        | 60
-> > +++++++++++++++++++
-> >  2 files changed, 81 insertions(+)
-> >  create mode 100644
-> > tools/testing/selftests/bpf/progs/tcp_ca_write_sk_pacing.c
-> > 
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-> > b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-> > index e9a9a31b2ffe..a797497e2864 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-> > @@ -9,6 +9,7 @@
-> >  #include "bpf_cubic.skel.h"
-> >  #include "bpf_tcp_nogpl.skel.h"
-> >  #include "bpf_dctcp_release.skel.h"
-> > +#include "tcp_ca_write_sk_pacing.skel.h"
-> >  
-> >  #ifndef ENOTSUPP
-> >  #define ENOTSUPP 524
-> > @@ -322,6 +323,24 @@ static void test_rel_setsockopt(void)
-> >         bpf_dctcp_release__destroy(rel_skel);
-> >  }
-> >  
-> > +static void test_write_sk_pacing(void)
-> > +{
-> > +       struct tcp_ca_write_sk_pacing *skel;
-> > +       struct bpf_link *link;
-> > +
-> > +       skel = tcp_ca_write_sk_pacing__open_and_load();
-> > +       if (!ASSERT_OK_PTR(skel, "open_and_load")) {
-> nit. Remove this single line '{'.
-> 
-> ./scripts/checkpatch.pl has reported that also:
-> WARNING: braces {} are not necessary for single statement blocks
-> #43: FILE: tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c:332:
-> +       if (!ASSERT_OK_PTR(skel, "open_and_load")) {
-> +               return;
-> +       }
-Have to admit I knowingly disregarded that warning as more of a
-recommendation. Out of habit and since I personally don’t see any
-compelling reason to generally use single-line statements after ifs,
-only multiple disadvantages.
+This patch corrects the receiving of packets in ax88179_rx_fixup.
 
-But wrong place to argue here, of course. Will bow to the warning.
+corrections:
+- the size check of the bounds of the metadata array.
+- remove erroneous call to le32_to_cpus(pkt_hdr).
+- correct the treatment of the metadata array.
+   The current code is allways exiting with return 0
+   while trying to access pkt_hdr out of metadata array and
+   generating RX Errors.
 
-> 
-> 
-> > +               return;
-> > +       }
-> > +
-> > +       link = bpf_map__attach_struct_ops(skel-
-> > >maps.write_sk_pacing);
-> > +       if (ASSERT_OK_PTR(link, "attach_struct_ops")) {
-> Same here.
-> 
-> and no need to check the link before bpf_link__destroy.
-> bpf_link__destroy can handle error link.  Something like:
-> 
->         ASSERT_OK_PTR(link, "attach_struct_ops");
->         bpf_link__destroy(link);
->         tcp_ca_write_sk_pacing__destroy(skel);
-> 
-> The earlier examples in test_cubic and test_dctcp were
-> written before bpf_link__destroy can handle error link.
-You are right, I followed the other two test_*() functions there. Good
-to know that it behaves similar to (k)free() and others. Will remove
-the ifs around bpf_link__destroy().
+Tested with: 0b95:1790 ASIX Electronics Corp. AX88179 Gigabit Ethernet
 
-> 
-> > +               bpf_link__destroy(link);
-> > +       }
-> > +
-> > +       tcp_ca_write_sk_pacing__destroy(skel);
-> > +}
-> > +
-> >  void test_bpf_tcp_ca(void)
-> >  {
-> >         if (test__start_subtest("dctcp"))
-> > @@ -334,4 +353,6 @@ void test_bpf_tcp_ca(void)
-> >                 test_dctcp_fallback();
-> >         if (test__start_subtest("rel_setsockopt"))
-> >                 test_rel_setsockopt();
-> > +       if (test__start_subtest("write_sk_pacing"))
-> > +               test_write_sk_pacing();
-> >  }
-> > diff --git
-> > a/tools/testing/selftests/bpf/progs/tcp_ca_write_sk_pacing.c
-> > b/tools/testing/selftests/bpf/progs/tcp_ca_write_sk_pacing.c
-> > new file mode 100644
-> > index 000000000000..43447704cf0e
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/progs/tcp_ca_write_sk_pacing.c
-> > @@ -0,0 +1,60 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +
-> > +#include "vmlinux.h"
-> > +
-> > +#include <bpf/bpf_helpers.h>
-> > +#include <bpf/bpf_tracing.h>
-> > +
-> > +char _license[] SEC("license") = "GPL";
-> > +
-> > +#define USEC_PER_SEC 1000000UL
-> > +
-> > +#define min(a, b) ((a) < (b) ? (a) : (b))
-> > +
-> > +static inline struct tcp_sock *tcp_sk(const struct sock *sk)
-> > +{
-> This helper is already available in bpf_tcp_helpers.h.
-> Is there a reason not to use that one and redefine
-> it in both patch 3 and 4?  The mss_cache and srtt_us can be added
-> to bpf_tcp_helpers.h.  It will need another effort to move
-> all selftest's bpf-cc to vmlinux.h.
-I fully agree it’s not elegant to redefine tcp_sk() twice more.
+Signed-off-by: Jose Alonso <joalonsof@gmail.com>
 
-It was between either using bpf_tcp_helpers.h and adding and
-maintaining additional struct members there. Or using the (as I
-understood it) more “modern” approach with vmlinux.h and redefining the
-trivial tcp_sk(). I chose the later. Didn’t see a reason not to slowly
-introduce vmlinux.h into the CA tests.
+---
 
-I had the same dilemma for the algorithm I’m implementing: Reuse
-bpf_tcp_helpers.h from the kernel tree and extend it. Or use vmlinux.h
-and copy only some of the (mostly trivial) helper functions. Also chose
-the later here.
+diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.=
+c
+index 4704ed6f00ef..1a70b7b2a3f2 100644
+--- a/drivers/net/usb/ax88179_178a.c
++++ b/drivers/net/usb/ax88179_178a.c
+@@ -1472,6 +1472,41 @@ static int ax88179_rx_fixup(struct usbnet *dev, stru=
+ct sk_buff *skb)
+ 	 * are bundled into this buffer and where we can find an array of
+ 	 * per-packet metadata (which contains elements encoded into u16).
+ 	 */
++
++	/* SKB contents for current firmware:
++	 *   <packet 1> <padding>
++	 *   ...
++	 *   <packet N> <padding>
++	 *   <per-packet metadata entry 1> <dummy header>
++	 *   ...
++	 *   <per-packet metadata entry N> <dummy header>
++	 *   <padding2> <rx_hdr>
++	 *
++	 * where:
++	 *   <packet N> contains:
++	 *		2 bytes of IP alignment pseudo header
++	 *		packet received
++	 *   <per-packet metadata entry N> contains 4 bytes:
++	 *		size of packet and fields AX_RXHDR_*
++	 *   <padding>	0-7 bytes to terminate at
++	 *		8 bytes boundary (64-bit).
++	 *   <padding2> 4 bytes
++	 *   <dummy-header> contains 4 bytes:
++	 *		size=3D0 & AX_RXHDR_DROP_ERR
++	 *   <rx-hdr>	contains 4 bytes:
++	 *		pkt_cnt and hdr_off (offset of=20
++	 *		  <per-packet metadata entry 1>)
++	 *
++	 * pkt_cnt is number of entrys in the per-packet metadata.
++	 * In current firmware there is 2 entrys per packet.
++	 * The first points to the packet and the
++	 *  second is a dummy header.
++	 * This was done probably to align fields in 64-bit and
++	 *  maintain compatibility with old firmware.
++	 * This code assumes that <dummy header> and <padding2> are
++	 *  optional.
++	 */
++
+ 	if (skb->len < 4)
+ 		return 0;
+ 	skb_trim(skb, skb->len - 4);
+@@ -1485,51 +1520,62 @@ static int ax88179_rx_fixup(struct usbnet *dev, str=
+uct sk_buff *skb)
+ 	/* Make sure that the bounds of the metadata array are inside the SKB
+ 	 * (and in front of the counter at the end).
+ 	 */
+-	if (pkt_cnt * 2 + hdr_off > skb->len)
++	if (pkt_cnt * 4 + hdr_off > skb->len)
+ 		return 0;
+ 	pkt_hdr =3D (u32 *)(skb->data + hdr_off);
+=20
+ 	/* Packets must not overlap the metadata array */
+ 	skb_trim(skb, hdr_off);
+=20
+-	for (; ; pkt_cnt--, pkt_hdr++) {
++	for (; pkt_cnt > 0; pkt_cnt--, pkt_hdr++) {
+ 		u16 pkt_len;
++		u16 pkt_len_buf;
+=20
+-		le32_to_cpus(pkt_hdr);
+ 		pkt_len =3D (*pkt_hdr >> 16) & 0x1fff;
++		pkt_len_buf =3D (pkt_len + 7) & 0xfff8;
+=20
+-		if (pkt_len > skb->len)
++		/* Skip dummy header used for alignment
++		 */
++		if (pkt_len =3D=3D 0)
++			continue;
++
++		if (pkt_len_buf > skb->len)
+ 			return 0;
+=20
+ 		/* Check CRC or runt packet */
+-		if (((*pkt_hdr & (AX_RXHDR_CRC_ERR | AX_RXHDR_DROP_ERR)) =3D=3D 0) &&
+-		    pkt_len >=3D 2 + ETH_HLEN) {
+-			bool last =3D (pkt_cnt =3D=3D 0);
+-
+-			if (last) {
+-				ax_skb =3D skb;
+-			} else {
+-				ax_skb =3D skb_clone(skb, GFP_ATOMIC);
+-				if (!ax_skb)
+-					return 0;
+-			}
+-			ax_skb->len =3D pkt_len;
+-			/* Skip IP alignment pseudo header */
+-			skb_pull(ax_skb, 2);
+-			skb_set_tail_pointer(ax_skb, ax_skb->len);
+-			ax_skb->truesize =3D pkt_len + sizeof(struct sk_buff);
+-			ax88179_rx_checksum(ax_skb, pkt_hdr);
++		if ((*pkt_hdr & (AX_RXHDR_CRC_ERR | AX_RXHDR_DROP_ERR)) ||
++		    pkt_len < 2 + ETH_HLEN) {
++			dev->net->stats.rx_errors++;
++			skb_pull(skb, pkt_len_buf);
++			continue;
++		}
+=20
+-			if (last)
+-				return 1;
++		/* last packet */
++		if (pkt_len_buf =3D=3D skb->len) {
++			skb_trim(skb, pkt_len);
+=20
+-			usbnet_skb_return(dev, ax_skb);
++			/* Skip IP alignment pseudo header */
++			skb_pull(skb, 2);
++
++			ax88179_rx_checksum(skb, pkt_hdr);
++			return 1;
+ 		}
+=20
+-		/* Trim this packet away from the SKB */
+-		if (!skb_pull(skb, (pkt_len + 7) & 0xFFF8))
++		ax_skb =3D skb_clone(skb, GFP_ATOMIC);
++		if (!ax_skb)
+ 			return 0;
++		skb_trim(ax_skb, pkt_len);
++
++		/* Skip IP alignment pseudo header */
++		skb_pull(ax_skb, 2);
++
++		ax88179_rx_checksum(ax_skb, pkt_hdr);
++		usbnet_skb_return(dev, ax_skb);
++
++		skb_pull(skb, pkt_len_buf);
+ 	}
++
++	return 0;
+ }
+=20
+ static struct sk_buff *
 
-While doing the above, I also considered extracting the type
-declarations from bpf_tcp_helpers.h into an, e.g.,
-bpf_tcp_types_helper.h, keeping only the functions in
-bpf_tcp_helpers.h. bpf_tcp_helpers.h could have been a base helper for
-any BPF CA implementation then and used with either vmlinux.h or the
-“old-school” includes. Similar to the way bpf_helpers.h is used. But at
-that point, a bpf_tcp_types_helper.h could have probably just been
-dropped for good and in favor of vmlinux.h. So I didn’t continue with
-that.
-
-Do you insist to use bpf_tcp_helpers.h instead of vmlinux.h? Or could
-the described split into two headers make sense after all?
-
-(Will wait for your reply here before sending a v4.)
-
-> 
-> > +       return (struct tcp_sock *)sk;
-> > +}
-> > +
-> > +SEC("struct_ops/write_sk_pacing_init")
-> > +void BPF_PROG(write_sk_pacing_init, struct sock *sk)
-> > +{
-> > +#ifdef ENABLE_ATOMICS_TESTS
-> > +       __sync_bool_compare_and_swap(&sk->sk_pacing_status,
-> > SK_PACING_NONE,
-> > +                                    SK_PACING_NEEDED);
-> > +#else
-> > +       sk->sk_pacing_status = SK_PACING_NEEDED;
-> > +#endif
-> > +}
-> > +
-> > +SEC("struct_ops/write_sk_pacing_cong_control")
-> > +void BPF_PROG(write_sk_pacing_cong_control, struct sock *sk,
-> > +             const struct rate_sample *rs)
-> > +{
-> > +       const struct tcp_sock *tp = tcp_sk(sk);
-> > +       unsigned long rate =
-> > +               ((tp->snd_cwnd * tp->mss_cache * USEC_PER_SEC) <<
-> > 3) /
-> > +               (tp->srtt_us ?: 1U << 3);
-> > +       sk->sk_pacing_rate = min(rate, sk->sk_max_pacing_rate);
-> > +}
-> > +
-> > +SEC("struct_ops/write_sk_pacing_ssthresh")
-> > +__u32 BPF_PROG(write_sk_pacing_ssthresh, struct sock *sk)
-> > +{
-> > +       return tcp_sk(sk)->snd_ssthresh;
-> > +}
-> > +
-> > +SEC("struct_ops/write_sk_pacing_undo_cwnd")
-> > +__u32 BPF_PROG(write_sk_pacing_undo_cwnd, struct sock *sk)
-> > +{
-> > +       return tcp_sk(sk)->snd_cwnd;
-> > +}
-> > +
-> > +SEC(".struct_ops")
-> > +struct tcp_congestion_ops write_sk_pacing = {
-> > +       .init = (void *)write_sk_pacing_init,
-> > +       .cong_control = (void *)write_sk_pacing_cong_control,
-> > +       .ssthresh = (void *)write_sk_pacing_ssthresh,
-> > +       .undo_cwnd = (void *)write_sk_pacing_undo_cwnd,
-> > +       .name = "bpf_w_sk_pacing",
-> > +};
-> > -- 
-> > 2.30.2
-> > 
-
+--
 
