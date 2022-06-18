@@ -2,91 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E7DF55069B
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 21:41:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 061DA5506CB
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 23:21:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233730AbiFRTlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 18 Jun 2022 15:41:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50660 "EHLO
+        id S232328AbiFRVR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 18 Jun 2022 17:17:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiFRTlM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 15:41:12 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCBC13D1C;
-        Sat, 18 Jun 2022 12:41:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=a0bL49uOiCfKwT3pkrVPnT1ka4/B28/6uyQ2X04Z2uE=; b=v7sWJzFOGdSYdZIqrUgltulDvB
-        4OYLCiBKpTU/gxVWoe7+5BZDCThsZIpeVflFB2hKb9xef5S9oR1IzVv/TIPNZ8352DZ7L4y2H9bjc
-        Jmm3lucQ5r46W+jh0YPPdpufOhL0oc+6u/z1/HnxocLAcrLExQk/tV+r89h7h2rJBW7HkWMzNVF0q
-        +WIbMin/lIE9rFhhyDjKdL9OzkPDDLx9So6dRWroeqd+o2BLMeRQMd+jBz8OKtZA/L9fXvpViA0ij
-        3FOXifV7VGCmCrmPC9jPkGMAJgjGydG1JnS8N8FfoYeqV3urXj5BnPigDS9O7tvXEKOSK4e67Qkxt
-        5/OlBqAw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o2eIt-003s30-RQ; Sat, 18 Jun 2022 19:40:19 +0000
-Date:   Sat, 18 Jun 2022 20:40:19 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Ralph Corderoy <ralph@inputplus.co.uk>
-Cc:     Nate Karstens <nate.karstens@garmin.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        David Laight <David.Laight@aculab.com>,
-        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-alpha@vger.kernel.org, linux-parisc@vger.kernel.org,
-        sparclinux@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Changli Gao <xiaosuo@gmail.com>
-Subject: Re: [PATCH v2] Implement close-on-fork
-Message-ID: <Yq4qIxh5QnhQZ0SJ@casper.infradead.org>
-References: <20200515152321.9280-1-nate.karstens@garmin.com>
- <20220618114111.61EC71F981@orac.inputplus.co.uk>
+        with ESMTP id S232078AbiFRVR0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 18 Jun 2022 17:17:26 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D2626E1;
+        Sat, 18 Jun 2022 14:17:25 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id o8so9782467wro.3;
+        Sat, 18 Jun 2022 14:17:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=F9zHQ5BDlESv+EJld7HTiBi3G93zCJ7miFrzqyCk/Ys=;
+        b=dfQzXNEvZ6jMhwDtZrRIQghsVUkY4XdSbUtJaOIebJgfW4IgNmRiLfaEhzJU4kvSkO
+         sFGsrmX//kn1dE9Bjik5X0Gqj4kkRtbgb909R3uFbLgYislj8kqwg8zHPtQObYDMBaQh
+         tKgbJy+nnhZRmDNFnc4nrztEwpSVWA5XwGknqDulxOnmSGVtZUKIbC3VY4K9kfpGR4Oo
+         hr+44L1/lMe/zAjrL+0z9zQ2OwpHYZez1rtyejk+mvoKuGsr6ik8ly6rJfCv5gF1e085
+         RVJCUbn83HPcmECcolCEoB062RAMl1yHgJ7JReOx/pSx9C+5gn9kW6CyyjdhCsXI/giA
+         CAWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=F9zHQ5BDlESv+EJld7HTiBi3G93zCJ7miFrzqyCk/Ys=;
+        b=Px8v82h76Oau3FQiTQ3H9yRVcVtZv21iOTZB/dP5floUEVLHBHUpyRcqt+gQW5dIVN
+         r+J3KrKXY+gizGnjQEFxwDeO5cc6UtWLL7uClLwtocVByUmuSZmMQRvH/NKw3roJswGM
+         6oWS9MUU9IvET9xuhaUDaHMhmDFWafYAwV//D1x/ALJ0HLlJ3BztAUsLiM3tnpx7PLt/
+         /KEb5jqmaJ8QKf73HEvBeEQkH/LNEdF6EOAK9SlGSTS/HrkmJk0Fx0FlSy6yfoA7Ic0C
+         zvjV0oUa+WAbVG++xnT2N9wGOE/9RDJJQzDuuIRgbOTs5SzGfdso7odGVskLwihpALzh
+         qyEw==
+X-Gm-Message-State: AJIora9Oetw7gZlj40Xq1lCZrv/vA7hidmwrSOY5Eb3Nfv9P/hcOsYAK
+        vKKhqc0wYvF3gJO9JlDiOIvhxyyDH6fQOw==
+X-Google-Smtp-Source: AGRyM1t/JX5RywE/NQdTYsk48Ow61saXwVBAj7MztKbhguVyPqtnjprupf+48GYsrEubjrq1po0PwQ==
+X-Received: by 2002:adf:e648:0:b0:210:bac2:c6cf with SMTP id b8-20020adfe648000000b00210bac2c6cfmr15201246wrn.310.1655587043663;
+        Sat, 18 Jun 2022 14:17:23 -0700 (PDT)
+Received: from krava (94.113.247.30.static.b2b.upcbusiness.cz. [94.113.247.30])
+        by smtp.gmail.com with ESMTPSA id n5-20020a05600c4f8500b0039c18d3fe27sm9921639wmq.19.2022.06.18.14.17.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 18 Jun 2022 14:17:23 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Sat, 18 Jun 2022 23:17:20 +0200
+To:     chuang <nashuiliang@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Jingren Zhou <zhoujingren@didiglobal.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH] libbpf: Remove kprobe_event on failed kprobe_open_legacy
+Message-ID: <Yq5A4Cln4qeTaAeM@krava>
+References: <20220614084930.43276-1-nashuiliang@gmail.com>
+ <62ad50fa9d42d_24b34208d6@john.notmuch>
+ <CACueBy7NqRszA3tCOvLhfi1OraUrL_GD9YZ9XOPNHzbR1=+z7g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220618114111.61EC71F981@orac.inputplus.co.uk>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <CACueBy7NqRszA3tCOvLhfi1OraUrL_GD9YZ9XOPNHzbR1=+z7g@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jun 18, 2022 at 12:41:11PM +0100, Ralph Corderoy wrote:
-> Hi Nate,
+On Sat, Jun 18, 2022 at 01:31:01PM +0800, chuang wrote:
+> Hi John,
 > 
-> > One manifestation of this is a race conditions in system(), which
-> > (depending on the implementation) is non-atomic in that it first calls
-> > a fork() and then an exec().
+> On Sat, Jun 18, 2022 at 12:13 PM John Fastabend
+> <john.fastabend@gmail.com> wrote:
+> >
+> > Chuang W wrote:
+> > > In a scenario where livepatch and aggrprobe coexist, the creating
+> > > kprobe_event using tracefs API will succeed, a trace event (e.g.
+> > > /debugfs/tracing/events/kprobe/XX) will exist, but perf_event_open()
+> > > will return an error.
+> >
+> > This seems a bit strange from API side. I'm not really familiar with
+> > livepatch, but I guess this is UAPI now so fixing add_kprobe_event_legacy
+> > to fail is not an option?
+> >
 > 
-> The need for O_CLOFORK might be made more clear by looking at a
-> long-standing Go issue, i.e. unrelated to system(3), which was started
-> in 2017 by Russ Cox when he summed up the current race-condition
-> behaviour of trying to execve(2) a newly created file:
-> https://github.com/golang/go/issues/22315.  I raised it on linux-kernel
-> in 2017, https://marc.info/?l=linux-kernel&m=150834137201488, and linked
-> to a proposed patch from 2011, ‘[PATCH] fs: add FD_CLOFORK and
-> O_CLOFORK’ by Changli Gao.  As I said, long-standing.
+> The legacy kprobe API (i.e. tracefs API) has two steps:
+> 
+> 1) register_kprobe
+> $ echo 'p:mykprobe XXX' > /sys/kernel/debug/tracing/kprobe_events
+> This will create a trace event of mykprobe and register a disable
+> kprobe that waits to be activated.
+> 
+> 2) enable_kprobe
+> 2.1) using syscall perf_event_open
+> as the following code, perf_event_kprobe_open_legacy (file:
+> tools/lib/bpf/libbpf.c):
+> ---
+> attr.type = PERF_TYPE_TRACEPOINT;
+> pfd = syscall(__NR_perf_event_open, &attr,
+>               pid < 0 ? -1 : pid, /* pid */
+>               pid == -1 ? 0 : -1, /* cpu */
+>               -1 /* group_fd */,  PERF_FLAG_FD_CLOEXEC);
+> ---
+> In the implementation code of perf_event_open, enable_kprobe() will be executed.
+> 2.2) using shell
+> $ echo 1 > /sys/kernel/debug/tracing/events/kprobes/mykprobe/enable
+> As with perf_event_open, enable_kprobe() will also be executed.
+> 
+> When using the same function XXX, kprobe and livepatch cannot coexist,
+> that is, step 2) will return an error (ref: arm_kprobe_ftrace()),
 
-The problem is that people advocating for O_CLOFORK understand its
-value, but not its cost.  Other google employees have a system which has
-literally millions of file descriptors in a single process.  Having to
-maintain this extra state per-fd is a cost they don't want to pay
-(and have been quite vocal about earlier in this thread).
+just curious.. is that because of ipmodify flag on ftrace_ops?
+AFAICS that be a poblem just for kretprobes, cc-ing Masami
 
-Fundamentally, fork()+exec() is a terrible model.  Mind you, so is
-spawn().  I haven't seen a good model yet.
+thanks,
+jirka
+
+
+> however, step 1) is ok!
+> However, the new kprobe API (i.e. perf kprobe API) aggregates
+> register_kprobe and enable_kprobe, internally fixes the issue on
+> failed enable_kprobe.
+> But above all, for the legacy kprobe API, I think it should remove
+> kprobe_event on failed add_kprobe_event_legacy() in
+> perf_event_kprobe_open_legacy (file: tools/lib/bpf/libbpf.c).
