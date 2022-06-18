@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8522D55017D
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 02:58:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF91255017E
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 02:58:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383150AbiFRA6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 20:58:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41174 "EHLO
+        id S1383561AbiFRA6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 20:58:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231921AbiFRA6G (ORCPT
+        with ESMTP id S233738AbiFRA6G (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 20:58:06 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2EC19C03
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5414119F95
         for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 17:58:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655513883; x=1687049883;
+  t=1655513884; x=1687049884;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=JsSrspB63ZUIldoXiOkeG5wericKM2TTB6WQm61wXrU=;
-  b=NAnXtyBT1ih1l4O34/JPzdo+XE13PnUXGu8YapJQo6jWR/ikcO7BrWR3
-   yUzJ/vCbb10lmgU5h//O2dmAp3PX5AlBkJFw3b6nzXOQK19AMCsGL8OVy
-   aZ2XNbpraigIuevOIKsGSnwgQPRPtAawnkgyAEG0p4VpKYWNNfmRVprN9
-   wnC0QQzncdJQXtMJ8fUHojbc14zcCJqEL4lQ8XAKR4IIJlNcXxom150ky
-   5va6jpD8yBYxHGb4D2Wyd/MHhPzuBrumvCIEsiKF43wlhbo7yRMmIySi5
-   mXTCO/vNUc5/bqjvmRaPWJzj4lQUry/jHcNMZo6FRvpFjHm3YTRBupOYA
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="341299699"
+  bh=+KN9gez3gxQswyoKt22AOTbDHVUxQmSEnDp+s0L0DBA=;
+  b=BM5gFygevwEofGlXpyWTYzd9U9kSOiXtPIcKz6JJMBbgKv06J38CjLkN
+   ingztYA9nZRshhxH1hLOMotneRxTvvI+cVEu54PYlzymITdhn95m0l/+c
+   I5XUmQwVde8EG/8+FHFd5h2VzcZFiBJoR29Y6UO01XICiXYydYsZnN1PF
+   a+HNgjvJ94/rxIsRDIJRua9GesiiS1hrH1yyTe7sO8rtz/xitGYq260EZ
+   oCdtZdjrvIRJRW3h1Bs7j0iiHXMrgGB5tIBIZD5XU9Cu/7Av7bHuZKwz3
+   l0ZqQngXhjfgaFC6PmdvUyYIIMdwDryPJm85oFCknaL54xbkNaz5lHwIb
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="343606679"
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="341299699"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 17:58:02 -0700
+   d="scan'208";a="343606679"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 17:58:02 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="728557437"
+   d="scan'208";a="619440733"
 Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 17 Jun 2022 17:58:00 -0700
+  by orsmga001.jf.intel.com with ESMTP; 17 Jun 2022 17:58:00 -0700
 Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1o2Mmm-000Pu0-4d;
+        id 1o2Mmm-000Ptx-3y;
         Sat, 18 Jun 2022 00:58:00 +0000
-Date:   Sat, 18 Jun 2022 08:57:07 +0800
+Date:   Sat, 18 Jun 2022 08:57:08 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Eric Dumazet <eric.dumazet@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Cc:     kbuild-all@lists.01.org, netdev <netdev@vger.kernel.org>,
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>
 Subject: Re: [PATCH net-next 1/2] raw: use more conventional iterators
-Message-ID: <202206180849.uRTBo4M2-lkp@intel.com>
+Message-ID: <202206180819.fn7MTnwO-lkp@intel.com>
 References: <20220617201045.2659460-2-eric.dumazet@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -74,30 +75,31 @@ I love your patch! Perhaps something to improve:
 
 url:    https://github.com/intel-lab-lkp/linux/commits/Eric-Dumazet/raw-RCU-conversion/20220618-041145
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 4875d94c69d5a4836c4225b51429d277c297aae8
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220618/202206180849.uRTBo4M2-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+config: hexagon-randconfig-r045-20220617 (https://download.01.org/0day-ci/archive/20220618/202206180819.fn7MTnwO-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d764aa7fc6b9cc3fbe960019018f5f9e941eb0a6)
 reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
         # https://github.com/intel-lab-lkp/linux/commit/6862039427583c2b85bdda50f45ece5b79ed5fa5
         git remote add linux-review https://github.com/intel-lab-lkp/linux
         git fetch --no-tags linux-review Eric-Dumazet/raw-RCU-conversion/20220618-041145
         git checkout 6862039427583c2b85bdda50f45ece5b79ed5fa5
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash net/ipv4/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/ipv4/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
 All warnings (new ones prefixed by >>):
 
-   net/ipv4/raw.c: In function 'raw_v4_input':
->> net/ipv4/raw.c:167:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-     167 |         int sdif = inet_sdif(skb);
-         |         ^~~
-   net/ipv4/raw.c: In function 'raw_icmp_error':
-   net/ipv4/raw.c:268:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-     268 |         int dif = skb->dev->ifindex;
-         |         ^~~
+>> net/ipv4/raw.c:167:6: warning: mixing declarations and code is incompatible with standards before C99 [-Wdeclaration-after-statement]
+           int sdif = inet_sdif(skb);
+               ^
+   net/ipv4/raw.c:268:6: warning: mixing declarations and code is incompatible with standards before C99 [-Wdeclaration-after-statement]
+           int dif = skb->dev->ifindex;
+               ^
+   2 warnings generated.
 
 
 vim +167 net/ipv4/raw.c
