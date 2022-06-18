@@ -2,59 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D5985501AE
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 03:31:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 572B95501BD
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 03:46:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229459AbiFRBb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 21:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33024 "EHLO
+        id S234389AbiFRBqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 21:46:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234451AbiFRBb4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 21:31:56 -0400
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85B1A6B0BA;
-        Fri, 17 Jun 2022 18:31:55 -0700 (PDT)
-Received: by mail-il1-x129.google.com with SMTP id d6so4036677ilm.4;
-        Fri, 17 Jun 2022 18:31:55 -0700 (PDT)
+        with ESMTP id S231741AbiFRBqr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 21:46:47 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19FAB6B03A;
+        Fri, 17 Jun 2022 18:46:43 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id h8so6147189iof.11;
+        Fri, 17 Jun 2022 18:46:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:message-id:in-reply-to:references:subject
          :mime-version:content-transfer-encoding;
-        bh=9X+CU1shIcH/tUnfM3RA+7PCrBSjdTTcceJqopaFXWw=;
-        b=T3TGHaxsOxhhisw52+UAVl7vsdYClKCfWykvxJQH7oyDLtRkxzpVPcSksDmfpWFP6u
-         b7YCvatS2JgH17Lkk4ghYj+8ihnm9WZO6IpW8YnZ08xH1OHkt+cHvZX71u5eywCOSVwa
-         N1qsn61QiURCn2t7OqOIAtGZbtmDhGVfu3ifMQxGytcVclk//I+gy/XRNV3hHc6gsxXc
-         qvjx5IKvzu+3m3+4BNuSv5wf0XpIoWBoX6+YgebQ+hSISx2x/Kv/JQxPabrOv4KfGe7I
-         YI5XL8iyrWPhxL2teZpi4J4BqE/fsLRrIBLIdQ5onKTfjIZrf8GxKLWUsngPj3RIWS8P
-         qOIA==
+        bh=GvzE0MY7dGfJMgbKlLx/bwUiID6nHhevmap4odLEw0w=;
+        b=X6T6z1ZaHZdUxzj59PTAJiqiR1oAztfJq7dzjsVm67X9KHgHX/VClJGUxJ8xB7/uKX
+         Efr5Me6MpULj/YyY2yWo7tHzNR3siyFX6RDA/H6cqNZ++Ct0h/h2gov6JD/wZSyyuUXt
+         vFgPbEnyRLfob0+rS30X591kmljM+c5T/Z93O0PqMgIrUajEqmd4MSiNzlAzmRtWBLBM
+         YP7fiqyYm5dUQrwXASXGdQVD0jmOFz88oIzJcvGBql4knEr3qW72JMNHw9IjY16TuVfa
+         SxOgGaL5mKYXw3R4GbI8m6SrhxkKzo3JB8/NXqrHiD0wdhtJemF7Xw9kMM8ENU3F4EK7
+         h6PQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
          :references:subject:mime-version:content-transfer-encoding;
-        bh=9X+CU1shIcH/tUnfM3RA+7PCrBSjdTTcceJqopaFXWw=;
-        b=ut7nEHmqzwYnsaRS9MDLpa7dJG7utMJFFmgHp7/uxueC4z340jtZkrMwIRrb1wOf59
-         JcGvYuEAnVsbq+jbXWG7ld+uYJpXWtEw1PJQYtr0/3nrfnmZ2jyE4JgkpJnzyoi7DfPx
-         TQwkavhVncJqpzbrM7GFKOFhU8irSnIxs441ytkm140JSKg5FPAdhsyEQENydySxgUTR
-         4qMepVappnTqpE1jIGNv2a4LnQGU0oOrN97B3ist9B5OF/MbGC8j8SLIme9I+VTFQQiw
-         d3BY6j0FR9bITuDGKR/ZS91EL45E3QcmTGBSFc9F6roxiGy9XLmNFVY51aCbV0RgQeom
-         NT2Q==
-X-Gm-Message-State: AJIora8sil4d8KF3uiYLaHWfXqAJe79YXNzCUgb/qD7Va3tUkEEY/sLM
-        tZOp0bc/KTr5OE/ZGynwKXWWnt6diETO/Q==
-X-Google-Smtp-Source: AGRyM1tK9DBH36i2OHa9mYazCLrgd8iitOgRPumsdVAJ/SJwaW7UcX7YXrK67AbXwjNL3SrRUcLnwA==
-X-Received: by 2002:a05:6e02:158a:b0:2d5:12f0:4dce with SMTP id m10-20020a056e02158a00b002d512f04dcemr7145582ilu.159.1655515914953;
-        Fri, 17 Jun 2022 18:31:54 -0700 (PDT)
+        bh=GvzE0MY7dGfJMgbKlLx/bwUiID6nHhevmap4odLEw0w=;
+        b=eUUxAYyJgNWqpfRy6surxorHDTNzTDvZidRcxDJfFsbMMiQ7QN8tO9r6Vh5HeKeKOB
+         q0Ij9aVre6Lu8g40UhqgZ7whDuVypd9a/vc7ZJU++eMsGIo52R5EaBAPgbd+y6d2Tq1v
+         hDlWCuxSGxU3Tg1QtKBHoh+vC6bzxDsh/Euq7YJQe4c75PC3r0xxxisSO4NUQd12u9E4
+         rzOlH7CKUbG/TXy+1i03D6dFxaFmuZyh/YpCSOczkKA+K9Ap9SG7UvKfJohL7pqZB21m
+         alM6m8p3oMkbBnvFylXAr5c3jr7id5zZ4s3ch1QVnjLUvVSAft5eG9N98n26pLDZZxa/
+         d4eQ==
+X-Gm-Message-State: AJIora93QOV/8CFZ+ZV8GzSM4sucsZRQn05gkHM/v39XpRoF7VEzdXqN
+        /eWa/XhP44pCcndE+anJYA0=
+X-Google-Smtp-Source: AGRyM1tCoeDIg42MjHnB1CNnjXxeIR3zdmznQaYjTB5ELvKLdh+Jtxg3rCNe+vVPIJ3FA9X8K9ebvg==
+X-Received: by 2002:a05:6602:2aca:b0:669:e6ec:9b6c with SMTP id m10-20020a0566022aca00b00669e6ec9b6cmr6363592iov.176.1655516802415;
+        Fri, 17 Jun 2022 18:46:42 -0700 (PDT)
 Received: from localhost ([172.243.153.43])
-        by smtp.gmail.com with ESMTPSA id 10-20020a02110a000000b003316f4b9b26sm2877173jaf.131.2022.06.17.18.31.52
+        by smtp.gmail.com with ESMTPSA id b11-20020a92dccb000000b002d3edd935e5sm3009932ilr.53.2022.06.17.18.46.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jun 2022 18:31:54 -0700 (PDT)
-Date:   Fri, 17 Jun 2022 18:31:46 -0700
+        Fri, 17 Jun 2022 18:46:41 -0700 (PDT)
+Date:   Fri, 17 Jun 2022 18:46:35 -0700
 From:   John Fastabend <john.fastabend@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
-Message-ID: <62ad2b02627ce_24b342089f@john.notmuch>
-In-Reply-To: <20220615162014.89193-1-xiyou.wangcong@gmail.com>
-References: <20220615162014.89193-1-xiyou.wangcong@gmail.com>
-Subject: RE: [Patch bpf-next v4 0/4] sockmap: some performance optimizations
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
+        bjorn@kernel.org, kuba@kernel.org,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Alexandr Lobakin <alexandr.lobakin@intel.com>
+Message-ID: <62ad2e7b9ff11_24b342081a@john.notmuch>
+In-Reply-To: <20220616180609.905015-2-maciej.fijalkowski@intel.com>
+References: <20220616180609.905015-1-maciej.fijalkowski@intel.com>
+ <20220616180609.905015-2-maciej.fijalkowski@intel.com>
+Subject: RE: [PATCH v4 bpf-next 01/10] ice: compress branches in
+ ice_set_features()
 Mime-Version: 1.0
 Content-Type: text/plain;
  charset=utf-8
@@ -69,43 +75,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
+Maciej Fijalkowski wrote:
+> Instead of rather verbose comparison of current netdev->features bits vs
+> the incoming ones from user, let us compress them by a helper features
+> set that will be the result of netdev->features XOR features. This way,
+> current, extensive branches:
 > 
-> This patchset contains two optimizations for sockmap. The first one
-> eliminates a skb_clone() and the second one eliminates a memset(). With
-> this patchset, the throughput of UDP transmission via sockmap gets
-> improved by 61%.
+> 	if (features & NETIF_F_BIT && !(netdev->features & NETIF_F_BIT))
+> 		set_feature(true);
+> 	else if (!(features & NETIF_F_BIT) && netdev->features & NETIF_F_BIT)
+> 		set_feature(false);
 > 
-> v4: replace kfree_skb() with consume_skb()
+> can become:
 > 
-> v3: avoid touching tcp_recv_skb()
+> 	netdev_features_t changed = netdev->features ^ features;
 > 
-> v2: clean up coding style for tcp_read_skb()
->     get rid of some redundant variables
->     add a comment for ->read_skb()
+> 	if (changed & NETIF_F_BIT)
+> 		set_feature(!!(features & NETIF_F_BIT));
+> 
+> This is nothing new as currently several other drivers use this
+> approach, which I find much more convenient.
+
+Looks good couple nits below. Up to you if you want to follow through
+on them or not I don't have a strong opinion. For what its worth the
+other intel drivers also do the 'netdev->features ^ features'
+assignment.
+
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+
+> 
+> CC: Alexandr Lobakin <alexandr.lobakin@intel.com>
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 > ---
-> Cong Wang (4):
->   tcp: introduce tcp_read_skb()
->   net: introduce a new proto_ops ->read_skb()
->   skmsg: get rid of skb_clone()
->   skmsg: get rid of unncessary memset()
+>  drivers/net/ethernet/intel/ice/ice_main.c | 40 +++++++++++------------
+>  1 file changed, 19 insertions(+), 21 deletions(-)
 > 
->  include/linux/net.h |  4 ++++
->  include/net/tcp.h   |  1 +
->  include/net/udp.h   |  3 +--
->  net/core/skmsg.c    | 48 +++++++++++++++++----------------------------
->  net/ipv4/af_inet.c  |  3 ++-
->  net/ipv4/tcp.c      | 44 +++++++++++++++++++++++++++++++++++++++++
->  net/ipv4/udp.c      | 11 +++++------
->  net/ipv6/af_inet6.c |  3 ++-
->  net/unix/af_unix.c  | 23 +++++++++-------------
->  9 files changed, 86 insertions(+), 54 deletions(-)
-> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+> index e1cae253412c..23d1b1fc39fb 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_main.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
+> @@ -5910,44 +5910,41 @@ ice_set_vlan_features(struct net_device *netdev, netdev_features_t features)
+>  static int
+>  ice_set_features(struct net_device *netdev, netdev_features_t features)
+>  {
+> +	netdev_features_t changed = netdev->features ^ features;
+>  	struct ice_netdev_priv *np = netdev_priv(netdev);
+>  	struct ice_vsi *vsi = np->vsi;
+>  	struct ice_pf *pf = vsi->back;
+>  	int ret = 0;
+>  
+>  	/* Don't set any netdev advanced features with device in Safe Mode */
+> -	if (ice_is_safe_mode(vsi->back)) {
+> -		dev_err(ice_pf_to_dev(vsi->back), "Device is in Safe Mode - not enabling advanced netdev features\n");
+> +	if (ice_is_safe_mode(pf)) {
+> +		dev_err(ice_pf_to_dev(vsi->back),
+
+bit of nitpicking but if you use pf in the 'if' above why not use it here
+as well and save a few keys. Also matches below then.
+
+> +			"Device is in Safe Mode - not enabling advanced netdev features\n");
+>  		return ret;
+>  	}
+>  
+>  	/* Do not change setting during reset */
+>  	if (ice_is_reset_in_progress(pf->state)) {
+> -		dev_err(ice_pf_to_dev(vsi->back), "Device is resetting, changing advanced netdev features temporarily unavailable.\n");
+> +		dev_err(ice_pf_to_dev(pf),
+> +			"Device is resetting, changing advanced netdev features temporarily unavailable.\n");
+>  		return -EBUSY;
+>  	}
+>  
+
+[...]
+
+> @@ -5956,11 +5953,12 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
+>  		return -EACCES;
+>  	}
+>  
+> -	if ((features & NETIF_F_HW_TC) &&
+> -	    !(netdev->features & NETIF_F_HW_TC))
+> -		set_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
+> -	else
+> -		clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
+> +	if (changed & NETIF_F_HW_TC) {
+> +		bool ena = !!(features & NETIF_F_HW_TC);
+> +
+> +		ena ? set_bit(ICE_FLAG_CLS_FLOWER, pf->flags) :
+> +		      clear_bit(ICE_FLAG_CLS_FLOWER, pf->flags);
+> +	}
+
+Just a note you changed the logic slightly here. Above you always
+clear the bit. But, it looks like it doesn't matter caveat being
+I don't know what might happen in hardware.
+
+>  
+>  	return 0;
+>  }
 > -- 
-> 2.34.1
+> 2.27.0
 > 
 
-Thanks Cong, nice set of improvements.
 
-Reviewed-by: John Fastabend <john.fastabend@gmail.com>
