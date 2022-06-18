@@ -2,64 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF91255017E
-	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 02:58:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4497755019A
+	for <lists+netdev@lfdr.de>; Sat, 18 Jun 2022 03:15:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383561AbiFRA6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 17 Jun 2022 20:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41176 "EHLO
+        id S236250AbiFRBPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 17 Jun 2022 21:15:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233738AbiFRA6G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 20:58:06 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5414119F95
-        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 17:58:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655513884; x=1687049884;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+KN9gez3gxQswyoKt22AOTbDHVUxQmSEnDp+s0L0DBA=;
-  b=BM5gFygevwEofGlXpyWTYzd9U9kSOiXtPIcKz6JJMBbgKv06J38CjLkN
-   ingztYA9nZRshhxH1hLOMotneRxTvvI+cVEu54PYlzymITdhn95m0l/+c
-   I5XUmQwVde8EG/8+FHFd5h2VzcZFiBJoR29Y6UO01XICiXYydYsZnN1PF
-   a+HNgjvJ94/rxIsRDIJRua9GesiiS1hrH1yyTe7sO8rtz/xitGYq260EZ
-   oCdtZdjrvIRJRW3h1Bs7j0iiHXMrgGB5tIBIZD5XU9Cu/7Av7bHuZKwz3
-   l0ZqQngXhjfgaFC6PmdvUyYIIMdwDryPJm85oFCknaL54xbkNaz5lHwIb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="343606679"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="343606679"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2022 17:58:02 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="619440733"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 17 Jun 2022 17:58:00 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o2Mmm-000Ptx-3y;
-        Sat, 18 Jun 2022 00:58:00 +0000
-Date:   Sat, 18 Jun 2022 08:57:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        with ESMTP id S231741AbiFRBPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 17 Jun 2022 21:15:52 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 650CF6AA67
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 18:15:51 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id y6so5474734pfr.13
+        for <netdev@vger.kernel.org>; Fri, 17 Jun 2022 18:15:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=2Wicin66A5Ecw5eOHjSRw3gMf1e/v5xlB1s6rjFamVc=;
+        b=rYxYQNnXCvLE4VkDuRntdBWtvRSy9Js0aFg2p7PC8AoRXwLqSP/VcXnFUB041aQM+Z
+         Cr32BoNciIvWFGPNqDnK7+dLMMiii0j195J6SfzP5gqj+Th7Syj3gV9xjSTrjk4+j52R
+         BuE485MDS3716u/H6iFT3/P7PmXu6SrRQOU/y23CI6AVDiBqO7tAzKdifXQehVcLPo+I
+         4m/+uEHjUP4jyYxWVeBvHRwSxbGmHC3qJFDf0ZZfqCzJfPIXbdMlri+ZiC+3s3gMOG/U
+         LrKqhRMR6EBTErEj1BmuWVGdvRiyLkpO4q/mbpMCGH5UY1Zl5qKSfMEGbolQniYIOl/9
+         5+pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2Wicin66A5Ecw5eOHjSRw3gMf1e/v5xlB1s6rjFamVc=;
+        b=5etDiDvtp1r+tsTqFXZFtjyCZOPPEMZyVVYtJfYBjkN9hA4NHqtyMzdLhQwhZFylPI
+         rM6/hGUS02Lo1Njg1zQmjzcMs0fsZeFC1NropjOdD3Dc6/rnUfl7utxyb+O31FOcFyg1
+         z3GJbEfwpsrViFJwRkFhb5pM+7uFTv+LCLWvS6gU5UfLZguv3S2S3KHyypZt5wwN3SAb
+         fvveLYaJNV3HzcDohiwiH8OILZDFxBfeOkIhx1icu2EX+WW/6QbkeRhVvpyR5aHkHD6i
+         16aznrxaNs9APyNPM+50nnAgJNw5nTJ7Qq5ZEd+QTmwxsTSxN+4H0hPXkED+n44WUn1u
+         rdiA==
+X-Gm-Message-State: AJIora+C+86325g4OHN79tSNm8/+Pfg/xtt3vAc8vVw+TNyfKILOn1Nf
+        dsg4yWRCLDqoQwePxChP2m6RcQ==
+X-Google-Smtp-Source: AGRyM1u5MsCZ5unrFNNSkRvF2SL6LwoHOZByCaW9oeRdELC6PITpnSRHbGHN4xDSAWSCZtviQKdPpg==
+X-Received: by 2002:a63:6c42:0:b0:3fe:465:7a71 with SMTP id h63-20020a636c42000000b003fe04657a71mr11328301pgc.101.1655514950870;
+        Fri, 17 Jun 2022 18:15:50 -0700 (PDT)
+Received: from [172.31.235.92] ([216.9.110.6])
+        by smtp.gmail.com with ESMTPSA id o1-20020a62f901000000b0052285857864sm4410468pfh.97.2022.06.17.18.15.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 17 Jun 2022 18:15:50 -0700 (PDT)
+Message-ID: <110c4a4b-8007-1826-ee27-02eaedd22d8f@linaro.org>
+Date:   Fri, 17 Jun 2022 18:15:46 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH net-next 01/28] dt-bindings: phy: Add QorIQ SerDes binding
+Content-Language: en-US
+To:     Sean Anderson <sean.anderson@seco.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net-next 1/2] raw: use more conventional iterators
-Message-ID: <202206180819.fn7MTnwO-lkp@intel.com>
-References: <20220617201045.2659460-2-eric.dumazet@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220617201045.2659460-2-eric.dumazet@gmail.com>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Eric Dumazet <edumazet@google.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>, devicetree@vger.kernel.org,
+        linux-phy@lists.infradead.org
+References: <20220617203312.3799646-1-sean.anderson@seco.com>
+ <20220617203312.3799646-2-sean.anderson@seco.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220617203312.3799646-2-sean.anderson@seco.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,83 +84,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+On 17/06/2022 13:32, Sean Anderson wrote:
+> This adds a binding for the SerDes module found on QorIQ processors. The
+> phy reference has two cells, one for the first lane and one for the
+> last. This should allow for good support of multi-lane protocols when
+> (if) they are added. There is no protocol option, because the driver is
+> designed to be able to completely reconfigure lanes at runtime.
+> Generally, the phy consumer can select the appropriate protocol using
+> set_mode. For the most part there is only one protocol controller
+> (consumer) per lane/protocol combination. The exception to this is the
+> B4860 processor, which has some lanes which can be connected to
+> multiple MACs. For that processor, I anticipate the easiest way to
+> resolve this will be to add an additional cell with a "protocol
+> controller instance" property.
+> 
+> Each serdes has a unique set of supported protocols (and lanes). The
+> support matrix is stored in the driver and is selected based on the
+> compatible string. It is anticipated that a new compatible string will
+> need to be added for each serdes on each SoC that drivers support is
+> added for.
+> 
+> There are two PLLs, each of which can be used as the master clock for
+> each lane. Each PLL has its own reference. For the moment they are
+> required, because it simplifies the driver implementation. Absent
+> reference clocks can be modeled by a fixed-clock with a rate of 0.
+> 
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> ---
+> 
+>  .../bindings/phy/fsl,qoriq-serdes.yaml        | 78 +++++++++++++++++++
+>  1 file changed, 78 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/phy/fsl,qoriq-serdes.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/phy/fsl,qoriq-serdes.yaml b/Documentation/devicetree/bindings/phy/fsl,qoriq-serdes.yaml
+> new file mode 100644
+> index 000000000000..4b9c1fcdab10
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/phy/fsl,qoriq-serdes.yaml
+> @@ -0,0 +1,78 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/phy/fsl,qoriq-serdes.yaml#
 
-I love your patch! Perhaps something to improve:
+File name: fsl,ls1046a-serdes.yaml
 
-[auto build test WARNING on net-next/master]
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: NXP QorIQ SerDes Device Tree Bindings
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Eric-Dumazet/raw-RCU-conversion/20220618-041145
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 4875d94c69d5a4836c4225b51429d277c297aae8
-config: hexagon-randconfig-r045-20220617 (https://download.01.org/0day-ci/archive/20220618/202206180819.fn7MTnwO-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d764aa7fc6b9cc3fbe960019018f5f9e941eb0a6)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/6862039427583c2b85bdda50f45ece5b79ed5fa5
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Eric-Dumazet/raw-RCU-conversion/20220618-041145
-        git checkout 6862039427583c2b85bdda50f45ece5b79ed5fa5
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/ipv4/
+s/Device Tree Bindings//
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> +
+> +maintainers:
+> +  - Sean Anderson <sean.anderson@seco.com>
+> +
+> +description: |
+> +  This binding describes the SerDes devices found in NXP's QorIQ line of
 
-All warnings (new ones prefixed by >>):
+Describe the device, not the binding, so wording "This binding" is not
+appropriate.
 
->> net/ipv4/raw.c:167:6: warning: mixing declarations and code is incompatible with standards before C99 [-Wdeclaration-after-statement]
-           int sdif = inet_sdif(skb);
-               ^
-   net/ipv4/raw.c:268:6: warning: mixing declarations and code is incompatible with standards before C99 [-Wdeclaration-after-statement]
-           int dif = skb->dev->ifindex;
-               ^
-   2 warnings generated.
+> +  processors. The SerDes provides up to eight lanes. Each lane may be
+> +  configured individually, or may be combined with adjacent lanes for a
+> +  multi-lane protocol. The SerDes supports a variety of protocols, including up
+> +  to 10G Ethernet, PCIe, SATA, and others. The specific protocols supported for
+> +  each lane depend on the particular SoC.
+> +
+> +properties:
+
+Compatible goes first.
+
+> +  "#phy-cells":
+> +    const: 2
+> +    description: |
+> +      The cells contain the following arguments.
+> +
+> +      - description: |
+
+Not a correct schema. What is this "- description" attached to? There is
+no items here...
+
+> +          The first lane in the group. Lanes are numbered based on the register
+> +          offsets, not the I/O ports. This corresponds to the letter-based
+> +          ("Lane A") naming scheme, and not the number-based ("Lane 0") naming
+> +          scheme. On most SoCs, "Lane A" is "Lane 0", but not always.
+> +        minimum: 0
+> +        maximum: 7
+> +      - description: |
+> +          Last lane. For single-lane protocols, this should be the same as the
+> +          first lane.
+> +        minimum: 0
+> +        maximum: 7
+> +
+> +  compatible:
+> +    enum:
+> +      - fsl,ls1046a-serdes-1
+> +      - fsl,ls1046a-serdes-2
+
+Does not look like proper compatible and your explanation from commit
+msg did not help me. What "1" and "2" stand for? Usually compatibles
+cannot have some arbitrary properties encoded.
+
+> +
+> +  clocks:
+> +    minItems: 2
+
+No need for minItems.
+
+> +    maxItems: 2
+> +    description: |
+> +      Clock for each PLL reference clock input.
+> +
+> +  clock-names:
+> +    minItems: 2
+> +    maxItems: 2
+> +    items:
+> +      pattern: "^ref[0-1]$"
+
+No, instead describe actual items with "const". See other examples.
+
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +required:
+> +  - "#phy-cells"
+> +  - compatible
+> +  - clocks
+> +  - clock-names
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    serdes1: phy@1ea0000 {
+> +      #phy-cells = <2>;
+> +      compatible = "fsl,ls1046a-serdes-1";
+> +      reg = <0x0 0x1ea0000 0x0 0x2000>;
+> +      clocks = <&clk_100mhz>, <&clk_156mhz>;
+> +      clock-names = "ref0", "ref1";
+> +    };
+> +
+> +...
 
 
-vim +167 net/ipv4/raw.c
-
-^1da177e4c3f41 Linus Torvalds   2005-04-16  157  
-^1da177e4c3f41 Linus Torvalds   2005-04-16  158  /* IP input processing comes here for RAW socket delivery.
-^1da177e4c3f41 Linus Torvalds   2005-04-16  159   * Caller owns SKB, so we must make clones.
-^1da177e4c3f41 Linus Torvalds   2005-04-16  160   *
-^1da177e4c3f41 Linus Torvalds   2005-04-16  161   * RFC 1122: SHOULD pass TOS value up to the transport layer.
-^1da177e4c3f41 Linus Torvalds   2005-04-16  162   * -> It does. And not only TOS, but all IP header.
-^1da177e4c3f41 Linus Torvalds   2005-04-16  163   */
-b71d1d426d263b Eric Dumazet     2011-04-22  164  static int raw_v4_input(struct sk_buff *skb, const struct iphdr *iph, int hash)
-^1da177e4c3f41 Linus Torvalds   2005-04-16  165  {
-6862039427583c Eric Dumazet     2022-06-17  166  	struct net *net = dev_net(skb->dev);;
-67359930e185c4 David Ahern      2017-08-07 @167  	int sdif = inet_sdif(skb);
-19e4e768064a87 David Ahern      2019-05-07  168  	int dif = inet_iif(skb);
-^1da177e4c3f41 Linus Torvalds   2005-04-16  169  	struct hlist_head *head;
-d13964f4490157 Patrick McHardy  2005-08-09  170  	int delivered = 0;
-6862039427583c Eric Dumazet     2022-06-17  171  	struct sock *sk;
-^1da177e4c3f41 Linus Torvalds   2005-04-16  172  
-b673e4dfc8f29e Pavel Emelyanov  2007-11-19  173  	head = &raw_v4_hashinfo.ht[hash];
-^1da177e4c3f41 Linus Torvalds   2005-04-16  174  	if (hlist_empty(head))
-6862039427583c Eric Dumazet     2022-06-17  175  		return 0;
-6862039427583c Eric Dumazet     2022-06-17  176  	read_lock(&raw_v4_hashinfo.lock);
-6862039427583c Eric Dumazet     2022-06-17  177  	sk_for_each(sk, head) {
-6862039427583c Eric Dumazet     2022-06-17  178  		if (!raw_v4_match(net, sk, iph->protocol,
-6862039427583c Eric Dumazet     2022-06-17  179  				  iph->saddr, iph->daddr, dif, sdif))
-6862039427583c Eric Dumazet     2022-06-17  180  			continue;
-d13964f4490157 Patrick McHardy  2005-08-09  181  		delivered = 1;
-f5220d63991f3f Quentin Armitage 2014-07-23  182  		if ((iph->protocol != IPPROTO_ICMP || !icmp_filter(sk, skb)) &&
-f5220d63991f3f Quentin Armitage 2014-07-23  183  		    ip_mc_sf_allow(sk, iph->daddr, iph->saddr,
-60d9b031412435 David Ahern      2017-08-07  184  				   skb->dev->ifindex, sdif)) {
-^1da177e4c3f41 Linus Torvalds   2005-04-16  185  			struct sk_buff *clone = skb_clone(skb, GFP_ATOMIC);
-^1da177e4c3f41 Linus Torvalds   2005-04-16  186  
-^1da177e4c3f41 Linus Torvalds   2005-04-16  187  			/* Not releasing hash table! */
-^1da177e4c3f41 Linus Torvalds   2005-04-16  188  			if (clone)
-^1da177e4c3f41 Linus Torvalds   2005-04-16  189  				raw_rcv(sk, clone);
-^1da177e4c3f41 Linus Torvalds   2005-04-16  190  		}
-^1da177e4c3f41 Linus Torvalds   2005-04-16  191  	}
-b673e4dfc8f29e Pavel Emelyanov  2007-11-19  192  	read_unlock(&raw_v4_hashinfo.lock);
-d13964f4490157 Patrick McHardy  2005-08-09  193  	return delivered;
-^1da177e4c3f41 Linus Torvalds   2005-04-16  194  }
-^1da177e4c3f41 Linus Torvalds   2005-04-16  195  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best regards,
+Krzysztof
