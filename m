@@ -2,113 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17294550C11
-	for <lists+netdev@lfdr.de>; Sun, 19 Jun 2022 18:30:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD424550C26
+	for <lists+netdev@lfdr.de>; Sun, 19 Jun 2022 18:45:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229893AbiFSQam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jun 2022 12:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57274 "EHLO
+        id S235225AbiFSQo7 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 19 Jun 2022 12:44:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiFSQal (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jun 2022 12:30:41 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 515D0AE66
-        for <netdev@vger.kernel.org>; Sun, 19 Jun 2022 09:30:40 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id x38so15140986ybd.9
-        for <netdev@vger.kernel.org>; Sun, 19 Jun 2022 09:30:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=06aReM9jfRAlY7hrHnKqsjfzL0Vm0W0X9h6r/U1qeAQ=;
-        b=lJUvpMnLts9+nOcXP/qTjQh1798PhsP3toOjxH4Hn5CyxdYvxzn/7Rm0IIFdHmQ0YM
-         d9+vOTVEec62GoD88v+899cn5fFsAO1ZZOFtEZd6/FWcdBzC9okbNW2x3xh90u3mKMUO
-         0uCP4hUKkLhgM1GCMzw9KXFit/KGxAgD/qcjHSIj9s9qGWcLh3/Yduk8OsEfM7xOXXT/
-         ssYO7lCbK7NbudN4yb4gNSAUKrBb6ILtwgLYlQQVsVdwIo6Ara/74hlaA1V6UKIltHVQ
-         5ji9bJBkgTV6i5neBwlwhGz6PRNRl/IYfGxzhhg9bOHf/cXISSPkp5c52NsoHlyMvStp
-         uKXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=06aReM9jfRAlY7hrHnKqsjfzL0Vm0W0X9h6r/U1qeAQ=;
-        b=0RUtToN2AkAi9FoEklFH/W18xMSi22H59y8WJg46nrybzOaFuFRkIfqrBW6VeGYFiM
-         wpp7ZUhKKsyyiyxm9pom0ng8zMiJ0pLC7aIxvMpI2Xpb3bk+w/u5S1CKAblgxbDMpbjz
-         xGofs4MtyP8ikoErhigfUZAK/AsOtN6KGazmuxO+xNsgS/bNQShNWXnqQ4GYrLP+Fhjp
-         jJwB9odSk1oPKhWR9M0fKs/WHYssYYvWCzM3/9NclcTLQ18e66GE9biIQdwQc+cXue6J
-         lz5eI0BydVghNHa2MjcByOrPz38FBiK3EsFn+LM+T63OYn7WezfpYOqFmgG1N/+itjSq
-         mfCA==
-X-Gm-Message-State: AJIora8CSBtY+hV26sukbV3S0D+ZhSPsQZ3+1s7+uSb1elaY484L59eS
-        aVRrdTLFIyf2W0CJ0aGyhPBPLQcQX2KEI/eF7xc=
-X-Google-Smtp-Source: AGRyM1uMDIqInmgQQ3QVA3xDKQVs/Wk2Skx3I5GSQZqGjOiaKnDNWj5FRPr2Y9XZIsqIdEr0l9v/W/WkIjGBGfX7qjM=
-X-Received: by 2002:a25:a28f:0:b0:668:dc91:a16 with SMTP id
- c15-20020a25a28f000000b00668dc910a16mr7024138ybi.391.1655656238769; Sun, 19
- Jun 2022 09:30:38 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:a05:7108:700d:0:0:0:0 with HTTP; Sun, 19 Jun 2022 09:30:35
- -0700 (PDT)
-Reply-To: ibnahmadmustafa.aseelfinance@gmail.com
-From:   "Ibn Ahmad Mustafa(ASEEL Islamic Finance)" <kateb0343@gmail.com>
-Date:   Sun, 19 Jun 2022 17:30:35 +0100
-Message-ID: <CAGBY=PEqNT8APS2qfi=veOnxz3S4zEfHyMnCgX-qzDTL7zPzig@mail.gmail.com>
-Subject: LOAN AND INVESTMENT - ASEEL ISLAMIC FINANCE
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=7.7 required=5.0 tests=BAYES_80,DEAR_SOMETHING,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,
-        T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:b2f listed in]
-        [list.dnswl.org]
-        *  2.0 BAYES_80 BODY: Bayes spam probability is 80 to 95%
-        *      [score: 0.8117]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [kateb0343[at]gmail.com]
-        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [kateb0343[at]gmail.com]
-        *  2.0 DEAR_SOMETHING BODY: Contains 'Dear (something)'
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  2.2 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *******
+        with ESMTP id S229490AbiFSQo6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jun 2022 12:44:58 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 586F8D119;
+        Sun, 19 Jun 2022 09:44:57 -0700 (PDT)
+Received: (Authenticated sender: pbl@bestov.io)
+        by mail.gandi.net (Postfix) with ESMTPSA id AEBAA1BF209;
+        Sun, 19 Jun 2022 16:44:52 +0000 (UTC)
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8
+Date:   Sun, 19 Jun 2022 18:44:51 +0200
+Message-Id: <CKU9GFTASELO.22PM22I90JDM8@enhorning>
+Cc:     <davem@davemloft.net>, <cmllamas@google.com>,
+        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <kernel-team@android.com>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linmiaohe@huawei.com>
+Subject: Re: NEEDS FIXING - Was: Re: [PATCH v2] ipv4: ping: fix bind address
+ validity check
+From:   "Riccardo Paolo Bestetti" <pbl@bestov.io>
+To:     "Jakub Kicinski" <kuba@kernel.org>
+X-Mailer: aerc 0.9.0
+References: <20220617085435.193319-1-pbl@bestov.io>
+ <165546541315.12170.9716012665055247467.git-patchwork-notify@kernel.org>
+ <CKSU5Q2M1IE3.39AS0HDHTZPN@enhorning> <20220617195816.53a2f2cf@kernel.org>
+In-Reply-To: <20220617195816.53a2f2cf@kernel.org>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Sir/Madam
+On Sat Jun 18, 2022 at 4:58 AM CEST, Jakub Kicinski wrote:
+> On Sat, 18 Jun 2022 02:32:55 +0200 Riccardo Paolo Bestetti wrote:
+> > I receompiled the kernel from the net tree to do some more manual testing
+> > on the patch and I have two things to disclose. Sorry for the caps in
+> > the subject.
+> > 
+> > TL;DR: I noticed that one of the regressions tests is (correctly)
+> > failing, but for the wrong reasons; and the patch I sent contains a
+> > mistake, and unfortunately it has already been applied to the tree as
+> > commit b4a028c4d0.
+> > 
+> > Long version below.
+> > 
+> > 1) If you run regression tests with -v, the (correct -- see below) ICMP
+> > tests for broadcast and multicast binding do not fail with
+> > EADDRNOTAVAIL, but with ACCES, but only when run through fcnal-test.sh.
+> > This is also true for one of the additional (commented out) tests you
+> > can find in my patch following this email. I'm not sure why this
+> > happens; however I'm reasonably convinced it is a quirk or a consequence
+> > of the testing methodology/setup. Can anyone offer any insights?
+> > 
+> > 2) My patch is faulty. I had a complete and tested patch, including code
+> > fixing the regression. Instead of sending it, however, I decided to
+> > adapt it to preserve Carlos Llamas' version of ping.c, since they posted
+> > their patch first. In doing so I used a work branch which contained a
+> > faulty version (wrong flags) of the regression tests. The resulting
+> > faulty patch is, unfortunately, currently in the tree.
+> > 
+> > At this point, due to the unfortunate combination of (1) and (2), it
+> > might be worth reverting the patch altogether and just applying the v1
+> > (i.e. without the regression tests) to the tree and to the relevant LTS
+> > versions.
+>
+> IIUC only the test is faulty / unreliable, correct?
+>
+> We have until Thursday before this patch hits Linus's tree so should 
+> be plenty of time to figure the problem out and apply an incremental
+> fix. I see you posted an RFC already, thanks!
 
-I would like to introduce you to Aseel Islamic finance PJSC which is a
-private joint stock company that was
-established in 2006 and has built a leading market position for itself
-in the UAE's Islamic finance market which specializes in loan finance
-and investment activities in real estate, hospitality, industrial &
-sustainable technologies, strategic financial investments, specialized
-education, healthcare services, agriculture, manufacturing,
-mining,energy and additional environmentally sustainable projects.
+I followed that up with a v2 [1] that looks good to me. Fixes the fulty
+tests covering the regression, adds a couple more tests similar to what
+I added back in November (but for different code paths).
 
-I would love to send you further details with your consent.
+As an additional note, if the regression fix (b4a028c4d0) is candidate
+for the LTS, then this patch should probably be as well.
 
-Regards.
+Riccardo P. Bestetti
 
-Mr. Ibn Ahmad Mustafa
-International Business Coordinator
-Aseel Islamic Finance PJSC
-Telephone: 800-ASEEL(27335)
+[1]: https://patchwork.kernel.org/project/netdevbpf/patch/20220619162734.113340-1-pbl@bestov.io/
+
+>
+> > After that, a more proper discussion can be had about (1), and the
+> > regression tests can be fixed. I'm sending a demonstrative patch for
+> > that as a response to this message.
+
