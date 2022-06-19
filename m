@@ -2,108 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFBD65509A0
-	for <lists+netdev@lfdr.de>; Sun, 19 Jun 2022 12:30:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75B845509A1
+	for <lists+netdev@lfdr.de>; Sun, 19 Jun 2022 12:30:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232740AbiFSK35 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jun 2022 06:29:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47094 "EHLO
+        id S232927AbiFSKaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jun 2022 06:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230414AbiFSK34 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jun 2022 06:29:56 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2076.outbound.protection.outlook.com [40.107.237.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDE4BF73
-        for <netdev@vger.kernel.org>; Sun, 19 Jun 2022 03:29:55 -0700 (PDT)
+        with ESMTP id S232782AbiFSKaD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jun 2022 06:30:03 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2042.outbound.protection.outlook.com [40.107.237.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E838CE0C
+        for <netdev@vger.kernel.org>; Sun, 19 Jun 2022 03:30:02 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gsvANvLsGaIwhRz6ZZpfc9k7L5SlMO1SvVhu51Lgl4dXZvv/A4uT1y4sAtcT4d99f0BOqOUnE/aLMkfJyhtJJm7PB/RHG01MYELORV+74VgDJKNBLxAG+OcuiqzwleqOPYB/ZEWeHTW+sG9i8copv28pdPtMRq/8uB5QXMVAOQkUORMK8WdXRxHPMw30tYI64ZAQHvrwg98XQNM1xtknCr6D7kQMig+i9ZCbECFjhy9wvdlKOhy/jnE+ORk7CE+ELsO6Py2qpOkaQgokWqxJFkkzuGrEt1OznbNhdLO+tWU7rTlAXH7yXTjKyJqkiOQ2qc4xrc+4a2SL8Oxhhmd06A==
+ b=FAHpcCqt9d76cKmTKXvx5HTGc6mRYX6TWGEUK9oLAWdnom7BBacyRF5mhMK1j7P0JmL9UQ8iIEIwn/WUf6zKmFqb4OvdWFIZe8ifubOczSe+i/xHE3hyQa55XQXX+E0yEKw1vil7zIYOH9RvYxWJ0L5CCFs0Dt5LzeYdQsyIYmer2mqDxaBMnbH4ALBdJXOTkSYHn5kXkKYdDqSwcciprvBISqoq4HOflJPxexdZx5qLahayDye1HWL3TYHYQGpaglrTJ6lQYPDcb2tr42X0LOoP4MnSkhsiJx3KouupfHnlboyOSWc8TW/rCJXZ0INo5aQvGIluTqF/QwyZ7peCtg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Pf90ESZOBi53p7G/f1pvEAcOLmBdIK9wB2OPMjXLD2M=;
- b=aVuUW/t9fOQPJZVhmcJJY1L5x9SA1COnZqYads5goYkPia39RcQGUqxqm58GbEZrYcDgHYTZ3bC7VROwbZqdecDkWHpT3HCaR55PUEewtpYkd9xTym/+/ixZUrAa1fQB3rvUnPTGUpDGg/znCA3ceLd1tfBrI2sb7lvKu5HzQpFusKTfo0yl3t4KYftjcMF8O5orA6kl39VvN50D9hJieL5kX0a4OsvUg6bflK3il25ytgVCvKKftccenwd0Q6HmcpqFlgU0U019zIPfFfyejszG4IAGDsnv4sK0QPKI/JondedAmJZzGES8xTVzj3XFr7236tQ+ex+zCKK8/g0OGQ==
+ bh=oxxVNBrZ4r0vw3uTcY4JjgG2wP9XSDgdm+0xK5VMZqA=;
+ b=i9Mt85qbGqPTwd5tIWBRF4KJPd3vBYX06YXlukjHzQJsKSriVIDJtZOyxyYxHEsD+0YfbtVtU0Qtuf7QSNknImsCmjkLZwLjvtGPXQT12jE65RugAG3rYtI4QaCDjO/uZHYQps4GSSWor9xUez5gkgvGQcLs1QymfoFlxoFxkeN/bNCSeubSZj1tjgg+Mbyv2ivdf3ujTBgHWL59YhfBX1tyUaJmeUJ+cOcw907uOrry9rrXRdJg50XOOjrAF6GDhUKu6WOa1n/npASv667mDMQhleDO/Kfv9uHdRs0LhWBZJModnFnJGaMpSMANpjgJ9rSfZJ/hIZgVCEbi7fhSCQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Pf90ESZOBi53p7G/f1pvEAcOLmBdIK9wB2OPMjXLD2M=;
- b=MXYCPH393ifZlF9R+HQs0JBvv3DEaRsMJOncEzth1t3mPNCkKhwUytVzZvXx/KD5T6hVcCt2t8kKo3MdcPIRbvQMlgNWkgH2b6u64+/IUIemqvwtxdsVIRLAFrgr+S5NLgxuFhkkRQRIAXleCnm0rUIvRv+edZCTfot1qyAbdmmYJGaaLZI67+vErDKxOqcXYmN/pkNGR5GVturHx+WL4AT0rOB3W5Eg9tNYgDrKTByk2Up0+c2gfBEyEF6GnQcRufqQYwKfTTg0+HepCv3RFJ2+EVPkStWXHuSoA35J+66FPdF+Ymd+vl5VCgWr7nL+tMFRVK7Tnn9nSOCpOF+WFw==
+ bh=oxxVNBrZ4r0vw3uTcY4JjgG2wP9XSDgdm+0xK5VMZqA=;
+ b=OiNCTwNIylnbqjw3X0D73CqUTKESCHJaxgJefuizkMBdSL5T5coN/1hkVB8IcFn5mJOmqjcIZe/0H8gdcOfRUc6KdQXmF070UEqJVVhgdKerZ/ZjGkkim26C0lTrLaUOoek576xtDdf3iWA6UJgcFQ9kCLtXNvmYdZd6cyJlEcJImz5oh7yhthAyog4MP7pzVHbh5eQmimnHOzhDHLPGjcuFGyf8k6nyryoAFq39232/zui3AoHVgHxqjPOvyzDd0hSHdO03V0ea3P//EnfqzrYU6POw4Xwa5u1KYd77NVMEOFevE+TDo4oNalBwydRB2dNCFsASw9z/pp0w3PKP4A==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com (2603:10b6:930:24::22)
  by DM5PR12MB1193.namprd12.prod.outlook.com (2603:10b6:3:70::9) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5353.16; Sun, 19 Jun 2022 10:29:52 +0000
+ 15.20.5353.16; Sun, 19 Jun 2022 10:30:00 +0000
 Received: from CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::9157:69c9:ea8f:8190]) by CY5PR12MB6179.namprd12.prod.outlook.com
  ([fe80::9157:69c9:ea8f:8190%9]) with mapi id 15.20.5353.014; Sun, 19 Jun 2022
- 10:29:52 +0000
+ 10:30:00 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, petrm@nvidia.com, amcohen@nvidia.com,
         mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 00/13] mlxsw: Unified bridge conversion - part 1/6
-Date:   Sun, 19 Jun 2022 13:29:08 +0300
-Message-Id: <20220619102921.33158-1-idosch@nvidia.com>
+Subject: [PATCH net-next 01/13] mlxsw: reg: Add 'flood_rsp' field to SFMR register
+Date:   Sun, 19 Jun 2022 13:29:09 +0300
+Message-Id: <20220619102921.33158-2-idosch@nvidia.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220619102921.33158-1-idosch@nvidia.com>
+References: <20220619102921.33158-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: MRXP264CA0038.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:500:14::26) To CY5PR12MB6179.namprd12.prod.outlook.com
+X-ClientProxiedBy: MRXP264CA0033.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:500:14::21) To CY5PR12MB6179.namprd12.prod.outlook.com
  (2603:10b6:930:24::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9312c68d-7dc0-428c-05a9-08da51dea51d
+X-MS-Office365-Filtering-Correlation-Id: 50ff892c-fa24-422a-2f77-08da51dea9f5
 X-MS-TrafficTypeDiagnostic: DM5PR12MB1193:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR12MB11931235FB5C203D67A45DB8B2B19@DM5PR12MB1193.namprd12.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DM5PR12MB1193FB9B97017F38DA7EF115B2B19@DM5PR12MB1193.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +EHZ5p1iql9Pa9Rhcq25Mkpv1dLqSIaZYsg87eJPufATHp6GHQF42QFqx/yFruef+ZqtSXgIwzhiqdXl9yekB/t9i27skdA2KNZ9fNyyiSeQv1yLQP5IhxtU5XgcuFb7xaX9hLxA2IXRZfPcZ5ljn7aBJ05LZfqsl/pXGvjslFg91k94RKB3D67phb02oBkbdkBCwwsUInX3JDUyNQmZP7ezjmfCCCIYpz3uC8IrUSRj4ZxbSyUiwIOTxxztjcGu97MMcVFYXDPgsgSpHfCE8SM6WRW1Qu4+OuwqZAqt04vDRGV9/xoRr15DLuuC/muzxxzBGbfV6rMQSLQ79AFRsgn4zO7OHRaT5IvFj4bGFGO/p+IHcMlOlk+Y/otFbEpaWlO83D7TIIrXVB98XzdBt9So5Kf3jmm/1pT1d+F9w8Gn6En2gwopDuAJPcmqgRcbJnvaNV62Q80/eWvgQG6rLqJJKkG6VhwbdxUVvy7KFpozhvtl4sFI2LlIchzkyfwloGA69ZjLpSRvO7w8vUD8iNP/M1VsGwWw5+YzenoSvsWEKHV6twNST1aRJmh+6pVZysXZk9mmJPRsyLXNV6Gj9rhbRK0QVXUj5w/lRAr37d/eUWHzyx7xUcYBbf0EQvAJASNiDwGx/uCXcdHVSgkUyA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(83380400001)(36756003)(26005)(66574015)(107886003)(2906002)(1076003)(186003)(2616005)(4326008)(8676002)(6506007)(6666004)(66556008)(86362001)(66946007)(8936002)(66476007)(5660300002)(6916009)(6512007)(38100700002)(6486002)(498600001)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: huTCIfH7qoHpHUaVMKmmgRBCGBFwVmj8W1iqtai1YdPICY2AldpKdIF5B1LLR9spvcXXd8XvHT/sUbflV+YEPsgnoSObfc4+HhQ7YPyiufE32MD+SQWzlYE2E4VNh75OFdTCiiIids17F5nEv9nt/edAZl6PHd1lfSS+y9BGgBhI00zLVDYfnL1ombiPPDVuhAFj0AvNn8BuWGcoGNjRN4tC8z+u9dbClny3H8zDokGI2jPfNi1z3hEcPOUsSTB51oso62c26Mg6i1fmDJ2MJhAdfVFZEVTpjEVKsgFjTPuSVN86Ah3+6IbfOsywNVciEilF0vyGZUNheIO6XRbg3on+2DKTiSS4rACP+KIYqfckW7ud4S+swaxllCrKoHtFAZB+Lg17llFfSpCsfL7LcVs3zKOlQl6MqWMltkQfB5cButSCFBqqDJdWlEMAcMJwrVBMzutrphzahTbJpTllN9xdD2Z8DtzeS5Aby7R1sYi21bBCiSD89BXAp3kISZHDi3Y2ERd7E8BlE2BZXSicVGH1MtDnrkLVmgpkuIzox60ZhFEYKgUGF43FQbf4I09WfkHlfcCqFhsyov3Z/mqN6pJ4RPiizt9Bs5sAdIjeJEYk8fvog+wdQFg24IlfrTqe2B0aOfvfI7UJ274iqOqXMw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY5PR12MB6179.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(83380400001)(36756003)(26005)(66574015)(107886003)(2906002)(1076003)(186003)(2616005)(4326008)(8676002)(6506007)(66556008)(86362001)(66946007)(8936002)(66476007)(5660300002)(6916009)(6512007)(38100700002)(6486002)(498600001)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?98hcaKqYzQQLffCuXb43OzyIGRl23INq2MvxcDBM+EYuQ1iXsbxn+wNtF7t+?=
- =?us-ascii?Q?OSofYSyBZEA0t4nmb4nys4+O55Y14xgUdDScNrsy37dIu7NVTF4nz4/fvXDB?=
- =?us-ascii?Q?C4V8saW8GRbfzAzsGKgy6jCIt3E96T4962AH0GS4gxLlZuWba8beamuVCcdq?=
- =?us-ascii?Q?GiYrIflByNDCUeQfaXU0XHkp3gKO8w0/TDg8+HCSGZbENZTY0YcMcDp4fLRF?=
- =?us-ascii?Q?alSPx1cF4CKSFnlUiO/dZQKtvLTwMINsGQ2N2fjryzNWjUadw2MwMIbYfTUS?=
- =?us-ascii?Q?ktI1b4Xp04yDnL3QdJ+YakbhqhB4H5WSw1blM6+GDz0GQTPHWQUh8aV5lpsZ?=
- =?us-ascii?Q?t8axuGk7cMlGL7tSvyTT2rfujSibKQaAnjXzdVvR1Np+d2ngNE3mQaxKpfJe?=
- =?us-ascii?Q?zi//AFB25GZG51HelARc5XSup3ZAT1RSzEQTQbMFmkh8Fst2XNN8KfNXyUtd?=
- =?us-ascii?Q?mO1VBCyiGsmtOKqx7Ys3+gxP0dJtLsFiMy/vxDn1PJEuOC3eL0VCVdwktGn0?=
- =?us-ascii?Q?lPGxEit5YA0pZ+mhb1HpFE6s6pnc4/3CD+wG7tl+H/c7RY5KZV4P7fDehdkc?=
- =?us-ascii?Q?+Ky4Uv8WHOvwhHYPENAig3/9y+x3Vgkew8LLrkqMKuEBQFXiEyGvcFjaNYNS?=
- =?us-ascii?Q?gZ3oIDRrN4E90cCKi9Ze5iwwvXqFmr7o3Q/5M5eEi/GUncdVj7TQv+Y2NUrV?=
- =?us-ascii?Q?5tMc8Bty9ZRGg7yLdJRCM0WDWchwwa7Ts2cZNzHkWbSpxaE35JMlHDe/Vn2e?=
- =?us-ascii?Q?C6JwugmVxlFx2t5Gly14S8GvyZcfCX9HHdo7ENhoQj9HUO/vqS0iTozslAOY?=
- =?us-ascii?Q?yfScar+MjVh+PXw14CMLV9/z/cvOhv9eY5TWyw4s9NTZCB1ZUYbjft9SNjSE?=
- =?us-ascii?Q?o4DfHOb6C0D5MEQ2pBVwlKIJ+N/B1jUnMFRdgSJ2P3wtzMKTpXJ0OvX5j8xk?=
- =?us-ascii?Q?lhfWG2MhFJyUtBPGXSQcNnYyTjB+ft0Z9lg/ECdOcc5Q4qRxyYFFeeOYsICP?=
- =?us-ascii?Q?LCqHW3ES6Tq6NYWEGcEURJyXxuAHI4aAJC2MeZB8CMDgIQqtcYPazrA+G0hw?=
- =?us-ascii?Q?ZDP2P4F5WAfq9gFsiLK1AA47vvIoolU2iTCKXZw4/7d5TJhKeHSYWMNATuLb?=
- =?us-ascii?Q?q4eX5QRAufIBxmVLlUI/ITcxfxHJ7WzPEdZPXHQZwrji3MHVdf/bsyz4DXom?=
- =?us-ascii?Q?HKTJtCWgNt0dKgMTM9Eea8x1NF94et2EfDlcj2igsg/LDhqYk8CUEuAHCw+R?=
- =?us-ascii?Q?GFQVdIIKGyMKZGMOReDywxgu5Dsygf0MAeao6nMcy2k9sa+kc8965Vjx/58z?=
- =?us-ascii?Q?GnOzaC4AsjPNC+MaiVkDM3AfYxig86owJ69Q5h0LB9YnDtOJW6Vak7M1AYA8?=
- =?us-ascii?Q?LjjR/fUdEHbVi0s4lnL6QJKoP3msQjb7LwF9fAIO/TCVIv142N0Q4isFk7b5?=
- =?us-ascii?Q?QShz8FtKHbxaliCFUFbIQzFekGwG4rHv+0sHQCvR+PGsFQfUwRnhQXkxWLQ0?=
- =?us-ascii?Q?8gZT63drccfksC2xRNEcGCQmM+WtTIhPtKJMRKGiNoNB8rwZGJPys8dJcBOF?=
- =?us-ascii?Q?cqC4/oVse9+e2drswKcXDDsf7GV++qCz17Ge7IpVK+K94rr6T8u5i4VFwKmJ?=
- =?us-ascii?Q?yoTKVdOYo0WcgmibIW//xs00JDMBnFKgRTc+TcJyzoZ0+9HG5tIdr+2NWUsD?=
- =?us-ascii?Q?9JnU/aS5ltWjJ5WYvNkDvvSevp2zkYy+jFEkeZg73t+KJBCWUJqTcmPqv8u+?=
- =?us-ascii?Q?DWmHUjdzNw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ymuQ+4SN60BTrPj7ly2hotqf78X1vdSvf4w6S5P0rdgBriB/iLo+jK8cWJMd?=
+ =?us-ascii?Q?YNuQmlR1faF1GtEcWtL87CqwNhs+r9FAHfWlJLIAEU9+TiD67kQdj/VZs/Z3?=
+ =?us-ascii?Q?OGFiul258PjlsuAOjTNboVnwX2xZsT0iUVTST3YxcY4SL3I0f0c8ikf/et+t?=
+ =?us-ascii?Q?C1xOL/DdS1zj33UjqDobdxsl828faffgqwsQ3+Zy9YusJGznFoVNEP/MYh2v?=
+ =?us-ascii?Q?KPEDQ0w4iCcQRpPWZvIrLdXeK1eUeHr3sylD5jGGT2zlrvXd1ik+jft8H3/E?=
+ =?us-ascii?Q?qgBm0kh38ftv3GBTt42QArcUHayb5keqpHNB6z9q+Wb90X9KXVF8f9U0iOia?=
+ =?us-ascii?Q?GWJ1l91z8jPn9fYcWhoEb1XezHrTySCMX3MTpfUYflGdXnYi+ZHTh4xuTS7j?=
+ =?us-ascii?Q?IYaz+yCZi+Jnt4I09e4svzbdA61XxYjJEf0dyxxdzVW7DS+eiQtOMxc4oGiv?=
+ =?us-ascii?Q?QUJw11suAaTKptONocphMgkN+MrMtQxT4YCf6OSezfQrRUU63xRRhf//FRm0?=
+ =?us-ascii?Q?3h1ipELCjQP579SMxds0Nzh+NxK8q92DAfXSdCoRY3WEmmV00RuwIM08x7b8?=
+ =?us-ascii?Q?nYg1vdu3loLJyBh+NcjkDFxt73ixrG3Z0X8/kOL+t9gvJfPpthZmpE9xpjKU?=
+ =?us-ascii?Q?KLxUkptl1m6F8ZHDJx3g6IEvabu1g2KGyROQDWNSfUZ6C8RdlsaxBGqBOWqp?=
+ =?us-ascii?Q?VuTkq8d43ClClA5MjL+vVv5FO+Wv+Eibf5jgIRi5a6wCd1oHWozx8T/tvECg?=
+ =?us-ascii?Q?z7i5bYh2UPcPikORpGmnScu6NWAZsylNfV35/55iY3qIasU5j4vxelBy1cr/?=
+ =?us-ascii?Q?O2rj0TlHTn+8lstUBz82sTGLByY0Ox18MhEVUFsR1Qy8LU1e9zcm3Nhh/Oy8?=
+ =?us-ascii?Q?NjyvNHb5+tKif6iXD0Vc71bhrZa66VPVwtBcIfXbl+UcO0DV4R3Va5bcKVbI?=
+ =?us-ascii?Q?An/+xc3en48Lym/26TbS/xMOCOQKdIALsaHLuJyCuVS3Pp7hw08OaNGDJLKm?=
+ =?us-ascii?Q?23vbRZyPVVNGGt4aIWT4uap0ZnRKHoPhvdo7zPz1YqzaoIkSpNmWsUGnu/JY?=
+ =?us-ascii?Q?RmC5HRqzpCOJz75SxlKZH8pQATMKk+RKJqob7KzCzlMtJ+xuwn13IBZEpeJe?=
+ =?us-ascii?Q?+dKXmROqw7jvZ5v6IN/ZiuNhnkV1p9Lj/AebsSLvYfwCaH6Z1XAZCiAHbi0g?=
+ =?us-ascii?Q?MQMcMbw7IWUjuJNFA6+sTDg3Xi7Ki5ud6eroQA1I/SakxJszvDuNwG0yU/k/?=
+ =?us-ascii?Q?L7k9iHBnEDc8h6ZLVCueYcdE1PkWlv2ILW59pa87a2oRo5djmVDsEcZfw0a+?=
+ =?us-ascii?Q?zM/X9YPrdbDxhOFMHEDcLnhoLd19ImklsugDYAU6UM3Nx3mYezZHEDwxNtkp?=
+ =?us-ascii?Q?kQKZoTFfivxtqFosjdzUxVxV3RVSAdjITfYLP+eBEXJlywlBhXfDUsikEfa2?=
+ =?us-ascii?Q?otb5fkzJVErNymisZVsMjYHz6/P6oVRDJTHetFwQCxM0lneHdUYkKLD6vqe+?=
+ =?us-ascii?Q?4hpLQFvrEY/5hKN9BTPRv+nu9N5A3zHaqMAX/BLrkpzM0CDwz/xy/KVuZ0xN?=
+ =?us-ascii?Q?wZMD2ewRDK1pp1jssbWFTgE2eXDBJjiRIdAhtR/W9tpqZO4p0y0d4UJOKWFQ?=
+ =?us-ascii?Q?0slwJxXGhwkuDpNVy+yW6jRz5C1zlMmvFSA8LxafxaCc96+6kGhstnf5BXYz?=
+ =?us-ascii?Q?BWu1jby4sWTo5wmNwygWaOTlC6kg0iLSDMqrUlE0NcMZl40bCxWY9mnXHUeA?=
+ =?us-ascii?Q?6awHJGZmww=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9312c68d-7dc0-428c-05a9-08da51dea51d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50ff892c-fa24-422a-2f77-08da51dea9f5
 X-MS-Exchange-CrossTenant-AuthSource: CY5PR12MB6179.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jun 2022 10:29:52.2484
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jun 2022 10:30:00.3447
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3R2g9oU2/+igBHlAHTLWNFTck9wv02cmkVE+UudNcm/i26351SduY0Roy/JcJKbPYFPoV6UV6QYoQhPfrv9buQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: b77xVHp19y2oOMNOys8nV0FqrQcHfVecYeT9MDiyK+gS+2qanFbij7pxPHo6T6tYd2vNv2ARIhdsY24njUCRAA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1193
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -115,70 +117,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This set starts converting mlxsw to the unified bridge model and mainly
-adds new device registers and extends existing ones that will be used in
-follow-up patchsets.
+From: Amit Cohen <amcohen@nvidia.com>
 
-High-level summary
-==================
+SFMR register creates and configures FIDs. As preparation for unified
+bridge model, add a field for future use.
 
-The unified bridge model is a new way of managing low-level device
-objects such as filtering identifiers (FIDs). The conversion moves a lot
-of logic out of the device's firmware towards the driver, but its main
-selling point is that it allows to overcome various scalability issues
-related to the amount of entries that need to be programmed to the
-device.
+In the new model, RITR no longer configures the rFID used for sub-port RIFs
+and it has to be created by software via SFMR. Such FIDs need to be created
+with special flood indication using 'flood_rsp' field. When set, this bit
+instructs the device to manage the flooding entries for this FID in a
+reserved part of the port group table (PGT).
 
-The only (intended) user visible changes of the conversion are
-improvement in resource utilization and ability to support more router
-interfaces (RIFs) in Spectrum-{2,3}.
+Signed-off-by: Amit Cohen <amcohen@nvidia.com>
+Reviewed-by: Petr Machata <petrm@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-Details
-=======
-
-Commit 50853808ff4a ("Merge branch
-'mlxsw-Prepare-for-VLAN-aware-bridge-w-VxLAN'") converted mlxsw to
-emulate 802.1Q FIDs (represent VLANs in a VLAN-aware bridge) using
-802.1D FIDs (represent VLAN-unaware bridges). This was necessary because
-at that time VNI could not be assigned to 802.1Q FIDs, which effectively
-meant that mlxsw could not support VXLAN with VLAN-aware bridges.
-
-The downside of this approach is that multiple {Port,VID}->FID entries
-are required in order to classify incoming traffic to a FID, as opposed
-to a single VID->FID entry that can be used with actual 802.1Q FIDs.
-
-For example, if 10 ports are members in the same VLAN-aware bridge and
-the same 100 VLANs are configured on each port, then only 100 VID->FID
-entries are required with 802.1Q FIDs, whereas 1000 {Port,VID}->FID
-entries are required with emulated 802.1Q FIDs.
-
-The above limitation is the result of various assumptions that were made
-in the design of the API that was exposed to software. In the unified
-bridge model the API is much more "raw" and therefore avoids these
-assumptions, allowing software to configure the device in a more
-efficient manner.
-
-Amit Cohen (13):
-  mlxsw: reg: Add 'flood_rsp' field to SFMR register
-  mlxsw: reg: Add ingress RIF related fields to SFMR register
-  mlxsw: reg: Add ingress RIF related fields to SVFA register
-  mlxsw: reg: Add Switch Multicast Port to Egress VID Register
-  mlxsw: Add SMPE related fields to SMID2 register
-  mlxsw: reg: Add SMPE related fields to SFMR register
-  mlxsw: reg: Add VID related fields to SFD register
-  mlxsw: reg: Add flood related field to SFMR register
-  mlxsw: reg: Replace MID related fields in SFGC register
-  mlxsw: reg: Add Router Egress Interface to VID Register
-  mlxsw: reg: Add egress FID field to RITR register
-  mlxsw: Add support for egress FID classification after decapsulation
-  mlxsw: reg: Add support for VLAN RIF as part of RITR register
-
- drivers/net/ethernet/mellanox/mlxsw/port.h    |   2 -
- drivers/net/ethernet/mellanox/mlxsw/reg.h     | 353 ++++++++++++++++--
- .../ethernet/mellanox/mlxsw/spectrum_fid.c    |   4 +-
- .../mellanox/mlxsw/spectrum_switchdev.c       |   7 +-
- 4 files changed, 335 insertions(+), 31 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index d830a35755a8..18b9fbf11d71 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -1764,6 +1764,18 @@ MLXSW_ITEM32(reg, sfmr, op, 0x00, 24, 4);
+  */
+ MLXSW_ITEM32(reg, sfmr, fid, 0x00, 0, 16);
+ 
++/* reg_sfmr_flood_rsp
++ * Router sub-port flooding table.
++ * 0 - Regular flooding table.
++ * 1 - Router sub-port flooding table. For this FID the flooding is per
++ * router-sub-port local_port. Must not be set for a FID which is not a
++ * router-sub-port and must be set prior to enabling the relevant RIF.
++ * Access: RW
++ *
++ * Note: Reserved when legacy bridge model is used.
++ */
++MLXSW_ITEM32(reg, sfmr, flood_rsp, 0x08, 31, 1);
++
+ /* reg_sfmr_fid_offset
+  * FID offset.
+  * Used to point into the flooding table selected by SFGC register if
 -- 
 2.36.1
 
