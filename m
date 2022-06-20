@@ -2,43 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B265551919
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 14:39:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7752551932
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 14:43:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242705AbiFTMjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 08:39:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54044 "EHLO
+        id S240227AbiFTMnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 08:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242407AbiFTMjn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 08:39:43 -0400
+        with ESMTP id S233887AbiFTMn1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 08:43:27 -0400
 Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 524ACA1A6;
-        Mon, 20 Jun 2022 05:39:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42445F9F;
+        Mon, 20 Jun 2022 05:43:25 -0700 (PDT)
 Received: from sslproxy04.your-server.de ([78.46.152.42])
         by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <daniel@iogearbox.net>)
-        id 1o3Ggo-0003VL-Sd; Mon, 20 Jun 2022 14:39:34 +0200
+        id 1o3GkV-0004H2-Co; Mon, 20 Jun 2022 14:43:23 +0200
 Received: from [2a02:168:f656:0:d16a:7287:ccf0:4fff] (helo=localhost.localdomain)
         by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <daniel@iogearbox.net>)
-        id 1o3Ggo-000V6U-Lu; Mon, 20 Jun 2022 14:39:34 +0200
-Subject: Re: [PATCH bpf-next v2] libbpf: Include linux/log2.h to use
- is_power_of_2()
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
+        id 1o3GkU-000RhI-UM; Mon, 20 Jun 2022 14:43:22 +0200
+Subject: Re: [PATCHv5 bpf-next 1/1] perf tools: Rework prologue generation
+ code
+To:     Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>
-Cc:     Pavel Machek <pavel@ucw.cz>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <1655713404-7133-1-git-send-email-yangtiezhu@loongson.cn>
+Cc:     linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Ian Rogers <irogers@google.com>
+References: <20220616202214.70359-1-jolsa@kernel.org>
+ <20220616202214.70359-2-jolsa@kernel.org>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <8e5291b7-bd89-6fea-bfb7-954cacdb8523@iogearbox.net>
-Date:   Mon, 20 Jun 2022 14:39:34 +0200
+Message-ID: <72122b4e-1056-7392-f9eb-6ea4c0a79529@iogearbox.net>
+Date:   Mon, 20 Jun 2022 14:43:22 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <1655713404-7133-1-git-send-email-yangtiezhu@loongson.cn>
+In-Reply-To: <20220616202214.70359-2-jolsa@kernel.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -53,73 +62,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/20/22 10:23 AM, Tiezhu Yang wrote:
-> is_power_of_2() is already defined in tools/include/linux/log2.h [1],
-> so no need to define it again in tools/lib/bpf/libbpf_internal.h, so
-> just include linux/log2.h directly.
+On 6/16/22 10:22 PM, Jiri Olsa wrote:
+> Some functions we use for bpf prologue generation are going to be
+> deprecated. This change reworks current code not to use them.
 > 
-> [1] https://lore.kernel.org/bpf/20220619171248.GC3362@bug/
+> We need to replace following functions/struct:
+>     bpf_program__set_prep
+>     bpf_program__nth_fd
+>     struct bpf_prog_prep_result
 > 
-> Suggested-by: Pavel Machek <pavel@ucw.cz>
-> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
-> ---
->   tools/lib/bpf/libbpf.c          | 2 +-
->   tools/lib/bpf/libbpf_internal.h | 6 +-----
->   tools/lib/bpf/linker.c          | 2 +-
->   3 files changed, 3 insertions(+), 7 deletions(-)
+> Currently we use bpf_program__set_prep to hook perf callback before
+> program is loaded and provide new instructions with the prologue.
 > 
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 49e359c..5252e51 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -5131,7 +5131,7 @@ static size_t adjust_ringbuf_sz(size_t sz)
->   	 * a power-of-2 multiple of kernel's page size. If user diligently
->   	 * satisified these conditions, pass the size through.
->   	 */
-> -	if ((sz % page_sz) == 0 && is_pow_of_2(sz / page_sz))
-> +	if ((sz % page_sz) == 0 && is_power_of_2(sz / page_sz))
->   		return sz;
->   
->   	/* Otherwise find closest (page_sz * power_of_2) product bigger than
-> diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-> index a1ad145..021946a 100644
-> --- a/tools/lib/bpf/libbpf_internal.h
-> +++ b/tools/lib/bpf/libbpf_internal.h
-> @@ -13,6 +13,7 @@
->   #include <limits.h>
->   #include <errno.h>
->   #include <linux/err.h>
-> +#include <linux/log2.h>
->   #include <fcntl.h>
->   #include <unistd.h>
->   #include "libbpf_legacy.h"
-> @@ -582,9 +583,4 @@ struct bpf_link * usdt_manager_attach_usdt(struct usdt_manager *man,
->   					   const char *usdt_provider, const char *usdt_name,
->   					   __u64 usdt_cookie);
->   
-> -static inline bool is_pow_of_2(size_t x)
-> -{
-> -	return x && (x & (x - 1)) == 0;
-> -}
+> We replace this function/ality by taking instructions for specific
+> program, attaching prologue to them and load such new ebpf programs
+> with prologue using separate bpf_prog_load calls (outside libbpf
+> load machinery).
+> 
+> Before we can take and use program instructions, we need libbpf to
+> actually load it. This way we get the final shape of its instructions
+> with all relocations and verifier adjustments).
+> 
+> There's one glitch though.. perf kprobe program already assumes
+> generated prologue code with proper values in argument registers,
+> so loading such program directly will fail in the verifier.
+> 
+> That's where the fallback pre-load handler fits in and prepends
+> the initialization code to the program. Once such program is loaded
+> we take its instructions, cut off the initialization code and prepend
+> the prologue.
+> 
+> I know.. sorry ;-)
+> 
+> To have access to the program when loading this patch adds support to
+> register 'fallback' section handler to take care of perf kprobe programs.
+> The fallback means that it handles any section definition besides the
+> ones that libbpf handles.
+> 
+> The handler serves two purposes:
+>    - allows perf programs to have special arguments in section name
+>    - allows perf to use pre-load callback where we can attach init
+>      code (zeroing all argument registers) to each perf program
+> 
+> Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 
-I don't think this is worth the extra pain and I would just leave above as-is, because then
-we would also need a `LGPL-2.1 OR BSD-2-Clause` compatible reimplementation of linux/log2.h
-header inside the standalone repo https://github.com/libbpf/libbpf/tree/master/include/linux
-in order to build libbpf there once this get imported to it.
+Hey Arnaldo, if you get a chance, please take a look.
 
->   #endif /* __LIBBPF_LIBBPF_INTERNAL_H */
-> diff --git a/tools/lib/bpf/linker.c b/tools/lib/bpf/linker.c
-> index 4ac02c2..b2edb5f 100644
-> --- a/tools/lib/bpf/linker.c
-> +++ b/tools/lib/bpf/linker.c
-> @@ -719,7 +719,7 @@ static int linker_sanity_check_elf(struct src_obj *obj)
->   			return -EINVAL;
->   		}
->   
-> -		if (sec->shdr->sh_addralign && !is_pow_of_2(sec->shdr->sh_addralign))
-> +		if (sec->shdr->sh_addralign && !is_power_of_2(sec->shdr->sh_addralign))
->   			return -EINVAL;
->   		if (sec->shdr->sh_addralign != sec->data->d_align)
->   			return -EINVAL;
-> 
-
+Thanks a lot,
+Daniel
