@@ -2,1314 +2,951 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F12465525BE
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 22:26:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F5B75525E5
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 22:39:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344511AbiFTU0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 16:26:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
+        id S243685AbiFTUjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 16:39:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343931AbiFTU0L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 16:26:11 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60130.outbound.protection.outlook.com [40.107.6.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3472C1573D;
-        Mon, 20 Jun 2022 13:26:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U+hx2cLirGZg9tnWuqNmsxSwYvroo4A3HmeF9eSAH9z0wiI6nt2LG3IYro8TinY7S2u0UaQqUqBd2CtByR9xnCPRqbxIR8s2p4dh+W3rJ65r1aQZoqm/2iwlpy1EIWKvevWNaWv9i0HU1BJ+VjSG78pdPKblodxDM6p0hbpLCrNlqoedObiDS0IAYLV5lV4LNXAt18ejMXwaB20kospatAkyf41xTQVE6f7UQDHA+42NvWBW/7sBBgHP683Ilt0ceT52HnKIjyYfhUFZ1lpsCbCjBZrqrQQgCf+i+xukboJGSoUws9U8r8Y8nsrMJehm5kJodZgU34sbHldf+SVm3g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WoNPji7QrhRjlWU0qxvxSQvH9jt/B+/eKHLsA27IhyA=;
- b=B/tNJE0l0lvIIVLQPJr++B1c66lgzUeHygUdbo+S20JKyz3G3T57dGOamxvfy2gAWBO2guBdDK/YezwBCqqJ369TvHF4lQOhTj/TZZ+HZUU34KVa4XO/mMnLcb5QInzGa2TNMcTZ1nkcxhjBW7h819tjItpZ5YokvetbeI0zZFkNrx9+Pi7Zs3G1ELtHEbc79gSkkUYuasqB1iC9vSpXMsqY0e0VDZizlKXD37/Q4kFtbmPdBuQCqpJYQOAsovI9PRRrhpuwgqzM/3bGuLDjWIti8q+4T410Dbnhn1P16j0vXZkOvIy5QeL5P09zeExf6iqKTrCnZfzAM2AzwxGrbQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 217.86.141.140) smtp.rcpttodomain=esd.eu smtp.mailfrom=esd.eu;
- dmarc=bestguesspass action=none header.from=esd.eu; dkim=none (message not
- signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=esdhannover.onmicrosoft.com; s=selector1-esdhannover-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WoNPji7QrhRjlWU0qxvxSQvH9jt/B+/eKHLsA27IhyA=;
- b=EgK9XTB3RyVMwVTi6Mxe/LuD6Te0BRpH/GtDM3H0zxMe/iQv23gBNAMtktxGNKFQU0SVb3CM+J+VzhJ6RYz53M8fEMUlnPfkDqQ4H5DOLtswYBMufjmWXqeupAWnAyrdLT2quBcJq7PH0EX2u8NDqEEy3hW8k9SRe9rWEIcyMmU=
-Received: from AM6PR04CA0065.eurprd04.prod.outlook.com (2603:10a6:20b:f0::42)
- by PA4PR03MB7246.eurprd03.prod.outlook.com (2603:10a6:102:bc::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.22; Mon, 20 Jun
- 2022 20:26:04 +0000
-Received: from VI1EUR06FT062.eop-eur06.prod.protection.outlook.com
- (2603:10a6:20b:f0:cafe::94) by AM6PR04CA0065.outlook.office365.com
- (2603:10a6:20b:f0::42) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.22 via Frontend
- Transport; Mon, 20 Jun 2022 20:26:04 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 217.86.141.140)
- smtp.mailfrom=esd.eu; dkim=none (message not signed)
- header.d=none;dmarc=bestguesspass action=none header.from=esd.eu;
-Received-SPF: Pass (protection.outlook.com: domain of esd.eu designates
- 217.86.141.140 as permitted sender) receiver=protection.outlook.com;
- client-ip=217.86.141.140; helo=esd-s7.esd; pr=C
-Received: from esd-s7.esd (217.86.141.140) by
- VI1EUR06FT062.mail.protection.outlook.com (10.13.6.85) with Microsoft SMTP
- Server id 15.20.5353.14 via Frontend Transport; Mon, 20 Jun 2022 20:26:04
- +0000
-Received: from esd-s20.esd.local (debby [10.0.0.190])
-        by esd-s7.esd (Postfix) with ESMTPS id CEA377C16C8;
-        Mon, 20 Jun 2022 22:26:03 +0200 (CEST)
-Received: by esd-s20.esd.local (Postfix, from userid 2046)
-        id AD4D82E4AED; Mon, 20 Jun 2022 22:26:03 +0200 (CEST)
-From:   Frank Jungclaus <frank.jungclaus@esd.eu>
-To:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Frank Jungclaus <frank.jungclaus@esd.eu>
-Subject: [PATCH 1/1] can/esd_usb2: Added support for esd CAN-USB/3
-Date:   Mon, 20 Jun 2022 22:26:03 +0200
-Message-Id: <20220620202603.2069841-2-frank.jungclaus@esd.eu>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220620202603.2069841-1-frank.jungclaus@esd.eu>
-References: <20220620202603.2069841-1-frank.jungclaus@esd.eu>
+        with ESMTP id S242151AbiFTUjE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 16:39:04 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A501ADA4;
+        Mon, 20 Jun 2022 13:39:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:From:References:Cc:To:
+        Subject:MIME-Version:Date:Message-ID:Content-Type:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=+nmqIsNUoKaFtDpoC/+LrKu+vRjZmRgiFbMW3Dml8zg=; b=cIT67q8OXHegU6u1G/U1olHizc
+        KBUKyoBT/XhnOHAUu3ibW2suZjY1454i3oXipc6eCCqdOaRM9Eip+cjZIwfOQI6aePfnagzTXTNwz
+        WvAXfE0rhIQrQeh9XpC/QJ8okX57Wmml36CP1k+RHOqp4Bno6GXikU1M8iYgEONnM9n4nOd5KZxSw
+        MfqJ878rNx/SBeY6Ccv5rHyVT+6420VJbi8KhmTAmm+w1s+mj+lEiGJMH6mesKITniv2wLPcWjp+F
+        /ZTtt3w3R+n1oIKcRpZZBXSoJPS2HA8VCtUi3z2DtQjqvoVnnXrRGPiXQTDKEdpL+aXHSKbOTmilY
+        CpT3tWOA==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o3O8G-009uAm-Ts; Mon, 20 Jun 2022 20:37:08 +0000
+Content-Type: multipart/mixed; boundary="------------0ZFYScQ7D0hHD0JlJWWWBdxK"
+Message-ID: <de9851c3-5be7-05ee-ded2-77dae7544dbc@infradead.org>
+Date:   Mon, 20 Jun 2022 13:35:45 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 2f0c69c9-f86a-42c3-776f-08da52fb1960
-X-MS-TrafficTypeDiagnostic: PA4PR03MB7246:EE_
-X-Microsoft-Antispam-PRVS: <PA4PR03MB724687DE4086364933AB3DEC96B09@PA4PR03MB7246.eurprd03.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: s5I72UUrLQVPzv7R3gOE+vHxp+5TOW9gofQ8r4i6ERKD3Y4TcFs5VNBEFqTVY9TuBb9CT/s8WutCrAR5OiX+7Z9PYGrNLxgwb5DMT6A81D9MaPwm0X0/JEdCcTC77ZrH+icx52S9WFaRpFST0vsQaHVXjQ12MSYvPAVJ0I3Augss9paq1ENalHwY4zOUGU4CNB956vb3ZRMUTyfEkxt2Y+DGXDXai3ScQbUCXk7/rfZOpU7RTcWjHkoqRhuPa1crsAUPp7M4pU13IdUR3q+WJdvzoDhaEGfUwrig9sk7PzhGtHxWOEv5VxxfyeLuQJU6sy/8SXILdnYSV4OqKK0wXyfGjIOk/BeTD+oadYKOUEQICoC7OMTc4qE51cSoiuefXtFwGOVtaJ2n15xNstiv/jHWnz23xcU7JCvPCSMHopJPIfujlxdgAd1jwuAYV8jTWUFuIFqavGcqRIW/iBs/kvGVmcVd7BzEub1xsFNm6sldlqD+pnWeCpE4l+KMV5M4RU6DVxAhIS+HMFn9we4pyxLTbZJNm1sV6OvFL/jRCvz2AJWDCyX2VeqLAfpUAk5rVh8jmRXw+2rFHVUvjVVFilbO9OoZ0tGDf8YzS772TDV95ShRpvaWyIGuGKINTIIiAf0/ZstTrR/S/YvkAoFNCyQ6TnZV2JOYZxG4aNniPqpUHkEMBxvK+rDu/lTTe+gp
-X-Forefront-Antispam-Report: CIP:217.86.141.140;CTRY:DE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:esd-s7.esd;PTR:pd9568d8c.dip0.t-ipconnect.de;CAT:NONE;SFS:(13230016)(4636009)(396003)(39840400004)(136003)(346002)(376002)(46966006)(36840700001)(2906002)(36756003)(44832011)(40480700001)(82310400005)(4326008)(5660300002)(8936002)(36860700001)(30864003)(8676002)(54906003)(316002)(42186006)(110136005)(478600001)(70206006)(70586007)(26005)(356005)(6266002)(41300700001)(2616005)(1076003)(86362001)(186003)(83380400001)(336012)(47076005)(81166007)(579004);DIR:OUT;SFP:1102;
-X-OriginatorOrg: esd.eu
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 20:26:04.1586
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2f0c69c9-f86a-42c3-776f-08da52fb1960
-X-MS-Exchange-CrossTenant-Id: 5a9c3a1d-52db-4235-b74c-9fd851db2e6b
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=5a9c3a1d-52db-4235-b74c-9fd851db2e6b;Ip=[217.86.141.140];Helo=[esd-s7.esd]
-X-MS-Exchange-CrossTenant-AuthSource: VI1EUR06FT062.eop-eur06.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR03MB7246
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: linux-next: Tree for Jun 20 [drivers/net/pcs/pcs_xpcs.ko]
+Content-Language: en-US
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+References: <20220620184224.48898daa@canb.auug.org.au>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220620184224.48898daa@canb.auug.org.au>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for the newly available esd CAN-USB/3.
----
- drivers/net/can/usb/esd_usb2.c | 647 ++++++++++++++++++++++++---------
- 1 file changed, 467 insertions(+), 180 deletions(-)
+This is a multi-part message in MIME format.
+--------------0ZFYScQ7D0hHD0JlJWWWBdxK
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-diff --git a/drivers/net/can/usb/esd_usb2.c b/drivers/net/can/usb/esd_usb2.c
-index 286daaaea0b8..062f3dd922d2 100644
---- a/drivers/net/can/usb/esd_usb2.c
-+++ b/drivers/net/can/usb/esd_usb2.c
-@@ -1,9 +1,11 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * CAN driver for esd CAN-USB/2 and CAN-USB/Micro
-+ * CAN driver for esd CAN-USB/2, CAN-USB/3 and CAN-USB/Micro
-  *
-- * Copyright (C) 2010-2012 Matthias Fuchs <matthias.fuchs@esd.eu>, esd gmbh
-+ * Copyright (C) 2010-     Matthias Fuchs                          , esd gmbh
-+ * Copyright (C) 2022-     Frank Jungclaus <frank.jungclaus@esd.eu>, esd gmbh
-  */
-+
- #include <linux/signal.h>
- #include <linux/slab.h>
- #include <linux/module.h>
-@@ -14,20 +16,25 @@
- #include <linux/can/dev.h>
- #include <linux/can/error.h>
- 
--MODULE_AUTHOR("Matthias Fuchs <matthias.fuchs@esd.eu>");
--MODULE_DESCRIPTION("CAN driver for esd CAN-USB/2 and CAN-USB/Micro interfaces");
-+MODULE_AUTHOR("Frank Jungclaus <frank.jungclaus@esd.eu>");
-+MODULE_DESCRIPTION("CAN driver for esd CAN-USB/2, CAN-USB/3 and CAN-USB/Micro interfaces");
- MODULE_LICENSE("GPL v2");
- 
--/* Define these values to match your devices */
-+/* USB vendor and product ID */
- #define USB_ESDGMBH_VENDOR_ID	0x0ab4
- #define USB_CANUSB2_PRODUCT_ID	0x0010
- #define USB_CANUSBM_PRODUCT_ID	0x0011
-+#define USB_CANUSB3_PRODUCT_ID	0x0014
- 
-+/* CAN controller clock frequencies */
- #define ESD_USB2_CAN_CLOCK	60000000
- #define ESD_USBM_CAN_CLOCK	36000000
--#define ESD_USB2_MAX_NETS	2
-+#define ESD_USB3_CAN_CLOCK	80000000
-+
-+/* Maximum number of CAN nets */
-+#define ESD_USB_MAX_NETS	2
- 
--/* USB2 commands */
-+/* USB commands */
- #define CMD_VERSION		1 /* also used for VERSION_REPLY */
- #define CMD_CAN_RX		2 /* device to host only */
- #define CMD_CAN_TX		3 /* also used for TX_DONE */
-@@ -36,20 +43,29 @@ MODULE_LICENSE("GPL v2");
- #define CMD_IDADD		6 /* also used for IDADD_REPLY */
- 
- /* esd CAN message flags - dlc field */
--#define ESD_RTR			0x10
-+#define ESD_DLC_RTR		0x10
-+#define ESD_DLC_NO_BRS		0x10
-+#define ESD_DLC_ESI		0x20
-+#define ESD_DLC_FD		0x80
-+
- 
- /* esd CAN message flags - id field */
- #define ESD_EXTID		0x20000000
- #define ESD_EVENT		0x40000000
- #define ESD_IDMASK		0x1fffffff
- 
--/* esd CAN event ids used by this driver */
--#define ESD_EV_CAN_ERROR_EXT	2
-+/* esd CAN event ids */
-+#define ESD_EV_CAN_ERROR	0 /* General bus diagnostics data */
-+#define ESD_EV_BAUD_CHANGE	1 /* Bit rate change event (unused within this driver) */
-+#define ESD_EV_CAN_ERROR_EXT	2 /* CAN controller specific diagnostic data */
-+#define ESD_EV_BUSLOAD		3 /* Busload event (unused within this driver) */
- 
--/* baudrate message flags */
-+/* Baudrate message flags */
- #define ESD_USB2_UBR		0x80000000
- #define ESD_USB2_LOM		0x40000000
- #define ESD_USB2_NO_BAUDRATE	0x7fffffff
-+
-+/* Bit timing CAN-USB/2 */
- #define ESD_USB2_TSEG1_MIN	1
- #define ESD_USB2_TSEG1_MAX	16
- #define ESD_USB2_TSEG1_SHIFT	16
-@@ -64,6 +80,28 @@ MODULE_LICENSE("GPL v2");
- #define ESD_USB2_BRP_INC	1
- #define ESD_USB2_3_SAMPLES	0x00800000
- 
-+/* Bit timing CAN-USB/3 */
-+#define ESD_USB3_TSEG1_MIN	1
-+#define ESD_USB3_TSEG1_MAX	256
-+#define ESD_USB3_TSEG2_MIN	1
-+#define ESD_USB3_TSEG2_MAX	128
-+#define ESD_USB3_SJW_MAX	128
-+#define ESD_USB3_BRP_MIN	1
-+#define ESD_USB3_BRP_MAX	1024
-+#define ESD_USB3_BRP_INC	1
-+/* Bit timing CAN-USB/3, data phase */
-+#define ESD_USB3_DATA_TSEG1_MIN	1
-+#define ESD_USB3_DATA_TSEG1_MAX	32
-+#define ESD_USB3_DATA_TSEG2_MIN	1
-+#define ESD_USB3_DATA_TSEG2_MAX	16
-+#define ESD_USB3_DATA_SJW_MAX	8
-+#define ESD_USB3_DATA_BRP_MIN	1
-+#define ESD_USB3_DATA_BRP_MAX	32
-+#define ESD_USB3_DATA_BRP_INC	1
-+
-+/* Transmitter Delay Compensation */
-+#define ESD_TDC_MODE_AUTO       0
-+
- /* esd IDADD message */
- #define ESD_ID_ENABLE		0x80
- #define ESD_MAX_ID_SEGMENT	64
-@@ -78,15 +116,31 @@ MODULE_LICENSE("GPL v2");
- #define SJA1000_ECC_MASK	0xc0
- 
- /* esd bus state event codes */
--#define ESD_BUSSTATE_MASK	0xc0
-+#define ESD_BUSSTATE_OK         0x00
- #define ESD_BUSSTATE_WARN	0x40
- #define ESD_BUSSTATE_ERRPASSIVE	0x80
- #define ESD_BUSSTATE_BUSOFF	0xc0
-+#define ESD_BUSSTATE_MASK	0xc0
- 
- #define RX_BUFFER_SIZE		1024
- #define MAX_RX_URBS		4
- #define MAX_TX_URBS		16 /* must be power of 2 */
- 
-+/* Modes for NTCAN_BAUDRATE_X */
-+#define ESD_BAUDRATE_MODE_DISABLE          0      /* Remove from bus        */
-+#define ESD_BAUDRATE_MODE_INDEX            1      /* ESD (CiA) bit rate idx */
-+#define ESD_BAUDRATE_MODE_BTR_CTRL         2      /* BTR values (Controller)*/
-+#define ESD_BAUDRATE_MODE_BTR_CANONICAL    3      /* BTR values (Canonical) */
-+#define ESD_BAUDRATE_MODE_NUM              4      /* Numerical bit rate     */
-+#define ESD_BAUDRATE_MODE_AUTOBAUD         5      /* Autobaud               */
-+
-+/* Flags for NTCAN_BAUDRATE_X */
-+#define ESD_BAUDRATE_FLAG_FD     0x0001        /* Enable CAN FD Mode        */
-+#define ESD_BAUDRATE_FLAG_LOM    0x0002        /* Enable Listen Only mode   */
-+#define ESD_BAUDRATE_FLAG_STM    0x0004        /* Enable Self test mode     */
-+#define ESD_BAUDRATE_FLAG_TRS    0x0008        /* Enable Triple Sampling    */
-+#define ESD_BAUDRATE_FLAG_TXP    0x0010        /* Enable Transmit Pause     */
-+
- struct header_msg {
- 	u8 len; /* len is always the total message length in 32bit words */
- 	u8 cmd;
-@@ -119,7 +173,10 @@ struct rx_msg {
- 	u8 dlc;
- 	__le32 ts;
- 	__le32 id; /* upper 3 bits contain flags */
--	u8 data[8];
-+	union {
-+		u8 cc[8];  /* classic CAN */
-+		u8 fd[64]; /* CAN FD */
-+	} data;
- };
- 
- struct tx_msg {
-@@ -127,9 +184,12 @@ struct tx_msg {
- 	u8 cmd;
- 	u8 net;
- 	u8 dlc;
--	u32 hnd;	/* opaque handle, not used by device */
-+	u32 hnd;   /* opaque handle, not used by device */
- 	__le32 id; /* upper 3 bits contain flags */
--	u8 data[8];
-+	union {
-+		u8 cc[8];  /* classic CAN */
-+		u8 fd[64]; /* CAN FD */
-+	} data;
- };
- 
- struct tx_done_msg {
-@@ -149,16 +209,41 @@ struct id_filter_msg {
- 	__le32 mask[ESD_MAX_ID_SEGMENT + 1];
- };
- 
-+struct baudrate_x_cfg {
-+	__le16 brp;          /* Bit rate pre-scaler                   */
-+	__le16 tseg1;        /* TSEG1 register                        */
-+	__le16 tseg2;        /* TSEG2 register                        */
-+	__le16 sjw;          /* SJW register                          */
-+};
-+
-+struct tdc_cfg {
-+	u8 tdc_mode;    /* Transmitter Delay Compensation mode  */
-+	u8 ssp_offset;  /* Secondary Sample Point offset in mtq */
-+	s8 ssp_shift;   /* Secondary Sample Point shift in mtq  */
-+	u8 tdc_filter;  /* Transmitter Delay Compensation       */
-+};
-+
-+struct baudrate_x {
-+	__le16 mode;        /* Mode word                          */
-+	__le16 flags;       /* Control flags                      */
-+	struct tdc_cfg tdc; /* TDC configuration                  */
-+	struct baudrate_x_cfg arb;  /* Bit rate during arbitration phase  */
-+	struct baudrate_x_cfg data; /* Bit rate during data phase         */
-+};
-+
- struct set_baudrate_msg {
- 	u8 len;
- 	u8 cmd;
- 	u8 net;
- 	u8 rsvd;
--	__le32 baud;
-+	union {
-+		__le32 baud;
-+		struct baudrate_x baud_x;
-+	} u;
- };
- 
- /* Main message type used between library and application */
--struct __attribute__ ((packed)) esd_usb2_msg {
-+struct __packed esd_usb_msg {
- 	union {
- 		struct header_msg hdr;
- 		struct version_msg version;
-@@ -171,23 +256,24 @@ struct __attribute__ ((packed)) esd_usb2_msg {
- 	} msg;
- };
- 
--static struct usb_device_id esd_usb2_table[] = {
-+static struct usb_device_id esd_usb_table[] = {
- 	{USB_DEVICE(USB_ESDGMBH_VENDOR_ID, USB_CANUSB2_PRODUCT_ID)},
- 	{USB_DEVICE(USB_ESDGMBH_VENDOR_ID, USB_CANUSBM_PRODUCT_ID)},
-+	{USB_DEVICE(USB_ESDGMBH_VENDOR_ID, USB_CANUSB3_PRODUCT_ID)},
- 	{}
- };
--MODULE_DEVICE_TABLE(usb, esd_usb2_table);
-+MODULE_DEVICE_TABLE(usb, esd_usb_table);
- 
--struct esd_usb2_net_priv;
-+struct esd_usb_net_priv;
- 
- struct esd_tx_urb_context {
--	struct esd_usb2_net_priv *priv;
-+	struct esd_usb_net_priv *priv;
- 	u32 echo_index;
- };
- 
--struct esd_usb2 {
-+struct esd_usb {
- 	struct usb_device *udev;
--	struct esd_usb2_net_priv *nets[ESD_USB2_MAX_NETS];
-+	struct esd_usb_net_priv *nets[ESD_USB_MAX_NETS];
- 
- 	struct usb_anchor rx_submitted;
- 
-@@ -198,36 +284,64 @@ struct esd_usb2 {
- 	dma_addr_t rxbuf_dma[MAX_RX_URBS];
- };
- 
--struct esd_usb2_net_priv {
-+struct esd_usb_net_priv {
- 	struct can_priv can; /* must be the first member */
- 
- 	atomic_t active_tx_jobs;
- 	struct usb_anchor tx_submitted;
- 	struct esd_tx_urb_context tx_contexts[MAX_TX_URBS];
- 
--	struct esd_usb2 *usb2;
-+	struct esd_usb *usb;
- 	struct net_device *netdev;
- 	int index;
- 	u8 old_state;
- 	struct can_berr_counter bec;
- };
- 
--static void esd_usb2_rx_event(struct esd_usb2_net_priv *priv,
--			      struct esd_usb2_msg *msg)
-+static void esd_usb_rx_event(struct esd_usb_net_priv *priv, struct esd_usb_msg *msg)
- {
- 	struct net_device_stats *stats = &priv->netdev->stats;
- 	struct can_frame *cf;
- 	struct sk_buff *skb;
- 	u32 id = le32_to_cpu(msg->msg.rx.id) & ESD_IDMASK;
- 
-+#if defined(DEBUG)
-+	{
-+		static struct esd_usb_msg old_msg;
-+		static u32 rx_event_cnt;
-+
-+		msg->msg.rx.ts = 0;
-+		if (memcmp(msg, &old_msg, 16)) {
-+			netdev_info(priv->netdev,
-+				    "EVENT:%08d: id=%#02x dlc=%#02x %02x %02x %02x %02x - %02x %02x %02x %02x\n",
-+				    rx_event_cnt,
-+				    id,
-+				    msg->msg.rx.dlc,
-+				    msg->msg.rx.data.cc[0],
-+				    msg->msg.rx.data.cc[1],
-+				    msg->msg.rx.data.cc[2],
-+				    msg->msg.rx.data.cc[3],
-+				    msg->msg.rx.data.cc[4],
-+				    msg->msg.rx.data.cc[5],
-+				    msg->msg.rx.data.cc[6],
-+				    msg->msg.rx.data.cc[7]);
-+			memcpy(&old_msg, msg, 16);
-+		}
-+		rx_event_cnt++;
-+	}
-+#endif /* DEBUG */
-+
- 	if (id == ESD_EV_CAN_ERROR_EXT) {
--		u8 state = msg->msg.rx.data[0];
--		u8 ecc = msg->msg.rx.data[1];
--		u8 rxerr = msg->msg.rx.data[2];
--		u8 txerr = msg->msg.rx.data[3];
-+		/* Here, for ESD_EV_CAN_ERROR_EXT we don't need
-+		 * any special treatment for EVMSG_X
-+		 */
-+		u8 state = msg->msg.rx.data.cc[0];
-+		u8 ecc	 = msg->msg.rx.data.cc[1];
-+		u8 rxerr = msg->msg.rx.data.cc[2];
-+		u8 txerr = msg->msg.rx.data.cc[3];
- 
- 		skb = alloc_can_err_skb(priv->netdev, &cf);
--		if (skb == NULL) {
-+		if (!skb) {
- 			stats->rx_dropped++;
- 			return;
- 		}
-@@ -280,7 +394,7 @@ static void esd_usb2_rx_event(struct esd_usb2_net_priv *priv,
- 				cf->data[2] |= CAN_ERR_PROT_TX;
- 
- 			if (priv->can.state == CAN_STATE_ERROR_WARNING ||
--			    priv->can.state == CAN_STATE_ERROR_PASSIVE) {
-+				priv->can.state == CAN_STATE_ERROR_PASSIVE) {
- 				cf->data[1] = (txerr > rxerr) ?
- 					CAN_ERR_CRTL_TX_PASSIVE :
- 					CAN_ERR_CRTL_RX_PASSIVE;
-@@ -293,16 +407,40 @@ static void esd_usb2_rx_event(struct esd_usb2_net_priv *priv,
- 		priv->bec.rxerr = rxerr;
- 
- 		netif_rx(skb);
-+
-+	} else if (id == ESD_EV_CAN_ERROR) {
-+		u8 state = msg->msg.rx.data.cc[1];
-+
-+		/* Switching back to Error Warn and back to Error Passive
-+		 * only is announced by means of a non-extended Error Event ...
-+		 */
-+		switch (state & ESD_BUSSTATE_MASK) {
-+		case ESD_BUSSTATE_OK:
-+			priv->old_state = state;
-+			priv->can.state = CAN_STATE_ERROR_ACTIVE;
-+			priv->bec.txerr = 0;
-+			priv->bec.rxerr = 0;
-+			break;
-+		case ESD_BUSSTATE_WARN:
-+			/* ... intentionally, don't set priv->old_state here! */
-+			priv->can.state = CAN_STATE_ERROR_WARNING;
-+			break;
-+		default:
-+			/* Do nothing ... */
-+			break;
-+		}
- 	}
- }
- 
--static void esd_usb2_rx_can_msg(struct esd_usb2_net_priv *priv,
--				struct esd_usb2_msg *msg)
-+static void esd_usb_rx_can_msg(struct esd_usb_net_priv *priv, struct esd_usb_msg *msg)
- {
- 	struct net_device_stats *stats = &priv->netdev->stats;
--	struct can_frame *cf;
-+	/* can.h:
-+	 *	  ... the struct can_frame and struct canfd_frame intentionally
-+	 *	      share the same layout ...
-+	 */
-+	struct canfd_frame *cfd;
- 	struct sk_buff *skb;
--	int i;
- 	u32 id;
- 
- 	if (!netif_device_present(priv->netdev))
-@@ -311,39 +449,63 @@ static void esd_usb2_rx_can_msg(struct esd_usb2_net_priv *priv,
- 	id = le32_to_cpu(msg->msg.rx.id);
- 
- 	if (id & ESD_EVENT) {
--		esd_usb2_rx_event(priv, msg);
-+		esd_usb_rx_event(priv, msg);
- 	} else {
--		skb = alloc_can_skb(priv->netdev, &cf);
--		if (skb == NULL) {
--			stats->rx_dropped++;
--			return;
--		}
- 
--		cf->can_id = id & ESD_IDMASK;
--		can_frame_set_cc_len(cf, msg->msg.rx.dlc & ~ESD_RTR,
--				     priv->can.ctrlmode);
-+		if (msg->msg.rx.dlc & ESD_DLC_FD) {
-+			/* CAN FD */
-+			skb = alloc_canfd_skb(priv->netdev, &cfd);
-+			if (!skb) {
-+				stats->rx_dropped++;
-+				return;
-+			}
- 
--		if (id & ESD_EXTID)
--			cf->can_id |= CAN_EFF_FLAG;
-+			/* Masking by 0x0F is already done within can_fd_dlc2len()! */
-+			cfd->len = can_fd_dlc2len(msg->msg.rx.dlc);
-+
-+			if ((msg->msg.rx.dlc & ESD_DLC_NO_BRS) == 0)
-+				cfd->flags |= CANFD_BRS;
-+
-+			if (msg->msg.rx.dlc & ESD_DLC_ESI)
-+				cfd->flags |= CANFD_ESI;
- 
--		if (msg->msg.rx.dlc & ESD_RTR) {
--			cf->can_id |= CAN_RTR_FLAG;
-+			memcpy(cfd->data, msg->msg.rx.data.fd, cfd->len);
-+			stats->rx_bytes += cfd->len;
- 		} else {
--			for (i = 0; i < cf->len; i++)
--				cf->data[i] = msg->msg.rx.data[i];
-+			/* Classic CAN */
-+			skb = alloc_can_skb(priv->netdev, (struct can_frame **)&cfd);
-+			if (!skb) {
-+				stats->rx_dropped++;
-+				return;
-+			}
- 
--			stats->rx_bytes += cf->len;
-+			can_frame_set_cc_len((struct can_frame *)cfd,
-+					     msg->msg.rx.dlc & 0x0F,
-+					     priv->can.ctrlmode);
-+
-+			if (msg->msg.rx.dlc & ESD_DLC_RTR) {
-+				/* No data copy for a RTR frame */
-+				cfd->can_id |= CAN_RTR_FLAG; // ok, due to memset(0)
-+							     // in alloc_can_skb()
-+			} else {
-+				memcpy(cfd->data, msg->msg.rx.data.cc, cfd->len);
-+				stats->rx_bytes += cfd->len;
-+			}
- 		}
--		stats->rx_packets++;
- 
-+		/* Common part for CAN FD and CAN classic ... */
-+		cfd->can_id |= id & ESD_IDMASK;
-+
-+		if (id & ESD_EXTID)
-+			cfd->can_id |= CAN_EFF_FLAG;
-+
-+		stats->rx_packets++;
- 		netif_rx(skb);
- 	}
- 
--	return;
- }
- 
--static void esd_usb2_tx_done_msg(struct esd_usb2_net_priv *priv,
--				 struct esd_usb2_msg *msg)
-+static void esd_usb_tx_done_msg(struct esd_usb_net_priv *priv, struct esd_usb_msg *msg)
- {
- 	struct net_device_stats *stats = &priv->netdev->stats;
- 	struct net_device *netdev = priv->netdev;
-@@ -356,8 +518,7 @@ static void esd_usb2_tx_done_msg(struct esd_usb2_net_priv *priv,
- 
- 	if (!msg->msg.txdone.status) {
- 		stats->tx_packets++;
--		stats->tx_bytes += can_get_echo_skb(netdev, context->echo_index,
--						    NULL);
-+		stats->tx_bytes += can_get_echo_skb(netdev, context->echo_index, NULL);
- 	} else {
- 		stats->tx_errors++;
- 		can_free_echo_skb(netdev, context->echo_index, NULL);
-@@ -370,9 +531,9 @@ static void esd_usb2_tx_done_msg(struct esd_usb2_net_priv *priv,
- 	netif_wake_queue(netdev);
- }
- 
--static void esd_usb2_read_bulk_callback(struct urb *urb)
-+static void esd_usb_read_bulk_callback(struct urb *urb)
- {
--	struct esd_usb2 *dev = urb->context;
-+	struct esd_usb *dev = urb->context;
- 	int retval;
- 	int pos = 0;
- 	int i;
-@@ -394,9 +555,9 @@ static void esd_usb2_read_bulk_callback(struct urb *urb)
- 	}
- 
- 	while (pos < urb->actual_length) {
--		struct esd_usb2_msg *msg;
-+		struct esd_usb_msg *msg;
- 
--		msg = (struct esd_usb2_msg *)(urb->transfer_buffer + pos);
-+		msg = (struct esd_usb_msg *)(urb->transfer_buffer + pos);
- 
- 		switch (msg->msg.hdr.cmd) {
- 		case CMD_CAN_RX:
-@@ -405,7 +566,7 @@ static void esd_usb2_read_bulk_callback(struct urb *urb)
- 				break;
- 			}
- 
--			esd_usb2_rx_can_msg(dev->nets[msg->msg.rx.net], msg);
-+			esd_usb_rx_can_msg(dev->nets[msg->msg.rx.net], msg);
- 			break;
- 
- 		case CMD_CAN_TX:
-@@ -414,8 +575,7 @@ static void esd_usb2_read_bulk_callback(struct urb *urb)
- 				break;
- 			}
- 
--			esd_usb2_tx_done_msg(dev->nets[msg->msg.txdone.net],
--					     msg);
-+			esd_usb_tx_done_msg(dev->nets[msg->msg.txdone.net], msg);
- 			break;
- 		}
- 
-@@ -429,8 +589,8 @@ static void esd_usb2_read_bulk_callback(struct urb *urb)
- 
- resubmit_urb:
- 	usb_fill_bulk_urb(urb, dev->udev, usb_rcvbulkpipe(dev->udev, 1),
--			  urb->transfer_buffer, RX_BUFFER_SIZE,
--			  esd_usb2_read_bulk_callback, dev);
-+			urb->transfer_buffer, RX_BUFFER_SIZE,
-+			esd_usb_read_bulk_callback, dev);
- 
- 	retval = usb_submit_urb(urb, GFP_ATOMIC);
- 	if (retval == -ENODEV) {
-@@ -443,18 +603,17 @@ static void esd_usb2_read_bulk_callback(struct urb *urb)
- 			"failed resubmitting read bulk urb: %d\n", retval);
- 	}
- 
--	return;
- }
- 
- /*
-  * callback for bulk IN urb
-  */
--static void esd_usb2_write_bulk_callback(struct urb *urb)
-+static void esd_usb_write_bulk_callback(struct urb *urb)
- {
- 	struct esd_tx_urb_context *context = urb->context;
--	struct esd_usb2_net_priv *priv;
-+	struct esd_usb_net_priv *priv;
- 	struct net_device *netdev;
--	size_t size = sizeof(struct esd_usb2_msg);
-+	size_t size = sizeof(struct esd_usb_msg);
- 
- 	WARN_ON(!context);
- 
-@@ -478,7 +637,7 @@ static ssize_t firmware_show(struct device *d,
- 			     struct device_attribute *attr, char *buf)
- {
- 	struct usb_interface *intf = to_usb_interface(d);
--	struct esd_usb2 *dev = usb_get_intfdata(intf);
-+	struct esd_usb *dev = usb_get_intfdata(intf);
- 
- 	return sprintf(buf, "%d.%d.%d\n",
- 		       (dev->version >> 12) & 0xf,
-@@ -491,7 +650,7 @@ static ssize_t hardware_show(struct device *d,
- 			     struct device_attribute *attr, char *buf)
- {
- 	struct usb_interface *intf = to_usb_interface(d);
--	struct esd_usb2 *dev = usb_get_intfdata(intf);
-+	struct esd_usb *dev = usb_get_intfdata(intf);
- 
- 	return sprintf(buf, "%d.%d.%d\n",
- 		       (dev->version >> 28) & 0xf,
-@@ -504,13 +663,13 @@ static ssize_t nets_show(struct device *d,
- 			 struct device_attribute *attr, char *buf)
- {
- 	struct usb_interface *intf = to_usb_interface(d);
--	struct esd_usb2 *dev = usb_get_intfdata(intf);
-+	struct esd_usb *dev = usb_get_intfdata(intf);
- 
- 	return sprintf(buf, "%d", dev->net_count);
- }
- static DEVICE_ATTR_RO(nets);
- 
--static int esd_usb2_send_msg(struct esd_usb2 *dev, struct esd_usb2_msg *msg)
-+static int esd_usb_send_msg(struct esd_usb *dev, struct esd_usb_msg *msg)
- {
- 	int actual_length;
- 
-@@ -522,8 +681,7 @@ static int esd_usb2_send_msg(struct esd_usb2 *dev, struct esd_usb2_msg *msg)
- 			    1000);
- }
- 
--static int esd_usb2_wait_msg(struct esd_usb2 *dev,
--			     struct esd_usb2_msg *msg)
-+static int esd_usb_wait_msg(struct esd_usb *dev, struct esd_usb_msg *msg)
- {
- 	int actual_length;
- 
-@@ -535,7 +693,7 @@ static int esd_usb2_wait_msg(struct esd_usb2 *dev,
- 			    1000);
- }
- 
--static int esd_usb2_setup_rx_urbs(struct esd_usb2 *dev)
-+static int esd_usb_setup_rx_urbs(struct esd_usb *dev)
- {
- 	int i, err = 0;
- 
-@@ -554,8 +712,7 @@ static int esd_usb2_setup_rx_urbs(struct esd_usb2 *dev)
- 			break;
- 		}
- 
--		buf = usb_alloc_coherent(dev->udev, RX_BUFFER_SIZE, GFP_KERNEL,
--					 &buf_dma);
-+		buf = usb_alloc_coherent(dev->udev, RX_BUFFER_SIZE, GFP_KERNEL, &buf_dma);
- 		if (!buf) {
- 			dev_warn(dev->udev->dev.parent,
- 				 "No memory left for USB buffer\n");
-@@ -568,15 +725,14 @@ static int esd_usb2_setup_rx_urbs(struct esd_usb2 *dev)
- 		usb_fill_bulk_urb(urb, dev->udev,
- 				  usb_rcvbulkpipe(dev->udev, 1),
- 				  buf, RX_BUFFER_SIZE,
--				  esd_usb2_read_bulk_callback, dev);
-+				  esd_usb_read_bulk_callback, dev);
- 		urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
- 		usb_anchor_urb(urb, &dev->rx_submitted);
- 
- 		err = usb_submit_urb(urb, GFP_KERNEL);
- 		if (err) {
- 			usb_unanchor_urb(urb);
--			usb_free_coherent(dev->udev, RX_BUFFER_SIZE, buf,
--					  urb->transfer_dma);
-+			usb_free_coherent(dev->udev, RX_BUFFER_SIZE, buf, urb->transfer_dma);
- 			goto freeurb;
- 		}
- 
-@@ -609,11 +765,11 @@ static int esd_usb2_setup_rx_urbs(struct esd_usb2 *dev)
- /*
-  * Start interface
-  */
--static int esd_usb2_start(struct esd_usb2_net_priv *priv)
-+static int esd_usb_start(struct esd_usb_net_priv *priv)
- {
--	struct esd_usb2 *dev = priv->usb2;
-+	struct esd_usb *dev = priv->usb;
- 	struct net_device *netdev = priv->netdev;
--	struct esd_usb2_msg *msg;
-+	struct esd_usb_msg *msg;
- 	int err, i;
- 
- 	msg = kmalloc(sizeof(*msg), GFP_KERNEL);
-@@ -624,7 +780,7 @@ static int esd_usb2_start(struct esd_usb2_net_priv *priv)
- 
- 	/*
- 	 * Enable all IDs
--	 * The IDADD message takes up to 64 32 bit bitmasks (2048 bits).
-+	 * The IDADD message takes up to 64 32-bit bitmasks (2048 bits).
- 	 * Each bit represents one 11 bit CAN identifier. A set bit
- 	 * enables reception of the corresponding CAN identifier. A cleared
- 	 * bit disabled this identifier. An additional bitmask value
-@@ -641,14 +797,15 @@ static int esd_usb2_start(struct esd_usb2_net_priv *priv)
- 	msg->msg.filter.option = ESD_ID_ENABLE; /* start with segment 0 */
- 	for (i = 0; i < ESD_MAX_ID_SEGMENT; i++)
- 		msg->msg.filter.mask[i] = cpu_to_le32(0xffffffff);
-+
- 	/* enable 29bit extended IDs */
- 	msg->msg.filter.mask[ESD_MAX_ID_SEGMENT] = cpu_to_le32(0x00000001);
- 
--	err = esd_usb2_send_msg(dev, msg);
-+	err = esd_usb_send_msg(dev, msg);
- 	if (err)
- 		goto out;
- 
--	err = esd_usb2_setup_rx_urbs(dev);
-+	err = esd_usb_setup_rx_urbs(dev);
- 	if (err)
- 		goto out;
- 
-@@ -664,16 +821,16 @@ static int esd_usb2_start(struct esd_usb2_net_priv *priv)
- 	return err;
- }
- 
--static void unlink_all_urbs(struct esd_usb2 *dev)
-+static void unlink_all_urbs(struct esd_usb *dev)
- {
--	struct esd_usb2_net_priv *priv;
-+	struct esd_usb_net_priv *priv;
- 	int i, j;
- 
- 	usb_kill_anchored_urbs(&dev->rx_submitted);
- 
- 	for (i = 0; i < MAX_RX_URBS; ++i)
--		usb_free_coherent(dev->udev, RX_BUFFER_SIZE,
--				  dev->rxbuf[i], dev->rxbuf_dma[i]);
-+		usb_free_coherent(dev->udev, RX_BUFFER_SIZE, dev->rxbuf[i], dev->rxbuf_dma[i]);
-+
- 
- 	for (i = 0; i < dev->net_count; i++) {
- 		priv = dev->nets[i];
-@@ -687,9 +844,9 @@ static void unlink_all_urbs(struct esd_usb2 *dev)
- 	}
- }
- 
--static int esd_usb2_open(struct net_device *netdev)
-+static int esd_usb_open(struct net_device *netdev)
- {
--	struct esd_usb2_net_priv *priv = netdev_priv(netdev);
-+	struct esd_usb_net_priv *priv = netdev_priv(netdev);
- 	int err;
- 
- 	/* common open */
-@@ -698,7 +855,7 @@ static int esd_usb2_open(struct net_device *netdev)
- 		return err;
- 
- 	/* finally start device */
--	err = esd_usb2_start(priv);
-+	err = esd_usb_start(priv);
- 	if (err) {
- 		netdev_warn(netdev, "couldn't start device: %d\n", err);
- 		close_candev(netdev);
-@@ -710,20 +867,23 @@ static int esd_usb2_open(struct net_device *netdev)
- 	return 0;
- }
- 
--static netdev_tx_t esd_usb2_start_xmit(struct sk_buff *skb,
--				      struct net_device *netdev)
-+static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb, struct net_device *netdev)
- {
--	struct esd_usb2_net_priv *priv = netdev_priv(netdev);
--	struct esd_usb2 *dev = priv->usb2;
-+	struct esd_usb_net_priv *priv = netdev_priv(netdev);
-+	struct esd_usb *dev = priv->usb;
- 	struct esd_tx_urb_context *context = NULL;
- 	struct net_device_stats *stats = &netdev->stats;
--	struct can_frame *cf = (struct can_frame *)skb->data;
--	struct esd_usb2_msg *msg;
-+	/* can.h:
-+	 *    ... the struct can_frame and struct canfd_frame intentionally
-+	 *	  share the same layout ...
-+	 */
-+	struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
-+	struct esd_usb_msg *msg;
- 	struct urb *urb;
- 	u8 *buf;
- 	int i, err;
- 	int ret = NETDEV_TX_OK;
--	size_t size = sizeof(struct esd_usb2_msg);
-+	size_t size = sizeof(struct esd_usb_msg);
- 
- 	if (can_dropped_invalid_skb(netdev, skb))
- 		return NETDEV_TX_OK;
-@@ -736,8 +896,7 @@ static netdev_tx_t esd_usb2_start_xmit(struct sk_buff *skb,
- 		goto nourbmem;
- 	}
- 
--	buf = usb_alloc_coherent(dev->udev, size, GFP_ATOMIC,
--				 &urb->transfer_dma);
-+	buf = usb_alloc_coherent(dev->udev, size, GFP_ATOMIC, &urb->transfer_dma);
- 	if (!buf) {
- 		netdev_err(netdev, "No memory left for USB buffer\n");
- 		stats->tx_dropped++;
-@@ -745,24 +904,35 @@ static netdev_tx_t esd_usb2_start_xmit(struct sk_buff *skb,
- 		goto nobufmem;
- 	}
- 
--	msg = (struct esd_usb2_msg *)buf;
-+	msg = (struct esd_usb_msg *)buf;
- 
- 	msg->msg.hdr.len = 3; /* minimal length */
- 	msg->msg.hdr.cmd = CMD_CAN_TX;
- 	msg->msg.tx.net = priv->index;
--	msg->msg.tx.dlc = can_get_cc_dlc(cf, priv->can.ctrlmode);
--	msg->msg.tx.id = cpu_to_le32(cf->can_id & CAN_ERR_MASK);
- 
--	if (cf->can_id & CAN_RTR_FLAG)
--		msg->msg.tx.dlc |= ESD_RTR;
-+	if (can_is_canfd_skb(skb)) {
-+		/* CAN FD */
-+		msg->msg.tx.dlc = can_fd_len2dlc(cfd->len);
-+		msg->msg.tx.dlc |= ESD_DLC_FD;
- 
--	if (cf->can_id & CAN_EFF_FLAG)
--		msg->msg.tx.id |= cpu_to_le32(ESD_EXTID);
-+		if ((cfd->flags & CANFD_BRS) == 0)
-+			msg->msg.tx.dlc |= ESD_DLC_NO_BRS;
-+	} else {
-+		/* Classic CAN */
-+		msg->msg.tx.dlc = can_get_cc_dlc((struct can_frame *)cfd, priv->can.ctrlmode);
-+
-+		if (cfd->can_id & CAN_RTR_FLAG)
-+			msg->msg.tx.dlc |= ESD_DLC_RTR;
-+	}
- 
--	for (i = 0; i < cf->len; i++)
--		msg->msg.tx.data[i] = cf->data[i];
-+	/* Common for classic CAN and CAN FD */
-+	msg->msg.hdr.len += (cfd->len + 3) >> 2;
- 
--	msg->msg.hdr.len += (cf->len + 3) >> 2;
-+	msg->msg.tx.id	= cpu_to_le32(cfd->can_id & CAN_ERR_MASK);
-+	if (cfd->can_id & CAN_EFF_FLAG)
-+		msg->msg.tx.id |= cpu_to_le32(ESD_EXTID);
-+
-+	memcpy(msg->msg.tx.data.fd, cfd->data, cfd->len);
- 
- 	for (i = 0; i < MAX_TX_URBS; i++) {
- 		if (priv->tx_contexts[i].echo_index == MAX_TX_URBS) {
-@@ -788,7 +958,7 @@ static netdev_tx_t esd_usb2_start_xmit(struct sk_buff *skb,
- 
- 	usb_fill_bulk_urb(urb, dev->udev, usb_sndbulkpipe(dev->udev, 2), buf,
- 			  msg->msg.hdr.len << 2,
--			  esd_usb2_write_bulk_callback, context);
-+			  esd_usb_write_bulk_callback, context);
- 
- 	urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
- 
-@@ -839,33 +1009,34 @@ static netdev_tx_t esd_usb2_start_xmit(struct sk_buff *skb,
- 	return ret;
- }
- 
--static int esd_usb2_close(struct net_device *netdev)
-+static int esd_usb_close(struct net_device *netdev)
- {
--	struct esd_usb2_net_priv *priv = netdev_priv(netdev);
--	struct esd_usb2_msg *msg;
-+	struct esd_usb_net_priv *priv = netdev_priv(netdev);
-+	struct esd_usb_msg *msg;
- 	int i;
- 
- 	msg = kmalloc(sizeof(*msg), GFP_KERNEL);
- 	if (!msg)
- 		return -ENOMEM;
- 
--	/* Disable all IDs (see esd_usb2_start()) */
-+	/* Disable all IDs (see esd_usb_start()) */
- 	msg->msg.hdr.cmd = CMD_IDADD;
- 	msg->msg.hdr.len = 2 + ESD_MAX_ID_SEGMENT;
- 	msg->msg.filter.net = priv->index;
- 	msg->msg.filter.option = ESD_ID_ENABLE; /* start with segment 0 */
- 	for (i = 0; i <= ESD_MAX_ID_SEGMENT; i++)
- 		msg->msg.filter.mask[i] = 0;
--	if (esd_usb2_send_msg(priv->usb2, msg) < 0)
-+	if (esd_usb_send_msg(priv->usb, msg) < 0)
- 		netdev_err(netdev, "sending idadd message failed\n");
- 
--	/* set CAN controller to reset mode */
-+	/* Set CAN controller to reset mode */
- 	msg->msg.hdr.len = 2;
- 	msg->msg.hdr.cmd = CMD_SETBAUD;
- 	msg->msg.setbaud.net = priv->index;
- 	msg->msg.setbaud.rsvd = 0;
--	msg->msg.setbaud.baud = cpu_to_le32(ESD_USB2_NO_BAUDRATE);
--	if (esd_usb2_send_msg(priv->usb2, msg) < 0)
-+	/* Sending ESD_USB2_NO_BAUDRATE is sufficient for CAN-USB/3, even in CAN FD mode, too */
-+	msg->msg.setbaud.u.baud = cpu_to_le32(ESD_USB2_NO_BAUDRATE);
-+	if (esd_usb_send_msg(priv->usb, msg) < 0)
- 		netdev_err(netdev, "sending setbaud message failed\n");
- 
- 	priv->can.state = CAN_STATE_STOPPED;
-@@ -879,10 +1050,10 @@ static int esd_usb2_close(struct net_device *netdev)
- 	return 0;
- }
- 
--static const struct net_device_ops esd_usb2_netdev_ops = {
--	.ndo_open = esd_usb2_open,
--	.ndo_stop = esd_usb2_close,
--	.ndo_start_xmit = esd_usb2_start_xmit,
-+static const struct net_device_ops esd_usb_netdev_ops = {
-+	.ndo_open = esd_usb_open,
-+	.ndo_stop = esd_usb_close,
-+	.ndo_start_xmit = esd_usb_start_xmit,
- 	.ndo_change_mtu = can_change_mtu,
- };
- 
-@@ -898,11 +1069,35 @@ static const struct can_bittiming_const esd_usb2_bittiming_const = {
- 	.brp_inc = ESD_USB2_BRP_INC,
- };
- 
-+static const struct can_bittiming_const esd_usb3_bittiming_const = {
-+	.name = "esd_usb3",
-+	.tseg1_min = ESD_USB3_TSEG1_MIN,
-+	.tseg1_max = ESD_USB3_TSEG1_MAX,
-+	.tseg2_min = ESD_USB3_TSEG2_MIN,
-+	.tseg2_max = ESD_USB3_TSEG2_MAX,
-+	.sjw_max = ESD_USB3_SJW_MAX,
-+	.brp_min = ESD_USB3_BRP_MIN,
-+	.brp_max = ESD_USB3_BRP_MAX,
-+	.brp_inc = ESD_USB3_BRP_INC,
-+};
-+
-+static const struct can_bittiming_const esd_usb3_data_bittiming_const = {
-+	.name = "esd_usb3",
-+	.tseg1_min = ESD_USB3_DATA_TSEG1_MIN,
-+	.tseg1_max = ESD_USB3_DATA_TSEG1_MAX,
-+	.tseg2_min = ESD_USB3_DATA_TSEG2_MIN,
-+	.tseg2_max = ESD_USB3_DATA_TSEG2_MAX,
-+	.sjw_max = ESD_USB3_DATA_SJW_MAX,
-+	.brp_min = ESD_USB3_DATA_BRP_MIN,
-+	.brp_max = ESD_USB3_DATA_BRP_MAX,
-+	.brp_inc = ESD_USB3_DATA_BRP_INC,
-+};
-+
- static int esd_usb2_set_bittiming(struct net_device *netdev)
- {
--	struct esd_usb2_net_priv *priv = netdev_priv(netdev);
-+	struct esd_usb_net_priv *priv = netdev_priv(netdev);
- 	struct can_bittiming *bt = &priv->can.bittiming;
--	struct esd_usb2_msg *msg;
-+	struct esd_usb_msg *msg;
- 	int err;
- 	u32 canbtr;
- 	int sjw_shift;
-@@ -913,19 +1108,15 @@ static int esd_usb2_set_bittiming(struct net_device *netdev)
- 
- 	canbtr |= (bt->brp - 1) & (ESD_USB2_BRP_MAX - 1);
- 
--	if (le16_to_cpu(priv->usb2->udev->descriptor.idProduct) ==
--	    USB_CANUSBM_PRODUCT_ID)
-+	if (le16_to_cpu(priv->usb->udev->descriptor.idProduct) == USB_CANUSBM_PRODUCT_ID)
- 		sjw_shift = ESD_USBM_SJW_SHIFT;
- 	else
- 		sjw_shift = ESD_USB2_SJW_SHIFT;
- 
--	canbtr |= ((bt->sjw - 1) & (ESD_USB2_SJW_MAX - 1))
--		<< sjw_shift;
--	canbtr |= ((bt->prop_seg + bt->phase_seg1 - 1)
--		   & (ESD_USB2_TSEG1_MAX - 1))
-+	canbtr |= ((bt->sjw - 1) & (ESD_USB2_SJW_MAX - 1)) << sjw_shift;
-+	canbtr |= ((bt->prop_seg + bt->phase_seg1 - 1) & (ESD_USB2_TSEG1_MAX - 1))
- 		<< ESD_USB2_TSEG1_SHIFT;
--	canbtr |= ((bt->phase_seg2 - 1) & (ESD_USB2_TSEG2_MAX - 1))
--		<< ESD_USB2_TSEG2_SHIFT;
-+	canbtr |= ((bt->phase_seg2 - 1) & (ESD_USB2_TSEG2_MAX - 1)) << ESD_USB2_TSEG2_SHIFT;
- 	if (priv->can.ctrlmode & CAN_CTRLMODE_3_SAMPLES)
- 		canbtr |= ESD_USB2_3_SAMPLES;
- 
-@@ -937,20 +1128,97 @@ static int esd_usb2_set_bittiming(struct net_device *netdev)
- 	msg->msg.hdr.cmd = CMD_SETBAUD;
- 	msg->msg.setbaud.net = priv->index;
- 	msg->msg.setbaud.rsvd = 0;
--	msg->msg.setbaud.baud = cpu_to_le32(canbtr);
-+	msg->msg.setbaud.u.baud = cpu_to_le32(canbtr);
- 
- 	netdev_info(netdev, "setting BTR=%#x\n", canbtr);
- 
--	err = esd_usb2_send_msg(priv->usb2, msg);
-+	err = esd_usb_send_msg(priv->usb, msg);
-+
-+	kfree(msg);
-+	return err;
-+}
-+
-+static int esd_usb3_set_bittiming(struct net_device *netdev)
-+{
-+	struct esd_usb_net_priv *priv = netdev_priv(netdev);
-+	struct can_bittiming *bt   = &priv->can.bittiming;
-+	struct can_bittiming *d_bt = &priv->can.data_bittiming;
-+	struct esd_usb_msg *msg;
-+	int err;
-+	u16 mode;
-+	u16 flags = 0;
-+	u16 brp, tseg1, tseg2, sjw;
-+	u16 d_brp, d_tseg1, d_tseg2, d_sjw;
-+
-+	msg = kmalloc(sizeof(*msg), GFP_KERNEL);
-+	if (!msg)
-+		return -ENOMEM;
-+
-+	/* Canonical is the most reasonable mode for SocketCAN on CAN-USB/3 ... */
-+	mode = ESD_BAUDRATE_MODE_BTR_CANONICAL;
-+
-+	if (priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY)
-+		flags |= ESD_BAUDRATE_FLAG_LOM;
-+
-+	if (priv->can.ctrlmode & CAN_CTRLMODE_3_SAMPLES)
-+		flags |= ESD_BAUDRATE_FLAG_TRS;
-+
-+	brp = bt->brp & (ESD_USB3_BRP_MAX - 1);
-+	sjw = bt->sjw & (ESD_USB3_SJW_MAX - 1);
-+	tseg1 = (bt->prop_seg + bt->phase_seg1) & (ESD_USB3_TSEG1_MAX - 1);
-+	tseg2 = bt->phase_seg2 & (ESD_USB3_TSEG2_MAX - 1);
-+
-+	msg->msg.setbaud.u.baud_x.arb.brp   = cpu_to_le16(brp);
-+	msg->msg.setbaud.u.baud_x.arb.sjw   = cpu_to_le16(sjw);
-+	msg->msg.setbaud.u.baud_x.arb.tseg1 = cpu_to_le16(tseg1);
-+	msg->msg.setbaud.u.baud_x.arb.tseg2 = cpu_to_le16(tseg2);
-+
-+	if (priv->can.ctrlmode & CAN_CTRLMODE_FD) {
-+		d_brp = d_bt->brp & (ESD_USB3_DATA_BRP_MAX - 1);
-+		d_sjw = d_bt->sjw & (ESD_USB3_DATA_SJW_MAX - 1);
-+		d_tseg1 = (d_bt->prop_seg + d_bt->phase_seg1) & (ESD_USB3_DATA_TSEG1_MAX - 1);
-+		d_tseg2 = d_bt->phase_seg2 & (ESD_USB3_DATA_TSEG2_MAX - 1);
-+		flags |= ESD_BAUDRATE_FLAG_FD;
-+	} else {
-+		d_brp   = 0;
-+		d_sjw   = 0;
-+		d_tseg1 = 0;
-+		d_tseg2 = 0;
-+	}
-+
-+	msg->msg.setbaud.u.baud_x.data.brp   = cpu_to_le16(d_brp);
-+	msg->msg.setbaud.u.baud_x.data.sjw   = cpu_to_le16(d_sjw);
-+	msg->msg.setbaud.u.baud_x.data.tseg1 = cpu_to_le16(d_tseg1);
-+	msg->msg.setbaud.u.baud_x.data.tseg2 = cpu_to_le16(d_tseg2);
-+	msg->msg.setbaud.u.baud_x.mode	     = cpu_to_le16(mode);
-+	msg->msg.setbaud.u.baud_x.flags	     = cpu_to_le16(flags);
-+	msg->msg.setbaud.u.baud_x.tdc.tdc_mode   = ESD_TDC_MODE_AUTO;
-+	msg->msg.setbaud.u.baud_x.tdc.ssp_offset = 0;
-+	msg->msg.setbaud.u.baud_x.tdc.ssp_shift  = 0;
-+	msg->msg.setbaud.u.baud_x.tdc.tdc_filter = 0;
-+
-+	msg->msg.hdr.len = 7;
-+	msg->msg.hdr.cmd = CMD_SETBAUD;
-+
-+	msg->msg.setbaud.net = priv->index;
-+	msg->msg.setbaud.rsvd = 0;
-+
-+	netdev_info(netdev,
-+		    "ctrlmode:{ is:%#x, spprted:%#x },  esd-net:%u, esd-mode:%#x, esd-flg:%#x, arb:{ brp:%u, ts1:%u, ts2:%u, sjw:%u }, data:{ dbrp:%u, dts1:%u, dts2:%u dsjw:%u }\n",
-+		    priv->can.ctrlmode, priv->can.ctrlmode_supported,
-+		    priv->index, mode, flags,
-+		    brp, tseg1, tseg2, sjw,
-+		    d_brp, d_tseg1, d_tseg2, d_sjw);
-+
-+	err = esd_usb_send_msg(priv->usb, msg);
- 
- 	kfree(msg);
- 	return err;
- }
- 
--static int esd_usb2_get_berr_counter(const struct net_device *netdev,
--				     struct can_berr_counter *bec)
-+static int esd_usb_get_berr_counter(const struct net_device *netdev, struct can_berr_counter *bec)
- {
--	struct esd_usb2_net_priv *priv = netdev_priv(netdev);
-+	struct esd_usb_net_priv *priv = netdev_priv(netdev);
- 
- 	bec->txerr = priv->bec.txerr;
- 	bec->rxerr = priv->bec.rxerr;
-@@ -958,7 +1226,7 @@ static int esd_usb2_get_berr_counter(const struct net_device *netdev,
- 	return 0;
- }
- 
--static int esd_usb2_set_mode(struct net_device *netdev, enum can_mode mode)
-+static int esd_usb_set_mode(struct net_device *netdev, enum can_mode mode)
- {
- 	switch (mode) {
- 	case CAN_MODE_START:
-@@ -972,11 +1240,11 @@ static int esd_usb2_set_mode(struct net_device *netdev, enum can_mode mode)
- 	return 0;
- }
- 
--static int esd_usb2_probe_one_net(struct usb_interface *intf, int index)
-+static int esd_usb_probe_one_net(struct usb_interface *intf, int index)
- {
--	struct esd_usb2 *dev = usb_get_intfdata(intf);
-+	struct esd_usb *dev = usb_get_intfdata(intf);
- 	struct net_device *netdev;
--	struct esd_usb2_net_priv *priv;
-+	struct esd_usb_net_priv *priv;
- 	int err = 0;
- 	int i;
- 
-@@ -995,30 +1263,45 @@ static int esd_usb2_probe_one_net(struct usb_interface *intf, int index)
- 	for (i = 0; i < MAX_TX_URBS; i++)
- 		priv->tx_contexts[i].echo_index = MAX_TX_URBS;
- 
--	priv->usb2 = dev;
-+	priv->usb = dev;
- 	priv->netdev = netdev;
- 	priv->index = index;
- 
- 	priv->can.state = CAN_STATE_STOPPED;
--	priv->can.ctrlmode_supported = CAN_CTRLMODE_LISTENONLY |
--		CAN_CTRLMODE_CC_LEN8_DLC;
-+	priv->can.ctrlmode_supported = CAN_CTRLMODE_LISTENONLY | CAN_CTRLMODE_CC_LEN8_DLC;
-+
-+	switch (le16_to_cpu(dev->udev->descriptor.idProduct)) {
-+	case USB_CANUSB3_PRODUCT_ID:
-+		priv->can.clock.freq = ESD_USB3_CAN_CLOCK;
-+		priv->can.ctrlmode_supported |= CAN_CTRLMODE_3_SAMPLES;
-+		priv->can.ctrlmode_supported |= CAN_CTRLMODE_FD;
-+		priv->can.bittiming_const = &esd_usb3_bittiming_const;
-+		priv->can.data_bittiming_const = &esd_usb3_data_bittiming_const;
-+		priv->can.do_set_bittiming = esd_usb3_set_bittiming;
-+		priv->can.do_set_data_bittiming = esd_usb3_set_bittiming;
-+		break;
- 
--	if (le16_to_cpu(dev->udev->descriptor.idProduct) ==
--	    USB_CANUSBM_PRODUCT_ID)
-+	case USB_CANUSBM_PRODUCT_ID:
- 		priv->can.clock.freq = ESD_USBM_CAN_CLOCK;
--	else {
-+		priv->can.bittiming_const = &esd_usb2_bittiming_const;
-+		priv->can.do_set_bittiming = esd_usb2_set_bittiming;
-+		break;
-+
-+	case USB_CANUSB2_PRODUCT_ID:
-+	default:
- 		priv->can.clock.freq = ESD_USB2_CAN_CLOCK;
- 		priv->can.ctrlmode_supported |= CAN_CTRLMODE_3_SAMPLES;
-+		priv->can.bittiming_const = &esd_usb2_bittiming_const;
-+		priv->can.do_set_bittiming = esd_usb2_set_bittiming;
-+		break;
- 	}
- 
--	priv->can.bittiming_const = &esd_usb2_bittiming_const;
--	priv->can.do_set_bittiming = esd_usb2_set_bittiming;
--	priv->can.do_set_mode = esd_usb2_set_mode;
--	priv->can.do_get_berr_counter = esd_usb2_get_berr_counter;
-+	priv->can.do_set_mode = esd_usb_set_mode;
-+	priv->can.do_get_berr_counter = esd_usb_get_berr_counter;
- 
- 	netdev->flags |= IFF_ECHO; /* we support local echo */
- 
--	netdev->netdev_ops = &esd_usb2_netdev_ops;
-+	netdev->netdev_ops = &esd_usb_netdev_ops;
- 
- 	SET_NETDEV_DEV(netdev, &intf->dev);
- 	netdev->dev_id = index;
-@@ -1044,11 +1327,10 @@ static int esd_usb2_probe_one_net(struct usb_interface *intf, int index)
-  * check version information and number of available
-  * CAN interfaces
-  */
--static int esd_usb2_probe(struct usb_interface *intf,
--			 const struct usb_device_id *id)
-+static int esd_usb_probe(struct usb_interface *intf, const struct usb_device_id *id)
- {
--	struct esd_usb2 *dev;
--	struct esd_usb2_msg *msg;
-+	struct esd_usb *dev;
-+	struct esd_usb_msg *msg;
- 	int i, err;
- 
- 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-@@ -1076,13 +1358,13 @@ static int esd_usb2_probe(struct usb_interface *intf,
- 	msg->msg.version.flags = 0;
- 	msg->msg.version.drv_version = 0;
- 
--	err = esd_usb2_send_msg(dev, msg);
-+	err = esd_usb_send_msg(dev, msg);
- 	if (err < 0) {
- 		dev_err(&intf->dev, "sending version message failed\n");
- 		goto free_msg;
- 	}
- 
--	err = esd_usb2_wait_msg(dev, msg);
-+	err = esd_usb_wait_msg(dev, msg);
- 	if (err < 0) {
- 		dev_err(&intf->dev, "no version message answer\n");
- 		goto free_msg;
-@@ -1091,21 +1373,26 @@ static int esd_usb2_probe(struct usb_interface *intf,
- 	dev->net_count = (int)msg->msg.version_reply.nets;
- 	dev->version = le32_to_cpu(msg->msg.version_reply.version);
- 
-+	dev_info(&intf->dev, "version:{ hw:%d.%d.%d fw:%d.%d.%d }\n",
-+		 (dev->version >> 28) & 0xf,
-+		 (dev->version >> 24) & 0xf,
-+		 (dev->version >> 16) & 0xff,
-+		 (dev->version >> 12) & 0xf,
-+		 (dev->version >>  8) & 0xf,
-+		 (dev->version)       & 0xff);
-+
- 	if (device_create_file(&intf->dev, &dev_attr_firmware))
--		dev_err(&intf->dev,
--			"Couldn't create device file for firmware\n");
-+		dev_err(&intf->dev, "Couldn't create device file for firmware\n");
- 
- 	if (device_create_file(&intf->dev, &dev_attr_hardware))
--		dev_err(&intf->dev,
--			"Couldn't create device file for hardware\n");
-+		dev_err(&intf->dev, "Couldn't create device file for hardware\n");
- 
- 	if (device_create_file(&intf->dev, &dev_attr_nets))
--		dev_err(&intf->dev,
--			"Couldn't create device file for nets\n");
-+		dev_err(&intf->dev, "Couldn't create device file for nets\n");
- 
- 	/* do per device probing */
- 	for (i = 0; i < dev->net_count; i++)
--		esd_usb2_probe_one_net(intf, i);
-+		esd_usb_probe_one_net(intf, i);
- 
- free_msg:
- 	kfree(msg);
-@@ -1118,9 +1405,9 @@ static int esd_usb2_probe(struct usb_interface *intf,
- /*
-  * called by the usb core when the device is removed from the system
-  */
--static void esd_usb2_disconnect(struct usb_interface *intf)
-+static void esd_usb_disconnect(struct usb_interface *intf)
- {
--	struct esd_usb2 *dev = usb_get_intfdata(intf);
-+	struct esd_usb *dev = usb_get_intfdata(intf);
- 	struct net_device *netdev;
- 	int i;
- 
-@@ -1144,11 +1431,11 @@ static void esd_usb2_disconnect(struct usb_interface *intf)
- }
- 
- /* usb specific object needed to register this driver with the usb subsystem */
--static struct usb_driver esd_usb2_driver = {
--	.name = "esd_usb2",
--	.probe = esd_usb2_probe,
--	.disconnect = esd_usb2_disconnect,
--	.id_table = esd_usb2_table,
-+static struct usb_driver esd_usb_driver = {
-+	.name = "esd_usb",
-+	.probe = esd_usb_probe,
-+	.disconnect = esd_usb_disconnect,
-+	.id_table = esd_usb_table,
- };
- 
--module_usb_driver(esd_usb2_driver);
-+module_usb_driver(esd_usb_driver);
+
+
+On 6/20/22 01:42, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Changes since 20220617:
+> 
+
+on i386 or x86_64:
+
+ERROR: modpost: "phylink_mii_c22_pcs_encode_advertisement" [drivers/net/pcs/pcs_xpcs.ko] undefined!
+ERROR: modpost: "phylink_mii_c22_pcs_decode_state" [drivers/net/pcs/pcs_xpcs.ko] undefined!
+
+
+Full randconfig file is attached.
+
 -- 
-2.25.1
+~Randy
+--------------0ZFYScQ7D0hHD0JlJWWWBdxK
+Content-Type: application/gzip; name="config-r4045.gz"
+Content-Disposition: attachment; filename="config-r4045.gz"
+Content-Transfer-Encoding: base64
 
+H4sICAdHsGIAA2NvbmZpZy1yNDA0NQCcPEtz3DbS9/yKKeeSHOxIsqx46ysdQBIk4SEJCgDn
+oQtrIo0dVfTwjka79r/fboAPAARl15dDrOluvPuNBn/95dcFeTk+PeyOdze7+/vviy/7x/1h
+d9zfLj7f3e//b5HwRcXVgiZMvQPi4u7x5dsf3z5etBfniw/vTv/17uTt4eb9Yrk/PO7vF/HT
+4+e7Ly/Qwd3T4y+//hLzKmVZG8ftigrJeNUqulGXb77c3Cx+k42kpsPfF3+++/Du5I1Fz2Sb
+xfHl9x6UjX1c/nny4eRkoC1IlQ2oAUyk7qJqxi4A1JOdnZy9P/948r5HFQlSR2kyUgNoltrC
+nVhzjknVFqxajp1YwFYqoljs4HKYEpFlm3HFgwhWQVM6QVW8rQVPWUHbtGqJUmIkqUnOAT6Z
+HxNX7ZoLa3JRw4pEsZK2ikTQRHKhRqzKBSWwLVXK4X9AIrEpnOmvi0zzyP3ieX98+TqeciT4
+klYtHLIs67EjVjHV0mrVEgFbx0qmLt+fDQviZY3LUFTi2L8uOviaCsHF4u558fh0xIH6Bg2p
+WZvDzKjoG/WnwmNS9Mt+88ZZZStJoSxgTla0XVJR0aLNrpk1WxsTAeYsjCquSxLGbK7nWvA5
+xHkYcS2VxY/ubIeNsqdqb5dPgBN+Db+5fr01fx19/hoaFxI4yoSmpCmUZhDrbHpwzqWqSEkv
+3/z2+PS4//3N2K/cyhWr40CfNZds05ZXDW0ssbGh2DhWhcNsRMV5q7GBLmPBpWxLWnKxRVkj
+cT72DCqsYJGlYxpQlN5xEgG9awQOTYrCIx+hWrpAUBfPL389f38+7h9G6cpoRQWLtRyD8EfW
+8myUzPnaHl8kAJWtXLeCSlol4VZxbssAQhJeElaFYG3OqMA1bV1sSqSinI1oGL1KChDI6Zil
+ZNhmFjEZ3p5sSZSA44QtA4lXXISpcLliBSoX9FHJE+pNlouYJp2SY1U2YmVNhKTd7AYWsXtO
+aNRkqXQ5fv94u3j67B3eaKN4vJS8gTENsyXcGlHzh02iBeJ7qPGKFCwhirYFbHYbb+MiwAZa
+pa8mvNajdX90RSsVOBgLifqcJDGxdWyIrASWIMmnJkhXctk2NU7ZEwojknHd6OkKqQ2MZ6B+
+hkYvdtmgjXHNAfyDvkarBImXzgn7mJYlehu19Km7h/3hOSSAYLyXYNwoSJg1DJji/BrNWMkr
+m2EAWMMW8ISF1JRp1Y07tNHQoCLNWZYjR3cbEdJSARYDSdm0cknXoKYuT8FlGth0ssrBWtap
+d1AUQO0nmyE1v65JpQZVPZLoPYSfoQ1EqglXTnrvACDea7KVLa+mqH5Yd8cR21S1YKuRIE2D
+UupOcGA3QWlZK+Mx2D33iApOP3g8PcGKF02liNiGLJOhsbi7axRzaDMBM3vhPWmyBYOofUi9
+zyAZf6jd8z+LIxznYgdrez7ujs+L3c3N08vj8e7xi8e9KEok1gMaiRhWsGJCeWgU4uBqUQdq
+sRtpA+uNZIJ2KqZgPIHQPmEP067e21NBIUdfWYa3WrLgkf7EXgyiAstkkhek22S9lyJuFjIg
+9LDzLeCmZ2GAw7zgZ0s3IPIqsBfS6UH36YFwzbqPTnMGUD4I1Zc3N+wAtq4oRoVkYSoKFk/S
+LI4K1nnb3ea5ix/s5NL8YS+zh+kDDHPH0njnISVVcPTHQQvkLFWXp3+Oe8oqBRESSalP896j
+YVVCN56KairZRTBxDkvUqrA/V3nz9/725X5/WHze744vh/2zBncLD2AdLSebuoaoCCKupiRt
+RCDWjB1bMurCCJUujN5UJalbVURtWjTSchW72A1WcXr20QGzsi5YDIothaMDl4Q3WX755u36
+7uHr/d3N3fHtZwjNj38fnl6+/H35YXCUISQ+PUOjQYQg2zYCWUykN7VhAcOww0HFGQxUh6UM
+/W5whEBEQ6Ymp/Gy5tAjmiRwwBwjZs6ANIrr/kPSsJWpBB0NkgT+G7VcUh/Trs4cGaMF2Qbn
+GxVLaLbSnpNIwiSco67Fv8N8i01JCePXxnWkbYlaLrQBcctBQ5fsmqIjiYYe/imBN5yd8Mkk
+/BESiqTlogZfGfhIVM5mmDjFYXWWnF74NKB4YqpNhlEKvqsVy3oJswSFh9McsUZf2VPW3Qfm
+WII1ZRDrCOekM6pK9Mg6oz571BOjn5rIwPf0jHNjq1oUecfGNyFTM13g2ICAL582wcmljbJV
+if7Z1sxuTmvuNh0Xz7KKFGkortXLsFNJ2lG2ATKHcNKSVMYdHcvbRoSNKklWTNJ+Q62tgv4i
+UAOMWtHQEkm2pZxCWuc0BqjeLBQyxVbUUySousZBYAYVePdG9Ptu4tLJTEAUdRXcOuiFJgkN
+bZ3hV9i91g9Q6vj05LxX6l22sd4fPj8dHnaPN/sF/c/+Ecw9Ab0eo8EH93a04m6Pw0R0IGeQ
+wNvtqtQhZdC9+MkRR87F7JxjKbRkaq0pbdPr5tJ64ovzyPaJNzrf6vy282tSiSbW4p/QGEJd
+iwd4o+pGtVo9qcs3+/vPF+dvv328eHtxPtgRNJegc3tbYbGpggDJuBkTXFk2HoeUaPdElbQw
+dR0VXp59fI2AbKw8oEuAWUGixo5m+nHIoLvTi0n8CfFyJDBgTtB2BHganUFk+Y2PYxEVlUkf
+gHaSLCp8kahEm9UguqcnZ+ee0ZU1hfkF2mG+RxPN2elG53Ysxk9BMVIiim2MiQxbbdSZ8XoK
+4GzQBR88R0OSipojhC4VjU2mRMtPfXi62T8/Px0Wx+9fjbfseEf9+Zch843MmFKiGkGNn+Dy
+6eaM1Np/HbpBaFnrtEpQH2S8SFIm88BYgirQwCYF7vQH8TvsMHgIvdIP9oyUIHCYoaxlyJVB
+AlKOvaATwVwrzrhM2zJiM62Hg+sShClhRRPyiHiJDh54GJj7wEmFstv5FrQRqHjwFrLGS4nD
+BhIM02Ymkq+Q24sIzrtd9ac9NDY5prrBlANwR6F8w9YPsrI48xOsJeeoGvvJ9L3FoppOsFx+
+DJ5CWctwqFCiATkLuRtEcceMD/JcNzPL1ztagfKDXYD97sKHC5ukOJ3H4SJrkBPj3MqmdJla
+ydgFgK3bxHnmKWXMd61cCKgvVjal1jMpBO/F9vLi3CbQRgicuFJaapuR92dayFrHBUT6VbmZ
+E78uqEZXkxY0dg4HxwdeNeIQPI2eAuThVXy+zXgV8oo7fAxmljTWYnrEdU74xk7q5jVVxlvy
+YBT8TVTaQjmKJClDUghqGEaAEJlUGW0jmsEQp2Ek5r8nqC5ZNEGMAJi7no6bl9UshXdObafw
+bG7kAaCgEBApEwt0d2U6KMEEvcc0tg/fATAuLmhG4u1Et+qUsXesE/wnwxBG/1tuzMPT493x
+6WCSRYNbMkPhMGLnhXan5SSszB7UBf6PCk+YkNMfHKlBveTSfNBGzYUlDMJC1WZRTTIq/V2I
+a2KuWKVicUjXGzurzRDoauAFMjXpI7rnilEkC9z9olfemIpv6OXJt9v97vbE+s9ZGCoT8E+4
+RF9ZNH1az5k48gDq9rI3ISOp6SCkIJVw1Dv+RoPPFMSYIcOCA4Gv5C0XtB6Eu8DglVaMTtJT
+E4DYJLyc6a8p3atImrKg4siv29OTk5C1u27PPpx4WfP3LqnXS7ibS+jGvnXc0LDB0ZgW783D
+Gk4QmbdJE3R76nwrGUo7MBk4wiffTt3zBicSr6M6phqjIL2DmALA6Oq1fsFVzSro98zptkv5
+9rwBTizoEEu3Ghd4lUgnhDSKYhTRDa+KUFLap8MMt2M1ygS9L+TRsNEoecJSmFaiQlmA0QVS
+YL0VBs3gemifdC4boiPAAuLPGvNpdqT0mtM6cetJAk5dpyac2CGvcSsxgjDuNG7qoAqMcnz6
+7/6wANW3+7J/gBBPj0Timi2evmJZixVXdo6+FTF1nn8qKL32siUdSi5ZrcPnEC+UrSwodaQK
+YJhM0/BwkzVZUn37Y3kCFrSruTgdecrBZrHdzBtZOyfhUeNi6YzXu2jm5taay/oKdOYaNCZN
+UxYzOt4bvdZ+2Ih5Cp762rv3xfG0bG/V/9XzvZZW2CDOl03tcwrLctVd4GOTOom9ToDhFVgK
+szg0PdDVJE7WlF2c5hQKIFxvb2a7Pw641Rm3B3fQOhbtRMtoVFonoeDALLhm/qS8DdYwQVct
+X1EhWELt8NUdCHRo8A7cpiEh/taYiCiwn1tYl9siapQKOpZmC1m17bbaEHr7MsF3GbrL9x8d
+uhWsjE+3jswPTBL/eMz1gg3S3r2gwOlSeqjRKY81j8yimZMRdZHeYlldMg809kOyTAB7q0kr
+lYMrBjvy4PC51pYjkzZ1JkjiT0Qf92TX6hi5iKt5LoC/Fchq0CXRBDn4PkWDUbbrLxsOjeRk
+zJyGoxMzXCMhcAS1rnL+CpmgSYPVH1gdsyYQR81Yx1H4SU0tFeLC26r01UtH7kkE0mZ58Epl
+JJhPI4w0FLz5VzuhQqqZM0tqlc7vDN0oiDPm+jZ/p9JnvVSASzLAanRXeA086IQEMWjTdfwa
+NsHSlTkC7cCWQ7TY338v0sP+3y/7x5vvi+eb3b1z5d0LpR8Ga0FFWZwJYjW+LyHI+Gr2fidI
+iypIAoPMxtCTJqjl9WXbzzfhVUJhPvOB+qQF4Lp6qFXwSqtvM11vkKJf5Qx+WFJwv35+Ba/N
+fGCBzz4LLG4Pd/9xLgCAzOyIxacjTKf/ErryIzOTOqy12p6LqeK478g2aENecdLWJelsBzaf
+JQK3kSbgaZjMimAVn5vLubn6Bp+8l5Dnv3eH/e3UcXX7dRyTKy7Y1bAmy/8OS9twCuz2fu/K
+nl/e1MP0qRbgoQfNgkNV0qqZ7UJRryjVmqiZzRA6/NClN3VLL889YPEbGLfF/njz7nfrGgns
+nUlC2PdSoLNL88O+HcE/MOF3epK7xHEVnZ3ACq4aZtexMUnAcXHsHYKSkmAmKVzFFJ6uWcrd
+4+7wfUEfXu533tnr3KKds3G4bQNIEsx2d6Hme6si2oAm0SgmuJqLcxPRwhE6tSbTmTlmdbmy
+skWY7m6gl2svvYQuy2rz4fTMAcmcnLYV82FnHy58qKoJaKhLr5x9d7j5++64v8GQ8u3t/itM
+GHllIjx9HILSaF0pLf2bm09NiYnDyM5jmUcA7ZJuJSZpU7/uvcPrYLzHB86C18ofzRTrDSFW
+U+ndx1KMGB3DaeZH17mB29xGck2sQGCJly5e5wMMo2aB7hVfekMzLiiG1XjZ5KEmO2OggXE0
+Ym5xXTc4hdSrczDXG1zoBKF1bQmkwzBeb2lTmTtT/dKgS5A6XKbJHOfOdMrEVVqQLBDsjeXe
+mjKwSyjP6BSzrOFNoP5WAstoBWcqk70Voq8OwqUw5WJqPQMEkqrOi5xBdnnUkvjPHszMzbsP
+c6fcrnMGNpDJUPmnHJJTui7XtAjSVdzcUvvjyRITSN2bDf+4wQMEMceMic4XGTZGZejTSXrl
+g5xiZPe48RXKbF/5uo1g+aa6ycOVbAPSNKKlnqFHhI4PCkgjKlg1HJRTkeGXN7jcZWYAMQka
+8aYG983c2uoWoU4C4/fFDKLbNUxmhk45pJtC2PlyECMbpmavuw3zuuqg5pJkBpfwZpqF1/V0
+nS1hddyaivz+aU+AlheJRR9akaQxEryCwrSwsg9r0uQHhN3lYh92TcfBAymAezzk5Ip+NAU/
+AUex45OKxCETVihuXsj9kAAE376bQ3iXDZ6sZM2QtuMwfaXts2Hsl9h3tWM/pMGSbd2vRzxT
+n+zboGllsi/EHIWkSYLg0gf3qrzCeyG0qnmTUUwr/yxdYCgjPoDHeqMgQ/ZILEYKcbvGw2TR
+uRHBqUieajWvtpN1Jv1FF41BOVn9A6rBZCh6BuB4aMEPbC/dMCy8N2+NAgeFQyMOSPi68kkG
+O6RH6K9GQktwioV8LwfnEDSQbqux/ijQr1U8NNeJTRLoqkNrcrzcsfPvePZ4w9EWaGgUVnde
+nC+j1ynAU7VJjDMUfVKc++rTUtD59Awqrq3ta6juIdHU32k62zhLYKR+Fg1sw0wt9uCFTYIc
+1/Ci8pYs6+5H3k+iiQ5PYj9cGQKSiJkygtkUHp4WStvAjuO7hwH6auPxFm9p1o9qiloewv+X
+YHoVMrpq5s6se0Mp1laF2isov7kR62DzEGpccg0nCbFgd63Z+WfjBSO4KMaJMe9XZi/cu7pR
+CJZisa19n8oKd+Yxk1fQxtOZvIl5BeuNMOrSueJr10h2haIgsiGlPJBpmTZpdH1xH9Z7WPQ0
+iZwHAqwEACFN2uI08V8Q9IsBadBWdwhgY756+9fueX+7+MfUqX49PH2+u+9rOvoYA8g6nnnt
+tDRZ/7zcbNtYrfrKSM7+43N9TOyzKljt+oNQexAaYFKsyrZVqy5SlmgdxwKdznbZDNoxt37n
+CdxKQtXGHU1TIX62sUH/qHmL9xyh14bBAGc28un6lCLuP5jQn4BHwEJZ+g6JzCVQifvX+T4e
+H5PPXes7hDOvw32ymYfeHRnKzhrCKCnRexuemODzFxQfZxNMsgFEJL9888fzX3ePfzw83QKv
+/bV/4x26eU7lX+FG3Rsg64UIaqzu3hcv1GcOFV+SsPjKbWoel0QyK1g008a8PlE0E8z2uiao
+Vp2ehDq/hqOam886Un4TALXl1excUF2l0m8ksQy1JiHp18vWarbX1J6xDRLoB0uRZzxNEcXu
+cLxDYV6o71/dqmLQcIqZUDxZ4R1DaNmg5zIyklq8IRMuQwiaMgc8Jn+9qTgsMlHEuM7yCjO1
+ExjGIIy7YF0xYZ7t8/E1mZUshHaMmwrgBPxV15BZyOU2su/6e3CUmnuF/nm5M8ioTarTsdOm
+6s5J1hCkoXaaWKKxUEJxNCiiXHsUGAXoDyIkuhuvvMQnEesQgflSSaULCgpS1yj1JEm0pugv
+hyZeS/+upI1oiv9gUOg+37doTdHSWkDndng5Vt/ok6Hf9jcvx91f93v9TZuFLmw8WmcUsSot
+Fdpm63AH2Mzr8i40mLbsTPykKxkLViv7lqhDgEYMl6thN3412sAKc6vSSy73D0+H74tyvPEY
+s9hjrnlN6ongSogqFrv7+6eb3fHpECh5ArytF2TRRMHJy4LPIUgELqHIaO/8hh6OIRGeI+Ye
+O+fZHdbGY9KMVn5lQP/GM7yiYaS8SdOCGufN/qaEH2dEIhQjDBWjlns91phuwDiVNIRadVVo
+fhnqhMLPY+KHHzLb1HUVA/aLZltSzAA9VVdv4TgFDia4xAL4v1ZGX2Jl9HlohI4Mbz2Vq3O6
+ESLc3UAIpwO7UJEZnoigqKlcj4pl4pWVDrmXAF2sU++t58VjCabWTK3yX17pvJPi3dVcB1xK
+67T7S3Z9muZbGIm4PD/514Uzufl3Iu4mBQo/8nXN4XSr7o5iznfX8Yy+RyCF3gRVRN4OmWy8
+yuu2u/IZH90HklehWnt8Qg66VqfiltYuOAj9wK9NGVahxHljfxDLodOnFCQzISBVTT0Qw9ys
+fFRcuj/8tOsASqUL1C9SXRD2LC//dCTCSqEFtmG4AcR3Wf3Nl5fb0bc4eE9kpT+SXs9Mw4Tx
+QZrOIhsD7uTGRopG6HMyeYSuHj1At8KSSWUGdG/lxmhTv4xzE5EDEl1SfWHlJDJ66BRi3wzD
+2FZ2wH3VS4V+EYKfeBihoNI8E+tMUucr7VsESWNBldG7Yw0TuhuwGh1cBI0PuhNaXt2Xu9r0
+JbvjbkFusMh4UdqvInpJJ84nFfTPoHNgMCutCDxgHQJqSren8c2LptBcG1yQwSeRV4zpYAWN
+C8JKf9hCNP033wZjObcHPX7esRgl3H5BuozMU70+zNUbXe2P/306/IOVOhP/AszBktrVZPo3
+SCII0gCEnbJyVvgLvCv7QXVqgJw7voqGYU+hApoElCJ+1MhmSgvYz8D6XgANqWKA4geKkD/L
+/3H2dM2N4zj+lTzePeytJH/JjzQlx5roK6JsK/uiynZndlPX3ZlKZ25n/v0CJCWBFORc7dR0
+VxsAPwSSIAgCoGgcyYd7aI2XLXAAPjpRPEMh2Ii0IRPWRlF7EeCU2NxAcRtBWzh+tW3R56Lk
+JLlqyZK/Fw09OzdZQq84zO/+AjXZuy9Hcll00TgbioXKIxc9oquKgygkF7cTrL+/uHURVAEo
+fh2kkh+QPCc7PfxwMkqIVuScVtdFG8faKWru3F+fqjJ1NPosTVPs6IbPh4dzQJ/ruKUqnbma
+lHi/DDrdhR3oAwyt0Cdoh+kjdPjn5WbZvpQLxZcc/wkJ7mHORLjM1s/FWzw+GNTBGs0HBFVo
+h9xLITOuPn0C/xzB5OMC1ussnAvLv6hz5ZFrWH+vOHc7jcJoPmTAdwcKZ7xzWabEzRrrKqkd
+96Sc88Vj03JDjMWaDjVPdGx3cmY95p4ovft4+fnhhfDNUB6Cit9J7yoakWgjhzXjfPnfl4+7
+5vnr6xuaej/evrx9cw6RApYKf3hlXeoPRLQf8EyV0u0QIM0Rx86ZlQOwb9uF7C9QUclGxwDm
+lCW1c+gGEL+VAmYhMExjksVShTriTTbfvqhAd+la74uY+IkJSRzDJuAQ8zsousbN79vvLx9v
+bx//vPv68n+vX17mnq+H1rixumyXhfO7aV38oxTO76J9cH6fZHZoz+rg89WCTcCSuc9bGJSB
+8kC3bYoovMQvBAW9vVGrwunrdfaMEXsMDDjdGL/fOeq0nrevEWX1kPGpVAnRQSp+nyI0oj2t
+Hj4jYqP0CX51zdzTIsEtBQUTksbNhEowMAduFxX3265bKFw0lxtjJIsoWHWzGVWLMJhDj2ae
+OcCkzcP5hFxJZj7m51SKpZRQmuQCf/i+4le46wAA/WyC6XH018uMCmCzafgIYk0ViQOzVmZi
+9F1c5OO+I6kyh7+8A4kGHfPq6uxxOHPQ+YD5+Ob4kOXk281vLQRpDRaclfWZk34WrZOkOLvh
+vvb32j30jx8kizVsuUUxU1nIVpTxMS/lkY3CVKB9U5scNpAdCSC/2j3e+4pBcHMs1Xi0oBWK
+6EzmcO44eIwg/4iMpiG0pRNTc3tC55BBuXF6jJdK+lypLaR2PphzrplFib9VGN+aTJGj/fwX
+KOMHTMxVeAkkNQ792/EfzOebssafGzSnqp0V1heCS14Yzn2M/4PEnE63TDLTlkNQn9ihR7xQ
+NZ83BpFwWOOOLtrfX3ntL2UtRpz28/e7dmOyIrYxfgaDRRO304WuqPbs7MIIwzSr7Zk9sABW
+uFm1MJpTFC4ErbfaK8nAXGRWXfyPgemw0FgtFM3soCu3Tqcus9ErCNZUOk/Z6lMt3xmMJOiT
+yrZAAptuN1KnaRPhXyzZ5R6NhhyDh3BGZ4YSoBeL7GP67EAUM4qVizUipv9bu9lsguWi87Si
+lEKd6jGnLMaRfHn78fH+9g3TYk76pDPiArbUi2AvRDQPO0x+1vXlNXcH/9jC32EQuFC8GhcO
+CPOaikangHdJEcKc7kaU/c7b/fKasp2VtbcMOqzMb0UDccEvLt7LCvaB4gYeI+fapRwUukcC
+jSycFB2/sz2dS3wCoU4LhkEDdra0ga+wtt1s7w54znK8OoJDc5s+eHJmQiDXV5yZR6s23upq
+ZKFa/mbQyJ6qhDM3n3nYtJpJ6O3Q16WRFnWd63ECoVw1IHJyczET/PEr/kcybEzk8w9sd9so
+nBuKX36+/uPH9fn9RS8X+Qb/UL//9tvb+4cTLAaHtavHy+Q6cNhtCeAYhDj7JIc3afdUVtwW
+qeVy0W1n1cIRTDThqusWCmEcUut4eVMos/5y8QTTV4raK3LKVDZrHdXbxfEBMZyIPn6YlQIl
+uU7l9iYryIS1HF2mNFGc99dliocUE1s+fVLPQ9Zk7DUlIvH7Ydc9+OICVBr+bhMLabkX7tfE
+2k3Bhv0u7pIpiXeY3Do9l1l9ytysI1acLH/V8bxbewl3hquAG7PcOBm8/R02h9dviH65tQqK
+6pBd0iz35YoF8ytixOK6WOLgNB1RBq3pTcaN3pnd7PnrC2a30uhpx8Ok+Nw3SJGkTjw0hXKj
+MaCw+zdQzBr7ZReFKQOa+DQEun76CaMPFL+rjzt++uPrb2+vPz78fT4tE32/yE4Qp+BY1c9/
+vX58+SevQ1DF9Qr/Z608tamk33S7iqEG2eV+tCyCavYkjxhX79K0TuReLdFKQBdbITPhbggI
+0a6kvczYvNhQg+mUZcZfvjy/f737+/vr13+8kM9/wgR5U1P6Z1+Ry1MDATWmOtEvNOCW+0SL
+qtQpOwhnKSXbXbRnl38WR8Gey75oeIGuW/6TVY2oM8euYQF9AmJJ31xhcqpV4KPtOabp+rbr
+B2fPyYowVFIIoLzPFh5ZGMkWj05Tc+cC/YRZPXAgkic4B8y/RPui9hKtgt/tywDPv71+Rcc7
+MysZjXisslY9u9VSApBT0bzZptOYFbX7LDQ8xSy/frGH+LvKv0YVZ9RqBXrduMvkbK7lT2le
+sxdL8OFtUVMXiQECEtl5qGKE2+OWBcOcKRORu0pFY1o9Zo253xme2NDfcnx9//4v3Ga+vYFA
+e58+4njVy81x7RtA2kyS4EsBHNLz8kA/LDG2Tt6amkro4DPDFa5Cgh6dXilbJ8rBGZqdoUCm
+/TsYxgPqXI+O6HYK+KwZiO3rK5fRRdC51NR+1hS7cGOKXsJJk/E3jBadXprUmQwIRWuSLdk3
+KQbPkbEu+sdKLXgz6IJCO3na4trRm2veovnHfUg+WG0dWXgQC9GXc44uUQdYDm1GP0VV0nXr
+atJ7xxHG/O6zSM5gRUEdgQdC+qCVhSkpifV6INSW6uFD0cEGA/n0ZD666hsij1pX0JFU7Da8
+IArGjBbGaOxe2jWF9UhHX8c+57T0QxvCqYh4kGlAR60QoPPmsEmVfV4798hG4866et11fcrZ
+SfBkAJjMuYw/qrwv9Jiw87U4ZZ/h+pT3laVsGHfrqiy9yFrMoTWliXdl02Qt1XDg4J3Sz6Xg
+m5eopuicIsQvJsOM8L8+o3pm702JdAb+K1norF1tJSvHHjYijU8ebkc3jN9TVTr3mbFAskz4
+j7rsN1QvNzTI2oSoUfADLXrOKA97gHFv5SWhPNq3I6gGRuFDZsqluaXoDecAgU5fTbAOepST
+0LvJrRjqPvQKH2RJj2yohyzWO5jV5aWhppUBrGBACbhNYasrO9j4rvRD7qvqPk9HTjDNnDGa
+QTp70Qiy2f/Na2Uv/3h/vvt1mKRGRaBOAAsEs/0lGZWLsZPlwh5W8I85tkRK0syMlfbFav2d
+AMDou5+0B06VBuwxx3dN09SpyThcsqiH6vCL14CNl+Prt5EITh2OBK+O9g1BkMyOf7dBoGeO
+154JdOAcRv2MkiapgXcEsYDvHgCI5zDoV6ZT+U2a/kgNE+vICwtCo876ebrPyMyp5yaV6OJ4
+t9/epAmjeM2wZUCXlf7KiRVl7fywakcB42Vzug7PGIwOKcPWo4Rf2B79pltfE3E1s+qVlyKd
+GzAQOjx04lehkdxVH5bRT+boALY/HTjMkUOFMfaYdsb1OUL06VqwBiONPIoDqDXKq/EoPUAr
+mnvqhUmAeCOj2lNznjVs8eiStdS8JTk69+wuxi8+OR1R7hrz0evPL0Q5GSRwWirgC95arvJL
+EDkWZJFsok3XJ/VCzknQdYsnXMX8gfdQYOAl68gH+rQjuLNjMRt1DQQpH/K1S7VfRWodhNz6
+bwvQiJRyOAd6XV4p9OlBKZMtPLalNpvVpi+O9zXNXUeg0zu6IL12HoUkgdqqcZo/gSKac/eK
+eruUVQZqJ/U602AMP2moQBJ1ovZxEImcpIXMVB7tg4DE8htIRK6ohoFuAbPZkBuhAXE4hbud
+Eys5YHSb+6Bjx+FUyO1qw9k1EhVuY8dH3ZxFx7CUYTZg9PvpTPR25Wz2ybXvEtHq627PTjfY
+y8xxhSYENHdMKjmm3H6EIWB90yoaiY8W5VP2kD71nqdVVadln2SSzeMY1ZX7pJeBwNKAbxBN
+H4WbYCb60hT1lrnl08Bh9kbknQsLnL9FYBGF6LbxjncKtCT7lez4DcMSZEnbx/tTnSp+kC1Z
+moZBsGbljfdJI38OuzCYrWwDXfJ5JViQH+psXuccd6H25Y/nn6A7//x4//27fhLKZl38eH/+
+8RNbv/v2+gN0L5B3r7/hP+lRrMVrA/YL/oN6OSGqz6/TctU3i2ikqcnSNge2gua4HUE9jV+b
+oG2XzlYSeu06h/DrY+r/np7aMXnXmlSi2vQ0PVSfyhP1nAK1/eK6AmqI7wxKF5LIJWbNkiRH
+8rjA3Kv5Cex4mZ3EQZSiF6SC+lKLktpCLcCYAqgeZuGeLXq6l6Dbngm5lCobXLtmSxCRvcno
+SeyNWYIvkbNvbOoC9oacdEs3wvWHa53suC2v/BXsw3dGC9Cra2RcC8OVmXB8B4bpJagpGWFo
+ZSPGUXWoB12GHgPPyosXNPHXaZrehav9+u6/4FTzcoU//z1nJ5y5Ut9jcoD11ckfM5+irNQT
+y8WbrRO2ocs8mumtfWvBUcy8QkUzImSZo3NZLvMnDScCx/wGBTwgHpMDMNjMgY24zkpLN1hw
+gFbFPvjjjwWzBCXJODVjaC+D+THrBRSMAtQXZl2xCHd5+0jpGA4wDIbh97SbYGZ0L3pkGvsk
+4SeFdug7LLxJUp+enKy66gqQ6WeOb883mU7y7yCOOsmgARktOcvu4Oeif7fOMkxr0DfO/T3e
+cFEwvnKvId8pJITuW7qJW49n0IYzgXBu2Mxx72Arm8Syfi0eNmWvGJXbm3W4Dm4RbFddt9Au
+YEH37txvAGC8juPQ/VaE7iypt3HIp/sS/buWmjBhWmbwJm07k+ir4LQsdVSy8LmQCFi5cyaM
+Z4Q6N63TfuVdu0Svt9vuKp7cD8xBxKdtGIShdHsFGt4FXV3cGWGBYXDPI+K4i+A/v6oODWwC
+Hzl0v5G4/Sz0G110Ur8Xo9uO28wIbkMGg55UPo+Lqq0aHRDCt25ebRS5W13Z1b1cb/r2FxGG
+/jxCpIsgwiMOVkuT8pH0b9icU9SxHnxgmSqhPODgwuLNB1UoudCeakHj7dzIbdDnYNLC8XOh
+TFLHq9iOLr1aAHAr4zC8VWwdu4Oogdud+x0GuJ8D22QTBj4/LxmcjdTSzLHnpHsQe1Fzb7Y9
+IwdlWy96Lmv/dmsS8/zgRxu6UYMnNYypbyxprpntS5AU6NwXHa/6vcEioXdB1dEDaL9OFzTU
+33gpqxCszuWau+HXyMEjkcKEzuNOlo3uZ9YenKSfBoqqGF5yMPBzmYFy4iEkSLNzMesjOvQv
+aIWA1QfXY1qIhUcf9S37BfTtG2glJeo8nK3GEFSdE0uhgZVsU9ctVIOz+nEdhPulqgAdB/Qd
+Rw21HpTj7APYXfH7tw84aL384c49Oy/64tzN2rbwYVMOI86p06HUm+A2ns+7AWtH8PtCS/7Y
+sL3Rpsk87ej9gktRYFKD++Hza6kWFRDA9V1tFa7RiWdGP5LnWU1OVTW11dZ1f1CJTrpLD1Q1
+2n/R5s8+n1aThLxOmaKulwpoBrgREwCuTPQ0AaR+ncJ/uMvB6ntt/lyqcupyq/KTpL9gDxjc
+BtLEQ6hCuAYdDdUXWPgv7rV2DJJDPcbqvJSZiJKi5b8BkQ/iCurwQqV1ei/UeVZh0+axZ1aa
+YcmxDoG5KHdx17lA+FPS2P/hO1DlDHfdEmLfh7tYzLEykVqzZzF9mhY8opQM4nQGvmTLeEQU
+h6zwWaOHodhvWavwQKCa/S4IuKKAiRfeQxxJQFjuNh1vJ6NE+8+I7vNtFHACaiAoUeeMg/nX
+o1Z74PpfSLWLV0szQx//yiRTnqcrZao6HzBNqk2TdIPExYkcNt3NduU4GGhEGe2iZY4e0vzB
+vz+npZsCxMaZ8/FCdFqDmI/iOPZbfZBRuL/Fhr+Jc3NWzPd1cbQCJQom8hz5IPLCdVIcMI+g
+lV6vbAQ2kpxUNa8NDhubsAtn0iKRNtHBIley+rQsM1SWNo3ovUQJiLnk20/mtjztI/Z4PQqA
+RxmGsy4bibPqU8mHd11zljPAL2J+T3LHpwV/o22EKTeg9CA5FaCjqKxm1Rz5sCKNg31kZtrq
+/ifa/FXnoLAWJaT4+voTk799ddxqgVuwCU1jC5/UkTDOWq6CoK2cHh1F429qulE0YX3DNDBQ
+x9TG1TBpYiX8vhHMrtGnq8ocJVLfJB1EAZLxzIukpi6ULS3bhgslLtqHvt3ZAGSrdjhdpgbD
+X7JWnXv2fg1nEQmsnK7zVMLYGH/89vvHoqlWh8G6flAAmGUOcJDHI/oW5I4jgsGYRHAPjkea
+wRSibbKOw1yyi8iT7GhQusvnny/v39DP53Vw7nE8wWyN+Mi7dyfuEPxSPTlx8gaaXrxHswaw
+d49CeLd0gjMlH9KnQ4V+2KTOAdaLhLs5I+h6swHJ+50tijjuCDCRtA8HonqN8EfY8mhknYPY
+BWyJKNxyJWReq10YdkyZxOYmabbxhv2C/AG6xy6VkSSt93ygz0jhBmI7YJ1hJOUY0EqxXYdb
+HhOvw5jBmBnKNJUX8SpaLSBWK7aqbrfa7JkihWvkneB1E0acujVSqPKi+vraAIBpMSs6tt4y
+vfLvk44UeDGLZnnF9BafNQSFl69aiQLO/dzd4zRIVZ4cM3Ua/BPnLai2uoqreGJROqZL0g1u
+Qp5LnPpMqZMpxa5G1Rbs8WpiBgihNVNrW0R9W53lyXB/XnN7zdcBqzOOJJ1drPPCUtRoxLtV
+2CQ/YeZNu93tbsoI3HNqJ9f81O6TyYCtjnN5qKUr7zMyCFd8s54LpjUEOqW860etIUYllalk
+M1lTmqzG+M0/GdRJlFfHUkRwDwf4QXlFcPYouNyuMceBBgKb/XrOFD0FlGzSlFtSlnGZkvOS
+cVwXcdD1VQncXywrkl24JiKIQt0rcYtpZbQdavU3OuO+A3NL99rHHgoR0i3C7oKrLpg9VWxQ
+tVT1QzODFigfYA8/NH4G2oHAiBArupbZBiJzt90E9lu+c9j9Cka+xuAeHy3DFRzZsA2+80UB
+Up/661gW1cJJemWgems5pKnjyUpQSSqrJJ2xQuM0I+bDlAvVH9pypi+JNtOxCG0a+SiUYtA9
+i55hu/aXPcNtdHMueKOToXhKhbYheV2URRjsfWCT3uODi1WzwPa2VttNFMaE7/73dXUE87N2
+47BtaSMyp8LLosRSDsydV7QN1ha9WMl50HRdhsFpVKjliVPLY7zZreeN1tfCzpHFFpHEdHk2
+TnquNFWLsU64/SYLSRsMdSJ2URzYQeBvgwfCfbDZfCJkkGi74tfZFTSaEOXJbCCTLl9xokmD
+OdmUFcBWeZ6BH1W03TMsAcQ22i6PH+B3URTNC8pCrPj7bFswSWGdJ2h4hDOfYGSUCarR768L
+OPbzF72Wec1FS1xmLOZ0281AN2/TEOz+H4Oqryb0wr41qkpGu0EQ+zxXLUrh0B/ypsjWvZv1
+XYOGSycKUwUXWKBRR+oyOUD0Tlp58CixTl4+fRjOIJEPWQUziLNDWxg3gQxqs/Yr2GyGA+fp
++f2rDinI/lrd4QHZce51voTxivco9M8+i4N15APhb+suT/xDESHbOJK7kJvFhgAO1o7Ca6Ey
+q1XkQ/PsgNA//UY8S5CHtV52UHK5Eyoq/OATU7aRNwuK+sD0s8qBeaJWtY/Q94m9+QYHYU59
+yjOQLsYE3ItC51NivZ+4MR89ozibiTFB/PP5/fnLB4Z3+17gLX1D5eL6s1Yw7fPU3OyajPf8
+kr+0Ay1ns7sOSNoOAePjDImT3hSzB+9hg26f3JewzJMyCGbayXVk9PDezLBG1Mv76/O3+V2a
+1Zl1lIukO4dFxNEm8Ce8BYMqBScQCfoKnkNnXGEKOHESFBFuN5tA9BcBoNIN1aZkR/ROYZ9E
+oL2iicKd1qn7FkWknWiWvpHdJShBkZagwR74msumxwx85PkCim3wvcgiHUnYDuhc1on/0ARD
+aG7l+wvW9hmLrq6nmINa4kTKW7YpSVZJLimP881tFMfd0gBXfHgeJQGpE8auUcMZjna72e0+
+7emQuOSTxmA1pmUmlxrL64WANadH2edjh4FRfOYah6oT/DQz2axYFPqwRbuQ+YLqODpGzyyn
+5duPv2BxgGixoW8A5o7CpiJRHGDjyYMwmHVBn2KZwban20VZ6ZDViZzNVYMBmU0znVic9nzg
+oXMJbLGjodT/AmsnmxWwcLN2/83YtXS3jSvpv+LlzKLnim9q0QuKpCTEBEWTlMR4w+Pbybmd
+c/M6iWdu978fFACSeBTgLOLY9RWAAohHAShUzbEfR8b2giNtYLLyr+tuJHF4aNHWqmKYMt2b
+pYHADRm9Eg1nprHiJqqS4zzAQI1C9FxsaXNNeVWIzq8EYwTpye/QF1bLd1cjp2w0Zxn8pghG
+vdVwK6KkNUW5jXniuGFchp13ihvIESJf23VswEAWi762JCzLdrJXV0F2VnYog5QMsPVAP8YK
+exJqvgqWHkvooe6rAilRWtwiTbfY4r49KwhV991YnK5Fb49/A3dW3sE3H97Di0UXu69I4Yi4
+mIS/GXPNV5kOxbXqmeb0exAk4eYYDuF0SQ9Pxq6mnY4Ovd2UdBqYpojnsmJvZyNNKLth1v0N
+Lzkxnd9fmZXDbtkemfz70v1RGca0LvEFAqtSfefa5jAQvEE0HSrGBjlL5iykPTb15GhRg+Pt
+dmV/Md0U/K6QE5v7mgumpnL3Jtg95brwtfNzECX20tb1FZofjTyNRG/14Yp/KwG5J8fLHbtW
+X75MVSBJGPUXejFpDnUBp4SDetuIoTM+NGHBQ7vuAsCoXjuV0V7XFoyRsJYUCL7GL2+h9H2Z
+KTuYIohLVLtthLestjJ8jUumdj6pK197eb5QZU1rrw3Xn5QDJW4AoZFkQTwS6RXblXGPPyAi
+S2Zv1ct1Zw3+etsR9zzPIVQT7zrhE0sx5OYxN9wdgnSUwP1S1Win/0Dlnu/gDa1J50/n+BUn
+ikDkalX/45Cw1OaPJfojhJX8osGqs2ZBYOu6wcN+aBddnHgvxvJcXbBrWSESHCSCdxP1tYDY
+9z2Wg+A5UNzUsu34cxYno54dBHGQTJrgB7vum/3RfQubaJK4q7aeXDS3FhtqBIzYgIJWGL+1
+sdigQxFH2F28wlHSMI8SPDm3dZ779hQ69LiN9UYwtVzJirsjwsQHJRCrLdCjucdbUHHTbxfF
+lHomM/ZBN6aWZV+RRyxvPuljgNhMIaKKaBkWWTiMxRDofxjddgi7YSWbXNTBtyETWADqlzNK
+sjbYYcdE4HKX7yFWf4nc1cgfyKngNtO9b0tuKuM45gfHhRCfKMZvMTY4VrfHZR9q9zHdEhlB
+t2l3iLeVTu/FDfVlVt+0kSacB31RYN0TzLmrjb9mGQl0a96F6PGHzqbeE49DL4b7VuBYsn8d
+xTrSqDrB5nxksB70cqpmFyAZ2ed5urJZCFs/Fh62RZnLXj/HVDE+meBLl8LFFDfS1uhFp8rW
+Xm8X7SoSwHYodYKYvwx53iih7A96JjfWdODPa3pvNRUb0FH03IWxG9Gv/dj0W+ohVJlS37yH
+1xk8fJwq64IgcnLIsMxevnN/Zarq4XIZhdtCVB2yD+iFJV9YIsaP6s5T+LJn7X/p+vqkRWAF
+KjeZYe170clmKG5O46F9b8rgZER4abM8zNne5HC5yj8/fUeFA4f94s6DZdk0dXuqrUwNA7mN
+KgrctAMJNGMZRzvsBcbC0ZXFPokDLLGA/vIlJi2oc7ZA4mWOlmNVKynwG1CZmDZT2TV4qGRv
+a+pZSV+YjtAUwDFQxRku5FZ8/te3H59e//zy0/gyzemiBd1diF151CsviGKdWa6X9IzXwtYr
+KfD9t3UIudI8MOEY/c9vP1+9nop5FyxP03wtB2LKQoKE6y0mMY0QzikyOGmVJSlGm4c4V93U
+SCQXhu46ke3V9Wt8+DJkSs4VtmnkE2e+M7Ihg2bSxCnU+BodIVNsjsxxvpd6VmxI92VtyC6J
+rFr7PDH4b6QiBRtgV7M/D2RIkn3i6lpkSKOdnhej7dNJp91IYRHYFL10SpimMH++PLtSD+Gw
+zXzCheI/waWkSPrwX19YP/r898PHL//8+OHDxw8P/5Bcv337+tsfbAz9t9nh4UTJrLLQ9R01
+LsZ9YH5ooEEgdIjaM8GlBQUv0NiunnNPk9kam+qtE9dHolpxADxeWtwfCGewQzuo/cV0oM6J
+sKTZsy68om9VPy1iihvIqeWOZkz/PQbM28QhhsK2XLh4cmJDrBuwE2Izq9KYHdQzIoVcs42M
+MbRqWt+sMSwUd1f3txuML2zSCxgPEq4ahohJ4XRuila3teN0PW4DH/4U3fJyZLKZ2TrYwcBw
+JLl00WQMy3fPcZbvzJwea2qtSwrcdGWImsjCuqbvizhpTBOzXBHOwyyX3lK2McTfoXB8cpgU
+wQTWldhtB1d9DEtwTtN2mpxyb6xhDaFIHJmyxW/rtlpGnRrWhhOmwiKIkaGThbe30uoF6wWL
+Q5Sna6dn1BNiLAf9Y2QINURlGAc7a7Y/83APzmoPhEKYADNVh561cWg0q8P31EfMCeWGZsaK
+cm1TMnfh3Rjb6y5Hrxu/GZwPne6MGxDP/bYKz4a2swYK0su509FsCfla3d2HxZ2Ao/yp6fbm
+UIHwS8syWf/FtgBfXz7D8vcPoTi9fHj5/upSmCpygYDN19D6YlXTuvSSsgvTwFAPLI+oXLLL
+4TIer8/P8wXO8fRPUFyGmW22rfYhLfei52yfG+nALadxeMtrf3n9U2jDsurKwq9XWyrW5sfH
+fDcruiuqp+pdU/VEyClyEOv9W+gBwuudo5NzFvBMCA55zcUVvNvp944bHfRujL6cQyv1saoQ
+KfvCEqJaM8pMi2FUx091V8nbycyt1OnbUQuBHSaDXC67hs5Fd4TmOg9oELtOD93XDbabQLGn
+6IaHPz5/En76rAgyHWzcCTjhfBRnMX8jELcV2yqvINtA0CSRqOnyYZXnX+AZ/uX12w97BzR2
+TNpvf/wbkXXs5iDJ89k4gdDp0sZM9bdiMFSqpb2BPV168rRs4euv8I71QThd4i7J23q8X3ru
+QocfXQ1jQdnW9vTw+o1V8OMDG5FsBvrwCRzds2mJV+Tn/7iqADewTklINeZhp748sxnUk1ID
+vdG7dkZoNeuaTu7l14yWEAUSmE/95dqpkRlJKxyK2Pywiz9eWTLphVIpgv2GF6EBYvBuIm2d
+SgpTUFwPW3G282CdDnXpvLDAc4W91mMlcqBBnqM+0yRDVeRgX3XtKkw2bnOPhq2RDPXTla12
+hx481yDFSysyb/2kWZunEPGKRvVnuyJsJYuGXQ7TpBtFkNUR1iCvGA2GS1k3etjUBREvL7w1
+6ggbRCx3NI6o5EFCA0pkYI2mGi+t9LHouYmMnWKkxwlJMAXJbkLqdkf74ZDgzvUWONvt0GR7
+bzLpMQnr9+K67eTt2JIn8WWAnQmu/R923cGEtMKyH7eaDcIL7Hc5msI04NGgIPcLkkZh7kyc
+vJk4DR0ipe5cwzT39lRx5ed0MbWwSUd+FPXFsTCZ06OgddYd/oaFb+bYzdq8vNat7hst9O/a
+I6IM7aQiwXw4xSUa3m6Zitic0BanorezpnBwX9i9pRzirAkSOwEHIheQr084IA7I54fvn77+
+8foDsVJfa1C8H/uCoCO3PNd9//5Gasxhxlq39+3E3WXbEokraGyENRUEWXh0RE9dROsvE/4M
+bhWwaNtLCxmh4tdVAaGC0QC3y0JUt2yHpr3UW5eg5vEMlpsidxOklIzD4dqf7E93qilpCZ6O
+sPkfACvRO5h1ehwD6pHUTWXn19R34hCD7Xx7MtTi21joSE5rccozD6zPiDuajx8+vYwf/+3u
+UTW4TNfusNc+7iDON2TqATq9aHsYFWJaNBmwr03HMNvhXv03FrbaY+b0GsMezz0PItwdusoS
+Zt7cwyxAa5xmaYKpOc7X7CrDHpkLOD3DK8Kq6NO8GMM+T7Es8yDNcHoWudosj95ss9wRdURh
+0SMc4izYOavCEKVoM+VJgNY1jWTzLZdqru5vJZWm8paQ946t/wluALMuTMKgyFMT7UBQIYYJ
+spwBPUPoYMBtTQiFdKGIA3mMquG2V0aMB/L11IlzZEjJDEh3AaZmDzQPwxQH0hRT6BmwT3fo
+IOOu3bwDFzgCRKWDXCdMcl5c4BBwn0QOIHOl2LvK2DtTIM32xFTTcI82whPTHna+j/RUHcNp
+QnYDIi7XcCCGV411GSqzIEe+CKOHOSrLULJJYecbBYyDpZ06JNeKot+f0fMYnWOHakp8c8dA
+0wD79kAPcXqUoBJMKcqeBwneDJS/F/KNLcYSoS4bFYYYz70Bi3y49LEOnfqPXz/+fPmJLPRW
+JtIjsk+A89wdsV7B6TO+SWYgHI04NXxIyW/c/LtlxtXnBVtA9/6Fe2P0DQAlO3QrsOKZfz7c
+8vF9uI0r8Ze2TzDLTFsoZN+55RH5wMAHYquqgu68qDfn4xv19ukwG1f+Ri7Zr32EwleR2FtG
+VPh6Vf9cIK3AqIie2D+fQnQ7tUmS+eeLjfEXR0T8S60co+rfBv/SsIpL/6eKa79yvzEWv8p4
+8DP2z+3bOQ3nLNz5ldyFzasErUzo9kOihtNTF1PoyyKKf0XYLPEpRAtTjp6frahfsZdsUfF2
+n+W18m3cVqYYH6fDeYpUdd61xlkr0fpW1ZJLWHf4l2e4KPeq84wjjfGjP7gYZ4oO24t5F3hp
+ZW4nF1floW/3KHnwLidv02PfKajk4Rlg0FlMDRhEuwA7xFqwBNlpjmQml6puVO94C7Zcv9up
+1ov5poqxeq5411/8Q2PlHJrKf/yp5unTLTe+aUAmfEX09OCFA2QRUeAQnVrV0n2Da+VrpwDL
+Z6TdLcvQ03rQ4DTHCJLAQxBCXM25IZSMvydBuHBcjoZWyM2iZPxPIxfSP8m7jlUocS3mcKDP
+szLCygtzYs0x6kqab4FBlddxBnUNOi6Pyr58+/H3w5eX798/fnjgoiA6NE+YQXBt8NPvElZa
+GRqNQatOu0cWVJfpoYKu11JG0vGMHjOJyrGkBzgI7giYKFqJMZNCE59Ogxm0QmDC2tDKU9oZ
+urK0fQsIR3R3iHVutktNnFZGAqd2kqnA7HyEgd4I/4FrBrRnIJZdAu7RlgfTPXQqEWhzd4pN
+yrNRBLl0hkzN5UTKm9nom78PgwrOBQxeesjTITN5ad0+B2FmtRvtuG9Dd4WE8Z6rSnQq7Swn
+bHsp/B5ReGYov64hoXZOJrpxqV6/CJL+QFY6oRP3p87Zo6BFUoVs8rscrkZ+0tWAmeVALpgO
+ILAWTEDgLYCRVddXJmnseBQpk/x+KNXrC04U7ksQWsCPdnX5xiHOnbP3apZmJcMM4nSOGzhO
+b0fMJEfgU54kVr48Ps48YCbIAudmcMb3nprOoIBh/ZGPET17Uo1RGEdGJ12PeZ1TtzC5+fbj
+9TeJgpss7+Qe7GIwo5vj3DmRAQsBHvUUWkVYYquBjlmQ555BJsYNZkAmGmDMM7uPlpjr/wWK
+xFxrdpsEv9nn6J20h0tbWanuQ5CWcY62vrd1V9t9Tv341/eXrx+0+yfx1VcH4jq1NafG0302
+7PxEs4Gnascz1Y0hdI5n/iAoMmdRSdVD029IZq4lwsum2cfHjpRhrvoEWobvXgYeUUz4jFYS
+ismxslvP0AR68uxbyyvW99Rb6Y0a2h1VhK92t6Vwz+nBcUtTjr0r2ud5HBurg9kW6PoqF+3j
+yErUdHmWpJiqLj+6fkm/9gRuPYT1IXDd666Ybeujr1TJmOSROc83YS5NU/VVgXa1OdODH9o8
+NXshJ+/VG0hBfqJTnpqdSriYtangWdbIQDhJtYni1mKbW+3eJx9ykTfGtPluSnS60dZhaDMd
+jqYGA7TQ/kgN05fOnk/knhAhRjg+aUMscQGpBxFS12DqlaWxDhd4JdNI3x7rI2WrQUQUCLYm
+ehtqM4BW2x1JxrO7ffrx+r8vn801TGv504mpJtyRtaWXMT3p6tSS5MN6WxOi6MSPirJkeNc2
+nfcAnFVYlxbBb//5JO2v6cvPV2NqY4mE9TEPanDB186NqRrCGD2d11lyxYGnUsJUYuRqCO6K
+CeoGyG2BRR9ORP2KSAXVig+fX/5P9b15Xx6VQewsqgkk6AOtMTLUa5do8ihAbnwJFYKYmdWh
+KHGXJBpzgJ026NmlzpLQc0CVI98ljoqpLnN1IHCliFwpIqa1ly7Q2U4Jeq2pchhvqnQI2zlp
+Va93MS5TXgcZ0p1kt1HOdMAdCvuUQ43as3F0uHZdo4V9UOm2aT3GdL5TzeYKIvMCrsyacj9d
+VOV8KMYRwssr3h0S7kOfJ1GmJumvG7qhPjmZHDwlIiQ8rFizlTR4vg4xnkG33KVKV5FizUU5
+5vs40R6DLlh5D3cBplgsDPBh1Rtrla73BQ3BuoLGoCzzC72pT5e5vkWYnIv3xKHCtmsr12Gw
+20Uj0qItLOKS/PAETrknrFISmo1HiE6+c/WE8i1CMd0Sj2a4NhJnQL4yd9GPNZFAkCwXr/5m
+b1wSMoUwyJje5K2YZMLvtDUmpkYgQizyk6GDfFQ5Foilzvc7bP5cODa1z0oMKnKIu4FVWXLM
+3nhh4GsdKhjvNJ6UzRilapz7jV7GQRo2juoGsct17dpP6pG/tBXcaYJddygZcsXeURiPyOEt
+jDPtM28ZXQgmiFZFhZkNPRxsiA2JOFDtvzRAt1ZQoRC941M5MtWOXQESKA4F8v0OlSMRN/EI
+kE6I5KyiUZzZdL6F2eFVktE38M+9DKBTcT3V0GvCfeybQpdITfYc1o/JLoowAfqRLQLYVL/W
+qgwzVdU4XutGSiTCFWAd61oOwW6H7YPXVqz2+30SY7Pq9RQFO0wkY/3lfzKtvTJJ8kmhuGQR
+joxfXpl+jrk9h0gGA0TniQPNe69C1yK7bQgNdiF+DqDz4BfKOg9ufaPxoM7MVI4gU14RK8A+
+VDe/GzBmU+AAYjcQYGUwIDVCFSgQaq6icyRoE5/HwOVDV3LAa+gL7a58s5K09YS7PJfc/EEE
+VtBQOk74V46JzMeC+41mW7HGboPHfKxph7QNPKkfaIkW21PL2Ycl2SHYYd9iCb1uZzpOna8m
+hzGYu9toZymBuWiYXIONl+xHQfq5BDcmVj0XtBuuNlgN2nu1jRyAUwSkElXdgBkg7s5ZsvBj
+OFtMkjyCJ3IsV4hrOWHzysIAZ9S75GhLyg+vw+MJy/WYJVGW4OEBBMcS2IptCpCsh/Ks+jZc
+6KcmCfKBYiUyKNw5fF1LDqacF0ieWRoiVH48X7Q2cibnNIjQIUMOtKh9IjCGrp6wOYHAHSHM
+096hTRzn9EqHq/EhJ68KDOq7MkbqzrTfPgixztkU7T5NJwQgbV2caqxR1hdT3pqJddzXDwUH
+UgkJ8AeeOLhHJgsBhEhVQA9NAuwjARQG/uWN86DPMjSOOMFLDlNcVgYgiwxouiHSJEBPdym6
+gHAswGwENI40x4vbZ45MoyCL/AsTY0pT1O5N50DbnkPRG2KnqW5jq0F7V+QLtQr7N6pQdtHO
+uyjSZurrEz51jGWaxHazMnU3jHL0+9btMQwOtJRans3QZ2zai9BxR1M83sgCZxHSBWmGdUya
+YeOOqqbIGzXHejBVb0EUKrJYMSpa2h6bkCg6hOkerds+CSOk/TkQB2iZSRijo6gr8yxC7flU
+jhgbnO1YirNcMoym03LJUY5s/Pm+HnBkWWK4AjVQV9aQ0HU4o/BlObpXWTnECye0kKGIvOO8
+fZ7G+bEvHus2RDMAfKBFP/okuJTl3BkP+xXMJvLL2D0yzrq6JEyHu+JrJ0crQqkb1t5lUNz9
+58p/p3x6sDJSzbMc492+OlyRwzgQrC2HQ+/Vpge2oUDGPCOHyJBg5OgvlBz/hc28DChx0+uV
+w+lacOV4n6VRWtgyVrRmiw66INVMv4zRAzKFIwx2yDzBgBSOepFa0qGMM4p0oAXZoxs+gR6i
+N1agYRyHDH0EsmVE0xSZMpkSHYR5lbt25UOWh9hp3srBqpyHSL1IW4Rq9FSVPiF6INAjRHNg
+9CjE+tNYZtiKeKZlgkz3I+2CHdrEHPF9bs6QO5LGjufGKkv4Ngv6LEBhSAJkEbyRYp16MDDN
+sa5/G4MwQLeJtzEPvcci9zzKsuiENQVAeYCZXKgc+6CyBeJAiExMHECGGacjE4+gwwwJJslo
+fk2WJ+OAVV6AKRq7XeFJw+x8dKRnWH0+er+1uHmybq4N/6XmGAMnzMZ91IqNj7sgQDo8xPSe
+a9UVNSgOqpsnSZjbeuTRjy1gGIuRDDJUq4HVtO5PdQvxEmXwhJlb5c90+H1nMhsHjQv5ooVY
+X6j3nvDA4/PYkw4NSy4Zpb/0+XS5MVHrbr6TocZyVBmPcKoynIsedzuBJYFYmnDYgZoiLwn0
+vO26vikkMByK9sR/eGVzy7SdG3fXhR3Fq/p27OsnL8/2pa8iOKeXy7RfXxl4pF6kHAmD11Gr
+ZzJiTqlNf4xWmupBTtpgeUrhbsqUtMtY6eqiR8jXNidYSYtdsLfdwMbYIwqH2ciJ7HL52z6l
+1muWj6R/vF8ulf+bXhZLD7TcgtGrwm5T4YULbdfxEctPcSwDDhW/vPw/Y1fW3DiOpN/3V/hp
+ZzdiIoY3qYd+gEhI4ohXkRQl94tC43J1O9ZHhV01272/fpEADxwJuh8qysovAeJMAAlkJmod
+zN2+8CDSWd9Zs+Fyj7H6gXP5JDdgwes/vmZYzUsvGMTyWhmUnKdPwZN9XahxajjETtdFrTiM
+wxuE12H7/nb7+vD2slZBcBgVu+5qB49OpVbKPVpSYJ0JBhgV2hESQ9cqo2+smrX8vAL94x+3
+D1b9jx/vP1+400SzmpOsyPmAMBei3KSJkC0oOcCmCABrTZO1JA49rHqfV0BE+r29fPx8/W2t
+E4U14OogteUibtW4E3VWoN/ebyutyL3TsoYUr7rkpWT2W7su2IHNZ+JSbBXQcq4WZSqJ/Dpn
+GXK8Kl9+3p7ZkMHH/PgNK8+U/2xzhvQ3t4xcq+VKzKeu27JdS9flWyXeXLdVfsAn5IhBPFWa
+H2r+OAhJPaFaLller6SZYJXKE3SypRRQszYfwFIvzXk4TzxDlUlpsgXlbyxRGUDkbGXpQQzh
+zWNMfPv5+gDeO6e44MZwLXeZ5o2WU/ircJUmvaCSqCLs+b4hmeLHnifofCYz0d6fYM/iHqLk
+w7YJQ1TZxFOT3ktiByk799Z/6rRghAKB8LkQiFCLOoxwHYo0w1ytAwdr7nDjqG+kOD3bhLFb
+ngdbmadnSwZNVXUBXX/OvtBMXsMP3UzU+3DxP6cUnJMtCvIFxzR2oiPzVPUuAN0HGxfdgkdK
+xC80PV1bqTNoxRebIYTmqw2ivxvjtKLyVAqYMB23/ka98uOIWCm4/xVrDfakp+A9t7vu0UCU
+vMdS11c88khEpM+1d0WcdmHlaJHZVV48tqB2xDpKD3kUeK7w+POiAWF40YBDD27AeU8qNFZI
+RSsJGYhN1pcTaY9ImISiSbnh458yQYQ+QbafUArrFm9igBgoZ0namigscblaTcEEwcptdGGx
+rPW9BDcWl9ec7UsXoSZGAHLDl7SsM7ldABCGL2prJklTJqp/1YWMX0nOeIS+dRSyQjysU78l
+2cMY1BClylYnC3Xj683G6bGLW+fPDEmAafJGONk4MZJtsrG8O5pxi/Z1wXFPABzvI/yyZwI3
+egtOF3cqWTHrkOhVf1HjKQCxpf3JWqIm3YVMoNnaiXX6RX6Nx/Mb7VZUYh8kvmt8mr+Ms+S9
+GDWpaY6Jg+mYOVaFfeQm6qc7mmr3V5yaB3Gkh9wWAJsUVMwqT2vX+VpEq0dXhg6mCuXY8T5h
+Y1/RJpPtJXTEbsGWajTSEqeJvnx6eH97fH58+PH+9vr08HHHcX6OfP92YzupzFAHAsNYg+VA
+8dcz0nZVEBGjlT2ic7pmSAw0djwjpe8zid53qVgoJHQ0ptNo8AZY72aWT1GeLK0D5zcI7HBV
+N8N8RHJDOem42HSR68iPT8WLUFcRcYIW2zcIgiHB3uEu8EaTWdP7UqxurNK+TVqOeBgZW6Mx
+R9v4l8z4zGQb1yZZTDM/mapOg/G9NzJxJoScMtk+abQARBKcC9eLfSOqEx8TpR/6+Mto0UBT
+bHs7S+qHyWalQ7kNo6VBJjNzuUSmQ2a+2xTWr9ouWhDHLZW5d/Xs69K5DF30OnwCXWNp5naT
+2LvsGdQEIqMFjmPQfF1mj4YvkwzRkNBZ2S6Ptpxasq4/BwlqisCFd30ohWGwvkVdEE+ryoiw
+g86lPO0MsQyugdhU4rE37IKW8XAObWfW9bCdc3Wi4uBenNBSL3K0thuJWOMdDyQj8MTHvupC
+lKErgSWC2lqYv+7nWzXlLrbllnrN2tLSduVpHppyBEjb6XzWONM9KPflGGMzSTz7xoBdfqFs
+RtVFDw/3EAaw/DyRgkcUPykBaxceuMHgFxgLl9SqCx/bhu6Z/MM06TIP3+G+YBmAWiFBzbpV
+HlX1IGFZ6MvzTUIq9l+DIkJ5YCmQ/Z2yxDQOQTwHmxHSwiKpEExsNuBH8h4n5Xrm85RGMxjn
+7moW+ulbReQzuIb4WB/BeVx9/KdgHrpOaiwuOtRJFfohXlCOJYmll3UVG8IiDtB/iWkI/fUq
+iDM31jZ5V2x8x9LbDIy82MVDQS5s6Etck4ttBWMXKwNHPBxJYg8dpXy/hDY8spNSQdT+TGIR
+Owk0awZFcYRnjdmSoUyhfKhVoCnUDJ674TECY0qiYGPJnbu9RmoFUCI7eFUhOBbboBDtNQ7F
+vrUinoNvrPXarrXTxrf2Qmx5YKgzeRFar1E9pp4gVTxOUDkDULLBmyRtXNZ7qOAqmzBw8bI0
+SRKiIxEQddsvY1/iDaq5lnj6yMdlGiCerXF7PVqMjQl7T62ybNBRNZ/mkIybbY56RJE4UrIJ
+QnSQN7vk4liQ06/UdRys25qBSfDIMiU5iEa40nhUY0QJPOPXAAsH3/S1TYk5GtG4ujIDTqwW
+AmebW7weHIbD9aC9L0V45aekfX1KD13aUlqxDQnEXvwssVDwrNbF0OhIENv7o/Q+SBx0LM9K
+KAQJ3Y1staNAcbjBe6xlZUP1dQoLPO22JP/iuRbvujJXOXj4bYiSVRSH62Ku88qGOGj9Aepc
+HArLJI5ivAbCPnX9q5P+C8u72LPjLj4PxcFsW9dqyEidYWjpbnva2RmasyW1drpbIFBhyVbT
+ciJ+gL0OpaxxlXD9BbEMJa5jhRIvQLdjHIortJRNF7pMNlswTemlYp4fofKNY0lkTcdWLMsy
+jinQLEw28cdR118fw5hKTUM/O//N2i5rRRKbV3SJTSi7Vj80exhGWnNQH50uwKiIQcsmFDer
+3zxroT80sV6Qbb6VXi60s2p8/lyRt5jOoYVwrJJVQgvBYNM6A7XJchPGzgjCBpwjCzcD/jmk
+KL1M4d4zQ7GK4mnYyiHRl3s8QKIJQXuQs5QlxrNwdKS6ry0fgBebzSfJ6+oeLfalbEw6b8gh
+T6najrSiStod3AQetcIIn3m5taqH/BIeMjT2Muupfd02xWnPlnrlS/n+RGSN5tip2qd5P7cE
+i/MGaE+hXHpHi0/J2fDgR3geHLr2FzWT/qiOkNNQ90bhWpq1pMd2FgBeQlfvVNrmlpdBgPYt
+JeWvBHcPBAyn6oLGS2dyor7XvtX3rBVyy9AZfWCqbcdGCGFrUkvLulemKgOKum50F1oL2vVK
+LpdtfblmQ6b17V7/Df2q3I8L6gHr7HS6XRvvqthvKbjwotWkGdgf0JS7c6rbXm3LUQ0pJ/4P
+JeWYSlKyymQ2O4pe1QlO+DZrhys59XVHC6qGXFyi1E0azx9/fpddoo2FJiW8c1lKoH2DTZai
+3l/7Aa+awpvl+7wnxV9jbgn4BUT41Cpmrb1sk2vpv/A17sdqrXOQlppKMuQZBYE56P3DfoDL
+hoLOUeWHp6+Pb0Hx9Przj7u376Bulhpc5DMEhXbpJNGhRynrUdm5u4BJNuhaaAEIDXSZV/zA
+Uu1lSSs4+lMl7zH5h3bniglqjUi6+0ovF9t9wuNGhDqUpChq5QYWq740Dh/eXn+8vz0/P75L
+jaP1AMIjj+T5IpgTx+vcu29Pzz8e3x+/3t0+WK/C/S/8/ePubzsO3L3Iif82pdazVPoWjojL
+wOP858d/PdxexjFi9Gva5ES5Bocc9h07paPDEtDmjJuP8m97Huo7hx9dxQcL0kl9rQHXvGpO
+/ZUOyrgFpl9bf4yxIdXq73f9cPdft9fb89tv//j69NvTj9vzf3NXmZbq0tJLZJW6TOWjaXr+
+2r19+/G/t/dHltG3p1fWL++3r09veNZQPJK3XXOvFvnA1oB2hwiANF+RIOPoHyhVX69OI9jT
+bm0XOi8/Qi/ZItXo80ukmCeDAWUlE2N75T5KGXjSWLy9Pjw9P9/e/zRHpagMrFX8bkusPreX
+x/cbq/Lrx9u7raNI0+cVyErJukIghzwMI5OYBJHerUBUDiVjacqLh75WWWA3wJNZgiQuDGic
+5gWOA72MQFUPXzPdRx01LLCveIeT6NgEXGBZIz9TA9fTm7TsN6Uj62wkso9yu65rVoQBDe6q
+acZ7R1aALGTX1YczkAfHxbgHUSjz64Pr2r9e1XXluE6Tqi88BVjvHZe4mAf7ER8cj7hYwsFJ
+MounponD9ZOVwQL4VjYKnMheFCCjBeioPneBZc8MEtUYDIwKodCMD4eRhRpixWF0/MWdxIAr
+qRcG1EuWBFs+vMGOGBIcmrXQXYdM9NgL8cu9mSEK1goZRzHSZjFclyFUrH2TJIywklnuwyd4
+4yXG1GFUy9jZ2Lyczwy2cGOCoc1IWlq0oTLHWlu2/wyDyj5Pu/AY0HRvrNyMHm7JTm84Ro6I
+jzBHhBjU1vGFANC3tl0UechCkKbYDce4k+gTekwMqRWWddHJW058DeTLY8FotoWUZGHiGQUl
+x9iPjWGdnTexa6w3QJXd+8zUxImvQ1rKhVRKwsu2e759/G5dsjO4P/P1vOHZWGQMbUaNgkj+
+mpq3MC78CXuur48Pb+Dv/O9339/fGMZa7IPtOb7evTz9gbRR2vm+Y3RB2oV+YAg7oBa+R4z1
+pGv8wDEKzZVI2353LRtjBvcZiQNzXWTkTRIga0RPSRS4IabWkxg8owx9MfieQ/LU87d6dfpB
+e+cnyKeMuH6ArI5D48Udq4u1DOcyif2NmRDocYieSP9an4kQtVk3M+q92BESheML1Cnan8y+
+nFutWbCzJ49ZbB5JGdk35zUAQWJvDMAjB9l0jQBoUlYTJ4ExPEYyJNXLuYVw6AjR3PwyYmQQ
+866IN5vkYhb32Dl4hPtx7JMLWz4iZC9VJBGraLS2sLNui93VnY/gsLcyf9mhBBxU6VhT9UMT
+uoGxOHByaM6goYkdx5ypZy9xApO62TjIYOF07IHEApvbt6G5+MK3njR8YVbclEmDzIXYjY3q
+pXDcCJSQMdqEkL7y+GqbJBs/2Wzx2eBarlxkDvs2BHA/MNYDTlatQxYgXNmrk2OSuOYOABrH
+Q455HEhwu5Cxkw4dW00dVIxprSa15NMLE2n/fgRD47uH35++G016ajK20fJdYpZJQIm/8kkz
++2Up/IdgeXhjPEymwrNQtAQgPOPQOyhbjvUchNIja+9+/Hx9fNezBX0mPApyR8dik+mCxi90
+Ak8fD4/Pz7fXx7efH3e/Pz5/l/LTj6voY+Vp0+TFG3MJ7q9l3uQZMn8PXew7SnzYlaKoarNJ
+1yhK+PPjx9vL0/89gnKJV89Qs3H+Kw0czShLAncpO9Wi9ic6k7IwGyhqiaMwMSkgGzJKWN5v
+XP+CY2WStF3EKmDo70cculsOda+AaRB0iSoXFbz3nMhiLKqzfVZBYFLMmVTM9V0r5kWRtYSX
+wnfcFnviqrGFjhN2K9kwPF7V4XPGL6WbuVvW3BYzA52Vdb0liIDC2rsObkEiMbVMyCHXEALs
+cs9FHcirTGB+hQ8FtsF1E88+iEcctY4x2ELLQBZobOlphjLQMs45uLHnu0mS2Fp2SsI4stin
+G3yftWJ/IhtFoSaDl9RzvMRWkEsKouaT/C9pOMmj6ZSJSTJVnWvqbrkM3L/fvv8OpmjLteH4
+RbJv5FKyn8IeFm0kQLscf7AG2JDj1wzDnly7c96nB9rWmJ8DcDqUN6fBtFTKWswJM6OOTvDL
+OoOwOPAg+jhJfMLSLIfaZcWUyOL4+86O7Xf/+vntG1tHMv0UvNte0zIDb8hLFzNaVff57l4m
+SX/nbXkmLb2ybsyUVJlspQc5s3+7vChamvYGkNbNPcuFGEBekj3dFrmapLvv8LwAQPMCAM9r
+x5o/31dXWrGBWCnQtu4PC33uIEDYfwJAe59xsM/0BUWYtFoo9xrQbHRH25ZmV/kUDMxsRCkR
+rBmtJCkfDGqhSXos8v1BrSXwXQ+0aJSXNQzo84K3SS9cDJmj5Pfb+1dxj2R6m4FOytvW8qCT
+oU2JPROBZFPkZLksbE4sUg6Y7re09ZSXfDLVGGKk1YacuCfW+o50ecH6BLu54mXo+l5LwZre
+xUM+MPA00A6XAZByBasCdHfFkMNeHbz7LdV/w5XYL4FEa4bWU5jqhlYgWjqlSTu2Mvta6CNo
+E/AHghdGuOGRJeZMtPrhXThsQbgWDny8tvlAlIIDQb2+n4jT7bz8dQ7MOdvKmMeo8htmL02c
+ME7U0UhaJnIgDnklh7zm8xCC+WlTE0hsp18UtMpPpVa+Cb7v+vzLCbc3XdhwX3wLvtINLWEn
+C4v8If2966l1FCRLnzBQGwaMck2tzQvoHreVHVG0h6TB6mvf63yY8xZmMiimgDPJGDUjmaQp
+1WWDbamHqZxj0WhhHNOaLSy5+o3jfavKbz/b6ZMOSKIUtm9yjpXeHeo6q2uLFBn6JPJ8Vdi3
+7KBZab3aHrVyNSV2ohEzoMzlF4QLDZyblVc6qB6yFDA9dX2NbW1YLucyCeVwj5zUX1kvtWKB
+lMu3p2wxw/NpLkxSq0P6rFhdQB8f2Gq4ZcveFdwfqe1TaqsuEEQXFeoQ8lM1Tz8dd2ct3YP3
+UG0gll162qkS4pTpgy/flmy+9EFoifsMVR/DQdlwdlS4YJpJPn65QawquCiTH1Vdql1abtnA
+uWjyTND4y4+91moTps+zbVuTrDtQqq+n4jRmmcYdW6CcWE9Rxq5lJ8G9NrCevB7UsQ50T8uG
+08aOsr9fmRmrU8l+dL/4BpLxhz7aTnKGcKr+jMzEdraUKTx2S3uI28094lq/wN+vITVm2MC2
+A2uVBZ5DVubsY6XiKnfkCGYO5BPhDH72iS7LbYXvbAiTIddderw23Knc8RfHUsWuoLS5kh2E
+joLqXo34oXzzCgl227vm9vr4zJXXVChJTXcnc+6wlcpYrnVD/AgfVRNLv2sCVKNhcjaZ63WO
+GyLVZr8rEQ8wG3JtFdQ5Pmv2hXN+VIrWoCEVLWAM2aSLwtaxkWKR5jKfeNledI4fD3F2dlxZ
+/fppT8xaAnjjnneNogQaadJzUFzPwfh2WxWabmyx47BwmHp7+J/np99+/3H3n3dMuEwPVA1l
+Agge8e5PPLdfuhKQ6aHsQp13PJZUC37sM0++i14QaDUXAyw71IWhOaNF4RHN5KZdIG7fcS4o
+5lV94dJN4BakI6z/CYbovkGk4mRgd+rgBeIg+rBG4pldHxgQ3Nr7DlogDm2wAhVNEoZoUUcv
+Q1hTkyqrW4IlkmzXkAp+Ej5yYrO5z1yKNoSeExcNVrhtFrmywbXUdG16SasKbR+ayaq5T2bI
+lJ6dnWHF0p974vqIcXURKoa314+358e7r08f359vk3bPnIGgaWN/drXshTQ7leX9J2RYVU9l
+1f2SODje1ufuFy+cBRvbxLJVerdjotvIGQEhzDFJ78X2kbbcf7kid5EkIgrstWnzkrS4pSuW
+rK17u3t0/DujlqknR1oPuuSctK/rXTBLunov7ZrhF0RUO7HjLdtbyjWWILtKRWJKi1Pv6W6N
+xrIZ+t3p+119qtQwilVmbAEOeWaOpEOeyaVlP5d4031Lq32P77sZo2aytLwohw9Z0ky+i43C
+dd8fH55uz7yQxjMqSEgCNkokAc9paXrittJy1QXQnrAjAcdGwa+TZDshTuxOnUY5tVT17s2b
+ixbHHB+FAu5rthbj4Sk4Q77f0krjkHDQprf3+lfTQ85+3dvS1DyMpVr8tD4pTreAVpKUFMW9
+Skz5/YTxRVb5PgefSFsnRHVInOu+YRtQreHYUNnXVQsRGKRMF6q98rTsGKjmRgs5FJOg0FR+
+dC9otV4D+uuR2lpsT8tt3mZqHvtdq+W6L+o2r0+dnvWhLnqKmY4BOOQDKbL5kPGCYCpx30eJ
+r/UeK7oY6kp5jvdUL8opZdIkx449gJ5JIXwnKWmGnJ67urKmuuSkVp0c8GLet4YEluA8JRlV
+K5H3GuGfZNsSvTT9Oa8OllsG0RRVlzPJZP1ykWpRWziRGpKuoFU92MJnANx3R9qnmI8IjrN2
+HoWSmm6kw4+mQRLPDLudsobk7ancFrQhmWdA+03gGMTzgdKiE2SlCFw5V7KBiqtZBUsBihBL
+3Upyv2ObdU3glmx1P9dtkYlJqeTHLUX3lvWYJ87Ttu7qHa475RzsUENb6xwtT0X//5Q9XXfb
+uI5/xWee7n2YM5YU28ruuQ8UJVucWB8RJVvpi06m9XRyJm26aXr29t8vQUoyP0Dl7ksbA+CH
+SBAEQRBgqLwv4TJT6J7emssWOy0qTMMO5ldWDbwPNtaZ0Gwh6L1Y/cY2q4GXRHydlWIu0NsX
+hW7J8aHszV7UQsALHdP+1BHsnO4QkiVLs04HrfzEqxCLBnOb1kngga1dWkho4C2G+lxLZiEf
+MrcYaIC+bbsBs50tT5qKUtKaMLHxqekz6uak4B2aZEpis4I5c87ZoSCSaa0GxL57hUjvYn1d
+ShJIa20md5LgNiOFPaECKNawUIoy3AwvabqyPqIpCuUoFMzapSByDOFMO4nNILevkLTx9+oB
+GtBHTYf7N2ihEVRmfWJ74Sqptw7MhcC29tI2bzreFkRGJdEGRYcvraoONNCh5pjhXuLDvWAy
+a/LOkGjdnoIzY/Ag3Lv5idVrdh3qtcdrgvnH6sNDKhRTWwNQ2UCGvEscnlUYdYcwYFlDdOX0
+iCbtknKT1mEYGkYoTN2Wejg8lUQPCvJpJEttGaVpTCOFegNqVJa8iE7Vry9vLx9fkMwqUPAu
+sWqSm5d+9n6nMptsPiLJtEkhtb5qHjuIc6+ODDUaeGBEmznTrlCpjS6WGw5VlbJe/xS7O3Yh
+PQqASnAE1x/otKio9gJtTs4VPDurpNW5PFZkisNh5E+yq1f+NUW64nuF4I5DUSH4cz+1enW+
+wcpMSOyTYaqrnDLTd8RkBSdiAQBni/313MnhDjuFCz9MzgO6O9ZsSEz1XVVWlj7rknwn3IA2
+R/iQU5NNzT7VlJkAUpZi36fZUGZnLTYJ4nELbOs84ocqpox4YDRivLU/eC8qhksZuT/6thBZ
+z0MJm5l6vI9JCjkT7cFuQIDExlylHW2Pon1/QbBLy/yBWS8EdwnpBztrfIBqzwsTCCqGnLND
+BtFpE3eqZcyJTuypZaqSHf4rNCVFaQicl+9vYMWZXvanrguPnPLtrl+vYUI9n9QDV9rzraBp
+cqCkRhA11U5yOlRMT5lxwjGsYy+/ti4GPEGKQOgWl7o4ZUlnT5/EQO47z1dmgB/zl5ktocAM
+HRQJbaqqhSkf2hbBti2sAU7zDCurFo7RcQnfc8xBR+/InNTarRSwlRFpyUQ1TN+KDZxMUGgL
+iSu2xW+LDCLIVrRMxbFz5YxVqWrQPhRYHiLJ0yWXETaByjMgOLdVfRcG67x2p5bxOgi2vURY
+fQFUtA0XltBeLHhRr1trhbJRZQ6/B9daS+yKiWh4E6w95Y41jYwEyAYWZsuDkhnx7G+fsSk5
+sZJimoNBVpsJx81+c+yx+kzCc0ckX/nDy2ETKwDtu51DeaKb5sjqNz/GQbAw6U1MttvN7W4s
+q2OUDIS/c45VjYyGg5fBdQrcGcZpZHqzBfuCuupc0efH78hLXbnP0MLssDiQlq1uRwLgObWo
+WhnBUGUSFKeI/1rJUWqrhhyy1afLN6H9fF+9fF1xytnqjx9vq+R4B8rAwNPVl8efU4SYx+fv
+L6s/Lquvl8uny6f/Ft91MWrKL8/fVn++vK6+vLxeVk9f/3yZSsLXsS+Pn5++fsbDnBQpjdfm
+wmC1E65OQU/jtOPDKwhkohC3WJd648uw2usSKVk1LblHxwOMmZhkAjsrUgKHA0kPmU9JUSSe
++uQufW5IjVe8IPIVASswy8WErzEJoBDvdrlGuly0XeRCJkKjFYlYGv9CLq20oXb/FKLiuMFu
+plj8AEmRQlKCRt0dSo6tnx/fBCt/WR2ef1xWx8efl1dbP5MFIcDbFn8rc62c15ZaJcEd5AVC
+4PJuQ8X/U2q4lA0FEcvq08WIsyYlAKuGqjxiFsm5EQi6Yw86K09Z2TYEcH6V/Ewx28WICs35
+Bcg0v+qxx+Onz5e339Ifj8+/vsKNJXzA6vXyPz+eXi/qQKFIpjPX6k3Kl8vXxz+eL5+sUwbU
+jrCohDvM45KIT6V34mzBeQYGsr3vgAFZnFmaEWcpjPChQ11dDRJkAU8oR/+eMQUvPBjDAd/A
+jHeVHqxM52riQCPabdcYMIAvc7hE0au0o7A+PJ8+0amVNq0ktKp5qTk3rMAQkg3Qva/jfBda
+PVexHDHYPDQ/Edz87sxUGxSSMHEYSTzZhnS65i4KAuyptkakrl49LdE8usG8hDWSc87aLM90
+C7KGhQiDoyOD3Jo8zdRCw/WJ/olGXYoORYw2lBV1dkAx+zYVCiCrPG2fmM8iqBGxmtwvd485
+R52pY4LdPP6iCJVK1IjVs4+DEI1GbNJsot5TwUH6VL/zFfXZU5p1eH4gjeQue+A1KYc6xRze
+XUJ0tu6OnOEIcL0eOMX5rKDt0IVmHCwdDRcfy50qKr7zrF6FCzZDTRo7sKVFFaOX+jpR340L
+wcWV5FQQ31Ksj2G0xnOQaVRVy7axJwmCRnZPCerboZMIIQj2QU93eE3ruPcFPJyIyN4nwwAl
+xjNNUQ9BQxJmTUPOrBEihHN03PhDkVRHT0MLSucsWZKs+R2PWqsLurN3bqrac4Wv0xQlKzN8
+4qE8tQ0pI66HOwuhgKLIM+N5UukvK/Rh4V1gJpbSp7d9R5Z0dbqL9+tdhC+J3ifvHEVn3jhN
+Yy3yKhBqyQq29fVM4MKt3SxJu3aBl088O9hFjtmhasG5wVPqaBtVpr2HPuzoNrJxKpe9qa+k
+6urFalhuRfZlh/k14EUFzslHgnvxAZH0rc06bOHI8kOxZ8Oe8JbmpNGfNskhYVz8dzo46uPR
+txBbcAvOTixpIHK7Y8GqzqRpWOUbTLA12BZCeIUsbRB71rddk9nmMrhv359N6IOgsy2UH+Sg
+9o7UBwuq+D/cBP2CIYQzCn9EmwWxOhHdbD3hC+TIsfJuEBMm38N7zftiMioutj7Ne7ahKrVJ
+zcrCtoWT1hW9cCMufTf85+ge3PZ8J62MHI4ZUnEv/hFgdNXWf/38/vTx8VmdMHHFt861r4Ld
+vRUyacbMk19WKk1qTzN2uoLHBK3iF3jjA4WDE9WYcKhGhps/JZ21KUiTqh5sQHGhOGiYvZEj
+cqwtI6+83QJXLtOS8vuHm91uPX6ocU/qGR+jo/LIYXVeHUOspz0a5gQpk3mG4tRDpD07ZnwJ
+jyNhxMBv8GzeAI3Y0VImnzAp318u6K7cMm+ayiEYZ5nL69O3vy6vYlCud0gmx1wtyaaAHI3d
+/hPsoZGHQKvcZC/9T+yZY3kc7ZjE6p6EaB4RQBYntzKARa7Bt6yBVJqJfZXBF4RmZYkognwu
+KdLNJtoumAsHoWqE4c63k0ps7OgGh+rOr+Vnh3Dt6/vIPD0TotCZVCLl1sKcjgQnuOs0Pl+5
+1U9Gbn3RoRxmMBhLxC5ZV9xwl5Q85tqo90JXGo5W4xOr29AM9nunPEK6H6ok621Y6TaeuaA6
+rxxlURBmbse7hLuETSl0CBtYwLuhcX3buL1D3Z2oDTK8I8Z+Ytb9/dDaX6T+tFuZoNPw/USR
+hBb2iWvGwQj79tuJplwon1E8yZlNNI7ze02pcfc2lmHv3gyScd7xgTAm0NfIXjCyYOf3vwom
+/b3u7O23DRZWMMl/0tDIJe+31sqpmjeS0fb67fUCYdtevl8+QbqBP58+/3h9RNw8TE+1CTLk
+ZS2VUFN3bHOTVADm6bPAsOzMndRdxUoCOsuoKykcDffOJfQVA014B1Ejk53zXRJfyVCron/p
+j5K7hYOCraKgUu2grXnrJgZSr4wi1/tBoAXeoRERFFYs9qFwRuug/Ja9pSYPKgOYJgfMcVwh
+z1lCiaMIgzOkexVjbD3v8+TUUPtQZ5oMlT8Fh+tZEGeYeWugwE0b7IIAc3DQikG0OubUuAdV
+Zh26dXZwf4rNzVilTEaGRoLV+nRrN5enEedjfE8DweHyKVC5oA3EmC+cOeNzhp7H8rXvLAba
+n98uv1KVFfzb8+Xfl9ff0ov2a8X/9+nt41+uY5+qsuh6IerIzU3s9A9QNYvkaG1G66E21//f
+hu0eE0hm8vXx7bIq4F5JN3m4rXiIDUUVnuCp6GDm+gYEHx0We8NxxUgNWJ8bnt0PGQbkabyT
+8eAssHMRIQoPCcQQQ/mIQ5Kgjvhy+4iyniMyoGjzULfV7NxX0N94+hvUuOCQphV3AvoAkKeW
+94aBVVm9PMFmrgRFL+vxdFujYdoGJFFVT3RrL8Bk4Imcm0AwtjYmqGV7oXekJnD0lTGBRlSR
+ETDkZzUZrLk32EEia1Y5AwWhSDw3rWogxbZS5QP6HkH2F2KemImJJ7DNP2Iw/XMyJSr0EtBk
+5wm0DNiTzEIl/vKXF2Mojrdt3pVp1vjnPsXfZsoPyOE/hgbRhD50QqCszXHoeE5tiBiGrVi7
+FiW8kGyzO9MVVkd0ZuI62SFP0jf5vfe5ub8AMOf3/iVa8Zwl8irYU2VCizCONmb3jGx4ktPP
+R5vLjkI5wLaXIit4y6jx5mSCeWzKxeXLy+tP/vb08W/MmjyX7kp52dBkvCuw2+GC10JLlCJN
+6z6fIU5j7wujqWm5hAtNpZwxv8tHMeUQxT2CbZQlwP0WjTUWBtFilBEL/tPgKKw9fwO34Skt
+1dzYFTrI52som2hEUjWj1dFzjSopkwZsuiUY0YVcojnkPXNfV0O4CMfAKMuTUqgzm1ti9Z00
+LNP0UwU7h+vAsOOoHtBiG4VYMNYrehNbdUEGBzM/zhWMx6id8FtPDNsZfxvigkcSqDTnfrx0
+00QDNql5qRIx/8N9p8f/0zENubcQkJwcNCCbD0a4z7Ff0gDOHrg6ur25QYBm9IoRvFn7v0Vg
+NzLhvf1UYcaGmIfCFeuyAoDRS6YRG2/WAVIIInYsFLIij1xHb7Mw0UCwjbwfr2KdyNBNnb1u
+jZgsEjJn13WZPw3jtf+L22hzGzmdL2gQ7dCE6BJd8tCa3zJr+4QdnNYJZ6iTlnq1QAmkanYK
+tUe6uQ36pUVC+t3OSuBjr9LNv60xqtpw7S7oIiv3YZAUmIYnCRiPgv0xCm5765tHhLJlW0JM
+epr+8fz09e9/BCo3X3NIVmNMnB9fIV4R8oZs9Y/rY79/WmIwgaumwpkp/sApev+sGKWI15vY
+Gofi2At2cWrqOGqmUdPL6C5OequilomB7pzgX1c5h0ztmA/cP7WsRpNZq0oPs41IJc6B+E/t
+y6s4h5n7h8q0Mo64BQZQ+/r0+bO71YzPaOzlNr2uaVmh2zsNXCU2uLxqPdg8E0eBxPCUMvDX
+4Jk4ntadp0+EtuzEzCibBoEtvXGq6ZmUyUpyvJ6+vYHH4/fVmxq0KweXlzeVzXM0g6z+AWP7
+9vj6+fL2T10fM0exISVnWYkfE83PlglvveJjpKpJqRu9DJyQS+pBJd5ALWO1eJfPPMhmgiHz
+c9qHiSf505dvzxdclQFHOM5Zwo6s1W5MSRA8CA2JQMxXLULQFNPl8e8f32BwZUid798ul49/
+afkp6ozcddr7nBEw2u7MY96MeyjbXPSmbDk2sC5ZTZEGFLaujsfKi+3Sum182KTkPlSa0fZo
+5Bd38FmPmREcspou1CLawK0YBtld9lBjO4NJdVQdRnEQscGLq++qzott+7rxIuX9mG608nDL
+VDpLCSTvruANI6eN/rRQopwHBAC1aMbgVGLL2RunBon0ezmrpsFRz4/OdpsQU4UkksXh7U4P
+pqagkRHle4RZW7yCZlEQopkEJLqPYruajZEHbYQhzW0CrLldtNAYGOmv1TQtnIsTEyC0r5tt
+HMQuxjmwATCn4tD+gJlmAMvBJSOnZj0jcAol+Mvr28f1LzqB5ZwwdnO46+Ct7HilYnSiPBWZ
+60UiMKunr2KH+PNxSjOglWFlu1fc5Om7JBAndGq3JhGi855ykGl9dD6a369DVxBTwUQex6Ar
+YSw4UZAk2XzIeGSOisJk1YdbDN7Ha+NOfMKMj0MXWkv5GNIWhQ9U7J9d84Djd9rpS4Nvd6E9
+joDJH4p4gyakmSjsiIUTXGjh21t9UWiI+NYMyKuhhOYeY57pE0nDNzTC+8r4MbDSGHtoQuzI
+Y5FssanpBQbPnzVR1HQfb8KlAZMU622EfYLERVv8hG8QLc6JpIgj7AuKm6CNMQE0c1+6W2/C
+GOtdch+F+L44r6vz8WaNquhz18ixINzlCnnDFG97rN2GbtqNnSIModmi6aEnCh5tots1cZve
+F1Gge7POVYoFGqzRDvViePEXyHrhEHODngiyIlqH6CpoTgKDWRR0Aj2v5hUeQwYqB843hfvV
+PBWiIp6EIK+ZJQR1gRqKLbqEp8NzME2gh/OVKzwd0RKFWF8VfMjPxulQY+AQUtghnyjG5pai
+61/hVJVLo9dvAzmt5mu5xa+gReXsrKPgDBfFlSDYBAEqiTcbVASALI43w54U7Ii7+mqUu5sl
+SZby8MbMzjljyO16s8SdQLDFWKm9C3YtiRGxfhO38RaV6gITLUtNIEGzdc8EvNiGN+i0J/c3
+uA1rnvB6Q03D3YQBhlkSVgdxxKRgLEXKKhPckryh4a5H5Zl8gr9Q8sNDeV/UWMmy7TM3vufL
+119p3S1zMOHFbbhFtuPrxaHLJezg2u9t4cnhJVUhVHiiO7vP8wZXoAizyJvRk/jp4sywElfp
+TV1gVt9GPapDnZqbALUdz+PR3gaNGBJMQwEcJ8UtVnHzAc3JPXOM/axx7lAbb7C2eFduGcok
+9sWdu2iWNFwxGyQlUdy7XYHQkSVFmXrfir/wN8FXCVDUyIRSlQXIaQwcpG/QTfRYO3cVGA2Y
+UJf0iSLu8VUmXbuXREqPMJ8ADidku+LliSPcrW7xMZnXhniCiSvBNrpFVPii3W1DVM7Jw+GS
+mNtFuJQTM+a5lJqLtmkQ3C4uF+mKO2kLMgKVStS+KHS0QGtgHsU6t5iA5Cr9aYSm/UwFk8+R
+nxyYfVDVMKcJJb8H3Buc5HWEP5R0aPshK2XoJbiclAkILD8bUViQHIwkdwAb86NM5cweypBo
+JsSMggb3tA08rT74fC/Ukx4i0JgNivQMatUkEbQBq1H3dgIYJ0HQ2zBbKqXnuUbcTiMlse0n
+MiJhj8jgIf/cRs64rEznCFYcIJiG19dkDLsm0NsbpJEJ3acyCNlPF35tXqMFz0TSYuQQFWxv
+aKcjriKtikpggWs5GddW7qLBoCvoXg2D7srAjklGuhYi1aPzOBP05mxCEorarF5AWrt6ITbQ
+7bvouR1aoUzq/TjHSIGa5vaE1UffhEuJY378DCo6Q1oreOGpp25Su9XxitthxREtpX64Fqsj
+GYzZUIhgbU2SkEuJ2dPJzUh2Svd1n+BqJmZ6KZfNKtR7h1GPM7thoWoDWbR3Q84dEL03aofw
+gHVrDYt0nMxhdQzFocAs4FcKba2f5Tha3lkj1BDXQu0ZZw8Tw2M1RogIAczsxgAAVFpjfD+Y
+gzC9urHYk0v+y4aEcHQXpKQZzInRnu/YmA8WoGVTX68SD0SyUEUxHpOLZICIyzwhRqhdJQuO
+FjvPmwx9frp8fTNsjPM2gy8BATWd1K/bzdAQ6YQ/1Z50ezfMoawdXoQZY3mWcKS5TtVjNCd+
+C03nlDl5W0ecu8sClGfHPfTcODePuDwjNf4SYSoMdl+VmcokG+8zrK+dm6b6Mun68cHsFQYP
+X41XvJCbdswDNG1N6Q3skW5AeQXXWeSOC1UZtzfCZkY4ZQweDSPjnLfB9i7SzMWCLNR2rTGi
+gMp5pDnfyhRIU7iBtQVuKjnRGxOsnKrgyMWNfIYKm0BkwQn3yy/XLxiHakiOQjPBAwXrJJjF
+RcOreOdm25potaJwgL8o6kMJmHo8Z4H/qlUoLbJiRKEdBhqSoXwvMDxraMUjo1sqP50Tq0Yg
+wKnFbr9uOo4+xRC4Yr8NDVvMaY96ToHaKJRedjJcDU4FfJamwpySqj90mRkujNCmFBsI9poI
+qtWvqdVv+XlwkfQFh4+3eka3FUGRldhz4lNaa6IcfoGnuFF+hMEAeiqQaMvvUsLBC8VQGff0
+hLHJqbY6ApmOSQKCk9ldlPGBWNXqz/wUsIEMxnrPJdT+8DHe7MfXl+8vf76t8p/fLq+/nlaf
+f1y+v2ExkfMHoVeeUKn2Xi3XSg5N9pCgMcuF2MpSQ3VXEG+UshmtfDyk9GUfsuEu+Ve4vokX
+yArS65Rrp8mCcTqxsr9lxonL7yOupsddYBxqNYSdyAehwEyzGl63+l/BcRDi4C3ekTjAjPUz
+voh24Y1TISnqoxgcVoXrNQyBh6CmYbSVeHtoZvw2GsvbXRPrNEbvmnV8+H+cPct24zqO+/mK
+LLvPmZ5rSZZkLWVKtnWjV0TZUdVGJ5246/p0EtekUmdu9dcPQVIyH6CT7k2qDIAg+IZAEMCm
+SkpQg+qMpl5UeZbEDL5YoW3hJdCK6FUJoZwIroiUjJZXhez9FX/sb5VkCDRPtopfWt3NwaHd
+MgDHKLU/2OCKfeyoX5sSvilDz0dGMIXzqmg8f7wyw4CoKLpm5PPTWFs8/K+/uCUWikQD2Hcb
+S5iqJXBSWfMtu/P8tQVmG2raj+zDKlwgDZBY7JxTKSrVT9hAeFGGVVqm65Y4Jj5bcymeJetC
+kKUebhO7kFTo+XzB73Unqqn7wOv9DjNWSQIa+hGy0RXKJmjyXPlh6HDtn0eH/blPe7LLmi0y
+dvAH6vAWgX8NrdmoEbRni66iI2Sju6Aj3VZvEfgLNJCZTWf48VgE4NHzGUZBiG4RCsGAGp9n
+uhJGJfIXK6RXOC4eggHpEo5jBwq2zDgu8Txcsgl7bUPI4AK18GIPG0uJ8/EenLD4ZbtFdvUE
+nsmiq4NxEJMf2Ym0M1KzLSBnpPYoCjkjjae0BkVhpAV0UQV2l7JffU6cjRCnIiZ91utOahP4
+S81tJN5isKfOlmlUuzazmbHPi8FefAVpxYaEiHW3btIu8zERfu8CtD9vwQ11zx9523OT8BwN
+/GC+NitmMnd3S5LMVnoEhm3etqo4oZBSVb5cLGxVr8qhF/BTKwp9PGGqSnJtbwAC7X2zAo8X
+A9J/86F2daOv+VmR4QcmdAAyBbs+C327/TTybY2h0lLNX1izbz52aCJis4OQFCmm5puU3A73
+0dcAO+rsTRHOPxQ4IorxrfhXc49ENpRrmwm+iLEe5yOGIXpkHGpI5LDv4bPSRE2WMgQ65kMq
+31pjWMlUvQGjfbrVKmlInze1iFAjwogIz0em4Px4l7HN9XcQ6ePj8fn4dn45vhsv0w2MoH59
+eD5/gxjIT6dvp/eHZ3A0ZuysstfoVE4T+u+nvz2d3o6PYObTecqWpVkfB6riKwHgs6Q6QH+S
+r/hQf/j+8MjIXh+PzibNtcXxMlIr+riwMNfy2tk/Ak1/vb7/cfxx0nrLSSPC4R/f/+/89k/e
+sl//Or79903x8v34xCsmeu/PwoZJYBzssqpPMpNT451NFVby+Pbt1w2fBjCBCqJ2Sx6vQs3a
+JUEwLqgEbq7CV/j44/wMT6c+nGMfUc7JmZDJP8m/WY+0ikMjwmVe6fqrXGYi6jl6Cybw/JxV
+LL19Pm6ziilPyumwKbocYplaEY82933/BUwtY9/0EO616dhGES1tPGG1SHTga5tvxdY+KW/H
+oawhB/Lt/dcOTb9OKpFLW6bImlnIR93jgewK3LDKi010KMVQlHCDTFlLN9hn1abIy4xHoNNf
+5OwqeOQLxi464havAzvHxY0vnwbs58367fT07Wi/vwbSnhbeUtHXAbZJb/PJtwHKy3QWaHnT
+BjmsojnJx5SGCrs/rcQLC+0E3XVsJ59Lo/ET8rJM62ZA8oiIl3rjrunbcq+EuJZwLeKEAJXK
+SVUf4BKoZp9SiiGnKZn6MTReHGq3Rftuk5Lrcu7SQw5TS7lHkZCx7fI27XSlQs5IQ52Y5qnt
+Wie2sefz/KKfP6FMu4ot938c346wTz2xvfGbevUFrAqi3p0BhLYr6dQ77difY6tIWvJbWtwT
+WmmGcNCoicOKMJFNTu9YBwEyWa5CQ0mdsLsicr0iVqgoqRwK5YWiNT+OZlQR4qHeDZpQtwcq
+KG/pwiydmNj8Op1w68pboe7rCg3JSB4vTGPthAVH89Uy/gSPxA/RMSEUPppG0qLYvI7hbTk+
+s7m3ZJkPtMVd+wxSmn4wcNu8KmrT2j8h2caRRJHjG2WepMKxC+dA/aqluLEUevK+jBbLBdoL
+4EjC/t3mtb767pquuNNqA0Gpt/BX7KO3LLMCfyamnmKmHxza9obs6nSLutkqZOZrBBV1X6Gz
+sxnq1LTRTbiOJty74XqlB+Jaz1XV+uI96XUO6yz2VoP5ETnPnGLIs9FlvoTB4THhqD4yzT2b
+b7r5b4LGhgl+gie47R4ETItbiLHumeXWvTcSsoehdhWVFFlxsAoz/SL2vDE7tPj4SxpDB9Gx
+YxQYPafAx22KpqqdaG6bOkVnS2E+RJtKkC/bGr+okwS7zte7HIA1bTFmNXXYrCWe4pFW+NRk
+C32dd90XNBOrdqawvTwih8C6d9Eoko9WIFCFCaYX60RRhO8ggIqdqDhZkYP5Fa8cixBzTnEE
+gsDi4HOIsls3EJdaUawGoqsyfICrYVVV5qBwKB61fUZjHkQzUjc/Sei+vFKGB+SQ2Wu/HV9P
+jzf0TJCka+zLI68L1pKtHYRBxdkO2ibWD7G3iCZVdJUHet6aRCsni8FboHuNTrMKUAY9202I
++aB7TtGL9CEyR6bg5Sr/vpABNkzuuLZaHZ9OD/3xn1CXoqQqu/+UPQtfduBSvsAfnRlU7put
+C1UUR+gmqdPECbrABIodMaz91wiKaisoXDIATZvj75NtUpJ+VOEhy8mHNR7ymhhVXqGuNluy
+cThOGKTs5L4mXxI7RxaQojs/IxWjFT37SWLZK5+ltrsHo5XPFFwoMDZCZ1yh2BWbDyhkhzop
+EmeHAlKK8HGzObGQ5sNWJyvTkUFHfrrSlYdrKTpN5J4zgJQ99Bk+02K8ys6e7NeIzfnqpJyW
+pbvu2HnhqFI53gCbVNFnqBLHVbNGg38AMlRo+bPoSGRg3AYH7WRQDo8ptyA3Srw8n7+xg+q7
+fK+q2Tw/Q34RtqJ92sk3NWNlaOIXKrJrRYPazYfTuS0YT7JDvzi43/k2o4q7NQd1bUUI2r+A
+tnzb0zBwiSrw8VW0MMgQCi9JVwma/E6no9kQKv4+M5JWGYiu3Di0d+OWkHG1WC11aFVZ4IKB
+05ZS+ADSPBkneLTwHB7FsprlAn3lPqGhvF6dkC0adGiJQgWtGiKCdZeARmruxRmaqHcvF2iQ
+YFCTQ3mBXqZdJqgZGMvacUGrzlgALW0oq0IMgVnHLFGI+elc0GZHSG5o/yRxhBInKLEDGpli
+Tkyw+aqUW1nNa/cSgy9uhTVOcUcEc99P8JC6QACe8wjNTEHljFUaSyHMLtQce+pDtAvYN8Cy
+Dot8gpv0W4x4e6G8mLUFmJ0XaGSXCc1KDa1Zjvcu1IJ2zYXCd1OUbUopQmNQjHAZgzVJx5q9
+UDGcVURc7sy8VGlmlEMatsDE+KyWygqjcjVqewMA+dyK9FXHiXm3RJFrStGx34PbNcwZx4y6
+iyj7EmuNWSUFsaUT62AZmpJMDWYoR3vlBEPKTkPnKjtwWUJNFAGLVNjcpb7uO0nnuiMPDSFy
+IbhSNEADYMotI/I8XZKtrM0GBuo16LTjeBjQloWDrwrCutDgJGaIVasYR8+uQiD80LHQlJH2
+XILMFGYL2qrgyQjg4M8K7Lm9eFS3Eae5hN3COT4Q1S0ETPUbOXFYjbIiBcs/Qjzd5CTfr5k2
+p7zKD6juCkW+ppbJtYtp4jvionP8Ko2DFPV+k9h4aViFBdC3auJgh44+4/H74Qs+vi5qvEwd
+RpCZYP0RAfmoitx158HR8QrpjjhBu8Nxel7wV2tKfKSmZIkBQwwYWYZ7Cf+gh5Log1FK8Au0
+Gb3CZkySOMRJXPZ6gU4dxTbXZdjaxRiraLtwREOYKOLtYon6byt4cwgEOETATAzPWpN0x5ac
+U3p4ykrarR7hb8Zs89oHNI4K3KilA7Wna8YQnlvBo02D4OvWN0HyWS1IyNSM7hq2b3Es20zx
++26aVnSvuq7RgETLOc63bpenYXuAF924Q0E+fKkbOgZsr1Uo0JGXpEsHnU4V6gyRKkM/clVp
+EC4/kj5c+p+VPu2q6HMtANsE5d1NGi11scQzTLNHg6jC23tTZA3nO5rDscvgo6bwKVBsioPj
+gheuQPgLa9qQTbt1xgxQhHjREJQkKxgcHBGkEqML1KcdiDT+vos955Unj9djrXMAirXlsKHM
+RG3Hs8nVEXo/Z5GtCn1l6dhEwUoZyF5TbfZ1cRg3HmENooDEtad97S+KMfNMCgvfyQouiJAh
+UpiQVsUc44EHhYvpTNE5iu+iazILCs+isXjYUi95xRY4YuDAw8AQosYErxi1HyCiAyIIrokO
+FKugd0vOCHYO1ofAGkkNn+U+XrBbWmOhUiQg05XRAg4mY9XhBh55uO/7p7AaDnPqoYAbNkey
+diAotxVc/yHcZaiNA9k7eIsgHA65tGi2qh6f9jmK3N3Ttqj5q2UEZoQ1UxDc2omVgH1J7VMV
+ZYZ0Qkh4CJ9LhTSvxr2MQabYmOn559vj0b4+5uHsRUwiDdJ2jZo8hPVIfughCHOoBDPgP0e9
+KxjlusxMSgalHeHOKpjHKa8THfrJG8MmkQQyrp2My3+JTjHFtJsRM0uef4t93js53vOoMla5
+Td9X3YLtGm5pi6EFJcbFmYfDixCJ7ktnmS5L7QJiB3MVgY2PbR/UKiayYLuKidB1ZkfWLani
+qU3KgIrgcmPfExMlQxDaUstJkK0HqAfOMGw5k7KlsecNdnkIZuQSvmYLostNUUCJ2PK09WxI
+rSYIceY7DURUEbWoxN2QmCJ2iCseRrtwZMNL+woCdhSYkiVwehDtqVqhHYNvGlJwCsVoNIc7
+rI1dS00EhBYyQFwVwrvjdzA1gsgK9U5uCqTSpJ3hVb9HY+DJr4CGdSNarkcnQC6bxvqmsEdr
+SM2tqoDMe1/YmdjbraE9xBa8gLdDi8wrfkWWO+fW7GBiFpwQrPaG4qksJhIXnqcBY7OvhS6P
+lmudSLv3M7ZwhUdalOsGM24X7BDcs78HPQIbh8pg/5ZDS3d8Ob8fv7+dH5GAf3nV9LkVjH2G
+jgSPxz71wqHdsxkKxbXAV5QoR+acTTFt2BIjap2X2FHwPWsIM78LscQXzfr+8uMb0qK2olr0
+Dw7gIW2wGS2QfaeYAQVMTWUhIFbDBFgGaFGeEumSKcuk2dcZPBaxhoh9Fd38hf768X58uWle
+b8gfp+9/hVwPj6d/nB6V5wzaAdNWY8aOvqKmFr/pFpmekSCPYjxIWh9UD1oJ5e5MKd13eopQ
+mVUTPt+KGn0HMpNcxNKWJEfnuUNqg65Ca7q8OUKaJ9r9HVK16K2+7N3crb+tth3PhdrjHqOC
+iookn5caLcaiPu6E7ayQY2G/4jMMq+xCQeumadUzl2Mg8ar99lAiWz8VU/eXVefV3rOFVg+4
+xIPSY4EHYpjxdNNZ0279dn54ejy/4PNu0g3b5t5Qfhoi0vU5gspyvDO3AiiUbbVWtwxUDvH4
+bmh/27wdjz8eH9h43p3fijvX6N3tC0JkxDZMqWzTFIwmIrmPMlU+qkKkX/qfasB7CQ6/bUsO
+vmMh8bEBD1R0bC2+wuGUabF//umoT2i4d2xZaEeKANdtjtaDcOQ15a+QVeqmPL0fhRzrn6dn
+yCo1b2Z2OkhIIHqZ2/wnbyV8PnZNWcrJImv+fA0yzefFRQdNKgphGqvsDtvRekhUekhb7WwE
+KFtaXerytwICfvd036W4nikPEpe32QX94WbZ32LOh1NUKqzpvO13Px+e2fIw16nheMOUCkge
+kGGLTvgGQVQuqnxUCihdFwaoLIkWlHJyI8KDB0/YFt+BOJoaeWl0nOHoI6Ct7Zp0T2pKrb3Z
+cE9qO7R30T78L2WRIreAHQQnI6giAg7JHKdo6ROI3wFoewDHuG9gFPzS5He5z7HAcYISo7Tq
+tZUC9VBoFDqkRwOMqHic32bh4IffDykEuJPEBR+7OKOXPgp+a/VS1axF9E6LeOmqBXdLuKB9
+lFuAQgk6bMsc7dFlioPXagaMhtzy75ptpwW8nuFFI/YqdAxmKnxLU9aNdZM0XX5QHhzfggPX
+IrPAe6q9jJTQDzZUSTXnXWWb4J6pg+iCZaJOMYsPTdmn23yiNo9rThZYZC6myu6554YVoY5N
+5r/h9Hx6NQ/zeVvCsHMyuU99ZUx1t/xV9KbL76aa5c+b7ZkRvp7VQ1yixm1zgCCQoEI3dZbD
+AaKY8BQiiNHddAxPtKcZGgnoiTQ9oNqXQgcPu2mbktxRU0ppcZifiU+NsN6Is7k1jb98zs7b
+/qLiQTlTkb9UpDDGoajphchIINgQxvlyyVChFVxGY8wPed3bbeXgqQV1o36ooiRtW+1dXObV
+mm0UU3Q+9IS/RhKq3p/vj+dX55N7QTymGRl/T8mtvhY5akPTZIluyJKAp6H+ZQBl0Pa6D5aJ
+5sqt4cmuZ6e7Y41zuiodvGUYY76qF4ogCEOkDvHyO8F8DSSF+T51Avd1CK5QNstJRxHBN92M
+u36VxEGKcKBVGKKBFSUeImHIxN5mUYZi+w77G/i41wvTtpruC8K7UKMVsB8QX3SjGWxn2EjW
+GKkeZV2Hy+wMGBaSzrNvr72WuxfwtxCnAqh0sEzsmmeThBpW/HdD0TJ6Y6ZaKWxhM4mvktD7
+KQXjiwGeyB2iiZX94ozkM+0X2VDCEwAjJIuKVX0YJWCOrKOC4XmJm0vsG1xi3+SyrtLlAp80
+64qwuc5z5GK2jyw1/HqzNECfrLOJ0GV6WAABwtzpOcbT+G6Gkq6SyE83jrYq2U64sGOQGSPX
+TwiIhOLAQbK1CT/XfTvQDH9xezuQ32+9BZodpSKBr4a4ZR9iTDcMLYAcDAVouO4y0GoZYpsC
+wyRh6I16AgEJNQFKaO1qIGy8Qw0Q+ZrLbH+7CvSoqABap6an538el2qekvEi8Tptqsd+4mm/
+o0Vk/h4LERYl7dKyzEt9UbCPI8zwnkKgsQFuxJUel8Y2HQYGMhvCtNo0zHwDM7T+YrBhq5UO
+AxMXf6hugPOuLOqJ5+XOCXxDFlwIdNklsCq3rVEqKwUn/MysD3nZtDnb1/qc9A1+WTop6g4m
+cNtXdqAQ4JLtBhEyelpcdeoPg9m46eIBZ8H0szizilTD6m5oHUVEGlSzTNkSCNTgLMOzW+mj
+UfbEX8ZazGsOWmEfdRyTKHkSQR0J1MR9EEAmUvujIm2w9JUdeVYqqz5iigzkTTBaUeX1+NUT
+rXOa7Gnaae2oWh+eVWqwOt3HEHJa4Q3XyM6hFuqPmGQuM80BZgIxkjVwjEgNNg6N0RxhC/nS
+Nc56uxqSibraO2u1ZpO5s6Q5BUQaQAcrngnQKsGn3lg1mfh6xI0R/AZatL3DPm1kwp0Nf7rR
+6PcwKs4hWF+1uSVYP3jouwzhdmDtBdzzhyxWHpqoB5CUnVzKvguwiinL1nKVeWXZbEal5ZFo
+gstuJMGHTcTz/WisDgVTuHhINkfTpduQuQgkOK1wK+mnQxsqFJBAdfo/Az8Igs+GTvywtFrr
+5u38+n6Tvz6pJnumdnQ5Jal+8WCXkHeB35/ZB752cu4qsvRDrfCF6j+IpTg97/j3YimSP44v
+p0eIkMhT0qks+5JtH+1OqmXqWQqI/GtjYdZVHqnPpsRvXUMihK60Iya9M1dYW0HUHEwpoyQL
+Foa+JGBaHQIkowFq20m2dFxvsZYUXQFb8bYNHM9hVJolaotsqaoy8p+msi6AQjaMBaskT4sO
+toWuoGCoUo6bw9dVMmijbA6fSDF4eppSDEKkRnJ+eTm/KjPvomuLrykjWY+OvnwvzbXi/NWl
+UVHJgsr2zzFTeUA1a7JxLZ5h1FosanFNT9up7rldF+uahTQ+E3ShcJycXjLU6NUdZl594UKN
+3s5+B+o6YL+XS+3jiUHCJMBPJ4aLksjxnUQgU4+eXixrmx5gmKJJl0s1f8akUmVaNrzIDwJN
+r2B6T+ihL4gZYuVr+hVTiSDKjfsQVauaQdap2vPMGWEY449rxGmUmQkU52CvH+3kMJeefr68
+/JIWWfVTng+/sJdm+6r6glZhMeAcNqdn86yZQAL/dvzfn8fXx19zANp/MdxNltHf2rKc4gUL
+T6QthG99eD+//Zadfry/nf7+EwLs2pEKHHQiIfcfDz+OfysZ2fHppjyfv9/8hdXz15t/zHL8
+UORQef+7JefmXm+htoi+/Xo7/3g8fz+yrp3Wv2Kp2HroVdRmSKnPvqbUFXuBmdursnlxLTXA
+LzCrdh8swoUdUVffEgQLMChgHzr9NpiSKRgT0W6p2JePD8/vfyi73wR9e7/pHt6PN9X59fSu
+n8KbfKm91gWL6MLTczhImI/OXJS9glQlEvL8fDk9nd5/YaOUVn7gYYs92/Xqqb7L4ANYi/jL
+QP7C8ZRSGbXdviqyosezt+966vv4DrHr9z5muaJFrNlK4LevDZrVXhkgjO0fJzaWL8eHHz/f
+ji9HptH9ZP1nzNqCzVrHXr0ZGrqK1ThrE8SctbfV4HhVWNSHsSDV/7P2LN1t6zj/lUzXvef6
+HWfRBS3Rlhq9KsqOk41OmriNz7RJTpJ+d/r9+gFIUeYDVLqYTRsDEAmSIAGCJDCbLEahapAE
+5Hkh5dnyBZsIQuFlIl/EYh+CD33TplMSdxGLUQjuhhUf6GHZxdnx+8ObIYRaBKMKdjqZsNXp
+ZxAgx3VpYLew9yKzmrAMJ46hqTNQhSPrYierYnExJZ8uSZQTH4OJ8+kkwMgqGZ8H3lojKhDv
+IAKdOV4GHp0Cjs77AlvBieHKgN8Lcxrg74XpZdxUE1aNRhMXAr0xGpmO/C9iMRl3A2AYrdKq
+EtnkQsVQsazmE25CpV6RqPFkHljHoar3Fo2qLmm7/rNg4wmdS7yqR/OJ4yqq54EgcdkOxGQW
+kVGm2X7WpcgwF2SEUc7xomTj6chqa1lhMhNq8aqA+8kIkVaXpuPxlNweAWJmu4GnU1O8YTJu
+d6mwQhVokLsmNZGYzsaUx0JizifUKDcwlPMFxZvELA2JlADTUYyAc/O4AwCz+dSg2Ir5eDkx
+EzlGReb2vYKR8cF2PJe+DotcwsgX2bts4QT7uIGhwqjfpKK11yt18+32++PhTbnVSXV6iQFx
+qJUFEaZT/XJ0cWEq2O5gJ2ebggQ6xxJsA4vjKDDBkJ43Zc4bXgcNpjyazifkrrdb5WWt9OGM
+ZshFa6lJ8mi+nE2DCG8P3aHrfDoOqsVrlrOEwX9iPrX0PTkoarh+/Xg7Pv84/Mc57JM72u2e
+HHXrm85yuPtxfPQGndhdF1GWFn2/kztwdYjZ1mXDMO6wrT+Jesyexyd2rbzh0WctaV6O37+j
+gf4X5m94vIfN0uPB3oYndfeOxNj3G2g826/rbdVoggH7Wb3zsYp7hzpIazYr3SRNVpYVfZSr
+0h8TXgu67Z2p8QhWsvQK3j5+//UD/n5+ej3KDCfeCEoNOGurUpAjFm0FzKXuDkSCZyUmE39S
+k7Vpen56A7voeDqCPnkJxmPbxzCx1+QY8z+SR5uwi59NzVMM2MM7ahtBsPaSw9VUWXC3EWCb
+bBKMwpt5CTmvLsYjekNlf6L2ui+HVzQbCQtxVY0Wo3xjLozVxHZM4m97jYyzBBSB9Wg0rsCm
+pJY8y/TgwhSEamSsY2lUjbvNWr/xzKzwQeq3s1pX2dQmEvOFnclVQQIrHyKn5+7EhbVA8krp
+5vlMcn1SDtVktKCKvqkY2JvGaW4HcG17b3BOFv0jJo0xdaGpPi1kN8xP/zn+xO2Z8tm/Kpe2
+PyvRiJzbhlKWxqyWt9lbMupPvhpPzHlQqaTF2kJcY4Ii+8RN1Gv6EGfvuVHF/mJqq1yEkJny
+EGFFAdtfzE2hwVqt2Yk2znQUuCi0y+bTbLQPZgt6p0f/tymDlNY5/HxGn5U9W0/SiQvqiOGb
+cPJFuTHbkMKaB9n+YrQgrVSFMoe3yWGDs3B+n1u/x2PzN6iS0dj5PYktnUK0rLf0m5V5RQx+
+wsykAlQghuXGJU0EpHFzqlkCUKHYIF6tzc5AkLhKmyhpOO3WQgoU8qosqKjMiG7K0qkFr4na
+kKZmhcB3jsbUuTJuBcMPpYbN9iMwlEcbcfLprtmcHggbjhXZHKTo72UMUuBr9yGCYOoliZd3
+PAJsd4+irJ7on1vb0PgqsvuIVxcqn4IB6x4iux2RpKsd9eAZcWm+ccnTfE/uJxVqcm4zhldq
+G/O1hgRKAybbuGA1WW1gFwffYeKS83zFqCuLiM2q6cVs6kqIPqEQUai13cUPu9egv4VbfSZD
+xZL5IE9onRnKao68lOEWJ58ipYJ+TqS+UndBAvXle286FM2eU1oWcV1ABfU82mGlitjFgrzT
+IrHma24EGOkrwGrldlvt9y4S0r0wb6qty7C+vRGo2Xs2IIEyJJEDyybLqMpit2HySkewg/GB
+fajmJrWbJbcTBAiG3asUr2uEysXLGQ7v26LKtp60yZvngVKalEfMqxegSU1HI5Doq8ztfgC1
+GQ/1gY72YrOrAlC4JakLGWZBautafzm7ezg+63DYhnlVf8GBt565wkKVkvYni3nN8BOzyZ9l
+DASWBm4NdUIHq06EX1ahNyyaDvihvHodGmM5ShrjSU0nc7IKK4CHmC3Ri1BTDxC7myvuN2Z6
+DPpDgPbheaDVMTeeC6hLX0jRXa8378khXDQ8tFXOJTOON6JDdpf/sGCwRldpYV6chh1zscF6
+qygBI8BqjoVzjBRjz9G4bTW2i0nVcndstaPClSqjORWLLgO5CVXmGRRp4wWqhWNNck7f7O3w
+ezEm4xMrtHzvPJv75QYVfofuVP5vEtxdCzJFv8uh46S9s5B4a9JnROngzdVAGy9D4UkVOmOw
+ItBj1hEohRtkTI6sqFi9JzpKCnL4UynmMiVXy+qV/zneXwx+bYaQsRDqSWhp7roNRBVHfkXD
+CZw6GnkBcStWVXKtn/RbBPJ+iguT9wY8qAqw54HtWHg+mzLaXJBBTJkTeRz0iXTc3miK2RIs
+UdSyzid91LCfNLzdZFvuyy9G/KJOmlRMMJ0namrFs3aQMrVUd7UGuvlM/Pr6Kt/CnRQNJqir
+YWUFtBFh5gRs8xTMmFihTzoNENp0xEc2ZUNuM4CqFyuks1QyIL30eB0Oi8RYaRZTUk5YoXZD
+Ecfc3C5L6m4nfB1gRoXBM1tkIy/kx0SpGIMP3woFypUzb9kmcZ62jbkL6XErGbnULVkHEJHz
+gPKYGETjCVNl+KX3yKnM6Of2crcu7DehfH82kewepGxZwbJyQ1XY03Xd2EtY9wBT5vXoQ1LY
+eUCMwroIGMg6/S5ejrnMSufx7hbUijow8n34NRk81ht3laxOjw+JmLpdWojJMENIoHLI0+c7
+snwZAJM1pBmr8WrW+E2VA23EiPiDzrcnUhf6rKxr9QCLQMrBDWLaeu92i0YLWNXqgAPAJGPZ
+joqrgzS4L1dZ56gpmad7UNS9BL5Xhp4WDi67BlNzstzYw66WTb/j1VpLw89HHZc+vB8oC4WG
+C9qMYeYxBSAYJEVJSKY2h706lfnR7ur9ZERX3VHUYEgH1hxWw4aCTc/n8o0kbL3wuMyfNdJm
+k+LrSkGHciajPX47vtq2UAlwuW3IlL8m2VK6ewkdpAiiajweLAe26DDORQ42YRq57PZItz88
+qsEW5dV0QPNItKzdbQEGtgtLAaK35iNNDdwLqjsAgUpooDA1Z0TqKTlpcuJF6ZjOCa5kB5P0
+dkTe5K9g0z3UBayqkrLgmAEHJtLI5aCMeFY2BAcWldyDDNQijVIeV7a0SmhafcGERJQhokxZ
+mC4hJSwJvuSVy7SCD2hvSYCaIPE6rEeJohLtmudNSZ+bOOX4ImwgpSgHe+9UZbiHdV9hxqVh
+kZd5IEIuP1QQDNaBS2r9PkWAd60qm6x/k6/0Db3zsijlijkwB2xC36Cy8ZFIOyU4UFusiN6r
+sFuNKVRzXXFvUDvvQlypnB+B4jsqOa0lnd0cHfjAq1uH59yuRQBB2Ks6iP3gStlvawZmhUkz
+tTnuUZT2Onl4kqDU4dMC9GuOp8Ap9Iu/TJ4oZh1FsDGiSZPZ6HxoTyHdnGofG9ldKX2U44tZ
+W0227ujGrNs7BauO8+X4nRnI8sV8Nrxmfz6fjHl7ld6YnSCd3ZHy9LSh5sNOt0orHp6dGD1h
+HHKHKDMF3SndsUTL8zxwaOSRDrW5PyeR9lP5B3RuxR5Rk2yLmNeaSW+XqnySfgRuy/g+7a2N
+rzGcS8Qo/31uhoaAHyju9oWQFe6wPZdxdXhBa14eIf9U98t97zFGV4miwvIeIyinnEcyFAsG
+U93B9jE3osNr87mN47rD9MXJnTsCyf7HIuM8WoAZXZHhcXNW73iWtVExHoH9w2K7ZhttVq87
+fKAXeieLE4gME30EzmlB3mZeT7PH+5en473Rq0Vcl2bYpQ7QrlIUH9CZUQhnLrLOV+rGmfj0
+4evx8f7w8vHhn+6P/3u8V399CNeHSVDWXWh341GkYlx/FjPDJVHscm4cHcuf/uGxAkvnd0q5
+DE/4Miob66hFJcdu+Xor6O2x+lZ7jzgGvw1XoclUJRYK39ar2p1QhV7VGteHKYaPIre4AteC
+Ii5bpz3Kwlu7XJ7kSivxcIt7Eig62FLc13ud2Q2PVDHAAKdZ6LViqOWqGPWoS3eZ7hQdfFZ+
+68uAKHYCRmHjhgTsiLoX4+G2yyjdw3zVKJHOaEjfR7GrmSerGbvmtYBFlbdiXXmSrE4LfcFQ
+aBXpVrLjRxBOrs7eXm7v5JUod0VV0b9PP/AKPJjrK6ascQ+BkSwb+wv52M0GiXJbR7yPqErh
+ErBTmhVnjV1Lh103tRUETOsz++xMwVxD3SfApx7U0ZrGbwIFiyYZ+gzsSZ/DtmpSsjDvzsrp
+4ZA/Pr2qstz/+KvFmMfewYCLwQQq9hlrg0epFS6uoWAFfRkdcbSzBK1Ho73Quol/bLJVncYb
+et5IfLym3ixbNeRVqPE7jCSXaeypYPJOVMPNkDjbrElhouylh929qk1E195iEITN+cWEmYXs
+dewtA9Inz/Cvc3sRRStYECtjhou0NBQZ/pKB6dwAXyJLc+eE05KyGv4ueESHso/KLZLQh65O
+/HvNJo/MyxDwq40q295HWBeCmio4aeiIw06cOf0E9nCmDE0zFmHEogTM/BIjRUQRXpHtu23H
+8F5mA4uFwPg/wjykBlAqk72YUdsmrelw6gDtnjVmbgINrkqRwuhH1uUJjRQ82tbO48ITyVTV
+Y341tYoMf9aXbDE0a20rpgO9V+BsoEC5GjmwU0Ido5c/r2Jru4y/g/fvoL58JYfMPCtMBRqK
+Tqf0YCAOJOjoSWS4pECseqP4fij9EkKdRVIOjO5n1Q6zP94Zh8/kGCBUD4FVFIayTzFnCbXv
+3Xu1I6TLFdHuqNurSPBlWzbM/Wq4O5CiplcSRJUF7BzBTonqLeU+2ButM0BMQBc37Zo1zJpV
+m7XAWUXWtmrUoFBGVpqpD02xWk9C5M6c7gUf+24tfEi7UimjKgO3TsHKQrAK4W/onpYXUX1d
+4dsaWu0J1Fu0UK1FUTbp2hCP2AWkCiDjo1oVM4Ug65TjTtQn4W3BG+nFlKpjbVlbkiBqjG5i
+26Zci24dsmCOQKIFGhrLEnoArFwH3YWouXs4WMeoayHXEVJ/dNSKPP4LNhB/x7tYqhBPg6Si
+vMDjLVtMPpdZymn5voEvSAHaxmvdWM0HXbd6pFKKv0HS/+Z7/LdoaO4A53RgLuBLWoJ3PbXx
+dczXDMwaUPAxr9iGf5pNzyl8WmLaFMGbTx+Or0/L5fzir/EHU5BOpNtmTT2vRRIq55psYWtP
+oUDNv96+LY1KiyY4twHjqlEFW8xWwEF3fBf8MrvZt3v1pOa3W0J48dPmydDQKWfV6+HX/dPZ
+N2pIpbJyrqwj6DJgdkskXr1pMu8bHFAwz6DPS6qtKqtPkmZxzQvDRSs/TWPM0JNIjbI1BueS
+14U5WNpHog3mvLKZl4BBFacoPOWrwLByxXxBqaZku4ElaGVW3oFku42FBptxxYrGwuNz5zRP
+b3iLO2DL1vtfkPXiWxo9C6h13EY1bFtd/hKMkZdu8BQ6cvhX/52WSu3r84Xo5NERkVQ2mL+M
+59Z4lDUrNjw0cVis67EBbX1lwNYOEZe6y7UyNRB9KYJt0oJOkpGEeAGE9FmYNa34mgA4xsLK
+Zc/5HdUsN0159Vsp7JjvDNn+smUisZcRDVPK3FMyJFWc1rCx8ssFxvH8HvZsxSaznEwuhdx6
+0o4kihIfy8Bma4gxZ9/Sw29Uxmq//OyGfDN2QpdEafsbsqwb0dBbvp5iJhOurGQu4ZvBHub5
+iscxj4na1zXb5BjEXG0DsaRP01Nlu31I9PK0gOXKlJEy11sQLZ2VA/hS7GeOoAFo4Zk4HZDw
+5+i9RFcXtWKLBgNW/bZ/92vNJSYhW12Dfv00Hk1mI58sww0vyon9XLQjgDE8Id1KYPzNL0+a
+pkcnUU9AHz8pyuVs8kd0KCQkoU0WZNhtru4mS036DddkQ6yZfUHR0xz2DHy4P3z7cft2+OAV
+HCmXZ7gsmdLObwCsYEP8rgK5ukE/7GhJ23o7bgVpr2AXQrvmtoNSzevSk+rTTFyVe7EO2HK8
+uSrrS0efaWRm/zh1sWGlGmht5rZg5tof9pjzqfEszcacW3fPLdxyTj3QdkjsqLk2jnpG5ZCE
++FraoX8cHP143iGiry04RNQ1X4dkFujU5WIeZH4xwDwZusYkuZiGP794f0wuzNdZNmZ2EeaL
+DJaCJLD5Q6lrl4FSx5P5KIwa273HRJSmNkiXP6bBnoBpRGjoNH7mCrZGhMRS4xd2azT4nObP
+69K+PfR1CovkvT4fz+1KL8t02dY2fxK2dbnIWYRal9G+F00RcbCsqBsTJ4Ki4du6pIqP6pI1
+6Xs1XNdplqWBR9Md0YbxbJCNTc35pd0VCE6BfysHT48otmZGYKtDgGO7AxHTbOvLVCT2J7jr
+P0Fgn4+Cffq2A7QFxoHJ0hsZRuZ0TG/cYbA8+SrW6uHu1wsGCnh6xgAlxmb5kl9bthX+bmv+
+ZYshZwgHkNaKvBYpaBKwDOGLGqxvMhxFjU6CWFeikkY+nb29/HoFOpWw9/Xw43D3drj/l5Ht
+RnnyTh/qHhDyVoNGxsx2qgJxGyewj+S17BsyJ1bnCG5j2FLJ9zBNnUZ23mbC+ewhA1pYLkMN
+W8GOBeZUxlxvpLZ82Y7DP3XMC0xLKvDkqLpuWQb7J4x1brLjkdHezbKW7kl1eks1HN3akSwk
+BylKeFZZKa8pNDSnST59+Pv16/Hx71+vh5efT/eHvx4OP56NqyPacj71LDMuq2Qi//Thx+3j
+PUY8/Yj/3D/98/jx9+3PW/h1e/98fPz4evvtAJwe7z8eH98O31FOP359/vZBycvl4eXx8OPs
+4fbl/iCDipxEuMtJ+fPp5ffZ8fGIIQiP/3/bBVvtGEjRXYYPhS5h4hTWDlGi8MkJdrvhbSBP
+nBXpGhYG2y9hJIik+NAF1LBugKhto+bERvdhuIF9MGR39vY+/bJWe25raw6zo9SzLXr5/fz2
+dHb39HI4e3o5U2N36h1FDD2wYVXqltGBJz6cs5gE+qTiMkqrxEqkbiP8TxJmLowG0CetzSfq
+JxhJaOxdHMaDnLAQ85dV5VMD0HSIqBJw4+KTglpgG6LcDm4d93UonJn0ubL1KQY2kMuPPET8
+kw/4vqmZT24Tb9bjyTLfZh7HxTajgX6j5X+E3GybBBZ8r+tsF7eWmjTvU/dVv77+ON799e/D
+77M7KeXfX26fH357wl0LRvRnTF0s6XA88tnhUZxQQGE9UunhNSDCFYh8QnwF6+eOT+bzMWWy
+ezTtfrnQXcF+vT1gVK072BHfn/FH2R8YiOyf49vDGXt9fbo7SlR8+3brdVAU5QQ3m4jeD+uP
+ErAN2GRUldk1hsEcomV8k4oxGTHUoYA/BKbBFZyaA4J/SXdDw5YwWKh3uldWMso26qxXv82r
+iKggWlOHqRrZ1J4ARI238gIbK6LorKbffnfocqjmCrl1q943gqgGbCA3U7IzNxM9Yv607VF6
+AIJ4ttsTy2UMtm6zpYQpgc4jg9t2XYZJJfVz4uT29SE0ajnzOyLJGTWWe+i0cI079ZGOZnd4
+ffMrq6PpJCKWMQS7QZxMJDW1EQ7jmMEaOiQG+z0qujDbq4xd8snKY0rBRbcmeHU341GcrimB
+1ziCN49yMZP3TUW59hfmjdTabnegvOyYryA6eCvrbAvf8uhllCpRSiC0tJWZGjy9FlO73B45
+J3ohT2HlkK8+BySmzuPxYuRrpISNCS4QDLNIcMptcKKZzBeKymsoIOfjSYckKoUvKTB8Q4GJ
+InKiznyqH+iTOJj1p3530A1YxivzSXeHuKoolqS49MPfTyZlsh6fH6xLgL2OoBY8gLYNde/Q
+wPc1EJ8X2xWZE0Dj64gSMjC6r9bp8ExVFDqaoD9jO3zXod6sZTnPspT5S0yHeO/DTpUaY/Y+
+5SRMit4AuiWI85WJhA5JDBIsaKj9mWe5kS+STshpy2Measha/u9Ve5mwG2JPo42cICJUjeA8
+9ucIrysr2bANl0o3XKCiGRhOgyRcTE7CBmb97H05soiCVTec+bCrEueAb/sreEjiNDpUk4Vu
+p1fsOkhjNUstP08/nzHmqeVF6KVLnod5/KqTW1dQl7MBkye7oWRbHgEOGQjusa+K8Xn7eP/0
+86z49fPr4UWnlaH4Z4XAK8TUtjmuVzLF4ZbGdEYWhVHbdW+WIg6svoGpChRekZ/TpuEYN6Iu
+K3/UpAOQ8lRoREuaIT026I3oKerCV2EmEhaoXRX+XHpGgt/zQm7NyxUeUJr3V7Qli0oRb9kS
+/ZnQ2wcmrvOcow9Tuj/xua9/tQ+zc3yTm0MVweP1+P1RRTq9ezjc/fv4+N14jiLPB9GgjC6z
+VPTuXcNV6FJItvGvTx8+GFfz/qBWXeQqLVh93VZQUbPWEzE7/reyI1uOGzf+ih6TqsSl0Spa
+bar8wCHBGax4icfMyC8srXfiUvmQS0ei/H36AMnGNXZeLE93EwBBoC90N/54un/679nT4+vL
+wzdpDWDoa9KOFIZjh3klFBgaWHNrDQoK5i2IWZ9qEYHuUqXN3Zi3lMIul4ckKVQVwVZYcqnX
+8iA1rdtM8lN4tVKN1VCuYQyiXBN5iKWGPBdISrUbQD+hHDBWPZyuyLYjojASNC2bQ7rdUMxs
+q3KHAmOmcpTtJjFDy9eb24A1BqyjMpXrZ0++8S1+iX6nianptVHeAnDWrzyla8s+ciQxtk3w
+8cnumeSXZ5JaLbHUDjbEKNGOx5lnopPKouxtdtWEe1w8OT/o9SfcQkiXRaZ4Nplait5ZrU6O
+Omp5WU3F5ttpIT6JYceRTz1bOgtfiay6hTmsMUqwUrdydOmYpiBaLNDqyqaYreQFFjF5YQ/2
+w2iDfrlwftpHczamgM26vgs7xATBpb0kCJO0+yQSPsIUwOrC7dqqUmr/EsfNMIO+7yMVR5Ps
+pVh+4+FGXco3nlEYC4cizVabPvB6daDh2CmEcmCeC7eCqQRUUM/wwwcEW3nmBEHlL5Q/wUjK
+sm+sjWkwOrEjal180oa9pwu634IwiHeNVXPEBzBQSjQuPpSJh1mnv3sws/gc8SFPGQ2KMhDQ
+IYNWvBAAXVenGpg+8IakbaUajYJD11bCN4MoEcYO8gV4JkcMP+ykjgrvfe8YAVKWk0ElDhEY
+EYynlK6QQ1yCifw9R6bb/cA0FAlFhW1JrRRic6/rvrBctfjAdCIMvTZ1HXKIIVXqvk+jWhDu
+E4Ldisd/3b9+ecEa+i8Pn14fX5/PvvIZ4f3T8f4M71f8p5CV8DDy57Hk6MNzD4EBqfAGGNh8
+Lvb8hO7QgUXPhnmDpFuaCnEKq0Vt1XqwcUmo2CiSJIXeVBg2+v7anl3UgmOpa9NHXqsqBXOj
+FQEY3abgZSs4EiatwVg2VdIPMqAzu5XaVFGv7V+SK09LrLADedPiA57hi+3R3qJUE+2WjeYg
+34Vl5lkv1zxsmWnD7bJOBPZO0I3qsSR4nWdJoD4mPkN36IyVTDep0U3A2WY21CW6frv2IFLe
+EejqbbVyQL++rS4dENazKUyDIt4APQ2g5VaIiYQkAAmGAY+Xb1dxChhE8LJQxK3O31Z+t91Q
+4cvEmwSC1cXbRcj6Jjwwu9XVmxTYZiTXcsnR/g/oyw2n++sAauAM2TEvhm7rZGHORBTqUaYO
+hkIU9kkhVz2CMtXUvQNjiwssDNDWL2ZGAdo9VjBNb6y4DuCIzI2FkdQ6cVoGUa9/TzYbqWt5
+JthszoDyVtWlJsvFDtOY7EmCfn96+Pbyma8n+Xp8lsEbIs8GxM8NLfZwTA3j0wRLR4eDcnBS
+qF7BuB40FgYPVVZPOTAYLKFNAaZgMQcE/BqluB206t9fzruesjACLVwuY1nXdT8NOVNFEg7X
+ye6qBGR5nBdKPF+xLCOU7sp1DRriqNoW6MIpetGpn/ugtjEZSYllzlBMf5EOsYcvx7+/PHw1
+pvsztfqR4U9+TBm3gY4ML+ZGoLJ90uZ0Swmd254MGncfC+teLlXItshbmLARsBVsncvrZV+1
+ugGFByvWyOjoViUZOW0AJdi7wsL4mFoFS6/wZq9TKcXmwSyWSZ8KbcbF0EAwmffOn6S8pjoc
+Q8WPkExFFSe8c3uLWVU1Dq2dMvS1dKLuykJXWDBBKmmyy71KblBFoGID0vL62YVAy4bckA8f
+J8aQHf94/fQJw5v0t+eXp1e8I9ZiA2Wy0ZSGFyzCb8bXeSPuSDHYj/wZ3CnsKB6GCEqsv3Bi
+2cwt4ZKNxewRq77ZZJbaiL9DiWCzVFh3CdYzrXSPqpMzUsKe7i8FCvkhfmpqOdjy+PKfxyfk
+yAvVsk/Rb5WpHUqOFMXiLDyWiFms7d45BNHPUymrWlSwcxmzFxgSBVCqQ6+qTteV/0URT5rg
+iS/ZFUmkyBulGe6r4CuI0E3SLW2RaeNGVdFWCV7ggbRNrbu6stymy/hH9sM5o25rjGclm+3U
+YmLi/cFtWEJmH2KfDaWsV0q/PXFiwNROMH+EewAmo6x4FwscsP1tfM6mpfPWE5Zux/lh31iG
+5CbWARYe3nJkYqQTTukLVWIJkht3/STkV0IAb0HA31Awclh+0+Y1AhbUxQI4qjvsH8HRiUUq
+KCfdra7Oz8/dF5tp3VUTo5tDV/M8+vozMZYXGLs0qTz5Rkro0Fk5th3sjMygVJXNmyi8gHfw
+bhvaUW7ju9L/gEAN0gqjGmERRQcOVO3abw46yotk4y3c0BDcUeq2H5KAYDGIE1MOk1i3dxQ4
+HNvOxpDrYMbB7EWnTGEksKOxT9/FpzotN5JOfjsHgSFQjkmd0qsz1vPwisdzrLFuSUCCBNVQ
+j9U7S2mLlwvNHhMgOqsfvz//7ax4/Pj59TsrGNv7b59skyHBGuWgFNV1E8xrlHhUgga1OFQY
+Sbb30EtXCnp58ZhkQF7YAwsIpvxjPL6hYlmALcGytys4C6oTbTFq3GJV3D7pLF7AG3VGzQNe
+LRYf2hpgzSWlIKO3W9rZ34KKCYpmVls5j3ShMI8v+NVOfwlOKQEN8M9XVPukGF8mk9hBjD8y
+1hx1Shh6+Kwc/VA37s7AqblRqonlxxvRC7yjbKzdyOeMGCW66FB/ef7+8A0jR+HVv76+HN+O
+8J/jy8d37979VRxBYmUaahez8n2fTNPWO1moRj6G7+gyI3SaDr06KI9NdfBa+JhnooXJ93vG
+gBZU7yl/w+1p31n5nwylgTn8gJP5Gw+AJwzd+9U/XDCZcZ3BXrlYlgzGSieS306RkIuD6S69
+jjTI+iJpwT5Xw9Tahfu9DXVUXCR9jSZ2VyjlGULmw3HQgFFsOuczwpZGz+PoHvEsX8A8GFz/
+uf289LF2GXewT3R/omjh/7Nup355boHlOhLRho+VvB/JWNXeM4vXRY6eDFpYSONQYRAU7HI+
+HTqlnbDC5W1MZkKf2cj58/7l/gytm48YQuA5Gyj8wNW1Q8DOU8mpfpPGY3nxGqQHVpRihvoy
+XpMeTuUym3HWTiTvOvkCdgNpC3NV9Top5uN1WONBC4k4CyDF17NX0uS6AH0Y7y9TzjkQwp21
+KzDoRYw9hcozOTxmYXSxknh1aEI0QsRS37hkgsuB2rgNpsBPdxRbc+IuJBB2rBm15LsI9oFH
+jlV619chxkCROsKb6LH1iu6qB5RwsZJi1Kp+W9eCSXsAIpu9OcFGJq+fW3s1gBz3ut9CJ3JD
+Rsm4eAp5UH+GPGm9Vg26JNMJusXwFocECyjRZ0dKsH+tMwluBMO67hygcV2Zph1karoKIsnV
+S0ckZlid9al4xKktOjGSCR7Mczn3aqeMc8OS1fAHuHhvLmL2vphRJ/BsKPjKXnsGIBbVcmrh
+7Qmx2XUGs7RN9eqX3y7pkAxtCsGGE7y4rnMBYL0d8JLbQp4uGRRPDb22OCK3kOnQ9XjdyUSz
+6HWSiv3cIfkmqfjo2O3HcH3Lr20w8NbrYJCvIdjux3ULFipNud9wrvPag7ZY9gOWg1aBR/hX
+7k9GygVd69bDbHXWJntvajE/3F5yBtHoLM88aKdSjFUITAI5RMKnHUwwbHWkABDjd7nGfAe1
+g38wuC3kopyWSrSi/NyWD+OyyqXSHiZkcEgUq20x09VQGo7j1n2KknAEW9CS54ryxr2rLP8Q
+n/UbGk8Bebu+CklgX1nyBQXGFO9Uu647RWbaYH1jPFG9i+8eY9UUazpHdF4e6xxHpJOu+chp
+PD9cW8WnBSJSKHimGOKHVjNNxEPOw+YDMLRK7XSNJomfdtGDjnQwylmp7ZsIxPwav31E0DdU
+KBGV/Gi/Q7Xn+w7q1orxmeF8WERsxt2MRiGxl4g8Ce2Pzy+ol6PZnD7++/h0/+koyi4MFhPn
+qo7GA+uCbbWOYepg2EQAR1LYNlgmHRdPDOsW9u7vfBAlAlTLMJEIk1A9cpMfUM0ajtvTctbO
+NSkFYpGDiS6i3ntEsv/cOwAItzxXTJB9a4xbuVFTiQsHpetZbbUROVp09lDtvqZDpFO++5u0
+FqXxjLutSyoATwLVWodIH2ivBWUH1R78xqhQ2FH7xU0mbxRgTw+GaTvqEcJLXaHLvHHAAcpM
+72QOjxHRfKh156zC9aI/w8717FtqTwQrhE2BNRpTcb92SyFjdVHjpbQRI9uKanPMGXMUYAPZ
+I3B1GTjLoEFv1YEOVMR9CaRQhgI9eSIZz9U0ggVSDFWXNkJDIugNgPv64AxhDpG3GkiTKnce
+n+M+JHAY5CUzBDo4gX38ddD74rjGuSfd2KGfBNVZ4i64m9KbDBiR46218cYfHScg68ytgGL1
+0HizgEkK25pOcXaCSQF7x/GEYs3ouVy35T5pldPcXCR2Wum6B1ZYZC47J+dViHm3ylyvEUJy
+60EUZ2IEESIVwlnOaZlRkfDQc+gzc8dmchGC9KAeYYpECIVFpXM8OA++U08pGdoZvfNh4zqH
+2SBUnAaLAcU+PY4vge3hfEcT0vTVpbVNKP7kyCRQvHQOed4MDoSMSvMhZ2V34SJT2gT0402i
+e6PSKWWBvUBYKmmJqlo8IRLuuN9K3WE91DGr0wGjMMObjj11a82SuguqN05U1/8A/LC5tYvk
+AgA=
+
+--------------0ZFYScQ7D0hHD0JlJWWWBdxK--
