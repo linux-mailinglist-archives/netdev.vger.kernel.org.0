@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40E955520D1
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 17:27:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 891515520D5
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 17:28:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241614AbiFTP1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 11:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57958 "EHLO
+        id S243391AbiFTP1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 11:27:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234611AbiFTP1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 11:27:35 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2068.outbound.protection.outlook.com [40.107.220.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F49CD
-        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 08:27:34 -0700 (PDT)
+        with ESMTP id S231253AbiFTP1i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 11:27:38 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2071.outbound.protection.outlook.com [40.107.236.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B210CD
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 08:27:36 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y7Ca/bjdFdRWwrpdk3OlnQ3TTQMIqqTobrWj6UcXY4LNkkXAihJh98aj5znJ8s9rjYTpQvC7p/0jq9fqbb0lan3YVVTY2r0DprLOvYiMjXVC9vr2gOyLRahrUh5EwHKKORYEjGgvpZS/zDmfvoy6PkoW+gz73o79h21OvY9aYSP1LK0guiiQXmCak0rItcRR4aLS5UXk+SZovWBJz5jiNF4+eEw5rgkcDzNavIbRayOl0gAvIHa0/9PDczW+Z+cJwNPGAtSuPa5QyBhN39efwH6C7iAmemNjPZa1+PwwbJIIV1YVEqnmZ0Mmf02o8ErsuqLyy2BVjLoM/ZZIGs+3RA==
+ b=Jpuw49YJ3ScMZlyo3FI9/W/55ZrWOMekkvmVmIpNmYNSvTqJhPEhzcZhVDG2XZGntSzVVva8yNm7+OR0+4WyzCO7OiOO1OeYWIQHMxe9l1rh4Lu81BCr1NkP5DYmXnH7LBeHEL8qeXwXiyr9NTndz+1SuOZmAFVUqdf8qRmJsoWS8gPFn4WvN/Q3f689FTYiKXtlDyEKqGvupZvZwTe+UxVTTQLcXrZ6Jzr4yzFmVDyHtVhvG9R1ebz4aLENZ0zdmPelAKDTKvM4SPH5Wmi3HN3rrO9Y639m79QPNLimXcliZtU+ybtf8f4KP4vmE6JyVjGp9A2jWsMQm1tt5lvJtg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uhr5kYS54HvYUqUu7g2ruMA2nxBQjWC3dBq0Be8nQVg=;
- b=ly20smVMH3AQIUYupeUUXDk8rovbAixOMr6YYhNhrt4XSCb12wd41Kx9bAd15FLhQcy2Pa7mPCNoCScQysc4MiXOe0ENGms7scNT8Z+ZOOkPir/DSUoPTO9jyMOhPyLXd1OqYEnW6tK6qangHSN5RSLDG8l8bGZiqwcqZSHY23uRTCQE5Xp6jeFU4o1GpVHKTSTXNEeINlyrQXuLaWwxpaPapvGMQl6ENiFqIga3nm4T5pDnTQhDECYJO+u7W6dNo3F8iDUbM+yesyd09MOAW9I74VeJ33nZ/jUhkzovCJdiIMlq63PBHfRv6t7TRb07w0Nyd74vYy0ehNrOHFPH2g==
+ bh=MxaMopFfJn+PW9v0NtqQrUp08dvJqPtzc91D3SpGAxs=;
+ b=RYJM39d/zQkDF4DNrkLagrpzF+1oERRV2/t/4dpeB0tSHnY2iy192mfvyD4jvma0SUQw47qPJ4RAnSXcMF9nspr7gDPh7yT0NWHaPnIdg91XosCt96hr/nwYGbildTxZ4i3/9sgHtMazWO9DindaxGG5tApsBJ/9aoEpEPL/+UCoELZpg2ipc2diA+0e2IPfroOXESU4HIjAcXC5g9H3NxJlZFKQs8PlwFMYCVv6FnxlMQRzIvJctlffzaaDi5JZPsPZql9v6gEKMbp2xvKD0Hmms2tVCr8ap1FBeovO3YmTbhQHk7gVV1dmXcNiCqYfakDg1NT6wQ5r3wIBGeM75Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ 12.22.5.235) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uhr5kYS54HvYUqUu7g2ruMA2nxBQjWC3dBq0Be8nQVg=;
- b=mFaQsKMpotPurIAGfY1LR8dcbJKsPeyG4+jb0moBWPBsIBbpftosnu4ryhUb2W3dpRPvhboQelEtMQXt0Qiof05LV41il2TYVSTKbnUsxtf/YBBeYaO0uifO2v5VYNACLLfvlCiUxPAF01rKcTlHYdDmXbaGct/tP/yXpgpTrFro03+2CTAGanlbUJX69wh98mwMXeRFXc5dnJhLVn4pqRTeUsx/ZTaDJKSBtbnBb4EjeOF1Q9R+2b841pyEn61ViTdUDcJLmsXsuJJUe6d1uv3hjnEpAwo8wyeJ+nCWcDe6gtVKv8FSs1dFQomiqA+e4J7jQoCeB91sfKg7EMmlEQ==
-Received: from BN6PR16CA0047.namprd16.prod.outlook.com (2603:10b6:405:14::33)
- by PH7PR12MB6561.namprd12.prod.outlook.com (2603:10b6:510:213::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.15; Mon, 20 Jun
- 2022 15:27:32 +0000
-Received: from BN8NAM11FT015.eop-nam11.prod.protection.outlook.com
- (2603:10b6:405:14:cafe::a3) by BN6PR16CA0047.outlook.office365.com
- (2603:10b6:405:14::33) with Microsoft SMTP Server (version=TLS1_2,
+ bh=MxaMopFfJn+PW9v0NtqQrUp08dvJqPtzc91D3SpGAxs=;
+ b=bAxeImz2JorPV1Uam8Y6JY8aDR3mkI4PhVRXl1i7m0c8hEJnpnr3Wdk/sjRb6YJWzz6IRqZUpCmq9BjQKvr++e5+3sIcds4+ijOwnyZH+FluQ5QzK7yRGZQ9JgsTqoHy64YMEHVViGltA3pvwwnqoiTuZZpWs3pUSmPgMn3G0HFIxUXDH9YyXanuc9cogGJWO1LxRJoe5mQH/SiATPWv1Lo65ygqtpCWJNGvGE6rbz6F5LQf1pNKCnxTjWWpjFM46k87Tbse36sND6Lm8A2VjESyOF/q+4J7fhHDj7XMZ0/KxGDLQK5jThfbgpCegpHeEF45zUBxgf0KtU/ZQ8PVnw==
+Received: from MWHPR1701CA0005.namprd17.prod.outlook.com
+ (2603:10b6:301:14::15) by SN1PR12MB2382.namprd12.prod.outlook.com
+ (2603:10b6:802:2e::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.19; Mon, 20 Jun
+ 2022 15:27:34 +0000
+Received: from CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:301:14:cafe::31) by MWHPR1701CA0005.outlook.office365.com
+ (2603:10b6:301:14::15) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.22 via Frontend
- Transport; Mon, 20 Jun 2022 15:27:32 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ Transport; Mon, 20 Jun 2022 15:27:34 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.236) by
- BN8NAM11FT015.mail.protection.outlook.com (10.13.176.90) with Microsoft SMTP
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.235) by
+ CO1NAM11FT022.mail.protection.outlook.com (10.13.175.199) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5353.14 via Frontend Transport; Mon, 20 Jun 2022 15:27:31 +0000
+ 15.20.5353.14 via Frontend Transport; Mon, 20 Jun 2022 15:27:33 +0000
 Received: from drhqmail202.nvidia.com (10.126.190.181) by
- DRHQMAIL109.nvidia.com (10.27.9.19) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Mon, 20 Jun 2022 15:27:31 +0000
+ DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Mon, 20 Jun 2022 15:27:33 +0000
 Received: from drhqmail201.nvidia.com (10.126.190.180) by
  drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 20 Jun 2022 08:27:30 -0700
+ 15.2.986.22; Mon, 20 Jun 2022 08:27:32 -0700
 Received: from vdi.nvidia.com (10.127.8.13) by mail.nvidia.com
  (10.126.190.180) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Mon, 20 Jun 2022 08:27:28 -0700
+ Transport; Mon, 20 Jun 2022 08:27:31 -0700
 From:   Dima Chumak <dchumak@nvidia.com>
 To:     Jakub Kicinski <kuba@kernel.org>
 CC:     Jiri Pirko <jiri@nvidia.com>,
@@ -67,9 +67,9 @@ CC:     Jiri Pirko <jiri@nvidia.com>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
         Dima Chumak <dchumak@nvidia.com>
-Subject: [PATCH net-next 1/5] devlink: Introduce limit_type attr for rate objects
-Date:   Mon, 20 Jun 2022 18:26:43 +0300
-Message-ID: <20220620152647.2498927-2-dchumak@nvidia.com>
+Subject: [PATCH net-next 2/5] devlink: Introduce police rate limit type
+Date:   Mon, 20 Jun 2022 18:26:44 +0300
+Message-ID: <20220620152647.2498927-3-dchumak@nvidia.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220620152647.2498927-1-dchumak@nvidia.com>
 References: <20220620152647.2498927-1-dchumak@nvidia.com>
@@ -78,24 +78,24 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 396bdf91-843d-4072-891c-08da52d164e5
-X-MS-TrafficTypeDiagnostic: PH7PR12MB6561:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR12MB6561E7326A40F460D92BECB8D5B09@PH7PR12MB6561.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 0c17e0e5-8348-4e81-d429-08da52d165f9
+X-MS-TrafficTypeDiagnostic: SN1PR12MB2382:EE_
+X-Microsoft-Antispam-PRVS: <SN1PR12MB2382D2BA46E0A07680080F8FD5B09@SN1PR12MB2382.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: c6OJ/xhVLfPR9P1ke8kT9RvhZUY7JKzIis32/zGPPpk9XPI5FnKTsOGTFuW8sseengmqYdM66KEd3N4Gp7pGH3K4reeZXVoSmQdUsNeeyHXN5/ocl5tUAo+t1HSr1I0anKdRKLX6CqSYLxLwFnFh7LIA8ImOSnS0ac5hBPVAkkw6aHPMsxkvELIcaDe2kNLXvwXaJG9uADUD3EQd8F50cev2jb2fBZNfZqMN1qcscztrkS9Yyk3L35eUDNZ4+QJOl2kNAcV2x8upSUFp20BJPVD/QAz9GadBOt0DScfODySVnZeVjevQCUZndm8UBOD1jq4gPtHCggZuk+Lmfu6whR3+gREtC6k4+kD/DPOYi3Eo4N4EkLAPukEEmE2Aem5h4zWYIfes7oWNO9XMNreo10nx0ws6RsCvYGsS1n86XnJymcaXnUwn/50siZObIyuBRFBlUl1p6lFmtiX0tFYqMfDtRrd6yDGqXKthLmBhR1tCj1qjL6mZnV/GbPKqh0sjXVAuXRf4kL7srUd1rikUrgqq/jevkdbw/PQJDQe5UbxG+kW5AmqDtD4H2qzx3cvKEgY3AgMX4pnVqR4Dom+wjIk2Imza8wYduhghQHFJuHFGtbE3S5CsGu0xQb56/4P5q/uA0c94zdp27+c/s2/6rcbPbtqZkqkRnB0ViKwDoT6a6arWa3f1TPsLQI86mu1NS8kyZLM1BPQf5oVXkylT/heBa4K2CRxWdhO29baax+Briw1/liM00Y8pYJDaI2UK
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(376002)(39860400002)(346002)(136003)(46966006)(40470700004)(36840700001)(40460700003)(8676002)(4326008)(36860700001)(36756003)(336012)(7696005)(107886003)(47076005)(6666004)(70206006)(81166007)(26005)(40480700001)(1076003)(70586007)(54906003)(86362001)(83380400001)(2906002)(478600001)(356005)(41300700001)(426003)(8936002)(5660300002)(316002)(2616005)(82740400003)(186003)(30864003)(6916009)(82310400005)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: DpSLOopqLMNT+A7itlUhYy1VUofaHFAyQdJIl8va36loHZpcOY4ZOOwCrkpGRpnQbh1YZFY2gO1Mdw0OYG3zu2L9z6h0CqZVtOCYWALf38gYVAlPQclTkRhdJmHDEhDhwMfeEgRQPASPcUqSoXJprQ72sUnNH31iFYuW6s24tQpr5/IIwPrVx4Hws4u9g8OuHlJ+LiGy5NwL71i5AFH3acqcXRH/3D3qQNNtsLgPX/xvdduU5T7vCThrhbQDC7mmfXQOfjCxyvAss/KxN9YcpZH4UBBVCVt9TwjsqRM8UhlLFm7gVbvAByqHJt4x0H/e/H1VstmixXqc4HzkXqdg0plfDKLgTdpopNeaeCZsh+7JynnJyRUbr5XkgWBn8kT4fR8eqtL2Gi5jwGGSSk+fD4tW+ixLUvCcIidMJwqCdO06la5Kr0LB0CnSY0XAbrDPfcHePdboehvVdGKzUAEAWu1IN/FVoTaLRGMxXZLni6R86iElDzC898law6ten90aE6z73VcrT4B6ydayYZT7b+EEChzJlmeFJsjovAk7R8xuRPUllI34bJH1WxgbWEVB6yFlaHpt03r5YCuoDeGpgmvlLw+xGMvJXebvCiyectBmF+1sr5LJlTORzqqXjzRfveV47sc5JMk+LUXmGFNDofTdLXyldntCV6gUaX5oCXmB2cf4YfCw6paOaGGt1jaV295A4dA525gK1uwqkhr+Pg==
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(46966006)(36840700001)(40470700004)(54906003)(26005)(316002)(6916009)(36756003)(498600001)(82310400005)(4326008)(70206006)(70586007)(6666004)(107886003)(1076003)(2616005)(83380400001)(186003)(8936002)(47076005)(426003)(336012)(356005)(36860700001)(2906002)(81166007)(86362001)(8676002)(7696005)(5660300002)(40460700003)(30864003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 15:27:31.8097
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 15:27:33.7454
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 396bdf91-843d-4072-891c-08da52d164e5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c17e0e5-8348-4e81-d429-08da52d165f9
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT015.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6561
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR12MB2382
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -106,325 +106,392 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lay foundation to support different kinds of rate limiting that may be
-performed by rate objects.
+Define a new DEVLINK_RATE_LIMIT_TYPE_POLICE along with the related
+devlink_rate object attributes and their devlink_ops.
 
-Existing rate limiting type is dubbed as 'shaping' and it is assumed by
-default when limit_type attribute isn't set explicitly. Following patch
-in the series will introduce new limit type 'police'.
+The new attributes are optional and specific to 'limit_type police'
+only. Driver implementations are allowed to support any or none of them.
 
-Leaf rate objects inherit their limit_type from a parent node object if
-it hasn't been explicitly set for the leaf object.
+Example of limiting inbound traffic with the new limit type:
+
+$ devlink port function rate set netdevsim/netdevsim10/1 \
+          limit_type police rx_max 10mbit rx_burst 1mb
 
 Signed-off-by: Dima Chumak <dchumak@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/esw/qos.c |  28 +++-
- include/net/devlink.h                         |  12 +-
- include/uapi/linux/devlink.h                  |   7 +
- net/core/devlink.c                            | 123 ++++++++++++++----
- 4 files changed, 140 insertions(+), 30 deletions(-)
+ include/net/devlink.h        |  40 +++++++
+ include/uapi/linux/devlink.h |   8 ++
+ net/core/devlink.c           | 223 ++++++++++++++++++++++++++++++++++-
+ 3 files changed, 268 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
-index 694c54066955..50bd4536fab1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/qos.c
-@@ -874,8 +874,8 @@ int mlx5_esw_devlink_rate_node_tx_max_set(struct devlink_rate *rate_node, void *
- int mlx5_esw_devlink_rate_node_new(struct devlink_rate *rate_node, void **priv,
- 				   struct netlink_ext_ack *extack)
- {
--	struct mlx5_esw_rate_group *group;
- 	struct mlx5_eswitch *esw;
-+	void *group;
- 	int err = 0;
- 
- 	esw = mlx5_devlink_eswitch_get(rate_node->devlink);
-@@ -890,7 +890,17 @@ int mlx5_esw_devlink_rate_node_new(struct devlink_rate *rate_node, void **priv,
- 		goto unlock;
- 	}
- 
--	group = esw_qos_create_rate_group(esw, extack);
-+	switch (rate_node->limit_type) {
-+	case DEVLINK_RATE_LIMIT_TYPE_UNSET:
-+		group = ERR_PTR(-EINVAL);
-+		break;
-+	case DEVLINK_RATE_LIMIT_TYPE_SHAPING:
-+		group = esw_qos_create_rate_group(esw, extack);
-+		break;
-+	default:
-+		group = ERR_PTR(-EOPNOTSUPP);
-+	}
-+
- 	if (IS_ERR(group)) {
- 		err = PTR_ERR(group);
- 		goto unlock;
-@@ -905,7 +915,6 @@ int mlx5_esw_devlink_rate_node_new(struct devlink_rate *rate_node, void **priv,
- int mlx5_esw_devlink_rate_node_del(struct devlink_rate *rate_node, void *priv,
- 				   struct netlink_ext_ack *extack)
- {
--	struct mlx5_esw_rate_group *group = priv;
- 	struct mlx5_eswitch *esw;
- 	int err;
- 
-@@ -914,7 +923,18 @@ int mlx5_esw_devlink_rate_node_del(struct devlink_rate *rate_node, void *priv,
- 		return PTR_ERR(esw);
- 
- 	mutex_lock(&esw->state_lock);
--	err = esw_qos_destroy_rate_group(esw, group, extack);
-+
-+	switch (rate_node->limit_type) {
-+	case DEVLINK_RATE_LIMIT_TYPE_UNSET:
-+		err = -EINVAL;
-+		break;
-+	case DEVLINK_RATE_LIMIT_TYPE_SHAPING:
-+		err = esw_qos_destroy_rate_group(esw, priv, extack);
-+		break;
-+	default:
-+		err = -EOPNOTSUPP;
-+	}
-+
- 	mutex_unlock(&esw->state_lock);
- 	return err;
- }
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 2a2a2a0c93f7..4fe8e657da44 100644
+index 4fe8e657da44..3de1cc42b10c 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -98,13 +98,21 @@ struct devlink_port_attrs {
- 	};
+@@ -103,6 +103,17 @@ struct devlink_rate_shaping_attrs {
+ 	u64 tx_share;
  };
  
-+struct devlink_rate_shaping_attrs {
++struct devlink_rate_police_attrs {
 +	u64 tx_max;
-+	u64 tx_share;
++	u64 tx_burst;
++	u64 rx_max;
++	u64 rx_burst;
++	u64 tx_pkts;
++	u64 tx_pkts_burst;
++	u64 rx_pkts;
++	u64 rx_pkts_burst;
 +};
 +
  struct devlink_rate {
  	struct list_head list;
-+	enum devlink_rate_limit_type limit_type;
- 	enum devlink_rate_type type;
- 	struct devlink *devlink;
- 	void *priv;
--	u64 tx_share;
--	u64 tx_max;
-+
-+	union { /* on limit_type */
-+		struct devlink_rate_shaping_attrs shaping_attrs;
-+	};
+ 	enum devlink_rate_limit_type limit_type;
+@@ -112,6 +123,7 @@ struct devlink_rate {
+ 
+ 	union { /* on limit_type */
+ 		struct devlink_rate_shaping_attrs shaping_attrs;
++		struct devlink_rate_police_attrs police_attrs;
+ 	};
  
  	struct devlink_rate *parent;
- 	union {
+@@ -1501,10 +1513,38 @@ struct devlink_ops {
+ 				      u64 tx_share, struct netlink_ext_ack *extack);
+ 	int (*rate_leaf_tx_max_set)(struct devlink_rate *devlink_rate, void *priv,
+ 				    u64 tx_max, struct netlink_ext_ack *extack);
++	int (*rate_leaf_tx_burst_set)(struct devlink_rate *devlink_rate, void *priv,
++				      u64 tx_burst, struct netlink_ext_ack *extack);
++	int (*rate_leaf_rx_max_set)(struct devlink_rate *devlink_rate, void *priv,
++				    u64 rx_max, struct netlink_ext_ack *extack);
++	int (*rate_leaf_rx_burst_set)(struct devlink_rate *devlink_rate, void *priv,
++				      u64 rx_burst, struct netlink_ext_ack *extack);
++	int (*rate_leaf_tx_pkts_set)(struct devlink_rate *devlink_rate, void *priv,
++				     u64 tx_pkts, struct netlink_ext_ack *extack);
++	int (*rate_leaf_tx_pkts_burst_set)(struct devlink_rate *devlink_rate, void *priv,
++					   u64 tx_pkts_burst, struct netlink_ext_ack *extack);
++	int (*rate_leaf_rx_pkts_set)(struct devlink_rate *devlink_rate, void *priv,
++				     u64 rx_pkts, struct netlink_ext_ack *extack);
++	int (*rate_leaf_rx_pkts_burst_set)(struct devlink_rate *devlink_rate, void *priv,
++					   u64 rx_pkts_burst, struct netlink_ext_ack *extack);
+ 	int (*rate_node_tx_share_set)(struct devlink_rate *devlink_rate, void *priv,
+ 				      u64 tx_share, struct netlink_ext_ack *extack);
+ 	int (*rate_node_tx_max_set)(struct devlink_rate *devlink_rate, void *priv,
+ 				    u64 tx_max, struct netlink_ext_ack *extack);
++	int (*rate_node_tx_burst_set)(struct devlink_rate *devlink_rate, void *priv,
++				      u64 tx_burst, struct netlink_ext_ack *extack);
++	int (*rate_node_rx_max_set)(struct devlink_rate *devlink_rate, void *priv,
++				    u64 rx_max, struct netlink_ext_ack *extack);
++	int (*rate_node_rx_burst_set)(struct devlink_rate *devlink_rate, void *priv,
++				      u64 rx_burst, struct netlink_ext_ack *extack);
++	int (*rate_node_tx_pkts_set)(struct devlink_rate *devlink_rate, void *priv,
++				     u64 tx_pkts, struct netlink_ext_ack *extack);
++	int (*rate_node_tx_pkts_burst_set)(struct devlink_rate *devlink_rate, void *priv,
++					   u64 tx_pkts_burst, struct netlink_ext_ack *extack);
++	int (*rate_node_rx_pkts_set)(struct devlink_rate *devlink_rate, void *priv,
++				     u64 rx_pkts, struct netlink_ext_ack *extack);
++	int (*rate_node_rx_pkts_burst_set)(struct devlink_rate *devlink_rate, void *priv,
++					   u64 rx_pkts_burst, struct netlink_ext_ack *extack);
+ 	int (*rate_node_new)(struct devlink_rate *rate_node, void **priv,
+ 			     struct netlink_ext_ack *extack);
+ 	int (*rate_node_del)(struct devlink_rate *rate_node, void *priv,
 diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index b3d40a5d72ff..53aad0d09231 100644
+index 53aad0d09231..4903f7b6dc93 100644
 --- a/include/uapi/linux/devlink.h
 +++ b/include/uapi/linux/devlink.h
-@@ -221,6 +221,11 @@ enum devlink_rate_type {
- 	DEVLINK_RATE_TYPE_NODE,
+@@ -224,6 +224,7 @@ enum devlink_rate_type {
+ enum devlink_rate_limit_type {
+ 	DEVLINK_RATE_LIMIT_TYPE_UNSET,
+ 	DEVLINK_RATE_LIMIT_TYPE_SHAPING,
++	DEVLINK_RATE_LIMIT_TYPE_POLICE,
  };
  
-+enum devlink_rate_limit_type {
-+	DEVLINK_RATE_LIMIT_TYPE_UNSET,
-+	DEVLINK_RATE_LIMIT_TYPE_SHAPING,
-+};
-+
  enum devlink_param_cmode {
- 	DEVLINK_PARAM_CMODE_RUNTIME,
- 	DEVLINK_PARAM_CMODE_DRIVERINIT,
-@@ -576,6 +581,8 @@ enum devlink_attr {
- 	DEVLINK_ATTR_LINECARD_TYPE,		/* string */
+@@ -582,6 +583,13 @@ enum devlink_attr {
  	DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,	/* nested */
  
-+	DEVLINK_ATTR_RATE_LIMIT_TYPE,		/* u16 */
-+
+ 	DEVLINK_ATTR_RATE_LIMIT_TYPE,		/* u16 */
++	DEVLINK_ATTR_RATE_TX_BURST,		/* u64 */
++	DEVLINK_ATTR_RATE_RX_MAX,		/* u64 */
++	DEVLINK_ATTR_RATE_RX_BURST,		/* u64 */
++	DEVLINK_ATTR_RATE_TX_PKTS,		/* u64 */
++	DEVLINK_ATTR_RATE_TX_PKTS_BURST,	/* u64 */
++	DEVLINK_ATTR_RATE_RX_PKTS,		/* u64 */
++	DEVLINK_ATTR_RATE_RX_PKTS_BURST,	/* u64 */
+ 
  	/* add new attributes above here, update the policy in devlink.c */
  
- 	__DEVLINK_ATTR_MAX,
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index db61f3a341cb..756d95c72b4d 100644
+index 756d95c72b4d..c74cdd0bd44d 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -354,6 +354,18 @@ devlink_rate_is_node(struct devlink_rate *devlink_rate)
- 	return devlink_rate->type == DEVLINK_RATE_TYPE_NODE;
+@@ -366,6 +366,12 @@ devlink_rate_is_shaping(struct devlink_rate *devlink_rate)
+ 	return devlink_rate->limit_type == DEVLINK_RATE_LIMIT_TYPE_SHAPING;
  }
  
 +static inline bool
-+devlink_rate_is_unset(struct devlink_rate *devlink_rate)
++devlink_rate_is_police(struct devlink_rate *devlink_rate)
 +{
-+	return devlink_rate->limit_type == DEVLINK_RATE_LIMIT_TYPE_UNSET;
-+}
-+
-+static inline bool
-+devlink_rate_is_shaping(struct devlink_rate *devlink_rate)
-+{
-+	return devlink_rate->limit_type == DEVLINK_RATE_LIMIT_TYPE_SHAPING;
++	return devlink_rate->limit_type == DEVLINK_RATE_LIMIT_TYPE_POLICE;
 +}
 +
  static struct devlink_rate *
  devlink_rate_leaf_get_from_info(struct devlink *devlink, struct genl_info *info)
  {
-@@ -1093,13 +1105,27 @@ static int devlink_nl_rate_fill(struct sk_buff *msg,
+@@ -1125,6 +1131,31 @@ static int devlink_nl_rate_fill(struct sk_buff *msg,
+ 		if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RATE_TX_SHARE,
+ 				      devlink_rate->shaping_attrs.tx_share, DEVLINK_ATTR_PAD))
  			goto nla_put_failure;
- 	}
- 
--	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RATE_TX_SHARE,
--			      devlink_rate->tx_share, DEVLINK_ATTR_PAD))
-+	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RATE_LIMIT_TYPE,
-+			      devlink_rate->limit_type, DEVLINK_ATTR_PAD))
- 		goto nla_put_failure;
- 
--	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RATE_TX_MAX,
--			      devlink_rate->tx_max, DEVLINK_ATTR_PAD))
--		goto nla_put_failure;
-+	if (devlink_rate_is_unset(devlink_rate)) {
-+		/* For backward compatibility with older user-space clients that
-+		 * don't understatnd DEVLINK_ATTR_RATE_LIMIT_TYPE, report tx_max
-+		 * and tx_share as being "unlimited".
-+		 */
-+		if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RATE_TX_MAX, 0, DEVLINK_ATTR_PAD))
-+			goto nla_put_failure;
-+		if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RATE_TX_SHARE, 0, DEVLINK_ATTR_PAD))
-+			goto nla_put_failure;
-+	} else if (devlink_rate_is_shaping(devlink_rate)) {
++	} else if (devlink_rate_is_police(devlink_rate)) {
 +		if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RATE_TX_MAX,
 +				      devlink_rate->shaping_attrs.tx_max, DEVLINK_ATTR_PAD))
 +			goto nla_put_failure;
-+		if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RATE_TX_SHARE,
-+				      devlink_rate->shaping_attrs.tx_share, DEVLINK_ATTR_PAD))
++		if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RATE_TX_BURST,
++				      devlink_rate->police_attrs.tx_burst, DEVLINK_ATTR_PAD))
 +			goto nla_put_failure;
-+	}
++		if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RATE_RX_MAX,
++				      devlink_rate->police_attrs.rx_max, DEVLINK_ATTR_PAD))
++			goto nla_put_failure;
++		if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RATE_RX_BURST,
++				      devlink_rate->police_attrs.rx_burst, DEVLINK_ATTR_PAD))
++			goto nla_put_failure;
++		if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RATE_TX_PKTS,
++				      devlink_rate->police_attrs.tx_pkts, DEVLINK_ATTR_PAD))
++			goto nla_put_failure;
++		if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RATE_TX_PKTS_BURST,
++				      devlink_rate->police_attrs.tx_pkts_burst, DEVLINK_ATTR_PAD))
++			goto nla_put_failure;
++		if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RATE_RX_PKTS,
++				      devlink_rate->police_attrs.rx_pkts, DEVLINK_ATTR_PAD))
++			goto nla_put_failure;
++		if (nla_put_u64_64bit(msg, DEVLINK_ATTR_RATE_RX_PKTS_BURST,
++				      devlink_rate->police_attrs.rx_pkts_burst, DEVLINK_ATTR_PAD))
++			goto nla_put_failure;
+ 	}
  
  	if (devlink_rate->parent)
- 		if (nla_put_string(msg, DEVLINK_ATTR_RATE_PARENT_NODE_NAME,
-@@ -1850,6 +1876,12 @@ devlink_nl_rate_parent_node_set(struct devlink_rate *devlink_rate,
- 			return -EEXIST;
+@@ -1966,7 +1997,110 @@ static int devlink_nl_rate_set(struct devlink_rate *devlink_rate,
+ 							new_val, info->extack);
+ 		if (err)
+ 			return err;
+-		devlink_rate->shaping_attrs.tx_max = new_val;
++
++		if (devlink_rate_is_police(devlink_rate))
++			devlink_rate->police_attrs.tx_max = new_val;
++		else
++			devlink_rate->shaping_attrs.tx_max = new_val;
++	}
++
++	if (attrs[DEVLINK_ATTR_RATE_TX_BURST] && devlink_rate_is_police(devlink_rate)) {
++		new_val = nla_get_u64(attrs[DEVLINK_ATTR_RATE_TX_BURST]);
++
++		if (devlink_rate_is_leaf(devlink_rate))
++			err = ops->rate_leaf_tx_burst_set(devlink_rate, devlink_rate->priv,
++							  new_val, info->extack);
++		else if (devlink_rate_is_node(devlink_rate))
++			err = ops->rate_node_tx_burst_set(devlink_rate, devlink_rate->priv,
++							  new_val, info->extack);
++		if (err)
++			return err;
++		devlink_rate->police_attrs.tx_burst = new_val;
++	}
++
++	if (attrs[DEVLINK_ATTR_RATE_RX_MAX] && devlink_rate_is_police(devlink_rate)) {
++		new_val = nla_get_u64(attrs[DEVLINK_ATTR_RATE_RX_MAX]);
++
++		if (devlink_rate_is_leaf(devlink_rate)) {
++			err = ops->rate_leaf_rx_max_set(devlink_rate, devlink_rate->priv,
++							new_val, info->extack);
++		} else if (devlink_rate_is_node(devlink_rate)) {
++			err = ops->rate_node_rx_max_set(devlink_rate, devlink_rate->priv,
++							new_val, info->extack);
++		}
++		if (err)
++			return err;
++		devlink_rate->police_attrs.rx_max = new_val;
++	}
++
++	if (attrs[DEVLINK_ATTR_RATE_RX_BURST] && devlink_rate_is_police(devlink_rate)) {
++		new_val = nla_get_u64(attrs[DEVLINK_ATTR_RATE_RX_BURST]);
++
++		if (devlink_rate_is_leaf(devlink_rate))
++			err = ops->rate_leaf_rx_burst_set(devlink_rate, devlink_rate->priv,
++							new_val, info->extack);
++		else if (devlink_rate_is_node(devlink_rate))
++			err = ops->rate_node_rx_burst_set(devlink_rate, devlink_rate->priv,
++							new_val, info->extack);
++		if (err)
++			return err;
++		devlink_rate->police_attrs.rx_burst = new_val;
++	}
++
++	if (attrs[DEVLINK_ATTR_RATE_TX_PKTS] && devlink_rate_is_police(devlink_rate)) {
++		new_val = nla_get_u64(attrs[DEVLINK_ATTR_RATE_TX_PKTS]);
++
++		if (devlink_rate_is_leaf(devlink_rate))
++			err = ops->rate_leaf_tx_pkts_set(devlink_rate, devlink_rate->priv,
++							new_val, info->extack);
++		else if (devlink_rate_is_node(devlink_rate))
++			err = ops->rate_node_tx_pkts_set(devlink_rate, devlink_rate->priv,
++							new_val, info->extack);
++		if (err)
++			return err;
++		devlink_rate->police_attrs.tx_pkts = new_val;
++	}
++
++	if (attrs[DEVLINK_ATTR_RATE_TX_PKTS_BURST] && devlink_rate_is_police(devlink_rate)) {
++		new_val = nla_get_u64(attrs[DEVLINK_ATTR_RATE_TX_PKTS_BURST]);
++
++		if (devlink_rate_is_leaf(devlink_rate))
++			err = ops->rate_leaf_tx_pkts_burst_set(devlink_rate, devlink_rate->priv,
++							       new_val, info->extack);
++		else if (devlink_rate_is_node(devlink_rate))
++			err = ops->rate_node_tx_pkts_burst_set(devlink_rate, devlink_rate->priv,
++							       new_val, info->extack);
++		if (err)
++			return err;
++		devlink_rate->police_attrs.tx_pkts_burst = new_val;
++	}
++
++	if (attrs[DEVLINK_ATTR_RATE_RX_PKTS] && devlink_rate_is_police(devlink_rate)) {
++		new_val = nla_get_u64(attrs[DEVLINK_ATTR_RATE_RX_PKTS]);
++
++		if (devlink_rate_is_leaf(devlink_rate))
++			err = ops->rate_leaf_rx_pkts_set(devlink_rate, devlink_rate->priv,
++							 new_val, info->extack);
++		else if (devlink_rate_is_node(devlink_rate))
++			err = ops->rate_node_rx_pkts_set(devlink_rate, devlink_rate->priv,
++							 new_val, info->extack);
++		if (err)
++			return err;
++		devlink_rate->police_attrs.rx_pkts = new_val;
++	}
++
++	if (attrs[DEVLINK_ATTR_RATE_RX_PKTS_BURST] && devlink_rate_is_police(devlink_rate)) {
++		new_val = nla_get_u64(attrs[DEVLINK_ATTR_RATE_RX_PKTS_BURST]);
++
++		if (devlink_rate_is_leaf(devlink_rate))
++			err = ops->rate_leaf_rx_pkts_burst_set(devlink_rate, devlink_rate->priv,
++							       new_val, info->extack);
++		else if (devlink_rate_is_node(devlink_rate))
++			err = ops->rate_node_rx_pkts_burst_set(devlink_rate, devlink_rate->priv,
++							       new_val, info->extack);
++		if (err)
++			return err;
++		devlink_rate->police_attrs.rx_pkts_burst = new_val;
+ 	}
+ 
+ 	if (nla_parent)
+@@ -1977,7 +2111,12 @@ static int devlink_nl_rate_set(struct devlink_rate *devlink_rate,
+ 	 */
+ 	if (devlink_rate_is_leaf(devlink_rate) && !devlink_rate->parent &&
+ 	    ((devlink_rate_is_shaping(devlink_rate) &&
+-	      !devlink_rate->shaping_attrs.tx_max && !devlink_rate->shaping_attrs.tx_share)))
++	      !devlink_rate->shaping_attrs.tx_max && !devlink_rate->shaping_attrs.tx_share) ||
++	     (devlink_rate_is_police(devlink_rate) &&
++	      !devlink_rate->police_attrs.tx_max && !devlink_rate->police_attrs.tx_burst &&
++	      !devlink_rate->police_attrs.rx_max && !devlink_rate->police_attrs.rx_burst &&
++	      !devlink_rate->police_attrs.tx_pkts && !devlink_rate->police_attrs.tx_pkts_burst &&
++	      !devlink_rate->police_attrs.rx_pkts && !devlink_rate->police_attrs.rx_pkts_burst)))
+ 		devlink_rate->limit_type = DEVLINK_RATE_LIMIT_TYPE_UNSET;
+ 
+ 	return err;
+@@ -1995,7 +2134,43 @@ static bool devlink_rate_set_ops_supported(const struct devlink_ops *ops,
+ 			return false;
  		}
- 
-+		if (parent->limit_type != devlink_rate->limit_type) {
+ 		if (attrs[DEVLINK_ATTR_RATE_TX_MAX] && !ops->rate_leaf_tx_max_set) {
+-			NL_SET_ERR_MSG_MOD(info->extack, "TX max set isn't supported for the leafs");
 +			NL_SET_ERR_MSG_MOD(info->extack,
-+					   "Parent and object should be of the same limit_type");
-+			return -EINVAL;
++					   "TX max set isn't supported for the leafs");
++			return false;
 +		}
-+
- 		if (devlink_rate_is_leaf(devlink_rate))
- 			err = ops->rate_leaf_parent_set(devlink_rate, parent,
- 							devlink_rate->priv, parent->priv,
-@@ -1873,44 +1905,82 @@ static int devlink_nl_rate_set(struct devlink_rate *devlink_rate,
- 			       struct genl_info *info)
- {
- 	struct nlattr *nla_parent, **attrs = info->attrs;
--	int err = -EOPNOTSUPP;
--	u64 rate;
-+	struct devlink_rate *parent;
-+	int err = 0;
-+	u16 new_limit_type;
-+	u64 new_val;
-+
-+	nla_parent = attrs[DEVLINK_ATTR_RATE_PARENT_NODE_NAME];
-+
-+	if (attrs[DEVLINK_ATTR_RATE_LIMIT_TYPE]) {
-+		new_limit_type = nla_get_u16(attrs[DEVLINK_ATTR_RATE_LIMIT_TYPE]);
-+		if (devlink_rate_is_unset(devlink_rate))
-+			devlink_rate->limit_type = new_limit_type;
-+		if (devlink_rate->limit_type != new_limit_type) {
-+			if (devlink_rate_is_node(devlink_rate)) {
-+				NL_SET_ERR_MSG_MOD(info->extack,
-+						   "Cannot change limit_type of the rate node object, delete and add a new one instead.");
-+				return -EINVAL;
-+			}
++		if (attrs[DEVLINK_ATTR_RATE_TX_BURST] && !ops->rate_leaf_tx_burst_set) {
 +			NL_SET_ERR_MSG_MOD(info->extack,
-+					   "Cannot change limit_type of the rate leaf object, reset current rate attributes first.");
-+			return -EBUSY;
++					   "TX burst set isn't supported for the leafs");
++			return false;
 +		}
-+	}
-+
-+	if (devlink_rate_is_unset(devlink_rate)) {
-+		if (nla_parent) {
-+			parent = devlink_rate_node_get_by_name(devlink_rate->devlink,
-+							       nla_data(nla_parent));
-+			if (!IS_ERR(parent))
-+				devlink_rate->limit_type = parent->limit_type;
-+			else
-+				devlink_rate->limit_type = DEVLINK_RATE_LIMIT_TYPE_SHAPING;
-+		} else {
-+			devlink_rate->limit_type = DEVLINK_RATE_LIMIT_TYPE_SHAPING;
++		if (attrs[DEVLINK_ATTR_RATE_RX_MAX] && !ops->rate_leaf_rx_max_set) {
++			NL_SET_ERR_MSG_MOD(info->extack,
++					   "RX max set isn't supported for the leafs");
++			return false;
 +		}
-+	}
-+
-+	if (attrs[DEVLINK_ATTR_RATE_TX_SHARE] && devlink_rate_is_shaping(devlink_rate)) {
-+		new_val = nla_get_u64(attrs[DEVLINK_ATTR_RATE_TX_SHARE]);
- 
--	if (attrs[DEVLINK_ATTR_RATE_TX_SHARE]) {
--		rate = nla_get_u64(attrs[DEVLINK_ATTR_RATE_TX_SHARE]);
- 		if (devlink_rate_is_leaf(devlink_rate))
- 			err = ops->rate_leaf_tx_share_set(devlink_rate, devlink_rate->priv,
--							  rate, info->extack);
-+							  new_val, info->extack);
- 		else if (devlink_rate_is_node(devlink_rate))
- 			err = ops->rate_node_tx_share_set(devlink_rate, devlink_rate->priv,
--							  rate, info->extack);
-+							  new_val, info->extack);
- 		if (err)
- 			return err;
--		devlink_rate->tx_share = rate;
-+		devlink_rate->shaping_attrs.tx_share = new_val;
- 	}
- 
- 	if (attrs[DEVLINK_ATTR_RATE_TX_MAX]) {
--		rate = nla_get_u64(attrs[DEVLINK_ATTR_RATE_TX_MAX]);
-+		new_val = nla_get_u64(attrs[DEVLINK_ATTR_RATE_TX_MAX]);
-+
- 		if (devlink_rate_is_leaf(devlink_rate))
- 			err = ops->rate_leaf_tx_max_set(devlink_rate, devlink_rate->priv,
--							rate, info->extack);
-+							new_val, info->extack);
- 		else if (devlink_rate_is_node(devlink_rate))
- 			err = ops->rate_node_tx_max_set(devlink_rate, devlink_rate->priv,
--							rate, info->extack);
-+							new_val, info->extack);
- 		if (err)
- 			return err;
--		devlink_rate->tx_max = rate;
-+		devlink_rate->shaping_attrs.tx_max = new_val;
- 	}
- 
--	nla_parent = attrs[DEVLINK_ATTR_RATE_PARENT_NODE_NAME];
--	if (nla_parent) {
--		err = devlink_nl_rate_parent_node_set(devlink_rate, info,
--						      nla_parent);
--		if (err)
--			return err;
--	}
-+	if (nla_parent)
-+		err = devlink_nl_rate_parent_node_set(devlink_rate, info, nla_parent);
- 
--	return 0;
-+	/* reset limit_type when all attrs have been cleared, relevant only for
-+	 * leaf objects as node objects get deleted altogether
-+	 */
-+	if (devlink_rate_is_leaf(devlink_rate) && !devlink_rate->parent &&
-+	    ((devlink_rate_is_shaping(devlink_rate) &&
-+	      !devlink_rate->shaping_attrs.tx_max && !devlink_rate->shaping_attrs.tx_share)))
-+		devlink_rate->limit_type = DEVLINK_RATE_LIMIT_TYPE_UNSET;
-+
-+	return err;
- }
- 
- static bool devlink_rate_set_ops_supported(const struct devlink_ops *ops,
-@@ -2002,6 +2072,10 @@ static int devlink_nl_cmd_rate_new_doit(struct sk_buff *skb,
- 
- 	rate_node->devlink = devlink;
- 	rate_node->type = DEVLINK_RATE_TYPE_NODE;
-+	if (info->attrs[DEVLINK_ATTR_RATE_LIMIT_TYPE])
-+		rate_node->limit_type = nla_get_u16(info->attrs[DEVLINK_ATTR_RATE_LIMIT_TYPE]);
-+	if (rate_node->limit_type == DEVLINK_RATE_LIMIT_TYPE_UNSET)
-+		rate_node->limit_type = DEVLINK_RATE_LIMIT_TYPE_SHAPING;
- 	rate_node->name = nla_strdup(info->attrs[DEVLINK_ATTR_RATE_NODE_NAME], GFP_KERNEL);
- 	if (!rate_node->name) {
- 		err = -ENOMEM;
-@@ -9000,6 +9074,7 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_RATE_PARENT_NODE_NAME] = { .type = NLA_NUL_STRING },
++		if (attrs[DEVLINK_ATTR_RATE_RX_BURST] && !ops->rate_leaf_rx_burst_set) {
++			NL_SET_ERR_MSG_MOD(info->extack,
++					   "RX burst set isn't supported for the leafs");
++			return false;
++		}
++		if (attrs[DEVLINK_ATTR_RATE_TX_PKTS] && !ops->rate_leaf_tx_pkts_set) {
++			NL_SET_ERR_MSG_MOD(info->extack,
++					   "TX pkts set isn't supported for the leafs");
++			return false;
++		}
++		if (attrs[DEVLINK_ATTR_RATE_TX_PKTS_BURST] && !ops->rate_leaf_tx_pkts_burst_set) {
++			NL_SET_ERR_MSG_MOD(info->extack,
++					   "TX pkts burst set isn't supported for the leafs");
++			return false;
++		}
++		if (attrs[DEVLINK_ATTR_RATE_RX_PKTS] && !ops->rate_leaf_rx_pkts_set) {
++			NL_SET_ERR_MSG_MOD(info->extack,
++					   "RX pkts set isn't supported for the leafs");
++			return false;
++		}
++		if (attrs[DEVLINK_ATTR_RATE_RX_PKTS_BURST] && !ops->rate_leaf_rx_pkts_burst_set) {
++			NL_SET_ERR_MSG_MOD(info->extack,
++					   "RX pkts burst set isn't supported for the leafs");
+ 			return false;
+ 		}
+ 		if (attrs[DEVLINK_ATTR_RATE_PARENT_NODE_NAME] &&
+@@ -2012,6 +2187,41 @@ static bool devlink_rate_set_ops_supported(const struct devlink_ops *ops,
+ 			NL_SET_ERR_MSG_MOD(info->extack, "TX max set isn't supported for the nodes");
+ 			return false;
+ 		}
++		if (attrs[DEVLINK_ATTR_RATE_TX_BURST] && !ops->rate_node_tx_burst_set) {
++			NL_SET_ERR_MSG_MOD(info->extack,
++					   "TX burst set isn't supported for the nodes");
++			return false;
++		}
++		if (attrs[DEVLINK_ATTR_RATE_RX_MAX] && !ops->rate_node_rx_max_set) {
++			NL_SET_ERR_MSG_MOD(info->extack,
++					   "RX max set isn't supported for the nodes");
++			return false;
++		}
++		if (attrs[DEVLINK_ATTR_RATE_RX_BURST] && !ops->rate_node_rx_burst_set) {
++			NL_SET_ERR_MSG_MOD(info->extack,
++					   "RX burst set isn't supported for the nodes");
++			return false;
++		}
++		if (attrs[DEVLINK_ATTR_RATE_TX_PKTS] && !ops->rate_node_tx_pkts_set) {
++			NL_SET_ERR_MSG_MOD(info->extack,
++					   "TX pkts set isn't supported for the nodes");
++			return false;
++		}
++		if (attrs[DEVLINK_ATTR_RATE_TX_PKTS_BURST] && !ops->rate_node_tx_pkts_burst_set) {
++			NL_SET_ERR_MSG_MOD(info->extack,
++					   "TX pkts burst set isn't supported for the nodes");
++			return false;
++		}
++		if (attrs[DEVLINK_ATTR_RATE_RX_PKTS] && !ops->rate_node_rx_pkts_set) {
++			NL_SET_ERR_MSG_MOD(info->extack,
++					   "RX pkts set isn't supported for the nodes");
++			return false;
++		}
++		if (attrs[DEVLINK_ATTR_RATE_RX_PKTS_BURST] && !ops->rate_node_rx_pkts_burst_set) {
++			NL_SET_ERR_MSG_MOD(info->extack,
++					   "RX pkts burst set isn't supported for the nodes");
++			return false;
++		}
+ 		if (attrs[DEVLINK_ATTR_RATE_PARENT_NODE_NAME] &&
+ 		    !ops->rate_node_parent_set) {
+ 			NL_SET_ERR_MSG_MOD(info->extack, "Parent set isn't supported for the nodes");
+@@ -9075,6 +9285,13 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
  	[DEVLINK_ATTR_LINECARD_INDEX] = { .type = NLA_U32 },
  	[DEVLINK_ATTR_LINECARD_TYPE] = { .type = NLA_NUL_STRING },
-+	[DEVLINK_ATTR_RATE_LIMIT_TYPE] = { .type = NLA_U16 },
+ 	[DEVLINK_ATTR_RATE_LIMIT_TYPE] = { .type = NLA_U16 },
++	[DEVLINK_ATTR_RATE_TX_BURST] = { .type = NLA_U64 },
++	[DEVLINK_ATTR_RATE_RX_MAX] = { .type = NLA_U64 },
++	[DEVLINK_ATTR_RATE_RX_BURST] = { .type = NLA_U64 },
++	[DEVLINK_ATTR_RATE_TX_PKTS] = { .type = NLA_U64 },
++	[DEVLINK_ATTR_RATE_TX_PKTS_BURST] = { .type = NLA_U64 },
++	[DEVLINK_ATTR_RATE_RX_PKTS] = { .type = NLA_U64 },
++	[DEVLINK_ATTR_RATE_RX_PKTS_BURST] = { .type = NLA_U64 },
  };
  
  static const struct genl_small_ops devlink_nl_ops[] = {
