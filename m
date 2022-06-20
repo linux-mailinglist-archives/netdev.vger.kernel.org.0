@@ -2,139 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ADCF552233
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 18:26:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7B9355225D
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 18:36:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239537AbiFTQ0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 12:26:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47742 "EHLO
+        id S233196AbiFTQgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 12:36:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236262AbiFTQ0B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 12:26:01 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E881D0F6
-        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 09:26:00 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-3177e60d980so84179867b3.12
-        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 09:26:00 -0700 (PDT)
+        with ESMTP id S230330AbiFTQgV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 12:36:21 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0BE1C91E;
+        Mon, 20 Jun 2022 09:36:20 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id g8so10215070plt.8;
+        Mon, 20 Jun 2022 09:36:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=AxZOLWWV2zJmAf07Z/UkIXx+4I8hu7YPuvmoKiDADCc=;
-        b=epKPsnrwEM4zGa1UyifXUYf7dTHBdLRF0sQjo0mBvd6BSuwq6Ab1eA/s4uEWeG3C6C
-         dlE+BGDNyBKyxO4/voDqeZHypZf3MenoW86yUGEUsff6qdOGymmtF6JhahLp+lpVHd7/
-         IdiaQ0/huVpJst1EV/oPZjpHUPoz3N6J/TRQ8yYUtkPu9EF63CNj2y4iQ+BxX8ge2Oeg
-         f3Y9xW3Mg7v4sMRChIdjkDtXmtaEOQYT39b69R4bWHW53WsymTxPOpDgTSF6qYzLAD/k
-         sp4kJmBGXy5wpftDrrmI6uwHOovkL1Ee1fSKQtR8u0bWdb4ErwAvIj+vzcfCrjAQPHkd
-         3V2Q==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=6KRpF0L0JhSh1qLp7YyVoespt3LvQWnvsOM7gzN/eCs=;
+        b=OnV04FB7r3thHqoOwsP42APFqN3Mwm1hE69j5gTpZAx/S8oxHLaChL4ITmHLfx95k+
+         jnpO6pwz3heY0ow0mj8LFKPT1k/DHeAUWPZSCAy3TSmAiXuBvK/SxwuqNZHkjlROX/a6
+         VJ/PKzHg6ucFoBG/InxvUOyohNAmdBun7/CDlZRHmXJ0gTdrsUngYZZeUOddorS+YUBJ
+         QzXBsTrr/wZrjg42br/Vm5C5yLyNTdpmhpcod0x+MfCDHv/fNXfG4uKiHMY608n6WmfF
+         G9zVa/c8Q2f6QrK0MvN4/jDdYrZrCw9wsiKBWwuXzId3ZIXJliaSV1XFEpCYhCWWF9yW
+         rUmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to:content-transfer-encoding;
-        bh=AxZOLWWV2zJmAf07Z/UkIXx+4I8hu7YPuvmoKiDADCc=;
-        b=1LOCYpVpFEldDZBUwQIU3JUvEiQzGOClYFBPqIiyq+W/TD5acBCQsIBmK7IMw6SRW2
-         8hVc3oHDpq1bOO3JK3Hv3pq46D3BUCo5dq0CZt7FANVEJL+bcxpvb6Mg+Q/SzmtWdR8E
-         ALd0A7RUhhE4HIqJh+KAZG+TD4tiHZe7SPCgc2uRe51BwK+kMoZ6ok1qM1jIMzjBE/Vb
-         KWgDT7S/ZZ+rqu3M1qXBMOffdEPhFihLjV5PBxgtLMcLRFuwNaNi2HjJX0xMJYle7ZSm
-         UaPfNjErUT5H9cbMaEjwrWDy2OBCxC/B6+DJRa1mMkUhwuETa09fRTx81ZTTt9BFRMZL
-         6WtQ==
-X-Gm-Message-State: AJIora+XIPxFsygewG2FjO57X9yiUVWu/oLb7dsdkv3UOTbBGM4sx64t
-        mQsLRtwrpiZ8Ht6cYrHWoLVdLgxUhRPo1ULsyTA=
-X-Google-Smtp-Source: AGRyM1tu1KPR8P9qJuaPX/hArQATHtEwAW3T+RiJAQipWXvI28/6bvWngSnJIhxcqZoHIPbPGcVZBqRnNe2od6422RA=
-X-Received: by 2002:a81:4886:0:b0:317:7e90:cb02 with SMTP id
- v128-20020a814886000000b003177e90cb02mr20828656ywa.506.1655742359742; Mon, 20
- Jun 2022 09:25:59 -0700 (PDT)
-MIME-Version: 1.0
-Sender: adonald323@gmail.com
-Received: by 2002:a05:7000:c21c:0:0:0:0 with HTTP; Mon, 20 Jun 2022 09:25:59
- -0700 (PDT)
-From:   Dina Mckenna <dinamckenna1894@gmail.com>
-Date:   Mon, 20 Jun 2022 16:25:59 +0000
-X-Google-Sender-Auth: vTkF_goGQyOgCyzHjdMWFqteAfk
-Message-ID: <CANHbP4MOspG5DEVKY+5vcTpX-C5jYg3FDHHs2S6gpDuoMQZt0g@mail.gmail.com>
-Subject: Please need your urgent assistance,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=6.4 required=5.0 tests=ADVANCE_FEE_5_NEW_MONEY,
-        BAYES_50,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,LOTS_OF_MONEY,MONEY_FRAUD_8,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_MONEY,URG_BIZ autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:1135 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5630]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [dinamckenna1894[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [adonald323[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  0.6 URG_BIZ Contains urgent matter
-        *  0.0 MONEY_FRAUD_8 Lots of money and very many fraud phrases
-        *  3.0 ADVANCE_FEE_5_NEW_MONEY Advance Fee fraud and lots of money
-        *  2.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: ******
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=6KRpF0L0JhSh1qLp7YyVoespt3LvQWnvsOM7gzN/eCs=;
+        b=BabZzjG98TJuMDCykuUIZVpHXmuf/aHedOdojyxRZQkBhoJMSP8yGKg7J1+shHxEfY
+         AvnBFGLJb3a1spHEog6mXF8N9bcdhB74jBVBTJ3i0MAchwJeStXLhoAui5kswnM7oGFT
+         T/dDVVco6LRWQSenayM43jXmvMpKCH2T8l4N8gVaHQODMHCI7cjZESh54NDZLV2N2Wi1
+         5zvImdxxHEZH/l/ftGnlJCbxS99Q+glxHH45BgkgS00Hmk2txVc0GB9/dM0naOu194iT
+         Px8BNlKdcZM/8HJAiutKlOarIwhd7dn224M7vSTChO0VxTLIyTRLBDV7g0lOe+jxmMct
+         CJEQ==
+X-Gm-Message-State: AJIora/e+84A/U6EdL+uqdEoR2UDYMVlmWpt/ZhYwnGsD+a+EKWW8rZ8
+        wkn/hiuiKi1x54R9t8K+Df4=
+X-Google-Smtp-Source: AGRyM1sIik5hEchZgzx0CStr6urmNDu7c6hYdXeDHF3Ga9ntpQcFweUTbfrmWyqaaI9c0Np59EHtRQ==
+X-Received: by 2002:a17:902:9f97:b0:16a:9b9:fb63 with SMTP id g23-20020a1709029f9700b0016a09b9fb63mr16346339plq.7.1655742979643;
+        Mon, 20 Jun 2022 09:36:19 -0700 (PDT)
+Received: from localhost ([98.97.116.244])
+        by smtp.gmail.com with ESMTPSA id gp5-20020a17090adf0500b001ec84b0f199sm5589053pjb.1.2022.06.20.09.36.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 09:36:19 -0700 (PDT)
+Date:   Mon, 20 Jun 2022 09:36:18 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org, magnus.karlsson@intel.com,
+        bjorn@kernel.org, kuba@kernel.org
+Message-ID: <62b0a20232920_3573208ab@john.notmuch>
+In-Reply-To: <YrBh4PsLY1GID3Uj@boxer>
+References: <20220616180609.905015-1-maciej.fijalkowski@intel.com>
+ <20220616180609.905015-10-maciej.fijalkowski@intel.com>
+ <62ad3ed172224_24b342084d@john.notmuch>
+ <YrBh4PsLY1GID3Uj@boxer>
+Subject: Re: [PATCH v4 bpf-next 09/10] selftests: xsk: rely on pkts_in_flight
+ in wait_for_tx_completion()
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello My Dear.,
+Maciej Fijalkowski wrote:
+> On Fri, Jun 17, 2022 at 07:56:17PM -0700, John Fastabend wrote:
+> > Maciej Fijalkowski wrote:
+> > > Some of the drivers that implement support for AF_XDP Zero Copy (like
+> > > ice) can have lazy approach for cleaning Tx descriptors. For ZC, when
+> > > descriptor is cleaned, it is placed onto AF_XDP completion queue. This
+> > > means that current implementation of wait_for_tx_completion() in
+> > > xdpxceiver can get onto infinite loop, as some of the descriptors can
+> > > never reach CQ.
+> > > 
+> > > This function can be changed to rely on pkts_in_flight instead.
+> > > 
+> > > Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > > ---
+> > 
+> > Sorry I'm going to need more details to follow whats going on here.
+> > 
+> > In send_pkts() we do the expected thing and send all the pkts and
+> > then call wait_for_tx_completion().
+> > 
+> > Wait for completion is obvious,
+> > 
+> >  static void wait_for_tx_completion(struct xsk_socket_info *xsk)               
+> >  {                                                   
+> >         while (xsk->outstanding_tx)                                                      
+> >                 complete_pkts(xsk, BATCH_SIZE);
+> >  }  
+> > 
+> > the 'outstanding_tx' counter appears to be decremented in complete_pkts().
+> > This is done by looking at xdk_ring_cons__peek() makes sense to me until
+> > it shows up here we don't know the pkt has been completely sent and
+> > can release the resources.
+> 
+> This is necessary for scenarios like l2fwd in xdpsock where you would be
+> taking entries from cq back to fq to refill the rx hw queue and keep going
+> with the flow.
+> 
+> > 
+> > Now if you just zero it on exit and call it good how do you know the
+> > resources are safe to clean up? Or that you don't have a real bug
+> > in the driver that isn't correctly releasing the resource.
+> 
+> xdpxceiver spawns two threads one for tx and one for rx. from rx thread
+> POV if receive_pkts() ended its job then this implies that tx thread
+> transmitted all of the frames that rx thread expected to receive. this
+> zeroing is then only to terminate the tx thread and finish the current
+> test case so that further cases under the current mode can be executed.
+> 
+> > 
+> > How are users expected to use a lazy approach to tx descriptor cleaning
+> > in this case e.g. on exit like in this case. It seems we need to
+> > fix the root cause of ice not putting things on the completion queue
+> > or I misunderstood the patch.
+> 
+> ice puts things on cq lazily on purpose as we added batching to Tx side
+> where we clean descs only when it's needed.
+> 
+> We need to exit spawned threads before we detach socket from interface.
+> Socket detach is done from main thread and in that case driver goes
+> through tx ring and places descriptors that are left to completion queue.
 
-Please do not feel disturbed for contacting =C2=A0you in this regards, It
-was based on the critical health condition I found myself. =C2=A0My names
-are Mrs. Dina Mckenna Howley. A widow and am suffering from brain
-tumor disease and this illness has gotten to a very bad stage, I
- married my husband for Ten years without any child. =C2=A0My husband died
-after a brief illness that lasted for few  days.
-Since the death of my husband, I decided not to remarry again, When my
-late husband was alive he deposited the sum of =C2=A0($ 11,000,000.00,
-Eleven Million Dollars) with the Bank. Presently this money is still
-in bank. And My  Doctor told me that I don't have much time to live
-because my illness has gotten to a very bad stage, Having known my
-condition I  decided to entrust over the deposited fund under your
-custody to take care of the less-privileged ones therein your country
-or position,
-which i believe that you will utilize this money the way I am going to
-instruct herein..
+But, in general (not this specific xdpxceiver) how does an application
+that is tx only know when its OK to tear things down if the ice
+driver can get stuck and never puts those on the completion queue? Should
+there be some timer that fires and writes these back regardless of more
+descriptors are seen? Did I understand the driver correctly.
 
-However all I need and required from you is your sincerity and ability
-to carry out the transaction successfully and fulfill my final wish in
-implementing the charitable project as it requires absolute trust and
-devotion without any failure and I will be glad to see that the bank
-finally release and transfer the fund into your bank account in your
-country even before I die here in the hospital, because my present
-health condition is very critical at the moment everything needs to be
-process rapidly as soon as possible.
-
-It will be my pleasure to compensate you as my Investment
-Manager/Partner with 35 % percent of the total fund for your effort in
- handling the transaction, 5 % percent for any expenses or processing
-charges fee that will involve during this process while 60% of the
-fund will be Invested into the charity project there in your country
-for the mutual benefit of the orphans and the less privileges ones.
-Meanwhile I am waiting for your prompt respond, if only you are
-interested for further details of the transaction and execution of
-this  humanitarian project for the glory and honor of God the merciful
-compassionate.
-May God bless you and your family.
-
-Regards,
-Mrs. Dina Mckenna Howley..
-written from Hospital..
+Thanks,
+John
