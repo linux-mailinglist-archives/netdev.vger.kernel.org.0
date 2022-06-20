@@ -2,84 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F77D551960
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 14:51:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09301551E46
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 16:27:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230476AbiFTMvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 08:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
+        id S1350021AbiFTOZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 10:25:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240792AbiFTMvW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 08:51:22 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19C717A9D;
-        Mon, 20 Jun 2022 05:51:17 -0700 (PDT)
-Received: from sslproxy04.your-server.de ([78.46.152.42])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1o3Gs4-0005hk-A0; Mon, 20 Jun 2022 14:51:12 +0200
-Received: from [2a02:168:f656:0:d16a:7287:ccf0:4fff] (helo=localhost.localdomain)
-        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1o3Gs3-000Luv-UF; Mon, 20 Jun 2022 14:51:11 +0200
-Subject: Re: [PATCH] libbpf: Remove kprobe_event on failed kprobe_open_legacy
-To:     chuang <nashuiliang@gmail.com>, Jiri Olsa <olsajiri@gmail.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Jingren Zhou <zhoujingren@didiglobal.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Masami Hiramatsu <mhiramat@kernel.org>
-References: <20220614084930.43276-1-nashuiliang@gmail.com>
- <62ad50fa9d42d_24b34208d6@john.notmuch>
- <CACueBy7NqRszA3tCOvLhfi1OraUrL_GD9YZ9XOPNHzbR1=+z7g@mail.gmail.com>
- <Yq5A4Cln4qeTaAeM@krava>
- <CACueBy4Nr+rqJjZ3guBimd6t36V5B3CBp6_oZVMRzLvMZoTRpg@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <1b813650-baac-a93e-97b0-11967080fdfe@iogearbox.net>
-Date:   Mon, 20 Jun 2022 14:51:11 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S1351100AbiFTOYc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 10:24:32 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13AFC28E3E;
+        Mon, 20 Jun 2022 06:40:22 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3336C40002;
+        Mon, 20 Jun 2022 13:40:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1655732420;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=cReJwg111/Kka2t3uUDnStvxAa8TQUViqU4YfmtL0Ns=;
+        b=LuoRGqkYrJXMfvnY3DajDtFI9BHEt+erIeTqlp18uL+RbQ0xlxE9Zx0T9y8BhZBAm7RDtA
+        mn3RRcCe8QLjUGYRLIwRzMBTPBbzHSIbT5/bF0wOyeAK2t5eJqbaGGIChAKb2SNntEPQvJ
+        xbFgLej4ca2gj3OreuA3t5Uz3Jkp2zDtVphi/9H6eV87K0iyCbEqxyoeOhEjtPfEzzFkk+
+        c65pdKDG2heh93T56rkS0UuDe9ZEJ79SdMuDL6cfdbQ8FnFvy+umovO78SDG5+AFJOeWIm
+        XIrFEXu3Tz3olWcO2moFwkqM1txKyw7SMEgqY3yQ5Kblkde6pCdeIzMBi+cO4Q==
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v3 0/4] net: ieee802154: PAN management
+Date:   Mon, 20 Jun 2022 15:40:14 +0200
+Message-Id: <20220620134018.62414-1-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <CACueBy4Nr+rqJjZ3guBimd6t36V5B3CBp6_oZVMRzLvMZoTRpg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26578/Mon Jun 20 10:06:11 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/19/22 3:56 AM, chuang wrote:
-> On Sun, Jun 19, 2022 at 5:17 AM Jiri Olsa <olsajiri@gmail.com> wrote:
->>
->> just curious.. is that because of ipmodify flag on ftrace_ops?
->> AFAICS that be a poblem just for kretprobes, cc-ing Masami
-> 
-> Yes, the core reason is caused by ipmodify flag (not only for kretprobes).
-> Before commit 0bc11ed5ab60 ("kprobes: Allow kprobes coexist with
-> livepatch"), it's very easy to trigger this problem.
-> The kprobe has other problems and is communicating with Masami.
-> 
-> With this fix, whenever an error is returned after
-> add_kprobe_event_legacy(), this guarantees cleanup of the kprobe
-> event.
+Hello,
 
-The details from this follow-up conversation should definitely be part of
-the commit description, please add them to a v2 as otherwise context is
-missing if we look at the commit again in say few months from now. Also,
-would be good if Masami could provide ack given 0bc11ed5ab60.
+Last step before adding scan support, we need to introduce a proper PAN
+description (with its main properties) and PAN management helpers.
+
+This series provides generic code to do simple operations on the list of
+surrounding PANs, such as registering, listing, flushing... The scanning
+code will soon make use of these additions.
 
 Thanks,
-Daniel
+Miquèl
+
+Changes in v3:
+* Dropped the device type (FFD, RFD, etc) enumeration, all the checks
+  that were related to this parameter and of course the additional user
+  attribute which allowed to check for that value.
+* Reworded a few commit messages.
+
+Changes in v2:
+* The main change is related to the use of the COORD interface (instead
+  of dropping it). Most of the actual diff is in the following series.
+
+David Girault (1):
+  net: ieee802154: Trace the registration of new PANs
+
+Miquel Raynal (3):
+  net: mac802154: Allow the creation of coordinator interfaces
+  net: ieee802154: Add support for inter PAN management
+  net: ieee802154: Give the user access to list of surrounding PANs
+
+ include/net/cfg802154.h   |  31 +++++
+ include/net/nl802154.h    |  49 ++++++++
+ net/ieee802154/Makefile   |   2 +-
+ net/ieee802154/core.c     |   2 +
+ net/ieee802154/core.h     |  26 +++++
+ net/ieee802154/nl802154.c | 199 +++++++++++++++++++++++++++++++-
+ net/ieee802154/pan.c      | 234 ++++++++++++++++++++++++++++++++++++++
+ net/ieee802154/trace.h    |  25 ++++
+ net/mac802154/iface.c     |  14 ++-
+ net/mac802154/rx.c        |   2 +-
+ 10 files changed, 574 insertions(+), 10 deletions(-)
+ create mode 100644 net/ieee802154/pan.c
+
+-- 
+2.34.1
+
