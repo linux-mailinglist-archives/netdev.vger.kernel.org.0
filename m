@@ -2,122 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E391551F4F
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 16:48:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F480551FB1
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 17:05:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241436AbiFTOrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 10:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48098 "EHLO
+        id S241979AbiFTPFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 11:05:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240916AbiFTOqy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 10:46:54 -0400
-Received: from smtp11.infineon.com (smtp11.infineon.com [IPv6:2a00:18f0:1e00:4::5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BAF337BF2;
-        Mon, 20 Jun 2022 07:07:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
-  t=1655734065; x=1687270065;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=WFUlWOfqcV+dfLqXHwjqs/AJN8x0qxLjeeFqsnGEuGs=;
-  b=oYvOkfi/U6TLnjaze31CPCWSoZXnPb0nj/Mui9YDETfduwPJdeViNR68
-   bKOqtyj7NTO5ZQ1Aru1A+mtstjecVPJq88tosHzu3JbwLCXJcEEauXryJ
-   a0w3XZgyRQf8ccdd/j3f9vldIgugIsD4VxCWrxqesAz5LXedn2/kOcmNj
-   4=;
-X-SBRS: None
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="301914076"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650924000"; 
-   d="scan'208";a="301914076"
-Received: from unknown (HELO mucxv003.muc.infineon.com) ([172.23.11.20])
-  by smtp11.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 16:06:28 +0200
-Received: from MUCSE812.infineon.com (MUCSE812.infineon.com [172.23.29.38])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mucxv003.muc.infineon.com (Postfix) with ESMTPS;
-        Mon, 20 Jun 2022 16:06:27 +0200 (CEST)
-Received: from MUCSE807.infineon.com (172.23.29.33) by MUCSE812.infineon.com
- (172.23.29.38) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Mon, 20 Jun
- 2022 16:06:27 +0200
-Received: from [10.160.196.13] (172.23.8.247) by MUCSE807.infineon.com
- (172.23.29.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Mon, 20 Jun
- 2022 16:06:26 +0200
-Message-ID: <cb973352-36f9-8d70-95ac-5b63a566422c@infineon.com>
-Date:   Mon, 20 Jun 2022 16:06:25 +0200
+        with ESMTP id S242159AbiFTPE4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 11:04:56 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E8062D7
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 07:40:27 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id 15so7923064qki.6
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 07:40:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kudzu-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Ty43DqmG3UXtsNzk9LiMVx5ZLHlOvXVEiRAeYWZUjis=;
+        b=ehdfbodio9asmZSE8+QMUK2IDGqIA9Uq2vXqgvkwME7asqb9ENdH6MKGVTdFrJRaX5
+         iQFRYY9IvYkwjjZAxEtAj39HLM0AUzeAQmZZnn8BwRij7yOUS55DD3PZVrs5I9/EGu2l
+         ERHd8/cL9D99VCHc+hgtlJgn/lip6xbX0KsaGg/21U2yKv5U9J4YnnMp1N++ELM5f4RZ
+         Il2h+bvvj6uyzDjSKAoCQGe9pJtQ7C2UBkkvtTcGA7T8W6s/0ZcITIyj40lQbSHcgXgg
+         0AQfk7oJLIyLgpq/oCrbPG7gructmTdYld7kLs1RzGk74WlKEuv4E9V07s0p5grKb9fu
+         k8zw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ty43DqmG3UXtsNzk9LiMVx5ZLHlOvXVEiRAeYWZUjis=;
+        b=zkQpnDqI1hXKZVeV9zkDxnoV3MWHzU00LMxSzAXHP43IyLzopNRn9T6CDjhFuK5G7o
+         yZrML/Sl0tSa7AEmtRj4RaJZ6B+BjEsGhcaBvuRY2Eplslu1OrGNOnH7egQICQ8AJKtI
+         ncvF9uMzJUgdgaeVn1tRbj2X6bf1UrYHpTYT+sZpHzQoSt8/amt0464Ha8R8A/MJLbDW
+         1DkrrZppXfNGKx8gCMv935G/9dyUsvZbNZTBmkqwR8ha7uFvFRlwVeZ72aE8iEkjd5Tw
+         IXIxgmqbNqvSK1OptaFB72dtzgRo4eNomtKajlHtIM2GlPLiPpPtLMBcl8jRmQNOTWK8
+         KTCQ==
+X-Gm-Message-State: AJIora8IFFD2LGkTNgtDBSJHFS/HyW1s/TqsISy6szKBz93viHmtSNRo
+        8d0mebBACwkFMp6VnurC6KwGCQ==
+X-Google-Smtp-Source: AGRyM1t2DpVL1ZKeGfA6+OkJVEPu5i1BfwpzqRN+1YOnxW1uLC3JhT4+n0ITZfeKUi3jvgYyK/GIhw==
+X-Received: by 2002:a05:620a:318b:b0:6a6:cb0b:bb3d with SMTP id bi11-20020a05620a318b00b006a6cb0bbb3dmr16343573qkb.480.1655736018813;
+        Mon, 20 Jun 2022 07:40:18 -0700 (PDT)
+Received: from kudzu.us ([2605:a601:a608:5600::59])
+        by smtp.gmail.com with ESMTPSA id u7-20020a05622a198700b002f90a33c78csm11015400qtc.67.2022.06.20.07.40.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 07:40:18 -0700 (PDT)
+Date:   Mon, 20 Jun 2022 10:40:16 -0400
+From:   Jon Mason <jdmason@kudzu.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Wentao_Liang <Wentao_Liang_g@163.com>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] [PATCH net v2]vexy: Fix a use-after-free bug in
+ vxge-main.c
+Message-ID: <YrCG0CZy4Onh/8RI@kudzu.us>
+References: <20220615013816.6593-1-Wentao_Liang_g@163.com>
+ <20220615195050.6e4785ef@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/4] dt-bindings: net: broadcom-bluetooth: Add CYW55572 DT
- binding
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
-        <linux-bluetooth@vger.kernel.org>
-References: <cover.1655723462.git.hakan.jansson@infineon.com>
- <acd9e85b1ba82875e83ca68ae2aa62d828bfdfa3.1655723462.git.hakan.jansson@infineon.com>
- <2c753258-b68e-b2ad-c4cc-f0a437769bc2@linaro.org>
-From:   Hakan Jansson <hakan.jansson@infineon.com>
-In-Reply-To: <2c753258-b68e-b2ad-c4cc-f0a437769bc2@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.23.8.247]
-X-ClientProxiedBy: MUCSE812.infineon.com (172.23.29.38) To
- MUCSE807.infineon.com (172.23.29.33)
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220615195050.6e4785ef@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Krzysztof,
+On Wed, Jun 15, 2022 at 07:50:50PM -0700, Jakub Kicinski wrote:
+> Jon, if you're there, do you have any sense on whether this HW is still
+> in production somewhere? I scrolled thru last 5 years of the git history
+> and there doesn't seem to be any meaningful change here while there's a
+> significant volume of refactoring going in. 
 
-Thanks for replying.
+Neterion was killed off by Exar after acquiring it roughly a decade
+ago.  To my knowledge no one ever acquired the IP.  So, this should be
+viewed as an EOL'ed part.  It is a mature driver and I believe there are
+parts out in the field still.  So, no need to kill off the driver.
 
-On 6/20/2022 2:32 PM, Krzysztof Kozlowski wrote:
->> CYW55572 is a Wi-Fi + Bluetooth combo device from Infineon.
->> Extend the binding with its DT compatible.
->>
->> Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
->> ---
->>   Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
->> index df59575840fe..71fe9b17f8f1 100644
->> --- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
->> +++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
->> @@ -24,6 +24,7 @@ properties:
->>         - brcm,bcm43540-bt
->>         - brcm,bcm4335a0
->>         - brcm,bcm4349-bt
->> +      - infineon,cyw55572-bt
-> Patch is okay, but just to be sure - is it entirely different device
-> from Infineon or some variant of Broadcom block?
+Thanks,
+Jon
 
-CYW55572 is a new device from Infineon. It is not the same as any 
-Broadcom device.
-
->   Are all existing
-> properties applicable to it as well?
-
-Yes, all existing properties are applicable.
-
-
-Regards,
-Håkan
+> 
+> 
+> On the patch itself:
+> 
+> On Wed, 15 Jun 2022 09:38:16 +0800 Wentao_Liang wrote:
+> > Subject: [PATCH] [PATCH net v2]vexy: Fix a use-after-free bug in vxge-main.c
+> 
+> No need to repeat "[PATCH]"
+> The driver is not called "vexy" as far as I can tell.
+> 
+> > The pointer vdev points to a memory region adjacent to a net_device
+> > structure ndev, which is a field of hldev. At line 4740, the invocation
+> > to vxge_device_unregister unregisters device hldev, and it also releases
+> > the memory region pointed by vdev->bar0. At line 4743, the freed memory
+> > region is referenced (i.e., iounmap(vdev->bar0)), resulting in a
+> > use-after-free vulnerability. We can fix the bug by calling iounmap
+> > before vxge_device_unregister.
+> 
+> Are you sure the bar0 is not needed by the netdev? You're freeing
+> memory that the netdev may need until it's unregistered.
