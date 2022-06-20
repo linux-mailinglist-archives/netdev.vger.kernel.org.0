@@ -2,157 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E45552470
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 21:14:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 393E855249A
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 21:32:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245192AbiFTTOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 15:14:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39000 "EHLO
+        id S236396AbiFTTcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 15:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241978AbiFTTN7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 15:13:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2A315812;
-        Mon, 20 Jun 2022 12:13:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81614615F5;
-        Mon, 20 Jun 2022 19:13:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00F67C341C5;
-        Mon, 20 Jun 2022 19:13:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655752437;
-        bh=fm216QCe5GtCFE+IohJi5m9T+OdkW82eZrUFigAy+Nk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ouzVqjh1TZH3xr/NNWbbr3MY/i8NLDmg/lKSfIP5XK318L0eaDzEzo9VC5qBvSWfW
-         Os5e365YCd/PFdW/o7xQaqOzYzY057idJU8LZDATBe76Pyh/4A0bKAo4GwTVFW9npc
-         ptTiz+dDr5+bbHP6gWYC86L+ve4ikbx6GyRWPrzNs9lhXQXRRaMmpLShKAvBrmzYRi
-         hKHCLCMiE7iWCykmxoEdD4jZ2oA7XNS4OPbo9UBlIJ1tSRhgB6FHRBPt8DD6irDj4c
-         I+DReSPE7gB0RhEcKtxdp6k97aJ/uank34WsZ2FuCL7Xc1RXjeNsxII4N94pkqV0DV
-         9Ui0K3lshymPQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>, john.fastabend@gmail.com,
-        jakub@cloudflare.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, borisp@nvidia.com, cong.wang@bytedance.com,
-        bpf@vger.kernel.org
-Subject: [PATCH net 2/2] sock: redo the psock vs ULP protection check
-Date:   Mon, 20 Jun 2022 12:13:53 -0700
-Message-Id: <20220620191353.1184629-2-kuba@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220620191353.1184629-1-kuba@kernel.org>
-References: <20220620191353.1184629-1-kuba@kernel.org>
+        with ESMTP id S233184AbiFTTcU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 15:32:20 -0400
+Received: from mail-vk1-xa2a.google.com (mail-vk1-xa2a.google.com [IPv6:2607:f8b0:4864:20::a2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B8701C130
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 12:32:19 -0700 (PDT)
+Received: by mail-vk1-xa2a.google.com with SMTP id b81so5621864vkf.1
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 12:32:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=iXfVGid5flDr/Pjg4urM++0HVmQRZoMWrda5i0vXEaI=;
+        b=elY63pDquJdRVPIfbCIwxx9q0AfdG7qhmttrwS23ldZhm7PFk1B0Tu0+H4NMwnC2iF
+         m+2Xf1M33RgwTDO9YRRhmCMhcaHKyFMmbfpud0+C13PzdVdWYxAAFZOLHV54frmqjjuR
+         fu28JfuM4XD4ULbPAvSSG5bbnz3w/QHFHyJabew1XenXxN4/pWAvvG260BKt2kGGi4xr
+         WoQb6+6ULTLhr+gX/C/laVAT4MIUsTWOmJUz9S8xbqU1W+gL+DM06tdYzaseYYLEDyhm
+         07K6msYOagoZu3loubc3bzvtHtGfrg9iT8kEeqJdaqIXKoIUQ8Mi4e+O1Q0VOd0PHR7D
+         xZfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=iXfVGid5flDr/Pjg4urM++0HVmQRZoMWrda5i0vXEaI=;
+        b=5Rq7Hc8hqkSrOu7oMFxvkZtyFEQE0mqCsD9pJ/s+KQH0iN+xetug9jmOxSGExE8PPR
+         eKSGRkfRo6GOvtQkEsTlb2v6uZInhxgWCm8IULfp1haLcwYF8aocBMbHBHZwk80BpcmT
+         4hqNpa75fb8BBoxtMLp6iKChRsI1N339tpHCA8jLA9iRCTymfjM43oRbstOUHl4CuDyQ
+         PukUcxGy1CcTRIrP8BgjRpZVis6p2gFWPa9KjdboIHjYTPCnIl76QtJ2orvSb8HlV8n9
+         tzJ0gNKRKkkhA6ey55zgCaPOi35ntrGKJyyd/O5n7dygX8scpnoIsuDIb4UUI0DlG+u+
+         3sKA==
+X-Gm-Message-State: AJIora/iiWn9yadOvguOtvqGM+49RrVLOhfzcCDzvQcwalA6yKxyJzlz
+        uOdQtHfpLSeXGPhKzHMf14wTuMfTkhhMI2UoxIo=
+X-Google-Smtp-Source: AGRyM1v3q4IDNYgYRvZkc65kq7kyJ1DfQ7iOXuuj8uAX/brywrc9Ncuyv5S5bOW+o6kHCDusb7xfpiosP30wZRLqy5c=
+X-Received: by 2002:ac5:ca07:0:b0:35d:8527:8996 with SMTP id
+ c7-20020ac5ca07000000b0035d85278996mr9916536vkm.0.1655753537548; Mon, 20 Jun
+ 2022 12:32:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Sender: willalam744@gmail.com
+Received: by 2002:a59:6744:0:b0:2ca:c69:730a with HTTP; Mon, 20 Jun 2022
+ 12:32:16 -0700 (PDT)
+From:   Mrs Carlsen monika <carlsen.monika@gmail.com>
+Date:   Mon, 20 Jun 2022 20:32:16 +0100
+X-Google-Sender-Auth: NwS-QTV02hVD0nsyzAjJU8HZc1g
+Message-ID: <CAA_vh5BqHXtB-41DzmirQk-ua6sXufn+xVv8XytTMX5Jx96RHQ@mail.gmail.com>
+Subject: My Dearest,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=7.0 required=5.0 tests=ADVANCE_FEE_5_NEW_MONEY,
+        BAYES_80,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,LOTS_OF_MONEY,MONEY_FRAUD_8,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,
+        T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:a2a listed in]
+        [list.dnswl.org]
+        *  2.0 BAYES_80 BODY: Bayes spam probability is 80 to 95%
+        *      [score: 0.9288]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [carlsen.monika[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [willalam744[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        *  0.0 MONEY_FRAUD_8 Lots of money and very many fraud phrases
+        *  3.0 ADVANCE_FEE_5_NEW_MONEY Advance Fee fraud and lots of money
+        *  2.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 8a59f9d1e3d4 ("sock: Introduce sk->sk_prot->psock_update_sk_prot()")
-has moved the inet_csk_has_ulp(sk) check from sk_psock_init() to
-the new tcp_bpf_update_proto() function. I'm guessing that this
-was done to allow creating psocks for non-inet sockets.
+My  Dearest,
 
-Unfortunately the destruction path for psock includes the ULP
-unwind, so we need to fail the sk_psock_init() itself.
-Otherwise if ULP is already present we'll notice that later,
-and call tcp_update_ulp() with the sk_proto of the ULP
-itself, which will most likely result in the ULP looping
-its callbacks.
+    CHARITY DONATION Please read carefully, I know it is true that
+this letter may come to you as a surprise. I came across your e-mail
+contact through a private search while in need of your assistance. am
+writing this mail to you with heavy sorrow in my heart, I have chose
+to reach out to you through Internet because it still remains the
+fastest medium of communication. I sent this mail praying it will
+found you in a good condition of health, since I myself are in a very
+critical health condition in which I sleep every night without knowing
+if I may be alive to see the next day.
 
-Fixes: 8a59f9d1e3d4 ("sock: Introduce sk->sk_prot->psock_update_sk_prot()")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-CC: john.fastabend@gmail.com
-CC: jakub@cloudflare.com
-CC: yoshfuji@linux-ipv6.org
-CC: dsahern@kernel.org
-CC: ast@kernel.org
-CC: daniel@iogearbox.net
-CC: andrii@kernel.org
-CC: kafai@fb.com
-CC: songliubraving@fb.com
-CC: yhs@fb.com
-CC: kpsingh@kernel.org
-CC: borisp@nvidia.com
-CC: cong.wang@bytedance.com
-CC: bpf@vger.kernel.org
----
- include/net/inet_sock.h | 5 +++++
- net/core/skmsg.c        | 5 +++++
- net/ipv4/tcp_bpf.c      | 3 ---
- net/tls/tls_main.c      | 2 ++
- 4 files changed, 12 insertions(+), 3 deletions(-)
+am Mrs.Monika John Carlsen, wife of late Mr John Carlsen, a widow
+suffering from long time illness. I have some funds I inherited from
+my late husband, the sum of ($11.000.000,eleven million dollars) my
+Doctor told me recently that I have serious sickness which is cancer
+problem. What disturbs me most is my stroke sickness. Having known my
+condition, I decided to donate this fund to a good person that will
+utilize it the way am going to instruct herein. I need a very honest
+and God fearing person who can claim this money and use it for Charity
+works, for orphanages, widows and also build schools for less
+privileges that will be named after my late husband if possible and to
+promote the word of God and the effort that the house of God is
+maintained.
 
-diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
-index c1b5dcd6597c..daead5fb389a 100644
---- a/include/net/inet_sock.h
-+++ b/include/net/inet_sock.h
-@@ -253,6 +253,11 @@ struct inet_sock {
- #define IP_CMSG_CHECKSUM	BIT(7)
- #define IP_CMSG_RECVFRAGSIZE	BIT(8)
- 
-+static inline bool sk_is_inet(struct sock *sk)
-+{
-+	return sk->sk_family == AF_INET || sk->sk_family == AF_INET6;
-+}
-+
- /**
-  * sk_to_full_sk - Access to a full socket
-  * @sk: pointer to a socket
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 22b983ade0e7..b0fcd0200e84 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -699,6 +699,11 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
- 
- 	write_lock_bh(&sk->sk_callback_lock);
- 
-+	if (sk_is_inet(sk) && inet_csk_has_ulp(sk)) {
-+		psock = ERR_PTR(-EINVAL);
-+		goto out;
-+	}
-+
- 	if (sk->sk_user_data) {
- 		psock = ERR_PTR(-EBUSY);
- 		goto out;
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index be3947e70fec..0d3f68bb51c0 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -611,9 +611,6 @@ int tcp_bpf_update_proto(struct sock *sk, struct sk_psock *psock, bool restore)
- 		return 0;
- 	}
- 
--	if (inet_csk_has_ulp(sk))
--		return -EINVAL;
--
- 	if (sk->sk_family == AF_INET6) {
- 		if (tcp_bpf_assert_proto_ops(psock->sk_proto))
- 			return -EINVAL;
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index da176411c1b5..2ffede463e4a 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -921,6 +921,8 @@ static void tls_update(struct sock *sk, struct proto *p,
- {
- 	struct tls_context *ctx;
- 
-+	WARN_ON_ONCE(sk->sk_prot == p);
-+
- 	ctx = tls_get_ctx(sk);
- 	if (likely(ctx)) {
- 		ctx->sk_write_space = write_space;
--- 
-2.36.1
+I do not want a situation where this money will be used in an ungodly
+manners. That's why am taking this decision. am not afraid of death so
+I know where am going. I accept this decision because I do not have
+any child who will inherit this money after I die. Please I want your
+sincerely and urgent answer to know if you will be able to execute
+this project, and I will give you more information on how the fund
+will be transferred to your bank account. am waiting for your reply.
 
+Best Regards
+Mrs.Monika John Carlsen,
