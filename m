@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCF61552057
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 17:20:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F2F755203B
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 17:20:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243342AbiFTPMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 11:12:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39034 "EHLO
+        id S243191AbiFTPMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 11:12:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243303AbiFTPMN (ORCPT
+        with ESMTP id S243214AbiFTPMN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 11:12:13 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44BD82644
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886B62738
         for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 08:02:53 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id j22so5610260ljg.0
+Received: by mail-lf1-x12c.google.com with SMTP id c4so17680624lfj.12
         for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 08:02:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=semihalf.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/EdxkH4fP0zqJATydAHLXu3mRsR+HclXmov1NWv6EHk=;
-        b=SRAAsjAAJry/wEZv46Yv2kZoDW6yLFk+/MU0hcz/UFP8Xv4zTtmkJ4vcKqMOe9yXji
-         3DETO2Omf28vecJPHHw/Fr7623f1Locm4Yw//wT56jHgEG1NcFFnR9D5Ukgdu5hSrcF1
-         HBGPUoI/6Em9j22nofiO/Go+lz9k+aoHoN5UrWqkq0V79MEgQb56au1V2Si2LLyV8GqP
-         +T65+SizTW9QOpqwb4acq7XAEBBFM3v5lOtfNsKJpZT/2g7lsYpxvPQeA0vB4zEels7B
-         8QkdtjzAZFlcIHIged0Ox9FX6X3p8cAKagYQwlHChZm9zqAENVkalOXwjY2IsWZxuzUv
-         btWA==
+        bh=7RYmX6hwDcKGiQHQEayVLNO5diQlCW4Y4Deqwz4h8T8=;
+        b=J7f4T8YnKHMS90UGD6gxXSuB7x2Hg6/2jTVv/VoOmma8k9lrBsmRLZDs8GHCK0fOcV
+         BfFrqQlgSLL+Hur5zSzTBp6invCr+HxiGZaurvWwoK5F2vdD/LaRMryeUG1J0nWVAwaI
+         ayTBVBxeU+mi5xMt73C8Z5w5Ou16ed5i/fx0KKQA1bPV5gsiMrQvsH3/D0a7QF0jJqrn
+         WwyN8zKdC6FGDZN/rEUxI4jp+/KsTZCOOS9ajE5p1A/E47CRd35v+Fb8m/GgZGPeiT3h
+         ZrQEcRXcFHkV+2S+f860tEg+zRuu/zxdVoGHNsbBMRHwmdwXW7UU9W+437UcF/GKLUn5
+         v8TA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/EdxkH4fP0zqJATydAHLXu3mRsR+HclXmov1NWv6EHk=;
-        b=W4210H6JTjIaHnJNevgPNe2faGr82AsuWfRC5HSB9uGEWcg5lYdntbVBuf3/1ExtLv
-         zGe0vcGBRuG3LokWDtf0CoUOrt8gA4tsY9My2foKhl7XvGR012XNfof9rNJwmPbPatpY
-         Ny/e3mVyaWisH4WCEgDTcc3kdVc3Qv0RRykgXxw6ZHeZbeZgHXByKHiGmO2NnMQq/scw
-         mk6ZTIrmAQY2577N7FJWOO/apIVj2UHOK9fiXLLqlg0OEx8n/oWqhe3qH6UhkVlMTE6Z
-         n8yKLRNDG3OC7BtTi6YFVl3gWJYDQvoHvdzlx5sgNV30mSgjZs1utjBXKC33Dnsl4lDJ
-         PQUw==
-X-Gm-Message-State: AJIora+SHIEeSRaEvAp+4NbBZjLmhxovx7dRLz79NoliC7y4aHgg/6B2
-        c8U9Pq4ApxYBZJjob8OaUvnStw==
-X-Google-Smtp-Source: AGRyM1ucPSh7wwP+2gyt89hjNQtLW/miFV9yXLuoSMYVAKWa4WBZ9gQ6SIX8q98ZpaQMBfD8re+kqg==
-X-Received: by 2002:a2e:a268:0:b0:255:9eaf:3422 with SMTP id k8-20020a2ea268000000b002559eaf3422mr11448243ljm.461.1655737371334;
-        Mon, 20 Jun 2022 08:02:51 -0700 (PDT)
+        bh=7RYmX6hwDcKGiQHQEayVLNO5diQlCW4Y4Deqwz4h8T8=;
+        b=Y+a24HDMWNekiqJslFHL4I5snLhoo2DQxy8r2BxFcT+oecPBmsDqRNcWs5ep1JToel
+         M6WwSvPVNmNJW1OGvHllXxl+qu8IcSsVX05NOsyXENVY1llilMgb7eeA+K0oUExjsPrQ
+         oayEAxp3z24XsmSEwN5SLhJx5/BS51sbbCd9iPgHuloz/b1fMpqxxcA8OoLnxaNw/cSz
+         VeDSghR6pzMVbC+vETfH2VFt5PdrWL5Tqyrgf42dlrTvfBcoG/KypaUQYIKmRf6U03od
+         Y5lFbP7s3khw/KI1/Ri0HX7wB4t8IEsbPXLdDtfxxo9FmrzAoH6weMhIkdj1B0Rna9jy
+         fDVg==
+X-Gm-Message-State: AJIora+EheKnt5hksyz0fSQ54M1Gn5kd64buSl51y44s+Fi1HF8vCLBb
+        h+EhawQ8zI/nDInGhwSeDMA1ug==
+X-Google-Smtp-Source: AGRyM1sWO6KOjp1s3p12U7eWklYIpDeYsTWAh5PfOMGJbed42f5P8rcRGwK+1A3uhwLmCbi9uFJtjg==
+X-Received: by 2002:a05:6512:1684:b0:47f:5f27:b006 with SMTP id bu4-20020a056512168400b0047f5f27b006mr7010050lfb.225.1655737372485;
+        Mon, 20 Jun 2022 08:02:52 -0700 (PDT)
 Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
-        by smtp.gmail.com with ESMTPSA id e19-20020a05651236d300b0047f79f7758asm17564lfs.22.2022.06.20.08.02.50
+        by smtp.gmail.com with ESMTPSA id e19-20020a05651236d300b0047f79f7758asm17564lfs.22.2022.06.20.08.02.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 08:02:50 -0700 (PDT)
+        Mon, 20 Jun 2022 08:02:52 -0700 (PDT)
 From:   Marcin Wojtas <mw@semihalf.com>
 To:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
         netdev@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     rafael@kernel.org, andriy.shevchenko@linux.intel.com,
         linux@armlinux.org.uk, hkallweit1@gmail.com, gjb@semihalf.com,
         mw@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
         Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
-Subject: [net-next: PATCH 06/12] net: mdio: introduce fwnode_mdiobus_register_device()
-Date:   Mon, 20 Jun 2022 17:02:19 +0200
-Message-Id: <20220620150225.1307946-7-mw@semihalf.com>
+Subject: [net-next: PATCH 07/12] net: mdio: allow registering non-PHY devices in ACPI world
+Date:   Mon, 20 Jun 2022 17:02:20 +0200
+Message-Id: <20220620150225.1307946-8-mw@semihalf.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20220620150225.1307946-1-mw@semihalf.com>
 References: <20220620150225.1307946-1-mw@semihalf.com>
@@ -75,111 +75,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As a preparation patch to extend MDIO capabilities in the ACPI world,
-introduce fwnode_mdiobus_register_device() to register non-PHY
-devices on the mdiobus.
-
-While at it, also use the newly introduced fwnode operation in
-of_mdiobus_phy_device_register().
+This patch utilizes the newly added fwnode_mdiobus_register_device
+function and enables registration of non-PHY MDIO devices.
+For that purpose a helper routine is added, allowing to determine,
+whether the device associated to ACPI node is a PHY.
+In addition to that update, allow matching child devices' drivers
+based on their ACPI ID.
 
 Signed-off-by: Marcin Wojtas <mw@semihalf.com>
 ---
- include/linux/fwnode_mdio.h    |  3 ++
- drivers/net/mdio/fwnode_mdio.c | 29 ++++++++++++++++++++
- drivers/net/mdio/of_mdio.c     | 26 +-----------------
- 3 files changed, 33 insertions(+), 25 deletions(-)
+ drivers/net/mdio/acpi_mdio.c | 40 +++++++++++++++++++-
+ drivers/net/phy/mdio_bus.c   |  4 ++
+ 2 files changed, 43 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/fwnode_mdio.h b/include/linux/fwnode_mdio.h
-index 98755b8c6c8a..39d74c5d1bb0 100644
---- a/include/linux/fwnode_mdio.h
-+++ b/include/linux/fwnode_mdio.h
-@@ -16,6 +16,9 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
- int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 				struct fwnode_handle *child, u32 addr);
+diff --git a/drivers/net/mdio/acpi_mdio.c b/drivers/net/mdio/acpi_mdio.c
+index d77c987fda9c..b5d7404afc5e 100644
+--- a/drivers/net/mdio/acpi_mdio.c
++++ b/drivers/net/mdio/acpi_mdio.c
+@@ -17,6 +17,41 @@
+ MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
+ MODULE_LICENSE("GPL");
  
-+int fwnode_mdiobus_register_device(struct mii_bus *mdio,
-+				   struct fwnode_handle *child, u32 addr);
-+
- int fwnode_phy_register_fixed_link(struct fwnode_handle *fwnode);
- 
- void fwnode_phy_deregister_fixed_link(struct fwnode_handle *fwnode);
-diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-index b1c20c48b6cb..97abfaf88030 100644
---- a/drivers/net/mdio/fwnode_mdio.c
-+++ b/drivers/net/mdio/fwnode_mdio.c
-@@ -149,6 +149,35 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- }
- EXPORT_SYMBOL(fwnode_mdiobus_register_phy);
- 
-+int fwnode_mdiobus_register_device(struct mii_bus *mdio,
-+				   struct fwnode_handle *child, u32 addr)
++/**
++ * acpi_mdiobus_child_is_phy - check if device associated with fwnode is a PHY.
++ * @fwnode: pointer to MDIO bus child fwnode and is expected to represent ACPI
++ * device object.
++ *
++ * The function returns true if the child node is for a PHY.
++ * It must comprise either:
++ * o Compatible string of "ethernet-phy-idX.X"
++ * o Compatible string of "ethernet-phy-ieee802.3-c45"
++ * o Compatible string of "ethernet-phy-ieee802.3-c22"
++ * o No _HID or _CID fields.
++ */
++static bool acpi_mdiobus_child_is_phy(struct fwnode_handle *child)
 +{
-+	struct mdio_device *mdiodev;
-+	int rc;
++	struct acpi_device *adev = to_acpi_device_node(child);
++	u32 phy_id;
 +
-+	mdiodev = mdio_device_create(mdio, addr);
-+	if (IS_ERR(mdiodev))
-+		return PTR_ERR(mdiodev);
++	if (fwnode_get_phy_id(child, &phy_id) != -EINVAL)
++		return true;
 +
-+	/* Associate the fwnode with the device structure so it
-+	 * can be looked up later.
-+	 */
-+	device_set_node(&mdiodev->dev, child);
++	if (fwnode_property_match_string(child, "compatible",
++					 "ethernet-phy-ieee802.3-c45") == 0)
++		return true;
 +
-+	/* All data is now stored in the mdiodev struct; register it. */
-+	rc = mdio_device_register(mdiodev);
-+	if (rc) {
-+		mdio_device_free(mdiodev);
-+		fwnode_handle_put(child);
-+		return rc;
-+	}
++	if (fwnode_property_match_string(child, "compatible",
++					 "ethernet-phy-ieee802.3-c22") == 0)
++		return true;
 +
-+	dev_dbg(&mdio->dev, "registered mdio device %p fwnode at address %i\n",
-+		child, addr);
-+	return 0;
++	/* Default to PHY if no _HID or _CID found in the fwnode. */
++	if (list_empty(&adev->pnp.ids))
++		return true;
++
++	return false;
 +}
-+EXPORT_SYMBOL(fwnode_mdiobus_register_device);
 +
- /*
-  * fwnode_phy_is_fixed_link() and fwnode_phy_register_fixed_link() must
-  * support two bindings:
-diff --git a/drivers/net/mdio/of_mdio.c b/drivers/net/mdio/of_mdio.c
-index 409da6e92f7d..522dbee419fe 100644
---- a/drivers/net/mdio/of_mdio.c
-+++ b/drivers/net/mdio/of_mdio.c
-@@ -51,31 +51,7 @@ static int of_mdiobus_register_phy(struct mii_bus *mdio,
- static int of_mdiobus_register_device(struct mii_bus *mdio,
- 				      struct device_node *child, u32 addr)
- {
--	struct fwnode_handle *fwnode = of_fwnode_handle(child);
--	struct mdio_device *mdiodev;
--	int rc;
--
--	mdiodev = mdio_device_create(mdio, addr);
--	if (IS_ERR(mdiodev))
--		return PTR_ERR(mdiodev);
--
--	/* Associate the OF node with the device structure so it
--	 * can be looked up later.
--	 */
--	fwnode_handle_get(fwnode);
--	device_set_node(&mdiodev->dev, fwnode);
--
--	/* All data is now stored in the mdiodev struct; register it. */
--	rc = mdio_device_register(mdiodev);
--	if (rc) {
--		mdio_device_free(mdiodev);
--		of_node_put(child);
--		return rc;
--	}
--
--	dev_dbg(&mdio->dev, "registered mdio device %pOFn at address %i\n",
--		child, addr);
--	return 0;
-+	return fwnode_mdiobus_register_device(mdio, of_fwnode_handle(child), addr);
- }
+ /**
+  * acpi_mdiobus_register - Register mii_bus and create PHYs from the ACPI ASL.
+  * @mdio: pointer to mii_bus structure
+@@ -47,7 +82,10 @@ int acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode)
+ 		if (ret || addr >= PHY_MAX_ADDR)
+ 			continue;
  
- /* The following is a list of PHY compatible strings which appear in
+-		ret = fwnode_mdiobus_register_phy(mdio, child, addr);
++		if (acpi_mdiobus_child_is_phy(child))
++			ret = fwnode_mdiobus_register_phy(mdio, child, addr);
++		else
++			ret = fwnode_mdiobus_register_device(mdio, child, addr);
+ 		if (ret == -ENODEV)
+ 			dev_err(&mdio->dev,
+ 				"MDIO device at address %d is missing.\n",
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 8a2dbe849866..b3c2f966be4b 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -8,6 +8,7 @@
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+ 
++#include <linux/acpi.h>
+ #include <linux/delay.h>
+ #include <linux/device.h>
+ #include <linux/errno.h>
+@@ -989,6 +990,9 @@ static int mdio_bus_match(struct device *dev, struct device_driver *drv)
+ 	if (of_driver_match_device(dev, drv))
+ 		return 1;
+ 
++	if (acpi_driver_match_device(dev, drv))
++		return 1;
++
+ 	if (mdio->bus_match)
+ 		return mdio->bus_match(dev, drv);
+ 
 -- 
 2.29.0
 
