@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 758FD55246D
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 21:12:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68D4155246E
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 21:14:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245146AbiFTTMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 15:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37948 "EHLO
+        id S245289AbiFTTOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 15:14:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244329AbiFTTMs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 15:12:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B791758E
-        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 12:12:48 -0700 (PDT)
+        with ESMTP id S243729AbiFTTOA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 15:14:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75153186DF
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 12:13:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA7BD615E9
-        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 19:12:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C41ADC3411B;
-        Mon, 20 Jun 2022 19:12:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25F97B8159F
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 19:13:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EA2EC3411B;
+        Mon, 20 Jun 2022 19:13:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655752367;
-        bh=6EBwTfdETNSyZ0L1hy72qtB4j4e4yeEJFcJnwtuDEAg=;
+        s=k20201202; t=1655752436;
+        bh=6nuGh2x7y8XjANkScnnQ62/aRk6Zq9kebVXfj7gkmTE=;
         h=From:To:Cc:Subject:Date:From;
-        b=XHDpfsCcTXYYHsmthJX0JKWmqJsaQRz/EQ6q/gQ8CbNdyBoHVVo8Qw86WoQ2S2Umc
-         ti/dOoN7h7v15K7SgbIBdXNMNK3ahtJID/GkpLUMk7eX5eqhjIskO02BVPCdphp0QN
-         aJAq2xih9XvRSMw7i4KJFYOxggcRnE9h+QtWyKU0u43r82YFJiz50RVgHgv5ZPPgV1
-         x9diQdfr9NKnJQiP1pK5yePXRNVVt9Vbyr7zfOzvFbUlqg1CbUj6OBODqx8y4y6q0d
-         5X2by5BbkNkMwfop8sh5VdznudWbivLcF/fGAVgB/drXPQHxqs896VWiJn0wQU7x68
-         /7LFyfQ1a14zQ==
+        b=TxolPoXUmyw6j4zRR0q10IJe4VMZTQ2raKydGwwGt8SefONvZ/YwDrtpsjcU/qj6y
+         UGPSqyiJhz7F3O/FLs4TbBuv8StMSwDAQNqAiDFVU2ahAzi0jRpOHhBZV2ePo8Qnnz
+         yQ1DehzkRf31wCCdMdeDD4qJC9890q8VAgQT7JQ0D1SS2GYeq8gEReUkouPncJceMj
+         qN/0DGDRvohpGkMt0wa/INcDZEi1RAFswjXQvMEKiNECTZasIpUXibHCeDqyoO+Jp4
+         zHF3QAb7rGmw28eB+C0z5JqcbgNXW/v29bRHNLroi90I1Snc1Md295oiNvQh1G4hWZ
+         UMEN0DUoAvyeA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>, jdmason@kudzu.us,
-        christophe.jaillet@wanadoo.fr, Wentao_Liang_g@163.com
-Subject: [PATCH net] Revert "drivers/net/ethernet/neterion/vxge: Fix a use-after-free bug in vxge-main.c"
-Date:   Mon, 20 Jun 2022 12:12:37 -0700
-Message-Id: <20220620191237.1183989-1-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>, borisp@nvidia.com,
+        john.fastabend@gmail.com, william.xuanziyang@huawei.com
+Subject: [PATCH net 1/2] Revert "net/tls: fix tls_sk_proto_close executed repeatedly"
+Date:   Mon, 20 Jun 2022 12:13:52 -0700
+Message-Id: <20220620191353.1184629-1-kuba@kernel.org>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -52,45 +52,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 8fc74d18639a2402ca52b177e990428e26ea881f.
+This reverts commit 69135c572d1f84261a6de2a1268513a7e71753e2.
 
-BAR0 is the main (only?) register bank for this device. We most
-obviously can't unmap it before the netdev is unregistered.
-This was pointed out in review but the patch got reposted and
-merged, anyway.
+This commit was just papering over the issue, ULP should not
+get ->update() called with its own sk_prot. Each ULP would
+need to add this check.
 
-The author of the patch was only testing it with a QEMU model,
-which I presume does not emulate enough for the netdev to be brought
-up (author's replies are not visible in lore because they kept sending
-their emails in HTML).
-
-Link: https://lore.kernel.org/all/20220616085059.680dc215@kernel.org/
-Fixes: 8fc74d18639a ("drivers/net/ethernet/neterion/vxge: Fix a use-after-free bug in vxge-main.c")
+Fixes: 69135c572d1f ("net/tls: fix tls_sk_proto_close executed repeatedly")
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: jdmason@kudzu.us
-CC: christophe.jaillet@wanadoo.fr
-CC: Wentao_Liang_g@163.com
+CC: borisp@nvidia.com
+CC: john.fastabend@gmail.com
+CC: william.xuanziyang@huawei.com
 ---
- drivers/net/ethernet/neterion/vxge/vxge-main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/tls/tls_main.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-index 092fd0ae5831..fa5d4ddf429b 100644
---- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-@@ -4736,10 +4736,10 @@ static void vxge_remove(struct pci_dev *pdev)
- 	for (i = 0; i < vdev->no_of_vpath; i++)
- 		vxge_free_mac_add_list(&vdev->vpaths[i]);
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index 46bd5f26338b..da176411c1b5 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -921,9 +921,6 @@ static void tls_update(struct sock *sk, struct proto *p,
+ {
+ 	struct tls_context *ctx;
  
--	iounmap(vdev->bar0);
- 	vxge_device_unregister(hldev);
- 	/* Do not call pci_disable_sriov here, as it will break child devices */
- 	vxge_hw_device_terminate(hldev);
-+	iounmap(vdev->bar0);
- 	pci_release_region(pdev, 0);
- 	pci_disable_device(pdev);
- 	driver_config->config_dev_cnt--;
+-	if (sk->sk_prot == p)
+-		return;
+-
+ 	ctx = tls_get_ctx(sk);
+ 	if (likely(ctx)) {
+ 		ctx->sk_write_space = write_space;
 -- 
 2.36.1
 
