@@ -2,109 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3D405526F6
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 00:31:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50B375526FD
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 00:33:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243581AbiFTWbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 18:31:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43312 "EHLO
+        id S237431AbiFTWdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 18:33:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243182AbiFTWbP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 18:31:15 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF5B1CB39;
-        Mon, 20 Jun 2022 15:31:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655764274; x=1687300274;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pmSKwHf+XOx/cVvFoD/KBOhPf+3PAaRJZ2sU7Jq1+98=;
-  b=ekgd5lyLhWR66HOYz8oPMcLI3tfs1DkAhwI0S7DL3s+aPYy0kxdNDQ3F
-   6+7/cOVRN+9nqDhvkbhl8yrtjln4HjCe4l3iwSYC0aY6GgPaL7da33RhW
-   zqXsQwyO5TCqQTnYcAXByr/FHC05itfD+gmvqQqv4NfkZmMK9SRZcGEuH
-   ireaJ7lDjGzkCnjmBQsRReiA7MXBn73FRRypBdd71ed1m3lr85VxjvJ3U
-   1Fbdfm8dOEexlqos2+mtptqZr6zDAPpBhe8WupVgSF8eeQIQGh2KkUTDq
-   PlAeQULvxwVetU5NnwaDkObn26+1w3Ihn8QL17v1vpTIAnvwapRHHu0Zx
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="305417435"
-X-IronPort-AV: E=Sophos;i="5.92,207,1650956400"; 
-   d="scan'208";a="305417435"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 15:31:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,207,1650956400"; 
-   d="scan'208";a="585046305"
-Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 20 Jun 2022 15:31:09 -0700
-Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o3PvI-000Wkl-OD;
-        Mon, 20 Jun 2022 22:31:08 +0000
-Date:   Tue, 21 Jun 2022 06:30:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Marcin Wojtas <mw@semihalf.com>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, rafael@kernel.org,
-        andriy.shevchenko@linux.intel.com, lenb@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk, hkallweit1@gmail.com,
-        gjb@semihalf.com, mw@semihalf.com, jaz@semihalf.com,
-        tn@semihalf.com, Samer.El-Haj-Mahmoud@arm.com,
-        upstream@semihalf.com
-Subject: Re: [net-next: PATCH 05/12] net: core: switch to
- fwnode_find_net_device_by_node()
-Message-ID: <202206210649.QCsWk7fK-lkp@intel.com>
-References: <20220620150225.1307946-6-mw@semihalf.com>
+        with ESMTP id S238210AbiFTWdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 18:33:02 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF211054A
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 15:33:01 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id d13so10898019plh.13
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 15:33:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=superbaloo.net; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HBt51kyMpIjC4M3F3ivYqQDQ/GB/fjPiJlkO5Sd3V5s=;
+        b=ARjA7VOIGldIFqeNYlx+2tR+WRWCzDXEEfcKbUb/IChFgJkzUMGOx3hE3L4MjyyKgy
+         8CFjudUFXQK/UcwZ1IrIa8+UozEzpo5eS2Ox3Uad6ELWpR6WRTLp9JiP92wVTPz7iJAU
+         lay0TNI6w/Tv1NjeuhcurW1DQX/EJF4s7Ql9dTO7oZzAxFMWBt3JTftcswvLOQfBbRuQ
+         OZVp00yLUNesuPR6F3IIahBw+WRsFITCdpmDzTEledQSZQ1EEadiEe2lCG3mQAu+bxvQ
+         x14QTaQeWcYgVGFQCJd4Q9EX9VdWwwpusmZSy0jYjexi3y5kWmaWsKNLvPIx7+pTyrmU
+         6mxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HBt51kyMpIjC4M3F3ivYqQDQ/GB/fjPiJlkO5Sd3V5s=;
+        b=1kpYR3Y9n+6/+xsEk1nexS6O2+TdkKOsMH2Se0Eqxu+lMCFWmrXDWYDLRtpasw+HS+
+         kCzI94tT1YRErkn+hMdZIXgGSv50zuyGZxZNiGIt505LQU/UEv8d76e79JnIfi1C5St+
+         SOE3KDVxbFj1lwJDxwLMA4H0Nzydreu4fVPwVF0BqocpW8Nv0mRctVTV52xcbLdNiXzt
+         MdUBjBxl5yg7fvUKkJLi3OnaBP2f0FYAWx1skq1QHgvS5IElqQys9gXn83hN8hfLUYwo
+         mNyJIMjrewtY2ipT2lnz+2H5guccmbqEQ2x/iNoNVnc1HZZsh61bUpwQ/64gxBKKmcTe
+         bBOg==
+X-Gm-Message-State: AJIora8NxuzQ9IIiWQOPEWOjYeVW16j+tAHNkK1hTiagID8gJ2rLdh+1
+        mtuffS8Go/vxhyyGs7SuTAMJbQIVYBmgRA==
+X-Google-Smtp-Source: AGRyM1sF7Lg/02fMXk0W3YjMcikM4u4BOZP6mebxXi5ZH1yfZM0fZ1YFI9qKvVESJXHFv0sQbZV5Xg==
+X-Received: by 2002:a17:90b:4d11:b0:1e8:436b:a9cc with SMTP id mw17-20020a17090b4d1100b001e8436ba9ccmr40448785pjb.40.1655764381094;
+        Mon, 20 Jun 2022 15:33:01 -0700 (PDT)
+Received: from localhost.localdomain ([2607:f598:ba6a:691:9c8b:96fb:387a:11b8])
+        by smtp.gmail.com with ESMTPSA id ds12-20020a17090b08cc00b001e0c1044ceasm8657061pjb.43.2022.06.20.15.32.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 15:33:00 -0700 (PDT)
+From:   Arthur Gautier <baloo@superbaloo.net>
+To:     Raju Rangoju <rajur@chelsio.com>
+Cc:     Arthur Gautier <baloo@superbaloo.net>, netdev@vger.kernel.org
+Subject: [PATCH] cxgb4: DOM support when using a QSFP to SFP adaptor
+Date:   Mon, 20 Jun 2022 22:32:34 +0000
+Message-Id: <20220620223234.2443179-1-baloo@superbaloo.net>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220620150225.1307946-6-mw@semihalf.com>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcin,
+When a QSFP to SFP adaptor is used, the DOM eeprom is then presented
+with the SFF-8472 layout and not translated to SFF-8636 format.
 
-I love your patch! Yet something to improve:
+When parsing the eeprom, we can't just read the type of port but we
+need to identify the type of transceiver instead.
 
-[auto build test ERROR on rafael-pm/linux-next]
-[also build test ERROR on robh/for-next linus/master v5.19-rc2 next-20220617]
-[cannot apply to horms-ipvs/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Signed-off-by: Arthur Gautier <baloo@superbaloo.net>
+Cc: Raju Rangoju <rajur@chelsio.com>
+Cc: netdev@vger.kernel.org
+---
+ .../ethernet/chelsio/cxgb4/cxgb4_ethtool.c    | 69 ++++++++++++++-----
+ drivers/net/ethernet/chelsio/cxgb4/t4_hw.h    |  3 +
+ 2 files changed, 53 insertions(+), 19 deletions(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Marcin-Wojtas/ACPI-support-for-DSA/20220620-231646
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git linux-next
-config: arm-allmodconfig (https://download.01.org/0day-ci/archive/20220621/202206210649.QCsWk7fK-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/68a7a52989207bfe8640877c512c77ca233c3bba
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Marcin-Wojtas/ACPI-support-for-DSA/20220620-231646
-        git checkout 68a7a52989207bfe8640877c512c77ca233c3bba
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
-ERROR: modpost: missing MODULE_LICENSE() in drivers/watchdog/gxp-wdt.o
->> ERROR: modpost: "fwnode_find_net_device_by_node" [net/dsa/dsa_core.ko] undefined!
-
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
+index 6c790af92170..ff769216dbec 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
+@@ -2002,11 +2002,43 @@ static bool cxgb4_fw_mod_type_info_available(unsigned int fw_mod_type)
+ 		fw_mod_type != FW_PORT_MOD_TYPE_ERROR);
+ }
+ 
++static int cxgb4_read_eeprom_sfp(struct adapter *adapter,
++				 struct port_info *pi,
++				 struct ethtool_modinfo *modinfo)
++{
++	u8 sff8472_comp, sff_diag_type;
++	int ret;
++
++	ret = t4_i2c_rd(adapter, adapter->mbox, pi->tx_chan,
++			I2C_DEV_ADDR_A0, SFF_8472_COMP_ADDR,
++			SFF_8472_COMP_LEN, &sff8472_comp);
++	if (ret)
++		return ret;
++	ret = t4_i2c_rd(adapter, adapter->mbox, pi->tx_chan,
++			I2C_DEV_ADDR_A0, SFP_DIAG_TYPE_ADDR,
++			SFP_DIAG_TYPE_LEN, &sff_diag_type);
++	if (ret)
++		return ret;
++
++	if (!sff8472_comp || (sff_diag_type & SFP_DIAG_ADDRMODE)) {
++		modinfo->type = ETH_MODULE_SFF_8079;
++		modinfo->eeprom_len = ETH_MODULE_SFF_8079_LEN;
++	} else {
++		modinfo->type = ETH_MODULE_SFF_8472;
++		if (sff_diag_type & SFP_DIAG_IMPLEMENTED)
++			modinfo->eeprom_len = ETH_MODULE_SFF_8472_LEN;
++		else
++			modinfo->eeprom_len = ETH_MODULE_SFF_8472_LEN / 2;
++	}
++
++	return 0;
++}
++
+ static int cxgb4_get_module_info(struct net_device *dev,
+ 				 struct ethtool_modinfo *modinfo)
+ {
+ 	struct port_info *pi = netdev_priv(dev);
+-	u8 sff8472_comp, sff_diag_type, sff_rev;
++	u8 sff_rev, module_type;
+ 	struct adapter *adapter = pi->adapter;
+ 	int ret;
+ 
+@@ -2017,27 +2049,10 @@ static int cxgb4_get_module_info(struct net_device *dev,
+ 	case FW_PORT_TYPE_SFP:
+ 	case FW_PORT_TYPE_QSA:
+ 	case FW_PORT_TYPE_SFP28:
+-		ret = t4_i2c_rd(adapter, adapter->mbox, pi->tx_chan,
+-				I2C_DEV_ADDR_A0, SFF_8472_COMP_ADDR,
+-				SFF_8472_COMP_LEN, &sff8472_comp);
+-		if (ret)
+-			return ret;
+-		ret = t4_i2c_rd(adapter, adapter->mbox, pi->tx_chan,
+-				I2C_DEV_ADDR_A0, SFP_DIAG_TYPE_ADDR,
+-				SFP_DIAG_TYPE_LEN, &sff_diag_type);
++		ret = cxgb4_read_eeprom_sfp(adapter, pi, modinfo);
+ 		if (ret)
+ 			return ret;
+ 
+-		if (!sff8472_comp || (sff_diag_type & SFP_DIAG_ADDRMODE)) {
+-			modinfo->type = ETH_MODULE_SFF_8079;
+-			modinfo->eeprom_len = ETH_MODULE_SFF_8079_LEN;
+-		} else {
+-			modinfo->type = ETH_MODULE_SFF_8472;
+-			if (sff_diag_type & SFP_DIAG_IMPLEMENTED)
+-				modinfo->eeprom_len = ETH_MODULE_SFF_8472_LEN;
+-			else
+-				modinfo->eeprom_len = ETH_MODULE_SFF_8472_LEN / 2;
+-		}
+ 		break;
+ 
+ 	case FW_PORT_TYPE_QSFP:
+@@ -2045,6 +2060,22 @@ static int cxgb4_get_module_info(struct net_device *dev,
+ 	case FW_PORT_TYPE_CR_QSFP:
+ 	case FW_PORT_TYPE_CR2_QSFP:
+ 	case FW_PORT_TYPE_CR4_QSFP:
++		// lookup the transceiver type, we could be using a SFP
++		// plugged into a QSFP to SFP adapter
++		ret = t4_i2c_rd(adapter, adapter->mbox, pi->tx_chan,
++				I2C_DEV_ADDR_A0, SFF_8636_ID,
++				SFF_8636_ID_LEN, &module_type);
++		if (ret)
++			return ret;
++
++		if (module_type == SFF_8024_ID_SFP) {
++			ret = cxgb4_read_eeprom_sfp(adapter, pi, modinfo);
++			if (ret)
++				return ret;
++
++			break;
++		}
++
+ 		ret = t4_i2c_rd(adapter, adapter->mbox, pi->tx_chan,
+ 				I2C_DEV_ADDR_A0, SFF_REV_ADDR,
+ 				SFF_REV_LEN, &sff_rev);
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.h b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.h
+index 63bc956d2037..a27e20dc1268 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.h
+@@ -297,6 +297,9 @@ enum {
+ #define SFP_DIAG_IMPLEMENTED	BIT(6)
+ #define SFF_8472_COMP_ADDR	0x5e
+ #define SFF_8472_COMP_LEN	0x1
++#define SFF_8636_ID		0x0
++#define SFF_8636_ID_LEN	0x1
++#define SFF_8024_ID_SFP	0x3
+ #define SFF_REV_ADDR		0x1
+ #define SFF_REV_LEN		0x1
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.33.1
+
