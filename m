@@ -2,143 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D31E25517D9
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 13:56:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 386DB5517E3
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 13:57:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241539AbiFTL4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 07:56:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41078 "EHLO
+        id S231272AbiFTL44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 07:56:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240318AbiFTL4O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 07:56:14 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2833217A80
-        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 04:56:14 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o3G0j-0008Lu-35; Mon, 20 Jun 2022 13:56:05 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o3G0f-001dBj-Kw; Mon, 20 Jun 2022 13:56:03 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1o3G0g-008XiD-Fg; Mon, 20 Jun 2022 13:56:02 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v4 1/1] net: phy: dp83td510: add SQI support
-Date:   Mon, 20 Jun 2022 13:56:01 +0200
-Message-Id: <20220620115601.2035452-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S241536AbiFTL4z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 07:56:55 -0400
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D0D17E1C;
+        Mon, 20 Jun 2022 04:56:54 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id B41865C0181;
+        Mon, 20 Jun 2022 07:56:53 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Mon, 20 Jun 2022 07:56:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1655726213; x=1655812613; bh=DF7IXatyZc
+        fmlzK8+a+MhGWDcx/oKyhm00O2IupG+FQ=; b=mlrVNjTCvYnNl5CCKcdeL0DydB
+        Q1lav+HH1xUKrcd06uN0JAVYiLwnWsYL3/zm8jKqEki+oatveBtvR4nlQOHb6wJm
+        cgXxfiNiME7dVy2rmplDAYaluH6H0JI/Pcfnw8G05UxalQ1e/EYIbM6IlKCpFWAJ
+        3ycjWSZ9fLJRWDqvC7hzm3aVMbduqhY8Si1I8gsbd4ZLSqKaJVwUwPmW2Ct3feHY
+        xtu95HhZ+OVIfJpT1ZJHfPv63mRkaY9s4tIWkqK5KL2zfcJhNFrPh3t2ly9hRO/x
+        aJIZeyi3WsHO/WHQ9kBVzGRFPv+p4dBHwm5X436S4UpzT6RG5gE13kHV6glA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm2; t=1655726213; x=1655812613; bh=DF7IXatyZcfmlzK8+a+MhGWDcx/o
+        Kyhm00O2IupG+FQ=; b=t7pOi2FrxrrbySpK9wvrKZ9gV4es2g90+BcCCHXz6ohL
+        xOOTuHFxP406cFJfRGFzE0CMt+jb4Y4p+NogFfrHN4yvzigsJCnE9GDkf1KsU44b
+        swH4tMykh3rOQtqC3drKZVrl6AkEIgHPRdH5H6bKicfElmQE+UbNwSgCQJdi+XiB
+        G3/XWYbKuExEN/ZCRJbF6DxE98MdeAFP+YXhtjYZA3Zc1+wXYst/EPX+rUfzZP+c
+        NP/cy6AsbdySTuuulFB28nJzXK4kb2bVBDxSuQFZpKGyB3nQQOtOFBD/WaPle1/H
+        xe8QNtRfqYv9Z5SLRl3WgT33wDd7vfiq5jx1g3pRaw==
+X-ME-Sender: <xms:hWCwYi6yRozq7t28nEGdeGNL6NTynW3PhKHKEVA-AXZoGqNR8ZCdIQ>
+    <xme:hWCwYr5Njaw0b3GlVvBQtKQRXHkCN_cMIaiNIq-cCSsBFuZAFVtjGQbK3yTXjFrA5
+    5xzGCwG_Ag1uw>
+X-ME-Received: <xmr:hWCwYhcmi9I_ma96ShKpyRnvcikwNHtuymKGUudKMUMtGfJDJd3nNlH9Cgyu8Y8FQsulDdrZvW69vCOpZkg2Y4SSFqVBs7Iz>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudefuddggeehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghg
+    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepheegvd
+    evvdeljeeugfdtudduhfekledtiefhveejkeejuefhtdeufefhgfehkeetnecuvehluhhs
+    thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorg
+    hhrdgtohhm
+X-ME-Proxy: <xmx:hWCwYvJNj_1p_P2QbV4aPY3zg9DiGJ1O38fJQTRIP_WNE9FjTuVwNg>
+    <xmx:hWCwYmJgZ6mSQ9rvKWfSr4NS22sERINb4jx98QBGLK2GQ2Gx3xJYlg>
+    <xmx:hWCwYgyy2ljnWMDT61hpo3lGxDJJqCHx12O5PVZ2t-T9ei_la9jzuw>
+    <xmx:hWCwYoCVsVP48WXwNmhPCrDUF0ti7DyxG6d839kRi7AJmjg4fTDUcw>
+Feedback-ID: i787e41f1:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 20 Jun 2022 07:56:53 -0400 (EDT)
+Date:   Mon, 20 Jun 2022 13:56:51 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Meng Tang <tangmeng@uniontech.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: Re: [PATCH 5.10 2/2] commit 1b5d73fb8624 ("igc: Enable PCIe PTM")
+Message-ID: <YrBggx8tmeM9Be+4@kroah.com>
+References: <20220614011528.32118-1-tangmeng@uniontech.com>
+ <20220614011528.32118-2-tangmeng@uniontech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220614011528.32118-2-tangmeng@uniontech.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert MSE (mean-square error) values to SNR and split it SQI (Signal Quality
-Indicator) ranges. The used ranges are taken from "OPEN ALLIANCE - Advanced
-diagnostic features for 100BASE-T1 automotive Ethernet PHYs"
-specification.
+On Tue, Jun 14, 2022 at 09:15:28AM +0800, Meng Tang wrote:
+> In the 5.10 kernel version, even to the latest confirmed version,
+> the following error will still be reported when I225-V network card
+> is used.
+> 
+> kernel: [    1.031581] igc: probe of 0000:01:00.0 failed with error -2
+> kernel: [    1.066574] igc: probe of 0000:02:00.0 failed with error -2
+> kernel: [    1.096152] igc: probe of 0000:03:00.0 failed with error -2
+> kernel: [    1.127251] igc: probe of 0000:04:00.0 failed with error -2
+> 
+> Even though I confirmed that 7c496de538eebd8212dc2a3c9a468386b2640d4
+> and 47bca7de6a4fb8dcb564c7ca4d885c91ed19e03 have been merged into the
+> kernel 5.10, but bug still occurred, and this patch can fixes it.
+> 
+> Enables PCIe PTM (Precision Time Measurement) support in the igc
+> driver. Notifies the PCI devices that PCIe PTM should be enabled.
+> 
+> PCIe PTM is similar protocol to PTP (Precision Time Protocol) running
+> in the PCIe fabric, it allows devices to report time measurements from
+> their internal clocks and the correlation with the PCIe root clock.
+> 
+> The i225 NIC exposes some registers that expose those time
+> measurements, those registers will be used, in later patches, to
+> implement the PTP_SYS_OFFSET_PRECISE ioctl().
+> 
+> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+> Tested-by: Dvora Fuxbrumer <dvorax.fuxbrumer@linux.intel.com>
+> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> Signed-off-by: Meng Tang <tangmeng@uniontech.com>
+> ---
+>  drivers/net/ethernet/intel/igc/igc_main.c | 5 +++++
+>  1 file changed, 5 insertions(+)
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/phy/dp83td510.c | 49 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+Both now queued up, thanks.
 
-diff --git a/drivers/net/phy/dp83td510.c b/drivers/net/phy/dp83td510.c
-index 1ae792b0daaa..3cd9a77f9532 100644
---- a/drivers/net/phy/dp83td510.c
-+++ b/drivers/net/phy/dp83td510.c
-@@ -27,6 +27,27 @@
- #define DP83TD510E_AN_STAT_1			0x60c
- #define DP83TD510E_MASTER_SLAVE_RESOL_FAIL	BIT(15)
- 
-+#define DP83TD510E_MSE_DETECT			0xa85
-+
-+#define DP83TD510_SQI_MAX	7
-+
-+/* Register values are converted to SNR(dB) as suggested by
-+ * "Application Report - DP83TD510E Cable Diagnostics Toolkit":
-+ * SNR(dB) = -10 * log10 (VAL/2^17) - 1.76 dB.
-+ * SQI ranges are implemented according to "OPEN ALLIANCE - Advanced diagnostic
-+ * features for 100BASE-T1 automotive Ethernet PHYs"
-+ */
-+static const u16 dp83td510_mse_sqi_map[] = {
-+	0x0569, /* < 18dB */
-+	0x044c, /* 18dB =< SNR < 19dB */
-+	0x0369, /* 19dB =< SNR < 20dB */
-+	0x02b6, /* 20dB =< SNR < 21dB */
-+	0x0227, /* 21dB =< SNR < 22dB */
-+	0x01b6, /* 22dB =< SNR < 23dB */
-+	0x015b, /* 23dB =< SNR < 24dB */
-+	0x0000  /* 24dB =< SNR */
-+};
-+
- static int dp83td510_config_intr(struct phy_device *phydev)
- {
- 	int ret;
-@@ -164,6 +185,32 @@ static int dp83td510_config_aneg(struct phy_device *phydev)
- 	return genphy_c45_check_and_restart_aneg(phydev, changed);
- }
- 
-+static int dp83td510_get_sqi(struct phy_device *phydev)
-+{
-+	int sqi, ret;
-+	u16 mse_val;
-+
-+	if (!phydev->link)
-+		return 0;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_MSE_DETECT);
-+	if (ret < 0)
-+		return ret;
-+
-+	mse_val = 0xFFFF & ret;
-+	for (sqi = 0; sqi < ARRAY_SIZE(dp83td510_mse_sqi_map); sqi++) {
-+		if (mse_val >= dp83td510_mse_sqi_map[sqi])
-+			return sqi;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int dp83td510_get_sqi_max(struct phy_device *phydev)
-+{
-+	return DP83TD510_SQI_MAX;
-+}
-+
- static int dp83td510_get_features(struct phy_device *phydev)
- {
- 	/* This PHY can't respond on MDIO bus if no RMII clock is enabled.
-@@ -192,6 +239,8 @@ static struct phy_driver dp83td510_driver[] = {
- 	.get_features	= dp83td510_get_features,
- 	.config_intr	= dp83td510_config_intr,
- 	.handle_interrupt = dp83td510_handle_interrupt,
-+	.get_sqi	= dp83td510_get_sqi,
-+	.get_sqi_max	= dp83td510_get_sqi_max,
- 
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
--- 
-2.30.2
-
+greg k-h
