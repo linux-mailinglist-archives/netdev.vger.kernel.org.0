@@ -2,43 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18FD1550F2F
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 06:18:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC599550F85
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 06:50:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233748AbiFTESB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 00:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51516 "EHLO
+        id S237958AbiFTEuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 00:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231775AbiFTESA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 00:18:00 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C52F39;
-        Sun, 19 Jun 2022 21:17:57 -0700 (PDT)
-Received: from canpemm500006.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LRGXl29LLz1K9Sh;
-        Mon, 20 Jun 2022 12:15:51 +0800 (CST)
-Received: from container.huawei.com (10.175.104.82) by
- canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 20 Jun 2022 12:17:54 +0800
-From:   Ziyang Xuan <william.xuanziyang@huawei.com>
-To:     <borisp@nvidia.com>, <john.fastabend@gmail.com>,
-        <daniel@iogearbox.net>, <kuba@kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>
-Subject: [PATCH net] net/tls: fix tls_sk_proto_close executed repeatedly
-Date:   Mon, 20 Jun 2022 12:35:08 +0800
-Message-ID: <20220620043508.3455616-1-william.xuanziyang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231288AbiFTEuQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 00:50:16 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E4232DF;
+        Sun, 19 Jun 2022 21:50:15 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1o39MZ-0007A2-Mm; Mon, 20 Jun 2022 06:50:11 +0200
+Message-ID: <1198479a-ed0a-ae45-4aef-d750113aa3b0@leemhuis.info>
+Date:   Mon, 20 Jun 2022 06:50:10 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500006.china.huawei.com (7.192.105.130)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Content-Language: en-US
+To:     Andrea Mayer <andrea.mayer@uniroma2.it>,
+        Anton Makarov <am@3a-alliance.com>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, david.lebrun@uclouvain.be,
+        regressions@lists.linux.dev, stable@vger.kernel.org,
+        Stefano Salsano <stefano.salsano@uniroma2.it>,
+        Paolo Lungaroni <paolo.lungaroni@uniroma2.it>,
+        Ahmed Abdelsalam <ahabdels.dev@gmail.com>
+References: <7e315ff1-e172-16c3-44b5-0c83c4c92779@3a-alliance.com>
+ <20220606143338.91df592bbb7dc2f7db4747e6@uniroma2.it>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Re: [REGRESSION] net: SRv6 End.DT6 function is broken in VRF mode
+In-Reply-To: <20220606143338.91df592bbb7dc2f7db4747e6@uniroma2.it>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1655700615;6ebfc65e;
+X-HE-SMSGID: 1o39MZ-0007A2-Mm
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -47,47 +49,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After setting the sock ktls, update ctx->sk_proto to sock->sk_prot by
-tls_update(), so now ctx->sk_proto->close is tls_sk_proto_close(). When
-close the sock, tls_sk_proto_close() is called for sock->sk_prot->close
-is tls_sk_proto_close(). But ctx->sk_proto->close() will be executed later
-in tls_sk_proto_close(). Thus tls_sk_proto_close() executed repeatedly
-occurred. That will trigger the following bug.
+On 06.06.22 14:33, Andrea Mayer wrote:
+> On Fri, 3 Jun 2022 15:23:26 +0300
+> Anton Makarov <am@3a-alliance.com> wrote:
+> 
+>> #regzbot introduced: b9132c32e01976686efa26252cc246944a0d2cab
+>>
+>> Seems there is a regression of SRv6 End.DT6 function in VRF mode. In the 
+>> following scenario packet is decapsulated successfully on vrf10 
+>> interface but not forwarded to vrf10's slave interface:
+>>
+>> ip netns exec r4 ip -6 nexthop add id 1004 encap seg6local action 
+>> End.DT6 vrftable 10 dev vrf10
+>>
+>> ip netns exec r4 ip -6 route add fcff:0:4:200:: nhid 1004
 
-=================================================================
-KASAN: null-ptr-deref in range [0x0000000000000010-0x0000000000000017]
-RIP: 0010:tls_sk_proto_close+0xd8/0xaf0 net/tls/tls_main.c:306
-Call Trace:
- <TASK>
- tls_sk_proto_close+0x356/0xaf0 net/tls/tls_main.c:329
- inet_release+0x12e/0x280 net/ipv4/af_inet.c:428
- __sock_release+0xcd/0x280 net/socket.c:650
- sock_close+0x18/0x20 net/socket.c:1365
+#regzbot fixed-by: a3bd2102e4642
 
-Updating a proto which is same with sock->sk_prot is incorrect. Add proto
-and sock->sk_prot equality check at the head of tls_update() to fix it.
+> thank you for reporting this issue. I am already working on a fix patch which I
+> will send shortly.
 
-Fixes: 95fa145479fb ("bpf: sockmap/tls, close can race with map free")
-Reported-by: syzbot+29c3c12f3214b85ad081@syzkaller.appspotmail.com
-Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
----
- net/tls/tls_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+@Andrea: when you fix a reported issue, next time please include a
+"Link: <url>" that links to the report, as explained in the
+documentation (see submitting-patches.rst). Linus wants these tags(¹)
+and my regression tracking efforts rely on them (that'S why I had to
+write this mail to tell regression tracking bot with above command that
+the issue has been fixed). tia!
 
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index da176411c1b5..46bd5f26338b 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -921,6 +921,9 @@ static void tls_update(struct sock *sk, struct proto *p,
- {
- 	struct tls_context *ctx;
- 
-+	if (sk->sk_prot == p)
-+		return;
-+
- 	ctx = tls_get_ctx(sk);
- 	if (likely(ctx)) {
- 		ctx->sk_write_space = write_space;
--- 
-2.25.1
+Ciao, Thorsten
 
+(¹) see for example:
+https://lore.kernel.org/all/CAHk-=wjMmSZzMJ3Xnskdg4+GGz=5p5p+GSYyFBTh0f-DgvdBWg@mail.gmail.com/
+https://lore.kernel.org/all/CAHk-=wgs38ZrfPvy=nOwVkVzjpM3VFU1zobP37Fwd_h9iAD5JQ@mail.gmail.com/
