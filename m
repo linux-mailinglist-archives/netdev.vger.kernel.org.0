@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7752551932
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 14:43:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F77D551960
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 14:51:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240227AbiFTMnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 08:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56684 "EHLO
+        id S230476AbiFTMvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 08:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233887AbiFTMn1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 08:43:27 -0400
+        with ESMTP id S240792AbiFTMvW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 08:51:22 -0400
 Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42445F9F;
-        Mon, 20 Jun 2022 05:43:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19C717A9D;
+        Mon, 20 Jun 2022 05:51:17 -0700 (PDT)
 Received: from sslproxy04.your-server.de ([78.46.152.42])
         by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <daniel@iogearbox.net>)
-        id 1o3GkV-0004H2-Co; Mon, 20 Jun 2022 14:43:23 +0200
+        id 1o3Gs4-0005hk-A0; Mon, 20 Jun 2022 14:51:12 +0200
 Received: from [2a02:168:f656:0:d16a:7287:ccf0:4fff] (helo=localhost.localdomain)
         by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <daniel@iogearbox.net>)
-        id 1o3GkU-000RhI-UM; Mon, 20 Jun 2022 14:43:22 +0200
-Subject: Re: [PATCHv5 bpf-next 1/1] perf tools: Rework prologue generation
- code
-To:     Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        id 1o3Gs3-000Luv-UF; Mon, 20 Jun 2022 14:51:11 +0200
+Subject: Re: [PATCH] libbpf: Remove kprobe_event on failed kprobe_open_legacy
+To:     chuang <nashuiliang@gmail.com>, Jiri Olsa <olsajiri@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Jingren Zhou <zhoujingren@didiglobal.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Ian Rogers <irogers@google.com>
-References: <20220616202214.70359-1-jolsa@kernel.org>
- <20220616202214.70359-2-jolsa@kernel.org>
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Masami Hiramatsu <mhiramat@kernel.org>
+References: <20220614084930.43276-1-nashuiliang@gmail.com>
+ <62ad50fa9d42d_24b34208d6@john.notmuch>
+ <CACueBy7NqRszA3tCOvLhfi1OraUrL_GD9YZ9XOPNHzbR1=+z7g@mail.gmail.com>
+ <Yq5A4Cln4qeTaAeM@krava>
+ <CACueBy4Nr+rqJjZ3guBimd6t36V5B3CBp6_oZVMRzLvMZoTRpg@mail.gmail.com>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <72122b4e-1056-7392-f9eb-6ea4c0a79529@iogearbox.net>
-Date:   Mon, 20 Jun 2022 14:43:22 +0200
+Message-ID: <1b813650-baac-a93e-97b0-11967080fdfe@iogearbox.net>
+Date:   Mon, 20 Jun 2022 14:51:11 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20220616202214.70359-2-jolsa@kernel.org>
+In-Reply-To: <CACueBy4Nr+rqJjZ3guBimd6t36V5B3CBp6_oZVMRzLvMZoTRpg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -62,52 +61,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/16/22 10:22 PM, Jiri Olsa wrote:
-> Some functions we use for bpf prologue generation are going to be
-> deprecated. This change reworks current code not to use them.
+On 6/19/22 3:56 AM, chuang wrote:
+> On Sun, Jun 19, 2022 at 5:17 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+>>
+>> just curious.. is that because of ipmodify flag on ftrace_ops?
+>> AFAICS that be a poblem just for kretprobes, cc-ing Masami
 > 
-> We need to replace following functions/struct:
->     bpf_program__set_prep
->     bpf_program__nth_fd
->     struct bpf_prog_prep_result
+> Yes, the core reason is caused by ipmodify flag (not only for kretprobes).
+> Before commit 0bc11ed5ab60 ("kprobes: Allow kprobes coexist with
+> livepatch"), it's very easy to trigger this problem.
+> The kprobe has other problems and is communicating with Masami.
 > 
-> Currently we use bpf_program__set_prep to hook perf callback before
-> program is loaded and provide new instructions with the prologue.
-> 
-> We replace this function/ality by taking instructions for specific
-> program, attaching prologue to them and load such new ebpf programs
-> with prologue using separate bpf_prog_load calls (outside libbpf
-> load machinery).
-> 
-> Before we can take and use program instructions, we need libbpf to
-> actually load it. This way we get the final shape of its instructions
-> with all relocations and verifier adjustments).
-> 
-> There's one glitch though.. perf kprobe program already assumes
-> generated prologue code with proper values in argument registers,
-> so loading such program directly will fail in the verifier.
-> 
-> That's where the fallback pre-load handler fits in and prepends
-> the initialization code to the program. Once such program is loaded
-> we take its instructions, cut off the initialization code and prepend
-> the prologue.
-> 
-> I know.. sorry ;-)
-> 
-> To have access to the program when loading this patch adds support to
-> register 'fallback' section handler to take care of perf kprobe programs.
-> The fallback means that it handles any section definition besides the
-> ones that libbpf handles.
-> 
-> The handler serves two purposes:
->    - allows perf programs to have special arguments in section name
->    - allows perf to use pre-load callback where we can attach init
->      code (zeroing all argument registers) to each perf program
-> 
-> Suggested-by: Andrii Nakryiko <andrii@kernel.org>
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> With this fix, whenever an error is returned after
+> add_kprobe_event_legacy(), this guarantees cleanup of the kprobe
+> event.
 
-Hey Arnaldo, if you get a chance, please take a look.
+The details from this follow-up conversation should definitely be part of
+the commit description, please add them to a v2 as otherwise context is
+missing if we look at the commit again in say few months from now. Also,
+would be good if Masami could provide ack given 0bc11ed5ab60.
 
-Thanks a lot,
+Thanks,
 Daniel
