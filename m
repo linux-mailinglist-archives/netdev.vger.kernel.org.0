@@ -2,91 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A83815511FB
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 09:59:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFD51551282
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 10:20:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239450AbiFTH7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 03:59:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51968 "EHLO
+        id S239608AbiFTIUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 04:20:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237445AbiFTH7N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 03:59:13 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E41B72DDE;
-        Mon, 20 Jun 2022 00:59:11 -0700 (PDT)
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxX07GKLBir6JOAA--.21225S2;
-        Mon, 20 Jun 2022 15:59:03 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Pavel Machek <pavel@ucw.cz>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next] libbpf: Include linux/log2.h to use is_pow_of_2()
-Date:   Mon, 20 Jun 2022 15:59:02 +0800
-Message-Id: <1655711942-6181-1-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-X-CM-TRANSID: AQAAf9DxX07GKLBir6JOAA--.21225S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrKF17WF43Kw1kAF1rKr48Zwb_yoWkCrc_C3
-        4xJr48Wr9Iyryavw1fAFZ29Fyqqa1ruF18XF1rtwnrGas0kw15GwnrG34kAa4Yg3sayryf
-        WFykXrWfZr1rWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb2xYjsxI4VWDJwAYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwV
-        C2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
-        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Gr0_Cr
-        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxkIecxEwVAFwVW8CwCF04k2
-        0xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI
-        8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41l
-        IxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIx
-        AIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2
-        z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjxUcU73DUUUU
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S239124AbiFTIUb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 04:20:31 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4547411C27;
+        Mon, 20 Jun 2022 01:20:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AB444CE0FAE;
+        Mon, 20 Jun 2022 08:20:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 15E6CC341C5;
+        Mon, 20 Jun 2022 08:20:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655713228;
+        bh=sl02kj1le83JRF8ZjTmxwGvQGdhdKftJfwKyd9YstX0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=JHT8DTrqoFDchMMGuyXJ8IPN7PdNwHP5WBOWrI8C5n+4ZGU4YXPs/84Hk4jgGbNj3
+         I6NsmbaNbPQ0K0adiDGif7k0nHySVcWF0YMdvRyUKxz2Yu9ioLwPxAkhZNd2bSdA7O
+         lwq5W+UqTSfTdHhKW24SLtFHQfMkUuQ9nuhHIrHBpLN8tkFxERN2bl9AYftEWmAFih
+         aayb39/H/FpxjSnvbK+E2QTBQg63PAhb0n7x1rv56MKmw0PqZaNpeHMc9G6xhQp3Lt
+         MS9eUM/JEKcHw7O1PhuYRTEQ+XDVvy3dyyzopTkqvjm6VC5hA3qVDbGl9/SA1JCfdY
+         g5f6RRIO3XpyQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EE119E737F0;
+        Mon, 20 Jun 2022 08:20:27 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] vmxnet3: disable overlay offloads if UPT device does
+ not support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165571322796.28545.7365793721968727456.git-patchwork-notify@kernel.org>
+Date:   Mon, 20 Jun 2022 08:20:27 +0000
+References: <20220620001014.27048-1-doshir@vmware.com>
+In-Reply-To: <20220620001014.27048-1-doshir@vmware.com>
+To:     Ronak Doshi <doshir@vmware.com>
+Cc:     netdev@vger.kernel.org, pv-drivers@vmware.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        gyang@vmware.com, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-is_pow_of_2() is already defined in tools/include/linux/log2.h [1],
-so no need to define it again in tools/lib/bpf/libbpf_internal.h,
-just include linux/log2.h directly.
+Hello:
 
-[1] https://lore.kernel.org/bpf/20220619171248.GC3362@bug/
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Suggested-by: Pavel Machek <pavel@ucw.cz>
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
----
- tools/lib/bpf/libbpf_internal.h | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+On Sun, 19 Jun 2022 17:10:13 -0700 you wrote:
+> 'Commit 6f91f4ba046e ("vmxnet3: add support for capability registers")'
+> added support for capability registers. These registers are used
+> to advertize capabilities of the device.
+> 
+> The patch updated the dev_caps to disable outer checksum offload if
+> PTCR register does not support it. However, it missed to update
+> other overlay offloads. This patch fixes this issue.
+> 
+> [...]
 
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index a1ad145..021946a 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -13,6 +13,7 @@
- #include <limits.h>
- #include <errno.h>
- #include <linux/err.h>
-+#include <linux/log2.h>
- #include <fcntl.h>
- #include <unistd.h>
- #include "libbpf_legacy.h"
-@@ -582,9 +583,4 @@ struct bpf_link * usdt_manager_attach_usdt(struct usdt_manager *man,
- 					   const char *usdt_provider, const char *usdt_name,
- 					   __u64 usdt_cookie);
- 
--static inline bool is_pow_of_2(size_t x)
--{
--	return x && (x & (x - 1)) == 0;
--}
--
- #endif /* __LIBBPF_LIBBPF_INTERNAL_H */
+Here is the summary with links:
+  - [net-next] vmxnet3: disable overlay offloads if UPT device does not support
+    https://git.kernel.org/netdev/net-next/c/a56b158a5078
+
+You are awesome, thank you!
 -- 
-2.1.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
