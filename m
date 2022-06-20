@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFF4C55243E
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 20:52:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3040F552440
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 20:53:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245070AbiFTSwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 14:52:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55872 "EHLO
+        id S245121AbiFTSxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 14:53:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343621AbiFTSwx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 14:52:53 -0400
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA5D0DD3
-        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 11:52:52 -0700 (PDT)
+        with ESMTP id S242926AbiFTSxF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 14:53:05 -0400
+Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26DC1D10E
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 11:53:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1655751172; x=1687287172;
+  t=1655751184; x=1687287184;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=bbsoaTkErfZYqhCXfb/FH4xhJEo1JYSAL1s+JkiyIgw=;
-  b=Dz/Byn8hWd0ioP7YcM6yZdfahRWB4mEIiCBbuvOJu/VoNKIVgRza8bKU
-   4f5aNUptrZJF8c4f6mu1Ijz2gMjsgm5TJLJnVeGvF/vYNDkg8xm6LJwUw
-   PHgkwdSzTA9zndSGhwYr+UefyQP6dfOKd4tFf9Iy7X4gdXntHoJT6Ye6o
-   k=;
+  bh=tmVf/UlSWzphyug5cwKhsJdjodVKLjdnhhEbC9h0V2M=;
+  b=mWJsZtJXmla+4lQkZ8UuGccESYHPGtmMleMeJ+sKkjUrK/hqfQmT+DdW
+   ZmMEIfgOR+lAMl6DOUIsSIvXYECfGvolxUjn/TCzsNdDEe/gmxkkNms0u
+   E9lFqhnoHetQ02gwnsb9IHq5taZE5e2wY1Pz7Y9IAHHBZmWlcjLBYNbLx
+   s=;
 X-IronPort-AV: E=Sophos;i="5.92,207,1650931200"; 
-   d="scan'208";a="1026185658"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-4ba5c7da.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP; 20 Jun 2022 18:52:34 +0000
+   d="scan'208";a="99699262"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-4ba5c7da.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP; 20 Jun 2022 18:52:46 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1a-4ba5c7da.us-east-1.amazon.com (Postfix) with ESMTPS id 3AC28C0E73;
-        Mon, 20 Jun 2022 18:52:32 +0000 (UTC)
+        by email-inbound-relay-iad-1a-4ba5c7da.us-east-1.amazon.com (Postfix) with ESMTPS id 6A419C0E73;
+        Mon, 20 Jun 2022 18:52:44 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Mon, 20 Jun 2022 18:52:32 +0000
+ id 15.0.1497.36; Mon, 20 Jun 2022 18:52:43 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.161.183) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Mon, 20 Jun 2022 18:52:28 +0000
+ id 15.0.1497.36; Mon, 20 Jun 2022 18:52:40 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -45,9 +45,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     Amit Shah <aams@amazon.com>, Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH v2 net-next 1/6] af_unix: Clean up some sock_net() uses.
-Date:   Mon, 20 Jun 2022 11:51:46 -0700
-Message-ID: <20220620185151.65294-2-kuniyu@amazon.com>
+Subject: [PATCH v2 net-next 2/6] af_unix: Include the whole hash table size in UNIX_HASH_SIZE.
+Date:   Mon, 20 Jun 2022 11:51:47 -0700
+Message-ID: <20220620185151.65294-3-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220620185151.65294-1-kuniyu@amazon.com>
 References: <20220620185151.65294-1-kuniyu@amazon.com>
@@ -67,131 +67,139 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some functions define a net pointer only for one-shot use.  Others call
-sock_net() redundantly even when a net pointer is available.  Let's fix
-these and make the code simpler.
+Currently, the size of AF_UNIX hash table is UNIX_HASH_SIZE * 2,
+the first half for bind()ed sockets and the second half for unbound
+ones.  UNIX_HASH_SIZE * 2 is used to define the table and iterate
+over it.
+
+In some places, we use ARRAY_SIZE(unix_socket_table) instead of
+UNIX_HASH_SIZE * 2.  However, we cannot use it anymore because we
+will allocate the hash table dynamically.  Then, we would have to
+add UNIX_HASH_SIZE * 2 in many places, which would be troublesome.
+
+This patch adapts the UNIX_HASH_SIZE definition to include bound
+and unbound sockets and defines a new UNIX_HASH_MOD macro to ease
+calculations.
 
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
- net/unix/af_unix.c | 33 ++++++++++++++-------------------
- net/unix/diag.c    |  3 +--
- 2 files changed, 15 insertions(+), 21 deletions(-)
+ include/net/af_unix.h |  7 ++++---
+ net/unix/af_unix.c    | 18 +++++++++---------
+ net/unix/diag.c       |  6 ++----
+ 3 files changed, 15 insertions(+), 16 deletions(-)
 
+diff --git a/include/net/af_unix.h b/include/net/af_unix.h
+index a7ef624ed726..acb56e463db1 100644
+--- a/include/net/af_unix.h
++++ b/include/net/af_unix.h
+@@ -16,12 +16,13 @@ void wait_for_unix_gc(void);
+ struct sock *unix_get_socket(struct file *filp);
+ struct sock *unix_peer_get(struct sock *sk);
+ 
+-#define UNIX_HASH_SIZE	256
++#define UNIX_HASH_MOD	(256 - 1)
++#define UNIX_HASH_SIZE	(256 * 2)
+ #define UNIX_HASH_BITS	8
+ 
+ extern unsigned int unix_tot_inflight;
+-extern spinlock_t unix_table_locks[2 * UNIX_HASH_SIZE];
+-extern struct hlist_head unix_socket_table[2 * UNIX_HASH_SIZE];
++extern spinlock_t unix_table_locks[UNIX_HASH_SIZE];
++extern struct hlist_head unix_socket_table[UNIX_HASH_SIZE];
+ 
+ struct unix_address {
+ 	refcount_t	refcnt;
 diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 3453e0053f76..990257f02e7c 100644
+index 990257f02e7c..c0804ae9c96a 100644
 --- a/net/unix/af_unix.c
 +++ b/net/unix/af_unix.c
-@@ -932,7 +932,7 @@ static struct sock *unix_create1(struct net *net, struct socket *sock, int kern,
- 	memset(&u->scm_stat, 0, sizeof(struct scm_stat));
- 	unix_insert_unbound_socket(sk);
+@@ -118,9 +118,9 @@
  
--	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, 1);
-+	sock_prot_inuse_add(net, sk->sk_prot, 1);
+ #include "scm.h"
  
- 	return sk;
+-spinlock_t unix_table_locks[2 * UNIX_HASH_SIZE];
++spinlock_t unix_table_locks[UNIX_HASH_SIZE];
+ EXPORT_SYMBOL_GPL(unix_table_locks);
+-struct hlist_head unix_socket_table[2 * UNIX_HASH_SIZE];
++struct hlist_head unix_socket_table[UNIX_HASH_SIZE];
+ EXPORT_SYMBOL_GPL(unix_socket_table);
+ static atomic_long_t unix_nr_socks;
  
-@@ -1293,9 +1293,8 @@ static void unix_state_double_unlock(struct sock *sk1, struct sock *sk2)
- static int unix_dgram_connect(struct socket *sock, struct sockaddr *addr,
- 			      int alen, int flags)
+@@ -137,12 +137,12 @@ static unsigned int unix_unbound_hash(struct sock *sk)
+ 	hash ^= hash >> 8;
+ 	hash ^= sk->sk_type;
+ 
+-	return UNIX_HASH_SIZE + (hash & (UNIX_HASH_SIZE - 1));
++	return UNIX_HASH_MOD + 1 + (hash & UNIX_HASH_MOD);
+ }
+ 
+ static unsigned int unix_bsd_hash(struct inode *i)
  {
--	struct sock *sk = sock->sk;
--	struct net *net = sock_net(sk);
- 	struct sockaddr_un *sunaddr = (struct sockaddr_un *)addr;
-+	struct sock *sk = sock->sk;
- 	struct sock *other;
- 	int err;
+-	return i->i_ino & (UNIX_HASH_SIZE - 1);
++	return i->i_ino & UNIX_HASH_MOD;
+ }
  
-@@ -1316,7 +1315,7 @@ static int unix_dgram_connect(struct socket *sock, struct sockaddr *addr,
- 		}
+ static unsigned int unix_abstract_hash(struct sockaddr_un *sunaddr,
+@@ -155,14 +155,14 @@ static unsigned int unix_abstract_hash(struct sockaddr_un *sunaddr,
+ 	hash ^= hash >> 8;
+ 	hash ^= type;
  
- restart:
--		other = unix_find_other(net, sunaddr, alen, sock->type);
-+		other = unix_find_other(sock_net(sk), sunaddr, alen, sock->type);
- 		if (IS_ERR(other)) {
- 			err = PTR_ERR(other);
- 			goto out;
-@@ -1404,15 +1403,13 @@ static int unix_stream_connect(struct socket *sock, struct sockaddr *uaddr,
- 			       int addr_len, int flags)
+-	return hash & (UNIX_HASH_SIZE - 1);
++	return hash & UNIX_HASH_MOD;
+ }
+ 
+ static void unix_table_double_lock(unsigned int hash1, unsigned int hash2)
  {
- 	struct sockaddr_un *sunaddr = (struct sockaddr_un *)uaddr;
--	struct sock *sk = sock->sk;
--	struct net *net = sock_net(sk);
-+	struct sock *sk = sock->sk, *newsk = NULL, *other = NULL;
- 	struct unix_sock *u = unix_sk(sk), *newu, *otheru;
--	struct sock *newsk = NULL;
--	struct sock *other = NULL;
-+	struct net *net = sock_net(sk);
- 	struct sk_buff *skb = NULL;
--	int st;
--	int err;
- 	long timeo;
-+	int err;
-+	int st;
- 
- 	err = unix_validate_addr(sunaddr, addr_len);
- 	if (err)
-@@ -1432,7 +1429,7 @@ static int unix_stream_connect(struct socket *sock, struct sockaddr *uaddr,
+ 	/* hash1 and hash2 is never the same because
+-	 * one is between 0 and UNIX_HASH_SIZE - 1, and
+-	 * another is between UNIX_HASH_SIZE and UNIX_HASH_SIZE * 2.
++	 * one is between 0 and UNIX_HASH_MOD, and
++	 * another is between UNIX_HASH_MOD + 1 and UNIX_HASH_SIZE - 1.
  	 */
+ 	if (hash1 > hash2)
+ 		swap(hash1, hash2);
+@@ -3239,7 +3239,7 @@ static struct sock *unix_get_first(struct seq_file *seq, loff_t *pos)
+ 	unsigned long bucket = get_bucket(*pos);
+ 	struct sock *sk;
  
- 	/* create new sock for complete connection */
--	newsk = unix_create1(sock_net(sk), NULL, 0, sock->type);
-+	newsk = unix_create1(net, NULL, 0, sock->type);
- 	if (IS_ERR(newsk)) {
- 		err = PTR_ERR(newsk);
- 		newsk = NULL;
-@@ -1840,17 +1837,15 @@ static void scm_stat_del(struct sock *sk, struct sk_buff *skb)
- static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
- 			      size_t len)
- {
--	struct sock *sk = sock->sk;
--	struct net *net = sock_net(sk);
--	struct unix_sock *u = unix_sk(sk);
- 	DECLARE_SOCKADDR(struct sockaddr_un *, sunaddr, msg->msg_name);
--	struct sock *other = NULL;
--	int err;
--	struct sk_buff *skb;
--	long timeo;
-+	struct sock *sk = sock->sk, *other = NULL;
-+	struct unix_sock *u = unix_sk(sk);
- 	struct scm_cookie scm;
-+	struct sk_buff *skb;
- 	int data_len = 0;
- 	int sk_locked;
-+	long timeo;
-+	int err;
+-	while (bucket < ARRAY_SIZE(unix_socket_table)) {
++	while (bucket < UNIX_HASH_SIZE) {
+ 		spin_lock(&unix_table_locks[bucket]);
  
- 	wait_for_unix_gc();
- 	err = scm_send(sock, msg, &scm, false);
-@@ -1917,7 +1912,7 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
- 		if (sunaddr == NULL)
- 			goto out_free;
+ 		sk = unix_from_bucket(seq, pos);
+@@ -3666,7 +3666,7 @@ static int __init af_unix_init(void)
  
--		other = unix_find_other(net, sunaddr, msg->msg_namelen,
-+		other = unix_find_other(sock_net(sk), sunaddr, msg->msg_namelen,
- 					sk->sk_type);
- 		if (IS_ERR(other)) {
- 			err = PTR_ERR(other);
+ 	BUILD_BUG_ON(sizeof(struct unix_skb_parms) > sizeof_field(struct sk_buff, cb));
+ 
+-	for (i = 0; i < 2 * UNIX_HASH_SIZE; i++)
++	for (i = 0; i < UNIX_HASH_SIZE; i++)
+ 		spin_lock_init(&unix_table_locks[i]);
+ 
+ 	rc = proto_register(&unix_dgram_proto, 1);
 diff --git a/net/unix/diag.c b/net/unix/diag.c
-index bb0b5ea1655f..4e3dc8179fa4 100644
+index 4e3dc8179fa4..c5d1cca72aa5 100644
 --- a/net/unix/diag.c
 +++ b/net/unix/diag.c
-@@ -308,7 +308,6 @@ static int unix_diag_get_exact(struct sk_buff *in_skb,
- static int unix_diag_handler_dump(struct sk_buff *skb, struct nlmsghdr *h)
- {
- 	int hdrlen = sizeof(struct unix_diag_req);
--	struct net *net = sock_net(skb->sk);
+@@ -204,9 +204,7 @@ static int unix_diag_dump(struct sk_buff *skb, struct netlink_callback *cb)
+ 	s_slot = cb->args[0];
+ 	num = s_num = cb->args[1];
  
- 	if (nlmsg_len(h) < hdrlen)
- 		return -EINVAL;
-@@ -317,7 +316,7 @@ static int unix_diag_handler_dump(struct sk_buff *skb, struct nlmsghdr *h)
- 		struct netlink_dump_control c = {
- 			.dump = unix_diag_dump,
- 		};
--		return netlink_dump_start(net->diag_nlsk, skb, h, &c);
-+		return netlink_dump_start(sock_net(skb->sk)->diag_nlsk, skb, h, &c);
- 	} else
- 		return unix_diag_get_exact(skb, h, nlmsg_data(h));
- }
+-	for (slot = s_slot;
+-	     slot < ARRAY_SIZE(unix_socket_table);
+-	     s_num = 0, slot++) {
++	for (slot = s_slot; slot < UNIX_HASH_SIZE; s_num = 0, slot++) {
+ 		struct sock *sk;
+ 
+ 		num = 0;
+@@ -242,7 +240,7 @@ static struct sock *unix_lookup_by_ino(unsigned int ino)
+ 	struct sock *sk;
+ 	int i;
+ 
+-	for (i = 0; i < ARRAY_SIZE(unix_socket_table); i++) {
++	for (i = 0; i < UNIX_HASH_SIZE; i++) {
+ 		spin_lock(&unix_table_locks[i]);
+ 		sk_for_each(sk, &unix_socket_table[i])
+ 			if (ino == sock_i_ino(sk)) {
 -- 
 2.30.2
 
