@@ -2,190 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 48AB15524CD
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 21:47:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 038885524F0
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 22:04:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244994AbiFTTri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 15:47:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56112 "EHLO
+        id S242651AbiFTUEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 16:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240882AbiFTTrh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 15:47:37 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140801CFF5;
-        Mon, 20 Jun 2022 12:47:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=vlTtblH9D41r6dqll6MyR6DASss9XlNO9zQiEWLxQgk=; b=Rlh3jiZ/GWkhoGj+xIEMzvjrbV
-        JJmnXj2GBV31a0Umz6JQ9JwtOLxwgGHkrp4KU9NMZC0mpl3RuGMjyhDQrlckcZsawQocjem+psG/u
-        7aaO8KWpOIfMjj60vheC/N+nflnSBBT7cdS2aE0zjBckJmc2/X2W6gOBWxqfzMs9Tu+I=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o3NMx-007eEK-RN; Mon, 20 Jun 2022 21:47:31 +0200
-Date:   Mon, 20 Jun 2022 21:47:31 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, rafael@kernel.org,
-        andriy.shevchenko@linux.intel.com, lenb@kernel.org,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk, hkallweit1@gmail.com,
-        gjb@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
-        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
-Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA
- description
-Message-ID: <YrDO05TMK8SVgnBP@lunn.ch>
-References: <20220620150225.1307946-1-mw@semihalf.com>
- <20220620150225.1307946-10-mw@semihalf.com>
+        with ESMTP id S236360AbiFTUEb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 16:04:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4ED03A2
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 13:04:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 616D4B8125A
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 20:04:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8685C3411B;
+        Mon, 20 Jun 2022 20:04:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655755468;
+        bh=D7Ij3TJ1yxo4Qe4jLDUx44Zk7z9ulKk999KynpPDxYI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KB8p3fp1/ADspNpDuCo+1XrkgFExb3xK43JVWeJVahOPdBjPaKTB9OoGFyCUc2VHC
+         EzOP+0cY+QV2RIe3xqvNPuZMlFOJWqjHoBCJCMZZjeRslEh5N9hmaJK/jPUF5Roi/V
+         r+RiKkmZBncLvTysqIOBUgv2c4LWmv2EuKGltePvXWr7yCzj/13NA7B+JAMXDIH6G7
+         h/R5Mzwa61WTCSXrSfe5YBve900+mCxAHAj4Ot9GoLhk/nETo45XN1WL9G1ky7rPJ5
+         /sFx0kXB6zYpp89TdeTvCK0zfKuW7xFUXot3KBtCZ4M2A5VCgiFuSXUWMush/6brer
+         ipHnjmktZmd1g==
+Date:   Mon, 20 Jun 2022 13:04:26 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Dima Chumak <dchumak@nvidia.com>
+Cc:     Jiri Pirko <jiri@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/5] devlink rate police limiter
+Message-ID: <20220620130426.00818cbf@kernel.org>
+In-Reply-To: <20220620152647.2498927-1-dchumak@nvidia.com>
+References: <20220620152647.2498927-1-dchumak@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220620150225.1307946-10-mw@semihalf.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +In DSDT/SSDT the scope of switch device is extended by the front-panel
-> +and one or more so called 'CPU' switch ports. Additionally
-> +subsequent MDIO busses with attached PHYs can be described.
+On Mon, 20 Jun 2022 18:26:42 +0300 Dima Chumak wrote:
+> Currently, kernel provides a way to limit tx rate of a VF via devlink
+> rate function of a port. The underlying mechanism is a shaper applied to
+> all traffic passing through the target VF or a group of VFs. By its
+> essence, a shaper naturally works with outbound traffic, and in
+> practice, it's rarely seen to be implemented for inbound traffic.
+> Nevertheless, there is a user request to have a mechanism for limiting
+> inbound traffic as well. It is usually done by using some form of
+> traffic policing, dropping excess packets over the configured limit that
+> set by a user. Thus, introducing another limiting mechanism to the port
+> function can help close this gap.
+> 
+> This series introduces devlink attrs, along with their ops, to manage
+> rate policing of a single port as well as a port group. It is based on
+> the existing notion of leaf and node rate objects, and extends their
+> attributes to support both RX and TX limiting, for a number of packets
+> per second and/or a number of bytes per second. Additionally, there is a
+> second set of parameters for specifying the size of buffering performed,
+> called "burst", that controls the allowed level of spikes in traffic
+> before it starts getting dropped.
+> 
+> A new sub-type of a devlink_rate object is introduced, called
+> "limit_type". It can be either "shaping", the default, or "police".
+> A single leaf or a node object can be switched from one limit type to
+> another, but it cannot do both types of rate limiting simultaneously.
+> A node and a leaf object that have parent-child relationship must have
+> the same limit type. In other words, it's only possible to group rate
+> objects of the same limit type as their group's limit_type.
 
-Humm, dsa.yaml says nothing about MDIO busses with attached PHYs.
-That is up to each individual DSA drivers binding.
-
-Please spilt this into a generic DSA binding, similar to dsa.yaml, and
-a Marvell specific binding, similar to marvell.txt. It might be you
-also need a generic MDIO binding, since the marvell device is just an
-MDIO device, and inherits some of its properties from MDIO.
-
-> +
-> +This document presents the switch description with the required subnodes
-> +and _DSD properties.
-> +
-> +These properties are defined in accordance with the "Device
-> +Properties UUID For _DSD" [dsd-guide] document and the
-> +daffd814-6eba-4d8c-8a91-bc9bbf4aa301 UUID must be used in the Device
-> +Data Descriptors containing them.
-> +
-> +Switch device
-> +=============
-> +
-> +The switch device is represented as a child node of the MDIO bus.
-> +It must comprise the _HID (and optionally _CID) field, so to allow matching
-> +with appropriate driver via ACPI ID. The other obligatory field is
-> +_ADR with the device address on the MDIO bus [adr]. Below example
-> +shows 'SWI0' switch device at address 0x4 on the 'SMI0' bus.
->
-> +.. code-block:: none
-> +
-> +    Scope (\_SB.SMI0)
-> +    {
-> +        Name (_HID, "MRVL0100")
-> +        Name (_UID, 0x00)
-> +        Method (_STA)
-> +        {
-> +            Return (0xF)
-> +        }
-> +        Name (_CRS, ResourceTemplate ()
-> +        {
-> +            Memory32Fixed (ReadWrite,
-> +                0xf212a200,
-> +                0x00000010,
-
-What do these magic numbers mean?
-
-> +                )
-> +        })
-> +        Device (SWI0)
-> +        {
-> +            Name (_HID, "MRVL0120")
-> +            Name (_UID, 0x00)
-> +            Name (_ADR, 0x4)
-> +            <...>
-> +        }
-
-I guess it is not normal for ACPI, but could you add some comments
-which explain this. In DT we have
-
-    properties:
-      reg:
-        minimum: 0
-        maximum: 31
-        description:
-          The ID number for the device.
-
-which i guess what this _ADR property is, but it would be nice if it
-actually described what it is supposed to mean. You have a lot of
-undocumented properties here.
-
-
-> +label
-> +-----
-> +A property with a string value describing port's name in the OS. In case the
-> +port is connected to the MAC ('CPU' port), its value should be set to "cpu".
-
-Each port is a MAC, so "is connected to the MAC" is a bit
-meaningless. "CPU Port" is well defined in DSA, and is a DSA concept,
-not a DT concept, so you might as well just use it here.
-
-> +
-> +phy-handle
-> +----------
-> +For each MAC node, a device property "phy-handle" is used to reference
-> +the PHY that is registered on an MDIO bus. This is mandatory for
-> +network interfaces that have PHYs connected to MAC via MDIO bus.
-
-It is not mandatory. The DSA core will assume that port 0 has a PHY
-using address 0, port 1 has a PHY using address 1, etc. You only need
-a phy-handle when this assumption does not work.
-
-> +See [phy] for more details.
-> +
-> +ethernet
-> +--------
-> +A property valid for the so called 'CPU' port and should comprise a reference
-> +to the MAC object declared in the DSDT/SSDT.
-
-Is "MAC" an ACPI term? Because this does not seem very descriptive to
-me. DT says:
-
-      Should be a phandle to a valid Ethernet device node.  This host
-      device is what the switch port is connected to
-
-> +
-> +fixed-link
-> +----------
-> +The 'fixed-link' is described by a data-only subnode of the
-> +port, which is linked in the _DSD package via
-> +hierarchical data extension (UUID dbb8e3e6-5886-4ba6-8795-1319f52a966b
-> +in accordance with [dsd-guide] "_DSD Implementation Guide" document).
-> +The subnode should comprise a required property ("speed") and
-> +possibly the optional ones - complete list of parameters and
-> +their values are specified in [ethernet-controller].
-
-You appear to be cut/pasting
-Documentation/firmware-guide/acpi/dsd/phy.txt. Please just reference
-it.
-
-> +Below example comprises MDIO bus ('SMI0') with a PHY at address 0x0 ('PHY0')
-> +and a switch ('SWI0') at 0x4. The so called 'CPU' port ('PRT5') is connected to
-> +the SoC's MAC (\_SB.PP20.ETH2). 'PRT2' port is configured as 1G fixed-link.
-
-This is ACPI, so it is less likely to be a SoC. The hosts CPU port
-could well be an external PCIe device for example. Yes, there are AMD
-devices with built in MACs, but in the ACPI world, they don't happen
-so often.
-
-I assume you have 3 different 'compatible' strings for the nv88e6xxx
-driver? You should document them somewhere and say how they map to
-different marvell switches,
-
-	Andrew
+TC already has the police action. Your previous patches were accepted
+because there was no exact match for shaping / admission. Now you're 
+"extending" that API to duplicate existing TC APIs. Infuriating. 
