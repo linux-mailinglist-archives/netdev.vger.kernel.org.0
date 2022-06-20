@@ -2,102 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B70AC551517
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 12:03:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CA7655152B
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 12:04:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240874AbiFTKCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 06:02:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34036 "EHLO
+        id S237523AbiFTKD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 06:03:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240775AbiFTKCf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 06:02:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96BE513EA5;
-        Mon, 20 Jun 2022 03:02:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59CEFB80FBD;
-        Mon, 20 Jun 2022 10:02:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2111C3411B;
-        Mon, 20 Jun 2022 10:02:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655719351;
-        bh=1Qix9NjjwRWFg9AdThL/ttBW7iUNhaFy23vyffkXhao=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=qTPctW0Iv73c1Acdc9eDe/gAi8E44hgW3RmEHZH3wOXop+ey92ZL8HrMu/y9dTSm/
-         BoIMcEOdeLV16nG872tZRRjMBjP6lZ4Z2H08l+pURt8dc8j2f+M8+ugUde6d5q4Fp4
-         B/x9dypApDlNhYYMGxeq8BhO3oBSbpGHTdG+FtMxuw8CW8fmhoIqM5zN4MtYon/49t
-         EEKyVhMSzujNnyvvJtQGNqi+wjCNVKpSKGBedcf+NYM9XY+R/GvNlOWRyqKrsjwRnB
-         6nXzyxDPRawn98BmO14gcB4eWbGEiisppIGEw/7ndBLc4YdRiwzxfxbutL58QGBNxu
-         ZgJsHe1hhsocw==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S240821AbiFTKCx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 06:02:53 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9B8265D;
+        Mon, 20 Jun 2022 03:02:52 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id u37so9779381pfg.3;
+        Mon, 20 Jun 2022 03:02:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bpfZ/kYo7akCRG3R46WmbFjXJuTRk2P19UNZKT2W+CY=;
+        b=GIJbtJWy0EkRqQ5Wo8Ij7IWK47z8TDBPFMPnoHQGbGD2EpAKUocGqFHef/JamYJc8D
+         XA3iKG+kepUG+2B9rjjWileafUhosulHE155BEsnh6vpdNWRlFDqODduyKNrIlxDDteV
+         yzgyR0SEgzk/OTTi7Au0CYIDDCGwXvarlIMCEZHz9GDoaVO/Onpbe8cmjBccMgRL5N4V
+         7xWslV7xPSqJzCMhAxNPpWYCbA+l5x2skf/Bc2W6724F6lRx2veg/SNWuh/mOuJ980Mr
+         Uw6DIMRFCJPQnJj4sDEe7FzSReZWUr8YROLcy9Vdyon7AAQskRqE6tSoDJaEpmZ4ehc+
+         C9AA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bpfZ/kYo7akCRG3R46WmbFjXJuTRk2P19UNZKT2W+CY=;
+        b=DbXy5Dc1QcIzJFHZ8idwu9eqWfgaMRFK3SpjKTIsbaz3Ft5xS2v6vOrGIffaN4HEZI
+         fEKYpBpgbc7f8A18t9g8hY1leEziArQZ2Z/3MzEKWJtaYK8V3ROJHeJ/8BAOgHmT3Azc
+         nGBRt9h+NHeR54JL9C79dJLp80pMq4LPnYTswvOIzBkEhOgkWQ1jKbHKdrpcvnfX6j9K
+         DmcYntSf/KunugfAXzJGSUPE2u38JrDq9ate85otWOMYFIQB74ds95KcDlKLoepBUL6T
+         s+S5d8PftznmDM+aVvAx2UTAdxpJgn7XgYp1WdIDeXoq0Lb7odwWevBdTjJ9bcZZiMxL
+         g65g==
+X-Gm-Message-State: AJIora/RuXqprKCQvM+9V2p3VrJvaIuryZY4ZPXFnaUW0m8z54t138ri
+        dTh8/S5DSiLqiJK+pqLB/iDnmbuU0IiyM6al
+X-Google-Smtp-Source: AGRyM1uIZZ/N3u1c3wCPbZ8U+wpCgO9AkAqhO+btuKzCy2ZGLybOVqHxKWYlIz4BJA9psC9OKyb5CQ==
+X-Received: by 2002:a05:6a00:1a4a:b0:518:bbd5:3c1d with SMTP id h10-20020a056a001a4a00b00518bbd53c1dmr23728781pfv.64.1655719371441;
+        Mon, 20 Jun 2022 03:02:51 -0700 (PDT)
+Received: from C02FG34WMD6R.bytedance.net ([139.177.225.236])
+        by smtp.gmail.com with ESMTPSA id bj24-20020a056a00319800b0050dc76281ddsm8481679pfb.183.2022.06.20.03.02.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 03:02:51 -0700 (PDT)
+From:   wuchi <wuchi.zero@gmail.com>
+To:     mhiramat@kernel.org, kafai@fb.com, songliubraving@fb.com,
+        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH] lib/error-inject: Traverse list with mutex
+Date:   Mon, 20 Jun 2022 18:02:44 +0800
+Message-Id: <20220620100244.82896-1-wuchi.zero@gmail.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v6 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com>
-References: <d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     toke@toke.dk, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
-        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <165571934517.23287.2362581008087180339.kvalo@kernel.org>
-Date:   Mon, 20 Jun 2022 10:02:28 +0000 (UTC)
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pavel Skripkin <paskripkin@gmail.com> wrote:
+Traversing list without mutex in get_injectable_error_type will
+race with the following code:
+    list_del_init(&ent->list)
+    kfree(ent)
+in module_unload_ei_list. So fix that.
 
-> Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb() [0]. The
-> problem was in incorrect htc_handle->drv_priv initialization.
-> 
-> Probable call trace which can trigger use-after-free:
-> 
-> ath9k_htc_probe_device()
->   /* htc_handle->drv_priv = priv; */
->   ath9k_htc_wait_for_target()      <--- Failed
->   ieee80211_free_hw()              <--- priv pointer is freed
-> 
-> <IRQ>
-> ...
-> ath9k_hif_usb_rx_cb()
->   ath9k_hif_usb_rx_stream()
->    RX_STAT_INC()                <--- htc_handle->drv_priv access
-> 
-> In order to not add fancy protection for drv_priv we can move
-> htc_handle->drv_priv initialization at the end of the
-> ath9k_htc_probe_device() and add helper macro to make
-> all *_STAT_* macros NULL safe, since syzbot has reported related NULL
-> deref in that macros [1]
-> 
-> Link: https://syzkaller.appspot.com/bug?id=6ead44e37afb6866ac0c7dd121b4ce07cb665f60 [0]
-> Link: https://syzkaller.appspot.com/bug?id=b8101ffcec107c0567a0cd8acbbacec91e9ee8de [1]
-> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
-> Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotmail.com
-> Reported-and-tested-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> Acked-by: Toke Høiland-Jørgensen <toke@toke.dk>
-> Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Signed-off-by: wuchi <wuchi.zero@gmail.com>
+---
+ lib/error-inject.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-2 patches applied to ath-next branch of ath.git, thanks.
-
-0ac4827f78c7 ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-d7fc76039b74 ath9k: htc: clean up statistics macros
-
+diff --git a/lib/error-inject.c b/lib/error-inject.c
+index 4a4f1278c419..1afca1b1cdea 100644
+--- a/lib/error-inject.c
++++ b/lib/error-inject.c
+@@ -40,12 +40,18 @@ bool within_error_injection_list(unsigned long addr)
+ int get_injectable_error_type(unsigned long addr)
+ {
+ 	struct ei_entry *ent;
++	int ei_type = EI_ETYPE_NONE;
+ 
++	mutex_lock(&ei_mutex);
+ 	list_for_each_entry(ent, &error_injection_list, list) {
+-		if (addr >= ent->start_addr && addr < ent->end_addr)
+-			return ent->etype;
++		if (addr >= ent->start_addr && addr < ent->end_addr) {
++			ei_type = ent->etype;
++			break;
++		}
+ 	}
+-	return EI_ETYPE_NONE;
++	mutex_unlock(&ei_mutex);
++
++	return ei_type;
+ }
+ 
+ /*
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/d57bbedc857950659bfacac0ab48790c1eda00c8.1655145743.git.paskripkin@gmail.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.20.1
 
