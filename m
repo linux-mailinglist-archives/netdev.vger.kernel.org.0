@@ -2,67 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 807985518A1
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 14:18:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA4D755181E
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 14:03:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241764AbiFTMRm convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 20 Jun 2022 08:17:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35576 "EHLO
+        id S242136AbiFTMCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 08:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235801AbiFTMRl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 08:17:41 -0400
-Received: from mail.pgj.campeche.gob.mx (unknown [187.157.28.107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63BE6279
-        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 05:17:40 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.pgj.campeche.gob.mx (Postfix) with ESMTP id 30EB51BC0F83;
-        Mon, 20 Jun 2022 06:50:36 -0500 (CDT)
-Received: from mail.pgj.campeche.gob.mx ([127.0.0.1])
-        by localhost (mail.pgj.campeche.gob.mx [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id PPbQGL7UEm_8; Mon, 20 Jun 2022 06:50:24 -0500 (CDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.pgj.campeche.gob.mx (Postfix) with ESMTP id 20E961BC0F79;
-        Mon, 20 Jun 2022 06:50:20 -0500 (CDT)
-X-Virus-Scanned: amavisd-new at pgj.campeche.gob.mx
-Received: from mail.pgj.campeche.gob.mx ([127.0.0.1])
-        by localhost (mail.pgj.campeche.gob.mx [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id KnIv29Zq-c4A; Mon, 20 Jun 2022 06:50:14 -0500 (CDT)
-Received: from mail.pgj.campeche.gob.mx (mail.pgj.campeche.gob.mx [172.24.1.108])
-        by mail.pgj.campeche.gob.mx (Postfix) with ESMTP id 85CF91BC0F4E;
-        Mon, 20 Jun 2022 06:50:01 -0500 (CDT)
-Date:   Mon, 20 Jun 2022 06:50:01 -0500 (CDT)
-From:   =?utf-8?B?0YHQuNGB0YLQtdC80Ysg0LDQtNC80LjQvdC40YHRgtGA0LDRgtC+0YA=?= 
-        <vfgcontrolinterno@pgj.campeche.gob.mx>
-Reply-To: sistemassadmins@mail2engineer.com
-Message-ID: <345125816.97413.1655725801471.JavaMail.zimbra@pgj.campeche.gob.mx>
-Subject: 
+        with ESMTP id S242039AbiFTMCf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 08:02:35 -0400
+Received: from smtp11.infineon.com (smtp11.infineon.com [IPv6:2a00:18f0:1e00:4::5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4B36186E4;
+        Mon, 20 Jun 2022 05:02:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
+  t=1655726555; x=1687262555;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=bkHDpmBEWnraMUb/Sst3HBAGHKmFjwjIRjj6H3I//YI=;
+  b=CzlbhINuGDysLD0xQygc2g1PgBzP7hWBT75uDOjJX312w0R4uKfpl1nh
+   v+F9qtJ1YB+0c5AQJwdySAgP3PDoKyyozM4SOcPeBUdeIzVySsdDYoNZe
+   oukrQGDDdjxkvxZpuXjHQV6c7k6GHlnDYfSY/y//N/hKM2ZA24WDMFCUS
+   E=;
+X-SBRS: None
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="301894347"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650924000"; 
+   d="scan'208";a="301894347"
+Received: from unknown (HELO mucxv002.muc.infineon.com) ([172.23.11.17])
+  by smtp11.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 14:02:33 +0200
+Received: from MUCSE812.infineon.com (MUCSE812.infineon.com [172.23.29.38])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mucxv002.muc.infineon.com (Postfix) with ESMTPS;
+        Mon, 20 Jun 2022 14:02:32 +0200 (CEST)
+Received: from MUCSE807.infineon.com (172.23.29.33) by MUCSE812.infineon.com
+ (172.23.29.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Mon, 20 Jun
+ 2022 14:02:31 +0200
+Received: from ISCNPF0RJXQS.infineon.com (172.23.8.247) by
+ MUCSE807.infineon.com (172.23.29.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.26; Mon, 20 Jun 2022 14:02:30 +0200
+From:   Hakan Jansson <hakan.jansson@infineon.com>
+CC:     Hakan Jansson <hakan.jansson@infineon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
+        <linux-bluetooth@vger.kernel.org>
+Subject: [PATCH 0/4] Bluetooth: hci_bcm: Improve FW load time on CYW55572
+Date:   Mon, 20 Jun 2022 14:01:25 +0200
+Message-ID: <cover.1655723462.git.hakan.jansson@infineon.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-X-Originating-IP: [172.24.1.254]
-X-Mailer: Zimbra 8.8.15_GA_4304 (zclient/8.8.15_GA_4304)
-Thread-Index: LtWFMvmDPZZhq/9W7kR4jVLAEJ9rDg==
-Thread-Topic: 
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: Yes, score=6.5 required=5.0 tests=BAYES_50,
-        FREEMAIL_FORGED_REPLYTO,KHOP_HELO_FCRDNS,MISSING_HEADERS,
-        RCVD_IN_MSPIKE_H2,RDNS_DYNAMIC,REPLYTO_WITHOUT_TO_CC,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.0 T_SPF_HELO_TEMPERROR SPF: test of HELO record failed
-        *      (temperror)
-        *  0.0 SPF_NONE SPF: sender does not publish an SPF Record
-        *  1.0 MISSING_HEADERS Missing To: header
-        * -0.0 RCVD_IN_MSPIKE_H2 RBL: Average reputation (+2)
-        *      [187.157.28.107 listed in wl.mailspike.net]
-        *  1.0 RDNS_DYNAMIC Delivered to internal network by host with
-        *      dynamic-looking rDNS
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  1.6 REPLYTO_WITHOUT_TO_CC No description available.
-        *  2.1 FREEMAIL_FORGED_REPLYTO Freemail in Reply-To, but not From
-        *  0.0 KHOP_HELO_FCRDNS Relay HELO differs from its IP's reverse DNS
-X-Spam-Level: ******
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [172.23.8.247]
+X-ClientProxiedBy: MUCSE805.infineon.com (172.23.29.31) To
+ MUCSE807.infineon.com (172.23.29.33)
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 To:     unlisted-recipients:; (no To-header on input)
@@ -70,23 +78,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+These patches add an optional device specific data member to specify max
+baudrate of a device when in autobaud mode. This allows the host to set a
+first baudrate higher than "init speed" to improve FW load time.
+
+The host baudrate will later be changed to "init speed" (as usual) once FW
+loading is complete and the device has been reset to begin normal
+operation.
+
+Hakan Jansson (4):
+  dt-bindings: net: broadcom-bluetooth: Add CYW55572 DT binding
+  Bluetooth: hci_bcm: Add DT compatible for CYW55572
+  Bluetooth: hci_bcm: Prevent early baudrate setting in autobaud mode
+  Bluetooth: hci_bcm: Increase host baudrate for CYW55572 in autobaud
+    mode
+
+ .../bindings/net/broadcom-bluetooth.yaml      |  1 +
+ drivers/bluetooth/hci_bcm.c                   | 24 +++++++++++++------
+ 2 files changed, 18 insertions(+), 7 deletions(-)
 
 
-внимания;
+base-commit: 0b537674e072a37dec2fcefef4df2317b58aaa3f
+-- 
+2.25.1
 
-Ваши сообщения превысил лимит памяти, который составляет 5 Гб, определенных администратором, который в настоящее время работает на 10.9GB, Вы не сможете отправить или получить новую почту, пока вы повторно не проверить ваш почтовый ящик почты. Чтобы восстановить работоспособность Вашего почтового ящика, отправьте следующую информацию
-ниже:
-
-имя:
-Имя пользователя:
-пароль:
-Подтверждение пароля:
-Адрес электронной почты:
-телефон:
-
-Если вы не в состоянии перепроверить сообщения, ваш почтовый ящик будет
-отключен!
-
-Приносим извинения за неудобства.
-Проверочный код: RU:5143nnf.RU
-Почты технической поддержки © 2022
