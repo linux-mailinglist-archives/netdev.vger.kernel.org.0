@@ -2,60 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F278551824
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 14:04:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACC4955184E
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 14:10:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241846AbiFTMDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 08:03:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47086 "EHLO
+        id S240926AbiFTMKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 08:10:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242147AbiFTMCq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 08:02:46 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BDD318B01;
-        Mon, 20 Jun 2022 05:02:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655726564; x=1687262564;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8PAiqpimhJJzwDMe9fbD8XaA/eNCpQcNAwUwKc/oOn8=;
-  b=DCuKUJI3lQCh1D9P4+RP2hNouR0H93e0x9dQEbREKsjV6sCGr4dkaB8Q
-   xLBVV8sx9mUUzJE9pSUFz7WynCKj1UNHP0ueokbCmUJ+Np3IT0Zsfwq+w
-   QaYNT5ajk83ON5G7FgIuGIUmtGDt2/QDe/pwjmVb2ngvDjHACqqyG69QN
-   5EPk5HBSBhQoS3dLkXKKKr3hhc+NuWSnJAxCeSYRhVVyCShw+JXiBwtcL
-   XWfCcbJe0KLI4vTTMQhsYXoQc7la0D1+ZJsCxK/zDf+H1l45ew8epSupB
-   MiQ9sPoURVM0nmQJIVSaaU+1BhVbGhaZDPfcf66g1/M+Xt37GtkQfOlV+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="366202090"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="366202090"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 05:02:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="676511099"
-Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
-  by FMSMGA003.fm.intel.com with ESMTP; 20 Jun 2022 05:02:41 -0700
-Date:   Mon, 20 Jun 2022 14:02:40 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, magnus.karlsson@intel.com,
-        bjorn@kernel.org, kuba@kernel.org
-Subject: Re: [PATCH v4 bpf-next 09/10] selftests: xsk: rely on pkts_in_flight
- in wait_for_tx_completion()
-Message-ID: <YrBh4PsLY1GID3Uj@boxer>
-References: <20220616180609.905015-1-maciej.fijalkowski@intel.com>
- <20220616180609.905015-10-maciej.fijalkowski@intel.com>
- <62ad3ed172224_24b342084d@john.notmuch>
+        with ESMTP id S240472AbiFTMKU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 08:10:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F8F1580A;
+        Mon, 20 Jun 2022 05:10:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31D94B8110D;
+        Mon, 20 Jun 2022 12:10:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F0673C341C6;
+        Mon, 20 Jun 2022 12:10:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655727017;
+        bh=J7B0mVGZZLWlCR9GhZlQjlFwZp9D2TPXJeVMf+HQTXU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=s4YPMxf4HfTpLpMbIXk5jOumkCJkBxfsnJcARfipfdz8qdzwrcv8ZF7eZEN1Y7SEn
+         vZnlP5Wl+O+EpfNfLWlCdR7JinLtlOQdz0ENZtdV3K+LGpofmM0v6Ci6smlm/nvE+X
+         uMR2Q+yzPgpB94eeXCw+Hm0nVIsyY/o91mC1wAkmY9Nnj5BsIpQdgq76izXXSUhHVe
+         hbxN5Jhw0na/ooielbOSUCdQHGjV1tGs73a9wBfGbEohIqbzNIz5Es+gNNipP5/31k
+         xgzDL9fTADyx6eMUNpM99dSVBrqQm/jWwBoCcG8Et0cDpwANfBWyVGHtVaum2LwM+X
+         mECKmc3LjFtVQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D7C58E73877;
+        Mon, 20 Jun 2022 12:10:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <62ad3ed172224_24b342084d@john.notmuch>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Patch bpf-next v4 0/4] sockmap: some performance optimizations
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165572701688.4813.1208806792598960392.git-patchwork-notify@kernel.org>
+Date:   Mon, 20 Jun 2022 12:10:16 +0000
+References: <20220615162014.89193-1-xiyou.wangcong@gmail.com>
+In-Reply-To: <20220615162014.89193-1-xiyou.wangcong@gmail.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        cong.wang@bytedance.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,90 +56,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 07:56:17PM -0700, John Fastabend wrote:
-> Maciej Fijalkowski wrote:
-> > Some of the drivers that implement support for AF_XDP Zero Copy (like
-> > ice) can have lazy approach for cleaning Tx descriptors. For ZC, when
-> > descriptor is cleaned, it is placed onto AF_XDP completion queue. This
-> > means that current implementation of wait_for_tx_completion() in
-> > xdpxceiver can get onto infinite loop, as some of the descriptors can
-> > never reach CQ.
-> > 
-> > This function can be changed to rely on pkts_in_flight instead.
-> > 
-> > Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > ---
-> 
-> Sorry I'm going to need more details to follow whats going on here.
-> 
-> In send_pkts() we do the expected thing and send all the pkts and
-> then call wait_for_tx_completion().
-> 
-> Wait for completion is obvious,
-> 
->  static void wait_for_tx_completion(struct xsk_socket_info *xsk)               
->  {                                                   
->         while (xsk->outstanding_tx)                                                      
->                 complete_pkts(xsk, BATCH_SIZE);
->  }  
-> 
-> the 'outstanding_tx' counter appears to be decremented in complete_pkts().
-> This is done by looking at xdk_ring_cons__peek() makes sense to me until
-> it shows up here we don't know the pkt has been completely sent and
-> can release the resources.
+Hello:
 
-This is necessary for scenarios like l2fwd in xdpsock where you would be
-taking entries from cq back to fq to refill the rx hw queue and keep going
-with the flow.
+This series was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
+On Wed, 15 Jun 2022 09:20:10 -0700 you wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
 > 
-> Now if you just zero it on exit and call it good how do you know the
-> resources are safe to clean up? Or that you don't have a real bug
-> in the driver that isn't correctly releasing the resource.
-
-xdpxceiver spawns two threads one for tx and one for rx. from rx thread
-POV if receive_pkts() ended its job then this implies that tx thread
-transmitted all of the frames that rx thread expected to receive. this
-zeroing is then only to terminate the tx thread and finish the current
-test case so that further cases under the current mode can be executed.
-
+> This patchset contains two optimizations for sockmap. The first one
+> eliminates a skb_clone() and the second one eliminates a memset(). With
+> this patchset, the throughput of UDP transmission via sockmap gets
+> improved by 61%.
 > 
-> How are users expected to use a lazy approach to tx descriptor cleaning
-> in this case e.g. on exit like in this case. It seems we need to
-> fix the root cause of ice not putting things on the completion queue
-> or I misunderstood the patch.
+> [...]
 
-ice puts things on cq lazily on purpose as we added batching to Tx side
-where we clean descs only when it's needed.
+Here is the summary with links:
+  - [bpf-next,v4,1/4] tcp: introduce tcp_read_skb()
+    https://git.kernel.org/bpf/bpf-next/c/04919bed948d
+  - [bpf-next,v4,2/4] net: introduce a new proto_ops ->read_skb()
+    https://git.kernel.org/bpf/bpf-next/c/965b57b469a5
+  - [bpf-next,v4,3/4] skmsg: get rid of skb_clone()
+    https://git.kernel.org/bpf/bpf-next/c/57452d767fea
+  - [bpf-next,v4,4/4] skmsg: get rid of unncessary memset()
+    https://git.kernel.org/bpf/bpf-next/c/43312915b5ba
 
-We need to exit spawned threads before we detach socket from interface.
-Socket detach is done from main thread and in that case driver goes
-through tx ring and places descriptors that are left to completion queue.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-> 
-> 
-> >  tools/testing/selftests/bpf/xdpxceiver.c | 3 ++-
-> >  tools/testing/selftests/bpf/xdpxceiver.h | 2 +-
-> >  2 files changed, 3 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-> > index de4cf0432243..13a3b2ac2399 100644
-> > --- a/tools/testing/selftests/bpf/xdpxceiver.c
-> > +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-> > @@ -965,7 +965,7 @@ static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb)
-> >  
-> >  static void wait_for_tx_completion(struct xsk_socket_info *xsk)
-> >  {
-> > -	while (xsk->outstanding_tx)
-> > +	while (pkts_in_flight)
-> >  		complete_pkts(xsk, BATCH_SIZE);
-> >  }
-> >  
-> > @@ -1269,6 +1269,7 @@ static void *worker_testapp_validate_rx(void *arg)
-> >  		pthread_mutex_unlock(&pacing_mutex);
-> >  	}
-> >  
-> > +	pkts_in_flight = 0;
-> >  	pthread_exit(NULL);
-> >  }
+
