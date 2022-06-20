@@ -2,177 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2828551814
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 14:03:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F278551824
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 14:04:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242332AbiFTMDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 08:03:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47202 "EHLO
+        id S241846AbiFTMDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 08:03:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242089AbiFTMCl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 08:02:41 -0400
-Received: from smtp2.infineon.com (smtp2.infineon.com [IPv6:2a00:18f0:1e00:4::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A72D18380;
-        Mon, 20 Jun 2022 05:02:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=infineon.com; i=@infineon.com; q=dns/txt; s=IFXMAIL;
-  t=1655726560; x=1687262560;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=mcU2zd605tdGXObukOV2l4wgt38ac82d1qr3NR5XZ4s=;
-  b=Z7UDaHXgELPH/zR4+23dq3dPylvSdCLLvZULsOjkrxhe1drLZhXtgCm4
-   yu65OeCcCVnrKDw8xDL93w7rwBDsRV+0G6jE/xSoUXdqzyGswgIggptlk
-   nm+Bs6eHXga0f/K9FgTIsNxWQTAfc5FH4NlxYu6Wf/9K5TfeDhmxK5gRF
-   k=;
-X-SBRS: None
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="184450176"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650924000"; 
-   d="scan'208";a="184450176"
-Received: from unknown (HELO mucxv002.muc.infineon.com) ([172.23.11.17])
-  by smtp2.infineon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 14:02:35 +0200
-Received: from MUCSE819.infineon.com (MUCSE819.infineon.com [172.23.29.45])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mucxv002.muc.infineon.com (Postfix) with ESMTPS;
-        Mon, 20 Jun 2022 14:02:35 +0200 (CEST)
-Received: from MUCSE807.infineon.com (172.23.29.33) by MUCSE819.infineon.com
- (172.23.29.45) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Mon, 20 Jun
- 2022 14:02:35 +0200
-Received: from ISCNPF0RJXQS.infineon.com (172.23.8.247) by
- MUCSE807.infineon.com (172.23.29.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.26; Mon, 20 Jun 2022 14:02:34 +0200
-From:   Hakan Jansson <hakan.jansson@infineon.com>
-CC:     Hakan Jansson <hakan.jansson@infineon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
-        <linux-bluetooth@vger.kernel.org>
-Subject: [PATCH 4/4] Bluetooth: hci_bcm: Increase host baudrate for CYW55572 in autobaud mode
-Date:   Mon, 20 Jun 2022 14:01:29 +0200
-Message-ID: <386b205422099c795272ad8b792091b692def3cd.1655723462.git.hakan.jansson@infineon.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1655723462.git.hakan.jansson@infineon.com>
-References: <cover.1655723462.git.hakan.jansson@infineon.com>
+        with ESMTP id S242147AbiFTMCq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 08:02:46 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BDD318B01;
+        Mon, 20 Jun 2022 05:02:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655726564; x=1687262564;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8PAiqpimhJJzwDMe9fbD8XaA/eNCpQcNAwUwKc/oOn8=;
+  b=DCuKUJI3lQCh1D9P4+RP2hNouR0H93e0x9dQEbREKsjV6sCGr4dkaB8Q
+   xLBVV8sx9mUUzJE9pSUFz7WynCKj1UNHP0ueokbCmUJ+Np3IT0Zsfwq+w
+   QaYNT5ajk83ON5G7FgIuGIUmtGDt2/QDe/pwjmVb2ngvDjHACqqyG69QN
+   5EPk5HBSBhQoS3dLkXKKKr3hhc+NuWSnJAxCeSYRhVVyCShw+JXiBwtcL
+   XWfCcbJe0KLI4vTTMQhsYXoQc7la0D1+ZJsCxK/zDf+H1l45ew8epSupB
+   MiQ9sPoURVM0nmQJIVSaaU+1BhVbGhaZDPfcf66g1/M+Xt37GtkQfOlV+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="366202090"
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="366202090"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 05:02:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
+   d="scan'208";a="676511099"
+Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
+  by FMSMGA003.fm.intel.com with ESMTP; 20 Jun 2022 05:02:41 -0700
+Date:   Mon, 20 Jun 2022 14:02:40 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org, magnus.karlsson@intel.com,
+        bjorn@kernel.org, kuba@kernel.org
+Subject: Re: [PATCH v4 bpf-next 09/10] selftests: xsk: rely on pkts_in_flight
+ in wait_for_tx_completion()
+Message-ID: <YrBh4PsLY1GID3Uj@boxer>
+References: <20220616180609.905015-1-maciej.fijalkowski@intel.com>
+ <20220616180609.905015-10-maciej.fijalkowski@intel.com>
+ <62ad3ed172224_24b342084d@john.notmuch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.23.8.247]
-X-ClientProxiedBy: MUCSE805.infineon.com (172.23.29.31) To
- MUCSE807.infineon.com (172.23.29.33)
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <62ad3ed172224_24b342084d@john.notmuch>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add device specific data for max baudrate in autobaud mode. This allows the
-host to use a baudrate higher than "init speed" when loading FW in autobaud
-mode.
+On Fri, Jun 17, 2022 at 07:56:17PM -0700, John Fastabend wrote:
+> Maciej Fijalkowski wrote:
+> > Some of the drivers that implement support for AF_XDP Zero Copy (like
+> > ice) can have lazy approach for cleaning Tx descriptors. For ZC, when
+> > descriptor is cleaned, it is placed onto AF_XDP completion queue. This
+> > means that current implementation of wait_for_tx_completion() in
+> > xdpxceiver can get onto infinite loop, as some of the descriptors can
+> > never reach CQ.
+> > 
+> > This function can be changed to rely on pkts_in_flight instead.
+> > 
+> > Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > ---
+> 
+> Sorry I'm going to need more details to follow whats going on here.
+> 
+> In send_pkts() we do the expected thing and send all the pkts and
+> then call wait_for_tx_completion().
+> 
+> Wait for completion is obvious,
+> 
+>  static void wait_for_tx_completion(struct xsk_socket_info *xsk)               
+>  {                                                   
+>         while (xsk->outstanding_tx)                                                      
+>                 complete_pkts(xsk, BATCH_SIZE);
+>  }  
+> 
+> the 'outstanding_tx' counter appears to be decremented in complete_pkts().
+> This is done by looking at xdk_ring_cons__peek() makes sense to me until
+> it shows up here we don't know the pkt has been completely sent and
+> can release the resources.
 
-Signed-off-by: Hakan Jansson <hakan.jansson@infineon.com>
----
- drivers/bluetooth/hci_bcm.c | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
+This is necessary for scenarios like l2fwd in xdpsock where you would be
+taking entries from cq back to fq to refill the rx hw queue and keep going
+with the flow.
 
-diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
-index 0ae627c293c5..d7e0b75db8a6 100644
---- a/drivers/bluetooth/hci_bcm.c
-+++ b/drivers/bluetooth/hci_bcm.c
-@@ -53,10 +53,12 @@
-  * struct bcm_device_data - device specific data
-  * @no_early_set_baudrate: Disallow set baudrate before driver setup()
-  * @drive_rts_on_open: drive RTS signal on ->open() when platform requires it
-+ * @max_autobaud_speed: max baudrate supported by device in autobaud mode
-  */
- struct bcm_device_data {
- 	bool	no_early_set_baudrate;
- 	bool	drive_rts_on_open;
-+	u32	max_autobaud_speed;
- };
- 
- /**
-@@ -100,6 +102,7 @@ struct bcm_device_data {
-  * @drive_rts_on_open: drive RTS signal on ->open() when platform requires it
-  * @pcm_int_params: keep the initial PCM configuration
-  * @use_autobaud_mode: start Bluetooth device in autobaud mode
-+ * @max_autobaud_speed: max baudrate supported by device in autobaud mode
-  */
- struct bcm_device {
- 	/* Must be the first member, hci_serdev.c expects this. */
-@@ -139,6 +142,7 @@ struct bcm_device {
- 	bool			drive_rts_on_open;
- 	bool			use_autobaud_mode;
- 	u8			pcm_int_params[5];
-+	u32			max_autobaud_speed;
- };
- 
- /* generic bcm uart resources */
-@@ -479,7 +483,10 @@ static int bcm_open(struct hci_uart *hu)
- 		else if (bcm->dev->drive_rts_on_open)
- 			hci_uart_set_flow_control(hu, true);
- 
--		hu->init_speed = bcm->dev->init_speed;
-+		if (bcm->dev->use_autobaud_mode && bcm->dev->max_autobaud_speed)
-+			hu->init_speed = min(bcm->dev->oper_speed, bcm->dev->max_autobaud_speed);
-+		else
-+			hu->init_speed = bcm->dev->init_speed;
- 
- 		/* If oper_speed is set, ldisc/serdev will set the baudrate
- 		 * before calling setup()
-@@ -585,8 +592,8 @@ static int bcm_setup(struct hci_uart *hu)
- 		return 0;
- 
- 	/* Init speed if any */
--	if (hu->init_speed)
--		speed = hu->init_speed;
-+	if (bcm->dev && bcm->dev->init_speed)
-+		speed = bcm->dev->init_speed;
- 	else if (hu->proto->init_speed)
- 		speed = hu->proto->init_speed;
- 	else
-@@ -1519,6 +1526,7 @@ static int bcm_serdev_probe(struct serdev_device *serdev)
- 
- 	data = device_get_match_data(bcmdev->dev);
- 	if (data) {
-+		bcmdev->max_autobaud_speed = data->max_autobaud_speed;
- 		bcmdev->no_early_set_baudrate = data->no_early_set_baudrate;
- 		bcmdev->drive_rts_on_open = data->drive_rts_on_open;
- 	}
-@@ -1542,6 +1550,10 @@ static struct bcm_device_data bcm43438_device_data = {
- 	.drive_rts_on_open = true,
- };
- 
-+static struct bcm_device_data cyw55572_device_data = {
-+	.max_autobaud_speed = 921600,
-+};
-+
- static const struct of_device_id bcm_bluetooth_of_match[] = {
- 	{ .compatible = "brcm,bcm20702a1" },
- 	{ .compatible = "brcm,bcm4329-bt" },
-@@ -1554,7 +1566,7 @@ static const struct of_device_id bcm_bluetooth_of_match[] = {
- 	{ .compatible = "brcm,bcm4349-bt", .data = &bcm43438_device_data },
- 	{ .compatible = "brcm,bcm43540-bt", .data = &bcm4354_device_data },
- 	{ .compatible = "brcm,bcm4335a0" },
--	{ .compatible = "infineon,cyw55572-bt" },
-+	{ .compatible = "infineon,cyw55572-bt", .data = &cyw55572_device_data },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, bcm_bluetooth_of_match);
--- 
-2.25.1
+> 
+> Now if you just zero it on exit and call it good how do you know the
+> resources are safe to clean up? Or that you don't have a real bug
+> in the driver that isn't correctly releasing the resource.
 
+xdpxceiver spawns two threads one for tx and one for rx. from rx thread
+POV if receive_pkts() ended its job then this implies that tx thread
+transmitted all of the frames that rx thread expected to receive. this
+zeroing is then only to terminate the tx thread and finish the current
+test case so that further cases under the current mode can be executed.
+
+> 
+> How are users expected to use a lazy approach to tx descriptor cleaning
+> in this case e.g. on exit like in this case. It seems we need to
+> fix the root cause of ice not putting things on the completion queue
+> or I misunderstood the patch.
+
+ice puts things on cq lazily on purpose as we added batching to Tx side
+where we clean descs only when it's needed.
+
+We need to exit spawned threads before we detach socket from interface.
+Socket detach is done from main thread and in that case driver goes
+through tx ring and places descriptors that are left to completion queue.
+
+> 
+> 
+> >  tools/testing/selftests/bpf/xdpxceiver.c | 3 ++-
+> >  tools/testing/selftests/bpf/xdpxceiver.h | 2 +-
+> >  2 files changed, 3 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
+> > index de4cf0432243..13a3b2ac2399 100644
+> > --- a/tools/testing/selftests/bpf/xdpxceiver.c
+> > +++ b/tools/testing/selftests/bpf/xdpxceiver.c
+> > @@ -965,7 +965,7 @@ static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb)
+> >  
+> >  static void wait_for_tx_completion(struct xsk_socket_info *xsk)
+> >  {
+> > -	while (xsk->outstanding_tx)
+> > +	while (pkts_in_flight)
+> >  		complete_pkts(xsk, BATCH_SIZE);
+> >  }
+> >  
+> > @@ -1269,6 +1269,7 @@ static void *worker_testapp_validate_rx(void *arg)
+> >  		pthread_mutex_unlock(&pacing_mutex);
+> >  	}
+> >  
+> > +	pkts_in_flight = 0;
+> >  	pthread_exit(NULL);
+> >  }
