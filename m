@@ -2,123 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7761D550DAA
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 01:48:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEAD7550DBE
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 02:12:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234701AbiFSXsn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 19 Jun 2022 19:48:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49696 "EHLO
+        id S236923AbiFTAKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 19 Jun 2022 20:10:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231539AbiFSXsm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jun 2022 19:48:42 -0400
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A799FFA;
-        Sun, 19 Jun 2022 16:48:40 -0700 (PDT)
+        with ESMTP id S236615AbiFTAKm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 19 Jun 2022 20:10:42 -0400
+Received: from EX-PRD-EDGE01.vmware.com (EX-PRD-EDGE01.vmware.com [208.91.3.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6416BDC0;
+        Sun, 19 Jun 2022 17:10:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1655682521; x=1687218521;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=kyIkiZAiAiTXNFNHwizDZ9FyvnKD+JgDWZnNKx1jLVE=;
-  b=YmXR9mxZ2FN0PgBb/7zuuRV7WmL+xX2JwsuBxL8ndW0n26D/yaBatRL1
-   1/fHNM3ZZib1LiXiuVZlvI+OiI8ARXYN3BV3tfF+aBgeUkMGKNk+Qh0zS
-   JYcja+nzT4hApAsg1Hfhrzvmbea4Aw2GGek0zHH0DD2oHTIok8Uq7Kkcw
-   w=;
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-7d84505d.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 19 Jun 2022 23:48:29 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-7d84505d.us-west-2.amazon.com (Postfix) with ESMTPS id 554E9800F0;
-        Sun, 19 Jun 2022 23:48:28 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Sun, 19 Jun 2022 23:48:27 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.51) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Sun, 19 Jun 2022 23:48:25 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <sfr@canb.auug.org.au>
-CC:     <davem@davemloft.net>, <edumazet@google.com>,
-        <linux-kernel@vger.kernel.org>, <linux-next@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <kuniyu@amazon.com>
-Subject: Re: linux-next: build failure after merge of the net-next tree
-Date:   Sun, 19 Jun 2022 16:48:12 -0700
-Message-ID: <20220619234812.57765-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220620093424.0615a374@canb.auug.org.au>
-References: <20220620093424.0615a374@canb.auug.org.au>
+    s=s1024; d=vmware.com;
+    h=from:to:cc:subject:date:message-id:mime-version:content-type;
+    bh=WgE4jC6uoXiOarh99EjXMspYkBqjSPnVZsFaU6AfPZ0=;
+    b=ThEKLKt+hqXlbanLxgseYsNMMrQ1uexq/ZguFk+BCcjuSlJGxEbr4meKZnBsyi
+      gyUgQ1DyzYKappHBzy346Alf8W4p5W/czXa9HjLLgNL5HAvtWRwYRTw9kuV0pT
+      i5hMnhEiNYgtwfDum2P+heVP4oRgiXZAM9D+2LrL7z3l//4=
+Received: from sc9-mailhost2.vmware.com (10.113.161.72) by
+ EX-PRD-EDGE01.vmware.com (10.188.245.6) with Microsoft SMTP Server id
+ 15.1.2308.20; Sun, 19 Jun 2022 17:10:13 -0700
+Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
+        by sc9-mailhost2.vmware.com (Postfix) with ESMTP id 8F2D32023C;
+        Sun, 19 Jun 2022 17:10:35 -0700 (PDT)
+Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
+        id 5474EAA489; Sun, 19 Jun 2022 17:10:35 -0700 (PDT)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ronak Doshi <doshir@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Guolin Yang <gyang@vmware.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] vmxnet3: disable overlay offloads if UPT device does not support
+Date:   Sun, 19 Jun 2022 17:10:13 -0700
+Message-ID: <20220620001014.27048-1-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.43.162.51]
-X-ClientProxiedBy: EX13D38UWC002.ant.amazon.com (10.43.162.46) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Received-SPF: None (EX-PRD-EDGE01.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Date:   Mon, 20 Jun 2022 09:34:24 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-> Hi all,
-> 
-> After merging the net-next tree, today's linux-next build (powerpc
-> ppc64_defconfig) failed like this:
-> 
-> net/ipv4/raw.c: In function 'raw_icmp_error':
-> net/ipv4/raw.c:266:9: error: ISO C90 forbids mixed declarations and code [-Werror=declaration-after-statement]
->   266 |         struct hlist_nulls_head *hlist;
->       |         ^~~~~~
-> cc1: all warnings being treated as errors
-> 
-> Introduced by commit
-> 
->   ba44f8182ec2 ("raw: use more conventional iterators")
-> 
-> I have applied the following patch for today.
+'Commit 6f91f4ba046e ("vmxnet3: add support for capability registers")'
+added support for capability registers. These registers are used
+to advertize capabilities of the device.
 
-I have posted the same patch just few minutes ago,
-https://lore.kernel.org/netdev/20220619232927.54259-2-kuniyu@amazon.com/
+The patch updated the dev_caps to disable outer checksum offload if
+PTCR register does not support it. However, it missed to update
+other overlay offloads. This patch fixes this issue.
 
+Fixes: 6f91f4ba046e ("vmxnet3: add support for capability registers")
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c     | 9 ++++++++-
+ drivers/net/vmxnet3/vmxnet3_ethtool.c | 6 ++++++
+ 2 files changed, 14 insertions(+), 1 deletion(-)
 
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Mon, 20 Jun 2022 09:21:01 +1000
-> Subject: [PATCH] raw: fix build error
-> 
-> The linux-next x86_64 allmodconfig build produced this error:
-> 
-> net/ipv4/raw.c: In function 'raw_icmp_error':
-> net/ipv4/raw.c:266:9: error: ISO C90 forbids mixed declarations and code [-Werror=declaration-after-statement]
->   266 |         struct hlist_nulls_head *hlist;
->       |         ^~~~~~
-> cc1: all warnings being treated as errors
-> 
-> Fixes: ba44f8182ec2 ("raw: use more conventional iterators")
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> ---
->  net/ipv4/raw.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-> index d28bf0b901a2..b3b255db9021 100644
-> --- a/net/ipv4/raw.c
-> +++ b/net/ipv4/raw.c
-> @@ -262,7 +262,7 @@ static void raw_err(struct sock *sk, struct sk_buff *skb, u32 info)
->  
->  void raw_icmp_error(struct sk_buff *skb, int protocol, u32 info)
->  {
-> -	struct net *net = dev_net(skb->dev);;
-> +	struct net *net = dev_net(skb->dev);
->  	struct hlist_nulls_head *hlist;
->  	struct hlist_nulls_node *hnode;
->  	int dif = skb->dev->ifindex;
-> -- 
-> 2.35.1
-> 
-> -- 
-> Cheers,
-> Stephen Rothwell
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 1565e1808a19..19c414733747 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -3365,10 +3365,17 @@ vmxnet3_declare_features(struct vmxnet3_adapter *adapter)
+ 		adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
+ 		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
+ 
++		if (!(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_TSO)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_TSO))) {
++			netdev->hw_enc_features &= ~NETIF_F_GSO_UDP_TUNNEL;
++			netdev->hw_features &= ~NETIF_F_GSO_UDP_TUNNEL;
++		}
+ 		if (!(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD)) &&
+ 		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD))) {
+ 			netdev->hw_enc_features &= ~NETIF_F_GSO_UDP_TUNNEL_CSUM;
+-			netdev->features &= ~NETIF_F_GSO_UDP_TUNNEL_CSUM;
++			netdev->hw_features &= ~NETIF_F_GSO_UDP_TUNNEL_CSUM;
+ 		}
+ 	}
+ 
+diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+index ce3993282c0f..c3eaf1b864ed 100644
+--- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
++++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
+@@ -346,6 +346,12 @@ static void vmxnet3_enable_encap_offloads(struct net_device *netdev, netdev_feat
+ 		adapter->dev_caps[0] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
+ 		spin_unlock_irqrestore(&adapter->cmd_lock, flags);
+ 
++		if (!(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_CHECKSUM_OFFLOAD)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_CHECKSUM_OFFLOAD)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_TSO)) &&
++		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_TSO))) {
++			netdev->hw_enc_features &= ~NETIF_F_GSO_UDP_TUNNEL;
++		}
+ 		if (!(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_GENEVE_OUTER_CHECKSUM_OFFLOAD)) &&
+ 		    !(adapter->dev_caps[0] & (1UL << VMXNET3_CAP_VXLAN_OUTER_CHECKSUM_OFFLOAD))) {
+ 			netdev->hw_enc_features &= ~NETIF_F_GSO_UDP_TUNNEL_CSUM;
+-- 
+2.11.0
+
