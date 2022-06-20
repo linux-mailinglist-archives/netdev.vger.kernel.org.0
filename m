@@ -2,108 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B71395523DA
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 20:29:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4767D5523E9
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 20:32:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245383AbiFTS3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 14:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40370 "EHLO
+        id S245472AbiFTScP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 14:32:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238810AbiFTS3K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 14:29:10 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16522140B7
-        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 11:29:09 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id g8so10462819plt.8
-        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 11:29:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7sC/LkpqrzifaVuj/tRzbNz64Tj2h1uGYfKvsYILqdE=;
-        b=XIr9YEmX+1nR6UUBkSWHQqRVBixoyURbH4gKyNh3VA9B74Exq6ZgW5ogb/m90crBzN
-         bfHdX7Z8ACkBOXO/Ovm5VmUIsbjV95o/I1yPP613vzG5t9gKWyH9kvrdMnFjRlBLupAm
-         7YoW1Se0osjCk6QEUlon7EAikIvjcdaB93NKYVVIkhlcD9nOxBcTB1jO9Z221ksPPGc/
-         XJRiVRZX2+4r/+oFnADUE67p9hpGajdg22B8LZoo+6YJgPENmESIjGsXOhSDtZjUyLE2
-         +iwJctqIQeKgJk5pgQG9HOdv+65Qs+GdOowkh0FbdYEB7JSeVuZ2w2jHCvUgs0l5oaWo
-         25+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7sC/LkpqrzifaVuj/tRzbNz64Tj2h1uGYfKvsYILqdE=;
-        b=1rem1ot+/3uLk6QRLjC0AxeSOSnb6W/AvhudkDPioTLGwZfWxKoQlcBmuAXnCyV5sU
-         POKEFEotjw2+YbvHKPNJ8o2feINChWAsaMAV6TB4DvXiBF2rw3B7m2H5wMRd6mwSqTQy
-         3nzpWCHsOBP1VhOCJEzgGv17ulsZmGajGGWmequy0mKvXPifBdaSzdHOZtJguDduV2mp
-         M7BcgImr3/EQSQf5fKTwGH1nX5nJsgIEtQ+BM7LmILt+Qxzstg0Bv60QoS5z9oyx37kv
-         kLvsGF/bCXIkajh1cfEW6uTS/vpACPWLf89zXoKuZWy+xCjzGXBkUWBB5ML7OhBWyALf
-         BSMg==
-X-Gm-Message-State: AJIora9lTXmjjOCsG7F2yLyyXFV4SJ1XvdagfAMYqwK3K+LtfsMDW7ld
-        Qf2gsahbA74hK2/KEr5BURNvr+nVgBYZX2TYn328sf8GX1o=
-X-Google-Smtp-Source: AGRyM1tk/IpiQ4NitWTxo1rH9JsC0+YRi1t8SltKl4loT51OmMOEPUBjNs9PPdbJ68ZnFuoyu4Qe5FJAemXssHM9A+w=
-X-Received: by 2002:a17:903:1c2:b0:163:ef7b:e10f with SMTP id
- e2-20020a17090301c200b00163ef7be10fmr24630166plh.158.1655749748372; Mon, 20
- Jun 2022 11:29:08 -0700 (PDT)
+        with ESMTP id S242530AbiFTScO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 14:32:14 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290AC1D0EE;
+        Mon, 20 Jun 2022 11:32:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Cv/O7zb/kXAuRbf7PPZy0zV7UOelG4vjvn/esylaMkU=; b=TLIYEbwtyvNALjQ8rED/+y6w59
+        EjWAw4TXs1Lve9iUwCeKeDAsB7brqozjt80fRoVY72M5QL8zQXWIJ/tNeQxVjTK2JKFgfddLcG3VG
+        jCnoSI8RJAb1mgq1BF9CbYcYEGzu2tGaO0AZYvY3dEbvdf4GBQeMC1Ur8aK3amZuUOEw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o3MC2-007dlK-PF; Mon, 20 Jun 2022 20:32:10 +0200
+Date:   Mon, 20 Jun 2022 20:32:10 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, rafael@kernel.org,
+        andriy.shevchenko@linux.intel.com, lenb@kernel.org,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux@armlinux.org.uk, hkallweit1@gmail.com,
+        gjb@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
+        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
+Subject: Re: [net-next: PATCH 10/12] net: dsa: add ACPI support
+Message-ID: <YrC9KpEuYCgHv14l@lunn.ch>
+References: <20220620150225.1307946-1-mw@semihalf.com>
+ <20220620150225.1307946-11-mw@semihalf.com>
 MIME-Version: 1.0
-References: <20220618061840.1012529-1-chenzhen126@huawei.com>
-In-Reply-To: <20220618061840.1012529-1-chenzhen126@huawei.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 20 Jun 2022 11:28:57 -0700
-Message-ID: <CAM_iQpU00eJ3+_0-jQh-Fe7WN-v6ig-mfAfym=m6PTZjc9r--w@mail.gmail.com>
-Subject: Re: [Patch net] net_sched: cls_route: free the old filter only when
- it has been removed
-To:     chenzhen 00642392 <chenzhen126@huawei.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "Chenxiang (EulerOS)" <rose.chen@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220620150225.1307946-11-mw@semihalf.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 11:20 PM chenzhen 00642392
-<chenzhen126@huawei.com> wrote:
->
-> From: Zhen Chen <chenzhen126@huawei.com>
->
-> Syzbot reported a ODEBUG bug in route4_destroy(), it is actually a
-> use-after-free issue when route4_destroy() goes through the hashtable.
->
-> The root cause is that after route4_change() inserts a new filter into the
-> hashtable and finds an old filter, it will not remove the old one from the
-> table if fold->handle is 0, but free the fold as the final step.
+>  static int dsa_port_parse_dsa(struct dsa_port *dp)
+>  {
+> +	/* Cascade switch connection is not supported in ACPI world. */
+> +	if (is_acpi_node(dp->fwnode)) {
+> +		dev_warn(dp->ds->dev,
+> +			 "DSA type is not supported with ACPI, disable port #%d\n",
+> +			 dp->index);
+> +		dp->type = DSA_PORT_TYPE_UNUSED;
+> +		return 0;
+> +	}
+> +
 
-This seems reasonable but see below.
+Did you try this? I'm not sure it will work correctly. When a switch
+registers with the DSA core, the core will poke around in DT and fill
+in various bits of information, including the DSA links. Once that has
+completed, the core will look at all the switches registered so far
+and try to determine if it has a complete set, i.e, it has both ends
+of all DSA links. If it does have a complete set, it then calls the
+setup methods on each switch, and gets them configured. If it finds it
+does not have a complete setup, it does nothing, waiting for the next
+switch to register.
 
->
-> Fix this by putting the free logic together with the remove action.
+So if somebody passed an ACPI description with multiple switches, it
+is likely to call the setup methods as soon as the first switch is
+registered. And it might call those same setup methods a second time,
+when the second switch registers, on both switches. And when the third
+switch registers, it will probably call the setup methods yet again on
+all the switches....
 
-This does not look correct. You just move the deletion logic upper to
-a narrowed case. The if case you moved to also does the deletion
-without your patch, so I fail to see how this could solve the problem.
+You will have a much safer system if you return -EINVAL if you find a
+DSA link in ACPI. That should abort the switch probe.
 
-If we just follow your logic here, should we have the following patch
-instead? But I am still not sure whether we need to treat the 0 handle
-special here.
-
-diff --git a/net/sched/cls_route.c b/net/sched/cls_route.c
-index a35ab8c27866..758c21f9d628 100644
---- a/net/sched/cls_route.c
-+++ b/net/sched/cls_route.c
-@@ -526,7 +526,7 @@ static int route4_change(struct net *net, struct
-sk_buff *in_skb,
-        rcu_assign_pointer(f->next, f1);
-        rcu_assign_pointer(*fp, f);
-
--       if (fold && fold->handle && f->handle != fold->handle) {
-+       if (fold && f->handle != fold->handle) {
-                th = to_hash(fold->handle);
-                h = from_hash(fold->handle >> 16);
-                b = rtnl_dereference(head->table[th]);
+    Andrew
