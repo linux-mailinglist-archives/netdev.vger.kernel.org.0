@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 534405520D7
+	by mail.lfdr.de (Postfix) with ESMTP id 9F1B45520D8
 	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 17:28:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242360AbiFTP1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 11:27:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58112 "EHLO
+        id S229447AbiFTP1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 11:27:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242342AbiFTP1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 11:27:45 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2047.outbound.protection.outlook.com [40.107.243.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBFE0219
-        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 08:27:40 -0700 (PDT)
+        with ESMTP id S242523AbiFTP1q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 11:27:46 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2072.outbound.protection.outlook.com [40.107.243.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A1C2FB
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 08:27:44 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Xq1q6wjijHWpufGri6YwmcugzXMmjjSgEKAD4JPurrX9Y1QR5uNtcMBbMIFEWrB7fkWXaJZFUPfNA+wSj1G1rQih2bKt79MG1Rbr1xb18izsEHxZ9JnkKTCXEk14Kub05u1AIEawEypitB9t/LfqJvni+YQr5CKSwz0Y0mKVjAzaxKdz3kO5ZHBASPziS+FkiS6CX1squDkzg62bV/og6fJsBc6wIgT9hme22DZLFSYjv3O7Ekkhsu1P6dtJBw8Z0iRDtze2EyAOboO78R+G/rLNh0AZj410CciepCLuPLjD+ANb/CSRIyHG4vKu/EofJqJKTcsDzvdVisILSZt7cg==
+ b=caswboHwZ8SYJXSOBhZG6V386MID2tcD4VLUfhE+4t9uUrnpcZW5aqZ/gR8XYMTr69za9fM/+HnFuAzkslPQLuQRJf2DUKTtomrXySAEbkXpq2RUDamHrsgKav0p/+AGz6CcIBrosnD2+IL4MHBebTOpy4AyWjSblqKVxKTkkfNqZMoLzftF1rWJbYM3mez2onM8Cys0K7TMUUeLS2AV38rdKfXBsO9URT1SmwnoRqlrmIKfxnmIGetSlCSOv5iskHwNXwRvt+/zYSCnSKDgEHkAvSfQbsBPBXec4ar4qmdS38sw1B04QIYcPN3zaZK0N3MglfEDsa10ZT4/RCFFhg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=j651VUBtk9j3cjpSaA+14XhYLr5unDGdfaCvNVzsnCo=;
- b=T5DqtcbNGXLtTEMrmxE1y+LVZvihUxxSeMhcEcV7AC/mJOyZigRj6YiPHsOA/wMeyDlIGO09oJLA2W6gFtgcyBUBwSY6Zfd3zJDiNybzPfMUH4qJbGFs7CjpPZG422pUzn4qOIrKigc0RqGDwKXAVlMnNE0N9/TUuseJaO2bukUp8AbVrAjCnr5OlH4+4RKbpflMdixjhJ22ZfXBLWbSRuwa8AvZsVikJ4trle5J5lLOvIEvtSuO/x+1JVwlt525PQBcJyS/Vf4+iepaxIvXTAW2cKcWjIOABoC9qtf2wV+m5qHa+tRtA4nUMS5uNV9SXUwIZEyx27upgeyHihRA/g==
+ bh=9Hg0xx6yGg4OXL36NOoXNuIoVqtntLEa4fCW+vC2sRY=;
+ b=BAZSa5dHgkzXZiFX6dw5BG/AOT5yIgAzz74PbS1mh3qSixm+QkWUxzCs7oIxenPHKCLkdrk9IFJX5IbJKLef7jV7UDJnpX2JZqlMm17XIU7w4sNIY8uTuUunLtNSQWuCLJz7hstM8pDkPJ4TJGo47cGiYS5ofnKLBsPmAS6pFqckdv/EWc3tinibrXSZWRtrCxB2De3d7Emdjo32SsqVay1HMXxpamm0pRMUV1NyUy3RPb2tZsDbRA6ibVtMO3fZwwZ+8szrn++OD7r6vqmO/xKmpMtP+RBSO+VLXDRqV+O2Y9etmcgafyvksPO+JTyBLIaj//VTRo3pG+sFDBodLQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ 12.22.5.236) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=j651VUBtk9j3cjpSaA+14XhYLr5unDGdfaCvNVzsnCo=;
- b=ZcBUfbFoETvJk+yebG1y+8j/uqiNQHOPKpWlyWth9Tz92kLG4afKx6k41SY6D3yjegtEr0e6DYNNHmjnPlAv4a+U9h00hVOtK3L8dN7k+KRU845FbfqjLHSf5BSqia6WHiuzrFBqSMovo+whmcdtCNIK1wwLwUOOMHUFD63yW127A4rF0qpUIvTQWR2TrM5optvmmmMnNGZLIu89MiEXvimsJsSyq4uWxA/FXPnroCnH7a//YD/pXC1QMhbf2y0kY6khtRZVQMIqhJVC8oa1ergVMD2yiXphcWFdi92hTQ5LglCyRARAyhrlK734XdiKpAkUimUxkfPB8WNv8sJlwA==
-Received: from MWHPR15CA0066.namprd15.prod.outlook.com (2603:10b6:301:4c::28)
- by DM4PR12MB5722.namprd12.prod.outlook.com (2603:10b6:8:5d::11) with
+ bh=9Hg0xx6yGg4OXL36NOoXNuIoVqtntLEa4fCW+vC2sRY=;
+ b=e8RihOSWqK8zNCgFB3W+n5FHA5A5LPpG7wPTXzpcnHYzbJjvnFpCx4cJNPf0AN5Tatad9PGHLr2bcp9fYKWnckKX64xmWUWG9EzIW+zLUAAR2zpV+cZL48HaB3v/wzndsfaQRST/WQU4DGCiors0CZ3P9GbABqtb1kfD4pih98niguywiUKsF7nEciVRLMu1f4rK2JtC/rruZxZICWkLKcRqNJoIq5u55U1zv6KPP/YC1mVQnMZswDLIvO4oIDJ5HTEsyjv5z6BQUb8I5mGBwIStS12pcKE5iv1Ejb6LU6rm2U+yWBDjBzHFl9Z0SfMoAQUVsEcvn6uTQCCrbOxQvA==
+Received: from BN6PR14CA0042.namprd14.prod.outlook.com (2603:10b6:404:13f::28)
+ by SN6PR12MB2783.namprd12.prod.outlook.com (2603:10b6:805:78::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.18; Mon, 20 Jun
- 2022 15:27:39 +0000
-Received: from CO1NAM11FT065.eop-nam11.prod.protection.outlook.com
- (2603:10b6:301:4c:cafe::f6) by MWHPR15CA0066.outlook.office365.com
- (2603:10b6:301:4c::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.22 via Frontend
- Transport; Mon, 20 Jun 2022 15:27:38 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.20; Mon, 20 Jun
+ 2022 15:27:41 +0000
+Received: from BN8NAM11FT036.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:404:13f:cafe::ac) by BN6PR14CA0042.outlook.office365.com
+ (2603:10b6:404:13f::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.16 via Frontend
+ Transport; Mon, 20 Jun 2022 15:27:41 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- CO1NAM11FT065.mail.protection.outlook.com (10.13.174.62) with Microsoft SMTP
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.236) by
+ BN8NAM11FT036.mail.protection.outlook.com (10.13.177.168) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5353.14 via Frontend Transport; Mon, 20 Jun 2022 15:27:38 +0000
+ 15.20.5353.14 via Frontend Transport; Mon, 20 Jun 2022 15:27:41 +0000
 Received: from drhqmail202.nvidia.com (10.126.190.181) by
- DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Mon, 20 Jun 2022 15:27:38 +0000
+ DRHQMAIL109.nvidia.com (10.27.9.19) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Mon, 20 Jun 2022 15:27:40 +0000
 Received: from drhqmail201.nvidia.com (10.126.190.180) by
  drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 20 Jun 2022 08:27:37 -0700
+ 15.2.986.22; Mon, 20 Jun 2022 08:27:40 -0700
 Received: from vdi.nvidia.com (10.127.8.13) by mail.nvidia.com
  (10.126.190.180) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Mon, 20 Jun 2022 08:27:35 -0700
+ Transport; Mon, 20 Jun 2022 08:27:38 -0700
 From:   Dima Chumak <dchumak@nvidia.com>
 To:     Jakub Kicinski <kuba@kernel.org>
 CC:     Jiri Pirko <jiri@nvidia.com>,
@@ -67,9 +67,9 @@ CC:     Jiri Pirko <jiri@nvidia.com>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
         Dima Chumak <dchumak@nvidia.com>
-Subject: [PATCH net-next 4/5] selftest: netdevsim: Add devlink rate police sub-test
-Date:   Mon, 20 Jun 2022 18:26:46 +0300
-Message-ID: <20220620152647.2498927-5-dchumak@nvidia.com>
+Subject: [PATCH net-next 5/5] Documentation: devlink rate objects limit_type
+Date:   Mon, 20 Jun 2022 18:26:47 +0300
+Message-ID: <20220620152647.2498927-6-dchumak@nvidia.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220620152647.2498927-1-dchumak@nvidia.com>
 References: <20220620152647.2498927-1-dchumak@nvidia.com>
@@ -78,24 +78,24 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a74e5a58-57a2-4c9b-e411-08da52d168f0
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5722:EE_
-X-Microsoft-Antispam-PRVS: <DM4PR12MB57226FC550BDE94C879DA5EAD5B09@DM4PR12MB5722.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 53e4f69b-26c7-4b0a-75f2-08da52d16a71
+X-MS-TrafficTypeDiagnostic: SN6PR12MB2783:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR12MB2783A080F7731F4FF1F902A3D5B09@SN6PR12MB2783.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0eSoCQaXPDkJAerN6AnZGM3vhzgxmU5aEdhQUiON+SmXyKlXoqeWcDH70i0UV0mhH4hJnF1Lqm3Dnvr5WfZxD4B8dpwhbIx7MfoKPlw8IkAr+oynB8t8hvKf3Pp0FD7WqTEp1+GOaK947m9Gtx3II7FkECXG3k9Uhl9I3LjPaTn2NvF5aV3v5hLBFN6ezGAiQT78UrjN0KCTofRVokWg+qA8FUp99AZwv9gPltyLzh4cEpbCuTBiAiKVLUFQRhCem2N6qkdlsRtrEWFVAL3U/j57iWv33bIgDA572bZQ/WcuEH2dDtdhL2TReN2bQLuwgC8nWhQGzBS6SonajUetaNbW1n6QRs1BT/nNJ8zzWDF6RUqEauVngvsIMzoKboPmCrAqPKwIBgPfcVzroTLM4Y2OwPTcy/x93CDYtLgT0skTtF+lmsC76PJUP/2fDKoyfR6ofD3frv4/CByo/J+uiKE5huezHrcqw3ol3leBL558blk7rTGcvVVelFuo5pLnnAcMIpjE9q5IQtxE6+Xib4ksQV0ZSldKzGT54BxRqHSLTbdCnOv8k64UcmNv7GEOKrwH4gMCvP7eGIX4hdqU8uIENKMdMhP+yqwCCV1zB5V9auylGcqLLN1mtYEYqw9gT+z8qWZsTx7PJuoEUI4OktbbTGF9xM1fZYzKdu6hd120ssxWO0T5y3+I5/lhiLIYOjTXE23ImRLkeeUD3sY5tzYRPkgym96oPoSfvjq4K+MNM1cPwiycDIX0d25DIorR
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(376002)(396003)(136003)(40470700004)(36840700001)(46966006)(316002)(2906002)(8676002)(82740400003)(4326008)(1076003)(47076005)(478600001)(2616005)(26005)(83380400001)(6916009)(7696005)(54906003)(40460700003)(70206006)(70586007)(107886003)(8936002)(6666004)(82310400005)(40480700001)(5660300002)(36756003)(36860700001)(356005)(186003)(336012)(41300700001)(81166007)(426003)(86362001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: d+T3Z7+f1c3YRVTdqDseQnPNKvW3dTxkpMyoKsQP71U4u7zYvcXQV8PPh9FtTWJZAmQ7ufVmRAsKY4ClHdD20DT3rRPJw+Lhw55LtMOvAO3ZGgtXYZTyF6UaQHPz0NX6SmyKaTc21/0eB4DO13DZqBXHilanSR/Hm+ja/7cvajl0SNUx13yP4yEPKQEhbIqn7XqXcGl17Io/efOxMFvMmsfsyIwZJkDGEQKw3vLGmcYweJ8SbE/BNGPR9XGUaBJMnuqYK5wAzxlMSKOxJJgosBwIn07Uy0sP8miqRL+BDFkvtwQBFmK1Xs4FFKnQKAwunMRB1AK9YqxIVWhkO34xsctED8DRFxMqGOOJX+//cz+w8smr3P4PY9cJAdk3KWbkN6hzJlGIHcDr4l0l6HorJOJnGOQlsA/UTtg0FjWhROqReladKi+vtCrIr4JZ3OmBJ4+yMcNDF0tnhsQ6SHx9bDKFx1sSKhoTXuVjvK10XzHX4CwMf91LAW85LugeMlLkyHQvcNLO2Vy5lpw+fapb/lE4n2gEhYH3awFTyoWf8A2aRB1tAhRcvtknXTVWPcBJMuAgDMYObXufD01DwQMbVjeRxRmURGJz+NoMzI+r0JBJDhWbouOBvFjIzKlpiOYRh04JgVl2aIZdIEStPX29dLcbzo2TjJmJSUvvKNv+zGe6ABe5s2L+FS6kdV4WA/KuFIZDlle9VG2Y44QtmqI0gVOHIAxqa1UJiXONmNDQwjlbXrckh9O6shzJNEcgWAFA
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(346002)(39860400002)(396003)(36840700001)(40470700004)(46966006)(336012)(426003)(70206006)(47076005)(4326008)(8676002)(6666004)(186003)(1076003)(54906003)(40480700001)(41300700001)(70586007)(36756003)(26005)(2616005)(107886003)(83380400001)(6916009)(7696005)(36860700001)(8936002)(478600001)(5660300002)(86362001)(82310400005)(40460700003)(2906002)(316002)(81166007)(356005)(82740400003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 15:27:38.7356
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jun 2022 15:27:41.2091
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a74e5a58-57a2-4c9b-e411-08da52d168f0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 53e4f69b-26c7-4b0a-75f2-08da52d16a71
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT065.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT036.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5722
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB2783
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -106,302 +106,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test verifies that netdevsim VFs and groups can set and retrieve
-the new rate limit_type police attributes via devlink API.
+Add devlink rate limit_type attribute information in devlink port
+documentation.
+Add devlink rate 'limit_type police' attributes in netdevsim devlink
+documentation.
 
 Signed-off-by: Dima Chumak <dchumak@nvidia.com>
 ---
- .../drivers/net/netdevsim/devlink.sh          | 215 ++++++++++++++++--
- 1 file changed, 200 insertions(+), 15 deletions(-)
+ .../networking/devlink/devlink-port.rst       | 44 +++++++++++++++++--
+ .../networking/devlink/netdevsim.rst          |  3 +-
+ 2 files changed, 43 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-index 9de1d123f4f5..40392dcbb30e 100755
---- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-+++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-@@ -534,6 +534,15 @@ rate_attr_set()
- 	devlink port function rate set $handle $name $value$units
- }
+diff --git a/Documentation/networking/devlink/devlink-port.rst b/Documentation/networking/devlink/devlink-port.rst
+index 7627b1da01f2..c2cd97a4ec4f 100644
+--- a/Documentation/networking/devlink/devlink-port.rst
++++ b/Documentation/networking/devlink/devlink-port.rst
+@@ -184,20 +184,58 @@ This is done through rate objects, which can be one of the two types:
  
-+rate_police_attr_set()
-+{
-+	local handle=$1
-+	local name=$2
-+	local value=$3
-+
-+	devlink port function rate set $handle limit_type police $name $value
-+}
-+
- rate_attr_get()
- {
- 	local handle=$1
-@@ -542,7 +551,7 @@ rate_attr_get()
- 	cmd_jq "devlink port function rate show $handle -j" '.[][].'$name
- }
+ API allows to configure following rate object's parameters:
  
--rate_attr_tx_rate_check()
-+rate_attr_shaping_rate_check()
- {
- 	local handle=$1
- 	local name=$2
-@@ -563,6 +572,35 @@ rate_attr_tx_rate_check()
- 	check_err $? "Unexpected $name attr value $api_value != $rate"
- }
++``limit_type``
++  Type of rate limiting performed by a rate object. Supported types are
++  ``shaping`` and ``police``. Shaping type is a form of back pressure mechanism
++  that can delay traffic until there is a capacity, available at the lower
++  level, to process it. Police type is a simple packet counting and immediate
++  dropping of those packets that exceed the threshold. Some of the parameters
++  may be specific only to one of the limit types.
++
+ ``tx_share``
+   Minimum TX rate value shared among all other rate objects, or rate objects
+-  that parts of the parent group, if it is a part of the same group.
++  that parts of the parent group, if it is a part of the same group. Specific to
++  ``shaping`` limit type.
  
-+rate_attr_police_rate_check()
-+{
-+	local handle=$1
-+	local name=$2
-+	local rate=$3
-+	local debug_file=$4
-+
-+	rate_police_attr_set $handle $name $rate
-+	check_err $? "Failed to set $name value"
-+
-+	local debug_value=$(cat $debug_file)
-+	check_err $? "Failed to read $name value from debugfs"
-+
-+	# undo bits->bytes conversion forced by devlink
-+	case $name in ([rt]x_max) debug_value=$((debug_value * 8)) ;; esac
-+
-+	[ "$debug_value" == "$rate" ]
-+	check_err $? "Unexpected $name debug value $debug_value != $rate"
-+
-+	local api_value=$(rate_attr_get $handle $name)
-+	check_err $? "Failed to get $name attr value"
-+
-+	# undo bits->bytes conversion forced by devlink
-+	case $name in ([rt]x_max) api_value=$((api_value * 8)) ;; esac
-+
-+	[ "$api_value" == "$rate" ]
-+	check_err $? "Unexpected $name attr value $api_value != $rate"
-+}
-+
- rate_attr_parent_check()
- {
- 	local handle=$1
-@@ -586,8 +624,9 @@ rate_attr_parent_check()
- rate_node_add()
- {
- 	local handle=$1
-+	local limit_type=${2:+limit_type $2}
+ ``tx_max``
+   Maximum TX rate value.
  
--	devlink port function rate add $handle
-+	devlink port function rate add $handle $limit_type
- }
++``tx_burst``
++  Size of a bucket that's used to buffer spikes when traffic exceeds ``tx_max``
++  limit. Specific to ``police`` limit type.
++
++``rx_max``
++  Maximum RX rate value.
++
++``rx_burst``
++  Size of a bucket that's used to buffer spikes when traffic exceeds ``rx_max``
++  limit. Specific to ``police`` limit type.
++
++``tx_pkts``
++  Maximum TX rate in packets per second.
++
++``tx_pkts_burst``
++  Size of a bucket that's used to buffer spikes when traffic exceeds ``tx_pkts``
++  limit. Specific to ``police`` limit type.
++
++``rx_pkts``
++  Maximum RX rate in packets per second.
++
++``rx_pkts_burst``
++  Size of a bucket that's used to buffer spikes when traffic exceeds ``rx_pkts``
++  limit. Specific to ``police`` limit type.
++
+ ``parent``
+   Parent node name. Parent node rate limits are considered as additional limits
+   to all node children limits. ``tx_max`` is an upper limit for children.
+-  ``tx_share`` is a total bandwidth distributed among children.
++  ``tx_share`` is a total bandwidth distributed among children. It's important
++  that ``limit_type`` of a child object and the parent node should match. In
++  other words, it's only possible to group rate objects of the same
++  ``limit_type``.
  
- rate_node_del()
-@@ -597,21 +636,14 @@ rate_node_del()
- 	devlink port function rate del $handle
- }
+ Driver implementations are allowed to support both or either rate object types
+-and setting methods of their parameters.
++and setting methods of their parameters. The same holds for limit types, a
++driver implementation may support all or only some of them.
  
--rate_test()
-+rate_shaping_test()
- {
--	RET=0
--
--	echo $VF_COUNT > /sys/bus/netdevsim/devices/$DEV_NAME/sriov_numvfs
--	devlink dev eswitch set $DL_HANDLE mode switchdev
--	local leafs=`rate_leafs_get $DL_HANDLE`
--	local num_leafs=`echo $leafs | wc -w`
--	[ "$num_leafs" == "$VF_COUNT" ]
--	check_err $? "Expected $VF_COUNT rate leafs but got $num_leafs"
-+	local leafs=$1
+ Terms and Definitions
+ =====================
+diff --git a/Documentation/networking/devlink/netdevsim.rst b/Documentation/networking/devlink/netdevsim.rst
+index 8a292fb5aaea..32d3171ff281 100644
+--- a/Documentation/networking/devlink/netdevsim.rst
++++ b/Documentation/networking/devlink/netdevsim.rst
+@@ -64,7 +64,8 @@ The ``netdevsim`` driver supports rate objects management, which includes:
  
- 	rate=10
- 	for r_obj in $leafs
- 	do
--		rate_attr_tx_rate_check $r_obj tx_share $rate \
-+		rate_attr_shaping_rate_check $r_obj tx_share $rate \
- 			$DEBUGFS_DIR/ports/${r_obj##*/}/tx_share
- 		rate=$(($rate+10))
- 	done
-@@ -619,11 +651,19 @@ rate_test()
- 	rate=100
- 	for r_obj in $leafs
- 	do
--		rate_attr_tx_rate_check $r_obj tx_max $rate \
-+		rate_attr_shaping_rate_check $r_obj tx_max $rate \
- 			$DEBUGFS_DIR/ports/${r_obj##*/}/tx_max
- 		rate=$(($rate+100))
- 	done
+ - registerging/unregistering leaf rate objects per VF devlink port;
+ - creation/deletion node rate objects;
+-- setting tx_share and tx_max rate values for any rate object type;
++- setting limit_type, tx_share, tx_max, tx_burst, rx_max, rx_burst, tx_pkts,
++  tx_pkts_burst, rx_pkts and rx_pkts_burst rate values for any rate object type;
+ - setting parent node for any rate object type.
  
-+	for r_obj in $leafs
-+	do
-+		rate_attr_shaping_rate_check $r_obj tx_share 0 \
-+			$DEBUGFS_DIR/ports/${r_obj##*/}/tx_share
-+		rate_attr_shaping_rate_check $r_obj tx_max 0 \
-+			$DEBUGFS_DIR/ports/${r_obj##*/}/tx_max
-+	done
-+
- 	local node1_name='group1'
- 	local node1="$DL_HANDLE/$node1_name"
- 	rate_node_add "$node1"
-@@ -634,11 +674,11 @@ rate_test()
- 	check_err $? "Expected 1 rate node in output but got $num_nodes"
- 
- 	local node_tx_share=10
--	rate_attr_tx_rate_check $node1 tx_share $node_tx_share \
-+	rate_attr_shaping_rate_check $node1 tx_share $node_tx_share \
- 		$DEBUGFS_DIR/rate_nodes/${node1##*/}/tx_share
- 
- 	local node_tx_max=100
--	rate_attr_tx_rate_check $node1 tx_max $node_tx_max \
-+	rate_attr_shaping_rate_check $node1 tx_max $node_tx_max \
- 		$DEBUGFS_DIR/rate_nodes/${node1##*/}/tx_max
- 
- 	rate_node_del "$node1"
-@@ -668,6 +708,151 @@ rate_test()
- 	check_err $? "Failed to unset $r_obj parent node"
- 	rate_node_del "$node1"
- 	check_err $? "Failed to delete node $node1"
-+}
-+
-+rate_police_test()
-+{
-+	local leafs=$1
-+
-+	local rate=$((100 * 1000**2 * 8))
-+	for r_obj in $leafs
-+	do
-+		rate_attr_police_rate_check $r_obj tx_max $rate \
-+			$DEBUGFS_DIR/ports/${r_obj##*/}/tx_max
-+		rate=$(($rate + 10 * 1000**2 * 8))
-+	done
-+
-+	local size=$((1024**2))
-+	for r_obj in $leafs
-+	do
-+		rate_attr_police_rate_check $r_obj tx_burst $size \
-+			$DEBUGFS_DIR/ports/${r_obj##*/}/tx_burst
-+		size=$(($size * 2))
-+	done
-+
-+	rate=$((100 * 1000**2 * 8))
-+	for r_obj in $leafs
-+	do
-+		rate_attr_police_rate_check $r_obj rx_max $rate \
-+			$DEBUGFS_DIR/ports/${r_obj##*/}/rx_max
-+		rate=$(($rate + 10 * 1000**2 * 8))
-+	done
-+
-+	size=$((1024**2))
-+	for r_obj in $leafs
-+	do
-+		rate_attr_police_rate_check $r_obj rx_burst $size \
-+			$DEBUGFS_DIR/ports/${r_obj##*/}/rx_burst
-+		size=$(($size * 2))
-+	done
-+
-+	local packets=1000
-+	for r_obj in $leafs
-+	do
-+		rate_attr_police_rate_check $r_obj tx_pkts $packets \
-+			$DEBUGFS_DIR/ports/${r_obj##*/}/tx_pkts
-+		packets=$(($packets * 2))
-+	done
-+
-+	size=$((1024**2))
-+	for r_obj in $leafs
-+	do
-+		rate_attr_police_rate_check $r_obj tx_pkts_burst $size \
-+			$DEBUGFS_DIR/ports/${r_obj##*/}/tx_pkts_burst
-+		size=$(($size * 2))
-+	done
-+
-+	packets=1000
-+	for r_obj in $leafs
-+	do
-+		rate_attr_police_rate_check $r_obj rx_pkts $packets \
-+			$DEBUGFS_DIR/ports/${r_obj##*/}/rx_pkts
-+		packets=$(($packets * 2))
-+	done
-+
-+	size=$((1024**2))
-+	for r_obj in $leafs
-+	do
-+		rate_attr_police_rate_check $r_obj rx_pkts_burst $size \
-+			$DEBUGFS_DIR/ports/${r_obj##*/}/rx_pkts_burst
-+		size=$(($size * 2))
-+	done
-+
-+	local node1_name='group1'
-+	local node1="$DL_HANDLE/$node1_name"
-+	rate_node_add "$node1" police
-+	check_err $? "Failed to add node $node1"
-+
-+	local num_nodes=`rate_nodes_get $DL_HANDLE | wc -w`
-+	[ $num_nodes == 1 ]
-+	check_err $? "Expected 1 rate node in output but got $num_nodes"
-+
-+	rate_attr_police_rate_check $node1 tx_max $((200 * 1000**2 * 8)) \
-+		$DEBUGFS_DIR/rate_nodes/${node1##*/}/tx_max
-+
-+	rate_attr_police_rate_check $node1 tx_burst $((2 * 1024**2)) \
-+		$DEBUGFS_DIR/rate_nodes/${node1##*/}/tx_burst
-+
-+	rate_attr_police_rate_check $node1 rx_max $((300 * 1000**2 * 8)) \
-+		$DEBUGFS_DIR/rate_nodes/${node1##*/}/rx_max
-+
-+	rate_attr_police_rate_check $node1 rx_burst $((3 * 1024**2)) \
-+		$DEBUGFS_DIR/rate_nodes/${node1##*/}/rx_burst
-+
-+	rate_attr_police_rate_check $node1 tx_pkts 4000 \
-+		$DEBUGFS_DIR/rate_nodes/${node1##*/}/tx_pkts
-+
-+	rate_attr_police_rate_check $node1 tx_pkts_burst $((4 * 1024**2)) \
-+		$DEBUGFS_DIR/rate_nodes/${node1##*/}/tx_pkts_burst
-+
-+	rate_attr_police_rate_check $node1 rx_pkts 5000 \
-+		$DEBUGFS_DIR/rate_nodes/${node1##*/}/rx_pkts
-+
-+	rate_attr_police_rate_check $node1 rx_pkts_burst $((5 * 1024**2)) \
-+		$DEBUGFS_DIR/rate_nodes/${node1##*/}/rx_pkts_burst
-+
-+	rate_node_del "$node1"
-+	check_err $? "Failed to delete node $node1"
-+	num_nodes=`rate_nodes_get $DL_HANDLE | wc -w`
-+	[ $num_nodes == 0 ]
-+	check_err $? "Expected 0 rate node but got $num_nodes"
-+
-+	rate_node_add "$node1" police
-+	check_err $? "Failed to add node $node1"
-+
-+	rate_attr_parent_check $r_obj $node1_name \
-+		$DEBUGFS_DIR/ports/${r_obj##*/}/rate_parent
-+
-+	local node2_name='group2'
-+	local node2="$DL_HANDLE/$node2_name"
-+	rate_node_add "$node2" police
-+	check_err $? "Failed to add node $node2"
-+
-+	rate_attr_parent_check $node2 $node1_name \
-+		$DEBUGFS_DIR/rate_nodes/$node2_name/rate_parent
-+	rate_node_del "$node2"
-+	check_err $? "Failed to delete node $node2"
-+	rate_attr_set "$r_obj" noparent
-+	check_err $? "Failed to unset $r_obj parent node"
-+	rate_node_del "$node1"
-+	check_err $? "Failed to delete node $node1"
-+}
-+
-+rate_test()
-+{
-+	RET=0
-+
-+	echo $VF_COUNT > /sys/bus/netdevsim/devices/$DEV_NAME/sriov_numvfs
-+	devlink dev eswitch set $DL_HANDLE mode switchdev
-+	local leafs=`rate_leafs_get $DL_HANDLE`
-+	local num_leafs=`echo $leafs | wc -w`
-+	[ "$num_leafs" == "$VF_COUNT" ]
-+	check_err $? "Expected $VF_COUNT rate leafs but got $num_leafs"
-+
-+	rate_shaping_test "$leafs"
-+	if devlink port function rate help |& grep -qF 'limit_type police' ; then
-+		rate_police_test "$leafs"
-+	fi
- 
- 	log_test "rate test"
- }
+ Rate nodes and it's parameters are exposed in ``netdevsim`` debugfs in RO mode.
 -- 
 2.36.1
 
