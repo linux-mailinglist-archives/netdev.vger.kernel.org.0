@@ -2,132 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E118551653
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 12:55:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52620551689
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 13:05:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240735AbiFTKzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 06:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46904 "EHLO
+        id S241217AbiFTLFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 07:05:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239937AbiFTKzm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 06:55:42 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5493212A9D;
-        Mon, 20 Jun 2022 03:55:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655722541; x=1687258541;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nglppZhuvUQT7nOX+N/aR3xpXIaRhCEPCSAdUmEvcVQ=;
-  b=OqpEOGGLadO1AiwPEfujjSQYiD49fPoQKTBc4eiiOU5Gp+2Xg0G77Yef
-   ndUbzC4vZZx8VDu9Tcx9gI8cNNWS3EXPk7aHFXYSisvD/wxdooyHggUui
-   3ix9lMAQHAlWHuHGBtihOaXIbj0ZariP/Zxu9NZbnjmmKZzgS8sgeWXuy
-   ygJSOPWoMuI4KIMOKX485QlzYQvn9Z9QUg5gAyubMr6RrGAHwvuN60GwF
-   a6aM0jrIhPm5IgBJ4Qjrg1qSBZQ2fWVfXcrplemPAC1mEXHE4rAOpgMls
-   LCsSwXoA4hU4mKZlk5nNa00Fw+QKEM4wtfZgA1UcNwacIi8JnTm2wdKB7
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10380"; a="280920749"
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="280920749"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 03:55:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,306,1650956400"; 
-   d="scan'208";a="913609049"
-Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
-  by fmsmga005.fm.intel.com with ESMTP; 20 Jun 2022 03:55:38 -0700
-Date:   Mon, 20 Jun 2022 12:55:37 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, magnus.karlsson@intel.com,
-        bjorn@kernel.org, kuba@kernel.org
-Subject: Re: [PATCH v4 bpf-next 05/10] selftests: xsk: query for native XDP
- support
-Message-ID: <YrBSKTsQjShydeAw@boxer>
-References: <20220616180609.905015-1-maciej.fijalkowski@intel.com>
- <20220616180609.905015-6-maciej.fijalkowski@intel.com>
- <62ad3470573f9_24b342082e@john.notmuch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <62ad3470573f9_24b342082e@john.notmuch>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S240930AbiFTLFH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 07:05:07 -0400
+Received: from mailout3.hostsharing.net (mailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f236:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F86C12AA2;
+        Mon, 20 Jun 2022 04:05:06 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by mailout3.hostsharing.net (Postfix) with ESMTPS id 6E4AD10029E11;
+        Mon, 20 Jun 2022 13:05:01 +0200 (CEST)
+Received: from localhost (unknown [89.246.108.87])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by h08.hostsharing.net (Postfix) with ESMTPSA id 2CD1861975D7;
+        Mon, 20 Jun 2022 13:05:01 +0200 (CEST)
+X-Mailbox-Line: From 439a3f3168c2f9d44b5fd9bb8d2b551711316be6 Mon Sep 17 00:00:00 2001
+Message-Id: <439a3f3168c2f9d44b5fd9bb8d2b551711316be6.1655714438.git.lukas@wunner.de>
+From:   Lukas Wunner <lukas@wunner.de>
+Date:   Mon, 20 Jun 2022 13:04:50 +0200
+Subject: [PATCH net] net: phy: smsc: Disable Energy Detect Power-Down in
+ interrupt mode
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Simon Han <z.han@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Ferry Toth <fntoth@gmail.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-samsung-soc@vger.kernel.org
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jun 17, 2022 at 07:12:00PM -0700, John Fastabend wrote:
-> Maciej Fijalkowski wrote:
-> > Currently, xdpxceiver assumes that underlying device supports XDP in
-> > native mode - it is fine by now since tests can run only on a veth pair.
-> > Future commit is going to allow running test suite against physical
-> > devices, so let us query the device if it is capable of running XDP
-> > programs in native mode. This way xdpxceiver will not try to run
-> > TEST_MODE_DRV if device being tested is not supporting it.
-> > 
-> > Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > ---
-> >  tools/testing/selftests/bpf/xdpxceiver.c | 36 ++++++++++++++++++++++--
-> >  1 file changed, 34 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-> > index e5992a6b5e09..a1e410f6a5d8 100644
-> > --- a/tools/testing/selftests/bpf/xdpxceiver.c
-> > +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-> > @@ -98,6 +98,8 @@
-> >  #include <unistd.h>
-> >  #include <stdatomic.h>
-> >  #include <bpf/xsk.h>
-> > +#include <bpf/bpf.h>
-> > +#include <linux/filter.h>
-> >  #include "xdpxceiver.h"
-> >  #include "../kselftest.h"
-> >  
-> > @@ -1605,10 +1607,37 @@ static void ifobject_delete(struct ifobject *ifobj)
-> >  	free(ifobj);
-> >  }
-> >  
-> > +static bool is_xdp_supported(struct ifobject *ifobject)
-> > +{
-> > +	int flags = XDP_FLAGS_DRV_MODE;
-> > +
-> > +	LIBBPF_OPTS(bpf_link_create_opts, opts, .flags = flags);
-> > +	struct bpf_insn insns[2] = {
-> > +		BPF_MOV64_IMM(BPF_REG_0, XDP_PASS),
-> > +		BPF_EXIT_INSN()
-> > +	};
-> > +	int ifindex = if_nametoindex(ifobject->ifname);
-> > +	int prog_fd, insn_cnt = ARRAY_SIZE(insns);
-> > +	int err;
-> > +
-> > +	prog_fd = bpf_prog_load(BPF_PROG_TYPE_XDP, NULL, "GPL", insns, insn_cnt, NULL);
-> > +	if (prog_fd < 0)
-> > +		return false;
-> > +
-> > +	err = bpf_xdp_attach(ifindex, prog_fd, flags, NULL);
-> > +	if (err)
-> 
-> Best not to leave around prog_fd in the error case or in the
-> good case.
-> 
-> > +		return false;
-> > +
-> > +	bpf_xdp_detach(ifindex, flags, NULL);
-> > +
-> 
-> close(prog_fd)
+Simon reports that if two LAN9514 USB adapters are directly connected
+without an intermediate switch, the link fails to come up and link LEDs
+remain dark.  The issue was introduced by commit 1ce8b37241ed ("usbnet:
+smsc95xx: Forward PHY interrupts to PHY driver to avoid polling").
 
-Will fix
+The PHY suffers from a known erratum wherein link detection becomes
+unreliable if Energy Detect Power-Down is used.  In poll mode, the
+driver works around the erratum by briefly disabling EDPD for 640 msec
+to detect a neighbor, then re-enabling it to save power.
 
-> 
-> > +	return true;
-> > +}
-> > +
+In interrupt mode, no interrupt is signaled if EDPD is used by both link
+partners, so it must not be enabled at all.
+
+We'll recoup the power savings by enabling SUSPEND1 mode on affected
+LAN95xx chips in a forthcoming commit.
+
+Fixes: 1ce8b37241ed ("usbnet: smsc95xx: Forward PHY interrupts to PHY driver to avoid polling")
+Reported-by: Simon Han <z.han@kunbus.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+---
+ drivers/net/phy/smsc.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
+index 1b54684b68a0..96d3c40932d8 100644
+--- a/drivers/net/phy/smsc.c
++++ b/drivers/net/phy/smsc.c
+@@ -110,7 +110,7 @@ static int smsc_phy_config_init(struct phy_device *phydev)
+ 	struct smsc_phy_priv *priv = phydev->priv;
+ 	int rc;
+ 
+-	if (!priv->energy_enable)
++	if (!priv->energy_enable || phydev->irq != PHY_POLL)
+ 		return 0;
+ 
+ 	rc = phy_read(phydev, MII_LAN83C185_CTRL_STATUS);
+@@ -210,6 +210,8 @@ static int lan95xx_config_aneg_ext(struct phy_device *phydev)
+  * response on link pulses to detect presence of plugged Ethernet cable.
+  * The Energy Detect Power-Down mode is enabled again in the end of procedure to
+  * save approximately 220 mW of power if cable is unplugged.
++ * The workaround is only applicable to poll mode. Energy Detect Power-Down may
++ * not be used in interrupt mode lest link change detection becomes unreliable.
+  */
+ static int lan87xx_read_status(struct phy_device *phydev)
+ {
+@@ -217,7 +219,7 @@ static int lan87xx_read_status(struct phy_device *phydev)
+ 
+ 	int err = genphy_read_status(phydev);
+ 
+-	if (!phydev->link && priv->energy_enable) {
++	if (!phydev->link && priv->energy_enable && phydev->irq == PHY_POLL) {
+ 		/* Disable EDPD to wake up PHY */
+ 		int rc = phy_read(phydev, MII_LAN83C185_CTRL_STATUS);
+ 		if (rc < 0)
+-- 
+2.35.2
+
