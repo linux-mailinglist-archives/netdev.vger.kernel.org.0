@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F09A955284C
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 01:26:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3B32552855
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 01:31:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347354AbiFTX03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 19:26:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47368 "EHLO
+        id S245029AbiFTXbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 19:31:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347661AbiFTX0M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 19:26:12 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB6D383
-        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 16:25:54 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id c2so19604883lfk.0
-        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 16:25:54 -0700 (PDT)
+        with ESMTP id S243046AbiFTXba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 19:31:30 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4706911448
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 16:31:29 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id j22so6922067ljg.0
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 16:31:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=semihalf.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=23wRLssd9yUqYAVQ0COO9blyB0bEYhanq/ns7VcDlgE=;
-        b=a6K24opO14Dj6hgQTimAXkGwICYrRk6VgLGUpR2AqI/ZfwHucLaDZ8qlmbryBseQHn
-         6hJZUNfTMN+s8AMKRri0vtlpsaG0HkclhUY6T2yZ8ZIMmIOqvQTe/+L8fGXgcI1XK6tZ
-         Xyob8JTfZhQj3N3Nx3CsU7dJ1e6nRz72MOGAuPkRF88WN2ykwFJvIEXtnMdqNQ7m7XcF
-         vO1Cw3KKRlicGVsNjvbyUzVcQHjdQBsyhjrpuw16RboevoHzMONMigTaB87oESo7J/tS
-         bWRz3toWtYvAHkpSPW6fzSD4Fi+pm4Ce0kmoaSDoInw9IHcfjAiGtN6zrNHf5/wjBGur
-         pxeQ==
+        bh=1CFkBJOtdGheyOUeX2yPaN3vtsNkY5WbEiLu1iujMTs=;
+        b=c4HGipQeXgKwPcs43aMkdi5K3w74ldx4cPKh57/kJpEQTehk3R/ApwGMNcAHO0Tdv1
+         KZcLI3O9sYzcsqENTulejrJsKyKbECVvxjRTj8MwTSKDp1iU1F7fJ2jwGzYLCZFmtPp4
+         lFpffbNNQ5kIHynvctCZjyLfHRPhdPZUxsbvm5i7v/Zvk2CJq/t7YLnFaTCwfsHe0C1u
+         onkG1TkN4yM9IuLPlUwYVfnTQ+SgsNSxQG59fnew9BzNwu2V8ik0qxv07FfJ9pMmGQCZ
+         MOhJ+CKSFEtbEffaaaZ+krJRh1TGny3Kr9jJAXaWLOUE2a6Ym3yzB1vBdIepC5L74Xwb
+         6g6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=23wRLssd9yUqYAVQ0COO9blyB0bEYhanq/ns7VcDlgE=;
-        b=aZ1skjZzi1k7CqD0tae+fHncwF6QMWqcE1csPx6wiPxbhnwGyFDfmybH92FirhIFIw
-         wwyNQRTzx2yFgDauCEyVn3CUPxQ481to8GZ1MQnqn4roWle8A96toq82KuXIvu6UwV/L
-         aJ/8qWvJLEsyrRE9FdA4QjmVwrJm4GPDkGHIoQS3bmosza/AYtKvdffW5rH1NurTQM+0
-         kJJjcg4CaHvjcF92o/way51Z0ebG4gjkvR2f7adIIzXBDRvqplU5ZVog3z1RHJTiOArZ
-         bZBbEOrI19F6G/gkNaZn9HtU2bbrkbHXjW+a2e7YFdWtoQhWe22uxuA4hpndnWCYZTAW
-         3QiA==
-X-Gm-Message-State: AJIora/TGJZc4reRenIVqZk91HZadwrS6OBP2yy0hGKY/TUbCdNYiCa2
-        FiOHZreyUlo67131R8x8CxF75sd33fxdT8D5rIzI2Q==
-X-Google-Smtp-Source: AGRyM1tj3E3GMT9NlxXY+pcKooUG/uy9ecdEmK8WlBazVLo1/iJJSNqzIptvCW9xtoDgjbZog94h2BMO/c7qewDSpxo=
-X-Received: by 2002:a05:6512:a90:b0:478:f288:f1b5 with SMTP id
- m16-20020a0565120a9000b00478f288f1b5mr14398705lfu.614.1655767552878; Mon, 20
- Jun 2022 16:25:52 -0700 (PDT)
+        bh=1CFkBJOtdGheyOUeX2yPaN3vtsNkY5WbEiLu1iujMTs=;
+        b=fnnNzK9urwOhGLk+i+cxXDcu3nZ+ug+qZlTZSuQeQdkRt/efTg9oQlk0PCvYbbRrwA
+         KckkUjKCQi5pTad/dldP4/K+AX5ExhuHo0YzkI1L4NRnxj+aZkqzEML4NzH6zw0GAMPy
+         oxY3h1V7YJff6isCzZrN8honG87j/8++mo6CC5rGy448952HrYplwfJXeW58P4Aoaaeg
+         6ZgqQNg8SUz9mZXp8DOOEWFaMDG3wSi5eZ997tBXImHHcm2x82nDLZP1F3ahEnRtu+iO
+         i+gmAw108zsPIObZc8aEphEqk+/7CnYgtPmkca8uKgM53RWz+1n/BM800TGa87V5Kxw0
+         CQFA==
+X-Gm-Message-State: AJIora+9Gp42et3RH/P2aHigA0dGLuvqQvetf7voDDv2k5vxtgh1bqIR
+        ASToYQdJrl3PvIme/39rGq3pNVZFQEP88upKYm9xAQ==
+X-Google-Smtp-Source: AGRyM1sbnZzfwsCxwOZ4fl03m/sbkmCz2JnOCvW0MwaN6F99qEiBqmCOunyhbakJlEfMe1w/RrfFHKde5cExa9fFVm4=
+X-Received: by 2002:a2e:a58d:0:b0:25a:6348:9595 with SMTP id
+ m13-20020a2ea58d000000b0025a63489595mr6680735ljp.72.1655767887614; Mon, 20
+ Jun 2022 16:31:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220620150225.1307946-1-mw@semihalf.com> <20220620150225.1307946-10-mw@semihalf.com>
- <YrDO05TMK8SVgnBP@lunn.ch>
-In-Reply-To: <YrDO05TMK8SVgnBP@lunn.ch>
+References: <20220620150225.1307946-1-mw@semihalf.com> <20220620150225.1307946-11-mw@semihalf.com>
+ <YrC9KpEuYCgHv14l@lunn.ch>
+In-Reply-To: <YrC9KpEuYCgHv14l@lunn.ch>
 From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Tue, 21 Jun 2022 01:25:42 +0200
-Message-ID: <CAPv3WKeSoErRWZYV3X6+kDd9VZAqQmjA7KvC14_Zs8RbbLXjDg@mail.gmail.com>
-Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA description
+Date:   Tue, 21 Jun 2022 01:31:17 +0200
+Message-ID: <CAPv3WKeHpB0v1udzSAjm3QnRoCaVTUqiOa7f_MvAbgMOWDDEAg@mail.gmail.com>
+Subject: Re: [net-next: PATCH 10/12] net: dsa: add ACPI support
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
@@ -75,7 +75,7 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,153 +83,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pon., 20 cze 2022 o 21:47 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
+pon., 20 cze 2022 o 20:32 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
 >
-> > +In DSDT/SSDT the scope of switch device is extended by the front-panel
-> > +and one or more so called 'CPU' switch ports. Additionally
-> > +subsequent MDIO busses with attached PHYs can be described.
->
-> Humm, dsa.yaml says nothing about MDIO busses with attached PHYs.
-> That is up to each individual DSA drivers binding.
->
-> Please spilt this into a generic DSA binding, similar to dsa.yaml, and
-> a Marvell specific binding, similar to marvell.txt. It might be you
-> also need a generic MDIO binding, since the marvell device is just an
-> MDIO device, and inherits some of its properties from MDIO.
->
+> >  static int dsa_port_parse_dsa(struct dsa_port *dp)
+> >  {
+> > +     /* Cascade switch connection is not supported in ACPI world. */
+> > +     if (is_acpi_node(dp->fwnode)) {
+> > +             dev_warn(dp->ds->dev,
+> > +                      "DSA type is not supported with ACPI, disable po=
+rt #%d\n",
+> > +                      dp->index);
+> > +             dp->type =3D DSA_PORT_TYPE_UNUSED;
+> > +             return 0;
+> > +     }
 > > +
-> > +This document presents the switch description with the required subnod=
-es
-> > +and _DSD properties.
-> > +
-> > +These properties are defined in accordance with the "Device
-> > +Properties UUID For _DSD" [dsd-guide] document and the
-> > +daffd814-6eba-4d8c-8a91-bc9bbf4aa301 UUID must be used in the Device
-> > +Data Descriptors containing them.
-> > +
-> > +Switch device
-> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > +
-> > +The switch device is represented as a child node of the MDIO bus.
-> > +It must comprise the _HID (and optionally _CID) field, so to allow mat=
-ching
-> > +with appropriate driver via ACPI ID. The other obligatory field is
-> > +_ADR with the device address on the MDIO bus [adr]. Below example
-> > +shows 'SWI0' switch device at address 0x4 on the 'SMI0' bus.
-> >
-> > +.. code-block:: none
-> > +
-> > +    Scope (\_SB.SMI0)
-> > +    {
-> > +        Name (_HID, "MRVL0100")
-> > +        Name (_UID, 0x00)
-> > +        Method (_STA)
-> > +        {
-> > +            Return (0xF)
-> > +        }
-> > +        Name (_CRS, ResourceTemplate ()
-> > +        {
-> > +            Memory32Fixed (ReadWrite,
-> > +                0xf212a200,
-> > +                0x00000010,
 >
-> What do these magic numbers mean?
+> Did you try this? I'm not sure it will work correctly. When a switch
+> registers with the DSA core, the core will poke around in DT and fill
+> in various bits of information, including the DSA links. Once that has
+> completed, the core will look at all the switches registered so far
+> and try to determine if it has a complete set, i.e, it has both ends
+> of all DSA links. If it does have a complete set, it then calls the
+> setup methods on each switch, and gets them configured. If it finds it
+> does not have a complete setup, it does nothing, waiting for the next
+> switch to register.
 >
-> > +                )
-> > +        })
-> > +        Device (SWI0)
-> > +        {
-> > +            Name (_HID, "MRVL0120")
-> > +            Name (_UID, 0x00)
-> > +            Name (_ADR, 0x4)
-> > +            <...>
-> > +        }
+> So if somebody passed an ACPI description with multiple switches, it
+> is likely to call the setup methods as soon as the first switch is
+> registered. And it might call those same setup methods a second time,
+> when the second switch registers, on both switches. And when the third
+> switch registers, it will probably call the setup methods yet again on
+> all the switches....
 >
-> I guess it is not normal for ACPI, but could you add some comments
-> which explain this. In DT we have
->
->     properties:
->       reg:
->         minimum: 0
->         maximum: 31
->         description:
->           The ID number for the device.
->
-> which i guess what this _ADR property is, but it would be nice if it
-> actually described what it is supposed to mean. You have a lot of
-> undocumented properties here.
->
->
-> > +label
-> > +-----
-> > +A property with a string value describing port's name in the OS. In ca=
-se the
-> > +port is connected to the MAC ('CPU' port), its value should be set to =
-"cpu".
->
-> Each port is a MAC, so "is connected to the MAC" is a bit
-> meaningless. "CPU Port" is well defined in DSA, and is a DSA concept,
-> not a DT concept, so you might as well just use it here.
->
-> > +
-> > +phy-handle
-> > +----------
-> > +For each MAC node, a device property "phy-handle" is used to reference
-> > +the PHY that is registered on an MDIO bus. This is mandatory for
-> > +network interfaces that have PHYs connected to MAC via MDIO bus.
->
-> It is not mandatory. The DSA core will assume that port 0 has a PHY
-> using address 0, port 1 has a PHY using address 1, etc. You only need
-> a phy-handle when this assumption does not work.
->
-> > +See [phy] for more details.
-> > +
-> > +ethernet
-> > +--------
-> > +A property valid for the so called 'CPU' port and should comprise a re=
-ference
-> > +to the MAC object declared in the DSDT/SSDT.
->
-> Is "MAC" an ACPI term? Because this does not seem very descriptive to
-> me. DT says:
->
->       Should be a phandle to a valid Ethernet device node.  This host
->       device is what the switch port is connected to
->
-> > +
-> > +fixed-link
-> > +----------
-> > +The 'fixed-link' is described by a data-only subnode of the
-> > +port, which is linked in the _DSD package via
-> > +hierarchical data extension (UUID dbb8e3e6-5886-4ba6-8795-1319f52a966b
-> > +in accordance with [dsd-guide] "_DSD Implementation Guide" document).
-> > +The subnode should comprise a required property ("speed") and
-> > +possibly the optional ones - complete list of parameters and
-> > +their values are specified in [ethernet-controller].
->
-> You appear to be cut/pasting
-> Documentation/firmware-guide/acpi/dsd/phy.txt. Please just reference
-> it.
->
-> > +Below example comprises MDIO bus ('SMI0') with a PHY at address 0x0 ('=
-PHY0')
-> > +and a switch ('SWI0') at 0x4. The so called 'CPU' port ('PRT5') is con=
-nected to
-> > +the SoC's MAC (\_SB.PP20.ETH2). 'PRT2' port is configured as 1G fixed-=
-link.
->
-> This is ACPI, so it is less likely to be a SoC. The hosts CPU port
-> could well be an external PCIe device for example. Yes, there are AMD
-> devices with built in MACs, but in the ACPI world, they don't happen
-> so often.
->
-> I assume you have 3 different 'compatible' strings for the nv88e6xxx
-> driver? You should document them somewhere and say how they map to
-> different marvell switches,
+> You will have a much safer system if you return -EINVAL if you find a
+> DSA link in ACPI. That should abort the switch probe.
 >
 
-Thank you for the remarks, I'll address all after the consensus about
-the binding is established.
+I only set a single port to "dsa" label to check if this condition is
+entered. I see 2 devices in the arm64 tree (fsl-lx2160a-bluebox3.dts
+and armada-3720-turris-mox.dts) that support cascade switches via
+"link" property. I don't have access to real life setup (and those
+seem to not support ACPI anyway...).
 
-Best regards,
+In case this temporarily would remain as unsupported feature, I agree
+-EINVAL is a safer solution.
+
+Thanks,
 Marcin
