@@ -2,73 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7B9355225D
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 18:36:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F10E6552280
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 18:53:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233196AbiFTQgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 12:36:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54290 "EHLO
+        id S235193AbiFTQxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 12:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230330AbiFTQgV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 12:36:21 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D0BE1C91E;
-        Mon, 20 Jun 2022 09:36:20 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id g8so10215070plt.8;
-        Mon, 20 Jun 2022 09:36:20 -0700 (PDT)
+        with ESMTP id S234090AbiFTQxT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 12:53:19 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC5D193CB;
+        Mon, 20 Jun 2022 09:53:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=6KRpF0L0JhSh1qLp7YyVoespt3LvQWnvsOM7gzN/eCs=;
-        b=OnV04FB7r3thHqoOwsP42APFqN3Mwm1hE69j5gTpZAx/S8oxHLaChL4ITmHLfx95k+
-         jnpO6pwz3heY0ow0mj8LFKPT1k/DHeAUWPZSCAy3TSmAiXuBvK/SxwuqNZHkjlROX/a6
-         VJ/PKzHg6ucFoBG/InxvUOyohNAmdBun7/CDlZRHmXJ0gTdrsUngYZZeUOddorS+YUBJ
-         QzXBsTrr/wZrjg42br/Vm5C5yLyNTdpmhpcod0x+MfCDHv/fNXfG4uKiHMY608n6WmfF
-         G9zVa/c8Q2f6QrK0MvN4/jDdYrZrCw9wsiKBWwuXzId3ZIXJliaSV1XFEpCYhCWWF9yW
-         rUmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=6KRpF0L0JhSh1qLp7YyVoespt3LvQWnvsOM7gzN/eCs=;
-        b=BabZzjG98TJuMDCykuUIZVpHXmuf/aHedOdojyxRZQkBhoJMSP8yGKg7J1+shHxEfY
-         AvnBFGLJb3a1spHEog6mXF8N9bcdhB74jBVBTJ3i0MAchwJeStXLhoAui5kswnM7oGFT
-         T/dDVVco6LRWQSenayM43jXmvMpKCH2T8l4N8gVaHQODMHCI7cjZESh54NDZLV2N2Wi1
-         5zvImdxxHEZH/l/ftGnlJCbxS99Q+glxHH45BgkgS00Hmk2txVc0GB9/dM0naOu194iT
-         Px8BNlKdcZM/8HJAiutKlOarIwhd7dn224M7vSTChO0VxTLIyTRLBDV7g0lOe+jxmMct
-         CJEQ==
-X-Gm-Message-State: AJIora/e+84A/U6EdL+uqdEoR2UDYMVlmWpt/ZhYwnGsD+a+EKWW8rZ8
-        wkn/hiuiKi1x54R9t8K+Df4=
-X-Google-Smtp-Source: AGRyM1sIik5hEchZgzx0CStr6urmNDu7c6hYdXeDHF3Ga9ntpQcFweUTbfrmWyqaaI9c0Np59EHtRQ==
-X-Received: by 2002:a17:902:9f97:b0:16a:9b9:fb63 with SMTP id g23-20020a1709029f9700b0016a09b9fb63mr16346339plq.7.1655742979643;
-        Mon, 20 Jun 2022 09:36:19 -0700 (PDT)
-Received: from localhost ([98.97.116.244])
-        by smtp.gmail.com with ESMTPSA id gp5-20020a17090adf0500b001ec84b0f199sm5589053pjb.1.2022.06.20.09.36.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 09:36:19 -0700 (PDT)
-Date:   Mon, 20 Jun 2022 09:36:18 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, magnus.karlsson@intel.com,
-        bjorn@kernel.org, kuba@kernel.org
-Message-ID: <62b0a20232920_3573208ab@john.notmuch>
-In-Reply-To: <YrBh4PsLY1GID3Uj@boxer>
-References: <20220616180609.905015-1-maciej.fijalkowski@intel.com>
- <20220616180609.905015-10-maciej.fijalkowski@intel.com>
- <62ad3ed172224_24b342084d@john.notmuch>
- <YrBh4PsLY1GID3Uj@boxer>
-Subject: Re: [PATCH v4 bpf-next 09/10] selftests: xsk: rely on pkts_in_flight
- in wait_for_tx_completion()
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1655743997; x=1687279997;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=kgESs27XhF81QnJUgze9eJuZmW99UDQpLFplT83+koM=;
+  b=opYvnVJdRpIkA4ex4ZKNH4CdE96ALOzE6Gp+I4plUa+HvRhDDbq/eKKR
+   F0t/uW4lztaSygb5gfTtyk1zPSwLduBgYc9LYgwUKrr6QcT+a1ZMNdCkS
+   TuhUGBpwtbhpsaxGc0vHgdDV8liJ9gLvw1d+tyIhelD7Z/pUOLmYzWwoD
+   o=;
+X-IronPort-AV: E=Sophos;i="5.92,207,1650931200"; 
+   d="scan'208";a="99721030"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-1box-2b-3386f33d.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 20 Jun 2022 16:47:25 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-1box-2b-3386f33d.us-west-2.amazon.com (Postfix) with ESMTPS id 3D52F81733;
+        Mon, 20 Jun 2022 16:47:25 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Mon, 20 Jun 2022 16:47:24 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.161.55) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.36; Mon, 20 Jun 2022 16:47:21 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <oliver.sang@intel.com>
+CC:     <aams@amazon.com>, <davem@davemloft.net>, <edumazet@google.com>,
+        <kuba@kernel.org>, <kuni1840@gmail.com>, <kuniyu@amazon.com>,
+        <linux-kernel@vger.kernel.org>, <lkp@intel.com>,
+        <lkp@lists.01.org>, <netdev@vger.kernel.org>, <pabeni@redhat.com>
+Subject: Re: [af_unix]  b4813d5914: WARNING:possible_recursive_locking_detected
+Date:   Mon, 20 Jun 2022 09:47:02 -0700
+Message-ID: <20220620164702.43666-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220620061053.GC3669@xsang-OptiPlex-9020>
+References: <20220620061053.GC3669@xsang-OptiPlex-9020>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.55]
+X-ClientProxiedBy: EX13D22UWB003.ant.amazon.com (10.43.161.76) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
+X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,73 +65,177 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maciej Fijalkowski wrote:
-> On Fri, Jun 17, 2022 at 07:56:17PM -0700, John Fastabend wrote:
-> > Maciej Fijalkowski wrote:
-> > > Some of the drivers that implement support for AF_XDP Zero Copy (like
-> > > ice) can have lazy approach for cleaning Tx descriptors. For ZC, when
-> > > descriptor is cleaned, it is placed onto AF_XDP completion queue. This
-> > > means that current implementation of wait_for_tx_completion() in
-> > > xdpxceiver can get onto infinite loop, as some of the descriptors can
-> > > never reach CQ.
-> > > 
-> > > This function can be changed to rely on pkts_in_flight instead.
-> > > 
-> > > Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> > > ---
-> > 
-> > Sorry I'm going to need more details to follow whats going on here.
-> > 
-> > In send_pkts() we do the expected thing and send all the pkts and
-> > then call wait_for_tx_completion().
-> > 
-> > Wait for completion is obvious,
-> > 
-> >  static void wait_for_tx_completion(struct xsk_socket_info *xsk)               
-> >  {                                                   
-> >         while (xsk->outstanding_tx)                                                      
-> >                 complete_pkts(xsk, BATCH_SIZE);
-> >  }  
-> > 
-> > the 'outstanding_tx' counter appears to be decremented in complete_pkts().
-> > This is done by looking at xdk_ring_cons__peek() makes sense to me until
-> > it shows up here we don't know the pkt has been completely sent and
-> > can release the resources.
+From:   kernel test robot <oliver.sang@intel.com>
+Date:   Mon, 20 Jun 2022 14:10:53 +0800
+> Greeting,
 > 
-> This is necessary for scenarios like l2fwd in xdpsock where you would be
-> taking entries from cq back to fq to refill the rx hw queue and keep going
-> with the flow.
+> FYI, we noticed the following commit (built with gcc-11):
 > 
-> > 
-> > Now if you just zero it on exit and call it good how do you know the
-> > resources are safe to clean up? Or that you don't have a real bug
-> > in the driver that isn't correctly releasing the resource.
+> commit: b4813d591454d771b5aaf33a6252b214648c430f ("[PATCH v1 net-next 4/6] af_unix: Acquire/Release per-netns hash table's locks.")
+> url: https://github.com/intel-lab-lkp/linux/commits/Kuniyuki-Iwashima/af_unix-Introduce-per-netns-socket-hash-table/20220617-075046
+> base: https://git.kernel.org/cgit/linux/kernel/git/davem/net-next.git 5dcb50c009c9f8ec1cfca6a81a05c0060a5bbf68
+> patch link: https://lore.kernel.org/netdev/20220616234714.4291-5-kuniyu@amazon.com
 > 
-> xdpxceiver spawns two threads one for tx and one for rx. from rx thread
-> POV if receive_pkts() ended its job then this implies that tx thread
-> transmitted all of the frames that rx thread expected to receive. this
-> zeroing is then only to terminate the tx thread and finish the current
-> test case so that further cases under the current mode can be executed.
+> in testcase: boot
 > 
-> > 
-> > How are users expected to use a lazy approach to tx descriptor cleaning
-> > in this case e.g. on exit like in this case. It seems we need to
-> > fix the root cause of ice not putting things on the completion queue
-> > or I misunderstood the patch.
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 > 
-> ice puts things on cq lazily on purpose as we added batching to Tx side
-> where we clean descs only when it's needed.
+> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
 > 
-> We need to exit spawned threads before we detach socket from interface.
-> Socket detach is done from main thread and in that case driver goes
-> through tx ring and places descriptors that are left to completion queue.
+> 
+> 
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> 
+> 
+> [  113.085258][    T1] WARNING: possible recursive locking detected
+> [  113.085261][    T1] 5.19.0-rc1-00408-gb4813d591454 #1 Not tainted
+> [  113.085264][    T1] --------------------------------------------
+> [  113.085265][    T1] systemd/1 is trying to acquire lock:
+> [ 113.085270][ T1] ffff888167ee6c18 (&net->unx.hash[i].lock){+.+.}-{2:2}, at: unix_bind_bsd (net/unix/af_unix.c:1200) 
+> [  113.085313][    T1]
+> [  113.085313][    T1] but task is already holding lock:
+> [ 113.085314][ T1] ffff888167ee0918 (&net->unx.hash[i].lock){+.+.}-{2:2}, at: unix_bind_bsd (net/unix/af_unix.c:175 net/unix/af_unix.c:1199) 
+> [  113.085321][    T1]
+> [  113.085321][    T1] other info that might help us debug this:
+> [  113.085323][    T1]  Possible unsafe locking scenario:
+> [  113.085323][    T1]
+> [  113.085324][    T1]        CPU0
+> [  113.085325][    T1]        ----
+> [  113.085325][    T1]   lock(&net->unx.hash[i].lock);
+> [  113.085328][    T1]   lock(&net->unx.hash[i].lock);
+> [  113.085330][    T1]
+> [  113.085330][    T1]  *** DEADLOCK ***
+> [  113.085330][    T1]
+> [  113.085331][    T1]  May be due to missing lock nesting notation
 
-But, in general (not this specific xdpxceiver) how does an application
-that is tx only know when its OK to tear things down if the ice
-driver can get stuck and never puts those on the completion queue? Should
-there be some timer that fires and writes these back regardless of more
-descriptors are seen? Did I understand the driver correctly.
+Sorry, I did a wrong copy-and-paste.
+I'll use spin_lock_nested() in unix_table_double_lock().
 
-Thanks,
-John
+
+> [  113.085331][    T1]
+> [  113.085333][    T1] 6 locks held by systemd/1:
+> [ 113.085335][ T1] #0: ffff88815da40448 (sb_writers#6){.+.+}-{0:0}, at: filename_create (fs/namei.c:3744) 
+> [ 113.085351][ T1] #1: ffff88815bffec40 (&type->i_mutex_dir_key#4/1){+.+.}-{3:3}, at: filename_create (fs/namei.c:3747) 
+> [  OK  ] Started Forward Password Requests to Wall Directory Watch.
+> [  OK  ] Started Dispatch Password Requests to Console Directory Watch.
+> [  OK  ] Reached target Paths.
+> [  OK  ] Listening on udev Control Socket.
+> [ 113.085359][ T1] #2: ffff88815d974e18 (&u->bindlock){+.+.}-{3:3}, at: unix_bind_bsd (net/unix/af_unix.c:1192) 
+> [ 113.085370][ T1] #3: ffffffffb0eec038 (&unix_table_locks[i]){+.+.}-{2:2}, at: unix_bind_bsd (net/unix/af_unix.c:172 net/unix/af_unix.c:1199) 
+> [ 113.085377][ T1] #4: ffffffffb0ef1838 (&unix_table_locks[i]/1){+.+.}-{2:2}, at: unix_bind_bsd (net/unix/af_unix.c:174 net/unix/af_unix.c:1199) 
+> [ 113.085384][ T1] #5: ffff888167ee0918 (&net->unx.hash[i].lock){+.+.}-{2:2}, at: unix_bind_bsd (net/unix/af_unix.c:175 net/unix/af_unix.c:1199) 
+> [  113.085391][    T1]
+> [  113.085391][    T1] stack backtrace:
+> [  113.085395][    T1] CPU: 1 PID: 1 Comm: systemd Not tainted 5.19.0-rc1-00408-gb4813d591454 #1
+> [  113.085401][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-debian-1.16.0-4 04/01/2014
+> [  113.085408][    T1] Call Trace:
+> [  113.085419][    T1]  <TASK>
+> [ 113.085421][ T1] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 4)) 
+> [ 113.085453][ T1] validate_chain.cold (kernel/locking/lockdep.c:2988 kernel/locking/lockdep.c:3031 kernel/locking/lockdep.c:3816) 
+> [ 113.085473][ T1] ? check_prev_add (kernel/locking/lockdep.c:3785) 
+> [ 113.085483][ T1] ? rcu_read_unlock (include/linux/rcupdate.h:724 (discriminator 5)) 
+> [ 113.085489][ T1] __lock_acquire (kernel/locking/lockdep.c:5053) 
+> [  OK  ] Listening on Journal Socket (/dev/log).
+> [  OK  ] Listening on Journal Socket.
+> [  OK  ] Reached target Encrypted Volumes.
+> [  OK  ] Listening on /dev/initctl Compatibility Named Pipe.
+> [ 113.085497][ T1] ? rcu_read_unlock (include/linux/rcupdate.h:724 (discriminator 5)) 
+> [ 113.085501][ T1] lock_acquire (kernel/locking/lockdep.c:466 kernel/locking/lockdep.c:5667 kernel/locking/lockdep.c:5630) 
+> [ 113.085504][ T1] ? unix_bind_bsd (net/unix/af_unix.c:1200) 
+> [ 113.085509][ T1] ? rcu_read_unlock (include/linux/rcupdate.h:724 (discriminator 5)) 
+> [ 113.085513][ T1] ? do_raw_spin_lock (arch/x86/include/asm/atomic.h:202 include/linux/atomic/atomic-instrumented.h:543 include/asm-generic/qspinlock.h:111 kernel/locking/spinlock_debug.c:115) 
+> [ 113.085519][ T1] ? rwlock_bug+0xc0/0xc0 
+> [  OK  ] Created slice User and Session Slice.
+> [ 113.085524][ T1] _raw_spin_lock (include/linux/spinlock_api_smp.h:134 kernel/locking/spinlock.c:154) 
+> [ 113.085539][ T1] ? unix_bind_bsd (net/unix/af_unix.c:1200) 
+> [ 113.085543][ T1] unix_bind_bsd (net/unix/af_unix.c:1200) 
+> [ 113.085548][ T1] ? __might_fault (mm/memory.c:5566 mm/memory.c:5559) 
+> [ 113.085557][ T1] ? unix_stream_sendmsg (net/unix/af_unix.c:1153) 
+> [  OK  ] Created slice System Slice.
+> [ 113.085560][ T1] ? lock_release (kernel/locking/lockdep.c:466 kernel/locking/lockdep.c:5687) 
+> [ 113.085563][ T1] ? _copy_from_user (arch/x86/include/asm/uaccess_64.h:46 arch/x86/include/asm/uaccess_64.h:52 lib/usercopy.c:16) 
+> [ 113.085580][ T1] __sys_bind (net/socket.c:1776) 
+> [ 113.085589][ T1] ? __ia32_sys_socketpair (net/socket.c:1763) 
+> [ 113.085592][ T1] ? __lock_release (kernel/locking/lockdep.c:5341) 
+> [ 113.085597][ T1] ? lock_is_held_type (kernel/locking/lockdep.c:5406 kernel/locking/lockdep.c:5708) 
+> [ 113.085606][ T1] ? __might_fault (mm/memory.c:5566 mm/memory.c:5559) 
+> [ 113.085610][ T1] ? lock_release (kernel/locking/lockdep.c:466 kernel/locking/lockdep.c:5687) 
+> [ 113.085614][ T1] __do_compat_sys_socketcall (net/compat.c:453) 
+> [ 113.085627][ T1] ? __x64_sys_rmdir (fs/namei.c:4221) 
+> [ 113.085631][ T1] ? __ia32_compat_sys_recvmmsg_time32 (net/compat.c:425) 
+> [ 113.085637][ T1] ? syscall_exit_to_user_mode (kernel/entry/common.c:129 kernel/entry/common.c:296) 
+> [ 113.085642][ T1] ? lockdep_hardirqs_on_prepare (kernel/locking/lockdep.c:4526) 
+> [ 113.085646][ T1] __do_fast_syscall_32 (arch/x86/entry/common.c:112 arch/x86/entry/common.c:178) 
+> [ 113.085652][ T1] ? __do_fast_syscall_32 (arch/x86/entry/common.c:183) 
+> Mounting Debug File System...
+> [ 113.085656][ T1] do_fast_syscall_32 (arch/x86/entry/common.c:203) 
+> [ 113.085660][ T1] entry_SYSENTER_compat_after_hwframe (arch/x86/entry/entry_64_compat.S:117) 
+> [  113.085669][    T1] RIP: 0023:0xf7f70549
+> [ 113.085673][ T1] Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
+> All code
+> ========
+>    0:	03 74 c0 01          	add    0x1(%rax,%rax,8),%esi
+>    4:	10 05 03 74 b8 01    	adc    %al,0x1b87403(%rip)        # 0x1b8740d
+>    a:	10 06                	adc    %al,(%rsi)
+>    c:	03 74 b4 01          	add    0x1(%rsp,%rsi,4),%esi
+>   10:	10 07                	adc    %al,(%rdi)
+>   12:	03 74 b0 01          	add    0x1(%rax,%rsi,4),%esi
+>   16:	10 08                	adc    %cl,(%rax)
+>   18:	03 74 d8 01          	add    0x1(%rax,%rbx,8),%esi
+>   1c:	00 00                	add    %al,(%rax)
+>   1e:	00 00                	add    %al,(%rax)
+>   20:	00 51 52             	add    %dl,0x52(%rcx)
+>   23:	55                   	push   %rbp
+>   24:	89 e5                	mov    %esp,%ebp
+>   26:	0f 34                	sysenter 
+>   28:	cd 80                	int    $0x80
+>   2a:*	5d                   	pop    %rbp		<-- trapping instruction
+>   2b:	5a                   	pop    %rdx
+>   2c:	59                   	pop    %rcx
+>   2d:	c3                   	retq   
+>   2e:	90                   	nop
+>   2f:	90                   	nop
+>   30:	90                   	nop
+>   31:	90                   	nop
+>   32:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
+>   39:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
+> 
+> Code starting with the faulting instruction
+> ===========================================
+>    0:	5d                   	pop    %rbp
+>    1:	5a                   	pop    %rdx
+>    2:	59                   	pop    %rcx
+>    3:	c3                   	retq   
+>    4:	90                   	nop
+>    5:	90                   	nop
+>    6:	90                   	nop
+>    7:	90                   	nop
+>    8:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
+>    f:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
+> 
+> 
+> To reproduce:
+> 
+>         # build kernel
+> 	cd linux
+> 	cp config-5.19.0-rc1-00408-gb4813d591454 .config
+> 	make HOSTCC=gcc-11 CC=gcc-11 ARCH=x86_64 olddefconfig prepare modules_prepare bzImage modules
+> 	make HOSTCC=gcc-11 CC=gcc-11 ARCH=x86_64 INSTALL_MOD_PATH=<mod-install-dir> modules_install
+> 	cd <mod-install-dir>
+> 	find lib/ | cpio -o -H newc --quiet | gzip > modules.cgz
+> 
+> 
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         bin/lkp qemu -k <bzImage> -m modules.cgz job-script # job-script is attached in this email
+> 
+>         # if come across any failure that blocks the test,
+>         # please remove ~/.lkp and /lkp dir to run from a clean state.
+> 
+> 
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://01.org/lkp
+> 
