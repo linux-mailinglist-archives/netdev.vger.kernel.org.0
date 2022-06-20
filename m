@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B5505522B3
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 19:21:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ECF15522B8
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 19:25:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238509AbiFTRVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 13:21:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50760 "EHLO
+        id S239172AbiFTRZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 13:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232903AbiFTRVN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 13:21:13 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0FF1DA58;
-        Mon, 20 Jun 2022 10:21:13 -0700 (PDT)
+        with ESMTP id S232421AbiFTRZm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 13:25:42 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48891EAC9;
+        Mon, 20 Jun 2022 10:25:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655745673; x=1687281673;
+  t=1655745941; x=1687281941;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=Yat8R+G8CrJ8fLq3/RWqsSncBYDHY8UEwygwlmgjhYs=;
-  b=LvcfakX3ztUt4gyBujkm0NScLSVzZTo3GuYYWhC7bOnEqPX5TIA52ia8
-   +R49qR7E3oqNd3QwCL30fGdZhPWJ5e/qQTqFdMBCWJJB7MdBomwHAaeVr
-   NoIDdhuzMGF7nxDm0HNSHRdkGBWnYBHCYh9ERjsDuOLs4PutqWd9anD9r
-   WwUIqytsTJMcylAdabzFkvpeU80+yx5BN93vj3ySacR4qQqSJidTFGZTq
-   +YsK9d/7RKO0Ru8xjQCbogoV3oJZlNTSZWJtj1EauPD8DK6SiOQ7+3D/6
-   ydEUOLjXDcUtz/7c/3lIkwE5sP3r+b8x3m8X2TcR47mTR04l5xVbsNiQ3
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="262977650"
+   mime-version:in-reply-to;
+  bh=BbgzJRwAzZfGnN6+fsR430k9tPyCeFnjovUdsDb86xE=;
+  b=dKWdKAyLLj1Meq1T7fN60BxFeHP5t3A7NFxqvOOR9R2fVdbgaEPeUpx5
+   /DG+Y3Ux90UN3HVCWddaQicO5q1h5Y3INAJEtTT7s0HUiIZIat+4LuOaE
+   awACAJSkJA1scih7VE5a1k9tQxqk+sG2gjENoDbIy3ZoX9Ho2UbF3yHjp
+   QHrrlwcFpmsqOKG1Xfud2hNnw+Ngn4a4is2B9/xo0SRIY9ToyJdL1e14B
+   Kn7icifMaokzOdzW5BU22LSoG/yPbObPRg9+0Y5XeaSkIk9RZHT7AGhYF
+   ZEESiSwhVv3Vu85oJg6UwGmG+SKoSN5VTPkTc9eCHaoGjrOmKbXHd5gUG
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="366267955"
 X-IronPort-AV: E=Sophos;i="5.92,207,1650956400"; 
-   d="scan'208";a="262977650"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 10:21:12 -0700
+   d="scan'208";a="366267955"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 10:25:41 -0700
 X-IronPort-AV: E=Sophos;i="5.92,207,1650956400"; 
-   d="scan'208";a="689549673"
+   d="scan'208";a="729475487"
 Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 10:21:07 -0700
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2022 10:25:37 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.95)
         (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1o3L5E-000kYi-BG;
-        Mon, 20 Jun 2022 20:21:04 +0300
-Date:   Mon, 20 Jun 2022 20:21:04 +0300
+        id 1o3L9Z-000kYr-9m;
+        Mon, 20 Jun 2022 20:25:33 +0300
+Date:   Mon, 20 Jun 2022 20:25:33 +0300
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Marcin Wojtas <mw@semihalf.com>
 Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
@@ -51,64 +51,94 @@ Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
         hkallweit1@gmail.com, gjb@semihalf.com, jaz@semihalf.com,
         tn@semihalf.com, Samer.El-Haj-Mahmoud@arm.com,
         upstream@semihalf.com
-Subject: Re: [net-next: PATCH 00/12] ACPI support for DSA
-Message-ID: <YrCsgIxOmXQcjy+B@smile.fi.intel.com>
+Subject: Re: [net-next: PATCH 01/12] net: phy: fixed_phy: switch to fwnode_
+ API
+Message-ID: <YrCtjWSokoFPKwoJ@smile.fi.intel.com>
 References: <20220620150225.1307946-1-mw@semihalf.com>
+ <20220620150225.1307946-2-mw@semihalf.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220620150225.1307946-1-mw@semihalf.com>
+In-Reply-To: <20220620150225.1307946-2-mw@semihalf.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 05:02:13PM +0200, Marcin Wojtas wrote:
-> Hi!
-> 
-> This patchset introduces the support for DSA in ACPI world. A couple of
-> words about the background and motivation behind those changes:
-> 
-> The DSA code is strictly dependent on the Device Tree and Open Firmware
-> (of_*) interface, both in the drivers and the common high-level net/dsa API.
-> The only alternative is to pass the information about the topology via
-> platform data - a legacy approach used by older systems that compiled the
-> board description into the kernel.
-> 
-> The above constraint is problematic for the embedded devices based e.g. on
-> x86_64 SoCs, which are described by ACPI tables - to use DSA, some tricks
-> and workarounds have to be applied. Addition of switch description to
-> DSDT/SSDT tables would help to solve many similar cases and use unmodified
-> kernel modules. It also enables this feature for ARM64 ACPI users.
-> 
-> The key enablements allowing for adding ACPI support for DSA in Linux were
-> NIC drivers, MDIO, PHY, and phylink modifications – the latter three merged
-> in 2021. I thought it would be worth to experiment with DSA, which seemed
-> to be a natural follow-up challenge.
-> 
-> It turned out that without much hassle it is possible to describe
-> DSA-compliant switches as child devices of the MDIO busses, which are
-> responsible for their enumeration based on the standard _ADR fields and
-> description in _DSD objects under 'device properties' UUID [1].
-> The vast majority of required changes were simple of_* to fwnode_*
-> transition, as the DT and ACPI topolgies are analogous, except for
-> 'ports' and 'mdio' subnodes naming, as they don't conform ACPI
-> namespace constraints [2].
+On Mon, Jun 20, 2022 at 05:02:14PM +0200, Marcin Wojtas wrote:
+> This patch allows to use fixed_phy driver and its helper
+> functions without Device Tree dependency, by swtiching from
+> of_ to fwnode_ API.
 
 ...
 
-> Note that for now cascade topology remains unsupported in ACPI world
-> (based on "dsa" label and "link" property values). It seems to be feasible,
-> but would extend this patchset due to necessity of of_phandle_iterator
-> migration to fwnode_. Leave it as a possible future step.
+> -#ifdef CONFIG_OF_GPIO
 
-Wondering if this can be done using fwnode graph.
+Nice to see this gone, because it's my goal as well.
+
+...
+
+> -static struct gpio_desc *fixed_phy_get_gpiod(struct device_node *np)
+> +static struct gpio_desc *fixed_phy_get_gpiod(struct fwnode_handle *fwnode)
+>  {
+> -	struct device_node *fixed_link_node;
+> +	struct fwnode_handle *fixed_link_node;
+>  	struct gpio_desc *gpiod;
+
+> -	if (!np)
+> +	if (!fwnode)
+>  		return NULL;
+
+Can be dropped altogether. The following call will fail and return the same.
+
+> -	fixed_link_node = of_get_child_by_name(np, "fixed-link");
+> +	fixed_link_node = fwnode_get_named_child_node(fwnode, "fixed-link");
+>  	if (!fixed_link_node)
+>  		return NULL;
+>  
+> @@ -204,7 +203,7 @@ static struct gpio_desc *fixed_phy_get_gpiod(struct device_node *np)
+>  	 * Linux device associated with it, we simply have obtain
+>  	 * the GPIO descriptor from the device tree like this.
+>  	 */
+> -	gpiod = fwnode_gpiod_get_index(of_fwnode_handle(fixed_link_node),
+
+> +	gpiod = fwnode_gpiod_get_index(fixed_link_node,
+>  				       "link", 0, GPIOD_IN, "mdio");
+
+Can fit one line now.
+
+>  	if (IS_ERR(gpiod) && PTR_ERR(gpiod) != -EPROBE_DEFER) {
+>  		if (PTR_ERR(gpiod) != -ENOENT)
+> @@ -212,20 +211,14 @@ static struct gpio_desc *fixed_phy_get_gpiod(struct device_node *np)
+>  			       fixed_link_node);
+>  		gpiod = NULL;
+>  	}
+> -	of_node_put(fixed_link_node);
+> +	fwnode_handle_put(fixed_link_node);
+>  
+>  	return gpiod;
+>  }
+
+...
+
+> -	of_node_get(np);
+> -	phy->mdio.dev.of_node = np;
+> +	fwnode_handle_get(fwnode);
+> +	phy->mdio.dev.fwnode = fwnode;
+
+Please, use device_set_node().
+
+...
+
+> +	fwnode_handle_put(phy->mdio.dev.fwnode);
+
+dev_fwnode()
 
 -- 
 With Best Regards,
