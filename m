@@ -2,67 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 956AE55245F
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 21:05:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 898ED552463
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 21:08:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239357AbiFTTFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 15:05:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34432 "EHLO
+        id S245254AbiFTTIY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 15:08:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235833AbiFTTFR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 15:05:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F1CA12AF0
-        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 12:05:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 384E1615DB
-        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 19:05:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47519C3411B;
-        Mon, 20 Jun 2022 19:05:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655751915;
-        bh=iYZeR+Ya7snVdwYo5nzju+nvwQXbzKqKwL64+L+RvuY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IESARd0GQLJ1GNDsffqjf4cau28eoICoRs7gQpoDE5h/dw8n68z7+ImiPwoRnbdWt
-         pQjEamHZowYnX8+zpmDT3kqlxQwHkk0lih/YiDCz66hXhH8Y6YUFa2EH5p276sQqeZ
-         i92p8VxL3zN9Co8e8Xom6qqyUatt5SalQlRrpuu8PDg34N+mY4YGtSOtzg/ZvDHrhJ
-         NVTijSvYWBy9miSCHVndGwVR7r1sgRH2HxY+uiCtiMGqs41Pek4XcXP+QDLlRfe3uX
-         UfLV9digt3g1ESvFyZkizY7bU1LxLcaA5XanBd52M5qZ9GxrJIumVuIW8tYOAIgRwg
-         yI4KWgxHQzWBQ==
-Date:   Mon, 20 Jun 2022 12:05:14 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Jiawen Wu" <jiawenwu@trustnetic.com>
-Cc:     "'Andrew Lunn'" <andrew@lunn.ch>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v6] net: txgbe: Add build support for txgbe
-Message-ID: <20220620120514.64f3ca85@kernel.org>
-In-Reply-To: <005001d8844b$d58f94c0$80aebe40$@trustnetic.com>
-References: <20220616095308.470320-1-jiawenwu@trustnetic.com>
-        <YquDYCltyKfEjA93@lunn.ch>
-        <20220616132908.789b9be4@kernel.org>
-        <005001d8844b$d58f94c0$80aebe40$@trustnetic.com>
+        with ESMTP id S244329AbiFTTIT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 15:08:19 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E08AB63CB;
+        Mon, 20 Jun 2022 12:08:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=I9JnMjmAl+wncDy9zdMXbHRNZeq3DoxfwmauEBSTDeE=; b=GOD56Y9zHryF7WAzDRI2QyaXi0
+        8Cl1YZtE109vd3tf4jUQK7fuLgZ8IBznPOW0z3bIqxY5jr+ILsIL5U3+ii8Wy7FGP4CDFNpRsyhf6
+        EYlTuP+VVQwBeIR4nwoeQfb3FifwOoyapKabT1f19gAhtYmPoFyleuzIZ/tO6Tw8Y+jE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o3Mku-007dzr-0I; Mon, 20 Jun 2022 21:08:12 +0200
+Date:   Mon, 20 Jun 2022 21:08:11 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org, rafael@kernel.org,
+        andriy.shevchenko@linux.intel.com, lenb@kernel.org,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux@armlinux.org.uk, hkallweit1@gmail.com,
+        gjb@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
+        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
+Subject: Re: [net-next: PATCH 08/12] ACPI: scan: prevent double enumeration
+ of MDIO bus children
+Message-ID: <YrDFmw4rziGQJCAu@lunn.ch>
+References: <20220620150225.1307946-1-mw@semihalf.com>
+ <20220620150225.1307946-9-mw@semihalf.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220620150225.1307946-9-mw@semihalf.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Jun 2022 10:17:03 +0800 Jiawen Wu wrote:
-> Thanks for your comments.
-> If I don't make changes for this patch, is the next thing I should to do is
-> wait for the patch to be merged?
-> Can I go on to send the next part of the driver?
+On Mon, Jun 20, 2022 at 05:02:21PM +0200, Marcin Wojtas wrote:
+> The MDIO bus is responsible for probing and registering its respective
+> children, such as PHYs or other kind of devices.
+> 
+> It is required that ACPI scan code should not enumerate such
+> devices, leaving this task for the generic MDIO bus routines,
+> which are initiated by the controller driver.
 
-You got review comments the patch was set to 'Changes Requested' in
-patchwork:
-https://patchwork.kernel.org/project/netdevbpf/patch/20220616095308.470320-1-jiawenwu@trustnetic.com/
+I suppose the question is, should you ignore the ACPI way of doing
+things, or embrace the ACPI way?
 
-You need to address the feedback and post a v8.
+At least please add a comment why the ACPI way is wrong, despite this
+being an ACPI binding.
+
+      Andrew
