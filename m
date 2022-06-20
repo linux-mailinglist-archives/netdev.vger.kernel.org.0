@@ -2,95 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CCFB551435
-	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 11:24:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4A0755144A
+	for <lists+netdev@lfdr.de>; Mon, 20 Jun 2022 11:27:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239353AbiFTJYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 20 Jun 2022 05:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34198 "EHLO
+        id S240672AbiFTJ0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 20 Jun 2022 05:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232112AbiFTJYH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 05:24:07 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9E910FEF;
-        Mon, 20 Jun 2022 02:24:06 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id a14so183071pgh.11;
-        Mon, 20 Jun 2022 02:24:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=S5CS4XuowHl3fOQ7b49ktrcd1HEr3NKrPs0rcjTFez0=;
-        b=WID6xmpohixtFlYmxksYOKpB3rq0QO82zERJD1ltIKASW3B92zhFit4jpZ55xorv4R
-         wdcIOCS29im2ljT7APria7bnLFfWZU42ACqvORgqIrKkm29hC2wBPANWPBxQRBXGnH7a
-         cru3fHYKquGP94wwwRwaMru0vdWp9+iIiDziHou4hCmaXM1gHj6aSnPlEYpl699RPWfY
-         8e5lyVuvhrhXPsmH0F+Jt1yF+v0LsItyDAjaoug97z0XfdNH2vGvAv3hz2SvED1+tfcP
-         pXZ0dCeowDBcbcIjTJw6I/eRhhGJqNOk/a+WmBIv9uJ8f8QOt+j4rSaWbmZ4/UY0zIMp
-         /37A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=S5CS4XuowHl3fOQ7b49ktrcd1HEr3NKrPs0rcjTFez0=;
-        b=4GvQU9tiPakmbDR6/3LcuuIg7y76OWKP18q1uBtLcappwZjVz4DCqfMeqZF7CCmzMm
-         87vr2FB0O+89gDMh2+OJVouuQaW4g63XlCULs/vrpjRCMmErOD0AlZkg8yPM8fQ1Fjg7
-         UT0PlkB2nPmNEy2vJBh3RXWHiVNhlKPxHjs1P2Q8T7AK+9hufCeMJM0XPT09xOOcB+tn
-         r8uDGyJ0ulnEsHDVR0bmqoX9CPfEsuOmq3r8p3PTK/I9PY4zgGTs4T/q8fiRkta+uMye
-         ERDuQwOhLxduE5utzHp/ohtxxP7TUzb39sGBImnqRDXDxi4lptzsE+d0Icpjv8fl94Hs
-         MqsA==
-X-Gm-Message-State: AJIora96lGFEOwX0VIwCNNh8h3ojcAN8EU89lm2mMTuEgpkPmFU1+dqV
-        CxHhIhM3GhHPCJP+mEIWk5A=
-X-Google-Smtp-Source: AGRyM1u3rLFCnE8Lo+RAAcfpyHC/N8fnrkkJavw2vCtskOUencdn6XVurRwJGrlRUhMHclC3z1Mkmg==
-X-Received: by 2002:a63:f09:0:b0:3fd:7e20:6508 with SMTP id e9-20020a630f09000000b003fd7e206508mr21086223pgl.32.1655717046078;
-        Mon, 20 Jun 2022 02:24:06 -0700 (PDT)
-Received: from localhost.localdomain ([103.84.139.165])
-        by smtp.gmail.com with ESMTPSA id b193-20020a6334ca000000b0040c95aeae26sm3414935pga.12.2022.06.20.02.24.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jun 2022 02:24:05 -0700 (PDT)
-From:   Hangyu Hua <hbh25y@gmail.com>
-To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, wanghai38@huawei.com,
-        dsd@laptop.org, linville@tuxdriver.com, dcbw@redhat.com
-Cc:     libertas-dev@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH] libertas: Fix possible refcount leak in if_usb_probe()
-Date:   Mon, 20 Jun 2022 17:23:50 +0800
-Message-Id: <20220620092350.39960-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S240661AbiFTJ0t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 20 Jun 2022 05:26:49 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623D412D20;
+        Mon, 20 Jun 2022 02:26:48 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 8D26E1C0006;
+        Mon, 20 Jun 2022 09:26:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1655717207;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BjEJ00h/h9s7Mts4kYrpWW5OrcmrFoJTYskT9VkugVY=;
+        b=Zlb4Wdsl1v4gXO2cHelFeqDMq9k7gYIuWefCzsZstAWYsnnzAKX9tRJ0JCaWvlT3XCwICR
+        V4WZNyDp/+FXSd/5Ckm056Zzjih04gNTFWQtHNeCquBwgoxXIax6iYlLD4veXBCZxeURin
+        gOK6gYgn5+pSQiPYcFlRHJonOX42RUSuWWUaayZcXw276/ACjWsIUg9IzMknEyPTike1o2
+        QF7EerdVPfcxjv4tI3kL06P7s/6EHFm0Asi68g1gEg6hdLlgmGt9rQvjOU4qgpp8IJOVD6
+        HH7ZrVHRMNrtOXA8AdAO9oRtMq2k8HSBAttYAMc1ceLX5EopkTt7XErQkFRIEA==
+Date:   Mon, 20 Jun 2022 11:26:44 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next v2 1/6] net: ieee802154: Create a device type
+Message-ID: <20220620112527.48c7ba54@xps-13>
+In-Reply-To: <CAK-6q+g7pd14Bhng9r210kROttwtqQkF1JgAF283B9MPc22g3g@mail.gmail.com>
+References: <20220617193254.1275912-1-miquel.raynal@bootlin.com>
+        <20220617193254.1275912-2-miquel.raynal@bootlin.com>
+        <CAK-6q+g7pd14Bhng9r210kROttwtqQkF1JgAF283B9MPc22g3g@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-usb_get_dev will be called before lbs_get_firmware_async which means that
-usb_put_dev need to be called when lbs_get_firmware_async fails.
+Hi Alex,
 
-Fixes: ce84bb69f50e ("libertas USB: convert to asynchronous firmware loading")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
----
- drivers/net/wireless/marvell/libertas/if_usb.c | 1 +
- 1 file changed, 1 insertion(+)
+aahringo@redhat.com wrote on Sun, 19 Jun 2022 20:18:43 -0400:
 
-diff --git a/drivers/net/wireless/marvell/libertas/if_usb.c b/drivers/net/wireless/marvell/libertas/if_usb.c
-index 5d6dc1dd050d..32fdc4150b60 100644
---- a/drivers/net/wireless/marvell/libertas/if_usb.c
-+++ b/drivers/net/wireless/marvell/libertas/if_usb.c
-@@ -287,6 +287,7 @@ static int if_usb_probe(struct usb_interface *intf,
- 	return 0;
- 
- err_get_fw:
-+	usb_put_dev(udev);
- 	lbs_remove_card(priv);
- err_add_card:
- 	if_usb_reset_device(cardp);
--- 
-2.25.1
+> Hi,
+>=20
+> On Fri, Jun 17, 2022 at 3:35 PM Miquel Raynal <miquel.raynal@bootlin.com>=
+ wrote:
+> >
+> > A device can be either a fully functioning device or a kind of reduced
+> > functioning device. Let's create a device type member. Drivers will be
+> > in charge of setting this value if they handle non-FFD devices.
+> >
+> > FFD are considered the default.
+> >
+> > Provide this information in the interface get netlink command.
+> >
+> > Create a helper just to check if a rdev is a FFD or not, which will
+> > then be useful when bringing scan support.
+> >
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > ---
+> >  include/net/nl802154.h    | 9 +++++++++
+> >  net/ieee802154/core.h     | 8 ++++++++
+> >  net/ieee802154/nl802154.c | 6 +++++-
+> >  3 files changed, 22 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/net/nl802154.h b/include/net/nl802154.h
+> > index 145acb8f2509..5258785879e8 100644
+> > --- a/include/net/nl802154.h
+> > +++ b/include/net/nl802154.h
+> > @@ -133,6 +133,8 @@ enum nl802154_attrs {
+> >         NL802154_ATTR_PID,
+> >         NL802154_ATTR_NETNS_FD,
+> >
+> > +       NL802154_ATTR_DEV_TYPE,
+> > +
+> >         /* add attributes here, update the policy in nl802154.c */
+> >
+> >  #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
+> > @@ -163,6 +165,13 @@ enum nl802154_iftype {
+> >         NL802154_IFTYPE_MAX =3D NUM_NL802154_IFTYPES - 1
+> >  };
+> >
+> > +enum nl802154_dev_type {
+> > +       NL802154_DEV_TYPE_FFD =3D 0,
+> > +       NL802154_DEV_TYPE_RFD,
+> > +       NL802154_DEV_TYPE_RFD_RX,
+> > +       NL802154_DEV_TYPE_RFD_TX,
+> > +}; =20
+>=20
+> As I said in another mail, I think this is a "transceiver capability"
 
+Maybe I can rename it to PHY_TYPE if you prefer.
+
+> why it is required that a user sets a transceiver capability. It means
+> that you can actually buy hardware which is either one of those
+> capabilities, one reason why D in those acronyms stands for "Device".
+
+The user is not supposed to set this field, but it can get this field.
+This is what this enumeration is intended for.=20
+
+> In SoftMac you probably find only FFD but out there you would probably
+> find hardware which cannot run as e.g. coordinator and is a RFD.
+
+My main concern was initially to be sure that we would not try to
+perform any unsupported MLME commands on these devices. But as you said
+in another mail, it is highly unlikely that we will ever have to support
+true RFD devices in Linux, so I can just drop this parameter.
+
+Thanks,
+Miqu=C3=A8l
