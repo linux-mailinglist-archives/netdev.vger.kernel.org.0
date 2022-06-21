@@ -2,217 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A728B5537CB
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 18:26:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C8665537F6
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 18:39:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352527AbiFUQ0M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 12:26:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43652 "EHLO
+        id S1352282AbiFUQi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 12:38:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351042AbiFUQ0J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 12:26:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0CFF713F4A
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 09:26:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655828767;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WDvAfC8H1jWG/kPl4hssaiTNP9VbbBXL1QM5A1sW0U4=;
-        b=JMf/rlkbXMlTYBLdYHiHvnLxgzHQocdgkO3+LRfiH1YWoSdNHk114f8yioO9rX5h9ZMdHN
-        jaBBmKPZfwEjiQrsBZ68+8CzVTeBz057kKMn0lR6A1zEhkV3v2AERcehkrP/n5tnkLzuyt
-        sH9KzlIdv8TGJiIl9ChrNYYlzSLFqPI=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-47-w9QEnYwDM22NoHDy1rxVMw-1; Tue, 21 Jun 2022 12:26:04 -0400
-X-MC-Unique: w9QEnYwDM22NoHDy1rxVMw-1
-Received: by mail-wm1-f69.google.com with SMTP id j20-20020a05600c1c1400b0039c747a1e5aso6596854wms.9
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 09:26:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WDvAfC8H1jWG/kPl4hssaiTNP9VbbBXL1QM5A1sW0U4=;
-        b=m+IKfEAXnGf6LtaE771KXEg6u9wUvaL8sUB5vksRzQgXR2zGJWc3aNlXCjPuilwNNV
-         +VEzs7Mx6gVUYrhuXGZeoedV4yrIr+d/t6p4XrW+qE0j9bB7sfOSfBXR3qJYifCcHZEG
-         0MEHWGhbtpbkniO4WD192Z+hb5bLOm6V2vO1gQ0aZUbBPVaoph7o8OCrZPZ9vlw2Qa61
-         pxzH4QHjrZdqBaVQypYu2wL0JLQLzo0q5Zl18mjA3lzDvufutVYT395vpbgbkoM2SdPn
-         eOHUcoiqd003A1h3oP0UOrD7jSTFOA0M8NvWgem57sn+myIBTyAKNSOp41PYTWf3bV6I
-         gm8A==
-X-Gm-Message-State: AJIora80QugMTsV9F75WJzo+Xydm/zYJqrNxwPSFg3LZgUtnvveQ6I+M
-        1uN4XeiX4FjbcPQOVtfu3g17o2Fx0sNlL2GqebsK0joUT/Fhku3G6mosbEbd8I2bwW2vLMuuEaL
-        bcnnK0TUISAG+ylMO
-X-Received: by 2002:a05:600c:2105:b0:39c:381c:1e13 with SMTP id u5-20020a05600c210500b0039c381c1e13mr31200330wml.189.1655828763408;
-        Tue, 21 Jun 2022 09:26:03 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tLVVHWep27Pszg8AaHPX0SKs7SwcyIctPWq8R/Dd6xz2vqMeAosqMqmjEE9gIClLLIIqIuEQ==
-X-Received: by 2002:a05:600c:2105:b0:39c:381c:1e13 with SMTP id u5-20020a05600c210500b0039c381c1e13mr31200305wml.189.1655828763169;
-        Tue, 21 Jun 2022 09:26:03 -0700 (PDT)
-Received: from localhost (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.gmail.com with ESMTPSA id t9-20020adfe109000000b0021018642ff8sm16673450wrz.76.2022.06.21.09.26.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 09:26:02 -0700 (PDT)
-Date:   Tue, 21 Jun 2022 18:25:59 +0200
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Andy Gospodarek <andrew.gospodarek@broadcom.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        kpsingh@kernel.org, toke@redhat.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andy Gospodarek <gospo@broadcom.com>
-Subject: Re: [PATCH net-next] samples/bpf: fixup some xdp progs to be able to
- support xdp multibuffer
-Message-ID: <YrHxF3j5cqqVWE2y@localhost.localdomain>
-References: <20220617220738.3593-1-gospo@broadcom.com>
+        with ESMTP id S232900AbiFUQi4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 12:38:56 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B32418358;
+        Tue, 21 Jun 2022 09:38:53 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LSBxL5x72z6H6t4;
+        Wed, 22 Jun 2022 00:36:54 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 21 Jun 2022 18:38:49 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kpsingh@kernel.org>, <john.fastabend@gmail.com>,
+        <songliubraving@fb.com>, <kafai@fb.com>, <yhs@fb.com>
+CC:     <dhowells@redhat.com>, <keyrings@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v5 0/5] bpf: Add bpf_verify_pkcs7_signature() helper
+Date:   Tue, 21 Jun 2022 18:37:52 +0200
+Message-ID: <20220621163757.760304-1-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="JXivmyhH6RaVy4Gq"
-Content-Disposition: inline
-In-Reply-To: <20220617220738.3593-1-gospo@broadcom.com>
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+One of the desirable features in security is the ability to restrict import
+of data to a given system based on data authenticity. If data import can be
+restricted, it would be possible to enforce a system-wide policy based on
+the signing keys the system owner trusts.
 
---JXivmyhH6RaVy4Gq
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This feature is widely used in the kernel. For example, if the restriction
+is enabled, kernel modules can be plugged in only if they are signed with a
+key whose public part is in the primary or secondary keyring.
 
-> This changes the section name for the bpf program embedded in these
-> files to "xdp.frags" to allow the programs to be loaded on drivers that
-> are using an MTU greater than PAGE_SIZE.  Rather than directly accessing
-> the buffers, the packet data is now accessed via xdp helper functions to
-> provide an example for those who may need to write more complex
-> programs.
->=20
-> Signed-off-by: Andy Gospodarek <gospo@broadcom.com>
+For eBPF, it can be useful as well. For example, it might be useful to
+authenticate data an eBPF program makes security decisions on.
 
-Hi Andy,
+After a discussion in the eBPF mailing list, it was decided that the stated
+goal should be accomplished by introducing a new helper:
+bpf_verify_pkcs7_signature(), dedicated to verify PKCS#7 signatures. More
+helpers will be introduced later, as necessary.
 
-Just 2 nit inline but the code is fine.
+The job of bpf_verify_pkcs7_signature() is simply to call the corresponding
+signature verification function verify_pkcs7_signature(). Data and
+signature can be provided to the new helper with two dynamic pointers, to
+reduce the number of parameters.
 
-Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
+The keyring can be provided from its serial number, with the new helper
+bpf_lookup_user_key(). Since it acquires a reference of the found key, the
+corresponding release helper bpf_key_put() has been introduced to decrement
+the reference count. The eBPF verifier has been enhanced to ensure that the
+key reference count is always decreased, when incremented, or otherwise it
+refuses to load the program. This ability is being verified with the
+lookup_user_key_norelease test.
 
-> ---
->  samples/bpf/xdp1_kern.c            | 13 ++++++++++---
->  samples/bpf/xdp2_kern.c            | 13 ++++++++++---
->  samples/bpf/xdp_tx_iptunnel_kern.c |  2 +-
->  3 files changed, 21 insertions(+), 7 deletions(-)
->=20
-> diff --git a/samples/bpf/xdp1_kern.c b/samples/bpf/xdp1_kern.c
-> index f0c5d95084de..a798553fca3b 100644
-> --- a/samples/bpf/xdp1_kern.c
-> +++ b/samples/bpf/xdp1_kern.c
-> @@ -39,17 +39,24 @@ static int parse_ipv6(void *data, u64 nh_off, void *d=
-ata_end)
->  	return ip6h->nexthdr;
->  }
-> =20
-> -SEC("xdp1")
-> +#define XDPBUFSIZE	64
-> +SEC("xdp.frags")
->  int xdp_prog1(struct xdp_md *ctx)
->  {
-> -	void *data_end =3D (void *)(long)ctx->data_end;
-> -	void *data =3D (void *)(long)ctx->data;
-> +	__u8 pkt[XDPBUFSIZE] =3D {};
-> +	void *data_end =3D &pkt[XDPBUFSIZE-1];
-> +	void *data =3D pkt;
->  	struct ethhdr *eth =3D data;
->  	int rc =3D XDP_DROP;
->  	long *value;
->  	u16 h_proto;
->  	u64 nh_off;
->  	u32 ipproto;
-> +	int err;
-> +
-> +	err =3D bpf_xdp_load_bytes(ctx, 0, pkt, sizeof(pkt));
-> +	if (err < 0)
-> +		return rc;
+While the new helpers provide great flexibility, they seem to be suboptimal
+in terms of security guarantees. If the goal is to do signature
+verification with system-provided keys (e.g. from the built-in keyring),
+the eBPF program would have to rely on the user space counterpart to search
+the correct keyring and to pass its serial. If only the eBPF program is
+signed and verified, there is not certainty that this operation is done
+correctly by unverified code.
 
-I guess we do not need err here:
+Instead, since verify_pkcs7_signature() understands a pre-determined set of
+struct key pointer values, which translates into the corresponding system
+keyrings, the keyring ID parameter has been added as well to the eBPF
+helper. It is considered only if the passed struct key pointer is NULL.
+That would guaranteed, assuming that the keyring ID is hardcoded, that
+signature verification is always done with the desired keys.
 
-	if (bpf_xdp_load_bytes(ctx, 0, pkt, sizeof(pkt)) < 0)
-		return XDP_DROP;
+The introduced helpers can be called only from sleepable programs, because
+of memory allocation (with key flag KEY_LOOKUP_CREATE) and crypto
+operations. For example, the lsm.s/bpf attach point is suitable,
+fexit/array_map_update_elem is not.
 
-> =20
->  	nh_off =3D sizeof(*eth);
->  	if (data + nh_off > data_end)
-> diff --git a/samples/bpf/xdp2_kern.c b/samples/bpf/xdp2_kern.c
-> index d8a64ab077b0..1502ef820aed 100644
-> --- a/samples/bpf/xdp2_kern.c
-> +++ b/samples/bpf/xdp2_kern.c
-> @@ -55,17 +55,24 @@ static int parse_ipv6(void *data, u64 nh_off, void *d=
-ata_end)
->  	return ip6h->nexthdr;
->  }
-> =20
-> -SEC("xdp1")
-> +#define XDPBUFSIZE	64
-> +SEC("xdp.frags")
->  int xdp_prog1(struct xdp_md *ctx)
->  {
-> -	void *data_end =3D (void *)(long)ctx->data_end;
-> -	void *data =3D (void *)(long)ctx->data;
-> +	__u8 pkt[XDPBUFSIZE] =3D {};
-> +	void *data_end =3D &pkt[XDPBUFSIZE-1];
-> +	void *data =3D pkt;
->  	struct ethhdr *eth =3D data;
->  	int rc =3D XDP_DROP;
->  	long *value;
->  	u16 h_proto;
->  	u64 nh_off;
->  	u32 ipproto;
-> +	int err;
-> +
-> +	err =3D bpf_xdp_load_bytes(ctx, 0, pkt, sizeof(pkt));
-> +	if (err < 0)
-> +		return rc;
+A test was added to check the ability of bpf_verify_pkcs7_signature() to
+verify PKCS#7 signatures from the session keyring, a newly-created keyring,
+and from the secondary keyring (taking an existing kernel module for the
+verification). The test does not fail if a suitable kernel module is not
+found (needs support from the CI).
 
-same here
+The patch set is organized as follows.
 
-> =20
->  	nh_off =3D sizeof(*eth);
->  	if (data + nh_off > data_end)
-> diff --git a/samples/bpf/xdp_tx_iptunnel_kern.c b/samples/bpf/xdp_tx_iptu=
-nnel_kern.c
-> index 575d57e4b8d6..0e2bca3a3fff 100644
-> --- a/samples/bpf/xdp_tx_iptunnel_kern.c
-> +++ b/samples/bpf/xdp_tx_iptunnel_kern.c
-> @@ -212,7 +212,7 @@ static __always_inline int handle_ipv6(struct xdp_md =
-*xdp)
->  	return XDP_TX;
->  }
-> =20
-> -SEC("xdp_tx_iptunnel")
-> +SEC("xdp.frags")
->  int _xdp_tx_iptunnel(struct xdp_md *xdp)
->  {
->  	void *data_end =3D (void *)(long)xdp->data_end;
-> --=20
-> 2.25.1
->=20
+Patch 1 exports bpf_dynptr_get_size(), to obtain the real size of data
+carried by a dynamic pointer. Patch 2 introduces the
+bpf_lookup_user_key() and bpf_key_put() helpers. Patch 3 introduces the
+bpf_verify_pkcs7_signature() helper. Patches 4 and 5 respectively add the
+test for the first and the last helper.
 
+Changelog
 
+v4:
+ - Remove bpf_request_key_by_id(), don't return an invalid pointer that
+   other helpers can use
+ - Pass the keyring ID (without ULONG_MAX, suggested by Alexei) to
+   bpf_verify_pkcs7_signature()
+ - Introduce bpf_lookup_user_key() and bpf_key_put() helpers (suggested by
+   Alexei)
+ - Add lookup_key_norelease test, to ensure that the verifier blocks eBPF
+   programs which don't decrement the key reference count
+ - Parse raw PKCS#7 signature instead of module-style signature in the
+   verify_pkcs7_signature test (suggested by Alexei)
+ - Parse kernel module in user space and pass raw PKCS#7 signature to the
+   eBPF program for signature verification
 
---JXivmyhH6RaVy4Gq
-Content-Type: application/pgp-signature; name="signature.asc"
+v3:
+ - Rename bpf_verify_signature() back to bpf_verify_pkcs7_signature() to
+   avoid managing different parameters for each signature verification
+   function in one helper (suggested by Daniel)
+ - Use dynamic pointers and export bpf_dynptr_get_size() (suggested by
+   Alexei)
+ - Introduce bpf_request_key_by_id() to give more flexibility to the caller
+   of bpf_verify_pkcs7_signature() to retrieve the appropriate keyring
+   (suggested by Alexei)
+ - Fix test by reordering the gcc command line, always compile sign-file
+ - Improve helper support check mechanism in the test
 
------BEGIN PGP SIGNATURE-----
+v2:
+ - Rename bpf_verify_pkcs7_signature() to a more generic
+   bpf_verify_signature() and pass the signature type (suggested by KP)
+ - Move the helper and prototype declaration under #ifdef so that user
+   space can probe for support for the helper (suggested by Daniel)
+ - Describe better the keyring types (suggested by Daniel)
+ - Include linux/bpf.h instead of vmlinux.h to avoid implicit or
+   redeclaration
+ - Make the test selfcontained (suggested by Alexei)
 
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYrHxFAAKCRA6cBh0uS2t
-rNXWAQC9RJ9eBhQ8nqZk0eHJVD+XnR8cAsMvS3kRaQcLM0zAMgD+IVGR3IUNouQF
-obNO+iYLRxLKVLkqQ5tvRO0Xh0kAyw0=
-=LNWy
------END PGP SIGNATURE-----
+v1:
+ - Don't define new map flag but introduce simple wrapper of
+   verify_pkcs7_signature() (suggested by Alexei and KP)
 
---JXivmyhH6RaVy4Gq--
+Roberto Sassu (5):
+  bpf: Export bpf_dynptr_get_size()
+  bpf: Add bpf_lookup_user_key() and bpf_key_put() helpers
+  bpf: Add bpf_verify_pkcs7_signature() helper
+  selftests/bpf: Add test for unreleased key references
+  selftests/bpf: Add test for bpf_verify_pkcs7_signature() helper
+
+ include/linux/bpf.h                           |   1 +
+ include/uapi/linux/bpf.h                      |  33 ++
+ kernel/bpf/bpf_lsm.c                          |  85 +++++
+ kernel/bpf/helpers.c                          |   2 +-
+ kernel/bpf/verifier.c                         |   6 +-
+ scripts/bpf_doc.py                            |   2 +
+ tools/include/uapi/linux/bpf.h                |  33 ++
+ tools/testing/selftests/bpf/Makefile          |  14 +-
+ tools/testing/selftests/bpf/config            |   2 +
+ .../prog_tests/lookup_user_key_norelease.c    |  52 +++
+ .../bpf/prog_tests/verify_pkcs7_sig.c         | 341 ++++++++++++++++++
+ .../progs/test_lookup_user_key_norelease.c    |  24 ++
+ .../bpf/progs/test_verify_pkcs7_sig.c         |  90 +++++
+ .../testing/selftests/bpf/verify_sig_setup.sh | 104 ++++++
+ 14 files changed, 783 insertions(+), 6 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/lookup_user_key_norelease.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/verify_pkcs7_sig.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_lookup_user_key_norelease.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_verify_pkcs7_sig.c
+ create mode 100755 tools/testing/selftests/bpf/verify_sig_setup.sh
+
+-- 
+2.25.1
 
