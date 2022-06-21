@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6223B552C59
+	by mail.lfdr.de (Postfix) with ESMTP id 15B35552C58
 	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 09:49:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347573AbiFUHte (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 03:49:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47360 "EHLO
+        id S1347238AbiFUHtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 03:49:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347926AbiFUHtc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 03:49:32 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A80F23BE4
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 00:49:31 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id 73-20020a17090a0fcf00b001eaee69f600so12538923pjz.1
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 00:49:31 -0700 (PDT)
+        with ESMTP id S1347590AbiFUHth (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 03:49:37 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCFDD2409B
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 00:49:36 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id y6so11832008plg.0
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 00:49:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aaK7RUDb+MNIHPH71+3s7TMT4RD7fK5Gn4ITZtL6OY8=;
-        b=OjuNvsJTGeEddC3nLKFN7UoRMc1BgiTq56gK+9cO4NNZ5a/YZiwm+jRUtix9Gpo3Mb
-         3rO7WA3GOE3iclDBPqe5IUNoNwhPt6MVcSe6pbx7MtENr9LSgMf3nuEbmf8lhEVHxQrD
-         S/EfJQgeyhzR7dFDmADB+rioatdCSjxHzxI2saBnn7mRgfX/ZVi2e1pMgZVf2GQf59Xz
-         YVP7W7hICod0kIS5qmPXO1SOZSALiCtHXZJrDmMoX7bhjuZTRD5bLw7BOKxIECGC3daY
-         fbmuhYZB3ikvtE6g7DJhkNvhUu+O/xZ2SB0i8WygtuIfuXrUxvw7U8+eguybXRBtm51q
-         UxnA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=G4y5Zh8jm0qtwXpPHEKBpl4vEtjbGQBLkZQmwRYcXp0=;
+        b=MVVbbfPp9HnNa3Ly5aCn3oprwMdyuHhh5aEhr7TCKqqpXJ6dOhiDznyoryWAKD6m7V
+         DFJ/oCy8ErhlP2rGPS5F1ZSEl+mSpLiFy4ylMNdsUpe+N2fku2sdxDVVG8sG8aNR4E3V
+         sd0FENb8uHep+MRrDnOUo8Hg9zC7SJvkiW0v//Ber6eRLDAxG+C5P7MSTOMsFwkpbTQl
+         OlkdAh6hHeD5jhOR/Vv1xXC52v3DxDAWtqk5xTMXllFS5HklmmAkbasjcnGFt4LqaSJW
+         vAbyzhY4wgg/3tj8Dell/7njH/pgfBRilRjxi/8tfVbR53PQ5D3A/xCoCrPl3sXMes4H
+         1lVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aaK7RUDb+MNIHPH71+3s7TMT4RD7fK5Gn4ITZtL6OY8=;
-        b=6XtezP/6ovXaAIC5DhuZUXdnDDmFwbK3rcfQTZjW+QHVYyhxwdNbZmZcf/oDHX9gvm
-         dpGdiZhcRNUXCfEwPmER3f9S72x22DvhZlS+CSmZVDonzhuzejYiYVHg18sVTnrQEDyx
-         J3vt0yVSdJoaZBVFUD4ywW6Kq9IGUPs2gUiLRw6D6sqcnij9lzii8feZPi+NeISK9V5N
-         hbQA3qYHEuoK70z0AwybicyKHyBPTWsAwytlMpKPY1yU1Z76LCwspaJdFEsY1Gu0+AUs
-         Tr6P3pjeQqk3+0zBFhdt192bThoI36hdv/6INo6zVMdpUO2Oanut3OMLDHHahMSBlWbJ
-         9/Ww==
-X-Gm-Message-State: AJIora93/CruOgZ1ILYNuWKlAAD1HTgQjsWx4FP0eLB6FmP7GuiNKfU6
-        SdzDQAcDO4R+pmeZT6iJDCs1X3dRkx4=
-X-Google-Smtp-Source: AGRyM1tmMrwBpg9iOneE6MZV/xqRvCgJ+Pj1nwxMJpZEjMOMoBSpZPthLw9Qac0VW6QGBhJrqmN2ZQ==
-X-Received: by 2002:a17:90b:1bc8:b0:1ec:881d:86ad with SMTP id oa8-20020a17090b1bc800b001ec881d86admr19133768pjb.4.1655797770198;
-        Tue, 21 Jun 2022 00:49:30 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=G4y5Zh8jm0qtwXpPHEKBpl4vEtjbGQBLkZQmwRYcXp0=;
+        b=UBn6SM2lRdpyd3OZH0SzHHrlLkoim/4l5Re5qYVaokE7oNtYqL9y6N13DdBpAazBrL
+         E+J5V/grIiCfq0vnqEWF75z5iiXGl98PcxsmZLzKkyamgH64wggXfovkdefDIUAkfRqR
+         dbQND6n9vt4CsL+RqPLgEEYU/xcKwgyeNvfXUYvJHwmwgJ5Q4ASiybMx3djzdKRURxzW
+         Biwpr2FmiDmKcQM/+f4+XWGU8AzRz7nKhR/EjZ/mwK1Zve3pj+g/ylMwxrJQN5OaIRXG
+         cFoY9o0tfSzT7cTh3jkc5nltvHxxBa3bJbvZgXN07MWu9ZYmfsm6eUYLbSErdEGPQUYC
+         GS5w==
+X-Gm-Message-State: AJIora/eqFOkphkVVoz84RQA0QEXKyMTDAGicBnG6Z6ftXSdqViu2mqV
+        NGv0O6u68c2wjzjy68GkeCoCZptNiOY=
+X-Google-Smtp-Source: AGRyM1sc8qgz49arJS3mZcDDAGf8e9a9Sn5OiD9SAazX/2nHOuZB4wkn8PLoQ0NGB4a5go3l7DG/cg==
+X-Received: by 2002:a17:903:2308:b0:167:62ae:28fc with SMTP id d8-20020a170903230800b0016762ae28fcmr27393415plh.100.1655797775413;
+        Tue, 21 Jun 2022 00:49:35 -0700 (PDT)
 Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id mm5-20020a17090b358500b001ecd3034b66sm8119pjb.54.2022.06.21.00.49.25
+        by smtp.gmail.com with ESMTPSA id mm5-20020a17090b358500b001ecd3034b66sm8119pjb.54.2022.06.21.00.49.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 00:49:29 -0700 (PDT)
+        Tue, 21 Jun 2022 00:49:34 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
@@ -58,10 +58,12 @@ Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
         David Ahern <dsahern@gmail.com>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv3 net-next 0/2] Bonding: add per-port priority support
-Date:   Tue, 21 Jun 2022 15:49:17 +0800
-Message-Id: <20220621074919.2636622-1-liuhangbin@gmail.com>
+Subject: [PATCHv3 net-next 1/2] bonding: add slave_dev field for bond_opt_value
+Date:   Tue, 21 Jun 2022 15:49:18 +0800
+Message-Id: <20220621074919.2636622-2-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220621074919.2636622-1-liuhangbin@gmail.com>
+References: <20220621074919.2636622-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -74,36 +76,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set add per-port priority for bonding failover re-selection.
+Currently, bond_opt_value are mostly used for bonding option settings. If
+we want to set a value for slave, we need to re-alloc a string to store
+both slave name and vlaue, like bond_option_queue_id_set() does, which
+is complex and dumb.
 
-The first patch add a new filed for bond_opt_value so we can set slave
-value easier. I will update the bond_option_queue_id_set() setting
-in later patch.
+As Jon suggested, let's add a union field slave_dev for bond_opt_value,
+which will be benefit for future slave option setting. In function
+__bond_opt_init(), we will always check the extra field and set it
+if it's not NULL.
 
-The second patch add the per-port priority for bonding. I defined
-it as s32 to compatible with team prio option, which also use a s32
-value.
+Suggested-by: Jonathan Toppins <jtoppins@redhat.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ include/net/bond_options.h | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-v3: store slave_dev in bond_opt_value directly to simplify setting
-    values for slave.
-
-v2: using the extant bonding options management stuff instead setting
-    slave prio in bond_slave_changelink() directly.
-
-Hangbin Liu (2):
-  bonding: add slave_dev field for bond_opt_value
-  Bonding: add per-port priority for failover re-selection
-
- Documentation/networking/bonding.rst | 11 ++++++++++
- drivers/net/bonding/bond_main.c      | 27 +++++++++++++++++++++++
- drivers/net/bonding/bond_netlink.c   | 15 +++++++++++++
- drivers/net/bonding/bond_options.c   | 33 ++++++++++++++++++++++++++++
- include/net/bond_options.h           | 11 ++++++++--
- include/net/bonding.h                |  1 +
- include/uapi/linux/if_link.h         |  1 +
- tools/include/uapi/linux/if_link.h   |  1 +
- 8 files changed, 98 insertions(+), 2 deletions(-)
-
+diff --git a/include/net/bond_options.h b/include/net/bond_options.h
+index 1618b76f4903..eade8236a4df 100644
+--- a/include/net/bond_options.h
++++ b/include/net/bond_options.h
+@@ -83,7 +83,10 @@ struct bond_opt_value {
+ 	char *string;
+ 	u64 value;
+ 	u32 flags;
+-	char extra[BOND_OPT_EXTRA_MAXLEN];
++	union {
++		char extra[BOND_OPT_EXTRA_MAXLEN];
++		struct net_device *slave_dev;
++	};
+ };
+ 
+ struct bonding;
+@@ -133,13 +136,16 @@ static inline void __bond_opt_init(struct bond_opt_value *optval,
+ 		optval->value = value;
+ 	else if (string)
+ 		optval->string = string;
+-	else if (extra_len <= BOND_OPT_EXTRA_MAXLEN)
++
++	if (extra && extra_len <= BOND_OPT_EXTRA_MAXLEN)
+ 		memcpy(optval->extra, extra, extra_len);
+ }
+ #define bond_opt_initval(optval, value) __bond_opt_init(optval, NULL, value, NULL, 0)
+ #define bond_opt_initstr(optval, str) __bond_opt_init(optval, str, ULLONG_MAX, NULL, 0)
+ #define bond_opt_initextra(optval, extra, extra_len) \
+ 	__bond_opt_init(optval, NULL, ULLONG_MAX, extra, extra_len)
++#define bond_opt_slave_initval(optval, slave_dev, value) \
++	__bond_opt_init(optval, NULL, value, slave_dev, sizeof(struct net_device *))
+ 
+ void bond_option_arp_ip_targets_clear(struct bonding *bond);
+ #if IS_ENABLED(CONFIG_IPV6)
 -- 
 2.35.1
 
