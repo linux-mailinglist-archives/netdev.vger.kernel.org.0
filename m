@@ -2,66 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52C62553256
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 14:43:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9F59553259
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 14:44:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350543AbiFUMnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 08:43:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44226 "EHLO
+        id S1349712AbiFUMoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 08:44:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350547AbiFUMnL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 08:43:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6115621B9
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 05:43:09 -0700 (PDT)
+        with ESMTP id S231252AbiFUMoQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 08:44:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F393212091
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 05:44:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655815388;
+        s=mimecast20190719; t=1655815455;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=JWyA3kDHpmSjtRPYXtckUhfY7bGtosb7ATeV51guGM8=;
-        b=gQa1T8U0qEBxim6Sq8k8ERfhUvUcZogJXqagGM17wO2vSg+xvKhCbs5pR9Ne7JBB4gD4xC
-        hf5vq73fO52H43hgeGMmnaXcjUO4TougPkiYWTpjn4iLwO1maZY//TGMR9jmKMrvU6x9gb
-        tglhQ0prhv2a0yX6cWozAfTFdYzBW+E=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=pd3J8JPqD6kQCuJIr3RkUpHfIhmcn3pD2QOgK4NseCA=;
+        b=HIG/I/DuWYsuYf2KzovT85afEtuYj1GOvXIzlfUy78VHi30k4w05w9VweSEcqmrDb7Ibax
+        KcAMVRrZsk0+HUlJNn3VkdnsfzJstmtMm+Ttb6oSnlfmlaaKtRljQhcUEQFvC26Gk289M3
+        rd9meM688BpnKcGZqRpOxt2usZyc0EE=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-647-8rdibzrOMamR3p-x3jBaNA-1; Tue, 21 Jun 2022 08:43:07 -0400
-X-MC-Unique: 8rdibzrOMamR3p-x3jBaNA-1
-Received: by mail-qv1-f70.google.com with SMTP id kd24-20020a056214401800b0046d7fd4a421so14191375qvb.20
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 05:43:06 -0700 (PDT)
+ us-mta-160-a2nXg2nVO8S2uEz_FOCwuQ-1; Tue, 21 Jun 2022 08:44:14 -0400
+X-MC-Unique: a2nXg2nVO8S2uEz_FOCwuQ-1
+Received: by mail-qk1-f197.google.com with SMTP id f2-20020a05620a408200b006ab94bb9d09so12470127qko.8
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 05:44:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=JWyA3kDHpmSjtRPYXtckUhfY7bGtosb7ATeV51guGM8=;
-        b=k7uktPvRYBgup5RYr1IETXhataqrY53DVK98PODmbsobhUa9KuJe7U4yZkVe8xDAlf
-         7453XO27JZFk+HsSRnXdC0AMvjCBAPhVtc++yjjW8XokgO+b/nddCZ5RtWs8XghkpgdZ
-         OhZ4HzVCXN3p/aApSwbcXGrjfOtm7fMef4aWtSJ1DTNg1ECQSYFym6bX5cFzVjevpZEg
-         Z1dgzWZdBVFISHFykrSVGTTiFfppmgiWYLneTQfWKZPq6GNcKPFHJg7pywj5aPHOgIdm
-         WDxjycAwOECGyEwPaivUC9WkjAD88TzQhzbRDtYMK9I1TuiIc4uNtFj966miZviXakoV
-         DmZQ==
-X-Gm-Message-State: AJIora+nLEsEWoyvKvrR5W5ZYiFlHT7IlFxoGQJzmI9sPWQHN7iKGn25
-        kHsCClWtuPwTboGi30qF/hIn+8E8OaaDWC1hBOi60aLtP2yLykjqiJNcjPk5Ll36JkJCxJeuxJl
-        kd23tzBzA9GsTfEvO
-X-Received: by 2002:a05:620a:2720:b0:6a7:c28:3afa with SMTP id b32-20020a05620a272000b006a70c283afamr19415713qkp.438.1655815385934;
-        Tue, 21 Jun 2022 05:43:05 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1smuI+NYGC5EG1gB1dKUpsTviAaiAeLuQtaChCe8ccCuNUMklb/qNTMzkm96nEIaaTzUD8vhg==
-X-Received: by 2002:a05:620a:2720:b0:6a7:c28:3afa with SMTP id b32-20020a05620a272000b006a70c283afamr19415700qkp.438.1655815385759;
-        Tue, 21 Jun 2022 05:43:05 -0700 (PDT)
+        bh=pd3J8JPqD6kQCuJIr3RkUpHfIhmcn3pD2QOgK4NseCA=;
+        b=zXdbGjniwKvXPx4OApKTypJXljM3C2FSZrw74DW1yr7pggTPCaqyy+jqAA+vUNZMzc
+         7qLPdRIQLVRHaaNXvi7JtfISZ60pYLbVJ8H3Wtkjmeye3iSRmTsUwmQEJcObslbQ2dCc
+         4QPQcZRf3uN621TseiftKWkIV68repHM0M2x6Yycv+LH7ZY0HJvWVY/EJTFu88bHJmHZ
+         M3JgV8JuSIBz5kE492Ldy1chPqhO4pqxp1VcgK418tCbCbWkfwLRUBH/amNQWX1JBEfD
+         Ls7CdDuLHy6FOC6zy6d7A9VlzkB56nms4xlRZV41z9lHzRAbkikdc+BIRJbmynv7spSp
+         PWEg==
+X-Gm-Message-State: AJIora+Lv15FzEuZFwlVGomZ4T0U5xMeEQNAF+6K4NAbYd3778QPnZiS
+        6qJFO+vrgCNDlfDAunv/nGlQzbdKQdN0JYvJtmgRh2UxdNAuO7vIe2HG3jwyvSNVYzkSXuj5HwI
+        di7fGguFpi20RPGS3
+X-Received: by 2002:a05:6214:2387:b0:462:1026:b5bb with SMTP id fw7-20020a056214238700b004621026b5bbmr22701918qvb.38.1655815453522;
+        Tue, 21 Jun 2022 05:44:13 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tl5Wy1PtQlDXj7T0ffzeIB1VreIVB3C7u7MFwraFIWuaNtbq29rZAPOM9xwPa1YpQlcmTPbA==
+X-Received: by 2002:a05:6214:2387:b0:462:1026:b5bb with SMTP id fw7-20020a056214238700b004621026b5bbmr22701903qvb.38.1655815453299;
+        Tue, 21 Jun 2022 05:44:13 -0700 (PDT)
 Received: from [192.168.98.18] ([107.12.98.143])
-        by smtp.gmail.com with ESMTPSA id z16-20020a05620a08d000b006a5d2eb58b2sm13721269qkz.33.2022.06.21.05.43.05
+        by smtp.gmail.com with ESMTPSA id d14-20020a05620a240e00b006a6b6638a59sm14835072qkn.53.2022.06.21.05.44.12
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 05:43:05 -0700 (PDT)
-Message-ID: <7c7b3121-4c16-f0df-4262-bba33b8e5234@redhat.com>
-Date:   Tue, 21 Jun 2022 08:43:04 -0400
+        Tue, 21 Jun 2022 05:44:13 -0700 (PDT)
+Message-ID: <91d441d8-ee1a-4ab3-fe04-1d7ff13fc6f1@redhat.com>
+Date:   Tue, 21 Jun 2022 08:44:11 -0400
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCHv3 net-next 2/2] Bonding: add per-port priority for
- failover re-selection
+Subject: Re: [PATCHv3 iproute2-next] iplink: bond_slave: add per port prio
+ support
 Content-Language: en-US
 To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
 Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
@@ -72,9 +72,9 @@ Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
         David Ahern <dsahern@gmail.com>
 References: <20220621074919.2636622-1-liuhangbin@gmail.com>
- <20220621074919.2636622-3-liuhangbin@gmail.com>
+ <20220621075105.2636726-1-liuhangbin@gmail.com>
 From:   Jonathan Toppins <jtoppins@redhat.com>
-In-Reply-To: <20220621074919.2636622-3-liuhangbin@gmail.com>
+In-Reply-To: <20220621075105.2636726-1-liuhangbin@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -87,23 +87,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/21/22 03:49, Hangbin Liu wrote:
-> Add per port priority support for bonding active slave re-selection during
-> failover. A higher number means higher priority in selection. The primary
-> slave still has the highest priority. This option also follows the
-> primary_reselect rules.
+On 6/21/22 03:51, Hangbin Liu wrote:
+> Add per port priority support for active slave re-selection during
+> bonding failover. A higher number means higher priority.
 > 
-> This option could only be configured via netlink.
+> This option is only valid for active-backup(1), balance-tlb (5) and
+> balance-alb (6) mode.
 > 
 > Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 
 Acked-by: Jonathan Toppins <jtoppins@redhat.com>
 
 > ---
-> v3: store slave_dev in bond_opt_value directly to simplify setting
->      values for slave.
-> 
-> v2: using the extant bonding options management stuff instead setting
->      slave prio in bond_slave_changelink() directly.
+> v3: no update
+> v2: update man page
 > ---
+>   ip/iplink_bond_slave.c | 12 +++++++++++-
+>   man/man8/ip-link.8.in  |  8 ++++++++
+>   2 files changed, 19 insertions(+), 1 deletion(-)
+> 
 
