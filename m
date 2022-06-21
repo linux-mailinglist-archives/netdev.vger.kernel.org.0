@@ -2,95 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0175F552E5E
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 11:33:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B70B552E65
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 11:33:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348864AbiFUJcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 05:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43858 "EHLO
+        id S1348933AbiFUJdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 05:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348475AbiFUJcD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 05:32:03 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8BD913CF4
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 02:32:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=7rn0FEztTcZeX3yVFikCDJPY96wnbpo2j7Mfp2KqOqQ=; b=Gb49gQChK+/ZSbohszMQ26XTqb
-        Ouhniez6IMyfilpsygD6XLLEAyjIpIjIKQ1mlk3/+Ux3lrgCKCqlDFlMrOriBnlsYqxuPsPnhehZV
-        tXEeFlMQ6KduqFlU8wBw+3wiYTzbJNqL3DTWhYvnmKa68V0FWIVhsJhoAnAwzSEN5xOjyVTl9J+Pa
-        +8sIDga7XMAKbGMpcfhEWwKLU69ecOKYAZdAst6iMwdIAyG+emFqIpYFmbgOUA23J212IHBivexMq
-        LH0mSr9Cs2f0UKD3OMZZ6FVbQWW4WJlys2WFPvff9x5MxmoYfLp9XHFjv92mHrg+IgAWCq1cbpjGN
-        3TnMpVWA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32956)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1o3aEj-00027w-4Q; Tue, 21 Jun 2022 10:31:52 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1o3aEg-0005v2-My; Tue, 21 Jun 2022 10:31:50 +0100
-Date:   Tue, 21 Jun 2022 10:31:50 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 0/2] net: dsa: mv88e6xxx: get rid of SPEED_MAX
-Message-ID: <YrGQBssOvQBZiDS4@shell.armlinux.org.uk>
+        with ESMTP id S1348335AbiFUJdt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 05:33:49 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F5625C6D
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 02:33:47 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id b7so14742702ljr.6
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 02:33:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=eAn0mkf8cbbSldcOsHVmdulCChq1XWCHxJvyevA7Xy8=;
+        b=p4nsrDQU/HL9kiO/BSBR3lWKcRmz20yfkNdEtRFiNLVnFyObvB+2JDLTEPz7ZfSyAx
+         yb8oXPhQwE7wAUNWhTOZJq9rPKo82YQXQT1v57iBWTtjuIlUiGV3ydbeVvOpNV7FIvKf
+         uwypx613RgvnumfBL4EjeGiXKXumJD7NYUvRTFWCMTZlqmqFOvPQZB25F4VUc/BlUzkI
+         3bNO0DGxMuBeZIB2Pr8Vpxlv1ykqtMJcBaw92L+A25T5Dw2K4bZpnInem7cMn/dTNbx7
+         XJx9UovtyH/lBD5ZMglt4lEvpPjY9t9N2PL3lUOYHjaP+i0BTi9noXI9qYHbg9TRgqLw
+         BH/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=eAn0mkf8cbbSldcOsHVmdulCChq1XWCHxJvyevA7Xy8=;
+        b=ctVqQ1RK4jjTVMdQB/LltNkdU2lMeXECZoUpFlx9uAimkGQfnKFK9xZkSZz1RQtYAr
+         /j7vmrXEIH1Z0imjasyA5zTWJ5WQGVczEz4UZ2ArO5cazbcDjxXlWlDYKpbl1bRtjEK5
+         +6h7OxKgNH2k5/kG+XIgF3P/S4nf6Kg1g0nr9AIumLRzFzBwaXrnxg5Ne5IEji3UeSoT
+         SQa12zYF2sM64+PX0pf6eZSykmooJadAxflPPAvwAJ6ruBCOVLs/B99LxWlRicJm9V8H
+         zHmatfXpAhzjoTu9YQTBqvYXWT5OLAnGjXjtwMfzG5Zl2VqY8Ul27I/prDwmMcEiobHh
+         bb/w==
+X-Gm-Message-State: AJIora8A8qqAAOCj28Go/sJgDi74jV4Hlxi8Po87lx9HkqVomyS/L5uw
+        iloQ9HDlruWlaJCKpBGwKM9fOBVDRKYcsDSxYPrFvg==
+X-Google-Smtp-Source: AGRyM1vhoowH12J1zPskShLlXyMV98854EH+GXf+cFtJNMVCeZhPcYPK3u6iSPHLdI8a5bE/oc6mJEfEqdg9mfvyvNk=
+X-Received: by 2002:a2e:860e:0:b0:25a:6dbe:abb5 with SMTP id
+ a14-20020a2e860e000000b0025a6dbeabb5mr5361078lji.474.1655804025707; Tue, 21
+ Jun 2022 02:33:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+References: <20220620150225.1307946-1-mw@semihalf.com> <20220620150225.1307946-7-mw@semihalf.com>
+ <YrCzBzKfSl1u90lB@smile.fi.intel.com>
+In-Reply-To: <YrCzBzKfSl1u90lB@smile.fi.intel.com>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Tue, 21 Jun 2022 11:33:36 +0200
+Message-ID: <CAPv3WKd+e5kYz7L0Fnw6u9wcPU6+r54EeEWvJzw8oCyj=m6JPg@mail.gmail.com>
+Subject: Re: [net-next: PATCH 06/12] net: mdio: introduce fwnode_mdiobus_register_device()
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        vivien.didelot@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+pon., 20 cze 2022 o 19:49 Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> napisa=C5=82(a):
+>
+> On Mon, Jun 20, 2022 at 05:02:19PM +0200, Marcin Wojtas wrote:
+> > As a preparation patch to extend MDIO capabilities in the ACPI world,
+> > introduce fwnode_mdiobus_register_device() to register non-PHY
+> > devices on the mdiobus.
+> >
+> > While at it, also use the newly introduced fwnode operation in
+> > of_mdiobus_phy_device_register().
+>
+> ...
+>
+> >  static int of_mdiobus_register_device(struct mii_bus *mdio,
+> >                                     struct device_node *child, u32 addr=
+)
+> >  {
+>
+> > +     return fwnode_mdiobus_register_device(mdio, of_fwnode_handle(chil=
+d), addr);
+> >  }
+>
+> Since it's static one-liner you probably may ger rid of it completely.
+>
 
-This series does two things:
+Good point, will do in v2.
 
-1. it gets rid of mv88e6065_port_set_speed_duplex() which is completely
-   unused (do we support this device? I couldn't find it in the tables
-   in chip.c) This has a max speed of 200Mbps which we don't support.
-
-2. get rid of the SPEED_MAX constant, which is used to configure a DSA
-   or CPU port to their maximum speed during initialisation. We no
-   longer need this as we can derive the maximum port speed from the
-   mac_capabilities instead.
-
-The reason for making this change is in preparation for phylink to be
-used by DSA for CPU ports. This omission has come back to bite us with
-the conversion of DSA drivers to phylink_pcs, since phylink_pcs won't
-get used unless phylink is being used. Particularly with this driver,
-it is very common for DT descriptions to omit the fixed-link details
-which means "use maximum speed".
-
-It will eventually be necessary to hoist the selection of "max speed"
-into the DSA layer (trivial) and also have a way for the DSA driver
-to tell the DSA layer which interface it should be using for these
-ports.
-
- drivers/net/dsa/mv88e6xxx/chip.c | 39 +++++++++++++++++++++++++++++----------
- drivers/net/dsa/mv88e6xxx/chip.h |  3 +--
- drivers/net/dsa/mv88e6xxx/port.c | 36 ------------------------------------
- drivers/net/dsa/mv88e6xxx/port.h |  2 --
- 4 files changed, 30 insertions(+), 50 deletions(-)
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Thanks,
+Marcin
