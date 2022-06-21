@@ -2,131 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9DAA55340B
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 15:53:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08A29553476
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 16:26:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351104AbiFUNxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 09:53:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46846 "EHLO
+        id S1351539AbiFUOZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 10:25:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230521AbiFUNxs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 09:53:48 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4317A13D24;
-        Tue, 21 Jun 2022 06:53:46 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id mf9so7349600ejb.0;
-        Tue, 21 Jun 2022 06:53:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+bnD9hK3prWl6/gYLDJgj48e9xi4+igUWjv8z3KjEBQ=;
-        b=LowuFnu5EJgFHfzLAZhiUV7XOQNZYlScpKJ1ehzxo7KJUk/9pWR71H5EwqtpxEx3Fb
-         YfUSnzxFnVD5ot3ZdEG/1igUSRaTi/xWfLb5fuEOpbNSFVuKIjJTVrwwTHeCLKoMRJiK
-         KzxkPB4jtqUyMX0mNr0addwuL2bf1o/va3KQGfEucHbsrEipOW/Tu6qRQGWNAR36wPQ+
-         0l4e/9P2t8Qt6/XCOfuMjO/QegqXx1ndv31XZaecmI15AW/LMCT7QJ6ogvgzx/NhjVmj
-         ZQ5RnwLxa8kMBixDilmjmSKpGebk/zzlWsGhbtnErPIUxik2SZ6+HuZ2IUPl9ttXvmGG
-         G9nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+bnD9hK3prWl6/gYLDJgj48e9xi4+igUWjv8z3KjEBQ=;
-        b=RkBR2opaXSGus81rEpODpEcHKTIeVDYDt+IPvDrdNbp4F8ShJogD0qNlQvpX2XtL0v
-         nzqyy2UZOZW24tWQacy1KHwasRnvxnBuXM2U/OOFjFKQ161+e+dt3IawS2jn4Ev7Vvzw
-         7lz79CnAKRHbyT88LEVtUF0pK0nSKQdOyaZvoSSdwSEcb0qnudz2Yysxf0bkReVSFl1+
-         cwKIX1/1YzJJcgDh4HtrZnrVWfhvRRlJwQqEwhKOHtJo0VbZMtIcgVw6QTmXRw1f4wJt
-         Ri1sb+g0GOEXmqKXFq2KxSBGLCiqrFRcYsrgS1U1qqnCSVWLfNU4qtCunFgejAFAQR+b
-         kk7w==
-X-Gm-Message-State: AJIora+S1VKg35+dG9eCqXLpHXjcYXetOhSELTe2G51bDSR91togdERc
-        bU0WnFATQmr1yRg5YAtcNdw=
-X-Google-Smtp-Source: AGRyM1t1OnGmn/19PEpvpFJ5PtSkks3BLBi/GIwdyVDyqV8uzkzUJ+za1jeXY1Kw9XAFhVPac2/SNw==
-X-Received: by 2002:a17:907:7b8a:b0:707:59d4:14a3 with SMTP id ne10-20020a1709077b8a00b0070759d414a3mr25833143ejc.51.1655819624627;
-        Tue, 21 Jun 2022 06:53:44 -0700 (PDT)
-Received: from fedora.robimarko.hr (dh207-99-158.xnet.hr. [88.207.99.158])
-        by smtp.googlemail.com with ESMTPSA id fy11-20020a1709069f0b00b007104b37aab7sm7325408ejc.106.2022.06.21.06.53.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 06:53:44 -0700 (PDT)
-From:   Robert Marko <robimarko@gmail.com>
-To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH 2/2] ath11k: search DT for qcom,ath11k-board-id
-Date:   Tue, 21 Jun 2022 15:53:39 +0200
-Message-Id: <20220621135339.1269409-2-robimarko@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220621135339.1269409-1-robimarko@gmail.com>
-References: <20220621135339.1269409-1-robimarko@gmail.com>
+        with ESMTP id S1351599AbiFUOZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 10:25:35 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49DAC2317C
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 07:25:34 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1o3eof-0007fC-NI; Tue, 21 Jun 2022 16:25:17 +0200
+Received: from pengutronix.de (2a03-f580-87bc-d400-bd72-15a3-eb10-2206.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:bd72:15a3:eb10:2206])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id C6EC49B8B5;
+        Tue, 21 Jun 2022 14:25:15 +0000 (UTC)
+Date:   Tue, 21 Jun 2022 16:25:15 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Thomas.Kopp@microchip.com
+Cc:     pavel.modilaynen@volvocars.com, drew@beagleboard.org,
+        linux-can@vger.kernel.org, menschel.p@posteo.de,
+        netdev@vger.kernel.org, will@macchina.cc
+Subject: Re: [net-next 6/6] can: mcp251xfd: mcp251xfd_regmap_crc_read(): work
+ around broken CRC on TBC register
+Message-ID: <20220621142515.4xgxhj6oxo5kuepn@pengutronix.de>
+References: <PR3P174MB0112D073D0E5E080FAAE8510846E9@PR3P174MB0112.EURP174.PROD.OUTLOOK.COM>
+ <DM4PR11MB5390BA1C370A5AF90E666F1EFB709@DM4PR11MB5390.namprd11.prod.outlook.com>
+ <PR3P174MB01124C085C0E0A0220F2B11584709@PR3P174MB0112.EURP174.PROD.OUTLOOK.COM>
+ <DM4PR11MB53901D49578FE265B239E55AFB7C9@DM4PR11MB5390.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="b53yhzgh5rzrogp6"
+Content-Disposition: inline
+In-Reply-To: <DM4PR11MB53901D49578FE265B239E55AFB7C9@DM4PR11MB5390.namprd11.prod.outlook.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bus + qmi-chip-id + qmi-board-id and optionally the variant are currently
-used for identifying the correct board data file.
 
-This however is sometimes not enough as all of the IPQ8074 boards that I
-have access to dont have the qmi-board-id properly fused and simply return
-the default value of 0xFF.
+--b53yhzgh5rzrogp6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-So, to provide the correct qmi-board-id look for the qcom,ath11k-board-id
-property and use that.
-This is what vendors have been doing in the stock firmwares that were
-shipped on boards I have.
+Picking up this old thread....
 
-It should be added to DTS like:
-	wifi@c000000 {
-        status = "okay";
+On 21.12.2021 22:24:52, Thomas.Kopp@microchip.com wrote:
+> Thanks for the data. I've looked into this and it seems that the
+> second bit being set in your case does not depend on the SPI-Rate (or
+> the quirks for that matter) but it seems to be hardware setup related.
+>=20
+> I'm fine with changing the driver so that it ignores set LSBs but
+> would limit it to 2 or 3 bits:
 
-        qcom,ath11k-board-id = <658>;
-        qcom,ath11k-calibration-variant = "Edgecore-EAP102";
-    };
+> (buf_rx->data[0] =3D=3D 0x0 || buf_rx->data[0] =3D=3D 0x80))
+> becomes
+> ((buf_rx->data[0] & 0xf8) =3D=3D 0x0 || (buf_rx->data[0] & 0xf8) =3D=3D 0=
+x80)) {
+>=20
+> The action also needs to be changed and the flip back of the bit needs
+> to be removed. In this case the flipped databit that produces a
+> matching CRC is actually  correct (i.e. consistent with the 7 LSBs in
+> that byte.)
+>=20
+> A patch could look like this (I'm currently not close to a setup where
+> I can compile/test this.)
 
-Signed-off-by: Robert Marko <robimarko@gmail.com>
----
- drivers/net/wireless/ath/ath11k/qmi.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Thomas, can I have your Signed-off-by for this patch?
 
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index 00136601cb7d..9d27b4968d10 100644
---- a/drivers/net/wireless/ath/ath11k/qmi.c
-+++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -2172,12 +2172,14 @@ static int ath11k_qmi_request_device_info(struct ath11k_base *ab)
- 
- static int ath11k_qmi_request_target_cap(struct ath11k_base *ab)
- {
-+	struct device *dev = ab->dev;
- 	struct qmi_wlanfw_cap_req_msg_v01 req;
- 	struct qmi_wlanfw_cap_resp_msg_v01 resp;
- 	struct qmi_txn txn;
- 	int ret = 0;
- 	int r;
- 	char *fw_build_id;
-+	unsigned int board_id;
- 	int fw_build_id_mask_len;
- 
- 	memset(&req, 0, sizeof(req));
-@@ -2219,7 +2221,9 @@ static int ath11k_qmi_request_target_cap(struct ath11k_base *ab)
- 		ab->qmi.target.chip_family = resp.chip_info.chip_family;
- 	}
- 
--	if (resp.board_info_valid)
-+	if (!of_property_read_u32(dev->of_node, "qcom,ath11k-board-id", &board_id))
-+		ab->qmi.target.board_id = board_id;
-+	else if (resp.board_info_valid)
- 		ab->qmi.target.board_id = resp.board_info.board_id;
- 	else
- 		ab->qmi.target.board_id = 0xFF;
--- 
-2.36.1
+Marc
 
+> diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c b/drivers/n=
+et/can/spi/mcp251xfd/mcp251xfd-regmap.c
+> index 297491516a26..e5bc897f37e8 100644
+> --- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c
+> +++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c
+> @@ -332,12 +332,10 @@ mcp251xfd_regmap_crc_read(void *context,
+>                  *
+>                  * If the highest bit in the lowest byte is flipped
+>                  * the transferred CRC matches the calculated one. We
+> -                * assume for now the CRC calculation in the chip
+> -                * works on wrong data and the transferred data is
+> -                * correct.
+> +                * assume for now the CRC operates on the correct data.
+>                  */
+>                 if (reg =3D=3D MCP251XFD_REG_TBC &&
+> -                   (buf_rx->data[0] =3D=3D 0x0 || buf_rx->data[0] =3D=3D=
+ 0x80)) {
+> +                   ((buf_rx->data[0] & 0xF8) =3D=3D 0x0 || (buf_rx->data=
+[0] & 0xF8) =3D=3D 0x80)) {
+>                         /* Flip highest bit in lowest byte of le32 */
+>                         buf_rx->data[0] ^=3D 0x80;
+>=20
+> @@ -347,10 +345,8 @@ mcp251xfd_regmap_crc_read(void *context,
+>                                                                   val_len=
+);
+>                         if (!err) {
+>                                 /* If CRC is now correct, assume
+> -                                * transferred data was OK, flip bit
+> -                                * back to original value.
+> +                                * flipped data was OK.
+>                                  */
+> -                               buf_rx->data[0] ^=3D 0x80;
+>                                 goto out;
+>                         }
+>                 }
+>=20
+> Thanks,
+> Thomas
+>=20
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--b53yhzgh5rzrogp6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKx1McACgkQrX5LkNig
+012YUAf/YXu6T42MB7nmX1BM7wyF9wMC+oo/7AhfQa0nGVREg2JVQcO+4H6yuZko
+R/681s4acSF6qYkoVyMQgo0UkoAwvl1KegzlNdaP2+eH7CxTSYw+JCc9M+aY9B6r
+eBE8yv9b4khgMp+FB5BVx1ms+GEApGqsb6vW7bH1hXa9Zqf/yy/2rY0C/9szkMGy
+9cyHUYabnCXjW1Xn0J14Il3Ctn5QnKIrxDr/C2uhhQQVz2LwQa3TDN3CJgqI9aCq
+kv/DwbXQd3J+gCQKcAavDUZVI1tGvylyR01S89zmZK8tHffqqqrLOONt9EO5MJQA
+1SUToRmMEz7aQgzYZDzajnbWwOfbdg==
+=qFiv
+-----END PGP SIGNATURE-----
+
+--b53yhzgh5rzrogp6--
