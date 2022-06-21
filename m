@@ -2,116 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD9E1552B85
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 09:12:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45E9B552B79
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 09:09:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346501AbiFUHM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 03:12:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44658 "EHLO
+        id S1345850AbiFUHI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 03:08:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345500AbiFUHM0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 03:12:26 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F962222A0
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 00:12:25 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1o3Y3a-0006RX-Ql; Tue, 21 Jun 2022 09:12:14 +0200
-Received: from pengutronix.de (2a03-f580-87bc-d400-bd72-15a3-eb10-2206.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:bd72:15a3:eb10:2206])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 353969B386;
-        Tue, 21 Jun 2022 06:35:02 +0000 (UTC)
-Date:   Tue, 21 Jun 2022 08:35:01 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Frank Jungclaus <frank.jungclaus@esd.eu>
-Cc:     linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/1] can/esd_usb2: Added support for esd CAN-USB/3
-Message-ID: <20220621063501.wxxpotw6vck42gsn@pengutronix.de>
-References: <20220620202603.2069841-1-frank.jungclaus@esd.eu>
+        with ESMTP id S236786AbiFUHI6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 03:08:58 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F15B201A9
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 00:08:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=mx9Ng+zjjKDgVyRmQJH2YZYOdnU3VzL5lamiomZhPxg=; b=ecKHTyD+ubE/JV3CX53z03vyU5
+        6H8fmFikR/SF90HRPMO7jNnhRG02gapi8moJgIL4svvvoTbo5MhbfNuDdA9RIx/FEi5MUvCRl5itc
+        owRmlcL5XLJ8yfnSNbLCfg72kwpPSjuJKkSSYuHFW797sFyB6fTXTMJooGJat25CcPGFpP39SVUCK
+        H7rts10Ky0iTpptb3EVeOxknsA6bHV3N12ztekv8/pANuKJSFCDheYUEUMQrLQLEHYADFre362o8o
+        gevVlqzMh23sk0ZvAIEGNY0InpcXPOnDQwjNUIGww+U7nT4ttfIPrSrFFAL51TSXy7qL6oXascji8
+        6wcyX6GA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32954)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1o3Y09-0001xN-LO; Tue, 21 Jun 2022 08:08:41 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1o3Xzx-0005po-F9; Tue, 21 Jun 2022 08:08:29 +0100
+Date:   Tue, 21 Jun 2022 08:08:29 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     kernel test robot <lkp@intel.com>, davem@davemloft.net,
+        kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        edumazet@google.com, pabeni@redhat.com, andrew@lunn.ch,
+        hkallweit1@gmail.com, boon.leong.ong@intel.com
+Subject: Re: [PATCH net-next] net: pcs: xpcs: select PHYLINK in Kconfig
+Message-ID: <YrFubYKuqPbT4fRc@shell.armlinux.org.uk>
+References: <20220620201915.1195280-1-kuba@kernel.org>
+ <202206210551.Fhz4xcTc-lkp@intel.com>
+ <20220620174800.6dc60a5b@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="5bpvqibdgubwlgdb"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220620202603.2069841-1-frank.jungclaus@esd.eu>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220620174800.6dc60a5b@kernel.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jun 20, 2022 at 05:48:00PM -0700, Jakub Kicinski wrote:
+> On Tue, 21 Jun 2022 05:49:57 +0800 kernel test robot wrote:
+> > I love your patch! Yet something to improve:
+> > 
+> > [auto build test ERROR on net-next/master]
+> > 
+> > url:    https://github.com/intel-lab-lkp/linux/commits/Jakub-Kicinski/net-pcs-xpcs-select-PHYLINK-in-Kconfig/20220621-042123
+> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git dbca1596bbb08318f5e3b3b99f8ca0a0d3830a65
+> > config: i386-tinyconfig
+> > compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+> > reproduce (this is a W=1 build):
+> >         # https://github.com/intel-lab-lkp/linux/commit/a3120516f7ee66896bb0d3c90fe653ce0cb3a09f
+> >         git remote add linux-review https://github.com/intel-lab-lkp/linux
+> >         git fetch --no-tags linux-review Jakub-Kicinski/net-pcs-xpcs-select-PHYLINK-in-Kconfig/20220621-042123
+> >         git checkout a3120516f7ee66896bb0d3c90fe653ce0cb3a09f
+> >         make W=1 ARCH=i386  tinyconfig
+> >         make W=1 ARCH=i386 
+> > 
+> > If you fix the issue, kindly add following tag where applicable
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > 
+> > All errors (new ones prefixed by >>):
+> > 
+> > >> drivers/net/phy/Kconfig:16:error: recursive dependency detected!  
+> >    drivers/net/phy/Kconfig:16: symbol PHYLIB is selected by PHYLINK
+> >    drivers/net/phy/Kconfig:6: symbol PHYLINK is selected by PCS_XPCS
+> >    drivers/net/pcs/Kconfig:8: symbol PCS_XPCS depends on MDIO_DEVICE
+> >    drivers/net/mdio/Kconfig:6: symbol MDIO_DEVICE is selected by PHYLIB
+> >    For a resolution refer to Documentation/kbuild/kconfig-language.rst
+> >    subsection "Kconfig recursive dependency limitations"
+> 
+> Dunno what the best practice is in that case :S
+> I'll leave this to the experts.
 
---5bpvqibdgubwlgdb
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Would it work to make all the PCS drivers depend on PHYLINK ?
 
-Hello Frank,
-
-thanks for your patch!
-
-On 20.06.2022 22:26:02, Frank Jungclaus wrote:
-> This patch adds support for the newly available esd CAN-USB/3.
->=20
-> The USB protocol for the CAN-USB/3 is similar to the protocol used
-> for the CAN-USB/2 and the CAN-USB/Micro, so most of the code can be
-> shared for all three platforms.
-> Due to the fact that the CAN-USB/3 additionally supports CAN FD
-> some new functionality / functions are introduced.
-> Each occurrence of the term "usb2" within variables, function names,
-> etc. is changed to "usb" where it is shared for all three platforms.
-
-Can you split the patch into several ones. Please do the renaming first.
-There's some seemingly unrelated reformatting, this could be a separate
-patch, too. If this is too much work, you might take this into the
-renaming patch. Then add the new device. This makes reviewing a lot
-easier.
-
-> The patch has been tested against / should apply to Marc's=20
-> current testing branch:
-> commit 934135149578 ("Merge branch 'document-polarfire-soc-can-controller=
-'")
-
-Note: Better use the linux-can-next/master branch as a base, it will be
-only fast forwarded. The testing branch will be rebased. As you don't
-depend on any new features, it doesn't make any difference for you.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---5bpvqibdgubwlgdb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKxZpIACgkQrX5LkNig
-010Wzgf9EESo1mSFr/dxiOtxvp0BR3UdEVIbciQ4jaSBnN1ANqBSmp0Vb1JsaXdx
-ueC/1P4q9gygB15XcS7ITmOI3pfQwKcEbW/c/X8CJn7gCU1fRRDrqKtlloYY+i8u
-xkwAY3Vgy7hJ1M1gChDJ+7WFTkXEL86agYZmYxGPQBB+GBsLF50d7Jgsn6Piuge3
-3Mw6X2T7PWsYeQ1CA6YHhcplKuMLUZZ10tM1rDnVVcRMjzjS/hCk+wSJ67KKo1mr
-Iy6GeLT0fkDvr/hLpZfJqFSk892lK4jyur4rHTFjXRmUx0fM9mnZc1rwiCObOWsy
-sHIJhathYttsCASc9/vj16torj6Szw==
-=Bhiy
------END PGP SIGNATURE-----
-
---5bpvqibdgubwlgdb--
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
