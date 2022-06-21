@@ -2,59 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54089552A60
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 06:56:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 361D0552AAE
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 08:00:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344486AbiFUE40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 00:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60358 "EHLO
+        id S1344211AbiFUGAj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 02:00:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230262AbiFUE4Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 00:56:25 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FF420BD5;
-        Mon, 20 Jun 2022 21:56:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 784DBCE1799;
-        Tue, 21 Jun 2022 04:56:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35AE8C3411D;
-        Tue, 21 Jun 2022 04:56:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655787380;
-        bh=ik7pSplbVYwBvCW4LkJ/zGfaJRxicLwOi1ymeKG55mg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AhMmK7fFhdIgu2PBs0+RIWN84F/RXwCG6JhogKd0UgCKOcyIxF9iox5jffqX9mqxp
-         LRkFGzC+IGtF+2Ei+cDiz9SdpbbgMOLwcA4ujmkziegcZLJMlC4gwp39yEBCYzza2e
-         r8GdxsNuyKn+PHz9kN2uy86k2kb3G/D4vdyfsL56hDbNEO/BmB8iL/zLxzyMd+Dv6H
-         D+ST8PofuLEAz8XGMcXrhmz35SXQvYDmecRwsi8eY2XToyJql6DvWQDi1P4sl3bdfm
-         0CzjJgJTDYgzeo4KFIK325ehSYufnvYwYybFYwV/06C2ip+Zc3D+tc37ush0e4VHTl
-         mcoJ0+OkEqX1w==
-Date:   Mon, 20 Jun 2022 21:56:19 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan McDowell <noodles@earth.li>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RESEND net-next PATCH 3/3] net: dsa: qca8k: reset cpu port on
- MTU change
-Message-ID: <20220620215619.2209533a@kernel.org>
-In-Reply-To: <20220618072650.3502-3-ansuelsmth@gmail.com>
-References: <20220618072650.3502-1-ansuelsmth@gmail.com>
-        <20220618072650.3502-3-ansuelsmth@gmail.com>
+        with ESMTP id S233652AbiFUGAh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 02:00:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0EE11220C6
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 23:00:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655791235;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HpI8G7xwI35B9Nl13pX8pLeBi7qUikVCYP4oyWd8eYk=;
+        b=Pi0fhIiqroeufIhx9rBxHHStJIr6fdpYgfpSg6A5up1Q45nQm4jWF10HEKcjmSEFSjO+bn
+        MoVzOUOnpVPsWR6O6s7F0UosM1xVcMSDf+AXAtl3+MMwGui1hFDcWE6829prDm9lkPFK2D
+        Lx4qVBvMfP7MgUm24TkpuZH1BU0oykA=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-248-Gsx9qZfzOGWhV9JlurZEPg-1; Tue, 21 Jun 2022 02:00:34 -0400
+X-MC-Unique: Gsx9qZfzOGWhV9JlurZEPg-1
+Received: by mail-wm1-f70.google.com with SMTP id ay28-20020a05600c1e1c00b0039c5cbe76c1so7979479wmb.1
+        for <netdev@vger.kernel.org>; Mon, 20 Jun 2022 23:00:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HpI8G7xwI35B9Nl13pX8pLeBi7qUikVCYP4oyWd8eYk=;
+        b=HHsUwnpXetzgjDYpVDMbnL3GsN0bH0iRxzvnqjPbWD8ML1KaIqhpaMt3bY1QyNpcTs
+         rgmbzf4nwDNtKGHVP57bl93zMVGAhOB7u1N53M4qqyl6Kab64t5qBZQowWghROYRvPL/
+         g76Png1uI/eChRgJdsNtlnk7M+kUFdAUlmVZtE1Sl5P9n4RBAPy0pNsI14qbSP//rJrB
+         O661jRl90ScJLP4k8ZJmcEH/5bKB1p26W94nTFdgN1jHkWOQTtpx2UcGVsmtsRNotjA6
+         z5/MkNesZ+1xmuHSk/5OuWgUgrA5wh1nMSxiKZPCpOG65rovR4UcqhIu8h0UDhi7TtWk
+         XOrA==
+X-Gm-Message-State: AJIora/7V5HC/XMo6YrgofV6KB1qgPowW7Dye8tMIWtIUHEr+pMPrrKL
+        lpaJ6wFFf/DOXn0KJexPZHRtWUADQ6pdZKNhERVTbeHjVJGPPPUHv6mm0r5ZpeH6ne7iHWO5WUt
+        DwGYItCtdwD32qx5i
+X-Received: by 2002:adf:db48:0:b0:21b:9733:e134 with SMTP id f8-20020adfdb48000000b0021b9733e134mr1868385wrj.396.1655791233025;
+        Mon, 20 Jun 2022 23:00:33 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1ueVVv0nYzdNBCnl0LzuMmMaJJwbfPo6vYbVgN8zyrf0qI4HmI616IJk704Hm+OV6yGEEGYsQ==
+X-Received: by 2002:adf:db48:0:b0:21b:9733:e134 with SMTP id f8-20020adfdb48000000b0021b9733e134mr1868373wrj.396.1655791232802;
+        Mon, 20 Jun 2022 23:00:32 -0700 (PDT)
+Received: from redhat.com ([2.53.15.87])
+        by smtp.gmail.com with ESMTPSA id i27-20020a1c541b000000b0039c5ab7167dsm21126194wmb.48.2022.06.20.23.00.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jun 2022 23:00:32 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 02:00:28 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        davem <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
+        erwan.yvin@stericsson.com
+Subject: Re: [PATCH 3/3] caif_virtio: fix the race between reset and netdev
+ unregister
+Message-ID: <20220621020013-mutt-send-email-mst@kernel.org>
+References: <20220620051115.3142-1-jasowang@redhat.com>
+ <20220620051115.3142-4-jasowang@redhat.com>
+ <20220620050446-mutt-send-email-mst@kernel.org>
+ <CACGkMEsEq3mu6unXx1VZuEFgDCotOc9v7fcwJG-kXEqs6hXYYg@mail.gmail.com>
+ <20220620061607-mutt-send-email-mst@kernel.org>
+ <CACGkMEu7k2X6S0tSsuGOb-Ta+MzzYE5NzHgrhR2H1vgmcLqjCw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACGkMEu7k2X6S0tSsuGOb-Ta+MzzYE5NzHgrhR2H1vgmcLqjCw@mail.gmail.com>
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,75 +83,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 18 Jun 2022 09:26:50 +0200 Christian Marangi wrote:
-> It was discovered that the Documentation lacks of a fundamental detail
-> on how to correctly change the MAX_FRAME_SIZE of the switch.
+On Tue, Jun 21, 2022 at 11:09:45AM +0800, Jason Wang wrote:
+> On Mon, Jun 20, 2022 at 6:18 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > On Mon, Jun 20, 2022 at 05:18:29PM +0800, Jason Wang wrote:
+> > > On Mon, Jun 20, 2022 at 5:09 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> > > >
+> > > > On Mon, Jun 20, 2022 at 01:11:15PM +0800, Jason Wang wrote:
+> > > > > We use to do the following steps during .remove():
+> > > >
+> > > > We currently do
+> > > >
+> > > >
+> > > > > static void cfv_remove(struct virtio_device *vdev)
+> > > > > {
+> > > > >       struct cfv_info *cfv = vdev->priv;
+> > > > >
+> > > > >       rtnl_lock();
+> > > > >       dev_close(cfv->ndev);
+> > > > >       rtnl_unlock();
+> > > > >
+> > > > >       tasklet_kill(&cfv->tx_release_tasklet);
+> > > > >       debugfs_remove_recursive(cfv->debugfs);
+> > > > >
+> > > > >       vringh_kiov_cleanup(&cfv->ctx.riov);
+> > > > >       virtio_reset_device(vdev);
+> > > > >       vdev->vringh_config->del_vrhs(cfv->vdev);
+> > > > >       cfv->vr_rx = NULL;
+> > > > >       vdev->config->del_vqs(cfv->vdev);
+> > > > >       unregister_netdev(cfv->ndev);
+> > > > > }
+> > > > > This is racy since device could be re-opened after dev_close() but
+> > > > > before unregister_netdevice():
+> > > > >
+> > > > > 1) RX vringh is cleaned before resetting the device, rx callbacks that
+> > > > >    is called after the vringh_kiov_cleanup() will result a UAF
+> > > > > 2) Network stack can still try to use TX virtqueue even if it has been
+> > > > >    deleted after dev_vqs()
+> > > > >
+> > > > > Fixing this by unregistering the network device first to make sure not
+> > > > > device access from both TX and RX side.
+> > > > >
+> > > > > Fixes: 0d2e1a2926b18 ("caif_virtio: Introduce caif over virtio")
+> > > > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+> > > > > ---
+> > > > >  drivers/net/caif/caif_virtio.c | 6 ++----
+> > > > >  1 file changed, 2 insertions(+), 4 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/net/caif/caif_virtio.c b/drivers/net/caif/caif_virtio.c
+> > > > > index 66375bea2fcd..a29f9b2df5b1 100644
+> > > > > --- a/drivers/net/caif/caif_virtio.c
+> > > > > +++ b/drivers/net/caif/caif_virtio.c
+> > > > > @@ -752,9 +752,8 @@ static void cfv_remove(struct virtio_device *vdev)
+> > > > >  {
+> > > > >       struct cfv_info *cfv = vdev->priv;
+> > > > >
+> > > > > -     rtnl_lock();
+> > > > > -     dev_close(cfv->ndev);
+> > > > > -     rtnl_unlock();
+> > > > > +     /* Make sure NAPI/TX won't try to access the device */
+> > > > > +     unregister_netdev(cfv->ndev);
+> > > > >
+> > > > >       tasklet_kill(&cfv->tx_release_tasklet);
+> > > > >       debugfs_remove_recursive(cfv->debugfs);
+> > > > > @@ -764,7 +763,6 @@ static void cfv_remove(struct virtio_device *vdev)
+> > > > >       vdev->vringh_config->del_vrhs(cfv->vdev);
+> > > > >       cfv->vr_rx = NULL;
+> > > > >       vdev->config->del_vqs(cfv->vdev);
+> > > > > -     unregister_netdev(cfv->ndev);
+> > > > >  }
+> > > >
+> > > >
+> > > > This gives me pause, callbacks can now trigger after device
+> > > > has been unregistered. Are we sure this is safe?
+> > >
+> > > It looks safe, for RX NAPI is disabled. For TX, tasklet is disabled
+> > > after tasklet_kill(). I can add a comment to explain this.
+> >
+> > that waits for outstanding tasklets but does it really prevent
+> > future ones?
 > 
-> In fact if the MAX_FRAME_SIZE is changed while the cpu port is on, the
-> switch panics and cease to send any packet. This cause the mgmt ethernet
-> system to not receive any packet (the slow fallback still works) and
-> makes the device not reachable. To recover from this a switch reset is
-> required.
+> I think so, it tries to test and set TASKLET_STATE_SCHED which blocks
+> the future scheduling of a tasklet.
 > 
-> To correctly handle this, turn off the cpu ports before changing the
-> MAX_FRAME_SIZE and turn on again after the value is applied.
-> 
-> Fixes: f58d2598cf70 ("net: dsa: qca8k: implement the port MTU callbacks")
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
- 
-It reads like this patch should be backported to 5.10 and 5.15 stable
-branches. While patches 1 and 2 are cleanups. In which case you should
-reports just patch 3 against net/master first, we'll send it to Linus at
-the end of the week and then you can send the cleanups on top for -next.
+> Thanks
 
-One extra question below.
+But then in the end it clears it, does it not?
 
-> diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-> index eaaf80f96fa9..0b92b9d5954a 100644
-> --- a/drivers/net/dsa/qca8k.c
-> +++ b/drivers/net/dsa/qca8k.c
-> @@ -2334,6 +2334,7 @@ static int
->  qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
->  {
->  	struct qca8k_priv *priv = ds->priv;
-> +	int ret;
->  
->  	/* We have only have a general MTU setting.
->  	 * DSA always set the CPU port's MTU to the largest MTU of the slave
-> @@ -2344,10 +2345,29 @@ qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
->  	if (!dsa_is_cpu_port(ds, port))
->  		return 0;
->  
-> +	/* To change the MAX_FRAME_SIZE the cpu ports must be off or
-> +	 * the switch panics.
-> +	 * Turn off both cpu ports before applying the new value to prevent
-> +	 * this.
-> +	 */
-> +	if (priv->port_enabled_map & BIT(0))
-> +		qca8k_port_set_status(priv, 0, 0);
-> +
-> +	if (priv->port_enabled_map & BIT(6))
-> +		qca8k_port_set_status(priv, 6, 0);
-> +
->  	/* Include L2 header / FCS length */
-> -	return regmap_update_bits(priv->regmap, QCA8K_MAX_FRAME_SIZE_REG,
-> -				  QCA8K_MAX_FRAME_SIZE_MASK,
-> -				  new_mtu + ETH_HLEN + ETH_FCS_LEN);
-> +	ret = regmap_update_bits(priv->regmap, QCA8K_MAX_FRAME_SIZE_REG,
+> >
+> > > > Won't it be safer to just keep the rtnl_lock around
+> > > > the whole process?
+> > >
+> > > It looks to me we rtnl_lock can't help in synchronizing with the
+> > > callbacks, anything I miss?
+> > >
+> > > Thanks
+> >
+> > good point.
+> >
+> >
+> > > >
+> > > > >  static struct virtio_device_id id_table[] = {
+> > > > > --
+> > > > > 2.25.1
+> > > >
+> >
 
-Why care about the return code of this regmap access but not the ones
-inside the *port_set_status() calls?
-
-> +				 QCA8K_MAX_FRAME_SIZE_MASK,
-> +				 new_mtu + ETH_HLEN + ETH_FCS_LEN);
-> +
-> +	if (priv->port_enabled_map & BIT(0))
-> +		qca8k_port_set_status(priv, 0, 1);
-> +
-> +	if (priv->port_enabled_map & BIT(6))
-> +		qca8k_port_set_status(priv, 6, 1);
-> +
-> +	return ret;
->  }
->  
->  static int
