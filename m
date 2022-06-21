@@ -2,103 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 267FA553176
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 13:57:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46AB055317B
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 13:58:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350243AbiFUL5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 07:57:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39116 "EHLO
+        id S1347120AbiFUL6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 07:58:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350237AbiFUL5N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 07:57:13 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A4E11460;
-        Tue, 21 Jun 2022 04:57:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=xQFqvX/2U0sysOS7JlcEgkNOgJ7FhhhaD6YU2rG8wGM=; b=jbni4AfMdOAxiigUTxB7wRppR0
-        D5kYFDzS6jHCSYoiNManujTW4YxoyWK0Ndseqf+hKpPEf3vWyUUgmWDAn6K2bL1LZZPWZk9kWNdXV
-        b4C/87HPklnO7EAapuNzPYiNrO+QHfrVmOhzmAAKJbR0f895bfXCzLB8jbo0HxjzMp98=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o3cVH-007iX1-Oa; Tue, 21 Jun 2022 13:57:07 +0200
-Date:   Tue, 21 Jun 2022 13:57:07 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Marcin Wojtas <mw@semihalf.com>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
-        rafael@kernel.org, lenb@kernel.org, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux@armlinux.org.uk, hkallweit1@gmail.com, gjb@semihalf.com,
-        jaz@semihalf.com, tn@semihalf.com, Samer.El-Haj-Mahmoud@arm.com,
-        upstream@semihalf.com
-Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA
- description
-Message-ID: <YrGyE2boRg9Fy4A4@lunn.ch>
-References: <20220620150225.1307946-1-mw@semihalf.com>
- <20220620150225.1307946-10-mw@semihalf.com>
- <20220621094556.5ev3nencnw7a5xwv@bogus>
- <YrGoXXBgHvyifny3@smile.fi.intel.com>
- <YrGqg5fHB4s+Y7wx@lunn.ch>
- <YrGvfdRF4jNIGzQq@smile.fi.intel.com>
+        with ESMTP id S1350269AbiFUL6M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 07:58:12 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A368DFC7;
+        Tue, 21 Jun 2022 04:58:11 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25LADi03032637;
+        Tue, 21 Jun 2022 11:58:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=ld8ONx1WoaWgPX/hqnxfo4AHapYxdwGCb8SdAeAAbkk=;
+ b=K79IfWdNAvE7lzBL1Qh4nGlUP/iB5HoAW9VEAvxW064hjSvDZW37ye/YTUpetu1Xes3D
+ EcQtRPfKCVd9lwBzQsrGShGP6Xwr+lRxc6dtCi4JMouoLImFNamALxGsLse6ciAROM80
+ HcckcrP7It6UHi7DetzTsA4svc8c08GVO5dwX/nnHfnfMM59u8cMIvN8uMq7FjIl/Sg7
+ 0Bvvf7tR+6Nb2cLIFxsrwGR4KjYLwS5L7yVUcZqvG7ZfNqPdpXJ6nU8OZStjagMuw/+e
+ Vm83aayaeVmsDeJUlvvkpuDRNpS2t2awMMqhcgXvTqQCoDyrFbb1KRkaApSv7Mo46Z5C QA== 
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3guc202tjk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Jun 2022 11:58:07 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 25LBpEpG022601;
+        Tue, 21 Jun 2022 11:58:04 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma05fra.de.ibm.com with ESMTP id 3gs6b933xf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 21 Jun 2022 11:58:04 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 25LBw0Xi19923372
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 21 Jun 2022 11:58:00 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D7E78A404D;
+        Tue, 21 Jun 2022 11:58:00 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 85F02A4040;
+        Tue, 21 Jun 2022 11:58:00 +0000 (GMT)
+Received: from [9.152.224.195] (unknown [9.152.224.195])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 21 Jun 2022 11:58:00 +0000 (GMT)
+Message-ID: <09b411b2-0e1f-26d5-c0ea-8ee6504bdcfd@linux.ibm.com>
+Date:   Tue, 21 Jun 2022 13:58:00 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrGvfdRF4jNIGzQq@smile.fi.intel.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: [PATCH] net: s390: drop unexpected word "the" in the comments
+Content-Language: en-US
+To:     Jiang Jian <jiangjian@cdjrlc.com>
+Cc:     wenjia@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220621113740.103317-1-jiangjian@cdjrlc.com>
+From:   Alexandra Winter <wintera@linux.ibm.com>
+In-Reply-To: <20220621113740.103317-1-jiangjian@cdjrlc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 65iRLLqjKaKQYaC7OLXIcWFLbFDgQeU1
+X-Proofpoint-GUID: 65iRLLqjKaKQYaC7OLXIcWFLbFDgQeU1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-21_04,2022-06-21_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
+ priorityscore=1501 clxscore=1011 bulkscore=0 malwarescore=0 phishscore=0
+ impostorscore=0 mlxlogscore=999 lowpriorityscore=0 spamscore=0
+ suspectscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206210050
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 02:46:05PM +0300, Andy Shevchenko wrote:
-> On Tue, Jun 21, 2022 at 01:24:51PM +0200, Andrew Lunn wrote:
-> > On Tue, Jun 21, 2022 at 02:15:41PM +0300, Andy Shevchenko wrote:
-> > > On Tue, Jun 21, 2022 at 10:45:56AM +0100, Sudeep Holla wrote:
-> 
-> ...
-> 
-> > > I dunno we have a such, but the closest I may imagine is MIPI standardization,
-> > > that we have at least for cameras and sound.
-> > > 
-> > > I would suggest to go and work with MIPI for network / DSA / etc area, so
-> > > everybody else will be aware of the standard.
-> > 
-> > It is the same argument as for DT. Other OSes and bootloaders seem to
-> > manage digging around in Linux for DT binding documentation. I don't
-> > see why bootloaders and other OSes can not also dig around in Linux
-> > for ACPI binding documentations.
-> > 
-> > Ideally, somebody will submit all this for acceptance into ACPI, but
-> > into somebody does, i suspect it will just remain a defacto standard
-> > in Linux.
-> 
-> The "bindings" are orthogonal to ACPI specification. It's a vendor / OS / ...
-> specific from ACPI p.o.v. It has an UUID field and each UUID may or may not
-> be a part of any standard.
 
-We want to avoid snowflakes, each driver doing its own thing,
-different to every other driver. So we push as much as possible into
-the core, meaning the driver have no choice. So i expect the MDIO part
-to look the same for every MDIO bus in Linux using ACPI. I expect the
-PHY part to look the same, for every PHY using ACPI in Linux, the DSA
-part to look the same, for every DSA switch using linux, because all
-the ACPI is in the core of each of these subsystems. The driver only
-gets to implement its own properties for anything which is not in one
-of these cores.
 
-So you say these bindings are vendor/OS specific, which is great. We
-are defining how Linux does this. We are fully open, any other OS or
-bootloader can copy it, but it also suggests we don't need to care
-about other OSes and bootloaders? That actually seems opposite to DT,
-were we do try to share it, and avoid being vendor or OS specific!
+On 21.06.22 13:37, Jiang Jian wrote:
+> there is an unexpected word "the" in the comments that need to be dropped
+> 
+> file: ./drivers/s390/net/qeth_core_main.c
+> line: 3568
+> 
+> * have to request a PCI to be sure the the PCI
+> changed to
+> * have to request a PCI to be sure the PCI
+> 
+> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+> ---
+>  drivers/s390/net/qeth_core_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
+> index 9e54fe76a9b2..35d4b398c197 100644
+> --- a/drivers/s390/net/qeth_core_main.c
+> +++ b/drivers/s390/net/qeth_core_main.c
+> @@ -3565,7 +3565,7 @@ static void qeth_flush_buffers(struct qeth_qdio_out_q *queue, int index,
+>  			if (!atomic_read(&queue->set_pci_flags_count)) {
+>  				/*
+>  				 * there's no outstanding PCI any more, so we
+> -				 * have to request a PCI to be sure the the PCI
+> +				 * have to request a PCI to be sure the PCI
+>  				 * will wake at some time in the future then we
+>  				 * can flush packed buffers that might still be
+>  				 * hanging around, which can happen if no
 
-    Andrew
+Acked-by: Alexandra Winter <wintera@linux.ibm.com>
