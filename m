@@ -2,114 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 340F3552F5A
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 12:03:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2690B552F5F
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 12:03:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229588AbiFUKCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 06:02:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41776 "EHLO
+        id S1346969AbiFUKDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 06:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiFUKCD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 06:02:03 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78911275D7;
-        Tue, 21 Jun 2022 03:02:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=CebAnGs2I4e+XopgqgMPynRsVklLyL9H2XvsgpMCH3A=; b=1XHoW/tBFaJiaNKU4sevkeQHAT
-        wzUfAxdFftsUy5g5L9/JF4dxs7GL+VOQbvh9kbNbOhX+4Z0Dk6MK1XuRFVV1Uc0nCTbXndIkQJc/V
-        fwbyHU2KTxvyHKNGA6gBBeuO/455fTuUXYM0dFbEg37zaZG+VPpP0SeJqJzdnrOQTlpbRRBOoeaYA
-        up/T//k0ritMvyTsQS6847SkS55N2B0Yi/8FucBKE+t4PaP6z2/awQDssBq7Mb7g/DRmvLmZ4y6By
-        WWSgQ9hM3rgxBf1g95BU/wLA2wFBAsd+pJb2t6V6Fh5HJnn9mr0xVhiiVqxFEFhhmMrzguYTPIPpo
-        TNbTmF3Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:32960)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1o3ahq-0002AF-2D; Tue, 21 Jun 2022 11:01:57 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1o3ahl-0005w5-HX; Tue, 21 Jun 2022 11:01:53 +0100
-Date:   Tue, 21 Jun 2022 11:01:53 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        with ESMTP id S1346941AbiFUKDA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 06:03:00 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D01CFD43
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 03:02:57 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id y32so21477637lfa.6
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 03:02:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=WgpvJ+ZYQ9wNJ1RH7x/Iyee2F28bg23N2XRimN8MYRQ=;
+        b=ktPF7cOnTQ+f5ss8vA4ne+IqJ1N2aK8YJDV120+3TE5Y/PumvHgTI9YFgKCc/emtfo
+         Rpk77hxnFVp2OoD6JZTZahD5WNhRB58jXTzOyhiGI26jAuV0LO2rsYzX++z/fM1OTXPe
+         RvxfAcSAdUUJr28uLmAby0mBoPAvpNkCR/jGF056uSrC9GxTDf84J4UvIMjPZ/z/OVKr
+         YDXRK3FKeW9eCGLazvBoG9I5pbF0iliNKlnaV6bPxaVInkUTftHN9losZCQKB5WVxwz0
+         CEByZvkr8RrFrC80CCL3NKulB9MQXNa9Lh31KJaecljsfW2TK0XIlIiHubuZfpeb4y2v
+         U5ng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=WgpvJ+ZYQ9wNJ1RH7x/Iyee2F28bg23N2XRimN8MYRQ=;
+        b=7EzMYj2YfU9ySsuX1vrkQZ8m+7D1fmojyCOI3cKhove7lcV3UbnwqdrCs7ukfMSUvY
+         0vedI2SzBHhMxEO958k68DfhAb5LEN2PDKO+NwdcwHq+T7LV1+wKa1EvHjkrwOTz1lQr
+         x9Da/M0ICQI2zDwSfHJMN+qzBMstsd4bbRMJ/3mLvfXuWLFGWNz8HenzC9O8+AsN4RqU
+         VnwYd8kM017k32SgZotIdZ2jazB5797XvEj0iRAOddpnXHowUNXwl5qqQ681e2galp+t
+         lQRmp29khdyHVSMb3gAuLjRuN5ajh6tsxfrJ+1ePoWKE7nev3AJI40kK3eHjiqtKa/pC
+         TLPw==
+X-Gm-Message-State: AJIora8y0vD3nEZ90MVhPDgRVQHphaA2AJfXzcumze1ELCT/RURSos7D
+        O43Nuic5SZ0GdEYKZVVsCsf09eHpUF9nKCqWplICLQ==
+X-Google-Smtp-Source: AGRyM1vJyn4HX+l1jRaEx/IuJ8VvUq21x67APPtICLlcI6h1PNZNhnGzvCIIh/0z7vZgyTr7dsdpoFugsC0f3Mg2usE=
+X-Received: by 2002:a05:6512:118f:b0:47f:6a1a:20d4 with SMTP id
+ g15-20020a056512118f00b0047f6a1a20d4mr7197196lfr.428.1655805776035; Tue, 21
+ Jun 2022 03:02:56 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220620150225.1307946-1-mw@semihalf.com> <YrCsgIxOmXQcjy+B@smile.fi.intel.com>
+In-Reply-To: <YrCsgIxOmXQcjy+B@smile.fi.intel.com>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Tue, 21 Jun 2022 12:02:46 +0200
+Message-ID: <CAPv3WKdJ_zoraG=gpOOSWHJcoMTKkkH8=N21aXX2RrusjWWD9g@mail.gmail.com>
+Subject: Re: [net-next: PATCH 00/12] ACPI support for DSA
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Len Brown <lenb@kernel.org>, vivien.didelot@gmail.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        Len Brown <lenb@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        vivien.didelot@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Grzegorz Bernacki <gjb@semihalf.com>,
         Grzegorz Jaszczyk <jaz@semihalf.com>,
         Tomasz Nowicki <tn@semihalf.com>,
         Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
         upstream@semihalf.com
-Subject: Re: [net-next: PATCH 01/12] net: phy: fixed_phy: switch to fwnode_
- API
-Message-ID: <YrGXEReoc3qweU1S@shell.armlinux.org.uk>
-References: <20220620150225.1307946-1-mw@semihalf.com>
- <20220620150225.1307946-2-mw@semihalf.com>
- <YrC1gEf4HpRp5zkh@lunn.ch>
- <CAPv3WKe3vBJ9r=6tMEtPj-3c0E3MBpW4Csf8zjS0jG03C35ycg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPv3WKe3vBJ9r=6tMEtPj-3c0E3MBpW4Csf8zjS0jG03C35ycg@mail.gmail.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 11:56:06AM +0200, Marcin Wojtas wrote:
-> pon., 20 cze 2022 o 19:59 Andrew Lunn <andrew@lunn.ch> napisał(a):
+pon., 20 cze 2022 o 19:21 Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> napisa=C5=82(a):
+>
+> On Mon, Jun 20, 2022 at 05:02:13PM +0200, Marcin Wojtas wrote:
+> > Hi!
 > >
-> > On Mon, Jun 20, 2022 at 05:02:14PM +0200, Marcin Wojtas wrote:
-> > > This patch allows to use fixed_phy driver and its helper
-> > > functions without Device Tree dependency, by swtiching from
-> > > of_ to fwnode_ API.
+> > This patchset introduces the support for DSA in ACPI world. A couple of
+> > words about the background and motivation behind those changes:
 > >
-> > Do you actually need this? phylink does not use this code, it has its
-> > own fixed link implementation. And that implementation is not limited
-> > to 1G.
+> > The DSA code is strictly dependent on the Device Tree and Open Firmware
+> > (of_*) interface, both in the drivers and the common high-level net/dsa=
+ API.
+> > The only alternative is to pass the information about the topology via
+> > platform data - a legacy approach used by older systems that compiled t=
+he
+> > board description into the kernel.
 > >
-> 
-> Yes, phylink has its own fixed-link handling, however the
-> net/dsa/port.c relies on fixed_phy helpers these are not 1:1
-> equivalents. I assumed this migration (fixed_phy -> phylink) is not
-> straightforward and IMO should be handled separately. Do you recall
-> justification for not using phylink in this part of net/dsa/*?
+> > The above constraint is problematic for the embedded devices based e.g.=
+ on
+> > x86_64 SoCs, which are described by ACPI tables - to use DSA, some tric=
+ks
+> > and workarounds have to be applied. Addition of switch description to
+> > DSDT/SSDT tables would help to solve many similar cases and use unmodif=
+ied
+> > kernel modules. It also enables this feature for ARM64 ACPI users.
+> >
+> > The key enablements allowing for adding ACPI support for DSA in Linux w=
+ere
+> > NIC drivers, MDIO, PHY, and phylink modifications =E2=80=93 the latter =
+three merged
+> > in 2021. I thought it would be worth to experiment with DSA, which seem=
+ed
+> > to be a natural follow-up challenge.
+> >
+> > It turned out that without much hassle it is possible to describe
+> > DSA-compliant switches as child devices of the MDIO busses, which are
+> > responsible for their enumeration based on the standard _ADR fields and
+> > description in _DSD objects under 'device properties' UUID [1].
+> > The vast majority of required changes were simple of_* to fwnode_*
+> > transition, as the DT and ACPI topolgies are analogous, except for
+> > 'ports' and 'mdio' subnodes naming, as they don't conform ACPI
+> > namespace constraints [2].
+>
+> ...
+>
+> > Note that for now cascade topology remains unsupported in ACPI world
+> > (based on "dsa" label and "link" property values). It seems to be feasi=
+ble,
+> > but would extend this patchset due to necessity of of_phandle_iterator
+> > migration to fwnode_. Leave it as a possible future step.
+>
+> Wondering if this can be done using fwnode graph.
+>
 
-All modern DSA drivers use phylink and not fixed-phy as far as I'm
-aware - there are a number that still implement the .adjust_link
-callback, but note in dsa_port_link_register_of():
+Probably yes. It's a general question whether to follow iterating over
+phandles pointed by properties, like DT with a minimal code change or
+do something completely different.
 
-        if (!ds->ops->adjust_link) {
-	...
-		return 0;
-	}
-
-	dev_warn(ds->dev,
-		 "Using legacy PHYLIB callbacks. Please migrate to PHYLINK!\n");
-
-It's really just that they haven't been migrated.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Best regards,
+Marcin
