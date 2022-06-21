@@ -2,84 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9F59553259
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 14:44:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ED345532D2
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 15:03:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349712AbiFUMoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 08:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
+        id S1345250AbiFUNCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 09:02:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231252AbiFUMoQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 08:44:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F393212091
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 05:44:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655815455;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pd3J8JPqD6kQCuJIr3RkUpHfIhmcn3pD2QOgK4NseCA=;
-        b=HIG/I/DuWYsuYf2KzovT85afEtuYj1GOvXIzlfUy78VHi30k4w05w9VweSEcqmrDb7Ibax
-        KcAMVRrZsk0+HUlJNn3VkdnsfzJstmtMm+Ttb6oSnlfmlaaKtRljQhcUEQFvC26Gk289M3
-        rd9meM688BpnKcGZqRpOxt2usZyc0EE=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-160-a2nXg2nVO8S2uEz_FOCwuQ-1; Tue, 21 Jun 2022 08:44:14 -0400
-X-MC-Unique: a2nXg2nVO8S2uEz_FOCwuQ-1
-Received: by mail-qk1-f197.google.com with SMTP id f2-20020a05620a408200b006ab94bb9d09so12470127qko.8
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 05:44:13 -0700 (PDT)
+        with ESMTP id S229547AbiFUNCn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 09:02:43 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E13CC4
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 06:02:42 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id e4so11682182ybq.7
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 06:02:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KSRRGgJaWx5LrJiPUsRPKv/ynG0xwMU7DZej5R/GU6w=;
+        b=s2JOkh7BOT1AsKOuTArumE1N4uk1/GW8uoUF9YA5WKbv5cHZQNr3T2ssLPgOEqORfI
+         9Pp2hSCMc2cnosKFk/bO74CaPTXDdRyVqKfN5om3WyMYwetoRexu9DhBoiOwbJdZf/8V
+         /kruX+QH3rDqNaxPy/VW3Lvo/qCa92i8MKES+JZYEuqEG3opuHyhErSzURh5u5N34t6X
+         1xIGuw1u/xKPJpGFkNGzzuQYxQ1w66+Cz6uwLhM+gBOrdGM3EiwMC9Wol9hm8zziPEpe
+         rwo7m56NNfS3ifdU6eKd1i19lBrEKGRXS4CFyjRN9ddYu71Uz1eJKq4x3fOj1g1tmFXb
+         MRvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=pd3J8JPqD6kQCuJIr3RkUpHfIhmcn3pD2QOgK4NseCA=;
-        b=zXdbGjniwKvXPx4OApKTypJXljM3C2FSZrw74DW1yr7pggTPCaqyy+jqAA+vUNZMzc
-         7qLPdRIQLVRHaaNXvi7JtfISZ60pYLbVJ8H3Wtkjmeye3iSRmTsUwmQEJcObslbQ2dCc
-         4QPQcZRf3uN621TseiftKWkIV68repHM0M2x6Yycv+LH7ZY0HJvWVY/EJTFu88bHJmHZ
-         M3JgV8JuSIBz5kE492Ldy1chPqhO4pqxp1VcgK418tCbCbWkfwLRUBH/amNQWX1JBEfD
-         Ls7CdDuLHy6FOC6zy6d7A9VlzkB56nms4xlRZV41z9lHzRAbkikdc+BIRJbmynv7spSp
-         PWEg==
-X-Gm-Message-State: AJIora+Lv15FzEuZFwlVGomZ4T0U5xMeEQNAF+6K4NAbYd3778QPnZiS
-        6qJFO+vrgCNDlfDAunv/nGlQzbdKQdN0JYvJtmgRh2UxdNAuO7vIe2HG3jwyvSNVYzkSXuj5HwI
-        di7fGguFpi20RPGS3
-X-Received: by 2002:a05:6214:2387:b0:462:1026:b5bb with SMTP id fw7-20020a056214238700b004621026b5bbmr22701918qvb.38.1655815453522;
-        Tue, 21 Jun 2022 05:44:13 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tl5Wy1PtQlDXj7T0ffzeIB1VreIVB3C7u7MFwraFIWuaNtbq29rZAPOM9xwPa1YpQlcmTPbA==
-X-Received: by 2002:a05:6214:2387:b0:462:1026:b5bb with SMTP id fw7-20020a056214238700b004621026b5bbmr22701903qvb.38.1655815453299;
-        Tue, 21 Jun 2022 05:44:13 -0700 (PDT)
-Received: from [192.168.98.18] ([107.12.98.143])
-        by smtp.gmail.com with ESMTPSA id d14-20020a05620a240e00b006a6b6638a59sm14835072qkn.53.2022.06.21.05.44.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 05:44:13 -0700 (PDT)
-Message-ID: <91d441d8-ee1a-4ab3-fe04-1d7ff13fc6f1@redhat.com>
-Date:   Tue, 21 Jun 2022 08:44:11 -0400
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KSRRGgJaWx5LrJiPUsRPKv/ynG0xwMU7DZej5R/GU6w=;
+        b=Id3LR8s/UMb7WiB7uqygjaLVslyHgqnmlAfbUdSiZpm2o/owRqL/ysXo10UPhUeAIl
+         EtfJv2OPwYfuiDnq4y+gNwjGFLeZH5+XeQoVnZtQyduWJ0XcAk0se+TtAGhMSPLLYUms
+         TYx2hgaWAxSBq4c6/bkRGayu4F6X8SBG4S+NaqRzARwGqmExogBa5xCuR0zSjiXHwB0S
+         ukIgVWdEscMR+LJqP7fovTj+0x/DIzdlXBuRXAU0wzcXNSpoVIywUYDOVISq1UoT+69i
+         SuRdsH4EFwJIv1GoZfZQNFHKWK26d+uVG5I6ztvUG9bQyZsVce6IZbvK3xoubqCVfshz
+         +sjg==
+X-Gm-Message-State: AJIora/rBbf1sTKhz9V4dx/NmdhyjBj0CJbWUoj/q7DV1Y/TiJkBouYF
+        ilLkbGWgkjU0K1wEhF5HKXU/oZzGqya85AsWCrdElKwBVHafrw==
+X-Google-Smtp-Source: AGRyM1uroVI9iTR2yiASeo3PCrpupnOvCkjxqjQzpyMhFPsIwEssjy4vMK7L2NSJUN34MwRMQSFQBso07Bw5Xmx01ek=
+X-Received: by 2002:a25:8181:0:b0:668:c835:eb7c with SMTP id
+ p1-20020a258181000000b00668c835eb7cmr22430340ybk.598.1655816561029; Tue, 21
+ Jun 2022 06:02:41 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCHv3 iproute2-next] iplink: bond_slave: add per port prio
- support
-Content-Language: en-US
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@gmail.com>
-References: <20220621074919.2636622-1-liuhangbin@gmail.com>
- <20220621075105.2636726-1-liuhangbin@gmail.com>
-From:   Jonathan Toppins <jtoppins@redhat.com>
-In-Reply-To: <20220621075105.2636726-1-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+References: <202206212033.3lgl72Fw-lkp@intel.com>
+In-Reply-To: <202206212033.3lgl72Fw-lkp@intel.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 21 Jun 2022 15:02:29 +0200
+Message-ID: <CANn89i+-T0iPKASSrHZvn4Cj4+UMYCpQWq5mg+Mc1hXsv_9BcQ@mail.gmail.com>
+Subject: Re: [linux-next:master 3790/4834] net/ipv6/raw.c:338:33: warning:
+ variable 'daddr' set but not used
+To:     kernel test robot <lkp@intel.com>
+Cc:     netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -87,23 +66,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6/21/22 03:51, Hangbin Liu wrote:
-> Add per port priority support for active slave re-selection during
-> bonding failover. A higher number means higher priority.
-> 
-> This option is only valid for active-backup(1), balance-tlb (5) and
-> balance-alb (6) mode.
-> 
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+On Tue, Jun 21, 2022 at 2:42 PM kernel test robot <lkp@intel.com> wrote:
+>
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+> head:   34d1d36073ea4d4c532e8c8345627a9702be799e
+> commit: ba44f8182ec299c5d1c8a72fc0fde4ec127b5a6d [3790/4834] raw: use more conventional iterators
+> config: i386-randconfig-a012-20220620 (https://download.01.org/0day-ci/archive/20220621/202206212033.3lgl72Fw-lkp@intel.com/config)
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project af6d2a0b6825e71965f3e2701a63c239fa0ad70f)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=ba44f8182ec299c5d1c8a72fc0fde4ec127b5a6d
+>         git remote add linux-next https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+>         git fetch --no-tags linux-next master
+>         git checkout ba44f8182ec299c5d1c8a72fc0fde4ec127b5a6d
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/ipv6/
+>
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All warnings (new ones prefixed by >>):
+>
+> >> net/ipv6/raw.c:338:33: warning: variable 'daddr' set but not used [-Wunused-but-set-variable]
+>            const struct in6_addr *saddr, *daddr;
+>                                           ^
+> >> net/ipv6/raw.c:338:25: warning: variable 'saddr' set but not used [-Wunused-but-set-variable]
+>            const struct in6_addr *saddr, *daddr;
+>                                   ^
+>    2 warnings generated.
+>
 
-Acked-by: Jonathan Toppins <jtoppins@redhat.com>
+Yep, a cleanup is possible.
 
-> ---
-> v3: no update
-> v2: update man page
-> ---
->   ip/iplink_bond_slave.c | 12 +++++++++++-
->   man/man8/ip-link.8.in  |  8 ++++++++
->   2 files changed, 19 insertions(+), 1 deletion(-)
-> 
+I will submit this when my workstation is up again.
 
+diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
+index 46b560aacc11352ee9f2043c277709c28f85e610..722de9dd0ff78fbb2535165935c92fe7d7e6a8c2
+100644
+--- a/net/ipv6/raw.c
++++ b/net/ipv6/raw.c
+@@ -332,7 +332,6 @@ static void rawv6_err(struct sock *sk, struct sk_buff *skb,
+ void raw6_icmp_error(struct sk_buff *skb, int nexthdr,
+                u8 type, u8 code, int inner_offset, __be32 info)
+ {
+-       const struct in6_addr *saddr, *daddr;
+        struct net *net = dev_net(skb->dev);
+        struct hlist_nulls_head *hlist;
+        struct hlist_nulls_node *hnode;
+@@ -345,8 +344,6 @@ void raw6_icmp_error(struct sk_buff *skb, int nexthdr,
+        sk_nulls_for_each(sk, hnode, hlist) {
+                /* Note: ipv6_hdr(skb) != skb->data */
+                const struct ipv6hdr *ip6h = (const struct ipv6hdr *)skb->data;
+-               saddr = &ip6h->saddr;
+-               daddr = &ip6h->daddr;
+
+                if (!raw_v6_match(net, sk, nexthdr, &ip6h->saddr, &ip6h->daddr,
+                                  inet6_iif(skb), inet6_iif(skb)))
