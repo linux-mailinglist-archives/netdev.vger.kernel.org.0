@@ -2,133 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0242553E61
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 00:14:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C43AD553E78
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 00:28:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230409AbiFUWOM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 18:14:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50446 "EHLO
+        id S1352430AbiFUW16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 18:27:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231502AbiFUWOK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 18:14:10 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CE931214
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 15:14:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655849644; x=1687385644;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=vD3NCp32q8nrKx0Gj0k9aVpV2CXjj3Kubo99SdQDW60=;
-  b=QyJQd4Vtc9SHnv1KAIookh6gpPEe9DVotMa6l5WS3keV2rZYAh3sZyWI
-   l+InvqRI1l9L9Ae0SE8HcmKjoIJU2uaPjToPBuY5KKHJtljEM1xEP3yJV
-   SvmwNmu2xyC6RfoKVhFNj5RmVNa/z9M6+8ZBBRwvhe14bvsDfEQnrWbFG
-   bGDY70TmQ+G6hojTG+OfhAv1dhVeHzglg2duIWJ20lRwN/PEQ0qThZ9H4
-   u8QgeDYDUh4EYNQXDktdrcwF7er8aHZaMrjzZJ13HUc+5bfPvzQakUx/u
-   zsc4Bj4W+SUjn9IVS2s65sRLBMwyoIUM0IhC5y8U+OLypGELzZPYf02WH
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="366573555"
-X-IronPort-AV: E=Sophos;i="5.92,210,1650956400"; 
-   d="scan'208";a="366573555"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 15:14:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,210,1650956400"; 
-   d="scan'208";a="764635929"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga005.jf.intel.com with ESMTP; 21 Jun 2022 15:14:02 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH net 1/1] igb: Make DMA faster when CPU is active on the PCIe link
-Date:   Tue, 21 Jun 2022 15:10:56 -0700
-Message-Id: <20220621221056.604304-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231383AbiFUW16 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 18:27:58 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4061A2AD1;
+        Tue, 21 Jun 2022 15:27:56 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id d123so15741793iof.10;
+        Tue, 21 Jun 2022 15:27:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=fNGqJo+i9/6/f3kZZhedEKn3jNfO/JEUEuBNSE2ons8=;
+        b=Bsw5bU9aNfX0F844I1T/2Kq4vl6mJFjBGaNV9ZHdP3lfbUJ/NJmLvDw83lq1sZFFOk
+         jcxk50T2/0kg5pvZqxPXETFm7ri2eYeXWX6DleBI69HpzlTdwJPOtwNWsJItjFz8O79B
+         Z5VES7BJv+nUxwuzojgo6CCgZegw/ZBLHXB9TWjkWI6eWLIzO4nlq4KGdyoaaKMKFCX/
+         M69QnFTju+8iE/bwxLJFtsHzxqpssOEXchocaKHpI4dgQ/XeBdJsSco0UzSfmtL1hX3a
+         Eg52YGE/4lIAK4fPx8BV4Rz+0CiChofrVsBZPjeItE8yTJg1Uf4s4Vq1nIVl9mpNSrA6
+         8WJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=fNGqJo+i9/6/f3kZZhedEKn3jNfO/JEUEuBNSE2ons8=;
+        b=gB5ikzvQynttGT3J50uuSZIxutL/gvPNBnEcSW4E3r60DriRnIbXwH9Jfi9i9XOwHZ
+         fcpkbMenod7TCAq5eX1l7foQwulqm54ctJkKa/SvZkzs0t8+i1Bigb4oh1S7TaIQM5Fo
+         KA+LX9OCtDjkdZ0hd3grgLQjfO+j8tkSYLPg8FC0I9idUTJdeZpYTCmPlY3Er/ffWeD0
+         U46ZTbrrPC+NHNECvbKv/4e1puAhhq2m6/vjDM+u5812GSp7mpP85fIg4Qe0duhNPsFG
+         GS8lkPZLyRl8937IBWiEGFi35VvIvM2s2yGq3VMSvkVats2Pq26SN+Tj3WTv2L52eSpU
+         34RQ==
+X-Gm-Message-State: AJIora/AG7MeT4ijtjApez5AV45mOlypKxbPys7c9jbtCFCkYaO8w4g2
+        Xmg76OnK5OT1tM+fpISYpAs=
+X-Google-Smtp-Source: AGRyM1s7CtUuGPbwQO3uFbWyjsf6za/ECqC0G+2mNEFJEQFJ6RUGx/b3UQVkQauF8xeSlfZOHgzUag==
+X-Received: by 2002:a05:6638:1301:b0:331:f2f0:a17e with SMTP id r1-20020a056638130100b00331f2f0a17emr227630jad.141.1655850475088;
+        Tue, 21 Jun 2022 15:27:55 -0700 (PDT)
+Received: from localhost ([172.243.153.43])
+        by smtp.gmail.com with ESMTPSA id h18-20020a02c732000000b0032e3b0933c6sm7637267jao.162.2022.06.21.15.27.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 15:27:54 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 15:27:46 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Roberto Sassu <roberto.sassu@huawei.com>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kpsingh@kernel.org,
+        john.fastabend@gmail.com, songliubraving@fb.com, kafai@fb.com,
+        yhs@fb.com
+Cc:     dhowells@redhat.com, keyrings@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        kernel test robot <lkp@intel.com>
+Message-ID: <62b245e22effa_1627420871@john.notmuch>
+In-Reply-To: <20220621163757.760304-4-roberto.sassu@huawei.com>
+References: <20220621163757.760304-1-roberto.sassu@huawei.com>
+ <20220621163757.760304-4-roberto.sassu@huawei.com>
+Subject: RE: [PATCH v5 3/5] bpf: Add bpf_verify_pkcs7_signature() helper
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Roberto Sassu wrote:
+> Add the bpf_verify_pkcs7_signature() helper, to give eBPF security modules
+> the ability to check the validity of a signature against supplied data, by
+> using user-provided or system-provided keys as trust anchor.
+> 
+> The new helper makes it possible to enforce mandatory policies, as eBPF
+> programs might be allowed to make security decisions only based on data
+> sources the system administrator approves.
+> 
+> The caller should provide both the data to be verified and the signature as
+> eBPF dynamic pointers (to minimize the number of parameters).
+> 
+> The caller should also provide a keyring pointer obtained with
+> bpf_lookup_user_key() or, alternatively, a keyring ID with values defined
+> in verification.h. While the first choice gives users more flexibility, the
+> second offers better security guarantees, as the keyring selection will not
+> depend on possibly untrusted user space but on the kernel itself.
+> 
+> Defined keyring IDs are: 0 for the primary keyring (immutable keyring of
+> system keys); 1 for both the primary and secondary keyring (where keys can
+> be added only if they are vouched for by existing keys in those keyrings);
+> 2 for the platform keyring (primarily used by the integrity subsystem to
+> verify a kexec'ed kerned image and, possibly, the initramfs signature).
+> 
+> Note: since the keyring ID assignment is understood only by
+> verify_pkcs7_signature(), it must be passed directly to the corresponding
+> helper, rather than to a separate new helper returning a struct key pointer
+> with the keyring ID as a pointer value. If such pointer is passed to any
+> other helper which does not check its validity, an illegal memory access
+> could occur.
+> 
+> Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+> Reported-by: kernel test robot <lkp@intel.com> (cast warning)
+> ---
+>  include/uapi/linux/bpf.h       | 17 +++++++++++++++
+>  kernel/bpf/bpf_lsm.c           | 39 ++++++++++++++++++++++++++++++++++
+>  tools/include/uapi/linux/bpf.h | 17 +++++++++++++++
+>  3 files changed, 73 insertions(+)
+> 
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 7bbcf2cd105d..524bed4d7170 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -5339,6 +5339,22 @@ union bpf_attr {
+>   *		bpf_lookup_user_key() helper.
+>   *	Return
+>   *		0
+> + *
+> + * long bpf_verify_pkcs7_signature(struct bpf_dynptr *data_ptr, struct bpf_dynptr *sig_ptr, struct key *trusted_keys, unsigned long keyring_id)
+> + *	Description
+> + *		Verify the PKCS#7 signature *sig* against the supplied *data*
+> + *		with keys in *trusted_keys* or in a keyring with ID
+> + *		*keyring_id*.
 
-Intel I210 on some Intel Alder Lake platforms can only achieve ~750Mbps
-Tx speed via iperf. The RR2DCDELAY shows around 0x2xxx DMA delay, which
-will be significantly lower when 1) ASPM is disabled or 2) SoC package
-c-state stays above PC3. When the RR2DCDELAY is around 0x1xxx the Tx
-speed can reach to ~950Mbps.
+Would be nice to give precedence here so that its obvious order between
+trusted_keys and keyring_id. 
 
-According to the I210 datasheet "8.26.1 PCIe Misc. Register - PCIEMISC",
-"DMA Idle Indication" doesn't seem to tie to DMA coalesce anymore, so
-set it to 1b for "DMA is considered idle when there is no Rx or Tx AND
-when there are no TLPs indicating that CPU is active detected on the
-PCIe link (such as the host executes CSR or Configuration register read
-or write operation)" and performing Tx should also fall under "active
-CPU on PCIe link" case.
-
-In addition to that, commit b6e0c419f040 ("igb: Move DMA Coalescing init
-code to separate function.") seems to wrongly changed from enabling
-E1000_PCIEMISC_LX_DECISION to disabling it, also fix that.
-
-Fixes: b6e0c419f040 ("igb: Move DMA Coalescing init code to separate function.")
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/igb/igb_main.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 1c26bec7d6fa..c5f04c40284b 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -9901,11 +9901,10 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
- 	struct e1000_hw *hw = &adapter->hw;
- 	u32 dmac_thr;
- 	u16 hwm;
-+	u32 reg;
- 
- 	if (hw->mac.type > e1000_82580) {
- 		if (adapter->flags & IGB_FLAG_DMAC) {
--			u32 reg;
--
- 			/* force threshold to 0. */
- 			wr32(E1000_DMCTXTH, 0);
- 
-@@ -9938,7 +9937,6 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
- 			/* Disable BMC-to-OS Watchdog Enable */
- 			if (hw->mac.type != e1000_i354)
- 				reg &= ~E1000_DMACR_DC_BMC2OSW_EN;
--
- 			wr32(E1000_DMACR, reg);
- 
- 			/* no lower threshold to disable
-@@ -9955,12 +9953,12 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
- 			 */
- 			wr32(E1000_DMCTXTH, (IGB_MIN_TXPBSIZE -
- 			     (IGB_TX_BUF_4096 + adapter->max_frame_size)) >> 6);
-+		}
- 
--			/* make low power state decision controlled
--			 * by DMA coal
--			 */
-+		if (hw->mac.type >= e1000_i210 ||
-+		    (adapter->flags & IGB_FLAG_DMAC)) {
- 			reg = rd32(E1000_PCIEMISC);
--			reg &= ~E1000_PCIEMISC_LX_DECISION;
-+			reg |= E1000_PCIEMISC_LX_DECISION;
- 			wr32(E1000_PCIEMISC, reg);
- 		} /* endif adapter->dmac is not disabled */
- 	} else if (hw->mac.type == e1000_82580) {
--- 
-2.35.1
-
+> + *
+> + *		*keyring_id* can have the following values defined in
+> + *		verification.h: 0 for the primary keyring (immutable keyring of
+> + *		system keys); 1 for both the primary and secondary keyring
+> + *		(where keys can be added only if they are vouched for by
+> + *		existing keys in those keyrings); 2 for the platform keyring
+> + *		(primarily used by the integrity subsystem to verify a kexec'ed
+> + *		kerned image and, possibly, the initramfs signature).
+> + *	Return
+> + *		0 on success, a negative value on error.
+>   */
