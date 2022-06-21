@@ -2,173 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2B10553AD8
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 21:55:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF11B553B84
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 22:23:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354120AbiFUTze (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 15:55:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37528 "EHLO
+        id S1354312AbiFUUXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 16:23:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354125AbiFUTza (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 15:55:30 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-centralusazon11021027.outbound.protection.outlook.com [52.101.62.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41ABC28E1E;
-        Tue, 21 Jun 2022 12:55:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cPtWoHlvHsyuv/8gSNT6zDO7m2Z6449yVcMKdzTZlJg27+JvpL5ZgcCDga6cFkm+dK0FGKwQLgzo1nSMRFNrGVwFeQmfMkkWcsDUpXkjpNaGODK04tvcDbunHNGxr6DLUj+SWQ0VFyH7vCDZEnVJ24zRZDt7mAFlJmtzkej4KYFlZC6UaAyaURkP8mWGBkWRIcgwM3Y4deBi3d+wpVsv6h5cV0aJ0GGZsTEm8HtoHVJn78bkDbcpTA/Jfrc/rZ7DAWFgqfheVB8thZUyitIJJ/Op20owo5ArNgdCjYtFtV20g6+tozSCYGUyMTgzYEZj0csm8mf0wiJvNJJ4pQEeQw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=o/x+rKek6FcZeba7pGVuy11GaXOCdxLYLFhEmpWjF8M=;
- b=C9dp2pBPkXidIXTUFmRWnOqJ5w2rAU3c5VwPPb6jKlS2UiQBYfEM0GW6YrG7gjyCY6vk24EJUrlXi/Q6KzRO+mPqP4jKaK68exu7Msg4xN9v/L12gI4HZVp5jNNARpSfffjE4RhnJAur1FiNZjs4uBlVfmv5XR79xneTPTmJdVIbgDqHbyxhKW/t938f0G9J8SyxHtr+muPEnmtREHV3VEuxlxBwcI9Rqj432KoU377oFMitUlS1ugDYrtDMG/FGntiWaHIlvjD+nJbKNft4r+GQmlFc5HjjVnjlw7eoU3a28IIMPXrXrwxBTVf0xS9CTv0M6xb99PeEgwxQ1gpajg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o/x+rKek6FcZeba7pGVuy11GaXOCdxLYLFhEmpWjF8M=;
- b=KEh+8Gbc8shWyFNLW3kTXPXWHKkhY+JaG4gW7D3j3L4LCwrTuf0LtiNBLTUfYhpqOJkZU3DjiIT/ypWNhkG5D8uMT/35UDJwPFs3ks9ye7tIroUXdOwTvnk58jM5Qd9MvFCh/ZrezoZ1h1tiAtjRvvXauClgSY7x1QcyAf4zMVE=
-Received: from DM5PR21MB1749.namprd21.prod.outlook.com (2603:10b6:4:9f::21) by
- CH2PR21MB1528.namprd21.prod.outlook.com (2603:10b6:610:80::13) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5395.3; Tue, 21 Jun 2022 19:55:27 +0000
-Received: from DM5PR21MB1749.namprd21.prod.outlook.com
- ([fe80::f4e3:b5d6:2808:f49c]) by DM5PR21MB1749.namprd21.prod.outlook.com
- ([fe80::f4e3:b5d6:2808:f49c%9]) with mapi id 15.20.5395.003; Tue, 21 Jun 2022
- 19:55:26 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>
-CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Paul Rosswurm <paulros@microsoft.com>,
-        Shachar Raindel <shacharr@microsoft.com>,
-        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next, 1/2] net: mana: Add handling of CQE_RX_TRUNCATED
-Thread-Topic: [PATCH net-next, 1/2] net: mana: Add handling of
- CQE_RX_TRUNCATED
-Thread-Index: AQHYGhkbwj/2soN83kmQnCFUF3LCRqyFiqLggALM3QCA0sG4YA==
-Importance: high
-X-Priority: 1
-Date:   Tue, 21 Jun 2022 19:55:26 +0000
-Message-ID: <DM5PR21MB17494B8D4472F74198C88FE7CAB39@DM5PR21MB1749.namprd21.prod.outlook.com>
-References: <1644014745-22261-1-git-send-email-haiyangz@microsoft.com>
-        <1644014745-22261-2-git-send-email-haiyangz@microsoft.com>
-        <MN2PR21MB12957F8F10E4B152E26421BBCA2A9@MN2PR21MB1295.namprd21.prod.outlook.com>
- <20220207091212.0ccccde7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220207091212.0ccccde7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-Mentions: gregkh@linuxfoundation.org
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=7e560606-000c-4c57-9e64-b79c51153f2c;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-06-21T19:40:05Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 377a95fe-458a-4b38-a606-08da53bffc9d
-x-ms-traffictypediagnostic: CH2PR21MB1528:EE_
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <CH2PR21MB15281439B934810E3A2693B8CAB39@CH2PR21MB1528.namprd21.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: uVuqZnpXbJnby8J9ovJvhNs1UmGqjBRBhHpLuKfyAp0uVWf+MWFYFxYLVV/Xguc1TAKkjMfi+kbJfGbZlabhfrd7K/T7ip0hGfswcvmkNZJEc26I920VGSqLBNZ5jye05UQRxWZ9r401YyXCAsHcV2HDoUe+JoP9TBOkAzzNm7os5heVyUnr/4AjSUEOeXlT/sC2oD2sx4keaeBZYt2xGdT/bkVGCY6FvM8y6mCNB5ZwCQFu050UxiqIcAyI8O3fGanXny8/cu+6QkBI95huReOdEQoBFIGGL1S/VoKdXEv1D5pOTUXt+2Ftljh2QWFtSEkrbJaWOlFIfEi2GEtbZTtn3T90VQr9/iFu9PA3f4SMYDubaCLpQfHeEBrS756nM6JN3Nln9ttOLxBh3N13RgsT1GUaGd1CprucPq+3Ohtt3VOf2BeO+A8V08UgNQd1Mn9Q5jZ/8fBQ/KM5i5vF5jP0HHnBsqKyOv9ALa52aLWGKFy8lFjQr+YSzKmIrXvDVP6ZejPXdirSJvM5OfmrZvtvuzbX5nIsD9M89M1lJOnFEo3/XBG7ypA/J7eGx++MY+GEiO+2aDLs239dAHZBIvvCrQluw6mAZAOyrrG+J6KbBUImC1u//br/4qF7cSSxUEzrVxTFUKcfoY9UxnyIR+lX+hVmdd7QubzFVZ07ZmEopw3kbAFefipifdPycV1YEZQ4ZCk4KK15uyZ2Ujxi5O3LtpYqTndZ/hCnRJWoYzTwicExfXjC77lNysszSwqk3SISzx9WmDzyCIjr/Gbjp2paSLIxaxLDUhFMaTUiyDItPjEW3u/mrBNks3G315z6Z5qy54nYZWNRGF8Q7BZlrQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR21MB1749.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(136003)(396003)(346002)(376002)(451199009)(26005)(478600001)(33656002)(83380400001)(8990500004)(966005)(38070700005)(5660300002)(122000001)(186003)(2906002)(82950400001)(55016003)(8676002)(10290500003)(52536014)(4326008)(41300700001)(316002)(86362001)(64756008)(54906003)(66946007)(110136005)(9686003)(53546011)(66476007)(7696005)(6506007)(71200400001)(82960400001)(38100700002)(66556008)(8936002)(66446008)(76116006);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?15ePAJdmH0H33PRf3qVx2rOUgBfFeEq0hIA80P34GUqm96U12zYMjkt8OAVS?=
- =?us-ascii?Q?uzWVUiQTqYh9Q6WonnpxMEnCWKFcOACHXenzuYe9rxiLxuG/LanABtqhquDF?=
- =?us-ascii?Q?Kcg2IFg6mP5w5NEUwo5+MCqsFWMjQhUsm2MwkBndWImqUPmI8UQsB0/3/vFA?=
- =?us-ascii?Q?1MQ7TM8SBh0Dnklkh2cE8aAncfuP28GmiPeGAceqbb5XtbIq/04Hw3C/fmjV?=
- =?us-ascii?Q?hCOOuzV4hXrdtegMiAhBsaqpS34UKT8GUCE3T0ZdKLcQKJYASwrUxaWuEUz8?=
- =?us-ascii?Q?DeMKKJ/p4mY5aQJ7tuqGslS3te5Lkfzq0+WJm6fxaJVeNKgYy9peeFTXzocd?=
- =?us-ascii?Q?8MfjbiGI1OdCOH+NiH21RZxvK5pTYxvv1Z3nQzYzjl+tXinNay296wBreahf?=
- =?us-ascii?Q?Tk1P+lJTxgh1lCa6eySBk1QzPWWLLI1wA8ciSyf5G8i2SJAdM7gsEdKo54bM?=
- =?us-ascii?Q?klvshy23dc/QIyCi7SzcDt8MGJnll+D/3m0tdeNiq2RkjjTVALcRqwQ6Uvr7?=
- =?us-ascii?Q?Zubey1Qd2JXPjqMvyRMHu7NGk95Ty+sxcpPnseou22f64EnKZv1M+tPCFQ3k?=
- =?us-ascii?Q?FEZcDB7ZJBiBmOMn6LcGQ8t7OSpZboAkf7A1rsLhsUWZUsyxBT0QHCLciaK8?=
- =?us-ascii?Q?9mql9IKCiE0fw8Oz6KKSnDfebscqdHgUkeq27DM0J8NfiOs8XJpqWwBQfDRE?=
- =?us-ascii?Q?b9Fgi32LhYTtufR6op6SvIZ12JSY+0Y9oIh6fbmRWDvD9qKWwe77WrEr4ND2?=
- =?us-ascii?Q?3IhUPxCP8Mw18Zi2iFbLPPx8ilS3jHO/ig7j34eVgXT23f/3T+HJv7jYUa6J?=
- =?us-ascii?Q?dUGc44OTUAkoZYi3EDVs7KWgwOEZINTqgwUiLcZqioNY5IHkL4wfVP69Qn+S?=
- =?us-ascii?Q?wje3NTDCxoeyqVzzzJxNIJRSDoE+exM6qDErKwIrWfIdZpEmju+8J3QpsMWJ?=
- =?us-ascii?Q?+VxDHN10WCvxFd3HE9iQ4Zn8s9Rn5ZJX89+4LzL9VydvUMpE9QBsjzGpXYH7?=
- =?us-ascii?Q?FFXQ+rA2YOl/V+Sg/2v/xxtjEj1AopmhSeMWSDKuW1ETsoW9tp/vCfjz6gqG?=
- =?us-ascii?Q?NqT9NDqnTvK/BxQxnv+B9692lY1EXogitu28/yQSGk8TZd5UKzbbuTvPIJIa?=
- =?us-ascii?Q?8JLprOB7izTgswixqkKCsf8S05qmjxPxnpKFe/gjZb3GMDo65VKdFHHSvDvS?=
- =?us-ascii?Q?BLmH/be9hn1tsnOTzZG/C1xDG3NrGwe5opT3HMOWc/VwDEbBMy9M2wo0xNdl?=
- =?us-ascii?Q?a8jKTdBsJkiIaRzni+Aelh+piWH93189ga0s7JVu52pKiegS9ZJDqrRZtHvk?=
- =?us-ascii?Q?O3hwy9++eCo9s6TyX2OZgnKzLE7bL8gdXkK//vY345177f9+SrbkCNJLa3sj?=
- =?us-ascii?Q?mOlExA2O4xX3j/tHU3pjvbYGJLtTuhovaefxpH8p2V4z/rdHxgQbequYtUJY?=
- =?us-ascii?Q?8BV7W0sAIGnsTNmwfCCwJcKShTC3T3m8tdwAtkQuaKXuHrBIv31Cmv/vrnz5?=
- =?us-ascii?Q?r+pqVHB4Bt6sh9kFPWP3qWB3FXGzOr+ROd498KYC/ZMsNsen1aP179VpG5NG?=
- =?us-ascii?Q?wZJbmbpWbjp6eu257CLGHgSKBOzRLDIMCnLQcCcO?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S1354318AbiFUUXO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 16:23:14 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A21CAE7D
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 13:23:11 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id m2so6250853plx.3
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 13:23:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nNqn2KpA9Wu6Kk0gAFVTMZsINKotYp5vQjkZHl0c4/4=;
+        b=oroR6o/pWC6FIruKw6lG2fUc7mJKEkagLHe1VdBTmn/VN5OSsuJUag8vLhvI6qGJx/
+         v/Dp5kohI0Tz76prc09Wa+djZkGl4fRaQr7IALXQuzVrzdb6VTZj6cUVdCESi6sy+7dV
+         PMluw9noUPGcGqGHnhoB+ZTzfV7PU7/IM06ZrOAiUhYI0quWUYT7wOoAMrxnz1u92eRZ
+         sDm72nMiJdPG/j7RuJIaLnrNp6s/0z0KtALX4/R3aeiq63tLkE5Tyfn1YnPFqN1sHIiH
+         Uvwiml7UNzvVYFlC7PfOc6FPsTm6BCvaaUfqG1wRYE9sh24FFSrYvFm2ptpFRhCDvbT3
+         BxSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nNqn2KpA9Wu6Kk0gAFVTMZsINKotYp5vQjkZHl0c4/4=;
+        b=8ARdYhiUCz74P3nef7M8XHDbmdqt1YqzrnpTMq1Elqh3n+MEtxQWTtL3MyHQ77LH4k
+         WudkqkOaYuJlftqhIoHZ3Zr7gd7JzuRDCM9YMhN21c7VYQ4FJe73o8eIgSrbAZnkquA9
+         oQJX8XhaQ/HTfLU+N/IXYrZLLjZOuYiq6wUPBm+eLCuSdAb3ChEAK9rVAY9Gcad0sVhP
+         D1vZ1gYBAtue/eyb6D2LB2NoGfUCIfT4PhwP1J/GIUVvgkYjD4Z+P/1C/qesTuqakISk
+         FEAUQwTs7eeijEEwEjMoxFqg5IPALCuuduxtcxgmFCElvX+3aaTNu/eMMknp3dzkJuO1
+         o9pw==
+X-Gm-Message-State: AJIora+hbjqDhD0Y3Ye/WbRkBZ2Fv1yPxus54PjwH5PHerFSgz1PNkby
+        cOon/YBV8+9L8/MfldJDHR1KkmTaBnKJakzo55M=
+X-Google-Smtp-Source: AGRyM1vO47vvJPY7hwVy73U2YFLFu4kJZPKd4YjGLtInMCC4Rnr0sm8J1QlzdGs9A5HLP4lAmJ0LoA==
+X-Received: by 2002:a17:90a:c718:b0:1eb:af0e:36fd with SMTP id o24-20020a17090ac71800b001ebaf0e36fdmr30820446pjt.99.1655842990540;
+        Tue, 21 Jun 2022 13:23:10 -0700 (PDT)
+Received: from sewookseo1.c.googlers.com.com (253.78.80.34.bc.googleusercontent.com. [34.80.78.253])
+        by smtp.gmail.com with ESMTPSA id u1-20020a170903124100b0016188a4005asm11059354plh.122.2022.06.21.13.23.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 13:23:10 -0700 (PDT)
+From:   Sewook Seo <ssewook@gmail.com>
+To:     Sewook Seo <sewookseo@google.com>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        "David S . Miller " <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sehee Lee <seheele@google.com>
+Subject: [PATCH] net-tcp: Find dst with sk's xfrm policy not ctl_sk
+Date:   Tue, 21 Jun 2022 20:22:40 +0000
+Message-Id: <20220621202240.4182683-1-ssewook@gmail.com>
+X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR21MB1749.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 377a95fe-458a-4b38-a606-08da53bffc9d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jun 2022 19:55:26.7770
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 54dP5GgNEzKcsngWHiPiZgAGZ1RfCbOHYcJMkrT5IqbkNVo2RI54Ezvc+W809LpbKGlKOAqg11UYlzhb32I5Zw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR21MB1528
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: sewookseo <sewookseo@google.com>
 
+If we set XFRM security policy by calling setsockopt with option
+IPV6_XFRM_POLICY, the policy will be stored in 'sock_policy' in 'sock'
+struct. However tcp_v6_send_response doesn't look up dst_entry with the
+actual socket but looks up with tcp control socket. This may cause a
+problem that a RST packet is sent without ESP encryption & peer's TCP
+socket can't receive it.
+This patch will make the function look up dest_entry with actual socket,
+if the socket has XFRM policy(sock_policy), so that the TCP response
+packet via this function can be encrypted, & aligned on the encrypted
+TCP socket.
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Monday, February 7, 2022 12:12 PM
-> To: Haiyang Zhang <haiyangz@microsoft.com>
-> Cc: linux-hyperv@vger.kernel.org; netdev@vger.kernel.org; Dexuan Cui
-> <decui@microsoft.com>; KY Srinivasan <kys@microsoft.com>; Stephen
-> Hemminger <sthemmin@microsoft.com>; Paul Rosswurm
-> <paulros@microsoft.com>; Shachar Raindel <shacharr@microsoft.com>;
-> olaf@aepfle.de; vkuznets <vkuznets@redhat.com>; davem@davemloft.net;
-> linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH net-next, 1/2] net: mana: Add handling of
-> CQE_RX_TRUNCATED
->=20
-> On Sat, 5 Feb 2022 22:32:41 +0000 Haiyang Zhang wrote:
-> > Since the proper handling of CQE_RX_TRUNCATED type is important, could
-> any
-> > of you backport this patch to the stable branches: 5.16 & 5.15?
->=20
-> Only patches which are in Linus's tree can be backported to stable.
-> You sent this change for -next so no, it can't be backported now.
-> You need to wait until 5.17 final is released and then ask Greg KH
-> to backport it.
+Tested: We encountered this problem when a TCP socket which is encrypted
+in ESP transport mode encryption, receives challenge ACK at SYN_SENT
+state. After receiving challenge ACK, TCP needs to send RST to
+establish the socket at next SYN try. But the RST was not encrypted &
+peer TCP socket still remains on ESTABLISHED state.
+So we verified this with test step as below.
+[Test step]
+1. Making a TCP state mismatch between client(IDLE) & server(ESTABLISHED).
+2. Client tries a new connection on the same TCP ports(src & dst).
+3. Server will return challenge ACK instead of SYN,ACK.
+4. Client will send RST to server to clear the SOCKET.
+5. Client will retransmit SYN to server on the same TCP ports.
+[Expected result]
+The TCP connection should be established.
 
-@Greg KH <gregkh@linuxfoundation.org>
+Effort: net-tcp
+Cc: Maciej Żenczykowski <maze@google.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Cc: Sehee Lee <seheele@google.com>
+Signed-off-by: sewookseo <sewookseo@google.com>
+---
+ net/ipv4/ip_output.c | 7 ++++++-
+ net/ipv4/tcp_ipv4.c  | 8 ++++++++
+ net/ipv6/tcp_ipv6.c  | 7 ++++++-
+ 3 files changed, 20 insertions(+), 2 deletions(-)
 
-Hi Greg,
-
-This patch is on 5.18 now:
-	net: mana: Add handling of CQE_RX_TRUNCATED
-	https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?h=
-=3Dv5.18.5&id=3De4b7621982d29f26ff4d39af389e5e675a4ffed4
-
-Could you backport it to 5.15?
-
-Thanks,
-- Haiyang
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 00b4bf26fd93..26f388decee9 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1704,7 +1704,12 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
+ 			   tcp_hdr(skb)->source, tcp_hdr(skb)->dest,
+ 			   arg->uid);
+ 	security_skb_classify_flow(skb, flowi4_to_flowi_common(&fl4));
+-	rt = ip_route_output_key(net, &fl4);
++#ifdef CONFIG_XFRM
++	if (sk && sk->sk_policy[XFRM_POLICY_OUT])
++		rt = ip_route_output_flow(net, &fl4, sk);
++	else
++#endif
++		rt = ip_route_output_key(net, &fl4);
+ 	if (IS_ERR(rt))
+ 		return;
+ 
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index fda811a5251f..6a9afd2fdf70 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -819,6 +819,10 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
+ 		ctl_sk->sk_priority = (sk->sk_state == TCP_TIME_WAIT) ?
+ 				   inet_twsk(sk)->tw_priority : sk->sk_priority;
+ 		transmit_time = tcp_transmit_time(sk);
++#ifdef CONFIG_XFRM
++		if (sk->sk_policy[XFRM_POLICY_OUT])
++			xfrm_sk_clone_policy(ctl_sk, sk);
++#endif
+ 	}
+ 	ip_send_unicast_reply(ctl_sk,
+ 			      skb, &TCP_SKB_CB(skb)->header.h4.opt,
+@@ -827,6 +831,10 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
+ 			      transmit_time);
+ 
+ 	ctl_sk->sk_mark = 0;
++#ifdef CONFIG_XFRM
++	if (ctl_sk->sk_policy[XFRM_POLICY_OUT])
++		xfrm_sk_free_policy(ctl_sk);
++#endif
+ 	sock_net_set(ctl_sk, &init_net);
+ 	__TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
+ 	__TCP_INC_STATS(net, TCP_MIB_OUTRSTS);
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index c72448ba6dc9..f731884cda90 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -952,7 +952,12 @@ static void tcp_v6_send_response(const struct sock *sk, struct sk_buff *skb, u32
+ 	 * Underlying function will use this to retrieve the network
+ 	 * namespace
+ 	 */
+-	dst = ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &fl6, NULL);
++#ifdef CONFIG_XFRM
++	if (sk && sk->sk_policy[XFRM_POLICY_OUT])
++		dst = ip6_dst_lookup_flow(net, sk, &fl6, NULL);  /* Get dst with sk's XFRM policy */
++	else
++#endif
++		dst = ip6_dst_lookup_flow(sock_net(ctl_sk), ctl_sk, &fl6, NULL);
+ 	if (!IS_ERR(dst)) {
+ 		skb_dst_set(buff, dst);
+ 		ip6_xmit(ctl_sk, buff, &fl6, fl6.flowi6_mark, NULL,
+-- 
+2.37.0.rc0.104.g0611611a94-goog
 
