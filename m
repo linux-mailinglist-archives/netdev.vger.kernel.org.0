@@ -2,250 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04130553173
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 13:56:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56222553170
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 13:56:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350232AbiFUL42 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 21 Jun 2022 07:56:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38452 "EHLO
+        id S1350199AbiFUL4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 07:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231397AbiFUL41 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 07:56:27 -0400
-X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 21 Jun 2022 04:56:25 PDT
-Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.111.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E227B2AE08
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 04:56:25 -0700 (PDT)
-Received: from CHE01-ZR0-obe.outbound.protection.outlook.com
- (mail-zr0che01lp2105.outbound.protection.outlook.com [104.47.22.105]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-24-GNVNjR2pMLyK5bIZcc74Ug-2; Tue, 21 Jun 2022 13:55:17 +0200
-X-MC-Unique: GNVNjR2pMLyK5bIZcc74Ug-2
-Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
- ZRAP278MB0531.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:3e::6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5353.14; Tue, 21 Jun 2022 11:55:15 +0000
-Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- ([fe80::2879:acb:62c8:4987]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- ([fe80::2879:acb:62c8:4987%8]) with mapi id 15.20.5353.022; Tue, 21 Jun 2022
- 11:55:15 +0000
-Date:   Tue, 21 Jun 2022 13:55:14 +0200
-From:   Francesco Dolcini <francesco.dolcini@toradex.com>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Vasyl Vavrychuk <vasyl.vavrychuk@opensynergy.com>
-Cc:     Max Krummenacher <max.oss.09@gmail.com>,
-        max.krummenacher@toradex.com,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1348633AbiFUL4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 07:56:08 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5B4711460;
+        Tue, 21 Jun 2022 04:56:07 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id kq6so26901743ejb.11;
+        Tue, 21 Jun 2022 04:56:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=gnl0wJDcbGyeG2Jzp9z8ykP0NivEyMSr5iKIZo5tXBk=;
+        b=o7UBtpV1wF5UpMl03Q8Vi7f1/Gbekb5LSvxLJ0iQtBmQQpSbhSCgtxKLWHf6+bL+tq
+         oGUJowxIKNN4DXzVzYee4SzLh7smMShK7Cdr0rsxRYg3EljpSlNFeCuBS6xzqSSZM6gv
+         9hrIw2CNg4JxwjW2cAdpOn29sqDNmJ9qHC6zViXmFuOxA7pWdTf9LBEXuHyQE6MwO9BO
+         Rx+ruavybv2yTcgPYqqBv7kiU/0egsKBI9rNxXwACQhVyADDnMcumcIWDPYXPgbuL4uJ
+         x6LyN4x2jeFGWQB1+5iiTNyWZoSIswCxvg338E4Y3004/Wuef6O7RTqTrgQap7VJWQZY
+         WUmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=gnl0wJDcbGyeG2Jzp9z8ykP0NivEyMSr5iKIZo5tXBk=;
+        b=eDulhQSvVJznuWvcYlIjf1eFTbaURj/pMfWtP/vIy9oTBNB9PTQhONTIWsOr4X+pey
+         VErdZmlvDlWFLefKFgFK9Zlw0YgGwYBoUXP+BX4JbDYOFd2ibXQbA+PXDQ+q36RPm+RW
+         B8MskT9FMn63Gtao2bK0y0AOLwvuu104q48syCvW0c2Y2EX8z3Pnevc/eJeZl0xiSv4F
+         qNuG72wNkSnOq6SOPddHyeKMYdLXQhlc56L0obs8HvHiS6P85IvKRcAJGPOtEPnWALQJ
+         jK3DpWXOBRGfPYRvaO1W8r6epcjDRJAFHi1OjynW13WvdZ6vVed9gSOls2kS8LvhgFmB
+         6/Kw==
+X-Gm-Message-State: AJIora8LW4dW64h2912mg66RN9WTSgTk5q9H2Ss6/Weva2GFFJ0S5T9s
+        gtQjbZUjXWGcYoiClfM75IY=
+X-Google-Smtp-Source: AGRyM1vuZsNu3hanNf6cHV6qvU0DNqRqDR1yRqb3ASlaAkoAaM2oy0VZ68quEjqMht+YzCPnbe/TEw==
+X-Received: by 2002:a17:907:7b8d:b0:722:def3:915f with SMTP id ne13-20020a1709077b8d00b00722def3915fmr4308432ejc.728.1655812566187;
+        Tue, 21 Jun 2022 04:56:06 -0700 (PDT)
+Received: from skbuf ([188.25.159.210])
+        by smtp.gmail.com with ESMTPSA id ky20-20020a170907779400b006f4cb79d9a8sm7519895ejc.75.2022.06.21.04.56.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jun 2022 04:56:05 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 14:56:03 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v1] Revert "Bluetooth: core: Fix missing power_on work
- cancel on HCI close"
-Message-ID: <20220621115514.GA75773@francesco-nb.int.toradex.com>
-References: <20220614181706.26513-1-max.oss.09@gmail.com>
-In-Reply-To: <20220614181706.26513-1-max.oss.09@gmail.com>
-X-ClientProxiedBy: ZR0P278CA0068.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:21::19) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:2e::8)
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v8 15/16] ARM: dts: r9a06g032-rzn1d400-db: add
+ switch description
+Message-ID: <20220621115603.yzcxcu7gzwng6bcg@skbuf>
+References: <20220620110846.374787-1-clement.leger@bootlin.com>
+ <20220620110846.374787-16-clement.leger@bootlin.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f7add516-8c4f-449e-0c08-08da537ce77c
-X-MS-TrafficTypeDiagnostic: ZRAP278MB0531:EE_
-X-Microsoft-Antispam-PRVS: <ZRAP278MB05312FB4184E66A0338E42E2E2B39@ZRAP278MB0531.CHEP278.PROD.OUTLOOK.COM>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0
-X-Microsoft-Antispam-Message-Info: iSnkFkgvrmVTX3H5eJLr26AJn3ffHEvAcAQ4cNxnBRUcW/FJfj7uBWLW6K0KYwGOEUi/wU/iVJ0b1mHVfSgDoOe5tod0krwDfRxP3YuDEtqlwZV57uxehysg5KewcbPGKQZ14kL1onCyx5mEX6fFrZgvbE8GIAEoo3tISwPPuqZDwEQ1vvHTt7r+dGDKvCkjGouu/0Zhcs6ZmW9LpeEjLmDKWCv3+ZjDkQf3BGjuv1nvixRZ3MU7tk44WLeSP9HSzyacXXYMuunubQe4cKFUvHKs1GVROURr6auW4OSOn3JCp/4XfP/nkErirybNeJt3eLJNIlZ/bRVY5q09gFkFig1YqHSTWTcKFldMan6zt2CUYy0PfGFzpICJo6QHWYwUkiRhgElFE5V97VygrE3Zlgy5Z/99qMDY+ceVr/RIvUJdpt/WM5ZM/5Xh3tL/C5uRE1rZNr9d3bEbP/YB4yOmYn0GJqaUoJeBK4lV0CA9JrNd2f81QWFsvHl9rrphVALL8tIVw6/wf5+B4kz7cFRBalgluai11RZGctr0ZBYNoHWiqHwlhPxc2NSUC/wKBWXMHbffukVGKHb0z3/dq8QE6bJIb8sWTHS/6prw3B+UhzWnRrNQbpyI8rbp3NzqRzyX6gWIOfhH7aqhib9vDTTZuLXkBu3rToXMw7XKQc8JlvKK+bmGTQDtVi4Gyq/jjC2jUQRA+q4HNGDbCIFTlPov5A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(39850400004)(136003)(346002)(376002)(8936002)(33656002)(5660300002)(44832011)(110136005)(7416002)(83380400001)(8676002)(66556008)(66946007)(4326008)(6486002)(2906002)(316002)(1076003)(478600001)(41300700001)(86362001)(6512007)(26005)(38100700002)(186003)(66476007)(52116002)(54906003)(6506007)(38350700002);DIR:OUT;SFP:1102
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FcTxS7SZtsCUmfhT8WHHeA8Zi9JHnFNNUZsVXXky8/+Jk1Kn8ZTm/hzd+84J?=
- =?us-ascii?Q?xXS10Vmkp3XIHcO/gHJWKQcXAJt1PeijsL0NVLUA5KR1wtazx9xdz86hoxLQ?=
- =?us-ascii?Q?cFasgN7J15WcPaVdANGOq3BFLOZ2y+afTxywcClkZX7B8je497cbGdlFX2gL?=
- =?us-ascii?Q?fwd3EkSY1aJSj8+4zlSJTOY4gtKvx1qR/CVtzS3vVsG/uzoO3TBB50BioDVx?=
- =?us-ascii?Q?/+C5JNdhOkE6/tkzr1GI7bbKsaTZzpjVGT3EvSwuWJgP/yQg9DAW6ewDwHt7?=
- =?us-ascii?Q?shhUO8fyAiGzccwnBdu2Lxuh4AyXURH+YtRgsQDe0zhiNNFCzg6M77/9RZ+k?=
- =?us-ascii?Q?sPxf0kvdJZjEwhYBYXj0L+mf1AmsQLxh/xtWBD03ybD7NAl5oh/oM24xx8vx?=
- =?us-ascii?Q?vyCC6ozmCPWVYTLEwISJXLdlEQl6KBr6FPTofZcuCSh5pXOEUiFu8Y4nFoB8?=
- =?us-ascii?Q?oxi8hW2Y1gm4TEP5Z7dWuvDp22ZPpB6sjZJ9O2ndGJh3Odv/22MYsa9hfx9Q?=
- =?us-ascii?Q?cDgt1xpQyFaaEQnk/frS+iqldyYSEL41PVOOV6ojNyz0Npi6Kr76Ti9rawVy?=
- =?us-ascii?Q?7dtscRWO2QH9xFwyXBYGr7Jal+Z8glhx6WMEWaDUjzsz6+pOdV9SJ4jpa7/K?=
- =?us-ascii?Q?/9NJ3db09sJZlEXdrg8ffPHCVkKSDzP5MnYo81oJX3bje/N/Rtd2fmUdavOi?=
- =?us-ascii?Q?yW79/E2TrG1BPBnMw0pHEI6ZzOFpX0DWTPqIGF1WW7vSlTYGnVH5rqYut/V7?=
- =?us-ascii?Q?LGVOyl11elFwTLuMSM6/hc+JqcoAqmYdzIaCMLpwm4cj8hHtEDkApO7YgRg7?=
- =?us-ascii?Q?b8ME12PdkTw849W8q7D+8N7QiElnxCqnyA/WxFLfJ7d8ezJT1m8NcigLdAEC?=
- =?us-ascii?Q?34OJUIvhycdkHHLNo169X0OKdEBHswH/2G3f+3gLfBarqL4o2usRvirUcpgT?=
- =?us-ascii?Q?G+hxigGT62+/6uTL1aXtaJAejBkzSlqKIQtMznCG9S+Fur4pMF60asu0eauY?=
- =?us-ascii?Q?+JhkEq44xYqkNOkS8AH3Y6akHnQ1+TqKgWEuLsSiS/wu6jOYMj6356apQFIP?=
- =?us-ascii?Q?F9OF3XbSv6grDOfMkI5iUcNLYZESJWmukU3wnOuwvHEswzw1bUx5LzK/cPf4?=
- =?us-ascii?Q?ZLCi/sn7WejYKUo0S9EMD4IyENQCw040n+BfkiAp+EI48OIrYpoF31BF9yHy?=
- =?us-ascii?Q?E7h38qyArD7xqTovjQUvyglCVQQ6WCRHqlXWziHRpySi/n2j6ndFDH64Yo/D?=
- =?us-ascii?Q?DMZxyiFcziuWnv2D7tgp6MWr8pE47xkddNj2BlxuTT8Ew1Dnnfp+wmZhZKc1?=
- =?us-ascii?Q?5jgeSoGDxQEvs8DuymzO9Aqr/FPMamCkNoCGKGPbtVNUulKhtw6xMNShMyns?=
- =?us-ascii?Q?+q7I/Ax4J0yQkEFsfQ27RWzrcp1onOva8NvBPL1ZEQkn7mO+EzPiKQN0gQ8i?=
- =?us-ascii?Q?6Y+IVCqnTgN9uBC8uQfNGxMlUvQJ6XrftqiNMf1zm0Ek0cW3e7B505aE4OjQ?=
- =?us-ascii?Q?SJjpY2R7okcCcmvMMqkfTYcOzzuCmyjMFyjqbYBChZJ6Ewt8a4OEs9nbMtkq?=
- =?us-ascii?Q?jCBPuIL1APwgyG9mkXXT25DKf1ySXdbbDkqZJK09ZP9Miuxhx7soVuOyaX7M?=
- =?us-ascii?Q?IqePu6rCPYNit6hEfbiVFg/qCUD17gVo+Is36+NZLdBcAtK9hYdQPFJAWqVL?=
- =?us-ascii?Q?whi1QqP9O5f+Mf+geVXCntjrpLRPKaobWhiQsgeXqCOq4wZ/0dgoRS7KE0eF?=
- =?us-ascii?Q?0EXDPt6tT3jhmtQI2/CizMisJQwtJcYUMsn9KXkRJINSPVhDOH+N?=
-X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f7add516-8c4f-449e-0c08-08da537ce77c
-X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jun 2022 11:55:15.1843
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Jw/h/3T2s0U/yzS5IX4nRYviwZdm+pwDtsiwYt+PMyey7lTdVAPHOmQ1UboHr6L+VuYeUVX5o0uS8cw731pZrBBg7RigHrNFa4qt2o3TXj4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZRAP278MB0531
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CDE13A77 smtp.mailfrom=francesco.dolcini@toradex.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: toradex.com
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220620110846.374787-16-clement.leger@bootlin.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Marcel, Vasyl,
-any comment on this?
-
-Francesco
-
-On Tue, Jun 14, 2022 at 08:17:06PM +0200, Max Krummenacher wrote:
-> From: Max Krummenacher <max.krummenacher@toradex.com>
+On Mon, Jun 20, 2022 at 01:08:45PM +0200, Clément Léger wrote:
+> Add description for the switch, GMAC2 and MII converter. With these
+> definitions, the switch port 0 and 1 (MII port 5 and 4) are working on
+> RZ/N1D-DB board.
 > 
-> This reverts commit ff7f2926114d3a50f5ffe461a9bce8d761748da5.
-> 
-> The commit ff7f2926114d ("Bluetooth: core: Fix missing power_on work
-> cancel on HCI close") introduced between v5.18 and v5.19-rc1 makes
-> going to suspend freeze. v5.19-rc2 is equally affected.
-> 
-> This has been seen on a Colibri iMX6ULL WB which has a Marvell 8997
-> based WiFi / Bluetooth module connected over SDIO.
-> 
-> With 'v5.18' or 'v5.19-rc1 with said commit reverted' a suspend/resume
-> cycle looks as follows and the device is functional after the resume:
-> 
-> root@imx6ull:~# rfkill
-> ID TYPE      DEVICE    SOFT      HARD
->  0 bluetooth hci0   blocked unblocked
->  1 wlan      phy0   blocked unblocked
-> root@imx6ull:~# echo enabled > /sys/class/tty/ttymxc0/power/wakeup
-> root@imx6ull:~# date;echo mem > /sys/power/state;date
-> Tue Jun 14 14:43:03 UTC 2022
-> [ 6393.464497] PM: suspend entry (deep)
-> [ 6393.529398] Filesystems sync: 0.064 seconds
-> [ 6393.594006] Freezing user space processes ... (elapsed 0.015 seconds) done.
-> [ 6393.610266] OOM killer disabled.
-> [ 6393.610285] Freezing remaining freezable tasks ... (elapsed 0.013 seconds) done.
-> [ 6393.623727] printk: Suspending console(s) (use no_console_suspend to debug)
-> 
-> ~~ suspended until console initiates the resume
-> 
-> [ 6394.023552] fec 20b4000.ethernet eth0: Link is Down
-> [ 6394.049902] PM: suspend devices took 0.300 seconds
-> [ 6394.091654] Disabling non-boot CPUs ...
-> [ 6394.565896] PM: resume devices took 0.440 seconds
-> [ 6394.681350] OOM killer enabled.
-> [ 6394.681369] Restarting tasks ... done.
-> [ 6394.741157] random: crng reseeded on system resumption
-> [ 6394.813135] PM: suspend exit
-> Tue Jun 14 14:43:11 UTC 2022
-> [ 6396.403873] fec 20b4000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
-> [ 6396.404347] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
-> root@imx6ull:~#
-> 
-> With 'v5.19-rc1' suspend freezes in the suspend phase, i.e. power
-> consumption is not lowered and no wakeup source initiates a wakup.
-> 
-> root@imx6ull:~# rfkill
-> ID TYPE      DEVICE    SOFT      HARD
->  0 bluetooth hci0   blocked unblocked
->  1 wlan      phy0   blocked unblocked
-> root@imx6ull:~# echo enabled > /sys/class/tty/ttymxc0/power/wakeup
-> root@imx6ull:~# date;echo mem > /sys/power/state;date
-> Tue Jun 14 12:40:38 UTC 2022
-> [  122.476333] PM: suspend entry (deep)
-> [  122.556012] Filesystems sync: 0.079 seconds
-> 
-> ~~ no further kernel output
-> 
-> If one first unbinds the bluetooth device driver, suspend / resume works
-> as expected also with 'v5.19-rc1':
-> 
-> root@imx6ull:~# echo mmc1:0001:2 > /sys/bus/sdio/drivers/btmrvl_sdio/unbind
-> root@imx6ull:~# rfkill
-> ID TYPE DEVICE    SOFT      HARD
->  1 wlan phy0   blocked unblocked
-> root@imx6ull:~# echo enabled > /sys/class/tty/ttymxc0/power/wakeup
-> root@imx6ull:~# date;echo mem > /sys/power/state;date
-> Tue Jun 14 14:59:26 UTC 2022
-> [  123.530310] PM: suspend entry (deep)
-> [  123.595432] Filesystems sync: 0.064 seconds
-> [  123.672478] Freezing user space processes ... (elapsed 0.028 seconds) done.
-> [  123.701848] OOM killer disabled.
-> [  123.701869] Freezing remaining freezable tasks ... (elapsed 0.007 seconds) done.
-> [  123.709993] printk: Suspending console(s) (use no_console_suspend to debug)
-> [  124.097772] fec 20b4000.ethernet eth0: Link is Down
-> [  124.124795] PM: suspend devices took 0.280 seconds
-> [  124.165893] Disabling non-boot CPUs ...
-> [  124.632959] PM: resume devices took 0.430 seconds
-> [  124.750164] OOM killer enabled.
-> [  124.750187] Restarting tasks ... done.
-> [  124.827899] random: crng reseeded on system resumption
-> [  124.923183] PM: suspend exit
-> Tue Jun 14 14:59:31 UTC 2022
-> [  127.520321] fec 20b4000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
-> [  127.520514] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
-> root@imx6ull:~#
-> 
-> Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
-> 
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 > ---
+
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+
+Just minor comments below:
+
+>  arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts | 117 ++++++++++++++++++++
+>  1 file changed, 117 insertions(+)
 > 
->  net/bluetooth/hci_core.c | 2 ++
->  net/bluetooth/hci_sync.c | 1 -
->  2 files changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> index 59a5c1341c26..19df3905c5f8 100644
-> --- a/net/bluetooth/hci_core.c
-> +++ b/net/bluetooth/hci_core.c
-> @@ -2675,6 +2675,8 @@ void hci_unregister_dev(struct hci_dev *hdev)
->  	list_del(&hdev->list);
->  	write_unlock(&hci_dev_list_lock);
+> diff --git a/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts b/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
+> index 3f8f3ce87e12..36b898d9f115 100644
+> --- a/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
+> +++ b/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
+> @@ -8,6 +8,8 @@
 >  
-> +	cancel_work_sync(&hdev->power_on);
+>  /dts-v1/;
+>  
+> +#include <dt-bindings/pinctrl/rzn1-pinctrl.h>
+> +#include <dt-bindings/net/pcs-rzn1-miic.h>
+>  #include "r9a06g032.dtsi"
+>  
+>  / {
+> @@ -31,3 +33,118 @@ &wdt0 {
+>  	timeout-sec = <60>;
+>  	status = "okay";
+>  };
 > +
->  	hci_cmd_sync_clear(hdev);
->  
->  	if (!test_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks))
-> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-> index 286d6767f017..1739e8cb3291 100644
-> --- a/net/bluetooth/hci_sync.c
-> +++ b/net/bluetooth/hci_sync.c
-> @@ -4088,7 +4088,6 @@ int hci_dev_close_sync(struct hci_dev *hdev)
->  
->  	bt_dev_dbg(hdev, "");
->  
-> -	cancel_work_sync(&hdev->power_on);
->  	cancel_delayed_work(&hdev->power_off);
->  	cancel_delayed_work(&hdev->ncmd_timer);
->  
+> +&gmac2 {
+> +	status = "okay";
+> +	phy-mode = "gmii";
+> +	fixed-link {
+> +		speed = <1000>;
+> +		full-duplex;
+> +	};
+> +};
+> +
+> +&switch {
+> +	status = "okay";
+> +	#address-cells = <1>;
+> +	#size-cells = <0>;
+> +
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&pins_mdio1>, <&pins_eth3>, <&pins_eth4>;
+> +
+> +	dsa,member = <0 0>;
+
+This doesn't really have any value for single-switch DSA trees, since
+that is the implicit tree id/switch id, but it doesn't hurt, either.
+
+> +
+> +	mdio {
+> +		clock-frequency = <2500000>;
+> +
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		switch0phy4: ethernet-phy@4{
+
+Space between ethernet-phy@4 and {.
+
+> +			reg = <4>;
+> +			micrel,led-mode = <1>;
+> +		};
+> +
+> +		switch0phy5: ethernet-phy@5{
+
+Same thing here.
+
+> +			reg = <5>;
+> +			micrel,led-mode = <1>;
+> +		};
+> +	};
+> +};
+> +
+> +&switch_port0 {
+> +	label = "lan0";
+> +	phy-mode = "mii";
+> +	phy-handle = <&switch0phy5>;
+> +	status = "okay";
+> +};
+> +
+> +&switch_port1 {
+> +	label = "lan1";
+> +	phy-mode = "mii";
+> +	phy-handle = <&switch0phy4>;
+> +	status = "okay";
+> +};
+> +
+> +&switch_port4 {
+> +	status = "okay";
+> +};
+> +
+> +&eth_miic {
+> +	status = "okay";
+> +	renesas,miic-switch-portin = <MIIC_GMAC2_PORT>;
+> +};
+> +
+> +&mii_conv4 {
+> +	renesas,miic-input = <MIIC_SWITCH_PORTB>;
+> +	status = "okay";
+> +};
+> +
+> +&mii_conv5 {
+> +	renesas,miic-input = <MIIC_SWITCH_PORTA>;
+> +	status = "okay";
+> +};
+> +
+> +&pinctrl{
+> +	pins_mdio1: pins_mdio1 {
+> +		pinmux = <
+> +			RZN1_PINMUX(152, RZN1_FUNC_MDIO1_SWITCH)
+> +			RZN1_PINMUX(153, RZN1_FUNC_MDIO1_SWITCH)
+> +		>;
+> +	};
+> +	pins_eth3: pins_eth3 {
+> +		pinmux = <
+> +			RZN1_PINMUX(36, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(37, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(38, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(39, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(40, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(41, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(42, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(43, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(44, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(45, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(46, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(47, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +		>;
+> +		drive-strength = <6>;
+> +		bias-disable;
+> +	};
+> +	pins_eth4: pins_eth4 {
+> +		pinmux = <
+> +			RZN1_PINMUX(48, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(49, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(50, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(51, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(52, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(53, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(54, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(55, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(56, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(57, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(58, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +			RZN1_PINMUX(59, RZN1_FUNC_CLK_ETH_MII_RGMII_RMII)
+> +		>;
+> +		drive-strength = <6>;
+> +		bias-disable;
+> +	};
+> +};
 > -- 
-> 2.20.1
+> 2.36.1
 > 
 
