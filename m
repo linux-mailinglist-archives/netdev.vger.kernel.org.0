@@ -2,98 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 461E95530D0
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 13:25:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0C6355312B
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 13:40:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349258AbiFULY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 07:24:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40490 "EHLO
+        id S229578AbiFULjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 07:39:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348439AbiFULYz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 07:24:55 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2501E7;
-        Tue, 21 Jun 2022 04:24:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=FZ/UEYEMWjOlIYXpn4b+wFVai7b+Mp2cQMDTXYu+VaA=; b=amR6q4/WHpPhoD2RHfTx8ODHNv
-        TuScfrplmH02qw+h83GmFORlldE1X1vJtFnC1SOKaplD+Jmuoai0cGTNShff4YrkM1a9anbZuz9z4
-        E5iKZjHBDsEiePPk/cRaafU4HJTbGolI7f6B5IBFQISS4UjLxhT1tDYSAnGCDfhGC3HE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o3c03-007iHx-Sl; Tue, 21 Jun 2022 13:24:51 +0200
-Date:   Tue, 21 Jun 2022 13:24:51 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Marcin Wojtas <mw@semihalf.com>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
-        rafael@kernel.org, lenb@kernel.org, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux@armlinux.org.uk, hkallweit1@gmail.com, gjb@semihalf.com,
-        jaz@semihalf.com, tn@semihalf.com, Samer.El-Haj-Mahmoud@arm.com,
-        upstream@semihalf.com
-Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA
- description
-Message-ID: <YrGqg5fHB4s+Y7wx@lunn.ch>
-References: <20220620150225.1307946-1-mw@semihalf.com>
- <20220620150225.1307946-10-mw@semihalf.com>
- <20220621094556.5ev3nencnw7a5xwv@bogus>
- <YrGoXXBgHvyifny3@smile.fi.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YrGoXXBgHvyifny3@smile.fi.intel.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S1350176AbiFULio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 07:38:44 -0400
+Received: from smtpbg.qq.com (smtpbg123.qq.com [175.27.65.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C862A26D;
+        Tue, 21 Jun 2022 04:38:05 -0700 (PDT)
+X-QQ-mid: bizesmtp68t1655811468tockc4e4
+Received: from ubuntu.localdomain ( [106.117.99.68])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 21 Jun 2022 19:37:43 +0800 (CST)
+X-QQ-SSF: 0100000000700040B000B00A0000000
+X-QQ-FEAT: kx8LQfRSHcFpoCd2TCggh4bmwsw8np9DavT4KShlOTkJpyM8p1fuxAYiiBdgW
+        7h2kPV2N+xaRqAslaO0gNxzH8YQlGuiTpVRQDeSmtZDt3yV8Zj0aWuc+aU2oafZEcI0Ujvq
+        PPe1rURi8PkELyLBaZQa4y3BBC8tpmQxPApzrXQ0Ec7JCN0o0XAFE2QgyjwCaWYRUeLVAU/
+        nFPxRahtaW5AITobY4DkHG2Ib/Blz2sIKqnuHZX/cC1cp9lfa81z5jyidlz9E1vdOGZLDQY
+        k5igPMDDX+lJmu6KI+KNCGIDeyP0cyCUJIcc+e0S6CDIV02d3UG/L0lBLXTTeC76hLE3eLT
+        lcxIGlXFGgXt68upwTajsibV/VYaQ==
+X-QQ-GoodBg: 0
+From:   Jiang Jian <jiangjian@cdjrlc.com>
+To:     wintera@linux.ibm.com
+Cc:     wenjia@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiang Jian <jiangjian@cdjrlc.com>
+Subject: [PATCH] net: s390: drop unexpected word "the" in the comments
+Date:   Tue, 21 Jun 2022 19:37:40 +0800
+Message-Id: <20220621113740.103317-1-jiangjian@cdjrlc.com>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam8
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 02:15:41PM +0300, Andy Shevchenko wrote:
-> On Tue, Jun 21, 2022 at 10:45:56AM +0100, Sudeep Holla wrote:
-> > On Mon, Jun 20, 2022 at 05:02:22PM +0200, Marcin Wojtas wrote:
-> > > Describe the Distributed Switch Architecture (DSA) - compliant
-> > > MDIO devices. In ACPI world they are represented as children
-> > > of the MDIO busses, which are responsible for their enumeration
-> > > based on the standard _ADR fields and description in _DSD objects
-> > > under device properties UUID [1].
-> > > 
-> > > [1] http://www.uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
-> 
-> > Why is this document part of Linux code base ?
-> 
-> It's fine, but your are right with your latter questions.
-> 
-> > How will the other OSes be aware of this ?
-> 
-> Should be a standard somewhere.
-> 
-> > I assume there was some repository to maintain such DSDs so that it
-> > is accessible for other OSes. I am not agreeing or disagreeing on the
-> > change itself, but I am concerned about this present in the kernel
-> > code.
-> 
-> I dunno we have a such, but the closest I may imagine is MIPI standardization,
-> that we have at least for cameras and sound.
-> 
-> I would suggest to go and work with MIPI for network / DSA / etc area, so
-> everybody else will be aware of the standard.
+there is an unexpected word "the" in the comments that need to be dropped
 
-It is the same argument as for DT. Other OSes and bootloaders seem to
-manage digging around in Linux for DT binding documentation. I don't
-see why bootloaders and other OSes can not also dig around in Linux
-for ACPI binding documentations.
+file: ./drivers/s390/net/qeth_core_main.c
+line: 3568
 
-Ideally, somebody will submit all this for acceptance into ACPI, but
-into somebody does, i suspect it will just remain a defacto standard
-in Linux.
+* have to request a PCI to be sure the the PCI
+changed to
+* have to request a PCI to be sure the PCI
 
-   Andrew
+Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+---
+ drivers/s390/net/qeth_core_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
+index 9e54fe76a9b2..35d4b398c197 100644
+--- a/drivers/s390/net/qeth_core_main.c
++++ b/drivers/s390/net/qeth_core_main.c
+@@ -3565,7 +3565,7 @@ static void qeth_flush_buffers(struct qeth_qdio_out_q *queue, int index,
+ 			if (!atomic_read(&queue->set_pci_flags_count)) {
+ 				/*
+ 				 * there's no outstanding PCI any more, so we
+-				 * have to request a PCI to be sure the the PCI
++				 * have to request a PCI to be sure the PCI
+ 				 * will wake at some time in the future then we
+ 				 * can flush packed buffers that might still be
+ 				 * hanging around, which can happen if no
+-- 
+2.17.1
+
