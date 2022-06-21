@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5464555315F
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 13:51:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A16B553167
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 13:53:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350092AbiFULvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 07:51:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34220 "EHLO
+        id S1350136AbiFULxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 07:53:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349688AbiFULvY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 07:51:24 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B91E2AC5C;
-        Tue, 21 Jun 2022 04:51:23 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id ay16so7554342ejb.6;
-        Tue, 21 Jun 2022 04:51:23 -0700 (PDT)
+        with ESMTP id S1350132AbiFULxD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 07:53:03 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B6DC219C;
+        Tue, 21 Jun 2022 04:53:02 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id lw20so4596675ejb.4;
+        Tue, 21 Jun 2022 04:53:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=A6z8EyIWtSjhv1qsgDmsEARBUgF7vOWwaGhqdMdxjmg=;
-        b=h7Tk4Gk4wXtwCe1JUnnRuM5joaDicK10WIlrLRYqUSB8s4RVm3M+pq0NJZYZCvbfDp
-         2CZN7/B+2UzmiFEWBe/W1Yi1MnTiPhAmQcLPJNXOt/2o60AbraoPBABIrGZPpDKuXJwB
-         KX97VI5bcuQG/RDpvMj43wp3kaWoF2UCDNzLnyqzMzZApgEICEHsuJl6+uVqgKbTurGj
-         2O+hnqfyp13YZCKwsBNBVY7aQx+MOnYJnOgQIy89wH7jPh9ulnfWWqBoHmh/U4TVvOSu
-         tvlDxtbXXbkZA5zElJ0C200MvOkVJIxU6ofYLRD0O+sqsYTjhR9gwmsrlwOerHb2z9EV
-         tDRA==
+        bh=Euwp5N+3NI2BdvzXjSxZwpJ8MC0XY7297caCI5aXQwc=;
+        b=caoosVB+ji/MBF4QNxdPDrMTdE+RUfJFeYCOK51Ypxol8hOyopUeoHDcgG2cbvKL4j
+         AQmpw8fYkkLcmWdn7JrNqEJUN1XOFaZNi1WH3u+KUXQs3zS8jmYbIpFoJt8VnvzSFCGa
+         v7DB2WqSA1tLqrvbIR/Ku+XBmc6Q4Q/IGU7x6WsGcHltS8tae/crxVqBxvu4Kmhw5PcJ
+         HsDB6B4CcR5HmcYiQpX29eNqdhRoho8PxnWbjHWqOdvhLymRaQ8oGcAOGolNNACmwbkQ
+         DtXi7l5LbraKTByoHzYTHJiJU8WBEjV5zXDJBjccuJktBSwOEg8+yP08sb2ya3ue2nzy
+         NDxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=A6z8EyIWtSjhv1qsgDmsEARBUgF7vOWwaGhqdMdxjmg=;
-        b=Xe8UAe+lqj08F9RDSN7T6zldWf3R+sc49BTnwLOe4O/k631h1n/34KAHIk38Yvu3Iq
-         QB2drcuXhiXelmwV9tLfaa9jvZsULVOGeCAUrfAXCxcdq1oDdndwj1IDOMActzBVM/s5
-         NonmD9DgOEN6COw5pvOJL6zAKLQCbaa4cYqP77FdoeBz13pY9MGCofV9DyEABks5KU+m
-         azzgtarOUzyKz7e7JwdHT/qnGIR+YEj6IoGhjVfwZYHnCWdGnFLXBS0iSIwz7maM1oBk
-         Mr9hisOvLSpF5pWS906BlHYQdK7093ewUKKpmTvutnG/TqxTpaKtvQystkfKxyA8f+Wg
-         oMSQ==
-X-Gm-Message-State: AJIora85ZEjrdjfJHgXw97yAz3J40N6JOu1S/Nt8EOmroW8DuQZd30Ou
-        6LUrwfcM0XysLiH3enCnQQk=
-X-Google-Smtp-Source: AGRyM1sO8Ql94yNsfKTq6dsJ57UV5X0/W/zaMXn3wDgm+rtwheqIqyaZFXloYPeUq4AbigdikJ5Wjw==
-X-Received: by 2002:a17:906:ee1:b0:70d:d293:7b30 with SMTP id x1-20020a1709060ee100b0070dd2937b30mr24861378eji.134.1655812282076;
-        Tue, 21 Jun 2022 04:51:22 -0700 (PDT)
+        bh=Euwp5N+3NI2BdvzXjSxZwpJ8MC0XY7297caCI5aXQwc=;
+        b=O0LGx2EoN57icvH5GFSKhjZridzHkI7sDeUxvmkNHBk4hnT7Js5UgyJf2qt6/TEbj7
+         84CwlQtkBo+WpRQu3tKeJIAf3wTUllwqSx0XivzLpQHZNIAk4aBLPcBBxPpb72bvCisF
+         c88ec8yyiXa1lLUWolDkzK2Q/4bouimWYNGJJoGRl9yeWAFe9LBmQJeFRVVVkiaV/P2k
+         jDyOm0A6ilg19lY7FWLL0zyMrKCbKn2pBc4GYc0dv1msNSLniUnPWWs/ZALkGJGdATF+
+         wbch0Z1awRQYHtySPuquTRW/8GLX/LlFJ5zyO0uVhF0lvW8x7Qpxb/4bcwmccJ38iXAa
+         w0ZA==
+X-Gm-Message-State: AJIora/BUO0aC5Yd/8yPTBAzlq/UMsKwZd/4wvjQRwFhvd1VIYuZg8Dg
+        nBZFnzTM+Gy0fZguPwhPVWU=
+X-Google-Smtp-Source: AGRyM1uWvOjhc8Wie+uhS1amwH9iINJ7y4JcksVrZ5QJ7wQCVhIldTXXHZ1puT3SYqw8WkYWZhe6mQ==
+X-Received: by 2002:a17:906:530b:b0:715:7867:1033 with SMTP id h11-20020a170906530b00b0071578671033mr25797519ejo.683.1655812380816;
+        Tue, 21 Jun 2022 04:53:00 -0700 (PDT)
 Received: from skbuf ([188.25.159.210])
-        by smtp.gmail.com with ESMTPSA id s10-20020aa7cb0a000000b00435728cd12fsm7278397edt.18.2022.06.21.04.51.19
+        by smtp.gmail.com with ESMTPSA id f16-20020a17090631d000b006f3ef214d9fsm7453537ejf.5.2022.06.21.04.52.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 04:51:21 -0700 (PDT)
-Date:   Tue, 21 Jun 2022 14:51:18 +0300
+        Tue, 21 Jun 2022 04:53:00 -0700 (PDT)
+Date:   Tue, 21 Jun 2022 14:52:58 +0300
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -75,15 +75,15 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Pascal Eberhard <pascal.eberhard@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v8 09/16] net: dsa: rzn1-a5psw: add FDB support
-Message-ID: <20220621115118.fk6zlvehq4jbhvlx@skbuf>
+Subject: Re: [PATCH net-next v8 14/16] ARM: dts: r9a06g032: describe switch
+Message-ID: <20220621115258.grihuonqjncjy7tk@skbuf>
 References: <20220620110846.374787-1-clement.leger@bootlin.com>
- <20220620110846.374787-10-clement.leger@bootlin.com>
+ <20220620110846.374787-15-clement.leger@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220620110846.374787-10-clement.leger@bootlin.com>
+In-Reply-To: <20220620110846.374787-15-clement.leger@bootlin.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -94,9 +94,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 01:08:39PM +0200, Clément Léger wrote:
-> This commits add forwarding database support to the driver. It
-> implements fdb_add(), fdb_del() and fdb_dump().
+On Mon, Jun 20, 2022 at 01:08:44PM +0200, Clément Léger wrote:
+> Add description of the switch that is present on the RZ/N1 SoC. This
+> description includes ethernet-ports description for all the ports that
+> are present on the switch along with their connection to the MII
+> converter ports and to the GMAC for the CPU port.
 > 
 > Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 > ---
