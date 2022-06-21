@@ -2,129 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E919E5536FD
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 18:00:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAA4E55372A
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 18:03:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352261AbiFUP7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 11:59:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42854 "EHLO
+        id S1353631AbiFUQCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 12:02:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352441AbiFUP6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 11:58:15 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61258B60
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 08:58:08 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id z17so7754376wmi.1
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 08:58:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=8bGIi/65SNf1gUCizJJAA/uyPpaT7iiHXEa0Yre3OLs=;
-        b=qc78xzPKYmrdcuYQ1ne6Hu8H1BSHHtXY0kD3g+N7e0SwghvQN3cw/qoAboUgUrs+Ck
-         +iwQJ1AJ10Btc0VTT9f6WHOgo8D1M44NtYEiybmDF8Qw1nuDngA9JskQuGCbrE3tO6nl
-         eOC4eyyo/f5SFvf9KgmRv+CDRnTziQhvDBCEM5t7Y86dYYU5K3O1Rl6sZVi1kpPAVOvC
-         Mm5VwD38GAGomFJPcHYSHlYRYekmhbWFD6Ok/DiaZrz5oqAr5y0B65kbUBRp1g5dzbcn
-         hGDJpk81SwmFxFBSKHm447D3o18Ami9ckEnNWJFVwbBjwjxjpvgRktuW+I3Y1jnfs+DD
-         k+ww==
+        with ESMTP id S1353572AbiFUQBr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 12:01:47 -0400
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA3C2F652;
+        Tue, 21 Jun 2022 09:00:55 -0700 (PDT)
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-3178ea840easo97552427b3.13;
+        Tue, 21 Jun 2022 09:00:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=8bGIi/65SNf1gUCizJJAA/uyPpaT7iiHXEa0Yre3OLs=;
-        b=pkrfG7+GVG0APAlAUx0SSo9o6W4yYZ8osH5zKKJfWGNlCPAk+5t8CMArYIjfVaHa3x
-         /R7W1AK/wnoL7mIsJzGS5cZAImvLUSruw5fPPfMPwegDhrh8enFSuPmBg6J6nuicpFAb
-         b2s4+Ujs3WMS1InnVrhIT4B5ct/BC7/sjXX+6jAO83cq8d1r7EAR2BG79DQlbcbwpKbe
-         JF3FVmU4ln3/mU9/OgW+8zfjZZjtbJ18Iu9cIQsxjj+9s3K6sAJ+qUoxQ/S8WiwfMFQx
-         OUHwREhWmQ/lo5DkACiMka/efgldSowkphrIH7pZUXSuGbg+r+0aKLz1l6Ag+KTNCCvi
-         brLA==
-X-Gm-Message-State: AOAM530mAagExCrmDJ5o/XcqFbdYnCMFHHJBfy6sfdFYMJ8TuEKboDx9
-        nsaALi098j6nHjdTk/jw2yybFA==
-X-Google-Smtp-Source: ABdhPJzfQtcmGS9lGGD/a74+uwozsMtxNFYclUUgKl5wNK5vG+XpP16pmsEjUM4CRShV7wvaWru3eQ==
-X-Received: by 2002:a05:600c:3b88:b0:39c:55b2:3d1 with SMTP id n8-20020a05600c3b8800b0039c55b203d1mr42734848wms.64.1655827086597;
-        Tue, 21 Jun 2022 08:58:06 -0700 (PDT)
-Received: from [192.168.0.221] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id i187-20020a1c3bc4000000b0039ee52c1345sm12581252wma.4.2022.06.21.08.58.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 21 Jun 2022 08:58:06 -0700 (PDT)
-Message-ID: <a194d4c5-8e31-ecd9-ecd0-0c96af03485b@linaro.org>
-Date:   Tue, 21 Jun 2022 17:58:04 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yB/ZL6+L5GNkzKBj3jiXJtIZGsVXC7IFjlzFHfvTBlU=;
+        b=5dAuMB3sn0b2trnrS1PU3/CnWR3M8yvDXUeh6KPLxRQv+uAgcSzBI2ZA8VM7istEnO
+         AMAB18xsxDg8ha6Qcvmw4F5FbfdCcMULY8KIv5eVpiCHobrt+CBIO4/tXpd51WNNslT9
+         MuYmAoGECQskNB/PATkOKwUcc5orL6vW4fxJ6LWF1UqXcZsiwmXWZiSZTd55Rxn3+Gmq
+         gusc5IpV8d618/+zPnvHYLROMcFbc2TUTkDl2ZApfT1upy47v9fpTHIrhP14CIJGNRYX
+         UyBY/Z2s9lJTNTGk3SnwD76NwxGZLC54E0WpSCHdGkZs3zaFyOvX/ZTVs6Fz/U3/CWq9
+         z8Vg==
+X-Gm-Message-State: AJIora9PR/5JGo1niRmV0ZAiLv9b6n6+MtFqe0OSqm082MS7Hb3gP9dH
+        gPEwPfzI5tP8B0bsA6Sm0yxCh50I07T/gF/yIEg=
+X-Google-Smtp-Source: AGRyM1sJPeLHl6/X7kbl3ocuzFFryFFXILIu/vDEsiSDQsRYODqS2xDzIskFU8JXUnhe+2o6THbRRbjgxY1VS1hrLRc=
+X-Received: by 2002:a0d:e804:0:b0:317:9c5f:97a4 with SMTP id
+ r4-20020a0de804000000b003179c5f97a4mr19864176ywe.19.1655827253268; Tue, 21
+ Jun 2022 09:00:53 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 1/2] dt-bindings: net: wireless: ath11k: add new DT entry
- for board ID
-Content-Language: en-US
-To:     Robert Marko <robimarko@gmail.com>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220621135339.1269409-1-robimarko@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220621135339.1269409-1-robimarko@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+References: <20220620150225.1307946-1-mw@semihalf.com> <20220620150225.1307946-10-mw@semihalf.com>
+ <20220621094556.5ev3nencnw7a5xwv@bogus> <YrGoXXBgHvyifny3@smile.fi.intel.com>
+ <YrGqg5fHB4s+Y7wx@lunn.ch> <20220621132836.wiyexi4y6vjeumrv@bogus>
+ <CAJZ5v0gJPdWnu7u5+zxKbGvGvRrOeh6OxsHTXxvBaP7MOb1coA@mail.gmail.com> <20220621153718.p7z6v655gpijzedi@bogus>
+In-Reply-To: <20220621153718.p7z6v655gpijzedi@bogus>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 21 Jun 2022 18:00:42 +0200
+Message-ID: <CAJZ5v0gvs20PgdX1cR0PzMnQcv-bg8yQ4v8qQZRvKn1z-7=y8Q@mail.gmail.com>
+Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA description
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Len Brown <lenb@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21/06/2022 15:53, Robert Marko wrote:
-> bus + qmi-chip-id + qmi-board-id and optionally the variant are currently
-> used for identifying the correct board data file.
-> 
-> This however is sometimes not enough as all of the IPQ8074 boards that I
-> have access to dont have the qmi-board-id properly fused and simply return
-> the default value of 0xFF.
-> 
-> So, to provide the correct qmi-board-id add a new DT property that allows
-> the qmi-board-id to be overridden from DTS in cases where its not set.
-> This is what vendors have been doing in the stock firmwares that were
-> shipped on boards I have.
-> 
-> Signed-off-by: Robert Marko <robimarko@gmail.com>
+On Tue, Jun 21, 2022 at 5:37 PM Sudeep Holla <sudeep.holla@arm.com> wrote:
+>
+> On Tue, Jun 21, 2022 at 05:23:30PM +0200, Rafael J. Wysocki wrote:
+> > On Tue, Jun 21, 2022 at 3:28 PM Sudeep Holla <sudeep.holla@arm.com> wrote:
+> > >
+> > > On Tue, Jun 21, 2022 at 01:24:51PM +0200, Andrew Lunn wrote:
+> > > > On Tue, Jun 21, 2022 at 02:15:41PM +0300, Andy Shevchenko wrote:
+> > > > > On Tue, Jun 21, 2022 at 10:45:56AM +0100, Sudeep Holla wrote:
+> > > > > > On Mon, Jun 20, 2022 at 05:02:22PM +0200, Marcin Wojtas wrote:
+> > > > > > > Describe the Distributed Switch Architecture (DSA) - compliant
+> > > > > > > MDIO devices. In ACPI world they are represented as children
+> > > > > > > of the MDIO busses, which are responsible for their enumeration
+> > > > > > > based on the standard _ADR fields and description in _DSD objects
+> > > > > > > under device properties UUID [1].
+> > > > > > >
+> > > > > > > [1] http://www.uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
+> > > > >
+> > > > > > Why is this document part of Linux code base ?
+> > > > >
+> > > > > It's fine, but your are right with your latter questions.
+> > > > >
+> > > > > > How will the other OSes be aware of this ?
+> > > > >
+> > > > > Should be a standard somewhere.
+> > > > >
+> > > > > > I assume there was some repository to maintain such DSDs so that it
+> > > > > > is accessible for other OSes. I am not agreeing or disagreeing on the
+> > > > > > change itself, but I am concerned about this present in the kernel
+> > > > > > code.
+> > > > >
+> > > > > I dunno we have a such, but the closest I may imagine is MIPI standardization,
+> > > > > that we have at least for cameras and sound.
+> > > > >
+> > > > > I would suggest to go and work with MIPI for network / DSA / etc area, so
+> > > > > everybody else will be aware of the standard.
+> > > >
+> > > > It is the same argument as for DT. Other OSes and bootloaders seem to
+> > > > manage digging around in Linux for DT binding documentation. I don't
+> > > > see why bootloaders and other OSes can not also dig around in Linux
+> > > > for ACPI binding documentations.
+> > > >
+> > >
+> > > Theoretically you are right. But in DT case majority of non-standard(by
+> > > standard I am referring to the one's in Open Firmware specification) are
+> > > in the kernel. But that is not true for ACPI. And that is the reason for
+> > > objecting it. One of the main other OS using ACPI may not look here for
+> > > any ACPI bindings(we may not care, but still OS neutral place is better
+> > > for this).
+> > >
+> > > > Ideally, somebody will submit all this for acceptance into ACPI, but
+> > > > into somebody does, i suspect it will just remain a defacto standard
+> > > > in Linux.
+> > > >
+> > >
+> > > DSD is not integral part of ACPI spec, so the process is never clear.
+> > > However there is this project[1], IIUC it is just guidance and doesn't
+> > > include any bindings IIUC. But we need something similar here for better
+> > > visibility and to remain OS agnostic. Even with DT, there is a strong
+> > > desire to separate it out, but it has grown so much that it is getting
+> > > harder to do that with every release. I was just trying to avoid getting
+> > > into that situation.
+> > >
+> > > [1] https://github.com/UEFI/DSD-Guide
+> >
+> > Here's my personal take on this.
+> >
+> > This patch series essentially makes the kernel recognize a few generic
+> > (that is, not tied on any specific device ID) device properties
+> > supplied by the firmware via _DSD.  They are generic, because there is
+> > some library code in the kernel that can consume them and that library
+> > code is used in multiple places (and it is better to supply data from
+> > the firmware directly to it).
+> >
+> > If we all agree that it is a good idea for the kernel to allow these
+> > properties to be supplied via _DSD this way, there is no reason to
+> > avoid admitting that fact in the kernel documentation.
+> >
+> > IMV, there's nothing wrong with stating officially that these
+> > properties are recognized by the kernel and what they are used for and
+> > it has no bearing on whether or not they are also used by someone
+> > else.
+>
+> Good point. I was also suggested to make properties have prefix "linux-"
+> similar to "uefi-" in the set of DSD properties list @[1]. In that case
+> it makes more sense to maintain in the kernel. If they add "uefi-" prefix,
+> I was also told that it can be hosted @[1] as specific in section 3.1.4 @[2]
 
-Thank you for your patch. There is something to discuss/improve.
+Well, the point here is to use the same property names on both the DT
+and ACPI ends IIUC and there's certain value in doing that.
 
-> ---
->  .../devicetree/bindings/net/wireless/qcom,ath11k.yaml     | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml b/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
-> index a677b056f112..fe6aafdab9d4 100644
-> --- a/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
-> +++ b/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
-> @@ -41,6 +41,14 @@ properties:
->          * reg
->          * reg-names
->  
-> +  qcom,ath11k-board-id:
+The library in question already uses these names with DT and there is
+no real need to change that.
 
-The "board" a bit confuses me because in the context of entire system it
-means the entire hardware running Qualcomm SoC. This is sometimes
-encoded as qcom,board-id property.
+Of course, if the platform firmware supplies these properties in a way
+described in the document in question, it will be a provision
+specifically for Linux and nothing else (unless that hypothetical
+other thing decides to follow Linux in this respect, that is).  As
+long as that is clear, I don't see why it would be better to introduce
+different property names just for _DSD.
 
-Is your property exactly the same?
+> I just sent an update to Documentation with the link to[1].
 
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description:
-> +      Board ID to override the one returned by the firmware or the default
-> +      0xff if it was not set by the vendor at all.
-> +      It is used along the ath11k-calibration-variant to mach the correct
-> +      calibration data from board-2.bin.
-> +
->    qcom,ath11k-calibration-variant:
->      $ref: /schemas/types.yaml#/definitions/string
->      description:
+Thanks!
 
+> I can also
+> update the same to mention about the process as described in section 3.1.4
+> if that helps and we are happy to follow that in the kernel.
+>
+> [1] https://github.com/UEFI/DSD-Guide
+> [2] https://github.com/UEFI/DSD-Guide/blob/main/src/dsd-guide.adoc#314-adding-uefi-device-properties
 
-Best regards,
-Krzysztof
+IMV it would be useful to add that information, but IMO the process is
+mostly relevant for new use cases, when someone wants to introduce an
+entirely new property that is not yet covered by the DT bindings.
+
+In the cases when the existing DT properties are the closest thing to
+a standard way of supplying the OS with the information in question it
+is most appealing to use the property names that are in use already.
