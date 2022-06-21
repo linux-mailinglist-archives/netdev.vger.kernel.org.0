@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 05112553409
+	by mail.lfdr.de (Postfix) with ESMTP id C9DAA55340B
 	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 15:53:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350953AbiFUNxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 09:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46844 "EHLO
+        id S1351104AbiFUNxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 09:53:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiFUNxr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 09:53:47 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA8112776;
-        Tue, 21 Jun 2022 06:53:44 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id fu3so27668993ejc.7;
-        Tue, 21 Jun 2022 06:53:44 -0700 (PDT)
+        with ESMTP id S230521AbiFUNxs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 09:53:48 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4317A13D24;
+        Tue, 21 Jun 2022 06:53:46 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id mf9so7349600ejb.0;
+        Tue, 21 Jun 2022 06:53:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=roHXTUL4tKXVN//IvEXVUmOPrGKI2A3Q1fTOEiNxRiE=;
-        b=P5XX+bTiGw5qp8eSMfarTWvbuYZdIdE/DXb5iSZ8X4x/m9/szH6t40nyGlna8U8T7E
-         e9zqDZ2c7I5374q+h+4xdhLKoMxCMXy3CAWe5PUGt+/SxouSYiYMbhXYZaCNnxA5CkCY
-         wi99hSVxmqCBzZLtZw2muvN23Rdb1KEyGYIJIvFZH7iVLeIhtRqfGWXyMoDw5YUHH5oD
-         reUW+m5SeNYHj1VmO1rijqrQE5gJ5MsjHrO4BSn/hsJsuqzPkXFLkIx1iAHJVbD2a3GB
-         GbnykMSfI7VYnn1KOuERBdm+67sGyC/kkCevOwELffMJ8DnRu1lw4miR8viQYylwXpR9
-         Vb3Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+bnD9hK3prWl6/gYLDJgj48e9xi4+igUWjv8z3KjEBQ=;
+        b=LowuFnu5EJgFHfzLAZhiUV7XOQNZYlScpKJ1ehzxo7KJUk/9pWR71H5EwqtpxEx3Fb
+         YfUSnzxFnVD5ot3ZdEG/1igUSRaTi/xWfLb5fuEOpbNSFVuKIjJTVrwwTHeCLKoMRJiK
+         KzxkPB4jtqUyMX0mNr0addwuL2bf1o/va3KQGfEucHbsrEipOW/Tu6qRQGWNAR36wPQ+
+         0l4e/9P2t8Qt6/XCOfuMjO/QegqXx1ndv31XZaecmI15AW/LMCT7QJ6ogvgzx/NhjVmj
+         ZQ5RnwLxa8kMBixDilmjmSKpGebk/zzlWsGhbtnErPIUxik2SZ6+HuZ2IUPl9ttXvmGG
+         G9nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=roHXTUL4tKXVN//IvEXVUmOPrGKI2A3Q1fTOEiNxRiE=;
-        b=xWDStEErAEr85ZTnrCOrejctAQYVpp497pS4S5+B/88t4c3an1h6v/fjkhHwyBJj8N
-         l8A7iCW0AYGI1Qy7c8NgCPp4Sh4lihoeHz9qeWQbFoDsytwLHlMI51/6TS9DhHJLKCNf
-         E6ZOL0FkPcC/3UCAYUCMYr4r4X5WS9wAnEfLfwWvaQQjx2/ZiBfsHwFqFMx/nt5TLV2S
-         e+wrDCfXMAfo+UtyB+mG7h0nCowBumPNIRmPNTqa9HiDJeNAo1JOBH+7F8TGs3JXaAW5
-         m8OfWqFSlJuRZkbebZ5P1Bs53IsRgEdur9l8zhihBCiRNxdPVNRYinW4UvrGzQRI7KLF
-         R9aw==
-X-Gm-Message-State: AJIora9GQHmLYcp6zR0VSUX58nEXPVQsg7+irzGd8yO/Tyh13+0azhnt
-        9KWHsXL5IqEK80i9P2cL60XWfeKLOiYvOQ==
-X-Google-Smtp-Source: AGRyM1sczfnqeoBRL2JVbKBxe9KgCynS8OEYJM73QMnSa2Iy5BIRI4fRPUdc2rdfo7pOMxyFAXFyuw==
-X-Received: by 2002:a17:906:c7c8:b0:70c:a62c:d0e8 with SMTP id dc8-20020a170906c7c800b0070ca62cd0e8mr25422461ejb.545.1655819623364;
-        Tue, 21 Jun 2022 06:53:43 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+bnD9hK3prWl6/gYLDJgj48e9xi4+igUWjv8z3KjEBQ=;
+        b=RkBR2opaXSGus81rEpODpEcHKTIeVDYDt+IPvDrdNbp4F8ShJogD0qNlQvpX2XtL0v
+         nzqyy2UZOZW24tWQacy1KHwasRnvxnBuXM2U/OOFjFKQ161+e+dt3IawS2jn4Ev7Vvzw
+         7lz79CnAKRHbyT88LEVtUF0pK0nSKQdOyaZvoSSdwSEcb0qnudz2Yysxf0bkReVSFl1+
+         cwKIX1/1YzJJcgDh4HtrZnrVWfhvRRlJwQqEwhKOHtJo0VbZMtIcgVw6QTmXRw1f4wJt
+         Ri1sb+g0GOEXmqKXFq2KxSBGLCiqrFRcYsrgS1U1qqnCSVWLfNU4qtCunFgejAFAQR+b
+         kk7w==
+X-Gm-Message-State: AJIora+S1VKg35+dG9eCqXLpHXjcYXetOhSELTe2G51bDSR91togdERc
+        bU0WnFATQmr1yRg5YAtcNdw=
+X-Google-Smtp-Source: AGRyM1t1OnGmn/19PEpvpFJ5PtSkks3BLBi/GIwdyVDyqV8uzkzUJ+za1jeXY1Kw9XAFhVPac2/SNw==
+X-Received: by 2002:a17:907:7b8a:b0:707:59d4:14a3 with SMTP id ne10-20020a1709077b8a00b0070759d414a3mr25833143ejc.51.1655819624627;
+        Tue, 21 Jun 2022 06:53:44 -0700 (PDT)
 Received: from fedora.robimarko.hr (dh207-99-158.xnet.hr. [88.207.99.158])
-        by smtp.googlemail.com with ESMTPSA id fy11-20020a1709069f0b00b007104b37aab7sm7325408ejc.106.2022.06.21.06.53.41
+        by smtp.googlemail.com with ESMTPSA id fy11-20020a1709069f0b00b007104b37aab7sm7325408ejc.106.2022.06.21.06.53.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 06:53:42 -0700 (PDT)
+        Tue, 21 Jun 2022 06:53:44 -0700 (PDT)
 From:   Robert Marko <robimarko@gmail.com>
 To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
         kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
@@ -54,10 +54,12 @@ To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH 1/2] dt-bindings: net: wireless: ath11k: add new DT entry for board ID
-Date:   Tue, 21 Jun 2022 15:53:38 +0200
-Message-Id: <20220621135339.1269409-1-robimarko@gmail.com>
+Subject: [PATCH 2/2] ath11k: search DT for qcom,ath11k-board-id
+Date:   Tue, 21 Jun 2022 15:53:39 +0200
+Message-Id: <20220621135339.1269409-2-robimarko@gmail.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220621135339.1269409-1-robimarko@gmail.com>
+References: <20220621135339.1269409-1-robimarko@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -77,35 +79,54 @@ This however is sometimes not enough as all of the IPQ8074 boards that I
 have access to dont have the qmi-board-id properly fused and simply return
 the default value of 0xFF.
 
-So, to provide the correct qmi-board-id add a new DT property that allows
-the qmi-board-id to be overridden from DTS in cases where its not set.
+So, to provide the correct qmi-board-id look for the qcom,ath11k-board-id
+property and use that.
 This is what vendors have been doing in the stock firmwares that were
 shipped on boards I have.
 
+It should be added to DTS like:
+	wifi@c000000 {
+        status = "okay";
+
+        qcom,ath11k-board-id = <658>;
+        qcom,ath11k-calibration-variant = "Edgecore-EAP102";
+    };
+
 Signed-off-by: Robert Marko <robimarko@gmail.com>
 ---
- .../devicetree/bindings/net/wireless/qcom,ath11k.yaml     | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/wireless/ath/ath11k/qmi.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml b/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
-index a677b056f112..fe6aafdab9d4 100644
---- a/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
-+++ b/Documentation/devicetree/bindings/net/wireless/qcom,ath11k.yaml
-@@ -41,6 +41,14 @@ properties:
-         * reg
-         * reg-names
+diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
+index 00136601cb7d..9d27b4968d10 100644
+--- a/drivers/net/wireless/ath/ath11k/qmi.c
++++ b/drivers/net/wireless/ath/ath11k/qmi.c
+@@ -2172,12 +2172,14 @@ static int ath11k_qmi_request_device_info(struct ath11k_base *ab)
  
-+  qcom,ath11k-board-id:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Board ID to override the one returned by the firmware or the default
-+      0xff if it was not set by the vendor at all.
-+      It is used along the ath11k-calibration-variant to mach the correct
-+      calibration data from board-2.bin.
-+
-   qcom,ath11k-calibration-variant:
-     $ref: /schemas/types.yaml#/definitions/string
-     description:
+ static int ath11k_qmi_request_target_cap(struct ath11k_base *ab)
+ {
++	struct device *dev = ab->dev;
+ 	struct qmi_wlanfw_cap_req_msg_v01 req;
+ 	struct qmi_wlanfw_cap_resp_msg_v01 resp;
+ 	struct qmi_txn txn;
+ 	int ret = 0;
+ 	int r;
+ 	char *fw_build_id;
++	unsigned int board_id;
+ 	int fw_build_id_mask_len;
+ 
+ 	memset(&req, 0, sizeof(req));
+@@ -2219,7 +2221,9 @@ static int ath11k_qmi_request_target_cap(struct ath11k_base *ab)
+ 		ab->qmi.target.chip_family = resp.chip_info.chip_family;
+ 	}
+ 
+-	if (resp.board_info_valid)
++	if (!of_property_read_u32(dev->of_node, "qcom,ath11k-board-id", &board_id))
++		ab->qmi.target.board_id = board_id;
++	else if (resp.board_info_valid)
+ 		ab->qmi.target.board_id = resp.board_info.board_id;
+ 	else
+ 		ab->qmi.target.board_id = 0xFF;
 -- 
 2.36.1
 
