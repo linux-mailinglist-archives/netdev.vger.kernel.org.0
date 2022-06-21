@@ -2,75 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AAFB55314F
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 13:46:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96B9E553149
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 13:46:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350018AbiFULpu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 07:45:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58484 "EHLO
+        id S229495AbiFULqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 07:46:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229495AbiFULpt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 07:45:49 -0400
-Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36930286DC;
-        Tue, 21 Jun 2022 04:45:45 -0700 (PDT)
-X-QQ-mid: bizesmtp73t1655811936ten2qx0b
-Received: from ubuntu.localdomain ( [106.117.99.68])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 21 Jun 2022 19:45:31 +0800 (CST)
-X-QQ-SSF: 0100000000700040B000B00A0000000
-X-QQ-FEAT: vEggWWkZ1aeeivA2IGpkAS2dbrJ+8veKZTDvAPbI7V7/+4zenqmxuMDxGo+tl
-        Src8wFYMgxo61jPU+MYlHgcPqkm7i8y+RyIWTPF1toZb7FWez++aBSy0GE+ACchBr3/Cphm
-        IGnewpE/EwMSDusD7H33UI0T2hA71YXAoykoBughQzekW3QeQ/FB04CBdPAcPMEUm5BNlDz
-        ObSaDFDl47Y/XI8tw3231fCpPu3y+tHRq1p6JePgvIczjwCGrAxhz3uCEMuyVVOC7g8Tgmv
-        KugiQ5BLETt/A78ulO8aTJJi11Idc5frlSbTFcsiCIqV2NNBPeGwZ/7p0Dtjs0w2OntX2kD
-        2rGjFMIZn3S+onJ8Iw=
-X-QQ-GoodBg: 0
-From:   Jiang Jian <jiangjian@cdjrlc.com>
-To:     isdn@linux-pingi.de
-Cc:     jiangjian@cdjrlc.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] isdn: mISDN: hfcsusb: drop unexpected word "the" in the comments
-Date:   Tue, 21 Jun 2022 19:45:29 +0800
-Message-Id: <20220621114529.108079-1-jiangjian@cdjrlc.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S1350016AbiFULqU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 07:46:20 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7422A951;
+        Tue, 21 Jun 2022 04:46:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655811980; x=1687347980;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=3GUgWTllOUgsMA7bwu4qZaUXD45tDHXoYQUBLPICbPI=;
+  b=Gtus1wMNFspB6w9Luyr4HGzryCSUT3yWR2G7fyr0ZC9dbqVYpc0/DER4
+   ezn7ZBwdU+4DJor513GBwrQR9Ewt25Rf8S8B6/YdFE2upq49iejjDkA08
+   jdM8qJkR0y/5pQehrTdxfAHU/FKkc4gMw0lFhCny/3PnwlqCDELN4Xrtw
+   wXN2PUCqaLB3K7PBQ1sIn7d977gz2TrHU3dICBqz58R1MGfjiKcy06JQM
+   m8qBtjUqerujAiHgyuL/Trjedos4/Kg8arl2yfX4DhyJiunYk2npzxc6T
+   xCO5ELFrLGzY2JqRncjf0Kgi4gQTp3m1o4fio3h2LeX2Yx9FeGtDVwc4D
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10384"; a="277646587"
+X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
+   d="scan'208";a="277646587"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 04:46:19 -0700
+X-IronPort-AV: E=Sophos;i="5.92,209,1650956400"; 
+   d="scan'208";a="585252456"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2022 04:46:09 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1o3cKb-000qzY-PZ;
+        Tue, 21 Jun 2022 14:46:05 +0300
+Date:   Tue, 21 Jun 2022 14:46:05 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Sudeep Holla <sudeep.holla@arm.com>,
+        Marcin Wojtas <mw@semihalf.com>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, netdev@vger.kernel.org,
+        rafael@kernel.org, lenb@kernel.org, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux@armlinux.org.uk, hkallweit1@gmail.com, gjb@semihalf.com,
+        jaz@semihalf.com, tn@semihalf.com, Samer.El-Haj-Mahmoud@arm.com,
+        upstream@semihalf.com
+Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA
+ description
+Message-ID: <YrGvfdRF4jNIGzQq@smile.fi.intel.com>
+References: <20220620150225.1307946-1-mw@semihalf.com>
+ <20220620150225.1307946-10-mw@semihalf.com>
+ <20220621094556.5ev3nencnw7a5xwv@bogus>
+ <YrGoXXBgHvyifny3@smile.fi.intel.com>
+ <YrGqg5fHB4s+Y7wx@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YrGqg5fHB4s+Y7wx@lunn.ch>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-there is an unexpected word "the" in the comments that need to be dropped
+On Tue, Jun 21, 2022 at 01:24:51PM +0200, Andrew Lunn wrote:
+> On Tue, Jun 21, 2022 at 02:15:41PM +0300, Andy Shevchenko wrote:
+> > On Tue, Jun 21, 2022 at 10:45:56AM +0100, Sudeep Holla wrote:
 
-file: ./drivers/isdn/hardware/mISDN/hfcsusb.c
-line: 1560
- /* set USB_SIZE_I to match the the wMaxPacketSize for ISO transfers */
-changed to
- /* set USB_SIZE_I to match the wMaxPacketSize for ISO transfers */
+...
 
-Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
----
- drivers/isdn/hardware/mISDN/hfcsusb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> > I dunno we have a such, but the closest I may imagine is MIPI standardization,
+> > that we have at least for cameras and sound.
+> > 
+> > I would suggest to go and work with MIPI for network / DSA / etc area, so
+> > everybody else will be aware of the standard.
+> 
+> It is the same argument as for DT. Other OSes and bootloaders seem to
+> manage digging around in Linux for DT binding documentation. I don't
+> see why bootloaders and other OSes can not also dig around in Linux
+> for ACPI binding documentations.
+> 
+> Ideally, somebody will submit all this for acceptance into ACPI, but
+> into somebody does, i suspect it will just remain a defacto standard
+> in Linux.
 
-diff --git a/drivers/isdn/hardware/mISDN/hfcsusb.c b/drivers/isdn/hardware/mISDN/hfcsusb.c
-index cd5642cef01f..651f2f8f685b 100644
---- a/drivers/isdn/hardware/mISDN/hfcsusb.c
-+++ b/drivers/isdn/hardware/mISDN/hfcsusb.c
-@@ -1557,7 +1557,7 @@ reset_hfcsusb(struct hfcsusb *hw)
- 	write_reg(hw, HFCUSB_USB_SIZE, (hw->packet_size / 8) |
- 		  ((hw->packet_size / 8) << 4));
- 
--	/* set USB_SIZE_I to match the the wMaxPacketSize for ISO transfers */
-+	/* set USB_SIZE_I to match the wMaxPacketSize for ISO transfers */
- 	write_reg(hw, HFCUSB_USB_SIZE_I, hw->iso_packet_size);
- 
- 	/* enable PCM/GCI master mode */
+The "bindings" are orthogonal to ACPI specification. It's a vendor / OS / ...
+specific from ACPI p.o.v. It has an UUID field and each UUID may or may not
+be a part of any standard.
+
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
+
 
