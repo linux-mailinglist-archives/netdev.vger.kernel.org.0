@@ -2,163 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CC895534A9
-	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 16:38:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECF675534C9
+	for <lists+netdev@lfdr.de>; Tue, 21 Jun 2022 16:46:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351757AbiFUOiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 10:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47642 "EHLO
+        id S1347121AbiFUOqL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 10:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351041AbiFUOiv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 10:38:51 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA1922530
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 07:38:50 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id e5so7635885wma.0
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 07:38:50 -0700 (PDT)
+        with ESMTP id S235435AbiFUOqL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 10:46:11 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 251EE1CB1E;
+        Tue, 21 Jun 2022 07:46:10 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id k22so12845459wrd.6;
+        Tue, 21 Jun 2022 07:46:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=fgAsmHRa0I7boS8KfaFAiezDw43TzbbHvdTT8A1mzvc=;
-        b=fjgiTzrSnM0+9EZN4+GD2LFTOVMK6/CYnddY6bA6LT3kVBxneVuAR/IRd7DD19M95T
-         etHmCVpCNdZ9q5zwc2CgcesKFVzR/mWRY3Tg/G+djiXjlKgzSh6Adex56jqTAVfvnWVo
-         EVy5XBKOS+v2vxkkfIlUKIYUk8i6aNrT2ESpuOJQajB8p9/7uyAPhPqwy4SCWIAt36JN
-         MI4Rmegi1hVM2YKX7ZlqJ+1aFXsKgmSl1JZx9Brrx8KOLUIo9zkWxZ5Q1LruWNj146hr
-         KoqrgsjsXSPzqQH+WE8gng4QpOrnGwIlLzVt+2q7tD+XdE9S9vpp4L+T0jBfNWfX6nlZ
-         vxqA==
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sjG4KBCbJDG4xNZ8mnDMSODfXDWHdcHHaEh+82KTF38=;
+        b=U6O5CE9nmtEygth+s2uD7aSc5cuDePKMlz/TTf5mG++s54obcjU1lbKGZ4X5Gy9b3f
+         +VhLP5+pz//BqId5yTeVnHQMJPxU5KQ8/NHclEgQrdIHThwppVbYvBWkH9Pcl7EL10WA
+         qQORB3t7FKnawtg7dGolh0OkbGrs/okR4EpzK6ZRaDypZlr7O63uL4lLiLCSMrDrIGXV
+         lrCjHRhzH34TVh/pa2VanPFay5DKx0CPODUyUvVD81E2rsFrASeUthI4NToAhJvdXQ+q
+         IS5jMqrKfHC6P5+iaadDdZ0Bt5zUF8WNTB8A0Z6ttoL8A4ADaeb6W3EXUeZp1662YfJ9
+         WElw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=fgAsmHRa0I7boS8KfaFAiezDw43TzbbHvdTT8A1mzvc=;
-        b=h0N1S4DQDrrUGxAO9ccDJDCF6/+nHWhXXGQa7RaNyscWYJDEVpqLK7Tx0uJI2e7XlS
-         dsRmifadwOQFkPr8bkHZ8F9mCXo3GepKUXMo2etyV9fjZe1OkooPjNbvQQH7ItHZKxdd
-         eX7OoaV25NINfSlpOPR614Un37UO70ZmKWEUhXuzBMPfiWr1NeDdYz0fYt4y94kf27yq
-         THaJ1wrIOlTSObDLimcUsplWkM7IRcLzw1fPeoM1uARp7NYy0qBz2tXqUKwdSyHG6cG/
-         oCCaMiQJUh9edXECFaQUVgd2geQiWLJwb3jfSWz9K5r4Mxc9IhnvoTi1LRsx7D184/gD
-         fg4w==
-X-Gm-Message-State: AJIora/9RvzNDzzu1E1K76j1dRFAyJXdQry6L2WbXntYzw1b8A5ZZ2aq
-        YvuIZKxl2/JbcwHiqPk2MVdRJA==
-X-Google-Smtp-Source: AGRyM1sNQRrQWpqX4g8bgwJGWY0NhrzcXOBJO6ADZYtWQl2HzembPJy9LgFIsb3r+3mbwmURTA5n3w==
-X-Received: by 2002:a05:600c:a182:b0:39e:fea2:c5d6 with SMTP id id2-20020a05600ca18200b0039efea2c5d6mr12746841wmb.54.1655822329201;
-        Tue, 21 Jun 2022 07:38:49 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id e16-20020adfdbd0000000b0021b91ec8f6esm5175694wrj.67.2022.06.21.07.38.48
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sjG4KBCbJDG4xNZ8mnDMSODfXDWHdcHHaEh+82KTF38=;
+        b=lawj6vB08v5qijfvjlcLjZcI1CAh/h67H15+3paLHWBkkFPCpwBG5F4nkBr6dyJfjG
+         QZcN5cAGUyAZuLXxzGh7e5YnXhNaXQYtLX/lmy+UZunR9DuEIEZBoMDs1Fwhrs+ql7jA
+         QRlsvPbdgayhQrq2MsqQBbBhFdt79O2UKTJbY7y9JJlRtYzv8WK6rA5LDgEI8wj/37gd
+         t+rOsRzukpxCdGwc1gIE8XaHuBzMA30XFlDtAcQvwWLrKX7j6vqMAyK9C5Dsi020LUnF
+         ugMGniOXTHsPVxnyaO4bL8oczj44ZS1VXMyTFMd9FdwbhNtyQacUVIrhmxfyavE5lcNB
+         ZSmw==
+X-Gm-Message-State: AJIora/Sre7zSE8BTg7vCux8NYAOYJoI8gWub8K3DN5mq6x0kYPAOo+x
+        ffftLYyhUDCSD+r96BB+tdc=
+X-Google-Smtp-Source: AGRyM1voaebqOwrRsRtdDgRD5skEGDRxbijbMJGO72qFkDSYGaerzvwrlDnipBnG2pGGj7aUaJOxQw==
+X-Received: by 2002:a5d:6f19:0:b0:21a:3802:8b5b with SMTP id ay25-20020a5d6f19000000b0021a38028b5bmr25995276wrb.391.1655822768412;
+        Tue, 21 Jun 2022 07:46:08 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id eh1-20020a05600c61c100b003973d425a7fsm20804729wmb.41.2022.06.21.07.46.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 07:38:48 -0700 (PDT)
-Date:   Tue, 21 Jun 2022 15:38:46 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     linux-kernel@vger.kernel.org, stable@kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Tue, 21 Jun 2022 07:46:07 -0700 (PDT)
+Message-ID: <62b1d9af.1c69fb81.6ff6b.7b32@mx.google.com>
+X-Google-Original-Message-ID: <YrHZrvC1l0O2qMrw@Ansuel-xps.>
+Date:   Tue, 21 Jun 2022 16:46:06 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH 1/1] Bluetooth: Use chan_list_lock to protect the whole
- put/destroy invokation
-Message-ID: <YrHX9pj/f0tkqJis@google.com>
-References: <20220607134709.373344-1-lee.jones@linaro.org>
+        Jonathan McDowell <noodles@earth.li>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] net: dsa: qca8k: change only max_frame_size of
+ mac_frame_size_reg
+References: <20220618062300.28541-1-ansuelsmth@gmail.com>
+ <20220618062300.28541-2-ansuelsmth@gmail.com>
+ <20220621123041.6y7rre26iqhhwdoa@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220607134709.373344-1-lee.jones@linaro.org>
+In-Reply-To: <20220621123041.6y7rre26iqhhwdoa@skbuf>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 07 Jun 2022, Lee Jones wrote:
-
-> This change prevents a use-after-free caused by one of the worker
-> threads starting up (see below) *after* the final channel reference
-> has been put() during sock_close() but *before* the references to the
-> channel have been destroyed.
+On Tue, Jun 21, 2022 at 03:30:41PM +0300, Vladimir Oltean wrote:
+> On Sat, Jun 18, 2022 at 08:22:59AM +0200, Christian Marangi wrote:
+> > Currently we overwrite the entire MAX_FRAME_SIZE reg instead of tweaking
+> > just the MAX_FRAME_SIZE value. Change this and update only the relevant
+> > bits.
+> > 
+> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> > ---
+> >  drivers/net/dsa/qca8k.c | 8 ++++++--
+> >  drivers/net/dsa/qca8k.h | 3 ++-
+> >  2 files changed, 8 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
+> > index 2727d3169c25..eaaf80f96fa9 100644
+> > --- a/drivers/net/dsa/qca8k.c
+> > +++ b/drivers/net/dsa/qca8k.c
+> > @@ -2345,7 +2345,9 @@ qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+> >  		return 0;
+> >  
+> >  	/* Include L2 header / FCS length */
+> > -	return qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, new_mtu + ETH_HLEN + ETH_FCS_LEN);
+> > +	return regmap_update_bits(priv->regmap, QCA8K_MAX_FRAME_SIZE_REG,
+> > +				  QCA8K_MAX_FRAME_SIZE_MASK,
+> > +				  new_mtu + ETH_HLEN + ETH_FCS_LEN);
+> >  }
+> >  
+> >  static int
+> > @@ -3015,7 +3017,9 @@ qca8k_setup(struct dsa_switch *ds)
+> >  	}
+> >  
+> >  	/* Setup our port MTUs to match power on defaults */
+> > -	ret = qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, ETH_FRAME_LEN + ETH_FCS_LEN);
+> > +	ret = regmap_update_bits(priv->regmap, QCA8K_MAX_FRAME_SIZE_REG,
+> > +				 QCA8K_MAX_FRAME_SIZE_MASK,
+> > +				 ETH_FRAME_LEN + ETH_FCS_LEN);
+> >  	if (ret)
+> >  		dev_warn(priv->dev, "failed setting MTU settings");
+> >  
+> > diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+> > index ec58d0e80a70..1d0c383a95e7 100644
+> > --- a/drivers/net/dsa/qca8k.h
+> > +++ b/drivers/net/dsa/qca8k.h
+> > @@ -87,7 +87,8 @@
+> >  #define   QCA8K_MDIO_MASTER_MAX_REG			32
+> >  #define QCA8K_GOL_MAC_ADDR0				0x60
+> >  #define QCA8K_GOL_MAC_ADDR1				0x64
+> > -#define QCA8K_MAX_FRAME_SIZE				0x78
+> > +#define QCA8K_MAX_FRAME_SIZE_REG			0x78
+> > +#define   QCA8K_MAX_FRAME_SIZE_MASK			GENMASK(13, 0)
 > 
->   refcount_t: increment on 0; use-after-free.
->   BUG: KASAN: use-after-free in refcount_dec_and_test+0x20/0xd0
->   Read of size 4 at addr ffffffc114f5bf18 by task kworker/u17:14/705
-> 
->   CPU: 4 PID: 705 Comm: kworker/u17:14 Tainted: G S      W       4.14.234-00003-g1fb6d0bd49a4-dirty #28
->   Hardware name: Qualcomm Technologies, Inc. SM8150 V2 PM8150 Google Inc. MSM sm8150 Flame DVT (DT)
->   Workqueue: hci0 hci_rx_work
->   Call trace:
->    dump_backtrace+0x0/0x378
->    show_stack+0x20/0x2c
->    dump_stack+0x124/0x148
->    print_address_description+0x80/0x2e8
->    __kasan_report+0x168/0x188
->    kasan_report+0x10/0x18
->    __asan_load4+0x84/0x8c
->    refcount_dec_and_test+0x20/0xd0
->    l2cap_chan_put+0x48/0x12c
->    l2cap_recv_frame+0x4770/0x6550
->    l2cap_recv_acldata+0x44c/0x7a4
->    hci_acldata_packet+0x100/0x188
->    hci_rx_work+0x178/0x23c
->    process_one_work+0x35c/0x95c
->    worker_thread+0x4cc/0x960
->    kthread+0x1a8/0x1c4
->    ret_from_fork+0x10/0x18
-> 
-> Cc: stable@kernel.org
-> Cc: Marcel Holtmann <marcel@holtmann.org>
-> Cc: Johan Hedberg <johan.hedberg@gmail.com>
-> Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: linux-bluetooth@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Lee Jones <lee.jones@linaro.org>
-> ---
->  net/bluetooth/l2cap_core.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> What's at bits 14 and beyond? Trying to understand the impact of this change.
+>
 
-No reply for 2 weeks.
+Most of them are reserved bits (from Documentation).
+The few we have Documentation of are debug bits about CRC handling, IPG
+and special mode where the MAC send pause frames based on the signal.
 
-Is this patch being considered at all?
+It's a cleanup and seems a nice change now that we are touching this
+part.
 
-Can I help in any way?
-
-> diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-> index ae78490ecd3d4..82279c5919fd8 100644
-> --- a/net/bluetooth/l2cap_core.c
-> +++ b/net/bluetooth/l2cap_core.c
-> @@ -483,9 +483,7 @@ static void l2cap_chan_destroy(struct kref *kref)
->  
->  	BT_DBG("chan %p", chan);
->  
-> -	write_lock(&chan_list_lock);
->  	list_del(&chan->global_l);
-> -	write_unlock(&chan_list_lock);
->  
->  	kfree(chan);
->  }
-> @@ -501,7 +499,9 @@ void l2cap_chan_put(struct l2cap_chan *c)
->  {
->  	BT_DBG("chan %p orig refcnt %u", c, kref_read(&c->kref));
->  
-> +	write_lock(&chan_list_lock);
->  	kref_put(&c->kref, l2cap_chan_destroy);
-> +	write_unlock(&chan_list_lock);
->  }
->  EXPORT_SYMBOL_GPL(l2cap_chan_put);
->  
+> >  #define QCA8K_REG_PORT_STATUS(_i)			(0x07c + (_i) * 4)
+> >  #define   QCA8K_PORT_STATUS_SPEED			GENMASK(1, 0)
+> >  #define   QCA8K_PORT_STATUS_SPEED_10			0
+> > -- 
+> > 2.36.1
+> > 
 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+	Ansuel
