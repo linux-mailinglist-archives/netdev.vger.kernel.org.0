@@ -2,31 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE06D554C6B
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 16:14:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1588554C87
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 16:15:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358209AbiFVOOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 10:14:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35878 "EHLO
+        id S1358088AbiFVOPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 10:15:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358305AbiFVON4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 10:13:56 -0400
+        with ESMTP id S1358171AbiFVOOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 10:14:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18CAFA45F;
-        Wed, 22 Jun 2022 07:13:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87429BBD;
+        Wed, 22 Jun 2022 07:14:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE01FB81F56;
-        Wed, 22 Jun 2022 14:13:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11AEFC341C0;
-        Wed, 22 Jun 2022 14:13:53 +0000 (UTC)
-Subject: [PATCH RFC 10/30] NFSD: Report filecache item construction failures
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40257B81F5B;
+        Wed, 22 Jun 2022 14:14:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94C21C34114;
+        Wed, 22 Jun 2022 14:13:59 +0000 (UTC)
+Subject: [PATCH RFC 11/30] NFSD: Zero counters when the filecache is
+ re-initialized
 From:   Chuck Lever <chuck.lever@oracle.com>
 To:     linux-nfs@vger.kernel.org, netdev@vger.kernel.org
 Cc:     david@fromorbit.com, tgraf@suug.ch, jlayton@redhat.com
-Date:   Wed, 22 Jun 2022 10:13:52 -0400
-Message-ID: <165590723207.75778.6796494140785317184.stgit@manet.1015granger.net>
+Date:   Wed, 22 Jun 2022 10:13:58 -0400
+Message-ID: <165590723860.75778.13700894228554322207.stgit@manet.1015granger.net>
 In-Reply-To: <165590626293.75778.9843437418112335153.stgit@manet.1015granger.net>
 References: <165590626293.75778.9843437418112335153.stgit@manet.1015granger.net>
 User-Agent: StGit/1.5.dev2+g9ce680a5
@@ -42,58 +43,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My guess is this is exceptionally rare, but it's worth reporting
-to see how nfsd_file_acquire() behaves when the cache is full.
+If nfsd_file_cache_init() is called after a shutdown, be sure the
+stat counters are reset.
 
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 ---
- fs/nfsd/filecache.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ fs/nfsd/filecache.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
 diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
-index cae7fa2343c1..a2a78163bf8d 100644
+index a2a78163bf8d..0cf2e44e874f 100644
 --- a/fs/nfsd/filecache.c
 +++ b/fs/nfsd/filecache.c
-@@ -47,6 +47,7 @@ static DEFINE_PER_CPU(unsigned long, nfsd_file_acquisitions);
- static DEFINE_PER_CPU(unsigned long, nfsd_file_releases);
- static DEFINE_PER_CPU(unsigned long, nfsd_file_pages_flushed);
- static DEFINE_PER_CPU(unsigned long, nfsd_file_evictions);
-+static DEFINE_PER_CPU(unsigned long, nfsd_file_cons_fails);
- 
- struct nfsd_fcache_disposal {
- 	struct work_struct work;
-@@ -975,6 +976,7 @@ nfsd_do_file_acquire(struct svc_rqst *rqstp, struct svc_fh *fhp,
- 
- 	/* Did construction of this file fail? */
- 	if (!test_bit(NFSD_FILE_HASHED, &nf->nf_flags)) {
-+		this_cpu_inc(nfsd_file_cons_fails);
- 		if (!retry) {
- 			status = nfserr_jukebox;
- 			goto out;
-@@ -1098,7 +1100,7 @@ nfsd_file_create(struct svc_rqst *rqstp, struct svc_fh *fhp,
- static int nfsd_file_cache_stats_show(struct seq_file *m, void *v)
+@@ -832,6 +832,8 @@ nfsd_file_cache_shutdown_net(struct net *net)
+ void
+ nfsd_file_cache_shutdown(void)
  {
- 	unsigned long releases = 0, pages_flushed = 0, evictions = 0;
--	unsigned long hits = 0, acquisitions = 0;
-+	unsigned long hits = 0, acquisitions = 0, cons_fails = 0;
- 	unsigned int i, count = 0, longest = 0;
++	int i;
++
+ 	set_bit(NFSD_FILE_SHUTDOWN, &nfsd_file_lru_flags);
  
- 	/*
-@@ -1121,6 +1123,7 @@ static int nfsd_file_cache_stats_show(struct seq_file *m, void *v)
- 		releases += per_cpu(nfsd_file_releases, i);
- 		evictions += per_cpu(nfsd_file_evictions, i);
- 		pages_flushed += per_cpu(nfsd_file_pages_flushed, i);
-+		cons_fails += per_cpu(nfsd_file_cons_fails, i);
- 	}
- 
- 	seq_printf(m, "total entries: %u\n", count);
-@@ -1136,6 +1139,7 @@ static int nfsd_file_cache_stats_show(struct seq_file *m, void *v)
- 	else
- 		seq_printf(m, "mean age (ms): -\n");
- 	seq_printf(m, "pages flushed: %lu\n", pages_flushed);
-+	seq_printf(m, "cons fails:    %lu\n", cons_fails);
- 	return 0;
+ 	lease_unregister_notifier(&nfsd_file_lease_notifier);
+@@ -855,6 +857,15 @@ nfsd_file_cache_shutdown(void)
+ 	nfsd_file_hashtbl = NULL;
+ 	destroy_workqueue(nfsd_filecache_wq);
+ 	nfsd_filecache_wq = NULL;
++
++	for_each_possible_cpu(i) {
++		this_cpu_write(nfsd_file_cache_hits, 0);
++		this_cpu_write(nfsd_file_acquisitions, 0);
++		this_cpu_write(nfsd_file_releases, 0);
++		this_cpu_write(nfsd_file_evictions, 0);
++		this_cpu_write(nfsd_file_pages_flushed, 0);
++		this_cpu_write(nfsd_file_cons_fails, 0);
++	}
  }
  
+ static bool
 
 
