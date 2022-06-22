@@ -2,67 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12CF65550E5
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 18:10:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DFCA5550E1
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 18:09:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358809AbiFVQK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 12:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45572 "EHLO
+        id S1358174AbiFVQJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 12:09:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356636AbiFVQK2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 12:10:28 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A399B3703E
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 09:10:27 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id u12so35277620eja.8
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 09:10:27 -0700 (PDT)
+        with ESMTP id S1356191AbiFVQJf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 12:09:35 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30C902F67B;
+        Wed, 22 Jun 2022 09:09:35 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id h192so16515045pgc.4;
+        Wed, 22 Jun 2022 09:09:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=y2YO9/O6no0imcsCRFEbzTu6b4kaHJ0+DKmmWMOQcOo=;
-        b=mOR4HKXwuWXVFq41eXkGtU9S0bM2iMTYVFD5Av9BCDbVLDH8u9mX7viiBpLJk1d/wf
-         YejkG5I3VuxwI7pPc29FfQypDFbXwC5MYXHBQSWz2NgIduuMPHKw7XUjNlpPyoql/f/g
-         KJU5R43hZYHH5ZwZPE0pOhTJAuqfquxm9IAlgtT1jCzlJDAhRG1Wf7NLRKe2Ko/+u3ei
-         pDR3DcR20jUn7NgIGw4EEdpxx5nLvqIC8NSpuuD+qatpOljFpSEWWgSUN66yUkMZEhpj
-         hx+D7cFtGKZusKdmrxjHQv5c4+W5zYix+Hm4seOsh6VWqyafuJgCjIDfZQ5S8OTpa05S
-         yZjQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=+EtFsQ/IG9t0+cLITLCHnL4ghtintXW+5tTxWND0qNQ=;
+        b=nS9MBb0mf3J1Md+n4WUmnLL0sqW/cE20D9BDwR9GPY3NTaYFWz6KcdQSuIBIUaTRAo
+         PKo4BxPSJgSFxY7EXnbAQoG8VR+smz7V/dY1Kz7nKY6lBoJ5cWsrSq9YMdaa49Jgnqn5
+         Q/cZ/v5g31Kgxh7gR+awBPVAyx+ADvhg0Gqm2zb1n7OrrfO0ivJQ1/3SgyYq5k462qQi
+         HBwNlg+WBBZL/evQewje+xFHBTRDZo1PaAYeSCIvZ8vH3hdX9UX/bPRREHTLV9Vz68b1
+         iDlJiKo43whqkEN7Q3+nF5l1Tvddc00SCFHJ0ToyFwDZJ4nLiq2JK1JG5xB545LKuTpl
+         qgCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=y2YO9/O6no0imcsCRFEbzTu6b4kaHJ0+DKmmWMOQcOo=;
-        b=6EM315mN6ap8nCDlEWQHAzDfwj9XLrWBN3nKhb1g2FEETNWwUvLIX69s4Ap3/nA4u3
-         f8iZJSAUs/5gdmAo1Z2XSUYY9lCwc1ZwWcCkVKqnu+siQKbI8N47QfSeuzV6bNDlJOXB
-         ZFY33ZeLPqc1aiqQeiRYaALrcmwXmPy8cWEKKccZU0qnnXT5YjoEwgAw1cowdIb3Ncp2
-         0UNO+7SAijmq3MDEdaezmerKrA4UZo/BW5myyb33cdyjSOyL7oLEm+m+HlLAhOLSe860
-         1rn4KQ3wC8HPiEInAOb906MUuALJZ77uoYaVzbUwSN71656EGPR+0pGGnq1T2d98Idne
-         ha/Q==
-X-Gm-Message-State: AJIora9HRLnioiuWuDOw16kZqfK5MoP6P2fipWp0T+nY1jYYC9d12T23
-        aOZs33NUUhuoztxCXZ0fuYc=
-X-Google-Smtp-Source: AGRyM1tQL+nW5gR+hmO0z+EGyRDR5pL/QH6okTkcekThh9jWJyIiKdENu4Dyy+SISue0bGh1RaNCUg==
-X-Received: by 2002:a17:907:8a17:b0:711:e3fe:7767 with SMTP id sc23-20020a1709078a1700b00711e3fe7767mr3795737ejc.380.1655914226083;
-        Wed, 22 Jun 2022 09:10:26 -0700 (PDT)
-Received: from debian ([89.238.191.199])
-        by smtp.gmail.com with ESMTPSA id e7-20020a50ec87000000b0043561e0c9adsm12748339edr.52.2022.06.22.09.10.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 09:10:25 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 18:09:03 +0200
-From:   Richard Gobert <richardbgobert@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
-        willemb@google.com, imagedong@tencent.com, talalahmad@google.com,
-        kafai@fb.com, vasily.averin@linux.dev, luiz.von.dentz@intel.com,
-        jk@codeconstruct.com.au, netdev@vger.kernel.org
-Subject: [PATCH v3] net: helper function skb_len_add
-Message-ID: <20220622160853.GA6478@debian>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+EtFsQ/IG9t0+cLITLCHnL4ghtintXW+5tTxWND0qNQ=;
+        b=PChUhyjPNQDGHr4rglH6loohU271iFq/leof8tzHnG8ld8vnzUq2tkyM6KdYzQpWjg
+         0rzDD/w84/j0dHOHn6gchf/IhcBcP3PPAEkUaFh2ZhOFMNUV5tDNtnUkCNTbfWNa7n+v
+         Z9vGyjip6cwx3aOYierZq7WEQuNnBPzLRB6AC0sPrMXlchzaJvGjrryTov/lM58TCXC8
+         iCeE3dX4IcTtWLs5dPCv0nqxaWNGlBhtaW7hlC0qpvZVuav9ddkCr9DwshF449VSs5nW
+         Q75eQoL0AaIiYHXlnyK5l7LgjIxtMKeYsU6GFGcwlWOB6c7CGDtbD3enaQ/ctRp9JGJK
+         OfdA==
+X-Gm-Message-State: AJIora+qMbvS4LnLa1wmNGjs1mQ5EcSIKZZXcU1E8Xrc4sqK2f7Zstf0
+        4e6YdxD4nW95BoFnL6tzdr4=
+X-Google-Smtp-Source: AGRyM1u98/UE1tJiYVIQsQR1MDaAB0odjiS6/pGRy2RXg1Ew1iAotj2Q1jberv8Tc9N1x36fT/DqDg==
+X-Received: by 2002:a63:5424:0:b0:405:230e:3d9f with SMTP id i36-20020a635424000000b00405230e3d9fmr3483868pgb.271.1655914174579;
+        Wed, 22 Jun 2022 09:09:34 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id b9-20020a17090a550900b001eaec814132sm3080205pji.3.2022.06.22.09.09.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 09:09:33 -0700 (PDT)
+Message-ID: <041a526e-2ecf-878a-e36c-d704e4b55e97@gmail.com>
+Date:   Wed, 22 Jun 2022 09:09:31 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [net-next: PATCH 03/12] net: dsa: switch to device_/fwnode_ APIs
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        vivien.didelot@gmail.com, Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
+References: <20220620150225.1307946-1-mw@semihalf.com>
+ <20220620150225.1307946-4-mw@semihalf.com>
+ <YrCxUfTDmvm9zLXq@smile.fi.intel.com>
+ <CAPv3WKch9hC3ZjZE0f4JntqFDY04PUpQ1yzsgShThmhkqV01-g@mail.gmail.com>
+ <YrGlUPxrK4XeaT5h@smile.fi.intel.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <YrGlUPxrK4XeaT5h@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -71,131 +92,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move the len fields manipulation in the skbs to a helper function.
-There is a comment specifically requesting this and there are several
-other areas in the code displaying the same pattern which can be
-refactored.
-This improves code readability.
+On 6/21/22 04:02, Andy Shevchenko wrote:
+> On Tue, Jun 21, 2022 at 11:27:43AM +0200, Marcin Wojtas wrote:
+>> pon., 20 cze 2022 o 19:41 Andy Shevchenko
+>> <andriy.shevchenko@linux.intel.com> napisał(a):
+>>> On Mon, Jun 20, 2022 at 05:02:16PM +0200, Marcin Wojtas wrote:
+> 
+> ...
+> 
+>>>>        struct device_node      *dn;
+>>>
+>>> What prevents us from removing this?
+>>
+>> I left it to satisfy possible issues with backward compatibility - I
+>> migrated mv88e6xxx, other DSA drivers still rely on of_* and may use
+>> this field.
+> 
+> If it is so, it's a way to get into troubles of desynchronized dn and fwnode.
 
-Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
----
- include/linux/skbuff.h | 12 ++++++++++++
- include/net/sock.h     |  4 +---
- net/core/skbuff.c      | 13 +++----------
- net/ipv4/esp4.c        |  4 +---
- net/ipv4/ip_output.c   |  8 ++------
- 5 files changed, 19 insertions(+), 22 deletions(-)
-
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 84d78df60453..b02e0a314683 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -2417,6 +2417,18 @@ static inline unsigned int skb_pagelen(const struct sk_buff *skb)
- }
- 
- /**
-+ * skb_len_add - adds a number to len fields of skb
-+ * @skb: buffer to add len to
-+ * @delta: number of bytes to add
-+ */
-+static inline void skb_len_add(struct sk_buff *skb, int delta)
-+{
-+	skb->len += delta;
-+	skb->data_len += delta;
-+	skb->truesize += delta;
-+}
-+
-+/**
-  * __skb_fill_page_desc - initialise a paged fragment in an skb
-  * @skb: buffer containing fragment to be initialised
-  * @i: paged fragment index to initialise
-diff --git a/include/net/sock.h b/include/net/sock.h
-index a01d6c421aa2..648658f782c2 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2230,9 +2230,7 @@ static inline int skb_copy_to_page_nocache(struct sock *sk, struct iov_iter *fro
- 	if (err)
- 		return err;
- 
--	skb->len	     += copy;
--	skb->data_len	     += copy;
--	skb->truesize	     += copy;
-+	skb_len_add(skb, copy);
- 	sk_wmem_queued_add(sk, copy);
- 	sk_mem_charge(sk, copy);
- 	return 0;
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 30b523fa4ad2..2110db41cb41 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3195,9 +3195,7 @@ skb_zerocopy(struct sk_buff *to, struct sk_buff *from, int len, int hlen)
- 		}
- 	}
- 
--	to->truesize += len + plen;
--	to->len += len + plen;
--	to->data_len += len + plen;
-+	skb_len_add(to, len + plen);
- 
- 	if (unlikely(skb_orphan_frags(from, GFP_ATOMIC))) {
- 		skb_tx_error(from);
-@@ -3634,13 +3632,8 @@ int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen)
- 	tgt->ip_summed = CHECKSUM_PARTIAL;
- 	skb->ip_summed = CHECKSUM_PARTIAL;
- 
--	/* Yak, is it really working this way? Some helper please? */
--	skb->len -= shiftlen;
--	skb->data_len -= shiftlen;
--	skb->truesize -= shiftlen;
--	tgt->len += shiftlen;
--	tgt->data_len += shiftlen;
--	tgt->truesize += shiftlen;
-+	skb_len_add(skb, -shiftlen);
-+	skb_len_add(tgt, shiftlen);
- 
- 	return shiftlen;
- }
-diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index d747166bb291..2ad3d6955dae 100644
---- a/net/ipv4/esp4.c
-+++ b/net/ipv4/esp4.c
-@@ -502,9 +502,7 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
- 
- 			nfrags++;
- 
--			skb->len += tailen;
--			skb->data_len += tailen;
--			skb->truesize += tailen;
-+			skb_len_add(skb, tailen);
- 			if (sk && sk_fullsock(sk))
- 				refcount_add(tailen, &sk->sk_wmem_alloc);
- 
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 00b4bf26fd93..5e32a2f86fbd 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1214,9 +1214,7 @@ static int __ip_append_data(struct sock *sk,
- 
- 			pfrag->offset += copy;
- 			skb_frag_size_add(&skb_shinfo(skb)->frags[i - 1], copy);
--			skb->len += copy;
--			skb->data_len += copy;
--			skb->truesize += copy;
-+			skb_len_add(skb, copy);
- 			wmem_alloc_delta += copy;
- 		} else {
- 			err = skb_zerocopy_iter_dgram(skb, from, copy);
-@@ -1443,9 +1441,7 @@ ssize_t	ip_append_page(struct sock *sk, struct flowi4 *fl4, struct page *page,
- 			skb->csum = csum_block_add(skb->csum, csum, skb->len);
- 		}
- 
--		skb->len += len;
--		skb->data_len += len;
--		skb->truesize += len;
-+		skb_len_add(skb, len);
- 		refcount_add(len, &sk->sk_wmem_alloc);
- 		offset += len;
- 		size -= len;
+Agreed, we can take it in baby steps if you prefer, but ultimately we 
+should move to using a fwnode reference rather than a device_node 
+reference and if there are drivers needing the device_node we can always 
+extract it from the fwnode.
 -- 
-2.36.1
-
+Florian
