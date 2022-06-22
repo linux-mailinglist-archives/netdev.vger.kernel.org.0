@@ -2,116 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 77865554651
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:10:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B0405547D8
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:12:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244997AbiFVLKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 07:10:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52170 "EHLO
+        id S1357614AbiFVLVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 07:21:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231809AbiFVLKu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 07:10:50 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C0A73C481
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 04:10:49 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 362611F8CF;
-        Wed, 22 Jun 2022 11:10:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1655896248; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=F2WNIxFaMF2KIOAie5EuOE7wF5zeDB8KVeSzlfKCYks=;
-        b=0iPCFBHVdvrcMzbXrIItRWUWCoWr6kQMD4TppNPeuVhX7yfNeJgnhsZbpG/AknMyDXg/U+
-        gtluKXV9R9m8tFnwVxJQWm5GglDaURescg8m1hrgK4omABKixw6cmQI+xQUbZfCWCJCBOG
-        f9VY7wB2JtReL5FQus17798y1CbmVFw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1655896248;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=F2WNIxFaMF2KIOAie5EuOE7wF5zeDB8KVeSzlfKCYks=;
-        b=V67zF5A3Jg37/o4FzYxLQmO+8YujfG/vnjdN3CIr+xPqjVIhwCm1E1gx2jbl4aD71vZ2RJ
-        N6xbZYZEqKMqrlBw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D4D68134A9;
-        Wed, 22 Jun 2022 11:10:47 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Zaj/MLf4smJPYwAAMHmgww
-        (envelope-from <iluceno@suse.de>); Wed, 22 Jun 2022 11:10:47 +0000
-Date:   Wed, 22 Jun 2022 13:12:18 +0200
-From:   Ismael Luceno <iluceno@suse.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1357599AbiFVLUy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 07:20:54 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7835B3D1D2
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 04:19:16 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1o3yNj-0002pw-5i; Wed, 22 Jun 2022 13:18:47 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1o3yNV-0004vY-2O; Wed, 22 Jun 2022 13:18:33 +0200
+Date:   Wed, 22 Jun 2022 13:18:33 +0200
+From:   Sascha Hauer <sha@pengutronix.de>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
+        Saravana Kannan <saravanak@google.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: Netlink NLM_F_DUMP_INTR flag lost
-Message-ID: <20220622131218.1ed6f531@pirotess>
-In-Reply-To: <20220617150110.6366d5bf@pirotess>
-References: <20220615171113.7d93af3e@pirotess>
-        <20220615090044.54229e73@kernel.org>
-        <20220616171016.56d4ec9c@pirotess>
-        <20220616171612.66638e54@kernel.org>
-        <20220617150110.6366d5bf@pirotess>
-Organization: SUSE
+        Android Kernel Team <kernel-team@android.com>,
+        Len Brown <len.brown@intel.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        David Ahern <dsahern@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v2 7/9] driver core: Set fw_devlink.strict=1 by default
+Message-ID: <20220622111833.GW1615@pengutronix.de>
+References: <CAHp75VdqjCoWAHV4AyYrju0o8buREA8pM5wyf8TD=rCMTs-tEA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHp75VdqjCoWAHV4AyYrju0o8buREA8pM5wyf8TD=rCMTs-tEA@mail.gmail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 17 Jun 2022 15:01:10 +0200
-Ismael Luceno <iluceno@suse.de> wrote:
-> On Thu, 16 Jun 2022 17:16:12 -0700
-> Jakub Kicinski <kuba@kernel.org> wrote:
-<...>
-> > That's iterating over protocols, AFAICT, we don't guarantee
-> > consistency across protocols.  
+On Wed, Jun 22, 2022 at 12:52:02PM +0200, Andy Shevchenko wrote:
+> On Wed, Jun 22, 2022 at 10:44 AM Linus Walleij <linus.walleij@linaro.org> wrote:
+> > On Wed, Jun 22, 2022 at 9:48 AM Sascha Hauer <sha@pengutronix.de> wrote:
 > 
-> That's reasonable, I was just wondering about it because it does seem
-> reasonable that the flags affect only the packets describing the table
-> whose dump got interrupted...
+> ...
+> 
+> > > This patch has the effect that console UART devices which have "dmas"
+> > > properties specified in the device tree get deferred for 10 to 20
+> > > seconds. This happens on i.MX and likely on other SoCs as well. On i.MX
+> > > the dma channel is only requested at UART startup time and not at probe
+> > > time. dma is not used for the console. Nevertheless with this driver probe
+> > > defers until the dma engine driver is available.
+> > >
+> > > It shouldn't go in as-is.
+> >
+> > This affects all machines with the PL011 UART and DMAs specified as
+> > well.
+> >
+> > It would be best if the console subsystem could be treated special and
+> > not require DMA devlink to be satisfied before probing.
+> 
+> In 8250 we force disable DMA and PM on kernel consoles, because it's
+> so-o PITA and has a lot of corner cases we may never chase down.
 
-So, just for clarification:
+On i.MX this is done as well, but it doesn't help here. The driver is
+not even probed when the device node contains a "dmas" property.
 
-
-Scenario 1:
-- 64 KB packet is filled.
-- protocol table shrinks
-- Next iteration finds it's done
-- next protocol clears the seq, so nothing is flaged
-- ...
-- NLMSG_DONE (not flagged)
-
-Scenario 2:
-- 64 KB packet is filled.
-- protocol table shrinks
-- Next iteration finds it's done
-- NLMSG_DONE (flagged with NLM_F_DUMP_INTR)
-
-So, in order to break as little as possible, I was thinking about
-introducing a new packet iff it happens we have to signal INTR between
-protocols.
-
-Does that sound good?
+Sascha
 
 -- 
-Ismael Luceno
-SUSE L3 Support
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
