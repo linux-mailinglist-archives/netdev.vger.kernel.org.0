@@ -2,121 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85E76554BAE
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 15:47:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC771554BEA
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 15:56:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356098AbiFVNru (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 09:47:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37460 "EHLO
+        id S1357590AbiFVN44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 09:56:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241493AbiFVNrr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 09:47:47 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F6E62FE43
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 06:47:42 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id pk21so11261489ejb.2
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 06:47:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2QZHrrIBVW3T6cCzOrquv5g3s3bcHIbuUCuv4UP/4ic=;
-        b=FmNIAbKhrN0tr6L1fI9HtdVfR7DjgkD7iykGsVbbqVbYqmGPYkuYj88aNATFf7XmjN
-         Nk65pyBmSuDZEEGv2RAHOm/IqWDB0Fp0VdstYlyMr6ivizNYuBuT5BlBI0kL5DDBrK1P
-         HeY63qQi5LEvLajcHynt3VDm2pUUK7Ml7VBG8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2QZHrrIBVW3T6cCzOrquv5g3s3bcHIbuUCuv4UP/4ic=;
-        b=fXx8BuW7izCkJZ7dvvqQPM1RnBs7jsG/5/RMUTwSjIEYNiB/Z24DS4vIw7Svfw/L+P
-         8TDlz1wrtAnxeQA3USluGJ+1VoAwtInbnDr7jWZhZUFwVGEBefadVQA+z68Q66aS1tCj
-         n/OlD5D6TZG5tdcH/uk3eimynx2Tg60bZVojh+ZICzlyH9VDPCYNiMXeKf+UHfXJ49Yh
-         Z5AY/ePfP4Y3x56ia5p04edF3JXbU0kZaIIFBXRq9SskV0wstO+rsB4qRNTwwTk5JTTZ
-         q83fsPpDFaLPs+hfCQw2iGGCsdaEkOPvqigc9IMvA2v7oYzl1qNe9yH157+hDdJ172Tf
-         UhoQ==
-X-Gm-Message-State: AJIora9urylyS174GTPYIaHJYVGzo30nQwJLbis0vv51exwA2te17RYX
-        lKPR0Q8fETirFgrQ54H+Ua0MSxC0cNFazBj8
-X-Google-Smtp-Source: AGRyM1tjR9SjZ2lsbSQqUl8NXyUn2zC2csjtv5egxfF2hUjDkEpNk1EAv2Ht4ZN1T8zFVzinB0GQJg==
-X-Received: by 2002:a17:906:6d98:b0:715:76eb:9e33 with SMTP id h24-20020a1709066d9800b0071576eb9e33mr3162107ejt.729.1655905660489;
-        Wed, 22 Jun 2022 06:47:40 -0700 (PDT)
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com. [209.85.128.49])
-        by smtp.gmail.com with ESMTPSA id cm28-20020a0564020c9c00b0043577da51f1sm9036073edb.81.2022.06.22.06.47.38
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 06:47:39 -0700 (PDT)
-Received: by mail-wm1-f49.google.com with SMTP id l2-20020a05600c4f0200b0039c55c50482so11133586wmq.0
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 06:47:38 -0700 (PDT)
-X-Received: by 2002:a05:600c:3485:b0:39c:7db5:f0f7 with SMTP id
- a5-20020a05600c348500b0039c7db5f0f7mr4093835wmq.8.1655905658386; Wed, 22 Jun
- 2022 06:47:38 -0700 (PDT)
+        with ESMTP id S234792AbiFVN4z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 09:56:55 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B44FE3525C;
+        Wed, 22 Jun 2022 06:56:54 -0700 (PDT)
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LSlHm32cYz1KC3T;
+        Wed, 22 Jun 2022 21:54:44 +0800 (CST)
+Received: from localhost.localdomain (10.67.165.24) by
+ dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 22 Jun 2022 21:56:29 +0800
+From:   Jian Shen <shenjian15@huawei.com>
+To:     <daniel@iogearbox.net>, <shmulik@metanetworks.com>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linuxarm@openeuler.org>
+Subject: [PATCH net] test_bpf: fix incorrect netdev features
+Date:   Wed, 22 Jun 2022 21:50:02 +0800
+Message-ID: <20220622135002.8263-1-shenjian15@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <YrLtpixBqWDmZT/V@debian>
-In-Reply-To: <YrLtpixBqWDmZT/V@debian>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 22 Jun 2022 08:47:22 -0500
-X-Gmail-Original-Message-ID: <CAHk-=wiN1ujyVTgyt1GuZiyWAPfpLwwg-FY1V-J56saMyiA1Lg@mail.gmail.com>
-Message-ID: <CAHk-=wiN1ujyVTgyt1GuZiyWAPfpLwwg-FY1V-J56saMyiA1Lg@mail.gmail.com>
-Subject: Re: mainline build failure due to 281d0c962752 ("fortify: Add Clang support")
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_RED autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500022.china.huawei.com (7.185.36.66)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 5:23 AM Sudip Mukherjee
-<sudipm.mukherjee@gmail.com> wrote:
->
-> I have recently (since yesterday) started building the mainline kernel
-> with clang-14 and I am seeing a build failure with allmodconfig.
+The prototype of .features is netdev_features_t, it should use
+NETIF_F_LLTX and NETIF_F_HW_VLAN_STAG_TX, not NETIF_F_LLTX_BIT
+and NETIF_F_HW_VLAN_STAG_TX_BIT.
 
-Yeah, the clang build has never been allmodconfig-clean, although I
-think it's starting to get pretty close.
+Fixes: cf204a718357 ("test_bpf: Introduce 'gso_linear_no_head_frag' skb_segment test")
 
-I build the kernel I actually _use_ with clang, and make sure it's
-clean in sane configurations, but my full allmodconfig build I do with
-gcc.
+Signed-off-by: Jian Shen <shenjian15@huawei.com>
+---
+ lib/test_bpf.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Partly because of that "the clang build hasn't quite gotten there yet"
-and partly because last I tried it was even slower to build (not a big
-issue for my default config, but does matter for the allmodconfig
-build, even on my beefy home machine)
+diff --git a/lib/test_bpf.c b/lib/test_bpf.c
+index 2a7836e115b4..5820704165a6 100644
+--- a/lib/test_bpf.c
++++ b/lib/test_bpf.c
+@@ -14733,9 +14733,9 @@ static struct skb_segment_test skb_segment_tests[] __initconst = {
+ 		.build_skb = build_test_skb_linear_no_head_frag,
+ 		.features = NETIF_F_SG | NETIF_F_FRAGLIST |
+ 			    NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_GSO |
+-			    NETIF_F_LLTX_BIT | NETIF_F_GRO |
++			    NETIF_F_LLTX | NETIF_F_GRO |
+ 			    NETIF_F_IPV6_CSUM | NETIF_F_RXCSUM |
+-			    NETIF_F_HW_VLAN_STAG_TX_BIT
++			    NETIF_F_HW_VLAN_STAG_TX
+ 	}
+ };
+ 
+-- 
+2.33.0
 
-I would love for people to start doing allmodconfig builds with clang
-too, but it would require some initial work to fix it... Hint, hint.
-
-And in the case of this warning attribute case, the clang error messages are
-
- (a) verbose
-
- (b) useless
-
-because they point to where the warning attribute is (I know where it
-is), but don't point to where it's actually triggering (ie where it
-was actually inlined and called from).
-
-The gcc equivalent of that warning actually says exactly where the
-problem is. The clang one is useless, which is probably part of why
-people aren't fixing them, because even if they would want to, they
-just give up.
-
-Nick, Nathan, any chance of getting better error messages out of
-clang? In some cases, they are very good, so it's not like clang does
-bad error messages by default. But in this case, the error message
-really is *entirely* useless.
-
-             Linus
