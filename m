@@ -2,224 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D0175547B9
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:12:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C853D554985
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:17:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352262AbiFVK3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 06:29:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49056 "EHLO
+        id S1345399AbiFVKlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 06:41:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354748AbiFVK2u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 06:28:50 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65D531201;
-        Wed, 22 Jun 2022 03:28:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1655893730; x=1687429730;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=dj28N6SLVUB4mV+mjREMiUuxJGVVRloqCn6LP2R95QY=;
-  b=lb5VlZYmpFdBmRZmxjnu27chn8+phMMHlj14j4qg/s9M7iAVCD57jCQL
-   sq35iQaYhbS9Au360Q5RsRd2tfsGlHJXPq4/d1HgZOfYppo7/ndMzcd4K
-   bgm6yv4CMd2ZRH64KGFT3BpZIvGicj4hBhBimNrzKYEHjKzzXSp+wEVM5
-   Aa2U6djPtxPJ5L91c0CD5wQ9p2HJO2yNsMqX/gsBqRdfEPO/mmz+G7bEr
-   4DYD3K9ji49OM39ACNXrSgS1PTIgWZg37ykQk9piGs3spgaov5T+q7c3l
-   qqLqVWlkwiNM72WtTjyh7J6nbDnmy5wKZuBQYuXQRM6mU3gOCOUWyoSVZ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="269099673"
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="269099673"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 03:28:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="592120346"
-Received: from lkp-server02.sh.intel.com (HELO a67cc04a5eeb) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 22 Jun 2022 03:28:43 -0700
-Received: from kbuild by a67cc04a5eeb with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1o3xbG-00018z-Gn;
-        Wed, 22 Jun 2022 10:28:42 +0000
-Date:   Wed, 22 Jun 2022 18:27:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S1353850AbiFVK2Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 06:28:25 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 456CEE4B;
+        Wed, 22 Jun 2022 03:28:23 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1o3xan-0002Cj-GJ; Wed, 22 Jun 2022 12:28:13 +0200
+Date:   Wed, 22 Jun 2022 12:28:13 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Ilya Maximets <i.maximets@ovn.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, dev@openvswitch.org,
+        LKML <linux-kernel@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>
-Cc:     kbuild-all@lists.01.org,
-        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v8 05/16] net: pcs: add Renesas MII converter
- driver
-Message-ID: <202206221821.YTh0dW9N-lkp@intel.com>
-References: <20220620110846.374787-6-clement.leger@bootlin.com>
+        Florian Westphal <fw@strlen.de>
+Subject: Re: [PATCH net] net: ensure all external references are released in
+ deferred skbuffs
+Message-ID: <20220622102813.GA24844@breakpoint.cc>
+References: <20220619003919.394622-1-i.maximets@ovn.org>
+ <CANn89iL_EmkEgPAVdhNW4tyzwQbARyji93mUQ9E2MRczWpNm7g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220620110846.374787-6-clement.leger@bootlin.com>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CANn89iL_EmkEgPAVdhNW4tyzwQbARyji93mUQ9E2MRczWpNm7g@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi "Clément,
+Eric Dumazet <edumazet@google.com> wrote:
+> On Sun, Jun 19, 2022 at 2:39 AM Ilya Maximets <i.maximets@ovn.org> wrote:
+> >
+> > Open vSwitch system test suite is broken due to inability to
+> > load/unload netfilter modules.  kworker thread is getting trapped
+> > in the infinite loop while running a net cleanup inside the
+> > nf_conntrack_cleanup_net_list, because deferred skbuffs are still
+> > holding nfct references and not being freed by their CPU cores.
+> >
+> > In general, the idea that we will have an rx interrupt on every
+> > CPU core at some point in a near future doesn't seem correct.
+> > Devices are getting created and destroyed, interrupts are getting
+> > re-scheduled, CPUs are going online and offline dynamically.
+> > Any of these events may leave packets stuck in defer list for a
+> > long time.  It might be OK, if they are just a piece of memory,
+> > but we can't afford them holding references to any other resources.
+> >
+> > In case of OVS, nfct reference keeps the kernel thread in busy loop
+> > while holding a 'pernet_ops_rwsem' semaphore.  That blocks the
+> > later modprobe request from user space:
+> >
+> >   # ps
+> >    299 root  R  99.3  200:25.89 kworker/u96:4+
+> >
+> >   # journalctl
+> >   INFO: task modprobe:11787 blocked for more than 1228 seconds.
+> >         Not tainted 5.19.0-rc2 #8
+> >   task:modprobe     state:D
+> >   Call Trace:
+> >    <TASK>
+> >    __schedule+0x8aa/0x21d0
+> >    schedule+0xcc/0x200
+> >    rwsem_down_write_slowpath+0x8e4/0x1580
+> >    down_write+0xfc/0x140
+> >    register_pernet_subsys+0x15/0x40
+> >    nf_nat_init+0xb6/0x1000 [nf_nat]
+> >    do_one_initcall+0xbb/0x410
+> >    do_init_module+0x1b4/0x640
+> >    load_module+0x4c1b/0x58d0
+> >    __do_sys_init_module+0x1d7/0x220
+> >    do_syscall_64+0x3a/0x80
+> >    entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> >
+> > At this point OVS testsuite is unresponsive and never recover,
+> > because these skbuffs are never freed.
+> >
+> > Solution is to make sure no external references attached to skb
+> > before pushing it to the defer list.  Using skb_release_head_state()
+> > for that purpose.  The function modified to be re-enterable, as it
+> > will be called again during the defer list flush.
+> >
+> > Another approach that can fix the OVS use-case, is to kick all
+> > cores while waiting for references to be released during the net
+> > cleanup.  But that sounds more like a workaround for a current
+> > issue rather than a proper solution and will not cover possible
+> > issues in other parts of the code.
+> >
+> > Additionally checking for skb_zcopy() while deferring.  This might
+> > not be necessary, as I'm not sure if we can actually have zero copy
+> > packets on this path, but seems worth having for completeness as we
+> > should never defer such packets regardless.
+> >
+> > CC: Eric Dumazet <edumazet@google.com>
+> > Fixes: 68822bdf76f1 ("net: generalize skb freeing deferral to per-cpu lists")
+> > Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+> > ---
+> >  net/core/skbuff.c | 16 +++++++++++-----
+> >  1 file changed, 11 insertions(+), 5 deletions(-)
+> 
+> I do not think this patch is doing the right thing.
+> 
+> Packets sitting in TCP receive queues should not hold state that is
+> not relevant for TCP recvmsg().
 
-I love your patch! Perhaps something to improve:
+Agree, but tcp_v4/6_rcv() already call nf_reset_ct(), else it would
+not be possible to remove nf_conntrack module in practice.
 
-[auto build test WARNING on net-next/master]
+I wonder where the deferred skbs are coming from, any and all
+queued skbs need the conntrack state dropped.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Cl-ment-L-ger/add-support-for-Renesas-RZ-N1-ethernet-subsystem-devices/20220620-191343
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git dbca1596bbb08318f5e3b3b99f8ca0a0d3830a65
-config: ia64-randconfig-r003-20220622 (https://download.01.org/0day-ci/archive/20220622/202206221821.YTh0dW9N-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/fd8100fa88a9cffefe76f27b683803108d39c253
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Cl-ment-L-ger/add-support-for-Renesas-RZ-N1-ethernet-subsystem-devices/20220620-191343
-        git checkout fd8100fa88a9cffefe76f27b683803108d39c253
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/net/pcs/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/net/pcs/pcs-rzn1-miic.c:501:34: warning: 'miic_of_mtable' defined but not used [-Wunused-const-variable=]
-     501 | static const struct of_device_id miic_of_mtable[] = {
-         |                                  ^~~~~~~~~~~~~~
-   drivers/net/pcs/pcs-rzn1-miic.c: In function 'miic_probe':
->> drivers/net/pcs/pcs-rzn1-miic.c:430:19: warning: 'conf' is used uninitialized [-Wuninitialized]
-     430 |         dt_val[0] = conf;
-         |         ~~~~~~~~~~^~~~~~
-   drivers/net/pcs/pcs-rzn1-miic.c:424:13: note: 'conf' was declared here
-     424 |         u32 conf;
-         |             ^~~~
-
-
-vim +/conf +430 drivers/net/pcs/pcs-rzn1-miic.c
-
-   418	
-   419	static int miic_parse_dt(struct device *dev, u32 *mode_cfg)
-   420	{
-   421		s8 dt_val[MIIC_MODCTRL_CONF_CONV_NUM];
-   422		struct device_node *np = dev->of_node;
-   423		struct device_node *conv;
-   424		u32 conf;
-   425		int port;
-   426	
-   427		memset(dt_val, MIIC_MODCTRL_CONF_NONE, sizeof(dt_val));
-   428	
-   429		of_property_read_u32(np, "renesas,miic-switch-portin", &conf);
- > 430		dt_val[0] = conf;
-   431	
-   432		for_each_child_of_node(np, conv) {
-   433			if (of_property_read_u32(conv, "reg", &port))
-   434				continue;
-   435	
-   436			if (!of_device_is_available(conv))
-   437				continue;
-   438	
-   439			if (of_property_read_u32(conv, "renesas,miic-input", &conf) == 0)
-   440				dt_val[port] = conf;
-   441		}
-   442	
-   443		return miic_match_dt_conf(dev, dt_val, mode_cfg);
-   444	}
-   445	
-   446	static int miic_probe(struct platform_device *pdev)
-   447	{
-   448		struct device *dev = &pdev->dev;
-   449		struct miic *miic;
-   450		u32 mode_cfg;
-   451		int ret;
-   452	
-   453		ret = miic_parse_dt(dev, &mode_cfg);
-   454		if (ret < 0)
-   455			return -EINVAL;
-   456	
-   457		miic = devm_kzalloc(dev, sizeof(*miic), GFP_KERNEL);
-   458		if (!miic)
-   459			return -ENOMEM;
-   460	
-   461		spin_lock_init(&miic->lock);
-   462		miic->dev = dev;
-   463		miic->base = devm_platform_ioremap_resource(pdev, 0);
-   464		if (!miic->base)
-   465			return -EINVAL;
-   466	
-   467		ret = devm_pm_runtime_enable(dev);
-   468		if (ret < 0)
-   469			return ret;
-   470	
-   471		ret = pm_runtime_resume_and_get(dev);
-   472		if (ret < 0)
-   473			return ret;
-   474	
-   475		ret = miic_init_hw(miic, mode_cfg);
-   476		if (ret)
-   477			goto disable_runtime_pm;
-   478	
-   479		/* miic_create() relies on that fact that data are attached to the
-   480		 * platform device to determine if the driver is ready so this needs to
-   481		 * be the last thing to be done after everything is initialized
-   482		 * properly.
-   483		 */
-   484		platform_set_drvdata(pdev, miic);
-   485	
-   486		return 0;
-   487	
-   488	disable_runtime_pm:
-   489		pm_runtime_put(dev);
-   490	
-   491		return ret;
-   492	}
-   493	
-   494	static int miic_remove(struct platform_device *pdev)
-   495	{
-   496		pm_runtime_put(&pdev->dev);
-   497	
-   498		return 0;
-   499	}
-   500	
- > 501	static const struct of_device_id miic_of_mtable[] = {
-   502		{ .compatible = "renesas,rzn1-miic" },
-   503		{ /* sentinel */ },
-   504	};
-   505	MODULE_DEVICE_TABLE(of, miic_of_mtable);
-   506	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+I don't mind a new helper that does a combined dst+ct release though.
