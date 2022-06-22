@@ -2,83 +2,297 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 262145552F5
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 20:07:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94059555301
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 20:10:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358979AbiFVSHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 14:07:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35676 "EHLO
+        id S1376887AbiFVSJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 14:09:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233565AbiFVSHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 14:07:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D10137A1A;
-        Wed, 22 Jun 2022 11:07:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 052D9B8207C;
-        Wed, 22 Jun 2022 18:07:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55A57C34114;
-        Wed, 22 Jun 2022 18:07:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655921254;
-        bh=9v6QXZNg0hA9ptWbQZ5AT1Ka8fcEQnwliWHpv9K1+O8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Jt7PLlEe9hAkCthzeSVOJH78NAAeRmmobELYd4a+JNk3+Q0JpEsVezqIB+k8OxWgb
-         hOqgS/tg4dfasgfcwmMU8Lln80JQU35EYzxk9R1E4aOQna8WoiSrghIFiLZRxm5wfb
-         lPKLZBihfsVjEsIRdroUTNtlv/Ky7S2k4CjBVnKATE/g0thG7bh2Q/X2pwssGCPNp+
-         7SIRf5kH9TKdsDk9lyV7bXSgpDnLZTvSfocD0iD+bHfa8F0EI1FXRYI8w5g1618SL1
-         zvs3+0ihE7FzLTPuV9zSO8gxnKnqejRe1OdulVHyFptNFswiAPsy5KBi9YglFi3yHK
-         Tr9ccds5axntg==
-Date:   Wed, 22 Jun 2022 11:07:33 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: mainline build failure due to 281d0c962752 ("fortify: Add Clang
- support")
-Message-ID: <20220622110733.1eba089c@kernel.org>
-In-Reply-To: <YrMu5bdhkPzkxv/X@dev-arch.thelio-3990X>
-References: <YrLtpixBqWDmZT/V@debian>
-        <CAHk-=wiN1ujyVTgyt1GuZiyWAPfpLwwg-FY1V-J56saMyiA1Lg@mail.gmail.com>
-        <YrMu5bdhkPzkxv/X@dev-arch.thelio-3990X>
+        with ESMTP id S1376474AbiFVSJd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 14:09:33 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2278F393E5;
+        Wed, 22 Jun 2022 11:09:31 -0700 (PDT)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id C7E5A40007;
+        Wed, 22 Jun 2022 18:09:26 +0000 (UTC)
+Message-ID: <16e4ac19-0ba5-d59e-d0c7-1e448ba56070@ovn.org>
+Date:   Wed, 22 Jun 2022 20:09:25 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Cc:     i.maximets@ovn.org,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Florian Westphal <fw@strlen.de>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, dev@openvswitch.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>
+References: <20220619003919.394622-1-i.maximets@ovn.org>
+ <CANn89iL_EmkEgPAVdhNW4tyzwQbARyji93mUQ9E2MRczWpNm7g@mail.gmail.com>
+ <20220622102813.GA24844@breakpoint.cc>
+ <CANn89iLGKbeeBNoDQU9C7nPRCxc6FUsrwn0LfrAKrJiJ14PH+w@mail.gmail.com>
+ <c7ab4a7b-a987-e74b-dd2d-ee2c8ca84147@ovn.org>
+ <CANn89iLxqae9wZ-h5M-whSsmAZ_7hW1e_=krvSyF8x89Y6o76w@mail.gmail.com>
+ <068ad894-c60f-c089-fd4a-5deda1c84cdd@ovn.org>
+ <CANn89iKV7as_oog+HQOKj+N5Qomae7aa9ZNidePMbQ7tv11mZw@mail.gmail.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [PATCH net] net: ensure all external references are released in
+ deferred skbuffs
+In-Reply-To: <CANn89iKV7as_oog+HQOKj+N5Qomae7aa9ZNidePMbQ7tv11mZw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NEUTRAL,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 22 Jun 2022 08:01:57 -0700 Nathan Chancellor wrote:
-> On Wed, Jun 22, 2022 at 08:47:22AM -0500, Linus Torvalds wrote:
-> > On Wed, Jun 22, 2022 at 5:23 AM Sudip Mukherjee
-> > <sudipm.mukherjee@gmail.com> wrote:  
-> > >
-> > > I have recently (since yesterday) started building the mainline kernel
-> > > with clang-14 and I am seeing a build failure with allmodconfig.  
+On 6/22/22 16:35, Eric Dumazet wrote:
+> On Wed, Jun 22, 2022 at 4:26 PM Ilya Maximets <i.maximets@ovn.org> wrote:
+>>
+>> On 6/22/22 13:43, Eric Dumazet wrote:
+>>> On Wed, Jun 22, 2022 at 1:32 PM Ilya Maximets <i.maximets@ovn.org> wrote:
+>>>>
+>>>> On 6/22/22 12:36, Eric Dumazet wrote:
+>>>>> On Wed, Jun 22, 2022 at 12:28 PM Florian Westphal <fw@strlen.de> wrote:
+>>>>>>
+>>>>>> Eric Dumazet <edumazet@google.com> wrote:
+>>>>>>> On Sun, Jun 19, 2022 at 2:39 AM Ilya Maximets <i.maximets@ovn.org> wrote:
+>>>>>>>>
+>>>>>>>> Open vSwitch system test suite is broken due to inability to
+>>>>>>>> load/unload netfilter modules.  kworker thread is getting trapped
+>>>>>>>> in the infinite loop while running a net cleanup inside the
+>>>>>>>> nf_conntrack_cleanup_net_list, because deferred skbuffs are still
+>>>>>>>> holding nfct references and not being freed by their CPU cores.
+>>>>>>>>
+>>>>>>>> In general, the idea that we will have an rx interrupt on every
+>>>>>>>> CPU core at some point in a near future doesn't seem correct.
+>>>>>>>> Devices are getting created and destroyed, interrupts are getting
+>>>>>>>> re-scheduled, CPUs are going online and offline dynamically.
+>>>>>>>> Any of these events may leave packets stuck in defer list for a
+>>>>>>>> long time.  It might be OK, if they are just a piece of memory,
+>>>>>>>> but we can't afford them holding references to any other resources.
+>>>>>>>>
+>>>>>>>> In case of OVS, nfct reference keeps the kernel thread in busy loop
+>>>>>>>> while holding a 'pernet_ops_rwsem' semaphore.  That blocks the
+>>>>>>>> later modprobe request from user space:
+>>>>>>>>
+>>>>>>>>   # ps
+>>>>>>>>    299 root  R  99.3  200:25.89 kworker/u96:4+
+>>>>>>>>
+>>>>>>>>   # journalctl
+>>>>>>>>   INFO: task modprobe:11787 blocked for more than 1228 seconds.
+>>>>>>>>         Not tainted 5.19.0-rc2 #8
+>>>>>>>>   task:modprobe     state:D
+>>>>>>>>   Call Trace:
+>>>>>>>>    <TASK>
+>>>>>>>>    __schedule+0x8aa/0x21d0
+>>>>>>>>    schedule+0xcc/0x200
+>>>>>>>>    rwsem_down_write_slowpath+0x8e4/0x1580
+>>>>>>>>    down_write+0xfc/0x140
+>>>>>>>>    register_pernet_subsys+0x15/0x40
+>>>>>>>>    nf_nat_init+0xb6/0x1000 [nf_nat]
+>>>>>>>>    do_one_initcall+0xbb/0x410
+>>>>>>>>    do_init_module+0x1b4/0x640
+>>>>>>>>    load_module+0x4c1b/0x58d0
+>>>>>>>>    __do_sys_init_module+0x1d7/0x220
+>>>>>>>>    do_syscall_64+0x3a/0x80
+>>>>>>>>    entry_SYSCALL_64_after_hwframe+0x46/0xb0
+>>>>>>>>
+>>>>>>>> At this point OVS testsuite is unresponsive and never recover,
+>>>>>>>> because these skbuffs are never freed.
+>>>>>>>>
+>>>>>>>> Solution is to make sure no external references attached to skb
+>>>>>>>> before pushing it to the defer list.  Using skb_release_head_state()
+>>>>>>>> for that purpose.  The function modified to be re-enterable, as it
+>>>>>>>> will be called again during the defer list flush.
+>>>>>>>>
+>>>>>>>> Another approach that can fix the OVS use-case, is to kick all
+>>>>>>>> cores while waiting for references to be released during the net
+>>>>>>>> cleanup.  But that sounds more like a workaround for a current
+>>>>>>>> issue rather than a proper solution and will not cover possible
+>>>>>>>> issues in other parts of the code.
+>>>>>>>>
+>>>>>>>> Additionally checking for skb_zcopy() while deferring.  This might
+>>>>>>>> not be necessary, as I'm not sure if we can actually have zero copy
+>>>>>>>> packets on this path, but seems worth having for completeness as we
+>>>>>>>> should never defer such packets regardless.
+>>>>>>>>
+>>>>>>>> CC: Eric Dumazet <edumazet@google.com>
+>>>>>>>> Fixes: 68822bdf76f1 ("net: generalize skb freeing deferral to per-cpu lists")
+>>>>>>>> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+>>>>>>>> ---
+>>>>>>>>  net/core/skbuff.c | 16 +++++++++++-----
+>>>>>>>>  1 file changed, 11 insertions(+), 5 deletions(-)
+>>>>>>>
+>>>>>>> I do not think this patch is doing the right thing.
+>>>>>>>
+>>>>>>> Packets sitting in TCP receive queues should not hold state that is
+>>>>>>> not relevant for TCP recvmsg().
+>>>>>>
+>>>>>> Agree, but tcp_v4/6_rcv() already call nf_reset_ct(), else it would
+>>>>>> not be possible to remove nf_conntrack module in practice.
+>>>>>
+>>>>> Well, existing nf_reset_ct() does not catch all cases, like TCP fastopen ?
+>>>>
+>>>> Yeah, that is kind of the main problem I have with the current
+>>>> code.  It's very hard to find all the cases where skb has to be
+>>>> cleaned up and almost impossible for someone who doesn't know
+>>>> every aspect of every network subsystem in the kernel.  That's
+>>>> why I went with the more or less bulletproof approach of cleaning
+>>>> up while actually deferring.  I can try and test the code you
+>>>> proposed in the other reply, but at least, I think, we need a
+>>>> bunch of debug warnings in the skb_attempt_defer_free() to catch
+>>>> possible issues.
+>>>
+>>> Debug warnings are expensive if they need to bring new cache lines.
+>>>
+>>> So far skb_attempt_defer_free() is only used by TCP in well known conditions.
+>>
+>> That's true for skb_attempt_defer_free() itself, but it's
+>> hard to tell the same for all the parts of the code that
+>> are enqueuing these skbuffs.  Even if all the places are
+>> well known, it looks to me highly error prone.  Having
+>> a couple of DEBUG_NET_WARN_ON_ONCE should not cause any
+>> performance issues, IIUC, unless debug is enabled, right?
+>>
+>> e.g.
+>>
+>>         DEBUG_NET_WARN_ON_ONCE(skb_nfct(skb));
+>>         DEBUG_NET_WARN_ON_ONCE(skb_dst(skb));
 > 
-> Right, this is known. Kees sent a fix for that warning recently but it
-> went to net-next instead of net it seems:
+> Sure, but we need to put them at the right place.
 > 
-> https://git.kernel.org/netdev/net-next/c/2c0ab32b73cfe39a609192f338464e948fc39117
-> 
-> I am not sure if that change could be cherry-picked or applied to net so
-> that it could be fixed in mainline, I see the netdev maintainers are
-> already on CC so maybe they can comment on that?
+> Doing these checks in skb_attempt_defer_free() is too late.
 
-Sorry about the hassle, done now. It's commit 1e70212e0315 ("hinic:
-Replace memcpy() with direct assignment") in net and should make it 
-to Linus tomorrow.
+Yes, I agree that it doesn't give any useful information for
+debugging, because we need to know who put those packets in
+the queue, not who took them out.  But 'not too late' places
+should already have calls to reset these fields in a close
+proximity to where the warnings should be, so it's hard to
+tell if that will make a lot of sense.  What I had in mind is
+just a red flag that says that something went wrong, so it
+can be raised while testing new changes to the kernel and
+running with debug enabled.  That can save some debugging and
+bisecting time in the future if some unexpected nfct or dst
+reference will sneak into the queue.
+But I will not insist on adding these, if you think they are
+not valuable.
+
+> 
+>>
+>>>
+>>>
+>>>>
+>>>> Also, what about cleaning up extensions?  IIUC, at least one
+>>>> of them can hold external references.  SKB_EXT_SEC_PATH holds
+>>>> xfrm_state.  We should, probably, free them as well?
+>>>
+>>> I do not know about this, I would ask XFRM maintainers
+>>
+>> @Steffen, @Herbert, what do you think?  Is it a problem if the
+>> skb holding SKB_EXT_SEC_PATH extension is held not freed in
+>> a defer list indefinitely (for a very long time)?  Or is it
+>> even possible for an skb with SKB_EXT_SEC_PATH extension present
+>> to be enqueued to a TCP receive queue without releasing all
+>> the references?
+
+To answer my own questions:
+ - Yes, it's possible.
+ - No, doesn't seem to be a big problem, IIUC, as xfrm_state
+   seem to be self-contained and keeping it around for a long
+   time doesn't seem to be harmful.
+
+Some input from xfrm maintainers would still be great though.
+
+>>
+>> This seems like a long existing problem though, so can be fixed
+>> separately, if it is a problem.
+>>
+>>>
+>>>>
+>>>> And what about zerocopy skb?  I think, we should still not
+>>>> allow them to be deferred as they seem to hold HW resources.
+>>>
+>>> The point of skb_attempt_defer_free() i is to make the freeing happen
+>>> at producer
+>>>  much instead of consumer.
+>>>
+>>> I do not think there is anything special in this regard with zero
+>>> copy. I would leave the current code as is.
+>>
+>> The problem is that these skbuffs are never actually freed,
+>> so if they do hold HW resources, these resources will never be
+>> released (never == for a very long time, hours, days).
+> 
+> This is fine. Number of such skbs per cpu is limited.
+> 
+> Or if some HW feature needs buffers to be released _immediately_, we
+> have to implement
+> a method for doing so.
+> 
+> Please point why buffers sitting in TCP receive queues are not causing issues ?
+> Do we need a general method "Please scan all TCP sockets and release
+> skb holding HW resources immediately"
+
+That's a good point.  I agree that it's probably not a big deal
+in this case.
+
+> 
+>>
+>> Not a blocker from my point of view, just trying to highlight
+>> a possible issue.
+> 
+> The tradeoff is known really, as for any cache.
+> 
+>>
+>>>
+>>> A simpler patch might be to move the existing nf_reset_ct() earlier,
+>>> can you test this ?
+>>
+>> I tested the patch below and it seems to fix the issue seen
+>> with OVS testsuite.  Though it's not obvious for me why this
+>> happens.  Can you explain a bit more?
+> 
+> I think the bug predates my recent change.
+> 
+> skb_attempt_defer_free() is increasing the probability of hitting the bug.
+> 
+>>
+>>>
+>>> I note that IPv6 does the nf_reset_ct() earlier, from ip6_protocol_deliver_rcu()
+>>>
+>>> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+>>> index fda811a5251f2d76ac24a036e6b4f4e7d7d96d6f..a06464f96fe0cc94dd78272738ddaab2c19e87db
+>>> 100644
+>>> --- a/net/ipv4/tcp_ipv4.c
+>>> +++ b/net/ipv4/tcp_ipv4.c
+>>> @@ -1919,6 +1919,8 @@ int tcp_v4_rcv(struct sk_buff *skb)
+>>>         struct sock *sk;
+>>>         int ret;
+>>>
+>>> +       nf_reset_ct(skb);
+>>> +
+>>>         drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
+>>>         if (skb->pkt_type != PACKET_HOST)
+>>>                 goto discard_it;
+>>> @@ -2046,8 +2048,6 @@ int tcp_v4_rcv(struct sk_buff *skb)
+>>>         if (drop_reason)
+>>>                 goto discard_and_relse;
+>>>
+>>> -       nf_reset_ct(skb);
+>>> -
+>>>         if (tcp_filter(sk, skb)) {
+>>>                 drop_reason = SKB_DROP_REASON_SOCKET_FILTER;
+>>>                 goto discard_and_relse;
+>>
+
