@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A90A15550B6
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 18:04:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D858B5550BE
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 18:04:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376500AbiFVQEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 12:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39284 "EHLO
+        id S1376593AbiFVQEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 12:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376436AbiFVQEJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 12:04:09 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10B626AD3
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 09:03:59 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id 15-20020a63040f000000b0040c9f7f2978so5387552pge.12
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 09:03:59 -0700 (PDT)
+        with ESMTP id S1376385AbiFVQEK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 12:04:10 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1334833364
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 09:04:01 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id x123-20020a626381000000b005254d5e6a0fso416430pfb.5
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 09:04:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=pp6HkjLeA9NZbHZxyUE2iiB8Biyi+3A9z58GXZU/nnw=;
-        b=PxXd17R+mhgYh/TAbDnbUgqP3WS4a1ly1EdhXuiPaV6/2vmal6zuK/vQ/U0ATFozqN
-         3OmuYvfT/beOBrb8Tz3QFmm3fcQt/M0dohkUwDZKQG2cq1+Pj52Vryz+YJpnP2oH7RId
-         ruA/MZyBA3Slpb244g3Md4xHsryrLUUt4uqB6OeXalB77qCOQySGbgJwiaKoNoRGF+iA
-         0jk53FRN+F41ScyWR6cUBtKKWaMdpsCV0fxyZr8rB6bGV8HjoF/0Ip2snWYgM+4N4zu0
-         8WhnVqP42NZhV+PJgWiHSBy7/QBlYUwv84dOCZiDph5tKCmGdlr9lcXUyYbZU4dWW3cP
-         Wyfw==
+        bh=r0Lj6PtlHqrSuvZYIBihZTa4s3/QqaHCC+51XLBQesU=;
+        b=dBhpu92abKzO7KIKqwO4gSNKF6LQbKmuTy/8vw52x+et0yOUxkv+3aatVXI0qJVA1k
+         jZ51L/sV17bf8vjd4fD/edu97sOGQgQUq/kwDDFqsaZQB+nM8xHYA/QKO4zzbLpieNbc
+         13cEOJykniWNT5AXK67TpS5cl8wFdmAJfKaBcFOHo6u5LSmxoC6hFYHT5XUDMU4keidW
+         HZRQQFgDNlr2GvBXU8wJpvx8REftJ3bCqZsqM5hTcjCLa8dMFxt881DMHGL4k4d13npo
+         EoONVvrcTO58ZnQw7RcxJaeC1ir6QD+NxSJNU1sFCe3bfNMF6GbUeWODeQBV2pm8E7Z4
+         PgPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=pp6HkjLeA9NZbHZxyUE2iiB8Biyi+3A9z58GXZU/nnw=;
-        b=o7x/O9fSAb55yn1duS3e8Tzd769nEqgp2eHLa7A6Pq7clnDqx2Lnz+aV30K3HPn0sw
-         Be9TM2119jqfi6XJ5RpM721rSzrEGhZWwklQpDQmY7mVQbNas93i762abrLnh7uH/kmT
-         IDYkDJcu50PgwVYU+Km8mWzR1Jv6+joAvrAUHOqSjXPHGfUHWyDfm+pJhLKNTOmxDrzf
-         VLcNNBGNX/YJ+CUZQbjs2Ldn7Ko2Ldx0YsZxtgfRrxgMawVJKLCAD1jUEAgMkl10TEgs
-         lHVmNSm0LPYcSO8PBmjGKr+VaNPiZy3z6yxvP9ENfgNHYxjhUAmjhhnr7n8qmw3nCfBo
-         GApw==
-X-Gm-Message-State: AJIora8lFK2skAGvMW+yep4/FZadsuYu6J7ynygVUn67jIaVIk5bwij1
-        z5nKG3mgOFAUlusRL9Sid0LeJZE7n2nZ8pd289Ew0+9TFFL7kyxgjFM3GRwzJQHW34ss7rdmSnp
-        rCK8LPuwCHF7ZNeXZmaWEg8D7MAmxh2ZyIuSpvL8jcm6/4Mi62LqZcg==
-X-Google-Smtp-Source: AGRyM1un/wjrLrnz0KrTUSFeit7ncXkja4gFYaXaE+mpx2OgHi2/D0QmlUMzH9g9C0Q3BvixQYM2AoU=
+        bh=r0Lj6PtlHqrSuvZYIBihZTa4s3/QqaHCC+51XLBQesU=;
+        b=L0sMa7cz5tYVeAQEUbGxTYNItkG8DgNY7raoHPtTyAT5lpeYTmW9ByLoWkfaN1xIq8
+         Z+V6nvj5NXcD1375kQibI/oz8h9G55StxbAo35ZNUqRiO9hihyCM1rF9fybZmo5qKan3
+         yfdWp+k1Dag+8XvMQCiFoOhdDc9mYbcnrVtCB/nd0Sgf+VCfwGCofGGEd1V31IcsbD8j
+         seyJDIHo8wt78ESTXZC1Cn9V/wTi+pZYzanZrVMgNOd3ZomRjwnOUQ8gEBtGSd/kGCiU
+         YzvTELvz5m5R/hWgqVsh9Ixl3rVbVYuZIIbX9ulj/ed6ysY4UzFKjsCOiW0LaZvUcXxi
+         vB4Q==
+X-Gm-Message-State: AJIora+kIb+SMYV0+7GyuCtpDHb0WpA10VhGBgAyNgLjNnEN1o8GZHoV
+        AEtIsD9wKErtNnphxxUhOB5hXztzbYOXnmCod43H9xMuetgV16spYnVSYkSRWau1B/kUOuoQ88C
+        pwnFCnnvY9MGLpAOPew+sNqycQW/i6ybXd6HSXaqZ54/uvBuRzDWujg==
+X-Google-Smtp-Source: AGRyM1vrS/3nrnPBc6pbKgfJHcN0fPfmqmine9GonsORm5PuwsPNubQlFOSD55Lxn4YfWM3cjGL7JAs=
 X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a63:ea09:0:b0:3fd:3c6a:47c2 with SMTP id
- c9-20020a63ea09000000b003fd3c6a47c2mr3484937pgi.242.1655913839536; Wed, 22
- Jun 2022 09:03:59 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 09:03:41 -0700
+ (user=sdf job=sendgmr) by 2002:a17:902:f602:b0:16a:178a:7b0b with SMTP id
+ n2-20020a170902f60200b0016a178a7b0bmr20423267plg.20.1655913841348; Wed, 22
+ Jun 2022 09:04:01 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 09:03:42 -0700
 In-Reply-To: <20220622160346.967594-1-sdf@google.com>
-Message-Id: <20220622160346.967594-7-sdf@google.com>
+Message-Id: <20220622160346.967594-8-sdf@google.com>
 Mime-Version: 1.0
 References: <20220622160346.967594-1-sdf@google.com>
 X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
-Subject: [PATCH bpf-next v10 06/11] bpf: expose bpf_{g,s}etsockopt to lsm cgroup
+Subject: [PATCH bpf-next v10 07/11] tools/bpf: Sync btf_ids.h to tools
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
@@ -61,209 +61,110 @@ Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I don't see how to make it nice without introducing btf id lists
-for the hooks where these helpers are allowed. Some LSM hooks
-work on the locked sockets, some are triggering early and
-don't grab any locks, so have two lists for now:
+Has been slowly getting out of sync, let's update it.
 
-1. LSM hooks which trigger under socket lock - minority of the hooks,
-   but ideal case for us, we can expose existing BTF-based helpers
-2. LSM hooks which trigger without socket lock, but they trigger
-   early in the socket creation path where it should be safe to
-   do setsockopt without any locks
-3. The rest are prohibited. I'm thinking that this use-case might
-   be a good gateway to sleeping lsm cgroup hooks in the future.
-   We can either expose lock/unlock operations (and add tracking
-   to the verifier) or have another set of bpf_setsockopt
-   wrapper that grab the locks and might sleep.
+resolve_btfids usage has been updated to match the header changes.
 
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- include/linux/bpf.h  |  2 ++
- kernel/bpf/bpf_lsm.c | 38 ++++++++++++++++++++++++++++
- net/core/filter.c    | 60 ++++++++++++++++++++++++++++++++++++++------
- 3 files changed, 93 insertions(+), 7 deletions(-)
+ tools/include/linux/btf_ids.h                 | 35 +++++++++++++++----
+ .../selftests/bpf/prog_tests/resolve_btfids.c |  2 +-
+ 2 files changed, 29 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 5d2afa55c7c3..2b21f2a3452f 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -2386,6 +2386,8 @@ extern const struct bpf_func_proto bpf_for_each_map_elem_proto;
- extern const struct bpf_func_proto bpf_btf_find_by_name_kind_proto;
- extern const struct bpf_func_proto bpf_sk_setsockopt_proto;
- extern const struct bpf_func_proto bpf_sk_getsockopt_proto;
-+extern const struct bpf_func_proto bpf_unlocked_sk_setsockopt_proto;
-+extern const struct bpf_func_proto bpf_unlocked_sk_getsockopt_proto;
- extern const struct bpf_func_proto bpf_find_vma_proto;
- extern const struct bpf_func_proto bpf_loop_proto;
- extern const struct bpf_func_proto bpf_copy_from_user_task_proto;
-diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
-index 83aa431dd52e..d469b7f3deef 100644
---- a/kernel/bpf/bpf_lsm.c
-+++ b/kernel/bpf/bpf_lsm.c
-@@ -45,6 +45,24 @@ BTF_ID(func, bpf_lsm_sk_alloc_security)
- BTF_ID(func, bpf_lsm_sk_free_security)
- BTF_SET_END(bpf_lsm_current_hooks)
+diff --git a/tools/include/linux/btf_ids.h b/tools/include/linux/btf_ids.h
+index 57890b357f85..71e54b1e3796 100644
+--- a/tools/include/linux/btf_ids.h
++++ b/tools/include/linux/btf_ids.h
+@@ -73,7 +73,7 @@ asm(							\
+ __BTF_ID_LIST(name, local)				\
+ extern u32 name[];
  
-+/* List of LSM hooks that trigger while the socket is properly locked.
-+ */
-+BTF_SET_START(bpf_lsm_locked_sockopt_hooks)
-+BTF_ID(func, bpf_lsm_socket_sock_rcv_skb)
-+BTF_ID(func, bpf_lsm_sock_graft)
-+BTF_ID(func, bpf_lsm_inet_csk_clone)
-+BTF_ID(func, bpf_lsm_inet_conn_established)
-+BTF_SET_END(bpf_lsm_locked_sockopt_hooks)
+-#define BTF_ID_LIST_GLOBAL(name)			\
++#define BTF_ID_LIST_GLOBAL(name, n)			\
+ __BTF_ID_LIST(name, globl)
+ 
+ /* The BTF_ID_LIST_SINGLE macro defines a BTF_ID_LIST with
+@@ -82,6 +82,9 @@ __BTF_ID_LIST(name, globl)
+ #define BTF_ID_LIST_SINGLE(name, prefix, typename)	\
+ 	BTF_ID_LIST(name) \
+ 	BTF_ID(prefix, typename)
++#define BTF_ID_LIST_GLOBAL_SINGLE(name, prefix, typename) \
++	BTF_ID_LIST_GLOBAL(name, 1)			  \
++	BTF_ID(prefix, typename)
+ 
+ /*
+  * The BTF_ID_UNUSED macro defines 4 zero bytes.
+@@ -143,13 +146,14 @@ extern struct btf_id_set name;
+ 
+ #else
+ 
+-#define BTF_ID_LIST(name) static u32 name[5];
++#define BTF_ID_LIST(name) static u32 __maybe_unused name[5];
+ #define BTF_ID(prefix, name)
+ #define BTF_ID_UNUSED
+-#define BTF_ID_LIST_GLOBAL(name) u32 name[1];
+-#define BTF_ID_LIST_SINGLE(name, prefix, typename) static u32 name[1];
+-#define BTF_SET_START(name) static struct btf_id_set name = { 0 };
+-#define BTF_SET_START_GLOBAL(name) static struct btf_id_set name = { 0 };
++#define BTF_ID_LIST_GLOBAL(name, n) u32 __maybe_unused name[n];
++#define BTF_ID_LIST_SINGLE(name, prefix, typename) static u32 __maybe_unused name[1];
++#define BTF_ID_LIST_GLOBAL_SINGLE(name, prefix, typename) u32 __maybe_unused name[1];
++#define BTF_SET_START(name) static struct btf_id_set __maybe_unused name = { 0 };
++#define BTF_SET_START_GLOBAL(name) static struct btf_id_set __maybe_unused name = { 0 };
+ #define BTF_SET_END(name)
+ 
+ #endif /* CONFIG_DEBUG_INFO_BTF */
+@@ -172,7 +176,10 @@ extern struct btf_id_set name;
+ 	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP_TW, tcp_timewait_sock)		\
+ 	BTF_SOCK_TYPE(BTF_SOCK_TYPE_TCP6, tcp6_sock)			\
+ 	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP, udp_sock)			\
+-	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP6, udp6_sock)
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UDP6, udp6_sock)			\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_UNIX, unix_sock)			\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_MPTCP, mptcp_sock)			\
++	BTF_SOCK_TYPE(BTF_SOCK_TYPE_SOCKET, socket)
+ 
+ enum {
+ #define BTF_SOCK_TYPE(name, str) name,
+@@ -184,4 +191,18 @@ MAX_BTF_SOCK_TYPE,
+ extern u32 btf_sock_ids[];
+ #endif
+ 
++#define BTF_TRACING_TYPE_xxx	\
++	BTF_TRACING_TYPE(BTF_TRACING_TYPE_TASK, task_struct)	\
++	BTF_TRACING_TYPE(BTF_TRACING_TYPE_FILE, file)		\
++	BTF_TRACING_TYPE(BTF_TRACING_TYPE_VMA, vm_area_struct)
 +
-+/* List of LSM hooks that trigger while the socket is _not_ locked,
-+ * but it's ok to call bpf_{g,s}etsockopt because the socket is still
-+ * in the early init phase.
-+ */
-+BTF_SET_START(bpf_lsm_unlocked_sockopt_hooks)
-+BTF_ID(func, bpf_lsm_socket_post_create)
-+BTF_ID(func, bpf_lsm_socket_socketpair)
-+BTF_SET_END(bpf_lsm_unlocked_sockopt_hooks)
-+
- void bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
- 			     bpf_func_t *bpf_func)
- {
-@@ -201,6 +219,26 @@ bpf_lsm_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 	case BPF_FUNC_get_retval:
- 		return prog->expected_attach_type == BPF_LSM_CGROUP ?
- 			&bpf_get_retval_proto : NULL;
-+	case BPF_FUNC_setsockopt:
-+		if (prog->expected_attach_type != BPF_LSM_CGROUP)
-+			return NULL;
-+		if (btf_id_set_contains(&bpf_lsm_locked_sockopt_hooks,
-+					prog->aux->attach_btf_id))
-+			return &bpf_sk_setsockopt_proto;
-+		if (btf_id_set_contains(&bpf_lsm_unlocked_sockopt_hooks,
-+					prog->aux->attach_btf_id))
-+			return &bpf_unlocked_sk_setsockopt_proto;
-+		return NULL;
-+	case BPF_FUNC_getsockopt:
-+		if (prog->expected_attach_type != BPF_LSM_CGROUP)
-+			return NULL;
-+		if (btf_id_set_contains(&bpf_lsm_locked_sockopt_hooks,
-+					prog->aux->attach_btf_id))
-+			return &bpf_sk_getsockopt_proto;
-+		if (btf_id_set_contains(&bpf_lsm_unlocked_sockopt_hooks,
-+					prog->aux->attach_btf_id))
-+			return &bpf_unlocked_sk_getsockopt_proto;
-+		return NULL;
- 	default:
- 		return tracing_prog_func_proto(func_id, prog);
- 	}
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 151aa4756bd6..c6941ab0eb52 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -5012,8 +5012,8 @@ static const struct bpf_func_proto bpf_get_socket_uid_proto = {
- 	.arg1_type      = ARG_PTR_TO_CTX,
- };
- 
--static int _bpf_setsockopt(struct sock *sk, int level, int optname,
--			   char *optval, int optlen)
-+static int __bpf_setsockopt(struct sock *sk, int level, int optname,
-+			    char *optval, int optlen)
- {
- 	char devname[IFNAMSIZ];
- 	int val, valbool;
-@@ -5024,8 +5024,6 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 	if (!sk_fullsock(sk))
- 		return -EINVAL;
- 
--	sock_owned_by_me(sk);
--
- 	if (level == SOL_SOCKET) {
- 		if (optlen != sizeof(int) && optname != SO_BINDTODEVICE)
- 			return -EINVAL;
-@@ -5258,14 +5256,20 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 	return ret;
- }
- 
--static int _bpf_getsockopt(struct sock *sk, int level, int optname,
-+static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 			   char *optval, int optlen)
-+{
-+	if (sk_fullsock(sk))
-+		sock_owned_by_me(sk);
-+	return __bpf_setsockopt(sk, level, optname, optval, optlen);
-+}
-+
-+static int __bpf_getsockopt(struct sock *sk, int level, int optname,
-+			    char *optval, int optlen)
- {
- 	if (!sk_fullsock(sk))
- 		goto err_clear;
- 
--	sock_owned_by_me(sk);
--
- 	if (level == SOL_SOCKET) {
- 		if (optlen != sizeof(int))
- 			goto err_clear;
-@@ -5360,6 +5364,14 @@ static int _bpf_getsockopt(struct sock *sk, int level, int optname,
- 	return -EINVAL;
- }
- 
-+static int _bpf_getsockopt(struct sock *sk, int level, int optname,
-+			   char *optval, int optlen)
-+{
-+	if (sk_fullsock(sk))
-+		sock_owned_by_me(sk);
-+	return __bpf_getsockopt(sk, level, optname, optval, optlen);
-+}
-+
- BPF_CALL_5(bpf_sk_setsockopt, struct sock *, sk, int, level,
- 	   int, optname, char *, optval, int, optlen)
- {
-@@ -5400,6 +5412,40 @@ const struct bpf_func_proto bpf_sk_getsockopt_proto = {
- 	.arg5_type	= ARG_CONST_SIZE,
- };
- 
-+BPF_CALL_5(bpf_unlocked_sk_setsockopt, struct sock *, sk, int, level,
-+	   int, optname, char *, optval, int, optlen)
-+{
-+	return __bpf_setsockopt(sk, level, optname, optval, optlen);
-+}
-+
-+const struct bpf_func_proto bpf_unlocked_sk_setsockopt_proto = {
-+	.func		= bpf_unlocked_sk_setsockopt,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_BTF_ID_SOCK_COMMON,
-+	.arg2_type	= ARG_ANYTHING,
-+	.arg3_type	= ARG_ANYTHING,
-+	.arg4_type	= ARG_PTR_TO_MEM | MEM_RDONLY,
-+	.arg5_type	= ARG_CONST_SIZE,
++enum {
++#define BTF_TRACING_TYPE(name, type) name,
++BTF_TRACING_TYPE_xxx
++#undef BTF_TRACING_TYPE
++MAX_BTF_TRACING_TYPE,
 +};
 +
-+BPF_CALL_5(bpf_unlocked_sk_getsockopt, struct sock *, sk, int, level,
-+	   int, optname, char *, optval, int, optlen)
-+{
-+	return __bpf_getsockopt(sk, level, optname, optval, optlen);
-+}
++extern u32 btf_tracing_ids[];
 +
-+const struct bpf_func_proto bpf_unlocked_sk_getsockopt_proto = {
-+	.func		= bpf_unlocked_sk_getsockopt,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_BTF_ID_SOCK_COMMON,
-+	.arg2_type	= ARG_ANYTHING,
-+	.arg3_type	= ARG_ANYTHING,
-+	.arg4_type	= ARG_PTR_TO_UNINIT_MEM,
-+	.arg5_type	= ARG_CONST_SIZE,
-+};
-+
- BPF_CALL_5(bpf_sock_addr_setsockopt, struct bpf_sock_addr_kern *, ctx,
- 	   int, level, int, optname, char *, optval, int, optlen)
- {
+ #endif
+diff --git a/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c b/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
+index f4a13d9dd5c8..c197261d02e2 100644
+--- a/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
++++ b/tools/testing/selftests/bpf/prog_tests/resolve_btfids.c
+@@ -44,7 +44,7 @@ BTF_ID(union,   U)
+ BTF_ID(func,    func)
+ 
+ extern __u32 test_list_global[];
+-BTF_ID_LIST_GLOBAL(test_list_global)
++BTF_ID_LIST_GLOBAL(test_list_global, 1)
+ BTF_ID_UNUSED
+ BTF_ID(typedef, S)
+ BTF_ID(typedef, T)
 -- 
 2.37.0.rc0.104.g0611611a94-goog
 
