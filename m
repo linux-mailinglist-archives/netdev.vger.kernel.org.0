@@ -2,55 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F06D15541CD
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 06:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 138BA5541DF
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 06:52:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356882AbiFVEi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 00:38:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34134 "EHLO
+        id S1347603AbiFVEwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 00:52:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356131AbiFVEi1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 00:38:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D19C34BB1
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 21:38:26 -0700 (PDT)
+        with ESMTP id S229644AbiFVEwX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 00:52:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4872E35858
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 21:52:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E96FE61947
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 04:38:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 020DCC34114;
-        Wed, 22 Jun 2022 04:38:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D78B661949
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 04:52:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0168CC34114;
+        Wed, 22 Jun 2022 04:52:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655872705;
-        bh=AOeAKspaAI3fRgwPOl9B6waVIpiwWmGpp+PYyTm3s5I=;
+        s=k20201202; t=1655873542;
+        bh=o2pO/1klxyMLGn+rFqnSe6Z40EyODwBTkjoQVa5ndgI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PqBorpHjb72UU0kTZi0vxn6lbeHt7D+0xIMXmgJQImk+fYeQshBH0Yx7J1VIAKTja
-         foGGDwlmVI9vjeYRT3gKIXknCXCsMw4uG2+en7wvu3of7RaI2JVQKSQsSubB/mjliw
-         eMqt7edDi5daoNeLeSyxjUvpycmwYwQSFuWM2c6jsnAoIoXpyY5Df7U6bUe+H0yD4g
-         rFDSyikJBvFsU+LmHRJsAjRf2hoGvEPCKfTVWlCc9eLYZJ0PqsgHdWOKPt34b/M5ev
-         LAox5/q87EMGpWVv5qcwnvBTofoWEdJGlo60MHJQA4KFcVRCC060DgqBOO6wqM6veI
-         OJK5zff9tk01g==
-Date:   Tue, 21 Jun 2022 21:38:23 -0700
+        b=XpxQm0qdAIXvEvdI/joK3JaZ6Y7FL5nEtQ21fGSTKwvYXlN0OssjiHRh/9Od3+XnG
+         Tk0t8aZR+tikpK/pCMEdFNiaXX7pl9G2k4eT+afVm//h7qzKTq6Xuula0GGItcyhF7
+         K/7ixaNKPEfjNbKb4ulyzwK4j2OZsUC1c8ZHu9He3CPgA0Dpx87kLocB//kcc4LnxJ
+         stGUpK/zqmelW53NOAtPGCRV0vdlBuiMhX1eER3TLvVRvkSQaG0kWBkycNdbFH9Hot
+         3UpdxdfZOmvdwLTFYyguQ/LHRcD82UBhBI6BqaAchVXz/rSxQ8mhQr0UGf3SmUQEGi
+         k/zCb0AXF+5Sw==
+Date:   Tue, 21 Jun 2022 21:52:20 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: Re: [PATCH net] veth: Add updating of trans_start
-Message-ID: <20220621213823.51c51326@kernel.org>
-In-Reply-To: <15667.1655862139@famine>
-References: <9088.1655407590@famine>
-        <20220617084535.6d687ed0@kernel.org>
-        <5765.1655484175@famine>
-        <20220617124413.6848c826@kernel.org>
-        <28607.1655512063@famine>
-        <20220617175550.6a3602ab@kernel.org>
-        <20220621125233.1d36737b@kicinski-fedora-PC1C0HJN>
-        <15667.1655862139@famine>
+To:     Jose Alonso <joalonsof@gmail.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3] net: usb: ax88179_178a: ax88179_rx_fixup corrections
+Message-ID: <20220621215220.78f86712@kernel.org>
+In-Reply-To: <8d3ed098f1dc0ce98191abf5e924c9e81250ea27.camel@gmail.com>
+References: <8d3ed098f1dc0ce98191abf5e924c9e81250ea27.camel@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -64,17 +54,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Jun 2022 18:42:19 -0700 Jay Vosburgh wrote:
-> 	Sorry, was out for the three day weekend.
+On Wed, 22 Jun 2022 00:59:46 -0300 Jose Alonso wrote:
+> This patch corrects the receiving of packets in ax88179_rx_fixup.
 > 
-> 	I had a quick look and I think you're probably right that
-> anything with a ndo_tx_timeout will deal with trans_start, and anything
-> without ndo_tx_timeout will be a software device not subject to delayed
-> batching of stats updates.
+> corrections:
+> - the size check of the bounds of the metadata array.
+> - the handling of the metadata array.
+>    The current code is allways exiting with return 0
+>    while trying to access pkt_hdr out of metadata array and
+>    generating RX Errors.
+> - avoid changing the skb->data content (swap bytes) in case
+>    of big-endian. le32_to_cpus(pkt_hdr)
 > 
-> 	And, yes, if there are no objections, what I'd like to do now is
-> apply the veth change to get things working and work up the bifurcated
-> approach separately (which would ultimately include removing the
-> trans_start updates from veth and tun).
+> Tested with: 0b95:1790 ASIX Electronics Corp. AX88179 Gigabit Ethernet
 
-Works for me, thanks!
+Whenever you have to write a list like this chances are the change
+should be split into multiple patches. Please try to perform the fixes
+first and code refactoring afterwards, so that the fixes can be
+backported to older releases easily.
+
+>  static void
+> -ax88179_rx_checksum(struct sk_buff *skb, u32 *pkt_hdr)
+> +ax88179_rx_checksum(struct sk_buff *skb, u32 pkt_hdr_val)
+>  {
+>  	skb->ip_summed = CHECKSUM_NONE;
+>  
+>  	/* checksum error bit is set */
+> -	if ((*pkt_hdr & AX_RXHDR_L3CSUM_ERR) ||
+> -	    (*pkt_hdr & AX_RXHDR_L4CSUM_ERR))
+> +	if ((pkt_hdr_val & AX_RXHDR_L3CSUM_ERR) ||
+> +	    (pkt_hdr_val & AX_RXHDR_L4CSUM_ERR))
+>  		return;
+>  
+>  	/* It must be a TCP or UDP packet with a valid checksum */
+> -	if (((*pkt_hdr & AX_RXHDR_L4_TYPE_MASK) == AX_RXHDR_L4_TYPE_TCP) ||
+> -	    ((*pkt_hdr & AX_RXHDR_L4_TYPE_MASK) == AX_RXHDR_L4_TYPE_UDP))
+> +	if (((pkt_hdr_val & AX_RXHDR_L4_TYPE_MASK) == AX_RXHDR_L4_TYPE_TCP) ||
+> +	    ((pkt_hdr_val & AX_RXHDR_L4_TYPE_MASK) == AX_RXHDR_L4_TYPE_UDP))
+>  		skb->ip_summed = CHECKSUM_UNNECESSARY;
+>  }
+
+This for example looks like pure refactoring which can be done
+separately.
+
+> +	 *   <dummy-header> contains 4 bytes:
+> +	 *		pkt_len=0 and AX_RXHDR_DROP_ERR
+> +	 *   <rx-hdr>	contains 4 bytes:
+> +	 *		pkt_cnt and hdr_off (offset of 
+
+There's trailing whitespace on this line.
