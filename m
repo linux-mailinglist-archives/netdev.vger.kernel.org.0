@@ -2,104 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC0FA5555A3
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 23:00:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E900C556DC0
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 23:13:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229912AbiFVU7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 16:59:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41362 "EHLO
+        id S1356964AbiFVVM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 17:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229710AbiFVU7H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 16:59:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C6615FFE;
-        Wed, 22 Jun 2022 13:59:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83B00B82108;
-        Wed, 22 Jun 2022 20:59:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E287FC34114;
-        Wed, 22 Jun 2022 20:59:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655931544;
-        bh=JAuvwzzIc8I0jEMb6uKgOcBoYXCBX/+WPVXr9EWW1kI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=UmGJQPn65btImLAlFTy2bVGaGScB5/S+aZr9e5hvEglA7m4xtXMV/bFBh87LN6eFL
-         5i4WUy9cNv8vQEcWWxSzCSmEA8/ukKozHe9EOCm3aS1bWu/NshZkhHiVER55cdGOI7
-         bx3Eb1Ls7F6g3a0LrF1gCDSU+Hh0xnB1ujhoRSuhtO49Wj55pIyRlnnahrloi7vzS6
-         8+Gl5D5po9yoDzqEiGl7FbF4VNCrPSyJLT1ZDMblKsHiAeTGnrB0qi0y2tIAY5v0tJ
-         hMjl3t/agrqYK6qZ0z7FTnNPcSWxGji6jK39zkfrGUDUpEwhOXJjD5/Bh1aZpFXN/P
-         WgofHm1Ky4/9g==
-Date:   Wed, 22 Jun 2022 15:59:01 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     bhelgaas@google.com, Jiawen Wu <jiawenwu@trustnetic.com>,
-        netdev@vger.kernel.org, linux-pci@vger.kernel.org
-Subject: Re: [PATCH net-next v7] net: txgbe: Add build support for txgbe
-Message-ID: <20220622205901.GA1390995@bhelgaas>
+        with ESMTP id S1344588AbiFVVMz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 17:12:55 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96BAB4;
+        Wed, 22 Jun 2022 14:12:51 -0700 (PDT)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 1ABC64000B;
+        Wed, 22 Jun 2022 21:12:47 +0000 (UTC)
+Message-ID: <b89a4d69-9ec8-10f1-363a-523eb451ccf8@ovn.org>
+Date:   Wed, 22 Jun 2022 23:12:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220621223315.60b657f4@kernel.org>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Cc:     i.maximets@ovn.org,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Florian Westphal <fw@strlen.de>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, dev@openvswitch.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>
+References: <20220619003919.394622-1-i.maximets@ovn.org>
+ <CANn89iL_EmkEgPAVdhNW4tyzwQbARyji93mUQ9E2MRczWpNm7g@mail.gmail.com>
+ <20220622102813.GA24844@breakpoint.cc>
+ <CANn89iLGKbeeBNoDQU9C7nPRCxc6FUsrwn0LfrAKrJiJ14PH+w@mail.gmail.com>
+ <c7ab4a7b-a987-e74b-dd2d-ee2c8ca84147@ovn.org>
+ <CANn89iLxqae9wZ-h5M-whSsmAZ_7hW1e_=krvSyF8x89Y6o76w@mail.gmail.com>
+ <068ad894-c60f-c089-fd4a-5deda1c84cdd@ovn.org>
+ <CANn89iJ=Xc57pdZ-NaRF7FXZnq2skh5MJ3aDtDCGp8RNG4oowA@mail.gmail.com>
+ <CANn89i+yy3mL2BUT=uhhkACVviWXCA9fdE1mrG=ZMuSQKdK8SQ@mail.gmail.com>
+ <CANn89iLVHAE5aMwo0dow14mdFK0JjokE9y5KV+67AxKJdSjx=w@mail.gmail.com>
+ <CANn89i+5pWbXyFBnMqdfz6SqRV9enFNHbcd_2irJub1Ag7vxNw@mail.gmail.com>
+ <673a6f2b-dab2-e00f-b37c-15f8775b2121@ovn.org>
+ <CANn89i+a6nd=80X-7p+GLq9Tvx7QjRYHkHVJgrjJu_UO30+SDQ@mail.gmail.com>
+ <CANn89i+en=eU3L1kCcn41+-MRuoge0KHwcLHY3ah8TRmLMaMvg@mail.gmail.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [PATCH net] net: ensure all external references are released in
+ deferred skbuffs
+In-Reply-To: <CANn89i+en=eU3L1kCcn41+-MRuoge0KHwcLHY3ah8TRmLMaMvg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NEUTRAL,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 10:33:15PM -0700, Jakub Kicinski wrote:
-> On Tue, 21 Jun 2022 10:32:09 +0800 Jiawen Wu wrote:
-> > --- a/drivers/pci/quirks.c
-> > +++ b/drivers/pci/quirks.c
-> > @@ -5942,3 +5942,18 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x56b1, aspm_l1_acceptable_latency
-> >  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x56c0, aspm_l1_acceptable_latency);
-> >  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x56c1, aspm_l1_acceptable_latency);
-> >  #endif
-> > +
-> > +static void quirk_wangxun_set_read_req_size(struct pci_dev *pdev)
-> > +{
-> > +	u16 ctl;
-> > +
-> > +	pcie_capability_read_word(pdev, PCI_EXP_DEVCTL, &ctl);
-> > +
-> > +	if (((ctl & PCI_EXP_DEVCTL_READRQ) != PCI_EXP_DEVCTL_READRQ_128B) &&
-> > +	    ((ctl & PCI_EXP_DEVCTL_READRQ) != PCI_EXP_DEVCTL_READRQ_256B))
-> > +		pcie_capability_clear_and_set_word(pdev, PCI_EXP_DEVCTL,
-> > +						   PCI_EXP_DEVCTL_READRQ,
-> > +						   PCI_EXP_DEVCTL_READRQ_256B);
-> > +}
-> > +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_WANGXUN, PCI_ANY_ID,
-> > +			 quirk_wangxun_set_read_req_size);
+On 6/22/22 21:27, Eric Dumazet wrote:
+> On Wed, Jun 22, 2022 at 9:04 PM Eric Dumazet <edumazet@google.com> wrote:
+>>
+>> On Wed, Jun 22, 2022 at 8:19 PM Ilya Maximets <i.maximets@ovn.org> wrote:
+>>>
+>>> On 6/22/22 19:03, Eric Dumazet wrote:
+>>>> On Wed, Jun 22, 2022 at 6:47 PM Eric Dumazet <edumazet@google.com> wrote:
+>>>>>
+>>>>> On Wed, Jun 22, 2022 at 6:39 PM Eric Dumazet <edumazet@google.com> wrote:
+>>>>>>
+>>>>>> On Wed, Jun 22, 2022 at 6:29 PM Eric Dumazet <edumazet@google.com> wrote:
+>>>>>>>
+>>>>>>> On Wed, Jun 22, 2022 at 4:26 PM Ilya Maximets <i.maximets@ovn.org> wrote:
+>>>>>>>>
+>>>>>>>> On 6/22/22 13:43, Eric Dumazet wrote:
+>>>>>>>
+>>>>>>>>
+>>>>>>>> I tested the patch below and it seems to fix the issue seen
+>>>>>>>> with OVS testsuite.  Though it's not obvious for me why this
+>>>>>>>> happens.  Can you explain a bit more?
+>>>>>>>
+>>>>>>> Anyway, I am not sure we can call nf_reset_ct(skb) that early.
+>>>>>>>
+>>>>>>> git log seems to say that xfrm check needs to be done before
+>>>>>>> nf_reset_ct(skb), I have no idea why.
+>>>>>>
+>>>>>> Additional remark: In IPv6 side, xfrm6_policy_check() _is_ called
+>>>>>> after nf_reset_ct(skb)
+>>>>>>
+>>>>>> Steffen, do you have some comments ?
+>>>>>>
+>>>>>> Some context:
+>>>>>> commit b59c270104f03960069596722fea70340579244d
+>>>>>> Author: Patrick McHardy <kaber@trash.net>
+>>>>>> Date:   Fri Jan 6 23:06:10 2006 -0800
+>>>>>>
+>>>>>>     [NETFILTER]: Keep conntrack reference until IPsec policy checks are done
+>>>>>>
+>>>>>>     Keep the conntrack reference until policy checks have been performed for
+>>>>>>     IPsec NAT support. The reference needs to be dropped before a packet is
+>>>>>>     queued to avoid having the conntrack module unloadable.
+>>>>>>
+>>>>>>     Signed-off-by: Patrick McHardy <kaber@trash.net>
+>>>>>>     Signed-off-by: David S. Miller <davem@davemloft.net>
+>>>>>>
+>>>>>
+>>>>> Oh well... __xfrm_policy_check() has :
+>>>>>
+>>>>> nf_nat_decode_session(skb, &fl, family);
+>>>>>
+>>>>> This  answers my questions.
+>>>>>
+>>>>> This means we are probably missing at least one XFRM check in TCP
+>>>>> stack in some cases.
+>>>>> (Only after adding this XFRM check we can call nf_reset_ct(skb))
+>>>>>
+>>>>
+>>>> Maybe this will help ?
+>>>
+>>> I tested this patch and it seems to fix the OVS problem.
+>>> I did not test the xfrm part of it.
+>>>
+>>> Will you post an official patch?
+>>
+>> Yes I will. I need to double check we do not leak either the req, or the child.
+>>
+>> Maybe the XFRM check should be done even earlier, on the listening socket ?
+>>
+>> Or if we assume the SYNACK packet has been sent after the XFRM test
+>> has been applied to the SYN,
+>> maybe we could just call nf_reset_ct(skb) to lower risk of regressions.
+>>
+>> With the last patch, it would be strange that we accept the 3WHS and
+>> establish a socket,
+>> but drop the payload in the 3rd packet...
 > 
-> Hi Bjorn! Other than the fact that you should obviously have been CCed
-> on the patch [1] - what are the general rules on the quirks? Should
-> this be sent separately to your PCI tree?
+> Ilya, can you test the following patch ?
 
-This is a little bit ugly because the PCI core assumes that it
-controls PCI_EXP_DEVCTL_READRQ (Max_Read_Request_Size / MRRS) and uses
-it as part of the hierarchy-wide strategy for managing
-Max_Payload_Size / MPS.
+Tested with OVS and it works fine, the issue doesn't appear.
+Still didn't test the xfrm part, as I'm not sure how.
 
-This is all in pcie_bus_configure_settings() and is called after
-enumerating all devices, so I think it happens *after* all the quirks
-have been run.  So whatever this quirk does might be overwritten by
-pcie_bus_configure_settings().
+> I think it makes more sense to let XFRM reject the packet earlier, and
+> not complete the 3WHS,
+> if for some reason this happens.
 
-I assume wangxun needs to set MRRS to 128 or 256 bytes.  The power-up
-default is supposed to be 512 bytes, and pcie_bus_configure_settings()
-may choose something else.  There are some drivers that call
-pcie_set_readrq() from their probe functions, and that's probably what
-you should do, too.
+OK.  However, now the patch looks more like two separate fixes.
 
-I do see that quirk_brcm_5719_limit_mrrs() does this as a quirk after
-0b471506712d ("tg3: Recode PCI MRRS adjustment as a PCI quirk"), but I
-don't think that is reliable.  Apparently it *used* to be done during
-probe, and I don't know why it was changed to be a quirk.
+> 
+> Thanks !
+> 
+> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> index fe8f23b95d32ca4a35d05166d471327bc608fa91..da5a3c44c4fb70f1d3ecc596e694a86267f1c44a
+> 100644
+> --- a/net/ipv4/tcp_ipv4.c
+> +++ b/net/ipv4/tcp_ipv4.c
+> @@ -1964,7 +1964,10 @@ int tcp_v4_rcv(struct sk_buff *skb)
+>                 struct sock *nsk;
+> 
+>                 sk = req->rsk_listener;
+> -               drop_reason = tcp_inbound_md5_hash(sk, skb,
+> +               if (!xfrm4_policy_check(sk, XFRM_POLICY_IN, skb))
+> +                       drop_reason = SKB_DROP_REASON_XFRM_POLICY;
+> +               else
+> +                       drop_reason = tcp_inbound_md5_hash(sk, skb,
+>                                                    &iph->saddr, &iph->daddr,
+>                                                    AF_INET, dif, sdif);
+>                 if (unlikely(drop_reason)) {
+> @@ -2016,6 +2019,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
+>                         }
+>                         goto discard_and_relse;
+>                 }
+> +               nf_reset_ct(skb);
+>                 if (nsk == sk) {
+>                         reqsk_put(req);
+>                         tcp_v4_restore_cb(skb);
 
-> [1]
-> https://lore.kernel.org/all/20220621023209.599386-1-jiawenwu@trustnetic.com/
