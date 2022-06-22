@@ -2,128 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69071554E20
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 17:00:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05117554E24
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 17:01:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358494AbiFVPAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 11:00:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59966 "EHLO
+        id S1358227AbiFVPAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 11:00:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230123AbiFVPAU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 11:00:20 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FCFB3DDE6;
-        Wed, 22 Jun 2022 08:00:17 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id e63so14830414pgc.5;
-        Wed, 22 Jun 2022 08:00:17 -0700 (PDT)
+        with ESMTP id S1358884AbiFVPAi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 11:00:38 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B105A3E0C4
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 08:00:36 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id y32so28255316lfa.6
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 08:00:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=NUInGvIaCWlBmCyU3f6jLXuI/R6odOMByfzoWikcb6k=;
-        b=qKj3B6pJG5pUu4ic64fh4xm5fzzwN/rV7rBmQr1cmr5obfi3R7Tr7cElyP08nV2Vq1
-         sPxZAm5o3+CTgLdF1njeSr92Iconj6ZffQCo2eTJyl2Pmi6FHqJICy1TspHOvGh5hM5s
-         jPJxXM3b8qu3yIkROnljR+exmKIt4xvaYvC9T30zUEdHuA3h2iBOEg4u/KqPaJRCwXVa
-         VYpY/YK9lQPiVHDI/ZP26o200+cMb/qIhwjsq7AQ6FJ7Y1qe/lpyN/hpvu3/9lhU7t0S
-         WTKTahsVpnn1I93OC0CgfGMdzshYSxzKk51/CesIAJaz3BDIISf7t0buWjbHMeiGwfPA
-         sl+g==
+        d=semihalf.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Ot619CPCB+Os3Ma2zzaC2EQcVEWPZ51BE3CwtG6/D/Y=;
+        b=gRu32UY4Bm+ZmXkImTLAi5ks8x/VhZVMF8bm+1iriWv6IAOvsztz8SZ5nCBkLf3OJC
+         tEQATuW6ysvNT0R5+g9gUZE3620Ht5OUsTXDyM754PAv+hP+6JDy0G1su/lus37M4Ghg
+         qrBXbP2NCP/uwxDro5K2norKo3vMsCfN6HVtt3obD1OjDmqMSrM96ylCuv30zFpjUXR5
+         ZHXBZXhcKgXRmX85r87v18m/Uep6tkd3spwYispgbXxpmdfcaRkiZELWD8TXE/EUb4Vh
+         6jzc74qipm2b+UVw2vKoZFN0Ghtg4qw7395UG3glEG1IXM3QipBxVgdgmUdGtGN3FNdY
+         3uzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=NUInGvIaCWlBmCyU3f6jLXuI/R6odOMByfzoWikcb6k=;
-        b=it7Cf/Hcf4Rl4G+jKJkHWKCngwwQNQPJTY9pcmKPo+VEEQTE9eMbD0E1GugskbnnxN
-         J0aZ6zYtINU0u/P9TwO2OpSwIw0WfB03TFnVUPz4tMnaWODbJNUhSjjC9NK8l74qOwJZ
-         tehOA36P0a7Lukb5Ah7vlw8oa+/pQVfNHVgRmdhjZ2zUPEA5Q3tgcoMZNG1yNSUIQO+T
-         BWkVhEVdF5xt57o+fnlsed/q6qKfKZmTu9XcH2zmbcVV7WE+3YA9Xb4ZEzmDt4bhWAwR
-         OVIY4B/ewc1ISJoGUzte2YMyK96irYnZ/opdV+tQzjOGjV7cIWQzkthgU66H/hfE7wta
-         1fQg==
-X-Gm-Message-State: AJIora/k685ZAlacQp+kImsCdfUST/3Ad96T6JD0MLUHWuS1WwSB72k8
-        rR9IQoWNqCUAG4a5mQpSlOE=
-X-Google-Smtp-Source: AGRyM1tRfN/NWoK1WHO5kIJN1aJDHAv2D6/YitDEjju3U1/sbEbNEtCgJ3jZlN28KP+Bk1j715kxYg==
-X-Received: by 2002:a63:3817:0:b0:40c:c766:c935 with SMTP id f23-20020a633817000000b0040cc766c935mr3272635pga.481.1655910016650;
-        Wed, 22 Jun 2022 08:00:16 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id d9-20020a639909000000b0040cfb5151fcsm3505438pge.74.2022.06.22.08.00.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 08:00:14 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Wed, 22 Jun 2022 08:00:13 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Subject: Re: [PATCH net-next 1/2] net: sfp: use hwmon_sanitize_name()
-Message-ID: <20220622150013.GA1861763@roeck-us.net>
-References: <20220622123543.3463209-1-michael@walle.cc>
- <20220622123543.3463209-2-michael@walle.cc>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Ot619CPCB+Os3Ma2zzaC2EQcVEWPZ51BE3CwtG6/D/Y=;
+        b=uiSrHT1B2K8ApO41UoX7sdnb+vK0oIrlA8SQozFalrC38kiqkDDillVsodyydDX6rI
+         rFfU9I3PzEd26K0kpelD4va4ZvyJlfqv9qn8wXREFC5bRMJG0biuMXlCYHEsdp0Pbjfi
+         zMEsj/HbEQkFW6c0x6CJzNbugGqJEDtOIF9xGKHoHiJQ55WatzeNBADDBURR2940kyhW
+         gZ5u5VFdH406feBBVzo4/+qvcoYG8dtdnJ2BNAMBeLZTjlLPfUt6yZYO+sY90PtCpSTQ
+         bP5LVOVw7D1OAvsRKBdTVKt4kAPRemPgVUWJneZVNPLcv1t/RJyuXx898xSkWOZERDmX
+         58+Q==
+X-Gm-Message-State: AJIora9LGSan6CN2l1/IAQqNkITK7A6iV/SJrd+k/Zww7e3o93h5Ro1f
+        bq7xoyofPt2zKPAVUOTSwdNx1fHZiRH0ZULBBECp6w==
+X-Google-Smtp-Source: AGRyM1unI7r0V2nFtbd0hAmRtQ/C4hrOSHl9aG7WH7LVtA0iL1YvX6N5FIgi3bqsqZw20IPX+PzcHlNiajpNUeu6q5U=
+X-Received: by 2002:a05:6512:3090:b0:47f:60f8:31d6 with SMTP id
+ z16-20020a056512309000b0047f60f831d6mr2454957lfd.514.1655910033821; Wed, 22
+ Jun 2022 08:00:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220622123543.3463209-2-michael@walle.cc>
-X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20220620150225.1307946-1-mw@semihalf.com> <20220620150225.1307946-10-mw@semihalf.com>
+ <YrDO05TMK8SVgnBP@lunn.ch> <YrGm2jmR7ijHyQjJ@smile.fi.intel.com>
+ <YrGpDgtm4rPkMwnl@lunn.ch> <YrGukfw4uiQz0NpW@smile.fi.intel.com>
+ <CAPv3WKf_2QYh0F2LEr1DeErvnMeQqT0M5t40ROP2G6HSUwKpQQ@mail.gmail.com>
+ <YrL3DQD92ijLam2V@smile.fi.intel.com> <YrL7Z6/ghTO/9wlx@lunn.ch> <YrMlEcKwpTmR5qj6@smile.fi.intel.com>
+In-Reply-To: <YrMlEcKwpTmR5qj6@smile.fi.intel.com>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Wed, 22 Jun 2022 17:00:21 +0200
+Message-ID: <CAPv3WKeT_OaTS6es=WKx8gmQ=zuzv0EqfW=vPafNA2hYbhQJ6g@mail.gmail.com>
+Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA description
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, vivien.didelot@gmail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 02:35:42PM +0200, Michael Walle wrote:
-> Instead of open-coding the bad characters replacement in the hwmon name,
-> use the new hwmon_sanitize_name().
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+=C5=9Br., 22 cze 2022 o 16:20 Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> napisa=C5=82(a):
+>
+> On Wed, Jun 22, 2022 at 01:22:15PM +0200, Andrew Lunn wrote:
+> > > > It's not device on MDIO bus, but the MDIO controller's register its=
+elf
+> > > > (this _CSR belongs to the parent, subnodes do not refer to it in an=
+y
+> > > > way). The child device requires only _ADR (or whatever else is need=
+ed
+> > > > for the case the DSA device is attached to SPI/I2C controllers).
+> > >
+> > > More and more the idea of standardizing the MDIOSerialBus() resource =
+looks
+> > > plausible. The _ADR() usage is a bit grey area in ACPI specification.=
+ Maybe
+> > > someone can also make it descriptive, so Microsoft and others won't u=
+tilize
+> > > _ADR() in any level of weirdness.
+> >
+> > I don't know if it makes any difference, but there are two protocols
+> > spoken over MDIO, c22 and c45, specified in clause 22 and clause 45 of
+> > the 802.3 specification. In some conditions, you need to specify which
+> > protocol to speak to a device at a particular address. In DT we
+> > indicate this with the compatible string, when maybe it should really
+> > be considered as an extension of the address.
+> >
+> > If somebody does produce a draft for MDIOSerialBus() i'm happy to
+> > review it.
+>
+> I also can review it. Marcin, would it be hard for you to prepare a forma=
+l
+> proposal for ACPI specification?
+>
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
+I've just consulted this to get an understanding of the process.
+* I will initiate it with the code-first ECR using the linux-acpi
+mailing list, where all the technical review will take place.
+* At the same time a ticket and the formal process for this will be
+triggered within UEFI Forum.
+* Once everything gets approved, an official confirmation will be
+provided and from that moment, it would allow us to proceed with
+implementation without need of waiting months for another ACPI
+Specification release.
 
-> ---
->  drivers/net/phy/sfp.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-> index 9a5d5a10560f..81a529c3dbe4 100644
-> --- a/drivers/net/phy/sfp.c
-> +++ b/drivers/net/phy/sfp.c
-> @@ -1290,7 +1290,7 @@ static const struct hwmon_chip_info sfp_hwmon_chip_info = {
->  static void sfp_hwmon_probe(struct work_struct *work)
->  {
->  	struct sfp *sfp = container_of(work, struct sfp, hwmon_probe.work);
-> -	int err, i;
-> +	int err;
->  
->  	/* hwmon interface needs to access 16bit registers in atomic way to
->  	 * guarantee coherency of the diagnostic monitoring data. If it is not
-> @@ -1318,16 +1318,12 @@ static void sfp_hwmon_probe(struct work_struct *work)
->  		return;
->  	}
->  
-> -	sfp->hwmon_name = kstrdup(dev_name(sfp->dev), GFP_KERNEL);
-> -	if (!sfp->hwmon_name) {
-> +	sfp->hwmon_name = hwmon_sanitize_name(dev_name(sfp->dev));
-> +	if (IS_ERR(sfp->hwmon_name)) {
->  		dev_err(sfp->dev, "out of memory for hwmon name\n");
->  		return;
->  	}
->  
-> -	for (i = 0; sfp->hwmon_name[i]; i++)
-> -		if (hwmon_is_bad_char(sfp->hwmon_name[i]))
-> -			sfp->hwmon_name[i] = '_';
-> -
->  	sfp->hwmon_dev = hwmon_device_register_with_info(sfp->dev,
->  							 sfp->hwmon_name, sfp,
->  							 &sfp_hwmon_chip_info,
-> -- 
-> 2.30.2
-> 
+Unless anyone objects, I will include this thread recipients to take
+part in review of the proposed MDIOSerialBus _CRS resource macro
+contents, so it contains all relevant information.
+
+Note: Once this hopefully gets accepted one day and allow us proceed
+with Linux handling, it should be easy to satisfy backward
+compatibility with current users of MDIO+PHY in ACPI.
+
+Best regards,
+Marcin
