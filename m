@@ -2,157 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9892554CDF
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 16:24:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5797554CEC
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 16:26:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358667AbiFVOY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 10:24:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48610 "EHLO
+        id S1353459AbiFVO0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 10:26:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358369AbiFVOYt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 10:24:49 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD77C3A5F5
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 07:24:35 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-f2a4c51c45so22616451fac.9
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 07:24:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=RTCiI3z/FejuYZ8fuG7ALGW0XqlrQSjMbaE9qwJX9Cg=;
-        b=ZQVTbEN7aUSDEdVs2YzfZWlgi3LbLYER2SLB8yHQY9UzSHPRwUSbJ/NDygAsKrAd7J
-         aCH94nDm4GL5jbWvtBLV8vfQuiMl7/ZDQHOeePpUKtuiYYEaVMFgNk3doBxXIONUBjgv
-         I6Rp+PmtrGPbaTovYHGreme6UXJYrZb4m5Bjs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=RTCiI3z/FejuYZ8fuG7ALGW0XqlrQSjMbaE9qwJX9Cg=;
-        b=tsisFcLEGH6r+l/Y8gdxYPidckk9XTqYR2PRnqWBDR6/dI9iTesUby59+WTBSAYNX5
-         p+IEM5yzehjx7Z7PkV6HtFeniIKXTVAqKrUKQozjAb8kh37u2t/ntsU5y2eVuDdWb1Mf
-         ORgefsj271wioRRrmEiG2DdGHv8EAY8YtKOEhHdGByJ+uJmVatabDQGnCGMys1gt13DR
-         Me+9fnCmzXS4mrmJ8n6X2hw10jRg0AH6cyTzrK10iEfArDoSh5+6jsH7kC4UHhKV6ttn
-         xMrbmvapDFKASmOeLBa2wy87wI9Heqtcckc2WOmpjv9GTbN8zpUp4//SpO+aYCJBG6/l
-         oKvw==
-X-Gm-Message-State: AJIora9mdgQUcTkRpQX/C2bfw1BCvCRu4LXdhRyQtgIjKAnqGD4z41ZB
-        37n+zYo7JlO1FFTDzDXM0Y1Oag==
-X-Google-Smtp-Source: AGRyM1v60GyMFZawKSzE9AV+dokDeZ2oOw03of096v2vdWHskT34HNJlwjkQbYpYkHqZslvi3hON/w==
-X-Received: by 2002:a05:6870:3320:b0:fd:a944:1abf with SMTP id x32-20020a056870332000b000fda9441abfmr24133333oae.251.1655907874821;
-        Wed, 22 Jun 2022 07:24:34 -0700 (PDT)
-Received: from [192.168.0.115] ([172.58.70.161])
-        by smtp.gmail.com with ESMTPSA id w25-20020a4a7659000000b0035eb4e5a6cesm11612512ooe.36.2022.06.22.07.24.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 07:24:34 -0700 (PDT)
-Message-ID: <b72c889a-4a50-3330-baae-3bbf065e7187@cloudflare.com>
-Date:   Wed, 22 Jun 2022 09:24:31 -0500
+        with ESMTP id S1356759AbiFVO0f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 10:26:35 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB431B78A;
+        Wed, 22 Jun 2022 07:26:31 -0700 (PDT)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 94B8A60007;
+        Wed, 22 Jun 2022 14:26:24 +0000 (UTC)
+Message-ID: <068ad894-c60f-c089-fd4a-5deda1c84cdd@ovn.org>
+Date:   Wed, 22 Jun 2022 16:26:23 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 0/2] Introduce security_create_user_ns()
+ Thunderbird/91.8.0
+Cc:     i.maximets@ovn.org, Florian Westphal <fw@strlen.de>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, dev@openvswitch.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
 Content-Language: en-US
-To:     Casey Schaufler <casey@schaufler-ca.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, serge@hallyn.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Cc:     brauner@kernel.org, paul@paul-moore.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@cloudflare.com
-References: <20220621233939.993579-1-fred@cloudflare.com>
- <ce1653b1-feb0-1a99-0e97-8dfb289eeb79@schaufler-ca.com>
-From:   Frederick Lawler <fred@cloudflare.com>
-In-Reply-To: <ce1653b1-feb0-1a99-0e97-8dfb289eeb79@schaufler-ca.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+To:     Eric Dumazet <edumazet@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+References: <20220619003919.394622-1-i.maximets@ovn.org>
+ <CANn89iL_EmkEgPAVdhNW4tyzwQbARyji93mUQ9E2MRczWpNm7g@mail.gmail.com>
+ <20220622102813.GA24844@breakpoint.cc>
+ <CANn89iLGKbeeBNoDQU9C7nPRCxc6FUsrwn0LfrAKrJiJ14PH+w@mail.gmail.com>
+ <c7ab4a7b-a987-e74b-dd2d-ee2c8ca84147@ovn.org>
+ <CANn89iLxqae9wZ-h5M-whSsmAZ_7hW1e_=krvSyF8x89Y6o76w@mail.gmail.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [PATCH net] net: ensure all external references are released in
+ deferred skbuffs
+In-Reply-To: <CANn89iLxqae9wZ-h5M-whSsmAZ_7hW1e_=krvSyF8x89Y6o76w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NEUTRAL,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Casey,
-
-On 6/21/22 7:19 PM, Casey Schaufler wrote:
-> On 6/21/2022 4:39 PM, Frederick Lawler wrote:
->> While creating a LSM BPF MAC policy to block user namespace creation, we
->> used the LSM cred_prepare hook because that is the closest hook to 
->> prevent
->> a call to create_user_ns().
+On 6/22/22 13:43, Eric Dumazet wrote:
+> On Wed, Jun 22, 2022 at 1:32 PM Ilya Maximets <i.maximets@ovn.org> wrote:
 >>
->> The calls look something like this:
+>> On 6/22/22 12:36, Eric Dumazet wrote:
+>>> On Wed, Jun 22, 2022 at 12:28 PM Florian Westphal <fw@strlen.de> wrote:
+>>>>
+>>>> Eric Dumazet <edumazet@google.com> wrote:
+>>>>> On Sun, Jun 19, 2022 at 2:39 AM Ilya Maximets <i.maximets@ovn.org> wrote:
+>>>>>>
+>>>>>> Open vSwitch system test suite is broken due to inability to
+>>>>>> load/unload netfilter modules.  kworker thread is getting trapped
+>>>>>> in the infinite loop while running a net cleanup inside the
+>>>>>> nf_conntrack_cleanup_net_list, because deferred skbuffs are still
+>>>>>> holding nfct references and not being freed by their CPU cores.
+>>>>>>
+>>>>>> In general, the idea that we will have an rx interrupt on every
+>>>>>> CPU core at some point in a near future doesn't seem correct.
+>>>>>> Devices are getting created and destroyed, interrupts are getting
+>>>>>> re-scheduled, CPUs are going online and offline dynamically.
+>>>>>> Any of these events may leave packets stuck in defer list for a
+>>>>>> long time.  It might be OK, if they are just a piece of memory,
+>>>>>> but we can't afford them holding references to any other resources.
+>>>>>>
+>>>>>> In case of OVS, nfct reference keeps the kernel thread in busy loop
+>>>>>> while holding a 'pernet_ops_rwsem' semaphore.  That blocks the
+>>>>>> later modprobe request from user space:
+>>>>>>
+>>>>>>   # ps
+>>>>>>    299 root  R  99.3  200:25.89 kworker/u96:4+
+>>>>>>
+>>>>>>   # journalctl
+>>>>>>   INFO: task modprobe:11787 blocked for more than 1228 seconds.
+>>>>>>         Not tainted 5.19.0-rc2 #8
+>>>>>>   task:modprobe     state:D
+>>>>>>   Call Trace:
+>>>>>>    <TASK>
+>>>>>>    __schedule+0x8aa/0x21d0
+>>>>>>    schedule+0xcc/0x200
+>>>>>>    rwsem_down_write_slowpath+0x8e4/0x1580
+>>>>>>    down_write+0xfc/0x140
+>>>>>>    register_pernet_subsys+0x15/0x40
+>>>>>>    nf_nat_init+0xb6/0x1000 [nf_nat]
+>>>>>>    do_one_initcall+0xbb/0x410
+>>>>>>    do_init_module+0x1b4/0x640
+>>>>>>    load_module+0x4c1b/0x58d0
+>>>>>>    __do_sys_init_module+0x1d7/0x220
+>>>>>>    do_syscall_64+0x3a/0x80
+>>>>>>    entry_SYSCALL_64_after_hwframe+0x46/0xb0
+>>>>>>
+>>>>>> At this point OVS testsuite is unresponsive and never recover,
+>>>>>> because these skbuffs are never freed.
+>>>>>>
+>>>>>> Solution is to make sure no external references attached to skb
+>>>>>> before pushing it to the defer list.  Using skb_release_head_state()
+>>>>>> for that purpose.  The function modified to be re-enterable, as it
+>>>>>> will be called again during the defer list flush.
+>>>>>>
+>>>>>> Another approach that can fix the OVS use-case, is to kick all
+>>>>>> cores while waiting for references to be released during the net
+>>>>>> cleanup.  But that sounds more like a workaround for a current
+>>>>>> issue rather than a proper solution and will not cover possible
+>>>>>> issues in other parts of the code.
+>>>>>>
+>>>>>> Additionally checking for skb_zcopy() while deferring.  This might
+>>>>>> not be necessary, as I'm not sure if we can actually have zero copy
+>>>>>> packets on this path, but seems worth having for completeness as we
+>>>>>> should never defer such packets regardless.
+>>>>>>
+>>>>>> CC: Eric Dumazet <edumazet@google.com>
+>>>>>> Fixes: 68822bdf76f1 ("net: generalize skb freeing deferral to per-cpu lists")
+>>>>>> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+>>>>>> ---
+>>>>>>  net/core/skbuff.c | 16 +++++++++++-----
+>>>>>>  1 file changed, 11 insertions(+), 5 deletions(-)
+>>>>>
+>>>>> I do not think this patch is doing the right thing.
+>>>>>
+>>>>> Packets sitting in TCP receive queues should not hold state that is
+>>>>> not relevant for TCP recvmsg().
+>>>>
+>>>> Agree, but tcp_v4/6_rcv() already call nf_reset_ct(), else it would
+>>>> not be possible to remove nf_conntrack module in practice.
+>>>
+>>> Well, existing nf_reset_ct() does not catch all cases, like TCP fastopen ?
 >>
->>      cred = prepare_creds()
->>          security_prepare_creds()
->>              call_int_hook(cred_prepare, ...
->>      if (cred)
->>          create_user_ns(cred)
->>
->> We noticed that error codes were not propagated from this hook and
->> introduced a patch [1] to propagate those errors.
->>
->> The discussion notes that security_prepare_creds()
->> is not appropriate for MAC policies, and instead the hook is
->> meant for LSM authors to prepare credentials for mutation. [2]
->>
->> Ultimately, we concluded that a better course of action is to introduce
->> a new security hook for LSM authors. [3]
->>
->> This patch set first introduces a new security_create_user_ns() function
->> and create_user_ns LSM hook, then marks the hook as sleepable in BPF.
+>> Yeah, that is kind of the main problem I have with the current
+>> code.  It's very hard to find all the cases where skb has to be
+>> cleaned up and almost impossible for someone who doesn't know
+>> every aspect of every network subsystem in the kernel.  That's
+>> why I went with the more or less bulletproof approach of cleaning
+>> up while actually deferring.  I can try and test the code you
+>> proposed in the other reply, but at least, I think, we need a
+>> bunch of debug warnings in the skb_attempt_defer_free() to catch
+>> possible issues.
 > 
-> Why restrict this hook to user namespaces? It seems that an LSM that
-> chooses to preform controls on user namespaces may want to do so for
-> network namespaces as well.
-IIRC, CLONE_NEWUSER is the only namespace flag that does not require 
-CAP_SYS_ADMIN. There is a security use case to prevent this namespace 
-from being created within an unprivileged environment. I'm not opposed 
-to a more generic hook, but I don't currently have a use case to block 
-any others. We can also say the same is true for the other namespaces: 
-add this generic security function to these too.
-
-I'm curious what others think about this too.
-
-
-> Also, the hook seems backwards. You should
-> decide if the creation of the namespace is allowed before you create it.
-> Passing the new namespace to a function that checks to see creating a
-> namespace is allowed doesn't make a lot off sense.
+> Debug warnings are expensive if they need to bring new cache lines.
 > 
+> So far skb_attempt_defer_free() is only used by TCP in well known conditions.
 
-I think having more context to a security hook is a good thing. I 
-believe you brought up in the previous discussions that you'd like to 
-use this hook for xattr purposes. Doesn't that require a namespace?
+That's true for skb_attempt_defer_free() itself, but it's
+hard to tell the same for all the parts of the code that
+are enqueuing these skbuffs.  Even if all the places are
+well known, it looks to me highly error prone.  Having
+a couple of DEBUG_NET_WARN_ON_ONCE should not cause any
+performance issues, IIUC, unless debug is enabled, right?
 
+e.g.
+
+	DEBUG_NET_WARN_ON_ONCE(skb_nfct(skb));
+	DEBUG_NET_WARN_ON_ONCE(skb_dst(skb));
+
+> 
+> 
 >>
->> Links:
->> 1. 
->> https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
->> 2. 
->> https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/ 
+>> Also, what about cleaning up extensions?  IIUC, at least one
+>> of them can hold external references.  SKB_EXT_SEC_PATH holds
+>> xfrm_state.  We should, probably, free them as well?
+> 
+> I do not know about this, I would ask XFRM maintainers
+
+@Steffen, @Herbert, what do you think?  Is it a problem if the
+skb holding SKB_EXT_SEC_PATH extension is held not freed in
+a defer list indefinitely (for a very long time)?  Or is it
+even possible for an skb with SKB_EXT_SEC_PATH extension present
+to be enqueued to a TCP receive queue without releasing all
+the references?
+
+This seems like a long existing problem though, so can be fixed
+separately, if it is a problem.
+
+> 
 >>
->> 3. 
->> https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/ 
->>
->>
->> Frederick Lawler (2):
->>    security, lsm: Introduce security_create_user_ns()
->>    bpf-lsm: Make bpf_lsm_create_user_ns() sleepable
->>
->>   include/linux/lsm_hook_defs.h | 2 ++
->>   include/linux/lsm_hooks.h     | 5 +++++
->>   include/linux/security.h      | 8 ++++++++
->>   kernel/bpf/bpf_lsm.c          | 1 +
->>   kernel/user_namespace.c       | 5 +++++
->>   security/security.c           | 6 ++++++
->>   6 files changed, 27 insertions(+)
->>
->> -- 
->> 2.30.2
->>
+>> And what about zerocopy skb?  I think, we should still not
+>> allow them to be deferred as they seem to hold HW resources.
+> 
+> The point of skb_attempt_defer_free() i is to make the freeing happen
+> at producer
+>  much instead of consumer.
+> 
+> I do not think there is anything special in this regard with zero
+> copy. I would leave the current code as is.
+
+The problem is that these skbuffs are never actually freed,
+so if they do hold HW resources, these resources will never be
+released (never == for a very long time, hours, days).
+
+Not a blocker from my point of view, just trying to highlight
+a possible issue.
+
+> 
+> A simpler patch might be to move the existing nf_reset_ct() earlier,
+> can you test this ?
+
+I tested the patch below and it seems to fix the issue seen
+with OVS testsuite.  Though it's not obvious for me why this
+happens.  Can you explain a bit more?
+
+> 
+> I note that IPv6 does the nf_reset_ct() earlier, from ip6_protocol_deliver_rcu()
+> 
+> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> index fda811a5251f2d76ac24a036e6b4f4e7d7d96d6f..a06464f96fe0cc94dd78272738ddaab2c19e87db
+> 100644
+> --- a/net/ipv4/tcp_ipv4.c
+> +++ b/net/ipv4/tcp_ipv4.c
+> @@ -1919,6 +1919,8 @@ int tcp_v4_rcv(struct sk_buff *skb)
+>         struct sock *sk;
+>         int ret;
+> 
+> +       nf_reset_ct(skb);
+> +
+>         drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
+>         if (skb->pkt_type != PACKET_HOST)
+>                 goto discard_it;
+> @@ -2046,8 +2048,6 @@ int tcp_v4_rcv(struct sk_buff *skb)
+>         if (drop_reason)
+>                 goto discard_and_relse;
+> 
+> -       nf_reset_ct(skb);
+> -
+>         if (tcp_filter(sk, skb)) {
+>                 drop_reason = SKB_DROP_REASON_SOCKET_FILTER;
+>                 goto discard_and_relse;
 
