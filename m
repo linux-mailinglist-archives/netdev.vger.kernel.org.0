@@ -2,63 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44DC955474D
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:12:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2130955479C
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:12:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353349AbiFVJye (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 05:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48020 "EHLO
+        id S243556AbiFVKDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 06:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352645AbiFVJyX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 05:54:23 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88BDB3A5DD;
-        Wed, 22 Jun 2022 02:54:21 -0700 (PDT)
-Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LSdxs0C8dz689t8;
-        Wed, 22 Jun 2022 17:53:53 +0800 (CST)
-Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
- fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 22 Jun 2022 11:54:18 +0200
-Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
- fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
- Wed, 22 Jun 2022 11:54:18 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "kafai@fb.com" <kafai@fb.com>, "yhs@fb.com" <yhs@fb.com>
-CC:     "dhowells@redhat.com" <dhowells@redhat.com>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernel test robot" <lkp@intel.com>
-Subject: RE: [PATCH v5 3/5] bpf: Add bpf_verify_pkcs7_signature() helper
-Thread-Topic: [PATCH v5 3/5] bpf: Add bpf_verify_pkcs7_signature() helper
-Thread-Index: AQHYhY1kCHhKSR2HMUKh5v3j7X869a1aT6EAgADgkDA=
-Date:   Wed, 22 Jun 2022 09:54:18 +0000
-Message-ID: <03b67c7a6161428c9ff8a5dde0450402@huawei.com>
-References: <20220621163757.760304-1-roberto.sassu@huawei.com>
- <20220621163757.760304-4-roberto.sassu@huawei.com>
- <62b245e22effa_1627420871@john.notmuch>
-In-Reply-To: <62b245e22effa_1627420871@john.notmuch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.221.98.153]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        with ESMTP id S244780AbiFVKCt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 06:02:49 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF8303A5F0
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 03:02:48 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id w6so29299564ybl.4
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 03:02:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=i5TcadfDwpNkHBHIGjc2aejtAjCEkDrL44PzWJy8/V0=;
+        b=L3XsTDjK6bd7Lklt/VqZOZHzMPK51HDrkj40KLhiL3PYWfI42oo542VKJrW9hpm/Tp
+         VCXGOSA8SUS6Keb+m635xGx/eS3Yas4Kq3fJCIGqApKcx2bme9EUR8rpN2Aw1OsQsVuf
+         biE8iLSSVzRF1pXBcVAp/zHWcaPLqwQHBtWk9/HxBcYTKtmDHFg2um2GE1G0MG1LhCbJ
+         llSDUKeGQAN6aX3zqn0Ms8hW4KwlWBwHR8aS/NTbvfgXfAv6Wr66i8WKvUiWP0lvA3+Q
+         tl/2YOGACARIcMzwvrZwvRdohnnV7CPjVczI5rz0NnSju3sQTYc59xuofhQCndxokN8m
+         2LjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=i5TcadfDwpNkHBHIGjc2aejtAjCEkDrL44PzWJy8/V0=;
+        b=WoxjWnMOQ368EyhBuiuJ+F4uMfoMo80D4X/4IQUn0NyGsIbfZZ9tN192C9jbCZYMTD
+         TwOrK93NkCmNREErd1hyFLLbBiSHEHaB6Yawi0KjAmeBfvUkV/N0eJG0uvVYPKeYCT3f
+         yx5skzu6GVvVlHwdUbXytK4TUMIXrJhNFst5y7xe5STcyA5eFLB4pX7WmxrAE/+PkDv6
+         Jj6g9ADamvUhho9qFahlvPv2IaoO/Xx1HZX+x/7mLmgkz7Xrk0BAJwQdw62+Y+ZIXM24
+         rDR2XWp8qjox+VeEzgknXi9lRt1J2U9A+K4sMA6qh9WaXspaQH/NImJYADz9juRYdqvT
+         mM9A==
+X-Gm-Message-State: AJIora9RMZVTYg1YsC8zoP4Qt2dV9hF3S3dUWwalwr1grWPZBV09ixq7
+        +GTl1XSfhK2opRrDTaoYrUVkbVdCIku4sTxsE9kIWn2CBC0=
+X-Google-Smtp-Source: AGRyM1sV6bezNTxFdNk13U3p+VXhOBJQu0/mI+L7VnjJbxiSkdDBQbNDUQOmO/4J4gjHVebjZL+eDU+pfoHNNyUCsAw=
+X-Received: by 2002:a25:e211:0:b0:669:9cf9:bac7 with SMTP id
+ h17-20020a25e211000000b006699cf9bac7mr328830ybe.407.1655892167707; Wed, 22
+ Jun 2022 03:02:47 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20220619003919.394622-1-i.maximets@ovn.org>
+In-Reply-To: <20220619003919.394622-1-i.maximets@ovn.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 22 Jun 2022 12:02:36 +0200
+Message-ID: <CANn89iL_EmkEgPAVdhNW4tyzwQbARyji93mUQ9E2MRczWpNm7g@mail.gmail.com>
+Subject: Re: [PATCH net] net: ensure all external references are released in
+ deferred skbuffs
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, dev@openvswitch.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Westphal <fw@strlen.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,71 +71,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBGcm9tOiBKb2huIEZhc3RhYmVuZCBbbWFpbHRvOmpvaG4uZmFzdGFiZW5kQGdtYWlsLmNvbV0N
-Cj4gU2VudDogV2VkbmVzZGF5LCBKdW5lIDIyLCAyMDIyIDEyOjI4IEFNDQo+IFJvYmVydG8gU2Fz
-c3Ugd3JvdGU6DQo+ID4gQWRkIHRoZSBicGZfdmVyaWZ5X3BrY3M3X3NpZ25hdHVyZSgpIGhlbHBl
-ciwgdG8gZ2l2ZSBlQlBGIHNlY3VyaXR5IG1vZHVsZXMNCj4gPiB0aGUgYWJpbGl0eSB0byBjaGVj
-ayB0aGUgdmFsaWRpdHkgb2YgYSBzaWduYXR1cmUgYWdhaW5zdCBzdXBwbGllZCBkYXRhLCBieQ0K
-PiA+IHVzaW5nIHVzZXItcHJvdmlkZWQgb3Igc3lzdGVtLXByb3ZpZGVkIGtleXMgYXMgdHJ1c3Qg
-YW5jaG9yLg0KPiA+DQo+ID4gVGhlIG5ldyBoZWxwZXIgbWFrZXMgaXQgcG9zc2libGUgdG8gZW5m
-b3JjZSBtYW5kYXRvcnkgcG9saWNpZXMsIGFzIGVCUEYNCj4gPiBwcm9ncmFtcyBtaWdodCBiZSBh
-bGxvd2VkIHRvIG1ha2Ugc2VjdXJpdHkgZGVjaXNpb25zIG9ubHkgYmFzZWQgb24gZGF0YQ0KPiA+
-IHNvdXJjZXMgdGhlIHN5c3RlbSBhZG1pbmlzdHJhdG9yIGFwcHJvdmVzLg0KPiA+DQo+ID4gVGhl
-IGNhbGxlciBzaG91bGQgcHJvdmlkZSBib3RoIHRoZSBkYXRhIHRvIGJlIHZlcmlmaWVkIGFuZCB0
-aGUgc2lnbmF0dXJlIGFzDQo+ID4gZUJQRiBkeW5hbWljIHBvaW50ZXJzICh0byBtaW5pbWl6ZSB0
-aGUgbnVtYmVyIG9mIHBhcmFtZXRlcnMpLg0KPiA+DQo+ID4gVGhlIGNhbGxlciBzaG91bGQgYWxz
-byBwcm92aWRlIGEga2V5cmluZyBwb2ludGVyIG9idGFpbmVkIHdpdGgNCj4gPiBicGZfbG9va3Vw
-X3VzZXJfa2V5KCkgb3IsIGFsdGVybmF0aXZlbHksIGEga2V5cmluZyBJRCB3aXRoIHZhbHVlcyBk
-ZWZpbmVkDQo+ID4gaW4gdmVyaWZpY2F0aW9uLmguIFdoaWxlIHRoZSBmaXJzdCBjaG9pY2UgZ2l2
-ZXMgdXNlcnMgbW9yZSBmbGV4aWJpbGl0eSwgdGhlDQo+ID4gc2Vjb25kIG9mZmVycyBiZXR0ZXIg
-c2VjdXJpdHkgZ3VhcmFudGVlcywgYXMgdGhlIGtleXJpbmcgc2VsZWN0aW9uIHdpbGwgbm90DQo+
-ID4gZGVwZW5kIG9uIHBvc3NpYmx5IHVudHJ1c3RlZCB1c2VyIHNwYWNlIGJ1dCBvbiB0aGUga2Vy
-bmVsIGl0c2VsZi4NCj4gPg0KPiA+IERlZmluZWQga2V5cmluZyBJRHMgYXJlOiAwIGZvciB0aGUg
-cHJpbWFyeSBrZXlyaW5nIChpbW11dGFibGUga2V5cmluZyBvZg0KPiA+IHN5c3RlbSBrZXlzKTsg
-MSBmb3IgYm90aCB0aGUgcHJpbWFyeSBhbmQgc2Vjb25kYXJ5IGtleXJpbmcgKHdoZXJlIGtleXMg
-Y2FuDQo+ID4gYmUgYWRkZWQgb25seSBpZiB0aGV5IGFyZSB2b3VjaGVkIGZvciBieSBleGlzdGlu
-ZyBrZXlzIGluIHRob3NlIGtleXJpbmdzKTsNCj4gPiAyIGZvciB0aGUgcGxhdGZvcm0ga2V5cmlu
-ZyAocHJpbWFyaWx5IHVzZWQgYnkgdGhlIGludGVncml0eSBzdWJzeXN0ZW0gdG8NCj4gPiB2ZXJp
-ZnkgYSBrZXhlYydlZCBrZXJuZWQgaW1hZ2UgYW5kLCBwb3NzaWJseSwgdGhlIGluaXRyYW1mcyBz
-aWduYXR1cmUpLg0KPiA+DQo+ID4gTm90ZTogc2luY2UgdGhlIGtleXJpbmcgSUQgYXNzaWdubWVu
-dCBpcyB1bmRlcnN0b29kIG9ubHkgYnkNCj4gPiB2ZXJpZnlfcGtjczdfc2lnbmF0dXJlKCksIGl0
-IG11c3QgYmUgcGFzc2VkIGRpcmVjdGx5IHRvIHRoZSBjb3JyZXNwb25kaW5nDQo+ID4gaGVscGVy
-LCByYXRoZXIgdGhhbiB0byBhIHNlcGFyYXRlIG5ldyBoZWxwZXIgcmV0dXJuaW5nIGEgc3RydWN0
-IGtleSBwb2ludGVyDQo+ID4gd2l0aCB0aGUga2V5cmluZyBJRCBhcyBhIHBvaW50ZXIgdmFsdWUu
-IElmIHN1Y2ggcG9pbnRlciBpcyBwYXNzZWQgdG8gYW55DQo+ID4gb3RoZXIgaGVscGVyIHdoaWNo
-IGRvZXMgbm90IGNoZWNrIGl0cyB2YWxpZGl0eSwgYW4gaWxsZWdhbCBtZW1vcnkgYWNjZXNzDQo+
-ID4gY291bGQgb2NjdXIuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBSb2JlcnRvIFNhc3N1IDxy
-b2JlcnRvLnNhc3N1QGh1YXdlaS5jb20+DQo+ID4gUmVwb3J0ZWQtYnk6IGtlcm5lbCB0ZXN0IHJv
-Ym90IDxsa3BAaW50ZWwuY29tPiAoY2FzdCB3YXJuaW5nKQ0KPiA+IC0tLQ0KPiA+ICBpbmNsdWRl
-L3VhcGkvbGludXgvYnBmLmggICAgICAgfCAxNyArKysrKysrKysrKysrKysNCj4gPiAga2VybmVs
-L2JwZi9icGZfbHNtLmMgICAgICAgICAgIHwgMzkgKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKw0KPiA+ICB0b29scy9pbmNsdWRlL3VhcGkvbGludXgvYnBmLmggfCAxNyArKysrKysr
-KysrKysrKysNCj4gPiAgMyBmaWxlcyBjaGFuZ2VkLCA3MyBpbnNlcnRpb25zKCspDQo+ID4NCj4g
-PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5oIGIvaW5jbHVkZS91YXBpL2xp
-bnV4L2JwZi5oDQo+ID4gaW5kZXggN2JiY2YyY2QxMDVkLi41MjRiZWQ0ZDcxNzAgMTAwNjQ0DQo+
-ID4gLS0tIGEvaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5oDQo+ID4gKysrIGIvaW5jbHVkZS91YXBp
-L2xpbnV4L2JwZi5oDQo+ID4gQEAgLTUzMzksNiArNTMzOSwyMiBAQCB1bmlvbiBicGZfYXR0ciB7
-DQo+ID4gICAqCQlicGZfbG9va3VwX3VzZXJfa2V5KCkgaGVscGVyLg0KPiA+ICAgKglSZXR1cm4N
-Cj4gPiAgICoJCTANCj4gPiArICoNCj4gPiArICogbG9uZyBicGZfdmVyaWZ5X3BrY3M3X3NpZ25h
-dHVyZShzdHJ1Y3QgYnBmX2R5bnB0ciAqZGF0YV9wdHIsIHN0cnVjdA0KPiBicGZfZHlucHRyICpz
-aWdfcHRyLCBzdHJ1Y3Qga2V5ICp0cnVzdGVkX2tleXMsIHVuc2lnbmVkIGxvbmcga2V5cmluZ19p
-ZCkNCj4gPiArICoJRGVzY3JpcHRpb24NCj4gPiArICoJCVZlcmlmeSB0aGUgUEtDUyM3IHNpZ25h
-dHVyZSAqc2lnKiBhZ2FpbnN0IHRoZSBzdXBwbGllZCAqZGF0YSoNCj4gPiArICoJCXdpdGgga2V5
-cyBpbiAqdHJ1c3RlZF9rZXlzKiBvciBpbiBhIGtleXJpbmcgd2l0aCBJRA0KPiA+ICsgKgkJKmtl
-eXJpbmdfaWQqLg0KPiANCj4gV291bGQgYmUgbmljZSB0byBnaXZlIHByZWNlZGVuY2UgaGVyZSBz
-byB0aGF0IGl0cyBvYnZpb3VzIG9yZGVyIGJldHdlZW4NCj4gdHJ1c3RlZF9rZXlzIGFuZCBrZXly
-aW5nX2lkLg0KDQpEaWQgeW91IG1lYW4gdG8gYWRkIGF0IHRoZSBlbmQgb2YgdGhlIHNlbnRlbmNl
-Og0KDQpvciBpbiBhIGtleXJpbmcgd2l0aCBJRCAqa2V5cmluZ19pZCosIGlmICp0cnVzdGVkX2tl
-eXMqIGlzIE5VTEwuDQoNClRoYW5rcw0KDQpSb2JlcnRvDQoNCkhVQVdFSSBURUNITk9MT0dJRVMg
-RHVlc3NlbGRvcmYgR21iSCwgSFJCIDU2MDYzDQpNYW5hZ2luZyBEaXJlY3RvcjogTGkgUGVuZywg
-WWFuZyBYaSwgTGkgSGUNCg0KPiA+ICsgKg0KPiA+ICsgKgkJKmtleXJpbmdfaWQqIGNhbiBoYXZl
-IHRoZSBmb2xsb3dpbmcgdmFsdWVzIGRlZmluZWQgaW4NCj4gPiArICoJCXZlcmlmaWNhdGlvbi5o
-OiAwIGZvciB0aGUgcHJpbWFyeSBrZXlyaW5nIChpbW11dGFibGUga2V5cmluZyBvZg0KPiA+ICsg
-KgkJc3lzdGVtIGtleXMpOyAxIGZvciBib3RoIHRoZSBwcmltYXJ5IGFuZCBzZWNvbmRhcnkga2V5
-cmluZw0KPiA+ICsgKgkJKHdoZXJlIGtleXMgY2FuIGJlIGFkZGVkIG9ubHkgaWYgdGhleSBhcmUg
-dm91Y2hlZCBmb3IgYnkNCj4gPiArICoJCWV4aXN0aW5nIGtleXMgaW4gdGhvc2Uga2V5cmluZ3Mp
-OyAyIGZvciB0aGUgcGxhdGZvcm0ga2V5cmluZw0KPiA+ICsgKgkJKHByaW1hcmlseSB1c2VkIGJ5
-IHRoZSBpbnRlZ3JpdHkgc3Vic3lzdGVtIHRvIHZlcmlmeSBhIGtleGVjJ2VkDQo+ID4gKyAqCQlr
-ZXJuZWQgaW1hZ2UgYW5kLCBwb3NzaWJseSwgdGhlIGluaXRyYW1mcyBzaWduYXR1cmUpLg0KPiA+
-ICsgKglSZXR1cm4NCj4gPiArICoJCTAgb24gc3VjY2VzcywgYSBuZWdhdGl2ZSB2YWx1ZSBvbiBl
-cnJvci4NCj4gPiAgICovDQo=
+On Sun, Jun 19, 2022 at 2:39 AM Ilya Maximets <i.maximets@ovn.org> wrote:
+>
+> Open vSwitch system test suite is broken due to inability to
+> load/unload netfilter modules.  kworker thread is getting trapped
+> in the infinite loop while running a net cleanup inside the
+> nf_conntrack_cleanup_net_list, because deferred skbuffs are still
+> holding nfct references and not being freed by their CPU cores.
+>
+> In general, the idea that we will have an rx interrupt on every
+> CPU core at some point in a near future doesn't seem correct.
+> Devices are getting created and destroyed, interrupts are getting
+> re-scheduled, CPUs are going online and offline dynamically.
+> Any of these events may leave packets stuck in defer list for a
+> long time.  It might be OK, if they are just a piece of memory,
+> but we can't afford them holding references to any other resources.
+>
+> In case of OVS, nfct reference keeps the kernel thread in busy loop
+> while holding a 'pernet_ops_rwsem' semaphore.  That blocks the
+> later modprobe request from user space:
+>
+>   # ps
+>    299 root  R  99.3  200:25.89 kworker/u96:4+
+>
+>   # journalctl
+>   INFO: task modprobe:11787 blocked for more than 1228 seconds.
+>         Not tainted 5.19.0-rc2 #8
+>   task:modprobe     state:D
+>   Call Trace:
+>    <TASK>
+>    __schedule+0x8aa/0x21d0
+>    schedule+0xcc/0x200
+>    rwsem_down_write_slowpath+0x8e4/0x1580
+>    down_write+0xfc/0x140
+>    register_pernet_subsys+0x15/0x40
+>    nf_nat_init+0xb6/0x1000 [nf_nat]
+>    do_one_initcall+0xbb/0x410
+>    do_init_module+0x1b4/0x640
+>    load_module+0x4c1b/0x58d0
+>    __do_sys_init_module+0x1d7/0x220
+>    do_syscall_64+0x3a/0x80
+>    entry_SYSCALL_64_after_hwframe+0x46/0xb0
+>
+> At this point OVS testsuite is unresponsive and never recover,
+> because these skbuffs are never freed.
+>
+> Solution is to make sure no external references attached to skb
+> before pushing it to the defer list.  Using skb_release_head_state()
+> for that purpose.  The function modified to be re-enterable, as it
+> will be called again during the defer list flush.
+>
+> Another approach that can fix the OVS use-case, is to kick all
+> cores while waiting for references to be released during the net
+> cleanup.  But that sounds more like a workaround for a current
+> issue rather than a proper solution and will not cover possible
+> issues in other parts of the code.
+>
+> Additionally checking for skb_zcopy() while deferring.  This might
+> not be necessary, as I'm not sure if we can actually have zero copy
+> packets on this path, but seems worth having for completeness as we
+> should never defer such packets regardless.
+>
+> CC: Eric Dumazet <edumazet@google.com>
+> Fixes: 68822bdf76f1 ("net: generalize skb freeing deferral to per-cpu lists")
+> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
+> ---
+>  net/core/skbuff.c | 16 +++++++++++-----
+>  1 file changed, 11 insertions(+), 5 deletions(-)
+
+I do not think this patch is doing the right thing.
+
+Packets sitting in TCP receive queues should not hold state that is
+not relevant for TCP recvmsg().
+
+This consumes extra memory for no good reason, and defer expensive
+atomic operations.
+
+We for instance release skb dst before skb is queued, we should do the
+same for conntrack state.
+
+This would increase performance anyway, as we free ct state while cpu
+caches are hot.
