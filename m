@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8005755465B
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:10:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8554D554637
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:10:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357309AbiFVJJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 05:09:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35162 "EHLO
+        id S1357275AbiFVJKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 05:10:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357187AbiFVJJe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 05:09:34 -0400
+        with ESMTP id S1357274AbiFVJJj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 05:09:39 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4260A655D;
-        Wed, 22 Jun 2022 02:07:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F13930F7D;
+        Wed, 22 Jun 2022 02:08:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655888876; x=1687424876;
+  t=1655888891; x=1687424891;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=icS9ww33nS5c6vx3JRhg5AukSknYpFlZE6EotAMz4ts=;
-  b=syU0htRzFv64npyQBtXV4/PVk1JUH8U0yRq9R71weLLbGZzkLW2E1Fm4
-   BK2T0iYJ0Bo3Kklw1zJF/j47CghHev45z15ujPShqp9PcN0aLxIljq9OV
-   6puRDC6MpJ77oAHOsWniB5HTJ6Tla/6C6VrRsRGH/pjEu/b5Tiwn+e11P
-   j+Xouy2LuobFMoqlPlEcaPEYwMTNstxj90uiYgtfI88r/gyqhQ0QSHe+l
-   Tfb7Vkq1KRRGDiGtRaWMJVXlxqAPTVGEXmMTZ7yJpnCTQwYyXb8Gf1aYB
-   e63IhsoUfo4BL56yI1YNd2sEOViUGADhoW/d3i7arqvNohlB2dGD+3HPE
+  bh=ex7EEdNA0l4W9ocblvz6P5Q2Ph8QUhH9oxSUyhLzrgE=;
+  b=YwDlQwOk3KpD3i6QUGflXXoovZfAFxvW4EcvtsocVxmNw+wgS/Y5FKq8
+   c+h5G1Dw+fNM6jx1nZQsXKOWm5wDz+sUsbPeAs7ldQhIIHEUKGTxLizEi
+   iAFi5LKPNR1Mhw9sSGeYD/oAeDXXSqy8GnkXtOXyOPx73VVbgQ++NW++U
+   7z4PHSTsWxAmYj6+RR2TuJEZxhuT+Z77SMVewS9/W1EyX94SXj6BNXoSw
+   1/r57XsS43KCpgdgHT52mgGzeJA0wyTzYiIznkIBmQ6sCdR3574CZirBk
+   xFHEQXxs0U7dcnfuWSNk7/0edtJCO4cUf37NkhireiHzPlrSRWHt8TONZ
    g==;
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="169425168"
+   d="scan'208";a="179017287"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Jun 2022 02:07:54 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Jun 2022 02:08:11 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 22 Jun 2022 02:07:53 -0700
+ 15.1.2375.17; Wed, 22 Jun 2022 02:08:10 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 22 Jun 2022 02:07:48 -0700
+ 15.1.2375.17 via Frontend Transport; Wed, 22 Jun 2022 02:08:06 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Woojung Huh <woojung.huh@microchip.com>,
@@ -50,9 +50,9 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         "Russell King" <linux@armlinux.org.uk>
-Subject: [Patch net-next 06/13] net: dsa: microchip: move multicast enable to ksz_setup
-Date:   Wed, 22 Jun 2022 14:34:18 +0530
-Message-ID: <20220622090425.17709-7-arun.ramadoss@microchip.com>
+Subject: [Patch net-next 07/13] net: dsa: microchip: move start of switch to ksz_setup
+Date:   Wed, 22 Jun 2022 14:34:19 +0530
+Message-ID: <20220622090425.17709-8-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220622090425.17709-1-arun.ramadoss@microchip.com>
 References: <20220622090425.17709-1-arun.ramadoss@microchip.com>
@@ -69,204 +69,192 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch moves the enabling the multicast storm protection from
-individual setup function to ksz_setup function.
+This patch move the setting the start bit from the individual switch
+configuration to ksz_setup
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/ksz8795.c     |  2 --
  drivers/net/dsa/microchip/ksz8795_reg.h |  1 -
- drivers/net/dsa/microchip/ksz9477.c     |  2 --
+ drivers/net/dsa/microchip/ksz9477.c     |  3 ---
  drivers/net/dsa/microchip/ksz9477_reg.h |  1 -
- drivers/net/dsa/microchip/ksz_common.c  | 16 ++++++++++++++++
+ drivers/net/dsa/microchip/ksz_common.c  | 17 +++++++++++++++++
  drivers/net/dsa/microchip/ksz_common.h  |  3 +++
- 6 files changed, 19 insertions(+), 6 deletions(-)
+ 5 files changed, 20 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 1bbad202b238..662493db8638 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1406,8 +1406,6 @@ static int ksz8_setup(struct dsa_switch *ds)
- 			   UNICAST_VLAN_BOUNDARY | NO_EXC_COLLISION_DROP,
- 			   UNICAST_VLAN_BOUNDARY | NO_EXC_COLLISION_DROP);
- 
--	ksz_cfg(dev, REG_SW_CTRL_2, MULTICAST_STORM_DISABLE, true);
--
- 	ksz_cfg(dev, S_REPLACE_VID_CTRL, SW_REPLACE_VID, false);
- 
- 	ksz_cfg(dev, S_MIRROR_CTRL, SW_MIRROR_RX_TX, false);
 diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
-index 7b56e533a688..f2b0399d69d1 100644
+index f2b0399d69d1..32d985296520 100644
 --- a/drivers/net/dsa/microchip/ksz8795_reg.h
 +++ b/drivers/net/dsa/microchip/ksz8795_reg.h
-@@ -44,7 +44,6 @@
- #define REG_SW_CTRL_2			0x04
+@@ -16,7 +16,6 @@
  
- #define UNICAST_VLAN_BOUNDARY		BIT(7)
--#define MULTICAST_STORM_DISABLE		BIT(6)
- #define SW_BACK_PRESSURE		BIT(5)
- #define FAIR_FLOW_CTRL			BIT(4)
- #define NO_EXC_COLLISION_DROP		BIT(3)
+ #define SW_REVISION_M			0x0E
+ #define SW_REVISION_S			1
+-#define SW_START			0x01
+ 
+ #define KSZ8863_REG_SW_RESET		0x43
+ 
 diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index b2a6d2365c82..827e62b032d2 100644
+index 827e62b032d2..5fa5b3d09146 100644
 --- a/drivers/net/dsa/microchip/ksz9477.c
 +++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1281,8 +1281,6 @@ static int ksz9477_setup(struct dsa_switch *ds)
- 	if (ret)
- 		return ret;
+@@ -1287,9 +1287,6 @@ static int ksz9477_setup(struct dsa_switch *ds)
+ 	/* enable global MIB counter freeze function */
+ 	ksz_cfg(dev, REG_SW_MAC_CTRL_6, SW_MIB_COUNTER_FREEZE, true);
  
--	ksz_cfg(dev, REG_SW_MAC_CTRL_1, MULTICAST_STORM_DISABLE, true);
+-	/* start switch */
+-	ksz_cfg(dev, REG_SW_OPERATION, SW_START, true);
 -
- 	/* queue based egress rate limit */
- 	ksz_cfg(dev, REG_SW_MAC_CTRL_5, SW_OUT_RATE_LIMIT_QUEUE_BASED, true);
+ 	return 0;
+ }
  
 diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-index 0345fc7ac850..57e03dfcf869 100644
+index 57e03dfcf869..c0ad83753b13 100644
 --- a/drivers/net/dsa/microchip/ksz9477_reg.h
 +++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-@@ -265,7 +265,6 @@
+@@ -165,7 +165,6 @@
  
- #define REG_SW_MAC_CTRL_1		0x0331
+ #define SW_DOUBLE_TAG			BIT(7)
+ #define SW_RESET			BIT(1)
+-#define SW_START			BIT(0)
  
--#define MULTICAST_STORM_DISABLE		BIT(6)
- #define SW_BACK_PRESSURE		BIT(5)
- #define FAIR_FLOW_CTRL			BIT(4)
- #define NO_EXC_COLLISION_DROP		BIT(3)
+ #define REG_SW_MAC_ADDR_0		0x0302
+ #define REG_SW_MAC_ADDR_1		0x0303
 diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 976b2b18908f..719fa1b0884e 100644
+index 719fa1b0884e..6da4df520397 100644
 --- a/drivers/net/dsa/microchip/ksz_common.c
 +++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -154,6 +154,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
+@@ -155,6 +155,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.stp_ctrl_reg = 0x02,
  		.broadcast_ctrl_reg =  0x06,
-+		.multicast_ctrl_reg = 0x04,
+ 		.multicast_ctrl_reg = 0x04,
++		.start_ctrl_reg = 0x01,
  		.supports_mii = {false, false, false, false, true},
  		.supports_rmii = {false, false, false, false, true},
  		.supports_rgmii = {false, false, false, false, true},
-@@ -188,6 +189,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
+@@ -190,6 +191,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.stp_ctrl_reg = 0x02,
  		.broadcast_ctrl_reg =  0x06,
-+		.multicast_ctrl_reg = 0x04,
+ 		.multicast_ctrl_reg = 0x04,
++		.start_ctrl_reg = 0x01,
  		.supports_mii = {false, false, false, false, true},
  		.supports_rmii = {false, false, false, false, true},
  		.supports_rgmii = {false, false, false, false, true},
-@@ -208,6 +210,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
+@@ -211,6 +213,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.stp_ctrl_reg = 0x02,
  		.broadcast_ctrl_reg =  0x06,
-+		.multicast_ctrl_reg = 0x04,
+ 		.multicast_ctrl_reg = 0x04,
++		.start_ctrl_reg = 0x01,
  		.supports_mii = {false, false, false, false, true},
  		.supports_rmii = {false, false, false, false, true},
  		.supports_rgmii = {false, false, false, false, true},
-@@ -227,6 +230,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
+@@ -231,6 +234,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.stp_ctrl_reg = 0x02,
  		.broadcast_ctrl_reg =  0x06,
-+		.multicast_ctrl_reg = 0x04,
+ 		.multicast_ctrl_reg = 0x04,
++		.start_ctrl_reg = 0x01,
  		.supports_mii = {false, false, true},
  		.supports_rmii = {false, false, true},
  		.internal_phy = {true, true, false},
-@@ -246,6 +250,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
+@@ -251,6 +255,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.stp_ctrl_reg = 0x0B04,
  		.broadcast_ctrl_reg =  0x0332,
-+		.multicast_ctrl_reg = 0x0331,
+ 		.multicast_ctrl_reg = 0x0331,
++		.start_ctrl_reg = 0x0300,
  		.supports_mii	= {false, false, false, false,
  				   false, true, false},
  		.supports_rmii	= {false, false, false, false,
-@@ -270,6 +275,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
+@@ -276,6 +281,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.stp_ctrl_reg = 0x0B04,
  		.broadcast_ctrl_reg =  0x0332,
-+		.multicast_ctrl_reg = 0x0331,
+ 		.multicast_ctrl_reg = 0x0331,
++		.start_ctrl_reg = 0x0300,
  		.supports_mii	= {false, false, false, false,
  				   false, true, true},
  		.supports_rmii	= {false, false, false, false,
-@@ -293,6 +299,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
+@@ -300,6 +306,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.stp_ctrl_reg = 0x0B04,
  		.broadcast_ctrl_reg =  0x0332,
-+		.multicast_ctrl_reg = 0x0331,
+ 		.multicast_ctrl_reg = 0x0331,
++		.start_ctrl_reg = 0x0300,
  		.supports_mii = {false, false, true},
  		.supports_rmii = {false, false, true},
  		.supports_rgmii = {false, false, true},
-@@ -313,6 +320,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
+@@ -321,6 +328,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.stp_ctrl_reg = 0x0B04,
  		.broadcast_ctrl_reg =  0x0332,
-+		.multicast_ctrl_reg = 0x0331,
+ 		.multicast_ctrl_reg = 0x0331,
++		.start_ctrl_reg = 0x0300,
  		.supports_mii	= {false, false, false, false,
  				   false, true, true},
  		.supports_rmii	= {false, false, false, false,
-@@ -336,6 +344,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
+@@ -345,6 +353,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.stp_ctrl_reg = 0x0B04,
  		.broadcast_ctrl_reg =  0x0332,
-+		.multicast_ctrl_reg = 0x0331,
+ 		.multicast_ctrl_reg = 0x0331,
++		.start_ctrl_reg = 0x0300,
  		.supports_mii = {false, false, false, false, true},
  		.supports_rmii = {false, false, false, false, true},
  		.supports_rgmii = {false, false, false, false, true},
-@@ -355,6 +364,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
+@@ -365,6 +374,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.stp_ctrl_reg = 0x0B04,
  		.broadcast_ctrl_reg =  0x0332,
-+		.multicast_ctrl_reg = 0x0331,
+ 		.multicast_ctrl_reg = 0x0331,
++		.start_ctrl_reg = 0x0300,
  		.supports_mii = {false, false, false, false, true, true},
  		.supports_rmii = {false, false, false, false, true, true},
  		.supports_rgmii = {false, false, false, false, true, true},
-@@ -374,6 +384,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
+@@ -385,6 +395,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.stp_ctrl_reg = 0x0B04,
  		.broadcast_ctrl_reg =  0x0332,
-+		.multicast_ctrl_reg = 0x0331,
+ 		.multicast_ctrl_reg = 0x0331,
++		.start_ctrl_reg = 0x0300,
  		.supports_mii	= {false, false, false, false,
  				   true, true, false, false},
  		.supports_rmii	= {false, false, false, false,
-@@ -397,6 +408,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
+@@ -409,6 +420,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.stp_ctrl_reg = 0x0B04,
  		.broadcast_ctrl_reg =  0x0332,
-+		.multicast_ctrl_reg = 0x0331,
+ 		.multicast_ctrl_reg = 0x0331,
++		.start_ctrl_reg = 0x0300,
  		.supports_mii	= {false, false, false, false,
  				   true, true, false, false},
  		.supports_rmii	= {false, false, false, false,
-@@ -420,6 +432,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.reg_mib_cnt = MIB_COUNTER_NUM,
+@@ -433,6 +445,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
  		.stp_ctrl_reg = 0x0B04,
  		.broadcast_ctrl_reg =  0x0332,
-+		.multicast_ctrl_reg = 0x0331,
+ 		.multicast_ctrl_reg = 0x0331,
++		.start_ctrl_reg = 0x0300,
  		.supports_mii	= {false, false, false, false,
  				   true, true, false, false},
  		.supports_rmii	= {false, false, false, false,
-@@ -646,6 +659,9 @@ int ksz_setup(struct dsa_switch *ds)
+@@ -672,6 +685,10 @@ int ksz_setup(struct dsa_switch *ds)
+ 			return ret;
+ 	}
  
- 	dev->dev_ops->enable_stp_addr(dev);
- 
-+	regmap_update_bits(dev->regmap[0], dev->info->multicast_ctrl_reg,
-+			   MULTICAST_STORM_DISABLE, MULTICAST_STORM_DISABLE);
++	/* start switch */
++	regmap_update_bits(dev->regmap[0], dev->info->start_ctrl_reg,
++			   SW_START, SW_START);
 +
- 	ksz_init_mib_timer(dev);
- 
- 	ds->configure_vlan_while_not_filtering = false;
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(ksz_setup);
 diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 6aeee4771f06..35d734ee932e 100644
+index 35d734ee932e..2cf8474ba626 100644
 --- a/drivers/net/dsa/microchip/ksz_common.h
 +++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -48,6 +48,7 @@ struct ksz_chip_data {
- 	u8 reg_mib_cnt;
+@@ -49,6 +49,7 @@ struct ksz_chip_data {
  	int stp_ctrl_reg;
  	int broadcast_ctrl_reg;
-+	int multicast_ctrl_reg;
+ 	int multicast_ctrl_reg;
++	int start_ctrl_reg;
  	bool supports_mii[KSZ_MAX_NUM_PORTS];
  	bool supports_rmii[KSZ_MAX_NUM_PORTS];
  	bool supports_rgmii[KSZ_MAX_NUM_PORTS];
-@@ -426,6 +427,8 @@ static inline void ksz_regmap_unlock(void *__mtx)
- #define BROADCAST_STORM_RATE_LO		0xFF
- #define BROADCAST_STORM_RATE		0x07FF
+@@ -429,6 +430,8 @@ static inline void ksz_regmap_unlock(void *__mtx)
  
-+#define MULTICAST_STORM_DISABLE		BIT(6)
+ #define MULTICAST_STORM_DISABLE		BIT(6)
+ 
++#define SW_START			0x01
 +
  /* Regmap tables generation */
  #define KSZ_SPI_OP_RD		3
