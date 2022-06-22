@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8209D55431B
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 09:04:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BCE75543EE
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 10:10:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351639AbiFVGve (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 02:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33278 "EHLO
+        id S1349153AbiFVHGR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 22 Jun 2022 03:06:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351334AbiFVGvc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 02:51:32 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2045B35DC0;
-        Tue, 21 Jun 2022 23:51:31 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id s185so9530306pgs.3;
-        Tue, 21 Jun 2022 23:51:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=niUUVRIRw4J6TsPTvzTZNTwxYV2pE3XjscebFTdFk/s=;
-        b=aDzOpZs430kj0B3FbQJdRU99FdbqzgXH5ogGDVHmt2zc88EkmYFIvkfjTrb36sVHNQ
-         +Fq/Sa7ZdiCLazdgbhnfpHsfZixsJrNSmBJq4cgbUS4Y/FDQOCn92kk7snSjhdyG6Mdi
-         VqKYElPoFWKZG8hYa5QFUwbLsiUJMPFdhuFJBMAc9XDj9bOFm8/ceoqG71WJVdScQE1s
-         H9aSK7RiP8SXerWZWl1pvtqEn+CNDRkWycE5pYUkbCLr/KxECC82/GEBl6ucNzEiqwPV
-         yOwPMNm7uUVuBATNan3CGxFnaBIKsE1UX1gGi2kyNRq7mQqTEtoV9aZrmqzstB4delFg
-         s6og==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=niUUVRIRw4J6TsPTvzTZNTwxYV2pE3XjscebFTdFk/s=;
-        b=DRnod1t8SN7FadpfyK+cJC9f3wjd1j+SCdX6bwNSQhA7DC9+561KSLFMBv29WnRjWB
-         n2QSgXvSHzlVO7GBEd0/B/SFsvV2pdRhFJ43nBVBqh5KAsLXL0T8Nat/l5stcxxTLip2
-         4Ayu2TjsATOdj4MakvtXT8Mmdg0lj2vVXmVTupsjYs6l66D4hKxadqQqAmhNp7t2nmHM
-         7wTxsBrXpczHYgb7KY/IiD5qocBKdFlb9EKa6sh++jo5TUR/aiQ4JEJTK6+gntpaT2CS
-         KbITeXb9AL76ODPiqHOT0d32JcApSfjMgyfC7M2ykmDIWF3a6MM27cv1OQWhupxR6zkF
-         2mHA==
-X-Gm-Message-State: AJIora9Y/ZSt1a0ZtxPBiirY5jchPWYI1IxEt81VixWKmrUbCLrsmLoE
-        2HaDKV0nuf/Fn36cskXGi2k=
-X-Google-Smtp-Source: AGRyM1ucRbo0zkixEc3lxNBaFFOCSRntJD+QdEDuVi0zQvwm8xxuW+tLf4pkaPcZSNa1NKFz8Rz9GQ==
-X-Received: by 2002:a63:35c4:0:b0:40c:99f6:8889 with SMTP id c187-20020a6335c4000000b0040c99f68889mr1684738pga.387.1655880690601;
-        Tue, 21 Jun 2022 23:51:30 -0700 (PDT)
-Received: from localhost.localdomain ([103.84.139.165])
-        by smtp.gmail.com with ESMTPSA id bx5-20020a17090af48500b001e0899052f1sm13585858pjb.3.2022.06.21.23.51.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jun 2022 23:51:30 -0700 (PDT)
-From:   Hangyu Hua <hbh25y@gmail.com>
-To:     krzysztof.kozlowski@linaro.org, sameo@linux.intel.com,
-        christophe.ricard@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Hangyu Hua <hbh25y@gmail.com>
-Subject: [PATCH] nfc: st21nfca: fix possible double free in st21nfca_im_recv_dep_res_cb()
-Date:   Wed, 22 Jun 2022 14:51:17 +0800
-Message-Id: <20220622065117.23210-1-hbh25y@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230070AbiFVHGQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 03:06:16 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150A936B47;
+        Wed, 22 Jun 2022 00:06:15 -0700 (PDT)
+Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LSZB70KnBz67mnw;
+        Wed, 22 Jun 2022 15:04:15 +0800 (CST)
+Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
+ fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 22 Jun 2022 09:06:12 +0200
+Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
+ fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2375.024;
+ Wed, 22 Jun 2022 09:06:12 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "kafai@fb.com" <kafai@fb.com>, "yhs@fb.com" <yhs@fb.com>,
+        "dhowells@redhat.com" <dhowells@redhat.com>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v5 5/5] selftests/bpf: Add test for
+ bpf_verify_pkcs7_signature() helper
+Thread-Topic: [PATCH v5 5/5] selftests/bpf: Add test for
+ bpf_verify_pkcs7_signature() helper
+Thread-Index: AQHYhY2R+7oGNnsbDU2QqyKkP3n2X61aULGAgACwS9A=
+Date:   Wed, 22 Jun 2022 07:06:12 +0000
+Message-ID: <76c319d5ad1e4ac69ae5d3f71e9d62f7@huawei.com>
+References: <20220621163757.760304-1-roberto.sassu@huawei.com>
+ <20220621163757.760304-6-roberto.sassu@huawei.com>
+ <20220621223135.puwe3m55yznaevm5@macbook-pro-3.dhcp.thefacebook.com>
+In-Reply-To: <20220621223135.puwe3m55yznaevm5@macbook-pro-3.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.221.98.153]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,31 +68,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-nfc_tm_data_received will free skb internally when it fails. There is no
-need to free skb in st21nfca_im_recv_dep_res_cb again.
+> From: Alexei Starovoitov [mailto:alexei.starovoitov@gmail.com]
+> Sent: Wednesday, June 22, 2022 12:32 AM
+> On Tue, Jun 21, 2022 at 06:37:57PM +0200, Roberto Sassu wrote:
+> > +	if (child_pid == 0) {
+> > +		snprintf(path, sizeof(path), "%s/signing_key.pem", tmp_dir);
+> > +
+> > +		return execlp("./sign-file", "./sign-file", "-d", "sha256",
+> > +			      path, path, data_template, NULL);
+> 
+> Did you miss my earlier reply requesting not to do this module_signature append
+> and use signature directly?
 
-Fix this by setting skb to NULL when nfc_tm_data_received fails.
+I didn't miss. sign-file is producing the raw PKCS#7 signature here (-d).
 
-Fixes: 1892bf844ea0 ("NFC: st21nfca: Adding P2P support to st21nfca in Initiator & Target mode")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
----
- drivers/nfc/st21nfca/dep.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I'm doing something slightly different, to test the keyring ID part.
+I'm retrieving an existing kernel module (actually this does not work
+in the CI), parsing it to extract the raw signature, and passing it to the
+eBPF program for verification.
 
-diff --git a/drivers/nfc/st21nfca/dep.c b/drivers/nfc/st21nfca/dep.c
-index 1ec651e31064..07ac5688011c 100644
---- a/drivers/nfc/st21nfca/dep.c
-+++ b/drivers/nfc/st21nfca/dep.c
-@@ -594,7 +594,8 @@ static void st21nfca_im_recv_dep_res_cb(void *context, struct sk_buff *skb,
- 			    ST21NFCA_NFC_DEP_PFB_PNI(dep_res->pfb + 1);
- 			size++;
- 			skb_pull(skb, size);
--			nfc_tm_data_received(info->hdev->ndev, skb);
-+			if (nfc_tm_data_received(info->hdev->ndev, skb))
-+				skb = NULL;
- 			break;
- 		case ST21NFCA_NFC_DEP_PFB_SUPERVISOR_PDU:
- 			pr_err("Received a SUPERVISOR PDU\n");
--- 
-2.25.1
+Since the kernel module is signed with a key in the built-in keyring,
+passing 1 or 0 as ID should work.
 
+Roberto
+
+(sorry, I have to keep the email signature by German law)
+
+HUAWEI TECHNOLOGIES Duesseldorf GmbH, HRB 56063
+Managing Director: Li Peng, Yang Xi, Li He
