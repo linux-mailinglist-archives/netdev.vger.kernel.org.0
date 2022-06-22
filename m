@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B2A5554217
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 07:14:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F9F4554221
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 07:14:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357040AbiFVFNl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 01:13:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54060 "EHLO
+        id S1357051AbiFVFNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 01:13:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356924AbiFVFN2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 01:13:28 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 563C535DEE
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 22:13:27 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2eb7d137101so136292017b3.12
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 22:13:27 -0700 (PDT)
+        with ESMTP id S1356969AbiFVFN3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 01:13:29 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87A435DF2
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 22:13:28 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id a8-20020a25a188000000b0066839c45fe8so13667064ybi.17
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 22:13:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=1mcBhyhkyYvUwin15ciKRtLj/bHT6HY5NDONX+E6MMM=;
-        b=kfGlyiY8/tzXSmp+KRhULB6SjCgfmqgaoVgGuGzy/kV3pu3ojstYvNBvJDHqFNhUa4
-         JUXz59ANXPO/HG0mI96GiNBa9lxZMIlrTJLoTqC9U2bOVTeQGXdAKp/pJRD1FAxp7bso
-         m89ilJFuOJCgOdFTiWBOBuWlZEJeSRluE0zQAn12zBIOs/wAJY0HBnt6ynZCjgfCR/4F
-         Gd3LOSGfIJ3GQAqd8i2RdQ+zIm1HuPKn4ZTVs2eEOiExwgd2SoPr2+IKHLWpEz/ndHp9
-         Se2BgvcQ39Ntduv7SFr4GU+5I89j0mHLFtwJO9iuf+TKOVM5VRL1RAS1pvQ2R3XWOVR+
-         MJzg==
+        bh=7rjrQ3wFza4ZoUN3WC5B+Xi/dWO10C5OH6N7utNmGIw=;
+        b=LETSOc/bssPVooI/vaNgy4jS0YBe6yd7yiRnZCZ6kwrxfK1ITNI1kmJ5tTrwosMcBr
+         /hgQP8G8MhkD+Sjr6cYE8C+MwE3DO2DNAiFsbcGCCZzDO8gCQnZjEuKEdx42jWD2C4ue
+         n/cHD7hHkxO3I8TlXvqpf1oKsep8NNM7LJWASuCzDTZbDbJYes6iE3Gz06nwPJkNmhU2
+         vS16RE+lFo6i04aj+swmz7+e6lxOB2antwKIDY4gc0wayalgYFb0+SbvbdFfare21Fzt
+         Wf/GNc2xgXe19WTTbeTPVmqaiZXmT7RrHR3S/+6uTvzUXP+ZG99bVgGwojPT0ElqXAaA
+         73PQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=1mcBhyhkyYvUwin15ciKRtLj/bHT6HY5NDONX+E6MMM=;
-        b=rRNybELX6s8pPz05rJ0ZqxiFcArNoZ2skIJuMh8An9XaKsnPsn6o8dnUHa8U0VKhr7
-         VRDumY2VD1zBg07PpSi47L57FZ8tAL4j4gZ/4w0SYAMcLHrwzA3tDON1oeP9gY6SJOQh
-         vHHdqwSe9bh7/enQVW4OP3CGKPWeY3ujZ0yMD2r2LEPJUsRdixU9fI0gMyqtiu2O5tE9
-         mAP8SKMj5UKB7tPXESM4Nh8gqkUs4vtr8Af9+5O4rXyqfmmU0WIXA3QfZ/c+5agVW555
-         H5jZafidRw/8Ey3reNZhQT0oX8QGMNqykf2dXuaWuOgI05TL5Mw/rD4ktV2HgP7DT3TU
-         Or0g==
-X-Gm-Message-State: AJIora82TYtGpIbGrueO8Fu30ktdev4kBNFwYjhmRlzgLDcSYayPc6M9
-        mDUQoGgJ8AMwovFQdHZT8GoSpWtZjjiovg==
-X-Google-Smtp-Source: AGRyM1sPgMdgj1lF3Y4VSNffOkrcXAU6rNPN6NG3LA72Tmqxdz79R9C/6RJZ5bFwpPRO6BNr34AnTQo8yl59/A==
+        bh=7rjrQ3wFza4ZoUN3WC5B+Xi/dWO10C5OH6N7utNmGIw=;
+        b=DBy/SOZR3CJrGF/2IO4QAVWo/Q4Cuxgopa43PABmGOcb9AbXZzJMPZ6KvCfmxcZlX9
+         Dd6/oWe3cgEKr7rOV7ddsMyojVYpiOtGrqKSdGXBqxm8CbNUwqJjlZYz+DnqyLImpFqD
+         vL6K0pO9QTJkrKejLZZAp0XPhaKU7R2Mg3mDepMnVChcXJrG2hnNWHUVA9pVTgf3QSqi
+         PXAnzyxtfdO7VnMiaqn5x0D/1xYibX0F7a1t7XvaqhyKrJyU436JqdmSTHwa+a5HfWKC
+         6osXuA7jHbbBjIwUA8LQEvzc+BkDqqRzjohfa2SfwrzUZE2HV659kqOesrl8XqeNjl/p
+         DHmw==
+X-Gm-Message-State: AJIora+nq242VPylgAm8MrQmCmtVJwZUaT0mQ9c0LoVza2NbOyafqO5W
+        N/CxuwVskS+oiGbE2Uq85qgSt+6xJUqxBQ==
+X-Google-Smtp-Source: AGRyM1vhrc76EprVw5CApFmzsMttOfvoXPREFJDmb3jUuhPwqzFvpQ2smIL3KOD1FvJNkbdrG+hM+W28ZHnenA==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a25:8909:0:b0:656:ae08:d91a with SMTP id
- e9-20020a258909000000b00656ae08d91amr1887126ybl.414.1655874806670; Tue, 21
- Jun 2022 22:13:26 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 05:12:51 +0000
+ (user=edumazet job=sendgmr) by 2002:a0d:d8c5:0:b0:318:3994:cc3e with SMTP id
+ a188-20020a0dd8c5000000b003183994cc3emr2115457ywe.225.1655874808494; Tue, 21
+ Jun 2022 22:13:28 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 05:12:52 +0000
 In-Reply-To: <20220622051255.700309-1-edumazet@google.com>
-Message-Id: <20220622051255.700309-16-edumazet@google.com>
+Message-Id: <20220622051255.700309-17-edumazet@google.com>
 Mime-Version: 1.0
 References: <20220622051255.700309-1-edumazet@google.com>
 X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
-Subject: [PATCH net-next 15/19] ip6mr: switch ip6mr_get_route() to rcu_read_lock()
+Subject: [PATCH net-next 16/19] ipmr: adopt rcu_read_lock() in mr_dump()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -69,59 +69,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Like ipmr_get_route(), we can use standard RCU here.
+We no longer need to acquire mrt_lock() in mr_dump,
+using rcu_read_lock() is enough.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv6/ip6mr.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ include/linux/mroute_base.h | 4 ++--
+ net/ipv4/ipmr.c             | 2 +-
+ net/ipv4/ipmr_base.c        | 8 +++-----
+ net/ipv6/ip6mr.c            | 2 +-
+ 4 files changed, 7 insertions(+), 9 deletions(-)
 
-diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-index 8a751a36020334168fe87c98ea38d561e2fa1d94..08ac177fe30ca3bfbc50cd73b41cdc3da56d23e0 100644
---- a/net/ipv6/ip6mr.c
-+++ b/net/ipv6/ip6mr.c
-@@ -2290,7 +2290,7 @@ int ip6mr_get_route(struct net *net, struct sk_buff *skb, struct rtmsg *rtm,
- 	if (!mrt)
- 		return -ENOENT;
- 
--	read_lock(&mrt_lock);
-+	rcu_read_lock();
- 	cache = ip6mr_cache_find(mrt, &rt->rt6i_src.addr, &rt->rt6i_dst.addr);
- 	if (!cache && skb->dev) {
- 		int vif = ip6mr_find_vif(mrt, skb->dev);
-@@ -2308,14 +2308,14 @@ int ip6mr_get_route(struct net *net, struct sk_buff *skb, struct rtmsg *rtm,
- 
- 		dev = skb->dev;
- 		if (!dev || (vif = ip6mr_find_vif(mrt, dev)) < 0) {
--			read_unlock(&mrt_lock);
-+			rcu_read_unlock();
- 			return -ENODEV;
- 		}
- 
- 		/* really correct? */
- 		skb2 = alloc_skb(sizeof(struct ipv6hdr), GFP_ATOMIC);
- 		if (!skb2) {
--			read_unlock(&mrt_lock);
-+			rcu_read_unlock();
- 			return -ENOMEM;
- 		}
- 
-@@ -2338,13 +2338,13 @@ int ip6mr_get_route(struct net *net, struct sk_buff *skb, struct rtmsg *rtm,
- 		iph->daddr = rt->rt6i_dst.addr;
- 
- 		err = ip6mr_cache_unresolved(mrt, vif, skb2, dev);
--		read_unlock(&mrt_lock);
-+		rcu_read_unlock();
- 
- 		return err;
- 	}
- 
- 	err = mr_fill_mroute(mrt, skb, &cache->_c, rtm);
--	read_unlock(&mrt_lock);
-+	rcu_read_unlock();
- 	return err;
+diff --git a/include/linux/mroute_base.h b/include/linux/mroute_base.h
+index 10d1e4fb4e9fe387d914c83d135ed6a8f284c374..9dd4bf1572553ffbf41bade97393fac091797a8d 100644
+--- a/include/linux/mroute_base.h
++++ b/include/linux/mroute_base.h
+@@ -308,7 +308,7 @@ int mr_dump(struct net *net, struct notifier_block *nb, unsigned short family,
+ 			      struct netlink_ext_ack *extack),
+ 	    struct mr_table *(*mr_iter)(struct net *net,
+ 					struct mr_table *mrt),
+-	    rwlock_t *mrt_lock, struct netlink_ext_ack *extack);
++	    struct netlink_ext_ack *extack);
+ #else
+ static inline void vif_device_init(struct vif_device *v,
+ 				   struct net_device *dev,
+@@ -363,7 +363,7 @@ static inline int mr_dump(struct net *net, struct notifier_block *nb,
+ 					    struct netlink_ext_ack *extack),
+ 			  struct mr_table *(*mr_iter)(struct net *net,
+ 						      struct mr_table *mrt),
+-			  rwlock_t *mrt_lock, struct netlink_ext_ack *extack)
++			  struct netlink_ext_ack *extack)
+ {
+ 	return -EINVAL;
+ }
+diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
+index 69ccd3d7c655a53d3cf1ac9104b9da94213416f6..38963b8de7af65cabd09894a816d342cd3cee5df 100644
+--- a/net/ipv4/ipmr.c
++++ b/net/ipv4/ipmr.c
+@@ -3027,7 +3027,7 @@ static int ipmr_dump(struct net *net, struct notifier_block *nb,
+ 		     struct netlink_ext_ack *extack)
+ {
+ 	return mr_dump(net, nb, RTNL_FAMILY_IPMR, ipmr_rules_dump,
+-		       ipmr_mr_table_iter, &mrt_lock, extack);
++		       ipmr_mr_table_iter, extack);
  }
  
+ static const struct fib_notifier_ops ipmr_notifier_ops_template = {
+diff --git a/net/ipv4/ipmr_base.c b/net/ipv4/ipmr_base.c
+index 59f62b938472aef79b4eb3ade706bf4d111e1e3a..271dc03fc6dbd9b35db4d5782716679134f225e4 100644
+--- a/net/ipv4/ipmr_base.c
++++ b/net/ipv4/ipmr_base.c
+@@ -399,7 +399,6 @@ int mr_dump(struct net *net, struct notifier_block *nb, unsigned short family,
+ 			      struct netlink_ext_ack *extack),
+ 	    struct mr_table *(*mr_iter)(struct net *net,
+ 					struct mr_table *mrt),
+-	    rwlock_t *mrt_lock,
+ 	    struct netlink_ext_ack *extack)
+ {
+ 	struct mr_table *mrt;
+@@ -416,10 +415,9 @@ int mr_dump(struct net *net, struct notifier_block *nb, unsigned short family,
+ 		int vifi;
+ 
+ 		/* Notifiy on table VIF entries */
+-		read_lock(mrt_lock);
++		rcu_read_lock();
+ 		for (vifi = 0; vifi < mrt->maxvif; vifi++, v++) {
+-			vif_dev = rcu_dereference_check(v->dev,
+-							lockdep_is_held(mrt_lock));
++			vif_dev = rcu_dereference(v->dev);
+ 			if (!vif_dev)
+ 				continue;
+ 
+@@ -430,7 +428,7 @@ int mr_dump(struct net *net, struct notifier_block *nb, unsigned short family,
+ 			if (err)
+ 				break;
+ 		}
+-		read_unlock(mrt_lock);
++		rcu_read_unlock();
+ 
+ 		if (err)
+ 			return err;
+diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
+index 08ac177fe30ca3bfbc50cd73b41cdc3da56d23e0..f0a9bceb8e3c05ab45e95e8983e505edc005917e 100644
+--- a/net/ipv6/ip6mr.c
++++ b/net/ipv6/ip6mr.c
+@@ -1267,7 +1267,7 @@ static int ip6mr_dump(struct net *net, struct notifier_block *nb,
+ 		      struct netlink_ext_ack *extack)
+ {
+ 	return mr_dump(net, nb, RTNL_FAMILY_IP6MR, ip6mr_rules_dump,
+-		       ip6mr_mr_table_iter, &mrt_lock, extack);
++		       ip6mr_mr_table_iter, extack);
+ }
+ 
+ static struct notifier_block ip6_mr_notifier = {
 -- 
 2.37.0.rc0.104.g0611611a94-goog
 
