@@ -2,113 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE0C0554882
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:15:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFCE7554665
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:10:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357317AbiFVJON (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 05:14:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37128 "EHLO
+        id S243342AbiFVJPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 05:15:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357428AbiFVJMX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 05:12:23 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCDE2F034
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 02:10:40 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id g27so15799148wrb.10
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 02:10:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=JjOjpc99NDX760QEnCLvwrwveLOaiPRbzlah8sRkfs4=;
-        b=H0MvEEx4nv2731m1sxTWOBa0DG/vUofoKhmMlGpPJW4ek0EDoOq3VMzow08a9NeBc3
-         hNbtNosx7zwn/J51Fd5D17ODE5IdnTMWN2iHOHFuTZ/oCqYw6cX5mDJN935dCUVYOPGk
-         6GCO+AsM2/9bomImBmThVjl3FyUP9WzLU4un0xpQx/vylGd/F0PJCAW84WRzjdLJ10/4
-         mNNJyXqzm6pl8spkNpp4br1elnjCU5DcXQrtp82Jz+8NzsgMroThq24wnlvG0Gngr8ES
-         8VUYvG3A2k2xvXWo5IeKvFI0RFtdNj/J2526Sy8RXA+MXd/N3XY7vpS3D5WaNJzLJbqk
-         +9Gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=JjOjpc99NDX760QEnCLvwrwveLOaiPRbzlah8sRkfs4=;
-        b=AteVbe9UFVUF95g2/D0pYXcHq46ptB4Mf2JphNySOnJs555IGpqkEf+cuKMy3+q8Ra
-         GzEiDVCxXWCW19i5HDyYRCTyyN9o3uxL/oQJac0FGwv8SBaYPtI6xXIMcGNUFm86+pfZ
-         E+A9fgDr9fEbxVq62yo5BLioKOnHKOKJ2CnVDaHPZgbyUGXZP7iiwXqB2RW4MpZBf8aN
-         OgklKqu17ameGDMmR6B/twYNTL7fvpONwVFLIdcSek0pZ7UTwyPG2jKx3p5pWbNrrQwh
-         DycM7v/+5KpnNQN5JJeEZjR/KYVnM0wl93WXxlwahxpDFmMt62fwpdKcIocULLebbNUb
-         RVAw==
-X-Gm-Message-State: AJIora+tAgFfun2DBQozeztwVaVXZNR07q3r7J/Gb/IZZHSWzmkPHiBq
-        h/WNeyYmO+1CEQzIATbxSEhNkKIKbPOKFDnD1NU=
-X-Google-Smtp-Source: AGRyM1sFeD9IuK1urDNXoAwJ7ENivg2G+k17pYT2EBw1lsxJrPhk4PcGWGJf/JPfaTKy2E3rJXkHysFIEFmff11EWj8=
-X-Received: by 2002:adf:e6d2:0:b0:21b:9580:8d8b with SMTP id
- y18-20020adfe6d2000000b0021b95808d8bmr2262272wrm.120.1655889039046; Wed, 22
- Jun 2022 02:10:39 -0700 (PDT)
+        with ESMTP id S232067AbiFVJPP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 05:15:15 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DCA52E4;
+        Wed, 22 Jun 2022 02:15:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655889315; x=1687425315;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=qkIbc9bgxwlz5t1sR0ht0Cvk/IpQWMrSNCWK6J6W2/A=;
+  b=X4cIlpYb4Ne449deqTVWfktSJ5+mVOUkdKIYUISZbjn57Kf1RT8tWF95
+   iu5Jwc6Fk4BrYShfSI4glkudRpekP8nRNEp8+fQGoM7RwM5vBlyMZWKiw
+   WmOl1/0DNJ2MkH7bpKzTyUyf1j5cPICrqnRHIMdq4TlwUYfAyYHgJ0V5l
+   JHS711pqwT4l98oLWyzbXK6FakAmYnlB84iKZ4sZa6mIEAOuO9WzN7fSW
+   vWMBbO5Ggr0JyTMnM/6F86zkmk6f0Jg8Ub0fGKxEjxaUYAhTwRlI32jde
+   GiCQq/97Rn8vKJVeJzzXyOAVr8V6NMBSyKMDIICvV8ssuVyrFaKkpEYLa
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10385"; a="344354844"
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="344354844"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 02:15:14 -0700
+X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
+   d="scan'208";a="562883193"
+Received: from silpixa00401086.ir.intel.com ([10.55.128.124])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jun 2022 02:15:12 -0700
+From:   Ciara Loftus <ciara.loftus@intel.com>
+To:     intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        Ciara Loftus <ciara.loftus@intel.com>
+Subject: [PATCH net-next] i40e: xsk: read the XDP program once per NAPI
+Date:   Wed, 22 Jun 2022 09:14:47 +0000
+Message-Id: <20220622091447.243101-1-ciara.loftus@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Received: by 2002:a5d:64cd:0:0:0:0:0 with HTTP; Wed, 22 Jun 2022 02:10:38
- -0700 (PDT)
-From:   nnani nawafo <nnadinawafo11@gmail.com>
-Date:   Wed, 22 Jun 2022 09:10:38 +0000
-Message-ID: <CAPhDfr1-0koOftG3Hwt=8PMP8nOXa0WmTn756bhztS4AvYi=ag@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=3.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLY,LOTS_OF_MONEY,MONEY_FORM_SHORT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_FILL_THIS_FORM_SHORT,
-        T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Level: ***
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Herzliche Gl=C3=BCckw=C3=BCnsche!
+Similar to how it's done in the ice driver since 'eb087cd82864 ("ice:
+propagate xdp_ring onto rx_ring")', read the XDP program once per NAPI
+instead of once per descriptor cleaned. I measured an improvement in
+throughput of 2% for the AF_XDP xdpsock l2fwd benchmark in busy polling
+mode on my platform.
 
-Die Vereinten Nationen sind zu dem Schluss gekommen, die Zahlung eines
-Entsch=C3=A4digungsfonds in H=C3=B6he von sechs Millionen US-Dollar
-(6.000.000,00 USD) an gl=C3=BCckliche Beg=C3=BCnstigte auf der ganzen Welt =
-mit
-Hilfe des neu gew=C3=A4hlten Pr=C3=A4sidenten aufgrund von Covid-19
-(Coronavirus), das zu einem wirtschaftlichen Zusammenbruch gef=C3=BChrt
-hat, zu billigen verschiedenen L=C3=A4ndern und globale Gefahr f=C3=BCr so =
-viele
-Menschenleben.
+Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+---
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
- Die Vereinten Nationen haben die Schweizerische Weltbank angewiesen,
-in Zusammenarbeit mit der IBE Bank in Gro=C3=9Fbritannien die Zahlung des
-Entsch=C3=A4digungsfonds freizugeben.
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+index af3e7e6afc85..2f422c61ac11 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+@@ -146,17 +146,13 @@ int i40e_xsk_pool_setup(struct i40e_vsi *vsi, struct xsk_buff_pool *pool,
+  *
+  * Returns any of I40E_XDP_{PASS, CONSUMED, TX, REDIR}
+  **/
+-static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
++static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp,
++			   struct bpf_prog *xdp_prog)
+ {
+ 	int err, result = I40E_XDP_PASS;
+ 	struct i40e_ring *xdp_ring;
+-	struct bpf_prog *xdp_prog;
+ 	u32 act;
+ 
+-	/* NB! xdp_prog will always be !NULL, due to the fact that
+-	 * this path is enabled by setting an XDP program.
+-	 */
+-	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
+ 	act = bpf_prog_run_xdp(xdp_prog, xdp);
+ 
+ 	if (likely(act == XDP_REDIRECT)) {
+@@ -339,9 +335,15 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
+ 	u16 next_to_clean = rx_ring->next_to_clean;
+ 	u16 count_mask = rx_ring->count - 1;
+ 	unsigned int xdp_res, xdp_xmit = 0;
++	struct bpf_prog *xdp_prog;
+ 	bool failure = false;
+ 	u16 cleaned_count;
+ 
++	/* NB! xdp_prog will always be !NULL, due to the fact that
++	 * this path is enabled by setting an XDP program.
++	 */
++	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
++
+ 	while (likely(total_rx_packets < (unsigned int)budget)) {
+ 		union i40e_rx_desc *rx_desc;
+ 		unsigned int rx_packets;
+@@ -378,7 +380,7 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
+ 		xsk_buff_set_size(bi, size);
+ 		xsk_buff_dma_sync_for_cpu(bi, rx_ring->xsk_pool);
+ 
+-		xdp_res = i40e_run_xdp_zc(rx_ring, bi);
++		xdp_res = i40e_run_xdp_zc(rx_ring, bi, xdp_prog);
+ 		i40e_handle_xdp_result_zc(rx_ring, bi, rx_desc, &rx_packets,
+ 					  &rx_bytes, size, xdp_res, &failure);
+ 		if (failure)
+-- 
+2.25.1
 
-Die Zahlung wird auf eine ATM-Visumkarte ausgestellt und an den
-gl=C3=BCcklichen Beg=C3=BCnstigten gesendet, der sie =C3=BCber die IBE-Bank=
- im
-Vereinigten K=C3=B6nigreich =C3=BCber ein diplomatisches Kurierdienstuntern=
-ehmen
-in der N=C3=A4he des beg=C3=BCnstigten Landes beantragt.
-
-Dies sind die Informationen, die das Management des Vereinigten
-K=C3=B6nigreichs ben=C3=B6tigt, um die Zahlung des Ausgleichsfonds an die
-Haust=C3=BCr des beg=C3=BCnstigten Landes zu liefern.
-
-1. Ihr Name:
-2. Heimatadresse:
-3. Stadt:
-4. Land:
-5. Beruf:
-6. Geschlecht:
-7. Familienstand:
-8. Alter:
-9. Reisepass / Personalausweis / F=C3=BChrerschein
-10. Telefonnummer:
-Kontaktieren Sie unsere Agenten-E-Mail-ID:
-Name Solomo Brandy
-
-EMIL-ADRESSE (solomonbrandyfiveone@gmail.com) f=C3=BCr Ihre Zahlung ohne Ve=
-rz=C3=B6gerung,
-
-Mit bestem Gru=C3=9F
-Frau Mary J Robertson.
