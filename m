@@ -2,110 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B0405547D8
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:12:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E0D3D5548BC
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:16:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357614AbiFVLVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 07:21:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
+        id S1357331AbiFVLXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 07:23:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357599AbiFVLUy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 07:20:54 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7835B3D1D2
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 04:19:16 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1o3yNj-0002pw-5i; Wed, 22 Jun 2022 13:18:47 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1o3yNV-0004vY-2O; Wed, 22 Jun 2022 13:18:33 +0200
-Date:   Wed, 22 Jun 2022 13:18:33 +0200
-From:   Sascha Hauer <sha@pengutronix.de>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Pavel Machek <pavel@ucw.cz>, Will Deacon <will@kernel.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Android Kernel Team <kernel-team@android.com>,
-        Len Brown <len.brown@intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Ahern <dsahern@kernel.org>,
+        with ESMTP id S1357605AbiFVLW6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 07:22:58 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC76D3A71C;
+        Wed, 22 Jun 2022 04:22:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=I+IQpUdGRvzryPiMbgvBe30v5I8PKYgMnD6LyAtMq9s=; b=j1+GJak+LXgezTk5y6Op6Hz8Oc
+        gCjGb6oeibd7Z+rMixmSzNt+EVlBH77RTjCj8p6uUUtjWrJ1ZN7JGNfgu+Jc/YW5zlQ0B+38D14JJ
+        xnEUEQZ1SVVSqO38mOwulyJmIKpmB5vluJ/Gr5J6Cwj1Gx33tIgT4/BMrt1jyPeRl+CU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o3yR5-007qRc-VN; Wed, 22 Jun 2022 13:22:15 +0200
+Date:   Wed, 22 Jun 2022 13:22:15 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Marcin Wojtas <mw@semihalf.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        Sascha Hauer <kernel@pengutronix.de>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, vivien.didelot@gmail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v2 7/9] driver core: Set fw_devlink.strict=1 by default
-Message-ID: <20220622111833.GW1615@pengutronix.de>
-References: <CAHp75VdqjCoWAHV4AyYrju0o8buREA8pM5wyf8TD=rCMTs-tEA@mail.gmail.com>
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
+Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA
+ description
+Message-ID: <YrL7Z6/ghTO/9wlx@lunn.ch>
+References: <20220620150225.1307946-1-mw@semihalf.com>
+ <20220620150225.1307946-10-mw@semihalf.com>
+ <YrDO05TMK8SVgnBP@lunn.ch>
+ <YrGm2jmR7ijHyQjJ@smile.fi.intel.com>
+ <YrGpDgtm4rPkMwnl@lunn.ch>
+ <YrGukfw4uiQz0NpW@smile.fi.intel.com>
+ <CAPv3WKf_2QYh0F2LEr1DeErvnMeQqT0M5t40ROP2G6HSUwKpQQ@mail.gmail.com>
+ <YrL3DQD92ijLam2V@smile.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHp75VdqjCoWAHV4AyYrju0o8buREA8pM5wyf8TD=rCMTs-tEA@mail.gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <YrL3DQD92ijLam2V@smile.fi.intel.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 12:52:02PM +0200, Andy Shevchenko wrote:
-> On Wed, Jun 22, 2022 at 10:44 AM Linus Walleij <linus.walleij@linaro.org> wrote:
-> > On Wed, Jun 22, 2022 at 9:48 AM Sascha Hauer <sha@pengutronix.de> wrote:
+> > It's not device on MDIO bus, but the MDIO controller's register itself
+> > (this _CSR belongs to the parent, subnodes do not refer to it in any
+> > way). The child device requires only _ADR (or whatever else is needed
+> > for the case the DSA device is attached to SPI/I2C controllers).
 > 
-> ...
-> 
-> > > This patch has the effect that console UART devices which have "dmas"
-> > > properties specified in the device tree get deferred for 10 to 20
-> > > seconds. This happens on i.MX and likely on other SoCs as well. On i.MX
-> > > the dma channel is only requested at UART startup time and not at probe
-> > > time. dma is not used for the console. Nevertheless with this driver probe
-> > > defers until the dma engine driver is available.
-> > >
-> > > It shouldn't go in as-is.
-> >
-> > This affects all machines with the PL011 UART and DMAs specified as
-> > well.
-> >
-> > It would be best if the console subsystem could be treated special and
-> > not require DMA devlink to be satisfied before probing.
-> 
-> In 8250 we force disable DMA and PM on kernel consoles, because it's
-> so-o PITA and has a lot of corner cases we may never chase down.
+> More and more the idea of standardizing the MDIOSerialBus() resource looks
+> plausible. The _ADR() usage is a bit grey area in ACPI specification. Maybe
+> someone can also make it descriptive, so Microsoft and others won't utilize
+> _ADR() in any level of weirdness.
 
-On i.MX this is done as well, but it doesn't help here. The driver is
-not even probed when the device node contains a "dmas" property.
+I don't know if it makes any difference, but there are two protocols
+spoken over MDIO, c22 and c45, specified in clause 22 and clause 45 of
+the 802.3 specification. In some conditions, you need to specify which
+protocol to speak to a device at a particular address. In DT we
+indicate this with the compatible string, when maybe it should really
+be considered as an extension of the address.
 
-Sascha
+If somebody does produce a draft for MDIOSerialBus() i'm happy to
+review it.
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+       Andrew
