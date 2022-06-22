@@ -2,78 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B280F554FA3
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 17:42:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44729554FAE
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 17:45:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357300AbiFVPm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 11:42:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42376 "EHLO
+        id S1359432AbiFVPo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 11:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359422AbiFVPmZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 11:42:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 272383CA7A
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 08:42:24 -0700 (PDT)
+        with ESMTP id S1359421AbiFVPoy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 11:44:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ED0561D311
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 08:44:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655912543;
+        s=mimecast20190719; t=1655912692;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=lYg19QbrWLn+AB4CBMITi/5vzGTh85mgQgsOKd71tIk=;
-        b=VPPozl3KMciA5xP6AF3DBtrYlYcdYbDV3WjpcI/Mp6+7caJl7QgY1hDFQu0iZBaZCXl+av
-        gUcii3kSL0WnCS+1gHfdysDEifHji638zYHpyujeexIajuEhhQaqMV+2RlegLLikiN9EpB
-        LFqm3pDBQPALBtc5pYDDzFtBxjDqndE=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=ihQ51bcQWrzbwEBEWv0BHU9ir5A3unDKhLlROclaoHU=;
+        b=ih8KE7EkxSv52VQhowjTwci3hilEtZVrNBEHeDTP1QJDbDLxPOB4nQHe60Os07XQUcprtY
+        DPFrRCScl1bgyLd6xl1ijv70K1Zw/rjGaBk+zfHyUfCOCwhAFkYAWJnHA7ADPnE1dFkqUG
+        6NyurRbDoxNh5J3YIvf2N3Ean/sucis=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-530-epqpHMlSOYWwI8luh80lhw-1; Wed, 22 Jun 2022 11:42:22 -0400
-X-MC-Unique: epqpHMlSOYWwI8luh80lhw-1
-Received: by mail-qk1-f199.google.com with SMTP id t66-20020a372d45000000b006aee88c3281so1062925qkh.6
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 08:42:22 -0700 (PDT)
+ us-mta-573-Hj9dw4OLOsaDrLiJc_F6yQ-1; Wed, 22 Jun 2022 11:44:51 -0400
+X-MC-Unique: Hj9dw4OLOsaDrLiJc_F6yQ-1
+Received: by mail-wr1-f70.google.com with SMTP id z11-20020adfc00b000000b0021a3ab8ec82so3972336wre.23
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 08:44:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=lYg19QbrWLn+AB4CBMITi/5vzGTh85mgQgsOKd71tIk=;
-        b=slCIs375Og0ww3qYMfEjTEiW8graRdp4WtmFYd5CgLFMeOeBvp5a+d7kAZWB4jcS+H
-         R/6qsWEKMq44ajC2YBkuS414oNxSyXK/8FXJn215Z1i4etgVOfeiWVdaTEWpd21e/GNu
-         Og0uu0KyOdHsUCk4CmmukKRhjsX4RVMwiEsm+aqbnJhlyFJeqYxw1LQ49thlpGpS63gh
-         81+ShiANSBBPLOlsCtYo+VD7PWluq17ob6RdGY4hbI2VEArGrbBI5XDFDtfRFpfXAdWs
-         nw1FuNzqY8Xkis/JGfISotyXMa566JKNBBQk30KU2V+c7cYa/aB73LiETREkc6+A072k
-         MPZw==
-X-Gm-Message-State: AJIora+oEKi7KqoN11NOnOB60xl8jU5oL8AbJxsI0SLW/VNWqGirc9RG
-        t8HO1+lZU3DpMyYkVhfNtFMoIN0nS/ENvR0Niyhcp3L/K6RiAlIS8/3lr5jXj3GzDGWGKQGbffH
-        3JjRYh4be3g6btnx5
-X-Received: by 2002:a37:a496:0:b0:6ae:d5d5:363c with SMTP id n144-20020a37a496000000b006aed5d5363cmr2749752qke.419.1655912541513;
-        Wed, 22 Jun 2022 08:42:21 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1unfxWS+IItVoUrPS/ZynQUxJ44nF49/PHczgmjHHrxjB4tsB29fD/9ifOvCHj2fOin+q+Axw==
-X-Received: by 2002:a37:a496:0:b0:6ae:d5d5:363c with SMTP id n144-20020a37a496000000b006aed5d5363cmr2749730qke.419.1655912541237;
-        Wed, 22 Jun 2022 08:42:21 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-113-202.dyn.eolo.it. [146.241.113.202])
-        by smtp.gmail.com with ESMTPSA id t12-20020a05620a450c00b006a746826feesm17452442qkp.120.2022.06.22.08.42.18
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ihQ51bcQWrzbwEBEWv0BHU9ir5A3unDKhLlROclaoHU=;
+        b=x6lQyLd7w7RMz0Bo/T1T/EfCPdz6hFp+Lz09fnr7FVfAmvm4FfkMGXnOPqx5DC7f52
+         iGHg5puqo6htiso49HHREgCuIVAEICHZUtIF4IC8zQTuwdcf3pNtm939JnVTe0nib0nj
+         iYzAlPOLX5eIndfXTLj+h/MGZiuJSRRShtxCQXQw1EV5+SdV4MZMmk/wA0XNu/HHwxFB
+         4NdTsn/m0E+K7C1EqFUH7SAI/DxDMJ6uu4ky2ebdFK/Bx5kUmcLhjyW8M6Q7zyZe5TFQ
+         vOlxBdyD4arIumqFlOE3iLspUnzekQxc4FAyV1LOyqtR/xKSC8mz0DX0VwVBUnxt+BfH
+         q5Rw==
+X-Gm-Message-State: AJIora+ABeTwh+t++e3iC/kaQmkepwBoONhOgQSeNbD0+/j0iYsPyy6A
+        WQDglLnyDFCF1B3eaes2EAoQvgpP6pzQb8F9FsG0LUAHYcakTzVAarx+l3qn5n3ieyz3GsJ4hwU
+        KSIObuTnD7OrlDAyd
+X-Received: by 2002:adf:e252:0:b0:21b:827e:4c63 with SMTP id bl18-20020adfe252000000b0021b827e4c63mr4009479wrb.307.1655912689734;
+        Wed, 22 Jun 2022 08:44:49 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1u7iQW1o9hu0M1BscDqcuqnTBsDy17WvRImGANcMHb/fY6669Lsq7nWLjQNBG3zGujOvpBU4Q==
+X-Received: by 2002:adf:e252:0:b0:21b:827e:4c63 with SMTP id bl18-20020adfe252000000b0021b827e4c63mr4009443wrb.307.1655912689458;
+        Wed, 22 Jun 2022 08:44:49 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-40.retail.telecomitalia.it. [79.46.200.40])
+        by smtp.gmail.com with ESMTPSA id y6-20020a5d6206000000b0021350f7b22esm21860297wru.109.2022.06.22.08.44.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 08:42:20 -0700 (PDT)
-Message-ID: <cebed632d3337a40cedbf3da78ff1e1154b1ae3a.camel@redhat.com>
-Subject: Re: [PATCH net-next] net: pcs: xpcs: depends on PHYLINK in Kconfig
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Date:   Wed, 22 Jun 2022 17:42:13 +0200
-In-Reply-To: <20220622083521.0de3ea5c@kernel.org>
-References: <6959a6a51582e8bc2343824d0cee56f1db246e23.1655797997.git.pabeni@redhat.com>
-         <20220621125045.7e0a78c2@kernel.org>
-         <YrMkEp6EWDvd3GT/@shell.armlinux.org.uk>
-         <20220622083521.0de3ea5c@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Wed, 22 Jun 2022 08:44:48 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 17:44:44 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Eugenio Perez Martin <eperezma@redhat.com>
+Cc:     Gautam Dawar <gautam.dawar@xilinx.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Gautam Dawar <gdawar@xilinx.com>,
+        Longpeng <longpeng2@huawei.com>, Eli Cohen <elic@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Linux Virtualization <virtualization@lists.linux-foundation.org>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        kvm <kvm@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
+        Harpreet Singh Anand <hanand@xilinx.com>,
+        Martin Porter <martinpo@xilinx.com>,
+        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
+        Dinan Gunawardena <dinang@xilinx.com>,
+        "Kamde, Tanuj" <tanuj.kamde@amd.com>, habetsm.xilinx@gmail.com,
+        ecree.xilinx@gmail.com, Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Zhang Min <zhang.min9@zte.com.cn>
+Subject: Re: [PATCH v2 19/19] vdpasim: control virtqueue support
+Message-ID: <20220622154444.tjx5ehw47pqyjzjt@sgarzare-redhat>
+References: <20220330180436.24644-1-gdawar@xilinx.com>
+ <20220330180436.24644-20-gdawar@xilinx.com>
+ <CAGxU2F6OO108oHsrLBWJnYRG2yRU8QnRxAdjJhUUcp8AqaAP-g@mail.gmail.com>
+ <CAJaqyWd8MR9vTRcCTktzC3VL054x5H5_sXy+MLVNewFDkjQUSw@mail.gmail.com>
+ <CAJaqyWc36adK-gUzc8tMgDDe5SoBPy7xN-UtcFA4=aDezdJ5LA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CAJaqyWc36adK-gUzc8tMgDDe5SoBPy7xN-UtcFA4=aDezdJ5LA@mail.gmail.com>
 X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -84,67 +99,186 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-06-22 at 08:35 -0700, Jakub Kicinski wrote:
-> On Wed, 22 Jun 2022 15:15:46 +0100 Russell King (Oracle) wrote:
-> > > We can't use depends with PHYLINK, AFAIU, because PHYLINK is not 
-> > > a user-visible knob. Its always "select"ed and does not show up
-> > > in {x,n,menu}config.  
-> > 
-> > I'm not sure I understand the point you're making. You seem to be
-> > saying we can't use "depend on PHYLINK" for this PCS driver, but
-> > then you sent a patch doing exactly that.
-> 
-> Nuh uh, I sent a patch which does _select_ PHYLINK.
-> 
-> My concern is that since PHYLINK is not visible user will not be able
-> to see PCS_XPCS unless something else already enabled PHYLINK.
-> 
-> I may well be missing some higher level relations here, on the surface
-> "depending" on a symbol which is not user-visible seems.. unusual.
-> 
-> > As these PCS drivers are only usable if PHYLINK is already enabled,
-> > there is a clear dependency between them and phylink. The drivers
-> > that make use of xpcs are:
-> > 
-> > stmmac, which selects both PCS_XPCS and PHYLINK.
-> > sja1105 (dsa driver), which selects PCS_XPCS. All DSA drivers depend
-> > on NET_DSA, and NET_DSA selects PHYLINK.
-> > 
-> > So, for PCS_XPCS, PHYLINK will be enabled whenever PCS_XPCS is
-> > selected. No other drivers in drivers/net appear to make use of
-> > the XPCS driver (I couldn't find any other references to
-> > xpcs_create()) so using "depends on PHYLINK" for it should be safe.
-> > 
-> > Moreover, the user-visible nature of PCS_XPCS doesn't add anything
-> > to the kernel - two drivers require PCS_XPCS due to code references
-> > to the xpcs code, these two select that symbol. Offering it to the
-> > user just gives the user an extra knob to twiddle with no useful
-> > result (other than more files to be built.)
-> > 
-> > It could be argued that it helps compile coverage, which I think is
-> > the only reason to make PCS_XPCS visible... but then we get compile
-> > coverage when stmmac or sja1105 are enabled.
-> 
-> Interesting, hiding PCS_XPCS sounds good then. PCS_LYNX is not visible.
-> 
-> diff --git a/drivers/net/pcs/Kconfig b/drivers/net/pcs/Kconfig
-> index 22ba7b0b476d..9eb32220efea 100644
-> --- a/drivers/net/pcs/Kconfig
-> +++ b/drivers/net/pcs/Kconfig
-> @@ -6,7 +6,7 @@
->  menu "PCS device drivers"
->  
->  config PCS_XPCS
-> -	tristate "Synopsys DesignWare XPCS controller"
-> +	tristate
->  	depends on MDIO_DEVICE && MDIO_BUS
->  	help
->  	  This module provides helper functions for Synopsys DesignWare XPCS
-> 
-@Jakub: please let me know if you prefer to go ahead yourself, or me
-sending a v3 with 'depends PHYLINK' + the above (or any other option ;)
+On Wed, Jun 22, 2022 at 05:04:44PM +0200, Eugenio Perez Martin wrote:
+>On Wed, Jun 22, 2022 at 12:21 PM Eugenio Perez Martin
+><eperezma@redhat.com> wrote:
+>>
+>> On Tue, Jun 21, 2022 at 5:20 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+>> >
+>> > Hi Gautam,
+>> >
+>> > On Wed, Mar 30, 2022 at 8:21 PM Gautam Dawar <gautam.dawar@xilinx.com> wrote:
+>> > >
+>> > > This patch introduces the control virtqueue support for vDPA
+>> > > simulator. This is a requirement for supporting advanced features like
+>> > > multiqueue.
+>> > >
+>> > > A requirement for control virtqueue is to isolate its memory access
+>> > > from the rx/tx virtqueues. This is because when using vDPA device
+>> > > for VM, the control virqueue is not directly assigned to VM. Userspace
+>> > > (Qemu) will present a shadow control virtqueue to control for
+>> > > recording the device states.
+>> > >
+>> > > The isolation is done via the virtqueue groups and ASID support in
+>> > > vDPA through vhost-vdpa. The simulator is extended to have:
+>> > >
+>> > > 1) three virtqueues: RXVQ, TXVQ and CVQ (control virtqueue)
+>> > > 2) two virtqueue groups: group 0 contains RXVQ and TXVQ; group 1
+>> > >    contains CVQ
+>> > > 3) two address spaces and the simulator simply implements the address
+>> > >    spaces by mapping it 1:1 to IOTLB.
+>> > >
+>> > > For the VM use cases, userspace(Qemu) may set AS 0 to group 0 and AS 1
+>> > > to group 1. So we have:
+>> > >
+>> > > 1) The IOTLB for virtqueue group 0 contains the mappings of guest, so
+>> > >    RX and TX can be assigned to guest directly.
+>> > > 2) The IOTLB for virtqueue group 1 contains the mappings of CVQ which
+>> > >    is the buffers that allocated and managed by VMM only. So CVQ of
+>> > >    vhost-vdpa is visible to VMM only. And Guest can not access the CVQ
+>> > >    of vhost-vdpa.
+>> > >
+>> > > For the other use cases, since AS 0 is associated to all virtqueue
+>> > > groups by default. All virtqueues share the same mapping by default.
+>> > >
+>> > > To demonstrate the function, VIRITO_NET_F_CTRL_MACADDR is
+>> > > implemented in the simulator for the driver to set mac address.
+>> > >
+>> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
+>> > > Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
+>> > > ---
+>> > >  drivers/vdpa/vdpa_sim/vdpa_sim.c     | 91 ++++++++++++++++++++++------
+>> > >  drivers/vdpa/vdpa_sim/vdpa_sim.h     |  2 +
+>> > >  drivers/vdpa/vdpa_sim/vdpa_sim_net.c | 88 ++++++++++++++++++++++++++-
+>> > >  3 files changed, 161 insertions(+), 20 deletions(-)
+>> > >
+>> > > diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+>> > > index 659e2e2e4b0c..51bd0bafce06 100644
+>> > > --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
+>> > > +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+>> > > @@ -96,11 +96,17 @@ static void vdpasim_do_reset(struct vdpasim *vdpasim)
+>> > >  {
+>> > >         int i;
+>> > >
+>> > > -       for (i = 0; i < vdpasim->dev_attr.nvqs; i++)
+>> > > +       spin_lock(&vdpasim->iommu_lock);
+>> > > +
+>> > > +       for (i = 0; i < vdpasim->dev_attr.nvqs; i++) {
+>> > >                 vdpasim_vq_reset(vdpasim, &vdpasim->vqs[i]);
+>> > > +               vringh_set_iotlb(&vdpasim->vqs[i].vring, &vdpasim->iommu[0],
+>> > > +                                &vdpasim->iommu_lock);
+>> > > +       }
+>> > > +
+>> > > +       for (i = 0; i < vdpasim->dev_attr.nas; i++)
+>> > > +               vhost_iotlb_reset(&vdpasim->iommu[i]);
+>> > >
+>> > > -       spin_lock(&vdpasim->iommu_lock);
+>> > > -       vhost_iotlb_reset(vdpasim->iommu);
+>> > >         spin_unlock(&vdpasim->iommu_lock);
+>> > >
+>> > >         vdpasim->features = 0;
+>> > > @@ -145,7 +151,7 @@ static dma_addr_t vdpasim_map_range(struct vdpasim *vdpasim, phys_addr_t paddr,
+>> > >         dma_addr = iova_dma_addr(&vdpasim->iova, iova);
+>> > >
+>> > >         spin_lock(&vdpasim->iommu_lock);
+>> > > -       ret = vhost_iotlb_add_range(vdpasim->iommu, (u64)dma_addr,
+>> > > +       ret = vhost_iotlb_add_range(&vdpasim->iommu[0], (u64)dma_addr,
+>> > >                                     (u64)dma_addr + size - 1, (u64)paddr, perm);
+>> > >         spin_unlock(&vdpasim->iommu_lock);
+>> > >
+>> > > @@ -161,7 +167,7 @@ static void vdpasim_unmap_range(struct vdpasim *vdpasim, dma_addr_t dma_addr,
+>> > >                                 size_t size)
+>> > >  {
+>> > >         spin_lock(&vdpasim->iommu_lock);
+>> > > -       vhost_iotlb_del_range(vdpasim->iommu, (u64)dma_addr,
+>> > > +       vhost_iotlb_del_range(&vdpasim->iommu[0], (u64)dma_addr,
+>> > >                               (u64)dma_addr + size - 1);
+>> > >         spin_unlock(&vdpasim->iommu_lock);
+>> > >
+>> > > @@ -250,8 +256,9 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *dev_attr)
+>> > >         else
+>> > >                 ops = &vdpasim_config_ops;
+>> > >
+>> > > -       vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops, 1,
+>> > > -                                   1, dev_attr->name, false);
+>> > > +       vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops,
+>> > > +                                   dev_attr->ngroups, dev_attr->nas,
+>> > > +                                   dev_attr->name, false);
+>> > >         if (IS_ERR(vdpasim)) {
+>> > >                 ret = PTR_ERR(vdpasim);
+>> > >                 goto err_alloc;
+>> > > @@ -278,16 +285,20 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *dev_attr)
+>> > >         if (!vdpasim->vqs)
+>> > >                 goto err_iommu;
+>> > >
+>> > > -       vdpasim->iommu = vhost_iotlb_alloc(max_iotlb_entries, 0);
+>> > > +       vdpasim->iommu = kmalloc_array(vdpasim->dev_attr.nas,
+>> > > +                                      sizeof(*vdpasim->iommu), GFP_KERNEL);
+>> > >         if (!vdpasim->iommu)
+>> > >                 goto err_iommu;
+>> > >
+>> > > +       for (i = 0; i < vdpasim->dev_attr.nas; i++)
+>> > > +               vhost_iotlb_init(&vdpasim->iommu[i], 0, 0);
+>> > > +
+>> > >         vdpasim->buffer = kvmalloc(dev_attr->buffer_size, GFP_KERNEL);
+>> > >         if (!vdpasim->buffer)
+>> > >                 goto err_iommu;
+>> > >
+>> > >         for (i = 0; i < dev_attr->nvqs; i++)
+>> > > -               vringh_set_iotlb(&vdpasim->vqs[i].vring, vdpasim->iommu,
+>> > > +               vringh_set_iotlb(&vdpasim->vqs[i].vring, &vdpasim->iommu[0],
+>> > >                                  &vdpasim->iommu_lock);
+>> > >
+>> > >         ret = iova_cache_get();
+>> > > @@ -401,7 +412,11 @@ static u32 vdpasim_get_vq_align(struct vdpa_device *vdpa)
+>> > >
+>> > >  static u32 vdpasim_get_vq_group(struct vdpa_device *vdpa, u16 idx)
+>> > >  {
+>> > > -       return 0;
+>> > > +       /* RX and TX belongs to group 0, CVQ belongs to group 1 */
+>> > > +       if (idx == 2)
+>> > > +               return 1;
+>> > > +       else
+>> > > +               return 0;
+>> >
+>> > This code only works for the vDPA-net simulator, since
+>> > vdpasim_get_vq_group() is also shared with other simulators (e.g.
+>> > vdpa_sim_blk),
+>>
+>> That's totally right.
+>>
+>> > should we move this net-specific code into
+>> > vdpa_sim_net.c, maybe adding a callback implemented by the different
+>> > simulators?
+>> >
+>>
+>> At this moment, VDPASIM_BLK_VQ_NUM is fixed to 1, so maybe the right
+>> thing to do for the -rc phase is to check if idx > vdpasim.attr.nvqs?
+>> It's a more general fix.
+>>
+>
+>Actually, that is already checked by vhost/vdpa.c.
+>
+>Taking that into account, is it worth introducing the change for 5.19?
+>I'm totally ok with the change for 5.20.
+>
+>Thanks!
+>
+>> For the general case, yes, a callback should be issued to the actual
+>> simulator so it's not a surprise when VDPASIM_BLK_VQ_NUM increases,
+>> either dynamically or by anyone testing it.
 
-Thanks!
+Exactly, since those parameters are not yet configurable at runtime 
+(someday I hope they will be), I often recompile the module by changing 
+them, so for me we should fix them in 5.19.
 
-Paolo
+Obviously it's an advanced case, and I expect that if someone recompiles 
+the module changing some hardwired thing, they can expect to have to 
+change something else as well.
+
+So, I'm also fine with leaving it that way for 5.19, but if you want I 
+can fix it earlier.
+
+Thanks,
+Stefano
 
