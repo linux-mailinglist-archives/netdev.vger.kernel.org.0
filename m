@@ -2,43 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5817D554237
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 07:23:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA864554242
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 07:27:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356969AbiFVFXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 01:23:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60466 "EHLO
+        id S1356985AbiFVF0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 01:26:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233946AbiFVFXW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 01:23:22 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0736136157
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 22:23:22 -0700 (PDT)
+        with ESMTP id S1347664AbiFVF0O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 01:26:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB9836307;
+        Tue, 21 Jun 2022 22:26:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 6E43ACE1C35
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 05:23:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFE60C34114;
-        Wed, 22 Jun 2022 05:23:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A8CFB81A9A;
+        Wed, 22 Jun 2022 05:26:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF520C34114;
+        Wed, 22 Jun 2022 05:26:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655875398;
-        bh=s4gTOMkuCt3y4iZhBEDrrBnZBzh8C1OUzRBvJerWPWo=;
+        s=k20201202; t=1655875569;
+        bh=7RxrNlagKfC3KdPjNXKV2smX0nbDuSbx3K+vuz8e3iE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ARVe2EfuKQLnthKuj8LnmbEzGtjw/Mf6Bv7X1ncFpAyrCZhhUkz3keKoP32CbLIzB
-         Lc1NSQjq2i1Yv1yo4jBCgEVvS7q8atCxr7VyCUf2HvQkVdswtgwBUb4ViW31HATTrt
-         vx9dj1f/H20azbX36z5YVPnlkK+X5MQ03/tCngliPpyLHUV7d2ZDJ/q7JqWYCJWcte
-         u6cKzqvc4tCNiwwOCUcOyk6TTHk6vHX5FxI3ZfRnvB2y8GZbn51Pgts/XDTWfk95t5
-         MY00sRghBjru33FwUAb43vk/fH37Um4KG09uLe9znjt2nKx5BnjCHD35GDZ0846JKn
-         L1ZG2im813pIg==
-Date:   Tue, 21 Jun 2022 22:23:17 -0700
+        b=FS/rZlcdNPNrC+OBRAS66/RbIfpSyXFf2oPZoN3KeCCKTDjV05WiZjGD/AXCtQdUp
+         48S+Ew0KSvT08V3koT9NI0uBUF10yvUom1gBQyyirkoUxX8drwzZa8a8wRdCw2rK4B
+         CwJ7o0IUtai3dKZ5MgW+L9097XiOJZeLDaRdcRQwAwgWMI+fqLgdygZMJ+Qco7DmKI
+         kPPEIhN7P+3VT0agHWbUndQR2xYW8EXaywjUTkIFzYH1+tUfWcqDNkHKAUHymq5Q1T
+         S8Ps5h7Sy0RnoUesBX0ZjPazPWPiQ3RzRCNxIqTV1W0LEK4lGa0AViRTHUaOvbIxyy
+         k/OCRcXiBIRow==
+Date:   Tue, 21 Jun 2022 22:26:07 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Arthur Gautier <baloo@superbaloo.net>
-Cc:     Raju Rangoju <rajur@chelsio.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH] cxgb4: DOM support when using a QSFP to SFP adaptor
-Message-ID: <20220621222317.1cbcaaeb@kernel.org>
-In-Reply-To: <20220620223234.2443179-1-baloo@superbaloo.net>
-References: <20220620223234.2443179-1-baloo@superbaloo.net>
+To:     Yu Zhe <yuzhe@nfschina.com>
+Cc:     ap420073@gmail.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, liqiong@nfschina.com
+Subject: Re: [PATCH] amt: remove unnecessary (void*) conversions.
+Message-ID: <20220621222607.75e66eec@kernel.org>
+In-Reply-To: <20220621021648.2544-1-yuzhe@nfschina.com>
+References: <20220621021648.2544-1-yuzhe@nfschina.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -52,23 +54,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 20 Jun 2022 22:32:34 +0000 Arthur Gautier wrote:
-> When a QSFP to SFP adaptor is used, the DOM eeprom is then presented
-> with the SFF-8472 layout and not translated to SFF-8636 format.
+On Tue, 21 Jun 2022 10:16:48 +0800 Yu Zhe wrote:
+> remove unnecessary void* type castings.
 > 
-> When parsing the eeprom, we can't just read the type of port but we
-> need to identify the type of transceiver instead.
-> 
-> Signed-off-by: Arthur Gautier <baloo@superbaloo.net>
-> Cc: Raju Rangoju <rajur@chelsio.com>
-> Cc: netdev@vger.kernel.org
+> Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
 
-Makes sense. Do you expect this change to make it into the long term
-stable branches or are you okay with it appearing starting with 5.20?
-
-> +#define SFF_8636_ID		0x0
-> +#define SFF_8636_ID_LEN	0x1
-> +#define SFF_8024_ID_SFP	0x3
-
-Please use the defines from include/linux/sfp.h
-SFF8024_ID_SFP and SFP_PHYS_ID
+Taehee, ack?  Your call.
