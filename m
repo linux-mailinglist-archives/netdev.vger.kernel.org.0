@@ -2,79 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 949E555443B
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 10:11:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7541455473F
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:11:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352161AbiFVIGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 04:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36210 "EHLO
+        id S241217AbiFVITw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 04:19:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351249AbiFVIGj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 04:06:39 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9D3EBE32
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 01:06:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655885196;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=J5FesIEJNUAYWwzRo/YOZ1QtVKtqRp3mnHCOXbnUhhM=;
-        b=E0erraqkkAc2E3Gmgfnh7TI6GNsM4b3PWvLsZbMiYuOKu2/pjO4rb3pcROi5lFuTiGT2uI
-        ZXGDf9e0889RdWl9wI4M9bxuj6++v6gqjA+QtR6DCyt8RMB1VbLptY6a6uXbQHKBIUSJik
-        Wqq/jxVnb11WwqKn2s9mwbv0duiA2i8=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-673-YyMbeC4iPdaw-_IiA-64Xg-1; Wed, 22 Jun 2022 04:06:30 -0400
-X-MC-Unique: YyMbeC4iPdaw-_IiA-64Xg-1
-Received: by mail-lf1-f71.google.com with SMTP id c21-20020a056512105500b00479762353a4so8179182lfb.8
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 01:06:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J5FesIEJNUAYWwzRo/YOZ1QtVKtqRp3mnHCOXbnUhhM=;
-        b=WEnb7HttGzVDDlb/ALJ3az4umtDoUqCOPBoyv0Sv6eY4Z1krsly/Uqs1B5ccHplCIZ
-         +TfoRoP643VTPzXxMrwqitYvRxz98xay7ycL0/A70tRo9By9ryJqlfP8+2AypjyRmFu+
-         Dhuqyel+WVvAbeiiqMORnPCVTTsDIQ5Vq01fPtUYBUMQtjiAqpksrCylKlyCBg/12JT4
-         y/dq+PJpAJI9+gPUkVmx0WPGHzI5Dyrhgg7h4RLrL91fQxX5UOg9YNw5mmm9AFKg/yBC
-         EBUj2kc6rcC9NIjthiN2QPmrGuLYkoD5pOIYBwKjF0pSKQuw8ykgEBN36K4PXucHAPDY
-         RLmQ==
-X-Gm-Message-State: AJIora/QL5sj+wOxP7KE+EmAolV/JeLON+FlL9pL8H11jKHT91RD+ocl
-        jA/567jHG11nG6AuEeW5mmV3uXvS8aYFYpYXEASCZoxSrML4Aa7/z6K3K6z3h7coLTn3A86TGOt
-        GzXS4KJ/VnuYfNHCEl+cHxMQpyTPTrmb2
-X-Received: by 2002:a05:6512:13a5:b0:47d:c1d9:dea8 with SMTP id p37-20020a05651213a500b0047dc1d9dea8mr1420550lfa.442.1655885189243;
-        Wed, 22 Jun 2022 01:06:29 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tkxcyuPKm08huxiqWuTWt7AWd6nEXg9wjIHlQsqNsaLpWQeLuiYvLUwu9t7gVY0n8kDnn3TbP+HM4y52lv6qk=
-X-Received: by 2002:a05:6512:13a5:b0:47d:c1d9:dea8 with SMTP id
- p37-20020a05651213a500b0047dc1d9dea8mr1420532lfa.442.1655885188954; Wed, 22
- Jun 2022 01:06:28 -0700 (PDT)
+        with ESMTP id S235471AbiFVITv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 04:19:51 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26BC437BFD
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 01:19:50 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1o3vaP-00056G-Lx; Wed, 22 Jun 2022 10:19:41 +0200
+Received: from pengutronix.de (2a03-f580-87bc-d400-0ddb-1bbb-e3fd-3cee.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:ddb:1bbb:e3fd:3cee])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id CDAE39C0DF;
+        Wed, 22 Jun 2022 08:19:39 +0000 (UTC)
+Date:   Wed, 22 Jun 2022 10:19:39 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Thomas.Kopp@microchip.com
+Cc:     pavel.modilaynen@volvocars.com, drew@beagleboard.org,
+        linux-can@vger.kernel.org, menschel.p@posteo.de,
+        netdev@vger.kernel.org, will@macchina.cc
+Subject: Re: [net-next 6/6] can: mcp251xfd: mcp251xfd_regmap_crc_read(): work
+ around broken CRC on TBC register
+Message-ID: <20220622081939.b4ev2k4b3i3fo6an@pengutronix.de>
+References: <PR3P174MB0112D073D0E5E080FAAE8510846E9@PR3P174MB0112.EURP174.PROD.OUTLOOK.COM>
+ <DM4PR11MB5390BA1C370A5AF90E666F1EFB709@DM4PR11MB5390.namprd11.prod.outlook.com>
+ <PR3P174MB01124C085C0E0A0220F2B11584709@PR3P174MB0112.EURP174.PROD.OUTLOOK.COM>
+ <DM4PR11MB53901D49578FE265B239E55AFB7C9@DM4PR11MB5390.namprd11.prod.outlook.com>
+ <20220621142515.4xgxhj6oxo5kuepn@pengutronix.de>
 MIME-Version: 1.0
-References: <20220621114845.3650258-1-stephan.gerhold@kernkonzept.com>
-In-Reply-To: <20220621114845.3650258-1-stephan.gerhold@kernkonzept.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Wed, 22 Jun 2022 16:06:17 +0800
-Message-ID: <CACGkMEskKF4O7_Dz5=JxB2noVV5qJQusN9DLLzUFc4d149kS7g@mail.gmail.com>
-Subject: Re: [PATCH net] virtio_net: fix xdp_rxq_info bug after suspend/resume
-To:     Stephan Gerhold <stephan.gerhold@kernkonzept.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="t3plp2cuyqmshzvy"
+Content-Disposition: inline
+In-Reply-To: <20220621142515.4xgxhj6oxo5kuepn@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,111 +58,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 7:50 PM Stephan Gerhold
-<stephan.gerhold@kernkonzept.com> wrote:
->
-> The following sequence currently causes a driver bug warning
-> when using virtio_net:
->
->   # ip link set eth0 up
->   # echo mem > /sys/power/state (or e.g. # rtcwake -s 10 -m mem)
->   <resume>
->   # ip link set eth0 down
->
->   Missing register, driver bug
->   WARNING: CPU: 0 PID: 375 at net/core/xdp.c:138 xdp_rxq_info_unreg+0x58/0x60
->   Call trace:
->    xdp_rxq_info_unreg+0x58/0x60
->    virtnet_close+0x58/0xac
->    __dev_close_many+0xac/0x140
->    __dev_change_flags+0xd8/0x210
->    dev_change_flags+0x24/0x64
->    do_setlink+0x230/0xdd0
->    ...
->
-> This happens because virtnet_freeze() frees the receive_queue
-> completely (including struct xdp_rxq_info) but does not call
-> xdp_rxq_info_unreg(). Similarly, virtnet_restore() sets up the
-> receive_queue again but does not call xdp_rxq_info_reg().
->
-> Actually, parts of virtnet_freeze_down() and virtnet_restore_up()
-> are almost identical to virtnet_close() and virtnet_open(): only
-> the calls to xdp_rxq_info_(un)reg() are missing. This means that
-> we can fix this easily and avoid such problems in the future by
-> just calling virtnet_close()/open() from the freeze/restore handlers.
->
-> Aside from adding the missing xdp_rxq_info calls the only difference
-> is that the refill work is only cancelled if netif_running(). However,
-> this should not make any functional difference since the refill work
-> should only be active if the network interface is actually up.
->
-> Fixes: 754b8a21a96d ("virtio_net: setup xdp_rxq_info")
-> Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+--t3plp2cuyqmshzvy
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> ---
->  drivers/net/virtio_net.c | 25 ++++++-------------------
->  1 file changed, 6 insertions(+), 19 deletions(-)
->
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index db05b5e930be..969a67970e71 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -2768,7 +2768,6 @@ static const struct ethtool_ops virtnet_ethtool_ops = {
->  static void virtnet_freeze_down(struct virtio_device *vdev)
->  {
->         struct virtnet_info *vi = vdev->priv;
-> -       int i;
->
->         /* Make sure no work handler is accessing the device */
->         flush_work(&vi->config_work);
-> @@ -2776,14 +2775,8 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
->         netif_tx_lock_bh(vi->dev);
->         netif_device_detach(vi->dev);
->         netif_tx_unlock_bh(vi->dev);
-> -       cancel_delayed_work_sync(&vi->refill);
-> -
-> -       if (netif_running(vi->dev)) {
-> -               for (i = 0; i < vi->max_queue_pairs; i++) {
-> -                       napi_disable(&vi->rq[i].napi);
-> -                       virtnet_napi_tx_disable(&vi->sq[i].napi);
-> -               }
-> -       }
-> +       if (netif_running(vi->dev))
-> +               virtnet_close(vi->dev);
->  }
->
->  static int init_vqs(struct virtnet_info *vi);
-> @@ -2791,7 +2784,7 @@ static int init_vqs(struct virtnet_info *vi);
->  static int virtnet_restore_up(struct virtio_device *vdev)
->  {
->         struct virtnet_info *vi = vdev->priv;
-> -       int err, i;
-> +       int err;
->
->         err = init_vqs(vi);
->         if (err)
-> @@ -2800,15 +2793,9 @@ static int virtnet_restore_up(struct virtio_device *vdev)
->         virtio_device_ready(vdev);
->
->         if (netif_running(vi->dev)) {
-> -               for (i = 0; i < vi->curr_queue_pairs; i++)
-> -                       if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
-> -                               schedule_delayed_work(&vi->refill, 0);
-> -
-> -               for (i = 0; i < vi->max_queue_pairs; i++) {
-> -                       virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
-> -                       virtnet_napi_tx_enable(vi, vi->sq[i].vq,
-> -                                              &vi->sq[i].napi);
-> -               }
-> +               err = virtnet_open(vi->dev);
-> +               if (err)
-> +                       return err;
->         }
->
->         netif_tx_lock_bh(vi->dev);
-> --
-> 2.30.2
->
+On 21.06.2022 16:25:15, Marc Kleine-Budde wrote:
+> > Thanks for the data. I've looked into this and it seems that the
+> > second bit being set in your case does not depend on the SPI-Rate (or
+> > the quirks for that matter) but it seems to be hardware setup related.
+> >=20
+> > I'm fine with changing the driver so that it ignores set LSBs but
+> > would limit it to 2 or 3 bits:
+> >=20
+> > (buf_rx->data[0] =3D=3D 0x0 || buf_rx->data[0] =3D=3D 0x80))
+> > becomes
+> > ((buf_rx->data[0] & 0xf8) =3D=3D 0x0 || (buf_rx->data[0] & 0xf8) =3D=3D=
+ 0x80)) {
+> >=20
+> > The action also needs to be changed and the flip back of the bit
+> > needs to be removed. In this case the flipped databit that produces
+> > a matching CRC is actually correct (i.e. consistent with the 7 LSBs
+> > in that byte.)
 
+The mcp2517fd errata says the transmitted data is okay, but the CRC is
+calculated on wrong data:
+
+| It is possible that there is a mismatch between the transmitted CRC
+| and the actual CRC for the transmitted data when data are updated at a
+| specific time during the SPI READ_CRC command. In these cases, the
+| transmitted CRC is wrong. The data transmitted are correct.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--t3plp2cuyqmshzvy
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKy0JYACgkQrX5LkNig
+013R/QgAqOI8My5DUrkLSb+7/BnXvLYA3VyATjMZHD6feI/8zSpq5Sqc6NTtBiQa
+gs4ok4w0WTN5mu2Ib3Ons1TIQRROR4/WjcdY9PKJ1HqdznaUL9XkAnXIV5V0U3CA
+jV64873QB/+pGmRUPG+2nNRIebCSP+MSLMqz/9XAn198B0+SaORZKwIruKKKw8sv
+Hn9Uh3I3MH/SvDS/EsKeidnT7YSwl8AHBV4W6ES4dvQ48GhLD69mVMlKeBz7DtTj
+zIug2IIBW5WSlTpHMvvzDBpIBR9KYmgt9TpDDjcy1K2xpQ9uZQvKFjgldozEAPg7
+nPAVeZYoGf+G1O4wpc0EXHvkzRL9Wg==
+=QqDn
+-----END PGP SIGNATURE-----
+
+--t3plp2cuyqmshzvy--
