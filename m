@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8732F554227
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 07:14:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52DCD554220
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 07:14:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356939AbiFVFN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 01:13:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53842 "EHLO
+        id S1356923AbiFVFN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 01:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356912AbiFVFNT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 01:13:19 -0400
+        with ESMTP id S1356932AbiFVFNU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 01:13:20 -0400
 Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A081535DE5
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 22:13:14 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id m68-20020a253f47000000b006683bd91962so13762599yba.0
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 22:13:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B970435DE7
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 22:13:16 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id d6-20020a256806000000b00668a3d90e95so13749688ybc.2
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 22:13:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=MbAa01ayooLRjvmZvMsHwzRjI7CpSiorxRvp5VWlJKg=;
-        b=lFxaMyJoMNDYKOZnodD1Q75etFtJnz/kbZF+a+wBiWlzEpGzQZNjTPeivJK+BhAjOg
-         /L4M8jbibxdtTLJGTq5Evi6qUxV1y9rc1VBzfspVeekCn45WzPmzXZq6g7nS1pE9eahf
-         anRtvBNdiu04AkP75v2OCSUYU+sZdtmnP6nX+vMPPAc0nVcHGBAAsX0gVAGjfBRpjBL0
-         xo0rkj7Hlnik9dTjw26mhAmBJtta5Jpk9jqS41x8s71AM8fl4UrmDYgOJS5khGqV74r9
-         tpILDkaoOsKH7XVUpqRVIswFJjlAhgARw485WqJh82n0A5QRXDTn4FZBZ8z5D9msLnXt
-         9/Uw==
+        bh=RObd3TiRkqvkoKMe+QwcB26i+/ARD+OA3IafA9Z7HpI=;
+        b=fupddBHJrPixwqHCGwFKlw24Nz7HiqjO6n4cZuLnawpMh9lsheWvBHlanw2AY+1BW5
+         F3lrADz9q1daIJfLOGzU+LV+XuKRZ+9ula5KdwY0IW/OzcsmvSSbTgj+Zx6/HCzFUY3+
+         NhguBFjcxMpYLOjqHMtL9FuRi4Td105NzpvGuIxg1pediMmZ/rxYUg12RGx4D2nXiGF5
+         hK/lFdSWJPSrV+csmSRzUBH244qoq72JXiNDT2EQ8vD4AUDx1J7AcTOSrl4Pv0UVe8bY
+         AzaGc1wbt2hSXq2hP+uob0RUK1cUAEvIwx02V4cZq5vaUJkurJIAJA0OvuOTpBtCi7kx
+         oHZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=MbAa01ayooLRjvmZvMsHwzRjI7CpSiorxRvp5VWlJKg=;
-        b=zlMyV/Cv1fI625xgNN9sK9ES98Y9wGPtkI3QMG6pnbAaC0OdfbYOGBW3qkkd2vbN9W
-         NMASeZzqafGCp/+BvNQsOtny5wHpPau8pd362qARpiXrw2YPJtnp419YlbqS/GvtQNH1
-         NUO/swXeO1X39sBVWffhnNEf04fFWvhAyDG8eUs8Nl0Qkk6IwhIBjLvIXvQT7QhMCKU6
-         2E+7ZuTJkHmIOgYnlMZugLcAQ3owAibcQCt7cSMx1mjcazzbazMTJW75mRhsWfO8mgcE
-         aG4pYCrpTenrlGmrPT5RAk519/xSuspEbANQqXR/A2p1XW7MhmLInxjIcDqw6ATdv2CI
-         r1CQ==
-X-Gm-Message-State: AJIora9A9b8LzrqF1Dt8q9WVF+Bx1GG+N2Rv6Y/bzddTci4m4OKoYRj6
-        u1Ekm5zeT+fn5GhnqKNglDUQEX3FXhRVog==
-X-Google-Smtp-Source: AGRyM1sPBtsgreVfUCk2KH/JF6UCLMGB0N2QZSw76EbKMDXlrnzfHH4W9hK5NAZpV+vLK7ecGdNNMMRd2eVD+g==
+        bh=RObd3TiRkqvkoKMe+QwcB26i+/ARD+OA3IafA9Z7HpI=;
+        b=s1NSkHgjvEO+uaV2aqfBmpOxmQMWdQAh9OrFPJLv1tvhqk7f88xKkisqTzO80HWw0L
+         EDywDW3oxHGn6tOqysnv1/pmou1j/flWGGe+BkFC3A0gcoGjHtjawCXsljXxMq2pzQvd
+         G80CDc+IlCYWqcpCE4+BlkTt+y6yc0j+m7ek5SbX99POVnknBnvGqkZ1XP4VuOrUMyOn
+         bi/64rq68vn00YFPEzaEiL19+DvAn5fD8xU7X4ozOVA7nsR/x1e1iRd//mfxwqdDgXRI
+         G87weoHylzajsQi4T8i+IHCx0nUuXeULrA6og7M/yxDY9qk38mOD6Ks3psSd8KMQz+8q
+         0GHg==
+X-Gm-Message-State: AJIora/zJKVl4xamrwxFI2ZeErTF1nGdi8Z+oF/tAdsG2PJGWLO0DDuW
+        QFcUjtN1YTCW10kCiGG+7/+Y8zayeTHUPg==
+X-Google-Smtp-Source: AGRyM1t9LgNI2Pp2O85WHOAa1mqMTDEfX/dSnyhXIMCOf+8WbypzLxmelPscWCM6DiwgtSCiqi5VKRg6h+HHDw==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a81:6d55:0:b0:317:90a6:83b1 with SMTP id
- i82-20020a816d55000000b0031790a683b1mr2138253ywc.170.1655874794444; Tue, 21
- Jun 2022 22:13:14 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 05:12:44 +0000
+ (user=edumazet job=sendgmr) by 2002:a5b:246:0:b0:619:5651:3907 with SMTP id
+ g6-20020a5b0246000000b0061956513907mr1884945ybp.190.1655874796065; Tue, 21
+ Jun 2022 22:13:16 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 05:12:45 +0000
 In-Reply-To: <20220622051255.700309-1-edumazet@google.com>
-Message-Id: <20220622051255.700309-9-edumazet@google.com>
+Message-Id: <20220622051255.700309-10-edumazet@google.com>
 Mime-Version: 1.0
 References: <20220622051255.700309-1-edumazet@google.com>
 X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
-Subject: [PATCH net-next 08/19] ipmr: do not acquire mrt_lock while calling ip_mr_forward()
+Subject: [PATCH net-next 09/19] ipmr: do not acquire mrt_lock in ipmr_get_route()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -69,67 +69,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ip_mr_forward() uses standard RCU protection already.
+mr_fill_mroute() uses standard rcu_read_unlock(),
+no need to grab mrt_lock anymore.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv4/ipmr.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ net/ipv4/ipmr.c | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-index 6ea54bc3d9b6555aaa9974d81ba4acd47481724f..b0f2e6d79d62273c8c2682f28cb45fe5ec3df6f3 100644
+index b0f2e6d79d62273c8c2682f28cb45fe5ec3df6f3..69ccd3d7c655a53d3cf1ac9104b9da94213416f6 100644
 --- a/net/ipv4/ipmr.c
 +++ b/net/ipv4/ipmr.c
-@@ -1817,7 +1817,7 @@ static bool ipmr_forward_offloaded(struct sk_buff *skb, struct mr_table *mrt,
- }
- #endif
- 
--/* Processing handlers for ipmr_forward */
-+/* Processing handlers for ipmr_forward, under rcu_read_lock() */
- 
- static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
- 			    int in_vifi, struct sk_buff *skb, int vifi)
-@@ -1839,9 +1839,7 @@ static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
- 		WRITE_ONCE(vif->bytes_out, vif->bytes_out + skb->len);
- 		vif_dev->stats.tx_bytes += skb->len;
- 		vif_dev->stats.tx_packets++;
--		rcu_read_lock();
- 		ipmr_cache_report(mrt, skb, vifi, IGMPMSG_WHOLEPKT);
--		rcu_read_unlock();
- 		goto out_free;
- 	}
- 
-@@ -1936,6 +1934,7 @@ static int ipmr_find_vif(const struct mr_table *mrt, struct net_device *dev)
- }
- 
- /* "local" means that we should preserve one skb (for local delivery) */
-+/* Called uner rcu_read_lock() */
- static void ip_mr_forward(struct net *net, struct mr_table *mrt,
- 			  struct net_device *dev, struct sk_buff *skb,
- 			  struct mfc_cache *c, int local)
-@@ -1992,12 +1991,10 @@ static void ip_mr_forward(struct net *net, struct mr_table *mrt,
- 			       c->_c.mfc_un.res.last_assert +
- 			       MFC_ASSERT_THRESH)) {
- 			c->_c.mfc_un.res.last_assert = jiffies;
--			rcu_read_lock();
- 			ipmr_cache_report(mrt, skb, true_vifi, IGMPMSG_WRONGVIF);
- 			if (mrt->mroute_do_wrvifwhole)
- 				ipmr_cache_report(mrt, skb, true_vifi,
- 						  IGMPMSG_WRVIFWHOLE);
--			rcu_read_unlock();
- 		}
- 		goto dont_forward;
- 	}
-@@ -2169,9 +2166,7 @@ int ip_mr_input(struct sk_buff *skb)
- 		return -ENODEV;
+@@ -2289,9 +2289,7 @@ int ipmr_get_route(struct net *net, struct sk_buff *skb,
+ 		return err;
  	}
  
 -	read_lock(&mrt_lock);
- 	ip_mr_forward(net, mrt, dev, skb, cache, local);
+ 	err = mr_fill_mroute(mrt, skb, &cache->_c, rtm);
 -	read_unlock(&mrt_lock);
- 
- 	if (local)
- 		return ip_local_deliver(skb);
+ 	rcu_read_unlock();
+ 	return err;
+ }
 -- 
 2.37.0.rc0.104.g0611611a94-goog
 
