@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4344554228
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 07:14:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09DA655421C
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 07:14:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356920AbiFVFN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 01:13:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53612 "EHLO
+        id S1356900AbiFVFNZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 01:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356783AbiFVFNM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 01:13:12 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B5035A88
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 22:13:11 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-317bfb7aaacso68225167b3.1
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 22:13:11 -0700 (PDT)
+        with ESMTP id S1356785AbiFVFNO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 01:13:14 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F13535DE0
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 22:13:13 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id a8-20020a25a188000000b0066839c45fe8so13667064ybi.17
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 22:13:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=Q6zxvPds/JEM81DuSyUCoS9FcG5gc9gJ3cgYpcc9rFw=;
-        b=qsYiWrkfm+NDL6WamE5xDK/htzaG7INzh7PNSREvciuG+ZXkJ73MIjy3TPJ6ecmPVH
-         qcmXrzMAvN5xLoHjyOnaYF8zl0Yw55ALcQS+Pxus61exiR3kFrZHBMYzdLo12NgUVE9p
-         l4E/GSjw/1SwjNO+KMJDtpbi+2J+GfXeKDJZMckTvW8S9SZoQxtxEy0Kz/4re3H22Kgb
-         4nQ5GxE6znp5lcr6hreSC151wBSpStCnNrClJ3hCtHEcbIGnw11+vBoOPK/qeIoQ8JsG
-         y+KmkxAH3r4aYwTl1gsckm2aWXWFQPKlendBOVBgLQ13N2QcVxpD/9vAfpmvdgDsQ/I+
-         JHvg==
+        bh=ieF6vXeFFn+xrybKfdCGWxcLeig/WsIdEGabofxCaJA=;
+        b=Ki9W8TSOm3tpM/R59XTy7+HEmQNJ+yyYp/zy9EDTXbTS59dHkPbTQTSLakAsYj0sbZ
+         gFxkfC7szyIzFmmp4KdzHCWE3aai/cwlBp+Dhj0VgNqsSaxVTR9UX+TUJX6HH2lfsoQl
+         vpBfDsuJNDbxhFaiQcNQy583Dsst/39SDg64QyuhXBoOEvivaYPuNkmUDkQaHmnHmTBH
+         LfdBDmpKT2DySSCo6trMFdkksy0WTi1wIzlrbZiYhctcG7rprdB6mZqPd62Ik2Gguwn5
+         DdopCiQ4oCohwYFIlCKpBQgZ4YODHyAo1IAJrd6oXfY4Pan1kj5BfXS+DI06Z8LT+DtE
+         ljeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=Q6zxvPds/JEM81DuSyUCoS9FcG5gc9gJ3cgYpcc9rFw=;
-        b=mAzX+4u5ICPUxnItMr2bxKuDurGu1yGeCnbupc/JTSOiDcCYGt4DGMfB+narHMzOxu
-         5WVx5F7XsTj+9r9qb9YHwQKW9L9Rf8FVC1K1UUoxz1/tZYfrK94p/CThzzMJnXVcEo/8
-         AWRIG0mK3kFxtlX7GmeqXCQEoNr0tQTZfwDYHiJNt+ACWETExOOFVXdxwK4CesV015FA
-         GPmODND8cPclIRbYyREc434GDA3H8Ti5pIECJ9/hC1dWO2ejAeLd2gfPE3BnqcpMuKR0
-         iDn7A5PalHnhD1xEjkW6idLrVeDOtNTv2As14CaaKm5hHgDY1RjmNFAsnnBMyvJJKwGS
-         MnHw==
-X-Gm-Message-State: AJIora+omPC9UKyKz8PeMzPC0bN/y72ZFNVL8TyDBR3vBvZ/zry92IM9
-        +ONveX/+t2CwxVVgF1neYgvbxY33sEORUw==
-X-Google-Smtp-Source: AGRyM1vnvXFM39fDMQqt29WqHKdME9ih9kqdT/oESYFdxf4puQCiliC91fy8fTQPA0w4zXWOocDQlIYWVpu+vA==
+        bh=ieF6vXeFFn+xrybKfdCGWxcLeig/WsIdEGabofxCaJA=;
+        b=pShmhz9HuK/CiHcHGfHvnWsZy6t9jpuf+rUWer1/JApRBTsD5HL9YRdGfB5k2r3FCE
+         mnc+rkovdTYrxK3mZwxH22b4JYL+LT+c9+PblHIH7tpzH5iMqHQl1yxm/nR5Y3pOw026
+         Jl1YeIYo2X9TSvrUZdtdnNODiqnEculmpVKk/FQgo1/sXJltWN+oNYZWgwcBm4RojVlO
+         2diWEMthbrPKYosSv3pNbljhdZ7j3dWDVptJb9tc0ryFhPQXnaZjdFLA+w5zZDRhqKQE
+         WkiPxaEMmfn7dJYeT5U5dXJ049cahDz4poTkcrCwmJY/Ky7LrRzOOIHHlYxDrp91nbU4
+         gprA==
+X-Gm-Message-State: AJIora+MroFkfoB1as96ZrfzFXdhBFTdRgCpOpT+mZ6cUIzsbDv+LazO
+        A7V844YTYp6AOddlBdg/djtm8i8cI+pXOg==
+X-Google-Smtp-Source: AGRyM1vtZoul9UPlxBorPds7I9CObhq9CYIyevLna7uS+pyPLa1xvRSuSutm7S7B7JgjxQX/ex8d3v3WKAhb/Q==
 X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a0d:cad1:0:b0:318:1eeb:3cce with SMTP id
- m200-20020a0dcad1000000b003181eeb3ccemr2132544ywd.371.1655874791141; Tue, 21
- Jun 2022 22:13:11 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 05:12:42 +0000
+ (user=edumazet job=sendgmr) by 2002:a25:30c1:0:b0:64d:f030:b01a with SMTP id
+ w184-20020a2530c1000000b0064df030b01amr1732098ybw.330.1655874792831; Tue, 21
+ Jun 2022 22:13:12 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 05:12:43 +0000
 In-Reply-To: <20220622051255.700309-1-edumazet@google.com>
-Message-Id: <20220622051255.700309-7-edumazet@google.com>
+Message-Id: <20220622051255.700309-8-edumazet@google.com>
 Mime-Version: 1.0
 References: <20220622051255.700309-1-edumazet@google.com>
 X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
-Subject: [PATCH net-next 06/19] ipmr: do not acquire mrt_lock in ioctl(SIOCGETVIFCNT)
+Subject: [PATCH net-next 07/19] ipmr: do not acquire mrt_lock before calling ipmr_cache_unresolved()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -71,106 +71,96 @@ X-Mailing-List: netdev@vger.kernel.org
 
 rcu_read_lock() protection is good enough.
 
+ipmr_cache_unresolved() uses a dedicated spinlock (mfc_unres_lock)
+
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv4/ipmr.c | 42 ++++++++++++++++++++++--------------------
- 1 file changed, 22 insertions(+), 20 deletions(-)
+ net/ipv4/ipmr.c | 25 ++++++++-----------------
+ 1 file changed, 8 insertions(+), 17 deletions(-)
 
 diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
-index 8a94f9a459cd077d74b5e38c3d2f248620d4ecfc..bc8b7504fde6ec3aadd6c0962f23e59c0aac702a 100644
+index bc8b7504fde6ec3aadd6c0962f23e59c0aac702a..6ea54bc3d9b6555aaa9974d81ba4acd47481724f 100644
 --- a/net/ipv4/ipmr.c
 +++ b/net/ipv4/ipmr.c
-@@ -1611,20 +1611,20 @@ int ipmr_ioctl(struct sock *sk, int cmd, void __user *arg)
- 		if (vr.vifi >= mrt->maxvif)
- 			return -EINVAL;
- 		vr.vifi = array_index_nospec(vr.vifi, mrt->maxvif);
--		read_lock(&mrt_lock);
-+		rcu_read_lock();
- 		vif = &mrt->vif_table[vr.vifi];
- 		if (VIF_EXISTS(mrt, vr.vifi)) {
--			vr.icount = vif->pkt_in;
--			vr.ocount = vif->pkt_out;
--			vr.ibytes = vif->bytes_in;
--			vr.obytes = vif->bytes_out;
--			read_unlock(&mrt_lock);
-+			vr.icount = READ_ONCE(vif->pkt_in);
-+			vr.ocount = READ_ONCE(vif->pkt_out);
-+			vr.ibytes = READ_ONCE(vif->bytes_in);
-+			vr.obytes = READ_ONCE(vif->bytes_out);
-+			rcu_read_unlock();
- 
- 			if (copy_to_user(arg, &vr, sizeof(vr)))
- 				return -EFAULT;
- 			return 0;
+@@ -680,7 +680,7 @@ static int vif_delete(struct mr_table *mrt, int vifi, int notify,
+ 			if (VIF_EXISTS(mrt, tmp))
+ 				break;
  		}
--		read_unlock(&mrt_lock);
-+		rcu_read_unlock();
- 		return -EADDRNOTAVAIL;
- 	case SIOCGETSGCNT:
- 		if (copy_from_user(&sr, arg, sizeof(sr)))
-@@ -1686,20 +1686,20 @@ int ipmr_compat_ioctl(struct sock *sk, unsigned int cmd, void __user *arg)
- 		if (vr.vifi >= mrt->maxvif)
- 			return -EINVAL;
- 		vr.vifi = array_index_nospec(vr.vifi, mrt->maxvif);
--		read_lock(&mrt_lock);
-+		rcu_read_lock();
- 		vif = &mrt->vif_table[vr.vifi];
- 		if (VIF_EXISTS(mrt, vr.vifi)) {
--			vr.icount = vif->pkt_in;
--			vr.ocount = vif->pkt_out;
--			vr.ibytes = vif->bytes_in;
--			vr.obytes = vif->bytes_out;
--			read_unlock(&mrt_lock);
-+			vr.icount = READ_ONCE(vif->pkt_in);
-+			vr.ocount = READ_ONCE(vif->pkt_out);
-+			vr.ibytes = READ_ONCE(vif->bytes_in);
-+			vr.obytes = READ_ONCE(vif->bytes_out);
-+			rcu_read_unlock();
- 
- 			if (copy_to_user(arg, &vr, sizeof(vr)))
- 				return -EFAULT;
- 			return 0;
- 		}
--		read_unlock(&mrt_lock);
-+		rcu_read_unlock();
- 		return -EADDRNOTAVAIL;
- 	case SIOCGETSGCNT:
- 		if (copy_from_user(&sr, arg, sizeof(sr)))
-@@ -1835,8 +1835,8 @@ static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
- 		goto out_free;
- 
- 	if (vif->flags & VIFF_REGISTER) {
--		vif->pkt_out++;
--		vif->bytes_out += skb->len;
-+		WRITE_ONCE(vif->pkt_out, vif->pkt_out + 1);
-+		WRITE_ONCE(vif->bytes_out, vif->bytes_out + skb->len);
- 		vif_dev->stats.tx_bytes += skb->len;
- 		vif_dev->stats.tx_packets++;
- 		rcu_read_lock();
-@@ -1885,8 +1885,8 @@ static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
- 		goto out_free;
+-		mrt->maxvif = tmp+1;
++		WRITE_ONCE(mrt->maxvif, tmp + 1);
  	}
  
--	vif->pkt_out++;
--	vif->bytes_out += skb->len;
-+	WRITE_ONCE(vif->pkt_out, vif->pkt_out + 1);
-+	WRITE_ONCE(vif->bytes_out, vif->bytes_out + skb->len);
- 
- 	skb_dst_drop(skb);
- 	skb_dst_set(skb, &rt->dst);
-@@ -2002,8 +2002,10 @@ static void ip_mr_forward(struct net *net, struct mr_table *mrt,
+ 	write_unlock_bh(&mrt_lock);
+@@ -905,7 +905,7 @@ static int vif_add(struct net *net, struct mr_table *mrt,
+ 		WRITE_ONCE(mrt->mroute_reg_vif_num, vifi);
  	}
+ 	if (vifi+1 > mrt->maxvif)
+-		mrt->maxvif = vifi+1;
++		WRITE_ONCE(mrt->maxvif, vifi + 1);
+ 	write_unlock_bh(&mrt_lock);
+ 	call_ipmr_vif_entry_notifiers(net, FIB_EVENT_VIF_ADD, v, dev,
+ 				      vifi, mrt->id);
+@@ -1923,11 +1923,12 @@ static void ipmr_queue_xmit(struct net *net, struct mr_table *mrt,
+ 	kfree_skb(skb);
+ }
  
- forward:
--	mrt->vif_table[vif].pkt_in++;
--	mrt->vif_table[vif].bytes_in += skb->len;
-+	WRITE_ONCE(mrt->vif_table[vif].pkt_in,
-+		   mrt->vif_table[vif].pkt_in + 1);
-+	WRITE_ONCE(mrt->vif_table[vif].bytes_in,
-+		   mrt->vif_table[vif].bytes_in + skb->len);
+-static int ipmr_find_vif(struct mr_table *mrt, struct net_device *dev)
++/* Called with mrt_lock or rcu_read_lock() */
++static int ipmr_find_vif(const struct mr_table *mrt, struct net_device *dev)
+ {
+ 	int ct;
+-
+-	for (ct = mrt->maxvif-1; ct >= 0; ct--) {
++	/* Pairs with WRITE_ONCE() in vif_delete()/vif_add() */
++	for (ct = READ_ONCE(mrt->maxvif) - 1; ct >= 0; ct--) {
+ 		if (rcu_access_pointer(mrt->vif_table[ct].dev) == dev)
+ 			break;
+ 	}
+@@ -2161,15 +2162,9 @@ int ip_mr_input(struct sk_buff *skb)
+ 			skb = skb2;
+ 		}
  
- 	/* Forward the frame */
- 	if (c->mfc_origin == htonl(INADDR_ANY) &&
+-		read_lock(&mrt_lock);
+ 		vif = ipmr_find_vif(mrt, dev);
+-		if (vif >= 0) {
+-			int err2 = ipmr_cache_unresolved(mrt, vif, skb, dev);
+-			read_unlock(&mrt_lock);
+-
+-			return err2;
+-		}
+-		read_unlock(&mrt_lock);
++		if (vif >= 0)
++			return ipmr_cache_unresolved(mrt, vif, skb, dev);
+ 		kfree_skb(skb);
+ 		return -ENODEV;
+ 	}
+@@ -2273,18 +2268,15 @@ int ipmr_get_route(struct net *net, struct sk_buff *skb,
+ 		int vif = -1;
+ 
+ 		dev = skb->dev;
+-		read_lock(&mrt_lock);
+ 		if (dev)
+ 			vif = ipmr_find_vif(mrt, dev);
+ 		if (vif < 0) {
+-			read_unlock(&mrt_lock);
+ 			rcu_read_unlock();
+ 			return -ENODEV;
+ 		}
+ 
+ 		skb2 = skb_realloc_headroom(skb, sizeof(struct iphdr));
+ 		if (!skb2) {
+-			read_unlock(&mrt_lock);
+ 			rcu_read_unlock();
+ 			return -ENOMEM;
+ 		}
+@@ -2298,7 +2290,6 @@ int ipmr_get_route(struct net *net, struct sk_buff *skb,
+ 		iph->daddr = daddr;
+ 		iph->version = 0;
+ 		err = ipmr_cache_unresolved(mrt, vif, skb2, dev);
+-		read_unlock(&mrt_lock);
+ 		rcu_read_unlock();
+ 		return err;
+ 	}
 -- 
 2.37.0.rc0.104.g0611611a94-goog
 
