@@ -2,143 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ADDE554EA2
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 17:05:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 271AC554E9A
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 17:05:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359016AbiFVPFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 11:05:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38908 "EHLO
+        id S1358882AbiFVPFp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 11:05:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359001AbiFVPFx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 11:05:53 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEFE93A72E
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 08:05:43 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id c30so19707110ljr.9
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 08:05:43 -0700 (PDT)
+        with ESMTP id S1358969AbiFVPFl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 11:05:41 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B193DDE2;
+        Wed, 22 Jun 2022 08:05:39 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id d129so16339112pgc.9;
+        Wed, 22 Jun 2022 08:05:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=kyUcdhzGFcDndqqzlq8u6bhrtYYzLp4ulxMjiB9uh5c=;
-        b=C+EQKQ+Z8Vj1vQdoeE5hwXUYHEKkxl5yDsbmhz3+uTszsXb7+8IqY870rcQtZMmMve
-         VpiNN0O7wAe+fRNcuPfvtOeJzsJzJJeFexeMUUihMgs5+xELfjcSKzNE6Tw7an2EuDlJ
-         l9itCW1E7/zzF2iY0uuGzRjN7EfkxWbgFniQfI1ig9hJBuLAAU6YtgnvS2qsDDMjfPMq
-         g9tozy1bAayaY2bUFb0o6GVxI9nZaG10jdXi963nV3FzTJdibHeg06H22231sObEoWSt
-         qU605cKW93bqjsW9lI4NmMQdA3dHSz9bBOJoowWaneiVi6MI/l1Oj/TICYyYRzjq15JX
-         bVvg==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=LuhiIv9CIZdNs/8xxOUuGG9SP8g2B8WP+UP2kknv5E4=;
+        b=LhNn4LgL8gxb98w0koQQ1pt8q+moy/PmTLkrqKJXS5iLbgs2r8PFFpTl7WJtjnJXTy
+         PGFQHtyWwNumPZVwabdojQV4B8BcQiGluDEKogAkLqTQpswo9trBSt012Vf4v/WbfI0J
+         n8pW0vAQBG+5rav6i6aN2/XDN6XpmUpR8UsIcca6MTsXuU0YiqiPCIrR7i40+GDLfEZ2
+         blEcxJDoJAW7ZpFz1gOH3ZHJ9q51IHp23ohmshwUfOwJCSrBZ0gATqzNhqLXTt5oVrXU
+         GTnVpRcW+JWAMP+vA23N5PcbqMhTgUgEQ0lOittB4W35S0rR79PNLv4cmz7y9dw8lqdW
+         aqmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=kyUcdhzGFcDndqqzlq8u6bhrtYYzLp4ulxMjiB9uh5c=;
-        b=Arij9kcAgidSoSyFWz6kxScH+AYHNV+ZArsvFd37/dm90LLZbmxcbyQWPddMaXp6W+
-         dFQ97z4Quos0AYiVzZS/9TqZ0minO97R/KCCovgnZHfW2ojYGQE9GmtqvKiia/J19MnQ
-         /E2wCXYbbA68Q23PLP9i4qBv14mTbn6/nymflap1nKvQuBZOOmKXEuhRYpOwyOpb/0XY
-         h2ZgZaD7EKB1wIwDZUJ3X013sEilMDVsZvSajkfcY4oXdNnlNiTNoOmTcUk2260hMKqI
-         U77868iWtKyJNkSlIfDS5ZWtvkkXUyavqN3/I7ZRK4V+ryQEFMKeCluTLUDaFWk0ViEo
-         wcLg==
-X-Gm-Message-State: AJIora89VWrUDT2wYQJfobgRji3rq29hNi3Ym3KruvCvHu1hFnOyj1LJ
-        coeV/p1yS9lg9aFjVBIRr3XuzlA9HhJuxmHAbohiQA==
-X-Google-Smtp-Source: AGRyM1vi+zjahGXXcpbt0CqwKznHFVRgSDpwgZA5t5LpY6k47Bt24hhcLlYP11MJUxs1rAREcnH3d+ZuAGphRNygiSk=
-X-Received: by 2002:a2e:90d6:0:b0:25a:86c8:93be with SMTP id
- o22-20020a2e90d6000000b0025a86c893bemr2094952ljg.107.1655910342131; Wed, 22
- Jun 2022 08:05:42 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220620150225.1307946-1-mw@semihalf.com> <20220620150225.1307946-9-mw@semihalf.com>
- <YrC0BSeUJaBkhEop@smile.fi.intel.com> <CAPv3WKdiftkA4_D-z_j1GqyAVk9Rit2Rwf_z=OttMaAZ4f2oAQ@mail.gmail.com>
- <CAJZ5v0gzd_Tmvq27695o=PuGoneGUW=gd4f9_5nQPMHgMk+xwA@mail.gmail.com>
-In-Reply-To: <CAJZ5v0gzd_Tmvq27695o=PuGoneGUW=gd4f9_5nQPMHgMk+xwA@mail.gmail.com>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Wed, 22 Jun 2022 17:05:30 +0200
-Message-ID: <CAPv3WKcpKYV2OQuy3KMKW6u09Rp2-d422WspB6uo6ta=mvhN8Q@mail.gmail.com>
-Subject: Re: [net-next: PATCH 08/12] ACPI: scan: prevent double enumeration of
- MDIO bus children
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, Len Brown <lenb@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=LuhiIv9CIZdNs/8xxOUuGG9SP8g2B8WP+UP2kknv5E4=;
+        b=hYyv8NfCioXSjTbJ3vNfwgMZ45k5o3v1TRn8fAlrfFxyL0MFVY7dTWdn1hF6ABLH5O
+         aPrGv02qe6OhR8fU3ll9RapgWQi6R2bcAZ96IoUkK3g/R4C+YlxruEJtR9g1L1NVbGgt
+         c3vFTvQWLXtJeSygH5vwcsJ+2NBoZ4TKZasaSFGRC+71r8EqOfRYrTJhqvLDtvE7f3po
+         I6yA+hZTz8QjcLYR8LVwTBJsnvawLDZnjM5s9LhQX83rGH3PPuRh2TTWMREyX2zrbTlP
+         AIydLiU++XjH+bx85Daj+SxVu4Uy/Ihhwub4FPxF7u5TX4skDHTSyg90/us1b1NBS4JN
+         ikCg==
+X-Gm-Message-State: AJIora8ofOSl0W2TEcpy/k/aqr0rUEt+IKdRSF7Xlj459vo05Ll1DpXm
+        39dUJ6rCvxwY7iOApvwXdMQ=
+X-Google-Smtp-Source: AGRyM1sqBUgmDZnnoA/y3KUiDhcmIJ4+aKuO1UuBLYb2VT4x+kFV5dNZZzYnUTtbvjCaQB2PPZHVtw==
+X-Received: by 2002:a65:464a:0:b0:408:b022:877a with SMTP id k10-20020a65464a000000b00408b022877amr3272066pgr.78.1655910339009;
+        Wed, 22 Jun 2022 08:05:39 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id ok12-20020a17090b1d4c00b001ecb7643c0asm5219573pjb.36.2022.06.22.08.05.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 08:05:38 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Wed, 22 Jun 2022 08:05:37 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Tomasz Nowicki <tn@semihalf.com>,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        upstream@semihalf.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, Xu Liang <lxu@maxlinear.com>,
+        Jean Delvare <jdelvare@suse.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phy: mxl-gpy: add temperature sensor
+Message-ID: <20220622150537.GD1861763@roeck-us.net>
+References: <20220622141716.3517645-1-michael@walle.cc>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220622141716.3517645-1-michael@walle.cc>
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=C5=9Br., 22 cze 2022 o 14:09 Rafael J. Wysocki <rafael@kernel.org> napisa=
-=C5=82(a):
->
-> On Tue, Jun 21, 2022 at 1:05 AM Marcin Wojtas <mw@semihalf.com> wrote:
-> >
-> > pon., 20 cze 2022 o 19:53 Andy Shevchenko
-> > <andriy.shevchenko@linux.intel.com> napisa=C5=82(a):
-> > >
-> > > On Mon, Jun 20, 2022 at 05:02:21PM +0200, Marcin Wojtas wrote:
-> > > > The MDIO bus is responsible for probing and registering its respect=
-ive
-> > > > children, such as PHYs or other kind of devices.
-> > > >
-> > > > It is required that ACPI scan code should not enumerate such
-> > > > devices, leaving this task for the generic MDIO bus routines,
-> > > > which are initiated by the controller driver.
-> > > >
-> > > > This patch prevents unwanted enumeration of the devices by setting
-> > > > 'enumeration_by_parent' flag, depending on whether their parent
-> > > > device is a member of a known list of MDIO controllers. For now,
-> > > > the Marvell MDIO controllers' IDs are added.
-> > >
-> > > This flag is used for serial buses that are not self-discoverable. No=
-t sure
-> > > about MDIO, but the current usage has a relation to the _CRS. Have yo=
-u
-> > > considered to propose the MdioSerialBus() resource type to ACPI speci=
-fication?
-> > >
-> >
-> > Indeed, one of the cases checked in the
-> > acpi_device_enumeration_by_parent() is checking _CRS (of the bus child
-> > device) for being of the serial bus type. Currently I see
-> > I2C/SPI/UARTSerialBus resource descriptors in the specification. Since
-> > MDIO doesn't seem to require any special description macros like the
-> > mentioned ones (for instance see I2CSerialBusV2 [1]), Based on
-> > example: dfda4492322ed ("ACPI / scan: Do not enumerate Indirect IO
-> > host children"), I thought of similar one perhaps being applicable.
-> >
-> > Maybe there is some different, more proper solution, I'd be happy to
-> > hear from the ACPI Maintainers.
-> >
-> > [1] https://uefi.org/specs/ACPI/6.4/19_ASL_Reference/ACPI_Source_Langua=
-ge_Reference.html?highlight=3Di2cserialbus#i2cserialbusterm
->
-> Well, the approach based on lists of device IDs is not scalable and
-> generally used as the last resort one.
->
-> It would be a lot better to have a way of representing connections to
-> the MDIO bus as resources in _CRS.
+On Wed, Jun 22, 2022 at 04:17:16PM +0200, Michael Walle wrote:
+> The GPY115 and GPY2xx PHYs contain an integrated temperature sensor. It
+> accuracy is +/- 5°C. Add support for it.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-Thank you for your input. I will submit a proposal for MDIOSerialBus
-_CRS resource macro then.
+Acked-by: Guenter Roeck <linux@roeck-us.net>
 
-Best regards,
-Marcin
+> ---
+>  drivers/net/phy/Kconfig   |   2 +
+>  drivers/net/phy/mxl-gpy.c | 106 ++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 108 insertions(+)
+> 
+> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> index 9fee639ee5c8..09fa17796d4d 100644
+> --- a/drivers/net/phy/Kconfig
+> +++ b/drivers/net/phy/Kconfig
+> @@ -216,6 +216,8 @@ config MARVELL_88X2222_PHY
+>  
+>  config MAXLINEAR_GPHY
+>  	tristate "Maxlinear Ethernet PHYs"
+> +	select POLYNOMIAL if HWMON
+> +	depends on HWMON || HWMON=n
+>  	help
+>  	  Support for the Maxlinear GPY115, GPY211, GPY212, GPY215,
+>  	  GPY241, GPY245 PHYs.
+> diff --git a/drivers/net/phy/mxl-gpy.c b/drivers/net/phy/mxl-gpy.c
+> index 6c4da2f9e90a..5b99acf44337 100644
+> --- a/drivers/net/phy/mxl-gpy.c
+> +++ b/drivers/net/phy/mxl-gpy.c
+> @@ -8,7 +8,9 @@
+>  
+>  #include <linux/module.h>
+>  #include <linux/bitfield.h>
+> +#include <linux/hwmon.h>
+>  #include <linux/phy.h>
+> +#include <linux/polynomial.h>
+>  #include <linux/netdevice.h>
+>  
+>  /* PHY ID */
+> @@ -64,6 +66,10 @@
+>  #define VSPEC1_SGMII_ANEN_ANRS	(VSPEC1_SGMII_CTRL_ANEN | \
+>  				 VSPEC1_SGMII_CTRL_ANRS)
+>  
+> +/* Temperature sensor */
+> +#define VPSPEC1_TEMP_STA	0x0E
+> +#define VPSPEC1_TEMP_STA_DATA	GENMASK(9, 0)
+> +
+>  /* WoL */
+>  #define VPSPEC2_WOL_CTL		0x0E06
+>  #define VPSPEC2_WOL_AD01	0x0E08
+> @@ -80,6 +86,102 @@ static const struct {
+>  	{9, 0x73},
+>  };
+>  
+> +#if IS_ENABLED(CONFIG_HWMON)
+> +/* The original translation formulae of the temperature (in degrees of Celsius)
+> + * are as follows:
+> + *
+> + *   T = -2.5761e-11*(N^4) + 9.7332e-8*(N^3) + -1.9165e-4*(N^2) +
+> + *       3.0762e-1*(N^1) + -5.2156e1
+> + *
+> + * where [-52.156, 137.961]C and N = [0, 1023].
+> + *
+> + * They must be accordingly altered to be suitable for the integer arithmetics.
+> + * The technique is called 'factor redistribution', which just makes sure the
+> + * multiplications and divisions are made so to have a result of the operations
+> + * within the integer numbers limit. In addition we need to translate the
+> + * formulae to accept millidegrees of Celsius. Here what it looks like after
+> + * the alterations:
+> + *
+> + *   T = -25761e-12*(N^4) + 97332e-9*(N^3) + -191650e-6*(N^2) +
+> + *       307620e-3*(N^1) + -52156
+> + *
+> + * where T = [-52156, 137961]mC and N = [0, 1023].
+> + */
+> +static const struct polynomial poly_N_to_temp = {
+> +	.terms = {
+> +		{4,  -25761, 1000, 1},
+> +		{3,   97332, 1000, 1},
+> +		{2, -191650, 1000, 1},
+> +		{1,  307620, 1000, 1},
+> +		{0,  -52156,    1, 1}
+> +	}
+> +};
+> +
+> +static int gpy_hwmon_read(struct device *dev,
+> +			  enum hwmon_sensor_types type,
+> +			  u32 attr, int channel, long *value)
+> +{
+> +	struct phy_device *phydev = dev_get_drvdata(dev);
+> +	int ret;
+> +
+> +	ret = phy_read_mmd(phydev, MDIO_MMD_VEND1, VPSPEC1_TEMP_STA);
+> +	if (ret < 0)
+> +		return ret;
+> +	if (!ret)
+> +		return -ENODATA;
+> +
+> +	*value = polynomial_calc(&poly_N_to_temp,
+> +				 FIELD_GET(VPSPEC1_TEMP_STA_DATA, ret));
+> +
+> +	return 0;
+> +}
+> +
+> +static umode_t gpy_hwmon_is_visible(const void *data,
+> +				    enum hwmon_sensor_types type,
+> +				    u32 attr, int channel)
+> +{
+> +	return 0444;
+> +}
+> +
+> +static const struct hwmon_channel_info *gpy_hwmon_info[] = {
+> +	HWMON_CHANNEL_INFO(temp, HWMON_T_INPUT),
+> +	NULL
+> +};
+> +
+> +static const struct hwmon_ops gpy_hwmon_hwmon_ops = {
+> +	.is_visible	= gpy_hwmon_is_visible,
+> +	.read		= gpy_hwmon_read,
+> +};
+> +
+> +static const struct hwmon_chip_info gpy_hwmon_chip_info = {
+> +	.ops		= &gpy_hwmon_hwmon_ops,
+> +	.info		= gpy_hwmon_info,
+> +};
+> +
+> +static int gpy_hwmon_register(struct phy_device *phydev)
+> +{
+> +	struct device *dev = &phydev->mdio.dev;
+> +	struct device *hwmon_dev;
+> +	char *hwmon_name;
+> +
+> +	hwmon_name = devm_hwmon_sanitize_name(dev, dev_name(dev));
+> +	if (IS_ERR(hwmon_name))
+> +		return PTR_ERR(hwmon_name);
+> +
+> +	hwmon_dev = devm_hwmon_device_register_with_info(dev, hwmon_name,
+> +							 phydev,
+> +							 &gpy_hwmon_chip_info,
+> +							 NULL);
+> +
+> +	return PTR_ERR_OR_ZERO(hwmon_dev);
+> +}
+> +#else
+> +static int gpy_hwmon_register(struct phy_device *phydev)
+> +{
+> +	return 0;
+> +}
+> +#endif
+> +
+>  static int gpy_config_init(struct phy_device *phydev)
+>  {
+>  	int ret;
+> @@ -109,6 +211,10 @@ static int gpy_probe(struct phy_device *phydev)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	ret = gpy_hwmon_register(phydev);
+> +	if (ret)
+> +		return ret;
+> +
+>  	phydev_info(phydev, "Firmware Version: 0x%04X (%s)\n", ret,
+>  		    (ret & PHY_FWV_REL_MASK) ? "release" : "test");
+>  
+> -- 
+> 2.30.2
+> 
