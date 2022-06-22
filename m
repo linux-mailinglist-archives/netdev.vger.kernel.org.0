@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BC70554709
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:11:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ACF75548F4
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:16:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357201AbiFVJH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 05:07:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36916 "EHLO
+        id S1356308AbiFVJJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 05:09:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357032AbiFVJHn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 05:07:43 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A5E39BB3;
-        Wed, 22 Jun 2022 02:06:41 -0700 (PDT)
+        with ESMTP id S1357322AbiFVJId (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 05:08:33 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8CD53AA73;
+        Wed, 22 Jun 2022 02:07:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655888801; x=1687424801;
+  t=1655888827; x=1687424827;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=O+YLmbbRFsXcqHI7l6EGPHD+EO6W7uLzZnfBGwT5P7s=;
-  b=pE4laODVgLXTuZjdKzcDQrRNqMinxg09XSIQxb2AzqOgsuntat4euWC3
-   CZIn+5IA19BQY8h6aZdVok9NqUJyD6h3fTfgp8iYW5VR3RE4MWRHu6zhQ
-   3qMm5ncNvVJLsklhqCPfe2m3IBcZU5V5eSyzX2ObAEszA5rhLgBR/78uU
-   MpY3bQAXUx9lWrt5vpHf6b3L0n8TUN26tXZOJlyyqRrv8jiEtzH1XoP3T
-   NiZKXGvIEpeWyDD1gFWeOmlSpBwDzdwj+R/a2ogAXetpVBObqZqz+Gjbe
-   HNK1Np3f5DbujqB2LT749T5AFUyUn4TihxL10ha9cCNhNY5DGJv73dzVi
-   Q==;
+  bh=9LMRJkXQESxFAGWk9Jr0RGQeR5yqRLWxs4I0JojDeyg=;
+  b=cVulY40d4Vdh2BW2XXXi/3o5KJwX6BQjwUK7PwIYbxvpJWmmGGaQyBIl
+   NuJ//9z9nedSJp5JLwbyOV6T+jKrEs2iaLzfCEgoHgHkLyrh6bbc0XdB0
+   mncY7I8P/GuSYBZXOWmoPtCU+PiybNviSQcd7xhfO9n+vJNxuPr64UfH9
+   VqTVyWmoYbK8EvwQZdzypButAJ+99d6CM0n18YTV2sQnTx5gh1OYpK6tA
+   fkgAtJSwEq+8srVPjngHeVwuG2HHD4Z0/wKPjgcRwDYJXa8/pkts7JVT4
+   GpN/50cxvyn0X9G9wTuuly3reZ0UZmMb+0czVqo8f/labjY2+/R0k3ma4
+   g==;
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="164526716"
+   d="scan'208";a="179017143"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Jun 2022 02:06:40 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Jun 2022 02:07:04 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 22 Jun 2022 02:06:40 -0700
+ 15.1.2375.17; Wed, 22 Jun 2022 02:07:04 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 22 Jun 2022 02:06:35 -0700
+ 15.1.2375.17 via Frontend Transport; Wed, 22 Jun 2022 02:07:00 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Woojung Huh <woojung.huh@microchip.com>,
@@ -50,9 +50,9 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         "Russell King" <linux@armlinux.org.uk>
-Subject: [Patch net-next 02/13] net: dsa: microchip: add config_cpu_port to struct ksz_dev_ops
-Date:   Wed, 22 Jun 2022 14:34:14 +0530
-Message-ID: <20220622090425.17709-3-arun.ramadoss@microchip.com>
+Subject: [Patch net-next 03/13] net: dsa: microchip: add the enable_stp_addr pointer in ksz_dev_ops
+Date:   Wed, 22 Jun 2022 14:34:15 +0530
+Message-ID: <20220622090425.17709-4-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220622090425.17709-1-arun.ramadoss@microchip.com>
 References: <20220622090425.17709-1-arun.ramadoss@microchip.com>
@@ -69,69 +69,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To have the common set of initialization in ksz_setup, introduced the
-new config_cpu_port member to ksz_dev_ops. Since both the ksz8795.c and
-ksz9477.c configuring the cpu port in the setup function, introduced the
-member.
+In order to transmit the STP BPDU packet to the CPU port, the STP
+address 01-80-c2-00-00-00 has to be added to static alu table for
+ksz8795 series switch. For the ksz9477 switch, there is reserved
+multicast table which handles forwarding the particular set of
+multicast address to cpu port. So enabling the multicast reserved table
+and updated the cpu port index. The stp addr is enabled during the setup
+phase using the enable_stp_addr pointer in struct ksz_dev_ops.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/ksz8795.c    | 3 ++-
- drivers/net/dsa/microchip/ksz9477.c    | 3 ++-
- drivers/net/dsa/microchip/ksz_common.h | 1 +
- 3 files changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/dsa/microchip/ksz8795.c    | 27 ++++++++++++++-------
+ drivers/net/dsa/microchip/ksz9477.c    | 33 ++++++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_common.h |  1 +
+ 3 files changed, 52 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index ad58112bda44..0df2140b7ccc 100644
+index 0df2140b7ccc..30052dc5b9a1 100644
 --- a/drivers/net/dsa/microchip/ksz8795.c
 +++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1402,7 +1402,7 @@ static int ksz8_setup(struct dsa_switch *ds)
- 			   UNICAST_VLAN_BOUNDARY | NO_EXC_COLLISION_DROP,
- 			   UNICAST_VLAN_BOUNDARY | NO_EXC_COLLISION_DROP);
+@@ -1368,10 +1368,25 @@ static int ksz8_handle_global_errata(struct dsa_switch *ds)
+ 	return ret;
+ }
  
--	ksz8_config_cpu_port(ds);
-+	dev->dev_ops->config_cpu_port(ds);
++static int ksz8_enable_stp_addr(struct ksz_device *dev)
++{
++	struct alu_struct alu;
++
++	/* Setup STP address for STP operation. */
++	memset(&alu, 0, sizeof(alu));
++	ether_addr_copy(alu.mac, eth_stp_addr);
++	alu.is_static = true;
++	alu.is_override = true;
++	alu.port_forward = dev->info->cpu_ports;
++
++	ksz8_w_sta_mac_table(dev, 0, &alu);
++
++	return 0;
++}
++
+ static int ksz8_setup(struct dsa_switch *ds)
+ {
+ 	struct ksz_device *dev = ds->priv;
+-	struct alu_struct alu;
+ 	int i, ret = 0;
  
- 	ksz_cfg(dev, REG_SW_CTRL_2, MULTICAST_STORM_DISABLE, true);
+ 	dev->vlan_cache = devm_kcalloc(dev->dev, sizeof(struct vlan_table),
+@@ -1422,14 +1437,7 @@ static int ksz8_setup(struct dsa_switch *ds)
+ 	for (i = 0; i < (dev->info->num_vlans / 4); i++)
+ 		ksz8_r_vlan_entries(dev, i);
  
-@@ -1545,6 +1545,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
- 	.mirror_add = ksz8_port_mirror_add,
+-	/* Setup STP address for STP operation. */
+-	memset(&alu, 0, sizeof(alu));
+-	ether_addr_copy(alu.mac, eth_stp_addr);
+-	alu.is_static = true;
+-	alu.is_override = true;
+-	alu.port_forward = dev->info->cpu_ports;
+-
+-	ksz8_w_sta_mac_table(dev, 0, &alu);
++	dev->dev_ops->enable_stp_addr(dev);
+ 
+ 	ksz_init_mib_timer(dev);
+ 
+@@ -1546,6 +1554,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
  	.mirror_del = ksz8_port_mirror_del,
  	.get_caps = ksz8_get_caps,
-+	.config_cpu_port = ksz8_config_cpu_port,
+ 	.config_cpu_port = ksz8_config_cpu_port,
++	.enable_stp_addr = ksz8_enable_stp_addr,
  	.reset = ksz8_reset_switch,
  	.init = ksz8_switch_init,
  	.exit = ksz8_switch_exit,
 diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 4e0e9507e62a..fef8142440cf 100644
+index fef8142440cf..6ca0d5753df0 100644
 --- a/drivers/net/dsa/microchip/ksz9477.c
 +++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1268,7 +1268,7 @@ static int ksz9477_setup(struct dsa_switch *ds)
- 	if (ret)
- 		return ret;
+@@ -1236,6 +1236,36 @@ static void ksz9477_config_cpu_port(struct dsa_switch *ds)
+ 	}
+ }
  
--	ksz9477_config_cpu_port(ds);
-+	dev->dev_ops->config_cpu_port(ds);
++static int ksz9477_enable_stp_addr(struct ksz_device *dev)
++{
++	u32 data;
++	int ret;
++
++	/* Enable Reserved multicast table */
++	ksz_cfg(dev, REG_SW_LUE_CTRL_0, SW_RESV_MCAST_ENABLE, true);
++
++	/* Set the Override bit for forwarding BPDU packet to CPU */
++	ret = ksz_write32(dev, REG_SW_ALU_VAL_B,
++			  ALU_V_OVERRIDE | BIT(dev->cpu_port));
++	if (ret < 0)
++		return ret;
++
++	data = ALU_STAT_START | ALU_RESV_MCAST_ADDR;
++
++	ret = ksz_write32(dev, REG_SW_ALU_STAT_CTRL__4, data);
++	if (ret < 0)
++		return ret;
++
++	/* wait to be finished */
++	ret = ksz9477_wait_alu_sta_ready(dev);
++	if (ret < 0) {
++		dev_err(dev->dev, "Failed to update Reserved Multicast table\n");
++		return ret;
++	}
++
++	return 0;
++}
++
+ static int ksz9477_setup(struct dsa_switch *ds)
+ {
+ 	struct ksz_device *dev = ds->priv;
+@@ -1281,6 +1311,8 @@ static int ksz9477_setup(struct dsa_switch *ds)
+ 	/* start switch */
+ 	ksz_cfg(dev, REG_SW_OPERATION, SW_START, true);
  
- 	ksz_cfg(dev, REG_SW_MAC_CTRL_1, MULTICAST_STORM_DISABLE, true);
++	dev->dev_ops->enable_stp_addr(dev);
++
+ 	ksz_init_mib_timer(dev);
  
-@@ -1400,6 +1400,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.mdb_del = ksz9477_mdb_del,
+ 	ds->configure_vlan_while_not_filtering = false;
+@@ -1401,6 +1433,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
  	.change_mtu = ksz9477_change_mtu,
  	.max_mtu = ksz9477_max_mtu,
-+	.config_cpu_port = ksz9477_config_cpu_port,
+ 	.config_cpu_port = ksz9477_config_cpu_port,
++	.enable_stp_addr = ksz9477_enable_stp_addr,
  	.reset = ksz9477_reset_switch,
  	.init = ksz9477_switch_init,
  	.exit = ksz9477_switch_exit,
 diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 44f60922be92..d5b53b5b7b51 100644
+index d5b53b5b7b51..e38bdf1f5b41 100644
 --- a/drivers/net/dsa/microchip/ksz_common.h
 +++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -204,6 +204,7 @@ struct ksz_dev_ops {
- 	int (*max_mtu)(struct ksz_device *dev, int port);
+@@ -205,6 +205,7 @@ struct ksz_dev_ops {
  	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
  	void (*port_init_cnt)(struct ksz_device *dev, int port);
-+	void (*config_cpu_port)(struct dsa_switch *ds);
+ 	void (*config_cpu_port)(struct dsa_switch *ds);
++	int (*enable_stp_addr)(struct ksz_device *dev);
  	int (*reset)(struct ksz_device *dev);
  	int (*init)(struct ksz_device *dev);
  	void (*exit)(struct ksz_device *dev);
