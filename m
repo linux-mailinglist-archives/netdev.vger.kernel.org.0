@@ -2,67 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A9DE255443E
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 10:11:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 949E555443B
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 10:11:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350823AbiFVHt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 03:49:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50254 "EHLO
+        id S1352161AbiFVIGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 04:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351483AbiFVHtm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 03:49:42 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52631266C
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 00:49:18 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1o3v5s-0000nJ-UD; Wed, 22 Jun 2022 09:48:08 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1o3v5g-0000yF-8I; Wed, 22 Jun 2022 09:47:56 +0200
-Date:   Wed, 22 Jun 2022 09:47:56 +0200
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
+        with ESMTP id S1351249AbiFVIGj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 04:06:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9D3EBE32
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 01:06:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655885196;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=J5FesIEJNUAYWwzRo/YOZ1QtVKtqRp3mnHCOXbnUhhM=;
+        b=E0erraqkkAc2E3Gmgfnh7TI6GNsM4b3PWvLsZbMiYuOKu2/pjO4rb3pcROi5lFuTiGT2uI
+        ZXGDf9e0889RdWl9wI4M9bxuj6++v6gqjA+QtR6DCyt8RMB1VbLptY6a6uXbQHKBIUSJik
+        Wqq/jxVnb11WwqKn2s9mwbv0duiA2i8=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-673-YyMbeC4iPdaw-_IiA-64Xg-1; Wed, 22 Jun 2022 04:06:30 -0400
+X-MC-Unique: YyMbeC4iPdaw-_IiA-64Xg-1
+Received: by mail-lf1-f71.google.com with SMTP id c21-20020a056512105500b00479762353a4so8179182lfb.8
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 01:06:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=J5FesIEJNUAYWwzRo/YOZ1QtVKtqRp3mnHCOXbnUhhM=;
+        b=WEnb7HttGzVDDlb/ALJ3az4umtDoUqCOPBoyv0Sv6eY4Z1krsly/Uqs1B5ccHplCIZ
+         +TfoRoP643VTPzXxMrwqitYvRxz98xay7ycL0/A70tRo9By9ryJqlfP8+2AypjyRmFu+
+         Dhuqyel+WVvAbeiiqMORnPCVTTsDIQ5Vq01fPtUYBUMQtjiAqpksrCylKlyCBg/12JT4
+         y/dq+PJpAJI9+gPUkVmx0WPGHzI5Dyrhgg7h4RLrL91fQxX5UOg9YNw5mmm9AFKg/yBC
+         EBUj2kc6rcC9NIjthiN2QPmrGuLYkoD5pOIYBwKjF0pSKQuw8ykgEBN36K4PXucHAPDY
+         RLmQ==
+X-Gm-Message-State: AJIora/QL5sj+wOxP7KE+EmAolV/JeLON+FlL9pL8H11jKHT91RD+ocl
+        jA/567jHG11nG6AuEeW5mmV3uXvS8aYFYpYXEASCZoxSrML4Aa7/z6K3K6z3h7coLTn3A86TGOt
+        GzXS4KJ/VnuYfNHCEl+cHxMQpyTPTrmb2
+X-Received: by 2002:a05:6512:13a5:b0:47d:c1d9:dea8 with SMTP id p37-20020a05651213a500b0047dc1d9dea8mr1420550lfa.442.1655885189243;
+        Wed, 22 Jun 2022 01:06:29 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tkxcyuPKm08huxiqWuTWt7AWd6nEXg9wjIHlQsqNsaLpWQeLuiYvLUwu9t7gVY0n8kDnn3TbP+HM4y52lv6qk=
+X-Received: by 2002:a05:6512:13a5:b0:47d:c1d9:dea8 with SMTP id
+ p37-20020a05651213a500b0047dc1d9dea8mr1420532lfa.442.1655885188954; Wed, 22
+ Jun 2022 01:06:28 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220621114845.3650258-1-stephan.gerhold@kernkonzept.com>
+In-Reply-To: <20220621114845.3650258-1-stephan.gerhold@kernkonzept.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 22 Jun 2022 16:06:17 +0800
+Message-ID: <CACGkMEskKF4O7_Dz5=JxB2noVV5qJQusN9DLLzUFc4d149kS7g@mail.gmail.com>
+Subject: Re: [PATCH net] virtio_net: fix xdp_rxq_info bug after suspend/resume
+To:     Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: [PATCH v2 7/9] driver core: Set fw_devlink.strict=1 by default
-Message-ID: <20220622074756.GA1647@pengutronix.de>
-References: <20220601070707.3946847-1-saravanak@google.com>
- <20220601070707.3946847-8-saravanak@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220601070707.3946847-8-saravanak@google.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-From:   Sascha Hauer <sha@pengutronix.de>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "open list:XDP (eXpress Data Path)" <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,53 +82,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 01, 2022 at 12:07:03AM -0700, Saravana Kannan wrote:
-> Now that deferred_probe_timeout is non-zero by default, fw_devlink will
-> never permanently block the probing of devices. It'll try its best to
-> probe the devices in the right order and then finally let devices probe
-> even if their suppliers don't have any drivers.
-> 
-> Signed-off-by: Saravana Kannan <saravanak@google.com>
+On Tue, Jun 21, 2022 at 7:50 PM Stephan Gerhold
+<stephan.gerhold@kernkonzept.com> wrote:
+>
+> The following sequence currently causes a driver bug warning
+> when using virtio_net:
+>
+>   # ip link set eth0 up
+>   # echo mem > /sys/power/state (or e.g. # rtcwake -s 10 -m mem)
+>   <resume>
+>   # ip link set eth0 down
+>
+>   Missing register, driver bug
+>   WARNING: CPU: 0 PID: 375 at net/core/xdp.c:138 xdp_rxq_info_unreg+0x58/0x60
+>   Call trace:
+>    xdp_rxq_info_unreg+0x58/0x60
+>    virtnet_close+0x58/0xac
+>    __dev_close_many+0xac/0x140
+>    __dev_change_flags+0xd8/0x210
+>    dev_change_flags+0x24/0x64
+>    do_setlink+0x230/0xdd0
+>    ...
+>
+> This happens because virtnet_freeze() frees the receive_queue
+> completely (including struct xdp_rxq_info) but does not call
+> xdp_rxq_info_unreg(). Similarly, virtnet_restore() sets up the
+> receive_queue again but does not call xdp_rxq_info_reg().
+>
+> Actually, parts of virtnet_freeze_down() and virtnet_restore_up()
+> are almost identical to virtnet_close() and virtnet_open(): only
+> the calls to xdp_rxq_info_(un)reg() are missing. This means that
+> we can fix this easily and avoid such problems in the future by
+> just calling virtnet_close()/open() from the freeze/restore handlers.
+>
+> Aside from adding the missing xdp_rxq_info calls the only difference
+> is that the refill work is only cancelled if netif_running(). However,
+> this should not make any functional difference since the refill work
+> should only be active if the network interface is actually up.
+>
+> Fixes: 754b8a21a96d ("virtio_net: setup xdp_rxq_info")
+> Signed-off-by: Stephan Gerhold <stephan.gerhold@kernkonzept.com>
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
 > ---
->  drivers/base/core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-
-As mentioned here:
-
-https://lore.kernel.org/lkml/20220622062027.994614-1-peng.fan@oss.nxp.com/
-
-This patch has the effect that console UART devices which have "dmas"
-properties specified in the device tree get deferred for 10 to 20
-seconds. This happens on i.MX and likely on other SoCs as well. On i.MX
-the dma channel is only requested at UART startup time and not at probe
-time. dma is not used for the console. Nevertheless with this driver probe
-defers until the dma engine driver is available.
-
-It shouldn't go in as-is.
-
-Sascha
-
-> 
-> diff --git a/drivers/base/core.c b/drivers/base/core.c
-> index 61fdfe99b348..977b379a495b 100644
-> --- a/drivers/base/core.c
-> +++ b/drivers/base/core.c
-> @@ -1613,7 +1613,7 @@ static int __init fw_devlink_setup(char *arg)
->  }
->  early_param("fw_devlink", fw_devlink_setup);
->  
-> -static bool fw_devlink_strict;
-> +static bool fw_devlink_strict = true;
->  static int __init fw_devlink_strict_setup(char *arg)
+>  drivers/net/virtio_net.c | 25 ++++++-------------------
+>  1 file changed, 6 insertions(+), 19 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index db05b5e930be..969a67970e71 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -2768,7 +2768,6 @@ static const struct ethtool_ops virtnet_ethtool_ops = {
+>  static void virtnet_freeze_down(struct virtio_device *vdev)
 >  {
->  	return strtobool(arg, &fw_devlink_strict);
-> -- 
-> 2.36.1.255.ge46751e96f-goog
-> 
-> 
+>         struct virtnet_info *vi = vdev->priv;
+> -       int i;
+>
+>         /* Make sure no work handler is accessing the device */
+>         flush_work(&vi->config_work);
+> @@ -2776,14 +2775,8 @@ static void virtnet_freeze_down(struct virtio_device *vdev)
+>         netif_tx_lock_bh(vi->dev);
+>         netif_device_detach(vi->dev);
+>         netif_tx_unlock_bh(vi->dev);
+> -       cancel_delayed_work_sync(&vi->refill);
+> -
+> -       if (netif_running(vi->dev)) {
+> -               for (i = 0; i < vi->max_queue_pairs; i++) {
+> -                       napi_disable(&vi->rq[i].napi);
+> -                       virtnet_napi_tx_disable(&vi->sq[i].napi);
+> -               }
+> -       }
+> +       if (netif_running(vi->dev))
+> +               virtnet_close(vi->dev);
+>  }
+>
+>  static int init_vqs(struct virtnet_info *vi);
+> @@ -2791,7 +2784,7 @@ static int init_vqs(struct virtnet_info *vi);
+>  static int virtnet_restore_up(struct virtio_device *vdev)
+>  {
+>         struct virtnet_info *vi = vdev->priv;
+> -       int err, i;
+> +       int err;
+>
+>         err = init_vqs(vi);
+>         if (err)
+> @@ -2800,15 +2793,9 @@ static int virtnet_restore_up(struct virtio_device *vdev)
+>         virtio_device_ready(vdev);
+>
+>         if (netif_running(vi->dev)) {
+> -               for (i = 0; i < vi->curr_queue_pairs; i++)
+> -                       if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
+> -                               schedule_delayed_work(&vi->refill, 0);
+> -
+> -               for (i = 0; i < vi->max_queue_pairs; i++) {
+> -                       virtnet_napi_enable(vi->rq[i].vq, &vi->rq[i].napi);
+> -                       virtnet_napi_tx_enable(vi, vi->sq[i].vq,
+> -                                              &vi->sq[i].napi);
+> -               }
+> +               err = virtnet_open(vi->dev);
+> +               if (err)
+> +                       return err;
+>         }
+>
+>         netif_tx_lock_bh(vi->dev);
+> --
+> 2.30.2
+>
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
