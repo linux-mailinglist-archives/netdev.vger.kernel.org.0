@@ -2,111 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF0345550DD
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 18:08:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12CF65550E5
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 18:10:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358635AbiFVQID (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 12:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42858 "EHLO
+        id S1358809AbiFVQK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 12:10:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358263AbiFVQIC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 12:08:02 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F9D4140C6
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 09:08:00 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id fd6so21807235edb.5
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 09:08:00 -0700 (PDT)
+        with ESMTP id S1356636AbiFVQK2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 12:10:28 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A399B3703E
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 09:10:27 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id u12so35277620eja.8
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 09:10:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AplRqfnN0oWkS+2VNQi8ZStoPrmgxPvXHgqZuEE6ulA=;
-        b=RjrOyWJQLKFLoF69Y4cw8jPAZQd/5a73i8kXm9/eqxT4hqXK39Co8UGdIrRTlokSAF
-         LdKTNyP83Rc4J+75iaPsPpCji4Sc36JQRHgHEvJyiTS7qBTq5n4ELSWPbP4ibEDb5vh+
-         WEgDhWOy38aHbqmCKRCMRkcgJB88OKHWthfFg=
+        d=gmail.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=y2YO9/O6no0imcsCRFEbzTu6b4kaHJ0+DKmmWMOQcOo=;
+        b=mOR4HKXwuWXVFq41eXkGtU9S0bM2iMTYVFD5Av9BCDbVLDH8u9mX7viiBpLJk1d/wf
+         YejkG5I3VuxwI7pPc29FfQypDFbXwC5MYXHBQSWz2NgIduuMPHKw7XUjNlpPyoql/f/g
+         KJU5R43hZYHH5ZwZPE0pOhTJAuqfquxm9IAlgtT1jCzlJDAhRG1Wf7NLRKe2Ko/+u3ei
+         pDR3DcR20jUn7NgIGw4EEdpxx5nLvqIC8NSpuuD+qatpOljFpSEWWgSUN66yUkMZEhpj
+         hx+D7cFtGKZusKdmrxjHQv5c4+W5zYix+Hm4seOsh6VWqyafuJgCjIDfZQ5S8OTpa05S
+         yZjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AplRqfnN0oWkS+2VNQi8ZStoPrmgxPvXHgqZuEE6ulA=;
-        b=FrhcrnucdkVNxkqHXWvs000E+3Aj5aihDCOrehim1Vrnyx6Cd59ufJVm/BDDdHFIgK
-         CpBDp4ZzY0p2fr1ewgASeBYtFE9pLxyMQ8Y4Vu9r1WfLTNybQnP3hSpcOoRhtPlY1k+x
-         vFbdzzpUm8/rIs2IKRYG2B6kNJPc5Ww8R8mzVWbptwBLK5gJVpU9o7W+jaQjEi/3YMIv
-         mkHzEb/QL/8+BWUBB1wyfzoYTvFrLXlO1uvDxDj+J/A6Wn2T0ODvIyThG4gFsMhPF4xv
-         HwHpaJ4QN8SojjBgiELipxyYPpteawywKHDGxaUFr8vH48CqCQgnocR4qAUFNAxlFYr/
-         Uqvw==
-X-Gm-Message-State: AJIora/kQ3RHfwKjbv9EMjN2//ax5ZwAWKkROv4duPlAFuBjd1XNFXvl
-        zr/R3AZBNpoGhR0FALY3SfIzoQXgJvnCvTSP
-X-Google-Smtp-Source: AGRyM1u05y44Ud8GmSS5N/ZVvTLw8hfGZHfQVOOHZka4qKYnBa8cu77wqPPG+w9oIWFANmcZq76D/A==
-X-Received: by 2002:a05:6402:3689:b0:435:95b0:edf2 with SMTP id ej9-20020a056402368900b0043595b0edf2mr4963411edb.279.1655914078486;
-        Wed, 22 Jun 2022 09:07:58 -0700 (PDT)
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com. [209.85.221.42])
-        by smtp.gmail.com with ESMTPSA id l10-20020a1709060cca00b006f3ef214debsm9583890ejh.81.2022.06.22.09.07.57
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 09:07:57 -0700 (PDT)
-Received: by mail-wr1-f42.google.com with SMTP id r20so3669531wra.1
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 09:07:57 -0700 (PDT)
-X-Received: by 2002:a5d:48c1:0:b0:21a:3574:e70c with SMTP id
- p1-20020a5d48c1000000b0021a3574e70cmr3983380wrs.97.1655914076974; Wed, 22 Jun
- 2022 09:07:56 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=y2YO9/O6no0imcsCRFEbzTu6b4kaHJ0+DKmmWMOQcOo=;
+        b=6EM315mN6ap8nCDlEWQHAzDfwj9XLrWBN3nKhb1g2FEETNWwUvLIX69s4Ap3/nA4u3
+         f8iZJSAUs/5gdmAo1Z2XSUYY9lCwc1ZwWcCkVKqnu+siQKbI8N47QfSeuzV6bNDlJOXB
+         ZFY33ZeLPqc1aiqQeiRYaALrcmwXmPy8cWEKKccZU0qnnXT5YjoEwgAw1cowdIb3Ncp2
+         0UNO+7SAijmq3MDEdaezmerKrA4UZo/BW5myyb33cdyjSOyL7oLEm+m+HlLAhOLSe860
+         1rn4KQ3wC8HPiEInAOb906MUuALJZ77uoYaVzbUwSN71656EGPR+0pGGnq1T2d98Idne
+         ha/Q==
+X-Gm-Message-State: AJIora9HRLnioiuWuDOw16kZqfK5MoP6P2fipWp0T+nY1jYYC9d12T23
+        aOZs33NUUhuoztxCXZ0fuYc=
+X-Google-Smtp-Source: AGRyM1tQL+nW5gR+hmO0z+EGyRDR5pL/QH6okTkcekThh9jWJyIiKdENu4Dyy+SISue0bGh1RaNCUg==
+X-Received: by 2002:a17:907:8a17:b0:711:e3fe:7767 with SMTP id sc23-20020a1709078a1700b00711e3fe7767mr3795737ejc.380.1655914226083;
+        Wed, 22 Jun 2022 09:10:26 -0700 (PDT)
+Received: from debian ([89.238.191.199])
+        by smtp.gmail.com with ESMTPSA id e7-20020a50ec87000000b0043561e0c9adsm12748339edr.52.2022.06.22.09.10.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 09:10:25 -0700 (PDT)
+Date:   Wed, 22 Jun 2022 18:09:03 +0200
+From:   Richard Gobert <richardbgobert@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
+        willemb@google.com, imagedong@tencent.com, talalahmad@google.com,
+        kafai@fb.com, vasily.averin@linux.dev, luiz.von.dentz@intel.com,
+        jk@codeconstruct.com.au, netdev@vger.kernel.org
+Subject: [PATCH v3] net: helper function skb_len_add
+Message-ID: <20220622160853.GA6478@debian>
 MIME-Version: 1.0
-References: <YrLtpixBqWDmZT/V@debian> <CAHk-=wiN1ujyVTgyt1GuZiyWAPfpLwwg-FY1V-J56saMyiA1Lg@mail.gmail.com>
- <YrMwXAs9apFRdkVo@debian> <CAHk-=wjmREcirYi4k_CBT+2U8X5VOAjQn0tVD28OdcKJKpA0zg@mail.gmail.com>
- <YrM8kC5zXzZgL/ca@debian>
-In-Reply-To: <YrM8kC5zXzZgL/ca@debian>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 22 Jun 2022 11:07:40 -0500
-X-Gmail-Original-Message-ID: <CAHk-=wjdjrx_bORk3Th+rk66Rx-U2Zgoz1AOTE_UwVtCpD3N1A@mail.gmail.com>
-Message-ID: <CAHk-=wjdjrx_bORk3Th+rk66Rx-U2Zgoz1AOTE_UwVtCpD3N1A@mail.gmail.com>
-Subject: Re: mainline build failure due to 281d0c962752 ("fortify: Add Clang support")
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_RED autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 11:00 AM Sudip Mukherjee
-<sudipm.mukherjee@gmail.com> wrote:
->
-> imho, there is no check for 'i' and it can become more than MAX_FW_TYPE_NUM and
-> in that case it will overwrite.
+Move the len fields manipulation in the skbs to a helper function.
+There is a comment specifically requesting this and there are several
+other areas in the code displaying the same pattern which can be
+refactored.
+This improves code readability.
 
-No. That's already checked a few lines before, in the
+Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
+---
+ include/linux/skbuff.h | 12 ++++++++++++
+ include/net/sock.h     |  4 +---
+ net/core/skbuff.c      | 13 +++----------
+ net/ipv4/esp4.c        |  4 +---
+ net/ipv4/ip_output.c   |  8 ++------
+ 5 files changed, 19 insertions(+), 22 deletions(-)
 
-        if (fw_image->fw_info.fw_section_cnt > MAX_FW_TYPE_NUM) {
-                .. error out
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 84d78df60453..b02e0a314683 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -2417,6 +2417,18 @@ static inline unsigned int skb_pagelen(const struct sk_buff *skb)
+ }
+ 
+ /**
++ * skb_len_add - adds a number to len fields of skb
++ * @skb: buffer to add len to
++ * @delta: number of bytes to add
++ */
++static inline void skb_len_add(struct sk_buff *skb, int delta)
++{
++	skb->len += delta;
++	skb->data_len += delta;
++	skb->truesize += delta;
++}
++
++/**
+  * __skb_fill_page_desc - initialise a paged fragment in an skb
+  * @skb: buffer containing fragment to be initialised
+  * @i: paged fragment index to initialise
+diff --git a/include/net/sock.h b/include/net/sock.h
+index a01d6c421aa2..648658f782c2 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2230,9 +2230,7 @@ static inline int skb_copy_to_page_nocache(struct sock *sk, struct iov_iter *fro
+ 	if (err)
+ 		return err;
+ 
+-	skb->len	     += copy;
+-	skb->data_len	     += copy;
+-	skb->truesize	     += copy;
++	skb_len_add(skb, copy);
+ 	sk_wmem_queued_add(sk, copy);
+ 	sk_mem_charge(sk, copy);
+ 	return 0;
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 30b523fa4ad2..2110db41cb41 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3195,9 +3195,7 @@ skb_zerocopy(struct sk_buff *to, struct sk_buff *from, int len, int hlen)
+ 		}
+ 	}
+ 
+-	to->truesize += len + plen;
+-	to->len += len + plen;
+-	to->data_len += len + plen;
++	skb_len_add(to, len + plen);
+ 
+ 	if (unlikely(skb_orphan_frags(from, GFP_ATOMIC))) {
+ 		skb_tx_error(from);
+@@ -3634,13 +3632,8 @@ int skb_shift(struct sk_buff *tgt, struct sk_buff *skb, int shiftlen)
+ 	tgt->ip_summed = CHECKSUM_PARTIAL;
+ 	skb->ip_summed = CHECKSUM_PARTIAL;
+ 
+-	/* Yak, is it really working this way? Some helper please? */
+-	skb->len -= shiftlen;
+-	skb->data_len -= shiftlen;
+-	skb->truesize -= shiftlen;
+-	tgt->len += shiftlen;
+-	tgt->data_len += shiftlen;
+-	tgt->truesize += shiftlen;
++	skb_len_add(skb, -shiftlen);
++	skb_len_add(tgt, shiftlen);
+ 
+ 	return shiftlen;
+ }
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index d747166bb291..2ad3d6955dae 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -502,9 +502,7 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
+ 
+ 			nfrags++;
+ 
+-			skb->len += tailen;
+-			skb->data_len += tailen;
+-			skb->truesize += tailen;
++			skb_len_add(skb, tailen);
+ 			if (sk && sk_fullsock(sk))
+ 				refcount_add(tailen, &sk->sk_wmem_alloc);
+ 
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 00b4bf26fd93..5e32a2f86fbd 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1214,9 +1214,7 @@ static int __ip_append_data(struct sock *sk,
+ 
+ 			pfrag->offset += copy;
+ 			skb_frag_size_add(&skb_shinfo(skb)->frags[i - 1], copy);
+-			skb->len += copy;
+-			skb->data_len += copy;
+-			skb->truesize += copy;
++			skb_len_add(skb, copy);
+ 			wmem_alloc_delta += copy;
+ 		} else {
+ 			err = skb_zerocopy_iter_dgram(skb, from, copy);
+@@ -1443,9 +1441,7 @@ ssize_t	ip_append_page(struct sock *sk, struct flowi4 *fl4, struct page *page,
+ 			skb->csum = csum_block_add(skb->csum, csum, skb->len);
+ 		}
+ 
+-		skb->len += len;
+-		skb->data_len += len;
+-		skb->truesize += len;
++		skb_len_add(skb, len);
+ 		refcount_add(len, &sk->sk_wmem_alloc);
+ 		offset += len;
+ 		size -= len;
+-- 
+2.36.1
 
-path. And fw_section_cnt as a value is an unsigned bitfield of 16
-bits, so there's no chance of some kind of integer signedness
-confusion.
-
-So clang is just wrong here.
-
-The fact that you can apparently silence the error with an extra bogus
-check does hopefully give clang people a clue about *where* clang is
-wrong, but it's not an acceptable workaround for the kernel.
-
-We don't write worse source code to make bad compilers happy.
-
-My "use a struct assignment" is more acceptable because at least then
-the source code doesn't get worse. It arguably should have been done
-that way the whole time, even if 'memcpy()' is the traditional C way
-of doing struct assignments (traditional as in "_really_ old
-traditional C").
-
-               Linus
