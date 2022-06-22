@@ -2,67 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C17865548CB
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:16:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1927F5548CC
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:16:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357034AbiFVLyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 07:54:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37404 "EHLO
+        id S245011AbiFVMAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 08:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352829AbiFVLyX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 07:54:23 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C553878A
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 04:54:20 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id e2so12604803edv.3
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 04:54:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NOoIKcOn+fn/RzKHn0fJ4NUU3G2nfTfnTHFn7LdhAks=;
-        b=AdfKtmV9Lu5Dt/1foY+ADpByGOmR6vTr3UhT2CHJkEafEFmh+aBZY1LlNvZoL+6oaS
-         rfZKXGozkdDUBO74Co9cPX1yn7kFje05B43dvIFiAsXGGqB6iwlQPvn2tiIWz1++4SOs
-         QgiYW11SLh3HAii9geZPiPVY1g48pmTO9n/0z8YuUPicJ2OvlWaC8ReKLUFQLTYNtz7n
-         Cfdcyp0MYxJGGk+naL5uJCzFbrnxvY+G66l+jUKujcq0qGa1DOiyzy0hpEMOIHQmE4WB
-         QZI5t7OXNKMB4jhDsTHdTCSrfGSKz63+A5EXwBAZ6+681cIThUrD8W2vadq/bnTnmnNM
-         tARg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NOoIKcOn+fn/RzKHn0fJ4NUU3G2nfTfnTHFn7LdhAks=;
-        b=bqZubCYZN9xl1a6gN0sCAiVgUi417qquE71dQYK42JB4JpsO4Plnj/0rDdNfIATJqH
-         qLSiyjKXbv8CPX8gdLEcMEnQGUvWuhmbPnOKyjRexMm9rXTfxYa81GKiXsnar8EUIw6I
-         YBZmAJGkNhUoWMdnVeGUaPlAzaamytonELP+Xofv3Bjvh7NHdXdezXCeUjSOmZjjdFxg
-         gsd4r2+qRcCXQ+PTznEnI0Sx+0qCP96W1aJt866hdLyxg/6iOknVZpUlmh4NgBM99grh
-         7dY2GxyIDlspOs49nnDJU0j6vxu9+YimyI6IQQanw9WMRvLrG27RVuEASRuf07xKt/DV
-         j6ng==
-X-Gm-Message-State: AJIora8uApXQbeNkG094d3+Z0PsJOn4BvYMISGbvCajnpHblxcA20tgn
-        VRXGBoHkBZJb5aCAek+1m1jwHA==
-X-Google-Smtp-Source: AGRyM1t5fihARfpTKUOLQNCjVONdWR8oHH8X3XzLJMf74aL9Msfa7frCy3ERB9yehacvDsepOq0mPQ==
-X-Received: by 2002:a05:6402:2398:b0:435:9685:1581 with SMTP id j24-20020a056402239800b0043596851581mr3658655eda.333.1655898859243;
-        Wed, 22 Jun 2022 04:54:19 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id qa39-20020a17090786a700b007030c97ae62sm9063007ejc.191.2022.06.22.04.54.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 04:54:18 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RESEND PATCH] net/ncsi: use proper "mellanox" DT vendor prefix
-Date:   Wed, 22 Jun 2022 13:54:16 +0200
-Message-Id: <20220622115416.7400-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S241412AbiFVMAW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 08:00:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0E73D1E3
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 05:00:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E4F8B81E36
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 12:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 39E46C341C0;
+        Wed, 22 Jun 2022 12:00:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655899218;
+        bh=UlOXuFNHW25a9qyvdE4AAMvkmFZH2GOaaW/fEGtWhj8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Tgr/9hVkOk3bGKM+bzvONQDLTPQWYRCTrPNX01KLTeWkqdVoV/xNVsAa8RDrrdbuF
+         Tv6SiCty3BwDfDo9dT0sJdMG7SN3+9fymO8w0YBhYQJb3sbDRs7G4JrLFc7TINMaIr
+         INNoeZJpbimUmL8X78AcYzWUoUlPww5xCE94zoPJzA+acRoV9Va/nkPuxDSKvshr2t
+         qd4kwAZa2X1DZ2htx+wTPoDzLDzhMtvKNptHsjLlELHiUg2WJCow5pAT4fRx77VEPc
+         rtDQrQC+3ROT1TjU1YqiTBdxcSB2Wn0Havjb91zE6kmY2Gk1Hyk/in7qWq4BL1Gp+2
+         zFt/Bm83YseZQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2513AE574DA;
+        Wed, 22 Jun 2022 12:00:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Subject: Re: [PATCH net-next 00/13] mlxsw: Unified bridge conversion - part 2/6
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165589921814.12203.2881774083975642813.git-patchwork-notify@kernel.org>
+Date:   Wed, 22 Jun 2022 12:00:18 +0000
+References: <20220621083345.157664-1-idosch@nvidia.com>
+In-Reply-To: <20220621083345.157664-1-idosch@nvidia.com>
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, petrm@nvidia.com,
+        amcohen@nvidia.com, mlxsw@nvidia.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -71,33 +57,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"mlx" Devicetree vendor prefix is not documented and instead "mellanox"
-should be used.
+Hello:
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
----
+On Tue, 21 Jun 2022 11:33:32 +0300 you wrote:
+> This is the second part of the conversion of mlxsw to the unified bridge
+> model. Part 1 was merged in commit 4336487e30c3 ("Merge branch
+> 'mlxsw-unified-bridge-conversion-part-1'") which includes details about
+> the new model and the motivation behind the conversion.
+> 
+> This patchset does not begin the conversion, but rather prepares the code
+> base for it.
+> 
+> [...]
 
-Reason for resend: split from DTS patch. The patch is safe to take
-independently.
----
- net/ncsi/ncsi-manage.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Here is the summary with links:
+  - [net-next,01/13] mlxsw: Remove lag_vid_valid indication
+    https://git.kernel.org/netdev/net-next/c/22aae52076cd
+  - [net-next,02/13] mlxsw: spectrum_switchdev: Pass 'struct mlxsw_sp' to mlxsw_sp_bridge_mdb_mc_enable_sync()
+    https://git.kernel.org/netdev/net-next/c/21c795f8494a
+  - [net-next,03/13] mlxsw: spectrum_switchdev: Do not set 'multicast_enabled' twice
+    https://git.kernel.org/netdev/net-next/c/6e66d2e4b3a2
+  - [net-next,04/13] mlxsw: spectrum_switchdev: Simplify mlxsw_sp_port_mc_disabled_set()
+    https://git.kernel.org/netdev/net-next/c/a6f43b1dad80
+  - [net-next,05/13] mlxsw: spectrum_switchdev: Add error path in mlxsw_sp_port_mc_disabled_set()
+    https://git.kernel.org/netdev/net-next/c/c96a9919c79e
+  - [net-next,06/13] mlxsw: spectrum_switchdev: Convert mlxsw_sp_mc_write_mdb_entry() to return int
+    https://git.kernel.org/netdev/net-next/c/fd66f5184c28
+  - [net-next,07/13] mlxsw: spectrum_switchdev: Handle error in mlxsw_sp_bridge_mdb_mc_enable_sync()
+    https://git.kernel.org/netdev/net-next/c/0100f840750c
+  - [net-next,08/13] mlxsw: Add enumerator for 'config_profile.flood_mode'
+    https://git.kernel.org/netdev/net-next/c/70b34c77f127
+  - [net-next,09/13] mlxsw: cmd: Increase 'config_profile.flood_mode' length
+    https://git.kernel.org/netdev/net-next/c/89df3c6261f2
+  - [net-next,10/13] mlxsw: pci: Query resources before and after issuing 'CONFIG_PROFILE' command
+    https://git.kernel.org/netdev/net-next/c/6131d9630d98
+  - [net-next,11/13] mlxsw: spectrum_fid: Save 'fid_offset' as part of FID structure
+    https://git.kernel.org/netdev/net-next/c/736bf371d2d4
+  - [net-next,12/13] mlxsw: spectrum_fid: Use 'fid->fid_offset' when setting VNI
+    https://git.kernel.org/netdev/net-next/c/784763e59225
+  - [net-next,13/13] mlxsw: spectrum_fid: Implement missing operations for rFID and dummy FID
+    https://git.kernel.org/netdev/net-next/c/048fcbb71a0e
 
-diff --git a/net/ncsi/ncsi-manage.c b/net/ncsi/ncsi-manage.c
-index 78814417d753..80713febfac6 100644
---- a/net/ncsi/ncsi-manage.c
-+++ b/net/ncsi/ncsi-manage.c
-@@ -1803,7 +1803,8 @@ struct ncsi_dev *ncsi_register_dev(struct net_device *dev,
- 	pdev = to_platform_device(dev->dev.parent);
- 	if (pdev) {
- 		np = pdev->dev.of_node;
--		if (np && of_get_property(np, "mlx,multi-host", NULL))
-+		if (np && (of_get_property(np, "mellanox,multi-host", NULL) ||
-+			   of_get_property(np, "mlx,multi-host", NULL)))
- 			ndp->mlx_multi_host = true;
- 	}
- 
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
