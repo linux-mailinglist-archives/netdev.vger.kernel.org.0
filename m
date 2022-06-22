@@ -2,88 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AFA7554E97
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 17:05:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ADDE554EA2
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 17:05:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357984AbiFVPFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 11:05:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38476 "EHLO
+        id S1359016AbiFVPFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 11:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353361AbiFVPFa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 11:05:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 903AB3467F
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 08:05:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655910328;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/2IQy+E40urhXFacB8Vj36ycB9yteHAjL3Hd6nT3fLI=;
-        b=U6kOysbJkmDb1R7kxTl31SMyR1sshgjLyW8YOLyw/NZjKdTkh1WVrStdDT9vfUUY/u9Wu3
-        Fld8Cz3ovVcvA5TYYKkOwzMhJo7xt+Nr51ZnGlk0EFm9Vb8QYHyEMBYBitPr+rQR7CbaRT
-        Vwfy/nukP4lpd+PsP+HXX5SCCmSWhC0=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-324-woDISYfvO9KcV4FMOjfRoQ-1; Wed, 22 Jun 2022 11:05:21 -0400
-X-MC-Unique: woDISYfvO9KcV4FMOjfRoQ-1
-Received: by mail-qk1-f200.google.com with SMTP id y8-20020a05620a44c800b006a6f8cd53cbso20246252qkp.5
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 08:05:21 -0700 (PDT)
+        with ESMTP id S1359001AbiFVPFx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 11:05:53 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEFE93A72E
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 08:05:43 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id c30so19707110ljr.9
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 08:05:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=kyUcdhzGFcDndqqzlq8u6bhrtYYzLp4ulxMjiB9uh5c=;
+        b=C+EQKQ+Z8Vj1vQdoeE5hwXUYHEKkxl5yDsbmhz3+uTszsXb7+8IqY870rcQtZMmMve
+         VpiNN0O7wAe+fRNcuPfvtOeJzsJzJJeFexeMUUihMgs5+xELfjcSKzNE6Tw7an2EuDlJ
+         l9itCW1E7/zzF2iY0uuGzRjN7EfkxWbgFniQfI1ig9hJBuLAAU6YtgnvS2qsDDMjfPMq
+         g9tozy1bAayaY2bUFb0o6GVxI9nZaG10jdXi963nV3FzTJdibHeg06H22231sObEoWSt
+         qU605cKW93bqjsW9lI4NmMQdA3dHSz9bBOJoowWaneiVi6MI/l1Oj/TICYyYRzjq15JX
+         bVvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/2IQy+E40urhXFacB8Vj36ycB9yteHAjL3Hd6nT3fLI=;
-        b=Q0/sFzudLBPZbjYp/OvrF3Sc+QghUSDrCfPQGpcj0eftdHjFdSVl/0YMz06AdIafxs
-         JY8CMUMkHbr90rHlVtWc7fXt+2yVtgTPo+h/WExl0hsQvKWtijnhrKLEoRHHMPlH8Rgb
-         IINDPSBMpAl+sn9xKQTEnuX0VOsm4bchnHgfDvT9JlYyEtbPB8GU2wUKu/VUAAnflJnY
-         bYlVpgifZuPeto0SxnCxsu046Dro6jm+mjn6U9ySB79uYRiMr5QAeJnheq/HysG+qCC5
-         ayv3xn/HeedwLe+s5xpNCR5vVN6+C9jJtgohNMWC0Me0wvzxE0fuT/d+S3ayi2r7ZKbE
-         gx/A==
-X-Gm-Message-State: AJIora9+Y376OIMTUQJMv7qTSfnwvf9A04n28KC63XwU8q1S2hQxUO3t
-        rrAcOeYDDqILAnrQdBz/wDv8oXLnqzXdbqpTG8VoW2uQdP/ntOqNNJPQoyw6sYKjHD2Abdpkqd6
-        AmGdcYWR34Lt9UyhUqZ+veJYiWjwd93D/
-X-Received: by 2002:a37:9e8d:0:b0:6ae:e97f:0 with SMTP id h135-20020a379e8d000000b006aee97f0000mr771689qke.255.1655910321126;
-        Wed, 22 Jun 2022 08:05:21 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sQQ1h9P/HHEVYnAo2mvHU2BBI6pfbGjZhVCLCVPT5jR/q5Yw/ghpcZqC3xUNOJBIwMqEbn/hBb7fQQn1SmrVE=
-X-Received: by 2002:a37:9e8d:0:b0:6ae:e97f:0 with SMTP id h135-20020a379e8d000000b006aee97f0000mr771619qke.255.1655910320506;
- Wed, 22 Jun 2022 08:05:20 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=kyUcdhzGFcDndqqzlq8u6bhrtYYzLp4ulxMjiB9uh5c=;
+        b=Arij9kcAgidSoSyFWz6kxScH+AYHNV+ZArsvFd37/dm90LLZbmxcbyQWPddMaXp6W+
+         dFQ97z4Quos0AYiVzZS/9TqZ0minO97R/KCCovgnZHfW2ojYGQE9GmtqvKiia/J19MnQ
+         /E2wCXYbbA68Q23PLP9i4qBv14mTbn6/nymflap1nKvQuBZOOmKXEuhRYpOwyOpb/0XY
+         h2ZgZaD7EKB1wIwDZUJ3X013sEilMDVsZvSajkfcY4oXdNnlNiTNoOmTcUk2260hMKqI
+         U77868iWtKyJNkSlIfDS5ZWtvkkXUyavqN3/I7ZRK4V+ryQEFMKeCluTLUDaFWk0ViEo
+         wcLg==
+X-Gm-Message-State: AJIora89VWrUDT2wYQJfobgRji3rq29hNi3Ym3KruvCvHu1hFnOyj1LJ
+        coeV/p1yS9lg9aFjVBIRr3XuzlA9HhJuxmHAbohiQA==
+X-Google-Smtp-Source: AGRyM1vi+zjahGXXcpbt0CqwKznHFVRgSDpwgZA5t5LpY6k47Bt24hhcLlYP11MJUxs1rAREcnH3d+ZuAGphRNygiSk=
+X-Received: by 2002:a2e:90d6:0:b0:25a:86c8:93be with SMTP id
+ o22-20020a2e90d6000000b0025a86c893bemr2094952ljg.107.1655910342131; Wed, 22
+ Jun 2022 08:05:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220330180436.24644-1-gdawar@xilinx.com> <20220330180436.24644-20-gdawar@xilinx.com>
- <CAGxU2F6OO108oHsrLBWJnYRG2yRU8QnRxAdjJhUUcp8AqaAP-g@mail.gmail.com> <CAJaqyWd8MR9vTRcCTktzC3VL054x5H5_sXy+MLVNewFDkjQUSw@mail.gmail.com>
-In-Reply-To: <CAJaqyWd8MR9vTRcCTktzC3VL054x5H5_sXy+MLVNewFDkjQUSw@mail.gmail.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Wed, 22 Jun 2022 17:04:44 +0200
-Message-ID: <CAJaqyWc36adK-gUzc8tMgDDe5SoBPy7xN-UtcFA4=aDezdJ5LA@mail.gmail.com>
-Subject: Re: [PATCH v2 19/19] vdpasim: control virtqueue support
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Gautam Dawar <gautam.dawar@xilinx.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Gautam Dawar <gdawar@xilinx.com>,
-        Longpeng <longpeng2@huawei.com>, Eli Cohen <elic@nvidia.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Linux Virtualization <virtualization@lists.linux-foundation.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        kvm <kvm@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>, habetsm.xilinx@gmail.com,
-        ecree.xilinx@gmail.com, Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Zhang Min <zhang.min9@zte.com.cn>
+References: <20220620150225.1307946-1-mw@semihalf.com> <20220620150225.1307946-9-mw@semihalf.com>
+ <YrC0BSeUJaBkhEop@smile.fi.intel.com> <CAPv3WKdiftkA4_D-z_j1GqyAVk9Rit2Rwf_z=OttMaAZ4f2oAQ@mail.gmail.com>
+ <CAJZ5v0gzd_Tmvq27695o=PuGoneGUW=gd4f9_5nQPMHgMk+xwA@mail.gmail.com>
+In-Reply-To: <CAJZ5v0gzd_Tmvq27695o=PuGoneGUW=gd4f9_5nQPMHgMk+xwA@mail.gmail.com>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Wed, 22 Jun 2022 17:05:30 +0200
+Message-ID: <CAPv3WKcpKYV2OQuy3KMKW6u09Rp2-d422WspB6uo6ta=mvhN8Q@mail.gmail.com>
+Subject: Re: [net-next: PATCH 08/12] ACPI: scan: prevent double enumeration of
+ MDIO bus children
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Len Brown <lenb@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -91,175 +86,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 12:21 PM Eugenio Perez Martin
-<eperezma@redhat.com> wrote:
+=C5=9Br., 22 cze 2022 o 14:09 Rafael J. Wysocki <rafael@kernel.org> napisa=
+=C5=82(a):
 >
-> On Tue, Jun 21, 2022 at 5:20 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+> On Tue, Jun 21, 2022 at 1:05 AM Marcin Wojtas <mw@semihalf.com> wrote:
 > >
-> > Hi Gautam,
+> > pon., 20 cze 2022 o 19:53 Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com> napisa=C5=82(a):
+> > >
+> > > On Mon, Jun 20, 2022 at 05:02:21PM +0200, Marcin Wojtas wrote:
+> > > > The MDIO bus is responsible for probing and registering its respect=
+ive
+> > > > children, such as PHYs or other kind of devices.
+> > > >
+> > > > It is required that ACPI scan code should not enumerate such
+> > > > devices, leaving this task for the generic MDIO bus routines,
+> > > > which are initiated by the controller driver.
+> > > >
+> > > > This patch prevents unwanted enumeration of the devices by setting
+> > > > 'enumeration_by_parent' flag, depending on whether their parent
+> > > > device is a member of a known list of MDIO controllers. For now,
+> > > > the Marvell MDIO controllers' IDs are added.
+> > >
+> > > This flag is used for serial buses that are not self-discoverable. No=
+t sure
+> > > about MDIO, but the current usage has a relation to the _CRS. Have yo=
+u
+> > > considered to propose the MdioSerialBus() resource type to ACPI speci=
+fication?
+> > >
 > >
-> > On Wed, Mar 30, 2022 at 8:21 PM Gautam Dawar <gautam.dawar@xilinx.com> wrote:
-> > >
-> > > This patch introduces the control virtqueue support for vDPA
-> > > simulator. This is a requirement for supporting advanced features like
-> > > multiqueue.
-> > >
-> > > A requirement for control virtqueue is to isolate its memory access
-> > > from the rx/tx virtqueues. This is because when using vDPA device
-> > > for VM, the control virqueue is not directly assigned to VM. Userspace
-> > > (Qemu) will present a shadow control virtqueue to control for
-> > > recording the device states.
-> > >
-> > > The isolation is done via the virtqueue groups and ASID support in
-> > > vDPA through vhost-vdpa. The simulator is extended to have:
-> > >
-> > > 1) three virtqueues: RXVQ, TXVQ and CVQ (control virtqueue)
-> > > 2) two virtqueue groups: group 0 contains RXVQ and TXVQ; group 1
-> > >    contains CVQ
-> > > 3) two address spaces and the simulator simply implements the address
-> > >    spaces by mapping it 1:1 to IOTLB.
-> > >
-> > > For the VM use cases, userspace(Qemu) may set AS 0 to group 0 and AS 1
-> > > to group 1. So we have:
-> > >
-> > > 1) The IOTLB for virtqueue group 0 contains the mappings of guest, so
-> > >    RX and TX can be assigned to guest directly.
-> > > 2) The IOTLB for virtqueue group 1 contains the mappings of CVQ which
-> > >    is the buffers that allocated and managed by VMM only. So CVQ of
-> > >    vhost-vdpa is visible to VMM only. And Guest can not access the CVQ
-> > >    of vhost-vdpa.
-> > >
-> > > For the other use cases, since AS 0 is associated to all virtqueue
-> > > groups by default. All virtqueues share the same mapping by default.
-> > >
-> > > To demonstrate the function, VIRITO_NET_F_CTRL_MACADDR is
-> > > implemented in the simulator for the driver to set mac address.
-> > >
-> > > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > > Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
-> > > ---
-> > >  drivers/vdpa/vdpa_sim/vdpa_sim.c     | 91 ++++++++++++++++++++++------
-> > >  drivers/vdpa/vdpa_sim/vdpa_sim.h     |  2 +
-> > >  drivers/vdpa/vdpa_sim/vdpa_sim_net.c | 88 ++++++++++++++++++++++++++-
-> > >  3 files changed, 161 insertions(+), 20 deletions(-)
-> > >
-> > > diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> > > index 659e2e2e4b0c..51bd0bafce06 100644
-> > > --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> > > +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> > > @@ -96,11 +96,17 @@ static void vdpasim_do_reset(struct vdpasim *vdpasim)
-> > >  {
-> > >         int i;
-> > >
-> > > -       for (i = 0; i < vdpasim->dev_attr.nvqs; i++)
-> > > +       spin_lock(&vdpasim->iommu_lock);
-> > > +
-> > > +       for (i = 0; i < vdpasim->dev_attr.nvqs; i++) {
-> > >                 vdpasim_vq_reset(vdpasim, &vdpasim->vqs[i]);
-> > > +               vringh_set_iotlb(&vdpasim->vqs[i].vring, &vdpasim->iommu[0],
-> > > +                                &vdpasim->iommu_lock);
-> > > +       }
-> > > +
-> > > +       for (i = 0; i < vdpasim->dev_attr.nas; i++)
-> > > +               vhost_iotlb_reset(&vdpasim->iommu[i]);
-> > >
-> > > -       spin_lock(&vdpasim->iommu_lock);
-> > > -       vhost_iotlb_reset(vdpasim->iommu);
-> > >         spin_unlock(&vdpasim->iommu_lock);
-> > >
-> > >         vdpasim->features = 0;
-> > > @@ -145,7 +151,7 @@ static dma_addr_t vdpasim_map_range(struct vdpasim *vdpasim, phys_addr_t paddr,
-> > >         dma_addr = iova_dma_addr(&vdpasim->iova, iova);
-> > >
-> > >         spin_lock(&vdpasim->iommu_lock);
-> > > -       ret = vhost_iotlb_add_range(vdpasim->iommu, (u64)dma_addr,
-> > > +       ret = vhost_iotlb_add_range(&vdpasim->iommu[0], (u64)dma_addr,
-> > >                                     (u64)dma_addr + size - 1, (u64)paddr, perm);
-> > >         spin_unlock(&vdpasim->iommu_lock);
-> > >
-> > > @@ -161,7 +167,7 @@ static void vdpasim_unmap_range(struct vdpasim *vdpasim, dma_addr_t dma_addr,
-> > >                                 size_t size)
-> > >  {
-> > >         spin_lock(&vdpasim->iommu_lock);
-> > > -       vhost_iotlb_del_range(vdpasim->iommu, (u64)dma_addr,
-> > > +       vhost_iotlb_del_range(&vdpasim->iommu[0], (u64)dma_addr,
-> > >                               (u64)dma_addr + size - 1);
-> > >         spin_unlock(&vdpasim->iommu_lock);
-> > >
-> > > @@ -250,8 +256,9 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *dev_attr)
-> > >         else
-> > >                 ops = &vdpasim_config_ops;
-> > >
-> > > -       vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops, 1,
-> > > -                                   1, dev_attr->name, false);
-> > > +       vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops,
-> > > +                                   dev_attr->ngroups, dev_attr->nas,
-> > > +                                   dev_attr->name, false);
-> > >         if (IS_ERR(vdpasim)) {
-> > >                 ret = PTR_ERR(vdpasim);
-> > >                 goto err_alloc;
-> > > @@ -278,16 +285,20 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *dev_attr)
-> > >         if (!vdpasim->vqs)
-> > >                 goto err_iommu;
-> > >
-> > > -       vdpasim->iommu = vhost_iotlb_alloc(max_iotlb_entries, 0);
-> > > +       vdpasim->iommu = kmalloc_array(vdpasim->dev_attr.nas,
-> > > +                                      sizeof(*vdpasim->iommu), GFP_KERNEL);
-> > >         if (!vdpasim->iommu)
-> > >                 goto err_iommu;
-> > >
-> > > +       for (i = 0; i < vdpasim->dev_attr.nas; i++)
-> > > +               vhost_iotlb_init(&vdpasim->iommu[i], 0, 0);
-> > > +
-> > >         vdpasim->buffer = kvmalloc(dev_attr->buffer_size, GFP_KERNEL);
-> > >         if (!vdpasim->buffer)
-> > >                 goto err_iommu;
-> > >
-> > >         for (i = 0; i < dev_attr->nvqs; i++)
-> > > -               vringh_set_iotlb(&vdpasim->vqs[i].vring, vdpasim->iommu,
-> > > +               vringh_set_iotlb(&vdpasim->vqs[i].vring, &vdpasim->iommu[0],
-> > >                                  &vdpasim->iommu_lock);
-> > >
-> > >         ret = iova_cache_get();
-> > > @@ -401,7 +412,11 @@ static u32 vdpasim_get_vq_align(struct vdpa_device *vdpa)
-> > >
-> > >  static u32 vdpasim_get_vq_group(struct vdpa_device *vdpa, u16 idx)
-> > >  {
-> > > -       return 0;
-> > > +       /* RX and TX belongs to group 0, CVQ belongs to group 1 */
-> > > +       if (idx == 2)
-> > > +               return 1;
-> > > +       else
-> > > +               return 0;
+> > Indeed, one of the cases checked in the
+> > acpi_device_enumeration_by_parent() is checking _CRS (of the bus child
+> > device) for being of the serial bus type. Currently I see
+> > I2C/SPI/UARTSerialBus resource descriptors in the specification. Since
+> > MDIO doesn't seem to require any special description macros like the
+> > mentioned ones (for instance see I2CSerialBusV2 [1]), Based on
+> > example: dfda4492322ed ("ACPI / scan: Do not enumerate Indirect IO
+> > host children"), I thought of similar one perhaps being applicable.
 > >
-> > This code only works for the vDPA-net simulator, since
-> > vdpasim_get_vq_group() is also shared with other simulators (e.g.
-> > vdpa_sim_blk),
->
-> That's totally right.
->
-> > should we move this net-specific code into
-> > vdpa_sim_net.c, maybe adding a callback implemented by the different
-> > simulators?
+> > Maybe there is some different, more proper solution, I'd be happy to
+> > hear from the ACPI Maintainers.
 > >
+> > [1] https://uefi.org/specs/ACPI/6.4/19_ASL_Reference/ACPI_Source_Langua=
+ge_Reference.html?highlight=3Di2cserialbus#i2cserialbusterm
 >
-> At this moment, VDPASIM_BLK_VQ_NUM is fixed to 1, so maybe the right
-> thing to do for the -rc phase is to check if idx > vdpasim.attr.nvqs?
-> It's a more general fix.
+> Well, the approach based on lists of device IDs is not scalable and
+> generally used as the last resort one.
 >
+> It would be a lot better to have a way of representing connections to
+> the MDIO bus as resources in _CRS.
 
-Actually, that is already checked by vhost/vdpa.c.
+Thank you for your input. I will submit a proposal for MDIOSerialBus
+_CRS resource macro then.
 
-Taking that into account, is it worth introducing the change for 5.19?
-I'm totally ok with the change for 5.20.
-
-Thanks!
-
-> For the general case, yes, a callback should be issued to the actual
-> simulator so it's not a surprise when VDPASIM_BLK_VQ_NUM increases,
-> either dynamically or by anyone testing it.
->
-> Thoughts?
->
-> Thanks!
-
+Best regards,
+Marcin
