@@ -2,54 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCCE5555258
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 19:26:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B65E35552D2
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 19:49:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359294AbiFVR0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 13:26:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34532 "EHLO
+        id S1377451AbiFVRtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 13:49:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230476AbiFVR0J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 13:26:09 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DB3289AF;
-        Wed, 22 Jun 2022 10:26:08 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id r7-20020a1c4407000000b003a02cc49774so67648wma.1;
-        Wed, 22 Jun 2022 10:26:08 -0700 (PDT)
+        with ESMTP id S1376980AbiFVRtO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 13:49:14 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C1832EC8
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 10:49:13 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id z11so18794447edp.9
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 10:49:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gx8MHjBKLUDJNFsntdrDoHFHXszbdB+MLB7TwASONiA=;
-        b=CeIyY61ktnfWz5ZbciV0WOC5VFw8HGSJ+5WUxqk65+0qibR3nxZpsCHGt+0uY/W6YG
-         aVCLgfoBrS8qPA0lAjeyCnF4l+Dn63W6qPg9e/RQMPZ1xno+OFhTG1z1USQYjhZK0A84
-         yFOIrl6+lT2aSQnuKCZB/3ZHaBCzPi/7PZFq7bS+/81ZQv9mZ2az7KE1gTk6RbfO5xpb
-         WHjx2mDimZ9lV3WsC+ofhxJ6OuKamj+DjaIwQWb9YBP2FaszDDKfsJm1Muhux9Wto2Ww
-         heCbY7CG1/C4a8UUfKLjRsWkiQn17wuFNQo5FPa5Z2MSndckB9DnXZVkLoA4/ddOX43c
-         YgEw==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rlDSAPctE0EJecdMHo4GLxVrkzYccxxM0XqXwWT0qtc=;
+        b=d8pXzhOjFhIfHaTrTJaEBGuxbslJVA3UQS5ihnBhlcyyWFpm4RNYHtrqvqCDpMuY0x
+         pQ9neSs4Vaqkd3XxtyrQkbTSsyoUjOQRIyAnoEextIs+Z8rV7+dI4nmlv3c8oLpkCbWH
+         VJXFbyzjTrRJq4i8dbA2cqrQtQGf51VDcMmy4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gx8MHjBKLUDJNFsntdrDoHFHXszbdB+MLB7TwASONiA=;
-        b=OcGXQZOWxVz1Z7rcYGP0AvmmyKltykzMPTk29ep1Ze+6HK/LMoyUaA/EwKjuhNyhJQ
-         BYnUsUSMZDG9metb/OYUTPyEPa6FM9Qaklwc6W9917sApZhJW0u3nMbKOfGwKz2ddZsF
-         q5Zqeg2Q0fAVLcQCtisYBKPaAmNBwIgqXT90DWcGV+S5gXxvc+BraGs7meB4jhgHC5Bc
-         53IkFM3TQRt4NkP2TQ2Rx/rk5XpR+LeFq/mfjpltZdkSxfCHiojArtQg3gvp17wwi3sa
-         5CTFJkIA4f4R3qFvXbAmUfNV1DQFJUAeAjZPT3VOTzPaW7zhWLhje5pyDiOTRn1vypxD
-         OuUQ==
-X-Gm-Message-State: AOAM5325dvCXjpT0t9GLZMqLU8e2Y0OZ0uySq3kAcDR6MXi2LAm+QhY1
-        b3lTHvQ4eePPnDUXTlQL4FzF2Vsm5So=
-X-Google-Smtp-Source: ABdhPJw92zzWDOf4nX5co4h+yOaYfpvSE1lqWrAWyMnVuVIbDMJBNV5Z9nVcUfk7df9Z0MwcebHBGQ==
-X-Received: by 2002:a05:600c:2194:b0:39c:419c:1a24 with SMTP id e20-20020a05600c219400b0039c419c1a24mr47332513wme.186.1655918767173;
-        Wed, 22 Jun 2022 10:26:07 -0700 (PDT)
-Received: from debian (host-78-150-47-22.as13285.net. [78.150.47.22])
-        by smtp.gmail.com with ESMTPSA id t5-20020a05600001c500b0020d106c0386sm11482007wrx.89.2022.06.22.10.26.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 10:26:06 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 18:26:04 +0100
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rlDSAPctE0EJecdMHo4GLxVrkzYccxxM0XqXwWT0qtc=;
+        b=qrZJw//RLMA5evlc/kp73bKNcrDUATm+J+5BxYIyssfoL1uFEvoIvzTI0G4ywhp+XF
+         9upqb+JjyKUDIx2jvzi+xMk4RCamqYm+QXjh2ro6cYOcDnyAj8Ptw4MHSKjzWedvuHaN
+         I0J3W0+sAGPe5TvgdokA1uuxsWmBVN09wAjVmYX6xKG9Low6L8MvfsbjMa4jvU/A3MBO
+         LD9EgqlwgfGe2X5gaSpUwFnE0jD/napGvD74daAdXTCnXu6fxpbjWdGvG3xG9T2QWqLQ
+         lzy7RzjMlzYMaccdecDcIJ2Y0Neoa09Nnu1+oQniSNH+9+5njpHCcnKwVb1Td0S2kgwL
+         XSFg==
+X-Gm-Message-State: AJIora8xyABtZPyQO6n8Vng9CPuKl3XnhN8+n+MTdkUIE1siIOC283CP
+        cRiewjGR13YB4MywhPs12tWJJYvgvIRxmlCk
+X-Google-Smtp-Source: AGRyM1vO+DhST4oz9G24DjB9U6xLZQyiF1x3BVqU82pi5DcO5w7Xq7andcxPl6A7Z/xNM4+hmmJADg==
+X-Received: by 2002:a05:6402:51d3:b0:431:6c7b:28d with SMTP id r19-20020a05640251d300b004316c7b028dmr5354162edd.281.1655920152274;
+        Wed, 22 Jun 2022 10:49:12 -0700 (PDT)
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com. [209.85.128.52])
+        by smtp.gmail.com with ESMTPSA id bn11-20020a170906c0cb00b006fed062c68esm1260513ejb.182.2022.06.22.10.49.10
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 10:49:11 -0700 (PDT)
+Received: by mail-wm1-f52.google.com with SMTP id j5-20020a05600c1c0500b0039c5dbbfa48so83906wms.5
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 10:49:10 -0700 (PDT)
+X-Received: by 2002:a05:600c:681:b0:3a0:2da6:d173 with SMTP id
+ a1-20020a05600c068100b003a02da6d173mr1160427wmn.68.1655920150368; Wed, 22 Jun
+ 2022 10:49:10 -0700 (PDT)
+MIME-Version: 1.0
+References: <YrLtpixBqWDmZT/V@debian> <CAHk-=wiN1ujyVTgyt1GuZiyWAPfpLwwg-FY1V-J56saMyiA1Lg@mail.gmail.com>
+ <YrMu5bdhkPzkxv/X@dev-arch.thelio-3990X> <CAHk-=wjTS9OJzggD8=tqtj0DoRCKhjjhpYWoB=bPQAv3QMa+eA@mail.gmail.com>
+ <YrNQrPNF/XfriP99@debian>
+In-Reply-To: <YrNQrPNF/XfriP99@debian>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 22 Jun 2022 12:48:54 -0500
+X-Gmail-Original-Message-ID: <CAHk-=wjje8UdsQ_mjGVF4Bc_TcjAWRgOps7E_Cytg4xTbXfyig@mail.gmail.com>
+Message-ID: <CAHk-=wjje8UdsQ_mjGVF4Bc_TcjAWRgOps7E_Cytg4xTbXfyig@mail.gmail.com>
+Subject: Re: mainline build failure due to 281d0c962752 ("fortify: Add Clang support")
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Cc:     Nathan Chancellor <nathan@kernel.org>,
         Kees Cook <keescook@chromium.org>,
         Nick Desaulniers <ndesaulniers@google.com>,
@@ -58,64 +69,79 @@ Cc:     Nathan Chancellor <nathan@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Netdev <netdev@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: mainline build failure due to 281d0c962752 ("fortify: Add Clang
- support")
-Message-ID: <YrNQrPNF/XfriP99@debian>
-References: <YrLtpixBqWDmZT/V@debian>
- <CAHk-=wiN1ujyVTgyt1GuZiyWAPfpLwwg-FY1V-J56saMyiA1Lg@mail.gmail.com>
- <YrMu5bdhkPzkxv/X@dev-arch.thelio-3990X>
- <CAHk-=wjTS9OJzggD8=tqtj0DoRCKhjjhpYWoB=bPQAv3QMa+eA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wjTS9OJzggD8=tqtj0DoRCKhjjhpYWoB=bPQAv3QMa+eA@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_RED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 11:21:09AM -0500, Linus Torvalds wrote:
-> On Wed, Jun 22, 2022 at 10:02 AM Nathan Chancellor <nathan@kernel.org> wrote:
-> >
-> > Right, we are working on a statically linked and optimized build of LLVM
-> > that people can use similar to the GCC builds provided on kernel.org,
-> > which should make the compile time problem not as bad as well as making
-> > it easier for developers to get access to a recent version of clang with
-> > all the fixes and improvements that we have made in upstream LLVM.
-> 
-> So I'm on the road, and will try to see how well I can do that
-> allmodconfig build on my poor laptop and see what else goes wrong for
-> now.
+On Wed, Jun 22, 2022 at 12:26 PM Sudip Mukherjee
+<sudipm.mukherjee@gmail.com> wrote:
+>
+> Tried it after applying your patch. There was no build failure, but some warnings:
 
-Tried it after applying your patch. There was no build failure, but some warnings:
+So some of those objtool warnings are, I think, because clang does odd
+and crazy things for when it decides "this is not reachable" code.
 
-fs/reiserfs/reiserfs.o: warning: objtool: leaf_copy_items_entirely+0x7fd: stack state mismatch: cfa1=4+240 cfa2=4+232
-arch/x86/kvm/kvm.o: warning: objtool: emulator_cmpxchg_emulated+0x705: call to __ubsan_handle_load_invalid_value() with UACCESS enabled
-arch/x86/kvm/kvm.o: warning: objtool: paging64_update_accessed_dirty_bits+0x39e: call to __ubsan_handle_load_invalid_value() with UACCESS enabled
-arch/x86/kvm/kvm.o: warning: objtool: paging32_update_accessed_dirty_bits+0x390: call to __ubsan_handle_load_invalid_value() with UACCESS enabled
-arch/x86/kvm/kvm.o: warning: objtool: ept_update_accessed_dirty_bits+0x43f: call to __ubsan_handle_load_invalid_value() with UACCESS enabled
-drivers/video/fbdev/smscufx.o: warning: objtool: ufx_ops_write() falls through to next function ufx_ops_setcolreg()
-drivers/video/fbdev/udlfb.o: warning: objtool: dlfb_ops_write() falls through to next function dlfb_ops_setcolreg()
-drivers/soc/qcom/qcom_rpmh.o: warning: objtool: rpmh_rsc_write_ctrl_data() falls through to next function trace_raw_output_rpmh_tx_done()
-drivers/scsi/mpi3mr/mpi3mr.o: warning: objtool: mpi3mr_op_request_post() falls through to next function mpi3mr_check_rh_fault_ioc()
-drivers/gpu/drm/radeon/radeon.o: warning: objtool: sumo_dpm_set_power_state() falls through to next function sumo_dpm_post_set_power_state()
-drivers/net/ethernet/wiznet/w5100.o: warning: objtool: w5100_tx_skb() falls through to next function w5100_get_drvinfo()
-drivers/net/ethernet/wiznet/w5100.o: warning: objtool: w5100_rx_skb() falls through to next function w5100_mmio_probe()
-vmlinux.o: warning: objtool: __startup_64() falls through to next function startup_64_setup_env()
-vmlinux.o: warning: objtool: sync_regs+0x24: call to memcpy() leaves .noinstr.text section
-vmlinux.o: warning: objtool: vc_switch_off_ist+0xbe: call to memcpy() leaves .noinstr.text section
-vmlinux.o: warning: objtool: fixup_bad_iret+0x36: call to memset() leaves .noinstr.text section
-vmlinux.o: warning: objtool: __sev_get_ghcb+0xa0: call to memcpy() leaves .noinstr.text section
-vmlinux.o: warning: objtool: __sev_put_ghcb+0x35: call to memcpy() leaves .noinstr.text section
+I don't much like it, and neither does objtool, but it is what it is.
+When clang decides "I'm calling a function that cannot return", it
+will have a "call" instruction and then it will just fall off the face
+of the earth after that.
 
-The build took 16 minutes 6 seconds on the build machines in my office (Codethink).
+That includes falling through to the next function, or just to random
+other labels after the function, and then objtool as a result
+complains about a stack state mismatch (when the fallthrough is the
+same function, but now the stack pointer is different in different
+parts), or of the "falls through to next function".
 
+I think it's a clang misfeature in that if something goes wrong, you
+basically execute random code. I'd much rather see clang insert a real
+'ud' instruction or 'int3' or whatever. But it doesn't.
 
---
-Regards
-Sudip
+I didn't check whether gcc avoids that "don't make assumptions about
+non-return functions" or whether it's just that objtool recognizes
+whatever pattern gcc uses.
+
+So *some* of the warnings are basically code generation disagreements,
+but aren't signs of actual problems per se.
+
+Others may be because objdump knows about gcc foibles in ways it
+doesn't know about some clang foibles. I think the "call to memcpy()
+leaves .noinstr.text section" might be of that type: clang seems to
+sometimes generate out-of-line memcpy calls for absolutely ridiculous
+things (I've seen a 16-byte memcpy done that way - just stupid when
+it's just two load/store pairs, and just the function call overhead is
+much more than that).
+
+And then a couple seem to be real mis-features in our code:
+
+> arch/x86/kvm/kvm.o: warning: objtool: emulator_cmpxchg_emulated+0x705: call to __ubsan_handle_load_invalid_value() with UACCESS enabled
+> arch/x86/kvm/kvm.o: warning: objtool: paging64_update_accessed_dirty_bits+0x39e: call to __ubsan_handle_load_invalid_value() with UACCESS enabled
+> arch/x86/kvm/kvm.o: warning: objtool: paging32_update_accessed_dirty_bits+0x390: call to __ubsan_handle_load_invalid_value() with UACCESS enabled
+> arch/x86/kvm/kvm.o: warning: objtool: ept_update_accessed_dirty_bits+0x43f: call to __ubsan_handle_load_invalid_value() with UACCESS enabled
+
+and I actually sent email to the kvm and x86 people involved in those
+code sequences. It's the __try_cmpxchg_user() macro that isn't great.
+
+Not a fatal problem, but a sign of something we should do better, and
+that one doesn't seem to be due to any actual clang misfeature.
+
+> The build took 16 minutes 6 seconds on the build machines in my office (Codethink).
+
+Oh yeah. I'm on a laptop that is a few years old (good laptop, just
+not top-of-the-line any more), and it's been chugging along for almost
+two hours by now. It's still working on it, and making "solid
+progress". But it does not seem to have hit any other failures after
+that memcpy fixlet, so I guess I will get to that successful end some
+time soon.
+
+I don't typically do allmodconfig builds while on the road, much less
+with clang. With gcc, I seem to recall it being a bit over an hour.
+Clang is worse.
+
+              Linus
