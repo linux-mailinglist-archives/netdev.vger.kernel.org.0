@@ -2,169 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D8AD554CAA
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 16:17:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5BAE554CD6
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 16:24:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358232AbiFVORX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 10:17:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37490 "EHLO
+        id S1358003AbiFVOYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 10:24:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358227AbiFVOQ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 10:16:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C213BA54;
-        Wed, 22 Jun 2022 07:16:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA6B7B81F5B;
-        Wed, 22 Jun 2022 14:16:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4431FC34114;
-        Wed, 22 Jun 2022 14:16:04 +0000 (UTC)
-Subject: [PATCH RFC 30/30] NFSD: Clean up unusued code after rhashtable
- conversion
-From:   Chuck Lever <chuck.lever@oracle.com>
-To:     linux-nfs@vger.kernel.org, netdev@vger.kernel.org
-Cc:     david@fromorbit.com, tgraf@suug.ch, jlayton@redhat.com
-Date:   Wed, 22 Jun 2022 10:16:03 -0400
-Message-ID: <165590736333.75778.11835074896938057232.stgit@manet.1015granger.net>
-In-Reply-To: <165590626293.75778.9843437418112335153.stgit@manet.1015granger.net>
-References: <165590626293.75778.9843437418112335153.stgit@manet.1015granger.net>
-User-Agent: StGit/1.5.dev2+g9ce680a5
+        with ESMTP id S1358393AbiFVOXa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 10:23:30 -0400
+X-Greylist: delayed 401 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 22 Jun 2022 07:23:25 PDT
+Received: from mail.acc.umu.se (mail.acc.umu.se [130.239.18.156])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA5CA39B96
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 07:23:25 -0700 (PDT)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by amavisd-new (Postfix) with ESMTP id 3C4AC44B96;
+        Wed, 22 Jun 2022 16:16:39 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=acc.umu.se; s=mail1;
+        t=1655907399; bh=pouzNMFsSYJ4l7Zs9Xkl7ctIrZw/mpAZA+tAWdu6N5A=;
+        h=Date:From:To:Cc:Subject:From;
+        b=y4YDEBIF6tTr39cOw7TKoZnO5+eFzR6CXtYYZVQhSq+XZ3133pD+/96jTBKgz0YEZ
+         tkK7Xbw2x/mrIzQua3SvIKqggJvs0qyOWHfeIW/bpFYIJxgzDo2Ko8lTCqtGAfDqHb
+         4+M2bBUCriOx4j7mD7VE437UuDK2fJODic/g9zLRdtysfDW0TDbgflBkmceFPqWHXR
+         ArywsQJn11srbVqC0JnL1VnLEtGkNrFYxXSntdNccD+Vqq8Mh+9RySLUN0kSl9fsEN
+         A34Es53V8cOEagkdlGdhK5SYK0sHbEnvYF70oquhLF7z2CdB/jZqVKEN5HXCkaKL0T
+         O3NqqnwjcDcfg==
+Received: by mail.acc.umu.se (Postfix, from userid 24471)
+        id CD76B44B97; Wed, 22 Jun 2022 16:16:38 +0200 (CEST)
+Date:   Wed, 22 Jun 2022 16:16:38 +0200
+From:   Anton Lundin <glance@acc.umu.se>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [REGRESSION] AX88772 card booted without cable can't receive
+Message-ID: <20220622141638.GE930160@montezuma.acc.umu.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
----
- fs/nfsd/filecache.c |   31 +------------------------------
- fs/nfsd/filecache.h |    3 +--
- 2 files changed, 2 insertions(+), 32 deletions(-)
+Hi.
 
-diff --git a/fs/nfsd/filecache.c b/fs/nfsd/filecache.c
-index 14b607e544bf..88c5d8393981 100644
---- a/fs/nfsd/filecache.c
-+++ b/fs/nfsd/filecache.c
-@@ -24,9 +24,6 @@
- 
- #define NFSDDBG_FACILITY	NFSDDBG_FH
- 
--/* FIXME: dynamically size this for the machine somehow? */
--#define NFSD_FILE_HASH_BITS                   12
--#define NFSD_FILE_HASH_SIZE                  (1 << NFSD_FILE_HASH_BITS)
- #define NFSD_LAUNDRETTE_DELAY		     (2 * HZ)
- 
- #define NFSD_FILE_CACHE_UP		     (0)
-@@ -34,13 +31,6 @@
- /* We only care about NFSD_MAY_READ/WRITE for this cache */
- #define NFSD_FILE_MAY_MASK	(NFSD_MAY_READ|NFSD_MAY_WRITE)
- 
--struct nfsd_fcache_bucket {
--	struct hlist_head	nfb_head;
--	spinlock_t		nfb_lock;
--	unsigned int		nfb_count;
--	unsigned int		nfb_maxcount;
--};
--
- static DEFINE_PER_CPU(unsigned long, nfsd_file_cache_hits);
- static DEFINE_PER_CPU(unsigned long, nfsd_file_acquisitions);
- static DEFINE_PER_CPU(unsigned long, nfsd_file_releases);
-@@ -58,7 +48,6 @@ static struct workqueue_struct *nfsd_filecache_wq __read_mostly;
- 
- static struct kmem_cache		*nfsd_file_slab;
- static struct kmem_cache		*nfsd_file_mark_slab;
--static struct nfsd_fcache_bucket	*nfsd_file_hashtbl;
- static struct list_lru			nfsd_file_lru;
- static unsigned long			nfsd_file_flags;
- static struct fsnotify_group		*nfsd_file_fsnotify_group;
-@@ -275,7 +264,6 @@ nfsd_file_alloc(struct inode *inode, unsigned int may, struct net *net)
- 
- 	nf = kmem_cache_alloc(nfsd_file_slab, GFP_KERNEL);
- 	if (nf) {
--		INIT_HLIST_NODE(&nf->nf_node);
- 		INIT_LIST_HEAD(&nf->nf_lru);
- 		nf->nf_birthtime = ktime_get();
- 		nf->nf_file = NULL;
-@@ -784,8 +772,7 @@ static const struct fsnotify_ops nfsd_file_fsnotify_ops = {
- int
- nfsd_file_cache_init(void)
- {
--	int		ret;
--	unsigned int	i;
-+	int ret;
- 
- 	lockdep_assert_held(&nfsd_mutex);
- 	if (test_and_set_bit(NFSD_FILE_CACHE_UP, &nfsd_file_flags) == 1)
-@@ -800,13 +787,6 @@ nfsd_file_cache_init(void)
- 	if (!nfsd_filecache_wq)
- 		goto out;
- 
--	nfsd_file_hashtbl = kvcalloc(NFSD_FILE_HASH_SIZE,
--				sizeof(*nfsd_file_hashtbl), GFP_KERNEL);
--	if (!nfsd_file_hashtbl) {
--		pr_err("nfsd: unable to allocate nfsd_file_hashtbl\n");
--		goto out_err;
--	}
--
- 	nfsd_file_slab = kmem_cache_create("nfsd_file",
- 				sizeof(struct nfsd_file), 0, 0, NULL);
- 	if (!nfsd_file_slab) {
-@@ -850,11 +830,6 @@ nfsd_file_cache_init(void)
- 		goto out_notifier;
- 	}
- 
--	for (i = 0; i < NFSD_FILE_HASH_SIZE; i++) {
--		INIT_HLIST_HEAD(&nfsd_file_hashtbl[i].nfb_head);
--		spin_lock_init(&nfsd_file_hashtbl[i].nfb_lock);
--	}
--
- 	INIT_DELAYED_WORK(&nfsd_filecache_laundrette, nfsd_file_gc_worker);
- out:
- 	return ret;
-@@ -869,8 +844,6 @@ nfsd_file_cache_init(void)
- 	nfsd_file_slab = NULL;
- 	kmem_cache_destroy(nfsd_file_mark_slab);
- 	nfsd_file_mark_slab = NULL;
--	kvfree(nfsd_file_hashtbl);
--	nfsd_file_hashtbl = NULL;
- 	destroy_workqueue(nfsd_filecache_wq);
- 	nfsd_filecache_wq = NULL;
- 	rhashtable_destroy(&nfsd_file_rhash_tbl);
-@@ -1002,8 +975,6 @@ nfsd_file_cache_shutdown(void)
- 	fsnotify_wait_marks_destroyed();
- 	kmem_cache_destroy(nfsd_file_mark_slab);
- 	nfsd_file_mark_slab = NULL;
--	kvfree(nfsd_file_hashtbl);
--	nfsd_file_hashtbl = NULL;
- 	destroy_workqueue(nfsd_filecache_wq);
- 	nfsd_filecache_wq = NULL;
- 	rhashtable_destroy(&nfsd_file_rhash_tbl);
-diff --git a/fs/nfsd/filecache.h b/fs/nfsd/filecache.h
-index 7fc017e7b09e..5ce3fdf3b729 100644
---- a/fs/nfsd/filecache.h
-+++ b/fs/nfsd/filecache.h
-@@ -24,13 +24,12 @@ struct nfsd_file_mark {
- 
- /*
-  * A representation of a file that has been opened by knfsd. These are hashed
-- * in the hashtable by inode pointer value. Note that this object doesn't
-+ * in an rhashtable by inode pointer value. Note that this object doesn't
-  * hold a reference to the inode by itself, so the nf_inode pointer should
-  * never be dereferenced, only used for comparison.
-  */
- struct nfsd_file {
- 	struct rhash_head	nf_rhash;
--	struct hlist_node	nf_node;
- 	struct list_head	nf_lru;
- 	struct rcu_head		nf_rcu;
- 	struct file		*nf_file;
+I've found a issue with a Dlink usb ether adapter, that can't receive
+anything until it self transmits if it's plugged in while booting, and
+doesn't have link.
+
+Later when a cable is attached, link is detected but nothing is received
+either by daemons listening to ip address on that interface, or seen
+with tcpdump.
+
+The dongle is a:
+D-Link Corp. DUB-E100 Fast Ethernet Adapter(rev.C1) [ASIX AX88772]
+
+And it's detected at boot as:
+libphy: Asix MDIO Bus: probed
+Asix Electronics AX88772C usb-003:004:10: attached PHY driver (mii_bus:phy_addr=usb-003:004:10, irq=POLL)
+asix 3-10.4:1.0 eth1: register 'asix' at usb-0000:00:14.0-10.4, ASIX AX88772 USB 2.0 Ethernet, <masked-mac>
+usbcore: registered new interface driver asix
 
 
+While in this state, the hardware starts sending pause frames to the
+network when it has recived a couple of frames, and they look like:
+0000   01 80 c2 00 00 01 00 00 00 00 00 00 88 08 00 01
+0010   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0020   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0030   00 00 00 00 00 00 00 00 00 00 00 00
+
+0000   01 80 c2 00 00 01 00 00 00 00 00 00 88 08 00 01
+0010   ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0020   00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0030   00 00 00 00 00 00 00 00 00 00 00 00
+
+And these two frames are repeated every couple of seconds.
+
+The card wakes up when something triggers a transmit on that card, and
+then starts receiving traffic as normal.
+
+I've bisected this issue down to:
+"net: usb: asix: ax88772: add phylib support" (e532a096be0e)
+
+
+Reverting that makes the interface work as normal, even if the machine
+boots without a cable plugged in.
+
+Another issue found with exactly the same patch is that if it's loaded
+as a module, then unloaded and loaded again, it fails to initialize the
+card with:
+
+sysfs: cannot create duplicate filename '/devices/virtual/mdio_bus/usb-003:004'
+CPU: 0 PID: 3733 Comm: modprobe Tainted: G           O      5.15.10-core_64_preempt #3
+Hardware name:  <masked-hardware-name>
+Call Trace:
+ <TASK>
+ ? dump_stack_lvl+0x34/0x44
+ ? sysfs_warn_dup.cold+0x17/0x24
+ ? sysfs_create_dir_ns+0xbc/0xd0
+ ? kobject_add_internal+0xa6/0x260
+ ? kobject_add+0x7e/0xb0
+ ? preempt_count_add+0x68/0xa0
+ ? device_add+0x10f/0x8d0
+ ? dev_set_name+0x53/0x70
+ ? __mdiobus_register+0xc2/0x350
+ ? __devm_mdiobus_register+0x64/0xb0
+ ? ax88772_bind+0x22a/0x340 [asix]
+ ? usbnet_probe+0x346/0x870
+ ? usb_match_dynamic_id+0x8f/0xa0
+ ? usb_probe_interface+0x9b/0x150
+ ? really_probe.part.0+0x237/0x280
+ ? __driver_probe_device+0x8c/0xd0
+ ? driver_probe_device+0x1e/0xe0
+ ? __driver_attach+0xa8/0x170
+ ? __device_attach_driver+0xe0/0xe0
+ ? bus_for_each_dev+0x77/0xc0
+ ? bus_add_driver+0x10b/0x1c0
+ ? driver_register+0x8b/0xe0
+ ? usb_register_driver+0x84/0x120
+ ? 0xffffffffc06e4000
+ ? do_one_initcall+0x41/0x1f0
+ ? kmem_cache_alloc_trace+0x3f/0x1b0
+ ? do_init_module+0x5c/0x260
+ ? __do_sys_finit_module+0xa0/0xe0
+ ? do_syscall_64+0x35/0x80
+ ? entry_SYSCALL_64_after_hwframe+0x44/0xae
+ </TASK>
+kobject_add_internal failed for usb-003:004 with -EEXIST, don't try to register things with the same name in the same directory.
+libphy: mii_bus usb-003:004 failed to register
+asix: probe of 3-10.4:1.0 failed with error -22 
+usbcore: registered new interface driver asix
+
+
+Both these issues with "net: usb: asix: ax88772: add phylib support"
+(e532a096be0e) can be reproduced all the way from when it was introduced
+to linus current tree.
+
+
+I'm sorry to say that I don't know enough about either libphy or asix to
+figure out what cause the issues can be.
+
+
+
+//Anton
