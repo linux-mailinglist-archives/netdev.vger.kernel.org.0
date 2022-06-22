@@ -2,160 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42D30556E8F
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 00:34:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77364556E93
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 00:37:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359677AbiFVWef (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 18:34:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37060 "EHLO
+        id S1358275AbiFVWhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 18:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359655AbiFVWec (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 18:34:32 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A4CB3FDAA
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 15:34:27 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id i15so27836195ybp.1
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 15:34:27 -0700 (PDT)
+        with ESMTP id S241081AbiFVWhG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 18:37:06 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964F940920
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 15:37:05 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id l4so17362048pgh.13
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 15:37:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WKylA8pYtIvxwg5/dZiB/uZdIVVN/P980vi4sBmsa8g=;
-        b=J4pi/aKDOGnb+AER5hiC/Ur9ZSPqxLhl9mnB71A7+WIlfY2oiT/T5y5JfIyXfOCApX
-         pLilMQlV84wpeyWcdPvtM97nw68tnuZyysLqMtJ7DRRJ6ajeonNGzDXJprWOIg8xBf0y
-         NTH6Wl1a1nlYUaFdI4qtAMzn8cW7xPEjL5f7QJ94kT2HJ1ci6OAaAPqD1UX+0NL/zHh7
-         304JDEDsF/c/vE8OS7ScZ5S8psqurQ00bjxfdujGxOif8q+MEh1dX6y/brQOOJs5BypF
-         iAv8odstd+qJJe5X1KPMo+1qvBAD62prH31qb5OR0/0XW3vKz526q1m+3AN2s9rHhIps
-         PBRw==
+        d=fungible.com; s=google;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aOOC6w7tcK8YAozx/l7DkxqRFo0vrrcy2NbyMYSNBZc=;
+        b=WvXJJeRlXwtox/SCr/vmFW+PKSnADw7tIprG1wcNfqnHC/zLW3aVU4e/T0zxFS19jC
+         BCaJqBr2bDb+6LjY3Rx4mpgglRoGYeBmDsF2Y4/36Oujillkx9tUP1mEgQthO1DhSefR
+         tFfI1OPGpKT+sy8yYID8A3w+4Nh2nISwshCg0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WKylA8pYtIvxwg5/dZiB/uZdIVVN/P980vi4sBmsa8g=;
-        b=aoQPhfCywIvNwGXdIQQ2j+sFaF1EGz/HvN2RJOcmAAr3bwc5CI2ygODhmtjuocMhf+
-         3L6Fs9ufDPnUYZBLcSt6tU4bVQu1EqwegzgkMNerHqhbXyEgsHQW3K7qlHwyQLBeSFTJ
-         wF8sixjBcaAWEWeOh20//4F4mRkjEHKVv4P5C5pAwnjO8vCxxrwo84xbeJqjmbna7cq7
-         wb1/Uv4mR2RGk2SBXcxpOCCPTt0A7t9EVT/BU4cxIeeJXUVF0332m32Hxv4WhY0ZY7O+
-         bbClE04JtYeyEsiV3aeydd33zWZQyT9fPHhYhYYsMg7s7cVs4OV3FK0AedfGEpT9aubM
-         KNfg==
-X-Gm-Message-State: AJIora8elJVcOweTd7/ru4u3a3Kd1u+V3d5RZfVfb9dJnYYzugR9STVE
-        sk4Aw5w2r4WDPV6lpJitFiDbmt32MjCga2WbHclqKA==
-X-Google-Smtp-Source: AGRyM1vtP8cTHTShZ6uWcl+OVMszNehOV5bCtDdbKW/msmtH+Wdf1HHxNjR1QJIjKUG41gGaaaYuCgB7moTXz8XY7EE=
-X-Received: by 2002:a25:d112:0:b0:669:17:8d98 with SMTP id i18-20020a25d112000000b0066900178d98mr6124766ybg.447.1655937266678;
- Wed, 22 Jun 2022 15:34:26 -0700 (PDT)
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aOOC6w7tcK8YAozx/l7DkxqRFo0vrrcy2NbyMYSNBZc=;
+        b=jntnA1rayELko4UbKSEOIB7lnYPwzj54I7t1ypuYaIXfTOWvFDAMfFHu0ef5jg+P5s
+         AEU6GGi7jYrCHwZ8Oeoqx9GBY9V43AEyYg1Ab+OXqM2kqL+wRRPRKeDQ7o6ISYXabmRy
+         TGM07gt6N4pIClNbcKKrx7O9B/L7mnz4AJfaSbJ7eUe8HdPe7aNUTt9fHTEbJllfo8eb
+         86pMlmPtBqAqHEG9olYq4NqiDiXXNMENf84lIfO73jiJnYqze7VEe3jIjkcUeIXyTSTg
+         30I4JsYf4O/jgtZFxTa/1ekdpXjN3vMxYeFBFqHv4mPDYBed9SnZMCIjt1sjkVWq9hml
+         BHZg==
+X-Gm-Message-State: AJIora+Wtt7w214cXJZZDxQcYScticw4F9UIj4t2SIkEjIxeqnbS33jy
+        q2tAIGtDJJvW6f1em6Y9OcxfqVxC4SZG3A==
+X-Google-Smtp-Source: AGRyM1uZh0N5ow3h8UG1mkytB5RetAbqfgPN85qz74yLXKM1VU+rT5u08aB0xP/lZoZJqJbdo49Biw==
+X-Received: by 2002:a05:6a00:10d4:b0:522:8c31:ec23 with SMTP id d20-20020a056a0010d400b005228c31ec23mr37983499pfu.67.1655937425121;
+        Wed, 22 Jun 2022 15:37:05 -0700 (PDT)
+Received: from cab09-qa-09.fungible.local ([12.190.10.11])
+        by smtp.gmail.com with ESMTPSA id v21-20020a17090331d500b0016a1e2d148fsm7518827ple.64.2022.06.22.15.37.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 22 Jun 2022 15:37:04 -0700 (PDT)
+From:   Dimitris Michailidis <d.michailidis@fungible.com>
+X-Google-Original-From: Dimitris Michailidis <dmichail@fungible.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, d.michailidis@fungible.com
+Subject: [PATCH net-next] net/funeth: Support UDP segmentation offload
+Date:   Wed, 22 Jun 2022 15:37:03 -0700
+Message-Id: <20220622223703.59886-1-dmichail@fungible.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220622215912.550419-1-saravanak@google.com> <DU0PR04MB941733BFD323D3542B7F75A888B29@DU0PR04MB9417.eurprd04.prod.outlook.com>
-In-Reply-To: <DU0PR04MB941733BFD323D3542B7F75A888B29@DU0PR04MB9417.eurprd04.prod.outlook.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Wed, 22 Jun 2022 15:33:50 -0700
-Message-ID: <CAGETcx-h4iDx+WG+HnN0_ej0qtLOp66oOXvkppm060TRCG3_Jg@mail.gmail.com>
-Subject: Re: [PATCH v1 0/2] Fix console probe delay due to fw_devlink
-To:     Peng Fan <peng.fan@nxp.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Len Brown <lenb@kernel.org>, Sascha Hauer <sha@pengutronix.de>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        "kernel-team@android.com" <kernel-team@android.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 3:32 PM Peng Fan <peng.fan@nxp.com> wrote:
->
-> > Subject: [PATCH v1 0/2] Fix console probe delay due to fw_devlink
-> >
-> > fw_devlink.strict=1 has been enabled by default. This was delaying the probe
-> > of console devices. This series fixes that.
-> >
-> > Sasha/Peng,
-> >
-> > Can you test this please?
->
-> Thanks, just give a test on i.MX8MP-EVK, works well now.
->
-> Tested-by: Peng Fan <peng.fan@nxp.com> #i.MX8MP-EVK
+Handle skbs with SKB_GSO_UDP_L4, advertise the offload in features, and
+add an ethtool counter for it. Small change to existing TSO code due to
+UDP's different header length.
 
-Lol, that was quick! Thanks!
+Signed-off-by: Dimitris Michailidis <dmichail@fungible.com>
+---
+ .../ethernet/fungible/funeth/funeth_ethtool.c |  2 ++
+ .../ethernet/fungible/funeth/funeth_main.c    |  3 ++-
+ .../net/ethernet/fungible/funeth/funeth_tx.c  | 23 ++++++++++++++++++-
+ .../ethernet/fungible/funeth/funeth_txrx.h    |  1 +
+ 4 files changed, 27 insertions(+), 2 deletions(-)
 
--Saravana
+diff --git a/drivers/net/ethernet/fungible/funeth/funeth_ethtool.c b/drivers/net/ethernet/fungible/funeth/funeth_ethtool.c
+index d081168c95fa..da42dd53a87c 100644
+--- a/drivers/net/ethernet/fungible/funeth/funeth_ethtool.c
++++ b/drivers/net/ethernet/fungible/funeth/funeth_ethtool.c
+@@ -78,6 +78,7 @@ static const char * const txq_stat_names[] = {
+ 	"tx_cso",
+ 	"tx_tso",
+ 	"tx_encapsulated_tso",
++	"tx_uso",
+ 	"tx_more",
+ 	"tx_queue_stops",
+ 	"tx_queue_restarts",
+@@ -778,6 +779,7 @@ static void fun_get_ethtool_stats(struct net_device *netdev,
+ 		ADD_STAT(txs.tx_cso);
+ 		ADD_STAT(txs.tx_tso);
+ 		ADD_STAT(txs.tx_encap_tso);
++		ADD_STAT(txs.tx_uso);
+ 		ADD_STAT(txs.tx_more);
+ 		ADD_STAT(txs.tx_nstops);
+ 		ADD_STAT(txs.tx_nrestarts);
+diff --git a/drivers/net/ethernet/fungible/funeth/funeth_main.c b/drivers/net/ethernet/fungible/funeth/funeth_main.c
+index 9485cf699c5d..f247b7ad3a88 100644
+--- a/drivers/net/ethernet/fungible/funeth/funeth_main.c
++++ b/drivers/net/ethernet/fungible/funeth/funeth_main.c
+@@ -1357,7 +1357,8 @@ static const struct net_device_ops fun_netdev_ops = {
+ #define GSO_ENCAP_FLAGS (NETIF_F_GSO_GRE | NETIF_F_GSO_IPXIP4 | \
+ 			 NETIF_F_GSO_IPXIP6 | NETIF_F_GSO_UDP_TUNNEL | \
+ 			 NETIF_F_GSO_UDP_TUNNEL_CSUM)
+-#define TSO_FLAGS (NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_TSO_ECN)
++#define TSO_FLAGS (NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_TSO_ECN | \
++		   NETIF_F_GSO_UDP_L4)
+ #define VLAN_FEAT (NETIF_F_SG | NETIF_F_HW_CSUM | TSO_FLAGS | \
+ 		   GSO_ENCAP_FLAGS | NETIF_F_HIGHDMA)
+ 
+diff --git a/drivers/net/ethernet/fungible/funeth/funeth_tx.c b/drivers/net/ethernet/fungible/funeth/funeth_tx.c
+index ff6e29237253..0a4a590218ba 100644
+--- a/drivers/net/ethernet/fungible/funeth/funeth_tx.c
++++ b/drivers/net/ethernet/fungible/funeth/funeth_tx.c
+@@ -130,6 +130,7 @@ static unsigned int write_pkt_desc(struct sk_buff *skb, struct funeth_txq *q,
+ 	struct fun_dataop_gl *gle;
+ 	const struct tcphdr *th;
+ 	unsigned int ngle, i;
++	unsigned int l4_hlen;
+ 	u16 flags;
+ 
+ 	if (unlikely(map_skb(skb, q->dma_dev, addrs, lens))) {
+@@ -178,6 +179,7 @@ static unsigned int write_pkt_desc(struct sk_buff *skb, struct funeth_txq *q,
+ 						 FUN_ETH_UPDATE_INNER_L3_LEN;
+ 			}
+ 			th = inner_tcp_hdr(skb);
++			l4_hlen = __tcp_hdrlen(th);
+ 			fun_eth_offload_init(&req->offload, flags,
+ 					     shinfo->gso_size,
+ 					     tcp_hdr_doff_flags(th), 0,
+@@ -185,6 +187,24 @@ static unsigned int write_pkt_desc(struct sk_buff *skb, struct funeth_txq *q,
+ 					     skb_inner_transport_offset(skb),
+ 					     skb_network_offset(skb), ol4_ofst);
+ 			FUN_QSTAT_INC(q, tx_encap_tso);
++		} else if (shinfo->gso_type & SKB_GSO_UDP_L4) {
++			flags = FUN_ETH_INNER_LSO | FUN_ETH_INNER_UDP |
++				FUN_ETH_UPDATE_INNER_L4_CKSUM |
++				FUN_ETH_UPDATE_INNER_L4_LEN |
++				FUN_ETH_UPDATE_INNER_L3_LEN;
++
++			if (ip_hdr(skb)->version == 4)
++				flags |= FUN_ETH_UPDATE_INNER_L3_CKSUM;
++			else
++				flags |= FUN_ETH_INNER_IPV6;
++
++			l4_hlen = sizeof(struct udphdr);
++			fun_eth_offload_init(&req->offload, flags,
++					     shinfo->gso_size,
++					     cpu_to_be16(l4_hlen << 10), 0,
++					     skb_network_offset(skb),
++					     skb_transport_offset(skb), 0, 0);
++			FUN_QSTAT_INC(q, tx_uso);
+ 		} else {
+ 			/* HW considers one set of headers as inner */
+ 			flags = FUN_ETH_INNER_LSO |
+@@ -195,6 +215,7 @@ static unsigned int write_pkt_desc(struct sk_buff *skb, struct funeth_txq *q,
+ 			else
+ 				flags |= FUN_ETH_UPDATE_INNER_L3_CKSUM;
+ 			th = tcp_hdr(skb);
++			l4_hlen = __tcp_hdrlen(th);
+ 			fun_eth_offload_init(&req->offload, flags,
+ 					     shinfo->gso_size,
+ 					     tcp_hdr_doff_flags(th), 0,
+@@ -209,7 +230,7 @@ static unsigned int write_pkt_desc(struct sk_buff *skb, struct funeth_txq *q,
+ 
+ 		extra_pkts = shinfo->gso_segs - 1;
+ 		extra_bytes = (be16_to_cpu(req->offload.inner_l4_off) +
+-			       __tcp_hdrlen(th)) * extra_pkts;
++			       l4_hlen) * extra_pkts;
+ 	} else if (likely(skb->ip_summed == CHECKSUM_PARTIAL)) {
+ 		flags = FUN_ETH_UPDATE_INNER_L4_CKSUM;
+ 		if (skb->csum_offset == offsetof(struct udphdr, check))
+diff --git a/drivers/net/ethernet/fungible/funeth/funeth_txrx.h b/drivers/net/ethernet/fungible/funeth/funeth_txrx.h
+index 04c9f91b7489..1711f82cad71 100644
+--- a/drivers/net/ethernet/fungible/funeth/funeth_txrx.h
++++ b/drivers/net/ethernet/fungible/funeth/funeth_txrx.h
+@@ -82,6 +82,7 @@ struct funeth_txq_stats {  /* per Tx queue SW counters */
+ 	u64 tx_cso;        /* # of packets with checksum offload */
+ 	u64 tx_tso;        /* # of non-encapsulated TSO super-packets */
+ 	u64 tx_encap_tso;  /* # of encapsulated TSO super-packets */
++	u64 tx_uso;        /* # of non-encapsulated UDP LSO super-packets */
+ 	u64 tx_more;       /* # of DBs elided due to xmit_more */
+ 	u64 tx_nstops;     /* # of times the queue has stopped */
+ 	u64 tx_nrestarts;  /* # of times the queue has restarted */
+-- 
+2.25.1
 
->
-> Thanks,
-> Peng.
->
-> >
-> > -Saravana
-> >
-> > Cc: Sascha Hauer <sha@pengutronix.de>
-> > Cc: Peng Fan <peng.fan@nxp.com>
-> > Cc: Kevin Hilman <khilman@kernel.org>
-> > Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> > Cc: Len Brown <len.brown@intel.com>
-> > Cc: Pavel Machek <pavel@ucw.cz>
-> > Cc: Joerg Roedel <joro@8bytes.org>
-> > Cc: Will Deacon <will@kernel.org>
-> > Cc: Andrew Lunn <andrew@lunn.ch>
-> > Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> > Cc: Russell King <linux@armlinux.org.uk>
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Eric Dumazet <edumazet@google.com>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Paolo Abeni <pabeni@redhat.com>
-> > Cc: Linus Walleij <linus.walleij@linaro.org>
-> > Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-> > Cc: David Ahern <dsahern@kernel.org>
-> > Cc: kernel-team@android.com
-> > Cc: linux-kernel@vger.kernel.org
-> > Cc: linux-pm@vger.kernel.org
-> > Cc: iommu@lists.linux-foundation.org
-> > Cc: netdev@vger.kernel.org
-> > Cc: linux-gpio@vger.kernel.org
-> > Cc: kernel@pengutronix.de
-> >
-> > Saravana Kannan (2):
-> >   driver core: fw_devlink: Allow firmware to mark devices as best effort
-> >   of: base: Avoid console probe delay when fw_devlink.strict=1
-> >
-> >  drivers/base/core.c    | 3 ++-
-> >  drivers/of/base.c      | 2 ++
-> >  include/linux/fwnode.h | 4 ++++
-> >  3 files changed, 8 insertions(+), 1 deletion(-)
-> >
-> > --
-> > 2.37.0.rc0.161.g10f37bed90-goog
->
