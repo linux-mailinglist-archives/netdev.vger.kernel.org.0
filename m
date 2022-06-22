@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 493EA55470D
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:11:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BC70554709
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357211AbiFVJHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 05:07:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36924 "EHLO
+        id S1357201AbiFVJH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 05:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357071AbiFVJH2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 05:07:28 -0400
+        with ESMTP id S1357032AbiFVJHn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 05:07:43 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB5739695;
-        Wed, 22 Jun 2022 02:06:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A5E39BB3;
+        Wed, 22 Jun 2022 02:06:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1655888786; x=1687424786;
+  t=1655888801; x=1687424801;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=QgwgRyX8o4yRJN4ShcJUdlkyfnx63f1v1svi3Wnwp3Y=;
-  b=n5dKuilqcppLOrJOtygSK6kRxG7lNGWGGRsQ7LbXdcWGqgieBS7M2N1V
-   MnBjVBoWJXw6bV4rn46xGre33WKYLW3BG7sNSwTGRtGmmxV/esSGYM45q
-   lgPquFlCj+MwWkN3sIhnFqoFrkyL5bnBoTMZ9/gPLGW8QwBDlfpRt20le
-   3gaptVVH824MYwgHQo2Adc7jxxl9dDVh+BhvNXY7LNQYeNk69bHDwDmy6
-   yUbl0eOwyDQhsObheEUFiJgzazkQ0efVMmFja6vpdn+7mJsS51QeeJu+t
-   +vvWgPnNev+YGJC7F2X92DTJU+gHag69XBmffYrHqqo4SZ+gMNqxlNlyO
-   w==;
+  bh=O+YLmbbRFsXcqHI7l6EGPHD+EO6W7uLzZnfBGwT5P7s=;
+  b=pE4laODVgLXTuZjdKzcDQrRNqMinxg09XSIQxb2AzqOgsuntat4euWC3
+   CZIn+5IA19BQY8h6aZdVok9NqUJyD6h3fTfgp8iYW5VR3RE4MWRHu6zhQ
+   3qMm5ncNvVJLsklhqCPfe2m3IBcZU5V5eSyzX2ObAEszA5rhLgBR/78uU
+   MpY3bQAXUx9lWrt5vpHf6b3L0n8TUN26tXZOJlyyqRrv8jiEtzH1XoP3T
+   NiZKXGvIEpeWyDD1gFWeOmlSpBwDzdwj+R/a2ogAXetpVBObqZqz+Gjbe
+   HNK1Np3f5DbujqB2LT749T5AFUyUn4TihxL10ha9cCNhNY5DGJv73dzVi
+   Q==;
 X-IronPort-AV: E=Sophos;i="5.92,212,1650956400"; 
-   d="scan'208";a="101185305"
+   d="scan'208";a="164526716"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Jun 2022 02:06:25 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Jun 2022 02:06:40 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 22 Jun 2022 02:06:25 -0700
+ 15.1.2375.17; Wed, 22 Jun 2022 02:06:40 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 22 Jun 2022 02:06:20 -0700
+ 15.1.2375.17 via Frontend Transport; Wed, 22 Jun 2022 02:06:35 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Woojung Huh <woojung.huh@microchip.com>,
@@ -50,9 +50,9 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         "Russell King" <linux@armlinux.org.uk>
-Subject: [Patch net-next 01/13] net: dsa: microchip: rename shutdown to reset in ksz_dev_ops
-Date:   Wed, 22 Jun 2022 14:34:13 +0530
-Message-ID: <20220622090425.17709-2-arun.ramadoss@microchip.com>
+Subject: [Patch net-next 02/13] net: dsa: microchip: add config_cpu_port to struct ksz_dev_ops
+Date:   Wed, 22 Jun 2022 14:34:14 +0530
+Message-ID: <20220622090425.17709-3-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220622090425.17709-1-arun.ramadoss@microchip.com>
 References: <20220622090425.17709-1-arun.ramadoss@microchip.com>
@@ -69,105 +69,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch renames the shutdown to reset in ksz_dev_ops in order to use
-the reset dev_ops in the ksz_setup.
+To have the common set of initialization in ksz_setup, introduced the
+new config_cpu_port member to ksz_dev_ops. Since both the ksz8795.c and
+ksz9477.c configuring the cpu port in the setup function, introduced the
+member.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/ksz8795.c     | 4 ++--
- drivers/net/dsa/microchip/ksz8795_spi.c | 4 ++--
- drivers/net/dsa/microchip/ksz9477.c     | 4 ++--
- drivers/net/dsa/microchip/ksz9477_i2c.c | 4 ++--
- drivers/net/dsa/microchip/ksz_common.h  | 2 +-
- 5 files changed, 9 insertions(+), 9 deletions(-)
+ drivers/net/dsa/microchip/ksz8795.c    | 3 ++-
+ drivers/net/dsa/microchip/ksz9477.c    | 3 ++-
+ drivers/net/dsa/microchip/ksz_common.h | 1 +
+ 3 files changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 23ed05f4efcc..ad58112bda44 100644
+index ad58112bda44..0df2140b7ccc 100644
 --- a/drivers/net/dsa/microchip/ksz8795.c
 +++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1379,7 +1379,7 @@ static int ksz8_setup(struct dsa_switch *ds)
- 	if (!dev->vlan_cache)
- 		return -ENOMEM;
+@@ -1402,7 +1402,7 @@ static int ksz8_setup(struct dsa_switch *ds)
+ 			   UNICAST_VLAN_BOUNDARY | NO_EXC_COLLISION_DROP,
+ 			   UNICAST_VLAN_BOUNDARY | NO_EXC_COLLISION_DROP);
  
--	ret = ksz8_reset_switch(dev);
-+	ret = dev->dev_ops->reset(dev);
- 	if (ret) {
- 		dev_err(ds->dev, "failed to reset switch\n");
- 		return ret;
-@@ -1545,7 +1545,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
+-	ksz8_config_cpu_port(ds);
++	dev->dev_ops->config_cpu_port(ds);
+ 
+ 	ksz_cfg(dev, REG_SW_CTRL_2, MULTICAST_STORM_DISABLE, true);
+ 
+@@ -1545,6 +1545,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
  	.mirror_add = ksz8_port_mirror_add,
  	.mirror_del = ksz8_port_mirror_del,
  	.get_caps = ksz8_get_caps,
--	.shutdown = ksz8_reset_switch,
-+	.reset = ksz8_reset_switch,
++	.config_cpu_port = ksz8_config_cpu_port,
+ 	.reset = ksz8_reset_switch,
  	.init = ksz8_switch_init,
  	.exit = ksz8_switch_exit,
- };
-diff --git a/drivers/net/dsa/microchip/ksz8795_spi.c b/drivers/net/dsa/microchip/ksz8795_spi.c
-index 961a74c359a8..3f27aee9b6d3 100644
---- a/drivers/net/dsa/microchip/ksz8795_spi.c
-+++ b/drivers/net/dsa/microchip/ksz8795_spi.c
-@@ -110,8 +110,8 @@ static void ksz8795_spi_shutdown(struct spi_device *spi)
- 	if (!dev)
- 		return;
- 
--	if (dev->dev_ops->shutdown)
--		dev->dev_ops->shutdown(dev);
-+	if (dev->dev_ops->reset)
-+		dev->dev_ops->reset(dev);
- 
- 	dsa_switch_shutdown(dev->ds);
- 
 diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 5b4fc16e1692..4e0e9507e62a 100644
+index 4e0e9507e62a..fef8142440cf 100644
 --- a/drivers/net/dsa/microchip/ksz9477.c
 +++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1246,7 +1246,7 @@ static int ksz9477_setup(struct dsa_switch *ds)
- 	if (!dev->vlan_cache)
- 		return -ENOMEM;
- 
--	ret = ksz9477_reset_switch(dev);
-+	ret = dev->dev_ops->reset(dev);
- 	if (ret) {
- 		dev_err(ds->dev, "failed to reset switch\n");
+@@ -1268,7 +1268,7 @@ static int ksz9477_setup(struct dsa_switch *ds)
+ 	if (ret)
  		return ret;
-@@ -1400,7 +1400,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
+ 
+-	ksz9477_config_cpu_port(ds);
++	dev->dev_ops->config_cpu_port(ds);
+ 
+ 	ksz_cfg(dev, REG_SW_MAC_CTRL_1, MULTICAST_STORM_DISABLE, true);
+ 
+@@ -1400,6 +1400,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
  	.mdb_del = ksz9477_mdb_del,
  	.change_mtu = ksz9477_change_mtu,
  	.max_mtu = ksz9477_max_mtu,
--	.shutdown = ksz9477_reset_switch,
-+	.reset = ksz9477_reset_switch,
++	.config_cpu_port = ksz9477_config_cpu_port,
+ 	.reset = ksz9477_reset_switch,
  	.init = ksz9477_switch_init,
  	.exit = ksz9477_switch_exit,
- };
-diff --git a/drivers/net/dsa/microchip/ksz9477_i2c.c b/drivers/net/dsa/microchip/ksz9477_i2c.c
-index faa3163c86b0..4ade64387f3a 100644
---- a/drivers/net/dsa/microchip/ksz9477_i2c.c
-+++ b/drivers/net/dsa/microchip/ksz9477_i2c.c
-@@ -71,8 +71,8 @@ static void ksz9477_i2c_shutdown(struct i2c_client *i2c)
- 	if (!dev)
- 		return;
- 
--	if (dev->dev_ops->shutdown)
--		dev->dev_ops->shutdown(dev);
-+	if (dev->dev_ops->reset)
-+		dev->dev_ops->reset(dev);
- 
- 	dsa_switch_shutdown(dev->ds);
- 
 diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index ebcfa688ea2c..44f60922be92 100644
+index 44f60922be92..d5b53b5b7b51 100644
 --- a/drivers/net/dsa/microchip/ksz_common.h
 +++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -204,7 +204,7 @@ struct ksz_dev_ops {
+@@ -204,6 +204,7 @@ struct ksz_dev_ops {
  	int (*max_mtu)(struct ksz_device *dev, int port);
  	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
  	void (*port_init_cnt)(struct ksz_device *dev, int port);
--	int (*shutdown)(struct ksz_device *dev);
-+	int (*reset)(struct ksz_device *dev);
++	void (*config_cpu_port)(struct dsa_switch *ds);
+ 	int (*reset)(struct ksz_device *dev);
  	int (*init)(struct ksz_device *dev);
  	void (*exit)(struct ksz_device *dev);
- };
 -- 
 2.36.1
 
