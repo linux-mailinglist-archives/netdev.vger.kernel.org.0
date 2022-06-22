@@ -2,203 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F210555382
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 20:48:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4F975553C5
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 20:54:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376717AbiFVSsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 14:48:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36476 "EHLO
+        id S1377720AbiFVSx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 14:53:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376899AbiFVSs3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 14:48:29 -0400
-Received: from mailrelay.tu-berlin.de (mailrelay.tu-berlin.de [130.149.7.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E562FE6C;
-        Wed, 22 Jun 2022 11:48:27 -0700 (PDT)
-Received: from SPMA-04.tubit.win.tu-berlin.de (localhost.localdomain [127.0.0.1])
-        by localhost (Email Security Appliance) with SMTP id 9FD91974E0F_2B363F9B;
-        Wed, 22 Jun 2022 18:48:25 +0000 (GMT)
-Received: from mail.tu-berlin.de (postcard.tu-berlin.de [141.23.12.142])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "exchange.tu-berlin.de", Issuer "DFN-Verein Global Issuing CA" (verified OK))
-        by SPMA-04.tubit.win.tu-berlin.de (Sophos Email Appliance) with ESMTPS id E4518977B76_2B363F8F;
-        Wed, 22 Jun 2022 18:48:24 +0000 (GMT)
-Received: from [192.168.178.14] (77.191.241.175) by ex-06.svc.tu-berlin.de
- (10.150.18.10) with Microsoft SMTP Server id 15.2.986.22; Wed, 22 Jun 2022
- 20:48:24 +0200
-Message-ID: <6b91a269d8201435c07df44dc267c98dbd552c75.camel@mailbox.tu-berlin.de>
-Subject: Re: [PATCH bpf-next v3 3/5] selftests/bpf: Test a BPF CC writing
- sk_pacing_*
-From:   =?ISO-8859-1?Q?J=F6rn-Thorben?= Hinz <jthinz@mailbox.tu-berlin.de>
-To:     Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>
-CC:     <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, <netdev@vger.kernel.org>
-Date:   Wed, 22 Jun 2022 20:48:22 +0200
-In-Reply-To: <20220620180808.4a3saky4pd7ge7zn@kafai-mbp>
-References: <20220614104452.3370148-1-jthinz@mailbox.tu-berlin.de>
-         <20220614104452.3370148-4-jthinz@mailbox.tu-berlin.de>
-         <20220617210425.xpeyxd4ahnudxnxb@kafai-mbp>
-         <629bc069dd807d7ac646f836e9dca28bbc1108e2.camel@mailbox.tu-berlin.de>
-         <e4390345-df3b-5ece-3464-83ff8c1992ce@fb.com>
-         <20220620180808.4a3saky4pd7ge7zn@kafai-mbp>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        with ESMTP id S1359064AbiFVSxq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 14:53:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1D3AF1705E
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 11:53:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1655924024;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=NUxlW/j88Epc56MqOmmJqiwjv7RfINKqkJmwCtsv0gI=;
+        b=QDaZ5P8DshskWRrjqcaX4KGnJwZLhHCMb8cX+ez7ORlSs1EV8n0GyrHOviAqif6wjOvFe7
+        Whr69xdEjgnFq45fe/oF0YuEzE0gPIs0crBwR8B0TNOznhPIVXESEwRq+VWIn2NFd2NCsj
+        1AvooyAC46vQgUjiP1XDDEVb0fqXJbA=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-648-9V1khCgpPHO7eGUryuev3w-1; Wed, 22 Jun 2022 14:53:43 -0400
+X-MC-Unique: 9V1khCgpPHO7eGUryuev3w-1
+Received: by mail-qk1-f198.google.com with SMTP id k13-20020a05620a414d00b006a6e4dc1dfcso20871536qko.19
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 11:53:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=NUxlW/j88Epc56MqOmmJqiwjv7RfINKqkJmwCtsv0gI=;
+        b=CW7JS7KT88/hCsmgWNEujof9KJ7vlcc1NlFuMcqoykxqs1HAk+wa/kVtsCDKfSfdPl
+         OhWvmhwwehcnbrOoeY61nxrqirQYuKnHP6X8cVJOi/jxqcGYN1Pjyb+QgyyWQ17bJA7n
+         FBvPmH3HbFcySKD42IerpPHkxaQrY9aICNCxF0GdA6xCBVFwKMrMHZ9hASYmRBHixJ/C
+         +AUlZa1HSSdkHfFX7q3J8WKo2kOQCeLZyB4QhbGJ1icR0qjd+3ovZS/ui/OZ0iZgTa/K
+         mXU9yU4RZX7LZT7eXV8F9DUf4/esXC8KFKT3H37ZNXcGlyC7BsZGyM/sI6fw9EPf/elg
+         sPzQ==
+X-Gm-Message-State: AJIora87L/1wSmpjDaqNgkW5RPkyVTfqyr7txq1hjw+3GryufIJw7Iai
+        DeAsRhTFspj/w3o/7RDO95lTDBUwL3xsiqHu3Hk+DO8q3edABx4XX7SnRWkgYxcxsPicM70CehO
+        sguI+6iGIstJ8fIUyfh0y0BfJmRH8OpBX
+X-Received: by 2002:ac8:598f:0:b0:305:8f8:2069 with SMTP id e15-20020ac8598f000000b0030508f82069mr4463229qte.370.1655924022280;
+        Wed, 22 Jun 2022 11:53:42 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vito0RGMmoO0PY0tCMLhEJ3EtZsz9CJl1GiY/Z98Qu2Yy5UsxoSjB8deyHpN0/O8c0wv8vm/DAfiRMBO7J3Y4=
+X-Received: by 2002:ac8:598f:0:b0:305:8f8:2069 with SMTP id
+ e15-20020ac8598f000000b0030508f82069mr4463221qte.370.1655924022071; Wed, 22
+ Jun 2022 11:53:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SASI-RCODE: 200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=campus.tu-berlin.de; h=message-id:subject:from:to:cc:date:in-reply-to:references:content-type:mime-version:content-transfer-encoding; s=dkim-tub; bh=gB7WqdEijdKTTGN3M9ydRI43QPzSrKqSQCWtnUkM0Y8=; b=MYsff7R0Yzj7SCNwmLWLYwuLRy3zYQShxEEhxFnvuhUhXlk+RwhTNj5oqf6U6IxS1hWYfWzbWeLoxj8m37LnJaXlv29exPUTjd37XClLie/6eNtEh6H1VdBxYbx22mEeQIhgb66MUVqeEtlVLjohVRQgS4o0ABQRaJDU1DdELDw=
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220622151407.51232-1-sgarzare@redhat.com>
+In-Reply-To: <20220622151407.51232-1-sgarzare@redhat.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Wed, 22 Jun 2022 20:53:06 +0200
+Message-ID: <CAJaqyWf6BKK1=KBwHufVY-eLt0JFz9V4-kK-pPLU0tuDc7uGgQ@mail.gmail.com>
+Subject: Re: [PATCH] vhost-vdpa: call vhost_vdpa_cleanup during the release
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Jason Wang <jasowang@redhat.com>,
+        Gautam Dawar <gautam.dawar@xilinx.com>,
+        kvm list <kvm@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-06-20 at 11:08 -0700, Martin KaFai Lau wrote:
-> On Mon, Jun 20, 2022 at 09:06:13AM -0700, Yonghong Song wrote:
-> [ ... ]
-> > > > > a/tools/testing/selftests/bpf/progs/tcp_ca_write_sk_pacing.c
-> > > > > b/tools/testing/selftests/bpf/progs/tcp_ca_write_sk_pacing.c
-> > > > > new file mode 100644
-> > > > > index 000000000000..43447704cf0e
-> > > > > --- /dev/null
-> > > > > +++
-> > > > > b/tools/testing/selftests/bpf/progs/tcp_ca_write_sk_pacing.c
-> > > > > @@ -0,0 +1,60 @@
-> > > > > +// SPDX-License-Identifier: GPL-2.0
-> > > > > +
-> > > > > +#include "vmlinux.h"
-> > > > > +
-> > > > > +#include <bpf/bpf_helpers.h>
-> > > > > +#include <bpf/bpf_tracing.h>
-> > > > > +
-> > > > > +char _license[] SEC("license") = "GPL";
-> > > > > +
-> > > > > +#define USEC_PER_SEC 1000000UL
-> > > > > +
-> > > > > +#define min(a, b) ((a) < (b) ? (a) : (b))
-> > > > > +
-> > > > > +static inline struct tcp_sock *tcp_sk(const struct sock *sk)
-> > > > > +{
-> > > > This helper is already available in bpf_tcp_helpers.h.
-> > > > Is there a reason not to use that one and redefine
-> > > > it in both patch 3 and 4?  The mss_cache and srtt_us can be
-> > > > added
-> > > > to bpf_tcp_helpers.h.  It will need another effort to move
-> > > > all selftest's bpf-cc to vmlinux.h.
-> > > I fully agree it’s not elegant to redefine tcp_sk() twice more.
-> > > 
-> > > It was between either using bpf_tcp_helpers.h and adding and
-> > > maintaining additional struct members there. Or using the (as I
-> > > understood it) more “modern” approach with vmlinux.h and
-> > > redefining the
-> > > trivial tcp_sk(). I chose the later. Didn’t see a reason not to
-> > > slowly
-> > > introduce vmlinux.h into the CA tests.
-> > > 
-> > > I had the same dilemma for the algorithm I’m implementing: Reuse
-> > > bpf_tcp_helpers.h from the kernel tree and extend it. Or use
-> > > vmlinux.h
-> > > and copy only some of the (mostly trivial) helper functions. Also
-> > > chose
-> > > the later here.
-> > > 
-> > > While doing the above, I also considered extracting the type
-> > > declarations from bpf_tcp_helpers.h into an, e.g.,
-> > > bpf_tcp_types_helper.h, keeping only the functions in
-> > > bpf_tcp_helpers.h. bpf_tcp_helpers.h could have been a base
-> > > helper for
-> > > any BPF CA implementation then and used with either vmlinux.h or
-> > > the
-> > > “old-school” includes. Similar to the way bpf_helpers.h is used.
-> > > But at
-> > > that point, a bpf_tcp_types_helper.h could have probably just
-> > > been
-> > > dropped for good and in favor of vmlinux.h. So I didn’t continue
-> > > with
-> > > that.
-> I think a trimmed down bpf_tcp_helpers.h + vmlinux.h is good. 
-> Basically
-> what Yonghong has suggested.  Not sure what you meant by 'old-school'
-> includes.
-That was badly worded by me. I was referring to linux/types.h and co.
+On Wed, Jun 22, 2022 at 5:14 PM Stefano Garzarella <sgarzare@redhat.com> wr=
+ote:
+>
+> Before commit 3d5698793897 ("vhost-vdpa: introduce asid based IOTLB")
+> we call vhost_vdpa_iotlb_free() during the release to clean all regions
+> mapped in the iotlb.
+>
+> That commit removed vhost_vdpa_iotlb_free() and added vhost_vdpa_cleanup(=
+)
+> to do some cleanup, including deleting all mappings, but we forgot to cal=
+l
+> it in vhost_vdpa_release().
+>
+> This causes that if an application does not remove all mappings explicitl=
+y
+> (or it crashes), the mappings remain in the iotlb and subsequent
+> applications may fail if they map the same addresses.
+>
 
-> I don't think it needs a new bpf_tcp_types_helper.h also. 
-I thought that might be helpful as a first step towards using
-vmlinux.h, without fully migrating all the users of bpf_tcp_helpers.h.
-But that’s probably unnecessary.
+I tested this behavior even by sending SIGKILL to qemu. The failed map
+is reproducible easily before applying this patch and applying it
+fixes the issue properly.
 
-> 
-> I think it makes sense to remove everything from bpf_tcp_helpers.h
-> that is already available from vmlinux.h.  bpf_tcp_helpers.h
-> should only have some macros and helpers left.  Then move
-> bpf_dctcp.c, bpf_cubic.c, and a few others under progs/ to
-> use vmlinux.h.  I haven't tried but it should be doable
-> from a quick look at bpf_cubic.c and bpf_dctcp.c.
-> 
-> I agree it is better to directly use the struct tcp_sock,
-> inet_connection_sock,
-> inet_sock... from the vmlinux.h.  However, bpf_tcp_helpers.h does not
-> only have the struct and enum defined in the kernel.  It has some
-> helpers and macros (e.g. TCP_CONG_NEEDS_ECN, TCP_ECN_*) that are
-> missing
-> from vmlinux.h.
-It’s unfortunate that especially those many, tiny non-macro helpers
-like tcp_sk() and e.g. tcp_stamp_us_delta() still have to be redefined.
-Could it make sense to provide those, in the same way tcp_slow_start(),
-tcp_cong_avoid_ai(), and tcp_reno_*() are “exported” as kfuncs by
-bpf_tcp_ca.c (if I read that correctly)? Even though the list of these
-functions could grow quickly.
+> Calling vhost_vdpa_cleanup() also fixes a memory leak since we are not
+> freeing `v->vdev.vqs` during the release from the same commit.
+>
+> Since vhost_vdpa_cleanup() calls vhost_dev_cleanup() we can remove its
+> call from vhost_vdpa_release().
+>
 
+Tested-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
 
-> These are actually used by the realistic bpf-tcp-cc like
-> bpf_cubic.c and bpf_dctcp.c.
-> 
-> The simple test in this patch is not a fully implemented bpf-tcp-cc
-> and
-> it only needs to duplicate the tcp_sk() helper which looks ok at the
-> beginning.
-> Later, this simple test will be copied-and-pasted to create another
-> test.
-> These new tests may then need to duplicate more helpers and macros.
-> It was what I meant it needs separate patches to migrate all bpf-tcp-
-> cc
-> tests to vmlinux.h.  Otherwise, when they are migrated to vmlinux.h
-> later,
-> we have another pattern of tests that can be cleared up to remove
-> these helpers/macros duplication.
-I agree with you there and also don’t favor copying stuff around. Only
-did it here, since something had to be copied: either a field into one
-of the structs in bpf_tcp_helpers or tcp_sk.
-
-> 
-> I don't mind to keep a duplicate tcp_sk() in this set for now
-> if you can do a follow up to move all bpf-tcp-cc tests
-> to this path (vmlinux.h + a trimmed down bpf_tcp_helpers.h) and then
-> remove the tcp_sk() duplication here.  This will be very useful.
-Took a look at this over the last few days, see [1]. Happy about
-feedback.
-
-[1]
-https://lore.kernel.org/bpf/20220622181015.892445-1-jthinz@mailbox.tu-berlin.de/
-
-> 
-> > > 
-> > > Do you insist to use bpf_tcp_helpers.h instead of vmlinux.h? Or
-> > > could
-> > > the described split into two headers make sense after all?
-> > 
-> > I prefer to use vmlinux.h. Eventually we would like to use
-> > vmlinux.h
-> > for progs which include bpf_tcp_healpers.h. Basically remove the
-> > struct
-> > definitions in bpf_tcp_helpers.h and replacing "bpf.h, stddef.h,
-> > tcp.h ..."
-> > with vmlinux.h. We may not be there yet, but that is the goal.
-> > 
-> > > 
-> > > (Will wait for your reply here before sending a v4.)
-
+> Fixes: 3d5698793897 ("vhost-vdpa: introduce asid based IOTLB")
+> Cc: gautam.dawar@xilinx.com
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>  drivers/vhost/vdpa.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 5ad2596c6e8a..23dcbfdfa13b 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -1209,7 +1209,7 @@ static int vhost_vdpa_release(struct inode *inode, =
+struct file *filep)
+>         vhost_dev_stop(&v->vdev);
+>         vhost_vdpa_free_domain(v);
+>         vhost_vdpa_config_put(v);
+> -       vhost_dev_cleanup(&v->vdev);
+> +       vhost_vdpa_cleanup(v);
+>         mutex_unlock(&d->mutex);
+>
+>         atomic_dec(&v->opened);
+> --
+> 2.36.1
+>
 
