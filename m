@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C841E553F56
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 02:07:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45188553F57
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 02:07:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232140AbiFVAHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 21 Jun 2022 20:07:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57638 "EHLO
+        id S232282AbiFVAHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 21 Jun 2022 20:07:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231569AbiFVAHE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 20:07:04 -0400
+        with ESMTP id S231569AbiFVAHG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 21 Jun 2022 20:07:06 -0400
 Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A977F1580D
-        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 17:07:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C4D41580D
+        for <netdev@vger.kernel.org>; Tue, 21 Jun 2022 17:07:05 -0700 (PDT)
 Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id BF6DE500592;
-        Wed, 22 Jun 2022 03:05:31 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru BF6DE500592
+        by novek.ru (Postfix) with ESMTPSA id 560A3500593;
+        Wed, 22 Jun 2022 03:05:33 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 560A3500593
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1655856333; bh=4XueigKtNuJ5DSD1ZIsWspnQV5J7sNM/P00fLF/koNw=;
+        t=1655856334; bh=ufbyJZN3WKSfAMdNgxGoEPKbZEhqEuE5NyNDOZFsKCc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zzNTVJf/UOLSlPIyk9KDJecnutqyzhUPztAyNjXJbDOIwWOalH7kHtj2VkEV5Tv9v
-         wZBMRCmKxtCnaxD/4bGOcbnA5svM2YYMk5qPsoDSL0JXiBdg2WOE6O+J5JQbbU133h
-         6ZFFwmnqA6jG/75L3wZcRj3UjSEfIpt4GdzmWX/k=
+        b=QjrEeAyBPHZPDBJtIaODsoOMoqIJdCEMGVxJ+e76jAvaNzTOQEqUhGw8Cz0/CVbRc
+         cJgYRR9xKwD8TKp0JhO5Sj6MUa3FgC9+54Lx5VxKF26mXKlbhca1suOsl8m+Bn9T/l
+         U2XDUpVjWUCbT6ldCE5P4TqrZjG80ckIUhp57UeQ=
 From:   Vadim Fedorenko <vfedorenko@novek.ru>
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
         Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
         netdev@vger.kernel.org, linux-arm-kernel@vger.kernel.org
-Subject: [RFC PATCH 2/3] dpll: add netlink events
-Date:   Wed, 22 Jun 2022 03:06:50 +0300
-Message-Id: <20220622000651.27299-3-vfedorenko@novek.ru>
+Subject: [RFC PATCH 3/3] ptp_ocp: implement DPLL ops
+Date:   Wed, 22 Jun 2022 03:06:51 +0300
+Message-Id: <20220622000651.27299-4-vfedorenko@novek.ru>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220622000651.27299-1-vfedorenko@novek.ru>
 References: <20220622000651.27299-1-vfedorenko@novek.ru>
@@ -50,226 +50,143 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vadim Fedorenko <vadfed@fb.com>
 
-Add netlink interface to enable notification of users about
-events in DPLL framework. Part of this interface should be
-used by drivers directly, i.e. lock status changes.
+Implement DPLL operations in ptp_ocp driver.
 
 Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
 ---
- drivers/dpll/dpll_core.c    |   2 +
- drivers/dpll/dpll_netlink.c | 147 ++++++++++++++++++++++++++++++++++++
- drivers/dpll/dpll_netlink.h |   7 ++
- 3 files changed, 156 insertions(+)
+ drivers/ptp/Kconfig   |  1 +
+ drivers/ptp/ptp_ocp.c | 85 +++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 86 insertions(+)
 
-diff --git a/drivers/dpll/dpll_core.c b/drivers/dpll/dpll_core.c
-index a6d6ea828073..075dfdfa370e 100644
---- a/drivers/dpll/dpll_core.c
-+++ b/drivers/dpll/dpll_core.c
-@@ -94,6 +94,8 @@ struct dpll_device *dpll_device_alloc(struct dpll_device_ops *ops, int sources_c
- 	mutex_unlock(&dpll_device_xa_lock);
- 	dpll->priv = priv;
+diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
+index 458218f88c5e..f74846ebc177 100644
+--- a/drivers/ptp/Kconfig
++++ b/drivers/ptp/Kconfig
+@@ -176,6 +176,7 @@ config PTP_1588_CLOCK_OCP
+ 	depends on !S390
+ 	depends on COMMON_CLK
+ 	select NET_DEVLINK
++	select DPLL
+ 	help
+ 	  This driver adds support for an OpenCompute time card.
  
-+	dpll_notify_device_create(dpll->id, dev_name(&dpll->dev));
-+
- 	return dpll;
+diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+index e59ea2173aac..b7bdb210514d 100644
+--- a/drivers/ptp/ptp_ocp.c
++++ b/drivers/ptp/ptp_ocp.c
+@@ -21,6 +21,7 @@
+ #include <linux/mtd/mtd.h>
+ #include <linux/nvmem-consumer.h>
+ #include <linux/crc16.h>
++#include <uapi/linux/dpll.h>
  
- error:
-diff --git a/drivers/dpll/dpll_netlink.c b/drivers/dpll/dpll_netlink.c
-index 85a4b0c8c2f2..e11727028103 100644
---- a/drivers/dpll/dpll_netlink.c
-+++ b/drivers/dpll/dpll_netlink.c
-@@ -48,6 +48,8 @@ struct param {
- 	int dpll_source_type;
- 	int dpll_output_id;
- 	int dpll_output_type;
-+	int dpll_status;
-+	const char *dpll_name;
+ #define PCI_VENDOR_ID_FACEBOOK			0x1d9b
+ #define PCI_DEVICE_ID_FACEBOOK_TIMECARD		0x0400
+@@ -336,6 +337,7 @@ struct ptp_ocp {
+ 	struct ptp_ocp_signal	signal[4];
+ 	struct ptp_ocp_sma_connector sma[4];
+ 	const struct ocp_sma_op *sma_op;
++	struct dpll_device *dpll;
  };
  
- struct dpll_dump_ctx {
-@@ -222,6 +224,8 @@ static int dpll_genl_cmd_set_source(struct param *p)
- 	ret = dpll->ops->set_source_type(dpll, src_id, type);
- 	mutex_unlock(&dpll->lock);
- 
-+	dpll_notify_source_change(id, src_id, type);
-+
- 	return ret;
+ #define OCP_REQ_TIMESTAMP	BIT(0)
+@@ -3713,6 +3715,81 @@ ptp_ocp_detach(struct ptp_ocp *bp)
+ 	device_unregister(&bp->dev);
  }
  
-@@ -245,6 +249,8 @@ static int dpll_genl_cmd_set_output(struct param *p)
- 	ret = dpll->ops->set_source_type(dpll, out_id, type);
- 	mutex_unlock(&dpll->lock);
- 
-+	dpll_notify_source_change(id, out_id, type);
-+
- 	return ret;
- }
- 
-@@ -420,6 +426,147 @@ static struct genl_family dpll_gnl_family __ro_after_init = {
- 	.n_mcgrps	= ARRAY_SIZE(dpll_genl_mcgrps),
- };
- 
-+static int dpll_event_device_create(struct param *p)
++static int ptp_ocp_dpll_get_status(struct dpll_device *dpll)
 +{
-+	if (nla_put_u32(p->msg, DPLLA_DEVICE_ID, p->dpll_id) ||
-+	    nla_put_string(p->msg, DPLLA_DEVICE_NAME, p->dpll_name))
-+		return -EMSGSIZE;
++	struct ptp_ocp *bp = (struct ptp_ocp *)dpll->priv;
++	int sync;
 +
-+	return 0;
++	sync = ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC;
++	return sync;
 +}
 +
-+static int dpll_event_device_delete(struct param *p)
++static int ptp_ocp_dpll_get_lock_status(struct dpll_device *dpll)
 +{
-+	if (nla_put_u32(p->msg, DPLLA_DEVICE_ID, p->dpll_id))
-+		return -EMSGSIZE;
++	struct ptp_ocp *bp = (struct ptp_ocp *)dpll->priv;
++	int sync;
 +
-+	return 0;
++	sync = ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC;
++	return sync;
 +}
 +
-+static int dpll_event_status(struct param *p)
++static int ptp_ocp_dpll_get_source_type(struct dpll_device *dpll, int sma)
 +{
-+	if (nla_put_u32(p->msg, DPLLA_DEVICE_ID, p->dpll_id) ||
-+		nla_put_u32(p->msg, DPLLA_LOCK_STATUS, p->dpll_status))
-+		return -EMSGSIZE;
++	struct ptp_ocp *bp = (struct ptp_ocp *)dpll->priv;
++	int ret;
 +
-+	return 0;
-+}
++	if (bp->sma[sma].mode != SMA_MODE_IN)
++		return -1;
 +
-+static int dpll_event_source_change(struct param *p)
-+{
-+	if (nla_put_u32(p->msg, DPLLA_DEVICE_ID, p->dpll_id) ||
-+	    nla_put_u32(p->msg, DPLLA_SOURCE_ID, p->dpll_source_id) ||
-+		nla_put_u32(p->msg, DPLLA_SOURCE_TYPE, p->dpll_source_type))
-+		return -EMSGSIZE;
-+
-+	return 0;
-+}
-+
-+static int dpll_event_output_change(struct param *p)
-+{
-+	if (nla_put_u32(p->msg, DPLLA_DEVICE_ID, p->dpll_id) ||
-+	    nla_put_u32(p->msg, DPLLA_OUTPUT_ID, p->dpll_output_id) ||
-+		nla_put_u32(p->msg, DPLLA_OUTPUT_TYPE, p->dpll_output_type))
-+		return -EMSGSIZE;
-+
-+	return 0;
-+}
-+
-+int dpll_event_status_lock(struct param *p)
-+	__alias("dpll_event_status");
-+
-+int dpll_event_status_unlock(struct param *p)
-+	__alias("dpll_event_status");
-+
-+static cb_t event_cb[] = {
-+	[DPLL_EVENT_DEVICE_CREATE]	= dpll_event_device_create,
-+	[DPLL_EVENT_DEVICE_DELETE]	= dpll_event_device_delete,
-+	[DPLL_EVENT_STATUS_LOCKED]	= dpll_event_status_lock,
-+	[DPLL_EVENT_STATUS_UNLOCKED]	= dpll_event_status_unlock,
-+	[DPLL_EVENT_SOURCE_CHANGE]	= dpll_event_source_change,
-+	[DPLL_EVENT_OUTPUT_CHANGE]	= dpll_event_output_change,
-+};
-+/*
-+ * Generic netlink DPLL event encoding
-+ */
-+static int dpll_send_event(enum dpll_genl_event event,
-+				   struct param *p)
-+{
-+	struct sk_buff *msg;
-+	int ret = -EMSGSIZE;
-+	void *hdr;
-+
-+	msg = genlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
-+	if (!msg)
-+		return -ENOMEM;
-+	p->msg = msg;
-+
-+	hdr = genlmsg_put(msg, 0, 0, &dpll_gnl_family, 0, event);
-+	if (!hdr)
-+		goto out_free_msg;
-+
-+	ret = event_cb[event](p);
-+	if (ret)
-+		goto out_cancel_msg;
-+
-+	genlmsg_end(msg, hdr);
-+
-+	genlmsg_multicast(&dpll_gnl_family, msg, 0, 1, GFP_KERNEL);
-+
-+	return 0;
-+
-+out_cancel_msg:
-+	genlmsg_cancel(msg, hdr);
-+out_free_msg:
-+	nlmsg_free(msg);
++	switch (ptp_ocp_sma_get(bp, sma)) {
++	case 0:
++		ret = DPLL_TYPE_EXT_10MHZ;
++		break;
++	case 1:
++	case 2:
++		ret = DPLL_TYPE_EXT_1PPS;
++		break;
++	default:
++		ret = DPLL_TYPE_INT_OSCILLATOR;
++	}
 +
 +	return ret;
 +}
 +
-+int dpll_notify_device_create(int dpll_id, const char *name)
-+{
-+	struct param p = { .dpll_id = dpll_id, .dpll_name = name };
 +
-+	return dpll_send_event(DPLL_EVENT_DEVICE_CREATE, &p);
++static int ptp_ocp_dpll_get_output_type(struct dpll_device *dpll, int sma)
++{
++	struct ptp_ocp *bp = (struct ptp_ocp *)dpll->priv;
++	int ret;
++
++	if (bp->sma[sma].mode != SMA_MODE_IN)
++		return -1;
++
++	switch (ptp_ocp_sma_get(bp, sma)) {
++	case 0:
++		ret = DPLL_TYPE_EXT_10MHZ;
++		break;
++	case 1:
++	case 2:
++		ret = DPLL_TYPE_INT_OSCILLATOR;
++	case 4:
++	case 8:
++		ret = DPLL_TYPE_GNSS;
++		break;
++	default:
++		ret = DPLL_TYPE_INT_OSCILLATOR;
++	}
++
++	return ret;
 +}
 +
-+int dpll_notify_device_delete(int dpll_id)
-+{
-+	struct param p = { .dpll_id = dpll_id };
++static struct dpll_device_ops ptp_ocp_dpll_ops {
++	.get_status			= ptp_ocp_dpll_get_status;
++	.get_lock_status	= ptp_ocp_dpll_get_lock_status;
++	.get_source_type	= ptp_ocp_dpll_get_source_type;
++	.get_output_type	= ptp_ocp_dpll_get_output_type;
++};
 +
-+	return dpll_send_event(DPLL_EVENT_DEVICE_DELETE, &p);
-+}
-+
-+int dpll_notify_status_locked(int dpll_id)
-+{
-+	struct param p = { .dpll_id = dpll_id, .dpll_status = 1 };
-+
-+	return dpll_send_event(DPLL_EVENT_STATUS_LOCKED, &p);
-+}
-+
-+int dpll_notify_status_unlocked(int dpll_id)
-+{
-+	struct param p = { .dpll_id = dpll_id, .dpll_status = 0 };
-+
-+	return dpll_send_event(DPLL_EVENT_STATUS_UNLOCKED, &p);
-+}
-+
-+int dpll_notify_source_change(int dpll_id, int source_id, int source_type)
-+{
-+	struct param p =  { .dpll_id = dpll_id, .dpll_source_id = source_id,
-+						.dpll_source_type = source_type };
-+
-+	return dpll_send_event(DPLL_EVENT_SOURCE_CHANGE, &p);
-+}
-+
-+int dpll_notify_output_change(int dpll_id, int output_id, int output_type)
-+{
-+	struct param p =  { .dpll_id = dpll_id, .dpll_output_id = output_id,
-+						.dpll_output_type = output_type };
-+
-+	return dpll_send_event(DPLL_EVENT_OUTPUT_CHANGE, &p);
-+}
-+
- int __init dpll_netlink_init(void)
+ static int
+ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
  {
- 	return genl_register_family(&dpll_gnl_family);
-diff --git a/drivers/dpll/dpll_netlink.h b/drivers/dpll/dpll_netlink.h
-index e2d100f59dd6..0dc81320f982 100644
---- a/drivers/dpll/dpll_netlink.h
-+++ b/drivers/dpll/dpll_netlink.h
-@@ -3,5 +3,12 @@
-  *  Copyright (c) 2021 Meta Platforms, Inc. and affiliates
-  */
+@@ -3768,6 +3845,14 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
  
-+int dpll_notify_device_create(int dpll_id, const char *name);
-+int dpll_notify_device_delete(int dpll_id);
-+int dpll_notify_status_locked(int dpll_id);
-+int dpll_notify_status_unlocked(int dpll_id);
-+int dpll_notify_source_change(int dpll_id, int source_id, int source_type);
-+int dpll_notify_output_change(int dpll_id, int output_id, int output_type);
+ 	ptp_ocp_info(bp);
+ 	devlink_register(devlink);
 +
- int __init dpll_netlink_init(void);
- void dpll_netlink_finish(void);
++	bp->dpll = dpll_device_alloc(&dpll_ops, ARRAY_SIZE(bp->sma), ARRAY_SIZE(bp->sma));
++	if (!bp->dpll) {
++		dev_err(&pdev->dev, "dpll_device_alloc failed\n");
++		return 0;
++	}
++	dpll_device_register(bp->dpll);
++
+ 	return 0;
+ 
+ out:
 -- 
 2.27.0
 
