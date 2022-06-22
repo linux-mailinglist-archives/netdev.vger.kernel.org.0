@@ -2,55 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6913E555121
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 18:16:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1A41555131
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 18:21:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376435AbiFVQQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 12:16:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53000 "EHLO
+        id S1376473AbiFVQVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 12:21:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355693AbiFVQQs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 12:16:48 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4641E39685;
-        Wed, 22 Jun 2022 09:16:47 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id o16so24129057wra.4;
-        Wed, 22 Jun 2022 09:16:47 -0700 (PDT)
+        with ESMTP id S237052AbiFVQVa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 12:21:30 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BEEB37A9D
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 09:21:29 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id z19so7795790edb.11
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 09:21:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=t8fTjKPiEXxcK49dMKmR/PvQlfLitTyw5aVyNr6LTuw=;
-        b=h73cmD/Od55jah8HUzrGD1NefEtgw1Ii7PExR9LdRJURRyiBpTReiYwfEHl+/04ZRz
-         ThgHar8ri3QI0BT9zFcOrSe94IWs2xbMBkkGhLhCcWoCZdIucEYYugA1+rKpkjfvdTY/
-         NqiNg3R28HIqQBXGPLP8/H1EYQ5MH8hWm3XSHcsSAxluzlgjoXLnFrfuyer0dIlAx3Ln
-         grvr1XYIGWABrpxPHY3EY2DA4dvNMFJShKIYFovCSTRpeo7T34/hdOe0/luZhWEeW5Q8
-         g9LGZCmqam/HJLFFe/s273SheTmN8G+Ak1f1FCnUqUeaH1n1s89BF2AEw0mfaT3KvY3k
-         m0eg==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=La2lbdp3UKjWCqW4lfnhUIczS1kJzOzEyt2PeIAhoKo=;
+        b=FfAyOh/DVgRc9cG+OdaMU7PGb120Oo+8Kt5ymO0wHtxBrqKW6X7uECKSgxFEsKK7FZ
+         ++TO/Q/qoaRDQ3KpT2ZrF2Di7QOCKeDTU2gFD7Id15IeekIIww1BKJvriU3KWot8Qpd6
+         m/1qCo3kwFiKykHlUgjb8oqTit3FZn4QWp6Bs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=t8fTjKPiEXxcK49dMKmR/PvQlfLitTyw5aVyNr6LTuw=;
-        b=cY9vP0VMDSicWBBJn8oIPb7wZo4PvsJ2FwVxnRSPtRpNeOB6/nnnPXFu1d7Due6nIy
-         VUHWCQPj5vVStcPf7awM+ikhSzEkOKaHw8NY5n+fIuVNyO5iJagv138RH1FMBixMeVdJ
-         DNrbadoCxxepLe6ka5T4JpHhYGoorQM98QJ6l9Jpli+RwCDhfNm2yIOcSOXN4iHforGp
-         sGfkDWZmSAPiGsf9e46lXLfq35rEr47Xsy88sWcIVQ0tEnoE+C0MRUXfMA8RNjeZT5Dy
-         wOWbv6SJfpjgwEjSZWkB37juOEUyTuK7/ub49O1LuLu3bjjM5SP0jV+yubsHB7OauWm3
-         /I+Q==
-X-Gm-Message-State: AJIora/Fy34oLv4c6hM8MNc17QYKO5JNI11Dro5W6FcRGPgNmEou1udL
-        25IZY4xPWk6BS69MijqtgeBb7N+pYxc=
-X-Google-Smtp-Source: AGRyM1vizB7tgtcwmyIXHwnLNTGWhyYwtCSDtHPFvceoqZaoyGZ7qYyjxj50a8Z4+k/Sg+sFFs0ifw==
-X-Received: by 2002:a05:6000:a13:b0:21a:3d94:c7aa with SMTP id co19-20020a0560000a1300b0021a3d94c7aamr4120237wrb.12.1655914605832;
-        Wed, 22 Jun 2022 09:16:45 -0700 (PDT)
-Received: from debian (host-78-150-47-22.as13285.net. [78.150.47.22])
-        by smtp.gmail.com with ESMTPSA id r64-20020a1c4443000000b003942a244f39sm31775253wma.18.2022.06.22.09.16.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Jun 2022 09:16:45 -0700 (PDT)
-Date:   Wed, 22 Jun 2022 17:16:43 +0100
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=La2lbdp3UKjWCqW4lfnhUIczS1kJzOzEyt2PeIAhoKo=;
+        b=EkcVIA+6CGnuBdUKvgud0Nu5ENYTivSS2KeSyOrcDQWSVRJs0fp8DOqxbF/QduCwD5
+         NuIG9OR5J3ZfE2a4gAbbpj1QbfXItxh4tpDnMHD3I0yTJQ5DyFLAUcIeHpQZGouPGO4v
+         /m/TUT0Y3uiBLDzOXzsQ91LxJoZOBg5M+vyl6nULjfWFZZmsYCvfMhOcELUL4uVYEKlY
+         TdIoJ6eddH7MsysrLCljQFa1ZNDzCY7mxtBylLaIYGg5hJ97J2COBH96wEMCHPzaBXAw
+         PyRbgATaHGI/BJ3cT87/QISGZdl2UW9WzDjAT8Y3qrpB6JcSyDKkkyKOYZDjGwFo3tmj
+         9+Tw==
+X-Gm-Message-State: AJIora/w3pZNqcakhg7Ncg5Vfm4IPONCLicD0MLD6gSBuQWb6bCT4ZdD
+        mx1/tlnWOSm4pOXQXSW/0jw9/0QoiEOInnSp
+X-Google-Smtp-Source: AGRyM1vXCBMhq4RSATXpM4bi8kX7JA34WNffpUJ1Q0zvpjhH6S7PbrsFoHCGgVBd9ASQS9FNtMoO7A==
+X-Received: by 2002:aa7:c846:0:b0:431:6c7b:26af with SMTP id g6-20020aa7c846000000b004316c7b26afmr4953350edt.123.1655914887547;
+        Wed, 22 Jun 2022 09:21:27 -0700 (PDT)
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
+        by smtp.gmail.com with ESMTPSA id qw21-20020a1709066a1500b0070c4abe4706sm2166174ejc.158.2022.06.22.09.21.26
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 09:21:26 -0700 (PDT)
+Received: by mail-wr1-f54.google.com with SMTP id r20so3723578wra.1
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 09:21:26 -0700 (PDT)
+X-Received: by 2002:a5d:6da3:0:b0:219:bcdd:97cd with SMTP id
+ u3-20020a5d6da3000000b00219bcdd97cdmr4126190wrs.274.1655914886112; Wed, 22
+ Jun 2022 09:21:26 -0700 (PDT)
+MIME-Version: 1.0
+References: <YrLtpixBqWDmZT/V@debian> <CAHk-=wiN1ujyVTgyt1GuZiyWAPfpLwwg-FY1V-J56saMyiA1Lg@mail.gmail.com>
+ <YrMu5bdhkPzkxv/X@dev-arch.thelio-3990X>
+In-Reply-To: <YrMu5bdhkPzkxv/X@dev-arch.thelio-3990X>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 22 Jun 2022 11:21:09 -0500
+X-Gmail-Original-Message-ID: <CAHk-=wjTS9OJzggD8=tqtj0DoRCKhjjhpYWoB=bPQAv3QMa+eA@mail.gmail.com>
+Message-ID: <CAHk-=wjTS9OJzggD8=tqtj0DoRCKhjjhpYWoB=bPQAv3QMa+eA@mail.gmail.com>
+Subject: Re: mainline build failure due to 281d0c962752 ("fortify: Add Clang support")
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
         Kees Cook <keescook@chromium.org>,
         Nick Desaulniers <ndesaulniers@google.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -58,67 +68,72 @@ Cc:     Nathan Chancellor <nathan@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Netdev <netdev@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: mainline build failure due to 281d0c962752 ("fortify: Add Clang
- support")
-Message-ID: <YrNAazYbqA1sOa7D@debian>
-References: <YrLtpixBqWDmZT/V@debian>
- <CAHk-=wiN1ujyVTgyt1GuZiyWAPfpLwwg-FY1V-J56saMyiA1Lg@mail.gmail.com>
- <YrMwXAs9apFRdkVo@debian>
- <CAHk-=wjmREcirYi4k_CBT+2U8X5VOAjQn0tVD28OdcKJKpA0zg@mail.gmail.com>
- <YrM8kC5zXzZgL/ca@debian>
- <CAHk-=wjdjrx_bORk3Th+rk66Rx-U2Zgoz1AOTE_UwVtCpD3N1A@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wjdjrx_bORk3Th+rk66Rx-U2Zgoz1AOTE_UwVtCpD3N1A@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_RED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 11:07:40AM -0500, Linus Torvalds wrote:
-> On Wed, Jun 22, 2022 at 11:00 AM Sudip Mukherjee
-> <sudipm.mukherjee@gmail.com> wrote:
-> >
-> > imho, there is no check for 'i' and it can become more than MAX_FW_TYPE_NUM and
-> > in that case it will overwrite.
-> 
-> No. That's already checked a few lines before, in the
-> 
->         if (fw_image->fw_info.fw_section_cnt > MAX_FW_TYPE_NUM) {
->                 .. error out
-> 
-> path. And fw_section_cnt as a value is an unsigned bitfield of 16
-> bits, so there's no chance of some kind of integer signedness
-> confusion.
+On Wed, Jun 22, 2022 at 10:02 AM Nathan Chancellor <nathan@kernel.org> wrote:
+>
+> Right, we are working on a statically linked and optimized build of LLVM
+> that people can use similar to the GCC builds provided on kernel.org,
+> which should make the compile time problem not as bad as well as making
+> it easier for developers to get access to a recent version of clang with
+> all the fixes and improvements that we have made in upstream LLVM.
 
-oops. yeah, sorry missed that.
+So I'm on the road, and will try to see how well I can do that
+allmodconfig build on my poor laptop and see what else goes wrong for
+now.
 
-> 
-> So clang is just wrong here.
-> 
-> The fact that you can apparently silence the error with an extra bogus
-> check does hopefully give clang people a clue about *where* clang is
-> wrong, but it's not an acceptable workaround for the kernel.
-> 
-> We don't write worse source code to make bad compilers happy.
-> 
-> My "use a struct assignment" is more acceptable because at least then
-> the source code doesn't get worse. It arguably should have been done
-> that way the whole time, even if 'memcpy()' is the traditional C way
-> of doing struct assignments (traditional as in "_really_ old
-> traditional C").
+But I do have to say that it's just a lot better if the regular distro
+compiler build works out of the box. I did build my own clang binary
+for a while, just because I was an early adopter of the whole "ask
+goto with outputs" thing, but I've been *so* much happier now that I
+don't need to do that any more.
 
-Incidentally, its same as what Kees sent.
+So I would prefer not going backwards.
 
-2c0ab32b73cf ("hinic: Replace memcpy() with direct assignment") in next-20220622.
+I wish the standard clang build just stopped doing the crazy shared
+library thing. The security arguments for it are just ridiculous, when
+any shared library update for any security reason would mean a full
+clang update _anyway_.
 
+I realize it's partly distro rules too, but the distros only do that
+"we always build shared libraries" when the project itself makes that
+an option. And it's a really stupid option for the regular C compiler
+case.
 
---
-Regards
-Sudip
+Side note: I think gcc takes almost exactly the opposite approach, and
+does much better as a result. It doesn't do a shared libary, but what
+it *does* do is make 'gcc' itself a reasonably small binary that just
+does the command line front-end parsing.
+
+The advantage of the gcc model is that it works *really* well for the
+"test compiler options" kind of stage, where you only run that much
+simpler 'gcc' wrapper binary.
+
+We don't actually take full advantage of that, because we do end up
+doing a real "build" of an empty file, so "cc1" does actually get
+executed, but even then it's done fairly efficiently with 'vfork()'.
+That "cc-option" part of the kernel build is actually noticeable
+during configuration etc, and clang is *much* slower because of how it
+is built.
+
+See
+
+    time clang -Werror -c -x c /dev/null
+
+and compare it with gcc. And if you want to see a really *big*
+difference, pick a command line option that causes an error because it
+doesn't exist..
+
+I really wish clang wasn't so much noticeably slower. It's limiting
+what I do with it, and I've had other developers say the same.
+
+              Linus
