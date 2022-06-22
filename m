@@ -2,136 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4F975553C5
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 20:54:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F26505553F3
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 21:04:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377720AbiFVSx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 14:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40512 "EHLO
+        id S1377558AbiFVTEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 15:04:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359064AbiFVSxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 14:53:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1D3AF1705E
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 11:53:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655924024;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NUxlW/j88Epc56MqOmmJqiwjv7RfINKqkJmwCtsv0gI=;
-        b=QDaZ5P8DshskWRrjqcaX4KGnJwZLhHCMb8cX+ez7ORlSs1EV8n0GyrHOviAqif6wjOvFe7
-        Whr69xdEjgnFq45fe/oF0YuEzE0gPIs0crBwR8B0TNOznhPIVXESEwRq+VWIn2NFd2NCsj
-        1AvooyAC46vQgUjiP1XDDEVb0fqXJbA=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-648-9V1khCgpPHO7eGUryuev3w-1; Wed, 22 Jun 2022 14:53:43 -0400
-X-MC-Unique: 9V1khCgpPHO7eGUryuev3w-1
-Received: by mail-qk1-f198.google.com with SMTP id k13-20020a05620a414d00b006a6e4dc1dfcso20871536qko.19
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 11:53:43 -0700 (PDT)
+        with ESMTP id S1355987AbiFVTEW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 15:04:22 -0400
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB4B13617E
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 12:04:21 -0700 (PDT)
+Received: by mail-yb1-xb2c.google.com with SMTP id w6so31805893ybl.4
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 12:04:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tGYC0JfVcEOklfcd5CHjY9rwrFmfl6TemJvfZU8qJxE=;
+        b=JT+oe4uvxIqOfCEFWYz+8dmrf0ZlHKNGnw5N0DgM0ILmXnX87BVQPrcf5VGc71Q2zt
+         Jn/KtlOsZPN/34WTySuutgwZgN78oklxy6ySoNm9XEimT50SmD3j5xqqxBouCCsEi1Sb
+         WpSMFjdj/PPyHWvBPfMk4Gwt2J6EEdPUJVsm+Aw2z4pH4YFPacKVMvMtiU0sXS6Pmtkw
+         3HNRiWuyrPqWdW0CeYVzQI3YGiZX+Hq9yRntregBkx+e/OonyNF0kee0rwAKob4mT5Pm
+         ENxQFVVnnj3X0Om0jWeb53E381Uq8d/CtmbLtPyp5bIBwJnpBdtqEqnzmv6lPHXEwdvB
+         bzTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=NUxlW/j88Epc56MqOmmJqiwjv7RfINKqkJmwCtsv0gI=;
-        b=CW7JS7KT88/hCsmgWNEujof9KJ7vlcc1NlFuMcqoykxqs1HAk+wa/kVtsCDKfSfdPl
-         OhWvmhwwehcnbrOoeY61nxrqirQYuKnHP6X8cVJOi/jxqcGYN1Pjyb+QgyyWQ17bJA7n
-         FBvPmH3HbFcySKD42IerpPHkxaQrY9aICNCxF0GdA6xCBVFwKMrMHZ9hASYmRBHixJ/C
-         +AUlZa1HSSdkHfFX7q3J8WKo2kOQCeLZyB4QhbGJ1icR0qjd+3ovZS/ui/OZ0iZgTa/K
-         mXU9yU4RZX7LZT7eXV8F9DUf4/esXC8KFKT3H37ZNXcGlyC7BsZGyM/sI6fw9EPf/elg
-         sPzQ==
-X-Gm-Message-State: AJIora87L/1wSmpjDaqNgkW5RPkyVTfqyr7txq1hjw+3GryufIJw7Iai
-        DeAsRhTFspj/w3o/7RDO95lTDBUwL3xsiqHu3Hk+DO8q3edABx4XX7SnRWkgYxcxsPicM70CehO
-        sguI+6iGIstJ8fIUyfh0y0BfJmRH8OpBX
-X-Received: by 2002:ac8:598f:0:b0:305:8f8:2069 with SMTP id e15-20020ac8598f000000b0030508f82069mr4463229qte.370.1655924022280;
-        Wed, 22 Jun 2022 11:53:42 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vito0RGMmoO0PY0tCMLhEJ3EtZsz9CJl1GiY/Z98Qu2Yy5UsxoSjB8deyHpN0/O8c0wv8vm/DAfiRMBO7J3Y4=
-X-Received: by 2002:ac8:598f:0:b0:305:8f8:2069 with SMTP id
- e15-20020ac8598f000000b0030508f82069mr4463221qte.370.1655924022071; Wed, 22
- Jun 2022 11:53:42 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=tGYC0JfVcEOklfcd5CHjY9rwrFmfl6TemJvfZU8qJxE=;
+        b=wOd6FTcPR5UGSWQtJbsov4u1ZzKwGWWblnmbSmqtrLKLaD6JnZrGWFmhVICA1p+/3l
+         iHsXho/hk3tXZZ47w1qQhODwH7bQciE90Xwot13l8hcLyV3wQzX2qmpiXEja6RJENKwC
+         z+IICfPGWNnxm4Ef6zxNc20nUbXlrqwDQALIfE3CVCIfQWwWls1v+JfVVENJvfpQehnh
+         XDj1cgDyWIKPLfZgN0qX++O4ZTu7Bl5r3qVEqDGzPGubrZqu1lTggLIgh9elEFRASSIA
+         amT2HQpWgzML6tuDTdfbJt0V4ZjX4AlezjlO3HWfDZEHukuCnETplqtKIzL7vpLvCyhX
+         j71A==
+X-Gm-Message-State: AJIora9kwA4z7ae6kdYb+IikQXdP/7axdk5gJyXA7/41UkWtIy0LlxlS
+        G73Avj7ChlJZYkhtGsep+/9uvNysWZXaxPowYtwpIw==
+X-Google-Smtp-Source: AGRyM1ueTZj8HsDBAP0D9sQrfkgWTf9Kr6hlLMz7YSl6oI99BGIwNcqB85NOH9KuK4HD5uEdGFBxh5TkD/SkNxtpcSQ=
+X-Received: by 2002:a25:e211:0:b0:669:9cf9:bac7 with SMTP id
+ h17-20020a25e211000000b006699cf9bac7mr2831225ybe.407.1655924660420; Wed, 22
+ Jun 2022 12:04:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220622151407.51232-1-sgarzare@redhat.com>
-In-Reply-To: <20220622151407.51232-1-sgarzare@redhat.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Wed, 22 Jun 2022 20:53:06 +0200
-Message-ID: <CAJaqyWf6BKK1=KBwHufVY-eLt0JFz9V4-kK-pPLU0tuDc7uGgQ@mail.gmail.com>
-Subject: Re: [PATCH] vhost-vdpa: call vhost_vdpa_cleanup during the release
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
+References: <20220619003919.394622-1-i.maximets@ovn.org> <CANn89iL_EmkEgPAVdhNW4tyzwQbARyji93mUQ9E2MRczWpNm7g@mail.gmail.com>
+ <20220622102813.GA24844@breakpoint.cc> <CANn89iLGKbeeBNoDQU9C7nPRCxc6FUsrwn0LfrAKrJiJ14PH+w@mail.gmail.com>
+ <c7ab4a7b-a987-e74b-dd2d-ee2c8ca84147@ovn.org> <CANn89iLxqae9wZ-h5M-whSsmAZ_7hW1e_=krvSyF8x89Y6o76w@mail.gmail.com>
+ <068ad894-c60f-c089-fd4a-5deda1c84cdd@ovn.org> <CANn89iJ=Xc57pdZ-NaRF7FXZnq2skh5MJ3aDtDCGp8RNG4oowA@mail.gmail.com>
+ <CANn89i+yy3mL2BUT=uhhkACVviWXCA9fdE1mrG=ZMuSQKdK8SQ@mail.gmail.com>
+ <CANn89iLVHAE5aMwo0dow14mdFK0JjokE9y5KV+67AxKJdSjx=w@mail.gmail.com>
+ <CANn89i+5pWbXyFBnMqdfz6SqRV9enFNHbcd_2irJub1Ag7vxNw@mail.gmail.com> <673a6f2b-dab2-e00f-b37c-15f8775b2121@ovn.org>
+In-Reply-To: <673a6f2b-dab2-e00f-b37c-15f8775b2121@ovn.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 22 Jun 2022 21:04:08 +0200
+Message-ID: <CANn89i+a6nd=80X-7p+GLq9Tvx7QjRYHkHVJgrjJu_UO30+SDQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: ensure all external references are released in
+ deferred skbuffs
+To:     Ilya Maximets <i.maximets@ovn.org>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Florian Westphal <fw@strlen.de>,
         netdev <netdev@vger.kernel.org>,
-        Jason Wang <jasowang@redhat.com>,
-        Gautam Dawar <gautam.dawar@xilinx.com>,
-        kvm list <kvm@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>
+        "David S. Miller" <davem@davemloft.net>, dev@openvswitch.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 5:14 PM Stefano Garzarella <sgarzare@redhat.com> wr=
-ote:
+On Wed, Jun 22, 2022 at 8:19 PM Ilya Maximets <i.maximets@ovn.org> wrote:
 >
-> Before commit 3d5698793897 ("vhost-vdpa: introduce asid based IOTLB")
-> we call vhost_vdpa_iotlb_free() during the release to clean all regions
-> mapped in the iotlb.
+> On 6/22/22 19:03, Eric Dumazet wrote:
+> > On Wed, Jun 22, 2022 at 6:47 PM Eric Dumazet <edumazet@google.com> wrote:
+> >>
+> >> On Wed, Jun 22, 2022 at 6:39 PM Eric Dumazet <edumazet@google.com> wrote:
+> >>>
+> >>> On Wed, Jun 22, 2022 at 6:29 PM Eric Dumazet <edumazet@google.com> wrote:
+> >>>>
+> >>>> On Wed, Jun 22, 2022 at 4:26 PM Ilya Maximets <i.maximets@ovn.org> wrote:
+> >>>>>
+> >>>>> On 6/22/22 13:43, Eric Dumazet wrote:
+> >>>>
+> >>>>>
+> >>>>> I tested the patch below and it seems to fix the issue seen
+> >>>>> with OVS testsuite.  Though it's not obvious for me why this
+> >>>>> happens.  Can you explain a bit more?
+> >>>>
+> >>>> Anyway, I am not sure we can call nf_reset_ct(skb) that early.
+> >>>>
+> >>>> git log seems to say that xfrm check needs to be done before
+> >>>> nf_reset_ct(skb), I have no idea why.
+> >>>
+> >>> Additional remark: In IPv6 side, xfrm6_policy_check() _is_ called
+> >>> after nf_reset_ct(skb)
+> >>>
+> >>> Steffen, do you have some comments ?
+> >>>
+> >>> Some context:
+> >>> commit b59c270104f03960069596722fea70340579244d
+> >>> Author: Patrick McHardy <kaber@trash.net>
+> >>> Date:   Fri Jan 6 23:06:10 2006 -0800
+> >>>
+> >>>     [NETFILTER]: Keep conntrack reference until IPsec policy checks are done
+> >>>
+> >>>     Keep the conntrack reference until policy checks have been performed for
+> >>>     IPsec NAT support. The reference needs to be dropped before a packet is
+> >>>     queued to avoid having the conntrack module unloadable.
+> >>>
+> >>>     Signed-off-by: Patrick McHardy <kaber@trash.net>
+> >>>     Signed-off-by: David S. Miller <davem@davemloft.net>
+> >>>
+> >>
+> >> Oh well... __xfrm_policy_check() has :
+> >>
+> >> nf_nat_decode_session(skb, &fl, family);
+> >>
+> >> This  answers my questions.
+> >>
+> >> This means we are probably missing at least one XFRM check in TCP
+> >> stack in some cases.
+> >> (Only after adding this XFRM check we can call nf_reset_ct(skb))
+> >>
+> >
+> > Maybe this will help ?
 >
-> That commit removed vhost_vdpa_iotlb_free() and added vhost_vdpa_cleanup(=
-)
-> to do some cleanup, including deleting all mappings, but we forgot to cal=
-l
-> it in vhost_vdpa_release().
+> I tested this patch and it seems to fix the OVS problem.
+> I did not test the xfrm part of it.
 >
-> This causes that if an application does not remove all mappings explicitl=
-y
-> (or it crashes), the mappings remain in the iotlb and subsequent
-> applications may fail if they map the same addresses.
->
+> Will you post an official patch?
 
-I tested this behavior even by sending SIGKILL to qemu. The failed map
-is reproducible easily before applying this patch and applying it
-fixes the issue properly.
+Yes I will. I need to double check we do not leak either the req, or the child.
 
-> Calling vhost_vdpa_cleanup() also fixes a memory leak since we are not
-> freeing `v->vdev.vqs` during the release from the same commit.
->
-> Since vhost_vdpa_cleanup() calls vhost_dev_cleanup() we can remove its
-> call from vhost_vdpa_release().
->
+Maybe the XFRM check should be done even earlier, on the listening socket ?
 
-Tested-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
+Or if we assume the SYNACK packet has been sent after the XFRM test
+has been applied to the SYN,
+maybe we could just call nf_reset_ct(skb) to lower risk of regressions.
 
-> Fixes: 3d5698793897 ("vhost-vdpa: introduce asid based IOTLB")
-> Cc: gautam.dawar@xilinx.com
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> ---
->  drivers/vhost/vdpa.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 5ad2596c6e8a..23dcbfdfa13b 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -1209,7 +1209,7 @@ static int vhost_vdpa_release(struct inode *inode, =
-struct file *filep)
->         vhost_dev_stop(&v->vdev);
->         vhost_vdpa_free_domain(v);
->         vhost_vdpa_config_put(v);
-> -       vhost_dev_cleanup(&v->vdev);
-> +       vhost_vdpa_cleanup(v);
->         mutex_unlock(&d->mutex);
->
->         atomic_dec(&v->opened);
-> --
-> 2.36.1
->
+With the last patch, it would be strange that we accept the 3WHS and
+establish a socket,
+but drop the payload in the 3rd packet...
 
+>
+> >
+> > diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> > index fe8f23b95d32ca4a35d05166d471327bc608fa91..49c1348e40b6c7b6a98b54d716f29c948e00ba33
+> > 100644
+> > --- a/net/ipv4/tcp_ipv4.c
+> > +++ b/net/ipv4/tcp_ipv4.c
+> > @@ -2019,12 +2019,19 @@ int tcp_v4_rcv(struct sk_buff *skb)
+> >                 if (nsk == sk) {
+> >                         reqsk_put(req);
+> >                         tcp_v4_restore_cb(skb);
+> > -               } else if (tcp_child_process(sk, nsk, skb)) {
+> > -                       tcp_v4_send_reset(nsk, skb);
+> > -                       goto discard_and_relse;
+> >                 } else {
+> > -                       sock_put(sk);
+> > -                       return 0;
+> > +                       if (!xfrm4_policy_check(nsk, XFRM_POLICY_IN, skb)) {
+> > +                               drop_reason = SKB_DROP_REASON_XFRM_POLICY;
+> > +                               goto discard_and_relse;
+> > +                       }
+> > +                       nf_reset_ct(skb);
+> > +                       if (tcp_child_process(sk, nsk, skb)) {
+> > +                               tcp_v4_send_reset(nsk, skb);
+> > +                               goto discard_and_relse;
+> > +                       } else {
+> > +                               sock_put(sk);
+> > +                               return 0;
+> > +                       }
+> >                 }
+> >         }
+>
