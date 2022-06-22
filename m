@@ -2,254 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D562E5546F3
-	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:11:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A5B4554938
+	for <lists+netdev@lfdr.de>; Wed, 22 Jun 2022 14:17:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236201AbiFVKWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 06:22:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42706 "EHLO
+        id S1347612AbiFVKWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 06:22:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232489AbiFVKWM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 06:22:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2120E3AA60
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 03:22:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655893330;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nfl1nb+33mlRf2GSwN8w3YvpZV0ySkPvRLOSfPPc+dc=;
-        b=VbwuZnG9oa5oa0by2s7ltzHtGqg2DVtKhB5Ca5OI1dY08HQfGJzMkv5Aq0mXmeaovdHy6p
-        r3mF4yQTaPRfKTtdckCkem5NYu1wRTwGksZCVTbsJPXFguGUT5e+kIXy6QkgOu4z8enUip
-        bBuTNkbhkgS6ouJ8WEE668JyZ+K7IRM=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-550-eTpCEBYZPE2absbPUAZLIg-1; Wed, 22 Jun 2022 06:22:08 -0400
-X-MC-Unique: eTpCEBYZPE2absbPUAZLIg-1
-Received: by mail-qk1-f199.google.com with SMTP id i10-20020a05620a404a00b006a7609f54c6so19425791qko.7
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 03:22:08 -0700 (PDT)
+        with ESMTP id S1346654AbiFVKWi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 06:22:38 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD203B3D8
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 03:22:37 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id c30so18749194ljr.9
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 03:22:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=/3scupapn9W2y2IwLBRCTxOKFHLpEAemTlHO5CeKx/A=;
+        b=JRkeP6hK/0SBN+umjfYDlNvt5CfTBBZdNZh9CMRBuXf5udkHnZYDwm9Qugs9BISi7a
+         c1tNL3TYOLT5YejRanE5NvVB8WoJ/bywqf9w01eTlwm88B+z/bFWIxXVbBQK2dx/AkjW
+         DADt2URp3m+poaK/sxloGFC9fCWx3suat4BDkxsm0iHWOy1HH6XnNecf3W5NfVPo+T88
+         LWhj1Ss4d92YRytTOVjwmH7jgh+qJNIh2W43PHSGO8UZnBNHxEZ4/o6ibaJUTqo8ds6j
+         dFBb1zhzAg8Bshcy1mIgJX2mGUXxyrQ6wv5dI/VvT6VNm2K595qzOhBO1k0cIESp+ZAz
+         Ha+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nfl1nb+33mlRf2GSwN8w3YvpZV0ySkPvRLOSfPPc+dc=;
-        b=YBH7bsuppwJkB994Y5QvIHKucw5U4a5CFJzmdEE8fSeVMaYJ3iJsqVWLaAhNOWodKM
-         Cx6QNAH/xHUTrFCaHVXaDjDNtM0Ea43x32NeF8k+buKQGCWFgwVzhfmLDgLfC+SPT1nh
-         uw259IFvvQDxLutAvFpaOk5tnBp6fHUqSDQiRXpcuGy7NPqq+hgtLiQvI9SauX8wlxCY
-         qHqhD6f1qexSx3t5AeDDsy8hJE2evSAE/iF2MiqBuRvbj/Kqi9V5C8VzLjMOImaZRFMc
-         msOHJc1vbbI9FLV6qKpKgmbW/za3kC9NcByn6pmojUaDBXuRFISHvYQ/kltOgzuh3gEe
-         WzUw==
-X-Gm-Message-State: AJIora9xZkcqTXotUNG8zjdW6KJApE2qGSsXQrtTQGEQb69c+UY0Nc1C
-        23XPizMHpk3JBLjb2dX0cnV0a0carsoMCyU7Q7d6JGd2dYqJNFkIDpvW4zyfQDDmB6l+Cio3pFC
-        BNaPLF4w04L3S7HX3ZA9imeeVfrQWDUdL
-X-Received: by 2002:a05:6214:1c83:b0:46b:a79a:2f0b with SMTP id ib3-20020a0562141c8300b0046ba79a2f0bmr26575110qvb.103.1655893328396;
-        Wed, 22 Jun 2022 03:22:08 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tRH9IgjI7D7T9+pD0EtLZxv84aRvOyAbEbYmJ/axV5leG89dyYdugg4VxhD4kTKIAEuACDpoqbEz6mSVCQhYE=
-X-Received: by 2002:a05:6214:1c83:b0:46b:a79a:2f0b with SMTP id
- ib3-20020a0562141c8300b0046ba79a2f0bmr26575071qvb.103.1655893328078; Wed, 22
- Jun 2022 03:22:08 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=/3scupapn9W2y2IwLBRCTxOKFHLpEAemTlHO5CeKx/A=;
+        b=7FFpcq6kNb4CJGsE+E8/vPtoUM26OmVfljdk1CXtNx8ekJwYGdR4aF9PaWKa6J3PLJ
+         PtPXLPBXOSaXkh+7bfsp7Q8bcczvul1cFq4xIcC0GcriAAhdJHo9aKksxYhMxEsS3iOY
+         Jac47u1WcQSevZ5I83LeLmJQRJxefnBD5/Av6hKVRnYRSeCo68soO4cy1Pl+qQmV74LV
+         5Qa1MOH3jxwX8OgmCX484P2arnsk+PaRKnYHKpLzo19YJ4Mb93RkZw38b77YL+zppBZI
+         paMbGUSHDN0rV1IFgqT1Dx7wo0YdDooVenhF/7uDTVQAdcKplkxvauwsoBwKyfnOKCFF
+         3phg==
+X-Gm-Message-State: AJIora8NIUsBciqtWdz3DoZIN2l95YVKwZp/ZrTEZMaR9dDeNLbo59va
+        uRoUUHEY56tMjULCLESKXN3XVm5wkpb17XL6fyiKcA==
+X-Google-Smtp-Source: AGRyM1se2BoPLHvWhFpwxYBadNS6jT4kJliR5w7Cbw9fSZJg6SHpakhu5R0sF3cJYRLKc74VRpNrRHZevfSU0YtBG8k=
+X-Received: by 2002:a2e:860e:0:b0:25a:6dbe:abb5 with SMTP id
+ a14-20020a2e860e000000b0025a6dbeabb5mr1516302lji.474.1655893355719; Wed, 22
+ Jun 2022 03:22:35 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220330180436.24644-1-gdawar@xilinx.com> <20220330180436.24644-20-gdawar@xilinx.com>
- <CAGxU2F6OO108oHsrLBWJnYRG2yRU8QnRxAdjJhUUcp8AqaAP-g@mail.gmail.com>
-In-Reply-To: <CAGxU2F6OO108oHsrLBWJnYRG2yRU8QnRxAdjJhUUcp8AqaAP-g@mail.gmail.com>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Wed, 22 Jun 2022 12:21:32 +0200
-Message-ID: <CAJaqyWd8MR9vTRcCTktzC3VL054x5H5_sXy+MLVNewFDkjQUSw@mail.gmail.com>
-Subject: Re: [PATCH v2 19/19] vdpasim: control virtqueue support
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Gautam Dawar <gautam.dawar@xilinx.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Gautam Dawar <gdawar@xilinx.com>,
-        Longpeng <longpeng2@huawei.com>, Eli Cohen <elic@nvidia.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Linux Virtualization <virtualization@lists.linux-foundation.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        kvm <kvm@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>, habetsm.xilinx@gmail.com,
-        ecree.xilinx@gmail.com, Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Zhang Min <zhang.min9@zte.com.cn>
+References: <20220620150225.1307946-1-mw@semihalf.com> <20220620150225.1307946-10-mw@semihalf.com>
+ <YrDO05TMK8SVgnBP@lunn.ch> <YrGm2jmR7ijHyQjJ@smile.fi.intel.com>
+ <YrGpDgtm4rPkMwnl@lunn.ch> <YrGukfw4uiQz0NpW@smile.fi.intel.com>
+ <CAPv3WKf_2QYh0F2LEr1DeErvnMeQqT0M5t40ROP2G6HSUwKpQQ@mail.gmail.com> <YrLft+BrP2jI5lwp@lunn.ch>
+In-Reply-To: <YrLft+BrP2jI5lwp@lunn.ch>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Wed, 22 Jun 2022 12:22:23 +0200
+Message-ID: <CAPv3WKcAPb1Kc7=YpfmOWKa_kZYQvN8HyvjG91SiMK9c8yZa-Q@mail.gmail.com>
+Subject: Re: [net-next: PATCH 09/12] Documentation: ACPI: DSD: introduce DSA description
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, vivien.didelot@gmail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_FILL_THIS_FORM_SHORT,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jun 21, 2022 at 5:20 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+=C5=9Br., 22 cze 2022 o 11:24 Andrew Lunn <andrew@lunn.ch> napisa=C5=82(a):
 >
-> Hi Gautam,
+> On Wed, Jun 22, 2022 at 11:08:13AM +0200, Marcin Wojtas wrote:
+> > wt., 21 cze 2022 o 13:42 Andy Shevchenko
+> > <andriy.shevchenko@linux.intel.com> napisa=C5=82(a):
+> > >
+> > > On Tue, Jun 21, 2022 at 01:18:38PM +0200, Andrew Lunn wrote:
+> > > > On Tue, Jun 21, 2022 at 02:09:14PM +0300, Andy Shevchenko wrote:
+> > > > > On Mon, Jun 20, 2022 at 09:47:31PM +0200, Andrew Lunn wrote:
+> > >
+> > > ...
+> > >
+> > > > > > > +        Name (_CRS, ResourceTemplate ()
+> > > > > > > +        {
+> > > > > > > +            Memory32Fixed (ReadWrite,
+> > > > > > > +                0xf212a200,
+> > > > > > > +                0x00000010,
+> > > > > >
+> > > > > > What do these magic numbers mean?
+> > > > >
+> > > > > Address + Length, it's all described in the ACPI specification.
+> > > >
+> > > > The address+plus length of what? This device is on an MDIO bus. As
+> > > > such, there is no memory! It probably makes sense to somebody who
+> > > > knows ACPI, but to me i have no idea what it means.
+> > >
+> > > I see what you mean. Honestly I dunno what the device this descriptio=
+n is for.
+> > > For the DSA that's behind MDIO bus? Then it's definitely makes no sen=
+se and
+> > > MDIOSerialBus() resources type is what would be good to have in ACPI
+> > > specification.
+> > >
+> >
+> > It's not device on MDIO bus, but the MDIO controller's register itself
 >
-> On Wed, Mar 30, 2022 at 8:21 PM Gautam Dawar <gautam.dawar@xilinx.com> wrote:
-> >
-> > This patch introduces the control virtqueue support for vDPA
-> > simulator. This is a requirement for supporting advanced features like
-> > multiqueue.
-> >
-> > A requirement for control virtqueue is to isolate its memory access
-> > from the rx/tx virtqueues. This is because when using vDPA device
-> > for VM, the control virqueue is not directly assigned to VM. Userspace
-> > (Qemu) will present a shadow control virtqueue to control for
-> > recording the device states.
-> >
-> > The isolation is done via the virtqueue groups and ASID support in
-> > vDPA through vhost-vdpa. The simulator is extended to have:
-> >
-> > 1) three virtqueues: RXVQ, TXVQ and CVQ (control virtqueue)
-> > 2) two virtqueue groups: group 0 contains RXVQ and TXVQ; group 1
-> >    contains CVQ
-> > 3) two address spaces and the simulator simply implements the address
-> >    spaces by mapping it 1:1 to IOTLB.
-> >
-> > For the VM use cases, userspace(Qemu) may set AS 0 to group 0 and AS 1
-> > to group 1. So we have:
-> >
-> > 1) The IOTLB for virtqueue group 0 contains the mappings of guest, so
-> >    RX and TX can be assigned to guest directly.
-> > 2) The IOTLB for virtqueue group 1 contains the mappings of CVQ which
-> >    is the buffers that allocated and managed by VMM only. So CVQ of
-> >    vhost-vdpa is visible to VMM only. And Guest can not access the CVQ
-> >    of vhost-vdpa.
-> >
-> > For the other use cases, since AS 0 is associated to all virtqueue
-> > groups by default. All virtqueues share the same mapping by default.
-> >
-> > To demonstrate the function, VIRITO_NET_F_CTRL_MACADDR is
-> > implemented in the simulator for the driver to set mac address.
-> >
-> > Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
-> > ---
-> >  drivers/vdpa/vdpa_sim/vdpa_sim.c     | 91 ++++++++++++++++++++++------
-> >  drivers/vdpa/vdpa_sim/vdpa_sim.h     |  2 +
-> >  drivers/vdpa/vdpa_sim/vdpa_sim_net.c | 88 ++++++++++++++++++++++++++-
-> >  3 files changed, 161 insertions(+), 20 deletions(-)
-> >
-> > diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> > index 659e2e2e4b0c..51bd0bafce06 100644
-> > --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> > +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> > @@ -96,11 +96,17 @@ static void vdpasim_do_reset(struct vdpasim *vdpasim)
-> >  {
-> >         int i;
-> >
-> > -       for (i = 0; i < vdpasim->dev_attr.nvqs; i++)
-> > +       spin_lock(&vdpasim->iommu_lock);
-> > +
-> > +       for (i = 0; i < vdpasim->dev_attr.nvqs; i++) {
-> >                 vdpasim_vq_reset(vdpasim, &vdpasim->vqs[i]);
-> > +               vringh_set_iotlb(&vdpasim->vqs[i].vring, &vdpasim->iommu[0],
-> > +                                &vdpasim->iommu_lock);
-> > +       }
-> > +
-> > +       for (i = 0; i < vdpasim->dev_attr.nas; i++)
-> > +               vhost_iotlb_reset(&vdpasim->iommu[i]);
-> >
-> > -       spin_lock(&vdpasim->iommu_lock);
-> > -       vhost_iotlb_reset(vdpasim->iommu);
-> >         spin_unlock(&vdpasim->iommu_lock);
-> >
-> >         vdpasim->features = 0;
-> > @@ -145,7 +151,7 @@ static dma_addr_t vdpasim_map_range(struct vdpasim *vdpasim, phys_addr_t paddr,
-> >         dma_addr = iova_dma_addr(&vdpasim->iova, iova);
-> >
-> >         spin_lock(&vdpasim->iommu_lock);
-> > -       ret = vhost_iotlb_add_range(vdpasim->iommu, (u64)dma_addr,
-> > +       ret = vhost_iotlb_add_range(&vdpasim->iommu[0], (u64)dma_addr,
-> >                                     (u64)dma_addr + size - 1, (u64)paddr, perm);
-> >         spin_unlock(&vdpasim->iommu_lock);
-> >
-> > @@ -161,7 +167,7 @@ static void vdpasim_unmap_range(struct vdpasim *vdpasim, dma_addr_t dma_addr,
-> >                                 size_t size)
-> >  {
-> >         spin_lock(&vdpasim->iommu_lock);
-> > -       vhost_iotlb_del_range(vdpasim->iommu, (u64)dma_addr,
-> > +       vhost_iotlb_del_range(&vdpasim->iommu[0], (u64)dma_addr,
-> >                               (u64)dma_addr + size - 1);
-> >         spin_unlock(&vdpasim->iommu_lock);
-> >
-> > @@ -250,8 +256,9 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *dev_attr)
-> >         else
-> >                 ops = &vdpasim_config_ops;
-> >
-> > -       vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops, 1,
-> > -                                   1, dev_attr->name, false);
-> > +       vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops,
-> > +                                   dev_attr->ngroups, dev_attr->nas,
-> > +                                   dev_attr->name, false);
-> >         if (IS_ERR(vdpasim)) {
-> >                 ret = PTR_ERR(vdpasim);
-> >                 goto err_alloc;
-> > @@ -278,16 +285,20 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *dev_attr)
-> >         if (!vdpasim->vqs)
-> >                 goto err_iommu;
-> >
-> > -       vdpasim->iommu = vhost_iotlb_alloc(max_iotlb_entries, 0);
-> > +       vdpasim->iommu = kmalloc_array(vdpasim->dev_attr.nas,
-> > +                                      sizeof(*vdpasim->iommu), GFP_KERNEL);
-> >         if (!vdpasim->iommu)
-> >                 goto err_iommu;
-> >
-> > +       for (i = 0; i < vdpasim->dev_attr.nas; i++)
-> > +               vhost_iotlb_init(&vdpasim->iommu[i], 0, 0);
-> > +
-> >         vdpasim->buffer = kvmalloc(dev_attr->buffer_size, GFP_KERNEL);
-> >         if (!vdpasim->buffer)
-> >                 goto err_iommu;
-> >
-> >         for (i = 0; i < dev_attr->nvqs; i++)
-> > -               vringh_set_iotlb(&vdpasim->vqs[i].vring, vdpasim->iommu,
-> > +               vringh_set_iotlb(&vdpasim->vqs[i].vring, &vdpasim->iommu[0],
-> >                                  &vdpasim->iommu_lock);
-> >
-> >         ret = iova_cache_get();
-> > @@ -401,7 +412,11 @@ static u32 vdpasim_get_vq_align(struct vdpa_device *vdpa)
-> >
-> >  static u32 vdpasim_get_vq_group(struct vdpa_device *vdpa, u16 idx)
-> >  {
-> > -       return 0;
-> > +       /* RX and TX belongs to group 0, CVQ belongs to group 1 */
-> > +       if (idx == 2)
-> > +               return 1;
-> > +       else
-> > +               return 0;
+> Ah. So this is equivalent to
 >
-> This code only works for the vDPA-net simulator, since
-> vdpasim_get_vq_group() is also shared with other simulators (e.g.
-> vdpa_sim_blk),
-
-That's totally right.
-
-> should we move this net-specific code into
-> vdpa_sim_net.c, maybe adding a callback implemented by the different
-> simulators?
+>                 CP11X_LABEL(mdio): mdio@12a200 {
+>                         #address-cells =3D <1>;
+>                         #size-cells =3D <0>;
+>                         compatible =3D "marvell,orion-mdio";
+>                         reg =3D <0x12a200 0x10>;
+>                         clocks =3D <&CP11X_LABEL(clk) 1 9>, <&CP11X_LABEL=
+(clk) 1 5>,
+>                                  <&CP11X_LABEL(clk) 1 6>, <&CP11X_LABEL(c=
+lk) 1 18>;
+>                         status =3D "disabled";
+>                 };
 >
+> DT seems a lot more readable, "marvell,orion-mdio" is a good hint that
+> device this is. But maybe it is more readable because that is what i'm
+> used to.
 
-At this moment, VDPASIM_BLK_VQ_NUM is fixed to 1, so maybe the right
-thing to do for the -rc phase is to check if idx > vdpasim.attr.nvqs?
-It's a more general fix.
+No worries, this reaction is not uncommon (including myself), I agree
+it becomes more readable, the longer you work with it :).
 
-For the general case, yes, a callback should be issued to the actual
-simulator so it's not a surprise when VDPASIM_BLK_VQ_NUM increases,
-either dynamically or by anyone testing it.
+IMO the ACPI node of orion-mdio looks very similar. Please take a look:
 
-Thoughts?
+        Device (SMI0)
+        {
+            Name (_HID, "MRVL0100")              // _HID: Hardware ID
+            Name (_UID, 0x00)                          // _UID: Unique ID
+            Method (_STA)                                 // _STA: Device s=
+tatus
+            {
+                Return (0xF)
+            }
+            Name (_CRS, ResourceTemplate ()
+            {
+                Memory32Fixed (ReadWrite,
+                    0xf212a200,                        // Address Base
+                    0x00000010,                       // Address Length
+                    )
+            })
+        }
 
-Thanks!
+You can "map" the objects/methods to what you know from DT farly easily:
+_HID -> compatible string
+_STA -> 'status' property
+_CRS & Memory32Fixed  -> 'reg' property (_CRS can also comprise IRQs
+and other kind of resources, you can check [1] for more details).
 
+Clocks are configured by firmware, so they are not referenced in the
+tables and touched by the orion-mdio driver.
+
+>
+> Please could you add a lot more comments. Given that nobody currently
+> actually does networking via ACPI, we have to assume everybody trying
+> to use it is a newbie, and more comments are better than less.
+
+I can add more verbose description of the example and probably a
+reference to https://www.kernel.org/doc/Documentation/firmware-guide/acpi/d=
+sd/phy.rst
+("DSDT entry for MDIO node").
+
+[1] https://uefi.org/specs/ACPI/6.4/06_Device_Configuration/Device_Configur=
+ation.html#crs-current-resource-settings
+
+Best regards,
+Marcin
+
+>
+> Thanks
+>         Andrew
