@@ -2,124 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66F4A55725A
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 06:58:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 884B5557261
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 06:59:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229838AbiFWEur (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 00:50:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
+        id S229559AbiFWE7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 00:59:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232026AbiFWEsy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 00:48:54 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6DE45538
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 21:42:34 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id q132so236394ybg.10
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 21:42:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4iW6SQbrl4tK6SGKbb60gU7a3SBpPlo+vf+kq4WldJo=;
-        b=OSdxExzR8fmlbbHIyQ4TdsUziOKviIq19CVD5M0eSB9BD1Rh8B4qOPvtw1fCgMATfe
-         PPznvkdib+rPEyjvH1LpwQHil0U35M+8lXdQRjaY3l0QGr/8Xdv9oiXZ5P3VA1sEuJwm
-         st94p729nzb3hM5IjOBiXFjVsRsZIXwu0o/P7l9F9mbOmXleVfdodBeWzNd0X5DeQPRd
-         T5wS662rv/dbOJVB/Kg9zKVHu6WPYDSH92NHsMc/2Z+9bpLOCBHU0/IqLNAvYz5ydggq
-         Zz801BZZYsYlduB2bDQIu6jyH0CiDGEM4kwUqwoAQiGJ44EjcBM8I55FExN977nz0Pax
-         o9GA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4iW6SQbrl4tK6SGKbb60gU7a3SBpPlo+vf+kq4WldJo=;
-        b=vS3Yiq/g65YRzHfn16Gwhx4gCxJSEp/wSMIcfpzkAbMF7pGmxUhrrHOlSg45w64FVi
-         3xFHT1+gBohlKlvyj1sQnRFb88EWmmuMt0QyENXNsdO9TPA+/9D0Ik+pAvUjKFFV6jh0
-         yKWFRUWVu98uqBmQ54VuD0OYpHROA7mqtt26FEeaFF1TludcfplcYKa6PCLTstv50wYk
-         kUeWqIJKJNorE2paqCGVHEHi1BKjPRFKrkC9ecsBepPBA95ovzzKh+0cxhkR3hMTk15q
-         rJ/X487W88SGSI82wC+aMLHmum4fULAn7dojoS8QTxl8mOAgSpTnB+xu0Pa2xhbxIf8O
-         /Gsw==
-X-Gm-Message-State: AJIora989jXKBStxCrAVWM0nE8ijQF93vpPQKqHFODbQUwYkBlX/6Ydr
-        L4rS0pBz/Sj4cvj5psNcoLhs/RUNoeZ6w3gdszEY+g==
-X-Google-Smtp-Source: AGRyM1vez/noetu41uNulqFawtfQXXyq+0cTlkuvwdzxvEpMZg81xlF4Ungc7jQSjmKg+0UMEkU8unZNv4A31Gh3pBc=
-X-Received: by 2002:a25:23c3:0:b0:669:b1df:a249 with SMTP id
- j186-20020a2523c3000000b00669b1dfa249mr540360ybj.387.1655959352434; Wed, 22
- Jun 2022 21:42:32 -0700 (PDT)
+        with ESMTP id S230105AbiFWE5g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 00:57:36 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A5A147558;
+        Wed, 22 Jun 2022 21:44:03 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 25N4hhQl007210;
+        Wed, 22 Jun 2022 23:43:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1655959423;
+        bh=FzKrRm04wWtFn692doS62Lv/7usbJv0aDyQjyM4vhQ8=;
+        h=From:To:CC:Subject:Date;
+        b=ZgvnoOoZxc3lFYc/7yKZPuQgUVS94yqvCdRdEIbMn56XfGa9CCoGXadVQ2N7+DAwn
+         87b5olorbSEqb9N+qvVbDH9l9+59qiwRxxsdS8OL3SdJgpUdKKKPjIrGVfVt0Jt7li
+         rFjoA2Uel+eesL3+iXt3vS+/YOUXFpcnDu1aic+g=
+Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 25N4hhoW015178
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 22 Jun 2022 23:43:43 -0500
+Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 22
+ Jun 2022 23:43:42 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 22 Jun 2022 23:43:42 -0500
+Received: from ula0492258.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 25N4hcHT127881;
+        Wed, 22 Jun 2022 23:43:39 -0500
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>, <linux@armlinux.org.uk>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kishon@ti.com>, <vigneshr@ti.com>, <grygorii.strashko@ti.com>,
+        <s-vadapalli@ti.com>
+Subject: [PATCH] net: ethernet: ti: am65-cpsw: Fix devlink port register sequence
+Date:   Thu, 23 Jun 2022 10:13:37 +0530
+Message-ID: <20220623044337.6179-1-s-vadapalli@ti.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220622150220.1091182-1-edumazet@google.com> <4d281429-8ac0-c85b-5f8d-3f6fc925d9b7@kernel.dk>
-In-Reply-To: <4d281429-8ac0-c85b-5f8d-3f6fc925d9b7@kernel.dk>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 23 Jun 2022 06:42:21 +0200
-Message-ID: <CANn89iJWdVjR16fRv=-ijZv37bmoUexjxi49EhmA6oKuxnxa8A@mail.gmail.com>
-Subject: Re: [PATCH net] net: clear msg_get_inq in __sys_recvfrom() and __copy_msghdr_from_user()
-To:     Jens Axboe <axboe@kernel.dk>,
-        Alexander Potapenko <glider@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 5:24 PM Jens Axboe <axboe@kernel.dk> wrote:
->
-> On 6/22/22 9:02 AM, Eric Dumazet wrote:
-> > syzbot reported uninit-value in tcp_recvmsg() [1]
-> >
-> > Issue here is that msg->msg_get_inq should have been cleared,
-> > otherwise tcp_recvmsg() might read garbage and perform
-> > more work than needed, or have undefined behavior.
-> >
-> > Given CONFIG_INIT_STACK_ALL_ZERO=y is probably going to be
-> > the default soon, I chose to change __sys_recvfrom() to clear
-> > all fields but msghdr.addr which might be not NULL.
-> >
-> > For __copy_msghdr_from_user(), I added an explicit clear
-> > of kmsg->msg_get_inq.
-> >
-> > [1]
-> > BUG: KMSAN: uninit-value in tcp_recvmsg+0x6cf/0xb60 net/ipv4/tcp.c:2557
-> > tcp_recvmsg+0x6cf/0xb60 net/ipv4/tcp.c:2557
-> > inet_recvmsg+0x13a/0x5a0 net/ipv4/af_inet.c:850
-> > sock_recvmsg_nosec net/socket.c:995 [inline]
-> > sock_recvmsg net/socket.c:1013 [inline]
-> > __sys_recvfrom+0x696/0x900 net/socket.c:2176
-> > __do_sys_recvfrom net/socket.c:2194 [inline]
-> > __se_sys_recvfrom net/socket.c:2190 [inline]
-> > __x64_sys_recvfrom+0x122/0x1c0 net/socket.c:2190
-> > do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-> > do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
-> > entry_SYSCALL_64_after_hwframe+0x46/0xb0
-> >
-> > Local variable msg created at:
-> > __sys_recvfrom+0x81/0x900 net/socket.c:2154
-> > __do_sys_recvfrom net/socket.c:2194 [inline]
-> > __se_sys_recvfrom net/socket.c:2190 [inline]
-> > __x64_sys_recvfrom+0x122/0x1c0 net/socket.c:2190
-> >
-> > CPU: 0 PID: 3493 Comm: syz-executor170 Not tainted 5.19.0-rc3-syzkaller-30868-g4b28366af7d9 #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
->
-> Thanks Eric, looks good to me:
->
-> Reviewed-by: Jens Axboe <axboe@kernel.dk>
->
-> --
-> Jens Axboe
->
+Renaming interfaces using udevd depends on the interface being registered
+before its netdev is registered. Otherwise, udevd reads an empty
+phys_port_name value, resulting in the interface not being renamed.
 
-Alexander tested the patch as well:
+Fix this by registering the interface before registering its netdev
+by invoking am65_cpsw_nuss_register_devlink() before invoking
+register_netdev() for the interface.
 
-Tested-by: Alexander Potapenko<glider@google.com>
+Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+---
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-Thanks !
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index fb92d4c1547d..47a6c4e5360b 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -2527,6 +2527,10 @@ static int am65_cpsw_nuss_register_ndevs(struct am65_cpsw_common *common)
+ 		return ret;
+ 	}
+ 
++	ret = am65_cpsw_nuss_register_devlink(common);
++	if (ret)
++		goto err_cleanup_ndev;
++
+ 	for (i = 0; i < common->port_num; i++) {
+ 		port = &common->ports[i];
+ 
+@@ -2545,17 +2549,12 @@ static int am65_cpsw_nuss_register_ndevs(struct am65_cpsw_common *common)
+ 	if (ret)
+ 		goto err_cleanup_ndev;
+ 
+-	ret = am65_cpsw_nuss_register_devlink(common);
+-	if (ret)
+-		goto clean_unregister_notifiers;
+-
+ 	/* can't auto unregister ndev using devm_add_action() due to
+ 	 * devres release sequence in DD core for DMA
+ 	 */
+ 
+ 	return 0;
+-clean_unregister_notifiers:
+-	am65_cpsw_unregister_notifiers(common);
++
+ err_cleanup_ndev:
+ 	am65_cpsw_nuss_cleanup_ndev(common);
+ 
+-- 
+2.36.1
+
