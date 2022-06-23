@@ -2,123 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FC275571AC
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 06:43:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B4D35571A2
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 06:42:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229579AbiFWEkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 00:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48746 "EHLO
+        id S230481AbiFWEkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 00:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242341AbiFWDzH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 23:55:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 447D4EE07
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 20:55:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655956505;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7r6qmkZmyFSR/QZW2a5u/i7ubHA3ZPKofanFmUp6yzI=;
-        b=cS+BdbqC3K5IvpqrAnWOay9cbj/9S+weJHCMhEmFnvX5v54zqZhCGyHDT59dO5x+RPhMc6
-        YhCSp/gLrAMC7qnp3VF8s2V9AQNEOc5JY+XKroqnau3pWNUV7/d+JyNurshbFann2EO1Wf
-        xLtZjcKsQiTDpMV36JO1XDLUJae3kRQ=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-278-IpeYuQFGPx2uzkRUtXs5MQ-1; Wed, 22 Jun 2022 23:55:03 -0400
-X-MC-Unique: IpeYuQFGPx2uzkRUtXs5MQ-1
-Received: by mail-lf1-f70.google.com with SMTP id c21-20020a056512105500b00479762353a4so9440704lfb.8
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 20:55:02 -0700 (PDT)
+        with ESMTP id S245495AbiFWEBn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 00:01:43 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E102D1F4
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 21:01:41 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id z191so2282815iof.6
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 21:01:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=pIuuJCIOPINbZ7MSWv+gYAnGoerpTn0hH0+cLJdnlGE=;
+        b=k0vamO9pEpEZwjR2RihStzSnP7iUHyR7dTlA0PrDNvsYPJcthptOpwumWoSNyUfI1a
+         OFbQUzmFn9Gdu3toHUD1i0HQvfWDPAD7hYGXFaB5K5p6buaadN+qpolAWM+sIWq+ByNq
+         Eend53sgNN/Sxz7T908sJPKDdGOChh7PWOenllY+0o33jQ93Bv4MNMDqJBtFN9q1h81p
+         Z8YE64WZ6M7rsAa28GZID/WKOb59NKV9wpkU19J80MC9n8HWCZe4FG6pz7Jz4kJ/GdmD
+         D4bkCBppZSTDlvTmHbyHIXt0LROR7VqZWY3CEiDi08H7Udfqzh7WZQ+CBxKeYaoAOpb0
+         ATmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7r6qmkZmyFSR/QZW2a5u/i7ubHA3ZPKofanFmUp6yzI=;
-        b=4sHNevxeoQwWX/8CYwIlFsknHEaHJ4qSKstLO0ehQ1uh5CUOds/dcYASKulPrezemg
-         zF+at5KyDLqQFNRpGrNisyroWf5d9twFokfw7+NNf6ICpEaNTa/2F9MxrCcWC77Rn9Xp
-         Es7Yz/m2+8xzM/kC5hUfj8O5vQERt9k7QaStKQ3RV7K41hYS1fr8gLO47M62WP039njO
-         3RHTVTk9aX0jCtp1KAT+fMXnniSGd+6/cJCTwu86Rg6MEFiAmnUbySrV5mQXRXGaP8KY
-         2dbKbmKgGyUEbnWt2bqcK/RO2VjrKFsr55f8ZnyRrLtuIC/HE6kJ2SpJx7wP/Kdct+jj
-         SHbA==
-X-Gm-Message-State: AJIora9wHwFwsRdd9icerzaZACHTwd4I6rDce6rveW5NPAoSfqp6EVcy
-        JewwHWmG32Oatwquy4MAqg3i0rWgoovhtEj1MpBWMMt2/0ppvrkcU55PpZvYAwXcg68AzdTkdS1
-        PO4JHl3V/5sFQN7EjM/vJWNafKNZeG0nn
-X-Received: by 2002:a2e:8958:0:b0:25a:852a:c302 with SMTP id b24-20020a2e8958000000b0025a852ac302mr3663580ljk.130.1655956501262;
-        Wed, 22 Jun 2022 20:55:01 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vrF3BW4ecp7uMp7ixhwZNP6zrC/7mtr9RBqWZSr7h7Xd5f5VroJYLw4ej6faDfjvvTZLb0DpnhA3R+kdmS/XI=
-X-Received: by 2002:a2e:8958:0:b0:25a:852a:c302 with SMTP id
- b24-20020a2e8958000000b0025a852ac302mr3663568ljk.130.1655956501094; Wed, 22
- Jun 2022 20:55:01 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=pIuuJCIOPINbZ7MSWv+gYAnGoerpTn0hH0+cLJdnlGE=;
+        b=KSVkg40nObBmVz7w7MSqs7vqvooSdjJSSWcuiV0aA+8oq+Vk6i6HvZssRV++qYguV7
+         b74DXOLd3KTsGP36QPJxOyOFSHNpoHAyFRYV24TgJ/NE73XhoqxnBCIp8p2BL2iUevin
+         8gayYtQeP8VTZTKcr8Kd7x3fnf7X8YziHMHHawltvLhm6386smfukZf1xh8KOhtyV65G
+         v4drzwTxyKXSN7v/iUDMNen/xxkcdXupcyo6ZeUom5qGChusXEixtIerJ8s72ozaCqhu
+         fkYc+rEOoF1WQL3zeNfyP1JEbBdvNdqWq82+5Pbk6Hww6NRIdymRCe0/3xi18r8FW1Bu
+         5eZw==
+X-Gm-Message-State: AJIora8XEOSblfFqbbU3/Do0gHYm8dnMYtCKHoXNLx1bY3I8j1rXrMOk
+        nUZ1dTHcLu9ZJF/Jpj3/pdo=
+X-Google-Smtp-Source: AGRyM1sj6BV5qY9phOviqq+ZUt1T/NiyZUBtQMlDY0H/+y3IdBWQa24CCDHUuRyf5p722KM86fXjIA==
+X-Received: by 2002:a5d:9345:0:b0:66c:d57a:d06 with SMTP id i5-20020a5d9345000000b0066cd57a0d06mr3585198ioo.56.1655956900251;
+        Wed, 22 Jun 2022 21:01:40 -0700 (PDT)
+Received: from ?IPV6:2601:282:800:dc80:a54b:f51d:f163:ba49? ([2601:282:800:dc80:a54b:f51d:f163:ba49])
+        by smtp.googlemail.com with ESMTPSA id n11-20020a6b410b000000b00672f405e911sm628565ioa.38.2022.06.22.21.01.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jun 2022 21:01:39 -0700 (PDT)
+Message-ID: <fef8b8d5-e07d-6d8f-841a-ead4ebee8d29@gmail.com>
+Date:   Wed, 22 Jun 2022 22:01:37 -0600
 MIME-Version: 1.0
-References: <20220622151407.51232-1-sgarzare@redhat.com>
-In-Reply-To: <20220622151407.51232-1-sgarzare@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Thu, 23 Jun 2022 11:54:50 +0800
-Message-ID: <CACGkMEsW7OAWHZvD6rjGtCE6t3BmEvpz=PmQvbHh1hMq-6RwhA@mail.gmail.com>
-Subject: Re: [PATCH] vhost-vdpa: call vhost_vdpa_cleanup during the release
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>,
-        Gautam Dawar <gautam.dawar@xilinx.com>,
-        kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.1
+Subject: Re: Netlink NLM_F_DUMP_INTR flag lost
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>, Ismael Luceno <iluceno@suse.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20220615171113.7d93af3e@pirotess>
+ <20220615090044.54229e73@kernel.org> <20220616171016.56d4ec9c@pirotess>
+ <20220616171612.66638e54@kernel.org> <20220617150110.6366d5bf@pirotess>
+ <20220622131218.1ed6f531@pirotess> <20220622165547.71846773@kernel.org>
+From:   David Ahern <dsahern@gmail.com>
+In-Reply-To: <20220622165547.71846773@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 11:14 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
->
-> Before commit 3d5698793897 ("vhost-vdpa: introduce asid based IOTLB")
-> we call vhost_vdpa_iotlb_free() during the release to clean all regions
-> mapped in the iotlb.
->
-> That commit removed vhost_vdpa_iotlb_free() and added vhost_vdpa_cleanup()
-> to do some cleanup, including deleting all mappings, but we forgot to call
-> it in vhost_vdpa_release().
->
-> This causes that if an application does not remove all mappings explicitly
-> (or it crashes), the mappings remain in the iotlb and subsequent
-> applications may fail if they map the same addresses.
->
-> Calling vhost_vdpa_cleanup() also fixes a memory leak since we are not
-> freeing `v->vdev.vqs` during the release from the same commit.
->
-> Since vhost_vdpa_cleanup() calls vhost_dev_cleanup() we can remove its
-> call from vhost_vdpa_release().
->
-> Fixes: 3d5698793897 ("vhost-vdpa: introduce asid based IOTLB")
-> Cc: gautam.dawar@xilinx.com
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+On 6/22/22 5:55 PM, Jakub Kicinski wrote:
+> On Wed, 22 Jun 2022 13:12:18 +0200 Ismael Luceno wrote:
+>> So, just for clarification:
+>>
+>> Scenario 1:
+>> - 64 KB packet is filled.
+>> - protocol table shrinks
+>> - Next iteration finds it's done
+>> - next protocol clears the seq, so nothing is flaged
+>> - ...
+>> - NLMSG_DONE (not flagged)
+>>
+>> Scenario 2:
+>> - 64 KB packet is filled.
+>> - protocol table shrinks
+>> - Next iteration finds it's done
+>> - NLMSG_DONE (flagged with NLM_F_DUMP_INTR)
+>>
+>> So, in order to break as little as possible, I was thinking about
+>> introducing a new packet iff it happens we have to signal INTR between
+>> protocols.
+>>
+>> Does that sound good?
+> 
+> Right, the question is what message can we introduce here which would
+> not break old user space?
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+I would hope a "normal" message with just the flags set is processed by
+userspace. iproute2 does - lib/libnetlink.c, rtnl_dump_filter_l(). It
+checks the nlmsg_flags first.
 
-> ---
->  drivers/vhost/vdpa.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 5ad2596c6e8a..23dcbfdfa13b 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -1209,7 +1209,7 @@ static int vhost_vdpa_release(struct inode *inode, struct file *filep)
->         vhost_dev_stop(&v->vdev);
->         vhost_vdpa_free_domain(v);
->         vhost_vdpa_config_put(v);
-> -       vhost_dev_cleanup(&v->vdev);
-> +       vhost_vdpa_cleanup(v);
->         mutex_unlock(&d->mutex);
->
->         atomic_dec(&v->opened);
-> --
-> 2.36.1
->
+> 
+> The alternative of not wiping the _DUMP_INTR flag as we move thru
+> protocols seems more and more appealing, even tho I was initially
+> dismissive.
+> 
+> We should make sure we do one last consistency check before we return 0
+> from the handlers. Or even at the end of the loop in rtnl_dump_all().
+
+Seems like netlink_dump_done should handle that for the last dump?
+
+That said, in rtnl_dump_all how about a flags check after dumpit() and
+send the message if INTR is set? would need to adjust the return code of
+rtnl_dump_all so netlink_dump knows the dump is not done yet.
+
 
