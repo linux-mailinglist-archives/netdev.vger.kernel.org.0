@@ -2,166 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D76EF5574C5
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 10:03:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48E085574E5
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 10:08:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231183AbiFWIDU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 04:03:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47706 "EHLO
+        id S229570AbiFWIIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 04:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230416AbiFWIDS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 04:03:18 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FF932C660;
-        Thu, 23 Jun 2022 01:03:15 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 4900FE0013;
-        Thu, 23 Jun 2022 08:03:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1655971394;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3E94NbzYv5YlL11+dddbLmI84sUMgfXDsFCWy0L1tXs=;
-        b=AHi+aMoCsCBw8opB/qYlKeOcOycTfdl7uPeeRAvZoClHs9kCpks4D2UOMlODssCVuIpH4p
-        EouZl5a63YJz83m2vIR6vxcjhjRszM0ASx3w2FGRnkgNWSCwVebGe9d4X3G4YiJ+/aCxNc
-        icIzo5fD2XXqnsk0rELF62cQjASXK9WFOO6fcVQMtBYocQiGIjeFW8JlntuqTTVyOdVvkh
-        6q8mI9A5Dfj0F2XsUdbd+AMYHAha9QhwpnCMSqyKzZivYyn8o7mvZorc4pjK/0GzjE9OR5
-        05MZb6C6E/Aep5tiwHVOiwCiGMVJuzr3sznCzXdFtJzO2UCTiK0hLpgqhO6vew==
-Date:   Thu, 23 Jun 2022 10:02:21 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S229609AbiFWIIJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 04:08:09 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69075186CE
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 01:08:07 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id l6-20020a25bf86000000b00668c915a3f2so13397388ybk.4
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 01:08:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=0/eFU0mji1Y5TeAdS+iFtwLqEv6S9QVvc5w9MNgKvSI=;
+        b=i4lCagk9B7bXzBTSvydWESPGMcIaTy587NpbP2mYAtDZ6jSJjooH6C+Y7/cK+vDe8p
+         tjaVXz9Xf6G/kwdEKbckuIRmvlKQc0Isg70swEZfiBMBCe+S3DqlsKW/Vc8ddBvOPVjR
+         lIvPheRYRhyuT/aqrXKaS7dyrpjaT1bLTWLtv8vqGjAQoGAdfDNhim8Pekrgn/FN48t1
+         D/gMxBflHbRNNpG4enBqhdLz1PNLhMs6W1UECUryzvBYRrirEIKEhJEPYAfsSr+73pFd
+         dJS6KNGeJqtSU8cTmMdAQUt0LX8fu7kIoK2f2KVE7L/935rTbDztPIh8OGI8pjdX5HBe
+         1Gqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=0/eFU0mji1Y5TeAdS+iFtwLqEv6S9QVvc5w9MNgKvSI=;
+        b=JDfYTCIj/BNPL/wXk5V+zhP9kClXKq3nwPMxZpIbSEkqTrp+ULgzK2ey9m/aBDI2rm
+         aWwqSGGdqky9iqWqie4Aq2XG4SHa79/R47y0FmWZ3/SPjMaDVT+BSnkNlqRx/FNcbvgQ
+         S8T2QYeazNZh7YltrYo4AGNjHCS0dqD1diFN+1nnoEX1AAxhS4sp9Bx78NU84F0O0RJx
+         7my5W1nhh/xpA0BrCuAP3ddEH2h8+cZbPROXIPY4ncgOjAtypFnB8SP2MLO+DrAAuPBP
+         x56Sj9pz1kGGaZN84rJxoZO+Z7BXN1WYNXCDVciANC3I0IeL2+Pxs+ln5+ihM/01oJ1O
+         AjEA==
+X-Gm-Message-State: AJIora+EQ8cCfKvWTiCoVA2SQhsZ76Pf8o2hemlCcWHb0jEUDV9xSbqG
+        FhkPaOkahdyoZSJPNQPoPOfUSK6laOhYTK4=
+X-Google-Smtp-Source: AGRyM1tKZUYuUk4jgIOeWzWC4DuvxuYDkBy6JPSb9aejRHfp70WxuRAHiujgQUdpkfHS1fKlas2dvEUoIip4TbQ=
+X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:8b2d:9894:73a4:8e1f])
+ (user=saravanak job=sendgmr) by 2002:a81:9b97:0:b0:313:7c6f:8685 with SMTP id
+ s145-20020a819b97000000b003137c6f8685mr9446552ywg.201.1655971686587; Thu, 23
+ Jun 2022 01:08:06 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 01:03:41 -0700
+Message-Id: <20220623080344.783549-1-saravanak@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.0.rc0.161.g10f37bed90-goog
+Subject: [PATCH v2 0/2] Fix console probe delay due to fw_devlink
+From:   Saravana Kannan <saravanak@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v8 15/16] ARM: dts: r9a06g032-rzn1d400-db: add
- switch description
-Message-ID: <20220623100221.740de5c3@fixe.home>
-In-Reply-To: <20220621115603.yzcxcu7gzwng6bcg@skbuf>
-References: <20220620110846.374787-1-clement.leger@bootlin.com>
-        <20220620110846.374787-16-clement.leger@bootlin.com>
-        <20220621115603.yzcxcu7gzwng6bcg@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        Frank Rowand <frowand.list@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Len Brown <lenb@kernel.org>,
+        Saravana Kannan <saravanak@google.com>
+Cc:     sascha hauer <sha@pengutronix.de>, peng fan <peng.fan@nxp.com>,
+        kevin hilman <khilman@kernel.org>,
+        ulf hansson <ulf.hansson@linaro.org>,
+        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
+        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
+        andrew lunn <andrew@lunn.ch>,
+        heiner kallweit <hkallweit1@gmail.com>,
+        russell king <linux@armlinux.org.uk>,
+        "david s. miller" <davem@davemloft.net>,
+        eric dumazet <edumazet@google.com>,
+        jakub kicinski <kuba@kernel.org>,
+        paolo abeni <pabeni@redhat.com>,
+        linus walleij <linus.walleij@linaro.org>,
+        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
+        david ahern <dsahern@kernel.org>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, kernel@pengutronix.de,
+        devicetree@vger.kernel.org, linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Tue, 21 Jun 2022 14:56:03 +0300,
-Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
+fw_devlink.strict=1 has been enabled by default. This was delaying the
+probe of console devices. This series fixes that.
 
-> On Mon, Jun 20, 2022 at 01:08:45PM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
-> > Add description for the switch, GMAC2 and MII converter. With these
-> > definitions, the switch port 0 and 1 (MII port 5 and 4) are working on
-> > RZ/N1D-DB board.
-> >=20
-> > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
-> > --- =20
->=20
-> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
->=20
-> Just minor comments below:
->=20
-> >  arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts | 117 ++++++++++++++++++++
-> >  1 file changed, 117 insertions(+)
-> >=20
-> > diff --git a/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts b/arch/arm/boo=
-t/dts/r9a06g032-rzn1d400-db.dts
-> > index 3f8f3ce87e12..36b898d9f115 100644
-> > --- a/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
-> > +++ b/arch/arm/boot/dts/r9a06g032-rzn1d400-db.dts
-> > @@ -8,6 +8,8 @@
-> > =20
-> >  /dts-v1/;
-> > =20
-> > +#include <dt-bindings/pinctrl/rzn1-pinctrl.h>
-> > +#include <dt-bindings/net/pcs-rzn1-miic.h>
-> >  #include "r9a06g032.dtsi"
-> > =20
-> >  / {
-> > @@ -31,3 +33,118 @@ &wdt0 {
-> >  	timeout-sec =3D <60>;
-> >  	status =3D "okay";
-> >  };
-> > +
-> > +&gmac2 {
-> > +	status =3D "okay";
-> > +	phy-mode =3D "gmii";
-> > +	fixed-link {
-> > +		speed =3D <1000>;
-> > +		full-duplex;
-> > +	};
-> > +};
-> > +
-> > +&switch {
-> > +	status =3D "okay";
-> > +	#address-cells =3D <1>;
-> > +	#size-cells =3D <0>;
-> > +
-> > +	pinctrl-names =3D "default";
-> > +	pinctrl-0 =3D <&pins_mdio1>, <&pins_eth3>, <&pins_eth4>;
-> > +
-> > +	dsa,member =3D <0 0>; =20
->=20
-> This doesn't really have any value for single-switch DSA trees, since
-> that is the implicit tree id/switch id, but it doesn't hurt, either.
+v1->v2:
+- Added missing NULL check
+- Added Tested-by tags
 
-Ok, let's remove it then if it's useless.
+-Saravana
 
->=20
-> > +
-> > +	mdio {
-> > +		clock-frequency =3D <2500000>;
-> > +
-> > +		#address-cells =3D <1>;
-> > +		#size-cells =3D <0>;
-> > +
-> > +		switch0phy4: ethernet-phy@4{ =20
->=20
-> Space between ethernet-phy@4 and {.
->=20
-> > +			reg =3D <4>;
-> > +			micrel,led-mode =3D <1>;
-> > +		};
-> > +
-> > +		switch0phy5: ethernet-phy@5{ =20
->=20
-> Same thing here.
+cc: sascha hauer <sha@pengutronix.de>
+cc: peng fan <peng.fan@nxp.com>
+cc: kevin hilman <khilman@kernel.org>
+cc: ulf hansson <ulf.hansson@linaro.org>
+cc: len brown <len.brown@intel.com>
+cc: pavel machek <pavel@ucw.cz>
+cc: joerg roedel <joro@8bytes.org>
+cc: will deacon <will@kernel.org>
+cc: andrew lunn <andrew@lunn.ch>
+cc: heiner kallweit <hkallweit1@gmail.com>
+cc: russell king <linux@armlinux.org.uk>
+cc: "david s. miller" <davem@davemloft.net>
+cc: eric dumazet <edumazet@google.com>
+cc: jakub kicinski <kuba@kernel.org>
+cc: paolo abeni <pabeni@redhat.com>
+cc: linus walleij <linus.walleij@linaro.org>
+cc: hideaki yoshifuji <yoshfuji@linux-ipv6.org>
+cc: david ahern <dsahern@kernel.org>
+cc: kernel-team@android.com
+cc: linux-kernel@vger.kernel.org
+cc: linux-pm@vger.kernel.org
+cc: iommu@lists.linux-foundation.org
+cc: netdev@vger.kernel.org
+cc: linux-gpio@vger.kernel.org
+Cc: kernel@pengutronix.de
 
-Acked
+Saravana Kannan (2):
+  driver core: fw_devlink: Allow firmware to mark devices as best effort
+  of: base: Avoid console probe delay when fw_devlink.strict=1
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+ drivers/base/core.c    | 3 ++-
+ drivers/of/base.c      | 2 ++
+ include/linux/fwnode.h | 4 ++++
+ 3 files changed, 8 insertions(+), 1 deletion(-)
+
+-- 
+2.37.0.rc0.161.g10f37bed90-goog
+
