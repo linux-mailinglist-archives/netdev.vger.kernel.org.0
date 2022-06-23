@@ -2,278 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CE3A55788A
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 13:17:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DD8B5578D3
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 13:38:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230274AbiFWLRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 07:17:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38780 "EHLO
+        id S229826AbiFWLii (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 07:38:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbiFWLRp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 07:17:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C96E04BB92
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 04:17:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655983063;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=qlxtbceGc9v9ykUf+1lPqFcb6Nv0A3pMmJbFZF2rabY=;
-        b=HTsORTJGMtenySG7mDwEbJvMHm7Fpo14PwkPciyz8Rf1RQkl92ASy1DILR1WVxJlURwVHD
-        chXO8IlNhnlIHmMXP5IIrUW7hd+HXBZSrGtBq9wrAZCTolYbAOQ37/pJygfGGvOQKIAir7
-        zin4otYzagFIHiylolqw1CJ70QNy8VQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-620-AyvSGJfMPMuaV0kRDZzpcA-1; Thu, 23 Jun 2022 07:17:40 -0400
-X-MC-Unique: AyvSGJfMPMuaV0kRDZzpcA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 27FFC19711BE;
-        Thu, 23 Jun 2022 11:17:40 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.192.243])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1848A2026D64;
-        Thu, 23 Jun 2022 11:17:38 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     torvalds@linux-foundation.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        with ESMTP id S229482AbiFWLih (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 07:38:37 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2062.outbound.protection.outlook.com [40.107.237.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3EAF49F81;
+        Thu, 23 Jun 2022 04:38:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FvfocXfBWS+BvSZop8ByxDNJpJimaWFNHvB3Kv5weecgCkVkPtmcDdL9VtSvos44A3PIeIYtXZmUiLtpT9oxIrgCLe0QFt10n2Qx8E6eGoD+vsFWKCSujvGWXHORas3HZV/KdSFkQ6O4gxfSRHLPv9u1TSvX7KOMNcdf4nbsomdVYcC3Do7/aPnmR37mT9kJEHqL8pDQDuMhjI+/e+a2kmMLXeNYsO3pjqXHW8EhMdQr2nOhI9k3UiA25GurSs6jBTWnkzShfFzwVi7TEnbPAS9DxlQS9+VcVHtTubgc+TEF6euHWwCVUUSojm0YcS/5Zm+x3rlNaIVKAGv/S4wYqA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aZnTtJFplFu5UwUYp7KDaX9bi1S+5rCZh9xW0VWixyc=;
+ b=A4C9MOFOTnFx5+0eppHGEI50TTiBae1NuxtPaTBkWbXe6mIktlFgwlTAkISNc6eivE5i/xc4MtqbFu8yqz7CpDXguDkl6Nnan4z+Zuv0XxYLEgur0u2jTHKPtZTMprqSNEMudRktlRoQ14G4xaLAHQL9qeOJ94sHP/n4M9LWugZV4LYr4eTxejG3B/pxZ7oQEnPdv+LDj+4h39ep3fzgDrQH6pi1O4jEWTMrzgbDgBMETRYWjZXZQAdbVWgYpx/4whRCK4flwv/2DWzskBqMy+4FJXJTo9q93QCu45x5jEu5KwHJ5OCQZwC3XlejW853eisXBahn4wgRhgBIN1cJuQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aZnTtJFplFu5UwUYp7KDaX9bi1S+5rCZh9xW0VWixyc=;
+ b=LRqHbsTLbrMequNa/wnx5z7h8Wh/tdfh8Ajx505nVrfanzSK7nyYG/rWJdsCQdFN54tTvE8d955CaJkzDJ7PBMYN/G8bv4W3LYJvUgLNvOOvw4wp3z4jWJYeGechu16JLAtnhuI3MsgN26OGKNlqPEoRDmHOIFY4voUdlUsMJ4jsGSybmeInpzSEc/NiHA34WOCyhG5S6ve4Sw9Xx+G/opMdADckTZY+e7c2OVZWiSBGXHxt1aBvz4i2zjLhu591Plc8nLzGwfWgOTZiL3eBoGCTS3fVkp40GokHZOf9sgxEORc1jkgwHvu5iIJp/bDfJtOmfb0QmIaVCqJSJabnGA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from IA1PR12MB6163.namprd12.prod.outlook.com (2603:10b6:208:3e9::22)
+ by SA0PR12MB4368.namprd12.prod.outlook.com (2603:10b6:806:9f::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Thu, 23 Jun
+ 2022 11:38:32 +0000
+Received: from IA1PR12MB6163.namprd12.prod.outlook.com
+ ([fe80::6da4:ce53:39ae:8dbf]) by IA1PR12MB6163.namprd12.prod.outlook.com
+ ([fe80::6da4:ce53:39ae:8dbf%7]) with mapi id 15.20.5353.018; Thu, 23 Jun 2022
+ 11:38:32 +0000
+Date:   Thu, 23 Jun 2022 14:38:26 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Jiang Jian <jiangjian@cdjrlc.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, petrm@nvidia.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Networking for 5.19-rc4
-Date:   Thu, 23 Jun 2022 13:17:11 +0200
-Message-Id: <20220623111711.25693-1-pabeni@redhat.com>
+Subject: Re: [PATCH] mlxsw: drop unexpected word 'for' in comments
+Message-ID: <YrRQssdIkiIalC2r@shredder>
+References: <20220623104601.48149-1-jiangjian@cdjrlc.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220623104601.48149-1-jiangjian@cdjrlc.com>
+X-ClientProxiedBy: VI1P189CA0031.EURP189.PROD.OUTLOOK.COM
+ (2603:10a6:802:2a::44) To IA1PR12MB6163.namprd12.prod.outlook.com
+ (2603:10b6:208:3e9::22)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1eb556de-d7c9-4302-44c7-08da550ce66f
+X-MS-TrafficTypeDiagnostic: SA0PR12MB4368:EE_
+X-Microsoft-Antispam-PRVS: <SA0PR12MB43682925638B0417B71A95F4B2B59@SA0PR12MB4368.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WvEO+yRBeVGglf4MbhRETskBVobso3vkqwinIwB+1sNIHhFGQfPKt3sNJoe9IIWn39nvhbdzSOgAk2BemjZoFGtqLxKV/nBoW3aGNkngY9Ym6kBVKjIMA3PfcUR1/0mimuyzHTN7aW4ytpapTUKzbCGnYKbwm1FMfJWi20vhZZO2AyARndLe8jTRkFZAiZJcnMoU2Ju4c6LrHh4IWNJKeuQkldKrWrqpgke6EY41lcWDfhmP4kXR509t33NmMKEy1ndnHGPqFwYA3DXBn/+NJhoVj8qf558zkiLXL7cDPF5ONcf5H7tMGHQzRsmQWvfqNoth7O2hI4ChsPxZlkGsD5nlvA+M00Ife+HGcatSCLZ0Qfz+hbIz9rXG9/RERvtRTL+cIEAPYtq7X5laCFmPBIMZxRxMUvy0AxWFD9e7Cv0s2cb3MkKdBTGgoNsiDj/EViYhiox2j15duKOw2AlsaLq3hYGit4ETw5LzjBj8ujIEtDNWz3uY35DYICIJcwjmf5HBAlL06C6cf0T2gEMlFIjAlyCW1isi2+EPyQkoJGKGrkyHh2CMB8MtoRkNIrTz44PzqigqPQ0yuXbOZ0mEa45BbLMZXyM3sM7A/EA2wLikjHnKJ4IO5msmGP0ncnIPk31jOPIhneSY007v64iJ0DQ62d0f4pOcK22oQ5kHNVLBvEpxb0/PuTSJsbEJSs91bhv1FQ6oxioFGwrXJSQZ8A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6163.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(396003)(346002)(136003)(366004)(39860400002)(376002)(5660300002)(478600001)(8936002)(6486002)(4744005)(33716001)(6506007)(9686003)(26005)(6512007)(186003)(86362001)(2906002)(316002)(8676002)(4326008)(66556008)(66946007)(66476007)(38100700002)(41300700001)(6916009)(6666004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4wgU2tG7jGs7LHu4SAptK8LF7DIxVC02TZfAVQ6kRAF3wOnYxwlSFiZ0KDIQ?=
+ =?us-ascii?Q?jrhSwfmheOM7qXUVlBnD+PZBd9wMtVZLW/gbkzttpPpXHb7dzu+UWBtLgxTD?=
+ =?us-ascii?Q?0/PzK4avF+H4vX2Lf9YiQP/CVvnOmI2pFcB5OPKHh89BJ/HaghtRsJJqCR/r?=
+ =?us-ascii?Q?xo4AuA9TVC0xYV+Uy169/E90NoLZfHzKhBTvrf+0ANT6NGsTV5uecDaTPZb+?=
+ =?us-ascii?Q?J239HY0wZRhB/T0mUY1qwt6x+0dp4OKgKFHcKXTBmtlBaiUmN3UxjjZbEGnw?=
+ =?us-ascii?Q?X25mAE+HPooQ6rbx867ZOeXNDf2mMrpxUgoH97lVoqSn5asUJPAH/8VeLO54?=
+ =?us-ascii?Q?9IUS1hLDL5+yeo2OeLpv4b+MXhGIT1+snh5WcGUAOP4TwxZS6U462yI8NCvT?=
+ =?us-ascii?Q?migk9yYlgRCnUzTd/VrvzmY3DSLrb9IENj8TuZiavWRvuNlN6MPhGL8xddza?=
+ =?us-ascii?Q?WPRAGOp9jeAu8/a6O/41Ih03NGhTo1j9cpyd2DuWPfk71b1BQxGD56Iy+u7Q?=
+ =?us-ascii?Q?NvL1n7UC8JIxyfBZAkdc4Kuorpps6u8T8UlX8KGdPQmeocKkTqC/8BxuRJ/R?=
+ =?us-ascii?Q?dzqc6seuGVFeEidiBjK6AXJBLxg2EIhTdA9bWDyjsr4xccXZe0LNAnNM3vWY?=
+ =?us-ascii?Q?cBhDURFxZaIqbueSFUosX9t34jeWUOSl5qZXUhcnPsLvM8PerWLuPEgkH9XX?=
+ =?us-ascii?Q?FyttKI5KpEkZlBgTIF1aHIpHbOFchIqDJL7WSN5UQ8arR3c7KuUKYgn7l5pq?=
+ =?us-ascii?Q?Az53jOVu//auzLJSFILIBBThbPtkZ9rq2yvljMx/eQYjr6scki/0scRMwqKx?=
+ =?us-ascii?Q?hAlEenIUxyaLU4Cveei9WcAHVsjozZMA6UhA2+TQGGO9YzTNsSkgSJQ1wd7i?=
+ =?us-ascii?Q?nlRIx2PI5Wv7ZzgLTGqrH946Bhym5sC2S6obW34eq3UaV9aYT8Y0w2V+2ZOT?=
+ =?us-ascii?Q?pFhl1HEQzryS1SNnlTcQXaRJD7O2F7c72tqGnwn3IGpCYmPJfAA/EMQyP5Gw?=
+ =?us-ascii?Q?nIDPm1yQXpjNNTQlqFZr4VLcxt/2t2Oh0fyyZJBA5Pm7K5FRCkjIM0EJD8sb?=
+ =?us-ascii?Q?YiiW4VyFfOfcu8s7VVyTX6SJtaz6aRvLho4hnptbY5ATLg0bsgbigRwFbgeh?=
+ =?us-ascii?Q?6jZLsGd58ujPP4UmERio5vckq7a6iXA/2l14a5e2VeU7CNkVSOFTuAuvD1jQ?=
+ =?us-ascii?Q?DQ6fgeXGFXNjImEfcclMrw1hIvDW7/0WM9obYdqMJ8T9NleNXx8rD2FsEXNv?=
+ =?us-ascii?Q?3Fy5gvEGtIaCdkKme2EASTZMnlYlhlrKp17xEDyMrdzwzZOVVMe1BQ/QtbFu?=
+ =?us-ascii?Q?4UQ5YOIVQQUsFoH+rrtK+kY5vf99RMwsp8B89bAl/uUq1JiLBAkc/LOM5pUY?=
+ =?us-ascii?Q?Vyb5gtjV9xh81CQw3bNjnmOE8WuhRwlQLTBxR7zcOycCNywsyqAcHcrwn06Y?=
+ =?us-ascii?Q?r1LgMZDw1sNxtn6sONzea/gQRktYJDz/kbEqMINrt0nBF7BuBHBlJ9p3iCmT?=
+ =?us-ascii?Q?/5suim08Zu8YE8INl/6KLcqLyKgWRyfZsKgrr1TfBq19/+ryPPnrUDz/CP9q?=
+ =?us-ascii?Q?SypFrRR73cBWYocZQ2hQUTYAI83M7JNuh3WpBKg+30uqFxHxtC2otogH8OBg?=
+ =?us-ascii?Q?4nO13TIDiNA7Pt2g7afecPMa20/KLWZZ9Fft6Z2qsbytE9uMh0DuqOufZStU?=
+ =?us-ascii?Q?cMB4BN46kPuqIxWiD6qbQVXFgpoiScCxnNqiNO7Uo7MdY/SagTK7Duuj+AAx?=
+ =?us-ascii?Q?vsoi2pkwMQ=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1eb556de-d7c9-4302-44c7-08da550ce66f
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6163.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2022 11:38:32.1162
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uv2exCj2gGncqswB/Wd5uUvNrktPMJbA5rNGWXBBKFvjjyrsac71CVNIbvimKT4SEiMvRdF6bqx72OdZbR0cyA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4368
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Linus!
+On Thu, Jun 23, 2022 at 06:46:01PM +0800, Jiang Jian wrote:
+> there is an unexpected word 'for' in the comments that need to be dropped
+> 
+> file - drivers/net/ethernet/mellanox/mlxsw/spectrum2_kvdl.c
+> line - 18
+> 
+> 	 * ids for for this purpose in partition definition.
+> changed to:
+> 
+> 	 * ids for this purpose in partition definition.
+> 
+> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
 
-The following changes since commit 48a23ec6ff2b2a5effe8d3ae5f17fc6b7f35df65:
+For for net-next:
 
-  Merge tag 'net-5.19-rc3' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-06-16 11:51:32 -0700)
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.19-rc4
-
-for you to fetch changes up to 12378a5a75e33f34f8586706eb61cca9e6d4690c:
-
-  net: openvswitch: fix parsing of nw_proto for IPv6 fragments (2022-06-23 11:44:01 +0200)
-
-----------------------------------------------------------------
-Networking fixes for 5.19-rc4, including fixes from bpf and netfilter.
-
-Current release - regressions:
-  - netfilter: cttimeout: fix slab-out-of-bounds read in cttimeout_net_exit
-
-Current release - new code bugs:
-  - bpf: ftrace: keep address offset in ftrace_lookup_symbols
-
-  - bpf: force cookies array to follow symbols sorting
-
-Previous releases - regressions:
-  - ipv4: ping: fix bind address validity check
-
-  - tipc: fix use-after-free read in tipc_named_reinit
-
-  - eth: veth: add updating of trans_start
-
-Previous releases - always broken:
-  - sock: redo the psock vs ULP protection check
-
-  - netfilter: nf_dup_netdev: fix skb_under_panic
-
-  - bpf: fix request_sock leak in sk lookup helpers
-
-  - eth: igb: fix a use-after-free issue in igb_clean_tx_ring
-
-  - eth: ice: prohibit improper channel config for DCB
-
-  - eth: at803x: fix null pointer dereference on AR9331 phy
-
-  - eth: virtio_net: fix xdp_rxq_info bug after suspend/resume
-
-Misc:
-  - eth: hinic: replace memcpy() with direct assignment
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-
-----------------------------------------------------------------
-Alexei Starovoitov (1):
-      Merge branch 'bpf: Fix cookie values for kprobe multi'
-
-Anatolii Gerasymenko (2):
-      ice: ethtool: advertise 1000M speeds properly
-      ice: ethtool: Prohibit improper channel config for DCB
-
-Christian Marangi (2):
-      net: dsa: qca8k: reset cpu port on MTU change
-      net: dsa: qca8k: reduce mgmt ethernet timeout
-
-Ciara Loftus (1):
-      xsk: Fix generic transmit when completion queue reservation fails
-
-Claudiu Manoil (1):
-      phy: aquantia: Fix AN when higher speeds than 1G are not advertised
-
-Daniel Borkmann (1):
-      bpf, docs: Update some of the JIT/maintenance entries
-
-Eric Dumazet (2):
-      net: fix data-race in dev_isalive()
-      erspan: do not assume transport header is always set
-
-Florian Westphal (4):
-      netfilter: use get_random_u32 instead of prandom
-      netfilter: cttimeout: fix slab-out-of-bounds read typo in cttimeout_net_exit
-      netfilter: nf_dup_netdev: do not push mac header a second time
-      netfilter: nf_dup_netdev: add and use recursion counter
-
-Hoang Le (1):
-      tipc: fix use-after-free Read in tipc_named_reinit
-
-Ivan Vecera (1):
-      ethtool: Fix get module eeprom fallback
-
-Jakub Kicinski (6):
-      Merge https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
-      Merge git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf
-      Revert "drivers/net/ethernet/neterion/vxge: Fix a use-after-free bug in vxge-main.c"
-      Merge branch '100GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue
-      Revert "net/tls: fix tls_sk_proto_close executed repeatedly"
-      sock: redo the psock vs ULP protection check
-
-Jakub Sitnicki (2):
-      bpf, x86: Fix tail call count offset calculation on bpf2bpf call
-      selftests/bpf: Test tail call counting with bpf2bpf and data on stack
-
-Jay Vosburgh (2):
-      veth: Add updating of trans_start
-      bonding: ARP monitor spams NETDEV_NOTIFY_PEERS notifiers
-
-Jie2x Zhou (1):
-      selftests: netfilter: correct PKTGEN_SCRIPT_PATHS in nft_concat_range.sh
-
-Jiri Olsa (4):
-      selftests/bpf: Shuffle cookies symbols in kprobe multi test
-      ftrace: Keep address offset in ftrace_lookup_symbols
-      bpf: Force cookies array to follow symbols sorting
-      selftest/bpf: Fix kprobe_multi bench test
-
-Jon Maxwell (1):
-      bpf: Fix request_sock leak in sk lookup helpers
-
-Kai-Heng Feng (1):
-      igb: Make DMA faster when CPU is active on the PCIe link
-
-Kees Cook (1):
-      hinic: Replace memcpy() with direct assignment
-
-Kumar Kartikeya Dwivedi (1):
-      bpf: Limit maximum modifier chain length in btf_check_type_tags
-
-Lorenzo Bianconi (1):
-      igb: fix a use-after-free issue in igb_clean_tx_ring
-
-Lukas Wunner (1):
-      net: phy: smsc: Disable Energy Detect Power-Down in interrupt mode
-
-Marcin Szycik (1):
-      ice: ignore protocol field in GTP offload
-
-Masami Hiramatsu (Google) (2):
-      fprobe, samples: Add use_trace option and show hit/missed counter
-      rethook: Reject getting a rethook if RCU is not watching
-
-Oleksij Rempel (1):
-      net: phy: at803x: fix NULL pointer dereference on AR9331 PHY
-
-Peilin Ye (1):
-      net/sched: sch_netem: Fix arithmetic in netem_dump() for 32-bit platforms
-
-Riccardo Paolo Bestetti (2):
-      ipv4: ping: fix bind address validity check
-      ipv4: fix bind address validity regression tests
-
-Rosemarie O'Riorden (1):
-      net: openvswitch: fix parsing of nw_proto for IPv6 fragments
-
-Stephan Gerhold (1):
-      virtio_net: fix xdp_rxq_info bug after suspend/resume
-
-Vadim Fedorenko (1):
-      MAINTAINERS: Add a maintainer for OCP Time Card
-
-Wentao_Liang (1):
-      drivers/net/ethernet/neterion/vxge: Fix a use-after-free bug in vxge-main.c
-
-Wojciech Drewek (1):
-      ice: Fix switchdev rules book keeping
-
-Xu Jia (1):
-      hamradio: 6pack: fix array-index-out-of-bounds in decode_std_command()
-
-Ziyang Xuan (1):
-      net/tls: fix tls_sk_proto_close executed repeatedly
-
- MAINTAINERS                                        | 42 ++++++------
- arch/x86/net/bpf_jit_comp.c                        |  3 +-
- drivers/net/bonding/bond_main.c                    |  4 +-
- drivers/net/dsa/qca8k.c                            | 22 +++++-
- drivers/net/dsa/qca8k.h                            |  2 +-
- drivers/net/ethernet/huawei/hinic/hinic_devlink.c  |  4 +-
- drivers/net/ethernet/intel/ice/ice_ethtool.c       | 49 +++++++++++++-
- drivers/net/ethernet/intel/ice/ice_lib.c           | 42 ++++++++++--
- drivers/net/ethernet/intel/ice/ice_tc_lib.c        |  5 +-
- drivers/net/ethernet/intel/igb/igb_main.c          | 19 +++---
- drivers/net/hamradio/6pack.c                       |  9 ++-
- drivers/net/phy/aquantia_main.c                    | 15 ++++-
- drivers/net/phy/at803x.c                           |  6 ++
- drivers/net/phy/smsc.c                             |  6 +-
- drivers/net/veth.c                                 |  4 ++
- drivers/net/virtio_net.c                           | 25 ++-----
- include/net/inet_sock.h                            |  5 ++
- kernel/bpf/btf.c                                   |  5 ++
- kernel/trace/bpf_trace.c                           | 60 ++++++++++++-----
- kernel/trace/ftrace.c                              | 13 +++-
- kernel/trace/rethook.c                             |  9 +++
- net/core/dev.c                                     | 25 ++++---
- net/core/filter.c                                  | 34 ++++++++--
- net/core/net-sysfs.c                               |  1 +
- net/core/skmsg.c                                   |  5 ++
- net/ethtool/eeprom.c                               |  2 +-
- net/ipv4/ip_gre.c                                  | 15 +++--
- net/ipv4/ping.c                                    | 10 ++-
- net/ipv4/tcp_bpf.c                                 |  3 -
- net/ipv6/ip6_gre.c                                 | 15 +++--
- net/netfilter/nf_dup_netdev.c                      | 25 +++++--
- net/netfilter/nfnetlink_cttimeout.c                |  2 +-
- net/netfilter/nft_meta.c                           | 13 +---
- net/netfilter/nft_numgen.c                         | 12 +---
- net/openvswitch/flow.c                             |  2 +-
- net/sched/sch_netem.c                              |  4 +-
- net/tipc/core.c                                    |  3 +-
- net/tls/tls_main.c                                 |  2 +
- net/xdp/xsk.c                                      | 16 +++--
- samples/fprobe/fprobe_example.c                    | 29 ++++++--
- .../testing/selftests/bpf/prog_tests/bpf_cookie.c  | 78 +++++++++++-----------
- .../selftests/bpf/prog_tests/kprobe_multi_test.c   |  3 +
- tools/testing/selftests/bpf/prog_tests/tailcalls.c | 55 +++++++++++++++
- tools/testing/selftests/bpf/progs/kprobe_multi.c   | 24 +++----
- .../selftests/bpf/progs/tailcall_bpf2bpf6.c        | 42 ++++++++++++
- tools/testing/selftests/net/fcnal-test.sh          | 61 +++++++++++++++--
- .../selftests/netfilter/nft_concat_range.sh        |  2 +-
- 47 files changed, 617 insertions(+), 215 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/tailcall_bpf2bpf6.c
-
+:)
