@@ -2,95 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C717755895C
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 21:45:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2688A55895D
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 21:45:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231802AbiFWToO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 15:44:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37544 "EHLO
+        id S231268AbiFWTol (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 15:44:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231151AbiFWToB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 15:44:01 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C64FF69259
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 12:35:42 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id m68-20020a253f47000000b006683bd91962so407312yba.0
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 12:35:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=MAXurkH5YIvUK83RyTev2ultyjV4VR5HwNSHHeg+BOM=;
-        b=IakdnuylQHewX6zbazfIuobiRafKXKDncjqAHOQxKP8yKpKuxaoIu+6B1PwspzEnDP
-         o6JCgYyKVvuZIkeL5TFY1y0WNMAbwrcvvBiX1u1f/fRd0Us9+YAOx/Rfme1wEl1sIq3r
-         5J3mluZKzaq3bELEhIeQaE29gSn8SlXBZVvUXKidWzx3VuVBLKeCQZNgBEG+EWH11p+v
-         CvbzlO4wQDEG96BiKyJ2oQegSLJfxqHDEp7USBV90yqSFN9Y0h7LEXxwArCG31WWTHV5
-         F5nSorm6D50d6F/Sjiq5dUJ/Mt1pdhkldJR0qfturCby2OXCV/X8rayfdcKFAJUI/K+R
-         qeEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=MAXurkH5YIvUK83RyTev2ultyjV4VR5HwNSHHeg+BOM=;
-        b=Vgw79q+nI+3xP/49hO3t5Sc5FOuEp/ZssEavVhe8B+D5fPjvbFjOynueN2RZhBdeM5
-         +DIryvYlWWS5a9ks6XoKdxB9sZDHwEw+1yoHyTBftnwIOH2tVB1co3fHoduHIBqQWvPH
-         RhcHg/Z8Dhza0Iah8ULo3YmOfzHR+reM7MfFeHEb07dNnFqExSXXc3cvN7WgkjW32MG/
-         VlOboH1T9gLQOakaphM3nzulBagrRe+/qtd3h+AUplDXWkRPxvg8WW2Y0G9v7xSAY2fG
-         RpH181Mang9TIAAlopOhpH1KWUN1pHTRumeAPGJEq0gg0aXK8juZlMmRWlqmyJupJkqb
-         yePQ==
-X-Gm-Message-State: AJIora8M48n6gaEu7069V3ngZcl29rLX/XzcsJnniKfxS7vDa12oVCGo
-        i5oWGEaXqikS9RaYZXMHUOPGCxRKEwZ1pg==
-X-Google-Smtp-Source: AGRyM1u7QOVUPg40OzyXpOoyLbOM6XsfPIyZL609yXeNZ3Glxmj44h5MO+fyLIsKltJOC4wP7RkhfHxQENoXbg==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a81:1b4b:0:b0:317:a2dd:31fa with SMTP id
- b72-20020a811b4b000000b00317a2dd31famr12613260ywb.476.1656012942007; Thu, 23
- Jun 2022 12:35:42 -0700 (PDT)
-Date:   Thu, 23 Jun 2022 19:35:40 +0000
-Message-Id: <20220623193540.2851799-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
-Subject: [PATCH net-next] raw: fix a typo in raw_icmp_error()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Eric Dumazet <edumazet@google.com>,
-        John Sperbeck <jsperbeck@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229806AbiFWToT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 15:44:19 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 83066262C;
+        Thu, 23 Jun 2022 12:36:44 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 21:36:41 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Wei Han <lailitty@foxmail.com>
+Cc:     kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev
+Subject: Re: [PATCH] netfilter: xt_esp: add support for ESP match in NAT
+ Traversal
+Message-ID: <YrTAyW0phD0OiYN/@salvia>
+References: <tencent_DDE91CB7412D427A442DB4362364DC04F20A@qq.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <tencent_DDE91CB7412D427A442DB4362364DC04F20A@qq.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I accidentally broke IPv4 traceroute, by swaping iph->saddr and iph->daddr.
+On Thu, Jun 23, 2022 at 08:42:48PM +0800, Wei Han wrote:
+> when the ESP packets traversing Network Address Translators,
+> which are encapsulated and decapsulated inside UDP packets,
+> so we need to get ESP data in UDP.
+> 
+> Signed-off-by: Wei Han <lailitty@foxmail.com>
+> ---
+>  net/netfilter/xt_esp.c | 54 +++++++++++++++++++++++++++++++++++-------
+>  1 file changed, 45 insertions(+), 9 deletions(-)
+> 
+> diff --git a/net/netfilter/xt_esp.c b/net/netfilter/xt_esp.c
+> index 2a1c0ad0ff07..c3feb79a830a 100644
+> --- a/net/netfilter/xt_esp.c
+> +++ b/net/netfilter/xt_esp.c
+> @@ -8,12 +8,14 @@
+>  #include <linux/skbuff.h>
+>  #include <linux/in.h>
+>  #include <linux/ip.h>
+> +#include <linux/ipv6.h>
+>  
+>  #include <linux/netfilter/xt_esp.h>
+>  #include <linux/netfilter/x_tables.h>
+>  
+>  #include <linux/netfilter_ipv4/ip_tables.h>
+>  #include <linux/netfilter_ipv6/ip6_tables.h>
+> +#include <net/ip.h>
+>  
+>  MODULE_LICENSE("GPL");
+>  MODULE_AUTHOR("Yon Uriarte <yon@astaro.de>");
+> @@ -39,17 +41,53 @@ static bool esp_mt(const struct sk_buff *skb, struct xt_action_param *par)
+>  	struct ip_esp_hdr _esp;
+>  	const struct xt_esp *espinfo = par->matchinfo;
+>  
+> +	const struct iphdr *iph = NULL;
+> +	const struct ipv6hdr *ip6h = NULL;
+> +	const struct udphdr *udph = NULL;
+> +	struct udphdr _udph;
+> +	int proto = -1;
+> +
+>  	/* Must not be a fragment. */
+>  	if (par->fragoff != 0)
+>  		return false;
+>  
+> -	eh = skb_header_pointer(skb, par->thoff, sizeof(_esp), &_esp);
+> -	if (eh == NULL) {
+> -		/* We've been asked to examine this packet, and we
+> -		 * can't.  Hence, no choice but to drop.
+> -		 */
+> -		pr_debug("Dropping evil ESP tinygram.\n");
+> -		par->hotdrop = true;
+> +	if (xt_family(par) == NFPROTO_IPV6) {
+> +		ip6h = ipv6_hdr(skb);
+> +		if (!ip6h)
+> +			return false;
+> +		proto = ip6h->nexthdr;
+> +	} else {
+> +		iph = ip_hdr(skb);
+> +		if (!iph)
+> +			return false;
+> +		proto = iph->protocol;
+> +	}
+> +
+> +	if (proto == IPPROTO_UDP) {
+> +		//for NAT-T
+> +		udph = skb_header_pointer(skb, par->thoff, sizeof(_udph), &_udph);
+> +		if (udph && (udph->source == htons(4500) || udph->dest == htons(4500))) {
+> +			/* Not deal with above data it don't conflict with SPI
+> +			 * 1.IKE Header Format for Port 4500(Non-ESP Marker 0x00000000)
+> +			 * 2.NAT-Keepalive Packet Format(0xFF)
+> +			 */
+> +			eh = (struct ip_esp_hdr *)((char *)udph + sizeof(struct udphdr));
 
-Probably because raw_icmp_error() and raw_v4_input()
-use different order for iph->saddr and iph->daddr.
+this is not safe, skbuff might not be linear.
 
-Fixes: ba44f8182ec2 ("raw: use more conventional iterators")
-Reported-by: John Sperbeck<jsperbeck@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv4/raw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> +		} else {
+> +			return false;
+> +		}
+> +	} else if (proto == IPPROTO_ESP) {
+> +		//not NAT-T
+> +		eh = skb_header_pointer(skb, par->thoff, sizeof(_esp), &_esp);
+> +		if (!eh) {
+> +			/* We've been asked to examine this packet, and we
+> +			 * can't.  Hence, no choice but to drop.
+> +			 */
+> +			pr_debug("Dropping evil ESP tinygram.\n");
+> +			par->hotdrop = true;
+> +			return false;
+> +		}
 
-diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
-index 027389969915e456b0009e2a0b4ad81afb836e9d..006c1f0ed8b4731a8c64de282409e4bb03a6c1a6 100644
---- a/net/ipv4/raw.c
-+++ b/net/ipv4/raw.c
-@@ -278,7 +278,7 @@ void raw_icmp_error(struct sk_buff *skb, int protocol, u32 info)
- 	sk_nulls_for_each(sk, hnode, hlist) {
- 		iph = (const struct iphdr *)skb->data;
- 		if (!raw_v4_match(net, sk, iph->protocol,
--				  iph->saddr, iph->daddr, dif, sdif))
-+				  iph->daddr, iph->saddr, dif, sdif))
- 			continue;
- 		raw_err(sk, skb, info);
- 	}
--- 
-2.37.0.rc0.104.g0611611a94-goog
+This is loose, the user does not have a way to restrict to either
+ESP over UDP or native ESP. I don't think this is going to look nice
+from iptables syntax perspective to restrict either one or another
+mode.
 
+> +	} else {
+> +		//not esp data
+>  		return false;
+>  	}
+>  
+> @@ -76,7 +114,6 @@ static struct xt_match esp_mt_reg[] __read_mostly = {
+>  		.checkentry	= esp_mt_check,
+>  		.match		= esp_mt,
+>  		.matchsize	= sizeof(struct xt_esp),
+> -		.proto		= IPPROTO_ESP,
+>  		.me		= THIS_MODULE,
+>  	},
+>  	{
+> @@ -85,7 +122,6 @@ static struct xt_match esp_mt_reg[] __read_mostly = {
+>  		.checkentry	= esp_mt_check,
+>  		.match		= esp_mt,
+>  		.matchsize	= sizeof(struct xt_esp),
+> -		.proto		= IPPROTO_ESP,
+>  		.me		= THIS_MODULE,
+>  	},
+>  };
+> -- 
+> 2.17.1
+> 
