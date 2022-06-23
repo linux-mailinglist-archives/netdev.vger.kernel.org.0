@@ -2,71 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEDFF558BBD
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 01:31:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB0D7558BCA
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 01:36:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230390AbiFWXbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 19:31:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42192 "EHLO
+        id S229754AbiFWXg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 19:36:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230399AbiFWXbv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 19:31:51 -0400
-Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825DD4CD42
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 16:31:49 -0700 (PDT)
-Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id E03C4500583;
-        Fri, 24 Jun 2022 02:30:15 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru E03C4500583
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1656027016; bh=o1JLwOmL2Z/wVltkZhoi1Xg3NW62y4VoVN9ODPWPVDw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=k/ZnebWh3Abdtz0ekbwhSgmgit2Qwjeu+5kecDioggTOdiiVtRhiVa73X5QY8DZRU
-         Mw1Trq729V2prqNJQCZLy6Ig0bIb8QsCCxstIuhuOmpyJJ5tyuGAJV0gHjX2NFBkWc
-         l/IFO0AjANlt7MziAgDcFA5MRlg021nFjEE3qiA8=
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     Vadim Fedorenko <vfedorenko@novek.ru>, netdev@vger.kernel.org
-Subject: [PATCH net] ptp: ocp: add EEPROM_AT24 dependency
-Date:   Fri, 24 Jun 2022 02:31:41 +0300
-Message-Id: <20220623233141.31251-1-vfedorenko@novek.ru>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S229454AbiFWXgZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 19:36:25 -0400
+Received: from smtp6.emailarray.com (smtp6.emailarray.com [65.39.216.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868075639F
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 16:36:24 -0700 (PDT)
+Received: (qmail 31427 invoked by uid 89); 23 Jun 2022 23:36:22 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNQ==) (POLARISLOCAL)  
+  by smtp6.emailarray.com with SMTP; 23 Jun 2022 23:36:22 -0000
+Date:   Thu, 23 Jun 2022 16:36:20 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Vadim Fedorenko <vadfed@fb.com>,
+        Aya Levin <ayal@nvidia.com>,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [RFC PATCH v1 3/3] ptp_ocp: implement DPLL ops
+Message-ID: <20220623233620.vq7oqzop6lg4nmlb@bsd-mbp.dhcp.thefacebook.com>
+References: <20220623005717.31040-1-vfedorenko@novek.ru>
+ <20220623005717.31040-4-vfedorenko@novek.ru>
+ <20220623182813.safjhwvu67i4vu3b@bsd-mbp.dhcp.thefacebook.com>
+ <a978c45e-db51-a67c-9240-10eeeaa2db8d@novek.ru>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a978c45e-db51-a67c-9240-10eeeaa2db8d@novek.ru>
+X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,
+        SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Various information which is provided via devlink is stored in
-EEPROM and is not accessible unless at24 eeprom is supported.
+On Fri, Jun 24, 2022 at 12:11:43AM +0100, Vadim Fedorenko wrote:
+> On 23.06.2022 19:28, Jonathan Lemon wrote:
+> > On Thu, Jun 23, 2022 at 03:57:17AM +0300, Vadim Fedorenko wrote:
+> > > From: Vadim Fedorenko <vadfed@fb.com>
+> > > +static int ptp_ocp_dpll_get_source_type(struct dpll_device *dpll, int sma)
+> > > +{
+> > > +	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
+> > > +	int ret;
+> > > +
+> > > +	if (bp->sma[sma].mode != SMA_MODE_IN)
+> > > +		return -1;
+> > > +
+> > > +	switch (ptp_ocp_sma_get(bp, sma)) {
+> > > +	case 0:
+> > > +		ret = DPLL_TYPE_EXT_10MHZ;
+> > > +		break;
+> > > +	case 1:
+> > > +	case 2:
+> > > +		ret = DPLL_TYPE_EXT_1PPS;
+> > > +		break;
+> > > +	default:
+> > > +		ret = DPLL_TYPE_INT_OSCILLATOR;
+> > > +	}
+> > > +
+> > > +	return ret;
+> > > +}
+> > 
+> > These case statements switch on private bits.  This needs to match
+> > on the selector name instead.
+> > 
+> 
+> Not sure that string comparison is a good idea. Maybe it's better to extend
+> struct ocp_selector with netlink type id and fill it according to hardware?
 
-Fixes: 773bda964921 ("ptp: ocp: Expose various resources on the timecard.")
-Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
----
- drivers/ptp/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Sure, that could be an option.  But, as this is DPLL only, how does it
+handle things when a pin is used for non-clock IO?  In the timecard,
+for example, we have the frequency counters for input, and the frequency
+generators/VCC/GND for output.
 
-diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
-index 458218f88c5e..c86be47e69ed 100644
---- a/drivers/ptp/Kconfig
-+++ b/drivers/ptp/Kconfig
-@@ -171,7 +171,7 @@ config PTP_1588_CLOCK_OCP
- 	tristate "OpenCompute TimeCard as PTP clock"
- 	depends on PTP_1588_CLOCK
- 	depends on HAS_IOMEM && PCI
--	depends on I2C && MTD
-+	depends on I2C && EEPROM_AT24 && MTD
- 	depends on SERIAL_8250
- 	depends on !S390
- 	depends on COMMON_CLK
+Actually our HW has a multi-level input, where the DPLL selects its
+source from an internal mux - this isn't reflected here.  The external
+pins feed into some complex HW logic, which performs its own priority
+calculations before presenting the end result as an available selection
+for the DPLL.
 -- 
-2.27.0
-
+Jonathan
