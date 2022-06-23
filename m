@@ -2,975 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0DA2558B60
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 00:48:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FDDC558B65
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 00:50:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229586AbiFWWs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 18:48:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42692 "EHLO
+        id S229851AbiFWWuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 18:50:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbiFWWsY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 18:48:24 -0400
-Received: from novek.ru (unknown [213.148.174.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A006522F1
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 15:48:22 -0700 (PDT)
-Received: from [192.168.0.18] (unknown [37.228.234.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by novek.ru (Postfix) with ESMTPSA id A4E9C500064;
-        Fri, 24 Jun 2022 01:46:44 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru A4E9C500064
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
-        t=1656024408; bh=XD43s+bZMEkG23lZeGBOHhkmdof46wRG8syDin2YFZU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=SW/APqOryIDKpk35oj5dEBH+8A0VSEo2hwGtvoyXjN/AKzZ2M8SFLGOy+aSqrAvDU
-         uMumXWXZJS74Ryh8uKu9IZu/MSTpe0Au0U+g3s57eJm2Zhe8qHaWvQC4M8kFSfumOX
-         hj5aCGNBKmDvKAF02M2mavZ0Gr/Cx72lhYlWz6xk=
-Message-ID: <34093244-431b-98c8-ba88-82957c659808@novek.ru>
-Date:   Thu, 23 Jun 2022 23:48:14 +0100
+        with ESMTP id S229587AbiFWWug (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 18:50:36 -0400
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2136527F4;
+        Thu, 23 Jun 2022 15:50:35 -0700 (PDT)
+Received: by mail-oi1-x22c.google.com with SMTP id bd16so1386404oib.6;
+        Thu, 23 Jun 2022 15:50:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Y+Dg0mM96GxdgWzW8Q0806WYRu+tu0Ie+VcO+cMcI4U=;
+        b=FYk61bvDh5JwGf5WdZIwNZW8B6+57IJxN4Nk3SgOVQUCUsYiOm3ErEX+kq3vz0b1jl
+         ehO4ycV50KjmXNOG82d4ajlgj9CqbebkKJ4SWJJqHREo4pk+ilQPgbCv6IB6zHid79iP
+         rqmZHNnlfQ/rPeGGBvDbNZN9ZMa975cK8vv+RyGLosEe6hd4C5Y35Ob1uvZYTwiiw7Y6
+         b7DLV4jzyNghScUUIIDElRVSlbKCQALz3tZIOKZJAGj2eZTZ+H5JRAhWbVmRsDvMSzlp
+         R9wiUFpG2WjWK042boAletT6C5cPLJc0Zo+RjXzFx7sR8PaYb7ukt2dzVz3wkwtF6YIr
+         Md9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Y+Dg0mM96GxdgWzW8Q0806WYRu+tu0Ie+VcO+cMcI4U=;
+        b=VdVX1KljLiXQtwwWL+4BBgDe5GU+eIyxjseEaV403AReEJ0gt3ZoqHVlw8xyr7DeT+
+         flJy5IRLl1Db1zCP2UqBkY/Ace2yLfZSkJiv7jwrSg/GGpsKSNhnk7FbcCqghgJkMr6w
+         NDYOKI4pmMh9ZeX+k7DgsJGxXSReAAJsFUTXVBWj6+MCNlu6StTrx9+MfnHYr7r3+4Vf
+         SvsR3y4h6smzBcPFn3e0KzzrQ4ulI174rgSKx1xNQJ+cL5u3preoHgaRnfc+MCV1APfw
+         zJSy5HNyddC1YN6ZX/nCfOkHk+jHgt2DUq1sZC+/WkNeFXJ27RWSmN9D3Lpx6ApL/n7j
+         Kxvg==
+X-Gm-Message-State: AJIora9pUBzBhvdnFmGSBw0s9iTRpH4/E8LkjTxCMG12DPyIwcQfa48+
+        0Yqg4hCC3dzhTju87nJhPnvph/bFFtOCg4jPYmA8JWxT1p0=
+X-Google-Smtp-Source: AGRyM1uj/Q9s5zKn4L4uThaMvEnMiPzOqEF1sLtJVqTO12h9dB2vaIo0yv0Uh2i5b+OALrND/sp8sTGWW12NFpQK0Us=
+X-Received: by 2002:a05:6808:179a:b0:32f:fd4:3ad6 with SMTP id
+ bg26-20020a056808179a00b0032f0fd43ad6mr199172oib.190.1656024634956; Thu, 23
+ Jun 2022 15:50:34 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [RFC PATCH v1 1/3] dpll: Add DPLL framework base functions
-Content-Language: en-US
-To:     "Kubalewski, Arkadiusz" <arkadiusz.kubalewski@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-References: <20220623005717.31040-1-vfedorenko@novek.ru>
- <20220623005717.31040-2-vfedorenko@novek.ru>
- <DM6PR11MB46579C692B75DEF81530B7339BB59@DM6PR11MB4657.namprd11.prod.outlook.com>
-From:   Vadim Fedorenko <vfedorenko@novek.ru>
-In-Reply-To: <DM6PR11MB46579C692B75DEF81530B7339BB59@DM6PR11MB4657.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220619150456.GB34471@xsang-OptiPlex-9020> <20220622172857.37db0d29@kernel.org>
+ <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
+In-Reply-To: <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 23 Jun 2022 18:50:07 -0400
+Message-ID: <CADvbK_eQUmb942vC+bG+NRzM1ki1LiCydEDR1AezZ35Jvsdfnw@mail.gmail.com>
+Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        kernel test robot <oliver.sang@intel.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        network dev <netdev@vger.kernel.org>,
+        linux-s390@vger.kernel.org, mptcp@lists.linux.dev,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
+        Huang Ying <ying.huang@intel.com>, feng.tang@intel.com,
+        zhengjun.xing@linux.intel.com, fengwei.yin@intel.com,
+        Ying Xu <yinxu@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arkadiusz!
-
-On 23.06.2022 16:33, Kubalewski, Arkadiusz wrote:
-> Hi Vadim,
-> 
-> Great work!
-> 
-> Although, I've been thinking that you already forget about it, so I have
-> started development of something similar.
+On Wed, Jun 22, 2022 at 11:08 PM Xin Long <lucien.xin@gmail.com> wrote:
 >
+> Yes, I'm working on it. I couldn't see the regression in my env with
+> the 'reproduce' script attached.
+> I will try with lkp tomorrow.
+>
+> Thanks.
+>
+> On Wed, Jun 22, 2022 at 8:29 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > Could someone working on SCTP double check this is a real regression?
+> > Feels like the regression reports are flowing at such rate its hard
+> > to keep up.
+> >
+> > >
+> > > commit:
+> > >   7c80b038d2 ("net: fix sk_wmem_schedule() and sk_rmem_schedule() err=
+ors")
+> > >   4890b686f4 ("net: keep sk->sk_forward_alloc as small as possible")
+> > >
+> > > 7c80b038d23e1f4c 4890b686f4088c90432149bd6de
+> > > ---------------- ---------------------------
+> > >          %stddev     %change         %stddev
+> > >              \          |                \
+> > >      15855           -69.4%       4854        netperf.Throughput_Mbps
+> > >     570788           -69.4%     174773        netperf.Throughput_tota=
+l_Mbps
+...
+> > >       0.00            +5.1        5.10 =C2=B1  5%  perf-profile.callt=
+race.cycles-pp.__sk_mem_reduce_allocated.sctp_wfree.skb_release_head_state.=
+consume_skb.sctp_chunk_put
+> > >       0.17 =C2=B1141%      +5.3        5.42 =C2=B1  6%  perf-profile.=
+calltrace.cycles-pp.skb_release_head_state.consume_skb.sctp_chunk_put.sctp_=
+outq_sack.sctp_cmd_interpreter
+> > >       0.00            +5.3        5.35 =C2=B1  6%  perf-profile.callt=
+race.cycles-pp.sctp_wfree.skb_release_head_state.consume_skb.sctp_chunk_put=
+.sctp_outq_sack
+> > >       0.00            +5.5        5.51 =C2=B1  6%  perf-profile.callt=
+race.cycles-pp.__sk_mem_reduce_allocated.skb_release_head_state.kfree_skb_r=
+eason.sctp_recvmsg.inet_recvmsg
+> > >       0.00            +5.7        5.65 =C2=B1  6%  perf-profile.callt=
+race.cycles-pp.skb_release_head_state.kfree_skb_reason.sctp_recvmsg.inet_re=
+cvmsg.____sys_recvmsg
+...
+> > >       0.00            +4.0        4.04 =C2=B1  6%  perf-profile.child=
+ren.cycles-pp.mem_cgroup_charge_skmem
+> > >       2.92 =C2=B1  6%      +4.2        7.16 =C2=B1  6%  perf-profile.=
+children.cycles-pp.sctp_outq_sack
+> > >       0.00            +4.3        4.29 =C2=B1  6%  perf-profile.child=
+ren.cycles-pp.__sk_mem_raise_allocated
+> > >       0.00            +4.3        4.32 =C2=B1  6%  perf-profile.child=
+ren.cycles-pp.__sk_mem_schedule
+> > >       1.99 =C2=B1  6%      +4.4        6.40 =C2=B1  6%  perf-profile.=
+children.cycles-pp.consume_skb
+> > >       1.78 =C2=B1  6%      +4.6        6.42 =C2=B1  6%  perf-profile.=
+children.cycles-pp.kfree_skb_reason
+> > >       0.37 =C2=B1  8%      +5.0        5.40 =C2=B1  6%  perf-profile.=
+children.cycles-pp.sctp_wfree
+> > >       0.87 =C2=B1  9%     +10.3       11.20 =C2=B1  6%  perf-profile.=
+children.cycles-pp.skb_release_head_state
+> > >       0.00           +10.7       10.66 =C2=B1  6%  perf-profile.child=
+ren.cycles-pp.__sk_mem_reduce_allocated
+...
+> > >       0.00            +1.2        1.19 =C2=B1  7%  perf-profile.self.=
+cycles-pp.try_charge_memcg
+> > >       0.00            +2.0        1.96 =C2=B1  6%  perf-profile.self.=
+cycles-pp.page_counter_uncharge
+> > >       0.00            +2.1        2.07 =C2=B1  5%  perf-profile.self.=
+cycles-pp.page_counter_try_charge
+> > >       1.09 =C2=B1  8%      +2.8        3.92 =C2=B1  6%  perf-profile.=
+self.cycles-pp.native_queued_spin_lock_slowpath
+> > >       0.29 =C2=B1  6%      +3.5        3.81 =C2=B1  6%  perf-profile.=
+self.cycles-pp.sctp_eat_data
+> > >       0.00            +7.8        7.76 =C2=B1  6%  perf-profile.self.=
+cycles-pp.__sk_mem_reduce_allocated
 
-Sorry for making you wait for so long. I'm happy to merge your work into these 
-series and to continue collaboration to further improve subsystem.
+From the perf data, we can see __sk_mem_reduce_allocated() is the one
+using CPU the most more than before, and mem_cgroup APIs are also
+called in this function. It means the mem cgroup must be enabled in
+the test env, which may explain why I couldn't reproduce it.
 
->> +# SPDX-License-Identifier: GPL-2.0-only
->> +#
->> +# Generic DPLL drivers configuration
->> +#
->> +
->> +config DPLL
->> +  bool
-> 
-> for RFC help and default were ommited?
-> 
+The Commit 4890b686f4 ("net: keep sk->sk_forward_alloc as small as
+possible") uses sk_mem_reclaim(checking reclaimable >=3D PAGE_SIZE) to
+reclaim the memory, which is *more frequent* to call
+__sk_mem_reduce_allocated() than before (checking reclaimable >=3D
+SK_RECLAIM_THRESHOLD). It might be cheap when
+mem_cgroup_sockets_enabled is false, but I'm not sure if it's still
+cheap when mem_cgroup_sockets_enabled is true.
 
-In private conversation with Jakub we decided to hide this subsystem from user
-facing menu and enable via in-kernel customer's dependency. If you think it's 
-better to let users enable or disable it, we can bring this discussion back to 
-wider audience.
+I think SCTP netperf could trigger this, as the CPU is the bottleneck
+for SCTP netperf testing, which is more sensitive to the extra
+function calls than TCP.
 
->> diff --git a/drivers/dpll/Makefile b/drivers/dpll/Makefile
->> new file mode 100644
->> index 000000000000..0748c80097e4
->> --- /dev/null
->> +++ b/drivers/dpll/Makefile
->> @@ -0,0 +1,7 @@
->> +# SPDX-License-Identifier: GPL-2.0
->> +#
->> +# Makefile for DPLL drivers.
->> +#
->> +
->> +obj-$(CONFIG_DPLL)          += dpll_sys.o
->> +dpll_sys-y                  += dpll_core.o dpll_netlink.o
->> diff --git a/drivers/dpll/dpll_core.c b/drivers/dpll/dpll_core.c
->> new file mode 100644
->> index 000000000000..e34767e723cf
->> --- /dev/null
->> +++ b/drivers/dpll/dpll_core.c
->> @@ -0,0 +1,152 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/*
->> + *  dpll_core.c - Generic DPLL Management class support.
->> + *
->> + *  Copyright (c) 2021 Meta Platforms, Inc. and affiliates
->> + */
->> +
->> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
->> +
->> +#include <linux/device.h>
->> +#include <linux/err.h>
->> +#include <linux/slab.h>
->> +#include <linux/string.h>
->> +
->> +#include "dpll_core.h"
->> +
->> +static DEFINE_MUTEX(dpll_device_xa_lock);
->> +static DEFINE_XARRAY_FLAGS(dpll_device_xa, XA_FLAGS_ALLOC);
->> +#define DPLL_REGISTERED XA_MARK_1
->> +
->> +#define ASSERT_DPLL_REGISTERED(d)                                           \
->> +	WARN_ON_ONCE(!xa_get_mark(&dpll_device_xa, (d)->id, DPLL_REGISTERED))
->> +#define ASSERT_DPLL_NOT_REGISTERED(d)                                      \
->> +	WARN_ON_ONCE(xa_get_mark(&dpll_device_xa, (d)->id, DPLL_REGISTERED))
->> +
->> +
->> +int for_each_dpll_device(int id, int (*cb)(struct dpll_device *, void *), void *data)
->> +{
->> +	struct dpll_device *dpll;
->> +	unsigned long index;
->> +	int ret = 0;
->> +
->> +	mutex_lock(&dpll_device_xa_lock);
->> +	xa_for_each_start(&dpll_device_xa, index, dpll, id) {
->> +		if (!xa_get_mark(&dpll_device_xa, index, DPLL_REGISTERED))
->> +			continue;
->> +		ret = cb(dpll, data);
->> +		if (ret)
->> +			break;
->> +	}
->> +	mutex_unlock(&dpll_device_xa_lock);
->> +
->> +	return ret;
->> +}
->> +
->> +struct dpll_device *dpll_device_get_by_id(int id)
->> +{
->> +	struct dpll_device *dpll = NULL;
->> +
->> +	if (xa_get_mark(&dpll_device_xa, id, DPLL_REGISTERED))
->> +		dpll = xa_load(&dpll_device_xa, id);
->> +	return dpll;
->> +}
->> +
->> +void *dpll_priv(struct dpll_device *dpll)
->> +{
->> +	return dpll->priv;
->> +}
->> +EXPORT_SYMBOL_GPL(dpll_priv);
->> +
->> +static void dpll_device_release(struct device *dev)
->> +{
->> +	struct dpll_device *dpll;
->> +
->> +	dpll = to_dpll_device(dev);
->> +
->> +	dpll_device_unregister(dpll);
->> +
->> +	mutex_destroy(&dpll->lock);
->> +	kfree(dpll);
->> +}
->> +
->> +static struct class dpll_class = {
->> +	.name = "dpll",
->> +	.dev_release = dpll_device_release,
->> +};
->> +
->> +struct dpll_device *dpll_device_alloc(struct dpll_device_ops *ops, int sources_count,
->> +					 int outputs_count, void *priv)
->> +{
->> +	struct dpll_device *dpll;
->> +	int ret;
->> +
->> +	dpll = kzalloc(sizeof(*dpll), GFP_KERNEL);
->> +	if (!dpll)
->> +		return ERR_PTR(-ENOMEM);
->> +
->> +	mutex_init(&dpll->lock);
->> +	dpll->ops = ops;
->> +	dpll->dev.class = &dpll_class;
->> +	dpll->sources_count = sources_count;
->> +	dpll->outputs_count = outputs_count;
->> +
->> +	mutex_lock(&dpll_device_xa_lock);
->> +	ret = xa_alloc(&dpll_device_xa, &dpll->id, dpll, xa_limit_16b, GFP_KERNEL);
->> +	if (ret)
->> +		goto error;
->> +	dev_set_name(&dpll->dev, "dpll%d", dpll->id);
->> +	mutex_unlock(&dpll_device_xa_lock);
->> +	dpll->priv = priv;
->> +
->> +	return dpll;
->> +
->> +error:
->> +	mutex_unlock(&dpll_device_xa_lock);
->> +	kfree(dpll);
->> +	return ERR_PTR(ret);
->> +}
->> +EXPORT_SYMBOL_GPL(dpll_device_alloc);
->> +
->> +void dpll_device_register(struct dpll_device *dpll)
->> +{
->> +	ASSERT_DPLL_NOT_REGISTERED(dpll);
->> +
->> +	mutex_lock(&dpll_device_xa_lock);
->> +	xa_set_mark(&dpll_device_xa, dpll->id, DPLL_REGISTERED);
->> +	dpll_notify_device_create(dpll->id, dev_name(&dpll->dev));
->> +	mutex_unlock(&dpll_device_xa_lock);
->> +}
->> +EXPORT_SYMBOL_GPL(dpll_device_register);
->> +
->> +void dpll_device_unregister(struct dpll_device *dpll)
->> +{
->> +	ASSERT_DPLL_REGISTERED(dpll);
->> +
->> +	mutex_lock(&dpll_device_xa_lock);
->> +	xa_erase(&dpll_device_xa, dpll->id);
->> +	mutex_unlock(&dpll_device_xa_lock);
->> +}
->> +EXPORT_SYMBOL_GPL(dpll_device_unregister);
->> +
->> +static int __init dpll_init(void)
->> +{
->> +	int ret;
->> +
->> +	ret = dpll_netlink_init();
->> +	if (ret)
->> +		goto error;
->> +
->> +	ret = class_register(&dpll_class);
->> +	if (ret)
->> +		goto unregister_netlink;
->> +
->> +	return 0;
->> +
->> +unregister_netlink:
->> +	dpll_netlink_finish();
->> +error:
->> +	mutex_destroy(&dpll_device_xa_lock);
->> +	return ret;
->> +}
->> +subsys_initcall(dpll_init);
->> diff --git a/drivers/dpll/dpll_core.h b/drivers/dpll/dpll_core.h
->> new file mode 100644
->> index 000000000000..5ad3224d5caf
->> --- /dev/null
->> +++ b/drivers/dpll/dpll_core.h
->> @@ -0,0 +1,40 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +/*
->> + *  Copyright (c) 2021 Meta Platforms, Inc. and affiliates
->> + */
->> +
->> +#ifndef __DPLL_CORE_H__
->> +#define __DPLL_CORE_H__
->> +
->> +#include <linux/dpll.h>
->> +
->> +#include "dpll_netlink.h"
->> +
->> +/**
->> + * struct dpll_device - structure for a DPLL device
->> + * @id:		unique id number for each edvice
->> + * @dev:	&struct device for this dpll device
->> + * @sources_count:	amount of input sources this dpll_device supports
->> + * @outputs_count:	amount of outputs this dpll_device supports
->> + * @ops:	operations this &dpll_device supports
->> + * @lock:	mutex to serialize operations
->> + * @priv:	pointer to private information of owner
->> + */
->> +struct dpll_device {
->> +	int id;
->> +	struct device dev;
->> +	int sources_count;
->> +	int outputs_count;
->> +	struct dpll_device_ops *ops;
->> +	struct mutex lock;
->> +	void *priv;
->> +};
->> +
->> +#define to_dpll_device(_dev) \
->> +	container_of(_dev, struct dpll_device, dev)
->> +
->> +int for_each_dpll_device(int id, int (*cb)(struct dpll_device *, void *),
->> +			  void *data);
->> +struct dpll_device *dpll_device_get_by_id(int id);
->> +void dpll_device_unregister(struct dpll_device *dpll);
->> +#endif
->> diff --git a/drivers/dpll/dpll_netlink.c b/drivers/dpll/dpll_netlink.c
->> new file mode 100644
->> index 000000000000..0bbdaa6dde8e
->> --- /dev/null
->> +++ b/drivers/dpll/dpll_netlink.c
->> @@ -0,0 +1,437 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/*
->> + * Generic netlink for DPLL management framework
->> + *
->> + * Copyright (c) 2021 Meta Platforms, Inc. and affiliates
->> + *
->> + */
->> +#include <linux/module.h>
->> +#include <linux/kernel.h>
->> +#include <net/genetlink.h>
->> +#include "dpll_core.h"
->> +
->> +#include <uapi/linux/dpll.h>
->> +
->> +static const struct genl_multicast_group dpll_genl_mcgrps[] = {
->> +	{ .name = DPLL_CONFIG_DEVICE_GROUP_NAME, },
->> +	{ .name = DPLL_CONFIG_SOURCE_GROUP_NAME, },
->> +	{ .name = DPLL_CONFIG_OUTPUT_GROUP_NAME, },
->> +	{ .name = DPLL_MONITOR_GROUP_NAME,  },
->> +};
->> +
->> +static const struct nla_policy dpll_genl_get_policy[] = {
->> +	[DPLLA_DEVICE_ID]	= { .type = NLA_U32 },
->> +	[DPLLA_DEVICE_NAME]	= { .type = NLA_STRING,
->> +				    .len = DPLL_NAME_LENGTH },
->> +	[DPLLA_FLAGS]		= { .type = NLA_U32 },
->> +};
->> +
->> +static const struct nla_policy dpll_genl_set_source_policy[] = {
->> +	[DPLLA_DEVICE_ID]	= { .type = NLA_U32 },
->> +	[DPLLA_SOURCE_ID]	= { .type = NLA_U32 },
->> +	[DPLLA_SOURCE_TYPE]	= { .type = NLA_U32 },
->> +};
->> +
->> +static const struct nla_policy dpll_genl_set_output_policy[] = {
->> +	[DPLLA_DEVICE_ID]	= { .type = NLA_U32 },
->> +	[DPLLA_OUTPUT_ID]	= { .type = NLA_U32 },
->> +	[DPLLA_OUTPUT_TYPE]	= { .type = NLA_U32 },
->> +};
->> +
->> +struct param {
->> +	struct netlink_callback *cb;
->> +	struct dpll_device *dpll;
->> +	struct nlattr **attrs;
->> +	struct sk_buff *msg;
->> +	int dpll_id;
->> +	int dpll_source_id;
->> +	int dpll_source_type;
->> +	int dpll_output_id;
->> +	int dpll_output_type;
->> +};
->> +
->> +struct dpll_dump_ctx {
->> +	struct dpll_device *dev;
->> +	int flags;
->> +	int pos_idx;
->> +	int pos_src_idx;
->> +	int pos_out_idx;
->> +};
->> +
->> +typedef int (*cb_t)(struct param *);
->> +
->> +static struct genl_family dpll_gnl_family;
->> +
->> +static struct dpll_dump_ctx *dpll_dump_context(struct netlink_callback *cb)
->> +{
->> +	return (struct dpll_dump_ctx *)cb->ctx;
->> +}
->> +
->> +static int __dpll_cmd_device_dump_one(struct dpll_device *dpll,
->> +					   struct sk_buff *msg)
->> +{
->> +	if (nla_put_u32(msg, DPLLA_DEVICE_ID, dpll->id))
->> +		return -EMSGSIZE;
->> +
->> +	if (nla_put_string(msg, DPLLA_DEVICE_NAME, dev_name(&dpll->dev)))
->> +		return -EMSGSIZE;
->> +
->> +	return 0;
->> +}
->> +
->> +static int __dpll_cmd_dump_sources(struct dpll_device *dpll,
->> +					   struct sk_buff *msg)
->> +{
->> +	struct nlattr *src_attr;
->> +	int i, ret = 0, type;
->> +
->> +	for (i = 0; i < dpll->sources_count; i++) {
->> +		src_attr = nla_nest_start(msg, DPLLA_SOURCE);
->> +		if (!src_attr) {
->> +			ret = -EMSGSIZE;
->> +			break;
->> +		}
->> +		type = dpll->ops->get_source_type(dpll, i);
->> +		if (nla_put_u32(msg, DPLLA_SOURCE_ID, i) ||
->> +		    nla_put_u32(msg, DPLLA_SOURCE_TYPE, type)) {
->> +			nla_nest_cancel(msg, src_attr);
->> +			ret = -EMSGSIZE;
->> +			break;
->> +		}
->> +		nla_nest_end(msg, src_attr);
->> +	}
->> +
->> +	return ret;
->> +}
->> +
->> +static int __dpll_cmd_dump_outputs(struct dpll_device *dpll,
->> +					   struct sk_buff *msg)
->> +{
->> +	struct nlattr *out_attr;
->> +	int i, ret = 0, type;
->> +
->> +	for (i = 0; i < dpll->outputs_count; i++) {
->> +		out_attr = nla_nest_start(msg, DPLLA_OUTPUT);
->> +		if (!out_attr) {
->> +			ret = -EMSGSIZE;
->> +			break;
->> +		}
->> +		type = dpll->ops->get_source_type(dpll, i);
->> +		if (nla_put_u32(msg, DPLLA_OUTPUT_ID, i) ||
->> +		    nla_put_u32(msg, DPLLA_OUTPUT_TYPE, type)) {
->> +			nla_nest_cancel(msg, out_attr);
->> +			ret = -EMSGSIZE;
->> +			break;
->> +		}
->> +		nla_nest_end(msg, out_attr);
->> +	}
->> +
->> +	return ret;
->> +}
->> +
->> +static int __dpll_cmd_dump_status(struct dpll_device *dpll,
->> +					   struct sk_buff *msg)
->> +{
->> +	int ret;
->> +
->> +	if (!dpll->ops->get_status && !dpll->ops->get_temp && !dpll->ops->get_lock_status)
->> +		return 0;
-> 
-> what if dpll doesn't support one of those commands?
-> 
+Can we re-run this testing without mem cgroup enabled?
 
-then only supported attributes will be messaged back to user
-
->> +
->> +	if (dpll->ops->get_status) {
->> +		ret = dpll->ops->get_status(dpll);
->> +		if (nla_put_u32(msg, DPLLA_STATUS, ret))
->> +			return -EMSGSIZE;
->> +	}
->> +
->> +	if (dpll->ops->get_temp) {
->> +		ret = dpll->ops->get_status(dpll);
->> +		if (nla_put_u32(msg, DPLLA_TEMP, ret))
->> +			return -EMSGSIZE;
->> +	}
-> 
-> shouldn't be get_temp(dpll)?
-
-good catch, copy-paste error
-
->> +
->> +	if (dpll->ops->get_lock_status) {
->> +		ret = dpll->ops->get_lock_status(dpll);
->> +		if (nla_put_u32(msg, DPLLA_LOCK_STATUS, ret))
->> +			return -EMSGSIZE;
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +static int dpll_device_dump_one(struct dpll_device *dev, struct sk_buff *msg, int flags)
->> +{
->> +	struct nlattr *hdr;
->> +	int ret;
->> +
->> +	hdr = nla_nest_start(msg, DPLLA_DEVICE);
->> +	if (!hdr)
->> +		return -EMSGSIZE;
->> +
->> +	mutex_lock(&dev->lock);
->> +	ret = __dpll_cmd_device_dump_one(dev, msg);
->> +	if (ret)
->> +		goto out_cancel_nest;
->> +
->> +	if (flags & DPLL_FLAG_SOURCES && dev->ops->get_source_type) {
->> +		ret = __dpll_cmd_dump_sources(dev, msg);
->> +		if (ret)
->> +			goto out_cancel_nest;
->> +	}
->> +
->> +	if (flags & DPLL_FLAG_OUTPUTS && dev->ops->get_output_type) {
->> +		ret = __dpll_cmd_dump_outputs(dev, msg);
->> +		if (ret)
->> +			goto out_cancel_nest;
->> +	}
->> +
->> +	if (flags & DPLL_FLAG_STATUS) {
->> +		ret = __dpll_cmd_dump_status(dev, msg);
->> +		if (ret)
->> +			goto out_cancel_nest;
->> +	}
->> +
->> +	mutex_unlock(&dev->lock);
->> +	nla_nest_end(msg, hdr);
->> +
->> +	return 0;
->> +
->> +out_cancel_nest:
->> +	mutex_unlock(&dev->lock);
->> +	nla_nest_cancel(msg, hdr);
->> +
->> +	return ret;
->> +}
->> +
->> +static int dpll_genl_cmd_set_source(struct param *p)
->> +{
->> +	const struct genl_dumpit_info *info = genl_dumpit_info(p->cb);
->> +	struct dpll_device *dpll = p->dpll;
->> +	int ret = 0, src_id, type;
->> +
->> +	if (!info->attrs[DPLLA_SOURCE_ID] ||
->> +	    !info->attrs[DPLLA_SOURCE_TYPE])
->> +		return -EINVAL;
->> +
->> +	if (!dpll->ops->set_source_type)
->> +		return -EOPNOTSUPP;
->> +
->> +	src_id = nla_get_u32(info->attrs[DPLLA_SOURCE_ID]);
->> +	type = nla_get_u32(info->attrs[DPLLA_SOURCE_TYPE]);
->> +
->> +	mutex_lock(&dpll->lock);
->> +	ret = dpll->ops->set_source_type(dpll, src_id, type);
->> +	mutex_unlock(&dpll->lock);
->> +
->> +	return ret;
->> +}
->> +
->> +static int dpll_genl_cmd_set_output(struct param *p)
->> +{
->> +	const struct genl_dumpit_info *info = genl_dumpit_info(p->cb);
->> +	struct dpll_device *dpll = p->dpll;
->> +	int ret = 0, out_id, type;
->> +
->> +	if (!info->attrs[DPLLA_OUTPUT_ID] ||
->> +	    !info->attrs[DPLLA_OUTPUT_TYPE])
->> +		return -EINVAL;
->> +
->> +	if (!dpll->ops->set_output_type)
->> +		return -EOPNOTSUPP;
->> +
->> +	out_id = nla_get_u32(info->attrs[DPLLA_OUTPUT_ID]);
->> +	type = nla_get_u32(info->attrs[DPLLA_OUTPUT_TYPE]);
->> +
->> +	mutex_lock(&dpll->lock);
->> +	ret = dpll->ops->set_source_type(dpll, out_id, type);
->> +	mutex_unlock(&dpll->lock);
->> +
->> +	return ret;
->> +}
->> +
->> +static int dpll_device_loop_cb(struct dpll_device *dpll, void *data)
->> +{
->> +	struct dpll_dump_ctx *ctx;
->> +	struct param *p = (struct param *)data;
->> +
->> +	ctx = dpll_dump_context(p->cb);
->> +
->> +	ctx->pos_idx = dpll->id;
->> +
->> +	return dpll_device_dump_one(dpll, p->msg, ctx->flags);
->> +}
->> +
->> +static int dpll_cmd_device_dump(struct param *p)
->> +{
->> +	struct dpll_dump_ctx *ctx = dpll_dump_context(p->cb);
->> +
->> +	return for_each_dpll_device(ctx->pos_idx, dpll_device_loop_cb, p);
->> +}
->> +
->> +static int dpll_genl_cmd_device_get_id(struct param *p)
->> +{
->> +	struct dpll_device *dpll = p->dpll;
->> +	int flags = 0;
->> +
->> +	if (p->attrs[DPLLA_FLAGS])
->> +		flags = nla_get_u32(p->attrs[DPLLA_FLAGS]);
->> +
->> +	return dpll_device_dump_one(dpll, p->msg, flags);
->> +}
->> +
->> +static cb_t cmd_doit_cb[] = {
->> +	[DPLL_CMD_DEVICE_GET]		= dpll_genl_cmd_device_get_id,
->> +	[DPLL_CMD_SET_SOURCE_TYPE]	= dpll_genl_cmd_set_source,
->> +	[DPLL_CMD_SET_OUTPUT_TYPE]	= dpll_genl_cmd_set_output,
->> +};
->> +
->> +static cb_t cmd_dump_cb[] = {
->> +	[DPLL_CMD_DEVICE_GET]		= dpll_cmd_device_dump,
->> +};
->> +
->> +static int dpll_genl_cmd_start(struct netlink_callback *cb)
->> +{
->> +	const struct genl_dumpit_info *info = genl_dumpit_info(cb);
->> +	struct dpll_dump_ctx *ctx = dpll_dump_context(cb);
->> +
->> +	ctx->dev = NULL;
->> +	if (info->attrs[DPLLA_FLAGS])
->> +		ctx->flags = nla_get_u32(info->attrs[DPLLA_FLAGS]);
->> +	else
->> +		ctx->flags = 0;
->> +	ctx->pos_idx = 0;
->> +	ctx->pos_src_idx = 0;
->> +	ctx->pos_out_idx = 0;
->> +	return 0;
->> +}
->> +
->> +static int dpll_genl_cmd_dumpit(struct sk_buff *skb,
->> +				   struct netlink_callback *cb)
->> +{
->> +	struct param p = { .cb = cb, .msg = skb };
->> +	const struct genl_dumpit_info *info = genl_dumpit_info(cb);
->> +	int cmd = info->op.cmd;
->> +	int ret;
->> +	void *hdr;
->> +
->> +	hdr = genlmsg_put(skb, 0, 0, &dpll_gnl_family, 0, cmd);
->> +	if (!hdr)
->> +		return -EMSGSIZE;
->> +
->> +	ret = cmd_dump_cb[cmd](&p);
->> +	if (ret)
->> +		goto out_cancel_msg;
->> +
->> +	genlmsg_end(skb, hdr);
->> +
->> +	return 0;
->> +
->> +out_cancel_msg:
->> +	genlmsg_cancel(skb, hdr);
->> +
->> +	return ret;
->> +}
->> +
->> +static int dpll_genl_cmd_doit(struct sk_buff *skb,
->> +				 struct genl_info *info)
->> +{
->> +	struct param p = { .attrs = info->attrs, .dpll = info->user_ptr[0] };
->> +	int cmd = info->genlhdr->cmd;
->> +	struct sk_buff *msg;
->> +	void *hdr;
->> +	int ret;
->> +
->> +	msg = genlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
->> +	if (!msg)
->> +		return -ENOMEM;
->> +	p.msg = msg;
->> +
->> +	hdr = genlmsg_put_reply(msg, info, &dpll_gnl_family, 0, cmd);
->> +	if (!hdr) {
->> +		ret = -EMSGSIZE;
->> +		goto out_free_msg;
->> +	}
->> +
->> +	ret = cmd_doit_cb[cmd](&p);
->> +	if (ret)
->> +		goto out_cancel_msg;
->> +
->> +	genlmsg_end(msg, hdr);
->> +
->> +	return genlmsg_reply(msg, info);
->> +
->> +out_cancel_msg:
->> +	genlmsg_cancel(msg, hdr);
->> +out_free_msg:
->> +	nlmsg_free(msg);
->> +
->> +	return ret;
->> +}
->> +
->> +static int dpll_pre_doit(const struct genl_ops *ops, struct sk_buff *skb,
->> +						 struct genl_info *info)
->> +{
->> +	struct dpll_device *dpll;
->> +	int id;
->> +
->> +	if (!info->attrs[DPLLA_DEVICE_ID])
->> +		return -EINVAL;
->> +	id = nla_get_u32(info->attrs[DPLLA_DEVICE_ID]);
->> +
->> +	dpll = dpll_device_get_by_id(id);
->> +	if (!dpll)
->> +		return -ENODEV;
->> +	info->user_ptr[0] = dpll;
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct genl_ops dpll_genl_ops[] = {
->> +	{
->> +		.cmd	= DPLL_CMD_DEVICE_GET,
->> +		.start	= dpll_genl_cmd_start,
->> +		.dumpit	= dpll_genl_cmd_dumpit,
->> +		.doit	= dpll_genl_cmd_doit,
->> +		.policy	= dpll_genl_get_policy,
->> +		.maxattr = ARRAY_SIZE(dpll_genl_get_policy) - 1,
->> +	},
->> +	{
->> +		.cmd	= DPLL_CMD_SET_SOURCE_TYPE,
->> +		.flags	= GENL_UNS_ADMIN_PERM,
->> +		.doit	= dpll_genl_cmd_doit,
->> +		.policy	= dpll_genl_set_source_policy,
->> +		.maxattr = ARRAY_SIZE(dpll_genl_set_source_policy) - 1,
->> +	},
->> +	{
->> +		.cmd	= DPLL_CMD_SET_OUTPUT_TYPE,
->> +		.flags	= GENL_UNS_ADMIN_PERM,
->> +		.doit	= dpll_genl_cmd_doit,
->> +		.policy	= dpll_genl_set_output_policy,
->> +		.maxattr = ARRAY_SIZE(dpll_genl_set_output_policy) - 1,
->> +	},
->> +};
->> +
->> +static struct genl_family dpll_gnl_family __ro_after_init = {
->> +	.hdrsize	= 0,
->> +	.name		= DPLL_FAMILY_NAME,
->> +	.version	= DPLL_VERSION,
->> +	.ops		= dpll_genl_ops,
->> +	.n_ops		= ARRAY_SIZE(dpll_genl_ops),
->> +	.mcgrps		= dpll_genl_mcgrps,
->> +	.n_mcgrps	= ARRAY_SIZE(dpll_genl_mcgrps),
->> +	.pre_doit	= dpll_pre_doit,
->> +};
->> +
->> +int __init dpll_netlink_init(void)
->> +{
->> +	return genl_register_family(&dpll_gnl_family);
->> +}
->> +
->> +void dpll_netlink_finish(void)
->> +{
->> +	genl_unregister_family(&dpll_gnl_family);
->> +}
->> +
->> +void __exit dpll_netlink_fini(void)
->> +{
->> +	dpll_netlink_finish();
->> +}
->> diff --git a/drivers/dpll/dpll_netlink.h b/drivers/dpll/dpll_netlink.h
->> new file mode 100644
->> index 000000000000..e2d100f59dd6
->> --- /dev/null
->> +++ b/drivers/dpll/dpll_netlink.h
->> @@ -0,0 +1,7 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +/*
->> + *  Copyright (c) 2021 Meta Platforms, Inc. and affiliates
->> + */
->> +
->> +int __init dpll_netlink_init(void);
->> +void dpll_netlink_finish(void);
->> diff --git a/include/linux/dpll.h b/include/linux/dpll.h
->> new file mode 100644
->> index 000000000000..9051337bcf9e
->> --- /dev/null
->> +++ b/include/linux/dpll.h
->> @@ -0,0 +1,25 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +/*
->> + *  Copyright (c) 2021 Meta Platforms, Inc. and affiliates
->> + */
->> +
->> +#ifndef __DPLL_H__
->> +#define __DPLL_H__
->> +
->> +struct dpll_device;
->> +
->> +struct dpll_device_ops {
->> +	int (*get_status)(struct dpll_device *dpll);
->> +	int (*get_temp)(struct dpll_device *dpll);
->> +	int (*get_lock_status)(struct dpll_device *dpll);
->> +	int (*get_source_type)(struct dpll_device *dpll, int id);
->> +	int (*get_output_type)(struct dpll_device *dpll, int id);
->> +	int (*set_source_type)(struct dpll_device *dpll, int id, int val);
->> +	int (*set_output_type)(struct dpll_device *dpll, int id, int val);
->> +};
->> +
->> +struct dpll_device *dpll_device_alloc(struct dpll_device_ops *ops, int sources_count,
->> +					 int outputs_count, void *priv);
->> +void dpll_device_register(struct dpll_device *dpll);
->> +void *dpll_priv(struct dpll_device *dpll);
->> +#endif
->> diff --git a/include/uapi/linux/dpll.h b/include/uapi/linux/dpll.h
->> new file mode 100644
->> index 000000000000..8c00f52736ee
->> --- /dev/null
->> +++ b/include/uapi/linux/dpll.h
->> @@ -0,0 +1,77 @@
->> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
->> +#ifndef _UAPI_LINUX_DPLL_H
->> +#define _UAPI_LINUX_DPLL_H
->> +
->> +#define DPLL_NAME_LENGTH	20
->> +
->> +/* Adding event notification support elements */
->> +#define DPLL_FAMILY_NAME		"dpll"
->> +#define DPLL_VERSION			0x01
->> +#define DPLL_CONFIG_DEVICE_GROUP_NAME  "config"
->> +#define DPLL_CONFIG_SOURCE_GROUP_NAME  "source"
->> +#define DPLL_CONFIG_OUTPUT_GROUP_NAME  "output"
->> +#define DPLL_MONITOR_GROUP_NAME        "monitor"
->> +
->> +#define DPLL_FLAG_SOURCES	1
->> +#define DPLL_FLAG_OUTPUTS	2
->> +#define DPLL_FLAG_STATUS	4
->> +
->> +/* Attributes of dpll_genl_family */
->> +enum dpll_genl_get_attr {
->> +	DPLLA_UNSPEC,
->> +	DPLLA_DEVICE,
->> +	DPLLA_DEVICE_ID,
->> +	DPLLA_DEVICE_NAME,
->> +	DPLLA_SOURCE,
->> +	DPLLA_SOURCE_ID,
->> +	DPLLA_SOURCE_TYPE,
->> +	DPLLA_OUTPUT,
->> +	DPLLA_OUTPUT_ID,
->> +	DPLLA_OUTPUT_TYPE,
->> +	DPLLA_STATUS,
->> +	DPLLA_TEMP,
->> +	DPLLA_LOCK_STATUS,
->> +	DPLLA_FLAGS,
->> +
->> +	__DPLLA_MAX,
->> +};
->> +#define DPLLA_GET_MAX (__DPLLA_MAX - 1)
-> 
-> I think "_get_/_GET_" in above names is outdated?
-> 
-
-Yes, you are right. The earliest revision had these "GET/SET" in attributes but 
-later we decided to unite them into common attributes. I will remove these 
-artifacts in the next revision.
-
->> +
->> +/* DPLL signal types used as source or as output */
->> +enum dpll_genl_signal_type {
->> +	DPLL_TYPE_EXT_1PPS,
->> +	DPLL_TYPE_EXT_10MHZ,
->> +	DPLL_TYPE_SYNCE_ETH_PORT,
->> +	DPLL_TYPE_INT_OSCILLATOR,
->> +	DPLL_TYPE_GNSS,
->> +
->> +	__DPLL_TYPE_MAX,
->> +};
->> +#define DPLL_TYPE_MAX (__DPLL_TYPE_MAX - 1)
->> +
->> +/* Events of dpll_genl_family */
->> +enum dpll_genl_event {
->> +	DPLL_EVENT_UNSPEC,
->> +	DPLL_EVENT_DEVICE_CREATE,		/* DPLL device creation */
->> +	DPLL_EVENT_DEVICE_DELETE,		/* DPLL device deletion */
->> +	DPLL_EVENT_STATUS_LOCKED,		/* DPLL device locked to source */
->> +	DPLL_EVENT_STATUS_UNLOCKED,	/* DPLL device freerun */
->> +	DPLL_EVENT_SOURCE_CHANGE,		/* DPLL device source changed */
->> +	DPLL_EVENT_OUTPUT_CHANGE,		/* DPLL device output changed */
->> +
->> +	__DPLL_EVENT_MAX,
->> +};
->> +#define DPLL_EVENT_MAX (__DPLL_EVENT_MAX - 1)
->> +
->> +/* Commands supported by the dpll_genl_family */
->> +enum dpll_genl_cmd {
->> +	DPLL_CMD_UNSPEC,
->> +	DPLL_CMD_DEVICE_GET,	/* List of DPLL devices id */
->> +	DPLL_CMD_SET_SOURCE_TYPE,	/* Set the DPLL device source type */
->> +	DPLL_CMD_SET_OUTPUT_TYPE,	/* Get the DPLL device output type */
-> 
-> "Get" in comment description looks like a typo.
-> I am getting bit confused with the name and comments.
-> For me, first look says: it is selection of a type of a source.
-> But in the code I can see it selects a source id and a type.
-> Type of source originates in HW design, why would the one want to "set" it?
-> I can imagine a HW design where a single source or output would allow to choose
-> where the signal originates/goes, some kind of extra selector layer for a
-> source/output, but was that the intention?
-
-In general - yes, we have experimented with our time card providing different 
-types of source synchronisation signal on different input pins, i.e. 1PPS, 
-10MHz, IRIG-B, etc. Any of these signals could be connected to any of 4 external 
-pins, that's why I source id is treated as input pin identifier and source type 
-is the signal type it receives.
-
-> If so, shouldn't the user get some bitmap/list of modes available for each
-> source/output?
-
-Good idea. We have list of available modes exposed via sysfs file, and I agree 
-that it's worth to expose them via netlink interface. I will try to address this 
-in the next version.
-
-> 
-> The user shall get some extra information about the source/output. Right now
-> there can be multiple sources/outputs of the same type, but not really possible
-> to find out their purpose. I.e. a dpll equipped with four source of
-> DPLL_TYPE_EXT_1PPS type.
->  > This implementation looks like designed for a "forced reference lock" mode
-> where the user must explicitly select one source. But a multi source/output
-> DPLL could be running in different modes. I believe most important is automatic
-> mode, where it tries to lock to a user-configured source priority list.
-> However, there is also freerun mode, where dpll isn't even trying to lock to
-> anything, or NCO - Numerically Controlled Oscillator mode.
-
-Yes, you are right, my focus was on "forced reference lock" mode as currently 
-this is the only mode supported by our hardware. But I'm happy to extend it to 
-other usecases.
-
-> It would be great to have ability to select DPLL modes, but also to be able to
-> configure priorities, read failure status, configure extra "features" (i.e.
-> Embedded Sync, EEC modes, Fast Lock)
-I absolutely agree on this way of improvement, and I already have some ongoing 
-work about failures/events/status change messages. I can see no stoppers for 
-creating priorities (if supported by HW) and other extra "features", but we have 
-to agree on the interface with flexibility in mind.
-
-> The sources and outputs can also have some extra features or capabilities, like:
-> - enable Embedded Sync
-
-Does it mean we want to enable or disable Embedded Sync within one protocol? Is 
-it like Time-Sensitive Networking (TSN) for Ethernet?
-
-> - add phase delay
-> - configure frequency (user might need to use source/output with different
->    frequency then 1 PPS or 10MHz)
-
-Providing these modes I was thinking about the most common and widely used 
-signals in measurement equipment. So my point here is that both 1PPS and 10MHz 
-should stay as is, but another type of signal should be added, let's say 
-CUSTOM_FREQ, which will also consider special attribute in netlink terms. is it ok?
-
-> Generally, for simple DPLL designs this interface could do the job (although,
-> I still think user needs more information about the sources/outputs), but for
-> more complex ones, there should be something different, which takes care of my
-> comments regarding extra configuration needed.
-> 
-
-As I already mentioned earlier, I'm open for improvements and happy to 
-collaborate to cover other use cases of this subsystem from the very beginning 
-of development. We can even create an open github repo to share implementation 
-details together with comments if it works better for you.
-
-> Thanks,
-> Arkadiusz
-> 
->> +
->> +	__DPLL_CMD_MAX,
->> +};
->> +#define DPLL_CMD_MAX (__DPLL_CMD_MAX - 1)
->> +
->> +#endif /* _UAPI_LINUX_DPLL_H */
->> -- 
->> 2.27.0
->>
->>
-
+Thanks.
