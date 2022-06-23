@@ -2,75 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F0C7558896
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 21:22:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8DA9558899
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 21:22:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229457AbiFWTW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 15:22:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40726 "EHLO
+        id S229902AbiFWTWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 15:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230032AbiFWTWO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 15:22:14 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526461134;
-        Thu, 23 Jun 2022 11:27:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=qYgIdP7/GKFkoipDD7vfd5G91Qah2rhJh3hyubrotsQ=; b=nfz/g2B+cxsPsWc6G8CKNTiHyV
-        XsY3rwYIMjPOdyCc+yOEuszvc1KNvYvOUPkGgqTBY+p8J8YoBjnSRsKiywDOjv3tF0EO4X2d9S4Kd
-        tK3B57MBZSNLoKOC6liaJ8MwwEtomacD8nQ0ltxSSFEcw/BKZ+syBwasdZLAadI/KS9A=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1o4RXs-007zfv-K5; Thu, 23 Jun 2022 20:27:12 +0200
-Date:   Thu, 23 Jun 2022 20:27:12 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Enguerrand de Ribaucourt 
-        <enguerrand.de-ribaucourt@savoirfairelinux.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        hkallweit1@gmail.com
-Subject: Re: [PATCH v3 1/2] net: dp83822: disable false carrier interrupt
-Message-ID: <YrSwgKpa+KUxIZd5@lunn.ch>
-References: <YqzAKguRaxr74oXh@lunn.ch>
- <20220623134645.1858361-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
- <20220623134645.1858361-2-enguerrand.de-ribaucourt@savoirfairelinux.com>
+        with ESMTP id S230280AbiFWTWV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 15:22:21 -0400
+Received: from smtp4.emailarray.com (smtp4.emailarray.com [65.39.216.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA10E3E5F7
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 11:28:17 -0700 (PDT)
+Received: (qmail 96020 invoked by uid 89); 23 Jun 2022 18:28:15 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNQ==) (POLARISLOCAL)  
+  by smtp4.emailarray.com with SMTP; 23 Jun 2022 18:28:15 -0000
+Date:   Thu, 23 Jun 2022 11:28:13 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Vadim Fedorenko <vfedorenko@novek.ru>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Vadim Fedorenko <vadfed@fb.com>,
+        Aya Levin <ayal@nvidia.com>,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [RFC PATCH v1 3/3] ptp_ocp: implement DPLL ops
+Message-ID: <20220623182813.safjhwvu67i4vu3b@bsd-mbp.dhcp.thefacebook.com>
+References: <20220623005717.31040-1-vfedorenko@novek.ru>
+ <20220623005717.31040-4-vfedorenko@novek.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220623134645.1858361-2-enguerrand.de-ribaucourt@savoirfairelinux.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220623005717.31040-4-vfedorenko@novek.ru>
+X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 03:46:44PM +0200, Enguerrand de Ribaucourt wrote:
-> When unplugging an Ethernet cable, false carrier events were produced by
-> the PHY at a very high rate. Once the false carrier counter full, an
-> interrupt was triggered every few clock cycles until the cable was
-> replugged. This resulted in approximately 10k/s interrupts.
+On Thu, Jun 23, 2022 at 03:57:17AM +0300, Vadim Fedorenko wrote:
+> From: Vadim Fedorenko <vadfed@fb.com>
 > 
-> Since the false carrier counter (FCSCR) is never used, we can safely
-> disable this interrupt.
-> 
-> In addition to improving performance, this also solved MDIO read
-> timeouts I was randomly encountering with an i.MX8 fec MAC because of
-> the interrupt flood. The interrupt count and MDIO timeout fix were
-> tested on a v5.4.110 kernel.
-> 
-> Signed-off-by: Enguerrand de Ribaucourt <enguerrand.de-ribaucourt@savoirfairelinux.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Fixes: 87461f7a58ab ("net: phy: DP83822 initial driver submission")
+> Implement DPLL operations in ptp_ocp driver.
 
-For future reference, you should put these in the opposite order. Your
-Signed-off-by should come last. Fixes generally comes first.
+Please CC: me as well.
 
-No need to resend for this patchset.
 
-   Andrew
+> +static int ptp_ocp_dpll_get_status(struct dpll_device *dpll)
+> +{
+> +	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
+> +	int sync;
+> +
+> +	sync = ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC;
+> +	return sync;
+> +}
+
+Please match existing code style.
+
+
+> +static int ptp_ocp_dpll_get_source_type(struct dpll_device *dpll, int sma)
+> +{
+> +	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
+> +	int ret;
+> +
+> +	if (bp->sma[sma].mode != SMA_MODE_IN)
+> +		return -1;
+> +
+> +	switch (ptp_ocp_sma_get(bp, sma)) {
+> +	case 0:
+> +		ret = DPLL_TYPE_EXT_10MHZ;
+> +		break;
+> +	case 1:
+> +	case 2:
+> +		ret = DPLL_TYPE_EXT_1PPS;
+> +		break;
+> +	default:
+> +		ret = DPLL_TYPE_INT_OSCILLATOR;
+> +	}
+> +
+> +	return ret;
+> +}
+
+These case statements switch on private bits.  This needs to match
+on the selector name instead.
+
+
+> +static int ptp_ocp_dpll_get_output_type(struct dpll_device *dpll, int sma)
+> +{
+> +	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
+> +	int ret;
+> +
+> +	if (bp->sma[sma].mode != SMA_MODE_OUT)
+> +		return -1;
+> +
+> +	switch (ptp_ocp_sma_get(bp, sma)) {
+> +	case 0:
+> +		ret = DPLL_TYPE_EXT_10MHZ;
+> +		break;
+> +	case 1:
+> +	case 2:
+> +		ret = DPLL_TYPE_INT_OSCILLATOR;
+> +		break;
+> +	case 4:
+> +	case 8:
+> +		ret = DPLL_TYPE_GNSS;
+> +		break;
+> +	default:
+> +		ret = DPLL_TYPE_INT_OSCILLATOR;
+
+Missing break;
+
+
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static struct dpll_device_ops dpll_ops = {
+> +	.get_status		= ptp_ocp_dpll_get_status,
+> +	.get_lock_status	= ptp_ocp_dpll_get_lock_status,
+> +	.get_source_type	= ptp_ocp_dpll_get_source_type,
+> +	.get_output_type	= ptp_ocp_dpll_get_output_type,
+> +};
+
+No 'set' statements here?  Also, what happens if there is more than
+one GNSS receiver, how is this differentiated?
+>  static int
+>  ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  {
+> @@ -3768,6 +3846,14 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  
+>  	ptp_ocp_info(bp);
+>  	devlink_register(devlink);
+> +
+> +	bp->dpll = dpll_device_alloc(&dpll_ops, ARRAY_SIZE(bp->sma), ARRAY_SIZE(bp->sma), bp);
+> +	if (!bp->dpll) {
+> +		dev_err(&pdev->dev, "dpll_device_alloc failed\n");
+> +		return 0;
+> +	}
+> +	dpll_device_register(bp->dpll);
+> +
+
+How is the release/unregister path called when the module is unloaded?
+-- 
+Jonathan
