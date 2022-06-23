@@ -2,66 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 691B25571AD
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 06:43:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66F4A55725A
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 06:58:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229759AbiFWEl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 00:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36060 "EHLO
+        id S229838AbiFWEur (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 00:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347452AbiFWEgX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 00:36:23 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A886130F71
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 21:36:22 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-317a4c8a662so104882337b3.6
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 21:36:22 -0700 (PDT)
+        with ESMTP id S232026AbiFWEsy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 00:48:54 -0400
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6DE45538
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 21:42:34 -0700 (PDT)
+Received: by mail-yb1-xb30.google.com with SMTP id q132so236394ybg.10
+        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 21:42:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=9hpBdccy74sS7LhLCkjUZlDSBI954GNR5j1me5KZlE8=;
-        b=GK+fixkDrlsidXLSyvKPfC26rPClSnVyscxqQvDt6bdZlYFdj+UEKmxOZc+iqq0QGx
-         JzgwarjIGJDA2CHcwsa0P2MrJqJCuQ1E7zn8QwVbC8wQmunmEtyhJ2OMUTWvYf0cFRIC
-         JcbrSO/YO9lcKDBCtK+pvGNmlP3IzO8w2HQUiQ8zg+jN/zzGCKEmR1axqxjHQkvBYIKx
-         wLgndPtbSxmE+CTuNcYuyjK1ggG5/LONDKFr8ZzQMubnfeY+wPuniSFo195dEhycp5l4
-         plxfiGts4gT72Wh0qkpPNOCoj/3RWtsyB4oBr0Ehy9zfwVltQfKufK8DRNi+7ETBoChc
-         FPgg==
+        bh=4iW6SQbrl4tK6SGKbb60gU7a3SBpPlo+vf+kq4WldJo=;
+        b=OSdxExzR8fmlbbHIyQ4TdsUziOKviIq19CVD5M0eSB9BD1Rh8B4qOPvtw1fCgMATfe
+         PPznvkdib+rPEyjvH1LpwQHil0U35M+8lXdQRjaY3l0QGr/8Xdv9oiXZ5P3VA1sEuJwm
+         st94p729nzb3hM5IjOBiXFjVsRsZIXwu0o/P7l9F9mbOmXleVfdodBeWzNd0X5DeQPRd
+         T5wS662rv/dbOJVB/Kg9zKVHu6WPYDSH92NHsMc/2Z+9bpLOCBHU0/IqLNAvYz5ydggq
+         Zz801BZZYsYlduB2bDQIu6jyH0CiDGEM4kwUqwoAQiGJ44EjcBM8I55FExN977nz0Pax
+         o9GA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=9hpBdccy74sS7LhLCkjUZlDSBI954GNR5j1me5KZlE8=;
-        b=fk7bOYjEt4NZOhmOueNMp5ZKoVTqEKoVdcE5rGp5/hyVnDZWcKfqO7AWOMfbdybu5t
-         2VGsvOizsvVqFyojO3sA5ycaBzUAwHPRSbk8CK60x5pjvFH0HwJ/9b/VzxVTqswLy40x
-         8LB74OroSG6CrZXVF0ksKrq0NuyWLE7WZsEIibO8o/67WD3sbzeqSlel85zKB16quriy
-         5XBAZQlDDKnTVpDsTMGV6J5mYFnCSoBdF67H/A0Hd+Q3AgSNaCYA9T38Rw6kQnFwKsHa
-         oVmLxgesCUOAJX3dhVlfpL1RK5F8qxoKaQLnas83Kw47Np29AZyCxDjbb2LAh3pj9XoA
-         SBNg==
-X-Gm-Message-State: AJIora+aXDaPzJgh21URdQpyMMbQ8uTitsB1SpvxHn019Wd3KLzWaLdS
-        lnT2eELkgmcBgZP7LiRwrd4IIk2gTJXdNQ==
-X-Google-Smtp-Source: AGRyM1s8s7CK3vj94kIHeXK3IdC7Z6EIP0PaznQeLb46bmW50K5lwNfUk7e2aHeUe4YaqsqyW4NXwjPDfls3FQ==
-X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
- (user=edumazet job=sendgmr) by 2002:a81:12d6:0:b0:314:6097:b272 with SMTP id
- 205-20020a8112d6000000b003146097b272mr8522541yws.159.1655958981873; Wed, 22
- Jun 2022 21:36:21 -0700 (PDT)
-Date:   Thu, 23 Jun 2022 04:34:49 +0000
-In-Reply-To: <20220623043449.1217288-1-edumazet@google.com>
-Message-Id: <20220623043449.1217288-20-edumazet@google.com>
-Mime-Version: 1.0
-References: <20220623043449.1217288-1-edumazet@google.com>
-X-Mailer: git-send-email 2.37.0.rc0.104.g0611611a94-goog
-Subject: [PATCH v2 net-next 19/19] ip6mr: convert mrt_lock to a spinlock
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4iW6SQbrl4tK6SGKbb60gU7a3SBpPlo+vf+kq4WldJo=;
+        b=vS3Yiq/g65YRzHfn16Gwhx4gCxJSEp/wSMIcfpzkAbMF7pGmxUhrrHOlSg45w64FVi
+         3xFHT1+gBohlKlvyj1sQnRFb88EWmmuMt0QyENXNsdO9TPA+/9D0Ik+pAvUjKFFV6jh0
+         yKWFRUWVu98uqBmQ54VuD0OYpHROA7mqtt26FEeaFF1TludcfplcYKa6PCLTstv50wYk
+         kUeWqIJKJNorE2paqCGVHEHi1BKjPRFKrkC9ecsBepPBA95ovzzKh+0cxhkR3hMTk15q
+         rJ/X487W88SGSI82wC+aMLHmum4fULAn7dojoS8QTxl8mOAgSpTnB+xu0Pa2xhbxIf8O
+         /Gsw==
+X-Gm-Message-State: AJIora989jXKBStxCrAVWM0nE8ijQF93vpPQKqHFODbQUwYkBlX/6Ydr
+        L4rS0pBz/Sj4cvj5psNcoLhs/RUNoeZ6w3gdszEY+g==
+X-Google-Smtp-Source: AGRyM1vez/noetu41uNulqFawtfQXXyq+0cTlkuvwdzxvEpMZg81xlF4Ungc7jQSjmKg+0UMEkU8unZNv4A31Gh3pBc=
+X-Received: by 2002:a25:23c3:0:b0:669:b1df:a249 with SMTP id
+ j186-20020a2523c3000000b00669b1dfa249mr540360ybj.387.1655959352434; Wed, 22
+ Jun 2022 21:42:32 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220622150220.1091182-1-edumazet@google.com> <4d281429-8ac0-c85b-5f8d-3f6fc925d9b7@kernel.dk>
+In-Reply-To: <4d281429-8ac0-c85b-5f8d-3f6fc925d9b7@kernel.dk>
 From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>,
+Date:   Thu, 23 Jun 2022 06:42:21 +0200
+Message-ID: <CANn89iJWdVjR16fRv=-ijZv37bmoUexjxi49EhmA6oKuxnxa8A@mail.gmail.com>
+Subject: Re: [PATCH net] net: clear msg_get_inq in __sys_recvfrom() and __copy_msghdr_from_user()
+To:     Jens Axboe <axboe@kernel.dk>,
+        Alexander Potapenko <glider@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        Eric Dumazet <edumazet@google.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,140 +71,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-mrt_lock is only held in write mode, from process context only.
+On Wed, Jun 22, 2022 at 5:24 PM Jens Axboe <axboe@kernel.dk> wrote:
+>
+> On 6/22/22 9:02 AM, Eric Dumazet wrote:
+> > syzbot reported uninit-value in tcp_recvmsg() [1]
+> >
+> > Issue here is that msg->msg_get_inq should have been cleared,
+> > otherwise tcp_recvmsg() might read garbage and perform
+> > more work than needed, or have undefined behavior.
+> >
+> > Given CONFIG_INIT_STACK_ALL_ZERO=y is probably going to be
+> > the default soon, I chose to change __sys_recvfrom() to clear
+> > all fields but msghdr.addr which might be not NULL.
+> >
+> > For __copy_msghdr_from_user(), I added an explicit clear
+> > of kmsg->msg_get_inq.
+> >
+> > [1]
+> > BUG: KMSAN: uninit-value in tcp_recvmsg+0x6cf/0xb60 net/ipv4/tcp.c:2557
+> > tcp_recvmsg+0x6cf/0xb60 net/ipv4/tcp.c:2557
+> > inet_recvmsg+0x13a/0x5a0 net/ipv4/af_inet.c:850
+> > sock_recvmsg_nosec net/socket.c:995 [inline]
+> > sock_recvmsg net/socket.c:1013 [inline]
+> > __sys_recvfrom+0x696/0x900 net/socket.c:2176
+> > __do_sys_recvfrom net/socket.c:2194 [inline]
+> > __se_sys_recvfrom net/socket.c:2190 [inline]
+> > __x64_sys_recvfrom+0x122/0x1c0 net/socket.c:2190
+> > do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> > do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
+> > entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> >
+> > Local variable msg created at:
+> > __sys_recvfrom+0x81/0x900 net/socket.c:2154
+> > __do_sys_recvfrom net/socket.c:2194 [inline]
+> > __se_sys_recvfrom net/socket.c:2190 [inline]
+> > __x64_sys_recvfrom+0x122/0x1c0 net/socket.c:2190
+> >
+> > CPU: 0 PID: 3493 Comm: syz-executor170 Not tainted 5.19.0-rc3-syzkaller-30868-g4b28366af7d9 #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+>
+> Thanks Eric, looks good to me:
+>
+> Reviewed-by: Jens Axboe <axboe@kernel.dk>
+>
+> --
+> Jens Axboe
+>
 
-We can switch to a mere spinlock, and avoid blocking BH.
+Alexander tested the patch as well:
 
-Also, vif_dev_read() is always called under standard rcu_read_lock().
+Tested-by: Alexander Potapenko<glider@google.com>
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- net/ipv6/ip6mr.c | 29 ++++++++++++++---------------
- 1 file changed, 14 insertions(+), 15 deletions(-)
-
-diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-index 7381cfdac3e376c97917465918a464bd61643f2a..ec6e1509fc7cdfaf55bc79034f43b6e3ce0434ed 100644
---- a/net/ipv6/ip6mr.c
-+++ b/net/ipv6/ip6mr.c
-@@ -62,12 +62,11 @@ struct ip6mr_result {
-    Note that the changes are semaphored via rtnl_lock.
-  */
- 
--static DEFINE_RWLOCK(mrt_lock);
-+static DEFINE_SPINLOCK(mrt_lock);
- 
- static struct net_device *vif_dev_read(const struct vif_device *vif)
- {
--	return rcu_dereference_check(vif->dev,
--				     lockdep_is_held(&mrt_lock));
-+	return rcu_dereference(vif->dev);
- }
- 
- /* Multicast router control variables */
-@@ -714,7 +713,7 @@ static int mif6_delete(struct mr_table *mrt, int vifi, int notify,
- 	call_ip6mr_vif_entry_notifiers(read_pnet(&mrt->net),
- 				       FIB_EVENT_VIF_DEL, v, dev,
- 				       vifi, mrt->id);
--	write_lock_bh(&mrt_lock);
-+	spin_lock(&mrt_lock);
- 	RCU_INIT_POINTER(v->dev, NULL);
- 
- #ifdef CONFIG_IPV6_PIMSM_V2
-@@ -733,7 +732,7 @@ static int mif6_delete(struct mr_table *mrt, int vifi, int notify,
- 		WRITE_ONCE(mrt->maxvif, tmp + 1);
- 	}
- 
--	write_unlock_bh(&mrt_lock);
-+	spin_unlock(&mrt_lock);
- 
- 	dev_set_allmulti(dev, -1);
- 
-@@ -833,7 +832,7 @@ static void ipmr_expire_process(struct timer_list *t)
- 	spin_unlock(&mfc_unres_lock);
- }
- 
--/* Fill oifs list. It is called under write locked mrt_lock. */
-+/* Fill oifs list. It is called under locked mrt_lock. */
- 
- static void ip6mr_update_thresholds(struct mr_table *mrt,
- 				    struct mr_mfc *cache,
-@@ -919,7 +918,7 @@ static int mif6_add(struct net *net, struct mr_table *mrt,
- 			MIFF_REGISTER);
- 
- 	/* And finish update writing critical data */
--	write_lock_bh(&mrt_lock);
-+	spin_lock(&mrt_lock);
- 	rcu_assign_pointer(v->dev, dev);
- 	netdev_tracker_alloc(dev, &v->dev_tracker, GFP_ATOMIC);
- #ifdef CONFIG_IPV6_PIMSM_V2
-@@ -928,7 +927,7 @@ static int mif6_add(struct net *net, struct mr_table *mrt,
- #endif
- 	if (vifi + 1 > mrt->maxvif)
- 		WRITE_ONCE(mrt->maxvif, vifi + 1);
--	write_unlock_bh(&mrt_lock);
-+	spin_unlock(&mrt_lock);
- 	call_ip6mr_vif_entry_notifiers(net, FIB_EVENT_VIF_ADD,
- 				       v, dev, vifi, mrt->id);
- 	return 0;
-@@ -1442,12 +1441,12 @@ static int ip6mr_mfc_add(struct net *net, struct mr_table *mrt,
- 				    &mfc->mf6cc_mcastgrp.sin6_addr, parent);
- 	rcu_read_unlock();
- 	if (c) {
--		write_lock_bh(&mrt_lock);
-+		spin_lock(&mrt_lock);
- 		c->_c.mfc_parent = mfc->mf6cc_parent;
- 		ip6mr_update_thresholds(mrt, &c->_c, ttls);
- 		if (!mrtsock)
- 			c->_c.mfc_flags |= MFC_STATIC;
--		write_unlock_bh(&mrt_lock);
-+		spin_unlock(&mrt_lock);
- 		call_ip6mr_mfc_entry_notifiers(net, FIB_EVENT_ENTRY_REPLACE,
- 					       c, mrt->id);
- 		mr6_netlink_event(mrt, c, RTM_NEWROUTE);
-@@ -1565,7 +1564,7 @@ static int ip6mr_sk_init(struct mr_table *mrt, struct sock *sk)
- 	struct net *net = sock_net(sk);
- 
- 	rtnl_lock();
--	write_lock_bh(&mrt_lock);
-+	spin_lock(&mrt_lock);
- 	if (rtnl_dereference(mrt->mroute_sk)) {
- 		err = -EADDRINUSE;
- 	} else {
-@@ -1573,7 +1572,7 @@ static int ip6mr_sk_init(struct mr_table *mrt, struct sock *sk)
- 		sock_set_flag(sk, SOCK_RCU_FREE);
- 		atomic_inc(&net->ipv6.devconf_all->mc_forwarding);
- 	}
--	write_unlock_bh(&mrt_lock);
-+	spin_unlock(&mrt_lock);
- 
- 	if (!err)
- 		inet6_netconf_notify_devconf(net, RTM_NEWNETCONF,
-@@ -1603,14 +1602,14 @@ int ip6mr_sk_done(struct sock *sk)
- 	rtnl_lock();
- 	ip6mr_for_each_table(mrt, net) {
- 		if (sk == rtnl_dereference(mrt->mroute_sk)) {
--			write_lock_bh(&mrt_lock);
-+			spin_lock(&mrt_lock);
- 			RCU_INIT_POINTER(mrt->mroute_sk, NULL);
- 			/* Note that mroute_sk had SOCK_RCU_FREE set,
- 			 * so the RCU grace period before sk freeing
- 			 * is guaranteed by sk_destruct()
- 			 */
- 			atomic_dec(&devconf->mc_forwarding);
--			write_unlock_bh(&mrt_lock);
-+			spin_unlock(&mrt_lock);
- 			inet6_netconf_notify_devconf(net, RTM_NEWNETCONF,
- 						     NETCONFA_MC_FORWARDING,
- 						     NETCONFA_IFINDEX_ALL,
-@@ -2097,7 +2096,7 @@ static int ip6mr_forward2(struct net *net, struct mr_table *mrt,
- 	return 0;
- }
- 
--/* Called with mrt_lock or rcu_read_lock() */
-+/* Called with rcu_read_lock() */
- static int ip6mr_find_vif(struct mr_table *mrt, struct net_device *dev)
- {
- 	int ct;
--- 
-2.37.0.rc0.104.g0611611a94-goog
-
+Thanks !
