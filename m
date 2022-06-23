@@ -2,140 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F09B557763
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 12:06:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C2B6557772
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 12:09:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231400AbiFWKGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 06:06:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36726 "EHLO
+        id S231328AbiFWKJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 06:09:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230516AbiFWKGM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 06:06:12 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B93E549CBE
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 03:06:10 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1o4JhK-0001s4-PU; Thu, 23 Jun 2022 12:04:26 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1o4JhF-0006Dc-DA; Thu, 23 Jun 2022 12:04:21 +0200
-Date:   Thu, 23 Jun 2022 12:04:21 +0200
-From:   sascha hauer <sha@pengutronix.de>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Len Brown <lenb@kernel.org>, peng fan <peng.fan@nxp.com>,
-        kevin hilman <khilman@kernel.org>,
-        ulf hansson <ulf.hansson@linaro.org>,
-        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
-        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
-        andrew lunn <andrew@lunn.ch>,
-        heiner kallweit <hkallweit1@gmail.com>,
-        russell king <linux@armlinux.org.uk>,
-        "david s. miller" <davem@davemloft.net>,
-        eric dumazet <edumazet@google.com>,
-        jakub kicinski <kuba@kernel.org>,
-        paolo abeni <pabeni@redhat.com>,
-        linus walleij <linus.walleij@linaro.org>,
-        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
-        david ahern <dsahern@kernel.org>, kernel-team@android.com,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-gpio@vger.kernel.org, kernel@pengutronix.de,
-        devicetree@vger.kernel.org, linux-acpi@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] of: base: Avoid console probe delay when
- fw_devlink.strict=1
-Message-ID: <20220623100421.GY1615@pengutronix.de>
-References: <20220623080344.783549-1-saravanak@google.com>
- <20220623080344.783549-3-saravanak@google.com>
+        with ESMTP id S230313AbiFWKJI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 06:09:08 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5EF443E5;
+        Thu, 23 Jun 2022 03:09:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655978947; x=1687514947;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=jA77PzIoNXk7nFImbHRx1GPrP2Ro2H86IsqPha9kQtg=;
+  b=VYyu7fgzIIefFU23oidUum1hzvP7MGvqqtts0sC9E/WCkN9cxr4yHqp/
+   mSOs+OwmH9OUobQ+CFty66Ap/ezlv9IxdBZMUvC4sj0xbj+ZHQPczpCOj
+   y0k7qY8HWOIl/atx8lA4C8ngZioCZUXEevF0Sp/XhJP8s0jyLXTGJqIm7
+   mUDlp8ePLORJQRZB3RIl0HfiWRQzenn7JNd3SHZ+96yE3AOU9DNHIaPTn
+   T1ZQ02+Nwxs1Q9Rmb94LLhFITRJ09N5MMuPcg2Sy18paK1k19PSzmtJqE
+   i7xEyRiegK56+C5eFflo+8J2b8ciwybJJtrwcK66jW8f1ZDM5ZmnB4CXy
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10386"; a="263712755"
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="263712755"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 03:09:07 -0700
+X-IronPort-AV: E=Sophos;i="5.92,215,1650956400"; 
+   d="scan'208";a="915126988"
+Received: from silpixa00401086.ir.intel.com ([10.55.128.124])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2022 03:09:04 -0700
+From:   Ciara Loftus <ciara.loftus@intel.com>
+To:     intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        zeffron@riotgames.com, Ciara Loftus <ciara.loftus@intel.com>
+Subject: [PATCH net-next v2] i40e: read the XDP program once per NAPI
+Date:   Thu, 23 Jun 2022 10:08:52 +0000
+Message-Id: <20220623100852.7867-1-ciara.loftus@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220623080344.783549-3-saravanak@google.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 01:03:43AM -0700, Saravana Kannan wrote:
-> Commit 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
-> enabled iommus and dmas dependency enforcement by default. On some
-> systems, this caused the console device's probe to get delayed until the
-> deferred_probe_timeout expires.
-> 
-> We need consoles to work as soon as possible, so mark the console device
-> node with FWNODE_FLAG_BEST_EFFORT so that fw_delink knows not to delay
-> the probe of the console device for suppliers without drivers. The
-> driver can then make the decision on where it can probe without those
-> suppliers or defer its probe.
-> 
-> Fixes: 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
-> Reported-by: Sascha Hauer <sha@pengutronix.de>
-> Reported-by: Peng Fan <peng.fan@nxp.com>
-> Signed-off-by: Saravana Kannan <saravanak@google.com>
-> Tested-by: Peng Fan <peng.fan@nxp.com>
-> ---
->  drivers/of/base.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/of/base.c b/drivers/of/base.c
-> index d4f98c8469ed..a19cd0c73644 100644
-> --- a/drivers/of/base.c
-> +++ b/drivers/of/base.c
-> @@ -1919,6 +1919,8 @@ void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align))
->  			of_property_read_string(of_aliases, "stdout", &name);
->  		if (name)
->  			of_stdout = of_find_node_opts_by_path(name, &of_stdout_options);
-> +		if (of_stdout)
-> +			of_stdout->fwnode.flags |= FWNODE_FLAG_BEST_EFFORT;
+Similar to how it's done in the ice driver since 'eb087cd82864 ("ice:
+propagate xdp_ring onto rx_ring")', read the XDP program once per NAPI
+instead of once per descriptor cleaned. I measured an improvement in
+throughput of 2% for the AF_XDP xdpsock l2fwd benchmark for zero copy mode
+and 1% for copy mode.
 
-The device given in the stdout-path property doesn't necessarily have to
-be consistent with the console= parameter. The former is usually
-statically set in the device trees contained in the kernel while the
-latter is dynamically set by the bootloader. So if you change the
-console uart in the bootloader then you'll still run into this trap.
+Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+---
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c | 11 ++++++-----
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c  | 17 ++++++++++-------
+ 2 files changed, 16 insertions(+), 12 deletions(-)
 
-It's problematic to consult only the device tree for dependencies. I
-found several examples of drivers in the tree for which dma support
-is optional. They use it if they can, but continue without it when
-not available. "hwlock" is another property which consider several
-drivers as optional. Also consider SoCs in early upstreaming phases
-when the device tree is merged with "dmas" or "hwlock" properties,
-but the corresponding drivers are not yet upstreamed. It's not nice
-to defer probing of all these devices for a long time.
-
-I wonder if it wouldn't be a better approach to just probe all devices
-and record the device(node) they are waiting on. Then you know that you
-don't need to probe them again until the device they are waiting for
-is available.
-
-Sascha
-
-
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+index dadef56e5f9b..a327189deda0 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+@@ -2289,16 +2289,14 @@ int i40e_xmit_xdp_tx_ring(struct xdp_buff *xdp, struct i40e_ring *xdp_ring)
+  * i40e_run_xdp - run an XDP program
+  * @rx_ring: Rx ring being processed
+  * @xdp: XDP buffer containing the frame
++ * @xdp_prog: XDP program to run
+  **/
+-static int i40e_run_xdp(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
++static int i40e_run_xdp(struct i40e_ring *rx_ring, struct xdp_buff *xdp, struct bpf_prog *xdp_prog)
+ {
+ 	int err, result = I40E_XDP_PASS;
+ 	struct i40e_ring *xdp_ring;
+-	struct bpf_prog *xdp_prog;
+ 	u32 act;
+ 
+-	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
+-
+ 	if (!xdp_prog)
+ 		goto xdp_out;
+ 
+@@ -2443,6 +2441,7 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
+ 	unsigned int offset = rx_ring->rx_offset;
+ 	struct sk_buff *skb = rx_ring->skb;
+ 	unsigned int xdp_xmit = 0;
++	struct bpf_prog *xdp_prog;
+ 	bool failure = false;
+ 	struct xdp_buff xdp;
+ 	int xdp_res = 0;
+@@ -2452,6 +2451,8 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
+ #endif
+ 	xdp_init_buff(&xdp, frame_sz, &rx_ring->xdp_rxq);
+ 
++	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
++
+ 	while (likely(total_rx_packets < (unsigned int)budget)) {
+ 		struct i40e_rx_buffer *rx_buffer;
+ 		union i40e_rx_desc *rx_desc;
+@@ -2512,7 +2513,7 @@ static int i40e_clean_rx_irq(struct i40e_ring *rx_ring, int budget)
+ 			/* At larger PAGE_SIZE, frame_sz depend on len size */
+ 			xdp.frame_sz = i40e_rx_frame_truesize(rx_ring, size);
+ #endif
+-			xdp_res = i40e_run_xdp(rx_ring, &xdp);
++			xdp_res = i40e_run_xdp(rx_ring, &xdp, xdp_prog);
+ 		}
+ 
+ 		if (xdp_res) {
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+index af3e7e6afc85..6d4009e0cbd6 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
+@@ -143,20 +143,17 @@ int i40e_xsk_pool_setup(struct i40e_vsi *vsi, struct xsk_buff_pool *pool,
+  * i40e_run_xdp_zc - Executes an XDP program on an xdp_buff
+  * @rx_ring: Rx ring
+  * @xdp: xdp_buff used as input to the XDP program
++ * @xdp_prog: XDP program to run
+  *
+  * Returns any of I40E_XDP_{PASS, CONSUMED, TX, REDIR}
+  **/
+-static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp)
++static int i40e_run_xdp_zc(struct i40e_ring *rx_ring, struct xdp_buff *xdp,
++			   struct bpf_prog *xdp_prog)
+ {
+ 	int err, result = I40E_XDP_PASS;
+ 	struct i40e_ring *xdp_ring;
+-	struct bpf_prog *xdp_prog;
+ 	u32 act;
+ 
+-	/* NB! xdp_prog will always be !NULL, due to the fact that
+-	 * this path is enabled by setting an XDP program.
+-	 */
+-	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
+ 	act = bpf_prog_run_xdp(xdp_prog, xdp);
+ 
+ 	if (likely(act == XDP_REDIRECT)) {
+@@ -339,9 +336,15 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
+ 	u16 next_to_clean = rx_ring->next_to_clean;
+ 	u16 count_mask = rx_ring->count - 1;
+ 	unsigned int xdp_res, xdp_xmit = 0;
++	struct bpf_prog *xdp_prog;
+ 	bool failure = false;
+ 	u16 cleaned_count;
+ 
++	/* NB! xdp_prog will always be !NULL, due to the fact that
++	 * this path is enabled by setting an XDP program.
++	 */
++	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
++
+ 	while (likely(total_rx_packets < (unsigned int)budget)) {
+ 		union i40e_rx_desc *rx_desc;
+ 		unsigned int rx_packets;
+@@ -378,7 +381,7 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
+ 		xsk_buff_set_size(bi, size);
+ 		xsk_buff_dma_sync_for_cpu(bi, rx_ring->xsk_pool);
+ 
+-		xdp_res = i40e_run_xdp_zc(rx_ring, bi);
++		xdp_res = i40e_run_xdp_zc(rx_ring, bi, xdp_prog);
+ 		i40e_handle_xdp_result_zc(rx_ring, bi, rx_desc, &rx_packets,
+ 					  &rx_bytes, size, xdp_res, &failure);
+ 		if (failure)
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.25.1
+
