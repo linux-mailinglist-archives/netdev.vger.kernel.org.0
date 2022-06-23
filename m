@@ -2,76 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71CF55576BB
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 11:36:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8AA85576DF
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 11:42:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231190AbiFWJgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 05:36:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39696 "EHLO
+        id S230272AbiFWJmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 05:42:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230323AbiFWJgT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 05:36:19 -0400
+        with ESMTP id S230356AbiFWJmu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 05:42:50 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8C17449698
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 02:36:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 29DEA49924
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 02:42:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655976976;
+        s=mimecast20190719; t=1655977368;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=1RblD6lamHOJLDi1sp3XifpeL6OnTDlCisZUrk4lRDo=;
-        b=Gj+UQIIkeBjy7X2nHuvzjshQ/D4Rofe77/uUceBUBg+e3fz4l+r2YuzaAfHSaL9qvDdCHR
-        3LVw5R7KeQHRIowA0xjeu2Wp0HGRVuhJXtqonAceNdfRSCRzw5/MsfOjjGPHSGV73JJs0t
-        ccAEmnYjCLIaIO2uwolY5cH5+a067RE=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=GtCRYQelrWKnz3SabeELJkqPRwIFLNLfCWPVojFD6BI=;
+        b=eYAyCfd7bupG0OxI28PQMR6039y4sJQV+hbotdJVDnqcre+Qy1fS2fVTVqYV35vUr0Ej9B
+        CD1RDKT9YSTZCLsmRnS252vpPJitE1oitDU9Ed2DxmN58mcKbeey2OtNUbQAkhHhzJ76JC
+        iF/rxI6REZX6aj98vMdugQ7vS6CMesE=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-104-juQVnF7qMA-Q1b2nq-yAuQ-1; Thu, 23 Jun 2022 05:36:15 -0400
-X-MC-Unique: juQVnF7qMA-Q1b2nq-yAuQ-1
-Received: by mail-ed1-f70.google.com with SMTP id z4-20020a05640240c400b004358a7d5a1dso7975963edb.2
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 02:36:14 -0700 (PDT)
+ us-mta-646-SX3Z049pO2-1Kaidn8C3ww-1; Thu, 23 Jun 2022 05:42:46 -0400
+X-MC-Unique: SX3Z049pO2-1Kaidn8C3ww-1
+Received: by mail-wm1-f72.google.com with SMTP id be12-20020a05600c1e8c00b0039c506b52a4so1490434wmb.1
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 02:42:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1RblD6lamHOJLDi1sp3XifpeL6OnTDlCisZUrk4lRDo=;
-        b=ePIaG6h5w2yJ9nzCU5suy30gNnX1YRueCHBYM6F1sy1mcLGsK8hFo7P0+Ofro3OHdd
-         z46jDQfLX3Mv2IB1g8LPWnJUa3+RNqZjxjRc7ZhDmPmmTKox7NjJ9+hvQBONWSG13QrB
-         EOplHUVIyEqKjJt5m7v4qZEGLT9zfEKY4SK5Y2TfCbbsz92/W+S2MCPyYn6RmEJqDxRy
-         3bsnZXV8SKt/fknPj9wcXDpf8BH+9fP7layozJOdb/xuquRgmX59DeKv83FPk6YB1pOP
-         AWo0LK5wQubBLqqVEIjcuMKGjoPKArY9AhjKXf9CV3hePtnxTK4W85LrHJ/zBPfHu5pG
-         9XQw==
-X-Gm-Message-State: AJIora9KhkK9ZziKnXFr9nVfI00l/MRyDbF2a7xtKqAxdcfjBlGXLPle
-        q4dAfAMk7MbhdVB1oUQ8kT1POVQkaolQMGv7khxffVTolMlOPhJEe9l0alHKTo+Q6aq2Ph+wVJK
-        MJyAHEtiK5409zZjP
-X-Received: by 2002:a05:6402:4301:b0:42d:e8fb:66f7 with SMTP id m1-20020a056402430100b0042de8fb66f7mr9602028edc.229.1655976973847;
-        Thu, 23 Jun 2022 02:36:13 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uYpECn/thoY0XIWFSz+dMXhvG0PPUcN4aI5tKYgxwH0S0jUsq58NWOhEqiFhmN/8fk3wxAoQ==
-X-Received: by 2002:a05:6402:4301:b0:42d:e8fb:66f7 with SMTP id m1-20020a056402430100b0042de8fb66f7mr9601992edc.229.1655976973569;
-        Thu, 23 Jun 2022 02:36:13 -0700 (PDT)
-Received: from [10.39.193.30] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
-        by smtp.gmail.com with ESMTPSA id f16-20020a17090631d000b006f3ef214d9fsm10437263ejf.5.2022.06.23.02.36.12
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 23 Jun 2022 02:36:13 -0700 (PDT)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     "Rosemarie O'Riorden" <roriorden@redhat.com>
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org, i.maximets@ovn.org,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [ovs-dev] [PATCH net] net: openvswitch: fix parsing of nw_proto
- for IPv6 fragments
-Date:   Thu, 23 Jun 2022 11:36:11 +0200
-X-Mailer: MailMate (1.14r5899)
-Message-ID: <509C48AE-595C-4C21-91CD-33D2893F3577@redhat.com>
-In-Reply-To: <20220621204845.9721-1-roriorden@redhat.com>
-References: <20220621204845.9721-1-roriorden@redhat.com>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=GtCRYQelrWKnz3SabeELJkqPRwIFLNLfCWPVojFD6BI=;
+        b=iFyU8pT/FLWNoLLBid1Z3u5WrAdIkzeW++slHzNXUH6JHKvfesErGVVLg7hqP66kVl
+         CzQgLtX+tfERlbKOOsJ+N4FnL4Purd2UPfLnXCElhVLvMLkLCsfYTm4Fh5J6W0Ca/DL8
+         efK5bgBQHk6dlw7dTTJCNI29XShbuYzSjxtapdCMZVGOX0U0ZvnD6JZVLpN2AB4nlPxU
+         FK5WDXihNoKj4DdG6+y73eVOHApqYz+iJYTFfRotKctW6p26UnkJGq3AoEZQit9F9E7+
+         XcD61GF9sxQgBhezsLhlOcjZyM7sCouMk4YZlVcbN33Yz6ct9pk9Gpo1e5u5Myjoo9em
+         bo/g==
+X-Gm-Message-State: AJIora+7gZo0fDDXBm3BSUHkNXSx/sW47IqIk0ZnFPwA+HzoQfCvf5ie
+        EZy7Puzbok9HQsiuyveJjWkKjgGvpPgciJSDVDB/F5M/mX9jqSfp4iHT2TXwI1kTnH8f9Dw89DO
+        qGiqG07NOf11dAUFs
+X-Received: by 2002:a5d:64ca:0:b0:218:5503:d0c3 with SMTP id f10-20020a5d64ca000000b002185503d0c3mr7366174wri.168.1655977365301;
+        Thu, 23 Jun 2022 02:42:45 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1ta/upeL0MWo4wy9b8nuJ+Bd6LqtH80hM/pfDo2zEAWKUxK2lzvqema85h+mKsgXOVFSUYYIQ==
+X-Received: by 2002:a5d:64ca:0:b0:218:5503:d0c3 with SMTP id f10-20020a5d64ca000000b002185503d0c3mr7366159wri.168.1655977365033;
+        Thu, 23 Jun 2022 02:42:45 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-113-202.dyn.eolo.it. [146.241.113.202])
+        by smtp.gmail.com with ESMTPSA id a17-20020adffad1000000b0021b8749728dsm15873560wrs.73.2022.06.23.02.42.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 02:42:44 -0700 (PDT)
+Message-ID: <39279ba0ced207f484b664fe5364fa4ee6271cfb.camel@redhat.com>
+Subject: Re: [PATCH] nfc: st21nfca: fix possible double free in
+ st21nfca_im_recv_dep_res_cb()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Hangyu Hua <hbh25y@gmail.com>, krzysztof.kozlowski@linaro.org,
+        sameo@linux.intel.com, christophe.ricard@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 23 Jun 2022 11:42:43 +0200
+In-Reply-To: <20220622065117.23210-1-hbh25y@gmail.com>
+References: <20220622065117.23210-1-hbh25y@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -82,75 +78,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 21 Jun 2022, at 22:48, Rosemarie O'Riorden wrote:
-
-> When a packet enters the OVS datapath and does not match any existing
-> flows installed in the kernel flow cache, the packet will be sent to
-> userspace to be parsed, and a new flow will be created. The kernel and
-> OVS rely on each other to parse packet fields in the same way so that
-> packets will be handled properly.
->
-> As per the design document linked below, OVS expects all later IPv6
-> fragments to have nw_proto=3D44 in the flow key, so they can be correct=
-ly
-> matched on OpenFlow rules. OpenFlow controllers create pipelines based
-> on this design.
->
-> This behavior was changed by the commit in the Fixes tag so that
-> nw_proto equals the next_header field of the last extension header.
-> However, there is no counterpart for this change in OVS userspace,
-> meaning that this field is parsed differently between OVS and the
-> kernel. This is a problem because OVS creates actions based on what is
-> parsed in userspace, but the kernel-provided flow key is used as a matc=
-h
-> criteria, as described in Documentation/networking/openvswitch.rst. Thi=
-s
-> leads to issues such as packets incorrectly matching on a flow and thus=
-
-> the wrong list of actions being applied to the packet. Such changes in
-> packet parsing cannot be implemented without breaking the userspace.
->
-> The offending commit is partially reverted to restore the expected
-> behavior.
->
-> The change technically made sense and there is a good reason that it wa=
-s
-> implemented, but it does not comply with the original design of OVS.
-> If in the future someone wants to implement such a change, then it must=
-
-> be user-configurable and disabled by default to preserve backwards
-> compatibility with existing OVS versions.
->
-> Cc: stable@vger.kernel.org
-> Fixes: fa642f08839b ("openvswitch: Derive IP protocol number for IPv6 l=
-ater frags")
-> Link: https://docs.openvswitch.org/en/latest/topics/design/#fragments
-> Signed-off-by: Rosemarie O'Riorden <roriorden@redhat.com>
+On Wed, 2022-06-22 at 14:51 +0800, Hangyu Hua wrote:
+> nfc_tm_data_received will free skb internally when it fails. There is no
+> need to free skb in st21nfca_im_recv_dep_res_cb again.
+> 
+> Fix this by setting skb to NULL when nfc_tm_data_received fails.
+> 
+> Fixes: 1892bf844ea0 ("NFC: st21nfca: Adding P2P support to st21nfca in Initiator & Target mode")
+> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
 > ---
->  net/openvswitch/flow.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-> index 372bf54a0ca9..e20d1a973417 100644
-> --- a/net/openvswitch/flow.c
-> +++ b/net/openvswitch/flow.c
-> @@ -407,7 +407,7 @@ static int parse_ipv6hdr(struct sk_buff *skb, struc=
-t sw_flow_key *key)
->  	if (flags & IP6_FH_F_FRAG) {
->  		if (frag_off) {
->  			key->ip.frag =3D OVS_FRAG_TYPE_LATER;
-> -			key->ip.proto =3D nexthdr;
-> +			key->ip.proto =3D NEXTHDR_FRAGMENT;
->  			return 0;
->  		}
->  		key->ip.frag =3D OVS_FRAG_TYPE_FIRST;
-> -- =
+>  drivers/nfc/st21nfca/dep.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/nfc/st21nfca/dep.c b/drivers/nfc/st21nfca/dep.c
+> index 1ec651e31064..07ac5688011c 100644
+> --- a/drivers/nfc/st21nfca/dep.c
+> +++ b/drivers/nfc/st21nfca/dep.c
+> @@ -594,7 +594,8 @@ static void st21nfca_im_recv_dep_res_cb(void *context, struct sk_buff *skb,
+>  			    ST21NFCA_NFC_DEP_PFB_PNI(dep_res->pfb + 1);
+>  			size++;
+>  			skb_pull(skb, size);
+> -			nfc_tm_data_received(info->hdev->ndev, skb);
+> +			if (nfc_tm_data_received(info->hdev->ndev, skb))
+> +				skb = NULL;
 
-> 2.35.3
+Note that 'skb' not used (nor freed) by this function after this point:
+the next 'break' statement refears to the inner switch, and land to the
+execution flow to the 'return' statement a few lines below.
+kfree_skb(skb) is never reached.
 
-Thanks Rosemarie, for fixing this. The change looks good to me!
-
-Acked-by: Eelco Chaudron <echaudro@redhat.com>
+Paolo
 
