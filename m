@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0C19557443
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 09:46:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3946B557447
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 09:47:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230438AbiFWHqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 03:46:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59764 "EHLO
+        id S230285AbiFWHqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 03:46:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230434AbiFWHqq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 03:46:46 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC05B46B3B;
-        Thu, 23 Jun 2022 00:46:44 -0700 (PDT)
+        with ESMTP id S230440AbiFWHqt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 03:46:49 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2051.outbound.protection.outlook.com [40.107.92.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA2246B36;
+        Thu, 23 Jun 2022 00:46:48 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Tg/tehgpQipynJiWXhs14mlbGTUzFkBN77uqIHTA6UxRNlEUZx9bs3d+eULYxJlIwqGqcnidXjJSUv6UNi4doRoeEpe2zxJCTukycexlVO9W7xUL8h4gW9dQGPyKXsysx3yX2yDn/pXyh3+3N5GSMPwAc3I5XsRhUWAjE2cqU6jDs0lDlG5cWb5lmBoUCfRTm7sQ5meZYXkWPHBn5E23UrY74xf3zoEm/ghMWkBISkztMUXelJ4MVh5VdNslSt9xIUjnKj6/TpB+DjRBCaGN1o9aPcAt8A1wZqvtMQXe4+spugNzcgRNEs/f7FUrJRDxxQeYxXKZTLltahF+mJtZrw==
+ b=FJfh0LFI5LMJjsizcCJfGNPDxWzqxPCW9iOsokf+2K/Da5mgPAB7/0SRqbJyI6u54jwr9Mf9Eksqjiu46EuD8GzxeMqEyEqcRiIYTBXUUOx3nYiQ0H3L3bOBFvWqPp6WjuyI0dqx4O1H0HAr4LZ3fCQ4gm0nONEXNEVWxEYhBiY5/bcwVAIisGCWFpYmj9vhdEP0FDqKMuvJsCqPGHjt8USlyO7xdnAGbN03CwrHUEqZcLHIEVBn6+7jVlvHrX117hwdflwDL8c4txwNKVwr9RDSyF9CwFq2TBvGnfQO09h8JN2cqy7zrIIwxggTwNkuAt2jriaBkxJw53NlhPc/aw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=U4zZt4PoIT5NPRkdhm9OYO2gcnN+PnXtnKtYzei29tY=;
- b=bMXQdgr54YwTHHYB5cLpKmH+KHe+aBwtdlSGuBpBM4ZOiWD3AvWx7aqkwiwt2qWW7YLN/WK/Fh62X+L5QH66SC78XgmosxTuHHIQuLsT3lhDWTITLN7jYNswtlZeNrlEUR52HUk3+bXil5bmyKRbsMNHxF/PJLrsWeaLp+Kz9iIsedVxml5pA7O+Do4gJVIYdAVP6WltDIDRMeVDRKIdkxelqdo3ussDVAco1NDhidQetcbrAQXbhlCJqplOs2B+MwMDDE80ry6iqmE7o2+zXlk5oX24gZPH5adsybe0h8NMoKEcKduAferA3Cow9xfny4E7qaA+rTYDfl7LPhZFpw==
+ bh=jSmPgUbrgSv2fJrSdfo/GxXDMO2ZXJl+wlnQXzeLsA4=;
+ b=KPQq0eibGPWwcJyRU4b0pi5ygEdiAEoDv+1xMDF0Tb7s6xbw8druz++lvTh1DiAnFValRymFmgtanmwwAvzzqMu8aTrg6RamyXMU29ukDb0gVzPV3Z1z2tNBJhh+sv+BxiJsvZ0rvbwYyA4dYFuFk0lr86dfzMAgnWdXXp7JH5PsKawALOYtkabngsyU5iUBJVcuCl5m3ebhEin3mXjlrShr5/oeqB5xSr9j/8tvoxQsMIonp8atQQai77s3+F/S7sokE+oeIHNB+ULEZlqambXC+djgH62AUTbkauE3PdMA5hRE3IkNrxqs2EA1mF5jZqMocEgn6ekMjYphXRIDuw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ 12.22.5.235) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U4zZt4PoIT5NPRkdhm9OYO2gcnN+PnXtnKtYzei29tY=;
- b=f+5xja33c2TByiYKTSOh1D5o9H3llslsBSSgEe5Ztng6oe/oMP4x9WSYNf7/ZJ5wSeLv0zC2cRiGMKNf41PWO80o6cKR2ISpuM34gG50vizTOJs02RRf6Aof17QU1pKr00IsM6y5+wF4nj4oLRorNQFDJ515bYdX+ta0SHD0X9L5IE8sNp872CoMDdRwi4umUuXJ05N4pfzyA/v7Bcw0aNvXGcMQvmX2PGIBarYKxe+g3DoiiINbybOet1nvHlSRUg1ASdK9hWxiLop6nvNGMOAYgo8RS+mYHb40/CsMnb0XznSjv+lokIO7ZECh2n6zKFsvFEZ86hBnwx8rDTrkJA==
-Received: from BN9PR03CA0393.namprd03.prod.outlook.com (2603:10b6:408:111::8)
- by MN2PR12MB3485.namprd12.prod.outlook.com (2603:10b6:208:c9::22) with
+ bh=jSmPgUbrgSv2fJrSdfo/GxXDMO2ZXJl+wlnQXzeLsA4=;
+ b=Ij+U3IxbbvSq/tMpE8N4qgtj0pVMmXRMG5vf9QpkKgmjRLsFIDNLnYB3ZHqNDJpd/GrUbWzqLHily+y/0NdNB13Jd0nisFQUICdEhVNcfc3JgXGMo7PgoiRUxX6GDLVrDc6+Y5jVO/iCdZpP02oqS2P3AQYusfqtcUDnHaS53N9wb30fTww5UjyVZmugq25MTrZYoKqiuc+/EMFY9vJ2qOKsVX/HGQpDvwQpatWPzuVITjjjHTSJP1FWwF7hRDgml6QAa1dqeFPqn6c3st3TXYrvc8cWXC3PVIQVdCI9nyYx8yQfwyHrFnkGc8mcJ90idVDPUjHRI4ZW/F4yvnTRRw==
+Received: from MW4PR03CA0205.namprd03.prod.outlook.com (2603:10b6:303:b8::30)
+ by CH0PR12MB5297.namprd12.prod.outlook.com (2603:10b6:610:d4::24) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Thu, 23 Jun
- 2022 07:46:42 +0000
-Received: from BN8NAM11FT027.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:111:cafe::d0) by BN9PR03CA0393.outlook.office365.com
- (2603:10b6:408:111::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.16 via Frontend
- Transport; Thu, 23 Jun 2022 07:46:42 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ 2022 07:46:46 +0000
+Received: from CO1NAM11FT014.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b8:cafe::d) by MW4PR03CA0205.outlook.office365.com
+ (2603:10b6:303:b8::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15 via Frontend
+ Transport; Thu, 23 Jun 2022 07:46:46 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- BN8NAM11FT027.mail.protection.outlook.com (10.13.177.96) with Microsoft SMTP
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.235) by
+ CO1NAM11FT014.mail.protection.outlook.com (10.13.175.99) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5373.15 via Frontend Transport; Thu, 23 Jun 2022 07:46:42 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 23 Jun
- 2022 07:46:41 +0000
+ 15.20.5373.15 via Frontend Transport; Thu, 23 Jun 2022 07:46:45 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Thu, 23 Jun
+ 2022 07:46:45 +0000
 Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail205.nvidia.com
  (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26; Thu, 23 Jun
- 2022 00:46:40 -0700
+ 2022 00:46:44 -0700
 Received: from buildserver-hdc-comms.nvidia.com (10.127.8.9) by
  mail.nvidia.com (10.129.68.7) with Microsoft SMTP Server id 15.2.986.26 via
- Frontend Transport; Thu, 23 Jun 2022 00:46:37 -0700
+ Frontend Transport; Thu, 23 Jun 2022 00:46:41 -0700
 From:   Bhadram Varka <vbhadram@nvidia.com>
 To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-tegra@vger.kernel.org>
@@ -68,33 +68,35 @@ CC:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
         <kuba@kernel.org>, <catalin.marinas@arm.com>, <will@kernel.org>,
         Thierry Reding <treding@nvidia.com>,
         Bhadram Varka <vbhadram@nvidia.com>
-Subject: [PATCH net-next v1 1/9] dt-bindings: power: Add Tegra234 MGBE power domains
-Date:   Thu, 23 Jun 2022 13:16:07 +0530
-Message-ID: <20220623074615.56418-1-vbhadram@nvidia.com>
+Subject: [PATCH net-next v1 2/9] dt-bindings: Add Tegra234 MGBE clocks and resets
+Date:   Thu, 23 Jun 2022 13:16:08 +0530
+Message-ID: <20220623074615.56418-2-vbhadram@nvidia.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220623074615.56418-1-vbhadram@nvidia.com>
+References: <20220623074615.56418-1-vbhadram@nvidia.com>
 X-NVConfidentiality: public
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a803b06f-b6e4-4222-7900-08da54ec838d
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3485:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB3485DCD2541E1C51FDB530FFAFB59@MN2PR12MB3485.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 93423072-2b2a-4b3c-f0eb-08da54ec85c4
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5297:EE_
+X-Microsoft-Antispam-PRVS: <CH0PR12MB52973221885CF188A55A9430AFB59@CH0PR12MB5297.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: m2UnNdCMaFLVHrkeSGCt9XlpoKts5/94NCiLAc7IMxdz1MqgA1u0oxpe07L0r7teNQKfR18h7pXjnoUbV81a/h3/iUP6gUL2PfqDVMj2Yk4QRB9liKNZFhSlmN0R4GumyckHAUS4BlZsHGjRGWC1W8oDeyoksZwN0JfFJWDMiBEIKb9QOLcpgBf6JT187cPVO/s2QQ7FIDxAn/gmTLJRyvfaI0dy4ovm3p93PtI5D9TbOiccVxoqLCrzZ63qEqowENbQXB39fdWbBkx1DWpDoLFdPwD2++a6LMg95Qt3KWZwLfVqR+/PaD/60jc/wXqItdu/jQ0xgSNK0p5r+cuIkepFbr+4y0G5CN/4/+KgQD+zKmH/1IdrpAbjlusnrHM7KyADUV+HlAUnfEr4g2dAEGjXyBOfZYlJmoGCCdeoNV71J4jqMjwUNL/WJM/YBe/yauScX6XtwqFnTR/RBoYB4NX7YDriYMqquDuokrN4Ru5mBxB4jvcweKhnFJAqeoaU8eg/5mWxoBOeD+BoIpj73zgbuZJuWy6gJo3aSP7r64rvybHaJj2Wq1DtoLu5z9ellJ0JRK/iGTL9F9kgVdNhqd7PgfrH+KtpiATBbYUmBlB6bCsMHS4ldEzKkuzJa9XqRpJE1p1CMP0E5qPOAodvPvKSQJP6bplRnxH3Zk6M2dixDx9ssEIpzopvJYQUxt0/3jazilJ9IWGI4uOP+q5/ZQO9PJB3Nq7UTpnrMPrDpEfiVj1Fdwwf2DK5LUzK28iFN4+59zzis5H4T5qXpV2LwOAZUd2ZOTr5PTJpsixecc4=
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(136003)(346002)(396003)(36840700001)(40470700004)(46966006)(7696005)(356005)(82740400003)(6666004)(82310400005)(4744005)(316002)(2906002)(336012)(54906003)(36860700001)(426003)(186003)(2616005)(47076005)(110136005)(107886003)(86362001)(36756003)(1076003)(40480700001)(8936002)(41300700001)(70586007)(478600001)(70206006)(8676002)(4326008)(26005)(40460700003)(81166007)(5660300002)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: M9bMx57ZaVXg5jAVTv5uaYsFBu9F7n13HychLNKLbMBUvVncP1XjuDlt2QZ9MjqWKA2eyNftiuU3rRWKnF5P2jN2cYUUYvUp7rkdIYFH14T5VvIeQrXjb5Z3J5ul9EkjfmUsxhzkcx8FwS1Gh2V4AChDvCPu4aVEjo6luP2tqJlAcdJamIks+bt8FSarOResA5HMTjcl6PBfs25iGGaxswdaY8yuIVvh7qt6tktkctDkbzKYPlgRspUTZu2uUmA8WwfGgl0fzvVqfBOFZeo0yGEtU5+Sz6EWWpH5HOkO2NpGhEgAueRsBTp/gGh80izkMesWCQ6d119PRxPW1wv9L1b32KUY2ljt5TAIUM7/F+8QMapETmirKudi7asmCNxbUPewHlrJcVL+ECKls1PR7ajoW6md7dE1E75bS+mD8D890sHvtgB6oJAdNcC0VUeq52HsMog3gKtRyT8ZHlj8C6hHHhGhgFYCjiYq3CIx80ubIiNhHPzQ6r0329q9gcvbcWkU974PgtRjl7kfmGhzmVfb1Z0SmIFIPpVhkWkFNOEjol8NCFYTHQ4k6IDBfmeTkuOmA7GYLmY9ZMAXjjHFS4hiz+3Vm0MPqi+NKCcBLeYIFxZvKYZ/efUp3Fd4YWpXipOlGSDc2gROwQR9WKBA37tX7t/xMyI013d92AzGF5Nr8RB6i29aQvwKhtHHO5vu9eLMMR3UhibrrNJw9T7J7lB0pgZABfqOXOSQbmFTdGfBMGCbH7YRnCa9o4T29X8uYYtOgBvb4esS/3+2eTa0qYuoMBdMAmXY7Ak+ugKbfPs=
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(136003)(376002)(396003)(346002)(36840700001)(46966006)(40470700004)(2906002)(7696005)(41300700001)(2616005)(8676002)(70586007)(6666004)(4326008)(478600001)(26005)(81166007)(86362001)(40460700003)(36860700001)(54906003)(36756003)(8936002)(40480700001)(70206006)(82740400003)(356005)(426003)(47076005)(336012)(1076003)(82310400005)(83380400001)(107886003)(186003)(5660300002)(110136005)(316002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2022 07:46:42.0573
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2022 07:46:45.8388
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a803b06f-b6e4-4222-7900-08da54ec838d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93423072-2b2a-4b3c-f0eb-08da54ec85c4
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT027.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT014.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3485
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5297
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -107,26 +109,158 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Thierry Reding <treding@nvidia.com>
 
-Add power domain IDs for the four MGBE power partitions found on
-Tegra234.
+Add the clocks and resets used by the MGBE Ethernet hardware found on
+Tegra234 SoCs.
 
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Bhadram Varka <vbhadram@nvidia.com>
 ---
- include/dt-bindings/power/tegra234-powergate.h | 1 +
- 1 file changed, 1 insertion(+)
+ include/dt-bindings/clock/tegra234-clock.h | 101 +++++++++++++++++++++
+ include/dt-bindings/reset/tegra234-reset.h |   8 ++
+ 2 files changed, 109 insertions(+)
 
-diff --git a/include/dt-bindings/power/tegra234-powergate.h b/include/dt-bindings/power/tegra234-powergate.h
-index f610eee9bce8..df1d4dd8dcf3 100644
---- a/include/dt-bindings/power/tegra234-powergate.h
-+++ b/include/dt-bindings/power/tegra234-powergate.h
-@@ -18,5 +18,6 @@
- #define TEGRA234_POWER_DOMAIN_MGBEA	17U
- #define TEGRA234_POWER_DOMAIN_MGBEB	18U
- #define TEGRA234_POWER_DOMAIN_MGBEC	19U
-+#define TEGRA234_POWER_DOMAIN_MGBED	20U
- 
+diff --git a/include/dt-bindings/clock/tegra234-clock.h b/include/dt-bindings/clock/tegra234-clock.h
+index bd4c3086a2da..bab85d9ba8cd 100644
+--- a/include/dt-bindings/clock/tegra234-clock.h
++++ b/include/dt-bindings/clock/tegra234-clock.h
+@@ -164,10 +164,111 @@
+ #define TEGRA234_CLK_PEX1_C5_CORE		225U
+ /** @brief PLL controlled by CLK_RST_CONTROLLER_PLLC4_BASE */
+ #define TEGRA234_CLK_PLLC4			237U
++/** @brief RX clock recovered from MGBE0 lane input */
++#define TEGRA234_CLK_MGBE0_RX_INPUT		248U
++/** @brief RX clock recovered from MGBE1 lane input */
++#define TEGRA234_CLK_MGBE1_RX_INPUT		249U
++/** @brief RX clock recovered from MGBE2 lane input */
++#define TEGRA234_CLK_MGBE2_RX_INPUT		250U
++/** @brief RX clock recovered from MGBE3 lane input */
++#define TEGRA234_CLK_MGBE3_RX_INPUT		251U
+ /** @brief 32K input clock provided by PMIC */
+ #define TEGRA234_CLK_CLK_32K			289U
++/** @brief Monitored branch of MBGE0 RX input clock */
++#define TEGRA234_CLK_MGBE0_RX_INPUT_M		357U
++/** @brief Monitored branch of MBGE1 RX input clock */
++#define TEGRA234_CLK_MGBE1_RX_INPUT_M		358U
++/** @brief Monitored branch of MBGE2 RX input clock */
++#define TEGRA234_CLK_MGBE2_RX_INPUT_M		359U
++/** @brief Monitored branch of MBGE3 RX input clock */
++#define TEGRA234_CLK_MGBE3_RX_INPUT_M		360U
++/** @brief Monitored branch of MGBE0 RX PCS mux output */
++#define TEGRA234_CLK_MGBE0_RX_PCS_M		361U
++/** @brief Monitored branch of MGBE1 RX PCS mux output */
++#define TEGRA234_CLK_MGBE1_RX_PCS_M		362U
++/** @brief Monitored branch of MGBE2 RX PCS mux output */
++#define TEGRA234_CLK_MGBE2_RX_PCS_M		363U
++/** @brief Monitored branch of MGBE3 RX PCS mux output */
++#define TEGRA234_CLK_MGBE3_RX_PCS_M		364U
++/** @brief RX PCS clock recovered from MGBE0 lane input */
++#define TEGRA234_CLK_MGBE0_RX_PCS_INPUT		369U
++/** @brief RX PCS clock recovered from MGBE1 lane input */
++#define TEGRA234_CLK_MGBE1_RX_PCS_INPUT		370U
++/** @brief RX PCS clock recovered from MGBE2 lane input */
++#define TEGRA234_CLK_MGBE2_RX_PCS_INPUT		371U
++/** @brief RX PCS clock recovered from MGBE3 lane input */
++#define TEGRA234_CLK_MGBE3_RX_PCS_INPUT		372U
++/** @brief output of mux controlled by GBE_UPHY_MGBE0_RX_PCS_CLK_SRC_SEL */
++#define TEGRA234_CLK_MGBE0_RX_PCS		373U
++/** @brief GBE_UPHY_MGBE0_TX_CLK divider gated output */
++#define TEGRA234_CLK_MGBE0_TX			374U
++/** @brief GBE_UPHY_MGBE0_TX_PCS_CLK divider gated output */
++#define TEGRA234_CLK_MGBE0_TX_PCS		375U
++/** @brief GBE_UPHY_MGBE0_MAC_CLK divider output */
++#define TEGRA234_CLK_MGBE0_MAC_DIVIDER		376U
++/** @brief GBE_UPHY_MGBE0_MAC_CLK gate output */
++#define TEGRA234_CLK_MGBE0_MAC			377U
++/** @brief GBE_UPHY_MGBE0_MACSEC_CLK gate output */
++#define TEGRA234_CLK_MGBE0_MACSEC		378U
++/** @brief GBE_UPHY_MGBE0_EEE_PCS_CLK gate output */
++#define TEGRA234_CLK_MGBE0_EEE_PCS		379U
++/** @brief GBE_UPHY_MGBE0_APP_CLK gate output */
++#define TEGRA234_CLK_MGBE0_APP			380U
++/** @brief GBE_UPHY_MGBE0_PTP_REF_CLK divider gated output */
++#define TEGRA234_CLK_MGBE0_PTP_REF		381U
++/** @brief output of mux controlled by GBE_UPHY_MGBE1_RX_PCS_CLK_SRC_SEL */
++#define TEGRA234_CLK_MGBE1_RX_PCS		382U
++/** @brief GBE_UPHY_MGBE1_TX_CLK divider gated output */
++#define TEGRA234_CLK_MGBE1_TX			383U
++/** @brief GBE_UPHY_MGBE1_TX_PCS_CLK divider gated output */
++#define TEGRA234_CLK_MGBE1_TX_PCS		384U
++/** @brief GBE_UPHY_MGBE1_MAC_CLK divider output */
++#define TEGRA234_CLK_MGBE1_MAC_DIVIDER		385U
++/** @brief GBE_UPHY_MGBE1_MAC_CLK gate output */
++#define TEGRA234_CLK_MGBE1_MAC			386U
++/** @brief GBE_UPHY_MGBE1_EEE_PCS_CLK gate output */
++#define TEGRA234_CLK_MGBE1_EEE_PCS		388U
++/** @brief GBE_UPHY_MGBE1_APP_CLK gate output */
++#define TEGRA234_CLK_MGBE1_APP			389U
++/** @brief GBE_UPHY_MGBE1_PTP_REF_CLK divider gated output */
++#define TEGRA234_CLK_MGBE1_PTP_REF		390U
++/** @brief output of mux controlled by GBE_UPHY_MGBE2_RX_PCS_CLK_SRC_SEL */
++#define TEGRA234_CLK_MGBE2_RX_PCS		391U
++/** @brief GBE_UPHY_MGBE2_TX_CLK divider gated output */
++#define TEGRA234_CLK_MGBE2_TX			392U
++/** @brief GBE_UPHY_MGBE2_TX_PCS_CLK divider gated output */
++#define TEGRA234_CLK_MGBE2_TX_PCS		393U
++/** @brief GBE_UPHY_MGBE2_MAC_CLK divider output */
++#define TEGRA234_CLK_MGBE2_MAC_DIVIDER		394U
++/** @brief GBE_UPHY_MGBE2_MAC_CLK gate output */
++#define TEGRA234_CLK_MGBE2_MAC			395U
++/** @brief GBE_UPHY_MGBE2_EEE_PCS_CLK gate output */
++#define TEGRA234_CLK_MGBE2_EEE_PCS		397U
++/** @brief GBE_UPHY_MGBE2_APP_CLK gate output */
++#define TEGRA234_CLK_MGBE2_APP			398U
++/** @brief GBE_UPHY_MGBE2_PTP_REF_CLK divider gated output */
++#define TEGRA234_CLK_MGBE2_PTP_REF		399U
++/** @brief output of mux controlled by GBE_UPHY_MGBE3_RX_PCS_CLK_SRC_SEL */
++#define TEGRA234_CLK_MGBE3_RX_PCS		400U
++/** @brief GBE_UPHY_MGBE3_TX_CLK divider gated output */
++#define TEGRA234_CLK_MGBE3_TX			401U
++/** @brief GBE_UPHY_MGBE3_TX_PCS_CLK divider gated output */
++#define TEGRA234_CLK_MGBE3_TX_PCS		402U
++/** @brief GBE_UPHY_MGBE3_MAC_CLK divider output */
++#define TEGRA234_CLK_MGBE3_MAC_DIVIDER		403U
++/** @brief GBE_UPHY_MGBE3_MAC_CLK gate output */
++#define TEGRA234_CLK_MGBE3_MAC			404U
++/** @brief GBE_UPHY_MGBE3_MACSEC_CLK gate output */
++#define TEGRA234_CLK_MGBE3_MACSEC		405U
++/** @brief GBE_UPHY_MGBE3_EEE_PCS_CLK gate output */
++#define TEGRA234_CLK_MGBE3_EEE_PCS		406U
++/** @brief GBE_UPHY_MGBE3_APP_CLK gate output */
++#define TEGRA234_CLK_MGBE3_APP			407U
++/** @brief GBE_UPHY_MGBE3_PTP_REF_CLK divider gated output */
++#define TEGRA234_CLK_MGBE3_PTP_REF		408U
+ /** @brief CLK_RST_CONTROLLER_AZA2XBITCLK_OUT_SWITCH_DIVIDER switch divider output (aza_2xbitclk) */
+ #define TEGRA234_CLK_AZA_2XBIT			457U
+ /** @brief aza_2xbitclk / 2 (aza_bitclk) */
+ #define TEGRA234_CLK_AZA_BIT			458U
++
  #endif
+diff --git a/include/dt-bindings/reset/tegra234-reset.h b/include/dt-bindings/reset/tegra234-reset.h
+index 547ca3b60caa..55e397823a38 100644
+--- a/include/dt-bindings/reset/tegra234-reset.h
++++ b/include/dt-bindings/reset/tegra234-reset.h
+@@ -29,6 +29,12 @@
+ #define TEGRA234_RESET_I2C7			33U
+ #define TEGRA234_RESET_I2C8			34U
+ #define TEGRA234_RESET_I2C9			35U
++#define TEGRA234_RESET_MGBE0_PCS		45U
++#define TEGRA234_RESET_MGBE0_MAC		46U
++#define TEGRA234_RESET_MGBE1_PCS		49U
++#define TEGRA234_RESET_MGBE1_MAC		50U
++#define TEGRA234_RESET_MGBE2_PCS		53U
++#define TEGRA234_RESET_MGBE2_MAC		54U
+ #define TEGRA234_RESET_PEX2_CORE_10		56U
+ #define TEGRA234_RESET_PEX2_CORE_10_APB		57U
+ #define TEGRA234_RESET_PEX2_COMMON_APB		58U
+@@ -43,6 +49,8 @@
+ #define TEGRA234_RESET_QSPI0			76U
+ #define TEGRA234_RESET_QSPI1			77U
+ #define TEGRA234_RESET_SDMMC4			85U
++#define TEGRA234_RESET_MGBE3_PCS		87U
++#define TEGRA234_RESET_MGBE3_MAC		88U
+ #define TEGRA234_RESET_UARTA			100U
+ #define TEGRA234_RESET_PEX0_CORE_0		116U
+ #define TEGRA234_RESET_PEX0_CORE_1		117U
 -- 
 2.17.1
 
