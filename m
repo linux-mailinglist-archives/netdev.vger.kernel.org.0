@@ -2,75 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8AA85576DF
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 11:42:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44D34557753
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 12:00:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230272AbiFWJmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 05:42:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44786 "EHLO
+        id S231382AbiFWKAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 06:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230356AbiFWJmu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 05:42:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 29DEA49924
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 02:42:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1655977368;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GtCRYQelrWKnz3SabeELJkqPRwIFLNLfCWPVojFD6BI=;
-        b=eYAyCfd7bupG0OxI28PQMR6039y4sJQV+hbotdJVDnqcre+Qy1fS2fVTVqYV35vUr0Ej9B
-        CD1RDKT9YSTZCLsmRnS252vpPJitE1oitDU9Ed2DxmN58mcKbeey2OtNUbQAkhHhzJ76JC
-        iF/rxI6REZX6aj98vMdugQ7vS6CMesE=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-646-SX3Z049pO2-1Kaidn8C3ww-1; Thu, 23 Jun 2022 05:42:46 -0400
-X-MC-Unique: SX3Z049pO2-1Kaidn8C3ww-1
-Received: by mail-wm1-f72.google.com with SMTP id be12-20020a05600c1e8c00b0039c506b52a4so1490434wmb.1
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 02:42:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=GtCRYQelrWKnz3SabeELJkqPRwIFLNLfCWPVojFD6BI=;
-        b=iFyU8pT/FLWNoLLBid1Z3u5WrAdIkzeW++slHzNXUH6JHKvfesErGVVLg7hqP66kVl
-         CzQgLtX+tfERlbKOOsJ+N4FnL4Purd2UPfLnXCElhVLvMLkLCsfYTm4Fh5J6W0Ca/DL8
-         efK5bgBQHk6dlw7dTTJCNI29XShbuYzSjxtapdCMZVGOX0U0ZvnD6JZVLpN2AB4nlPxU
-         FK5WDXihNoKj4DdG6+y73eVOHApqYz+iJYTFfRotKctW6p26UnkJGq3AoEZQit9F9E7+
-         XcD61GF9sxQgBhezsLhlOcjZyM7sCouMk4YZlVcbN33Yz6ct9pk9Gpo1e5u5Myjoo9em
-         bo/g==
-X-Gm-Message-State: AJIora+7gZo0fDDXBm3BSUHkNXSx/sW47IqIk0ZnFPwA+HzoQfCvf5ie
-        EZy7Puzbok9HQsiuyveJjWkKjgGvpPgciJSDVDB/F5M/mX9jqSfp4iHT2TXwI1kTnH8f9Dw89DO
-        qGiqG07NOf11dAUFs
-X-Received: by 2002:a5d:64ca:0:b0:218:5503:d0c3 with SMTP id f10-20020a5d64ca000000b002185503d0c3mr7366174wri.168.1655977365301;
-        Thu, 23 Jun 2022 02:42:45 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1ta/upeL0MWo4wy9b8nuJ+Bd6LqtH80hM/pfDo2zEAWKUxK2lzvqema85h+mKsgXOVFSUYYIQ==
-X-Received: by 2002:a5d:64ca:0:b0:218:5503:d0c3 with SMTP id f10-20020a5d64ca000000b002185503d0c3mr7366159wri.168.1655977365033;
-        Thu, 23 Jun 2022 02:42:45 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-113-202.dyn.eolo.it. [146.241.113.202])
-        by smtp.gmail.com with ESMTPSA id a17-20020adffad1000000b0021b8749728dsm15873560wrs.73.2022.06.23.02.42.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 02:42:44 -0700 (PDT)
-Message-ID: <39279ba0ced207f484b664fe5364fa4ee6271cfb.camel@redhat.com>
-Subject: Re: [PATCH] nfc: st21nfca: fix possible double free in
- st21nfca_im_recv_dep_res_cb()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Hangyu Hua <hbh25y@gmail.com>, krzysztof.kozlowski@linaro.org,
-        sameo@linux.intel.com, christophe.ricard@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 23 Jun 2022 11:42:43 +0200
-In-Reply-To: <20220622065117.23210-1-hbh25y@gmail.com>
-References: <20220622065117.23210-1-hbh25y@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S231400AbiFWKAO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 06:00:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF16349CB7;
+        Thu, 23 Jun 2022 03:00:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7035161DAD;
+        Thu, 23 Jun 2022 10:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CA7CEC341C0;
+        Thu, 23 Jun 2022 10:00:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655978412;
+        bh=BkUxnJPDhnPu27WSLpY2P7BGcWIQ8/1j1dDbELLIkdg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=K4kenSi8J3qXR8EyHxXgSCY2MNWUakjRtbrG8vdHETNVapUi6PiTIqmDKFxEJ0Y1F
+         DiRtXf9XlZIJAWNq99QQZ3giPY71kItM7wSAp2R8KfBIf5TSYqRTKIwsWEtX92lJkp
+         +/qHMuqJnJD/ZonzIw0MZxUKjLqe0OnHnNQrIdQQv9LhR1F1PDJH8FjidS7qYpQTMS
+         hdPsJUnssjuChlTz+b1JQ1EeEpygiuQ6irNjHRI0TfClOG7grbTBA/QHzRsatDyhN0
+         q/yIQ+sE4G7b3f7Q6JIafgKtO/IcEMEdsHBZRymzCWGDkpWpQ1/Z2alegWIThkiMhl
+         2yvtvcelun2eA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AF68FE737F0;
+        Thu, 23 Jun 2022 10:00:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] net: openvswitch: fix parsing of nw_proto for IPv6
+ fragments
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165597841271.22799.14586391448638568362.git-patchwork-notify@kernel.org>
+Date:   Thu, 23 Jun 2022 10:00:12 +0000
+References: <20220621204845.9721-1-roriorden@redhat.com>
+In-Reply-To: <20220621204845.9721-1-roriorden@redhat.com>
+To:     Rosemarie O'Riorden <roriorden@redhat.com>
+Cc:     netdev@vger.kernel.org, pshelar@ovn.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        yihung.wei@gmail.com, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org, i.maximets@ovn.org,
+        aconole@redhat.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,34 +60,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-06-22 at 14:51 +0800, Hangyu Hua wrote:
-> nfc_tm_data_received will free skb internally when it fails. There is no
-> need to free skb in st21nfca_im_recv_dep_res_cb again.
-> 
-> Fix this by setting skb to NULL when nfc_tm_data_received fails.
-> 
-> Fixes: 1892bf844ea0 ("NFC: st21nfca: Adding P2P support to st21nfca in Initiator & Target mode")
-> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-> ---
->  drivers/nfc/st21nfca/dep.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/nfc/st21nfca/dep.c b/drivers/nfc/st21nfca/dep.c
-> index 1ec651e31064..07ac5688011c 100644
-> --- a/drivers/nfc/st21nfca/dep.c
-> +++ b/drivers/nfc/st21nfca/dep.c
-> @@ -594,7 +594,8 @@ static void st21nfca_im_recv_dep_res_cb(void *context, struct sk_buff *skb,
->  			    ST21NFCA_NFC_DEP_PFB_PNI(dep_res->pfb + 1);
->  			size++;
->  			skb_pull(skb, size);
-> -			nfc_tm_data_received(info->hdev->ndev, skb);
-> +			if (nfc_tm_data_received(info->hdev->ndev, skb))
-> +				skb = NULL;
+Hello:
 
-Note that 'skb' not used (nor freed) by this function after this point:
-the next 'break' statement refears to the inner switch, and land to the
-execution flow to the 'return' statement a few lines below.
-kfree_skb(skb) is never reached.
+This patch was applied to netdev/net.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Paolo
+On Tue, 21 Jun 2022 16:48:45 -0400 you wrote:
+> When a packet enters the OVS datapath and does not match any existing
+> flows installed in the kernel flow cache, the packet will be sent to
+> userspace to be parsed, and a new flow will be created. The kernel and
+> OVS rely on each other to parse packet fields in the same way so that
+> packets will be handled properly.
+> 
+> As per the design document linked below, OVS expects all later IPv6
+> fragments to have nw_proto=44 in the flow key, so they can be correctly
+> matched on OpenFlow rules. OpenFlow controllers create pipelines based
+> on this design.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net] net: openvswitch: fix parsing of nw_proto for IPv6 fragments
+    https://git.kernel.org/netdev/net/c/12378a5a75e3
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
