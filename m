@@ -2,50 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D54A556F52
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 02:19:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCD62556F58
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 02:21:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234393AbiFWATe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 22 Jun 2022 20:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40434 "EHLO
+        id S244112AbiFWAVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 22 Jun 2022 20:21:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbiFWATc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 20:19:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1EB741612
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 17:19:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4105F61BD9
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 00:19:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73E29C34114;
-        Thu, 23 Jun 2022 00:19:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655943570;
-        bh=56uf5hhy4IJUI6zIFVaQrnUyrP9UkMLOj9+QhxodRMk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=V4wWaB1mwwfQlXRiKJMxJ4XVnpUspN6BRm/Ryi4+q/sr8WWKydI4XVCifpYP+Ckk+
-         rKODlJIh8eZ5eXLXk/HY1DRVSg3MH2upTsF2jVAkEYqMmOFdbyRm0Ac2nd8Kgz3twy
-         hTIp4NMeh/6vftXJaFujsBHvA1dpLhAio00So2XBv3lm6qfbf6o9J6hIqMhm/G31vD
-         y8Rgf1NHm2TW01SKbZiU8sT+qJaugZt2KYOUOEIWSDL7s2s9Ann4/aeRtpOYm3oXbL
-         xPP/9HzwbAbC9lOlqKsWR5/TmfD++Bjxv8/BRM4M/uOISD8qiSX/DK30xII3h5UEwl
-         l+juS1Bf5YdIA==
-Date:   Wed, 22 Jun 2022 17:19:29 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Aleksey Shumnik <ashumnik9@gmail.com>
-Cc:     netdev@vger.kernel.org, kuznet@ms2.inr.ac.ru, xeb@mail.ru
-Subject: Re: [PATCH] net/ipv4/ip_gre.c net/ipv6/ip6_gre.c: ip and gre header
- are recorded twice
-Message-ID: <20220622171929.77078c4d@kernel.org>
-In-Reply-To: <CAJGXZLi_QCZ+4dHv8qtGeyEjdkP3wjoXge_b-zTZ0sgUcEZ8zw@mail.gmail.com>
-References: <CAJGXZLi_QCZ+4dHv8qtGeyEjdkP3wjoXge_b-zTZ0sgUcEZ8zw@mail.gmail.com>
+        with ESMTP id S245440AbiFWAVj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 22 Jun 2022 20:21:39 -0400
+Received: from mail104.syd.optusnet.com.au (mail104.syd.optusnet.com.au [211.29.132.246])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B14D341612;
+        Wed, 22 Jun 2022 17:21:38 -0700 (PDT)
+Received: from dread.disaster.area (pa49-181-2-147.pa.nsw.optusnet.com.au [49.181.2.147])
+        by mail104.syd.optusnet.com.au (Postfix) with ESMTPS id 50A0B5ECBDE;
+        Thu, 23 Jun 2022 10:21:34 +1000 (AEST)
+Received: from dave by dread.disaster.area with local (Exim 4.92.3)
+        (envelope-from <david@fromorbit.com>)
+        id 1o4AbE-009tg3-Hl; Thu, 23 Jun 2022 10:21:32 +1000
+Date:   Thu, 23 Jun 2022 10:21:32 +1000
+From:   Dave Chinner <david@fromorbit.com>
+To:     Chuck Lever III <chuck.lever@oracle.com>
+Cc:     Wang Yugui <wangyugui@e16-tech.com>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "tgraf@suug.ch" <tgraf@suug.ch>, Jeff Layton <jlayton@redhat.com>
+Subject: Re: [PATCH RFC 00/30] Overhaul NFSD filecache
+Message-ID: <20220623002132.GE1098723@dread.disaster.area>
+References: <165590626293.75778.9843437418112335153.stgit@manet.1015granger.net>
+ <20220623023645.F914.409509F4@e16-tech.com>
+ <FE520DC8-3C8F-4974-9F3B-84DE822CB899@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <FE520DC8-3C8F-4974-9F3B-84DE822CB899@oracle.com>
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.4 cv=e9dl9Yl/ c=1 sm=1 tr=0 ts=62b3b210
+        a=ivVLWpVy4j68lT4lJFbQgw==:117 a=ivVLWpVy4j68lT4lJFbQgw==:17
+        a=kj9zAlcOel0A:10 a=JPEYwPQDsx4A:10 a=7-415B0cAAAA:8
+        a=rNkiPHGBACb3STtxGGMA:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -53,34 +50,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 21 Jun 2022 16:48:09 +0300 Aleksey Shumnik wrote:
-> Subject: [PATCH] net/ipv4/ip_gre.c net/ipv6/ip6_gre.c: ip and gre header are  recorded twice
-> Date: Tue, 21 Jun 2022 16:48:09 +0300
+On Wed, Jun 22, 2022 at 07:04:39PM +0000, Chuck Lever III wrote:
+> > more detail in attachment file(531.dmesg)
+> > 
+> > local.config of fstests:
+> > 	export NFS_MOUNT_OPTIONS="-o rw,relatime,vers=4.2,nconnect=8"
+> > changes of generic/531
+> > 	max_allowable_files=$(( 1 * 1024 * 1024 / $nr_cpus / 2 ))
 > 
-> Dear Maintainers,
+> Changed from:
 > 
-> I tried to ping IPv6 hub address on the mGRE interface from the spok
-> and found some problem:
-> I caught packets and saw that there are 2 identical IP and GRE headers
-> (when use IPv4 there is no duplication)
-> Below is the package structure:
-> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-> | eth | iph (1) | greh (1) | iph (1) | greh (1) | iph (2) | greh (2) |  icmp  |
-> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-What socket type is the ping you have using?
-
-> I found cause of the problem, in ip_gre.c and ip6_gre.c IP and GRE
-> headers created twice, first time in ip gre_header() and
-> ip6gre_header() and second time in __gre_xmit(), so I deleted
-> unnecessary creation of headers and everything started working as it
-> should.
-> Below is a patch to eliminate the problem of duplicate headers:
+> 	max_allowable_files=$(( $(cat /proc/sys/fs/file-max) / $nr_cpus / 2 ))
 > 
-> diff -c a/net/inv6/ip6_gre.c b/net/inv6/ip6_gre.c
+> For my own information, what's $nr_cpus in your test?
+> 
+> Aside from the max_allowable_files setting, can you tell how the
+> test determines when it should stop creating files? Is it looking
+> for a particular error code from open(2), for instance?
+> 
+> On my client:
+> 
+> [cel@morisot generic]$ cat /proc/sys/fs/file-max
+> 9223372036854775807
+> [cel@morisot generic]$
 
-The patch looks strangely mangled, it's white space damaged and refers
-to a net/inv6 which does not exist.
+$ echo $((2**63 - 1))
+9223372036854775807
 
-Could you regenerate your changes using git? git commit / format-patch
-/ send-email ? 
+i.e. LLONG_MAX, or "no limit is set".
+
+> I wonder if it's realistic to expect an NFSv4 server to support
+> that many open files. Is 9 quintillion files really something
+> I'm going to have to engineer for, or is this just a crazy
+> test?
+
+The test does not use the value directly - it's a max value for
+clamping:
+
+max_files=$((50000 * LOAD_FACTOR))
+max_allowable_files=$(( $(cat /proc/sys/fs/file-max) / $nr_cpus / 2 ))
+test $max_allowable_files -gt 0 && test $max_files -gt $max_allowable_files && \
+        max_files=$max_allowable_files
+ulimit -n $max_files
+
+i.e. the result should be
+
+max_files = max(50000, max_allowable_files)
+
+So the test should only be allowing 50,000 open unlinked files to be
+created before unmounting. Which means there's lots of silly
+renaming going on at the client and so the server is probably seeing
+100,000 unique file handles across the test....
+
+Cheers,
+
+Dave.
+-- 
+Dave Chinner
+david@fromorbit.com
