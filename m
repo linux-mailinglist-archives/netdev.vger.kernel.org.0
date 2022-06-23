@@ -2,137 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B599755886C
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 21:14:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F845558889
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 21:19:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229450AbiFWTOI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 15:14:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
+        id S229853AbiFWTTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 15:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230190AbiFWTNv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 15:13:51 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E14E90F91
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 11:18:34 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id h20so8236603ilj.13
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 11:18:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=51dCcYKeu14QwJ+SbbelFcjxRhDiELAHk8+8A4uJTfo=;
-        b=m0kOEMRYsnlrJfJtzN5N5ULzilyZZeMX3vG68SBrvjrPBUSYB0V9raKw0JuYF9dXNL
-         j79zt3j5MxDSlRYoDmnB0C0lp9ZLp6YS7kRqcJa4tpzxq0WJNaQcZNjW/dgSnwkYxiB1
-         Uxiw4wedDcKn102mfRx3rAI6DCPi38zo1uPouN6/gwbmQTz+xlnR9Pw7BSF9zWMueHEI
-         /7KiehO1k+NHvPcWESA9wlatY7jCEhsnf8lmw9+tlU+1YyJbix6JzK+a2J2+vb02zWuZ
-         MWALDiVLYYYSqBXesMMy54GVVS2ttvKZRTnympUR1WTgyWvb7WD/lZLN9Sl3xAIdfr9x
-         e7sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=51dCcYKeu14QwJ+SbbelFcjxRhDiELAHk8+8A4uJTfo=;
-        b=cs22cclPeraL50ppYzjJMOxV3VBEhTtXykaeMIn1tejCjuxUaPCp9w7nCmQb7r1BY9
-         VgZC05glfuwwLiIoTx9vOqu/3a8cmQhE7CB1yUDgXDncYZJzDKF+CXO9cQagG1ZpFJ5f
-         bjKVqstR6eOnFmQKWNC6I3wcDAtQQhY0vBzLXXnlf8Q2yjGxpVU9HkegyWb25MM944Sn
-         usWSVemlGhim2bMT4uSGafpRUrhty97cPSdP4//pEd8gvaKDQ6cibUDVepf5UgY5XVk5
-         Ln3qZscW7kErLo7lWBgLQ+WPI4sVpKtr9wfKyPSUDfeYGhYhDrIjbuPLI9laUpovKAxM
-         OVWw==
-X-Gm-Message-State: AJIora+OUG5OqYtexgZwFqH+dBsgncAPsqAWTcTAeXiwjaF4scq5NQ2a
-        0vTTdE2h9pscVAXuMPOKkI6onhYQre143zDQe9f/8Q==
-X-Google-Smtp-Source: AGRyM1sSXmovrfX/rEw1li+ovIQDkAHOURPtBbVr8YKIZAKiy+x+aUeVh8iH/80/41PpfW1OBPmd3fWnZ0gynBKIERY=
-X-Received: by 2002:a05:6e02:1647:b0:2d9:532c:d799 with SMTP id
- v7-20020a056e02164700b002d9532cd799mr2896083ilu.323.1656008313600; Thu, 23
- Jun 2022 11:18:33 -0700 (PDT)
+        with ESMTP id S229646AbiFWTSx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 15:18:53 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F0AC3E90;
+        Thu, 23 Jun 2022 11:24:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=NV3fzrvLUTeIsatJ8ynzmADBs8FW3qodOLoqKRksmx8=; b=36QFTjRIYmPHNLwBxEGQFDrnkF
+        uo64DOdpm3IOCba5T8ogDGf4EmxCI7KDRDH30zJsUlr3hvStXshfS3NlPptM22myzC4yG5VpALAzm
+        Gw7u7f7ylVoDo7rBOkm6NuZJ/PyPdRfv52J3acTf4hnxQeLSh3hNBWAnVhpd1YYRnzTY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1o4RV4-007zf6-8p; Thu, 23 Jun 2022 20:24:18 +0200
+Date:   Thu, 23 Jun 2022 20:24:18 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Enguerrand de Ribaucourt 
+        <enguerrand.de-ribaucourt@savoirfairelinux.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        hkallweit1@gmail.com
+Subject: Re: [PATCH v3 0/2] net: dp83822: fix interrupt floods
+Message-ID: <YrSv0hcay5cnJNY9@lunn.ch>
+References: <YqzAKguRaxr74oXh@lunn.ch>
+ <20220623134645.1858361-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
 MIME-Version: 1.0
-References: <20220617085435.193319-1-pbl@bestov.io> <165546541315.12170.9716012665055247467.git-patchwork-notify@kernel.org>
- <CANP3RGcMqXH2+g1=40zwpzbpDORjDpyo4cVYZWS_tfVR8A_6CQ@mail.gmail.com> <YrBH1MXZq2/3Z94T@kroah.com>
-In-Reply-To: <YrBH1MXZq2/3Z94T@kroah.com>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Date:   Thu, 23 Jun 2022 11:18:21 -0700
-Message-ID: <CANP3RGc8tjqk+c=+rAHNON8u=21Uu+kWveuMWZxGCNMjvqRHYg@mail.gmail.com>
-Subject: Re: [PATCH v2] ipv4: ping: fix bind address validity check
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     patchwork-bot+netdevbpf@kernel.org, stable@vger.kernel.org,
-        Riccardo Paolo Bestetti <pbl@bestov.io>,
-        Carlos Llamas <cmllamas@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel-team@android.com,
-        Kernel hackers <linux-kernel@vger.kernel.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        Miaohe Lin <linmiaohe@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220623134645.1858361-1-enguerrand.de-ribaucourt@savoirfairelinux.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jun 20, 2022 at 3:11 AM Greg KH <gregkh@linuxfoundation.org> wrote:
-> On Fri, Jun 17, 2022 at 04:45:52PM -0700, Maciej =C5=BBenczykowski wrote:
-> > On Fri, Jun 17, 2022 at 4:30 AM <patchwork-bot+netdevbpf@kernel.org> wr=
-ote:
-> > >
-> > > Hello:
-> > >
-> > > This patch was applied to netdev/net.git (master)
-> > > by David S. Miller <davem@davemloft.net>:
-> > >
-> > > On Fri, 17 Jun 2022 10:54:35 +0200 you wrote:
-> > > > Commit 8ff978b8b222 ("ipv4/raw: support binding to nonlocal address=
-es")
-> > > > introduced a helper function to fold duplicated validity checks of =
-bind
-> > > > addresses into inet_addr_valid_or_nonlocal(). However, this caused =
-an
-> > > > unintended regression in ping_check_bind_addr(), which previously w=
-ould
-> > > > reject binding to multicast and broadcast addresses, but now these =
-are
-> > > > both incorrectly allowed as reported in [1].
-> > > >
-> > > > [...]
-> > >
-> > > Here is the summary with links:
-> > >   - [v2] ipv4: ping: fix bind address validity check
-> > >     https://git.kernel.org/netdev/net/c/b4a028c4d031
-> > >
-> > > You are awesome, thank you!
-> > > --
-> > > Deet-doot-dot, I am a bot.
-> > > https://korg.docs.kernel.org/patchwork/pwbot.html
-> >
-> > I believe this [
-> > https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?=
-id=3Db4a028c4d031
-> > ] needs to end up in 5.17+ LTS (though I guess 5.17 is eol, so
-> > probably just 5.18)
->
-> 5.17 is end-of-life, sorry.
->
-> And this needs to hit Linus's tree first.
+On Thu, Jun 23, 2022 at 03:46:43PM +0200, Enguerrand de Ribaucourt wrote:
+> The false carrier and RX error counters, once half full, produce interrupt
+> floods. Since we do not use these counters, these interrupts should be disabled.
+> 
+> v2: added Fixes: and patchset description 0/2
+> v3: Fixed Fixes: commit format
+> 
+> In-Reply-To: YqzAKguRaxr74oXh@lunn.ch
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Fixes: 87461f7a58ab ("net: phy: DP83822 initial driver submission")
 
-It now has:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/log/net/=
-ipv4/ping.c
+It is maybe only part of the netdev FAQ, but it states there, don't
+post new versions of the patches in less than 24 hours. You need to
+give people time to review the changes and make comments.
 
-ipv4: ping: fix bind address validity check
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/n=
-et/ipv4/ping.c?id=3Db4a028c4d031c27704ad73b1195ca69a1206941e
+It is correct to append a Reviewed-by, but it should only be to the
+patch which was actually reviewed. So please add my Reviewed-by to
+just patch 1/2. The Fixes should also be on each individual patch, not
+the 0/X patch, since that often gets lost in the noise.
 
-> thanks,
->
-> greg k-h
+    Andrew
 
-Thanks,
-Maciej
+
