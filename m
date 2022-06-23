@@ -2,228 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6B74557A89
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 14:42:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD1A8557AB1
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 14:51:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231702AbiFWMmj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 08:42:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53358 "EHLO
+        id S231570AbiFWMvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 08:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiFWMmi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 08:42:38 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123334991E;
-        Thu, 23 Jun 2022 05:42:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1655988152; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:references; bh=0wMZkfhKmaBVieQjspEnioAUmjxOfe2EjfUYozTaP3s=;
-        b=CvykSZkFx+kydcC3E7oAXMiJF5UYAR3nUcVoBRQSuSrERA24g624uH6hi2n2DCGQ5r3psU
-        3IFIQ0W5vkdZqVWnfA8+cv+QAvG4UCqz1/P7wYHZQyEAXB3Sicm2gBMoIw/oa5UpFtU3tv
-        39krHrS+SUPAvT8D1xP4AkB/RC34rRE=
-From:   Paul Cercueil <paul@crapouillou.net>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>
-Cc:     linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v2] brcmfmac: Remove #ifdef guards for PM related functions
-Date:   Thu, 23 Jun 2022 13:42:21 +0100
-Message-Id: <20220623124221.18238-1-paul@crapouillou.net>
+        with ESMTP id S231564AbiFWMvJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 08:51:09 -0400
+X-Greylist: delayed 248 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 23 Jun 2022 05:51:03 PDT
+Received: from out203-205-221-202.mail.qq.com (out203-205-221-202.mail.qq.com [203.205.221.202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8C645AF7;
+        Thu, 23 Jun 2022 05:51:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1655988661;
+        bh=WkPDR7AEUWbovUynFMyUZJb/WXXDveepQJRcNB/88sY=;
+        h=Date:From:To:Cc:Subject;
+        b=eThYzUm9Qka+IrJHeUkUmW1NCcRfGySimih5DaiBE6qcjMX4/P6POR84Ur8Met9Ao
+         zU7IWvVj5Bsp3t+a+zBO5oyy+brRI+06ixl5zKsgf1OxDWqG8KsIGR3gsUfoSPXRXU
+         /V5gpispz8eQWo6gLRdnCIHAzRmmp0CSwGf2jOcw=
+Received: from wh-VirtualBox ([117.175.169.40])
+        by newxmesmtplogicsvrsza5.qq.com (NewEsmtp) with SMTP
+        id ADB3EAE6; Thu, 23 Jun 2022 20:43:27 +0800
+X-QQ-mid: xmsmtpt1655988207t5r5adzos
+Message-ID: <tencent_DDE91CB7412D427A442DB4362364DC04F20A@qq.com>
+X-QQ-XMAILINFO: MyIXMys/8kCtHWBqatw/wyopKz5hTtXjGRfWMXKeAhHky4aLsr5FnFxJYfiVJ2
+         vmh+GYDNRyVjufcT9KR9j6lnRTiskEtKQaB2ikpUNwauGhDyExgknndJG05BIU7GBebRSoRte9N3
+         5GJnUfUkfc8NZkMDsa/6Nd8WihoYjDnalEPRaX4rNog/40w8GP++3OKCjF3IQ72ZhwVrHByJhEIH
+         w5eYHN2PzNK77nARXeIZqc+aokil7yjSIBZTYxuBJ9aKyjAAMjEaWJedjDCabWV6T9GUaoMqSJqs
+         rgkAUEptV1AP0h4ALDyQlnAcWosKMFAaqfLhNc4kzyTGEafvI01KETTn64tY6yDZbUlvFLUC63Lc
+         UFoJOsEIPwhkLWuoipKF1W7cukiGW0II2NjQCouja0sFmBux7GhH3kC/CUmD/BnS0Fti9deyw/wY
+         DBLVUCyDbNRdEFVZqcwh5eKsbp9lrLJhRicnOUllA55m2qYVW0DY9aJlHcDSruOYP9RMHLhfmMb/
+         dCp17iv5TQvvEVnRN1Tl//HQqd1THamtgQ4QGAZ7NEy4Ydc+SXdmS8q7smuRj/xqmP7GOJXCDEea
+         Vqd9urW6/Y+7Alp3hksq02HMTipPx14CodJgQ8jWECRsqm1IHAERbD7Pf27IhhYQXu6cFd1mYZut
+         x3PfHN6S1XjI6x+GENZ4ZH6dMprzF5pdKAUZsVz8Jd985z6XJOY6Y2iWNaWIRVHNXLYrh9IK23ik
+         EVG1Of+9Oc78CaopaW+IDfp+PCyUHdYNiHWi7Vw6TEqWjvUYyMxr50oWfTbFLb66/RBdvYXXgfgl
+         /9+onMOLnGbGo/9JMTTGOQ9OCtocKCUphbdOJNznGEifvgKbruQaPIijS5nJldq8/MvgbNAHiJXn
+         fm1Vt8FpGxgR+TpubTkULtZYxhaw10cXSLtnRuYTCkyUp6z3OlAAUh5Ueo5Qlq8slP8kiNxTwXXj
+         nmnIedB/spF8mABF7g82q5kDBr6G8mAhvHuJoXe5NZRe/1lyt+6wSIvxUzyGq7
+Date:   Thu, 23 Jun 2022 20:42:48 +0800
+From:   Wei Han <lailitty@foxmail.com>
+To:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lailitty@foxmail.com, linux-staging@lists.linux.dev
+Subject: [PATCH] netfilter: xt_esp: add support for ESP match in NAT Traversal
+X-OQ-MSGID: <20220623124248.GA10755@wh-VirtualBox>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        HELO_DYNAMIC_IPADDR,RCVD_IN_DNSWL_NONE,RDNS_DYNAMIC,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the new DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr() macros to
-handle the .suspend/.resume callbacks.
+when the ESP packets traversing Network Address Translators,
+which are encapsulated and decapsulated inside UDP packets,
+so we need to get ESP data in UDP.
 
-These macros allow the suspend and resume functions to be automatically
-dropped by the compiler when CONFIG_SUSPEND is disabled, without having
-to use #ifdef guards.
-
-Some other functions not directly called by the .suspend/.resume
-callbacks, but still related to PM were also taken outside #ifdef
-guards.
-
-The advantage is then that these functions are now always compiled
-independently of any Kconfig option, and thanks to that bugs and
-regressions are easier to catch.
-
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Signed-off-by: Wei Han <lailitty@foxmail.com>
 ---
+ net/netfilter/xt_esp.c | 54 +++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 45 insertions(+), 9 deletions(-)
 
-Notes:
-    v2:
-    - Move checks for IS_ENABLED(CONFIG_PM_SLEEP) inside functions to keep
-      the calling functions intact.
-    - Reword the commit message to explain why this patch is useful.
-
- .../broadcom/brcm80211/brcmfmac/bcmsdh.c      | 38 +++++++------------
- .../broadcom/brcm80211/brcmfmac/sdio.c        |  5 +--
- .../broadcom/brcm80211/brcmfmac/sdio.h        | 16 --------
- 3 files changed, 16 insertions(+), 43 deletions(-)
-
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-index 9c598ea97499..11ad878a906b 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bcmsdh.c
-@@ -784,9 +784,11 @@ void brcmf_sdiod_sgtable_alloc(struct brcmf_sdio_dev *sdiodev)
- 	sdiodev->txglomsz = sdiodev->settings->bus.sdio.txglomsz;
- }
+diff --git a/net/netfilter/xt_esp.c b/net/netfilter/xt_esp.c
+index 2a1c0ad0ff07..c3feb79a830a 100644
+--- a/net/netfilter/xt_esp.c
++++ b/net/netfilter/xt_esp.c
+@@ -8,12 +8,14 @@
+ #include <linux/skbuff.h>
+ #include <linux/in.h>
+ #include <linux/ip.h>
++#include <linux/ipv6.h>
  
--#ifdef CONFIG_PM_SLEEP
- static int brcmf_sdiod_freezer_attach(struct brcmf_sdio_dev *sdiodev)
- {
-+	if (!IS_ENABLED(CONFIG_PM_SLEEP))
-+		return 0;
+ #include <linux/netfilter/xt_esp.h>
+ #include <linux/netfilter/x_tables.h>
+ 
+ #include <linux/netfilter_ipv4/ip_tables.h>
+ #include <linux/netfilter_ipv6/ip6_tables.h>
++#include <net/ip.h>
+ 
+ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Yon Uriarte <yon@astaro.de>");
+@@ -39,17 +41,53 @@ static bool esp_mt(const struct sk_buff *skb, struct xt_action_param *par)
+ 	struct ip_esp_hdr _esp;
+ 	const struct xt_esp *espinfo = par->matchinfo;
+ 
++	const struct iphdr *iph = NULL;
++	const struct ipv6hdr *ip6h = NULL;
++	const struct udphdr *udph = NULL;
++	struct udphdr _udph;
++	int proto = -1;
 +
- 	sdiodev->freezer = kzalloc(sizeof(*sdiodev->freezer), GFP_KERNEL);
- 	if (!sdiodev->freezer)
- 		return -ENOMEM;
-@@ -799,7 +801,7 @@ static int brcmf_sdiod_freezer_attach(struct brcmf_sdio_dev *sdiodev)
+ 	/* Must not be a fragment. */
+ 	if (par->fragoff != 0)
+ 		return false;
  
- static void brcmf_sdiod_freezer_detach(struct brcmf_sdio_dev *sdiodev)
- {
--	if (sdiodev->freezer) {
-+	if (IS_ENABLED(CONFIG_PM_SLEEP) && sdiodev->freezer) {
- 		WARN_ON(atomic_read(&sdiodev->freezer->freezing));
- 		kfree(sdiodev->freezer);
+-	eh = skb_header_pointer(skb, par->thoff, sizeof(_esp), &_esp);
+-	if (eh == NULL) {
+-		/* We've been asked to examine this packet, and we
+-		 * can't.  Hence, no choice but to drop.
+-		 */
+-		pr_debug("Dropping evil ESP tinygram.\n");
+-		par->hotdrop = true;
++	if (xt_family(par) == NFPROTO_IPV6) {
++		ip6h = ipv6_hdr(skb);
++		if (!ip6h)
++			return false;
++		proto = ip6h->nexthdr;
++	} else {
++		iph = ip_hdr(skb);
++		if (!iph)
++			return false;
++		proto = iph->protocol;
++	}
++
++	if (proto == IPPROTO_UDP) {
++		//for NAT-T
++		udph = skb_header_pointer(skb, par->thoff, sizeof(_udph), &_udph);
++		if (udph && (udph->source == htons(4500) || udph->dest == htons(4500))) {
++			/* Not deal with above data it don't conflict with SPI
++			 * 1.IKE Header Format for Port 4500(Non-ESP Marker 0x00000000)
++			 * 2.NAT-Keepalive Packet Format(0xFF)
++			 */
++			eh = (struct ip_esp_hdr *)((char *)udph + sizeof(struct udphdr));
++		} else {
++			return false;
++		}
++	} else if (proto == IPPROTO_ESP) {
++		//not NAT-T
++		eh = skb_header_pointer(skb, par->thoff, sizeof(_esp), &_esp);
++		if (!eh) {
++			/* We've been asked to examine this packet, and we
++			 * can't.  Hence, no choice but to drop.
++			 */
++			pr_debug("Dropping evil ESP tinygram.\n");
++			par->hotdrop = true;
++			return false;
++		}
++	} else {
++		//not esp data
+ 		return false;
  	}
-@@ -833,7 +835,8 @@ static void brcmf_sdiod_freezer_off(struct brcmf_sdio_dev *sdiodev)
  
- bool brcmf_sdiod_freezing(struct brcmf_sdio_dev *sdiodev)
- {
--	return atomic_read(&sdiodev->freezer->freezing);
-+	return IS_ENABLED(CONFIG_PM_SLEEP) &&
-+		atomic_read(&sdiodev->freezer->freezing);
- }
- 
- void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev)
-@@ -847,24 +850,16 @@ void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev)
- 
- void brcmf_sdiod_freezer_count(struct brcmf_sdio_dev *sdiodev)
- {
--	atomic_inc(&sdiodev->freezer->thread_count);
-+	if (IS_ENABLED(CONFIG_PM_SLEEP))
-+		atomic_inc(&sdiodev->freezer->thread_count);
- }
- 
- void brcmf_sdiod_freezer_uncount(struct brcmf_sdio_dev *sdiodev)
- {
--	atomic_dec(&sdiodev->freezer->thread_count);
--}
--#else
--static int brcmf_sdiod_freezer_attach(struct brcmf_sdio_dev *sdiodev)
--{
--	return 0;
-+	if (IS_ENABLED(CONFIG_PM_SLEEP))
-+		atomic_dec(&sdiodev->freezer->thread_count);
- }
- 
--static void brcmf_sdiod_freezer_detach(struct brcmf_sdio_dev *sdiodev)
--{
--}
--#endif /* CONFIG_PM_SLEEP */
--
- int brcmf_sdiod_remove(struct brcmf_sdio_dev *sdiodev)
- {
- 	sdiodev->state = BRCMF_SDIOD_DOWN;
-@@ -1136,7 +1131,6 @@ void brcmf_sdio_wowl_config(struct device *dev, bool enabled)
- 	brcmf_dbg(SDIO, "WOWL not supported\n");
- }
- 
--#ifdef CONFIG_PM_SLEEP
- static int brcmf_ops_sdio_suspend(struct device *dev)
- {
- 	struct sdio_func *func;
-@@ -1204,11 +1198,9 @@ static int brcmf_ops_sdio_resume(struct device *dev)
- 	return ret;
- }
- 
--static const struct dev_pm_ops brcmf_sdio_pm_ops = {
--	.suspend	= brcmf_ops_sdio_suspend,
--	.resume		= brcmf_ops_sdio_resume,
--};
--#endif	/* CONFIG_PM_SLEEP */
-+static DEFINE_SIMPLE_DEV_PM_OPS(brcmf_sdio_pm_ops,
-+				brcmf_ops_sdio_suspend,
-+				brcmf_ops_sdio_resume);
- 
- static struct sdio_driver brcmf_sdmmc_driver = {
- 	.probe = brcmf_ops_sdio_probe,
-@@ -1217,9 +1209,7 @@ static struct sdio_driver brcmf_sdmmc_driver = {
- 	.id_table = brcmf_sdmmc_ids,
- 	.drv = {
- 		.owner = THIS_MODULE,
--#ifdef CONFIG_PM_SLEEP
--		.pm = &brcmf_sdio_pm_ops,
--#endif	/* CONFIG_PM_SLEEP */
-+		.pm = pm_sleep_ptr(&brcmf_sdio_pm_ops),
- 		.coredump = brcmf_dev_coredump,
+@@ -76,7 +114,6 @@ static struct xt_match esp_mt_reg[] __read_mostly = {
+ 		.checkentry	= esp_mt_check,
+ 		.match		= esp_mt,
+ 		.matchsize	= sizeof(struct xt_esp),
+-		.proto		= IPPROTO_ESP,
+ 		.me		= THIS_MODULE,
+ 	},
+ 	{
+@@ -85,7 +122,6 @@ static struct xt_match esp_mt_reg[] __read_mostly = {
+ 		.checkentry	= esp_mt_check,
+ 		.match		= esp_mt,
+ 		.matchsize	= sizeof(struct xt_esp),
+-		.proto		= IPPROTO_ESP,
+ 		.me		= THIS_MODULE,
  	},
  };
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-index 212fbbe1cd7e..58ed6b70f8c5 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
-@@ -4020,15 +4020,14 @@ brcmf_sdio_probe_attach(struct brcmf_sdio *bus)
- 	 */
- 	brcmf_sdiod_sgtable_alloc(sdiodev);
- 
--#ifdef CONFIG_PM_SLEEP
- 	/* wowl can be supported when KEEP_POWER is true and (WAKE_SDIO_IRQ
- 	 * is true or when platform data OOB irq is true).
- 	 */
--	if ((sdio_get_host_pm_caps(sdiodev->func1) & MMC_PM_KEEP_POWER) &&
-+	if (IS_ENABLED(CONFIG_PM_SLEEP) &&
-+	    (sdio_get_host_pm_caps(sdiodev->func1) & MMC_PM_KEEP_POWER) &&
- 	    ((sdio_get_host_pm_caps(sdiodev->func1) & MMC_PM_WAKE_SDIO_IRQ) ||
- 	     (sdiodev->settings->bus.sdio.oob_irq_supported)))
- 		sdiodev->bus_if->wowl_supported = true;
--#endif
- 
- 	if (brcmf_sdio_kso_init(bus)) {
- 		brcmf_err("error enabling KSO\n");
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h
-index 15d2c02fa3ec..47351ff458ca 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.h
-@@ -346,26 +346,10 @@ int brcmf_sdiod_abort(struct brcmf_sdio_dev *sdiodev, struct sdio_func *func);
- void brcmf_sdiod_sgtable_alloc(struct brcmf_sdio_dev *sdiodev);
- void brcmf_sdiod_change_state(struct brcmf_sdio_dev *sdiodev,
- 			      enum brcmf_sdiod_state state);
--#ifdef CONFIG_PM_SLEEP
- bool brcmf_sdiod_freezing(struct brcmf_sdio_dev *sdiodev);
- void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev);
- void brcmf_sdiod_freezer_count(struct brcmf_sdio_dev *sdiodev);
- void brcmf_sdiod_freezer_uncount(struct brcmf_sdio_dev *sdiodev);
--#else
--static inline bool brcmf_sdiod_freezing(struct brcmf_sdio_dev *sdiodev)
--{
--	return false;
--}
--static inline void brcmf_sdiod_try_freeze(struct brcmf_sdio_dev *sdiodev)
--{
--}
--static inline void brcmf_sdiod_freezer_count(struct brcmf_sdio_dev *sdiodev)
--{
--}
--static inline void brcmf_sdiod_freezer_uncount(struct brcmf_sdio_dev *sdiodev)
--{
--}
--#endif /* CONFIG_PM_SLEEP */
- 
- int brcmf_sdiod_probe(struct brcmf_sdio_dev *sdiodev);
- int brcmf_sdiod_remove(struct brcmf_sdio_dev *sdiodev);
 -- 
-2.35.1
+2.17.1
 
