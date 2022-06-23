@@ -2,57 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44D34557753
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 12:00:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F09B557763
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 12:06:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231382AbiFWKAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 06:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33582 "EHLO
+        id S231400AbiFWKGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 06:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231400AbiFWKAO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 06:00:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF16349CB7;
-        Thu, 23 Jun 2022 03:00:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7035161DAD;
-        Thu, 23 Jun 2022 10:00:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CA7CEC341C0;
-        Thu, 23 Jun 2022 10:00:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655978412;
-        bh=BkUxnJPDhnPu27WSLpY2P7BGcWIQ8/1j1dDbELLIkdg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=K4kenSi8J3qXR8EyHxXgSCY2MNWUakjRtbrG8vdHETNVapUi6PiTIqmDKFxEJ0Y1F
-         DiRtXf9XlZIJAWNq99QQZ3giPY71kItM7wSAp2R8KfBIf5TSYqRTKIwsWEtX92lJkp
-         +/qHMuqJnJD/ZonzIw0MZxUKjLqe0OnHnNQrIdQQv9LhR1F1PDJH8FjidS7qYpQTMS
-         hdPsJUnssjuChlTz+b1JQ1EeEpygiuQ6irNjHRI0TfClOG7grbTBA/QHzRsatDyhN0
-         q/yIQ+sE4G7b3f7Q6JIafgKtO/IcEMEdsHBZRymzCWGDkpWpQ1/Z2alegWIThkiMhl
-         2yvtvcelun2eA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AF68FE737F0;
-        Thu, 23 Jun 2022 10:00:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S230516AbiFWKGM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 06:06:12 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B93E549CBE
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 03:06:10 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1o4JhK-0001s4-PU; Thu, 23 Jun 2022 12:04:26 +0200
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1o4JhF-0006Dc-DA; Thu, 23 Jun 2022 12:04:21 +0200
+Date:   Thu, 23 Jun 2022 12:04:21 +0200
+From:   sascha hauer <sha@pengutronix.de>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Len Brown <lenb@kernel.org>, peng fan <peng.fan@nxp.com>,
+        kevin hilman <khilman@kernel.org>,
+        ulf hansson <ulf.hansson@linaro.org>,
+        len brown <len.brown@intel.com>, pavel machek <pavel@ucw.cz>,
+        joerg roedel <joro@8bytes.org>, will deacon <will@kernel.org>,
+        andrew lunn <andrew@lunn.ch>,
+        heiner kallweit <hkallweit1@gmail.com>,
+        russell king <linux@armlinux.org.uk>,
+        "david s. miller" <davem@davemloft.net>,
+        eric dumazet <edumazet@google.com>,
+        jakub kicinski <kuba@kernel.org>,
+        paolo abeni <pabeni@redhat.com>,
+        linus walleij <linus.walleij@linaro.org>,
+        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
+        david ahern <dsahern@kernel.org>, kernel-team@android.com,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-gpio@vger.kernel.org, kernel@pengutronix.de,
+        devicetree@vger.kernel.org, linux-acpi@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] of: base: Avoid console probe delay when
+ fw_devlink.strict=1
+Message-ID: <20220623100421.GY1615@pengutronix.de>
+References: <20220623080344.783549-1-saravanak@google.com>
+ <20220623080344.783549-3-saravanak@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: openvswitch: fix parsing of nw_proto for IPv6
- fragments
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165597841271.22799.14586391448638568362.git-patchwork-notify@kernel.org>
-Date:   Thu, 23 Jun 2022 10:00:12 +0000
-References: <20220621204845.9721-1-roriorden@redhat.com>
-In-Reply-To: <20220621204845.9721-1-roriorden@redhat.com>
-To:     Rosemarie O'Riorden <roriorden@redhat.com>
-Cc:     netdev@vger.kernel.org, pshelar@ovn.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        yihung.wei@gmail.com, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org, i.maximets@ovn.org,
-        aconole@redhat.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220623080344.783549-3-saravanak@google.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,32 +79,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Tue, 21 Jun 2022 16:48:45 -0400 you wrote:
-> When a packet enters the OVS datapath and does not match any existing
-> flows installed in the kernel flow cache, the packet will be sent to
-> userspace to be parsed, and a new flow will be created. The kernel and
-> OVS rely on each other to parse packet fields in the same way so that
-> packets will be handled properly.
+On Thu, Jun 23, 2022 at 01:03:43AM -0700, Saravana Kannan wrote:
+> Commit 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
+> enabled iommus and dmas dependency enforcement by default. On some
+> systems, this caused the console device's probe to get delayed until the
+> deferred_probe_timeout expires.
 > 
-> As per the design document linked below, OVS expects all later IPv6
-> fragments to have nw_proto=44 in the flow key, so they can be correctly
-> matched on OpenFlow rules. OpenFlow controllers create pipelines based
-> on this design.
+> We need consoles to work as soon as possible, so mark the console device
+> node with FWNODE_FLAG_BEST_EFFORT so that fw_delink knows not to delay
+> the probe of the console device for suppliers without drivers. The
+> driver can then make the decision on where it can probe without those
+> suppliers or defer its probe.
 > 
-> [...]
+> Fixes: 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
+> Reported-by: Sascha Hauer <sha@pengutronix.de>
+> Reported-by: Peng Fan <peng.fan@nxp.com>
+> Signed-off-by: Saravana Kannan <saravanak@google.com>
+> Tested-by: Peng Fan <peng.fan@nxp.com>
+> ---
+>  drivers/of/base.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/of/base.c b/drivers/of/base.c
+> index d4f98c8469ed..a19cd0c73644 100644
+> --- a/drivers/of/base.c
+> +++ b/drivers/of/base.c
+> @@ -1919,6 +1919,8 @@ void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align))
+>  			of_property_read_string(of_aliases, "stdout", &name);
+>  		if (name)
+>  			of_stdout = of_find_node_opts_by_path(name, &of_stdout_options);
+> +		if (of_stdout)
+> +			of_stdout->fwnode.flags |= FWNODE_FLAG_BEST_EFFORT;
 
-Here is the summary with links:
-  - [net] net: openvswitch: fix parsing of nw_proto for IPv6 fragments
-    https://git.kernel.org/netdev/net/c/12378a5a75e3
+The device given in the stdout-path property doesn't necessarily have to
+be consistent with the console= parameter. The former is usually
+statically set in the device trees contained in the kernel while the
+latter is dynamically set by the bootloader. So if you change the
+console uart in the bootloader then you'll still run into this trap.
 
-You are awesome, thank you!
+It's problematic to consult only the device tree for dependencies. I
+found several examples of drivers in the tree for which dma support
+is optional. They use it if they can, but continue without it when
+not available. "hwlock" is another property which consider several
+drivers as optional. Also consider SoCs in early upstreaming phases
+when the device tree is merged with "dmas" or "hwlock" properties,
+but the corresponding drivers are not yet upstreamed. It's not nice
+to defer probing of all these devices for a long time.
+
+I wonder if it wouldn't be a better approach to just probe all devices
+and record the device(node) they are waiting on. Then you know that you
+don't need to probe them again until the device they are waiting for
+is available.
+
+Sascha
+
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
