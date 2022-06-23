@@ -2,149 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A8DA9558899
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 21:22:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DC125588E6
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 21:32:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229902AbiFWTWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 15:22:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40522 "EHLO
+        id S231378AbiFWTb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 15:31:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbiFWTWV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 15:22:21 -0400
-Received: from smtp4.emailarray.com (smtp4.emailarray.com [65.39.216.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA10E3E5F7
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 11:28:17 -0700 (PDT)
-Received: (qmail 96020 invoked by uid 89); 23 Jun 2022 18:28:15 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTYzLjExNC4xMzIuNQ==) (POLARISLOCAL)  
-  by smtp4.emailarray.com with SMTP; 23 Jun 2022 18:28:15 -0000
-Date:   Thu, 23 Jun 2022 11:28:13 -0700
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Vadim Fedorenko <vadfed@fb.com>,
-        Aya Levin <ayal@nvidia.com>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [RFC PATCH v1 3/3] ptp_ocp: implement DPLL ops
-Message-ID: <20220623182813.safjhwvu67i4vu3b@bsd-mbp.dhcp.thefacebook.com>
-References: <20220623005717.31040-1-vfedorenko@novek.ru>
- <20220623005717.31040-4-vfedorenko@novek.ru>
+        with ESMTP id S231393AbiFWTbn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 15:31:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73BE0848A7
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 12:03:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D13B6B82338
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 19:03:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 660B2C341C6;
+        Thu, 23 Jun 2022 19:03:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656010996;
+        bh=0J9qoJd4e87NhPKKWDKaOcV9w5RUwZvgBUv/+GTJTZM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=JQCBDrftJQQGq+AR3SddZ0KcsscsTdulOXHqWo7sUVkFNZwWQbc7gAeFC6i3SeBGM
+         QVumWjtOLZwiXc/ZsiS5yRKr9MV7PmHtyb+YEOQEU5d2Eslql9ImUThlgyXQTODbGF
+         Tno7og0wWIH5vyAknKdmhnFwuRv1+8Cjg+y3+LTtMRXWWoIUd7BZoEEB1DYBwr5idf
+         azGgLiCnAWB90vf687uGkEZFXs7GHclrRYEd5b83NpeE+troqNX0UeuGI+sS0Ba3I0
+         i6+1/XIgNXZrsjquVnLQjb742EU/WHDdGixhgHcw6+Jk0V/BCEeMH/JqqCRIPfhSWb
+         C3SzGDNptCJcg==
+Date:   Thu, 23 Jun 2022 12:03:07 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@gmail.com>, Ismael Luceno <iluceno@suse.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Netlink NLM_F_DUMP_INTR flag lost
+Message-ID: <20220623120307.602e1d10@kernel.org>
+In-Reply-To: <da0875aa-6829-c396-0577-2e400c1041c7@gmail.com>
+References: <20220615171113.7d93af3e@pirotess>
+        <20220615090044.54229e73@kernel.org>
+        <20220616171016.56d4ec9c@pirotess>
+        <20220616171612.66638e54@kernel.org>
+        <20220617150110.6366d5bf@pirotess>
+        <20220622131218.1ed6f531@pirotess>
+        <20220622165547.71846773@kernel.org>
+        <fef8b8d5-e07d-6d8f-841a-ead4ebee8d29@gmail.com>
+        <20220623090352.69bf416c@kernel.org>
+        <bd76637b-0404-12e3-37b6-4bdedd625965@gmail.com>
+        <20220623093609.1b104859@kernel.org>
+        <da0875aa-6829-c396-0577-2e400c1041c7@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220623005717.31040-4-vfedorenko@novek.ru>
-X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 03:57:17AM +0300, Vadim Fedorenko wrote:
-> From: Vadim Fedorenko <vadfed@fb.com>
+On Thu, 23 Jun 2022 11:31:34 -0600 David Ahern wrote:
+> >> All of the dumps should be checking the consistency at the end of the
+> >> dump - regardless of any remaining entries on a particular round (e.g.,
+> >> I mentioned this what the nexthop dump does). Worst case then is DONE
+> >> and INTR are set on the same message with no data, but it tells
+> >> explicitly the set of data affected.  
+> > 
+> > Okay, perhaps we should put a WARN_ON_ONCE(seq && seq != prev_seq)
+> > in rtnl_dump_all() then, to catch those who get it wrong.  
 > 
-> Implement DPLL operations in ptp_ocp driver.
+> with '!(nlh->msg_flags & INTR)' to catch seq numbers not matching and
+> the message was not flagged?
 
-Please CC: me as well.
+Yup.
 
-
-> +static int ptp_ocp_dpll_get_status(struct dpll_device *dpll)
-> +{
-> +	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
-> +	int sync;
-> +
-> +	sync = ioread32(&bp->reg->status) & OCP_STATUS_IN_SYNC;
-> +	return sync;
-> +}
-
-Please match existing code style.
-
-
-> +static int ptp_ocp_dpll_get_source_type(struct dpll_device *dpll, int sma)
-> +{
-> +	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
-> +	int ret;
-> +
-> +	if (bp->sma[sma].mode != SMA_MODE_IN)
-> +		return -1;
-> +
-> +	switch (ptp_ocp_sma_get(bp, sma)) {
-> +	case 0:
-> +		ret = DPLL_TYPE_EXT_10MHZ;
-> +		break;
-> +	case 1:
-> +	case 2:
-> +		ret = DPLL_TYPE_EXT_1PPS;
-> +		break;
-> +	default:
-> +		ret = DPLL_TYPE_INT_OSCILLATOR;
-> +	}
-> +
-> +	return ret;
-> +}
-
-These case statements switch on private bits.  This needs to match
-on the selector name instead.
-
-
-> +static int ptp_ocp_dpll_get_output_type(struct dpll_device *dpll, int sma)
-> +{
-> +	struct ptp_ocp *bp = (struct ptp_ocp *)dpll_priv(dpll);
-> +	int ret;
-> +
-> +	if (bp->sma[sma].mode != SMA_MODE_OUT)
-> +		return -1;
-> +
-> +	switch (ptp_ocp_sma_get(bp, sma)) {
-> +	case 0:
-> +		ret = DPLL_TYPE_EXT_10MHZ;
-> +		break;
-> +	case 1:
-> +	case 2:
-> +		ret = DPLL_TYPE_INT_OSCILLATOR;
-> +		break;
-> +	case 4:
-> +	case 8:
-> +		ret = DPLL_TYPE_GNSS;
-> +		break;
-> +	default:
-> +		ret = DPLL_TYPE_INT_OSCILLATOR;
-
-Missing break;
-
-
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static struct dpll_device_ops dpll_ops = {
-> +	.get_status		= ptp_ocp_dpll_get_status,
-> +	.get_lock_status	= ptp_ocp_dpll_get_lock_status,
-> +	.get_source_type	= ptp_ocp_dpll_get_source_type,
-> +	.get_output_type	= ptp_ocp_dpll_get_output_type,
-> +};
-
-No 'set' statements here?  Also, what happens if there is more than
-one GNSS receiver, how is this differentiated?
->  static int
->  ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->  {
-> @@ -3768,6 +3846,14 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->  
->  	ptp_ocp_info(bp);
->  	devlink_register(devlink);
-> +
-> +	bp->dpll = dpll_device_alloc(&dpll_ops, ARRAY_SIZE(bp->sma), ARRAY_SIZE(bp->sma), bp);
-> +	if (!bp->dpll) {
-> +		dev_err(&pdev->dev, "dpll_device_alloc failed\n");
-> +		return 0;
-> +	}
-> +	dpll_device_register(bp->dpll);
-> +
-
-How is the release/unregister path called when the module is unloaded?
--- 
-Jonathan
+Ismael, do you want to send a patch for either version of the solution
+or do you expect one of us to do it?
