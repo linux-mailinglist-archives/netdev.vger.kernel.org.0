@@ -2,64 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1874C558BE4
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 01:48:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A43E558BF0
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 01:51:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230469AbiFWXs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 19:48:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53814 "EHLO
+        id S230460AbiFWXvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 19:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230370AbiFWXsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 19:48:25 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC1625C4C
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 16:48:22 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id r1so591246plo.10
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 16:48:22 -0700 (PDT)
+        with ESMTP id S229505AbiFWXvi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 19:51:38 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14E1C609E6;
+        Thu, 23 Jun 2022 16:51:38 -0700 (PDT)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25NKEUPt003476;
+        Thu, 23 Jun 2022 23:51:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=KNCtjPGvfjaedM9wvjst11eNKElO+kq8+Oj3HnVUR0Y=;
+ b=oCu5XwOQuaQ/afV2dEtZdET7KF2cGjVv4hHbo1bLTAQipuZgb5cUMVuZNnT0HCZRN1Ml
+ gN69MUrkjz3SDYhmWSucJrhr8wwNRRuQsBnRoyGBzrGyFvaNBT99wIEpuKm5qBkxQjhm
+ TeuXT8NI2JKEW8rlrcVNNe6NeGbZh7qNZE9SBX3xeYgh+6MwLlNm71joIGqQ/W7ZmrwZ
+ Fj50EngWrggCinq8dekIKbhJeIFc9TY3r9GO6rVjEY5naveqd82Ut9Z9QLQP34INPQGl
+ Lkjkgv+rP4tGKszoh7y4jkQkHYuvdbR1vgU2VJLfoVJ+eyoUzZICWoq5jFJMrqdl4tk+ Ug== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3gs78u4gbr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 23 Jun 2022 23:51:33 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 25NNonfY018640;
+        Thu, 23 Jun 2022 23:51:32 GMT
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2168.outbound.protection.outlook.com [104.47.57.168])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3gtg5wydy1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 23 Jun 2022 23:51:31 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=V/HiJD3y7WUfO0PfSNhItOa/9gDNil7D+/krCb7j/FcU8zJhkLq+PzW0E+aVRXKZ5d5GbknU2QL3Yb/5kKeXTbT/s9whTIQQqGldUvw6F24vga8Dj4PvanCG7W1ul/56ko2hdWnGO7ma3MsWf3bCYjZqrIhvRwbxIAt9ZzVSwgM5I2F2BuBf3GyXXb77MED8dPB+AgslhWfvK0fw4f97nOX+0rjjtgs95Ij9gIqerSGz0tMrzK5jOx8X5jjXmTZDL80X6V5nUiPgyCTEbMsEZsWzviXA+ryNToE3mS/Vi9i4NruEY+DIQSqR32mlM6Hhyh7X6aJ7rmd4/gqIXj/BaA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KNCtjPGvfjaedM9wvjst11eNKElO+kq8+Oj3HnVUR0Y=;
+ b=giC88iwgCI33ZG6u44RmxaO8tCwllw30ZBAqWjUnFGtuM8wcqzJunI/CS/oGwSWDTzi/GIJEEFJv93ODgrTF6KoYAb0thop698AeLTyJOCbBx/zFENKsdM07hK2bJY4KZsM0mzpqLGY1LioazkHy+Q5LflJyjya8/Ei8Ikmqis+yulAvbehQCbN+rSI80A61IkSRybFZr42sBC7C7QwzpA3c7MvvjWhD8O+54dh9WDWmBy9BAmmBe3vwHfRT+CXpYBa81BcPPQYFiVFRGKpn2jrhlhDqfoVAupNgg/j/0Csz4C3ioRXE63XvXm5pHkzndEqbWugGKquvV7phB5WG6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=esBO+gxkP8xynJNoG1WYNo+VvW6Ql/lZluFwI8QCO6k=;
-        b=mg9fqoZxdzawbh758EORRniXTZCsIHms9V14dVQk0Z3jtB5SKxq1A+fd0Dm63vg104
-         LsCqMYttahIsoVdlazERddlPVNgotWXDgUx8J0iVVeGkExAilqZJyCVa1EbRyHMwuEG5
-         S3/9fusa8fsTMta9Nj5d8pQ8PD/xKz1hA8cwrIwzqmo54NY93OqALiNnkpE2pYCZ6OoE
-         ZoFALViH+RPbazF8SlWjsE67BZfCt4Xat+ZtimxIKUsxHTC8YNloU8i+r2EiTTFwms8y
-         0vmDMSDfFXAWNle7gfqbaC9lM4/YHm3sUMEwCueGF+Bz0e1aP+OKCTaOIKkd63Q8cB+m
-         nsMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=esBO+gxkP8xynJNoG1WYNo+VvW6Ql/lZluFwI8QCO6k=;
-        b=5F/s7OEUVN4WKfhi/N0E9NHiQHuJaC6e03AdmayZeWIGbeG6f1ejxtYtvFQuDIRZSd
-         WRjqEYCUMvJniZbQAy4XfOakHZsRVEhAIf+41pNTbwneWFiQGdWhAEN8Eh01meqHJied
-         Id+JzIKgMfP0Q00gxG+JUQaA2FkOdNfpsJYt7sS9QMJltO84qpuqG3Btqq1n4sl5xnqa
-         xfpOz5G7R8IVoVnzfjBOxHSYNzm4CH+Cu3vhLaQE/TmV2rfZf4IOCWMSIVIZ4wrDJk0o
-         to/qSY5SZqg9wS3fEPZat0c6tKU1lngENqdmMp5159Kl9BTGD9x0dNuOL/0AWpo4BtDj
-         7cVA==
-X-Gm-Message-State: AJIora+tKSdyQDrzE4VPxiG7CrKnPPfwj7C1RT3/QwXB3HSqRgnoZ70d
-        /71R7uPx5VixxwYq+C0SYY1J1orFK7ziC9qMWiEwHw==
-X-Google-Smtp-Source: AGRyM1tqJsXl4e9Qw3j0MwzvHB7S0yXplJHUxr5dAbm1HytVzR3gReXOHY2WLyEkaFYfFekC/+fNsISUE9DwJmdX8Dw=
-X-Received: by 2002:a17:90b:194:b0:1ec:96dd:fef2 with SMTP id
- t20-20020a17090b019400b001ec96ddfef2mr495879pjs.195.1656028101539; Thu, 23
- Jun 2022 16:48:21 -0700 (PDT)
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KNCtjPGvfjaedM9wvjst11eNKElO+kq8+Oj3HnVUR0Y=;
+ b=tPHRayfzWs0OPCDo9UEH1dyEqdq8JRvLEATgQipWzySo4odjn6MG3u7WS0yH1mQdKGd9g0kk+gnzWX+FJeGGBnXNwDwaBJFL2Xpa5/U+SGdbHgJO01xCqiEYr9+Lrfoq6lJLJSQGoqp3TmOUfRMf10mUyrWJU9B4yHxs76LmHOk=
+Received: from BN0PR10MB5128.namprd10.prod.outlook.com (2603:10b6:408:117::24)
+ by BYAPR10MB3319.namprd10.prod.outlook.com (2603:10b6:a03:150::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5353.14; Thu, 23 Jun
+ 2022 23:51:29 +0000
+Received: from BN0PR10MB5128.namprd10.prod.outlook.com
+ ([fe80::9920:1ac4:2d14:e703]) by BN0PR10MB5128.namprd10.prod.outlook.com
+ ([fe80::9920:1ac4:2d14:e703%5]) with mapi id 15.20.5373.017; Thu, 23 Jun 2022
+ 23:51:29 +0000
+From:   Chuck Lever III <chuck.lever@oracle.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+CC:     Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Dave Chinner <david@fromorbit.com>,
+        "tgraf@suug.ch" <tgraf@suug.ch>, Jeff Layton <jlayton@redhat.com>
+Subject: Re: [PATCH RFC 28/30] NFSD: Set up an rhashtable for the filecache
+Thread-Topic: [PATCH RFC 28/30] NFSD: Set up an rhashtable for the filecache
+Thread-Index: AQHYhkLIv6uRbtoPJEu5Zs/9WvV7ta1dnH2AgAAPTAA=
+Date:   Thu, 23 Jun 2022 23:51:29 +0000
+Message-ID: <1E65ABAA-C9D9-41F3-A93C-086381A78F10@oracle.com>
+References: <165590626293.75778.9843437418112335153.stgit@manet.1015granger.net>
+ <165590735022.75778.7652622979487182880.stgit@manet.1015granger.net>
+ <YrTvq2ED+Xugqpyi@ZenIV>
+In-Reply-To: <YrTvq2ED+Xugqpyi@ZenIV>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3696.100.31)
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c784f036-45d9-45e1-6a07-08da55734acf
+x-ms-traffictypediagnostic: BYAPR10MB3319:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 1VGDuOFWzduqXO+ZkJ83bxKAS2g3Dy+P7aSuvWdNFwgCtFNBbIj5nzGEWDFZjMBroCsu6eV5p951dNgEwpQTaHBTsCFmOr2+HGBLTeJtwkvJ/woQXg/yVC1+kv71WMxNUXFys8O9M2JMDVmgGsLij8tqmTxvfhG/BP1/tbRfVyM3T8a+geU/IGL1DZ/rwBamyIAe8/30rKIDj3OpYvGCzSDmtxZc1kPBpxxjaA40CBQzL41MAGAfANTNpsqrFsNmCOt1qFeDuqGWWSY9uM0xviOXIpKyNUtDHklVhrAZp3TaQYeBA3p9K20EDFjDOCGXgdwAcr23X4l2wnPofHW/bYYbhFO4G2ilXs/ol90HL+s56e44FKUAzciryL/zCRvCLa7bjy+yWSoYJEHYf7YjY/cPEUpNT9UENyK2ozjBvu169wt0adtWDs6xM8fonj8cJ+0wTL0nKNkQFaUGvIP7oNDyjfavHvYMRzjWMEZPjHY87kFWmOII2Vcwo+PB8if3ZUUTQgdNQJnKoPtj6sgs422fZslCYWFhHc8rRbhVoWoax3LrZ8jlkLhHm35eY7m9BcU4I6skqSrar3tW0q8CRuKFufQCFRS94Hav7+mVxrOcbbkNG97o0nIQhZcmGfA1CWMgp9E/ImxevL4vUtTnoYBzx09YtLiJ21AVeOFYxBLjCLoj1RFy/NdA+w/RfDA8QwyPKbJUijAnmAlALsKv5KJgcJbQNGFD6u7XNr3A5VDfs27wIWcs59o3dVEd/pvfIvjdQ0UgLbXPiXwrtxGds4GZkQgHmBBRalem7saaCfj8OJw13AP9B2Wsivr852MVxZNrSJ1C+FrjutL+RUvkTQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR10MB5128.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(136003)(346002)(39860400002)(366004)(396003)(4326008)(122000001)(76116006)(66946007)(66446008)(8676002)(2616005)(36756003)(71200400001)(8936002)(6486002)(316002)(5660300002)(53546011)(478600001)(86362001)(91956017)(66556008)(66476007)(41300700001)(54906003)(4744005)(26005)(38070700005)(33656002)(6512007)(6506007)(38100700002)(2906002)(6916009)(186003)(64756008)(45980500001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?OUIT5ek7/QZ5an6HGqRvragQYzFTA/mBdwx2a9B457/zHXFl6kqUxVKtO6Va?=
+ =?us-ascii?Q?toEe9XAUYPC5O/BoQdP7kDu1yyufZKH2k/An+iMTHjwr+EQCarjpbb6dhfYK?=
+ =?us-ascii?Q?vGB7Pjeih9mqZn0NH+6x29CToh6WqtS6UluFmLQI9LSQe3wg60WVlXUIwkjS?=
+ =?us-ascii?Q?wxVDp0Uy4ZwIioLzWPYP3eQWdWADs+T/V9PrRvHUfBIUOpi4nsOLE9Jc47Vv?=
+ =?us-ascii?Q?mCvZ/p+x+KBWND4aNNXz+reKLNPzvVXo4POqbOG7ZmC0i3WywCNMHZnJtZIR?=
+ =?us-ascii?Q?4bpwQil2n4OPT7oWXlyI7Ngx9M0ydv0vmAaIiadsIKwCM/EiaXz6TOeroW//?=
+ =?us-ascii?Q?c3sLInUtUNnSLl3FMVV3MV8u8FCcz14V/YsHGUmhJFfnMVBlePwMA0rzlN11?=
+ =?us-ascii?Q?MvJaHom5n/BelqRXNmrU4ckO3T4SJfsw0VX2kd5H0DN6pZ0vrw26n9NNvOno?=
+ =?us-ascii?Q?inXiBkX7ix7NTEbnv26Wvq5PKQKix8xaGMaKU0/qalXVCSHQLFGh7tZCezN5?=
+ =?us-ascii?Q?mE0SPS/PUfbFiplMfkDXEOveOw/qYdYEln1RkkAztBu8X+Vns851DxsniPEB?=
+ =?us-ascii?Q?b6P4iInAv45vA8N8ZvTlOr4mXDV9MIDs8t3CArCHY3IUbQxtJ0+YwwLJvi/X?=
+ =?us-ascii?Q?EO4wIR8OCZsFjF6MCFAPxWIAOfpR9FAy65NrTR7bao18lDnrN0FA+gK298le?=
+ =?us-ascii?Q?uSBDXFoj1a3yUARLNYS8/JiAhSN70En4vrvpV+ryQvu71A2ZwVhXTGLd5sTt?=
+ =?us-ascii?Q?K39qK0LGL6pN/GPpf5gP9mtyGEtsmPycbcJWkOYJI3ZyWQU28pr3JZ5VvtvI?=
+ =?us-ascii?Q?O3svD5fcg1Gy/dWtaSEJcNmapvdyCT6MzwCHuzPp4cem5X8idopyNCo902fQ?=
+ =?us-ascii?Q?RQzwC54ncuJl+jpHwX/29Ir9PuzIAT41lrtnZLbPwr9VuXkonLLPVRNm+MhE?=
+ =?us-ascii?Q?TwYXt+E/KQRrgdOtjd5di37Uj38ieeKTyge1mlHkvhPEYeoR+VIOrB02HD1f?=
+ =?us-ascii?Q?WhYGeeYMYIt4+d3FQhaEpoPb5ul4Fi6BvHPkM+aBMATCDOzOLwqrAbnZJqlo?=
+ =?us-ascii?Q?tLHPoOOf9jlqeCh8iFk9+Vlg8t354GMhtgfpa/d2fTLOW2fBwU5EFxWXnXBx?=
+ =?us-ascii?Q?MsD6YP7aNkV452P72KmtihPJkdin6Z23dGGlDg94UzBQwS6ZithAV18eznGo?=
+ =?us-ascii?Q?QECseHN5qG/H7tNQthU4PCR/Fiaku95kEMgP2deVH9TLJCxRHrVnwI5kwdL8?=
+ =?us-ascii?Q?CIDwVvq9tgtdd/57edcYDsgOdZfX1Yksy8YNBjeWGNUzCCOUOb2iPbXuf8QW?=
+ =?us-ascii?Q?WJpN05xdNJPx1ef9O31Lfsp7HOx2J6DocSYEsHF8PBZ5Ef73NPSi3tBmlvQm?=
+ =?us-ascii?Q?KTlKiE66mzokjfIZqUhOr57/3Ot+cpoLs7ze30VFzGPAH9NihoGrz+m6CXDS?=
+ =?us-ascii?Q?CeYGTTUqZfkcLqAC41wfEHSfPvj9zbQAQKRLVgD5FnBom2sj9YzqGHXM8L7e?=
+ =?us-ascii?Q?uO1x1XI9vMiioWiyyuLWeWsyDZRwF+6+NywIl7k5Db2wh+LDxfCCWHVQdz9B?=
+ =?us-ascii?Q?xe2nEym/c3fYpi+XrvEO0dgxh7NAiTb91a6RNI8nWy5xK3FqsB4zCAmqee6I?=
+ =?us-ascii?Q?IA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2B432EB83F433348ABC815B17EBC446F@namprd10.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220622160346.967594-1-sdf@google.com> <20220622160346.967594-12-sdf@google.com>
- <20220623223631.uu3uakauseipsx5a@kafai-mbp>
-In-Reply-To: <20220623223631.uu3uakauseipsx5a@kafai-mbp>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Thu, 23 Jun 2022 16:48:10 -0700
-Message-ID: <CAKH8qBshDVf6eMb4-ON5fACcqgqew9EuefXNF1Up0Gfx9Z_uRQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v10 11/11] selftests/bpf: lsm_cgroup functional test
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN0PR10MB5128.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c784f036-45d9-45e1-6a07-08da55734acf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jun 2022 23:51:29.0742
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: WfUDkBAEOaHqb1oh9SK9BSJnlpB1jXdZdLEjC41i5U/NdXhetW48ETLMV1xm/4hAe+70qo/uy+i7YJfyE8Z4Ug==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB3319
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
+ definitions=2022-06-23_11:2022-06-23,2022-06-23 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0
+ mlxlogscore=859 bulkscore=0 phishscore=0 suspectscore=0 spamscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2206230092
+X-Proofpoint-GUID: q8BsgKKOXhYdcWRqirrQwwT3jiJZRqqo
+X-Proofpoint-ORIG-GUID: q8BsgKKOXhYdcWRqirrQwwT3jiJZRqqo
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,292 +151,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 3:36 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Wed, Jun 22, 2022 at 09:03:46AM -0700, Stanislav Fomichev wrote:
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/lsm_cgroup.c b/tools/testing/selftests/bpf/prog_tests/lsm_cgroup.c
-> > new file mode 100644
-> > index 000000000000..a96057ec7dd4
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/prog_tests/lsm_cgroup.c
-> > @@ -0,0 +1,277 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +
-> > +#include <sys/types.h>
-> > +#include <sys/socket.h>
-> > +#include <test_progs.h>
-> > +#include <bpf/btf.h>
-> > +
-> > +#include "lsm_cgroup.skel.h"
-> > +#include "cgroup_helpers.h"
-> > +#include "network_helpers.h"
-> > +
-> > +static __u32 query_prog_cnt(int cgroup_fd, const char *attach_func)
-> > +{
-> > +     LIBBPF_OPTS(bpf_prog_query_opts, p);
-> > +     static struct btf *btf;
-> > +     int cnt = 0;
-> > +     int i;
-> > +
-> > +     ASSERT_OK(bpf_prog_query_opts(cgroup_fd, BPF_LSM_CGROUP, &p), "prog_query");
-> > +
-> > +     if (!attach_func)
-> > +             return p.prog_cnt;
-> > +
-> > +     /* When attach_func is provided, count the number of progs that
-> > +      * attach to the given symbol.
-> > +      */
-> > +
-> > +     if (!btf)
-> > +             btf = btf__load_vmlinux_btf();
-> This needs a btf__free().  Probably at the end of test_lsm_cgroup().
 
-Ack. Let me move it out of the function in this case.
 
-> > +     if (!ASSERT_OK(libbpf_get_error(btf), "btf_vmlinux"))
-> > +             return -1;
-> > +
-> > +     p.prog_ids = malloc(sizeof(u32) * p.prog_cnt);
-> > +     p.prog_attach_flags = malloc(sizeof(u32) * p.prog_cnt);
-> and these mallocs too ?
+> On Jun 23, 2022, at 6:56 PM, Al Viro <viro@zeniv.linux.org.uk> wrote:
+>=20
+> On Wed, Jun 22, 2022 at 10:15:50AM -0400, Chuck Lever wrote:
+>=20
+>> +static u32 nfsd_file_obj_hashfn(const void *data, u32 len, u32 seed)
+>> +{
+>> +	const struct nfsd_file *nf =3D data;
+>> +
+>> +	return jhash2((const u32 *)&nf->nf_inode,
+>> +		      sizeof_field(struct nfsd_file, nf_inode) / sizeof(u32),
+>> +		      seed);
+>=20
+> Out of curiosity - what are you using to allocate those?  Because if
+> it's a slab, then middle bits of address (i.e. lower bits of
+> (unsigned long)data / L1_CACHE_BYTES) would better be random enough...
 
-Ack. I'm being sloppy with the tests :-(
+ 261 static struct nfsd_file *
+ 262 nfsd_file_alloc(struct nfsd_file_lookup_key *key, unsigned int may)
+ 263 {
+ 264         static atomic_t nfsd_file_id;
+ 265         struct nfsd_file *nf;
+ 266=20
+ 267         nf =3D kmem_cache_alloc(nfsd_file_slab, GFP_KERNEL);
 
-> > +     ASSERT_OK(bpf_prog_query_opts(cgroup_fd, BPF_LSM_CGROUP, &p), "prog_query");
-> > +
-> > +     for (i = 0; i < p.prog_cnt; i++) {
-> > +             struct bpf_prog_info info = {};
-> > +             __u32 info_len = sizeof(info);
-> > +             int fd;
-> > +
-> > +             fd = bpf_prog_get_fd_by_id(p.prog_ids[i]);
-> > +             ASSERT_GE(fd, 0, "prog_get_fd_by_id");
-> > +             ASSERT_OK(bpf_obj_get_info_by_fd(fd, &info, &info_len), "prog_info_by_fd");
-> > +             close(fd);
-> > +
-> > +             if (info.attach_btf_id ==
-> > +                 btf__find_by_name_kind(btf, attach_func, BTF_KIND_FUNC))
-> > +                     cnt++;
-> > +     }
-> > +
-> > +     return cnt;
-> > +}
-> > +
-> > +static void test_lsm_cgroup_functional(void)
-> > +{
-> > +     DECLARE_LIBBPF_OPTS(bpf_prog_attach_opts, attach_opts);
-> > +     DECLARE_LIBBPF_OPTS(bpf_link_update_opts, update_opts);
-> > +     int cgroup_fd, cgroup_fd2, err, fd, prio;
-> > +     int listen_fd, client_fd, accepted_fd;
-> > +     struct lsm_cgroup *skel = NULL;
-> > +     int post_create_prog_fd2 = -1;
-> > +     int post_create_prog_fd = -1;
-> > +     int bind_link_fd2 = -1;
-> > +     int bind_prog_fd2 = -1;
-> > +     int alloc_prog_fd = -1;
-> > +     int bind_prog_fd = -1;
-> > +     int bind_link_fd = -1;
-> > +     int clone_prog_fd = -1;
-> > +     socklen_t socklen;
-> > +
-> > +     cgroup_fd = test__join_cgroup("/sock_policy");
-> > +     if (!ASSERT_GE(cgroup_fd, 0, "join_cgroup"))
-> > +             goto close_skel;
-> > +
-> > +     cgroup_fd2 = create_and_get_cgroup("/sock_policy2");
-> > +     if (!ASSERT_GE(cgroup_fd2, 0, "create second cgroup"))
-> cgroup_fd needs to close in this error case
->
-> > +             goto close_skel;
->
-> A valid cgroup_fd2 should be closed later also.
+Was wondering about that. pahole says struct nfsd_file is 112
+bytes on my system.
 
-Will initialize to -1 and unconditionally close in close_skel.
 
-> > +
-> > +     skel = lsm_cgroup__open_and_load();
-> > +     if (!ASSERT_OK_PTR(skel, "open_and_load"))
-> > +             goto close_cgroup;
-> > +
-> > +     post_create_prog_fd = bpf_program__fd(skel->progs.socket_post_create);
-> > +     post_create_prog_fd2 = bpf_program__fd(skel->progs.socket_post_create2);
-> > +     bind_prog_fd = bpf_program__fd(skel->progs.socket_bind);
-> > +     bind_prog_fd2 = bpf_program__fd(skel->progs.socket_bind2);
-> > +     alloc_prog_fd = bpf_program__fd(skel->progs.socket_alloc);
-> > +     clone_prog_fd = bpf_program__fd(skel->progs.socket_clone);
-> > +
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, "bpf_lsm_sk_alloc_security"), 0, "prog count");
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, NULL), 0, "total prog count");
-> > +     err = bpf_prog_attach(alloc_prog_fd, cgroup_fd, BPF_LSM_CGROUP, 0);
-> > +     if (!ASSERT_OK(err, "attach alloc_prog_fd"))
-> > +             goto detach_cgroup;
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, "bpf_lsm_sk_alloc_security"), 1, "prog count");
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, NULL), 1, "total prog count");
-> > +
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, "bpf_lsm_inet_csk_clone"), 0, "prog count");
-> > +     err = bpf_prog_attach(clone_prog_fd, cgroup_fd, BPF_LSM_CGROUP, 0);
-> > +     if (!ASSERT_OK(err, "attach clone_prog_fd"))
-> > +             goto detach_cgroup;
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, "bpf_lsm_inet_csk_clone"), 1, "prog count");
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, NULL), 2, "total prog count");
-> > +
-> > +     /* Make sure replacing works. */
-> > +
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, "bpf_lsm_socket_post_create"), 0, "prog count");
-> > +     err = bpf_prog_attach(post_create_prog_fd, cgroup_fd,
-> > +                           BPF_LSM_CGROUP, 0);
-> > +     if (!ASSERT_OK(err, "attach post_create_prog_fd"))
-> > +             goto close_cgroup;
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, "bpf_lsm_socket_post_create"), 1, "prog count");
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, NULL), 3, "total prog count");
-> > +
-> > +     attach_opts.replace_prog_fd = post_create_prog_fd;
-> > +     err = bpf_prog_attach_opts(post_create_prog_fd2, cgroup_fd,
-> > +                                BPF_LSM_CGROUP, &attach_opts);
-> > +     if (!ASSERT_OK(err, "prog replace post_create_prog_fd"))
-> > +             goto detach_cgroup;
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, "bpf_lsm_socket_post_create"), 1, "prog count");
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, NULL), 3, "total prog count");
-> > +
-> > +     /* Try the same attach/replace via link API. */
-> > +
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, "bpf_lsm_socket_bind"), 0, "prog count");
-> > +     bind_link_fd = bpf_link_create(bind_prog_fd, cgroup_fd,
-> > +                                    BPF_LSM_CGROUP, NULL);
-> > +     if (!ASSERT_GE(bind_link_fd, 0, "link create bind_prog_fd"))
-> > +             goto detach_cgroup;
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, "bpf_lsm_socket_bind"), 1, "prog count");
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, NULL), 4, "total prog count");
-> > +
-> > +     update_opts.old_prog_fd = bind_prog_fd;
-> > +     update_opts.flags = BPF_F_REPLACE;
-> > +
-> > +     err = bpf_link_update(bind_link_fd, bind_prog_fd2, &update_opts);
-> > +     if (!ASSERT_OK(err, "link update bind_prog_fd"))
-> > +             goto detach_cgroup;
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, "bpf_lsm_socket_bind"), 1, "prog count");
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, NULL), 4, "total prog count");
-> > +
-> > +     /* Attach another instance of bind program to another cgroup.
-> > +      * This should trigger the reuse of the trampoline shim (two
-> > +      * programs attaching to the same btf_id).
-> > +      */
-> > +
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, "bpf_lsm_socket_bind"), 1, "prog count");
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd2, "bpf_lsm_socket_bind"), 0, "prog count");
-> > +     bind_link_fd2 = bpf_link_create(bind_prog_fd2, cgroup_fd2,
-> > +                                     BPF_LSM_CGROUP, NULL);
-> > +     if (!ASSERT_GE(bind_link_fd2, 0, "link create bind_prog_fd2"))
-> > +             goto detach_cgroup;
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd2, "bpf_lsm_socket_bind"), 1, "prog count");
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd, NULL), 4, "total prog count");
-> > +     ASSERT_EQ(query_prog_cnt(cgroup_fd2, NULL), 1, "total prog count");
-> > +
-> > +     /* AF_UNIX is prohibited. */
-> > +
-> > +     fd = socket(AF_UNIX, SOCK_STREAM, 0);
-> > +     ASSERT_LT(fd, 0, "socket(AF_UNIX)");
-> close on fd >=0 case.
+--
+Chuck Lever
 
-Here also seems to be safe to unconditionally close.
 
-> > +
-> > +     /* AF_INET6 gets default policy (sk_priority). */
-> > +
-> > +     fd = socket(AF_INET6, SOCK_STREAM, 0);
-> > +     if (!ASSERT_GE(fd, 0, "socket(SOCK_STREAM)"))
-> > +             goto detach_cgroup;
-> > +
-> > +     prio = 0;
-> > +     socklen = sizeof(prio);
-> > +     ASSERT_GE(getsockopt(fd, SOL_SOCKET, SO_PRIORITY, &prio, &socklen), 0,
-> > +               "getsockopt");
-> > +     ASSERT_EQ(prio, 123, "sk_priority");
-> > +
-> > +     close(fd);
-> > +
-> > +     /* TX-only AF_PACKET is allowed. */
-> > +
-> > +     ASSERT_LT(socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)), 0,
-> > +               "socket(AF_PACKET, ..., ETH_P_ALL)");
-> > +
-> > +     fd = socket(AF_PACKET, SOCK_RAW, 0);
-> > +     ASSERT_GE(fd, 0, "socket(AF_PACKET, ..., 0)");
-> > +
-> > +     /* TX-only AF_PACKET can not be rebound. */
-> > +
-> > +     struct sockaddr_ll sa = {
-> > +             .sll_family = AF_PACKET,
-> > +             .sll_protocol = htons(ETH_P_ALL),
-> > +     };
-> > +     ASSERT_LT(bind(fd, (struct sockaddr *)&sa, sizeof(sa)), 0,
-> > +               "bind(ETH_P_ALL)");
-> > +
-> > +     close(fd);
-> > +
-> > +     /* Trigger passive open. */
-> > +
-> > +     listen_fd = start_server(AF_INET6, SOCK_STREAM, "::1", 0, 0);
-> > +     ASSERT_GE(listen_fd, 0, "start_server");
-> > +     client_fd = connect_to_fd(listen_fd, 0);
-> > +     ASSERT_GE(client_fd, 0, "connect_to_fd");
-> > +     accepted_fd = accept(listen_fd, NULL, NULL);
-> > +     ASSERT_GE(accepted_fd, 0, "accept");
-> This listen/client/accept_fd needs a close.
 
-Will do.
-
-> > +
-> > +     prio = 0;
-> > +     socklen = sizeof(prio);
-> > +     ASSERT_GE(getsockopt(accepted_fd, SOL_SOCKET, SO_PRIORITY, &prio, &socklen), 0,
-> > +               "getsockopt");
-> > +     ASSERT_EQ(prio, 234, "sk_priority");
-> > +
-> > +     /* These are replaced and never called. */
-> > +     ASSERT_EQ(skel->bss->called_socket_post_create, 0, "called_create");
-> > +     ASSERT_EQ(skel->bss->called_socket_bind, 0, "called_bind");
-> > +
-> > +     /* AF_INET6+SOCK_STREAM
-> > +      * AF_PACKET+SOCK_RAW
-> > +      * listen_fd
-> > +      * client_fd
-> > +      * accepted_fd
-> > +      */
-> > +     ASSERT_EQ(skel->bss->called_socket_post_create2, 5, "called_create2");
-> > +
-> > +     /* start_server
-> > +      * bind(ETH_P_ALL)
-> > +      */
-> > +     ASSERT_EQ(skel->bss->called_socket_bind2, 2, "called_bind2");
-> > +     /* Single accept(). */
-> > +     ASSERT_EQ(skel->bss->called_socket_clone, 1, "called_clone");
-> > +
-> > +     /* AF_UNIX+SOCK_STREAM (failed)
-> > +      * AF_INET6+SOCK_STREAM
-> > +      * AF_PACKET+SOCK_RAW (failed)
-> > +      * AF_PACKET+SOCK_RAW
-> > +      * listen_fd
-> > +      * client_fd
-> > +      * accepted_fd
-> > +      */
-> > +     ASSERT_EQ(skel->bss->called_socket_alloc, 7, "called_alloc");
-> > +
-> > +     /* Make sure other cgroup doesn't trigger the programs. */
-> > +
-> > +     if (!ASSERT_OK(join_cgroup(""), "join root cgroup"))
-> In my qemu setup, I am hitting this:
-> (cgroup_helpers.c:166: errno: Device or resource busy) Joining Cgroup
-> test_lsm_cgroup_functional:FAIL:join root cgroup unexpected error: 1 (errno 16)
->
-> A quick tracing leads to the non zero dst_cgrp->subtree_control
-> in cgroup_migrate_vet_dst().
->
-> This is likely due to the enable_all_controllers() in cgroup_helpers.c
-> that enabled the 'memory' controller in my setup.  Avoid this function
-> worked around the issue.  Do you know how to solve this ?
-
-Ugh, yeah, that's due to some controller enabled on v2 and
-"no-process-in-non-leaf-cgroup" restriction :-(
-Let me see how to do it more carefully. Probably easier to create
-another temporary leaf cgroup..
