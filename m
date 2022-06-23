@@ -2,120 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 379DA557FCD
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 18:29:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A37E8557FF7
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 18:36:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232271AbiFWQ3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 12:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60124 "EHLO
+        id S231160AbiFWQgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 12:36:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232249AbiFWQ26 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 12:28:58 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8868F3EA93;
-        Thu, 23 Jun 2022 09:28:57 -0700 (PDT)
-Received: from jupiter.universe (unknown [95.33.159.255])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        with ESMTP id S230512AbiFWQgU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 12:36:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F350242A1D
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 09:36:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: sre)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id AF31166017E4;
-        Thu, 23 Jun 2022 17:28:55 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1656001736;
-        bh=NR9TyHKc60OYnxwLzxpQ1c2wItafR5D/uWReeMDiZLI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C4UNF7lZTqD5LepVh7lPXHlQ4Cg/MEBb0h35zYH+X8dGc8Eu0ai5PQMPD5IarZXf2
-         e7h0C7YgJ4TWpOj/Za/hPe9A0p0X8iJGdbcD5X1quHJvT0PDTGWJQ7CVzXh5zjle+4
-         p0ilh6svW6dAG/2XvlSuUcgpTSHIgSMb+nQNRD1qSksgEWCxSo94pTUHP9lYZIVT/4
-         aTHqXJemhYdox00n8txpy56Q3zYYT2idzOwicN9pAHjQek1Zz/6BlLlTi9u/mIyC74
-         aH6GFfmUNOh9oWw3igFheTNgflmESEipeFusus4ddL8mBHfKfB5g+6e1UNzhg7YPYo
-         +qDY/tzxGJmBg==
-Received: by jupiter.universe (Postfix, from userid 1000)
-        id 4A59D480591; Thu, 23 Jun 2022 18:28:53 +0200 (CEST)
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F4F261F4A
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 16:36:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8720FC3411B;
+        Thu, 23 Jun 2022 16:36:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656002178;
+        bh=RsDPzFgvYNRLpz/ox6kaO3NMlEjwDu8rxRGI+7CXLso=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kD5ldIdeuF6tWq7GXi2RQkLNudcGysU7LlwH0GYg8PlBKg2KGa3J3MM+3gRUe9lal
+         Fx/iWyX9l0Fr/sk2434dsdQMYp4dP6DDDP918GjBJGyWgDPkxEyU68cbvZaVnyBeqT
+         HrnvmO875stIKFL9D46yVTQ+wvoBVPAzrswaf9pcz1aoHxRmf1N8IewifGY6mmr3sR
+         FUy4e79tX/sSmdyldXzx+wRHUDok3rlpMerovwWf5hbBLCPtXU2doG3hM849nahTbD
+         JmefSy29JKCvk+wCNlXFsYe4h0VYH/WFpE97vG61Q9mzkHocUJF87r334Y0BzW/kPG
+         yoY0ZEAmfi/ZQ==
+Date:   Thu, 23 Jun 2022 09:36:09 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Ismael Luceno <iluceno@suse.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        netdev@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        kernel@collabora.com
-Subject: [PATCH 3/3] dt-bindings: net: rockchip-dwmac: add rk3588 gmac compatible
-Date:   Thu, 23 Jun 2022 18:28:50 +0200
-Message-Id: <20220623162850.245608-4-sebastian.reichel@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220623162850.245608-1-sebastian.reichel@collabora.com>
-References: <20220623162850.245608-1-sebastian.reichel@collabora.com>
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: Netlink NLM_F_DUMP_INTR flag lost
+Message-ID: <20220623093609.1b104859@kernel.org>
+In-Reply-To: <bd76637b-0404-12e3-37b6-4bdedd625965@gmail.com>
+References: <20220615171113.7d93af3e@pirotess>
+        <20220615090044.54229e73@kernel.org>
+        <20220616171016.56d4ec9c@pirotess>
+        <20220616171612.66638e54@kernel.org>
+        <20220617150110.6366d5bf@pirotess>
+        <20220622131218.1ed6f531@pirotess>
+        <20220622165547.71846773@kernel.org>
+        <fef8b8d5-e07d-6d8f-841a-ead4ebee8d29@gmail.com>
+        <20220623090352.69bf416c@kernel.org>
+        <bd76637b-0404-12e3-37b6-4bdedd625965@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add compatible string for RK3588 gmac, which is similar to the RK3568
-one, but needs another syscon device for clock selection.
+On Thu, 23 Jun 2022 10:17:17 -0600 David Ahern wrote:
+> > Yup, the question for me is what's the risk / benefit of sending 
+> > the empty message vs putting the _DUMP_INTR on the next family.
+> > I'm leaning towards putting it on the next family and treating 
+> > the entire dump as interrupted, do you reckon that's suboptimal?  
+> 
+> I think it is going to be misleading; the INTR flag needs to be set on
+> the dump that is affected.
 
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
----
- Documentation/devicetree/bindings/net/rockchip-dwmac.yaml | 6 ++++++
- Documentation/devicetree/bindings/net/snps,dwmac.yaml     | 1 +
- 2 files changed, 7 insertions(+)
+Right, it's a bit of a philosophical discussion but dump is delineated
+but NLMSG_DONE. PF_UNSPEC dump is a single dump, not a group of multiple
+independent per-family dumps. If we think of a nlmsg as a representation
+of an object having an empty one is awkward. What if someone does a dump
+to just count objects? Too speculative?
 
-diff --git a/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
-index 083623c8d718..c42f5a74a92e 100644
---- a/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
-@@ -25,6 +25,7 @@ select:
-           - rockchip,rk3368-gmac
-           - rockchip,rk3399-gmac
-           - rockchip,rk3568-gmac
-+          - rockchip,rk3588-gmac
-           - rockchip,rv1108-gmac
-   required:
-     - compatible
-@@ -50,6 +51,7 @@ properties:
-       - items:
-           - enum:
-               - rockchip,rk3568-gmac
-+              - rockchip,rk3588-gmac
-           - const: snps,dwmac-4.20a
- 
-   clocks:
-@@ -81,6 +83,10 @@ properties:
-     description: The phandle of the syscon node for the general register file.
-     $ref: /schemas/types.yaml#/definitions/phandle
- 
-+  rockchip,php_grf:
-+    description: The phandle of the syscon node for the peripheral general register file.
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+
-   tx_delay:
-     description: Delay value for TXD timing. Range value is 0~0x7F, 0x30 as default.
-     $ref: /schemas/types.yaml#/definitions/uint32
-diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-index 36c85eb3dc0d..b5aba399ca5d 100644
---- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-@@ -72,6 +72,7 @@ properties:
-         - rockchip,rk3328-gmac
-         - rockchip,rk3366-gmac
-         - rockchip,rk3368-gmac
-+        - rockchip,rk3588-gmac
-         - rockchip,rk3399-gmac
-         - rockchip,rv1108-gmac
-         - snps,dwmac
--- 
-2.35.1
+I guess one can argue either way, no empty messages is a weaker promise
+and hopefully lower risk, hence my preference. Do you feel strongly for
+the message? Do we flip a coin? :)
 
+> All of the dumps should be checking the consistency at the end of the
+> dump - regardless of any remaining entries on a particular round (e.g.,
+> I mentioned this what the nexthop dump does). Worst case then is DONE
+> and INTR are set on the same message with no data, but it tells
+> explicitly the set of data affected.
+
+Okay, perhaps we should put a WARN_ON_ONCE(seq && seq != prev_seq)
+in rtnl_dump_all() then, to catch those who get it wrong.
