@@ -2,109 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 342475571B5
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 06:43:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 311995571C0
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 06:43:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231161AbiFWEke (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 00:40:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58364 "EHLO
+        id S229656AbiFWEkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 00:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345891AbiFWEVK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 00:21:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8CDE2D1E9
-        for <netdev@vger.kernel.org>; Wed, 22 Jun 2022 21:21:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B894B821A7
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 04:21:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFB0FC3411B;
-        Thu, 23 Jun 2022 04:21:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655958067;
-        bh=kgguCi6eHaF3p1kHMeFh8B9q2XqrcFVvsUiLk2bboJQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YdGjo/oYXuSa16BnQe7zFpKJXvAJLt6Q1PYdM/81sCpjA301l2LYT6QWnln3pqR1O
-         yot40ftEHUdOkWuJBebfGFEzz4Klhn+yxmQHRHJkwnqWahB6hU3EeM8ky4Bt/fOGwj
-         5v70MGT7qTmRQAfKL+rKOYXE+QtSfcdNiHOqv4wlmMy1wHkLLBFm5hkX/tUm0l57GQ
-         6vQ9dXVhps9qRWzYTNAHapi2rleO8mBKEv1i+4SZzpB4A2ZZ20qBVEpPpv6J9cNe37
-         z6p3q/6LfZE/UoSF1YcGxKGMbluPXXNhHjxrWPREoIBCjimebtbUKFmxY342MHXC3g
-         HW72L526aL3Xg==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net, edumazet@google.com
-Cc:     netdev@vger.kernel.org, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>, maheshb@google.com,
-        peterpenkov96@gmail.com
-Subject: [PATCH net] net: tun: stop NAPI when detaching queues
-Date:   Wed, 22 Jun 2022 21:21:05 -0700
-Message-Id: <20220623042105.2274812-1-kuba@kernel.org>
+        with ESMTP id S1347255AbiFWEeN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 00:34:13 -0400
+Received: from smtpbg.qq.com (smtpbg139.qq.com [175.27.65.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8AC830F71;
+        Wed, 22 Jun 2022 21:34:03 -0700 (PDT)
+X-QQ-mid: bizesmtp66t1655958698t6sehq37
+Received: from localhost.localdomain ( [125.70.163.206])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 23 Jun 2022 12:31:23 +0800 (CST)
+X-QQ-SSF: 0100000000000060B000000A0000000
+X-QQ-FEAT: aP2oNmVYkM//QKQAzcxQRsExRLQz4wt+1vyw5soFQm/ynKh+HqhGyYlMSR5X/
+        Mikgp8+JmaTE7BmZVAkcotH6Ab4Xnt5vBRIYy5/x65FM238u9XvnNd/TyNrS7GjuCs/TM6m
+        vOAOc271BXXVNcqu9hYt4U5gT9lgkrF7C0Z0TC4T7CX/AIMxCGdfA0oSgCwe1EWzFNfmSrL
+        yeQUZlLiGr1vyKdLdqjJ0NQ0qkhKC8Tzdiy84qgyGX1EhDOsZYQcpaM/ZzehhkjMrJU81/t
+        sC25CmwsVHEDCXxbVzZtU2/3x4JHCixwH0lniP9XBNJSodAoYKXATQ0SkaBWfaPqnlWvYr5
+        mkh/+ie
+X-QQ-GoodBg: 0
+From:   Jilin Yuan <yuanjilin@cdjrlc.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     ecree.xilinx@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
+Subject: [PATCH] sfc:siena:Fix syntax errors in comments
+Date:   Thu, 23 Jun 2022 12:31:15 +0800
+Message-Id: <20220623043115.60482-1-yuanjilin@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybgspam:qybgspam6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While looking at a syzbot report I noticed the NAPI only gets
-disabled before it's deleted. I think that user can detach
-the queue before destroying the device and the NAPI will never
-be stopped.
+Delete the redundant word 'set'.
+Delete the redundant word 'a'.
+Delete the redundant word 'in'.
 
-Compile tested only.
-
-Fixes: 943170998b20 ("tun: enable NAPI for TUN/TAP driver")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 ---
-CC: maheshb@google.com
-CC: peterpenkov96@gmail.com
----
- drivers/net/tun.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/sfc/siena/mcdi_pcol.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 7fd0288c3789..e2eb35887394 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -273,6 +273,12 @@ static void tun_napi_init(struct tun_struct *tun, struct tun_file *tfile,
- 	}
- }
- 
-+static void tun_napi_enable(struct tun_file *tfile)
-+{
-+	if (tfile->napi_enabled)
-+		napi_enable(&tfile->napi);
-+}
-+
- static void tun_napi_disable(struct tun_file *tfile)
- {
- 	if (tfile->napi_enabled)
-@@ -653,8 +659,10 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
- 		if (clean) {
- 			RCU_INIT_POINTER(tfile->tun, NULL);
- 			sock_put(&tfile->sk);
--		} else
-+		} else {
- 			tun_disable_queue(tun, tfile);
-+			tun_napi_disable(tfile);
-+		}
- 
- 		synchronize_net();
- 		tun_flow_delete_by_queue(tun, tun->numqueues + 1);
-@@ -808,6 +816,7 @@ static int tun_attach(struct tun_struct *tun, struct file *file,
- 
- 	if (tfile->detached) {
- 		tun_enable_queue(tfile);
-+		tun_napi_enable(tfile);
- 	} else {
- 		sock_hold(&tfile->sk);
- 		tun_napi_init(tun, tfile, napi, napi_frags);
+diff --git a/drivers/net/ethernet/sfc/siena/mcdi_pcol.h b/drivers/net/ethernet/sfc/siena/mcdi_pcol.h
+index 89a7fd47b057..a3cc8b7ec732 100644
+--- a/drivers/net/ethernet/sfc/siena/mcdi_pcol.h
++++ b/drivers/net/ethernet/sfc/siena/mcdi_pcol.h
+@@ -274,7 +274,7 @@
+  * MC_CMD_WORKAROUND_BUG26807.
+  * May also returned for other operations such as sub-variant switching. */
+ #define MC_CMD_ERR_FILTERS_PRESENT 0x1014
+-/* The clock whose frequency you've attempted to set set
++/* The clock whose frequency you've attempted to set
+  * doesn't exist on this NIC */
+ #define MC_CMD_ERR_NO_CLOCK 0x1015
+ /* Returned by MC_CMD_TESTASSERT if the action that should
+@@ -7782,7 +7782,7 @@
+  * large number (253) it is not anticipated that this will be needed in the
+  * near future, so can currently be ignored.
+  *
+- * On Riverhead this command is implemented as a a wrapper for `list` in the
++ * On Riverhead this command is implemented as a wrapper for `list` in the
+  * sensor_query SPHINX service.
+  */
+ #define MC_CMD_DYNAMIC_SENSORS_LIST 0x66
+@@ -7827,7 +7827,7 @@
+  * update is in progress, and effectively means the set of usable sensors is
+  * the intersection between the sets of sensors known to the driver and the MC.
+  *
+- * On Riverhead this command is implemented as a a wrapper for
++ * On Riverhead this command is implemented as a wrapper for
+  * `get_descriptions` in the sensor_query SPHINX service.
+  */
+ #define MC_CMD_DYNAMIC_SENSORS_GET_DESCRIPTIONS 0x67
+@@ -7876,7 +7876,7 @@
+  * update is in progress, and effectively means the set of usable sensors is
+  * the intersection between the sets of sensors known to the driver and the MC.
+  *
+- * On Riverhead this command is implemented as a a wrapper for `get_readings`
++ * On Riverhead this command is implemented as a wrapper for `get_readings`
+  * in the sensor_query SPHINX service.
+  */
+ #define MC_CMD_DYNAMIC_SENSORS_GET_READINGS 0x68
+@@ -16682,7 +16682,7 @@
+  * TLV_PORT_MODE_*). A superset of MC_CMD_GET_PORT_MODES_OUT/MODES that
+  * contains all modes implemented in firmware for a particular board. Modes
+  * listed in MODES are considered production modes and should be exposed in
+- * userland tools. Modes listed in in ENGINEERING_MODES, but not in MODES
++ * userland tools. Modes listed in ENGINEERING_MODES, but not in MODES
+  * should be considered hidden (not to be exposed in userland tools) and for
+  * engineering use only. There are no other semantic differences and any mode
+  * listed in either MODES or ENGINEERING_MODES can be set on the board.
 -- 
 2.36.1
 
