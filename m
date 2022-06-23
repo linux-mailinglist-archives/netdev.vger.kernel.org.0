@@ -2,83 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2291D557693
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 11:27:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 453BB557694
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 11:27:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230499AbiFWJ0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 05:26:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60374 "EHLO
+        id S231156AbiFWJ12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 05:27:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230488AbiFWJ0x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 05:26:53 -0400
-X-Greylist: delayed 220 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 23 Jun 2022 02:26:52 PDT
-Received: from violet.fr.zoreil.com (violet.fr.zoreil.com [IPv6:2001:4b98:dc0:41:216:3eff:fe56:8398])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9AE43AEA;
-        Thu, 23 Jun 2022 02:26:52 -0700 (PDT)
-Received: from violet.fr.zoreil.com ([127.0.0.1])
-        by violet.fr.zoreil.com (8.17.1/8.17.1) with ESMTP id 25N9MTVS377698;
-        Thu, 23 Jun 2022 11:22:29 +0200
-DKIM-Filter: OpenDKIM Filter v2.11.0 violet.fr.zoreil.com 25N9MTVS377698
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fr.zoreil.com;
-        s=v20220413; t=1655976149;
-        bh=EKIPvALK1cXTsZBALd26oq28Q8z0/i5tehmQMg7z91A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=N5jVj9dEVpeCInEvy7kYFtMEp010qxdn7S55rFfgJuXbeqBEBhoEC+361TTbGFXSl
-         P3maJiQmPi1ThXl3I2O5DKrXgcaD54A38QROMvnaZ1dLOBwc7h+oCmbLshWIfiFd0h
-         ReGH0sSmblIlM1R4GT/szagjF0QRNyq/u80ttTzQ=
-Received: (from romieu@localhost)
-        by violet.fr.zoreil.com (8.17.1/8.17.1/Submit) id 25N9MT45377697;
-        Thu, 23 Jun 2022 11:22:29 +0200
-Date:   Thu, 23 Jun 2022 11:22:28 +0200
-From:   Francois Romieu <romieu@fr.zoreil.com>
-To:     Tong Zhang <ztong0001@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yilun Wu <yiluwu@cs.stonybrook.edu>
-Subject: Re: [PATCH] epic100: fix use after free on rmmod
-Message-ID: <YrQw1CVJfIS18CNo@electric-eye.fr.zoreil.com>
-References: <20220623074005.259309-1-ztong0001@gmail.com>
+        with ESMTP id S230461AbiFWJ1V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 05:27:21 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A740743AE2;
+        Thu, 23 Jun 2022 02:27:20 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 646EC1E80D05;
+        Thu, 23 Jun 2022 17:27:01 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id xuDYrVjpIURz; Thu, 23 Jun 2022 17:26:58 +0800 (CST)
+Received: from localhost.localdomain (unknown [112.64.61.33])
+        (Authenticated sender: jiaming@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 3D8CE1E80CCC;
+        Thu, 23 Jun 2022 17:26:58 +0800 (CST)
+From:   Zhang Jiaming <jiaming@nfschina.com>
+To:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        liqiong@nfschina.com, renyu@nfschina.com,
+        Zhang Jiaming <jiaming@nfschina.com>
+Subject: [PATCH] esp6: Fix spelling mistake
+Date:   Thu, 23 Jun 2022 17:27:12 +0800
+Message-Id: <20220623092712.12696-1-jiaming@nfschina.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220623074005.259309-1-ztong0001@gmail.com>
-X-Organisation: Land of Sunshine Inc.
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tong Zhang <ztong0001@gmail.com> :
-> epic_close() calls epic_rx() and uses dma buffer, but in epic_remove_one()
-> we already freed the dma buffer. To fix this issue, reorder function calls
-> like in the .probe function.
-> 
-> BUG: KASAN: use-after-free in epic_rx+0xa6/0x7e0 [epic100]
-> Call Trace:
->  epic_rx+0xa6/0x7e0 [epic100]
->  epic_close+0xec/0x2f0 [epic100]
->  unregister_netdev+0x18/0x20
->  epic_remove_one+0xaa/0xf0 [epic100]
-> 
-> Fixes: ae150435b59e ("smsc: Move the SMC (SMSC) drivers")
-> Reported-by: Yilun Wu <yiluwu@cs.stonybrook.edu>
-> Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+Change 'accomodate' to 'accommodate'.
 
-The "Fixes:" tag is a bit misleading: this code path predates the move
-by several years. Ignoring pci_* vs dma_* API changes, this is pre-2005
-material.
+Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
+---
+ net/ipv6/esp6.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Reviewed-by: Francois Romieu <romieu@fr.zoreil.com>
-
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index 36e1d0f8dd06..8220923a12f7 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -343,7 +343,7 @@ static struct ip_esp_hdr *esp_output_set_esn(struct sk_buff *skb,
+ 					     struct esp_output_extra *extra)
+ {
+ 	/* For ESN we move the header forward by 4 bytes to
+-	 * accomodate the high bits.  We will move it back after
++	 * accommodate the high bits.  We will move it back after
+ 	 * encryption.
+ 	 */
+ 	if ((x->props.flags & XFRM_STATE_ESN)) {
+@@ -896,7 +896,7 @@ static void esp_input_set_header(struct sk_buff *skb, __be32 *seqhi)
+ 	struct xfrm_state *x = xfrm_input_state(skb);
+ 
+ 	/* For ESN we move the header forward by 4 bytes to
+-	 * accomodate the high bits.  We will move it back after
++	 * accommodate the high bits.  We will move it back after
+ 	 * decryption.
+ 	 */
+ 	if ((x->props.flags & XFRM_STATE_ESN)) {
 -- 
-Ueimor
+2.25.1
+
