@@ -2,148 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DB0E558A66
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 22:54:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F133558B3B
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 00:31:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229797AbiFWUy2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 16:54:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51604 "EHLO
+        id S229691AbiFWWbq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 18:31:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbiFWUy2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 16:54:28 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35DFB62728;
-        Thu, 23 Jun 2022 13:54:27 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id lw20so695437ejb.4;
-        Thu, 23 Jun 2022 13:54:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+NeDhzIsosAc6zjoUbMznd330rNHziGlr8pP4p3fVF0=;
-        b=fAx3pvL2mb1wUs/cl1pnaZOCuwao8+6SnBAODybSfO6ROi8NVo0gsKiyWCmyMbmkMF
-         b9S4yoI2SKgUW/Vp2Y4iNLOKbFtK0G6tdJi2kYeqDOqZaUlXCixb5Yx09/gLwJDkX9g2
-         WYGdfXOv7BKXlYhDmhz/UJrZDqvzmK5TbDKG9S39mn/+cW6tq78J/W6GZrg7aeuMCjOx
-         bz6q/v5o5SuZy856wRedvW5sCeM0PJprg1hDe5IvdltJYfCPXMmnNkS8QYXRUI89g290
-         AiXG2CJPs4gS2iuURPvnSXllm4vbU7SppK6KhveNTjEuGhjUDsg5v1ziIpgHh/S2n47a
-         lGWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+NeDhzIsosAc6zjoUbMznd330rNHziGlr8pP4p3fVF0=;
-        b=TX766x9RN6iQgt5sl+tL+hokKmzPlBmAP4pZaJYHgH0KdjW5GXjHOrjAb4/NEnjwkR
-         2HluYevT3cIFFue8Pb86QW9XdVSPgmOA4/wttBPY1QzNrNxtSMSnUp+scG4JXkaWL5ZL
-         1HAteUtbh1nk2L5SQuYXpXpuwjBzo5XqWiiPNma3d8ZjeJsPRO6vDt4ArLEAnT75dZvE
-         xA+xUt3OW8yQ8oqGHpjN3cd9XyxfLtpMnMoNPOSI0N3Kfw5EsY8+8Bq/rx4oISwqFij3
-         e07OxdiXszyqwmmd3SwqGWDz6mvcvjyemsbwaXgsyzhf6Vd0Mv2t/DM605ZWL/uelRQS
-         NsJQ==
-X-Gm-Message-State: AJIora8nans6J/nKolpLjuTJFNSps6ppc1ngspxo2bxcdRJwsG1yRg3t
-        JTXFZw0yABTCuwMBgdk7ESXFtQonNt4zvqX/ma0=
-X-Google-Smtp-Source: AGRyM1uthzr9Oy84rLqxABiXeKGAOyvcg+MqzD8Qykjqulo8c8PXkSAiveDwBCRGCtZDd07fq0RBqRpxnYdg/51DLHM=
-X-Received: by 2002:a17:907:971e:b0:71d:955c:b296 with SMTP id
- jg30-20020a170907971e00b0071d955cb296mr9639163ejc.633.1656017665626; Thu, 23
- Jun 2022 13:54:25 -0700 (PDT)
+        with ESMTP id S229645AbiFWWbq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 18:31:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FE34133B;
+        Thu, 23 Jun 2022 15:31:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 726E261EFE;
+        Thu, 23 Jun 2022 22:31:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C8C7C341C0;
+        Thu, 23 Jun 2022 22:31:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656023500;
+        bh=JOr4XB5AjQsPL/m0VXzjQnysrgirQotZ5IrmNpmL/CI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SyxQjSbcmpvHyzO+Qf7Av3hgXARona9YUuA8gkKjUjoTXqHQeWCSLLn7bpppX4qWk
+         vTi4Py859pnIZajqzoutiREgtn5nLJx2KUoueifzREJO64dSAi1SM3oG3Y2GR3dKwl
+         QGemYCCgCvUa+EvS81oW6/azKOudbInBYznsPi6o7sJN30DBF6Q4z+epqePrY/c5dM
+         yD+xsdDRIT9tW0rdpKk3LXsNHsizvrqzqPGey0wwQU/y9w8cdu5soQPbSieEq+DbAy
+         Pr6PkU5bLnAnfdfMih1oUaYuF5GOx3W5U7vNJwp56YVGVzEpV4Int7IWS2aws4r1qe
+         /ECVEaSoBb6QA==
+From:   "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH bpf] fprobe, samples: Add module parameter descriptions
+Date:   Fri, 24 Jun 2022 07:31:35 +0900
+Message-Id: <165602349520.56016.1314423560740428008.stgit@devnote2>
+X-Mailer: git-send-email 2.25.1
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-References: <20220621163757.760304-1-roberto.sassu@huawei.com>
- <20220621163757.760304-3-roberto.sassu@huawei.com> <20220621223248.f6wgyewajw6x4lgr@macbook-pro-3.dhcp.thefacebook.com>
- <796b55c79be142cab6a22dd281fdb9fa@huawei.com> <f2d3da08e7774df9b44cc648dda7d0b8@huawei.com>
-In-Reply-To: <f2d3da08e7774df9b44cc648dda7d0b8@huawei.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 23 Jun 2022 13:54:13 -0700
-Message-ID: <CAADnVQKVx9o1PcCV_F3ywJCzDTPtQG4MTKM2BmwdCwNvyxdNPg@mail.gmail.com>
-Subject: Re: [PATCH v5 2/5] bpf: Add bpf_lookup_user_key() and bpf_key_put() helpers
-To:     Roberto Sassu <roberto.sassu@huawei.com>
-Cc:     "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "kafai@fb.com" <kafai@fb.com>, "yhs@fb.com" <yhs@fb.com>,
-        "dhowells@redhat.com" <dhowells@redhat.com>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 5:36 AM Roberto Sassu <roberto.sassu@huawei.com> wrote:
->
-> > From: Roberto Sassu [mailto:roberto.sassu@huawei.com]
-> > Sent: Wednesday, June 22, 2022 9:12 AM
-> > > From: Alexei Starovoitov [mailto:alexei.starovoitov@gmail.com]
-> > > Sent: Wednesday, June 22, 2022 12:33 AM
-> > > On Tue, Jun 21, 2022 at 06:37:54PM +0200, Roberto Sassu wrote:
-> > > > Add the bpf_lookup_user_key() and bpf_key_put() helpers, to respectively
-> > > > search a key with a given serial, and release the reference count of the
-> > > > found key.
-> > > >
-> > > > Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-> > > > ---
-> > > >  include/uapi/linux/bpf.h       | 16 ++++++++++++
-> > > >  kernel/bpf/bpf_lsm.c           | 46 ++++++++++++++++++++++++++++++++++
-> > > >  kernel/bpf/verifier.c          |  6 +++--
-> > > >  scripts/bpf_doc.py             |  2 ++
-> > > >  tools/include/uapi/linux/bpf.h | 16 ++++++++++++
-> > > >  5 files changed, 84 insertions(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > > > index e81362891596..7bbcf2cd105d 100644
-> > > > --- a/include/uapi/linux/bpf.h
-> > > > +++ b/include/uapi/linux/bpf.h
-> > > > @@ -5325,6 +5325,20 @@ union bpf_attr {
-> > > >   *               **-EACCES** if the SYN cookie is not valid.
-> > > >   *
-> > > >   *               **-EPROTONOSUPPORT** if CONFIG_IPV6 is not builtin.
-> > > > + *
-> > > > + * struct key *bpf_lookup_user_key(u32 serial, unsigned long flags)
-> > > > + *       Description
-> > > > + *               Search a key with a given *serial* and the provided *flags*, and
-> > > > + *               increment the reference count of the key.
-> > >
-> > > Why passing 'flags' is ok to do?
-> > > Please think through every line of the patch.
-> >
-> > To be honest, I thought about it. Probably yes, I should do some
-> > sanitization, like I did for the keyring ID. When I checked
-> > lookup_user_key(), I saw that flags are checked individually, so
-> > an arbitrary value passed to the helper should not cause harm.
-> > Will do sanitization, if you prefer. It is just that we have to keep
-> > the eBPF code in sync with key flag definition (unless we have
-> > a 'last' flag).
->
-> I'm not sure that having a helper for lookup_user_key() alone is
-> correct. By having separate helpers for lookup and usage of the
-> key, nothing would prevent an eBPF program to ask for a
-> permission to pass the access control check, and then use the
-> key for something completely different from what it requested.
->
-> Looking at how lookup_user_key() is used in security/keys/keyctl.c,
-> it seems clear that it should be used together with the operation
-> that needs to be performed. Only in this way, the key permission
-> would make sense.
+From: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 
-lookup is roughly equivalent to open when all permission checks are done.
-And using the key is read/write.
+Add module parameter descriptions for the fprobe_example module.
 
-> What do you think (also David)?
->
-> Thanks
->
-> Roberto
->
-> HUAWEI TECHNOLOGIES Duesseldorf GmbH, HRB 56063
-> Managing Director: Li Peng, Yang Xi, Li He
+Signed-off-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
+---
+ samples/fprobe/fprobe_example.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Please use a different email server and get rid of this.
+diff --git a/samples/fprobe/fprobe_example.c b/samples/fprobe/fprobe_example.c
+index 01ee6c8c8382..18b1e5c4b431 100644
+--- a/samples/fprobe/fprobe_example.c
++++ b/samples/fprobe/fprobe_example.c
+@@ -25,12 +25,19 @@ static unsigned long nhit;
+ 
+ static char symbol[MAX_SYMBOL_LEN] = "kernel_clone";
+ module_param_string(symbol, symbol, sizeof(symbol), 0644);
++MODULE_PARM_DESC(symbol, "Probed symbol(s), given by comma separated symbols or a wildcard pattern.");
++
+ static char nosymbol[MAX_SYMBOL_LEN] = "";
+ module_param_string(nosymbol, nosymbol, sizeof(nosymbol), 0644);
++MODULE_PARM_DESC(nosymbol, "Not-probed symbols, given by a wildcard pattern.");
++
+ static bool stackdump = true;
+ module_param(stackdump, bool, 0644);
++MODULE_PARM_DESC(stackdump, "Enable stackdump.");
++
+ static bool use_trace = false;
+ module_param(use_trace, bool, 0644);
++MODULE_PARM_DESC(use_trace, "Use trace_printk instead of printk. This is only for debugging.");
+ 
+ static void show_backtrace(void)
+ {
+
