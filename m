@@ -2,133 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87F365587D7
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 20:53:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2249558855
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 21:07:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230333AbiFWSwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 14:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33348 "EHLO
+        id S230090AbiFWTHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 15:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230500AbiFWSwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 14:52:21 -0400
-Received: from out20-51.mail.aliyun.com (out20-51.mail.aliyun.com [115.124.20.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 182D5FE017;
-        Thu, 23 Jun 2022 10:57:08 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.04520515|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.192979-0.00344398-0.803577;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047199;MF=wangyugui@e16-tech.com;NM=1;PH=DS;RN=6;RT=6;SR=0;TI=SMTPD_---.OBQTixF_1656006676;
-Received: from 192.168.2.112(mailfrom:wangyugui@e16-tech.com fp:SMTPD_---.OBQTixF_1656006676)
-          by smtp.aliyun-inc.com;
-          Fri, 24 Jun 2022 01:51:17 +0800
-Date:   Fri, 24 Jun 2022 01:51:22 +0800
-From:   Wang Yugui <wangyugui@e16-tech.com>
-To:     Chuck Lever III <chuck.lever@oracle.com>
-Subject: Re: [PATCH RFC 00/30] Overhaul NFSD filecache
-Cc:     Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "david@fromorbit.com" <david@fromorbit.com>,
-        "tgraf@suug.ch" <tgraf@suug.ch>, Jeff Layton <jlayton@redhat.com>
-In-Reply-To: <0292A2FC-7725-47FC-8F08-CCB8500D8E1D@oracle.com>
-References: <20220623170218.7874.409509F4@e16-tech.com> <0292A2FC-7725-47FC-8F08-CCB8500D8E1D@oracle.com>
-Message-Id: <20220624015121.06F3.409509F4@e16-tech.com>
+        with ESMTP id S231500AbiFWTHc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 15:07:32 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8FF506CA
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 11:13:09 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id 128so295402pfv.12
+        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 11:13:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R9wh05WaRqHmfx5gRya0gL25HMZgWs7rW6ZtE4LbOGY=;
+        b=mCJnm77x/UMxGFxjZA+qZvLalBX/EDyba1wAalQESYqhIfC0fqk2EMlJExzho2MGk1
+         XpzsW7EndVEAmSzRzXiDm75O3KHmhXDDRInetPlTikD9BRK9svnmEKl3mfqTatxyOg3t
+         Z96HIIavR180Djv9FfiP10/kPrJc9V1rLQyRlfmjwVwgUC6i87Vp6Z+9Pss/uE2dmozf
+         SQZ/HZKiMtZXiZgM7YBCpy0mk0rGvgNmszmTGLQiOzdA46z4IOvh5uhfuMHwkitf47e6
+         cK0a9I+Y/5InLX8+UBAug6E97AXeKdD6U4rjqqYK2A+v+hp9fYvXyBOz6+twzlmE+4Fr
+         sMVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=R9wh05WaRqHmfx5gRya0gL25HMZgWs7rW6ZtE4LbOGY=;
+        b=qZZI/x4v2iY/wSCt2vQnldiZKWkXtaX+GJ1pYydBNkRPVbowDcVp04aJUgKFG3y5ls
+         dFfGDXu9CWSnT7G3F83GvR6Ae2utq8zfV8vdYMHQ0kxft+uGJykSmWNgmSjLtHMxNiJ5
+         gHPS4fLcfOIyoSRICMK7mtGx5FREaUIKSmsTlXcg8nsANjgw8J/a+lG9DI5WOmcNMMtx
+         Jqn78YB8oftGXPEEyZhp7QdUhAqCtzYUFm0Wi3PViRmAs5n53LZN9pfbwMcqTXm97nuj
+         FHF6xeKLxuPy+o9MpKt33fLWlzQLiYkKUD6xtOSoItoHPe6Ld9NLLOOg5q4H6aUgLv+V
+         XPlg==
+X-Gm-Message-State: AJIora873DkZu8otJTWi8Q3Im9IelTIz++inGWhmoCo/Qi306MKpQMG1
+        oGFxWOfj9mF9QjkqvJ7c0X1EZ1lOZ8c=
+X-Google-Smtp-Source: AGRyM1tW0+kgWOJq4FZSTkDrp1eJIpD50w86kFeKrAdcF6kqq4RJnlc9CbHDPc8zmEWjy6N5R7M98w==
+X-Received: by 2002:a63:9547:0:b0:408:be53:b599 with SMTP id t7-20020a639547000000b00408be53b599mr8495590pgn.463.1656007988242;
+        Thu, 23 Jun 2022 11:13:08 -0700 (PDT)
+Received: from celestia.. ([2602:3f:9b59:c101:d94d:ed0f:f7a8:9043])
+        by smtp.gmail.com with ESMTPSA id iz19-20020a170902ef9300b0016378bfeb90sm87914plb.227.2022.06.23.11.13.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 11:13:06 -0700 (PDT)
+From:   Sam Edwards <cfsworks@gmail.com>
+X-Google-Original-From: Sam Edwards <CFSworks@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sam Edwards <CFSworks@gmail.com>
+Subject: [PATCH net-next v2 resend] ipv6/addrconf: fix timing bug in tempaddr regen
+Date:   Thu, 23 Jun 2022 12:11:04 -0600
+Message-Id: <20220623181103.7033-1-CFSworks@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Becky! ver. 2.75.04 [en]
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The addrconf_verify_rtnl() function uses a big if/elseif/elseif/... block
+to categorize each address by what type of attention it needs.  An
+about-to-expire (RFC 4941) temporary address is one such category, but the
+previous elseif branch catches addresses that have already run out their
+prefered_lft.  This means that if addrconf_verify_rtnl() fails to run in
+the necessary time window (i.e. REGEN_ADVANCE time units before the end of
+the prefered_lft), the temporary address will never be regenerated, and no
+temporary addresses will be available until each one's valid_lft runs out
+and manage_tempaddrs() begins anew.
 
-> > On Jun 23, 2022, at 5:02 AM, Wang Yugui <wangyugui@e16-tech.com> wrote:
-> > 
-> > Hi,
-> > 
-> >>> On Jun 22, 2022, at 3:04 PM, Chuck Lever III <chuck.lever@oracle.com> wrote:
-> >>>> On Jun 22, 2022, at 2:36 PM, Wang Yugui <wangyugui@e16-tech.com> wrote:
-> >>>> 
-> >>>> Hi,
-> >>>> 
-> >>>> fstests generic/531 triggered a panic on kernel 5.19.0-rc3 with this
-> >>>> patchset.
-> >>> 
-> >>> As I mention in the cover letter, I haven't tried running generic/531
-> >>> yet -- no claim at all that this is finished work and that #386 has
-> >>> been fixed at this point. I'm merely interested in comments on the
-> >>> general approach.
-> >>> 
-> >>> 
-> >>>> [ 405.478056] BUG: kernel NULL pointer dereference, address: 0000000000000049
-> >>> 
-> >>> The "RIP: " tells the location of the crash. Notice that the call
-> >>> trace here does not include that information. From your attachment:
-> >>> 
-> >>> [ 405.518022] RIP: 0010:nfsd_do_file_acquire+0x4e1/0xb80 [nfsd]
-> >>> 
-> >>> To match that to a line of source code:
-> >>> 
-> >>> [cel@manet ~]$ cd src/linux/linux/
-> >>> [cel@manet linux]$ scripts/faddr2line ../obj/manet/fs/nfsd/filecache.o nfsd_do_file_acquire+0x4e1
-> >>> nfsd_do_file_acquire+0x4e1/0xfc0:
-> >>> rht_bucket_insert at /home/cel/src/linux/linux/include/linux/rhashtable.h:303
-> >>> (inlined by) __rhashtable_insert_fast at /home/cel/src/linux/linux/include/linux/rhashtable.h:718
-> >>> (inlined by) rhashtable_lookup_get_insert_key at /home/cel/src/linux/linux/include/linux/rhashtable.h:982
-> >>> (inlined by) nfsd_file_insert at /home/cel/src/linux/linux/fs/nfsd/filecache.c:1031
-> >>> (inlined by) nfsd_do_file_acquire at /home/cel/src/linux/linux/fs/nfsd/filecache.c:1089
-> >>> [cel@manet linux]$
-> >>> 
-> >>> This is an example, I'm sure my compiled objects don't match yours.
-> >>> 
-> >>> And, now that I've added observability, you should be able to do:
-> >>> 
-> >>> # watch cat /proc/fs/nfsd/filecache
-> >>> 
-> >>> to see how many items are in the hash and LRU list while the test
-> >>> is running.
-> >>> 
-> >>> 
-> >>>> [ 405.608016] Call Trace:
-> >>>> [ 405.608016] <TASK>
-> >>>> [ 405.613020] nfs4_get_vfs_file+0x325/0x410 [nfsd]
-> >>>> [ 405.618018] nfsd4_process_open2+0x4ba/0x16d0 [nfsd]
-> >>>> [ 405.623016] ? inode_get_bytes+0x38/0x40
-> >>>> [ 405.623016] ? nfsd_permission+0x97/0xf0 [nfsd]
-> >>>> [ 405.628022] ? fh_verify+0x1cc/0x6f0 [nfsd]
-> >>>> [ 405.633025] nfsd4_open+0x640/0xb30 [nfsd]
-> >>>> [ 405.638025] nfsd4_proc_compound+0x3bd/0x710 [nfsd]
-> >>>> [ 405.643017] nfsd_dispatch+0x143/0x270 [nfsd]
-> >>>> [ 405.648019] svc_process_common+0x3bf/0x5b0 [sunrpc]
-> >> 
-> >> I was able to trigger something that looks very much like this crash.
-> >> If you remove this line from fs/nfsd/filecache.c:
-> >> 
-> >> 	.max_size		= 131072, /* buckets */
-> >> 
-> >> things get a lot more stable for generic/531.
-> >> 
-> >> I'm looking into the issue now.
-> > 
-> > Yes. When '.max_size = 131072' is removed, fstests generic/531 passed.
-> 
-> Great! Are you comfortable with this general approach for bug #386?
+Fix this by moving the entire temporary address regeneration case out of
+that block.  That block is supposed to implement the "destructive" part of
+an address's lifecycle, and regenerating a fresh temporary address is not,
+semantically speaking, actually tied to any particular lifecycle stage.
+The age test is also changed from `age >= prefered_lft - regen_advance`
+to `age + regen_advance >= prefered_lft` instead, to ensure no underflow
+occurs if the system administrator increases the regen_advance to a value
+greater than the already-set prefered_lft.
 
-It seems a good result for #386.
+Note that this does not fix the problem of addrconf_verify_rtnl() sometimes
+not running in time, resulting in the race condition described in RFC 4941
+section 3.4 - it only ensures that the address is regenerated.  Fixing THAT
+problem may require either using jiffies instead of seconds for all time
+arithmetic here, or always rounding up when regen_advance is converted to
+seconds.
 
-fstests generic/531(file-max: 1M) performance result:
-base(5.19.0-rc3, 12 bits hash, serialized nfsd_file_gc): 222s
-this patchset(.min_size=4096): 59s
-so, a good improvement for #386.
+Signed-off-by: Sam Edwards <CFSworks@gmail.com>
+---
+ net/ipv6/addrconf.c | 62 ++++++++++++++++++++++++---------------------
+ 1 file changed, 33 insertions(+), 29 deletions(-)
 
-It seems a good(acceptable) result for #387 too.
-the period of 'text busy(exec directly from the back-end of nfs-server)'
-is about 4s.
-
-Best Regards
-Wang Yugui (wangyugui@e16-tech.com)
-2022/06/24
-
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index b22504176588..57aa46cb85b7 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -4507,6 +4507,39 @@ static void addrconf_verify_rtnl(struct net *net)
+ 			/* We try to batch several events at once. */
+ 			age = (now - ifp->tstamp + ADDRCONF_TIMER_FUZZ_MINUS) / HZ;
+ 
++			if ((ifp->flags&IFA_F_TEMPORARY) &&
++			    !(ifp->flags&IFA_F_TENTATIVE) &&
++			    ifp->prefered_lft != INFINITY_LIFE_TIME &&
++			    !ifp->regen_count && ifp->ifpub) {
++				/* This is a non-regenerated temporary addr. */
++
++				unsigned long regen_advance = ifp->idev->cnf.regen_max_retry *
++					ifp->idev->cnf.dad_transmits *
++					max(NEIGH_VAR(ifp->idev->nd_parms, RETRANS_TIME), HZ/100) / HZ;
++
++				if (age + regen_advance >= ifp->prefered_lft) {
++					struct inet6_ifaddr *ifpub = ifp->ifpub;
++					if (time_before(ifp->tstamp + ifp->prefered_lft * HZ, next))
++						next = ifp->tstamp + ifp->prefered_lft * HZ;
++
++					ifp->regen_count++;
++					in6_ifa_hold(ifp);
++					in6_ifa_hold(ifpub);
++					spin_unlock(&ifp->lock);
++
++					spin_lock(&ifpub->lock);
++					ifpub->regen_count = 0;
++					spin_unlock(&ifpub->lock);
++					rcu_read_unlock_bh();
++					ipv6_create_tempaddr(ifpub, true);
++					in6_ifa_put(ifpub);
++					in6_ifa_put(ifp);
++					rcu_read_lock_bh();
++					goto restart;
++				} else if (time_before(ifp->tstamp + ifp->prefered_lft * HZ - regen_advance * HZ, next))
++					next = ifp->tstamp + ifp->prefered_lft * HZ - regen_advance * HZ;
++			}
++
+ 			if (ifp->valid_lft != INFINITY_LIFE_TIME &&
+ 			    age >= ifp->valid_lft) {
+ 				spin_unlock(&ifp->lock);
+@@ -4540,35 +4573,6 @@ static void addrconf_verify_rtnl(struct net *net)
+ 					in6_ifa_put(ifp);
+ 					goto restart;
+ 				}
+-			} else if ((ifp->flags&IFA_F_TEMPORARY) &&
+-				   !(ifp->flags&IFA_F_TENTATIVE)) {
+-				unsigned long regen_advance = ifp->idev->cnf.regen_max_retry *
+-					ifp->idev->cnf.dad_transmits *
+-					max(NEIGH_VAR(ifp->idev->nd_parms, RETRANS_TIME), HZ/100) / HZ;
+-
+-				if (age >= ifp->prefered_lft - regen_advance) {
+-					struct inet6_ifaddr *ifpub = ifp->ifpub;
+-					if (time_before(ifp->tstamp + ifp->prefered_lft * HZ, next))
+-						next = ifp->tstamp + ifp->prefered_lft * HZ;
+-					if (!ifp->regen_count && ifpub) {
+-						ifp->regen_count++;
+-						in6_ifa_hold(ifp);
+-						in6_ifa_hold(ifpub);
+-						spin_unlock(&ifp->lock);
+-
+-						spin_lock(&ifpub->lock);
+-						ifpub->regen_count = 0;
+-						spin_unlock(&ifpub->lock);
+-						rcu_read_unlock_bh();
+-						ipv6_create_tempaddr(ifpub, true);
+-						in6_ifa_put(ifpub);
+-						in6_ifa_put(ifp);
+-						rcu_read_lock_bh();
+-						goto restart;
+-					}
+-				} else if (time_before(ifp->tstamp + ifp->prefered_lft * HZ - regen_advance * HZ, next))
+-					next = ifp->tstamp + ifp->prefered_lft * HZ - regen_advance * HZ;
+-				spin_unlock(&ifp->lock);
+ 			} else {
+ 				/* ifp->prefered_lft <= ifp->valid_lft */
+ 				if (time_before(ifp->tstamp + ifp->prefered_lft * HZ, next))
+-- 
+2.35.1
 
