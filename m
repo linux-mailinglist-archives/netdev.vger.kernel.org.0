@@ -2,176 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FDDC558B65
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 00:50:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 427F2558B69
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 00:54:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbiFWWuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 18:50:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43562 "EHLO
+        id S229844AbiFWWy2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 18:54:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229587AbiFWWug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 18:50:36 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2136527F4;
-        Thu, 23 Jun 2022 15:50:35 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id bd16so1386404oib.6;
-        Thu, 23 Jun 2022 15:50:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Y+Dg0mM96GxdgWzW8Q0806WYRu+tu0Ie+VcO+cMcI4U=;
-        b=FYk61bvDh5JwGf5WdZIwNZW8B6+57IJxN4Nk3SgOVQUCUsYiOm3ErEX+kq3vz0b1jl
-         ehO4ycV50KjmXNOG82d4ajlgj9CqbebkKJ4SWJJqHREo4pk+ilQPgbCv6IB6zHid79iP
-         rqmZHNnlfQ/rPeGGBvDbNZN9ZMa975cK8vv+RyGLosEe6hd4C5Y35Ob1uvZYTwiiw7Y6
-         b7DLV4jzyNghScUUIIDElRVSlbKCQALz3tZIOKZJAGj2eZTZ+H5JRAhWbVmRsDvMSzlp
-         R9wiUFpG2WjWK042boAletT6C5cPLJc0Zo+RjXzFx7sR8PaYb7ukt2dzVz3wkwtF6YIr
-         Md9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Y+Dg0mM96GxdgWzW8Q0806WYRu+tu0Ie+VcO+cMcI4U=;
-        b=VdVX1KljLiXQtwwWL+4BBgDe5GU+eIyxjseEaV403AReEJ0gt3ZoqHVlw8xyr7DeT+
-         flJy5IRLl1Db1zCP2UqBkY/Ace2yLfZSkJiv7jwrSg/GGpsKSNhnk7FbcCqghgJkMr6w
-         NDYOKI4pmMh9ZeX+k7DgsJGxXSReAAJsFUTXVBWj6+MCNlu6StTrx9+MfnHYr7r3+4Vf
-         SvsR3y4h6smzBcPFn3e0KzzrQ4ulI174rgSKx1xNQJ+cL5u3preoHgaRnfc+MCV1APfw
-         zJSy5HNyddC1YN6ZX/nCfOkHk+jHgt2DUq1sZC+/WkNeFXJ27RWSmN9D3Lpx6ApL/n7j
-         Kxvg==
-X-Gm-Message-State: AJIora9pUBzBhvdnFmGSBw0s9iTRpH4/E8LkjTxCMG12DPyIwcQfa48+
-        0Yqg4hCC3dzhTju87nJhPnvph/bFFtOCg4jPYmA8JWxT1p0=
-X-Google-Smtp-Source: AGRyM1uj/Q9s5zKn4L4uThaMvEnMiPzOqEF1sLtJVqTO12h9dB2vaIo0yv0Uh2i5b+OALrND/sp8sTGWW12NFpQK0Us=
-X-Received: by 2002:a05:6808:179a:b0:32f:fd4:3ad6 with SMTP id
- bg26-20020a056808179a00b0032f0fd43ad6mr199172oib.190.1656024634956; Thu, 23
- Jun 2022 15:50:34 -0700 (PDT)
+        with ESMTP id S229553AbiFWWy1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 18:54:27 -0400
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079AB56C04;
+        Thu, 23 Jun 2022 15:54:25 -0700 (PDT)
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 25NK2sCt000521;
+        Thu, 23 Jun 2022 15:54:11 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=x8VdgF+Ak/tUZmq/DSFMgTkt3MyLFPRipLkXdNQRPh8=;
+ b=jy0z95SDEHrAoMHaJrEKL24xvjQ9kxOAXjQJEZW46bAH3D9vmHg5nRMJh5/q7xnFOZ5V
+ Bf5d4XhRF5uHDz4rGPQzUGE0Dw92O+ON/kqDTwQd+Q6U3PiD44wxAnMShwOeFJ7NQrEN
+ uR3JEppe7c9jxqZiSDtvZOxxDMN9ydZsHQU= 
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2108.outbound.protection.outlook.com [104.47.70.108])
+        by m0001303.ppops.net (PPS) with ESMTPS id 3gvqwxm04y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 23 Jun 2022 15:54:10 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Hk0Fw7OkIHLXL6gffWDGN3KV71NBa/WP2F5wHrpMMgBJtgWU7srbsjnPJBy+qbsZ+E2bIPSJdxHpwMAJU658GB6N0AJQ78Hy3fuEnXDnIc1YRp+IB3/dmAL5hECh//7Brpu4D+sKiuPOY0RxyquiDiK0H6Bs+2FUvEng9QnzQEOQDpOY47Uw1KxFQSGCkCgyG6m9/EjwFfK8j7jnQ+2FF3/mAj1oh/NiUKhGhfYZiaobmt2RGHIIyigrdC1uoEq3Pn3hu9jeFIdPiwg7fuBK588dAxg86QvQzJ3keO9OHlDgQ+5OaR5lqI2ufoVkSVI9rHOSmdLykZFlOwE0mi882g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=x8VdgF+Ak/tUZmq/DSFMgTkt3MyLFPRipLkXdNQRPh8=;
+ b=cgK6GCB41cChWlI2zcb7AFhXsnY2ynyJE57Eqkvqdh2vX/CwqxwTIdX+V6OwUoRik/N5S2mRCCYm8daniBD5Ucf1m3ZDHpqk8VtGb1LCynRHfHNKC1S9JMsjPp5WQY1w4nOoyaGalo+Agr/rcDDMyoFVY2UB3wx6cSUSM7KTS4WJIQzfUqyLu8q3hz7PdcuLfjRdMtH8kKeWEiOWxyE1KXEGKSv1KLF8Cy8iisTevwT1yBrj+4azFwJi6s27/JOlaDThD9Vx80/g5aMBBGrAu8jXDs8rCvt0niRQWP/1ZmvyeAWOtZ3f18nus6Ibb/mikY1H1Chs0X1CHW+oHSYzBw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from MW4PR15MB4475.namprd15.prod.outlook.com (2603:10b6:303:104::16)
+ by CY4PR15MB1719.namprd15.prod.outlook.com (2603:10b6:910:21::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5373.15; Thu, 23 Jun
+ 2022 22:54:09 +0000
+Received: from MW4PR15MB4475.namprd15.prod.outlook.com
+ ([fe80::3941:25c6:c1cd:5762]) by MW4PR15MB4475.namprd15.prod.outlook.com
+ ([fe80::3941:25c6:c1cd:5762%7]) with mapi id 15.20.5353.022; Thu, 23 Jun 2022
+ 22:54:08 +0000
+Date:   Thu, 23 Jun 2022 15:54:06 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org
+Subject: Re: [PATCH bpf-next v10 07/11] tools/bpf: Sync btf_ids.h to tools
+Message-ID: <20220623225406.n5kds63j37j63dxr@kafai-mbp>
+References: <20220622160346.967594-1-sdf@google.com>
+ <20220622160346.967594-8-sdf@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220622160346.967594-8-sdf@google.com>
+X-ClientProxiedBy: SJ0PR05CA0140.namprd05.prod.outlook.com
+ (2603:10b6:a03:33d::25) To MW4PR15MB4475.namprd15.prod.outlook.com
+ (2603:10b6:303:104::16)
 MIME-Version: 1.0
-References: <20220619150456.GB34471@xsang-OptiPlex-9020> <20220622172857.37db0d29@kernel.org>
- <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
-In-Reply-To: <CADvbK_csvmkKe46hT9792=+Qcjor2EvkkAnr--CJK3NGX-N9BQ@mail.gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 23 Jun 2022 18:50:07 -0400
-Message-ID: <CADvbK_eQUmb942vC+bG+NRzM1ki1LiCydEDR1AezZ35Jvsdfnw@mail.gmail.com>
-Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        kernel test robot <oliver.sang@intel.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        network dev <netdev@vger.kernel.org>,
-        linux-s390@vger.kernel.org, mptcp@lists.linux.dev,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
-        Huang Ying <ying.huang@intel.com>, feng.tang@intel.com,
-        zhengjun.xing@linux.intel.com, fengwei.yin@intel.com,
-        Ying Xu <yinxu@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7b0f05bf-c0a0-4109-6741-08da556b4833
+X-MS-TrafficTypeDiagnostic: CY4PR15MB1719:EE_
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /haPYSuTGH1Ja/scM6excQraJaNE0aSulVcD1fz5rW0ae5eyi6gxLOkABpcAc+YsBlGX1im1qr2SW44wbYdV4O6nNqjYttdhSXRguGjtcmUTuQlbnjAxeuAk+F24ZtZI1vNghr61dQFeyAYAfclLcO64YCujdWRsFffCv3H0e72tY2hG7kiv86aZYZPaT7XREDwsltqxON5BUYLk++m3erlb1W/b/RdjrH4uPio0L3HNv9rn9DSWlEMZC0WkumVUNF72J2Cp8P/B/oKfQWAUnlvtY5kZkT8HU5yZB0VaxtmsyVziPk/UbRGiUSasCe6Z3r9TBwf1WnsSC50ICwWJhkvW8q2WGp6+pjd9b/k0o3LRinvcJdBoxADsuBC8dgfa4sdsenG1uJhKUL1IlrI95Nh7wjdwVYLQNUjJriHUyiZfUBaH8b/hzQM3/54xffeTREMjQUPdEF/otJkq9g4bJWPl1OSXOfAqDsj4vhOxYqGSagGLIC1wXdsg6lTWcmNaHQHcPKCNzDyfaRSkemohiQmnCN8/pS5VsalALy7a7Ie0fvLPObln1Q2JLSxOkReDwebC67VIhGwqEAhJ15buWCW2K+Y3eTnNaROt4jRaquI6Qq6ibv8rFYsKBa1o59NLvwedAjPi/YI+F3E2IpW/E1/1eLpXCDuBhv/4RAEfb7Od0ZSEy0SqNFH1xke9Lvmuz2O8tcto3QNxL7gb9bv2R+lDc+yBckeNAMQQOxf7pMGFUcDUxsiFgIVhPUL4g55P
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR15MB4475.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(396003)(136003)(366004)(39860400002)(346002)(376002)(66946007)(6506007)(66476007)(9686003)(6512007)(66556008)(8676002)(4326008)(86362001)(558084003)(83380400001)(52116002)(33716001)(41300700001)(186003)(2906002)(6916009)(478600001)(38100700002)(8936002)(6486002)(1076003)(5660300002)(316002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?p0WBtGlKuJ4JYYFc4LZ0mvI6L+6xiL24WwPTNfpNI5PUWEzEzQMYov1XH6ON?=
+ =?us-ascii?Q?GAIjcqNh1pblzpKMaMv2ptzAv70HbCqFBYhz/i7uTjNvevFSYjzx9UPgOsCI?=
+ =?us-ascii?Q?OfySRkxitgS10yrdxc133z9fx5N6ceqfKcW1bxfCcf6w3UBhpikAWWihCek7?=
+ =?us-ascii?Q?86lCIM/knkCztbkzzFhmrGcfli7GI94oN/XmdEvHYEKy3v762UOo9c6tpLv7?=
+ =?us-ascii?Q?ub0hWWT5X/3XhDSchbsTxGpXrCMwB+CwTXh7chylHjdrLjIgVWD/sYB4ICce?=
+ =?us-ascii?Q?l6jMUtjTToiIfSWf7+AfzHiek1I4IbEZFxNR/0uzKbeevu/t3O8F3VgIJ/dQ?=
+ =?us-ascii?Q?uWSVQIeH32BNgOl+yRx25gpFj2BXgT0yYeIkwnO93t0i+Tc9hz5C0eGScxG1?=
+ =?us-ascii?Q?IfILblTkQR6aLWyT4X3No2RkY10vHIbPnJQJmGin1S1rUw7Oa37xXsr7E0ft?=
+ =?us-ascii?Q?75g0IHHr/v35q9wWsQqmVUTPv0GourTJ7JPwQIiTY/miE14k2c7CF0I/7pRD?=
+ =?us-ascii?Q?l8qa2s4429+bJg2H/Qi2H8wynGTHuxkvMeS9846iL6zoTb1+DlXBGny35V9i?=
+ =?us-ascii?Q?PLOpcaZSv63GUcHMU4MPy+6tHVpGnZk7FG7jMYsk4zbQikNTzMjJO1lFjtfh?=
+ =?us-ascii?Q?b5kcjFJJfuIHkiWOaKz9lZSEGtSBdx+ccQAhDsAugfXjEFF3r+5JwaE4+EAt?=
+ =?us-ascii?Q?L35hOCbo+G08nqXIPr0BZHTM6D6saw7UeJOwBxEPFIit9gMksuF6oAaC/fPp?=
+ =?us-ascii?Q?SKrbqj4OM5CYSbWlyiPm2a5gtnQ1qnbZbRnJIhs9vuZrvmIJykgCjwrP38Y0?=
+ =?us-ascii?Q?tkmK1ri93leoa0zZqsCsxMfqnLThm9TKk4ShhLpH3QYqnCudEOwCIztRQMRt?=
+ =?us-ascii?Q?TiN/+t50ZiF4rCOCRVuK+VqFSGac2Ry97027YAglm1uwp93Ew3Rc5t5X5+7J?=
+ =?us-ascii?Q?w3/Iq9gidrFshytOt5WEHkaRkyaC3ZoSMIgfl4+CjYZJ8IIkN1jxsf/ZYz7e?=
+ =?us-ascii?Q?0snRVWqNp16lGF+AMf9aJ1yHt++4iCjNu2Xlkld+6AsXglm7zF0/BVw/aBMB?=
+ =?us-ascii?Q?HfTN3ZD9YO0AGicNtGmxnmoW47N02EHwt9OCHHpI2O/2FfPYi16C+Udlr3EK?=
+ =?us-ascii?Q?r6qS2q9o6DmPBlz05Vk1NR/wbISD5nwsgjvsptinb0UF5lrwzn+KiShmoLfy?=
+ =?us-ascii?Q?KgojWJSRjoGrfwu3cHX45brh80bdnJ/Gc0p4YhBQVsCGfOFJvQsE5Gcc01Pe?=
+ =?us-ascii?Q?bNX1f5UH8IORl1X7MT0gWP1jbYfpYu8Ivud1VDhbTRiOqDJX/svlqT0mALOT?=
+ =?us-ascii?Q?+uZV8UdpO3a5uZhMv6emXwQ2F8FmBs6rqCJ6znjWx7LTE0Lc+jyxEkFH0z/Y?=
+ =?us-ascii?Q?iGIJylcPD954puWLnVDfcUjmgzSAJtnQ7tlwOvFD15tY2ECNJoeW6iwLlICE?=
+ =?us-ascii?Q?GZxIpAl2hbtwDRXqyEZ1SpswiJoallojWwnfmN6N0Ds5pgEYxONWbcJKdAzz?=
+ =?us-ascii?Q?m/qEb0vSpy6HZhEOSRzct2tb//EA8jZVe8hrSwyY+b8m1PSvpjA33XSSsZOs?=
+ =?us-ascii?Q?IBVY89LsI8tNqP9seCxSyokFsw8LzwygCIhGNnrIvRV5USyjyR83tiQXFZqE?=
+ =?us-ascii?Q?GQ=3D=3D?=
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b0f05bf-c0a0-4109-6741-08da556b4833
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR15MB4475.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jun 2022 22:54:08.8630
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1OyWqT/77zSHrwANjZkyM2Wd0SC0OhH6WCax42L8rWnSRr0gsTgg7SC7XWyrSdMj
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR15MB1719
+X-Proofpoint-ORIG-GUID: BmyXTIB5oxTPdpFvDZ6x3VUTsni1txmE
+X-Proofpoint-GUID: BmyXTIB5oxTPdpFvDZ6x3VUTsni1txmE
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-06-23_11,2022-06-23_01,2022-06-22_01
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jun 22, 2022 at 11:08 PM Xin Long <lucien.xin@gmail.com> wrote:
->
-> Yes, I'm working on it. I couldn't see the regression in my env with
-> the 'reproduce' script attached.
-> I will try with lkp tomorrow.
->
-> Thanks.
->
-> On Wed, Jun 22, 2022 at 8:29 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > Could someone working on SCTP double check this is a real regression?
-> > Feels like the regression reports are flowing at such rate its hard
-> > to keep up.
-> >
-> > >
-> > > commit:
-> > >   7c80b038d2 ("net: fix sk_wmem_schedule() and sk_rmem_schedule() err=
-ors")
-> > >   4890b686f4 ("net: keep sk->sk_forward_alloc as small as possible")
-> > >
-> > > 7c80b038d23e1f4c 4890b686f4088c90432149bd6de
-> > > ---------------- ---------------------------
-> > >          %stddev     %change         %stddev
-> > >              \          |                \
-> > >      15855           -69.4%       4854        netperf.Throughput_Mbps
-> > >     570788           -69.4%     174773        netperf.Throughput_tota=
-l_Mbps
-...
-> > >       0.00            +5.1        5.10 =C2=B1  5%  perf-profile.callt=
-race.cycles-pp.__sk_mem_reduce_allocated.sctp_wfree.skb_release_head_state.=
-consume_skb.sctp_chunk_put
-> > >       0.17 =C2=B1141%      +5.3        5.42 =C2=B1  6%  perf-profile.=
-calltrace.cycles-pp.skb_release_head_state.consume_skb.sctp_chunk_put.sctp_=
-outq_sack.sctp_cmd_interpreter
-> > >       0.00            +5.3        5.35 =C2=B1  6%  perf-profile.callt=
-race.cycles-pp.sctp_wfree.skb_release_head_state.consume_skb.sctp_chunk_put=
-.sctp_outq_sack
-> > >       0.00            +5.5        5.51 =C2=B1  6%  perf-profile.callt=
-race.cycles-pp.__sk_mem_reduce_allocated.skb_release_head_state.kfree_skb_r=
-eason.sctp_recvmsg.inet_recvmsg
-> > >       0.00            +5.7        5.65 =C2=B1  6%  perf-profile.callt=
-race.cycles-pp.skb_release_head_state.kfree_skb_reason.sctp_recvmsg.inet_re=
-cvmsg.____sys_recvmsg
-...
-> > >       0.00            +4.0        4.04 =C2=B1  6%  perf-profile.child=
-ren.cycles-pp.mem_cgroup_charge_skmem
-> > >       2.92 =C2=B1  6%      +4.2        7.16 =C2=B1  6%  perf-profile.=
-children.cycles-pp.sctp_outq_sack
-> > >       0.00            +4.3        4.29 =C2=B1  6%  perf-profile.child=
-ren.cycles-pp.__sk_mem_raise_allocated
-> > >       0.00            +4.3        4.32 =C2=B1  6%  perf-profile.child=
-ren.cycles-pp.__sk_mem_schedule
-> > >       1.99 =C2=B1  6%      +4.4        6.40 =C2=B1  6%  perf-profile.=
-children.cycles-pp.consume_skb
-> > >       1.78 =C2=B1  6%      +4.6        6.42 =C2=B1  6%  perf-profile.=
-children.cycles-pp.kfree_skb_reason
-> > >       0.37 =C2=B1  8%      +5.0        5.40 =C2=B1  6%  perf-profile.=
-children.cycles-pp.sctp_wfree
-> > >       0.87 =C2=B1  9%     +10.3       11.20 =C2=B1  6%  perf-profile.=
-children.cycles-pp.skb_release_head_state
-> > >       0.00           +10.7       10.66 =C2=B1  6%  perf-profile.child=
-ren.cycles-pp.__sk_mem_reduce_allocated
-...
-> > >       0.00            +1.2        1.19 =C2=B1  7%  perf-profile.self.=
-cycles-pp.try_charge_memcg
-> > >       0.00            +2.0        1.96 =C2=B1  6%  perf-profile.self.=
-cycles-pp.page_counter_uncharge
-> > >       0.00            +2.1        2.07 =C2=B1  5%  perf-profile.self.=
-cycles-pp.page_counter_try_charge
-> > >       1.09 =C2=B1  8%      +2.8        3.92 =C2=B1  6%  perf-profile.=
-self.cycles-pp.native_queued_spin_lock_slowpath
-> > >       0.29 =C2=B1  6%      +3.5        3.81 =C2=B1  6%  perf-profile.=
-self.cycles-pp.sctp_eat_data
-> > >       0.00            +7.8        7.76 =C2=B1  6%  perf-profile.self.=
-cycles-pp.__sk_mem_reduce_allocated
-
-From the perf data, we can see __sk_mem_reduce_allocated() is the one
-using CPU the most more than before, and mem_cgroup APIs are also
-called in this function. It means the mem cgroup must be enabled in
-the test env, which may explain why I couldn't reproduce it.
-
-The Commit 4890b686f4 ("net: keep sk->sk_forward_alloc as small as
-possible") uses sk_mem_reclaim(checking reclaimable >=3D PAGE_SIZE) to
-reclaim the memory, which is *more frequent* to call
-__sk_mem_reduce_allocated() than before (checking reclaimable >=3D
-SK_RECLAIM_THRESHOLD). It might be cheap when
-mem_cgroup_sockets_enabled is false, but I'm not sure if it's still
-cheap when mem_cgroup_sockets_enabled is true.
-
-I think SCTP netperf could trigger this, as the CPU is the bottleneck
-for SCTP netperf testing, which is more sensitive to the extra
-function calls than TCP.
-
-Can we re-run this testing without mem cgroup enabled?
-
-Thanks.
+On Wed, Jun 22, 2022 at 09:03:42AM -0700, Stanislav Fomichev wrote:
+> Has been slowly getting out of sync, let's update it.
+> 
+> resolve_btfids usage has been updated to match the header changes.
+Acked-by: Martin KaFai Lau <kafai@fb.com>
