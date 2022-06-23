@@ -2,171 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1B48558BDF
-	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 01:47:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71E3E558BD6
+	for <lists+netdev@lfdr.de>; Fri, 24 Jun 2022 01:44:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230418AbiFWXrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 19:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52638 "EHLO
+        id S230436AbiFWXoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 19:44:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229641AbiFWXrf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 19:47:35 -0400
-Received: from 66-220-155-178.mail-mxout.facebook.com (66-220-155-178.mail-mxout.facebook.com [66.220.155.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E16A6506E7
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 16:47:34 -0700 (PDT)
-Received: by devbig010.atn6.facebook.com (Postfix, from userid 115148)
-        id 15738E0E702E; Thu, 23 Jun 2022 16:44:44 -0700 (PDT)
-From:   Joanne Koong <joannelkoong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     edumazet@google.com, kafai@fb.com, kuba@kernel.org,
-        davem@davemloft.net, pabeni@redhat.com,
-        Joanne Koong <joannelkoong@gmail.com>
-Subject: [PATCH net-next v1 3/3] selftests/net: Add sk_bind_sendto_listen test
-Date:   Thu, 23 Jun 2022 16:42:42 -0700
-Message-Id: <20220623234242.2083895-4-joannelkoong@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220623234242.2083895-1-joannelkoong@gmail.com>
-References: <20220623234242.2083895-1-joannelkoong@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=1.6 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,RDNS_DYNAMIC,
-        SPF_HELO_PASS,SPF_SOFTFAIL,TVD_RCVD_IP,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+        with ESMTP id S229615AbiFWXog (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 19:44:36 -0400
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E764FC6B;
+        Thu, 23 Jun 2022 16:44:35 -0700 (PDT)
+Received: by mail-il1-x130.google.com with SMTP id n14so408345ilt.10;
+        Thu, 23 Jun 2022 16:44:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=Q9dyH1c/WKyQejLN3Yo4vHJr2Mjmed9KfkMox7OYbHw=;
+        b=Y8r6pVrW3fnhs0FmOm3bz1xp8USIwC8ve01v9J6QV4g9KA5Uf4F2vDivQiIYNojmIs
+         U7E3kJe2r9Z6oSOjcsyIFuSCJ1VrRdC2Jw3puIyxHpgXeOaSuy1+pE0nYvEGjekaVpaA
+         fcm8wrPrPGTo9LokkV0nz1qrxaCs/NL/3/fvxdV3hJJMEe3wrve5velwn3dJTTDky17x
+         KOsBTZb/1Z7bWLeXM8+uusUi7+7WhzBswPteztfYZnwf+NKtNaUXjQBeslPq/u2D8rVE
+         +eFC+cOK4qXKDW4EVhfoTb2viliPYy3uN8w6cBCCtuheF6awJp0haifDMnfYbk+paiG8
+         Lsaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=Q9dyH1c/WKyQejLN3Yo4vHJr2Mjmed9KfkMox7OYbHw=;
+        b=mr9ELWY4szgIRoxADSiP0OODcIrqkHFdyM6+tk/WQV4AT608IeIQti1tZ645KvVk4+
+         VF9qui1WONFO7nokJD0X6UuoDH3DxgF0CUk0S5Zlrn8RDVdyAvEm8C1NkOPu/Tqpodys
+         GuPH8OLpIB6dGmGBpgBAGV9/uDKAM1oB+/Qafw6tWjYAzbXAigoAW4czhdikfKvwIT4B
+         U5+LAEdEwcZfxhO10/CtDvJ3SS3ubfh8DuC3iueADBhkBbW86E2XRlvLE5OgamvjJHvs
+         hQHWgH5pKIVHl0FU6103hv1rt6cXVDh2o7Y7mqAkEJUZIi/wVNOmdjviHygonCn7Wkmr
+         P6MQ==
+X-Gm-Message-State: AJIora9teySOd1nT5U/UvyrqN0LFU+r6gp/hbTitPGoC+l6Tdk6NC7JC
+        0VLt4lX5KjwM+gpqttfiPCA=
+X-Google-Smtp-Source: AGRyM1uAMrbwKWLgODvFzmC0vmX8VqGiUp8rWPxrkbPQuXToUKxA2kE76dkWkLpDWSUW7wErwn2qPQ==
+X-Received: by 2002:a05:6e02:154e:b0:2d9:3a5:3c61 with SMTP id j14-20020a056e02154e00b002d903a53c61mr6591762ilu.147.1656027875171;
+        Thu, 23 Jun 2022 16:44:35 -0700 (PDT)
+Received: from localhost ([172.243.153.43])
+        by smtp.gmail.com with ESMTPSA id n41-20020a056602342900b00669536b0d71sm430920ioz.14.2022.06.23.16.44.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 Jun 2022 16:44:34 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 16:44:28 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Simon wang <wangchuanguo@inspur.com>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Simon Wang <wangchuanguo@inspur.com>
+Message-ID: <62b4fadc6aaf_26268208bf@john.notmuch>
+In-Reply-To: <20220622031923.65692-1-wangchuanguo@inspur.com>
+References: <20220622031923.65692-1-wangchuanguo@inspur.com>
+Subject: RE: [PATCH] bpf: Replace 0 with BPF_K
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a new test called sk_bind_sendto_listen.
+Simon wang wrote:
+> From: Simon Wang <wangchuanguo@inspur.com>
+> 
+> Enhance readability.
+> 
+> Signed-off-by: Simon Wang <wangchuanguo@inspur.com>
+> ---
+>  kernel/bpf/verifier.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 2859901ffbe3..29060f15daab 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -9064,7 +9064,7 @@ static int check_alu_op(struct bpf_verifier_env *env, struct bpf_insn *insn)
+>  
+>  	if (opcode == BPF_END || opcode == BPF_NEG) {
+>  		if (opcode == BPF_NEG) {
+> -			if (BPF_SRC(insn->code) != 0 ||
+> +			if (BPF_SRC(insn->code) != BPF_K ||
+>  			    insn->src_reg != BPF_REG_0 ||
+>  			    insn->off != 0 || insn->imm != 0) {
+>  				verbose(env, "BPF_NEG uses reserved fields\n");
+> -- 
+> 2.27.0
+> 
 
-This test exercises the path where a socket's rcv saddr changes after it
-has been added to the binding tables, and then a listen() on the socket
-is invoked. The listen() should succeed.
+Code is fine and seems everywhere else we do this check with
 
-This test is copied over from one of syzbot's tests:
-https://syzkaller.appspot.com/x/repro.c?x=3D1673a38df00000
+    BPF_SRC(insn->code) != BPF_K
 
-Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
----
- tools/testing/selftests/net/.gitignore        |  1 +
- tools/testing/selftests/net/Makefile          |  1 +
- .../selftests/net/sk_bind_sendto_listen.c     | 80 +++++++++++++++++++
- 3 files changed, 82 insertions(+)
- create mode 100644 tools/testing/selftests/net/sk_bind_sendto_listen.c
+One thing though this should have [PATCH bpf-next] in the title so its
+clear the code is targeted for bpf-next. Although in this case its
+obvious from the content.
 
-diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selft=
-ests/net/.gitignore
-index 8b509a4672fc..5252c1a3926e 100644
---- a/tools/testing/selftests/net/.gitignore
-+++ b/tools/testing/selftests/net/.gitignore
-@@ -38,3 +38,4 @@ ioam6_parser
- toeplitz
- cmsg_sender
- bind_bhash
-+sk_bind_sendto_listen
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftes=
-ts/net/Makefile
-index bc54d9c36abc..0658f86a045a 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -61,6 +61,7 @@ TEST_GEN_FILES +=3D cmsg_sender
- TEST_GEN_FILES +=3D stress_reuseport_listen
- TEST_PROGS +=3D test_vxlan_vnifiltering.sh
- TEST_GEN_FILES +=3D bind_bhash
-+TEST_GEN_FILES +=3D sk_bind_sendto_listen
-=20
- TEST_FILES :=3D settings
-=20
-diff --git a/tools/testing/selftests/net/sk_bind_sendto_listen.c b/tools/=
-testing/selftests/net/sk_bind_sendto_listen.c
-new file mode 100644
-index 000000000000..b420d830f72c
---- /dev/null
-+++ b/tools/testing/selftests/net/sk_bind_sendto_listen.c
-@@ -0,0 +1,80 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <arpa/inet.h>
-+#include <error.h>
-+#include <errno.h>
-+#include <unistd.h>
-+
-+int main(void)
-+{
-+	int fd1, fd2, one =3D 1;
-+	struct sockaddr_in6 bind_addr =3D {
-+		.sin6_family =3D AF_INET6,
-+		.sin6_port =3D htons(20000),
-+		.sin6_flowinfo =3D htonl(0),
-+		.sin6_addr =3D {},
-+		.sin6_scope_id =3D 0,
-+	};
-+
-+	inet_pton(AF_INET6, "::", &bind_addr.sin6_addr);
-+
-+	fd1 =3D socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
-+	if (fd1 < 0) {
-+		error(1, errno, "socket fd1");
-+		return -1;
-+	}
-+
-+	if (setsockopt(fd1, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one))) {
-+		error(1, errno, "setsockopt(SO_REUSEADDR) fd1");
-+		goto out_err1;
-+	}
-+
-+	if (bind(fd1, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {
-+		error(1, errno, "bind fd1");
-+		goto out_err1;
-+	}
-+
-+	if (sendto(fd1, NULL, 0, MSG_FASTOPEN, (struct sockaddr *)&bind_addr,
-+		   sizeof(bind_addr))) {
-+		error(1, errno, "sendto fd1");
-+		goto out_err1;
-+	}
-+
-+	fd2 =3D socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
-+	if (fd2 < 0) {
-+		error(1, errno, "socket fd2");
-+		goto out_err1;
-+	}
-+
-+	if (setsockopt(fd2, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one))) {
-+		error(1, errno, "setsockopt(SO_REUSEADDR) fd2");
-+		goto out_err2;
-+	}
-+
-+	if (bind(fd2, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {
-+		error(1, errno, "bind fd2");
-+		goto out_err2;
-+	}
-+
-+	if (sendto(fd2, NULL, 0, MSG_FASTOPEN, (struct sockaddr *)&bind_addr,
-+		   sizeof(bind_addr)) !=3D -1) {
-+		error(1, errno, "sendto fd2");
-+		goto out_err2;
-+	}
-+
-+	if (listen(fd2, 0)) {
-+		error(1, errno, "listen");
-+		goto out_err2;
-+	}
-+
-+	close(fd2);
-+	close(fd1);
-+	return 0;
-+
-+out_err2:
-+	close(fd2);
-+
-+out_err1:
-+	close(fd1);
-+	return -1;
-+}
---=20
-2.30.2
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
