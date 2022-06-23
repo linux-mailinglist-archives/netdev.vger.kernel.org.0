@@ -2,160 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D57825587A8
-	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 20:36:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87F365587D7
+	for <lists+netdev@lfdr.de>; Thu, 23 Jun 2022 20:53:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231652AbiFWSge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 23 Jun 2022 14:36:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48314 "EHLO
+        id S230333AbiFWSwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 23 Jun 2022 14:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232517AbiFWSgX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 14:36:23 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD848F9F9
-        for <netdev@vger.kernel.org>; Thu, 23 Jun 2022 10:37:31 -0700 (PDT)
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1o4QkO-00079c-Ee; Thu, 23 Jun 2022 19:36:04 +0200
-Message-ID: <ec4168b6-36f1-0183-b1ed-6a33d9fa1bbc@pengutronix.de>
-Date:   Thu, 23 Jun 2022 19:35:53 +0200
+        with ESMTP id S230500AbiFWSwV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 23 Jun 2022 14:52:21 -0400
+Received: from out20-51.mail.aliyun.com (out20-51.mail.aliyun.com [115.124.20.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 182D5FE017;
+        Thu, 23 Jun 2022 10:57:08 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.04520515|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.192979-0.00344398-0.803577;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047199;MF=wangyugui@e16-tech.com;NM=1;PH=DS;RN=6;RT=6;SR=0;TI=SMTPD_---.OBQTixF_1656006676;
+Received: from 192.168.2.112(mailfrom:wangyugui@e16-tech.com fp:SMTPD_---.OBQTixF_1656006676)
+          by smtp.aliyun-inc.com;
+          Fri, 24 Jun 2022 01:51:17 +0800
+Date:   Fri, 24 Jun 2022 01:51:22 +0800
+From:   Wang Yugui <wangyugui@e16-tech.com>
+To:     Chuck Lever III <chuck.lever@oracle.com>
+Subject: Re: [PATCH RFC 00/30] Overhaul NFSD filecache
+Cc:     Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "david@fromorbit.com" <david@fromorbit.com>,
+        "tgraf@suug.ch" <tgraf@suug.ch>, Jeff Layton <jlayton@redhat.com>
+In-Reply-To: <0292A2FC-7725-47FC-8F08-CCB8500D8E1D@oracle.com>
+References: <20220623170218.7874.409509F4@e16-tech.com> <0292A2FC-7725-47FC-8F08-CCB8500D8E1D@oracle.com>
+Message-Id: <20220624015121.06F3.409509F4@e16-tech.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2 2/2] of: base: Avoid console probe delay when
- fw_devlink.strict=1
-Content-Language: en-US
-To:     Saravana Kannan <saravanak@google.com>,
-        sascha hauer <sha@pengutronix.de>
-Cc:     andrew lunn <andrew@lunn.ch>, peng fan <peng.fan@nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linus walleij <linus.walleij@linaro.org>,
-        ulf hansson <ulf.hansson@linaro.org>,
-        eric dumazet <edumazet@google.com>,
-        pavel machek <pavel@ucw.cz>, will deacon <will@kernel.org>,
-        kevin hilman <khilman@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        joerg roedel <joro@8bytes.org>,
-        russell king <linux@armlinux.org.uk>,
-        linux-acpi@vger.kernel.org, jakub kicinski <kuba@kernel.org>,
-        paolo abeni <pabeni@redhat.com>, kernel-team@android.com,
-        Len Brown <lenb@kernel.org>, len brown <len.brown@intel.com>,
-        kernel@pengutronix.de, linux-pm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        hideaki yoshifuji <yoshfuji@linux-ipv6.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        david ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
-        Daniel Scally <djrscally@gmail.com>,
-        iommu@lists.linux-foundation.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        netdev@vger.kernel.org, "david s. miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, heiner kallweit <hkallweit1@gmail.com>
-References: <20220623080344.783549-1-saravanak@google.com>
- <20220623080344.783549-3-saravanak@google.com>
- <20220623100421.GY1615@pengutronix.de>
- <CAGETcx_eVkYtVX9=TOKnhpP2_ZpJwRDoBye3i7ND2u5Q-eQfPg@mail.gmail.com>
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-In-Reply-To: <CAGETcx_eVkYtVX9=TOKnhpP2_ZpJwRDoBye3i7ND2u5Q-eQfPg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Mailer: Becky! ver. 2.75.04 [en]
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Saravana,
+Hi,
 
-On 23.06.22 19:26, Saravana Kannan wrote:
-> On Thu, Jun 23, 2022 at 3:05 AM sascha hauer <sha@pengutronix.de> wrote:
->>
->> On Thu, Jun 23, 2022 at 01:03:43AM -0700, Saravana Kannan wrote:
->>> Commit 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
->>> enabled iommus and dmas dependency enforcement by default. On some
->>> systems, this caused the console device's probe to get delayed until the
->>> deferred_probe_timeout expires.
->>>
->>> We need consoles to work as soon as possible, so mark the console device
->>> node with FWNODE_FLAG_BEST_EFFORT so that fw_delink knows not to delay
->>> the probe of the console device for suppliers without drivers. The
->>> driver can then make the decision on where it can probe without those
->>> suppliers or defer its probe.
->>>
->>> Fixes: 71066545b48e ("driver core: Set fw_devlink.strict=1 by default")
->>> Reported-by: Sascha Hauer <sha@pengutronix.de>
->>> Reported-by: Peng Fan <peng.fan@nxp.com>
->>> Signed-off-by: Saravana Kannan <saravanak@google.com>
->>> Tested-by: Peng Fan <peng.fan@nxp.com>
->>> ---
->>>  drivers/of/base.c | 2 ++
->>>  1 file changed, 2 insertions(+)
->>>
->>> diff --git a/drivers/of/base.c b/drivers/of/base.c
->>> index d4f98c8469ed..a19cd0c73644 100644
->>> --- a/drivers/of/base.c
->>> +++ b/drivers/of/base.c
->>> @@ -1919,6 +1919,8 @@ void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align))
->>>                       of_property_read_string(of_aliases, "stdout", &name);
->>>               if (name)
->>>                       of_stdout = of_find_node_opts_by_path(name, &of_stdout_options);
->>> +             if (of_stdout)
->>> +                     of_stdout->fwnode.flags |= FWNODE_FLAG_BEST_EFFORT;
->>
->> The device given in the stdout-path property doesn't necessarily have to
->> be consistent with the console= parameter. The former is usually
->> statically set in the device trees contained in the kernel while the
->> latter is dynamically set by the bootloader. So if you change the
->> console uart in the bootloader then you'll still run into this trap.
->>
->> It's problematic to consult only the device tree for dependencies. I
->> found several examples of drivers in the tree for which dma support
->> is optional. They use it if they can, but continue without it when
->> not available. "hwlock" is another property which consider several
->> drivers as optional. Also consider SoCs in early upstreaming phases
->> when the device tree is merged with "dmas" or "hwlock" properties,
->> but the corresponding drivers are not yet upstreamed. It's not nice
->> to defer probing of all these devices for a long time.
->>
->> I wonder if it wouldn't be a better approach to just probe all devices
->> and record the device(node) they are waiting on. Then you know that you
->> don't need to probe them again until the device they are waiting for
->> is available.
+> > On Jun 23, 2022, at 5:02 AM, Wang Yugui <wangyugui@e16-tech.com> wrote:
+> > 
+> > Hi,
+> > 
+> >>> On Jun 22, 2022, at 3:04 PM, Chuck Lever III <chuck.lever@oracle.com> wrote:
+> >>>> On Jun 22, 2022, at 2:36 PM, Wang Yugui <wangyugui@e16-tech.com> wrote:
+> >>>> 
+> >>>> Hi,
+> >>>> 
+> >>>> fstests generic/531 triggered a panic on kernel 5.19.0-rc3 with this
+> >>>> patchset.
+> >>> 
+> >>> As I mention in the cover letter, I haven't tried running generic/531
+> >>> yet -- no claim at all that this is finished work and that #386 has
+> >>> been fixed at this point. I'm merely interested in comments on the
+> >>> general approach.
+> >>> 
+> >>> 
+> >>>> [ 405.478056] BUG: kernel NULL pointer dereference, address: 0000000000000049
+> >>> 
+> >>> The "RIP: " tells the location of the crash. Notice that the call
+> >>> trace here does not include that information. From your attachment:
+> >>> 
+> >>> [ 405.518022] RIP: 0010:nfsd_do_file_acquire+0x4e1/0xb80 [nfsd]
+> >>> 
+> >>> To match that to a line of source code:
+> >>> 
+> >>> [cel@manet ~]$ cd src/linux/linux/
+> >>> [cel@manet linux]$ scripts/faddr2line ../obj/manet/fs/nfsd/filecache.o nfsd_do_file_acquire+0x4e1
+> >>> nfsd_do_file_acquire+0x4e1/0xfc0:
+> >>> rht_bucket_insert at /home/cel/src/linux/linux/include/linux/rhashtable.h:303
+> >>> (inlined by) __rhashtable_insert_fast at /home/cel/src/linux/linux/include/linux/rhashtable.h:718
+> >>> (inlined by) rhashtable_lookup_get_insert_key at /home/cel/src/linux/linux/include/linux/rhashtable.h:982
+> >>> (inlined by) nfsd_file_insert at /home/cel/src/linux/linux/fs/nfsd/filecache.c:1031
+> >>> (inlined by) nfsd_do_file_acquire at /home/cel/src/linux/linux/fs/nfsd/filecache.c:1089
+> >>> [cel@manet linux]$
+> >>> 
+> >>> This is an example, I'm sure my compiled objects don't match yours.
+> >>> 
+> >>> And, now that I've added observability, you should be able to do:
+> >>> 
+> >>> # watch cat /proc/fs/nfsd/filecache
+> >>> 
+> >>> to see how many items are in the hash and LRU list while the test
+> >>> is running.
+> >>> 
+> >>> 
+> >>>> [ 405.608016] Call Trace:
+> >>>> [ 405.608016] <TASK>
+> >>>> [ 405.613020] nfs4_get_vfs_file+0x325/0x410 [nfsd]
+> >>>> [ 405.618018] nfsd4_process_open2+0x4ba/0x16d0 [nfsd]
+> >>>> [ 405.623016] ? inode_get_bytes+0x38/0x40
+> >>>> [ 405.623016] ? nfsd_permission+0x97/0xf0 [nfsd]
+> >>>> [ 405.628022] ? fh_verify+0x1cc/0x6f0 [nfsd]
+> >>>> [ 405.633025] nfsd4_open+0x640/0xb30 [nfsd]
+> >>>> [ 405.638025] nfsd4_proc_compound+0x3bd/0x710 [nfsd]
+> >>>> [ 405.643017] nfsd_dispatch+0x143/0x270 [nfsd]
+> >>>> [ 405.648019] svc_process_common+0x3bf/0x5b0 [sunrpc]
+> >> 
+> >> I was able to trigger something that looks very much like this crash.
+> >> If you remove this line from fs/nfsd/filecache.c:
+> >> 
+> >> 	.max_size		= 131072, /* buckets */
+> >> 
+> >> things get a lot more stable for generic/531.
+> >> 
+> >> I'm looking into the issue now.
+> > 
+> > Yes. When '.max_size = 131072' is removed, fstests generic/531 passed.
 > 
-> That actually breaks things in a worse sense. There are cases where
-> the consumer driver is built in and the optional supplier driver is
-> loaded at boot. Without fw_devlink and the deferred probe timeout, we
-> end up probing the consumer with limited functionality. With the
-> current setup, sure we delay some probes a bit but at least everything
-> works with the right functionality. And you can reduce or remove the
-> delay if you want to optimize it.
+> Great! Are you comfortable with this general approach for bug #386?
 
-I have a system that doesn't use stdout-path and has the bootloader
-set console= either to ttynull when secure booting or to an UART
-when booting normally. How would I optimize the kernel to avoid
-my UART being loaded after DMA controller probe without touching
-the bootloader?
+It seems a good result for #386.
 
-Cheers,
-Ahmad
+fstests generic/531(file-max: 1M) performance result:
+base(5.19.0-rc3, 12 bits hash, serialized nfsd_file_gc): 222s
+this patchset(.min_size=4096): 59s
+so, a good improvement for #386.
 
-> 
-> -Saravana
-> 
-> 
+It seems a good(acceptable) result for #387 too.
+the period of 'text busy(exec directly from the back-end of nfs-server)'
+is about 4s.
+
+Best Regards
+Wang Yugui (wangyugui@e16-tech.com)
+2022/06/24
 
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
